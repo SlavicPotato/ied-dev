@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseAVX2 MT|x64">
+      <Configuration>ReleaseAVX2 MT</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{a0af6c5a-b0f8-4f7f-b622-535c5b9dcff1}</ProjectGuid>
+    <RootNamespace>ImmersiveEquipmentDisplays</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ImmersiveEquipmentDisplays</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgTriplet>x64-windows-rel-static</VcpkgTriplet>
+    <VcpkgConfiguration>Release</VcpkgConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'" Label="Vcpkg">
+    <VcpkgTriplet>x64-windows-avx2-static</VcpkgTriplet>
+    <VcpkgConfiguration>Release</VcpkgConfiguration>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;_DEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\sparse-map\include;$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>/permissive %(AdditionalOptions)</AdditionalOptions>
+      <ForcedIncludeFiles>common/IPrefix.h;ext/ICommon.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\sparse-map\include;$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
+      <IntelJCCErratum>true</IntelJCCErratum>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/permissive %(AdditionalOptions)</AdditionalOptions>
+      <ForcedIncludeFiles>common/IPrefix.h;ext/ICommon.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(TargetPath)" "$(SSEPath)\Data\SKSE\Plugins\zNGU.dll" /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Installing to: $(SSEPath)\Data\SKSE\Plugins\</Message>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\sparse-map\include;$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
+      <IntelJCCErratum>true</IntelJCCErratum>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/permissive %(AdditionalOptions)</AdditionalOptions>
+      <ForcedIncludeFiles>common/IPrefix.h;ext/ICommon.h</ForcedIncludeFiles>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Installing to: $(SSEPath)\Data\SKSE\Plugins\</Message>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(ProjectDir)mkgitparams.bat</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h" />
+    <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h" />
+    <ClInclude Include="Drivers\Input.h" />
+    <ClInclude Include="Drivers\Input\Handlers.h" />
+    <ClInclude Include="Drivers\Render.h" />
+    <ClInclude Include="Drivers\Render\Events.h" />
+    <ClInclude Include="Drivers\UI.h" />
+    <ClInclude Include="Drivers\UI\Tasks.h" />
+    <ClInclude Include="Events\Dispatcher.h" />
+    <ClInclude Include="Fonts\FontInfo.h" />
+    <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="ImGui\imgui_impl_dx11.h" />
+    <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\MouseEventQueue.h" />
+    <ClInclude Include="Localization\Common.h" />
+    <ClInclude Include="Localization\CommonStrings.h" />
+    <ClInclude Include="Localization\ILocalization.h" />
+    <ClInclude Include="Localization\LocalizationDataManager.h" />
+    <ClInclude Include="Localization\StringTable.h" />
+    <ClInclude Include="IED\ActorInfoEntry.h" />
+    <ClInclude Include="IED\ActorState.h" />
+    <ClInclude Include="IED\CollectorData.h" />
+    <ClInclude Include="IED\CommonParams.h" />
+    <ClInclude Include="IED\Config.h" />
+    <ClInclude Include="IED\ConfigOverrideBaseValues.h" />
+    <ClInclude Include="IED\ConfigOverride.h" />
+    <ClInclude Include="IED\ConfigOverrideBase.h" />
+    <ClInclude Include="IED\ConfigOverrideBlockList.h" />
+    <ClInclude Include="IED\ConfigOverrideCommon.h" />
+    <ClInclude Include="IED\ConfigOverrideCustom.h" />
+    <ClInclude Include="IED\ConfigOverrideDefault.h" />
+    <ClInclude Include="IED\ConfigOverrideEquipment.h" />
+    <ClInclude Include="IED\ConfigOverrideNodeOverride.h" />
+    <ClInclude Include="IED\ConfigOverrideSlot.h" />
+    <ClInclude Include="IED\ConfigOverrideTransform.h" />
+    <ClInclude Include="IED\ConfigParsers.h" />
+    <ClInclude Include="IED\Controller\ControllerCommon.h" />
+    <ClInclude Include="IED\Controller\FormFilterMaintenance.h" />
+    <ClInclude Include="IED\Controller\IMaintenance.h" />
+    <ClInclude Include="IED\Controller\INodeOverride.h" />
+    <ClInclude Include="IED\Controller\ModelType.h" />
+    <ClInclude Include="IED\Controller\ObjectDatabase.h" />
+    <ClInclude Include="IED\Controller\ObjectDatabaseLevel.h" />
+    <ClInclude Include="IED\Controller\ObjectManagerCommon.h" />
+    <ClInclude Include="IED\Controller\Controller.h" />
+    <ClInclude Include="IED\Controller\IActorInfo.h" />
+    <ClInclude Include="IED\Controller\ObjectManagerData.h" />
+    <ClInclude Include="IED\Controller\IEquipment.h" />
+    <ClInclude Include="IED\Controller\IForm.h" />
+    <ClInclude Include="IED\Controller\IFormDatabase.h" />
+    <ClInclude Include="IED\Controller\IJSONSerialization.h" />
+    <ClInclude Include="IED\Controller\IModel.h" />
+    <ClInclude Include="IED\Controller\INode.h" />
+    <ClInclude Include="IED\Controller\IObjectManager.h" />
+    <ClInclude Include="IED\Controller\ISound.h" />
+    <ClInclude Include="IED\Controller\IUI.h" />
+    <ClInclude Include="IED\Controller\NodeProcessorTask.h" />
+    <ClInclude Include="IED\Controller\NodeOverrideData.h" />
+    <ClInclude Include="IED\Controller\ObjectEntryStatus.h" />
+    <ClInclude Include="IED\Controller\SlotDeferedCleanupObject.h" />
+    <ClInclude Include="IED\Data.h" />
+    <ClInclude Include="IED\ConfigCommon.h" />
+    <ClInclude Include="IED\EngineExtensions.h" />
+    <ClInclude Include="IED\FormCommon.h" />
+    <ClInclude Include="IED\FormHolder.h" />
+    <ClInclude Include="IED\Inventory.h" />
+    <ClInclude Include="IED\Main.h" />
+    <ClInclude Include="IED\NodeMap.h" />
+    <ClInclude Include="IED\NodeDescriptor.h" />
+    <ClInclude Include="IED\PapyrusInterface\Papyrus.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCommon.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItem.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItemCommon.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItemImpl.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigCachedFormParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigMapNodeOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigTransformParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigBaseParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigBaseValuesParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigCustomHolderParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigCustomParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigCustomPluginMapParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSexParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigMapCustomParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigMapSlotParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSlotParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigStoreCustomParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigStoreParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigStoreSlotParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSlotHolderParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFontGlyphDataParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFontGlyphRangeParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFontInfoMapParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFontInfoEntryParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseSharedParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFormFilterParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFormListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONFormParser.h" />
+    <ClInclude Include="IED\Parsers\JSONNodeMapParser.h" />
+    <ClInclude Include="IED\Parsers\JSONNodeMapValueParser.h" />
+    <ClInclude Include="IED\Parsers\JSONParsersCommon.h" />
+    <ClInclude Include="IED\Parsers\JSONRangeParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsActorParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsControlsParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsHolder.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsImportExport.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsProfileEditorParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsRaceParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsEditorPanelParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSettingsUserInterfaceParser.h" />
+    <ClInclude Include="IED\Parsers\JSONStringTableDataParser.h" />
+    <ClInclude Include="IED\ProcessParams.h" />
+    <ClInclude Include="IED\GlobalProfileManager.h" />
+    <ClInclude Include="IED\Profile\Events.h" />
+    <ClInclude Include="IED\Profile\Manager.h" />
+    <ClInclude Include="IED\Profile\Profile.h" />
+    <ClInclude Include="IED\SettingHolder.h" />
+    <ClInclude Include="IED\StringHolder.h" />
+    <ClInclude Include="IED\UI\Controls\UIAlignment.h" />
+    <ClInclude Include="IED\UI\Controls\UICollapsibles.h" />
+    <ClInclude Include="IED\UI\Controls\UIControls.h" />
+    <ClInclude Include="IED\UI\Custom\Profile\UIProfileEditorCustom.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomEditorActor.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomEditorCommon.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomEditorGlobal.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomEditorNPC.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomEditorRace.h" />
+    <ClInclude Include="IED\UI\Custom\UICustomTabPanel.h" />
+    <ClInclude Include="IED\UI\Custom\Widgets\UICustomEditorStrings.h" />
+    <ClInclude Include="IED\UI\Custom\Widgets\UICustomEditorWidget.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\Profile\UIProfileEditorSlot.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorActor.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorBase.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorCommon.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorGlobal.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorNPC.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorRace.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotTabPanel.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\Widgets\UISlotEditorWidget.h" />
+    <ClInclude Include="IED\UI\EquipmentSlots\Widgets\UISlotEditorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\FormFilters\UIProfileEditorFormFilters.h" />
+    <ClInclude Include="IED\UI\Modals\UICommonModals.h" />
+    <ClInclude Include="IED\UI\NodeOverride\Profile\UIProfileEditorNodeOverride.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorCommon.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorGlobal.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorNPC.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorRace.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorStrings.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorWindow.h" />
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideTabPanel.h" />
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorStrings.h" />
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidget.h" />
+    <ClInclude Include="IED\UI\PopupQueue\UIPopupAction.h" />
+    <ClInclude Include="IED\UI\PopupQueue\UIPopupQueue.h" />
+    <ClInclude Include="IED\UI\Profile\UIProfileBase.h" />
+    <ClInclude Include="IED\UI\Profile\UIProfileEditorBase.h" />
+    <ClInclude Include="IED\UI\Profile\UIProfileSelectorBase.h" />
+    <ClInclude Include="IED\UI\Profile\UIProfileStrings.h" />
+    <ClInclude Include="IED\UI\UIClipboard.h" />
+    <ClInclude Include="IED\UI\UICommon.h" />
+    <ClInclude Include="IED\UI\UIData.h" />
+    <ClInclude Include="IED\UI\UIDialogImportExport.h" />
+    <ClInclude Include="IED\UI\UIDialogImportExportStrings.h" />
+    <ClInclude Include="IED\UI\UIEditorInterface.h" />
+    <ClInclude Include="IED\UI\UIFormBrowser.h" />
+    <ClInclude Include="IED\UI\UIEditorTabPanel.h" />
+    <ClInclude Include="IED\UI\UIFormBrowserStrings.h" />
+    <ClInclude Include="IED\UI\UIFormInfoCache.h" />
+    <ClInclude Include="IED\UI\UIFormLookupInterface.h" />
+    <ClInclude Include="IED\UI\UILocalizationInterface.h" />
+    <ClInclude Include="IED\UI\UILog.h" />
+    <ClInclude Include="IED\UI\UIMainStrings.h" />
+    <ClInclude Include="IED\UI\UINodeMapEditor.h" />
+    <ClInclude Include="IED\UI\UIMainCommon.h" />
+    <ClInclude Include="IED\UI\UINotificationInterface.h" />
+    <ClInclude Include="IED\UI\UISettingsInterface.h" />
+    <ClInclude Include="IED\UI\UISettingsStrings.h" />
+    <ClInclude Include="IED\UI\UIStats.h" />
+    <ClInclude Include="IED\UI\UIStatsStrings.h" />
+    <ClInclude Include="IED\UI\UITips.h" />
+    <ClInclude Include="IED\UI\UIMain.h" />
+    <ClInclude Include="IED\UI\UISettings.h" />
+    <ClInclude Include="IED\UI\UITipsData.h" />
+    <ClInclude Include="IED\UI\Widgets\Filters\UIFilterBase.h" />
+    <ClInclude Include="IED\UI\Widgets\Filters\UIGenericFilter.h" />
+    <ClInclude Include="IED\UI\Widgets\Filters\UIRegexFilter.h" />
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormBrowserOwner.h" />
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormFilterWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormPickerWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorListStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorListWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIListCommon.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UINPCInfoAddInterface.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UINPCListWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIRaceListWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UICMNodeSelector.h" />
+    <ClInclude Include="IED\UI\Widgets\UIControlKeySelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIDescriptionPopup.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEditorPanelSettings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEditorPanelSettingsGear.h" />
+    <ClInclude Include="IED\UI\Widgets\UIExportFilterWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIFileSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIConditionParamEditorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIFileSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIPopupToggleButtonWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UISimpleNodeList.h" />
+    <ClInclude Include="IED\UI\Widgets\UITableRowInputWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UITransformSliderWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIWidgetCommonStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIWidgetsCommon.h" />
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UINodeSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIProfileSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Window\UIWindow.h" />
+    <ClInclude Include="IED\UI\Window\UIWindowBase.h" />
+    <ClInclude Include="IED\UI\Window\WindowLayoutData.h" />
+    <ClInclude Include="IED\Util\Common.h" />
+    <ClInclude Include="IED\Util\Logging.h" />
+    <ClInclude Include="paths.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="plugin.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Serialization\Serialization.h" />
+    <ClInclude Include="skse.h" />
+    <ClInclude Include="version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Drivers\Input.cpp" />
+    <ClCompile Include="Drivers\Input\Handlers.cpp" />
+    <ClCompile Include="Drivers\Render.cpp" />
+    <ClCompile Include="Drivers\UI.cpp" />
+    <ClCompile Include="Drivers\UI\Tasks.cpp" />
+    <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
+    <ClCompile Include="ImGui\MouseEventQueue.cpp" />
+    <ClCompile Include="Localization\ILocalization.cpp" />
+    <ClCompile Include="Localization\LocalizationDataManager.cpp" />
+    <ClCompile Include="Localization\StringTable.cpp" />
+    <ClCompile Include="IED\ActorState.cpp" />
+    <ClCompile Include="IED\CollectorData.cpp" />
+    <ClCompile Include="IED\Config.cpp" />
+    <ClCompile Include="IED\ConfigOverrideBase.cpp" />
+    <ClCompile Include="IED\ConfigOverrideCommon.cpp" />
+    <ClCompile Include="IED\ConfigOverrideSlot.cpp" />
+    <ClCompile Include="IED\ConfigParsers.cpp" />
+    <ClCompile Include="IED\Controller\Controller.cpp" />
+    <ClCompile Include="IED\Controller\FormFilterMaintenance.cpp" />
+    <ClCompile Include="IED\Controller\IActorInfo.cpp" />
+    <ClCompile Include="IED\Controller\IMaintenance.cpp" />
+    <ClCompile Include="IED\Controller\INodeOverride.cpp" />
+    <ClCompile Include="IED\Controller\ObjectDatabase.cpp" />
+    <ClCompile Include="IED\Controller\ObjectEntryStatus.cpp" />
+    <ClCompile Include="IED\Controller\ObjectManagerData.cpp" />
+    <ClCompile Include="IED\Controller\IEquipment.cpp" />
+    <ClCompile Include="IED\Controller\IForm.cpp" />
+    <ClCompile Include="IED\Controller\IFormDatabase.cpp" />
+    <ClCompile Include="IED\Controller\IJSONSerialization.cpp" />
+    <ClCompile Include="IED\Controller\IModel.cpp" />
+    <ClCompile Include="IED\Controller\INode.cpp" />
+    <ClCompile Include="IED\Controller\IObjectManager.cpp" />
+    <ClCompile Include="IED\Controller\ISound.cpp" />
+    <ClCompile Include="IED\Controller\IUI.cpp" />
+    <ClCompile Include="IED\Controller\NodeProcessorTask.cpp" />
+    <ClCompile Include="IED\Controller\NodeOverrideData.cpp" />
+    <ClCompile Include="IED\Controller\SlotDeferedCleanupObject.cpp" />
+    <ClCompile Include="IED\Data.cpp" />
+    <ClCompile Include="IED\EngineExtensions.cpp" />
+    <ClCompile Include="IED\FormCommon.cpp" />
+    <ClCompile Include="IED\FormHolder.cpp" />
+    <ClCompile Include="IED\Inventory.cpp" />
+    <ClCompile Include="IED\Main.cpp" />
+    <ClCompile Include="IED\NodeMap.cpp" />
+    <ClCompile Include="IED\NodeDescriptor.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\Papyrus.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCommon.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItem.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItemCommon.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItemImpl.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigCachedFormParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigMapNodeOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigTransformParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigBaseParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigBaseValuesParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigCustomHolderParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigCustomParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigCustomPluginMapParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSexParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigMapCustomParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigMapSlotParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSlotHolderParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSlotParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigStoreCustomParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigStoreParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigStoreSlotParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFontGlyphDataParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFontGlyphRangeParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFontInfoMapParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFontInfoEntryParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseSharedParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFormFilterParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFormListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONFormParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONNodeMapParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONNodeMapValueParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONParsersCommon.cpp" />
+    <ClCompile Include="IED\GlobalProfileManager.cpp" />
+    <ClCompile Include="IED\Parsers\JSONRangeParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsActorParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsControlsParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsHolder.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsImportExport.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsProfileEditorParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsRaceParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsEditorPanelParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSettingsUserInterfaceParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONStringTableDataParser.cpp" />
+    <ClCompile Include="IED\SettingHolder.cpp" />
+    <ClCompile Include="IED\StringHolder.cpp" />
+    <ClCompile Include="IED\UI\Controls\UIAlignment.cpp" />
+    <ClCompile Include="IED\UI\Controls\UICollapsibles.cpp" />
+    <ClCompile Include="IED\UI\Controls\UIControls.cpp" />
+    <ClCompile Include="IED\UI\Custom\Profile\UIProfileEditorCustom.cpp" />
+    <ClCompile Include="IED\UI\Custom\UICustomEditorActor.cpp" />
+    <ClCompile Include="IED\UI\Custom\UICustomEditorGlobal.cpp" />
+    <ClCompile Include="IED\UI\Custom\UICustomEditorNPC.cpp" />
+    <ClCompile Include="IED\UI\Custom\UICustomEditorRace.cpp" />
+    <ClCompile Include="IED\UI\Custom\UICustomTabPanel.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\Profile\UIProfileEditorSlot.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorActor.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorGlobal.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorNPC.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorRace.cpp" />
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotTabPanel.cpp" />
+    <ClCompile Include="IED\UI\FormFilters\UIProfileEditorFormFilters.cpp" />
+    <ClCompile Include="IED\UI\Modals\UICommonModals.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\Profile\UIProfileEditorNodeOverride.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorGlobal.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorNPC.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorRace.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorWindow.cpp" />
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideTabPanel.cpp" />
+    <ClCompile Include="IED\UI\PopupQueue\UIPopupQueue.cpp" />
+    <ClCompile Include="IED\UI\UIClipboard.cpp" />
+    <ClCompile Include="IED\UI\UICommon.cpp" />
+    <ClCompile Include="IED\UI\UIData.cpp" />
+    <ClCompile Include="IED\UI\UIDialogImportExport.cpp" />
+    <ClCompile Include="IED\UI\UIFormBrowser.cpp" />
+    <ClCompile Include="IED\UI\UIEditorTabPanel.cpp" />
+    <ClCompile Include="IED\UI\UIFormInfoCache.cpp" />
+    <ClCompile Include="IED\UI\UIFormLookupInterface.cpp" />
+    <ClCompile Include="IED\UI\UILocalizationInterface.cpp" />
+    <ClCompile Include="IED\UI\UILog.cpp" />
+    <ClCompile Include="IED\UI\UINodeMapEditor.cpp" />
+    <ClCompile Include="IED\UI\UINotificationInterface.cpp" />
+    <ClCompile Include="IED\UI\UISettingsInterface.cpp" />
+    <ClCompile Include="IED\UI\UIStats.cpp" />
+    <ClCompile Include="IED\UI\UITips.cpp" />
+    <ClCompile Include="IED\UI\UIMain.cpp" />
+    <ClCompile Include="IED\UI\UISettings.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Filters\UIGenericFilter.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Filters\UIRegexFilter.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormPickerWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Lists\UINPCInfoAddInterface.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIControlKeySelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIDescriptionPopup.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIEditorPanelSettings.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIEditorPanelSettingsGear.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIExportFilterWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIFileSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIConditionParamEditorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIPopupToggleButtonWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UISimpleNodeList.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIWidgetsCommon.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UINodeSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Window\UIWindow.cpp" />
+    <ClCompile Include="IED\Util\Common.cpp" />
+    <ClCompile Include="IED\Util\Logging.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Serialization\Serialization.cpp" />
+    <ClCompile Include="skse.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\imgui\deployment\a\imgui.vcxproj">
+      <Project>{9f316e83-5ae5-4939-a723-305a94f48005}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\sse-build-resources\skse64\common\common_vc14.vcxproj">
+      <Project>{472e19ab-def0-42df-819b-18722e8dc822}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\sse-build-resources\skse64\skse64\skse64_common\skse64_common.vcxproj">
+      <Project>{5fd1c08d-db80-480c-a1c6-f0920005cd13}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\sse-build-resources\sse-build-resources.vcxproj">
+      <Project>{c59e5569-e3f3-4da5-8313-12d90229b8c0}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\.clang-format" />
+    <None Include="exports.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ImmersiveEquipmentDisplays.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="localization_stringid_assigments.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

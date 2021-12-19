@@ -1,0 +1,351 @@
+#pragma once
+
+#include "IED/ConfigOverride.h"
+
+namespace IED
+{
+	namespace UI
+	{
+		class UIClipboard
+		{
+		public:
+			enum class DataType : std::uint8_t
+			{
+				None,
+				ConfigBaseValues,
+				ConfigBase,
+				ConfigSlot,
+				ConfigCustom,
+				EquipmentOverride,
+				EquipmentOverrideConditionList,
+				FormSet,
+				FormList,
+				NodeOverride,
+				NodeOverridePlacement,
+				NodeOverridePlacementOverride,
+				NodeOverridePlacementOverrideList,
+				NodeOverridePlacementValues,
+				NodeOverrideValues,
+				NodeOverrideOffset,
+				NodeOverrideOffsetList,
+				NodeOverrideOffsetConditionList,
+				ConfigTransform,
+				FormFilter
+			};
+
+			struct entry_t
+			{
+				DataType type{ DataType::None };
+				void* data{ nullptr };
+			};
+
+			template <class T, class data_type = stl::strip_type<T>>
+			static const data_type* Get() noexcept;
+
+			template <class T, class = std::enable_if_t<std::is_copy_constructible_v<T>, void>>
+			static void Set(const T& a_data);
+			
+			template <class T, class... Args>
+			static void Set(Args&&... a_data);
+
+			static void clear();
+
+		private:
+			UIClipboard() = default;
+			~UIClipboard();
+
+			template <class T>
+			static void erase();
+			
+			template <class T>
+			static void set_type();
+
+			entry_t m_data;
+
+			static UIClipboard m_Instance;
+		};
+
+		template <class T, class data_type>
+		inline const data_type* UIClipboard::Get() noexcept
+		{
+			auto& data = m_Instance.m_data;
+
+			if (!data.data)
+			{
+				return nullptr;
+			}
+
+			if constexpr (std::is_same_v<data_type, Data::configBaseValues_t>)
+			{
+				switch (data.type)
+				{
+				case DataType::ConfigCustom:
+					{
+						auto v = static_cast<Data::configCustomNameValue_t*>(data.data);
+						return static_cast<data_type*>(std::addressof(v->data(v->sex)));
+					}
+				case DataType::ConfigSlot:
+				case DataType::EquipmentOverride:
+				case DataType::ConfigBase:
+				case DataType::ConfigBaseValues:
+					return static_cast<data_type*>(data.data);
+				default:
+					return nullptr;
+				}
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configBase_t>)
+			{
+				switch (data.type)
+				{
+				case DataType::ConfigCustom:
+					return static_cast<data_type*>(std::addressof(static_cast<Data::configCustomNameValue_t*>(data.data)->second));
+				case DataType::ConfigSlot:
+				case DataType::ConfigBase:
+					return static_cast<data_type*>(data.data);
+				default:
+					return nullptr;
+				}
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configCustomNameValue_t>)
+			{
+				return data.type == DataType::ConfigCustom ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configSlot_t>)
+			{
+				return data.type == DataType::ConfigSlot ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::equipmentOverride_t>)
+			{
+				return data.type == DataType::EquipmentOverride ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::equipmentOverrideConditionList_t>)
+			{
+				return data.type == DataType::EquipmentOverrideConditionList ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configFormSet_t>)
+			{
+				return data.type == DataType::FormSet ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configFormList_t>)
+			{
+				return data.type == DataType::FormList ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverride_t>)
+			{
+				return data.type == DataType::NodeOverride ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacement_t>)
+			{
+				return data.type == DataType::NodeOverridePlacement ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacementOverride_t>)
+			{
+				return data.type == DataType::NodeOverridePlacementOverride ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacementOverrideList_t>)
+			{
+				return data.type == DataType::NodeOverridePlacementOverrideList ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideOffset_t>)
+			{
+				return data.type == DataType::NodeOverrideOffset ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideOffsetList_t>)
+			{
+				return data.type == DataType::NodeOverrideOffsetList ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideConditionList_t>)
+			{
+				return data.type == DataType::NodeOverrideOffsetConditionList ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configTransform_t>)
+			{
+				return data.type == DataType::ConfigTransform ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configFormFilter_t>)
+			{
+				return data.type == DataType::FormFilter ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideValues_t>)
+			{
+				switch (data.type)
+				{
+				case DataType::NodeOverrideOffset:
+				case DataType::NodeOverrideValues:
+				case DataType::NodeOverride:
+					return static_cast<data_type*>(data.data);
+				default:
+					return nullptr;
+				}
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacementValues_t>)
+			{
+				switch (data.type)
+				{
+				case DataType::NodeOverridePlacementOverride:
+				case DataType::NodeOverridePlacementValues:
+				case DataType::NodeOverridePlacement:
+					return static_cast<data_type*>(data.data);
+				default:
+					return nullptr;
+				}
+			}
+			else
+			{
+				static_assert(false);
+			}
+		}
+
+		template <class T, class>
+		inline void UIClipboard::Set(const T& a_data)
+		{
+			clear();
+
+			m_Instance.m_data.data = new T(a_data);
+
+			set_type<T>();
+		}
+
+		template <class T, class... Args>
+		inline void UIClipboard::Set(Args&&... a_data)
+		{
+			clear();
+
+			m_Instance.m_data.data = new T(std::forward<Args>(a_data)...);
+
+			set_type<T>();
+		}
+
+		template <class T>
+		inline void UIClipboard::erase()
+		{
+			auto& data = m_Instance.m_data;
+
+			if (data.data)
+			{
+				delete static_cast<T*>(data.data);
+
+				data.data = nullptr;
+			}
+
+			data.type = DataType::None;
+		}
+
+		template <class T>
+		inline void UIClipboard::set_type()
+		{
+			auto& data = m_Instance.m_data;
+
+			if constexpr (std::is_same_v<T, Data::configBaseValues_t>)
+			{
+				data.type = DataType::ConfigBaseValues;
+			}
+			else if constexpr (std::is_same_v<T, Data::configBase_t>)
+			{
+				data.type = DataType::ConfigBase;
+			}
+			else if constexpr (std::is_same_v<T, Data::configCustomNameValue_t>)
+			{
+				data.type = DataType::ConfigCustom;
+			}
+			else if constexpr (std::is_same_v<T, Data::configSlot_t>)
+			{
+				data.type = DataType::ConfigSlot;
+			}
+			else if constexpr (std::is_same_v<T, Data::equipmentOverride_t>)
+			{
+				data.type = DataType::EquipmentOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::equipmentOverrideConditionList_t>)
+			{
+				data.type = DataType::EquipmentOverrideConditionList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configFormSet_t>)
+			{
+				data.type = DataType::FormSet;
+			}
+			else if constexpr (std::is_same_v<T, Data::configFormList_t>)
+			{
+				data.type = DataType::FormList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverride_t>)
+			{
+				data.type = DataType::NodeOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePlacement_t>)
+			{
+				data.type = DataType::NodeOverridePlacement;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePlacementOverride_t>)
+			{
+				data.type = DataType::NodeOverridePlacementOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePlacementOverrideList_t>)
+			{
+				data.type = DataType::NodeOverridePlacementOverrideList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePlacementValues_t>)
+			{
+				data.type = DataType::NodeOverridePlacementValues;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideOffset_t>)
+			{
+				data.type = DataType::NodeOverrideOffset;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideValues_t>)
+			{
+				data.type = DataType::NodeOverrideValues;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideOffsetList_t>)
+			{
+				data.type = DataType::NodeOverrideOffsetList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideConditionList_t>)
+			{
+				data.type = DataType::NodeOverrideOffsetConditionList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configTransform_t>)
+			{
+				data.type = DataType::ConfigTransform;
+			}
+			else if constexpr (std::is_same_v<T, Data::configFormFilter_t>)
+			{
+				data.type = DataType::FormFilter;
+			}
+			else
+			{
+				static_assert(false);
+			}
+		}
+	}
+}

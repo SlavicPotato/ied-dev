@@ -1,0 +1,5 @@
+LIBRARY "ImmersiveEquipmentDisplays"
+EXPORTS
+    SKSEPlugin_Query
+    SKSEPlugin_Load
+    SKSEPlugin_Version

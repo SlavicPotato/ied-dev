@@ -1,0 +1,1475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source\IED">
+      <UniqueIdentifier>{3c036c41-b872-46ce-b041-24172ed80e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Util">
+      <UniqueIdentifier>{4407fa8b-2206-4ace-8ecc-2312195377ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI">
+      <UniqueIdentifier>{ee88f447-a91c-46f0-af0d-0c5879957b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets">
+      <UniqueIdentifier>{0225c84c-f316-4d10-a05c-14427e24cdf3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets\Form">
+      <UniqueIdentifier>{1e62a601-2114-4561-bb42-02e469146ad9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets\Lists">
+      <UniqueIdentifier>{e5b7cb76-5fdc-4a32-8447-8cb4a4677f95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Profile">
+      <UniqueIdentifier>{60f69767-6fe9-4847-9a55-ea18c4db5aad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers">
+      <UniqueIdentifier>{1420baaf-6a95-44d8-8f87-f56c3e4ca5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\NodeMap">
+      <UniqueIdentifier>{1862583f-e0dc-4de4-924c-8e25e8154f52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Settings">
+      <UniqueIdentifier>{08619f2f-d149-4240-ab89-3c1b43e52d0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller">
+      <UniqueIdentifier>{0ed0676c-f4d9-4c85-9918-397ca4d25d9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers">
+      <UniqueIdentifier>{f79f3c94-082b-4273-99e0-b422588d2978}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers\Input">
+      <UniqueIdentifier>{001f2af0-ca09-4018-8fd3-1ea9e8c4d3f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers\UI">
+      <UniqueIdentifier>{d751ccdf-0775-4344-a968-5d1d351edae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers\Render">
+      <UniqueIdentifier>{ba2d0415-f919-4637-9306-311990494f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ImGui">
+      <UniqueIdentifier>{d10e5aca-e9be-47e4-ad6e-83751bbc7eaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Events">
+      <UniqueIdentifier>{5ba272b3-9953-4ed9-8288-80993246b7a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Serialization">
+      <UniqueIdentifier>{8bbf867f-c3c5-4adc-80a7-60cbb3e13a06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\ObjectManager">
+      <UniqueIdentifier>{acf55ada-539a-4e33-acca-9cb3652a2e98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\Form">
+      <UniqueIdentifier>{2f3d5e01-6ab3-477b-bbc1-86b2516faf52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\Serialization">
+      <UniqueIdentifier>{409ec62b-3750-4520-aab6-49e3370bd4e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\NodeMap">
+      <UniqueIdentifier>{6cb661ef-c48b-42c2-aa32-b45ca969d812}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Custom">
+      <UniqueIdentifier>{a6660217-d29f-48dc-9dab-b7a4dbf8cc34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Custom\Widgets">
+      <UniqueIdentifier>{70407017-a212-41cb-918d-2fa1b76f319d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\PapyrusInterface">
+      <UniqueIdentifier>{6af58deb-3db3-4636-b496-93fb2573405a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Equipment">
+      <UniqueIdentifier>{de086524-6537-4afa-a9ec-3ade024542ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Equipment\Widgets">
+      <UniqueIdentifier>{2e38e98a-178b-4279-9882-17256c387f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Equipment\Profile">
+      <UniqueIdentifier>{ec43626f-062e-4adc-8b0b-ea4df92b2a64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Custom\Profile">
+      <UniqueIdentifier>{196575c8-bb96-4293-96ad-5b2ff2ddecae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config">
+      <UniqueIdentifier>{b976870e-be2e-4f20-bbd6-989628abc828}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Form">
+      <UniqueIdentifier>{a9370f57-4c43-4fb8-a1ab-9f2ebdce814c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Base">
+      <UniqueIdentifier>{735287f9-0649-42ca-8f07-974103ceb584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Custom">
+      <UniqueIdentifier>{06b5cea7-94fb-4f2e-8585-4d395f692049}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Slot">
+      <UniqueIdentifier>{e7bd07c6-d349-4b5e-a5f3-f7634085a87f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Store">
+      <UniqueIdentifier>{d8b8eb1f-d316-45f3-90f3-3796fa2b2be0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\NodeOverride">
+      <UniqueIdentifier>{e465b152-ae03-42d7-b50a-24a7dbc3670c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\NodeOverride">
+      <UniqueIdentifier>{f16c369b-e219-4437-b6c2-49e6b7490616}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\NodeOverride">
+      <UniqueIdentifier>{e54b87e5-391a-4ff7-8191-1299b6fbbf10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\NodeOverride\Profile">
+      <UniqueIdentifier>{7cf75d7c-1693-48a9-8ed5-2bde61368635}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\EquipmentOverride">
+      <UniqueIdentifier>{20f7816e-f55a-466e-9574-2459581a660c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\FormFilters">
+      <UniqueIdentifier>{d1b79c91-7c73-4e9d-93bc-41a93ca785c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\NodeOverride\Widgets">
+      <UniqueIdentifier>{26599bcd-a0a1-4bcb-a3b8-cdfeede38862}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Localization">
+      <UniqueIdentifier>{c8ad0731-9827-457f-a155-8232934fceec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Fonts">
+      <UniqueIdentifier>{47c1d18b-00a4-4f73-9b90-a479d72bbb5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Font">
+      <UniqueIdentifier>{ae71f388-ef36-46a3-b04c-de1d51925fe0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Profile">
+      <UniqueIdentifier>{ecc39a86-828e-44a1-a70f-74d92b73125b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\PopupQueue">
+      <UniqueIdentifier>{3c51c3d1-3bf0-41a5-84d2-cded849683bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Window">
+      <UniqueIdentifier>{ea1d6274-013a-4cd8-aeda-f5da5f4bb09d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets\Filters">
+      <UniqueIdentifier>{9cb905f1-956b-4711-94ac-0f54865c7d02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Controls">
+      <UniqueIdentifier>{97e54655-4b54-4f61-9bdb-d1bdf3b1e4f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Modals">
+      <UniqueIdentifier>{ce3f4daa-ae3f-4443-9bf6-dc8d26c65aa6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="skse.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="plugin.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Util\Common.h">
+      <Filter>Source\IED\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Util\Logging.h">
+      <Filter>Source\IED\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Main.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigCommon.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Config.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\StringHolder.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Data.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Inventory.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\EngineExtensions.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigParsers.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Input.h">
+      <Filter>Source\Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Render.h">
+      <Filter>Source\Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\UI.h">
+      <Filter>Source\Drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Input\Handlers.h">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\UI\Tasks.h">
+      <Filter>Source\Drivers\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Render\Events.h">
+      <Filter>Source\Drivers\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_dx11.h">
+      <Filter>Source\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\imgui_impl_win32.h">
+      <Filter>Source\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\MouseEventQueue.h">
+      <Filter>Source\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverride.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\Dispatcher.h">
+      <Filter>Source\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ProcessParams.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIMain.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UICommon.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Profile\Events.h">
+      <Filter>Source\IED\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Profile\Manager.h">
+      <Filter>Source\IED\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Profile\Profile.h">
+      <Filter>Source\IED\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Serialization.h">
+      <Filter>Source\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIData.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIWidgetsCommon.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\SettingHolder.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UINodeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIProfileSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\FormCommon.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIFormBrowser.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="paths.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorActor.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorCommon.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorGlobal.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorRace.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotTabPanel.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\Widgets\UISlotEditorWidget.h">
+      <Filter>Source\IED\UI\Equipment\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\Profile\UIProfileEditorSlot.h">
+      <Filter>Source\IED\UI\Equipment\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormBrowserOwner.h">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorListWidget.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIListCommon.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIRaceListWidget.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IActorInfo.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IEquipment.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IModel.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\INode.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ISound.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IUI.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\Controller.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\GlobalProfileManager.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIControlKeySelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UISettings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONParsersCommon.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigMapSlotParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigStoreSlotParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSlotHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSlotParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIFileSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIDialogImportExport.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONNodeMapValueParser.h">
+      <Filter>Source\IED\JSONParsers\NodeMap</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONNodeMapParser.h">
+      <Filter>Source\IED\JSONParsers\NodeMap</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsActorParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsRaceParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsControlsParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsProfileEditorParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsEditorPanelParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsUserInterfaceParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsHolder.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorInfoEntry.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\NodeProcessorTask.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UITips.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UITipsData.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideSlot.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideBase.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideCustom.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideCommon.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectManagerCommon.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectManagerData.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IObjectManager.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IForm.h">
+      <Filter>Source\IED\Controller\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IFormDatabase.h">
+      <Filter>Source\IED\Controller\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IJSONSerialization.h">
+      <Filter>Source\IED\Controller\Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\NodeMap.h">
+      <Filter>Source\IED\NodeMap</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\NodeDescriptor.h">
+      <Filter>Source\IED\NodeMap</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ControllerCommon.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Widgets\UICustomEditorWidget.h">
+      <Filter>Source\IED\UI\Custom\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomEditorCommon.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomEditorActor.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigCustomParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigCustomHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigMapCustomParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigCustomPluginMapParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigStoreCustomParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIEditorInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIEditorTabPanel.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomEditorRace.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomTabPanel.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideDefault.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\Papyrus.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItem.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItemCommon.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONRangeParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCustomItemImpl.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Profile\UIProfileEditorCustom.h">
+      <Filter>Source\IED\UI\Custom\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UITableRowInputWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UINodeMapEditor.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsImportExport.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UINotificationInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEditorPanelSettings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIClipboard.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIFormInfoCache.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIFormLookupInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigBaseParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigBaseValuesParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigStoreParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Store</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSexParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormParser.h">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormPickerWidget.h">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIPopupToggleButtonWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigCachedFormParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIStats.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigTransformParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideEquipment.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideBaseValues.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomEditorGlobal.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UISettingsInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UILog.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorBase.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideBlockList.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormListParser.h">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideNodeOverride.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigMapNodeOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidget.h">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorCommon.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorGlobal.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideTabPanel.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorWindow.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEditorPanelSettingsGear.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\INodeOverride.h">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\NodeOverrideData.h">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UINPCListWidget.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorNPC.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UINPCInfoAddInterface.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorRace.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\UICustomEditorNPC.h">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorNPC.h">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Profile\UIProfileEditorNodeOverride.h">
+      <Filter>Source\IED\UI\NodeOverride\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideTransform.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UITransformSliderWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIDescriptionPopup.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UICMNodeSelector.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\CollectorData.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIMainCommon.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ModelType.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorState.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIConditionParamEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\FormHolder.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormFilterWidget.h">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IMaintenance.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusCommon.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseSharedParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\FormFilters\UIProfileEditorFormFilters.h">
+      <Filter>Source\IED\UI\FormFilters</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\FormFilterMaintenance.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIExportFilterWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UISimpleNodeList.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\SlotDeferedCleanupObject.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\CommonParams.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectDatabase.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectDatabaseLevel.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Localization\StringTable.h">
+      <Filter>Source\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Localization\Common.h">
+      <Filter>Source\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONStringTableDataParser.h">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="Localization\LocalizationDataManager.h">
+      <Filter>Source\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\FontInfo.h">
+      <Filter>Source\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFontInfoEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFontInfoMapParser.h">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFontGlyphRangeParser.h">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Fonts\IGlyphData.h">
+      <Filter>Source\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="Localization\ILocalization.h">
+      <Filter>Source\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Profile\UIProfileBase.h">
+      <Filter>Source\IED\UI\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Profile\UIProfileSelectorBase.h">
+      <Filter>Source\IED\UI\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Profile\UIProfileEditorBase.h">
+      <Filter>Source\IED\UI\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\PopupQueue\UIPopupQueue.h">
+      <Filter>Source\IED\UI\PopupQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\PopupQueue\UIPopupAction.h">
+      <Filter>Source\IED\UI\PopupQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Window\WindowLayoutData.h">
+      <Filter>Source\IED\UI\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Window\UIWindow.h">
+      <Filter>Source\IED\UI\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Window\UIWindowBase.h">
+      <Filter>Source\IED\UI\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Filters\UIFilterBase.h">
+      <Filter>Source\IED\UI\Widgets\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Filters\UIGenericFilter.h">
+      <Filter>Source\IED\UI\Widgets\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Filters\UIRegexFilter.h">
+      <Filter>Source\IED\UI\Widgets\Filters</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Controls\UIAlignment.h">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Controls\UICollapsibles.h">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Controls\UIControls.h">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Localization\CommonStrings.h">
+      <Filter>Source\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UILocalizationInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIWidgetCommonStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\EquipmentSlots\Widgets\UISlotEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Equipment\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Widgets\UICustomEditorStrings.h">
+      <Filter>Source\IED\UI\Custom\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorStrings.h">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UISettingsStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFontGlyphDataParser.h">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Profile\UIProfileStrings.h">
+      <Filter>Source\IED\UI\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIMainStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIStatsStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectEntryStatus.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIDialogImportExportStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Modals\UICommonModals.h">
+      <Filter>Source\IED\UI\Modals</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIFileSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIActorListStrings.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorStrings.h">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIFormBrowserStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="IED\Controller\Controller.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IActorInfo.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IEquipment.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IModel.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\INode.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ISound.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IUI.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigMapSlotParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSlotHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSlotParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigStoreSlotParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONNodeMapParser.cpp">
+      <Filter>Source\IED\JSONParsers\NodeMap</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONNodeMapValueParser.cpp">
+      <Filter>Source\IED\JSONParsers\NodeMap</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsActorParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsControlsParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsHolder.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsProfileEditorParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsRaceParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsEditorPanelParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsUserInterfaceParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONParsersCommon.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\Profile\UIProfileEditorSlot.cpp">
+      <Filter>Source\IED\UI\Equipment\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorActor.cpp">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorGlobal.cpp">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorRace.cpp">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotTabPanel.cpp">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIControlKeySelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UINodeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIWidgetsCommon.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UICommon.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIData.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIDialogImportExport.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIFormBrowser.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIMain.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UISettings.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Util\Common.cpp">
+      <Filter>Source\IED\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Util\Logging.cpp">
+      <Filter>Source\IED\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Config.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigOverrideBase.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigParsers.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Data.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\EngineExtensions.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\FormCommon.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\GlobalProfileManager.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Inventory.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Main.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\SettingHolder.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\StringHolder.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Serialization.cpp">
+      <Filter>Source\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_dx11.cpp">
+      <Filter>Source\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\imgui_impl_win32.cpp">
+      <Filter>Source\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGui\MouseEventQueue.cpp">
+      <Filter>Source\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Input\Handlers.cpp">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\UI\Tasks.cpp">
+      <Filter>Source\Drivers\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Input.cpp">
+      <Filter>Source\Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Render.cpp">
+      <Filter>Source\Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\UI.cpp">
+      <Filter>Source\Drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="skse.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\NodeProcessorTask.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UITips.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectManagerData.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IObjectManager.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IForm.cpp">
+      <Filter>Source\IED\Controller\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IFormDatabase.cpp">
+      <Filter>Source\IED\Controller\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IJSONSerialization.cpp">
+      <Filter>Source\IED\Controller\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\NodeMap.cpp">
+      <Filter>Source\IED\NodeMap</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\NodeDescriptor.cpp">
+      <Filter>Source\IED\NodeMap</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\UICustomEditorActor.cpp">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigCustomParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigCustomHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigMapCustomParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigCustomPluginMapParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigStoreCustomParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIEditorTabPanel.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\UICustomEditorRace.cpp">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\UICustomTabPanel.cpp">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\Papyrus.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItem.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItemCommon.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONRangeParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCustomItemImpl.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\Profile\UIProfileEditorCustom.cpp">
+      <Filter>Source\IED\UI\Custom\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UINodeMapEditor.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsImportExport.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigOverrideCommon.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UINotificationInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEditorPanelSettings.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIClipboard.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIFormInfoCache.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIFormLookupInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIFileSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigBaseParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigBaseValuesParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigStoreParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Store</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSexParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormParser.cpp">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormPickerWidget.cpp">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIPopupToggleButtonWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigCachedFormParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIStats.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigTransformParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\UICustomEditorGlobal.cpp">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UISettingsInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UILog.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigMapNodeOverrideParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorGlobal.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideTabPanel.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorWindow.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEditorPanelSettingsGear.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\INodeOverride.cpp">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\NodeOverrideData.cpp">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorNPC.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Lists\UINPCInfoAddInterface.cpp">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorRace.cpp">
+      <Filter>Source\IED\UI\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Custom\UICustomEditorNPC.cpp">
+      <Filter>Source\IED\UI\Custom</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\EquipmentSlots\UISlotEditorNPC.cpp">
+      <Filter>Source\IED\UI\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\Profile\UIProfileEditorNodeOverride.cpp">
+      <Filter>Source\IED\UI\NodeOverride\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIDescriptionPopup.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\CollectorData.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.cpp">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorState.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIConditionParamEditorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\FormHolder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IMaintenance.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusCommon.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseSharedParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\FormFilters\UIProfileEditorFormFilters.cpp">
+      <Filter>Source\IED\UI\FormFilters</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\FormFilterMaintenance.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigOverrideSlot.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIExportFilterWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UISimpleNodeList.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\SlotDeferedCleanupObject.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectDatabase.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Localization\StringTable.cpp">
+      <Filter>Source\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONStringTableDataParser.cpp">
+      <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="Localization\LocalizationDataManager.cpp">
+      <Filter>Source\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFontInfoEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFontInfoMapParser.cpp">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFontGlyphRangeParser.cpp">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Fonts\IGlyphData.cpp">
+      <Filter>Source\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Localization\ILocalization.cpp">
+      <Filter>Source\Localization</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\PopupQueue\UIPopupQueue.cpp">
+      <Filter>Source\IED\UI\PopupQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Window\UIWindow.cpp">
+      <Filter>Source\IED\UI\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Filters\UIGenericFilter.cpp">
+      <Filter>Source\IED\UI\Widgets\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Filters\UIRegexFilter.cpp">
+      <Filter>Source\IED\UI\Widgets\Filters</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Controls\UIAlignment.cpp">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Controls\UICollapsibles.cpp">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Controls\UIControls.cpp">
+      <Filter>Source\IED\UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UILocalizationInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFontGlyphDataParser.cpp">
+      <Filter>Source\IED\JSONParsers\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectEntryStatus.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Modals\UICommonModals.cpp">
+      <Filter>Source\IED\UI\Modals</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="exports.def" />
+    <None Include="..\.clang-format" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ImmersiveEquipmentDisplays.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="localization_stringid_assigments.txt" />
+  </ItemGroup>
+</Project>

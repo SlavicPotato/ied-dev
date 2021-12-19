@@ -1,0 +1,56 @@
+#pragma once
+
+#include "../UIPopupToggleButtonWidget.h"
+#include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UITips.h"
+#include "UIFormSelectorWidget.h"
+
+
+namespace IED
+{
+	class Controller;
+
+	namespace UI
+	{
+		class UIFormPickerWidget :
+			public UIFormSelectorWidget,
+			UINotificationInterface,
+			virtual public UIPopupToggleButtonWidget
+		{
+		public:
+			UIFormPickerWidget(
+				Controller& a_controller,
+				FormInfoFlags a_requiredFlags,
+				bool a_restrictTypes = false,
+				bool a_forceBase = false);
+
+			bool DrawFormPicker(
+				const char *a_strid,
+				const char* a_label,
+				Data::configCachedForm_t& a_form,
+				const char* a_tipText = nullptr);
+
+			bool DrawFormPicker(
+				const char* a_strid,
+				const char* a_label,
+				Game::FormID& a_form,
+				const char* a_tipText = nullptr);
+
+			inline constexpr const auto GetCurrentInfo() const noexcept
+			{
+				return m_currentInfo;
+			}
+
+		private:
+			bool DrawContextMenu(Game::FormID& a_form);
+			UIFormBrowser::FormBrowserDrawResult DrawFormBrowserPopup(Game::FormID& a_form);
+
+			UIFormLookupInterface m_ifLookup;
+
+			const formInfoResult_t* m_currentInfo{ nullptr };
+
+			Controller& m_controller;
+		};
+	}
+}

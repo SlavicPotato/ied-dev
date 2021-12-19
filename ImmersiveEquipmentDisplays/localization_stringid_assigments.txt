@@ -1,0 +1,16 @@
+0-999:			common words
+1000-1999:		tooltips
+2000-3999:		widget common
+4000-4099:		base editor widget
+4100-4199:		slot editor widget
+4200-4299:		custom editor widget
+4300-4399:		node override editor widget
+4400-4499:		settings
+4500-4599:		profile
+4600-4699:		main
+4700-4799:		stats
+4800-4899:		import/export
+4900-4099:		file selector
+5000-5099:		actor list
+5100-5199:		node override editor
+5200-5299:		form browser
