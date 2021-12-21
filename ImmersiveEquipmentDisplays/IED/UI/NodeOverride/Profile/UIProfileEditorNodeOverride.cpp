@@ -11,7 +11,7 @@ namespace IED
 		UIProfileEditorNodeOverride::UIProfileEditorNodeOverride(Controller& a_controller) :
 			UIProfileEditorBase<NodeOverrideProfile>(
 				UIProfileStrings::TitleNodeOverride,
-				"IED_pe_no",
+				"ied_pe_no",
 				a_controller),
 			UINodeOverrideEditorWidget<int>(a_controller),
 			UITipsInterface(a_controller),
@@ -174,9 +174,14 @@ namespace IED
 		{
 		}
 
+		WindowLayoutData UIProfileEditorNodeOverride::GetWindowDimensions() const
+		{
+			return { 250.0f, 600.0f, -1.0f, false };
+		}
+
 		void UIProfileEditorNodeOverride::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::NodeOverride, "1")))
+			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::GearPositioning, "peb_1")))
 			{
 				DrawMenuBarItems();
 				ImGui::EndMenu();

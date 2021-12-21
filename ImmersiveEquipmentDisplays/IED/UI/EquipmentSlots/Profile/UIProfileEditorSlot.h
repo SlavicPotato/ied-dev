@@ -99,6 +99,8 @@ namespace IED
 
 			virtual constexpr bool BaseConfigStoreCC() const override;
 
+			virtual WindowLayoutData GetWindowDimensions() const;
+
 			SetObjectWrapper<cachedItem_t> m_cachedItem;
 
 			Controller& m_controller;

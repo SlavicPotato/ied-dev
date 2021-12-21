@@ -105,52 +105,6 @@ namespace IED
 		}
 	}
 
-	static void SDS_MessageHandler(SKSEMessagingInterface::Message* a_message)
-	{
-		using namespace SKSEMessaging;
-
-		switch (a_message->type)
-		{
-		case NodeUpdateMessage::kMessage_NodeMoveComplete:
-			{
-				//auto data = static_cast<NodeUpdateMessage*>(a_message->data);
-
-				// g_controller->QueueAttachSlotNode(data->actor, Data::ObjectSlot::kMax);
-			}
-			break;
-		case NodeListMessage::kMessage_NodeList:
-			{
-				/*auto data = static_cast<NodeListMessage*>(a_message->data);
-				if (!data)
-				{
-					break;
-				}
-
-				std::uint32_t added = 0;
-
-				if (data->size > 0)
-				{
-					IScopedLock lock(g_controller->GetLock());
-
-					for (std::uint32_t i = 0; i < data->size; i++)
-					{
-						if (auto name = data->list[i].name)
-						{
-							g_controller->AddExtraManagedNode(name);
-							added++;
-						}
-					}
-				}
-
-				if (added)
-				{
-					gLog.Message("SDS sent %u managed node(s)", added);
-				}*/
-			}
-			break;
-		}
-	}
-
 	static void SaveGameHandler(SKSESerializationInterface* a_intfc)
 	{
 		g_controller->SaveGameHandler(a_intfc);
@@ -165,19 +119,6 @@ namespace IED
 	{
 		g_controller->RevertHandler(a_intfc);
 	}
-
-	/*SKMP_NOINLINE static void temp_register_listener_wrapper(PluginHandle a_handle, SKSEMessagingInterface* a_interface)
-	{
-		__try
-		{
-			a_interface->RegisterListener(a_handle, "EquipEnchantmentFix", SDS_MessageHandler);
-		}
-		__except (EXCEPTION_EXECUTE_HANDLER)
-		{
-			_DMESSAGE("except");
-		}
-
-	}*/
 
 	bool Initialize(const SKSEInterface* a_skse)
 	{
@@ -202,13 +143,6 @@ namespace IED
 		{
 			return false;
 		}
-
-		/*if (config->m_taskPoolBudget > 0)
-		{
-			gLog.Debug("Taskpool budget: %lld", config->m_taskPoolBudget);
-
-			ITaskPool::SetBudget(config->m_taskPoolBudget);
-		}*/
 
 		ITaskPool::Install(
 			ISKSE::GetBranchTrampoline(),
@@ -251,13 +185,11 @@ namespace IED
 
 		mi->RegisterListener(handle, "SKSE", SKSE_MessageHandler);
 
-		//temp_register_listener_wrapper(handle, mi);
-
 		skse.GetInterface<SKSEPapyrusInterface>()->Register(Papyrus::Register);
 
 		auto si = skse.GetInterface<SKSESerializationInterface>();
 
-		si->SetUniqueID(handle, 'AUGN');
+		si->SetUniqueID(handle, 'ADEI');
 		si->SetRevertCallback(handle, RevertHandler);
 		si->SetSaveCallback(handle, SaveGameHandler);
 		si->SetLoadCallback(handle, LoadGameHandler);

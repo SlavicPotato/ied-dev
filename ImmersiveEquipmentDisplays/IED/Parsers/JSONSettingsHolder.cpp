@@ -53,9 +53,9 @@ namespace IED
 			}
 
 			a_out.odbLevel = static_cast<ObjectDatabaseLevel>(
-				data.get("odb_level", stl::underlying(ObjectDatabaseLevel::kDisabled)).asUInt());
+				data.get("odb_level", stl::underlying(ObjectDatabaseLevel::kNone)).asUInt());
 
-			a_out.laIEDage = data["laIEDage"].asString();
+			a_out.language = data["language"].asString();
 
 			return true;
 		}
@@ -85,7 +85,7 @@ namespace IED
 
 			data["odb_level"] = stl::underlying(a_data.odbLevel);
 
-			data["laIEDage"] = *a_data.laIEDage;
+			data["language"] = *a_data.language;
 
 			a_out["version"] = 1u;
 		}

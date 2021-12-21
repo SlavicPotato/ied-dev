@@ -11,7 +11,7 @@ namespace IED
 		UIProfileEditorCustom::UIProfileEditorCustom(Controller& a_controller) :
 			UIProfileEditorBase<CustomProfile>(
 				UIProfileStrings::TitleCustom,
-				"IED_pe_cust",
+				"ied_pe_cust",
 				a_controller),
 			UICustomEditorWidget<int>(a_controller),
 			UITipsInterface(a_controller),
@@ -173,7 +173,7 @@ namespace IED
 
 		void UIProfileEditorCustom::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu("Custom"))
+			if (ImGui::BeginMenu(LS(CommonStrings::Custom, "peb_1")))
 			{
 				DrawMenuBarItems();
 
@@ -195,6 +195,11 @@ namespace IED
 		constexpr bool UIProfileEditorCustom::BaseConfigStoreCC() const
 		{
 			return false;
+		}
+
+		WindowLayoutData UIProfileEditorCustom::GetWindowDimensions() const
+		{
+			return { 100.0f, 600.0f, -1.0f, false };
 		}
 
 		void UIProfileEditorCustom::DrawItem(CustomProfile& a_profile)

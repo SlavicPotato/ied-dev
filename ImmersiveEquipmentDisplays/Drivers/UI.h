@@ -186,7 +186,7 @@ namespace IED
 			}
 
 			static void QueueSetExtraGlyphs(GlyphPresetFlags a_flags);
-			static void QueueSetLaIEDageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data);
+			static void QueueSetLanguageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data);
 			static void QueueFontChange(const stl::fixed_string& a_font);
 			static void QueueSetFontSize(float a_size);
 
@@ -253,7 +253,7 @@ namespace IED
 
 			void QueueSetScaleImpl(float a_scale);
 			void QueueSetExtraGlyphsImpl(GlyphPresetFlags a_flags);
-			void QueueSetLaIEDageGlyphDataImpl(const std::shared_ptr<fontGlyphData_t>& a_data);
+			void QueueSetLanguageGlyphDataImpl(const std::shared_ptr<fontGlyphData_t>& a_data);
 			void QueueFontChangeImpl(const stl::fixed_string& a_font);
 			void QueueSetFontSizeImpl(float a_size);
 			void QueueReloadFontsImpl();

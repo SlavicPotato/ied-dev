@@ -409,7 +409,7 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0 }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, 15.0f);
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 1.1f);
 				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
 				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 
@@ -522,9 +522,11 @@ namespace IED
 					a_data.profile.name.c_str(),
 					ImGuiComboFlags_HeightLarge))
 			{
+				bool selectedNew = false;
+
 				for (const auto& e : data.getvec())
 				{
-					ImGui::PushID(e->first.c_str());
+					ImGui::PushID(e);
 
 					bool selected = a_data.profile.name == e->first;
 					if (selected)
@@ -538,10 +540,15 @@ namespace IED
 					if (ImGui::Selectable(e->second.Name().c_str(), selected))
 					{
 						a_data.profile.name = e->first;
-						m_onChangeFunc(a_params);
+						selectedNew = true;
 					}
 
 					ImGui::PopID();
+				}
+
+				if (selectedNew)
+				{
+					m_onChangeFunc(a_params);
 				}
 
 				ImGui::EndCombo();

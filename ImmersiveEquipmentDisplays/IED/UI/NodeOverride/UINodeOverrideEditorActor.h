@@ -61,6 +61,10 @@ namespace IED
 				profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
+			virtual void MergeProfile(
+				profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+				const NodeOverrideProfile& a_profile) override;
+
 			virtual void OnUpdate(
 				Game::FormID a_handle,
 				const SingleNodeOverrideUpdateParams& a_params) override;

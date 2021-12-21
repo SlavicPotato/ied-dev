@@ -64,64 +64,144 @@ namespace IED
 	}
 
 	bool IJSONSerialization::ImportData(
-		const fs::path& a_path,
-		bool a_eraseTemporary)
+		Data::configStore_t&& a_in,
+		stl::flag<ImportFlags> a_flags)
 	{
-		try
+		if (a_flags.test(ImportFlags::kEraseTemporary))
 		{
-			Json::Value root;
-
-			ReadData(a_path, root);
-
-			Parser<Data::configStore_t> parser;
-			Data::configStore_t tmp;
-
-			if (!parser.Parse(root, tmp))
-			{
-				throw std::exception("parse failed");
-			}
-
-			if (a_eraseTemporary)
-			{
-				EraseTemporary(tmp.slot.GetActorData());
-				EraseTemporary(tmp.slot.GetNPCData());
-				EraseTemporary(tmp.custom.GetActorData());
-				EraseTemporary(tmp.custom.GetNPCData());
-			}
-
-			IScopedLock lock(JSGetLock());
-
-			auto& store = JSGetConfigStore();
-
-			const auto& fm = store.custom.GetFormMaps();
-
-			for (std::uint32_t i = 0; i < std::size(fm); i++)
-			{
-				CopyCustomPapyrusEntries(
-					fm[i],
-					tmp.custom.GetFormMaps()[i]);
-			}
-
-			const auto& gd = store.custom.GetGlobalData();
-
-			for (std::uint32_t i = 0; i < std::size(gd); i++)
-			{
-				CopyCustomPapyrusEntries(
-					gd[i],
-					tmp.custom.GetGlobalData()[i]);
-			}
-
-			store = std::move(tmp);
-
-			JSOnDataImport();
-
-			return true;
+			EraseTemporary(a_in.slot.GetActorData());
+			EraseTemporary(a_in.slot.GetNPCData());
+			EraseTemporary(a_in.custom.GetActorData());
+			EraseTemporary(a_in.custom.GetNPCData());
+			EraseTemporary(a_in.transforms.GetActorData());
+			EraseTemporary(a_in.transforms.GetNPCData());
 		}
-		catch (const std::exception& e)
+
+		if (a_flags.test(ImportFlags::kMerge))
 		{
-			m_lastException = e;
-			return false;
+			return DoImportMerge(std::move(a_in), a_flags);
 		}
+		else
+		{
+			return DoImportOverwrite(std::move(a_in), a_flags);
+		}
+	}
+
+	bool IJSONSerialization::DoImportOverwrite(
+		Data::configStore_t&& a_in,
+		stl::flag<ImportFlags> a_flags)
+	{
+		IScopedLock lock(JSGetLock());
+
+		auto& store = JSGetConfigStore();
+
+		const auto& fm = store.custom.GetFormMaps();
+
+		for (std::size_t i = 0; i < std::size(fm); i++)
+		{
+			CopyCustomPapyrusEntries(
+				fm[i],
+				a_in.custom.GetFormMaps()[i]);
+		}
+
+		const auto& gd = store.custom.GetGlobalData();
+
+		for (std::size_t i = 0; i < std::size(gd); i++)
+		{
+			CopyCustomPapyrusEntries(
+				gd[i],
+				a_in.custom.GetGlobalData()[i]);
+		}
+
+		store = std::move(a_in);
+
+		JSOnDataImport();
+
+		return true;
+	}
+
+	static void MergeConfig(
+		Data::configFormMap_t<Data::configCustomPluginMap_t>&& a_in,
+		Data::configFormMap_t<Data::configCustomPluginMap_t>& a_out)
+	{
+		for (auto& e : a_in)
+		{
+			if (auto it = e.second.find(StringHolder::GetSingleton().IED); it != e.second.end())
+			{
+				auto& x = a_out.try_emplace(e.first);
+
+				x.first->second.insert_or_assign(it->first, it->second);
+			}
+		}
+	}
+
+	static void MergeConfig(
+		Data::configCustomPluginMap_t&& a_in,
+		Data::configCustomPluginMap_t& a_dst)
+	{
+		if (auto it = a_in.find(StringHolder::GetSingleton().IED); it != a_in.end())
+		{
+			a_dst.insert_or_assign(it->first, std::move(it->second));
+		}
+	}
+
+	template <class T>
+	static void MergeConfig(
+		Data::configFormMap_t<T>&& a_in,
+		Data::configFormMap_t<T>& a_out)
+	{
+		for (auto& e : a_in)
+		{
+			a_out.insert_or_assign(e.first, std::move(e.second));
+		}
+	}
+
+	template <class Ti, class To>
+	static void MergeConfig(
+		Ti&& a_in,
+		To& a_out)
+	{
+		auto& fm = a_in.GetFormMaps();
+
+		for (std::size_t i = 0; i < std::size(fm); i++)
+		{
+			MergeConfig(
+				std::move(fm[i]),
+				a_out.GetFormMaps()[i]);
+		}
+
+		auto& gd = a_in.GetGlobalData();
+
+		for (std::size_t i = 0; i < std::size(gd); i++)
+		{
+			if constexpr (std::is_same_v<Ti, Data::configStoreCustom_t>)
+			{
+				MergeConfig(
+					std::move(gd[i]),
+					a_out.GetGlobalData()[i]);
+			}
+			else
+			{
+				a_out.GetGlobalData()[i] = std::move(gd[i]);
+			}
+		}
+	}
+
+	bool IJSONSerialization::DoImportMerge(
+		Data::configStore_t&& a_in,
+		stl::flag<ImportFlags> a_flags)
+	{
+		IScopedLock lock(JSGetLock());
+
+		auto& store = JSGetConfigStore();
+
+		MergeConfig(std::move(a_in.slot), store.slot);
+		MergeConfig(std::move(a_in.custom), store.custom);
+		MergeConfig(std::move(a_in.transforms), store.transforms);
+
+		JSOnDataImport();
+
+		return true;
 	}
 
 	bool IJSONSerialization::ExportData(
@@ -181,7 +261,13 @@ namespace IED
 		catch (const std::exception& e)
 		{
 			m_lastException = e;
-			Error("%s: %s", __FUNCTION__, e.what());
+
+			Error(
+				"%s: [%s] %s",
+				__FUNCTION__,
+				SafeGetPath(a_path).c_str(),
+				e.what());
+
 			return false;
 		}
 	}
@@ -208,7 +294,13 @@ namespace IED
 		catch (const std::exception& e)
 		{
 			m_lastException = e;
-			Error("%s: %s", __FUNCTION__, e.what());
+
+			Error(
+				"%s: [%s] %s",
+				__FUNCTION__,
+				SafeGetPath(a_path).c_str(),
+				e.what());
+
 			return false;
 		}
 	}

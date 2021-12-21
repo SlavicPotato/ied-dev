@@ -2,6 +2,7 @@
 
 #include "../ConfigOverride.h"
 #include "../ConfigOverrideDefault.h"
+#include "ImportFlags.h"
 
 namespace IED
 {
@@ -9,7 +10,9 @@ namespace IED
 		public virtual ILog
 	{
 	public:
-		bool ImportData(const fs::path& a_path, bool a_eraseTemporary);
+
+		bool ImportData(Data::configStore_t&& a_in, stl::flag<ImportFlags> a_flags);
+
 		bool ExportData(const fs::path& a_path, stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out) const;
@@ -27,6 +30,14 @@ namespace IED
 		FN_NAMEPROC("JSONSerialization");
 
 	private:
+		bool DoImportOverwrite(
+			Data::configStore_t&& a_in,
+			[[maybe_unused]] stl::flag<ImportFlags> a_flags);
+
+		bool DoImportMerge(
+			Data::configStore_t&& a_in,
+			[[maybe_unused]] stl::flag<ImportFlags> a_flags);
+
 		mutable except::descriptor m_lastException;
 
 		virtual constexpr WCriticalSection& JSGetLock() noexcept = 0;

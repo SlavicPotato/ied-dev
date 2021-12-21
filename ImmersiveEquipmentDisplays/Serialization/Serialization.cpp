@@ -40,5 +40,45 @@ namespace IED
 				a_out.append(a_in[i]);
 			}
 		}
-	}  // namespace Serialization
-}  // namespace IED
+
+		void SafeCleanup(const fs::path& a_path) noexcept
+		{
+			try
+			{
+				fs::remove(a_path);
+			}
+			catch (...)
+			{
+			}
+		}
+
+		std::string SafeGetPath(const fs::path& a_path) noexcept
+		{
+			try
+			{
+				return a_path.string();
+			}
+			catch (...)
+			{
+				return {};
+			}
+		}
+
+		void CreateRootPath(const std::filesystem::path& a_path)
+		{
+			auto form = a_path.parent_path();
+
+			if (!std::filesystem::exists(form))
+			{
+				if (!std::filesystem::create_directories(form))
+				{
+					throw std::exception("Couldn't create base directory");
+				}
+			}
+			else if (!std::filesystem::is_directory(form))
+			{
+				throw std::exception("Root path is not a directory");
+			}
+		}
+	}
+}

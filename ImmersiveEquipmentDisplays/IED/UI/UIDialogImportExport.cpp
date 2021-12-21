@@ -144,9 +144,10 @@ namespace IED
 
 					auto& conf = m_controller.GetConfigStore().settings;
 
-					conf.MarkIf(ImGui::Checkbox(
+					conf.MarkIf(ImGui::CheckboxFlagsT(
 						LS(UIDialogImportExportStrings::SkipTempRefs, "3"),
-						std::addressof(conf.data.ui.importExport.eraseTemporary)));
+						stl::underlying(std::addressof(conf.data.ui.importExport.importFlags.value)),
+						stl::underlying(ImportFlags::kEraseTemporary)));
 
 					DrawTip(UITip::SkipTempRefs);
 				}
@@ -159,17 +160,69 @@ namespace IED
 				{
 					if (ImGui::Button(LS(CommonStrings::Import, "4"), { 120.f, 0.f }))
 					{
-						auto& queue = m_controller.UIGetPopupQueue();
+						std::shared_ptr<Data::configStore_t> data(std::make_unique<Data::configStore_t>());
 
-						queue.push(
-								 UIPopupType::Confirm,
-								 LS(CommonStrings::Confirm),
-								 "%s [%s]",
-								 LS(UIDialogImportExportStrings::ImportConfirm),
-								 selected->m_key.c_str())
-							.call([this, path = selected->m_fullpath](const auto&) {
-								DoImport(path);
-							});
+						if (!m_controller.LoadConfigStore(selected->m_fullpath, *data))
+						{
+							auto& queue = m_controller.UIGetPopupQueue();
+
+							queue.push(
+								UIPopupType::Message,
+								LS(CommonStrings::Error),
+								"%s",
+								m_controller.JSGetLastException().what());
+						}
+						else
+						{
+							auto& queue = m_controller.UIGetPopupQueue();
+
+							queue.push(
+									 UIPopupType::Confirm,
+									 LS(CommonStrings::Confirm),
+									 "%s [%s]",
+									 LS(UIDialogImportExportStrings::ImportConfirm),
+									 selected->m_key.c_str())
+								.draw([this] {
+									auto& conf = m_controller.GetConfigStore().settings;
+
+									conf.MarkIf(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+
+									ImGui::Separator();
+									ImGui::Spacing();
+
+									ImGui::PushID("mode_sel");
+
+									if (ImGui::RadioButton(
+											LS(CommonStrings::Overwrite, "1"),
+											!conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
+									{
+										conf.data.ui.importExport.importFlags.clear(ImportFlags::kMerge);
+										conf.MarkDirty();
+									}
+
+									ImGui::SameLine();
+
+									if (ImGui::RadioButton(
+											LS(CommonStrings::Merge, "2"),
+											conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
+									{
+										conf.data.ui.importExport.importFlags.set(ImportFlags::kMerge);
+										conf.MarkDirty();
+									}
+
+									DrawTip(UITip::ImportMode);
+
+									ImGui::PopID();
+
+									ImGui::Spacing();
+
+									return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
+								})
+								.call([this, data = std::move(data)](const auto&) mutable {
+									auto& conf = m_controller.GetConfigStore().settings;
+									DoImport(std::move(*data), conf.data.ui.importExport.importFlags);
+								});
+						}
 					}
 
 					ImGui::SameLine();
@@ -273,11 +326,13 @@ namespace IED
 			}
 		}
 
-		void UIDialogImportExport::DoImport(const fs::path& a_path)
+		void UIDialogImportExport::DoImport(
+			Data::configStore_t&& a_data,
+			stl::flag<ImportFlags> a_flags)
 		{
 			auto& conf = m_controller.GetConfigStore().settings.data;
 
-			if (m_controller.ImportData(a_path, conf.ui.importExport.eraseTemporary))
+			if (m_controller.ImportData(std::move(a_data), a_flags))
 			{
 				m_controller.UIReset();
 				SetOpenState(false);

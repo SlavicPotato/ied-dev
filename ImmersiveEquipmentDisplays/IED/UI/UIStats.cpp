@@ -15,6 +15,7 @@ namespace IED
 		UIStats::UIStats(
 			Controller& a_controller) :
 			UILocalizationInterface(a_controller),
+			UITipsInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -34,30 +35,44 @@ namespace IED
 						WINDOW_ID),
 					GetOpenState()))
 			{
-				auto& objects = m_controller.GetObjects();
+				ImGui::Columns(3, nullptr, false);
 
-				ImGui::Text("Nodeproc: %lld \xC2\xB5s", m_controller.GetRefSyncTaskTime());
+				ImGui::TextUnformatted("Nodeproc:");
+				ImGui::TextUnformatted("UI:");
 
-				if (auto odbLevel = m_controller.GetODBLevel();
-				    odbLevel != ObjectDatabaseLevel::kDisabled)
+				auto odbLevel = m_controller.GetODBLevel();
+
+				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{
-					ImGui::Text(
-						"ObjectDB: %zu/%u/%zu",
-						m_controller.GetODBUnusedObjectCount(),
-						stl::underlying(odbLevel),
-						m_controller.GetODBObjectCount());
+					ImGui::TextUnformatted("Cache:");
 				}
 
-				ImGui::Text("UI: %lld \xC2\xB5s", Drivers::UI::GetPerf());
-				ImGui::Text("%s: %zu", LS(UIStatsStrings::TrackedActors), objects.size());
+				ImGui::NextColumn();
+
+				ImGui::Text("%lld \xC2\xB5s", m_controller.GetRefSyncTaskTime());
+				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
+
+				if (odbLevel != ObjectDatabaseLevel::kDisabled)
+				{
+					ImGui::Text(
+						"%zu/%zu/%u",
+						m_controller.GetODBUnusedObjectCount(),
+						m_controller.GetODBObjectCount(),
+						stl::underlying(odbLevel));
+
+					DrawTip(UITip::CacheInfo);
+				}
+
+				ImGui::Columns();
 
 				ImGui::Separator();
 
 				if (TreeEx(
 						"actor_tree",
 						true,
-						"%s",
-						LS(CommonStrings::Actors)))
+						"%s [%zu]",
+						LS(CommonStrings::Actors),
+						m_controller.GetObjects().size()))
 				{
 					DrawActorTable();
 

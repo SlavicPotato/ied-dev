@@ -11,7 +11,7 @@ namespace IED
 		UIProfileEditorSlot::UIProfileEditorSlot(Controller& a_controller) :
 			UIProfileEditorBase<SlotProfile>(
 				UIProfileStrings::TitleSlot,
-				"IED_pe_slot",
+				"ied_pe_slot",
 				a_controller),
 			UISlotEditorBase<int>(a_controller),
 			UITipsInterface(a_controller),
@@ -43,7 +43,8 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
-		auto UIProfileEditorSlot::GetCurrentData() -> SlotEditorCurrentData
+		auto UIProfileEditorSlot::GetCurrentData()
+			-> SlotEditorCurrentData
 		{
 			if (!m_cachedItem)
 			{
@@ -60,14 +61,12 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
-		void UIProfileEditorSlot::OnItemSelected(const stl::fixed_string& a_name)
+		void UIProfileEditorSlot::OnItemSelected(
+			const stl::fixed_string& a_name)
 		{
-			//_DMESSAGE("sel: %s", a_name.c_str());
+			const auto& data = GetProfileManager().Data();
 
-			auto& data = GetProfileManager().Data();
-
-			auto it = data.find(a_name);
-			if (it != data.end())
+			if (auto it = data.find(a_name); it != data.end())
 			{
 				m_cachedItem.emplace(a_name, it->second.Data());
 				ResetFormSelectorWidgets();
@@ -276,7 +275,7 @@ namespace IED
 
 		void UIProfileEditorSlot::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Slot, "1")))
+			if (ImGui::BeginMenu(LS(CommonStrings::Equipment, "peb_1")))
 			{
 				DrawMenuBarItems();
 
@@ -409,6 +408,11 @@ namespace IED
 		constexpr bool UIProfileEditorSlot::BaseConfigStoreCC() const
 		{
 			return true;
+		}
+
+		WindowLayoutData UIProfileEditorSlot::GetWindowDimensions() const
+		{
+			return { 150.0f, 600.0f, -1.0f, false };
 		}
 
 		void UIProfileEditorSlot::DrawItem(SlotProfile& a_profile)

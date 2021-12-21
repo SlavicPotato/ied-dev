@@ -153,7 +153,7 @@ namespace IED
 			}
 
 			stl::flag<EquipmentOverrideFlags> eoFlags{ EquipmentOverrideFlags::kNone };
-			equipmentOverrideConditionList_t matches;
+			equipmentOverrideConditionList_t conditions;
 			std::string description;
 
 		protected:
@@ -162,7 +162,7 @@ namespace IED
 			{
 				ar& static_cast<configBaseValues_t&>(*this);
 				ar& eoFlags.value;
-				ar& matches;
+				ar& conditions;
 				ar& description;
 			}
 		};

@@ -67,7 +67,10 @@ namespace IED
 		UINodeOverrideEditorCommon<T>::UINodeOverrideEditorCommon(
 			Controller& a_controller) :
 			UINodeOverrideEditorWidget<T>(a_controller),
-			UIProfileSelectorWidget<profileSelectorParamsNodeOverride_t<T>, NodeOverrideProfile>(a_controller)
+			UIProfileSelectorWidget<profileSelectorParamsNodeOverride_t<T>, NodeOverrideProfile>(
+				a_controller,
+				UIProfileSelectorFlags::kEnableApply |
+					UIProfileSelectorFlags::kEnableMerge)
 		{
 		}
 

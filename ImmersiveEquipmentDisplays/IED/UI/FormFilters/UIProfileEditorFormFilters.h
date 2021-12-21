@@ -67,6 +67,10 @@ namespace IED
 
 			virtual void OnCollapsibleStatesUpdate();
 
+			virtual WindowLayoutData GetWindowDimensions() const;
+
+			void DrawMenuBarItems();
+
 			mutable bool m_changedConfig{ false };
 
 			UIFormSelectorWidget m_formSelector;

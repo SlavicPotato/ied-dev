@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		UISlotEditorTabPanel::UISlotEditorTabPanel(Controller& a_controller) :
-			UIEditorTabPanel(a_controller, stl::underlying(CommonStrings::Slot)),
+			UIEditorTabPanel(a_controller, stl::underlying(CommonStrings::Equipment)),
 			UILocalizationInterface(a_controller),
 			m_slotEditorActor(a_controller),
 			m_slotEditorRace(a_controller),

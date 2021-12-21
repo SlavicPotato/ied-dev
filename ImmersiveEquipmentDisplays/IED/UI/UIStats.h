@@ -9,6 +9,8 @@
 
 #include "UILocalizationInterface.h"
 
+#include "UITips.h"
+
 namespace IED
 {
 	class Controller;
@@ -18,9 +20,10 @@ namespace IED
 		class UIStats :
 			public UIWindow,
 			UICollapsibles,
-			public virtual UILocalizationInterface
+			public virtual UILocalizationInterface,
+			public virtual UITipsInterface
 		{
-			inline static constexpr auto WINDOW_ID = "IED_stats";
+			inline static constexpr auto WINDOW_ID = "ied_stats";
 
 		public:
 			UIStats(Controller& a_controller);

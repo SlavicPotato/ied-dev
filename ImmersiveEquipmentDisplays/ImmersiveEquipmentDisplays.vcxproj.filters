@@ -162,6 +162,9 @@
     <Filter Include="Source\IED\UI\Modals">
       <UniqueIdentifier>{ce3f4daa-ae3f-4443-9bf6-dc8d26c65aa6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scripts">
+      <UniqueIdentifier>{dc61e8b0-27e3-41fd-94d5-ebac549caceb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -914,6 +917,9 @@
     <ClInclude Include="IED\UI\UIFormBrowserStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ImportFlags.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1463,6 +1469,9 @@
   <ItemGroup>
     <None Include="exports.def" />
     <None Include="..\.clang-format" />
+    <None Include="..\Scripts\IED.psc">
+      <Filter>Scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ImmersiveEquipmentDisplays.rc">

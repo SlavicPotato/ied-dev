@@ -2,6 +2,8 @@
 
 #include "LocalizationDataManager.h"
 
+#include "Serialization/Serialization.h"
+
 namespace IED
 {
 	namespace Localization
@@ -25,43 +27,32 @@ namespace IED
 
 						auto& path = entry.path();
 
-						std::string fn;
-						try
-						{
-							fn = path.string();
-						}
-						catch (const std::exception&)
-						{
-							fn = ".";
-						}
-
-						StringTable tmp;
-						if (!tmp.Load(path))
+						auto tmp(std::make_unique<StringTable>());
+						if (!tmp->Load(path))
 						{
 							Error(
 								"%s: %s",
-								fn.c_str(),
-								tmp.GetLastException().what());
+								Serialization::SafeGetPath(path).c_str(),
+								tmp->GetLastException().what());
 
 							continue;
 						}
 
-						auto name(tmp.GetLang());
-
 						auto r = m_data.emplace(
-							std::move(name),
-							std::make_unique<StringTable>(std::move(tmp)));
+							tmp->GetLang(),
+							std::move(tmp));
 
 						if (!r.second)
 						{
 							Warning(
-								"%s: duplicate laIEDage key: %s",
-								fn.c_str(),
-								name.c_str());
+								"%s: duplicate language key: %s",
+								Serialization::SafeGetPath(path).c_str(),
+								r.first->first.c_str());
 						}
 						else
 						{
-							if (r.first->first == defaultLang) {
+							if (r.first->first == defaultLang)
+							{
 								m_defaultTable = r.first->second;
 							}
 
@@ -74,14 +65,20 @@ namespace IED
 					catch (const std::exception& e)
 					{
 						Error(
-							"Exception occured while processing string table: %s",
+							"%s: exception occured while processing string table: %s",
+							Serialization::SafeGetPath(entry.path()).c_str(),
 							e.what());
 					}
 				}
 
 				m_loaded = true;
 
-				Debug("Loaded %zu string table(s)", m_data.size());
+				if (!m_defaultTable)
+				{
+					Warning("Default language table could not be loaded [%s]", DEFAULT_LANG);
+				}
+
+				Debug("%zu string table(s) loaded", m_data.size());
 
 				return true;
 			}

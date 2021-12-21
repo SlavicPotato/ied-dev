@@ -20,7 +20,7 @@ namespace IED
 			UIControlKeySelectorWidget,
 			public virtual UITipsInterface
 		{
-			inline static constexpr auto WINDOW_ID = "IED_settings";
+			inline static constexpr auto WINDOW_ID = "ied_settings";
 
 		public:
 			UISettings(Controller& a_controller);

@@ -40,7 +40,7 @@ namespace IED
 
 			if (ImGui::Begin(
 					LS<UIWidgetCommonStrings, 3>(
-						UIWidgetCommonStrings::NodeOverride,
+						UIWidgetCommonStrings::GearPositioning,
 						WINDOW_ID),
 					GetOpenState(),
 					ImGuiWindowFlags_MenuBar))

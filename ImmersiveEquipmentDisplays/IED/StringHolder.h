@@ -102,7 +102,7 @@ namespace IED
 		stl::fixed_string snew{ "New" };
 		stl::fixed_string apply{ "Apply" };
 		stl::fixed_string merge{ "Merge" };
-		stl::fixed_string IED{ "NGU" };
+		stl::fixed_string IED{ "IED" };
 
 		stl::fixed_string slotNames[stl::underlying(Data::ObjectSlot::kMax)];
 

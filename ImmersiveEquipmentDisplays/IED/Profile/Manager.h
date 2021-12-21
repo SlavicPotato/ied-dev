@@ -12,10 +12,10 @@ namespace IED
 		public ::Events::EventDispatcher<ProfileManagerEvent<T>>,
 		ILog
 	{
+	public:
 		using profile_data_type = typename T::base_type;
 		using storage_type = stl::vectormap<stl::fixed_string, T>;
 
-	public:
 		ProfileManager(
 			const std::string& a_fc,
 			const fs::path& a_ext = ".json");

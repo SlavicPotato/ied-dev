@@ -58,7 +58,7 @@ namespace IED
 				m_dirty = true;
 			}
 
-			bool SaveExtra(const fs::path& a_path);
+			bool SaveExtra(const fs::path& a_path) const;
 			bool LoadExtra(const fs::path& a_path);
 
 			inline constexpr const auto& GetLastException() const noexcept
@@ -84,8 +84,8 @@ namespace IED
 
 			bool m_dirty{ false };
 
-			FastSpinLock m_rwLock;
-			except::descriptor m_lastException;
+			mutable FastSpinLock m_rwLock;
+			mutable except::descriptor m_lastException;
 
 			static NodeMap m_Instance;
 		};

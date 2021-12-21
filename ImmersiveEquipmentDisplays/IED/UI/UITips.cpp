@@ -15,17 +15,23 @@ namespace IED
 		{
 		}
 
-		void UITipsInterface::DrawTip(UITip a_id) const
+		void UITipsInterface::DrawTip(
+			UITip a_id,
+			bool a_sameLine) const
 		{
-			DrawTipText(GetTipText(a_id));
+			DrawTipText(GetTipText(a_id), a_sameLine);
 		}
 
-		void UITipsInterface::DrawTip(const char* a_text) const
+		void UITipsInterface::DrawTip(
+			const char* a_text,
+			bool a_sameLine) const
 		{
-			DrawTipText(a_text);
+			DrawTipText(a_text, a_sameLine);
 		}
 
-		void UITipsInterface::DrawTipText(const char* a_text) const
+		void UITipsInterface::DrawTipText(
+			const char* a_text,
+			bool a_sameLine) const
 		{
 			ImGui::SameLine();
 			UICommon::HelpMarker(a_text);

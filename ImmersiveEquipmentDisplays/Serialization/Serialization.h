@@ -157,19 +157,14 @@ namespace IED
 			std::uint32_t a_size,
 			Json::Value& a_out);
 
-		SKMP_FORCEINLINE static void SafeCleanup(const fs::path& a_path) noexcept
-		{
-			try
-			{
-				fs::remove(a_path);
-			}
-			catch (...)
-			{
-			}
-		}
+		void SafeCleanup(const fs::path& a_path) noexcept;
+		std::string SafeGetPath(const fs::path& a_path) noexcept;
+		void CreateRootPath(const std::filesystem::path& a_path);
 
 		template <class T>
-		void ReadData(const fs::path& a_path, T& a_root)
+		void ReadData(
+			const fs::path& a_path,
+			T& a_root)
 		{
 			std::ifstream ifs;
 
@@ -182,25 +177,11 @@ namespace IED
 			ifs >> a_root;
 		}
 
-		SKMP_FORCEINLINE static void CreateRootPath(const std::filesystem::path& a_path)
-		{
-			auto form = a_path.parent_path();
-
-			if (!std::filesystem::exists(form))
-			{
-				if (!std::filesystem::create_directories(form))
-				{
-					throw std::exception("Couldn't create base directory");
-				}
-			}
-			else if (!std::filesystem::is_directory(form))
-			{
-				throw std::exception("Root path is not a directory");
-			}
-		}
-
 		template <class Tp>
-		void WriteData(Tp&& a_path, const Json::Value& a_root, bool a_styled = false)
+		void WriteData(
+			Tp&& a_path,
+			const Json::Value& a_root,
+			bool a_styled = false)
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
 
@@ -249,7 +230,9 @@ namespace IED
 		}
 
 		template <class T, class Tp>
-		void WriteData(Tp&& a_path, const T& a_root)
+		void WriteData(
+			Tp&& a_path,
+			const T& a_root)
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
 

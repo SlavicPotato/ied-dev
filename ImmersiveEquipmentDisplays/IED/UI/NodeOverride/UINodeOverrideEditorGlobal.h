@@ -38,6 +38,10 @@ namespace IED
 				profileSelectorParamsNodeOverride_t<int>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
+			virtual void MergeProfile(
+				profileSelectorParamsNodeOverride_t<int>& a_data,
+				const NodeOverrideProfile& a_profile) override;
+
 			virtual void OnUpdate(
 				int a_handle,
 				const SingleNodeOverrideUpdateParams& a_params) override;

@@ -95,7 +95,7 @@ namespace IED
 			{
 				for (const auto& e : data.getvec())
 				{
-					ImGui::PushID(e->first.c_str());
+					ImGui::PushID(e);
 
 					bool selected = m_state.selected == e->first;
 					if (selected)

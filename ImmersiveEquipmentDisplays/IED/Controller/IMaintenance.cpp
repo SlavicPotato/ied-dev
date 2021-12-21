@@ -1,32 +1,25 @@
 #include "pch.h"
 
-#include "IMaintenance.h"
-#include "IED/StringHolder.h"
 #include "IED/Data.h"
+#include "IED/StringHolder.h"
+#include "IMaintenance.h"
 
 namespace IED
 {
 	using namespace Data;
 
-	void IMaintenance::CleanEquipmentOverrideList(
+	/*void IMaintenance::CleanEquipmentOverrideList(
 		Data::equipmentOverrideList_t& a_list)
 	{
 		for (auto& e : a_list)
 		{
-			auto it = e.matches.begin();
-			while (it != e.matches.end())
+			for (auto it = e.conditions.begin(); it != e.conditions.end();)
 			{
-				if (it->fbf.type == EquipmentOverrideConditionType::Form && !it->form)
+				if ((it->fbf.type == EquipmentOverrideConditionType::Form && !it->form) ||
+				    (it->fbf.type == EquipmentOverrideConditionType::Keyword && !it->keyword.get_id()) ||
+				    (it->fbf.type == EquipmentOverrideConditionType::Race && !it->form))
 				{
-					it = e.matches.erase(it);
-				}
-				else if (it->fbf.type == EquipmentOverrideConditionType::Keyword && !it->keyword.get_id())
-				{
-					it = e.matches.erase(it);
-				}
-				else if (it->fbf.type == EquipmentOverrideConditionType::Race && !it->form)
-				{
-					it = e.matches.erase(it);
+					it = e.conditions.erase(it);
 				}
 				else
 				{
@@ -42,15 +35,9 @@ namespace IED
 		auto it = a_list.begin();
 		while (it != a_list.end())
 		{
-			if (it->fbf.type == NodeOverrideConditionType::Form && !it->form.get_id())
-			{
-				it = a_list.erase(it);
-			}
-			else if (it->fbf.type == NodeOverrideConditionType::Keyword && !it->keyword.get_id())
-			{
-				it = a_list.erase(it);
-			}
-			else if (it->fbf.type == NodeOverrideConditionType::Race && !it->form.get_id())
+			if ((it->fbf.type == NodeOverrideConditionType::Form && !it->form.get_id()) ||
+			    (it->fbf.type == NodeOverrideConditionType::Keyword && !it->keyword.get_id()) ||
+			    (it->fbf.type == NodeOverrideConditionType::Race && !it->form.get_id()))
 			{
 				it = a_list.erase(it);
 			}
@@ -66,7 +53,7 @@ namespace IED
 	{
 		for (auto& e : a_list)
 		{
-			CleanNodeOverrideConditionList(e.matches);
+			CleanNodeOverrideConditionList(e.conditions);
 		}
 	}
 
@@ -75,9 +62,9 @@ namespace IED
 	{
 		for (auto& e : a_list)
 		{
-			CleanNodeOverrideConditionList(e.matches);
+			CleanNodeOverrideConditionList(e.conditions);
 		}
-	}
+	}*/
 
 	void IMaintenance::CleanFormList(Data::configFormList_t& a_list)
 	{
@@ -95,27 +82,11 @@ namespace IED
 		}
 	}
 
-	void IED::IMaintenance::CleanFormSet(Data::configFormSet_t& a_list)
+	void IMaintenance::CleanCustomConfig(
+		Game::FormID a_id,
+		Data::configCustomPluginMap_t& a_data)
 	{
-		auto it = a_list.begin();
-		while (it != a_list.end())
-		{
-			if (!*it)
-			{
-				it = a_list.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
-
-	void IMaintenance::CleanCustomConfig(Game::FormID a_id, Data::configCustomPluginMap_t& a_data)
-	{
-		auto it = a_data.begin();
-
-		while (it != a_data.end())
+		for (auto it = a_data.begin(); it != a_data.end();)
 		{
 			if (it->second.empty())
 			{
@@ -129,7 +100,7 @@ namespace IED
 					if (!pluginInfo.contains(it->first))
 					{
 						Warning(
-							"%.8X: erasing %zu custom entrie(s) from missing plugin '%s'",
+							"%.8X: erasing %zu custom item(s) from missing plugin '%s'",
 							a_id.get(),
 							it->second.data.size(),
 							it->first.c_str());
@@ -143,10 +114,10 @@ namespace IED
 				{
 					for (auto& i : h.second())
 					{
-						CleanEquipmentOverrideList(i.equipmentOverrides);
+						/*CleanEquipmentOverrideList(i.equipmentOverrides);*/
 						CleanFormList(i.extraItems);
-						CleanFormSet(i.raceFilter.allow);
-						CleanFormSet(i.raceFilter.deny);
+						i.raceFilter.allow.erase(0);
+						i.raceFilter.deny.erase(0);
 					}
 				}
 
@@ -167,10 +138,10 @@ namespace IED
 
 				for (auto& h : (*g)())
 				{
-					CleanEquipmentOverrideList(h.equipmentOverrides);
+					/*CleanEquipmentOverrideList(h.equipmentOverrides);*/
 					CleanFormList(h.preferredItems);
-					CleanFormSet(h.raceFilter.allow);
-					CleanFormSet(h.raceFilter.deny);
+					h.raceFilter.allow.erase(0);
+					h.raceFilter.deny.erase(0);
 					h.itemFilter.allow.erase(0);
 					h.itemFilter.deny.erase(0);
 				}
@@ -180,7 +151,7 @@ namespace IED
 		return empty;
 	}
 
-	void IMaintenance::CleanTransformConfig(
+	/*void IMaintenance::CleanNodeOverrideConfig(
 		Data::configNodeOverrideHolder_t& a_data)
 	{
 		for (auto& g : a_data.data)
@@ -199,7 +170,7 @@ namespace IED
 				CleanNodeOverridePlacementOverrideList(h.overrides);
 			}
 		}
-	}
+	}*/
 
 	void IMaintenance::CleanBlockList(Data::actorBlockList_t& a_data)
 	{
@@ -242,8 +213,7 @@ namespace IED
 		{
 			e.erase(0);
 
-			auto it = e.begin();
-			while (it != e.end())
+			for (auto it = e.begin(); it != e.end();)
 			{
 				if (it->second.empty())
 				{
@@ -266,8 +236,7 @@ namespace IED
 		{
 			e.erase(0);
 
-			auto it = e.begin();
-			while (it != e.end())
+			for (auto it = e.begin(); it != e.end();)
 			{
 				if (CleanSlotConfig(it->second))
 				{
@@ -289,8 +258,7 @@ namespace IED
 		{
 			e.erase(0);
 
-			auto it = e.begin();
-			while (it != e.end())
+			for (auto it = e.begin(); it != e.end();)
 			{
 				if (it->second.data.empty())
 				{
@@ -298,17 +266,16 @@ namespace IED
 				}
 				else
 				{
-					CleanTransformConfig(it->second);
+					//CleanNodeOverrideConfig(it->second);
 					++it;
 				}
 			}
 		}
 
-		for (auto& e : a_data.transforms.GetGlobalData())
+		/*for (auto& e : a_data.transforms.GetGlobalData())
 		{
-			CleanTransformConfig(e);
-		}
-
+			CleanNodeOverrideConfig(e);
+		}*/
 	}
 
 }

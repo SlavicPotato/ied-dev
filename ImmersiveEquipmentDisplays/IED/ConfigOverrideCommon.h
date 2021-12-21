@@ -122,12 +122,11 @@ namespace IED
 			void load(Archive& ar, const unsigned int version)
 			{
 				ar& id;
+
 				if (id)
 				{
 					id = resolve_form(id);
 				}
-
-				form = lookup_form(id);
 			}
 
 			static TESForm* lookup_form(Game::FormID a_form) noexcept;

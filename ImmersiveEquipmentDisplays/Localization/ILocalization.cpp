@@ -12,7 +12,7 @@ namespace IED
 		{
 		}
 
-		bool ILocalization::SetLaIEDage(const stl::fixed_string& a_lang)
+		bool ILocalization::SetLanguage(const stl::fixed_string& a_lang)
 		{
 			return LocalizationDataManager::GetSingleton().LookupTable(a_lang, m_currentTable);
 		}

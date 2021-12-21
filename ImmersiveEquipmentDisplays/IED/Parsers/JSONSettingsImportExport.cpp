@@ -21,10 +21,11 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			a_out.eraseTemporary = data.get("erase_temporary", false).asBool();
-
 			a_out.exportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
+			
+			a_out.importFlags = static_cast<ImportFlags>(
+				data.get("import_flags", stl::underlying(ImportFlags::kEraseTemporary)).asUInt());
 
 			return true;
 		}
@@ -36,8 +37,8 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			data["erase_temporary"] = a_data.eraseTemporary;
 			data["export_flags"] = stl::underlying(a_data.exportFlags.value);
+			data["import_flags"] = stl::underlying(a_data.importFlags.value);
 
 			a_out["version"] = 1u;
 		}

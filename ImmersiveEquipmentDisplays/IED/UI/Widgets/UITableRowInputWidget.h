@@ -66,7 +66,7 @@ namespace IED
 				}
 
 				if (ImGui::InputText(
-						"",
+						"##input",
 						m_current->buffer,
 						sizeof(m_current->buffer),
 						ImGuiInputTextFlags_EnterReturnsTrue |

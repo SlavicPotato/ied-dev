@@ -880,7 +880,7 @@ namespace IED
 
 						const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(a_handle, e, a_params);
 
-						bool empty = e.matches.empty();
+						bool empty = e.conditions.empty();
 
 						if (!empty)
 						{
@@ -962,7 +962,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Type:
 						if (result.slot != Data::ObjectSlotExtra::kNone)
 						{
-							a_data.matches.emplace_back(
+							a_data.conditions.emplace_back(
 								result.entryType,
 								0,
 								result.slot);
@@ -976,7 +976,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Race:
 						if (result.form)
 						{
-							a_data.matches.emplace_back(
+							a_data.conditions.emplace_back(
 								result.entryType,
 								result.form,
 								Data::ObjectSlotExtra::kNone);
@@ -989,7 +989,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Keyword:
 						if (result.form)
 						{
-							a_data.matches.emplace_back(
+							a_data.conditions.emplace_back(
 								result.entryType,
 								0,
 								Data::ObjectSlotExtra::kNone,
@@ -1002,7 +1002,7 @@ namespace IED
 						break;
 					case Data::EquipmentOverrideConditionType::Furniture:
 
-						a_data.matches.emplace_back(
+						a_data.conditions.emplace_back(
 							result.entryType);
 
 						action = result.action;
@@ -1018,13 +1018,13 @@ namespace IED
 				break;
 
 			case EquipmentOverrideAction::Copy:
-				UIClipboard::Set(a_data.matches);
+				UIClipboard::Set(a_data.conditions);
 				break;
 
 			case EquipmentOverrideAction::PasteOver:
 				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>())
 				{
-					a_data.matches = *clipData;
+					a_data.conditions = *clipData;
 
 					OnBaseConfigChange(
 						a_handle,
@@ -1035,7 +1035,7 @@ namespace IED
 				}
 				break;
 			case EquipmentOverrideAction::Delete:
-				a_data.matches.clear();
+				a_data.conditions.clear();
 
 				action = EquipmentOverrideAction::Delete;
 
@@ -1085,9 +1085,9 @@ namespace IED
 
 				int i = 0;
 
-				auto it = a_data.matches.begin();
+				auto it = a_data.conditions.begin();
 
-				while (it != a_data.matches.end())
+				while (it != a_data.conditions.end())
 				{
 					ImGui::PushID(i);
 
@@ -1102,7 +1102,7 @@ namespace IED
 					switch (result.action)
 					{
 					case EquipmentOverrideAction::Delete:
-						it = a_data.matches.erase(it);
+						it = a_data.conditions.erase(it);
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						break;
 					case EquipmentOverrideAction::ClearKeyword:
@@ -1119,7 +1119,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Type:
 							if (result.slot != Data::ObjectSlotExtra::kNone)
 							{
-								it = a_data.matches.emplace(
+								it = a_data.conditions.emplace(
 									it,
 									result.entryType,
 									0,
@@ -1132,7 +1132,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Race:
 							if (result.form)
 							{
-								it = a_data.matches.emplace(
+								it = a_data.conditions.emplace(
 									it,
 									result.entryType,
 									result.form,
@@ -1144,7 +1144,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Keyword:
 							if (result.form)
 							{
-								it = a_data.matches.emplace(
+								it = a_data.conditions.emplace(
 									it,
 									result.entryType,
 									0,
@@ -1156,7 +1156,7 @@ namespace IED
 							break;
 						case Data::EquipmentOverrideConditionType::Furniture:
 
-							it = a_data.matches.emplace(
+							it = a_data.conditions.emplace(
 								it,
 								result.entryType);
 
@@ -1169,7 +1169,7 @@ namespace IED
 
 					case EquipmentOverrideAction::Swap:
 
-						if (IterSwap(a_data.matches, it, result.dir))
+						if (IterSwap(a_data.conditions, it, result.dir))
 						{
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						}
@@ -1177,7 +1177,7 @@ namespace IED
 						break;
 					}
 
-					if (it != a_data.matches.end())
+					if (it != a_data.conditions.end())
 					{
 						auto& e = *it;
 

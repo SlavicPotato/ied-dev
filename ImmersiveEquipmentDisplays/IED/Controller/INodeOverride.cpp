@@ -442,7 +442,7 @@ namespace IED
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
 		return run_matches(
-			a_data.matches,
+			a_data.conditions,
 			a_params,
 			!a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kRequiresConditionList));
 	}
@@ -750,7 +750,7 @@ namespace IED
 		for (auto& e : a_data.overrides)
 		{
 			if (run_matches(
-					e.matches,
+					e.conditions,
 					a_params,
 					false,
 					true))

@@ -487,9 +487,9 @@ namespace IED
 			m_Instance.QueueSetExtraGlyphsImpl(a_flags);
 		}
 
-		void UI::QueueSetLaIEDageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data)
+		void UI::QueueSetLanguageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data)
 		{
-			m_Instance.QueueSetLaIEDageGlyphDataImpl(a_data);
+			m_Instance.QueueSetLanguageGlyphDataImpl(a_data);
 		}
 
 		void UI::QueueFontChange(const stl::fixed_string& a_font)
@@ -561,7 +561,7 @@ namespace IED
 			m_fontUpdateData.dirty = true;
 		}
 
-		void UI::QueueSetLaIEDageGlyphDataImpl(
+		void UI::QueueSetLanguageGlyphDataImpl(
 			const std::shared_ptr<fontGlyphData_t>& a_data)
 		{
 			IScopedLock lock(m_Instance.m_lock);

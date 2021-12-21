@@ -28,20 +28,26 @@ namespace IED
 				return true;
 			}
 
-			auto& plugin = a_in["plugin"];
+			stl::fixed_string plugin(a_in["plugin"].asString());
 
 			auto& data = Data::IData::GetPluginInfo().GetLookupRef();
 
-			auto it = data.find(plugin.asString());
-			if (it == data.end())
-			{
-				a_out = {};
-				return false;
-			}
-			else
+			if (auto it = data.find(plugin); it != data.end())
 			{
 				a_out = it->second.GetFormID(lower);
 				return true;
+			}
+			else
+			{
+				a_out = {};
+
+				Error(
+					"%s: could not find plugin '%s' [%.8X]",
+					__FUNCTION__,
+					plugin.c_str(),
+					lower.get());
+
+				return false;
 			}
 		}
 
@@ -55,10 +61,9 @@ namespace IED
 			{
 				auto& data = Data::IData::GetPluginInfo().GetIndexMap();
 
-				auto it = data.find(pluginIndex);
-				if (it != data.end())
+				if (auto it = data.find(pluginIndex); it != data.end())
 				{
-					a_out["plugin"] = static_cast<const std::string&>(it->second.name);
+					a_out["plugin"] = *it->second.name;
 					a_out["id"] = it->second.GetFormIDLower(a_data).get();
 				}
 				else

@@ -8,6 +8,10 @@
 
 #include "IED/UI/Window/UIWindow.h"
 
+#include "IED/Controller/ImportFlags.h"
+
+#include "IED/ConfigOverride.h"
+
 namespace IED
 {
 	class Controller;
@@ -20,7 +24,7 @@ namespace IED
 			UITipsInterface,
 			UIExportFilterWidget
 		{
-			static constexpr auto WINDOW_ID = "IED_ie";
+			static constexpr auto WINDOW_ID = "ied_ie";
 
 		public:
 			UIDialogImportExport(Controller& a_controller);
@@ -31,7 +35,7 @@ namespace IED
 		private:
 			void DrawExportContextMenu();
 
-			void DoImport(const fs::path& a_path);
+			void DoImport(Data::configStore_t&& a_data, stl::flag<ImportFlags> a_flags);
 			void DoExport(const fs::path& a_path);
 
 			bool DoUpdate(bool a_select);

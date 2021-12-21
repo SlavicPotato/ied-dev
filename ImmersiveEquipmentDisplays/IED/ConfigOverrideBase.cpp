@@ -15,7 +15,7 @@ namespace IED
 		{
 			for (auto& e : equipmentOverrides)
 			{
-				if (match(a_data, e.matches, a_params, false))
+				if (match(a_data, e.conditions, a_params, false))
 				{
 					return std::addressof(e);
 				}
@@ -31,7 +31,7 @@ namespace IED
 		{
 			for (auto& e : equipmentOverrides)
 			{
-				if (match(a_data, a_slots, e.matches, a_params, false))
+				if (match(a_data, a_slots, e.conditions, a_params, false))
 				{
 					return std::addressof(e);
 				}
@@ -47,7 +47,7 @@ namespace IED
 		{
 			for (auto& e : equipmentOverrides)
 			{
-				if (match(a_data, e.matches, a_checkForm, a_params, false))
+				if (match(a_data, e.conditions, a_checkForm, a_params, false))
 				{
 					return std::addressof(e);
 				}

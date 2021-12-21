@@ -67,7 +67,7 @@ namespace IED
 							continue;
 						}
 
-						ImGui::PushID(e->first.c_str());
+						ImGui::PushID(e);
 
 						bool selected = (e->first == a_data.name);
 						if (selected)

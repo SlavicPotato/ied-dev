@@ -96,29 +96,29 @@ namespace IED
 					ImGui::TableHeader(ImGui::TableGetColumnName(column));
 				}
 
-				for (auto& e : data)
+				for (auto& e : data.getvec())
 				{
-					if (!e.second.flags.test(Data::NodeDescriptorFlags::kExtra))
+					if (!e->second.flags.test(Data::NodeDescriptorFlags::kExtra))
 					{
 						continue;
 					}
 
-					ImGui::PushID(e.first.c_str());
+					ImGui::PushID(e);
 
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
 
-					ImGui::TextUnformatted(e.first.c_str());
+					ImGui::TextUnformatted(e->first.c_str());
 
 					ImGui::TableSetColumnIndex(1);
 
-					if (m_tableRowInput.DrawColumn(1, e.first, e.second.name.c_str()))
+					if (m_tableRowInput.DrawColumn(1, e->first, e->second.name.c_str()))
 					{
 						auto buffer = m_tableRowInput.GetBuffer();
 						if (std::strlen(buffer))
 						{
-							e.second.name = buffer;
+							e->second.name = buffer;
 							OnChange();
 						}
 					}
@@ -129,7 +129,7 @@ namespace IED
 
 					if (ImGui::Selectable(LS(CommonStrings::Delete, "ctl_1")))
 					{
-						QueueDeleteNodePopup(e.first);
+						QueueDeleteNodePopup(e->first);
 					}
 
 					ImGui::PopStyleVar();

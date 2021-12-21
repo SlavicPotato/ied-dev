@@ -40,6 +40,9 @@ namespace IED
 			EnableRestrictions = 1029,
 			ControlLock = 1030,
 			UIScale = 1031,
+			AnimSupportWarning = 1032,
+			CacheInfo = 1033,
+			ImportMode = 1034
 		};
 
 	}

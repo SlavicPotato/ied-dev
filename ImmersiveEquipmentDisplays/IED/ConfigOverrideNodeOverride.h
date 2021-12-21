@@ -238,7 +238,7 @@ namespace IED
 			};
 
 			stl::flag<NodeOverrideOffsetFlags> offsetFlags{ NodeOverrideOffsetFlags::kNone };
-			configNodeOverrideConditionList_t matches;
+			configNodeOverrideConditionList_t conditions;
 			std::string description;
 			NiPoint3 adjustScale{ 1.0f, 1.0f, 1.0f };
 			std::vector<configNodeOverrideOffset_t> group;
@@ -258,7 +258,7 @@ namespace IED
 			{
 				ar& static_cast<const configNodeOverrideValues_t&>(*this);
 				ar& offsetFlags.value;
-				ar& matches;
+				ar& conditions;
 				ar& description;
 				ar& adjustScale;
 				ar& group;
@@ -269,7 +269,7 @@ namespace IED
 			{
 				ar& static_cast<configNodeOverrideValues_t&>(*this);
 				ar& offsetFlags.value;
-				ar& matches;
+				ar& conditions;
 				ar& description;
 				ar& adjustScale;
 				ar& group;
@@ -366,7 +366,7 @@ namespace IED
 			};
 
 			stl::flag<NodeOverridePlacementOverrideFlags> overrideFlags{ NodeOverridePlacementOverrideFlags::kNone };
-			configNodeOverrideConditionList_t matches;
+			configNodeOverrideConditionList_t conditions;
 			std::string description;
 
 		private:
@@ -375,7 +375,7 @@ namespace IED
 			{
 				ar& static_cast<configNodeOverridePlacementValues_t&>(*this);
 				ar& overrideFlags.value;
-				ar& matches;
+				ar& conditions;
 				ar& description;
 			}
 		};

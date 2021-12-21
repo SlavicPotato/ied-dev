@@ -36,7 +36,7 @@ namespace IED
 			{
 				for (auto& e : a_data.getvec())
 				{
-					ImGui::PushID(e->first);
+					ImGui::PushID(e);
 
 					bool selected = e->first == a_key;
 					if (selected)

@@ -4,7 +4,7 @@ namespace IED
 {
 	namespace UI
 	{
-		struct SKMP_ALIGN(16) WindowLayoutData
+		struct WindowLayoutData
 		{
 			float m_offset;
 			float m_width;

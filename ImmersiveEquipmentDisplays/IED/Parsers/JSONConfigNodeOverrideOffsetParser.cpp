@@ -24,7 +24,7 @@ namespace IED
 				return false;
 			}
 
-			if (!mlparser.Parse(a_in["matches"], a_out.matches))
+			if (!mlparser.Parse(a_in["matches"], a_out.conditions))
 			{
 				return false;
 			}
@@ -55,7 +55,7 @@ namespace IED
 			Parser<Data::configNodeOverrideOffsetList_t> olparser;
 
 			vparser.Create(a_data, a_out);
-			mlparser.Create(a_data.matches, a_out["matches"]);
+			mlparser.Create(a_data.conditions, a_out["matches"]);
 
 			a_out["offset_flags"] = stl::underlying(a_data.offsetFlags.value);
 			a_out["desc"] = a_data.description;

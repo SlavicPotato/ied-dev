@@ -21,14 +21,10 @@ namespace IED
 				UIProfileStrings a_title,
 				const char* a_strid,
 				Localization::ILocalization& a_localization);
+
 			virtual ~UIProfileEditorBase() noexcept = default;
 
 			void DrawProfileEditor();
-
-			inline constexpr const auto& GetName() const noexcept
-			{
-				return m_name;
-			}
 
 			virtual void DrawProfileEditorMenuBarItems();
 
@@ -39,16 +35,17 @@ namespace IED
 			virtual void OnProfileReload(const T& a_profile);
 
 		private:
+			void SelectFirstPassed();
+
 			virtual ProfileManager<T>& GetProfileManager() const = 0;
 
-			virtual void DrawOptions(T& a_profile);
+			virtual void DrawOptions(const T& a_profile);
 
 			void DrawMenuBar();
 
 			UIGenericFilter m_filter;
-
 			UIProfileStrings m_title;
-			std::string m_strid;
+			const char* m_strid;
 		};
 
 		template <class T>
@@ -60,6 +57,21 @@ namespace IED
 			m_title(a_title),
 			m_strid(a_strid)
 		{}
+
+		template <class T>
+		void UIProfileEditorBase<T>::SelectFirstPassed()
+		{
+			auto& data = GetProfileManager().Data();
+
+			for (const auto& e : data.getvec())
+			{
+				if (m_filter.Test(e->first))
+				{
+					SetSelected(e->first);
+					break;
+				}
+			}
+		}
 
 		template <class T>
 		void UIProfileEditorBase<T>::DrawProfileEditor()
@@ -74,7 +86,7 @@ namespace IED
 			if (ImGui::Begin(
 					LS<UIProfileStrings, 3>(
 						m_title,
-						m_strid.c_str()),
+						m_strid),
 					GetOpenState(),
 					ImGuiWindowFlags_MenuBar))
 			{
@@ -84,38 +96,24 @@ namespace IED
 
 				auto& data = GetProfileManager().Data();
 
-				const char* curSelName = nullptr;
 				if (m_state.selected)
 				{
-					if (data.find(*m_state.selected) != data.end())
-					{
-						curSelName = m_state.selected->c_str();
-
-						if (!m_filter.Test(*m_state.selected))
-						{
-							for (const auto& e : data)
-							{
-								if (!m_filter.Test(e.first))
-									continue;
-
-								SetSelected(e.first);
-								curSelName = e.first.c_str();
-
-								break;
-							}
-						}
-					}
-					else
+					if (!data.contains(*m_state.selected))
 					{
 						m_state.selected.clear();
 					}
 				}
+
+				if (!m_state.selected)
+				{
+					SelectFirstPassed();
+				}
 				else
 				{
-					if (!data.empty())
+					if (!m_filter.Test(*m_state.selected))
 					{
-						SetSelected(data.begin()->first);
-						curSelName = m_state.selected->c_str();
+						m_state.selected.clear();
+						SelectFirstPassed();
 					}
 				}
 
@@ -123,17 +121,23 @@ namespace IED
 
 				if (ImGui::BeginCombo(
 						LS(CommonStrings::Profile, "combo"),
-						curSelName,
+						m_state.selected ?
+                            m_state.selected->c_str() :
+                            nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{
+					const ProfileManager<T>::storage_type::value_type* newItem = nullptr;
+
 					for (const auto& e : data.getvec())
 					{
 						if (!m_filter.Test(e->first))
+						{
 							continue;
+						}
 
-						ImGui::PushID(e->first.c_str());
+						ImGui::PushID(e);
 
-						bool selected = e->first == *m_state.selected;
+						bool selected = m_state.selected == e->first;
 						if (selected)
 						{
 							if (ImGui::IsWindowAppearing())
@@ -142,11 +146,17 @@ namespace IED
 
 						if (ImGui::Selectable(e->second.Name().c_str(), selected))
 						{
-							SetSelected(e->first);
+							newItem = e;
 						}
 
 						ImGui::PopID();
 					}
+
+					if (newItem)
+					{
+						SetSelected(newItem->first);
+					}
+
 					ImGui::EndCombo();
 				}
 
@@ -173,8 +183,7 @@ namespace IED
 
 				if (m_state.selected)
 				{
-					auto it = data.find(*m_state.selected);
-					if (it != data.end())
+					if (auto it = data.find(*m_state.selected); it != data.end())
 					{
 						ImGui::PushID("ctls");
 
@@ -241,12 +250,12 @@ namespace IED
 									 "%s:",
 									 LS(UIProfileStrings::ProfileNamePrompt))
 								.call([this, item = *m_state.selected](const auto& a_p) {
-									auto& in = a_p.GetInput();
+									std::string newName(a_p.GetInput());
 
-									if (!stl::strlen(in))
+									if (newName.empty())
+									{
 										return;
-
-									std::string newName(in);
+									}
 
 									auto& pm = GetProfileManager();
 									if (!pm.RenameProfile(item, newName))
@@ -319,6 +328,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 				DrawProfileEditorMenuBarItems();
 
 				ImGui::EndMenuBar();
@@ -333,11 +343,11 @@ namespace IED
 		template <class T>
 		WindowLayoutData UIProfileEditorBase<T>::GetWindowDimensions() const
 		{
-			return { 500.0f, -1.0f, -1.0f, false };
+			return { 50.0f, 550.0f, -1.0f, false };
 		}
 
 		template <class T>
-		void UIProfileEditorBase<T>::DrawOptions(T& a_profile)
+		void UIProfileEditorBase<T>::DrawOptions(const T& a_profile)
 		{}
 
 		template <class T>

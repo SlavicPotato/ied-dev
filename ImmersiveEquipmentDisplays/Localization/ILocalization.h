@@ -14,12 +14,12 @@ namespace IED
 			ILocalization() = default;
 			ILocalization(const LocalizationDataManager::shared_string_table& a_table);
 
-			[[nodiscard]] inline constexpr const auto& GetCurrentLaIEDageTable() const noexcept
+			[[nodiscard]] inline constexpr const auto& GetCurrentLanguageTable() const noexcept
 			{
 				return m_currentTable;
 			}
 
-			bool SetLaIEDage(const stl::fixed_string& a_lang);
+			bool SetLanguage(const stl::fixed_string& a_lang);
 
 			const std::string& L(StringID a_id) const;
 
@@ -50,7 +50,7 @@ namespace IED
 
 		private:
 			
-			SKMP_NOINLINE const std::string& get_default_str(StringID a_id) const;
+			const std::string& get_default_str(StringID a_id) const;
 
 			LocalizationDataManager::shared_string_table m_currentTable;
 		};

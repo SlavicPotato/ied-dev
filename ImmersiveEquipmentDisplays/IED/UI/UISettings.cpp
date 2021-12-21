@@ -222,7 +222,7 @@ namespace IED
 
 				if (m_scaleTemp)
 				{
-					ImGui::SameLine();
+					//ImGui::SameLine();
 
 					if (ImGui::Button(LS(CommonStrings::Apply, "5")))
 					{
@@ -339,11 +339,9 @@ namespace IED
 			auto current = gLog.GetLogLevel();
 			auto desc = ILog::GetLogLevelString(current);
 
-			auto& data = ILog::GetLogLevels();
-
 			if (ImGui::BeginCombo(LS(UISettingsStrings::LogLevel, "ll_sel"), desc))
 			{
-				for (auto& e : data)
+				for (auto& e : ILog::GetLogLevels())
 				{
 					bool selected = e.second == current;
 					if (selected)
@@ -456,17 +454,18 @@ namespace IED
 
 				auto& config = m_controller.GetConfigStore().settings;
 				auto& ldm = Localization::LocalizationDataManager::GetSingleton();
-				auto& data = ldm.GetData();
-				auto& current = m_controller.GetCurrentLaIEDageTable();
+				auto& current = m_controller.GetCurrentLanguageTable();
 
 				const char* desc = current ?
                                        current->GetLang().c_str() :
                                        nullptr;
 
-				if (ImGui::BeginCombo(LS(CommonStrings::LaIEDage, "1"), desc))
+				if (ImGui::BeginCombo(LS(CommonStrings::Language, "1"), desc))
 				{
-					for (auto& e : data)
+					for (auto& e : ldm.GetData())
 					{
+						ImGui::PushID(std::addressof(e));
+
 						bool selected = (current && e.first == current->GetLang());
 						if (selected)
 						{
@@ -476,11 +475,13 @@ namespace IED
 
 						if (ImGui::Selectable(e.first.c_str(), selected))
 						{
-							config.data.laIEDage = e.first;
+							config.data.language = e.first;
 							config.MarkDirty();
 
-							m_controller.QueueSetLaIEDage(e.first);
+							m_controller.QueueSetLanguage(e.first);
 						}
+
+						ImGui::PopID();
 					}
 
 					ImGui::EndCombo();
@@ -497,15 +498,16 @@ namespace IED
 
 			auto& config = m_controller.GetConfigStore().settings;
 
-			auto& data = Drivers::UI::GetAvailableFonts();
 			auto current = Drivers::UI::GetCurrentFont();
 
 			if (ImGui::BeginCombo(
 					LS(CommonStrings::Font, "1"),
 					current->first.c_str()))
 			{
-				for (auto& e : data)
+				for (auto& e : Drivers::UI::GetAvailableFonts())
 				{
+					ImGui::PushID(std::addressof(e));
+
 					bool selected = e == current->first;
 					if (selected)
 					{
@@ -520,6 +522,8 @@ namespace IED
 						config.data.ui.font = e;
 						config.MarkDirty();
 					}
+
+					ImGui::PopID();
 				}
 
 				ImGui::EndCombo();
@@ -558,7 +562,7 @@ namespace IED
 
 			if (m_fontSizeTemp)
 			{
-				ImGui::SameLine();
+				//ImGui::SameLine();
 				if (ImGui::Button(LS(CommonStrings::Apply, "4")))
 				{
 					Drivers::UI::QueueSetFontSize(*m_fontSizeTemp);

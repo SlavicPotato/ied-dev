@@ -192,6 +192,7 @@
     <ClInclude Include="Events\Dispatcher.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="IED\Controller\ImportFlags.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
     <ClInclude Include="ImGui\MouseEventQueue.h" />
@@ -643,6 +644,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.clang-format" />
+    <None Include="..\Scripts\IED.psc" />
     <None Include="exports.def" />
   </ItemGroup>
   <ItemGroup>

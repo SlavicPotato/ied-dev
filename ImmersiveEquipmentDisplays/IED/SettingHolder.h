@@ -6,9 +6,11 @@
 
 #include "Controller/ObjectDatabaseLevel.h"
 
+#include "Fonts/FontInfo.h"
 #include "UI/UIData.h"
 #include "UI/UIMainCommon.h"
-#include <Fonts/FontInfo.h>
+
+#include "Controller/ImportFlags.h"
 
 namespace IED
 {
@@ -95,10 +97,10 @@ namespace IED
 
 			struct ImportExport
 			{
-				bool eraseTemporary{ true };
 				stl::flag<Data::ConfigStoreSerializationFlags> exportFlags{
 					Data::ConfigStoreSerializationFlags::kAll
 				};
+				stl::flag<ImportFlags> importFlags{ ImportFlags::kEraseTemporary };
 			};
 
 			struct UserInterface
@@ -157,9 +159,9 @@ namespace IED
 
 				SetObjectWrapper<LogLevel> logLevel;
 
-				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kDisabled };
+				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kNone };
 
-				stl::fixed_string laIEDage;
+				stl::fixed_string language;
 			};
 
 			Settings data;

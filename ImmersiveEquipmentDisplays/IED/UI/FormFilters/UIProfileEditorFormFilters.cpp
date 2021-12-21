@@ -12,14 +12,14 @@ namespace IED
 			Controller& a_controller) :
 			UIProfileEditorBase<FormFilterProfile>(
 				UIProfileStrings::TitleFormFilters,
-				"IED_pe_ff",
+				"ied_pe_ff",
 				a_controller),
 			UIFormFilterWidget<FFPEFormFilterParams_t>(a_controller, m_formSelector),
 			UILocalizationInterface(a_controller),
 			m_formSelector(a_controller, FormInfoFlags::kNone, false),
 			m_controller(a_controller)
 		{
-			SetOnChangeFunc([this](FFPEFormFilterParams_t&) {
+			SetOnChangeFunc([this](auto&) {
 				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 			});
 		}
@@ -31,6 +31,11 @@ namespace IED
 
 		void UIProfileEditorFormFilters::DrawProfileEditorMenuBarItems()
 		{
+			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::FormFilters, "peb_1")))
+			{
+				DrawMenuBarItems();
+				ImGui::EndMenu();
+			}
 		}
 
 		void UIProfileEditorFormFilters::DrawItem(
@@ -64,39 +69,46 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
+			bool chg = false;
+
 			store.active.slot.visit(
-				[this, &a = a_oldName, &b = a_newName](
-					Data::configSlot_t& a_conf) {
+				[&](Data::configSlot_t& a_conf) {
 					if (a_conf.raceFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
-				        a_conf.raceFilter.profile.name == a)
+				        a_conf.raceFilter.profile.name == a_oldName)
 					{
-						a_conf.raceFilter.profile.name = b;
-						m_changedConfig = true;
+						a_conf.raceFilter.profile.name = a_newName;
+						chg = true;
 					}
 
 					if (a_conf.itemFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
-				        a_conf.itemFilter.profile.name == a)
+				        a_conf.itemFilter.profile.name == a_oldName)
 					{
-						a_conf.itemFilter.profile.name = b;
-						m_changedConfig = true;
+						a_conf.itemFilter.profile.name = a_newName;
+						chg = true;
 					}
 				});
 
 			store.active.custom.visit(
-				[this, &a = a_oldName, &b = a_newName](
-					Data::configCustom_t& a_conf) {
+				[&](Data::configCustom_t& a_conf) {
 					if (a_conf.raceFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
-				        a_conf.raceFilter.profile.name == a)
+				        a_conf.raceFilter.profile.name == a_oldName)
 					{
-						a_conf.raceFilter.profile.name = b;
-						m_changedConfig = true;
+						a_conf.raceFilter.profile.name = a_newName;
+						chg = true;
 					}
 				});
+
+			if (chg)
+			{
+				m_changedConfig = true;
+				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
+			}
 		}
 
 		void UIProfileEditorFormFilters::OnProfileDelete(
 			const stl::fixed_string& a_name)
 		{
+			m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 		}
 
 		void UIProfileEditorFormFilters::OnProfileSave(
@@ -108,9 +120,20 @@ namespace IED
 		void UIProfileEditorFormFilters::OnProfileReload(
 			const FormFilterProfile& a_profile)
 		{
+			m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 		}
 
 		void UIProfileEditorFormFilters::OnCollapsibleStatesUpdate()
+		{
+			m_controller.GetConfigStore().settings.MarkDirty();
+		}
+
+		WindowLayoutData UIProfileEditorFormFilters::GetWindowDimensions() const
+		{
+			return { 200.0f, 600.0f, -1.0f, false };
+		}
+
+		void UIProfileEditorFormFilters::DrawMenuBarItems()
 		{
 		}
 	}

@@ -145,7 +145,7 @@ namespace IED
 			}
 		}
 
-		bool NodeMap::SaveExtra(const fs::path& a_path)
+		bool NodeMap::SaveExtra(const fs::path& a_path) const
 		{
 			using namespace Serialization;
 

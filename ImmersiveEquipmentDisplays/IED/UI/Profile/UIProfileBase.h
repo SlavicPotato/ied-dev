@@ -258,7 +258,7 @@ namespace IED
 		void UIProfileBase<T>::SetSelected(const stl::fixed_string& a_item)
 		{
 			m_state.selected = a_item;
-			OnItemSelected(a_item);
+			OnItemSelected(*m_state.selected);
 		}
 
 	}

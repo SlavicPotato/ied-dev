@@ -17,7 +17,7 @@ namespace IED
 			public UIWindow,
 			public virtual UILocalizationInterface
 		{
-			inline static constexpr auto WINDOW_ID = "IED_log";
+			inline static constexpr auto WINDOW_ID = "ied_log";
 
 		public:
 			UILog(Controller& a_controller);

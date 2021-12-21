@@ -97,10 +97,25 @@ namespace IED
 			profileSelectorParamsNodeOverride_t<int>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
-
 			a_data.data = a_profile.Data();
-			conf = a_profile.Data();
+
+			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
+
+			m_controller.RequestEvaluateTransformsAll(true);
+		}
+
+		void UINodeOverrideEditorGlobal::MergeProfile(
+			profileSelectorParamsNodeOverride_t<int>& a_data,
+			const NodeOverrideProfile& a_profile)
+		{
+			auto& profileData = a_profile.Data();
+
+			for (auto& e : profileData.data)
+			{
+				a_data.data.data.insert_or_assign(e.first, e.second);
+			}
+
+			GetOrCreateConfigHolder(a_data.handle) = a_data.data;
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}

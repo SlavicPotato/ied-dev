@@ -83,6 +83,8 @@ namespace IED
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
+			virtual WindowLayoutData GetWindowDimensions() const;
+
 			Controller& m_controller;
 		};
 	}  // namespace UI

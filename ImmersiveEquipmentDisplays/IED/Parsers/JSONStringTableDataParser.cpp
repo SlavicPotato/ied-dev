@@ -25,7 +25,7 @@ namespace IED
 
 			if (a_out.lang.empty())
 			{
-				Error("%s: missing laIEDage", __FUNCTION__);
+				Error("%s: missing language", __FUNCTION__);
 				return false;
 			}
 

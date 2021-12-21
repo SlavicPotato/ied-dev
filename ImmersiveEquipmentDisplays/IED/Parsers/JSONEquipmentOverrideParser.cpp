@@ -17,7 +17,7 @@ namespace IED
 			Parser<Data::configBaseValues_t> bvParser;
 			Parser<Data::equipmentOverrideConditionList_t> mlParser;
 
-			if (!mlParser.Parse(a_in["matches"], a_out.matches))
+			if (!mlParser.Parse(a_in["matches"], a_out.conditions))
 			{
 				return false;
 			}
@@ -41,7 +41,7 @@ namespace IED
 			Parser<Data::configBaseValues_t> bvParser;
 			Parser<Data::equipmentOverrideConditionList_t> mlParser;
 
-			mlParser.Create(a_data.matches, a_out["matches"]);
+			mlParser.Create(a_data.conditions, a_out["matches"]);
 			bvParser.Create(a_data, a_out["config"]);
 
 			a_out["desc"] = a_data.description;

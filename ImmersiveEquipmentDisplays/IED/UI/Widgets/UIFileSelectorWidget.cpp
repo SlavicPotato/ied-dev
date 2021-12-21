@@ -39,6 +39,8 @@ namespace IED
 			{
 				for (auto& e : m_files)
 				{
+					ImGui::PushID(std::addressof(e));
+
 					bool selected = m_selected->m_key == e.first;
 					if (selected)
 						if (ImGui::IsWindowAppearing())
@@ -49,6 +51,8 @@ namespace IED
 						m_selected = { m_root, e };
 						m_selected->UpdateInfo();
 					}
+
+					ImGui::PopID();
 				}
 
 				ImGui::EndCombo();

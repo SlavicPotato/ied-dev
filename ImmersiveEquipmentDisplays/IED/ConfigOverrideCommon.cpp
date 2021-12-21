@@ -12,11 +12,9 @@ namespace IED
 		{
 			auto intfc = ISKSE::GetSingleton().GetInterface<SKSESerializationInterface>();
 
-			Game::FormID tmp;
-
-			if (ISKSE::ResolveFormID(intfc, a_form, tmp))
+			if (auto form = ISKSE::ResolveForm<TESForm>(intfc, a_form))
 			{
-				return tmp;
+				return form->formID;
 			}
 			else
 			{
@@ -35,6 +33,11 @@ namespace IED
 
 			auto form = a_form.Lookup();
 			if (!form)
+			{
+				return nullptr;
+			}
+
+			if (form->IsDeleted())
 			{
 				return nullptr;
 			}

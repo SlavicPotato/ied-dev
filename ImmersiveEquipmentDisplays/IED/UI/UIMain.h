@@ -41,8 +41,8 @@ namespace IED
 			UIExportFilterWidget,
 			public virtual UILocalizationInterface
 		{
-			static constexpr auto TITLE_NAME = "IED";
-			static constexpr auto WINDOW_ID = "IED_main";
+			static constexpr auto TITLE_NAME = "Immersive Equipment Displays";
+			static constexpr auto WINDOW_ID = "ied_main";
 
 		public:
 			UIMain(Controller& a_controller);

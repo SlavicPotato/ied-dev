@@ -69,7 +69,9 @@ namespace IED
 			NPCNotFound = 2058,
 			ActorNotFound = 2059,
 			CrosshairRef = 2060,
-			DefaultConfForced = 2061
+			DefaultConfForced = 2061,
+			FormFilters = 2062,
+			GearPositioning = 2063,
 		};
 	}
 }

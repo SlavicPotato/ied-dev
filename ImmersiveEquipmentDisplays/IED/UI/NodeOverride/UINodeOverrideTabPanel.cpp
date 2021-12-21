@@ -11,7 +11,7 @@ namespace IED
 	namespace UI
 	{
 		UINodeOverrideTabPanel::UINodeOverrideTabPanel(Controller& a_controller) :
-			UIEditorTabPanel(a_controller, stl::underlying(UIWidgetCommonStrings::NodeOverride)),
+			UIEditorTabPanel(a_controller, stl::underlying(UIWidgetCommonStrings::GearPositioning)),
 			UILocalizationInterface(a_controller),
 			m_editorGlobal(a_controller),
 			m_editorActor(a_controller),

@@ -56,7 +56,7 @@ namespace IED
 
 			decltype(&PlayerControls_InputEvent_ProcessEvent_Hook) m_nextIEPCall{ nullptr };
 
-			static inline const auto m_unkIED_a = IAL::Address<std::uintptr_t>(67355, 68655, 0x11E, 0x133);
+			static inline const auto m_unkIEProc_a = IAL::Address<std::uintptr_t>(67355, 68655, 0x11E, 0x133);
 
 			static Input m_Instance;
 		};

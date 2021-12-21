@@ -75,7 +75,7 @@ namespace IED
 		Size = 66,
 		Font = 67,
 		Reload = 68,
-		LaIEDage = 69,
+		Language = 69,
 		Caching = 70,
 		Key = 71,
 		ComboKey = 72,
@@ -138,5 +138,8 @@ namespace IED
 		Find = 209,
 		NPC = 210,
 		Global = 211,
+		Gear = 212,
+		Positions = 213,
+		Overwrite = 214,
 	};
 }

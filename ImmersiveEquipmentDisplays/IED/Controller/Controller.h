@@ -52,7 +52,7 @@ namespace IED
 			kDataVersion1 = 1
 		};
 
-		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DUGN';
+		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
 
 		struct actorLookupResult_t
 		{
@@ -437,7 +437,7 @@ namespace IED
 			return m_forceDefaultConfig;
 		}
 
-		void QueueSetLaIEDage(const stl::fixed_string& a_laIEDage);
+		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -743,7 +743,7 @@ namespace IED
 		bool CollectKnownActors(
 			actorLookupResultMap_t& a_out, bool a_includeUntracked);
 
-		bool SetLaIEDageImpl(const stl::fixed_string& a_lang);
+		bool SetLanguageImpl(const stl::fixed_string& a_lang);
 
 		// events
 		virtual EventResult ReceiveEvent(

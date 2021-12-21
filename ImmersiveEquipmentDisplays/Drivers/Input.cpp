@@ -141,17 +141,22 @@ namespace IED
 		}
 
 		template <bool _IsAE, class T>
-		static constexpr bool ExtractHookCallAddr(std::uintptr_t a_dst, T& a_out)
+		static constexpr bool ExtractHookCallAddr(
+			std::uintptr_t a_dst,
+			T& a_out)
 		{
 #pragma pack(push, 1)
+
 			struct payload_se_t
 			{
-				// mov rcx, r12
+				/*	
+					mov rcx, r12
+				*/
 				std::uint8_t m[3];
 				// call ..
 				std::uint8_t escape;
 				std::uint8_t modrm;
-				std::uint32_t displ;
+				std::int32_t displ;
 				// ...
 			};
 
@@ -161,70 +166,72 @@ namespace IED
 					push rax
 					push rcx
 					push r11
-					sub rsp,
+					sub rsp, 0x28
 					mov rcx, r12
 				*/
 				std::uint8_t m[11];
 				// call ..
 				std::uint8_t escape;
 				std::uint8_t modrm;
-				std::uint32_t displ;
+				std::int32_t displ;
 				// ...
 			};
 
 #pragma pack(pop)
 
-			using payload_t = std::conditional_t<_IsAE, payload_ae_t, payload_se_t>;
+			using payload_t = std::conditional_t<
+				_IsAE,
+				payload_ae_t,
+				payload_se_t>;
 
-			std::uintptr_t tmp;
-			if (!Hook::GetDst5<0xE9>(a_dst, tmp))
+			std::uintptr_t traddr;
+
+			if (!Hook::GetDst5<0xE9>(a_dst, traddr))
 			{
 				return false;
 			}
 
-			payload_t* p{ nullptr };
+			const payload_t* pl{ nullptr };
 
-			if (!Hook::GetDst6<0x25>(tmp, p))
+			if (!Hook::GetDst6<0x25>(traddr, pl))
 			{
 				return false;
 			}
 
 			if constexpr (_IsAE)
 			{
-				constexpr std::uint8_t d[]{
-					0x50,
-					0x51,
-					0x41,
-					0x53,
-					0x48,
-					0x83,
-					0xEC,
-					0x28,
-					0x4C,
-					0x89,
-					0xE1
-				};
-
-				if (!Patching::validate_mem(std::uintptr_t(p->m), d))
+				if (!Patching::validate_mem(
+						std::uintptr_t(pl->m),
+						{ 0x50,
+				          0x51,
+				          0x41,
+				          0x53,
+				          0x48,
+				          0x83,
+				          0xEC,
+				          0x28,
+				          0x4C,
+				          0x89,
+				          0xE1 }))
 				{
 					return false;
 				}
 			}
 			else
 			{
-				constexpr std::uint8_t d[]{
-					0x4C,
-					0x89,
-					0xE1
-				};
-
-				if (!Patching::validate_mem(std::uintptr_t(p->m), d))
+				if (!Patching::validate_mem(
+						std::uintptr_t(pl->m),
+						{ 0x4C,
+				          0x89,
+				          0xE1 }))
 				{
 					return false;
 				}
 			}
 
-			return Hook::GetDst6<0x15>(std::uintptr_t(std::addressof(p->escape)), a_out);
+			return Hook::GetDst6<0x15>(
+				std::uintptr_t(std::addressof(pl->escape)),
+				a_out);
 		}
 
 		void Input::InstallPriorityHook()
@@ -290,8 +297,12 @@ namespace IED
 			};
 
 			auto ehresult = IAL::IsAE() ?
-                                ExtractHookCallAddr<true>(m_unkIED_a, m_Instance.m_nextIEPCall) :
-                                ExtractHookCallAddr<false>(m_unkIED_a, m_Instance.m_nextIEPCall);
+                                ExtractHookCallAddr<true>(
+									m_unkIEProc_a,
+									m_Instance.m_nextIEPCall) :
+                                ExtractHookCallAddr<false>(
+									m_unkIEProc_a,
+									m_Instance.m_nextIEPCall);
 
 			if (ehresult)
 			{
@@ -303,9 +314,9 @@ namespace IED
 
 			m_Instance.LogPatchBegin(__FUNCTION__);
 			{
-				ProcessInputEvent code(m_unkIED_a);
+				ProcessInputEvent code(m_unkIEProc_a);
 
-				ISKSE::GetBranchTrampoline().Write5Branch(m_unkIED_a, code.get());
+				ISKSE::GetBranchTrampoline().Write5Branch(m_unkIEProc_a, code.get());
 			}
 			m_Instance.LogPatchEnd(__FUNCTION__);
 		}
@@ -351,14 +362,24 @@ namespace IED
 			Handlers::KeyEventType a_event,
 			std::uint32_t a_keyCode)
 		{
-			m_prioHandlers.SendEvent({ a_event, a_keyCode });
+			Handlers::KeyEvent evn{
+				a_event,
+				a_keyCode
+			};
+
+			m_prioHandlers.SendEvent(evn);
 		}
 
 		void Input::DispatchKeyEvent(
 			Handlers::KeyEventType a_event,
 			std::uint32_t a_keyCode)
 		{
-			m_handlers.SendEvent({ a_event, a_keyCode });
+			Handlers::KeyEvent evn{
+				a_event,
+				a_keyCode
+			};
+
+			m_handlers.SendEvent(evn);
 		}
 	}  // namespace Drivers
 }  // namespace IED

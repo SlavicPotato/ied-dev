@@ -90,6 +90,8 @@ namespace IED
 
 			virtual constexpr bool BaseConfigStoreCC() const override;
 
+			virtual WindowLayoutData GetWindowDimensions() const;
+
 			Controller& m_controller;
 		};
 	}  // namespace UI

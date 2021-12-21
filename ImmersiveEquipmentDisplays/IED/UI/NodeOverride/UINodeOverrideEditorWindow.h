@@ -18,7 +18,7 @@ namespace IED
 			public UIWindow,
 			public virtual UILocalizationInterface
 		{
-			inline static constexpr auto WINDOW_ID = "IED_noe";
+			inline static constexpr auto WINDOW_ID = "ied_noe";
 
 		public:
 			UINodeOverrideEditorWindow(
@@ -44,4 +44,4 @@ namespace IED
 		};
 
 	}  // namespace UI
-}  // namespace IED#pragma once
+}  // namespace IED

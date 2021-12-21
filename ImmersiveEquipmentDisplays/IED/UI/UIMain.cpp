@@ -64,14 +64,13 @@ namespace IED
 			m_nodeOverrideProfileEditor.Reset();
 			m_slotProfileEditor.Reset();
 			m_customProfileEditor.Reset();
-			m_nodeOverrideProfileEditor.Reset();
 		}
 
 		void UIMain::Draw()
 		{
 			//ImGui::ShowDemoWindow();
 
-			SetWindowDimensions(10.0f, 550.0f);
+			SetWindowDimensions(10.0f, 600.0f);
 
 			if (ImGui::Begin(
 					m_currentTitle,

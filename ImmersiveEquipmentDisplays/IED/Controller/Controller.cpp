@@ -262,7 +262,7 @@ namespace IED
 	void Controller::InitializeLocalization()
 	{
 		auto& settings = m_config.settings;
-		auto& clang = settings.data.laIEDage;
+		auto& clang = settings.data.language;
 
 		SetObjectWrapper<stl::fixed_string> defaultLang;
 
@@ -271,12 +271,12 @@ namespace IED
 			settings.Set(clang, defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG));
 		}
 
-		if (!SetLaIEDageImpl(clang))
+		if (!SetLanguageImpl(clang))
 		{
 			if (clang != defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG))
 			{
 				settings.Set(clang, std::move(*defaultLang));
-				SetLaIEDageImpl(clang);
+				SetLanguageImpl(clang);
 			}
 		}
 	}
@@ -823,21 +823,21 @@ namespace IED
 		return !a_out.empty();
 	}
 
-	bool Controller::SetLaIEDageImpl(const stl::fixed_string& a_lang)
+	bool Controller::SetLanguageImpl(const stl::fixed_string& a_lang)
 	{
-		bool result = SetLaIEDage(a_lang);
+		bool result = SetLanguage(a_lang);
 
 		if (result)
 		{
 			if (Drivers::UI::IsImInitialized())
 			{
-				Drivers::UI::QueueSetLaIEDageGlyphData(
-					GetCurrentLaIEDageTable()->GetGlyphData());
+				Drivers::UI::QueueSetLanguageGlyphData(
+					GetCurrentLanguageTable()->GetGlyphData());
 			}
 		}
 		else
 		{
-			Error("String table for laIEDage '%s' not found", a_lang.c_str());
+			Error("String table for language '%s' not found", a_lang.c_str());
 		}
 
 		return result;
@@ -4717,12 +4717,12 @@ namespace IED
 		}
 	}
 
-	void Controller::QueueSetLaIEDage(const stl::fixed_string& a_laIEDage)
+	void Controller::QueueSetLanguage(const stl::fixed_string& a_lang)
 	{
-		ITaskPool::AddTask([this, a_laIEDage]() {
+		ITaskPool::AddTask([this, a_lang]() {
 			IScopedLock lock(m_lock);
 
-			SetLaIEDageImpl(a_laIEDage);
+			SetLanguageImpl(a_lang);
 		});
 	}
 }

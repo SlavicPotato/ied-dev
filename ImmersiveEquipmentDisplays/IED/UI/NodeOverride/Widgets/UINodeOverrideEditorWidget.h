@@ -431,6 +431,13 @@ namespace IED
 
 			if (flags.test(NodeOverrideEditorFlags::kDrawNodePlacement))
 			{
+				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+				ImGui::TextWrapped("%s", LS(UITip::AnimSupportWarning));
+				ImGui::PopStyleColor();
+
+				ImGui::Separator();
+				ImGui::Spacing();
+
 				if (ImGui::BeginChild(
 						"ep_editor_panel",
 						{ -1.0f, 0.0f },
@@ -483,7 +490,7 @@ namespace IED
 			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Transforms, "1"),
+					LS(CommonStrings::Positions, "1"),
 					!flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)))
 			{
 				flags.clear(NodeOverrideEditorFlags::kDrawNodePlacement);
@@ -1631,7 +1638,7 @@ namespace IED
 							DrawOverrideConditionTree(
 								a_handle,
 								a_data,
-								e.matches,
+								e.conditions,
 								a_params,
 								a_exists);
 
@@ -1936,7 +1943,7 @@ namespace IED
 						DrawOverrideConditionTree(
 							a_handle,
 							a_data,
-							e.matches,
+							e.conditions,
 							a_params,
 							a_exists);
 

@@ -128,6 +128,8 @@ namespace IED
 					a_curSelName,
 					ImGuiComboFlags_HeightLarge))
 			{
+				const typename list_type::value_type* newItem = nullptr;
+
 				for (const auto& e : m_listData)
 				{
 					if (!m_listFilter.Test(e.second))
@@ -146,12 +148,17 @@ namespace IED
 
 					if (ImGui::Selectable(e.second.c_str(), selected))
 					{
-						ListSetCurrentItem(e);
-						a_entry = std::addressof(*m_listCurrent);
-						a_curSelName = m_listCurrent->desc.c_str();
+						newItem = std::addressof(e);
 					}
 
 					ImGui::PopID();
+				}
+
+				if (newItem)
+				{
+					ListSetCurrentItem(*newItem);
+					a_entry = std::addressof(*m_listCurrent);
+					a_curSelName = m_listCurrent->desc.c_str();
 				}
 
 				ImGui::EndCombo();
