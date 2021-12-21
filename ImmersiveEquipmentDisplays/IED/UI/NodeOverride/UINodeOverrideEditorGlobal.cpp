@@ -97,9 +97,8 @@ namespace IED
 			profileSelectorParamsNodeOverride_t<int>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			a_data.data = a_profile.Data();
-
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
+			UpdateData();
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -108,14 +107,14 @@ namespace IED
 			profileSelectorParamsNodeOverride_t<int>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& profileData = a_profile.Data();
+			auto& conf = GetOrCreateConfigHolder(a_data.handle);
 
-			for (auto& e : profileData.data)
+			for (auto& e : a_profile.Data().data)
 			{
-				a_data.data.data.insert_or_assign(e.first, e.second);
+				conf.data.insert_or_assign(e.first, e.second);
 			}
 
-			GetOrCreateConfigHolder(a_data.handle) = a_data.data;
+			UpdateData();
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -142,16 +141,14 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
-		void UINodeOverrideEditorGlobal::OnUpdate(
+		/*void UINodeOverrideEditorGlobal::OnUpdate(
 			int a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
-
-			conf = a_params.data;
+			GetOrCreateConfigHolder(a_handle) = a_params.data;
 
 			m_controller.RequestEvaluateTransformsAll(true);
-		}
+		}*/
 
 		void UINodeOverrideEditorGlobal::OnClear(
 			int a_handle,

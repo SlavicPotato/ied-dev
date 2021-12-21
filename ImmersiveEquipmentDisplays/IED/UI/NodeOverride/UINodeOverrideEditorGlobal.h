@@ -50,9 +50,9 @@ namespace IED
 				int a_handle,
 				const SingleNodeOverrideParentUpdateParams& a_params) override;
 
-			virtual void OnUpdate(
+			/*virtual void OnUpdate(
 				int a_handle,
-				const NodeOverrideUpdateParams& a_params) override;
+				const NodeOverrideUpdateParams& a_params) override;*/
 
 			virtual void OnClear(
 				int a_handle,

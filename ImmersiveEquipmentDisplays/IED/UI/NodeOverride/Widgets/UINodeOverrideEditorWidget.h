@@ -56,10 +56,10 @@ namespace IED
 			entryNodeOverrideData_t& entry;
 		};
 
-		struct NodeOverrideUpdateParams
+		/*struct NodeOverrideUpdateParams
 		{
 			Data::configNodeOverrideHolder_t& data;
-		};
+		};*/
 
 		enum class NodeOverrideCommonAction : std::uint8_t
 		{
@@ -308,9 +308,9 @@ namespace IED
 				T a_handle,
 				const SingleNodeOverrideParentUpdateParams& a_params) = 0;
 
-			virtual void OnUpdate(
+			/*virtual void OnUpdate(
 				T a_handle,
-				const NodeOverrideUpdateParams& a_params) = 0;
+				const NodeOverrideUpdateParams& a_params) = 0;*/
 
 			virtual void OnClear(
 				T a_handle,

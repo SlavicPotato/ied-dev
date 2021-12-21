@@ -150,9 +150,9 @@ namespace IED
 			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			a_data.data = a_profile.Data();
-
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
+
+			a_data.data = GetData(a_data.handle);
 
 			m_controller.RequestEvaluateTransformsRace(a_data.handle, true);
 		}
@@ -161,14 +161,14 @@ namespace IED
 			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& profileData = a_profile.Data();
+			auto& conf = GetOrCreateConfigHolder(a_data.handle);
 
-			for (auto& e : profileData.data)
+			for (auto& e : a_profile.Data().data)
 			{
-				a_data.data.data.insert_or_assign(e.first, e.second);
+				conf.data.insert_or_assign(e.first, e.second);
 			}
 
-			GetOrCreateConfigHolder(a_data.handle) = a_data.data;
+			a_data.data = GetData(a_data.handle);
 
 			m_controller.RequestEvaluateTransformsRace(a_data.handle, true);
 		}
@@ -195,7 +195,7 @@ namespace IED
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
 
-		void UINodeOverrideEditorRace::OnUpdate(
+		/*void UINodeOverrideEditorRace::OnUpdate(
 			Game::FormID a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
@@ -204,7 +204,7 @@ namespace IED
 			conf = a_params.data;
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
-		}
+		}*/
 
 		void UINodeOverrideEditorRace::OnClear(
 			Game::FormID a_handle,

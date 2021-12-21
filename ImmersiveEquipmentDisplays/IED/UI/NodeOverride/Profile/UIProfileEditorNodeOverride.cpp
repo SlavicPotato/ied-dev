@@ -156,11 +156,11 @@ namespace IED
 			}
 		}
 
-		void UIProfileEditorNodeOverride::OnUpdate(
+		/*void UIProfileEditorNodeOverride::OnUpdate(
 			int a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-		}
+		}*/
 
 		void UIProfileEditorNodeOverride::OnClear(
 			int a_handle,

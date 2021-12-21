@@ -73,9 +73,9 @@ namespace IED
 				Game::FormID a_handle,
 				const SingleNodeOverrideParentUpdateParams& a_params) override;
 
-			virtual void OnUpdate(
+			/*virtual void OnUpdate(
 				Game::FormID a_handle,
-				const NodeOverrideUpdateParams& a_params) override;
+				const NodeOverrideUpdateParams& a_params) override;*/
 
 			virtual void OnClear(
 				Game::FormID a_handle,
