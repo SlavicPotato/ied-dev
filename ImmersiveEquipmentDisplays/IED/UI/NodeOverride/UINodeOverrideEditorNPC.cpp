@@ -183,21 +183,20 @@ namespace IED
 		{
 			auto& npcInfo = m_controller.GetNPCInfo();
 
-			auto it = npcInfo.find(a_handle);
-			if (it == npcInfo.end())
-			{
-				return m_empty;
-			}
-			else
+			if (auto it = npcInfo.find(a_handle); it != npcInfo.end())
 			{
 				auto& store = m_controller.GetConfigStore();
 
 				m_temp = store.active.transforms.GetNPC(
 					a_handle,
 					it->second->race);
-
-				return m_temp;
 			}
+			else
+			{
+				m_temp.clear();
+			}
+
+			return m_temp;
 		}
 
 		void UINodeOverrideEditorNPC::OnSexChanged(Data::ConfigSex a_newSex)
@@ -277,7 +276,11 @@ namespace IED
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).data, a_params.entry.data, a_params.name);
+				PostClear(
+					GetData(a_handle).data,
+					a_params.entry.data,
+					a_params.name);
+
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
 		}
@@ -290,7 +293,11 @@ namespace IED
 
 			if (EraseConfigParent(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).placementData, a_params.entry.placementData, a_params.name);
+				PostClear(
+					GetData(a_handle).placementData,
+					a_params.entry.placementData,
+					a_params.name);
+
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
 		}

@@ -40,7 +40,7 @@ namespace IED
 
 		struct overrideNodeEntry_t
 		{
-			std::string desc;
+			const char* desc;
 			BSFixedString bsname;
 		};
 

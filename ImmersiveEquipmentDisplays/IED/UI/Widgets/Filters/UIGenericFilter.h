@@ -13,6 +13,7 @@ namespace IED
 			UIGenericFilter();
 			UIGenericFilter(bool a_isOpen);
 
+			[[nodiscard]] virtual bool Test(const char* a_haystack) const;
 			[[nodiscard]] virtual bool Test(const std::string& a_haystack) const;
 
 		protected:

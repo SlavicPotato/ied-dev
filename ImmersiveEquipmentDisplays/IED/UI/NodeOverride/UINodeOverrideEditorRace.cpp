@@ -214,7 +214,11 @@ namespace IED
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).data, a_params.entry.data, a_params.name);
+				PostClear(
+					GetData(a_handle).data,
+					a_params.entry.data,
+					a_params.name);
+
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 		}
@@ -227,7 +231,11 @@ namespace IED
 
 			if (EraseConfigParent(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).placementData, a_params.entry.placementData, a_params.name);
+				PostClear(
+					GetData(a_handle).placementData,
+					a_params.entry.placementData,
+					a_params.name);
+
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 		}

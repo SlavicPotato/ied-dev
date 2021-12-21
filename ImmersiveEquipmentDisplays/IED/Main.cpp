@@ -73,8 +73,6 @@ namespace IED
 				edl->deathDispatcher.AddEventSink(g_controller.get());
 				edl->raceSwitchCompleteDispatcher.AddEventSink(g_controller.get());
 
-				/*auto f = Game::FormID(0xFE021801).As<TESObjectARMA>();
-				_DMESSAGE("%p | %f", &f->data.weaponAdjust, f->data.weaponAdjust);*/
 			}
 			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:

@@ -157,56 +157,54 @@ namespace IED
 	}
 
 	template <class T>
-	inline static std::string GetFullName(TESForm* a_form)
+	inline static const char* GetFullName(TESForm* a_form)
 	{
-		auto obj = static_cast<T*>(a_form);
-		if (auto name = obj->fullName.name.c_str())
+		return static_cast<T*>(a_form)->fullName.name.c_str();
+	}
+
+	inline static const char* GetKeywordString(BGSKeyword* a_form)
+	{
+		return a_form->keyword.c_str();
+	}
+
+	inline static const char* GetEditorID(TESRace* a_form)
+	{
+		return a_form->editorId.c_str();
+	}
+
+	inline static const char* GetReferenceName(TESObjectREFR* a_form)
+	{
+		return a_form->GetReferenceName();
+	}
+
+	static std::string ConvertToUTF8(const char* a_in)
+	{
+		std::basic_string<std::uint16_t> tmp;
+
+		for (auto p = reinterpret_cast<const std::uint8_t*>(a_in);; p++)
 		{
-			return name;
+			auto c = *p;
+			if (!c)
+			{
+				break;
+			}
+
+			tmp.push_back(c);
 		}
-		else
+
+		try
 		{
-			return {};
+			using namespace boost::locale;
+
+			return conv::utf_to_utf<char, std::uint16_t>(tmp, conv::skip);
+		}
+		catch (...)
+		{
+			return a_in;
 		}
 	}
 
-	inline static std::string GetKeywordString(BGSKeyword* a_form)
-	{
-		if (auto name = a_form->keyword.c_str())
-		{
-			return name;
-		}
-		else
-		{
-			return {};
-		}
-	}
-
-	inline static std::string GetEditorID(TESRace* a_form)
-	{
-		if (auto name = a_form->editorId.c_str())
-		{
-			return name;
-		}
-		else
-		{
-			return {};
-		}
-	}
-
-	inline static std::string GetReferenceName(TESObjectREFR* a_form)
-	{
-		if (auto name = a_form->GetDisplayName())
-		{
-			return name;
-		}
-		else
-		{
-			return {};
-		}
-	}
-
-	std::string IFormCommon::GetFormName(TESForm* a_form)
+	static inline constexpr const char* GetFormNamePtr(TESForm* a_form)
 	{
 		switch (a_form->formType)
 		{
@@ -246,6 +244,18 @@ namespace IED
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
 		default:
+			return nullptr;
+		}
+	}
+
+	std::string IFormCommon::GetFormName(TESForm* a_form)
+	{
+		if (auto p = GetFormNamePtr(a_form))
+		{
+			return ConvertToUTF8(p);
+		}
+		else
+		{
 			return {};
 		}
 	}

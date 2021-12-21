@@ -91,7 +91,6 @@ namespace IED
 
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
-			entryNodeOverrideData_t m_empty;
 			entryNodeOverrideData_t m_temp;
 
 			Controller& m_controller;

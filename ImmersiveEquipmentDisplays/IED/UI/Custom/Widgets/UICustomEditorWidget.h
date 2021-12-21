@@ -614,17 +614,17 @@ namespace IED
 					nullptr,
 					false,
 					clipData != nullptr))
+			{
+				if (clipData)
 				{
-					if (clipData)
-					{
-						a_params.entry(a_params.sex) = clipData->data(a_params.sex);
+					a_params.entry(a_params.sex) = clipData->data(a_params.sex);
 
-						OnBaseConfigChange(
-							a_handle,
-							std::addressof(a_params),
-							PostChangeAction::Reset);
-					}
+					OnBaseConfigChange(
+						a_handle,
+						std::addressof(a_params),
+						PostChangeAction::Reset);
 				}
+			}
 		}
 
 		template <class T>
@@ -697,12 +697,12 @@ namespace IED
 								100.0f,
 								"%.2f",
 								ImGuiSliderFlags_AlwaysClamp))
-							{
-								OnBaseConfigChange(
-									a_handle,
-									std::addressof(a_params),
-									PostChangeAction::Evaluate);
-							}
+						{
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						}
 					}
 
 					ImGui::EndGroup();
@@ -1107,11 +1107,11 @@ namespace IED
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-			ImGui::PushID("config_custom_header");
-
-			if (ImGui::CollapsingHeader(
-					a_name.c_str(),
-					ImGuiTreeNodeFlags_None))
+			if (ImGui::TreeNodeEx(
+					"tree_entry",
+					ImGuiTreeNodeFlags_CollapsingHeader,
+					"%s",
+					a_name.c_str()))
 			{
 				ImGui::Spacing();
 
@@ -1154,8 +1154,6 @@ namespace IED
 
 				ImGui::Spacing();
 			}
-
-			ImGui::PopID();
 		}
 
 		template <class T>

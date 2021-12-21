@@ -39,6 +39,25 @@ namespace IED
 			return r;
 		}
 
+		bool UIGenericFilter::Test(const char* a_haystack) const
+		{
+			if (!m_filter)
+				return true;
+
+			auto end = a_haystack + std::strlen(a_haystack);
+
+			auto p = std::search(
+				a_haystack,
+				end,
+				m_filter->begin(),
+				m_filter->end(),
+				[](char a_lhs, char a_rhs) {
+					return std::tolower(a_lhs) == std::tolower(a_rhs);
+				});
+
+			return (p != end);
+		}
+
 		bool UIGenericFilter::Test(const std::string& a_haystack) const
 		{
 			if (!m_filter)

@@ -236,7 +236,7 @@ namespace IED
 						auto it = data.find(*static_cast<const stl::fixed_string*>(e.p1));
 						if (it != data.end())
 						{
-							return it->second.desc.c_str();
+							return it->second.desc;
 						}
 					}
 

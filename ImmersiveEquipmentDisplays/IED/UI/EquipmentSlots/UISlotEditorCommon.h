@@ -93,6 +93,7 @@ namespace IED
 			{
 				slot = std::make_unique<Data::configSlotHolder_t::data_type>(
 					*a_params->entry.data);
+
 				a_params->entry.conf_class = GetConfigClass();
 			}
 			else

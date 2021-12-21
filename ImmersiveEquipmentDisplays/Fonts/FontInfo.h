@@ -35,7 +35,7 @@ namespace IED
 		fontGlyphRange_t glyph_ranges;
 	};
 
-	struct fontInfoEntry_t : 
+	struct fontInfoEntry_t :
 		public fontGlyphData_t
 	{
 		std::string path;
@@ -46,7 +46,7 @@ namespace IED
 	{
 		std::unordered_map<stl::fixed_string, fontInfoEntry_t> fonts;
 		fontGlyphData_t default_glyph_data;
-		float default_font_size;
+		float default_font_size{ 13.0f };
 	};
 
 }

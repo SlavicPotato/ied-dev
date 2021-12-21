@@ -177,12 +177,7 @@ namespace IED
 		{
 			auto& actorInfo = m_controller.GetActorInfo();
 
-			auto it = actorInfo.find(a_handle);
-			if (it == actorInfo.end())
-			{
-				return m_empty;
-			}
-			else
+			if (auto it = actorInfo.find(a_handle); it != actorInfo.end())
 			{
 				auto& store = m_controller.GetConfigStore();
 
@@ -190,9 +185,13 @@ namespace IED
 					a_handle,
 					it->second.GetBase(),
 					it->second.GetRace());
-
-				return m_temp;
 			}
+			else
+			{
+				m_temp.clear();
+			}
+
+			return m_temp;
 		}
 
 		void UINodeOverrideEditorActor::OnSexChanged(Data::ConfigSex a_newSex)
@@ -272,7 +271,10 @@ namespace IED
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).data, a_params.entry.data, a_params.name);
+				PostClear(
+					GetData(a_handle).data,
+					a_params.entry.data,
+					a_params.name);
 
 				m_controller.RequestEvaluateTransforms(a_handle, true);
 			}
@@ -286,7 +288,11 @@ namespace IED
 
 			if (EraseConfigParent(a_handle, data, a_params.name))
 			{
-				PostClear(GetData(a_handle).placementData, a_params.entry.placementData, a_params.name);
+				PostClear(
+					GetData(a_handle).placementData,
+					a_params.entry.placementData,
+					a_params.name);
+
 				m_controller.RequestEvaluateTransforms(a_handle, true);
 			}
 		}

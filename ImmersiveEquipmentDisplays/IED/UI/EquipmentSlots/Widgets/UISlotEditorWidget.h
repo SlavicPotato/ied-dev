@@ -701,7 +701,11 @@ namespace IED
 
 			auto& slotName = StringHolder::GetSingleton().GetSlotName(a_slot);
 
-			if (CollapsingHeader(slotName.c_str(), stl::underlying(a_slot) == 0))
+			if (CollapsingHeader(
+					"tree_slot",
+					stl::underlying(a_slot) == 0,
+					"%s",
+					slotName.c_str()))
 			{
 				ImGui::Spacing();
 

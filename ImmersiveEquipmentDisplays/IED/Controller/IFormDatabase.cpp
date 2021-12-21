@@ -96,7 +96,10 @@ namespace IED
 				continue;
 			}
 
-			holder.emplace_back(e->formID, GetFormFlags(e), GetFormName(e));
+			holder.emplace_back(
+				e->formID,
+				GetFormFlags(e),
+				GetFormName(e));
 		}
 
 		std::sort(holder.begin(), holder.end(), [](auto& a_rhs, auto& a_lhs) {

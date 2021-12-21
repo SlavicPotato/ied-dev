@@ -553,15 +553,13 @@ namespace IED
 		{
 			auto& data = OverrideNodeInfo::GetCMENodeData();
 
-			bool first = true;
-
 			Data::configStoreNodeOverride_t::holderCache_t hc;
 
 			auto configClass = GetConfigClass();
 
 			auto df = data.getvec().begin();
 
-			for (auto e : data.getvec())
+			for (const auto &e : data.getvec())
 			{
 				if (!m_itemFilter.Test(e->second.desc))
 				{
@@ -593,9 +591,11 @@ namespace IED
 
 				it = DrawTransformEntryContextMenu(a_handle, a_data, e->first, it);
 
-				ImGui::PushID("entry_area");
-
-				if (TreeEx("tree", e->first == (*df)->first, "%s", e->second.desc.c_str()))
+				if (TreeEx(
+						"entry_tree",
+						e->first == (*df)->first,
+						"%s",
+						e->second.desc))
 				{
 					ImGui::Spacing();
 
@@ -607,7 +607,7 @@ namespace IED
 					}
 					else
 					{
-						decltype(it->second) tmp;
+						entryNodeOverrideData_t::transform_data_type::mapped_type tmp;
 
 						DrawTransformEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
 					}
@@ -625,9 +625,6 @@ namespace IED
 				ImGui::Spacing();
 
 				ImGui::PopID();
-				ImGui::PopID();
-
-				first = false;
 			}
 		}
 
@@ -678,7 +675,11 @@ namespace IED
 
 				ImGui::PushID("entry_area");
 
-				if (TreeEx("tree", true, "%s", e->second.desc.c_str()))
+				if (TreeEx(
+						"tree",
+						true,
+						"%s",
+						e->second.desc.c_str()))
 				{
 					ImGui::Spacing();
 
