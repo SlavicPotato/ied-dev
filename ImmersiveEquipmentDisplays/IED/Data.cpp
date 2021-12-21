@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "Data.h"
 #include "NodeMap.h"
+#include "FormCommon.h"
 
 #include "StringHolder.h"
 
@@ -682,11 +683,13 @@ namespace IED
 				bool playable = (race->data.raceFlags & TESRace::kRace_Playable) ==
 				                TESRace::kRace_Playable;
 
+				
+
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
 					playable,
-					race->fullName.GetName(),
-					race->editorId.c_str(),
+					IFormCommon::ConvertToUTF8(race->fullName.GetName()),
+					IFormCommon::ConvertToUTF8(race->editorId.c_str()),
 					race->data.raceFlags);
 			}
 

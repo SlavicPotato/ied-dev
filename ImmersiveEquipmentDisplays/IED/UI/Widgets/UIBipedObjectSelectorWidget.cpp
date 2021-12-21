@@ -61,7 +61,7 @@ namespace IED
 
 			auto preview = GetBipedSlotDesc(a_data);
 
-			if (ImGui::BeginCombo(a_label, preview))
+			if (ImGui::BeginCombo(a_label, preview, ImGuiComboFlags_HeightLarge))
 			{
 				using enum_type = std::underlying_type_t<Biped::BIPED_OBJECT>;
 

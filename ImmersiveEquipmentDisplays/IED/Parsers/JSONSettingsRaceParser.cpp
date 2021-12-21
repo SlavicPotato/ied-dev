@@ -48,8 +48,8 @@ namespace IED
 
 			sexParser.Create(a_data.sex, data);
 
-			data["auto_select_sex"] = a_data.playableOnly;
-			data["show_all"] = a_data.showEditorIDs;
+			data["playable_only"] = a_data.playableOnly;
+			data["show_editor_ids"] = a_data.showEditorIDs;
 			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
 
 			a_out["version"] = 1u;

@@ -65,11 +65,11 @@ namespace IED
 
 				if (raceConf.showEditorIDs)
 				{
-					ss << e.second.edid.get();
+					ss << e.second.edid;
 				}
 				else
 				{
-					ss << e.second.fullname.get();
+					ss << e.second.fullname;
 				}
 
 				m_listData.try_emplace(e.first, std::move(ss.str()));
@@ -132,8 +132,8 @@ namespace IED
 			auto itr = raceCache.find(a_entry->handle);
 			if (itr != raceCache.end())
 			{
-				ss << "EDID:  " << itr->second.edid.get() << std::endl;
-				ss << "Name:  " << itr->second.fullname.get() << std::endl;
+				ss << "EDID:  " << itr->second.edid << std::endl;
+				ss << "Name:  " << itr->second.fullname << std::endl;
 
 				ss << "Flags: " << std::bitset<8>(itr->second.flags) << std::endl;
 			}

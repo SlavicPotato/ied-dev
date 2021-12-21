@@ -13,7 +13,7 @@ namespace IED
 		actorInfoEntry_t& a_out,
 		bool a_updateNPC)
 	{
-		a_out.name = a_actor->GetReferenceName();
+		a_out.name = IFormCommon::GetFormName(a_actor);
 
 		if (auto race = Game::GetActorRace(a_actor))
 		{

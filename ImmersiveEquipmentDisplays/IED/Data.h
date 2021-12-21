@@ -66,8 +66,8 @@ namespace IED
 		struct raceCacheEntry_t
 		{
 			bool playable;
-			stl::fixed_string fullname;
-			stl::fixed_string edid;
+			std::string fullname;
+			std::string edid;
 			std::uint32_t flags;
 		};
 

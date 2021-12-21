@@ -31,6 +31,7 @@ namespace IED
 
 		static stl::flag<FormInfoFlags> GetFormFlags(TESForm* a_form);
 
+		static std::string ConvertToUTF8(const char* a_in);
 		static std::string GetFormName(TESForm* a_form);
 		static const char* GetFormTypeDesc(std::uint8_t a_type);
 

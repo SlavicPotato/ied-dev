@@ -27,7 +27,7 @@ namespace IED
 
 			auto label = Data::GetSlotName(a_out);
 
-			if (ImGui::BeginCombo(a_label, label))
+			if (ImGui::BeginCombo(a_label, label, ImGuiComboFlags_HeightLarge))
 			{
 				using enum_type = std::underlying_type_t<T>;
 

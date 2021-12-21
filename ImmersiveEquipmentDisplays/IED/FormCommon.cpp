@@ -177,7 +177,7 @@ namespace IED
 		return a_form->GetReferenceName();
 	}
 
-	static std::string ConvertToUTF8(const char* a_in)
+	std::string IFormCommon::ConvertToUTF8(const char* a_in)
 	{
 		std::basic_string<std::uint16_t> tmp;
 
