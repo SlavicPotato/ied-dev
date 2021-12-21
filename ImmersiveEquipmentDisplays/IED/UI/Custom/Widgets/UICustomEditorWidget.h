@@ -224,6 +224,7 @@ namespace IED
 			      TESFlora::kTypeID,
 			      TESFurniture::kTypeID,
 			      BGSArtObject::kTypeID,
+			      TESObjectACTI::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 

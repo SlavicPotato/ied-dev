@@ -35,7 +35,8 @@ namespace IED
 				{ UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
 				{ UIFormBrowserStrings::Races, TESRace::kTypeID },
 				{ UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
-				{ UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID }
+				{ UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
+				{ UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
 			}
 		{
 			m_formIDFilter.SetFlags(
@@ -49,7 +50,7 @@ namespace IED
 		{
 			FormBrowserDrawResult result{ false, false };
 
-			SetWindowDimensions(0.f, 1000.f, 500.f, true);
+			SetWindowDimensions(0.f, 1200.f, 700.f, true);
 
 			if (ImGui::BeginPopupModal(
 					LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID),

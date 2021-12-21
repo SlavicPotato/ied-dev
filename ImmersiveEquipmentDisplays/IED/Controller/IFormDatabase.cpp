@@ -135,6 +135,7 @@ namespace IED
 		Populate(*result, dh->races);
 		Populate(*result, dh->arrARTO);
 		Populate(*result, dh->arrTREE);
+		Populate(*result, dh->arrACTI);
 		Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
 		Populate2(

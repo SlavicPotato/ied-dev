@@ -28,5 +28,6 @@ namespace IED
 		Furniture = 5219,
 		Races = 5220,
 		Keywords = 5221,
+		Activators = 5222,
 	};
 }

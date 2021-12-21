@@ -204,7 +204,7 @@ namespace IED
 		}
 	}
 
-	static inline constexpr const char* GetFormNamePtr(TESForm* a_form)
+	inline static constexpr const char* GetFormNamePtr(TESForm* a_form)
 	{
 		switch (a_form->formType)
 		{
@@ -223,19 +223,16 @@ namespace IED
 		case TESObjectBOOK::kTypeID:
 			return GetFullName<TESObjectBOOK>(a_form);
 		case AlchemyItem::kTypeID:
-			return GetFullName<AlchemyItem>(a_form);
 		case IngredientItem::kTypeID:
-			return GetFullName<IngredientItem>(a_form);
+		case SpellItem::kTypeID:
 		case ScrollItem::kTypeID:
-			return GetFullName<ScrollItem>(a_form);
+			return GetFullName<MagicItem>(a_form);
 		case TESAmmo::kTypeID:
 			return GetFullName<TESAmmo>(a_form);
 		case TESFlora::kTypeID:
-			return GetFullName<TESFlora>(a_form);
 		case TESFurniture::kTypeID:
-			return GetFullName<TESFurniture>(a_form);
-		case SpellItem::kTypeID:
-			return GetFullName<SpellItem>(a_form);
+		case TESObjectACTI::kTypeID:
+			return GetFullName<TESObjectACTI>(a_form);
 		case BGSKeyword::kTypeID:
 			return GetKeywordString(static_cast<BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
@@ -300,6 +297,8 @@ namespace IED
 			return "Flora";
 		case TESFurniture::kTypeID:
 			return "Furniture";
+		case TESObjectACTI::kTypeID:
+			return "Activator";
 		case TESObjectREFR::kTypeID:
 			return "Reference";
 		case Actor::kTypeID:
