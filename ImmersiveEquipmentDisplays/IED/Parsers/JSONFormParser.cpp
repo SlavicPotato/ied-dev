@@ -11,8 +11,7 @@ namespace IED
 		template <>
 		bool Parser<Game::FormID>::Parse(
 			const Json::Value& a_in,
-			Game::FormID& a_out,
-			const std::uint32_t a_version) const
+			Game::FormID& a_out) const
 		{
 			if (a_in.empty())
 			{
@@ -30,6 +29,12 @@ namespace IED
 
 			stl::fixed_string plugin(a_in["plugin"].asString());
 
+			if (plugin.empty())
+			{
+				a_out = {};
+				return false;
+			}
+
 			auto& data = Data::IData::GetPluginInfo().GetLookupRef();
 
 			if (auto it = data.find(plugin); it != data.end())
@@ -46,6 +51,8 @@ namespace IED
 					__FUNCTION__,
 					plugin.c_str(),
 					lower.get());
+
+				SetHasErrors();
 
 				return false;
 			}

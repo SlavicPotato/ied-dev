@@ -55,6 +55,9 @@ namespace IED
 			virtual const entryNodeOverrideData_t& GetData(
 				Game::FormID a_formid) override;
 
+			virtual const NodeOverrideProfile::base_type& GetData(
+				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params) override;
+
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(

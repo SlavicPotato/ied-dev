@@ -119,6 +119,13 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
+		const NodeOverrideProfile::base_type& UINodeOverrideEditorGlobal::GetData(
+			const profileSelectorParamsNodeOverride_t<int>& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+			return store.active.transforms.GetGlobalData()[0];
+		}
+
 		void UINodeOverrideEditorGlobal::OnUpdate(
 			int a_handle,
 			const SingleNodeOverrideUpdateParams& a_params)

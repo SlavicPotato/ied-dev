@@ -194,6 +194,24 @@ namespace IED
 			return m_temp;
 		}
 
+		const NodeOverrideProfile::base_type& UINodeOverrideEditorActor::GetData(
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+			auto& data = store.active.transforms.GetActorData();
+
+			if (auto it = data.find(a_params.handle); it != data.end())
+			{
+				m_temp = it->second;
+			}
+			else
+			{
+				m_temp.clear();
+			}
+
+			return m_temp;
+		}
+
 		void UINodeOverrideEditorActor::OnSexChanged(Data::ConfigSex a_newSex)
 		{
 			auto& store = m_controller.GetConfigStore();

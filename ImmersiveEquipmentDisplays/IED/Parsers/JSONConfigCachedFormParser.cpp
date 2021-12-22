@@ -10,22 +10,17 @@ namespace IED
 		template <>
 		bool Parser<Data::configCachedForm_t>::Parse(
 			const Json::Value& a_in,
-			Data::configCachedForm_t& a_out,
-			const std::uint32_t a_version) const
+			Data::configCachedForm_t& a_out) const
 		{
-			Parser<Game::FormID> formParser;
+			Parser<Game::FormID> formParser(m_state);
 
 			Game::FormID tmp;
-			if (formParser.Parse(a_in, tmp, a_version))
-			{
-				a_out = tmp;
-			}
-			else
-			{
-				a_out = Data::configCachedForm_t();
-			}
 
-			return true;
+			bool result = formParser.Parse(a_in, tmp);
+
+			a_out = tmp;
+
+			return result;
 		}
 
 		template <>
@@ -33,7 +28,7 @@ namespace IED
 			const Data::configCachedForm_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Game::FormID> formParser;
+			Parser<Game::FormID> formParser(m_state);
 
 			formParser.Create(a_data.get_id(), a_out);
 		}

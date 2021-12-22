@@ -23,8 +23,8 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::ConfigSex> sexParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
+			Parser<Data::ConfigSex> sexParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
 			if (!sexParser.Parse(data, a_out.sex, version))
 			{
@@ -49,8 +49,8 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::ConfigSex> sexParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
+			Parser<Data::ConfigSex> sexParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
 			sexParser.Create(a_data.sex, data);
 			colStatesParser.Create(a_data.colStates, data["col_states"]);

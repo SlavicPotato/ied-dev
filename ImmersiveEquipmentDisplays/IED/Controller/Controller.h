@@ -740,8 +740,8 @@ namespace IED
 			const ActorObjectHolder& a_record,
 			actorInfo_t& a_out);
 
-		bool CollectKnownActors(
-			actorLookupResultMap_t& a_out, bool a_includeUntracked);
+		void CollectKnownActors(
+			actorLookupResultMap_t& a_out);
 
 		bool SetLanguageImpl(const stl::fixed_string& a_lang);
 

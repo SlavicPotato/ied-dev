@@ -13,14 +13,16 @@ namespace IED
 			Data::configFormList_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Game::FormID> formParser;
+			Parser<Game::FormID> formParser(m_state);
 
 			for (auto& e : a_in)
 			{
 				Game::FormID tmp;
 
-				if (!formParser.Parse(e, tmp, a_version))
+				if (!formParser.Parse(e, tmp))
 				{
+					Error("%s: could not parse form ID", __FUNCTION__);
+					SetHasErrors();
 					continue;
 				}
 
@@ -35,7 +37,7 @@ namespace IED
 			const Data::configFormList_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Game::FormID> formParser;
+			Parser<Game::FormID> formParser(m_state);
 
 			for (auto& e : a_data)
 			{

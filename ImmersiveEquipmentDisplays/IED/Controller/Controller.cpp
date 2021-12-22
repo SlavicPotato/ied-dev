@@ -802,9 +802,8 @@ namespace IED
 		});
 	}
 
-	bool Controller::CollectKnownActors(
-		actorLookupResultMap_t& a_out,
-		bool a_includeUntracked)
+	void Controller::CollectKnownActors(
+		actorLookupResultMap_t& a_out)
 	{
 		for (auto& e : m_objects)
 		{
@@ -819,8 +818,6 @@ namespace IED
 				}
 			}
 		}
-
-		return !a_out.empty();
 	}
 
 	bool Controller::SetLanguageImpl(const stl::fixed_string& a_lang)
@@ -850,7 +847,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			actorLookupResultMap_t result;
-			CollectKnownActors(result, true);
+			CollectKnownActors(result);
 
 			for (auto& e : result)
 			{
@@ -867,7 +864,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			actorLookupResultMap_t result;
-			CollectKnownActors(result, true);
+			CollectKnownActors(result);
 
 			for (auto& e : result)
 			{
@@ -1280,10 +1277,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			actorLookupResultMap_t result;
-			if (!CollectKnownActors(result, false))
-			{
-				return;
-			}
+			CollectKnownActors(result);
 
 			for (auto& e : result)
 			{
@@ -1305,10 +1299,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			actorLookupResultMap_t result;
-			if (!CollectKnownActors(result, false))
-			{
-				return;
-			}
+			CollectKnownActors(result);
 
 			for (auto& e : result)
 			{
@@ -1328,10 +1319,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			actorLookupResultMap_t result;
-			if (!CollectKnownActors(result, false))
-			{
-				return;
-			};
+			CollectKnownActors(result);
 
 			for (auto& e : result)
 			{
@@ -4514,6 +4502,7 @@ namespace IED
 		boost::archive::binary_oarchive& a_out)
 	{
 		a_out << m_actorBlockList;
+
 		if (m_forceDefaultConfig)
 		{
 			a_out << m_config.stash;
@@ -4522,6 +4511,7 @@ namespace IED
 		{
 			a_out << m_config.active;
 		}
+
 		a_out << actorStateHolder_t(*this);
 
 		return 3;

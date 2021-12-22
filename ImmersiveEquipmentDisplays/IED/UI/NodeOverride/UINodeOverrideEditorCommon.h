@@ -58,9 +58,6 @@ namespace IED
 
 			virtual Data::configNodeOverrideHolder_t&
 				GetOrCreateConfigHolder(T a_handle) const = 0;
-
-			virtual const NodeOverrideProfile::base_type& GetData(
-				const profileSelectorParamsNodeOverride_t<T>& a_params) override;
 		};
 
 		template <class T>
@@ -218,13 +215,6 @@ namespace IED
 
 				ImGui::TreePop();
 			}
-		}
-
-		template <class T>
-		inline const NodeOverrideProfile::base_type& UINodeOverrideEditorCommon<T>::GetData(
-			const profileSelectorParamsNodeOverride_t<T>& a_params)
-		{
-			return a_params.data;
 		}
 	}
 }

@@ -27,11 +27,11 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::EditorPanel> editorPanelParser;
-			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser;
-			Parser<Data::SettingHolder::Controls> controlsParser;
-			Parser<Data::SettingHolder::ImportExport> ieParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
+			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
+			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
 			if (!editorPanelParser.Parse(data["slot_editor"], a_out.slotEditor))
 			{
@@ -143,11 +143,11 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::EditorPanel> editorPanelParser;
-			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser;
-			Parser<Data::SettingHolder::Controls> controlsParser;
-			Parser<Data::SettingHolder::ImportExport> ieParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
+			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
+			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
 			editorPanelParser.Create(a_data.customEditor, data["custom_editor"]);

@@ -42,6 +42,9 @@ namespace IED
 				profileSelectorParamsNodeOverride_t<int>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
+			virtual const NodeOverrideProfile::base_type& GetData(
+				const profileSelectorParamsNodeOverride_t<int>& a_params) override;
+
 			virtual void OnUpdate(
 				int a_handle,
 				const SingleNodeOverrideUpdateParams& a_params) override;

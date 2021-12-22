@@ -22,7 +22,7 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::ConfigSex> sexParser;
+			Parser<Data::ConfigSex> sexParser(m_state);
 
 			if (!sexParser.Parse(data, a_out.sex, version))
 			{
@@ -44,7 +44,7 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::ConfigSex> sexParser;
+			Parser<Data::ConfigSex> sexParser(m_state);
 
 			sexParser.Create(a_data.sex, data);
 

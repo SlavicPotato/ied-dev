@@ -23,7 +23,7 @@ namespace IED
 				return false;
 			}
 
-			Parser<Data::configCustom_t> pslot;
+			Parser<Data::configCustom_t> pslot(m_state);
 
 			auto& data = a_in["data"];
 
@@ -40,7 +40,10 @@ namespace IED
 
 				for (auto& e : desc)
 				{
-					pslot.Parse((*it)[e.member], e.data, version);
+					if (!pslot.Parse((*it)[e.member], e.data, version))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -56,7 +59,7 @@ namespace IED
 
 			using enum_type = std::underlying_type_t<ObjectSlot>;
 
-			Parser<Data::configCustom_t> pslot;
+			Parser<Data::configCustom_t> pslot(m_state);
 
 			for (auto& e : a_data.data)
 			{

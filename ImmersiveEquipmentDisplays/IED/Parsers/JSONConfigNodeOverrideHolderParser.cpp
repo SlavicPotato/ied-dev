@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideHolderParser.h"
-#include "JSONConfigNodeOverridePlacementParser.h"
 #include "JSONConfigNodeOverrideParser.h"
+#include "JSONConfigNodeOverridePlacementParser.h"
 
 namespace IED
 {
@@ -25,8 +25,8 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configNodeOverride_t> parser;
-			Parser<Data::configNodeOverridePlacement_t> pparser;
+			Parser<Data::configNodeOverride_t> parser(m_state);
+			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
 
 			a_out.flags = static_cast<Data::NodeOverrideHolderFlags>(
 				data.get("flags", stl::underlying(Data::NodeOverrideHolderFlags::kNone)).asUInt());
@@ -46,7 +46,10 @@ namespace IED
 
 				for (auto& e : desc)
 				{
-					parser.Parse((*it)[e.member], e.data, version);
+					if (!parser.Parse((*it)[e.member], e.data, version))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -65,7 +68,10 @@ namespace IED
 
 				for (auto& e : desc)
 				{
-					pparser.Parse((*it)[e.member], e.data, version);
+					if (!pparser.Parse((*it)[e.member], e.data, version))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -79,8 +85,8 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configNodeOverride_t> parser;
-			Parser<Data::configNodeOverridePlacement_t> pparser;
+			Parser<Data::configNodeOverride_t> parser(m_state);
+			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
 
 			data["flags"] = stl::underlying(a_data.flags.value);
 

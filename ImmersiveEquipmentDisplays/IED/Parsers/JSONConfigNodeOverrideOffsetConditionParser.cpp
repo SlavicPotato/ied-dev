@@ -14,15 +14,30 @@ namespace IED
 			Data::configNodeOverrideCondition_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configCachedForm_t> fparser;
+			Parser<Data::configCachedForm_t> fparser(m_state);
 
 			a_out.flags = static_cast<Data::NodeOverrideConditionFlags>(
 				a_in.get("flags", stl::underlying(Data::NodeOverrideConditionFlags::kNone)).asUInt());
 
 			a_out.node = a_in["node"].asString();
+
+			if (auto& v = a_in["form"]; !v.empty())
+			{
+				if (!fparser.Parse(v, a_out.form))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse form ID", __FUNCTION__);
+				}
+			}
 			
-			fparser.Parse(a_in["form"], a_out.form, 1u);
-			fparser.Parse(a_in["kw"], a_out.keyword, 1u);
+			if (auto& v = a_in["kw"]; !v.empty())
+			{
+				if (!fparser.Parse(v, a_out.keyword))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse keyword form ID", __FUNCTION__);
+				}
+			}
 
 			a_out.bipedSlot = a_in["bip"].asUInt();
 			a_out.equipmentSlot = static_cast<Data::ObjectSlot>(a_in["slot"].asUInt());
@@ -35,7 +50,7 @@ namespace IED
 			const Data::configNodeOverrideCondition_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configCachedForm_t> fparser;
+			Parser<Data::configCachedForm_t> fparser(m_state);
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 			a_out["node"] = *a_data.node;

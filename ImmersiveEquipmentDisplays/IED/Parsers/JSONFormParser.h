@@ -9,8 +9,7 @@ namespace IED
 		template <>
 		bool Parser<Game::FormID>::Parse(
 			const Json::Value& a_in,
-			Game::FormID& a_outData,
-			const std::uint32_t a_version) const;
+			Game::FormID& a_outData) const;
 
 		template <>
 		void Parser<Game::FormID>::Create(

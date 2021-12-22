@@ -23,7 +23,7 @@ namespace IED
 				return false;
 			}
 
-			ParseConfigMap<Data::configSlotHolder_t>(a_in, a_out, version);
+			ParseConfigMap<Data::configSlotHolder_t>(a_in, a_out, version, m_state);
 
 			return true;
 		}
@@ -33,7 +33,7 @@ namespace IED
 			const Data::configMapSlot_t& a_data,
 			Json::Value& a_out) const
 		{
-			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, 1u);
+			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, 1u, m_state);
 		}
 
 		template <>

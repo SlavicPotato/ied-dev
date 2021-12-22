@@ -699,7 +699,8 @@ namespace IED
 
 				Serialization::ReadData(PATHS::FONT_META, root);
 
-				Serialization::Parser<fontInfoMap_t> parser;
+				Serialization::ParserState state;
+				Serialization::Parser<fontInfoMap_t> parser(state);
 
 				return parser.Parse(root, a_out);
 			}

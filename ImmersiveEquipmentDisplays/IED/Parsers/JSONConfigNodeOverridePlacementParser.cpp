@@ -14,8 +14,8 @@ namespace IED
 			Data::configNodeOverridePlacement_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configNodeOverridePlacementValues_t> vparser;
-			Parser<Data::configNodeOverridePlacementOverrideList_t> lparser;
+			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
+			Parser<Data::configNodeOverridePlacementOverrideList_t> lparser(m_state);
 
 			if (!vparser.Parse(a_in, a_out, a_version))
 			{
@@ -38,8 +38,8 @@ namespace IED
 			const Data::configNodeOverridePlacement_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configNodeOverridePlacementValues_t> vparser;
-			Parser<Data::configNodeOverridePlacementOverrideList_t> lparser;
+			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
+			Parser<Data::configNodeOverridePlacementOverrideList_t> lparser(m_state);
 
 			vparser.Create(a_data, a_out);
 			lparser.Create(a_data.overrides, a_out["overrides"]);

@@ -23,8 +23,8 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<fontInfoEntry_t> parser;
-			Parser<fontGlyphRange_t> rangeParser;
+			Parser<fontInfoEntry_t> parser(m_state);
+			Parser<fontGlyphRange_t> rangeParser(m_state);
 
 			for (auto it = data.begin(); it != data.end(); ++it)
 			{
@@ -42,7 +42,7 @@ namespace IED
 
 			auto& def = a_in["default_font"];
 
-			Parser<fontGlyphData_t> gparser;
+			Parser<fontGlyphData_t> gparser(m_state);
 
 			if (!gparser.Parse(
 					def["glyphs"],
@@ -61,20 +61,6 @@ namespace IED
 			const fontInfoMap_t& a_data,
 			Json::Value& a_out) const
 		{
-			/*auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
-
-			Parser<fontInfoEntry_t> parser;
-
-			for (auto& e : a_data)
-			{
-				Json::Value tmp;
-
-				parser.Create(e.second, tmp);
-
-				data[*e.first] = std::move(tmp);
-			}
-
-			a_out["version"] = 1u;*/
 		}
 
 		template <>

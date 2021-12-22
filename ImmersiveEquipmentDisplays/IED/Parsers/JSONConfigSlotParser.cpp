@@ -15,13 +15,24 @@ namespace IED
 			Data::configSlot_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBase_t> pbase;
-			Parser<Data::configFormList_t> pformList;
-			Parser<Data::configFormFilter_t> pfset;
+			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configFormList_t> pformList(m_state);
+			Parser<Data::configFormFilter_t> pfset(m_state);
 
-			pbase.Parse(a_in, a_out, a_version);
-			pformList.Parse(a_in["pil"], a_out.preferredItems, a_version);
-			pfset.Parse(a_in["flt"], a_out.itemFilter);
+			if (!pbase.Parse(a_in, a_out, a_version))
+			{
+				return false;
+			}
+
+			if (!pformList.Parse(a_in["pil"], a_out.preferredItems, a_version))
+			{
+				return false;
+			}
+
+			if (!pfset.Parse(a_in["flt"], a_out.itemFilter))
+			{
+				return false;
+			}
 
 			a_out.slotFlags = static_cast<Data::SlotFlags>(
 				a_in.get("sflags", stl::underlying(Data::configSlot_t::DEFAULT_SLOT_FLAGS)).asUInt());
@@ -34,9 +45,9 @@ namespace IED
 			const Data::configSlot_t& a_in,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configBase_t> pbase;
-			Parser<Data::configFormList_t> pformList;
-			Parser<Data::configFormFilter_t> pfset;
+			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configFormList_t> pformList(m_state);
+			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			pbase.Create(a_in, a_out);
 			if (!a_in.preferredItems.empty())

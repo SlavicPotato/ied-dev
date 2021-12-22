@@ -13,6 +13,7 @@ namespace IED
 		UICustomEditorRace::UICustomEditorRace(
 			Controller& a_controller) :
 			UICustomEditorCommon<Game::FormID>(a_controller),
+			UIRaceList<entryCustomData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller)

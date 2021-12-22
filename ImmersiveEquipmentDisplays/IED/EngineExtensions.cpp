@@ -572,8 +572,6 @@ namespace IED
 
 				virtual void Run() override
 				{
-					//ASSERT(!fUnk63F810());  // REMOVE ME
-
 					CleanupNodeImpl(m_handle, m_object);
 
 					m_object.reset();

@@ -110,15 +110,11 @@ namespace IED
 
 	template <class T>
 	class Profile :
-		public ProfileBase<T>,
-		Serialization::Parser<T>
+		public ProfileBase<T>
 	{
 	public:
 		using ProfileBase<T>::ProfileBase;
 		using ProfileBase<T>::Save;
-
-		Profile(const Profile&) = default;
-		Profile(Profile&&) = default;
 
 		virtual ~Profile() noexcept = default;
 
@@ -126,6 +122,15 @@ namespace IED
 		virtual bool Save(const T& a_data, bool a_store) override;
 
 		virtual void SetDefaults() noexcept override;
+
+		inline constexpr bool HasParserErrors() const noexcept
+		{
+			return m_hasParserErrors;
+		}
+
+	private:
+		Serialization::ParserState m_state;
+		bool m_hasParserErrors{ false };
 	};
 
 	template <class T>
@@ -138,7 +143,10 @@ namespace IED
 
 			Json::Value root;
 
-			Create(a_data, root);
+			Serialization::ParserState state;
+			Serialization::Parser<T> parser(state);
+
+			parser.Create(a_data, root);
 
 			root["id"] = m_id;
 			if (m_desc)
@@ -174,10 +182,15 @@ namespace IED
 			Json::Value root;
 			fs >> root;
 
+			Serialization::ParserState state;
+			Serialization::Parser<T> parser(state);
+
 			T tmp;
 
-			if (!Parse(root, tmp))
+			if (!parser.Parse(root, tmp))
 				throw std::exception("Parser error");
+
+			m_hasParserErrors = parser.HasErrors();
 
 			auto& id = root["id"];
 
@@ -204,6 +217,9 @@ namespace IED
 	template <class T>
 	void Profile<T>::SetDefaults() noexcept
 	{
-		GetDefault(m_data);
+		Serialization::ParserState state;
+		Serialization::Parser<T> parser(state);
+
+		parser.GetDefault(m_data);
 	}
 }  // namespace IED

@@ -26,10 +26,11 @@ namespace IED
 		constexpr void ParseConfigMap(
 			const Json::Value& a_in,
 			Tm& a_out,
-			std::uint32_t a_version)
+			std::uint32_t a_version,
+			ParserState& a_state)
 		{
-			Parser<Game::FormID> pform;
-			Parser<Th> pholder;
+			Parser<Game::FormID> pform(a_state);
+			Parser<Th> pholder(a_state);
 
 			auto& data = a_in["data"];
 
@@ -37,7 +38,7 @@ namespace IED
 			{
 				Game::FormID form;
 
-				if (!pform.Parse(e["form"], form, a_version))
+				if (!pform.Parse(e["form"], form))
 				{
 					gLog.Warning("%s: missing form entry", __FUNCTION__);
 					continue;
@@ -64,12 +65,13 @@ namespace IED
 		constexpr void CreateConfigMap(
 			const Tm& a_data,
 			Json::Value& a_out,
-			std::uint32_t a_version)
+			std::uint32_t a_version,
+			ParserState& a_state)
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
-			Parser<Game::FormID> pform;
-			Parser<Th> pholder;
+			Parser<Game::FormID> pform(a_state);
+			Parser<Th> pholder(a_state);
 
 			for (auto& e : a_data)
 			{
@@ -89,10 +91,11 @@ namespace IED
 		[[nodiscard]] constexpr bool ParseConfigStore(
 			const Json::Value& a_in,
 			Ts& a_out,
-			std::uint32_t a_version)
+			std::uint32_t a_version,
+			ParserState &a_state)
 		{
-			Parser<Tm> pmap;
-			Parser<Th> pholder;
+			Parser<Tm> pmap(a_state);
+			Parser<Th> pholder(a_state);
 
 			auto& data = a_in["data"];
 
@@ -137,12 +140,13 @@ namespace IED
 		constexpr void CreateConfigStore(
 			const Ts& a_data,
 			Json::Value& a_out,
-			std::uint32_t a_version)
+			std::uint32_t a_version,
+			ParserState& a_state)
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Tm> pmap;
-			Parser<Th> pholder;
+			Parser<Tm> pmap(a_state);
+			Parser<Th> pholder(a_state);
 
 			auto& g = a_data.GetFormMaps();
 

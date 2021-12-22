@@ -10,10 +10,12 @@ namespace IED
 	{
 		UISlotEditorRace::UISlotEditorRace(Controller& a_controller) :
 			UISlotEditorCommon<Game::FormID>(a_controller),
-			UIRaceList<entrySlotData_t>(), m_controller(a_controller),
+			UIRaceList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller)
-		{}
+			UILocalizationInterface(a_controller),
+			m_controller(a_controller)
+		{
+		}
 
 		void UISlotEditorRace::Initialize()
 		{

@@ -160,9 +160,11 @@ namespace IED
 				{
 					if (ImGui::Button(LS(CommonStrings::Import, "4"), { 120.f, 0.f }))
 					{
-						std::shared_ptr<Data::configStore_t> data(std::make_unique<Data::configStore_t>());
+						auto data = std::make_shared<Data::configStore_t>();
 
-						if (!m_controller.LoadConfigStore(selected->m_fullpath, *data))
+						Serialization::ParserState state;
+
+						if (!m_controller.LoadConfigStore(selected->m_fullpath, *data, state))
 						{
 							auto& queue = m_controller.UIGetPopupQueue();
 
@@ -182,7 +184,19 @@ namespace IED
 									 "%s [%s]",
 									 LS(UIDialogImportExportStrings::ImportConfirm),
 									 selected->m_key.c_str())
-								.draw([this] {
+								.draw([this, state = std::move(state)] {
+									if (state.has_errors())
+									{
+										ImGui::PushTextWrapPos(ImGui::GetFontSize() * 25.0f);
+										ImGui::TextColored(
+											UICommon::g_colorWarning,
+											"%s",
+											LS(UIDialogImportExportStrings::ImportHasErrorsWarning));
+										ImGui::PopTextWrapPos();
+
+										ImGui::Separator();
+									}
+
 									auto& conf = m_controller.GetConfigStore().settings;
 
 									conf.MarkIf(DrawExportFilters(conf.data.ui.importExport.exportFlags));

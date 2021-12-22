@@ -42,12 +42,14 @@ namespace IED
 				if (!(end > key.c_str()))
 				{
 					Error("%s: bad key: %s", __FUNCTION__, key.c_str());
+					SetHasErrors();
 					continue;
 				}
 
 				if (lid > std::numeric_limits<Localization::StringID>::max())
 				{
 					Error("%s: [%s] id out of range: %lu", __FUNCTION__, key.c_str(), lid);
+					SetHasErrors();
 					continue;
 				}
 
@@ -61,7 +63,7 @@ namespace IED
 
 			if (a_in.isMember("glyphs"))
 			{
-				Parser<fontGlyphData_t> gparser;
+				Parser<fontGlyphData_t> gparser(m_state);
 
 				auto tmp = std::make_unique<fontGlyphData_t>();
 
@@ -83,7 +85,7 @@ namespace IED
 			const Localization::StringTable::data_storage_type& a_data,
 			Json::Value& a_out) const
 		{
-			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
+			/*auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
 			for (auto& e : a_data.data)
 			{
@@ -91,7 +93,7 @@ namespace IED
 			}
 
 			a_out["lang"] = *a_data.lang;
-			a_out["version"] = 1u;
+			a_out["version"] = 1u;*/
 		}
 
 		template <>

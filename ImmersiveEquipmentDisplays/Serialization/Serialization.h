@@ -4,10 +4,41 @@ namespace IED
 {
 	namespace Serialization
 	{
+		enum class ParserStateFlags : std::uint32_t
+		{
+			kNone = 0,
+
+			kHasErrors = 1u << 0,
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(ParserStateFlags);
+
+		class ParserState
+		{
+			template <class T>
+			friend class Parser;
+
+		public:
+			[[nodiscard]] inline constexpr bool has_errors() const noexcept
+			{
+				return m_flags.test(ParserStateFlags::kHasErrors);
+			}
+
+		private:
+			inline void clear() noexcept
+			{
+				m_flags = ParserStateFlags::kNone;
+			}
+
+			stl::flag<ParserStateFlags> m_flags{ ParserStateFlags::kNone };
+		};
+
 		template <class T>
 		class Parser : ILog
 		{
 		public:
+			Parser(ParserState& a_state);
+
 			void Create(const T& a_in, Json::Value& a_out) const;
 			void Create(const T& a_in, Json::Value& a_out, bool a_arg) const;
 			void Create(const T& a_in, Json::Value& a_out, std::uint32_t a_arg) const;
@@ -19,12 +50,36 @@ namespace IED
 
 			void GetDefault(T& a_out) const;
 
+			inline constexpr bool HasErrors() const noexcept
+			{
+				return m_state.m_flags.test(ParserStateFlags::kHasErrors);
+			}
+
+		protected:
+			inline void SetHasErrors() const noexcept
+			{
+				m_state.m_flags.set(ParserStateFlags::kHasErrors);
+			}
+
+			inline void ClearState() const noexcept
+			{
+				m_state.clear();
+			}
+
 		private:
 			bool ParseVersion(
 				const Json::Value& a_in,
 				const char* a_key,
 				std::uint32_t& a_out) const;
+
+			ParserState& m_state;
 		};
+
+		template <class T>
+		Parser<T>::Parser(ParserState& a_state) :
+			m_state(a_state)
+		{
+		}
 
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out) const

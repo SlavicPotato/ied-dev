@@ -66,10 +66,10 @@ namespace IED
 				stl::underlying(ConfigStoreSerializationFlags::kCustomActor));
 
 			bool disabled = a_flags.test(ConfigStoreSerializationFlags::kCustomActor);
-			
+
 			UICommon::PushDisabled(disabled);
 
-			ImGui::Indent();
+			ImGui::SameLine();
 
 			if (!disabled)
 			{
@@ -83,8 +83,6 @@ namespace IED
 				bool dummy = true;
 				ImGui::Checkbox("Player##custom", std::addressof(dummy));
 			}
-
-			ImGui::Unindent();
 
 			UICommon::PopDisabled(disabled);
 
@@ -100,7 +98,7 @@ namespace IED
 
 			ImGui::Unindent();
 
-			ImGui::TextUnformatted("Node override:");
+			ImGui::TextUnformatted("Gear positioning:");
 
 			ImGui::Indent();
 			ImGui::Spacing();
@@ -119,7 +117,7 @@ namespace IED
 
 			UICommon::PushDisabled(disabled);
 
-			ImGui::Indent();
+			ImGui::SameLine();
 
 			if (!disabled)
 			{
@@ -133,8 +131,6 @@ namespace IED
 				bool dummy = true;
 				ImGui::Checkbox("Player##node", std::addressof(dummy));
 			}
-
-			ImGui::Unindent();
 
 			UICommon::PopDisabled(disabled);
 

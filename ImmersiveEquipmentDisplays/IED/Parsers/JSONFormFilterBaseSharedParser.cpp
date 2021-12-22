@@ -14,7 +14,7 @@ namespace IED
 		{
 			a_out = std::make_unique<Data::configFormFilterBase_t>();
 
-			Parser<Data::configFormFilterBase_t> parser;
+			Parser<Data::configFormFilterBase_t> parser(m_state);
 
 			return parser.Parse(a_in, *a_out);
 		}
@@ -26,7 +26,7 @@ namespace IED
 		{
 			if (a_in)
 			{
-				Parser<Data::configFormFilterBase_t> parser;
+				Parser<Data::configFormFilterBase_t> parser(m_state);
 
 				parser.Create(*a_in, a_out);
 			}

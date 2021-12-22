@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "JSONConfigNodeOverrideHolderParser.h"
 #include "JSONConfigMapNodeOverrideParser.h"
+#include "JSONConfigNodeOverrideHolderParser.h"
 #include "JSONConfigStoreNodeOverrideParser.h"
 #include "JSONParsersCommon.h"
 
@@ -24,7 +24,13 @@ namespace IED
 				return false;
 			}
 
-			return ParseConfigStore<configNodeOverrideHolder_t, configMapNodeOverrides_t>(a_in, a_out, version);
+			return ParseConfigStore<
+				configNodeOverrideHolder_t,
+				configMapNodeOverrides_t>(
+				a_in,
+				a_out,
+				version,
+				m_state);
 		}
 
 		template <>
@@ -32,7 +38,13 @@ namespace IED
 			const Data::configStoreNodeOverride_t& a_data,
 			Json::Value& a_out) const
 		{
-			CreateConfigStore<configNodeOverrideHolder_t, configMapNodeOverrides_t>(a_data, a_out, 1u);
+			CreateConfigStore<
+				configNodeOverrideHolder_t,
+				configMapNodeOverrides_t>(
+				a_data,
+				a_out,
+				1u,
+				m_state);
 		}
 
 		template <>

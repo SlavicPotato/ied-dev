@@ -21,7 +21,7 @@ namespace IED
 				return false;
 			}
 
-			Parser<Data::NodeMap::value_type> parser;
+			Parser<Data::NodeMap::value_type> parser(m_state);
 
 			auto& data = a_in["data"];
 
@@ -62,7 +62,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::NodeMap::value_type> parser;
+			Parser<Data::NodeMap::value_type> parser(m_state);
 
 			for (auto& e : a_data)
 			{

@@ -57,7 +57,6 @@ namespace IED
 		TESNPC* a_npc,
 		npcInfoEntry_t& a_out)
 	{
-		a_out.active = a_out.active;
 		a_out.name = IFormCommon::GetFormName(a_npc);
 		a_out.form = a_npc->formID;
 		a_out.flags = a_npc->flags;
@@ -170,15 +169,18 @@ namespace IED
 		m_actorInfoUpdateID++;
 	}
 
-	bool IActorInfo::LookupCrosshairRef(NiPointer<TESObjectREFR>& a_out)
+	bool IActorInfo::LookupCrosshairRef(
+		NiPointer<TESObjectREFR>& a_out)
 	{
 		auto refHolder = CrosshairRefHandleHolder::GetSingleton();
-		if (!refHolder) {
+		if (!refHolder)
+		{
 			return false;
 		}
 
 		auto handle = refHolder->CrosshairRefHandle();
-		if (!handle) {
+		if (!handle)
+		{
 			return false;
 		}
 
@@ -188,8 +190,10 @@ namespace IED
 	void IActorInfo::UpdateActorInfo(
 		const ActorObjectHolder& a_objectHolder)
 	{
+		auto handle = a_objectHolder.GetHandle();
+
 		NiPointer<TESObjectREFR> ref;
-		if (!a_objectHolder.GetHandle().Lookup(ref))
+		if (!handle.Lookup(ref))
 		{
 			return;
 		}

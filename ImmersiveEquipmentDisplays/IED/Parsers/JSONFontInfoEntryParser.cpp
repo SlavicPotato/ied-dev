@@ -52,7 +52,7 @@ namespace IED
 				a_out.path = std::move(file);
 			}
 
-			Parser<fontGlyphData_t> gparser;
+			Parser<fontGlyphData_t> gparser(m_state);
 
 			if (!gparser.Parse(a_in, a_out))
 			{

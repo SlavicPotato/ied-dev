@@ -3,8 +3,8 @@
 #include "JSONConfigBaseParser.h"
 #include "JSONConfigCachedFormParser.h"
 #include "JSONConfigCustomParser.h"
-#include "JSONFormParser.h"
 #include "JSONFormListParser.h"
+#include "JSONFormParser.h"
 #include "JSONRangeParser.h"
 
 namespace IED
@@ -17,16 +17,28 @@ namespace IED
 			Data::configCustom_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBase_t> pbase;
-			Parser<Data::configRange_t> prange;
-			Parser<Data::configCachedForm_t> pform;
-			Parser<Data::configFormList_t> pformList;
+			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configRange_t> prange(m_state);
+			Parser<Data::configCachedForm_t> pform(m_state);
+			Parser<Data::configFormList_t> pformList(m_state);
 
-			pbase.Parse(a_in, a_out, a_version);
-			pform.Parse(a_in["item"], a_out.form, a_version);
-			pform.Parse(a_in["model"], a_out.modelForm, a_version);
-			prange.Parse(a_in["cr"], a_out.countRange);
-			pformList.Parse(a_in["extra"], a_out.extraItems, a_version);
+			if (!pbase.Parse(a_in, a_out, a_version))
+			{
+				return false;
+			}
+
+			pform.Parse(a_in["item"], a_out.form);
+			pform.Parse(a_in["model"], a_out.modelForm);
+
+			if (!prange.Parse(a_in["cr"], a_out.countRange))
+			{
+				return false;
+			}
+
+			if (!pformList.Parse(a_in["extra"], a_out.extraItems, a_version))
+			{
+				return false;
+			}
 
 			a_out.customFlags = static_cast<Data::CustomFlags>(
 				a_in.get("cflags", stl::underlying(Data::configCustom_t::DEFAULT_CUSTOM_FLAGS)).asUInt());
@@ -42,10 +54,10 @@ namespace IED
 			const Data::configCustom_t& a_in,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configBase_t> pbase;
-			Parser<Data::configCachedForm_t> pform;
-			Parser<Data::configRange_t> prange;
-			Parser<Data::configFormList_t> pformList;
+			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configRange_t> prange(m_state);
+			Parser<Data::configCachedForm_t> pform(m_state);
+			Parser<Data::configFormList_t> pformList(m_state);
 
 			pbase.Create(a_in, a_out);
 

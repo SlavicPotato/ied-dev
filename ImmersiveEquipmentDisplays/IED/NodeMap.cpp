@@ -153,7 +153,8 @@ namespace IED
 			{
 				IScopedLock lock(m_rwLock);
 
-				Parser<map_type> parser;
+				ParserState state;
+				Parser<map_type> parser(state);
 				Json::Value root;
 
 				parser.Create(m_data.getmap(), root, true);
@@ -181,7 +182,8 @@ namespace IED
 
 				ReadData(a_path, root);
 
-				Parser<map_type> parser;
+				ParserState state;
+				Parser<map_type> parser(state);
 				map_type tmp;
 
 				if (!parser.Parse(root, tmp, false))

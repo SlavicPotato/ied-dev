@@ -17,9 +17,6 @@ namespace IED
 			const Json::Value& a_in,
 			Data::configSlotHolder_t& a_out) const
 		{
-			//::IED::Serialization::Parse(a_in,
-			//:static_cast<Data::configBase_t&>(a_outData));
-
 			std::uint32_t version;
 
 			if (!ParseVersion(a_in, "version", version))
@@ -28,11 +25,7 @@ namespace IED
 				return false;
 			}
 
-			/*for (auto& e : a_outData.m_data) {
-          e = std::make_unique<configSlotHolder_t::data_type>();
-      }*/
-
-			Parser<Data::configSlot_t> pslot;
+			Parser<Data::configSlot_t> pslot(m_state);
 
 			auto& data = a_in["data"];
 
@@ -62,7 +55,10 @@ namespace IED
 
 				for (auto& e : desc)
 				{
-					pslot.Parse((*it)[e.member], e.data, version);
+					if (!pslot.Parse((*it)[e.member], e.data, version))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -78,7 +74,7 @@ namespace IED
 
 			using enum_type = std::underlying_type_t<ObjectSlot>;
 
-			Parser<Data::configSlot_t> pslot;
+			Parser<Data::configSlot_t> pslot(m_state);
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{

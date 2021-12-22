@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include "JSONEquipmentOverrideListParser.h"
 #include "JSONConfigBaseParser.h"
 #include "JSONConfigBaseValuesParser.h"
+#include "JSONEquipmentOverrideListParser.h"
 #include "JSONFormFilterParser.h"
 
 namespace IED
@@ -15,9 +15,9 @@ namespace IED
 			Data::configBase_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBaseValues_t> bvParser;
-			Parser<Data::equipmentOverrideList_t> aoListParser;
-			Parser<Data::configFormFilter_t> pfset;
+			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			if (!bvParser.Parse(a_in, a_out, a_version))
 			{
@@ -34,7 +34,10 @@ namespace IED
 				}
 			}
 
-			pfset.Parse(a_in["rfilter"], a_out.raceFilter);
+			if (!pfset.Parse(a_in["rfilter"], a_out.raceFilter))
+			{
+				return false;
+			}
 
 			return true;
 		}
@@ -44,9 +47,9 @@ namespace IED
 			const Data::configBase_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configBaseValues_t> bvParser;
-			Parser<Data::equipmentOverrideList_t> aoListParser;
-			Parser<Data::configFormFilter_t> pfset;
+			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			bvParser.Create(a_data, a_out);
 			if (!a_data.equipmentOverrides.empty())

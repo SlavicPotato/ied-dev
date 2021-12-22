@@ -7,8 +7,6 @@ namespace IED
 {
 	namespace Serialization
 	{
-		using namespace IED::Data;
-
 		template <>
 		bool Parser<Data::equipmentOverrideConditionList_t>::Parse(
 			const Json::Value& a_in,
@@ -22,17 +20,17 @@ namespace IED
 				return false;
 			}
 
-			Parser<equipmentOverrideCondition_t> parser;
+			Parser<Data::equipmentOverrideCondition_t> parser(m_state);
 
 			auto& data = a_in["data"];
 
 			for (auto& e : data)
 			{
-				equipmentOverrideCondition_t tmp;
+				Data::equipmentOverrideCondition_t tmp;
 
 				if (!parser.Parse(e, tmp, version))
 				{
-					Error("%s: failed parsing armor override entry", __FUNCTION__);
+					Error("%s: failed parsing equipment override condition", __FUNCTION__);
 					continue;
 				}
 
@@ -49,7 +47,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
-			Parser<equipmentOverrideCondition_t> parser;
+			Parser<Data::equipmentOverrideCondition_t> parser(m_state);
 
 			for (auto& e : a_data)
 			{

@@ -14,8 +14,8 @@ namespace IED
 			Data::equipmentOverride_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBaseValues_t> bvParser;
-			Parser<Data::equipmentOverrideConditionList_t> mlParser;
+			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
 
 			if (!mlParser.Parse(a_in["matches"], a_out.conditions))
 			{
@@ -38,8 +38,8 @@ namespace IED
 			const Data::equipmentOverride_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configBaseValues_t> bvParser;
-			Parser<Data::equipmentOverrideConditionList_t> mlParser;
+			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
 
 			mlParser.Create(a_data.conditions, a_out["matches"]);
 			bvParser.Create(a_data, a_out["config"]);

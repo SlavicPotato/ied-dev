@@ -25,10 +25,10 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::EditorPanelActorSettings> actorSettingsParser;
-			Parser<Data::SettingHolder::EditorPanelRaceSettings> raceSettingsParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
-			Parser<Data::ConfigSex> sexParser;
+			Parser<Data::SettingHolder::EditorPanelActorSettings> actorSettingsParser(m_state);
+			Parser<Data::SettingHolder::EditorPanelRaceSettings> raceSettingsParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
+			Parser<Data::ConfigSex> sexParser(m_state);
 
 			if (!actorSettingsParser.Parse(data["actor_config"], a_out.actorConfig))
 			{
@@ -94,10 +94,10 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::EditorPanelActorSettings> actorSettingsParser;
-			Parser<Data::SettingHolder::EditorPanelRaceSettings> raceSettingsParser;
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser;
-			Parser<Data::ConfigSex> sexParser;
+			Parser<Data::SettingHolder::EditorPanelActorSettings> actorSettingsParser(m_state);
+			Parser<Data::SettingHolder::EditorPanelRaceSettings> raceSettingsParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
+			Parser<Data::ConfigSex> sexParser(m_state);
 
 			actorSettingsParser.Create(a_data.actorConfig, data["actor_config"]);
 			raceSettingsParser.Create(a_data.raceConfig, data["race_config"]);

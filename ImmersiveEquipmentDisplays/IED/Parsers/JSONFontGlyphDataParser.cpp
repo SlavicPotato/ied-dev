@@ -47,7 +47,7 @@ namespace IED
 				}
 			}
 
-			Parser<fontGlyphRange_t> rangeParser;
+			Parser<fontGlyphRange_t> rangeParser(m_state);
 
 			if (!rangeParser.Parse(
 					a_in["glyph_ranges"],

@@ -210,7 +210,9 @@ namespace IED
 	{
 		try
 		{
-			Parser<Data::configStore_t> parser;
+			ParserState state;
+
+			Parser<Data::configStore_t> parser(state);
 			Json::Value root;
 
 			Data::configStore_t tmp;
@@ -238,6 +240,15 @@ namespace IED
 		const fs::path& a_path,
 		Data::configStore_t& a_out) const
 	{
+		Serialization::ParserState state;
+		return LoadConfigStore(a_path, a_out, state);
+	}
+
+	bool IJSONSerialization::LoadConfigStore(
+		const fs::path& a_path,
+		Data::configStore_t& a_out,
+		Serialization::ParserState& a_state) const
+	{
 		using namespace Serialization;
 
 		try
@@ -246,12 +257,20 @@ namespace IED
 
 			ReadData(a_path, root);
 
-			Parser<Data::configStore_t> parser;
+			Parser<Data::configStore_t> parser(a_state);
 			Data::configStore_t tmp;
 
 			if (!parser.Parse(root, tmp))
 			{
 				throw std::exception("parse failed");
+			}
+
+			if (parser.HasErrors())
+			{
+				Warning(
+					"%s: [%s] parser errors occured",
+					__FUNCTION__,
+					SafeGetPath(a_path).c_str());
 			}
 
 			a_out = std::move(tmp);
@@ -280,7 +299,8 @@ namespace IED
 
 		try
 		{
-			Parser<Data::configStore_t> parser;
+			ParserState state;
+			Parser<Data::configStore_t> parser(state);
 			Json::Value root;
 
 			parser.Create(

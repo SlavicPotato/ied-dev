@@ -10,6 +10,7 @@ namespace IED
 	{
 		UINodeOverrideEditorRace::UINodeOverrideEditorRace(Controller& a_controller) :
 			UINodeOverrideEditorCommon<Game::FormID>(a_controller),
+			UIRaceList<entryNodeOverrideData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
@@ -133,6 +134,24 @@ namespace IED
 			auto& store = m_controller.GetConfigStore();
 
 			m_temp = store.active.transforms.GetRace(a_handle);
+
+			return m_temp;
+		}
+
+		const NodeOverrideProfile::base_type& UINodeOverrideEditorRace::GetData(
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+			auto& data = store.active.transforms.GetRaceData();
+
+			if (auto it = data.find(a_params.handle); it != data.end())
+			{
+				m_temp = it->second;
+			}
+			else
+			{
+				m_temp.clear();
+			}
 
 			return m_temp;
 		}

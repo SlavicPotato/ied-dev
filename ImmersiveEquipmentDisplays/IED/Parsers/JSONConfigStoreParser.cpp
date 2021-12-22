@@ -26,9 +26,9 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configStoreSlot_t> sparser;
-			Parser<Data::configStoreCustom_t> cparser;
-			Parser<Data::configStoreNodeOverride_t> eparser;
+			Parser<Data::configStoreSlot_t> sparser(m_state);
+			Parser<Data::configStoreCustom_t> cparser(m_state);
+			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
 
 			if (!sparser.Parse(data["slot"], a_out.slot))
 			{
@@ -55,9 +55,9 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configStoreSlot_t> sparser;
-			Parser<Data::configStoreCustom_t> cparser;
-			Parser<Data::configStoreNodeOverride_t> eparser;
+			Parser<Data::configStoreSlot_t> sparser(m_state);
+			Parser<Data::configStoreCustom_t> cparser(m_state);
+			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
 
 			sparser.Create(a_data.slot, data["slot"]);
 			cparser.Create(a_data.custom, data["custom"]);

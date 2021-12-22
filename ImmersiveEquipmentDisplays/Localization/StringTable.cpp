@@ -16,7 +16,9 @@ namespace IED
 
 				Serialization::ReadData(a_path, root);
 
-				Serialization::Parser<StringTable::data_storage_type> parser;
+				Serialization::ParserState state;
+				Serialization::Parser<StringTable::data_storage_type> parser(state);
+
 				StringTable::data_storage_type tmp;
 
 				if (!parser.Parse(root, tmp))

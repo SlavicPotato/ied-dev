@@ -15,11 +15,26 @@ namespace IED
 			Data::equipmentOverrideCondition_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Game::FormID> formParser;
-			Parser<Data::configCachedForm_t> cachedFormParser;
+			Parser<Game::FormID> formParser(m_state);
+			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
-			formParser.Parse(a_in["form"], a_out.form, 1u);
-			cachedFormParser.Parse(a_in["keyword"], a_out.keyword, 1u);
+			if (auto& v = a_in["form"]; !v.empty())
+			{
+				if (!formParser.Parse(v, a_out.form))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse form ID", __FUNCTION__);
+				}
+			}
+
+			if (auto& v = a_in["keyword"]; !v.empty())
+			{
+				if (!cachedFormParser.Parse(v, a_out.keyword))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse keyword form ID", __FUNCTION__);
+				}
+			}
 
 			a_out.slot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
@@ -35,8 +50,8 @@ namespace IED
 			const Data::equipmentOverrideCondition_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Game::FormID> formParser;
-			Parser<Data::configCachedForm_t> cachedFormParser;
+			Parser<Game::FormID> formParser(m_state);
+			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
 			if (a_data.form)
 			{

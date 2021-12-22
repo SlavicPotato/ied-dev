@@ -29,7 +29,7 @@ namespace IED
 			struct listValue_t
 			{
 				P handle;
-				stl::fixed_string desc;
+				std::string desc;
 				T data;
 			};
 
@@ -90,7 +90,7 @@ namespace IED
 			SetObjectWrapper<listValue_t> m_listCurrent;
 			SetObjectWrapper<P> m_desiredHandle;
 
-			char m_listBuf1[128]{ 0 };
+			char m_listBuf1[256]{ 0 };
 			UIGenericFilter m_listFilter;
 			float m_itemWidthScalar;
 		};

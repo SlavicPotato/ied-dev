@@ -24,7 +24,13 @@ namespace IED
 				return false;
 			}
 
-			return ParseConfigStore<configCustomPluginMap_t, configMapCustom_t>(a_in, a_out, version);
+			return ParseConfigStore<
+				configCustomPluginMap_t,
+				configMapCustom_t>(
+				a_in,
+				a_out,
+				version,
+				m_state);
 		}
 
 		template <>
@@ -32,7 +38,13 @@ namespace IED
 			const Data::configStoreCustom_t& a_data,
 			Json::Value& a_out) const
 		{
-			CreateConfigStore<configCustomPluginMap_t, configMapCustom_t>(a_data, a_out, 1u);
+			CreateConfigStore<
+				configCustomPluginMap_t,
+				configMapCustom_t>(
+				a_data,
+				a_out,
+				1u,
+				m_state);
 		}
 
 		template <>

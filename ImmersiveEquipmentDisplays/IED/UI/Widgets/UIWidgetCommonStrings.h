@@ -72,6 +72,8 @@ namespace IED
 			DefaultConfForced = 2061,
 			FormFilters = 2062,
 			GearPositioning = 2063,
+			PlayableOnly = 2064,
+			ShowEditorIDs = 2065,
 		};
 	}
 }

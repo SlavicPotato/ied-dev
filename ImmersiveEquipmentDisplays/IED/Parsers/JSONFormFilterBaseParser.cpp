@@ -22,7 +22,7 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configFormSet_t> pformset;
+			Parser<Data::configFormSet_t> pformset(m_state);
 
 			a_out.flags = static_cast<Data::FormFilterBaseFlags>(
 				data.get("flags", stl::underlying(Data::FormFilterBaseFlags::kNone)).asUInt());
@@ -47,7 +47,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configFormSet_t> pformset;
+			Parser<Data::configFormSet_t> pformset(m_state);
 
 			data["flags"] = stl::underlying(a_in.flags.value);
 

@@ -301,6 +301,17 @@ namespace IED
 
 						ImGui::Separator();
 
+						if (profile.HasParserErrors())
+						{
+							ImGui::Spacing();
+
+							ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+							ImGui::TextWrapped("%s", LS(UIProfileStrings::ProfileParserErrorWarning));
+							ImGui::PopStyleColor();
+
+							ImGui::Separator();
+						}
+
 						ImGui::PushID("pe_item");
 						DrawItem(profile);
 						ImGui::PopID();

@@ -17,8 +17,8 @@ namespace IED
 			a_out.flags = static_cast<Data::FlagsBase>(
 				a_in.get("flags", stl::underlying(Data::configBaseValues_t::DEFAULT_FLAGS)).asUInt());
 
-			Parser<Data::NodeDescriptor> nvParser;
-			Parser<Data::configTransform_t> tfParser;
+			Parser<Data::NodeDescriptor> nvParser(m_state);
+			Parser<Data::configTransform_t> tfParser(m_state);
 
 			if (!tfParser.Parse(a_in["xfrm"], a_out, a_version))
 			{
@@ -29,10 +29,8 @@ namespace IED
 			{
 				return false;
 			}
-			else
-			{
-				a_out.targetNode.lookup_flags();
-			}
+
+			a_out.targetNode.lookup_flags();
 
 			return true;
 		}
@@ -44,8 +42,8 @@ namespace IED
 		{
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 
-			Parser<Data::NodeDescriptor> nvParser;
-			Parser<Data::configTransform_t> tfParser;
+			Parser<Data::NodeDescriptor> nvParser(m_state);
+			Parser<Data::configTransform_t> tfParser(m_state);
 
 			tfParser.Create(a_data, a_out["xfrm"]);
 			nvParser.Create(a_data.targetNode, a_out["node"]);

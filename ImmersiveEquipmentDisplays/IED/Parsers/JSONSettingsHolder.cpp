@@ -24,8 +24,8 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::UserInterface> uiParser;
-			Parser<Data::SettingHolder::Controls> controlsParser;
+			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
+			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
 
 			if (!uiParser.Parse(data["ui"], a_out.ui))
 			{
@@ -67,8 +67,8 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::UserInterface> uiParser;
-			Parser<Data::SettingHolder::Controls> controlsParser;
+			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
+			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
 
 			uiParser.Create(a_data.ui, data["ui"]);
 			controlsParser.Create(a_data.playerBlockKeys, data["player_block_keys"]);

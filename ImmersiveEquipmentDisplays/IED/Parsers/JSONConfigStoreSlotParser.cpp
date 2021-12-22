@@ -24,8 +24,13 @@ namespace IED
 				return false;
 			}
 
-			return ParseConfigStore<configSlotHolder_t, configMapSlot_t>(a_in, a_out, version);
-
+			return ParseConfigStore<
+				configSlotHolder_t,
+				configMapSlot_t>(
+				a_in,
+				a_out,
+				version,
+				m_state);
 		}
 
 		template <>
@@ -33,7 +38,13 @@ namespace IED
 			const Data::configStoreSlot_t& a_data,
 			Json::Value& a_out) const
 		{
-			CreateConfigStore<configSlotHolder_t, configMapSlot_t>(a_data, a_out, 1u);
+			CreateConfigStore<
+				configSlotHolder_t,
+				configMapSlot_t>(
+				a_data,
+				a_out,
+				1u,
+				m_state);
 		}
 
 		template <>

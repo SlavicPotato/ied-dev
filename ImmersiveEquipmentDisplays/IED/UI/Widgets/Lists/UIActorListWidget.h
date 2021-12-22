@@ -81,15 +81,13 @@ namespace IED
 					continue;
 				}
 
-				char buf[256];
-
 				stl::snprintf(
-					buf,
+					m_listBuf1,
 					"[%.8X] %s",
 					e.first.get(),
 					e.second.name.c_str());
 
-				m_listData.try_emplace(e.first, buf);
+				m_listData.try_emplace(e.first, m_listBuf1);
 			}
 
 			if (m_listData.empty())

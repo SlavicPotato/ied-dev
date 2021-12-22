@@ -15,9 +15,9 @@ namespace IED
 			Data::configNodeOverrideOffset_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configNodeOverrideValues_t> vparser;
-			Parser<Data::configNodeOverrideConditionList_t> mlparser;
-			Parser<Data::configNodeOverrideOffsetList_t> olparser;
+			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
+			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
+			Parser<Data::configNodeOverrideOffsetList_t> olparser(m_state);
 
 			if (!vparser.Parse(a_in, a_out, a_version))
 			{
@@ -50,9 +50,9 @@ namespace IED
 			const Data::configNodeOverrideOffset_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configNodeOverrideValues_t> vparser;
-			Parser<Data::configNodeOverrideConditionList_t> mlparser;
-			Parser<Data::configNodeOverrideOffsetList_t> olparser;
+			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
+			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
+			Parser<Data::configNodeOverrideOffsetList_t> olparser(m_state);
 
 			vparser.Create(a_data, a_out);
 			mlparser.Create(a_data.conditions, a_out["matches"]);

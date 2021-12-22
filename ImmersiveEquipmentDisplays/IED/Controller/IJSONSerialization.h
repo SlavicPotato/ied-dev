@@ -4,6 +4,8 @@
 #include "../ConfigOverrideDefault.h"
 #include "ImportFlags.h"
 
+#include "Serialization/Serialization.h"
+
 namespace IED
 {
 	class IJSONSerialization :
@@ -16,6 +18,7 @@ namespace IED
 		bool ExportData(const fs::path& a_path, stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out) const;
+		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out, Serialization::ParserState &a_state) const;
 		bool SaveConfigStore(const fs::path& a_path, const Data::configStore_t& a_data) const;
 
 		inline constexpr const auto& JSGetLastException() const noexcept

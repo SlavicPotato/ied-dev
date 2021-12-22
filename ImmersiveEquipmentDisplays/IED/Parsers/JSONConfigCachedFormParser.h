@@ -11,8 +11,7 @@ namespace IED
 		template <>
 		bool Parser<Data::configCachedForm_t>::Parse(
 			const Json::Value& a_in,
-			Data::configCachedForm_t& a_outData,
-			const std::uint32_t a_version) const;
+			Data::configCachedForm_t& a_outData) const;
 
 		template <>
 		void Parser<Data::configCachedForm_t>::Create(

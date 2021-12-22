@@ -166,13 +166,24 @@ namespace IED
 
 					T profile(path);
 
+					if (!std::regex_match(*profile.Name(), m_rFileCheck))
+						throw std::exception("Invalid characters in profile name");
+
 					if (!profile.Load())
 					{
-						Warning(
+						Error(
 							"Failed loading profile '%s': %s",
 							profile.Name().c_str(),
 							profile.GetLastException().what());
 						continue;
+					}
+
+					if (profile.HasParserErrors())
+					{
+						Warning(
+							"Errors occured while parsing profile '%s' [%s]",
+							profile.Name().c_str(),
+							Serialization::SafeGetPath(entry.path()).c_str());
 					}
 
 					m_storage.emplace(profile.Name(), std::move(profile));
@@ -180,7 +191,8 @@ namespace IED
 				catch (const std::exception& e)
 				{
 					Warning(
-						"Exception occured while processing profile: %s",
+						"Exception occured while processing profile '%s': %s",
+						Serialization::SafeGetPath(entry.path()).c_str(),
 						e.what());
 					continue;
 				}

@@ -22,6 +22,7 @@ namespace IED
 			ExportError = 4811,
 			OverwriteConfirm = 4812,
 			FileListError = 4813,
+			ImportHasErrorsWarning = 4814
 		};
 	}
 }

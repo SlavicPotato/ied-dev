@@ -21,7 +21,7 @@ namespace IED
 				return false;
 			}
 
-			Parser<Data::configFormFilterBase_t> bparser;
+			Parser<Data::configFormFilterBase_t> bparser(m_state);
 
 			auto& data = a_in["data"];
 
@@ -43,7 +43,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configFormFilterBase_t> bparser;
+			Parser<Data::configFormFilterBase_t> bparser(m_state);
 
 			bparser.Create(a_in, data["data"]);
 

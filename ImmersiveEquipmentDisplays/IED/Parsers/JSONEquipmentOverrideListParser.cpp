@@ -20,7 +20,7 @@ namespace IED
 				return false;
 			}
 
-			Parser<Data::equipmentOverride_t> parser;
+			Parser<Data::equipmentOverride_t> parser(m_state);
 
 			auto& data = a_in["data"];
 
@@ -47,7 +47,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
-			Parser<Data::equipmentOverride_t> parser;
+			Parser<Data::equipmentOverride_t> parser(m_state);
 
 			for (auto& e : a_data)
 			{

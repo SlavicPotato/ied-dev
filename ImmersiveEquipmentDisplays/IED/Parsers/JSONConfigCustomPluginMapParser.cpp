@@ -17,7 +17,7 @@ namespace IED
 			const Json::Value& a_in,
 			Data::configCustomPluginMap_t& a_out) const
 		{
-			Parser<Data::configCustomHolder_t> pholder;
+			Parser<Data::configCustomHolder_t> pholder(m_state);
 
 			if (a_in.empty())
 			{
@@ -42,7 +42,7 @@ namespace IED
 			const Data::configCustomPluginMap_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configCustomHolder_t> pholder;
+			Parser<Data::configCustomHolder_t> pholder(m_state);
 
 			auto it = a_data.find(StringHolder::GetSingleton().IED);
 			if (it != a_data.end())

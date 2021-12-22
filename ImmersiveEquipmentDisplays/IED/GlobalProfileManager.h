@@ -35,11 +35,11 @@ namespace IED
 			using ProfileManager<CustomProfile>::ProfileManager;
 		};
 		
-		class ProfileManagerNodeOverrides :
+		class ProfileManagerNodeOverride :
 			public ProfileManager<NodeOverrideProfile>
 		{
 		public:
-			FN_NAMEPROC("ProfileManagerNodeOverrides");
+			FN_NAMEPROC("ProfileManagerNodeOverride");
 
 		private:
 			using ProfileManager<NodeOverrideProfile>::ProfileManager;
@@ -83,7 +83,7 @@ namespace IED
 	private:
 		static ProfileManagerSlot m_slotManager;
 		static ProfileManagerCustom m_customManager;
-		static ProfileManagerNodeOverrides m_nodeOverrideManager;
+		static ProfileManagerNodeOverride m_nodeOverrideManager;
 		static ProfileManagerFormFilter m_formFilterManager;
 	};
 

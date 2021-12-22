@@ -13,12 +13,12 @@ namespace IED
 			Data::configFormSet_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Game::FormID> pform;
+			Parser<Game::FormID> pform(m_state);
 
 			for (auto it = a_in.begin(); it != a_in.end(); ++it)
 			{
 				Game::FormID tmp;
-				if (pform.Parse(*it, tmp, a_version))
+				if (pform.Parse(*it, tmp))
 				{
 					a_out.emplace(tmp);
 				}
@@ -32,7 +32,7 @@ namespace IED
 			const Data::configFormSet_t& a_in,
 			Json::Value& a_out) const
 		{
-			Parser<Game::FormID> pform;
+			Parser<Game::FormID> pform(m_state);
 
 			for (auto& e : a_in)
 			{
@@ -40,7 +40,7 @@ namespace IED
 
 				pform.Create(e, tmp);
 
-				a_out.append(tmp);
+				a_out.append(std::move(tmp));
 			}
 		}
 

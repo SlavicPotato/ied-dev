@@ -8,18 +8,24 @@
 #include "../UIWidgetsCommon.h"
 #include "UIListCommon.h"
 
+#include "Localization/ILocalization.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		template <class T>
 		class UIRaceList :
-			public UIListBase<T, Game::FormID>
+			public UIListBase<T, Game::FormID>,
+			public virtual UILocalizationInterface
 		{
 		protected:
 			using listValue_t = UIListBase<T, Game::FormID>::listValue_t;
 
-			UIRaceList(float a_itemWidthScalar = -10.0f);
+			UIRaceList(
+				Localization::ILocalization& a_localization,
+				float a_itemWidthScalar = -10.0f);
+
 			virtual ~UIRaceList() noexcept = default;
 
 		private:
@@ -35,8 +41,11 @@ namespace IED
 		};
 
 		template <typename T>
-		UIRaceList<T>::UIRaceList(float a_itemWidthScalar) :
-			UIListBase<T, Game::FormID>(a_itemWidthScalar)
+		UIRaceList<T>::UIRaceList(
+			Localization::ILocalization& a_localization,
+			float a_itemWidthScalar) :
+			UIListBase<T, Game::FormID>(a_itemWidthScalar),
+			UILocalizationInterface(a_localization)
 		{}
 
 		template <class T>
@@ -59,20 +68,15 @@ namespace IED
 					continue;
 				}
 
-				std::ostringstream ss;
-				ss << "[" << std::uppercase << std::setfill('0') << std::setw(8) << std::hex
-				   << e.first << "] ";
+				stl::snprintf(
+					m_listBuf1,
+					"[%.8X] %s",
+					e.first.get(),
+					raceConf.showEditorIDs ?
+                        e.second.edid.c_str() :
+                        e.second.fullname.c_str());
 
-				if (raceConf.showEditorIDs)
-				{
-					ss << e.second.edid;
-				}
-				else
-				{
-					ss << e.second.fullname;
-				}
-
-				m_listData.try_emplace(e.first, std::move(ss.str()));
+				m_listData.try_emplace(e.first, m_listBuf1);
 			}
 
 			if (m_listData.empty())
@@ -133,9 +137,8 @@ namespace IED
 			if (itr != raceCache.end())
 			{
 				ss << "EDID:  " << itr->second.edid << std::endl;
-				ss << "Name:  " << itr->second.fullname << std::endl;
-
-				ss << "Flags: " << std::bitset<8>(itr->second.flags) << std::endl;
+				ss << LS(CommonStrings::Name) << ":  " << itr->second.fullname << std::endl;
+				ss << LS(CommonStrings::Flags) << ": " << std::bitset<8>(itr->second.flags) << std::endl;
 			}
 
 			std::uint32_t modIndex;
@@ -143,7 +146,7 @@ namespace IED
 			{
 				auto itm = modList.find(modIndex);
 				if (itm != modList.end())
-					ss << "Mod:   " << itm->second.name.get() << " [" << sshex(2)
+					ss << LS(CommonStrings::Mod) << ":   " << itm->second.name.get() << " [" << sshex(2)
 					   << itm->second.GetPartialIndex() << "]" << std::endl;
 			}
 
@@ -155,7 +158,9 @@ namespace IED
 		{
 			auto& config = GetRaceSettings();
 
-			if (ImGui::Checkbox("Playable only", &config.playableOnly))
+			if (ImGui::Checkbox(
+					LS(UIWidgetCommonStrings::PlayableOnly, "1"),
+					std::addressof(config.playableOnly)))
 			{
 				OnListOptionsChange();
 				QueueListUpdate();
@@ -163,7 +168,9 @@ namespace IED
 
 			ImGui::SameLine(0.0f, 10.0f);
 
-			if (ImGui::Checkbox("Show editor IDs", &config.showEditorIDs))
+			if (ImGui::Checkbox(
+					LS(UIWidgetCommonStrings::ShowEditorIDs, "2"),
+					std::addressof(config.showEditorIDs)))
 			{
 				OnListOptionsChange();
 				QueueListUpdate();
@@ -174,7 +181,8 @@ namespace IED
 
 		template <class T>
 		void UIRaceList<T>::ListDrawOptionsExtra()
-		{}
+		{
+		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

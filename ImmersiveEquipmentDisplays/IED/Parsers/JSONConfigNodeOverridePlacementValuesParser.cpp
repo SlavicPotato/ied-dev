@@ -12,7 +12,7 @@ namespace IED
 			Data::configNodeOverridePlacementValues_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configTransform_t> tfparser;
+			Parser<Data::configTransform_t> tfparser(m_state);
 
 			a_out.targetNode = a_in.get("target", "").asString();
 
@@ -27,7 +27,7 @@ namespace IED
 			const Data::configNodeOverridePlacementValues_t& a_data,
 			Json::Value& a_out) const
 		{
-			Parser<Data::configTransform_t> tfparser;
+			Parser<Data::configTransform_t> tfparser(m_state);
 
 			a_out["target"] = *a_data.targetNode;
 			a_out["flags"] = stl::underlying(a_data.flags.value);

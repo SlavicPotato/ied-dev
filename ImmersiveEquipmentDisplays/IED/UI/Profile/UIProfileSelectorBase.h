@@ -211,6 +211,15 @@ namespace IED
 						}
 					}
 
+					if (profile.HasParserErrors())
+					{
+						ImGui::Spacing();
+
+						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+						ImGui::TextWrapped("%s", LS(UIProfileStrings::ProfileParserErrorWarning));
+						ImGui::PopStyleColor();
+					}
+
 					ImGui::PushID("ps_options");
 					DrawProfileSelectorOptions(a_data);
 					ImGui::PopID();
