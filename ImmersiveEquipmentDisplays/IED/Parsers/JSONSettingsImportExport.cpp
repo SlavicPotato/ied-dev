@@ -6,18 +6,14 @@ namespace IED
 {
 	namespace Serialization
 	{
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::SettingHolder::ImportExport>::Parse(
 			const Json::Value& a_in,
 			Data::SettingHolder::ImportExport& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
@@ -40,7 +36,7 @@ namespace IED
 			data["export_flags"] = stl::underlying(a_data.exportFlags.value);
 			data["import_flags"] = stl::underlying(a_data.importFlags.value);
 
-			a_out["version"] = 1u;
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>

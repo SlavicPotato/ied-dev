@@ -2,10 +2,10 @@
 
 #include "../ConfigOverrideNodeOverride.h"
 
-#include "INodeOverride.h"
 #include "IED/EngineExtensions.h"
 #include "IED/FormCommon.h"
 #include "IED/Inventory.h"
+#include "INodeOverride.h"
 #include "ObjectManagerData.h"
 
 namespace IED
@@ -770,7 +770,10 @@ namespace IED
 		{
 			if (a_entry.currentTarget != a_entry.defaultParent)
 			{
-				attach_node_to_target(a_entry, a_entry.defaultParent, a_params.npcRoot);
+				attach_node_to_target(
+					a_entry,
+					a_entry.defaultParent,
+					a_params.npcRoot);
 			}
 
 			a_entry.currentTarget.clear();

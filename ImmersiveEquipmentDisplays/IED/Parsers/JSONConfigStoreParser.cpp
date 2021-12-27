@@ -11,18 +11,14 @@ namespace IED
 	{
 		using namespace Data;
 
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::configStore_t>::Parse(
 			const Json::Value& a_in,
 			Data::configStore_t& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
@@ -63,7 +59,7 @@ namespace IED
 			cparser.Create(a_data.custom, data["custom"]);
 			eparser.Create(a_data.transforms, data["transforms"]);
 
-			a_out["version"] = 1u;
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>

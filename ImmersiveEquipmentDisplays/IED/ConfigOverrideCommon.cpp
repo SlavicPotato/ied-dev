@@ -12,9 +12,22 @@ namespace IED
 		{
 			auto intfc = ISKSE::GetSingleton().GetInterface<SKSESerializationInterface>();
 
-			if (auto form = ISKSE::ResolveForm<TESForm>(intfc, a_form))
+			Game::FormID tmp;
+			if (ISKSE::ResolveFormID(intfc, a_form, tmp))
 			{
-				return form->formID;
+				if (auto form = tmp.Lookup())
+				{
+					if (form->IsDeleted())
+					{
+						gLog.Warning("%s: form %.8X is deleted", __FUNCTION__, a_form.get());
+					}
+				}
+				else
+				{
+					gLog.Debug("%s: form %.8X not found", __FUNCTION__, a_form.get());
+				}
+
+				return tmp;
 			}
 			else
 			{

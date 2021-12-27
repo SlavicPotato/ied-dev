@@ -8,18 +8,14 @@ namespace IED
 {
 	namespace Serialization
 	{
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::configFormFilter_t>::Parse(
 			const Json::Value& a_in,
 			Data::configFormFilter_t& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			Parser<Data::configFormFilterBase_t> bparser(m_state);
 
@@ -49,7 +45,7 @@ namespace IED
 
 			data["ff_flags"] = stl::underlying(a_in.filterFlags.value);
 
-			a_out["version"] = 1u;
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>

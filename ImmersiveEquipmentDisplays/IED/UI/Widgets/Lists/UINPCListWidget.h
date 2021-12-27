@@ -173,38 +173,53 @@ namespace IED
 		template <class T>
 		void UINPCList<T>::ListDrawInfoText(listValue_t* a_entry)
 		{
-			/*auto& actorInfo = GetActorInfoHolder();
+			auto& npcInfo = GetNPCInfoHolder();
 			auto& raceInfo = Data::IData::GetRaceList();
 			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
 
-			std::ostringstream ss;
+			ImGui::Columns(2, nullptr, false);
 
-			auto it = actorInfo.find(a_entry->handle);
-			if (it != actorInfo.end())
+			auto it = npcInfo.find(a_entry->handle);
+			if (it != npcInfo.end())
 			{
-				if (it->second.npc)
-				{
-					ss << "Base:    " << sshex(8) << it->second.npc->base << " ["
-					   << std::bitset<8>(it->second.npc->flags) << "]" << std::endl;
+				ImGui::Text("%s:", LS(CommonStrings::Flags));
+				ImGui::Text("%s:", LS(CommonStrings::Sex));
+				ImGui::Text("%s:", LS(CommonStrings::Race));
+				ImGui::Text("%s:", LS(CommonStrings::Weight));
+			}
 
-					ss << "Sex:     " << (it->second.npc->female ? "Female" : "Male") << std::endl;
-				}
+			ImGui::Text("%s:", LS(CommonStrings::Mod));
 
-				auto race = it->second.GetRace();
+			ImGui::NextColumn();
+
+			if (it != npcInfo.end())
+			{
+				ImGui::TextWrapped(
+					"%s",
+					std::bitset<8>(it->second->flags).to_string().c_str());
+
+				ImGui::TextWrapped(
+					"%s",
+					it->second->female ?
+                        LS(CommonStrings::Female) :
+                        LS(CommonStrings::Male));
+
+				auto race = it->second->race;
 
 				auto itr = raceInfo.find(race);
 				if (itr != raceInfo.end())
 				{
-					ss << "Race:    " << itr->second.edid.get() << " [" << sshex(8)
-					   << race.get() << "]" << std::endl;
+					ImGui::TextWrapped(
+						"%s [%.8X]",
+						itr->second.edid.c_str(),
+						race.get());
 				}
 				else
 				{
-					ss << "Race:    " << sshex(8) << race.get() << std::endl;
+					ImGui::TextWrapped("%s", "N/A");
 				}
 
-				ss << "Weight:  " << std::fixed << std::setprecision(0) << it->second.weight
-				   << std::endl;
+				ImGui::TextWrapped("%.0f", it->second->weight);
 			}
 
 			std::uint32_t modIndex;
@@ -213,14 +228,22 @@ namespace IED
 				auto itm = modList.find(modIndex);
 				if (itm != modList.end())
 				{
-					ss << "Mod:     " << itm->second.name.get() << " [" << sshex(2)
-					   << itm->second.GetPartialIndex() << "]" << std::endl;
+					ImGui::TextWrapped(
+						"%s [%.2X]",
+						itm->second.name.c_str(),
+						itm->second.GetPartialIndex());
+				}
+				else
+				{
+					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 				}
 			}
+			else
+			{
+				ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
+			}
 
-			ListDrawExtraActorInfo(a_entry, ss);
-
-			ImGui::TextUnformatted(ss.str().c_str());*/
+			ImGui::Columns();
 		}
 
 		template <class T>

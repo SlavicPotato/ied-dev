@@ -10,18 +10,14 @@ namespace IED
 	{
 		using namespace Data;
 
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::configMapSlot_t>::Parse(
 			const Json::Value& a_in,
 			Data::configMapSlot_t& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			ParseConfigMap<Data::configSlotHolder_t>(a_in, a_out, version, m_state);
 
@@ -33,7 +29,7 @@ namespace IED
 			const Data::configMapSlot_t& a_data,
 			Json::Value& a_out) const
 		{
-			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, 1u, m_state);
+			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, CURRENT_VERSION, m_state);
 		}
 
 		template <>

@@ -12,18 +12,14 @@ namespace IED
 
 		static SlotKeyParser s_slotKeyParser;
 
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::configSlotHolder_t>::Parse(
 			const Json::Value& a_in,
 			Data::configSlotHolder_t& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			Parser<Data::configSlot_t> pslot(m_state);
 
@@ -104,17 +100,13 @@ namespace IED
 				}
 			}
 
-			a_out["version"] = 1u;
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>
 		void Parser<Data::configSlotHolder_t>::GetDefault(
 			Data::configSlotHolder_t& a_out) const
 		{
-			/*for (auto& e : a_out.m_data)
-      {
-          e = std::make_unique<Data::configSlotHolder_t::data_type>();
-      }*/
 		}
 
 	}  // namespace Serialization

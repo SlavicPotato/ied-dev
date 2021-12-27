@@ -8,18 +8,14 @@ namespace IED
 {
 	namespace Serialization
 	{
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Localization::StringTable::data_storage_type>::Parse(
 			const Json::Value& a_in,
 			Localization::StringTable::data_storage_type& a_out) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			a_out.lang = a_in["lang"].asString();
 
@@ -85,15 +81,6 @@ namespace IED
 			const Localization::StringTable::data_storage_type& a_data,
 			Json::Value& a_out) const
 		{
-			/*auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
-
-			for (auto& e : a_data.data)
-			{
-				a_out[std::to_string(e.first)] = e.second;
-			}
-
-			a_out["lang"] = *a_data.lang;
-			a_out["version"] = 1u;*/
 		}
 
 		template <>

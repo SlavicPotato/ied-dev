@@ -339,3 +339,16 @@ namespace IED
 		};
 	}
 }
+
+#define JSON_PARSE_VERSION()                                                                 \
+	std::uint32_t version;                                                                   \
+	if (!ParseVersion(a_in, "version", version))                                             \
+	{                                                                                        \
+		Error("%s: bad version data", __FUNCTION__);                                         \
+		throw std::exception("failed parsing version data");                                 \
+	}                                                                                        \
+	if (version > CURRENT_VERSION)                                                           \
+	{                                                                                        \
+		Error("%s: unsupported version (%u > %u) ", __FUNCTION__, version, CURRENT_VERSION); \
+		throw std::exception("unsupported version");                                         \
+	}

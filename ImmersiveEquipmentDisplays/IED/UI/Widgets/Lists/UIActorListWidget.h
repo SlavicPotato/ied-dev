@@ -177,8 +177,9 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Sex));
 				ImGui::Text("%s:", LS(CommonStrings::Race));
 				ImGui::Text("%s:", LS(CommonStrings::Weight));
-				ImGui::Text("%s:", LS(CommonStrings::Mod));
 			}
+
+			ImGui::Text("%s:", LS(CommonStrings::Mod));
 
 			ImGui::NextColumn();
 
@@ -187,7 +188,7 @@ namespace IED
 				if (it->second.npc)
 				{
 					ImGui::TextWrapped(
-						"%.8X [%.8X]",
+						"%.8X [%s]",
 						it->second.npc->form.get(),
 						std::bitset<8>(it->second.npc->flags).to_string().c_str());
 
@@ -231,6 +232,10 @@ namespace IED
 						"%s [%.2X]",
 						itm->second.name.c_str(),
 						itm->second.GetPartialIndex());
+				}
+				else
+				{
+					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 				}
 			}
 			else

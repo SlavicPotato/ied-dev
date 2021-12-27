@@ -4522,6 +4522,11 @@ namespace IED
 		std::uint32_t a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
+		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
+		{
+			throw std::exception("unsupported version");
+		}
+
 		actorBlockList_t blockList;
 		configStore_t cfgStore;
 		actorStateHolder_t actorState;

@@ -7,19 +7,15 @@ namespace IED
 {
 	namespace Serialization
 	{
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
 		template <>
 		bool Parser<Data::NodeMap::map_type>::Parse(
 			const Json::Value& a_in,
 			Data::NodeMap::map_type& a_out,
 			bool a_extraOnly) const
 		{
-			std::uint32_t version;
-
-			if (!ParseVersion(a_in, "version", version))
-			{
-				Error("%s: bad version data", __FUNCTION__);
-				return false;
-			}
+			JSON_PARSE_VERSION()
 
 			Parser<Data::NodeMap::value_type> parser(m_state);
 
@@ -74,7 +70,7 @@ namespace IED
 				parser.Create(e.second, data[e.first.c_str()]);
 			}
 
-			a_out["version"] = 1u;
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>
