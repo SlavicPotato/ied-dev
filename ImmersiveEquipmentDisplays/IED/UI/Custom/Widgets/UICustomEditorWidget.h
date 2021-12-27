@@ -539,6 +539,9 @@ namespace IED
 				if (!OnCreateNew(current.handle, params))
 				{
 					current.data->data.erase(r.first);
+				}
+				else
+				{
 					return;
 				}
 			}
