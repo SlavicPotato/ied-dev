@@ -179,7 +179,7 @@ namespace IED
 
 	std::string IFormCommon::ConvertToUTF8(const char* a_in)
 	{
-		std::basic_string<std::uint16_t> tmp;
+		std::u32string tmp;
 
 		for (auto p = reinterpret_cast<const std::uint8_t*>(a_in);; p++)
 		{
@@ -196,7 +196,7 @@ namespace IED
 		{
 			using namespace boost::locale;
 
-			return conv::utf_to_utf<char, std::uint16_t>(tmp, conv::skip);
+			return conv::utf_to_utf<char>(tmp, conv::skip);
 		}
 		catch (...)
 		{

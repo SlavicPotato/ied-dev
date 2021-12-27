@@ -35,17 +35,14 @@ namespace IED
 			{
 				ListTick();
 
-				auto entry = ListGetSelected();
-				const char* curSelName{ nullptr };
-
 				ImGui::Spacing();
-				ListDraw(entry, curSelName);
+				ListDraw();
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				if (entry)
+				if (m_listCurrent)
 				{
-					if (m_controller.IsActorBlockedImpl(entry->handle))
+					if (m_controller.IsActorBlockedImpl(m_listCurrent->handle))
 					{
 						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 						ImGui::TextUnformatted(LS(UIWidgetCommonStrings::ActorBlocked));
@@ -53,7 +50,7 @@ namespace IED
 						ImGui::Spacing();
 					}
 
-					DrawSlotEditor(entry->handle, entry->data);
+					DrawSlotEditor(m_listCurrent->handle, m_listCurrent->data);
 				}
 			}
 
@@ -355,11 +352,11 @@ namespace IED
 		}
 
 		void UISlotEditorActor::ListDrawExtraActorInfo(
-			listValue_t* a_entry)
+			const listValue_t& a_entry)
 		{
 			auto& data = m_controller.GetObjects();
 
-			auto it = data.find(a_entry->handle);
+			auto it = data.find(a_entry.handle);
 			if (it == data.end())
 			{
 				return;

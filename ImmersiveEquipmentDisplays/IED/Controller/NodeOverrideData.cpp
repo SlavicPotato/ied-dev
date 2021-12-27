@@ -9,6 +9,8 @@ namespace IED
 
 	void OverrideNodeInfo::Create()
 	{
+		ASSERT(!m_Instance.m_initialized);
+
 		m_Instance.m_cme = {
 
 			{ "CME WeaponAxeDefault", { "Axe", "CME WeaponAxeDefault" } },
@@ -304,6 +306,7 @@ namespace IED
 								   { "MOV WeaponBowDefault", { "Bow" } },
 								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
 								   { "MOV WeaponBowBetter", { "Bow Better" } },
+								   { "MOV WeaponBowFSM", { "Bow FSM" } },
 							   }
 
 						   } },
@@ -321,5 +324,7 @@ namespace IED
 
 						} }
 		};
+
+		m_Instance.m_initialized = true;
 	}
 }

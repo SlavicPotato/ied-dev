@@ -45,13 +45,7 @@ namespace IED
 					if (auto it = a_data.find(a_current);
 					    it != a_data.end())
 					{
-						if constexpr (std::is_same_v<decltype(it->second.desc), const char*>) {
-							descName = it->second.desc;
-						}
-						else
-						{
-							descName = it->second.desc.c_str();
-						}
+						descName = it->second.desc;
 					}
 				}
 
@@ -81,18 +75,7 @@ namespace IED
 							ImGui::SetScrollHereY();
 					}
 
-					const char* k;
-
-					if constexpr (std::is_same_v<decltype(e->second.desc), const char*>)
-					{
-						k = e->second.desc;
-					}
-					else
-					{
-						k = e->second.desc.c_str();
-					}
-
-					if (ImGui::Selectable(k, selected))
+					if (ImGui::Selectable(e->second.desc, selected))
 					{
 						a_current = e->first;
 						result = true;

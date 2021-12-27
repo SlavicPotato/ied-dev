@@ -42,8 +42,8 @@ namespace IED
 			virtual void OnListOptionsChange() = 0;
 
 			virtual void ListUpdate() override;
-			virtual void ListDrawInfoText(listValue_t* a_entry) override;
-			virtual void ListDrawExtraActorInfo(listValue_t* a_entry);
+			virtual void ListDrawInfoText(const listValue_t& a_entry) override;
+			virtual void ListDrawExtraActorInfo(const listValue_t& a_entry);
 			virtual void ListDrawOptions() override;
 			virtual void ListDrawOptionsExtra();
 			virtual void ListDrawExtraControls() override;
@@ -171,7 +171,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINPCList<T>::ListDrawInfoText(listValue_t* a_entry)
+		void UINPCList<T>::ListDrawInfoText(const listValue_t& a_entry)
 		{
 			auto& npcInfo = GetNPCInfoHolder();
 			auto& raceInfo = Data::IData::GetRaceList();
@@ -179,7 +179,7 @@ namespace IED
 
 			ImGui::Columns(2, nullptr, false);
 
-			auto it = npcInfo.find(a_entry->handle);
+			auto it = npcInfo.find(a_entry.handle);
 			if (it != npcInfo.end())
 			{
 				ImGui::Text("%s:", LS(CommonStrings::Flags));
@@ -223,7 +223,7 @@ namespace IED
 			}
 
 			std::uint32_t modIndex;
-			if (a_entry->handle.GetPluginPartialIndex(modIndex))
+			if (a_entry.handle.GetPluginPartialIndex(modIndex))
 			{
 				auto itm = modList.find(modIndex);
 				if (itm != modList.end())
@@ -248,7 +248,7 @@ namespace IED
 
 		template <class T>
 		void UINPCList<T>::ListDrawExtraActorInfo(
-			listValue_t* a_entry)
+			const listValue_t& a_entry)
 		{
 		}
 

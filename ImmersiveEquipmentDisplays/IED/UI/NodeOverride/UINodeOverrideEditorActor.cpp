@@ -33,17 +33,15 @@ namespace IED
 			{
 				ListTick();
 
-				auto entry = ListGetSelected();
-				const char* curSelName{ nullptr };
-
 				ImGui::Spacing();
-				ListDraw(entry, curSelName);
+				ListDraw();
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				if (entry)
+				if (m_listCurrent)
 				{
-					auto disabled = (entry->handle == Data::IData::GetPlayerRefID() && !m_controller.GetNodeOverridePlayerEnabled());
+					auto disabled = m_listCurrent->handle == Data::IData::GetPlayerRefID() &&
+					                !m_controller.GetNodeOverridePlayerEnabled();
 
 					if (disabled)
 					{
@@ -52,7 +50,7 @@ namespace IED
 
 					UICommon::PushDisabled(disabled);
 
-					DrawNodeOverrideEditor(entry->handle, entry->data);
+					DrawNodeOverrideEditor(m_listCurrent->handle, m_listCurrent->data);
 
 					UICommon::PopDisabled(disabled);
 				}

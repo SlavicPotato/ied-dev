@@ -32,17 +32,14 @@ namespace IED
 			{
 				ListTick();
 
-				auto entry = ListGetSelected();
-				const char* curSelName{ nullptr };
-
 				ImGui::Spacing();
-				ListDraw(entry, curSelName);
+				ListDraw();
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				if (entry)
+				if (m_listCurrent)
 				{
-					DrawNodeOverrideEditor(entry->handle, entry->data);
+					DrawNodeOverrideEditor(m_listCurrent->handle, m_listCurrent->data);
 				}
 			}
 

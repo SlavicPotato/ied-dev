@@ -776,9 +776,6 @@
     <ClInclude Include="IED\UI\Widgets\UISimpleNodeList.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\SlotDeferedCleanupObject.h">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
-    </ClInclude>
     <ClInclude Include="IED\CommonParams.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
@@ -1401,9 +1398,6 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UISimpleNodeList.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Controller\SlotDeferedCleanupObject.cpp">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\ObjectDatabase.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>

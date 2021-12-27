@@ -35,7 +35,7 @@ namespace IED
 			virtual void OnListOptionsChange() = 0;
 
 			virtual void ListUpdate() override;
-			virtual void ListDrawInfoText(listValue_t* a_entry) override;
+			virtual void ListDrawInfoText(const listValue_t& a_entry) override;
 			virtual void ListDrawOptions() override;
 			virtual void ListDrawOptionsExtra();
 		};
@@ -126,14 +126,14 @@ namespace IED
 		}
 
 		template <class T>
-		void UIRaceList<T>::ListDrawInfoText(listValue_t* a_entry)
+		void UIRaceList<T>::ListDrawInfoText(const listValue_t& a_entry)
 		{
 			auto& raceCache = Data::IData::GetRaceList();
 			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
 
 			std::ostringstream ss;
 
-			auto itr = raceCache.find(a_entry->handle);
+			auto itr = raceCache.find(a_entry.handle);
 			if (itr != raceCache.end())
 			{
 				ss << "EDID:  " << itr->second.edid << std::endl;
@@ -142,7 +142,7 @@ namespace IED
 			}
 
 			std::uint32_t modIndex;
-			if (a_entry->handle.GetPluginPartialIndex(modIndex))
+			if (a_entry.handle.GetPluginPartialIndex(modIndex))
 			{
 				auto itm = modList.find(modIndex);
 				if (itm != modList.end())

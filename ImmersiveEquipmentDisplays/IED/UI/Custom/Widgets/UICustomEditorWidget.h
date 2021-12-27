@@ -536,7 +536,7 @@ namespace IED
 					r.first->second
 				};
 
-				if (OnCreateNew(current.handle, params))
+				if (!OnCreateNew(current.handle, params))
 				{
 					current.data->data.erase(r.first);
 					return;

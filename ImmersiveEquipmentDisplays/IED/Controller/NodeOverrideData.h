@@ -7,7 +7,7 @@ namespace IED
 	public:
 		struct weaponNodeListEntry_t
 		{
-			std::string desc;
+			const char* desc;
 		};
 
 		using nodeList_t = stl::vectormap<stl::fixed_string, weaponNodeListEntry_t>;
@@ -30,7 +30,7 @@ namespace IED
 			BSFixedString bsname;
 			stl::fixed_string defParent;
 			BSFixedString bsdefParent;
-			std::string desc;
+			const char* desc;
 			nodeList_t movs;
 		};
 
@@ -75,6 +75,8 @@ namespace IED
 		cm_data_type m_mov;
 		mon_data_type m_monitor;
 		weapnode_data_type m_weap;
+
+		bool m_initialized{ false };
 
 		static OverrideNodeInfo m_Instance;
 	};

@@ -241,7 +241,6 @@
     <ClInclude Include="IED\Controller\NodeProcessorTask.h" />
     <ClInclude Include="IED\Controller\NodeOverrideData.h" />
     <ClInclude Include="IED\Controller\ObjectEntryStatus.h" />
-    <ClInclude Include="IED\Controller\SlotDeferedCleanupObject.h" />
     <ClInclude Include="IED\Data.h" />
     <ClInclude Include="IED\ConfigCommon.h" />
     <ClInclude Include="IED\EngineExtensions.h" />
@@ -483,7 +482,6 @@
     <ClCompile Include="IED\Controller\IUI.cpp" />
     <ClCompile Include="IED\Controller\NodeProcessorTask.cpp" />
     <ClCompile Include="IED\Controller\NodeOverrideData.cpp" />
-    <ClCompile Include="IED\Controller\SlotDeferedCleanupObject.cpp" />
     <ClCompile Include="IED\Data.cpp" />
     <ClCompile Include="IED\EngineExtensions.cpp" />
     <ClCompile Include="IED\FormCommon.cpp" />

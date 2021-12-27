@@ -92,7 +92,7 @@ namespace IED
 			virtual void DrawMenuBarItemsExtra();
 
 			virtual void ListDrawExtraActorInfo(
-				listValue_t* a_entry) override;
+				const listValue_t& a_entry) override;
 
 			virtual bool DrawExtraSlotInfo(
 				Game::FormID a_handle,

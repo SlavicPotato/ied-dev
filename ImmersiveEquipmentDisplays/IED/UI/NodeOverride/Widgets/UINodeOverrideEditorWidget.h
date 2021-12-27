@@ -679,7 +679,7 @@ namespace IED
 						"tree",
 						true,
 						"%s",
-						e->second.desc.c_str()))
+						e->second.desc))
 				{
 					ImGui::Spacing();
 

@@ -37,25 +37,17 @@ namespace IED
 			virtual void ListReset();
 
 			void ListUpdateCurrent();
-			void ListDrawInfo(listValue_t* a_entry);
+			void ListDrawInfo(const listValue_t& a_entry);
 
 			UIListBase(float a_itemWidthScalar = -12.0f) noexcept;
 			virtual ~UIListBase() noexcept = default;
 
-			virtual void ListDraw(
-				listValue_t*& a_entry,
-				const char*& a_curSelName);
+			virtual void ListDraw();
 
 			virtual void ListDrawOptions();
 			virtual void ListDrawExtraControls();
 
-			virtual void
-				ListFilterSelected(
-					listValue_t*& a_entry,
-					const char*& a_curSelName);
-
-			virtual void ListDrawInfoText(
-				listValue_t* a_entry) = 0;
+			virtual void ListDrawInfoText(const listValue_t& a_entry) = 0;
 
 			virtual listValue_t* ListGetSelected();
 
@@ -82,6 +74,9 @@ namespace IED
 				const SetObjectWrapper<listValue_t>& a_oldHandle,
 				const SetObjectWrapper<listValue_t>& a_newHandle);
 
+			bool ListSelectFirstAvailable();
+			void ListFilterSelected();
+
 			bool m_listFirstUpdate{ false };
 			bool m_listNextUpdateCurrent{ false };
 			bool m_listNextUpdate{ true };
@@ -96,19 +91,17 @@ namespace IED
 		};
 
 		template <class T, class P>
-		UIListBase<T, P>::UIListBase(float a_itemWidthScalar) noexcept
-			:
+		UIListBase<T, P>::UIListBase(float a_itemWidthScalar) noexcept :
 			m_itemWidthScalar(a_itemWidthScalar)
-		{}
+		{
+		}
 
 		template <class T, class P>
-		void UIListBase<T, P>::ListDraw(
-			listValue_t*& a_entry,
-			const char*& a_curSelName)
+		void UIListBase<T, P>::ListDraw()
 		{
-			ImGui::PushID("__base_list");
+			ListFilterSelected();
 
-			ListFilterSelected(a_entry, a_curSelName);
+			ImGui::PushID("__base_list");
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * m_itemWidthScalar);
 
@@ -125,7 +118,9 @@ namespace IED
 
 			if (ImGui::BeginCombo(
 					m_listBuf1,
-					a_curSelName,
+					m_listCurrent ?
+                        m_listCurrent->desc.c_str() :
+                        nullptr,
 					ImGuiComboFlags_HeightLarge))
 			{
 				const typename list_type::value_type* newItem = nullptr;
@@ -157,8 +152,6 @@ namespace IED
 				if (newItem)
 				{
 					ListSetCurrentItem(*newItem);
-					a_entry = std::addressof(*m_listCurrent);
-					a_curSelName = m_listCurrent->desc.c_str();
 				}
 
 				ImGui::EndCombo();
@@ -166,9 +159,9 @@ namespace IED
 
 			ImGui::PopID();
 
-			if (a_entry)
+			if (m_listCurrent)
 			{
-				ListDrawInfo(a_entry);
+				ListDrawInfo(*m_listCurrent);
 			}
 
 			m_listFilter.Draw();
@@ -187,46 +180,44 @@ namespace IED
 		{}
 
 		template <class T, class P>
-		inline void UIListBase<T, P>::ListDrawExtraControls()
+		void UIListBase<T, P>::ListDrawExtraControls()
 		{
 		}
 
 		template <class T, class P>
-		void UIListBase<T, P>::ListFilterSelected(
-			listValue_t*& a_entry,
-			const char*& a_curSelName)
+		bool UIListBase<T, P>::ListSelectFirstAvailable()
 		{
-			if (a_entry)
+			for (const auto& e : m_listData)
 			{
-				if (!m_listFilter.Test(a_entry->desc))
+				if (!m_listFilter.Test(e.second))
 				{
-					ListClearCurrentItem();
-					a_entry = nullptr;
-					a_curSelName = nullptr;
-
-					for (const auto& e : m_listData)
-					{
-						if (!m_listFilter.Test(e.second))
-						{
-							continue;
-						}
-
-						ListSetCurrentItem(e);
-
-						a_entry = std::addressof(*m_listCurrent);
-						a_curSelName = m_listCurrent->desc.c_str();
-
-						break;
-					}
+					continue;
 				}
-				else
+
+				ListSetCurrentItem(e);
+
+				return true;
+			}
+
+			return false;
+		}
+
+		template <class T, class P>
+		void UIListBase<T, P>::ListFilterSelected()
+		{
+			if (m_listCurrent)
+			{
+				if (!m_listFilter.Test(m_listCurrent->desc))
 				{
-					a_curSelName = a_entry->desc.c_str();
+					if (!ListSelectFirstAvailable())
+					{
+						ListClearCurrentItem();
+					}
 				}
 			}
 			else
 			{
-				a_curSelName = nullptr;
+				ListSelectFirstAvailable();
 			}
 		}
 
@@ -269,7 +260,10 @@ namespace IED
 		{
 			auto old(std::move(m_listCurrent));
 
-			m_listCurrent.emplace(a_value.first, a_value.second, GetData(a_value.first));
+			m_listCurrent.emplace(
+				a_value.first,
+				a_value.second,
+				GetData(a_value.first));
 
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
@@ -333,7 +327,7 @@ namespace IED
 		}
 
 		template <class T, class P>
-		void UIListBase<T, P>::ListDrawInfo(listValue_t* a_entry)
+		void UIListBase<T, P>::ListDrawInfo(const listValue_t& a_entry)
 		{
 			ImGui::SameLine();
 
