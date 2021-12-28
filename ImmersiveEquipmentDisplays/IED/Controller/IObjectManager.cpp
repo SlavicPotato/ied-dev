@@ -40,7 +40,7 @@ namespace IED
 			a_objectEntry.state->nodes.obj,
 			a_data.m_root);
 
-		if (a_objectEntry.state->dbEntry)
+		if (!a_objectEntry.state->dbEntries.empty())
 		{
 			QueueDatabaseCleanup();
 		}
@@ -275,6 +275,75 @@ namespace IED
 		m_objects.clear();
 	}
 
+	bool IObjectManager::ConstructArmorModel(
+		TESForm* a_form,
+		const std::vector<TESObjectARMA*>& a_in,
+		bool a_isFemale,
+		std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
+		NiPointer<NiNode>& a_out)
+	{
+		bool result = false;
+
+		for (auto& e : a_in)
+		{
+			auto texSwap = std::addressof(e->models[0][a_isFemale ? 1 : 0]);
+			auto path = texSwap->GetModelName();
+
+			if (!path || path[0] == 0)
+			{
+				texSwap = std::addressof(e->models[0][a_isFemale ? 0 : 1]);
+				path = texSwap->GetModelName();
+
+				if (!path || path[0] == 0)
+				{
+					continue;
+				}
+			}
+
+			NiPointer<NiNode> object;
+			ObjectDatabaseEntry entry;
+
+			if (!GetUniqueObject(path, entry, object))
+			{
+				continue;
+			}
+
+			char buffer[NODE_NAME_BUFFER_SIZE];
+
+			if (!a_out)
+			{
+				stl::snprintf(
+					buffer,
+					"IED ARMO [%.8X]",
+					a_form->formID.get());
+
+				a_out = CreateNode(buffer);
+				a_out->m_localTransform = {};
+			}
+
+			stl::snprintf(
+				buffer,
+				"IED ARMA [%.8X/%.8X]",
+				a_form->formID.get(),
+				e->formID.get());
+
+			object->m_name.Set(buffer);
+
+			EngineExtensions::ApplyTextureSwap(texSwap, object);
+
+			a_out->AttachChild(object, true);
+
+			if (entry)
+			{
+				a_dbEntries.emplace_back(std::move(entry));
+			}
+
+			result = true;
+		}
+
+		return result;
+	}
+
 	bool IObjectManager::LoadAndAttach(
 		processParams_t& a_params,
 		const Data::configBaseValues_t& a_config,
@@ -282,6 +351,7 @@ namespace IED
 		objectEntryBase_t& a_objectEntry,
 		TESForm* a_form,
 		bool a_leftWeapon,
+		bool a_loadArma,
 		bool a_visible)
 	{
 		RemoveObject(
@@ -298,11 +368,6 @@ namespace IED
 
 		if (a_form->formID.IsTemporary())
 		{
-			/*a_objectEntry.status.set(
-				ObjectEntryStatusCode::kTempForm,
-				a_params,
-				a_form->formID);*/
-
 			return false;
 		}
 
@@ -314,13 +379,9 @@ namespace IED
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
 				a_config.flags.test(Data::FlagsBase::kLoad1pWeaponModel),
+				a_loadArma,
 				modelParams))
 		{
-			/*a_objectEntry.status.set(
-				ObjectEntryStatusCode::kModelParamsError,
-				a_params,
-				a_form->formID);*/
-
 			Debug(
 				"[%.8X] [race: %.8X] [item: %.8X] couldn't get model params",
 				a_params.actor->formID.get(),
@@ -338,13 +399,8 @@ namespace IED
 				a_params.npcroot,
 				targetNodes))
 		{
-			/*a_objectEntry.status.set(
-				ObjectEntryStatusCode::kTargetNodeError,
-				a_params,
-				a_form->formID);*/
-
 			Debug(
-				"[%.8X] [race: %.8X] [item: %.8X] failed creating target node: %s",
+				"[%.8X] [race: %.8X] [item: %.8X] failed to create target node: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_form->formID.get(),
@@ -353,31 +409,55 @@ namespace IED
 			return false;
 		}
 
+		ASSERT(a_objectEntry.state->dbEntries.empty());
+
 		NiPointer<NiNode> object;
-		ObjectDatabaseEntry dbEntry;
 
-		if (!GetUniqueObject(modelParams.path, dbEntry, object))
+		if (!modelParams.armas)
 		{
-			/*a_objectEntry.status.set(
-				ObjectEntryStatusCode::kModelLoadError,
-				a_params,
-				a_form->formID);*/
+			ObjectDatabaseEntry tmp;
 
-			Warning(
-				"[%.8X] [race: %.8X] [item: %.8X] failed loading model: %s",
-				a_params.actor->formID.get(),
-				a_params.race->formID.get(),
-				a_form->formID.get(),
-				modelParams.path);
+			if (!GetUniqueObject(modelParams.path, tmp, object))
+			{
+				Warning(
+					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
+					a_params.actor->formID.get(),
+					a_params.race->formID.get(),
+					a_form->formID.get(),
+					modelParams.path);
 
-			return false;
+				return false;
+			}
+
+			if (tmp)
+			{
+				a_objectEntry.state->dbEntries.emplace_back(std::move(tmp));
+			}
+
+			object->m_localTransform = {};
+
+			if (modelParams.swap)
+			{
+				EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
+			}
 		}
-
-		object->m_localTransform = {};
-
-		if (modelParams.swap)
+		else
 		{
-			EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
+			if (!ConstructArmorModel(
+					a_form,
+					*modelParams.armas,
+					a_params.configSex == Data::ConfigSex::Female,
+					a_objectEntry.state->dbEntries,
+					object))
+			{
+				Warning(
+					"[%.8X] [race: %.8X] [item: %.8X] failed to construct armor model",
+					a_params.actor->formID.get(),
+					a_params.race->formID.get(),
+					a_form->formID.get());
+
+				return false;
+			}
 		}
 
 		if (!a_params.state.effectShadersReset)
@@ -397,6 +477,7 @@ namespace IED
 			break;
 		case ModelType::kArmor:
 			GetArmorNodeName(a_form->formID, modelParams.arma, buffer);
+			a_params.state.updateArmor = true;
 			break;
 		case ModelType::kMisc:
 		case ModelType::kLight:
@@ -438,7 +519,6 @@ namespace IED
 		a_objectEntry.state->nodeDesc = a_node;
 		a_objectEntry.state->atmReference = a_node.managed() ||
 		                                    a_config.flags.test(Data::FlagsBase::kReferenceMode);
-		a_objectEntry.state->dbEntry = std::move(dbEntry);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{

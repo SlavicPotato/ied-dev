@@ -1270,6 +1270,15 @@ namespace IED
 			}
 			DrawTip(UITip::LeftWeapon);
 
+			if (ImGui::CheckboxFlagsT(
+					LS(UICustomEditorString::LoadARMA, "3"),
+					stl::underlying(std::addressof(data.customFlags.value)),
+					stl::underlying(Data::CustomFlags::kLoadARMA)))
+			{
+				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+			}
+			DrawTip(UITip::LoadARMA);
+
 			ImGui::Columns();
 		}
 

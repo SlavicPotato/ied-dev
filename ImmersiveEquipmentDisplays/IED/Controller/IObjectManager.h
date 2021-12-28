@@ -83,6 +83,13 @@ namespace IED
 
 		void ClearObjectsImpl();
 
+		bool ConstructArmorModel(
+			TESForm* a_form,
+			const std::vector<TESObjectARMA*>& a_in,
+			bool a_isFemale,
+			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
+			NiPointer<NiNode>& a_out);
+
 		bool LoadAndAttach(
 			processParams_t& a_params,
 			const Data::configBaseValues_t& a_entry,
@@ -90,6 +97,7 @@ namespace IED
 			objectEntryBase_t& a_objectEntry,
 			TESForm* a_form,
 			bool a_leftWeapon,
+			bool a_loadArma,
 			bool a_visible);
 
 		void PlayObjectSound(
@@ -100,7 +108,6 @@ namespace IED
 
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
-
 	};
 
 }  // namespace IED

@@ -74,6 +74,7 @@ namespace IED
 			NiObjectNET* a_object,
 			const BSFixedString& a_name);
 		typedef bool (*unk14028BAD0_t)(NiNode* a_node);
+		typedef void (*fUnkC6B900_t)(NiNode* a_node, const char *a_str);
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
 
@@ -119,9 +120,12 @@ namespace IED
 		inline static const auto GetObjectByName =
 			IAL::Address<fGetNodeByName_t>(74481, 76207);
 
-		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);
+		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837); // 19baa0
 
 		inline static const auto m_unkglob0 = IAL::Address<std::int32_t*>(523662, 410201);
+		
+		inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
+		inline static const auto fUnkC6B900 = IAL::Address<fUnkC6B900_t>(69401, 0);
 
 	private:
 		inline static const auto m_shadowSceneNode =

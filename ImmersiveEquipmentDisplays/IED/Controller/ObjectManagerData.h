@@ -1,7 +1,7 @@
 #pragma once
 
-#include "INode.h"
 #include "IED/ConfigOverride.h"
+#include "INode.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
 //#include "ObjectEntryStatus.h"
@@ -39,11 +39,12 @@ namespace IED
 			state->nodes.obj.reset();
 			state->nodes.ref.reset();
 
-			if (state->dbEntry)
+			for (auto& e : state->dbEntries)
 			{
-				state->dbEntry->accessed = IPerfCounter::Query();
-				state->dbEntry.reset();
+				e->accessed = IPerfCounter::Query();
 			}
+
+			state->dbEntries.clear();
 
 			state->item.clear();
 			state->transform.clear();
@@ -102,7 +103,7 @@ namespace IED
 			Data::NodeDescriptor nodeDesc;
 			nodesRef_t nodes;
 			bool atmReference{ true };
-			ObjectDatabase::ObjectDatabaseEntry dbEntry;
+			std::vector<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
 			Data::cacheTransform_t transform;
 		};
 

@@ -15,6 +15,7 @@ namespace IED
 			TESModelTextureSwap* swap{ nullptr };
 			bool isShield{ false };
 			Game::FormID arma;
+			std::unique_ptr<std::vector<TESObjectARMA*>> armas;
 		};
 
 		template <
@@ -31,6 +32,7 @@ namespace IED
 			TESRace* a_race,
 			bool a_isFemale,
 			bool a_1pWeap,
+			bool a_useArma,
 			modelParams_t& a_out);
 	};
 

@@ -42,7 +42,8 @@ namespace IED
 			UIScale = 1031,
 			AnimSupportWarning = 1032,
 			CacheInfo = 1033,
-			ImportMode = 1034
+			ImportMode = 1034,
+			LoadARMA = 1035,
 		};
 
 	}

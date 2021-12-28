@@ -22,7 +22,9 @@ namespace IED
 			kEquipmentMode = kConsumeItem | kUseSharedCount | kDeltaEquipped,
 
 			kIgnoreRaceEquipTypes = 1u << 8,
-			kIgnoreExcessItemCount = 1u << 9
+			kIgnoreExcessItemCount = 1u << 9,
+
+			kLoadARMA = 1u << 10,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);

@@ -10,7 +10,7 @@ namespace IED
 		IModel::modelParams_t& a_out,
 		ModelType a_type = ModelType::kMisc)
 	{
-		TESModelTextureSwap* texSwap{nullptr};
+		TESModelTextureSwap* texSwap{ nullptr };
 		const char* path;
 
 		if constexpr (std::is_same_v<T, TESModel>)
@@ -50,6 +50,7 @@ namespace IED
 		TESRace* a_race,
 		bool a_isFemale,
 		bool a_1pWeap,
+		bool a_useArma,
 		modelParams_t& a_out)
 	{
 		switch (a_form->formType)
@@ -150,24 +151,58 @@ namespace IED
 				}
 				else
 				{
-					auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
-					auto path = texSwap->GetModelName();
-
-					if (!path || path[0] == 0)
+					if (a_useArma)
 					{
-						texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
-						path = texSwap->GetModelName();
-					}
+						a_out.armas = std::make_unique<std::vector<TESObjectARMA*>>();
 
-					if (!path || path[0] == 0)
-					{
-						return false;
+						for (auto arma : armor->armorAddons)
+						{
+							if (!arma)
+							{
+								continue;
+							}
+
+							if (!arma->isValidRace(a_race))
+							{
+								continue;
+							}
+
+							a_out.armas->emplace_back(arma);
+						}
+
+						if (a_out.armas->empty())
+						{
+							return false;
+						}
+						else
+						{
+							a_out.isShield = false;
+							a_out.type = ModelType::kArmor;
+
+							return true;
+						}
 					}
 					else
 					{
-						a_out = { ModelType::kArmor, path, texSwap, false, 0 };
+						auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
+						auto path = texSwap->GetModelName();
 
-						return true;
+						if (!path || path[0] == 0)
+						{
+							texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
+							path = texSwap->GetModelName();
+						}
+
+						if (!path || path[0] == 0)
+						{
+							return false;
+						}
+						else
+						{
+							a_out = { ModelType::kArmor, path, texSwap, false, 0 };
+
+							return true;
+						}
 					}
 				}
 			}

@@ -1977,9 +1977,9 @@ namespace IED
 					PlayObjectSound(a_params, a_config, a_entry, true);
 				}
 
-				if (a_entry.state->dbEntry)
+				for (auto& e : a_entry.state->dbEntries)
 				{
-					a_entry.state->dbEntry->accessed = IPerfCounter::Query();
+					e->accessed = IPerfCounter::Query();
 				}
 			}
 		}
@@ -1994,6 +1994,11 @@ namespace IED
 			}
 		}
 
+		if (a_visible != isVisible)
+		{
+			a_params.state.update = true;
+		}
+
 		a_entry.state->nodes.obj->SetVisible(a_visible);
 		a_entry.UpdateData(a_config);
 
@@ -2006,6 +2011,8 @@ namespace IED
 				a_node,
 				a_config.flags.test(Data::FlagsBase::kReferenceMode),
 				a_entry);
+
+			a_params.state.update = true;
 		}
 
 		if (!nodeAttached)
@@ -2015,9 +2022,9 @@ namespace IED
 				a_entry.state->nodes.obj,
 				a_entry.state->nodes.ref,
 				true);
-		}
 
-		a_params.state.update = true;
+			a_params.state.update = true;
+		}
 
 		return true;
 	}
@@ -2224,6 +2231,7 @@ namespace IED
 						objectEntry,
 						item->form,
 						ItemData::IsLeftWeaponSlot(slot),
+						false,
 						visible))
 				{
 					objectEntry.state->nodes.obj->SetVisible(visible);
@@ -2515,6 +2523,7 @@ namespace IED
 					a_objectEntry,
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
+					a_config.customFlags.test(CustomFlags::kLoadARMA),
 					visible))
 			{
 				a_objectEntry.SetNodeVisible(visible);
@@ -2578,6 +2587,7 @@ namespace IED
 					a_objectEntry,
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
+					a_config.customFlags.test(CustomFlags::kLoadARMA),
 					visible))
 			{
 				a_objectEntry.SetNodeVisible(visible);
@@ -2829,7 +2839,15 @@ namespace IED
 				ProcessSlots(params);
 				ProcessCustom(params);
 
-				if (params.state.update)
+				if (params.state.updateArmor)
+				{
+					EngineExtensions::fUnkC6B900(
+						a_root,
+						EngineExtensions::StrDismemberedLimb);
+
+					EngineExtensions::UpdateRoot(a_root);
+				}
+				else if (params.state.update)
 				{
 					UpdateRootInMenu(a_root);
 				}

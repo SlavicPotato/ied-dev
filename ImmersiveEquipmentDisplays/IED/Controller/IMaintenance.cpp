@@ -176,17 +176,19 @@ namespace IED
 	{
 		a_data.data.erase(0);
 
-		auto it = a_data.data.begin();
-		while (it != a_data.data.end())
+		for (auto it = a_data.data.begin(); it != a_data.data.end();)
 		{
-			auto it2 = it->second.keys.begin();
-			while (it2 != it->second.keys.end())
+			for (auto it2 = it->second.keys.begin(); it2 != it->second.keys.end();)
 			{
 				if (*it2 != StringHolder::GetSingleton().IED)
 				{
 					auto& pluginInfo = IData::GetPluginInfo().GetLookupRef();
 					if (!pluginInfo.contains(*it2))
 					{
+						Warning(
+							"Erasing actor block from missing plugin '%s'",
+							it2->c_str());
+
 						it2 = it->second.keys.erase(it2);
 						continue;
 					}

@@ -14,6 +14,7 @@ namespace IED
 		CommonParams
 	{
 		bool update{ false };
+		bool updateArmor{ false };
 		bool effectShadersReset{ false };
 	};
 
