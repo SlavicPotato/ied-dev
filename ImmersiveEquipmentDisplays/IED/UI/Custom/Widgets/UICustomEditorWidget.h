@@ -225,6 +225,7 @@ namespace IED
 			      TESFurniture::kTypeID,
 			      BGSArtObject::kTypeID,
 			      TESObjectACTI::kTypeID,
+			      BGSHeadPart::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 
@@ -254,18 +255,32 @@ namespace IED
 
 			if (ImGui::BeginChild("custom_editor_panel", { -1.0f, 0.0f }))
 			{
-				ImGui::PushItemWidth(ImGui::GetFontSize() * -10.5f);
+				std::vector<decltype(a_data.data)::value_type*> sorted;
 
 				for (auto& e : a_data.data)
 				{
-					if (!m_itemFilter.Test(e.first))
+					sorted.emplace_back(std::addressof(e));
+				}
+
+				std::sort(
+					sorted.begin(),
+					sorted.end(),
+					[](const auto& a_lhs, const auto& a_rhs) {
+						return a_lhs->first < a_rhs->first;
+					});
+
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -10.5f);
+
+				for (auto& e : sorted)
+				{
+					if (!m_itemFilter.Test(e->first))
 					{
 						continue;
 					}
 
-					ImGui::PushID(e.first.c_str());
+					ImGui::PushID(e->first.c_str());
 
-					DrawCustomEntry(a_handle, e.first, e.second);
+					DrawCustomEntry(a_handle, e->first, e->second);
 
 					ImGui::PopID();
 
@@ -296,9 +311,7 @@ namespace IED
 					 "%s",
 					 LS(UIWidgetCommonStrings::NewItemPrompt))
 				.call([this](const auto& a_p) {
-					auto& in = a_p.GetInput();
-
-					std::string name(in);
+					std::string name(a_p.GetInput());
 
 					if (name.empty())
 					{

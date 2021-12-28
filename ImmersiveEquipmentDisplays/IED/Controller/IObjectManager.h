@@ -83,7 +83,7 @@ namespace IED
 
 		void ClearObjectsImpl();
 
-		bool ConstructArmorModel(
+		bool ConstructArmorNode(
 			TESForm* a_form,
 			const std::vector<TESObjectARMA*>& a_in,
 			bool a_isFemale,

@@ -193,6 +193,7 @@
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
     <ClInclude Include="ImGui\MouseEventQueue.h" />
@@ -450,6 +451,7 @@
     <ClCompile Include="Drivers\UI.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\MouseEventQueue.cpp" />

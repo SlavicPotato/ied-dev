@@ -4,6 +4,7 @@
 #include "IObjectManager.h"
 
 #include <ext/Model.h>
+#include <ext/Node.h>
 
 namespace IED
 {
@@ -275,7 +276,7 @@ namespace IED
 		m_objects.clear();
 	}
 
-	bool IObjectManager::ConstructArmorModel(
+	bool IObjectManager::ConstructArmorNode(
 		TESForm* a_form,
 		const std::vector<TESObjectARMA*>& a_in,
 		bool a_isFemale,
@@ -314,7 +315,7 @@ namespace IED
 			{
 				stl::snprintf(
 					buffer,
-					"IED ARMO [%.8X]",
+					"IED ARMO R [%.8X]",
 					a_form->formID.get());
 
 				a_out = CreateNode(buffer);
@@ -415,9 +416,9 @@ namespace IED
 
 		if (!modelParams.armas)
 		{
-			ObjectDatabaseEntry tmp;
+			ObjectDatabaseEntry entry;
 
-			if (!GetUniqueObject(modelParams.path, tmp, object))
+			if (!GetUniqueObject(modelParams.path, entry, object))
 			{
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -429,9 +430,9 @@ namespace IED
 				return false;
 			}
 
-			if (tmp)
+			if (entry)
 			{
-				a_objectEntry.state->dbEntries.emplace_back(std::move(tmp));
+				a_objectEntry.state->dbEntries.emplace_back(std::move(entry));
 			}
 
 			object->m_localTransform = {};
@@ -443,7 +444,7 @@ namespace IED
 		}
 		else
 		{
-			if (!ConstructArmorModel(
+			if (!ConstructArmorNode(
 					a_form,
 					*modelParams.armas,
 					a_params.configSex == Data::ConfigSex::Female,
@@ -460,12 +461,12 @@ namespace IED
 			}
 		}
 
-		if (!a_params.state.effectShadersReset)
+		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
 		{
 			auto pl = Game::ProcessLists::GetSingleton();
 			pl->ResetEffectShaders(a_params.handle);
 
-			a_params.state.effectShadersReset = true;
+			a_params.state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
 		}
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
@@ -476,8 +477,10 @@ namespace IED
 			GetWeaponNodeName(a_form->formID, buffer);
 			break;
 		case ModelType::kArmor:
-			GetArmorNodeName(a_form->formID, modelParams.arma, buffer);
-			a_params.state.updateArmor = true;
+			GetArmorNodeName(
+				a_form->formID,
+				modelParams.arma ? modelParams.arma->formID : 0,
+				buffer);
 			break;
 		case ModelType::kMisc:
 		case ModelType::kLight:

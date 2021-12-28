@@ -1,13 +1,15 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
+
+#include "IED/UI/Widgets/Form/UIFormInfoTooltipWidget.h"
+#include "IED/UI/Widgets/Lists/UIActorListWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
+
 #include "UISlotEditorCommon.h"
+#include "Widgets/UISlotEditorWidget.h"
 
 #include "IED/GlobalProfileManager.h"
-
-#include "../Widgets/Lists/UIActorListWidget.h"
-#include "../Widgets/UIProfileSelectorWidget.h"
-#include "Widgets/UISlotEditorWidget.h"
 
 namespace IED
 {
@@ -18,7 +20,8 @@ namespace IED
 		class UISlotEditorActor :
 			// public UISlotEditorWidget<Game::FormID>,
 			public UISlotEditorCommon<Game::FormID>,
-			UIActorList<entrySlotData_t>
+			UIActorList<entrySlotData_t>,
+			UIFormInfoTooltipWidget
 		{
 		public:
 			UISlotEditorActor(Controller& a_controller);

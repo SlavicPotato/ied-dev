@@ -91,6 +91,8 @@ namespace IED
 			return ExtractFormModelParams<BGSStaticCollection>(a_form, a_out);
 		case TESObjectTREE::kTypeID:
 			return ExtractModelParams(std::addressof(static_cast<TESObjectTREE*>(a_form)->model), a_out);
+		case BGSHeadPart::kTypeID:
+			return ExtractFormModelParams<BGSHeadPart>(a_form, a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)
@@ -143,7 +145,7 @@ namespace IED
 						}
 						else
 						{
-							a_out = { ModelType::kArmor, path, texSwap, true, arma->formID };
+							a_out = { ModelType::kArmor, path, texSwap, true, arma };
 
 							return true;
 						}
@@ -153,7 +155,7 @@ namespace IED
 				{
 					if (a_useArma)
 					{
-						a_out.armas = std::make_unique<std::vector<TESObjectARMA*>>();
+						auto armas = std::make_unique<std::vector<TESObjectARMA*>>();
 
 						for (auto arma : armor->armorAddons)
 						{
@@ -167,17 +169,23 @@ namespace IED
 								continue;
 							}
 
-							a_out.armas->emplace_back(arma);
+							armas->emplace_back(arma);
 						}
 
-						if (a_out.armas->empty())
+						if (armas->empty())
 						{
 							return false;
 						}
 						else
 						{
-							a_out.isShield = false;
-							a_out.type = ModelType::kArmor;
+							a_out = {
+								ModelType::kArmor,
+								nullptr,
+								nullptr,
+								false,
+								nullptr,
+								std::move(armas)
+							};
 
 							return true;
 						}
@@ -199,7 +207,13 @@ namespace IED
 						}
 						else
 						{
-							a_out = { ModelType::kArmor, path, texSwap, false, 0 };
+							a_out = {
+								ModelType::kArmor,
+								path,
+								texSwap,
+								false,
+								nullptr
+							};
 
 							return true;
 						}

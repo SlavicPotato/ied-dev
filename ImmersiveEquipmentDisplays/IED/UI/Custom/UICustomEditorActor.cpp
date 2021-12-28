@@ -17,6 +17,7 @@ namespace IED
 			UIActorList<entryCustomData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIFormInfoTooltipWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -475,28 +476,7 @@ namespace IED
 			}
 
 			auto& flc = m_controller.UIGetFormLookupCache();
-
-			if (auto formInfo = flc.LookupForm(*object->state->item))
-			{
-				if (!object->state->nodes.obj->IsVisible())
-				{
-					ImGui::TextColored(UICommon::g_colorGreyed, "%s", "[Hidden]");
-					ImGui::SameLine();
-				}
-
-				if (formInfo->form.name.empty())
-				{
-					ImGui::TextColored(UICommon::g_colorLightBlue, "%.8X", formInfo->form.id.get());
-				}
-				else
-				{
-					ImGui::TextColored(UICommon::g_colorLightBlue, "%s", formInfo->form.name.c_str());
-				}
-			}
-			else
-			{
-				ImGui::TextColored(UICommon::g_colorLightBlue, "%.8X", object->state->item->get());
-			}
+			DrawObjectEntryHeaderInfo(flc.LookupForm(*object->state->item), *object);
 
 			if (*object->state->item != object->matchedItem)
 			{
@@ -507,7 +487,8 @@ namespace IED
 				ImGui::TextUnformatted("Matched:");
 				ImGui::SameLine();
 
-				if (auto formInfo = flc.LookupForm(object->matchedItem); formInfo && !formInfo->form.name.empty())
+				if (auto formInfo = flc.LookupForm(object->matchedItem); 
+					formInfo && !formInfo->form.name.empty())
 				{
 					ImGui::TextColored(UICommon::g_colorLightBlue, "%s", formInfo->form.name.c_str());
 				}

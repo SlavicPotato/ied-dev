@@ -80,6 +80,7 @@ namespace IED
 			case BGSStaticCollection::kTypeID:
 			case BGSKeyword::kTypeID:
 			case SpellItem::kTypeID:
+			case BGSHeadPart::kTypeID:
 				return form;
 			default:
 				return nullptr;

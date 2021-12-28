@@ -17,6 +17,7 @@ namespace IED
 			UIActorList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIFormInfoTooltipWidget(a_controller),
 			m_controller(a_controller)
 		{}
 
@@ -440,74 +441,8 @@ namespace IED
 			ImGui::Text("%s:", LS(CommonStrings::Item));
 			ImGui::SameLine();
 
-			ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorLightBlue);
-
 			auto& flc = m_controller.UIGetFormLookupCache();
-
-			if (auto formInfo = flc.LookupForm(*slot.state->item))
-			{
-				if (!slot.state->nodes.obj->IsVisible())
-				{
-					ImGui::TextColored(
-						UICommon::g_colorGreyed,
-						"%s",
-						LS(UIWidgetCommonStrings::HiddenBrackets));
-					ImGui::SameLine();
-				}
-
-				if (formInfo->form.name.empty())
-				{
-					ImGui::Text("%.8X", formInfo->form.id.get());
-				}
-				else
-				{
-					ImGui::Text("%s", formInfo->form.name.c_str());
-				}
-
-				ImGui::PopStyleColor();
-
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
-
-					ImGui::TextUnformatted(LS(UIWidgetCommonStrings::FormIDColon));
-					ImGui::SameLine();
-					ImGui::Text("%.8X", formInfo->form.id.get());
-
-					if (auto typeDesc = IFormCommon::GetFormTypeDesc(formInfo->form.type))
-					{
-						ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
-						ImGui::SameLine();
-						ImGui::Text("%s", typeDesc);
-					}
-					else
-					{
-						ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
-						ImGui::SameLine();
-						ImGui::Text("%hhu", formInfo->form.type);
-					}
-
-					if (slot.state->flags.test(ObjectEntryFlags::kScbLeft))
-					{
-						ImGui::Spacing();
-						ImGui::TextUnformatted(LS(UIWidgetCommonStrings::LeftScbAttached));
-					}
-
-					ImGui::PopTextWrapPos();
-					ImGui::EndTooltip();
-				}
-			}
-			else
-			{
-				ImGui::Text("%.8X", slot.state->item.get());
-				if (slot.state->flags.test(ObjectEntryFlags::kScbLeft))
-				{
-					UICommon::HelpMarker(LS(UIWidgetCommonStrings::LeftScbAttached));
-				}
-
-				ImGui::PopStyleColor();
-			}
+			DrawObjectEntryHeaderInfo(flc.LookupForm(*slot.state->item), slot);
 
 			return true;
 		}

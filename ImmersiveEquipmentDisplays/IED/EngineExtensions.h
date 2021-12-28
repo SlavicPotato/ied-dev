@@ -74,7 +74,8 @@ namespace IED
 			NiObjectNET* a_object,
 			const BSFixedString& a_name);
 		typedef bool (*unk14028BAD0_t)(NiNode* a_node);
-		typedef void (*fUnkC6B900_t)(NiNode* a_node, const char *a_str);
+		typedef void (*fUnkC6B900_t)(NiAVObject* a_object, const char* a_str);
+		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor *a_actor, NiAVObject *a_object);
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
 
@@ -125,7 +126,11 @@ namespace IED
 		inline static const auto m_unkglob0 = IAL::Address<std::int32_t*>(523662, 410201);
 		
 		inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
-		inline static const auto fUnkC6B900 = IAL::Address<fUnkC6B900_t>(69401, 0);
+
+		// BSDismemberSkinInstance
+		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
+		
+		//inline static const auto fUnk362E90 = IAL::Address<fUnk362E90_t>(24220, 0);
 
 	private:
 		inline static const auto m_shadowSceneNode =

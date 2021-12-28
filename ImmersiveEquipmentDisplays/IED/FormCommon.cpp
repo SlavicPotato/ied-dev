@@ -8,8 +8,7 @@ namespace IED
 {
 	bool IFormCommon::IsValidCustomForm(TESForm* a_form)
 	{
-		if (a_form->IsDeleted() ||
-		    !a_form->Has3D())
+		if (a_form->IsDeleted())
 		{
 			return false;
 		}
@@ -20,6 +19,7 @@ namespace IED
 		case TESObjectSTAT::kTypeID:
 		case BGSMovableStatic::kTypeID:
 		case TESObjectTREE::kTypeID:
+		case BGSHeadPart::kTypeID:
 		case TESObjectWEAP::kTypeID:
 		case TESObjectBOOK::kTypeID:
 		case TESObjectACTI::kTypeID:
@@ -44,8 +44,7 @@ namespace IED
 
 	bool IFormCommon::IsInventoryForm(TESForm* a_form)
 	{
-		if (a_form->IsDeleted() ||
-		    !a_form->Has3D())
+		if (a_form->IsDeleted())
 		{
 			return false;
 		}
@@ -95,8 +94,7 @@ namespace IED
 
 	bool IFormCommon::IsValidSlotForm(TESForm* a_form)
 	{
-		if (a_form->IsDeleted() ||
-		    !a_form->Has3D())
+		if (a_form->IsDeleted())
 		{
 			return false;
 		}
@@ -233,6 +231,8 @@ namespace IED
 		case TESFurniture::kTypeID:
 		case TESObjectACTI::kTypeID:
 			return GetFullName<TESObjectACTI>(a_form);
+		case BGSHeadPart::kTypeID:
+			return GetFullName<BGSHeadPart>(a_form);
 		case BGSKeyword::kTypeID:
 			return GetKeywordString(static_cast<BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
@@ -289,6 +289,8 @@ namespace IED
 			return "Movable Static";
 		case TESObjectTREE::kTypeID:
 			return "Tree";
+		case BGSHeadPart::kTypeID:
+			return "Head Part";
 		case TESAmmo::kTypeID:
 			return "Ammo";
 		case BGSKeyword::kTypeID:

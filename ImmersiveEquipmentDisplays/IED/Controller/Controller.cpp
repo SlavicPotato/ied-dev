@@ -1996,7 +1996,7 @@ namespace IED
 
 		if (a_visible != isVisible)
 		{
-			a_params.state.update = true;
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		a_entry.state->nodes.obj->SetVisible(a_visible);
@@ -2012,7 +2012,7 @@ namespace IED
 				a_config.flags.test(Data::FlagsBase::kReferenceMode),
 				a_entry);
 
-			a_params.state.update = true;
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		if (!nodeAttached)
@@ -2023,7 +2023,7 @@ namespace IED
 				a_entry.state->nodes.ref,
 				true);
 
-			a_params.state.update = true;
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		return true;
@@ -2235,7 +2235,7 @@ namespace IED
 						visible))
 				{
 					objectEntry.state->nodes.obj->SetVisible(visible);
-					a_params.state.update = true;
+					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
 					if (visible)
 					{
@@ -2533,7 +2533,7 @@ namespace IED
 					itemData.sharedCount--;
 				}
 
-				a_params.state.update = true;
+				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
 			return result;
@@ -2592,7 +2592,7 @@ namespace IED
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
-				a_params.state.update = true;
+				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
 			return result;
@@ -2839,17 +2839,16 @@ namespace IED
 				ProcessSlots(params);
 				ProcessCustom(params);
 
-				if (params.state.updateArmor)
+				if (params.state.flags.test_any(ProcessStateUpdateFlags::kUpdateMask))
 				{
-					EngineExtensions::fUnkC6B900(
-						a_root,
-						EngineExtensions::StrDismemberedLimb);
-
-					EngineExtensions::UpdateRoot(a_root);
-				}
-				else if (params.state.update)
-				{
-					UpdateRootInMenu(a_root);
+					if (params.state.flags.test(ProcessStateUpdateFlags::kForceUpdate))
+					{
+						EngineExtensions::UpdateRoot(a_root);
+					}
+					else
+					{
+						UpdateRootInMenu(a_root);
+					}
 				}
 			}
 		}

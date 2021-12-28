@@ -917,6 +917,9 @@
     <ClInclude Include="IED\Controller\ImportFlags.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1458,6 +1461,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Modals\UICommonModals.cpp">
       <Filter>Source\IED\UI\Modals</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp">
+      <Filter>Source\IED\UI\Widgets\Form</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

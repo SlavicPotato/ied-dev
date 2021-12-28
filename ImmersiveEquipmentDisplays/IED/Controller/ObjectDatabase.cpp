@@ -26,6 +26,11 @@ namespace IED
 			{
 				return false;
 			}
+
+			if (!ValidateObject(path, a_object))
+			{
+				return false;
+			}
 		}
 		else
 		{
@@ -38,6 +43,11 @@ namespace IED
 
 				ModelLoader loader;
 				if (!loader.LoadObject(spath.c_str(), entry->object))
+				{
+					return false;
+				}
+
+				if (!ValidateObject(path, a_object))
 				{
 					return false;
 				}
@@ -57,8 +67,57 @@ namespace IED
 			a_entry = it->second;
 			a_object = CreateClone(*it->second);
 		}
-
+		
 		return true;
+	}
+
+	bool ObjectDatabase::ValidateObject(
+		const char* a_path,
+		NiAVObject* a_object)
+	{
+		bool result = HasBSDismemberSkinInstance(a_object);
+
+		if (result)
+		{
+			Debug("[%s] objects with BSDismemberSkinInstance are not supported", a_path);
+		}
+
+		return !result;
+	}
+
+	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object)
+	{
+		auto r = Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
+			if (a_geometry->m_spSkinInstance)
+			{
+				if (ni_is_type(a_geometry->m_spSkinInstance->GetRTTI(), BSDismemberSkinInstance))
+				{
+					return Util::Node::VisitorControl::kStop;
+				}
+			}
+
+			return Util::Node::VisitorControl::kContinue;
+
+			/*
+			if (!dismemberSkinInstance->partitions)
+			{
+				return;
+			}
+
+			dismemberSkinInstance->unk98 = false;
+
+			for (std::int32_t i = 0; i < dismemberSkinInstance->numPartitions; i++)
+			{
+				auto& data = dismemberSkinInstance->partitions[i];
+
+				dismemberSkinInstance->unk98 = true;
+				data.editorVisible = true;
+
+				//_DMESSAGE("set %s | %s", object->m_name.c_str(), a_geometry->m_name.c_str());
+			}*/
+		});
+
+		return r == Util::Node::VisitorControl::kStop;
 	}
 
 	void ObjectDatabase::RunObjectCleanup()

@@ -392,7 +392,7 @@ namespace IED
 		stl::flag<AttachResultFlags> result{
 			AttachResultFlags::kNone
 		};
-
+		
 		if (auto bsxFlags = m_Instance->GetBSXFlags(a_object))
 		{
 			auto flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
@@ -459,6 +459,7 @@ namespace IED
 					scbRemove = scbNode;
 
 					scbLeftNode->ClearHidden();
+
 					result.set(AttachResultFlags::kScbLeft);
 				}
 				else
@@ -498,7 +499,7 @@ namespace IED
 		}
 
 		// collision related, 2nd param = flags
-		fUnk1CD130(a_object, 0x0);  //(a_shield || a_leftWeapon) ? 0x12 : (a_weapon ? 0x14 : 0x0));
+		fUnk1CD130(a_object, 0x0); 
 
 		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
 

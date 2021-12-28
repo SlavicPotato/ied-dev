@@ -1,13 +1,15 @@
 #pragma once
 
-#include "../UICommon.h"
-#include "../Widgets/Lists/UIActorListWidget.h"
-#include "../Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/UICommon.h"
+
+#include "IED/UI/Widgets/Form/UIFormInfoTooltipWidget.h"
+#include "IED/UI/Widgets/Lists/UIActorListWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 
 #include "UICustomEditorCommon.h"
 
-#include "IED/GlobalProfileManager.h"
 #include "IED/Controller/ObjectManagerData.h"
+#include "IED/GlobalProfileManager.h"
 
 namespace IED
 {
@@ -18,7 +20,8 @@ namespace IED
 	{
 		class UICustomEditorActor :
 			public UICustomEditorCommon<Game::FormID>,
-			UIActorList<entryCustomData_t>
+			UIActorList<entryCustomData_t>,
+			UIFormInfoTooltipWidget
 		{
 		public:
 			UICustomEditorActor(Controller& a_controller);
@@ -72,7 +75,7 @@ namespace IED
 			virtual void ApplyProfile(
 				profileSelectorParamsCustom_t<Game::FormID>& a_data,
 				const CustomProfile& a_profile) override;
-			
+
 			virtual void MergeProfile(
 				profileSelectorParamsCustom_t<Game::FormID>& a_data,
 				const CustomProfile& a_profile) override;

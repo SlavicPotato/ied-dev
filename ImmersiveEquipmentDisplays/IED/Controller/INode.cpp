@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "INode.h"
 #include "IED/EngineExtensions.h"
+#include "INode.h"
 
 #include <ext/Node.h>
 
@@ -279,11 +279,21 @@ namespace IED
 		Game::FormID a_arma,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])
 	{
-		stl::snprintf(
-			a_out,
-			"IED ARMOR [%.8X/%.8X]",
-			a_armor.get(),
-			a_arma.get());
+		if (a_arma)
+		{
+			stl::snprintf(
+				a_out,
+				"IED ARMOR [%.8X/%.8X]",
+				a_armor.get(),
+				a_arma.get());
+		}
+		else
+		{
+			stl::snprintf(
+				a_out,
+				"IED ARMOR [%.8X]",
+				a_armor.get());
+		}
 	}
 
 	void INode::GetWeaponNodeName(

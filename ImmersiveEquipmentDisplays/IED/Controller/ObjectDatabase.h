@@ -28,6 +28,9 @@ namespace IED
 			ObjectDatabaseEntry& a_entry,
 			NiPointer<NiNode>& a_object);
 
+		bool ValidateObject(const char* a_path, NiAVObject* a_object);
+		static bool HasBSDismemberSkinInstance(NiAVObject* a_object);
+
 		void RunObjectCleanup();
 
 		inline void QueueDatabaseCleanup() noexcept

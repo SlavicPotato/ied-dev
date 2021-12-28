@@ -7,14 +7,13 @@ namespace IED
 	class IModel
 	{
 	public:
-
 		struct modelParams_t
 		{
 			ModelType type;
 			const char* path{ nullptr };
 			TESModelTextureSwap* swap{ nullptr };
 			bool isShield{ false };
-			Game::FormID arma;
+			TESObjectARMA* arma{ nullptr };
 			std::unique_ptr<std::vector<TESObjectARMA*>> armas;
 		};
 
