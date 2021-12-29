@@ -42,12 +42,12 @@ namespace IED
 				auto entry = std::make_shared<entry_t>();
 
 				ModelLoader loader;
-				if (!loader.LoadObject(spath.c_str(), entry->object))
+				if (!loader.LoadObject(path, entry->object))
 				{
 					return false;
 				}
 
-				if (!ValidateObject(path, a_object))
+				if (!ValidateObject(path, entry->object))
 				{
 					return false;
 				}
