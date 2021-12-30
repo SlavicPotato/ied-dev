@@ -56,7 +56,7 @@ namespace IED
 			return nullptr;
 		}
 
-		SKMP_FORCEINLINE static TESForm* match_pm_equipped(
+		static TESForm* match_pm_equipped(
 			Actor* a_actor,
 			Game::FormID a_form)
 		{
@@ -74,13 +74,13 @@ namespace IED
 			return nullptr;
 		}
 
-		SKMP_FORCEINLINE static constexpr bool is_hand_slot(ObjectSlotExtra a_slot)
+		static constexpr bool is_hand_slot(ObjectSlotExtra a_slot)
 		{
 			return a_slot != ObjectSlotExtra::kArmor &&
 			       a_slot != ObjectSlotExtra::kAmmo;
 		}
 
-		SKMP_FORCEINLINE static constexpr bool match_form_slot(
+		static constexpr bool is_valid_form_for_slot(
 			TESForm* a_form,
 			ObjectSlotExtra a_slot,
 			bool a_left)
@@ -90,7 +90,7 @@ namespace IED
                        ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
-		SKMP_FORCEINLINE static bool match_race(
+		static bool match_race(
 			const equipmentOverrideCondition_t& a_match,
 			TESRace* a_race)
 		{
@@ -116,11 +116,11 @@ namespace IED
 			return true;
 		}
 
-		SKMP_FORCEINLINE static bool match_furniture(
+		static bool match_furniture(
 			CommonParams& a_params,
 			const equipmentOverrideCondition_t& a_match)
 		{
-			if (auto formid = a_match.form)
+			if (a_match.form)
 			{
 				auto furn = a_params.get_furniture();
 				if (!furn)
@@ -129,7 +129,7 @@ namespace IED
 				}
 
 				if (a_match.flags.test(Data::EquipmentOverrideConditionFlags::kNegateMatch1) ==
-				    (furn->formID == formid))
+				    (furn->formID == a_match.form))
 				{
 					return false;
 				}
@@ -164,8 +164,8 @@ namespace IED
 			const collectorData_t& a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
-			auto i = stl::underlying(a_match.slot);
-			if (i >= stl::underlying(ObjectSlotExtra::kMax))
+			auto slot = stl::underlying(a_match.slot);
+			if (slot >= stl::underlying(ObjectSlotExtra::kMax))
 			{
 				return false;
 			}
@@ -178,21 +178,16 @@ namespace IED
 					return false;
 				}
 
-				auto isLeftSlot = ItemData::IsLeftExtraSlot(a_match.slot);
+				auto isLeftSlot = ItemData::IsLeftHandExtraSlot(a_match.slot);
 
-				bool leftHand =
-					a_match.slot == ObjectSlotExtra::kShield ||
-					a_match.slot == ObjectSlotExtra::kTorch ||
-					isLeftSlot;
-
-				auto form = pm->equippedObject[leftHand ? ActorProcessManager::kEquippedHand_Left : ActorProcessManager::kEquippedHand_Right];
+				auto form = pm->equippedObject[isLeftSlot ? ActorProcessManager::kEquippedHand_Left : ActorProcessManager::kEquippedHand_Right];
 
 				if (!form)
 				{
 					return false;
 				}
 
-				if (!match_form_slot(form, a_match.slot, isLeftSlot))
+				if (!is_valid_form_for_slot(form, a_match.slot, isLeftSlot))
 				{
 					return false;
 				}
@@ -209,7 +204,7 @@ namespace IED
 				if (a_match.keyword.get_id())
 				{
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-					    has_keyword(a_match.keyword, form))
+					    IFormCommon::HasKeyword(form, a_match.keyword))
 					{
 						return false;
 					}
@@ -219,7 +214,7 @@ namespace IED
 			}
 			else
 			{
-				if (a_data.slots[i] == EquippedTypeFlags::kNone)
+				if (a_data.slots[slot] == EquippedTypeFlags::kNone)
 				{
 					return false;
 				}
@@ -244,7 +239,7 @@ namespace IED
 					if (a_match.keyword.get_id())
 					{
 						if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-						    has_keyword(a_match.keyword, it->second.form))
+						    IFormCommon::HasKeyword(it->second.form, a_match.keyword))
 						{
 							return false;
 						}
@@ -428,9 +423,7 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchSlots))
 					{
-						auto slot = ItemData::ExtraSlotToSlot(a_match.slot);
-
-						auto i = stl::underlying(slot);
+						auto i = stl::underlying(ItemData::ExtraSlotToSlot(a_match.slot));
 						if (i >= stl::underlying(ObjectSlot::kMax))
 						{
 							return false;

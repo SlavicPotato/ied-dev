@@ -173,7 +173,7 @@ namespace IED
 
 		void UIProfileEditorCustom::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Custom, "peb_1")))
+			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
 			{
 				DrawMenuBarItems();
 

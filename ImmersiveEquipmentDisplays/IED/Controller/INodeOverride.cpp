@@ -12,8 +12,7 @@ namespace IED
 {
 	//SKMP_FORCEINLINE static has_keyword(TESForm *a_form, Game::FormID)
 
-	SKMP_FORCEINLINE static bool match_slot_form(
-		Game::FormID a_formid,
+	static bool match_form_slot(
 		const Data::configNodeOverrideCondition_t& a_data,
 		const INodeOverride::nodeOverrideParams_t& a_params)
 	{
@@ -23,7 +22,7 @@ namespace IED
 		{
 			if (auto form = e.GetFormIfActive())
 			{
-				if (form->formID == a_formid)
+				if (form->formID == a_data.form.get_id())
 				{
 					foundForm = form;
 					break;
@@ -48,7 +47,7 @@ namespace IED
 		return true;
 	}
 
-	SKMP_FORCEINLINE static constexpr bool match_keyword_slot(
+	static constexpr bool match_keyword_slot(
 		BGSKeyword* a_keyword,
 		const INodeOverride::nodeOverrideParams_t& a_params)
 	{
@@ -66,10 +65,21 @@ namespace IED
 		return false;
 	}
 
-	SKMP_FORCEINLINE static bool match_keyword_bip(
+	static bool match_keyword_equipped(
 		BGSKeyword* a_keyword,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
+		if (auto pm = a_params.actor->processManager)
+		{
+			for (auto& e : pm->equippedObject)
+			{
+				if (e && IFormCommon::HasKeyword(e, a_keyword))
+				{
+					return true;
+				}
+			}
+		}
+
 		auto data = a_params.get_item_data();
 
 		for (auto& e : *data)
@@ -88,7 +98,256 @@ namespace IED
 		return false;
 	}
 
-	SKMP_FORCEINLINE static bool match(
+	static TESForm* find_equipped_form_pm(
+		Game::FormID a_formid,
+		const INodeOverride::nodeOverrideParams_t& a_params)
+	{
+		if (auto pm = a_params.actor->processManager)
+		{
+			for (auto& e : pm->equippedObject)
+			{
+				if (e && e->formID == a_formid)
+				{
+					return e;
+				}
+			}
+		}
+
+		return nullptr;
+	}
+
+	static auto find_equipped_form(
+		Game::FormID a_form,
+		INodeOverride::nodeOverrideParams_t& a_params)
+		-> std::pair<TESForm*, INodeOverride::nodeOverrideParams_t::item_container_type::value_type*>
+	{
+		if (auto form = find_equipped_form_pm(a_form, a_params))
+		{
+			return { form, nullptr };
+		}
+
+		auto data = a_params.get_item_data();
+
+		auto it = data->find(a_form);
+		if (it != data->end())
+		{
+			return { it->second.item, std::addressof(*it) };
+		}
+
+		return { nullptr, nullptr };
+	}
+
+	static bool match_form_equipped(
+		const Data::configNodeOverrideCondition_t& a_data,
+		INodeOverride::nodeOverrideParams_t& a_params)
+	{
+		auto r = find_equipped_form(a_data.form.get_id(), a_params);
+
+		if (!r.first)
+		{
+			return false;
+		}
+
+		if (a_data.keyword.get_id())
+		{
+			if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
+			    IFormCommon::HasKeyword(r.first, a_data.keyword))
+			{
+				return false;
+			}
+		}
+
+		if (r.second && r.second->second.item->IsArmor())
+		{
+			r.second->second.matched = true;
+		}
+
+		return true;
+	}
+
+	static inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot)
+	{
+		return a_slot != Data::ObjectSlotExtra::kArmor &&
+		       a_slot != Data::ObjectSlotExtra::kAmmo;
+	}
+
+	static inline constexpr bool is_valid_form_for_slot(
+		TESForm* a_form,
+		Data::ObjectSlotExtra a_slot,
+		bool a_left)
+	{
+		return a_left ?
+                   Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
+                   Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
+	}
+
+	constexpr bool match_slotted_type(
+		const Data::configNodeOverrideCondition_t& a_match,
+		INodeOverride::nodeOverrideParams_t& a_params)
+	{
+		auto slot = stl::underlying(Data::ItemData::ExtraSlotToSlot(a_match.typeSlot));
+		if (slot >= stl::underlying(Data::ObjectSlot::kMax))
+		{
+			return false;
+		}
+
+		auto& slots = a_params.objects.GetSlots();
+
+		auto form = slots[slot].GetFormIfActive();
+		if (!form)
+		{
+			return false;
+		}
+
+		if (a_match.form.get_id())
+		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
+			    (form->formID == a_match.form.get_id()))
+			{
+				return false;
+			}
+		}
+
+		if (a_match.keyword.get_id())
+		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
+			    IFormCommon::HasKeyword(form, a_match.keyword))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool match_equipped_type(
+		const Data::configNodeOverrideCondition_t& a_match,
+		INodeOverride::nodeOverrideParams_t& a_params)
+	{
+		TESForm* form;
+
+		if (is_hand_slot(a_match.typeSlot))
+		{
+			auto pm = a_params.actor->processManager;
+			if (!pm)
+			{
+				return false;
+			}
+
+			auto isLeftSlot = Data::ItemData::IsLeftHandExtraSlot(a_match.typeSlot);
+
+			form = pm->equippedObject[isLeftSlot ? ActorProcessManager::kEquippedHand_Left : ActorProcessManager::kEquippedHand_Right];
+
+			if (!form)
+			{
+				return false;
+			}
+
+			if (!is_valid_form_for_slot(form, a_match.typeSlot, isLeftSlot))
+			{
+				return false;
+			}
+		}
+		else
+		{
+			if (!a_params.get_biped_has_armor())
+			{
+				return false;
+			}
+
+			if (a_match.typeSlot == Data::ObjectSlotExtra::kArmor)
+			{
+				if (a_match.form.get_id())
+				{
+					auto data = a_params.get_item_data();
+
+					auto it = data->find(a_match.form.get_id());
+
+					auto rv = a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1);
+
+					if (it == data->end())
+					{
+						return rv;
+					}
+
+					auto armor = it->second.item->As<TESObjectARMO>();
+
+					if (!armor || armor->IsShield())
+					{
+						return rv;
+					}
+
+					if (a_match.keyword.get_id())
+					{
+						if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
+						    IFormCommon::HasKeyword(armor, a_match.keyword))
+						{
+							return false;
+						}
+					}
+
+					it->second.matched = !rv;
+
+					return !rv;
+				}
+				else
+				{
+					if (a_match.keyword.get_id())
+					{
+						return a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
+						       a_params.equipped_armor_visitor([&](auto* a_form) {
+								   return IFormCommon::HasKeyword(a_form, a_match.keyword);
+							   });
+					}
+
+					return true;
+				}
+			}
+			else if (a_match.typeSlot == Data::ObjectSlotExtra::kAmmo)
+			{
+				auto biped = a_params.get_biped();
+				if (biped)
+				{
+					return false;
+				}
+
+				auto& e = biped->objects[stl::underlying(Biped::BIPED_OBJECT::kQuiver)];
+
+				form = e.item;
+
+				if (!form || form == e.addon)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		if (a_match.form.get_id())
+		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
+			    (a_match.form.get_id() == form->formID))
+			{
+				return false;
+			}
+		}
+
+		if (a_match.keyword.get_id())
+		{
+			if (a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
+			    IFormCommon::HasKeyword(form, a_match.keyword))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	static bool match(
 		const Data::configNodeOverrideCondition_t& a_data,
 		INodeOverride::nodeOverrideParams_t& a_params,
 		bool a_ignoreNode = false)
@@ -102,7 +361,7 @@ namespace IED
 					return false;
 				}
 
-				auto formid = a_data.form.get_id();
+				auto& formid = a_data.form.get_id();
 
 				if (!formid)
 				{
@@ -117,7 +376,7 @@ namespace IED
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
-					result += match_slot_form(formid, a_data, a_params);
+					result += match_form_slot(a_data, a_params);
 
 					if (result == min)
 					{
@@ -127,29 +386,7 @@ namespace IED
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchEquipped))
 				{
-					auto data = a_params.get_item_data();
-
-					auto it = data->find(formid);
-					if (it == data->end())
-					{
-						return false;
-					}
-
-					if (a_data.keyword.get_id())
-					{
-						if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-						    IFormCommon::HasKeyword(it->second.item, a_data.keyword))
-						{
-							return false;
-						}
-					}
-
-					if (it->second.item->IsArmor())
-					{
-						it->second.matched = true;
-					}
-
-					result++;
+					result += match_form_equipped(a_data, a_params);
 				}
 
 				return result == min;
@@ -162,13 +399,7 @@ namespace IED
 					return false;
 				}
 
-				auto kwform = a_data.keyword.get_form();
-				if (!kwform)
-				{
-					return false;
-				}
-
-				auto keyword = kwform->As<BGSKeyword>();
+				auto keyword = a_data.keyword.get_form_as<BGSKeyword>();
 				if (!keyword)
 				{
 					return false;
@@ -192,7 +423,44 @@ namespace IED
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchEquipped))
 				{
-					result += match_keyword_bip(keyword, a_params);
+					result += match_keyword_equipped(keyword, a_params);
+				}
+
+				return result == min;
+			}
+			break;
+		case Data::NodeOverrideConditionType::Type:
+			{
+				if (!a_data.flags.test_any(Data::NodeOverrideConditionFlags::kMatchAll))
+				{
+					return false;
+				}
+
+				if (stl::underlying(a_data.typeSlot) >=
+				    stl::underlying(Data::ObjectSlotExtra::kMax))
+				{
+					return false;
+				}
+
+				std::uint32_t result = 0;
+				std::uint32_t min = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
+				                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                        2u :
+                                        1u;
+
+				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
+				{
+					result += match_slotted_type(a_data, a_params);
+
+					if (result == min)
+					{
+						return true;
+					}
+				}
+
+				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchEquipped))
+				{
+					result += match_equipped_type(a_data, a_params);
 				}
 
 				return result == min;
@@ -232,7 +500,7 @@ namespace IED
 				}
 				else
 				{
-					if (auto formid = a_data.form.get_id())
+					if (auto& formid = a_data.form.get_id())
 					{
 						if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
 						    (form->formID == formid))
@@ -260,40 +528,8 @@ namespace IED
 						it->second.matched = true;
 					}
 				}
-			}
-			break;
-		case Data::NodeOverrideConditionType::EquipmentSlot:
-			{
-				if (a_data.equipmentSlot >= Data::ObjectSlot::kMax)
-				{
-					return false;
-				}
 
-				auto& slot = a_params.objects.GetSlot(a_data.equipmentSlot);
-
-				auto form = slot.GetFormIfActive();
-				if (!form)
-				{
-					return false;
-				}
-
-				if (auto formid = a_data.form.get_id())
-				{
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-					    (form->formID == formid))
-					{
-						return false;
-					}
-				}
-
-				if (a_data.keyword.get_id())
-				{
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
-					    IFormCommon::HasKeyword(form, a_data.keyword))
-					{
-						return false;
-					}
-				}
+				return true;
 			}
 			break;
 		case Data::NodeOverrideConditionType::Node:
@@ -326,11 +562,13 @@ namespace IED
 						return false;
 					}
 				}
+
+				return true;
 			}
 			break;
 		case Data::NodeOverrideConditionType::Race:
 			{
-				auto formid = a_data.form.get_id();
+				auto& formid = a_data.form.get_id();
 
 				if (!formid)
 				{
@@ -350,11 +588,13 @@ namespace IED
 						return false;
 					}
 				}
+
+				return true;
 			}
 			break;
 		case Data::NodeOverrideConditionType::Furniture:
 			{
-				if (auto formid = a_data.form.get_id())
+				if (auto& formid = a_data.form.get_id())
 				{
 					auto furn = a_params.get_furniture();
 					if (!furn)
@@ -392,16 +632,16 @@ namespace IED
 				{
 					return a_params.get_using_furniture();
 				}
+
+				return true;
 			}
 			break;
-		default:
-			return false;
 		}
 
-		return true;
+		return false;
 	}
 
-	SKMP_FORCEINLINE static constexpr bool run_matches(
+	static constexpr bool run_matches(
 		const Data::configNodeOverrideConditionList_t& a_data,
 		INodeOverride::nodeOverrideParams_t& a_params,
 		bool a_default,
@@ -437,7 +677,7 @@ namespace IED
 		return result;
 	}
 
-	SKMP_FORCEINLINE static constexpr bool run_matches(
+	static constexpr bool run_matches(
 		const Data::configNodeOverrideOffset_t& a_data,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
@@ -447,7 +687,7 @@ namespace IED
 			!a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kRequiresConditionList));
 	}
 
-	SKMP_FORCEINLINE static constexpr bool run_visibility_matches(
+	static constexpr bool run_visibility_matches(
 		const Data::configNodeOverride_t& a_data,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
@@ -457,7 +697,7 @@ namespace IED
 			!a_data.overrideFlags.test(Data::NodeOverrideFlags::kVisibilityRequiresConditionList));
 	}
 
-	SKMP_FORCEINLINE void constexpr apply_transform(
+	void constexpr apply_transform(
 		const Data::configNodeOverrideOffset_t& a_data,
 		NiTransform& a_out,
 		NiPoint3& a_posAccum)
@@ -531,7 +771,7 @@ namespace IED
 		}
 	}
 
-	SKMP_FORCEINLINE void apply_adjust(
+	void apply_adjust(
 		const Data::configNodeOverrideOffset_t& a_data,
 		NiTransform& a_out,
 		float a_adjust,
@@ -695,7 +935,7 @@ namespace IED
 		a_node->SetVisible(visible);
 	}
 
-	SKMP_FORCEINLINE void attach_node_to_target(
+	void attach_node_to_target(
 		const weapNodeEntry_t& a_entry,
 		const stl::fixed_string& a_target,
 		NiNode* a_root)
@@ -781,7 +1021,7 @@ namespace IED
 	}
 
 	auto INodeOverride::nodeOverrideParams_t::get_item_data()
-		-> std::unordered_map<Game::FormID, armorInfoEntry_t>*
+		-> std::unordered_map<Game::FormID, bipedInfoEntry_t>*
 	{
 		if (!itemData)
 		{
@@ -805,7 +1045,10 @@ namespace IED
 						continue;
 					}
 
-					auto r = itemData->try_emplace(item->formID, item, static_cast<Biped::BIPED_OBJECT>(i));
+					auto r = itemData->try_emplace(
+						item->formID,
+						item,
+						static_cast<Biped::BIPED_OBJECT>(i));
 
 					if (addon)
 					{
@@ -813,9 +1056,9 @@ namespace IED
 						{
 							if (auto arma = addon->As<TESObjectARMA>())
 							{
-								r.first->second.totalWeightAdjust = std::max(
+								r.first->second.weaponAdjust = std::max(
 									Math::zero_nan(arma->data.weaponAdjust),
-									r.first->second.totalWeightAdjust);
+									r.first->second.weaponAdjust);
 							}
 						}
 					}

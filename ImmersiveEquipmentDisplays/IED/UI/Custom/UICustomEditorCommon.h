@@ -48,7 +48,7 @@ namespace IED
 				T a_handle,
 				entryCustomData_t& a_data) override;
 
-			virtual const CustomProfile::base_type&
+			virtual CustomProfile::base_type
 				GetData(const profileSelectorParamsCustom_t<T>& a_handle) override;
 
 			virtual Data::configCustomHolder_t&
@@ -196,7 +196,7 @@ namespace IED
 		}
 
 		template <class T>
-		const CustomProfile::base_type& UICustomEditorCommon<T>::GetData(
+		CustomProfile::base_type UICustomEditorCommon<T>::GetData(
 			const profileSelectorParamsCustom_t<T>& a_data)
 		{
 			return a_data.data;

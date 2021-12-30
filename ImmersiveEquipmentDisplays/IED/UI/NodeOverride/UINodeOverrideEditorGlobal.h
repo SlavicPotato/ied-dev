@@ -42,7 +42,7 @@ namespace IED
 				profileSelectorParamsNodeOverride_t<int>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
-			virtual const NodeOverrideProfile::base_type& GetData(
+			virtual NodeOverrideProfile::base_type GetData(
 				const profileSelectorParamsNodeOverride_t<int>& a_params) override;
 
 			virtual void OnUpdate(
@@ -61,14 +61,24 @@ namespace IED
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
-			virtual void OnClearParent(
+			virtual void OnClearPlacement(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
+
+			virtual void OnClearAll(
+				int a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+
+			virtual void OnClearAllPlacement(
+				int a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				int) const override;
 
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
+
+			virtual UIPopupQueue& GetPopupQueue() override;
 
 			void UpdateData();
 

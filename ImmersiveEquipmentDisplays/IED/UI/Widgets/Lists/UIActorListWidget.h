@@ -30,7 +30,7 @@ namespace IED
 
 			using listValue_t = UIListBase<T, Game::FormID>::listValue_t;
 
-			UIActorList(Controller& a_controller, float a_itemWidthScalar = -11.0f);
+			UIActorList(Controller& a_controller, float a_itemWidthScalar = -6.5f);
 			virtual ~UIActorList() noexcept = default;
 
 		private:

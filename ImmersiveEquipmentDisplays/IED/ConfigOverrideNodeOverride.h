@@ -70,7 +70,7 @@ namespace IED
 			Form,
 			Keyword,
 			BipedSlot,
-			EquipmentSlot,
+			Type,
 			Race,
 			Furniture
 		};
@@ -97,17 +97,22 @@ namespace IED
 			};
 
 			configNodeOverrideCondition_t(
-				Game::FormID a_form,
-				NodeOverrideConditionType a_type)
+				NodeOverrideConditionType a_type,
+				Game::FormID a_form)
 			{
-				if (a_type == NodeOverrideConditionType::Form ||
-				    a_type == NodeOverrideConditionType::Race)
+				if (a_type == NodeOverrideConditionType::Race)
 				{
 					form = a_form;
+				}
+				else if (a_type == NodeOverrideConditionType::Form)
+				{
+					form = a_form;
+					flags = NodeOverrideConditionFlags::kMatchEquipped;
 				}
 				else if (a_type == NodeOverrideConditionType::Keyword)
 				{
 					keyword = a_form;
+					flags = NodeOverrideConditionFlags::kMatchEquipped;
 				}
 				else
 				{
@@ -150,15 +155,16 @@ namespace IED
 			}
 
 			inline configNodeOverrideCondition_t(
-				ObjectSlot a_slot) :
-				equipmentSlot(a_slot)
+				ObjectSlotExtra a_slot) :
+				typeSlot(a_slot),
+				flags(NodeOverrideConditionFlags::kMatchEquipped)
 			{
-				fbf.type = NodeOverrideConditionType::EquipmentSlot;
+				fbf.type = NodeOverrideConditionType::Type;
 			}
 
 			union
 			{
-				stl::flag<NodeOverrideConditionFlags> flags{ NodeOverrideConditionFlags::kMatchEquipped };
+				stl::flag<NodeOverrideConditionFlags> flags{ NodeOverrideConditionFlags::kNone };
 				NodeOverrideConditionFlagsBitfield fbf;
 			};
 
@@ -166,7 +172,7 @@ namespace IED
 			configCachedForm_t form;
 			configCachedForm_t keyword;
 			std::uint32_t bipedSlot{ stl::underlying(Biped::kNone) };
-			ObjectSlot equipmentSlot{ ObjectSlot::kMax };
+			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
 
 		private:
 			template <class Archive>
@@ -177,7 +183,7 @@ namespace IED
 				ar& form;
 				ar& keyword;
 				ar& bipedSlot;
-				ar& equipmentSlot;
+				ar& typeSlot;
 			}
 		};
 

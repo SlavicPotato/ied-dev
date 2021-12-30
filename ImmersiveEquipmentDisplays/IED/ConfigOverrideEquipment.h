@@ -16,7 +16,6 @@ namespace IED
 			kMatchSlots = 1u << 2,
 			kBothMustMatch = 1u << 3
 
-
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideFlags);
@@ -38,7 +37,7 @@ namespace IED
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
 			kLayingDown = 1u << 11,
-			
+
 			kNegateMatch1 = 1u << 13,
 			kNegateMatch2 = 1u << 14
 		};
@@ -75,17 +74,39 @@ namespace IED
 			equipmentOverrideCondition_t() = default;
 
 			equipmentOverrideCondition_t(
-				EquipmentOverrideConditionType a_matchType,
-				Game::FormID a_form,
-				Data::ObjectSlotExtra a_type,
-				Game::FormID a_keyword = {}) :				
-				form(a_form),
-				slot{ a_type },
-				keyword(a_keyword)
+				EquipmentOverrideConditionType a_type,
+				Game::FormID a_form)
 			{
-				fbf.type = a_matchType;
+				if (a_type == EquipmentOverrideConditionType::Race)
+				{
+					form = a_form;
+				}
+				else if (a_type == EquipmentOverrideConditionType::Form)
+				{
+					form = a_form;
+					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
+				}
+				else if (a_type == EquipmentOverrideConditionType::Keyword)
+				{
+					keyword = a_form;
+					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
+				}
+				else
+				{
+					HALT("FIXME");
+				}
+
+				fbf.type = a_type;
 			}
-			
+
+			equipmentOverrideCondition_t(
+				Data::ObjectSlotExtra a_slot) :
+				slot(a_slot),
+				flags(EquipmentOverrideConditionFlags::kMatchEquipped)
+			{
+				fbf.type = EquipmentOverrideConditionType::Type;
+			}
+
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
 			{
@@ -110,7 +131,6 @@ namespace IED
 			configCachedForm_t keyword;
 
 		private:
-
 			template <class Archive>
 			void serialize(Archive& ar, const unsigned int version)
 			{

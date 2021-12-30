@@ -38,7 +38,7 @@ namespace IED
 				Data::configMapNodeOverrides_t& a_map,
 				const stl::fixed_string& a_name);
 
-			bool EraseConfigParent(
+			bool EraseConfigPlacement(
 				T a_handle,
 				Data::configMapNodeOverrides_t& a_map,
 				const stl::fixed_string& a_name);
@@ -140,7 +140,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline bool UINodeOverrideEditorCommon<T>::EraseConfigParent(
+		inline bool UINodeOverrideEditorCommon<T>::EraseConfigPlacement(
 			T a_handle,
 			Data::configMapNodeOverrides_t& a_map,
 			const stl::fixed_string& a_name)
@@ -172,7 +172,7 @@ namespace IED
 		{
 			if (auto it = a_data.find(a_name); it != a_data.end())
 			{
-				a_workingData.emplace(a_name, it->second);
+				a_workingData.insert_or_assign(a_name, it->second);
 			}
 		}
 

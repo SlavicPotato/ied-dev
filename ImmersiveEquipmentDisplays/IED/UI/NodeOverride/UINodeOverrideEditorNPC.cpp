@@ -176,7 +176,7 @@ namespace IED
 			}
 		}
 
-		const entryNodeOverrideData_t& UINodeOverrideEditorNPC::GetData(Game::FormID a_handle)
+		entryNodeOverrideData_t UINodeOverrideEditorNPC::GetData(Game::FormID a_handle)
 		{
 			auto& npcInfo = m_controller.GetNPCInfo();
 
@@ -184,19 +184,17 @@ namespace IED
 			{
 				auto& store = m_controller.GetConfigStore();
 
-				m_temp = store.active.transforms.GetNPC(
+				return store.active.transforms.GetNPC(
 					a_handle,
 					it->second->race);
 			}
 			else
 			{
-				m_temp.clear();
+				return {};
 			}
-
-			return m_temp;
 		}
 
-		const NodeOverrideProfile::base_type& UINodeOverrideEditorNPC::GetData(
+		NodeOverrideProfile::base_type UINodeOverrideEditorNPC::GetData(
 			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -204,14 +202,12 @@ namespace IED
 
 			if (auto it = data.find(a_params.handle); it != data.end())
 			{
-				m_temp = it->second;
+				return it->second;
 			}
 			else
 			{
-				m_temp.clear();
+				return {};
 			}
-
-			return m_temp;
 		}
 
 		void UINodeOverrideEditorNPC::OnSexChanged(Data::ConfigSex a_newSex)
@@ -291,30 +287,64 @@ namespace IED
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
-				PostClear(
-					GetData(a_handle).data,
-					a_params.entry.data,
-					a_params.name);
-
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
+
+			PostClear(
+				GetData(a_handle).data,
+				a_params.entry.data,
+				a_params.name);
 		}
 
-		void UINodeOverrideEditorNPC::OnClearParent(
+		void UINodeOverrideEditorNPC::OnClearPlacement(
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
 
-			if (EraseConfigParent(a_handle, data, a_params.name))
+			if (EraseConfigPlacement(a_handle, data, a_params.name))
 			{
-				PostClear(
-					GetData(a_handle).placementData,
-					a_params.entry.placementData,
-					a_params.name);
-
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
+
+			PostClear(
+				GetData(a_handle).placementData,
+				a_params.entry.placementData,
+				a_params.name);
+		}
+
+		void UINodeOverrideEditorNPC::OnClearAll(
+			Game::FormID a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+
+			auto it = data.find(a_handle);
+			if (it != data.end())
+			{
+				it->second.data.clear();
+
+				m_controller.RequestEvaluateTransforms(a_handle, true);
+			}
+
+			a_params.entry.data = GetData(a_handle).data;
+		}
+
+		void UINodeOverrideEditorNPC::OnClearAllPlacement(
+			Game::FormID a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+
+			auto it = data.find(a_handle);
+			if (it != data.end())
+			{
+				it->second.placementData.clear();
+
+				m_controller.RequestEvaluateTransforms(a_handle, true);
+			}
+
+			a_params.entry.placementData = GetData(a_handle).placementData;
 		}
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorNPC::GetOrCreateConfigHolder(Game::FormID a_handle) const
@@ -325,6 +355,11 @@ namespace IED
 		}
 
 		UIPopupQueue& UINodeOverrideEditorNPC::GetPopupQueue_ProfileBase() const
+		{
+			return m_controller.UIGetPopupQueue();
+		}
+
+		UIPopupQueue& UINodeOverrideEditorNPC::GetPopupQueue()
 		{
 			return m_controller.UIGetPopupQueue();
 		}

@@ -103,6 +103,10 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
+				ImGui::Separator();
+
+				m_tabPanel.DrawMenuBarItems();				
+
 				ImGui::EndMenuBar();
 			}
 		}

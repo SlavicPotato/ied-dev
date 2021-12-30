@@ -52,10 +52,10 @@ namespace IED
 				const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
 				const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_newHandle) override;
 
-			virtual const entryNodeOverrideData_t& GetData(
+			virtual entryNodeOverrideData_t GetData(
 				Game::FormID a_formid) override;
 
-			virtual const NodeOverrideProfile::base_type& GetData(
+			virtual NodeOverrideProfile::base_type GetData(
 				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params) override;
 
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
@@ -84,16 +84,24 @@ namespace IED
 				Game::FormID a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 			
-			virtual void OnClearParent(
+			virtual void OnClearPlacement(
 				Game::FormID a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
+			
+			virtual void OnClearAll(
+				Game::FormID a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+			
+			virtual void OnClearAllPlacement(
+				Game::FormID a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				Game::FormID) const override;
 
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
-			
-			entryNodeOverrideData_t m_temp;
+
+			virtual UIPopupQueue& GetPopupQueue() override;
 
 			Controller& m_controller;
 		};

@@ -259,6 +259,11 @@ namespace IED
 
 				for (auto& e : a_data.data)
 				{
+					if (!m_itemFilter.Test(e.first))
+					{
+						continue;
+					}
+					
 					sorted.emplace_back(std::addressof(e));
 				}
 
@@ -273,11 +278,6 @@ namespace IED
 
 				for (auto& e : sorted)
 				{
-					if (!m_itemFilter.Test(e->first))
-					{
-						continue;
-					}
-
 					ImGui::PushID(e->first.c_str());
 
 					DrawCustomEntry(a_handle, e->first, e->second);
@@ -565,6 +565,10 @@ namespace IED
 		template <class T>
 		void UICustomEditorWidget<T>::DrawMenuBarItems()
 		{
+			bool disabled = !GetCurrentData().data;
+
+			UICommon::PushDisabled(disabled);
+
 			if (ImGui::MenuItem(LS(CommonStrings::New, "1")))
 			{
 				QueueAddItemPopup();
@@ -580,6 +584,8 @@ namespace IED
 			{
 				DoPaste();
 			}
+
+			UICommon::PopDisabled(disabled);
 
 			DrawMenuBarItemsExtra();
 		}

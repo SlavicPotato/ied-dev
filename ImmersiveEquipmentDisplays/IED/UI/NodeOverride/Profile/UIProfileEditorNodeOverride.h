@@ -79,11 +79,21 @@ namespace IED
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 			
-			virtual void OnClearParent(
+			virtual void OnClearPlacement(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
+			virtual void OnClearAll(
+				int a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+
+			virtual void OnClearAllPlacement(
+				int a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+
 			virtual WindowLayoutData GetWindowDimensions() const;
+
+			virtual UIPopupQueue& GetPopupQueue() override;
 
 			Controller& m_controller;
 		};

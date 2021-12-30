@@ -85,13 +85,11 @@ namespace IED
 		{}
 
 		auto UISlotEditorRace::GetData(Game::FormID a_handle)
-			-> const entrySlotData_t&
+			-> entrySlotData_t
 		{
 			auto& store = m_controller.GetConfigStore().active;
 
-			m_tmpData = store.slot.GetRaceCopy(a_handle);
-
-			return m_tmpData;
+			return store.slot.GetRaceCopy(a_handle);
 		}
 
 		auto UISlotEditorRace::GetOrCreateConfigSlotHolder(

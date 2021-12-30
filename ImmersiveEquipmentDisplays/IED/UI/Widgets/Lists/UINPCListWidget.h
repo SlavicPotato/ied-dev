@@ -30,7 +30,7 @@ namespace IED
 
 			using listValue_t = UIListBase<T, Game::FormID>::listValue_t;
 
-			UINPCList(Controller& a_controller, float a_itemWidthScalar = -10.0f);
+			UINPCList(Controller& a_controller, float a_itemWidthScalar = -6.5f);
 			virtual ~UINPCList() noexcept = default;
 
 		private:

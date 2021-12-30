@@ -24,7 +24,7 @@ namespace IED
 
 			UIRaceList(
 				Localization::ILocalization& a_localization,
-				float a_itemWidthScalar = -10.0f);
+				float a_itemWidthScalar = -6.5f);
 
 			virtual ~UIRaceList() noexcept = default;
 

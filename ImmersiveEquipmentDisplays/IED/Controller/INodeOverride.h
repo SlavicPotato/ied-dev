@@ -22,11 +22,11 @@ namespace IED
 	class INodeOverride
 	{
 	public:
-		struct armorInfoEntry_t
+		struct bipedInfoEntry_t
 		{
 			TESForm* item;
 			Biped::BIPED_OBJECT bip{ Biped::BIPED_OBJECT::kNone };
-			float totalWeightAdjust{ 0.0f };
+			float weaponAdjust{ 0.0f };
 			bool matched{ false };
 		};
 
@@ -44,56 +44,49 @@ namespace IED
 			CommonParams
 		{
 		public:
-			/*const Data::collectorData_t::container_type* data;
-			std::unique_ptr<EquippedArmorCollector> collector;*/
+			using item_container_type = std::unordered_map<Game::FormID, bipedInfoEntry_t>;
+
 			SetObjectWrapper<float> weaponAdjust;
 			SetObjectWrapper<float> weightAdjust;
 			SetObjectWrapper<bool> actorDead;
-			std::unique_ptr<std::unordered_map<Game::FormID, armorInfoEntry_t>> itemData;
+			std::unique_ptr<item_container_type> itemData;
 			SetObjectWrapper<Biped*> biped;
 			SetObjectWrapper<TESObjectARMO*> actorSkin;
+			SetObjectWrapper<bool> bipedHasArmor;
 
-			//std::unique_ptr<stl::set<Game::FormID>> matchedArmors;
-			//float matchedWeightAdjust{ 0.0f };
-
-			/*SKMP_FORCEINLINE constexpr auto get_inventory_data()
+			auto get_biped_has_armor()
 			{
-				if (!data)
+				if (!bipedHasArmor)
 				{
-					collector = std::make_unique<EquippedArmorCollector>();
-					collector->Run(actor);
-
-					data = std::addressof(collector->m_data.forms);
+					bipedHasArmor = equipped_armor_visitor([](auto*) { return true; });
 				}
 
-				return data;
-			}*/
+				return *bipedHasArmor;
+			}
 
-			SKMP_FORCEINLINE std::unordered_map<Game::FormID, armorInfoEntry_t>* get_item_data();
+			std::unordered_map<Game::FormID, bipedInfoEntry_t>* get_item_data();
 
-			SKMP_FORCEINLINE auto get_biped()
+			auto get_biped()
 			{
 				if (!biped)
 				{
 					if (auto ptrh = actor->GetBiped(false))
 					{
-						*biped = ptrh->ptr;
+						biped = ptrh->ptr;
 					}
 					else
 					{
-						*biped = nullptr;
+						biped = nullptr;
 					}
-
-					biped.mark(true);
 				}
 
 				return *biped;
 			}
 
-			SKMP_FORCEINLINE float get_weapon_adjust();
+			float get_weapon_adjust();
 			//SKMP_FORCEINLINE float get_weapon_adjust(const stl::set<Game::FormID>* a_armors);
 
-			SKMP_FORCEINLINE constexpr float get_weight_adjust()
+			constexpr float get_weight_adjust()
 			{
 				if (!weightAdjust)
 				{
@@ -103,7 +96,7 @@ namespace IED
 				return *weightAdjust;
 			}
 
-			SKMP_FORCEINLINE constexpr bool get_actor_dead()
+			constexpr bool get_actor_dead()
 			{
 				if (!actorDead)
 				{
@@ -113,7 +106,7 @@ namespace IED
 				return *actorDead;
 			}
 
-			SKMP_FORCEINLINE constexpr auto get_actor_skin() noexcept
+			constexpr auto get_actor_skin() noexcept
 			{
 				if (!actorSkin)
 				{
@@ -123,7 +116,7 @@ namespace IED
 				return *actorSkin;
 			}
 
-			SKMP_FORCEINLINE void clear_matched_items() noexcept
+			void clear_matched_items() noexcept
 			{
 				if (itemData)
 				{
@@ -134,7 +127,7 @@ namespace IED
 				}
 			}
 
-			SKMP_FORCEINLINE float get_matched_weapon_adjust() const noexcept
+			float get_matched_weapon_adjust() const noexcept
 			{
 				float result = 0.0f;
 
@@ -144,12 +137,69 @@ namespace IED
 					{
 						if (e.second.matched)
 						{
-							result += e.second.totalWeightAdjust;
+							result += e.second.weaponAdjust;
 						}
 					}
 				}
 
 				return result;
+			}
+
+			template <class Tf>
+			bool equipped_armor_visitor(
+				Tf a_func)
+			{
+				auto biped = get_biped();
+				if (!biped)
+				{
+					return false;
+				}
+
+				auto skin = get_actor_skin();
+
+				using enum_type = std::underlying_type_t<Biped::BIPED_OBJECT>;
+
+				for (enum_type i = Biped::kHead; i < Biped::kEditorTotal; i++)
+				{
+					if (is_av_ignored_slot(i))
+					{
+						continue;
+					}
+
+					auto& e = biped->objects[i];
+
+					if (e.item &&
+					    e.item != e.addon &&
+					    e.item != skin &&
+					    e.item->IsArmor())
+					{
+						if (a_func(e.item))
+						{
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+
+		private:
+			inline static constexpr bool is_av_ignored_slot(
+				std::underlying_type_t<Biped::BIPED_OBJECT> a_slot) noexcept
+			{
+				switch (a_slot)
+				{
+				case Biped::kHair:
+				case Biped::kShield:
+				case Biped::kTail:
+				case Biped::kLongHair:
+				case Biped::kDecapitateHead:
+				case Biped::kDecapitate:
+				case Biped::kFX01:
+					return true;
+				default:
+					return false;
+				}
 			}
 		};
 
@@ -177,7 +227,7 @@ namespace IED
 			nodeOverrideParams_t& a_params);
 
 	private:
-		SKMP_FORCEINLINE static constexpr const stl::fixed_string& get_target_node(
+		static constexpr const stl::fixed_string& get_target_node(
 			const Data::configNodeOverridePlacement_t& a_data,
 			const weapNodeEntry_t& a_entry,
 			nodeOverrideParams_t& a_params);

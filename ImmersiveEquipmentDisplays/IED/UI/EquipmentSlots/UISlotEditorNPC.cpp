@@ -17,7 +17,7 @@ namespace IED
 			UINPCList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
-			m_controller(a_controller) 
+			m_controller(a_controller)
 		{}
 
 		void UISlotEditorNPC::Initialize()
@@ -85,25 +85,23 @@ namespace IED
 		void UISlotEditorNPC::ListResetAllValues(Game::FormID a_handle) {}
 
 		auto UISlotEditorNPC::GetData(Game::FormID a_handle)
-			-> const entrySlotData_t&
+			-> entrySlotData_t
 		{
 			auto& npcInfo = m_controller.GetNPCInfo();
 
 			auto it = npcInfo.find(a_handle);
-			if (it == npcInfo.end())
-			{
-				m_tempData = {};
-			}
-			else
+			if (it != npcInfo.end())
 			{
 				auto& store = m_controller.GetConfigStore().active;
 
-				m_tempData = store.slot.GetNPCCopy(
+				return store.slot.GetNPCCopy(
 					a_handle,
 					it->second->race);
 			}
-
-			return m_tempData;
+			else
+			{
+				return {};
+			}
 		}
 
 		Data::configSlotHolder_t&
@@ -330,7 +328,6 @@ namespace IED
 
 		void UISlotEditorNPC::DrawMenuBarItemsExtra()
 		{
-			
 		}
 
 	}

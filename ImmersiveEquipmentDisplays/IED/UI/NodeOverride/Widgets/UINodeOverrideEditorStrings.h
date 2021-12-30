@@ -15,6 +15,7 @@ namespace IED
 			AccumulatePosition = 4304,
 			LockToAccum = 4305,
 			MatchSkin = 4306,
+			ClearAllPrompt = 4307
 		};
 	}
 }

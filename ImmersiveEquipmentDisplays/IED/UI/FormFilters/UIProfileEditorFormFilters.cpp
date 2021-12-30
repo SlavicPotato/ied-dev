@@ -31,7 +31,7 @@ namespace IED
 
 		void UIProfileEditorFormFilters::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::FormFilters, "peb_1")))
+			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
 			{
 				DrawMenuBarItems();
 				ImGui::EndMenu();

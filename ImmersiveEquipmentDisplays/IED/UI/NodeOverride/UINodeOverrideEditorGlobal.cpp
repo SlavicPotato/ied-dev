@@ -119,7 +119,7 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
-		const NodeOverrideProfile::base_type& UINodeOverrideEditorGlobal::GetData(
+		NodeOverrideProfile::base_type UINodeOverrideEditorGlobal::GetData(
 			const profileSelectorParamsNodeOverride_t<int>& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -169,7 +169,7 @@ namespace IED
 			}
 		}
 
-		void UINodeOverrideEditorGlobal::OnClearParent(
+		void UINodeOverrideEditorGlobal::OnClearPlacement(
 			int a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
@@ -181,12 +181,39 @@ namespace IED
 			}
 		}
 
+		void UINodeOverrideEditorGlobal::OnClearAll(
+			int a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetGlobalData()[0];
+
+			data.data.clear();
+
+			m_controller.RequestEvaluateTransforms(a_handle, true);
+		}
+
+		void UINodeOverrideEditorGlobal::OnClearAllPlacement(
+			int a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetGlobalData()[0];
+
+			data.placementData.clear();
+
+			m_controller.RequestEvaluateTransforms(a_handle, true);
+		}
+
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(int) const
 		{
 			return m_controller.GetConfigStore().active.transforms.GetGlobalData()[0];
 		}
 
 		UIPopupQueue& UINodeOverrideEditorGlobal::GetPopupQueue_ProfileBase() const
+		{
+			return m_controller.UIGetPopupQueue();
+		}
+
+		UIPopupQueue& UINodeOverrideEditorGlobal::GetPopupQueue()
 		{
 			return m_controller.UIGetPopupQueue();
 		}

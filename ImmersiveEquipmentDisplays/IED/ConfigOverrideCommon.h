@@ -96,6 +96,19 @@ namespace IED
 				return form;
 			}
 
+			template <class T, class form_type = stl::strip_type<T>>
+			inline form_type* get_form_as() const noexcept
+			{
+				if (auto form = get_form())
+				{
+					return form->As<form_type>();
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+
 			inline constexpr const auto& get_id() const noexcept
 			{
 				return id;

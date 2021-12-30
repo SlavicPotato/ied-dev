@@ -106,7 +106,7 @@ namespace IED
 			return pluginMap.try_emplace(sh.IED).first->second;
 		}
 
-		const entryCustomData_t& UICustomEditorNPC::GetData(Game::FormID a_handle)
+		entryCustomData_t UICustomEditorNPC::GetData(Game::FormID a_handle)
 		{
 			auto& store = m_controller.GetConfigStore();
 			auto& data = store.active.custom.GetNPCData();
@@ -123,7 +123,7 @@ namespace IED
 				}
 			}
 
-			return m_empty;
+			return {};
 		}
 
 		auto UICustomEditorNPC::GetCurrentData()

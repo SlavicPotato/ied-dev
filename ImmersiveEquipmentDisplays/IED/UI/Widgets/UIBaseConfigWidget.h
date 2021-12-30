@@ -963,8 +963,6 @@ namespace IED
 						if (result.slot != Data::ObjectSlotExtra::kNone)
 						{
 							a_data.conditions.emplace_back(
-								result.entryType,
-								0,
 								result.slot);
 
 							action = result.action;
@@ -974,25 +972,11 @@ namespace IED
 						break;
 					case Data::EquipmentOverrideConditionType::Form:
 					case Data::EquipmentOverrideConditionType::Race:
-						if (result.form)
-						{
-							a_data.conditions.emplace_back(
-								result.entryType,
-								result.form,
-								Data::ObjectSlotExtra::kNone);
-
-							action = result.action;
-
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-						}
-						break;
 					case Data::EquipmentOverrideConditionType::Keyword:
 						if (result.form)
 						{
 							a_data.conditions.emplace_back(
 								result.entryType,
-								0,
-								Data::ObjectSlotExtra::kNone,
 								result.form);
 
 							action = result.action;
@@ -1121,8 +1105,6 @@ namespace IED
 							{
 								it = a_data.conditions.emplace(
 									it,
-									result.entryType,
-									0,
 									result.slot);
 
 								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
@@ -1130,25 +1112,12 @@ namespace IED
 							break;
 						case Data::EquipmentOverrideConditionType::Form:
 						case Data::EquipmentOverrideConditionType::Race:
-							if (result.form)
-							{
-								it = a_data.conditions.emplace(
-									it,
-									result.entryType,
-									result.form,
-									Data::ObjectSlotExtra::kNone);
-
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-							}
-							break;
 						case Data::EquipmentOverrideConditionType::Keyword:
 							if (result.form)
 							{
 								it = a_data.conditions.emplace(
 									it,
 									result.entryType,
-									0,
-									Data::ObjectSlotExtra::kNone,
 									result.form);
 
 								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);

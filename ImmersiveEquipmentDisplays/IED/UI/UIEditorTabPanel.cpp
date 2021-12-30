@@ -137,7 +137,7 @@ namespace IED
 
 		void UIEditorTabPanel::DrawMenuBarItems()
 		{
-			if (LCG_BM(m_menuName, "et_mb"))
+			if (LCG_BM(CommonStrings::Actions, "et_mb"))
 			{
 				auto i = stl::underlying(m_currentClass);
 				auto& e = m_interfaces[i];

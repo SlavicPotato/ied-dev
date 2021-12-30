@@ -64,7 +64,7 @@ namespace IED
 			virtual void ListResetAllValues(
 				P a_handle) = 0;
 
-			[[nodiscard]] virtual const T& GetData(
+			[[nodiscard]] virtual T GetData(
 				P a_formid) = 0;
 
 			[[nodiscard]] virtual const SetObjectWrapper<Game::FormID>&

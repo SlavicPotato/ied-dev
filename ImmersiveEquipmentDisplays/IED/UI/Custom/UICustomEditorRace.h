@@ -38,7 +38,7 @@ namespace IED
 			virtual Data::configCustomHolder_t& GetOrCreateConfigSlotHolder(
 				Game::FormID a_handle) const override;
 
-			virtual const entryCustomData_t& GetData(
+			virtual entryCustomData_t GetData(
 				Game::FormID a_formid) override;
 
 			virtual CustomEditorCurrentData GetCurrentData() override;
@@ -94,7 +94,6 @@ namespace IED
 				Game::FormID a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
-			entryCustomData_t m_empty;
 			Controller& m_controller;
 		};
 

@@ -374,9 +374,49 @@ namespace IED
 			auto sex = GetSex();
 			auto sexInfo = GetOppositeSex2(sex);
 
-			if (auto current = GetCurrentData(); current.data)
+			auto current = GetCurrentData();
+
+			bool disabled = !current.data;
+
+			UICommon::PushDisabled(disabled);
+
+			if (LCG_MI(UIWidgetCommonStrings::CopyAllFromOppositeSex, "1"))
 			{
-				if (LCG_MI(UIWidgetCommonStrings::CopyAllFromOppositeSex, "1"))
+				auto& queue = GetPopupQueue();
+
+				queue.push(
+						 UIPopupType::Confirm,
+						 LS(CommonStrings::Confirm),
+						 "%s",
+						 LS(UIWidgetCommonStrings::CopyAllFromOppositeSexPrompt))
+					.call([this,
+				           ssex = sexInfo.sex,
+				           tsex = sex](
+							  const auto&) {
+						auto current = GetCurrentData();
+						if (!current.data)
+						{
+							return;
+						}
+
+						for (auto& e : current.data->entries)
+						{
+							auto& d = e.data;
+							if (d)
+							{
+								d->get(tsex) = d->get(ssex);
+							}
+						}
+
+						SlotConfigUpdateParams params{ *current.data };
+
+						OnFullConfigChange(current.handle, params);
+					});
+			}
+
+			if (PermitDeletion())
+			{
+				if (LCG_MI(UISlotEditorWidgetStrings::ClearAllSlots, "2"))
 				{
 					auto& queue = GetPopupQueue();
 
@@ -384,76 +424,40 @@ namespace IED
 							 UIPopupType::Confirm,
 							 LS(CommonStrings::Confirm),
 							 "%s",
-							 LS(UIWidgetCommonStrings::CopyAllFromOppositeSexPrompt))
-						.call([this,
-					           ssex = sexInfo.sex,
-					           tsex = sex](
-								  const auto&) {
-							auto current = GetCurrentData();
-							if (!current.data)
+							 LS(UISlotEditorWidgetStrings::ClearAllSlotsPrompt))
+						.call([this](const auto&) {
+							if (auto current = GetCurrentData(); current.data)
 							{
-								return;
-							}
-
-							for (auto& e : current.data->entries)
-							{
-								auto& d = e.data;
-								if (d)
+								for (auto& e : current.data->entries)
 								{
-									d->get(tsex) = d->get(ssex);
+									e.data.reset();
+									e.conf_class = Data::ConfigClass::Global;
 								}
+
+								OnFullConfigClear(current.handle);
 							}
-
-							SlotConfigUpdateParams params{ *current.data };
-
-							OnFullConfigChange(current.handle, params);
 						});
 				}
-
-				if (PermitDeletion())
-				{
-					if (LCG_MI(UISlotEditorWidgetStrings::ClearAllSlots, "2"))
-					{
-						auto& queue = GetPopupQueue();
-
-						queue.push(
-								 UIPopupType::Confirm,
-								 LS(CommonStrings::Confirm),
-								 "%s",
-								 LS(UISlotEditorWidgetStrings::ClearAllSlotsPrompt),
-								 GetDisplayName())
-							.call([this](const auto&) {
-								if (auto current = GetCurrentData(); current.data)
-								{
-									for (auto& e : current.data->entries)
-									{
-										e.data.reset();
-										e.conf_class = Data::ConfigClass::Global;
-									}
-
-									OnFullConfigClear(current.handle);
-								}
-							});
-					}
-				}
-
-				ImGui::Separator();
-
-				if (LCG_BM(UISlotEditorWidgetStrings::AllSlots, "3"))
-				{
-					if (LCG_MI(CommonStrings::Enable, "1"))
-					{
-						QueueSetAllSlotsEnabled(current.handle, sex, true);
-					}
-
-					if (LCG_MI(CommonStrings::Disable, "2"))
-					{
-						QueueSetAllSlotsEnabled(current.handle, sex, false);
-					}
-
-					ImGui::EndMenu();
-				}
 			}
+
+			ImGui::Separator();
+
+			if (LCG_BM(UISlotEditorWidgetStrings::AllSlots, "3"))
+			{
+				if (LCG_MI(CommonStrings::Enable, "1"))
+				{
+					QueueSetAllSlotsEnabled(current.handle, sex, true);
+				}
+
+				if (LCG_MI(CommonStrings::Disable, "2"))
+				{
+					QueueSetAllSlotsEnabled(current.handle, sex, false);
+				}
+
+				ImGui::EndMenu();
+			}
+
+			UICommon::PopDisabled(disabled);
 
 			DrawMenuBarItemsExtra();
 		}

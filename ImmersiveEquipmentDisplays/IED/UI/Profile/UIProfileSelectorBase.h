@@ -24,7 +24,7 @@ namespace IED
 		class UIDataBase
 		{
 		protected:
-			[[nodiscard]] virtual const C& GetData(const T& a_data) = 0;
+			[[nodiscard]] virtual C GetData(const T& a_data) = 0;
 		};
 
 		template <class T, class P>

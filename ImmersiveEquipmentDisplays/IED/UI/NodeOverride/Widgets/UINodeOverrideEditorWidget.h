@@ -1,22 +1,23 @@
 #pragma once
 
-#include "../../UIClipboard.h"
-#include "../../UICommon.h"
-#include "../../UIEditorInterface.h"
-#include "../../UIFormLookupInterface.h"
-#include "../../UILocalizationInterface.h"
-#include "../../UISettingsInterface.h"
-#include "../../Widgets/Filters/UIGenericFilter.h"
-#include "../../Widgets/Form/UIFormSelectorWidget.h"
-#include "../../Widgets/UIBipedObjectSelectorWidget.h"
-#include "../../Widgets/UICMNodeSelector.h"
-#include "../../Widgets/UIConditionParamEditorWidget.h"
-#include "../../Widgets/UIDescriptionPopup.h"
-#include "../../Widgets/UIEditorPanelSettings.h"
-#include "../../Widgets/UIObjectTypeSelectorWidget.h"
-#include "../../Widgets/UIPopupToggleButtonWidget.h"
-#include "../../Widgets/UITransformSliderWidget.h"
-#include "../../Widgets/UIWidgetsCommon.h"
+#include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/UIEditorInterface.h"
+#include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/UILocalizationInterface.h"
+#include "IED/UI/UISettingsInterface.h"
+#include "IED/UI/Widgets/Filters/UIGenericFilter.h"
+#include "IED/UI/Widgets/Form/UIFormSelectorWidget.h"
+#include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
+#include "IED/UI/Widgets/UICMNodeSelector.h"
+#include "IED/UI/Widgets/UIConditionParamEditorWidget.h"
+#include "IED/UI/Widgets/UIDescriptionPopup.h"
+#include "IED/UI/Widgets/UIEditorPanelSettings.h"
+#include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
+#include "IED/UI/Widgets/UITransformSliderWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "UINodeOverrideEditorStrings.h"
 
@@ -53,6 +54,11 @@ namespace IED
 		struct ClearNodeOverrideUpdateParams
 		{
 			stl::fixed_string name;
+			entryNodeOverrideData_t& entry;
+		};
+
+		struct ClearAllNodeOverrideUpdateParams
+		{
 			entryNodeOverrideData_t& entry;
 		};
 
@@ -95,7 +101,7 @@ namespace IED
 			SwapDirection dir;
 			bool isGroup;
 			Biped::BIPED_OBJECT biped;
-			Data::ObjectSlot slot;
+			Data::ObjectSlotExtra type;
 		};
 
 		struct NodeOverridePlacementOverrideResult
@@ -134,6 +140,8 @@ namespace IED
 			};
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
+
+			virtual void DrawMenuBarItems() override;
 
 		private:
 			virtual void DrawMainHeaderControlsExtra(
@@ -316,9 +324,17 @@ namespace IED
 				T a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) = 0;
 
-			virtual void OnClearParent(
+			virtual void OnClearPlacement(
 				T a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) = 0;
+
+			virtual void OnClearAll(
+				T a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
+
+			virtual void OnClearAllPlacement(
+				T a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
 
 			void HandleValueUpdate(
 				T a_handle,
@@ -346,6 +362,8 @@ namespace IED
 
 			void UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType a_type);
 
+			virtual UIPopupQueue& GetPopupQueue() = 0;
+
 			//Game::FormID m_ooEditEntryID;
 			Game::FormID m_ooNewEntryID;
 			Game::FormID m_ooNewEntryIDKW;
@@ -355,7 +373,7 @@ namespace IED
 			UIFormSelectorWidget m_formSelectorKW;*/
 
 			Biped::BIPED_OBJECT m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
-			Data::ObjectSlot m_ooNewSlot{ Data::ObjectSlot::kMax };
+			Data::ObjectSlotExtra m_ooNewSlot{ Data::ObjectSlotExtra::kMax };
 
 			UIConditionParamEditorWidget m_matchParamEditor;
 
@@ -388,6 +406,8 @@ namespace IED
 			      TESObjectARMO::kTypeID,
 			      TESAmmo::kTypeID,
 			      TESObjectLIGH::kTypeID,
+			      SpellItem::kTypeID,
+			      BGSHeadPart::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 
 			m_type_filters.furniture = std::make_unique<
@@ -559,7 +579,7 @@ namespace IED
 
 			auto df = data.getvec().begin();
 
-			for (const auto &e : data.getvec())
+			for (const auto& e : data.getvec())
 			{
 				if (!m_itemFilter.Test(e->second.desc))
 				{
@@ -574,7 +594,7 @@ namespace IED
 
 				if (svar)
 				{
-					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
 				}
 				else
 				{
@@ -584,7 +604,7 @@ namespace IED
 
 						if (svar)
 						{
-							ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
+							ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.75f);
 						}
 					}
 				}
@@ -656,7 +676,7 @@ namespace IED
 
 				if (svar)
 				{
-					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
 				}
 				else
 				{
@@ -666,7 +686,7 @@ namespace IED
 
 						if (svar)
 						{
-							ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.75f);
+							ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.75f);
 						}
 					}
 				}
@@ -728,7 +748,12 @@ namespace IED
 			ImGui::PushID("context_area");
 
 			DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -810,9 +835,9 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
-			ImGui::PopID();
-
 			ImGui::PopStyleVar();
+
+			ImGui::PopID();
 
 			return a_it;
 		}
@@ -829,7 +854,12 @@ namespace IED
 			ImGui::PushID("context_area");
 
 			DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -843,7 +873,7 @@ namespace IED
 					{
 						a_data.placementData.erase(a_it);
 
-						OnClearParent(a_handle, { a_name, a_data });
+						OnClearPlacement(a_handle, { a_name, a_data });
 
 						a_it = a_data.placementData.find(a_name);
 					}
@@ -893,9 +923,9 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
-			ImGui::PopID();
-
 			ImGui::PopStyleVar();
+
+			ImGui::PopID();
 
 			return a_it;
 		}
@@ -1243,6 +1273,8 @@ namespace IED
 
 			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
+
 			if (ImGui::BeginPopup("context_menu"))
 			{
 				if (ImGui::MenuItem(LS(CommonStrings::Copy, "1")))
@@ -1275,6 +1307,8 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
+			ImGui::PopStyleVar();
+
 			ImGui::PopID();
 
 			return result;
@@ -1302,6 +1336,8 @@ namespace IED
 			ImGui::PopStyleVar();
 
 			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -1402,6 +1438,8 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
+			ImGui::PopStyleVar();
+
 			ImGui::PopID();
 
 			return result;
@@ -1429,6 +1467,8 @@ namespace IED
 			ImGui::PopStyleVar();
 
 			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -1503,6 +1543,8 @@ namespace IED
 
 				ImGui::EndPopup();
 			}
+
+			ImGui::PopStyleVar();
 
 			ImGui::PopID();
 
@@ -2076,6 +2118,8 @@ namespace IED
 
 			ImGui::PopStyleVar();
 
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
+
 			if (ImGui::BeginPopup("context_menu"))
 			{
 				if (LCG_BM(CommonStrings::Insert, "1"))
@@ -2196,6 +2240,8 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
+			ImGui::PopStyleVar();
+
 			ImGui::PopID();
 
 			return result;
@@ -2244,6 +2290,8 @@ namespace IED
 			}
 
 			ImGui::PopStyleVar();
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -2347,6 +2395,8 @@ namespace IED
 				ImGui::EndPopup();
 			}
 
+			ImGui::PopStyleVar();
+
 			ImGui::PopID();
 
 			return result;
@@ -2372,13 +2422,15 @@ namespace IED
 				m_ooNewEntryID = {};
 				m_ooNewEntryIDKW = {};
 				m_ooNewEntryIDRace = {};
-				m_ooNewSlot = Data::ObjectSlot::kMax;
+				m_ooNewSlot = Data::ObjectSlotExtra::kMax;
 				m_ooNewBiped = Biped::BIPED_OBJECT::kNone;
 			}
 
+			ImGui::PopStyleVar();
+
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-			ImGui::PopStyleVar();
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -2425,7 +2477,9 @@ namespace IED
 							{
 								if (m_ooNewEntryID)
 								{
-									a_entry.emplace_back(m_ooNewEntryID, Data::NodeOverrideConditionType::Form);
+									a_entry.emplace_back(
+										Data::NodeOverrideConditionType::Form,
+										m_ooNewEntryID);
 
 									HandleValueUpdate(
 										a_handle,
@@ -2450,7 +2504,9 @@ namespace IED
 							{
 								if (m_ooNewEntryIDKW)
 								{
-									a_entry.emplace_back(m_ooNewEntryIDKW, Data::NodeOverrideConditionType::Keyword);
+									a_entry.emplace_back(
+										Data::NodeOverrideConditionType::Keyword,
+										m_ooNewEntryIDKW);
 
 									HandleValueUpdate(
 										a_handle,
@@ -2495,13 +2551,13 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(UIWidgetCommonStrings::EquipmentDisplay, "7"))
+					if (LCG_BM(CommonStrings::Type, "7"))
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 								LS(CommonStrings::Type, "ss"),
 								m_ooNewSlot))
 						{
-							if (m_ooNewSlot != Data::ObjectSlot::kMax)
+							if (m_ooNewSlot < Data::ObjectSlotExtra::kMax)
 							{
 								a_entry.emplace_back(m_ooNewSlot);
 
@@ -2531,8 +2587,8 @@ namespace IED
 							if (m_ooNewEntryIDRace)
 							{
 								a_entry.emplace_back(
-									m_ooNewEntryIDRace,
-									Data::NodeOverrideConditionType::Race);
+									Data::NodeOverrideConditionType::Race,
+									m_ooNewEntryIDRace);
 
 								HandleValueUpdate(
 									a_handle,
@@ -2610,6 +2666,8 @@ namespace IED
 
 				ImGui::EndPopup();
 			}
+
+			ImGui::PopStyleVar();
 
 			ImGui::PopID();
 
@@ -2703,8 +2761,8 @@ namespace IED
 
 							it = a_entry.emplace(
 								it,
-								result.form,
-								result.matchType);
+								result.matchType,
+								result.form);
 
 							break;
 						case Data::NodeOverrideConditionType::BipedSlot:
@@ -2714,11 +2772,11 @@ namespace IED
 								result.biped);
 
 							break;
-						case Data::NodeOverrideConditionType::EquipmentSlot:
+						case Data::NodeOverrideConditionType::Type:
 
 							it = a_entry.emplace(
 								it,
-								result.slot);
+								result.type);
 
 							break;
 
@@ -2824,10 +2882,10 @@ namespace IED
 							tdesc = LS(CommonStrings::Biped);
 
 							break;
-						case Data::NodeOverrideConditionType::EquipmentSlot:
+						case Data::NodeOverrideConditionType::Type:
 
-							m_matchParamEditor.SetNext<ConditionParamItem::EquipmentSlot>(
-								e.equipmentSlot);
+							m_matchParamEditor.SetNext<ConditionParamItem::EquipmentSlotExtra>(
+								e.typeSlot);
 							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
 								e.form.get_id());
 							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
@@ -2835,8 +2893,8 @@ namespace IED
 							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
 								e);
 
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::EquipmentSlot);
-							tdesc = LS(CommonStrings::Display);
+							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::EquipmentSlotExtra);
+							tdesc = LS(CommonStrings::Type);
 
 							break;
 						case Data::NodeOverrideConditionType::Race:
@@ -3032,6 +3090,44 @@ namespace IED
 		}
 
 		template <class T>
+		void UINodeOverrideEditorWidget<T>::DrawMenuBarItems()
+		{
+			bool disabled = !GetCurrentData().data;
+
+			UICommon::PushDisabled(disabled);
+
+			if (LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
+			{
+				const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+
+				auto& queue = GetPopupQueue();
+				queue.push(
+						 UIPopupType::Confirm,
+						 LS(CommonStrings::Confirm),
+						 "%s",
+						 LS(UINodeOverrideEditorStrings::ClearAllPrompt))
+					.call([this,
+				           clr_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
+						if (auto current = GetCurrentData(); current.data)
+						{
+							if (clr_placement)
+							{
+								current.data->placementData.clear();
+								OnClearAllPlacement(current.handle, { *current.data });
+							}
+							else
+							{
+								current.data->data.clear();
+								OnClearAll(current.handle, { *current.data });
+							}
+						}
+					});
+			}
+
+			UICommon::PopDisabled(disabled);
+		}
+
+		template <class T>
 		template <class Tp>
 		NodeOverrideCommonResult UINodeOverrideEditorWidget<T>::DrawOverrideConditionContextMenu(
 			T a_handle,
@@ -3052,7 +3148,7 @@ namespace IED
 				m_ooNewEntryIDKW = {};
 				m_ooNewEntryIDRace = {};
 				m_ooNewBiped = Biped::BIPED_OBJECT::kNone;
-				m_ooNewSlot = Data::ObjectSlot::kMax;
+				m_ooNewSlot = Data::ObjectSlotExtra::kMax;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -3074,6 +3170,8 @@ namespace IED
 			ImGui::PopStyleVar();
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -3104,7 +3202,7 @@ namespace IED
 
 					if (LCG_BM(CommonStrings::Item, "3"))
 					{
-						if (LCG_BM(CommonStrings::Insert, "4"))
+						if (LCG_BM(CommonStrings::Form, "4"))
 						{
 							UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Form);
 
@@ -3164,17 +3262,17 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(UIWidgetCommonStrings::EquipmentDisplay, "7"))
+					if (LCG_BM(CommonStrings::Type, "7"))
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 								LS(CommonStrings::Type, "ss"),
 								m_ooNewSlot))
 						{
-							if (m_ooNewSlot != Data::ObjectSlot::kMax)
+							if (m_ooNewSlot < Data::ObjectSlotExtra::kMax)
 							{
 								result.action = NodeOverrideCommonAction::Insert;
-								result.slot = m_ooNewSlot;
-								result.matchType = Data::NodeOverrideConditionType::EquipmentSlot;
+								result.type = m_ooNewSlot;
+								result.matchType = Data::NodeOverrideConditionType::Type;
 							}
 
 							ImGui::CloseCurrentPopup();
@@ -3223,6 +3321,8 @@ namespace IED
 
 				ImGui::EndPopup();
 			}
+
+			ImGui::PopStyleVar();
 
 			ImGui::PopID();
 
@@ -3288,6 +3388,7 @@ namespace IED
 				break;
 			case Data::NodeOverrideConditionType::Form:
 			case Data::NodeOverrideConditionType::Keyword:
+			case Data::NodeOverrideConditionType::Type:
 
 				result |= ImGui::CheckboxFlagsT(
 					LS(CommonStrings::Equipped, "1"),
@@ -3350,7 +3451,7 @@ namespace IED
 			switch (match->fbf.type)
 			{
 			case Data::NodeOverrideConditionType::BipedSlot:
-			case Data::NodeOverrideConditionType::EquipmentSlot:
+			case Data::NodeOverrideConditionType::Type:
 			case Data::NodeOverrideConditionType::Furniture:
 
 				if (a_item == ConditionParamItem::Form)
@@ -3403,7 +3504,7 @@ namespace IED
 			{
 			case Data::NodeOverrideConditionType::Form:
 			case Data::NodeOverrideConditionType::BipedSlot:
-			case Data::NodeOverrideConditionType::EquipmentSlot:
+			case Data::NodeOverrideConditionType::Type:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
 				break;
 			case Data::NodeOverrideConditionType::Furniture:

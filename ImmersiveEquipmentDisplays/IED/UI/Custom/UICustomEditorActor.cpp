@@ -111,7 +111,7 @@ namespace IED
 			return pluginMap.try_emplace(sh.IED).first->second;
 		}
 
-		const entryCustomData_t& UICustomEditorActor::GetData(Game::FormID a_handle)
+		entryCustomData_t UICustomEditorActor::GetData(Game::FormID a_handle)
 		{
 			auto& store = m_controller.GetConfigStore();
 			auto& data = store.active.custom.GetActorData();
@@ -128,7 +128,7 @@ namespace IED
 				}
 			}
 
-			return m_empty;
+			return {};
 		}
 
 		auto UICustomEditorActor::GetCurrentData()

@@ -95,26 +95,24 @@ namespace IED
 		void UISlotEditorActor::ListResetAllValues(Game::FormID a_handle) {}
 
 		auto UISlotEditorActor::GetData(Game::FormID a_handle)
-			-> const entrySlotData_t&
+			-> entrySlotData_t
 		{
 			auto& actorInfo = m_controller.GetActorInfo();
 
 			auto it = actorInfo.find(a_handle);
-			if (it == actorInfo.end())
-			{
-				m_tempData = {};
-			}
-			else
+			if (it != actorInfo.end())
 			{
 				auto& store = m_controller.GetConfigStore().active;
 
-				m_tempData = store.slot.GetActorCopy(
+				return store.slot.GetActorCopy(
 					a_handle,
 					it->second.GetBase(),
 					it->second.GetRace());
 			}
-
-			return m_tempData;
+			else
+			{
+				return {};
+			}
 		}
 
 		Data::configSlotHolder_t&

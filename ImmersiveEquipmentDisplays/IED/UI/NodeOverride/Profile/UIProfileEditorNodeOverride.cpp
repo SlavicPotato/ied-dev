@@ -168,9 +168,21 @@ namespace IED
 		{
 		}
 
-		void UIProfileEditorNodeOverride::OnClearParent(
+		void UIProfileEditorNodeOverride::OnClearPlacement(
 			int a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
+		{
+		}
+
+		void UIProfileEditorNodeOverride::OnClearAll(
+			int a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+		}
+
+		void UIProfileEditorNodeOverride::OnClearAllPlacement(
+			int a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 		}
 
@@ -179,9 +191,14 @@ namespace IED
 			return { 250.0f, 600.0f, -1.0f, false };
 		}
 
+		UIPopupQueue& UIProfileEditorNodeOverride::GetPopupQueue()
+		{
+			return m_controller.UIGetPopupQueue();
+		}
+
 		void UIProfileEditorNodeOverride::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::GearPositioning, "peb_1")))
+			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
 			{
 				DrawMenuBarItems();
 				ImGui::EndMenu();

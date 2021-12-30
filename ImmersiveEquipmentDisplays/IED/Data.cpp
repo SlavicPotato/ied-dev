@@ -532,7 +532,7 @@ namespace IED
 			}
 		}
 
-		bool ItemData::IsLeftExtraSlot(ObjectSlotExtra a_slot) noexcept
+		bool ItemData::IsLeftHandExtraSlot(ObjectSlotExtra a_slot) noexcept
 		{
 			switch (a_slot)
 			{
@@ -544,6 +544,8 @@ namespace IED
 			case ObjectSlotExtra::kMaceLeft:
 			case ObjectSlotExtra::kStaffLeft:
 			case ObjectSlotExtra::kSpellLeft:
+			case ObjectSlotExtra::kShield:
+			case ObjectSlotExtra::kTorch:
 				return true;
 			default:
 				return false;

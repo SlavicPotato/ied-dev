@@ -51,7 +51,7 @@ namespace IED
 				profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
 
-			virtual const entrySlotData_t& GetData(
+			virtual entrySlotData_t GetData(
 				Game::FormID a_formid) override;
 
 			void OnBaseConfigChange(
@@ -81,10 +81,8 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue() override;
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
-			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
-
-			entrySlotData_t m_tmpData;
+			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
+			virtual void OnCollapsibleStatesUpdate() override;
 
 			Controller& m_controller;
 		};

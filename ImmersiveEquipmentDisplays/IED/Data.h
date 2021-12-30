@@ -50,7 +50,7 @@ namespace IED
 			static ObjectSlotExtra SlotToExtraSlot(ObjectSlot a_slot) noexcept;
 
 			static bool IsLeftWeaponSlot(ObjectSlot a_slot) noexcept;
-			static bool IsLeftExtraSlot(ObjectSlotExtra a_slot) noexcept;
+			static bool IsLeftHandExtraSlot(ObjectSlotExtra a_slot) noexcept;
 
 			static NodeDescriptor GetDefaultSlotNode(ObjectSlot a_slot) noexcept;
 

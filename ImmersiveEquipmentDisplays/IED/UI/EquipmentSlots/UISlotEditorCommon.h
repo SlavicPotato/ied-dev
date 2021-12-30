@@ -56,12 +56,11 @@ namespace IED
 			virtual Data::configSlotHolder_t&
 				GetOrCreateConfigSlotHolder(T a_handle) const = 0;
 
-			virtual const SlotProfile::base_type&
+			virtual SlotProfile::base_type
 				GetData(const profileSelectorParamsSlot_t<T>& a_data) override;
 
 			virtual constexpr bool BaseConfigStoreCC() const override;
 
-			SlotProfile::base_type m_tempData;
 		};
 
 		template <class T>
@@ -259,10 +258,10 @@ namespace IED
 		}
 
 		template <class T>
-		const SlotProfile::base_type& UISlotEditorCommon<T>::GetData(
+		SlotProfile::base_type UISlotEditorCommon<T>::GetData(
 			const profileSelectorParamsSlot_t<T>& a_data)
 		{
-			m_tempData = {};
+			SlotProfile::base_type result;
 
 			auto configClass = GetConfigClass();
 
@@ -274,12 +273,12 @@ namespace IED
 
 				if (v.data && v.conf_class == configClass)
 				{
-					m_tempData.get(static_cast<Data::ObjectSlot>(i)) =
+					result.get(static_cast<Data::ObjectSlot>(i)) =
 						std::make_unique<SlotProfile::base_type::data_type>(*v.data);
 				}
 			}
 
-			return m_tempData;
+			return result;
 		}
 
 		template <class T>

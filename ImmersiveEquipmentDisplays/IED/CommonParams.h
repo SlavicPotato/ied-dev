@@ -12,7 +12,7 @@ namespace IED
 		mutable SetObjectWrapper<Game::ObjectRefHandle> furnHandle;
 		mutable SetObjectWrapper<bool> layingDown;
 
-		SKMP_FORCEINLINE bool get_using_furniture() const
+		bool get_using_furniture() const
 		{
 			if (!furnHandle)
 			{
@@ -31,7 +31,7 @@ namespace IED
 			return *furnHandle != Game::ObjectRefHandle{};
 		}
 
-		SKMP_FORCEINLINE auto get_furniture() const
+		auto get_furniture() const
 		{
 			if (!furniture)
 			{
@@ -54,7 +54,7 @@ namespace IED
 			return *furniture;
 		}
 
-		SKMP_FORCEINLINE bool get_laying_down() const
+		bool get_laying_down() const
 		{
 			if (!layingDown)
 			{

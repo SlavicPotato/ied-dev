@@ -46,6 +46,11 @@ namespace IED
 		auto UIProfileEditorSlot::GetCurrentData()
 			-> SlotEditorCurrentData
 		{
+			if (!m_state.selected)
+			{
+				return { 0, nullptr };
+			}
+
 			if (!m_cachedItem)
 			{
 				return { 0, nullptr };
@@ -275,7 +280,7 @@ namespace IED
 
 		void UIProfileEditorSlot::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Equipment, "peb_1")))
+			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
 			{
 				DrawMenuBarItems();
 
@@ -285,7 +290,7 @@ namespace IED
 
 		void UIProfileEditorSlot::DrawMenuBarItemsExtra()
 		{
-			if (!m_cachedItem)
+			if (!m_state.selected || !m_cachedItem)
 			{
 				return;
 			}

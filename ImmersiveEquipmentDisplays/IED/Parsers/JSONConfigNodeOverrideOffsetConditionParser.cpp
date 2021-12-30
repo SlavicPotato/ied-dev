@@ -1,8 +1,8 @@
 #include "pch.h"
 
+#include "JSONConfigCachedFormParser.h"
 #include "JSONConfigNodeOverrideOffsetConditionParser.h"
 #include "JSONFormParser.h"
-#include "JSONConfigCachedFormParser.h"
 
 namespace IED
 {
@@ -29,7 +29,7 @@ namespace IED
 					Error("%s: failed to parse form ID", __FUNCTION__);
 				}
 			}
-			
+
 			if (auto& v = a_in["kw"]; !v.empty())
 			{
 				if (!fparser.Parse(v, a_out.keyword))
@@ -40,7 +40,8 @@ namespace IED
 			}
 
 			a_out.bipedSlot = a_in["bip"].asUInt();
-			a_out.equipmentSlot = static_cast<Data::ObjectSlot>(a_in["slot"].asUInt());
+			a_out.typeSlot = static_cast<Data::ObjectSlotExtra>(
+				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
 			return true;
 		}
@@ -59,7 +60,7 @@ namespace IED
 			fparser.Create(a_data.keyword, a_out["kw"]);
 
 			a_out["bip"] = a_data.bipedSlot;
-			a_out["slot"] = stl::underlying(a_data.equipmentSlot);
+			a_out["type"] = stl::underlying(a_data.typeSlot);
 		}
 
 		template <>

@@ -70,7 +70,7 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void OnCollapsibleStatesUpdate() override;
 
 			void DrawTypeSelectorRadio();
 			void UpdateData();

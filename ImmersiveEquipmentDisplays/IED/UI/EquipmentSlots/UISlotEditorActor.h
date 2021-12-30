@@ -51,7 +51,7 @@ namespace IED
 			virtual void ListResetAllValues(
 				Game::FormID a_handle) override;
 
-			virtual const entrySlotData_t& GetData(
+			virtual entrySlotData_t GetData(
 				Game::FormID a_formid) override;
 
 			Data::configSlotHolder_t&
@@ -89,10 +89,10 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue() override;
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
-			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
+			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
+			virtual void OnCollapsibleStatesUpdate() override;
 
-			virtual void DrawMenuBarItemsExtra();
+			virtual void DrawMenuBarItemsExtra() override;
 
 			virtual void ListDrawExtraActorInfo(
 				const listValue_t& a_entry) override;
@@ -102,8 +102,6 @@ namespace IED
 				Data::ObjectSlot a_slot,
 				const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
 				bool a_infoDrawn) override;
-
-			entrySlotData_t m_tempData;
 
 			Controller& m_controller;
 		};
