@@ -27,8 +27,6 @@ namespace IED
 
 			a_out.playableOnly = data.get("playable_only", true).asBool();
 			a_out.showEditorIDs = data.get("show_editor_ids", true).asBool();
-			a_out.selectCrosshairActor =
-				data.get("select_crosshair_actor", true).asBool();
 
 			return true;
 		}
@@ -46,7 +44,6 @@ namespace IED
 
 			data["playable_only"] = a_data.playableOnly;
 			data["show_editor_ids"] = a_data.showEditorIDs;
-			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
 
 			a_out["version"] = CURRENT_VERSION;
 		}

@@ -1,24 +1,23 @@
 #pragma once
 
-#include "../../UIClipboard.h"
-#include "../../UICommon.h"
-#include "../../UIEditorInterface.h"
-#include "../../UIFormLookupInterface.h"
-#include "../../Widgets/Filters/UIGenericFilter.h"
-#include "../../Widgets/Form/UIFormPickerWidget.h"
-#include "../../Widgets/UIBaseConfigWidget.h"
-#include "../../Widgets/UIEditorPanelSettingsGear.h"
-#include "../../Widgets/UIPopupToggleButtonWidget.h"
-#include "../../Widgets/UIWidgetsCommon.h"
-
-#include "UICustomEditorStrings.h"
+#include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/UIEditorInterface.h"
+#include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/Widgets/Filters/UIGenericFilter.h"
+#include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
+#include "IED/UI/Widgets/UIBaseConfigWidget.h"
+#include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/ConfigOverride.h"
 #include "IED/Data.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
-#include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "UICustomEditorStrings.h"
 
 namespace IED
 {
@@ -225,7 +224,6 @@ namespace IED
 			      TESFurniture::kTypeID,
 			      BGSArtObject::kTypeID,
 			      TESObjectACTI::kTypeID,
-			      BGSHeadPart::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 
@@ -263,7 +261,7 @@ namespace IED
 					{
 						continue;
 					}
-					
+
 					sorted.emplace_back(std::addressof(e));
 				}
 

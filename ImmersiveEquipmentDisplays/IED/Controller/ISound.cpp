@@ -59,6 +59,28 @@ namespace IED
 	}
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
+		Game::FormID a_formid)
+	{
+		if (a_formid.IsTemporary())
+		{
+			return nullptr;
+		}
+
+		auto form = a_formid.As<BGSSoundDescriptorForm>();
+		if (!form)
+		{
+			return nullptr;
+		}
+
+		if (form->IsDeleted())
+		{
+			return nullptr;
+		}
+
+		return form;
+	}
+
+	BGSSoundDescriptorForm* ISound::GetSoundForm(
 		const IPluginInfo& a_pinfo,
 		const SetObjectWrapper<Data::ConfigForm>& a_form)
 	{
@@ -74,27 +96,29 @@ namespace IED
 			return nullptr;
 		}
 
-		auto res = formid.As<BGSSoundDescriptorForm>();
-		if (!res)
-		{
-			return nullptr;
-		}
-
-		if (res->IsDeleted())
-		{
-			return nullptr;
-		}
-
-		return res;
+		return GetSoundForm(formid);
 	}
 
 	[[nodiscard]] ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
 		const IPluginInfo& a_pinfo,
-		const Data::ConfigEntrySound::soundPair_t& a_in)
+		const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_in)
 	{
 		return {
 			GetSoundForm(a_pinfo, a_in.first),
 			GetSoundForm(a_pinfo, a_in.second)
+		};
+	}
+
+	[[nodiscard]] ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
+		const Data::ConfigSound<Game::FormID>::soundPair_t& a_in)
+	{
+		return {
+			a_in.first ?
+                GetSoundForm(*a_in.first) :
+                nullptr,
+			a_in.first ?
+                GetSoundForm(*a_in.second) :
+                nullptr
 		};
 	}
 

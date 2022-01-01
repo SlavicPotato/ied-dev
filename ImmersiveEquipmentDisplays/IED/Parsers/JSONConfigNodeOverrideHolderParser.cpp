@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideHolderParser.h"
-#include "JSONConfigNodeOverrideParser.h"
+#include "JSONConfigNodeOverrideTransformParser.h"
 #include "JSONConfigNodeOverridePlacementParser.h"
 
 namespace IED
@@ -21,7 +21,7 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configNodeOverride_t> parser(m_state);
+			Parser<Data::configNodeOverrideTransform_t> parser(m_state);
 			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
 
 			a_out.flags = static_cast<Data::NodeOverrideHolderFlags>(
@@ -35,7 +35,7 @@ namespace IED
 
 				auto& v = a_out.data.try_emplace(key).first->second;
 
-				parserDesc_t<Data::configNodeOverride_t> desc[]{
+				parserDesc_t<Data::configNodeOverrideTransform_t> desc[]{
 					{ "m", v(ConfigSex::Male) },
 					{ "f", v(ConfigSex::Female) }
 				};
@@ -81,7 +81,7 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configNodeOverride_t> parser(m_state);
+			Parser<Data::configNodeOverrideTransform_t> parser(m_state);
 			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
 
 			data["flags"] = stl::underlying(a_data.flags.value);
@@ -90,7 +90,7 @@ namespace IED
 
 			for (auto& e : a_data.data)
 			{
-				parserDescConst_t<Data::configNodeOverride_t> desc[]{
+				parserDescConst_t<Data::configNodeOverrideTransform_t> desc[]{
 					{ "m", e.second(ConfigSex::Male) },
 					{ "f", e.second(ConfigSex::Female) }
 				};

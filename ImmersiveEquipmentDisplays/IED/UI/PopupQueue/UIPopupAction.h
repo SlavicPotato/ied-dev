@@ -8,7 +8,8 @@ namespace IED
 		{
 			Confirm,
 			Input,
-			Message
+			Message,
+			Custom
 		};
 
 		class UIPopupAction
@@ -27,7 +28,7 @@ namespace IED
 			UIPopupAction& operator=(const UIPopupAction&) = delete;
 			UIPopupAction& operator=(UIPopupAction&&) = delete;
 
-			template <typename... Args>
+			template <class... Args>
 			UIPopupAction(
 				UIPopupType a_type,
 				const char* a_key,
@@ -37,20 +38,22 @@ namespace IED
 				m_type(a_type),
 				m_key(a_key)
 			{
-				m_input[0x0] = 0x0;
+				mk_key();
+				stl::snprintf(
+					m_buf,
+					a_fmt,
+					std::forward<Args>(a_args)...);
+			}
 
-				if (auto it = std::find(
-						m_key.begin(),
-						m_key.end(),
-						'#');
-				    it != m_key.end())
-				{
-					m_key.erase(it, m_key.end());
-				}
-
-				m_key += "##pa_key";
-
-				stl::snprintf(m_buf, a_fmt, std::forward<Args>(a_args)...);
+			template <class... Args>
+			UIPopupAction(
+				UIPopupType a_type,
+				const char* a_key) noexcept
+				:
+				m_type(a_type),
+				m_key(a_key)
+			{
+				mk_key();
 			}
 
 			auto& call(func_type a_func) noexcept
@@ -71,10 +74,24 @@ namespace IED
 			}
 
 		private:
+			void mk_key() noexcept
+			{
+				if (auto it = std::find(
+						m_key.begin(),
+						m_key.end(),
+						'#');
+				    it != m_key.end())
+				{
+					m_key.erase(it, m_key.end());
+				}
+
+				m_key += "###pa_key";
+			}
+
 			std::string m_key;
 
-			char m_buf[512];
-			char m_input[512];
+			char m_buf[512]{ 0 };
+			char m_input[512]{ 0 };
 
 			UIPopupType m_type;
 			func_type m_func;

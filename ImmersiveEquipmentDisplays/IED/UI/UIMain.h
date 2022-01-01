@@ -9,6 +9,7 @@
 #include "UINodeMapEditor.h"
 #include "UISettings.h"
 #include "UIStats.h"
+#include "UIAboutModal.h"
 
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
@@ -39,10 +40,11 @@ namespace IED
 		class UIMain :
 			public UIWindow,
 			UIExportFilterWidget,
+			UIAboutModal,
 			public virtual UILocalizationInterface
 		{
-			static constexpr auto TITLE_NAME = "Immersive Equipment Displays";
-			static constexpr auto WINDOW_ID = "ied_main";
+			inline static constexpr auto TITLE_NAME = PLUGIN_NAME_FULL;
+			inline static constexpr auto WINDOW_ID = "ied_main";
 
 		public:
 			UIMain(Controller& a_controller);
@@ -77,6 +79,7 @@ namespace IED
 			void DrawViewMenu();
 			void DrawToolsMenu();
 			void DrawActionsMenu();
+			void DrawHelpMenu();
 
 			void OpenEditorPanel(UIEditorPanel a_panel);
 

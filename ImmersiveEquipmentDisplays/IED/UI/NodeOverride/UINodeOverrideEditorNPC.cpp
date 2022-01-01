@@ -14,6 +14,8 @@ namespace IED
 			UINPCList<entryNodeOverrideData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -29,10 +31,8 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::Draw()
 		{
-			if (ImGui::BeginChild("transform_editor_npc", { -1.0f, 0.0f }))
+			if (ImGui::BeginChild("no_editor_npc", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -79,35 +79,15 @@ namespace IED
 			return Data::ConfigClass::NPC;
 		}
 
-		const ActorInfoHolder& UINodeOverrideEditorNPC::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		const NPCInfoHolder& UINodeOverrideEditorNPC::GetNPCInfoHolder() const
-		{
-			return m_controller.GetNPCInfo();
-		}
-
-		std::uint64_t UINodeOverrideEditorNPC::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
-		}
-
 		Data::SettingHolder::EditorPanelActorSettings& UINodeOverrideEditorNPC::GetActorSettings() const
 		{
 			return m_controller.GetConfigStore().settings.data.ui.transformEditor.npcConfig;
 		}
 
-		const SetObjectWrapper<Game::FormID>& UINodeOverrideEditorNPC::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
-		}
-
 		auto UINodeOverrideEditorNPC::GetCurrentData()
 			-> NodeOverrideEditorCurrentData
 		{
-			if (auto entry = ListGetSelected())
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -127,7 +107,7 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorNPC::GetEditorPanelSettings()
@@ -137,12 +117,12 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorNPC::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorNPC::ListResetAllValues(Game::FormID a_handle)
@@ -214,7 +194,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			store.settings.Set(
+			store.settings.set(
 				store.settings.data.ui.transformEditor.npcConfig.sex,
 				a_newSex);
 		}
@@ -248,7 +228,7 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideUpdateParams& a_params)
+			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -259,7 +239,7 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideParentUpdateParams& a_params)
+			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -279,13 +259,13 @@ namespace IED
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}*/
 
-		void UINodeOverrideEditorNPC::OnClear(
+		void UINodeOverrideEditorNPC::OnClearTransform(
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
 
-			if (EraseConfig(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
@@ -302,7 +282,7 @@ namespace IED
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
 
-			if (EraseConfigPlacement(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
@@ -362,6 +342,18 @@ namespace IED
 		UIPopupQueue& UINodeOverrideEditorNPC::GetPopupQueue()
 		{
 			return m_controller.UIGetPopupQueue();
+		}
+
+		const ImVec4* UINodeOverrideEditorNPC::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorLightOrange);
+			}
+
+			return nullptr;
 		}
 
 	}

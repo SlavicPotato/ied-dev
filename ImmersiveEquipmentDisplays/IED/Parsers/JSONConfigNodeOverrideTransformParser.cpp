@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideOffsetListParser.h"
-#include "JSONConfigNodeOverrideOffsetConditionListParser.h"
-#include "JSONConfigNodeOverrideParser.h"
+#include "JSONConfigNodeOverrideConditionListParser.h"
+#include "JSONConfigNodeOverrideTransformParser.h"
 #include "JSONConfigNodeOverrideValuesParser.h"
 
 namespace IED
@@ -10,9 +10,9 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<Data::configNodeOverride_t>::Parse(
+		bool Parser<Data::configNodeOverrideTransform_t>::Parse(
 			const Json::Value& a_in,
-			Data::configNodeOverride_t& a_out,
+			Data::configNodeOverrideTransform_t& a_out,
 			const std::uint32_t a_version) const
 		{
 			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
@@ -41,8 +41,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Data::configNodeOverride_t>::Create(
-			const Data::configNodeOverride_t& a_data,
+		void Parser<Data::configNodeOverrideTransform_t>::Create(
+			const Data::configNodeOverrideTransform_t& a_data,
 			Json::Value& a_out) const
 		{
 			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
@@ -57,8 +57,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Data::configNodeOverride_t>::GetDefault(
-			Data::configNodeOverride_t& a_out) const
+		void Parser<Data::configNodeOverrideTransform_t>::GetDefault(
+			Data::configNodeOverrideTransform_t& a_out) const
 		{
 		}
 	}

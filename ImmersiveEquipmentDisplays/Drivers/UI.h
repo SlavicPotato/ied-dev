@@ -189,6 +189,7 @@ namespace IED
 			static void QueueSetLanguageGlyphData(const std::shared_ptr<fontGlyphData_t>& a_data);
 			static void QueueFontChange(const stl::fixed_string& a_font);
 			static void QueueSetFontSize(float a_size);
+			static void QueueResetFontSize();
 
 			static void UpdateAvailableFonts();
 
@@ -256,7 +257,7 @@ namespace IED
 			void QueueSetLanguageGlyphDataImpl(const std::shared_ptr<fontGlyphData_t>& a_data);
 			void QueueFontChangeImpl(const stl::fixed_string& a_font);
 			void QueueSetFontSizeImpl(float a_size);
-			void QueueReloadFontsImpl();
+			void QueueResetFontSizeImpl();
 
 			void MarkFontUpdateDataDirtyImpl();
 			void UpdateFontData(bool a_force = false);

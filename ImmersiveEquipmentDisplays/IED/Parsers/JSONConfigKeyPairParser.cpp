@@ -1,16 +1,15 @@
 #include "pch.h"
 
-#include "JSONSettingsControlsParser.h"
+#include "JSONConfigKeyPairParser.h"
 
 namespace IED
 {
 	namespace Serialization
 	{
 		template <>
-		bool Parser<Data::SettingHolder::Controls>::Parse(
+		bool Parser<Data::ConfigKeyPair>::Parse(
 			const Json::Value& a_in,
-			Data::SettingHolder::Controls& a_out,
-			const std::uint32_t a_version) const
+			Data::ConfigKeyPair& a_out) const
 		{
 			a_out.key = a_in.get("key", 0).asUInt();
 			a_out.comboKey = a_in.get("combo_key", 0).asUInt();
@@ -19,8 +18,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Data::SettingHolder::Controls>::Create(
-			const Data::SettingHolder::Controls& a_data,
+		void Parser<Data::ConfigKeyPair>::Create(
+			const Data::ConfigKeyPair& a_data,
 			Json::Value& a_out) const
 		{
 			a_out["key"] = a_data.key;
@@ -28,8 +27,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Data::SettingHolder::Controls>::GetDefault(
-			Data::SettingHolder::Controls& a_out) const
+		void Parser<Data::ConfigKeyPair>::GetDefault(
+			Data::ConfigKeyPair& a_out) const
 		{}
 
 	}  // namespace Serialization

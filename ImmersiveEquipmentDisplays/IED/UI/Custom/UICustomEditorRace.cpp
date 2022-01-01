@@ -16,6 +16,8 @@ namespace IED
 			UIRaceList<entryCustomData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -33,8 +35,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("custom_editor_race", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -73,11 +73,6 @@ namespace IED
 		constexpr Data::ConfigClass UICustomEditorRace::GetConfigClass() const
 		{
 			return Data::ConfigClass::Race;
-		}
-
-		const ActorInfoHolder& UICustomEditorRace::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
 		}
 
 		Data::SettingHolder::EditorPanelRaceSettings& UICustomEditorRace::GetRaceSettings() const
@@ -119,8 +114,7 @@ namespace IED
 		auto UICustomEditorRace::GetCurrentData()
 			-> CustomEditorCurrentData
 		{
-			auto entry = ListGetSelected();
-			if (entry)
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -128,11 +122,6 @@ namespace IED
 			{
 				return { {}, nullptr };
 			}
-		}
-
-		const SetObjectWrapper<Game::FormID>& UICustomEditorRace::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
 		}
 
 		UIPopupQueue& UICustomEditorRace::GetPopupQueue()
@@ -155,13 +144,13 @@ namespace IED
 
 		void UICustomEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UICustomEditorRace::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorRace::GetEditorPanelSettings()
@@ -172,7 +161,7 @@ namespace IED
 		void UICustomEditorRace::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UICustomEditorRace::ListResetAllValues(Game::FormID a_handle)
@@ -193,7 +182,7 @@ namespace IED
 			if (store.settings.data.ui.customEditor.raceConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.customEditor.raceConfig.sex,
 					a_newSex);
 			}
@@ -345,6 +334,15 @@ namespace IED
 				a_params.oldName);
 
 			return true;
+		}
+
+		const ImVec4* UICustomEditorRace::HighlightEntry(Game::FormID a_handle)
+		{
+			return HasConfigEntry(
+					   m_controller.GetConfigStore().active.custom.GetRaceData(),
+					   a_handle) ?
+                       std::addressof(UICommon::g_colorPurple) :
+                       nullptr;
 		}
 	}
 }

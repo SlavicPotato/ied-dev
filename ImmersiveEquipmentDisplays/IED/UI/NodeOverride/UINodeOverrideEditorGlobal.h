@@ -2,6 +2,8 @@
 
 #include "UINodeOverrideEditorCommon.h"
 
+#include "IED/UI/Widgets/UIGlobalConfigTypeSelectorWidget.h"
+
 namespace IED
 {
 	class Controller;
@@ -9,6 +11,7 @@ namespace IED
 	namespace UI
 	{
 		class UINodeOverrideEditorGlobal :
+			UIGlobalConfigTypeSelectorWidget,
 			public UINodeOverrideEditorCommon<int>
 		{
 		public:
@@ -47,17 +50,17 @@ namespace IED
 
 			virtual void OnUpdate(
 				int a_handle,
-				const SingleNodeOverrideUpdateParams& a_params) override;
+				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
 				int a_handle,
-				const SingleNodeOverrideParentUpdateParams& a_params) override;
+				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
 			/*virtual void OnUpdate(
 				int a_handle,
 				const NodeOverrideUpdateParams& a_params) override;*/
 
-			virtual void OnClear(
+			virtual void OnClearTransform(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 

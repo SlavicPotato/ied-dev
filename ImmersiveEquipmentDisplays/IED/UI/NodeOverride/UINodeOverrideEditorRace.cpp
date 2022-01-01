@@ -13,6 +13,8 @@ namespace IED
 			UIRaceList<entryNodeOverrideData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -28,10 +30,8 @@ namespace IED
 
 		void UINodeOverrideEditorRace::Draw()
 		{
-			if (ImGui::BeginChild("transform_editor_race", { -1.0f, 0.0f }))
+			if (ImGui::BeginChild("no_editor_race", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -66,25 +66,15 @@ namespace IED
 			return Data::ConfigClass::Race;
 		}
 
-		const ActorInfoHolder& UINodeOverrideEditorRace::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
 		Data::SettingHolder::EditorPanelRaceSettings& UINodeOverrideEditorRace::GetRaceSettings() const
 		{
 			return m_controller.GetConfigStore().settings.data.ui.transformEditor.raceConfig;
 		}
 
-		const SetObjectWrapper<Game::FormID>& UINodeOverrideEditorRace::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
-		}
-
 		auto UINodeOverrideEditorRace::GetCurrentData()
 			-> NodeOverrideEditorCurrentData
 		{
-			if (auto entry = ListGetSelected())
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -104,7 +94,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorRace::GetEditorPanelSettings()
@@ -114,12 +104,12 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorRace::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorRace::ListResetAllValues(Game::FormID a_handle)
@@ -130,7 +120,9 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			return store.active.transforms.GetRace(a_handle);
+			return store.active.transforms.GetRace(
+				a_handle,
+				store.settings.data.ui.transformEditor.globalType);
 		}
 
 		NodeOverrideProfile::base_type UINodeOverrideEditorRace::GetData(
@@ -153,7 +145,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			store.settings.Set(
+			store.settings.set(
 				store.settings.data.ui.transformEditor.raceConfig.sex,
 				a_newSex);
 		}
@@ -187,7 +179,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideUpdateParams& a_params)
+			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -198,7 +190,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideParentUpdateParams& a_params)
+			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -218,13 +210,13 @@ namespace IED
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}*/
 
-		void UINodeOverrideEditorRace::OnClear(
+		void UINodeOverrideEditorRace::OnClearTransform(
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
 
-			if (EraseConfig(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
@@ -241,7 +233,7 @@ namespace IED
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
 
-			if (EraseConfigPlacement(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
@@ -300,6 +292,18 @@ namespace IED
 		UIPopupQueue& UINodeOverrideEditorRace::GetPopupQueue()
 		{
 			return m_controller.UIGetPopupQueue();
+		}
+
+		const ImVec4* UINodeOverrideEditorRace::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorPurple);
+			}
+
+			return nullptr;
 		}
 
 	}

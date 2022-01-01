@@ -206,7 +206,7 @@ namespace IED
 			auto& conf = GetEditorConfig();
 
 			conf.lastConfigClass = a_class;
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 
 			const auto& inew = m_interfaces[stl::underlying(a_class)];
 			const auto& iold = m_interfaces[stl::underlying(oldClass)];

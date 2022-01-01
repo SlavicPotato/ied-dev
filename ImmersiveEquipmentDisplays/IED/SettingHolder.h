@@ -19,10 +19,6 @@ namespace IED
 		class SettingHolder
 		{
 		public:
-			struct Controls :
-				public ConfigKeyPair
-			{
-			};
 
 			using EditorPanelCommonFlagsType = std::uint32_t;
 
@@ -64,7 +60,6 @@ namespace IED
 
 			struct EditorPanelActorSettings
 			{
-				bool selectCrosshairActor{ true };
 				bool autoSelectSex{ true };
 				bool showAll{ true };
 				ConfigSex sex{ Data::ConfigSex::Male };
@@ -74,7 +69,6 @@ namespace IED
 
 			struct EditorPanelRaceSettings
 			{
-				bool selectCrosshairActor{ true };
 				bool playableOnly{ false };
 				bool showEditorIDs{ true };
 				ConfigSex sex{ ConfigSex::Male };
@@ -126,10 +120,11 @@ namespace IED
 
 				UI::UIEditorPanel lastPanel;
 
-				Controls toggleKeys;
+				ConfigKeyPair toggleKeys;
 
 				bool enableControlLock{ true };
 				bool enableRestrictions{ false };
+				bool selectCrosshairActor{ true };
 				float scale{ 1.0f };
 
 				std::uint32_t logLimit{ 200 };
@@ -150,10 +145,9 @@ namespace IED
 			{
 				UserInterface ui;
 
-				Controls playerBlockKeys;
+				ConfigKeyPair playerBlockKeys;
+				Data::ConfigSound<Game::FormID> sound;
 
-				bool playSound{ true };
-				bool playSoundNPC{ false };
 				bool hideEquipped{ false };
 				bool toggleKeepLoaded{ false };
 
@@ -189,18 +183,18 @@ namespace IED
 				class Tm,
 				class Tv,
 				class = std::enable_if_t<std::is_convertible_v<Tv, Tm>>>
-			inline void Set(Tm& a_member, Tv&& a_value)
+			inline void set(Tm& a_member, Tv&& a_value)
 			{
 				a_member = std::forward<Tv>(a_value);
 				m_dirty = true;
 			}
 
-			inline void MarkDirty()
+			inline void mark_dirty() noexcept
 			{
 				m_dirty = true;
 			}
 
-			inline bool MarkIf(bool a_isTrue)
+			inline bool mark_if(bool a_isTrue) noexcept
 			{
 				if (a_isTrue)
 				{

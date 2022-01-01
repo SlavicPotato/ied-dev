@@ -281,7 +281,7 @@ namespace IED
 				return data[stl::underlying(ConfigClass::NPC)];
 			}
 
-			inline constexpr auto& GetData(ConfigClass a_class) noexcept
+			/*inline constexpr auto& GetData(ConfigClass a_class) noexcept
 			{
 				return data[stl::underlying(a_class)];
 			}
@@ -289,7 +289,7 @@ namespace IED
 			inline constexpr const auto& GetData(ConfigClass a_class) const noexcept
 			{
 				return data[stl::underlying(a_class)];
-			}
+			}*/
 
 			inline constexpr auto& GetGlobalData() noexcept
 			{

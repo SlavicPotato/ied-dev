@@ -43,7 +43,7 @@ namespace IED
 				if (!ldm.Load(PATHS::LOCALIZATION))
 				{
 					gLog.Error(
-						"Error occured while loading localization data: %s",
+						"Exception occured while loading localization data: %s",
 						ldm.GetLastException().what());
 				}
 
@@ -61,18 +61,7 @@ namespace IED
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
 
-				auto edl = GetEventDispatcherList();
-
-				ASSERT(edl);
-
-				edl->objectLoadedDispatcher.AddEventSink(g_controller.get());
-				edl->initScriptDispatcher.AddEventSink(g_controller.get());
-				edl->equipDispatcher.AddEventSink(g_controller.get());
-				edl->containerChangedDispatcher.AddEventSink(g_controller.get());
-				edl->furnitureDispatcher.AddEventSink(g_controller.get());
-				edl->deathDispatcher.AddEventSink(g_controller.get());
-				edl->raceSwitchCompleteDispatcher.AddEventSink(g_controller.get());
-
+				ASSERT(g_controller->SinkEventsT2());
 			}
 			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:
@@ -82,11 +71,7 @@ namespace IED
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
 
-			if (auto mm = MenuManager::GetSingleton())
-			{
-				auto dispatcher = mm->MenuOpenCloseEventDispatcher();
-				dispatcher->AddEventSink(g_controller.get());
-			}
+			g_controller->SinkEventsT1();
 
 			break;
 		case SKSEMessagingInterface::kMessage_PreLoadGame:
@@ -120,7 +105,7 @@ namespace IED
 
 	bool Initialize(const SKSEInterface* a_skse)
 	{
-		auto config = std::make_shared<Config>(PLUGIN_INI_FILE);
+		auto config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE);
 
 		if (!config->IsLoaded())
 		{
@@ -177,6 +162,7 @@ namespace IED
 		bool closeLog = config->m_closeLogFile;
 
 		g_controller = std::make_shared<Controller>(config);
+		g_controller->SinkEventsT0();
 
 		auto handle = a_skse->GetPluginHandle();
 		auto mi = skse.GetInterface<SKSEMessagingInterface>();

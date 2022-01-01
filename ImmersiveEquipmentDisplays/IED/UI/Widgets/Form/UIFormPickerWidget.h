@@ -16,7 +16,8 @@ namespace IED
 		class UIFormPickerWidget :
 			public UIFormSelectorWidget,
 			UINotificationInterface,
-			virtual public UIPopupToggleButtonWidget
+			public virtual UIPopupToggleButtonWidget,
+			public virtual UIFormLookupInterface
 		{
 		public:
 			UIFormPickerWidget(
@@ -45,8 +46,6 @@ namespace IED
 		private:
 			bool DrawContextMenu(Game::FormID& a_form);
 			UIFormBrowser::FormBrowserDrawResult DrawFormBrowserPopup(Game::FormID& a_form);
-
-			UIFormLookupInterface m_ifLookup;
 
 			const formInfoResult_t* m_currentInfo{ nullptr };
 

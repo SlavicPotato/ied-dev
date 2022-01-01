@@ -13,6 +13,8 @@ namespace IED
 			UIRaceList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -30,8 +32,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("slot_editor_race", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -58,8 +58,7 @@ namespace IED
 
 		auto UISlotEditorRace::GetCurrentData() -> SlotEditorCurrentData
 		{
-			auto entry = ListGetSelected();
-			if (entry)
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -77,7 +76,7 @@ namespace IED
 		void UISlotEditorRace::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UISlotEditorRace::ListResetAllValues(
@@ -87,9 +86,11 @@ namespace IED
 		auto UISlotEditorRace::GetData(Game::FormID a_handle)
 			-> entrySlotData_t
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetConfigStore();
 
-			return store.slot.GetRaceCopy(a_handle);
+			return store.active.slot.GetRaceCopy(
+				a_handle,
+				store.settings.data.ui.slotEditor.globalType);
 		}
 
 		auto UISlotEditorRace::GetOrCreateConfigSlotHolder(
@@ -202,7 +203,7 @@ namespace IED
 			if (store.settings.data.ui.slotEditor.raceConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.slotEditor.raceConfig.sex,
 					a_newSex);
 			}
@@ -211,17 +212,7 @@ namespace IED
 		void UISlotEditorRace::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
-		}
-
-		const ActorInfoHolder& UISlotEditorRace::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		const SetObjectWrapper<Game::FormID>& UISlotEditorRace::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
+			store.settings.mark_dirty();
 		}
 
 		UIPopupQueue& UISlotEditorRace::GetPopupQueue()
@@ -244,7 +235,19 @@ namespace IED
 
 		void UISlotEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
+		}
+
+		const ImVec4* UISlotEditorRace::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.slot.GetRaceData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorPurple);
+			}
+
+			return nullptr;
 		}
 
 		void UISlotEditorRace::OnOpen()

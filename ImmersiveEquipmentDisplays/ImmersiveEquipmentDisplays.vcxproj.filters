@@ -165,6 +165,12 @@
     <Filter Include="Scripts">
       <UniqueIdentifier>{dc61e8b0-27e3-41fd-94d5-ebac549caceb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\FormFilter">
+      <UniqueIdentifier>{78b090db-3d11-4c60-b14a-7dee344c0dbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Sound">
+      <UniqueIdentifier>{960e2e3b-1101-459d-94ec-7d8c59f07918}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -398,9 +404,6 @@
     <ClInclude Include="IED\Parsers\JSONSettingsRaceParser.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONSettingsControlsParser.h">
-      <Filter>Source\IED\JSONParsers\Settings</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONSettingsProfileEditorParser.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClInclude>
@@ -605,14 +608,8 @@
     <ClInclude Include="IED\UI\UISettingsInterface.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
-      <Filter>Source\IED\JSONParsers</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UILog.h">
       <Filter>Source\IED\UI</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONFormFilterBaseParser.h">
-      <Filter>Source\IED\JSONParsers</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorBase.h">
       <Filter>Source\IED\UI\Equipment</Filter>
@@ -626,7 +623,7 @@
     <ClInclude Include="IED\ConfigOverrideNodeOverride.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideParser.h">
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideTransformParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.h">
@@ -701,10 +698,10 @@
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.h">
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.h">
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionListParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.h">
@@ -745,12 +742,6 @@
     </ClInclude>
     <ClInclude Include="IED\PapyrusInterface\PapyrusCommon.h">
       <Filter>Source\IED\PapyrusInterface</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONFormFilterParser.h">
-      <Filter>Source\IED\JSONParsers</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONFormFilterBaseSharedParser.h">
-      <Filter>Source\IED\JSONParsers</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\FormFilters\UIProfileEditorFormFilters.h">
       <Filter>Source\IED\UI\FormFilters</Filter>
@@ -920,6 +911,39 @@
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h">
       <Filter>Source\IED\UI\Widgets\Form</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIActorInfoInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIAboutModal.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIAboutModalStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseParser.h">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterBaseSharedParser.h">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONFormFilterParser.h">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigKeyPairParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -965,9 +989,6 @@
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.cpp">
-      <Filter>Source\IED\JSONParsers\Settings</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONSettingsControlsParser.cpp">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONSettingsHolder.cpp">
@@ -1264,19 +1285,13 @@
     <ClCompile Include="IED\UI\UISettingsInterface.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
-      <Filter>Source\IED\JSONParsers</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\UILog.cpp">
       <Filter>Source\IED\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONFormFilterBaseParser.cpp">
-      <Filter>Source\IED\JSONParsers</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONFormListParser.cpp">
       <Filter>Source\IED\JSONParsers\Form</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideParser.cpp">
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideTransformParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.cpp">
@@ -1333,10 +1348,10 @@
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.cpp">
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.cpp">
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.cpp">
@@ -1368,12 +1383,6 @@
     </ClCompile>
     <ClCompile Include="IED\PapyrusInterface\PapyrusCommon.cpp">
       <Filter>Source\IED\PapyrusInterface</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONFormFilterParser.cpp">
-      <Filter>Source\IED\JSONParsers</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONFormFilterBaseSharedParser.cpp">
-      <Filter>Source\IED\JSONParsers</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\FormFilters\UIProfileEditorFormFilters.cpp">
       <Filter>Source\IED\UI\FormFilters</Filter>
@@ -1464,6 +1473,39 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp">
       <Filter>Source\IED\UI\Widgets\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIActorInfoInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIAboutModal.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseParser.cpp">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterBaseSharedParser.cpp">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONFormFilterParser.cpp">
+      <Filter>Source\IED\JSONParsers\FormFilter</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
+      <Filter>Source\IED\JSONParsers\Form</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigKeyPairParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -5,31 +5,37 @@
 #include "IED/Data.h"
 #include "IED/SettingHolder.h"
 
-#include "../UIWidgetsCommon.h"
+#include "IED/UI/UIActorInfoInterface.h"
+#include "IED/UI/UISettingsInterface.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
+
 #include "UIListCommon.h"
 
 #include "Localization/ILocalization.h"
 
 namespace IED
 {
+	class Controller;
+
 	namespace UI
 	{
-		template <class T>
+		template <class Td>
 		class UIRaceList :
-			public UIListBase<T, Game::FormID>,
-			public virtual UILocalizationInterface
+			public UIListBase<Td, Game::FormID>,
+			public virtual UILocalizationInterface,
+			public virtual UISettingsInterface,
+			public virtual UIActorInfoInterface
 		{
 		protected:
-			using listValue_t = UIListBase<T, Game::FormID>::listValue_t;
+			using listValue_t = UIListBase<Td, Game::FormID>::listValue_t;
 
 			UIRaceList(
-				Localization::ILocalization& a_localization,
+				Controller& a_controller,
 				float a_itemWidthScalar = -6.5f);
 
 			virtual ~UIRaceList() noexcept = default;
 
 		private:
-			virtual const ActorInfoHolder& GetActorInfoHolder() const = 0;
 			virtual Data::SettingHolder::EditorPanelRaceSettings& GetRaceSettings() const = 0;
 
 			virtual void OnListOptionsChange() = 0;
@@ -40,16 +46,18 @@ namespace IED
 			virtual void ListDrawOptionsExtra();
 		};
 
-		template <typename T>
-		UIRaceList<T>::UIRaceList(
-			Localization::ILocalization& a_localization,
+		template <class Td>
+		UIRaceList<Td>::UIRaceList(
+			Controller& a_controller,
 			float a_itemWidthScalar) :
-			UIListBase<T, Game::FormID>(a_itemWidthScalar),
-			UILocalizationInterface(a_localization)
+			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
+			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller)
 		{}
 
-		template <class T>
-		void UIRaceList<T>::ListUpdate()
+		template <class Td>
+		void UIRaceList<Td>::ListUpdate()
 		{
 			bool isFirstUpdate = m_listFirstUpdate;
 
@@ -57,7 +65,6 @@ namespace IED
 
 			m_listData.clear();
 
-			const auto& globalConfig = GetRaceSettings();
 			const auto& raceConf = GetRaceSettings();
 			auto& rl = Data::IData::GetRaceList();
 
@@ -88,11 +95,11 @@ namespace IED
 
 			stl::snprintf(m_listBuf1, "%zu", m_listData.size());
 
-			if (!isFirstUpdate && globalConfig.selectCrosshairActor)
+			if (!isFirstUpdate && GetSettings().data.ui.selectCrosshairActor)
 			{
-				if (auto& crosshairRef = GetCrosshairRef(); crosshairRef)
+				if (auto& crosshairRef = GetCrosshairRef())
 				{
-					auto& actorCache = GetActorInfoHolder();
+					auto& actorCache = GetActorInfo();
 					auto it = actorCache.find(*crosshairRef);
 					if (it != actorCache.end())
 					{
@@ -121,12 +128,12 @@ namespace IED
 
 			if (!m_listCurrent)
 			{
-				ListSetCurrentItem(m_listData.begin()->first);
+				ListSetCurrentItem(*m_listData.begin());
 			}
 		}
 
-		template <class T>
-		void UIRaceList<T>::ListDrawInfoText(const listValue_t& a_entry)
+		template <class Td>
+		void UIRaceList<Td>::ListDrawInfoText(const listValue_t& a_entry)
 		{
 			auto& raceCache = Data::IData::GetRaceList();
 			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
@@ -153,8 +160,8 @@ namespace IED
 			ImGui::TextUnformatted(ss.str().c_str());
 		}
 
-		template <class T>
-		void UIRaceList<T>::ListDrawOptions()
+		template <class Td>
+		void UIRaceList<Td>::ListDrawOptions()
 		{
 			auto& config = GetRaceSettings();
 
@@ -179,8 +186,8 @@ namespace IED
 			ListDrawOptionsExtra();
 		}
 
-		template <class T>
-		void UIRaceList<T>::ListDrawOptionsExtra()
+		template <class Td>
+		void UIRaceList<Td>::ListDrawOptionsExtra()
 		{
 		}
 

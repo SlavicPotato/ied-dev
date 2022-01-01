@@ -14,6 +14,8 @@ namespace IED
 			UIActorList<entryNodeOverrideData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -29,10 +31,8 @@ namespace IED
 
 		void UINodeOverrideEditorActor::Draw()
 		{
-			if (ImGui::BeginChild("transform_editor_actor", { -1.0f, 0.0f }))
+			if (ImGui::BeginChild("no_editor_actor", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -79,30 +79,15 @@ namespace IED
 			return Data::ConfigClass::Actor;
 		}
 
-		const ActorInfoHolder& UINodeOverrideEditorActor::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		std::uint64_t UINodeOverrideEditorActor::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
-		}
-
 		Data::SettingHolder::EditorPanelActorSettings& UINodeOverrideEditorActor::GetActorSettings() const
 		{
 			return m_controller.GetConfigStore().settings.data.ui.transformEditor.actorConfig;
 		}
 
-		const SetObjectWrapper<Game::FormID>& UINodeOverrideEditorActor::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
-		}
-
 		auto UINodeOverrideEditorActor::GetCurrentData()
 			-> NodeOverrideEditorCurrentData
 		{
-			if (auto entry = ListGetSelected())
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -122,7 +107,7 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorActor::GetEditorPanelSettings()
@@ -132,12 +117,12 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorActor::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UINodeOverrideEditorActor::ListResetAllValues(Game::FormID a_handle)
@@ -210,7 +195,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			store.settings.Set(
+			store.settings.set(
 				store.settings.data.ui.transformEditor.actorConfig.sex,
 				a_newSex);
 		}
@@ -244,7 +229,7 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideUpdateParams& a_params)
+			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -255,7 +240,7 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnUpdate(
 			Game::FormID a_handle,
-			const SingleNodeOverrideParentUpdateParams& a_params)
+			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -275,13 +260,13 @@ namespace IED
 			m_controller.RequestEvaluateTransforms(a_handle, true);
 		}*/
 
-		void UINodeOverrideEditorActor::OnClear(
+		void UINodeOverrideEditorActor::OnClearTransform(
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
 
-			if (EraseConfig(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransforms(a_handle, true);
 			}
@@ -298,7 +283,7 @@ namespace IED
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
 
-			if (EraseConfigPlacement(a_handle, data, a_params.name))
+			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
 			{
 				m_controller.RequestEvaluateTransforms(a_handle, true);
 			}
@@ -358,6 +343,18 @@ namespace IED
 		UIPopupQueue& UINodeOverrideEditorActor::GetPopupQueue()
 		{
 			return m_controller.UIGetPopupQueue();
+		}
+
+		const ImVec4* UINodeOverrideEditorActor::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorLimeGreen);
+			}
+
+			return nullptr;
 		}
 
 	}

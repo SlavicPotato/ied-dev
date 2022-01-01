@@ -21,6 +21,9 @@ namespace IED
 			KeepEquippedLoaded = 4410,
 			PlayerGearToggleKeys = 4411,
 			KeepLoadedWhenToggledOff = 4412,
+			SelectCrosshairActor = 4413,
+			ClearFontSizeOverride = 4414,
+			ClearFontSizeOverridePrompt = 4415,
 		};
 	}
 }

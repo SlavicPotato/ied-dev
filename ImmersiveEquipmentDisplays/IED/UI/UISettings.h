@@ -3,10 +3,14 @@
 #include "UICommon.h"
 
 #include "UITips.h"
+
 #include "Widgets/UIControlKeySelectorWidget.h"
+#include "Widgets/Form/UIFormPickerWidget.h"
 
 #include "IED/UI/Controls/UICollapsibles.h"
 #include "IED/UI/Window/UIWindow.h"
+
+#include "IED/ConfigCommon.h"
 
 namespace IED
 {
@@ -18,6 +22,7 @@ namespace IED
 			public UIWindow,
 			UICollapsibles,
 			UIControlKeySelectorWidget,
+			UIFormPickerWidget,
 			public virtual UITipsInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_settings";
@@ -46,6 +51,12 @@ namespace IED
 
 			void DrawFontSelector();
 			void DrawExtraGlyphs();
+
+			bool DrawSoundPairs();
+			bool DrawSoundPair(
+				const char *a_strid,
+				Localization::StringID a_label,
+				Data::ConfigSound<Game::FormID>::soundPair_t &a_soundPair);
 
 			SetObjectWrapper<float> m_scaleTemp;
 			SetObjectWrapper<float> m_fontSizeTemp;

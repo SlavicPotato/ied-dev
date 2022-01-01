@@ -16,7 +16,8 @@ namespace IED
 			SyncReference = 4005,
 			Use1pWeaponModels = 4006,
 			AttachmentModeColon = 4007,
-			EmptyNodeWarning = 4008
+			EmptyNodeWarning = 4008,
+			KeepTorchFlame = 4009,
 		};
 	}
 }

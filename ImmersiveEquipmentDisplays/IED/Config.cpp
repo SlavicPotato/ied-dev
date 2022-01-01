@@ -27,12 +27,12 @@ namespace IED
 		}
 	}
 
-	Config::Config(const std::string& a_path)
+	ConfigINI::ConfigINI(const std::string& a_path)
 	{
 		Load(a_path);
 	}
 
-	bool Config::Load(const std::string& a_path)
+	bool ConfigINI::Load(const std::string& a_path)
 	{
 		parsers_t parsers{ a_path };
 
@@ -40,7 +40,6 @@ namespace IED
 			parsers.reader.Get(SECT_GENERAL, "TogglePlayerDisplayKeys", ""));
 		m_closeLogFile =
 			parsers.reader.Get(SECT_GENERAL, "LogCloseAfterInit", false);
-
 		m_forceDefaultConfig =
 			parsers.reader.Get(SECT_GENERAL, "ForceDefaultConfig", false);
 
@@ -55,6 +54,8 @@ namespace IED
 
 		m_uiEnableInMenu =
 			parsers.reader.Get(SECT_DEBUG, "EnableUIInMenus", false);
+		m_disableNPCProcessing =
+			parsers.reader.Get(SECT_DEBUG, "DisableNPCProcessing", false);
 
 		m_logLevel = ILog::TranslateLogLevel(parsers.reader.Get(SECT_GENERAL, "LogLevel", "debug"));
 
@@ -67,37 +68,30 @@ namespace IED
 		m_enableUIRestrictions = parsers.reader.Get(SECT_GUI, "EnableRestrictions", false);
 		m_UIScaling = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
 
-		m_sound.enabled = parsers.reader.Get(SECT_SOUND, "Enabled", false);
-
-		if (m_sound.enabled)
-		{
-			m_sound.npc = parsers.reader.Get(SECT_SOUND, "NPC", false);
-
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "WeaponEquipSD", ""),
-				m_sound.weapon.first);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "WeaponUnequipSD", ""),
-				m_sound.weapon.second);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "GenericEquipSD", ""),
-				m_sound.gen.first);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "GenericUnequipSD", ""),
-				m_sound.gen.second);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "ArmorEquipSD", ""),
-				m_sound.armor.first);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "ArmorUnequipSD", ""),
-				m_sound.armor.second);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "ArrowEquipSD", ""),
-				m_sound.arrow.first);
-			ParseForm(
-				parsers.reader.Get(SECT_SOUND, "ArrowUnequipSD", ""),
-				m_sound.arrow.second);
-		}
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "WeaponEquipSD", ""),
+			m_sound.weapon.first);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "WeaponUnequipSD", ""),
+			m_sound.weapon.second);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "GenericEquipSD", ""),
+			m_sound.gen.first);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "GenericUnequipSD", ""),
+			m_sound.gen.second);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "ArmorEquipSD", ""),
+			m_sound.armor.first);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "ArmorUnequipSD", ""),
+			m_sound.armor.second);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "ArrowEquipSD", ""),
+			m_sound.arrow.first);
+		ParseForm(
+			parsers.reader.Get(SECT_SOUND, "ArrowUnequipSD", ""),
+			m_sound.arrow.second);
 
 		return (m_loaded = (parsers.reader.ParseError() == 0));
 	}

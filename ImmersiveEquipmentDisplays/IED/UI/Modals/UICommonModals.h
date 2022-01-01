@@ -46,6 +46,11 @@ namespace IED
 				const cm_func_t& a_func,
 				const char* text,
 				Args... args);
+
+			template <class... Args>
+			ModalStatus CustomDialog(
+				const char* name,
+				const cm_func_t& a_func);
 		};
 
 		template <class... Args>
@@ -248,6 +253,47 @@ namespace IED
 				if (ImGui::Button(
 						LS(CommonStrings::Cancel, "ctl_2"),
 						{ 120.0f, 0.0f }))
+				{
+					ImGui::CloseCurrentPopup();
+					ret = ModalStatus::kReject;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			return ret;
+		}
+
+		template <class... Args>
+		auto UICommonModals::CustomDialog(
+			const char* name,
+			const cm_func_t& a_func)
+			-> ModalStatus
+		{
+			ModalStatus ret{ ModalStatus::kNoAction };
+
+			auto& io = ImGui::GetIO();
+
+			ImGui::SetNextWindowPos(
+				{ io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f },
+				ImGuiCond_Appearing,
+				{ 0.5f, 0.5f });
+
+			if (ImGui::BeginPopupModal(
+					name,
+					nullptr,
+					ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				bool close = false;
+
+				if (a_func)
+				{
+					ImGui::PushID("extra");
+					close = a_func();
+					ImGui::PopID();
+				}
+
+				if (close)
 				{
 					ImGui::CloseCurrentPopup();
 					ret = ModalStatus::kReject;

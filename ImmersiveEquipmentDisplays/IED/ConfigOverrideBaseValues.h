@@ -21,7 +21,7 @@ namespace IED
 			kSyncReferenceTransform = 1u << 6,
 			kReferenceMode = 1u << 7,
 			kPlaySound = 1u << 8,
-			kKeepTorchFlame = 1u << 9,  // reserved
+			kKeepTorchFlame = 1u << 9,
 			kRemoveScabbard = 1u << 10,
 			kLoad1pWeaponModel = 1u << 11,
 			kHideLayingDown = 1u << 12,

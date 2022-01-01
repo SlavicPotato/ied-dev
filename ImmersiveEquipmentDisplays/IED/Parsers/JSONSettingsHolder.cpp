@@ -1,7 +1,8 @@
 #include "pch.h"
 
+#include "JSONConfigSoundParser.h"
 #include "JSONNodeMapParser.h"
-#include "JSONSettingsControlsParser.h"
+#include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsHolder.h"
 #include "JSONSettingsUserInterfaceParser.h"
 
@@ -21,7 +22,8 @@ namespace IED
 			auto& data = a_in["data"];
 
 			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
-			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::ConfigKeyPair> controlsParser(m_state);
+			Parser<Data::ConfigSound<Game::FormID>> soundParser(m_state);
 
 			if (!uiParser.Parse(data["ui"], a_out.ui))
 			{
@@ -30,15 +32,19 @@ namespace IED
 
 			if (!controlsParser.Parse(
 					data["player_block_keys"],
-					a_out.playerBlockKeys,
-					version))
+					a_out.playerBlockKeys))
+			{
+				return false;
+			}
+
+			if (!soundParser.Parse(
+					data["sound"],
+					a_out.sound))
 			{
 				return false;
 			}
 
 			a_out.toggleKeepLoaded = data.get("toggle_keep_loaded", false).asBool();
-			a_out.playSound = data.get("play_sound", true).asBool();
-			a_out.playSoundNPC = data.get("play_sound_npc", false).asBool();
 			a_out.hideEquipped = data.get("hide_equipped", false).asBool();
 
 			auto& logLevel = data["log_level"];
@@ -64,14 +70,14 @@ namespace IED
 			auto& data = a_out["data"];
 
 			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
-			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::ConfigKeyPair> controlsParser(m_state);
+			Parser<Data::ConfigSound<Game::FormID>> soundParser(m_state);
 
 			uiParser.Create(a_data.ui, data["ui"]);
 			controlsParser.Create(a_data.playerBlockKeys, data["player_block_keys"]);
+			soundParser.Create(a_data.sound, data["sound"]);
 
 			data["toggle_keep_loaded"] = a_data.toggleKeepLoaded;
-			data["play_sound"] = a_data.playSound;
-			data["play_sound_npc"] = a_data.playSoundNPC;
 			data["hide_equipped"] = a_data.hideEquipped;
 
 			if (a_data.logLevel)

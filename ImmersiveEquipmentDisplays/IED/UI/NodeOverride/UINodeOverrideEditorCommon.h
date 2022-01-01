@@ -16,29 +16,23 @@ namespace IED
 		template <class T>
 		class UINodeOverrideEditorCommon :
 			public UINodeOverrideEditorWidget<T>,
-			public UIProfileSelectorWidget<profileSelectorParamsNodeOverride_t<T>, NodeOverrideProfile>
+			public UIProfileSelectorWidget<
+				profileSelectorParamsNodeOverride_t<T>,
+				NodeOverrideProfile>
 		{
 		public:
 			UINodeOverrideEditorCommon(
 				Controller& a_controller);
 
 		protected:
+			template <class Td>
 			void UpdateConfig(
 				T a_handle,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const Td& a_params,
 				bool a_syncSex);
 
-			void UpdateConfig(
-				T a_handle,
-				const SingleNodeOverrideParentUpdateParams& a_params,
-				bool a_syncSex);
-
+			template <class Td>
 			bool EraseConfig(
-				T a_handle,
-				Data::configMapNodeOverrides_t& a_map,
-				const stl::fixed_string& a_name);
-
-			bool EraseConfigPlacement(
 				T a_handle,
 				Data::configMapNodeOverrides_t& a_map,
 				const stl::fixed_string& a_name);
@@ -49,7 +43,7 @@ namespace IED
 				Td& a_workingData,
 				const stl::fixed_string& a_name);
 
-			static void DrawPlayerDisabledWarning();
+			void DrawPlayerDisabledWarning();
 
 		private:
 			virtual void DrawMainHeaderControlsExtra(
@@ -64,7 +58,9 @@ namespace IED
 		UINodeOverrideEditorCommon<T>::UINodeOverrideEditorCommon(
 			Controller& a_controller) :
 			UINodeOverrideEditorWidget<T>(a_controller),
-			UIProfileSelectorWidget<profileSelectorParamsNodeOverride_t<T>, NodeOverrideProfile>(
+			UIProfileSelectorWidget<
+				profileSelectorParamsNodeOverride_t<T>,
+				NodeOverrideProfile>(
 				a_controller,
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge)
@@ -72,13 +68,14 @@ namespace IED
 		}
 
 		template <class T>
+		template <class Td>
 		void UINodeOverrideEditorCommon<T>::UpdateConfig(
 			T a_handle,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const Td& a_params,
 			bool a_syncSex)
 		{
 			auto& conf = GetOrCreateConfigHolder(a_handle);
-			auto& confEntry = conf.data.try_emplace(a_params.name).first->second;
+			auto& confEntry = conf.get_data<decltype(a_params.entry)>().try_emplace(a_params.name).first->second;
 
 			if (a_syncSex)
 			{
@@ -94,61 +91,16 @@ namespace IED
 		}
 
 		template <class T>
-		inline void UINodeOverrideEditorCommon<T>::UpdateConfig(
-			T a_handle,
-			const SingleNodeOverrideParentUpdateParams& a_params,
-			bool a_syncSex)
-		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
-			auto& confEntry = conf.placementData.try_emplace(a_params.name).first->second;
-
-			if (a_syncSex)
-			{
-				auto og = Data::GetOppositeSex(a_params.sex);
-
-				a_params.entry(og) = a_params.entry(a_params.sex);
-				confEntry = a_params.entry;
-			}
-			else
-			{
-				confEntry(a_params.sex) = a_params.entry(a_params.sex);
-			}
-		}
-
-		template <class T>
+		template <class Td>
 		bool UINodeOverrideEditorCommon<T>::EraseConfig(
 			T a_handle,
 			Data::configMapNodeOverrides_t& a_map,
 			const stl::fixed_string& a_name)
 		{
-			auto it = a_map.find(a_handle.get());
+			auto it = a_map.find(a_handle);
 			if (it != a_map.end())
 			{
-				bool r = it->second.data.erase(a_name) > 0;
-
-				if (it->second.empty())
-				{
-					a_map.erase(it);
-				}
-
-				return r;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		template <class T>
-		inline bool UINodeOverrideEditorCommon<T>::EraseConfigPlacement(
-			T a_handle,
-			Data::configMapNodeOverrides_t& a_map,
-			const stl::fixed_string& a_name)
-		{
-			auto it = a_map.find(a_handle.get());
-			if (it != a_map.end())
-			{
-				bool r = it->second.placementData.erase(a_name) > 0;
+				bool r = it->second.get_data<Td>().erase(a_name) > 0;
 
 				if (it->second.empty())
 				{
@@ -181,7 +133,8 @@ namespace IED
 		{
 			ImGui::TextColored(
 				UICommon::g_colorWarning,
-				"Player overrides disabled");
+				"%s",
+				LS(UINodeOverrideEditorStrings::PlayerDisabledWarning));
 
 			ImGui::Spacing();
 			ImGui::Separator();

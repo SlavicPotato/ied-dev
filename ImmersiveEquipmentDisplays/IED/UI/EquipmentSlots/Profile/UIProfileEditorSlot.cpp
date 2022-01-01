@@ -16,6 +16,7 @@ namespace IED
 			UISlotEditorBase<int>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
 			m_controller(a_controller)
 		{}
 
@@ -152,7 +153,7 @@ namespace IED
 			if (store.settings.data.ui.slotProfileEditor.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.slotProfileEditor.sex,
 					a_newSex);
 			}
@@ -166,7 +167,7 @@ namespace IED
 		void UIProfileEditorSlot::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorSlot::GetCollapsibleStatesData()
@@ -178,7 +179,7 @@ namespace IED
 
 		void UIProfileEditorSlot::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UIProfileEditorSlot::OnBaseConfigChange(

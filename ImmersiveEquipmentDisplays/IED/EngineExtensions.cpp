@@ -16,7 +16,7 @@ namespace IED
 
 	EngineExtensions::EngineExtensions(
 		const std::shared_ptr<Controller>& a_controller,
-		const std::shared_ptr<Config>& a_config)
+		const std::shared_ptr<ConfigINI>& a_config)
 	{
 		Patch_RemoveAllBipedParts();
 		Patch_GarbageCollector();
@@ -27,6 +27,7 @@ namespace IED
 		{
 			m_conf.weaponAdjustDisable = a_config->m_weaponAdjustDisable;
 			m_conf.nodeOverridePlayerEnabled = a_config->m_nodeOverridePlayerEnabled;
+			m_conf.disableNPCProcessing = a_config->m_disableNPCProcessing;
 
 			Patch_Armor_Update();
 			Patch_CreateWeaponNodes();  // not strictly necessary, prevents delays in transform updates
@@ -346,7 +347,10 @@ namespace IED
 	{
 		if (m_Instance->m_conf.weaponAdjustDisable)
 		{
-			if (a_refr != *g_thePlayer || m_Instance->m_conf.nodeOverridePlayerEnabled)
+			bool isPlayer = a_refr == *g_thePlayer;
+
+			if ((!isPlayer || m_Instance->m_conf.nodeOverridePlayerEnabled) &&
+			    (isPlayer || !m_Instance->m_conf.disableNPCProcessing))
 			{
 				return a_refr->animGraphHolder.SetVariableOnGraphsFloat(a_animVarName, 0.0f);
 			}
@@ -354,8 +358,8 @@ namespace IED
 
 		if (m_Instance->m_conf.weaponAdjustFix)
 		{
-			auto biped = a_refr->GetBiped(false);
-			if (!biped || biped->ptr != a_biped)
+			auto biped3p = a_refr->GetBiped(false);
+			if (!biped3p || biped3p->ptr != a_biped)
 			{
 				return false;
 			}
@@ -386,13 +390,14 @@ namespace IED
 		bool a_shield,
 		bool a_leftWeapon,
 		bool a_dropOnDeath,
-		bool a_removeScabbards)
+		bool a_removeScabbards,
+		bool a_keepTorchFlame)
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
 			AttachResultFlags::kNone
 		};
-		
+
 		if (auto bsxFlags = m_Instance->GetBSXFlags(a_object))
 		{
 			auto flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
@@ -474,7 +479,6 @@ namespace IED
 					{
 						a_targetNode->AttachChild(scbAttach, true);
 
-						// does something with NiCollisionObject->bhkWorldObject (target node won't have it but ok)
 						fUnkDC6140(a_targetNode, true);
 					}
 
@@ -489,17 +493,20 @@ namespace IED
 		}
 		else if (a_modelType == ModelType::kLight)
 		{
-			if (auto torchFireNode = GetObjectByName(a_object, sh->m_torchFire, true))
+			if (!a_keepTorchFlame)
 			{
-				torchFireNode->m_parent->RemoveChild(torchFireNode);
-				ShrinkChildrenToSize(a_object);
+				if (auto torchFireNode = GetObjectByName(a_object, sh->m_torchFire, true))
+				{
+					torchFireNode->m_parent->RemoveChild(torchFireNode);
+					ShrinkChildrenToSize(a_object);
 
-				result.set(AttachResultFlags::kTorchFlameRemoved);
+					result.set(AttachResultFlags::kTorchFlameRemoved);
+				}
 			}
 		}
 
 		// collision related, 2nd param = flags
-		fUnk1CD130(a_object, 0x0); 
+		fUnk1CD130(a_object, 0x0);
 
 		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
 
@@ -549,7 +556,7 @@ namespace IED
 		NiAVObject* a_object,
 		NiNode* a_root)
 	{
-		if (!fUnk63F810())
+		if (!SceneRendering())
 		{
 			CleanupNodeImpl(a_handle, a_object);
 		}

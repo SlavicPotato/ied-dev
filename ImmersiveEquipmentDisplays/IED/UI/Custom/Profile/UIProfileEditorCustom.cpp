@@ -107,7 +107,7 @@ namespace IED
 			if (store.settings.data.ui.customProfileEditor.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.customProfileEditor.sex,
 					a_newSex);
 			}
@@ -121,7 +121,7 @@ namespace IED
 		void UIProfileEditorCustom::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorCustom::GetCollapsibleStatesData()
@@ -133,7 +133,7 @@ namespace IED
 
 		void UIProfileEditorCustom::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UIProfileEditorCustom::OnBaseConfigChange(

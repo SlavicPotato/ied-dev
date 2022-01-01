@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
 #include "UISlotEditorCommon.h"
 
 #include "IED/Data.h"
 
-#include "../Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/Widgets/UIGlobalConfigTypeSelectorWidget.h"
 #include "Widgets/UISlotEditorWidget.h"
 
 namespace IED
@@ -15,7 +15,7 @@ namespace IED
 	namespace UI
 	{
 		class UISlotEditorGlobal :
-			// public UISlotEditorWidget<int>,
+			UIGlobalConfigTypeSelectorWidget,
 			public UISlotEditorCommon<int>
 		{
 		public:
@@ -38,7 +38,7 @@ namespace IED
 
 			virtual SlotEditorCurrentData GetCurrentData() override;
 
-			virtual Data::SettingHolder::EditorPanelCommon &GetEditorPanelSettings() override;
+			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
 
 			virtual void OnEditorPanelSettingsChange() override;
 
@@ -72,7 +72,6 @@ namespace IED
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 			virtual void OnCollapsibleStatesUpdate() override;
 
-			void DrawTypeSelectorRadio();
 			void UpdateData();
 
 			Data::configStoreSlot_t::result_copy m_data;

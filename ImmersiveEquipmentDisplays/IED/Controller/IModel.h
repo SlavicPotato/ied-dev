@@ -19,7 +19,10 @@ namespace IED
 
 		template <
 			class T,
-			class = std::enable_if_t<std::is_convertible_v<T, TESForm>>>
+			class = std::enable_if_t<
+				std::is_convertible_v<
+					T,
+					TESForm>>>
 		static bool ExtractFormModelParams(
 			TESForm* a_form,
 			modelParams_t& a_out,

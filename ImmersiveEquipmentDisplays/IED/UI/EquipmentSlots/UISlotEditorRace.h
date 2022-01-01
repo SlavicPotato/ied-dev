@@ -31,8 +31,6 @@ namespace IED
 		private:
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
-			virtual const ActorInfoHolder& GetActorInfoHolder() const override;
-
 			virtual Data::SettingHolder::EditorPanelRaceSettings& GetRaceSettings() const override;
 
 			virtual SlotEditorCurrentData GetCurrentData() override;
@@ -76,13 +74,13 @@ namespace IED
 
 			virtual void OnListOptionsChange() override;
 
-			virtual const SetObjectWrapper<Game::FormID>& GetCrosshairRef() override;
-
 			virtual UIPopupQueue& GetPopupQueue() override;
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 			virtual void OnCollapsibleStatesUpdate() override;
+
+			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
 
 			Controller& m_controller;
 		};

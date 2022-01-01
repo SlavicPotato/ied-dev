@@ -1,16 +1,19 @@
 #pragma once
 
-#include "../../UICommon.h"
-#include "../Filters/UIGenericFilter.h"
+#include "IED/UI/Widgets/Filters/UIGenericFilter.h"
+
+#include "IED/UI/UICommon.h"
 
 namespace IED
 {
 	namespace UI
 	{
-		template <class T, class P>
+		template <
+			class Td,
+			class Th>
 		class UIListBase
 		{
-			using list_type = std::map<P, stl::fixed_string>;
+			using list_type = std::map<Th, stl::fixed_string>;
 
 		public:
 			inline void QueueListUpdateCurrent()
@@ -19,7 +22,7 @@ namespace IED
 			}
 
 			inline void QueueListUpdate() { m_listNextUpdate = true; }
-			inline void QueueListUpdate(typename P a_desiredHandle)
+			inline void QueueListUpdate(typename Th a_desiredHandle)
 			{
 				m_listNextUpdate = true;
 				m_desiredHandle = a_desiredHandle;
@@ -28,13 +31,13 @@ namespace IED
 		protected:
 			struct listValue_t
 			{
-				P handle;
-				std::string desc;
-				T data;
+				Th handle;
+				stl::fixed_string desc;
+				mutable Td data{};
 			};
 
-			virtual void ListTick();
 			virtual void ListReset();
+			virtual void ListTick();
 
 			void ListUpdateCurrent();
 			void ListDrawInfo(const listValue_t& a_entry);
@@ -49,10 +52,10 @@ namespace IED
 
 			virtual void ListDrawInfoText(const listValue_t& a_entry) = 0;
 
-			virtual listValue_t* ListGetSelected();
+			inline constexpr const SetObjectWrapper<listValue_t>& ListGetSelected() const noexcept;
 
 			virtual bool ListSetCurrentItem(
-				P a_handle);
+				Th a_handle);
 
 			virtual void ListSetCurrentItem(
 				const typename list_type::value_type& a_value);
@@ -62,17 +65,15 @@ namespace IED
 			virtual void ListUpdate() = 0;
 
 			virtual void ListResetAllValues(
-				P a_handle) = 0;
+				Th a_handle) = 0;
 
-			[[nodiscard]] virtual T GetData(
-				P a_formid) = 0;
-
-			[[nodiscard]] virtual const SetObjectWrapper<Game::FormID>&
-				GetCrosshairRef() = 0;
+			[[nodiscard]] virtual Td GetData(Th a_handle) = 0;
 
 			virtual void OnListChangeCurrentItem(
 				const SetObjectWrapper<listValue_t>& a_oldHandle,
 				const SetObjectWrapper<listValue_t>& a_newHandle);
+
+			virtual const ImVec4* HighlightEntry(Th a_handle);
 
 			bool ListSelectFirstAvailable();
 			void ListFilterSelected();
@@ -83,25 +84,28 @@ namespace IED
 
 			list_type m_listData;
 			SetObjectWrapper<listValue_t> m_listCurrent;
-			SetObjectWrapper<P> m_desiredHandle;
+			SetObjectWrapper<Th> m_desiredHandle;
 
 			char m_listBuf1[256]{ 0 };
 			UIGenericFilter m_listFilter;
 			float m_itemWidthScalar;
+
+			static_assert(std::is_convertible_v<Th, std::uint64_t>);
 		};
 
-		template <class T, class P>
-		UIListBase<T, P>::UIListBase(float a_itemWidthScalar) noexcept :
+		template <class Td, class Th>
+		UIListBase<Td, Th>::UIListBase(float a_itemWidthScalar) noexcept :
 			m_itemWidthScalar(a_itemWidthScalar)
 		{
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListDraw()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListDraw()
 		{
+			ListTick();
 			ListFilterSelected();
 
-			ImGui::PushID("__base_list");
+			ImGui::PushID("list_base");
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * m_itemWidthScalar);
 
@@ -132,7 +136,11 @@ namespace IED
 						continue;
 					}
 
-					ImGui::PushID(e.first);
+					auto highlight = HighlightEntry(e.first);
+
+					ImGui::PushID(
+						reinterpret_cast<const void*>(
+							static_cast<std::uint64_t>(e.first)));
 
 					bool selected = m_listCurrent && e.first == m_listCurrent->handle;
 					if (selected)
@@ -141,9 +149,19 @@ namespace IED
 							ImGui::SetScrollHereY();
 					}
 
+					if (highlight)
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, *highlight);
+					}
+
 					if (ImGui::Selectable(e.second.c_str(), selected))
 					{
 						newItem = std::addressof(e);
+					}
+
+					if (highlight)
+					{
+						ImGui::PopStyleColor();
 					}
 
 					ImGui::PopID();
@@ -175,17 +193,18 @@ namespace IED
 			ImGui::PopID();
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListDrawOptions()
-		{}
-
-		template <class T, class P>
-		void UIListBase<T, P>::ListDrawExtraControls()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListDrawOptions()
 		{
 		}
 
-		template <class T, class P>
-		bool UIListBase<T, P>::ListSelectFirstAvailable()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListDrawExtraControls()
+		{
+		}
+
+		template <class Td, class Th>
+		bool UIListBase<Td, Th>::ListSelectFirstAvailable()
 		{
 			for (const auto& e : m_listData)
 			{
@@ -202,8 +221,8 @@ namespace IED
 			return false;
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListFilterSelected()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListFilterSelected()
 		{
 			if (m_listCurrent)
 			{
@@ -221,23 +240,15 @@ namespace IED
 			}
 		}
 
-		template <class T, class P>
-		auto UIListBase<T, P>::ListGetSelected() -> listValue_t*
+		template <class Td, class Th>
+		inline constexpr auto UIListBase<Td, Th>::ListGetSelected() const noexcept
+			-> const SetObjectWrapper<listValue_t>&
 		{
-			if (!m_listCurrent)
-			{
-				return nullptr;
-			}
-
-			/*if (!m_listCurrent->data) {
-          m_listCurrent->data = GetData(m_listCurrent->handle);
-      }*/
-
-			return std::addressof(*m_listCurrent);
+			return m_listCurrent;
 		}
 
-		template <class T, class P>
-		bool UIListBase<T, P>::ListSetCurrentItem(P a_handle)
+		template <class Td, class Th>
+		bool UIListBase<Td, Th>::ListSetCurrentItem(Th a_handle)
 		{
 			auto it = m_listData.find(a_handle);
 			if (it == m_listData.end())
@@ -254,8 +265,8 @@ namespace IED
 			return true;
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListSetCurrentItem(
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListSetCurrentItem(
 			const typename list_type::value_type& a_value)
 		{
 			auto old(std::move(m_listCurrent));
@@ -268,8 +279,8 @@ namespace IED
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListClearCurrentItem()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListClearCurrentItem()
 		{
 			auto old(std::move(m_listCurrent));
 
@@ -278,14 +289,21 @@ namespace IED
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::OnListChangeCurrentItem(
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::OnListChangeCurrentItem(
 			const SetObjectWrapper<listValue_t>& a_oldHandle,
 			const SetObjectWrapper<listValue_t>& a_newHandle)
-		{}
+		{
+		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListReset()
+		template <class Td, class Th>
+		const ImVec4* UIListBase<Td, Th>::HighlightEntry(Th a_handle)
+		{
+			return nullptr;
+		}
+
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListReset()
 		{
 			m_listNextUpdateCurrent = false;
 			m_listFirstUpdate = false;
@@ -293,8 +311,8 @@ namespace IED
 			m_listData.clear();
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListTick()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListTick()
 		{
 			if (m_listNextUpdateCurrent)
 			{
@@ -315,8 +333,8 @@ namespace IED
 			}
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListUpdateCurrent()
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListUpdateCurrent()
 		{
 			if (!m_listCurrent)
 			{
@@ -326,8 +344,8 @@ namespace IED
 			m_listCurrent->data = GetData(m_listCurrent->handle);
 		}
 
-		template <class T, class P>
-		void UIListBase<T, P>::ListDrawInfo(const listValue_t& a_entry)
+		template <class Td, class Th>
+		void UIListBase<Td, Th>::ListDrawInfo(const listValue_t& a_entry)
 		{
 			ImGui::SameLine();
 

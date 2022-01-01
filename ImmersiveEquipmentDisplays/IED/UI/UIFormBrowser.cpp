@@ -14,29 +14,31 @@ namespace IED
 			m_formIDFilter(true),
 			m_formNameFilter(true),
 			m_tabItems{
-				{ UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
-				{ UIFormBrowserStrings::Armor, IFormDatabase::EXTRA_TYPE_ARMOR },
-				{ UIFormBrowserStrings::Shields, TESObjectARMO::kTypeID },
-				{ UIFormBrowserStrings::Ammo, TESAmmo::kTypeID },
-				{ UIFormBrowserStrings::Torches, TESObjectLIGH::kTypeID },
-				{ UIFormBrowserStrings::Misc, TESObjectMISC::kTypeID },
-				{ UIFormBrowserStrings::Ingredients, IngredientItem::kTypeID },
-				{ UIFormBrowserStrings::PotionsFood, AlchemyItem::kTypeID },
-				{ UIFormBrowserStrings::Keys, TESKey::kTypeID },
-				{ UIFormBrowserStrings::Books, TESObjectBOOK::kTypeID },
-				{ UIFormBrowserStrings::SoulGems, TESSoulGem::kTypeID },
-				{ UIFormBrowserStrings::Scrolls, ScrollItem::kTypeID },
-				{ UIFormBrowserStrings::Spells, SpellItem::kTypeID },
-				{ UIFormBrowserStrings::Static, TESObjectSTAT::kTypeID },
-				{ UIFormBrowserStrings::MovableStatic, BGSMovableStatic::kTypeID },
-				{ UIFormBrowserStrings::Flora, TESFlora::kTypeID },
-				{ UIFormBrowserStrings::Furniture, TESFurniture::kTypeID },
-				{ UIFormBrowserStrings::Keywords, BGSKeyword::kTypeID },
-				{ UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
-				{ UIFormBrowserStrings::Races, TESRace::kTypeID },
-				{ UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
-				{ UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
-				{ UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
+				{ { UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
+			      { UIFormBrowserStrings::Armor, IFormDatabase::EXTRA_TYPE_ARMOR },
+			      { UIFormBrowserStrings::Shields, TESObjectARMO::kTypeID },
+			      { UIFormBrowserStrings::Ammo, TESAmmo::kTypeID },
+			      { UIFormBrowserStrings::Torches, TESObjectLIGH::kTypeID },
+			      { UIFormBrowserStrings::Misc, TESObjectMISC::kTypeID },
+			      { UIFormBrowserStrings::Ingredients, IngredientItem::kTypeID },
+			      { UIFormBrowserStrings::PotionsFood, AlchemyItem::kTypeID },
+			      { UIFormBrowserStrings::Keys, TESKey::kTypeID },
+			      { UIFormBrowserStrings::Books, TESObjectBOOK::kTypeID },
+			      { UIFormBrowserStrings::SoulGems, TESSoulGem::kTypeID },
+			      { UIFormBrowserStrings::Scrolls, ScrollItem::kTypeID },
+			      { UIFormBrowserStrings::Spells, SpellItem::kTypeID },
+			      { UIFormBrowserStrings::Static, TESObjectSTAT::kTypeID },
+			      { UIFormBrowserStrings::MovableStatic, BGSMovableStatic::kTypeID },
+			      { UIFormBrowserStrings::Flora, TESFlora::kTypeID },
+			      { UIFormBrowserStrings::Furniture, TESFurniture::kTypeID },
+			      { UIFormBrowserStrings::Keywords, BGSKeyword::kTypeID },
+			      { UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
+			      { UIFormBrowserStrings::Races, TESRace::kTypeID },
+			      { UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
+			      { UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
+			      { UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
+			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID } }
+
 			}
 		{
 			m_formIDFilter.SetFlags(
@@ -117,6 +119,7 @@ namespace IED
 			m_hlForm = {};
 
 			SetOpenState(true);
+
 			ImGui::OpenPopup(LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 
 			return true;
@@ -139,9 +142,9 @@ namespace IED
 		}
 
 		void UIFormBrowser::SetTabFilter(
-			std::initializer_list<tab_filter_type::value_type> a_filter)
+			std::initializer_list<tab_filter_type::value_type> a_init)
 		{
-			if (a_filter.size() == 0)
+			if (a_init.size() == 0)
 			{
 				ClearTabFilter();
 			}
@@ -150,9 +153,9 @@ namespace IED
 				for (auto& f : m_tabItems)
 				{
 					f.enabled = std::find(
-									a_filter.begin(),
-									a_filter.end(),
-									f.type) != a_filter.end();
+									a_init.begin(),
+									a_init.end(),
+									f.type) != a_init.end();
 				}
 			}
 		}
@@ -398,15 +401,14 @@ namespace IED
 
 		bool UIFormBrowser::HasType(std::uint32_t a_type) const
 		{
-			for (auto& e : m_tabItems)
-			{
-				if (e.enabled && e.type == a_type)
-				{
-					return true;
-				}
-			}
+			auto it = std::find_if(
+				m_tabItems.begin(),
+				m_tabItems.end(),
+				[&](auto& a_v) {
+					return a_v.enabled && a_v.type == a_type;
+				});
 
-			return false;
+			return it != m_tabItems.end();
 		}
 
 		void UIFormBrowser::QueueGetDatabase()

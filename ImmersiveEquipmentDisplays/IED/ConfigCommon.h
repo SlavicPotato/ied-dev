@@ -136,13 +136,23 @@ namespace IED
 
 		using ConfigForm = IPluginInfo::formPair_t;
 
-		struct ConfigEntrySound
+		template <
+			class T,
+			class form_descriptor_type = std::enable_if_t<
+				stl::is_any_same_v<
+					stl::strip_type<T>,
+					ConfigForm,
+					Game::FormID>,
+				stl::strip_type<T>>>
+		struct ConfigSound
 		{
-			using soundPair_t =
-				std::pair<SetObjectWrapper<ConfigForm>, SetObjectWrapper<ConfigForm>>;
+			using soundPair_t = std::pair<
+				SetObjectWrapper<form_descriptor_type>,
+				SetObjectWrapper<form_descriptor_type>>;
 
 			bool enabled{ false };
 			bool npc{ false };
+
 			soundPair_t gen;
 			soundPair_t weapon;
 			soundPair_t armor;

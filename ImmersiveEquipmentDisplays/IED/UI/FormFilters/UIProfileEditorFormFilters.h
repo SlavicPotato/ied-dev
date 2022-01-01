@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../UICommon.h"
-
-#include "../Widgets/Form/UIFormFilterWidget.h"
-#include "../Widgets/Form/UIFormSelectorWidget.h"
-
-#include "IED/GlobalProfileManager.h"
+#include "IED/UI/Widgets/Form/UIFormFilterWidget.h"
+#include "IED/UI/Widgets/Form/UIFormSelectorWidget.h"
 
 #include "IED/UI/Profile/UIProfileEditorBase.h"
+
+#include "IED/UI/UICommon.h"
+
+#include "IED/GlobalProfileManager.h"
 
 namespace IED
 {

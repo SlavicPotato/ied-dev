@@ -33,7 +33,7 @@ namespace IED
 		}
 	};
 
-	class Config
+	class ConfigINI
 	{
 		inline static constexpr auto SECT_GENERAL = "General";
 		inline static constexpr auto SECT_DEBUG = "Debug";
@@ -47,8 +47,8 @@ namespace IED
 		};
 
 	public:
-		Config() = default;
-		Config(const std::string& a_path);
+		ConfigINI() = default;
+		ConfigINI(const std::string& a_path);
 
 		bool Load(const std::string& a_path);
 
@@ -72,11 +72,12 @@ namespace IED
 		bool m_weaponAdjustDisable{ false };
 		bool m_weaponAdjustFix{ true };
 		bool m_forceDefaultConfig{ false };
+		bool m_disableNPCProcessing{ false };
 		LogLevel m_logLevel{ LogLevel::Message };
 
 		bool m_uiEnableInMenu{ false };
 
-		Data::ConfigEntrySound m_sound;
+		Data::ConfigSound<Data::ConfigForm> m_sound;
 
 	private:
 		bool m_loaded{ false };

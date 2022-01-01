@@ -142,7 +142,7 @@ namespace IED
                            static_cast<data_type*>(data.data) :
                            nullptr;
 			}
-			else if constexpr (std::is_same_v<data_type, Data::configNodeOverride_t>)
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideTransform_t>)
 			{
 				return data.type == DataType::NodeOverride ?
                            static_cast<data_type*>(data.data) :
@@ -298,7 +298,7 @@ namespace IED
 			{
 				data.type = DataType::FormList;
 			}
-			else if constexpr (std::is_same_v<T, Data::configNodeOverride_t>)
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideTransform_t>)
 			{
 				data.type = DataType::NodeOverride;
 			}

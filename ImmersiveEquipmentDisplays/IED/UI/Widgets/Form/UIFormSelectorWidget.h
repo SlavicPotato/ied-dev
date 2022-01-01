@@ -64,13 +64,12 @@ namespace IED
 			bool GetInputBufferChanged();
 			void ErrorMessage(const char* a_text);
 
-			inline constexpr auto& GetCurrentFormInfo() const noexcept {
+			inline constexpr auto& GetCurrentFormInfo() const noexcept
+			{
 				return !m_forceBase ?
                            m_state->m_currentInfo->form :
                            m_state->m_currentInfo->get_base();
 			}
-
-			Controller& m_controller;
 
 			struct state_t
 			{
@@ -82,17 +81,21 @@ namespace IED
 				char m_lastInputBuffer[9]{ 0 };
 			};
 
-			static void SetInputFormID(const std::shared_ptr<state_t>& a_state, Game::FormID a_form);
+			static void SetInputFormID(
+				const std::shared_ptr<state_t>& a_state,
+				Game::FormID a_form);
 
 			bool m_nextGrabKeyboardFocus{ false };
 			bool m_restrictTypes{ false };
 			bool m_enableFormBrowser{ true };
 			bool m_forceBase{ false };
 
-			FormInfoFlags m_requiredFlags;
+			FormInfoFlags m_requiredFlags{ FormInfoFlags::kNone };
 			std::shared_ptr<const UIFormBrowser::tab_filter_type> m_types;
 
 			std::shared_ptr<state_t> m_state;
+
+			Controller& m_controller;
 
 		protected:
 			on_open_func_t m_onOpenFunc;

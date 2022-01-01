@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release MT|x64">
+      <Configuration>Release MT</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="ReleaseAVX2 MT|x64">
       <Configuration>ReleaseAVX2 MT</Configuration>
       <Platform>x64</Platform>
@@ -43,6 +47,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -57,6 +68,9 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -67,11 +81,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <VcpkgTriplet>x64-windows-rel-static</VcpkgTriplet>
     <VcpkgConfiguration>Release</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'" Label="Vcpkg">
+    <VcpkgTriplet>x64-windows-avx2-static</VcpkgTriplet>
+    <VcpkgConfiguration>Release</VcpkgConfiguration>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'" Label="Vcpkg">
     <VcpkgTriplet>x64-windows-avx2-static</VcpkgTriplet>
     <VcpkgConfiguration>Release</VcpkgConfiguration>
   </PropertyGroup>
@@ -180,6 +201,49 @@
       <Command>$(ProjectDir)mkgitparams.bat</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\sparse-map\include;$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
+      <IntelJCCErratum>true</IntelJCCErratum>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalOptions>/permissive %(AdditionalOptions)</AdditionalOptions>
+      <ForcedIncludeFiles>common/IPrefix.h;ext/ICommon.h</ForcedIncludeFiles>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <ControlFlowGuard>false</ControlFlowGuard>
+      <StringPooling>true</StringPooling>
+      <UseFullPaths>false</UseFullPaths>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+      <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
+      <LargeAddressAware>true</LargeAddressAware>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Installing to: $(SSEPath)\Data\SKSE\Plugins\</Message>
+    </PostBuildEvent>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PreBuildEvent>
+      <Command>$(ProjectDir)mkgitparams.bat</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h" />
     <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h" />
@@ -193,7 +257,13 @@
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
+    <ClInclude Include="IED\UI\UIAboutModal.h" />
+    <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
+    <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
     <ClInclude Include="ImGui\MouseEventQueue.h" />
@@ -260,13 +330,13 @@
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.h" />
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.h" />
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.h" />
-    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideTransformParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigMapNodeOverrideParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.h" />
@@ -304,7 +374,7 @@
     <ClInclude Include="IED\Parsers\JSONRangeParser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsActorParser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.h" />
-    <ClInclude Include="IED\Parsers\JSONSettingsControlsParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigKeyPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsHolder.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsImportExport.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsProfileEditorParser.h" />
@@ -437,11 +507,13 @@
     <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="dllmain.cpp" />
@@ -451,7 +523,13 @@
     <ClCompile Include="Drivers\UI.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
+    <ClCompile Include="IED\UI\UIAboutModal.cpp" />
+    <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\MouseEventQueue.cpp" />
@@ -501,13 +579,13 @@
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionListParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetConditionParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementOverrideParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideTransformParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigMapNodeOverrideParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.cpp" />
@@ -546,7 +624,7 @@
     <ClCompile Include="IED\Parsers\JSONRangeParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsActorParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsCollapsibleStatesParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONSettingsControlsParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigKeyPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsHolder.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsImportExport.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsProfileEditorParser.cpp" />
@@ -624,6 +702,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Serialization\Serialization.cpp" />
     <ClCompile Include="skse.cpp" />

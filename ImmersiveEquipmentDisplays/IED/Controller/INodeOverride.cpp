@@ -688,7 +688,7 @@ namespace IED
 	}
 
 	static constexpr bool run_visibility_matches(
-		const Data::configNodeOverride_t& a_data,
+		const Data::configNodeOverrideTransform_t& a_data,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
 		return run_matches(
@@ -804,7 +804,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodeOverride(
 		const cmeNodeEntry_t& a_entry,
-		const Data::configNodeOverride_t& a_data,
+		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t& a_params)
 	{
 		auto xfrm = a_entry.originalTransform;
@@ -922,7 +922,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodeVisibility(
 		NiNode* a_node,
-		const Data::configNodeOverride_t& a_data,
+		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t& a_params)
 	{
 		bool visible = true;

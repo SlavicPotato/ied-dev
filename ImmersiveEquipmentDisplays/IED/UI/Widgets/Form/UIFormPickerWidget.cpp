@@ -23,7 +23,7 @@ namespace IED
 			UINotificationInterface(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
-			m_ifLookup(a_controller),
+			UIFormLookupInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -142,7 +142,7 @@ namespace IED
 
 				if (hasForm)
 				{
-					if (m_currentInfo = m_ifLookup.LookupForm(a_form))
+					if (m_currentInfo = LookupForm(a_form))
 					{
 						ImGui::TableSetColumnIndex(1);
 
@@ -157,15 +157,15 @@ namespace IED
 
 							UICommon::ToolTip(
 								100.0f,
-								"%s [%s]",
+								"[%.8X] %s [%s]",
+								a_form.get(),
 								m_currentInfo->form.name.c_str(),
 								desc);
 						}
 						else
 						{
 							ImGui::Text(
-								"%.8X [%s]",
-								a_form.get(),
+								"%s",
 								desc);
 
 							UICommon::ToolTip(

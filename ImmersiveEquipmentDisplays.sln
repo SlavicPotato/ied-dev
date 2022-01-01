@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31313.381
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImmersiveEquipmentDisplays", "ImmersiveEquipmentDisplays\ImmersiveEquipmentDisplays.vcxproj", "{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}"
 EndProject
@@ -59,8 +59,8 @@ Global
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.PreReleaseAVX2 MT|x64.Build.0 = Release|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release DT|x64.ActiveCfg = Release|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release DT|x64.Build.0 = Release|x64
-		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release MT|x64.ActiveCfg = Release|x64
-		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release MT|x64.Build.0 = Release|x64
+		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release MT|x64.ActiveCfg = Release MT|x64
+		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release MT|x64.Build.0 = Release MT|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release|x64.ActiveCfg = Release|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release|x64.Build.0 = Release|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.ReleaseAVX2 MD|x64.ActiveCfg = Release|x64

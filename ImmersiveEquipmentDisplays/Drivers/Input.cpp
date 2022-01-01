@@ -14,7 +14,7 @@ namespace IED
 		Input Input::m_Instance;
 
 		bool Input::PlayerControls_InputEvent_ProcessEvent_Hook(
-			InputEvent** a_evns)
+			const InputEvent** a_evns)
 		{
 			bool blocked = m_Instance.m_playerInputHandlingBlocked.load(
 				std::memory_order_relaxed);
@@ -40,7 +40,7 @@ namespace IED
 						continue;
 					}
 
-					auto buttonEvent = RTTI<ButtonEvent>()(inputEvent);
+					auto buttonEvent = RTTI<ButtonEvent>::Cast(inputEvent);
 					if (!buttonEvent)
 					{
 						continue;
@@ -93,12 +93,14 @@ namespace IED
 			return blocked;
 		}
 
-		auto Input::ReceiveEvent(InputEvent** evns, InputEventDispatcher* dispatcher)
+		auto Input::ReceiveEvent(
+			InputEvent* const* a_evns,
+			BSTEventSource<InputEvent*>* a_dispatcher)
 			-> EventResult
 		{
-			if (*evns)
+			if (a_evns)
 			{
-				for (auto inputEvent = *evns; inputEvent; inputEvent = inputEvent->next)
+				for (auto inputEvent = *a_evns; inputEvent; inputEvent = inputEvent->next)
 				{
 					if (inputEvent->eventType != InputEvent::kEventType_Button)
 					{

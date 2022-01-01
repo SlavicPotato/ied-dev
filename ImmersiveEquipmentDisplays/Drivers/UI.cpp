@@ -502,6 +502,11 @@ namespace IED
 			m_Instance.QueueSetFontSizeImpl(a_size);
 		}
 
+		void UI::QueueResetFontSize()
+		{
+			m_Instance.QueueResetFontSizeImpl();
+		}
+
 		void UI::QueueSetScale(float a_scale)
 		{
 			m_Instance.QueueSetScaleImpl(a_scale);
@@ -583,6 +588,14 @@ namespace IED
 			IScopedLock lock(m_Instance.m_lock);
 
 			m_fontUpdateData.fontsize = a_size;
+			m_fontUpdateData.dirty = true;
+		}
+
+		void UI::QueueResetFontSizeImpl()
+		{
+			IScopedLock lock(m_Instance.m_lock);
+
+			m_fontUpdateData.fontsize.clear();
 			m_fontUpdateData.dirty = true;
 		}
 

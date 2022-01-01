@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "JSONSettingsCollapsibleStatesParser.h"
-#include "JSONSettingsControlsParser.h"
+#include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsEditorPanelParser.h"
 #include "JSONSettingsImportExport.h"
 #include "JSONSettingsProfileEditorParser.h"
@@ -25,7 +25,7 @@ namespace IED
 
 			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
 			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::ConfigKeyPair> controlsParser(m_state);
 			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
 			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
@@ -98,13 +98,16 @@ namespace IED
 				break;
 			}
 
-			if (!controlsParser.Parse(data["toggle_keys"], a_out.toggleKeys, version))
+			if (!controlsParser.Parse(
+					data["toggle_keys"],
+					a_out.toggleKeys))
 			{
 				return false;
 			}
 
 			a_out.enableRestrictions = data.get("enable_restrictions", false).asBool();
 			a_out.enableControlLock = data.get("enable_control_lock", true).asBool();
+			a_out.selectCrosshairActor = data.get("select_crosshair_actor", true).asBool();
 			a_out.scale = data.get("scale", 1.0f).asFloat();
 			a_out.logLimit = data.get("log_limit", 200).asUInt();
 
@@ -141,7 +144,7 @@ namespace IED
 
 			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
 			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::SettingHolder::Controls> controlsParser(m_state);
+			Parser<Data::ConfigKeyPair> controlsParser(m_state);
 			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
 			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
 
@@ -174,6 +177,7 @@ namespace IED
 
 			data["enable_restrictions"] = a_data.enableRestrictions;
 			data["enable_control_lock"] = a_data.enableControlLock;
+			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
 			data["scale"] = a_data.scale;
 			data["log_limit"] = a_data.logLimit;
 

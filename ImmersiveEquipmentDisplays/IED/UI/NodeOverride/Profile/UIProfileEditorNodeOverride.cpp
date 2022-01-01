@@ -16,6 +16,7 @@ namespace IED
 			UINodeOverrideEditorWidget<int>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -103,7 +104,7 @@ namespace IED
 
 			if (store.settings.data.ui.transformProfileEditor.sex != a_newSex)
 			{
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.transformProfileEditor.sex,
 					a_newSex);
 			}
@@ -117,7 +118,7 @@ namespace IED
 		void UIProfileEditorNodeOverride::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorNodeOverride::GetCollapsibleStatesData()
@@ -129,12 +130,12 @@ namespace IED
 
 		void UIProfileEditorNodeOverride::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
 			int a_handle,
-			const SingleNodeOverrideUpdateParams& a_params)
+			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			if (GetEditorPanelSettings().sexSync)
 			{
@@ -146,7 +147,7 @@ namespace IED
 
 		void UIProfileEditorNodeOverride::OnUpdate(
 			int a_handle,
-			const SingleNodeOverrideParentUpdateParams& a_params)
+			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			if (GetEditorPanelSettings().sexSync)
 			{
@@ -162,7 +163,7 @@ namespace IED
 		{
 		}*/
 
-		void UIProfileEditorNodeOverride::OnClear(
+		void UIProfileEditorNodeOverride::OnClearTransform(
 			int a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{

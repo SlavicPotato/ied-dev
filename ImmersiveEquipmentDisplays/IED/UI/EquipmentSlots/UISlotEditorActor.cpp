@@ -18,6 +18,8 @@ namespace IED
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIFormInfoTooltipWidget(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{}
 
@@ -34,8 +36,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("slot_editor_actor", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -45,9 +45,11 @@ namespace IED
 				{
 					if (m_controller.IsActorBlockedImpl(m_listCurrent->handle))
 					{
-						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextUnformatted(LS(UIWidgetCommonStrings::ActorBlocked));
-						ImGui::PopStyleColor();
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::ActorBlocked));
+
 						ImGui::Spacing();
 					}
 
@@ -70,8 +72,7 @@ namespace IED
 
 		auto UISlotEditorActor::GetCurrentData() -> SlotEditorCurrentData
 		{
-			auto entry = ListGetSelected();
-			if (entry)
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -89,7 +90,7 @@ namespace IED
 		void UISlotEditorActor::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UISlotEditorActor::ListResetAllValues(Game::FormID a_handle) {}
@@ -115,8 +116,7 @@ namespace IED
 			}
 		}
 
-		Data::configSlotHolder_t&
-			UISlotEditorActor::GetOrCreateConfigSlotHolder(Game::FormID a_handle) const
+		Data::configSlotHolder_t& UISlotEditorActor::GetOrCreateConfigSlotHolder(Game::FormID a_handle) const
 		{
 			auto& store = m_controller.GetConfigStore().active;
 			auto& data = store.slot.GetActorData();
@@ -242,7 +242,7 @@ namespace IED
 			if (store.settings.data.ui.slotEditor.actorConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.slotEditor.actorConfig.sex,
 					a_newSex);
 			}
@@ -251,22 +251,7 @@ namespace IED
 		void UISlotEditorActor::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
-		}
-
-		const ActorInfoHolder& UISlotEditorActor::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		std::uint64_t UISlotEditorActor::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
-		}
-
-		const SetObjectWrapper<Game::FormID>& UISlotEditorActor::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
+			store.settings.mark_dirty();
 		}
 
 		UIPopupQueue& UISlotEditorActor::GetPopupQueue()
@@ -310,12 +295,12 @@ namespace IED
 
 		void UISlotEditorActor::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UISlotEditorActor::DrawMenuBarItemsExtra()
 		{
-			auto entry = ListGetSelected();
+			auto& entry = ListGetSelected();
 			if (!entry)
 			{
 				return;
@@ -439,10 +424,23 @@ namespace IED
 			ImGui::Text("%s:", LS(CommonStrings::Item));
 			ImGui::SameLine();
 
-			auto& flc = m_controller.UIGetFormLookupCache();
-			DrawObjectEntryHeaderInfo(flc.LookupForm(*slot.state->item), slot);
+			DrawObjectEntryHeaderInfo(
+				m_controller.UIGetFormLookupCache().LookupForm(*slot.state->item),
+				slot);
 
 			return true;
+		}
+
+		const ImVec4* UISlotEditorActor::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.slot.GetActorData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorLimeGreen);
+			}
+
+			return nullptr;
 		}
 	}
 }

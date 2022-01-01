@@ -50,8 +50,11 @@ namespace IED
 		UISettings::UISettings(Controller& a_controller) :
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIFormPickerWidget(a_controller, FormInfoFlags::kNone, true),
+			UIFormLookupInterface(a_controller),
 			m_controller(a_controller)
 		{
+			SetAllowedTypes({ BGSSoundDescriptorForm::kTypeID });
 		}
 
 		void UISettings::Draw()
@@ -113,7 +116,7 @@ namespace IED
 				auto& config = m_controller.GetConfigStore().settings;
 				auto& data = config.data;
 
-				if (config.MarkIf(ImGui::Checkbox(
+				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::KeepEquippedLoaded, "1"),
 						std::addressof(data.hideEquipped))))
 				{
@@ -133,7 +136,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					if (config.MarkIf(DrawKeySelector(
+					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
 							data.playerBlockKeys.comboKey)))
@@ -142,7 +145,7 @@ namespace IED
 							data.playerBlockKeys.comboKey);
 					}
 
-					if (config.MarkIf(DrawKeySelector(
+					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
 							data.playerBlockKeys.key)))
@@ -156,7 +159,7 @@ namespace IED
 
 				ImGui::Spacing();
 
-				if (config.MarkIf(ImGui::Checkbox(
+				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::KeepLoadedWhenToggledOff, "2"),
 						std::addressof(data.toggleKeepLoaded))))
 				{
@@ -182,13 +185,13 @@ namespace IED
 				auto& config = m_controller.GetConfigStore().settings;
 				auto& ui = config.data.ui;
 
-				config.MarkIf(ImGui::Checkbox(
+				config.mark_if(ImGui::Checkbox(
 					LS(UISettingsStrings::CloseOnEsc, "1"),
 					std::addressof(ui.closeOnESC)));
 
 				DrawTip(UITip::CloseOnESC);
 
-				if (config.MarkIf(ImGui::Checkbox(
+				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::EnableRestrictions, "2"),
 						std::addressof(ui.enableRestrictions))))
 				{
@@ -196,7 +199,7 @@ namespace IED
 				}
 				DrawTip(UITip::EnableRestrictions);
 
-				if (config.MarkIf(ImGui::Checkbox(
+				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::ControlLock, "3"),
 						std::addressof(ui.enableControlLock))))
 				{
@@ -204,12 +207,20 @@ namespace IED
 				}
 				DrawTip(UITip::ControlLock);
 
+				config.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::SelectCrosshairActor, "4"),
+					std::addressof(ui.selectCrosshairActor)));
+
+				DrawTip(UITip::SelectCrosshairActor);
+
+				ImGui::Spacing();
+
 				auto tmp = m_scaleTemp ?
                                *m_scaleTemp :
                                ui.scale;
 
 				if (ImGui::SliderFloat(
-						LS(CommonStrings::Scale, "4"),
+						LS(CommonStrings::Scale, "5"),
 						std::addressof(tmp),
 						0.2f,
 						5.0f,
@@ -224,10 +235,10 @@ namespace IED
 				{
 					//ImGui::SameLine();
 
-					if (ImGui::Button(LS(CommonStrings::Apply, "5")))
+					if (ImGui::Button(LS(CommonStrings::Apply, "6")))
 					{
 						Drivers::UI::QueueSetScale(*m_scaleTemp);
-						config.Set(ui.scale, m_scaleTemp.clear_and_get());
+						config.set(ui.scale, m_scaleTemp.clear_and_get());
 					}
 				}
 
@@ -267,7 +278,7 @@ namespace IED
 					ImGui::Indent();
 					ImGui::Spacing();
 
-					if (config.MarkIf(DrawKeySelector(
+					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
 							ui.toggleKeys.comboKey)))
@@ -276,7 +287,7 @@ namespace IED
 							ui.toggleKeys.comboKey);
 					}
 
-					if (config.MarkIf(DrawKeySelector(
+					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
 							ui.toggleKeys.key)))
@@ -308,22 +319,31 @@ namespace IED
 
 				auto& config = m_controller.GetConfigStore().settings;
 
-				if (config.MarkIf(ImGui::Checkbox(
+				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::EnableEquipSounds, "1"),
-						std::addressof(config.data.playSound))))
+						std::addressof(config.data.sound.enabled))))
 				{
-					m_controller.SetPlaySound(config.data.playSound);
+					m_controller.SetPlaySound(config.data.sound.enabled);
 				}
 
-				if (config.data.playSound)
+				if (config.data.sound.enabled)
 				{
 					ImGui::SameLine();
 
-					if (config.MarkIf(ImGui::Checkbox(
+					if (config.mark_if(ImGui::Checkbox(
 							LS(UISettingsStrings::NPCSounds, "2"),
-							std::addressof(config.data.playSoundNPC))))
+							std::addressof(config.data.sound.npc))))
 					{
-						m_controller.SetPlaySound(config.data.playSoundNPC);
+						m_controller.SetPlaySoundNPC(config.data.sound.npc);
+					}
+
+					ImGui::Spacing();
+					ImGui::Separator();
+					ImGui::Spacing();
+
+					if (DrawSoundPairs())
+					{
+						m_controller.QueueUpdateSoundForms();
 					}
 				}
 
@@ -353,7 +373,7 @@ namespace IED
 					if (ImGui::Selectable(e.first.c_str(), selected))
 					{
 						config.data.logLevel = e.second;
-						config.MarkDirty();
+						config.mark_dirty();
 						gLog.SetLogLevel(e.second);
 					}
 				}
@@ -413,7 +433,7 @@ namespace IED
 						if (ImGui::Selectable(LS(e.second), selected))
 						{
 							config.data.odbLevel = e.first;
-							config.MarkDirty();
+							config.mark_dirty();
 							m_controller.SetObjectDatabaseLevel(e.first);
 						}
 
@@ -476,7 +496,7 @@ namespace IED
 						if (ImGui::Selectable(e.first.c_str(), selected))
 						{
 							config.data.language = e.first;
-							config.MarkDirty();
+							config.mark_dirty();
 
 							m_controller.QueueSetLanguage(e.first);
 						}
@@ -520,7 +540,7 @@ namespace IED
 						Drivers::UI::QueueFontChange(e);
 
 						config.data.ui.font = e;
-						config.MarkDirty();
+						config.mark_dirty();
 					}
 
 					ImGui::PopID();
@@ -566,7 +586,7 @@ namespace IED
 				if (ImGui::Button(LS(CommonStrings::Apply, "4")))
 				{
 					Drivers::UI::QueueSetFontSize(*m_fontSizeTemp);
-					config.Set(config.data.ui.fontSize, m_fontSizeTemp.clear_and_get());
+					config.set(config.data.ui.fontSize, m_fontSizeTemp.clear_and_get());
 				}
 			}
 
@@ -597,7 +617,7 @@ namespace IED
 				{
 					ImGui::PushID(stl::underlying(e.first.value));
 
-					if (config.MarkIf(ImGui::CheckboxFlagsT(
+					if (config.mark_if(ImGui::CheckboxFlagsT(
 							e.second,
 							stl::underlying(std::addressof(config.data.ui.extraGlyphs.value)),
 							stl::underlying(e.first.value))))
@@ -625,6 +645,74 @@ namespace IED
 			}
 		}
 
+		bool UISettings::DrawSoundPairs()
+		{
+			auto& config = m_controller.GetConfigStore().settings;
+
+			bool result = false;
+
+			ImGui::PushID("snd_pairs");
+
+			result |= config.mark_if(DrawSoundPair(
+				"1",
+				stl::underlying(CommonStrings::Weapon),
+				config.data.sound.weapon));
+
+			result |= config.mark_if(DrawSoundPair(
+				"3",
+				stl::underlying(CommonStrings::Armor),
+				config.data.sound.armor));
+
+			result |= config.mark_if(DrawSoundPair(
+				"2",
+				stl::underlying(CommonStrings::Arrow),
+				config.data.sound.arrow));
+
+			result |= config.mark_if(DrawSoundPair(
+				"4",
+				stl::underlying(CommonStrings::Generic),
+				config.data.sound.gen));
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		bool UISettings::DrawSoundPair(
+			const char* a_strid,
+			Localization::StringID a_label,
+			Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair)
+		{
+			bool result = false;
+
+			if (TreeEx(
+					a_strid,
+					true,
+					"%s",
+					LS(a_label)))
+			{
+				ImGui::Indent();
+				ImGui::Spacing();
+
+				if ((result |= DrawFormPicker("1", LS(CommonStrings::Equip), *a_soundPair.first)))
+				{
+					a_soundPair.first.mark(true);
+				}
+
+				if ((result |= DrawFormPicker("2", LS(CommonStrings::Unequip), *a_soundPair.second)))
+				{
+					a_soundPair.second.mark(true);
+				}
+
+				ImGui::Spacing();
+				ImGui::Unindent();
+
+				ImGui::TreePop();
+			}
+
+			return result;
+		}
+
 		auto UISettings::GetCollapsibleStatesData()
 			-> UIData::UICollapsibleStates&
 		{
@@ -633,7 +721,7 @@ namespace IED
 
 		void UISettings::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UISettings::DrawMenuBar()
@@ -687,10 +775,10 @@ namespace IED
 
 		void UISettings::DrawMaintenanceMenu()
 		{
+			auto& settings = m_controller.GetConfigStore().settings;
+
 			if (LCG_MI(UISettingsStrings::ClearStoredColStates, "1"))
 			{
-				auto& settings = m_controller.GetConfigStore().settings;
-
 				settings.data.ui.settingsColStates.clear();
 				settings.data.ui.statsColStates.clear();
 
@@ -713,7 +801,29 @@ namespace IED
 				settings.data.ui.customProfileEditor.colStates.clear();
 				settings.data.ui.transformProfileEditor.colStates.clear();
 
-				settings.MarkDirty();
+				settings.mark_dirty();
+			}
+
+			if (settings.data.ui.fontSize)
+			{
+				if (LCG_MI(UISettingsStrings::ClearFontSizeOverride, "2"))
+				{
+					auto& queue = m_controller.UIGetPopupQueue();
+
+					queue.push(
+							 UIPopupType::Confirm,
+							 LS(CommonStrings::Confirm),
+							 "%s",
+							 LS(UISettingsStrings::ClearFontSizeOverridePrompt))
+						.call([this](auto&) {
+							auto& settings = m_controller.GetConfigStore().settings;
+
+							settings.data.ui.fontSize.clear();
+							settings.mark_dirty();
+
+							Drivers::UI::QueueResetFontSize();
+						});
+				}
 			}
 		}
 

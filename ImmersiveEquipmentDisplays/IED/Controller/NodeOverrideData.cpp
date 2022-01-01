@@ -290,9 +290,11 @@ namespace IED
 								"MOV WeaponBackDefault",
 								"Two-Handed",
 								{
+
 									{ "MOV WeaponBackDefault", { "Two-Handed" } },
 									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
 									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } }
+
 								}
 
 							} },
@@ -322,7 +324,18 @@ namespace IED
 								{ "MOV QUIVERLeftHipBolt", { "Quiver Left-Hip Bolt" } },
 							}
 
-						} }
+						} },
+
+			{ "ShieldBack", {
+
+								"ShieldBack",
+								"MOV ShieldBackDefault",
+								"Shield",
+								{
+									{ "MOV ShieldBackDefault", { "Shield Back" } },
+								}
+
+							} }
 		};
 
 		m_Instance.m_initialized = true;

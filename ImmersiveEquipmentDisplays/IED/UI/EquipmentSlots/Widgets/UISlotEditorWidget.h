@@ -1,25 +1,25 @@
 #pragma once
 
-#include "../../PopupQueue/UIPopupQueue.h"
-#include "../../UIClipboard.h"
-#include "../../UICommon.h"
-#include "../../UIEditorInterface.h"
-#include "../../UIFormLookupInterface.h"
-#include "../../UISettingsInterface.h"
-#include "../../Widgets/Filters/UIGenericFilter.h"
-#include "../../Widgets/Form/UIFormFilterWidget.h"
-#include "../../Widgets/Form/UIFormPickerWidget.h"
-#include "../../Widgets/UIBaseConfigWidget.h"
-#include "../../Widgets/UIEditorPanelSettingsGear.h"
-#include "../../Widgets/UIPopupToggleButtonWidget.h"
-#include "../../Widgets/UIProfileSelectorWidget.h"
-#include "../../Widgets/UIWidgetsCommon.h"
-
-#include "UISlotEditorWidgetStrings.h"
+#include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/UIEditorInterface.h"
+#include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/UISettingsInterface.h"
+#include "IED/UI/Widgets/Filters/UIGenericFilter.h"
+#include "IED/UI/Widgets/Form/UIFormFilterWidget.h"
+#include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
+#include "IED/UI/Widgets/UIBaseConfigWidget.h"
+#include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/ConfigOverride.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
+
+#include "UISlotEditorWidgetStrings.h"
 
 namespace IED
 {
@@ -68,7 +68,7 @@ namespace IED
 			public UIEditorInterface,
 			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
-			public UISettingsInterface,
+			public virtual UISettingsInterface,
 			public virtual UIPopupToggleButtonWidget
 		{
 		public:

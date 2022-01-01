@@ -86,20 +86,37 @@ namespace IED
 		friend class NodeProcessorTask;
 
 	public:
-		Controller(const std::shared_ptr<const Config>& a_config);
+		enum class EventSinkInstallationFlags : std::uint8_t
+		{
+			kNone = 0,
+
+			kT0 = 1ui8 << 0,
+			kT1 = 1ui8 << 1,
+			kT2 = 1ui8 << 2
+		};
+
+		Controller(const std::shared_ptr<const ConfigINI>& a_config);
 
 		Controller(const Controller&) = delete;
 		Controller(Controller&&) = delete;
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) = delete;
 
+		void SinkEventsT0();
+		bool SinkEventsT1();
+		bool SinkEventsT2();
 		void InitializeData();
 		void InitializeStrings();
+
+	private:
+		void InitializeSound();
+		void UpdateSoundForms();
 		void InitializeInput();
 		void InitializeUI();
 		void InitializeConfig();
 		void InitializeLocalization();
 
+	public:
 		[[nodiscard]] inline const auto* GetBSStringHolder() const noexcept
 		{
 			return m_bsstrings.get();
@@ -345,6 +362,8 @@ namespace IED
 		void QueueGetFormDatabase(form_db_get_func_t a_func);
 
 		void QueueGetCrosshairRef(std::function<void(Game::FormID)> a_func);
+
+		void QueueUpdateSoundForms();
 
 		void Evaluate(
 			Actor* a_actor,
@@ -749,36 +768,36 @@ namespace IED
 
 		// events
 		virtual EventResult ReceiveEvent(
-			TESObjectLoadedEvent* a_evn,
-			EventDispatcher<TESObjectLoadedEvent>* a_dispatcher) override;
+			const TESObjectLoadedEvent* a_evn,
+			BSTEventSource<TESObjectLoadedEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESInitScriptEvent* a_evn,
-			EventDispatcher<TESInitScriptEvent>* a_dispatcher) override;
+			const TESInitScriptEvent* a_evn,
+			BSTEventSource<TESInitScriptEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESEquipEvent* evn,
-			EventDispatcher<TESEquipEvent>* dispatcher) override;
+			const TESEquipEvent* evn,
+			BSTEventSource<TESEquipEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESContainerChangedEvent* evn,
-			EventDispatcher<TESContainerChangedEvent>* dispatcher) override;
+			const TESContainerChangedEvent* a_evn,
+			BSTEventSource<TESContainerChangedEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESFurnitureEvent* evn,
-			EventDispatcher<TESFurnitureEvent>* dispatcher) override;
+			const TESFurnitureEvent* a_evn,
+			BSTEventSource<TESFurnitureEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESDeathEvent* a_evn,
-			EventDispatcher<TESDeathEvent>* dispatcher) override;
+			const TESDeathEvent* a_evn,
+			BSTEventSource<TESDeathEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			TESSwitchRaceCompleteEvent* a_evn,
-			EventDispatcher<TESSwitchRaceCompleteEvent>* dispatcher) override;
+			const TESSwitchRaceCompleteEvent* a_evn,
+			BSTEventSource<TESSwitchRaceCompleteEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			MenuOpenCloseEvent* evn,
-			EventDispatcher<MenuOpenCloseEvent>* dispatcher) override;
+			const MenuOpenCloseEvent* evn,
+			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
 
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
 		//void FillInitialConfig(Data::configStore_t& a_data) const;
@@ -812,7 +831,10 @@ namespace IED
 
 		// json serialization
 
-		virtual constexpr WCriticalSection& JSGetLock() noexcept override { return m_lock; }
+		virtual constexpr WCriticalSection& JSGetLock() noexcept override
+		{
+			return m_lock;
+		}
 
 		virtual constexpr Data::configStore_t& JSGetConfigStore() noexcept override
 		{
@@ -823,7 +845,9 @@ namespace IED
 
 		//virtual void Run() override;
 
-		virtual EventResult ReceiveEvent(SKSENiNodeUpdateEvent* a_evn, EventDispatcher<SKSENiNodeUpdateEvent>* a_dispatcher) override;
+		/*virtual EventResult ReceiveEvent(
+			const SKSENiNodeUpdateEvent* a_evn,
+			BSTEventSource<SKSENiNodeUpdateEvent>* a_dispatcher) override;*/
 
 		/*virtual constexpr WCriticalSection& ODB_GetLock() noexcept override
 		{
@@ -833,13 +857,14 @@ namespace IED
 		// members
 
 		std::unique_ptr<BSStringHolder> m_bsstrings;
-		std::shared_ptr<const Config> m_iniconf;
+		std::shared_ptr<const ConfigINI> m_iniconf;
 
 		Data::actorBlockList_t m_actorBlockList;
 
 		bool m_nodeOverrideEnabled{ false };
 		bool m_nodeOverridePlayerEnabled{ false };
 		bool m_forceDefaultConfig{ false };
+		bool m_npcProcessingDisabled{ false };
 
 		struct
 		{
@@ -864,8 +889,13 @@ namespace IED
 
 		std::vector<Game::ObjectRefHandle> m_activeHandles;
 
+		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
+
 		except::descriptor m_lastException;
 
 		mutable WCriticalSection m_lock;
 	};
+
+	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);
+
 }

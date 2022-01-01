@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigCachedFormParser.h"
-#include "JSONConfigNodeOverrideOffsetConditionParser.h"
+#include "JSONConfigNodeOverrideConditionParser.h"
 #include "JSONFormParser.h"
 
 namespace IED

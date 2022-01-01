@@ -52,7 +52,7 @@ namespace IED
 
 			[[nodiscard]] bool LookupTable(
 				const stl::fixed_string& a_lang,
-				shared_string_table& a_out);
+				shared_string_table& a_out) const;
 
 			FN_NAMEPROC("LocalizationDataManager");
 

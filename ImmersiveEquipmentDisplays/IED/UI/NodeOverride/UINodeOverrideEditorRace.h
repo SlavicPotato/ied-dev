@@ -27,11 +27,7 @@ namespace IED
 		private:
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
-			virtual const ActorInfoHolder& GetActorInfoHolder() const override;
-
 			virtual Data::SettingHolder::EditorPanelRaceSettings& GetRaceSettings() const override;
-
-			virtual const SetObjectWrapper<Game::FormID>& GetCrosshairRef() override;
 
 			virtual NodeOverrideEditorCurrentData GetCurrentData() override;
 
@@ -64,17 +60,17 @@ namespace IED
 
 			virtual void OnUpdate(
 				Game::FormID a_handle,
-				const SingleNodeOverrideUpdateParams& a_params) override;
+				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 			
 			virtual void OnUpdate(
 				Game::FormID a_handle,
-				const SingleNodeOverrideParentUpdateParams& a_params) override;
+				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
 			/*virtual void OnUpdate(
 				Game::FormID a_handle,
 				const NodeOverrideUpdateParams& a_params) override;*/
 
-			virtual void OnClear(
+			virtual void OnClearTransform(
 				Game::FormID a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 			
@@ -96,6 +92,8 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIPopupQueue& GetPopupQueue() override;
+
+			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
 
 			Controller& m_controller;
 		};

@@ -298,7 +298,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideFlags);
 
-		struct configNodeOverride_t :
+		struct configNodeOverrideTransform_t :
 			public configNodeOverrideValues_t
 		{
 			friend class boost::serialization::access;
@@ -426,16 +426,16 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideHolderFlags);
 
-		using configNodeOverrideEntry_t = configSexRoot_t<configNodeOverride_t>;
-		using configNodeOverrideEntryParent_t = configSexRoot_t<configNodeOverridePlacement_t>;
+		using configNodeOverrideEntryTransform_t = configSexRoot_t<configNodeOverrideTransform_t>;
+		using configNodeOverrideEntryPlacement_t = configSexRoot_t<configNodeOverridePlacement_t>;
 
 		struct configNodeOverrideHolder_t
 		{
 			friend class boost::serialization::access;
 
 		public:
-			using transform_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntry_t>;
-			using placement_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntryParent_t>;
+			using transform_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntryTransform_t>;
+			using placement_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntryPlacement_t>;
 
 			enum Serialization : unsigned int
 			{
@@ -456,6 +456,29 @@ namespace IED
 			inline bool empty() const noexcept
 			{
 				return data.empty() && placementData.empty();
+			}
+
+			template <class Td, class data_type = stl::strip_type<Td>>
+			inline constexpr auto& get_data() noexcept
+			{
+				if constexpr (stl::is_any_same_v<
+								  data_type,
+								  transform_data_type,
+								  configNodeOverrideEntryTransform_t>)
+				{
+					return data;
+				}
+				else if constexpr (stl::is_any_same_v<
+									   data_type,
+									   placement_data_type,
+									   configNodeOverrideEntryPlacement_t>)
+				{
+					return placementData;
+				}
+				else
+				{
+					static_assert(false);
+				}
 			}
 
 		private:
@@ -564,83 +587,15 @@ namespace IED
 			configNodeOverrideHolder_t GetActor(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
-				Game::FormID a_race) const
-			{
-				configNodeOverrideHolder_t result;
-
-				if (auto& actorData = GetActorData(); !actorData.empty())
-				{
-					if (auto it = actorData.find(a_actor); it != actorData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				if (auto& npcData = GetNPCData(); !npcData.empty())
-				{
-					if (auto it = npcData.find(a_npc); it != npcData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				if (auto& raceData = GetRaceData(); !raceData.empty())
-				{
-					if (auto it = raceData.find(a_race); it != raceData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				CopyEntries(GetGlobalData()[0], result);
-
-				return result;
-			}
+				Game::FormID a_race) const;
 
 			configNodeOverrideHolder_t GetNPC(
 				Game::FormID a_npc,
-				Game::FormID a_race) const
-			{
-				configNodeOverrideHolder_t result;
-
-				if (auto& npcData = GetNPCData(); !npcData.empty())
-				{
-					if (auto it = npcData.find(a_npc); it != npcData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				if (auto& raceData = GetRaceData(); !raceData.empty())
-				{
-					if (auto it = raceData.find(a_race); it != raceData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				CopyEntries(GetGlobalData()[0], result);
-
-				return result;
-			}
+				Game::FormID a_race) const;
 
 			configNodeOverrideHolder_t GetRace(
-				Game::FormID a_race) const
-			{
-				configNodeOverrideHolder_t result;
-
-				if (auto& raceData = GetRaceData(); !raceData.empty())
-				{
-					if (auto it = raceData.find(a_race); it != raceData.end())
-					{
-						CopyEntries(it->second, result);
-					}
-				}
-
-				CopyEntries(GetGlobalData()[0], result);
-
-				return result;
-			}
+				Game::FormID a_race,
+				GlobalConfigType a_globtype) const;
 
 			bool HasCMEClass(
 				Game::FormID a_handle,
@@ -740,91 +695,19 @@ namespace IED
 				return false;
 			}
 
-			const auto* GetActorCME(
+			const configNodeOverrideEntryTransform_t* GetActorCME(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const
-			{
-				if (auto& actorData = GetActorData(); !actorData.empty())
-				{
-					if (auto data = a_hc.get_actor(a_actor, actorData))
-					{
-						if (auto r = GetEntry(data->data, a_node))
-						{
-							return r;
-						}
-					}
-				}
+				holderCache_t& a_hc) const;
 
-				if (auto& npcData = GetNPCData(); !npcData.empty())
-				{
-					if (auto data = a_hc.get_npc(a_npc, npcData))
-					{
-						if (auto r = GetEntry(data->data, a_node))
-						{
-							return r;
-						}
-					}
-				}
-
-				if (auto& raceData = GetRaceData(); !raceData.empty())
-				{
-					if (auto data = a_hc.get_race(a_race, raceData))
-					{
-						if (auto r = GetEntry(data->data, a_node))
-						{
-							return r;
-						}
-					}
-				}
-
-				return GetEntry(GetGlobalData()[0].data, a_node);
-			}
-
-			const auto* GetActorParent(
+			const configNodeOverrideEntryPlacement_t* GetActorPlacement(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const
-			{
-				if (auto& actorData = GetActorData(); !actorData.empty())
-				{
-					if (auto data = a_hc.get_actor(a_actor, actorData))
-					{
-						if (auto r = GetEntry(data->placementData, a_node))
-						{
-							return r;
-						}
-					}
-				}
-
-				if (auto& npcData = GetNPCData(); !npcData.empty())
-				{
-					if (auto data = a_hc.get_npc(a_npc, npcData))
-					{
-						if (auto r = GetEntry(data->placementData, a_node))
-						{
-							return r;
-						}
-					}
-				}
-
-				if (auto& raceData = GetRaceData(); !raceData.empty())
-				{
-					if (auto data = a_hc.get_race(a_race, raceData))
-					{
-						if (auto r = GetEntry(data->placementData, a_node))
-						{
-							return r;
-						}
-					}
-				}
-
-				return GetEntry(GetGlobalData()[0].placementData, a_node);
-			}
+				holderCache_t& a_hc) const;
 
 			void clear()
 			{
@@ -843,8 +726,8 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverride_t,
-	IED::Data::configNodeOverride_t::Serialization::DataVersion1);
+	IED::Data::configNodeOverrideTransform_t,
+	IED::Data::configNodeOverrideTransform_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
 	IED::Data::configNodeOverrideOffset_t,

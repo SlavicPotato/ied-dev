@@ -84,7 +84,7 @@ namespace IED
 	public:
 		EngineExtensions(
 			const std::shared_ptr<Controller>& a_controller,
-			const std::shared_ptr<Config>& a_config);
+			const std::shared_ptr<ConfigINI>& a_config);
 
 		EngineExtensions(const EngineExtensions&) = delete;
 		EngineExtensions(EngineExtensions&&) = delete;
@@ -109,7 +109,8 @@ namespace IED
 			bool a_shield,
 			bool a_left,
 			bool a_dropOnDeath,
-			bool a_removeScabbards);
+			bool a_removeScabbards,
+			bool a_keepTorchFlame);
 
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
@@ -147,7 +148,7 @@ namespace IED
 		inline static const auto fUnk5EBD90 = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0 = IAL::Address<unk5C39F0_t>(35947, 36922);
 		inline static const auto AttachAddonNodes = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto fUnk63F810 = IAL::Address<unk63F810_t>(38079, 39033);
+		inline static const auto SceneRendering = IAL::Address<unk63F810_t>(38079, 39033);
 		inline static const auto CleanupNodeImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto ShrinkChildrenToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto fUnkDC6140 = IAL::Address<fUnk140DC6140_t>(76545, 78389);
@@ -207,6 +208,7 @@ namespace IED
 			bool weaponAdjustDisable{ false };
 			bool weaponAdjustFix{ false };
 			bool nodeOverridePlayerEnabled{ false };
+			bool disableNPCProcessing{ false };
 		} m_conf;
 
 		std::shared_ptr<Controller> m_controller;

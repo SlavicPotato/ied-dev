@@ -90,7 +90,7 @@ namespace IED
 
 		void UIStats::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UIStats::DrawActorTable()

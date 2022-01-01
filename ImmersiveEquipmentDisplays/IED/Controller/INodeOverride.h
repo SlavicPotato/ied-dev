@@ -11,7 +11,7 @@ namespace IED
 {
 	namespace Data
 	{
-		struct configNodeOverride_t;
+		struct configNodeOverrideTransform_t;
 	}
 
 	class ActorObjectHolder;
@@ -206,7 +206,7 @@ namespace IED
 	protected:
 		static void ApplyNodeOverride(
 			const cmeNodeEntry_t& a_entry,
-			const Data::configNodeOverride_t& a_data,
+			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t& a_params);
 
 		static void ResetNodeOverride(
@@ -214,7 +214,7 @@ namespace IED
 
 		static void ApplyNodeVisibility(
 			NiNode* a_node,
-			const Data::configNodeOverride_t& a_data,
+			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t& a_params);
 
 		static void ApplyNodePlacement(

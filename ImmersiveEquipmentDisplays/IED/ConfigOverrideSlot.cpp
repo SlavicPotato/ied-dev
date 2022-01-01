@@ -34,12 +34,14 @@ namespace IED
 			return result;
 		}
 
-		auto configStoreSlot_t::GetRace(Game::FormID a_race) const
+		auto configStoreSlot_t::GetRace(
+			Game::FormID a_race,
+			GlobalConfigType a_globtype) const
 			-> result
 		{
 			result result;
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResult(ConfigClass::Race, it->second, result);
@@ -47,19 +49,20 @@ namespace IED
 
 			FillResult(
 				ConfigClass::Global,
-				GetGlobalData(GlobalConfigType::Player),
+				GetGlobalData(a_globtype),
 				result);
 
 			return result;
 		}
 
 		auto configStoreSlot_t::GetRaceCopy(
-			Game::FormID a_race) const
+			Game::FormID a_race,
+			GlobalConfigType a_globtype) const
 			-> result_copy
 		{
 			result_copy result;
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResultCopy(ConfigClass::Race, it->second, result);
@@ -67,7 +70,7 @@ namespace IED
 
 			FillResultCopy(
 				ConfigClass::Global,
-				GetGlobalData(GlobalConfigType::Player),
+				GetGlobalData(a_globtype),
 				result);
 
 			return result;
@@ -80,13 +83,13 @@ namespace IED
 		{
 			result result;
 
-			auto& npcmap = GetData(ConfigClass::NPC);
+			auto& npcmap = GetNPCData();
 			if (auto it = npcmap.find(a_npc); it != npcmap.end())
 			{
 				FillResult(ConfigClass::NPC, it->second, result);
 			}
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResult(ConfigClass::Race, it->second, result);
@@ -112,13 +115,13 @@ namespace IED
 		{
 			result_copy result;
 
-			auto& npcmap = GetData(ConfigClass::NPC);
+			auto& npcmap = GetNPCData();
 			if (auto it = npcmap.find(a_npc); it != npcmap.end())
 			{
 				FillResultCopy(ConfigClass::NPC, it->second, result);
 			}
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResultCopy(ConfigClass::Race, it->second, result);
@@ -145,19 +148,19 @@ namespace IED
 		{
 			result result;
 
-			auto& actormap = GetData(ConfigClass::Actor);
+			auto& actormap = GetActorData();
 			if (auto it = actormap.find(a_actor); it != actormap.end())
 			{
 				FillResult(ConfigClass::Actor, it->second, result);
 			}
 
-			auto& npcmap = GetData(ConfigClass::NPC);
+			auto& npcmap = GetNPCData();
 			if (auto it = npcmap.find(a_npc); it != npcmap.end())
 			{
 				FillResult(ConfigClass::NPC, it->second, result);
 			}
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResult(ConfigClass::Race, it->second, result);
@@ -184,19 +187,19 @@ namespace IED
 		{
 			result_copy result;
 
-			auto& actormap = GetData(ConfigClass::Actor);
+			auto& actormap = GetActorData();
 			if (auto it = actormap.find(a_actor); it != actormap.end())
 			{
 				FillResultCopy(ConfigClass::Actor, it->second, result);
 			}
 
-			auto& npcmap = GetData(ConfigClass::NPC);
+			auto& npcmap = GetNPCData();
 			if (auto it = npcmap.find(a_npc); it != npcmap.end())
 			{
 				FillResultCopy(ConfigClass::NPC, it->second, result);
 			}
 
-			auto& racemap = GetData(ConfigClass::Race);
+			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
 			{
 				FillResultCopy(ConfigClass::Race, it->second, result);

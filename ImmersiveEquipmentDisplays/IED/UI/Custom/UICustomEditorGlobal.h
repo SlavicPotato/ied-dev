@@ -75,7 +75,6 @@ namespace IED
 				int a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
-			
 			void UpdateData();
 
 			entryCustomData_t m_data;

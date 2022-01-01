@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../../UICommon.h"
-
-#include "IED/GlobalProfileManager.h"
-
-#include "../Widgets/UINodeOverrideEditorWidget.h"
+#include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidget.h"
 
 #include "IED/UI/Profile/UIProfileEditorBase.h"
+
+#include "IED/UI/UICommon.h"
+
+#include "IED/GlobalProfileManager.h"
 
 namespace IED
 {
@@ -65,17 +65,13 @@ namespace IED
 
 			virtual void OnUpdate(
 				int a_handle,
-				const SingleNodeOverrideUpdateParams& a_params) override;
+				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 			
 			virtual void OnUpdate(
 				int a_handle,
-				const SingleNodeOverrideParentUpdateParams& a_params) override;
+				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
-			/*virtual void OnUpdate(
-				int a_handle,
-				const NodeOverrideUpdateParams& a_params) override;*/
-
-			virtual void OnClear(
+			virtual void OnClearTransform(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 			

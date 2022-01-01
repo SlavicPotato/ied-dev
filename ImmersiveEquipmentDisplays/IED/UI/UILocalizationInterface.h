@@ -8,7 +8,7 @@ namespace IED
 	{
 		class UILocalizationInterface
 		{
-		public:
+		protected:
 			UILocalizationInterface(
 				Localization::ILocalization& a_localization) :
 				m_localization(a_localization)
@@ -28,13 +28,15 @@ namespace IED
 			}
 
 			template <class Te, std::uint32_t _NumHash = 2>
-			const char* LS(Te a_id, const char* a_im_id) const
+			inline constexpr const char* LS(
+				Te a_id,
+				const char* a_im_id) const noexcept
 			{
 				return LMKID<_NumHash>(LS(a_id), a_im_id);
 			}
 
 			template <class Te>
-			bool LCG_BM(
+			inline constexpr bool LCG_BM(
 				Te a_id,
 				const char* a_im_id) const
 			{
@@ -42,7 +44,7 @@ namespace IED
 			}
 
 			template <class Te>
-			bool LCG_MI(
+			inline constexpr bool LCG_MI(
 				Te a_id,
 				const char* a_im_id) const
 			{
@@ -54,9 +56,11 @@ namespace IED
 				const char* a_str,
 				const char* a_im_id) const noexcept
 			{
-				static_assert(sizeof(m_buffer) > _NumHash);
+				auto& buffer = m_localization.m_scBuffer1;
 
-				constexpr auto d = sizeof(m_buffer) - _NumHash - 1;
+				static_assert(sizeof(buffer) > _NumHash);
+
+				constexpr auto d = sizeof(buffer) - _NumHash - 1;
 
 				auto mslen = d - std::min(std::strlen(a_im_id), d);
 
@@ -70,31 +74,30 @@ namespace IED
 						break;
 					}
 
-					m_buffer[i] = c;
+					buffer[i] = c;
 				}
 
 				for (std::uint32_t j = 0; j < _NumHash; j++)
 				{
-					m_buffer[i++] = 0x23;
+					buffer[i++] = 0x23;
 				}
 
-				for (auto p = a_im_id; i < sizeof(m_buffer) - 1; p++, i++)
+				for (auto p = a_im_id; i < sizeof(buffer) - 1; p++, i++)
 				{
 					auto c = *p;
 					if (!c)
 					{
 						break;
 					}
-					m_buffer[i] = c;
+					buffer[i] = c;
 				}
 
-				m_buffer[i] = 0;
+				buffer[i] = 0;
 
-				return m_buffer;
+				return buffer;
 			}
 
 		private:
-			mutable char m_buffer[512]{ 0 };
 
 			Localization::ILocalization& m_localization;
 		};

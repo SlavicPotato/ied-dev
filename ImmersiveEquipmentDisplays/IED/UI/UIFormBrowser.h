@@ -52,7 +52,7 @@ namespace IED
 			FormBrowserDrawResult Draw();
 			bool Open();
 			void SetTabFilter(const tab_filter_type& a_filter);
-			void SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_filter);
+			void SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
 			void ClearTabFilter();
 
 			void OnClose();
@@ -94,7 +94,7 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID m_hlForm;
 
-			TabItem m_tabItems[23];
+			std::array<TabItem, 24> m_tabItems;
 
 			//select_callback_t m_current;
 

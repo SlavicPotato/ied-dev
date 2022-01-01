@@ -15,11 +15,13 @@ namespace IED
 				BGSSoundDescriptorForm* unequip{ nullptr };
 			};
 
-			BGSSoundDescriptorForm* Get(std::uint8_t a_formType, bool a_equip) const;
+			BGSSoundDescriptorForm* Get(
+				std::uint8_t a_formType,
+				bool a_equip) const;
 
-			soundPair_t weapon;
 			soundPair_t arrow;
 			soundPair_t armor;
+			soundPair_t weapon;
 			soundPair_t gen;
 		};
 
@@ -32,13 +34,18 @@ namespace IED
 		}
 
 	protected:
+		static BGSSoundDescriptorForm* GetSoundForm(Game::FormID a_formid);
+
 		static BGSSoundDescriptorForm* GetSoundForm(
 			const IPluginInfo& a_pinfo,
 			const SetObjectWrapper<Data::ConfigForm>& a_form);
 
 		static ISound::SoundRefHolder::soundPair_t MakeSoundPair(
 			const IPluginInfo& a_pinfo,
-			const Data::ConfigEntrySound::soundPair_t& a_in);
+			const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_in);
+
+		static ISound::SoundRefHolder::soundPair_t MakeSoundPair(
+			const Data::ConfigSound<Game::FormID>::soundPair_t& a_in);
 
 	private:
 		SoundRefHolder m_sounds;

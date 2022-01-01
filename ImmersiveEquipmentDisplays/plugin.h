@@ -1,7 +1,10 @@
 #pragma once
 
 #define PLUGIN_NAME "ImmersiveEquipmentDisplays"
+#define PLUGIN_NAME_FULL "Immersive Equipment Displays"
 #define PLUGIN_AUTHOR "SlavicPotato"
+#define PLUGIN_URL "nexusmods.com/skyrimspecialedition/mods/x"
+#define PLUGIN_URL_DEV "github.com/SlavicPotato/ImmersiveEquipmentDisplays"
 
 #include "version.h"
 

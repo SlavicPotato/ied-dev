@@ -16,6 +16,8 @@ namespace IED
 			UINPCList<entryCustomData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -33,8 +35,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("custom_editor_npc", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -73,21 +73,6 @@ namespace IED
 		constexpr Data::ConfigClass UICustomEditorNPC::GetConfigClass() const
 		{
 			return Data::ConfigClass::NPC;
-		}
-
-		const ActorInfoHolder& UICustomEditorNPC::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		const NPCInfoHolder& UICustomEditorNPC::GetNPCInfoHolder() const
-		{
-			return m_controller.GetNPCInfo();
-		}
-
-		std::uint64_t UICustomEditorNPC::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
 		}
 
 		Data::SettingHolder::EditorPanelActorSettings& UICustomEditorNPC::GetActorSettings() const
@@ -129,7 +114,7 @@ namespace IED
 		auto UICustomEditorNPC::GetCurrentData()
 			-> CustomEditorCurrentData
 		{
-			if (auto entry = ListGetSelected())
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -137,11 +122,6 @@ namespace IED
 			{
 				return { {}, nullptr };
 			}
-		}
-
-		const SetObjectWrapper<Game::FormID>& UICustomEditorNPC::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
 		}
 
 		UIPopupQueue& UICustomEditorNPC::GetPopupQueue()
@@ -164,13 +144,13 @@ namespace IED
 
 		void UICustomEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UICustomEditorNPC::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorNPC::GetEditorPanelSettings()
@@ -181,7 +161,7 @@ namespace IED
 		void UICustomEditorNPC::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UICustomEditorNPC::ListResetAllValues(Game::FormID a_handle)
@@ -229,7 +209,7 @@ namespace IED
 			if (store.settings.data.ui.customEditor.npcConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.customEditor.npcConfig.sex,
 					a_newSex);
 			}
@@ -381,6 +361,15 @@ namespace IED
 				a_params.oldName);
 
 			return true;
+		}
+
+		const ImVec4* UICustomEditorNPC::HighlightEntry(Game::FormID a_handle)
+		{
+			return HasConfigEntry(
+					   m_controller.GetConfigStore().active.custom.GetNPCData(),
+					   a_handle) ?
+                       std::addressof(UICommon::g_colorLightOrange) :
+                       nullptr;
 		}
 	}
 }

@@ -125,7 +125,7 @@ namespace IED
 
 		void UIProfileEditorFormFilters::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		WindowLayoutData UIProfileEditorFormFilters::GetWindowDimensions() const

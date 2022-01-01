@@ -507,12 +507,13 @@ namespace IED
 			a_params.actor,
 			a_params.root,
 			itemNodeRoot,
-			object,
+			object,			
 			modelParams.type,
 			modelParams.isShield,
 			a_leftWeapon,
 			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
-			a_config.flags.test(Data::FlagsBase::kRemoveScabbard));
+			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
+			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame));
 
 		a_objectEntry.state->item = a_form->formID;
 		a_objectEntry.state->nodes.obj = itemNodeRoot;

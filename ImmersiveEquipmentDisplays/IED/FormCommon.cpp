@@ -19,7 +19,6 @@ namespace IED
 		case TESObjectSTAT::kTypeID:
 		case BGSMovableStatic::kTypeID:
 		case TESObjectTREE::kTypeID:
-		case BGSHeadPart::kTypeID:
 		case TESObjectWEAP::kTypeID:
 		case TESObjectBOOK::kTypeID:
 		case TESObjectACTI::kTypeID:
@@ -313,6 +312,8 @@ namespace IED
 			return "Race";
 		case BGSArtObject::kTypeID:
 			return "Art Object";
+		case BGSSoundDescriptorForm::kTypeID:
+			return "Sound Descriptor";
 		default:
 			return nullptr;
 		}

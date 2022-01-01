@@ -218,7 +218,7 @@ namespace IED
 			const BSFixedString& a_scb,
 			const BSFixedString& a_scbLeft) noexcept;
 
-		mutable const Data::configNodeOverrideEntry_t* cachedConfCME{ nullptr };
+		mutable const Data::configNodeOverrideEntryTransform_t* cachedConfCME{ nullptr };
 	};
 
 	class ActorObjectHolder

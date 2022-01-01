@@ -27,8 +27,6 @@ namespace IED
 
 			a_out.autoSelectSex = data.get("auto_select_sex", true).asBool();
 			a_out.showAll = data.get("show_all", true).asBool();
-			a_out.selectCrosshairActor =
-				data.get("select_crosshair_actor", true).asBool();
 
 			return true;
 		}
@@ -46,7 +44,6 @@ namespace IED
 
 			data["auto_select_sex"] = a_data.autoSelectSex;
 			data["show_all"] = a_data.showAll;
-			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
 
 			a_out["version"] = CURRENT_VERSION;
 		}

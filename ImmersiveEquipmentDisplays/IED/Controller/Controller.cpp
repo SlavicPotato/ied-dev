@@ -21,21 +21,19 @@ namespace IED
 	using namespace Data;
 
 	Controller::Controller(
-		const std::shared_ptr<const Config>& a_config) :
-		ISerializationBase(),
+		const std::shared_ptr<const ConfigINI>& a_config) :
 		m_nodeProcessor(*this),
 		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
-		m_forceDefaultConfig(a_config->m_forceDefaultConfig)
+		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
+		m_npcProcessingDisabled(a_config->m_disableNPCProcessing)
 	{
 		InitializeInput();
-
-		ITaskPool::AddTaskFixed(std::addressof(m_nodeProcessor));
 	}
 
-	static bool IsActorValid(TESObjectREFR* a_refr)
+	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
 	{
 		if (a_refr == nullptr ||
 		    a_refr->loadedState == nullptr ||
@@ -45,6 +43,67 @@ namespace IED
 			return false;
 		}
 		return true;
+	}
+
+	void Controller::SinkEventsT0()
+	{
+		if (m_esif.test(EventSinkInstallationFlags::kT0))
+		{
+			return;
+		}
+
+		m_esif.set(EventSinkInstallationFlags::kT0);
+
+		ITaskPool::AddTaskFixed(std::addressof(m_nodeProcessor));
+	}
+
+	bool Controller::SinkEventsT1()
+	{
+		if (m_esif.test(EventSinkInstallationFlags::kT1))
+		{
+			return true;
+		}
+
+		m_esif.set(EventSinkInstallationFlags::kT1);
+
+		if (auto mm = MenuManager::GetSingleton())
+		{
+			auto dispatcher = mm->MenuOpenCloseEventDispatcher();
+			dispatcher->AddEventSink(this);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool Controller::SinkEventsT2()
+	{
+		if (m_esif.test(EventSinkInstallationFlags::kT2))
+		{
+			return true;
+		}
+
+		m_esif.set(EventSinkInstallationFlags::kT2);
+
+		if (auto edl = ScriptEventSourceHolder::GetSingleton())
+		{
+			edl->AddEventSink<TESInitScriptEvent>(this);
+			edl->AddEventSink<TESObjectLoadedEvent>(this);
+			edl->AddEventSink<TESEquipEvent>(this);
+			edl->AddEventSink<TESContainerChangedEvent>(this);
+			edl->AddEventSink<TESFurnitureEvent>(this);
+			edl->AddEventSink<TESDeathEvent>(this);
+			edl->AddEventSink<TESSwitchRaceCompleteEvent>(this);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	void Controller::InitializeData()
@@ -72,17 +131,6 @@ namespace IED
 
 		auto& nodeMap = NodeMap::GetSingleton();
 
-		/*for (auto& e : m_extraManagedNodes)
-		{
-			auto r = nodeMap.Add(e.c_str(), e.c_str(), NodeDescriptorFlags::kManaged);
-			if (!r.second)
-			{
-				r.first->second.flags.set(NodeDescriptorFlags::kManaged);
-			}
-		}
-
-		m_extraManagedNodes.swap(decltype(m_extraManagedNodes)());*/
-
 		if (!nodeMap.LoadExtra(PATHS::NODEMAP))
 		{
 			Warning(
@@ -93,24 +141,7 @@ namespace IED
 
 		SetODBLevel(settings.odbLevel);
 
-		if (m_iniconf->m_sound.enabled)
-		{
-			auto& pinfo = IData::GetPluginInfo();
-
-			SetSounds(
-				MakeSoundPair(pinfo, m_iniconf->m_sound.weapon),
-				MakeSoundPair(pinfo, m_iniconf->m_sound.arrow),
-				MakeSoundPair(pinfo, m_iniconf->m_sound.armor),
-				MakeSoundPair(pinfo, m_iniconf->m_sound.gen));
-
-			m_playSound = settings.playSound;
-			m_playSoundNPC = settings.playSoundNPC;
-		}
-		else
-		{
-			m_playSound = false;
-			m_playSoundNPC = false;
-		}
+		InitializeSound();
 
 		if (!settings.playerBlockKeys)
 		{
@@ -133,6 +164,55 @@ namespace IED
 		}
 
 		m_iniconf.reset();
+	}
+
+	static void UpdateSoundPairFromINI(
+		const SetObjectWrapper<Data::ConfigForm>& a_src,
+		SetObjectWrapper<Game::FormID>& a_dst)
+	{
+		if (a_src && !a_dst)
+		{
+			Game::FormID tmp;
+
+			if (IData::GetPluginInfo().ResolveFormID(*a_src, tmp))
+			{
+				a_dst = tmp;
+			}
+		}
+	}
+
+	static void UpdateSoundPairFromINI(
+		const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_src,
+		Data::ConfigSound<Game::FormID>::soundPair_t& a_dst)
+	{
+		UpdateSoundPairFromINI(a_src.first, a_dst.first);
+		UpdateSoundPairFromINI(a_src.second, a_dst.second);
+	}
+
+	void Controller::InitializeSound()
+	{
+		auto& settings = m_config.settings.data.sound;
+
+		UpdateSoundPairFromINI(m_iniconf->m_sound.arrow, settings.arrow);
+		UpdateSoundPairFromINI(m_iniconf->m_sound.armor, settings.armor);
+		UpdateSoundPairFromINI(m_iniconf->m_sound.weapon, settings.weapon);
+		UpdateSoundPairFromINI(m_iniconf->m_sound.gen, settings.gen);
+
+		UpdateSoundForms();
+
+		SetPlaySound(settings.enabled);
+		SetPlaySoundNPC(settings.npc);
+	}
+
+	void Controller::UpdateSoundForms()
+	{
+		auto& settings = m_config.settings.data.sound;
+
+		SetSounds(
+			MakeSoundPair(settings.arrow),
+			MakeSoundPair(settings.armor),
+			MakeSoundPair(settings.weapon),
+			MakeSoundPair(settings.gen));
 	}
 
 	void Controller::InitializeInput()
@@ -268,14 +348,14 @@ namespace IED
 
 		if (clang.empty())
 		{
-			settings.Set(clang, defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG));
+			settings.set(clang, defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG));
 		}
 
 		if (!SetLanguageImpl(clang))
 		{
 			if (clang != defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG))
 			{
-				settings.Set(clang, std::move(*defaultLang));
+				settings.set(clang, std::move(*defaultLang));
 				SetLanguageImpl(clang);
 			}
 		}
@@ -1844,6 +1924,14 @@ namespace IED
 		});
 	}
 
+	void Controller::QueueUpdateSoundForms()
+	{
+		ITaskPool::AddTask([this] {
+			IScopedLock lock(m_lock);
+			UpdateSoundForms();
+		});
+	}
+
 	void Controller::AddActorBlock(
 		Game::FormID a_actor,
 		const stl::fixed_string& a_key)
@@ -2740,6 +2828,12 @@ namespace IED
 			return;
 		}
 
+		if (m_npcProcessingDisabled &&
+		    a_actor != *g_thePlayer)
+		{
+			return;
+		}
+
 		if (!a_actor->GetBiped(false))
 		{
 			return;
@@ -2766,6 +2860,8 @@ namespace IED
 				a_actor->formID.get(),
 				a_handle.get(),
 				objects.GetHandle().get());
+
+			RemoveActorImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
 
 			return;
 		}
@@ -2832,6 +2928,15 @@ namespace IED
 					{ a_actor }
 				};
 
+				if (!params.dataList)
+				{
+					Warning(
+						"%s [%u]: %.8X: missing container object list",
+						__FUNCTION__,
+						__LINE__,
+						a_actor->formID.get());
+				}
+
 				params.collector.Run(
 					nrp.npc->container,
 					params.dataList);
@@ -2857,10 +2962,7 @@ namespace IED
 			RemoveActorGear(a_actor, a_handle, a_objects, a_flags);
 		}
 
-		if (!a_objects.m_cmeNodes.empty())
-		{
-			a_objects.RequestTransformUpdateDefer();
-		}
+		a_objects.RequestTransformUpdateDefer();
 
 		//Debug("%X : %f", a_actor->formID.get(), pt.Stop());
 	}
@@ -2983,7 +3085,7 @@ namespace IED
 
 		for (auto& e : a_objects.m_weapNodes)
 		{
-			auto r = m_config.active.transforms.GetActorParent(
+			auto r = m_config.active.transforms.GetActorPlacement(
 				a_actor->formID,
 				a_npc->formID,
 				a_race->formID,
@@ -3326,6 +3428,8 @@ namespace IED
 					sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
 			    mm->IsMenuOpen(
 					sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
+			    mm->IsMenuOpen(
+					sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
 			    mm->IsMenuOpen(
 					sh->GetString(UIStringHolder::STRING_INDICES::kconsole)))
 			{
@@ -4244,8 +4348,8 @@ namespace IED
 	}
 
 	auto Controller::ReceiveEvent(
-		TESObjectLoadedEvent* a_evn,
-		EventDispatcher<TESObjectLoadedEvent>*)
+		const TESObjectLoadedEvent* a_evn,
+		BSTEventSource<TESObjectLoadedEvent>*)
 		-> EventResult
 	{
 		if (a_evn && a_evn->loaded)
@@ -4260,8 +4364,8 @@ namespace IED
 	}
 
 	auto Controller::ReceiveEvent(
-		TESInitScriptEvent* a_evn,
-		EventDispatcher<TESInitScriptEvent>*)
+		const TESInitScriptEvent* a_evn,
+		BSTEventSource<TESInitScriptEvent>*)
 		-> EventResult
 	{
 		if (a_evn)
@@ -4273,8 +4377,8 @@ namespace IED
 	}
 
 	auto Controller::ReceiveEvent(
-		TESEquipEvent* a_evn,
-		EventDispatcher<TESEquipEvent>*)
+		const TESEquipEvent* a_evn,
+		BSTEventSource<TESEquipEvent>*)
 		-> EventResult
 	{
 		if (a_evn && a_evn->actor)
@@ -4296,8 +4400,8 @@ namespace IED
 	}
 
 	auto Controller::ReceiveEvent(
-		TESContainerChangedEvent* a_evn,
-		EventDispatcher<TESContainerChangedEvent>*)
+		const TESContainerChangedEvent* a_evn,
+		BSTEventSource<TESContainerChangedEvent>*)
 		-> EventResult
 	{
 		if (a_evn)
@@ -4326,8 +4430,8 @@ namespace IED
 	}
 
 	auto Controller::ReceiveEvent(
-		TESFurnitureEvent* a_evn,
-		EventDispatcher<TESFurnitureEvent>*)
+		const TESFurnitureEvent* a_evn,
+		BSTEventSource<TESFurnitureEvent>*)
 		-> EventResult
 	{
 		if (a_evn)
@@ -4338,10 +4442,14 @@ namespace IED
 		return kEvent_Continue;
 	}
 
-	auto Controller::ReceiveEvent(TESDeathEvent* a_evn, EventDispatcher<TESDeathEvent>*)
+	auto Controller::ReceiveEvent(
+		const TESDeathEvent* a_evn,
+		BSTEventSource<TESDeathEvent>*)
 		-> EventResult
 	{
-		if (a_evn && a_evn->source && a_evn->source->IsActor())
+		if (a_evn &&
+		    a_evn->source &&
+		    a_evn->source->IsActor())
 		{
 			ITaskPool::QueueActorTask(
 				a_evn->source,
@@ -4370,20 +4478,20 @@ namespace IED
 	}
 
 	EventResult Controller::ReceiveEvent(
-		TESSwitchRaceCompleteEvent* a_evn,
-		EventDispatcher<TESSwitchRaceCompleteEvent>* dispatcher)
+		const TESSwitchRaceCompleteEvent* a_evn,
+		BSTEventSource<TESSwitchRaceCompleteEvent>*)
 	{
-		if (a_evn && a_evn->actor)
+		if (a_evn)
 		{
-			QueueReset(a_evn->actor, ControllerUpdateFlags::kPlaySound);
+			QueueReset(a_evn->refr, ControllerUpdateFlags::kPlaySound);
 		}
 
 		return kEvent_Continue;
 	}
 
 	auto Controller::ReceiveEvent(
-		MenuOpenCloseEvent* a_evn,
-		EventDispatcher<MenuOpenCloseEvent>*)
+		const MenuOpenCloseEvent* a_evn,
+		BSTEventSource<MenuOpenCloseEvent>*)
 		-> EventResult
 	{
 		if (a_evn && !a_evn->opening)
@@ -4612,14 +4720,14 @@ namespace IED
 		QueueResetAll(ControllerUpdateFlags::kNone);
 	}
 
-	auto Controller::ReceiveEvent(
-		SKSENiNodeUpdateEvent* a_evn,
-		EventDispatcher<SKSENiNodeUpdateEvent>* a_dispatcher)
+	/*auto Controller::ReceiveEvent(
+		const SKSENiNodeUpdateEvent* a_evn,
+		BSTEventSource<SKSENiNodeUpdateEvent>* a_dispatcher)
 		-> EventResult
 	{
 		if (a_evn && a_evn->reference)
 		{
-			/*if (auto actor = a_evn->reference->As<Actor>())
+			if (auto actor = a_evn->reference->As<Actor>())
 			{
 				{
 					IScopedLock lock(m_lock);
@@ -4632,11 +4740,11 @@ namespace IED
 				}
 
 				QueueEvaluate(actor, ControllerUpdateFlags::kNone);
-			}*/
+			}
 		}
 
 		return EventResult::kEvent_Continue;
-	}
+	}*/
 
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)
 	{

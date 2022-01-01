@@ -37,10 +37,6 @@ namespace IED
 		private:
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
-			virtual const ActorInfoHolder& GetActorInfoHolder() const override;
-
-			std::uint64_t GetActorInfoUpdateID() const override;
-
 			virtual Data::SettingHolder::EditorPanelActorSettings& GetActorSettings() const override;
 
 			virtual SlotEditorCurrentData GetCurrentData() override;
@@ -84,8 +80,6 @@ namespace IED
 
 			virtual void OnListOptionsChange() override;
 
-			virtual const SetObjectWrapper<Game::FormID>& GetCrosshairRef() override;
-
 			virtual UIPopupQueue& GetPopupQueue() override;
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
@@ -102,6 +96,8 @@ namespace IED
 				Data::ObjectSlot a_slot,
 				const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
 				bool a_infoDrawn) override;
+
+			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
 
 			Controller& m_controller;
 		};

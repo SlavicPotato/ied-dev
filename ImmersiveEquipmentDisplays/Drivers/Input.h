@@ -9,7 +9,7 @@ namespace IED
 	{
 		class Input :
 			ILog,
-			public BSTEventSink<InputEvent>
+			public BSTEventSink<InputEvent*>
 		{
 		public:
 			static void RegisterForPriorityKeyEvents(
@@ -37,9 +37,11 @@ namespace IED
 		private:
 			Input() = default;
 
-			virtual EventResult ReceiveEvent(InputEvent** evns, InputEventDispatcher* dispatcher) override;
+			virtual EventResult ReceiveEvent(
+				InputEvent* const* a_evns,
+				BSTEventSource<InputEvent*>* a_dispatcher) override;
 
-			static bool PlayerControls_InputEvent_ProcessEvent_Hook(InputEvent** a_evns);
+			static bool PlayerControls_InputEvent_ProcessEvent_Hook(const InputEvent** a_evns);
 
 			void DispatchPriorityKeyEvent(
 				Handlers::KeyEventType a_event,

@@ -44,6 +44,8 @@ namespace IED
 			CacheInfo = 1033,
 			ImportMode = 1034,
 			LoadARMA = 1035,
+			SelectCrosshairActor = 1036,
+			KeepTorchFlame = 1037,
 		};
 
 	}

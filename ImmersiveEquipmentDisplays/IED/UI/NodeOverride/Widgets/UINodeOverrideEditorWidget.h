@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/UI/Controls/UICollapsibles.h"
 #include "IED/UI/PopupQueue/UIPopupQueue.h"
 #include "IED/UI/UIClipboard.h"
 #include "IED/UI/UICommon.h"
@@ -19,17 +20,13 @@
 #include "IED/UI/Widgets/UITransformSliderWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "UINodeOverrideEditorStrings.h"
-
-#include "IED/Controller/NodeOverrideData.h"
-
 #include "IED/ConfigOverride.h"
-#include "IED/Controller/NodeOverrideData.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
-#include "IED/UI/Controls/UICollapsibles.h"
-#include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/Controller/NodeOverrideData.h"
+
+#include "UINodeOverrideEditorStrings.h"
 
 namespace IED
 {
@@ -37,18 +34,18 @@ namespace IED
 
 	namespace UI
 	{
-		struct SingleNodeOverrideUpdateParams
+		struct SingleNodeOverrideTransformUpdateParams
 		{
 			Data::ConfigSex sex;
 			stl::fixed_string name;
-			Data::configNodeOverrideEntry_t& entry;
+			Data::configNodeOverrideEntryTransform_t& entry;
 		};
 
-		struct SingleNodeOverrideParentUpdateParams
+		struct SingleNodeOverridePlacementUpdateParams
 		{
 			Data::ConfigSex sex;
 			stl::fixed_string name;
-			Data::configNodeOverrideEntryParent_t& entry;
+			Data::configNodeOverrideEntryPlacement_t& entry;
 		};
 
 		struct ClearNodeOverrideUpdateParams
@@ -115,11 +112,11 @@ namespace IED
 		class UINodeOverrideEditorWidget :
 			public UIEditorInterface,
 			public UIEditorPanelSettings,
-			public UISettingsInterface,
 			public UICollapsibles,
 			public UIDescriptionPopupWidget,
 			public UIFormLookupInterface,
 			UIConditionParamExtraInterface,
+			public virtual UISettingsInterface,
 			public virtual UITransformSliderWidget,
 			public virtual UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
@@ -175,55 +172,55 @@ namespace IED
 			void DrawTransformEntry(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawPlacementEntry(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawPlacementValues(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverridePlacementValues_t& a_values,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawValueFlags(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideValues_t& a_values,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			NodeOverrideCommonAction DrawTransformHeaderContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configTransform_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			NodeOverrideCommonAction DrawOverrideOffsetListContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideOffsetList_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			NodeOverrideCommonAction DrawOverridePlacementOverrideListContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawOverrideOffsets(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideOffsetList_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists,
 				Data::configNodeOverrideOffset_t* a_parent);
 
@@ -231,21 +228,21 @@ namespace IED
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawOverrideOffsetList(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideOffsetList_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			void DrawOverridePlacementOverrideList(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			template <class Tp>
@@ -260,14 +257,14 @@ namespace IED
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideOffset_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			NodeOverridePlacementOverrideResult DrawOverridePlacementOverrideContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverridePlacementOverride_t& a_entry,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			template <class Tp>
@@ -290,7 +287,7 @@ namespace IED
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideOffset_t& a_entry,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			/*void DrawOverridePosClamp(
@@ -310,17 +307,17 @@ namespace IED
 
 			virtual void OnUpdate(
 				T a_handle,
-				const SingleNodeOverrideUpdateParams& a_params) = 0;
+				const SingleNodeOverrideTransformUpdateParams& a_params) = 0;
 
 			virtual void OnUpdate(
 				T a_handle,
-				const SingleNodeOverrideParentUpdateParams& a_params) = 0;
+				const SingleNodeOverridePlacementUpdateParams& a_params) = 0;
 
 			/*virtual void OnUpdate(
 				T a_handle,
 				const NodeOverrideUpdateParams& a_params) = 0;*/
 
-			virtual void OnClear(
+			virtual void OnClearTransform(
 				T a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) = 0;
 
@@ -339,13 +336,13 @@ namespace IED
 			void HandleValueUpdate(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
-				const SingleNodeOverrideUpdateParams& a_params,
+				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool a_exists);
 
 			void HandleValueUpdate(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
-				const SingleNodeOverrideParentUpdateParams& a_params,
+				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool a_exists);
 
 			virtual NodeOverrideEditorCurrentData GetCurrentData() = 0;
@@ -600,7 +597,11 @@ namespace IED
 				{
 					if (configClass != Data::ConfigClass::Global)
 					{
-						svar = !GetConfigStore().transforms.HasCMEClass(a_handle, configClass, e->first, hc);
+						svar = !GetConfigStore().transforms.HasCMEClass(
+							a_handle,
+							configClass,
+							e->first,
+							hc);
 
 						if (svar)
 						{
@@ -682,7 +683,11 @@ namespace IED
 				{
 					if (configClass != Data::ConfigClass::Global)
 					{
-						svar = !GetConfigStore().transforms.HasPlacementClass(a_handle, configClass, e->first, hc);
+						svar = !GetConfigStore().transforms.HasPlacementClass(
+							a_handle,
+							configClass,
+							e->first,
+							hc);
 
 						if (svar)
 						{
@@ -767,7 +772,7 @@ namespace IED
 					{
 						a_data.data.erase(a_it);
 
-						OnClear(a_handle, { a_name, a_data });
+						OnClearTransform(a_handle, { a_name, a_data });
 
 						a_it = a_data.data.find(a_name);
 					}
@@ -807,7 +812,7 @@ namespace IED
 					}
 				}
 
-				auto clipData = UIClipboard::Get<Data::configNodeOverride_t>();
+				auto clipData = UIClipboard::Get<Data::configNodeOverrideTransform_t>();
 
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "4"),
@@ -934,7 +939,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::DrawTransformEntry(
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -1023,7 +1028,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::DrawPlacementEntry(
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -1063,7 +1068,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverridePlacementValues_t& a_values,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
@@ -1142,7 +1147,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideOffsetList_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists,
 			Data::configNodeOverrideOffset_t* a_parent)
 		{
@@ -1186,7 +1191,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			const auto result = DrawOverridePlacementOverrideListContextMenu(
@@ -1233,7 +1238,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideValues_t& a_values,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			/*ImGui::PushID("value_flags");
@@ -1258,7 +1263,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configTransform_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
@@ -1319,7 +1324,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideOffsetList_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
@@ -1450,7 +1455,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
@@ -1556,7 +1561,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideOffsetList_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			if (a_entry.empty())
@@ -1889,7 +1894,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			if (a_entry.empty())
@@ -2079,7 +2084,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideOffset_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			NodeOverrideCommonResult result;
@@ -2252,7 +2257,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverridePlacementOverride_t& a_entry,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			NodeOverridePlacementOverrideResult result;
@@ -2436,7 +2441,7 @@ namespace IED
 			{
 				if (LCG_BM(CommonStrings::Add, "1"))
 				{
-					if constexpr (!std::is_same_v<Tp, SingleNodeOverrideParentUpdateParams>)
+					if constexpr (!std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
 					{
 						if (LCG_BM(CommonStrings::Node, "2"))
 						{
@@ -2689,7 +2694,7 @@ namespace IED
 
 			float width;
 
-			if constexpr (std::is_same_v<Tp, SingleNodeOverrideParentUpdateParams>)
+			if constexpr (std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
 			{
 				width = -1.0f;
 			}
@@ -3011,7 +3016,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideOffset_t& a_entry,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			if (ImGui::CheckboxFlagsT(
@@ -3177,7 +3182,7 @@ namespace IED
 			{
 				if (LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if constexpr (!std::is_same_v<Tp, SingleNodeOverrideParentUpdateParams>)
+					if constexpr (!std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
 					{
 						if (LCG_BM(CommonStrings::Node, "2"))
 						{
@@ -3333,7 +3338,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::HandleValueUpdate(
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
-			const SingleNodeOverrideUpdateParams& a_params,
+			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
 			if (!a_exists)
@@ -3352,7 +3357,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::HandleValueUpdate(
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
-			const SingleNodeOverrideParentUpdateParams& a_params,
+			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
 			if (!a_exists)

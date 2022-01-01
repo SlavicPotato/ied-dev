@@ -2,11 +2,11 @@
 
 #include "IUI.h"
 
-#include "Drivers/UI.h"
+#include "IED/UI/UIFormBrowser.h"
+#include "IED/UI/UIFormInfoCache.h"
+#include "IED/UI/UIMain.h"
 
-#include "../UI/UIFormBrowser.h"
-#include "../UI/UIFormInfoCache.h"
-#include "../UI/UIMain.h"
+#include "Drivers/UI.h"
 
 #include <ext/GameCommon.h>
 

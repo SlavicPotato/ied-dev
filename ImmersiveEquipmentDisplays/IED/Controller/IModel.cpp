@@ -91,8 +91,6 @@ namespace IED
 			return ExtractFormModelParams<BGSStaticCollection>(a_form, a_out);
 		case TESObjectTREE::kTypeID:
 			return ExtractModelParams(std::addressof(static_cast<TESObjectTREE*>(a_form)->model), a_out);
-		case BGSHeadPart::kTypeID:
-			return ExtractFormModelParams<BGSHeadPart>(a_form, a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)

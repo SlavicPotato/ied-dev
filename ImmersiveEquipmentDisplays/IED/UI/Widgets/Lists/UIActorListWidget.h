@@ -5,7 +5,10 @@
 #include "IED/Data.h"
 #include "IED/SettingHolder.h"
 
-#include "../UIWidgetsCommon.h"
+#include "IED/UI/UIActorInfoInterface.h"
+#include "IED/UI/UISettingsInterface.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
+
 #include "UIListCommon.h"
 
 #include "UIActorInfoAddInterface.h"
@@ -18,25 +21,30 @@ namespace IED
 
 	namespace UI
 	{
-		template <class T>
+		template <class Td>
 		class UIActorList :
-			public UIListBase<T, Game::FormID>,
+			public UIListBase<Td, Game::FormID>,
 			UIActorInfoAddInterface,
-			public virtual UILocalizationInterface
+			public virtual UILocalizationInterface,
+			public virtual UISettingsInterface,
+			public virtual UIActorInfoInterface
 		{
 		public:
-			virtual void ListTick() override;
 			virtual void ListReset() override;
 
-			using listValue_t = UIListBase<T, Game::FormID>::listValue_t;
+			using listValue_t = UIListBase<Td, Game::FormID>::listValue_t;
 
-			UIActorList(Controller& a_controller, float a_itemWidthScalar = -6.5f);
+			UIActorList(
+				Controller& a_controller,
+				float a_itemWidthScalar = -6.5f);
+
 			virtual ~UIActorList() noexcept = default;
+
+		protected:
+			virtual void ListTick() override;
 
 		private:
 			virtual Data::SettingHolder::EditorPanelActorSettings& GetActorSettings() const = 0;
-			virtual const ActorInfoHolder& GetActorInfoHolder() const = 0;
-			virtual std::uint64_t GetActorInfoUpdateID() const = 0;
 
 			virtual void OnListOptionsChange() = 0;
 
@@ -52,25 +60,26 @@ namespace IED
 			std::uint64_t m_lastCacheUpdateId{ 0 };
 		};
 
-		template <typename T>
-		UIActorList<T>::UIActorList(
+		template <class Td>
+		UIActorList<Td>::UIActorList(
 			Controller& a_controller,
 			float a_itemWidthScalar) :
-			UIListBase<T, Game::FormID>(a_itemWidthScalar),
+			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
 			UIActorInfoAddInterface(a_controller),
-			UILocalizationInterface(a_controller)
+			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller)
 		{}
 
-		template <typename T>
-		void UIActorList<T>::ListUpdate()
+		template <class Td>
+		void UIActorList<Td>::ListUpdate()
 		{
 			bool isFirstUpdate = m_listFirstUpdate;
 
 			m_listFirstUpdate = true;
 
-			const auto& globalConfig = GetActorSettings();
 			const auto& actorSettings = GetActorSettings();
-			auto& actorInfo = GetActorInfoHolder();
+			auto& actorInfo = GetActorInfo();
 
 			m_listData.clear();
 
@@ -99,9 +108,9 @@ namespace IED
 
 			stl::snprintf(m_listBuf1, "%zu", m_listData.size());
 
-			if (!isFirstUpdate && globalConfig.selectCrosshairActor)
+			if (!isFirstUpdate && GetSettings().data.ui.selectCrosshairActor)
 			{
-				if (auto& crosshairRef = GetCrosshairRef(); crosshairRef)
+				if (auto& crosshairRef = GetCrosshairRef())
 				{
 					if (m_listData.contains(*crosshairRef))
 					{
@@ -136,12 +145,12 @@ namespace IED
 
 			if (!m_listCurrent)
 			{
-				ListSetCurrentItem(m_listData.begin()->first);
+				ListSetCurrentItem(*m_listData.begin());
 			}
 		}
 
-		template <typename T>
-		void UIActorList<T>::ListTick()
+		template <class Td>
+		void UIActorList<Td>::ListTick()
 		{
 			const auto cacheUpdateId = GetActorInfoUpdateID();
 
@@ -151,20 +160,20 @@ namespace IED
 				m_listNextUpdate = true;
 			}
 
-			UIListBase<T, Game::FormID>::ListTick();
+			UIListBase<Td, Game::FormID>::ListTick();
 		}
 
-		template <typename T>
-		void UIActorList<T>::ListReset()
+		template <typename Td>
+		void UIActorList<Td>::ListReset()
 		{
-			UIListBase<T, Game::FormID>::ListReset();
+			UIListBase<Td, Game::FormID>::ListReset();
 			m_lastCacheUpdateId = GetActorInfoUpdateID() - 1;
 		}
 
-		template <class T>
-		void UIActorList<T>::ListDrawInfoText(const listValue_t& a_entry)
+		template <class Td>
+		void UIActorList<Td>::ListDrawInfoText(const listValue_t& a_entry)
 		{
-			auto& actorInfo = GetActorInfoHolder();
+			auto& actorInfo = GetActorInfo();
 			auto& raceInfo = Data::IData::GetRaceList();
 			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
 
@@ -248,14 +257,14 @@ namespace IED
 			ListDrawExtraActorInfo(a_entry);
 		}
 
-		template <class T>
-		void UIActorList<T>::ListDrawExtraActorInfo(
+		template <class Td>
+		void UIActorList<Td>::ListDrawExtraActorInfo(
 			const listValue_t& a_entry)
 		{
 		}
 
-		template <class T>
-		void UIActorList<T>::ListDrawOptions()
+		template <class Td>
+		void UIActorList<Td>::ListDrawOptions()
 		{
 			auto& config = GetActorSettings();
 
@@ -280,19 +289,19 @@ namespace IED
 			ListDrawOptionsExtra();
 		}
 
-		template <class T>
-		void UIActorList<T>::ListDrawOptionsExtra()
+		template <class Td>
+		void UIActorList<Td>::ListDrawOptionsExtra()
 		{
 		}
 
-		template <class T>
-		void UIActorList<T>::ListDrawExtraControls()
+		template <class Td>
+		void UIActorList<Td>::ListDrawExtraControls()
 		{
 			DrawActorInfoAdd();
 		}
 
-		template <class T>
-		void UIActorList<T>::OnActorInfoAdded(Game::FormID a_handle)
+		template <class Td>
+		void UIActorList<Td>::OnActorInfoAdded(Game::FormID a_handle)
 		{
 			QueueListUpdate(a_handle);
 		}

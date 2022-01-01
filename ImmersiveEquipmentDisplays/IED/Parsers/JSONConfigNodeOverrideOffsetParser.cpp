@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideOffsetListParser.h"
-#include "JSONConfigNodeOverrideOffsetConditionListParser.h"
+#include "JSONConfigNodeOverrideConditionListParser.h"
 #include "JSONConfigNodeOverrideOffsetParser.h"
 #include "JSONConfigNodeOverrideValuesParser.h"
 

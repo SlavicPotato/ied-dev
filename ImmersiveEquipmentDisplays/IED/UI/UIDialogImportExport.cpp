@@ -144,7 +144,7 @@ namespace IED
 
 					auto& conf = m_controller.GetConfigStore().settings;
 
-					conf.MarkIf(ImGui::CheckboxFlagsT(
+					conf.mark_if(ImGui::CheckboxFlagsT(
 						LS(UIDialogImportExportStrings::SkipTempRefs, "3"),
 						stl::underlying(std::addressof(conf.data.ui.importExport.importFlags.value)),
 						stl::underlying(ImportFlags::kEraseTemporary)));
@@ -199,7 +199,7 @@ namespace IED
 
 									auto& conf = m_controller.GetConfigStore().settings;
 
-									conf.MarkIf(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+									conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
 
 									ImGui::Separator();
 									ImGui::Spacing();
@@ -211,7 +211,7 @@ namespace IED
 											!conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 									{
 										conf.data.ui.importExport.importFlags.clear(ImportFlags::kMerge);
-										conf.MarkDirty();
+										conf.mark_dirty();
 									}
 
 									ImGui::SameLine();
@@ -221,7 +221,7 @@ namespace IED
 											conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 									{
 										conf.data.ui.importExport.importFlags.set(ImportFlags::kMerge);
-										conf.MarkDirty();
+										conf.mark_dirty();
 									}
 
 									DrawTip(UITip::ImportMode);
@@ -275,7 +275,7 @@ namespace IED
 						.draw([this] {
 							auto& conf = m_controller.GetConfigStore().settings;
 
-							conf.MarkIf(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+							conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
 
 							return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 						})
@@ -326,7 +326,7 @@ namespace IED
 							.draw([this] {
 								auto& conf = m_controller.GetConfigStore().settings;
 
-								conf.MarkIf(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+								conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
 
 								return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 							})

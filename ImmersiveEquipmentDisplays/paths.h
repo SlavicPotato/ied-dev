@@ -1,10 +1,12 @@
 #pragma once
 
+#include "plugin.h"
+
 namespace IED
 {
 	namespace PATHS
 	{
-		inline static constexpr auto IMGUI_INI = "Data\\SKSE\\Plugins\\IED_ImGui.ini";
+		inline static constexpr auto IMGUI_INI = "Data\\SKSE\\Plugins\\" PLUGIN_NAME "_ImGui.ini";
 
 		inline static constexpr auto SETTINGS = "Data\\SKSE\\Plugins\\IED\\Settings.json";
 		inline static constexpr auto NODEMAP = "Data\\SKSE\\Plugins\\IED\\Nodes.json";

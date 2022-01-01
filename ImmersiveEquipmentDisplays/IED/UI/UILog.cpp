@@ -79,7 +79,7 @@ namespace IED
 
 				data.SetLimit(limit);
 				settings.data.ui.logLimit = limit;
-				settings.MarkDirty();
+				settings.mark_dirty();
 			}
 
 			ImGui::PopItemWidth();
@@ -175,7 +175,7 @@ namespace IED
 		{
 			auto& settings = m_controller.GetConfigStore().settings;
 
-			settings.MarkIf(ImGui::Checkbox(
+			settings.mark_if(ImGui::Checkbox(
 				a_label,
 				std::addressof(settings.data.ui.logLevels[stl::underlying(a_level)])));
 		}

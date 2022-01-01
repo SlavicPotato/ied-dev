@@ -141,5 +141,16 @@ namespace IED
 		Gear = 212,
 		Positions = 213,
 		Overwrite = 214,
+		Help = 215,
+		About = 216,
+		Author = 217,
+		Development = 218,
+		Version = 219,
+		Arrow = 220,
+		Armor = 221,
+		Weapon = 222,
+		Generic = 223,
+		Equip = 224,
+		Unequip = 225
 	};
 }

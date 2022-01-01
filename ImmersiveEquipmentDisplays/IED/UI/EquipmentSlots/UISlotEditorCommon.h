@@ -18,7 +18,9 @@ namespace IED
 		template <class T>
 		class UISlotEditorCommon :
 			public UISlotEditorBase<T>,
-			public UIProfileSelectorWidget<profileSelectorParamsSlot_t<T>, SlotProfile>
+			public UIProfileSelectorWidget<
+				profileSelectorParamsSlot_t<T>,
+				SlotProfile>
 		{
 		public:
 			UISlotEditorCommon(
@@ -60,17 +62,19 @@ namespace IED
 				GetData(const profileSelectorParamsSlot_t<T>& a_data) override;
 
 			virtual constexpr bool BaseConfigStoreCC() const override;
-
 		};
 
 		template <class T>
 		UISlotEditorCommon<T>::UISlotEditorCommon(
 			Controller& a_controller) :
 			UISlotEditorBase<T>(a_controller),
-			UIProfileSelectorWidget<profileSelectorParamsSlot_t<T>, SlotProfile>(
+			UIProfileSelectorWidget<
+				profileSelectorParamsSlot_t<T>,
+				SlotProfile>(
 				a_controller,
 				UIProfileSelectorFlags::kEnableMerge)
-		{}
+		{
+		}
 
 		template <class T>
 		void UISlotEditorCommon<T>::UpdateConfigSingleSlot(

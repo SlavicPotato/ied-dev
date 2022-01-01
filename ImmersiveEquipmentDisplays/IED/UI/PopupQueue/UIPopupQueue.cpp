@@ -56,6 +56,11 @@ namespace IED
 					e.m_funcDraw,
 					e.m_buf);
 				break;
+			case UIPopupType::Custom:
+				res = CustomDialog(
+					e.m_key.c_str(),
+					e.m_funcDraw);
+				break;
 			}
 
 			if (res == ModalStatus::kAccept)

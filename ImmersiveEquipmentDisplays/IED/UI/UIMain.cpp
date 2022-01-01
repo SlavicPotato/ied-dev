@@ -10,6 +10,7 @@ namespace IED
 	{
 		UIMain::UIMain(Controller& a_controller) :
 			UILocalizationInterface(a_controller),
+			UIAboutModal(a_controller),
 			m_controller(a_controller),
 			m_slotTabPanel(a_controller),
 			m_customTabPanel(a_controller),
@@ -139,6 +140,12 @@ namespace IED
 					DrawToolsMenu();
 					ImGui::EndMenu();
 				}
+				
+				if (LCG_BM(CommonStrings::Help, "4"))
+				{
+					DrawHelpMenu();
+					ImGui::EndMenu();
+				}
 
 				ImGui::Separator();
 
@@ -179,7 +186,7 @@ namespace IED
 					.draw([this] {
 						auto& conf = m_controller.GetConfigStore().settings;
 
-						conf.MarkIf(DrawExportFilters(conf.data.ui.defaultExportFlags));
+						conf.mark_if(DrawExportFilters(conf.data.ui.defaultExportFlags));
 
 						return true;
 					})
@@ -331,6 +338,14 @@ namespace IED
 			}
 		}
 
+		void UIMain::DrawHelpMenu()
+		{
+			if (LCG_MI(CommonStrings::About, "1"))
+			{
+				QueueAboutPopup();
+			}
+		}
+
 		void UIMain::OpenEditorPanel(UIEditorPanel a_panel)
 		{
 			if (m_currentEditorPanel == a_panel)
@@ -343,7 +358,7 @@ namespace IED
 			m_currentEditorPanel = a_panel;
 
 			auto& conf = m_controller.GetConfigStore().settings;
-			conf.Set(conf.data.ui.lastPanel, a_panel);
+			conf.set(conf.data.ui.lastPanel, a_panel);
 
 			switch (oldPanel)
 			{

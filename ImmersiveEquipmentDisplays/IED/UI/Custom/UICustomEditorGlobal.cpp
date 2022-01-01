@@ -96,7 +96,7 @@ namespace IED
 
 		void UICustomEditorGlobal::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorGlobal::GetEditorPanelSettings()
@@ -106,7 +106,7 @@ namespace IED
 
 		void UICustomEditorGlobal::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UICustomEditorGlobal::OnSexChanged(Data::ConfigSex a_newSex)
@@ -116,7 +116,7 @@ namespace IED
 			if (store.settings.data.ui.customEditor.globalSex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.customEditor.globalSex,
 					a_newSex);
 			}

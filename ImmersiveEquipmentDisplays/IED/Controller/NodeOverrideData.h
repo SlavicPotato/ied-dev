@@ -26,7 +26,7 @@ namespace IED
 				movs(a_movlist)
 			{
 			}
-			
+
 			BSFixedString bsname;
 			stl::fixed_string defParent;
 			BSFixedString bsdefParent;

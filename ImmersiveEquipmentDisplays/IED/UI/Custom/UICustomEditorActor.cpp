@@ -1,9 +1,9 @@
 #include "pch.h"
 
-#include "../UIFormInfoCache.h"
-#include "UICustomEditorActor.h"
+#include "IED/UI/UIFormInfoCache.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "../Widgets/UIWidgetsCommon.h"
+#include "UICustomEditorActor.h"
 
 #include "IED/Controller/Controller.h"
 
@@ -18,6 +18,8 @@ namespace IED
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIFormInfoTooltipWidget(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -35,8 +37,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("custom_editor_actor", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -46,9 +46,11 @@ namespace IED
 				{
 					if (m_controller.IsActorBlockedImpl(m_listCurrent->handle))
 					{
-						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextUnformatted("Actor is blocked");
-						ImGui::PopStyleColor();
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::ActorBlocked));
+
 						ImGui::Spacing();
 					}
 
@@ -85,16 +87,6 @@ namespace IED
 			return Data::ConfigClass::Actor;
 		}
 
-		const ActorInfoHolder& UICustomEditorActor::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		std::uint64_t UICustomEditorActor::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
-		}
-
 		Data::SettingHolder::EditorPanelActorSettings& UICustomEditorActor::GetActorSettings() const
 		{
 			return m_controller.GetConfigStore().settings.data.ui.customEditor.actorConfig;
@@ -106,7 +98,7 @@ namespace IED
 			auto& data = m_controller.GetConfigStore().active.custom.GetActorData();
 			auto& sh = StringHolder::GetSingleton();
 
-			auto& pluginMap = data.try_emplace(static_cast<Data::configForm_t>(a_handle)).first->second;
+			auto& pluginMap = data.try_emplace(a_handle).first->second;
 
 			return pluginMap.try_emplace(sh.IED).first->second;
 		}
@@ -134,8 +126,7 @@ namespace IED
 		auto UICustomEditorActor::GetCurrentData()
 			-> CustomEditorCurrentData
 		{
-			auto entry = ListGetSelected();
-			if (entry)
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -143,11 +134,6 @@ namespace IED
 			{
 				return { {}, nullptr };
 			}
-		}
-
-		const SetObjectWrapper<Game::FormID>& UICustomEditorActor::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
 		}
 
 		UIPopupQueue& UICustomEditorActor::GetPopupQueue()
@@ -170,13 +156,13 @@ namespace IED
 
 		void UICustomEditorActor::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UICustomEditorActor::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorActor::GetEditorPanelSettings()
@@ -187,7 +173,7 @@ namespace IED
 		void UICustomEditorActor::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UICustomEditorActor::ListResetAllValues(Game::FormID a_handle)
@@ -235,7 +221,7 @@ namespace IED
 			if (store.settings.data.ui.customEditor.actorConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.customEditor.actorConfig.sex,
 					a_newSex);
 			}
@@ -390,7 +376,7 @@ namespace IED
 
 		void UICustomEditorActor::DrawMenuBarItemsExtra()
 		{
-			auto entry = ListGetSelected();
+			auto& entry = ListGetSelected();
 			if (!entry)
 			{
 				return;
@@ -459,6 +445,15 @@ namespace IED
 			return std::addressof(it3->second);
 		}
 
+		const ImVec4* UICustomEditorActor::HighlightEntry(Game::FormID a_handle)
+		{
+			return HasConfigEntry(
+					   m_controller.GetConfigStore().active.custom.GetActorData(),
+					   a_handle) ?
+                       std::addressof(UICommon::g_colorLimeGreen) :
+                       nullptr;
+		}
+
 		bool UICustomEditorActor::DrawExtraItemInfo(
 			Game::FormID a_handle,
 			const stl::fixed_string& a_name,
@@ -487,8 +482,8 @@ namespace IED
 				ImGui::TextUnformatted("Matched:");
 				ImGui::SameLine();
 
-				if (auto formInfo = flc.LookupForm(object->matchedItem); 
-					formInfo && !formInfo->form.name.empty())
+				if (auto formInfo = flc.LookupForm(object->matchedItem);
+				    formInfo && !formInfo->form.name.empty())
 				{
 					ImGui::TextColored(UICommon::g_colorLightBlue, "%s", formInfo->form.name.c_str());
 				}

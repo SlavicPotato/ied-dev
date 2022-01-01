@@ -18,7 +18,9 @@ namespace IED
 		template <class T>
 		class UICustomEditorCommon :
 			public UICustomEditorWidget<T>,
-			public UIProfileSelectorWidget<profileSelectorParamsCustom_t<T>, CustomProfile>
+			public UIProfileSelectorWidget<
+				profileSelectorParamsCustom_t<T>,
+				CustomProfile>
 		{
 		public:
 			UICustomEditorCommon(
@@ -43,6 +45,10 @@ namespace IED
 				T a_handle,
 				const CustomConfigRenameParams& a_params);
 
+			bool HasConfigEntry(
+				const Data::configMapCustom_t& a_data,
+				T a_handle) const;
+
 		private:
 			virtual void DrawMainHeaderControlsExtra(
 				T a_handle,
@@ -61,7 +67,9 @@ namespace IED
 		UICustomEditorCommon<T>::UICustomEditorCommon(
 			Controller& a_controller) :
 			UICustomEditorWidget<T>(a_controller),
-			UIProfileSelectorWidget<profileSelectorParamsCustom_t<T>, CustomProfile>(
+			UIProfileSelectorWidget<
+				profileSelectorParamsCustom_t<T>,
+				CustomProfile>(
 				a_controller,
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge)
@@ -206,6 +214,23 @@ namespace IED
 		inline constexpr bool UICustomEditorCommon<T>::BaseConfigStoreCC() const
 		{
 			return false;
+		}
+
+		template <class T>
+		bool UICustomEditorCommon<T>::HasConfigEntry(
+			const Data::configMapCustom_t& a_data,
+			T a_handle) const
+		{
+			if (auto it1 = a_data.find(a_handle); it1 != a_data.end())
+			{
+				auto it2 = it1->second.find(StringHolder::GetSingleton().IED);
+
+				return it2 != it1->second.end() && !it2->second.empty();
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 	}

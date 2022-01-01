@@ -359,10 +359,12 @@ namespace IED
 				GlobalConfigType a_type) const;
 
 			result GetRace(
-				Game::FormID a_race) const;
+				Game::FormID a_race,
+				GlobalConfigType a_globtype) const;
 
 			result_copy GetRaceCopy(
-				Game::FormID a_race) const;
+				Game::FormID a_race,
+				GlobalConfigType a_globtype) const;
 
 			result GetNPC(
 				Game::FormID a_npc,

@@ -17,6 +17,8 @@ namespace IED
 			UINPCList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
+			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
 		{}
 
@@ -33,8 +35,6 @@ namespace IED
 		{
 			if (ImGui::BeginChild("slot_editor_npc", { -1.0f, 0.0f }))
 			{
-				ListTick();
-
 				ImGui::Spacing();
 				ListDraw();
 				ImGui::Separator();
@@ -61,7 +61,7 @@ namespace IED
 
 		auto UISlotEditorNPC::GetCurrentData() -> SlotEditorCurrentData
 		{
-			if (auto entry = ListGetSelected())
+			if (auto& entry = ListGetSelected())
 			{
 				return { entry->handle, std::addressof(entry->data) };
 			}
@@ -79,7 +79,7 @@ namespace IED
 		void UISlotEditorNPC::OnEditorPanelSettingsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
+			store.settings.mark_dirty();
 		}
 
 		void UISlotEditorNPC::ListResetAllValues(Game::FormID a_handle) {}
@@ -250,7 +250,7 @@ namespace IED
 			if (store.settings.data.ui.slotEditor.npcConfig.sex != a_newSex)
 			{
 				ResetFormSelectorWidgets();
-				store.settings.Set(
+				store.settings.set(
 					store.settings.data.ui.slotEditor.npcConfig.sex,
 					a_newSex);
 			}
@@ -259,27 +259,7 @@ namespace IED
 		void UISlotEditorNPC::OnListOptionsChange()
 		{
 			auto& store = m_controller.GetConfigStore();
-			store.settings.MarkDirty();
-		}
-
-		const ActorInfoHolder& UISlotEditorNPC::GetActorInfoHolder() const
-		{
-			return m_controller.GetActorInfo();
-		}
-
-		const NPCInfoHolder& UISlotEditorNPC::GetNPCInfoHolder() const
-		{
-			return m_controller.GetNPCInfo();
-		}
-
-		std::uint64_t UISlotEditorNPC::GetActorInfoUpdateID() const
-		{
-			return m_controller.GetActorInfoUpdateID();
-		}
-
-		const SetObjectWrapper<Game::FormID>& UISlotEditorNPC::GetCrosshairRef()
-		{
-			return m_controller.GetCrosshairRef();
+			store.settings.mark_dirty();
 		}
 
 		UIPopupQueue& UISlotEditorNPC::GetPopupQueue()
@@ -323,11 +303,23 @@ namespace IED
 
 		void UISlotEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.MarkDirty();
+			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
 		void UISlotEditorNPC::DrawMenuBarItemsExtra()
 		{
+		}
+
+		const ImVec4* UISlotEditorNPC::HighlightEntry(Game::FormID a_handle)
+		{
+			const auto& data = m_controller.GetConfigStore().active.slot.GetNPCData();
+
+			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
+			{
+				return std::addressof(UICommon::g_colorLightOrange);
+			}
+
+			return nullptr;
 		}
 
 	}
