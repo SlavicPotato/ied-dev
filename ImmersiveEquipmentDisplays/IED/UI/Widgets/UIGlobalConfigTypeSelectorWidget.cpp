@@ -6,6 +6,12 @@ namespace IED
 {
 	namespace UI
 	{
+		UIGlobalConfigTypeSelectorWidget::UIGlobalConfigTypeSelectorWidget(
+			Localization::ILocalization& a_localization) :
+			UILocalizationInterface(a_localization)
+		{
+		}
+
 		bool UIGlobalConfigTypeSelectorWidget::DrawTypeSelectorRadio(
 			Data::GlobalConfigType& a_value)
 		{
@@ -14,7 +20,7 @@ namespace IED
 			ImGui::PushID("type_selector");
 
 			if (ImGui::RadioButton(
-					"Player",
+					LS(CommonStrings::Player, "1"),
 					a_value == Data::GlobalConfigType::Player))
 			{
 				a_value = Data::GlobalConfigType::Player;
@@ -24,7 +30,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					"NPCs",
+					LS(CommonStrings::NPC, "2"),
 					a_value == Data::GlobalConfigType::NPC))
 			{
 				a_value = Data::GlobalConfigType::NPC;

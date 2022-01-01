@@ -151,6 +151,7 @@ namespace IED
 		Weapon = 222,
 		Generic = 223,
 		Equip = 224,
-		Unequip = 225
+		Unequip = 225,
+		Player = 226,
 	};
 }
