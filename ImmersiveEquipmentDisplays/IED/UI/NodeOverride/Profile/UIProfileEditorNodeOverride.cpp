@@ -246,21 +246,6 @@ namespace IED
 			}
 		}
 
-		Data::configNodeOverrideHolder_t UIProfileEditorNodeOverride::GetConfigStoreData(int a_handle)
-		{
-			if (m_cachedItem)
-			{
-				const auto& data = GetProfileManager().Data();
-
-				if (auto it = data.find(m_cachedItem->name); it != data.end())
-				{
-					return it->second.Data();
-				}
-			}
-
-			return {};
-		}
-
 		WindowLayoutData UIProfileEditorNodeOverride::GetWindowDimensions() const
 		{
 			return { 250.0f, 600.0f, -1.0f, false };
@@ -275,12 +260,10 @@ namespace IED
 			const NodeOverrideUpdateParams& a_params)
 		{
 			auto profile = GetCurrentProfile();
-			if (!profile)
+			if (profile)
 			{
-				return;
+				profile->Data() = a_params.data;
 			}
-
-			a_params.data.copy_cc(GetConfigClass(), profile->Data());
 		}
 
 		NodeOverrideProfile* UIProfileEditorNodeOverride::GetCurrentProfile() const

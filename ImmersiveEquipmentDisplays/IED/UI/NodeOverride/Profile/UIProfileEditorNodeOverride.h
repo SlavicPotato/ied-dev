@@ -108,9 +108,6 @@ namespace IED
 				int a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
-			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(
-				int a_handle) override;
-
 			virtual WindowLayoutData GetWindowDimensions() const;
 
 			virtual UIPopupQueue& GetPopupQueue() override;

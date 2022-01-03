@@ -71,7 +71,7 @@ namespace IED
 					return false;
 				}
 
-				return !Game::BSMain::GetSingleton()->freezeTime;
+				return !Game::Main::GetSingleton()->freezeTime;
 			}
 
 			inline constexpr void Trigger() const

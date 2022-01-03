@@ -236,7 +236,7 @@ namespace IED
 			auto it = data.find(m_cachedItem->name);
 			if (it != data.end())
 			{
-				a_params.data.copy_cc(GetConfigClass(), it->second.Data());
+				it->second.Data() = a_params.data;
 			}
 		}
 
@@ -318,9 +318,7 @@ namespace IED
 				return false;
 			}
 
-			cachedData = std::make_unique<entrySlotData_t::data_type>(
-				GetConfigClass(),
-				*CreateDefaultSlotConfig(a_slot));
+			cachedData = CreateDefaultSlotConfig(a_slot, GetConfigClass());
 
 			auto& profileData = it->second.Data().get(a_slot);
 

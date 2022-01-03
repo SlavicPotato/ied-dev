@@ -2,8 +2,8 @@
 
 #include "Config.h"
 #include "Data.h"
-#include "NodeMap.h"
 #include "FormCommon.h"
+#include "NodeMap.h"
 
 #include "StringHolder.h"
 
@@ -685,8 +685,6 @@ namespace IED
 				bool playable = (race->data.raceFlags & TESRace::kRace_Playable) ==
 				                TESRace::kRace_Playable;
 
-				
-
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
 					playable,
@@ -913,6 +911,17 @@ namespace IED
 			return r;
 		}
 
-	}  // namespace Data
+		std::unique_ptr<configSlotHolderCopy_t::data_type> CreateDefaultSlotConfig(
+			ObjectSlot a_slot,
+			ConfigClass a_class)
+		{
+			auto r = std::make_unique<configSlotHolderCopy_t::data_type>();
 
-}  // namespace IED
+			FillDefaultBaseConfig(a_slot, r->second);
+
+			return r;
+		}
+
+	}
+
+}

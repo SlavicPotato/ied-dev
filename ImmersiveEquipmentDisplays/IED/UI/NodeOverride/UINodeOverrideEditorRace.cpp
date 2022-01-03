@@ -256,19 +256,6 @@ namespace IED
 			a_params.entry.placementData = GetData(a_handle).placementData;
 		}
 
-		Data::configNodeOverrideHolder_t UINodeOverrideEditorRace::GetConfigStoreData(Game::FormID a_handle)
-		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
-			if (auto it = data.find(a_handle); it != data.end())
-			{
-				return it->second;
-			}
-			else
-			{
-				return {};
-			}
-		}
-
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorRace::GetOrCreateConfigHolder(Game::FormID a_handle) const
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();

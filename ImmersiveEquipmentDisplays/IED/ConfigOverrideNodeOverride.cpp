@@ -209,20 +209,20 @@ namespace IED
 		configNodeOverrideHolder_t::configNodeOverrideHolder_t(
 			const configNodeOverrideHolderCopy_t& a_rhs)
 		{
-			__copy(a_rhs);
+			__init(a_rhs);
 		}
 
 		configNodeOverrideHolder_t::configNodeOverrideHolder_t(
 			configNodeOverrideHolderCopy_t&& a_rhs)
 		{
-			__move(std::move(a_rhs));
+			__init(std::move(a_rhs));
 		}
 
 		configNodeOverrideHolder_t& configNodeOverrideHolder_t::operator=(
 			const configNodeOverrideHolderCopy_t& a_rhs)
 		{
 			clear();
-			__copy(a_rhs);
+			__init(a_rhs);
 
 			return *this;
 		}
@@ -231,12 +231,12 @@ namespace IED
 			configNodeOverrideHolderCopy_t&& a_rhs)
 		{
 			clear();
-			__move(std::move(a_rhs));
+			__init(std::move(a_rhs));
 
 			return *this;
 		}
 
-		void configNodeOverrideHolder_t::__copy(const configNodeOverrideHolderCopy_t& a_rhs)
+		void configNodeOverrideHolder_t::__init(const configNodeOverrideHolderCopy_t& a_rhs)
 		{
 			for (auto& e : a_rhs.data)
 			{
@@ -251,7 +251,7 @@ namespace IED
 			flags = a_rhs.flags;
 		}
 
-		void configNodeOverrideHolder_t::__move(configNodeOverrideHolderCopy_t&& a_rhs)
+		void configNodeOverrideHolder_t::__init(configNodeOverrideHolderCopy_t&& a_rhs)
 		{
 			for (auto& e : a_rhs.data)
 			{
@@ -301,7 +301,7 @@ namespace IED
 		}
 
 		configNodeOverrideHolder_t configNodeOverrideHolderCopy_t::copy_cc(
-			ConfigClass a_class)
+			ConfigClass a_class) const
 		{
 			configNodeOverrideHolder_t result;
 
@@ -328,7 +328,7 @@ namespace IED
 
 		void configNodeOverrideHolderCopy_t::copy_cc(
 			ConfigClass a_class,
-			configNodeOverrideHolder_t& a_dst)
+			configNodeOverrideHolder_t& a_dst) const
 		{
 			a_dst.clear();
 

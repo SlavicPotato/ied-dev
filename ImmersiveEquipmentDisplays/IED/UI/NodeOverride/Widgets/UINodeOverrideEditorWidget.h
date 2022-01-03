@@ -349,8 +349,6 @@ namespace IED
 				T a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
 
-			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(T a_handle) = 0;
-
 			void HandleValueUpdate(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,

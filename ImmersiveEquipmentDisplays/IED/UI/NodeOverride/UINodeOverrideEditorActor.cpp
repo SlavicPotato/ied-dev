@@ -309,23 +309,6 @@ namespace IED
 			a_params.entry.placementData = GetData(a_handle).placementData;
 		}
 
-		Data::configNodeOverrideHolder_t UINodeOverrideEditorActor::GetConfigStoreData(
-			Game::FormID a_handle)
-		{
-			const auto& data = m_controller
-			                       .GetConfigStore()
-			                       .active.transforms.GetActorData();
-
-			if (auto it = data.find(a_handle); it != data.end())
-			{
-				return it->second;
-			}
-			else
-			{
-				return {};
-			}
-		}
-
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorActor::GetOrCreateConfigHolder(
 			Game::FormID a_handle) const
 		{

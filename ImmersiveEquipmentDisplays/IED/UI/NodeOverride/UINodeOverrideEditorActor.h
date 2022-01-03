@@ -87,9 +87,6 @@ namespace IED
 				Game::FormID a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
-			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(
-				Game::FormID a_handle) override;
-
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				Game::FormID) const override;
 

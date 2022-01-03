@@ -305,6 +305,8 @@ namespace IED
 					data[i].reset();
 				}
 			}
+
+			return *this;
 		}
 
 		configSlotHolder_t& configSlotHolder_t::operator=(configSlotHolderCopy_t&& a_rhs)

@@ -506,8 +506,8 @@ namespace IED
 				ar& placementData;
 			}
 
-			void __copy(const configNodeOverrideHolderCopy_t& a_rhs);
-			void __move(configNodeOverrideHolderCopy_t&& a_rhs);
+			void __init(const configNodeOverrideHolderCopy_t& a_rhs);
+			void __init(configNodeOverrideHolderCopy_t&& a_rhs);
 		};
 
 		struct configNodeOverrideHolderCopy_t
@@ -573,11 +573,11 @@ namespace IED
 			}
 
 			configNodeOverrideHolder_t copy_cc(
-				ConfigClass a_class);
+				ConfigClass a_class) const;
 
 			void copy_cc(
 				ConfigClass a_class,
-				configNodeOverrideHolder_t& a_dst);
+				configNodeOverrideHolder_t& a_dst) const;
 		};
 
 		struct configNodeOverrideHolderClipboardData_t

@@ -223,11 +223,6 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
-		Data::configNodeOverrideHolder_t UINodeOverrideEditorGlobal::GetConfigStoreData(int a_handle)
-		{
-			return GetOrCreateConfigHolder(a_handle);
-		}
-
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(int) const
 		{
 			auto& store = m_controller.GetConfigStore();
