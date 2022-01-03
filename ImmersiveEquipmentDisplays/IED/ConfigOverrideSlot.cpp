@@ -413,12 +413,7 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				if (static_cast<ConfigClass>(i) != a_class)
-				{
-					continue;
-				}
-
-				if (auto& src = data[i])
+				if (auto& src = data[i]; src && src->first == a_class)
 				{
 					result.data[i] = std::make_unique<configSlotHolder_t::data_type>(src->second);
 				}
@@ -435,9 +430,7 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				auto& src = data[i];
-
-				if (static_cast<ConfigClass>(i) == a_class && src)
+				if (auto& src = data[i]; src && src->first == a_class)
 				{
 					a_out.data[i] = std::make_unique<configSlotHolder_t::data_type>(src->second);
 				}
