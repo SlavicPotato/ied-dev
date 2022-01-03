@@ -22,7 +22,7 @@ namespace IED
 
 	Controller::Controller(
 		const std::shared_ptr<const ConfigINI>& a_config) :
-		m_nodeProcessor(*this),
+		NodeProcessorTask(*this),
 		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
@@ -54,7 +54,7 @@ namespace IED
 
 		m_esif.set(EventSinkInstallationFlags::kT0);
 
-		ITaskPool::AddTaskFixed(std::addressof(m_nodeProcessor));
+		ITaskPool::AddTaskFixed(this);
 	}
 
 	bool Controller::SinkEventsT1()
@@ -2117,6 +2117,15 @@ namespace IED
 		return true;
 	}
 
+	static bool run_filters(
+		const processParams_t& a_params,
+		const Data::configBase_t& a_config)
+	{
+		return a_config.actorFilter.test(a_params.actor->formID) &&
+		       a_config.npcFilter.test(a_params.npc->formID) &&
+		       a_config.raceFilter.test(a_params.race->formID);
+	}
+
 	void Controller::ProcessSlots(processParams_t& a_params)
 	{
 		auto pm = a_params.actor->processManager;
@@ -2202,7 +2211,7 @@ namespace IED
 
 				auto& configEntry = entry.data->get(a_params.configSex);
 
-				if (!configEntry.raceFilter.test(a_params.race->formID))
+				if (!run_filters(a_params, configEntry))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2437,7 +2446,7 @@ namespace IED
 			return false;
 		}
 
-		if (a_config.customFlags.test_any(CustomFlags::kEquipmentMode))
+		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
 			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes))
 			{
@@ -2448,26 +2457,33 @@ namespace IED
 				}
 			}
 
-			if (a_config.customFlags.test(CustomFlags::kIgnoreExcessItemCount) ||
-			    a_itemData.form->formType == TESAmmo::kTypeID)
+			if (a_itemData.form->formType == TESAmmo::kTypeID)
 			{
-				a_hasMinCount = !a_itemData.equipped;
+				a_hasMinCount = !a_itemData.is_equipped();
 			}
 			else
 			{
-				std::int64_t delta = 0;
-
-				if (a_itemData.equipped)
+				if (a_config.customFlags.test(CustomFlags::kDisableIfEquipped) &&
+				    a_itemData.is_equipped())
 				{
-					delta++;
+					a_hasMinCount = false;
 				}
-
-				if (a_itemData.equippedLeft)
+				else
 				{
-					delta++;
-				}
+					std::int64_t delta = 0;
 
-				a_hasMinCount = a_itemData.sharedCount - delta > 0;
+					if (a_itemData.equipped)
+					{
+						delta++;
+					}
+
+					if (a_itemData.equippedLeft)
+					{
+						delta++;
+					}
+
+					a_hasMinCount = a_itemData.sharedCount - delta > 0;
+				}
 			}
 
 			if (!a_hasMinCount &&
@@ -2525,7 +2541,7 @@ namespace IED
 			return false;
 		}
 
-		if (!a_config.raceFilter.test(a_params.race->formID))
+		if (!run_filters(a_params, a_config))
 		{
 			return false;
 		}
@@ -2611,7 +2627,7 @@ namespace IED
 					a_objectEntry,
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
-					a_config.customFlags.test(CustomFlags::kLoadARMA),
+					false,
 					visible))
 			{
 				a_objectEntry.SetNodeVisible(visible);
@@ -2675,7 +2691,7 @@ namespace IED
 					a_objectEntry,
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
-					a_config.customFlags.test(CustomFlags::kLoadARMA),
+					false,
 					visible))
 			{
 				a_objectEntry.SetNodeVisible(visible);
@@ -4360,7 +4376,7 @@ namespace IED
 			}
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4373,7 +4389,7 @@ namespace IED
 			QueueEvaluate(a_evn->reference, ControllerUpdateFlags::kNone);
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4396,7 +4412,7 @@ namespace IED
 			}
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4426,7 +4442,7 @@ namespace IED
 			}
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4439,7 +4455,7 @@ namespace IED
 			QueueEvaluate(a_evn->actor, ControllerUpdateFlags::kAll);
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4474,7 +4490,7 @@ namespace IED
 			}
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	EventResult Controller::ReceiveEvent(
@@ -4486,7 +4502,7 @@ namespace IED
 			QueueReset(a_evn->refr, ControllerUpdateFlags::kPlaySound);
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	auto Controller::ReceiveEvent(
@@ -4515,7 +4531,7 @@ namespace IED
 			}
 		}
 
-		return kEvent_Continue;
+		return EventResult::kContinue;
 	}
 
 	bool Controller::GetNPCRacePair(Actor* a_actor, npcRacePair_t& a_out) noexcept
@@ -4772,11 +4788,6 @@ namespace IED
 			IScopedLock lock(m_lock);
 			callback(UpdateNPCInfo(a_npc));
 		});
-	}
-
-	long long Controller::GetRefSyncTaskTime() const noexcept
-	{
-		return m_nodeProcessor.GetTime();
 	}
 
 	void Controller::StoreActiveHandles()

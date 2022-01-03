@@ -22,14 +22,11 @@ namespace IED
 
 			for (auto& e : data)
 			{
-				Data::configNodeOverrideCondition_t tmp;
-
-				if (!mparser.Parse(e, tmp, version))
+				if (!mparser.Parse(e, a_out.emplace_back(), version))
 				{
-					continue;
+					Error("%s: failed parsing node override condition", __FUNCTION__);
+					return false;
 				}
-
-				a_out.emplace_back(std::move(tmp));
 			}
 
 			return true;
@@ -46,11 +43,7 @@ namespace IED
 
 			for (auto& e : a_data)
 			{
-				Json::Value v;
-
-				mparser.Create(e, v);
-
-				data.append(std::move(v));
+				mparser.Create(e, data.append(Json::Value()));
 			}
 
 			a_out["version"] = CURRENT_VERSION;

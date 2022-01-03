@@ -17,23 +17,20 @@ namespace IED
 	struct objectEntryBase_t;
 
 	class NodeProcessorTask :
-		public TaskDelegateFixed,
-		ILog
+		public TaskDelegateFixed
 	{
-		friend class Controller;
-
 	public:
 		NodeProcessorTask(
 			Controller& a_controller);
 
-		virtual void Run() override;
-
-		[[nodiscard]] inline constexpr auto GetTime() const noexcept
+		[[nodiscard]] inline constexpr auto NodeProcessorGetTime() const noexcept
 		{
 			return m_currentTime;
 		}
 
 	private:
+		virtual void Run() override;
+
 		SKMP_FORCEINLINE void UpdateRef(
 			const ActorObjectHolder& a_record,
 			objectEntryBase_t& a_entry);

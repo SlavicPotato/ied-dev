@@ -99,11 +99,11 @@ namespace IED
 					return true;
 				}
 
-				return test(it->second.Data(), a_form);
+				return it->second.Data().test(a_form);
 			}
 			else
 			{
-				return test(*this, a_form);
+				return configFormFilterBase_t::test(a_form);
 			}
 		}
 

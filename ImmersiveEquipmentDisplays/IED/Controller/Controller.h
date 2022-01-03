@@ -33,6 +33,7 @@ namespace IED
 		public IForm,
 		private IEquipment,
 		public IObjectManager,
+		public NodeProcessorTask,
 		public IUI,
 		public IMaintenance,
 		public IJSONSerialization,
@@ -434,8 +435,6 @@ namespace IED
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);
 		void QueueUpdateNPCInfo(Game::FormID a_npc, std::function<void(bool)> a_callback);
-
-		[[nodiscard]] long long GetRefSyncTaskTime() const noexcept;
 
 		[[nodiscard]] inline constexpr auto GetNodeOverrideEnabled() const noexcept
 		{
@@ -881,8 +880,6 @@ namespace IED
 		} m_config;
 
 		Data::actorStateHolder_t m_storedActorStates;
-
-		NodeProcessorTask m_nodeProcessor;
 
 		//std::vector<stl::fixed_string> m_extraManagedNodes;
 		RandomNumberGenerator<float> m_rng1;

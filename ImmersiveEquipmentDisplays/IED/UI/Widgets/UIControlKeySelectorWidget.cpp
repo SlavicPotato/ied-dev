@@ -9,33 +9,39 @@ namespace IED
 		bool UIControlKeySelectorWidget::DrawKeySelector(
 			const char* a_label,
 			const UIData::controlDescData_t& a_data,
-			std::uint32_t& a_key)
+			std::uint32_t& a_key,
+			bool a_allowNone)
 		{
 			char buf[9];
-			const char* curSelName;
+			const char* preview;
 
 			bool result = false;
 
 			auto it = a_data.find(a_key);
 			if (it != a_data.end())
 			{
-				curSelName = it->second;
+				preview = it->second;
 			}
 			else
 			{
-				stl::snprintf(buf, "%.2X", a_key);
-				curSelName = buf;
+				stl::snprintf(buf, "%X", a_key);
+				preview = buf;
 			}
 
 			ImGui::PushID("key_sel");
 
 			if (ImGui::BeginCombo(
 					a_label,
-					curSelName,
+					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
 				for (auto& e : a_data.getvec())
 				{
+					if (!a_allowNone && !e->first)
+					{
+						continue;
+					}
+
 					ImGui::PushID(e);
 
 					bool selected = e->first == a_key;

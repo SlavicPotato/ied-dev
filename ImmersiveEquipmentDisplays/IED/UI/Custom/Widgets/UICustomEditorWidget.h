@@ -809,9 +809,9 @@ namespace IED
 						DrawTip(UITip::IgnoreRaceEquipTypes);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::IgnoreExcessItemCount, "7"),
+								LS(UICustomEditorString::DisableIfEquipped, "7"),
 								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kIgnoreExcessItemCount)))
+								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
 						{
 							OnBaseConfigChange(
 								a_handle,
@@ -819,7 +819,7 @@ namespace IED
 								PostChangeAction::Evaluate);
 						}
 
-						DrawTip(UITip::IgnoreExcessItemCount);
+						DrawTip(UITip::DisableIfEquipped);
 
 						UICommon::PopDisabled(disabled);
 
@@ -1286,14 +1286,14 @@ namespace IED
 			}
 			DrawTip(UITip::LeftWeapon);
 
-			if (ImGui::CheckboxFlagsT(
+			/*if (ImGui::CheckboxFlagsT(
 					LS(UICustomEditorString::LoadARMA, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kLoadARMA)))
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTip(UITip::LoadARMA);
+			DrawTip(UITip::LoadARMA);*/
 
 			ImGui::Columns();
 		}

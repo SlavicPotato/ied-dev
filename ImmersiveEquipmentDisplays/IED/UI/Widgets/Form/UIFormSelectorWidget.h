@@ -35,10 +35,14 @@ namespace IED
 
 			void Reset();
 
-			void SetOnOpenFunc(on_open_func_t a_func);
+			void SetOnFormBrowserOpenFunc(on_open_func_t a_func);
 			void SetAllowedTypes(std::initializer_list<UIFormBrowser::tab_filter_type::value_type> a_types);
 			void SetAllowedTypes(const std::shared_ptr<const UIFormBrowser::tab_filter_type>& a_types);
-			//void SetAllowedTypes(const UIFormBrowser::tab_filter_type& a_types);
+
+			inline void SetFormBrowserEnabled(bool a_switch) noexcept
+			{
+				m_enableFormBrowser = a_switch;
+			}
 
 			inline constexpr const auto& GetAllowedTypes() const noexcept
 			{

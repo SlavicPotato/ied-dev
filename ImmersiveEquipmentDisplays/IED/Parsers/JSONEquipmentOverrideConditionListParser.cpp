@@ -22,15 +22,11 @@ namespace IED
 
 			for (auto& e : data)
 			{
-				Data::equipmentOverrideCondition_t tmp;
-
-				if (!parser.Parse(e, tmp, version))
+				if (!parser.Parse(e, a_out.emplace_back(), version))
 				{
 					Error("%s: failed parsing equipment override condition", __FUNCTION__);
-					continue;
+					return false;
 				}
-
-				a_out.emplace_back(std::move(tmp));
 			}
 
 			return true;
@@ -47,18 +43,15 @@ namespace IED
 
 			for (auto& e : a_data)
 			{
-				Json::Value tmp;
-
-				parser.Create(e, tmp);
-
-				data.append(std::move(tmp));
+				parser.Create(e, data.append(Json::Value()));
 			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}
 
 		template <>
-		void Parser<Data::equipmentOverrideConditionList_t>::GetDefault(Data::equipmentOverrideConditionList_t& a_out) const
+		void Parser<Data::equipmentOverrideConditionList_t>::GetDefault(
+			Data::equipmentOverrideConditionList_t& a_out) const
 		{}
 	}
 }

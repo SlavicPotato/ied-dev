@@ -56,7 +56,7 @@ namespace IED
 		};
 
 		template <class T>
-		struct bcRaceFormFilterParams_t
+		struct bcFormFilterParams_t
 		{
 			T handle;
 			const void* params;
@@ -113,6 +113,11 @@ namespace IED
 				T a_handle,
 				Data::configBaseValues_t& a_data,
 				Data::configBase_t* a_baseConfig,
+				const void* a_params);
+
+			void DrawFiltersTree(
+				T a_handle,
+				Data::configBase_t& a_data,
 				const void* a_params);
 
 			virtual constexpr bool BaseConfigStoreCC() const = 0;
@@ -177,16 +182,18 @@ namespace IED
 
 			UIConditionParamEditorWidget m_matchParamEditor;
 
-			UIFormSelectorWidget m_raceFormSelector;
-			UIFormFilterWidget<bcRaceFormFilterParams_t<T>> m_raceFilter;
+			UIFormSelectorWidget m_ffFormSelector;
+			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
 
 			UINotificationInterface m_notif;
 
 			struct
 			{
 				std::shared_ptr<const UIFormBrowser::tab_filter_type> form_common;
-				std::shared_ptr<UIFormBrowser::tab_filter_type> furniture;
+				std::shared_ptr<const UIFormBrowser::tab_filter_type> furniture;
 				std::shared_ptr<const UIFormBrowser::tab_filter_type> race;
+				std::shared_ptr<const UIFormBrowser::tab_filter_type> actor;
+				std::shared_ptr<const UIFormBrowser::tab_filter_type> npc;
 			} m_type_filters;
 
 			Controller& m_controller;
@@ -202,8 +209,8 @@ namespace IED
 			m_controller(a_controller),
 			m_matchParamEditor(a_controller),
 			m_notif(a_controller),
-			m_raceFormSelector(a_controller, FormInfoFlags::kNone, true),
-			m_raceFilter(a_controller, m_raceFormSelector)
+			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
+			m_formFilter(a_controller, m_ffFormSelector)
 		{
 			m_type_filters.form_common = std::make_unique<
 				UIFormBrowser::tab_filter_type,
@@ -226,12 +233,19 @@ namespace IED
 				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 				{ TESRace::kTypeID });
 
+			m_type_filters.actor = std::make_unique<
+				UIFormBrowser::tab_filter_type,
+				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+				{ Actor::kTypeID });
+
+			m_type_filters.npc = std::make_unique<
+				UIFormBrowser::tab_filter_type,
+				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+				{ TESNPC::kTypeID });
+
 			m_matchParamEditor.SetExtraInterface(this);
 
-			m_raceFormSelector.SetAllowedTypes(
-				{ TESRace::kTypeID });
-
-			m_raceFilter.SetOnChangeFunc([this](bcRaceFormFilterParams_t<T>& a_params) {
+			m_formFilter.SetOnChangeFunc([this](auto& a_params) {
 				OnBaseConfigChange(
 					a_params.handle,
 					a_params.params,
@@ -263,53 +277,53 @@ namespace IED
 			auto storecc = BaseConfigStoreCC();
 
 			ImGui::PushID("config_equipment_overrides");
+
+			const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_data, a_params);
+
+			const bool empty = a_data.equipmentOverrides.empty();
+
+			UICommon::PushDisabled(empty);
+
+			if (!empty)
 			{
-				const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_data, a_params);
+				if (result == EquipmentOverrideAction::Insert)
+				{
+					ImGui::SetNextItemOpen(true);
+				}
+			}
 
-				const bool empty = a_data.equipmentOverrides.empty();
+			bool r;
 
-				UICommon::PushDisabled(empty);
+			if (storecc)
+			{
+				r = TreeEx("tree", true, "%s", LS(UIBaseConfigString::EquipmentOverrides));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen,
+					"%s",
+					LS(UIBaseConfigString::EquipmentOverrides));
+			}
 
+			if (r)
+			{
 				if (!empty)
 				{
-					if (result == EquipmentOverrideAction::Insert)
-					{
-						ImGui::SetNextItemOpen(true);
-					}
+					ImGui::Spacing();
+
+					DrawEquipmentOverrideList(a_handle, a_data, a_params, a_slotName);
+
+					ImGui::Spacing();
 				}
 
-				bool r;
-
-				if (storecc)
-				{
-					r = TreeEx("tree", true, "%s", LS(UIBaseConfigString::EquipmentOverrides));
-				}
-				else
-				{
-					r = ImGui::TreeNodeEx(
-						"tree",
-						ImGuiTreeNodeFlags_SpanAvailWidth |
-							ImGuiTreeNodeFlags_DefaultOpen,
-						"%s",
-						LS(UIBaseConfigString::EquipmentOverrides));
-				}
-
-				if (r)
-				{
-					if (!empty)
-					{
-						ImGui::Spacing();
-
-						DrawEquipmentOverrideList(a_handle, a_data, a_params, a_slotName);
-
-						ImGui::Spacing();
-					}
-
-					ImGui::TreePop();
-				}
-
-				UICommon::PopDisabled(empty);
+				ImGui::TreePop();
 			}
+
+			UICommon::PopDisabled(empty);
+
 			ImGui::PopID();
 
 			const bool disabled = a_data.flags.test(Data::FlagsBase::kDisabled) &&
@@ -317,23 +331,80 @@ namespace IED
 
 			UICommon::PushDisabled(disabled);
 
-			ImGui::PushID("config_race_filter");
-			{
-				bcRaceFormFilterParams_t<T> ffparams{
-					a_handle,
-					a_params
-				};
-
-				m_raceFilter.DrawFormFiltersTree(
-					LS(UIWidgetCommonStrings::RaceFilters),
-					ffparams,
-					a_data.raceFilter);
-			}
-			ImGui::PopID();
+			DrawFiltersTree(a_handle, a_data, a_params);
 
 			UICommon::PopDisabled(disabled);
 
 			ImGui::PopID();
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawFiltersTree(
+			T a_handle,
+			Data::configBase_t& a_data,
+			const void* a_params)
+		{
+			/*if (ImGui::TreeNodeEx(
+					"cnf_filters",
+					ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Filter)))
+			{*/
+
+			ImGui::PushID("cnf_filters");
+
+			bcFormFilterParams_t<T> ffparams{
+				a_handle,
+				a_params
+			};
+
+			ImGui::Spacing();
+
+			ImGui::PushID("1");
+
+			m_formFilter.DrawFormFiltersTree(
+				LS(UIWidgetCommonStrings::ActorFilters),
+				ffparams,
+				a_data.actorFilter,
+				[&] {
+					m_ffFormSelector.SetAllowedTypes(m_type_filters.actor);
+					m_ffFormSelector.SetFormBrowserEnabled(false);
+				});
+
+			ImGui::PopID();
+
+			ImGui::PushID("2");
+
+			m_formFilter.DrawFormFiltersTree(
+				LS(UIWidgetCommonStrings::NPCFilters),
+				ffparams,
+				a_data.npcFilter,
+				[&] {
+					m_ffFormSelector.SetAllowedTypes(m_type_filters.npc);
+					m_ffFormSelector.SetFormBrowserEnabled(true);
+				});
+
+			ImGui::PopID();
+
+			ImGui::PushID("3");
+
+			m_formFilter.DrawFormFiltersTree(
+				LS(UIWidgetCommonStrings::RaceFilters),
+				ffparams,
+				a_data.raceFilter,
+				[&] {
+					m_ffFormSelector.SetAllowedTypes(m_type_filters.race);
+					m_ffFormSelector.SetFormBrowserEnabled(true);
+				});
+
+			ImGui::PopID();
+
+			ImGui::Spacing();
+
+			ImGui::PopID();
+
+			/*ImGui::TreePop();
+			}*/
 		}
 
 		template <class T>
@@ -550,7 +621,7 @@ namespace IED
 					}
 
 					DrawTip(UITip::Load1pWeaponModel);
-					
+
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::KeepTorchFlame, "A"),
 							stl::underlying(std::addressof(a_data.flags.value)),

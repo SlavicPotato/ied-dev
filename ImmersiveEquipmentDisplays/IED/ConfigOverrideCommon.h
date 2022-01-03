@@ -97,7 +97,7 @@ namespace IED
 			}
 
 			template <class T, class form_type = stl::strip_type<T>>
-			inline form_type* get_form_as() const noexcept
+			inline form_type* get_form() const noexcept
 			{
 				if (auto form = get_form())
 				{
@@ -377,6 +377,18 @@ namespace IED
 			configFormSet_t allow;
 			configFormSet_t deny;
 
+			inline bool test(
+				Game::FormID a_form) const
+			{
+				if (allow.contains(a_form))
+				{
+					return true;
+				}
+
+				return !flags.test(FormFilterBaseFlags::kDenyAll) &&
+				       !deny.contains(a_form);
+			}
+
 		private:
 			template <class Archive>
 			void serialize(Archive& ar, const unsigned int version)
@@ -416,26 +428,6 @@ namespace IED
 			configFormFilterProfile_t profile;
 
 			bool test(Game::FormID a_form) const;
-
-			inline bool test(
-				const configFormFilterBase_t& a_data,
-				Game::FormID a_form) const
-			{
-				if (a_data.allow.contains(a_form))
-				{
-					return true;
-				}
-
-				if (a_data.flags.test(FormFilterBaseFlags::kDenyAll) ||
-				    a_data.deny.contains(a_form))
-				{
-					return false;
-				}
-				else
-				{
-					return true;
-				}
-			}
 
 		private:
 			template <class Archive>

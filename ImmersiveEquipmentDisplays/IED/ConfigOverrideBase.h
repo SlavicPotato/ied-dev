@@ -36,6 +36,8 @@ namespace IED
 
 			equipmentOverrideList_t equipmentOverrides;
 			configFormFilter_t raceFilter;
+			configFormFilter_t actorFilter;
+			configFormFilter_t npcFilter;
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
@@ -52,74 +54,74 @@ namespace IED
 				CommonParams& a_params) const;
 
 		private:
-			SKMP_FORCEINLINE static constexpr bool match_equipped_type(
+			static constexpr bool match_equipped_type(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
-			SKMP_FORCEINLINE static bool match_equipped_form(
+			static bool match_equipped_form(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams& a_params);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				CommonParams& a_params,
 				bool a_default);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_cdata,
 				const slot_container_type& a_data,
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams& a_params);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_cdata,
 				const slot_container_type& a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				CommonParams& a_params,
 				bool a_default);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match,
 				const formSlotPair_t& a_checkForm,
 				CommonParams& a_params);
 
-			SKMP_FORCEINLINE static constexpr bool match(
+			static constexpr bool match(
 				const collectorData_t& a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t& a_checkForm,
 				CommonParams& a_params,
 				bool a_default);
 
-			SKMP_FORCEINLINE static bool has_keyword(
+			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
 				const collectorData_t& a_data);
 
-			SKMP_FORCEINLINE static bool has_keyword(
+			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
 				const slot_container_type& a_data);
 
-			SKMP_FORCEINLINE static bool has_keyword(
+			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
 				TESForm* a_form);
 
-			SKMP_FORCEINLINE static bool has_keyword(
+			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
 				ObjectSlotExtra a_type,
 				const collectorData_t& a_data);
 
-			SKMP_FORCEINLINE static bool has_keyword(
+			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
 				ObjectSlot a_type,
 				const slot_container_type& a_data);
 
-			SKMP_FORCEINLINE static TESForm* match_slot_form(
+			static TESForm* match_slot_form(
 				const slot_container_type& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
@@ -134,6 +136,8 @@ namespace IED
 				ar& static_cast<configBaseValues_t&>(*this);
 				ar& equipmentOverrides;
 				ar& raceFilter;
+				ar& actorFilter;
+				ar& npcFilter;
 			}
 		};
 

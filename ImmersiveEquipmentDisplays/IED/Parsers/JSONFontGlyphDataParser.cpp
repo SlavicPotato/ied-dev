@@ -12,9 +12,7 @@ namespace IED
 			const Json::Value& a_in,
 			fontGlyphData_t& a_out) const
 		{
-			auto& imgr = a_in["glyph_presets"];
-
-			if (!imgr.empty())
+			if (auto& gp = a_in["glyph_presets"])
 			{
 				stl::iunordered_map<std::string, GlyphPresetFlags> m{
 					{ "default", GlyphPresetFlags::kDefault },
@@ -29,10 +27,10 @@ namespace IED
 					{ "greek", GlyphPresetFlags::kGreek },
 					{ "arabic", GlyphPresetFlags::kArabic },
 					{ "arrows", GlyphPresetFlags::kArrows },
-					{ "common", GlyphPresetFlags::kCommon },
+					{ "common", GlyphPresetFlags::kCommon }
 				};
 
-				for (auto& e : imgr)
+				for (auto& e : gp)
 				{
 					auto s = e.asString();
 
@@ -40,7 +38,7 @@ namespace IED
 					if (it == m.end())
 					{
 						Error("%s: unknown glyph preset: %s", __FUNCTION__, s.c_str());
-						return false;
+						continue;
 					}
 
 					a_out.glyph_preset_flags.set(it->second);

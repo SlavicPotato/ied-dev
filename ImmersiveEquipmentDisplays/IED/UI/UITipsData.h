@@ -34,7 +34,7 @@ namespace IED
 			CustomChance = 1023,
 			CustomEquipmentMode = 1024,
 			IgnoreRaceEquipTypes = 1025,
-			IgnoreExcessItemCount = 1026,
+			DisableIfEquipped = 1026,
 			ModelCache = 1027,
 			CloseOnESC = 1028,
 			EnableRestrictions = 1029,

@@ -399,7 +399,7 @@ namespace IED
 					return false;
 				}
 
-				auto keyword = a_data.keyword.get_form_as<BGSKeyword>();
+				auto keyword = a_data.keyword.get_form<BGSKeyword>();
 				if (!keyword)
 				{
 					return false;

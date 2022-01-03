@@ -75,12 +75,10 @@ namespace IED
 
 			for (auto& e : a_data)
 			{
-				auto v = Json::Value();
+				auto &v = data.append(Json::Value());
 
 				pform.Create(e.first, v["form"]);
 				pholder.Create(e.second, v["data"]);
-
-				data.append(std::move(v));
 			}
 
 			a_out["version"] = a_version;

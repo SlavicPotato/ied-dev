@@ -237,20 +237,22 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
+				auto& dst = data[i];
+
 				if (auto& src = a_rhs.data[i])
 				{
-					if (auto& dst = data[i])
+					if (dst)
 					{
 						*dst = *src;
 					}
 					else
 					{
-						data[i] = std::make_unique<data_type>(*src);
+						dst = std::make_unique<data_type>(*src);
 					}
 				}
 				else
 				{
-					data[i].reset();
+					dst.reset();
 				}
 			}
 
@@ -289,20 +291,22 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
+				auto& dst = data[i];
+
 				if (auto& src = a_rhs.data[i])
 				{
-					if (auto& dst = data[i])
+					if (dst)
 					{
 						*dst = src->second;
 					}
 					else
 					{
-						data[i] = std::make_unique<data_type>(src->second);
+						dst = std::make_unique<data_type>(src->second);
 					}
 				}
 				else
 				{
-					data[i].reset();
+					dst.reset();
 				}
 			}
 
@@ -315,9 +319,11 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
+				auto& dst = data[i];
+
 				if (auto& src = a_rhs.data[i])
 				{
-					if (auto& dst = data[i])
+					if (dst)
 					{
 						*dst = std::move(src->second);
 					}
@@ -328,7 +334,7 @@ namespace IED
 				}
 				else
 				{
-					data[i].reset();
+					dst.reset();
 				}
 			}
 
@@ -354,20 +360,22 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
+				auto& dst = data[i];
+
 				if (auto& src = a_rhs.data[i])
 				{
-					if (auto& dst = data[i])
+					if (dst)
 					{
 						*dst = *src;
 					}
 					else
 					{
-						data[i] = std::make_unique<data_type>(*src);
+						dst = std::make_unique<data_type>(*src);
 					}
 				}
 				else
 				{
-					data[i].reset();
+					dst.reset();
 				}
 			}
 

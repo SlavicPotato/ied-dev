@@ -139,7 +139,7 @@ namespace IED
 				}
 			}
 
-			return kEvent_Continue;
+			return EventResult::kContinue;
 		}
 
 		template <bool _IsAE, class T>

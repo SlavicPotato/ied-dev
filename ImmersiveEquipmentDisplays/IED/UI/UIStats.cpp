@@ -49,7 +49,7 @@ namespace IED
 
 				ImGui::NextColumn();
 
-				ImGui::Text("%lld \xC2\xB5s", m_controller.GetRefSyncTaskTime());
+				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)

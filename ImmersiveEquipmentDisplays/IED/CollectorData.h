@@ -15,7 +15,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(EquippedTypeFlags);
 
-		struct collectorData_t 
+		struct collectorData_t
 		{
 			inline collectorData_t(
 				Actor* a_actor,
@@ -46,6 +46,11 @@ namespace IED
 					form{ a_form },
 					type{ a_type }
 				{
+				}
+
+				inline constexpr bool is_equipped() const noexcept
+				{
+					return equipped || equippedLeft;
 				}
 
 				TESForm* form;

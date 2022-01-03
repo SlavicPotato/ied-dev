@@ -11,20 +11,13 @@ namespace IED
 			kNone = 0,
 
 			kIsInInventory = 1u << 0,
-			kConsumeItem = 1u << 1,
-			kUseSharedCount = 1u << 2,
-			kIgnorePlayer = 1u << 3,
-			kDeltaEquipped = 1u << 4,
-			kLeftWeapon = 1u << 5,
-			kAlwaysUnload = 1u << 6,
-			kUseChance = 1u << 7,
-
-			kEquipmentMode = kConsumeItem | kUseSharedCount | kDeltaEquipped,
-
-			kIgnoreRaceEquipTypes = 1u << 8,
-			kIgnoreExcessItemCount = 1u << 9,
-
-			kLoadARMA = 1u << 10,
+			kEquipmentMode = 1u << 1,
+			kIgnorePlayer = 1u << 2,
+			kLeftWeapon = 1u << 3,
+			kAlwaysUnload = 1u << 4,
+			kUseChance = 1u << 5,
+			kIgnoreRaceEquipTypes = 1u << 6,
+			kDisableIfEquipped = 1u << 7
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);

@@ -45,6 +45,13 @@ namespace IED
 				T& a_params,
 				Data::configFormFilter_t& a_data);
 
+			template <class Tfo>
+			void DrawFormFiltersTree(
+				const char* a_label,
+				T& a_params,
+				Data::configFormFilter_t& a_data,
+				Tfo a_func);
+
 			void DrawFormFilters(
 				T& a_params,
 				Data::configFormFilter_t& a_data);
@@ -98,6 +105,17 @@ namespace IED
 			T& a_params,
 			Data::configFormFilter_t& a_data)
 		{
+			DrawFormFiltersTree(a_label, a_params, a_data, [] {});
+		}
+
+		template <class T>
+		template <class Tfo>
+		void UIFormFilterWidget<T>::DrawFormFiltersTree(
+			const char* a_label,
+			T& a_params,
+			Data::configFormFilter_t& a_data,
+			Tfo a_func)
+		{
 			if (DrawFormFiltersHeaderTreeContextMenu(
 					a_params,
 					a_data) == FormFilterAction::Paste)
@@ -113,6 +131,7 @@ namespace IED
 			{
 				ImGui::Spacing();
 
+				a_func();
 				DrawFormFilters(a_params, a_data);
 
 				ImGui::Spacing();

@@ -28,6 +28,8 @@ namespace IED
 
 			ImGui::SameLine();
 
+			ImGui::PushID("slot_global");
+
 			result |= ImGui::CheckboxFlagsT(
 				"Player##slot",
 				stl::underlying(std::addressof(a_flags.value)),
@@ -39,6 +41,8 @@ namespace IED
 				"NPC##slot",
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kSlotGlobalNPC));
+
+			ImGui::PopID();
 
 			result |= ImGui::CheckboxFlagsT(
 				"Actor##slot",
@@ -115,6 +119,8 @@ namespace IED
 
 			ImGui::SameLine();
 
+			ImGui::PushID("node_global");
+
 			result |= ImGui::CheckboxFlagsT(
 				"Player##node",
 				stl::underlying(std::addressof(a_flags.value)),
@@ -126,6 +132,8 @@ namespace IED
 				"NPC##node",
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideGlobalNPC));
+
+			ImGui::PopID();
 
 			result |= ImGui::CheckboxFlagsT(
 				"Actor##node",

@@ -221,7 +221,7 @@ namespace IED
 			m_state->m_lastInputBuffer[0] = 0;
 		}
 
-		void UIFormSelectorWidget::SetOnOpenFunc(
+		void UIFormSelectorWidget::SetOnFormBrowserOpenFunc(
 			on_open_func_t a_func)
 		{
 			m_onOpenFunc = a_func;

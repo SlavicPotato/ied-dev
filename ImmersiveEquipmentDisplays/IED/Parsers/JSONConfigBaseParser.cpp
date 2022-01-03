@@ -38,6 +38,16 @@ namespace IED
 			{
 				return false;
 			}
+			
+			if (!pfset.Parse(a_in["afilter"], a_out.actorFilter))
+			{
+				return false;
+			}
+			
+			if (!pfset.Parse(a_in["nfilter"], a_out.npcFilter))
+			{
+				return false;
+			}
 
 			return true;
 		}
@@ -58,6 +68,8 @@ namespace IED
 			}
 
 			pfset.Create(a_data.raceFilter, a_out["rfilter"]);
+			pfset.Create(a_data.actorFilter, a_out["afilter"]);
+			pfset.Create(a_data.npcFilter, a_out["nfilter"]);
 		}
 
 		template <>

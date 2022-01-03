@@ -139,7 +139,8 @@ namespace IED
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
-							data.playerBlockKeys.comboKey)))
+							data.playerBlockKeys.comboKey,
+							true)))
 					{
 						m_controller.GetInputHandlers().playerBlock.SetComboKey(
 							data.playerBlockKeys.comboKey);
@@ -148,7 +149,8 @@ namespace IED
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
-							data.playerBlockKeys.key)))
+							data.playerBlockKeys.key,
+							true)))
 					{
 						m_controller.GetInputHandlers().playerBlock.SetKey(
 							data.playerBlockKeys.key);
@@ -281,7 +283,8 @@ namespace IED
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
-							ui.toggleKeys.comboKey)))
+							ui.toggleKeys.comboKey,
+							true)))
 					{
 						m_controller.GetInputHandlers().uiToggle.SetComboKey(
 							ui.toggleKeys.comboKey);
@@ -310,7 +313,7 @@ namespace IED
 		{
 			if (CollapsingHeader(
 					"tree_snd",
-					true,
+					false,
 					"%s",
 					LS(CommonStrings::Sound)))
 			{
@@ -393,7 +396,7 @@ namespace IED
 				auto& config = m_controller.GetConfigStore().settings;
 
 				char buf[std::numeric_limits<std::uint32_t>::digits10 + 3];
-				const char* desc;
+				const char* preview;
 
 				auto current = m_controller.GetODBLevel();
 
@@ -406,18 +409,18 @@ namespace IED
 
 				if (it != s_odbmvals.end())
 				{
-					desc = LS(it->second);
+					preview = LS(it->second);
 				}
 				else
 				{
 					stl::snprintf(buf, "%u", stl::underlying(current));
-					desc = buf;
+					preview = buf;
 				}
 
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				if (ImGui::BeginCombo(LS(CommonStrings::Caching, "1"), desc))
+				if (ImGui::BeginCombo(LS(CommonStrings::Caching, "1"), preview))
 				{
 					for (auto& e : s_odbmvals)
 					{

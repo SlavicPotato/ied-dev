@@ -22,14 +22,10 @@ namespace IED
 
 			for (auto& e : data)
 			{
-				Data::configNodeOverrideOffset_t tmp;
-
-				if (!parser.Parse(e, tmp, version))
+				if (!parser.Parse(e, a_out.emplace_back(), version))
 				{
-					continue;
+					return false;
 				}
-
-				a_out.emplace_back(std::move(tmp));
 			}
 
 			return true;
@@ -46,11 +42,7 @@ namespace IED
 
 			for (auto& e : a_data)
 			{
-				Json::Value v;
-
-				parser.Create(e, v);
-
-				data.append(std::move(v));
+				parser.Create(e, data.append(Json::Value()));
 			}
 
 			a_out["version"] = CURRENT_VERSION;

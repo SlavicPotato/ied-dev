@@ -73,7 +73,9 @@ namespace IED
 			FormFilters = 2062,
 			GearPositioning = 2063,
 			PlayableOnly = 2064,
-			ShowEditorIDs = 2065
+			ShowEditorIDs = 2065,
+			ActorFilters = 2066,
+			NPCFilters = 2067,
 		};
 	}
 }

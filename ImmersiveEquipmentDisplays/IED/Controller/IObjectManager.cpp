@@ -102,26 +102,30 @@ namespace IED
 			m_playerState = Data::actorStateEntry_t(a_data);
 		}
 
-		for (auto& ce : a_data.m_entriesSlot)
+		for (auto& e : a_data.m_entriesSlot)
 		{
-			RemoveObject(a_actor, a_handle, ce, a_data, a_flags);
+			RemoveObject(a_actor, a_handle, e, a_data, a_flags);
 		}
 
-		for (auto& ce : a_data.m_entriesCustom)
+		for (auto& e : a_data.m_entriesCustom)
 		{
-			for (auto& cf : ce)
+			for (auto& f : e)
 			{
-				for (auto& cg : cf.second)
+				for (auto& g : f.second)
 				{
-					RemoveObject(a_actor, a_handle, cg.second, a_data, a_flags);
+					RemoveObject(a_actor, a_handle, g.second, a_data, a_flags);
 				}
 			}
+
+			e.clear();
 		}
 
-		for (auto& ce : a_data.m_cmeNodes)
+		for (auto& e : a_data.m_cmeNodes)
 		{
-			ResetNodeOverride(ce.second);
+			ResetNodeOverride(e.second);
 		}
+
+		a_data.m_cmeNodes.clear();
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -142,22 +146,22 @@ namespace IED
 		ActorObjectHolder& a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		for (auto& ce : a_objects.m_entriesSlot)
+		for (auto& e : a_objects.m_entriesSlot)
 		{
-			RemoveObject(a_actor, a_handle, ce, a_objects, a_flags);
+			RemoveObject(a_actor, a_handle, e, a_objects, a_flags);
 		}
 
-		for (auto& ce : a_objects.m_entriesCustom)
+		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& cf : ce)
+			for (auto& f : e)
 			{
-				for (auto& cg : cf.second)
+				for (auto& g : f.second)
 				{
-					RemoveObject(a_actor, a_handle, cg.second, a_objects, a_flags);
+					RemoveObject(a_actor, a_handle, g.second, a_objects, a_flags);
 				}
 			}
 
-			ce.clear();
+			e.clear();
 		}
 	}
 
@@ -184,36 +188,40 @@ namespace IED
 		ActorObjectHolder& a_objects,
 		Game::ObjectRefHandle a_rhandle)
 	{
-		for (auto& ce : a_objects.m_entriesSlot)
+		for (auto& e : a_objects.m_entriesSlot)
 		{
 			RemoveObject(
 				nullptr,
 				a_rhandle,
-				ce,
+				e,
 				a_objects,
 				ControllerUpdateFlags::kNone);
 		}
 
-		for (auto& ce : a_objects.m_entriesCustom)
+		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& cf : ce)
+			for (auto& f : e)
 			{
-				for (auto& cg : cf.second)
+				for (auto& g : f.second)
 				{
 					RemoveObject(
 						nullptr,
 						a_rhandle,
-						cg.second,
+						g.second,
 						a_objects,
 						ControllerUpdateFlags::kNone);
 				}
 			}
+
+			e.clear();
 		}
 
 		for (auto& ce : a_objects.m_cmeNodes)
 		{
 			ResetNodeOverride(ce.second);
 		}
+
+		a_objects.m_cmeNodes.clear();
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
@@ -222,14 +230,14 @@ namespace IED
 	{
 		bool result = false;
 
-		for (auto& ce : a_objects.m_entriesSlot)
+		for (auto& e : a_objects.m_entriesSlot)
 		{
-			if (ce.state && !ce.state->nodes.obj->IsVisible())
+			if (e.state && !e.state->nodes.obj->IsVisible())
 			{
 				RemoveObject(
 					nullptr,
 					a_handle,
-					ce,
+					e,
 					a_objects,
 					ControllerUpdateFlags::kNone);
 
@@ -237,18 +245,18 @@ namespace IED
 			}
 		}
 
-		for (auto& ce : a_objects.m_entriesCustom)
+		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& cf : ce)
+			for (auto& f : e)
 			{
-				for (auto& cg : cf.second)
+				for (auto& g : f.second)
 				{
-					if (cg.second.state && !cg.second.state->nodes.obj->IsVisible())
+					if (g.second.state && !g.second.state->nodes.obj->IsVisible())
 					{
 						RemoveObject(
 							nullptr,
 							a_handle,
-							cg.second,
+							g.second,
 							a_objects,
 							ControllerUpdateFlags::kNone);
 
@@ -256,6 +264,8 @@ namespace IED
 					}
 				}
 			}
+
+			e.clear();
 		}
 
 		return result;
@@ -309,18 +319,15 @@ namespace IED
 				continue;
 			}
 
-			char buffer[NODE_NAME_BUFFER_SIZE];
-
 			if (!a_out)
 			{
-				stl::snprintf(
-					buffer,
-					"IED ARMO R [%.8X]",
-					a_form->formID.get());
-
-				a_out = CreateNode(buffer);
-				a_out->m_localTransform = {};
+				a_out = NiNode::Create(1);
+				a_out->m_flags = NiAVObject::kFlag_SelectiveUpdate |
+				                 NiAVObject::kFlag_SelectiveUpdateTransforms |
+				                 NiAVObject::kFlag_kSelectiveUpdateController;
 			}
+
+			char buffer[NODE_NAME_BUFFER_SIZE];
 
 			stl::snprintf(
 				buffer,
@@ -435,8 +442,6 @@ namespace IED
 				a_objectEntry.state->dbEntries.emplace_back(std::move(entry));
 			}
 
-			object->m_localTransform = {};
-
 			if (modelParams.swap)
 			{
 				EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
@@ -460,6 +465,8 @@ namespace IED
 				return false;
 			}
 		}
+
+		object->m_localTransform = {};
 
 		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
 		{
@@ -507,7 +514,7 @@ namespace IED
 			a_params.actor,
 			a_params.root,
 			itemNodeRoot,
-			object,			
+			object,
 			modelParams.type,
 			modelParams.isShield,
 			a_leftWeapon,
