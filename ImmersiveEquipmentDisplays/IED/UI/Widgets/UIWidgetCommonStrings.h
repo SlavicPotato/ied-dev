@@ -10,7 +10,7 @@ namespace IED
 		{
 			RaceFilters = 2000,
 			ClearKeyword = 2001,
-			ConfigInUseColon = 2002,
+			ConfigInUse = 2002,
 			AlwaysUnload = 2003,
 			CheckCannotWear = 2004,
 			ClearAll = 2005,
@@ -73,7 +73,7 @@ namespace IED
 			FormFilters = 2062,
 			GearPositioning = 2063,
 			PlayableOnly = 2064,
-			ShowEditorIDs = 2065,
+			ShowEditorIDs = 2065
 		};
 	}
 }

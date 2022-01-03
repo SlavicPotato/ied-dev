@@ -371,9 +371,25 @@ namespace IED
 
 		//
 
-		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideGlobal))
+		for (std::size_t i = 0; i < std::size(a_data.transforms.GetGlobalData()); i++)
 		{
-			result.transforms.GetGlobalData()[0] = a_data.transforms.GetGlobalData()[0];
+			auto type = static_cast<GlobalConfigType>(i);
+			if (type == GlobalConfigType::Player)
+			{
+				if (!a_flags.test(ConfigStoreSerializationFlags::kSlotGlobalPlayer))
+				{
+					continue;
+				}
+			}
+			else if (type == GlobalConfigType::NPC)
+			{
+				if (!a_flags.test(ConfigStoreSerializationFlags::kSlotGlobalNPC))
+				{
+					continue;
+				}
+			}
+
+			result.transforms.GetGlobalData()[i] = a_data.transforms.GetGlobalData()[i];
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideActor))

@@ -43,7 +43,7 @@ namespace IED
 			virtual void OnEditorPanelSettingsChange() override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsSlot_t<int>& a_data,
+				const profileSelectorParamsSlot_t<int>& a_data,
 				const SlotProfile& a_profile) override;
 
 			virtual void OnBaseConfigChange(
@@ -58,10 +58,11 @@ namespace IED
 
 			virtual void OnSingleSlotClear(
 				int a_handle,
-				const void* a_params) override;
+				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int a_handle) override;
+				int a_handle,
+				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnSexChanged(
 				Data::ConfigSex a_newSex) override;
@@ -74,7 +75,7 @@ namespace IED
 
 			void UpdateData();
 
-			Data::configStoreSlot_t::result_copy m_data;
+			entrySlotData_t m_data;
 
 			Controller& m_controller;
 		};

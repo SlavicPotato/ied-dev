@@ -38,15 +38,12 @@ namespace IED
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
-				profileSelectorParamsNodeOverride_t<int>& a_data,
+				const profileSelectorParamsNodeOverride_t<int>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsNodeOverride_t<int>& a_data,
+				const profileSelectorParamsNodeOverride_t<int>& a_data,
 				const NodeOverrideProfile& a_profile) override;
-
-			virtual NodeOverrideProfile::base_type GetData(
-				const profileSelectorParamsNodeOverride_t<int>& a_params) override;
 
 			virtual void OnUpdate(
 				int a_handle,
@@ -56,9 +53,9 @@ namespace IED
 				int a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
-			/*virtual void OnUpdate(
+			virtual void OnUpdate(
 				int a_handle,
-				const NodeOverrideUpdateParams& a_params) override;*/
+				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
 				int a_handle,
@@ -68,13 +65,16 @@ namespace IED
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
-			virtual void OnClearAll(
+			virtual void OnClearAllTransforms(
 				int a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
 				int a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
+
+			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(
+				int a_handle) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				int) const override;

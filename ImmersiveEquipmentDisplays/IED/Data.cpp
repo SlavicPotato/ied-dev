@@ -876,8 +876,10 @@ namespace IED
 				return "NPC";
 			case ConfigClass::Race:
 				return "Race";
+			case ConfigClass::Global:
+				return "Global";
 			default:
-				return "Default";
+				return nullptr;
 			}
 		}
 

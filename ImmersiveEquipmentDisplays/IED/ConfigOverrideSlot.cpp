@@ -22,9 +22,9 @@ namespace IED
 		}
 
 		auto configStoreSlot_t::GetGlobalCopy(GlobalConfigType a_type) const
-			-> result_copy
+			-> configSlotHolderCopy_t
 		{
-			result_copy result;
+			configSlotHolderCopy_t result;
 
 			FillResultCopy(
 				ConfigClass::Global,
@@ -58,9 +58,9 @@ namespace IED
 		auto configStoreSlot_t::GetRaceCopy(
 			Game::FormID a_race,
 			GlobalConfigType a_globtype) const
-			-> result_copy
+			-> configSlotHolderCopy_t
 		{
-			result_copy result;
+			configSlotHolderCopy_t result;
 
 			auto& racemap = GetRaceData();
 			if (auto it = racemap.find(a_race); it != racemap.end())
@@ -111,9 +111,9 @@ namespace IED
 		auto configStoreSlot_t::GetNPCCopy(
 			Game::FormID a_npc,
 			Game::FormID a_race) const
-			-> result_copy
+			-> configSlotHolderCopy_t
 		{
-			result_copy result;
+			configSlotHolderCopy_t result;
 
 			auto& npcmap = GetNPCData();
 			if (auto it = npcmap.find(a_npc); it != npcmap.end())
@@ -183,9 +183,9 @@ namespace IED
 			Game::FormID a_actor,
 			Game::FormID a_npc,
 			Game::FormID a_race) const
-			-> result_copy
+			-> configSlotHolderCopy_t
 		{
-			result_copy result;
+			configSlotHolderCopy_t result;
 
 			auto& actormap = GetActorData();
 			if (auto it = actormap.find(a_actor); it != actormap.end())
@@ -216,6 +216,234 @@ namespace IED
 				result);
 
 			return result;
+		}
+
+		configSlotHolder_t::configSlotHolder_t(const configSlotHolder_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(*src);
+				}
+			}
+		}
+
+		configSlotHolder_t& configSlotHolder_t::operator=(const configSlotHolder_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					if (auto& dst = data[i])
+					{
+						*dst = *src;
+					}
+					else
+					{
+						data[i] = std::make_unique<data_type>(*src);
+					}
+				}
+				else
+				{
+					data[i].reset();
+				}
+			}
+
+			return *this;
+		}
+
+		configSlotHolder_t::configSlotHolder_t(const configSlotHolderCopy_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(src->second);
+				}
+			}
+		}
+
+		configSlotHolder_t::configSlotHolder_t(configSlotHolderCopy_t&& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(std::move(src->second));
+				}
+			}
+		}
+
+		configSlotHolder_t& configSlotHolder_t::operator=(const configSlotHolderCopy_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					if (auto& dst = data[i])
+					{
+						*dst = src->second;
+					}
+					else
+					{
+						data[i] = std::make_unique<data_type>(src->second);
+					}
+				}
+				else
+				{
+					data[i].reset();
+				}
+			}
+		}
+
+		configSlotHolder_t& configSlotHolder_t::operator=(configSlotHolderCopy_t&& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					if (auto& dst = data[i])
+					{
+						*dst = std::move(src->second);
+					}
+					else
+					{
+						data[i] = std::make_unique<data_type>(std::move(src->second));
+					}
+				}
+				else
+				{
+					data[i].reset();
+				}
+			}
+
+			return *this;
+		}
+
+		configSlotHolderCopy_t::configSlotHolderCopy_t(const configSlotHolderCopy_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(*src);
+				}
+			}
+		}
+
+		configSlotHolderCopy_t& configSlotHolderCopy_t::operator=(const configSlotHolderCopy_t& a_rhs)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					if (auto& dst = data[i])
+					{
+						*dst = *src;
+					}
+					else
+					{
+						data[i] = std::make_unique<data_type>(*src);
+					}
+				}
+				else
+				{
+					data[i].reset();
+				}
+			}
+
+			return *this;
+		}
+
+		configSlotHolderCopy_t::configSlotHolderCopy_t(
+			const configSlotHolder_t& a_rhs,
+			ConfigClass a_initclass)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(a_initclass, *src);
+				}
+			}
+		}
+
+		configSlotHolderCopy_t::configSlotHolderCopy_t(
+			configSlotHolder_t&& a_rhs,
+			ConfigClass a_initclass)
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (auto& src = a_rhs.data[i])
+				{
+					data[i] = std::make_unique<data_type>(a_initclass, std::move(*src));
+				}
+			}
+		}
+
+		configSlotHolder_t configSlotHolderCopy_t::copy_cc(
+			ConfigClass a_class) const
+		{
+			configSlotHolder_t result;
+
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				if (static_cast<ConfigClass>(i) != a_class)
+				{
+					continue;
+				}
+
+				if (auto& src = data[i])
+				{
+					result.data[i] = std::make_unique<configSlotHolder_t::data_type>(src->second);
+				}
+			}
+
+			return result;
+		}
+
+		void configSlotHolderCopy_t::copy_cc(
+			ConfigClass a_class,
+			configSlotHolder_t& a_out) const
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				auto& src = data[i];
+
+				if (static_cast<ConfigClass>(i) == a_class && src)
+				{
+					a_out.data[i] = std::make_unique<configSlotHolder_t::data_type>(src->second);
+				}
+				else
+				{
+					a_out.data[i].reset();
+				}
+			}
 		}
 
 	}

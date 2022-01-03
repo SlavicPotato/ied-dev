@@ -115,7 +115,7 @@ namespace IED
 
 			if (store.settings.data.ui.customEditor.globalSex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
+				
 				store.settings.set(
 					store.settings.data.ui.customEditor.globalSex,
 					a_newSex);
@@ -123,7 +123,7 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::ApplyProfile(
-			profileSelectorParamsCustom_t<int>& a_data,
+			const profileSelectorParamsCustom_t<int>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
@@ -139,7 +139,7 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::MergeProfile(
-			profileSelectorParamsCustom_t<int>& a_data,
+			const profileSelectorParamsCustom_t<int>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& profileData = a_profile.Data();
@@ -204,7 +204,7 @@ namespace IED
 
 			conf = a_params.data;
 
-			ResetFormSelectorWidgets();
+			
 
 			m_controller.QueueResetCustomAll(
 				GetConfigClass(),
@@ -274,7 +274,7 @@ namespace IED
 				m_data = {};
 			}
 
-			ResetFormSelectorWidgets();
+			
 		}
 	}
 }

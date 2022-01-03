@@ -74,8 +74,10 @@ namespace IED
 
 			if (auto it = data.find(a_name); it != data.end())
 			{
-				m_cachedItem.emplace(a_name, it->second.Data());
-				ResetFormSelectorWidgets();
+				m_cachedItem.emplace(
+					a_name,
+					it->second.Data(),
+					Data::ConfigClass::Global);
 			}
 			else
 			{
@@ -125,8 +127,10 @@ namespace IED
 
 			if (m_cachedItem->name == a_name)
 			{
-				m_cachedItem = { a_name, a_profile.Data() };
-				ResetFormSelectorWidgets();
+				m_cachedItem.emplace(
+					a_name,
+					a_profile.Data(),
+					Data::ConfigClass::Global);
 			}
 		}
 
@@ -140,8 +144,9 @@ namespace IED
 
 			if (m_cachedItem->name == a_profile.Name())
 			{
-				m_cachedItem = { a_profile.Name(), a_profile.Data() };
-				ResetFormSelectorWidgets();
+				m_cachedItem->data = entrySlotData_t(
+					a_profile.Data(),
+					Data::ConfigClass::Global);
 			}
 		}
 
@@ -152,7 +157,6 @@ namespace IED
 
 			if (store.settings.data.ui.slotProfileEditor.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.slotProfileEditor.sex,
 					a_newSex);
@@ -194,32 +198,30 @@ namespace IED
 			auto it = data.find(m_cachedItem->name);
 			if (it != data.end())
 			{
-				auto i = stl::underlying(params->slot);
-
 				auto sync = GetEditorPanelSettings().sexSync;
 				auto sex = GetSex();
 
-				auto& src = params->entry.data;
+				auto& src = params->entry.second;
 				auto& dst = it->second.Data().get(params->slot);
 
 				if (sync)
 				{
-					src->get(Data::GetOppositeSex(sex)) = src->get(sex);
+					src.get(Data::GetOppositeSex(sex)) = src.get(sex);
 				}
 
 				if (!dst)
 				{
-					dst = std::make_unique<Data::configSlotHolder_t::data_type>(*src);
+					dst = std::make_unique<Data::configSlotHolder_t::data_type>(src);
 				}
 				else
 				{
 					if (sync)
 					{
-						*dst = *src;
+						*dst = src;
 					}
 					else
 					{
-						dst->get(sex) = src->get(sex);
+						dst->get(sex) = src.get(sex);
 					}
 				}
 			}
@@ -234,41 +236,26 @@ namespace IED
 			auto it = data.find(m_cachedItem->name);
 			if (it != data.end())
 			{
-				Data::configSlotHolder_t tmp;
-
-				using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-				for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-				{
-					auto& src = a_params.data.entries[i].data;
-
-					if (src)
-					{
-						tmp.get(static_cast<Data::ObjectSlot>(i)) =
-							std::make_unique<Data::configSlotHolder_t::data_type>(*src);
-					}
-				}
-
-				it->second.Data() = std::move(tmp);
+				a_params.data.copy_cc(GetConfigClass(), it->second.Data());
 			}
-
-			ResetFormSelectorWidgets();
 		}
 
-		void UIProfileEditorSlot::OnSingleSlotClear(int, const void* a_params)
+		void UIProfileEditorSlot::OnSingleSlotClear(
+			int,
+			const SingleSlotConfigClearParams& a_params)
 		{
-			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
-
 			auto& data = GetProfileManager().Data();
 
 			auto it = data.find(m_cachedItem->name);
 			if (it != data.end())
 			{
-				it->second.Data().get(params->slot).reset();
+				it->second.Data().get(a_params.slot).reset();
 			}
 		}
 
-		void UIProfileEditorSlot::OnFullConfigClear(int a_handle)
+		void UIProfileEditorSlot::OnFullConfigClear(
+			int a_handle,
+			const FullSlotConfigClearParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
 
@@ -318,7 +305,7 @@ namespace IED
 
 			auto& cachedData = m_cachedItem->data.get(a_slot);
 
-			if (cachedData.data)
+			if (cachedData)
 			{
 				return false;
 			}
@@ -331,18 +318,20 @@ namespace IED
 				return false;
 			}
 
-			cachedData.data = CreateDefaultSlotConfig(a_slot);
+			cachedData = std::make_unique<entrySlotData_t::data_type>(
+				GetConfigClass(),
+				*CreateDefaultSlotConfig(a_slot));
 
 			auto& profileData = it->second.Data().get(a_slot);
 
 			if (profileData)
 			{
-				*profileData = *cachedData.data;
+				*profileData = cachedData->second;
 			}
 			else
 			{
 				profileData = std::make_unique<Data::configSlotHolder_t::data_type>(
-					*cachedData.data);
+					cachedData->second);
 			}
 
 			return true;
@@ -354,9 +343,9 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 			{
-				auto& d = m_cachedItem->data.entries[i];
+				auto& d = m_cachedItem->data.data[i];
 
-				if (!d.data)
+				if (!d)
 				{
 					CreateSlot(static_cast<Data::ObjectSlot>(i));
 				}
@@ -371,9 +360,9 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 			{
-				auto& d = m_cachedItem->data.entries[i];
+				auto& d = m_cachedItem->data.data[i];
 
-				if (d.data)
+				if (d)
 				{
 					continue;
 				}

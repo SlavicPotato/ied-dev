@@ -150,7 +150,9 @@ namespace IED
 			auto it = npcInfo.find(a_newHandle->handle);
 			if (it != npcInfo.end())
 			{
-				auto sex = it->second->female ? Data::ConfigSex::Female : Data::ConfigSex::Male;
+				auto sex = it->second->female ?
+                               Data::ConfigSex::Female :
+                               Data::ConfigSex::Male;
 
 				SetSex(sex, false);
 			}
@@ -164,25 +166,9 @@ namespace IED
 			{
 				auto& store = m_controller.GetConfigStore();
 
-				return store.active.transforms.GetNPC(
+				return store.active.transforms.GetNPCCopy(
 					a_handle,
 					it->second->race);
-			}
-			else
-			{
-				return {};
-			}
-		}
-
-		NodeOverrideProfile::base_type UINodeOverrideEditorNPC::GetData(
-			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
-		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data = store.active.transforms.GetNPCData();
-
-			if (auto it = data.find(a_params.handle); it != data.end())
-			{
-				return it->second;
 			}
 			else
 			{
@@ -200,7 +186,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorNPC::ApplyProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
@@ -211,15 +197,10 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorNPC::MergeProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
-
-			for (auto& e : a_profile.Data().data)
-			{
-				conf.data.insert_or_assign(e.first, e.second);
-			}
+			MergeProfileData(a_data, a_profile);
 
 			a_data.data = GetData(a_data.handle);
 
@@ -232,7 +213,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}
@@ -243,21 +224,21 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}
 
-		/*void UINodeOverrideEditorNPC::OnUpdate(
+		void UINodeOverrideEditorNPC::OnUpdate(
 			Game::FormID a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
+			UpdateConfig(a_handle, a_params);
 
-			conf = a_params.data;
+			a_params.data = GetData(a_handle);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
-		}*/
+		}
 
 		void UINodeOverrideEditorNPC::OnClearTransform(
 			Game::FormID a_handle,
@@ -293,7 +274,7 @@ namespace IED
 				a_params.name);
 		}
 
-		void UINodeOverrideEditorNPC::OnClearAll(
+		void UINodeOverrideEditorNPC::OnClearAllTransforms(
 			Game::FormID a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
@@ -304,7 +285,7 @@ namespace IED
 			{
 				it->second.data.clear();
 
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
 
 			a_params.entry.data = GetData(a_handle).data;
@@ -321,10 +302,23 @@ namespace IED
 			{
 				it->second.placementData.clear();
 
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
 
 			a_params.entry.placementData = GetData(a_handle).placementData;
+		}
+
+		Data::configNodeOverrideHolder_t UINodeOverrideEditorNPC::GetConfigStoreData(Game::FormID a_handle)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			if (auto it = data.find(a_handle); it != data.end())
+			{
+				return it->second;
+			}
+			else
+			{
+				return {};
+			}
 		}
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorNPC::GetOrCreateConfigHolder(Game::FormID a_handle) const

@@ -118,21 +118,20 @@ namespace IED
 
 		Data::configSlotHolder_t& UISlotEditorActor::GetOrCreateConfigSlotHolder(Game::FormID a_handle) const
 		{
-			auto& store = m_controller.GetConfigStore().active;
-			auto& data = store.slot.GetActorData();
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.slot.GetActorData();
 
 			return data.try_emplace(a_handle).first->second;
 		}
 
 		void UISlotEditorActor::MergeProfile(
-			profileSelectorParamsSlot_t<Game::FormID>& a_data,
+			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
 
 			a_data.data = GetData(a_data.handle);
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueReset(a_data.handle, ControllerUpdateFlags::kNone);
 		}
@@ -174,31 +173,31 @@ namespace IED
 		{
 			UpdateConfig(a_handle, a_params.data);
 
-			ResetFormSelectorWidgets();
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone);
 		}
 
 		void UISlotEditorActor::OnSingleSlotClear(
 			Game::FormID a_handle,
-			const void* a_params)
+			const SingleSlotConfigClearParams& a_params)
 		{
-			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
-
 			auto& store = m_controller.GetConfigStore().active;
 
-			ResetConfigSlot(a_handle, params->slot, store.slot.GetActorData());
-			QueueListUpdateCurrent();
+			ResetConfigSlot(a_handle, a_params.slot, store.slot.GetActorData());
+			a_params.data = GetData(a_handle);
 
-			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone, params->slot);
+			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone, a_params.slot);
 		}
 
-		void UISlotEditorActor::OnFullConfigClear(Game::FormID a_handle)
+		void UISlotEditorActor::OnFullConfigClear(
+			Game::FormID a_handle,
+			const FullSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
 
 			ResetConfig(a_handle, store.slot.GetActorData());
-			QueueListUpdateCurrent();
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone);
 		}
@@ -224,14 +223,7 @@ namespace IED
 			auto it = actorInfo.find(a_newHandle->handle);
 			if (it != actorInfo.end())
 			{
-				auto sex = it->second.GetSex();
-
-				if (GetSex() != sex)
-				{
-					ResetFormSelectorWidgets();
-				}
-
-				SetSex(sex, false);
+				SetSex(it->second.GetSex(), false);
 			}
 		}
 
@@ -241,7 +233,6 @@ namespace IED
 
 			if (store.settings.data.ui.slotEditor.actorConfig.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.slotEditor.actorConfig.sex,
 					a_newSex);
@@ -277,7 +268,6 @@ namespace IED
 		void UISlotEditorActor::Reset()
 		{
 			ListReset();
-			ResetFormSelectorWidgets();
 		}
 
 		void UISlotEditorActor::QueueUpdateCurrent()
@@ -398,7 +388,7 @@ namespace IED
 		bool UISlotEditorActor::DrawExtraSlotInfo(
 			Game::FormID a_handle,
 			Data::ObjectSlot a_slot,
-			const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
+			const entrySlotData_t::data_type& a_entry,
 			bool a_infoDrawn)
 		{
 			auto& data = m_controller.GetObjects();

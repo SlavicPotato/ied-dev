@@ -72,7 +72,6 @@ namespace IED
 		void UIProfileEditorCustom::OnItemSelected(
 			const stl::fixed_string& a_name)
 		{
-			ResetFormSelectorWidgets();
 		}
 
 		void UIProfileEditorCustom::OnProfileRename(
@@ -90,13 +89,11 @@ namespace IED
 			const stl::fixed_string& a_name,
 			CustomProfile& a_profile)
 		{
-			ResetFormSelectorWidgets();
 		}
 
 		void UIProfileEditorCustom::OnProfileReload(
 			const CustomProfile& a_profile)
 		{
-			ResetFormSelectorWidgets();
 		}
 
 		void UIProfileEditorCustom::OnSexChanged(
@@ -106,7 +103,6 @@ namespace IED
 
 			if (store.settings.data.ui.customProfileEditor.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.customProfileEditor.sex,
 					a_newSex);
@@ -155,7 +151,6 @@ namespace IED
 			int,
 			const CustomConfigUpdateParams& a_params)
 		{
-			ResetFormSelectorWidgets();
 		}
 
 		bool UIProfileEditorCustom::OnCreateNew(

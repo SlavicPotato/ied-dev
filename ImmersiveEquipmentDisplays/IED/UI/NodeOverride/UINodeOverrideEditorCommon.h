@@ -26,10 +26,14 @@ namespace IED
 
 		protected:
 			template <class Td>
-			void UpdateConfig(
+			void UpdateConfigSingle(
 				T a_handle,
 				const Td& a_params,
 				bool a_syncSex);
+
+			void UpdateConfig(
+				T a_handle,
+				const NodeOverrideUpdateParams& a_params);
 
 			template <class Td>
 			bool EraseConfig(
@@ -43,6 +47,10 @@ namespace IED
 				Td& a_workingData,
 				const stl::fixed_string& a_name);
 
+			void MergeProfileData(
+				const profileSelectorParamsNodeOverride_t<T>& a_data,
+				const NodeOverrideProfile& a_profile);
+
 			void DrawPlayerDisabledWarning();
 
 		private:
@@ -52,6 +60,9 @@ namespace IED
 
 			virtual Data::configNodeOverrideHolder_t&
 				GetOrCreateConfigHolder(T a_handle) const = 0;
+
+			virtual NodeOverrideProfile::base_type GetData(
+				const profileSelectorParamsNodeOverride_t<T>& a_params) override;
 		};
 
 		template <class T>
@@ -69,25 +80,39 @@ namespace IED
 
 		template <class T>
 		template <class Td>
-		void UINodeOverrideEditorCommon<T>::UpdateConfig(
+		void UINodeOverrideEditorCommon<T>::UpdateConfigSingle(
 			T a_handle,
 			const Td& a_params,
 			bool a_syncSex)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
-			auto& confEntry = conf.get_data<decltype(a_params.entry)>().try_emplace(a_params.name).first->second;
+			auto& confEntry = GetOrCreateConfigHolder(a_handle)
+			                      .get_data<decltype(a_params.entry.second)>()
+			                      .try_emplace(a_params.name)
+			                      .first->second;
 
 			if (a_syncSex)
 			{
 				auto og = Data::GetOppositeSex(a_params.sex);
 
-				a_params.entry(og) = a_params.entry(a_params.sex);
-				confEntry = a_params.entry;
+				a_params.entry.second(og) = a_params.entry.second(a_params.sex);
+				confEntry = a_params.entry.second;
 			}
 			else
 			{
-				confEntry(a_params.sex) = a_params.entry(a_params.sex);
+				confEntry(a_params.sex) = a_params.entry.second(a_params.sex);
 			}
+
+			a_params.entry.first = GetConfigClass();
+		}
+
+		template <class T>
+		void UINodeOverrideEditorCommon<T>::UpdateConfig(
+			T a_handle,
+			const NodeOverrideUpdateParams& a_params)
+		{
+			a_params.data.copy_cc(
+				GetConfigClass(),
+				GetOrCreateConfigHolder(a_handle));
 		}
 
 		template <class T>
@@ -124,8 +149,29 @@ namespace IED
 		{
 			if (auto it = a_data.find(a_name); it != a_data.end())
 			{
-				a_workingData.insert_or_assign(a_name, it->second);
+				a_workingData.emplace(a_name, it->second);
 			}
+		}
+
+		template <class T>
+		void UINodeOverrideEditorCommon<T>::MergeProfileData(
+			const profileSelectorParamsNodeOverride_t<T>& a_data,
+			const NodeOverrideProfile& a_profile)
+		{
+			auto& conf = GetOrCreateConfigHolder(a_data.handle);
+			auto& pdata = a_profile.Data();
+
+			for (auto& e : pdata.data)
+			{
+				conf.data.insert_or_assign(e.first, e.second);
+			}
+
+			for (auto& e : pdata.placementData)
+			{
+				conf.placementData.insert_or_assign(e.first, e.second);
+			}
+
+			conf.flags = pdata.flags;
 		}
 
 		template <class T>
@@ -168,6 +214,13 @@ namespace IED
 
 				ImGui::TreePop();
 			}
+		}
+
+		template <class T>
+		NodeOverrideProfile::base_type UINodeOverrideEditorCommon<T>::GetData(
+			const profileSelectorParamsNodeOverride_t<T>& a_params)
+		{
+			return a_params.data.copy_cc(GetConfigClass());
 		}
 	}
 }

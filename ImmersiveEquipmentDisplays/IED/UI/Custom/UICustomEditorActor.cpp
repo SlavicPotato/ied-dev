@@ -74,7 +74,6 @@ namespace IED
 		void UICustomEditorActor::Reset()
 		{
 			ListReset();
-			ResetFormSelectorWidgets();
 		}
 
 		void UICustomEditorActor::QueueUpdateCurrent()
@@ -184,8 +183,6 @@ namespace IED
 			const SetObjectWrapper<UIActorList<entryCustomData_t>::listValue_t>& a_oldHandle,
 			const SetObjectWrapper<UIActorList<entryCustomData_t>::listValue_t>& a_newHandle)
 		{
-			ResetFormSelectorWidgets();
-
 			if (!a_newHandle)
 			{
 				return;
@@ -203,14 +200,7 @@ namespace IED
 			auto it = actorInfo.find(a_newHandle->handle);
 			if (it != actorInfo.end())
 			{
-				auto sex = it->second.GetSex();
-
-				if (GetSex() != sex)
-				{
-					ResetFormSelectorWidgets();
-				}
-
-				SetSex(sex, false);
+				SetSex(it->second.GetSex(), false);
 			}
 		}
 
@@ -220,7 +210,6 @@ namespace IED
 
 			if (store.settings.data.ui.customEditor.actorConfig.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.customEditor.actorConfig.sex,
 					a_newSex);
@@ -228,15 +217,13 @@ namespace IED
 		}
 
 		void UICustomEditorActor::ApplyProfile(
-			profileSelectorParamsCustom_t<Game::FormID>& a_data,
+			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
 
 			a_data.data = a_profile.Data();
 			conf = a_profile.Data();
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetCustom(
 				a_data.handle,
@@ -245,7 +232,7 @@ namespace IED
 		}
 
 		void UICustomEditorActor::MergeProfile(
-			profileSelectorParamsCustom_t<Game::FormID>& a_data,
+			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& profileData = a_profile.Data();
@@ -256,8 +243,6 @@ namespace IED
 			}
 
 			GetOrCreateConfigSlotHolder(a_data.handle) = a_data.data;
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetCustom(
 				a_data.handle,
@@ -314,8 +299,6 @@ namespace IED
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
 
 			conf = a_params.data;
-
-			ResetFormSelectorWidgets();
 
 			//m_controller.QueueActorReset(a_handle, ControllerUpdateFlags::kNone);
 			m_controller.QueueResetCustom(

@@ -27,16 +27,37 @@ namespace IED
 
 	namespace UI
 	{
+		using entrySlotData_t = Data::configSlotHolderCopy_t;
+
+		template <class T>
+		struct profileSelectorParamsSlot_t
+		{
+			T handle;
+			entrySlotData_t& data;
+		};
+
 		struct SingleSlotConfigUpdateParams
 		{
 			Data::ObjectSlot slot;
 			Data::ConfigSex sex;
-			Data::configStoreSlot_t::result_copy::result_entry& entry;
+			entrySlotData_t::data_type& entry;
+		};
+
+		struct SingleSlotConfigClearParams
+		{
+			Data::ObjectSlot slot;
+			Data::ConfigSex sex;
+			entrySlotData_t& data;
+		};
+
+		struct FullSlotConfigClearParams
+		{
+			entrySlotData_t& data;
 		};
 
 		struct SlotConfigUpdateParams
 		{
-			Data::configStoreSlot_t::result_copy& data;
+			entrySlotData_t& data;
 		};
 
 		enum class FormEntryAction : std::uint8_t
@@ -90,8 +111,6 @@ namespace IED
 				entrySlotData_t* data;
 			};
 
-			void ResetFormSelectorWidgets();
-
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
 		private:
@@ -101,7 +120,7 @@ namespace IED
 			virtual bool DrawExtraSlotInfo(
 				T a_handle,
 				Data::ObjectSlot a_slot,
-				const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
+				const entrySlotData_t::data_type& a_entry,
 				bool a_infoDrawn);
 
 			virtual void DrawExtraFlags(
@@ -120,10 +139,11 @@ namespace IED
 
 			virtual void OnSingleSlotClear(
 				T a_handle,
-				const void* a_params) = 0;
+				const SingleSlotConfigClearParams& a_params) = 0;
 
 			virtual void OnFullConfigClear(
-				T a_handle) = 0;
+				T a_handle,
+				const FullSlotConfigClearParams& a_params) = 0;
 
 			virtual void DrawMainHeaderControlsExtra(
 				T a_handle,
@@ -164,7 +184,6 @@ namespace IED
 			void QueueCopySlotSexPopup(
 				T a_handle,
 				Data::ConfigSex a_ssex,
-				const sexInfo_t& a_tsex,
 				Data::ObjectSlot a_slot);
 
 			void QueueClearSlot(
@@ -188,7 +207,7 @@ namespace IED
 			void DrawSlotEntry(
 				T a_handle,
 				Data::ObjectSlot a_slot,
-				Data::configStoreSlot_t::result_copy::result_entry& a_entry);
+				entrySlotData_t::data_type& a_entry);
 
 			void DrawSlotFilter();
 
@@ -241,7 +260,7 @@ namespace IED
 		bool UISlotEditorWidget<T>::DrawExtraSlotInfo(
 			T a_handle,
 			Data::ObjectSlot a_slot,
-			const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
+			const entrySlotData_t::data_type& a_entry,
 			bool a_infoDrawn)
 		{
 			return false;
@@ -256,14 +275,9 @@ namespace IED
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
-			if (!params->entry.data)
-			{
-				return;
-			}
-
 			ImGui::Separator();
 
-			auto& data = params->entry.data->get(params->sex);
+			auto& data = params->entry.second.get(params->sex);
 
 			const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
 			                      data.equipmentOverrides.empty();
@@ -346,13 +360,13 @@ namespace IED
 						continue;
 					}
 
-					auto& entry = a_data.entries[i];
+					auto& entry = a_data.data[i];
 
-					if (entry.data)
+					if (entry)
 					{
 						ImGui::PushID(i);
 
-						DrawSlotEntry(a_handle, slot, entry);
+						DrawSlotEntry(a_handle, slot, *entry);
 
 						ImGui::PopID();
 
@@ -372,7 +386,6 @@ namespace IED
 		void UISlotEditorWidget<T>::DrawMenuBarItems()
 		{
 			auto sex = GetSex();
-			auto sexInfo = GetOppositeSex2(sex);
 
 			auto current = GetCurrentData();
 
@@ -390,7 +403,7 @@ namespace IED
 						 "%s",
 						 LS(UIWidgetCommonStrings::CopyAllFromOppositeSexPrompt))
 					.call([this,
-				           ssex = sexInfo.sex,
+				           ssex = GetOppositeSex(sex),
 				           tsex = sex](
 							  const auto&) {
 						auto current = GetCurrentData();
@@ -399,13 +412,21 @@ namespace IED
 							return;
 						}
 
-						for (auto& e : current.data->entries)
+						auto configClass = GetConfigClass();
+
+						for (auto& e : current.data->data)
 						{
-							auto& d = e.data;
-							if (d)
+							if (!e)
 							{
-								d->get(tsex) = d->get(ssex);
+								continue;
 							}
+
+							if (e->first != configClass)
+							{
+								continue;
+							}
+
+							e->second.get(tsex) = e->second.get(ssex);
 						}
 
 						SlotConfigUpdateParams params{ *current.data };
@@ -428,13 +449,12 @@ namespace IED
 						.call([this](const auto&) {
 							if (auto current = GetCurrentData(); current.data)
 							{
-								for (auto& e : current.data->entries)
+								for (auto& e : current.data->data)
 								{
-									e.data.reset();
-									e.conf_class = Data::ConfigClass::Global;
+									e.reset();
 								}
 
-								OnFullConfigClear(current.handle);
+								OnFullConfigClear(current.handle, { *current.data });
 							}
 						});
 				}
@@ -466,7 +486,6 @@ namespace IED
 		void UISlotEditorWidget<T>::QueueCopySlotSexPopup(
 			T a_handle,
 			Data::ConfigSex a_tsex,
-			const sexInfo_t& a_ssex,
 			Data::ObjectSlot a_slot)
 		{
 			auto& queue = GetPopupQueue();
@@ -481,7 +500,7 @@ namespace IED
 			           handle = a_handle,
 			           slot = a_slot,
 			           tsex = a_tsex,
-			           ssex = a_ssex.sex](
+			           ssex = GetOppositeSex(a_tsex)](
 						  const auto&) {
 					auto current = GetCurrentData();
 					if (!current.data)
@@ -495,14 +514,14 @@ namespace IED
 					}
 
 					auto& slotData = current.data->get(slot);
-					if (!slotData.data)
+					if (!slotData)
 					{
 						return;
 					}
 
-					slotData.data->get(tsex) = slotData.data->get(ssex);
+					slotData->second.get(tsex) = slotData->second.get(ssex);
 
-					SingleSlotConfigUpdateParams params{ slot, tsex, slotData };
+					SingleSlotConfigUpdateParams params{ slot, tsex, *slotData };
 
 					OnBaseConfigChange(
 						handle,
@@ -539,22 +558,19 @@ namespace IED
 					}
 
 					auto& slotData = current.data->get(a_slot);
-					if (!slotData.data)
+					if (!slotData)
 					{
 						return;
 					}
 
-					if (slotData.conf_class != GetConfigClass())
+					if (slotData->first != GetConfigClass())
 					{
 						return;
 					}
 
-					slotData.data.reset();
-					slotData.conf_class = Data::ConfigClass::Global;
+					slotData.reset();
 
-					SingleSlotConfigUpdateParams params{ a_slot, a_sex, slotData };
-
-					OnSingleSlotClear(a_handle, std::addressof(params));
+					OnSingleSlotClear(a_handle, { a_slot, a_sex, *current.data });
 				});
 		}
 
@@ -593,14 +609,14 @@ namespace IED
 						auto slot = static_cast<Data::ObjectSlot>(i);
 
 						auto& slotData = current.data->get(slot);
-						if (!slotData.data)
+						if (!slotData)
 						{
 							continue;
 						}
 
-						slotData.conf_class = GetConfigClass();
+						slotData->first = GetConfigClass();
 
-						auto& data = slotData.data->get(a_sex);
+						auto& data = slotData->second.get(a_sex);
 
 						if (a_switch)
 						{
@@ -611,7 +627,7 @@ namespace IED
 							data.flags.set(Data::FlagsBase::kDisabled);
 						}
 
-						SingleSlotConfigUpdateParams params{ slot, a_sex, slotData };
+						SingleSlotConfigUpdateParams params{ slot, a_sex, *slotData };
 
 						OnBaseConfigChange(
 							a_handle,
@@ -631,11 +647,10 @@ namespace IED
 				QueueCopySlotSexPopup(
 					a_handle,
 					a_params.sex,
-					GetOppositeSex2(a_params.sex),
 					a_params.slot);
 			}
 
-			if (a_params.entry.conf_class == GetConfigClass())
+			if (a_params.entry.first == GetConfigClass())
 			{
 				if (PermitDeletion())
 				{
@@ -650,7 +665,7 @@ namespace IED
 
 			if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
 			{
-				UIClipboard::Set(a_params.entry.data->get(a_params.sex));
+				UIClipboard::Set(a_params.entry.second.get(a_params.sex));
 			}
 
 			auto clipData = UIClipboard::Get<Data::configSlot_t>();
@@ -663,7 +678,7 @@ namespace IED
 			{
 				if (clipData)
 				{
-					a_params.entry.data->get(a_params.sex) = *clipData;
+					a_params.entry.second.get(a_params.sex) = *clipData;
 
 					OnBaseConfigChange(
 						a_handle,
@@ -695,7 +710,7 @@ namespace IED
 		void UISlotEditorWidget<T>::DrawSlotEntry(
 			T a_handle,
 			Data::ObjectSlot a_slot,
-			Data::configStoreSlot_t::result_copy::result_entry& a_entry)
+			entrySlotData_t::data_type& a_entry)
 		{
 			SingleSlotConfigUpdateParams params{ a_slot, GetSex(), a_entry };
 
@@ -719,9 +734,9 @@ namespace IED
 
 				if (infoDrawn = ShowConfigClassIndicator())
 				{
-					ImGui::TextUnformatted(LS(UIWidgetCommonStrings::ConfigInUseColon));
+					ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
 					ImGui::SameLine();
-					DrawConfigClassInUse(a_entry.conf_class);
+					DrawConfigClassInUse(a_entry.first);
 				}
 
 				ImGui::PushID("extra_slot_info");
@@ -737,7 +752,7 @@ namespace IED
 					ImGui::Spacing();
 				}
 
-				auto& data = params.entry.data->get(params.sex);
+				auto& data = params.entry.second.get(params.sex);
 				auto& sh = StringHolder::GetSingleton();
 
 				ImGui::PushID("base_config");
@@ -783,7 +798,7 @@ namespace IED
 			T a_handle,
 			SingleSlotConfigUpdateParams& a_params)
 		{
-			auto& data = a_params.entry.data->get(a_params.sex);
+			auto& data = a_params.entry.second.get(a_params.sex);
 
 			const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
 			                      data.equipmentOverrides.empty();
@@ -933,13 +948,11 @@ namespace IED
 
 					if (it != a_data.end())
 					{
-						auto form(*it);
-
 						ImGui::TableSetColumnIndex(1);
 
 						char buf[24];
 
-						stl::snprintf(buf, "%.8X##form", form.get());
+						stl::snprintf(buf, "%.8X##form", it->get());
 
 						if (ImGui::Selectable(
 								buf,
@@ -947,13 +960,13 @@ namespace IED
 								ImGuiSelectableFlags_DontClosePopups))
 						{
 							ImGui::OpenPopup("form_edit_context_menu");
-							m_piEditEntryID = form;
+							m_piEditEntryID = *it;
 						}
 
 						DrawEditPreferredItemEntryFormPopup(a_handle, a_params, *it);
 
 						ImGui::TableSetColumnIndex(2);
-						DrawFormInfoText(form);
+						DrawFormInfoText(*it);
 
 						++it;
 						i++;
@@ -983,7 +996,10 @@ namespace IED
 					if (m_piEditEntryID)
 					{
 						a_out = m_piEditEntryID;
-						OnBaseConfigChange(a_handle, std::addressof(a_params), PostChangeAction::Evaluate);
+						OnBaseConfigChange(
+							a_handle,
+							std::addressof(a_params),
+							PostChangeAction::Evaluate);
 					}
 
 					ImGui::CloseCurrentPopup();
@@ -1163,8 +1179,6 @@ namespace IED
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotFilter()
 		{
-			auto& sh = StringHolder::GetSingleton();
-
 			if (TreeEx(
 					"slot_filter",
 					false,
@@ -1183,11 +1197,6 @@ namespace IED
 
 				ImGui::TreePop();
 			}
-		}
-
-		template <class T>
-		void UISlotEditorWidget<T>::ResetFormSelectorWidgets()
-		{
 		}
 
 	}

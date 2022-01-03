@@ -150,9 +150,7 @@ namespace IED
 			auto it = actorInfo.find(a_newHandle->handle);
 			if (it != actorInfo.end())
 			{
-				auto sex = it->second.GetSex();
-
-				SetSex(sex, false);
+				SetSex(it->second.GetSex(), false);
 			}
 		}
 
@@ -164,26 +162,10 @@ namespace IED
 			{
 				auto& store = m_controller.GetConfigStore();
 
-				return store.active.transforms.GetActor(
+				return store.active.transforms.GetActorCopy(
 					a_handle,
 					it->second.GetBase(),
 					it->second.GetRace());
-			}
-			else
-			{
-				return {};
-			}
-		}
-
-		NodeOverrideProfile::base_type UINodeOverrideEditorActor::GetData(
-			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
-		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data = store.active.transforms.GetActorData();
-
-			if (auto it = data.find(a_params.handle); it != data.end())
-			{
-				return it->second;
 			}
 			else
 			{
@@ -201,30 +183,25 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorActor::ApplyProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
 
 			a_data.data = GetData(a_data.handle);
 
-			m_controller.RequestEvaluateTransforms(a_data.handle, true);
+			m_controller.RequestEvaluateTransformsActor(a_data.handle, true);
 		}
 
 		void UINodeOverrideEditorActor::MergeProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
-
-			for (auto& e : a_profile.Data().data)
-			{
-				conf.data.insert_or_assign(e.first, e.second);
-			}
+			MergeProfileData(a_data, a_profile);
 
 			a_data.data = GetData(a_data.handle);
 
-			m_controller.RequestEvaluateTransforms(a_data.handle, true);
+			m_controller.RequestEvaluateTransformsActor(a_data.handle, true);
 		}
 
 		void UINodeOverrideEditorActor::OnUpdate(
@@ -233,9 +210,9 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
-			m_controller.RequestEvaluateTransforms(a_handle, true);
+			m_controller.RequestEvaluateTransformsActor(a_handle, true);
 		}
 
 		void UINodeOverrideEditorActor::OnUpdate(
@@ -244,31 +221,33 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
-			m_controller.RequestEvaluateTransforms(a_handle, true);
+			m_controller.RequestEvaluateTransformsActor(a_handle, true);
 		}
 
-		/*void UINodeOverrideEditorActor::OnUpdate(
+		void UINodeOverrideEditorActor::OnUpdate(
 			Game::FormID a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
+			UpdateConfig(a_handle, a_params);
 
-			conf = a_params.data;
+			a_params.data = GetData(a_handle);
 
-			m_controller.RequestEvaluateTransforms(a_handle, true);
-		}*/
+			m_controller.RequestEvaluateTransformsActor(a_handle, true);
+		}
 
 		void UINodeOverrideEditorActor::OnClearTransform(
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.transforms.GetActorData();
 
 			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
 			{
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}
 
 			PostClear(
@@ -281,11 +260,13 @@ namespace IED
 			Game::FormID a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.transforms.GetActorData();
 
 			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
 			{
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}
 
 			PostClear(
@@ -294,7 +275,7 @@ namespace IED
 				a_params.name);
 		}
 
-		void UINodeOverrideEditorActor::OnClearAll(
+		void UINodeOverrideEditorActor::OnClearAllTransforms(
 			Game::FormID a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
@@ -305,7 +286,7 @@ namespace IED
 			{
 				it->second.data.clear();
 
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}
 
 			a_params.entry.data = GetData(a_handle).data;
@@ -322,17 +303,37 @@ namespace IED
 			{
 				it->second.placementData.clear();
 
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}
 
 			a_params.entry.placementData = GetData(a_handle).placementData;
 		}
 
-		Data::configNodeOverrideHolder_t& UINodeOverrideEditorActor::GetOrCreateConfigHolder(Game::FormID a_handle) const
+		Data::configNodeOverrideHolder_t UINodeOverrideEditorActor::GetConfigStoreData(
+			Game::FormID a_handle)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			const auto& data = m_controller
+			                       .GetConfigStore()
+			                       .active.transforms.GetActorData();
 
-			return data.try_emplace(a_handle).first->second;
+			if (auto it = data.find(a_handle); it != data.end())
+			{
+				return it->second;
+			}
+			else
+			{
+				return {};
+			}
+		}
+
+		Data::configNodeOverrideHolder_t& UINodeOverrideEditorActor::GetOrCreateConfigHolder(
+			Game::FormID a_handle) const
+		{
+			return m_controller
+			    .GetConfigStore()
+			    .active.transforms.GetActorData()
+			    .try_emplace(a_handle)
+			    .first->second;
 		}
 
 		UIPopupQueue& UINodeOverrideEditorActor::GetPopupQueue_ProfileBase() const
@@ -347,7 +348,9 @@ namespace IED
 
 		const ImVec4* UINodeOverrideEditorActor::HighlightEntry(Game::FormID a_handle)
 		{
-			const auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			const auto& data = m_controller
+			                       .GetConfigStore()
+			                       .active.transforms.GetActorData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

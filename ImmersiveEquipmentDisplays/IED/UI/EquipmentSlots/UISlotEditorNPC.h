@@ -51,7 +51,7 @@ namespace IED
 					Game::FormID a_handle) const override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsSlot_t<Game::FormID>& a_data,
+				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
 
 			virtual void OnBaseConfigChange(
@@ -64,9 +64,13 @@ namespace IED
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void
-				OnSingleSlotClear(Game::FormID a_handle, const void* a_params) override;
+				OnSingleSlotClear(
+					Game::FormID a_handle,
+					const SingleSlotConfigClearParams& a_params) override;
 
-			virtual void OnFullConfigClear(Game::FormID a_handle) override;
+			virtual void OnFullConfigClear(
+				Game::FormID a_handle,
+				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnListChangeCurrentItem(
 				const SetObjectWrapper<UINPCList<entrySlotData_t>::listValue_t>& a_oldHandle,

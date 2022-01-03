@@ -120,25 +120,9 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			return store.active.transforms.GetRace(
+			return store.active.transforms.GetRaceCopy(
 				a_handle,
 				store.settings.data.ui.transformEditor.globalType);
-		}
-
-		NodeOverrideProfile::base_type UINodeOverrideEditorRace::GetData(
-			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params)
-		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data = store.active.transforms.GetRaceData();
-
-			if (auto it = data.find(a_params.handle); it != data.end())
-			{
-				return it->second;
-			}
-			else
-			{
-				return {};
-			}
 		}
 
 		void UINodeOverrideEditorRace::OnSexChanged(Data::ConfigSex a_newSex)
@@ -151,7 +135,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::ApplyProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
@@ -162,15 +146,10 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::MergeProfile(
-			profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
-
-			for (auto& e : a_profile.Data().data)
-			{
-				conf.data.insert_or_assign(e.first, e.second);
-			}
+			MergeProfileData(a_data, a_profile);
 
 			a_data.data = GetData(a_data.handle);
 
@@ -183,7 +162,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
@@ -194,21 +173,21 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
 
-		/*void UINodeOverrideEditorRace::OnUpdate(
+		void UINodeOverrideEditorRace::OnUpdate(
 			Game::FormID a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_handle);
+			UpdateConfig(a_handle, a_params);
 
-			conf = a_params.data;
+			a_params.data = GetData(a_handle);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
-		}*/
+		}
 
 		void UINodeOverrideEditorRace::OnClearTransform(
 			Game::FormID a_handle,
@@ -244,7 +223,7 @@ namespace IED
 				a_params.name);
 		}
 
-		void UINodeOverrideEditorRace::OnClearAll(
+		void UINodeOverrideEditorRace::OnClearAllTransforms(
 			Game::FormID a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
@@ -254,7 +233,7 @@ namespace IED
 			if (it != data.end())
 			{
 				it->second.data.clear();
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 
 			a_params.entry.data = GetData(a_handle).data;
@@ -271,10 +250,23 @@ namespace IED
 			{
 				it->second.placementData.clear();
 
-				m_controller.RequestEvaluateTransforms(a_handle, true);
+				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 
 			a_params.entry.placementData = GetData(a_handle).placementData;
+		}
+
+		Data::configNodeOverrideHolder_t UINodeOverrideEditorRace::GetConfigStoreData(Game::FormID a_handle)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			if (auto it = data.find(a_handle); it != data.end())
+			{
+				return it->second;
+			}
+			else
+			{
+				return {};
+			}
 		}
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorRace::GetOrCreateConfigHolder(Game::FormID a_handle) const

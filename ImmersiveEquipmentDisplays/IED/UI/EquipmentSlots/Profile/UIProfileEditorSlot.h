@@ -20,8 +20,19 @@ namespace IED
 		{
 			struct cachedItem_t
 			{
+				cachedItem_t() = default;
+
+				template <class... Args>
+				cachedItem_t(
+					const stl::fixed_string& a_name,
+					Args&&... a_args) :
+					name(a_name),
+					data(std::forward<Args>(a_args)...)
+				{
+				}
+
 				stl::fixed_string name;
-				Data::configStoreSlot_t::result_copy data;
+				entrySlotData_t data;
 			};
 
 		public:
@@ -87,10 +98,11 @@ namespace IED
 
 			virtual void OnSingleSlotClear(
 				int,
-				const void* a_params) override;
+				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int a_handle) override;
+				int a_handle,
+				const FullSlotConfigClearParams& a_params) override;
 
 			bool CreateSlot(Data::ObjectSlot a_slot);
 			void CreateAllSlots();

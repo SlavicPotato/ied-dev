@@ -16,7 +16,8 @@ namespace IED
 			LockToAccum = 4305,
 			MatchSkin = 4306,
 			ClearAllPrompt = 4307,
-			PlayerDisabledWarning = 4308
+			PlayerDisabledWarning = 4308,
+			PasteOverFullPrompt = 4309
 		};
 	}
 }

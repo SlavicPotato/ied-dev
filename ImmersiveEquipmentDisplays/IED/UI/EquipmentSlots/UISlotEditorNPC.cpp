@@ -114,14 +114,12 @@ namespace IED
 		}
 
 		void UISlotEditorNPC::MergeProfile(
-			profileSelectorParamsSlot_t<Game::FormID>& a_data,
+			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
 
 			a_data.data = GetData(a_data.handle);
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetNPC(
 				a_data.handle,
@@ -175,7 +173,7 @@ namespace IED
 		{
 			UpdateConfig(a_handle, a_params.data);
 
-			ResetFormSelectorWidgets();
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueResetNPC(
 				a_handle,
@@ -184,27 +182,28 @@ namespace IED
 
 		void UISlotEditorNPC::OnSingleSlotClear(
 			Game::FormID a_handle,
-			const void* a_params)
+			const SingleSlotConfigClearParams& a_params)
 		{
-			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
-
 			auto& store = m_controller.GetConfigStore().active;
 
-			ResetConfigSlot(a_handle, params->slot, store.slot.GetNPCData());
-			QueueListUpdateCurrent();
+			ResetConfigSlot(a_handle, a_params.slot, store.slot.GetNPCData());
+
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueResetNPC(
 				a_handle,
 				ControllerUpdateFlags::kNone,
-				params->slot);
+				a_params.slot);
 		}
 
-		void UISlotEditorNPC::OnFullConfigClear(Game::FormID a_handle)
+		void UISlotEditorNPC::OnFullConfigClear(
+			Game::FormID a_handle,
+			const FullSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
 
 			ResetConfig(a_handle, store.slot.GetNPCData());
-			QueueListUpdateCurrent();
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueResetNPC(
 				a_handle,
@@ -232,12 +231,9 @@ namespace IED
 			auto it = npcInfo.find(a_newHandle->handle);
 			if (it != npcInfo.end())
 			{
-				auto sex = it->second->female ? Data::ConfigSex::Female : Data::ConfigSex::Male;
-
-				if (GetSex() != sex)
-				{
-					ResetFormSelectorWidgets();
-				}
+				auto sex = it->second->female ?
+                               Data::ConfigSex::Female :
+                               Data::ConfigSex::Male;
 
 				SetSex(sex, false);
 			}
@@ -249,7 +245,6 @@ namespace IED
 
 			if (store.settings.data.ui.slotEditor.npcConfig.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.slotEditor.npcConfig.sex,
 					a_newSex);
@@ -285,7 +280,6 @@ namespace IED
 		void UISlotEditorNPC::Reset()
 		{
 			ListReset();
-			ResetFormSelectorWidgets();
 		}
 
 		void UISlotEditorNPC::QueueUpdateCurrent()

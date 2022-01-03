@@ -44,12 +44,12 @@ namespace IED
 
 			virtual ~UIProfileSelectorBase() noexcept = default;
 
-			void DrawProfileSelector(T& a_data);
+			void DrawProfileSelector(const T& a_data);
 
-			virtual void ApplyProfile(T& a_data, const P& a_profile){};
-			virtual void MergeProfile(T& a_data, const P& a_profile){};
+			virtual void ApplyProfile(const T& a_data, const P& a_profile){};
+			virtual void MergeProfile(const T& a_data, const P& a_profile){};
 
-			virtual void DrawProfileSelectorOptions(T& a_data);
+			virtual void DrawProfileSelectorOptions(const T& a_data);
 
 		private:
 			stl::flag<UIProfileSelectorFlags> m_flags;
@@ -66,7 +66,7 @@ namespace IED
 
 		template <class T, class P>
 		void UIProfileSelectorBase<T, P>::DrawProfileSelector(
-			T& a_data)
+			const T& a_data)
 		{
 			auto& pm = GetProfileManager();
 			auto& data = pm.Data();
@@ -232,7 +232,7 @@ namespace IED
 		}
 
 		template <class T, class P>
-		void UIProfileSelectorBase<T, P>::DrawProfileSelectorOptions(T& a_data)
+		void UIProfileSelectorBase<T, P>::DrawProfileSelectorOptions(const T& a_data)
 		{}
 
 	}

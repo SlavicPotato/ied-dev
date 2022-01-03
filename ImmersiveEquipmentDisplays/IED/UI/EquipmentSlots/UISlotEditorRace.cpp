@@ -104,14 +104,12 @@ namespace IED
 		}
 
 		void UISlotEditorRace::MergeProfile(
-			profileSelectorParamsSlot_t<Game::FormID>& a_data,
+			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
 
 			a_data.data = GetData(a_data.handle);
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetRace(
 				a_data.handle,
@@ -165,27 +163,27 @@ namespace IED
 		{
 			UpdateConfig(a_handle, a_params.data);
 
-			ResetFormSelectorWidgets();
+			a_params.data = GetData(a_handle);
 
 			m_controller.QueueResetRace(a_handle, ControllerUpdateFlags::kNone);
 		}
 
 		void UISlotEditorRace::OnSingleSlotClear(
 			Game::FormID a_handle,
-			const void* a_params)
+			const SingleSlotConfigClearParams& a_params)
 		{
-			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
-
 			auto& store = m_controller.GetConfigStore().active;
 
-			ResetConfigSlot(a_handle, params->slot, store.slot.GetRaceData());
-			QueueListUpdateCurrent();
+			ResetConfigSlot(a_handle, a_params.slot, store.slot.GetRaceData());
 
-			m_controller.QueueResetRace(a_handle, ControllerUpdateFlags::kNone, params->slot);
+			a_params.data = GetData(a_handle);
+
+			m_controller.QueueResetRace(a_handle, ControllerUpdateFlags::kNone, a_params.slot);
 		}
 
 		void UISlotEditorRace::OnFullConfigClear(
-			Game::FormID a_handle)
+			Game::FormID a_handle,
+			const FullSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
 
@@ -198,13 +196,12 @@ namespace IED
 		void UISlotEditorRace::OnSexChanged(
 			Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			if (store.settings.data.ui.slotEditor.raceConfig.sex != a_newSex)
+			if (settings.data.ui.slotEditor.raceConfig.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
-				store.settings.set(
-					store.settings.data.ui.slotEditor.raceConfig.sex,
+				settings.set(
+					settings.data.ui.slotEditor.raceConfig.sex,
 					a_newSex);
 			}
 		}
@@ -263,7 +260,6 @@ namespace IED
 		void UISlotEditorRace::Reset()
 		{
 			ListReset();
-			ResetFormSelectorWidgets();
 		}
 
 		void UISlotEditorRace::QueueUpdateCurrent()

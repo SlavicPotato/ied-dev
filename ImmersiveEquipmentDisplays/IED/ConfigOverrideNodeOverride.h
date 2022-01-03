@@ -429,6 +429,8 @@ namespace IED
 		using configNodeOverrideEntryTransform_t = configSexRoot_t<configNodeOverrideTransform_t>;
 		using configNodeOverrideEntryPlacement_t = configSexRoot_t<configNodeOverridePlacement_t>;
 
+		struct configNodeOverrideHolderCopy_t;
+
 		struct configNodeOverrideHolder_t
 		{
 			friend class boost::serialization::access;
@@ -441,6 +443,20 @@ namespace IED
 			{
 				DataVersion1 = 1
 			};
+
+			configNodeOverrideHolder_t() = default;
+
+			explicit configNodeOverrideHolder_t(
+				const configNodeOverrideHolderCopy_t& a_rhs);
+
+			explicit configNodeOverrideHolder_t(
+				configNodeOverrideHolderCopy_t&& a_rhs);
+
+			configNodeOverrideHolder_t& operator=(
+				const configNodeOverrideHolderCopy_t& a_rhs);
+
+			configNodeOverrideHolder_t& operator=(
+				configNodeOverrideHolderCopy_t&& a_rhs);
 
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
 			transform_data_type data;
@@ -489,6 +505,86 @@ namespace IED
 				ar& data;
 				ar& placementData;
 			}
+
+			void __copy(const configNodeOverrideHolderCopy_t& a_rhs);
+			void __move(configNodeOverrideHolderCopy_t&& a_rhs);
+		};
+
+		struct configNodeOverrideHolderCopy_t
+		{
+			template <class Td>
+			struct data_value_pair
+			{
+				ConfigClass first{ ConfigClass::Global };
+				Td second;
+			};
+
+		public:
+			using transform_data_type = std::unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryTransform_t>>;
+			using placement_data_type = std::unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryPlacement_t>>;
+
+			configNodeOverrideHolderCopy_t() = default;
+
+			configNodeOverrideHolderCopy_t(
+				const configNodeOverrideHolder_t& a_rhs,
+				ConfigClass a_initclass);
+
+			configNodeOverrideHolderCopy_t(
+				configNodeOverrideHolder_t&& a_rhs,
+				ConfigClass a_initclass);
+
+			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
+			transform_data_type data;
+			placement_data_type placementData;
+
+			void clear() noexcept
+			{
+				flags = NodeOverrideHolderFlags::kNone;
+				data.clear();
+				placementData.clear();
+			}
+
+			inline bool empty() const noexcept
+			{
+				return data.empty() && placementData.empty();
+			}
+
+			template <class Td, class data_type = stl::strip_type<Td>>
+			inline constexpr auto& get_data() noexcept
+			{
+				if constexpr (stl::is_any_same_v<
+								  data_type,
+								  transform_data_type,
+								  configNodeOverrideEntryTransform_t>)
+				{
+					return data;
+				}
+				else if constexpr (stl::is_any_same_v<
+									   data_type,
+									   placement_data_type,
+									   configNodeOverrideEntryPlacement_t>)
+				{
+					return placementData;
+				}
+				else
+				{
+					static_assert(false);
+				}
+			}
+
+			configNodeOverrideHolder_t copy_cc(
+				ConfigClass a_class);
+
+			void copy_cc(
+				ConfigClass a_class,
+				configNodeOverrideHolder_t& a_dst);
+		};
+
+		struct configNodeOverrideHolderClipboardData_t
+		{
+			ConfigClass conf_class;
+			ConfigSex sex;
+			configNodeOverrideHolder_t data;
 		};
 
 		using configMapNodeOverrides_t = configFormMap_t<configNodeOverrideHolder_t>;
@@ -565,7 +661,9 @@ namespace IED
 				else
 				{
 					auto it = a_data.find(a_node);
-					return it != a_data.end() ? std::addressof(it->second) : nullptr;
+					return it != a_data.end() ?
+                               std::addressof(it->second) :
+                               nullptr;
 				}
 			}
 
@@ -584,118 +682,39 @@ namespace IED
 				}
 			}
 
-			configNodeOverrideHolder_t GetActor(
+			static void CopyEntries(
+				const configNodeOverrideHolder_t& a_src,
+				configNodeOverrideHolderCopy_t& a_dst,
+				ConfigClass a_class)
+			{
+				for (auto& e : a_src.data)
+				{
+					a_dst.data.try_emplace(e.first, a_class, e.second);
+				}
+
+				for (auto& e : a_src.placementData)
+				{
+					a_dst.placementData.try_emplace(e.first, a_class, e.second);
+				}
+			}
+
+			configNodeOverrideHolderCopy_t GetActorCopy(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
-			configNodeOverrideHolder_t GetNPC(
+			configNodeOverrideHolderCopy_t GetNPCCopy(
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
-			configNodeOverrideHolder_t GetRace(
+			configNodeOverrideHolderCopy_t GetRaceCopy(
 				Game::FormID a_race,
 				GlobalConfigType a_globtype) const;
 
-			bool HasCMEClass(
-				Game::FormID a_handle,
-				ConfigClass a_class,
-				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const
-			{
-				switch (a_class)
-				{
-				case ConfigClass::Actor:
+			configNodeOverrideHolderCopy_t GetGlobalCopy(
+				GlobalConfigType a_globtype) const;
 
-					if (auto& actorData = GetActorData(); !actorData.empty())
-					{
-						if (auto data = a_hc.get_actor(a_handle, actorData))
-						{
-							return GetEntry(data->data, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::NPC:
-
-					if (auto& npcData = GetNPCData(); !npcData.empty())
-					{
-						if (auto data = a_hc.get_npc(a_handle, npcData))
-						{
-							return GetEntry(data->data, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::Race:
-
-					if (auto& raceData = GetRaceData(); !raceData.empty())
-					{
-						if (auto data = a_hc.get_race(a_handle, raceData))
-						{
-							return GetEntry(data->data, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::Global:
-
-					return GetEntry(GetGlobalData()[0].data, a_node) != nullptr;
-				}
-
-				return false;
-			}
-
-			bool HasPlacementClass(
-				Game::FormID a_handle,
-				ConfigClass a_class,
-				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const
-			{
-				switch (a_class)
-				{
-				case ConfigClass::Actor:
-
-					if (auto& actorData = GetActorData(); !actorData.empty())
-					{
-						if (auto data = a_hc.get_actor(a_handle, actorData))
-						{
-							return GetEntry(data->placementData, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::NPC:
-
-					if (auto& npcData = GetNPCData(); !npcData.empty())
-					{
-						if (auto data = a_hc.get_npc(a_handle, npcData))
-						{
-							return GetEntry(data->placementData, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::Race:
-
-					if (auto& raceData = GetRaceData(); !raceData.empty())
-					{
-						if (auto data = a_hc.get_race(a_handle, raceData))
-						{
-							return GetEntry(data->placementData, a_node) != nullptr;
-						}
-					}
-
-					break;
-				case ConfigClass::Global:
-
-					return GetEntry(GetGlobalData()[0].placementData, a_node) != nullptr;
-				}
-
-				return false;
-			}
-
-			const configNodeOverrideEntryTransform_t* GetActorCME(
+			const configNodeOverrideEntryTransform_t* GetActorTransform(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race,

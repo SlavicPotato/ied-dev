@@ -25,6 +25,15 @@ namespace IED
 
 	namespace UI
 	{
+		using entryCustomData_t = Data::configCustomHolder_t;
+
+		template <class T>
+		struct profileSelectorParamsCustom_t
+		{
+			T handle;
+			entryCustomData_t& data;
+		};
+
 		struct SingleCustomConfigUpdateParams
 		{
 			stl::fixed_string name;
@@ -86,8 +95,7 @@ namespace IED
 
 			void QueueCopySlotSexPopup(
 				T a_handle,
-				const SingleCustomConfigUpdateParams& a_data,
-				const sexInfo_t& a_tsex);
+				const SingleCustomConfigUpdateParams& a_data);
 
 			void QueueErasePopup(
 				T a_handle,
@@ -109,8 +117,6 @@ namespace IED
 				const SingleCustomConfigUpdateParams& a_params);
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
-
-			void ResetFormSelectorWidgets();
 
 		private:
 			void DrawCustomConfig(
@@ -294,11 +300,6 @@ namespace IED
 		}
 
 		template <class T>
-		void UICustomEditorWidget<T>::ResetFormSelectorWidgets()
-		{
-		}
-
-		template <class T>
 		void UICustomEditorWidget<T>::QueueAddItemPopup()
 		{
 			auto& queue = GetPopupQueue();
@@ -348,10 +349,9 @@ namespace IED
 		}
 
 		template <class T>
-		inline void UICustomEditorWidget<T>::QueueCopySlotSexPopup(
+		void UICustomEditorWidget<T>::QueueCopySlotSexPopup(
 			T a_handle,
-			const SingleCustomConfigUpdateParams& a_data,
-			const sexInfo_t& a_ssex)
+			const SingleCustomConfigUpdateParams& a_data)
 		{
 			auto& queue = GetPopupQueue();
 
@@ -364,7 +364,7 @@ namespace IED
 			           handle = a_handle,
 			           name = a_data.name,
 			           tsex = a_data.sex,
-			           ssex = a_ssex.sex](
+			           ssex = GetOppositeSex(a_data.sex)](
 						  const auto&) {
 					auto current = GetCurrentData();
 					if (!current.data)
@@ -614,8 +614,7 @@ namespace IED
 			{
 				QueueCopySlotSexPopup(
 					a_handle,
-					a_params,
-					GetOppositeSex2(a_params.sex));
+					a_params);
 			}
 
 			ImGui::Separator();

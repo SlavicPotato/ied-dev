@@ -45,6 +45,8 @@ namespace IED
 
 		class configStoreSlot_t;
 
+		struct configSlotHolderCopy_t;
+
 		struct configSlotHolder_t
 		{
 			friend class boost::serialization::access;
@@ -60,48 +62,25 @@ namespace IED
 
 			configSlotHolder_t() = default;
 
-			configSlotHolder_t(const configSlotHolder_t& a_rhs)
-			{
-				using enum_type = std::underlying_type_t<ObjectSlot>;
-
-				for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-				{
-					if (auto& src = a_rhs.data[i])
-					{
-						data[i] = std::make_unique<data_type>(*src);
-					}
-				}
-			}
+			configSlotHolder_t(const configSlotHolder_t& a_rhs);
 
 			configSlotHolder_t(configSlotHolder_t&&) = default;
 
-			configSlotHolder_t& operator=(const configSlotHolder_t& a_rhs)
-			{
-				using enum_type = std::underlying_type_t<ObjectSlot>;
-
-				for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-				{
-					if (auto& src = a_rhs.data[i])
-					{
-						if (auto& dst = data[i])
-						{
-							*dst = *src;
-						}
-						else
-						{
-							data[i] = std::make_unique<data_type>(*src);
-						}
-					}
-					else
-					{
-						data[i].reset();
-					}
-				}
-
-				return *this;
-			}
+			configSlotHolder_t& operator=(const configSlotHolder_t& a_rhs);
 
 			configSlotHolder_t& operator=(configSlotHolder_t&&) = default;
+
+			explicit configSlotHolder_t(
+				const configSlotHolderCopy_t& a_rhs);
+
+			explicit configSlotHolder_t(
+				configSlotHolderCopy_t&& a_rhs);
+
+			configSlotHolder_t& operator=(
+				const configSlotHolderCopy_t& a_rhs);
+
+			configSlotHolder_t& operator=(
+				configSlotHolderCopy_t&& a_rhs);
 
 			void clear() noexcept
 			{
@@ -156,6 +135,104 @@ namespace IED
 			}
 		};
 
+		struct configSlotHolderCopy_t
+		{
+			friend class boost::serialization::access;
+			friend class configStoreSlot_t;
+
+			template <class Td>
+			struct data_value_pair
+			{
+				ConfigClass first{ ConfigClass::Global };
+				Td second;
+			};
+
+		public:
+			using data_type = data_value_pair<configSexRoot_t<configSlot_t>>;
+
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			configSlotHolderCopy_t() = default;
+
+			configSlotHolderCopy_t(const configSlotHolderCopy_t& a_rhs);
+
+			configSlotHolderCopy_t(configSlotHolderCopy_t&&) = default;
+
+			configSlotHolderCopy_t& operator=(const configSlotHolderCopy_t& a_rhs);
+
+			configSlotHolderCopy_t& operator=(configSlotHolderCopy_t&&) = default;
+
+			configSlotHolderCopy_t(
+				const configSlotHolder_t& a_rhs,
+				ConfigClass a_initclass);
+
+			configSlotHolderCopy_t(
+				configSlotHolder_t&& a_rhs,
+				ConfigClass a_initclass);
+
+			void clear() noexcept
+			{
+				for (auto& e : data)
+				{
+					e.reset();
+				}
+			}
+
+			bool constexpr empty() const noexcept
+			{
+				for (auto& e : data)
+				{
+					if (e)
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
+			{
+				return data[stl::underlying(a_slot)];
+			}
+
+			inline constexpr auto& get(ObjectSlot a_slot) noexcept
+			{
+				return data[stl::underlying(a_slot)];
+			}
+
+			template <class Tf>
+			void visit(Tf a_func)
+			{
+				for (auto& e : data)
+				{
+					if (e)
+					{
+						e->visit(a_func);
+					}
+				}
+			}
+
+			configSlotHolder_t copy_cc(
+				ConfigClass a_class) const;
+
+			void copy_cc(
+				ConfigClass a_class,
+				configSlotHolder_t& a_out) const;
+
+			std::unique_ptr<data_type> data[stl::underlying(ObjectSlot::kMax)];
+
+		private:
+			template <class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& data;
+			}
+		};
+
 		using configMapSlot_t = configFormMap_t<configSlotHolder_t>;
 
 		class configStoreSlot_t :
@@ -169,118 +246,6 @@ namespace IED
 					const data_type::data_type* data{ nullptr };
 					ConfigClass conf_class{ ConfigClass::Global };
 				};
-
-				result_entry entries[stl::underlying(ObjectSlot::kMax)];
-			};
-
-			struct result_copy
-			{
-				struct result_entry
-				{
-				public:
-					result_entry() = default;
-
-					result_entry(const result_entry& a_rhs) :
-						conf_class(a_rhs.conf_class)
-					{
-						if (a_rhs.data)
-						{
-							__copy(a_rhs);
-						}
-					}
-
-					result_entry(result_entry&&) = default;
-
-					result_entry& operator=(const result_entry& a_rhs)
-					{
-						conf_class = a_rhs.conf_class;
-
-						if (a_rhs.data)
-						{
-							__copy(a_rhs);
-						}
-						else
-						{
-							data.reset();
-						}
-
-						return *this;
-					}
-
-					result_entry& operator=(result_entry&&) = default;
-
-					std::unique_ptr<data_type::data_type> data;
-					ConfigClass conf_class{ ConfigClass::Global };
-
-				private:
-					void __copy(const result_entry& a_rhs)
-					{
-						if (!data)
-						{
-							data = std::make_unique<data_type::data_type>(*a_rhs.data);
-						}
-						else
-						{
-							*data = *a_rhs.data;
-						}
-					}
-				};
-
-				inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
-				{
-					return entries[stl::underlying(a_slot)];
-				}
-
-				inline constexpr auto& get(ObjectSlot a_slot) noexcept
-				{
-					return entries[stl::underlying(a_slot)];
-				}
-
-				result_copy() = default;
-
-				result_copy(const configSlotHolder_t& a_rhs)
-				{
-					using enum_type = std::underlying_type_t<ObjectSlot>;
-
-					for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-					{
-						if (auto& src = a_rhs.data[i])
-						{
-							auto& dst = entries[i];
-
-							dst.conf_class = ConfigClass::Global;
-							dst.data = std::make_unique<configSlotHolder_t::data_type>(*src);
-						}
-					}
-				}
-
-				result_copy& operator=(const configSlotHolder_t& a_rhs)
-				{
-					using enum_type = std::underlying_type_t<ObjectSlot>;
-
-					for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-					{
-						auto& dst = entries[i];
-
-						dst.conf_class = ConfigClass::Global;
-
-						if (auto& src = a_rhs.data[i])
-						{
-							if (dst.data)
-							{
-								*dst.data = *src;
-							}
-							else
-							{
-								dst.data = std::make_unique<configSlotHolder_t::data_type>(*src);
-							}
-						}
-						else
-						{
-							dst.data.reset();
-						}
-					}
-				}
 
 				result_entry entries[stl::underlying(ObjectSlot::kMax)];
 			};
@@ -328,7 +293,7 @@ namespace IED
 			void FillResultCopy(
 				ConfigClass a_class,
 				const data_type& a_data,
-				result_copy& a_out) const
+				configSlotHolderCopy_t& a_out) const
 			{
 				using enum_type = std::underlying_type_t<ObjectSlot>;
 
@@ -341,12 +306,9 @@ namespace IED
 						continue;
 					}
 
-					auto& to = a_out.entries[i];
-
-					if (!to.data)
+					if (auto& to = a_out.data[i]; !to)
 					{
-						to.data = std::make_unique<data_type::data_type>(*from);
-						to.conf_class = a_class;
+						to = std::make_unique<configSlotHolderCopy_t::data_type>(a_class, *from);
 					}
 				}
 			}
@@ -355,14 +317,14 @@ namespace IED
 			result GetGlobal(
 				GlobalConfigType a_type) const;
 
-			result_copy GetGlobalCopy(
+			configSlotHolderCopy_t GetGlobalCopy(
 				GlobalConfigType a_type) const;
 
 			result GetRace(
 				Game::FormID a_race,
 				GlobalConfigType a_globtype) const;
 
-			result_copy GetRaceCopy(
+			configSlotHolderCopy_t GetRaceCopy(
 				Game::FormID a_race,
 				GlobalConfigType a_globtype) const;
 
@@ -370,7 +332,7 @@ namespace IED
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
-			result_copy GetNPCCopy(
+			configSlotHolderCopy_t GetNPCCopy(
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
@@ -379,7 +341,7 @@ namespace IED
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
-			result_copy GetActorCopy(
+			configSlotHolderCopy_t GetActorCopy(
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race) const;

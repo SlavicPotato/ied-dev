@@ -23,13 +23,20 @@ namespace IED
 			ImGui::Indent();
 			ImGui::Spacing();
 
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted("Global: ");
+
+			ImGui::SameLine();
+
 			result |= ImGui::CheckboxFlagsT(
-				"Global (Player)##slot",
+				"Player##slot",
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kSlotGlobalPlayer));
 
+			ImGui::SameLine();
+
 			result |= ImGui::CheckboxFlagsT(
-				"Global (NPC)##slot",
+				"NPC##slot",
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kSlotGlobalNPC));
 
@@ -103,10 +110,22 @@ namespace IED
 			ImGui::Indent();
 			ImGui::Spacing();
 
+			ImGui::AlignTextToFramePadding();
+			ImGui::TextUnformatted("Global: ");
+
+			ImGui::SameLine();
+
 			result |= ImGui::CheckboxFlagsT(
-				"Global##node",
+				"Player##node",
 				stl::underlying(std::addressof(a_flags.value)),
-				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideGlobal));
+				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideGlobalPlayer));
+			
+			ImGui::SameLine();
+
+			result |= ImGui::CheckboxFlagsT(
+				"NPC##node",
+				stl::underlying(std::addressof(a_flags.value)),
+				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideGlobalNPC));
 
 			result |= ImGui::CheckboxFlagsT(
 				"Actor##node",

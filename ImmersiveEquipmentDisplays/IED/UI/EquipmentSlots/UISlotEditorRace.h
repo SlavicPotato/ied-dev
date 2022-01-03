@@ -46,7 +46,7 @@ namespace IED
 					Game::FormID a_handle) const override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsSlot_t<Game::FormID>& a_data,
+				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
 
 			virtual entrySlotData_t GetData(
@@ -64,10 +64,11 @@ namespace IED
 			virtual void
 				OnSingleSlotClear(
 					Game::FormID a_handle,
-					const void* a_params) override;
+					const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				Game::FormID a_handle) override;
+				Game::FormID a_handle,
+				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnSexChanged(
 				Data::ConfigSex a_newSex) override;

@@ -20,11 +20,12 @@ namespace IED
 			kCustomNPC = 1u << 8,
 			kCustomRace = 1u << 9,
 
-			kNodeOverrideGlobal = 1u << 10,
-			kNodeOverridePlayer = 1u << 11,
-			kNodeOverrideActor = 1u << 12,
-			kNodeOverrideNPC = 1u << 13,
-			kNodeOverrideRace = 1u << 14,
+			kNodeOverrideGlobalPlayer = 1u << 10,
+			kNodeOverrideGlobalNPC = 1u << 11,
+			kNodeOverridePlayer = 1u << 12,
+			kNodeOverrideActor = 1u << 13,
+			kNodeOverrideNPC = 1u << 14,
+			kNodeOverrideRace = 1u << 15,
 
 			kAll = static_cast<std::underlying_type_t<ConfigStoreSerializationFlags>>(-1)
 		};

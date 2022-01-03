@@ -49,17 +49,14 @@ namespace IED
 			virtual entryNodeOverrideData_t GetData(
 				Game::FormID a_formid) override;
 
-			virtual NodeOverrideProfile::base_type GetData(
-				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_params) override;
-
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
-				profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
+				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
 				const NodeOverrideProfile& a_profile) override;
 
 			virtual void OnUpdate(
@@ -70,9 +67,9 @@ namespace IED
 				Game::FormID a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
-			/*virtual void OnUpdate(
+			virtual void OnUpdate(
 				Game::FormID a_handle,
-				const NodeOverrideUpdateParams& a_params) override;*/
+				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
 				Game::FormID a_handle,
@@ -82,13 +79,16 @@ namespace IED
 				Game::FormID a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 			
-			virtual void OnClearAll(
+			virtual void OnClearAllTransforms(
 				Game::FormID a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 			
 			virtual void OnClearAllPlacement(
 				Game::FormID a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
+
+			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(
+				Game::FormID a_handle) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				Game::FormID) const override;

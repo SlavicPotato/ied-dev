@@ -68,11 +68,11 @@ namespace IED
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
-				profileSelectorParamsCustom_t<Game::FormID>& a_data,
+				const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 				const CustomProfile& a_profile) override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsCustom_t<Game::FormID>& a_data,
+				const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 				const CustomProfile& a_profile) override;
 
 			virtual void OnBaseConfigChange(

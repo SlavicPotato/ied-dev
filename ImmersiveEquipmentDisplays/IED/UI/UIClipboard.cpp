@@ -38,7 +38,10 @@ namespace IED
 				case DataType::FormList:
 					erase<Data::configFormList_t>();
 					break;
-				case DataType::NodeOverride:
+				case DataType::NodeOverrideHolder:
+					erase<Data::configNodeOverrideHolderClipboardData_t>();
+					break;
+				case DataType::NodeOverrideTransform:
 					erase<Data::configNodeOverrideTransform_t>();
 					break;
 				case DataType::NodeOverridePlacement:

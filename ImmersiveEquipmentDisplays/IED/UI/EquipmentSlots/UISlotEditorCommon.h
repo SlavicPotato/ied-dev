@@ -48,12 +48,12 @@ namespace IED
 
 			void UpdateConfig(
 				T a_handle,
-				const Data::configStoreSlot_t::result_copy& a_data);
+				const entrySlotData_t& a_data);
 
 		private:
 			virtual void DrawMainHeaderControlsExtra(
 				T a_handle,
-				Data::configStoreSlot_t::result_copy& a_data) override;
+				entrySlotData_t& a_data) override;
 
 			virtual Data::configSlotHolder_t&
 				GetOrCreateConfigSlotHolder(T a_handle) const = 0;
@@ -85,25 +85,25 @@ namespace IED
 			auto& holder = GetOrCreateConfigSlotHolder(a_handle);
 			auto& slot = holder.get(a_params->slot);
 
-			auto& src = a_params->entry.data->get(a_params->sex);
+			auto& src = a_params->entry.second.get(a_params->sex);
 
 			if (a_syncSex)
 			{
-				a_params->entry.data->get(Data::GetOppositeSex(a_params->sex)) = src;
+				a_params->entry.second.get(Data::GetOppositeSex(a_params->sex)) = src;
 			}
+
+			a_params->entry.first = GetConfigClass();
 
 			if (!slot)
 			{
 				slot = std::make_unique<Data::configSlotHolder_t::data_type>(
-					*a_params->entry.data);
-
-				a_params->entry.conf_class = GetConfigClass();
+					a_params->entry.second);
 			}
 			else
 			{
 				if (a_syncSex)
 				{
-					*slot = *a_params->entry.data;
+					*slot = a_params->entry.second;
 				}
 				else
 				{
@@ -196,46 +196,17 @@ namespace IED
 		template <class T>
 		void UISlotEditorCommon<T>::UpdateConfig(
 			T a_handle,
-			const Data::configStoreSlot_t::result_copy& a_data)
+			const entrySlotData_t& a_data)
 		{
-			auto& holder = GetOrCreateConfigSlotHolder(a_handle);
-
-			auto configClass = GetConfigClass();
-
-			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-			{
-				auto& sourceEntry = a_data.entries[i];
-
-				if (!sourceEntry.data)
-				{
-					continue;
-				}
-
-				if (sourceEntry.conf_class != configClass)
-				{
-					continue;
-				}
-
-				auto& holderSlot = holder.get(static_cast<Data::ObjectSlot>(i));
-
-				if (holderSlot)
-				{
-					*holderSlot = *sourceEntry.data;
-				}
-				else
-				{
-					holderSlot = std::make_unique<Data::configSlotHolder_t::data_type>(
-						*sourceEntry.data);
-				}
-			}
+			a_data.copy_cc(
+				GetConfigClass(),
+				GetOrCreateConfigSlotHolder(a_handle));
 		}
 
 		template <class T>
 		void UISlotEditorCommon<T>::DrawMainHeaderControlsExtra(
 			T a_handle,
-			Data::configStoreSlot_t::result_copy& a_data)
+			entrySlotData_t& a_data)
 		{
 			ImGui::Separator();
 
@@ -265,24 +236,7 @@ namespace IED
 		SlotProfile::base_type UISlotEditorCommon<T>::GetData(
 			const profileSelectorParamsSlot_t<T>& a_data)
 		{
-			SlotProfile::base_type result;
-
-			auto configClass = GetConfigClass();
-
-			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-			{
-				auto& v = a_data.data.entries[i];
-
-				if (v.data && v.conf_class == configClass)
-				{
-					result.get(static_cast<Data::ObjectSlot>(i)) =
-						std::make_unique<SlotProfile::base_type::data_type>(*v.data);
-				}
-			}
-
-			return result;
+			return a_data.data.copy_cc(GetConfigClass());
 		}
 
 		template <class T>

@@ -34,18 +34,32 @@ namespace IED
 
 	namespace UI
 	{
+		using entryNodeOverrideData_t = Data::configNodeOverrideHolderCopy_t;
+
+		template <class T>
+		struct profileSelectorParamsNodeOverride_t
+		{
+			T handle;
+			entryNodeOverrideData_t& data;
+		};
+
+		struct NodeOverrideUpdateParams
+		{
+			entryNodeOverrideData_t& data;
+		};
+
 		struct SingleNodeOverrideTransformUpdateParams
 		{
 			Data::ConfigSex sex;
 			stl::fixed_string name;
-			Data::configNodeOverrideEntryTransform_t& entry;
+			entryNodeOverrideData_t::transform_data_type::mapped_type& entry;
 		};
 
 		struct SingleNodeOverridePlacementUpdateParams
 		{
 			Data::ConfigSex sex;
 			stl::fixed_string name;
-			Data::configNodeOverrideEntryPlacement_t& entry;
+			entryNodeOverrideData_t::placement_data_type::mapped_type& entry;
 		};
 
 		struct ClearNodeOverrideUpdateParams
@@ -58,11 +72,6 @@ namespace IED
 		{
 			entryNodeOverrideData_t& entry;
 		};
-
-		/*struct NodeOverrideUpdateParams
-		{
-			Data::configNodeOverrideHolder_t& data;
-		};*/
 
 		enum class NodeOverrideCommonAction : std::uint8_t
 		{
@@ -141,6 +150,11 @@ namespace IED
 			virtual void DrawMenuBarItems() override;
 
 		private:
+			void QueueClearAllPopup(const NodeOverrideEditorCurrentData& a_data);
+			void QueuePasteOverPopup(
+				const NodeOverrideEditorCurrentData& a_data,
+				const Data::configNodeOverrideHolderClipboardData_t& a_clipData);
+
 			virtual void DrawMainHeaderControlsExtra(
 				T a_handle,
 				entryNodeOverrideData_t& a_data);
@@ -148,6 +162,8 @@ namespace IED
 			virtual void DrawExtraEditorPanelSettings() override;
 
 			void DrawItemFilter();
+
+			void DrawConfigClassHeader(Data::ConfigClass a_class);
 
 			void DrawTransformPanel(
 				T a_handle,
@@ -157,17 +173,17 @@ namespace IED
 				T a_handle,
 				entryNodeOverrideData_t& a_data);
 
-			Data::configNodeOverrideHolder_t::transform_data_type::iterator DrawTransformEntryContextMenu(
+			entryNodeOverrideData_t::transform_data_type::iterator DrawTransformEntryContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				const stl::fixed_string& a_name,
-				Data::configNodeOverrideHolder_t::transform_data_type::iterator a_it);
+				entryNodeOverrideData_t::transform_data_type::iterator a_it);
 
-			Data::configNodeOverrideHolder_t::placement_data_type::iterator DrawPlacementEntryContextMenu(
+			entryNodeOverrideData_t::placement_data_type::iterator DrawPlacementEntryContextMenu(
 				T a_handle,
 				entryNodeOverrideData_t& a_data,
 				const stl::fixed_string& a_name,
-				Data::configNodeOverrideHolder_t::placement_data_type::iterator a_it);
+				entryNodeOverrideData_t::placement_data_type::iterator a_it);
 
 			void DrawTransformEntry(
 				T a_handle,
@@ -313,9 +329,9 @@ namespace IED
 				T a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) = 0;
 
-			/*virtual void OnUpdate(
+			virtual void OnUpdate(
 				T a_handle,
-				const NodeOverrideUpdateParams& a_params) = 0;*/
+				const NodeOverrideUpdateParams& a_params) = 0;
 
 			virtual void OnClearTransform(
 				T a_handle,
@@ -325,13 +341,15 @@ namespace IED
 				T a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) = 0;
 
-			virtual void OnClearAll(
+			virtual void OnClearAllTransforms(
 				T a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
 
 			virtual void OnClearAllPlacement(
 				T a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
+
+			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(T a_handle) = 0;
 
 			void HandleValueUpdate(
 				T a_handle,
@@ -564,6 +582,16 @@ namespace IED
 		}
 
 		template <class T>
+		void UINodeOverrideEditorWidget<T>::DrawConfigClassHeader(
+			Data::ConfigClass a_class)
+		{
+			ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
+			ImGui::SameLine();
+			DrawConfigClassInUse(a_class);
+			ImGui::Spacing();
+		}
+
+		template <class T>
 		void UINodeOverrideEditorWidget<T>::DrawTransformPanel(
 			T a_handle,
 			entryNodeOverrideData_t& a_data)
@@ -574,7 +602,7 @@ namespace IED
 
 			auto configClass = GetConfigClass();
 
-			auto df = data.getvec().begin();
+			auto itb = data.getvec().begin();
 
 			for (const auto& e : data.getvec())
 			{
@@ -597,11 +625,7 @@ namespace IED
 				{
 					if (configClass != Data::ConfigClass::Global)
 					{
-						svar = !GetConfigStore().transforms.HasCMEClass(
-							a_handle,
-							configClass,
-							e->first,
-							hc);
+						svar = configClass != it->second.first;
 
 						if (svar)
 						{
@@ -614,7 +638,7 @@ namespace IED
 
 				if (TreeEx(
 						"entry_tree",
-						e->first == (*df)->first,
+						e->first == (*itb)->first,
 						"%s",
 						e->second.desc))
 				{
@@ -624,11 +648,16 @@ namespace IED
 
 					if (it != a_data.data.end())
 					{
+						if (configClass != Data::ConfigClass::Global)
+						{
+							DrawConfigClassHeader(it->second.first);
+						}
+
 						DrawTransformEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
 					}
 					else
 					{
-						entryNodeOverrideData_t::transform_data_type::mapped_type tmp;
+						decltype(it->second) tmp;
 
 						DrawTransformEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
 					}
@@ -654,13 +683,13 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data)
 		{
-			auto& data = OverrideNodeInfo::GetWeaponNodeData();
-
 			bool first = true;
 
 			Data::configStoreNodeOverride_t::holderCache_t hc;
 
 			auto configClass = GetConfigClass();
+
+			auto& data = OverrideNodeInfo::GetWeaponNodeData();
 
 			for (auto e : data.getvec())
 			{
@@ -683,11 +712,7 @@ namespace IED
 				{
 					if (configClass != Data::ConfigClass::Global)
 					{
-						svar = !GetConfigStore().transforms.HasPlacementClass(
-							a_handle,
-							configClass,
-							e->first,
-							hc);
+						svar = configClass != it->second.first;
 
 						if (svar)
 						{
@@ -698,10 +723,8 @@ namespace IED
 
 				it = DrawPlacementEntryContextMenu(a_handle, a_data, e->first, it);
 
-				ImGui::PushID("entry_area");
-
 				if (TreeEx(
-						"tree",
+						"entry_tree",
 						true,
 						"%s",
 						e->second.desc))
@@ -712,6 +735,11 @@ namespace IED
 
 					if (it != a_data.placementData.end())
 					{
+						if (configClass != Data::ConfigClass::Global)
+						{
+							DrawConfigClassHeader(it->second.first);
+						}
+
 						DrawPlacementEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
 					}
 					else
@@ -734,7 +762,6 @@ namespace IED
 				ImGui::Spacing();
 
 				ImGui::PopID();
-				ImGui::PopID();
 
 				first = false;
 			}
@@ -745,8 +772,8 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			const stl::fixed_string& a_name,
-			Data::configNodeOverrideHolder_t::transform_data_type::iterator a_it)
-			-> Data::configNodeOverrideHolder_t::transform_data_type::iterator
+			entryNodeOverrideData_t::transform_data_type::iterator a_it)
+			-> entryNodeOverrideData_t::transform_data_type::iterator
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
 
@@ -762,13 +789,17 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
+				auto confClass = GetConfigClass();
+
 				if (ImGui::MenuItem(
 						LS(CommonStrings::Clear, "1"),
 						nullptr,
 						false,
-						a_it != a_data.data.end()))
+						a_it != a_data.data.end() &&
+							a_it->second.first == confClass))
 				{
-					if (a_it != a_data.data.end())
+					if (a_it != a_data.data.end() &&
+					    a_it->second.first == confClass)
 					{
 						a_data.data.erase(a_it);
 
@@ -788,7 +819,7 @@ namespace IED
 					{
 						auto sex = GetSex();
 
-						auto& data = a_it->second(sex);
+						auto& data = a_it->second.second(sex);
 
 						data.transform = Data::configTransform_t();
 
@@ -808,7 +839,7 @@ namespace IED
 				{
 					if (has)
 					{
-						UIClipboard::Set(a_it->second(GetSex()));
+						UIClipboard::Set(a_it->second.second(GetSex()));
 					}
 				}
 
@@ -831,7 +862,8 @@ namespace IED
 							a_it = a_data.data.try_emplace(a_name).first;
 						}
 
-						a_it->second(sex) = *clipData;
+						a_it->second.second(sex) = *clipData;
+						a_it->second.first = GetConfigClass();
 
 						OnUpdate(a_handle, { sex, a_name, a_it->second });
 					}
@@ -848,11 +880,11 @@ namespace IED
 		}
 
 		template <class T>
-		Data::configNodeOverrideHolder_t::placement_data_type::iterator UINodeOverrideEditorWidget<T>::DrawPlacementEntryContextMenu(
+		entryNodeOverrideData_t::placement_data_type::iterator UINodeOverrideEditorWidget<T>::DrawPlacementEntryContextMenu(
 			T a_handle,
 			entryNodeOverrideData_t& a_data,
 			const stl::fixed_string& a_name,
-			Data::configNodeOverrideHolder_t::placement_data_type::iterator a_it)
+			entryNodeOverrideData_t::placement_data_type::iterator a_it)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
 
@@ -868,13 +900,17 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
+				auto configClass = GetConfigClass();
+
 				if (ImGui::MenuItem(
 						LS(CommonStrings::Clear, "1"),
 						nullptr,
 						false,
-						a_it != a_data.placementData.end()))
+						a_it != a_data.placementData.end() &&
+							a_it->second.first == configClass))
 				{
-					if (a_it != a_data.placementData.end())
+					if (a_it != a_data.placementData.end() &&
+					    a_it->second.first == configClass)
 					{
 						a_data.placementData.erase(a_it);
 
@@ -896,7 +932,7 @@ namespace IED
 				{
 					if (has)
 					{
-						UIClipboard::Set(a_it->second(GetSex()));
+						UIClipboard::Set(a_it->second.second(GetSex()));
 					}
 				}
 
@@ -919,7 +955,8 @@ namespace IED
 							a_it = a_data.placementData.try_emplace(a_name).first;
 						}
 
-						a_it->second(sex) = *clipData;
+						a_it->second.second(sex) = *clipData;
+						a_it->second.first = GetConfigClass();
 
 						OnUpdate(a_handle, { sex, a_name, a_it->second });
 					}
@@ -942,7 +979,7 @@ namespace IED
 			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
-			auto& data = a_params.entry(a_params.sex);
+			auto& data = a_params.entry.second(a_params.sex);
 
 			if (DrawTransformHeaderContextMenu(
 					a_handle,
@@ -1031,7 +1068,7 @@ namespace IED
 			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
-			auto& data = a_params.entry(a_params.sex);
+			auto& data = a_params.entry.second(a_params.sex);
 
 			ImGui::PushID("pl_entry");
 
@@ -3097,39 +3134,159 @@ namespace IED
 		template <class T>
 		void UINodeOverrideEditorWidget<T>::DrawMenuBarItems()
 		{
-			bool disabled = !GetCurrentData().data;
+			auto current = GetCurrentData();
+
+			bool disabled = !current.data;
 
 			UICommon::PushDisabled(disabled);
 
 			if (LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
 			{
-				const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+				if (current.data)
+				{
+					QueueClearAllPopup(current);
+				}
+			}
 
-				auto& queue = GetPopupQueue();
-				queue.push(
-						 UIPopupType::Confirm,
-						 LS(CommonStrings::Confirm),
-						 "%s",
-						 LS(UINodeOverrideEditorStrings::ClearAllPrompt))
-					.call([this,
-				           clr_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
-						if (auto current = GetCurrentData(); current.data)
-						{
-							if (clr_placement)
-							{
-								current.data->placementData.clear();
-								OnClearAllPlacement(current.handle, { *current.data });
-							}
-							else
-							{
-								current.data->data.clear();
-								OnClearAll(current.handle, { *current.data });
-							}
-						}
-					});
+			ImGui::Separator();
+
+			if (LCG_MI(CommonStrings::Copy, "3"))
+			{
+				if (current.data)
+				{
+					auto confClass = GetConfigClass();
+
+					UIClipboard::Set<Data::configNodeOverrideHolderClipboardData_t>(
+						confClass,
+						GetSex(),
+						current.data->copy_cc(confClass));
+				}
+			}
+
+			auto clipData = UIClipboard::Get<Data::configNodeOverrideHolderClipboardData_t>();
+
+			if (ImGui::MenuItem(
+					LS(CommonStrings::PasteOver, "4"),
+					nullptr,
+					false,
+					clipData != nullptr))
+			{
+				if (clipData && current.data)
+				{
+					QueuePasteOverPopup(current, *clipData);
+				}
 			}
 
 			UICommon::PopDisabled(disabled);
+		}
+
+		template <class T>
+		void UINodeOverrideEditorWidget<T>::QueueClearAllPopup(
+			const NodeOverrideEditorCurrentData& a_data)
+		{
+			const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+
+			auto& queue = GetPopupQueue();
+			queue.push(
+					 UIPopupType::Confirm,
+					 LS(CommonStrings::Confirm),
+					 "%s",
+					 LS(UINodeOverrideEditorStrings::ClearAllPrompt))
+				.call([this,
+			           handle = a_data.handle,
+			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
+					auto current = GetCurrentData();
+					if (!current.data)
+					{
+						return;
+					}
+
+					if (handle != current.handle)
+					{
+						return;
+					}
+
+					if (is_placement)
+					{
+						current.data->placementData.clear();
+						OnClearAllPlacement(current.handle, { *current.data });
+					}
+					else
+					{
+						current.data->data.clear();
+						OnClearAllTransforms(current.handle, { *current.data });
+					}
+				});
+		}
+
+		template <class Ts, class Td>
+		static inline constexpr void paste_move_entries(
+			Ts&& a_src,
+			Td& a_dst,
+			Data::ConfigSex a_srcSex,
+			Data::ConfigSex a_dstSex,
+			Data::ConfigClass a_class)
+		{
+			for (auto& e : a_src)
+			{
+				auto it = a_dst.try_emplace(e.first).first;
+
+				it->second.first = a_class;
+				it->second.second(a_dstSex) =
+					std::move(e.second(a_srcSex));
+			}
+		}
+
+		template <class T>
+		void UINodeOverrideEditorWidget<T>::QueuePasteOverPopup(
+			const NodeOverrideEditorCurrentData& a_data,
+			const Data::configNodeOverrideHolderClipboardData_t& a_clipData)
+		{
+			const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+
+			auto& queue = GetPopupQueue();
+			queue.push(
+					 UIPopupType::Confirm,
+					 LS(CommonStrings::Confirm),
+					 "%s",
+					 LS(UINodeOverrideEditorStrings::PasteOverFullPrompt))
+				.call([this,
+			           handle = a_data.handle,
+			           dstSex = GetSex(),
+			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement),
+			           data = a_clipData](const auto&) mutable {
+					auto current = GetCurrentData();
+					if (!current.data)
+					{
+						return;
+					}
+
+					if (current.handle != handle)
+					{
+						return;
+					}
+
+					if (is_placement)
+					{
+						paste_move_entries(
+							std::move(data.data.placementData),
+							current.data->placementData,
+							data.sex,
+							dstSex,
+							GetConfigClass());
+					}
+					else
+					{
+						paste_move_entries(
+							std::move(data.data.data),
+							current.data->data,
+							data.sex,
+							dstSex,
+							GetConfigClass());
+					}
+
+					OnUpdate(handle, { *current.data });
+				});
 		}
 
 		template <class T>

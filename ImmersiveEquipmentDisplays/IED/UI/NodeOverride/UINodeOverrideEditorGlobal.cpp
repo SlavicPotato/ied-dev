@@ -55,7 +55,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::OnClose()
 		{
-			m_data = {};
+			m_data.clear();
 		}
 
 		void UINodeOverrideEditorGlobal::Reset()
@@ -107,7 +107,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::ApplyProfile(
-			profileSelectorParamsNodeOverride_t<int>& a_data,
+			const profileSelectorParamsNodeOverride_t<int>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
@@ -117,29 +117,13 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::MergeProfile(
-			profileSelectorParamsNodeOverride_t<int>& a_data,
+			const profileSelectorParamsNodeOverride_t<int>& a_data,
 			const NodeOverrideProfile& a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
-
-			for (auto& e : a_profile.Data().data)
-			{
-				conf.data.insert_or_assign(e.first, e.second);
-			}
-
+			MergeProfileData(a_data, a_profile);
 			UpdateData();
 
 			m_controller.RequestEvaluateTransformsAll(true);
-		}
-
-		NodeOverrideProfile::base_type UINodeOverrideEditorGlobal::GetData(
-			const profileSelectorParamsNodeOverride_t<int>& a_params)
-		{
-			auto& store = m_controller.GetConfigStore();
-
-			auto index = stl::underlying(store.settings.data.ui.transformEditor.globalType);
-
-			return store.active.transforms.GetGlobalData()[index];
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
@@ -148,7 +132,7 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -159,19 +143,27 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfig(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
-		/*void UINodeOverrideEditorGlobal::OnUpdate(
+		void UINodeOverrideEditorGlobal::OnUpdate(
 			int a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
-			GetOrCreateConfigHolder(a_handle) = a_params.data;
+			UpdateConfig(a_handle, a_params);
+
+			auto& store = m_controller.GetConfigStore();
+			auto index = stl::underlying(store.settings.data.ui.transformEditor.globalType);
+
+			a_params.data = {
+				store.active.transforms.GetGlobalData()[index],
+				Data::ConfigClass::Global
+			};
 
 			m_controller.RequestEvaluateTransformsAll(true);
-		}*/
+		}
 
 		void UINodeOverrideEditorGlobal::OnClearTransform(
 			int,
@@ -203,7 +195,7 @@ namespace IED
 			}
 		}
 
-		void UINodeOverrideEditorGlobal::OnClearAll(
+		void UINodeOverrideEditorGlobal::OnClearAllTransforms(
 			int,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
@@ -231,6 +223,11 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
+		Data::configNodeOverrideHolder_t UINodeOverrideEditorGlobal::GetConfigStoreData(int a_handle)
+		{
+			return GetOrCreateConfigHolder(a_handle);
+		}
+
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(int) const
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -254,7 +251,10 @@ namespace IED
 			auto& store = m_controller.GetConfigStore();
 			auto index = stl::underlying(store.settings.data.ui.transformEditor.globalType);
 
-			m_data = store.active.transforms.GetGlobalData()[index];
+			m_data = {
+				store.active.transforms.GetGlobalData()[index],
+				Data::ConfigClass::Global
+			};
 		}
 	}
 }

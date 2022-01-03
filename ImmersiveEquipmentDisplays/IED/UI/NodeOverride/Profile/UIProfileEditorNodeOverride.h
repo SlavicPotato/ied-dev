@@ -18,6 +18,23 @@ namespace IED
 			public UIProfileEditorBase<NodeOverrideProfile>,
 			public UINodeOverrideEditorWidget<int>
 		{
+			struct cachedItem_t
+			{
+				cachedItem_t() = default;
+
+				template <class... Args>
+				cachedItem_t(
+					const stl::fixed_string &a_name,
+					Args&&... a_args) :
+					name(a_name),
+					data(std::forward<Args>(a_args)...)
+				{
+				}
+
+				stl::fixed_string name;
+				entryNodeOverrideData_t data;
+			};
+
 		public:
 			UIProfileEditorNodeOverride(Controller& a_controller);
 
@@ -66,20 +83,24 @@ namespace IED
 			virtual void OnUpdate(
 				int a_handle,
 				const SingleNodeOverrideTransformUpdateParams& a_params) override;
-			
+
 			virtual void OnUpdate(
 				int a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
+			virtual void OnUpdate(
+				int a_handle,
+				const NodeOverrideUpdateParams& a_params) override;
+
 			virtual void OnClearTransform(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearPlacement(
 				int a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
-			virtual void OnClearAll(
+			virtual void OnClearAllTransforms(
 				int a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
@@ -87,11 +108,57 @@ namespace IED
 				int a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
+			virtual Data::configNodeOverrideHolder_t GetConfigStoreData(
+				int a_handle) override;
+
 			virtual WindowLayoutData GetWindowDimensions() const;
 
 			virtual UIPopupQueue& GetPopupQueue() override;
 
+			template <class Tp>
+			void UpdateConfigSingle(
+				const Tp& a_params,
+				bool a_syncSex);
+
+			void UpdateConfig(const NodeOverrideUpdateParams& a_params);
+
+			NodeOverrideProfile* GetCurrentProfile() const;
+
+			SetObjectWrapper<cachedItem_t> m_cachedItem;
+
 			Controller& m_controller;
 		};
+
+		template <class Tp>
+		void UIProfileEditorNodeOverride::UpdateConfigSingle(
+			const Tp& a_params,
+			bool a_syncSex)
+		{
+			auto profile = GetCurrentProfile();
+			if (!profile)
+			{
+				return;
+			}
+
+			auto& confEntry = profile->Data()
+			                      .get_data<decltype(a_params.entry.second)>()
+			                      .try_emplace(a_params.name)
+			                      .first->second;
+
+			if (a_syncSex)
+			{
+				auto og = Data::GetOppositeSex(a_params.sex);
+
+				a_params.entry.second(og) = a_params.entry.second(a_params.sex);
+				confEntry = a_params.entry.second;
+			}
+			else
+			{
+				confEntry(a_params.sex) = a_params.entry.second(a_params.sex);
+			}
+
+			a_params.entry.first = GetConfigClass();
+		}
+
 	}  // namespace UI
 }  // namespace IED

@@ -55,7 +55,7 @@ namespace IED
 					Game::FormID a_handle) const override;
 
 			virtual void MergeProfile(
-				profileSelectorParamsSlot_t<Game::FormID>& a_data,
+				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
 
 			virtual void OnBaseConfigChange(
@@ -68,9 +68,13 @@ namespace IED
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void
-				OnSingleSlotClear(Game::FormID a_handle, const void* a_params) override;
+				OnSingleSlotClear(
+					Game::FormID a_handle,
+					const SingleSlotConfigClearParams& a_params) override;
 
-			virtual void OnFullConfigClear(Game::FormID a_handle) override;
+			virtual void OnFullConfigClear(
+				Game::FormID a_handle,
+				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnListChangeCurrentItem(
 				const SetObjectWrapper<UIActorList<entrySlotData_t>::listValue_t>& a_oldHandle,
@@ -94,7 +98,7 @@ namespace IED
 			virtual bool DrawExtraSlotInfo(
 				Game::FormID a_handle,
 				Data::ObjectSlot a_slot,
-				const Data::configStoreSlot_t::result_copy::result_entry& a_entry,
+				const entrySlotData_t::data_type& a_entry,
 				bool a_infoDrawn) override;
 
 			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;

@@ -20,7 +20,8 @@ namespace IED
 				EquipmentOverrideConditionList,
 				FormSet,
 				FormList,
-				NodeOverride,
+				NodeOverrideHolder,
+				NodeOverrideTransform,
 				NodeOverridePlacement,
 				NodeOverridePlacementOverride,
 				NodeOverridePlacementOverrideList,
@@ -44,7 +45,7 @@ namespace IED
 
 			template <class T, class = std::enable_if_t<std::is_copy_constructible_v<T>, void>>
 			static void Set(const T& a_data);
-			
+
 			template <class T, class... Args>
 			static void Set(Args&&... a_data);
 
@@ -56,7 +57,7 @@ namespace IED
 
 			template <class T>
 			static void erase();
-			
+
 			template <class T>
 			static void set_type();
 
@@ -144,7 +145,13 @@ namespace IED
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideTransform_t>)
 			{
-				return data.type == DataType::NodeOverride ?
+				return data.type == DataType::NodeOverrideTransform ?
+                           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideHolderClipboardData_t>)
+			{
+				return data.type == DataType::NodeOverrideHolder ?
                            static_cast<data_type*>(data.data) :
                            nullptr;
 			}
@@ -202,7 +209,7 @@ namespace IED
 				{
 				case DataType::NodeOverrideOffset:
 				case DataType::NodeOverrideValues:
-				case DataType::NodeOverride:
+				case DataType::NodeOverrideTransform:
 					return static_cast<data_type*>(data.data);
 				default:
 					return nullptr;
@@ -298,9 +305,13 @@ namespace IED
 			{
 				data.type = DataType::FormList;
 			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideHolderClipboardData_t>)
+			{
+				data.type = DataType::NodeOverrideHolder;
+			}
 			else if constexpr (std::is_same_v<T, Data::configNodeOverrideTransform_t>)
 			{
-				data.type = DataType::NodeOverride;
+				data.type = DataType::NodeOverrideTransform;
 			}
 			else if constexpr (std::is_same_v<T, Data::configNodeOverridePlacement_t>)
 			{

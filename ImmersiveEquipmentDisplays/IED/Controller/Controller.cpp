@@ -583,11 +583,11 @@ namespace IED
 		bool a_noDefer) const
 	{
 		ITaskPool::AddTask([this, a_actor, a_noDefer]() {
-			RequestEvaluateTransforms(a_actor, a_noDefer);
+			RequestEvaluateTransformsActor(a_actor, a_noDefer);
 		});
 	}
 
-	void Controller::RequestEvaluateTransforms(
+	void Controller::RequestEvaluateTransformsActor(
 		Game::FormID a_actor,
 		bool a_noDefer) const
 	{
@@ -3104,7 +3104,7 @@ namespace IED
 
 		for (auto& e : a_objects.m_cmeNodes)
 		{
-			auto r = m_config.active.transforms.GetActorCME(
+			auto r = m_config.active.transforms.GetActorTransform(
 				a_actor->formID,
 				a_npc->formID,
 				a_race->formID,
@@ -4159,7 +4159,7 @@ namespace IED
 				a_atmReference,
 				a_cacheEntry))
 		{
-			RequestEvaluateTransforms(a_info.actor->formID, false);
+			RequestEvaluateTransformsActor(a_info.actor->formID, false);
 			UpdateRootInMenu(a_info.root);
 		}
 		else

@@ -153,7 +153,7 @@ namespace IED
 		// use when acquiring global lock may be detrimental to performance
 		void QueueRequestEvaluateTransforms(Game::FormID a_actor, bool a_noDefer) const;
 
-		void RequestEvaluateTransforms(Game::FormID a_actor, bool a_noDefer) const;
+		void RequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const;
 		void RequestEvaluateTransformsNPC(Game::FormID a_npc, bool a_noDefer) const;
 		void RequestEvaluateTransformsRace(Game::FormID a_race, bool a_noDefer) const;
 		void RequestEvaluateTransformsAll(bool a_noDefer) const;

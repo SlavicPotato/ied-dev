@@ -62,7 +62,6 @@ namespace IED
 		void UICustomEditorRace::Reset()
 		{
 			ListReset();
-			ResetFormSelectorWidgets();
 		}
 
 		void UICustomEditorRace::QueueUpdateCurrent()
@@ -77,7 +76,9 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelRaceSettings& UICustomEditorRace::GetRaceSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor.raceConfig;
+			return m_controller
+			    .GetConfigStore()
+			    .settings.data.ui.customEditor.raceConfig;
 		}
 
 		Data::configCustomHolder_t& UICustomEditorRace::GetOrCreateConfigSlotHolder(
@@ -138,7 +139,8 @@ namespace IED
 		{
 			auto& config = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.customEditor
+			return config
+			    .data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
 		}
 
@@ -155,7 +157,9 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorRace::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor;
+			return m_controller
+			    .GetConfigStore()
+			    .settings.data.ui.customEditor;
 		}
 
 		void UICustomEditorRace::OnEditorPanelSettingsChange()
@@ -168,20 +172,12 @@ namespace IED
 		{
 		}
 
-		void UICustomEditorRace::OnListChangeCurrentItem(
-			const SetObjectWrapper<UIRaceList<entryCustomData_t>::listValue_t>& a_oldHandle,
-			const SetObjectWrapper<UIRaceList<entryCustomData_t>::listValue_t>& a_newHandle)
-		{
-			ResetFormSelectorWidgets();
-		}
-
 		void UICustomEditorRace::OnSexChanged(Data::ConfigSex a_newSex)
 		{
 			auto& store = m_controller.GetConfigStore();
 
 			if (store.settings.data.ui.customEditor.raceConfig.sex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(
 					store.settings.data.ui.customEditor.raceConfig.sex,
 					a_newSex);
@@ -189,15 +185,13 @@ namespace IED
 		}
 
 		void UICustomEditorRace::ApplyProfile(
-			profileSelectorParamsCustom_t<Game::FormID>& a_data,
+			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
 
 			a_data.data = a_profile.Data();
 			conf = a_profile.Data();
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetCustomRace(
 				a_data.handle,
@@ -206,7 +200,7 @@ namespace IED
 		}
 
 		void UICustomEditorRace::MergeProfile(
-			profileSelectorParamsCustom_t<Game::FormID>& a_data,
+			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
 			const CustomProfile& a_profile)
 		{
 			auto& profileData = a_profile.Data();
@@ -217,8 +211,6 @@ namespace IED
 			}
 
 			GetOrCreateConfigSlotHolder(a_data.handle) = a_data.data;
-
-			ResetFormSelectorWidgets();
 
 			m_controller.QueueResetCustomRace(
 				a_data.handle,
@@ -278,8 +270,6 @@ namespace IED
 
 			conf = a_params.data;
 
-			ResetFormSelectorWidgets();
-
 			m_controller.QueueResetCustomRace(
 				a_handle,
 				GetConfigClass(),
@@ -292,7 +282,11 @@ namespace IED
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
 
-			auto r = conf.data.try_emplace(a_params.name, a_params.entry).second;
+			auto r = conf
+			             .data.try_emplace(
+								  a_params.name,
+								  a_params.entry)
+			             .second;
 
 			if (r)
 			{
@@ -306,7 +300,9 @@ namespace IED
 			Game::FormID a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetRaceData();
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.custom.GetRaceData();
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
@@ -339,7 +335,9 @@ namespace IED
 		const ImVec4* UICustomEditorRace::HighlightEntry(Game::FormID a_handle)
 		{
 			return HasConfigEntry(
-					   m_controller.GetConfigStore().active.custom.GetRaceData(),
+					   m_controller
+						   .GetConfigStore()
+						   .active.custom.GetRaceData(),
 					   a_handle) ?
                        std::addressof(UICommon::g_colorPurple) :
                        nullptr;

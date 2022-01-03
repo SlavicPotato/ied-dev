@@ -8,18 +8,18 @@ namespace IED
 {
 	namespace Data
 	{
-		configNodeOverrideHolder_t configStoreNodeOverride_t::GetActor(
+		configNodeOverrideHolderCopy_t configStoreNodeOverride_t::GetActorCopy(
 			Game::FormID a_actor,
 			Game::FormID a_npc,
 			Game::FormID a_race) const
 		{
-			configNodeOverrideHolder_t result;
+			configNodeOverrideHolderCopy_t result;
 
 			if (auto& actorData = GetActorData(); !actorData.empty())
 			{
 				if (auto it = actorData.find(a_actor); it != actorData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::Actor);
 				}
 			}
 
@@ -27,7 +27,7 @@ namespace IED
 			{
 				if (auto it = npcData.find(a_npc); it != npcData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::NPC);
 				}
 			}
 
@@ -35,7 +35,7 @@ namespace IED
 			{
 				if (auto it = raceData.find(a_race); it != raceData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::Race);
 				}
 			}
 
@@ -44,22 +44,22 @@ namespace IED
                     GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			CopyEntries(GetGlobalData(type), result);
+			CopyEntries(GetGlobalData(type), result, ConfigClass::Global);
 
 			return result;
 		}
 
-		configNodeOverrideHolder_t configStoreNodeOverride_t::GetNPC(
+		configNodeOverrideHolderCopy_t configStoreNodeOverride_t::GetNPCCopy(
 			Game::FormID a_npc,
 			Game::FormID a_race) const
 		{
-			configNodeOverrideHolder_t result;
+			configNodeOverrideHolderCopy_t result;
 
 			if (auto& npcData = GetNPCData(); !npcData.empty())
 			{
 				if (auto it = npcData.find(a_npc); it != npcData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::NPC);
 				}
 			}
 
@@ -67,7 +67,7 @@ namespace IED
 			{
 				if (auto it = raceData.find(a_race); it != raceData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::Race);
 				}
 			}
 
@@ -76,31 +76,41 @@ namespace IED
                     GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			CopyEntries(GetGlobalData(type), result);
+			CopyEntries(GetGlobalData(type), result, ConfigClass::Global);
 
 			return result;
 		}
 
-		configNodeOverrideHolder_t configStoreNodeOverride_t::GetRace(
+		configNodeOverrideHolderCopy_t configStoreNodeOverride_t::GetRaceCopy(
 			Game::FormID a_race,
 			GlobalConfigType a_globtype) const
 		{
-			configNodeOverrideHolder_t result;
+			configNodeOverrideHolderCopy_t result;
 
 			if (auto& raceData = GetRaceData(); !raceData.empty())
 			{
 				if (auto it = raceData.find(a_race); it != raceData.end())
 				{
-					CopyEntries(it->second, result);
+					CopyEntries(it->second, result, ConfigClass::Race);
 				}
 			}
 
-			CopyEntries(GetGlobalData(a_globtype), result);
+			CopyEntries(GetGlobalData(a_globtype), result, ConfigClass::Global);
 
 			return result;
 		}
 
-		const configNodeOverrideEntryTransform_t* configStoreNodeOverride_t::GetActorCME(
+		configNodeOverrideHolderCopy_t configStoreNodeOverride_t::GetGlobalCopy(
+			GlobalConfigType a_globtype) const
+		{
+			configNodeOverrideHolderCopy_t result;
+
+			CopyEntries(GetGlobalData(a_globtype), result, ConfigClass::Global);
+
+			return result;
+		}
+
+		const configNodeOverrideEntryTransform_t* configStoreNodeOverride_t::GetActorTransform(
 			Game::FormID a_actor,
 			Game::FormID a_npc,
 			Game::FormID a_race,
@@ -194,6 +204,151 @@ namespace IED
                     GlobalConfigType::NPC;
 
 			return GetEntry(GetGlobalData(type).placementData, a_node);
+		}
+
+		configNodeOverrideHolder_t::configNodeOverrideHolder_t(
+			const configNodeOverrideHolderCopy_t& a_rhs)
+		{
+			__copy(a_rhs);
+		}
+
+		configNodeOverrideHolder_t::configNodeOverrideHolder_t(
+			configNodeOverrideHolderCopy_t&& a_rhs)
+		{
+			__move(std::move(a_rhs));
+		}
+
+		configNodeOverrideHolder_t& configNodeOverrideHolder_t::operator=(
+			const configNodeOverrideHolderCopy_t& a_rhs)
+		{
+			clear();
+			__copy(a_rhs);
+
+			return *this;
+		}
+
+		configNodeOverrideHolder_t& configNodeOverrideHolder_t::operator=(
+			configNodeOverrideHolderCopy_t&& a_rhs)
+		{
+			clear();
+			__move(std::move(a_rhs));
+
+			return *this;
+		}
+
+		void configNodeOverrideHolder_t::__copy(const configNodeOverrideHolderCopy_t& a_rhs)
+		{
+			for (auto& e : a_rhs.data)
+			{
+				data.emplace(e.first, e.second.second);
+			}
+
+			for (auto& e : a_rhs.placementData)
+			{
+				placementData.emplace(e.first, e.second.second);
+			}
+
+			flags = a_rhs.flags;
+		}
+
+		void configNodeOverrideHolder_t::__move(configNodeOverrideHolderCopy_t&& a_rhs)
+		{
+			for (auto& e : a_rhs.data)
+			{
+				data.emplace(e.first, std::move(e.second.second));
+			}
+
+			for (auto& e : a_rhs.placementData)
+			{
+				placementData.emplace(e.first, std::move(e.second.second));
+			}
+
+			flags = a_rhs.flags;
+		}
+
+		configNodeOverrideHolderCopy_t::configNodeOverrideHolderCopy_t(
+			const configNodeOverrideHolder_t& a_rhs,
+			ConfigClass a_initclass)
+		{
+			for (auto& e : a_rhs.data)
+			{
+				data.try_emplace(e.first, a_initclass, e.second);
+			}
+
+			for (auto& e : a_rhs.placementData)
+			{
+				placementData.try_emplace(e.first, a_initclass, e.second);
+			}
+
+			flags = a_rhs.flags;
+		}
+
+		configNodeOverrideHolderCopy_t::configNodeOverrideHolderCopy_t(
+			configNodeOverrideHolder_t&& a_rhs,
+			ConfigClass a_initclass)
+		{
+			for (auto& e : a_rhs.data)
+			{
+				data.try_emplace(e.first, a_initclass, std::move(e.second));
+			}
+
+			for (auto& e : a_rhs.placementData)
+			{
+				placementData.try_emplace(e.first, a_initclass, std::move(e.second));
+			}
+
+			flags = a_rhs.flags;
+		}
+
+		configNodeOverrideHolder_t configNodeOverrideHolderCopy_t::copy_cc(
+			ConfigClass a_class)
+		{
+			configNodeOverrideHolder_t result;
+
+			for (auto& e : data)
+			{
+				if (e.second.first == a_class)
+				{
+					result.data.emplace(e.first, e.second.second);
+				}
+			}
+
+			for (auto& e : placementData)
+			{
+				if (e.second.first == a_class)
+				{
+					result.placementData.emplace(e.first, e.second.second);
+				}
+			}
+
+			result.flags = flags;
+
+			return result;
+		}
+
+		void configNodeOverrideHolderCopy_t::copy_cc(
+			ConfigClass a_class,
+			configNodeOverrideHolder_t& a_dst)
+		{
+			a_dst.clear();
+
+			for (auto& e : data)
+			{
+				if (e.second.first == a_class)
+				{
+					a_dst.data.emplace(e.first, e.second.second);
+				}
+			}
+
+			for (auto& e : placementData)
+			{
+				if (e.second.first == a_class)
+				{
+					a_dst.placementData.emplace(e.first, e.second.second);
+				}
+			}
+
+			a_dst.flags = flags;
 		}
 
 	}

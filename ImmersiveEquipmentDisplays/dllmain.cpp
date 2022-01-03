@@ -50,8 +50,8 @@ extern "C" {
 		}
 
 		gLog.Message(
-			"Initializing %s version %s [%.8x-%s] [runtime %u.%u.%u.%u]",
-			PLUGIN_NAME,
+			"%s %s [%.8x-%s] [runtime %u.%u.%u.%u]",
+			PLUGIN_NAME_FULL,
 			PLUGIN_VERSION_VERSTRING,
 			MK_GIT_COMMIT(GIT_CUR_COMMIT),
 			MK_STRING(GIT_BRANCH),

@@ -89,7 +89,7 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::MergeProfile(
-			profileSelectorParamsSlot_t<int>& a_data,
+			const profileSelectorParamsSlot_t<int>& a_data,
 			const SlotProfile& a_profile)
 		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
@@ -132,15 +132,20 @@ namespace IED
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
+			UpdateData();
 
 			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone);
 		}
 
-		void UISlotEditorGlobal::OnSingleSlotClear(int a_handle, const void* a_params)
+		void UISlotEditorGlobal::OnSingleSlotClear(
+			int,
+			const SingleSlotConfigClearParams&)
 		{
 		}
 
-		void UISlotEditorGlobal::OnFullConfigClear(int a_handle)
+		void UISlotEditorGlobal::OnFullConfigClear(
+			int,
+			const FullSlotConfigClearParams&)
 		{
 		}
 
@@ -150,7 +155,6 @@ namespace IED
 
 			if (store.settings.data.ui.slotEditor.globalSex != a_newSex)
 			{
-				ResetFormSelectorWidgets();
 				store.settings.set(store.settings.data.ui.slotEditor.globalSex, a_newSex);
 			}
 		}
@@ -185,8 +189,6 @@ namespace IED
 			const auto& config = store.settings;
 
 			m_data = store.active.slot.GetGlobalCopy(config.data.ui.slotEditor.globalType);
-
-			ResetFormSelectorWidgets();
 		}
 
 		void UISlotEditorGlobal::OnOpen()
