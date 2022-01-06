@@ -7,20 +7,6 @@ namespace IED
 {
 	namespace Data
 	{
-		auto configStoreSlot_t::GetGlobal(
-			GlobalConfigType a_type) const
-			-> result
-		{
-			result result;
-
-			FillResult(
-				ConfigClass::Global,
-				GetGlobalData(a_type),
-				result);
-
-			return result;
-		}
-
 		auto configStoreSlot_t::GetGlobalCopy(GlobalConfigType a_type) const
 			-> configSlotHolderCopy_t
 		{
@@ -29,27 +15,6 @@ namespace IED
 			FillResultCopy(
 				ConfigClass::Global,
 				GetGlobalData(a_type),
-				result);
-
-			return result;
-		}
-
-		auto configStoreSlot_t::GetRace(
-			Game::FormID a_race,
-			GlobalConfigType a_globtype) const
-			-> result
-		{
-			result result;
-
-			auto& racemap = GetRaceData();
-			if (auto it = racemap.find(a_race); it != racemap.end())
-			{
-				FillResult(ConfigClass::Race, it->second, result);
-			}
-
-			FillResult(
-				ConfigClass::Global,
-				GetGlobalData(a_globtype),
 				result);
 
 			return result;
@@ -71,38 +36,6 @@ namespace IED
 			FillResultCopy(
 				ConfigClass::Global,
 				GetGlobalData(a_globtype),
-				result);
-
-			return result;
-		}
-
-		auto configStoreSlot_t::GetNPC(
-			Game::FormID a_npc,
-			Game::FormID a_race) const
-			-> result
-		{
-			result result;
-
-			auto& npcmap = GetNPCData();
-			if (auto it = npcmap.find(a_npc); it != npcmap.end())
-			{
-				FillResult(ConfigClass::NPC, it->second, result);
-			}
-
-			auto& racemap = GetRaceData();
-			if (auto it = racemap.find(a_race); it != racemap.end())
-			{
-				FillResult(ConfigClass::Race, it->second, result);
-			}
-
-			auto type =
-				a_npc == IData::GetPlayerBaseID() ?
-                    GlobalConfigType::Player :
-                    GlobalConfigType::NPC;
-
-			FillResult(
-				ConfigClass::Global,
-				GetGlobalData(type),
 				result);
 
 			return result;
@@ -133,45 +66,6 @@ namespace IED
                     GlobalConfigType::NPC;
 
 			FillResultCopy(
-				ConfigClass::Global,
-				GetGlobalData(type),
-				result);
-
-			return result;
-		}
-
-		auto configStoreSlot_t::GetActor(
-			Game::FormID a_actor,
-			Game::FormID a_npc,
-			Game::FormID a_race) const
-			-> result
-		{
-			result result;
-
-			auto& actormap = GetActorData();
-			if (auto it = actormap.find(a_actor); it != actormap.end())
-			{
-				FillResult(ConfigClass::Actor, it->second, result);
-			}
-
-			auto& npcmap = GetNPCData();
-			if (auto it = npcmap.find(a_npc); it != npcmap.end())
-			{
-				FillResult(ConfigClass::NPC, it->second, result);
-			}
-
-			auto& racemap = GetRaceData();
-			if (auto it = racemap.find(a_race); it != racemap.end())
-			{
-				FillResult(ConfigClass::Race, it->second, result);
-			}
-
-			auto type =
-				a_actor == IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
-                    GlobalConfigType::NPC;
-
-			FillResult(
 				ConfigClass::Global,
 				GetGlobalData(type),
 				result);
@@ -216,6 +110,54 @@ namespace IED
 				result);
 
 			return result;
+		}
+
+		const configSlotHolder_t::data_type* configStoreSlot_t::GetActor(
+			Game::FormID a_actor,
+			Game::FormID a_npc,
+			Game::FormID a_race,
+			ObjectSlot a_slot,
+			holderCache_t& a_hc) const
+		{
+			if (auto& actorData = GetActorData(); !actorData.empty())
+			{
+				if (auto data = a_hc.get_actor(a_actor, actorData))
+				{
+					if (auto r = data->data[stl::underlying(a_slot)].get())
+					{
+						return r;
+					}
+				}
+			}
+
+			if (auto& npcData = GetNPCData(); !npcData.empty())
+			{
+				if (auto data = a_hc.get_npc(a_npc, npcData))
+				{
+					if (auto r = data->data[stl::underlying(a_slot)].get())
+					{
+						return r;
+					}
+				}
+			}
+
+			if (auto& raceData = GetRaceData(); !raceData.empty())
+			{
+				if (auto data = a_hc.get_race(a_race, raceData))
+				{
+					if (auto r = data->data[stl::underlying(a_slot)].get())
+					{
+						return r;
+					}
+				}
+			}
+
+			auto type =
+				a_actor == Data::IData::GetPlayerRefID() ?
+                    GlobalConfigType::Player :
+                    GlobalConfigType::NPC;
+
+			return GetGlobalData(type).data[stl::underlying(a_slot)].get();
 		}
 
 		configSlotHolder_t::configSlotHolder_t(const configSlotHolder_t& a_rhs)

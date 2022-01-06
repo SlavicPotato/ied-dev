@@ -129,6 +129,7 @@ namespace IED
 		public objectEntryBase_t
 	{
 		Game::FormID matchedItem;
+		bool doNotProcess{ false };
 	};
 
 	class IObjectManager;
@@ -250,6 +251,8 @@ namespace IED
 			bool a_nodeOverrideEnabledPlayer,
 			Data::actorStateHolder_t& a_actorState);
 
+		~ActorObjectHolder();
+
 		ActorObjectHolder(const ActorObjectHolder&) = delete;
 		ActorObjectHolder(ActorObjectHolder&&) = default;
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
@@ -353,6 +356,26 @@ namespace IED
 
 		using customEntryMap_t = std::unordered_map<stl::fixed_string, objectEntryCustom_t>;
 		using customPluginMap_t = std::unordered_map<stl::fixed_string, customEntryMap_t>;
+
+		template <class Tv>
+		void visit(Tv a_func)
+		{
+			for (auto& e : m_entriesSlot)
+			{
+				a_func(e);
+			}
+
+			for (auto& e : m_entriesCustom)
+			{
+				for (auto& f : e)
+				{
+					for (auto& g : f.second)
+					{
+						a_func(g.second);
+					}
+				}
+			}
+		}
 
 	private:
 		Game::ObjectRefHandle m_handle;

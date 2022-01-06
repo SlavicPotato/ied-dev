@@ -21,10 +21,9 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(AttachResultFlags);
 
-	class EngineExtensions : ILog
+	class EngineExtensions : 
+		ILog
 	{
-		FN_NAMEPROC("EngineExtensions");
-
 		struct unks_01
 		{
 			std::uint16_t p1;
@@ -56,7 +55,7 @@ namespace IED
 			const Game::ObjectRefHandle& a_handle,
 			NiAVObject* a_object);
 
-		typedef NiAVObject* (*fGetNodeByName_t)(
+		typedef NiAVObject* (*fGetObjectByName_t)(
 			NiNode* a_root,
 			const BSFixedString& a_name,
 			bool a_unk);
@@ -75,7 +74,7 @@ namespace IED
 			const BSFixedString& a_name);
 		typedef bool (*unk14028BAD0_t)(NiNode* a_node);
 		typedef void (*fUnkC6B900_t)(NiAVObject* a_object, const char* a_str);
-		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor *a_actor, NiAVObject *a_object);
+		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor* a_actor, NiAVObject* a_object);
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
 
@@ -83,7 +82,7 @@ namespace IED
 
 	public:
 		EngineExtensions(
-			const std::shared_ptr<Controller>& a_controller,
+			Controller* a_controller,
 			const std::shared_ptr<ConfigINI>& a_config);
 
 		EngineExtensions(const EngineExtensions&) = delete;
@@ -96,7 +95,7 @@ namespace IED
 		{
 			if (!m_Instance)
 			{
-				m_Instance = std::make_unique<EngineExtensions>(std::forward<Args>(a_args)...);
+				m_Instance = new EngineExtensions(std::forward<Args>(a_args)...);
 			}
 		}
 
@@ -115,23 +114,23 @@ namespace IED
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
 
-		static void CleanupObject(Game::ObjectRefHandle a_handle, NiAVObject* a_object, NiNode *a_root);
+		static void CleanupObject(Game::ObjectRefHandle a_handle, NiAVObject* a_object, NiNode* a_root);
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
 		inline static const auto GetObjectByName =
-			IAL::Address<fGetNodeByName_t>(74481, 76207);
+			IAL::Address<fGetObjectByName_t>(74481, 76207);
 
-		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837); // 19baa0
-
+		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0 = IAL::Address<std::int32_t*>(523662, 410201);
-		
 		inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
-		
+
 		//inline static const auto fUnk362E90 = IAL::Address<fUnk362E90_t>(24220, 0);
+
+		FN_NAMEPROC("EngineExtensions");
 
 	private:
 		inline static const auto m_shadowSceneNode =
@@ -188,7 +187,7 @@ namespace IED
 		inline static const auto m_vtblActor_a = IAL::Address<std::uintptr_t>(260538, 207511);
 		inline static const auto m_createWeaponNodes_a = IAL::Address<std::uintptr_t>(19342, 19769);
 
-		inline static const auto m_removeAllBipedParts_a = IAL::Address<std::uintptr_t>(15494, 15659, 0x30, 0xA8);
+		inline static const auto m_removeAllBipedParts_a = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
 		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
 		inline static const auto m_armorUpdate_a = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
 		inline static const auto m_garbageCollectorREFR_a = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
@@ -202,6 +201,7 @@ namespace IED
 		decltype(&GarbageCollectorReference_Hook) m_garbageCollectorReference_o;
 
 		decltype(&CreateWeaponNodes_Hook) m_createWeaponNodes_o;
+		decltype(&RemoveAllBipedParts_Hook) m_removeAllBipedParts_o;
 
 		struct
 		{
@@ -211,8 +211,8 @@ namespace IED
 			bool disableNPCProcessing{ false };
 		} m_conf;
 
-		std::shared_ptr<Controller> m_controller;
+		Controller* m_controller{ nullptr };
 
-		static std::unique_ptr<EngineExtensions> m_Instance;
+		static EngineExtensions *m_Instance;
 	};
 }  // namespace IED

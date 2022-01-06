@@ -239,57 +239,9 @@ namespace IED
 			public configStoreBase_t<configSlotHolder_t>
 		{
 		public:
-			struct result
-			{
-				struct result_entry
-				{
-					const data_type::data_type* data{ nullptr };
-					ConfigClass conf_class{ ConfigClass::Global };
-				};
-
-				result_entry entries[stl::underlying(ObjectSlot::kMax)];
-			};
-
-			void clear()
-			{
-				for (auto& e : data)
-				{
-					e.clear();
-				}
-
-				for (auto& e : global)
-				{
-					e.clear();
-				}
-			}
+			using holderCache_t = configHolderCache_t<configMapSlot_t>;
 
 		private:
-			SKMP_FORCEINLINE void FillResult(
-				ConfigClass a_class,
-				const data_type& a_data,
-				result& a_out) const
-			{
-				using enum_type = std::underlying_type_t<ObjectSlot>;
-
-				for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-				{
-					auto& from = a_data.data[i];
-
-					if (!from)
-					{
-						continue;
-					}
-
-					auto& to = a_out.entries[i];
-
-					if (!to.data)
-					{
-						to.data = from.get();
-						to.conf_class = a_class;
-					}
-				}
-			}
-
 			void FillResultCopy(
 				ConfigClass a_class,
 				const data_type& a_data,
@@ -314,30 +266,14 @@ namespace IED
 			}
 
 		public:
-			result GetGlobal(
-				GlobalConfigType a_type) const;
-
 			configSlotHolderCopy_t GetGlobalCopy(
 				GlobalConfigType a_type) const;
-
-			result GetRace(
-				Game::FormID a_race,
-				GlobalConfigType a_globtype) const;
 
 			configSlotHolderCopy_t GetRaceCopy(
 				Game::FormID a_race,
 				GlobalConfigType a_globtype) const;
 
-			result GetNPC(
-				Game::FormID a_npc,
-				Game::FormID a_race) const;
-
 			configSlotHolderCopy_t GetNPCCopy(
-				Game::FormID a_npc,
-				Game::FormID a_race) const;
-
-			result GetActor(
-				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
 
@@ -345,6 +281,13 @@ namespace IED
 				Game::FormID a_actor,
 				Game::FormID a_npc,
 				Game::FormID a_race) const;
+
+			const configSlotHolder_t::data_type* GetActor(
+				Game::FormID a_actor,
+				Game::FormID a_npc,
+				Game::FormID a_race,
+				ObjectSlot a_slot,
+				holderCache_t& a_hc) const;
 
 			template <class Tf>
 			void visit(Tf a_func)

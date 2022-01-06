@@ -103,6 +103,7 @@ namespace IED
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) = delete;
 
+		void SinkInputEvents();
 		void SinkEventsT0();
 		bool SinkEventsT1();
 		bool SinkEventsT2();
@@ -112,7 +113,7 @@ namespace IED
 	private:
 		void InitializeSound();
 		void UpdateSoundForms();
-		void InitializeInput();
+		void InitializeInputHandlers();
 		void InitializeUI();
 		void InitializeConfig();
 		void InitializeLocalization();
@@ -152,7 +153,7 @@ namespace IED
 		void QueueEvaluateAll(stl::flag<ControllerUpdateFlags> a_flags);
 
 		// use when acquiring global lock may be detrimental to performance
-		void QueueRequestEvaluateTransforms(Game::FormID a_actor, bool a_noDefer) const;
+		void QueueRequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const;
 
 		void RequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const;
 		void RequestEvaluateTransformsNPC(Game::FormID a_npc, bool a_noDefer) const;

@@ -116,8 +116,15 @@ namespace IED
 					{
 						/*CleanEquipmentOverrideList(i.equipmentOverrides);*/
 						CleanFormList(i.extraItems);
-						i.raceFilter.allow.erase(0);
-						i.raceFilter.deny.erase(0);
+						if (i.filters)
+						{
+							i.filters->raceFilter.allow.erase(0);
+							i.filters->raceFilter.deny.erase(0);
+							i.filters->npcFilter.allow.erase(0);
+							i.filters->npcFilter.deny.erase(0);
+							i.filters->actorFilter.allow.erase(0);
+							i.filters->actorFilter.deny.erase(0);
+						}
 					}
 				}
 
@@ -140,10 +147,15 @@ namespace IED
 				{
 					/*CleanEquipmentOverrideList(h.equipmentOverrides);*/
 					CleanFormList(h.preferredItems);
-					h.raceFilter.allow.erase(0);
-					h.raceFilter.deny.erase(0);
-					h.itemFilter.allow.erase(0);
-					h.itemFilter.deny.erase(0);
+					if (h.filters)
+					{
+						h.filters->raceFilter.allow.erase(0);
+						h.filters->raceFilter.deny.erase(0);
+						h.filters->npcFilter.allow.erase(0);
+						h.filters->npcFilter.deny.erase(0);
+						h.filters->actorFilter.allow.erase(0);
+						h.filters->actorFilter.deny.erase(0);
+					}
 				}
 			}
 		}

@@ -121,7 +121,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_actor(a_actor, actorData))
 				{
-					if (auto r = GetEntry(data->data, a_node))
+					if (auto r = get_entry(data->data, a_node))
 					{
 						return r;
 					}
@@ -132,7 +132,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_npc(a_npc, npcData))
 				{
-					if (auto r = GetEntry(data->data, a_node))
+					if (auto r = get_entry(data->data, a_node))
 					{
 						return r;
 					}
@@ -143,7 +143,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_race(a_race, raceData))
 				{
-					if (auto r = GetEntry(data->data, a_node))
+					if (auto r = get_entry(data->data, a_node))
 					{
 						return r;
 					}
@@ -155,7 +155,7 @@ namespace IED
                     GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return GetEntry(GetGlobalData(type).data, a_node);
+			return a_hc.get_entry(GetGlobalData(type).data, a_node);
 		}
 
 		const configNodeOverrideEntryPlacement_t* configStoreNodeOverride_t::GetActorPlacement(
@@ -169,7 +169,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_actor(a_actor, actorData))
 				{
-					if (auto r = GetEntry(data->placementData, a_node))
+					if (auto r = a_hc.get_entry(data->placementData, a_node))
 					{
 						return r;
 					}
@@ -180,7 +180,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_npc(a_npc, npcData))
 				{
-					if (auto r = GetEntry(data->placementData, a_node))
+					if (auto r = a_hc.get_entry(data->placementData, a_node))
 					{
 						return r;
 					}
@@ -191,7 +191,7 @@ namespace IED
 			{
 				if (auto data = a_hc.get_race(a_race, raceData))
 				{
-					if (auto r = GetEntry(data->placementData, a_node))
+					if (auto r = a_hc.get_entry(data->placementData, a_node))
 					{
 						return r;
 					}
@@ -203,7 +203,7 @@ namespace IED
                     GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return GetEntry(GetGlobalData(type).placementData, a_node);
+			return a_hc.get_entry(GetGlobalData(type).placementData, a_node);
 		}
 
 		configNodeOverrideHolder_t::configNodeOverrideHolder_t(

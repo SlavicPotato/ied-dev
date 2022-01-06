@@ -465,14 +465,27 @@ namespace IED
 				ImGui::TextUnformatted("Matched:");
 				ImGui::SameLine();
 
-				if (auto formInfo = flc.LookupForm(object->matchedItem);
-				    formInfo && !formInfo->form.name.empty())
+				if (auto formInfo = flc.LookupForm(object->matchedItem))
 				{
-					ImGui::TextColored(UICommon::g_colorLightBlue, "%s", formInfo->form.name.c_str());
-				}
-				else
-				{
-					ImGui::TextColored(UICommon::g_colorLightBlue, "%.8X", object->matchedItem.get());
+					if (!formInfo->form.name.empty())
+					{
+						ImGui::TextColored(
+							UICommon::g_colorLightBlue,
+							"%s",
+							formInfo->form.name.c_str());
+					}
+					else
+					{
+						ImGui::TextColored(
+							UICommon::g_colorLightBlue,
+							"%.8X",
+							object->matchedItem.get());
+					}
+
+					if (ImGui::IsItemHovered())
+					{
+						DrawFormInfoTooltip(*formInfo, *object);
+					}
 				}
 			}
 

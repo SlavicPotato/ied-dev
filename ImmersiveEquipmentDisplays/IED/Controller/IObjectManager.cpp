@@ -94,38 +94,34 @@ namespace IED
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR* a_actor,
 		Game::ObjectRefHandle a_handle,
-		ActorObjectHolder& a_data,
+		ActorObjectHolder& a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (a_actor == *g_thePlayer)
 		{
-			m_playerState = Data::actorStateEntry_t(a_data);
+			m_playerState = Data::actorStateEntry_t(a_objects);
 		}
 
-		for (auto& e : a_data.m_entriesSlot)
-		{
-			RemoveObject(a_actor, a_handle, e, a_data, a_flags);
-		}
+		a_objects.visit([&](objectEntryBase_t& a_object) {
+			RemoveObject(
+				a_actor,
+				a_handle,
+				a_object,
+				a_objects,
+				a_flags);
+		});
 
-		for (auto& e : a_data.m_entriesCustom)
+		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& f : e)
-			{
-				for (auto& g : f.second)
-				{
-					RemoveObject(a_actor, a_handle, g.second, a_data, a_flags);
-				}
-			}
-
 			e.clear();
 		}
 
-		for (auto& e : a_data.m_cmeNodes)
+		for (auto& e : a_objects.m_cmeNodes)
 		{
 			ResetNodeOverride(e.second);
 		}
 
-		a_data.m_cmeNodes.clear();
+		a_objects.m_cmeNodes.clear();
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -146,82 +142,19 @@ namespace IED
 		ActorObjectHolder& a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		for (auto& e : a_objects.m_entriesSlot)
-		{
-			RemoveObject(a_actor, a_handle, e, a_objects, a_flags);
-		}
-
-		for (auto& e : a_objects.m_entriesCustom)
-		{
-			for (auto& f : e)
-			{
-				for (auto& g : f.second)
-				{
-					RemoveObject(a_actor, a_handle, g.second, a_objects, a_flags);
-				}
-			}
-
-			e.clear();
-		}
-	}
-
-	/*void IObjectManager::RemoveActorByHandleImpl(
-		Game::ObjectRefHandle a_mhandle,
-		Game::ObjectRefHandle a_rhandle)
-	{
-		for (auto it = m_objects.begin(); it != m_objects.end(); ++it)
-		{
-			if (it->second.GetHandle() == a_mhandle)
-			{
-				__debugbreak();
-				_DMESSAGE("bh ; %X : %X | %u | %s", it->second.m_actor->formID, a_mhandle, it->second.m_root->m_uiRefCount, it->second.m_actor->GetDisplayName());
-
-				CleanupActorObjectsImpl(it->second, a_rhandle);
-
-				m_objects.erase(it);
-				break;
-			}
-		}
-	}*/
-
-	void IObjectManager::CleanupActorObjectsImpl(
-		ActorObjectHolder& a_objects,
-		Game::ObjectRefHandle a_rhandle)
-	{
-		for (auto& e : a_objects.m_entriesSlot)
-		{
+		a_objects.visit([&](objectEntryBase_t& a_object) {
 			RemoveObject(
-				nullptr,
-				a_rhandle,
-				e,
+				a_actor,
+				a_handle,
+				a_object,
 				a_objects,
-				ControllerUpdateFlags::kNone);
-		}
+				a_flags);
+		});
 
 		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& f : e)
-			{
-				for (auto& g : f.second)
-				{
-					RemoveObject(
-						nullptr,
-						a_rhandle,
-						g.second,
-						a_objects,
-						ControllerUpdateFlags::kNone);
-				}
-			}
-
 			e.clear();
 		}
-
-		for (auto& ce : a_objects.m_cmeNodes)
-		{
-			ResetNodeOverride(ce.second);
-		}
-
-		a_objects.m_cmeNodes.clear();
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
@@ -247,25 +180,38 @@ namespace IED
 
 		for (auto& e : a_objects.m_entriesCustom)
 		{
-			for (auto& f : e)
+			for (auto it1 = e.begin(); it1 != e.end();)
 			{
-				for (auto& g : f.second)
+				for (auto it2 = it1->second.begin(); it2 != it1->second.end();)
 				{
-					if (g.second.state && !g.second.state->nodes.obj->IsVisible())
+					if (it2->second.state && !it2->second.state->nodes.obj->IsVisible())
 					{
 						RemoveObject(
 							nullptr,
 							a_handle,
-							g.second,
+							it2->second,
 							a_objects,
 							ControllerUpdateFlags::kNone);
 
 						result = true;
+
+						it2 = it1->second.erase(it2);
+					}
+					else
+					{
+						++it2;
 					}
 				}
-			}
 
-			e.clear();
+				if (it1->second.empty())
+				{
+					it1 = e.erase(it1);
+				}
+				else
+				{
+					++it1;
+				}
+			}
 		}
 
 		return result;
@@ -273,17 +219,8 @@ namespace IED
 
 	void IObjectManager::ClearObjectsImpl()
 	{
-		for (auto& e : m_objects)
-		{
-			auto handle = e.second.GetHandle();
-
-			NiPointer<TESObjectREFR> ref;
-			LookupREFRByHandle(handle, ref);
-
-			CleanupActorObjectsImpl(e.second, handle);
-		}
-
 		m_objects.clear();
+		QueueDatabaseCleanup();
 	}
 
 	bool IObjectManager::ConstructArmorNode(
@@ -505,8 +442,7 @@ namespace IED
 		UpdateObjectTransform(
 			a_objectEntry.state->transform,
 			itemNodeRoot,
-			targetNodes.ref,
-			false);
+			targetNodes.ref);
 
 		UpdateDownwardPass(targetNodes.obj);
 

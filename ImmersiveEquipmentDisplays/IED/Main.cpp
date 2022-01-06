@@ -23,7 +23,7 @@
 
 namespace IED
 {
-	std::shared_ptr<Controller> g_controller;
+	Controller* g_controller{ nullptr };
 
 	static bool s_loaded = false;
 
@@ -109,7 +109,7 @@ namespace IED
 
 		if (!config->IsLoaded())
 		{
-			gLog.Warning("Couldn't load configuration file, using defaults");
+			gLog.Warning("Couldn't load '%s', using defaults", PLUGIN_INI_FILE);
 		}
 
 		if (!ITaskPool::ValidateMemory())
@@ -144,7 +144,7 @@ namespace IED
 				if (config->m_dpiAwareness)
 				{
 					ImGui_ImplWin32_EnableDpiAwareness();
-					gLog.Debug("Enabled DPI awareness");
+					gLog.Debug("Enabled process DPI awareness");
 				}
 			}
 			else
@@ -159,10 +159,9 @@ namespace IED
 			ISKSE::CloseBacklog();
 		}
 
-		bool closeLog = config->m_closeLogFile;
-
-		g_controller = std::make_shared<Controller>(config);
+		g_controller = new Controller(config);
 		g_controller->SinkEventsT0();
+		g_controller->SinkInputEvents();
 
 		auto handle = a_skse->GetPluginHandle();
 		auto mi = skse.GetInterface<SKSEMessagingInterface>();
@@ -190,7 +189,7 @@ namespace IED
 			g_controller,
 			config);
 
-		if (closeLog)
+		if (config->m_closeLogFile)
 		{
 			gLog.Close();
 		}

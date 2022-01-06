@@ -125,18 +125,6 @@ namespace IED
 			};
 
 		public:
-			void clear()
-			{
-				for (auto& e : data)
-				{
-					e.clear();
-				}
-
-				for (auto& e : global)
-				{
-					e.clear();
-				}
-			}
 
 			template <class Tf>
 			void visit(Tf a_func)

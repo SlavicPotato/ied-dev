@@ -18,10 +18,99 @@ namespace IED
 		Data::ObjectSlotExtra slot;
 	};
 
+	struct processParams_t;
+
 	namespace Data
 	{
+		struct configBaseFilters_t
+		{
+		private:
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			configFormFilter_t actorFilter;
+			configFormFilter_t npcFilter;
+			configFormFilter_t raceFilter;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& actorFilter;
+				ar& npcFilter;
+				ar& raceFilter;
+			}
+		};
+
+		struct configBaseFiltersHolder_t
+		{
+		private:
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			configBaseFiltersHolder_t() = default;
+
+			configBaseFiltersHolder_t(
+				const configBaseFiltersHolder_t& a_rhs)
+			{
+				__copy(a_rhs);
+			}
+
+			configBaseFiltersHolder_t(configBaseFiltersHolder_t&&) = default;
+
+			configBaseFiltersHolder_t& operator=(
+				const configBaseFiltersHolder_t& a_rhs)
+			{
+				__copy(a_rhs);
+				return *this;
+			}
+
+			configBaseFiltersHolder_t& operator=(configBaseFiltersHolder_t&&) = default;
+
+			bool run_filters(const processParams_t& a_params) const;
+
+			std::unique_ptr<configBaseFilters_t> filters;
+
+		private:
+			void __copy(const configBaseFiltersHolder_t& a_rhs)
+			{
+				if (a_rhs.filters)
+				{
+					if (filters)
+					{
+						*filters = *a_rhs.filters;
+					}
+					else
+					{
+						filters = std::make_unique<configBaseFilters_t>(*a_rhs.filters);
+					}
+				}
+				else
+				{
+					filters.reset();
+				}
+			}
+
+			template <class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& filters;
+			}
+		};
+
 		struct configBase_t :
-			public configBaseValues_t
+			public configBaseValues_t,
+			public configBaseFiltersHolder_t
 		{
 		private:
 			friend class boost::serialization::access;
@@ -35,9 +124,6 @@ namespace IED
 			};
 
 			equipmentOverrideList_t equipmentOverrides;
-			configFormFilter_t raceFilter;
-			configFormFilter_t actorFilter;
-			configFormFilter_t npcFilter;
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
@@ -134,15 +220,21 @@ namespace IED
 			void serialize(Archive& ar, const unsigned int version)
 			{
 				ar& static_cast<configBaseValues_t&>(*this);
+				ar& static_cast<configBaseFiltersHolder_t&>(*this);
 				ar& equipmentOverrides;
-				ar& raceFilter;
-				ar& actorFilter;
-				ar& npcFilter;
 			}
 		};
 
 	}
 }
+
+BOOST_CLASS_VERSION(
+	IED::Data::configBaseFilters_t,
+	IED::Data::configBaseFilters_t::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
+	IED::Data::configBaseFiltersHolder_t,
+	IED::Data::configBaseFiltersHolder_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBase_t,

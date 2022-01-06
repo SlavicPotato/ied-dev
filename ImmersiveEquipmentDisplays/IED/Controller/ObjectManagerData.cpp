@@ -1,9 +1,11 @@
 #include "pch.h"
 
 #include "ObjectManagerData.h"
+#include "INodeOverride.h"
 
 #include "IED/ActorState.h"
 #include "IED/Data.h"
+#include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
 
 namespace IED
@@ -90,6 +92,40 @@ namespace IED
 				ApplyActorState(it->second);
 				a_actorState.data.erase(it);
 			}
+		}
+	}
+
+	ActorObjectHolder::~ActorObjectHolder()
+	{
+		SetObjectWrapper<Game::ObjectRefHandle> handle;
+
+		*handle = GetHandle();
+
+		visit([&](objectEntryBase_t& a_entry) {
+			if (a_entry.state)
+			{
+				if (!handle)
+				{
+					NiPointer<TESObjectREFR> dummy;
+					LookupREFRByHandle(*handle, dummy);
+					handle.mark(true);
+				}
+
+				EngineExtensions::CleanupObject(
+					*handle,
+					a_entry.state->nodes.obj,
+					m_root);
+
+				for (auto& e : a_entry.state->dbEntries)
+				{
+					e->accessed = IPerfCounter::Query();
+				}
+			}
+		});
+
+		for (auto& ce : m_cmeNodes)
+		{
+			INodeOverride::ResetNodeOverride(ce.second);
 		}
 	}
 

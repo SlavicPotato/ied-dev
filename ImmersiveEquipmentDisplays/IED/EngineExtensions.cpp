@@ -8,15 +8,28 @@
 #include <ext/JITASM.h>
 #include <ext/VFT.h>
 
-#include <ext/Node.h>
+#define UNWRAP(...) __VA_ARGS__
+#define VALIDATE_MEMORY(addr, bytes_se, bytes_ae)                               \
+	{                                                                           \
+		constexpr auto failstr = "Memory validation failed";                    \
+		if (IAL::IsAE())                                                        \
+		{                                                                       \
+			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_ae), failstr); \
+		}                                                                       \
+		else                                                                    \
+		{                                                                       \
+			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_se), failstr); \
+		}                                                                       \
+	}
 
 namespace IED
 {
-	std::unique_ptr<EngineExtensions> EngineExtensions::m_Instance;
+	EngineExtensions* EngineExtensions::m_Instance{ nullptr };
 
 	EngineExtensions::EngineExtensions(
-		const std::shared_ptr<Controller>& a_controller,
-		const std::shared_ptr<ConfigINI>& a_config)
+		Controller* a_controller,
+		const std::shared_ptr<ConfigINI>& a_config) :
+		m_controller(a_controller)
 	{
 		Patch_RemoveAllBipedParts();
 		Patch_GarbageCollector();
@@ -40,57 +53,58 @@ namespace IED
 
 			Patch_SetWeapAdjAnimVar();
 		}
-
-		m_controller = a_controller;
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
 	{
+		VALIDATE_MEMORY(
+			m_removeAllBipedParts_a,
+			({ 0x40, 0x57, 0x48, 0x83, 0xEC, 0x30 }),
+			({ 0x40, 0x56, 0x57, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x30 }));
+
 		struct Assembly : JITASM::JITASM
 		{
-			Assembly(std::uintptr_t targetAddr) :
+			Assembly(std::uintptr_t a_targetAddr) :
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
-				Xbyak::Label callLabel;
 				Xbyak::Label retnLabel;
 
-				auto& reg = IAL::IsAE() ? rsi : rdi;
+				std::size_t size = IAL::IsAE() ? 0x9 : 0x6;
 
-				mov(rcx, reg);
-				call(ptr[rip + callLabel]);
-				lea(rbx, ptr[reg + 0x13C0]);
-
+				db(reinterpret_cast<Xbyak::uint8*>(a_targetAddr), size);
 				jmp(ptr[rip + retnLabel]);
 
 				L(retnLabel);
-				dq(targetAddr + 0x7);
-
-				L(callLabel);
-				dq(std::uintptr_t(RemoveAllBipedParts_Hook));
+				dq(a_targetAddr + size);
 			}
 		};
 
 		LogPatchBegin(__FUNCTION__);
 		{
 			Assembly code(m_removeAllBipedParts_a);
+			m_removeAllBipedParts_o = code.get<decltype(m_removeAllBipedParts_o)>();
+
 			ISKSE::GetBranchTrampoline().Write6Branch(
 				m_removeAllBipedParts_a,
-				code.get());
+				std::uintptr_t(RemoveAllBipedParts_Hook));
 		}
 		LogPatchEnd(__FUNCTION__);
 	}
 
 	void EngineExtensions::Patch_GarbageCollector()
 	{
-		auto result = Hook::Call5(
-			ISKSE::GetBranchTrampoline(),
-			m_garbageCollectorREFR_a,
-			std::uintptr_t(GarbageCollectorReference_Hook),
-			m_garbageCollectorReference_o);
-
-		ASSERT_STR(result, "failed to install garbage collector hook");
-
-		Debug("[%s] Installed garbage collector hook", __FUNCTION__);
+		if (Hook::Call5(
+				ISKSE::GetBranchTrampoline(),
+				m_garbageCollectorREFR_a,
+				std::uintptr_t(GarbageCollectorReference_Hook),
+				m_garbageCollectorReference_o))
+		{
+			Debug("[%s] Installed garbage collector hook", __FUNCTION__);
+		}
+		else
+		{
+			HALT("Failed to install garbage collector hook");
+		}
 	}
 
 	void EngineExtensions::Patch_Actor_Resurrect()
@@ -105,7 +119,7 @@ namespace IED
 		}
 		else
 		{
-			Error("[%s] Failed to install Character::Resurrect vtbl hook", __FUNCTION__);
+			HALT("Failed to install Character::Resurrect vtbl hook");
 		}
 
 		if (Hook::Call5(
@@ -118,7 +132,7 @@ namespace IED
 		}
 		else
 		{
-			Error("[%s] Failed to install state update hook", __FUNCTION__);
+			HALT("Failed to install state update hook");
 		}
 	}
 
@@ -134,7 +148,7 @@ namespace IED
 		}
 		else
 		{
-			Error("[%s] Failed to install Character::Release3D vtbl hook", __FUNCTION__);
+			HALT("Failed to install Character::Release3D vtbl hook");
 		}
 
 		if (VTable::Detour2(
@@ -147,7 +161,7 @@ namespace IED
 		}
 		else
 		{
-			Error("[%s] Failed to install Actor::Release3D vtbl hook", __FUNCTION__);
+			HALT("Failed to install Actor::Release3D vtbl hook");
 		}
 	}
 
@@ -163,12 +177,17 @@ namespace IED
 		}
 		else
 		{
-			Error("[%s] Failed to install armor update hook", __FUNCTION__);
+			HALT("Failed to install armor update hook");
 		}
 	}
 
 	void EngineExtensions::Patch_SetWeapAdjAnimVar()
 	{
+		VALIDATE_MEMORY(
+			m_weapAdj_a,
+			({ 0xE8 }),
+			({ 0xE8 }));
+
 		struct Assembly : JITASM::JITASM
 		{
 			Assembly(std::uintptr_t targetAddr) :
@@ -202,14 +221,21 @@ namespace IED
 
 	void EngineExtensions::Patch_CreateWeaponNodes()
 	{
+		VALIDATE_MEMORY(
+			m_createWeaponNodes_a,
+			({ 0x40, 0x56, 0x57, 0x41, 0x54, 0x41, 0x56 }),
+			({ 0x40, 0x56, 0x57, 0x41, 0x54, 0x41, 0x56 }));
+
 		struct Assembly : JITASM::JITASM
 		{
 			Assembly(std::uintptr_t a_targetAddr) :
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
 				Xbyak::Label retnLabel;
+
 				db(reinterpret_cast<Xbyak::uint8*>(a_targetAddr), 0x7);
 				jmp(ptr[rip + retnLabel]);
+
 				L(retnLabel);
 				dq(a_targetAddr + 0x7);
 			}
@@ -228,27 +254,20 @@ namespace IED
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
-		NiPointer<TESObjectREFR> ref;
-
-		if (!a_biped->handle.Lookup(ref))
 		{
-			return;
+			NiPointer<TESObjectREFR> ref;
+
+			if (a_biped->handle.Lookup(ref) && ref->formID)
+			{
+				if (auto actor = ref->As<Actor>())
+				{
+					m_Instance->m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
+					m_Instance->m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+				}
+			}
 		}
 
-		if (!ref->formID)
-		{
-			return;
-		}
-
-		if (auto actor = ref->As<Actor>())
-		{
-			auto controller = m_Instance->m_controller.get();
-
-			IScopedLock lock(controller->GetLock());
-
-			controller->RemoveActorImpl(actor, a_biped->handle, ControllerUpdateFlags::kNone);
-			controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
-		}
+		m_Instance->m_removeAllBipedParts_o(a_biped);
 	}
 
 	void EngineExtensions::Character_Resurrect_Hook(
@@ -325,7 +344,7 @@ namespace IED
 
 		if (formid)
 		{
-			m_Instance->m_controller->QueueRequestEvaluateTransforms(formid, false);
+			m_Instance->m_controller->QueueRequestEvaluateTransformsActor(formid, false);
 		}
 	}
 
@@ -377,7 +396,7 @@ namespace IED
 
 		if (a_actor)
 		{
-			m_Instance->m_controller->QueueRequestEvaluateTransforms(a_actor->formID, true);
+			m_Instance->m_controller->QueueRequestEvaluateTransformsActor(a_actor->formID, true);
 		}
 	}
 

@@ -298,20 +298,37 @@ namespace IED
 				}
 			};
 
-			auto ehresult = IAL::IsAE() ?
-                                ExtractHookCallAddr<true>(
-									m_unkIEProc_a,
-									m_Instance.m_nextIEPCall) :
-                                ExtractHookCallAddr<false>(
-									m_unkIEProc_a,
-									m_Instance.m_nextIEPCall);
-
-			if (ehresult)
+			if ((IAL::IsAE() ?
+                     ExtractHookCallAddr<true>(
+						 m_unkIEProc_a,
+						 m_Instance.m_nextIEPCall) :
+                     ExtractHookCallAddr<false>(
+						 m_unkIEProc_a,
+						 m_Instance.m_nextIEPCall)))
 			{
 				m_Instance.Debug(
 					"%s: extracted previous hook call address @%p",
 					__FUNCTION__,
 					m_Instance.m_nextIEPCall);
+			}
+			else
+			{
+				if (IAL::IsAE())
+				{
+					ASSERT_STR(
+						Patching::validate_mem(
+							m_unkIEProc_a,
+							{ 0x48, 0x3B, 0xF3, 0x74, 0x61 }),
+						"Memory validation failed");
+				}
+				else
+				{
+					ASSERT_STR(
+						Patching::validate_mem(
+							m_unkIEProc_a,
+							{ 0x48, 0x3B, 0xFB, 0x74, 0x65 }),
+						"Memory validation failed");
+				}
 			}
 
 			m_Instance.LogPatchBegin(__FUNCTION__);

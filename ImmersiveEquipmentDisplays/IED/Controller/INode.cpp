@@ -86,7 +86,6 @@ namespace IED
 
 		node->m_name.Set_ref(a_nodeName);
 		node->m_flags = ATTACHMENT_NODE_FLAGS;
-
 		node->m_localTransform = {};
 
 		return node;
@@ -250,8 +249,7 @@ namespace IED
 	void INode::UpdateObjectTransform(
 		const Data::cacheTransform_t& a_trnsf,
 		NiAVObject* a_object,
-		NiNode* a_refNode,
-		bool a_updateWorldData)
+		NiNode* a_refNode)
 	{
 		if (!a_object)
 		{
@@ -266,12 +264,6 @@ namespace IED
 		{
 			UpdateNodeDataImpl(a_object, a_trnsf);
 		}
-
-		/*if (a_updateWorldData)
-		{
-			NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-			a_object->UpdateWorldData(ctx);
-		}*/
 	}
 
 	void INode::GetArmorNodeName(

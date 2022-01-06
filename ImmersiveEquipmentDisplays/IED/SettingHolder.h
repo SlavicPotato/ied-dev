@@ -207,12 +207,18 @@ namespace IED
 			{
 				return m_lastException;
 			}
+			
+			inline constexpr auto HasErrors() const noexcept
+			{
+				return m_loadHasErrors;
+			}
 
 		private:
 			mutable except::descriptor m_lastException;
 
 			fs::path m_path;
 			bool m_dirty{ false };
+			bool m_loadHasErrors{ false };
 		};
 
 	}  // namespace Data

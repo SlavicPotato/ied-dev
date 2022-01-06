@@ -30,7 +30,7 @@ namespace IED
 
 	namespace UI
 	{
-		enum class EquipmentOverrideAction : std::uint8_t
+		enum class BaseConfigEditorAction : std::uint8_t
 		{
 			None,
 			Insert,
@@ -47,7 +47,7 @@ namespace IED
 
 		struct EquipmentOverrideResult
 		{
-			EquipmentOverrideAction action{ EquipmentOverrideAction::None };
+			BaseConfigEditorAction action{ BaseConfigEditorAction::None };
 			Game::FormID form;
 			Data::EquipmentOverrideConditionType entryType;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
@@ -115,6 +115,11 @@ namespace IED
 				Data::configBase_t* a_baseConfig,
 				const void* a_params);
 
+			BaseConfigEditorAction DrawFiltersTreeContextMenu(
+				T a_handle,
+				Data::configBase_t& a_data,
+				const void* a_params);
+
 			void DrawFiltersTree(
 				T a_handle,
 				Data::configBase_t& a_data,
@@ -122,7 +127,7 @@ namespace IED
 
 			virtual constexpr bool BaseConfigStoreCC() const = 0;
 
-			EquipmentOverrideAction DrawEquipmentOverrideTreeContextMenu(
+			BaseConfigEditorAction DrawEquipmentOverrideTreeContextMenu(
 				T a_handle,
 				Data::configBase_t& a_data,
 				const void* a_params);
@@ -133,7 +138,7 @@ namespace IED
 				const void* a_params,
 				const stl::fixed_string& a_slotName);
 
-			EquipmentOverrideAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 				T a_handle,
 				Data::equipmentOverride_t& a_data,
 				const void* a_params);
@@ -286,7 +291,7 @@ namespace IED
 
 			if (!empty)
 			{
-				if (result == EquipmentOverrideAction::Insert)
+				if (result == BaseConfigEditorAction::Insert)
 				{
 					ImGui::SetNextItemOpen(true);
 				}
@@ -339,72 +344,150 @@ namespace IED
 		}
 
 		template <class T>
+		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawFiltersTreeContextMenu(
+			T a_handle,
+			Data::configBase_t& a_data,
+			const void* a_params)
+		{
+			BaseConfigEditorAction result{
+				BaseConfigEditorAction::None
+			};
+
+			ImGui::PushID("context");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (a_data.filters)
+				{
+					if (LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
+					{
+						a_data.filters.reset();
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+
+						result = BaseConfigEditorAction::Delete;
+					}
+				}
+				else
+				{
+					if (LCG_MI(CommonStrings::Create, "2"))
+					{
+						a_data.filters = std::make_unique<Data::configBaseFilters_t>();
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+
+						result = BaseConfigEditorAction::Insert;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
 		void UIBaseConfigWidget<T>::DrawFiltersTree(
 			T a_handle,
 			Data::configBase_t& a_data,
 			const void* a_params)
 		{
-			/*if (ImGui::TreeNodeEx(
-					"cnf_filters",
-					ImGuiTreeNodeFlags_SpanAvailWidth,
-					"%s",
-					LS(CommonStrings::Filter)))
-			{*/
-
 			ImGui::PushID("cnf_filters");
 
-			bcFormFilterParams_t<T> ffparams{
-				a_handle,
-				a_params
-			};
+			const auto result = DrawFiltersTreeContextMenu(a_handle, a_data, a_params);
 
-			ImGui::Spacing();
+			if (result == BaseConfigEditorAction::Insert)
+			{
+				ImGui::SetNextItemOpen(true, ImGuiCond_Always);
+			}
+			else if (result == BaseConfigEditorAction::Delete)
+			{
+				ImGui::SetNextItemOpen(false, ImGuiCond_Always);
+			}
 
-			ImGui::PushID("1");
+			bool disabled = !a_data.filters;
 
-			m_formFilter.DrawFormFiltersTree(
-				LS(UIWidgetCommonStrings::ActorFilters),
-				ffparams,
-				a_data.actorFilter,
-				[&] {
-					m_ffFormSelector.SetAllowedTypes(m_type_filters.actor);
-					m_ffFormSelector.SetFormBrowserEnabled(false);
-				});
+			UICommon::PushDisabled(disabled);
+
+			if (ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Filters)))
+			{
+				if (a_data.filters)
+				{
+					bcFormFilterParams_t<T> ffparams{
+						a_handle,
+						a_params
+					};
+
+					ImGui::Spacing();
+
+					ImGui::PushID("1");
+
+					m_formFilter.DrawFormFiltersTree(
+						LS(UIWidgetCommonStrings::ActorFilters),
+						ffparams,
+						a_data.filters->actorFilter,
+						[&] {
+							m_ffFormSelector.SetAllowedTypes(m_type_filters.actor);
+							m_ffFormSelector.SetFormBrowserEnabled(false);
+						});
+
+					ImGui::PopID();
+
+					ImGui::PushID("2");
+
+					m_formFilter.DrawFormFiltersTree(
+						LS(UIWidgetCommonStrings::NPCFilters),
+						ffparams,
+						a_data.filters->npcFilter,
+						[&] {
+							m_ffFormSelector.SetAllowedTypes(m_type_filters.npc);
+							m_ffFormSelector.SetFormBrowserEnabled(true);
+						});
+
+					ImGui::PopID();
+
+					ImGui::PushID("3");
+
+					m_formFilter.DrawFormFiltersTree(
+						LS(UIWidgetCommonStrings::RaceFilters),
+						ffparams,
+						a_data.filters->raceFilter,
+						[&] {
+							m_ffFormSelector.SetAllowedTypes(m_type_filters.race);
+							m_ffFormSelector.SetFormBrowserEnabled(true);
+						});
+
+					ImGui::PopID();
+
+					ImGui::Spacing();
+				}
+
+				ImGui::TreePop();
+			}
+
+			UICommon::PopDisabled(disabled);
 
 			ImGui::PopID();
-
-			ImGui::PushID("2");
-
-			m_formFilter.DrawFormFiltersTree(
-				LS(UIWidgetCommonStrings::NPCFilters),
-				ffparams,
-				a_data.npcFilter,
-				[&] {
-					m_ffFormSelector.SetAllowedTypes(m_type_filters.npc);
-					m_ffFormSelector.SetFormBrowserEnabled(true);
-				});
-
-			ImGui::PopID();
-
-			ImGui::PushID("3");
-
-			m_formFilter.DrawFormFiltersTree(
-				LS(UIWidgetCommonStrings::RaceFilters),
-				ffparams,
-				a_data.raceFilter,
-				[&] {
-					m_ffFormSelector.SetAllowedTypes(m_type_filters.race);
-					m_ffFormSelector.SetFormBrowserEnabled(true);
-				});
-
-			ImGui::PopID();
-
-			ImGui::Spacing();
-
-			ImGui::PopID();
-
-			/*ImGui::TreePop();
-			}*/
 		}
 
 		template <class T>
@@ -803,13 +886,13 @@ namespace IED
 		}
 
 		template <class T>
-		EquipmentOverrideAction UIBaseConfigWidget<T>::DrawEquipmentOverrideTreeContextMenu(
+		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideTreeContextMenu(
 			T a_handle,
 			Data::configBase_t& a_data,
 			const void* a_params)
 		{
-			EquipmentOverrideAction result{
-				EquipmentOverrideAction::None
+			BaseConfigEditorAction result{
+				BaseConfigEditorAction::None
 			};
 
 			ImGui::PushID("ao_tree_context_area");
@@ -842,7 +925,7 @@ namespace IED
 
 						ImGui::CloseCurrentPopup();
 
-						result = EquipmentOverrideAction::Insert;
+						result = BaseConfigEditorAction::Insert;
 					}
 
 					ImGui::EndMenu();
@@ -864,7 +947,7 @@ namespace IED
 							a_params,
 							PostChangeAction::Evaluate);
 
-						result = EquipmentOverrideAction::Paste;
+						result = BaseConfigEditorAction::Paste;
 					}
 				}
 
@@ -908,16 +991,16 @@ namespace IED
 
 				switch (result.action)
 				{
-				case EquipmentOverrideAction::Delete:
+				case BaseConfigEditorAction::Delete:
 					it = a_data.equipmentOverrides.erase(it);
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
-				case EquipmentOverrideAction::Insert:
+				case BaseConfigEditorAction::Insert:
 					it = a_data.equipmentOverrides.emplace(it, a_data, *result.desc);
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					ImGui::SetNextItemOpen(true);
 					break;
-				case EquipmentOverrideAction::Swap:
+				case BaseConfigEditorAction::Swap:
 
 					if (IterSwap(a_data.equipmentOverrides, it, result.dir))
 					{
@@ -925,22 +1008,22 @@ namespace IED
 					}
 
 					break;
-				case EquipmentOverrideAction::Reset:
+				case BaseConfigEditorAction::Reset:
 					static_cast<Data::configBaseValues_t&>(*it) = a_data;
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
-				case EquipmentOverrideAction::Rename:
+				case BaseConfigEditorAction::Rename:
 					it->description = *result.desc;
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
-				case EquipmentOverrideAction::Paste:
+				case BaseConfigEditorAction::Paste:
 					if (auto clipData = UIClipboard::Get<Data::equipmentOverride_t>())
 					{
 						it = a_data.equipmentOverrides.emplace(it, *clipData);
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
 					// fallthrough
-				case EquipmentOverrideAction::PasteOver:
+				case BaseConfigEditorAction::PasteOver:
 					ImGui::SetNextItemOpen(true);
 					break;
 				}
@@ -969,8 +1052,8 @@ namespace IED
 
 						if (!empty)
 						{
-							if (result == EquipmentOverrideAction::PasteOver ||
-							    result == EquipmentOverrideAction::Insert)
+							if (result == BaseConfigEditorAction::PasteOver ||
+							    result == BaseConfigEditorAction::Insert)
 							{
 								ImGui::SetNextItemOpen(true);
 							}
@@ -1029,18 +1112,18 @@ namespace IED
 		}
 
 		template <class T>
-		EquipmentOverrideAction UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 			T a_handle,
 			Data::equipmentOverride_t& a_data,
 			const void* a_params)
 		{
-			EquipmentOverrideAction action{ EquipmentOverrideAction ::None };
+			BaseConfigEditorAction action{ BaseConfigEditorAction ::None };
 
 			const auto result = DrawEquipmentOverrideEntryContextMenu(true);
 
 			switch (result.action)
 			{
-			case EquipmentOverrideAction::Insert:
+			case BaseConfigEditorAction::Insert:
 				{
 					switch (result.entryType)
 					{
@@ -1086,11 +1169,11 @@ namespace IED
 
 				break;
 
-			case EquipmentOverrideAction::Copy:
+			case BaseConfigEditorAction::Copy:
 				UIClipboard::Set(a_data.conditions);
 				break;
 
-			case EquipmentOverrideAction::PasteOver:
+			case BaseConfigEditorAction::PasteOver:
 				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>())
 				{
 					a_data.conditions = *clipData;
@@ -1100,13 +1183,13 @@ namespace IED
 						a_params,
 						PostChangeAction::Evaluate);
 
-					action = EquipmentOverrideAction::PasteOver;
+					action = BaseConfigEditorAction::PasteOver;
 				}
 				break;
-			case EquipmentOverrideAction::Delete:
+			case BaseConfigEditorAction::Delete:
 				a_data.conditions.clear();
 
-				action = EquipmentOverrideAction::Delete;
+				action = BaseConfigEditorAction::Delete;
 
 				OnBaseConfigChange(
 					a_handle,
@@ -1170,18 +1253,18 @@ namespace IED
 
 					switch (result.action)
 					{
-					case EquipmentOverrideAction::Delete:
+					case BaseConfigEditorAction::Delete:
 						it = a_data.conditions.erase(it);
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						break;
-					case EquipmentOverrideAction::ClearKeyword:
+					case BaseConfigEditorAction::ClearKeyword:
 						if (it->keyword.get_id())
 						{
 							it->keyword = 0;
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						}
 						break;
-					case EquipmentOverrideAction::Insert:
+					case BaseConfigEditorAction::Insert:
 
 						switch (result.entryType)
 						{
@@ -1221,7 +1304,7 @@ namespace IED
 
 						break;
 
-					case EquipmentOverrideAction::Swap:
+					case BaseConfigEditorAction::Swap:
 
 						if (IterSwap(a_data.conditions, it, result.dir))
 						{
@@ -1407,7 +1490,7 @@ namespace IED
 			{
 				if (ImGui::ArrowButton("up", ImGuiDir_Up))
 				{
-					result.action = EquipmentOverrideAction::Swap;
+					result.action = BaseConfigEditorAction::Swap;
 					result.dir = SwapDirection::Up;
 				}
 
@@ -1415,7 +1498,7 @@ namespace IED
 
 				if (ImGui::ArrowButton("down", ImGuiDir_Down))
 				{
-					result.action = EquipmentOverrideAction::Swap;
+					result.action = BaseConfigEditorAction::Swap;
 					result.dir = SwapDirection::Down;
 				}
 			}
@@ -1430,7 +1513,7 @@ namespace IED
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector("##ss", m_aoNewSlot))
 						{
-							result.action = EquipmentOverrideAction::Insert;
+							result.action = BaseConfigEditorAction::Insert;
 							result.slot = m_aoNewSlot;
 							result.entryType = Data::EquipmentOverrideConditionType::Type;
 
@@ -1450,7 +1533,7 @@ namespace IED
 						{
 							if (m_aoNewEntryID)
 							{
-								result.action = EquipmentOverrideAction::Insert;
+								result.action = BaseConfigEditorAction::Insert;
 								result.form = m_aoNewEntryID;
 								result.entryType = Data::EquipmentOverrideConditionType::Form;
 
@@ -1469,7 +1552,7 @@ namespace IED
 						{
 							if (m_aoNewEntryKWID)
 							{
-								result.action = EquipmentOverrideAction::Insert;
+								result.action = BaseConfigEditorAction::Insert;
 								result.form = m_aoNewEntryKWID;
 								result.entryType = Data::EquipmentOverrideConditionType::Keyword;
 
@@ -1490,7 +1573,7 @@ namespace IED
 						{
 							if (m_aoNewEntryRaceID)
 							{
-								result.action = EquipmentOverrideAction::Insert;
+								result.action = BaseConfigEditorAction::Insert;
 								result.form = m_aoNewEntryRaceID;
 								result.entryType = Data::EquipmentOverrideConditionType::Race;
 
@@ -1505,7 +1588,7 @@ namespace IED
 
 					if (LCG_MI(CommonStrings::Furniture, "6"))
 					{
-						result.action = EquipmentOverrideAction::Insert;
+						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Furniture;
 
 						ImGui::CloseCurrentPopup();
@@ -1516,14 +1599,14 @@ namespace IED
 
 				if (LCG_MI(CommonStrings::Delete, "7"))
 				{
-					result.action = EquipmentOverrideAction::Delete;
+					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
 					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "8"))
 					{
-						result.action = EquipmentOverrideAction::ClearKeyword;
+						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
 				}
 				else
@@ -1532,7 +1615,7 @@ namespace IED
 
 					if (LCG_MI(CommonStrings::Copy, "9"))
 					{
-						result.action = EquipmentOverrideAction::Copy;
+						result.action = BaseConfigEditorAction::Copy;
 					}
 
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
@@ -1543,7 +1626,7 @@ namespace IED
 							false,
 							clipData != nullptr))
 					{
-						result.action = EquipmentOverrideAction::PasteOver;
+						result.action = BaseConfigEditorAction::PasteOver;
 					}
 				}
 
@@ -1600,7 +1683,7 @@ namespace IED
 
 			if (ImGui::ArrowButton("up", ImGuiDir_Up))
 			{
-				result.action = EquipmentOverrideAction::Swap;
+				result.action = BaseConfigEditorAction::Swap;
 				result.dir = SwapDirection::Up;
 			}
 
@@ -1608,7 +1691,7 @@ namespace IED
 
 			if (ImGui::ArrowButton("down", ImGuiDir_Down))
 			{
-				result.action = EquipmentOverrideAction::Swap;
+				result.action = BaseConfigEditorAction::Swap;
 				result.dir = SwapDirection::Down;
 			}
 
@@ -1624,7 +1707,7 @@ namespace IED
 					{
 						if (DrawDescriptionPopup())
 						{
-							result.action = EquipmentOverrideAction::Insert;
+							result.action = BaseConfigEditorAction::Insert;
 							result.desc = std::addressof(GetDescriptionPopupBuffer());
 
 							ImGui::CloseCurrentPopup();
@@ -1641,7 +1724,7 @@ namespace IED
 							false,
 							clipData != nullptr))
 					{
-						result.action = EquipmentOverrideAction::Paste;
+						result.action = BaseConfigEditorAction::Paste;
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -1651,14 +1734,14 @@ namespace IED
 
 				if (ImGui::MenuItem(LS(CommonStrings::Delete, "4")))
 				{
-					result.action = EquipmentOverrideAction::Delete;
+					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (LCG_BM(CommonStrings::Rename, "5"))
 				{
 					if (DrawDescriptionPopup())
 					{
-						result.action = EquipmentOverrideAction::Rename;
+						result.action = BaseConfigEditorAction::Rename;
 						result.desc = std::addressof(GetDescriptionPopupBuffer());
 
 						ImGui::CloseCurrentPopup();
@@ -1669,7 +1752,7 @@ namespace IED
 
 				if (ImGui::MenuItem(LS(CommonStrings::Reset, "6")))
 				{
-					result.action = EquipmentOverrideAction::Reset;
+					result.action = BaseConfigEditorAction::Reset;
 				}
 
 				ImGui::Separator();
@@ -1710,7 +1793,7 @@ namespace IED
 							a_params,
 							PostChangeAction::Evaluate);
 
-						result.action = EquipmentOverrideAction::PasteOver;
+						result.action = BaseConfigEditorAction::PasteOver;
 					}
 				}
 

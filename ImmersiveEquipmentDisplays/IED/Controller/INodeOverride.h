@@ -203,14 +203,14 @@ namespace IED
 			}
 		};
 
+		static void ResetNodeOverride(
+			const cmeNodeEntry_t& a_entry);
+
 	protected:
 		static void ApplyNodeOverride(
 			const cmeNodeEntry_t& a_entry,
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t& a_params);
-
-		static void ResetNodeOverride(
-			const cmeNodeEntry_t& a_entry);
 
 		static void ApplyNodeVisibility(
 			NiNode* a_node,

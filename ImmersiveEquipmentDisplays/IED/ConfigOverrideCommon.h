@@ -321,6 +321,19 @@ namespace IED
 				return data;
 			}
 
+			void clear()
+			{
+				for (auto& e : data)
+				{
+					e.clear();
+				}
+
+				for (auto& e : global)
+				{
+					e.clear();
+				}
+			}
+
 		protected:
 			template <class Archive>
 			void serialize(Archive& ar, const unsigned int version)
@@ -441,6 +454,94 @@ namespace IED
 
 		using configFormList_t = std::vector<configForm_t>;
 	}
+
+	template <class T>
+	struct configHolderCache_t
+	{
+	public:
+		using mapped_type = typename T::mapped_type;
+
+		const mapped_type* get_actor(
+			Game::FormID a_actor,
+			const T& a_data) const
+		{
+			if (!actor_set)
+			{
+				auto it = a_data.find(a_actor);
+
+				actor = it != a_data.end() ?
+                            std::addressof(it->second) :
+                            nullptr;
+
+				actor_set = true;
+			}
+
+			return actor;
+		}
+
+		const mapped_type* get_npc(
+			Game::FormID a_npc,
+			const T& a_data) const
+		{
+			if (!npc_set)
+			{
+				auto it = a_data.find(a_npc);
+
+				npc = it != a_data.end() ?
+                          std::addressof(it->second) :
+                          nullptr;
+
+				npc_set = true;
+			}
+
+			return npc;
+		}
+
+		const mapped_type* get_race(
+			Game::FormID a_race,
+			const T& a_data) const
+		{
+			if (!race_set)
+			{
+				auto it = a_data.find(a_race);
+
+				race = it != a_data.end() ?
+                           std::addressof(it->second) :
+                           nullptr;
+
+				race_set = true;
+			}
+
+			return race;
+		}
+
+		template <class Td>
+		SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
+			const Td& a_data,
+			const typename Td::key_type& a_key)
+		{
+			if (a_data.empty())
+			{
+				return nullptr;
+			}
+			else
+			{
+				auto it = a_data.find(a_key);
+				return it != a_data.end() ?
+                           std::addressof(it->second) :
+                           nullptr;
+			}
+		}
+
+	private:
+		mutable bool actor_set{ false };
+		mutable bool npc_set{ false };
+		mutable bool race_set{ false };
+
+		mutable const mapped_type* actor;
+		mutable const mapped_type* npc;
+		mutable const mapped_type* race;
+	};
 }
 
 BOOST_CLASS_VERSION(

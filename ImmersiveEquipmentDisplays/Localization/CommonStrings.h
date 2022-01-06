@@ -153,5 +153,7 @@ namespace IED
 		Equip = 224,
 		Unequip = 225,
 		Player = 226,
+		Create = 227,
+		Filters = 228,
 	};
 }

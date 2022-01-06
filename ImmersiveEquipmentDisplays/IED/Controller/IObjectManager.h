@@ -69,13 +69,9 @@ namespace IED
 			ActorObjectHolder& a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		/*void RemoveActorByHandleImpl(
-			Game::ObjectRefHandle a_mhandle,
-			Game::ObjectRefHandle a_rhandle);*/
-
-		void CleanupActorObjectsImpl(
+		/*void CleanupActorObjectsImpl(
 			ActorObjectHolder& a_objects,
-			Game::ObjectRefHandle a_rhandle);
+			Game::ObjectRefHandle a_rhandle);*/
 
 		bool RemoveInvisibleObjects(
 			ActorObjectHolder& a_objects,

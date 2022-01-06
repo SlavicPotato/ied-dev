@@ -5,6 +5,8 @@
 
 #include "Controller/ObjectManagerData.h"
 
+#include "ProcessParams.h"
+
 namespace IED
 {
 	namespace Data
@@ -953,6 +955,20 @@ namespace IED
 
 			return it != equipmentOverrides.end();*/
 			return false;
+		}
+
+		bool configBaseFiltersHolder_t::run_filters(const processParams_t& a_params) const
+		{
+			if (filters)
+			{
+				return filters->actorFilter.test(a_params.actor->formID) &&
+				       filters->npcFilter.test(a_params.npc->formID) &&
+				       filters->raceFilter.test(a_params.race->formID);
+			}
+			else
+			{
+				return true;
+			}
 		}
 	}
 }

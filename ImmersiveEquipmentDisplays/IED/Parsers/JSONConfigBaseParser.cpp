@@ -34,19 +34,26 @@ namespace IED
 				}
 			}
 
-			if (!pfset.Parse(a_in["rfilter"], a_out.raceFilter))
+			if (auto& filtData = a_in["bflt"])
 			{
-				return false;
-			}
-			
-			if (!pfset.Parse(a_in["afilter"], a_out.actorFilter))
-			{
-				return false;
-			}
-			
-			if (!pfset.Parse(a_in["nfilter"], a_out.npcFilter))
-			{
-				return false;
+				auto tmp = std::make_unique<Data::configBaseFilters_t>();
+
+				if (!pfset.Parse(filtData["r"], tmp->raceFilter))
+				{
+					return false;
+				}
+
+				if (!pfset.Parse(filtData["a"], tmp->actorFilter))
+				{
+					return false;
+				}
+
+				if (!pfset.Parse(filtData["n"], tmp->npcFilter))
+				{
+					return false;
+				}
+
+				a_out.filters = std::move(tmp);
 			}
 
 			return true;
@@ -67,9 +74,14 @@ namespace IED
 				aoListParser.Create(a_data.equipmentOverrides, a_out["ao"]);
 			}
 
-			pfset.Create(a_data.raceFilter, a_out["rfilter"]);
-			pfset.Create(a_data.actorFilter, a_out["afilter"]);
-			pfset.Create(a_data.npcFilter, a_out["nfilter"]);
+			if (a_data.filters)
+			{
+				auto& filtData = (a_out["bflt"] = Json::Value(Json::ValueType::objectValue));
+
+				pfset.Create(a_data.filters->raceFilter, filtData["r"]);
+				pfset.Create(a_data.filters->actorFilter, filtData["a"]);
+				pfset.Create(a_data.filters->npcFilter, filtData["n"]);
+			}
 		}
 
 		template <>

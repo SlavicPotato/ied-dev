@@ -12,7 +12,7 @@ namespace IED
 			{
 				if (a_refr == nullptr ||
 				    a_refr->loadedState == nullptr ||
-				    (a_refr->flags & TESForm::kFlagIsDeleted) == TESForm::kFlagIsDeleted)
+				    a_refr->IsDeleted())
 				{
 					return false;
 				}

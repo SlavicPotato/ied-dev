@@ -63,6 +63,37 @@ namespace IED
 		{
 		}
 
+		static constexpr bool upd_base_filt(
+			const stl::fixed_string& a_oldName,
+			const stl::fixed_string& a_newName,
+			Data::configBaseFilters_t& a_conf)
+		{
+			bool result = false;
+
+			if (a_conf.raceFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
+			    a_conf.raceFilter.profile.name == a_oldName)
+			{
+				a_conf.raceFilter.profile.name = a_newName;
+				result = true;
+			}
+
+			if (a_conf.npcFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
+			    a_conf.npcFilter.profile.name == a_oldName)
+			{
+				a_conf.npcFilter.profile.name = a_newName;
+				result = true;
+			}
+
+			if (a_conf.actorFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
+			    a_conf.actorFilter.profile.name == a_oldName)
+			{
+				a_conf.actorFilter.profile.name = a_newName;
+				result = true;
+			}
+
+			return result;
+		}
+
 		void UIProfileEditorFormFilters::OnProfileRename(
 			const stl::fixed_string& a_oldName,
 			const stl::fixed_string& a_newName)
@@ -73,11 +104,12 @@ namespace IED
 
 			store.active.slot.visit(
 				[&](Data::configSlot_t& a_conf) {
-					if (a_conf.raceFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
-				        a_conf.raceFilter.profile.name == a_oldName)
+					if (a_conf.filters)
 					{
-						a_conf.raceFilter.profile.name = a_newName;
-						chg = true;
+						if (upd_base_filt(a_oldName, a_newName, *a_conf.filters))
+						{
+							chg = true;
+						}
 					}
 
 					if (a_conf.itemFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
@@ -90,11 +122,12 @@ namespace IED
 
 			store.active.custom.visit(
 				[&](Data::configCustom_t& a_conf) {
-					if (a_conf.raceFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
-				        a_conf.raceFilter.profile.name == a_oldName)
+					if (a_conf.filters)
 					{
-						a_conf.raceFilter.profile.name = a_newName;
-						chg = true;
+						if (upd_base_filt(a_oldName, a_newName, *a_conf.filters))
+						{
+							chg = true;
+						}
 					}
 				});
 

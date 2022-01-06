@@ -595,77 +595,7 @@ namespace IED
 			//using merged_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntry_t>;
 
 		public:
-			struct holderCache_t
-			{
-			public:
-				const configNodeOverrideHolder_t* get_actor(
-					Game::FormID a_actor,
-					const configMapNodeOverrides_t& a_data) const
-				{
-					if (!actor)
-					{
-						if (auto it = a_data.find(a_actor); it != a_data.end())
-						{
-							actor = std::addressof(it->second);
-						}
-					}
-
-					return actor;
-				}
-
-				const configNodeOverrideHolder_t* get_npc(
-					Game::FormID a_npc,
-					const configMapNodeOverrides_t& a_data) const
-				{
-					if (!npc)
-					{
-						if (auto it = a_data.find(a_npc); it != a_data.end())
-						{
-							npc = std::addressof(it->second);
-						}
-					}
-
-					return npc;
-				}
-
-				const configNodeOverrideHolder_t* get_race(
-					Game::FormID a_race,
-					const configMapNodeOverrides_t& a_data) const
-				{
-					if (!race)
-					{
-						if (auto it = a_data.find(a_race); it != a_data.end())
-						{
-							race = std::addressof(it->second);
-						}
-					}
-
-					return race;
-				}
-
-			private:
-				mutable const configNodeOverrideHolder_t* actor{ nullptr };
-				mutable const configNodeOverrideHolder_t* npc{ nullptr };
-				mutable const configNodeOverrideHolder_t* race{ nullptr };
-			};
-
-			template <class T>
-			SKMP_FORCEINLINE static const typename T::mapped_type* GetEntry(
-				const T& a_data,
-				const stl::fixed_string& a_node)
-			{
-				if (a_data.empty())
-				{
-					return nullptr;
-				}
-				else
-				{
-					auto it = a_data.find(a_node);
-					return it != a_data.end() ?
-                               std::addressof(it->second) :
-                               nullptr;
-				}
-			}
+			using holderCache_t = configHolderCache_t<configMapNodeOverrides_t>;
 
 			static void CopyEntries(
 				const configNodeOverrideHolder_t& a_src,
@@ -728,16 +658,22 @@ namespace IED
 				const stl::fixed_string& a_node,
 				holderCache_t& a_hc) const;
 
-			void clear()
+		private:
+			template <class Td>
+			SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
+				const Td& a_data,
+				const typename Td::key_type& a_key)
 			{
-				for (auto& e : data)
+				if (a_data.empty())
 				{
-					e.clear();
+					return nullptr;
 				}
-
-				for (auto& e : global)
+				else
 				{
-					e.clear();
+					auto it = a_data.find(a_key);
+					return it != a_data.end() ?
+                               std::addressof(it->second) :
+                               nullptr;
 				}
 			}
 		};

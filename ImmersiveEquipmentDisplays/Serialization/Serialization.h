@@ -216,6 +216,8 @@ namespace IED
 		std::string SafeGetPath(const fs::path& a_path) noexcept;
 		void CreateRootPath(const std::filesystem::path& a_path);
 
+		bool FileExists(const fs::path& a_path) noexcept;
+
 		template <class T>
 		void ReadData(
 			const fs::path& a_path,

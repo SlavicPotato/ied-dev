@@ -30,7 +30,7 @@ namespace IED
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing)
 	{
-		InitializeInput();
+		InitializeInputHandlers();
 	}
 
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
@@ -43,6 +43,16 @@ namespace IED
 			return false;
 		}
 		return true;
+	}
+
+	void Controller::SinkInputEvents()
+	{
+		Drivers::Input::RegisterForKeyEvents(m_inputHandlers.playerBlock);
+
+		if (m_iniconf->m_enableUI)
+		{
+			Drivers::Input::RegisterForPriorityKeyEvents(m_inputHandlers.uiToggle);
+		}
 	}
 
 	void Controller::SinkEventsT0()
@@ -114,10 +124,20 @@ namespace IED
 
 		if (!m_config.settings.Load())
 		{
-			Warning(
-				"%s: failed loading settings: %s",
-				m_config.settings.GetPath().string().c_str(),
-				m_config.settings.GetLastException().what());
+			if (Serialization::FileExists(PATHS::SETTINGS))
+			{
+				Error(
+					"%s: failed loading settings: %s",
+					PATHS::SETTINGS,
+					m_config.settings.GetLastException().what());
+			}
+		}
+		else
+		{
+			if (m_config.settings.HasErrors())
+			{
+				Warning("%s: settings loaded with errors", PATHS::SETTINGS);
+			}
 		}
 
 		auto& settings = m_config.settings.data;
@@ -133,10 +153,13 @@ namespace IED
 
 		if (!nodeMap.LoadExtra(PATHS::NODEMAP))
 		{
-			Warning(
-				"%s: %s",
-				PATHS::NODEMAP,
-				nodeMap.GetLastException().what());
+			if (Serialization::FileExists(PATHS::NODEMAP))
+			{
+				Error(
+					"%s: %s",
+					PATHS::NODEMAP,
+					nodeMap.GetLastException().what());
+			}
 		}
 
 		SetODBLevel(settings.odbLevel);
@@ -215,7 +238,7 @@ namespace IED
 			MakeSoundPair(settings.gen));
 	}
 
-	void Controller::InitializeInput()
+	void Controller::InitializeInputHandlers()
 	{
 		m_inputHandlers.playerBlock.SetLambda([this] {
 			ITaskPool::AddTask(
@@ -226,14 +249,14 @@ namespace IED
 
 		m_inputHandlers.playerBlock.SetProcessPaused(false);
 
-		Drivers::Input::RegisterForKeyEvents(m_inputHandlers.playerBlock);
-
 		if (m_iniconf->m_enableUI)
 		{
 			m_inputHandlers.uiToggle.SetLambda(
-				[this] { ITaskPool::AddTask([this] { UIToggle(); }); });
-
-			Drivers::Input::RegisterForPriorityKeyEvents(m_inputHandlers.uiToggle);
+				[this] {
+					ITaskPool::AddTask([this] {
+						UIToggle();
+					});
+				});
 		}
 	}
 
@@ -298,18 +321,8 @@ namespace IED
 	void Controller::InitializeConfig()
 	{
 		bool defaultConfLoaded = false;
-		bool userConfExists;
 
-		try
-		{
-			userConfExists = fs::exists(PATHS::DEFAULT_CONFIG_USER);
-		}
-		catch (const std::exception&)
-		{
-			userConfExists = false;
-		}
-
-		if (userConfExists)
+		if (Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER))
 		{
 			defaultConfLoaded = LoadConfigStore(
 				PATHS::DEFAULT_CONFIG_USER,
@@ -578,7 +591,7 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueRequestEvaluateTransforms(
+	void Controller::QueueRequestEvaluateTransformsActor(
 		Game::FormID a_actor,
 		bool a_noDefer) const
 	{
@@ -2108,22 +2121,12 @@ namespace IED
 			UpdateObjectTransform(
 				a_entry.state->transform,
 				a_entry.state->nodes.obj,
-				a_entry.state->nodes.ref,
-				true);
+				a_entry.state->nodes.ref);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		return true;
-	}
-
-	static bool run_filters(
-		const processParams_t& a_params,
-		const Data::configBase_t& a_config)
-	{
-		return a_config.actorFilter.test(a_params.actor->formID) &&
-		       a_config.npcFilter.test(a_params.npc->formID) &&
-		       a_config.raceFilter.test(a_params.race->formID);
 	}
 
 	void Controller::ProcessSlots(processParams_t& a_params)
@@ -2142,15 +2145,12 @@ namespace IED
 
 		auto equippedInfo = CreateEquippedItemInfo(pm);
 
-		auto config = m_config.active.slot.GetActor(
-			a_params.actor->formID,
-			a_params.npc->formID,
-			a_params.race->formID);
-
 		SaveLastEquippedItems(
 			a_params.actor,
 			equippedInfo,
 			a_params.objects);
+
+		Data::configStoreSlot_t::holderCache_t hc;
 
 		using enum_type = std::underlying_type_t<ObjectType>;
 
@@ -2194,10 +2194,7 @@ namespace IED
 
 				auto& objectEntry = a_params.objects.GetSlot(slot);
 
-				const auto& entry = config.entries[stl::underlying(slot)];
-
-				if (!entry.data ||
-				    (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)
+				if ((a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2209,9 +2206,28 @@ namespace IED
 					continue;
 				}
 
-				auto& configEntry = entry.data->get(a_params.configSex);
+				auto entry = m_config.active.slot.GetActor(
+					a_params.actor->formID,
+					a_params.npc->formID,
+					a_params.race->formID,
+					slot,
+					hc);
 
-				if (!run_filters(a_params, configEntry))
+				if (!entry)
+				{
+					RemoveObject(
+						a_params.actor,
+						a_params.handle,
+						objectEntry,
+						a_params.objects,
+						a_params.flags);
+
+					continue;
+				}
+
+				auto& configEntry = entry->get(a_params.configSex);
+
+				if (!configEntry.run_filters(a_params))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2541,7 +2557,7 @@ namespace IED
 			return false;
 		}
 
-		if (!run_filters(a_params, a_config))
+		if (!a_config.run_filters(a_params))
 		{
 			return false;
 		}
@@ -2712,54 +2728,33 @@ namespace IED
 		{
 			auto& conf = f.second(a_params.configSex);
 
-			if (auto it = a_entryMap.find(f.first);
-			    it != a_entryMap.end())
-			{
-				if (!ProcessCustomEntry(
-						a_params,
-						conf,
-						it->second))
-				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						it->second,
-						a_params.objects,
-						a_params.flags);
+			auto it = a_entryMap.try_emplace(f.first).first;
 
-					a_entryMap.erase(it);
+			if (it->second.doNotProcess)
+			{
+				continue;
+			}
+
+			if (conf.customFlags.test(Data::CustomFlags::kUseChance))
+			{
+				if (m_rng1.Get() > conf.chance)
+				{
+					it->second.doNotProcess = true;
+					continue;
 				}
 			}
-			else
+
+			if (!ProcessCustomEntry(
+					a_params,
+					conf,
+					it->second))
 			{
-				if (conf.customFlags.test(Data::CustomFlags::kUseChance))
-				{
-					if (m_rng1.Get() > conf.chance)
-					{
-						continue;
-					}
-				}
-
-				objectEntryCustom_t tmp;
-
-				if (ProcessCustomEntry(
-						a_params,
-						conf,
-						tmp))
-				{
-					a_entryMap.emplace(f.first, std::move(tmp));
-				}
-				else
-				{
-					// atm it's not possible for obj to be set if process fails, this is in case that changes
-					if (tmp.state)
-					{
-						EngineExtensions::CleanupObject(
-							a_params.handle,
-							tmp.state->nodes.obj,
-							a_params.objects.m_root);
-					}
-				}
+				RemoveObject(
+					a_params.actor,
+					a_params.handle,
+					it->second,
+					a_params.objects,
+					a_params.flags);
 			}
 		}
 	}
@@ -2778,27 +2773,9 @@ namespace IED
 				continue;
 			}
 
-			if (auto it = pluginMap.find(e.first);
-			    it != pluginMap.end())
-			{
-				ProcessCustomEntryMap(a_params, e.second, it->second);
+			auto it = pluginMap.try_emplace(e.first).first;
 
-				if (it->second.empty())
-				{
-					pluginMap.erase(it);
-				}
-			}
-			else
-			{
-				ActorObjectHolder::customEntryMap_t tmp;
-
-				ProcessCustomEntryMap(a_params, e.second, tmp);
-
-				if (!tmp.empty())
-				{
-					pluginMap.emplace(e.first, std::move(tmp));
-				}
-			}
+			ProcessCustomEntryMap(a_params, e.second, it->second);
 		}
 	}
 
@@ -3217,15 +3194,6 @@ namespace IED
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
-		/*if (IsActorBlockedImpl(a_actor->formID))
-		{
-			RemoveActorImpl(
-				a_actor,
-				a_handle,
-				ControllerUpdateFlags::kNone);
-			return;
-		}*/
-
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
 		{
@@ -3263,15 +3231,6 @@ namespace IED
 		Data::ConfigClass a_class,
 		const stl::fixed_string& a_pkey)
 	{
-		/*if (IsActorBlockedImpl(a_actor->formID))
-		{
-			RemoveActorImpl(
-				a_actor,
-				a_handle,
-				ControllerUpdateFlags::kNone);
-			return;
-		}*/
-
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
 		{
@@ -3302,15 +3261,6 @@ namespace IED
 		Game::ObjectRefHandle a_handle,
 		Data::ConfigClass a_class)
 	{
-		/*if (IsActorBlockedImpl(a_actor->formID))
-		{
-			RemoveActorImpl(
-				a_actor,
-				a_handle,
-				ControllerUpdateFlags::kNone);
-			return;
-		}*/
-
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
 		{
@@ -3356,62 +3306,29 @@ namespace IED
 			return;
 		}
 
-		/*if (IsActorBlockedImpl(info.actor->formID))
+		if (a_slot != ObjectSlot::kMax)
 		{
-			return;
-		}*/
+			Data::configStoreSlot_t::holderCache_t hc;
 
-		auto config = m_config.active.slot.GetActor(
-			info.actor->formID,
-			info.npc->formID,
-			info.race->formID);
+			auto config = m_config.active.slot.GetActor(
+				info.actor->formID,
+				info.npc->formID,
+				info.race->formID,
+				a_slot,
+				hc);
 
-		if (a_slot == ObjectSlot::kMax)
-		{
-			/*using enum_type = std::underlying_type_t<ObjectSlot>;
-
-			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-			{
-				auto slotId = static_cast<ObjectSlot>(i);
-
-				auto& objectEntry = a_record.GetSlot(slotId);
-				if (!objectEntry.nodes.obj)
-				{
-					continue;
-				}
-
-				auto& e = config.entries[i];
-				if (e.data)
-				{
-					auto& conf = GetConfigForActor(
-						info.actor,
-						e.data->get(info.sex),
-						objectEntry);
-
-					objectEntry.transform.UpdateData(conf);
-
-					UpdateObjectTransform(
-						objectEntry.transform,
-						objectEntry.nodes.obj,
-						objectEntry.nodes.ref);
-				}
-			}*/
-		}
-		else
-		{
 			auto& objectEntry = a_record.GetSlot(a_slot);
 			if (!objectEntry.state)
 			{
 				return;
 			}
 
-			auto& e = config.entries[stl::underlying(a_slot)];
-			if (e.data)
+			if (config)
 			{
 				auto& conf = GetConfigForActor(
 					info.actor,
 					info.race,
-					e.data->get(info.sex),
+					config->get(info.sex),
 					objectEntry);
 
 				objectEntry.state->transform.UpdateData(conf);
@@ -3462,14 +3379,22 @@ namespace IED
 				actorInfo_t& a_info,
 				const Data::configCustomEntry_t& a_confEntry,
 				objectEntryCustom_t& a_entry) {
-				auto& conf = GetConfigForActor(
-					a_info.actor,
-					a_info.race,
-					a_confEntry(a_info.sex),
-					a_info.objects->GetSlots());
+				if (!a_entry.state)
+				{
+					return false;
+				}
+				else
+				{
+					auto& conf = GetConfigForActor(
+						a_info.actor,
+						a_info.race,
+						a_confEntry(a_info.sex),
+						a_info.objects->GetSlots());
 
-				UpdateTransformCustomImpl(a_info, conf, a_entry);
-				return true;
+					UpdateTransformCustomImpl(a_info, conf, a_entry);
+
+					return true;
+				}
 			}
 		};
 	}
@@ -4096,11 +4021,6 @@ namespace IED
 			return false;
 		}
 
-		auto config = m_config.active.slot.GetActor(
-			info.actor->formID,
-			info.npc->formID,
-			info.race->formID);
-
 		if (a_slot == ObjectSlot::kMax)
 		{
 			return false;
@@ -4132,10 +4052,18 @@ namespace IED
 			{
 				bool result = false;
 
-				auto& e = config.entries[stl::underlying(a_slot)];
-				if (e.data)
+				Data::configStoreSlot_t::holderCache_t hc;
+
+				auto config = m_config.active.slot.GetActor(
+					info.actor->formID,
+					info.npc->formID,
+					info.race->formID,
+					a_slot,
+					hc);
+
+				if (config)
 				{
-					auto& configEntry = e.data->get(info.sex);
+					auto& configEntry = config->get(info.sex);
 					auto& conf = GetConfigForActor(
 						info.actor,
 						info.race,
@@ -4160,7 +4088,7 @@ namespace IED
 		NiNode* a_root,
 		const Data::NodeDescriptor& a_node,
 		bool a_atmReference,
-		objectEntryBase_t& a_cacheEntry)
+		objectEntryBase_t& a_entry)
 	{
 		if (!a_node)
 		{
@@ -4173,7 +4101,7 @@ namespace IED
 				a_root,
 				a_node,
 				a_atmReference,
-				a_cacheEntry))
+				a_entry))
 		{
 			RequestEvaluateTransformsActor(a_info.actor->formID, false);
 			UpdateRootInMenu(a_info.root);
@@ -4213,8 +4141,7 @@ namespace IED
 			UpdateObjectTransform(
 				a_entry.state->transform,
 				a_entry.state->nodes.obj,
-				a_entry.state->nodes.ref,
-				true);
+				a_entry.state->nodes.ref);
 
 			a_entry.state->nodeDesc = a_node;
 			a_entry.state->atmReference = a_atmReference;
@@ -4332,7 +4259,9 @@ namespace IED
 			race,
 			root,
 			npcroot,
-			npc->GetSex() == 1 ? ConfigSex::Female : ConfigSex::Male,
+			npc->GetSex() == 1 ?
+                ConfigSex::Female :
+                ConfigSex::Male,
 			std::addressof(a_objects)
 		};
 
@@ -4486,7 +4415,7 @@ namespace IED
 
 			if (a_evn->dead)
 			{
-				QueueRequestEvaluateTransforms(a_evn->source->formID, true);
+				QueueRequestEvaluateTransformsActor(a_evn->source->formID, true);
 			}
 		}
 

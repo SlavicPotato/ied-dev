@@ -67,8 +67,7 @@ namespace IED
 		static void UpdateObjectTransform(
 			const Data::cacheTransform_t& a_trnsf,
 			NiAVObject* a_node,
-			NiNode* a_refNode,
-			bool a_updateWorldData = true);
+			NiNode* a_refNode);
 
 		static void GetArmorNodeName(
 			Game::FormID a_formid,

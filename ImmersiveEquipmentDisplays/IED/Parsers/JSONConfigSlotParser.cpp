@@ -29,7 +29,7 @@ namespace IED
 				return false;
 			}
 
-			if (!pfset.Parse(a_in["flt"], a_out.itemFilter))
+			if (!pfset.Parse(a_in["iflt"], a_out.itemFilter))
 			{
 				return false;
 			}
@@ -55,7 +55,7 @@ namespace IED
 				pformList.Create(a_in.preferredItems, a_out["pil"]);
 			}
 
-			pfset.Create(a_in.itemFilter, a_out["flt"]);
+			pfset.Create(a_in.itemFilter, a_out["iflt"]);
 
 			a_out["sflags"] = stl::underlying(a_in.slotFlags.value);
 		}

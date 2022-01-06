@@ -80,5 +80,17 @@ namespace IED
 				throw std::exception("Root path is not a directory");
 			}
 		}
+
+		bool FileExists(const fs::path& a_path) noexcept
+		{
+			try
+			{
+				return std::filesystem::exists(a_path);
+			}
+			catch (const std::exception&)
+			{
+				return false;
+			}
+		}
 	}
 }

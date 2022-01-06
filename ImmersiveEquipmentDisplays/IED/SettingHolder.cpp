@@ -28,6 +28,8 @@ namespace IED
 					throw std::exception("parser error");
 				}
 
+				m_loadHasErrors = state.has_errors();
+
 				data = std::move(tmp);
 
 				return true;
