@@ -315,7 +315,7 @@ namespace IED
 					keys.key,
 					keys.name,
 					GetSex(a_female),
-					std::clamp(Math::zero_nan(a_scale), 0.1f, 100.0f));
+					std::clamp(Math::zero_nan(a_scale), 0.01f, 100.0f));
 			}
 
 			template <class T>
@@ -355,7 +355,8 @@ namespace IED
 				BSFixedString a_name,
 				bool a_female,
 				bool a_switch,
-				bool a_ignoreRaceEquipTypes)
+				bool a_ignoreRaceEquipTypes,
+				bool a_disableIfEquipped)
 			{
 				if (!a_target)
 				{
@@ -375,7 +376,8 @@ namespace IED
 					keys.name,
 					GetSex(a_female),
 					a_switch,
-					a_ignoreRaceEquipTypes);
+					a_ignoreRaceEquipTypes,
+					a_disableIfEquipped);
 			}
 
 			template <class T>
@@ -955,21 +957,21 @@ namespace IED
 						a_registry));
 
 				a_registry->RegisterFunction(
-					new NativeFunction6<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool, bool>(
+					new NativeFunction7<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeActor",
 						"IED",
 						SetItemEquipmentMode<Actor>,
 						a_registry));
 
 				a_registry->RegisterFunction(
-					new NativeFunction6<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool, bool>(
+					new NativeFunction7<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeNPC",
 						"IED",
 						SetItemEquipmentMode<TESNPC>,
 						a_registry));
 
 				a_registry->RegisterFunction(
-					new NativeFunction6<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool, bool>(
+					new NativeFunction7<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeRace",
 						"IED",
 						SetItemEquipmentMode<TESRace>,

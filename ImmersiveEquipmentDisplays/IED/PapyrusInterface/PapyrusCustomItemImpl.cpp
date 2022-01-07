@@ -771,7 +771,8 @@ namespace IED
 				const stl::fixed_string& a_name,
 				Data::ConfigSex a_sex,
 				bool a_switch,
-				bool a_ignoreRaceEquipTypes)
+				bool a_ignoreRaceEquipTypes,
+				bool a_disableIfEquipped)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -799,6 +800,15 @@ namespace IED
 				else
 				{
 					e.customFlags.clear(Data::CustomFlags::kIgnoreRaceEquipTypes);
+				}
+
+				if (a_disableIfEquipped)
+				{
+					e.customFlags.set(Data::CustomFlags::kDisableIfEquipped);
+				}
+				else
+				{
+					e.customFlags.clear(Data::CustomFlags::kDisableIfEquipped);
 				}
 
 				if (!e.flags.test(FlagsBase::kDisabled))
