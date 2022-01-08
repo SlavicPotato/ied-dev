@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "ObjectManagerData.h"
 #include "INodeOverride.h"
+#include "ObjectManagerData.h"
 
 #include "IED/ActorState.h"
 #include "IED/Data.h"
@@ -15,17 +15,21 @@ namespace IED
 		Actor* a_actor,
 		NiNode* a_root,
 		NiNode* a_npcroot,
+		IObjectManager& a_owner,
 		Game::ObjectRefHandle a_handle,
 		bool a_nodeOverrideEnabled,
 		bool a_nodeOverrideEnabledPlayer,
 		Data::actorStateHolder_t& a_actorState) :
+		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
 		m_root(a_root),
 		m_formid(a_actor->formID),
 		m_created(IPerfCounter::Query())
 	{
-		if (a_nodeOverrideEnabled && (a_actor != *g_thePlayer || a_nodeOverrideEnabledPlayer))
+		if (a_nodeOverrideEnabled &&
+		    (a_actor != *g_thePlayer ||
+		     a_nodeOverrideEnabledPlayer))
 		{
 			for (auto& e : OverrideNodeInfo::GetMonitorNodeData())
 			{
@@ -116,9 +120,14 @@ namespace IED
 					a_entry.state->nodes.obj,
 					m_root);
 
-				for (auto& e : a_entry.state->dbEntries)
+				if (!a_entry.state->dbEntries.empty())
 				{
-					e->accessed = IPerfCounter::Query();
+					for (auto& e : a_entry.state->dbEntries)
+					{
+						e->accessed = IPerfCounter::Query();
+					}
+
+					m_owner.QueueDatabaseCleanup();
 				}
 			}
 		});

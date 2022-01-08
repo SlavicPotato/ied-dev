@@ -143,7 +143,13 @@ namespace IED
 						}
 						else
 						{
-							a_out = { ModelType::kArmor, path, texSwap, true, arma };
+							a_out = {
+								ModelType::kArmor,
+								path,
+								texSwap,
+								true,
+								arma
+							};
 
 							return true;
 						}

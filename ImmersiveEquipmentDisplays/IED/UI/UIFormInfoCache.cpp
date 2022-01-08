@@ -4,6 +4,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "Drivers/Render.h"
+
 namespace IED
 {
 	class Controller;
@@ -11,6 +13,7 @@ namespace IED
 	{
 		UIFormInfoCache::UIFormInfoCache(
 			Controller& a_controller) :
+			m_lastCleanup(IPerfCounter::Query()),
 			m_controller(a_controller)
 		{
 		}
@@ -29,17 +32,14 @@ namespace IED
 				m_data.clear();
 			}*/
 
-			auto r = m_data.try_emplace(a_form);
+			auto fc = Drivers::Render::GetSingleton().GetFrameCounter();
+
+			auto r = m_data.try_emplace(a_form, fc);
 			if (r.second)
 			{
 				m_controller.QueueLookupFormInfo(
 					a_form,
 					[this, a_form](std::unique_ptr<formInfoResult_t> a_info) {
-						if (!a_info)
-						{
-							return;
-						}
-
 						auto it = m_data.find(a_form);
 						if (it != m_data.end())
 						{
@@ -51,12 +51,61 @@ namespace IED
 			}
 			else
 			{
+				r.first->second.fcaccess = fc;
 				return r.first->second.info.get();
 			}
 		}
 
-		void UIFormInfoCache::Trim()
+		void UIFormInfoCache::RunCleanup()
 		{
+			if (m_data.size() < CLEANUP_THRESHOLD)
+			{
+				return;
+			}
+
+			auto tp = IPerfCounter::Query();
+
+			if (IPerfCounter::delta_us(m_lastCleanup, tp) < CLEANUP_RUN_INTERVAL)
+			{
+				return;
+			}
+
+			m_lastCleanup = tp;
+
+			auto fc = Drivers::Render::GetSingleton().GetFrameCounter();
+
+			std::vector<decltype(m_data)::const_iterator> candidates;
+
+			for (auto it = m_data.begin(); it != m_data.end(); ++it)
+			{
+				if (fc - it->second.fcaccess > 2)
+				{
+					candidates.emplace_back(it);
+				}
+			}
+
+			if (candidates.empty())
+			{
+				return;
+			}
+
+			std::sort(
+				candidates.begin(),
+				candidates.end(),
+				[](auto& a_lhs, auto& a_rhs) {
+					return a_lhs->second.fcaccess <
+				           a_rhs->second.fcaccess;
+				});
+
+			for (auto& e : candidates)
+			{
+				if (m_data.size() <= CLEANUP_TARGET)
+				{
+					break;
+				}
+
+				m_data.erase(e);
+			}
 		}
 
 	}

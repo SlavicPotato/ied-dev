@@ -21,7 +21,7 @@ namespace IED
 
 			a_out.node = a_in["node"].asString();
 
-			if (auto& v = a_in["form"]; !v.empty())
+			if (auto& v = a_in["form"])
 			{
 				if (!fparser.Parse(v, a_out.form))
 				{
@@ -30,7 +30,7 @@ namespace IED
 				}
 			}
 
-			if (auto& v = a_in["kw"]; !v.empty())
+			if (auto& v = a_in["kw"])
 			{
 				if (!fparser.Parse(v, a_out.keyword))
 				{

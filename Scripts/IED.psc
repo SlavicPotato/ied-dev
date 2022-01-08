@@ -39,7 +39,7 @@ Bool Function SetItemFormActor(Actor akActor, string asPlugin, string asName, bo
 Bool Function SetItemFormNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, Form akForm) native global
 Bool Function SetItemFormRace(Race akRace, string asPlugin, string asName, bool abIsFemale, Form akForm) native global
 
-; Only takes effect if the item entry is flagged as inventory
+; Only takes effect if the entry is flagged as an inventory item
 Bool Function SetItemModelSwapFormActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, Form akForm) native global
 Bool Function SetItemModelSwapFormNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, Form akForm) native global
 Bool Function SetItemModelSwapFormRace(Race akRace, string asPlugin, string asName, bool abIsFemale, Form akForm) native global
@@ -53,9 +53,9 @@ Bool Function SetItemInventoryActor(Actor akActor, string asPlugin, string asNam
 Bool Function SetItemInventoryNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIsInventoryForm) native global
 Bool Function SetItemInventoryRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abIsInventoryForm) native global
 
-Bool Function SetItemEquipmentModeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes) native global
-Bool Function SetItemEquipmentModeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes) native global
-Bool Function SetItemEquipmentModeRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes) native global
+Bool Function SetItemEquipmentModeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes, bool abDisableIfEquipped) native global
+Bool Function SetItemEquipmentModeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes, bool abDisableIfEquipped) native global
+Bool Function SetItemEquipmentModeRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEquipmentMode, bool abIgnoreRaceEquipTypes, bool abDisableIfEquipped) native global
 
 Bool Function SetItemLeftWeaponActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
 Bool Function SetItemLeftWeaponNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
@@ -91,7 +91,7 @@ Bool Function SetItemRotationActor(Actor akActor, string asPlugin, string asName
 Bool Function SetItemRotationNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, float[] arRotation) native global
 Bool Function SetItemRotationRace(Race akRace, string asPlugin, string asName, bool abIsFemale, float[] arRotation) native global
 
-; clamped to 0.1 - 100
+; clamped to 0.01 - 100
 Bool Function SetItemScaleActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, float afScale) native global
 Bool Function SetItemScaleNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, float afScale) native global
 Bool Function SetItemScaleRace(Race akRace, string asPlugin, string asName, bool abIsFemale, float afScale) native global
@@ -107,7 +107,6 @@ Bool Function ClearItemRotationRace(Race akRace, string asPlugin, string asName,
 Bool Function ClearItemScaleActor(Actor akActor, string asPlugin, string asName, bool abIsFemale) native global
 Bool Function ClearItemScaleNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale) native global
 Bool Function ClearItemScaleRace(Race akRace, string asPlugin, string asName, bool abIsFemale) native global
-
 
 Bool Function ItemExistsActor(Actor akActor, string asPlugin, string asName) native global
 Bool Function ItemExistsNPC(ActorBase akActorBase, string asPlugin, string asName) native global

@@ -2836,6 +2836,7 @@ namespace IED
 			a_actor,
 			a_root,
 			a_npcroot,
+			*this,
 			a_handle,
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
@@ -2873,6 +2874,7 @@ namespace IED
 					a_actor,
 					a_root,
 					a_npcroot,
+					*this,
 					a_handle,
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
@@ -4227,7 +4229,7 @@ namespace IED
 		if (!root)
 		{
 			Warning(
-				"%s: %.8X: actor has no 3d",
+				"%s: %.8X: actor has no 3D",
 				__FUNCTION__,
 				actor->formID.get());
 
@@ -4463,7 +4465,9 @@ namespace IED
 		return EventResult::kContinue;
 	}
 
-	bool Controller::GetNPCRacePair(Actor* a_actor, npcRacePair_t& a_out) noexcept
+	bool Controller::GetNPCRacePair(
+		Actor* a_actor,
+		npcRacePair_t& a_out) noexcept
 	{
 		auto actorBase = a_actor->baseForm;
 		if (!actorBase)

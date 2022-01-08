@@ -40,6 +40,11 @@ namespace IED
 				return m_bufferSize;
 			}
 			
+			[[nodiscard]] inline constexpr auto GetFrameCounter() const noexcept
+			{
+				return m_framecounter;
+			}
+			
 			template <class T>
 			[[nodiscard]] inline constexpr auto& GetEventDispatcher() noexcept
 			{
@@ -60,6 +65,8 @@ namespace IED
 			ID3D11DeviceContext* m_context{ nullptr };
 			IDXGISwapChain* m_swapChain{ nullptr };
 			NiPoint3 m_bufferSize;
+
+			std::uint64_t m_framecounter{ 0 };
 
 			static inline auto m_createD3D11_a = IAL::Addr(75595, 77226, 0x9, 0x275);
 			static inline auto m_unkPresent_a = IAL::Addr(75461, 77246, 0x9, 0x9);

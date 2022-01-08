@@ -48,10 +48,11 @@ namespace IED
 
 			IScopedLock lock(m_lock);
 
-			m_info.bufferSize.width =
-				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width);
-			m_info.bufferSize.height =
-				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height);
+			m_info.bufferSize = {
+				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width),
+				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height)
+			};
+
 			m_windowHandle = a_evn.m_pSwapChainDesc->OutputWindow;
 
 			RECT rect{};
@@ -63,7 +64,7 @@ namespace IED
 					static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width) /
 						static_cast<float>(rect.right),
 					static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height) /
-						static_cast<float>(rect.bottom),
+						static_cast<float>(rect.bottom)
 				};
 			}
 			else
@@ -79,8 +80,7 @@ namespace IED
 			io.WantSetMousePos = true;
 			io.ConfigWindowsMoveFromTitleBarOnly = true;
 			io.DisplaySize = { m_info.bufferSize.width, m_info.bufferSize.height };
-			io.MousePos.x = io.DisplaySize.x / 2.0f;
-			io.MousePos.y = io.DisplaySize.y / 2.0f;
+			io.MousePos = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
 			io.UserData = static_cast<void*>(std::addressof(m_ioUserData));
 
 			io.IniFilename =
@@ -90,17 +90,13 @@ namespace IED
 
 			ImGui::StyleColorsDark();
 
-			font_data_container tmp;
-
-			if (!LoadFonts(tmp, m_fontUpdateData.font))
+			if (!LoadFonts(m_fontData, m_fontUpdateData.font))
 			{
 				Warning("UI unavailable due to missing font atlas");
 				return;
 			}
 
-			ASSERT(!tmp.empty());
-
-			m_fontData = std::move(tmp);
+			ASSERT(!m_fontData.empty());
 
 			SetCurrentFont(m_sDefaultFont);
 
@@ -108,6 +104,8 @@ namespace IED
 			::ImGui_ImplDX11_Init(a_evn.m_pDevice, a_evn.m_pImmediateContext);
 
 			m_imInitialized = true;
+
+			Message("ImGui initialized");
 
 			m_pfnWndProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtrA(
 				a_evn.m_pSwapChainDesc->OutputWindow,
@@ -120,14 +118,10 @@ namespace IED
 					"[0x%llX] SetWindowLongPtrA failed",
 					a_evn.m_pSwapChainDesc->OutputWindow);
 			}
-
-			Message("ImGui initialized");
 		}
 
 		void UI::Receive(const IDXGISwapChainPresent& a_evn)
 		{
-			// m_preRun.ProcessTasks();
-
 			if (m_suspended)
 				return;
 
@@ -694,6 +688,8 @@ namespace IED
 
 			LoadFontMetadata(info);
 			UpdateAvailableFontsImpl(info);
+
+			a_data.clear();
 
 			if (!BuildFonts(info, a_data, a_font))
 			{

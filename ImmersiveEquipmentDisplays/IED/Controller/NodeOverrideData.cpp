@@ -118,6 +118,7 @@ namespace IED
 		};
 
 		m_Instance.m_monitor = {
+
 			"WeaponAxe",
 			"WeaponMace",
 			"WeaponSword",
@@ -132,6 +133,7 @@ namespace IED
 			"ShieldBack",
 			"WeaponStaff",
 			"WeaponStaffLeft"
+
 		};
 
 		m_Instance.m_weap = {
@@ -332,10 +334,13 @@ namespace IED
 								"MOV ShieldBackDefault",
 								"Shield",
 								{
+
 									{ "MOV ShieldBackDefault", { "Shield Back" } },
+
 								}
 
 							} }
+
 		};
 
 		m_Instance.m_initialized = true;

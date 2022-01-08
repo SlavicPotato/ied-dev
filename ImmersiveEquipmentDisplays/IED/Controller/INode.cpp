@@ -86,24 +86,9 @@ namespace IED
 
 		node->m_name.Set_ref(a_nodeName);
 		node->m_flags = ATTACHMENT_NODE_FLAGS;
-		node->m_localTransform = {};
 
 		return node;
 	}
-
-	/*NiNode* INode::CreateAttachmentNode(BSFixedString&& a_nodeName)
-	{
-		auto node = NiNode::Create(1);
-
-		node->m_name.data = a_nodeName.data;
-		a_nodeName.data = nullptr;
-
-		node->m_flags = ATTACHMENT_NODE_FLAGS;
-
-		node->m_localTransform = {};
-
-		return node;
-	}*/
 
 	auto INode::FindNodes(
 		const Data::NodeDescriptor& a_node,

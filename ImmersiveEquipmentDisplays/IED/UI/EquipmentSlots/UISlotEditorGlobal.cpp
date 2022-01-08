@@ -188,7 +188,9 @@ namespace IED
 
 			const auto& config = store.settings;
 
-			m_data = store.active.slot.GetGlobalCopy(config.data.ui.slotEditor.globalType);
+			m_data = entrySlotData_t(
+				store.active.slot.GetGlobalData(config.data.ui.slotEditor.globalType),
+				Data::ConfigClass::Global);
 		}
 
 		void UISlotEditorGlobal::OnOpen()

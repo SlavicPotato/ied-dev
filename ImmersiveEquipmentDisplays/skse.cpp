@@ -14,9 +14,15 @@ void ISKSE::OnLogOpen()
 	gLog.AddSink(this);
 }
 
-const char* ISKSE::GetLogPath() const { return PLUGIN_LOG_PATH; }
+const char* ISKSE::GetLogPath() const
+{
+	return PLUGIN_LOG_PATH;
+}
 
-const char* ISKSE::GetPluginName() const { return PLUGIN_NAME; };
+const char* ISKSE::GetPluginName() const
+{
+	return PLUGIN_NAME;
+};
 
 std::uint32_t ISKSE::GetPluginVersion() const
 {

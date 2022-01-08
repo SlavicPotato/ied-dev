@@ -246,6 +246,7 @@ namespace IED
 			Actor* a_actor,
 			NiNode* a_root,
 			NiNode* a_npcroot,
+			IObjectManager& a_owner,
 			Game::ObjectRefHandle a_handle,
 			bool a_nodeOverrideEnabled,
 			bool a_nodeOverrideEnabledPlayer,
@@ -379,7 +380,7 @@ namespace IED
 
 	private:
 		Game::ObjectRefHandle m_handle;
-		long long m_created;
+		long long m_created{ 0 };
 
 		union
 		{
@@ -388,7 +389,7 @@ namespace IED
 		};
 
 		slot_container_type m_entriesSlot;
-		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
+		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX];
 
 		std::vector<monitorNodeEntry_t> m_monitorNodes;
 		std::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
@@ -398,6 +399,8 @@ namespace IED
 		NiPointer<NiNode> m_root;
 
 		Game::FormID m_formid;
+
+		IObjectManager& m_owner;
 	};
 
 	using ActorObjectMap = std::unordered_map<Game::FormID, ActorObjectHolder>;
@@ -406,9 +409,16 @@ namespace IED
 	{
 	public:
 		template <class... Args>
-		[[nodiscard]] inline auto& GetObjectHolder(Actor* a_actor, NiNode* a_root, Args&&... a_args)
+		[[nodiscard]] inline constexpr auto& GetObjectHolder(
+			Actor* a_actor,
+			Args&&... a_args)
 		{
-			return m_objects.try_emplace(a_actor->formID, m_playerState, a_actor, a_root, std::forward<Args>(a_args)...).first->second;
+			return m_objects.try_emplace(
+								a_actor->formID,
+								m_playerState,
+								a_actor,
+								std::forward<Args>(a_args)...)
+			    .first->second;
 		}
 
 		inline constexpr const auto& GetData() const noexcept

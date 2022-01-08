@@ -251,18 +251,15 @@ namespace IED
 		bool UIListBase<Td, Th>::ListSetCurrentItem(Th a_handle)
 		{
 			auto it = m_listData.find(a_handle);
-			if (it == m_listData.end())
+			if (it != m_listData.end())
+			{
+				ListSetCurrentItem(*it);
+				return true;
+			}
+			else
 			{
 				return false;
 			}
-
-			auto old(std::move(m_listCurrent));
-
-			m_listCurrent.emplace(a_handle, it->second, GetData(a_handle));
-
-			OnListChangeCurrentItem(old, m_listCurrent);
-
-			return true;
 		}
 
 		template <class Td, class Th>

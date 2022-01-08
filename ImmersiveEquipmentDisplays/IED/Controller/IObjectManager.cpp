@@ -62,7 +62,11 @@ namespace IED
 			return false;
 		}
 
-		CleanupActorObjectsImpl(a_actor, a_handle, it->second, a_flags);
+		CleanupActorObjectsImpl(
+			a_actor,
+			a_handle,
+			it->second,
+			a_flags);
 
 		m_objects.erase(it);
 
@@ -84,7 +88,11 @@ namespace IED
 		NiPointer<TESObjectREFR> ref;
 		LookupREFRByHandle(handle, ref);
 
-		CleanupActorObjectsImpl(a_actor, handle, it->second, a_flags);
+		CleanupActorObjectsImpl(
+			a_actor,
+			handle,
+			it->second,
+			a_flags);
 
 		m_objects.erase(it);
 
@@ -99,7 +107,7 @@ namespace IED
 	{
 		if (a_actor == *g_thePlayer)
 		{
-			m_playerState = Data::actorStateEntry_t(a_objects);
+			m_playerState.emplace(a_objects);
 		}
 
 		a_objects.visit([&](objectEntryBase_t& a_object) {
@@ -165,7 +173,8 @@ namespace IED
 
 		for (auto& e : a_objects.m_entriesSlot)
 		{
-			if (e.state && !e.state->nodes.obj->IsVisible())
+			if (e.state &&
+			    !e.state->nodes.obj->IsVisible())
 			{
 				RemoveObject(
 					nullptr,
@@ -184,7 +193,8 @@ namespace IED
 			{
 				for (auto it2 = it1->second.begin(); it2 != it1->second.end();)
 				{
-					if (it2->second.state && !it2->second.state->nodes.obj->IsVisible())
+					if (it2->second.state &&
+					    !it2->second.state->nodes.obj->IsVisible())
 					{
 						RemoveObject(
 							nullptr,
@@ -220,7 +230,6 @@ namespace IED
 	void IObjectManager::ClearObjectsImpl()
 	{
 		m_objects.clear();
-		QueueDatabaseCleanup();
 	}
 
 	bool IObjectManager::ConstructArmorNode(
@@ -423,7 +432,9 @@ namespace IED
 		case ModelType::kArmor:
 			GetArmorNodeName(
 				a_form->formID,
-				modelParams.arma ? modelParams.arma->formID : 0,
+				modelParams.arma ?
+                    modelParams.arma->formID :
+                    0,
 				buffer);
 			break;
 		case ModelType::kMisc:

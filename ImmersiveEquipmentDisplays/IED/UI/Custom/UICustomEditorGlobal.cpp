@@ -115,7 +115,6 @@ namespace IED
 
 			if (store.settings.data.ui.customEditor.globalSex != a_newSex)
 			{
-				
 				store.settings.set(
 					store.settings.data.ui.customEditor.globalSex,
 					a_newSex);
@@ -204,8 +203,6 @@ namespace IED
 
 			conf = a_params.data;
 
-			
-
 			m_controller.QueueResetCustomAll(
 				GetConfigClass(),
 				StringHolder::GetSingleton().IED);
@@ -273,8 +270,6 @@ namespace IED
 			{
 				m_data = {};
 			}
-
-			
 		}
 	}
 }

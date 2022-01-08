@@ -12,7 +12,9 @@ namespace IED
 			const storage_type::value_type& a_filename) :
 			m_fullpath(a_root / a_filename.second),
 			m_filename(a_filename.second),
-			m_key(a_filename.first) {}
+			m_key(a_filename.first)
+		{
+		}
 
 		void UIFileSelector::SelectedFile::UpdateInfo()
 		{
@@ -48,7 +50,7 @@ namespace IED
 
 					if (ImGui::Selectable(e.first.c_str(), selected))
 					{
-						m_selected = { m_root, e };
+						m_selected.emplace(m_root, e);
 						m_selected->UpdateInfo();
 					}
 
@@ -109,7 +111,9 @@ namespace IED
 					{
 						if (!m_selected || !m_files.contains(m_selected->m_key))
 						{
-							m_selected = { m_root, *m_files.begin() };
+							m_selected.emplace(
+								m_root,
+								*m_files.begin());
 						}
 
 						if (m_selected)
@@ -180,7 +184,7 @@ namespace IED
 			{
 				if (m_selected->m_key == a_item.m_key)
 				{
-					m_selected = { m_root, *m_files.begin() };
+					m_selected.emplace(m_root, *m_files.begin());
 					m_selected->UpdateInfo();
 				}
 			}
@@ -192,10 +196,12 @@ namespace IED
 			const SelectedFile& a_item,
 			const fs::path& a_newFileName)
 		{
-			fs::path newFile(a_newFileName);
+			std::string fkey;
 
 			try
 			{
+				fkey = a_newFileName.stem().string();
+
 				fs::rename(a_item.m_fullpath, m_root / a_newFileName);
 			}
 			catch (const std::exception& e)
@@ -205,7 +211,7 @@ namespace IED
 			}
 
 			m_files.erase(a_item.m_key);
-			auto& r = m_files.emplace(newFile.stem().string(), newFile);
+			auto& r = m_files.emplace(fkey, a_newFileName);
 
 			if (m_selected->m_key == a_item.m_key)
 			{
@@ -222,7 +228,7 @@ namespace IED
 			auto it = m_files.find(a_itemDesc);
 			if (it != m_files.end())
 			{
-				m_selected = { m_root, *it };
+				m_selected.emplace(m_root, *it);
 				m_selected->UpdateInfo();
 			}
 		}

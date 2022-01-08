@@ -8,6 +8,8 @@
 
 #include "UIStatsStrings.h"
 
+#include "UIFormInfoCache.h"
+
 namespace IED
 {
 	namespace UI
@@ -39,6 +41,7 @@ namespace IED
 
 				ImGui::TextUnformatted("Nodeproc:");
 				ImGui::TextUnformatted("UI:");
+				ImGui::TextUnformatted("FC:");
 
 				auto odbLevel = m_controller.GetODBLevel();
 
@@ -51,6 +54,7 @@ namespace IED
 
 				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
+				ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{

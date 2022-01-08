@@ -111,6 +111,8 @@ namespace IED
 			}
 
 			m_popupQueue.run();
+
+			m_formLookupCache.RunCleanup();
 		}
 
 		const Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
