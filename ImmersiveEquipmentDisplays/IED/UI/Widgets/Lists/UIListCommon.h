@@ -52,7 +52,7 @@ namespace IED
 
 			virtual void ListDrawInfoText(const listValue_t& a_entry) = 0;
 
-			inline constexpr const SetObjectWrapper<listValue_t>& ListGetSelected() const noexcept;
+			inline constexpr const stl::optional<listValue_t>& ListGetSelected() const noexcept;
 
 			virtual bool ListSetCurrentItem(
 				Th a_handle);
@@ -70,8 +70,8 @@ namespace IED
 			[[nodiscard]] virtual Td GetData(Th a_handle) = 0;
 
 			virtual void OnListChangeCurrentItem(
-				const SetObjectWrapper<listValue_t>& a_oldHandle,
-				const SetObjectWrapper<listValue_t>& a_newHandle);
+				const stl::optional<listValue_t>& a_oldHandle,
+				const stl::optional<listValue_t>& a_newHandle);
 
 			virtual const ImVec4* HighlightEntry(Th a_handle);
 
@@ -83,8 +83,8 @@ namespace IED
 			bool m_listNextUpdate{ true };
 
 			list_type m_listData;
-			SetObjectWrapper<listValue_t> m_listCurrent;
-			SetObjectWrapper<Th> m_desiredHandle;
+			stl::optional<listValue_t> m_listCurrent;
+			stl::optional<Th> m_desiredHandle;
 
 			char m_listBuf1[256]{ 0 };
 			UIGenericFilter m_listFilter;
@@ -242,7 +242,7 @@ namespace IED
 
 		template <class Td, class Th>
 		inline constexpr auto UIListBase<Td, Th>::ListGetSelected() const noexcept
-			-> const SetObjectWrapper<listValue_t>&
+			-> const stl::optional<listValue_t>&
 		{
 			return m_listCurrent;
 		}
@@ -268,7 +268,7 @@ namespace IED
 		{
 			auto old(std::move(m_listCurrent));
 
-			m_listCurrent.emplace(
+			m_listCurrent.insert(
 				a_value.first,
 				a_value.second,
 				GetData(a_value.first));
@@ -288,8 +288,8 @@ namespace IED
 
 		template <class Td, class Th>
 		void UIListBase<Td, Th>::OnListChangeCurrentItem(
-			const SetObjectWrapper<listValue_t>& a_oldHandle,
-			const SetObjectWrapper<listValue_t>& a_newHandle)
+			const stl::optional<listValue_t>& a_oldHandle,
+			const stl::optional<listValue_t>& a_newHandle)
 		{
 		}
 

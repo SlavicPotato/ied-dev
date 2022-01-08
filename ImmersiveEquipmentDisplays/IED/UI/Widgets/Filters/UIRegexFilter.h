@@ -19,7 +19,7 @@ namespace IED
 			virtual bool ProcessInput(const char* a_label);
 
 		private:
-			SetObjectWrapper<except::descriptor> m_lastException;
+			stl::optional<except::descriptor> m_lastException;
 		};
 
 	}

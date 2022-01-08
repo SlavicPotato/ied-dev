@@ -58,8 +58,8 @@ namespace IED
 				Localization::StringID a_label,
 				Data::ConfigSound<Game::FormID>::soundPair_t &a_soundPair);
 
-			SetObjectWrapper<float> m_scaleTemp;
-			SetObjectWrapper<float> m_fontSizeTemp;
+			stl::optional<float> m_scaleTemp;
+			stl::optional<float> m_fontSizeTemp;
 
 			Controller& m_controller;
 		};

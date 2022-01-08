@@ -59,7 +59,7 @@ namespace IED
 		private:
 			bool Delete(const fs::path& a_file);
 
-			SetObjectWrapper<SelectedFile> m_selected;
+			stl::optional<SelectedFile> m_selected;
 			storage_type m_files;
 			fs::path m_root;
 

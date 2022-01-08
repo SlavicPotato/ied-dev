@@ -147,8 +147,8 @@ namespace IED
 		struct ConfigSound
 		{
 			using soundPair_t = std::pair<
-				SetObjectWrapper<form_descriptor_type>,
-				SetObjectWrapper<form_descriptor_type>>;
+				stl::optional<form_descriptor_type>,
+				stl::optional<form_descriptor_type>>;
 
 			bool enabled{ false };
 			bool npc{ false };

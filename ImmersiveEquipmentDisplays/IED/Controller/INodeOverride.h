@@ -46,13 +46,13 @@ namespace IED
 		public:
 			using item_container_type = std::unordered_map<Game::FormID, bipedInfoEntry_t>;
 
-			SetObjectWrapper<float> weaponAdjust;
-			SetObjectWrapper<float> weightAdjust;
-			SetObjectWrapper<bool> actorDead;
+			stl::optional<float> weaponAdjust;
+			stl::optional<float> weightAdjust;
+			stl::optional<bool> actorDead;
 			std::unique_ptr<item_container_type> itemData;
-			SetObjectWrapper<Biped*> biped;
-			SetObjectWrapper<TESObjectARMO*> actorSkin;
-			SetObjectWrapper<bool> bipedHasArmor;
+			stl::optional<Biped*> biped;
+			stl::optional<TESObjectARMO*> actorSkin;
+			stl::optional<bool> bipedHasArmor;
 
 			auto get_biped_has_armor()
 			{

@@ -121,7 +121,7 @@ namespace IED
 
 			NodeOverrideProfile* GetCurrentProfile() const;
 
-			SetObjectWrapper<cachedItem_t> m_cachedItem;
+			stl::optional<cachedItem_t> m_cachedItem;
 
 			Controller& m_controller;
 		};

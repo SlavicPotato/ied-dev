@@ -203,8 +203,8 @@ namespace IED
 		}
 
 		void UISlotEditorActor::OnListChangeCurrentItem(
-			const SetObjectWrapper<UIActorList<entrySlotData_t>::listValue_t>& a_oldHandle,
-			const SetObjectWrapper<UIActorList<entrySlotData_t>::listValue_t>& a_newHandle)
+			const stl::optional<UIActorList<entrySlotData_t>::listValue_t>& a_oldHandle,
+			const stl::optional<UIActorList<entrySlotData_t>::listValue_t>& a_newHandle)
 		{
 			if (!a_newHandle)
 			{

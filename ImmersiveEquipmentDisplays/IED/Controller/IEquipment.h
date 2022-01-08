@@ -19,7 +19,7 @@ namespace IED
 	protected:
 		struct selectedItem_t
 		{
-			SetObjectWrapper<SlotItemCandidates::storage_type::iterator> item;
+			stl::optional<SlotItemCandidates::storage_type::iterator> item;
 
 			void consume(SlotItemCandidates::storage_type& a_candidates);
 

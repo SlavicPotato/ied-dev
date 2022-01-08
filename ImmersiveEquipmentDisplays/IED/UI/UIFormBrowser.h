@@ -89,7 +89,7 @@ namespace IED
 			UIGenericFilter m_formIDFilter;
 			UIGenericFilter m_formNameFilter;
 
-			SetObjectWrapper<std::vector<IFormDatabase::entry_t>> m_filteredData;
+			stl::optional<std::vector<IFormDatabase::entry_t>> m_filteredData;
 
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID m_hlForm;
@@ -98,7 +98,7 @@ namespace IED
 
 			//select_callback_t m_current;
 
-			SetObjectWrapper<IFormDatabase::entry_t> m_selectedEntry;
+			stl::optional<IFormDatabase::entry_t> m_selectedEntry;
 
 			bool m_dbQueryInProgress{ false };
 

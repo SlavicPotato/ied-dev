@@ -33,7 +33,7 @@ namespace IED
 		private:
 			ImGuiInputTextFlags m_inputFlags;
 
-			SetObjectWrapper<state_t> m_current;
+			stl::optional<state_t> m_current;
 		};
 
 		template <class T>

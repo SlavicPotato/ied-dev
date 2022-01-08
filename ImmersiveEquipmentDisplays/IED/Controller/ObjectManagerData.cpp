@@ -11,7 +11,7 @@
 namespace IED
 {
 	ActorObjectHolder::ActorObjectHolder(
-		const SetObjectWrapper<Data::actorStateEntry_t>& a_playerState,
+		const stl::optional<Data::actorStateEntry_t>& a_playerState,
 		Actor* a_actor,
 		NiNode* a_root,
 		NiNode* a_npcroot,
@@ -101,7 +101,7 @@ namespace IED
 
 	ActorObjectHolder::~ActorObjectHolder()
 	{
-		SetObjectWrapper<Game::ObjectRefHandle> handle;
+		stl::optional<Game::ObjectRefHandle> handle;
 
 		*handle = GetHandle();
 

@@ -107,7 +107,7 @@ namespace IED
 	{
 		if (a_actor == *g_thePlayer)
 		{
-			m_playerState.emplace(a_objects);
+			m_playerState.insert(a_objects);
 		}
 
 		a_objects.visit([&](objectEntryBase_t& a_object) {

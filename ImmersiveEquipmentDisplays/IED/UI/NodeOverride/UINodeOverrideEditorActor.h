@@ -43,8 +43,8 @@ namespace IED
 				Game::FormID a_handle) override;
 
 			virtual void OnListChangeCurrentItem(
-				const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
-				const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_newHandle) override;
+				const stl::optional<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
+				const stl::optional<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_newHandle) override;
 
 			virtual entryNodeOverrideData_t GetData(
 				Game::FormID a_formid) override;

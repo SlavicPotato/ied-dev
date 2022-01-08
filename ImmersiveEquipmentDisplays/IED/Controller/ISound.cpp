@@ -82,7 +82,7 @@ namespace IED
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
 		const IPluginInfo& a_pinfo,
-		const SetObjectWrapper<Data::ConfigForm>& a_form)
+		const stl::optional<Data::ConfigForm>& a_form)
 	{
 		if (!a_form)
 		{

@@ -87,9 +87,9 @@ namespace IED
 				return true;
 			}
 
-			SetObjectWrapper<float> scale;
-			SetObjectWrapper<NiPoint3> position;
-			SetObjectWrapper<NiMatrix33> rotation;
+			stl::optional<float> scale;
+			stl::optional<NiPoint3> position;
+			stl::optional<NiMatrix33> rotation;
 		};
 	}  // namespace Data
 }  // namespace IED

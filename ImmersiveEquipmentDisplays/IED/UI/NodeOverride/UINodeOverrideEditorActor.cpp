@@ -130,8 +130,8 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorActor::OnListChangeCurrentItem(
-			const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
-			const SetObjectWrapper<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_newHandle)
+			const stl::optional<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
+			const stl::optional<UIActorList<entryNodeOverrideData_t>::listValue_t>& a_newHandle)
 		{
 			if (!a_newHandle)
 			{

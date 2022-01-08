@@ -38,7 +38,7 @@ namespace IED
 
 		static BGSSoundDescriptorForm* GetSoundForm(
 			const IPluginInfo& a_pinfo,
-			const SetObjectWrapper<Data::ConfigForm>& a_form);
+			const stl::optional<Data::ConfigForm>& a_form);
 
 		static ISound::SoundRefHolder::soundPair_t MakeSoundPair(
 			const IPluginInfo& a_pinfo,

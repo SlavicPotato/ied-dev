@@ -190,8 +190,8 @@ namespace IED
 	}
 
 	static void UpdateSoundPairFromINI(
-		const SetObjectWrapper<Data::ConfigForm>& a_src,
-		SetObjectWrapper<Game::FormID>& a_dst)
+		const stl::optional<Data::ConfigForm>& a_src,
+		stl::optional<Game::FormID>& a_dst)
 	{
 		if (a_src && !a_dst)
 		{
@@ -357,16 +357,16 @@ namespace IED
 		auto& settings = m_config.settings;
 		auto& clang = settings.data.language;
 
-		SetObjectWrapper<stl::fixed_string> defaultLang;
+		stl::optional<stl::fixed_string> defaultLang;
 
 		if (clang.empty())
 		{
-			settings.set(clang, defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG));
+			settings.set(clang, defaultLang.try_insert(Localization::LocalizationDataManager::DEFAULT_LANG));
 		}
 
 		if (!SetLanguageImpl(clang))
 		{
-			if (clang != defaultLang.try_emplace(Localization::LocalizationDataManager::DEFAULT_LANG))
+			if (clang != defaultLang.try_insert(Localization::LocalizationDataManager::DEFAULT_LANG))
 			{
 				settings.set(clang, std::move(*defaultLang));
 				SetLanguageImpl(clang);

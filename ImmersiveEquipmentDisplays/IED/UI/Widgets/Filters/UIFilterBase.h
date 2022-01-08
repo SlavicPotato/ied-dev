@@ -64,7 +64,7 @@ namespace IED
 
 			char m_filterBuf[128]{ 0 };
 
-			SetObjectWrapper<T> m_filter;
+			stl::optional<T> m_filter;
 			bool m_searchOpen{ false };
 			bool m_nextSetFocus{ false };
 

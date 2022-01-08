@@ -50,7 +50,7 @@ namespace IED
 
 					if (ImGui::Selectable(e.first.c_str(), selected))
 					{
-						m_selected.emplace(m_root, e);
+						m_selected.insert(m_root, e);
 						m_selected->UpdateInfo();
 					}
 
@@ -111,7 +111,7 @@ namespace IED
 					{
 						if (!m_selected || !m_files.contains(m_selected->m_key))
 						{
-							m_selected.emplace(
+							m_selected.insert(
 								m_root,
 								*m_files.begin());
 						}
@@ -174,17 +174,19 @@ namespace IED
 				return false;
 			}
 
-			m_files.erase(a_item.m_key);
+			auto tmp_key(a_item.m_key);
+
+			m_files.erase(tmp_key);
 
 			if (m_files.empty())
 			{
-				m_selected.clear();
+				m_selected.reset();
 			}
 			else
 			{
-				if (m_selected->m_key == a_item.m_key)
+				if (m_selected && m_selected->m_key == tmp_key)
 				{
-					m_selected.emplace(m_root, *m_files.begin());
+					m_selected.insert(m_root, *m_files.begin());
 					m_selected->UpdateInfo();
 				}
 			}
@@ -211,7 +213,7 @@ namespace IED
 			}
 
 			m_files.erase(a_item.m_key);
-			auto& r = m_files.emplace(fkey, a_newFileName);
+			auto r = m_files.emplace(fkey, a_newFileName);
 
 			if (m_selected->m_key == a_item.m_key)
 			{
@@ -228,7 +230,7 @@ namespace IED
 			auto it = m_files.find(a_itemDesc);
 			if (it != m_files.end())
 			{
-				m_selected.emplace(m_root, *it);
+				m_selected.insert(m_root, *it);
 				m_selected->UpdateInfo();
 			}
 		}

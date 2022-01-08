@@ -76,7 +76,7 @@ namespace IED
 			{
 				float scale{ 1.0f };
 				stl::fixed_string font;
-				SetObjectWrapper<float> fontsize;
+				stl::optional<float> fontsize;
 				stl::flag<GlyphPresetFlags> extraGlyphPresets{ GlyphPresetFlags::kNone };
 				std::shared_ptr<fontGlyphData_t> langGlyphData;
 
@@ -290,7 +290,7 @@ namespace IED
 				std::uint32_t freezeCounter{ 0 };
 
 				bool controlsLocked{ false };
-				SetObjectWrapper<bool> autoVanityAllowState;
+				stl::optional<bool> autoVanityAllowState;
 				bool timeFrozen{ false };
 			} m_state;
 

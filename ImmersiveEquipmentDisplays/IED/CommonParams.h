@@ -8,9 +8,9 @@ namespace IED
 	struct CommonParams
 	{
 		Actor* actor;
-		mutable SetObjectWrapper<TESFurniture*> furniture;
-		mutable SetObjectWrapper<Game::ObjectRefHandle> furnHandle;
-		mutable SetObjectWrapper<bool> layingDown;
+		mutable stl::optional<TESFurniture*> furniture;
+		mutable stl::optional<Game::ObjectRefHandle> furnHandle;
+		mutable stl::optional<bool> layingDown;
 
 		bool get_using_furniture() const
 		{

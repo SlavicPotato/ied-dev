@@ -101,7 +101,7 @@ namespace IED
 		stl::fixed_string m_name;
 
 		std::uint64_t m_id{ 0 };
-		SetObjectWrapper<std::string> m_desc;
+		stl::optional<std::string> m_desc;
 
 		T m_data;
 

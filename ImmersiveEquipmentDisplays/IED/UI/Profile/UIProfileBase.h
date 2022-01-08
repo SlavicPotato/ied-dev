@@ -56,7 +56,7 @@ namespace IED
 			struct
 			{
 				char new_input[260]{ 0 };
-				SetObjectWrapper<stl::fixed_string> selected;
+				stl::optional<stl::fixed_string> selected;
 				except::descriptor lastException;
 			} m_state;
 		};

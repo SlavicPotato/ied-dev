@@ -96,7 +96,7 @@ namespace IED
 
 		struct State
 		{
-			SetObjectWrapper<Game::FormID> item;
+			stl::optional<Game::FormID> item;
 			TESForm* form{ nullptr };
 			std::uint8_t itemType{ 0 };
 			stl::flag<ObjectEntryFlags> flags{ ObjectEntryFlags::kNone };
@@ -107,7 +107,7 @@ namespace IED
 			Data::cacheTransform_t transform;
 		};
 
-		SetObjectWrapper<State> state;
+		stl::optional<State> state;
 		//ObjectEntryStatus status;
 	};
 
@@ -242,7 +242,7 @@ namespace IED
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
-			const SetObjectWrapper<Data::actorStateEntry_t>& a_playerState,
+			const stl::optional<Data::actorStateEntry_t>& a_playerState,
 			Actor* a_actor,
 			NiNode* a_root,
 			NiNode* a_npcroot,
@@ -433,7 +433,7 @@ namespace IED
 
 	protected:
 		ActorObjectMap m_objects;
-		SetObjectWrapper<Data::actorStateEntry_t> m_playerState;
+		stl::optional<Data::actorStateEntry_t> m_playerState;
 	};
 
 	constexpr bool cmeNodeEntry_t::find_visible_geometry(NiAVObject* a_object) noexcept

@@ -17,7 +17,7 @@ namespace IED
 
 			[[nodiscard]] std::uint64_t GetActorInfoUpdateID() const noexcept;
 
-			[[nodiscard]] const SetObjectWrapper<Game::FormID>& GetCrosshairRef() const noexcept;
+			[[nodiscard]] const stl::optional<Game::FormID>& GetCrosshairRef() const noexcept;
 
 		private:
 			Controller& m_controller;

@@ -137,7 +137,7 @@ namespace IED
 				};
 
 				stl::fixed_string font;
-				SetObjectWrapper<float> fontSize;
+				stl::optional<float> fontSize;
 				stl::flag<GlyphPresetFlags> extraGlyphs{ GlyphPresetFlags::kNone };
 			};
 
@@ -151,7 +151,7 @@ namespace IED
 				bool hideEquipped{ false };
 				bool toggleKeepLoaded{ false };
 
-				SetObjectWrapper<LogLevel> logLevel;
+				stl::optional<LogLevel> logLevel;
 
 				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kNone };
 

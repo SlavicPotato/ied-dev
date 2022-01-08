@@ -28,7 +28,7 @@ namespace IED
 
 			template <class Tv, class Tp, class Tu>
 			void DrawTransformSliderContextMenu(
-				SerializedSOWrapper<Tv>& a_value,
+				stl::optional<Tv>& a_value,
 				Tp a_resetop,
 				Tu a_updateop,
 				TransformUpdateValue a_updValue);
@@ -177,7 +177,7 @@ namespace IED
 
 		template <class Tv, class Tp, class Tu>
 		void UITransformSliderWidget::DrawTransformSliderContextMenu(
-			SerializedSOWrapper<Tv>& a_value,
+			stl::optional<Tv>& a_value,
 			Tp a_resetop,
 			Tu a_updateop,
 			TransformUpdateValue a_updValue)

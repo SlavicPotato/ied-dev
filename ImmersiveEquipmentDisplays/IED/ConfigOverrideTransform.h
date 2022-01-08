@@ -19,9 +19,9 @@ namespace IED
 				*scale = 1.0f;
 			}
 
-			SerializedSOWrapper<float> scale;
-			SerializedSOWrapper<NiPoint3> position;
-			SerializedSOWrapper<NiPoint3> rotation;
+			stl::optional<float> scale;
+			stl::optional<NiPoint3> position;
+			stl::optional<NiPoint3> rotation;
 
 			void clamp()
 			{
