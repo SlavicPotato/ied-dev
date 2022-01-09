@@ -264,6 +264,7 @@
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIImportWidget.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
     <ClInclude Include="ImGui\MouseEventQueue.h" />
@@ -530,6 +531,7 @@
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="ImGui\MouseEventQueue.cpp" />

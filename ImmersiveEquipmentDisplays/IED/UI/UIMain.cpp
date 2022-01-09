@@ -142,7 +142,7 @@ namespace IED
 					DrawToolsMenu();
 					ImGui::EndMenu();
 				}
-				
+
 				if (LCG_BM(CommonStrings::Help, "4"))
 				{
 					DrawHelpMenu();
@@ -178,37 +178,15 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (LCG_MI(UIMainStrings::SaveCurrentAsDefault, "2"))
+			if (LCG_BM(UIMainStrings::DefaultConfig, "2"))
 			{
-				m_popupQueue.push(
-								UIPopupType::Confirm,
-								LS(CommonStrings::Confirm),
-								"%s",
-								LS(UIMainStrings::SaveCurrentAsDefaultPrompt))
-					.draw([this] {
-						auto& conf = m_controller.GetConfigStore().settings;
-
-						conf.mark_if(DrawExportFilters(conf.data.ui.defaultExportFlags));
-
-						return true;
-					})
-					.call([this](const auto&) {
-						auto& conf = m_controller.GetConfigStore().settings.data.ui;
-						if (!m_controller.SaveCurrentConfigAsDefault(conf.defaultExportFlags))
-						{
-							m_popupQueue.push(
-								UIPopupType::Message,
-								LS(CommonStrings::Confirm),
-								"%s\n\n%s",
-								LS(UIMainStrings::SaveCurrentAsDefaultError),
-								m_controller.JSGetLastException().what());
-						}
-					});
+				DrawDefaultConfigSubmenu();
+				ImGui::EndMenu();
 			}
 
 			ImGui::Separator();
 
-			if (LCG_MI(CommonStrings::Exit, "3"))
+			if (LCG_MI(CommonStrings::Exit, "2"))
 			{
 				SetOpenState(false);
 			}
@@ -345,6 +323,105 @@ namespace IED
 			if (LCG_MI(CommonStrings::About, "1"))
 			{
 				QueueAboutPopup();
+			}
+		}
+
+		void UIMain::DrawDefaultConfigSubmenu()
+		{
+			if (LCG_MI(UIMainStrings::LoadDefaultAsCurrent, "1"))
+			{
+				m_popupQueue.push(
+								UIPopupType::Confirm,
+								LS(CommonStrings::Confirm),
+								"%s",
+								LS(UIMainStrings::LoadDefaultAsCurrentPrompt))
+					.draw([this,
+				           c_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG),
+				           uc_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER)] {
+						auto& settings = m_controller.GetConfigStore().settings;
+
+						ImGui::PushID("dc_sel_radio");
+
+						UICommon::PushDisabled(!c_exists);
+
+						if (ImGui::RadioButton(
+								LS(CommonStrings::Default, "1"),
+								settings.data.ui.selectedDefaultConfImport ==
+									Data::DefaultConfigType::kDefault))
+						{
+							settings.set(
+								settings.data.ui.selectedDefaultConfImport,
+								Data::DefaultConfigType::kDefault);
+						}
+
+						UICommon::PopDisabled(!c_exists);
+
+						ImGui::SameLine();
+
+						UICommon::PushDisabled(!uc_exists);
+
+						if (ImGui::RadioButton(
+								LS(CommonStrings::User, "2"),
+								settings.data.ui.selectedDefaultConfImport ==
+									Data::DefaultConfigType::kUser))
+						{
+							settings.set(
+								settings.data.ui.selectedDefaultConfImport,
+								Data::DefaultConfigType::kUser);
+						}
+
+						UICommon::PopDisabled(!uc_exists);
+
+						ImGui::PopID();
+
+						return true;
+					})
+					.call([this](const auto&) {
+						const auto& settings = m_controller.GetConfigStore().settings;
+
+						switch (settings.data.ui.selectedDefaultConfImport)
+						{
+						case Data::DefaultConfigType::kDefault:
+							m_importExport.QueueImportPopup(
+								PATHS::DEFAULT_CONFIG,
+								LS(CommonStrings::Default));
+							break;
+						case Data::DefaultConfigType::kUser:
+							m_importExport.QueueImportPopup(
+								PATHS::DEFAULT_CONFIG_USER,
+								LS(CommonStrings::User));
+							break;
+						}
+					});
+			}
+
+			if (LCG_MI(UIMainStrings::SaveCurrentAsDefault, "2"))
+			{
+				m_popupQueue.push(
+								UIPopupType::Confirm,
+								LS(CommonStrings::Confirm),
+								"%s",
+								LS(UIMainStrings::SaveCurrentAsDefaultPrompt))
+					.draw([this] {
+						auto& conf = m_controller.GetConfigStore().settings;
+
+						conf.mark_if(DrawExportFilters(conf.data.ui.defaultExportFlags));
+
+						return true;
+					})
+					.call([this](const auto&) {
+						auto& conf = m_controller.GetConfigStore().settings.data.ui;
+						if (!m_controller.SaveCurrentConfigAsDefault(conf.defaultExportFlags))
+						{
+							m_popupQueue.push(
+								UIPopupType::Message,
+								LS(CommonStrings::Confirm),
+								"%s\n\n%s",
+								LS(UIMainStrings::SaveCurrentAsDefaultError),
+								m_controller.JSGetLastException().what());
+						}
+					})
+					.set_text_wrap_size(22.f);
 			}
 		}
 

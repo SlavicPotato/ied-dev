@@ -6,7 +6,8 @@
 #include "JSONSettingsImportExport.h"
 #include "JSONSettingsProfileEditorParser.h"
 #include "JSONSettingsUserInterfaceParser.h"
-#include <Fonts/FontInfo.h>
+
+#include "Fonts/FontInfo.h"
 
 namespace IED
 {
@@ -132,6 +133,9 @@ namespace IED
 			a_out.extraGlyphs = static_cast<GlyphPresetFlags>(
 				data.get("extra_glyphs", stl::underlying(GlyphPresetFlags::kNone)).asUInt());
 
+			a_out.selectedDefaultConfImport = static_cast<Data::DefaultConfigType>(
+				data.get("sel_def_conf_import", stl::underlying(Data::DefaultConfigType::kUser)).asUInt());
+
 			return true;
 		}
 
@@ -197,6 +201,8 @@ namespace IED
 				data["font_size"] = *a_data.fontSize;
 			}
 			data["extra_glyphs"] = stl::underlying(a_data.extraGlyphs.value);
+
+			data["sel_def_conf_import"] = stl::underlying(a_data.selectedDefaultConfImport);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

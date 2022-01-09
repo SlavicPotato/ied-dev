@@ -16,6 +16,12 @@ namespace IED
 {
 	namespace Data
 	{
+		enum class DefaultConfigType : std::uint8_t
+		{
+			kDefault = 0,
+			kUser = 1
+		};
+
 		class SettingHolder
 		{
 		public:
@@ -38,17 +44,7 @@ namespace IED
 					return reinterpret_cast<stl::flag<T>&>(flags);
 				}
 
-				/*template <class T, class = std::enable_if_t<std::is_enum_v<T>, void>>
-				inline constexpr const T& get_flags() const noexcept
-				{
-					return static_cast<const T&>(flags);
-				}*/
 			};
-
-			/*struct ObjectDatabase
-			{
-				std::size_t limit{ 10 };
-			};*/
 
 			struct ProfileEditor :
 				public EditorPanelCommon
@@ -139,6 +135,8 @@ namespace IED
 				stl::fixed_string font;
 				stl::optional<float> fontSize;
 				stl::flag<GlyphPresetFlags> extraGlyphs{ GlyphPresetFlags::kNone };
+
+				DefaultConfigType selectedDefaultConfImport{ DefaultConfigType::kUser };
 			};
 
 			struct Settings

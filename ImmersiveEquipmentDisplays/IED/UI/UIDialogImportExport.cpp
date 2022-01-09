@@ -20,11 +20,13 @@ namespace IED
 			UIFileSelector(a_controller, PATHS::EXPORTS),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIImportWidget(a_controller),
 			m_controller(a_controller),
 			m_rFileCheck(
 				"^[a-zA-Z0-9_\\- \\'\\\"\\,\\.]+$",
 				std::regex_constants::ECMAScript)
-		{}
+		{
+		}
 
 		void UIDialogImportExport::Draw()
 		{
@@ -160,83 +162,7 @@ namespace IED
 				{
 					if (ImGui::Button(LS(CommonStrings::Import, "4"), { 120.f, 0.f }))
 					{
-						auto data = std::make_shared<Data::configStore_t>();
-
-						Serialization::ParserState state;
-
-						if (!m_controller.LoadConfigStore(selected->m_fullpath, *data, state))
-						{
-							auto& queue = m_controller.UIGetPopupQueue();
-
-							queue.push(
-								UIPopupType::Message,
-								LS(CommonStrings::Error),
-								"%s",
-								m_controller.JSGetLastException().what());
-						}
-						else
-						{
-							auto& queue = m_controller.UIGetPopupQueue();
-
-							queue.push(
-									 UIPopupType::Confirm,
-									 LS(CommonStrings::Confirm),
-									 "%s [%s]",
-									 LS(UIDialogImportExportStrings::ImportConfirm),
-									 selected->m_key.c_str())
-								.draw([this, state = std::move(state)] {
-									if (state.has_errors())
-									{
-										ImGui::PushTextWrapPos(ImGui::GetFontSize() * 25.0f);
-										ImGui::TextColored(
-											UICommon::g_colorWarning,
-											"%s",
-											LS(UIDialogImportExportStrings::ImportHasErrorsWarning));
-										ImGui::PopTextWrapPos();
-
-										ImGui::Separator();
-									}
-
-									auto& conf = m_controller.GetConfigStore().settings;
-
-									conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
-
-									ImGui::Separator();
-									ImGui::Spacing();
-
-									ImGui::PushID("mode_sel");
-
-									if (ImGui::RadioButton(
-											LS(CommonStrings::Overwrite, "1"),
-											!conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
-									{
-										conf.data.ui.importExport.importFlags.clear(ImportFlags::kMerge);
-										conf.mark_dirty();
-									}
-
-									ImGui::SameLine();
-
-									if (ImGui::RadioButton(
-											LS(CommonStrings::Merge, "2"),
-											conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
-									{
-										conf.data.ui.importExport.importFlags.set(ImportFlags::kMerge);
-										conf.mark_dirty();
-									}
-
-									DrawTip(UITip::ImportMode);
-
-									ImGui::PopID();
-
-									ImGui::Spacing();
-
-									return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
-								})
-								.call([this, data = std::move(data)](const auto&) mutable {
-									auto& conf = m_controller.GetConfigStore().settings;
-									DoImport(std::move(*data), conf.data.ui.importExport.importFlags);
-								});
-						}
+						QueueImportPopup(selected->m_fullpath, selected->m_key);
 					}
 
 					ImGui::SameLine();
@@ -257,6 +183,25 @@ namespace IED
 			}
 
 			ImGui::End();
+		}
+
+		void UIDialogImportExport::OnDataImport(bool a_success)
+		{
+			if (a_success)
+			{
+				m_controller.UIReset();
+			}
+			else
+			{
+				auto& queue = m_controller.UIGetPopupQueue();
+
+				queue.push(
+					UIPopupType::Message,
+					LS(CommonStrings::Error),
+					"%s\n\n%s",
+					LS(UIDialogImportExportStrings::ImportError),
+					m_controller.JSGetLastException().what());
+			}
 		}
 
 		void UIDialogImportExport::DrawExportContextMenu()
@@ -305,7 +250,8 @@ namespace IED
 
 								DoExport(path);
 							}
-						});
+						})
+						.set_text_wrap_size(23.f);
 				}
 
 				auto& selected = GetSelected();
@@ -332,35 +278,12 @@ namespace IED
 							})
 							.call([this, path = selected->m_fullpath](auto&) {
 								DoExport(path);
-							});
+							})
+							.set_text_wrap_size(23.f);
 					}
 				}
 
 				ImGui::EndPopup();
-			}
-		}
-
-		void UIDialogImportExport::DoImport(
-			Data::configStore_t&& a_data,
-			stl::flag<ImportFlags> a_flags)
-		{
-			auto& conf = m_controller.GetConfigStore().settings.data;
-
-			if (m_controller.ImportData(std::move(a_data), a_flags))
-			{
-				m_controller.UIReset();
-				SetOpenState(false);
-			}
-			else
-			{
-				auto& queue = m_controller.UIGetPopupQueue();
-
-				queue.push(
-					UIPopupType::Message,
-					LS(CommonStrings::Error),
-					"%s\n\n%s",
-					LS(UIDialogImportExportStrings::ImportError),
-					m_controller.JSGetLastException().what());
 			}
 		}
 

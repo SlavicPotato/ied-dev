@@ -67,6 +67,12 @@ namespace IED
 				m_funcDraw = std::move(a_func);
 				return *this;
 			}
+			
+			auto& set_text_wrap_size(float a_size) noexcept
+			{
+				m_textWrapSize = a_size;
+				return *this;
+			}
 
 			inline constexpr const auto& GetInput() const noexcept
 			{
@@ -96,6 +102,8 @@ namespace IED
 			UIPopupType m_type;
 			func_type m_func;
 			func_type_draw m_funcDraw;
+
+			stl::optional<float> m_textWrapSize;
 		};
 
 	}

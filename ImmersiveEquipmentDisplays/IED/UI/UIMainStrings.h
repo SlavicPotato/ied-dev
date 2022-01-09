@@ -17,6 +17,9 @@ namespace IED
 			SaveCurrentAsDefaultPrompt = 4608,
 			SaveCurrentAsDefaultError = 4609,
 			ImportExport = 4610,
+			LoadDefaultAsCurrent = 4611,
+			LoadDefaultAsCurrentPrompt = 4612,
+			DefaultConfig = 4613,
 		};
 	}
 }

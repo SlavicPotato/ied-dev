@@ -12,6 +12,8 @@
 
 #include "IED/ConfigOverride.h"
 
+#include "Widgets/UIImportWidget.h"
+
 namespace IED
 {
 	class Controller;
@@ -21,8 +23,8 @@ namespace IED
 		class UIDialogImportExport :
 			public UIWindow,
 			public UIFileSelector,
-			UITipsInterface,
-			UIExportFilterWidget
+			public UIImportWidget,
+			public virtual UITipsInterface
 		{
 			static constexpr auto WINDOW_ID = "ied_ie";
 
@@ -33,9 +35,10 @@ namespace IED
 			void OnOpen();
 
 		private:
+			virtual void OnDataImport(bool a_success) override;
+
 			void DrawExportContextMenu();
 
-			void DoImport(Data::configStore_t&& a_data, stl::flag<ImportFlags> a_flags);
 			void DoExport(const fs::path& a_path);
 
 			bool DoUpdate(bool a_select);

@@ -399,7 +399,7 @@ namespace IED
 					a_form,
 					*modelParams.armas,
 					a_params.configSex == Data::ConfigSex::Female,
-					a_objectEntry.state->dbEntries,
+					state->dbEntries,
 					object))
 			{
 				Warning(
@@ -475,7 +475,7 @@ namespace IED
 		state->nodes.ref = std::move(targetNodes.ref);
 		state->nodeDesc = a_node;
 		state->atmReference = a_node.managed() ||
-		                                    a_config.flags.test(Data::FlagsBase::kReferenceMode);
+		                      a_config.flags.test(Data::FlagsBase::kReferenceMode);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{

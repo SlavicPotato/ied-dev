@@ -81,6 +81,8 @@ namespace IED
 			void DrawActionsMenu();
 			void DrawHelpMenu();
 
+			void DrawDefaultConfigSubmenu();
+
 			void OpenEditorPanel(UIEditorPanel a_panel);
 
 			void SetTitle(Localization::StringID a_strid);

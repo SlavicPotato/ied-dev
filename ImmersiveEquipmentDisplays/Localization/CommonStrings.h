@@ -155,5 +155,7 @@ namespace IED
 		Player = 226,
 		Create = 227,
 		Filters = 228,
+		Default = 229,
+		User = 230,
 	};
 }

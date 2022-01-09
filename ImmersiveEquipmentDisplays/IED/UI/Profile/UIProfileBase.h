@@ -108,6 +108,7 @@ namespace IED
 					"%s",
 					ImGuiInputTextFlags_EnterReturnsTrue,
 					cm_func_t{},
+					stl::optional<float>{},
 					m_state.new_input,
 					sizeof(m_state.new_input),
 					LS(UIProfileStrings::ProfileNamePrompt)) != ModalStatus::kAccept)

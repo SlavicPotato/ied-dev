@@ -160,6 +160,7 @@ namespace IED
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_APPLY),
 								cm_func_t{},
+								stl::optional<float>{},
 								"%s [%s]\n\n%s",
 								LS(UIProfileStrings::LoadDataFromProfile),
 								profile.Name().c_str(),
@@ -171,6 +172,7 @@ namespace IED
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_MERGE),
 								cm_func_t{},
+								stl::optional<float>{},
 								"%s [%s]\n\n%s",
 								LS(UIProfileStrings::MergeDataFromProfile),
 								profile.Name().c_str(),
@@ -191,6 +193,7 @@ namespace IED
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_SAVE),
 								cm_func_t{},
+								stl::optional<float>{},
 								"%s [%s]",
 								LS(UIProfileStrings::SaveCurrentToProfile),
 								profile.Name().c_str()) == ModalStatus::kAccept)

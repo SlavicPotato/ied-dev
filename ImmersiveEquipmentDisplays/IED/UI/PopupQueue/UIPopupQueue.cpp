@@ -39,6 +39,7 @@ namespace IED
 				res = ConfirmDialog(
 					e.m_key.c_str(),
 					e.m_funcDraw,
+					e.m_textWrapSize,
 					e.m_buf);
 				break;
 			case UIPopupType::Input:
@@ -47,6 +48,7 @@ namespace IED
 					e.m_buf,
 					ImGuiInputTextFlags_EnterReturnsTrue,
 					e.m_funcDraw,
+					e.m_textWrapSize,
 					e.m_input,
 					sizeof(e.m_input));
 				break;
@@ -54,6 +56,7 @@ namespace IED
 				res = MessageDialog(
 					e.m_key.c_str(),
 					e.m_funcDraw,
+					e.m_textWrapSize,
 					e.m_buf);
 				break;
 			case UIPopupType::Custom:

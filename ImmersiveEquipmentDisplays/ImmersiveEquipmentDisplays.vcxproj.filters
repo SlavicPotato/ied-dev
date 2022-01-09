@@ -944,6 +944,9 @@
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIImportWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1506,6 +1509,9 @@
     </ClCompile>
     <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

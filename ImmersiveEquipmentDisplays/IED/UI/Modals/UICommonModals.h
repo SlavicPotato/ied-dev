@@ -23,27 +23,51 @@ namespace IED
 
 			UICommonModals(Localization::ILocalization& a_localization);
 
+			ModalStatus TextInputDialog(
+				const char* a_name,
+				const char* a_text,
+				ImGuiInputTextFlags a_flags,
+				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
+				char* a_buf,
+				std::size_t a_size);
+			
 			template <class... Args>
 			ModalStatus TextInputDialog(
 				const char* a_name,
 				const char* a_text,
 				ImGuiInputTextFlags a_flags,
 				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
 				char* a_buf,
 				std::size_t a_size,
 				Args... args);
 
+			ModalStatus MessageDialog(
+				const char* name,
+				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
+				const char* text);
+			
 			template <class... Args>
 			ModalStatus MessageDialog(
 				const char* name,
 				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
 				const char* text,
 				Args... args);
 
+			ModalStatus ConfirmDialog(
+				const char* name,
+				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
+				const char* text);
+			
 			template <class... Args>
 			ModalStatus ConfirmDialog(
 				const char* name,
 				const cm_func_t& a_func,
+				const stl::optional<float> &a_twsz,
 				const char* text,
 				Args... args);
 
@@ -59,6 +83,7 @@ namespace IED
 			const char* a_text,
 			ImGuiInputTextFlags a_flags,
 			const cm_func_t& a_func,
+			const stl::optional<float> &a_twsz,
 			char* a_buf,
 			std::size_t a_size,
 			Args... args)
@@ -78,7 +103,7 @@ namespace IED
 					nullptr,
 					ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 25.0f);
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * (a_twsz ? *a_twsz : 25.0f));
 				ImGui::Text(a_text, args...);
 				ImGui::PopTextWrapPos();
 				ImGui::Spacing();
@@ -148,6 +173,7 @@ namespace IED
 		auto UICommonModals::MessageDialog(
 			const char* a_name,
 			const cm_func_t& a_func,
+			const stl::optional<float> &a_twsz,
 			const char* a_text,
 			Args... args)
 			-> ModalStatus
@@ -166,7 +192,7 @@ namespace IED
 					nullptr,
 					ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 25.0f);
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * (a_twsz ? *a_twsz : 25.0f));
 				ImGui::Text(a_text, args...);
 				ImGui::PopTextWrapPos();
 				ImGui::Spacing();
@@ -195,10 +221,12 @@ namespace IED
 
 			return ret;
 		}
+
 		template <class... Args>
 		auto UICommonModals::ConfirmDialog(
 			const char* name,
 			const cm_func_t& a_func,
+			const stl::optional<float> &a_twsz,
 			const char* text,
 			Args... args)
 			-> ModalStatus
@@ -217,7 +245,7 @@ namespace IED
 					nullptr,
 					ImGuiWindowFlags_AlwaysAutoResize))
 			{
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 25.0f);
+				ImGui::PushTextWrapPos(ImGui::GetFontSize() * (a_twsz ? *a_twsz : 25.0f));
 				ImGui::Text(text, args...);
 				ImGui::PopTextWrapPos();
 				ImGui::Spacing();
