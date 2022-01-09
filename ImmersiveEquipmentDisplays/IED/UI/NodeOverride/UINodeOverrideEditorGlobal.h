@@ -80,7 +80,7 @@ namespace IED
 
 			virtual UIPopupQueue& GetPopupQueue() override;
 
-			void UpdateData();
+			void UpdateData(entryNodeOverrideData_t &a_data);
 
 			entryNodeOverrideData_t m_data;
 

@@ -101,7 +101,7 @@ namespace IED
 
 	bool ItemCandidateCollector::CheckForm(TESForm* a_form)
 	{
-		if (a_form->IsDeleted()) // ?
+		if (a_form->IsDeleted())  // ?
 		{
 			return false;
 		}
@@ -273,7 +273,7 @@ namespace IED
 		return true;
 	}*/
 
-	SKMP_FORCEINLINE bool is_equippable(TESForm* a_form)
+	SKMP_FORCEINLINE static constexpr bool is_equippable(TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
 		{
@@ -486,11 +486,12 @@ namespace IED
 
 			auto form = e.second.form;
 
-			if (form->formID.IsTemporary() ||
-			    !form->Has3D())
+			if (form->formID.IsTemporary())
 			{
 				continue;
 			}
+
+			std::uint16_t damage;
 
 			if (auto weap = form->As<TESObjectWEAP>())
 			{
@@ -498,13 +499,8 @@ namespace IED
 				{
 					continue;
 				}
-			}
 
-			std::uint16_t damage;
-
-			if (auto attackDamage = RTTI<TESAttackDamageForm>()(form))
-			{
-				damage = attackDamage->attackDamage;
+				damage = weap->damage.attackDamage;
 			}
 			else
 			{
@@ -520,16 +516,19 @@ namespace IED
 		{
 			// apparently this is generally faster than inserting into a vector with upper_bound when there's lots of entries
 
-			std::sort(e.m_items.begin(), e.m_items.end(), [](auto& a_lhs, auto& a_rhs) {
-				return a_lhs.damage > a_rhs.damage;
-			});
+			std::sort(
+				e.m_items.begin(),
+				e.m_items.end(),
+				[](auto& a_lhs, auto& a_rhs) {
+					return a_lhs.damage > a_rhs.damage;
+				});
 		}
 	}
 
 	EquippedFormCollector::EquippedFormCollector(
 		Actor* a_actor,
 		TESRace* a_race) :
-		m_pm{ a_actor->processManager },
+		m_pm(a_actor->processManager),
 		m_data(a_actor, a_race)
 	{
 	}
@@ -620,4 +619,4 @@ namespace IED
 		return true;
 	}
 
-}  // namespace IED
+}

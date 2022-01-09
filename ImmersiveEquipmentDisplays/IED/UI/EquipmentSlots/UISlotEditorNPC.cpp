@@ -20,7 +20,8 @@ namespace IED
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
 			m_controller(a_controller)
-		{}
+		{
+		}
 
 		void UISlotEditorNPC::Initialize()
 		{
@@ -59,7 +60,8 @@ namespace IED
 			return m_controller.GetConfigStore().settings.data.ui.slotEditor.npcConfig;
 		}
 
-		auto UISlotEditorNPC::GetCurrentData() -> SlotEditorCurrentData
+		auto UISlotEditorNPC::GetCurrentData()
+			-> SlotEditorCurrentData
 		{
 			if (auto& entry = ListGetSelected())
 			{

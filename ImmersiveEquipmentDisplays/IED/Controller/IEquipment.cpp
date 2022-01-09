@@ -104,7 +104,7 @@ namespace IED
 	void IEquipment::selectedItem_t::consume(
 		SlotItemCandidates::storage_type& a_candidates)
 	{
-		auto it = (*item);
+		auto it(*item);
 
 		if (it->extra == 0)
 		{

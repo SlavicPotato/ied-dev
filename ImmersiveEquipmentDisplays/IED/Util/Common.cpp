@@ -11,6 +11,7 @@ namespace IED
 			bool IsREFRValid(const TESObjectREFR* a_refr)
 			{
 				if (a_refr == nullptr ||
+					a_refr->formID == 0 ||
 				    a_refr->loadedState == nullptr ||
 				    a_refr->IsDeleted())
 				{

@@ -99,7 +99,7 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorLightBlue,
 					"%.8X",
-					a_entry.state->item.get());
+					a_entry.state->formid.get());
 
 				if (a_entry.state->flags.test(ObjectEntryFlags::kScbLeft))
 				{

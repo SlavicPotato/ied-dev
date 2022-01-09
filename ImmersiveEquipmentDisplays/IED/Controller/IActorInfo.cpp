@@ -178,8 +178,8 @@ namespace IED
 			return false;
 		}
 
-		auto handle = refHolder->CrosshairRefHandle();
-		if (!handle)
+		auto &handle = refHolder->CrosshairRefHandle();
+		if (!handle || !handle.IsValid())
 		{
 			return false;
 		}

@@ -31,7 +31,7 @@ namespace IED
 			a_objectEntry.state->nodes.obj->IsVisible())
 		{
 			SoundPlay(
-				a_objectEntry.state->itemType,
+				a_objectEntry.state->form->formType,
 				a_objectEntry.state->nodes.obj->m_parent,
 				false);
 		}
@@ -363,7 +363,7 @@ namespace IED
 			return false;
 		}
 
-		ASSERT(a_objectEntry.state->dbEntries.empty());
+		auto state = std::make_unique<objectEntryBase_t::State>();
 
 		NiPointer<NiNode> object;
 
@@ -385,7 +385,7 @@ namespace IED
 
 			if (entry)
 			{
-				a_objectEntry.state->dbEntries.emplace_back(std::move(entry));
+				state->dbEntries.emplace_back(std::move(entry));
 			}
 
 			if (modelParams.swap)
@@ -449,9 +449,9 @@ namespace IED
 
 		targetNodes.obj->AttachChild(itemNodeRoot, true);
 
-		a_objectEntry.UpdateData(a_config);
+		state->UpdateData(a_config);
 		UpdateObjectTransform(
-			a_objectEntry.state->transform,
+			state->transform,
 			itemNodeRoot,
 			targetNodes.ref);
 
@@ -469,21 +469,20 @@ namespace IED
 			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
 			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame));
 
-		a_objectEntry.state->item = a_form->formID;
-		a_objectEntry.state->nodes.obj = itemNodeRoot;
-		a_objectEntry.state->nodes.ref = std::move(targetNodes.ref);
-		a_objectEntry.state->form = a_form;
-		a_objectEntry.state->itemType = a_form->formType;
-		a_objectEntry.state->nodeDesc = a_node;
-		a_objectEntry.state->atmReference = a_node.managed() ||
+		state->form = a_form;
+		state->formid = a_form->formID;
+		state->nodes.obj = itemNodeRoot;
+		state->nodes.ref = std::move(targetNodes.ref);
+		state->nodeDesc = a_node;
+		state->atmReference = a_node.managed() ||
 		                                    a_config.flags.test(Data::FlagsBase::kReferenceMode);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
-			a_objectEntry.state->flags.set(ObjectEntryFlags::kScbLeft);
+			state->flags.set(ObjectEntryFlags::kScbLeft);
 		}
 
-		a_objectEntry.state.mark(true);
+		a_objectEntry.state = std::move(state);
 
 		if (a_visible)
 		{
@@ -507,7 +506,7 @@ namespace IED
 			if (a_params.actor == *g_thePlayer || m_playSoundNPC)
 			{
 				SoundPlay(
-					a_objectEntry.state->itemType,
+					a_objectEntry.state->form->formType,
 					a_objectEntry.state->nodes.obj,
 					a_equip);
 			}

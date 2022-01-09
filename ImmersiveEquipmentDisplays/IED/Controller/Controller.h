@@ -721,6 +721,11 @@ namespace IED
 			processParams_t& a_params,
 			const Data::configCustom_t& a_config,
 			bool& a_hasMinCount);
+		
+		bool IsBlockedByChance(
+			processParams_t& a_params,
+			const Data::configCustom_t& a_config,
+			objectEntryCustom_t& a_objectEntry);
 
 		bool ProcessCustomEntry(
 			processParams_t& a_params,

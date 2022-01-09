@@ -36,7 +36,7 @@ namespace IED
 				if (DrawTypeSelectorRadio(config.data.ui.transformEditor.globalType))
 				{
 					config.mark_dirty();
-					UpdateData();
+					UpdateData(m_data);
 				}
 
 				ImGui::Separator();
@@ -60,7 +60,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::Reset()
 		{
-			UpdateData();
+			UpdateData(m_data);
 		}
 
 		constexpr Data::ConfigClass UINodeOverrideEditorGlobal::GetConfigClass() const
@@ -111,13 +111,7 @@ namespace IED
 			const NodeOverrideProfile& a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
-
-			auto& store = m_controller.GetConfigStore();
-
-			a_data.data = entryNodeOverrideData_t(
-				store.active.transforms.GetGlobalData(
-					store.settings.data.ui.transformEditor.globalType),
-				Data::ConfigClass::Global);
+			UpdateData(a_data.data);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -127,13 +121,7 @@ namespace IED
 			const NodeOverrideProfile& a_profile)
 		{
 			MergeProfileData(a_data, a_profile);
-
-			auto& store = m_controller.GetConfigStore();
-
-			a_data.data = entryNodeOverrideData_t(
-				store.active.transforms.GetGlobalData(
-					store.settings.data.ui.transformEditor.globalType),
-				Data::ConfigClass::Global);
+			UpdateData(a_data.data);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -172,12 +160,7 @@ namespace IED
 		{
 			UpdateConfig(a_handle, a_params);
 
-			auto& store = m_controller.GetConfigStore();
-
-			a_params.data = entryNodeOverrideData_t(
-				store.active.transforms.GetGlobalData(
-					store.settings.data.ui.transformEditor.globalType),
-				Data::ConfigClass::Global);
+			UpdateData(a_params.data);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -258,14 +241,15 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
-		void UINodeOverrideEditorGlobal::UpdateData()
+		void UINodeOverrideEditorGlobal::UpdateData(entryNodeOverrideData_t& a_data)
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			m_data = entryNodeOverrideData_t(
+			a_data = {
 				store.active.transforms.GetGlobalData(
 					store.settings.data.ui.transformEditor.globalType),
-				Data::ConfigClass::Global);
+				Data::ConfigClass::Global
+			};
 		}
 	}
 }

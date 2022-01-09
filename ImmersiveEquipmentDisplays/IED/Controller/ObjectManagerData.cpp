@@ -8,6 +8,8 @@
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
 
+#include <ext/Node.h>
+
 namespace IED
 {
 	ActorObjectHolder::ActorObjectHolder(
@@ -33,31 +35,25 @@ namespace IED
 		{
 			for (auto& e : OverrideNodeInfo::GetMonitorNodeData())
 			{
-				if (auto obj = a_npcroot->GetObjectByName(e))
+				if (auto node = ::Util::Node::FindNode(a_npcroot, e))
 				{
-					if (auto node = obj->GetAsNiNode())
-					{
-						m_monitorNodes.emplace_back(
-							node,
-							node->m_parent,
-							node->m_children.m_size,
-							node->IsVisible());
-					}
+					m_monitorNodes.emplace_back(
+						node,
+						node->m_parent,
+						node->m_children.m_size,
+						node->IsVisible());
 				}
 			}
 
 			for (auto& e : OverrideNodeInfo::GetCMENodeData().getvec())
 			{
-				if (auto obj = a_npcroot->GetObjectByName(e->second.bsname))
+				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
 				{
-					if (auto node = obj->GetAsNiNode())
-					{
-						m_cmeNodes.try_emplace(
-							e->first,
-							node,
-							node->m_localTransform,
-							node->IsVisible());
-					}
+					m_cmeNodes.try_emplace(
+						e->first,
+						node,
+						node->m_localTransform,
+						node->IsVisible());
 				}
 			}
 
@@ -79,9 +75,7 @@ namespace IED
 		{
 			auto& e = m_entriesSlot[i];
 
-			auto slotid = static_cast<Data::ObjectSlot>(i);
-
-			e.slotid = slotid;
+			e.slotid = static_cast<Data::ObjectSlot>(i);
 		}
 
 		if (a_actor == *g_thePlayer && a_playerState)
@@ -103,32 +97,33 @@ namespace IED
 	{
 		stl::optional<Game::ObjectRefHandle> handle;
 
-		*handle = GetHandle();
-
 		visit([&](objectEntryBase_t& a_entry) {
-			if (a_entry.state)
+			if (!a_entry.state)
 			{
-				if (!handle)
+				return;
+			}
+
+			if (!handle)
+			{
+				handle = GetHandle();
+
+				NiPointer<TESObjectREFR> refr;
+				LookupREFRByHandle(*handle, refr);
+			}
+
+			EngineExtensions::CleanupObject(
+				*handle,
+				a_entry.state->nodes.obj,
+				m_root);
+
+			if (!a_entry.state->dbEntries.empty())
+			{
+				for (auto& e : a_entry.state->dbEntries)
 				{
-					NiPointer<TESObjectREFR> dummy;
-					LookupREFRByHandle(*handle, dummy);
-					handle.mark(true);
+					e->accessed = IPerfCounter::Query();
 				}
 
-				EngineExtensions::CleanupObject(
-					*handle,
-					a_entry.state->nodes.obj,
-					m_root);
-
-				if (!a_entry.state->dbEntries.empty())
-				{
-					for (auto& e : a_entry.state->dbEntries)
-					{
-						e->accessed = IPerfCounter::Query();
-					}
-
-					m_owner.QueueDatabaseCleanup();
-				}
+				m_owner.QueueDatabaseCleanup();
 			}
 		});
 
@@ -196,8 +191,7 @@ namespace IED
 			auto& s = a_data.slots[i];
 			auto& d = m_entriesSlot[i];
 
-			d.lastEquipped = s.lastEquipped;
-			d.lastSeenEquipped = s.lastSeenEquipped;
+			d.slotState = s;
 		}
 	}
 

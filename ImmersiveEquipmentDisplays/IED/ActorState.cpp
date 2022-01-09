@@ -28,7 +28,7 @@ namespace IED
 				auto& sms = a_holder.GetSlot(mainSlot);
 				auto& smd = slots[stl::underlying(mainSlot)];
 
-				smd.lastEquipped = sms.lastEquipped;
+				smd.lastEquipped = sms.slotState.lastEquipped;
 
 				if (auto leftSlot = ItemData::GetLeftSlot(mainSlot);
 				    leftSlot != ObjectSlot::kMax)
@@ -36,11 +36,11 @@ namespace IED
 					auto& sls = a_holder.GetSlot(leftSlot);
 					auto& sld = slots[stl::underlying(leftSlot)];
 
-					if (sls.lastEquipped)
+					if (sls.slotState.lastEquipped)
 					{
-						sld.lastEquipped = sls.lastEquipped;
+						sld.lastEquipped = sls.slotState.lastEquipped;
 
-						if (sls.lastSeenEquipped > sms.lastSeenEquipped)
+						if (sls.slotState.lastSeenEquipped > sms.slotState.lastSeenEquipped)
 						{
 							smd.lastSeenEquipped = std::numeric_limits<long long>::min();
 							sld.lastSeenEquipped = std::numeric_limits<long long>::min() + 1;

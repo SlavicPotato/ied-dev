@@ -98,7 +98,7 @@ namespace IED
 	{
 		BSFixedString nodeName(a_node.name.c_str());
 
-		auto obj = EngineExtensions::GetObjectByName(a_root, nodeName, true);
+		auto obj = a_root->GetObjectByName(nodeName);
 
 		nodeName.Release();
 
@@ -182,7 +182,8 @@ namespace IED
 
 		targetNodeName.Release();
 
-		a_out = { node, nodes.ref };
+		a_out.obj = node;
+		a_out.ref = nodes.ref;
 
 		return true;
 	}

@@ -36,6 +36,7 @@ namespace IED
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
 	{
 		if (a_refr == nullptr ||
+		    a_refr->formID == 0 ||
 		    a_refr->loadedState == nullptr ||
 		    a_refr->IsDeleted() ||
 		    !a_refr->IsActor())
@@ -1922,7 +1923,7 @@ namespace IED
 	void Controller::QueueGetCrosshairRef(std::function<void(Game::FormID)> a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
-			Game::FormID result{};
+			Game::FormID result;
 
 			{
 				NiPointer<TESObjectREFR> ref;
@@ -2101,7 +2102,7 @@ namespace IED
 		}
 
 		a_entry.state->nodes.obj->SetVisible(a_visible);
-		a_entry.UpdateData(a_config);
+		a_entry.state->UpdateData(a_config);
 
 		bool nodeAttached = false;
 
@@ -2172,7 +2173,9 @@ namespace IED
 				auto& cer = a_params.objects.GetSlot(mainSlot);
 				auto& cel = a_params.objects.GetSlot(leftSlot);
 
-				if (cel.lastEquipped && (!cer.lastEquipped || cer.lastSeenEquipped < cel.lastSeenEquipped))
+				if (cel.slotState.lastEquipped &&
+				    (!cer.slotState.lastEquipped ||
+				     cer.slotState.lastSeenEquipped < cel.slotState.lastSeenEquipped))
 				{
 					slots[0] = leftSlot;
 					slots[1] = mainSlot;
@@ -2243,7 +2246,7 @@ namespace IED
 					a_params.actor,
 					configEntry,
 					candidates,
-					objectEntry.lastEquipped);
+					objectEntry.slotState.lastEquipped);
 
 				const configBaseValues_t* usedConf =
 					!item ? configEntry.get_equipment_override(
@@ -2318,7 +2321,7 @@ namespace IED
 					usedConf->flags,
 					a_params);
 
-				if (objectEntry.state && *objectEntry.state->item == item->form->formID)
+				if (objectEntry.state && objectEntry.state->form == item->form)
 				{
 					if (ProcessItemUpdate(
 							a_params,
@@ -2546,6 +2549,37 @@ namespace IED
 		return formData.end();
 	}
 
+	bool Controller::IsBlockedByChance(
+		processParams_t& a_params,
+		const Data::configCustom_t& a_config,
+		objectEntryCustom_t& a_objectEntry)
+	{
+		if (a_config.customFlags.test(Data::CustomFlags::kUseChance))
+		{
+			if (!a_objectEntry.cflags.test(CustomObjectEntryFlags::kProcessedChance))
+			{
+				if (m_rng1.Get() > a_config.chance)
+				{
+					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
+				}
+				else
+				{
+					a_objectEntry.cflags.clear(CustomObjectEntryFlags::kBlockedByChance);
+				}
+
+				a_objectEntry.cflags.set(CustomObjectEntryFlags::kProcessedChance);
+			}
+
+			return a_objectEntry.cflags.test(CustomObjectEntryFlags::kBlockedByChance);
+		}
+		else
+		{
+			a_objectEntry.clear_chance_flags();
+
+			return false;
+		}
+	}
+
 	bool Controller::ProcessCustomEntry(
 		processParams_t& a_params,
 		const Data::configCustom_t& a_config,
@@ -2554,11 +2588,13 @@ namespace IED
 		if (a_config.customFlags.test(CustomFlags::kIgnorePlayer) &&
 		    a_params.actor == *g_thePlayer)
 		{
+			a_objectEntry.clear_chance_flags();
 			return false;
 		}
 
 		if (!a_config.run_filters(a_params))
 		{
+			a_objectEntry.clear_chance_flags();
 			return false;
 		}
 
@@ -2574,6 +2610,15 @@ namespace IED
 		}
 
 		if (usedBaseConf->flags.test(FlagsBase::kDisabled))
+		{
+			a_objectEntry.clear_chance_flags();
+			return false;
+		}
+
+		if (IsBlockedByChance(
+				a_params,
+				a_config,
+				a_objectEntry))
 		{
 			return false;
 		}
@@ -2606,7 +2651,7 @@ namespace IED
 				usedBaseConf->flags.value,
 				a_params);
 
-			if (a_objectEntry.state && a_objectEntry.state->item == form->formID)
+			if (a_objectEntry.state && a_objectEntry.state->form == form)
 			{
 				bool _visible = hasMinCount && visible;
 
@@ -2685,7 +2730,7 @@ namespace IED
 				usedBaseConf->flags.value,
 				a_params);
 
-			if (a_objectEntry.state && a_objectEntry.state->item == form->formID)
+			if (a_objectEntry.state && a_objectEntry.state->form == form)
 			{
 				if (ProcessItemUpdate(
 						a_params,
@@ -2729,20 +2774,6 @@ namespace IED
 			auto& conf = f.second(a_params.configSex);
 
 			auto it = a_entryMap.try_emplace(f.first).first;
-
-			if (it->second.doNotProcess)
-			{
-				continue;
-			}
-
-			if (conf.customFlags.test(Data::CustomFlags::kUseChance))
-			{
-				if (m_rng1.Get() > conf.chance)
-				{
-					it->second.doNotProcess = true;
-					continue;
-				}
-			}
 
 			if (!ProcessCustomEntry(
 					a_params,
@@ -3468,7 +3499,7 @@ namespace IED
 			EquippedFormCollector collector(a_actor, a_race);
 			entryList->Visit(collector);
 
-			auto form = a_entry.IsActive() ? a_entry.state->item->Lookup() : nullptr;
+			auto form = a_entry.GetFormIfActive();
 
 			CommonParams params{ a_actor };
 
@@ -4043,7 +4074,7 @@ namespace IED
 						a_record,
 						ControllerUpdateFlags::kNone);
 
-					return objectEntry.state.has();
+					return objectEntry.state.get() != nullptr;
 				}
 				else
 				{
@@ -4173,6 +4204,11 @@ namespace IED
 			return false;
 		}
 
+		if (!IsREFRValid(refr))
+		{
+			return false;
+		}
+
 		if (refr->formID != a_objects.m_formid)
 		{
 			Warning(
@@ -4197,22 +4233,7 @@ namespace IED
 			return false;
 		}
 
-		if (!IsREFRValid(actor))
-		{
-			return false;
-		}
-
-		auto actorBase = actor->baseForm;
-		if (!actorBase)
-		{
-			return false;
-		}
-
-		auto npc = actorBase->As<TESNPC>();
-		if (!npc)
-		{
-			return false;
-		}
+		auto npc = Game::GetActorBase(actor);
 
 		auto race = actor->race;
 		if (!race)
@@ -4254,18 +4275,16 @@ namespace IED
 			return false;
 		}
 
-		a_out = {
-			actor,
-			handle,
-			npc,
-			race,
-			root,
-			npcroot,
-			npc->GetSex() == 1 ?
-                ConfigSex::Female :
-                ConfigSex::Male,
-			std::addressof(a_objects)
-		};
+		a_out.actor = actor;
+		a_out.handle = handle;
+		a_out.npc = npc;
+		a_out.race = race;
+		a_out.root = root;
+		a_out.npcRoot = npcroot;
+		a_out.sex = npc->GetSex() == 1 ?
+                        ConfigSex::Female :
+                        ConfigSex::Male;
+		a_out.objects = std::addressof(a_objects);
 
 		return true;
 	}
@@ -4281,16 +4300,16 @@ namespace IED
 		{
 			auto& slot = a_cache.GetSlot(a_info.rightSlot);
 
-			slot.lastEquipped = a_info.right->formID;
-			slot.lastSeenEquipped = ts;
+			slot.slotState.lastEquipped = a_info.right->formID;
+			slot.slotState.lastSeenEquipped = ts;
 		}
 
 		if (a_info.leftSlot < ObjectSlot::kMax)
 		{
 			auto& slot = a_cache.GetSlot(a_info.leftSlot);
 
-			slot.lastEquipped = a_info.left->formID;
-			slot.lastSeenEquipped = ts;
+			slot.slotState.lastEquipped = a_info.left->formID;
+			slot.slotState.lastSeenEquipped = ts;
 		}
 	}
 

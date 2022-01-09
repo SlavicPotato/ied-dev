@@ -100,7 +100,7 @@ namespace IED
 			auto& store = m_controller.GetConfigStore().active;
 			auto& data = store.slot.GetRaceData();
 
-			return data.try_emplace(static_cast<Data::configForm_t>(a_handle)).first->second;
+			return data.try_emplace(a_handle).first->second;
 		}
 
 		void UISlotEditorRace::MergeProfile(

@@ -454,9 +454,9 @@ namespace IED
 			}
 
 			auto& flc = m_controller.UIGetFormLookupCache();
-			DrawObjectEntryHeaderInfo(flc.LookupForm(*object->state->item), *object);
+			DrawObjectEntryHeaderInfo(flc.LookupForm(object->state->formid), *object);
 
-			if (*object->state->item != object->matchedItem)
+			if (object->state->formid != object->matchedItem)
 			{
 				ImGui::SameLine(0.0f, 5.0f);
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);

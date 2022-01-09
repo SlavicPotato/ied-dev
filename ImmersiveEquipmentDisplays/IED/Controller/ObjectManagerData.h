@@ -30,28 +30,21 @@ namespace IED
 		objectEntryBase_t() = default;
 
 		objectEntryBase_t(const objectEntryBase_t&) = delete;
-		objectEntryBase_t(objectEntryBase_t&&) = default;
+		objectEntryBase_t(objectEntryBase_t&&) = delete;
 		objectEntryBase_t& operator=(const objectEntryBase_t&) = delete;
-		objectEntryBase_t& operator=(objectEntryBase_t&&) = default;
+		objectEntryBase_t& operator=(objectEntryBase_t&&) = delete;
 
-		inline void Reset() noexcept
+		inline void Reset()
 		{
-			state->nodes.obj.reset();
-			state->nodes.ref.reset();
-
-			for (auto& e : state->dbEntries)
+			if (state)
 			{
-				e->accessed = IPerfCounter::Query();
+				for (auto& e : state->dbEntries)
+				{
+					e->accessed = IPerfCounter::Query();
+				}
+
+				state.reset();
 			}
-
-			state->dbEntries.clear();
-
-			state->item.clear();
-			state->transform.clear();
-			state->nodeDesc.name.clear();
-
-			state.clear();
-			//status.clear();
 		}
 
 		inline void SetNodeVisible(bool a_switch) noexcept
@@ -62,74 +55,88 @@ namespace IED
 			}
 		}
 
-		void UpdateData(const Data::configBaseValues_t& a_in) noexcept
-		{
-			// gross but efficient
-
-			static_assert(
-				std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::FlagsBase>> &&
-				stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::FlagsBase::kPlaySound)) &&
-				stl::underlying((ObjectEntryFlags::kDropOnDeath)) == stl::underlying((Data::FlagsBase::kDropOnDeath)) &&
-				stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::FlagsBase::kSyncReferenceTransform)));
-
-			state->flags =
-				(state->flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kDropOnDeath | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
-				static_cast<ObjectEntryFlags>((a_in.flags & (Data::FlagsBase::kPlaySound | Data::FlagsBase::kDropOnDeath | Data::FlagsBase::kSyncReferenceTransform)));
-
-			state->transform.UpdateData(a_in);
-		}
-
-		SKMP_FORCEINLINE constexpr auto IsActive() const noexcept
+		SKMP_FORCEINLINE auto IsActive() const noexcept
 		{
 			return state && state->nodes.obj->IsVisible();
 		}
 
-		SKMP_FORCEINLINE constexpr auto GetFormIfActive() const noexcept
+		SKMP_FORCEINLINE auto GetFormIfActive() const noexcept
 		{
 			return IsActive() ? state->form : nullptr;
 		}
 
-		SKMP_FORCEINLINE constexpr auto IsNodeVisible() const noexcept
+		SKMP_FORCEINLINE auto IsNodeVisible() const noexcept
 		{
 			return state && state->nodes.obj->IsVisible();
 		}
 
 		struct State
 		{
-			stl::optional<Game::FormID> item;
+			void UpdateData(const Data::configBaseValues_t& a_in) noexcept
+			{
+				// gross but efficient
+
+				static_assert(
+					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::FlagsBase>> &&
+					stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::FlagsBase::kPlaySound)) &&
+					stl::underlying((ObjectEntryFlags::kDropOnDeath)) == stl::underlying((Data::FlagsBase::kDropOnDeath)) &&
+					stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::FlagsBase::kSyncReferenceTransform)));
+
+				flags =
+					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kDropOnDeath | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
+					static_cast<ObjectEntryFlags>((a_in.flags & (Data::FlagsBase::kPlaySound | Data::FlagsBase::kDropOnDeath | Data::FlagsBase::kSyncReferenceTransform)));
+
+				transform.UpdateData(a_in);
+			}
+
 			TESForm* form{ nullptr };
-			std::uint8_t itemType{ 0 };
+			Game::FormID formid;
 			stl::flag<ObjectEntryFlags> flags{ ObjectEntryFlags::kNone };
 			Data::NodeDescriptor nodeDesc;
 			nodesRef_t nodes;
-			bool atmReference{ true };
-			std::vector<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
 			Data::cacheTransform_t transform;
+			std::vector<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
+			bool atmReference{ true };
 		};
 
-		stl::optional<State> state;
-		//ObjectEntryStatus status;
+		std::unique_ptr<State> state;
 	};
 
 	struct objectEntrySlot_t :
 		public objectEntryBase_t
 	{
-		Game::FormID lastEquipped;
-		long long lastSeenEquipped{ std::numeric_limits<long long>::min() };
+		Data::actorStateSlotEntry_t slotState;
 		Data::ObjectSlot slotid{ Data::ObjectSlot::kMax };
 		std::uint8_t hideCountdown{ 0 };
 
-		inline void ResetDeferedHide() noexcept
+		inline constexpr void ResetDeferedHide() noexcept
 		{
 			hideCountdown = 0;
 		}
 	};
 
+	enum class CustomObjectEntryFlags : std::uint32_t
+	{
+		kNone = 0,
+
+		kProcessedChance = 1u << 0,
+		kBlockedByChance = 1u << 1,
+
+		kChanceMask = kProcessedChance | kBlockedByChance
+	};
+
+	DEFINE_ENUM_CLASS_BITWISE(CustomObjectEntryFlags);
+
 	struct objectEntryCustom_t :
 		public objectEntryBase_t
 	{
+		inline constexpr void clear_chance_flags() noexcept
+		{
+			cflags.clear(CustomObjectEntryFlags::kChanceMask);
+		}
+
 		Game::FormID matchedItem;
-		bool doNotProcess{ false };
+		stl::flag<CustomObjectEntryFlags> cflags{ CustomObjectEntryFlags::kNone };
 	};
 
 	class IObjectManager;
@@ -421,12 +428,12 @@ namespace IED
 			    .first->second;
 		}
 
-		inline constexpr const auto& GetData() const noexcept
+		[[nodiscard]] inline constexpr const auto& GetData() const noexcept
 		{
 			return m_objects;
 		}
 
-		inline void ClearPlayerState() noexcept
+		inline constexpr void ClearPlayerState() noexcept
 		{
 			m_playerState.clear();
 		}

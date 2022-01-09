@@ -143,9 +143,10 @@ namespace IED
 
 			if (m_cachedItem->name == a_profile.Name())
 			{
-				m_cachedItem->data = entryNodeOverrideData_t(
+				m_cachedItem->data = {
 					a_profile.Data(),
-					Data::ConfigClass::Global);
+					Data::ConfigClass::Global
+				};
 			}
 		}
 
@@ -164,13 +165,16 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelCommon& UIProfileEditorNodeOverride::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformProfileEditor;
+			return m_controller
+			    .GetConfigStore()
+			    .settings.data.ui.transformProfileEditor;
 		}
 
 		void UIProfileEditorNodeOverride::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller
+				.GetConfigStore()
+				.settings.mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorNodeOverride::GetCollapsibleStatesData()

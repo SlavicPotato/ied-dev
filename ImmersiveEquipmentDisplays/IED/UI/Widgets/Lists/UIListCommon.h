@@ -333,12 +333,10 @@ namespace IED
 		template <class Td, class Th>
 		void UIListBase<Td, Th>::ListUpdateCurrent()
 		{
-			if (!m_listCurrent)
+			if (m_listCurrent)
 			{
-				return;
+				m_listCurrent->data = GetData(m_listCurrent->handle);
 			}
-
-			m_listCurrent->data = GetData(m_listCurrent->handle);
 		}
 
 		template <class Td, class Th>

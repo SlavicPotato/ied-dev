@@ -36,7 +36,7 @@ namespace IED
 				if (DrawTypeSelectorRadio(config.data.ui.slotEditor.globalType))
 				{
 					config.mark_dirty();
-					UpdateData();
+					UpdateData(m_data);
 				}
 
 				ImGui::Separator();
@@ -94,7 +94,7 @@ namespace IED
 		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
 
-			UpdateData();
+			UpdateData(a_data.data);
 
 			m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 		}
@@ -132,7 +132,7 @@ namespace IED
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
-			UpdateData();
+			UpdateData(a_params.data);
 
 			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone);
 		}
@@ -182,15 +182,17 @@ namespace IED
 			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
-		void UISlotEditorGlobal::UpdateData()
+		void UISlotEditorGlobal::UpdateData(entrySlotData_t& a_data)
 		{
 			auto& store = m_controller.GetConfigStore();
 
 			const auto& config = store.settings;
 
-			m_data = entrySlotData_t(
-				store.active.slot.GetGlobalData(config.data.ui.slotEditor.globalType),
-				Data::ConfigClass::Global);
+			a_data = {
+				store.active.slot.GetGlobalData(
+					config.data.ui.slotEditor.globalType),
+				Data::ConfigClass::Global
+			};
 		}
 
 		void UISlotEditorGlobal::OnOpen()
@@ -205,12 +207,12 @@ namespace IED
 
 		void UISlotEditorGlobal::Reset()
 		{
-			UpdateData();
+			UpdateData(m_data);
 		}
 
 		void UISlotEditorGlobal::QueueUpdateCurrent()
 		{
-			UpdateData();
+			UpdateData(m_data);
 		}
 	}
 }

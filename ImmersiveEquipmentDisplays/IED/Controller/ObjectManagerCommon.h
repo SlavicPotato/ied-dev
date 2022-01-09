@@ -38,7 +38,7 @@ namespace IED
 				rotation.clear();
 			}
 
-			inline bool operator==(const cacheTransform_t& a_rhs) const
+			/*inline bool operator==(const cacheTransform_t& a_rhs) const
 			{
 				if (scale.has() != a_rhs.scale.has())
 				{
@@ -85,11 +85,11 @@ namespace IED
 				}
 
 				return true;
-			}
+			}*/
 
-			stl::optional<float> scale;
 			stl::optional<NiPoint3> position;
 			stl::optional<NiMatrix33> rotation;
+			stl::optional<float> scale;
 		};
 	}  // namespace Data
 }  // namespace IED

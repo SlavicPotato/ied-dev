@@ -471,7 +471,8 @@ namespace IED
 
 			inline bool empty() const noexcept
 			{
-				return data.empty() && placementData.empty();
+				return data.empty() &&
+				       placementData.empty();
 			}
 
 			template <class Td, class data_type = stl::strip_type<Td>>

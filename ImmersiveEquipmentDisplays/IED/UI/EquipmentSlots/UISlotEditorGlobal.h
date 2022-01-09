@@ -73,7 +73,7 @@ namespace IED
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 			virtual void OnCollapsibleStatesUpdate() override;
 
-			void UpdateData();
+			void UpdateData(entrySlotData_t &a_data);
 
 			entrySlotData_t m_data;
 
