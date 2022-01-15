@@ -76,6 +76,7 @@ namespace IED
 			ShowEditorIDs = 2065,
 			ActorFilters = 2066,
 			NPCFilters = 2067,
+			DisableCollision = 2068,
 		};
 	}
 }

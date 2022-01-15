@@ -23,10 +23,13 @@ namespace IED
 
 		UIFileSelector::UIFileSelector(
 			Localization::ILocalization& a_loc,
-			const fs::path& a_root) :
+			const fs::path& a_root,
+			const fs::path& a_ext) :
 			UILocalizationInterface(a_loc),
-			m_root(a_root)
-		{}
+			m_root(a_root),
+			m_ext(a_ext)
+		{
+		}
 
 		void UIFileSelector::DrawFileSelector()
 		{
@@ -76,7 +79,7 @@ namespace IED
 
 				if (fs::exists(m_root) && !fs::is_directory(m_root))
 				{
-					throw std::exception(LS(UIFileSelectorWidgetStrings::ErrorRootPathNotDir));
+					throw std::exception("bad dir");
 				}
 
 				for (const auto& entry : fs::directory_iterator(m_root))
@@ -86,7 +89,15 @@ namespace IED
 						if (!entry.is_regular_file())
 							continue;
 
-						auto file = entry.path().filename();
+						auto& path = entry.path();
+
+						if (!m_ext.empty())
+						{
+							if (!path.has_extension() || path.extension() != m_ext)
+								continue;
+						}
+
+						auto file = path.filename();
 
 						tmp.emplace(file.stem().string(), file);
 					}

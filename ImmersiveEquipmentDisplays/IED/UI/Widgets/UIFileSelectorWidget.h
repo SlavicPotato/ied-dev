@@ -31,7 +31,10 @@ namespace IED
 			bool UpdateFileList(bool a_createPath, bool a_select = true);
 
 		protected:
-			UIFileSelector(Localization::ILocalization &a_loc, const fs::path& a_root);
+			UIFileSelector(
+				Localization::ILocalization& a_loc,
+				const fs::path& a_root,
+				const fs::path& a_ext);
 
 			void DrawFileSelector();
 
@@ -62,6 +65,7 @@ namespace IED
 			stl::optional<SelectedFile> m_selected;
 			storage_type m_files;
 			fs::path m_root;
+			fs::path m_ext;
 
 			except::descriptor m_lastExcept;
 		};

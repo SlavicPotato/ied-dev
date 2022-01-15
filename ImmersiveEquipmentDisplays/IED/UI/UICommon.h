@@ -18,6 +18,8 @@ namespace IED
 			extern const ImVec4 g_colorPurple;
 
 			void HelpMarker(const char* a_desc);
+			void HelpMarkerWarn(const char* a_desc);
+
 			void ToolTip(const char* a_text, float a_width = 100.0f);
 
 			template <class... Args>

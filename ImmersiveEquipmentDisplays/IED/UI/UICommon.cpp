@@ -32,6 +32,12 @@ namespace IED
 				ImGui::TextDisabled("[?]");
 				ToolTip(a_desc, 50.0f);
 			}
+			
+			void HelpMarkerWarn(const char* a_desc)
+			{
+				ImGui::TextDisabled("[!]");
+				ToolTip(a_desc, 50.0f);
+			}
 
 			void ToolTip(const char* a_text, float a_width)
 			{

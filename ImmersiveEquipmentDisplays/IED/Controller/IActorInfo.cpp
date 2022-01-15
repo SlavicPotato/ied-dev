@@ -105,6 +105,28 @@ namespace IED
 		FillNPCInfoEntry(npc, *e.first->second);
 	}
 
+	stl::optional<Game::ObjectRefHandle> IActorInfo::GetTargetActortHandle()
+	{
+		if (auto refHolder = CrosshairRefHandleHolder::GetSingleton())
+		{
+			auto& handle = refHolder->CrosshairRefHandle();
+			if (handle && handle.IsValid())
+			{
+				return handle;
+			}
+		}
+
+		if (auto tm = MenuTopicManager::GetSingleton())
+		{
+			if (tm->talkingHandle && tm->talkingHandle.IsValid())
+			{
+				return tm->talkingHandle;
+			}
+		}
+
+		return {};
+	}
+
 	void IActorInfo::UpdateActorInfo(
 		const ActorObjectMap& a_cache)
 	{
@@ -172,19 +194,13 @@ namespace IED
 	bool IActorInfo::LookupCrosshairRef(
 		NiPointer<TESObjectREFR>& a_out)
 	{
-		auto refHolder = CrosshairRefHandleHolder::GetSingleton();
-		if (!refHolder)
+		auto handle = GetTargetActortHandle();
+		if (!handle)
 		{
 			return false;
 		}
 
-		auto &handle = refHolder->CrosshairRefHandle();
-		if (!handle || !handle.IsValid())
-		{
-			return false;
-		}
-
-		return handle.Lookup(a_out);
+		return handle->Lookup(a_out);
 	}
 
 	void IActorInfo::UpdateActorInfo(

@@ -410,7 +410,8 @@ namespace IED
 		bool a_leftWeapon,
 		bool a_dropOnDeath,
 		bool a_removeScabbards,
-		bool a_keepTorchFlame)
+		bool a_keepTorchFlame,
+		bool a_disableCollision)
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
@@ -524,24 +525,27 @@ namespace IED
 			}
 		}
 
-		// collision related, 2nd param = flags
-		fUnk1CD130(a_object, 0x0);
-
-		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
-
-		if (auto cell = a_actor->parentCell)
+		if (!a_disableCollision)
 		{
-			if (auto world = cell->GetHavokWorld())
+			// collision related, 2nd param = flags
+			fUnk1CD130(a_object, 0x0);
+
+			fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
+
+			if (auto cell = a_actor->parentCell)
 			{
-				NiPointer<Actor> mountedActor;
-
-				auto isMounted = a_actor->GetMountedActor(mountedActor);
-
-				unks_01 tmp;
-
-				if (auto r = fUnk5EBD90(isMounted ? mountedActor : a_actor, &tmp))
+				if (auto world = cell->GetHavokWorld())
 				{
-					fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
+					NiPointer<Actor> mountedActor;
+
+					auto isMounted = a_actor->GetMountedActor(mountedActor);
+
+					unks_01 tmp;
+
+					if (auto r = fUnk5EBD90(isMounted ? mountedActor : a_actor, &tmp))
+					{
+						fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
+					}
 				}
 			}
 		}

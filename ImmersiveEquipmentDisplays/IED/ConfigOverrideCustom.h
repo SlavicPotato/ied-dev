@@ -17,7 +17,8 @@ namespace IED
 			kAlwaysUnload = 1u << 4,
 			kUseChance = 1u << 5,
 			kIgnoreRaceEquipTypes = 1u << 6,
-			kDisableIfEquipped = 1u << 7
+			kDisableIfEquipped = 1u << 7,
+			kDisableCollision = 1u << 8,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);

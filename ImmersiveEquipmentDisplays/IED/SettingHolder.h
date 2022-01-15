@@ -126,7 +126,7 @@ namespace IED
 				std::uint32_t logLimit{ 200 };
 				bool logLevels[stl::underlying(LogLevel::Max) + 1];
 
-				bool closeOnESC{ false };
+				bool closeOnESC{ true };
 
 				stl::flag<Data::ConfigStoreSerializationFlags> defaultExportFlags{
 					Data::ConfigStoreSerializationFlags::kAll

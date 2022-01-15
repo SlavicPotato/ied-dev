@@ -17,11 +17,13 @@ namespace IED
 
 		protected:
 			void DrawTip(UITip a_id, bool a_sameLine = true) const;
+			void DrawTipWarn(UITip a_id, bool a_sameLine = true) const;
 			void DrawTip(const char* a_text, bool a_sameLine = true) const;
 			const char* GetTipText(UITip a_id) const;
 
 		private:
 			void DrawTipText(const char* a_text, bool a_sameLine) const;
+			void DrawTipTextWarn(const char* a_text, bool a_sameLine) const;
 		};
 
 	}

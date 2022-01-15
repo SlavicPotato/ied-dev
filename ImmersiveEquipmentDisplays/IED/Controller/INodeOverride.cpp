@@ -977,7 +977,7 @@ namespace IED
 		}
 		else
 		{
-			ResetNodePlacement(a_entry, a_params);
+			ResetNodePlacement(a_entry, a_params.npcRoot);
 		}
 	}
 
@@ -1004,7 +1004,7 @@ namespace IED
 
 	void INodeOverride::ResetNodePlacement(
 		const weapNodeEntry_t& a_entry,
-		nodeOverrideParams_t& a_params)
+		NiNode* a_npcroot)
 	{
 		if (!a_entry.currentTarget.empty())
 		{
@@ -1013,7 +1013,7 @@ namespace IED
 				attach_node_to_target(
 					a_entry,
 					a_entry.defaultParent,
-					a_params.npcRoot);
+					a_npcroot);
 			}
 
 			a_entry.currentTarget.clear();

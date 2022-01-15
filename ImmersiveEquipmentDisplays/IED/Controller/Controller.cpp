@@ -2348,7 +2348,8 @@ namespace IED
 						item->form,
 						ItemData::IsLeftWeaponSlot(slot),
 						false,
-						visible))
+						visible,
+						false))
 				{
 					objectEntry.state->nodes.obj->SetVisible(visible);
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
@@ -2689,7 +2690,8 @@ namespace IED
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
-					visible))
+					visible,
+					a_config.customFlags.test(CustomFlags::kDisableCollision)))
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
@@ -2753,7 +2755,8 @@ namespace IED
 					form,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
-					visible))
+					visible,
+					a_config.customFlags.test(CustomFlags::kDisableCollision)))
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
@@ -3124,7 +3127,7 @@ namespace IED
 			}
 			else
 			{
-				ResetNodePlacement(e, params);
+				ResetNodePlacement(e, params.npcRoot);
 			}
 		}
 

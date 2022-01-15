@@ -404,6 +404,7 @@ namespace IED
 
 		NiPointer<Actor> m_actor;
 		NiPointer<NiNode> m_root;
+		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_formid;
 

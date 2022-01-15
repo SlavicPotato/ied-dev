@@ -1285,6 +1285,15 @@ namespace IED
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
 			DrawTip(UITip::LeftWeapon);
+			
+			if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::DisableCollision, "3"),
+					stl::underlying(std::addressof(data.customFlags.value)),
+					stl::underlying(Data::CustomFlags::kDisableCollision)))
+			{
+				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+			}
+			DrawTipWarn(UITip::DisableCollision);
 
 			/*if (ImGui::CheckboxFlagsT(
 					LS(UICustomEditorString::LoadARMA, "3"),

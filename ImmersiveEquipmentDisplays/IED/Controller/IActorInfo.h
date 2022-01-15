@@ -48,6 +48,8 @@ namespace IED
 		void AddExtraActorEntry(Game::FormID a_formid);
 		void AddExtraNPCEntry(Game::FormID a_formid);
 
+		static stl::optional<Game::ObjectRefHandle> GetTargetActortHandle();
+
 		stl::optional<Game::FormID> m_crosshairRef;
 
 		std::uint64_t m_actorInfoUpdateID{ 0 };

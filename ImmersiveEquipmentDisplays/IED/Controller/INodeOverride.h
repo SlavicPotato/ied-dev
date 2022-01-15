@@ -224,7 +224,7 @@ namespace IED
 
 		static void ResetNodePlacement(
 			const weapNodeEntry_t& a_entry,
-			nodeOverrideParams_t& a_params);
+			NiNode *a_npcroot);
 
 	private:
 		static constexpr const stl::fixed_string& get_target_node(

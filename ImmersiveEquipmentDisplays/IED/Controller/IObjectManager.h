@@ -94,7 +94,8 @@ namespace IED
 			TESForm* a_form,
 			bool a_leftWeapon,
 			bool a_loadArma,
-			bool a_visible);
+			bool a_visible,
+			bool a_disableCollision);
 
 		void PlayObjectSound(
 			const processParams_t& a_params,

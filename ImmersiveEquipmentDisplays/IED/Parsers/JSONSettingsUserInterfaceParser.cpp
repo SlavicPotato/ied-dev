@@ -118,7 +118,7 @@ namespace IED
 				a_out.logLevels[i] = levels.get(i, true).asBool();
 			}
 
-			a_out.closeOnESC = data.get("close_on_esc", false).asBool();
+			a_out.closeOnESC = data.get("close_on_esc", true).asBool();
 
 			a_out.defaultExportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("default_export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());

@@ -26,6 +26,7 @@ namespace IED
 		m_handle(a_handle),
 		m_actor(a_actor),
 		m_root(a_root),
+		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		m_created(IPerfCounter::Query())
 	{

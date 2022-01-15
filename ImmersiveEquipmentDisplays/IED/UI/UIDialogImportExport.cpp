@@ -17,13 +17,13 @@ namespace IED
 
 		UIDialogImportExport::UIDialogImportExport(
 			Controller& a_controller) :
-			UIFileSelector(a_controller, PATHS::EXPORTS),
+			UIFileSelector(a_controller, PATHS::EXPORTS, ".json"),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIImportWidget(a_controller),
 			m_controller(a_controller),
 			m_rFileCheck(
-				"^[a-zA-Z0-9_\\- \\'\\\"\\,\\.]+$",
+				"^[a-zA-Z0-9_\\-\\+ \\'\\\"\\,\\(\\)\\[\\]\\.]+$",
 				std::regex_constants::ECMAScript)
 		{
 		}

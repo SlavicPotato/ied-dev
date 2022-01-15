@@ -129,7 +129,17 @@ namespace IED
 			ResetNodeOverride(e.second);
 		}
 
+		if (a_actor && a_actor->loadedState) 
+		{
+			for (auto& e : a_objects.m_weapNodes)
+			{
+				ResetNodePlacement(e, a_objects.m_npcroot);
+			}
+		}
+
 		a_objects.m_cmeNodes.clear();
+		a_objects.m_weapNodes.clear();
+		a_objects.m_monitorNodes.clear();
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -306,7 +316,8 @@ namespace IED
 		TESForm* a_form,
 		bool a_leftWeapon,
 		bool a_loadArma,
-		bool a_visible)
+		bool a_visible,
+		bool a_disableCollision)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -467,7 +478,8 @@ namespace IED
 			a_leftWeapon,
 			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
 			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
-			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame));
+			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame),
+			a_disableCollision);
 
 		state->form = a_form;
 		state->formid = a_form->formID;

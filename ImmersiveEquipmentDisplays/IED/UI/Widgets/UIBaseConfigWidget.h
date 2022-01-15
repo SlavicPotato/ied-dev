@@ -662,7 +662,7 @@ namespace IED
 					UICommon::PushDisabled(!atmReference);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::SyncReference, "7"),
+							LS(UIBaseConfigString::SyncReference, "8"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::FlagsBase::kSyncReferenceTransform)))
 					{
@@ -678,7 +678,7 @@ namespace IED
 					DrawTip(UITip::SyncReferenceNode);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Invisible, "8"),
+							LS(CommonStrings::Invisible, "9"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::FlagsBase::kInvisible)))
 					{
@@ -692,7 +692,7 @@ namespace IED
 					DrawTip(UITip::Invisible);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::Use1pWeaponModels, "9"),
+							LS(UIBaseConfigString::Use1pWeaponModels, "A"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::FlagsBase::kLoad1pWeaponModel)))
 					{
@@ -706,7 +706,7 @@ namespace IED
 					DrawTip(UITip::Load1pWeaponModel);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::KeepTorchFlame, "A"),
+							LS(UIBaseConfigString::KeepTorchFlame, "B"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::FlagsBase::kKeepTorchFlame)))
 					{
