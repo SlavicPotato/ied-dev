@@ -62,6 +62,8 @@ namespace IED
 		static inline constexpr auto BSX = "BSX";
 
 		static inline constexpr auto NINODE_TORCH_FIRE = "TorchFire";
+		static inline constexpr auto NINODE_IED_ATTACH_LIGHT = "AttachLight";
+		static inline constexpr auto NINODE_IED_GLOW_ADD_MESH = "GlowAddMesh";
 
 		static inline constexpr auto NINODE_IED_OBJECT = "IED OBJECT";
 
@@ -78,6 +80,8 @@ namespace IED
 		BSFixedString m_bsx{ BSX };
 		BSFixedString m_torchFire{ NINODE_TORCH_FIRE };
 		BSFixedString m_object{ NINODE_IED_OBJECT };
+		BSFixedString m_attachLight{ NINODE_IED_ATTACH_LIGHT };
+		BSFixedString m_glowAddMesh{ NINODE_IED_GLOW_ADD_MESH };
 	};
 
 	class StringHolder

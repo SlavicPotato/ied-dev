@@ -2197,7 +2197,8 @@ namespace IED
 
 				auto& objectEntry = a_params.objects.GetSlot(slot);
 
-				if ((a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)
+				if (a_params.actor != *g_thePlayer && 
+					(!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2468,7 +2469,8 @@ namespace IED
 
 		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
-			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes))
+			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) && 
+				a_params.actor != *g_thePlayer)
 			{
 				auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(a_itemData.type);
 				if (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)

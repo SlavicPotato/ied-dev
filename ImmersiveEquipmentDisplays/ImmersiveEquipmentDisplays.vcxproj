@@ -93,7 +93,7 @@
     <VcpkgConfiguration>Release</VcpkgConfiguration>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'" Label="Vcpkg">
-    <VcpkgTriplet>x64-windows-avx2-static</VcpkgTriplet>
+    <VcpkgTriplet>x64-windows-rel-static</VcpkgTriplet>
     <VcpkgConfiguration>Release</VcpkgConfiguration>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

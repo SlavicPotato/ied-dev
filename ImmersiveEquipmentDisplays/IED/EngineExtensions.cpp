@@ -515,12 +515,34 @@ namespace IED
 		{
 			if (!a_keepTorchFlame)
 			{
+				bool shrink = false;
+
 				if (auto torchFireNode = GetObjectByName(a_object, sh->m_torchFire, true))
 				{
 					torchFireNode->m_parent->RemoveChild(torchFireNode);
-					ShrinkChildrenToSize(a_object);
+
+					shrink = true;
 
 					result.set(AttachResultFlags::kTorchFlameRemoved);
+				}
+
+				if (auto attachLightNode = GetObjectByName(a_object, sh->m_attachLight, true))
+				{
+					attachLightNode->m_parent->RemoveChild(attachLightNode);
+
+					shrink = true;
+				}
+
+				if (auto glowAddMesh = GetObjectByName(a_object, sh->m_glowAddMesh, true))
+				{
+					glowAddMesh->m_parent->RemoveChild(glowAddMesh);
+
+					shrink = true;
+				}
+
+				if (shrink)
+				{
+					ShrinkChildrenToSize(a_object);
 				}
 			}
 		}
