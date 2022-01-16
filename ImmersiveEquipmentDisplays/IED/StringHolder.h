@@ -67,6 +67,8 @@ namespace IED
 
 		static inline constexpr auto NINODE_IED_OBJECT = "IED OBJECT";
 
+		static inline constexpr auto NINODE_QUIVER = "QUIVER";
+
 		BSStringHolder() = default;
 
 		BSStringHolder(const BSStringHolder&) = delete;
@@ -82,6 +84,14 @@ namespace IED
 		BSFixedString m_object{ NINODE_IED_OBJECT };
 		BSFixedString m_attachLight{ NINODE_IED_ATTACH_LIGHT };
 		BSFixedString m_glowAddMesh{ NINODE_IED_GLOW_ADD_MESH };
+
+		BSFixedString m_weaponAxe{ NINODE_AXE };
+		BSFixedString m_weaponMace{ NINODE_MACE };
+		BSFixedString m_weaponSword{ NINODE_SWORD };
+		BSFixedString m_weaponDagger{ NINODE_DAGGER };
+		BSFixedString m_weaponBack{ NINODE_WEAPON_BACK };
+		BSFixedString m_weaponBow{ NINODE_BOW };
+		BSFixedString m_quiver{ NINODE_QUIVER };
 	};
 
 	class StringHolder

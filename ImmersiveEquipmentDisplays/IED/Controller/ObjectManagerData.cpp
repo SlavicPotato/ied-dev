@@ -65,21 +65,6 @@ namespace IED
 					e->second.bsname,
 					e->second.defParent);
 			}
-
-			/*if (auto node = ::Util::Node::FindNode(a_npcroot, "WeaponSword"))
-			{
-				_DMESSAGE("%p | %f | %p | %p", std::addressof(node->m_localTransform.pos.x), node->m_localTransform.pos.x, &node->m_name.data, node->m_name.data);
-			}*/
-
-			/*if (auto node = ::Util::Node::FindNode(a_npcroot, "WeaponSword"))
-			{
-				_DMESSAGE("%p | %f", std::addressof(node->m_localTransform.pos.x), node->m_localTransform.pos.x);
-			}
-			
-			if (auto node = ::Util::Node::FindNode(a_npcroot, "WeaponSwordLeft"))
-			{
-				_DMESSAGE("%p | %f", std::addressof(node->m_localTransform.pos.x), node->m_localTransform.pos.x);
-			}*/
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;

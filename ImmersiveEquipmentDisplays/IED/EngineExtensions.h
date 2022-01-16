@@ -124,7 +124,7 @@ namespace IED
 
 		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0 = IAL::Address<std::int32_t*>(523662, 410201);
-		inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
+		//inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -165,6 +165,8 @@ namespace IED
 		void Patch_Armor_Update();
 		void Patch_SetWeapAdjAnimVar();
 		void Patch_CreateWeaponNodes();
+		void Patch_AdjustSkip_SE();
+		void Patch_AdjustSkip_AE();
 
 		static void RemoveAllBipedParts_Hook(Biped* a_biped);
 		static void Character_Resurrect_Hook(
@@ -184,6 +186,8 @@ namespace IED
 		static bool GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 
+		static bool AdjustSkip_Test(BSFixedString& a_name);
+
 		inline static const auto m_vtblCharacter_a = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a = IAL::Address<std::uintptr_t>(260538, 207511);
 		inline static const auto m_createWeaponNodes_a = IAL::Address<std::uintptr_t>(19342, 19769);
@@ -193,6 +197,7 @@ namespace IED
 		inline static const auto m_armorUpdate_a = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
 		inline static const auto m_garbageCollectorREFR_a = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
 		inline static const auto m_weapAdj_a = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, 0x427);
+		inline static const auto m_adjustSkip_a = IAL::Address<std::uintptr_t>(62933, 63856);
 
 		decltype(&Character_Resurrect_Hook) m_characterResurrect_o;
 		decltype(&Character_Release3D_Hook) m_characterRelease3D_o;

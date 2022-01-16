@@ -232,7 +232,8 @@
       <LargeAddressAware>true</LargeAddressAware>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
+      <Command>copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y
+copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Installing to: $(SSEPath)\Data\SKSE\Plugins\</Message>

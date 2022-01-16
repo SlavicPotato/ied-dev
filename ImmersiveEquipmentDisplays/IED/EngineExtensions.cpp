@@ -8,18 +8,19 @@
 #include <ext/JITASM.h>
 #include <ext/VFT.h>
 
+constexpr static auto mv_failstr = "Memory validation failed";
+
 #define UNWRAP(...) __VA_ARGS__
-#define VALIDATE_MEMORY(addr, bytes_se, bytes_ae)                               \
-	{                                                                           \
-		constexpr auto failstr = "Memory validation failed";                    \
-		if (IAL::IsAE())                                                        \
-		{                                                                       \
-			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_ae), failstr); \
-		}                                                                       \
-		else                                                                    \
-		{                                                                       \
-			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_se), failstr); \
-		}                                                                       \
+#define VALIDATE_MEMORY(addr, bytes_se, bytes_ae)                                  \
+	{                                                                              \
+		if (IAL::IsAE())                                                           \
+		{                                                                          \
+			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_ae), mv_failstr); \
+		}                                                                          \
+		else                                                                       \
+		{                                                                          \
+			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_se), mv_failstr); \
+		}                                                                          \
 	}
 
 namespace IED
@@ -46,12 +47,23 @@ namespace IED
 			Patch_CreateWeaponNodes();  // not strictly necessary, prevents delays in transform updates
 		}
 
-		if (m_conf.weaponAdjustDisable ||
-		    a_config->m_weaponAdjustFix)
+		if (a_config->m_weaponAdjustFix)
 		{
 			m_conf.weaponAdjustFix = a_config->m_weaponAdjustFix;
 
 			Patch_SetWeapAdjAnimVar();
+		}
+
+		if (m_conf.weaponAdjustDisable)
+		{
+			if (IAL::IsAE())
+			{
+				Patch_AdjustSkip_AE();
+			}
+			else
+			{
+				Patch_AdjustSkip_SE();
+			}
 		}
 	}
 
@@ -252,6 +264,133 @@ namespace IED
 		LogPatchEnd(__FUNCTION__);
 	}
 
+	void EngineExtensions::Patch_AdjustSkip_SE()
+	{
+		auto addr = m_adjustSkip_a + 0x91;
+
+		ASSERT_STR(
+			Patching::validate_mem(
+				addr,
+				{ 0x48, 0x8B, 0x43, 0x70, 0x48, 0x85, 0xC0 }),
+			mv_failstr);
+
+		struct Assembly : JITASM::JITASM
+		{
+			Assembly(std::uintptr_t a_targetAddr) :
+				JITASM(ISKSE::GetLocalTrampoline())
+			{
+				Xbyak::Label callLabel;
+				Xbyak::Label retnContinueLabel;
+				Xbyak::Label retnSkipLabel;
+				Xbyak::Label skip;
+
+				lea(rcx, qword[rbx + 0x78]);
+				call(ptr[rip + callLabel]);
+				test(al, al);
+				je(skip);
+
+				mov(rax, qword[rbx + 0x70]);
+				test(rax, rax);
+
+				jmp(ptr[rip + retnContinueLabel]);
+				L(skip);
+				jmp(ptr[rip + retnSkipLabel]);
+
+				L(retnContinueLabel);
+				dq(a_targetAddr + 0x7);
+
+				L(retnSkipLabel);
+				dq(a_targetAddr + 0xE5);
+
+				L(callLabel);
+				dq(std::uintptr_t(AdjustSkip_Test));
+			}
+		};
+
+		LogPatchBegin(__FUNCTION__);
+		{
+			Assembly code(addr);
+
+			ISKSE::GetBranchTrampoline().Write6Branch(
+				addr,
+				code.get());
+		}
+		LogPatchEnd(__FUNCTION__);
+	}
+
+	void EngineExtensions::Patch_AdjustSkip_AE()
+	{
+		auto addr = m_adjustSkip_a + 0x97;
+
+		ASSERT_STR(
+			Patching::validate_mem(
+				addr,
+				{ 0x48, 0x8B, 0x42, 0x70, 0x48, 0x85, 0xC0 }),
+			mv_failstr);
+
+		struct Assembly : JITASM::JITASM
+		{
+			Assembly(std::uintptr_t a_targetAddr) :
+				JITASM(ISKSE::GetLocalTrampoline())
+			{
+				Xbyak::Label callLabel;
+				Xbyak::Label retnContinueLabel;
+				Xbyak::Label retnSkipLabel;
+				Xbyak::Label skip;
+
+				push(rdx);
+				push(r8);
+				push(r9);
+				push(r10);
+				push(r11);
+				sub(rsp, 0x28);
+
+				lea(rcx, qword[rdx + 0x78]);
+
+				call(ptr[rip + callLabel]);
+
+				add(rsp, 0x28);
+				pop(r11);
+				pop(r10);
+				pop(r9);
+				pop(r8);
+				pop(rdx);
+
+				test(al, al);
+				je(skip);
+
+				mov(rax, qword[rdx + 0x70]);
+				test(rax, rax);
+
+				jmp(ptr[rip + retnContinueLabel]);
+
+				L(skip);
+				jmp(ptr[rip + retnSkipLabel]);
+
+				L(retnContinueLabel);
+				dq(a_targetAddr + 0x7);
+
+				L(retnSkipLabel);
+				dq(a_targetAddr + 0x179);
+
+				L(callLabel);
+				dq(std::uintptr_t(AdjustSkip_Test));
+			}
+		};
+
+		LogPatchBegin(__FUNCTION__);
+		{
+			{
+				Assembly code(addr);
+
+				ISKSE::GetBranchTrampoline().Write6Branch(
+					addr,
+					code.get());
+			}
+		}
+		LogPatchEnd(__FUNCTION__);
+	}
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
 		{
@@ -364,17 +503,6 @@ namespace IED
 		float a_val,
 		Biped* a_biped)
 	{
-		if (m_Instance->m_conf.weaponAdjustDisable)
-		{
-			bool isPlayer = a_refr == *g_thePlayer;
-
-			if ((!isPlayer || m_Instance->m_conf.nodeOverridePlayerEnabled) &&
-			    (isPlayer || !m_Instance->m_conf.disableNPCProcessing))
-			{
-				return a_refr->animGraphHolder.SetVariableOnGraphsFloat(a_animVarName, 0.0f);
-			}
-		}
-
 		if (m_Instance->m_conf.weaponAdjustFix)
 		{
 			auto biped3p = a_refr->GetBiped(false);
@@ -385,6 +513,26 @@ namespace IED
 		}
 
 		return a_refr->animGraphHolder.SetVariableOnGraphsFloat(a_animVarName, a_val);
+	}
+
+	bool EngineExtensions::AdjustSkip_Test(BSFixedString& a_name)
+	{
+		auto sh = m_Instance->m_controller->GetBSStringHolder();
+
+		if (a_name == sh->m_weaponAxe ||
+		    a_name == sh->m_weaponMace ||
+		    a_name == sh->m_weaponSword ||
+		    a_name == sh->m_weaponDagger ||
+		    a_name == sh->m_weaponBack ||
+		    a_name == sh->m_weaponBow ||
+		    a_name == sh->m_quiver)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	void EngineExtensions::CreateWeaponNodes_Hook(

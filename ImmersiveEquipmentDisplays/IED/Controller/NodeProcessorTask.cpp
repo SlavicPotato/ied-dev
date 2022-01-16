@@ -3,8 +3,8 @@
 #include "NodeProcessorTask.h"
 
 #include "Controller.h"
-#include "IObjectManager.h"
 #include "IED/Inventory.h"
+#include "IObjectManager.h"
 
 namespace IED
 {
