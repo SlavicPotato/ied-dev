@@ -548,6 +548,29 @@ namespace IED
 		}
 	}
 
+	bool EngineExtensions::RemoveAllChildren(
+		NiNode* a_object,
+		const BSFixedString& a_name)
+	{
+		bool result = false;
+
+		// some massive paranoia
+		std::uint32_t maxiter = 1000;
+
+		while (auto node = GetObjectByName(a_object, a_name, true))
+		{
+			node->m_parent->RemoveChild(node);
+			result = true;
+
+			if (!--maxiter)
+			{
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	auto EngineExtensions::AttachObject(
 		Actor* a_actor,
 		NiNode* a_root,
@@ -665,28 +688,21 @@ namespace IED
 			{
 				bool shrink = false;
 
-				if (auto torchFireNode = GetObjectByName(a_object, sh->m_torchFire, true))
+				if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
 				{
-					torchFireNode->m_parent->RemoveChild(torchFireNode);
-
+					node->m_parent->RemoveChild(node);
 					shrink = true;
 
 					result.set(AttachResultFlags::kTorchFlameRemoved);
 				}
 
-				if (auto attachLightNode = GetObjectByName(a_object, sh->m_attachLight, true))
-				{
-					attachLightNode->m_parent->RemoveChild(attachLightNode);
-
-					shrink = true;
-				}
-
-				if (auto glowAddMesh = GetObjectByName(a_object, sh->m_glowAddMesh, true))
-				{
-					glowAddMesh->m_parent->RemoveChild(glowAddMesh);
-
-					shrink = true;
-				}
+				shrink |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
+				shrink |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
+				shrink |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
+				shrink |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
+				shrink |= RemoveAllChildren(a_object, sh->m_attachENBLight);
+				shrink |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
+				shrink |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
 
 				if (shrink)
 				{

@@ -6,14 +6,14 @@ namespace IED
 {
 	namespace Data
 	{
-		enum class EquippedTypeFlags : std::uint8_t
+		enum class InventoryPresenceFlags : std::uint8_t
 		{
 			kNone = 0,
 
 			kSet = 1ui8 << 0
 		};
 
-		DEFINE_ENUM_CLASS_BITWISE(EquippedTypeFlags);
+		DEFINE_ENUM_CLASS_BITWISE(InventoryPresenceFlags);
 
 		struct collectorData_t
 		{
@@ -34,20 +34,6 @@ namespace IED
 
 			struct itemData_t
 			{
-				inline explicit itemData_t(
-					TESForm* a_form) :
-					form{ a_form }
-				{
-				}
-
-				inline explicit itemData_t(
-					TESForm* a_form,
-					Data::ObjectType a_type) :
-					form{ a_form },
-					type{ a_type }
-				{
-				}
-
 				inline constexpr bool is_equipped() const noexcept
 				{
 					return equipped || equippedLeft;
@@ -55,6 +41,7 @@ namespace IED
 
 				TESForm* form;
 				ObjectType type{ Data::ObjectType::kMax };
+				ObjectTypeExtra typeExtra{ ObjectTypeExtra::kNone };
 				std::int64_t count{ 0 };
 				std::int64_t sharedCount{ 0 };
 				bool equipped{ false };
@@ -65,10 +52,10 @@ namespace IED
 			};
 
 			using container_type = std::unordered_map<Game::FormID, itemData_t>;
-			using slot_container_type = EquippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)];
 
 			container_type forms;
-			slot_container_type slots{};
+			InventoryPresenceFlags equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{};
+			std::int64_t typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;
 			TESRace* race;

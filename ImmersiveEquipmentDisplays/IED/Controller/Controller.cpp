@@ -2197,8 +2197,8 @@ namespace IED
 
 				auto& objectEntry = a_params.objects.GetSlot(slot);
 
-				if (a_params.actor != *g_thePlayer && 
-					(!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
+				if (a_params.actor != *g_thePlayer &&
+				    (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2469,8 +2469,8 @@ namespace IED
 
 		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
-			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) && 
-				a_params.actor != *g_thePlayer)
+			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
+			    a_params.actor != *g_thePlayer)
 			{
 				auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(a_itemData.type);
 				if (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)
@@ -3479,14 +3479,17 @@ namespace IED
 	{
 		if (auto entryList = GetEntryDataList(a_actor))
 		{
-			EquippedFormCollector collector(a_actor, a_race);
-			entryList->Visit(collector);
-
-			CommonParams params{ a_actor };
-
-			if (auto eo = a_config.get_equipment_override(collector.m_data, a_slots, params))
+			if (auto npc = Game::GetActorBase(a_actor))
 			{
-				return *eo;
+				ItemCandidateCollector collector(a_actor, a_race);
+				collector.Run(npc->container, entryList);
+
+				CommonParams params{ a_actor };
+
+				if (auto eo = a_config.get_equipment_override(collector.m_data, a_slots, params))
+				{
+					return *eo;
+				}
 			}
 		}
 
@@ -3501,21 +3504,24 @@ namespace IED
 	{
 		if (auto entryList = GetEntryDataList(a_actor))
 		{
-			EquippedFormCollector collector(a_actor, a_race);
-			entryList->Visit(collector);
-
-			auto form = a_entry.GetFormIfActive();
-
-			CommonParams params{ a_actor };
-
-			if (auto eo = !form ?
-                              a_config.get_equipment_override(collector.m_data, params) :
-                              a_config.get_equipment_override(
-								  collector.m_data,
-								  { form, ItemData::SlotToExtraSlot(a_entry.slotid) },
-								  params))
+			if (auto npc = Game::GetActorBase(a_actor))
 			{
-				return *eo;
+				ItemCandidateCollector collector(a_actor, a_race);
+				collector.Run(npc->container, entryList);
+
+				auto form = a_entry.GetFormIfActive();
+
+				CommonParams params{ a_actor };
+
+				if (auto eo = !form ?
+                                  a_config.get_equipment_override(collector.m_data, params) :
+                                  a_config.get_equipment_override(
+									  collector.m_data,
+									  { form, ItemData::SlotToExtraSlot(a_entry.slotid) },
+									  params))
+				{
+					return *eo;
+				}
 			}
 		}
 

@@ -69,6 +69,16 @@ namespace IED
 
 		static inline constexpr auto NINODE_QUIVER = "QUIVER";
 
+		// non-vanilla
+
+		static inline constexpr auto NINODE_MX_TORCH_SMOKE = "MXTorchSmoke01";
+		static inline constexpr auto NINODE_MX_TORCH_SPARKS = "MXTorchSparks02";
+		static inline constexpr auto NINODE_MX_ATTACH_SMOKE = "MXAttachSmoke";
+		static inline constexpr auto NINODE_MX_ATTACH_SPARKS = "MXAttachSparks";
+		static inline constexpr auto BSVALUENODE_ATTACH_ENB_LIGHT = "AttachENBLight";
+		static inline constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER = "pFireENBLight01-Emitter";
+		static inline constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
+
 		BSStringHolder() = default;
 
 		BSStringHolder(const BSStringHolder&) = delete;
@@ -92,6 +102,14 @@ namespace IED
 		BSFixedString m_weaponBack{ NINODE_WEAPON_BACK };
 		BSFixedString m_weaponBow{ NINODE_BOW };
 		BSFixedString m_quiver{ NINODE_QUIVER };
+
+		BSFixedString m_mxTorchSmoke{ NINODE_MX_TORCH_SMOKE };
+		BSFixedString m_mxTorchSparks{ NINODE_MX_TORCH_SPARKS };
+		BSFixedString m_mxAttachSmoke{ NINODE_MX_ATTACH_SMOKE };
+		BSFixedString m_mxAttachSparks{ NINODE_MX_ATTACH_SPARKS };
+		BSFixedString m_attachENBLight{ BSVALUENODE_ATTACH_ENB_LIGHT };
+		BSFixedString m_enbFireLightEmitter{ NINODE_ENB_FIRE_LIGHT_EMITTER };
+		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
 	};
 
 	class StringHolder

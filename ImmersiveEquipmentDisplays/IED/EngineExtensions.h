@@ -21,7 +21,7 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(AttachResultFlags);
 
-	class EngineExtensions : 
+	class EngineExtensions :
 		ILog
 	{
 		struct unks_01
@@ -98,6 +98,10 @@ namespace IED
 				m_Instance = new EngineExtensions(std::forward<Args>(a_args)...);
 			}
 		}
+
+		static bool RemoveAllChildren(
+			NiNode* a_object,
+			const BSFixedString& a_name);
 
 		static stl::flag<AttachResultFlags> AttachObject(
 			Actor* a_actor,
@@ -219,6 +223,6 @@ namespace IED
 
 		Controller* m_controller{ nullptr };
 
-		static EngineExtensions *m_Instance;
+		static EngineExtensions* m_Instance;
 	};
 }  // namespace IED

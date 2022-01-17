@@ -219,7 +219,7 @@ namespace IED
 
 		ObjectSlotExtra ItemData::GetItemSlotExtra(TESObjectARMO* a_form) noexcept
 		{
-			return a_form->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;
+			return !a_form->IsShield() ? ObjectSlotExtra::kArmor : ObjectSlotExtra::kNone;
 		}
 
 		ObjectSlotExtra ItemData::GetItemSlotExtra(TESObjectWEAP* a_form) noexcept
@@ -259,11 +259,11 @@ namespace IED
 			switch (a_form->formType)
 			{
 			case TESObjectWEAP::kTypeID:
-				return ItemData::GetItemSlotExtra(static_cast<TESObjectWEAP*>(a_form));
+				return GetItemSlotExtra(static_cast<TESObjectWEAP*>(a_form));
 			case TESObjectARMO::kTypeID:
-				return ItemData::GetItemSlotExtra(static_cast<TESObjectARMO*>(a_form));
+				return GetItemSlotExtra(static_cast<TESObjectARMO*>(a_form));
 			case TESObjectLIGH::kTypeID:
-				return ItemData::GetItemSlotExtra(static_cast<TESObjectLIGH*>(a_form));
+				return GetItemSlotExtra(static_cast<TESObjectLIGH*>(a_form));
 			case TESAmmo::kTypeID:
 				return ObjectSlotExtra::kAmmo;
 			case SpellItem::kTypeID:
@@ -302,6 +302,10 @@ namespace IED
 			{
 			case TESObjectWEAP::kTypeID:
 				return ItemData::GetItemSlotLeftExtra(static_cast<TESObjectWEAP*>(a_form));
+			case TESObjectARMO::kTypeID:
+				return static_cast<TESObjectARMO*>(a_form)->IsShield() ?
+                           ObjectSlotExtra::kShield :
+                           ObjectSlotExtra::kNone;
 			case SpellItem::kTypeID:
 				return ObjectSlotExtra::kSpellLeft;
 			default:
@@ -374,6 +378,51 @@ namespace IED
 				return ObjectSlotExtra::kSpell;
 			default:
 				HALT("FIXME");
+			}
+		}
+
+		ObjectTypeExtra ItemData::GetTypeFromSlotExtra(ObjectSlotExtra a_slot) noexcept
+		{
+			switch (a_slot)
+			{
+			case ObjectSlotExtra::k1HSword:
+			case ObjectSlotExtra::k1HSwordLeft:
+				return ObjectTypeExtra::k1HSword;
+			case ObjectSlotExtra::k1HAxe:
+			case ObjectSlotExtra::k1HAxeLeft:
+				return ObjectTypeExtra::k1HAxe;
+			case ObjectSlotExtra::k2HSword:
+			case ObjectSlotExtra::k2HSwordLeft:
+				return ObjectTypeExtra::k2HSword;
+			case ObjectSlotExtra::k2HAxe:
+			case ObjectSlotExtra::k2HAxeLeft:
+				return ObjectTypeExtra::k2HAxe;
+			case ObjectSlotExtra::kMace:
+			case ObjectSlotExtra::kMaceLeft:
+				return ObjectTypeExtra::kMace;
+			case ObjectSlotExtra::kDagger:
+			case ObjectSlotExtra::kDaggerLeft:
+				return ObjectTypeExtra::kDagger;
+			case ObjectSlotExtra::kStaff:
+			case ObjectSlotExtra::kStaffLeft:
+				return ObjectTypeExtra::kStaff;
+			case ObjectSlotExtra::kBow:
+				return ObjectTypeExtra::kBow;
+			case ObjectSlotExtra::kCrossBow:
+				return ObjectTypeExtra::kCrossBow;
+			case ObjectSlotExtra::kShield:
+				return ObjectTypeExtra::kShield;
+			case ObjectSlotExtra::kTorch:
+				return ObjectTypeExtra::kTorch;
+			case ObjectSlotExtra::kArmor:
+				return ObjectTypeExtra::kArmor;
+			case ObjectSlotExtra::kAmmo:
+				return ObjectTypeExtra::kAmmo;
+			case ObjectSlotExtra::kSpell:
+			case ObjectSlotExtra::kSpellLeft:
+				return ObjectTypeExtra::kSpell;
+			default:
+				return ObjectTypeExtra::kNone;
 			}
 		}
 

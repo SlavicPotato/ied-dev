@@ -144,7 +144,15 @@ namespace IED
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
+			static bool match_carried_type(
+				const collectorData_t& a_data,
+				const equipmentOverrideCondition_t& a_match);
+
 			static bool match_equipped_form(
+				const collectorData_t& a_data,
+				const equipmentOverrideCondition_t& a_match);
+			
+			static bool match_carried_form(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
@@ -185,7 +193,11 @@ namespace IED
 				CommonParams& a_params,
 				bool a_default);
 
-			static bool has_keyword(
+			static bool has_keyword_equipped(
+				const configCachedForm_t& a_keyword,
+				const collectorData_t& a_data);
+			
+			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
 				const collectorData_t& a_data);
 
@@ -197,9 +209,14 @@ namespace IED
 				const configCachedForm_t& a_keyword,
 				TESForm* a_form);
 
-			static bool has_keyword(
+			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
 				ObjectSlotExtra a_type,
+				const collectorData_t& a_data);
+			
+			static bool has_keyword_carried(
+				const configCachedForm_t& a_keyword,
+				ObjectTypeExtra a_type,
 				const collectorData_t& a_data);
 
 			static bool has_keyword(

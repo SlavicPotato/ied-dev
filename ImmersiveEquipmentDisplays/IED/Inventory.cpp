@@ -133,11 +133,22 @@ namespace IED
 			return true;
 		}
 
-		auto type = ItemData::GetItemType(form);
+		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& r = m_data.forms.try_emplace(form->formID, form, type).first->second;
+		auto& r = m_data.forms.try_emplace(
+								  form->formID,
+								  form,
+								  ItemData::GetItemType(form),
+								  extraType)
+		              .first->second;
 
 		r.sharedCount = (r.count += entry->count);
+
+		if (auto i = stl::underlying(extraType);
+		    i < stl::underlying(Data::ObjectTypeExtra::kMax))
+		{
+			m_data.typeCount[i] += entry->count;
+		}
 
 		return true;
 	}
@@ -231,7 +242,7 @@ namespace IED
 				auto i = stl::underlying(slot);
 				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 				{
-					a_data.slots[i] |= Data::EquippedTypeFlags::kSet;
+					a_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 
@@ -242,7 +253,7 @@ namespace IED
 				auto i = stl::underlying(r.first->second.extraEquipped.slotLeft);
 				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 				{
-					a_data.slots[i] |= Data::EquippedTypeFlags::kSet;
+					a_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 		}
@@ -329,10 +340,22 @@ namespace IED
 		}
 
 		auto type = ItemData::GetItemType(form);
+		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& r = m_data.forms.try_emplace(form->formID, form, type).first->second;
+		auto& r = m_data.forms.try_emplace(
+								  form->formID,
+								  form,
+								  type,
+								  extraType)
+		              .first->second;
 
 		r.sharedCount = (r.count += a_entryData->countDelta);
+
+		if (auto i = stl::underlying(extraType);
+		    i < stl::underlying(Data::ObjectTypeExtra::kMax))
+		{
+			m_data.typeCount[i] += a_entryData->countDelta;
+		}
 
 		if (!IFormCommon::IsEquippableForm(form))
 		{
@@ -352,18 +375,12 @@ namespace IED
 			}
 		}
 
-		bool checkLeft = form->formType == TESObjectWEAP::kTypeID;
 		bool checkFav = m_isPlayer && type != ObjectType::kMax;
 
 		if (auto extendDataList = a_entryData->extendDataList)
 		{
 			for (auto it = extendDataList->Begin(); !it.End(); ++it)
 			{
-				if ((!checkFav || r.favorited) && r.equipped && (!checkLeft || r.equippedLeft))
-				{
-					break;
-				}
-
 				auto extraDataList = *it;
 				if (!extraDataList)
 				{
@@ -386,7 +403,7 @@ namespace IED
 					}
 				}
 
-				if (checkLeft && !r.equippedLeft)
+				if (!r.equippedLeft)
 				{
 					if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
 					{
@@ -419,12 +436,11 @@ namespace IED
 
 		if (r.equipped || r.equippedLeft)
 		{
-			auto type = Data::ItemData::GetItemTypeExtra(form);
-			if (type != Data::ObjectTypeExtra::kNone)
+			if (extraType != Data::ObjectTypeExtra::kNone)
 			{
-				r.extraEquipped.type = type;
+				r.extraEquipped.type = extraType;
 
-				auto slot = Data::ItemData::GetSlotFromTypeExtra(type);
+				auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
 
 				if (r.equipped)
 				{
@@ -433,7 +449,7 @@ namespace IED
 					auto i = stl::underlying(slot);
 					if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 					{
-						m_data.slots[i] |= Data::EquippedTypeFlags::kSet;
+						m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 					}
 				}
 
@@ -444,7 +460,7 @@ namespace IED
 					auto i = stl::underlying(r.extraEquipped.slotLeft);
 					if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 					{
-						m_data.slots[i] |= Data::EquippedTypeFlags::kSet;
+						m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 					}
 				}
 			}

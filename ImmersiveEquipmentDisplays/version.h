@@ -4,8 +4,8 @@
 #include "skse64_common/skse_version.h"
 
 #define PLUGIN_VERSION_MAJOR 1
-#define PLUGIN_VERSION_MINOR 0
-#define PLUGIN_VERSION_REVISION 4
+#define PLUGIN_VERSION_MINOR 1
+#define PLUGIN_VERSION_REVISION 0
 
 //#define PLUGIN_VERSION_BETA 1
 

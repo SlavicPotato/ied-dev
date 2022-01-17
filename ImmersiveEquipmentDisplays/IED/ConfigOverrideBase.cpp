@@ -216,7 +216,7 @@ namespace IED
 			}
 			else
 			{
-				if (a_data.slots[slot] == EquippedTypeFlags::kNone)
+				if (a_data.equippedTypeFlags[slot] == InventoryPresenceFlags::kNone)
 				{
 					return false;
 				}
@@ -254,7 +254,7 @@ namespace IED
 					if (a_match.keyword.get_id())
 					{
 						if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-						    has_keyword(a_match.keyword, a_match.slot, a_data))
+						    has_keyword_equipped(a_match.keyword, a_match.slot, a_data))
 						{
 							return false;
 						}
@@ -262,6 +262,67 @@ namespace IED
 
 					return true;
 				}
+			}
+
+			return false;
+		}
+
+		bool configBase_t::match_carried_type(
+			const collectorData_t& a_data,
+			const equipmentOverrideCondition_t& a_match)
+		{
+			auto type = Data::ItemData::GetTypeFromSlotExtra(a_match.slot);
+
+			if (type >= ObjectTypeExtra::kMax)
+			{
+				return false;
+			}
+
+			if (a_data.typeCount[stl::underlying(type)] < 1)
+			{
+				return false;
+			}
+
+			if (a_match.form)
+			{
+				auto it = a_data.forms.find(a_match.form);
+
+				auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1);
+
+				if (it == a_data.forms.end())
+				{
+					return rv;
+				}
+
+				if (it->second.count < 1 ||
+				    it->second.typeExtra != type)
+				{
+					return rv;
+				}
+
+				if (a_match.keyword.get_id())
+				{
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
+					    IFormCommon::HasKeyword(it->second.form, a_match.keyword))
+					{
+						return false;
+					}
+				}
+
+				return !rv;
+			}
+			else
+			{
+				if (a_match.keyword.get_id())
+				{
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
+					    has_keyword_carried(a_match.keyword, type, a_data))
+					{
+						return false;
+					}
+				}
+
+				return true;
 			}
 
 			return false;
@@ -300,6 +361,32 @@ namespace IED
 			}
 		}
 
+		bool configBase_t::match_carried_form(
+			const collectorData_t& a_data,
+			const equipmentOverrideCondition_t& a_match)
+		{
+			auto it = a_data.forms.find(a_match.form);
+			if (it == a_data.forms.end())
+			{
+				return false;
+			}
+
+			if (it->second.count < 1)
+			{
+				return false;
+			}
+
+			if (a_match.keyword.get_id())
+			{
+				return a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) !=
+				       has_keyword(a_match.keyword, it->second.form);
+			}
+			else
+			{
+				return true;
+			}
+		}
+
 		constexpr bool configBase_t::match(
 			const collectorData_t& a_data,
 			const equipmentOverrideCondition_t& a_match,
@@ -309,7 +396,11 @@ namespace IED
 			{
 			case EquipmentOverrideConditionType::Type:
 
-				if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
+				if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+				{
+					return match_carried_type(a_data, a_match);
+				}
+				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 				{
 					return match_equipped_type(a_data, a_match);
 				}
@@ -318,27 +409,35 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Keyword:
 
-				if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
+				if (!a_match.keyword.get_id())
 				{
-					if (!a_match.keyword.get_id())
-					{
-						return false;
-					}
+					return false;
+				}
 
-					return has_keyword(a_match.keyword, a_data);
+				if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+				{
+					return has_keyword_carried(a_match.keyword, a_data);
+				}
+				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
+				{
+					return has_keyword_equipped(a_match.keyword, a_data);
 				}
 
 				break;
 
 			case EquipmentOverrideConditionType::Form:
 
-				if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
+				if (!a_match.form)
 				{
-					if (!a_match.form)
-					{
-						return false;
-					}
+					return false;
+				}
 
+				if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+				{
+					return match_carried_form(a_data, a_match);
+				}
+				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
+				{
 					return match_equipped_form(a_data, a_match);
 				}
 
@@ -404,7 +503,7 @@ namespace IED
 				{
 					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return match_carried_type(a_cdata, a_match);
 					}
 
 					std::uint32_t result = 0;
@@ -462,14 +561,14 @@ namespace IED
 				}
 			case EquipmentOverrideConditionType::Keyword:
 				{
-					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+					if (!a_match.keyword.get_id())
 					{
 						return false;
 					}
 
-					if (!a_match.keyword.get_id())
+					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return has_keyword_carried(a_match.keyword, a_cdata);
 					}
 
 					std::uint32_t result = 0;
@@ -480,7 +579,7 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += has_keyword(a_match.keyword, a_cdata);
+						result += has_keyword_equipped(a_match.keyword, a_cdata);
 
 						if (result == min)
 						{
@@ -497,14 +596,14 @@ namespace IED
 				}
 			case EquipmentOverrideConditionType::Form:
 				{
-					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+					if (!a_match.form)
 					{
 						return false;
 					}
 
-					if (!a_match.form)
+					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return match_carried_form(a_cdata, a_match);
 					}
 
 					std::uint32_t result = 0;
@@ -606,7 +705,7 @@ namespace IED
 				{
 					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return match_carried_type(a_data, a_match);
 					}
 
 					std::uint32_t result = 0;
@@ -658,14 +757,14 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Keyword:
 				{
-					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+					if (!a_match.keyword.get_id())
 					{
 						return false;
 					}
 
-					if (!a_match.keyword.get_id())
+					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return has_keyword_carried(a_match.keyword, a_data);
 					}
 
 					std::uint32_t result = 0;
@@ -676,7 +775,7 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += has_keyword(a_match.keyword, a_data);
+						result += has_keyword_equipped(a_match.keyword, a_data);
 
 						if (result == min)
 						{
@@ -693,14 +792,14 @@ namespace IED
 				}
 			case EquipmentOverrideConditionType::Form:
 				{
-					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
+					if (!a_match.form)
 					{
 						return false;
 					}
 
-					if (!a_match.form)
+					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchAll))
 					{
-						return false;
+						return match_carried_form(a_data, a_match);
 					}
 
 					std::uint32_t result = 0;
@@ -789,7 +888,7 @@ namespace IED
 			return result;
 		}
 
-		bool configBase_t::has_keyword(
+		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
 			const collectorData_t& a_data)
 		{
@@ -799,7 +898,7 @@ namespace IED
 				{
 					if (auto pm = a_data.actor->processManager)
 					{
-						for (auto e : pm->equippedObject)
+						for (auto& e : pm->equippedObject)
 						{
 							if (e && IFormCommon::HasKeyword(e, keyword))
 							{
@@ -811,6 +910,30 @@ namespace IED
 					for (auto& e : a_data.forms)
 					{
 						if (e.second.equipped || e.second.equippedLeft)
+						{
+							if (IFormCommon::HasKeyword(e.second.form, keyword))
+							{
+								return true;
+							}
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
+		bool configBase_t::has_keyword_carried(
+			const configCachedForm_t& a_keyword,
+			const collectorData_t& a_data)
+		{
+			if (auto form = a_keyword.get_form())
+			{
+				if (auto keyword = form->As<BGSKeyword>())
+				{
+					for (auto& e : a_data.forms)
+					{
+						if (e.second.count > 0)
 						{
 							if (IFormCommon::HasKeyword(e.second.form, keyword))
 							{
@@ -866,7 +989,32 @@ namespace IED
 			return false;
 		}
 
-		bool configBase_t::has_keyword(
+		bool configBase_t::has_keyword_carried(
+			const configCachedForm_t& a_keyword,
+			ObjectTypeExtra a_type,
+			const collectorData_t& a_data)
+		{
+			if (auto form = a_keyword.get_form())
+			{
+				if (auto keyword = form->As<BGSKeyword>())
+				{
+					for (auto& e : a_data.forms)
+					{
+						if (e.second.count > 0 && e.second.typeExtra == a_type)
+						{
+							if (IFormCommon::HasKeyword(e.second.form, keyword))
+							{
+								return true;
+							}
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
+		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
 			ObjectSlotExtra a_slot,
 			const collectorData_t& a_data)

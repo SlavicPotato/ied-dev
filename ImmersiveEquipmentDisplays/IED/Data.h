@@ -25,23 +25,24 @@ namespace IED
 			static ObjectType GetItemType(TESObjectWEAP* a_form) noexcept;
 			static ObjectType GetItemType(TESObjectLIGH* a_form) noexcept;
 			static ObjectType GetItemType(TESForm* a_form) noexcept;
-			
+
 			static ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept;
 			static ObjectTypeExtra GetItemTypeExtra(TESObjectWEAP* a_form) noexcept;
 			static ObjectTypeExtra GetItemTypeExtra(TESObjectLIGH* a_form) noexcept;
 			static ObjectTypeExtra GetItemTypeExtra(TESForm* a_form) noexcept;
-			
+
 			static ObjectSlotExtra GetItemSlotExtra(TESObjectARMO* a_form) noexcept;
 			static ObjectSlotExtra GetItemSlotExtra(TESObjectWEAP* a_form) noexcept;
 			static ObjectSlotExtra GetItemSlotExtra(TESObjectLIGH* a_form) noexcept;
 			static ObjectSlotExtra GetItemSlotExtra(TESForm* a_form) noexcept;
-			
+
 			static ObjectSlotExtra GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept;
 			static ObjectSlotExtra GetItemSlotLeftExtra(TESForm* a_form) noexcept;
 
 			// static ObjectType GetTypeFromSlot(ObjectSlot a_slot);
 			static ObjectSlot GetSlotFromType(ObjectType a_type) noexcept;
 			static ObjectSlotExtra GetSlotFromTypeExtra(ObjectTypeExtra a_type) noexcept;
+			static ObjectTypeExtra GetTypeFromSlotExtra(ObjectSlotExtra a_type) noexcept;
 
 			static ObjectSlot GetLeftSlot(ObjectSlot a_slot) noexcept;
 			static ObjectSlotExtra GetLeftSlotExtra(ObjectSlotExtra a_slot) noexcept;
@@ -87,12 +88,12 @@ namespace IED
 			{
 				return m_Instance.m_pluginInfo;
 			}
-			
+
 			[[nodiscard]] inline constexpr static const auto& GetPlayerRefID() noexcept
 			{
 				return m_Instance.m_playerRefID;
 			}
-			
+
 			[[nodiscard]] inline constexpr static const auto& GetPlayerBaseID() noexcept
 			{
 				return m_Instance.m_playerBaseID;
@@ -118,5 +119,5 @@ namespace IED
 
 		std::unique_ptr<configSlotHolderCopy_t::data_type>
 			CreateDefaultSlotConfig(ObjectSlot a_slot, ConfigClass a_class);
-	}  
-} 
+	}
+}
