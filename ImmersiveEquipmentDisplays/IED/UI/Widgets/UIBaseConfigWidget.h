@@ -224,6 +224,13 @@ namespace IED
 			      TESObjectARMO::kTypeID,
 			      TESAmmo::kTypeID,
 			      TESObjectLIGH::kTypeID,
+			      TESObjectMISC::kTypeID,
+			      IngredientItem::kTypeID,
+			      AlchemyItem::kTypeID,
+			      TESKey::kTypeID,
+			      TESObjectBOOK::kTypeID,
+			      TESSoulGem::kTypeID,
+			      ScrollItem::kTypeID,
 			      SpellItem::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 
