@@ -51,6 +51,7 @@ namespace IED
 				{ "Weapon", "Right Weapon", NodeDescriptorFlags::kManaged },
 				{ "Shield", "Left Weapon / Shield", NodeDescriptorFlags::kManaged },
 				{ "ShieldBack", "Shield Back", NodeDescriptorFlags::kXP32 },
+				{ "QUIVER", "Quiver", NodeDescriptorFlags::kManaged },
 				{ "NPC Spine [Spn0]", "Spine Lower" },
 				{ "NPC Spine1 [Spn1]", "Spine Middle" },
 				{ "NPC Spine2 [Spn2]", "Spine Upper" },
