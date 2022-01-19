@@ -4,6 +4,8 @@
 
 #include "ConfigOverrideCommon.h"
 
+#include "LocaleData.h"
+
 namespace IED
 {
 	bool IFormCommon::IsValidCustomForm(TESForm* a_form)
@@ -176,29 +178,20 @@ namespace IED
 
 	std::string IFormCommon::ConvertToUTF8(const char* a_in)
 	{
-		std::u32string tmp;
-
-		for (auto p = reinterpret_cast<const std::uint8_t*>(a_in);; p++)
-		{
-			auto c = *p;
-			if (!c)
-			{
-				break;
-			}
-
-			tmp.push_back(c);
-		}
-
 		try
 		{
 			using namespace boost::locale;
 
-			return conv::utf_to_utf<char>(tmp, conv::skip);
+			if (auto ld = LocaleData::GetSingleton())
+			{
+				return conv::to_utf<char>(a_in, ld->GetCurrent(), conv::skip);
+			}
 		}
 		catch (...)
 		{
-			return a_in;
 		}
+
+		return a_in;
 	}
 
 	inline static constexpr const char* GetFormNamePtr(TESForm* a_form)

@@ -8,6 +8,7 @@
 #include "Controller/NodeOverrideData.h"
 #include "FormHolder.h"
 #include "GlobalProfileManager.h"
+#include "LocaleData.h"
 #include "Localization/LocalizationDataManager.h"
 #include "Main.h"
 #include "NodeMap.h"
@@ -33,6 +34,19 @@ namespace IED
 		{
 		case SKSEMessagingInterface::kMessage_DataLoaded:
 			{
+				LocaleData::CreateSingleton();
+
+				if (auto e = *g_iniSettingCollection)
+				{
+					if (auto f = e->Get("sLanguage:General"))
+					{
+						if (f->GetType() == Setting::kType_String && f->data.s)
+						{
+							LocaleData::GetSingleton()->SetFromLang(f->data.s);
+						}
+					}
+				}
+
 				ASSERT(Data::IData::PopulateRaceList());
 				ASSERT(Data::IData::PopulatePluginInfo());
 				ASSERT(Data::IData::PopulateMiscInfo());
@@ -66,6 +80,7 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
+			LocaleData::CreateSingleton();
 			OverrideNodeInfo::Create();
 			g_controller->InitializeStrings();
 
