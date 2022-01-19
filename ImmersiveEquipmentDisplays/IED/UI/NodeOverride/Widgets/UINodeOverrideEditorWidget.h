@@ -369,9 +369,7 @@ namespace IED
 
 			virtual bool DrawConditionItemExtra(
 				ConditionParamItem a_item,
-				void* a_p1,
-				const void* a_p2,
-				void* a_p3) override;
+				ConditionParamItemExtraArgs& a_args) override;
 
 			void UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType a_type);
 
@@ -3545,6 +3543,8 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kMatchSkin));
 
+				DrawTip(UITip::MatchSkin);
+
 				break;
 			case Data::NodeOverrideConditionType::Form:
 			case Data::NodeOverrideConditionType::Keyword:
@@ -3598,11 +3598,9 @@ namespace IED
 		template <class T>
 		bool UINodeOverrideEditorWidget<T>::DrawConditionItemExtra(
 			ConditionParamItem a_item,
-			void* a_p1,
-			const void* a_p2,
-			void* a_p3)
+			ConditionParamItemExtraArgs& a_args)
 		{
-			auto match = static_cast<Data::configNodeOverrideCondition_t*>(a_p3);
+			auto match = static_cast<Data::configNodeOverrideCondition_t*>(a_args.p3);
 
 			bool result = false;
 
@@ -3620,6 +3618,12 @@ namespace IED
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+					if (match->fbf.type == Data::NodeOverrideConditionType::BipedSlot &&
+					    match->flags.test(Data::NodeOverrideConditionFlags::kMatchSkin))
+					{
+						a_args.disable = true;
+					}
 
 					ImGui::SameLine();
 				}

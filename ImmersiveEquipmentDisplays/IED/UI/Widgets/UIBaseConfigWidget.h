@@ -177,9 +177,7 @@ namespace IED
 
 			virtual bool DrawConditionItemExtra(
 				ConditionParamItem a_item,
-				void* a_p1,
-				const void* a_p2,
-				void* a_p3) override;
+				ConditionParamItemExtraArgs& a_args) override;
 
 			void UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type);
 
@@ -1174,7 +1172,7 @@ namespace IED
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 
 						break;
-					case Data::EquipmentOverrideConditionType::Biped:
+					case Data::EquipmentOverrideConditionType::BipedSlot:
 						if (result.biped != Biped::BIPED_OBJECT::kNone)
 						{
 							a_data.conditions.emplace_back(
@@ -1323,7 +1321,7 @@ namespace IED
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 
 							break;
-						case Data::EquipmentOverrideConditionType::Biped:
+						case Data::EquipmentOverrideConditionType::BipedSlot:
 							if (result.biped != Biped::BIPED_OBJECT::kNone)
 							{
 								it = a_data.conditions.emplace(
@@ -1427,7 +1425,7 @@ namespace IED
 							tdesc = LS(CommonStrings::Furniture);
 
 							break;
-						case Data::EquipmentOverrideConditionType::Biped:
+						case Data::EquipmentOverrideConditionType::BipedSlot:
 
 							m_matchParamEditor.SetNext<ConditionParamItem::BipedSlot>(
 								e.bipedSlot);
@@ -1622,7 +1620,7 @@ namespace IED
 							{
 								result.action = BaseConfigEditorAction::Insert;
 								result.biped = m_ooNewBiped;
-								result.entryType = Data::EquipmentOverrideConditionType::Biped;
+								result.entryType = Data::EquipmentOverrideConditionType::BipedSlot;
 
 								ImGui::CloseCurrentPopup();
 							}
@@ -1918,12 +1916,14 @@ namespace IED
 
 				break;
 
-			case Data::EquipmentOverrideConditionType::Biped:
+			case Data::EquipmentOverrideConditionType::BipedSlot:
 
 				result |= ImGui::CheckboxFlagsT(
 					LS(UINodeOverrideEditorStrings::MatchSkin, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSkin));
+
+				DrawTip(UITip::MatchSkin);
 
 				break;
 			}
@@ -1936,11 +1936,9 @@ namespace IED
 		template <class T>
 		bool UIBaseConfigWidget<T>::DrawConditionItemExtra(
 			ConditionParamItem a_item,
-			void* a_p1,
-			const void* a_p2,
-			void* a_p3)
+			ConditionParamItemExtraArgs& a_args)
 		{
-			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_p3);
+			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_args.p3);
 
 			bool result = false;
 
@@ -1950,14 +1948,20 @@ namespace IED
 			{
 			case Data::EquipmentOverrideConditionType::Type:
 			case Data::EquipmentOverrideConditionType::Furniture:
-			case Data::EquipmentOverrideConditionType::Biped:
+			case Data::EquipmentOverrideConditionType::BipedSlot:
 
 				if (a_item == ConditionParamItem::Form)
 				{
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+					if (match->fbf.type == Data::EquipmentOverrideConditionType::BipedSlot &&
+					    match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchSkin))
+					{
+						a_args.disable = true;
+					}
 
 					ImGui::SameLine();
 				}
@@ -1966,7 +1970,7 @@ namespace IED
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
 
 					ImGui::SameLine();
 				}
@@ -1981,7 +1985,7 @@ namespace IED
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
 					ImGui::SameLine();
 				}
@@ -1995,19 +1999,19 @@ namespace IED
 		}
 
 		template <class T>
-		void UIBaseConfigWidget<T>::UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type)
+		void UIBaseConfigWidget<T>::UpdateMatchParamAllowedTypes(
+			Data::EquipmentOverrideConditionType a_type)
 		{
 			switch (a_type)
 			{
-			case Data::EquipmentOverrideConditionType::Type:
-			case Data::EquipmentOverrideConditionType::Form:
-				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
-				break;
 			case Data::EquipmentOverrideConditionType::Furniture:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.furniture);
 				break;
 			case Data::EquipmentOverrideConditionType::Race:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.race);
+				break;
+			default:
+				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
 				break;
 			}
 		}

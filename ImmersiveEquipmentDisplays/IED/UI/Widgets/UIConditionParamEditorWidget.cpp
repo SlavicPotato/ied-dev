@@ -5,6 +5,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "IED/UI/UICommon.h"
+
 namespace IED
 {
 	namespace UI
@@ -146,22 +148,30 @@ namespace IED
 
 				if (const auto& e = get(ConditionParamItem::Form); e.p1)
 				{
+					ConditionParamItemExtraArgs args;
+
 					if (m_extraInterface)
 					{
 						if (const auto& f = get(ConditionParamItem::Extra); f.p1)
 						{
+							args.p1 = e.p1;
+							args.p2 = e.p2;
+							args.p3 = f.p1;
+
 							result |= m_extraInterface->DrawConditionItemExtra(
 								ConditionParamItem::Form,
-								e.p1,
-								e.p2,
-								f.p1);
+								args);
 						}
 					}
+
+					UICommon::PushDisabled(args.disable);
 
 					result |= m_formPickerForm.DrawFormPicker(
 						"fp_1",
 						LS(CommonStrings::Form),
 						m_tempData.form);
+
+					UICommon::PopDisabled(args.disable);
 
 					if (result)
 					{
@@ -171,22 +181,30 @@ namespace IED
 
 				if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
 				{
+					ConditionParamItemExtraArgs args;
+
 					if (m_extraInterface)
 					{
 						if (const auto& f = get(ConditionParamItem::Extra); f.p1)
 						{
+							args.p1 = e.p1;
+							args.p2 = e.p2;
+							args.p3 = f.p1;
+
 							result |= m_extraInterface->DrawConditionItemExtra(
 								ConditionParamItem::Keyword,
-								e.p1,
-								e.p2,
-								f.p1);
+								args);
 						}
 					}
+
+					UICommon::PushDisabled(args.disable);
 
 					result |= m_formPickerKeyword.DrawFormPicker(
 						"fp_2",
 						LS(CommonStrings::Keyword),
 						m_tempData.keyword);
+
+					UICommon::PopDisabled(args.disable);
 
 					if (result)
 					{
@@ -391,9 +409,7 @@ namespace IED
 
 		bool UIConditionParamExtraInterface::DrawConditionItemExtra(
 			ConditionParamItem a_item,
-			void* a_p1,
-			const void* a_p2,
-			void* a_p3)
+			ConditionParamItemExtraArgs& a_args)
 		{
 			return false;
 		}

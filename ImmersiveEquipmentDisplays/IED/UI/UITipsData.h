@@ -47,6 +47,7 @@ namespace IED
 			SelectCrosshairActor = 1036,
 			KeepTorchFlame = 1037,
 			DisableCollision = 1038,
+			MatchSkin = 1039,
 		};
 
 	}

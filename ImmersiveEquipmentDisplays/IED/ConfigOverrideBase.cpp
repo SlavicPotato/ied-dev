@@ -509,7 +509,7 @@ namespace IED
 
 				return match_furniture(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Biped:
+			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
 			}
@@ -714,7 +714,7 @@ namespace IED
 
 				return match_furniture(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Biped:
+			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
 			}
@@ -913,7 +913,7 @@ namespace IED
 
 				return match_furniture(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Biped:
+			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
 			}

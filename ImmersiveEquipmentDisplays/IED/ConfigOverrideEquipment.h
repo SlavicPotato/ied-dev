@@ -52,7 +52,7 @@ namespace IED
 			Keyword,
 			Race,
 			Furniture,
-			Biped
+			BipedSlot
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -114,7 +114,7 @@ namespace IED
 				Biped::BIPED_OBJECT a_slot) :
 				bipedSlot(a_slot)
 			{
-				fbf.type = EquipmentOverrideConditionType::Biped;
+				fbf.type = EquipmentOverrideConditionType::BipedSlot;
 			}
 
 			equipmentOverrideCondition_t(

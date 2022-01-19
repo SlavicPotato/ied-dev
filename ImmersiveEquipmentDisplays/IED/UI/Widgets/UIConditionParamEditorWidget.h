@@ -25,13 +25,23 @@ namespace IED
 		Total
 	};
 
+	struct ConditionParamItemExtraArgs
+	{
+		void* p1;
+		const void* p2;
+		void* p3;
+		bool disable{ false };
+	};
+
 	namespace UI
 	{
 		class UIConditionParamExtraInterface
 		{
 		public:
 			virtual bool DrawConditionParamExtra(void* a_p1, const void* a_p2) = 0;
-			virtual bool DrawConditionItemExtra(ConditionParamItem a_item, void* a_p1, const void* a_p2, void* a_p3);
+			virtual bool DrawConditionItemExtra(
+				ConditionParamItem a_item,
+				ConditionParamItemExtraArgs &a_args);
 		};
 
 		class UIConditionParamEditorWidget :
