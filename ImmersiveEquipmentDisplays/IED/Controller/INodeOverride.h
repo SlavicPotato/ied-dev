@@ -50,8 +50,6 @@ namespace IED
 			stl::optional<float> weightAdjust;
 			stl::optional<bool> actorDead;
 			std::unique_ptr<item_container_type> itemData;
-			stl::optional<Biped*> biped;
-			stl::optional<TESObjectARMO*> actorSkin;
 			stl::optional<bool> bipedHasArmor;
 
 			auto get_biped_has_armor()
@@ -64,24 +62,7 @@ namespace IED
 				return *bipedHasArmor;
 			}
 
-			std::unordered_map<Game::FormID, bipedInfoEntry_t>* get_item_data();
-
-			auto get_biped()
-			{
-				if (!biped)
-				{
-					if (auto ptrh = actor->GetBiped(false))
-					{
-						biped = ptrh->ptr;
-					}
-					else
-					{
-						biped = nullptr;
-					}
-				}
-
-				return *biped;
-			}
+			item_container_type* get_item_data();
 
 			float get_weapon_adjust();
 			//SKMP_FORCEINLINE float get_weapon_adjust(const stl::set<Game::FormID>* a_armors);
@@ -104,16 +85,6 @@ namespace IED
 				}
 
 				return *actorDead;
-			}
-
-			constexpr auto get_actor_skin() noexcept
-			{
-				if (!actorSkin)
-				{
-					actorSkin = Game::GetActorSkin(actor);
-				}
-
-				return *actorSkin;
 			}
 
 			void clear_matched_items() noexcept

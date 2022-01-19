@@ -4552,7 +4552,7 @@ namespace IED
 		WriteRecord(
 			a_intfc,
 			SKSE_SERIALIZATION_TYPE_ID,
-			stl::underlying(SerializationVersion::kDataVersion1));
+			stl::underlying(SerializationVersion::kCurrentVersion));
 	}
 
 	void Controller::LoadGameHandler(SKSESerializationInterface* a_intfc)

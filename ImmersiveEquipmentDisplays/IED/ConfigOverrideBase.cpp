@@ -162,6 +162,64 @@ namespace IED
 			}
 		}
 
+		static bool match_biped(
+			CommonParams& a_params,
+			const equipmentOverrideCondition_t& a_match)
+		{
+			if (a_match.bipedSlot >= Biped::kTotal)
+			{
+				return false;
+			}
+
+			auto biped = a_params.get_biped();
+			if (!biped)
+			{
+				return false;
+			}
+
+			auto& e = biped->objects[a_match.bipedSlot];
+
+			auto form = e.item;
+			if (!form || e.addon == form)
+			{
+				return false;
+			}
+
+			if (a_match.flags.test(Data::EquipmentOverrideConditionFlags::kMatchSkin))
+			{
+				if (auto skin = a_params.get_actor_skin())
+				{
+					if (a_match.flags.test(Data::EquipmentOverrideConditionFlags::kNegateMatch1) ==
+					    (form == skin))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				if (a_match.form)
+				{
+					if (a_match.flags.test(Data::EquipmentOverrideConditionFlags::kNegateMatch1) ==
+					    (form->formID == a_match.form))
+					{
+						return false;
+					}
+				}
+			}
+
+			if (a_match.keyword.get_id())
+			{
+				if (a_match.flags.test(Data::EquipmentOverrideConditionFlags::kNegateMatch2) ==
+				    IFormCommon::HasKeyword(form, a_match.keyword))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		constexpr bool configBase_t::match_equipped_type(
 			const collectorData_t& a_data,
 			const equipmentOverrideCondition_t& a_match)
@@ -450,6 +508,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Furniture:
 
 				return match_furniture(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Biped:
+
+				return match_biped(a_params, a_match);
 			}
 
 			return false;
@@ -651,6 +713,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Furniture:
 
 				return match_furniture(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Biped:
+
+				return match_biped(a_params, a_match);
 			}
 
 			return false;
@@ -846,6 +912,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Furniture:
 
 				return match_furniture(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Biped:
+
+				return match_biped(a_params, a_match);
 			}
 
 			return false;

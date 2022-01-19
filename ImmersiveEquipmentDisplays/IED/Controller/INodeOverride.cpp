@@ -250,13 +250,13 @@ namespace IED
 		}
 		else
 		{
-			if (!a_params.get_biped_has_armor())
-			{
-				return false;
-			}
-
 			if (a_match.typeSlot == Data::ObjectSlotExtra::kArmor)
 			{
+				if (!a_params.get_biped_has_armor())
+				{
+					return false;
+				}
+
 				if (a_match.form.get_id())
 				{
 					auto data = a_params.get_item_data();
@@ -306,12 +306,12 @@ namespace IED
 			else if (a_match.typeSlot == Data::ObjectSlotExtra::kAmmo)
 			{
 				auto biped = a_params.get_biped();
-				if (biped)
+				if (!biped)
 				{
 					return false;
 				}
 
-				auto& e = biped->objects[stl::underlying(Biped::BIPED_OBJECT::kQuiver)];
+				auto& e = biped->objects[Biped::BIPED_OBJECT::kQuiver];
 
 				form = e.item;
 
@@ -1021,7 +1021,7 @@ namespace IED
 	}
 
 	auto INodeOverride::nodeOverrideParams_t::get_item_data()
-		-> std::unordered_map<Game::FormID, bipedInfoEntry_t>*
+		-> item_container_type*
 	{
 		if (!itemData)
 		{

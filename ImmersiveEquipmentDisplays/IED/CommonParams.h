@@ -1,7 +1,7 @@
 #pragma once
 
-#include "FormHolder.h"
 #include "FormCommon.h"
+#include "FormHolder.h"
 
 namespace IED
 {
@@ -11,6 +11,8 @@ namespace IED
 		mutable stl::optional<TESFurniture*> furniture;
 		mutable stl::optional<Game::ObjectRefHandle> furnHandle;
 		mutable stl::optional<bool> layingDown;
+		mutable stl::optional<Biped*> biped;
+		mutable stl::optional<TESObjectARMO*> actorSkin;
 
 		bool get_using_furniture() const
 		{
@@ -77,6 +79,33 @@ namespace IED
 			}
 
 			return *layingDown;
+		}
+
+		constexpr auto get_biped() const
+		{
+			if (!biped)
+			{
+				if (auto ptrh = actor->GetBiped(false))
+				{
+					biped = ptrh->ptr;
+				}
+				else
+				{
+					biped = nullptr;
+				}
+			}
+
+			return *biped;
+		}
+
+		constexpr auto get_actor_skin() const
+		{
+			if (!actorSkin)
+			{
+				actorSkin = Game::GetActorSkin(actor);
+			}
+
+			return *actorSkin;
 		}
 	};
 }

@@ -1,15 +1,15 @@
 #pragma once
 
-#include "../Controls/UICollapsibles.h"
-#include "../UIClipboard.h"
-#include "../UICommon.h"
-#include "../UITips.h"
+#include "IED/UI//Controls/UICollapsibles.h"
+#include "IED/UI//UIClipboard.h"
+#include "IED/UI//UICommon.h"
+#include "IED/UI//UITips.h"
 
 #include "IED/ConfigOverride.h"
 #include "IED/StringHolder.h"
 
-#include "../UIFormLookupInterface.h"
-#include "../UINotificationInterface.h"
+#include "IED/UI//UIFormLookupInterface.h"
+#include "IED/UI//UINotificationInterface.h"
 
 #include "Form/UIFormFilterWidget.h"
 #include "Form/UIFormSelectorWidget.h"
@@ -23,6 +23,8 @@
 #include "UIWidgetsCommon.h"
 
 #include "IED/UI/UILocalizationInterface.h"
+
+#include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorStrings.h"
 
 namespace IED
 {
@@ -51,6 +53,7 @@ namespace IED
 			Game::FormID form;
 			Data::EquipmentOverrideConditionType entryType;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
+			Biped::BIPED_OBJECT biped{ Biped::BIPED_OBJECT::kNone };
 			const std::string* desc;
 			SwapDirection dir;
 		};
@@ -183,6 +186,8 @@ namespace IED
 			Game::FormID m_aoNewEntryID;
 			Game::FormID m_aoNewEntryKWID;
 			Game::FormID m_aoNewEntryRaceID;
+			Biped::BIPED_OBJECT m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
+
 			Data::ObjectSlotExtra m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
 
 			UIConditionParamEditorWidget m_matchParamEditor;
@@ -1169,6 +1174,17 @@ namespace IED
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 
 						break;
+					case Data::EquipmentOverrideConditionType::Biped:
+						if (result.biped != Biped::BIPED_OBJECT::kNone)
+						{
+							a_data.conditions.emplace_back(
+								result.biped);
+
+							action = result.action;
+
+							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						}
+						break;
 					}
 				}
 
@@ -1307,6 +1323,16 @@ namespace IED
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 
 							break;
+						case Data::EquipmentOverrideConditionType::Biped:
+							if (result.biped != Biped::BIPED_OBJECT::kNone)
+							{
+								it = a_data.conditions.emplace(
+									it,
+									result.biped);
+
+								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							}
+							break;
 						}
 
 						break;
@@ -1401,6 +1427,21 @@ namespace IED
 							tdesc = LS(CommonStrings::Furniture);
 
 							break;
+						case Data::EquipmentOverrideConditionType::Biped:
+
+							m_matchParamEditor.SetNext<ConditionParamItem::BipedSlot>(
+								e.bipedSlot);
+							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+								e.form);
+							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+								e.keyword.get_id());
+							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+								e);
+
+							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::BipedSlot);
+							tdesc = LS(CommonStrings::Biped);
+
+							break;
 						default:
 							tdesc = nullptr;
 							vdesc = nullptr;
@@ -1488,6 +1529,7 @@ namespace IED
 				m_aoNewEntryID = {};
 				m_aoNewEntryKWID = {};
 				m_aoNewEntryRaceID = {};
+				m_ooNewBiped = Biped::BIPED_OBJECT::kNone;
 				m_aoNewSlot = Data::ObjectSlotExtra::kNone;
 			}
 
@@ -1570,7 +1612,26 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Race, "5"))
+					if (LCG_BM(UIWidgetCommonStrings::BipedSlot, "5"))
+					{
+						if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
+								LS(CommonStrings::Biped, "bp"),
+								m_ooNewBiped))
+						{
+							if (m_ooNewBiped != Biped::BIPED_OBJECT::kNone)
+							{
+								result.action = BaseConfigEditorAction::Insert;
+								result.biped = m_ooNewBiped;
+								result.entryType = Data::EquipmentOverrideConditionType::Biped;
+
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Race, "6"))
 					{
 						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Race);
 
@@ -1593,7 +1654,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Furniture, "6"))
+					if (LCG_MI(CommonStrings::Furniture, "7"))
 					{
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Furniture;
@@ -1604,14 +1665,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "7"))
+				if (LCG_MI(CommonStrings::Delete, "8"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "8"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "9"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -1620,7 +1681,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "9"))
+					if (LCG_MI(CommonStrings::Copy, "A"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -1628,7 +1689,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "A"),
+							LS(CommonStrings::PasteOver, "B"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -1856,6 +1917,15 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kLayingDown));
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Biped:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UINodeOverrideEditorStrings::MatchSkin, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSkin));
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -1880,6 +1950,7 @@ namespace IED
 			{
 			case Data::EquipmentOverrideConditionType::Type:
 			case Data::EquipmentOverrideConditionType::Furniture:
+			case Data::EquipmentOverrideConditionType::Biped:
 
 				if (a_item == ConditionParamItem::Form)
 				{

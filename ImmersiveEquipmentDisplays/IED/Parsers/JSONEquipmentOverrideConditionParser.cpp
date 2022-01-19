@@ -38,6 +38,8 @@ namespace IED
 
 			a_out.slot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
+			
+			a_out.bipedSlot = a_in.get("bslot", Biped::BIPED_OBJECT::kNone).asUInt();
 
 			a_out.flags = static_cast<Data::EquipmentOverrideConditionFlags>(
 				a_in.get("flags", 0).asUInt());
@@ -64,6 +66,8 @@ namespace IED
 			}
 
 			a_out["type"] = stl::underlying(a_data.slot);
+			a_out["bslot"] = a_data.bipedSlot;
+
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 		}
 

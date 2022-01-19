@@ -51,8 +51,9 @@ namespace IED
 		enum class SerializationVersion : std::uint32_t
 		{
 			kDataVersion1 = 1,
+			kDataVersion2 = 2,
 
-			kCurrentVersion = kDataVersion1
+			kCurrentVersion = kDataVersion2
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';

@@ -37,6 +37,7 @@ namespace IED
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
 			kLayingDown = 1u << 11,
+			kMatchSkin = 1u << 12,
 
 			kNegateMatch1 = 1u << 13,
 			kNegateMatch2 = 1u << 14
@@ -50,7 +51,8 @@ namespace IED
 			Type,
 			Keyword,
 			Race,
-			Furniture
+			Furniture,
+			Biped
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -68,7 +70,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			equipmentOverrideCondition_t() = default;
@@ -106,6 +109,13 @@ namespace IED
 			{
 				fbf.type = EquipmentOverrideConditionType::Type;
 			}
+			
+			equipmentOverrideCondition_t(
+				Biped::BIPED_OBJECT a_slot) :
+				bipedSlot(a_slot)
+			{
+				fbf.type = EquipmentOverrideConditionType::Biped;
+			}
 
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
@@ -129,16 +139,34 @@ namespace IED
 			configForm_t form;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 			configCachedForm_t keyword;
+			std::uint32_t bipedSlot{ stl::underlying(Biped::kNone) };
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void save(Archive& ar, const unsigned int version) const
 			{
 				ar& flags.value;
 				ar& form;
 				ar& slot;
 				ar& keyword;
+				ar& bipedSlot;
 			}
+
+			template <class Archive>
+			void load(Archive& ar, const unsigned int version)
+			{
+				ar& flags.value;
+				ar& form;
+				ar& slot;
+				ar& keyword;
+
+				if (version >= DataVersion2)
+				{
+					ar& bipedSlot;
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		using equipmentOverrideConditionList_t = std::vector<equipmentOverrideCondition_t>;
@@ -198,4 +226,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	IED::Data::equipmentOverrideCondition_t,
-	IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion1);
+	IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion2);
