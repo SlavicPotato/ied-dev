@@ -3,8 +3,8 @@
 #include "Config.h"
 #include "Data.h"
 #include "FormCommon.h"
+#include "LocaleData.h"
 #include "NodeMap.h"
-
 #include "StringHolder.h"
 
 namespace IED
@@ -737,8 +737,8 @@ namespace IED
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
 					playable,
-					IFormCommon::ConvertToUTF8(race->fullName.GetName()),
-					IFormCommon::ConvertToUTF8(race->editorId.c_str()),
+					LocaleData::ToUTF8(race->fullName.GetName()),
+					LocaleData::ToUTF8(race->editorId.c_str()),
 					race->data.raceFlags);
 			}
 

@@ -13,95 +13,48 @@ namespace IED
 
 	void LocaleData::SetFromLang(const char* a_lang)
 	{
-		const char* codepage;
+		if (!_stricmp(a_lang, "english"))
+		{
+			try
+			{
+				boost::locale::generator gen;
+				m_current = gen.generate(CODEPAGE_ENGLISH);
+			}
+			catch (...)
+			{
+			}
+		}
+		
+	}
 
-		if (!_stricmp(a_lang, "french"))
+	std::string LocaleData::ToUTF8(const char* a_in)
+	{
+		if (m_Instance)
 		{
-			codepage = CODEPAGE_FRENCH;
-		}
-		else if (!_stricmp(a_lang, "polish"))
-		{
-			codepage = CODEPAGE_POLISH;
-		}
-		else if (!_stricmp(a_lang, "czech"))
-		{
-			codepage = CODEPAGE_CZECH;
-		}
-		else if (!_stricmp(a_lang, "danish"))
-		{
-			codepage = CODEPAGE_DANISH;
-		}
-		else if (!_stricmp(a_lang, "finnish"))
-		{
-			codepage = CODEPAGE_FINNISH;
-		}
-		else if (!_stricmp(a_lang, "german"))
-		{
-			codepage = CODEPAGE_GERMAN;
-		}
-		else if (!_stricmp(a_lang, "greek"))
-		{
-			codepage = CODEPAGE_GREEK;
-		}
-		else if (!_stricmp(a_lang, "italian"))
-		{
-			codepage = CODEPAGE_ITALIAN;
-		}
-		else if (!_stricmp(a_lang, "japanese"))
-		{
-			codepage = CODEPAGE_JAPANESE;
-		}
-		else if (!_stricmp(a_lang, "norwegian"))
-		{
-			codepage = CODEPAGE_NORWEGIAN;
-		}
-		else if (!_stricmp(a_lang, "portugese"))
-		{
-			codepage = CODEPAGE_PORTUGESE;
-		}
-		else if (!_stricmp(a_lang, "spanish"))
-		{
-			codepage = CODEPAGE_SPANISH;
-		}
-		else if (!_stricmp(a_lang, "swedish"))
-		{
-			codepage = CODEPAGE_SWEDISH;
-		}
-		else if (!_stricmp(a_lang, "turkish"))
-		{
-			codepage = CODEPAGE_TURKISH;
-		}
-		else if (!_stricmp(a_lang, "russian"))
-		{
-			codepage = CODEPAGE_RUSSIAN;
-		}
-		else if (!_stricmp(a_lang, "chinese"))
-		{
-			codepage = CODEPAGE_CHINESE;
-		}
-		else if (!_stricmp(a_lang, "hungarian"))
-		{
-			codepage = CODEPAGE_HUNGARIAN;
-		}
-		else if (!_stricmp(a_lang, "arabic"))
-		{
-			codepage = CODEPAGE_ARABIC;
+			return m_Instance->ToUTF8Impl(a_in);
 		}
 		else
 		{
-			codepage = CODEPAGE_ENGLISH;
+			return a_in;
 		}
+	}
 
+	std::string LocaleData::ToUTF8Impl(const char* a_in)
+	{
 		try
 		{
-			boost::locale::generator gen;
-			m_current = gen.generate(codepage);
+			using namespace boost::locale;
 
-			_DMESSAGE("set cp: %s", codepage);
-
+			if (m_current)
+			{
+				return conv::to_utf<char>(a_in, *m_current, conv::skip);
+			}
 		}
 		catch (...)
 		{
 		}
+
+		return a_in;
 	}
+
 }

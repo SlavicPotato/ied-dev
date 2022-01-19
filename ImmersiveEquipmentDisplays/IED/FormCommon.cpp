@@ -176,24 +176,6 @@ namespace IED
 		return a_form->GetReferenceName();
 	}
 
-	std::string IFormCommon::ConvertToUTF8(const char* a_in)
-	{
-		try
-		{
-			using namespace boost::locale;
-
-			if (auto ld = LocaleData::GetSingleton())
-			{
-				return conv::to_utf<char>(a_in, ld->GetCurrent(), conv::skip);
-			}
-		}
-		catch (...)
-		{
-		}
-
-		return a_in;
-	}
-
 	inline static constexpr const char* GetFormNamePtr(TESForm* a_form)
 	{
 		switch (a_form->formType)
@@ -241,7 +223,7 @@ namespace IED
 	{
 		if (auto p = GetFormNamePtr(a_form))
 		{
-			return ConvertToUTF8(p);
+			return LocaleData::ToUTF8(p);
 		}
 		else
 		{

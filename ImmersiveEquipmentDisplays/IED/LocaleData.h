@@ -41,9 +41,13 @@ namespace IED
 
 		void SetFromLang(const char* a_lang);
 
+		static std::string ToUTF8(const char* a_in);
+
+		std::string ToUTF8Impl(const char* a_in);
+
 	private:
 
-		std::locale m_current;
+		stl::optional<std::locale> m_current;
 
 		static std::unique_ptr<LocaleData> m_Instance;
 	};
