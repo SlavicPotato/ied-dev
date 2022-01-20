@@ -3,6 +3,7 @@
 #include "Widgets/Filters/UIGenericFilter.h"
 #include "Widgets/Form/UIFormBrowserOwner.h"
 #include "Widgets/UIWidgetsCommon.h"
+#include "Widgets/UIPopupToggleButtonWidget.h"
 
 #include "Window/UIWindow.h"
 
@@ -20,6 +21,7 @@ namespace IED
 	{
 		class UIFormBrowser :
 			public UIWindow,
+			UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
 		{
 			struct TabItem
@@ -33,6 +35,9 @@ namespace IED
 			inline static constexpr auto POPUP_ID = "form_browser";
 
 		public:
+
+			using selected_form_list = stl::vectormap<Game::FormID, IFormDatabase::entry_t>;
+
 			struct FormBrowserDrawResult
 			{
 				bool result;
@@ -50,7 +55,8 @@ namespace IED
 			UIFormBrowser(Controller& a_controller);
 
 			FormBrowserDrawResult Draw();
-			bool Open();
+			bool Open(bool a_multisel);
+			bool IsBrowserOpen() const;
 			void SetTabFilter(const tab_filter_type& a_filter);
 			void SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
 			void ClearTabFilter();
@@ -60,6 +66,16 @@ namespace IED
 			inline constexpr const auto& GetSelectedEntry() const noexcept
 			{
 				return m_selectedEntry;
+			}
+			
+			inline constexpr const auto& GetSelectedEntries() const noexcept
+			{
+				return m_selectedEntries;
+			}
+			
+			inline void ClearSelectedEntries() noexcept
+			{
+				m_selectedEntries.clear();
 			}
 
 			inline void SetHighlightForm(Game::FormID a_form)
@@ -78,6 +94,8 @@ namespace IED
 
 			template <class T>
 			bool DrawTable(const T& a_data);
+
+			void DrawContextMenu();
 
 			void QueueGetDatabase();
 
@@ -99,8 +117,10 @@ namespace IED
 			//select_callback_t m_current;
 
 			stl::optional<IFormDatabase::entry_t> m_selectedEntry;
+			selected_form_list m_selectedEntries;
 
 			bool m_dbQueryInProgress{ false };
+			bool m_multiSelectMode{ false };
 
 			Controller& m_controller;
 		};

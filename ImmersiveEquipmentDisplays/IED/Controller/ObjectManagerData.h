@@ -135,7 +135,7 @@ namespace IED
 			cflags.clear(CustomObjectEntryFlags::kChanceMask);
 		}
 
-		Game::FormID matchedItem;
+		Game::FormID modelForm;
 		stl::flag<CustomObjectEntryFlags> cflags{ CustomObjectEntryFlags::kNone };
 	};
 

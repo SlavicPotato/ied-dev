@@ -77,6 +77,9 @@ namespace IED
 			ActorFilters = 2066,
 			NPCFilters = 2067,
 			DisableCollision = 2068,
+			AddOne = 2069,
+			AddMultiple = 2070,
+			ClearSelection = 2071,
 		};
 	}
 }

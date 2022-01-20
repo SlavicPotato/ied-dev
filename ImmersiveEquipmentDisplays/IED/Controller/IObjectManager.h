@@ -92,6 +92,7 @@ namespace IED
 			const Data::NodeDescriptor& a_node,
 			objectEntryBase_t& a_objectEntry,
 			TESForm* a_form,
+			TESForm* a_modelForm,
 			bool a_leftWeapon,
 			bool a_loadArma,
 			bool a_visible,

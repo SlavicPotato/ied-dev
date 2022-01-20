@@ -456,16 +456,16 @@ namespace IED
 			auto& flc = m_controller.UIGetFormLookupCache();
 			DrawObjectEntryHeaderInfo(flc.LookupForm(object->state->formid), *object);
 
-			if (object->state->formid != object->matchedItem)
+			if (object->modelForm && object->state->formid != object->modelForm)
 			{
 				ImGui::SameLine(0.0f, 5.0f);
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 				ImGui::SameLine(0.0f, 8.0f);
 
-				ImGui::TextUnformatted("Matched:");
+				ImGui::TextUnformatted("Model:");
 				ImGui::SameLine();
 
-				if (auto formInfo = flc.LookupForm(object->matchedItem))
+				if (auto formInfo = flc.LookupForm(object->modelForm))
 				{
 					if (!formInfo->form.name.empty())
 					{
@@ -479,7 +479,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorLightBlue,
 							"%.8X",
-							object->matchedItem.get());
+							object->modelForm.get());
 					}
 
 					if (ImGui::IsItemHovered())

@@ -26,7 +26,7 @@ namespace IED
 
 			if (ImGui::Button(LS(CommonStrings::Find, "ctl")))
 			{
-				if (formBrowser.Open())
+				if (formBrowser.Open(false))
 				{
 					formBrowser.SetTabFilter({ TESNPC::kTypeID });
 					formBrowser.SetHighlightForm(a_current);

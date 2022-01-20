@@ -12,15 +12,19 @@ namespace IED
 		struct entry_t
 		{
 			Game::FormID formid;
-			FormInfoFlags flags;
+			FormInfoFlags flags{ FormInfoFlags::kNone };
 			std::string name;
 
-			inline friend bool operator<(const entry_t& a_lhs, const entry_t& a_rhs) noexcept
+			inline friend bool operator<(
+				const entry_t& a_lhs,
+				const entry_t& a_rhs) noexcept
 			{
 				return a_lhs.formid < a_rhs.formid;
 			}
 
-			inline friend bool operator==(const entry_t& a_lhs, const entry_t& a_rhs) noexcept
+			inline friend bool operator==(
+				const entry_t& a_lhs,
+				const entry_t& a_rhs) noexcept
 			{
 				return a_lhs.formid == a_rhs.formid;
 			}

@@ -94,11 +94,24 @@ namespace IED
 
 				ImGui::PopStyleVar();
 
-				if (ImGui::Button(
-						LS(CommonStrings::Close, "ctl_1"),
-						{ -1.f, 0.f }))
+				if (m_multiSelectMode)
 				{
-					SetOpenState(false);
+					if (ImGui::Button(
+							LS(CommonStrings::OK, "ctl_1"),
+							{ -1.f, 0.f }))
+					{
+						result.result = !m_selectedEntries.empty();
+						SetOpenState(false);
+					}
+				}
+				else
+				{
+					if (ImGui::Button(
+							LS(CommonStrings::Close, "ctl_1"),
+							{ -1.f, 0.f }))
+					{
+						SetOpenState(false);
+					}
 				}
 
 				if (!IsWindowOpen())
@@ -112,17 +125,24 @@ namespace IED
 			return result;
 		}
 
-		bool UIFormBrowser::Open()
+		bool UIFormBrowser::Open(bool a_multisel)
 		{
 			ClearTabFilter();
 
 			m_hlForm = {};
+			m_multiSelectMode = a_multisel;
+			m_selectedEntries.clear();
 
 			SetOpenState(true);
 
 			ImGui::OpenPopup(LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 
 			return true;
+		}
+
+		bool UIFormBrowser::IsBrowserOpen() const
+		{
+			return ImGui::IsPopupOpen(LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 		}
 
 		void UIFormBrowser::SetTabFilter(
@@ -178,6 +198,11 @@ namespace IED
 
 		bool UIFormBrowser::DrawTabBar()
 		{
+			if (m_multiSelectMode)
+			{
+				DrawContextMenu();
+			}
+
 			bool result = false;
 
 			if (ImGui::BeginTabBar("form_browser_tab_bar"))
@@ -368,18 +393,42 @@ namespace IED
 
 					ImGui::TableNextRow();
 
-					if (m_hlForm && m_hlForm == e.formid)
+					if (m_multiSelectMode)
 					{
-						ImGui::TableSetBgColor(ImGuiTableBgTarget_RowBg1, IM_COL32(50, 50, 50, 255));
+						if (m_selectedEntries.contains(e.formid))
+						{
+							ImGui::TableSetBgColor(
+								ImGuiTableBgTarget_RowBg1,
+								IM_COL32(50, 50, 50, 255));
+						}
+					}
+					else
+					{
+						if (m_hlForm && m_hlForm == e.formid)
+						{
+							ImGui::TableSetBgColor(
+								ImGuiTableBgTarget_RowBg1,
+								IM_COL32(50, 50, 50, 255));
+						}
 					}
 
 					ImGui::TableSetColumnIndex(0);
 
 					if (ImGui::Selectable(buf, false, SELECTABLE_FLAGS))
 					{
-						m_selectedEntry = e;
-						result = true;
-						SetOpenState(false);
+						if (m_multiSelectMode)
+						{
+							if (!m_selectedEntries.emplace(e.formid, e).second)
+							{
+								m_selectedEntries.erase(e.formid);
+							}
+						}
+						else
+						{
+							m_selectedEntry = e;
+							result = true;
+							SetOpenState(false);
+						}
 					}
 
 					ImGui::TableSetColumnIndex(1);
@@ -409,6 +458,37 @@ namespace IED
 				});
 
 			return it != m_tabItems.end();
+		}
+
+		void UIFormBrowser::DrawContextMenu()
+		{
+			ImGui::PushID("fb_context_area");
+
+			ImGui::PushStyleVar(
+				ImGuiStyleVar_WindowPadding,
+				{ 8, 8 });
+
+			DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::MenuItem(
+						LS(UIWidgetCommonStrings::ClearSelection, "1"),
+						nullptr,
+						false,
+						!m_selectedEntries.empty()))
+				{
+					m_selectedEntries.clear();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::PopID();
 		}
 
 		void UIFormBrowser::QueueGetDatabase()

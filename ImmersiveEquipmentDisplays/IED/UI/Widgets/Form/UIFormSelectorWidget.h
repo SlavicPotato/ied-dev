@@ -33,6 +33,9 @@ namespace IED
 				Game::FormID& a_form,
 				const char* a_tipText = nullptr);
 
+			
+			bool DrawFormSelectorMulti();
+
 			void Reset();
 
 			void SetOnFormBrowserOpenFunc(on_open_func_t a_func);
@@ -44,11 +47,15 @@ namespace IED
 				m_enableFormBrowser = a_switch;
 			}
 
-			inline constexpr const auto& GetAllowedTypes() const noexcept
+			[[nodiscard]] inline constexpr const auto& GetAllowedTypes() const noexcept
 			{
 				return m_types;
 			}
+			
+			[[nodiscard]] const UIFormBrowser::selected_form_list& GetSelectedEntries() const noexcept;
 
+			void ClearSelectedEntries() noexcept;
+			
 			bool HasType(const formInfo_t& a_info) const;
 
 			inline const auto& GetInfo() const noexcept

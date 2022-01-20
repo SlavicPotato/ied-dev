@@ -2353,6 +2353,7 @@ namespace IED
 						usedConf->targetNode,
 						objectEntry,
 						item->form,
+						nullptr,
 						ItemData::IsLeftWeaponSlot(slot),
 						false,
 						visible,
@@ -2644,23 +2645,17 @@ namespace IED
 
 			auto& itemData = it->second;
 
-			auto form = a_config.modelForm.get_id() ?
-                            a_config.modelForm.get_form() :
-                            itemData.form;
-
-			if (!form)
+			if (!itemData.form)
 			{
 				return false;
 			}
-
-			a_objectEntry.matchedItem = it->first;
 
 			bool visible = GetVisibilitySwitch(
 				a_params.actor,
 				usedBaseConf->flags.value,
 				a_params);
 
-			if (a_objectEntry.state && a_objectEntry.state->form == form)
+			if (a_objectEntry.state && a_objectEntry.state->form == itemData.form)
 			{
 				bool _visible = hasMinCount && visible;
 
@@ -2688,6 +2683,12 @@ namespace IED
 				return false;
 			}
 
+			auto modelForm = a_config.modelForm.get_id() ?
+                                 a_config.modelForm.get_form() :
+                                 itemData.form;
+
+			a_objectEntry.modelForm = modelForm->formID;
+
 			bool result;
 
 			if (result = LoadAndAttach(
@@ -2695,8 +2696,9 @@ namespace IED
 					*usedBaseConf,
 					usedBaseConf->targetNode,
 					a_objectEntry,
-					form,
-					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
+					itemData.form,
+					modelForm,
+					modelForm->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableCollision)))
@@ -2733,8 +2735,6 @@ namespace IED
 				return false;
 			}
 
-			a_objectEntry.matchedItem = a_config.form.get_id();
-
 			bool visible = GetVisibilitySwitch(
 				a_params.actor,
 				usedBaseConf->flags.value,
@@ -2753,6 +2753,8 @@ namespace IED
 				}
 			}
 
+			a_objectEntry.modelForm = {};
+
 			bool result;
 
 			if (result = LoadAndAttach(
@@ -2761,6 +2763,7 @@ namespace IED
 					usedBaseConf->targetNode,
 					a_objectEntry,
 					form,
+					nullptr,
 					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,

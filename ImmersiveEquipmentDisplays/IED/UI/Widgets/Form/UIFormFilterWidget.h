@@ -352,7 +352,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
 							LS(CommonStrings::Form, "fs"),
@@ -370,7 +370,33 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Clear, "2"))
+				if (LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
+				{
+					if (m_formSelector.DrawFormSelectorMulti())
+					{
+						bool added = false;
+
+						for (auto& e : m_formSelector.GetSelectedEntries().getvec())
+						{
+							added |= a_data.emplace(e->second.formid).second;
+						}
+
+						m_formSelector.ClearSelectedEntries();
+
+						if (added)
+						{
+							m_onChangeFunc(a_params);
+
+							result = FormFilterAction::Add;
+
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (LCG_MI(CommonStrings::Clear, "3"))
 				{
 					a_data.clear();
 
@@ -379,7 +405,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (LCG_MI(CommonStrings::Copy, "3"))
+				if (LCG_MI(CommonStrings::Copy, "4"))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -387,7 +413,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFormSet_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "4"),
+						LS(CommonStrings::Paste, "5"),
 						nullptr,
 						false,
 						clipData != nullptr))

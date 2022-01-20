@@ -904,7 +904,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
 					if (m_formPicker.DrawFormSelector("##fs", m_fsNew))
 					{
@@ -931,6 +931,56 @@ namespace IED
 					}
 
 					ImGui::EndMenu();
+				}
+
+				if (LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
+				{
+					if (m_formPicker.DrawFormSelectorMulti())
+					{
+						auto& data = a_params.entry(a_params.sex);
+
+						bool added = false;
+
+						for (auto& e : m_formPicker.GetSelectedEntries().getvec())
+						{
+							if (std::find(
+									data.extraItems.begin(),
+									data.extraItems.end(),
+									e->second.formid) == data.extraItems.end())
+							{
+								data.extraItems.emplace_back(e->second.formid);
+								added = true;
+							}
+						}
+
+						m_formPicker.ClearSelectedEntries();
+
+						if (added)
+						{
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+
+							result = ExtraItemsAction::Add;
+						}
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (LCG_MI(UIWidgetCommonStrings::ClearAll, "3"))
+				{
+					auto& data = a_params.entry(a_params.sex);
+
+					data.extraItems.clear();
+
+					OnBaseConfigChange(
+						a_handle,
+						std::addressof(a_params),
+						PostChangeAction::Evaluate);
 				}
 
 				ImGui::EndPopup();
@@ -1285,7 +1335,7 @@ namespace IED
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
 			DrawTip(UITip::LeftWeapon);
-			
+
 			if (ImGui::CheckboxFlagsT(
 					LS(UIWidgetCommonStrings::DisableCollision, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),

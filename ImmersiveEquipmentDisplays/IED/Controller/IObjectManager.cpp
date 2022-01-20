@@ -129,7 +129,7 @@ namespace IED
 			ResetNodeOverride(e.second);
 		}
 
-		if (a_actor && a_actor->loadedState) 
+		if (a_actor && a_actor->loadedState)
 		{
 			for (auto& e : a_objects.m_weapNodes)
 			{
@@ -314,6 +314,7 @@ namespace IED
 		const Data::NodeDescriptor& a_node,
 		objectEntryBase_t& a_objectEntry,
 		TESForm* a_form,
+		TESForm* a_modelForm,
 		bool a_leftWeapon,
 		bool a_loadArma,
 		bool a_visible,
@@ -336,11 +337,16 @@ namespace IED
 			return false;
 		}
 
+		if (!a_modelForm)
+		{
+			a_modelForm = a_form;
+		}
+
 		modelParams_t modelParams;
 
 		if (!GetModelParams(
 				a_params.actor,
-				a_form,
+				a_modelForm,
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
 				a_config.flags.test(Data::FlagsBase::kLoad1pWeaponModel),
@@ -351,7 +357,7 @@ namespace IED
 				"[%.8X] [race: %.8X] [item: %.8X] couldn't get model params",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
-				a_form->formID.get());
+				a_modelForm->formID.get());
 
 			return false;
 		}
@@ -368,7 +374,7 @@ namespace IED
 				"[%.8X] [race: %.8X] [item: %.8X] failed to create target node: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
-				a_form->formID.get(),
+				a_modelForm->formID.get(),
 				a_node.name.c_str());
 
 			return false;
@@ -388,7 +394,7 @@ namespace IED
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
 					a_params.actor->formID.get(),
 					a_params.race->formID.get(),
-					a_form->formID.get(),
+					a_modelForm->formID.get(),
 					modelParams.path);
 
 				return false;
@@ -407,7 +413,7 @@ namespace IED
 		else
 		{
 			if (!ConstructArmorNode(
-					a_form,
+					a_modelForm,
 					*modelParams.armas,
 					a_params.configSex == Data::ConfigSex::Female,
 					state->dbEntries,
@@ -417,7 +423,7 @@ namespace IED
 					"[%.8X] [race: %.8X] [item: %.8X] failed to construct armor model",
 					a_params.actor->formID.get(),
 					a_params.race->formID.get(),
-					a_form->formID.get());
+					a_modelForm->formID.get());
 
 				return false;
 			}
@@ -438,11 +444,11 @@ namespace IED
 		switch (modelParams.type)
 		{
 		case ModelType::kWeapon:
-			GetWeaponNodeName(a_form->formID, buffer);
+			GetWeaponNodeName(a_modelForm->formID, buffer);
 			break;
 		case ModelType::kArmor:
 			GetArmorNodeName(
-				a_form->formID,
+				a_modelForm->formID,
 				modelParams.arma ?
                     modelParams.arma->formID :
                     0,
@@ -450,7 +456,7 @@ namespace IED
 			break;
 		case ModelType::kMisc:
 		case ModelType::kLight:
-			GetMiscNodeName(a_form->formID, buffer);
+			GetMiscNodeName(a_modelForm->formID, buffer);
 			break;
 		default:
 			HALT("FIXME");

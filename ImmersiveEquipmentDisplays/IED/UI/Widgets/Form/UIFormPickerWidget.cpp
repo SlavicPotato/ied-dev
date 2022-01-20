@@ -113,7 +113,7 @@ namespace IED
 					{
 						auto& formBrowser = m_controller.UIGetFormBrowser();
 
-						if (formBrowser.Open())
+						if (formBrowser.Open(false))
 						{
 							if (m_onOpenFunc)
 							{
@@ -211,7 +211,7 @@ namespace IED
 
 				if (LCG_MI(CommonStrings::Browse, "1"))
 				{
-					if (formBrowser.Open())
+					if (formBrowser.Open(false))
 					{
 						if (m_onOpenFunc)
 						{
@@ -262,16 +262,19 @@ namespace IED
 			{
 				auto& entry = formBrowser.GetSelectedEntry();
 
-				if (IsEntryValid(*entry))
+				if (entry)
 				{
-					a_form = entry->formid;
-				}
-				else
-				{
-					QueueNotification(
-						"Error",
-						"%.8X - form not valid for this input",
-						entry->formid.get());
+					if (IsEntryValid(*entry))
+					{
+						a_form = entry->formid;
+					}
+					else
+					{
+						QueueNotification(
+							"Error",
+							"%.8X - form not valid for this input",
+							entry->formid.get());
+					}
 				}
 			}
 

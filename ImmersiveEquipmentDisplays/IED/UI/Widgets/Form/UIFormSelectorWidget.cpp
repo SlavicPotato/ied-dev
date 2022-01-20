@@ -118,7 +118,7 @@ namespace IED
 
 				if (open_browser)
 				{
-					if (formBrowser.Open())
+					if (formBrowser.Open(false))
 					{
 						if (m_onOpenFunc)
 						{
@@ -212,6 +212,39 @@ namespace IED
 			return result;
 		}
 
+		bool UIFormSelectorWidget::DrawFormSelectorMulti()
+		{
+			if (!m_enableFormBrowser)
+			{
+				return false;
+			}
+
+			ImGui::PushID("form_sel_m_w");
+
+			bool result = false;
+
+			auto& formBrowser = m_controller.UIGetFormBrowser();
+
+			if (ImGui::Button(LS(CommonStrings::Browse)))
+			{
+				if (formBrowser.Open(true))
+				{
+					if (m_onOpenFunc)
+					{
+						m_onOpenFunc(*this, formBrowser);
+					}
+
+					formBrowser.SetTabFilter(*m_types);
+				}
+			}
+
+			result = formBrowser.Draw().result;
+
+			ImGui::PopID();
+
+			return result;
+		}
+
 		void UIFormSelectorWidget::Reset()
 		{
 			m_state->m_bufferedFormID = {};
@@ -237,6 +270,16 @@ namespace IED
 			const std::shared_ptr<const UIFormBrowser::tab_filter_type>& a_types)
 		{
 			m_types = a_types;
+		}
+
+		const UIFormBrowser::selected_form_list& UIFormSelectorWidget::GetSelectedEntries() const noexcept
+		{
+			return m_controller.UIGetFormBrowser().GetSelectedEntries();
+		}
+
+		void UIFormSelectorWidget::ClearSelectedEntries() noexcept
+		{
+			m_controller.UIGetFormBrowser().ClearSelectedEntries();
 		}
 
 		bool UIFormSelectorWidget::HasType(const formInfo_t& a_info) const
