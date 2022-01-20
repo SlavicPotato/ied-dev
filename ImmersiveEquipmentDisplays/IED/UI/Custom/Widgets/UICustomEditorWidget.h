@@ -838,7 +838,7 @@ namespace IED
 							OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
-								PostChangeAction::Evaluate);
+								PostChangeAction::Reset);
 						}
 
 						ImGui::BeginGroup();

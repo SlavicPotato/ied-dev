@@ -694,7 +694,7 @@ namespace IED
 
 				if (!e.flags.test(FlagsBase::kDisabled))
 				{
-					QueueEvaluate(a_target, a_class);
+					QueueReset(a_target, a_class);
 				}
 
 				return true;
