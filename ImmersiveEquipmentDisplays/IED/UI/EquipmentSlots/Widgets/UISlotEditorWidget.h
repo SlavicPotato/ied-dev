@@ -763,6 +763,17 @@ namespace IED
 					ImGui::Spacing();
 				}
 
+				if (Is2HLeftSlot(a_slot))
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped(
+						LS(UISlotEditorWidgetStrings::Left2HSlotWarning));
+					ImGui::PopStyleColor();
+
+					ImGui::Separator();
+					ImGui::Spacing();
+				}
+
 				auto& data = params.entry.second.get(params.sex);
 				auto& sh = StringHolder::GetSingleton();
 
