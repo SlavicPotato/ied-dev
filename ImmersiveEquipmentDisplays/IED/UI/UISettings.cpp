@@ -136,24 +136,38 @@ namespace IED
 				{
 					ImGui::Spacing();
 
+					auto tmpk = m_controller.GetInputHandlers().playerBlock.GetComboKey();
+
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
-							data.playerBlockKeys.comboKey,
+							tmpk,
 							true)))
 					{
 						m_controller.GetInputHandlers().playerBlock.SetComboKey(
-							data.playerBlockKeys.comboKey);
+							tmpk);
+
+						data.playerBlockKeys->comboKey = tmpk;
+						data.playerBlockKeys.mark(true);
+
+						config.mark_dirty();
 					}
+
+					tmpk = m_controller.GetInputHandlers().playerBlock.GetKey();
 
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
-							data.playerBlockKeys.key,
+							tmpk,
 							true)))
 					{
 						m_controller.GetInputHandlers().playerBlock.SetKey(
-							data.playerBlockKeys.key);
+							tmpk);
+
+						data.playerBlockKeys->key = tmpk;
+						data.playerBlockKeys.mark(true);
+
+						config.mark_dirty();
 					}
 
 					ImGui::TreePop();
@@ -280,23 +294,43 @@ namespace IED
 					ImGui::Indent();
 					ImGui::Spacing();
 
+					bool disabled = m_controller.UIGetIniKeysForced();
+
+					UICommon::PushDisabled(disabled);
+
+					auto tmpk = m_controller.GetInputHandlers().uiToggle.GetComboKey();
+
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
-							ui.toggleKeys.comboKey,
+							tmpk,
 							true)))
 					{
 						m_controller.GetInputHandlers().uiToggle.SetComboKey(
-							ui.toggleKeys.comboKey);
+							tmpk);
+
+						ui.toggleKeys->comboKey = tmpk;
+						ui.toggleKeys.mark(true);
+
+						config.mark_dirty();
 					}
+
+					tmpk = m_controller.GetInputHandlers().uiToggle.GetKey();
 
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
-							ui.toggleKeys.key)))
+							tmpk)))
 					{
-						m_controller.GetInputHandlers().uiToggle.SetKey(ui.toggleKeys.key);
+						m_controller.GetInputHandlers().uiToggle.SetKey(tmpk);
+
+						ui.toggleKeys->key = tmpk;
+						ui.toggleKeys.mark(true);
+
+						config.mark_dirty();
 					}
+
+					UICommon::PopDisabled(disabled);
 
 					ImGui::Spacing();
 					ImGui::Unindent();

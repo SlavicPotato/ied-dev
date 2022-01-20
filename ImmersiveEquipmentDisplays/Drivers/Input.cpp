@@ -62,7 +62,7 @@ namespace IED
 						continue;
 					}
 
-					if (keyCode >= InputMap::kMaxMacros)
+					if (!keyCode || keyCode >= InputMap::kMaxMacros)
 					{
 						continue;
 					}
@@ -120,7 +120,7 @@ namespace IED
 
 					std::uint32_t keyCode = buttonEvent->keyMask;
 
-					if (keyCode >= InputMap::kMaxMacros)
+					if (!keyCode || keyCode >= InputMap::kMaxMacros)
 					{
 						continue;
 					}

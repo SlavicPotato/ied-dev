@@ -28,6 +28,37 @@ namespace IED
 
 	static bool s_loaded = false;
 
+	static bool SetLocaleFromLang()
+	{
+		auto e = *g_iniSettingCollection;
+		if (!e)
+		{
+			return false;
+		}
+
+		auto f = e->Get("sLanguage:General");
+		if (!f)
+		{
+			return false;
+		}
+
+		if (f->GetType() != Setting::kType_String)
+		{
+			return false;
+		}
+
+		if (f->data.s)
+		{
+			LocaleData::GetSingleton()->SetFromLang(f->data.s);
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	static void SKSE_MessageHandler(SKSEMessagingInterface::Message* a_message)
 	{
 		switch (a_message->type)
@@ -35,16 +66,9 @@ namespace IED
 		case SKSEMessagingInterface::kMessage_DataLoaded:
 			{
 				LocaleData::CreateSingleton();
-
-				if (auto e = *g_iniSettingCollection)
+				if (!SetLocaleFromLang())
 				{
-					if (auto f = e->Get("sLanguage:General"))
-					{
-						if (f->GetType() == Setting::kType_String && f->data.s)
-						{
-							LocaleData::GetSingleton()->SetFromLang(f->data.s);
-						}
-					}
+					LocaleData::GetSingleton()->SetFromLang("english");
 				}
 
 				ASSERT(Data::IData::PopulateRaceList());
@@ -80,7 +104,6 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
-			LocaleData::CreateSingleton();
 			OverrideNodeInfo::Create();
 			g_controller->InitializeStrings();
 

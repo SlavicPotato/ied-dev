@@ -99,11 +99,16 @@ namespace IED
 				break;
 			}
 
-			if (!controlsParser.Parse(
-					data["toggle_keys"],
-					a_out.toggleKeys))
+			if (auto& keys = data["toggle_keys"])
 			{
-				return false;
+				if (!controlsParser.Parse(
+						keys,
+						*a_out.toggleKeys))
+				{
+					return false;
+				}
+
+				a_out.toggleKeys.mark(true);
 			}
 
 			a_out.enableRestrictions = data.get("enable_restrictions", false).asBool();
@@ -177,7 +182,10 @@ namespace IED
 
 			data["last_editor_panel"] = stl::underlying(a_data.lastPanel);
 
-			controlsParser.Create(a_data.toggleKeys, data["toggle_keys"]);
+			if (a_data.toggleKeys)
+			{
+				controlsParser.Create(*a_data.toggleKeys, data["toggle_keys"]);
+			}
 
 			data["enable_restrictions"] = a_data.enableRestrictions;
 			data["enable_control_lock"] = a_data.enableControlLock;

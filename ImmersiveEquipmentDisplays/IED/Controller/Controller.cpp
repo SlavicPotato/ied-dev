@@ -167,17 +167,18 @@ namespace IED
 
 		InitializeSound();
 
-		if (!settings.playerBlockKeys)
+		if (settings.playerBlockKeys)
 		{
-			settings.playerBlockKeys.comboKey =
-				m_iniconf->m_toggleBlockKeys.GetComboKey();
-			settings.playerBlockKeys.key =
-				m_iniconf->m_toggleBlockKeys.GetKey();
+			m_inputHandlers.playerBlock.SetKeys(
+				settings.playerBlockKeys->comboKey,
+				settings.playerBlockKeys->key);
 		}
-
-		m_inputHandlers.playerBlock.SetKeys(
-			settings.playerBlockKeys.comboKey,
-			settings.playerBlockKeys.key);
+		else
+		{
+			m_inputHandlers.playerBlock.SetKeys(
+				m_iniconf->m_toggleBlockKeys.GetComboKey(),
+				m_iniconf->m_toggleBlockKeys.GetKey());
+		}
 
 		InitializeLocalization();
 		InitializeConfig();
@@ -271,31 +272,36 @@ namespace IED
 		UISetLock(config.ui.enableControlLock);
 		UISetEnabledInMenu(m_iniconf->m_uiEnableInMenu);
 
-		if (!config.ui.toggleKeys.Has())
-		{
-			config.ui.toggleKeys.comboKey =
-				m_iniconf->m_toggleUIKeys.GetComboKey();
-			config.ui.toggleKeys.key =
-				m_iniconf->m_toggleUIKeys.GetKey();
-
-			if (!config.ui.toggleKeys.Has())
-			{
-				config.ui.toggleKeys = { DIK_LSHIFT, DIK_PGDN };
-			}
-		}
-
 		if (m_iniconf->m_forceUIToggleKeys &&
 		    m_iniconf->m_toggleUIKeys.Has())
 		{
 			m_inputHandlers.uiToggle.SetKeys(
 				m_iniconf->m_toggleUIKeys.GetComboKey(),
 				m_iniconf->m_toggleUIKeys.GetKey());
+
+			m_iniKeysForced = true;
 		}
 		else
 		{
+			if (config.ui.toggleKeys)
+			{
+				m_inputHandlers.uiToggle.SetKeys(
+					config.ui.toggleKeys->comboKey,
+					config.ui.toggleKeys->key);
+			}
+			else if (m_iniconf->m_toggleUIKeys.Has())
+			{
+				m_inputHandlers.uiToggle.SetKeys(
+					m_iniconf->m_toggleUIKeys.GetComboKey(),
+					m_iniconf->m_toggleUIKeys.GetKey());
+			}
+		}
+
+		if (!m_inputHandlers.uiToggle.Enabled())
+		{
 			m_inputHandlers.uiToggle.SetKeys(
-				config.ui.toggleKeys.comboKey,
-				config.ui.toggleKeys.key);
+				DIK_LSHIFT,
+				DIK_BACKSPACE);
 		}
 
 		if (!Math::IsEqual(config.ui.scale, 1.0f))

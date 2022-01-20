@@ -116,7 +116,7 @@ namespace IED
 
 				UI::UIEditorPanel lastPanel;
 
-				ConfigKeyPair toggleKeys;
+				stl::optional<ConfigKeyPair> toggleKeys;
 
 				bool enableControlLock{ true };
 				bool enableRestrictions{ false };
@@ -143,7 +143,7 @@ namespace IED
 			{
 				UserInterface ui;
 
-				ConfigKeyPair playerBlockKeys;
+				stl::optional<ConfigKeyPair> playerBlockKeys;
 				Data::ConfigSound<Game::FormID> sound;
 
 				bool hideEquipped{ false };

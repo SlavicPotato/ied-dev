@@ -43,8 +43,6 @@ namespace IED
 
 		static std::string ToUTF8(const char* a_in);
 
-		std::string ToUTF8Impl(const char* a_in);
-
 	private:
 
 		stl::optional<std::locale> m_current;

@@ -1,8 +1,8 @@
 #include "pch.h"
 
+#include "JSONConfigKeyPairParser.h"
 #include "JSONConfigSoundParser.h"
 #include "JSONNodeMapParser.h"
-#include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsHolder.h"
 #include "JSONSettingsUserInterfaceParser.h"
 
@@ -30,11 +30,16 @@ namespace IED
 				return false;
 			}
 
-			if (!controlsParser.Parse(
-					data["player_block_keys"],
-					a_out.playerBlockKeys))
+			if (auto& keys = data["player_block_keys"])
 			{
-				return false;
+				if (!controlsParser.Parse(
+						data["player_block_keys"],
+						*a_out.playerBlockKeys))
+				{
+					return false;
+				}
+
+				a_out.playerBlockKeys.mark(true);
 			}
 
 			if (!soundParser.Parse(
@@ -74,7 +79,12 @@ namespace IED
 			Parser<Data::ConfigSound<Game::FormID>> soundParser(m_state);
 
 			uiParser.Create(a_data.ui, data["ui"]);
-			controlsParser.Create(a_data.playerBlockKeys, data["player_block_keys"]);
+
+			if (a_data.playerBlockKeys)
+			{
+				controlsParser.Create(*a_data.playerBlockKeys, data["player_block_keys"]);
+			}
+
 			soundParser.Create(a_data.sound, data["sound"]);
 
 			data["toggle_keep_loaded"] = a_data.toggleKeepLoaded;

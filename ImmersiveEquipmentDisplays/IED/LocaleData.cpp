@@ -24,34 +24,29 @@ namespace IED
 			{
 			}
 		}
-		
+
+		// in SE all other language strings are UTF-8 encoded, assume no conversion is necessary
 	}
 
 	std::string LocaleData::ToUTF8(const char* a_in)
 	{
 		if (m_Instance)
 		{
-			return m_Instance->ToUTF8Impl(a_in);
-		}
-		else
-		{
-			return a_in;
-		}
-	}
-
-	std::string LocaleData::ToUTF8Impl(const char* a_in)
-	{
-		try
-		{
-			using namespace boost::locale;
-
-			if (m_current)
+			try
 			{
-				return conv::to_utf<char>(a_in, *m_current, conv::skip);
+				if (m_Instance->m_current)
+				{
+					using namespace boost::locale;
+
+					return conv::to_utf<char>(
+						a_in,
+						*m_Instance->m_current,
+						conv::skip);
+				}
 			}
-		}
-		catch (...)
-		{
+			catch (...)
+			{
+			}
 		}
 
 		return a_in;

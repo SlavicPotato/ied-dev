@@ -458,6 +458,11 @@ namespace IED
 		{
 			return m_forceDefaultConfig;
 		}
+		
+		[[nodiscard]] inline constexpr auto UIGetIniKeysForced() const noexcept
+		{
+			return m_iniKeysForced;
+		}
 
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
@@ -871,6 +876,7 @@ namespace IED
 		bool m_nodeOverridePlayerEnabled{ false };
 		bool m_forceDefaultConfig{ false };
 		bool m_npcProcessingDisabled{ false };
+		bool m_iniKeysForced{ false };
 
 		struct
 		{
