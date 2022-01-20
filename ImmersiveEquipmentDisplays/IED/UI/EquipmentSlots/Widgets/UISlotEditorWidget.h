@@ -211,6 +211,12 @@ namespace IED
 
 			void DrawSlotFilter();
 
+			[[nodiscard]] inline static constexpr bool Is2HLeftSlot(Data::ObjectSlot a_slot)
+			{
+				return a_slot == Data::ObjectSlot::k2HAxeLeft ||
+				       a_slot == Data::ObjectSlot::k2HSwordLeft;
+			}
+
 		private:
 			UIGenericFilter m_slotFilter;
 			UIFormSelectorWidget m_formSelector;
@@ -607,6 +613,11 @@ namespace IED
 					for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 					{
 						auto slot = static_cast<Data::ObjectSlot>(i);
+
+						if (Is2HLeftSlot(slot))
+						{
+							continue;
+						}
 
 						auto& slotData = current.data->get(slot);
 						if (!slotData)
