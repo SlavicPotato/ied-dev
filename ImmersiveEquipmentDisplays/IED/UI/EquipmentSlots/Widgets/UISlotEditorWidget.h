@@ -768,6 +768,7 @@ namespace IED
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 					ImGui::TextWrapped(
+						"%s",
 						LS(UISlotEditorWidgetStrings::Left2HSlotWarning));
 					ImGui::PopStyleColor();
 
