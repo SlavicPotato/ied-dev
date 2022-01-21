@@ -211,10 +211,11 @@ namespace IED
 
 			void DrawSlotFilter();
 
-			[[nodiscard]] inline static constexpr bool Is2HLeftSlot(Data::ObjectSlot a_slot)
+			[[nodiscard]] inline static constexpr bool Is2HLeftSlot(
+				Data::ObjectSlot a_slot) noexcept
 			{
-				return a_slot == Data::ObjectSlot::k2HAxeLeft ||
-				       a_slot == Data::ObjectSlot::k2HSwordLeft;
+				return a_slot == Data::ObjectSlot::k2HSwordLeft ||
+				       a_slot == Data::ObjectSlot::k2HAxeLeft;
 			}
 
 		private:

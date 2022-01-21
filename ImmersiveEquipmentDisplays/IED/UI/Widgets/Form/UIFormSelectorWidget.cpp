@@ -225,7 +225,7 @@ namespace IED
 
 			auto& formBrowser = m_controller.UIGetFormBrowser();
 
-			if (ImGui::Button(LS(CommonStrings::Browse)))
+			if (ImGui::Button(LS(CommonStrings::Browse, "1")))
 			{
 				if (formBrowser.Open(true))
 				{

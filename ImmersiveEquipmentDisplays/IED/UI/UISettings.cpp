@@ -149,8 +149,6 @@ namespace IED
 
 						data.playerBlockKeys->comboKey = tmpk;
 						data.playerBlockKeys.mark(true);
-
-						config.mark_dirty();
 					}
 
 					tmpk = m_controller.GetInputHandlers().playerBlock.GetKey();
@@ -166,8 +164,6 @@ namespace IED
 
 						data.playerBlockKeys->key = tmpk;
 						data.playerBlockKeys.mark(true);
-
-						config.mark_dirty();
 					}
 
 					ImGui::TreePop();
@@ -311,8 +307,6 @@ namespace IED
 
 						ui.toggleKeys->comboKey = tmpk;
 						ui.toggleKeys.mark(true);
-
-						config.mark_dirty();
 					}
 
 					tmpk = m_controller.GetInputHandlers().uiToggle.GetKey();
@@ -326,8 +320,6 @@ namespace IED
 
 						ui.toggleKeys->key = tmpk;
 						ui.toggleKeys.mark(true);
-
-						config.mark_dirty();
 					}
 
 					UICommon::PopDisabled(disabled);
