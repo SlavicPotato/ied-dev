@@ -24,6 +24,7 @@ namespace IED
 			SelectCrosshairActor = 4413,
 			ClearFontSizeOverride = 4414,
 			ClearFontSizeOverridePrompt = 4415,
+			UIKeyOverrideWarning = 4416,
 		};
 	}
 }

@@ -950,6 +950,12 @@
     <ClInclude Include="IED\LocaleData.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1518,6 +1524,12 @@
     </ClCompile>
     <ClCompile Include="IED\LocaleData.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

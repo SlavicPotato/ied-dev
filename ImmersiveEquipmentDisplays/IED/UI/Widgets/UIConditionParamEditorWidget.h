@@ -7,6 +7,8 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
+#include "IED/ConfigOverrideCommon.h"
+
 namespace IED
 {
 	class Controller;
@@ -20,6 +22,7 @@ namespace IED
 		EquipmentSlot,
 		EquipmentSlotExtra,
 		Furniture,
+		QuestCondType,
 		Extra,
 
 		Total
@@ -113,6 +116,7 @@ namespace IED
 				Biped::BIPED_OBJECT biped{ Biped::BIPED_OBJECT::kNone };
 				Data::ObjectSlot slot{ Data::ObjectSlot::kMax };
 				Data::ObjectSlotExtra slotExtra{ Data::ObjectSlotExtra::kNone };
+				Data::QuestConditionType qcondType{ Data::QuestConditionType::kNone };
 
 				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
 			} m_tempData;
@@ -166,6 +170,14 @@ namespace IED
 				Ap == ConditionParamItem::EquipmentSlotExtra)
 			{
 				if constexpr (!std::is_same_v<T, Data::ObjectSlotExtra>)
+				{
+					static_assert(false);
+				}
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::QuestCondType)
+			{
+				if constexpr (!std::is_same_v<T, Data::QuestConditionType>)
 				{
 					static_assert(false);
 				}

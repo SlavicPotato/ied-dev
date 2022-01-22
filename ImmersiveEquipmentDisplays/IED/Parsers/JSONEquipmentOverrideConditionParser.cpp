@@ -2,6 +2,7 @@
 
 #include "JSONConfigBaseValuesParser.h"
 #include "JSONConfigCachedFormParser.h"
+#include "JSONEquipmentOverrideConditionGroupParser.h"
 #include "JSONEquipmentOverrideConditionParser.h"
 #include "JSONFormParser.h"
 
@@ -18,7 +19,7 @@ namespace IED
 			Parser<Game::FormID> formParser(m_state);
 			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
-			if (auto& v = a_in["form"]; !v.empty())
+			if (auto& v = a_in["form"])
 			{
 				if (!formParser.Parse(v, a_out.form))
 				{
@@ -27,7 +28,7 @@ namespace IED
 				}
 			}
 
-			if (auto& v = a_in["keyword"]; !v.empty())
+			if (auto& v = a_in["keyword"])
 			{
 				if (!cachedFormParser.Parse(v, a_out.keyword))
 				{
@@ -38,11 +39,18 @@ namespace IED
 
 			a_out.slot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
-			
-			a_out.bipedSlot = a_in.get("bslot", Biped::BIPED_OBJECT::kNone).asUInt();
+
+			a_out.ui32a = a_in.get("bslot", static_cast<std::uint32_t>(-1)).asUInt();
 
 			a_out.flags = static_cast<Data::EquipmentOverrideConditionFlags>(
 				a_in.get("flags", 0).asUInt());
+
+			Parser<Data::equipmentOverrideConditionGroup_t> gparser(m_state);
+
+			if (!gparser.Parse(a_in["group"], a_out.group))
+			{
+				return false;
+			}
 
 			return true;
 		}
@@ -66,9 +74,13 @@ namespace IED
 			}
 
 			a_out["type"] = stl::underlying(a_data.slot);
-			a_out["bslot"] = a_data.bipedSlot;
+			a_out["bslot"] = a_data.ui32a;
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
+
+			Parser<Data::equipmentOverrideConditionGroup_t> gparser(m_state);
+
+			gparser.Create(a_data.group, a_out["group"]);
 		}
 
 		template <>

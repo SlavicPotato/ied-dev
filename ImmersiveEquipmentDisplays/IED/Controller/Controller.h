@@ -46,14 +46,16 @@ namespace IED
 		public BSTEventSink<TESDeathEvent>,
 		public BSTEventSink<TESSwitchRaceCompleteEvent>,
 		public BSTEventSink<MenuOpenCloseEvent>,
-		public BSTEventSink<SKSENiNodeUpdateEvent>
+		public BSTEventSink<SKSENiNodeUpdateEvent>,
+		public BSTEventSink<TESQuestStartStopEvent>
 	{
 		enum class SerializationVersion : std::uint32_t
 		{
 			kDataVersion1 = 1,
 			kDataVersion2 = 2,
+			kDataVersion3 = 3,
 
-			kCurrentVersion = kDataVersion2
+			kCurrentVersion = kDataVersion3
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -809,6 +811,10 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const MenuOpenCloseEvent* evn,
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
+		
+		virtual EventResult ReceiveEvent(
+			const TESQuestStartStopEvent* evn,
+			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;
 
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
 		//void FillInitialConfig(Data::configStore_t& a_data) const;

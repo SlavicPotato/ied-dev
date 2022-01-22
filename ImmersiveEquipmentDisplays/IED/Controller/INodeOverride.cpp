@@ -651,7 +651,14 @@ namespace IED
 
 		for (auto& e : a_data)
 		{
-			result = match(e, a_params, a_ignoreNode);
+			if (e.fbf.type == Data::NodeOverrideConditionType::Group)
+			{
+				result = run_matches(e.group.conditions, a_params, a_default, a_ignoreNode);
+			}
+			else
+			{
+				result = match(e, a_params, a_ignoreNode);
+			}
 
 			if (e.flags.test(Data::NodeOverrideConditionFlags::kNot))
 			{

@@ -73,6 +73,14 @@ namespace IED
 				}
 			}
 
+			{
+				const auto& e = m_entries[stl::underlying(ConditionParamItem::QuestCondType)];
+				if (e.p1)
+				{
+					m_tempData.qcondType = *static_cast<Data::QuestConditionType*>(e.p1);
+				}
+			}
+
 			ImGui::OpenPopup("match_param_editor");
 		}
 
@@ -209,6 +217,20 @@ namespace IED
 					if (result)
 					{
 						*static_cast<Game::FormID*>(e.p1) = m_tempData.keyword;
+					}
+				}
+
+				if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
+				{
+					auto result = ImGui::RadioButton(
+						LS(CommonStrings::Complete, "qts"),
+						m_tempData.qcondType == Data::QuestConditionType::kComplete);
+
+					ImGui::Spacing();
+
+					if (result)
+					{
+						*static_cast<Data::QuestConditionType*>(e.p1) = m_tempData.qcondType;
 					}
 				}
 

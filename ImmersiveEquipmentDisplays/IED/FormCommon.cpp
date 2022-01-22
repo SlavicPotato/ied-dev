@@ -166,7 +166,8 @@ namespace IED
 		return a_form->keyword.c_str();
 	}
 
-	inline static const char* GetEditorID(TESRace* a_form)
+	template <class T>
+	inline static const char* GetEditorID(T* a_form)
 	{
 		return a_form->editorId.c_str();
 	}
@@ -211,6 +212,8 @@ namespace IED
 			return GetKeywordString(static_cast<BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
 			return GetEditorID(static_cast<TESRace*>(a_form));
+		case TESQuest::kTypeID:
+			return GetEditorID(static_cast<TESQuest*>(a_form));
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -328,6 +331,8 @@ namespace IED
 			return HasKeywordImpl<SpellItem>(a_form, a_keyword);
 		case TESRace::kTypeID:
 			return HasKeywordImpl<TESRace>(a_form, a_keyword);
+		case TESObjectACTI::kTypeID:
+			return HasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
 		default:
 			return false;
 		}

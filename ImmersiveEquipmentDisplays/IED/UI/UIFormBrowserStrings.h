@@ -29,6 +29,7 @@ namespace IED
 		Races = 5220,
 		Keywords = 5221,
 		Activators = 5222,
-		Sounds = 5223
+		Sounds = 5223,
+		Quests = 5224
 	};
 }

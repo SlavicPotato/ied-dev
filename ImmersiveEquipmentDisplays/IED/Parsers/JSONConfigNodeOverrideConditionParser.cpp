@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigCachedFormParser.h"
+#include "JSONConfigNodeOverrideConditionGroupParser.h"
 #include "JSONConfigNodeOverrideConditionParser.h"
 #include "JSONFormParser.h"
 
@@ -43,6 +44,13 @@ namespace IED
 			a_out.typeSlot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
+			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
+
+			if (!gparser.Parse(a_in["group"], a_out.group))
+			{
+				return false;
+			}
+
 			return true;
 		}
 
@@ -61,6 +69,10 @@ namespace IED
 
 			a_out["bip"] = a_data.bipedSlot;
 			a_out["type"] = stl::underlying(a_data.typeSlot);
+
+			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
+
+			gparser.Create(a_data.group, a_out["group"]);
 		}
 
 		template <>

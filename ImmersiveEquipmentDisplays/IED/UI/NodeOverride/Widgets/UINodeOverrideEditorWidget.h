@@ -297,7 +297,8 @@ namespace IED
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
 				const Tp& a_params,
-				const bool a_exists);
+				const bool a_exists,
+				bool a_isnested);
 
 			void DrawOverrideOffsetAdjust(
 				T a_handle,
@@ -2099,7 +2100,8 @@ namespace IED
 						a_data,
 						a_entry,
 						a_params,
-						a_exists);
+						a_exists,
+						false);
 
 					ImGui::Spacing();
 				}
@@ -2657,10 +2659,24 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "A")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Group);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "A")))
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "B")))
 				{
 					a_entry.clear();
 
@@ -2675,7 +2691,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "B")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "C")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2683,7 +2699,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideConditionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "C"),
+						LS(CommonStrings::PasteOver, "D"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -2719,9 +2735,21 @@ namespace IED
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
 			const Tp& a_params,
-			const bool a_exists)
+			const bool a_exists,
+			bool a_isnested)
 		{
-			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5.f, 5.f });
+			if (a_isnested)
+			{
+				ImGui::PushStyleVar(
+					ImGuiStyleVar_CellPadding,
+					{ 2.f, 2.f });
+			}
+			else
+			{
+				ImGui::PushStyleVar(
+					ImGuiStyleVar_CellPadding,
+					{ 5.f, 5.f });
+			}
 
 			constexpr int NUM_COLUMNS = 5;
 
@@ -2733,7 +2761,16 @@ namespace IED
 			}
 			else
 			{
-				width = ImGui::GetFontSize() * 29.0f;
+				if (a_isnested)
+				{
+					width = -1.0f;
+				}
+				else
+				{
+					width = std::max(
+						ImGui::GetFontSize() * 30.0f,
+						ImGui::GetContentRegionAvail().x - ImGui::GetFontSize());
+				}
 			}
 
 			if (ImGui::BeginTable(
@@ -2743,7 +2780,7 @@ namespace IED
 						ImGuiTableFlags_Resizable |
 						ImGuiTableFlags_NoSavedSettings |
 						ImGuiTableFlags_SizingStretchProp,
-					{ width, 0.f }))
+					{ width, 0.0f }))
 			{
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 4.0f);
 				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_None, 40.0f);
@@ -2819,6 +2856,7 @@ namespace IED
 							break;
 
 						case Data::NodeOverrideConditionType::Furniture:
+						case Data::NodeOverrideConditionType::Group:
 
 							it = a_entry.emplace(
 								it,
@@ -2862,139 +2900,167 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 
-						m_matchParamEditor.Reset();
-
-						UpdateMatchParamAllowedTypes(e.fbf.type);
-
-						const char* tdesc;
-						const char* vdesc;
-
-						switch (e.fbf.type)
+						if (e.fbf.type == Data::NodeOverrideConditionType::Group)
 						{
-						case Data::NodeOverrideConditionType::Node:
+							ImGui::TextUnformatted(LS(CommonStrings::Group));
 
-							m_matchParamEditor.SetNext<ConditionParamItem::CMENode>(
-								e.node,
-								a_params.name);
+							ImGui::TableSetColumnIndex(2);
 
-							tdesc = LS(CommonStrings::Node);
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::CMENode);
+							ImGui::PushID("cond_grp");
 
-							break;
-						case Data::NodeOverrideConditionType::Form:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
-								e.form.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
-							tdesc = LS(CommonStrings::Form);
-
-							break;
-						case Data::NodeOverrideConditionType::Keyword:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-
-							tdesc = LS(CommonStrings::Keyword);
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Keyword);
-
-							break;
-						case Data::NodeOverrideConditionType::BipedSlot:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::BipedSlot>(
-								e.bipedSlot);
-							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
-								e.form.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::BipedSlot);
-							tdesc = LS(CommonStrings::Biped);
-
-							break;
-						case Data::NodeOverrideConditionType::Type:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::EquipmentSlotExtra>(
-								e.typeSlot);
-							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
-								e.form.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::EquipmentSlotExtra);
-							tdesc = LS(CommonStrings::Type);
-
-							break;
-						case Data::NodeOverrideConditionType::Race:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
-								e.form.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
-							tdesc = LS(CommonStrings::Race);
-
-							break;
-						case Data::NodeOverrideConditionType::Furniture:
-
-							m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
-								e);
-							m_matchParamEditor.SetNext<ConditionParamItem::Form>(
-								e.form.get_id());
-							m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
-								e.keyword.get_id());
-
-							vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Furniture);
-							tdesc = LS(CommonStrings::Furniture);
-
-							break;
-						default:
-							tdesc = nullptr;
-							vdesc = nullptr;
-							break;
-						}
-
-						if (!vdesc)
-						{
-							vdesc = "N/A";
-						}
-
-						ImGui::Text("%s", tdesc);
-
-						ImGui::TableSetColumnIndex(2);
-
-						bool result = ImGui::Selectable(
-							LMKID<2>(vdesc, "sel_ctl"),
-							false,
-							ImGuiSelectableFlags_DontClosePopups);
-
-						UICommon::ToolTip(vdesc);
-
-						if (result)
-						{
-							m_matchParamEditor.OpenConditionParamEditorPopup();
-						}
-
-						if (m_matchParamEditor.DrawConditionParamEditorPopup())
-						{
-							HandleValueUpdate(
+							const auto result = DrawOverrideConditionHeaderContextMenu(
 								a_handle,
 								a_data,
+								e.group.conditions,
 								a_params,
 								a_exists);
+
+							DrawOverrideConditionTable(
+								a_handle,
+								a_data,
+								e.group.conditions,
+								a_params,
+								a_exists,
+								true);
+
+							ImGui::PopID();
+						}
+						else
+						{
+							m_matchParamEditor.Reset();
+
+							UpdateMatchParamAllowedTypes(e.fbf.type);
+
+							const char* tdesc;
+							const char* vdesc;
+
+							switch (e.fbf.type)
+							{
+							case Data::NodeOverrideConditionType::Node:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::CMENode>(
+									e.node,
+									a_params.name);
+
+								tdesc = LS(CommonStrings::Node);
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::CMENode);
+
+								break;
+							case Data::NodeOverrideConditionType::Form:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Form);
+
+								break;
+							case Data::NodeOverrideConditionType::Keyword:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								tdesc = LS(CommonStrings::Keyword);
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Keyword);
+
+								break;
+							case Data::NodeOverrideConditionType::BipedSlot:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::BipedSlot>(
+									e.bipedSlot);
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::BipedSlot);
+								tdesc = LS(CommonStrings::Biped);
+
+								break;
+							case Data::NodeOverrideConditionType::Type:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::EquipmentSlotExtra>(
+									e.typeSlot);
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::EquipmentSlotExtra);
+								tdesc = LS(CommonStrings::Type);
+
+								break;
+							case Data::NodeOverrideConditionType::Race:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Race);
+
+								break;
+							case Data::NodeOverrideConditionType::Furniture:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_matchParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Furniture);
+								tdesc = LS(CommonStrings::Furniture);
+
+								break;
+							default:
+								tdesc = nullptr;
+								vdesc = nullptr;
+								break;
+							}
+
+							if (!vdesc)
+							{
+								vdesc = "N/A";
+							}
+
+							ImGui::Text("%s", tdesc);
+
+							ImGui::TableSetColumnIndex(2);
+
+							bool result = ImGui::Selectable(
+								LMKID<2>(vdesc, "sel_ctl"),
+								false,
+								ImGuiSelectableFlags_DontClosePopups);
+
+							UICommon::ToolTip(vdesc);
+
+							if (result)
+							{
+								m_matchParamEditor.OpenConditionParamEditorPopup();
+							}
+
+							if (m_matchParamEditor.DrawConditionParamEditorPopup())
+							{
+								HandleValueUpdate(
+									a_handle,
+									a_data,
+									a_params,
+									a_exists);
+							}
 						}
 
 						ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
@@ -3469,10 +3535,18 @@ namespace IED
 						ImGui::CloseCurrentPopup();
 					}
 
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "A")))
+					{
+						result.action = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Group;
+
+						ImGui::CloseCurrentPopup();
+					}
+
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "A")))
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "B")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}

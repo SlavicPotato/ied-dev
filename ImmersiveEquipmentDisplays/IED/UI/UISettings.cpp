@@ -290,9 +290,13 @@ namespace IED
 					ImGui::Indent();
 					ImGui::Spacing();
 
-					bool disabled = m_controller.UIGetIniKeysForced();
-
-					UICommon::PushDisabled(disabled);
+					if (m_controller.UIGetIniKeysForced())
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+						ImGui::TextWrapped("%s", LS(UISettingsStrings::UIKeyOverrideWarning));
+						ImGui::PopStyleColor();
+						ImGui::Spacing();
+					}
 
 					auto tmpk = m_controller.GetInputHandlers().uiToggle.GetComboKey();
 
@@ -321,8 +325,6 @@ namespace IED
 						ui.toggleKeys->key = tmpk;
 						ui.toggleKeys.mark(true);
 					}
-
-					UICommon::PopDisabled(disabled);
 
 					ImGui::Spacing();
 					ImGui::Unindent();

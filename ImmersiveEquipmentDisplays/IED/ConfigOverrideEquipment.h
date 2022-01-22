@@ -15,7 +15,6 @@ namespace IED
 			kConditionInventory = 1u << 1,
 			kMatchSlots = 1u << 2,
 			kBothMustMatch = 1u << 3
-
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideFlags);
@@ -52,7 +51,9 @@ namespace IED
 			Keyword,
 			Race,
 			Furniture,
-			BipedSlot
+			BipedSlot,
+			Group,
+			Quest
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -63,6 +64,39 @@ namespace IED
 
 		static_assert(sizeof(EquipmentOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
 
+		struct equipmentOverrideCondition_t;
+
+		enum class EquipmentOverrideConditionGroupFlags : std::uint32_t
+		{
+			kNone = 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideConditionGroupFlags);
+
+		using equipmentOverrideConditionList_t = std::vector<equipmentOverrideCondition_t>;
+
+		struct equipmentOverrideConditionGroup_t
+		{
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			stl::flag<EquipmentOverrideConditionGroupFlags> flags{ EquipmentOverrideConditionGroupFlags::kNone };
+			equipmentOverrideConditionList_t conditions;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& flags.value;
+				ar& conditions;
+			}
+		};
+
 		struct equipmentOverrideCondition_t
 		{
 			friend class boost::serialization::access;
@@ -71,7 +105,8 @@ namespace IED
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
-				DataVersion2 = 2
+				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			equipmentOverrideCondition_t() = default;
@@ -88,6 +123,11 @@ namespace IED
 				{
 					form = a_form;
 					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
+				}
+				else if (a_type == EquipmentOverrideConditionType::Quest)
+				{
+					keyword = a_form;
+					questCondType = QuestConditionType::kComplete;
 				}
 				else if (a_type == EquipmentOverrideConditionType::Keyword)
 				{
@@ -109,7 +149,7 @@ namespace IED
 			{
 				fbf.type = EquipmentOverrideConditionType::Type;
 			}
-			
+
 			equipmentOverrideCondition_t(
 				Biped::BIPED_OBJECT a_slot) :
 				bipedSlot(a_slot)
@@ -120,7 +160,8 @@ namespace IED
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
 			{
-				if (a_matchType == EquipmentOverrideConditionType::Furniture)
+				if (a_matchType == EquipmentOverrideConditionType::Furniture ||
+				    a_matchType == EquipmentOverrideConditionType::Group)
 				{
 					fbf.type = a_matchType;
 				}
@@ -137,9 +178,18 @@ namespace IED
 			};
 
 			configForm_t form;
-			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 			configCachedForm_t keyword;
-			std::uint32_t bipedSlot{ stl::underlying(Biped::kNone) };
+			
+			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
+
+			union
+			{
+				std::uint32_t ui32a{ static_cast<std::uint32_t>(-1) };
+				QuestConditionType questCondType;
+				std::uint32_t bipedSlot;
+			};
+
+			equipmentOverrideConditionGroup_t group;
 
 		private:
 			template <class Archive>
@@ -149,7 +199,8 @@ namespace IED
 				ar& form;
 				ar& slot;
 				ar& keyword;
-				ar& bipedSlot;
+				ar& ui32a;
+				ar& group;
 			}
 
 			template <class Archive>
@@ -162,14 +213,17 @@ namespace IED
 
 				if (version >= DataVersion2)
 				{
-					ar& bipedSlot;
+					ar& ui32a;
+
+					if (version >= DataVersion3)
+					{
+						ar& group;
+					}
 				}
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
-
-		using equipmentOverrideConditionList_t = std::vector<equipmentOverrideCondition_t>;
 
 		struct equipmentOverride_t :
 			public configBaseValues_t
@@ -225,5 +279,9 @@ BOOST_CLASS_VERSION(
 	IED::Data::equipmentOverride_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
+	IED::Data::equipmentOverrideConditionGroup_t,
+	IED::Data::equipmentOverrideConditionGroup_t::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
 	IED::Data::equipmentOverrideCondition_t,
-	IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion2);
+	IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion3);

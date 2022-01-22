@@ -259,8 +259,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Fonts\IGlyphData.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
     <ClInclude Include="IED\LocaleData.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\UI\UIAboutModal.h" />
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
@@ -528,8 +530,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Fonts\IGlyphData.cpp" />
     <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />

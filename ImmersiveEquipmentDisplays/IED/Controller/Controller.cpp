@@ -108,6 +108,7 @@ namespace IED
 			edl->AddEventSink<TESFurnitureEvent>(this);
 			edl->AddEventSink<TESDeathEvent>(this);
 			edl->AddEventSink<TESSwitchRaceCompleteEvent>(this);
+			//edl->AddEventSink<TESQuestStartStopEvent>(this);
 
 			return true;
 		}
@@ -4501,6 +4502,13 @@ namespace IED
 			}
 		}
 
+		return EventResult::kContinue;
+	}
+
+	EventResult IED::Controller::ReceiveEvent(
+		const TESQuestStartStopEvent* a_evn,
+		BSTEventSource<TESQuestStartStopEvent>* a_dispatcher)
+	{
 		return EventResult::kContinue;
 	}
 

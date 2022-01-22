@@ -72,13 +72,49 @@ namespace IED
 			BipedSlot,
 			Type,
 			Race,
-			Furniture
+			Furniture,
+			Group
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
 		{
 			NodeOverrideConditionType type: 5 { NodeOverrideConditionType::Node };
 			std::uint32_t unused: 27 { 0 };
+		};
+
+		static_assert(sizeof(NodeOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
+
+		struct configNodeOverrideCondition_t;
+
+		enum class NodeOverrideConditionGroupFlags : std::uint32_t
+		{
+			kNone = 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionGroupFlags);
+
+		using configNodeOverrideConditionList_t = std::vector<configNodeOverrideCondition_t>;
+
+		struct configNodeOverrideConditionGroup_t
+		{
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			stl::flag<NodeOverrideConditionGroupFlags> flags{ NodeOverrideConditionGroupFlags::kNone };
+			configNodeOverrideConditionList_t conditions;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				ar& flags.value;
+				ar& conditions;
+			}
 		};
 
 		struct configNodeOverrideCondition_t
@@ -88,7 +124,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			inline configNodeOverrideCondition_t()
@@ -125,12 +162,15 @@ namespace IED
 			configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type)
 			{
-				if (a_type != NodeOverrideConditionType::Furniture)
+				if (a_type == NodeOverrideConditionType::Furniture ||
+				    a_type == NodeOverrideConditionType::Group)
+				{
+					fbf.type = a_type;
+				}
+				else
 				{
 					HALT("FIXME");
 				}
-
-				fbf.type = a_type;
 			}
 
 			inline configNodeOverrideCondition_t(
@@ -173,10 +213,11 @@ namespace IED
 			configCachedForm_t keyword;
 			std::uint32_t bipedSlot{ stl::underlying(Biped::kNone) };
 			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
+			configNodeOverrideConditionGroup_t group;
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void save(Archive& ar, const unsigned int version) const
 			{
 				ar& flags.value;
 				ar& node;
@@ -184,10 +225,27 @@ namespace IED
 				ar& keyword;
 				ar& bipedSlot;
 				ar& typeSlot;
+				ar& group;
 			}
-		};
 
-		using configNodeOverrideConditionList_t = std::vector<configNodeOverrideCondition_t>;
+			template <class Archive>
+			void load(Archive& ar, const unsigned int version)
+			{
+				ar& flags.value;
+				ar& node;
+				ar& form;
+				ar& keyword;
+				ar& bipedSlot;
+				ar& typeSlot;
+
+				if (version >= DataVersion2)
+				{
+					ar& group;
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
+		};
 
 		enum class NodeOverrideOffsetFlags : std::uint32_t
 		{
@@ -690,8 +748,12 @@ BOOST_CLASS_VERSION(
 	IED::Data::configNodeOverrideOffset_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
+	IED::Data::configNodeOverrideConditionGroup_t,
+	IED::Data::configNodeOverrideConditionGroup_t::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
 	IED::Data::configNodeOverrideCondition_t,
-	IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion1);
+	IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	IED::Data::configNodeOverrideValues_t,

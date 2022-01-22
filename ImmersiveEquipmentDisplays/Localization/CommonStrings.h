@@ -158,5 +158,7 @@ namespace IED
 		Default = 229,
 		User = 230,
 		Extra = 231,
+		Quest = 232,
+		Complete = 233,
 	};
 }

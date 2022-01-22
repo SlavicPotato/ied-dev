@@ -112,7 +112,7 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID m_hlForm;
 
-			std::array<TabItem, 24> m_tabItems;
+			std::array<TabItem, 25> m_tabItems;
 
 			//select_callback_t m_current;
 

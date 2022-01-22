@@ -220,6 +220,26 @@ namespace IED
 			return true;
 		}
 
+		static bool match_quest(
+			CommonParams& a_params,
+			const equipmentOverrideCondition_t& a_match)
+		{
+			auto form = a_match.keyword.get_form<TESQuest>();
+			if (!form)
+			{
+				return false;
+			}
+
+			if (a_match.questCondType == Data::QuestConditionType::kComplete)
+			{
+				return form->questData.flags.test_any(TESQuest::QuestFlag::kCompleted);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		constexpr bool configBase_t::match_equipped_type(
 			const collectorData_t& a_data,
 			const equipmentOverrideCondition_t& a_match)
@@ -512,6 +532,10 @@ namespace IED
 			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Quest:
+
+				return match_quest(a_params, a_match);
 			}
 
 			return false;
@@ -527,7 +551,14 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				result = match(a_data, f, a_params);
+				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				{
+					result = match(a_data, f.group.conditions, a_params, a_default);
+				}
+				else
+				{
+					result = match(a_data, f, a_params);
+				}
 
 				if (f.flags.test(EquipmentOverrideConditionFlags::kNot))
 				{
@@ -717,6 +748,10 @@ namespace IED
 			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Quest:
+
+				return match_quest(a_params, a_match);
 			}
 
 			return false;
@@ -733,7 +768,14 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				result = match(a_cdata, a_data, f, a_params);
+				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				{
+					result = match(a_cdata, a_data, f.group.conditions, a_params, a_default);
+				}
+				else
+				{
+					result = match(a_cdata, a_data, f, a_params);
+				}
 
 				if (f.flags.test(EquipmentOverrideConditionFlags::kNot))
 				{
@@ -916,6 +958,10 @@ namespace IED
 			case EquipmentOverrideConditionType::BipedSlot:
 
 				return match_biped(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Quest:
+
+				return match_quest(a_params, a_match);
 			}
 
 			return false;
@@ -932,7 +978,14 @@ namespace IED
 
 			for (auto& f : a_matches)
 			{
-				result = match(a_data, f, a_checkForm, a_params);
+				if (f.fbf.type == EquipmentOverrideConditionType::Group)
+				{
+					result = match(a_data, f.group.conditions, a_checkForm, a_params, a_default);
+				}
+				else
+				{
+					result = match(a_data, f, a_checkForm, a_params);
+				}
 
 				if (f.flags.test(EquipmentOverrideConditionFlags::kNot))
 				{

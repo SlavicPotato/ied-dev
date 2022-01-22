@@ -150,6 +150,12 @@ namespace IED
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
+		enum class QuestConditionType : std::uint32_t
+		{
+			kNone = static_cast<std::underlying_type_t<QuestConditionType>>(-1),
+
+			kComplete = 0,
+		};
 	}
 }
 
@@ -542,6 +548,7 @@ namespace IED
 		mutable const mapped_type* npc;
 		mutable const mapped_type* race;
 	};
+
 }
 
 BOOST_CLASS_VERSION(
