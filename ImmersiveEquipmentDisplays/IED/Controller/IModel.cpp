@@ -157,70 +157,30 @@ namespace IED
 				}
 				else
 				{
-					if (a_useArma)
+					auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
+					auto path = texSwap->GetModelName();
+
+					if (!path || path[0] == 0)
 					{
-						auto armas = std::make_unique<std::vector<TESObjectARMA*>>();
+						texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
+						path = texSwap->GetModelName();
+					}
 
-						for (auto arma : armor->armorAddons)
-						{
-							if (!arma)
-							{
-								continue;
-							}
-
-							if (!arma->isValidRace(a_race))
-							{
-								continue;
-							}
-
-							armas->emplace_back(arma);
-						}
-
-						if (armas->empty())
-						{
-							return false;
-						}
-						else
-						{
-							a_out = {
-								ModelType::kArmor,
-								nullptr,
-								nullptr,
-								false,
-								nullptr,
-								std::move(armas)
-							};
-
-							return true;
-						}
+					if (!path || path[0] == 0)
+					{
+						return false;
 					}
 					else
 					{
-						auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
-						auto path = texSwap->GetModelName();
+						a_out = {
+							ModelType::kArmor,
+							path,
+							texSwap,
+							false,
+							nullptr
+						};
 
-						if (!path || path[0] == 0)
-						{
-							texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
-							path = texSwap->GetModelName();
-						}
-
-						if (!path || path[0] == 0)
-						{
-							return false;
-						}
-						else
-						{
-							a_out = {
-								ModelType::kArmor,
-								path,
-								texSwap,
-								false,
-								nullptr
-							};
-
-							return true;
-						}
+						return true;
 					}
 				}
 			}

@@ -14,7 +14,6 @@ namespace IED
 			TESModelTextureSwap* swap{ nullptr };
 			bool isShield{ false };
 			TESObjectARMA* arma{ nullptr };
-			std::unique_ptr<std::vector<TESObjectARMA*>> armas;
 		};
 
 		template <

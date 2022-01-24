@@ -2,7 +2,7 @@
 
 #include "UIDescriptionPopup.h"
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
 
 namespace IED
 {
@@ -30,7 +30,8 @@ namespace IED
 			m_buffer.clear();
 		}
 
-		void UIDescriptionPopupWidget::SetDescriptionPopupBuffer(const std::string& a_text)
+		void UIDescriptionPopupWidget::SetDescriptionPopupBuffer(
+			const std::string& a_text)
 		{
 			m_buffer = a_text;
 		}

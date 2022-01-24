@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigOverrideBase.h"
+#include "ConfigOverrideModelGroup.h"
 
 namespace IED
 {
@@ -19,6 +20,7 @@ namespace IED
 			kIgnoreRaceEquipTypes = 1u << 6,
 			kDisableIfEquipped = 1u << 7,
 			kDisableCollision = 1u << 8,
+			kUseGroup = 1u << 9,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);
@@ -31,7 +33,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			static inline constexpr auto DEFAULT_CUSTOM_FLAGS = CustomFlags::kAlwaysUnload;
@@ -43,10 +46,26 @@ namespace IED
 			std::uint32_t priority{ 0 };
 			float chance{ 100.0f };
 			configFormList_t extraItems;
+			configModelGroup_t group;
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void save(Archive& ar, const unsigned int version) const
+			{
+				ar& static_cast<const configBase_t&>(*this);
+				ar& customFlags.value;
+				ar& form;
+				ar& modelForm;
+				ar& countRange.min;
+				ar& countRange.max;
+				ar& priority;
+				ar& chance;
+				ar& extraItems;
+				ar& group;
+			}
+
+			template <class Archive>
+			void load(Archive& ar, const unsigned int version)
 			{
 				ar& static_cast<configBase_t&>(*this);
 				ar& customFlags.value;
@@ -57,7 +76,14 @@ namespace IED
 				ar& priority;
 				ar& chance;
 				ar& extraItems;
+
+				if (version >= DataVersion2)
+				{
+					ar& group;
+				}
 			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		using configCustomEntry_t = configSexRoot_t<configCustom_t>;
@@ -65,7 +91,7 @@ namespace IED
 		struct configCustomNameValue_t
 		{
 			stl::fixed_string name;
-			ConfigSex sex;
+			ConfigSex sex{ ConfigSex::Male };
 			configCustomEntry_t data;
 		};
 
@@ -126,7 +152,6 @@ namespace IED
 			};
 
 		public:
-
 			template <class Tf>
 			void visit(Tf a_func)
 			{
@@ -156,7 +181,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configCustom_t,
-	IED::Data::configCustom_t::Serialization::DataVersion1);
+	IED::Data::configCustom_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	IED::Data::configCustomHolder_t,

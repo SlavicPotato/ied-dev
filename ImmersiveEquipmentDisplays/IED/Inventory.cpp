@@ -77,11 +77,10 @@ namespace IED
     }*/
 
 	ItemCandidateCollector::ItemCandidateCollector(
-		Actor* a_actor,
-		TESRace* a_race) :
+		Actor* a_actor) :
 		m_isPlayer(a_actor == *g_thePlayer),
 		m_pm(a_actor->processManager),
-		m_data(a_actor, a_race)
+		m_data(a_actor)
 	{
 		/*m_data.reserve(4000);
 		m_equipped.forms.reserve(50);*/
@@ -153,137 +152,6 @@ namespace IED
 		return true;
 	}
 
-	SKMP_FORCEINLINE static void AddEquippedForm(
-		ActorProcessManager* a_pm,
-		TESForm* a_form,
-		InventoryEntryData* a_entryData,
-		Data::collectorData_t& a_data)
-	{
-		auto type = Data::ItemData::GetItemTypeExtra(a_form);
-		if (type == Data::ObjectTypeExtra::kNone)
-		{
-			return;
-		}
-
-		bool left = false;
-		bool right = false;
-		bool cannotWear = false;
-
-		if (a_pm)
-		{
-			if (a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right] == a_form)
-			{
-				right = true;
-			}
-
-			if (a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left] == a_form)
-			{
-				left = true;
-			}
-		}
-
-		bool checkLeft = a_form->formType == TESObjectWEAP::kTypeID;
-
-		if (auto extendDataList = a_entryData->extendDataList)
-		{
-			for (auto it = extendDataList->Begin(); !it.End(); ++it)
-			{
-				auto extraDataList = *it;
-				if (!extraDataList)
-				{
-					continue;
-				}
-
-				if (cannotWear && right && (!checkLeft || left))
-				{
-					break;
-				}
-
-				BSReadLocker locker(std::addressof(extraDataList->m_lock));
-
-				auto presence = extraDataList->m_presence;
-				if (!presence)
-				{
-					continue;
-				}
-
-				if (!right)
-				{
-					right = presence->HasType(ExtraWorn::EXTRA_DATA);
-				}
-
-				if (checkLeft && !left)
-				{
-					left = presence->HasType(ExtraWornLeft::EXTRA_DATA);
-				}
-
-				if (!cannotWear)
-				{
-					cannotWear = presence->HasType(ExtraCannotWear::EXTRA_DATA);
-				}
-			}
-		}
-
-		if (right || left)
-		{
-			auto r = a_data.forms.try_emplace(a_form->formID, a_form);
-			r.first->second.extraEquipped.type = type;
-
-			r.first->second.equipped = right;
-			r.first->second.equippedLeft = left;
-			r.first->second.cannotWear = cannotWear;
-
-			auto slot = Data::ItemData::GetSlotFromTypeExtra(type);
-
-			if (right)
-			{
-				r.first->second.extraEquipped.slot = slot;
-
-				auto i = stl::underlying(slot);
-				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
-				{
-					a_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
-				}
-			}
-
-			if (left)
-			{
-				r.first->second.extraEquipped.slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
-
-				auto i = stl::underlying(r.first->second.extraEquipped.slotLeft);
-				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
-				{
-					a_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
-				}
-			}
-		}
-	}
-
-	/*bool ItemCandidateCollector::AddEquippedForms(
-		TESForm* a_form,
-		InventoryEntryData* a_entryData)
-	{
-		switch (a_form->formType)
-		{
-		case TESObjectARMO::kTypeID:
-		case TESObjectWEAP::kTypeID:
-		case TESAmmo::kTypeID:
-			break;
-		case TESObjectLIGH::kTypeID:
-			if (!static_cast<TESObjectLIGH*>(a_form)->CanCarry())
-			{
-				return false;
-			}
-			break;
-		default:
-			return true;
-		}
-
-		AddEquippedForm(a_form, a_entryData, m_equipped);
-
-		return true;
-	}*/
-
 	SKMP_FORCEINLINE static constexpr bool is_equippable(TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
@@ -297,29 +165,7 @@ namespace IED
 			return false;
 		}
 	}
-
-	/*SKMP_FORCEINLINE bool is_worn(InventoryEntryData* a_entryData) noexcept
-	{
-		if (auto extendDataList = a_entryData->extendDataList)
-		{
-			for (auto it = extendDataList->Begin(); !it.End(); ++it)
-			{
-				auto extraDataList = *it;
-				if (!extraDataList)
-				{
-					continue;
-				}
-
-				if (extraDataList->Has<ExtraWorn>())
-				{
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}*/
-
+	
 	bool ItemCandidateCollector::Accept(InventoryEntryData* a_entryData)
 	{
 		if (!a_entryData)
@@ -429,11 +275,6 @@ namespace IED
 			}
 		}
 
-		/*if (form->formType == TESObjectLIGH::kTypeID)
-		{
-			_DMESSAGE("%X %d %d", form->formID, r.equipped, r.equippedLeft);
-		}*/
-
 		if (r.equipped || r.equippedLeft)
 		{
 			if (extraType != Data::ObjectTypeExtra::kNone)
@@ -539,45 +380,6 @@ namespace IED
 					return a_lhs.damage > a_rhs.damage;
 				});
 		}
-	}
-
-	EquippedFormCollector::EquippedFormCollector(
-		Actor* a_actor,
-		TESRace* a_race) :
-		m_pm(a_actor->processManager),
-		m_data(a_actor, a_race)
-	{
-	}
-
-	bool EquippedFormCollector::Accept(InventoryEntryData* a_entryData)
-	{
-		if (!a_entryData)
-		{
-			return true;
-		}
-
-		auto form = a_entryData->type;
-
-		if (!form)
-		{
-			return true;
-		}
-
-		if (!IFormCommon::IsEquippableForm(form))
-		{
-			return true;
-		}
-
-		AddEquippedForm(m_pm, form, a_entryData, m_data);
-
-		return true;
-	}
-
-	EquippedArmorCollector::EquippedArmorCollector(
-		Actor* a_actor,
-		TESRace* a_race) :
-		m_data(a_actor, a_race)
-	{
 	}
 
 	void EquippedArmorCollector::Run()

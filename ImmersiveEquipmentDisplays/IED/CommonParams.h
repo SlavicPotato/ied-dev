@@ -8,6 +8,8 @@ namespace IED
 	struct CommonParams
 	{
 		Actor* actor;
+		TESNPC* npc;
+		TESRace* race;
 		mutable stl::optional<TESFurniture*> furniture;
 		mutable stl::optional<Game::ObjectRefHandle> furnHandle;
 		mutable stl::optional<bool> layingDown;

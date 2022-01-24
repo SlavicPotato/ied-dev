@@ -41,8 +41,7 @@ namespace IED
 
 	public:
 		ItemCandidateCollector(
-			Actor* a_actor,
-			TESRace *a_race);
+			Actor* a_actor);
 
 		void Run(
 			TESContainer& a_container,
@@ -71,18 +70,6 @@ namespace IED
 		//SKMP_FORCEINLINE bool AddEquippedForms(TESForm* a_form, InventoryEntryData* a_entryData);
 
 		bool m_isPlayer;
-		ActorProcessManager* m_pm;
-	};
-
-	struct EquippedFormCollector
-	{
-		EquippedFormCollector(Actor* a_actor, TESRace* a_race);
-
-		bool Accept(InventoryEntryData* a_entryData);
-
-		Data::collectorData_t m_data;
-
-	private:
 		ActorProcessManager* m_pm;
 	};
 

@@ -929,9 +929,6 @@
     <ClInclude Include="IED\Parsers\JSONFormFilterParser.h">
       <Filter>Source\IED\JSONParsers\FormFilter</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
-      <Filter>Source\IED\JSONParsers\Form</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h">
       <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
     </ClInclude>
@@ -955,6 +952,27 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideModelGroup.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h">
+      <Filter>Source\IED\UI\Custom\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Custom\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h">
+      <Filter>Source\IED\UI\Custom\Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1501,9 +1519,6 @@
     <ClCompile Include="IED\Parsers\JSONFormFilterParser.cpp">
       <Filter>Source\IED\JSONParsers\FormFilter</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
-      <Filter>Source\IED\JSONParsers\Form</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\Sound</Filter>
     </ClCompile>
@@ -1531,6 +1546,16 @@
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ProcessParams.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

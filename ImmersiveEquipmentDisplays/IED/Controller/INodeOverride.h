@@ -32,8 +32,6 @@ namespace IED
 
 		struct nodeOverrideParamsArgs_t
 		{
-			TESNPC* npc;
-			TESRace* race;
 			NiNode* npcRoot;
 			const ActorObjectHolder& objects;
 			Controller& controller;
@@ -177,6 +175,9 @@ namespace IED
 		static void ResetNodeOverride(
 			const cmeNodeEntry_t& a_entry);
 
+		static void ResetNodePlacement(
+			const weapNodeEntry_t& a_entry);
+
 	protected:
 		static void ApplyNodeOverride(
 			const cmeNodeEntry_t& a_entry,
@@ -188,14 +189,14 @@ namespace IED
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t& a_params);
 
+		static void attach_node_to(
+			const weapNodeEntry_t& a_entry,
+			const NiPointer<NiNode>& a_target);
+
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,
 			const weapNodeEntry_t& a_entry,
 			nodeOverrideParams_t& a_params);
-
-		static void ResetNodePlacement(
-			const weapNodeEntry_t& a_entry,
-			NiNode *a_npcroot);
 
 	private:
 		static constexpr const stl::fixed_string& get_target_node(

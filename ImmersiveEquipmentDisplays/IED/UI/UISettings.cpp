@@ -177,6 +177,13 @@ namespace IED
 				{
 					m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 				}
+				
+				if (config.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::DisableNPCEquipmentSlots, "3"),
+						std::addressof(data.disableNPCSlots))))
+				{
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+				}
 
 				ImGui::Unindent();
 				ImGui::Spacing();

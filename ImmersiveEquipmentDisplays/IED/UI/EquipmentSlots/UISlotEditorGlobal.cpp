@@ -42,6 +42,12 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
+				if (config.data.disableNPCSlots &&
+				    config.data.ui.slotEditor.globalType == Data::GlobalConfigType::NPC)
+				{
+					DrawSlotEditorNPCWarningHeader();
+				}
+
 				DrawSlotEditor(0, m_data);
 			}
 

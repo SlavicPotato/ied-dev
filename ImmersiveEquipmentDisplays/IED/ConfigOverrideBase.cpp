@@ -117,7 +117,31 @@ namespace IED
 
 			return true;
 		}
+		
+		static bool match_actor(
+			const equipmentOverrideCondition_t& a_match,
+			Actor* a_actor)
+		{
+			if (!a_match.form)
+			{
+				return false;
+			}
 
+			return a_actor->formID == a_match.form;
+		}
+		
+		static bool match_npc(
+			const equipmentOverrideCondition_t& a_match,
+			TESNPC *a_npc)
+		{
+			if (!a_match.form)
+			{
+				return false;
+			}
+
+			return a_npc->formID == a_match.form;
+		}
+		
 		static bool match_furniture(
 			CommonParams& a_params,
 			const equipmentOverrideCondition_t& a_match)
@@ -523,7 +547,15 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Race:
 
-				return match_race(a_match, a_data.race);
+				return match_race(a_match, a_params.race);
+
+			case EquipmentOverrideConditionType::Actor:
+
+				return match_actor(a_match, a_params.actor);
+
+			case EquipmentOverrideConditionType::NPC:
+
+				return match_npc(a_match, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -739,7 +771,15 @@ namespace IED
 				}
 			case EquipmentOverrideConditionType::Race:
 
-				return match_race(a_match, a_cdata.race);
+				return match_race(a_match, a_params.race);
+
+			case EquipmentOverrideConditionType::Actor:
+
+				return match_actor(a_match, a_params.actor);
+
+			case EquipmentOverrideConditionType::NPC:
+
+				return match_npc(a_match, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -949,7 +989,15 @@ namespace IED
 				}
 			case EquipmentOverrideConditionType::Race:
 
-				return match_race(a_match, a_data.race);
+				return match_race(a_match, a_params.race);
+							
+			case EquipmentOverrideConditionType::Actor:
+
+				return match_actor(a_match, a_params.actor);
+					
+			case EquipmentOverrideConditionType::NPC:
+
+				return match_npc(a_match, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 

@@ -24,26 +24,30 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(ProcessStateUpdateFlags);
 
-	struct processState_t :
-		CommonParams
+	struct processState_t
 	{
 		stl::flag<ProcessStateUpdateFlags> flags{ ProcessStateUpdateFlags::kNone };
+
+		void UpdateEffectShaders(Game::ObjectRefHandle a_handle);
 	};
 
-	struct processParams_t
+	struct processParamsData_t
 	{
 		NiNode* const root;
 		NiNode* const npcroot;
-		Actor* const actor;
 		const Game::ObjectRefHandle handle;
 		ActorObjectHolder& objects;
-		TESNPC* const npc;
 		EntryDataList* const dataList;
-		TESRace* const race;
 		const Data::ConfigSex configSex;
 		const stl::flag<ControllerUpdateFlags> flags;
 		ItemCandidateCollector collector;
-		processState_t state;
+	};
+
+	struct processParams_t :
+		processParamsData_t,
+		CommonParams
+	{
+		processState_t state;	
 	};
 
 }  // namespace IED

@@ -16,6 +16,7 @@ namespace IED
 			const ImVec4 g_colorLightOrange(0.9607f, 0.4941f, 0.2588f, 1.0f);
 			const ImVec4 g_colorLimeGreen(0.5333f, 1.0f, 0.3019f, 1.0f);
 			const ImVec4 g_colorLightBlue(0.2745f, 0.5803f, 0.9098f, 1.0f);
+			const ImVec4 g_colorLightBlue2(0.0941f, 0.7215f, 0.8588f, 1.0f);
 			const ImVec4 g_colorPurple(0.6117f, 0.3411f, 0.8509f, 1.0f);
 
 			void HelpMarker(const char* a_desc)

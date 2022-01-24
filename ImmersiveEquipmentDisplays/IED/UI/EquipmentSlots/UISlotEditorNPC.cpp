@@ -43,6 +43,14 @@ namespace IED
 
 				if (m_listCurrent)
 				{
+					auto& config = m_controller.GetConfigStore().settings;
+
+					if (config.data.disableNPCSlots &&
+					    m_listCurrent->handle != Data::IData::GetPlayerBaseID())
+					{
+						DrawSlotEditorNPCWarningHeader();
+					}
+
 					DrawSlotEditor(m_listCurrent->handle, m_listCurrent->data);
 				}
 			}

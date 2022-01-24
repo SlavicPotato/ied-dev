@@ -684,7 +684,8 @@ namespace IED
 
 		void UpdateTransformCustomImpl(
 			actorInfo_t& a_info,
-			const Data::configTransform_t& a_configEntry,
+			const Data::configCustom_t& a_configEntry,
+			const Data::configTransform_t& a_xfrmConfigEntry,
 			objectEntryCustom_t& a_entry);
 
 		void AttachSlotNodeImpl(
@@ -713,6 +714,7 @@ namespace IED
 		bool ProcessItemUpdate(
 			processParams_t& a_params,
 			const Data::configBaseValues_t& a_config,
+			const Data::configModelGroup_t* a_groupConfig,
 			const Data::NodeDescriptor& a_node,
 			objectEntryBase_t& a_entry,
 			bool a_visible);

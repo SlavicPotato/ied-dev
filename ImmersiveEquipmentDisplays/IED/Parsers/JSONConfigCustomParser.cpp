@@ -3,6 +3,7 @@
 #include "JSONConfigBaseParser.h"
 #include "JSONConfigCachedFormParser.h"
 #include "JSONConfigCustomParser.h"
+#include "JSONConfigOverrideModelGroupParser.h"
 #include "JSONFormListParser.h"
 #include "JSONFormParser.h"
 #include "JSONRangeParser.h"
@@ -21,6 +22,7 @@ namespace IED
 			Parser<Data::configRange_t> prange(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
 			Parser<Data::configFormList_t> pformList(m_state);
+			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
 			{
@@ -36,6 +38,11 @@ namespace IED
 			}
 
 			if (!pformList.Parse(a_in["extra"], a_out.extraItems, a_version))
+			{
+				return false;
+			}
+
+			if (!gparser.Parse(a_in["mgrp"], a_out.group))
 			{
 				return false;
 			}
@@ -58,6 +65,7 @@ namespace IED
 			Parser<Data::configRange_t> prange(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
 			Parser<Data::configFormList_t> pformList(m_state);
+			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			pbase.Create(a_in, a_out);
 
@@ -80,6 +88,8 @@ namespace IED
 			{
 				pformList.Create(a_in.extraItems, a_out["extra"]);
 			}
+
+			gparser.Create(a_in.group, a_out["mgrp"]);
 
 			a_out["cflags"] = stl::underlying(a_in.customFlags.value);
 			a_out["prio"] = a_in.priority;

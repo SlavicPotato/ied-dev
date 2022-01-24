@@ -18,10 +18,8 @@ namespace IED
 		struct collectorData_t
 		{
 			inline collectorData_t(
-				Actor* a_actor,
-				TESRace* a_race) noexcept :
-				actor{ a_actor },
-				race{ a_race }
+				Actor* a_actor) noexcept :
+				actor{ a_actor }
 			{
 			}
 
@@ -58,7 +56,6 @@ namespace IED
 			std::int64_t typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;
-			TESRace* race;
 		};
 	}
 }

@@ -160,5 +160,7 @@ namespace IED
 		Extra = 231,
 		Quest = 232,
 		Complete = 233,
+		Single = 234,
+		Primary = 235,
 	};
 }

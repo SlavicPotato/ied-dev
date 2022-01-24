@@ -26,6 +26,12 @@ namespace IED
 			kLoad1pWeaponModel = 1u << 11,
 			kHideLayingDown = 1u << 12,
 
+			kResetTriggerFlags = kDropOnDeath |
+			                     kReferenceMode |
+			                     kKeepTorchFlame |
+			                     kRemoveScabbard |
+			                     kLoad1pWeaponModel,
+
 			kPapyrus = 1u << 16,
 		};
 

@@ -18,6 +18,7 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
+			UINotificationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}

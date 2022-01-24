@@ -1,9 +1,10 @@
 #pragma once
 
-#include "../ConfigOverride.h"
-#include "../Data.h"
-#include "../ProcessParams.h"
 #include "ControllerCommon.h"
+#include "IED/ConfigOverride.h"
+#include "IED/ConfigOverrideModelGroup.h"
+#include "IED/Data.h"
+#include "IED/ProcessParams.h"
 #include "IModel.h"
 #include "INode.h"
 #include "INodeOverride.h"
@@ -86,6 +87,17 @@ namespace IED
 			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
 			NiPointer<NiNode>& a_out);
 
+		/*bool ConstructModelGroup(
+			const Data::configModelGroup_t& a_in,
+			bool a_isFemale,
+			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
+			NiPointer<NiNode>& a_out);*/
+
+		void GetNodeName(
+			TESForm* a_form,
+			const modelParams_t& a_params,
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+
 		bool LoadAndAttach(
 			processParams_t& a_params,
 			const Data::configBaseValues_t& a_entry,
@@ -97,6 +109,24 @@ namespace IED
 			bool a_loadArma,
 			bool a_visible,
 			bool a_disableCollision);
+
+		bool LoadAndAttachGroup(
+			processParams_t& a_params,
+			const Data::configBaseValues_t& a_configEntry,
+			const Data::configModelGroup_t& a_group,
+			const Data::NodeDescriptor& a_node,
+			objectEntryBase_t& a_objectEntry,
+			TESForm* a_form,
+			bool a_leftWeapon,
+			bool a_visible);
+
+		void FinalizeObjectState(
+			std::unique_ptr<objectEntryBase_t::State>& a_state,
+			TESForm* a_form,
+			NiNode* a_node,
+			nodesRef_t& a_targetNodes,
+			const Data::NodeDescriptor& a_nodeDesc,
+			const Data::configBaseValues_t& a_config);
 
 		void PlayObjectSound(
 			const processParams_t& a_params,

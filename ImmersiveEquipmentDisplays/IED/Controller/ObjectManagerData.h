@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigOverride.h"
+#include "IED/ConfigOverrideModelGroup.h"
 #include "INode.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
@@ -16,7 +17,6 @@ namespace IED
 		kNone = 0,
 
 		kRefSyncDisableFailedOrphan = 1u << 1,
-		kDropOnDeath = 1u << 4,
 		kScbLeft = 1u << 2,
 
 		kSyncReferenceTransform = 1u << 6,
@@ -70,23 +70,48 @@ namespace IED
 			return state && state->nodes.obj->IsVisible();
 		}
 
+		struct GroupObject
+		{
+			NiPointer<NiNode> object;
+			Data::cacheTransform_t transform;
+		};
+
 		struct State
 		{
-			void UpdateData(const Data::configBaseValues_t& a_in) noexcept
+			void UpdateData(
+				const Data::configBaseValues_t& a_in) noexcept
+			{
+				UpdateFlags(a_in);
+				transform.Update(a_in);
+
+				resetTriggerFlags = a_in.flags & Data::FlagsBase::kResetTriggerFlags;
+			}
+
+			void UpdateFlags(
+				const Data::configBaseValues_t& a_in) noexcept
 			{
 				// gross but efficient
 
 				static_assert(
 					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::FlagsBase>> &&
 					stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::FlagsBase::kPlaySound)) &&
-					stl::underlying((ObjectEntryFlags::kDropOnDeath)) == stl::underlying((Data::FlagsBase::kDropOnDeath)) &&
 					stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::FlagsBase::kSyncReferenceTransform)));
 
 				flags =
-					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kDropOnDeath | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
-					static_cast<ObjectEntryFlags>((a_in.flags & (Data::FlagsBase::kPlaySound | Data::FlagsBase::kDropOnDeath | Data::FlagsBase::kSyncReferenceTransform)));
+					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
+					static_cast<ObjectEntryFlags>((a_in.flags & (Data::FlagsBase::kPlaySound | Data::FlagsBase::kSyncReferenceTransform)));
+			}
 
-				transform.UpdateData(a_in);
+			void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
+			{
+				for (auto& e : a_group.entries)
+				{
+					if (auto it = groupObjects.find(e.first);
+					    it != groupObjects.end())
+					{
+						it->second.transform.Update(e.second.transform);
+					}
+				}
 			}
 
 			TESForm* form{ nullptr };
@@ -96,6 +121,8 @@ namespace IED
 			nodesRef_t nodes;
 			Data::cacheTransform_t transform;
 			std::vector<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
+			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
+			stl::flag<Data::FlagsBase> resetTriggerFlags{ Data::FlagsBase::kNone };
 			bool atmReference{ true };
 		};
 
@@ -121,6 +148,7 @@ namespace IED
 
 		kProcessedChance = 1u << 0,
 		kBlockedByChance = 1u << 1,
+		kUseGroup = 1u << 2,
 
 		kChanceMask = kProcessedChance | kBlockedByChance
 	};
@@ -185,33 +213,34 @@ namespace IED
 
 	public:
 		weapNodeEntry_t(
-			const stl::fixed_string& a_nodeName,
-			const BSFixedString& a_bsnodeName,
-			const stl::fixed_string& a_defaultParent) :
+			const stl::fixed_string &a_nodeName,
+			NiNode* a_node,
+			NiNode* a_defaultNode) :
 			nodeName(a_nodeName),
-			bsNodeName(a_bsnodeName),
-			defaultParent(a_defaultParent)
+			node(a_node),
+			defaultNode(a_defaultNode)
 		{
 		}
 
 		const stl::fixed_string nodeName;
-		const BSFixedString& bsNodeName;
-		const stl::fixed_string defaultParent;
+		NiPointer<NiNode> node;
+		NiPointer<NiNode> defaultNode;
 
-		inline constexpr const auto& get_current_target() const noexcept
+		/*inline constexpr const auto& get_current_target() const noexcept
 		{
 			return currentTarget;
 		}
 
 	private:
-		mutable stl::fixed_string currentTarget;
+		mutable stl::fixed_string currentTarget;*/
+
+	private:
+		mutable NiPointer<NiNode> target;
 	};
 
 	struct cmeNodeEntry_t
 	{
 		NiPointer<NiNode> node;
-		NiTransform originalTransform;
-		bool originalVisibility;
 
 		constexpr bool has_visible_geometry() const noexcept;
 		constexpr bool has_visible_geometry(
@@ -227,6 +256,11 @@ namespace IED
 			const BSFixedString& a_scbLeft) noexcept;
 
 		mutable const Data::configNodeOverrideEntryTransform_t* cachedConfCME{ nullptr };
+	};
+
+	struct movNodeEntry_t
+	{
+		NiPointer<NiNode> node;
 	};
 
 	class ActorObjectHolder
@@ -312,6 +346,11 @@ namespace IED
 		[[nodiscard]] inline constexpr const auto& GetCMENodes() const noexcept
 		{
 			return m_cmeNodes;
+		}
+
+		[[nodiscard]] inline constexpr const auto& GetMOVNodes() const noexcept
+		{
+			return m_movNodes;
 		}
 
 		[[nodiscard]] inline constexpr const auto& GetWeapNodes() const noexcept
@@ -400,6 +439,7 @@ namespace IED
 
 		std::vector<monitorNodeEntry_t> m_monitorNodes;
 		std::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
+		std::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
 		std::vector<weapNodeEntry_t> m_weapNodes;
 
 		NiPointer<Actor> m_actor;

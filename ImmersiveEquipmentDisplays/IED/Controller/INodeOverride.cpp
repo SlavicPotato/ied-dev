@@ -592,6 +592,30 @@ namespace IED
 				return true;
 			}
 			break;
+		case Data::NodeOverrideConditionType::Actor:
+			{
+				auto& formid = a_data.form.get_id();
+
+				if (!formid)
+				{
+					return false;
+				}
+
+				return formid != a_params.actor->formID;
+			}
+			break;
+		case Data::NodeOverrideConditionType::NPC:
+			{
+				auto& formid = a_data.form.get_id();
+
+				if (!formid)
+				{
+					return false;
+				}
+
+				return formid != a_params.npc->formID;
+			}
+			break;
 		case Data::NodeOverrideConditionType::Furniture:
 			{
 				if (auto& formid = a_data.form.get_id())
@@ -814,7 +838,7 @@ namespace IED
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t& a_params)
 	{
-		auto xfrm = a_entry.originalTransform;
+		NiTransform xfrm;
 
 		if (a_data.transform.scale)
 		{
@@ -846,8 +870,19 @@ namespace IED
 	void INodeOverride::ResetNodeOverride(
 		const cmeNodeEntry_t& a_entry)
 	{
-		a_entry.node->m_localTransform = a_entry.originalTransform;
-		a_entry.node->SetVisible(a_entry.originalVisibility);
+		if (EngineExtensions::SceneRendering())
+		{
+			ITaskPool::AddPriorityTask(
+				[node = a_entry.node]() {
+					node->m_localTransform = {};
+					node->SetVisible(true);
+				});
+		}
+		else
+		{
+			a_entry.node->m_localTransform = {};
+			a_entry.node->SetVisible(true);
+		}
 	}
 
 	bool INodeOverride::process_offsets(
@@ -942,24 +977,29 @@ namespace IED
 		a_node->SetVisible(visible);
 	}
 
-	void attach_node_to_target(
+	void INodeOverride::attach_node_to(
 		const weapNodeEntry_t& a_entry,
-		const stl::fixed_string& a_target,
-		NiNode* a_root)
+		const NiPointer<NiNode>& a_target)
 	{
-		if (auto node = a_root->GetObjectByName(a_entry.bsNodeName))
+		if (a_target &&
+		    a_entry.node->m_parent &&
+		    a_entry.node->m_parent != a_target)
 		{
-			BSFixedString targetName(a_target.c_str());
-
-			if (auto parentObject = a_root->GetObjectByName(targetName))
+			if (EngineExtensions::SceneRendering())
 			{
-				if (auto parentNode = parentObject->GetAsNiNode())
-				{
-					parentNode->AttachChild(node, true);
-				}
+				ITaskPool::AddPriorityTask(
+					[target = a_target,
+				     node = a_entry.node]() {
+						if (node->m_parent && node->m_parent != target)
+						{
+							target->AttachChild(node, true);
+						}
+					});
 			}
-
-			targetName.Release();
+			else
+			{
+				a_target->AttachChild(a_entry.node, true);
+			}
 		}
 	}
 
@@ -975,16 +1015,21 @@ namespace IED
 
 		if (!target.empty())
 		{
-			if (a_entry.currentTarget != target)
-			{
-				a_entry.currentTarget = target;
+			auto& mdata = a_params.objects.GetMOVNodes();
 
-				attach_node_to_target(a_entry, target, a_params.npcRoot);
+			if (auto it = mdata.find(target); it != mdata.end())
+			{
+				if (a_entry.target != it->second.node)
+				{
+					a_entry.target = it->second.node;
+				}
+
+				attach_node_to(a_entry, a_entry.target);
 			}
 		}
 		else
 		{
-			ResetNodePlacement(a_entry, a_params.npcRoot);
+			ResetNodePlacement(a_entry);
 		}
 	}
 
@@ -1010,20 +1055,12 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodePlacement(
-		const weapNodeEntry_t& a_entry,
-		NiNode* a_npcroot)
+		const weapNodeEntry_t& a_entry)
 	{
-		if (!a_entry.currentTarget.empty())
+		if (a_entry.target != nullptr)
 		{
-			if (a_entry.currentTarget != a_entry.defaultParent)
-			{
-				attach_node_to_target(
-					a_entry,
-					a_entry.defaultParent,
-					a_npcroot);
-			}
-
-			a_entry.currentTarget.clear();
+			a_entry.target.reset();
+			attach_node_to(a_entry, a_entry.defaultNode);
 		}
 	}
 

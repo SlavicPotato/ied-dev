@@ -113,7 +113,10 @@ namespace IED
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
+			void DrawSlotEditorNPCWarningHeader();
+
 		private:
+
 			virtual bool ShowConfigClassIndicator() const;
 			virtual bool PermitDeletion() const;
 
@@ -249,6 +252,17 @@ namespace IED
 					std::addressof(a_params.params),
 					PostChangeAction::Evaluate);
 			});
+		}
+
+		template <class T>
+		void UISlotEditorWidget<T>::DrawSlotEditorNPCWarningHeader()
+		{
+			ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+			ImGui::TextWrapped("%s", LS(UISlotEditorWidgetStrings::NPCDisabledWarning));
+			ImGui::PopStyleColor();
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
 		}
 
 		template <class T>

@@ -15,6 +15,7 @@ namespace IED
 			extern const ImVec4 g_colorLightOrange;
 			extern const ImVec4 g_colorLimeGreen;
 			extern const ImVec4 g_colorLightBlue;
+			extern const ImVec4 g_colorLightBlue2;
 			extern const ImVec4 g_colorPurple;
 
 			void HelpMarker(const char* a_desc);

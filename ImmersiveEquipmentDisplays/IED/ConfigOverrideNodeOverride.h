@@ -73,7 +73,9 @@ namespace IED
 			Type,
 			Race,
 			Furniture,
-			Group
+			Group,
+			Actor,
+			NPC
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -137,7 +139,9 @@ namespace IED
 				NodeOverrideConditionType a_type,
 				Game::FormID a_form)
 			{
-				if (a_type == NodeOverrideConditionType::Race)
+				if (a_type == NodeOverrideConditionType::Race ||
+				    a_type == NodeOverrideConditionType::Actor ||
+				    a_type == NodeOverrideConditionType::NPC)
 				{
 					form = a_form;
 				}

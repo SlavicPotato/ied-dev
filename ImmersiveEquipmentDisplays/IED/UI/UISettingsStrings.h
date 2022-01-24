@@ -25,6 +25,7 @@ namespace IED
 			ClearFontSizeOverride = 4414,
 			ClearFontSizeOverridePrompt = 4415,
 			UIKeyOverrideWarning = 4416,
+			DisableNPCEquipmentSlots = 4417,
 		};
 	}
 }

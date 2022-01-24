@@ -105,7 +105,7 @@ namespace IED
 						false,
 						ImGuiSelectableFlags_DontClosePopups))
 				{
-					if (ImGui::GetIO().KeyShift)
+					if (ImGui::GetIO().KeyShift || !IsFormBrowserEnabled())
 					{
 						ImGui::OpenPopup("form_sel_popup");
 					}
@@ -205,36 +205,39 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				auto& formBrowser = m_controller.UIGetFormBrowser();
-
-				ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
-
-				if (LCG_MI(CommonStrings::Browse, "1"))
+				if (IsFormBrowserEnabled())
 				{
-					if (formBrowser.Open(false))
+					auto& formBrowser = m_controller.UIGetFormBrowser();
+
+					ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
+
+					if (LCG_MI(CommonStrings::Browse, "1"))
 					{
-						if (m_onOpenFunc)
+						if (formBrowser.Open(false))
 						{
-							m_onOpenFunc(*this, formBrowser);
+							if (m_onOpenFunc)
+							{
+								m_onOpenFunc(*this, formBrowser);
+							}
+
+							formBrowser.SetTabFilter(*GetAllowedTypes());
+							formBrowser.SetHighlightForm(a_form);
 						}
-
-						formBrowser.SetTabFilter(*GetAllowedTypes());
-						formBrowser.SetHighlightForm(a_form);
 					}
-				}
 
-				ImGui::PopItemFlag();
+					ImGui::PopItemFlag();
 
-				auto fb_result = DrawFormBrowserPopup(a_form);
+					auto fb_result = DrawFormBrowserPopup(a_form);
 
-				if (fb_result)
-				{
-					result = true;
-					ImGui::CloseCurrentPopup();
-				}
-				else if (fb_result.closed)
-				{
-					ImGui::CloseCurrentPopup();
+					if (fb_result)
+					{
+						result = true;
+						ImGui::CloseCurrentPopup();
+					}
+					else if (fb_result.closed)
+					{
+						ImGui::CloseCurrentPopup();
+					}
 				}
 
 				if (a_form != 0)

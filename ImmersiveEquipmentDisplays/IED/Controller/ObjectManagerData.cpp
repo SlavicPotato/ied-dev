@@ -52,18 +52,32 @@ namespace IED
 				{
 					m_cmeNodes.try_emplace(
 						e->first,
-						node,
-						node->m_localTransform,
-						node->IsVisible());
+						node);
+				}
+			}
+			
+			for (auto& e : OverrideNodeInfo::GetMOVNodeData().getvec())
+			{
+				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
+				{
+					m_movNodes.try_emplace(
+						e->first,
+						node);
 				}
 			}
 
 			for (auto& e : OverrideNodeInfo::GetWeaponNodeData().getvec())
 			{
-				m_weapNodes.emplace_back(
-					e->first,
-					e->second.bsname,
-					e->second.defParent);
+				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname); node && node->m_parent)
+				{
+					if (auto defParentNode = ::Util::Node::FindNode(a_npcroot, e->second.bsdefParent))
+					{
+						m_weapNodes.emplace_back(
+							e->first,
+							node,
+							defParentNode);
+					}
+				}
 			}
 		}
 
@@ -109,6 +123,14 @@ namespace IED
 				LookupREFRByHandle(*handle, refr);
 			}
 
+			for (auto& e : a_entry.state->groupObjects)
+			{
+				EngineExtensions::CleanupObject(
+					*handle,
+					e.second.object,
+					m_root);
+			}
+
 			EngineExtensions::CleanupObject(
 				*handle,
 				a_entry.state->nodes.obj,
@@ -125,9 +147,14 @@ namespace IED
 			}
 		});
 
-		for (auto& ce : m_cmeNodes)
+		for (auto& e : m_cmeNodes)
 		{
-			INodeOverride::ResetNodeOverride(ce.second);
+			INodeOverride::ResetNodeOverride(e.second);
+		}
+
+		for (auto& e : m_weapNodes)
+		{
+			INodeOverride::ResetNodePlacement(e);
 		}
 	}
 

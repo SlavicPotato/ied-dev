@@ -54,7 +54,7 @@ namespace IED
 			Data::EquipmentOverrideConditionType entryType;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 			Biped::BIPED_OBJECT biped{ Biped::BIPED_OBJECT::kNone };
-			const std::string* desc;
+			std::string desc;
 			SwapDirection dir;
 		};
 
@@ -185,6 +185,8 @@ namespace IED
 			Game::FormID m_aoNewEntryID;
 			Game::FormID m_aoNewEntryKWID;
 			Game::FormID m_aoNewEntryRaceID;
+			Game::FormID m_aoNewEntryActorID;
+			Game::FormID m_aoNewEntryNPCID;
 			Biped::BIPED_OBJECT m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
 
 			Data::ObjectSlotExtra m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
@@ -940,7 +942,7 @@ namespace IED
 							a_params,
 							PostChangeAction::Evaluate);
 
-						ImGui::CloseCurrentPopup();
+						ClearDescriptionPopupBuffer();
 
 						result = BaseConfigEditorAction::Insert;
 					}
@@ -1013,7 +1015,7 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
 				case BaseConfigEditorAction::Insert:
-					it = a_data.equipmentOverrides.emplace(it, a_data, *result.desc);
+					it = a_data.equipmentOverrides.emplace(it, a_data, result.desc);
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					ImGui::SetNextItemOpen(true);
 					break;
@@ -1030,7 +1032,7 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
 				case BaseConfigEditorAction::Rename:
-					it->description = *result.desc;
+					it->description = result.desc;
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					break;
 				case BaseConfigEditorAction::Paste:
@@ -1165,6 +1167,8 @@ namespace IED
 						break;
 					case Data::EquipmentOverrideConditionType::Form:
 					case Data::EquipmentOverrideConditionType::Race:
+					case Data::EquipmentOverrideConditionType::Actor:
+					case Data::EquipmentOverrideConditionType::NPC:
 					case Data::EquipmentOverrideConditionType::Keyword:
 					case Data::EquipmentOverrideConditionType::Quest:
 						if (result.form)
@@ -1341,6 +1345,8 @@ namespace IED
 							break;
 						case Data::EquipmentOverrideConditionType::Form:
 						case Data::EquipmentOverrideConditionType::Race:
+						case Data::EquipmentOverrideConditionType::Actor:
+						case Data::EquipmentOverrideConditionType::NPC:
 						case Data::EquipmentOverrideConditionType::Keyword:
 						case Data::EquipmentOverrideConditionType::Quest:
 							if (result.form)
@@ -1478,6 +1484,28 @@ namespace IED
 								tdesc = LS(CommonStrings::Race);
 
 								break;
+							case Data::EquipmentOverrideConditionType::Actor:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form);
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Actor);
+
+								break;
+							case Data::EquipmentOverrideConditionType::NPC:
+
+								m_matchParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form);
+								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_matchParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::NPC);
+
+								break;
 							case Data::EquipmentOverrideConditionType::Furniture:
 
 								m_matchParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1606,6 +1634,8 @@ namespace IED
 				m_aoNewEntryID = {};
 				m_aoNewEntryKWID = {};
 				m_aoNewEntryRaceID = {};
+				m_aoNewEntryActorID = {};
+				m_aoNewEntryNPCID = {};
 				m_ooNewBiped = Biped::BIPED_OBJECT::kNone;
 				m_aoNewSlot = Data::ObjectSlotExtra::kNone;
 			}
@@ -1708,12 +1738,54 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Race, "6"))
+					if (LCG_BM(CommonStrings::Actor, "6"))
+					{
+						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Actor);
+
+						if (m_matchParamEditor.GetFormPicker().DrawFormSelector(
+								LS(CommonStrings::Form, "fs"),
+								m_aoNewEntryActorID))
+						{
+							if (m_aoNewEntryActorID)
+							{
+								result.action = BaseConfigEditorAction::Insert;
+								result.form = m_aoNewEntryActorID;
+								result.entryType = Data::EquipmentOverrideConditionType::Actor;
+
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						ImGui::EndMenu();
+					}
+					
+					if (LCG_BM(CommonStrings::NPC, "7"))
+					{
+						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::NPC);
+
+						if (m_matchParamEditor.GetFormPicker().DrawFormSelector(
+								LS(CommonStrings::Form, "fs"),
+								m_aoNewEntryNPCID))
+						{
+							if (m_aoNewEntryNPCID)
+							{
+								result.action = BaseConfigEditorAction::Insert;
+								result.form = m_aoNewEntryNPCID;
+								result.entryType = Data::EquipmentOverrideConditionType::NPC;
+
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Race, "8"))
 					{
 						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Race);
 
 						if (m_matchParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Race, "fs"),
+								LS(CommonStrings::Form, "fs"),
 								m_aoNewEntryRaceID))
 						{
 							if (m_aoNewEntryRaceID)
@@ -1724,14 +1796,12 @@ namespace IED
 
 								ImGui::CloseCurrentPopup();
 							}
-
-							ImGui::CloseCurrentPopup();
 						}
 
 						ImGui::EndMenu();
 					}
-
-					if (LCG_MI(CommonStrings::Furniture, "7"))
+					
+					if (LCG_MI(CommonStrings::Furniture, "9"))
 					{
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Furniture;
@@ -1739,7 +1809,7 @@ namespace IED
 						ImGui::CloseCurrentPopup();
 					}
 
-					if (LCG_BM(CommonStrings::Quest, "8"))
+					if (LCG_BM(CommonStrings::Quest, "A"))
 					{
 						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Quest);
 
@@ -1760,7 +1830,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "9"))
+					if (LCG_MI(CommonStrings::Group, "B"))
 					{
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
@@ -1771,14 +1841,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "A"))
+				if (LCG_MI(CommonStrings::Delete, "C"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "B"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "D"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -1787,7 +1857,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "B"))
+					if (LCG_MI(CommonStrings::Copy, "D"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -1795,7 +1865,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "C"),
+							LS(CommonStrings::PasteOver, "E"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -1882,9 +1952,9 @@ namespace IED
 						if (DrawDescriptionPopup())
 						{
 							result.action = BaseConfigEditorAction::Insert;
-							result.desc = std::addressof(GetDescriptionPopupBuffer());
+							result.desc = GetDescriptionPopupBuffer();
 
-							ImGui::CloseCurrentPopup();
+							ClearDescriptionPopupBuffer();
 						}
 
 						ImGui::EndMenu();
@@ -1916,9 +1986,9 @@ namespace IED
 					if (DrawDescriptionPopup())
 					{
 						result.action = BaseConfigEditorAction::Rename;
-						result.desc = std::addressof(GetDescriptionPopupBuffer());
+						result.desc = GetDescriptionPopupBuffer();
 
-						ImGui::CloseCurrentPopup();
+						ClearDescriptionPopupBuffer();
 					}
 
 					ImGui::EndMenu();
@@ -2114,15 +2184,27 @@ namespace IED
 			{
 			case Data::EquipmentOverrideConditionType::Furniture:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.furniture);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Race:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.race);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Actor:
+				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.actor);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
+				break;
+			case Data::EquipmentOverrideConditionType::NPC:
+				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.npc);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Quest:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.quest);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
 				m_matchParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
+				m_matchParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			}
 		}

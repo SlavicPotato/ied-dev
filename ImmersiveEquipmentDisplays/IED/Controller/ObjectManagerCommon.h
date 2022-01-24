@@ -11,7 +11,7 @@ namespace IED
 				return std::isnan(a_value) ? 0.0f : a_value;
 			}
 
-			void UpdateData(const Data::configTransform_t& a_in) noexcept
+			void Update(const Data::configTransform_t& a_in) noexcept
 			{
 				scale = a_in.scale;
 				position = a_in.position;

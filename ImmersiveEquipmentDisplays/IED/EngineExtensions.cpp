@@ -577,7 +577,6 @@ namespace IED
 		NiNode* a_targetNode,
 		NiNode* a_object,
 		ModelType a_modelType,
-		bool a_shield,
 		bool a_leftWeapon,
 		bool a_dropOnDeath,
 		bool a_removeScabbards,
@@ -711,7 +710,7 @@ namespace IED
 			}
 		}
 
-		if (!a_disableCollision)
+		//if (!a_disableCollision) - ignore this for now
 		{
 			// collision related, 2nd param = flags
 			fUnk1CD130(a_object, 0x0);
@@ -806,7 +805,7 @@ namespace IED
 				NiPointer<NiNode> m_root;
 			};
 
-			ITaskPool::AddTask<NodeCleanupTask>(
+			ITaskPool::AddPriorityTask<NodeCleanupTask>(
 				a_handle,
 				a_object,
 				a_root);

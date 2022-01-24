@@ -36,6 +36,14 @@ namespace IED
 				false);
 		}
 
+		for (auto& e : a_objectEntry.state->groupObjects)
+		{
+			EngineExtensions::CleanupObject(
+				a_handle,
+				e.second.object,
+				a_data.m_root);
+		}
+
 		EngineExtensions::CleanupObject(
 			a_handle,
 			a_objectEntry.state->nodes.obj,
@@ -105,7 +113,7 @@ namespace IED
 		ActorObjectHolder& a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_actor == *g_thePlayer)
+		if (a_actor && a_actor == *g_thePlayer)
 		{
 			m_playerState.insert(a_objects);
 		}
@@ -129,12 +137,9 @@ namespace IED
 			ResetNodeOverride(e.second);
 		}
 
-		if (a_actor && a_actor->loadedState)
+		for (auto& e : a_objects.m_weapNodes)
 		{
-			for (auto& e : a_objects.m_weapNodes)
-			{
-				ResetNodePlacement(e, a_objects.m_npcroot);
-			}
+			ResetNodePlacement(e);
 		}
 
 		a_objects.m_cmeNodes.clear();
@@ -239,6 +244,20 @@ namespace IED
 
 	void IObjectManager::ClearObjectsImpl()
 	{
+		for (auto& e : m_objects)
+		{
+			auto handle = e.second.GetHandle();
+
+			NiPointer<TESObjectREFR> ref;
+			LookupREFRByHandle(handle, ref);
+
+			CleanupActorObjectsImpl(
+				nullptr,
+				handle,
+				e.second,
+				ControllerUpdateFlags::kNone);
+		}
+
 		m_objects.clear();
 	}
 
@@ -308,6 +327,33 @@ namespace IED
 		return result;
 	}
 
+	void IObjectManager::GetNodeName(
+		TESForm* a_form,
+		const modelParams_t& a_params,
+		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+	{
+		switch (a_params.type)
+		{
+		case ModelType::kWeapon:
+			GetWeaponNodeName(a_form->formID, a_out);
+			break;
+		case ModelType::kArmor:
+			GetArmorNodeName(
+				a_form->formID,
+				a_params.arma ?
+                    a_params.arma->formID :
+                    0,
+				a_out);
+			break;
+		case ModelType::kMisc:
+		case ModelType::kLight:
+			GetMiscNodeName(a_form->formID, a_out);
+			break;
+		default:
+			HALT("FIXME");
+		}
+	}
+
 	bool IObjectManager::LoadAndAttach(
 		processParams_t& a_params,
 		const Data::configBaseValues_t& a_config,
@@ -350,7 +396,7 @@ namespace IED
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
 				a_config.flags.test(Data::FlagsBase::kLoad1pWeaponModel),
-				a_loadArma,
+				false,
 				modelParams))
 		{
 			Debug(
@@ -371,7 +417,7 @@ namespace IED
 				targetNodes))
 		{
 			Debug(
-				"[%.8X] [race: %.8X] [item: %.8X] failed to create target node: %s",
+				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node(s): %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_modelForm->formID.get(),
@@ -384,92 +430,46 @@ namespace IED
 
 		NiPointer<NiNode> object;
 
-		if (!modelParams.armas)
+		ObjectDatabaseEntry entry;
+
+		if (!GetUniqueObject(modelParams.path, entry, object))
 		{
-			ObjectDatabaseEntry entry;
+			Warning(
+				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
+				a_params.actor->formID.get(),
+				a_params.race->formID.get(),
+				a_modelForm->formID.get(),
+				modelParams.path);
 
-			if (!GetUniqueObject(modelParams.path, entry, object))
-			{
-				Warning(
-					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
-					a_params.actor->formID.get(),
-					a_params.race->formID.get(),
-					a_modelForm->formID.get(),
-					modelParams.path);
-
-				return false;
-			}
-
-			if (entry)
-			{
-				state->dbEntries.emplace_back(std::move(entry));
-			}
-
-			if (modelParams.swap)
-			{
-				EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
-			}
+			return false;
 		}
-		else
-		{
-			if (!ConstructArmorNode(
-					a_modelForm,
-					*modelParams.armas,
-					a_params.configSex == Data::ConfigSex::Female,
-					state->dbEntries,
-					object))
-			{
-				Warning(
-					"[%.8X] [race: %.8X] [item: %.8X] failed to construct armor model",
-					a_params.actor->formID.get(),
-					a_params.race->formID.get(),
-					a_modelForm->formID.get());
 
-				return false;
-			}
+		if (entry)
+		{
+			state->dbEntries.emplace_back(std::move(entry));
+		}
+
+		if (modelParams.swap)
+		{
+			EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
 		}
 
 		object->m_localTransform = {};
 
-		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
-		{
-			auto pl = Game::ProcessLists::GetSingleton();
-			pl->ResetEffectShaders(a_params.handle);
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
-		}
+		a_params.state.UpdateEffectShaders(a_params.handle);
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 
-		switch (modelParams.type)
-		{
-		case ModelType::kWeapon:
-			GetWeaponNodeName(a_modelForm->formID, buffer);
-			break;
-		case ModelType::kArmor:
-			GetArmorNodeName(
-				a_modelForm->formID,
-				modelParams.arma ?
-                    modelParams.arma->formID :
-                    0,
-				buffer);
-			break;
-		case ModelType::kMisc:
-		case ModelType::kLight:
-			GetMiscNodeName(a_modelForm->formID, buffer);
-			break;
-		default:
-			HALT("FIXME");
-		}
+		GetNodeName(a_modelForm, modelParams, buffer);
 
-		auto itemNodeRoot = CreateNode(buffer);
+		auto itemRoot = CreateNode(buffer);
 
-		targetNodes.obj->AttachChild(itemNodeRoot, true);
+		targetNodes.obj->AttachChild(itemRoot, true);
 
 		state->UpdateData(a_config);
 		UpdateObjectTransform(
 			state->transform,
-			itemNodeRoot,
+			itemRoot,
 			targetNodes.ref);
 
 		UpdateDownwardPass(targetNodes.obj);
@@ -477,23 +477,22 @@ namespace IED
 		auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
 			a_params.root,
-			itemNodeRoot,
+			itemRoot,
 			object,
 			modelParams.type,
-			modelParams.isShield,
 			a_leftWeapon,
 			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
 			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
 			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame),
 			a_disableCollision);
 
-		state->form = a_form;
-		state->formid = a_form->formID;
-		state->nodes.obj = itemNodeRoot;
-		state->nodes.ref = std::move(targetNodes.ref);
-		state->nodeDesc = a_node;
-		state->atmReference = a_node.managed() ||
-		                      a_config.flags.test(Data::FlagsBase::kReferenceMode);
+		FinalizeObjectState(
+			state,
+			a_form,
+			itemRoot,
+			targetNodes,
+			a_node,
+			a_config);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
@@ -508,6 +507,245 @@ namespace IED
 		}
 
 		return true;
+	}
+
+	bool IObjectManager::LoadAndAttachGroup(
+		processParams_t& a_params,
+		const Data::configBaseValues_t& a_config,
+		const Data::configModelGroup_t& a_group,
+		const Data::NodeDescriptor& a_node,
+		objectEntryBase_t& a_objectEntry,
+		TESForm* a_form,
+		bool a_leftWeapon,
+		bool a_visible)
+	{
+		if (!a_node)
+		{
+			return false;
+		}
+
+		if (a_form->formID.IsTemporary())
+		{
+			return false;
+		}
+
+		auto it = a_group.entries.find({});
+		if (it == a_group.entries.end())
+		{
+			return false;
+		}
+
+		if (it->second.form.get_id() != a_form->formID)
+		{
+			return false;
+		}
+
+		struct tmpdata_t
+		{
+			const decltype(a_group.entries)::value_type* entry;
+			TESForm* form;
+			modelParams_t params;
+			NiPointer<NiNode> object;
+		};
+
+		std::vector<tmpdata_t> modelParams;
+
+		for (auto& e : a_group.entries)
+		{
+			auto form = e.second.form.get_form();
+			if (!form)
+			{
+				continue;
+			}
+
+			if (form->formID.IsTemporary())
+			{
+				continue;
+			}
+
+			modelParams_t params;
+
+			if (!GetModelParams(
+					a_params.actor,
+					form,
+					a_params.race,
+					a_params.configSex == Data::ConfigSex::Female,
+					e.second.flags.test(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel),
+					false,
+					params))
+			{
+				Debug(
+					"[%.8X] [race: %.8X] [item: %.8X] couldn't get model params",
+					a_params.actor->formID.get(),
+					a_params.race->formID.get(),
+					form->formID.get());
+
+				continue;
+			}
+
+			modelParams.emplace_back(std::addressof(e), form, std::move(params));
+		}
+
+		if (modelParams.empty())
+		{
+			return false;
+		}
+
+		nodesRef_t targetNodes;
+
+		if (!CreateTargetNode(
+				a_config,
+				a_node,
+				a_params.npcroot,
+				targetNodes))
+		{
+			Debug(
+				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node(s): %s",
+				a_params.actor->formID.get(),
+				a_params.race->formID.get(),
+				a_form->formID.get(),
+				a_node.name.c_str());
+
+			return false;
+		}
+
+		auto state = std::make_unique<objectEntryBase_t::State>();
+
+		bool loaded = false;
+
+		for (auto& e : modelParams)
+		{
+			ObjectDatabaseEntry entry;
+
+			if (!GetUniqueObject(e.params.path, entry, e.object))
+			{
+				Warning(
+					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
+					a_params.actor->formID.get(),
+					a_params.race->formID.get(),
+					e.form->formID.get(),
+					e.params.path);
+
+				continue;
+			}
+
+			if (entry)
+			{
+				state->dbEntries.emplace_back(std::move(entry));
+			}
+
+			loaded = true;
+		}
+
+		if (!loaded)
+		{
+			return false;
+		}
+
+		a_params.state.UpdateEffectShaders(a_params.handle);
+
+		char buffer[NODE_NAME_BUFFER_SIZE];
+
+		stl::snprintf(
+			buffer,
+			"IED GROUP [%.8X]",
+			a_form->formID.get());
+
+		auto groupRoot = CreateNode(buffer);
+
+		targetNodes.obj->AttachChild(groupRoot, true);
+
+		state->UpdateData(a_config);
+		UpdateObjectTransform(
+			state->transform,
+			groupRoot,
+			targetNodes.ref);
+
+		for (auto& e : modelParams)
+		{
+			if (!e.object)
+			{
+				continue;
+			}
+
+			e.object->m_localTransform = {};
+
+			if (e.params.swap)
+			{
+				EngineExtensions::ApplyTextureSwap(e.params.swap, e.object);
+			}
+
+			GetNodeName(e.form, e.params, buffer);
+
+			auto itemRoot = CreateNode(buffer);
+			groupRoot->AttachChild(itemRoot, true);
+
+			auto& n = state->groupObjects.try_emplace(
+											 e.entry->first,
+											 itemRoot)
+			              .first->second;
+
+			n.transform.Update(e.entry->second.transform);
+
+			UpdateObjectTransform(
+				n.transform,
+				n.object,
+				nullptr);
+
+			UpdateDownwardPass(targetNodes.obj);
+
+			EngineExtensions::AttachObject(
+				a_params.actor,
+				a_params.root,
+				itemRoot,
+				e.object,
+				e.params.type,
+				a_leftWeapon ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
+				a_config.flags.test(Data::FlagsBase::kDropOnDeath) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
+				a_config.flags.test(Data::FlagsBase::kRemoveScabbard) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
+				a_config.flags.test(Data::FlagsBase::kKeepTorchFlame) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
+				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableCollision));
+
+			e.object = itemRoot;
+		}
+
+		FinalizeObjectState(
+			state,
+			a_form,
+			groupRoot,
+			targetNodes,
+			a_node,
+			a_config);
+
+		a_objectEntry.state = std::move(state);
+
+		if (a_visible)
+		{
+			PlayObjectSound(a_params, a_config, a_objectEntry, true);
+		}
+
+		return true;
+	}
+
+	void IObjectManager::FinalizeObjectState(
+		std::unique_ptr<objectEntryBase_t::State>& a_state,
+		TESForm* a_form,
+		NiNode* a_node,
+		nodesRef_t& a_targetNodes,
+		const Data::NodeDescriptor& a_nodeDesc,
+		const Data::configBaseValues_t& a_config)
+	{
+		a_state->form = a_form;
+		a_state->formid = a_form->formID;
+		a_state->nodes.obj = a_node;
+		a_state->nodes.ref = std::move(a_targetNodes.ref);
+		a_state->nodeDesc = a_nodeDesc;
+		a_state->atmReference = a_nodeDesc.managed() ||
+		                        a_config.flags.test(Data::FlagsBase::kReferenceMode);
 	}
 
 	void IObjectManager::PlayObjectSound(

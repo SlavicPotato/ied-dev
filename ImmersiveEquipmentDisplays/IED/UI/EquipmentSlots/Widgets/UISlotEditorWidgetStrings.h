@@ -17,6 +17,7 @@ namespace IED
 			EnableAllSlotsPrompt = 4107,
 			DisableAllSlotsPrompt = 4108,
 			Left2HSlotWarning = 4109,
+			NPCDisabledWarning = 4110,
 		};
 	}
 }

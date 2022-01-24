@@ -53,7 +53,9 @@ namespace IED
 			Furniture,
 			BipedSlot,
 			Group,
-			Quest
+			Quest,
+			Actor,
+			NPC
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -115,7 +117,9 @@ namespace IED
 				EquipmentOverrideConditionType a_type,
 				Game::FormID a_form)
 			{
-				if (a_type == EquipmentOverrideConditionType::Race)
+				if (a_type == EquipmentOverrideConditionType::Race ||
+				    a_type == EquipmentOverrideConditionType::Actor ||
+				    a_type == EquipmentOverrideConditionType::NPC)
 				{
 					form = a_form;
 				}

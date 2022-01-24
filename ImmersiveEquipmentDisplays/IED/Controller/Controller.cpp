@@ -2065,12 +2065,13 @@ namespace IED
 	bool Controller::ProcessItemUpdate(
 		processParams_t& a_params,
 		const Data::configBaseValues_t& a_config,
+		const Data::configModelGroup_t* a_groupConfig,
 		const Data::NodeDescriptor& a_node,
 		objectEntryBase_t& a_entry,
 		bool a_visible)
 	{
-		if (a_entry.state->flags.test(ObjectEntryFlags::kDropOnDeath) !=
-		    a_config.flags.test(FlagsBase::kDropOnDeath))
+		if (a_entry.state->resetTriggerFlags !=
+		    (a_config.flags & Data::FlagsBase::kResetTriggerFlags))
 		{
 			return false;
 		}
@@ -2109,30 +2110,39 @@ namespace IED
 		}
 
 		a_entry.state->nodes.obj->SetVisible(a_visible);
-		a_entry.state->UpdateData(a_config);
 
-		bool nodeAttached = false;
+		a_entry.state->UpdateFlags(a_config);
 
 		if (a_entry.state->nodeDesc.name != a_node.name)
 		{
-			nodeAttached = AttachNodeImpl(
+			AttachNodeImpl(
 				a_params.npcroot,
 				a_node,
 				a_config.flags.test(Data::FlagsBase::kReferenceMode),
 				a_entry);
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		if (!nodeAttached)
+		a_entry.state->transform.Update(a_config);
+
+		UpdateObjectTransform(
+			a_entry.state->transform,
+			a_entry.state->nodes.obj,
+			a_entry.state->nodes.ref);
+
+		/*if (a_groupConfig)
 		{
-			UpdateObjectTransform(
-				a_entry.state->transform,
-				a_entry.state->nodes.obj,
-				a_entry.state->nodes.ref);
+			a_entry.state->UpdateGroupTransforms(*a_groupConfig);
 
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
-		}
+			for (auto& e : a_entry.state->groupObjects)
+			{
+				UpdateObjectTransform(
+					e.second.transform,
+					e.second.object,
+					nullptr);
+			}
+		}*/
+
+		a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
 		return true;
 	}
@@ -2259,11 +2269,11 @@ namespace IED
 				const configBaseValues_t* usedConf =
 					!item ? configEntry.get_equipment_override(
 								a_params.collector.m_data,
-								a_params.state) :
+								a_params) :
                             configEntry.get_equipment_override(
 								a_params.collector.m_data,
 								{ item->form, ItemData::SlotToExtraSlot(objectEntry.slotid) },
-								a_params.state);
+								a_params);
 
 				if (!usedConf)
 				{
@@ -2334,6 +2344,7 @@ namespace IED
 					if (ProcessItemUpdate(
 							a_params,
 							*usedConf,
+							nullptr,
 							usedConf->targetNode,
 							objectEntry,
 							visible))
@@ -2394,13 +2405,13 @@ namespace IED
 		}
 
 		if (a_flags.test(FlagsBase::kHideIfUsingFurniture) &&
-		    a_params.state.get_using_furniture())
+		    a_params.get_using_furniture())
 		{
 			return false;
 		}
 
 		if (a_flags.test(FlagsBase::kHideLayingDown) &&
-		    a_params.state.get_laying_down())
+		    a_params.get_laying_down())
 		{
 			return false;
 		}
@@ -2613,7 +2624,7 @@ namespace IED
 			a_config.get_equipment_override(
 				a_params.collector.m_data,
 				a_params.objects.m_entriesSlot,
-				a_params.state);
+				a_params);
 
 		if (!usedBaseConf)
 		{
@@ -2658,24 +2669,29 @@ namespace IED
 
 			if (a_objectEntry.state && a_objectEntry.state->form == itemData.form)
 			{
-				bool _visible = hasMinCount && visible;
-
-				if (ProcessItemUpdate(
-						a_params,
-						*usedBaseConf,
-						usedBaseConf->targetNode,
-						a_objectEntry,
-						_visible))
+				if (a_config.customFlags.test(Data::CustomFlags::kUseGroup) ==
+				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
 				{
-					if (_visible)
-					{
-						if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
-						{
-							itemData.sharedCount--;
-						}
-					}
+					bool _visible = hasMinCount && visible;
 
-					return true;
+					if (ProcessItemUpdate(
+							a_params,
+							*usedBaseConf,
+							std::addressof(a_config.group),
+							usedBaseConf->targetNode,
+							a_objectEntry,
+							_visible))
+					{
+						if (_visible)
+						{
+							if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
+							{
+								itemData.sharedCount--;
+							}
+						}
+
+						return true;
+					}
 				}
 			}
 
@@ -2684,25 +2700,46 @@ namespace IED
 				return false;
 			}
 
-			auto modelForm = a_config.modelForm.get_id() ?
-                                 a_config.modelForm.get_form() :
-                                 itemData.form;
-
-			a_objectEntry.modelForm = modelForm->formID;
-
 			bool result;
 
-			if (result = LoadAndAttach(
+			if (a_config.customFlags.test(Data::CustomFlags::kUseGroup))
+			{
+				result = LoadAndAttachGroup(
+					a_params,
+					*usedBaseConf,
+					a_config.group,
+					usedBaseConf->targetNode,
+					a_objectEntry,
+					itemData.form,
+					a_config.customFlags.test(Data::CustomFlags::kLeftWeapon),
+					visible);
+
+				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
+			}
+			else
+			{
+				auto modelForm = a_config.modelForm.get_id() ?
+                                     a_config.modelForm.get_form() :
+                                     itemData.form;
+
+				a_objectEntry.modelForm = modelForm->formID;
+
+				result = LoadAndAttach(
 					a_params,
 					*usedBaseConf,
 					usedBaseConf->targetNode,
 					a_objectEntry,
 					itemData.form,
 					modelForm,
-					modelForm->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
+					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableCollision)))
+					a_config.customFlags.test(CustomFlags::kDisableCollision));
+
+				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
+			}
+
+			if (result)
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
@@ -2743,14 +2780,19 @@ namespace IED
 
 			if (a_objectEntry.state && a_objectEntry.state->form == form)
 			{
-				if (ProcessItemUpdate(
-						a_params,
-						*usedBaseConf,
-						usedBaseConf->targetNode,
-						a_objectEntry,
-						visible))
+				if (a_config.customFlags.test(Data::CustomFlags::kUseGroup) ==
+				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
 				{
-					return true;
+					if (ProcessItemUpdate(
+							a_params,
+							*usedBaseConf,
+							std::addressof(a_config.group),
+							usedBaseConf->targetNode,
+							a_objectEntry,
+							visible))
+					{
+						return true;
+					}
 				}
 			}
 
@@ -2758,17 +2800,38 @@ namespace IED
 
 			bool result;
 
-			if (result = LoadAndAttach(
+			if (a_config.customFlags.test(Data::CustomFlags::kUseGroup))
+			{
+				result = LoadAndAttachGroup(
+					a_params,
+					*usedBaseConf,
+					a_config.group,
+					usedBaseConf->targetNode,
+					a_objectEntry,
+					form,
+					a_config.customFlags.test(Data::CustomFlags::kLeftWeapon),
+					visible);
+
+				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
+			}
+			else
+			{
+				result = LoadAndAttach(
 					a_params,
 					*usedBaseConf,
 					usedBaseConf->targetNode,
 					a_objectEntry,
 					form,
 					nullptr,
-					form->IsWeapon() && a_config.customFlags.test(CustomFlags::kLeftWeapon),
+					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableCollision)))
+					a_config.customFlags.test(CustomFlags::kDisableCollision));
+
+				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
+			}
+
+			if (result)
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
@@ -2955,18 +3018,17 @@ namespace IED
 				processParams_t params{
 					a_root,
 					a_npcroot,
-					a_actor,
 					a_handle,
 					a_objects,
-					nrp.npc,
 					GetEntryDataList(a_actor),
-					nrp.race,
 					nrp.npc->GetSex() == 1 ?
                         ConfigSex::Female :
                         ConfigSex::Male,
 					a_flags,
-					{ a_actor, nrp.race },
-					{ a_actor }
+					{ a_actor },
+					a_actor,
+					nrp.npc,
+					nrp.race
 				};
 
 				if (!params.dataList)
@@ -2982,7 +3044,12 @@ namespace IED
 					nrp.npc->container,
 					params.dataList);
 
-				ProcessSlots(params);
+				if (!m_config.settings.data.disableNPCSlots ||
+				    a_actor == *g_thePlayer)
+				{
+					ProcessSlots(params);
+				}
+
 				ProcessCustom(params);
 
 				if (params.state.flags.test_any(ProcessStateUpdateFlags::kUpdateMask))
@@ -3114,12 +3181,12 @@ namespace IED
 		}
 
 		nodeOverrideParams_t params{
-			a_npc,
-			a_race,
 			a_npcRoot,
 			a_objects,
 			*this,
-			a_actor
+			a_actor,
+			a_npc,
+			a_race
 		};
 
 		configStoreNodeOverride_t::holderCache_t hc;
@@ -3139,7 +3206,7 @@ namespace IED
 			}
 			else
 			{
-				ResetNodePlacement(e, params.npcRoot);
+				ResetNodePlacement(e);
 			}
 		}
 
@@ -3379,7 +3446,7 @@ namespace IED
 					config->get(info.sex),
 					objectEntry);
 
-				objectEntry.state->transform.UpdateData(conf);
+				objectEntry.state->transform.Update(conf);
 
 				UpdateObjectTransform(
 					objectEntry.state->transform,
@@ -3439,7 +3506,11 @@ namespace IED
 						a_confEntry(a_info.sex),
 						a_info.objects->GetSlots());
 
-					UpdateTransformCustomImpl(a_info, conf, a_entry);
+					UpdateTransformCustomImpl(
+						a_info,
+						a_confEntry(a_info.sex),
+						conf,
+						a_entry);
 
 					return true;
 				}
@@ -3491,10 +3562,10 @@ namespace IED
 		{
 			if (auto npc = Game::GetActorBase(a_actor))
 			{
-				ItemCandidateCollector collector(a_actor, a_race);
+				ItemCandidateCollector collector(a_actor);
 				collector.Run(npc->container, entryList);
 
-				CommonParams params{ a_actor };
+				CommonParams params{ a_actor, npc, a_race };
 
 				if (auto eo = a_config.get_equipment_override(collector.m_data, a_slots, params))
 				{
@@ -3516,12 +3587,12 @@ namespace IED
 		{
 			if (auto npc = Game::GetActorBase(a_actor))
 			{
-				ItemCandidateCollector collector(a_actor, a_race);
+				ItemCandidateCollector collector(a_actor);
 				collector.Run(npc->container, entryList);
 
 				auto form = a_entry.GetFormIfActive();
 
-				CommonParams params{ a_actor };
+				CommonParams params{ a_actor, npc, a_race };
 
 				if (auto eo = !form ?
                                   a_config.get_equipment_override(collector.m_data, params) :
@@ -4030,7 +4101,8 @@ namespace IED
 
 	void Controller::UpdateTransformCustomImpl(
 		actorInfo_t& a_info,
-		const Data::configTransform_t& a_configEntry,
+		const Data::configCustom_t& a_configEntry,
+		const Data::configTransform_t& a_xfrmConfigEntry,
 		objectEntryCustom_t& a_entry)
 	{
 		if (!a_entry.state)
@@ -4038,11 +4110,22 @@ namespace IED
 			return;
 		}
 
-		a_entry.state->transform.UpdateData(a_configEntry);
+		a_entry.state->transform.Update(a_xfrmConfigEntry);
+
 		UpdateObjectTransform(
 			a_entry.state->transform,
 			a_entry.state->nodes.obj,
 			a_entry.state->nodes.ref);
+
+		a_entry.state->UpdateGroupTransforms(a_configEntry.group);
+
+		for (auto& e : a_entry.state->groupObjects)
+		{
+			UpdateObjectTransform(
+				e.second.transform,
+				e.second.object,
+				nullptr);
+		}
 
 		UpdateRootInMenu(a_info.root);
 	}
@@ -4192,11 +4275,6 @@ namespace IED
 				a_entry.state->nodes.obj,
 				a_entry.state->nodes.ref))
 		{
-			UpdateObjectTransform(
-				a_entry.state->transform,
-				a_entry.state->nodes.obj,
-				a_entry.state->nodes.ref);
-
 			a_entry.state->nodeDesc = a_node;
 			a_entry.state->atmReference = a_atmReference;
 

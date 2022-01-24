@@ -18,6 +18,9 @@
 #include "IED/StringHolder.h"
 
 #include "UICustomEditorStrings.h"
+#include "UIModelGroupEditorWidget.h"
+
+#include "UISingleCustomConfigUpdateParams.h"
 
 namespace IED
 {
@@ -32,13 +35,6 @@ namespace IED
 		{
 			T handle;
 			entryCustomData_t& data;
-		};
-
-		struct SingleCustomConfigUpdateParams
-		{
-			stl::fixed_string name;
-			Data::ConfigSex sex;
-			Data::configCustomEntry_t& entry;
 		};
 
 		struct CustomConfigUpdateParams
@@ -74,6 +70,7 @@ namespace IED
 			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
 			public UIEditorInterface,
+			public UIModelGroupEditorWidget<T>,
 			public virtual UIPopupToggleButtonWidget
 		{
 		public:
@@ -119,6 +116,10 @@ namespace IED
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
 		private:
+			void DrawFormSelectors(
+				T a_handle,
+				SingleCustomConfigUpdateParams& a_params);
+
 			void DrawCustomConfig(
 				T a_handle,
 				SingleCustomConfigUpdateParams& a_params);
@@ -193,6 +194,11 @@ namespace IED
 				const Data::configCustomEntry_t& a_entry,
 				bool a_infoDrawn);
 
+			virtual void OnModelGroupEditorChange(
+				T a_handle,
+				const SingleCustomConfigUpdateParams& a_params,
+				ModelGroupEditorOnChangeEventType a_type) override;
+
 			UIGenericFilter m_itemFilter;
 
 			UIFormPickerWidget m_formPicker;
@@ -207,6 +213,7 @@ namespace IED
 			Controller& a_controller) :
 			UIEditorPanelSettingsGear(a_controller),
 			UIBaseConfigWidget<T>(a_controller),
+			UIModelGroupEditorWidget<T>(m_formPicker, a_controller),
 			m_itemFilter(true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
@@ -648,33 +655,55 @@ namespace IED
 		}
 
 		template <class T>
-		void UICustomEditorWidget<T>::DrawCustomConfig(
+		void UICustomEditorWidget<T>::DrawFormSelectors(
 			T a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
 
-			ImGui::PushID("custom_item");
+			ImGui::PushID("fsel");
 
-			auto item_str = LS(CommonStrings::Item);
+			ImGui::PushID("gs");
 
-			if (ImGui::TreeNodeEx(
-					"tree",
-					ImGuiTreeNodeFlags_DefaultOpen |
-						ImGuiTreeNodeFlags_SpanAvailWidth,
-					"%s",
-					item_str))
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Single, "1"),
+					!data.customFlags.test(Data::CustomFlags::kUseGroup)))
 			{
-				ImGui::Spacing();
+				data.customFlags.clear(Data::CustomFlags::kUseGroup);
 
-				const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
-				                      data.equipmentOverrides.empty();
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Reset);
+			}
 
-				UICommon::PushDisabled(disabled);
+			ImGui::SameLine();
 
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Group, "2"),
+					data.customFlags.test(Data::CustomFlags::kUseGroup)))
+			{
+				data.customFlags.set(Data::CustomFlags::kUseGroup);
+
+				CreatePrimaryModelGroup(a_handle, a_params, data.group);
+
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Reset);
+			}
+
+			ImGui::PopID();
+
+			if (data.customFlags.test(Data::CustomFlags::kUseGroup))
+			{
+				DrawModelGroupEditorWidgetTree(a_handle, a_params, data.group);
+			}
+			else
+			{
 				if (m_formPicker.DrawFormPicker(
-						"fp_c",
-						item_str,
+						"fp",
+						LS(CommonStrings::Item),
 						data.form,
 						GetTipText(UITip::CustomForm)))
 				{
@@ -683,6 +712,35 @@ namespace IED
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
 				}
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UICustomEditorWidget<T>::DrawCustomConfig(
+			T a_handle,
+			SingleCustomConfigUpdateParams& a_params)
+		{
+			auto& data = a_params.entry(a_params.sex);
+
+			ImGui::PushID("custom_item");
+
+			if (ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Item)))
+			{
+				ImGui::Spacing();
+
+				const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
+				                      data.equipmentOverrides.empty();
+
+				UICommon::PushDisabled(disabled);
+
+				DrawFormSelectors(a_handle, a_params);
 
 				if (ImGui::TreeNodeEx(
 						"cond_tree",
@@ -829,6 +887,10 @@ namespace IED
 
 						ImGui::PushItemWidth(ImGui::GetFontSize() * -13.5f);
 
+						disabled = data.customFlags.test(Data::CustomFlags::kUseGroup);
+
+						UICommon::PushDisabled(disabled);
+
 						if (m_formPicker.DrawFormPicker(
 								"fp_m",
 								LS(UICustomEditorString::ModelSwap),
@@ -840,6 +902,8 @@ namespace IED
 								std::addressof(a_params),
 								PostChangeAction::Reset);
 						}
+
+						UICommon::PopDisabled(disabled);
 
 						ImGui::BeginGroup();
 						DrawCountRangeContextMenu(a_handle, a_params);
@@ -1336,6 +1400,8 @@ namespace IED
 			}
 			DrawTip(UITip::LeftWeapon);
 
+			UICommon::PushDisabled(true);
+
 			if (ImGui::CheckboxFlagsT(
 					LS(UIWidgetCommonStrings::DisableCollision, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),
@@ -1344,6 +1410,8 @@ namespace IED
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
 			DrawTipWarn(UITip::DisableCollision);
+
+			UICommon::PopDisabled(true);
 
 			/*if (ImGui::CheckboxFlagsT(
 					LS(UICustomEditorString::LoadARMA, "3"),
@@ -1380,6 +1448,34 @@ namespace IED
 			bool a_infoDrawn)
 		{
 			return false;
+		}
+
+		template <class T>
+		void UICustomEditorWidget<T>::OnModelGroupEditorChange(
+			T a_handle,
+			const SingleCustomConfigUpdateParams& a_params,
+			ModelGroupEditorOnChangeEventType a_type)
+		{
+			switch (a_type)
+			{
+			case ModelGroupEditorOnChangeEventType::Form:
+			case ModelGroupEditorOnChangeEventType::Flags:
+
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Reset);
+
+				break;
+			case ModelGroupEditorOnChangeEventType::Transform:
+
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::UpdateTransform);
+
+				break;
+			}
 		}
 
 	}
