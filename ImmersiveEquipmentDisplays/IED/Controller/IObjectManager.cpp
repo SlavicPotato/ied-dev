@@ -143,6 +143,7 @@ namespace IED
 		}
 
 		a_objects.m_cmeNodes.clear();
+		a_objects.m_movNodes.clear();
 		a_objects.m_weapNodes.clear();
 		a_objects.m_monitorNodes.clear();
 	}
@@ -519,6 +520,13 @@ namespace IED
 		bool a_leftWeapon,
 		bool a_visible)
 	{
+		RemoveObject(
+			a_params.actor,
+			a_params.handle,
+			a_objectEntry,
+			a_params.objects,
+			a_params.flags);
+
 		if (!a_node)
 		{
 			return false;

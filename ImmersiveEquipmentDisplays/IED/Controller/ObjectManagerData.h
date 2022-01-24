@@ -204,8 +204,10 @@ namespace IED
 		std::uint32_t wantEval: 1;
 		std::uint32_t immediateEval: 1;
 		std::uint32_t evalCountdown: 2;
-		std::uint32_t unused: 26;
+		std::uint32_t unused: 25;
 	};
+
+	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
 
 	struct weapNodeEntry_t
 	{

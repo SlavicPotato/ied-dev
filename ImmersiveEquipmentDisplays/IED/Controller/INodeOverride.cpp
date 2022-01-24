@@ -990,7 +990,8 @@ namespace IED
 				ITaskPool::AddPriorityTask(
 					[target = a_target,
 				     node = a_entry.node]() {
-						if (node->m_parent && node->m_parent != target)
+						if (node->m_parent &&
+					        node->m_parent != target)
 						{
 							target->AttachChild(node, true);
 						}
