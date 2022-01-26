@@ -25,6 +25,8 @@ namespace IED
 		case TESObjectWEAP::kTypeID:
 		case TESObjectBOOK::kTypeID:
 		case TESObjectACTI::kTypeID:
+		case TESObjectANIO::kTypeID:
+		case TESObjectDOOR::kTypeID:
 		case BGSTalkingActivator::kTypeID:
 		case TESSoulGem::kTypeID:
 		case TESKey::kTypeID:
@@ -36,6 +38,7 @@ namespace IED
 		case TESFlora::kTypeID:
 		case TESFurniture::kTypeID:
 		case BGSStaticCollection::kTypeID:
+		case BGSExplosion::kTypeID:
 		case TESObjectARMO::kTypeID:
 			return true;
 		case TESObjectLIGH::kTypeID:
@@ -217,6 +220,12 @@ namespace IED
 			return GetEditorID(static_cast<TESRace*>(a_form));
 		case TESQuest::kTypeID:
 			return GetEditorID(static_cast<TESQuest*>(a_form));
+		case TESObjectANIO::kTypeID:
+			return GetEditorID(static_cast<TESObjectANIO*>(a_form));
+		case TESObjectDOOR::kTypeID:
+			return GetFullName<TESObjectDOOR>(a_form);
+		case BGSExplosion::kTypeID:
+			return GetFullName<BGSExplosion>(a_form);
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -299,6 +308,12 @@ namespace IED
 			return "Art Object";
 		case BGSSoundDescriptorForm::kTypeID:
 			return "Sound Descriptor";
+		case TESObjectANIO::kTypeID:
+			return "Anim Object";
+		case TESObjectDOOR::kTypeID:
+			return "Door";
+		case BGSExplosion::kTypeID:
+			return "Explosion";
 		default:
 			return nullptr;
 		}

@@ -89,10 +89,16 @@ namespace IED
 			return ExtractFormModelParams<BGSMovableStatic>(a_form, a_out);
 		case BGSStaticCollection::kTypeID:
 			return ExtractFormModelParams<BGSStaticCollection>(a_form, a_out);
+		case TESObjectANIO::kTypeID:
+			return ExtractFormModelParams<TESObjectANIO>(a_form, a_out);
+		case TESObjectDOOR::kTypeID:
+			return ExtractFormModelParams<TESObjectDOOR>(a_form, a_out);
 		case TESObjectTREE::kTypeID:
 			return ExtractModelParams(std::addressof(static_cast<TESObjectTREE*>(a_form)->model), a_out);
 		case TESGrass::kTypeID:
 			return ExtractModelParams(std::addressof(static_cast<TESGrass*>(a_form)->model), a_out);
+		case BGSExplosion::kTypeID:
+			return ExtractModelParams(std::addressof(static_cast<BGSExplosion*>(a_form)->model), a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)

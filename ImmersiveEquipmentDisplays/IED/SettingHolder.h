@@ -116,7 +116,7 @@ namespace IED
 
 				UI::UIEditorPanel lastPanel;
 
-				stl::optional<ConfigKeyPair> toggleKeys;
+				stl::optional<ConfigKeyPair> openKeys;
 
 				bool enableControlLock{ true };
 				bool enableRestrictions{ false };

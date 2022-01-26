@@ -68,6 +68,8 @@ namespace IED
 			case BGSTalkingActivator::kTypeID:
 			case TESObjectARMO::kTypeID:
 			case TESObjectLIGH::kTypeID:
+			case TESObjectANIO::kTypeID:
+			case TESObjectDOOR::kTypeID:
 			case TESSoulGem::kTypeID:
 			case TESKey::kTypeID:
 			case TESAmmo::kTypeID:
@@ -83,6 +85,7 @@ namespace IED
 			case BGSKeyword::kTypeID:
 			case SpellItem::kTypeID:
 			case BGSHeadPart::kTypeID:
+			case BGSExplosion::kTypeID:
 				return form;
 			default:
 				return nullptr;

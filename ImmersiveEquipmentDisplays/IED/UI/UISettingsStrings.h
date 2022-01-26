@@ -14,7 +14,7 @@ namespace IED
 			EnableEquipSounds = 4403,
 			NPCSounds = 4404,
 			LogLevel = 4405,
-			InterfaceToggleKeys = 4406,
+			InterfaceOpenKeys = 4406,
 			CloseOnEsc = 4407,
 			EnableRestrictions = 4408,
 			ControlLock = 4409,

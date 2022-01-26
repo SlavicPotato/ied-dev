@@ -292,7 +292,7 @@ namespace IED
 						"if_toggle",
 						true,
 						"%s",
-						LS(UISettingsStrings::InterfaceToggleKeys)))
+						LS(UISettingsStrings::InterfaceOpenKeys)))
 				{
 					ImGui::Indent();
 					ImGui::Spacing();
@@ -305,7 +305,7 @@ namespace IED
 						ImGui::Spacing();
 					}
 
-					auto tmpk = m_controller.GetInputHandlers().uiToggle.GetComboKey();
+					auto tmpk = m_controller.GetInputHandlers().uiOpen.GetComboKey();
 
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
@@ -313,24 +313,24 @@ namespace IED
 							tmpk,
 							true)))
 					{
-						m_controller.GetInputHandlers().uiToggle.SetComboKey(
+						m_controller.GetInputHandlers().uiOpen.SetComboKey(
 							tmpk);
 
-						ui.toggleKeys->comboKey = tmpk;
-						ui.toggleKeys.mark(true);
+						ui.openKeys->comboKey = tmpk;
+						ui.openKeys.mark(true);
 					}
 
-					tmpk = m_controller.GetInputHandlers().uiToggle.GetKey();
+					tmpk = m_controller.GetInputHandlers().uiOpen.GetKey();
 
 					if (config.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
 							tmpk)))
 					{
-						m_controller.GetInputHandlers().uiToggle.SetKey(tmpk);
+						m_controller.GetInputHandlers().uiOpen.SetKey(tmpk);
 
-						ui.toggleKeys->key = tmpk;
-						ui.toggleKeys.mark(true);
+						ui.openKeys->key = tmpk;
+						ui.openKeys.mark(true);
 					}
 
 					ImGui::Spacing();

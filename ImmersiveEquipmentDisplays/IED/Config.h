@@ -61,8 +61,8 @@ namespace IED
 
 		bool m_enableUI{ true };
 		bool m_dpiAwareness{ false };
-		ConfigKeyCombo m_toggleUIKeys;
-		bool m_forceUIToggleKeys{ false };
+		ConfigKeyCombo m_UIOpenKeys;
+		bool m_forceUIOpenKeys{ false };
 		bool m_enableUIRestrictions{ false };
 		long long m_taskPoolBudget{ 0 };
 		bool m_closeLogFile{ false };

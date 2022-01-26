@@ -239,6 +239,9 @@ namespace IED
 			      TESObjectACTI::kTypeID,
 			      BGSTalkingActivator::kTypeID,
 			      TESGrass::kTypeID,
+			      TESObjectANIO::kTypeID,
+			      TESObjectDOOR::kTypeID,
+			      BGSExplosion::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 

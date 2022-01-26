@@ -35,10 +35,11 @@ namespace IED
 			      { UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
 			      { UIFormBrowserStrings::Races, TESRace::kTypeID },
 			      { UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
+			      { UIFormBrowserStrings::AnimObject, TESObjectANIO::kTypeID },
 			      { UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
+			      { UIFormBrowserStrings::Grass, TESGrass::kTypeID },
 			      { UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
 			      { UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
-			      { UIFormBrowserStrings::Grass, TESGrass::kTypeID },
 			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
 			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID } }
 

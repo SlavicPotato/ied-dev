@@ -52,7 +52,7 @@ namespace IED
 
 		if (m_iniconf->m_enableUI)
 		{
-			Drivers::Input::RegisterForPriorityKeyEvents(m_inputHandlers.uiToggle);
+			Drivers::Input::RegisterForPriorityKeyEvents(m_inputHandlers.uiOpen);
 		}
 	}
 
@@ -254,12 +254,15 @@ namespace IED
 
 		if (m_iniconf->m_enableUI)
 		{
-			m_inputHandlers.uiToggle.SetLambda(
+			m_inputHandlers.uiOpen.SetLambda(
 				[this] {
 					ITaskPool::AddTask([this] {
 						UIOpen();
 					});
 				});
+
+			m_inputHandlers.uiOpen.SetProcessPaused(
+				m_iniconf->m_uiEnableInMenu);
 		}
 	}
 
@@ -273,34 +276,34 @@ namespace IED
 		UISetLock(config.ui.enableControlLock);
 		UISetEnabledInMenu(m_iniconf->m_uiEnableInMenu);
 
-		if (m_iniconf->m_forceUIToggleKeys &&
-		    m_iniconf->m_toggleUIKeys.Has())
+		if (m_iniconf->m_forceUIOpenKeys &&
+		    m_iniconf->m_UIOpenKeys.Has())
 		{
-			m_inputHandlers.uiToggle.SetKeys(
-				m_iniconf->m_toggleUIKeys.GetComboKey(),
-				m_iniconf->m_toggleUIKeys.GetKey());
+			m_inputHandlers.uiOpen.SetKeys(
+				m_iniconf->m_UIOpenKeys.GetComboKey(),
+				m_iniconf->m_UIOpenKeys.GetKey());
 
 			m_iniKeysForced = true;
 		}
 		else
 		{
-			if (config.ui.toggleKeys)
+			if (config.ui.openKeys)
 			{
-				m_inputHandlers.uiToggle.SetKeys(
-					config.ui.toggleKeys->comboKey,
-					config.ui.toggleKeys->key);
+				m_inputHandlers.uiOpen.SetKeys(
+					config.ui.openKeys->comboKey,
+					config.ui.openKeys->key);
 			}
-			else if (m_iniconf->m_toggleUIKeys.Has())
+			else if (m_iniconf->m_UIOpenKeys.Has())
 			{
-				m_inputHandlers.uiToggle.SetKeys(
-					m_iniconf->m_toggleUIKeys.GetComboKey(),
-					m_iniconf->m_toggleUIKeys.GetKey());
+				m_inputHandlers.uiOpen.SetKeys(
+					m_iniconf->m_UIOpenKeys.GetComboKey(),
+					m_iniconf->m_UIOpenKeys.GetKey());
 			}
 		}
 
-		if (!m_inputHandlers.uiToggle.Enabled())
+		if (!m_inputHandlers.uiOpen.Enabled())
 		{
-			m_inputHandlers.uiToggle.SetKeys(
+			m_inputHandlers.uiOpen.SetKeys(
 				0,
 				DIK_BACKSPACE);
 		}

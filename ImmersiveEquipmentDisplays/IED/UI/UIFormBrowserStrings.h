@@ -33,5 +33,6 @@ namespace IED
 		Quests = 5224,
 		TalkingActivators = 5225,
 		Grass = 5226,
+		AnimObject = 5227,
 	};
 }

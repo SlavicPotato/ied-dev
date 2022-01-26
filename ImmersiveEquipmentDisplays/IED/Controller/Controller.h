@@ -889,7 +889,7 @@ namespace IED
 		struct
 		{
 			Handlers::ComboKeyPressHandler playerBlock;
-			Handlers::ComboKeyPressHandler uiToggle;
+			Handlers::ComboKeyPressHandler uiOpen;
 		} m_inputHandlers;
 
 		struct
