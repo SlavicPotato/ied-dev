@@ -50,21 +50,27 @@ namespace IED
 		if (m_UIContext->IsWindowOpen())
 		{
 			m_UIContext->SetOpenState(false);
+
 			return UIOpenResult::kResultDisabled;
 		}
 		else
 		{
-			if (UIRunEnableChecks())
-			{
-				m_UIContext->SetOpenState(true);
-				OnUIOpen();
-				m_UIContext->OnOpen();
-				Drivers::UI::AddTask(0, this);
-				return UIOpenResult::kResultEnabled;
-			}
+			return UIOpenImpl();
 		}
+	}
 
-		return UIOpenResult::kResultNone;
+	auto IUI::UIOpen() -> UIOpenResult
+	{
+		IScopedLock lock(UIGetLock());
+
+		if (!m_UIContext->IsWindowOpen())
+		{
+			return UIOpenImpl();
+		}
+		else
+		{
+			return UIOpenResult::kResultNone;
+		}
 	}
 
 	bool IUI::UIRunTask()
@@ -98,10 +104,23 @@ namespace IED
 		{
 			HALT(e.what());
 		}
-		catch (...)
+	}
+
+	auto IUI::UIOpenImpl() -> UIOpenResult
+	{
+		if (UIRunEnableChecks())
 		{
-			HALT("Exception occured");
+			if (Drivers::UI::AddTask(0, this))
+			{
+				m_UIContext->SetOpenState(true);
+				OnUIOpen();
+				m_UIContext->OnOpen();
+
+				return UIOpenResult::kResultEnabled;
+			}
 		}
+
+		return UIOpenResult::kResultNone;
 	}
 
 }  // namespace IED

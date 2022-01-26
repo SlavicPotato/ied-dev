@@ -257,7 +257,7 @@ namespace IED
 			m_inputHandlers.uiToggle.SetLambda(
 				[this] {
 					ITaskPool::AddTask([this] {
-						UIToggle();
+						UIOpen();
 					});
 				});
 		}
@@ -301,7 +301,7 @@ namespace IED
 		if (!m_inputHandlers.uiToggle.Enabled())
 		{
 			m_inputHandlers.uiToggle.SetKeys(
-				DIK_LSHIFT,
+				0,
 				DIK_BACKSPACE);
 		}
 

@@ -116,7 +116,7 @@ namespace IED
 				return !m_Instance.m_drawTasks.empty();
 			}
 
-			static void AddTask(
+			[[nodiscard]] static bool AddTask(
 				std::uint32_t a_id,
 				Tasks::UIRenderTaskBase* a_task);
 
@@ -200,7 +200,7 @@ namespace IED
 			{
 				return m_Instance.m_imInitialized;
 			}
-			
+
 			static constexpr auto IsInitialized() noexcept
 			{
 				return m_Instance.m_initialized;

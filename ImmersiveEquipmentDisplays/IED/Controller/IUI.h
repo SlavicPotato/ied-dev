@@ -37,6 +37,7 @@ namespace IED
 	protected:
 		void UIInitialize(Controller& a_controller);
 		UIOpenResult UIToggle();
+		UIOpenResult UIOpen();
 
 		[[nodiscard]] bool UIIsInitialized() const noexcept;
 
@@ -44,6 +45,8 @@ namespace IED
 		virtual bool UIRunTask() override;
 		virtual constexpr WCriticalSection& UIGetLock() noexcept = 0;
 		virtual void OnUIOpen(){};
+
+		UIOpenResult UIOpenImpl();
 
 		std::unique_ptr<UI::UIMain> m_UIContext;
 		bool m_resetUI{ false };

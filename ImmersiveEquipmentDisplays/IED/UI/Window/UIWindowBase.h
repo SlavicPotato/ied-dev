@@ -24,12 +24,12 @@ namespace IED
 				m_openState = !m_openState;
 			}
 
-			inline constexpr bool* GetOpenState() noexcept
+			[[nodiscard]] inline constexpr bool* GetOpenState() noexcept
 			{
 				return std::addressof(m_openState);
 			}
 
-			inline constexpr bool IsWindowOpen() const noexcept
+			[[nodiscard]] inline constexpr bool IsWindowOpen() const noexcept
 			{
 				return m_openState;
 			}

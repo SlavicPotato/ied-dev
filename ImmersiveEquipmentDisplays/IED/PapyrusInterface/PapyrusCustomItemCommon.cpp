@@ -225,8 +225,7 @@ namespace IED
 
 				stl::fixed_string node(a_node.c_str());
 
-				const auto& nodeMap = NodeMap::GetSingleton();
-				const auto& data = nodeMap.GetData();
+				const auto& data = NodeMap::GetSingleton().GetData();
 
 				if (auto it = data.find(node); it != data.end())
 				{

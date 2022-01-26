@@ -61,6 +61,7 @@ namespace IED
 			case TESObjectSTAT::kTypeID:
 			case BGSMovableStatic::kTypeID:
 			case TESObjectTREE::kTypeID:
+			case TESGrass::kTypeID:
 			case TESObjectWEAP::kTypeID:
 			case TESObjectBOOK::kTypeID:
 			case TESObjectACTI::kTypeID:

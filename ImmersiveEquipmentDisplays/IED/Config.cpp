@@ -63,8 +63,8 @@ namespace IED
 
 		m_enableUI = parsers.reader.Get(SECT_GUI, "Enabled", true);
 		m_dpiAwareness = parsers.reader.Get(SECT_GUI, "EnableProcessDPIAwareness", false);
-		m_toggleUIKeys.Parse(parsers.reader.Get(SECT_GUI, "ToggleKeys", "0x2A+0x0E"));
-		m_forceUIToggleKeys = parsers.reader.Get(SECT_GUI, "OverrideToggleKeys", false);
+		m_toggleUIKeys.Parse(parsers.reader.Get(SECT_GUI, "OpenKeys", "0x0E"));
+		m_forceUIToggleKeys = parsers.reader.Get(SECT_GUI, "OverrideOpenKeys", false);
 		m_enableUIRestrictions = parsers.reader.Get(SECT_GUI, "EnableRestrictions", false);
 		m_UIScaling = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
 

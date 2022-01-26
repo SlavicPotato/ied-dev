@@ -16,7 +16,6 @@ namespace IED
 		if constexpr (std::is_same_v<T, TESModel>)
 		{
 			path = a_ptr->GetModelName();
-			//texSwap = a_ptr->GetAsModelTextureSwap();
 		}
 		else
 		{
@@ -92,6 +91,8 @@ namespace IED
 			return ExtractFormModelParams<BGSStaticCollection>(a_form, a_out);
 		case TESObjectTREE::kTypeID:
 			return ExtractModelParams(std::addressof(static_cast<TESObjectTREE*>(a_form)->model), a_out);
+		case TESGrass::kTypeID:
+			return ExtractModelParams(std::addressof(static_cast<TESGrass*>(a_form)->model), a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)

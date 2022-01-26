@@ -38,6 +38,7 @@ namespace IED
 			      { UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
 			      { UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
 			      { UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
+			      { UIFormBrowserStrings::Grass, TESGrass::kTypeID },
 			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
 			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID } }
 

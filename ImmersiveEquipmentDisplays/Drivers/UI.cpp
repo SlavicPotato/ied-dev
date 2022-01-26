@@ -372,18 +372,18 @@ namespace IED
 			m_state.timeFrozen = a_switch;
 		}
 
-		void UI::AddTask(std::uint32_t a_id, UIRenderTaskBase* a_task)
+		bool UI::AddTask(std::uint32_t a_id, UIRenderTaskBase* a_task)
 		{
 			IScopedLock lock(m_Instance.m_lock);
 
 			if (!m_Instance.m_imInitialized)
 			{
-				return;
+				return false;
 			}
 
 			if (auto r = m_Instance.m_drawTasks.emplace(a_id, a_task); !r.second)
 			{
-				return;
+				return false;
 			}
 
 			a_task->m_state.holdsLock = a_task->m_options.lock;
@@ -415,6 +415,8 @@ namespace IED
 			{
 				m_Instance.FreezeTime(true);
 			}
+
+			return true;
 		}
 
 		void UI::RemoveTask(uint32_t id)

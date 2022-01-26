@@ -12,7 +12,7 @@ namespace IED
 		{
 			if (!m_options.enableInMenu && Game::InPausedMenu())
 			{
-				Game::Debug::Notification("UI unavailable while an in-game menu is open");
+				//Game::Debug::Notification("UI unavailable while an in-game menu is open");
 				return false;
 			}
 

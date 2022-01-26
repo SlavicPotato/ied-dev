@@ -35,27 +35,22 @@ namespace IED
 			{
 				for (auto inputEvent = *a_evns; inputEvent; inputEvent = inputEvent->next)
 				{
-					if (inputEvent->eventType != InputEvent::kEventType_Button)
-					{
-						continue;
-					}
-
-					auto buttonEvent = RTTI<ButtonEvent>::Cast(inputEvent);
+					auto buttonEvent = inputEvent->AsButtonEvent();
 					if (!buttonEvent)
 					{
 						continue;
 					}
 
-					std::uint32_t deviceType = buttonEvent->deviceType;
+					auto deviceType = buttonEvent->device;
 					std::uint32_t keyCode;
 
-					if (deviceType == kDeviceType_Mouse)
+					if (deviceType == INPUT_DEVICE::kMouse)
 					{
-						keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->keyMask;
+						keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
 					}
-					else if (deviceType == kDeviceType_Keyboard)
+					else if (deviceType == INPUT_DEVICE::kKeyboard)
 					{
-						keyCode = buttonEvent->keyMask;
+						keyCode = buttonEvent->GetIDCode();
 					}
 					else
 					{
@@ -67,16 +62,13 @@ namespace IED
 						continue;
 					}
 
-					if (buttonEvent->flags != 0)
+					if (buttonEvent->IsDown())
 					{
-						if (buttonEvent->timer == 0.0f)
-						{
-							m_Instance.DispatchPriorityKeyEvent(
-								Handlers::KeyEventType::KeyDown,
-								keyCode);
-						}
+						m_Instance.DispatchPriorityKeyEvent(
+							Handlers::KeyEventType::KeyDown,
+							keyCode);
 					}
-					else
+					else if (buttonEvent->IsUpLF())
 					{
 						m_Instance.DispatchPriorityKeyEvent(
 							Handlers::KeyEventType::KeyUp,
@@ -102,37 +94,29 @@ namespace IED
 			{
 				for (auto inputEvent = *a_evns; inputEvent; inputEvent = inputEvent->next)
 				{
-					if (inputEvent->eventType != InputEvent::kEventType_Button)
-					{
-						continue;
-					}
-
-					auto buttonEvent = RTTI<ButtonEvent>::Cast(inputEvent);
+					auto buttonEvent = inputEvent->AsButtonEvent();
 					if (!buttonEvent)
 					{
 						continue;
 					}
 
-					if (buttonEvent->deviceType != kDeviceType_Keyboard)
+					if (buttonEvent->device != INPUT_DEVICE::kKeyboard)
 					{
 						continue;
 					}
 
-					std::uint32_t keyCode = buttonEvent->keyMask;
+					std::uint32_t keyCode = buttonEvent->GetIDCode();
 
 					if (!keyCode || keyCode >= InputMap::kMaxMacros)
 					{
 						continue;
 					}
 
-					if (buttonEvent->flags != 0)
+					if (buttonEvent->IsDown())
 					{
-						if (buttonEvent->timer == 0.0f)
-						{
-							DispatchKeyEvent(Handlers::KeyEventType::KeyDown, keyCode);
-						}
+						DispatchKeyEvent(Handlers::KeyEventType::KeyDown, keyCode);
 					}
-					else
+					else if (buttonEvent->IsUpLF())
 					{
 						DispatchKeyEvent(Handlers::KeyEventType::KeyUp, keyCode);
 					}

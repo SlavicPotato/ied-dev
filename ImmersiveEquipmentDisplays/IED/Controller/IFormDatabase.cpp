@@ -139,6 +139,7 @@ namespace IED
 		Populate(*result, dh->arrTACT);
 		Populate(*result, dh->arrSNDR);
 		Populate(*result, dh->quests);
+		Populate(*result, dh->arrGRAS);
 		Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
 		Populate2(

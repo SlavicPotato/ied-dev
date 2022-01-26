@@ -32,5 +32,6 @@ namespace IED
 		Sounds = 5223,
 		Quests = 5224,
 		TalkingActivators = 5225,
+		Grass = 5226,
 	};
 }
