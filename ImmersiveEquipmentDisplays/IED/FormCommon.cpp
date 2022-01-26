@@ -24,6 +24,7 @@ namespace IED
 		case TESObjectWEAP::kTypeID:
 		case TESObjectBOOK::kTypeID:
 		case TESObjectACTI::kTypeID:
+		case BGSTalkingActivator::kTypeID:
 		case TESSoulGem::kTypeID:
 		case TESKey::kTypeID:
 		case TESAmmo::kTypeID:
@@ -202,9 +203,10 @@ namespace IED
 			return GetFullName<MagicItem>(a_form);
 		case TESAmmo::kTypeID:
 			return GetFullName<TESAmmo>(a_form);
+		case TESObjectACTI::kTypeID:
+		case BGSTalkingActivator::kTypeID:
 		case TESFlora::kTypeID:
 		case TESFurniture::kTypeID:
-		case TESObjectACTI::kTypeID:
 			return GetFullName<TESObjectACTI>(a_form);
 		case BGSHeadPart::kTypeID:
 			return GetFullName<BGSHeadPart>(a_form);
@@ -278,6 +280,8 @@ namespace IED
 			return "Furniture";
 		case TESObjectACTI::kTypeID:
 			return "Activator";
+		case BGSTalkingActivator::kTypeID:
+			return "Talking Activator";
 		case TESObjectREFR::kTypeID:
 			return "Reference";
 		case Actor::kTypeID:
@@ -325,13 +329,14 @@ namespace IED
 			return HasKeywordImpl<ScrollItem>(a_form, a_keyword);
 		case TESAmmo::kTypeID:
 			return HasKeywordImpl<TESAmmo>(a_form, a_keyword);
-		case TESFurniture::kTypeID:
-			return HasKeywordImpl<TESFurniture>(a_form, a_keyword);
 		case SpellItem::kTypeID:
 			return HasKeywordImpl<SpellItem>(a_form, a_keyword);
 		case TESRace::kTypeID:
 			return HasKeywordImpl<TESRace>(a_form, a_keyword);
 		case TESObjectACTI::kTypeID:
+		case BGSTalkingActivator::kTypeID:
+		case TESFlora::kTypeID:
+		case TESFurniture::kTypeID:
 			return HasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
 		default:
 			return false;

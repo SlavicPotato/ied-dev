@@ -867,6 +867,12 @@ namespace IED
 		a_entry.node->m_localTransform = xfrm;
 	}
 
+	static void reset_node_override(NiAVObject* a_object) noexcept
+	{
+		a_object->m_localTransform = {};
+		a_object->SetVisible(true);
+	}
+
 	void INodeOverride::ResetNodeOverride(
 		const cmeNodeEntry_t& a_entry)
 	{
@@ -874,14 +880,12 @@ namespace IED
 		{
 			ITaskPool::AddPriorityTask(
 				[node = a_entry.node]() {
-					node->m_localTransform = {};
-					node->SetVisible(true);
+					reset_node_override(node);
 				});
 		}
 		else
 		{
-			a_entry.node->m_localTransform = {};
-			a_entry.node->SetVisible(true);
+			reset_node_override(a_entry.node);
 		}
 	}
 

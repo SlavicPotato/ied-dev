@@ -136,6 +136,7 @@ namespace IED
 		Populate(*result, dh->arrARTO);
 		Populate(*result, dh->arrTREE);
 		Populate(*result, dh->arrACTI);
+		Populate(*result, dh->arrTACT);
 		Populate(*result, dh->arrSNDR);
 		Populate(*result, dh->quests);
 		Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
@@ -151,4 +152,4 @@ namespace IED
 		return result;
 	}
 
-}  // namespace IED
+}

@@ -237,6 +237,7 @@ namespace IED
 			      TESFurniture::kTypeID,
 			      BGSArtObject::kTypeID,
 			      TESObjectACTI::kTypeID,
+			      BGSTalkingActivator::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 

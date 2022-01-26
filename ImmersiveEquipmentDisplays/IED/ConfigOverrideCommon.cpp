@@ -64,6 +64,7 @@ namespace IED
 			case TESObjectWEAP::kTypeID:
 			case TESObjectBOOK::kTypeID:
 			case TESObjectACTI::kTypeID:
+			case BGSTalkingActivator::kTypeID:
 			case TESObjectARMO::kTypeID:
 			case TESObjectLIGH::kTypeID:
 			case TESSoulGem::kTypeID:

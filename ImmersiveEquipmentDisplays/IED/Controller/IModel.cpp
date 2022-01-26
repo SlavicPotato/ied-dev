@@ -82,6 +82,7 @@ namespace IED
 		case TESObjectACTI::kTypeID:
 		case TESFlora::kTypeID:
 		case TESFurniture::kTypeID:
+		case BGSTalkingActivator::kTypeID:
 			return ExtractFormModelParams<TESObjectACTI>(a_form, a_out);
 		case TESObjectSTAT::kTypeID:
 			return ExtractFormModelParams<TESObjectSTAT>(a_form, a_out);

@@ -30,6 +30,7 @@ namespace IED
 		Keywords = 5221,
 		Activators = 5222,
 		Sounds = 5223,
-		Quests = 5224
+		Quests = 5224,
+		TalkingActivators = 5225,
 	};
 }
