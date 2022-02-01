@@ -747,15 +747,6 @@ namespace IED
 				xfrm.rotation->y,
 				xfrm.rotation->z);
 
-			/*if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAbsoluteRotation))
-			{
-				a_out.rot = rot;
-			}
-			else
-			{
-				a_out.rot = a_out.rot * rot;
-			}*/
-
 			a_out.rot = a_out.rot * rot;
 		}
 
@@ -798,7 +789,14 @@ namespace IED
 				a_posAccum += pos;
 			}
 
-			a_out.pos += (a_out.rot * pos) * a_out.scale;
+			if (a_data.flags.test(Data::NodeOverrideValuesFlags::kAbsolutePosition))
+			{
+				a_out.pos += pos;
+			}
+			else
+			{
+				a_out.pos += (a_out.rot * pos) * a_out.scale;
+			}
 		}
 	}
 
@@ -830,7 +828,14 @@ namespace IED
 			a_posAccum += offset;
 		}
 
-		a_out.pos += (a_out.rot * offset) * a_out.scale;
+		if (a_data.flags.test(Data::NodeOverrideValuesFlags::kAbsolutePosition))
+		{
+			a_out.pos += offset;
+		}
+		else
+		{
+			a_out.pos += (a_out.rot * offset) * a_out.scale;
+		}
 	}
 
 	void INodeOverride::ApplyNodeOverride(
@@ -847,17 +852,22 @@ namespace IED
 
 		if (a_data.transform.rotation)
 		{
-			NiMatrix33 rot(
+			xfrm.rot.SetEulerAngles(
 				a_data.transform.rotation->x,
 				a_data.transform.rotation->y,
 				a_data.transform.rotation->z);
-
-			xfrm.rot = xfrm.rot * rot;
 		}
 
 		if (a_data.transform.position)
 		{
-			xfrm.pos += (xfrm.rot * *a_data.transform.position) * xfrm.scale;
+			if (a_data.flags.test(Data::NodeOverrideValuesFlags::kAbsolutePosition))
+			{
+				xfrm.pos = *a_data.transform.position;
+			}
+			else
+			{
+				xfrm.pos = (xfrm.rot * *a_data.transform.position) * xfrm.scale;
+			}
 		}
 
 		NiPoint3 accumPos;
@@ -867,7 +877,7 @@ namespace IED
 		a_entry.node->m_localTransform = xfrm;
 	}
 
-	static void reset_node_override(NiAVObject* a_object) noexcept
+	void INodeOverride::ResetNodeOverrideImpl(NiAVObject* a_object)
 	{
 		a_object->m_localTransform = {};
 		a_object->SetVisible(true);
@@ -876,16 +886,17 @@ namespace IED
 	void INodeOverride::ResetNodeOverride(
 		const cmeNodeEntry_t& a_entry)
 	{
-		if (EngineExtensions::SceneRendering())
+		if (EngineExtensions::SceneRendering() ||
+		    !ITaskPool::IsRunningOnCurrentThread())
 		{
 			ITaskPool::AddPriorityTask(
 				[node = a_entry.node]() {
-					reset_node_override(node);
+					ResetNodeOverrideImpl(node);
 				});
 		}
 		else
 		{
-			reset_node_override(a_entry.node);
+			ResetNodeOverrideImpl(a_entry.node);
 		}
 	}
 
@@ -989,7 +1000,8 @@ namespace IED
 		    a_entry.node->m_parent &&
 		    a_entry.node->m_parent != a_target)
 		{
-			if (EngineExtensions::SceneRendering())
+			if (EngineExtensions::SceneRendering() ||
+			    !ITaskPool::IsRunningOnCurrentThread())
 			{
 				ITaskPool::AddPriorityTask(
 					[target = a_target,

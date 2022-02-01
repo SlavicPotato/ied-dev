@@ -1,8 +1,17 @@
 #pragma once
 
+#include "IED/ConfigOverrideTransform.h"
+
 namespace IED
 {
-	class OverrideNodeInfo
+	enum class NodeOverrideDataEntryFlags : std::uint32_t
+	{
+		kNone = 0
+	};
+
+	DEFINE_ENUM_CLASS_BITWISE(NodeOverrideDataEntryFlags);
+
+	class NodeOverrideData
 	{
 	public:
 		struct weaponNodeListEntry_t
@@ -42,9 +51,38 @@ namespace IED
 		{
 			const char* desc;
 			BSFixedString bsname;
+			stl::flag<NodeOverrideDataEntryFlags> flags{ NodeOverrideDataEntryFlags::kNone };
+		};
+
+		struct extraNodeEntry_t
+		{
+			extraNodeEntry_t(
+				const char* a_mov,
+				const char* a_cme,
+				const char *a_parent,
+				const Data::configTransform_t& a_transform_m,
+				const Data::configTransform_t& a_transform_f) :
+				name_cme(a_cme),
+				name_mov(a_mov),
+				bsname_cme(a_cme),
+				bsname_mov(a_mov),
+				name_parent(a_parent),
+				transform_m(a_transform_m.to_nitransform()),
+				transform_f(a_transform_f.to_nitransform())
+			{
+			}
+
+			stl::fixed_string name_cme;
+			stl::fixed_string name_mov;
+			BSFixedString bsname_cme;
+			BSFixedString bsname_mov;
+			BSFixedString name_parent;
+			NiTransform transform_m;
+			NiTransform transform_f;
 		};
 
 		using cm_data_type = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
+		using exn_data_type = std::list<extraNodeEntry_t>;
 
 		static void Create();
 
@@ -67,17 +105,23 @@ namespace IED
 		{
 			return m_Instance.m_weap;
 		}
+		
+		inline static constexpr const auto& GetExtraNodes() noexcept
+		{
+			return m_Instance.m_extra;
+		}
 
 	private:
-		OverrideNodeInfo() = default;
+		NodeOverrideData() = default;
 
 		cm_data_type m_cme;
 		cm_data_type m_mov;
 		mon_data_type m_monitor;
 		weapnode_data_type m_weap;
+		exn_data_type m_extra;
 
 		bool m_initialized{ false };
 
-		static OverrideNodeInfo m_Instance;
+		static NodeOverrideData m_Instance;
 	};
 }

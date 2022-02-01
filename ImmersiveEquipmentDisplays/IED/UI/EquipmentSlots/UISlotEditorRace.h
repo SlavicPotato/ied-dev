@@ -48,6 +48,10 @@ namespace IED
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
+			
+			virtual void ApplyProfile(
+				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
+				const SlotProfile& a_profile) override;
 
 			virtual entrySlotData_t GetData(
 				Game::FormID a_formid) override;

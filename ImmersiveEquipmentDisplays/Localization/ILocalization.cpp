@@ -50,7 +50,7 @@ namespace IED
 			auto r = empty->try_emplace(a_id);
 			if (r.second)
 			{
-				r.first->second = "$";
+				r.first->second = '$';
 				r.first->second += std::to_string(a_id);
 			}
 

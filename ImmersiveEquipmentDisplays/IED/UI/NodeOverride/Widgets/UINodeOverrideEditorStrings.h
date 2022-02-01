@@ -17,7 +17,8 @@ namespace IED
 			MatchSkin = 4306,
 			ClearAllPrompt = 4307,
 			PlayerDisabledWarning = 4308,
-			PasteOverFullPrompt = 4309
+			PasteOverFullPrompt = 4309,
+			AbsolutePosition = 4310,
 		};
 	}
 }

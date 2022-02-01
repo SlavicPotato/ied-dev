@@ -81,7 +81,7 @@ namespace IED
 					keys.key,
 					keys.name);
 			}
-			
+
 			template <class T>
 			static bool DeleteAll(
 				StaticFunctionTag*,
@@ -104,7 +104,7 @@ namespace IED
 					GetConfigClass<T>(),
 					key);
 			}
-			
+
 			static bool DeleteAll(
 				StaticFunctionTag*,
 				BSFixedString a_key)
@@ -577,7 +577,7 @@ namespace IED
 			}
 
 			template <class T>
-			static bool RemovetemExtraForm(
+			static bool RemoveItemExtraForm(
 				StaticFunctionTag*,
 				T* a_target,
 				BSFixedString a_key,
@@ -596,7 +596,7 @@ namespace IED
 					return false;
 				}
 
-				return RemovetemExtraFormImpl(
+				return RemoveItemExtraFormImpl(
 					a_target->formID,
 					GetConfigClass<T>(),
 					keys.key,
@@ -625,7 +625,7 @@ namespace IED
 					return false;
 				}
 
-				return RemovetemExtraFormImpl(
+				return RemoveItemExtraFormImpl(
 					a_target->formID,
 					GetConfigClass<T>(),
 					keys.key,
@@ -843,7 +843,7 @@ namespace IED
 						"IED",
 						DeleteItem<TESRace>,
 						a_registry));
-				
+
 				a_registry->RegisterFunction(
 					new NativeFunction2<StaticFunctionTag, bool, Actor*, BSFixedString>(
 						"DeleteAllActor",
@@ -864,7 +864,7 @@ namespace IED
 						"IED",
 						DeleteAll<TESRace>,
 						a_registry));
-				
+
 				a_registry->RegisterFunction(
 					new NativeFunction1<StaticFunctionTag, bool, BSFixedString>(
 						"DeleteAll",
@@ -1189,42 +1189,42 @@ namespace IED
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*>(
-						"RemovetemExtraFormActor",
+						"RemoveItemExtraFormActor",
 						"IED",
-						RemovetemExtraForm<Actor>,
+						RemoveItemExtraForm<Actor>,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*>(
-						"RemovetemExtraFormNPC",
+						"RemoveItemExtraFormNPC",
 						"IED",
-						RemovetemExtraForm<TESNPC>,
+						RemoveItemExtraForm<TESNPC>,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*>(
-						"RemovetemExtraFormRace",
+						"RemoveItemExtraFormRace",
 						"IED",
-						RemovetemExtraForm<TESRace>,
+						RemoveItemExtraForm<TESRace>,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, std::int32_t>(
-						"RemovetemExtraFormByIndexActor",
+						"RemoveItemExtraFormByIndexActor",
 						"IED",
 						RemovetemExtraFormByIndex<Actor>,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, std::int32_t>(
-						"RemovetemExtraFormByIndexNPC",
+						"RemoveItemExtraFormByIndexNPC",
 						"IED",
 						RemovetemExtraFormByIndex<TESNPC>,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, std::int32_t>(
-						"RemovetemExtraFormByIndexRace",
+						"RemoveItemExtraFormByIndexRace",
 						"IED",
 						RemovetemExtraFormByIndex<TESRace>,
 						a_registry));

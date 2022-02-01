@@ -28,7 +28,7 @@ namespace IED
 				class = std::enable_if_t<
 					std::is_enum_v<Te> &&
 					std::is_same_v<std::underlying_type_t<Te>, StringID>>>
-			inline constexpr auto& L(Te a_id)
+			inline constexpr auto& L(Te a_id) const
 			{
 				return L(stl::underlying(a_id));
 			}
@@ -43,7 +43,7 @@ namespace IED
 				class = std::enable_if_t<
 					std::is_enum_v<Te> &&
 					std::is_same_v<std::underlying_type_t<Te>, StringID>>>
-			inline constexpr auto LS(Te a_id)
+			inline constexpr auto LS(Te a_id) const
 			{
 				return L(stl::underlying(a_id)).c_str();
 			}

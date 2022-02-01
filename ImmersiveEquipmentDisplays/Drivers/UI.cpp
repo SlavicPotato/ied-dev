@@ -29,17 +29,6 @@ namespace IED
 
 			r.GetEventDispatcher<Events::D3D11CreateEventPost>().AddSink(this);
 			r.GetEventDispatcher<Events::IDXGISwapChainPresent>().AddSink(this);
-
-			/*if (!Hook::Call6(
-					ISKSE::GetBranchTrampoline(),
-					CreateWindowEx_addr,
-					std::uintptr_t(CreateWindowExA_Hook),
-					m_createWindowExA_o))
-			{
-				Warning("CreateWindowExA hook failed");
-			}*/
-
-			m_initialized = true;
 		}
 
 		void UI::Receive(const D3D11CreateEventPost& a_evn)
@@ -975,35 +964,6 @@ namespace IED
 
 			m_suspended = true;
 		}
-
-		/*HWND WINAPI UI::CreateWindowExA_Hook(
-			_In_ DWORD dwExStyle,
-			_In_opt_ LPCSTR lpClassName,
-			_In_opt_ LPCSTR lpWindowName,
-			_In_ DWORD dwStyle,
-			_In_ int X,
-			_In_ int Y,
-			_In_ int nWidth,
-			_In_ int nHeight,
-			_In_opt_ HWND hWndParent,
-			_In_opt_ HMENU hMenu,
-			_In_opt_ HINSTANCE hInstance,
-			_In_opt_ LPVOID lpParam)
-		{
-			return m_Instance.m_createWindowExA_o(
-				dwExStyle,
-				lpClassName,
-				lpWindowName,
-				dwStyle,
-				X,
-				Y,
-				nWidth,
-				nHeight,
-				hWndParent,
-				hMenu,
-				hInstance,
-				lpParam);
-		}*/
 
 	}  // namespace Drivers
 }  // namespace IED

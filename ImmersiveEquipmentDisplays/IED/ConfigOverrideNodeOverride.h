@@ -11,7 +11,8 @@ namespace IED
 		{
 			kNone = 0,
 
-			kInvisible = 1u << 0  // unused
+			kInvisible = 1u << 0,  // unused
+			kAbsolutePosition = 1u << 1
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideValuesFlags);
@@ -26,7 +27,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideValuesFlags> flags{ NodeOverrideValuesFlags::kNone };
+			stl::flag<NodeOverrideValuesFlags> flags{ NodeOverrideValuesFlags::kAbsolutePosition };
 			configTransform_t transform;
 
 		private:

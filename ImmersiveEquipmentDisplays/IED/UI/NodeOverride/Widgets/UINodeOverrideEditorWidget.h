@@ -609,7 +609,7 @@ namespace IED
 			T a_handle,
 			entryNodeOverrideData_t& a_data)
 		{
-			auto& data = OverrideNodeInfo::GetCMENodeData();
+			auto& data = NodeOverrideData::GetCMENodeData();
 
 			Data::configStoreNodeOverride_t::holderCache_t hc;
 
@@ -702,7 +702,7 @@ namespace IED
 
 			auto configClass = GetConfigClass();
 
-			auto& data = OverrideNodeInfo::GetWeaponNodeData();
+			auto& data = NodeOverrideData::GetWeaponNodeData();
 
 			for (auto e : data.getvec())
 			{
@@ -1008,7 +1008,9 @@ namespace IED
 			{
 				ImGui::Spacing();
 
-				//DrawValueFlags(a_handle, a_data, data, a_params, a_exists);
+				DrawValueFlags(a_handle, a_data, data, a_params, a_exists);
+
+				ImGui::Spacing();
 
 				DrawTransformSliders(data.transform, [&](auto a_v) {
 					HandleValueUpdate(
@@ -1123,11 +1125,11 @@ namespace IED
 		{
 			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
-			const OverrideNodeInfo::weaponNodeEntry_t* entry;
+			const NodeOverrideData::weaponNodeEntry_t* entry;
 
 			if (!flags.test(NodeOverrideEditorFlags::kUnrestrictedNodePlacement))
 			{
-				auto& nodedata = OverrideNodeInfo::GetWeaponNodeData();
+				auto& nodedata = NodeOverrideData::GetWeaponNodeData();
 
 				auto it = nodedata.find(a_params.name);
 				if (it == nodedata.end())
@@ -1168,14 +1170,14 @@ namespace IED
 					a_values.targetNode,
 					entry->movs,
 					nullptr,
-					std::addressof(OverrideNodeInfo::GetMOVNodeData()));
+					std::addressof(NodeOverrideData::GetMOVNodeData()));
 			}
 			else
 			{
 				result = UICMNodeSelectorWidget::DrawCMNodeSelector(
 					LS(UIWidgetCommonStrings::TargetNode, "node_sel"),
 					a_values.targetNode,
-					OverrideNodeInfo::GetMOVNodeData());
+					NodeOverrideData::GetMOVNodeData());
 			}
 
 			if (result)
@@ -1291,12 +1293,12 @@ namespace IED
 			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool a_exists)
 		{
-			/*ImGui::PushID("value_flags");
+			ImGui::PushID("value_flags");
 
 			if (ImGui::CheckboxFlagsT(
-					"Invisible##ctl",
+					LS(UINodeOverrideEditorStrings::AbsolutePosition, "1"),
 					stl::underlying(std::addressof(a_values.flags.value)),
-					stl::underlying(Data::NodeOverrideValuesFlags::kInvisible)))
+					stl::underlying(Data::NodeOverrideValuesFlags::kAbsolutePosition)))
 			{
 				HandleValueUpdate(
 					a_handle,
@@ -1305,7 +1307,7 @@ namespace IED
 					a_exists);
 			}
 
-			ImGui::PopID();*/
+			ImGui::PopID();
 		}
 
 		template <class T>
@@ -1866,6 +1868,10 @@ namespace IED
 								{
 									ImGui::Spacing();
 
+									DrawValueFlags(a_handle, a_data, e, a_params, a_exists);
+
+									ImGui::Spacing();
+
 									DrawOverrideOffsetAdjust(
 										a_handle,
 										a_data,
@@ -1911,6 +1917,12 @@ namespace IED
 										"%s",
 										LS(CommonStrings::Transform)))
 								{
+									ImGui::Spacing();
+
+									DrawValueFlags(a_handle, a_data, e, a_params, a_exists);
+
+									ImGui::Spacing();
+
 									DrawTransformSliders(e.transform, [&](auto a_v) {
 										HandleValueUpdate(
 											a_handle,
@@ -2501,7 +2513,7 @@ namespace IED
 							if (UICMNodeSelectorWidget::DrawCMNodeSelector(
 									"##node_sel",
 									c,
-									OverrideNodeInfo::GetCMENodeData(),
+									NodeOverrideData::GetCMENodeData(),
 									std::addressof(a_params.name)))
 							{
 								a_entry.emplace_back(std::move(c));
@@ -3510,7 +3522,7 @@ namespace IED
 							if (UICMNodeSelectorWidget::DrawCMNodeSelector(
 									"##node_sel",
 									c,
-									OverrideNodeInfo::GetCMENodeData(),
+									NodeOverrideData::GetCMENodeData(),
 									std::addressof(a_params.name)))
 							{
 								result.action = NodeOverrideCommonAction::Insert;

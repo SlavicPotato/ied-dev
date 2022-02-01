@@ -79,7 +79,6 @@ namespace IED
 	ItemCandidateCollector::ItemCandidateCollector(
 		Actor* a_actor) :
 		m_isPlayer(a_actor == *g_thePlayer),
-		m_pm(a_actor->processManager),
 		m_data(a_actor)
 	{
 		/*m_data.reserve(4000);
@@ -206,19 +205,6 @@ namespace IED
 		if (!IFormCommon::IsEquippableForm(form))
 		{
 			return true;
-		}
-
-		if (m_pm)
-		{
-			if (m_pm->equippedObject[ActorProcessManager::kEquippedHand_Right] == form)
-			{
-				r.equipped = true;
-			}
-
-			if (m_pm->equippedObject[ActorProcessManager::kEquippedHand_Left] == form)
-			{
-				r.equippedLeft = true;
-			}
 		}
 
 		bool checkFav = m_isPlayer && type != ObjectType::kMax;

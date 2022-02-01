@@ -107,6 +107,19 @@ namespace IED
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
+			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
+
+			a_data.data = GetData(a_data.handle);
+
+			m_controller.QueueResetRace(
+				a_data.handle,
+				ControllerUpdateFlags::kNone);
+		}
+
+		void UISlotEditorRace::ApplyProfile(
+			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
+			const SlotProfile& a_profile)
+		{
 			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
 
 			a_data.data = GetData(a_data.handle);

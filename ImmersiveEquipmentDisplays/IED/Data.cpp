@@ -608,31 +608,31 @@ namespace IED
 			case ObjectSlot::k1HSword:
 				return { BSStringHolder::NINODE_SWORD, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k1HSwordLeft:
-				return { BSStringHolder::NINODE_SWORD_LEFT };
+				return { BSStringHolder::NINODE_SWORD_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k1HAxe:
 				return { BSStringHolder::NINODE_AXE, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k1HAxeLeft:
-				return { BSStringHolder::NINODE_AXE_LEFT };
+				return { BSStringHolder::NINODE_AXE_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k2HSword:
 				return { BSStringHolder::NINODE_WEAPON_BACK, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k2HSwordLeft:
-				return { BSStringHolder::NINODE_SWORD_LEFT };
+				return { BSStringHolder::NINODE_SWORD_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k2HAxe:
 				return { BSStringHolder::NINODE_WEAPON_BACK, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::k2HAxeLeft:
-				return { BSStringHolder::NINODE_AXE_LEFT };
+				return { BSStringHolder::NINODE_AXE_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kMace:
 				return { BSStringHolder::NINODE_MACE, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kMaceLeft:
-				return { BSStringHolder::NINODE_MACE_LEFT };
+				return { BSStringHolder::NINODE_MACE_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kDagger:
 				return { BSStringHolder::NINODE_DAGGER, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kDaggerLeft:
-				return { BSStringHolder::NINODE_DAGGER_LEFT };
+				return { BSStringHolder::NINODE_DAGGER_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kStaff:
-				return { BSStringHolder::NINODE_STAFF };
+				return { BSStringHolder::NINODE_STAFF, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kStaffLeft:
-				return { BSStringHolder::NINODE_STAFF_LEFT };
+				return { BSStringHolder::NINODE_STAFF_LEFT, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kBow:
 				return { BSStringHolder::NINODE_BOW, NodeDescriptorFlags::kManaged };
 			case ObjectSlot::kCrossBow:

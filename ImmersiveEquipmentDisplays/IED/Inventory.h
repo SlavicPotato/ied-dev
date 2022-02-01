@@ -70,7 +70,6 @@ namespace IED
 		//SKMP_FORCEINLINE bool AddEquippedForms(TESForm* a_form, InventoryEntryData* a_entryData);
 
 		bool m_isPlayer;
-		ActorProcessManager* m_pm;
 	};
 
 	struct EquippedArmorCollector

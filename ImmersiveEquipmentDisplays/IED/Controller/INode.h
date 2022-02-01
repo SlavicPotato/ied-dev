@@ -82,13 +82,13 @@ namespace IED
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
 
+		static NiNode* CreateAttachmentNode(
+			const BSFixedString& a_nodeName);
+		
 	protected:
 		static NiNode* CreateNode(const char *a_name);
 
 	private:
-		static NiNode* CreateAttachmentNode(
-			const BSFixedString& a_nodeName);
-		
 		/*static NiNode* CreateAttachmentNode(
 			BSFixedString&& a_nodeName);*/
 

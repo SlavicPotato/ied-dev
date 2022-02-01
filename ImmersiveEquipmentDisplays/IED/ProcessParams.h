@@ -28,7 +28,7 @@ namespace IED
 	{
 		stl::flag<ProcessStateUpdateFlags> flags{ ProcessStateUpdateFlags::kNone };
 
-		void UpdateEffectShaders(Game::ObjectRefHandle a_handle);
+		void ResetEffectShaders(Game::ObjectRefHandle a_handle);
 	};
 
 	struct processParamsData_t

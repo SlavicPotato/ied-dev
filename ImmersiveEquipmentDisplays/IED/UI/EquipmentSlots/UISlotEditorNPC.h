@@ -53,6 +53,10 @@ namespace IED
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
+			
+			virtual void ApplyProfile(
+				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
+				const SlotProfile& a_profile) override;
 
 			virtual void OnBaseConfigChange(
 				Game::FormID a_handle,

@@ -142,16 +142,6 @@ namespace IED
 							});
 					}
 
-					ImGui::Separator();
-
-					auto& conf = m_controller.GetConfigStore().settings;
-
-					conf.mark_if(ImGui::CheckboxFlagsT(
-						LS(UIDialogImportExportStrings::SkipTempRefs, "3"),
-						stl::underlying(std::addressof(conf.data.ui.importExport.importFlags.value)),
-						stl::underlying(ImportFlags::kEraseTemporary)));
-
-					DrawTip(UITip::SkipTempRefs);
 				}
 
 				ImGui::PopTextWrapPos();

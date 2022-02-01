@@ -19,6 +19,16 @@ namespace IED
 				*scale = 1.0f;
 			}
 
+			configTransform_t(
+				float a_scale,
+				const NiPoint3& a_pos,
+				const NiPoint3& a_rot) :
+				scale(a_scale),
+				position(a_pos),
+				rotation(a_rot)
+			{
+			}
+
 			stl::optional<float> scale;
 			stl::optional<NiPoint3> position;
 			stl::optional<NiPoint3> rotation;
@@ -47,6 +57,31 @@ namespace IED
 					rotation->y = std::clamp(zero_nan(rotation->y), -pi2, pi2);
 					rotation->z = std::clamp(zero_nan(rotation->z), -pi2, pi2);
 				}
+			}
+
+			NiTransform to_nitransform() const
+			{
+				NiTransform result;
+
+				if (scale)
+				{
+					result.scale = *scale;
+				}
+
+				if (position)
+				{
+					result.pos = *position;
+				}
+
+				if (rotation)
+				{
+					result.rot.SetEulerAngles(
+						rotation->x,
+						rotation->y,
+						rotation->z);
+				}
+
+				return result;
 			}
 
 		protected:

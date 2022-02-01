@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigOverrideCommon.h"
+#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideTransform.h"
 
 namespace IED
@@ -34,6 +35,7 @@ namespace IED
 			stl::flag<ConfigModelGroupEntryFlags> flags{ ConfigModelGroupEntryFlags::kNone };
 			configCachedForm_t form;
 			configTransform_t transform;
+			//configEffectShaderHolder_t effects;
 
 		private:
 			template <class Archive>
@@ -57,13 +59,17 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-
 			using data_type = std::unordered_map<stl::fixed_string, configModelGroupEntry_t>;
 
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1
 			};
+
+			[[nodiscard]] inline bool empty() const noexcept
+			{
+				return entries.empty();
+			}
 
 			stl::flag<ConfigModelGroupFlags> flags{ ConfigModelGroupFlags::kNone };
 			data_type entries;

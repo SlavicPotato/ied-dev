@@ -5,9 +5,9 @@
 
 namespace IED
 {
-	OverrideNodeInfo OverrideNodeInfo::m_Instance;
+	NodeOverrideData NodeOverrideData::m_Instance;
 
-	void OverrideNodeInfo::Create()
+	void NodeOverrideData::Create()
 	{
 		ASSERT(!m_Instance.m_initialized);
 
@@ -39,6 +39,8 @@ namespace IED
 			{ "CME WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "CME WeaponDaggerLeftBackHip" } },
 			{ "CME WeaponDaggerAnkle", { "Dagger Ankle", "CME WeaponDaggerAnkle" } },
 			{ "CME WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "CME WeaponDaggerLeftAnkle" } },
+			{ "CME WeaponDaggerOnBack", { "Dagger On Back", "CME WeaponDaggerOnBack" } },
+			{ "CME WeaponDaggerLeftOnBack", { "Dagger On Back Left", "CME WeaponDaggerLeftOnBack" } },
 			{ "CME WeaponBackDefault", { "Two-Handed", "CME WeaponBackDefault" } },
 			{ "CME WeaponBackSWP", { "Two-Handed SWP", "CME WeaponBackSWP" } },
 			{ "CME WeaponBackFSM", { "Two-Handed FSM", "CME WeaponBackFSM" } },
@@ -92,6 +94,8 @@ namespace IED
 			{ "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "MOV WeaponDaggerLeftBackHip" } },
 			{ "MOV WeaponDaggerAnkle", { "Dagger Ankle", "MOV WeaponDaggerAnkle" } },
 			{ "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "MOV WeaponDaggerLeftAnkle" } },
+			{ "MOV WeaponDaggerOnBack", { "Dagger On Back", "MOV WeaponDaggerOnBack" } },
+			{ "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left", "MOV WeaponDaggerLeftOnBack" } },
 			{ "MOV WeaponBackDefault", { "Two-Handed", "MOV WeaponBackDefault" } },
 			{ "MOV WeaponBackSWP", { "Two-Handed SWP", "MOV WeaponBackSWP" } },
 			{ "MOV WeaponBackFSM", { "Two-Handed FSM", "MOV WeaponBackFSM" } },
@@ -115,6 +119,27 @@ namespace IED
 			{ "MOV BOLTABQ", { "Bolt ABQ", "MOV BOLTABQ" } },
 			{ "MOV ShieldBackDefault", { "Shield Back", "MOV ShieldBackDefault" } }
 
+		};
+
+		m_Instance.m_extra = {
+			{
+
+				"MOV WeaponDaggerOnBack",
+				"CME WeaponDaggerOnBack",
+				"CME Spine2 [Spn2]",
+				{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
+				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } }
+
+			},
+			{
+
+				"MOV WeaponDaggerLeftOnBack",
+				"CME WeaponDaggerLeftOnBack",
+				"CME Spine2 [Spn2]",
+				{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
+				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } }
+
+			},
 		};
 
 		m_Instance.m_monitor = {
@@ -214,6 +239,7 @@ namespace IED
 									  { "MOV WeaponDaggerDefault", { "Dagger" } },
 									  { "MOV WeaponDaggerBackHip", { "Dagger Back Hip" } },
 									  { "MOV WeaponDaggerAnkle", { "Dagger Ankle" } },
+									  { "MOV WeaponDaggerOnBack", { "Dagger On Back" } }
 
 								  }
 
@@ -228,7 +254,8 @@ namespace IED
 
 										  { "MOV WeaponDaggerLeftDefault", { "Dagger Left" } },
 										  { "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left" } },
-										  { "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left" } }
+										  { "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left" } },
+										  { "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left" } }
 
 									  }
 
@@ -336,7 +363,6 @@ namespace IED
 								{
 
 									{ "MOV ShieldBackDefault", { "Shield Back" } },
-
 								}
 
 							} }

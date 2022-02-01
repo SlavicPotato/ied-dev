@@ -5,6 +5,7 @@
 
 #include <ext/Model.h>
 #include <ext/Node.h>
+#include <ext/BSGraphics.h>
 
 namespace IED
 {
@@ -36,25 +37,12 @@ namespace IED
 				false);
 		}
 
-		for (auto& e : a_objectEntry.state->groupObjects)
-		{
-			EngineExtensions::CleanupObject(
-				a_handle,
-				e.second.object,
-				a_data.m_root);
-		}
-
-		EngineExtensions::CleanupObject(
-			a_handle,
-			a_objectEntry.state->nodes.obj,
-			a_data.m_root);
-
 		if (!a_objectEntry.state->dbEntries.empty())
 		{
 			QueueDatabaseCleanup();
 		}
 
-		a_objectEntry.Reset();
+		a_objectEntry.reset(a_handle, a_data.m_root);
 
 		return true;
 	}
@@ -107,6 +95,32 @@ namespace IED
 		return true;
 	}
 
+	bool IObjectManager::RemoveActorImpl(
+		Game::FormID a_actor,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		auto it = m_objects.find(a_actor);
+		if (it == m_objects.end())
+		{
+			return false;
+		}
+
+		auto handle = it->second.GetHandle();
+
+		NiPointer<TESObjectREFR> ref;
+		LookupREFRByHandle(handle, ref);
+
+		CleanupActorObjectsImpl(
+			nullptr,
+			handle,
+			it->second,
+			a_flags);
+
+		m_objects.erase(it);
+
+		return true;
+	}
+
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR* a_actor,
 		Game::ObjectRefHandle a_handle,
@@ -116,6 +130,16 @@ namespace IED
 		if (a_actor && a_actor == *g_thePlayer)
 		{
 			m_playerState.insert(a_objects);
+		}
+
+		for (auto& e : a_objects.m_cmeNodes)
+		{
+			ResetNodeOverride(e.second);
+		}
+
+		for (auto& e : a_objects.m_weapNodes)
+		{
+			ResetNodePlacement(e);
 		}
 
 		a_objects.visit([&](objectEntryBase_t& a_object) {
@@ -130,16 +154,6 @@ namespace IED
 		for (auto& e : a_objects.m_entriesCustom)
 		{
 			e.clear();
-		}
-
-		for (auto& e : a_objects.m_cmeNodes)
-		{
-			ResetNodeOverride(e.second);
-		}
-
-		for (auto& e : a_objects.m_weapNodes)
-		{
-			ResetNodePlacement(e);
 		}
 
 		a_objects.m_cmeNodes.clear();
@@ -457,7 +471,7 @@ namespace IED
 
 		object->m_localTransform = {};
 
-		a_params.state.UpdateEffectShaders(a_params.handle);
+		a_params.state.ResetEffectShaders(a_params.handle);
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 
@@ -650,7 +664,7 @@ namespace IED
 			return false;
 		}
 
-		a_params.state.UpdateEffectShaders(a_params.handle);
+		a_params.state.ResetEffectShaders(a_params.handle);
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 

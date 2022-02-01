@@ -45,6 +45,10 @@ namespace IED
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<int>& a_data,
 				const SlotProfile& a_profile) override;
+			
+			/*virtual void ApplyProfile(
+				const profileSelectorParamsSlot_t<int>& a_data,
+				const SlotProfile& a_profile) override;*/
 
 			virtual void OnBaseConfigChange(
 				int a_handle,

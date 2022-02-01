@@ -116,7 +116,7 @@ namespace IED
 				TESForm* a_form,
 				std::int32_t a_index);
 			
-			bool RemovetemExtraFormImpl(
+			bool RemoveItemExtraFormImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,
 				const stl::fixed_string& a_key,
@@ -124,7 +124,7 @@ namespace IED
 				Data::ConfigSex a_sex,
 				TESForm* a_form);
 			
-			bool RemovetemExtraFormImpl(
+			bool RemoveItemExtraFormImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,
 				const stl::fixed_string& a_key,

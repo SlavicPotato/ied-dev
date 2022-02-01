@@ -149,20 +149,6 @@ namespace IED
 
 		for (auto& e : m_controller.m_objects)
 		{
-			/*if (!e.second.m_actor->loadedState)
-			{
-				auto handle = e.second.GetHandle();
-
-				NiPointer<TESObjectREFR> actor;
-				LookupREFRByHandle(handle, actor);
-
-				m_controller.CleanupActorObjectsImpl(e.second, handle);
-
-				it = m_controller.m_objects.erase(it);
-			}
-			else
-			{*/
-
 			ProcessTransformUpdateRequest(e.second);
 			ProcessEvalRequest(e.second);
 

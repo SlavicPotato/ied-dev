@@ -172,6 +172,9 @@ namespace IED
 			}
 		};
 
+		static void ResetNodeOverrideImpl(
+			NiAVObject *a_object);
+		
 		static void ResetNodeOverride(
 			const cmeNodeEntry_t& a_entry);
 

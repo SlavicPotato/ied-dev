@@ -135,6 +135,10 @@ namespace IED
 		bool RemoveActor(
 			TESObjectREFR* a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
+		
+		bool RemoveActor(
+			Game::FormID a_actor,
+			stl::flag<ControllerUpdateFlags> a_flags);
 
 		/*void RemoveActorByHandle(
 			Game::ObjectRefHandle a_mhandle,
@@ -143,6 +147,7 @@ namespace IED
 		void QueueNiNodeUpdate(Game::FormID a_actor);
 
 		void QueueEvaluate(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags);
+		void QueueEvaluate(Game::ActorHandle a_handle, stl::flag<ControllerUpdateFlags> a_flags);
 		//void QueueTestTransforms(TESObjectREFR* a_actor);
 		//void QueueEvaluate2(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueEvaluate(Game::FormID a_actor, stl::flag<ControllerUpdateFlags> a_flags);
@@ -465,7 +470,7 @@ namespace IED
 		{
 			return m_iniKeysForced;
 		}
-
+		
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 	private:

@@ -101,7 +101,7 @@ namespace IED
 					result |= DrawCMNodeSelector(
 						LS(CommonStrings::Node, "ns"),
 						m_tempData.cmeNode,
-						OverrideNodeInfo::GetCMENodeData(),
+						NodeOverrideData::GetCMENodeData(),
 						static_cast<const stl::fixed_string*>(e.p2));
 
 					ImGui::Spacing();
@@ -271,7 +271,7 @@ namespace IED
 				{
 					if (const auto& e = get(a_item); e.p1)
 					{
-						auto& data = OverrideNodeInfo::GetCMENodeData();
+						auto& data = NodeOverrideData::GetCMENodeData();
 
 						auto it = data.find(*static_cast<const stl::fixed_string*>(e.p1));
 						if (it != data.end())

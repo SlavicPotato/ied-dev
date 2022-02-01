@@ -24,14 +24,18 @@ namespace IED
 		{
 			ImGui::PushID("sex_selector");
 
-			if (ImGui::RadioButton(LS(CommonStrings::Male, "1"), m_sex == Data::ConfigSex::Male))
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Male, "1"),
+					m_sex == Data::ConfigSex::Male))
 			{
 				SetSex(Data::ConfigSex::Male, true);
 			}
 
 			ImGui::SameLine();
 
-			if (ImGui::RadioButton(LS(CommonStrings::Female, "2"), m_sex == Data::ConfigSex::Female))
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Female, "2"),
+					m_sex == Data::ConfigSex::Female))
 			{
 				SetSex(Data::ConfigSex::Female, true);
 			}
@@ -39,10 +43,13 @@ namespace IED
 			ImGui::SameLine(0.0f, 10.0f);
 
 			auto& data = GetEditorPanelSettings();
-			if (ImGui::Checkbox(LS(CommonStrings::Sync, "3"), std::addressof(data.sexSync)))
+			if (ImGui::Checkbox(
+					LS(CommonStrings::Sync, "3"),
+					std::addressof(data.sexSync)))
 			{
 				OnEditorPanelSettingsChange();
 			}
+			DrawTip(UITip::SyncSexes);
 
 			ImGui::PopID();
 
@@ -55,5 +62,5 @@ namespace IED
 		{
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

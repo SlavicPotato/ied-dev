@@ -37,7 +37,7 @@ namespace IED
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
 			const ActorObjectHolder& a_data);
-		
+
 		SKMP_FORCEINLINE void ProcessEvalRequest(
 			ActorObjectHolder& a_data);
 

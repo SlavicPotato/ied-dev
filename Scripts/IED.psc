@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 1
+	return 2
 EndFunction
 
 Int Function GetVersion() native global
@@ -30,6 +30,12 @@ Bool Function CreateItemRace(Race akRace, string asPlugin, string asName, bool a
 Bool Function DeleteItemActor(Actor akActor, string asPlugin, string asName) native global
 Bool Function DeleteItemNPC(ActorBase akActorBase, string asPlugin, string asName) native global
 Bool Function DeleteItemRace(Race akRace, string asPlugin, string asName) native global
+
+Bool Function DeleteAllActor(Actor akActor, string asPlugin) native global
+Bool Function DeleteAllNPC(ActorBase akActorBase, string asPlugin) native global
+Bool Function DeleteAllRace(Race akRace, string asPlugin) native global
+
+Bool Function DeleteAll(string asPlugin) native global
 
 Bool Function SetItemEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global

@@ -974,6 +974,15 @@
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h">
       <Filter>Source\IED\UI\Custom\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideEffectShader.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverrideColor.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1556,6 +1565,9 @@
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
     <ClCompile Include="IED\ProcessParams.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

@@ -17,7 +17,7 @@ namespace IED
 				stl::fixed_string& a_current,
 				const T& a_data,
 				const stl::fixed_string* a_skip = nullptr,
-				const OverrideNodeInfo::cm_data_type* a_descLookup = nullptr);
+				const NodeOverrideData::cm_data_type* a_descLookup = nullptr);
 		};
 
 		template <class T>
@@ -26,7 +26,7 @@ namespace IED
 			stl::fixed_string& a_current,
 			const T& a_data,
 			const stl::fixed_string* a_skip,
-			const OverrideNodeInfo::cm_data_type* a_descLookup)
+			const NodeOverrideData::cm_data_type* a_descLookup)
 		{
 			const char* descName{ nullptr };
 

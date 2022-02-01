@@ -14,7 +14,7 @@ namespace IED
 			static bool DrawNodeList(
 				const char* a_label,
 				stl::fixed_string& a_current,
-				const OverrideNodeInfo::nodeList_t& a_data);
+				const NodeOverrideData::nodeList_t& a_data);
 		};
 	}
 }

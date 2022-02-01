@@ -118,7 +118,7 @@ namespace IED
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
 
-		static void CleanupObject(Game::ObjectRefHandle a_handle, NiAVObject* a_object, NiNode* a_root);
+		static void CleanupObject(Game::ObjectRefHandle a_handle, NiNode* a_object, NiNode* a_root);
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
@@ -128,6 +128,7 @@ namespace IED
 		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0 = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto SceneRendering = IAL::Address<unk63F810_t>(38079, 39033);
+		inline static const auto CleanupNodeImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		//inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance
@@ -152,7 +153,6 @@ namespace IED
 		inline static const auto fUnk5EBD90 = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0 = IAL::Address<unk5C39F0_t>(35947, 36922);
 		inline static const auto AttachAddonNodes = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto CleanupNodeImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto ShrinkChildrenToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto fUnkDC6140 = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0 = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
@@ -182,6 +182,8 @@ namespace IED
 
 		static void Character_Release3D_Hook(
 			Character* a_actor);
+
+		void FailsafeCleanupAndEval(Actor* a_actor, const char* a_func);
 
 		static void ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
 		static void CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);

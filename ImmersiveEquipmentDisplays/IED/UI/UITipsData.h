@@ -48,6 +48,7 @@ namespace IED
 			KeepTorchFlame = 1037,
 			DisableCollision = 1038,
 			MatchSkin = 1039,
+			SyncSexes = 1040,
 		};
 
 	}

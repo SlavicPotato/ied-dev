@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	void processState_t::UpdateEffectShaders(Game::ObjectRefHandle a_handle)
+	void processState_t::ResetEffectShaders(Game::ObjectRefHandle a_handle)
 	{
 		if (!flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
 		{

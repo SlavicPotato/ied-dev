@@ -4,6 +4,7 @@
 #include "ObjectManagerData.h"
 
 #include "IED/ActorState.h"
+#include "IED/Controller/INode.h"
 #include "IED/Data.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
@@ -34,7 +35,7 @@ namespace IED
 		    (a_actor != *g_thePlayer ||
 		     a_nodeOverrideEnabledPlayer))
 		{
-			for (auto& e : OverrideNodeInfo::GetMonitorNodeData())
+			for (auto& e : NodeOverrideData::GetMonitorNodeData())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e))
 				{
@@ -46,7 +47,7 @@ namespace IED
 				}
 			}
 
-			for (auto& e : OverrideNodeInfo::GetCMENodeData().getvec())
+			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
 				{
@@ -55,8 +56,8 @@ namespace IED
 						node);
 				}
 			}
-			
-			for (auto& e : OverrideNodeInfo::GetMOVNodeData().getvec())
+
+			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
 				{
@@ -66,7 +67,7 @@ namespace IED
 				}
 			}
 
-			for (auto& e : OverrideNodeInfo::GetWeaponNodeData().getvec())
+			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname); node && node->m_parent)
 				{
@@ -76,6 +77,21 @@ namespace IED
 							e->first,
 							node,
 							defParentNode);
+					}
+				}
+			}
+
+			if (!m_weapNodes.empty() &&
+			    !m_cmeNodes.empty() && 
+				!m_movNodes.empty())
+			{
+				if (auto npc = Game::GetActorBase(a_actor))
+				{
+					bool female = npc->GetSex() == 1;
+
+					for (auto& e : NodeOverrideData::GetExtraNodes())
+					{
+						CreateExtraNodes(a_npcroot, female, e);
 					}
 				}
 			}
@@ -107,6 +123,16 @@ namespace IED
 
 	ActorObjectHolder::~ActorObjectHolder()
 	{
+		for (auto& e : m_cmeNodes)
+		{
+			INodeOverride::ResetNodeOverride(e.second);
+		}
+
+		for (auto& e : m_weapNodes)
+		{
+			INodeOverride::ResetNodePlacement(e);
+		}
+
 		stl::optional<Game::ObjectRefHandle> handle;
 
 		visit([&](objectEntryBase_t& a_entry) {
@@ -123,39 +149,13 @@ namespace IED
 				LookupREFRByHandle(*handle, refr);
 			}
 
-			for (auto& e : a_entry.state->groupObjects)
-			{
-				EngineExtensions::CleanupObject(
-					*handle,
-					e.second.object,
-					m_root);
-			}
-
-			EngineExtensions::CleanupObject(
-				*handle,
-				a_entry.state->nodes.obj,
-				m_root);
-
 			if (!a_entry.state->dbEntries.empty())
 			{
-				for (auto& e : a_entry.state->dbEntries)
-				{
-					e->accessed = IPerfCounter::Query();
-				}
-
 				m_owner.QueueDatabaseCleanup();
 			}
+
+			a_entry.reset(*handle, m_root);
 		});
-
-		for (auto& e : m_cmeNodes)
-		{
-			INodeOverride::ResetNodeOverride(e.second);
-		}
-
-		for (auto& e : m_weapNodes)
-		{
-			INodeOverride::ResetNodePlacement(e);
-		}
 	}
 
 	bool ActorObjectHolder::AnySlotOccupied() const noexcept
@@ -259,6 +259,112 @@ namespace IED
 		}
 
 		return false;
+	}
+
+	void ActorObjectHolder::CreateExtraNodes(
+		NiNode* a_npcroot,
+		bool a_female,
+		const NodeOverrideData::extraNodeEntry_t& a_entry)
+	{
+		if (m_cmeNodes.contains(a_entry.name_cme) ||
+		    m_movNodes.contains(a_entry.name_mov))
+		{
+			return;
+		}
+
+		auto target = ::Util::Node::FindNode(a_npcroot, a_entry.name_parent);
+		if (!target)
+		{
+			return;
+		}
+
+		auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
+		target->AttachChild(cme, true);
+
+		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
+		
+		mov->m_localTransform = a_female ?
+                                    a_entry.transform_f :
+                                    a_entry.transform_m;
+
+		cme->AttachChild(mov, true);
+
+		INode::UpdateDownwardPass(cme);
+
+		m_cmeNodes.try_emplace(a_entry.name_cme, cme);
+		m_movNodes.try_emplace(a_entry.name_mov, mov);
+	}
+
+	void objectEntryBase_t::reset(
+		Game::ObjectRefHandle a_handle,
+		NiNode* a_root)
+	{
+		if (!state)
+		{
+			return;
+		}
+
+		for (auto& e : state->dbEntries)
+		{
+			e->accessed = IPerfCounter::Query();
+		}
+
+		if (EngineExtensions::SceneRendering() ||
+		    !ITaskPool::IsRunningOnCurrentThread())
+		{
+			struct DisposeStateTask :
+				public TaskDelegate
+			{
+			public:
+				DisposeStateTask(
+					std::unique_ptr<State>&& a_state,
+					Game::ObjectRefHandle a_handle,
+					NiNode* a_root) :
+					m_state(std::move(a_state)),
+					m_handle(a_handle),
+					m_root(a_root)
+				{}
+
+				virtual void Run() override
+				{
+					m_state->CleanupObjects(m_handle);
+
+					m_state.reset();
+					m_root.reset();
+				}
+
+				virtual void Dispose() override
+				{
+					delete this;
+				}
+
+			private:
+				std::unique_ptr<State> m_state;
+				Game::ObjectRefHandle m_handle;
+				NiPointer<NiNode> m_root;
+			};
+
+			ITaskPool::AddPriorityTask<DisposeStateTask>(std::move(state), a_handle, a_root);
+		}
+		else
+		{
+			state->CleanupObjects(a_handle);
+			state.reset();
+		}
+	}
+
+	void objectEntryBase_t::State::CleanupObjects(Game::ObjectRefHandle a_handle)
+	{
+		for (auto& e : groupObjects)
+		{
+			EngineExtensions::CleanupNodeImpl(
+				a_handle,
+				e.second.object);
+		}
+
+		EngineExtensions::CleanupNodeImpl(
+			a_handle,
+			nodes.obj);
 	}
 
 }

@@ -184,7 +184,7 @@ namespace IED
 		InitializeLocalization();
 		InitializeConfig();
 
-		if (m_iniconf->m_enableUI)
+		if (Drivers::UI::IsImInitialized())
 		{
 			InitializeUI();
 		}
@@ -484,6 +484,15 @@ namespace IED
 		return RemoveActorImpl(a_actor, a_flags);
 	}
 
+	bool Controller::RemoveActor(
+		Game::FormID a_actor,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		IScopedLock lock(m_lock);
+
+		return RemoveActorImpl(a_actor, a_flags);
+	}
+
 	void Controller::QueueNiNodeUpdate(Game::FormID a_actor)
 	{
 		ITaskPool::AddTask([this, a_actor]() {
@@ -503,6 +512,22 @@ namespace IED
 	{
 		ITaskPool::QueueActorTask(
 			a_actor,
+			[this, a_flags](
+				Actor* a_actor,
+				Game::ActorHandle a_handle) {
+				Evaluate(
+					a_actor,
+					static_cast<Game::ObjectRefHandle>(a_handle),
+					a_flags);
+			});
+	}
+
+	void Controller::QueueEvaluate(
+		Game::ActorHandle a_handle,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		ITaskPool::QueueActorTask(
+			a_handle,
 			[this, a_flags](
 				Actor* a_actor,
 				Game::ActorHandle a_handle) {
@@ -2132,19 +2157,6 @@ namespace IED
 			a_entry.state->nodes.obj,
 			a_entry.state->nodes.ref);
 
-		/*if (a_groupConfig)
-		{
-			a_entry.state->UpdateGroupTransforms(*a_groupConfig);
-
-			for (auto& e : a_entry.state->groupObjects)
-			{
-				UpdateObjectTransform(
-					e.second.transform,
-					e.second.object,
-					nullptr);
-			}
-		}*/
-
 		a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
 		return true;
@@ -2725,7 +2737,9 @@ namespace IED
                                      a_config.modelForm.get_form() :
                                      itemData.form;
 
-				a_objectEntry.modelForm = modelForm->formID;
+				a_objectEntry.modelForm = modelForm ?
+                                              modelForm->formID :
+                                              Game::FormID();
 
 				result = LoadAndAttach(
 					a_params,
@@ -2954,13 +2968,10 @@ namespace IED
 			m_nodeOverridePlayerEnabled,
 			m_storedActorStates);
 
-		/*__debugbreak();
-		_DMESSAGE("%X %p", a_actor->formID, a_actor->GetNiRootNode(false));*/
-
 		if (a_handle != objects.GetHandle())
 		{
 			Warning(
-				"%s [%u]: %.8X: handle mismatch (%u != %u)",
+				"%s [%u]: %.8X: handle mismatch (%.8X != %.8X)",
 				__FUNCTION__,
 				__LINE__,
 				a_actor->formID.get(),
@@ -3231,10 +3242,6 @@ namespace IED
 					r->get(a_sex),
 					params);
 			}
-			else
-			{
-				ResetNodeOverride(e.second);
-			}
 		}
 
 		for (auto& e : a_objects.m_cmeNodes)
@@ -3245,6 +3252,11 @@ namespace IED
 					e.second,
 					e.second.cachedConfCME->get(a_sex),
 					params);
+			}
+			else
+			{
+				// only called from main, no need to run checks
+				ResetNodeOverrideImpl(e.second.node);
 			}
 		}
 
@@ -3290,7 +3302,7 @@ namespace IED
 			return;
 		}*/
 
-		if (a_slot == ObjectSlot::kMax)
+		if (a_slot >= ObjectSlot::kMax)
 		{
 			return;
 		}
@@ -3424,7 +3436,7 @@ namespace IED
 			return;
 		}
 
-		if (a_slot != ObjectSlot::kMax)
+		if (a_slot < ObjectSlot::kMax)
 		{
 			Data::configStoreSlot_t::holderCache_t hc;
 
@@ -4161,7 +4173,7 @@ namespace IED
 			return false;
 		}
 
-		if (a_slot == ObjectSlot::kMax)
+		if (a_slot >= ObjectSlot::kMax)
 		{
 			return false;
 		}

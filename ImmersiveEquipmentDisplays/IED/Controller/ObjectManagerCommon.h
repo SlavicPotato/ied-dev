@@ -38,58 +38,9 @@ namespace IED
 				rotation.clear();
 			}
 
-			/*inline bool operator==(const cacheTransform_t& a_rhs) const
-			{
-				if (scale.has() != a_rhs.scale.has())
-				{
-					return false;
-				}
-
-				if (scale && a_rhs.scale)
-				{
-					if (*scale != *a_rhs.scale)
-					{
-						return false;
-					}
-				}
-
-				if (position.has() != a_rhs.position.has())
-				{
-					return false;
-				}
-
-				if (position && a_rhs.position)
-				{
-					if (position->x != a_rhs.position->x ||
-					    position->y != a_rhs.position->y ||
-					    position->z != a_rhs.position->z)
-					{
-						return false;
-					}
-				}
-
-				if (rotation.has() != a_rhs.rotation.has())
-				{
-					return false;
-				}
-
-				if (rotation && a_rhs.rotation)
-				{
-					if (std::memcmp(
-							rotation->arr,
-							a_rhs.rotation->arr,
-							sizeof(rotation->arr)))
-					{
-						return false;
-					}
-				}
-
-				return true;
-			}*/
-
 			stl::optional<NiPoint3> position;
 			stl::optional<NiMatrix33> rotation;
 			stl::optional<float> scale;
 		};
-	}  // namespace Data
-}  // namespace IED
+	}
+}

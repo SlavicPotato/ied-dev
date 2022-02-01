@@ -145,8 +145,7 @@ namespace IED
 
 				for (auto& e : store.active.custom.GetFormMaps())
 				{
-					auto itd = e.begin();
-					while (itd != e.end())
+					for (auto itd = e.begin(); itd != e.end();)
 					{
 						bool ee = false;
 
@@ -156,7 +155,7 @@ namespace IED
 							if (itp->first == a_key)
 							{
 								itp = itd->second.erase(itp);
-								ee = true;							
+								ee = true;
 							}
 							else
 							{
@@ -180,12 +179,12 @@ namespace IED
 					}
 				}
 
-				for (auto &e : erased)
+				for (auto& e : erased)
 				{
 					g_controller->QueueReset(e, ControllerUpdateFlags::kNone);
 				}
 
-				return true;
+				return !erased.empty();
 			}
 
 			bool SetItemAttachmentModeImpl(
@@ -570,7 +569,7 @@ namespace IED
 				return true;
 			}
 
-			bool RemovetemExtraFormImpl(
+			bool RemoveItemExtraFormImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,
 				const stl::fixed_string& a_key,
@@ -608,7 +607,7 @@ namespace IED
 				return true;
 			}
 
-			bool RemovetemExtraFormImpl(
+			bool RemoveItemExtraFormImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,
 				const stl::fixed_string& a_key,

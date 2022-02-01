@@ -12,6 +12,16 @@
 
 namespace IED
 {
+	struct effectShaderData_t
+	{
+		struct EffectShaderDataEntry
+		{
+			RE::BSTSmartPointer<BSEffectShaderData> data;
+		};
+
+		std::unordered_map<stl::fixed_string, EffectShaderDataEntry> effectShaderData;
+	};
+
 	enum class ObjectEntryFlags : std::uint32_t
 	{
 		kNone = 0,
@@ -34,18 +44,7 @@ namespace IED
 		objectEntryBase_t& operator=(const objectEntryBase_t&) = delete;
 		objectEntryBase_t& operator=(objectEntryBase_t&&) = delete;
 
-		inline void Reset()
-		{
-			if (state)
-			{
-				for (auto& e : state->dbEntries)
-				{
-					e->accessed = IPerfCounter::Query();
-				}
-
-				state.reset();
-			}
-		}
+		void reset(Game::ObjectRefHandle a_handle, NiNode* a_root);
 
 		inline void SetNodeVisible(bool a_switch) noexcept
 		{
@@ -70,14 +69,15 @@ namespace IED
 			return state && state->nodes.obj->IsVisible();
 		}
 
-		struct GroupObject
-		{
-			NiPointer<NiNode> object;
-			Data::cacheTransform_t transform;
-		};
-
 		struct State
 		{
+			struct GroupObject
+			{
+				NiPointer<NiNode> object;
+				Data::cacheTransform_t transform;
+				//effectShaderData_t effectShaderData;
+			};
+
 			void UpdateData(
 				const Data::configBaseValues_t& a_in) noexcept
 			{
@@ -114,14 +114,17 @@ namespace IED
 				}
 			}
 
+			void CleanupObjects(Game::ObjectRefHandle a_handle);
+
 			TESForm* form{ nullptr };
 			Game::FormID formid;
 			stl::flag<ObjectEntryFlags> flags{ ObjectEntryFlags::kNone };
 			Data::NodeDescriptor nodeDesc;
 			nodesRef_t nodes;
 			Data::cacheTransform_t transform;
-			std::vector<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
+			std::list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
 			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
+			//effectShaderData_t effectShaderData;
 			stl::flag<Data::FlagsBase> resetTriggerFlags{ Data::FlagsBase::kNone };
 			bool atmReference{ true };
 		};
@@ -130,7 +133,7 @@ namespace IED
 	};
 
 	struct objectEntrySlot_t :
-		public objectEntryBase_t
+		objectEntryBase_t
 	{
 		Data::actorStateSlotEntry_t slotState;
 		Data::ObjectSlot slotid{ Data::ObjectSlot::kMax };
@@ -156,7 +159,7 @@ namespace IED
 	DEFINE_ENUM_CLASS_BITWISE(CustomObjectEntryFlags);
 
 	struct objectEntryCustom_t :
-		public objectEntryBase_t
+		objectEntryBase_t
 	{
 		inline constexpr void clear_chance_flags() noexcept
 		{
@@ -215,7 +218,7 @@ namespace IED
 
 	public:
 		weapNodeEntry_t(
-			const stl::fixed_string &a_nodeName,
+			const stl::fixed_string& a_nodeName,
 			NiNode* a_node,
 			NiNode* a_defaultNode) :
 			nodeName(a_nodeName),
@@ -427,6 +430,11 @@ namespace IED
 		}
 
 	private:
+		void CreateExtraNodes(
+			NiNode* a_npcroot,
+			bool a_female,
+			const NodeOverrideData::extraNodeEntry_t& a_entry);
+
 		Game::ObjectRefHandle m_handle;
 		long long m_created{ 0 };
 

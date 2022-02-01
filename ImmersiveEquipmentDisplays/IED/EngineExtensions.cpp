@@ -400,8 +400,15 @@ namespace IED
 			{
 				if (auto actor = ref->As<Actor>())
 				{
-					m_Instance->m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
-					m_Instance->m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+					if (ITaskPool::IsRunningOnCurrentThread())
+					{
+						m_Instance->FailsafeCleanupAndEval(actor, __FUNCTION__);
+					}
+					else
+					{
+						m_Instance->m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
+						m_Instance->m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+					}
 				}
 			}
 		}
@@ -427,14 +434,25 @@ namespace IED
 	void EngineExtensions::Actor_Release3D_Hook(
 		Actor* a_actor)
 	{
+		bool eval = false;
+
 		if (a_actor->formID)
 		{
-			m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+			if (ITaskPool::IsRunningOnCurrentThread())
+			{
+				m_Instance->FailsafeCleanupAndEval(a_actor, __FUNCTION__);
+			}
+			else
+			{
+				m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+
+				eval = true;
+			}
 		}
 
 		m_Instance->m_actorRelease3D_o(a_actor);
 
-		if (a_actor->formID)
+		if (eval)
 		{
 			m_Instance->m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
 		}
@@ -443,17 +461,38 @@ namespace IED
 	void EngineExtensions::Character_Release3D_Hook(
 		Character* a_actor)
 	{
+		bool eval = false;
+
 		if (a_actor->formID)
 		{
-			m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+			if (ITaskPool::IsRunningOnCurrentThread())
+			{
+				m_Instance->FailsafeCleanupAndEval(a_actor, __FUNCTION__);
+			}
+			else
+			{
+				m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+
+				eval = true;
+			}
 		}
 
 		m_Instance->m_characterRelease3D_o(a_actor);
 
-		if (a_actor->formID)
+		if (eval)
 		{
 			m_Instance->m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
 		}
+	}
+
+	void EngineExtensions::FailsafeCleanupAndEval(Actor* a_actor, const char* a_func)
+	{
+		ITaskPool::AddTask([this, fid = a_actor->formID, handle = a_actor->GetHandle()]() {
+			m_controller->RemoveActor(fid, ControllerUpdateFlags::kNone);
+			m_controller->QueueEvaluate(handle, ControllerUpdateFlags::kNone);
+		});
+
+		Debug("[%.8X] [%s]: called from ITaskPool", a_actor->formID.get(), a_func);
 	}
 
 	void EngineExtensions::ReanimateActorStateUpdate_Hook(
@@ -505,8 +544,8 @@ namespace IED
 	{
 		if (m_Instance->m_conf.weaponAdjustFix)
 		{
-			auto biped3p = a_refr->GetBiped(false);
-			if (!biped3p || biped3p->ptr != a_biped)
+			auto& biped3p = a_refr->GetBiped(false);
+			if (!biped3p || biped3p.get() != a_biped)
 			{
 				return false;
 			}
@@ -761,10 +800,11 @@ namespace IED
 
 	void EngineExtensions::CleanupObject(
 		Game::ObjectRefHandle a_handle,
-		NiAVObject* a_object,
+		NiNode* a_object,
 		NiNode* a_root)
 	{
-		if (!SceneRendering())
+		if (!SceneRendering() &&
+		    ITaskPool::IsRunningOnCurrentThread())
 		{
 			CleanupNodeImpl(a_handle, a_object);
 		}
@@ -778,7 +818,7 @@ namespace IED
 			public:
 				NodeCleanupTask(
 					Game::ObjectRefHandle a_handle,
-					NiAVObject* a_object,
+					NiNode* a_object,
 					NiNode* a_root) :
 					m_handle(a_handle),
 					m_object(a_object),
@@ -801,7 +841,7 @@ namespace IED
 
 			private:
 				Game::ObjectRefHandle m_handle;
-				NiPointer<NiAVObject> m_object;
+				NiPointer<NiNode> m_object;
 				NiPointer<NiNode> m_root;
 			};
 
@@ -820,8 +860,10 @@ namespace IED
 		{
 			return RTTI<BSXFlags>()(r);
 		}
-
-		return nullptr;
+		else
+		{
+			return nullptr;
+		}
 	}
 
-}  // namespace IED
+}  

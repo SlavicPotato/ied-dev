@@ -288,7 +288,7 @@ namespace IED
 
 		/*for (auto& e : a_data.transforms.GetGlobalData())
 		{
-			CleanNodeOverrideConfig(e);
+			
 		}*/
 	}
 

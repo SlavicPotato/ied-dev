@@ -44,6 +44,10 @@ namespace IED
 		bool RemoveActorImpl(
 			TESObjectREFR* a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
+		
+		bool RemoveActorImpl(
+			Game::FormID a_actor,
+			stl::flag<ControllerUpdateFlags> a_flags);
 
 	protected:
 		void CleanupActorObjectsImpl(

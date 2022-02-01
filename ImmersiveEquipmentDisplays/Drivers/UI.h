@@ -196,14 +196,9 @@ namespace IED
 			static void QueueSetScale(float a_scale);
 			static void MarkFontUpdateDataDirty();
 
-			static constexpr auto IsImInitialized() noexcept
+			static inline constexpr auto IsImInitialized() noexcept
 			{
 				return m_Instance.m_imInitialized;
-			}
-
-			static constexpr auto IsInitialized() noexcept
-			{
-				return m_Instance.m_initialized;
 			}
 
 			FN_NAMEPROC("UI");
@@ -313,7 +308,6 @@ namespace IED
 			stl::map<std::uint32_t, Tasks::UIRenderTaskBase*> m_drawTasks;
 
 			bool m_imInitialized{ false };
-			bool m_initialized{ false };
 			bool m_suspended{ true };
 			HWND m_windowHandle{ nullptr };
 
@@ -331,8 +325,6 @@ namespace IED
 			stl::set<stl::fixed_string> m_availableFonts;
 			stl::fixed_string m_sDefaultFont{ DEFAULT_FONT_NAME };
 
-			//bool m_scalingEnabled{ false };
-
 			std::uint64_t m_frameCount{ 0 };
 
 			bool m_nextResetIO{ false };
@@ -340,28 +332,6 @@ namespace IED
 			BYTE m_keyState[256]{ 0 };
 
 			WCriticalSection m_lock;
-
-			// Hooks
-
-			/*static HWND WINAPI CreateWindowExA_Hook(
-				_In_ DWORD dwExStyle,
-				_In_opt_ LPCSTR lpClassName,
-				_In_opt_ LPCSTR lpWindowName,
-				_In_ DWORD dwStyle,
-				_In_ int X,
-				_In_ int Y,
-				_In_ int nWidth,
-				_In_ int nHeight,
-				_In_opt_ HWND hWndParent,
-				_In_opt_ HMENU hMenu,
-				_In_opt_ HINSTANCE hInstance,
-				_In_opt_ LPVOID lpParam);
-
-			decltype(&CreateWindowExA_Hook) m_createWindowExA_o{ nullptr };*/
-
-			// IAL
-
-			//inline static std::uintptr_t CreateWindowEx_addr = IAL::Addr(75591, 77226, 0x163, 0x22C);
 
 			static UI m_Instance;
 		};

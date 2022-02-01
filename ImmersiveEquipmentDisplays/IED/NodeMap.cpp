@@ -57,7 +57,7 @@ namespace IED
 				{ "NPC Spine2 [Spn2]", "Spine Upper" },
 				{ "NPC Pelvis [Pelv]", "Pelvis" },
 				{ "NPC Head [Head]", "Head" },
-				{ "NPC Root [Root]", "Root" },
+				{ "NPC Root [Root]", "NPC Root" },
 				{ "NPC L Thigh [LThg]", "Thigh Left" },
 				{ "NPC R Thigh [RThg]", "Thigh Right" },
 				{ "NPC L Calf [LClf]", "Calf Left" },

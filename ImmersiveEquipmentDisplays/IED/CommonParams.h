@@ -87,14 +87,7 @@ namespace IED
 		{
 			if (!biped)
 			{
-				if (auto ptrh = actor->GetBiped(false))
-				{
-					biped = ptrh->ptr;
-				}
-				else
-				{
-					biped = nullptr;
-				}
+				biped = actor->GetBiped(false).get();
 			}
 
 			return *biped;

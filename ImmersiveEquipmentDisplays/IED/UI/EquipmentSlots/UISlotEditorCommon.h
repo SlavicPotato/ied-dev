@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 
 #include "IED/ConfigOverride.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
-#include "../Widgets/UIProfileSelectorWidget.h"
 #include "UISlotEditorBase.h"
 
 namespace IED
@@ -24,7 +24,8 @@ namespace IED
 		{
 		public:
 			UISlotEditorCommon(
-				Controller& a_controller);
+				Controller& a_controller,
+				bool a_disableApply = false);
 
 		protected:
 			void UpdateConfigSingleSlot(
@@ -66,13 +67,17 @@ namespace IED
 
 		template <class T>
 		UISlotEditorCommon<T>::UISlotEditorCommon(
-			Controller& a_controller) :
+			Controller& a_controller,
+			bool a_disableApply) :
 			UISlotEditorBase<T>(a_controller),
 			UIProfileSelectorWidget<
 				profileSelectorParamsSlot_t<T>,
 				SlotProfile>(
 				a_controller,
-				UIProfileSelectorFlags::kEnableMerge)
+				UIProfileSelectorFlags::kEnableMerge |
+					(!a_disableApply ?
+                         UIProfileSelectorFlags::kEnableApply :
+                         UIProfileSelectorFlags::kNone))
 		{
 		}
 
@@ -165,29 +170,53 @@ namespace IED
 			{
 				const auto slotId = static_cast<Data::ObjectSlot>(i);
 
-				auto& sourceSlot = a_data.get(slotId);
-				auto& holderSlot = holder.get(slotId);
+				auto& srcSlot = a_data.get(slotId);
+				auto& dstSlot = holder.get(slotId);
 
-				if (holderSlot)
+				if (dstSlot)
 				{
-					if (sourceSlot)
+					if (srcSlot)
 					{
-						*holderSlot = *sourceSlot;
+						*dstSlot = *srcSlot;
 					}
 					else
 					{
 						if (a_resetEmpty)
 						{
-							holderSlot.reset();
+							dstSlot.reset();
+
+							/*if (a_defaultData)
+							{
+								if (auto& srcSlotDef = a_defaultData->get(slotId))
+								{
+									if (dstSlot)
+									{
+										*dstSlot = *srcSlotDef;
+									}
+									else
+									{
+										dstSlot =
+											std::make_unique<Data::configSlotHolder_t::data_type>(*srcSlotDef);
+									}
+								}
+								else
+								{
+									dstSlot = CreateDefaultSlotConfig(slotId);
+								}
+							}
+							else
+							{
+								dstSlot.reset();
+							}*/
 						}
 					}
 				}
 				else
 				{
-					if (sourceSlot)
+					if (srcSlot)
 					{
-						holderSlot =
-							std::make_unique<Data::configSlotHolder_t::data_type>(*sourceSlot);
+						dstSlot =
+							std::make_unique<Data::configSlotHolder_t::data_type>(*srcSlot);
 					}
 				}
 			}

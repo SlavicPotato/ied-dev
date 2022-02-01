@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		UISlotEditorGlobal::UISlotEditorGlobal(Controller& a_controller) :
-			UISlotEditorCommon<int>(a_controller),
+			UISlotEditorCommon<int>(a_controller, true),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
@@ -87,11 +87,10 @@ namespace IED
 		Data::configSlotHolder_t& UISlotEditorGlobal::GetOrCreateConfigSlotHolder(int) const
 		{
 			auto& store = m_controller.GetConfigStore().active;
-			auto& data = store.slot.GetGlobalData();
 
-			const auto& config = m_controller.GetConfigStore().settings;
+			const auto& settings = m_controller.GetConfigStore().settings;
 
-			return data[stl::underlying(config.data.ui.slotEditor.globalType)];
+			return store.slot.GetGlobalData(settings.data.ui.slotEditor.globalType);
 		}
 
 		void UISlotEditorGlobal::MergeProfile(
@@ -104,6 +103,23 @@ namespace IED
 
 			m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 		}
+
+		/*void UISlotEditorGlobal::ApplyProfile(
+			const profileSelectorParamsSlot_t<int>& a_data,
+			const SlotProfile& a_profile)
+		{
+			const auto& settings = m_controller.GetConfigStore().settings;
+			auto& dconf = m_controller
+			                  .GetConfigStore()
+			                  .initial.slot
+			                  .GetGlobalData(settings.data.ui.slotEditor.globalType);
+
+			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true, std::addressof(dconf));
+
+			UpdateData(a_data.data);
+
+			m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+		}*/
 
 		void UISlotEditorGlobal::OnBaseConfigChange(
 			int a_handle,

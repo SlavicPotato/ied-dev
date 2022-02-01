@@ -2,8 +2,8 @@
 
 #include "UIImportWidget.h"
 
-#include "IED/UI/UIDialogImportExportStrings.h"
 #include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/UI/UIDialogImportExportStrings.h"
 
 #include "IED/Controller/Controller.h"
 
@@ -66,10 +66,21 @@ namespace IED
 						ImGui::Separator();
 						ImGui::Spacing();
 
+						conf.mark_if(ImGui::CheckboxFlagsT(
+							LS(UIDialogImportExportStrings::SkipTempRefs, "1"),
+							stl::underlying(std::addressof(conf.data.ui.importExport.importFlags.value)),
+							stl::underlying(ImportFlags::kEraseTemporary)));
+
+						DrawTip(UITip::SkipTempRefs);
+
+						ImGui::Spacing();
+						ImGui::Separator();
+						ImGui::Spacing();
+
 						ImGui::PushID("mode_sel");
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::Overwrite, "1"),
+								LS(CommonStrings::Overwrite, "2"),
 								!conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 						{
 							conf.data.ui.importExport.importFlags.clear(ImportFlags::kMerge);
@@ -79,7 +90,7 @@ namespace IED
 						ImGui::SameLine();
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::Merge, "2"),
+								LS(CommonStrings::Merge, "3"),
 								conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 						{
 							conf.data.ui.importExport.importFlags.set(ImportFlags::kMerge);
@@ -102,7 +113,6 @@ namespace IED
 			}
 		}
 
-		
 		void UIImportWidget::DoImport(
 			Data::configStore_t&& a_data,
 			stl::flag<ImportFlags> a_flags)

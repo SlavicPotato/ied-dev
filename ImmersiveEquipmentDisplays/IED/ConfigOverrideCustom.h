@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigOverrideBase.h"
+#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideModelGroup.h"
 
 namespace IED
@@ -47,6 +48,7 @@ namespace IED
 			float chance{ 100.0f };
 			configFormList_t extraItems;
 			configModelGroup_t group;
+			//configEffectShaderHolder_t effects;
 
 		private:
 			template <class Archive>
@@ -62,6 +64,7 @@ namespace IED
 				ar& chance;
 				ar& extraItems;
 				ar& group;
+				//ar& effects;
 			}
 
 			template <class Archive>
@@ -80,6 +83,11 @@ namespace IED
 				if (version >= DataVersion2)
 				{
 					ar& group;
+
+					/*if (version >= DataVersion3)
+					{
+						ar& effects;
+					}*/
 				}
 			}
 

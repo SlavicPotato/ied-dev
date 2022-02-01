@@ -104,7 +104,7 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
-			OverrideNodeInfo::Create();
+			NodeOverrideData::Create();
 			g_controller->InitializeStrings();
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());

@@ -236,7 +236,8 @@ namespace IED
 
 		template <class T, class P>
 		void UIProfileSelectorBase<T, P>::DrawProfileSelectorOptions(const T& a_data)
-		{}
+		{
+		}
 
 	}
 }
