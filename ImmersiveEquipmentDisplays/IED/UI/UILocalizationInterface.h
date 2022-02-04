@@ -69,7 +69,7 @@ namespace IED
 				for (; i < mslen; i++)
 				{
 					auto c = a_str[i];
-					if (!c || c == 0x23)
+					if (!c || (c == '#' && a_str[i + 1] == '#'))
 					{
 						break;
 					}
@@ -79,17 +79,19 @@ namespace IED
 
 				for (std::uint32_t j = 0; j < _NumHash; j++)
 				{
-					buffer[i++] = 0x23;
+					buffer[i++] = '#';
 				}
 
 				for (auto p = a_im_id; i < sizeof(buffer) - 1; p++, i++)
 				{
-					auto c = *p;
-					if (!c)
+					if (auto c = *p)
+					{
+						buffer[i] = c;
+					}
+					else
 					{
 						break;
 					}
-					buffer[i] = c;
 				}
 
 				buffer[i] = 0;
@@ -98,7 +100,6 @@ namespace IED
 			}
 
 		private:
-
 			Localization::ILocalization& m_localization;
 		};
 	}

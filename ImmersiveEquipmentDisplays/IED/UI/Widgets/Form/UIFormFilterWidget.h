@@ -213,7 +213,8 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_DefaultOpen,
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
 					LS(CommonStrings::Allow)))
 			{
@@ -256,7 +257,8 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_DefaultOpen,
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
 					LS(CommonStrings::Deny)))
 			{
@@ -388,9 +390,9 @@ namespace IED
 							m_onChangeFunc(a_params);
 
 							result = FormFilterAction::Add;
-
-							ImGui::CloseCurrentPopup();
 						}
+
+						ImGui::CloseCurrentPopup();
 					}
 
 					ImGui::EndMenu();
@@ -467,6 +469,7 @@ namespace IED
 				}
 
 				auto it = a_data.begin();
+
 				while (it != a_data.end())
 				{
 					ImGui::PushID(*it);
@@ -582,7 +585,9 @@ namespace IED
 						}
 					}
 
-					if (ImGui::Selectable(e->second.Name().c_str(), selected))
+					if (ImGui::Selectable(
+							LMKID<3>(e->second.Name().c_str(), "1"),
+							selected))
 					{
 						a_data.profile.name = e->first;
 						selectedNew = true;

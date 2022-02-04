@@ -40,7 +40,7 @@ namespace IED
 				}
 			}
 
-			a_out.bipedSlot = a_in["bip"].asUInt();
+			a_out.ui32a = a_in.get("bip", static_cast<std::uint32_t>(-1)).asUInt();
 			a_out.typeSlot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
@@ -67,7 +67,7 @@ namespace IED
 			fparser.Create(a_data.form, a_out["form"]);
 			fparser.Create(a_data.keyword, a_out["kw"]);
 
-			a_out["bip"] = a_data.bipedSlot;
+			a_out["bip"] = a_data.ui32a;
 			a_out["type"] = stl::underlying(a_data.typeSlot);
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);

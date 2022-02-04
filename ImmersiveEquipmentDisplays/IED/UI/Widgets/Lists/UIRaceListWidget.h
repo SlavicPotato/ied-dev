@@ -11,8 +11,6 @@
 
 #include "UIListCommon.h"
 
-#include "Localization/ILocalization.h"
-
 namespace IED
 {
 	class Controller;
@@ -22,7 +20,6 @@ namespace IED
 		template <class Td>
 		class UIRaceList :
 			public UIListBase<Td, Game::FormID>,
-			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
 			public virtual UIActorInfoInterface
 		{
@@ -50,8 +47,7 @@ namespace IED
 		UIRaceList<Td>::UIRaceList(
 			Controller& a_controller,
 			float a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
-			UILocalizationInterface(a_controller),
+			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller)
 		{}

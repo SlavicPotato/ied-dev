@@ -2501,6 +2501,12 @@ namespace IED
 			return false;
 		}
 
+		if (a_config.customFlags.test(Data::CustomFlags::kCheckFav) &&
+		    !a_itemData.favorited)
+		{
+			return false;
+		}
+
 		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
 			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
@@ -2733,13 +2739,11 @@ namespace IED
 			}
 			else
 			{
-				auto modelForm = a_config.modelForm.get_id() ?
-                                     a_config.modelForm.get_form() :
-                                     itemData.form;
+				auto modelForm = a_config.modelForm.get_form();
 
 				a_objectEntry.modelForm = modelForm ?
                                               modelForm->formID :
-                                              Game::FormID();
+                                              Game::FormID{};
 
 				result = LoadAndAttach(
 					a_params,
@@ -2751,7 +2755,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableCollision));
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -2843,7 +2847,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					false,
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableCollision));
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -4539,12 +4543,11 @@ namespace IED
 					auto it = m_objects.find(a_actor->formID);
 					if (it != m_objects.end())
 					{
-						if (RemoveInvisibleObjects(
-								it->second,
-								static_cast<Game::ObjectRefHandle>(a_handle)))
-						{
-							EvaluateImpl(it->second, ControllerUpdateFlags::kNone);
-						}
+						RemoveInvisibleObjects(
+							it->second,
+							static_cast<Game::ObjectRefHandle>(a_handle));
+
+						EvaluateImpl(it->second, ControllerUpdateFlags::kNone);
 					}
 				});
 

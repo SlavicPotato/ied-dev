@@ -28,7 +28,7 @@ namespace IED
 				break;
 			}
 
-			ImGui::Text("%s", Data::GetConfigClassName(a_class));
+			ImGui::TextUnformatted(Data::GetConfigClassName(a_class));
 
 			ImGui::PopStyleColor();
 		};

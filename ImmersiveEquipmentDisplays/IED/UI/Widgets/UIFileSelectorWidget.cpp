@@ -48,10 +48,14 @@ namespace IED
 
 					bool selected = m_selected->m_key == e.first;
 					if (selected)
+					{
 						if (ImGui::IsWindowAppearing())
+						{
 							ImGui::SetScrollHereY();
+						}
+					}
 
-					if (ImGui::Selectable(e.first.c_str(), selected))
+					if (ImGui::Selectable(LMKID<3>(e.first.c_str(), "1"), selected))
 					{
 						m_selected.insert(m_root, e);
 						m_selected->UpdateInfo();

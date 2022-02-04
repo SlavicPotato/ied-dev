@@ -13,8 +13,6 @@
 
 #include "UIActorInfoAddInterface.h"
 
-#include "IED/UI/UILocalizationInterface.h"
-
 namespace IED
 {
 	class Controller;
@@ -25,7 +23,6 @@ namespace IED
 		class UIActorList :
 			public UIListBase<Td, Game::FormID>,
 			UIActorInfoAddInterface,
-			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
 			public virtual UIActorInfoInterface
 		{
@@ -64,9 +61,8 @@ namespace IED
 		UIActorList<Td>::UIActorList(
 			Controller& a_controller,
 			float a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
+			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UIActorInfoAddInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller)
 		{}

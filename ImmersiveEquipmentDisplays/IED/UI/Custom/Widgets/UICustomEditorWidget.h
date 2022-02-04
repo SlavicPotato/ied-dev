@@ -852,6 +852,18 @@ namespace IED
 						}
 						DrawTip(UITip::AlwaysUnloadCustom);
 
+						if (ImGui::CheckboxFlagsT(
+								LS(UIWidgetCommonStrings::IsFavorited, "6"),
+								stl::underlying(std::addressof(data.customFlags.value)),
+								stl::underlying(Data::CustomFlags::kCheckFav)))
+						{
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						}
+						DrawTip(UITip::IsFavorited);
+
 						ImGui::NextColumn();
 
 						bool disabled = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
@@ -859,7 +871,7 @@ namespace IED
 						UICommon::PushDisabled(disabled);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::IgnoreRaceEquipTypes, "6"),
+								LS(UICustomEditorString::IgnoreRaceEquipTypes, "7"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIgnoreRaceEquipTypes)))
 						{
@@ -872,7 +884,7 @@ namespace IED
 						DrawTip(UITip::IgnoreRaceEquipTypes);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::DisableIfEquipped, "7"),
+								LS(UICustomEditorString::DisableIfEquipped, "8"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
 						{
@@ -919,7 +931,7 @@ namespace IED
 						};
 
 						if (ImGui::DragScalarN(
-								LS(CommonStrings::Limits, "8"),
+								LS(CommonStrings::Limits, "9"),
 								ImGuiDataType_U32,
 								std::addressof(data.countRange),
 								2,
@@ -1397,7 +1409,7 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::LeftWeapon, "2"),
+					LS(UIWidgetCommonStrings::LeftWeapon, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kLeftWeapon)))
 			{
@@ -1405,18 +1417,14 @@ namespace IED
 			}
 			DrawTip(UITip::LeftWeapon);
 
-			UICommon::PushDisabled(true);
-
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableCollision, "3"),
+					LS(UIWidgetCommonStrings::DisableHavok, "4"),
 					stl::underlying(std::addressof(data.customFlags.value)),
-					stl::underlying(Data::CustomFlags::kDisableCollision)))
+					stl::underlying(Data::CustomFlags::kDisableHavok)))
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTipWarn(UITip::DisableCollision);
-
-			UICommon::PopDisabled(true);
+			DrawTipWarn(UITip::DisableHavok);
 
 			/*if (ImGui::CheckboxFlagsT(
 					LS(UICustomEditorString::LoadARMA, "3"),

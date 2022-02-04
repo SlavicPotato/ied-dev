@@ -34,7 +34,7 @@ namespace IED
 			{
 				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
 				ImGui::SameLine();
-				ImGui::Text("%s", typeDesc);
+				ImGui::TextUnformatted(typeDesc);
 			}
 			else
 			{

@@ -379,7 +379,7 @@ namespace IED
 		bool a_leftWeapon,
 		bool a_loadArma,
 		bool a_visible,
-		bool a_disableCollision)
+		bool a_disableHavok)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -499,7 +499,7 @@ namespace IED
 			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
 			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
 			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame),
-			a_disableCollision);
+			a_disableHavok);
 
 		FinalizeObjectState(
 			state,
@@ -730,7 +730,7 @@ namespace IED
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
 				a_config.flags.test(Data::FlagsBase::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
-				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableCollision));
+				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
 			e.object = itemRoot;
 		}

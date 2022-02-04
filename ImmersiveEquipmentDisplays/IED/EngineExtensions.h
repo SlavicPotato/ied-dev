@@ -113,7 +113,7 @@ namespace IED
 			bool a_dropOnDeath,
 			bool a_removeScabbards,
 			bool a_keepTorchFlame,
-			bool a_disableCollision);
+			bool a_disableHavok);
 
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);

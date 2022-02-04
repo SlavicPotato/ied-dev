@@ -3,52 +3,10 @@
 #include "FormCommon.h"
 #include "Inventory.h"
 
-#include <skse64/GameData.h>
-
 namespace IED
 {
 	using namespace Data;
 
-	enum EquipHandSlot
-	{
-		kLeft,
-		kRight,
-		kEither,
-
-		kNone
-	};
-
-	static EquipHandSlot GetEquipHandSlot(TESForm* item)
-	{
-		auto equipType = RTTI<BGSEquipType>()(item);
-		if (!equipType)
-		{
-			return EquipHandSlot::kNone;
-		}
-
-		auto equipSlot = equipType->GetEquipSlot();
-		if (!equipSlot)
-		{
-			return EquipHandSlot::kNone;
-		}
-
-		if (equipSlot == GetEitherHandSlot())
-		{
-			return EquipHandSlot::kEither;
-		}
-		else if (equipSlot == GetRightHandSlot())
-		{
-			return EquipHandSlot::kRight;
-		}
-		else if (equipSlot == GetLeftHandSlot())
-		{
-			return EquipHandSlot::kLeft;
-		}
-		else
-		{
-			return EquipHandSlot::kNone;
-		}
-	}
 
 	EntryDataList* GetEntryDataList(Actor* a_actor)
 	{
@@ -63,26 +21,11 @@ namespace IED
 		return nullptr;
 	}
 
-	/*bool CanEquipEitherHand(TESObjectWEAP* a_item)
-    {
-        auto equipSlot = a_item->equipType.GetEquipSlot();
-        if (!equipSlot) {
-            return false;
-        }
-
-        return (
-            equipSlot == GetRightHandSlot() ||
-            equipSlot == GetEitherHandSlot() ||
-            equipSlot == GetLeftHandSlot());
-    }*/
-
 	ItemCandidateCollector::ItemCandidateCollector(
 		Actor* a_actor) :
 		m_isPlayer(a_actor == *g_thePlayer),
 		m_data(a_actor)
 	{
-		/*m_data.reserve(4000);
-		m_equipped.forms.reserve(50);*/
 	}
 
 	void ItemCandidateCollector::Run(
@@ -100,6 +43,11 @@ namespace IED
 	bool ItemCandidateCollector::CheckForm(TESForm* a_form)
 	{
 		if (a_form->IsDeleted())  // ?
+		{
+			return false;
+		}
+
+		if (a_form->formID.IsTemporary())
 		{
 			return false;
 		}
@@ -151,20 +99,6 @@ namespace IED
 		return true;
 	}
 
-	SKMP_FORCEINLINE static constexpr bool is_equippable(TESForm* a_form) noexcept
-	{
-		switch (a_form->formType)
-		{
-		case TESObjectARMO::kTypeID:
-		case TESObjectWEAP::kTypeID:
-		case TESAmmo::kTypeID:
-		case TESObjectLIGH::kTypeID:
-			return true;
-		default:
-			return false;
-		}
-	}
-	
 	bool ItemCandidateCollector::Accept(InventoryEntryData* a_entryData)
 	{
 		if (!a_entryData)
@@ -202,13 +136,6 @@ namespace IED
 			m_data.typeCount[i] += a_entryData->countDelta;
 		}
 
-		if (!IFormCommon::IsEquippableForm(form))
-		{
-			return true;
-		}
-
-		bool checkFav = m_isPlayer && type != ObjectType::kMax;
-
 		if (auto extendDataList = a_entryData->extendDataList)
 		{
 			for (auto it = extendDataList->Begin(); !it.End(); ++it)
@@ -243,11 +170,11 @@ namespace IED
 					}
 				}
 
-				if (checkFav && !r.favorited)
+				if (m_isPlayer && !r.favorited)
 				{
 					if (presence->HasType(ExtraHotkey::EXTRA_DATA))
 					{
-						r.favorited = presence->HasType(ExtraHotkey::EXTRA_DATA);
+						r.favorited = true;
 					}
 				}
 
@@ -261,34 +188,32 @@ namespace IED
 			}
 		}
 
-		if (r.equipped || r.equippedLeft)
+		if (extraType != Data::ObjectTypeExtra::kNone &&
+		    (r.equipped || r.equippedLeft))
 		{
-			if (extraType != Data::ObjectTypeExtra::kNone)
+			r.extraEquipped.type = extraType;
+
+			auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
+
+			if (r.equipped)
 			{
-				r.extraEquipped.type = extraType;
+				r.extraEquipped.slot = slot;
 
-				auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
-
-				if (r.equipped)
+				auto i = stl::underlying(slot);
+				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 				{
-					r.extraEquipped.slot = slot;
-
-					auto i = stl::underlying(slot);
-					if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
-					{
-						m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
-					}
+					m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 				}
+			}
 
-				if (r.equippedLeft)
+			if (r.equippedLeft)
+			{
+				r.extraEquipped.slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
+
+				auto i = stl::underlying(r.extraEquipped.slotLeft);
+				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
 				{
-					r.extraEquipped.slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
-
-					auto i = stl::underlying(r.extraEquipped.slotLeft);
-					if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
-					{
-						m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
-					}
+					m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 		}
@@ -329,11 +254,6 @@ namespace IED
 
 			auto form = e.second.form;
 
-			if (form->formID.IsTemporary())
-			{
-				continue;
-			}
-
 			std::uint16_t damage;
 
 			if (auto weap = form->As<TESObjectWEAP>())
@@ -366,61 +286,6 @@ namespace IED
 					return a_lhs.damage > a_rhs.damage;
 				});
 		}
-	}
-
-	void EquippedArmorCollector::Run()
-	{
-		if (auto list = GetEntryDataList(m_data.actor))
-		{
-			list->Visit(*this);
-		}
-	}
-
-	bool EquippedArmorCollector::Accept(InventoryEntryData* a_entryData)
-	{
-		if (!a_entryData)
-		{
-			return true;
-		}
-
-		auto form = a_entryData->type;
-
-		if (!form)
-		{
-			return true;
-		}
-
-		auto armor = form->As<TESObjectARMO>();
-
-		if (!armor || armor->IsShield())
-		{
-			return true;
-		}
-
-		if (auto extendDataList = a_entryData->extendDataList)
-		{
-			for (auto it = extendDataList->Begin(); !it.End(); ++it)
-			{
-				auto extraDataList = *it;
-				if (!extraDataList)
-				{
-					continue;
-				}
-
-				if (extraDataList->Has<ExtraWorn>())
-				{
-					auto& r = m_data.forms.try_emplace(form->formID, form).first->second;
-
-					//r.equipped = true;
-
-					r.extraEquipped.type = Data::ObjectTypeExtra::kArmor;
-
-					break;
-				}
-			}
-		}
-
-		return true;
 	}
 
 }

@@ -20,8 +20,9 @@ namespace IED
 			kUseChance = 1u << 5,
 			kIgnoreRaceEquipTypes = 1u << 6,
 			kDisableIfEquipped = 1u << 7,
-			kDisableCollision = 1u << 8,
+			kDisableHavok = 1u << 8,
 			kUseGroup = 1u << 9,
+			kCheckFav = 1u << 10,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);

@@ -14,6 +14,7 @@ namespace IED
 		UIConditionParamEditorWidget::UIConditionParamEditorWidget(Controller& a_controller) :
 			UIFormLookupInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIConditionExtraSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
 		{
@@ -23,64 +24,6 @@ namespace IED
 
 		void UIConditionParamEditorWidget::OpenConditionParamEditorPopup()
 		{
-			m_tempData = {};
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::Form)];
-				if (e.p1)
-				{
-					m_tempData.form = *static_cast<Game::FormID*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::Keyword)];
-				if (e.p1)
-				{
-					m_tempData.keyword = *static_cast<Game::FormID*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::CMENode)];
-				if (e.p1)
-				{
-					m_tempData.cmeNode = *static_cast<stl::fixed_string*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::BipedSlot)];
-				if (e.p1)
-				{
-					m_tempData.biped = *static_cast<Biped::BIPED_OBJECT*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::EquipmentSlot)];
-				if (e.p1)
-				{
-					m_tempData.slot = *static_cast<Data::ObjectSlot*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::EquipmentSlotExtra)];
-				if (e.p1)
-				{
-					m_tempData.slotExtra = *static_cast<Data::ObjectSlotExtra*>(e.p1);
-				}
-			}
-
-			{
-				const auto& e = m_entries[stl::underlying(ConditionParamItem::QuestCondType)];
-				if (e.p1)
-				{
-					m_tempData.qcondType = *static_cast<Data::QuestConditionType*>(e.p1);
-				}
-			}
-
 			ImGui::OpenPopup("match_param_editor");
 		}
 
@@ -90,7 +33,9 @@ namespace IED
 
 			auto fontSize = ImGui::GetFontSize();
 
-			ImGui::SetNextWindowSizeConstraints({ fontSize * 34.0f, 0.0f }, { 800.0f, 800.0f });
+			ImGui::SetNextWindowSizeConstraints(
+				{ fontSize * 34.0f, 0.0f },
+				{ 800.0f, 800.0f });
 
 			if (ImGui::BeginPopup("match_param_editor"))
 			{
@@ -100,58 +45,38 @@ namespace IED
 				{
 					result |= DrawCMNodeSelector(
 						LS(CommonStrings::Node, "ns"),
-						m_tempData.cmeNode,
+						e.As1<stl::fixed_string>(),
 						NodeOverrideData::GetCMENodeData(),
 						static_cast<const stl::fixed_string*>(e.p2));
 
 					ImGui::Spacing();
-
-					if (result)
-					{
-						*static_cast<stl::fixed_string*>(e.p1) = m_tempData.cmeNode;
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::BipedSlot); e.p1)
 				{
 					result |= DrawBipedObjectSelector(
 						LS(CommonStrings::Node, "bp"),
-						m_tempData.biped);
+						e.As1<Biped::BIPED_OBJECT>());
 
 					ImGui::Spacing();
-
-					if (result)
-					{
-						*static_cast<std::uint32_t*>(e.p1) = static_cast<std::uint32_t>(m_tempData.biped);
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::EquipmentSlot); e.p1)
 				{
 					result |= DrawObjectSlotSelector(
 						LS(CommonStrings::Slot, "ss"),
-						m_tempData.slot);
+						e.As1<Data::ObjectSlot>());
 
 					ImGui::Spacing();
-
-					if (result)
-					{
-						*static_cast<Data::ObjectSlot*>(e.p1) = m_tempData.slot;
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
 				{
 					result |= DrawObjectSlotSelector(
 						LS(CommonStrings::Slot, "ss"),
-						m_tempData.slotExtra);
+						e.As1<Data::ObjectSlotExtra>());
 
 					ImGui::Spacing();
-
-					if (result)
-					{
-						*static_cast<Data::ObjectSlotExtra*>(e.p1) = m_tempData.slotExtra;
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::Form); e.p1)
@@ -177,14 +102,9 @@ namespace IED
 					result |= m_formPickerForm.DrawFormPicker(
 						"fp_1",
 						LS(CommonStrings::Form),
-						m_tempData.form);
+						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
-
-					if (result)
-					{
-						*static_cast<Game::FormID*>(e.p1) = m_tempData.form;
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
@@ -210,28 +130,28 @@ namespace IED
 					result |= m_formPickerKeyword.DrawFormPicker(
 						"fp_2",
 						LS(CommonStrings::Keyword),
-						m_tempData.keyword);
+						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
-
-					if (result)
-					{
-						*static_cast<Game::FormID*>(e.p1) = m_tempData.keyword;
-					}
 				}
 
 				if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
 				{
-					auto result = ImGui::RadioButton(
-						LS(CommonStrings::Complete, "qts"),
-						m_tempData.qcondType == Data::QuestConditionType::kComplete);
+					if (ImGui::RadioButton(
+							LS(CommonStrings::Complete, "qts"),
+							e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
+					{
+						e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
+						result = true;
+					}
 
 					ImGui::Spacing();
+				}
 
-					if (result)
-					{
-						*static_cast<Data::QuestConditionType*>(e.p1) = m_tempData.qcondType;
-					}
+				if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
+				{
+					result |= DrawExtraConditionSelector(
+						e.As1<Data::ExtraConditionType>());
 				}
 
 				if (m_extraInterface)
@@ -327,15 +247,31 @@ namespace IED
 				{
 					if (const auto& e = get(ConditionParamItem::Extra); e.p1)
 					{
+						auto r = GetFormKeywordExtraDesc(nullptr);
+
 						auto match = static_cast<Data::configNodeOverrideCondition_t*>(e.p1);
 
-						stl::snprintf(
-							m_descBuffer,
-							"%s: %s",
-							LS(CommonStrings::LayingDown),
-							match->flags.test(Data::NodeOverrideConditionFlags::kLayingDown) ?
-                                LS(CommonStrings::True) :
-                                LS(CommonStrings::False));
+						if (r[0] == 0)
+						{
+							stl::snprintf(
+								m_descBuffer2,
+								"LD: %s",
+								match->flags.test(Data::NodeOverrideConditionFlags::kLayingDown) ?
+                                    LS(CommonStrings::True) :
+                                    LS(CommonStrings::False));
+						}
+						else
+						{
+							stl::snprintf(
+								m_descBuffer2,
+								"%s, LD: %s",
+								r,
+								match->flags.test(Data::NodeOverrideConditionFlags::kLayingDown) ?
+                                    LS(CommonStrings::True) :
+                                    LS(CommonStrings::False));
+						}
+
+						return m_descBuffer2;
 					}
 					else
 					{
@@ -343,8 +279,22 @@ namespace IED
 					}
 				}
 				break;
+
+			case ConditionParamItem::CondExtra:
+				{
+					if (const auto& e = get(a_item); e.p1)
+					{
+						if (auto r = condition_type_to_desc(e.As1<Data::ExtraConditionType>()))
+						{
+							return r;
+						}
+					}
+					m_descBuffer[0] = 0x0;
+				}
+				break;
 			default:
 				m_descBuffer[0] = 0x0;
+				break;
 			}
 
 			return m_descBuffer;
@@ -380,42 +330,80 @@ namespace IED
 				a_iform = *static_cast<const Game::FormID*>(e.p1);
 			}
 
-			if (const auto& e = get(ConditionParamItem::Keyword); e.p2)
+			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
 			{
-				a_ikw = *static_cast<const Game::FormID*>(e.p2);
+				a_ikw = *static_cast<const Game::FormID*>(e.p1);
 			}
 
 			if (a_iform && a_ikw)
 			{
-				stl::snprintf(
-					m_descBuffer,
-					"%s, F: %.8X, KW: %.8X",
-					a_idesc,
-					a_iform.get(),
-					a_ikw.get());
+				if (a_idesc)
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"%s, F: %.8X, KW: %.8X",
+						a_idesc,
+						a_iform.get(),
+						a_ikw.get());
+				}
+				else
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"F: %.8X, KW: %.8X",
+						a_iform.get(),
+						a_ikw.get());
+				}
 			}
 			else if (a_iform)
 			{
-				stl::snprintf(
-					m_descBuffer,
-					"%s, F: %.8X",
-					a_idesc,
-					a_iform.get());
+				if (a_idesc)
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"%s, F: %.8X",
+						a_idesc,
+						a_iform.get());
+				}
+				else
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"F: %.8X",
+						a_iform.get());
+				}
 			}
 			else if (a_ikw)
 			{
-				stl::snprintf(
-					m_descBuffer,
-					"%s, KW: %.8X",
-					a_idesc,
-					a_ikw.get());
+				if (a_idesc)
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"%s, KW: %.8X",
+						a_idesc,
+						a_ikw.get());
+				}
+				else
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"KW: %.8X",
+						a_ikw.get());
+				}
 			}
 			else
 			{
-				stl::snprintf(
-					m_descBuffer,
-					"%s",
-					a_idesc);
+				if (a_idesc)
+				{
+					stl::snprintf(
+						m_descBuffer,
+						"%s",
+						a_idesc);
+				}
+				else
+				{
+					m_descBuffer[0] = 0;
+				}
 			}
 
 			return m_descBuffer;

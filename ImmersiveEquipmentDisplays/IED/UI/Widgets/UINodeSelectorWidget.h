@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
 
 #include "Filters/UIGenericFilter.h"
 
 #include "IED/ConfigOverride.h"
 #include "IED/NodeMap.h"
+
+#include "IED/UI/UILocalizationInterface.h"
 
 namespace IED
 {
@@ -13,7 +15,8 @@ namespace IED
 
 	namespace UI
 	{
-		class UINodeSelectorWidget
+		class UINodeSelectorWidget :
+			public virtual UILocalizationInterface
 		{
 		public:
 			UINodeSelectorWidget(

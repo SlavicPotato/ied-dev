@@ -112,7 +112,7 @@ namespace IED
 			bool a_leftWeapon,
 			bool a_loadArma,
 			bool a_visible,
-			bool a_disableCollision);
+			bool a_disableHavok);
 
 		bool LoadAndAttachGroup(
 			processParams_t& a_params,

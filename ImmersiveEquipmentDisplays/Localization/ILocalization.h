@@ -48,7 +48,7 @@ namespace IED
 				return L(stl::underlying(a_id)).c_str();
 			}
 
-			char m_scBuffer1[512]{ 0 };
+			char m_scBuffer1[2048]{ 0 };
 
 		private:
 			const std::string& get_default_str(StringID a_id) const;

@@ -46,9 +46,10 @@ namespace IED
 			LoadARMA = 1035,
 			SelectCrosshairActor = 1036,
 			KeepTorchFlame = 1037,
-			DisableCollision = 1038,
+			DisableHavok = 1038,
 			MatchSkin = 1039,
 			SyncSexes = 1040,
+			IsFavorited = 1041,
 		};
 
 	}

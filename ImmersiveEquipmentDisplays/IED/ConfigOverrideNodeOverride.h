@@ -27,7 +27,9 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideValuesFlags> flags{ NodeOverrideValuesFlags::kAbsolutePosition };
+			inline static constexpr auto DEFAULT_FLAGS = NodeOverrideValuesFlags::kAbsolutePosition;
+
+			stl::flag<NodeOverrideValuesFlags> flags{ DEFAULT_FLAGS };
 			configTransform_t transform;
 
 		private:
@@ -76,7 +78,8 @@ namespace IED
 			Furniture,
 			Group,
 			Actor,
-			NPC
+			NPC,
+			Extra
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -200,6 +203,13 @@ namespace IED
 			}
 
 			inline configNodeOverrideCondition_t(
+				ExtraConditionType a_type) :
+				extraCondType(a_type)
+			{
+				fbf.type = NodeOverrideConditionType::Extra;
+			}
+
+			inline configNodeOverrideCondition_t(
 				ObjectSlotExtra a_slot) :
 				typeSlot(a_slot),
 				flags(NodeOverrideConditionFlags::kMatchEquipped)
@@ -216,7 +226,16 @@ namespace IED
 			stl::fixed_string node;
 			configCachedForm_t form;
 			configCachedForm_t keyword;
-			std::uint32_t bipedSlot{ stl::underlying(Biped::kNone) };
+
+			union
+			{
+				std::uint32_t ui32a{ static_cast<std::uint32_t>(-1) };
+				ExtraConditionType extraCondType;
+				Biped::BIPED_OBJECT bipedSlot;
+
+				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
+			};
+
 			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
 			configNodeOverrideConditionGroup_t group;
 
@@ -228,7 +247,7 @@ namespace IED
 				ar& node;
 				ar& form;
 				ar& keyword;
-				ar& bipedSlot;
+				ar& ui32a;
 				ar& typeSlot;
 				ar& group;
 			}
@@ -240,7 +259,7 @@ namespace IED
 				ar& node;
 				ar& form;
 				ar& keyword;
-				ar& bipedSlot;
+				ar& ui32a;
 				ar& typeSlot;
 
 				if (version >= DataVersion2)

@@ -620,7 +620,7 @@ namespace IED
 		bool a_dropOnDeath,
 		bool a_removeScabbards,
 		bool a_keepTorchFlame,
-		bool a_disableCollision)
+		bool a_disableHavok)
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
@@ -629,8 +629,25 @@ namespace IED
 
 		if (auto bsxFlags = m_Instance->GetBSXFlags(a_object))
 		{
-			auto flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
-			if ((flag & BSXFlags::Flag::kAddon) == BSXFlags::Flag::kAddon)
+			stl::flag<BSXFlags::Flag> flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
+
+			if (a_disableHavok &&
+			    flag.test(BSXFlags::kHavok))
+			{
+				// recreate since this isn't cloned
+
+				if (a_object->RemoveExtraData(bsxFlags))
+				{
+					flag.clear(BSXFlags::Flag::kHavok);
+
+					bsxFlags = BSXFlags::Create(stl::underlying(flag.value));
+					flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
+
+					a_object->AddExtraData(bsxFlags);
+				}
+			}
+
+			if (flag.test(BSXFlags::Flag::kAddon))
 			{
 				fUnk28BAD0(a_object);
 			}
@@ -749,27 +766,23 @@ namespace IED
 			}
 		}
 
-		//if (!a_disableCollision) - ignore this for now
+		fUnk1CD130(a_object, 0x0);
+
+		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
+
+		if (auto cell = a_actor->parentCell)
 		{
-			// collision related, 2nd param = flags
-			fUnk1CD130(a_object, 0x0);
-
-			fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
-
-			if (auto cell = a_actor->parentCell)
+			if (auto world = cell->GetHavokWorld())
 			{
-				if (auto world = cell->GetHavokWorld())
+				NiPointer<Actor> mountedActor;
+
+				auto isMounted = a_actor->GetMountedActor(mountedActor);
+
+				unks_01 tmp;
+
+				if (auto r = fUnk5EBD90(isMounted ? mountedActor : a_actor, &tmp))
 				{
-					NiPointer<Actor> mountedActor;
-
-					auto isMounted = a_actor->GetMountedActor(mountedActor);
-
-					unks_01 tmp;
-
-					if (auto r = fUnk5EBD90(isMounted ? mountedActor : a_actor, &tmp))
-					{
-						fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
-					}
+					fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
 				}
 			}
 		}
@@ -866,4 +879,4 @@ namespace IED
 		}
 	}
 
-}  
+}

@@ -177,7 +177,7 @@ namespace IED
 				{
 					m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 				}
-				
+
 				if (config.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::DisableNPCEquipmentSlots, "3"),
 						std::addressof(data.disableNPCSlots))))
@@ -468,7 +468,7 @@ namespace IED
 								ImGui::SetScrollHereY();
 						}
 
-						if (ImGui::Selectable(LS(e.second), selected))
+						if (ImGui::Selectable(LS<CommonStrings, 3>(e.second, "1"), selected))
 						{
 							config.data.odbLevel = e.first;
 							config.mark_dirty();
@@ -531,7 +531,7 @@ namespace IED
 								ImGui::SetScrollHereY();
 						}
 
-						if (ImGui::Selectable(e.first.c_str(), selected))
+						if (ImGui::Selectable(LMKID<3>(e.first.c_str(), "1"), selected))
 						{
 							config.data.language = e.first;
 							config.mark_dirty();
@@ -573,7 +573,7 @@ namespace IED
 							ImGui::SetScrollHereY();
 					}
 
-					if (ImGui::Selectable(e.c_str(), selected))
+					if (ImGui::Selectable(LMKID<3>(e.c_str(), "1"), selected))
 					{
 						Drivers::UI::QueueFontChange(e);
 

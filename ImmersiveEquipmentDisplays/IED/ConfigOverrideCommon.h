@@ -156,6 +156,14 @@ namespace IED
 
 			kComplete = 0,
 		};
+		
+		enum class ExtraConditionType : std::uint32_t
+		{
+			kNone = static_cast<std::underlying_type_t<ExtraConditionType>>(-1),
+
+			kCanDualWield = 0,
+			kIsDead = 1,
+		};
 	}
 }
 

@@ -15,6 +15,8 @@ namespace IED
 		mutable stl::optional<bool> layingDown;
 		mutable stl::optional<Biped*> biped;
 		mutable stl::optional<TESObjectARMO*> actorSkin;
+		mutable stl::optional<bool> canDualWield;
+		mutable stl::optional<bool> isDead;
 
 		bool get_using_furniture() const
 		{
@@ -101,6 +103,51 @@ namespace IED
 			}
 
 			return *actorSkin;
+		}
+
+		constexpr bool can_dual_wield() const
+		{
+			if (!canDualWield)
+			{
+				if (actor == *g_thePlayer)
+				{
+					canDualWield = true;
+				}
+				else
+				{
+					if ((race->data.raceFlags & TESRace::kRace_CanDualWield) == TESRace::kRace_CanDualWield)
+					{
+						if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
+						{
+							if (auto cs = extraCombatStyle->combatStyle)
+							{
+								canDualWield = (cs->flags & TESCombatStyle::kFlag_AllowDualWielding) == TESCombatStyle::kFlag_AllowDualWielding;
+								return *canDualWield;
+							}
+						}
+
+						if (auto cs = npc->combatStyle)
+						{
+							canDualWield = (cs->flags & TESCombatStyle::kFlag_AllowDualWielding) == TESCombatStyle::kFlag_AllowDualWielding;
+							return *canDualWield;
+						}
+					}
+
+					canDualWield = false;
+				}
+			}
+
+			return *canDualWield;
+		}
+
+		constexpr bool is_dead() const
+		{
+			if (!isDead)
+			{
+				isDead = actor->IsDead();
+			}
+
+			return *isDead;
 		}
 	};
 }

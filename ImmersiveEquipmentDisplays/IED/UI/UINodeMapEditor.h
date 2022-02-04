@@ -16,6 +16,7 @@ namespace IED
 	{
 		class UINodeMapEditor :
 			public UIWindow,
+			public UITableRowInputWidget<stl::fixed_string>,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_nodemap";
@@ -32,8 +33,6 @@ namespace IED
 			void QueueDeleteNodePopup(const stl::fixed_string& a_node);
 
 			void OnChange();
-
-			UITableRowInputWidget<stl::fixed_string> m_tableRowInput;
 
 			Controller& m_controller;
 		};

@@ -357,21 +357,17 @@ namespace IED
 			}
 			DrawTip(UITip::RemoveScabbard);
 
-			UICommon::PushDisabled(true);
-
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableCollision, "6"),
+					LS(UIWidgetCommonStrings::DisableHavok, "6"),
 					stl::underlying(std::addressof(entry.flags.value)),
-					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableCollision)))
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{
 				OnModelGroupEditorChange(
 					a_handle,
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTipWarn(UITip::DisableCollision);
-
-			UICommon::PopDisabled(true);
+			DrawTipWarn(UITip::DisableHavok);
 
 			ImGui::Columns();
 		}

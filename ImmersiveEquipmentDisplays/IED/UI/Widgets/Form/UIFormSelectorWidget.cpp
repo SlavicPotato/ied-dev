@@ -324,7 +324,11 @@ namespace IED
                             UICommon::g_colorOK :
                             UICommon::g_colorError);
 
-					ImGui::Text("%s", isValid ? LS(CommonStrings::OK) : LS(CommonStrings::Invalid));
+					ImGui::TextUnformatted(
+						isValid ?
+                            LS(CommonStrings::OK) :
+                            LS(CommonStrings::Invalid));
+
 					ImGui::SameLine();
 					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 					ImGui::SameLine();

@@ -14,6 +14,7 @@ namespace IED
 	namespace UI
 	{
 		UINodeMapEditor::UINodeMapEditor(Controller& a_controller) :
+			UITableRowInputWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
@@ -113,9 +114,9 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(1);
 
-					if (m_tableRowInput.DrawColumn(1, e->first, e->second.name.c_str()))
+					if (DrawColumn(1, e->first, e->second.name.c_str()))
 					{
-						auto buffer = m_tableRowInput.GetBuffer();
+						auto buffer = GetBuffer();
 						if (std::strlen(buffer))
 						{
 							e->second.name = buffer;

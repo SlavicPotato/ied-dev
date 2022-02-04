@@ -86,7 +86,7 @@ namespace IED
 						               ImGui::CalcTextSize(text).x;
 
 						ImGui::SetCursorPosX(w * 0.5f);
-						ImGui::Text("%s", text);
+						ImGui::TextUnformatted(text);
 					}
 					else
 					{

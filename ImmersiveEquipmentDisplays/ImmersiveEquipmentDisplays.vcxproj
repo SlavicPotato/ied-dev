@@ -257,6 +257,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Events\Dispatcher.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="IED\ConfigConditionsCommon.h" />
     <ClInclude Include="IED\ConfigOverrideColor.h" />
     <ClInclude Include="IED\ConfigOverrideEffectShader.h" />
     <ClInclude Include="IED\ConfigOverrideModelGroup.h" />
@@ -275,6 +276,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIImportWidget.h" />
@@ -537,6 +540,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Drivers\UI.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="IED\ConfigConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
@@ -549,6 +553,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />

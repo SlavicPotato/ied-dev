@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "ConfigConditionsCommon.h"
 #include "ConfigOverrideBase.h"
 #include "FormCommon.h"
 
@@ -76,22 +77,6 @@ namespace IED
 			return nullptr;
 		}
 
-		static constexpr bool is_hand_slot(ObjectSlotExtra a_slot)
-		{
-			return a_slot != ObjectSlotExtra::kArmor &&
-			       a_slot != ObjectSlotExtra::kAmmo;
-		}
-
-		static constexpr bool is_valid_form_for_slot(
-			TESForm* a_form,
-			ObjectSlotExtra a_slot,
-			bool a_left)
-		{
-			return a_left ?
-                       ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
-                       ItemData::GetItemSlotExtra(a_form) == a_slot;
-		}
-
 		static bool match_race(
 			const equipmentOverrideCondition_t& a_match,
 			TESRace* a_race)
@@ -117,31 +102,7 @@ namespace IED
 
 			return true;
 		}
-		
-		static bool match_actor(
-			const equipmentOverrideCondition_t& a_match,
-			Actor* a_actor)
-		{
-			if (!a_match.form)
-			{
-				return false;
-			}
 
-			return a_actor->formID == a_match.form;
-		}
-		
-		static bool match_npc(
-			const equipmentOverrideCondition_t& a_match,
-			TESNPC *a_npc)
-		{
-			if (!a_match.form)
-			{
-				return false;
-			}
-
-			return a_npc->formID == a_match.form;
-		}
-		
 		static bool match_furniture(
 			CommonParams& a_params,
 			const equipmentOverrideCondition_t& a_match)
@@ -219,6 +180,10 @@ namespace IED
 						return false;
 					}
 				}
+				else
+				{
+					return false;
+				}
 			}
 			else
 			{
@@ -274,7 +239,7 @@ namespace IED
 				return false;
 			}
 
-			if (is_hand_slot(a_match.slot))
+			if (Conditions::is_hand_slot(a_match.slot))
 			{
 				auto pm = a_data.actor->processManager;
 				if (!pm)
@@ -291,7 +256,7 @@ namespace IED
 					return false;
 				}
 
-				if (!is_valid_form_for_slot(form, a_match.slot, isLeftSlot))
+				if (!Conditions::is_valid_form_for_slot(form, a_match.slot, isLeftSlot))
 				{
 					return false;
 				}
@@ -551,11 +516,11 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Actor:
 
-				return match_actor(a_match, a_params.actor);
+				return Conditions::match_form(a_match.form, a_params.actor);
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return match_npc(a_match, a_params.npc);
+				return Conditions::match_form(a_match.form, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -568,6 +533,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Quest:
 
 				return match_quest(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Extra:
+
+				return Conditions::match_extra(a_params, a_match.extraCondType);
 			}
 
 			return false;
@@ -775,11 +744,11 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Actor:
 
-				return match_actor(a_match, a_params.actor);
+				return Conditions::match_form(a_match.form, a_params.actor);
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return match_npc(a_match, a_params.npc);
+				return Conditions::match_form(a_match.form, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -792,6 +761,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Quest:
 
 				return match_quest(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Extra:
+
+				return Conditions::match_extra(a_params, a_match.extraCondType);
 			}
 
 			return false;
@@ -990,14 +963,14 @@ namespace IED
 			case EquipmentOverrideConditionType::Race:
 
 				return match_race(a_match, a_params.race);
-							
+
 			case EquipmentOverrideConditionType::Actor:
 
-				return match_actor(a_match, a_params.actor);
-					
+				return Conditions::match_form(a_match.form, a_params.actor);
+
 			case EquipmentOverrideConditionType::NPC:
 
-				return match_npc(a_match, a_params.npc);
+				return Conditions::match_form(a_match.form, a_params.npc);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -1010,6 +983,10 @@ namespace IED
 			case EquipmentOverrideConditionType::Quest:
 
 				return match_quest(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Extra:
+
+				return Conditions::match_extra(a_params, a_match.extraCondType);
 			}
 
 			return false;

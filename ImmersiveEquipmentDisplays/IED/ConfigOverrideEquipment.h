@@ -55,7 +55,8 @@ namespace IED
 			Group,
 			Quest,
 			Actor,
-			NPC
+			NPC,
+			Extra
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -160,6 +161,13 @@ namespace IED
 			{
 				fbf.type = EquipmentOverrideConditionType::BipedSlot;
 			}
+			
+			equipmentOverrideCondition_t(
+				ExtraConditionType a_type) :
+				extraCondType(a_type)
+			{
+				fbf.type = EquipmentOverrideConditionType::Extra;
+			}
 
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
@@ -183,14 +191,16 @@ namespace IED
 
 			configForm_t form;
 			configCachedForm_t keyword;
-			
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 
 			union
 			{
 				std::uint32_t ui32a{ static_cast<std::uint32_t>(-1) };
 				QuestConditionType questCondType;
-				std::uint32_t bipedSlot;
+				ExtraConditionType extraCondType;
+				Biped::BIPED_OBJECT bipedSlot;
+
+				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
 			};
 
 			equipmentOverrideConditionGroup_t group;
@@ -199,6 +209,7 @@ namespace IED
 			template <class Archive>
 			void save(Archive& ar, const unsigned int version) const
 			{
+
 				ar& flags.value;
 				ar& form;
 				ar& slot;

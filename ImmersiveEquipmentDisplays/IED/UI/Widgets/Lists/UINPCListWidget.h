@@ -13,8 +13,6 @@
 
 #include "UINPCInfoAddInterface.h"
 
-#include "IED/UI/UILocalizationInterface.h"
-
 namespace IED
 {
 	class Controller;
@@ -25,7 +23,6 @@ namespace IED
 		class UINPCList :
 			public UIListBase<Td, Game::FormID>,
 			UINPCInfoAddInterface,
-			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
 			public virtual UIActorInfoInterface
 		{
@@ -61,9 +58,8 @@ namespace IED
 		UINPCList<Td>::UINPCList(
 			Controller& a_controller,
 			float a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
+			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UINPCInfoAddInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller)
 		{

@@ -16,7 +16,7 @@ namespace IED
 			kKeepTorchFlame = 1u << 2,
 			kRemoveScabbard = 1u << 3,
 			kLoad1pWeaponModel = 1u << 4,
-			kDisableCollision = 1u << 5,
+			kDisableHavok = 1u << 5,
 			kLeftWeapon = 1u << 6,
 		};
 

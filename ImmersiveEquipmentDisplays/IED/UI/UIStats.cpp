@@ -197,7 +197,7 @@ namespace IED
 					if (!e.name.empty())
 					{
 						ImGui::TableSetColumnIndex(2);
-						ImGui::Text("%s", e.name.c_str());
+						ImGui::TextUnformatted(e.name.c_str());
 					}
 
 					if (e.race)

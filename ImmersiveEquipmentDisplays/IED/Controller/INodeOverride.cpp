@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "../ConfigOverrideNodeOverride.h"
-
+#include "IED/ConfigConditionsCommon.h"
+#include "IED/ConfigOverrideNodeOverride.h"
 #include "IED/EngineExtensions.h"
 #include "IED/FormCommon.h"
 #include "IED/Inventory.h"
@@ -10,8 +10,6 @@
 
 namespace IED
 {
-	//SKMP_FORCEINLINE static has_keyword(TESForm *a_form, Game::FormID)
-
 	static bool match_form_slot(
 		const Data::configNodeOverrideCondition_t& a_data,
 		const INodeOverride::nodeOverrideParams_t& a_params)
@@ -165,22 +163,6 @@ namespace IED
 		return true;
 	}
 
-	static inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot)
-	{
-		return a_slot != Data::ObjectSlotExtra::kArmor &&
-		       a_slot != Data::ObjectSlotExtra::kAmmo;
-	}
-
-	static inline constexpr bool is_valid_form_for_slot(
-		TESForm* a_form,
-		Data::ObjectSlotExtra a_slot,
-		bool a_left)
-	{
-		return a_left ?
-                   Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
-                   Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
-	}
-
 	constexpr bool match_slotted_type(
 		const Data::configNodeOverrideCondition_t& a_match,
 		INodeOverride::nodeOverrideParams_t& a_params)
@@ -226,7 +208,7 @@ namespace IED
 	{
 		TESForm* form;
 
-		if (is_hand_slot(a_match.typeSlot))
+		if (Conditions::is_hand_slot(a_match.typeSlot))
 		{
 			auto pm = a_params.actor->processManager;
 			if (!pm)
@@ -243,7 +225,7 @@ namespace IED
 				return false;
 			}
 
-			if (!is_valid_form_for_slot(form, a_match.typeSlot, isLeftSlot))
+			if (!Conditions::is_valid_form_for_slot(form, a_match.typeSlot, isLeftSlot))
 			{
 				return false;
 			}
@@ -497,6 +479,10 @@ namespace IED
 							return false;
 						}
 					}
+					else
+					{
+						return false;
+					}
 				}
 				else
 				{
@@ -593,29 +579,13 @@ namespace IED
 			}
 			break;
 		case Data::NodeOverrideConditionType::Actor:
-			{
-				auto& formid = a_data.form.get_id();
 
-				if (!formid)
-				{
-					return false;
-				}
+			return Conditions::match_form(a_data.form.get_id(), a_params.actor);
 
-				return formid != a_params.actor->formID;
-			}
-			break;
 		case Data::NodeOverrideConditionType::NPC:
-			{
-				auto& formid = a_data.form.get_id();
 
-				if (!formid)
-				{
-					return false;
-				}
+			return Conditions::match_form(a_data.form.get_id(), a_params.npc);
 
-				return formid != a_params.npc->formID;
-			}
-			break;
 		case Data::NodeOverrideConditionType::Furniture:
 			{
 				if (auto& formid = a_data.form.get_id())
@@ -656,10 +626,11 @@ namespace IED
 				{
 					return a_params.get_using_furniture();
 				}
-
-				return true;
 			}
 			break;
+		case Data::NodeOverrideConditionType::Extra:
+
+			return Conditions::match_extra(a_params, a_data.extraCondType);
 		}
 
 		return false;
@@ -784,18 +755,25 @@ namespace IED
 				}
 			}
 
-			if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
-			{
-				a_posAccum += pos;
-			}
-
 			if (a_data.flags.test(Data::NodeOverrideValuesFlags::kAbsolutePosition))
 			{
 				a_out.pos += pos;
+
+				if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
+				{
+					a_posAccum += pos;
+				}
 			}
 			else
 			{
-				a_out.pos += (a_out.rot * pos) * a_out.scale;
+				auto apos = (a_out.rot * pos) * a_out.scale;
+
+				a_out.pos += apos;
+
+				if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
+				{
+					a_posAccum += apos;
+				}
 			}
 		}
 	}

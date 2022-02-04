@@ -983,6 +983,15 @@
     <ClInclude Include="IED\ConfigOverrideColor.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigConditionsCommon.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1567,6 +1576,12 @@
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigConditionsCommon.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

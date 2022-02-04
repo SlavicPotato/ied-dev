@@ -1,11 +1,14 @@
 #pragma once
 
+#include "IED/UI/UILocalizationInterface.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		template <class T>
-		class UITableRowInputWidget
+		class UITableRowInputWidget :
+			public virtual UILocalizationInterface
 		{
 			struct state_t
 			{
@@ -21,6 +24,7 @@ namespace IED
 
 		public:
 			UITableRowInputWidget(
+				Localization::ILocalization &a_localization,
 				ImGuiInputTextFlags a_inputFlags = ImGuiInputTextFlags_None);
 
 			bool DrawColumn(
@@ -38,7 +42,9 @@ namespace IED
 
 		template <class T>
 		inline UITableRowInputWidget<T>::UITableRowInputWidget(
+			Localization::ILocalization& a_localization,
 			ImGuiInputTextFlags a_inputFlags) :
+			UILocalizationInterface(a_localization),
 			m_inputFlags(a_inputFlags)
 		{
 		}
@@ -98,7 +104,7 @@ namespace IED
 			else
 			{
 				if (ImGui::Selectable(
-						a_text,
+						LMKID<3>(a_text, "sel_ctl"),
 						false,
 						ImGuiSelectableFlags_DontClosePopups))
 				{

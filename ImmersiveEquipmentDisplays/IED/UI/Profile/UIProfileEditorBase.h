@@ -144,7 +144,7 @@ namespace IED
 								ImGui::SetScrollHereY();
 						}
 
-						if (ImGui::Selectable(e->second.Name().c_str(), selected))
+						if (ImGui::Selectable(LMKID<3>(e->second.Name().c_str(), "1"), selected))
 						{
 							newItem = e;
 						}
