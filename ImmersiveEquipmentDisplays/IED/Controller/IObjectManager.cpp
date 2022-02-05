@@ -496,6 +496,7 @@ namespace IED
 			object,
 			modelParams.type,
 			a_leftWeapon,
+			modelParams.isShield,
 			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
 			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
 			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame),
@@ -724,6 +725,7 @@ namespace IED
 				e.params.type,
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
+				e.params.isShield,
 				a_config.flags.test(Data::FlagsBase::kDropOnDeath) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
 				a_config.flags.test(Data::FlagsBase::kRemoveScabbard) ||

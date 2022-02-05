@@ -37,7 +37,7 @@ namespace IED
 		typedef NiNode* (*unkSSN1_t)(ShadowSceneNode* a_node, NiAVObject* a_object);
 		typedef void (*unkDC6140_t)(NiNode* a_node, bool a_unk2);
 		typedef void (*unk1CDB30_t)(NiAVObject* a_node);
-		typedef void (*unk1CD130_t)(NiAVObject* a_object, std::uint32_t a_unk2);
+		typedef void (*unk1CD130_t)(NiAVObject* a_object, std::uint32_t a_collisionFilterInfo);
 		typedef void (*unk5C3C40_t)(
 			BSTaskPool* a_taskpool,
 			NiAVObject* a_object,
@@ -109,7 +109,8 @@ namespace IED
 			NiNode* a_targetNode,
 			NiNode* a_object,
 			ModelType a_modelType,
-			bool a_left,
+			bool a_leftWeapon,
+			bool a_shield,
 			bool a_dropOnDeath,
 			bool a_removeScabbards,
 			bool a_keepTorchFlame,
@@ -156,7 +157,7 @@ namespace IED
 		inline static const auto ShrinkChildrenToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto fUnkDC6140 = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0 = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
-		inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
+		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 		inline static const auto fUnk28BAD0 = IAL::Address<unk14028BAD0_t>(19206, 19632);
 
 		BSXFlags* GetBSXFlags(NiObjectNET* a_object);

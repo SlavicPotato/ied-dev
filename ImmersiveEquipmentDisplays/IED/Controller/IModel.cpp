@@ -62,11 +62,12 @@ namespace IED
 			return ExtractFormModelParams<TESAmmo>(a_form, a_out);
 		case TESObjectLIGH::kTypeID:
 			{
-				auto carryFlag = static_cast<TESObjectLIGH*>(a_form)->CanCarry();
 				return ExtractFormModelParams<TESObjectLIGH>(
 					a_form,
 					a_out,
-					carryFlag ? ModelType::kLight : ModelType::kMisc);
+					static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
+                        ModelType::kLight :
+                        ModelType::kMisc);
 			}
 		case BGSArtObject::kTypeID:
 			return ExtractFormModelParams<BGSArtObject>(a_form, a_out);

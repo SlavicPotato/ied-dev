@@ -617,6 +617,7 @@ namespace IED
 		NiNode* a_object,
 		ModelType a_modelType,
 		bool a_leftWeapon,
+		bool a_shield,
 		bool a_dropOnDeath,
 		bool a_removeScabbards,
 		bool a_keepTorchFlame,
@@ -629,25 +630,33 @@ namespace IED
 
 		if (auto bsxFlags = m_Instance->GetBSXFlags(a_object))
 		{
-			stl::flag<BSXFlags::Flag> flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
+			stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
 			if (a_disableHavok &&
-			    flag.test(BSXFlags::kHavok))
+			    flags.test(BSXFlags::kHavok))
 			{
 				// recreate since this isn't cloned
 
-				if (a_object->RemoveExtraData(bsxFlags))
+				NiPointer newbsx = BSXFlags::Create(
+					flags.value & ~BSXFlags::Flag::kHavok);
+
+				if (auto index = a_object->GetIndexOf(newbsx); index >= 0)
 				{
-					flag.clear(BSXFlags::Flag::kHavok);
+					if (auto& entry = a_object->m_extraData[index]; entry == bsxFlags)
+					{
+						newbsx->IncRef();
+						entry->DecRef();
+						entry = newbsx;
 
-					bsxFlags = BSXFlags::Create(stl::underlying(flag.value));
-					flag = static_cast<BSXFlags::Flag>(bsxFlags->m_data);
+						flags = newbsx->m_data;
+						bsxFlags = nullptr;
 
-					a_object->AddExtraData(bsxFlags);
+						a_dropOnDeath = false;
+					}
 				}
 			}
 
-			if (flag.test(BSXFlags::Flag::kAddon))
+			if (flags.test(BSXFlags::Flag::kAddon))
 			{
 				fUnk28BAD0(a_object);
 			}
@@ -676,6 +685,8 @@ namespace IED
 		auto sh = m_Instance->m_controller->GetBSStringHolder();
 
 		a_object->m_name.Set_ref(sh->m_object);
+
+		std::uint32_t collisionFilterInfo = 0;
 
 		if (a_modelType == ModelType::kWeapon)
 		{
@@ -736,6 +747,8 @@ namespace IED
 					ShrinkChildrenToSize(a_object);
 				}
 			}
+
+			collisionFilterInfo = a_leftWeapon ? 0x12 : 0x14;
 		}
 		else if (a_modelType == ModelType::kLight)
 		{
@@ -764,9 +777,18 @@ namespace IED
 					ShrinkChildrenToSize(a_object);
 				}
 			}
+
+			collisionFilterInfo = 0x12;
+		}
+		else if (a_modelType == ModelType::kArmor)
+		{
+			if (a_shield)
+			{
+				collisionFilterInfo = 0x12;
+			}
 		}
 
-		fUnk1CD130(a_object, 0x0);
+		fUnk1CD130(a_object, collisionFilterInfo);
 
 		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
 
@@ -869,7 +891,7 @@ namespace IED
 	{
 		auto sh = m_controller->GetBSStringHolder();
 
-		if (auto r = FindNiExtraData(a_object, sh->m_bsx))
+		if (auto r = a_object->GetExtraData(sh->m_bsx))
 		{
 			return RTTI<BSXFlags>()(r);
 		}
