@@ -365,7 +365,8 @@ namespace IED
 
 		inline void RequestTransformUpdateDefer() const noexcept
 		{
-			if (!m_cmeNodes.empty())
+			if (!m_cmeNodes.empty() ||
+			    !m_movNodes.empty())
 			{
 				m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateDefer);
 			}
@@ -373,7 +374,8 @@ namespace IED
 
 		inline void RequestTransformUpdateDeferNoSkip() const noexcept
 		{
-			if (!m_cmeNodes.empty())
+			if (!m_cmeNodes.empty() ||
+			    !m_movNodes.empty())
 			{
 				m_flags.set(ActorObjectHolderFlags::kWantTransformUpdate);
 			}
@@ -381,7 +383,8 @@ namespace IED
 
 		inline void RequestTransformUpdate() const noexcept
 		{
-			if (!m_cmeNodes.empty())
+			if (!m_cmeNodes.empty() ||
+			    !m_movNodes.empty())
 			{
 				m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateImmediate);
 			}

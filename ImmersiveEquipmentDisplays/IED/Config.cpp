@@ -52,8 +52,6 @@ namespace IED
 		m_weaponAdjustFix =
 			parsers.reader.Get(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
 
-		m_uiEnableInMenu =
-			parsers.reader.Get(SECT_DEBUG, "EnableUIInMenus", false);
 		m_disableNPCProcessing =
 			parsers.reader.Get(SECT_DEBUG, "DisableNPCProcessing", false);
 
@@ -67,6 +65,7 @@ namespace IED
 		m_forceUIOpenKeys = parsers.reader.Get(SECT_GUI, "OverrideToggleKeys", false);
 		m_enableUIRestrictions = parsers.reader.Get(SECT_GUI, "EnableRestrictions", false);
 		m_UIScaling = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
+		m_enableInMenus = parsers.reader.Get(SECT_GUI, "EnableInMenus", true);
 
 		ParseForm(
 			parsers.reader.Get(SECT_SOUND, "WeaponEquipSD", ""),

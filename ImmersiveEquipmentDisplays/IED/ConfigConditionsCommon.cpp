@@ -15,7 +15,7 @@ namespace IED
 			case Data::ExtraConditionType::kCanDualWield:
 				return a_params.can_dual_wield();
 			case Data::ExtraConditionType::kIsDead:
-				return a_params.is_dead();
+				return a_params.get_actor_dead();
 			}
 
 			return false;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Events/Dispatcher.h"
+#include "KeyEventType.h"
 
 #include <ext/GameCommon.h>
 
@@ -8,12 +9,6 @@ namespace IED
 {
 	namespace Handlers
 	{
-		enum class KeyEventType : std::uint32_t
-		{
-			KeyDown = 0,
-			KeyUp = 1
-		};
-
 		struct KeyEvent
 		{
 			KeyEventType type;
@@ -65,8 +60,7 @@ namespace IED
 					return true;
 				}
 
-				auto mm = MenuManager::GetSingleton();
-				if (mm && mm->InPausedMenu())
+				if (Game::InPausedMenu())
 				{
 					return false;
 				}

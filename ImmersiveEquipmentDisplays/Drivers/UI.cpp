@@ -42,8 +42,6 @@ namespace IED
 				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height)
 			};
 
-			m_windowHandle = a_evn.m_pSwapChainDesc->OutputWindow;
-
 			RECT rect{};
 			if (::GetClientRect(
 					a_evn.m_pSwapChainDesc->OutputWindow,
@@ -125,16 +123,15 @@ namespace IED
 
 			bool exp = true;
 
-			if (m_nextResetIO)
+			if (m_nextResetInput)
 			{
-				m_nextResetIO = false;
-				ResetImGuiIO();
+				m_nextResetInput = false;
+				ResetInput();
 			}
 
 			UpdateFontData();
 
-			m_keyPressQueue.ProcessTasks();
-			m_mousePressEventQueue.ProcessEvents();
+			ProcessPressQueues();
 
 			::ImGui_ImplDX11_NewFrame();
 			::ImGui_ImplWin32_NewFrame();
@@ -166,8 +163,7 @@ namespace IED
 			ImGui::Render();
 			::ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-			m_keyReleaseQueue.ProcessTasks();
-			m_mouseReleaseEventQueue.ProcessEvents();
+			ProcessReleaseQueues();
 
 			m_frameCount++;
 
@@ -194,7 +190,7 @@ namespace IED
 
 			if (uMsg == WM_KILLFOCUS)
 			{
-				QueueResetIO();
+				QueueResetInput();
 			}
 
 			return result;
@@ -202,128 +198,9 @@ namespace IED
 
 		void UI::Receive(const Handlers::KeyEvent& a_evn)
 		{
-			if (m_Instance.m_suspended)
+			if (!m_Instance.m_suspended)
 			{
-				return;
-			}
-
-			switch (a_evn.key)
-			{
-			case InputMap::kMacro_MouseButtonOffset:
-				if (a_evn.type == Handlers::KeyEventType::KeyDown)
-				{
-					GetMousePressEventQueue().AddMouseButtonEvent(0, true);
-				}
-				else
-				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(0, false);
-				}
-				break;
-			case InputMap::kMacro_MouseButtonOffset + 1:
-				if (a_evn.type == Handlers::KeyEventType::KeyDown)
-				{
-					GetMousePressEventQueue().AddMouseButtonEvent(1, true);
-				}
-				else
-				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(1, false);
-				}
-				break;
-			case InputMap::kMacro_MouseButtonOffset + 2:
-				if (a_evn.type == Handlers::KeyEventType::KeyDown)
-				{
-					GetMousePressEventQueue().AddMouseButtonEvent(2, true);
-				}
-				else
-				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(2, false);
-				}
-				break;
-			case InputMap::kMacro_MouseWheelOffset:
-				GetMousePressEventQueue().AddMouseWheelEvent(1.0f);
-				break;
-			case InputMap::kMacro_MouseWheelOffset + 1:
-				GetMousePressEventQueue().AddMouseWheelEvent(-1.0f);
-				break;
-			default:
-				if (a_evn.key < InputMap::kMacro_NumKeyboardKeys)
-				{
-					UINT vkCode;
-
-					switch (a_evn.key)
-					{
-					case DIK_LEFT:
-						vkCode = VK_LEFT;
-						break;
-					case DIK_RIGHT:
-						vkCode = VK_RIGHT;
-						break;
-					case DIK_UP:
-						vkCode = VK_UP;
-						break;
-					case DIK_DOWN:
-						vkCode = VK_DOWN;
-						break;
-					case DIK_DELETE:
-						vkCode = VK_DELETE;
-						break;
-					default:
-						vkCode = MapVirtualKeyW(a_evn.key, MAPVK_VSC_TO_VK);
-						if (vkCode == 0)
-						{
-							return;
-						}
-					}
-
-					if (a_evn.type == Handlers::KeyEventType::KeyDown)
-					{
-						wchars_t c;
-
-						if (GetKeyboardState(m_keyState))
-						{
-							c.n = ToUnicode(
-								vkCode,
-								a_evn.key,
-								m_keyState,
-								c.b,
-								sizeof(c.b) - 1,
-								0);
-						}
-
-						GetKeyPressQueue().AddTask(vkCode, c);
-					}
-					else
-					{
-						GetKeyReleaseQueue().AddTask(vkCode);
-					}
-				}
-
-				break;
-			}
-		}
-
-		void UI::KeyEventTaskPress::Run()
-		{
-			auto& io = ImGui::GetIO();
-
-			if (m_uval < std::size(io.KeysDown))
-			{
-				io.KeysDown[m_uval] = true;
-			}
-
-			for (int i = 0; i < m_chars.n && i < sizeof(m_chars.b); i++)
-			{
-				io.AddInputCharacterUTF16(m_chars.b[i]);
-			}
-		}
-
-		void UI::KeyEventTaskRelease::Run()
-		{
-			auto& io = ImGui::GetIO();
-
-			if (m_uval < std::size(io.KeysDown))
-			{
-				io.KeysDown[m_uval] = false;
+				ProcessEvent(a_evn);
 			}
 		}
 
@@ -332,33 +209,41 @@ namespace IED
 			m_state.controlsLocked = a_switch;
 			Input::SetInputBlocked(a_switch);
 
-			if (a_switch)
-			{
-				if (!m_state.autoVanityAllowState)
+			ITaskPool::AddTask([this, a_switch]() {
+				IScopedLock lock(m_lock);
+
+				if (a_switch)
 				{
-					if (auto pc = PlayerCamera::GetSingleton())
+					if (!m_state.autoVanityAllowState)
 					{
-						m_state.autoVanityAllowState = pc->allowAutoVanityMode;
-						pc->allowAutoVanityMode = false;
+						if (auto pc = PlayerCamera::GetSingleton())
+						{
+							m_state.autoVanityAllowState = pc->allowAutoVanityMode;
+							pc->allowAutoVanityMode = false;
+						}
 					}
 				}
-			}
-			else
-			{
-				if (m_state.autoVanityAllowState)
+				else
 				{
-					if (auto pc = PlayerCamera::GetSingleton())
+					if (m_state.autoVanityAllowState)
 					{
-						pc->allowAutoVanityMode = *m_state.autoVanityAllowState;
+						if (auto pc = PlayerCamera::GetSingleton())
+						{
+							pc->allowAutoVanityMode = *m_state.autoVanityAllowState;
+						}
+						m_state.autoVanityAllowState.clear();
 					}
-					m_state.autoVanityAllowState.clear();
 				}
-			}
+			});
 		}
 
 		void UI::FreezeTime(bool a_switch)
 		{
 			m_state.timeFrozen = a_switch;
+
+			ITaskPool::AddTask([a_switch]() {
+				Game::Main::GetSingleton()->freezeTime = a_switch;
+			});
 		}
 
 		bool UI::AddTask(std::uint32_t a_id, UIRenderTaskBase* a_task)
@@ -927,7 +812,7 @@ namespace IED
 			m_availableFonts.emplace(m_sDefaultFont);
 		}
 
-		void UI::ResetImGuiIO()
+		void UI::ResetInput()
 		{
 			auto& io = ImGui::GetIO();
 
@@ -939,16 +824,12 @@ namespace IED
 			io.KeyShift = false;
 			io.KeyAlt = false;
 
-			m_keyPressQueue.ClearTasks();
-			m_keyReleaseQueue.ClearTasks();
-
-			m_mousePressEventQueue.Clear();
-			m_mouseReleaseEventQueue.Clear();
+			UIInputHandler::ResetInput();
 		}
 
 		void UI::Suspend()
 		{
-			ResetImGuiIO();
+			ResetInput();
 
 			if (m_state.controlsLocked)
 			{
@@ -965,5 +846,5 @@ namespace IED
 			m_suspended = true;
 		}
 
-	}  // namespace Drivers
-}  // namespace IED
+	}
+}

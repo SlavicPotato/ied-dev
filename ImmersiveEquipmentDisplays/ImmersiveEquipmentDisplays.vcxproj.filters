@@ -992,6 +992,18 @@
     <ClInclude Include="IED\ConfigConditionsCommon.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="Drivers\Input\KeyState.h">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Input\KeyEventType.h">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\Input\DeadKey.h">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Drivers\UI\InputHandler.h">
+      <Filter>Source\Drivers\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1582,6 +1594,15 @@
     </ClCompile>
     <ClCompile Include="IED\ConfigConditionsCommon.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Input\KeyState.cpp">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\Input\DeadKey.cpp">
+      <Filter>Source\Drivers\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\UI\InputHandler.cpp">
+      <Filter>Source\Drivers\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

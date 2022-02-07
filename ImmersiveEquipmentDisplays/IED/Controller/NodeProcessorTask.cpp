@@ -141,6 +141,38 @@ namespace IED
 		}
 	}
 
+	bool NodeProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data)
+	{
+		bool result = false;
+
+		for (auto& f : a_data.m_monitorNodes)
+		{
+			if (f.parent != f.node->m_parent)
+			{
+				f.parent = f.node->m_parent;
+
+				result = true;
+			}
+
+			if (f.size != f.node->m_children.m_size)
+			{
+				f.size = f.node->m_children.m_size;
+
+				result = true;
+			}
+
+			if (bool visible = f.node->IsVisible();
+			    visible != f.visible)
+			{
+				f.visible = visible;
+
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
 	void NodeProcessorTask::Run()
 	{
 		IScopedLock lock(m_controller.m_lock);
@@ -149,8 +181,16 @@ namespace IED
 
 		for (auto& e : m_controller.m_objects)
 		{
-			ProcessTransformUpdateRequest(e.second);
 			ProcessEvalRequest(e.second);
+
+			if (CheckMonitorNodes(e.second))
+			{
+				e.second.RequestTransformUpdateDeferNoSkip();
+			}
+
+			ProcessTransformUpdateRequest(e.second);
+
+			bool update = false;
 
 			for (auto& f : e.second.m_entriesSlot)
 			{
@@ -168,6 +208,8 @@ namespace IED
 
 						if (f.hideCountdown == 0)
 						{
+							update |= f.state->nodes.obj->IsVisible();
+
 							f.state->nodes.obj->SetVisible(false);
 						}
 					}
@@ -182,33 +224,6 @@ namespace IED
 					{
 						UpdateRef(e.second, h.second);
 					}
-				}
-			}
-
-			bool update = false;
-
-			for (auto& f : e.second.m_monitorNodes)
-			{
-				if (f.parent != f.node->m_parent)
-				{
-					f.parent = f.node->m_parent;
-
-					update = true;
-				}
-
-				if (f.size != f.node->m_children.m_size)
-				{
-					f.size = f.node->m_children.m_size;
-
-					update = true;
-				}
-
-				if (bool visible = f.node->IsVisible();
-				    visible != f.visible)
-				{
-					f.visible = visible;
-
-					update = true;
 				}
 			}
 

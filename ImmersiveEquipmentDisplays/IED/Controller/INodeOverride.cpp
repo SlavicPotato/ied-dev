@@ -696,7 +696,8 @@ namespace IED
 		return run_matches(
 			a_data.visibilityConditionList,
 			a_params,
-			!a_data.overrideFlags.test(Data::NodeOverrideFlags::kVisibilityRequiresConditionList));
+			!a_data.overrideFlags.test(Data::NodeOverrideFlags::kVisibilityRequiresConditionList),
+			true);
 	}
 
 	void constexpr apply_transform(
@@ -853,6 +854,9 @@ namespace IED
 		process_offsets(a_data.offsets, xfrm, accumPos, a_params);
 
 		a_entry.node->m_localTransform = xfrm;
+
+		NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
+		a_entry.node->UpdateDownwardPass(ctx, nullptr);
 	}
 
 	void INodeOverride::ResetNodeOverrideImpl(NiAVObject* a_object)
@@ -988,12 +992,18 @@ namespace IED
 					        node->m_parent != target)
 						{
 							target->AttachChild(node, true);
+
+							NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
+							node->UpdateDownwardPass(ctx, nullptr);
 						}
 					});
 			}
 			else
 			{
 				a_target->AttachChild(a_entry.node, true);
+
+				NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
+				a_entry.node->UpdateDownwardPass(ctx, nullptr);
 			}
 		}
 	}

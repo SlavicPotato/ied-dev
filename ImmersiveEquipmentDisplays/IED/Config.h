@@ -75,7 +75,7 @@ namespace IED
 		bool m_disableNPCProcessing{ false };
 		LogLevel m_logLevel{ LogLevel::Message };
 
-		bool m_uiEnableInMenu{ false };
+		bool m_enableInMenus{ false };
 
 		Data::ConfigSound<Data::ConfigForm> m_sound;
 

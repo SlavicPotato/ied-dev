@@ -40,6 +40,9 @@ namespace IED
 
 		SKMP_FORCEINLINE void ProcessEvalRequest(
 			ActorObjectHolder& a_data);
+		
+		SKMP_FORCEINLINE bool CheckMonitorNodes(
+			ActorObjectHolder& a_data);
 
 		PerfTimerInt m_timer{ 1000000LL };
 		long long m_currentTime{ 0LL };

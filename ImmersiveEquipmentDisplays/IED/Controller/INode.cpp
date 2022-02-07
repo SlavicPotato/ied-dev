@@ -178,6 +178,7 @@ namespace IED
 		{
 			node = CreateAttachmentNode(targetNodeName);
 			nodes.parent->AttachChild(node, true);
+			UpdateDownwardPass(node);
 		}
 
 		targetNodeName.Release();
@@ -217,13 +218,15 @@ namespace IED
 		{
 			targetNode = CreateAttachmentNode(targetNodeName);
 			nodes.parent->AttachChild(targetNode, true);
+			UpdateDownwardPass(targetNode);
 		}
 
 		targetNodeName.Release();
 
 		a_newRef = nodes.ref;
 
-		if (a_object->m_parent != targetNode)
+		if (a_object->m_parent &&
+			a_object->m_parent != targetNode)
 		{
 			targetNode->AttachChild(a_object, true);
 			UpdateDownwardPass(a_object);

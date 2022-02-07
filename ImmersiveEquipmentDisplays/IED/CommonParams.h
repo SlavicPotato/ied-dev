@@ -140,7 +140,7 @@ namespace IED
 			return *canDualWield;
 		}
 
-		constexpr bool is_dead() const
+		constexpr bool get_actor_dead() const
 		{
 			if (!isDead)
 			{

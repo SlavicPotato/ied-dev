@@ -44,7 +44,7 @@ namespace IED
 			m_conf.disableNPCProcessing = a_config->m_disableNPCProcessing;
 
 			Patch_Armor_Update();
-			Patch_CreateWeaponNodes();  // not strictly necessary, prevents delays in transform updates
+			Patch_CreateWeaponNodes();
 		}
 
 		if (a_config->m_weaponAdjustFix)
@@ -402,7 +402,7 @@ namespace IED
 				{
 					if (ITaskPool::IsRunningOnCurrentThread())
 					{
-						m_Instance->FailsafeCleanupAndEval(actor, __FUNCTION__);
+						m_Instance->FailsafeCleanupAndEval(actor);
 					}
 					else
 					{
@@ -440,7 +440,7 @@ namespace IED
 		{
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
-				m_Instance->FailsafeCleanupAndEval(a_actor, __FUNCTION__);
+				m_Instance->FailsafeCleanupAndEval(a_actor);
 			}
 			else
 			{
@@ -467,7 +467,7 @@ namespace IED
 		{
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
-				m_Instance->FailsafeCleanupAndEval(a_actor, __FUNCTION__);
+				m_Instance->FailsafeCleanupAndEval(a_actor);
 			}
 			else
 			{
@@ -485,14 +485,16 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::FailsafeCleanupAndEval(Actor* a_actor, const char* a_func)
+	void EngineExtensions::FailsafeCleanupAndEval(
+		Actor* a_actor,
+		const std::source_location a_loc)
 	{
 		ITaskPool::AddTask([this, fid = a_actor->formID, handle = a_actor->GetHandle()]() {
 			m_controller->RemoveActor(fid, ControllerUpdateFlags::kNone);
 			m_controller->QueueEvaluate(handle, ControllerUpdateFlags::kNone);
 		});
 
-		Debug("[%.8X] [%s]: called from ITaskPool", a_actor->formID.get(), a_func);
+		Debug("[%.8X] [%s]: called from ITaskPool", a_actor->formID.get(), a_loc.function_name());
 	}
 
 	void EngineExtensions::ReanimateActorStateUpdate_Hook(
@@ -583,7 +585,7 @@ namespace IED
 
 		if (a_actor)
 		{
-			m_Instance->m_controller->QueueRequestEvaluateTransformsActor(a_actor->formID, true);
+			m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, false, true);
 		}
 	}
 
@@ -649,7 +651,7 @@ namespace IED
 						entry = newbsx;
 
 						flags = newbsx->m_data;
-						bsxFlags = nullptr;
+						bsxFlags = newbsx;
 
 						a_dropOnDeath = false;
 					}
@@ -707,7 +709,7 @@ namespace IED
 						scbLeftNode->m_parent->RemoveChild(scbLeftNode);
 					}
 
-					ShrinkChildrenToSize(a_object);
+					ShrinkToSize(a_object);
 				}
 			}
 			else
@@ -744,7 +746,7 @@ namespace IED
 						scbRemove->m_parent->RemoveChild(scbRemove);
 					}
 
-					ShrinkChildrenToSize(a_object);
+					ShrinkToSize(a_object);
 				}
 			}
 
@@ -774,7 +776,7 @@ namespace IED
 
 				if (shrink)
 				{
-					ShrinkChildrenToSize(a_object);
+					ShrinkToSize(a_object);
 				}
 			}
 
@@ -802,7 +804,7 @@ namespace IED
 
 				unks_01 tmp;
 
-				if (auto r = fUnk5EBD90(isMounted ? mountedActor : a_actor, &tmp))
+				if (auto r = fUnk5EBD90(isMounted ? mountedActor.get() : a_actor, std::addressof(tmp)))
 				{
 					fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
 				}

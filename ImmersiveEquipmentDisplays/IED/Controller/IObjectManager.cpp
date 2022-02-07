@@ -444,7 +444,6 @@ namespace IED
 		auto state = std::make_unique<objectEntryBase_t::State>();
 
 		NiPointer<NiNode> object;
-
 		ObjectDatabaseEntry entry;
 
 		if (!GetUniqueObject(modelParams.path, entry, object))

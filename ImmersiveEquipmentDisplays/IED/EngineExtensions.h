@@ -147,14 +147,16 @@ namespace IED
 		inline static const auto SetRootOnShaderProperties = IAL::Address<unk1291cc0_t>(98895, 105542);
 		inline static const auto fUnk12ba3e0 = IAL::Address<unkSSN1_t>(99702, 106336);
 		inline static const auto fUnk12b99f0 = IAL::Address<unkSSN1_t>(99696, 106330);
+
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
+
 		inline static const auto fUnk1CD130 = IAL::Address<unk1CD130_t>(15567, 15745);
 		inline static const auto fUnk5C3C40 = IAL::Address<unk5C3C40_t>(35950, 36925);
 		inline static const auto fUnk5EBD90 = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0 = IAL::Address<unk5C39F0_t>(35947, 36922);
 		inline static const auto AttachAddonNodes = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto ShrinkChildrenToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
+		inline static const auto ShrinkToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto fUnkDC6140 = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0 = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
@@ -184,7 +186,9 @@ namespace IED
 		static void Character_Release3D_Hook(
 			Character* a_actor);
 
-		void FailsafeCleanupAndEval(Actor* a_actor, const char* a_func);
+		void FailsafeCleanupAndEval(
+			Actor* a_actor,
+			const std::source_location a_loc = std::source_location::current());
 
 		static void ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
 		static void CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);

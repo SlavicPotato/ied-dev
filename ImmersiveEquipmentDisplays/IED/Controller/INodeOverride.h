@@ -46,7 +46,6 @@ namespace IED
 
 			stl::optional<float> weaponAdjust;
 			stl::optional<float> weightAdjust;
-			stl::optional<bool> actorDead;
 			std::unique_ptr<item_container_type> itemData;
 			stl::optional<bool> bipedHasArmor;
 
@@ -73,16 +72,6 @@ namespace IED
 				}
 
 				return *weightAdjust;
-			}
-
-			constexpr bool get_actor_dead()
-			{
-				if (!actorDead)
-				{
-					actorDead = actor->IsDead();
-				}
-
-				return *actorDead;
 			}
 
 			void clear_matched_items() noexcept

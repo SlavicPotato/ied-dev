@@ -29,7 +29,7 @@ namespace IED
 
 			inline static void SetInputBlocked(bool a_enabled) noexcept
 			{
-				m_Instance.m_playerInputHandlingBlocked.store(a_enabled, std::memory_order_relaxed);
+				m_Instance.m_inputBlocked.store(a_enabled, std::memory_order_relaxed);
 			}
 
 			FN_NAMEPROC("Input");
@@ -44,17 +44,17 @@ namespace IED
 			static bool PlayerControls_InputEvent_ProcessEvent_Hook(const InputEvent** a_evns);
 
 			void DispatchPriorityKeyEvent(
-				Handlers::KeyEventType a_event,
+				KeyEventType a_event,
 				std::uint32_t a_keyCode);
 
 			void DispatchKeyEvent(
-				Handlers::KeyEventType a_event,
+				KeyEventType a_event,
 				std::uint32_t a_keyCode);
 
 			::Events::EventDispatcher<Handlers::KeyEvent> m_prioHandlers;
 			::Events::EventDispatcher<Handlers::KeyEvent> m_handlers;
 
-			std::atomic_bool m_playerInputHandlingBlocked{ false };
+			std::atomic_bool m_inputBlocked{ false };
 
 			decltype(&PlayerControls_InputEvent_ProcessEvent_Hook) m_nextIEPCall{ nullptr };
 

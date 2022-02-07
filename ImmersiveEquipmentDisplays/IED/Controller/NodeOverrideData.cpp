@@ -322,7 +322,10 @@ namespace IED
 
 									{ "MOV WeaponBackDefault", { "Two-Handed" } },
 									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
-									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } }
+									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
 
 								}
 

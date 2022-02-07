@@ -249,10 +249,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h" />
     <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h" />
     <ClInclude Include="Drivers\Input.h" />
+    <ClInclude Include="Drivers\Input\DeadKey.h" />
     <ClInclude Include="Drivers\Input\Handlers.h" />
+    <ClInclude Include="Drivers\Input\KeyEventType.h" />
+    <ClInclude Include="Drivers\Input\KeyState.h" />
     <ClInclude Include="Drivers\Render.h" />
     <ClInclude Include="Drivers\Render\Events.h" />
     <ClInclude Include="Drivers\UI.h" />
+    <ClInclude Include="Drivers\UI\InputHandler.h" />
     <ClInclude Include="Drivers\UI\Tasks.h" />
     <ClInclude Include="Events\Dispatcher.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
@@ -535,9 +539,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     </ClCompile>
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Drivers\Input.cpp" />
+    <ClCompile Include="Drivers\Input\DeadKey.cpp" />
     <ClCompile Include="Drivers\Input\Handlers.cpp" />
+    <ClCompile Include="Drivers\Input\KeyState.cpp" />
     <ClCompile Include="Drivers\Render.cpp" />
     <ClCompile Include="Drivers\UI.cpp" />
+    <ClCompile Include="Drivers\UI\InputHandler.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
     <ClCompile Include="IED\ConfigConditionsCommon.cpp" />

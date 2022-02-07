@@ -262,7 +262,7 @@ namespace IED
 				});
 
 			m_inputHandlers.uiOpen.SetProcessPaused(
-				m_iniconf->m_uiEnableInMenu);
+				m_iniconf->m_enableInMenus);
 		}
 	}
 
@@ -274,7 +274,7 @@ namespace IED
 
 		UIEnableRestrictions(config.ui.enableRestrictions);
 		UISetLock(config.ui.enableControlLock);
-		UISetEnabledInMenu(m_iniconf->m_uiEnableInMenu);
+		UISetEnabledInMenu(m_iniconf->m_enableInMenus);
 
 		if (m_iniconf->m_forceUIOpenKeys &&
 		    m_iniconf->m_UIOpenKeys.Has())
@@ -589,14 +589,18 @@ namespace IED
 
 	void Controller::QueueRequestEvaluate(
 		Game::FormID a_actor,
-		bool a_defer) const
+		bool a_defer,
+		bool a_xfrmUpdate) const
 	{
-		ITaskPool::AddTask([this, a_actor, a_defer]() {
-			RequestEvaluate(a_actor, a_defer);
+		ITaskPool::AddTask([this, a_actor, a_defer, a_xfrmUpdate]() {
+			RequestEvaluate(a_actor, a_defer, a_xfrmUpdate);
 		});
 	}
 
-	void Controller::RequestEvaluate(Game::FormID a_actor, bool a_defer) const
+	void Controller::RequestEvaluate(
+		Game::FormID a_actor,
+		bool a_defer,
+		bool a_xfrmUpdate) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -610,6 +614,11 @@ namespace IED
 			else
 			{
 				it->second.RequestEval();
+			}
+
+			if (a_xfrmUpdate)
+			{
+				it->second.RequestTransformUpdateDefer();
 			}
 		}
 	}
@@ -3051,7 +3060,7 @@ namespace IED
 
 				if (!params.dataList)
 				{
-					Warning(
+					Debug(
 						"%s [%u]: %.8X: missing container object list",
 						__FUNCTION__,
 						__LINE__,
@@ -4474,7 +4483,7 @@ namespace IED
 					if (form->formType == SpellItem::kTypeID ||
 					    IFormCommon::IsEquippableForm(form))
 					{
-						QueueRequestEvaluate(a_evn->actor->formID, false);
+						QueueRequestEvaluate(a_evn->actor->formID, false, true);
 					}
 				}
 			}
@@ -4494,16 +4503,20 @@ namespace IED
 			{
 				if (IsInventoryForm(form))
 				{
-					if (auto oldContainer = a_evn->oldContainer.As<Actor>())
+					if (a_evn->oldContainer)
 					{
-						QueueRequestEvaluate(oldContainer->formID, true);
+						if (auto oldContainer = a_evn->oldContainer.As<Actor>())
+						{
+							QueueRequestEvaluate(oldContainer->formID, true, false);
+						}
 					}
 
-					if (a_evn->oldContainer != a_evn->newContainer)  // ?
+					if (a_evn->newContainer &&
+					    a_evn->oldContainer != a_evn->newContainer)  // ?
 					{
 						if (auto newContainer = a_evn->newContainer.As<Actor>())
 						{
-							QueueRequestEvaluate(newContainer->formID, true);
+							QueueRequestEvaluate(newContainer->formID, true, false);
 						}
 					}
 				}

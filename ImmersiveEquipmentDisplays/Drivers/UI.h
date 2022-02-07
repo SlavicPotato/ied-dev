@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Events/Dispatcher.h"
-#include "ImGUI/MouseEventQueue.h"
 #include "Input/Handlers.h"
 #include "Render/Events.h"
+#include "UI/InputHandler.h"
 #include "UI/Tasks.h"
 
 #include "Fonts/FontInfo.h"
@@ -22,56 +22,11 @@ namespace IED
 		class UI :
 			ILog,
 			IGlyphData,
+			UIInputHandler,
 			::Events::EventSink<Handlers::KeyEvent>,
 			::Events::EventSink<Events::D3D11CreateEventPost>,
 			::Events::EventSink<Events::IDXGISwapChainPresent>
 		{
-			enum class UIInputEventType : std::uint32_t
-			{
-				MouseButton,
-				MouseWheel,
-				Keyboard
-			};
-
-			struct wchars_t
-			{
-				WCHAR b[4];
-				int n{ 0 };
-			};
-
-			class KeyEventTaskPress
-			{
-			public:
-				KeyEventTaskPress(
-					UINT a_uval,
-					const wchars_t& a_chars) :
-					m_uval(a_uval),
-					m_chars(a_chars)
-				{
-				}
-
-				void Run();
-
-			private:
-				UINT m_uval;
-				wchars_t m_chars;
-			};
-
-			class KeyEventTaskRelease
-			{
-			public:
-				KeyEventTaskRelease(
-					UINT a_uval) :
-					m_uval(a_uval)
-				{
-				}
-
-				void Run();
-
-			private:
-				UINT m_uval;
-			};
-
 			struct UIFontUpdateData
 			{
 				float scale{ 1.0f };
@@ -111,7 +66,7 @@ namespace IED
 		public:
 			static void Initialize();
 
-			inline static constexpr bool HasCallbacks() noexcept
+			[[nodiscard]] inline static constexpr bool HasCallbacks() noexcept
 			{
 				return !m_Instance.m_drawTasks.empty();
 			}
@@ -122,22 +77,22 @@ namespace IED
 
 			static void RemoveTask(std::uint32_t a_id);
 
-			inline static constexpr bool HasCallback(std::uint32_t a_id)
+			[[nodiscard]] inline static constexpr bool HasCallback(std::uint32_t a_id)
 			{
 				return m_Instance.m_drawTasks.contains(a_id);
 			}
 
-			inline constexpr static const UIRect& GetBufferSize() noexcept
+			[[nodiscard]] inline static constexpr const auto& GetBufferSize() noexcept
 			{
 				return m_Instance.m_info.bufferSize;
 			}
 
-			void ResetImGuiIO();
+			void ResetInput();
 
-			inline static void QueueResetIO() noexcept
+			inline static void QueueResetInput() noexcept
 			{
 				IScopedLock lock(m_Instance.m_lock);
-				m_Instance.m_nextResetIO = true;
+				m_Instance.m_nextResetInput = true;
 			}
 
 			inline static void SetImGuiIni(const std::string& a_path)
@@ -155,32 +110,27 @@ namespace IED
 				m_Instance.m_conf.imgui_ini = a_path;
 			}
 
-			inline static constexpr auto GetPerf() noexcept
+			[[nodiscard]] inline static constexpr auto GetPerf() noexcept
 			{
 				return m_Instance.m_uiRenderPerf.current;
 			}
 
-			inline static constexpr auto GetFrameCount() noexcept
+			[[nodiscard]] inline static constexpr auto GetFrameCount() noexcept
 			{
 				return m_Instance.m_frameCount;
 			}
-
-			/*inline static void EnableScaling(bool a_switch) noexcept
-			{
-				m_Instance.m_scalingEnabled = a_switch;
-			}*/
 
 			inline static void SetCurrentFont(font_data_container::const_iterator a_it) noexcept
 			{
 				m_Instance.m_currentFont = std::addressof(*a_it);
 			}
 
-			inline static constexpr const auto& GetAvailableFonts() noexcept
+			[[nodiscard]] inline static constexpr const auto& GetAvailableFonts() noexcept
 			{
 				return m_Instance.m_availableFonts;
 			}
 
-			inline static constexpr const auto GetCurrentFont() noexcept
+			[[nodiscard]] inline static constexpr const auto GetCurrentFont() noexcept
 			{
 				return m_Instance.m_currentFont;
 			}
@@ -196,7 +146,7 @@ namespace IED
 			static void QueueSetScale(float a_scale);
 			static void MarkFontUpdateDataDirty();
 
-			static inline constexpr auto IsImInitialized() noexcept
+			[[nodiscard]] static inline constexpr auto IsImInitialized() noexcept
 			{
 				return m_Instance.m_imInitialized;
 			}
@@ -225,26 +175,6 @@ namespace IED
 
 			void OnTaskRemove(Tasks::UIRenderTaskBase* a_task);
 
-			inline constexpr auto& GetKeyPressQueue() noexcept
-			{
-				return m_keyPressQueue;
-			}
-
-			inline constexpr auto& GetKeyReleaseQueue() noexcept
-			{
-				return m_keyReleaseQueue;
-			}
-
-			inline constexpr auto& GetMousePressEventQueue() noexcept
-			{
-				return m_mousePressEventQueue;
-			}
-
-			inline constexpr auto& GetMouseReleaseEventQueue() noexcept
-			{
-				return m_mouseReleaseEventQueue;
-			}
-
 			bool SetCurrentFont(const stl::fixed_string& a_font);
 
 			void QueueSetScaleImpl(float a_scale);
@@ -260,6 +190,7 @@ namespace IED
 			bool LoadFonts(
 				font_data_container& a_data,
 				const stl::fixed_string& a_font);
+
 			bool LoadFontMetadata(fontInfoMap_t& a_out);
 
 			void AddFontRanges(
@@ -284,8 +215,9 @@ namespace IED
 				std::uint32_t lockCounter{ 0 };
 				std::uint32_t freezeCounter{ 0 };
 
-				bool controlsLocked{ false };
 				stl::optional<bool> autoVanityAllowState;
+
+				bool controlsLocked{ false };
 				bool timeFrozen{ false };
 			} m_state;
 
@@ -309,15 +241,9 @@ namespace IED
 
 			bool m_imInitialized{ false };
 			bool m_suspended{ true };
-			HWND m_windowHandle{ nullptr };
 
 			IOUserData m_ioUserData;
 			UIFontUpdateData m_fontUpdateData;
-
-			TaskQueueStatic<KeyEventTaskPress> m_keyPressQueue;
-			TaskQueueStatic<KeyEventTaskRelease> m_keyReleaseQueue;
-			ImGuiMouseEventQueue m_mousePressEventQueue;
-			ImGuiMouseEventQueue m_mouseReleaseEventQueue;
 
 			font_data_container m_fontData;
 			const font_data_container::value_type* m_currentFont{ nullptr };
@@ -327,13 +253,12 @@ namespace IED
 
 			std::uint64_t m_frameCount{ 0 };
 
-			bool m_nextResetIO{ false };
-
-			BYTE m_keyState[256]{ 0 };
+			bool m_nextResetInput{ false };
 
 			WCriticalSection m_lock;
 
 			static UI m_Instance;
 		};
-	}  // namespace Drivers
-}  // namespace IED
+
+	}
+}

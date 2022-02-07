@@ -16,7 +16,7 @@ namespace IED
 		bool Input::PlayerControls_InputEvent_ProcessEvent_Hook(
 			const InputEvent** a_evns)
 		{
-			bool blocked = m_Instance.m_playerInputHandlingBlocked.load(
+			bool blocked = m_Instance.m_inputBlocked.load(
 				std::memory_order_relaxed);
 
 			if (blocked)
@@ -62,16 +62,18 @@ namespace IED
 						continue;
 					}
 
+					//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
+
 					if (buttonEvent->IsDown())
 					{
 						m_Instance.DispatchPriorityKeyEvent(
-							Handlers::KeyEventType::KeyDown,
+							KeyEventType::KeyDown,
 							keyCode);
 					}
 					else if (buttonEvent->IsUpLF())
 					{
 						m_Instance.DispatchPriorityKeyEvent(
-							Handlers::KeyEventType::KeyUp,
+							KeyEventType::KeyUp,
 							keyCode);
 					}
 				}
@@ -114,11 +116,11 @@ namespace IED
 
 					if (buttonEvent->IsDown())
 					{
-						DispatchKeyEvent(Handlers::KeyEventType::KeyDown, keyCode);
+						DispatchKeyEvent(KeyEventType::KeyDown, keyCode);
 					}
 					else if (buttonEvent->IsUpLF())
 					{
-						DispatchKeyEvent(Handlers::KeyEventType::KeyUp, keyCode);
+						DispatchKeyEvent(KeyEventType::KeyUp, keyCode);
 					}
 				}
 			}
@@ -362,7 +364,7 @@ namespace IED
 		}
 
 		void Input::DispatchPriorityKeyEvent(
-			Handlers::KeyEventType a_event,
+			KeyEventType a_event,
 			std::uint32_t a_keyCode)
 		{
 			Handlers::KeyEvent evn{
@@ -374,7 +376,7 @@ namespace IED
 		}
 
 		void Input::DispatchKeyEvent(
-			Handlers::KeyEventType a_event,
+			KeyEventType a_event,
 			std::uint32_t a_keyCode)
 		{
 			Handlers::KeyEvent evn{

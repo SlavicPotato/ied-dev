@@ -273,7 +273,8 @@ namespace IED
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
 				const Tp& a_params,
-				const bool a_exists);
+				const bool a_exists,
+				const bool a_ignoreNode);
 
 			NodeOverrideCommonResult DrawOverrideOffsetContextMenu(
 				T a_handle,
@@ -295,7 +296,8 @@ namespace IED
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
 				const Tp& a_params,
-				const bool a_exists);
+				const bool a_exists,
+				const bool a_ignoreNode);
 
 			template <class Tp>
 			void DrawOverrideConditionTable(
@@ -304,7 +306,8 @@ namespace IED
 				Data::configNodeOverrideConditionList_t& a_entry,
 				const Tp& a_params,
 				const bool a_exists,
-				bool a_isnested);
+				bool a_isnested,
+				bool a_ignoreNode);
 
 			void DrawOverrideOffsetAdjust(
 				T a_handle,
@@ -326,7 +329,8 @@ namespace IED
 				entryNodeOverrideData_t& a_data,
 				Data::configNodeOverrideCondition_t& a_entry,
 				const Tp& a_params,
-				const bool a_exists);
+				const bool a_exists,
+				const bool a_ignoreNode);
 
 			virtual void OnUpdate(
 				T a_handle,
@@ -1071,7 +1075,8 @@ namespace IED
 					a_data,
 					data.visibilityConditionList,
 					a_params,
-					a_exists);
+					a_exists,
+					true);
 
 				UICommon::PopDisabled(disabled);
 
@@ -1102,13 +1107,6 @@ namespace IED
 				a_exists);
 
 			ImGui::Spacing();
-
-			/*DrawOverrideConditionTree(
-				a_handle,
-				a_data,
-				data.matches,
-				a_params,
-				a_exists);*/
 
 			ImGui::Spacing();
 
@@ -1747,7 +1745,8 @@ namespace IED
 								a_data,
 								e.conditions,
 								a_params,
-								a_exists);
+								a_exists,
+								false);
 
 							if (ImGui::CheckboxFlagsT(
 									LS(CommonStrings::Continue, "1"),
@@ -2062,7 +2061,8 @@ namespace IED
 							a_data,
 							e.conditions,
 							a_params,
-							a_exists);
+							a_exists,
+							true);
 
 						ImGui::Spacing();
 
@@ -2095,7 +2095,8 @@ namespace IED
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
 			const Tp& a_params,
-			const bool a_exists)
+			const bool a_exists,
+			const bool a_ignoreNode)
 		{
 			ImGui::PushID("override_match_tree");
 
@@ -2104,7 +2105,8 @@ namespace IED
 				a_data,
 				a_entry,
 				a_params,
-				a_exists);
+				a_exists,
+				a_ignoreNode);
 
 			bool empty = a_entry.empty();
 
@@ -2136,7 +2138,8 @@ namespace IED
 						a_entry,
 						a_params,
 						a_exists,
-						false);
+						false,
+						a_ignoreNode);
 
 					ImGui::Spacing();
 				}
@@ -2482,7 +2485,8 @@ namespace IED
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
 			const Tp& a_params,
-			const bool a_exists)
+			const bool a_exists,
+			const bool a_ignoreNode)
 		{
 			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
 
@@ -2512,32 +2516,35 @@ namespace IED
 			{
 				if (LCG_BM(CommonStrings::Add, "1"))
 				{
-					if constexpr (!std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
+					if constexpr (std::is_same_v<Tp, SingleNodeOverrideTransformUpdateParams>)
 					{
-						if (LCG_BM(CommonStrings::Node, "2"))
+						if (!a_ignoreNode)
 						{
-							stl::fixed_string c;
-
-							if (UICMNodeSelectorWidget::DrawCMNodeSelector(
-									"##node_sel",
-									c,
-									NodeOverrideData::GetCMENodeData(),
-									std::addressof(a_params.name)))
+							if (LCG_BM(CommonStrings::Node, "2"))
 							{
-								a_entry.emplace_back(std::move(c));
+								stl::fixed_string c;
 
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
+								if (UICMNodeSelectorWidget::DrawCMNodeSelector(
+										"##node_sel",
+										c,
+										NodeOverrideData::GetCMENodeData(),
+										std::addressof(a_params.name)))
+								{
+									a_entry.emplace_back(std::move(c));
 
-								result = NodeOverrideCommonAction::Insert;
+									HandleValueUpdate(
+										a_handle,
+										a_data,
+										a_params,
+										a_exists);
 
-								ImGui::CloseCurrentPopup();
+									result = NodeOverrideCommonAction::Insert;
+
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::EndMenu();
 							}
-
-							ImGui::EndMenu();
 						}
 					}
 
@@ -2855,7 +2862,8 @@ namespace IED
 			Data::configNodeOverrideConditionList_t& a_entry,
 			const Tp& a_params,
 			const bool a_exists,
-			bool a_isnested)
+			bool a_isnested,
+			bool a_ignoreNode)
 		{
 			if (a_isnested)
 			{
@@ -2934,7 +2942,8 @@ namespace IED
 						a_data,
 						*it,
 						a_params,
-						a_exists);
+						a_exists,
+						a_ignoreNode);
 
 					switch (result.action)
 					{
@@ -3049,7 +3058,8 @@ namespace IED
 								a_data,
 								e.group.conditions,
 								a_params,
-								a_exists);
+								a_exists,
+								a_ignoreNode);
 
 							DrawOverrideConditionTable(
 								a_handle,
@@ -3057,7 +3067,8 @@ namespace IED
 								e.group.conditions,
 								a_params,
 								a_exists,
-								true);
+								true,
+								a_ignoreNode);
 
 							ImGui::PopID();
 						}
@@ -3525,7 +3536,8 @@ namespace IED
 			entryNodeOverrideData_t& a_data,
 			Data::configNodeOverrideCondition_t& a_entry,
 			const Tp& a_params,
-			const bool a_exists)
+			const bool a_exists,
+			const bool a_ignoreNode)
 		{
 			NodeOverrideCommonResult result;
 
@@ -3571,26 +3583,29 @@ namespace IED
 			{
 				if (LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if constexpr (!std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
+					if constexpr (std::is_same_v<Tp, SingleNodeOverrideTransformUpdateParams>)
 					{
-						if (LCG_BM(CommonStrings::Node, "2"))
+						if (!a_ignoreNode)
 						{
-							stl::fixed_string c;
-
-							if (UICMNodeSelectorWidget::DrawCMNodeSelector(
-									"##node_sel",
-									c,
-									NodeOverrideData::GetCMENodeData(),
-									std::addressof(a_params.name)))
+							if (LCG_BM(CommonStrings::Node, "2"))
 							{
-								result.action = NodeOverrideCommonAction::Insert;
-								result.str = std::move(c);
-								result.matchType = Data::NodeOverrideConditionType::Node;
+								stl::fixed_string c;
 
-								ImGui::CloseCurrentPopup();
+								if (UICMNodeSelectorWidget::DrawCMNodeSelector(
+										"##node_sel",
+										c,
+										NodeOverrideData::GetCMENodeData(),
+										std::addressof(a_params.name)))
+								{
+									result.action = NodeOverrideCommonAction::Insert;
+									result.str = std::move(c);
+									result.matchType = Data::NodeOverrideConditionType::Node;
+
+									ImGui::CloseCurrentPopup();
+								}
+
+								ImGui::EndMenu();
 							}
-
-							ImGui::EndMenu();
 						}
 					}
 
