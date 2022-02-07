@@ -155,9 +155,9 @@ namespace IED
 		void QueueEvaluateRace(Game::FormID a_race, stl::flag<ControllerUpdateFlags> a_flags);
 
 		// use when acquiring global lock may be detrimental to performance
-		void QueueRequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate) const;
+		void QueueRequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer = false) const;
 
-		void RequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate) const;
+		void RequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer) const;
 		void QueueEvaluateAll(stl::flag<ControllerUpdateFlags> a_flags);
 
 		// use when acquiring global lock may be detrimental to performance

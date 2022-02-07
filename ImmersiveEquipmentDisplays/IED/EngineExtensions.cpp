@@ -524,7 +524,7 @@ namespace IED
 
 		if (formid)
 		{
-			m_Instance->m_controller->QueueRequestEvaluateTransformsActor(formid, false);
+			m_Instance->m_controller->QueueRequestEvaluate(formid, false, true);
 		}
 	}
 
@@ -585,7 +585,7 @@ namespace IED
 
 		if (a_actor)
 		{
-			m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, false, true);
+			m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, false, true, true);
 		}
 	}
 

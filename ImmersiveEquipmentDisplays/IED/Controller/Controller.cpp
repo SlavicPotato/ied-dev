@@ -590,17 +590,19 @@ namespace IED
 	void Controller::QueueRequestEvaluate(
 		Game::FormID a_actor,
 		bool a_defer,
-		bool a_xfrmUpdate) const
+		bool a_xfrmUpdate,
+		bool a_xfrmUpdateNoDefer) const
 	{
-		ITaskPool::AddTask([this, a_actor, a_defer, a_xfrmUpdate]() {
-			RequestEvaluate(a_actor, a_defer, a_xfrmUpdate);
+		ITaskPool::AddTask([this, a_actor, a_defer, a_xfrmUpdate, a_xfrmUpdateNoDefer]() {
+			RequestEvaluate(a_actor, a_defer, a_xfrmUpdate, a_xfrmUpdateNoDefer);
 		});
 	}
 
 	void Controller::RequestEvaluate(
 		Game::FormID a_actor,
 		bool a_defer,
-		bool a_xfrmUpdate) const
+		bool a_xfrmUpdate,
+		bool a_xfrmUpdateNoDefer) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -618,7 +620,14 @@ namespace IED
 
 			if (a_xfrmUpdate)
 			{
-				it->second.RequestTransformUpdateDefer();
+				if (a_xfrmUpdateNoDefer)
+				{
+					it->second.RequestTransformUpdate();
+				}
+				else
+				{
+					it->second.RequestTransformUpdateDefer();
+				}
 			}
 		}
 	}

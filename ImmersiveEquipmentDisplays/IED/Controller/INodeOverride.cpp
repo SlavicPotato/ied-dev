@@ -853,10 +853,18 @@ namespace IED
 
 		process_offsets(a_data.offsets, xfrm, accumPos, a_params);
 
+		bool update = std::memcmp(
+			std::addressof(a_entry.node->m_localTransform),
+			std::addressof(xfrm),
+			sizeof(NiTransform)) != 0;
+
 		a_entry.node->m_localTransform = xfrm;
 
-		NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-		a_entry.node->UpdateDownwardPass(ctx, nullptr);
+		if (update)
+		{
+			NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
+			a_entry.node->UpdateDownwardPass(ctx, nullptr);
+		}
 	}
 
 	void INodeOverride::ResetNodeOverrideImpl(NiAVObject* a_object)
