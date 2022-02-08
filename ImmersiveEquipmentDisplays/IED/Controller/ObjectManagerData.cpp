@@ -82,8 +82,8 @@ namespace IED
 			}
 
 			if (!m_weapNodes.empty() &&
-			    !m_cmeNodes.empty() && 
-				!m_movNodes.empty())
+			    !m_cmeNodes.empty() &&
+			    !m_movNodes.empty())
 			{
 				if (auto npc = Game::GetActorBase(a_actor))
 				{
@@ -282,7 +282,7 @@ namespace IED
 		target->AttachChild(cme, true);
 
 		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
-		
+
 		mov->m_localTransform = a_female ?
                                     a_entry.transform_f :
                                     a_entry.transform_m;
@@ -344,7 +344,10 @@ namespace IED
 				NiPointer<NiNode> m_root;
 			};
 
-			ITaskPool::AddPriorityTask<DisposeStateTask>(std::move(state), a_handle, a_root);
+			ITaskPool::AddPriorityTask<DisposeStateTask>(
+				std::move(state),
+				a_handle,
+				a_root);
 		}
 		else
 		{

@@ -45,7 +45,7 @@ namespace IED
 		SKMP_FORCEINLINE bool Accept(TESContainer::ConfigEntry* entry);
 		SKMP_FORCEINLINE bool Accept(InventoryEntryData* a_entryData);
 
-		void GenerateSlotCandidates();
+		void GenerateSlotCandidates(bool a_checkFav);
 
 		SlotItemCandidates m_slotResults[stl::underlying(Data::ObjectType::kMax)];
 

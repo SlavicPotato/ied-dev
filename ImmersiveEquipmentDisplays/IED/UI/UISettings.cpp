@@ -185,6 +185,16 @@ namespace IED
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 
+				if (config.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::NoCheckFav, "4"),
+						std::addressof(data.removeFavRestriction))))
+				{
+					m_controller.QueueEvaluate(
+						Data::IData::GetPlayerRefID(),
+						ControllerUpdateFlags::kNone);
+				}
+				DrawTip(UITip::NoCheckFav);
+
 				ImGui::Unindent();
 				ImGui::Spacing();
 			}

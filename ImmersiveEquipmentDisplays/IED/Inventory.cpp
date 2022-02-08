@@ -221,8 +221,10 @@ namespace IED
 		return true;
 	}
 
-	void ItemCandidateCollector::GenerateSlotCandidates()
+	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
 	{
+		bool checkFav = m_isPlayer && a_checkFav;
+
 		for (auto& e : m_data.forms)
 		{
 			if (e.second.type == ObjectType::kMax)
@@ -230,7 +232,7 @@ namespace IED
 				continue;
 			}
 
-			if (m_isPlayer && !e.second.favorited)
+			if (checkFav && !e.second.favorited)
 			{
 				continue;
 			}

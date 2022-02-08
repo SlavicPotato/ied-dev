@@ -149,6 +149,7 @@ namespace IED
 				bool hideEquipped{ false };
 				bool toggleKeepLoaded{ false };
 				bool disableNPCSlots{ false };
+				bool removeFavRestriction{ false };
 
 				stl::optional<LogLevel> logLevel;
 

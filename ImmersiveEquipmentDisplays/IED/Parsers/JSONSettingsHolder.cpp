@@ -52,6 +52,7 @@ namespace IED
 			a_out.toggleKeepLoaded = data.get("toggle_keep_loaded", false).asBool();
 			a_out.hideEquipped = data.get("hide_equipped", false).asBool();
 			a_out.disableNPCSlots = data.get("disable_npc_slots", false).asBool();
+			a_out.removeFavRestriction = data.get("remove_fav_restriction", false).asBool();
 
 			auto& logLevel = data["log_level"];
 
@@ -91,6 +92,7 @@ namespace IED
 			data["toggle_keep_loaded"] = a_data.toggleKeepLoaded;
 			data["hide_equipped"] = a_data.hideEquipped;
 			data["disable_npc_slots"] = a_data.disableNPCSlots;
+			data["remove_fav_restriction"] = a_data.removeFavRestriction;
 
 			if (a_data.logLevel)
 			{

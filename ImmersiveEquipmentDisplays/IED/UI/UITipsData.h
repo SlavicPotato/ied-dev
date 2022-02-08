@@ -50,6 +50,7 @@ namespace IED
 			MatchSkin = 1039,
 			SyncSexes = 1040,
 			IsFavorited = 1041,
+			NoCheckFav = 1042,
 		};
 
 	}

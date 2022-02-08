@@ -2192,7 +2192,8 @@ namespace IED
 			return;
 		}
 
-		a_params.collector.GenerateSlotCandidates();
+		a_params.collector.GenerateSlotCandidates(
+			!m_config.settings.data.removeFavRestriction);
 
 		auto equippedInfo = CreateEquippedItemInfo(pm);
 
