@@ -27,12 +27,7 @@ namespace IED
 				return nullptr;
 			}
 
-			/*if (m_data.size() > 5000)
-			{
-				m_data.clear();
-			}*/
-
-			auto fc = Drivers::Render::GetSingleton().GetFrameCounter();
+			auto fc = Drivers::UI::GetFrameCount();
 
 			auto r = m_data.try_emplace(a_form, fc);
 			if (r.second)
@@ -72,7 +67,7 @@ namespace IED
 
 			m_lastCleanup = tp;
 
-			auto fc = Drivers::Render::GetSingleton().GetFrameCounter();
+			auto fc = Drivers::UI::GetFrameCount();
 
 			std::vector<decltype(m_data)::const_iterator> candidates;
 

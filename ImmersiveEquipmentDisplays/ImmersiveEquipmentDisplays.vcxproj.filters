@@ -171,6 +171,9 @@
     <Filter Include="Source\IED\JSONParsers\Config\Sound">
       <UniqueIdentifier>{960e2e3b-1101-459d-94ec-7d8c59f07918}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ImGui\Styles">
+      <UniqueIdentifier>{be1e456c-36f0-4c1a-90f1-435785aabdeb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -237,9 +240,6 @@
       <Filter>Source\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="ImGui\imgui_impl_win32.h">
-      <Filter>Source\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="ImGui\MouseEventQueue.h">
       <Filter>Source\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="IED\ConfigOverride.h">
@@ -1004,6 +1004,42 @@
     <ClInclude Include="Drivers\UI\InputHandler.h">
       <Filter>Source\Drivers\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UICurrentData.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UILogStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\ita.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\steam-classic.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\StylePreset.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\all.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\deep-dark.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\s56.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\corp-grey.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\dark-red.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1160,9 +1196,6 @@
       <Filter>Source\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="ImGui\imgui_impl_win32.cpp">
-      <Filter>Source\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="ImGui\MouseEventQueue.cpp">
       <Filter>Source\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="Drivers\Input\Handlers.cpp">
@@ -1603,6 +1636,9 @@
     </ClCompile>
     <ClCompile Include="Drivers\UI\InputHandler.cpp">
       <Filter>Source\Drivers\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

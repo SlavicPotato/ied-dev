@@ -454,6 +454,12 @@ static void ImGui_ImplDX11_CreateFontsTexture()
 
 void ImGui_ImplDX11_ReCreateFontsTexture()
 {
+	ImGui_ImplDX11_ReleaseFontsTexture();
+	ImGui_ImplDX11_CreateFontsTexture();
+}
+
+void ImGui_ImplDX11_ReleaseFontsTexture()
+{
 	if (g_pFontSampler)
 	{
 		g_pFontSampler->Release();
@@ -465,7 +471,6 @@ void ImGui_ImplDX11_ReCreateFontsTexture()
 		g_pFontTextureView = nullptr;
 		ImGui::GetIO().Fonts->TexID = nullptr;
 	}
-	ImGui_ImplDX11_CreateFontsTexture();
 }
 
 bool ImGui_ImplDX11_CreateDeviceObjects()
@@ -808,4 +813,9 @@ void ImGui_ImplDX11_NewFrame()
 {
 	if (!g_pFontSampler)
 		ImGui_ImplDX11_CreateDeviceObjects();
+}
+
+bool ImGui_ImplDX11_HasFontSampler()
+{
+	return static_cast<bool>(g_pFontSampler);
 }

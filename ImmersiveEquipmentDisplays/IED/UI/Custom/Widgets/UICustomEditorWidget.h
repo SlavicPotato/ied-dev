@@ -8,6 +8,7 @@
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
+#include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
@@ -82,11 +83,7 @@ namespace IED
 				entryCustomData_t& a_data);
 
 		protected:
-			struct CustomEditorCurrentData
-			{
-				T handle;
-				entryCustomData_t* data;
-			};
+			using CustomEditorCurrentData = UICurrentData<T, entryCustomData_t>;
 
 			void QueueAddItemPopup();
 
@@ -330,7 +327,7 @@ namespace IED
 					}
 
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -379,7 +376,7 @@ namespace IED
 			           ssex = GetOppositeSex(a_data.sex)](
 						  const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -427,7 +424,7 @@ namespace IED
 			           name = a_data.name](
 						  const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -455,6 +452,7 @@ namespace IED
 					 LS(UIWidgetCommonStrings::NewItem),
 					 "%s",
 					 LS(UIWidgetCommonStrings::RenamePrompt))
+				.fmt_input("%s", a_data.name.c_str())
 				.call([this, oldName = a_data.name](const auto& a_p) {
 					auto& in = a_p.GetInput();
 
@@ -466,7 +464,7 @@ namespace IED
 					}
 
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -527,7 +525,7 @@ namespace IED
 			}
 
 			auto current = GetCurrentData();
-			if (!current.data)
+			if (!current)
 			{
 				return;
 			}
@@ -575,7 +573,7 @@ namespace IED
 		template <class T>
 		void UICustomEditorWidget<T>::DrawMenuBarItems()
 		{
-			bool disabled = !GetCurrentData().data;
+			bool disabled = !GetCurrentData();
 
 			UICommon::PushDisabled(disabled);
 

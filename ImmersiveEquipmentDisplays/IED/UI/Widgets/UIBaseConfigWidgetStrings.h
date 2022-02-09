@@ -18,6 +18,7 @@ namespace IED
 			AttachmentModeColon = 4007,
 			EmptyNodeWarning = 4008,
 			KeepTorchFlame = 4009,
+			UseWorldModel = 4010,
 		};
 	}
 }

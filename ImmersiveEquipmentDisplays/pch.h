@@ -42,6 +42,7 @@
 #include <string>
 #include <vector>
 #include <source_location>
+#include <chrono>
 
 #include <d3d11.h>
 #include <dxgi1_5.h>

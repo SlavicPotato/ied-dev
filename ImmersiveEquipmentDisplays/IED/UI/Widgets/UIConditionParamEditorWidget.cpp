@@ -31,15 +31,16 @@ namespace IED
 		{
 			bool result = false;
 
-			auto fontSize = ImGui::GetFontSize();
-
 			ImGui::SetNextWindowSizeConstraints(
-				{ fontSize * 34.0f, 0.0f },
+				{ ImGui::GetFontSize() * 34.0f, 0.0f },
 				{ 800.0f, 800.0f });
 
 			if (ImGui::BeginPopup("match_param_editor"))
 			{
-				ImGui::PushItemWidth(fontSize * -5.5f);
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -5.5f);
+
+				GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
+				GetKeywordPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearKeyword));
 
 				if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
 				{
@@ -161,6 +162,9 @@ namespace IED
 						result |= m_extraInterface->DrawConditionParamExtra(e.p1, e.p2);
 					}
 				}
+
+				GetFormPicker().SetAllowClear(true);
+				GetKeywordPicker().SetAllowClear(true);
 
 				ImGui::PopItemWidth();
 
@@ -357,38 +361,88 @@ namespace IED
 			}
 			else if (a_iform)
 			{
+				auto info = LookupForm(a_iform);
+
 				if (a_idesc)
 				{
-					stl::snprintf(
-						m_descBuffer,
-						"%s, F: %.8X",
-						a_idesc,
-						a_iform.get());
+					if (info)
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"%s, F: [%.8X] %s",
+							a_idesc,
+							a_iform.get(),
+							info->form.name.c_str());
+					}
+					else
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"%s, F: %.8X",
+							a_idesc,
+							a_iform.get());
+					}
 				}
 				else
 				{
-					stl::snprintf(
-						m_descBuffer,
-						"F: %.8X",
-						a_iform.get());
+					if (info)
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"F: [%.8X] %s",
+							a_iform.get(),
+							info->form.name.c_str());
+					}
+					else
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"F: %.8X",
+							a_iform.get());
+					}
 				}
 			}
 			else if (a_ikw)
 			{
+				auto info = LookupForm(a_ikw);
+
 				if (a_idesc)
 				{
-					stl::snprintf(
-						m_descBuffer,
-						"%s, KW: %.8X",
-						a_idesc,
-						a_ikw.get());
+					if (info)
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"%s, KW: [%.8X] %s",
+							a_idesc,
+							a_ikw.get(),
+							info->form.name.c_str());
+					}
+					else
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"%s, KW: %.8X",
+							a_idesc,
+							a_ikw.get());
+					}
 				}
 				else
 				{
-					stl::snprintf(
-						m_descBuffer,
-						"KW: %.8X",
-						a_ikw.get());
+					if (info)
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"KW: [%.8X] %s",
+							a_ikw.get(),
+							info->form.name.c_str());
+					}
+					else
+					{
+						stl::snprintf(
+							m_descBuffer,
+							"KW: %.8X",
+							a_ikw.get());
+					}
 				}
 			}
 			else
@@ -415,6 +469,8 @@ namespace IED
 			{
 				e = {};
 			}
+
+			m_tempFlags = UIConditionParamEditorTempFlags::kNone;
 		}
 
 		bool UIConditionParamExtraInterface::DrawConditionItemExtra(

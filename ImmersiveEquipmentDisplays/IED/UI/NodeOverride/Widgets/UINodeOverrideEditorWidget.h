@@ -13,6 +13,7 @@
 #include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
 #include "IED/UI/Widgets/UICMNodeSelector.h"
 #include "IED/UI/Widgets/UIConditionParamEditorWidget.h"
+#include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
 #include "IED/UI/Widgets/UIEditorPanelSettings.h"
 #include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
@@ -145,11 +146,7 @@ namespace IED
 				entryNodeOverrideData_t& a_data);
 
 		protected:
-			struct NodeOverrideEditorCurrentData
-			{
-				T handle;
-				entryNodeOverrideData_t* data;
-			};
+			using NodeOverrideEditorCurrentData = UICurrentData<T, entryNodeOverrideData_t>;
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
@@ -486,7 +483,7 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			if (flags.test(NodeOverrideEditorFlags::kDrawNodePlacement))
 			{
@@ -546,7 +543,7 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			if (ImGui::RadioButton(
 					LS(CommonStrings::Positions, "1"),
@@ -1128,7 +1125,7 @@ namespace IED
 			const SingleNodeOverridePlacementUpdateParams& a_params,
 			const bool a_exists)
 		{
-			auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			const auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			const NodeOverrideData::weaponNodeEntry_t* entry;
 
@@ -3095,6 +3092,8 @@ namespace IED
 								break;
 							case Data::NodeOverrideConditionType::Form:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
@@ -3107,6 +3106,8 @@ namespace IED
 
 								break;
 							case Data::NodeOverrideConditionType::Keyword:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearKeyword);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
@@ -3149,6 +3150,8 @@ namespace IED
 								break;
 							case Data::NodeOverrideConditionType::Race:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
@@ -3162,6 +3165,8 @@ namespace IED
 								break;
 							case Data::NodeOverrideConditionType::Actor:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -3172,6 +3177,8 @@ namespace IED
 
 								break;
 							case Data::NodeOverrideConditionType::NPC:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
@@ -3376,7 +3383,7 @@ namespace IED
 		{
 			auto current = GetCurrentData();
 
-			bool disabled = !current.data;
+			bool disabled = !current;
 
 			UICommon::PushDisabled(disabled);
 
@@ -3424,7 +3431,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::QueueClearAllPopup(
 			const NodeOverrideEditorCurrentData& a_data)
 		{
-			const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			const auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			auto& queue = GetPopupQueue();
 			queue.push(
@@ -3436,7 +3443,7 @@ namespace IED
 			           handle = a_data.handle,
 			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -3482,7 +3489,7 @@ namespace IED
 			const NodeOverrideEditorCurrentData& a_data,
 			const Data::configNodeOverrideHolderClipboardData_t& a_clipData)
 		{
-			const auto& flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			const auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
 
 			auto& queue = GetPopupQueue();
 			queue.push(
@@ -3496,7 +3503,7 @@ namespace IED
 			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement),
 			           data = a_clipData](const auto&) mutable {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}

@@ -162,5 +162,6 @@ namespace IED
 		Complete = 233,
 		Single = 234,
 		Primary = 235,
+		Style = 236,
 	};
 }

@@ -12,6 +12,8 @@ namespace IED
 			Custom
 		};
 
+		class UIPopupQueue;
+
 		class UIPopupAction
 		{
 			friend class UIPopupQueue;
@@ -42,7 +44,7 @@ namespace IED
 				stl::snprintf(
 					m_buf,
 					a_fmt,
-					std::forward<Args>(a_args)...);
+					a_args...);
 			}
 
 			template <class... Args>
@@ -68,9 +70,16 @@ namespace IED
 				return *this;
 			}
 			
-			auto& set_text_wrap_size(float a_size) noexcept
+			inline auto& set_text_wrap_size(float a_size) noexcept
 			{
 				m_textWrapSize = a_size;
+				return *this;
+			}
+			
+			template <class ...Args>
+			inline constexpr auto& fmt_input(const char* a_fmt, Args... a_args) noexcept
+			{
+				stl::snprintf(m_input, a_fmt, a_args...);
 				return *this;
 			}
 

@@ -31,11 +31,11 @@ namespace IED
 		{
 			if (ImGui::BeginChild("no_editor_global", { -1.0f, 0.0f }))
 			{
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 
-				if (DrawTypeSelectorRadio(config.data.ui.transformEditor.globalType))
+				if (DrawTypeSelectorRadio(settings.data.ui.transformEditor.globalType))
 				{
-					config.mark_dirty();
+					settings.mark_dirty();
 					UpdateData(m_data);
 				}
 
@@ -76,9 +76,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.transformEditor
+			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
 		}
 

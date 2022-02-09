@@ -16,3 +16,5 @@
 5200-5299:		form browser
 5300-5399:		model group editor
 5400-5599:		extra cond 
+5600-5699:		style selector
+5700-5799:		log

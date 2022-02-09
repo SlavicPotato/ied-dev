@@ -15,9 +15,14 @@ namespace IED
 		public:
 			static bool Initialize();
 
-			[[nodiscard]] inline static constexpr auto &GetSingleton() noexcept
+			[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
 			{
 				return m_Instance;
+			}
+
+			[[nodiscard]] inline constexpr const auto& GetBufferSize() const noexcept
+			{
+				return m_bufferSize;
 			}
 
 			[[nodiscard]] inline constexpr auto GetDevice() const noexcept
@@ -25,7 +30,7 @@ namespace IED
 				return m_device;
 			}
 
-			[[nodiscard]] inline constexpr auto GetContext() const noexcept
+			[[nodiscard]] inline constexpr auto GetDeviceContext() const noexcept
 			{
 				return m_context;
 			}
@@ -35,23 +40,19 @@ namespace IED
 				return m_swapChain;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetBufferSize() const noexcept
-			{
-				return m_bufferSize;
-			}
-			
-			[[nodiscard]] inline constexpr auto GetFrameCounter() const noexcept
-			{
-				return m_framecounter;
-			}
-			
-			template <class T>
+			template <
+				class T,
+				class = std::enable_if_t<
+					std::is_convertible_v<
+						Render,
+						::Events::EventDispatcher<T>>>>
 			[[nodiscard]] inline constexpr auto& GetEventDispatcher() noexcept
 			{
 				return static_cast<::Events::EventDispatcher<T>&>(*this);
 			}
 
 			FN_NAMEPROC("Render");
+
 		private:
 			Render() = default;
 
@@ -65,8 +66,6 @@ namespace IED
 			ID3D11DeviceContext* m_context{ nullptr };
 			IDXGISwapChain* m_swapChain{ nullptr };
 			NiPoint3 m_bufferSize;
-
-			std::uint64_t m_framecounter{ 0 };
 
 			static inline auto m_createD3D11_a = IAL::Addr(75595, 77226, 0x9, 0x275);
 			static inline auto m_unkPresent_a = IAL::Addr(75461, 77246, 0x9, 0x9);

@@ -110,7 +110,6 @@ namespace IED
 			TESForm* a_form,
 			TESForm* a_modelForm,
 			bool a_leftWeapon,
-			bool a_loadArma,
 			bool a_visible,
 			bool a_disableHavok);
 

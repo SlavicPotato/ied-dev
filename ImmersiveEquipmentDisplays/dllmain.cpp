@@ -103,7 +103,6 @@ extern "C" {
 
 	SKSEPluginVersionData SKSEPlugin_Version = {
 		SKSEPluginVersionData::kVersion,
-
 		MAKE_PLUGIN_VERSION(
 			PLUGIN_VERSION_MAJOR,
 			PLUGIN_VERSION_MINOR,

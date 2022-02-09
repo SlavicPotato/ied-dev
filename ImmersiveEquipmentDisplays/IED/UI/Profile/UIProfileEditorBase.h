@@ -249,6 +249,7 @@ namespace IED
 									 LS(CommonStrings::Rename),
 									 "%s:",
 									 LS(UIProfileStrings::ProfileNamePrompt))
+								.fmt_input("%s", profile.Name().c_str())
 								.call([this, item = *m_state.selected](const auto& a_p) {
 									std::string newName(a_p.GetInput());
 

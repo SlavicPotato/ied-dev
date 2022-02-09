@@ -44,11 +44,11 @@ namespace IED
 			static bool PlayerControls_InputEvent_ProcessEvent_Hook(const InputEvent** a_evns);
 
 			void DispatchPriorityKeyEvent(
-				KeyEventType a_event,
+				KeyEventState a_event,
 				std::uint32_t a_keyCode);
 
 			void DispatchKeyEvent(
-				KeyEventType a_event,
+				KeyEventState a_event,
 				std::uint32_t a_keyCode);
 
 			::Events::EventDispatcher<Handlers::KeyEvent> m_prioHandlers;

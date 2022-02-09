@@ -5,7 +5,7 @@
 namespace IED
 {
 	template <class T>
-	static bool ExtractModelParams(
+	static constexpr bool ExtractModelParams(
 		T* a_ptr,
 		IModel::modelParams_t& a_out,
 		ModelType a_type = ModelType::kMisc)
@@ -49,7 +49,7 @@ namespace IED
 		TESRace* a_race,
 		bool a_isFemale,
 		bool a_1pWeap,
-		bool a_useArma,
+		bool a_useWorld,
 		modelParams_t& a_out)
 	{
 		switch (a_form->formType)
@@ -61,14 +61,14 @@ namespace IED
 		case TESAmmo::kTypeID:
 			return ExtractFormModelParams<TESAmmo>(a_form, a_out);
 		case TESObjectLIGH::kTypeID:
-			{
-				return ExtractFormModelParams<TESObjectLIGH>(
-					a_form,
-					a_out,
-					static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
-                        ModelType::kLight :
-                        ModelType::kMisc);
-			}
+
+			return ExtractFormModelParams<TESObjectLIGH>(
+				a_form,
+				a_out,
+				static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
+                    ModelType::kLight :
+                    ModelType::kMisc);
+
 		case BGSArtObject::kTypeID:
 			return ExtractFormModelParams<BGSArtObject>(a_form, a_out);
 		case TESObjectBOOK::kTypeID:
@@ -123,9 +123,9 @@ namespace IED
 			{
 				auto armor = static_cast<TESObjectARMO*>(a_form);
 
-				if (armor->IsShield())
+				if (!a_useWorld && armor->IsShield())
 				{
-					for (auto arma : armor->armorAddons)
+					for (auto& arma : armor->armorAddons)
 					{
 						if (!arma)
 						{

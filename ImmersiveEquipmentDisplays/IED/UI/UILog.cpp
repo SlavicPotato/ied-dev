@@ -5,6 +5,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "UILogStrings.h"
+
 namespace IED
 {
 	namespace UI
@@ -62,12 +64,15 @@ namespace IED
 			ImGui::SameLine();
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -10.0f);
 
-			constexpr int step = 1;
-			constexpr int stepFast = 100;
+			ImGui::PushID("ctls");
+
+			const int step = 1;
+			const int stepFast = 100;
+
 			std::uint32_t limit = data.GetLimit();
 
 			if (ImGui::InputScalar(
-					LS(CommonStrings::Limit, "ctl_1"),
+					LS(CommonStrings::Limit, "1"),
 					ImGuiDataType_U32,
 					std::addressof(limit),
 					std::addressof(step),
@@ -87,15 +92,24 @@ namespace IED
 
 			ImGui::Spacing();
 
-			DrawLevelCheckbox(LS(CommonStrings::Fatal, "ctl_2"), LogLevel::FatalError);
+			DrawLevelCheckbox(LS(CommonStrings::Fatal, "2"), LogLevel::FatalError);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Error, "ctl_3"), LogLevel::Error);
+			DrawLevelCheckbox(LS(CommonStrings::Error, "3"), LogLevel::Error);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Warning, "ctl_4"), LogLevel::Warning);
+			DrawLevelCheckbox(LS(CommonStrings::Warning, "4"), LogLevel::Warning);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Message, "ctl_5"), LogLevel::Message);
+			DrawLevelCheckbox(LS(CommonStrings::Message, "5"), LogLevel::Message);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Debug, "ctl_6"), LogLevel::Debug);
+			DrawLevelCheckbox(LS(CommonStrings::Debug, "6"), LogLevel::Debug);
+			ImGui::SameLine();
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+			ImGui::SameLine();
+
+			settings.mark_if(ImGui::Checkbox(
+				LS(UILogStrings::ShowTimestamps, "7"),
+				std::addressof(settings.data.ui.logShowTimestamps)));
+
+			ImGui::PopID();
 
 			ImGui::PopID();
 		}
@@ -104,7 +118,7 @@ namespace IED
 		{
 			auto& settings = m_controller.GetConfigStore().settings;
 
-			auto& data = ISKSE::GetBacklog();
+			const auto& data = ISKSE::GetBacklog();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 
@@ -131,6 +145,11 @@ namespace IED
 						if (!m_filter.Test(e))
 						{
 							continue;
+						}
+
+						if (settings.data.ui.logShowTimestamps)
+						{
+							DrawTimeStampLine(e);
 						}
 
 						bool popcol = true;
@@ -169,6 +188,26 @@ namespace IED
 			ImGui::EndChild();
 
 			ImGui::PopStyleVar();
+		}
+
+		void UILog::DrawTimeStampLine(const BackLog::Entry& a_entry)
+		{
+			auto lt = std::chrono::floor<std::chrono::days>(a_entry.ts());
+
+			std::chrono::year_month_day ymd{ lt };
+			std::chrono::hh_mm_ss hms{ a_entry.ts() - lt };
+
+			ImGui::Text(
+				"[%d-%.2u-%.2u %.2d:%.2d:%.2lld.%lld]",
+				static_cast<int>(ymd.year()),
+				static_cast<std::uint32_t>(ymd.month()),
+				static_cast<std::uint32_t>(ymd.day()),
+				static_cast<int>(hms.hours().count()),
+				static_cast<int>(hms.minutes().count()),
+				static_cast<long long>(hms.seconds().count()),
+				static_cast<long long>(hms.subseconds().count()));
+
+			ImGui::SameLine();
 		}
 
 		void UILog::DrawLevelCheckbox(const char* a_label, LogLevel a_level)

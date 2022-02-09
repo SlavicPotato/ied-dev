@@ -1,11 +1,10 @@
 #include "pch.h"
 
-#include "../EngineExtensions.h"
+#include "IED/EngineExtensions.h"
 #include "IObjectManager.h"
 
 #include <ext/Model.h>
 #include <ext/Node.h>
-#include <ext/BSGraphics.h>
 
 namespace IED
 {
@@ -357,7 +356,7 @@ namespace IED
 				a_form->formID,
 				a_params.arma ?
                     a_params.arma->formID :
-                    0,
+                    Game::FormID{},
 				a_out);
 			break;
 		case ModelType::kMisc:
@@ -377,7 +376,6 @@ namespace IED
 		TESForm* a_form,
 		TESForm* a_modelForm,
 		bool a_leftWeapon,
-		bool a_loadArma,
 		bool a_visible,
 		bool a_disableHavok)
 	{
@@ -411,7 +409,7 @@ namespace IED
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
 				a_config.flags.test(Data::FlagsBase::kLoad1pWeaponModel),
-				false,
+				a_config.flags.test(Data::FlagsBase::kUseWorldModel),
 				modelParams))
 		{
 			Debug(
@@ -593,7 +591,8 @@ namespace IED
 					a_params.race,
 					a_params.configSex == Data::ConfigSex::Female,
 					e.second.flags.test(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel),
-					false,
+					a_config.flags.test(Data::FlagsBase::kUseWorldModel) ||
+						e.second.flags.test(Data::ConfigModelGroupEntryFlags::kUseWorldModel),
 					params))
 			{
 				Debug(

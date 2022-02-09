@@ -4,8 +4,6 @@
 #include "Drivers/Input/Handlers.h"
 #include "Drivers/Input/KeyState.h"
 
-#include "ImGui/MouseEventQueue.h"
-
 namespace IED
 {
 	namespace Drivers
@@ -15,43 +13,72 @@ namespace IED
 		{
 			static_assert(sizeof(WCHAR) == sizeof(ImWchar16));
 
-			class KeyEventTaskPress
+			SKMP_ALIGN(16) class KeyEventTaskPress
 			{
 			public:
-
 				KeyEventTaskPress() = delete;
 
 				inline explicit KeyEventTaskPress(
-					UINT a_vkey,
+					UINT a_key,
 					WCHAR a_char) :
-					m_vkey(a_vkey),
-					m_char(a_char)
+					m_keys{ a_key, a_char },
+					m_type(KeyEventType::Keyboard)
+				{
+				}
+
+				inline explicit KeyEventTaskPress(
+					KeyEventType a_type,
+					UINT a_key) :
+					m_keys{ a_key, 0 },
+					m_type(a_type)
+				{
+				}
+
+				inline explicit KeyEventTaskPress(
+					float a_delta) :
+					m_wheel{ a_delta },
+					m_type(KeyEventType::Wheel)
 				{
 				}
 
 				void Run();
 
 			private:
-				UINT m_vkey;
-				WCHAR m_char;
+				KeyEventType m_type;
+
+				union
+				{
+					struct
+					{
+						UINT key;
+						WCHAR chr;
+					} m_keys;
+
+					struct
+					{
+						float delta;
+					} m_wheel;
+				};
 			};
 
 			class KeyEventTaskRelease
 			{
 			public:
-
 				KeyEventTaskRelease() = delete;
 
 				inline explicit KeyEventTaskRelease(
+					KeyEventType a_type,
 					UINT a_vkey) :
-					m_vkey(a_vkey)
+					m_type(a_type),
+					m_key(a_vkey)
 				{
 				}
 
 				void Run();
 
 			private:
-				UINT m_vkey;
+				UINT m_key;
+				KeyEventType m_type;
 			};
 
 		protected:
@@ -67,16 +94,6 @@ namespace IED
 				return m_keyReleaseQueue;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetMousePressEventQueue() noexcept
-			{
-				return m_mousePressQueue;
-			}
-
-			[[nodiscard]] inline constexpr auto& GetMouseReleaseEventQueue() noexcept
-			{
-				return m_mouseReleaseQueue;
-			}
-
 			void ProcessPressQueues();
 			void ProcessReleaseQueues();
 
@@ -85,8 +102,6 @@ namespace IED
 		private:
 			TaskQueueStatic<KeyEventTaskPress> m_keyPressQueue;
 			TaskQueueStatic<KeyEventTaskRelease> m_keyReleaseQueue;
-			ImGuiMouseEventQueue m_mousePressQueue;
-			ImGuiMouseEventQueue m_mouseReleaseQueue;
 
 			DeadKey m_dk;
 		};

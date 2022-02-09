@@ -89,9 +89,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.customEditor
+			return settings.data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
 		}
 

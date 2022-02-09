@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "JSONSettingsCollapsibleStatesParser.h"
 #include "JSONConfigKeyPairParser.h"
+#include "JSONSettingsCollapsibleStatesParser.h"
 #include "JSONSettingsEditorPanelParser.h"
 #include "JSONSettingsImportExport.h"
 #include "JSONSettingsProfileEditorParser.h"
@@ -111,11 +111,13 @@ namespace IED
 				a_out.openKeys.mark(true);
 			}
 
-			a_out.enableRestrictions = data.get("enable_restrictions", false).asBool();
 			a_out.enableControlLock = data.get("enable_control_lock", true).asBool();
+			a_out.enableFreezeTime = data.get("enable_freeze_time", false).asBool();
+			a_out.enableRestrictions = data.get("enable_restrictions", false).asBool();
 			a_out.selectCrosshairActor = data.get("select_crosshair_actor", true).asBool();
 			a_out.scale = data.get("scale", 1.0f).asFloat();
 			a_out.logLimit = data.get("log_limit", 200).asUInt();
+			a_out.logShowTimestamps = data.get("log_show_ts", true).asBool();
 
 			auto& levels = data["log_levels"];
 			for (std::underlying_type_t<LogLevel> i = 0; i <= stl::underlying(LogLevel::Max); i++)
@@ -138,8 +140,20 @@ namespace IED
 			a_out.extraGlyphs = static_cast<GlyphPresetFlags>(
 				data.get("extra_glyphs", stl::underlying(GlyphPresetFlags::kNone)).asUInt());
 
+			a_out.releaseFontData = data.get("release_font_data", true).asBool();
+
 			a_out.selectedDefaultConfImport = static_cast<Data::DefaultConfigType>(
 				data.get("sel_def_conf_import", stl::underlying(Data::DefaultConfigType::kUser)).asUInt());
+
+			a_out.stylePreset = static_cast<UIStylePreset>(
+				data.get("style_preset", stl::underlying(UIStylePreset::Dark)).asUInt());
+
+			a_out.alpha = data.get("alpha", 1.0f).asFloat();
+
+			if (data.isMember("bg_alpha"))
+			{
+				a_out.bgAlpha = data.get("bg_alpha", 1.0f).asFloat();
+			}
 
 			return true;
 		}
@@ -187,11 +201,13 @@ namespace IED
 				controlsParser.Create(*a_data.openKeys, data["toggle_keys"]);
 			}
 
-			data["enable_restrictions"] = a_data.enableRestrictions;
 			data["enable_control_lock"] = a_data.enableControlLock;
+			data["enable_freeze_time"] = a_data.enableFreezeTime;
+			data["enable_restrictions"] = a_data.enableRestrictions;
 			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
 			data["scale"] = a_data.scale;
 			data["log_limit"] = a_data.logLimit;
+			data["log_show_ts"] = a_data.logShowTimestamps;
 
 			auto& levels = (data["log_levels"] = Json::Value(Json::ValueType::arrayValue));
 			for (auto& e : a_data.logLevels)
@@ -209,8 +225,17 @@ namespace IED
 				data["font_size"] = *a_data.fontSize;
 			}
 			data["extra_glyphs"] = stl::underlying(a_data.extraGlyphs.value);
+			data["release_font_data"] = a_data.releaseFontData;
 
 			data["sel_def_conf_import"] = stl::underlying(a_data.selectedDefaultConfImport);
+
+			data["style_preset"] = stl::underlying(a_data.stylePreset);
+			data["alpha"] = a_data.alpha;
+
+			if (a_data.bgAlpha)
+			{
+				data["bg_alpha"] = *a_data.bgAlpha;
+			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}

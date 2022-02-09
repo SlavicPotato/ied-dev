@@ -56,7 +56,8 @@ namespace IED
 			return m_controller.GetConfigStore().settings.data.ui.slotEditor.raceConfig;
 		}
 
-		auto UISlotEditorRace::GetCurrentData() -> SlotEditorCurrentData
+		auto UISlotEditorRace::GetCurrentData()
+			-> SlotEditorCurrentData
 		{
 			if (auto& entry = ListGetSelected())
 			{
@@ -64,7 +65,7 @@ namespace IED
 			}
 			else
 			{
-				return { Game::FormID(), nullptr };
+				return {};
 			}
 		}
 
@@ -237,9 +238,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorRace::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.slotEditor
+			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
 		}
 

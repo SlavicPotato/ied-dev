@@ -122,7 +122,7 @@ namespace IED
 			}
 			else
 			{
-				return { {}, nullptr };
+				return {};
 			}
 		}
 
@@ -138,9 +138,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorRace::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config
+			return settings
 			    .data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
 		}

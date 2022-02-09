@@ -33,7 +33,7 @@ namespace IED
 			TESRace* a_race,
 			bool a_isFemale,
 			bool a_1pWeap,
-			bool a_useArma,
+			bool a_useWorld,
 			modelParams_t& a_out);
 	};
 

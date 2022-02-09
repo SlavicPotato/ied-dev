@@ -11,7 +11,7 @@ namespace IED
 	{
 		struct KeyEvent
 		{
-			KeyEventType type;
+			KeyEventState state;
 			std::uint32_t key;
 		};
 

@@ -27,6 +27,10 @@ namespace IED
 			UIKeyOverrideWarning = 4416,
 			DisableNPCEquipmentSlots = 4417,
 			NoCheckFav = 4418,
+			FreezeTime = 4419,
+			ReleaseFontData = 4420,
+			Alpha = 4421,
+			BGAlpha = 4422,
 		};
 	}
 }

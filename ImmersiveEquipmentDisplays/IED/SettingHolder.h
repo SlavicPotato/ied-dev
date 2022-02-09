@@ -12,6 +12,8 @@
 
 #include "Controller/ImportFlags.h"
 
+#include "ImGui/Styles/StylePreset.h"
+
 namespace IED
 {
 	namespace Data
@@ -25,7 +27,6 @@ namespace IED
 		class SettingHolder
 		{
 		public:
-
 			using EditorPanelCommonFlagsType = std::uint32_t;
 
 			struct EditorPanelCommon
@@ -37,13 +38,15 @@ namespace IED
 				template <
 					class T,
 					class = std::enable_if_t<
-						std::is_enum_v<T> && std::is_same_v<std::underlying_type_t<T>, EditorPanelCommonFlagsType>,
+						std::is_enum_v<T> &&
+							std::is_same_v<
+								std::underlying_type_t<T>,
+								EditorPanelCommonFlagsType>,
 						void>>
-				inline constexpr stl::flag<T>& get_flags() noexcept
+				inline constexpr stl::flag<T&> get_flags() noexcept
 				{
-					return reinterpret_cast<stl::flag<T>&>(flags);
+					return reinterpret_cast<T&>(flags);
 				}
-
 			};
 
 			struct ProfileEditor :
@@ -79,7 +82,6 @@ namespace IED
 
 				GlobalConfigType globalType{ GlobalConfigType::Player };
 				ConfigSex globalSex{ ConfigSex::Male };
-
 				ConfigClass lastConfigClass{ ConfigClass::Global };
 
 				UI::UIData::UICollapsibleStates colStates[CONFIG_CLASS_MAX];
@@ -119,11 +121,13 @@ namespace IED
 				stl::optional<ConfigKeyPair> openKeys;
 
 				bool enableControlLock{ true };
+				bool enableFreezeTime{ false };
 				bool enableRestrictions{ false };
 				bool selectCrosshairActor{ true };
 				float scale{ 1.0f };
 
-				std::uint32_t logLimit{ 200 };
+				std::uint32_t logLimit{ 500 };
+				bool logShowTimestamps{ true };
 				bool logLevels[stl::underlying(LogLevel::Max) + 1];
 
 				bool closeOnESC{ true };
@@ -135,8 +139,13 @@ namespace IED
 				stl::fixed_string font;
 				stl::optional<float> fontSize;
 				stl::flag<GlyphPresetFlags> extraGlyphs{ GlyphPresetFlags::kNone };
-
+				bool releaseFontData{ false };
+     
 				DefaultConfigType selectedDefaultConfImport{ DefaultConfigType::kUser };
+
+				UIStylePreset stylePreset{ UIStylePreset::Dark };
+				float alpha{ 1.0f };
+				stl::optional<float> bgAlpha;
 			};
 
 			struct Settings
@@ -207,7 +216,7 @@ namespace IED
 			{
 				return m_lastException;
 			}
-			
+
 			inline constexpr auto HasErrors() const noexcept
 			{
 				return m_loadHasErrors;

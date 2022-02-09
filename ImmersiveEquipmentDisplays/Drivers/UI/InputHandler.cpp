@@ -12,21 +12,56 @@ namespace IED
 		{
 			auto& io = ImGui::GetIO();
 
-			if (m_vkey < std::size(io.KeysDown))
+			switch (m_type)
 			{
-				io.KeysDown[m_vkey] = true;
-			}
+			case KeyEventType::Keyboard:
 
-			io.AddInputCharacterUTF16(m_char);
+				if (m_keys.key < std::size(io.KeysDown))
+				{
+					io.KeysDown[m_keys.key] = true;
+				}
+
+				io.AddInputCharacterUTF16(m_keys.chr);
+
+				break;
+			case KeyEventType::Mouse:
+
+				if (m_keys.key < std::size(io.MouseDown))
+				{
+					io.MouseDown[m_keys.key] = true;
+				}
+
+				break;
+			case KeyEventType::Wheel:
+
+				io.MouseWheel += m_wheel.delta;
+
+				break;
+			}
 		}
 
 		void UIInputHandler::KeyEventTaskRelease::Run()
 		{
 			auto& io = ImGui::GetIO();
 
-			if (m_vkey < std::size(io.KeysDown))
+			switch (m_type)
 			{
-				io.KeysDown[m_vkey] = false;
+			case KeyEventType::Keyboard:
+
+				if (m_key < std::size(io.KeysDown))
+				{
+					io.KeysDown[m_key] = false;
+				}
+
+				break;
+			case KeyEventType::Mouse:
+
+				if (m_key < std::size(io.MouseDown))
+				{
+					io.MouseDown[m_key] = false;
+				}
+
+				break;
 			}
 		}
 
@@ -35,40 +70,40 @@ namespace IED
 			switch (a_evn.key)
 			{
 			case InputMap::kMacro_MouseButtonOffset:
-				if (a_evn.type == KeyEventType::KeyDown)
+				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetMousePressEventQueue().AddMouseButtonEvent(0, true);
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(0));
 				}
 				else
 				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(0, false);
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(0));
 				}
 				break;
 			case InputMap::kMacro_MouseButtonOffset + 1:
-				if (a_evn.type == KeyEventType::KeyDown)
+				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetMousePressEventQueue().AddMouseButtonEvent(1, true);
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(1));
 				}
 				else
 				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(1, false);
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(1));
 				}
 				break;
 			case InputMap::kMacro_MouseButtonOffset + 2:
-				if (a_evn.type == KeyEventType::KeyDown)
+				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetMousePressEventQueue().AddMouseButtonEvent(2, true);
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(2));
 				}
 				else
 				{
-					GetMouseReleaseEventQueue().AddMouseButtonEvent(2, false);
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(2));
 				}
 				break;
 			case InputMap::kMacro_MouseWheelOffset:
-				GetMousePressEventQueue().AddMouseWheelEvent(1.0f);
+				GetKeyPressQueue().AddTask(1.0f);
 				break;
 			case InputMap::kMacro_MouseWheelOffset + 1:
-				GetMousePressEventQueue().AddMouseWheelEvent(-1.0f);
+				GetKeyPressQueue().AddTask(-1.0f);
 				break;
 			default:
 				if (a_evn.key >= InputMap::kMacro_NumKeyboardKeys)
@@ -119,9 +154,9 @@ namespace IED
 					return;
 				}
 
-				SetKeyState(a_evn.type, a_evn.key, vkCode);
+				SetKeyState(a_evn.state, a_evn.key, vkCode);
 
-				if (Game::InPausedMenu())
+				if (Game::IsPaused())
 				{
 					ClearKeyState(VK_CAPITAL);
 					ClearKeyState(VK_SCROLL);
@@ -134,7 +169,7 @@ namespace IED
 					UpdateKeyState(VK_NUMLOCK);
 				}
 
-				if (a_evn.type == KeyEventType::KeyDown)
+				if (a_evn.state == KeyEventState::KeyDown)
 				{
 					WCHAR cbuf[3]{ 0 };
 
@@ -195,7 +230,7 @@ namespace IED
 				}
 				else
 				{
-					GetKeyReleaseQueue().AddTask(vkCode);
+					GetKeyReleaseQueue().AddTask(KeyEventType::Keyboard, vkCode);
 				}
 
 				break;
@@ -205,13 +240,11 @@ namespace IED
 		void UIInputHandler::ProcessPressQueues()
 		{
 			GetKeyPressQueue().ProcessTasks();
-			GetMousePressEventQueue().ProcessEvents();
 		}
 
 		void UIInputHandler::ProcessReleaseQueues()
 		{
 			GetKeyReleaseQueue().ProcessTasks();
-			GetMouseReleaseEventQueue().ProcessEvents();
 		}
 
 		void UIInputHandler::ResetInput()
@@ -222,8 +255,15 @@ namespace IED
 			m_keyPressQueue.ClearTasks();
 			m_keyReleaseQueue.ClearTasks();
 
-			m_mousePressQueue.Clear();
-			m_mouseReleaseQueue.Clear();
+			auto& io = ImGui::GetIO();
+
+			std::memset(io.KeysDown, 0x0, sizeof(io.KeysDown));
+			std::memset(io.MouseDown, 0x0, sizeof(io.MouseDown));
+
+			io.MouseWheel = 0.0f;
+			io.KeyCtrl = false;
+			io.KeyShift = false;
+			io.KeyAlt = false;
 		}
 	}
 }

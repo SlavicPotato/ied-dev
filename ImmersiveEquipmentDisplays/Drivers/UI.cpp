@@ -6,6 +6,8 @@
 
 #include "IED/Parsers/JSONFontInfoMapParser.h"
 
+#include "ImGui/Styles/all.h"
+
 namespace IED
 {
 	namespace Drivers
@@ -86,6 +88,7 @@ namespace IED
 			ASSERT(!m_fontData.empty());
 
 			SetCurrentFont(m_sDefaultFont);
+			UpdateStyleAlpha();
 
 			::ImGui_ImplWin32_Init(a_evn.m_pSwapChainDesc->OutputWindow);
 			::ImGui_ImplDX11_Init(a_evn.m_pDevice, a_evn.m_pImmediateContext);
@@ -110,7 +113,9 @@ namespace IED
 		void UI::Receive(const IDXGISwapChainPresent& a_evn)
 		{
 			if (m_suspended)
+			{
 				return;
+			}
 
 			IScopedLock lock(m_lock);
 
@@ -130,6 +135,20 @@ namespace IED
 			}
 
 			UpdateFontData();
+
+			if (m_conf.releaseFontData)
+			{
+				if (m_frameCount && !::ImGui_ImplDX11_HasFontSampler())
+				{
+					::ImGui_ImplDX11_ReCreateFontsTexture();
+				}
+			}
+
+			if (m_currentStyle != m_conf.style)
+			{
+				m_currentStyle = m_conf.style;
+				UpdateStyle();
+			}
 
 			ProcessPressQueues();
 
@@ -170,6 +189,11 @@ namespace IED
 			if (m_drawTasks.empty())
 			{
 				Suspend();
+
+				if (m_conf.releaseFontData)
+				{
+					ImGui_ImplDX11_ReleaseFontsTexture();
+				}
 			}
 
 			m_uiRenderPerf.timer.End(m_uiRenderPerf.current);
@@ -273,11 +297,6 @@ namespace IED
 				m_Instance.m_state.freezeCounter++;
 			}
 
-			if (m_Instance.m_suspended)
-			{
-				m_Instance.m_suspended = false;
-			}
-
 			if (!m_Instance.m_state.controlsLocked &&
 			    m_Instance.m_state.lockCounter > 0)
 			{
@@ -289,6 +308,8 @@ namespace IED
 			{
 				m_Instance.FreezeTime(true);
 			}
+
+			m_Instance.m_suspended = false;
 
 			return true;
 		}
@@ -313,11 +334,78 @@ namespace IED
 			}
 		}
 
+		void UI::EvaluateTaskState()
+		{
+			m_Instance.EvaluateTaskStateImpl();
+		}
+
+		void UI::EvaluateTaskStateImpl()
+		{
+			IScopedLock lock(m_lock);
+
+			for (auto& e : m_drawTasks)
+			{
+				if (e.second->m_options.lock != e.second->m_state.holdsLock)
+				{
+					if (e.second->m_state.holdsLock = e.second->m_options.lock)
+					{
+						m_state.lockCounter++;
+					}
+					else
+					{
+						m_state.lockCounter--;
+					}
+				}
+
+				if (e.second->m_options.freeze != e.second->m_state.holdsFreeze)
+				{
+					if (e.second->m_state.holdsFreeze = e.second->m_options.freeze)
+					{
+						m_state.freezeCounter++;
+					}
+					else
+					{
+						m_state.freezeCounter--;
+					}
+				}
+			}
+
+			if (m_state.controlsLocked)
+			{
+				if (m_state.lockCounter == 0)
+				{
+					LockControls(false);
+				}
+			}
+			else
+			{
+				if (m_state.lockCounter > 0)
+				{
+					LockControls(true);
+				}
+			}
+
+			if (m_state.timeFrozen)
+			{
+				if (m_state.freezeCounter == 0)
+				{
+					FreezeTime(false);
+				}
+			}
+			else
+			{
+				if (m_state.freezeCounter > 0)
+				{
+					FreezeTime(true);
+				}
+			}
+		}
+
 		bool UI::SetCurrentFont(const stl::fixed_string& a_font)
 		{
-			auto it = m_Instance.m_fontData.find(a_font);
-
 			bool ok = false;
+
+			auto it = m_Instance.m_fontData.find(a_font);
 
 			if (it == m_Instance.m_fontData.end())
 			{
@@ -430,7 +518,7 @@ namespace IED
 
 		void UI::QueueSetExtraGlyphsImpl(GlyphPresetFlags a_flags)
 		{
-			IScopedLock lock(m_Instance.m_lock);
+			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.extraGlyphPresets = a_flags;
 			m_fontUpdateData.dirty = true;
@@ -439,7 +527,7 @@ namespace IED
 		void UI::QueueSetLanguageGlyphDataImpl(
 			const std::shared_ptr<fontGlyphData_t>& a_data)
 		{
-			IScopedLock lock(m_Instance.m_lock);
+			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.langGlyphData = a_data;
 			m_fontUpdateData.dirty = true;
@@ -447,7 +535,7 @@ namespace IED
 
 		void UI::QueueFontChangeImpl(const stl::fixed_string& a_font)
 		{
-			IScopedLock lock(m_Instance.m_lock);
+			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.font = a_font;
 			m_fontUpdateData.dirty = true;
@@ -455,7 +543,7 @@ namespace IED
 
 		void UI::QueueSetFontSizeImpl(float a_size)
 		{
-			IScopedLock lock(m_Instance.m_lock);
+			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.fontsize = a_size;
 			m_fontUpdateData.dirty = true;
@@ -463,7 +551,7 @@ namespace IED
 
 		void UI::QueueResetFontSizeImpl()
 		{
-			IScopedLock lock(m_Instance.m_lock);
+			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.fontsize.clear();
 			m_fontUpdateData.dirty = true;
@@ -476,7 +564,7 @@ namespace IED
 			m_fontUpdateData.dirty = true;
 		}
 
-		static constexpr void ScaleStyle(ImGuiStyle& a_style, float a_factor)
+		static constexpr void ScaleStyle(ImGuiStyle& a_style, float a_factor) noexcept
 		{
 			a_style.WindowPadding.x = (a_style.WindowPadding.x * a_factor);
 			a_style.WindowPadding.y = (a_style.WindowPadding.y * a_factor);
@@ -512,16 +600,16 @@ namespace IED
 			a_style.MouseCursorScale = (a_style.MouseCursorScale * a_factor);
 		}
 
-		void UI::UpdateFontData(bool a_force)
+		bool UI::UpdateFontData(bool a_force)
 		{
 			if (!m_fontUpdateData.dirty && !a_force)
 			{
-				return;
+				return false;
 			}
 
 			if (!m_frameCount)
 			{
-				return;
+				return false;
 			}
 
 			fontInfoMap_t info;
@@ -547,13 +635,71 @@ namespace IED
 
 			ImGui_ImplDX11_ReCreateFontsTexture();
 
-			ImGuiStyle newStyle;
-			ImGui::StyleColorsDark(std::addressof(newStyle));
-			ScaleStyle(newStyle, m_fontUpdateData.scale);
-			ImGui::GetStyle() = newStyle;
+			UpdateStyle();
 
 			m_fontUpdateData.dirty = false;
 			m_fontUpdateData.font.clear();
+
+			return true;
+		}
+
+		void UI::UpdateStyle()
+		{
+			ImGuiStyle newStyle;
+
+			switch (m_currentStyle)
+			{
+			case UIStylePreset::Light:
+				ImGui::StyleColorsLight(std::addressof(newStyle));
+				break;
+			case UIStylePreset::Classic:
+				ImGui::StyleColorsClassic(std::addressof(newStyle));
+				break;
+			case UIStylePreset::ItaDark:
+				IED::UI::Styles::ITA::Setup(newStyle, true, 1.0f);
+				break;
+			case UIStylePreset::ItaLight:
+				IED::UI::Styles::ITA::Setup(newStyle, false, 1.0f);
+				break;
+			case UIStylePreset::SteamClassic:
+				IED::UI::Styles::SteamClassic::Setup(newStyle);
+				break;
+			case UIStylePreset::DeepDark:
+				IED::UI::Styles::DeepDark::Setup(newStyle);
+				break;
+			case UIStylePreset::S56:
+				IED::UI::Styles::S56::Setup(newStyle);
+				break;
+			case UIStylePreset::CorpGrey:
+				IED::UI::Styles::CorporateGrey::Setup(newStyle, false);
+				break;
+			case UIStylePreset::CorpGreyFlat:
+				IED::UI::Styles::CorporateGrey::Setup(newStyle, true);
+				break;
+			case UIStylePreset::DarkRed:
+				IED::UI::Styles::DarkRed::Setup(newStyle);
+				break;
+			default:
+				ImGui::StyleColorsDark(std::addressof(newStyle));
+				break;
+			}
+
+			ScaleStyle(newStyle, m_fontUpdateData.scale);
+			ImGui::GetStyle() = newStyle;
+
+			UpdateStyleAlpha();
+		}
+
+		void UI::UpdateStyleAlpha()
+		{
+			auto& style = ImGui::GetStyle();
+
+			style.Alpha = std::clamp(m_conf.alpha, 0.15f, 1.0f);
+
+			if (m_conf.bgAlpha)
+			{
+				style.Colors[ImGuiCol_WindowBg].w = std::clamp(*m_conf.bgAlpha, 0.1f, 1.0f);
+			}
 		}
 
 		bool UI::LoadFonts(
@@ -784,8 +930,6 @@ namespace IED
 					else
 					{
 						r.first->second.font = font;
-
-						//Debug("%s | %d", it->first.c_str(), r.first->second.ranges.size());
 					}
 				}
 				else
@@ -810,21 +954,6 @@ namespace IED
 			}
 
 			m_availableFonts.emplace(m_sDefaultFont);
-		}
-
-		void UI::ResetInput()
-		{
-			auto& io = ImGui::GetIO();
-
-			std::memset(io.KeysDown, 0x0, sizeof(io.KeysDown));
-			std::memset(io.MouseDown, 0x0, sizeof(io.MouseDown));
-
-			io.MouseWheel = 0.0f;
-			io.KeyCtrl = false;
-			io.KeyShift = false;
-			io.KeyAlt = false;
-
-			UIInputHandler::ResetInput();
 		}
 
 		void UI::Suspend()

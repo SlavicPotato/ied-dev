@@ -31,19 +31,19 @@ namespace IED
 		{
 			if (ImGui::BeginChild("slot_editor_global", { -1.0f, 0.0f }))
 			{
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 
-				if (DrawTypeSelectorRadio(config.data.ui.slotEditor.globalType))
+				if (DrawTypeSelectorRadio(settings.data.ui.slotEditor.globalType))
 				{
-					config.mark_dirty();
+					settings.mark_dirty();
 					UpdateData(m_data);
 				}
 
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				if (config.data.disableNPCSlots &&
-				    config.data.ui.slotEditor.globalType == Data::GlobalConfigType::NPC)
+				if (settings.data.disableNPCSlots &&
+				    settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::NPC)
 				{
 					DrawSlotEditorNPCWarningHeader();
 				}
@@ -69,7 +69,8 @@ namespace IED
 			return Data::ConfigClass::Global;
 		}
 
-		auto UISlotEditorGlobal::GetCurrentData() -> SlotEditorCurrentData
+		auto UISlotEditorGlobal::GetCurrentData()
+			-> SlotEditorCurrentData
 		{
 			return { 0, std::addressof(m_data) };
 		}
@@ -193,9 +194,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.slotEditor
+			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
 		}
 
@@ -208,11 +209,11 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			const auto& config = store.settings;
+			const auto& settings = store.settings;
 
 			a_data = {
 				store.active.slot.GetGlobalData(
-					config.data.ui.slotEditor.globalType),
+					settings.data.ui.slotEditor.globalType),
 				Data::ConfigClass::Global
 			};
 		}

@@ -80,15 +80,15 @@ namespace IED
 			}
 			else
 			{
-				return { {}, nullptr };
+				return {};
 			}
 		}
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorRace::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.transformEditor
+			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
 		}
 

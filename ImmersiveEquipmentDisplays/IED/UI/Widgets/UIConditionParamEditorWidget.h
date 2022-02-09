@@ -49,6 +49,16 @@ namespace IED
 				ConditionParamItemExtraArgs& a_args);
 		};
 
+		enum class UIConditionParamEditorTempFlags : std::uint8_t
+		{
+			kNone = 0,
+
+			kNoClearForm = 1ui8 << 0,
+			kNoClearKeyword = 1ui8 << 1
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(UIConditionParamEditorTempFlags);
+
 		class UIConditionParamEditorWidget :
 			public UIObjectSlotSelectorWidget,
 			public UIBipedObjectSelectorWidget,
@@ -64,7 +74,7 @@ namespace IED
 				{
 					return *static_cast<T*>(p1);
 				}
-				
+
 				template <class T>
 				inline constexpr const T& As2() const noexcept
 				{
@@ -89,6 +99,12 @@ namespace IED
 			inline constexpr auto& GetKeywordPicker() noexcept
 			{
 				return m_formPickerKeyword;
+			}
+
+			inline constexpr void SetTempFlags(
+				UIConditionParamEditorTempFlags a_mask) noexcept
+			{
+				m_tempFlags.set(a_mask);
 			}
 
 			inline void SetExtraInterface(
@@ -130,6 +146,10 @@ namespace IED
 
 			UIFormPickerWidget m_formPickerForm;
 			UIFormPickerWidget m_formPickerKeyword;
+
+			stl::flag<UIConditionParamEditorTempFlags> m_tempFlags{
+				UIConditionParamEditorTempFlags::kNone
+			};
 		};
 
 		template <ConditionParamItem Ap, class T>

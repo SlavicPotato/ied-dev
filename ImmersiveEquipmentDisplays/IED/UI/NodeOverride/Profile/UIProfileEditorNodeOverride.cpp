@@ -60,7 +60,7 @@ namespace IED
 			if (!m_state.selected ||
 			    !m_cachedItem)
 			{
-				return { 0, nullptr };
+				return {};
 			}
 			else
 			{
@@ -179,9 +179,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UIProfileEditorNodeOverride::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.transformProfileEditor.colStates;
+			return settings.data.ui.transformProfileEditor.colStates;
 		}
 
 		void UIProfileEditorNodeOverride::OnCollapsibleStatesUpdate()

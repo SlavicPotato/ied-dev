@@ -4,8 +4,9 @@
 
 #include "UITips.h"
 
-#include "Widgets/UIControlKeySelectorWidget.h"
 #include "Widgets/Form/UIFormPickerWidget.h"
+#include "Widgets/UIControlKeySelectorWidget.h"
+#include "Widgets/UIStylePresetSelectorWidget.h"
 
 #include "IED/UI/Controls/UICollapsibles.h"
 #include "IED/UI/Window/UIWindow.h"
@@ -23,6 +24,7 @@ namespace IED
 			UICollapsibles,
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,
+			UIStylePresetSelectorWidget,
 			public virtual UITipsInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_settings";
@@ -51,12 +53,22 @@ namespace IED
 
 			void DrawFontSelector();
 			void DrawExtraGlyphs();
+			void DrawFontMiscOptions();
 
 			bool DrawSoundPairs();
 			bool DrawSoundPair(
-				const char *a_strid,
+				const char* a_strid,
 				Localization::StringID a_label,
-				Data::ConfigSound<Game::FormID>::soundPair_t &a_soundPair);
+				Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair);
+
+			template <
+				class Tf,
+				class Tl>
+			void DrawCommonResetContextMenu(
+				const char* a_imid,
+				Tl a_strid,
+				bool a_enabled,
+				Tf a_func);
 
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
@@ -64,5 +76,39 @@ namespace IED
 			Controller& m_controller;
 		};
 
-	}  // namespace UI
-}  // namespace IED
+		template <class Tf, class Tl>
+		void UISettings::DrawCommonResetContextMenu(
+			const char* a_imid,
+			Tl a_strid,
+			bool a_enabled,
+			Tf a_func)
+		{
+			ImGui::PushID(a_imid);
+
+			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			DrawPopupToggleButton("open", "context_menu");
+
+			//ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::MenuItem(
+						LS(a_strid, "1"),
+						nullptr,
+						false,
+						a_enabled))
+				{
+					a_func();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+		}
+
+	}
+}

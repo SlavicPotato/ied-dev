@@ -52,6 +52,7 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UIFormPickerWidget(a_controller, FormInfoFlags::kNone, true),
 			UIFormLookupInterface(a_controller),
+			UIStylePresetSelectorWidget(a_controller),
 			m_controller(a_controller)
 		{
 			SetAllowedTypes({ BGSSoundDescriptorForm::kTypeID });
@@ -73,12 +74,16 @@ namespace IED
 			{
 				DrawMenuBar();
 
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
+
 				DrawGeneralSection();
 				DrawDisplaysSection();
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
 				DrawSoundSection();
+
+				ImGui::PopItemWidth();
 			}
 
 			ImGui::End();
@@ -113,24 +118,39 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& config = m_controller.GetConfigStore().settings;
-				auto& data = config.data;
+				auto& settings = m_controller.GetConfigStore().settings;
+				auto& data = settings.data;
 
-				if (config.mark_if(ImGui::Checkbox(
+				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::KeepEquippedLoaded, "1"),
 						std::addressof(data.hideEquipped))))
 				{
 					m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 				}
-
 				DrawTip(UITip::HideEquipped);
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::DisableNPCEquipmentSlots, "2"),
+						std::addressof(data.disableNPCSlots))))
+				{
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+				}
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::NoCheckFav, "3"),
+						std::addressof(data.removeFavRestriction))))
+				{
+					m_controller.QueueEvaluate(
+						Data::IData::GetPlayerRefID(),
+						ControllerUpdateFlags::kNone);
+				}
+				DrawTip(UITip::NoCheckFav);
 
 				ImGui::Spacing();
 
 				if (ImGui::TreeNodeEx(
 						"gt_tree",
-						ImGuiTreeNodeFlags_SpanAvailWidth |
-							ImGuiTreeNodeFlags_DefaultOpen,
+						ImGuiTreeNodeFlags_SpanAvailWidth,
 						"%s",
 						LS(UISettingsStrings::PlayerGearToggleKeys)))
 				{
@@ -138,7 +158,7 @@ namespace IED
 
 					auto tmpk = m_controller.GetInputHandlers().playerBlock.GetComboKey();
 
-					if (config.mark_if(DrawKeySelector(
+					if (settings.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
 							tmpk,
@@ -153,7 +173,7 @@ namespace IED
 
 					tmpk = m_controller.GetInputHandlers().playerBlock.GetKey();
 
-					if (config.mark_if(DrawKeySelector(
+					if (settings.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
 							tmpk,
@@ -171,29 +191,12 @@ namespace IED
 
 				ImGui::Spacing();
 
-				if (config.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::KeepLoadedWhenToggledOff, "2"),
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::KeepLoadedWhenToggledOff, "4"),
 						std::addressof(data.toggleKeepLoaded))))
 				{
 					m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 				}
-
-				if (config.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::DisableNPCEquipmentSlots, "3"),
-						std::addressof(data.disableNPCSlots))))
-				{
-					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
-				}
-
-				if (config.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::NoCheckFav, "4"),
-						std::addressof(data.removeFavRestriction))))
-				{
-					m_controller.QueueEvaluate(
-						Data::IData::GetPlayerRefID(),
-						ControllerUpdateFlags::kNone);
-				}
-				DrawTip(UITip::NoCheckFav);
 
 				ImGui::Unindent();
 				ImGui::Spacing();
@@ -211,33 +214,100 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& config = m_controller.GetConfigStore().settings;
-				auto& ui = config.data.ui;
+				auto& settings = m_controller.GetConfigStore().settings;
+				auto& ui = settings.data.ui;
 
-				config.mark_if(ImGui::Checkbox(
-					LS(UISettingsStrings::CloseOnEsc, "1"),
+				if (settings.mark_if(DrawStylePresetSelector(ui.stylePreset)))
+				{
+					Drivers::UI::SetStyle(ui.stylePreset);
+				}
+
+				if (settings.mark_if(ImGui::SliderFloat(
+						LS(UISettingsStrings::Alpha, "1"),
+						std::addressof(ui.alpha),
+						0.15,
+						1.0f,
+						"%.2f")))
+				{
+					Drivers::UI::SetAlpha(ui.alpha);
+				}
+
+				DrawCommonResetContextMenu(
+					"ctx_rst_bg",
+					CommonStrings::Reset,
+					ui.bgAlpha.has(),
+					[&] {
+						ui.bgAlpha.clear();
+						Drivers::UI::SetBGAlpha(ui.bgAlpha);
+					});
+
+				bool hasAlpha = ui.bgAlpha.has();
+
+				float tmpbga = hasAlpha ?
+                                   *ui.bgAlpha :
+                                   ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
+
+				if (!hasAlpha)
+				{
+					ImGui::PushStyleVar(
+						ImGuiStyleVar_Alpha,
+						ImGui::GetStyle().Alpha * 0.65f);
+				}
+
+				if (settings.mark_if(ImGui::SliderFloat(
+						LS(UISettingsStrings::BGAlpha, "2"),
+						std::addressof(tmpbga),
+						0.1f,
+						1.0f,
+						"%.2f")))
+				{
+					ui.bgAlpha = tmpbga;
+					Drivers::UI::SetBGAlpha(ui.bgAlpha);
+				}
+
+				if (!hasAlpha)
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				settings.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::CloseOnEsc, "4"),
 					std::addressof(ui.closeOnESC)));
 
 				DrawTip(UITip::CloseOnESC);
 
-				if (config.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::EnableRestrictions, "2"),
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::EnableRestrictions, "5"),
 						std::addressof(ui.enableRestrictions))))
 				{
 					m_controller.UIEnableRestrictions(ui.enableRestrictions);
 				}
 				DrawTip(UITip::EnableRestrictions);
 
-				if (config.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::ControlLock, "3"),
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::ControlLock, "6"),
 						std::addressof(ui.enableControlLock))))
 				{
 					m_controller.UISetLock(ui.enableControlLock);
+					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::ControlLock);
 
-				config.mark_if(ImGui::Checkbox(
-					LS(UISettingsStrings::SelectCrosshairActor, "4"),
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::FreezeTime, "7"),
+						std::addressof(ui.enableFreezeTime))))
+				{
+					m_controller.UISetFreeze(ui.enableFreezeTime);
+					Drivers::UI::EvaluateTaskState();
+				}
+				DrawTip(UITip::FreezeTime);
+
+				settings.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::SelectCrosshairActor, "8"),
 					std::addressof(ui.selectCrosshairActor)));
 
 				DrawTip(UITip::SelectCrosshairActor);
@@ -249,7 +319,7 @@ namespace IED
                                ui.scale;
 
 				if (ImGui::SliderFloat(
-						LS(CommonStrings::Scale, "5"),
+						LS(CommonStrings::Scale, "9"),
 						std::addressof(tmp),
 						0.2f,
 						5.0f,
@@ -262,12 +332,10 @@ namespace IED
 
 				if (m_scaleTemp)
 				{
-					//ImGui::SameLine();
-
-					if (ImGui::Button(LS(CommonStrings::Apply, "6")))
+					if (ImGui::Button(LS(CommonStrings::Apply, "A")))
 					{
 						Drivers::UI::QueueSetScale(*m_scaleTemp);
-						config.set(ui.scale, m_scaleTemp.clear_and_get());
+						settings.set(ui.scale, m_scaleTemp.clear_and_get());
 					}
 				}
 
@@ -287,6 +355,8 @@ namespace IED
 					DrawFontSelector();
 					ImGui::Spacing();
 					DrawExtraGlyphs();
+					ImGui::Spacing();
+					DrawFontMiscOptions();
 
 					ImGui::Spacing();
 					ImGui::Unindent();
@@ -317,7 +387,7 @@ namespace IED
 
 					auto tmpk = m_controller.GetInputHandlers().uiOpen.GetComboKey();
 
-					if (config.mark_if(DrawKeySelector(
+					if (settings.mark_if(DrawKeySelector(
 							LS(CommonStrings::ComboKey, "1"),
 							UIData::g_comboControlMap,
 							tmpk,
@@ -332,7 +402,7 @@ namespace IED
 
 					tmpk = m_controller.GetInputHandlers().uiOpen.GetKey();
 
-					if (config.mark_if(DrawKeySelector(
+					if (settings.mark_if(DrawKeySelector(
 							LS(CommonStrings::Key, "2"),
 							UIData::g_controlMap,
 							tmpk)))
@@ -365,24 +435,24 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 
-				if (config.mark_if(ImGui::Checkbox(
+				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::EnableEquipSounds, "1"),
-						std::addressof(config.data.sound.enabled))))
+						std::addressof(settings.data.sound.enabled))))
 				{
-					m_controller.SetPlaySound(config.data.sound.enabled);
+					m_controller.SetPlaySound(settings.data.sound.enabled);
 				}
 
-				if (config.data.sound.enabled)
+				if (settings.data.sound.enabled)
 				{
 					ImGui::SameLine();
 
-					if (config.mark_if(ImGui::Checkbox(
+					if (settings.mark_if(ImGui::Checkbox(
 							LS(UISettingsStrings::NPCSounds, "2"),
-							std::addressof(config.data.sound.npc))))
+							std::addressof(settings.data.sound.npc))))
 					{
-						m_controller.SetPlaySoundNPC(config.data.sound.npc);
+						m_controller.SetPlaySoundNPC(settings.data.sound.npc);
 					}
 
 					ImGui::Spacing();
@@ -402,12 +472,14 @@ namespace IED
 
 		void UISettings::DrawLogLevelSelector()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
 			auto current = gLog.GetLogLevel();
 			auto desc = ILog::GetLogLevelString(current);
 
-			if (ImGui::BeginCombo(LS(UISettingsStrings::LogLevel, "ll_sel"), desc))
+			if (ImGui::BeginCombo(
+					LS(UISettingsStrings::LogLevel, "ll_sel"),
+					desc))
 			{
 				for (auto& e : ILog::GetLogLevels())
 				{
@@ -420,8 +492,8 @@ namespace IED
 
 					if (ImGui::Selectable(e.first.c_str(), selected))
 					{
-						config.data.logLevel = e.second;
-						config.mark_dirty();
+						settings.data.logLevel = e.second;
+						settings.mark_dirty();
 						gLog.SetLogLevel(e.second);
 					}
 				}
@@ -438,7 +510,7 @@ namespace IED
 					"%s",
 					LS(UIWidgetCommonStrings::ModelDatabase)))
 			{
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 
 				char buf[std::numeric_limits<std::uint32_t>::digits10 + 3];
 				const char* preview;
@@ -465,7 +537,9 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				if (ImGui::BeginCombo(LS(CommonStrings::Caching, "1"), preview))
+				if (ImGui::BeginCombo(
+						LS(CommonStrings::Caching, "1"),
+						preview))
 				{
 					for (auto& e : s_odbmvals)
 					{
@@ -480,8 +554,8 @@ namespace IED
 
 						if (ImGui::Selectable(LS<CommonStrings, 3>(e.second, "1"), selected))
 						{
-							config.data.odbLevel = e.first;
-							config.mark_dirty();
+							settings.data.odbLevel = e.first;
+							settings.mark_dirty();
 							m_controller.SetObjectDatabaseLevel(e.first);
 						}
 
@@ -520,15 +594,16 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 				auto& ldm = Localization::LocalizationDataManager::GetSingleton();
 				auto& current = m_controller.GetCurrentLanguageTable();
 
-				const char* desc = current ?
-                                       current->GetLang().c_str() :
-                                       nullptr;
-
-				if (ImGui::BeginCombo(LS(CommonStrings::Language, "1"), desc))
+				if (ImGui::BeginCombo(
+						LS(CommonStrings::Language, "1"),
+						current ?
+                            current->GetLang().c_str() :
+                            nullptr,
+						ImGuiComboFlags_HeightLarge))
 				{
 					for (auto& e : ldm.GetData())
 					{
@@ -543,8 +618,8 @@ namespace IED
 
 						if (ImGui::Selectable(LMKID<3>(e.first.c_str(), "1"), selected))
 						{
-							config.data.language = e.first;
-							config.mark_dirty();
+							settings.data.language = e.first;
+							settings.mark_dirty();
 
 							m_controller.QueueSetLanguage(e.first);
 						}
@@ -564,13 +639,22 @@ namespace IED
 		{
 			ImGui::PushID("font_selector");
 
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
 			auto current = Drivers::UI::GetCurrentFont();
 
+			DrawCommonResetContextMenu(
+				"ctx_font_rld",
+				CommonStrings::Reload,
+				true,
+				[&] {
+					Drivers::UI::MarkFontUpdateDataDirty();
+				});
+
 			if (ImGui::BeginCombo(
 					LS(CommonStrings::Font, "1"),
-					current->first.c_str()))
+					current->first.c_str(),
+					ImGuiComboFlags_HeightLarge))
 			{
 				for (auto& e : Drivers::UI::GetAvailableFonts())
 				{
@@ -587,8 +671,8 @@ namespace IED
 					{
 						Drivers::UI::QueueFontChange(e);
 
-						config.data.ui.font = e;
-						config.mark_dirty();
+						settings.data.ui.font = e;
+						settings.mark_dirty();
 					}
 
 					ImGui::PopID();
@@ -597,20 +681,25 @@ namespace IED
 				ImGui::EndCombo();
 			}
 
-			ImGui::SameLine();
-			if (ImGui::Button(LS(CommonStrings::Reload, "2")))
-			{
-				Drivers::UI::MarkFontUpdateDataDirty();
-			}
+			DrawCommonResetContextMenu(
+				"ctx_clr_fsz",
+				CommonStrings::Clear,
+				settings.data.ui.fontSize.has(),
+				[&] {
+					settings.data.ui.fontSize.clear();
+					settings.mark_dirty();
+
+					Drivers::UI::QueueResetFontSize();
+				});
 
 			float tmp;
 			if (m_fontSizeTemp)
 			{
 				tmp = *m_fontSizeTemp;
 			}
-			else if (config.data.ui.fontSize)
+			else if (settings.data.ui.fontSize)
 			{
-				tmp = *config.data.ui.fontSize;
+				tmp = *settings.data.ui.fontSize;
 			}
 			else
 			{
@@ -630,11 +719,11 @@ namespace IED
 
 			if (m_fontSizeTemp)
 			{
-				//ImGui::SameLine();
+				ImGui::SameLine();
 				if (ImGui::Button(LS(CommonStrings::Apply, "4")))
 				{
 					Drivers::UI::QueueSetFontSize(*m_fontSizeTemp);
-					config.set(config.data.ui.fontSize, m_fontSizeTemp.clear_and_get());
+					settings.set(settings.data.ui.fontSize, m_fontSizeTemp.clear_and_get());
 				}
 			}
 
@@ -652,7 +741,7 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				auto& config = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetConfigStore().settings;
 
 				decltype(s_extraGlyphs)::size_type i = 0;
 
@@ -665,12 +754,12 @@ namespace IED
 				{
 					ImGui::PushID(stl::underlying(e.first.value));
 
-					if (config.mark_if(ImGui::CheckboxFlagsT(
+					if (settings.mark_if(ImGui::CheckboxFlagsT(
 							e.second,
-							stl::underlying(std::addressof(config.data.ui.extraGlyphs.value)),
+							stl::underlying(std::addressof(settings.data.ui.extraGlyphs.value)),
 							stl::underlying(e.first.value))))
 					{
-						Drivers::UI::QueueSetExtraGlyphs(config.data.ui.extraGlyphs);
+						Drivers::UI::QueueSetExtraGlyphs(settings.data.ui.extraGlyphs);
 					}
 
 					ImGui::PopID();
@@ -693,33 +782,52 @@ namespace IED
 			}
 		}
 
+		void UISettings::DrawFontMiscOptions()
+		{
+			auto& settings = m_controller.GetConfigStore().settings;
+			auto& ui = settings.data.ui;
+
+			ImGui::PushID("font_misc_opt");
+
+			if (settings.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::ReleaseFontData, "1"),
+					std::addressof(ui.releaseFontData))))
+			{
+				Drivers::UI::SetReleaseFontData(ui.releaseFontData);
+			}
+
+			DrawTipWarn(UITip::ReleaseFontData);
+
+			ImGui::PopID();
+		}
+
 		bool UISettings::DrawSoundPairs()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
 			bool result = false;
 
 			ImGui::PushID("snd_pairs");
 
-			result |= config.mark_if(DrawSoundPair(
+			result |= settings.mark_if(DrawSoundPair(
 				"1",
 				stl::underlying(CommonStrings::Weapon),
-				config.data.sound.weapon));
+				settings.data.sound.weapon));
 
-			result |= config.mark_if(DrawSoundPair(
+			result |= settings.mark_if(DrawSoundPair(
 				"3",
 				stl::underlying(CommonStrings::Armor),
-				config.data.sound.armor));
+				settings.data.sound.armor));
 
-			result |= config.mark_if(DrawSoundPair(
+			result |= settings.mark_if(DrawSoundPair(
 				"2",
 				stl::underlying(CommonStrings::Arrow),
-				config.data.sound.arrow));
+				settings.data.sound.arrow));
 
-			result |= config.mark_if(DrawSoundPair(
+			result |= settings.mark_if(DrawSoundPair(
 				"4",
 				stl::underlying(CommonStrings::Generic),
-				config.data.sound.gen));
+				settings.data.sound.gen));
 
 			ImGui::PopID();
 
@@ -850,28 +958,6 @@ namespace IED
 				settings.data.ui.transformProfileEditor.colStates.clear();
 
 				settings.mark_dirty();
-			}
-
-			if (settings.data.ui.fontSize)
-			{
-				if (LCG_MI(UISettingsStrings::ClearFontSizeOverride, "2"))
-				{
-					auto& queue = m_controller.UIGetPopupQueue();
-
-					queue.push(
-							 UIPopupType::Confirm,
-							 LS(CommonStrings::Confirm),
-							 "%s",
-							 LS(UISettingsStrings::ClearFontSizeOverridePrompt))
-						.call([this](auto&) {
-							auto& settings = m_controller.GetConfigStore().settings;
-
-							settings.data.ui.fontSize.clear();
-							settings.mark_dirty();
-
-							Drivers::UI::QueueResetFontSize();
-						});
-				}
 			}
 		}
 

@@ -240,7 +240,7 @@ namespace IED
 					}
 				}
 
-				if (a_form != 0)
+				if (m_allowClear && a_form != 0)
 				{
 					if (LCG_MI(CommonStrings::Clear, "2"))
 					{

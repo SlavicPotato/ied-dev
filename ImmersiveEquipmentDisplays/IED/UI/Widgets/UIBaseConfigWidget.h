@@ -729,9 +729,23 @@ namespace IED
 					}
 
 					DrawTip(UITip::Load1pWeaponModel);
+					
+					if (ImGui::CheckboxFlagsT(
+							LS(UIBaseConfigString::UseWorldModel, "B"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::FlagsBase::kUseWorldModel)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::FlagsBase::kUseWorldModel);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					}
+
+					DrawTip(UITip::UseWorldModel);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::KeepTorchFlame, "B"),
+							LS(UIBaseConfigString::KeepTorchFlame, "C"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::FlagsBase::kKeepTorchFlame)))
 					{
@@ -1461,6 +1475,8 @@ namespace IED
 							{
 							case Data::EquipmentOverrideConditionType::Form:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form);
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
@@ -1489,6 +1505,8 @@ namespace IED
 								break;
 							case Data::EquipmentOverrideConditionType::Keyword:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearKeyword);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1499,6 +1517,8 @@ namespace IED
 
 								break;
 							case Data::EquipmentOverrideConditionType::Race:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form);
@@ -1513,6 +1533,8 @@ namespace IED
 								break;
 							case Data::EquipmentOverrideConditionType::Actor:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form);
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1523,6 +1545,8 @@ namespace IED
 
 								break;
 							case Data::EquipmentOverrideConditionType::NPC:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form);
@@ -1562,6 +1586,8 @@ namespace IED
 
 								break;
 							case Data::EquipmentOverrideConditionType::Quest:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.keyword.get_id());

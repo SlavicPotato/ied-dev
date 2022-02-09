@@ -121,7 +121,7 @@ namespace IED
 				{
 					bool result;
 
-					if (it->first == stl::fixed_string())
+					if (it->first.empty())
 					{
 						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorLightBlue);
 
@@ -228,7 +228,7 @@ namespace IED
 					LS(CommonStrings::Form),
 					entry.form))
 			{
-				if (a_value.first == stl::fixed_string())
+				if (a_value.first.empty())
 				{
 					data.form = entry.form.get_id();
 				}
@@ -293,6 +293,8 @@ namespace IED
 		{
 			auto& entry = a_value.second;
 
+			ImGui::PushID("flags");
+
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
@@ -344,9 +346,21 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			DrawTip(UITip::Load1pWeaponModel);
+			
+			if (ImGui::CheckboxFlagsT(
+					LS(UIBaseConfigString::UseWorldModel, "5"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kUseWorldModel)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::UseWorldModel);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::RemoveScabbard, "5"),
+					LS(UIBaseConfigString::RemoveScabbard, "6"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveScabbard)))
 			{
@@ -358,7 +372,7 @@ namespace IED
 			DrawTip(UITip::RemoveScabbard);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "6"),
+					LS(UIWidgetCommonStrings::DisableHavok, "7"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{
@@ -370,6 +384,8 @@ namespace IED
 			DrawTipWarn(UITip::DisableHavok);
 
 			ImGui::Columns();
+
+			ImGui::PopID();
 		}
 
 		template <class T>
@@ -447,7 +463,7 @@ namespace IED
 						ModelGroupEditorOnChangeEventType::Form);
 				}
 
-				if (a_it->first != stl::fixed_string())
+				if (!a_it->first.empty())
 				{
 					if (LCG_MI(CommonStrings::Delete, "2"))
 					{

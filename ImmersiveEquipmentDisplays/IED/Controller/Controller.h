@@ -135,7 +135,7 @@ namespace IED
 		bool RemoveActor(
 			TESObjectREFR* a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
-		
+
 		bool RemoveActor(
 			Game::FormID a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
@@ -407,21 +407,6 @@ namespace IED
 			return m_inputHandlers;
 		}
 
-		/*void SetExtraManagedNodes(std::vector<stl::fixed_string>&& a_list)
-		{
-			m_extraManagedNodes = std::move(a_list);
-		}
-
-		void AddExtraManagedNode(const stl::fixed_string& a_node)
-		{
-			m_extraManagedNodes.emplace_back(a_node);
-		}
-
-		void AddExtraManagedNode(const char* a_node)
-		{
-			m_extraManagedNodes.emplace_back(a_node);
-		}*/
-
 		[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
 		{
 			return m_lastException;
@@ -465,12 +450,12 @@ namespace IED
 		{
 			return m_forceDefaultConfig;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto UIGetIniKeysForced() const noexcept
 		{
 			return m_iniKeysForced;
 		}
-		
+
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 	private:
@@ -570,7 +555,7 @@ namespace IED
 			ActorObjectHolder& a_record,
 			Data::ObjectSlot a_slot);
 
-		static void UpdateRootInMenu(NiNode* a_root);
+		static void UpdateRootPaused(NiNode* a_root);
 
 		updateActionFunc_t MakeTransformUpdateFunc();
 		updateActionFunc_t MakeAttachUpdateFunc();
@@ -736,7 +721,7 @@ namespace IED
 			processParams_t& a_params,
 			const Data::configCustom_t& a_config,
 			bool& a_hasMinCount);
-		
+
 		bool IsBlockedByChance(
 			processParams_t& a_params,
 			const Data::configCustom_t& a_config,
@@ -818,7 +803,7 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const MenuOpenCloseEvent* evn,
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
-		
+
 		virtual EventResult ReceiveEvent(
 			const TESQuestStartStopEvent* evn,
 			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;
@@ -867,17 +852,6 @@ namespace IED
 
 		virtual void JSOnDataImport() override;
 
-		//virtual void Run() override;
-
-		/*virtual EventResult ReceiveEvent(
-			const SKSENiNodeUpdateEvent* a_evn,
-			BSTEventSource<SKSENiNodeUpdateEvent>* a_dispatcher) override;*/
-
-		/*virtual constexpr WCriticalSection& ODB_GetLock() noexcept override
-		{
-			return m_lock;
-		}*/
-
 		// members
 
 		std::unique_ptr<BSStringHolder> m_bsstrings;
@@ -907,7 +881,6 @@ namespace IED
 
 		Data::actorStateHolder_t m_storedActorStates;
 
-		//std::vector<stl::fixed_string> m_extraManagedNodes;
 		RandomNumberGenerator<float> m_rng1;
 
 		std::vector<Game::ObjectRefHandle> m_activeHandles;

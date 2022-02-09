@@ -49,12 +49,12 @@ namespace IED
 		{
 			if (!m_state.selected)
 			{
-				return { 0, nullptr };
+				return {};
 			}
 
 			if (!m_cachedItem)
 			{
-				return { 0, nullptr };
+				return {};
 			}
 			else
 			{
@@ -176,9 +176,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UIProfileEditorSlot::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.slotProfileEditor.colStates;
+			return settings.data.ui.slotProfileEditor.colStates;
 		}
 
 		void UIProfileEditorSlot::OnCollapsibleStatesUpdate()

@@ -43,9 +43,9 @@ namespace IED
 
 				if (m_listCurrent)
 				{
-					auto& config = m_controller.GetConfigStore().settings;
+					auto& settings = m_controller.GetConfigStore().settings;
 
-					if (config.data.disableNPCSlots &&
+					if (settings.data.disableNPCSlots &&
 					    m_listCurrent->handle != Data::IData::GetPlayerBaseID())
 					{
 						DrawSlotEditorNPCWarningHeader();
@@ -77,7 +77,7 @@ namespace IED
 			}
 			else
 			{
-				return { {}, nullptr };
+				return {};
 			}
 		}
 
@@ -242,9 +242,9 @@ namespace IED
 				return;
 			}
 
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			if (!config.data.ui.slotEditor.npcConfig.autoSelectSex)
+			if (!settings.data.ui.slotEditor.npcConfig.autoSelectSex)
 			{
 				return;
 			}
@@ -312,9 +312,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorNPC::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.slotEditor
+			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::NPC)];
 		}
 

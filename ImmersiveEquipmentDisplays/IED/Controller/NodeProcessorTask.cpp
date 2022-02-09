@@ -47,7 +47,7 @@ namespace IED
 						a_entry.state->atmReference,
 						a_entry))
 				{
-					m_controller.UpdateRootInMenu(info.root);
+					m_controller.UpdateRootPaused(info.root);
 					a_record.RequestTransformUpdateDefer();
 				}
 			}

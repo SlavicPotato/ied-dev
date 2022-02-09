@@ -10,8 +10,8 @@ namespace IED
 		void UpdateKeyState(UINT a_key);
 		void ResetKeyState();
 
-		void SetKeyState(KeyEventType a_ev, std::uint32_t a_sc, UINT a_vk);
-		void SetKeyState(KeyEventType a_ev, UINT a_key);
+		void SetKeyState(KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk);
+		void SetKeyState(KeyEventState a_ev, UINT a_key);
 		void ClearKeyState(UINT a_key);
 
 		[[nodiscard]] inline constexpr const auto& GetKeyStateData() const noexcept
@@ -23,7 +23,7 @@ namespace IED
 		inline static constexpr BYTE KS_LS_BIT = 1ui8 << 0;
 
 	private:
-		void SetLRKeyState(KeyEventType a_ev, std::uint32_t a_sc, UINT a_vk);
+		void SetLRKeyState(KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk);
 
 		using state_data_type = BYTE[256];
 

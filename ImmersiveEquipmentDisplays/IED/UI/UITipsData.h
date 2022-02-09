@@ -51,6 +51,9 @@ namespace IED
 			SyncSexes = 1040,
 			IsFavorited = 1041,
 			NoCheckFav = 1042,
+			FreezeTime = 1043,
+			UseWorldModel = 1044,
+			ReleaseFontData = 1045,
 		};
 
 	}

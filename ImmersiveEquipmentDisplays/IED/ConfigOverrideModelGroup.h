@@ -18,6 +18,7 @@ namespace IED
 			kLoad1pWeaponModel = 1u << 4,
 			kDisableHavok = 1u << 5,
 			kLeftWeapon = 1u << 6,
+			kUseWorldModel = 1u << 7
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);

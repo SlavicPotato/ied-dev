@@ -50,11 +50,17 @@ namespace IED
 			void SelectItem(
 				const stl::fixed_string& a_itemDesc);
 
-			inline constexpr const auto& GetSelected() const { return m_selected; }
+			inline constexpr const auto& GetSelected() const noexcept
+			{
+				return m_selected;
+			}
 
-			inline constexpr const auto& GetLastException() const { return m_lastExcept; }
+			inline constexpr const auto& GetLastException() const noexcept
+			{
+				return m_lastExcept;
+			}
 
-			bool HasFile(const stl::fixed_string& a_itemDesc) const
+			inline bool HasFile(const stl::fixed_string& a_itemDesc) const
 			{
 				return m_files.contains(a_itemDesc);
 			}

@@ -10,6 +10,7 @@
 #include "IED/UI/Widgets/Form/UIFormFilterWidget.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
+#include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIProfileSelectorWidget.h"
@@ -105,18 +106,13 @@ namespace IED
 			virtual const char* GetDisplayName() const;
 
 		protected:
-			struct SlotEditorCurrentData
-			{
-				T handle;
-				entrySlotData_t* data;
-			};
+			using SlotEditorCurrentData = UICurrentData<T, entrySlotData_t>;
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
 			void DrawSlotEditorNPCWarningHeader();
 
 		private:
-
 			virtual bool ShowConfigClassIndicator() const;
 			virtual bool PermitDeletion() const;
 
@@ -410,7 +406,7 @@ namespace IED
 
 			auto current = GetCurrentData();
 
-			bool disabled = !current.data;
+			bool disabled = !current;
 
 			UICommon::PushDisabled(disabled);
 
@@ -428,7 +424,7 @@ namespace IED
 				           tsex = sex](
 							  const auto&) {
 						auto current = GetCurrentData();
-						if (!current.data)
+						if (!current)
 						{
 							return;
 						}
@@ -468,7 +464,7 @@ namespace IED
 							 "%s",
 							 LS(UISlotEditorWidgetStrings::ClearAllSlotsPrompt))
 						.call([this](const auto&) {
-							if (auto current = GetCurrentData(); current.data)
+							if (auto current = GetCurrentData())
 							{
 								for (auto& e : current.data->data)
 								{
@@ -524,7 +520,7 @@ namespace IED
 			           ssex = GetOppositeSex(a_tsex)](
 						  const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -568,7 +564,7 @@ namespace IED
 				.call([this, a_handle, a_sex, a_slot](
 						  const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}
@@ -613,7 +609,7 @@ namespace IED
 				.call([this, a_handle, a_sex, a_switch](
 						  const auto&) {
 					auto current = GetCurrentData();
-					if (!current.data)
+					if (!current)
 					{
 						return;
 					}

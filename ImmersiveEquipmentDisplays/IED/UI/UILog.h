@@ -29,6 +29,7 @@ namespace IED
 
 			void DrawHeader();
 			void DrawLogText();
+			static void DrawTimeStampLine(const BackLog::Entry &a_entry);
 			void DrawLevelCheckbox(const char *a_label, LogLevel a_level);
 
 			void AutoScroll();

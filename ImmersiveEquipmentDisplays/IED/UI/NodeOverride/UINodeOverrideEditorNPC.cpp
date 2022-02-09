@@ -93,15 +93,15 @@ namespace IED
 			}
 			else
 			{
-				return { {}, nullptr };
+				return {};
 			}
 		}
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorNPC::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.transformEditor
+			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::NPC)];
 		}
 
@@ -138,9 +138,9 @@ namespace IED
 				return;
 			}
 
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			if (!config.data.ui.transformEditor.npcConfig.autoSelectSex)
+			if (!settings.data.ui.transformEditor.npcConfig.autoSelectSex)
 			{
 				return;
 			}

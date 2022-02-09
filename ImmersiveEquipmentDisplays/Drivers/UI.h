@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Events/Dispatcher.h"
+#include "ImGui/Styles/StylePreset.h"
 #include "Input/Handlers.h"
 #include "Render/Events.h"
 #include "UI/InputHandler.h"
@@ -62,6 +63,7 @@ namespace IED
 			using font_data_container = std::unordered_map<stl::fixed_string, FontEntry>;
 
 			inline static constexpr auto DEFAULT_FONT_NAME = "Default";
+			inline static constexpr auto DEFAULT_STYLE = UIStylePreset::Dark;
 
 		public:
 			static void Initialize();
@@ -77,6 +79,8 @@ namespace IED
 
 			static void RemoveTask(std::uint32_t a_id);
 
+			static void EvaluateTaskState();
+
 			[[nodiscard]] inline static constexpr bool HasCallback(std::uint32_t a_id)
 			{
 				return m_Instance.m_drawTasks.contains(a_id);
@@ -87,9 +91,7 @@ namespace IED
 				return m_Instance.m_info.bufferSize;
 			}
 
-			void ResetInput();
-
-			inline static void QueueResetInput() noexcept
+			static void QueueResetInput() noexcept
 			{
 				IScopedLock lock(m_Instance.m_lock);
 				m_Instance.m_nextResetInput = true;
@@ -120,11 +122,6 @@ namespace IED
 				return m_Instance.m_frameCount;
 			}
 
-			inline static void SetCurrentFont(font_data_container::const_iterator a_it) noexcept
-			{
-				m_Instance.m_currentFont = std::addressof(*a_it);
-			}
-
 			[[nodiscard]] inline static constexpr const auto& GetAvailableFonts() noexcept
 			{
 				return m_Instance.m_availableFonts;
@@ -133,6 +130,32 @@ namespace IED
 			[[nodiscard]] inline static constexpr const auto GetCurrentFont() noexcept
 			{
 				return m_Instance.m_currentFont;
+			}
+
+			static void SetStyle(UIStylePreset a_style) noexcept
+			{
+				IScopedLock lock(m_Instance.m_lock);
+				m_Instance.m_conf.style = a_style;
+			}
+
+			static void SetReleaseFontData(bool a_switch) noexcept
+			{
+				IScopedLock lock(m_Instance.m_lock);
+				m_Instance.m_conf.releaseFontData = a_switch;
+			}
+
+			static void SetAlpha(float a_value) noexcept
+			{
+				IScopedLock lock(m_Instance.m_lock);
+				m_Instance.m_conf.alpha = a_value;
+				m_Instance.UpdateStyleAlpha();
+			}
+			
+			static void SetBGAlpha(const stl::optional<float> &a_value) noexcept
+			{
+				IScopedLock lock(m_Instance.m_lock);
+				m_Instance.m_conf.bgAlpha = a_value;
+				m_Instance.UpdateStyle();
 			}
 
 			static void QueueSetExtraGlyphs(GlyphPresetFlags a_flags);
@@ -168,6 +191,8 @@ namespace IED
 				WPARAM wParam,
 				LPARAM lParam);
 
+			void EvaluateTaskStateImpl();
+
 			void Suspend();
 
 			void LockControls(bool a_switch);
@@ -185,7 +210,9 @@ namespace IED
 			void QueueResetFontSizeImpl();
 
 			void MarkFontUpdateDataDirtyImpl();
-			void UpdateFontData(bool a_force = false);
+			bool UpdateFontData(bool a_force = false);
+			void UpdateStyle();
+			void UpdateStyleAlpha();
 
 			bool LoadFonts(
 				font_data_container& a_data,
@@ -212,8 +239,8 @@ namespace IED
 
 			struct
 			{
-				std::uint32_t lockCounter{ 0 };
-				std::uint32_t freezeCounter{ 0 };
+				std::uint64_t lockCounter{ 0 };
+				std::uint64_t freezeCounter{ 0 };
 
 				stl::optional<bool> autoVanityAllowState;
 
@@ -229,6 +256,10 @@ namespace IED
 			struct
 			{
 				std::string imgui_ini;
+				UIStylePreset style{ DEFAULT_STYLE };
+				float alpha{ 1.0f };
+				stl::optional<float> bgAlpha;
+				bool releaseFontData{ false };
 			} m_conf;
 
 			struct
@@ -247,6 +278,8 @@ namespace IED
 
 			font_data_container m_fontData;
 			const font_data_container::value_type* m_currentFont{ nullptr };
+
+			UIStylePreset m_currentStyle{ DEFAULT_STYLE };
 
 			stl::set<stl::fixed_string> m_availableFonts;
 			stl::fixed_string m_sDefaultFont{ DEFAULT_FONT_NAME };

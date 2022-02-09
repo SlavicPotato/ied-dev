@@ -53,9 +53,9 @@ namespace IED
 						ImGui::Spacing();
 					}
 
-					auto& config = m_controller.GetConfigStore().settings;
+					auto& settings = m_controller.GetConfigStore().settings;
 
-					if (config.data.disableNPCSlots &&
+					if (settings.data.disableNPCSlots &&
 					    m_listCurrent->handle != Data::IData::GetPlayerRefID())
 					{
 						DrawSlotEditorNPCWarningHeader();
@@ -86,7 +86,7 @@ namespace IED
 			}
 			else
 			{
-				return { {}, nullptr };
+				return {};
 			}
 		}
 
@@ -230,9 +230,9 @@ namespace IED
 				return;
 			}
 
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			if (!config.data.ui.slotEditor.actorConfig.autoSelectSex)
+			if (!settings.data.ui.slotEditor.actorConfig.autoSelectSex)
 			{
 				return;
 			}
@@ -296,9 +296,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorActor::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.slotEditor
+			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Actor)];
 		}
 

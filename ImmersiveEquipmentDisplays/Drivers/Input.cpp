@@ -67,13 +67,13 @@ namespace IED
 					if (buttonEvent->IsDown())
 					{
 						m_Instance.DispatchPriorityKeyEvent(
-							KeyEventType::KeyDown,
+							KeyEventState::KeyDown,
 							keyCode);
 					}
 					else if (buttonEvent->IsUpLF())
 					{
 						m_Instance.DispatchPriorityKeyEvent(
-							KeyEventType::KeyUp,
+							KeyEventState::KeyUp,
 							keyCode);
 					}
 				}
@@ -116,11 +116,11 @@ namespace IED
 
 					if (buttonEvent->IsDown())
 					{
-						DispatchKeyEvent(KeyEventType::KeyDown, keyCode);
+						DispatchKeyEvent(KeyEventState::KeyDown, keyCode);
 					}
 					else if (buttonEvent->IsUpLF())
 					{
-						DispatchKeyEvent(KeyEventType::KeyUp, keyCode);
+						DispatchKeyEvent(KeyEventState::KeyUp, keyCode);
 					}
 				}
 			}
@@ -364,7 +364,7 @@ namespace IED
 		}
 
 		void Input::DispatchPriorityKeyEvent(
-			KeyEventType a_event,
+			KeyEventState a_event,
 			std::uint32_t a_keyCode)
 		{
 			Handlers::KeyEvent evn{
@@ -376,7 +376,7 @@ namespace IED
 		}
 
 		void Input::DispatchKeyEvent(
-			KeyEventType a_event,
+			KeyEventState a_event,
 			std::uint32_t a_keyCode)
 		{
 			Handlers::KeyEvent evn{

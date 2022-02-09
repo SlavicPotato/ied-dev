@@ -50,7 +50,7 @@ namespace IED
 		{
 			if (!m_state.selected)
 			{
-				return { 0, nullptr };
+				return {};
 			}
 
 			auto& data = GetProfileManager().Data();
@@ -61,7 +61,7 @@ namespace IED
 			}
 			else
 			{
-				return { 0, nullptr };
+				return {};
 			}
 		}
 
@@ -123,9 +123,9 @@ namespace IED
 
 		UIData::UICollapsibleStates& UIProfileEditorCustom::GetCollapsibleStatesData()
 		{
-			auto& config = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			return config.data.ui.customProfileEditor.colStates;
+			return settings.data.ui.customProfileEditor.colStates;
 		}
 
 		void UIProfileEditorCustom::OnCollapsibleStatesUpdate()

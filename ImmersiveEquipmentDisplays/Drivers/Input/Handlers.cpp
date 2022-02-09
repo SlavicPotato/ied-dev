@@ -8,13 +8,13 @@ namespace IED
 	{
 		void ComboKeyPressHandler::Receive(const KeyEvent& a_evn)
 		{
-			if (a_evn.type == KeyEventType::KeyDown)
+			if (a_evn.state == KeyEventState::KeyDown)
 			{
 				if (m_comboKey && a_evn.key == m_comboKey)
 				{
 					m_comboKeyDown = true;
 				}
-				
+
 				if ((m_key && a_evn.key == m_key) && (!m_comboKey || m_comboKeyDown))
 				{
 					Trigger();
@@ -28,6 +28,5 @@ namespace IED
 				}
 			}
 		}
-	}  // namespace Handlers
-
-}  // namespace IED
+	}
+}
