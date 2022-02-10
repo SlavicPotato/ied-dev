@@ -128,9 +128,9 @@ namespace IED
 
 			bool exp = true;
 
-			if (m_nextResetInput)
+			if (m_updateFlags.test(UpdateFlags::kResetInput))
 			{
-				m_nextResetInput = false;
+				m_updateFlags.clear(UpdateFlags::kResetInput);
 				ResetInput();
 			}
 
@@ -144,10 +144,18 @@ namespace IED
 				}
 			}
 
-			if (m_currentStyle != m_conf.style)
+			if (m_currentStyle != m_conf.style ||
+			    m_updateFlags.test(UpdateFlags::kStyle))
 			{
+				m_updateFlags.clear(UpdateFlags::kStyle);
 				m_currentStyle = m_conf.style;
 				UpdateStyle();
+			}
+
+			if (m_updateFlags.test(UpdateFlags::kStyleAlpha))
+			{
+				m_updateFlags.clear(UpdateFlags::kStyleAlpha);
+				UpdateStyleAlpha();
 			}
 
 			ProcessPressQueues();
@@ -645,6 +653,8 @@ namespace IED
 
 		void UI::UpdateStyle()
 		{
+			using namespace IED::UI;
+
 			ImGuiStyle newStyle;
 
 			switch (m_currentStyle)
@@ -656,28 +666,28 @@ namespace IED
 				ImGui::StyleColorsClassic(std::addressof(newStyle));
 				break;
 			case UIStylePreset::ItaDark:
-				IED::UI::Styles::ITA::Setup(newStyle, true, 1.0f);
+				Styles::ITA::Setup(newStyle, true, 1.0f);
 				break;
 			case UIStylePreset::ItaLight:
-				IED::UI::Styles::ITA::Setup(newStyle, false, 1.0f);
+				Styles::ITA::Setup(newStyle, false, 1.0f);
 				break;
 			case UIStylePreset::SteamClassic:
-				IED::UI::Styles::SteamClassic::Setup(newStyle);
+				Styles::SteamClassic::Setup(newStyle);
 				break;
 			case UIStylePreset::DeepDark:
-				IED::UI::Styles::DeepDark::Setup(newStyle);
+				Styles::DeepDark::Setup(newStyle);
 				break;
 			case UIStylePreset::S56:
-				IED::UI::Styles::S56::Setup(newStyle);
+				Styles::S56::Setup(newStyle);
 				break;
 			case UIStylePreset::CorpGrey:
-				IED::UI::Styles::CorporateGrey::Setup(newStyle, false);
+				Styles::CorporateGrey::Setup(newStyle, false);
 				break;
 			case UIStylePreset::CorpGreyFlat:
-				IED::UI::Styles::CorporateGrey::Setup(newStyle, true);
+				Styles::CorporateGrey::Setup(newStyle, true);
 				break;
 			case UIStylePreset::DarkRed:
-				IED::UI::Styles::DarkRed::Setup(newStyle);
+				Styles::DarkRed::Setup(newStyle);
 				break;
 			default:
 				ImGui::StyleColorsDark(std::addressof(newStyle));

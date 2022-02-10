@@ -66,6 +66,15 @@ namespace IED
 			inline static constexpr auto DEFAULT_STYLE = UIStylePreset::Dark;
 
 		public:
+			enum class UpdateFlags : std::uint8_t
+			{
+				kNone = 0,
+
+				kResetInput = 1ui8 << 0,
+				kStyle = 1ui8 << 1,
+				kStyleAlpha = 1ui8 << 2
+			};
+
 			static void Initialize();
 
 			[[nodiscard]] inline static constexpr bool HasCallbacks() noexcept
@@ -94,7 +103,7 @@ namespace IED
 			static void QueueResetInput() noexcept
 			{
 				IScopedLock lock(m_Instance.m_lock);
-				m_Instance.m_nextResetInput = true;
+				m_Instance.m_updateFlags.set(UpdateFlags::kResetInput);
 			}
 
 			inline static void SetImGuiIni(const std::string& a_path)
@@ -148,14 +157,14 @@ namespace IED
 			{
 				IScopedLock lock(m_Instance.m_lock);
 				m_Instance.m_conf.alpha = a_value;
-				m_Instance.UpdateStyleAlpha();
+				m_Instance.m_updateFlags.set(UpdateFlags::kStyleAlpha);
 			}
 			
 			static void SetBGAlpha(const stl::optional<float> &a_value) noexcept
 			{
 				IScopedLock lock(m_Instance.m_lock);
 				m_Instance.m_conf.bgAlpha = a_value;
-				m_Instance.UpdateStyle();
+				m_Instance.m_updateFlags.set(UpdateFlags::kStyle);
 			}
 
 			static void QueueSetExtraGlyphs(GlyphPresetFlags a_flags);
@@ -286,12 +295,14 @@ namespace IED
 
 			std::uint64_t m_frameCount{ 0 };
 
-			bool m_nextResetInput{ false };
+			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone};
 
 			WCriticalSection m_lock;
 
 			static UI m_Instance;
 		};
+
+		DEFINE_ENUM_CLASS_BITWISE(UI::UpdateFlags);
 
 	}
 }
