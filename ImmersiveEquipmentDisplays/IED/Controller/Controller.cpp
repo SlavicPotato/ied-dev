@@ -4693,7 +4693,7 @@ namespace IED
 		{
 			QueueRequestEvaluate(a_evn->actor->formID, true, false);
 
-			std::string n1, n2;
+			/*std::string n1, n2;
 			Game::FormID f1, f2;
 
 			if (a_evn->oldLocation)
@@ -4714,7 +4714,7 @@ namespace IED
 				f1,
 				n1.c_str(),
 				f2,
-				n2.c_str());
+				n2.c_str());*/
 		}
 
 		return EventResult::kContinue;
