@@ -4680,14 +4680,14 @@ namespace IED
 
 	EventResult Controller::ReceiveEvent(
 		const TESQuestStartStopEvent* a_evn,
-		BSTEventSource<TESQuestStartStopEvent>* a_dispatcher)
+		BSTEventSource<TESQuestStartStopEvent>*)
 	{
 		return EventResult::kContinue;
 	}
 
 	EventResult Controller::ReceiveEvent(
 		const TESActorLocationChangeEvent* a_evn,
-		BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher)
+		BSTEventSource<TESActorLocationChangeEvent>*)
 	{
 		if (a_evn && a_evn->actor)
 		{
