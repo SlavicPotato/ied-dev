@@ -12,7 +12,7 @@ namespace IED
 		struct entry_t
 		{
 			Game::FormID formid;
-			FormInfoFlags flags{ FormInfoFlags::kNone };
+			stl::flag<FormInfoFlags> flags{ FormInfoFlags::kNone };
 			std::string name;
 
 			inline friend bool operator<(
@@ -39,7 +39,7 @@ namespace IED
 	protected:
 		using form_db_get_func_t = std::function<void(result_type)>;
 
-		std::shared_ptr<data_type> GetFormDatabase();
+		result_type GetFormDatabase();
 
 	private:
 		template <class T, class Tf = T>
@@ -54,7 +54,7 @@ namespace IED
 			std::uint32_t a_type,
 			Tf a_func);
 
-		std::shared_ptr<data_type> Create();
+		static result_type Create();
 
 		std::weak_ptr<data_type> m_data;
 	};

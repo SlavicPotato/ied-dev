@@ -8,7 +8,7 @@ namespace IED
 {
 	namespace Data
 	{
-		enum class FlagsBase : std::uint32_t
+		enum class BaseFlags : std::uint32_t
 		{
 			kNone = 0,
 
@@ -26,6 +26,7 @@ namespace IED
 			kLoad1pWeaponModel = 1u << 11,
 			kHideLayingDown = 1u << 12,
 			kUseWorldModel = 1u << 13,
+			kIgnoreRaceEquipTypes = 1u << 14,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -37,7 +38,7 @@ namespace IED
 			kPapyrus = 1u << 16,
 		};
 
-		DEFINE_ENUM_CLASS_BITWISE(FlagsBase);
+		DEFINE_ENUM_CLASS_BITWISE(BaseFlags);
 
 		struct configBaseValues_t :
 			public configTransform_t
@@ -51,12 +52,12 @@ namespace IED
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
-				Data::FlagsBase::kDropOnDeath |
-				Data::FlagsBase::kSyncReferenceTransform |
-				Data::FlagsBase::kPlaySound |
-				Data::FlagsBase::kReferenceMode;
+				Data::BaseFlags::kDropOnDeath |
+				Data::BaseFlags::kSyncReferenceTransform |
+				Data::BaseFlags::kPlaySound |
+				Data::BaseFlags::kReferenceMode;
 
-			stl::flag<Data::FlagsBase> flags{ DEFAULT_FLAGS };
+			stl::flag<Data::BaseFlags> flags{ DEFAULT_FLAGS };
 			NodeDescriptor targetNode;
 
 		protected:

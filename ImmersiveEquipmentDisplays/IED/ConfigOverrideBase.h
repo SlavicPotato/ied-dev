@@ -155,7 +155,7 @@ namespace IED
 			static bool match_carried_form(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match);
-
+			
 			static constexpr bool match(
 				const collectorData_t& a_data,
 				const equipmentOverrideCondition_t& a_match,

@@ -4,6 +4,8 @@ namespace IED
 {
 	namespace Papyrus
 	{
+		inline static constexpr auto SCRIPT_NAME = "IED";
+
 		static inline constexpr bool ValidateString(const BSFixedString& a_str)
 		{
 			return a_str.data != nullptr && a_str.data[0] != 0;

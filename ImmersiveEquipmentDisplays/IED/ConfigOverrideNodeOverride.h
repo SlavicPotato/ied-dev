@@ -57,9 +57,14 @@ namespace IED
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			kNodeIgnoreScabbards = 1u << 10,
-			kLayingDown = 1u << 11,
-			kMatchSkin = 1u << 12,
+			// ignore scb (Node)
+			kExtraFlag0 = 1u << 10,
+
+			// laying down (Furniture), is child (Location)
+			kExtraFlag1 = 1u << 11,
+
+			// match skin (Biped)
+			kExtraFlag2 = 1u << 12,
 
 			kNegateMatch1 = 1u << 13,
 			kNegateMatch2 = 1u << 14
@@ -79,7 +84,8 @@ namespace IED
 			Group,
 			Actor,
 			NPC,
-			Extra
+			Extra,
+			Location
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -170,9 +176,16 @@ namespace IED
 			configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type)
 			{
-				if (a_type == NodeOverrideConditionType::Furniture ||
-				    a_type == NodeOverrideConditionType::Group)
+				if (a_type == NodeOverrideConditionType::Race ||
+				    a_type == NodeOverrideConditionType::Furniture ||
+				    a_type == NodeOverrideConditionType::Group ||
+				    a_type == NodeOverrideConditionType::Location)
 				{
+					if (a_type == NodeOverrideConditionType::Location)
+					{
+						flags = NodeOverrideConditionFlags::kExtraFlag0;
+					}
+
 					fbf.type = a_type;
 				}
 				else

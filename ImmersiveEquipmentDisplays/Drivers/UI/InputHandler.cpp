@@ -70,33 +70,34 @@ namespace IED
 			switch (a_evn.key)
 			{
 			case InputMap::kMacro_MouseButtonOffset:
+				
 				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(0));
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, 0);
 				}
 				else
 				{
-					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(0));
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, 0);
 				}
 				break;
 			case InputMap::kMacro_MouseButtonOffset + 1:
 				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(1));
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, 1);
 				}
 				else
 				{
-					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(1));
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, 1);
 				}
 				break;
 			case InputMap::kMacro_MouseButtonOffset + 2:
 				if (a_evn.state == KeyEventState::KeyDown)
 				{
-					GetKeyPressQueue().AddTask(KeyEventType::Mouse, UINT(2));
+					GetKeyPressQueue().AddTask(KeyEventType::Mouse, 2);
 				}
 				else
 				{
-					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, UINT(2));
+					GetKeyReleaseQueue().AddTask(KeyEventType::Mouse, 2);
 				}
 				break;
 			case InputMap::kMacro_MouseWheelOffset:
@@ -237,12 +238,12 @@ namespace IED
 			}
 		}
 
-		void UIInputHandler::ProcessPressQueues()
+		void UIInputHandler::ProcessPressQueue()
 		{
 			GetKeyPressQueue().ProcessTasks();
 		}
 
-		void UIInputHandler::ProcessReleaseQueues()
+		void UIInputHandler::ProcessReleaseQueue()
 		{
 			GetKeyReleaseQueue().ProcessTasks();
 		}

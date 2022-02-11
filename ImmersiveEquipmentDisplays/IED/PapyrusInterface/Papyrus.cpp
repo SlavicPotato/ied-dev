@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "../Controller/Controller.h"
-#include "../Main.h"
+#include "IED/Controller/Controller.h"
+#include "IED/Main.h"
 
 #include "Papyrus.h"
 #include "PapyrusCommon.h"
@@ -88,21 +88,21 @@ namespace IED
 			a_registry->RegisterFunction(
 				new NativeFunction0<StaticFunctionTag, std::uint32_t>(
 					"GetVersion",
-					"IED",
+					SCRIPT_NAME,
 					GetVersion,
 					a_registry));
 
 			a_registry->RegisterFunction(
 				new NativeFunction2<StaticFunctionTag, void, Actor*, BSFixedString>(
 					"AddActorBlock",
-					"IED",
+					SCRIPT_NAME,
 					AddActorBlock,
 					a_registry));
 
 			a_registry->RegisterFunction(
 				new NativeFunction2<StaticFunctionTag, void, Actor*, BSFixedString>(
 					"RemoveActorBlock",
-					"IED",
+					SCRIPT_NAME,
 					RemoveActorBlock,
 					a_registry));
 
@@ -116,21 +116,21 @@ namespace IED
 			a_registry->RegisterFunction(
 				new NativeFunction0<StaticFunctionTag, void>(
 					"EvaluateAll",
-					"IED",
+					SCRIPT_NAME,
 					EvaluateAll,
 					a_registry));
 
 			a_registry->RegisterFunction(
 				new NativeFunction1<StaticFunctionTag, void, Actor*>(
 					"Reset",
-					"IED",
+					SCRIPT_NAME,
 					Reset,
 					a_registry));
 
 			a_registry->RegisterFunction(
 				new NativeFunction0<StaticFunctionTag, void>(
 					"ResetAll",
-					"IED",
+					SCRIPT_NAME,
 					ResetAll,
 					a_registry));
 

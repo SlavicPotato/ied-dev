@@ -84,7 +84,7 @@ namespace IED
 				UpdateFlags(a_in);
 				transform.Update(a_in);
 
-				resetTriggerFlags = a_in.flags & Data::FlagsBase::kResetTriggerFlags;
+				resetTriggerFlags = a_in.flags & Data::BaseFlags::kResetTriggerFlags;
 			}
 
 			void UpdateFlags(
@@ -93,13 +93,13 @@ namespace IED
 				// gross but efficient
 
 				static_assert(
-					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::FlagsBase>> &&
-					stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::FlagsBase::kPlaySound)) &&
-					stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::FlagsBase::kSyncReferenceTransform)));
+					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::BaseFlags>> &&
+					stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::BaseFlags::kPlaySound)) &&
+					stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::BaseFlags::kSyncReferenceTransform)));
 
 				flags =
 					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
-					static_cast<ObjectEntryFlags>((a_in.flags & (Data::FlagsBase::kPlaySound | Data::FlagsBase::kSyncReferenceTransform)));
+					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
 
 			void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
@@ -125,7 +125,7 @@ namespace IED
 			std::list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
 			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			//effectShaderData_t effectShaderData;
-			stl::flag<Data::FlagsBase> resetTriggerFlags{ Data::FlagsBase::kNone };
+			stl::flag<Data::BaseFlags> resetTriggerFlags{ Data::BaseFlags::kNone };
 			bool atmReference{ true };
 		};
 
@@ -172,7 +172,7 @@ namespace IED
 
 	class IObjectManager;
 	class Controller;
-	class NodeProcessorTask;
+	class ActorProcessorTask;
 	class INodeOverride;
 
 	enum class ActorObjectHolderFlags : std::uint32_t
@@ -272,7 +272,7 @@ namespace IED
 	{
 		friend class IObjectManager;
 		friend class Controller;
-		friend class NodeProcessorTask;
+		friend class ActorProcessorTask;
 		friend class ObjectManagerData;
 
 		struct monitorNodeEntry_t
@@ -361,6 +361,16 @@ namespace IED
 		[[nodiscard]] inline constexpr const auto& GetWeapNodes() const noexcept
 		{
 			return m_weapNodes;
+		}
+
+		[[nodiscard]] inline constexpr bool IsCellAttached() const noexcept
+		{
+			return m_cellAttached;
+		}
+
+		inline constexpr void UpdateCellAttached()
+		{
+			m_cellAttached = m_actor->IsParentCellAttached();
 		}
 
 		inline void RequestTransformUpdateDefer() const noexcept
@@ -460,6 +470,9 @@ namespace IED
 		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_formid;
+
+		bool m_cellAttached{ false };
+		bool m_inInterior{ false };
 
 		IObjectManager& m_owner;
 	};

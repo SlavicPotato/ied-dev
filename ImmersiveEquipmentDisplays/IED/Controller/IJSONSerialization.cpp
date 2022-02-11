@@ -128,9 +128,9 @@ namespace IED
 		{
 			if (auto it = e.second.find(StringHolder::GetSingleton().IED); it != e.second.end())
 			{
-				auto& x = a_out.try_emplace(e.first);
-
-				x.first->second.insert_or_assign(it->first, it->second);
+				a_out.try_emplace(e.first)
+					.first->second
+					.insert_or_assign(it->first, std::move(it->second));
 			}
 		}
 	}
@@ -174,7 +174,9 @@ namespace IED
 
 		for (std::size_t i = 0; i < std::size(gd); i++)
 		{
-			if constexpr (std::is_same_v<Ti, Data::configStoreCustom_t>)
+			if constexpr (std::is_same_v<
+							  Ti,
+							  Data::configStoreCustom_t>)
 			{
 				MergeConfig(
 					std::move(gd[i]),

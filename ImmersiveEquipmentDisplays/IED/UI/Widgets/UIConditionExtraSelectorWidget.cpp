@@ -10,6 +10,7 @@ namespace IED
 
 			{ Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield },
 			{ Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead },
+			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
 
 		} };
 
@@ -66,6 +67,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::CanDualWield);
 			case Data::ExtraConditionType::kIsDead:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsDead);
+			case Data::ExtraConditionType::kInInterior:
+				return LS(UIConditionExtraSelectorWidgetStrings::InInterior);
 			default:
 				return nullptr;
 			}

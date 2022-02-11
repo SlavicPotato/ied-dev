@@ -296,7 +296,7 @@ namespace IED
 
 			auto& data = params->entry.second.get(params->sex);
 
-			const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
+			const bool disabled = data.flags.test(Data::BaseFlags::kDisabled) &&
 			                      data.equipmentOverrides.empty();
 
 			UICommon::PushDisabled(disabled);
@@ -642,11 +642,11 @@ namespace IED
 
 						if (a_switch)
 						{
-							data.flags.clear(Data::FlagsBase::kDisabled);
+							data.flags.clear(Data::BaseFlags::kDisabled);
 						}
 						else
 						{
-							data.flags.set(Data::FlagsBase::kDisabled);
+							data.flags.set(Data::BaseFlags::kDisabled);
 						}
 
 						SingleSlotConfigUpdateParams params{ slot, a_sex, *slotData };
@@ -834,7 +834,7 @@ namespace IED
 		{
 			auto& data = a_params.entry.second.get(a_params.sex);
 
-			const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
+			const bool disabled = data.flags.test(Data::BaseFlags::kDisabled) &&
 			                      data.equipmentOverrides.empty();
 
 			UICommon::PushDisabled(disabled);

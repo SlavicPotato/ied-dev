@@ -25,7 +25,7 @@ namespace IED
 			const char* condition_type_to_desc(Data::ExtraConditionType a_type);
 
 		private:
-			using data_type = std::array<std::pair<Data::ExtraConditionType, UIConditionExtraSelectorWidgetStrings>, 2>;
+			using data_type = std::array<std::pair<Data::ExtraConditionType, UIConditionExtraSelectorWidgetStrings>, 3>;
 
 			static data_type m_data;
 		};

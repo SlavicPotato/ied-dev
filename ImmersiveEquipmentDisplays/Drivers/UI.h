@@ -72,7 +72,10 @@ namespace IED
 
 				kResetInput = 1ui8 << 0,
 				kStyle = 1ui8 << 1,
-				kStyleAlpha = 1ui8 << 2
+				kStyleAlpha = 1ui8 << 2,
+
+				kStyleMask = kStyle |
+				             kStyleAlpha
 			};
 
 			static void Initialize();
@@ -159,8 +162,8 @@ namespace IED
 				m_Instance.m_conf.alpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyleAlpha);
 			}
-			
-			static void SetBGAlpha(const stl::optional<float> &a_value) noexcept
+
+			static void SetBGAlpha(const stl::optional<float>& a_value) noexcept
 			{
 				IScopedLock lock(m_Instance.m_lock);
 				m_Instance.m_conf.bgAlpha = a_value;
@@ -282,7 +285,7 @@ namespace IED
 			bool m_imInitialized{ false };
 			bool m_suspended{ true };
 
-			IOUserData m_ioUserData;
+			SKMP_ImGuiUserData m_ioUserData;
 			UIFontUpdateData m_fontUpdateData;
 
 			font_data_container m_fontData;
@@ -295,7 +298,7 @@ namespace IED
 
 			std::uint64_t m_frameCount{ 0 };
 
-			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone};
+			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
 
 			WCriticalSection m_lock;
 

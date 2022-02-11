@@ -49,6 +49,11 @@ namespace IED
 				extraItemData_t extraEquipped;
 			};
 
+			[[nodiscard]] inline constexpr bool IsSlotEquipped(ObjectSlotExtra a_slot) const noexcept
+			{
+				return (equippedTypeFlags[stl::underlying(a_slot)] & InventoryPresenceFlags::kSet) == InventoryPresenceFlags::kSet;
+			}
+
 			using container_type = std::unordered_map<Game::FormID, itemData_t>;
 
 			container_type forms;

@@ -279,6 +279,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIAboutModal.h" />
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
+    <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h" />
     <ClInclude Include="IED\UI\UILogStrings.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.h" />
@@ -341,7 +342,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\IObjectManager.h" />
     <ClInclude Include="IED\Controller\ISound.h" />
     <ClInclude Include="IED\Controller\IUI.h" />
-    <ClInclude Include="IED\Controller\NodeProcessorTask.h" />
+    <ClInclude Include="IED\Controller\ActorProcessorTask.h" />
     <ClInclude Include="IED\Controller\NodeOverrideData.h" />
     <ClInclude Include="IED\Controller\ObjectEntryStatus.h" />
     <ClInclude Include="IED\Data.h" />
@@ -570,6 +571,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
+    <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp" />
@@ -605,7 +607,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IObjectManager.cpp" />
     <ClCompile Include="IED\Controller\ISound.cpp" />
     <ClCompile Include="IED\Controller\IUI.cpp" />
-    <ClCompile Include="IED\Controller\NodeProcessorTask.cpp" />
+    <ClCompile Include="IED\Controller\ActorProcessorTask.cpp" />
     <ClCompile Include="IED\Controller\NodeOverrideData.cpp" />
     <ClCompile Include="IED\Data.cpp" />
     <ClCompile Include="IED\EngineExtensions.cpp" />

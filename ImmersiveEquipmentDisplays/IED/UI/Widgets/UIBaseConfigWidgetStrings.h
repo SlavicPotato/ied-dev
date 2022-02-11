@@ -19,6 +19,7 @@ namespace IED
 			EmptyNodeWarning = 4008,
 			KeepTorchFlame = 4009,
 			UseWorldModel = 4010,
+			IgnoreRaceEquipTypes = 4011,
 		};
 	}
 }

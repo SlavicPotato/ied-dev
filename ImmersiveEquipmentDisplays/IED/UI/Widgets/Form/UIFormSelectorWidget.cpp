@@ -290,7 +290,7 @@ namespace IED
 
 		bool UIFormSelectorWidget::IsEntryValid(const IFormDatabase::entry_t& a_entry) const
 		{
-			return (a_entry.flags & m_requiredFlags) == m_requiredFlags;
+			return a_entry.flags.test(m_requiredFlags);
 		}
 
 		bool UIFormSelectorWidget::IsCurrentValid() const noexcept

@@ -8,8 +8,9 @@
 #include "IED/ConfigOverride.h"
 #include "IED/StringHolder.h"
 
-#include "IED/UI//UIFormLookupInterface.h"
-#include "IED/UI//UINotificationInterface.h"
+#include "IED/UI/UIFormBrowserCommonFilters.h"
+#include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/UINotificationInterface.h"
 
 #include "Form/UIFormFilterWidget.h"
 #include "Form/UIFormSelectorWidget.h"
@@ -115,7 +116,7 @@ namespace IED
 
 			void PropagateFlagToEquipmentOverrides(
 				Data::configBase_t* a_data,
-				Data::FlagsBase a_mask);
+				Data::BaseFlags a_mask);
 
 		private:
 			virtual void DrawExtraFlags(
@@ -207,11 +208,6 @@ namespace IED
 			struct
 			{
 				std::shared_ptr<const UIFormBrowser::tab_filter_type> form_common;
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> furniture;
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> race;
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> actor;
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> npc;
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> quest;
 			} m_type_filters;
 
 			Controller& m_controller;
@@ -246,32 +242,6 @@ namespace IED
 			      ScrollItem::kTypeID,
 			      SpellItem::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
-
-			m_type_filters.furniture = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>{
-					TESFurniture::kTypeID });
-
-			m_type_filters.race = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				{ TESRace::kTypeID });
-
-			m_type_filters.actor = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				{ Actor::kTypeID });
-
-			m_type_filters.npc = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				{ TESNPC::kTypeID });
-
-			m_type_filters.quest = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				{ TESQuest::kTypeID });
 
 			m_condParamEditor.SetExtraInterface(this);
 
@@ -356,7 +326,7 @@ namespace IED
 
 			ImGui::PopID();
 
-			const bool disabled = a_data.flags.test(Data::FlagsBase::kDisabled) &&
+			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled) &&
 			                      a_data.equipmentOverrides.empty();
 
 			UICommon::PushDisabled(disabled);
@@ -472,7 +442,7 @@ namespace IED
 						ffparams,
 						a_data.filters->actorFilter,
 						[&] {
-							m_ffFormSelector.SetAllowedTypes(m_type_filters.actor);
+							m_ffFormSelector.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
 							m_ffFormSelector.SetFormBrowserEnabled(false);
 						});
 
@@ -485,7 +455,7 @@ namespace IED
 						ffparams,
 						a_data.filters->npcFilter,
 						[&] {
-							m_ffFormSelector.SetAllowedTypes(m_type_filters.npc);
+							m_ffFormSelector.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 							m_ffFormSelector.SetFormBrowserEnabled(true);
 						});
 
@@ -498,7 +468,7 @@ namespace IED
 						ffparams,
 						a_data.filters->raceFilter,
 						[&] {
-							m_ffFormSelector.SetAllowedTypes(m_type_filters.race);
+							m_ffFormSelector.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
 							m_ffFormSelector.SetFormBrowserEnabled(true);
 						});
 
@@ -547,7 +517,7 @@ namespace IED
 		template <class T>
 		void UIBaseConfigWidget<T>::PropagateFlagToEquipmentOverrides(
 			Data::configBase_t* a_data,
-			Data::FlagsBase a_mask)
+			Data::BaseFlags a_mask)
 		{
 			if (!a_data)
 			{
@@ -576,7 +546,7 @@ namespace IED
 		{
 			auto storecc = BaseConfigStoreCC() && a_storecc;
 
-			const bool disabled = a_data.flags.test(Data::FlagsBase::kDisabled);
+			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled);
 
 			ImGui::PushID("bc_flags");
 			{
@@ -605,11 +575,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(CommonStrings::Disabled, "1"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kDisabled)))
+							stl::underlying(Data::BaseFlags::kDisabled)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kDisabled);
+							Data::BaseFlags::kDisabled);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
@@ -619,11 +589,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::HideInFurniture, "2"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kHideIfUsingFurniture)))
+							stl::underlying(Data::BaseFlags::kHideIfUsingFurniture)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kHideIfUsingFurniture);
+							Data::BaseFlags::kHideIfUsingFurniture);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
@@ -632,11 +602,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::HideLayingDown, "3"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kHideLayingDown)))
+							stl::underlying(Data::BaseFlags::kHideLayingDown)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kHideLayingDown);
+							Data::BaseFlags::kHideLayingDown);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
@@ -645,11 +615,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(CommonStrings::kPlaySound, "4"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kPlaySound)))
+							stl::underlying(Data::BaseFlags::kPlaySound)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kPlaySound);
+							Data::BaseFlags::kPlaySound);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
@@ -657,43 +627,57 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::RemoveScabbard, "5"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kRemoveScabbard)))
+							stl::underlying(Data::BaseFlags::kRemoveScabbard)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kRemoveScabbard);
+							Data::BaseFlags::kRemoveScabbard);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
 					DrawTip(UITip::RemoveScabbard);
 
-					ImGui::NextColumn();
-
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::DropOnDeath, "6"),
+							LS(UIBaseConfigString::IgnoreRaceEquipTypes, "6"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kDropOnDeath)))
+							stl::underlying(Data::BaseFlags::kIgnoreRaceEquipTypes)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kDropOnDeath);
+							Data::BaseFlags::kIgnoreRaceEquipTypes);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					}
+
+					DrawTipWarn(UITip::IgnoreRaceEquipTypesSlot);
+
+					ImGui::NextColumn();
+
+					if (ImGui::CheckboxFlagsT(
+							LS(UIBaseConfigString::DropOnDeath, "7"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::BaseFlags::kDropOnDeath)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kDropOnDeath);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
 					DrawTip(UITip::DropOnDeath);
 
-					const bool atmReference = a_data.flags.test(Data::FlagsBase::kReferenceMode);
+					const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
 
 					UICommon::PushDisabled(!atmReference);
 
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::SyncReference, "8"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kSyncReferenceTransform)))
+							stl::underlying(Data::BaseFlags::kSyncReferenceTransform)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kSyncReferenceTransform);
+							Data::BaseFlags::kSyncReferenceTransform);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
@@ -705,11 +689,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(CommonStrings::Invisible, "9"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kInvisible)))
+							stl::underlying(Data::BaseFlags::kInvisible)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kInvisible);
+							Data::BaseFlags::kInvisible);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
@@ -719,25 +703,25 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::Use1pWeaponModels, "A"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kLoad1pWeaponModel)))
+							stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kLoad1pWeaponModel);
+							Data::BaseFlags::kLoad1pWeaponModel);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
 
 					DrawTip(UITip::Load1pWeaponModel);
-					
+
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::UseWorldModel, "B"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kUseWorldModel)))
+							stl::underlying(Data::BaseFlags::kUseWorldModel)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kUseWorldModel);
+							Data::BaseFlags::kUseWorldModel);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
@@ -747,11 +731,11 @@ namespace IED
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::KeepTorchFlame, "C"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::FlagsBase::kKeepTorchFlame)))
+							stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kKeepTorchFlame);
+							Data::BaseFlags::kKeepTorchFlame);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
@@ -812,13 +796,13 @@ namespace IED
 
 					if (ImGui::RadioButton(
 							LS(CommonStrings::Reference, "1"),
-							a_data.flags.test(Data::FlagsBase::kReferenceMode)))
+							a_data.flags.test(Data::BaseFlags::kReferenceMode)))
 					{
-						a_data.flags.set(Data::FlagsBase::kReferenceMode);
+						a_data.flags.set(Data::BaseFlags::kReferenceMode);
 
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kReferenceMode);
+							Data::BaseFlags::kReferenceMode);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
@@ -831,13 +815,13 @@ namespace IED
 
 					if (ImGui::RadioButton(
 							LS(CommonStrings::Parent, "2"),
-							!a_data.flags.test(Data::FlagsBase::kReferenceMode)))
+							!a_data.flags.test(Data::BaseFlags::kReferenceMode)))
 					{
-						a_data.flags.clear(Data::FlagsBase::kReferenceMode);
+						a_data.flags.clear(Data::BaseFlags::kReferenceMode);
 
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::FlagsBase::kReferenceMode);
+							Data::BaseFlags::kReferenceMode);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
@@ -850,7 +834,7 @@ namespace IED
 
 					if (DrawNodeSelector(
 							LS(UIWidgetCommonStrings::TargetNode, "ns"),
-							!a_data.flags.test(Data::FlagsBase::kReferenceMode),
+							!a_data.flags.test(Data::BaseFlags::kReferenceMode),
 							a_data.targetNode))
 					{
 						PropagateToEquipmentOverrides(
@@ -1186,7 +1170,6 @@ namespace IED
 						}
 						break;
 					case Data::EquipmentOverrideConditionType::Form:
-					case Data::EquipmentOverrideConditionType::Race:
 					case Data::EquipmentOverrideConditionType::Actor:
 					case Data::EquipmentOverrideConditionType::NPC:
 					case Data::EquipmentOverrideConditionType::Keyword:
@@ -1204,6 +1187,8 @@ namespace IED
 						break;
 					case Data::EquipmentOverrideConditionType::Furniture:
 					case Data::EquipmentOverrideConditionType::Group:
+					case Data::EquipmentOverrideConditionType::Location:
+					case Data::EquipmentOverrideConditionType::Race:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1375,7 +1360,6 @@ namespace IED
 							}
 							break;
 						case Data::EquipmentOverrideConditionType::Form:
-						case Data::EquipmentOverrideConditionType::Race:
 						case Data::EquipmentOverrideConditionType::Actor:
 						case Data::EquipmentOverrideConditionType::NPC:
 						case Data::EquipmentOverrideConditionType::Keyword:
@@ -1392,6 +1376,8 @@ namespace IED
 							break;
 						case Data::EquipmentOverrideConditionType::Furniture:
 						case Data::EquipmentOverrideConditionType::Group:
+						case Data::EquipmentOverrideConditionType::Location:
+						case Data::EquipmentOverrideConditionType::Race:
 
 							it = a_entry.emplace(
 								it,
@@ -1478,7 +1464,7 @@ namespace IED
 								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1493,7 +1479,7 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::EquipmentSlotExtra>(
 									e.slot);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1518,10 +1504,8 @@ namespace IED
 								break;
 							case Data::EquipmentOverrideConditionType::Race:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1536,7 +1520,7 @@ namespace IED
 								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
@@ -1549,7 +1533,7 @@ namespace IED
 								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
@@ -1562,7 +1546,7 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 
@@ -1575,7 +1559,7 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::BipedSlot>(
 									e.bipedSlot);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form);
+									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
@@ -1607,6 +1591,19 @@ namespace IED
 								tdesc = LS(CommonStrings::Extra);
 
 								break;
+							case Data::EquipmentOverrideConditionType::Location:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
+								tdesc = LS(CommonStrings::Location);
+
+								break;
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -1615,7 +1612,7 @@ namespace IED
 
 							if (!vdesc)
 							{
-								vdesc = "N/A";
+								vdesc = "";
 							}
 
 							ImGui::TextUnformatted(tdesc);
@@ -1839,25 +1836,10 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Race, "8"))
+					if (LCG_MI(CommonStrings::Race, "8"))
 					{
-						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Race);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Form, "fs"),
-								m_aoNewEntryRaceID))
-						{
-							if (m_aoNewEntryRaceID)
-							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryRaceID;
-								result.entryType = Data::EquipmentOverrideConditionType::Race;
-
-								ImGui::CloseCurrentPopup();
-							}
-						}
-
-						ImGui::EndMenu();
+						result.action = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Race;
 					}
 
 					if (LCG_MI(CommonStrings::Furniture, "9"))
@@ -1889,7 +1871,13 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "B"))
+					if (LCG_MI(CommonStrings::Location, "B"))
+					{
+						result.action = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Location;
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "C"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -1904,7 +1892,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "C"))
+					if (LCG_MI(CommonStrings::Group, "D"))
 					{
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
@@ -1915,14 +1903,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "D"))
+				if (LCG_MI(CommonStrings::Delete, "E"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "E"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "F"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -1931,7 +1919,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "E"))
+					if (LCG_MI(CommonStrings::Copy, "F"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -1939,7 +1927,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "F"),
+							LS(CommonStrings::PasteOver, "G"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2164,7 +2152,7 @@ namespace IED
 				result |= ImGui::CheckboxFlagsT(
 					LS(CommonStrings::LayingDown, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kLayingDown));
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
 				break;
 
@@ -2173,9 +2161,18 @@ namespace IED
 				result |= ImGui::CheckboxFlagsT(
 					LS(UINodeOverrideEditorStrings::MatchSkin, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSkin));
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
 				DrawTip(UITip::MatchSkin);
+
+				break;
+
+			case Data::EquipmentOverrideConditionType::Location:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::IsChildLoc, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
 				break;
 			}
@@ -2201,6 +2198,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Type:
 			case Data::EquipmentOverrideConditionType::Furniture:
 			case Data::EquipmentOverrideConditionType::BipedSlot:
+			case Data::EquipmentOverrideConditionType::Location:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -2210,7 +2208,7 @@ namespace IED
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
 					if (match->fbf.type == Data::EquipmentOverrideConditionType::BipedSlot &&
-					    match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchSkin))
+					    match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
 					{
 						a_args.disable = true;
 					}
@@ -2230,12 +2228,33 @@ namespace IED
 				break;
 
 			case Data::EquipmentOverrideConditionType::Form:
-			case Data::EquipmentOverrideConditionType::Race:
 
 				if (a_item == ConditionParamItem::Keyword)
 				{
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+
+				break;
+			case Data::EquipmentOverrideConditionType::Race:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::Keyword)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
@@ -2257,23 +2276,27 @@ namespace IED
 			switch (a_type)
 			{
 			case Data::EquipmentOverrideConditionType::Furniture:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.furniture);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Furniture));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Race:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.race);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Actor:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.actor);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			case Data::EquipmentOverrideConditionType::NPC:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.npc);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Quest:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.quest);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Quest));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Location:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Location));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

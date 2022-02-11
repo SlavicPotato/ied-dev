@@ -17,6 +17,8 @@ namespace IED
 		mutable stl::optional<TESObjectARMO*> actorSkin;
 		mutable stl::optional<bool> canDualWield;
 		mutable stl::optional<bool> isDead;
+		mutable stl::optional<bool> inInterior;
+		mutable stl::optional<BGSLocation*> location;
 
 		bool get_using_furniture() const
 		{
@@ -148,6 +150,40 @@ namespace IED
 			}
 
 			return *isDead;
+		}
+
+		constexpr bool get_in_interior() const
+		{
+			if (!inInterior)
+			{
+				inInterior = actor->IsInInteriorCell();
+			}
+
+			return *inInterior;
+		}
+
+		constexpr auto get_location() const
+		{
+			if (!location)
+			{
+				if (actor == *g_thePlayer)
+				{
+					location = (*g_thePlayer)->currentLocation;
+				}
+				else
+				{
+					if (auto extraLocation = actor->extraData.Get<ExtraLocation>())
+					{
+						location = extraLocation->location;
+					}
+					else
+					{
+						location = nullptr;
+					}
+				}
+			}
+
+			return *location;
 		}
 	};
 }

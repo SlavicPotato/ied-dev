@@ -18,12 +18,14 @@ namespace IED
 			static ObjectSlot GetObjectSlotLeft(TESObjectWEAP* a_form) noexcept;
 			static ObjectSlot GetObjectSlotLeft(TESObjectLIGH* a_form) noexcept;
 			static ObjectSlot GetObjectSlot(TESObjectARMO* a_form) noexcept;
+			static ObjectSlot GetObjectSlot(TESAmmo* a_form) noexcept;
 			static ObjectSlot GetObjectSlot(TESForm* a_form) noexcept;
 			static ObjectSlot GetObjectSlotLeft(TESForm* a_form) noexcept;
 
 			static ObjectType GetItemType(TESObjectARMO* a_form) noexcept;
 			static ObjectType GetItemType(TESObjectWEAP* a_form) noexcept;
 			static ObjectType GetItemType(TESObjectLIGH* a_form) noexcept;
+			static ObjectType GetItemType(TESAmmo* a_form) noexcept;
 			static ObjectType GetItemType(TESForm* a_form) noexcept;
 
 			static ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept;

@@ -41,9 +41,12 @@ namespace IED
 			      { UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
 			      { UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
 			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
-			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID } }
+			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID },
+			      { UIFormBrowserStrings::Locations, BGSLocation::kTypeID }
 
+			    }
 			}
+
 		{
 			m_formIDFilter.SetFlags(
 				ImGuiInputTextFlags_EnterReturnsTrue |

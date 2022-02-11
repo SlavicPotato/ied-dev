@@ -422,7 +422,7 @@
     <ClInclude Include="IED\ActorInfoEntry.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\NodeProcessorTask.h">
+    <ClInclude Include="IED\Controller\ActorProcessorTask.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UITips.h">
@@ -1040,6 +1040,9 @@
     <ClInclude Include="ImGui\Styles\dark-red.h">
       <Filter>Source\ImGui\Styles</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1228,7 +1231,7 @@
     <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Controller\NodeProcessorTask.cpp">
+    <ClCompile Include="IED\Controller\ActorProcessorTask.cpp">
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UITips.cpp">
@@ -1639,6 +1642,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp">
+      <Filter>Source\IED\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

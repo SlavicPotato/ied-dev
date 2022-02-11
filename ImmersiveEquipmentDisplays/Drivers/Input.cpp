@@ -24,8 +24,8 @@ namespace IED
 				// nasty, implement this properly
 				if (auto pc = PlayerControls::GetSingleton())
 				{
-					pc->lookInput = { 0, 0 };
 					pc->moveInput = { 0, 0 };
+					pc->lookInput = { 0, 0 };
 					pc->prevMove = { 0, 0 };
 					pc->prevLook = { 0, 0 };
 				}
@@ -56,7 +56,7 @@ namespace IED
 					{
 						continue;
 					}
-
+					
 					if (!keyCode || keyCode >= InputMap::kMaxMacros)
 					{
 						continue;

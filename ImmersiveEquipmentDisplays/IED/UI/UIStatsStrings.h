@@ -9,6 +9,7 @@ namespace IED
 		enum class UIStatsStrings : Localization::StringID
 		{
 			TrackedActors = 4700,
+			CellAttached = 4701,
 		};
 	}
 }

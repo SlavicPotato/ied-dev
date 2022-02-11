@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "NodeProcessorTask.h"
+#include "ActorProcessorTask.h"
 
 #include "Controller.h"
 #include "IED/Inventory.h"
@@ -8,12 +8,12 @@
 
 namespace IED
 {
-	NodeProcessorTask::NodeProcessorTask(
+	ActorProcessorTask::ActorProcessorTask(
 		Controller& a_controller) :
 		m_controller(a_controller)
 	{}
 
-	void NodeProcessorTask::UpdateRef(
+	void ActorProcessorTask::UpdateRef(
 		const ActorObjectHolder& a_record,
 		objectEntryBase_t& a_entry)
 	{
@@ -99,7 +99,7 @@ namespace IED
 		}
 	}
 
-	void NodeProcessorTask::ProcessTransformUpdateRequest(
+	void ActorProcessorTask::ProcessTransformUpdateRequest(
 		const ActorObjectHolder& a_data)
 	{
 		if (!a_data.m_flags.test(ActorObjectHolderFlags::kWantTransformUpdate))
@@ -120,7 +120,7 @@ namespace IED
 		}
 	}
 
-	void NodeProcessorTask::ProcessEvalRequest(ActorObjectHolder& a_data)
+	void ActorProcessorTask::ProcessEvalRequest(ActorObjectHolder& a_data)
 	{
 		if (!a_data.m_flags.test(ActorObjectHolderFlags::kWantEval))
 		{
@@ -141,7 +141,7 @@ namespace IED
 		}
 	}
 
-	bool NodeProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data)
+	bool ActorProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data)
 	{
 		bool result = false;
 
@@ -173,7 +173,7 @@ namespace IED
 		return result;
 	}
 
-	void NodeProcessorTask::Run()
+	void ActorProcessorTask::Run()
 	{
 		IScopedLock lock(m_controller.m_lock);
 
@@ -181,6 +181,25 @@ namespace IED
 
 		for (auto& e : m_controller.m_objects)
 		{
+			if (!e.second.m_actor->formID)
+			{
+				continue;
+			}
+
+			auto cell = e.second.m_actor->parentCell;
+
+			if (bool interior = cell && cell->IsInterior();
+			    interior != e.second.m_inInterior)
+			{
+				e.second.m_inInterior = interior;
+				e.second.RequestEvalDefer();
+			}
+
+			if (!(e.second.m_cellAttached = cell && cell->IsAttached()))
+			{
+				continue;
+			}
+
 			ProcessEvalRequest(e.second);
 
 			if (CheckMonitorNodes(e.second))

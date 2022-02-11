@@ -15,8 +15,12 @@ namespace IED
 		return equippedItemInfo_t{
 			formLeft,
 			formRight,
-			formLeft ? ItemData::GetObjectSlotLeft(formLeft) : ObjectSlot::kMax,
-			formRight ? ItemData::GetObjectSlot(formRight) : ObjectSlot::kMax
+			formLeft ?
+                ItemData::GetObjectSlotLeft(formLeft) :
+                ObjectSlot::kMax,
+			formRight ?
+                ItemData::GetObjectSlot(formRight) :
+                ObjectSlot::kMax
 		};
 	}
 
@@ -82,7 +86,6 @@ namespace IED
 			a_candidates.begin(),
 			a_candidates.end(),
 			[&](const auto& a_item) {
-
 				if (checkCannotWear && a_item.item->cannotWear)
 				{
 					return false;

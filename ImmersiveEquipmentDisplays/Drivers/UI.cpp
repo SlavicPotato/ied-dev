@@ -147,7 +147,7 @@ namespace IED
 			if (m_currentStyle != m_conf.style ||
 			    m_updateFlags.test(UpdateFlags::kStyle))
 			{
-				m_updateFlags.clear(UpdateFlags::kStyle);
+				m_updateFlags.clear(UpdateFlags::kStyleMask);
 				m_currentStyle = m_conf.style;
 				UpdateStyle();
 			}
@@ -158,7 +158,7 @@ namespace IED
 				UpdateStyleAlpha();
 			}
 
-			ProcessPressQueues();
+			ProcessPressQueue();
 
 			::ImGui_ImplDX11_NewFrame();
 			::ImGui_ImplWin32_NewFrame();
@@ -190,7 +190,7 @@ namespace IED
 			ImGui::Render();
 			::ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-			ProcessReleaseQueues();
+			ProcessReleaseQueue();
 
 			m_frameCount++;
 
@@ -280,6 +280,11 @@ namespace IED
 
 		bool UI::AddTask(std::uint32_t a_id, UIRenderTaskBase* a_task)
 		{
+			if (!a_task)
+			{
+				return false;
+			}
+
 			IScopedLock lock(m_Instance.m_lock);
 
 			if (!m_Instance.m_imInitialized)
@@ -413,9 +418,9 @@ namespace IED
 		{
 			bool ok = false;
 
-			auto it = m_Instance.m_fontData.find(a_font);
+			auto it = m_fontData.find(a_font);
 
-			if (it == m_Instance.m_fontData.end())
+			if (it == m_fontData.end())
 			{
 				Error("%s: font '%s' not found", __FUNCTION__, a_font.c_str());
 			}
@@ -430,19 +435,16 @@ namespace IED
 
 			if (ok)
 			{
-				m_Instance.m_currentFont = std::addressof(*it);
-				return true;
+				m_currentFont = std::addressof(*it);
 			}
 			else
 			{
-				auto it = m_Instance.m_fontData.find(m_sDefaultFont);
+				it = m_fontData.find(m_sDefaultFont);
 
-				ASSERT(it != m_Instance.m_fontData.end());
+				ASSERT(it != m_fontData.end());
 				ASSERT(it->second.font->IsLoaded());
 
-				m_Instance.m_currentFont = std::addressof(*it);
-
-				return false;
+				m_currentFont = std::addressof(*it);
 			}
 
 			return ok;

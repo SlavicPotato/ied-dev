@@ -450,72 +450,22 @@ namespace IED
 			break;
 		case Data::NodeOverrideConditionType::BipedSlot:
 			{
-				if (a_data.bipedSlot >= Biped::kTotal)
-				{
-					return false;
-				}
-
-				auto biped = a_params.get_biped();
-				if (!biped)
-				{
-					return false;
-				}
-
-				auto& e = biped->objects[a_data.bipedSlot];
-
-				auto form = e.item;
-				if (!form || e.addon == form)
-				{
-					return false;
-				}
-
-				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSkin))
-				{
-					if (auto skin = a_params.get_actor_skin())
-					{
-						if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-						    (form == skin))
+				return Conditions::match_biped<
+					Data::configNodeOverrideCondition_t,
+					Data::NodeOverrideConditionFlags>(
+					a_params,
+					a_data,
+					[&](TESForm* a_form) {
+						if (a_form->IsArmor())
 						{
-							return false;
+							auto data = a_params.get_item_data();
+							auto it = data->find(a_form->formID);
+							if (it != data->end())
+							{
+								it->second.matched = true;
+							}
 						}
-					}
-					else
-					{
-						return false;
-					}
-				}
-				else
-				{
-					if (auto& formid = a_data.form.get_id())
-					{
-						if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-						    (form->formID == formid))
-						{
-							return false;
-						}
-					}
-				}
-
-				if (a_data.keyword.get_id())
-				{
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
-					    IFormCommon::HasKeyword(form, a_data.keyword))
-					{
-						return false;
-					}
-				}
-
-				if (form->IsArmor())
-				{
-					auto data = a_params.get_item_data();
-					auto it = data->find(form->formID);
-					if (it != data->end())
-					{
-						it->second.matched = true;
-					}
-				}
-
-				return true;
+					});
 			}
 			break;
 		case Data::NodeOverrideConditionType::Node:
@@ -533,7 +483,7 @@ namespace IED
 					return false;
 				}
 
-				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNodeIgnoreScabbards))
+				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0))
 				{
 					auto sh = a_params.controller.GetBSStringHolder();
 					if (!it->second.has_visible_geometry(sh->m_scb, sh->m_scbLeft))
@@ -553,31 +503,11 @@ namespace IED
 			}
 			break;
 		case Data::NodeOverrideConditionType::Race:
-			{
-				auto& formid = a_data.form.get_id();
 
-				if (!formid)
-				{
-					return false;
-				}
+			return Conditions::match_race<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
-				if (formid != a_params.race->formID)
-				{
-					return false;
-				}
-
-				if (a_data.keyword.get_id())
-				{
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-					    IFormCommon::HasKeyword(a_params.race, a_data.keyword))
-					{
-						return false;
-					}
-				}
-
-				return true;
-			}
-			break;
 		case Data::NodeOverrideConditionType::Actor:
 
 			return Conditions::match_form(a_data.form.get_id(), a_params.actor);
@@ -587,50 +517,20 @@ namespace IED
 			return Conditions::match_form(a_data.form.get_id(), a_params.npc);
 
 		case Data::NodeOverrideConditionType::Furniture:
-			{
-				if (auto& formid = a_data.form.get_id())
-				{
-					auto furn = a_params.get_furniture();
-					if (!furn)
-					{
-						return false;
-					}
 
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1) ==
-					    (furn->formID == formid))
-					{
-						return false;
-					}
-				}
+			return Conditions::match_furniture<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
-				if (a_data.keyword.get_id())
-				{
-					auto furn = a_params.get_furniture();
-					if (!furn)
-					{
-						return false;
-					}
-
-					if (a_data.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
-					    IFormCommon::HasKeyword(furn, a_data.keyword))
-					{
-						return false;
-					}
-				}
-
-				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kLayingDown))
-				{
-					return a_params.get_laying_down();
-				}
-				else
-				{
-					return a_params.get_using_furniture();
-				}
-			}
-			break;
 		case Data::NodeOverrideConditionType::Extra:
 
 			return Conditions::match_extra(a_params, a_data.extraCondType);
+
+		case Data::NodeOverrideConditionType::Location:
+
+			return Conditions::match_location<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}
 
 		return false;
@@ -854,9 +754,9 @@ namespace IED
 		process_offsets(a_data.offsets, xfrm, accumPos, a_params);
 
 		bool update = std::memcmp(
-			std::addressof(a_entry.node->m_localTransform),
-			std::addressof(xfrm),
-			sizeof(NiTransform)) != 0;
+						  std::addressof(a_entry.node->m_localTransform),
+						  std::addressof(xfrm),
+						  sizeof(NiTransform)) != 0;
 
 		a_entry.node->m_localTransform = xfrm;
 
@@ -1151,5 +1051,4 @@ namespace IED
 
 		return *weaponAdjust;
 	}
-
 }

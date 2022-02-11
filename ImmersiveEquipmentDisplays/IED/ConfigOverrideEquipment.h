@@ -35,8 +35,11 @@ namespace IED
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			kLayingDown = 1u << 11,
-			kMatchSkin = 1u << 12,
+			// laying down (Furniture), loc child (Location)
+			kExtraFlag1 = 1u << 11,
+
+			// match skin (Biped)
+			kExtraFlag2 = 1u << 12,
 
 			kNegateMatch1 = 1u << 13,
 			kNegateMatch2 = 1u << 14
@@ -56,7 +59,8 @@ namespace IED
 			Quest,
 			Actor,
 			NPC,
-			Extra
+			Extra,
+			Location
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -161,7 +165,7 @@ namespace IED
 			{
 				fbf.type = EquipmentOverrideConditionType::BipedSlot;
 			}
-			
+
 			equipmentOverrideCondition_t(
 				ExtraConditionType a_type) :
 				extraCondType(a_type)
@@ -172,9 +176,16 @@ namespace IED
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
 			{
-				if (a_matchType == EquipmentOverrideConditionType::Furniture ||
-				    a_matchType == EquipmentOverrideConditionType::Group)
+				if (a_matchType == EquipmentOverrideConditionType::Race || 
+					a_matchType == EquipmentOverrideConditionType::Furniture ||
+				    a_matchType == EquipmentOverrideConditionType::Group ||
+				    a_matchType == EquipmentOverrideConditionType::Location)
 				{
+					if (a_matchType == EquipmentOverrideConditionType::Location)
+					{
+						flags = EquipmentOverrideConditionFlags::kExtraFlag1;
+					}
+
 					fbf.type = a_matchType;
 				}
 				else
@@ -189,7 +200,7 @@ namespace IED
 				EquipmentOverrideConditionFlagsBitfield fbf;
 			};
 
-			configForm_t form;
+			configCachedForm_t form;
 			configCachedForm_t keyword;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 
@@ -209,9 +220,9 @@ namespace IED
 			template <class Archive>
 			void save(Archive& ar, const unsigned int version) const
 			{
-
 				ar& flags.value;
-				ar& form;
+				configForm_t tmp = form.get_id();
+				ar& tmp;
 				ar& slot;
 				ar& keyword;
 				ar& ui32a;
@@ -222,7 +233,9 @@ namespace IED
 			void load(Archive& ar, const unsigned int version)
 			{
 				ar& flags.value;
-				ar& form;
+				configForm_t tmp;
+				ar& tmp;
+				form = tmp;
 				ar& slot;
 				ar& keyword;
 

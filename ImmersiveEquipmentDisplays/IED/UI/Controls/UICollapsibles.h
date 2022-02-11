@@ -101,18 +101,19 @@ namespace IED
 
 			auto& state = data.get(id, a_default);
 
-			ImGuiTreeNodeFlags flags(a_flags);
-
 			if (state)
 			{
-				flags |= ImGuiTreeNodeFlags_DefaultOpen;
+				a_flags |= ImGuiTreeNodeFlags_DefaultOpen;
 			}
 
 			auto context = ImGui::GetCurrentContext();
 
 			stl::snprintf(context->TempBuffer, a_fmt, a_args...);
 
-			bool newState = ImGui::TreeNodeBehavior(id, flags, context->TempBuffer);
+			bool newState = ImGui::TreeNodeBehavior(
+				id,
+				a_flags,
+				context->TempBuffer);
 
 			if (state != newState)
 			{

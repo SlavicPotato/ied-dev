@@ -163,6 +163,7 @@ namespace IED
 
 			kCanDualWield = 0,
 			kIsDead = 1,
+			kInInterior = 2,
 		};
 	}
 }

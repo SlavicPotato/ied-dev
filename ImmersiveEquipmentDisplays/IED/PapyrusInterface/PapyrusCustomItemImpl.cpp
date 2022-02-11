@@ -57,7 +57,7 @@ namespace IED
 
 				for (auto& f : re.first->second())
 				{
-					f.flags.set(FlagsBase::kDisabled);
+					f.flags.set(BaseFlags::kDisabled);
 				}
 
 				return true;
@@ -211,27 +211,27 @@ namespace IED
 				switch (a_attachmentMode)
 				{
 				case 0:
-					e.flags.set(FlagsBase::kReferenceMode);
+					e.flags.set(BaseFlags::kReferenceMode);
 					break;
 				case 1:
 					if (e.targetNode.flags.test(NodeDescriptorFlags::kManaged))
 					{
 						return false;
 					}
-					e.flags.clear(FlagsBase::kReferenceMode);
+					e.flags.clear(BaseFlags::kReferenceMode);
 					break;
 				}
 
 				if (a_syncReference)
 				{
-					e.flags.set(FlagsBase::kSyncReferenceTransform);
+					e.flags.set(BaseFlags::kSyncReferenceTransform);
 				}
 				else
 				{
-					e.flags.clear(FlagsBase::kSyncReferenceTransform);
+					e.flags.clear(BaseFlags::kSyncReferenceTransform);
 				}
 
-				if (e.flags != old && !e.flags.test(FlagsBase::kDisabled))
+				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueReset(a_target, a_class, a_key, a_name);
 				}
@@ -259,11 +259,11 @@ namespace IED
 
 				if (!a_switch)
 				{
-					e.flags.set(FlagsBase::kDisabled);
+					e.flags.set(BaseFlags::kDisabled);
 				}
 				else
 				{
-					e.flags.clear(FlagsBase::kDisabled);
+					e.flags.clear(BaseFlags::kDisabled);
 				}
 
 				QueueEvaluate(a_target, a_class);
@@ -295,7 +295,7 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				if (!e.flags.test(FlagsBase::kReferenceMode) &&
+				if (!e.flags.test(BaseFlags::kReferenceMode) &&
 				    node.flags.test(NodeDescriptorFlags::kManaged))
 				{
 					return false;
@@ -303,7 +303,7 @@ namespace IED
 
 				e.targetNode = std::move(node);
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueAttach(a_target, a_class, a_key, a_name);
 				}
@@ -331,7 +331,7 @@ namespace IED
 
 				e.position = a_position;
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
 				}
@@ -359,7 +359,7 @@ namespace IED
 
 				e.rotation = a_rotation;
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
 				}
@@ -387,7 +387,7 @@ namespace IED
 
 				e.scale = a_scale;
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
 				}
@@ -429,7 +429,7 @@ namespace IED
 					*e.scale = 1.0f;
 				}
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
 				}
@@ -464,7 +464,7 @@ namespace IED
 					e.customFlags.clear(Data::CustomFlags::kIsInInventory);
 				}
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -497,7 +497,7 @@ namespace IED
 
 				e.form = a_form->formID;
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -561,7 +561,7 @@ namespace IED
 					}
 				}
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -599,7 +599,7 @@ namespace IED
 
 				e.extraItems.erase(it);
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -633,7 +633,7 @@ namespace IED
 
 				e.extraItems.erase(e.extraItems.begin() + a_index);
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -691,7 +691,7 @@ namespace IED
 
 				e.modelForm = a_form->formID;
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueReset(a_target, a_class);
 				}
@@ -723,7 +723,7 @@ namespace IED
 
 				e.modelForm = Game::FormID{};
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -755,7 +755,7 @@ namespace IED
 					static_cast<std::uint32_t>(std::clamp(a_max, 0, INT32_MAX)),
 				};
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -810,7 +810,7 @@ namespace IED
 					e.customFlags.clear(Data::CustomFlags::kDisableIfEquipped);
 				}
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -847,7 +847,7 @@ namespace IED
 					e.customFlags.clear(CustomFlags::kLeftWeapon);
 				}
 
-				if (e.customFlags != old && !e.flags.test(FlagsBase::kDisabled))
+				if (e.customFlags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueReset(a_target, a_class, a_key, a_name);
 				}
@@ -885,7 +885,7 @@ namespace IED
 
 				e.chance = std::clamp(a_chance, 0.0f, 100.0f);
 
-				if (!e.flags.test(FlagsBase::kDisabled))
+				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueEvaluate(a_target, a_class);
 				}
@@ -919,7 +919,7 @@ namespace IED
 					return false;
 				}
 
-				return !conf->get(a_sex).flags.test(FlagsBase::kDisabled);
+				return !conf->get(a_sex).flags.test(BaseFlags::kDisabled);
 			}
 
 		}

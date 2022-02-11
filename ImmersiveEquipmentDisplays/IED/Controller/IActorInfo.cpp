@@ -25,6 +25,9 @@ namespace IED
 		}
 
 		a_out.weight = a_actor->GetWeight();
+		a_out.attached = a_actor->IsParentCellAttached();
+
+		a_out.ts = IPerfCounter::Query();
 
 		auto npc = a_actor->baseForm ?
                        a_actor->baseForm->As<TESNPC>() :

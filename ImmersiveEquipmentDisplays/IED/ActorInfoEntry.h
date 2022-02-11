@@ -18,9 +18,11 @@ namespace IED
 	struct actorInfoEntry_t
 	{
 		bool active{ false };
+		bool attached{ false };
 		std::string name;
 		Game::FormID race;
 		float weight;
+		long long ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 

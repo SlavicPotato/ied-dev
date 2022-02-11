@@ -86,6 +86,7 @@ namespace IED
 			case SpellItem::kTypeID:
 			case BGSHeadPart::kTypeID:
 			case BGSExplosion::kTypeID:
+			case BGSLocation::kTypeID:
 				return form;
 			default:
 				return nullptr;

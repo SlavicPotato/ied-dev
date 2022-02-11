@@ -183,7 +183,7 @@ namespace IED
 				{
 					if (const auto& e = get(a_item); e.p1)
 					{
-						GetFormDesc(*static_cast<const Game::FormID*>(e.p1));
+						GetFormDesc(e.As1<const Game::FormID>());
 					}
 					else
 					{
@@ -197,7 +197,7 @@ namespace IED
 					{
 						auto& data = NodeOverrideData::GetCMENodeData();
 
-						auto it = data.find(*static_cast<const stl::fixed_string*>(e.p1));
+						auto it = data.find(e.As1<const stl::fixed_string>());
 						if (it != data.end())
 						{
 							return it->second.desc;
@@ -212,7 +212,7 @@ namespace IED
 					if (const auto& e = get(a_item); e.p1)
 					{
 						return GetFormKeywordExtraDesc(GetBipedSlotDesc(
-							*static_cast<Biped::BIPED_OBJECT*>(e.p1)));
+							e.As1<Biped::BIPED_OBJECT>()));
 					}
 					else
 					{
@@ -225,7 +225,7 @@ namespace IED
 					if (const auto& e = get(a_item); e.p1)
 					{
 						return GetFormKeywordExtraDesc(
-							Data::GetSlotName(*static_cast<Data::ObjectSlot*>(e.p1)));
+							Data::GetSlotName(e.As1<Data::ObjectSlot>()));
 					}
 					else
 					{
@@ -238,7 +238,7 @@ namespace IED
 					if (const auto& e = get(a_item); e.p1)
 					{
 						return GetFormKeywordExtraDesc(
-							Data::GetSlotName(*static_cast<Data::ObjectSlotExtra*>(e.p1)));
+							Data::GetSlotName(e.As1<Data::ObjectSlotExtra>()));
 					}
 					else
 					{
@@ -253,14 +253,14 @@ namespace IED
 					{
 						auto r = GetFormKeywordExtraDesc(nullptr);
 
-						auto match = static_cast<Data::configNodeOverrideCondition_t*>(e.p1);
+						auto& match = e.As1<Data::configNodeOverrideCondition_t>();
 
 						if (r[0] == 0)
 						{
 							stl::snprintf(
 								m_descBuffer2,
 								"LD: %s",
-								match->flags.test(Data::NodeOverrideConditionFlags::kLayingDown) ?
+								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
                                     LS(CommonStrings::True) :
                                     LS(CommonStrings::False));
 						}
@@ -270,7 +270,7 @@ namespace IED
 								m_descBuffer2,
 								"%s, LD: %s",
 								r,
-								match->flags.test(Data::NodeOverrideConditionFlags::kLayingDown) ?
+								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
                                     LS(CommonStrings::True) :
                                     LS(CommonStrings::False));
 						}
@@ -331,12 +331,12 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
 			{
-				a_iform = *static_cast<const Game::FormID*>(e.p1);
+				a_iform = e.As1<Game::FormID>();
 			}
 
 			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
 			{
-				a_ikw = *static_cast<const Game::FormID*>(e.p1);
+				a_ikw = e.As1<Game::FormID>();
 			}
 
 			if (a_iform && a_ikw)

@@ -94,8 +94,8 @@ namespace IED
 				return m_keyReleaseQueue;
 			}
 
-			void ProcessPressQueues();
-			void ProcessReleaseQueues();
+			void ProcessPressQueue();
+			void ProcessReleaseQueue();
 
 			void ResetInput();
 

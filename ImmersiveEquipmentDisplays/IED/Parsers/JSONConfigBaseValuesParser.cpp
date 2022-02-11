@@ -14,7 +14,7 @@ namespace IED
 			Data::configBaseValues_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			a_out.flags = static_cast<Data::FlagsBase>(
+			a_out.flags = static_cast<Data::BaseFlags>(
 				a_in.get("flags", stl::underlying(Data::configBaseValues_t::DEFAULT_FLAGS)).asUInt());
 
 			Parser<Data::NodeDescriptor> nvParser(m_state);

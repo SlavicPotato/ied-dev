@@ -738,7 +738,7 @@ namespace IED
 			{
 				ImGui::Spacing();
 
-				const bool disabled = data.flags.test(Data::FlagsBase::kDisabled) &&
+				const bool disabled = data.flags.test(Data::BaseFlags::kDisabled) &&
 				                      data.equipmentOverrides.empty();
 
 				UICommon::PushDisabled(disabled);

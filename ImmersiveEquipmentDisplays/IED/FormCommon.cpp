@@ -70,8 +70,6 @@ namespace IED
 			return true;
 		case TESObjectLIGH::kTypeID:
 			return static_cast<TESObjectLIGH*>(a_form)->CanCarry();
-		/*case TESObjectARMO::kTypeID:
-			return static_cast<TESObjectARMO*>(a_form)->IsShield();*/
 		default:
 			return false;
 		}
@@ -108,6 +106,7 @@ namespace IED
 		switch (a_form->formType)
 		{
 		case TESObjectWEAP::kTypeID:
+		case TESAmmo::kTypeID:
 			return true;
 		case TESObjectARMO::kTypeID:
 			return static_cast<TESObjectARMO*>(a_form)->IsShield();
@@ -138,30 +137,26 @@ namespace IED
 	{
 		FormInfoFlags flags{ FormInfoFlags::kNone };
 
+		if (IsInventoryForm(a_form))
+		{
+			flags |= FormInfoFlags::kInventory;
+		}
+
 		if (IsValidCustomForm(a_form))
 		{
-			flags |= FormInfoFlags::kAll;
+			flags |= FormInfoFlags::kValidCustom;
 		}
-		else
+
+		if (IsValidSlotForm(a_form))
 		{
-			if (IsInventoryForm(a_form))
-			{
-				flags |= FormInfoFlags::kInventory | FormInfoFlags::kValidSlot;
-			}
-			else
-			{
-				if (IsValidSlotForm(a_form))
-				{
-					flags |= FormInfoFlags::kValidSlot;
-				}
-			}
+			flags |= FormInfoFlags::kValidSlot;
 		}
 
 		return flags;
 	}
 
 	template <class T>
-	inline static const char* GetFullName(TESForm* a_form)
+	inline static constexpr const char* GetFullName(TESForm* a_form)
 	{
 		return static_cast<T*>(a_form)->fullName.name.c_str();
 	}
@@ -172,7 +167,7 @@ namespace IED
 	}
 
 	template <class T>
-	inline static const char* GetEditorID(T* a_form)
+	inline static constexpr const char* GetEditorID(T* a_form)
 	{
 		return a_form->editorId.c_str();
 	}
@@ -226,6 +221,8 @@ namespace IED
 			return GetFullName<TESObjectDOOR>(a_form);
 		case BGSExplosion::kTypeID:
 			return GetFullName<BGSExplosion>(a_form);
+		case BGSLocation::kTypeID:
+			return GetFullName<BGSLocation>(a_form);
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -314,6 +311,8 @@ namespace IED
 			return "Door";
 		case BGSExplosion::kTypeID:
 			return "Explosion";
+		case BGSLocation::kTypeID:
+			return "Location";
 		default:
 			return nullptr;
 		}
@@ -356,6 +355,8 @@ namespace IED
 		case TESFlora::kTypeID:
 		case TESFurniture::kTypeID:
 			return HasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
+		case BGSLocation::kTypeID:
+			return HasKeywordImpl<BGSLocation>(a_form, a_keyword);
 		default:
 			return false;
 		}

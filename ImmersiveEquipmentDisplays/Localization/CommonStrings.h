@@ -163,5 +163,6 @@ namespace IED
 		Single = 234,
 		Primary = 235,
 		Style = 236,
+		Location = 237,
 	};
 }

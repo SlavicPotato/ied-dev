@@ -54,6 +54,7 @@ namespace IED
 			FreezeTime = 1043,
 			UseWorldModel = 1044,
 			ReleaseFontData = 1045,
+			IgnoreRaceEquipTypesSlot = 1046,
 		};
 
 	}

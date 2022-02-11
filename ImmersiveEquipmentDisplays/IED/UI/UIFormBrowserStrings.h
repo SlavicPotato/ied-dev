@@ -34,5 +34,6 @@ namespace IED
 		TalkingActivators = 5225,
 		Grass = 5226,
 		AnimObject = 5227,
+		Locations = 5228,
 	};
 }

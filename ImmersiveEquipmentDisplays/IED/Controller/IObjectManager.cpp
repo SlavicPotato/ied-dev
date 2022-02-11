@@ -408,8 +408,8 @@ namespace IED
 				a_modelForm,
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
-				a_config.flags.test(Data::FlagsBase::kLoad1pWeaponModel),
-				a_config.flags.test(Data::FlagsBase::kUseWorldModel),
+				a_config.flags.test(Data::BaseFlags::kLoad1pWeaponModel),
+				a_config.flags.test(Data::BaseFlags::kUseWorldModel),
 				modelParams))
 		{
 			Debug(
@@ -430,7 +430,7 @@ namespace IED
 				targetNodes))
 		{
 			Debug(
-				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node(s): %s",
+				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_modelForm->formID.get(),
@@ -494,9 +494,9 @@ namespace IED
 			modelParams.type,
 			a_leftWeapon,
 			modelParams.isShield,
-			a_config.flags.test(Data::FlagsBase::kDropOnDeath),
-			a_config.flags.test(Data::FlagsBase::kRemoveScabbard),
-			a_config.flags.test(Data::FlagsBase::kKeepTorchFlame),
+			a_config.flags.test(Data::BaseFlags::kDropOnDeath),
+			a_config.flags.test(Data::BaseFlags::kRemoveScabbard),
+			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok);
 
 		FinalizeObjectState(
@@ -591,7 +591,7 @@ namespace IED
 					a_params.race,
 					a_params.configSex == Data::ConfigSex::Female,
 					e.second.flags.test(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel),
-					a_config.flags.test(Data::FlagsBase::kUseWorldModel) ||
+					a_config.flags.test(Data::BaseFlags::kUseWorldModel) ||
 						e.second.flags.test(Data::ConfigModelGroupEntryFlags::kUseWorldModel),
 					params))
 			{
@@ -724,11 +724,11 @@ namespace IED
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
 				e.params.isShield,
-				a_config.flags.test(Data::FlagsBase::kDropOnDeath) ||
+				a_config.flags.test(Data::BaseFlags::kDropOnDeath) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
-				a_config.flags.test(Data::FlagsBase::kRemoveScabbard) ||
+				a_config.flags.test(Data::BaseFlags::kRemoveScabbard) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
-				a_config.flags.test(Data::FlagsBase::kKeepTorchFlame) ||
+				a_config.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
@@ -767,7 +767,7 @@ namespace IED
 		a_state->nodes.ref = std::move(a_targetNodes.ref);
 		a_state->nodeDesc = a_nodeDesc;
 		a_state->atmReference = a_nodeDesc.managed() ||
-		                        a_config.flags.test(Data::FlagsBase::kReferenceMode);
+		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 	}
 
 	void IObjectManager::PlayObjectSound(
@@ -778,7 +778,7 @@ namespace IED
 	{
 		if (a_objectEntry.state &&
 		    a_params.flags.test(ControllerUpdateFlags::kPlaySound) &&
-		    a_config.flags.test(Data::FlagsBase::kPlaySound) &&
+		    a_config.flags.test(Data::BaseFlags::kPlaySound) &&
 		    m_playSound)
 		{
 			if (a_params.actor == *g_thePlayer || m_playSoundNPC)

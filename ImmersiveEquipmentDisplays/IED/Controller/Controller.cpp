@@ -1,7 +1,7 @@
 #include "pch.h"
 
+#include "ActorProcessorTask.h"
 #include "Controller.h"
-#include "NodeProcessorTask.h"
 
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
@@ -22,7 +22,7 @@ namespace IED
 
 	Controller::Controller(
 		const std::shared_ptr<const ConfigINI>& a_config) :
-		NodeProcessorTask(*this),
+		ActorProcessorTask(*this),
 		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
@@ -79,8 +79,7 @@ namespace IED
 
 		if (auto mm = MenuManager::GetSingleton())
 		{
-			auto dispatcher = mm->MenuOpenCloseEventDispatcher();
-			dispatcher->AddEventSink(this);
+			mm->MenuOpenCloseEventDispatcher()->AddEventSink(this);
 
 			return true;
 		}
@@ -108,6 +107,7 @@ namespace IED
 			edl->AddEventSink<TESFurnitureEvent>(this);
 			edl->AddEventSink<TESDeathEvent>(this);
 			edl->AddEventSink<TESSwitchRaceCompleteEvent>(this);
+			edl->AddEventSink<TESActorLocationChangeEvent>(this);
 			//edl->AddEventSink<TESQuestStartStopEvent>(this);
 
 			return true;
@@ -2123,7 +2123,7 @@ namespace IED
 		bool a_visible)
 	{
 		if (a_entry.state->resetTriggerFlags !=
-		    (a_config.flags & FlagsBase::kResetTriggerFlags))
+		    (a_config.flags & BaseFlags::kResetTriggerFlags))
 		{
 			return false;
 		}
@@ -2170,7 +2170,7 @@ namespace IED
 			AttachNodeImpl(
 				a_params.npcroot,
 				a_node,
-				a_config.flags.test(FlagsBase::kReferenceMode),
+				a_config.flags.test(BaseFlags::kReferenceMode),
 				a_entry);
 		}
 
@@ -2204,7 +2204,7 @@ namespace IED
 		auto equippedInfo = CreateEquippedItemInfo(pm);
 
 		SaveLastEquippedItems(
-			a_params.actor,
+			a_params,
 			equippedInfo,
 			a_params.objects);
 
@@ -2253,19 +2253,6 @@ namespace IED
 				}
 
 				auto& objectEntry = a_params.objects.GetSlot(slot);
-
-				if (a_params.actor != *g_thePlayer &&
-				    (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
-				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
-
-					continue;
-				}
 
 				auto entry = m_config.active.slot.GetActor(
 					a_params.actor->formID,
@@ -2320,7 +2307,7 @@ namespace IED
 					usedConf = std::addressof(configEntry);
 				}
 
-				if (usedConf->flags.test(FlagsBase::kDisabled))
+				if (usedConf->flags.test(BaseFlags::kDisabled))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2332,8 +2319,25 @@ namespace IED
 					continue;
 				}
 
-				if (slot == equippedInfo.leftSlot ||
-				    slot == equippedInfo.rightSlot)
+				if (a_params.actor != *g_thePlayer &&
+				    !usedConf->flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+				    slot != ObjectSlot::kAmmo &&
+				    (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
+				{
+					RemoveObject(
+						a_params.actor,
+						a_params.handle,
+						objectEntry,
+						a_params.objects,
+						a_params.flags);
+
+					continue;
+				}
+
+				if ((slot == ObjectSlot::kAmmo &&
+				     a_params.collector.m_data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
+				    (slot == equippedInfo.leftSlot ||
+				     slot == equippedInfo.rightSlot))
 				{
 					auto& settings = m_config.settings.data;
 
@@ -2379,7 +2383,8 @@ namespace IED
 					usedConf->flags,
 					a_params);
 
-				if (objectEntry.state && objectEntry.state->form == item->form)
+				if (objectEntry.state &&
+				    objectEntry.state->form == item->form)
 				{
 					if (ProcessItemUpdate(
 							a_params,
@@ -2428,10 +2433,10 @@ namespace IED
 
 	bool Controller::GetVisibilitySwitch(
 		Actor* a_actor,
-		stl::flag<FlagsBase> a_flags,
+		stl::flag<BaseFlags> a_flags,
 		processParams_t& a_params)
 	{
-		if (a_flags.test(FlagsBase::kInvisible))
+		if (a_flags.test(BaseFlags::kInvisible))
 		{
 			return false;
 		}
@@ -2443,19 +2448,19 @@ namespace IED
 			return false;
 		}
 
-		if (a_flags.test(FlagsBase::kHideIfUsingFurniture) &&
+		if (a_flags.test(BaseFlags::kHideIfUsingFurniture) &&
 		    a_params.get_using_furniture())
 		{
 			return false;
 		}
 
-		if (a_flags.test(FlagsBase::kHideLayingDown) &&
+		if (a_flags.test(BaseFlags::kHideLayingDown) &&
 		    a_params.get_laying_down())
 		{
 			return false;
 		}
 
-		/*if (a_flags.test(FlagsBase::kHideOnMount))
+		/*if (a_flags.test(BaseFlags::kHideOnMount))
 		{
 			if (!a_params.state.mounted)
 			{
@@ -2512,6 +2517,7 @@ namespace IED
 		processParams_t& a_params,
 		const collectorData_t::itemData_t& a_itemData,
 		const configCustom_t& a_config,
+		const configBaseValues_t& a_baseConfig,
 		bool& a_hasMinCount)
 	{
 		if (a_itemData.count < 1)
@@ -2534,7 +2540,11 @@ namespace IED
 
 		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
-			if (!a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
+			bool isAmmo = a_itemData.form->formType == TESAmmo::kTypeID;
+
+			if (!isAmmo &&
+			    !a_baseConfig.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
 			    a_params.actor != *g_thePlayer)
 			{
 				auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(a_itemData.type);
@@ -2544,7 +2554,7 @@ namespace IED
 				}
 			}
 
-			if (a_itemData.form->formType == TESAmmo::kTypeID)
+			if (isAmmo)
 			{
 				a_hasMinCount = !a_itemData.is_equipped();
 			}
@@ -2591,6 +2601,7 @@ namespace IED
 	collectorData_t::container_type::iterator Controller::CustomEntrySelectInventoryForm(
 		processParams_t& a_params,
 		const configCustom_t& a_config,
+		const Data::configBaseValues_t& a_baseConfig,
 		bool& a_hasMinCount)
 	{
 		auto& formData = a_params.collector.m_data.forms;
@@ -2599,7 +2610,12 @@ namespace IED
 		{
 			if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
 			{
-				if (CustomEntryValidateInventoryForm(a_params, it->second, a_config, a_hasMinCount))
+				if (CustomEntryValidateInventoryForm(
+						a_params,
+						it->second,
+						a_config,
+						a_baseConfig,
+						a_hasMinCount))
 				{
 					return it;
 				}
@@ -2612,7 +2628,12 @@ namespace IED
 			{
 				if (auto it = formData.find(e); it != formData.end())
 				{
-					if (CustomEntryValidateInventoryForm(a_params, it->second, a_config, a_hasMinCount))
+					if (CustomEntryValidateInventoryForm(
+							a_params,
+							it->second,
+							a_config,
+							a_baseConfig,
+							a_hasMinCount))
 					{
 						return it;
 					}
@@ -2683,7 +2704,7 @@ namespace IED
 			usedBaseConf = std::addressof(a_config);
 		}
 
-		if (usedBaseConf->flags.test(FlagsBase::kDisabled))
+		if (usedBaseConf->flags.test(BaseFlags::kDisabled))
 		{
 			a_objectEntry.clear_chance_flags();
 			return false;
@@ -2701,7 +2722,7 @@ namespace IED
 		{
 			bool hasMinCount;
 
-			auto it = CustomEntrySelectInventoryForm(a_params, a_config, hasMinCount);
+			auto it = CustomEntrySelectInventoryForm(a_params, a_config, *usedBaseConf, hasMinCount);
 			if (it == a_params.collector.m_data.forms.end())
 			{
 				return false;
@@ -3599,7 +3620,7 @@ namespace IED
 							a_info,
 							a_info.npcRoot,
 							conf.targetNode,
-							conf.flags.test(FlagsBase::kReferenceMode),
+							conf.flags.test(BaseFlags::kReferenceMode),
 							a_entry);
 
 						return true;
@@ -4267,7 +4288,7 @@ namespace IED
 						info,
 						info.npcRoot,
 						conf.targetNode,
-						conf.flags.test(FlagsBase::kReferenceMode),
+						conf.flags.test(BaseFlags::kReferenceMode),
 						objectEntry);
 				}
 
@@ -4445,7 +4466,7 @@ namespace IED
 	}
 
 	void Controller::SaveLastEquippedItems(
-		Actor* a_actor,
+		processParams_t& a_params,
 		const equippedItemInfo_t& a_info,
 		ActorObjectHolder& a_cache)
 	{
@@ -4465,6 +4486,21 @@ namespace IED
 
 			slot.slotState.lastEquipped = a_info.left->formID;
 			slot.slotState.lastSeenEquipped = ts;
+		}
+
+		if (auto biped = a_params.get_biped())
+		{
+			auto& e = biped->objects[Biped::BIPED_OBJECT::kQuiver];
+
+			if (e.item &&
+			    e.item != e.addon && 
+				e.item->formType == TESAmmo::kTypeID)
+			{
+				auto& slot = a_cache.GetSlot(ObjectSlot::kAmmo);
+
+				slot.slotState.lastEquipped = e.item->formID;
+				slot.slotState.lastSeenEquipped = ts;
+			}
 		}
 	}
 
@@ -4642,10 +4678,45 @@ namespace IED
 		return EventResult::kContinue;
 	}
 
-	EventResult IED::Controller::ReceiveEvent(
+	EventResult Controller::ReceiveEvent(
 		const TESQuestStartStopEvent* a_evn,
 		BSTEventSource<TESQuestStartStopEvent>* a_dispatcher)
 	{
+		return EventResult::kContinue;
+	}
+
+	EventResult Controller::ReceiveEvent(
+		const TESActorLocationChangeEvent* a_evn,
+		BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher)
+	{
+		if (a_evn && a_evn->actor)
+		{
+			QueueRequestEvaluate(a_evn->actor->formID, true, false);
+
+			std::string n1, n2;
+			Game::FormID f1, f2;
+
+			if (a_evn->oldLocation)
+			{
+				n1 = IFormCommon::GetFormName(a_evn->oldLocation);
+				f1 = a_evn->oldLocation->formID;
+			}
+
+			if (a_evn->newLocation)
+			{
+				n2 = IFormCommon::GetFormName(a_evn->newLocation);
+				f2 = a_evn->newLocation->formID;
+			}
+
+			_DMESSAGE(
+				"%X: %X [%s] -> %X [%s]",
+				a_evn->actor->formID.get(),
+				f1,
+				n1.c_str(),
+				f2,
+				n2.c_str());
+		}
+
 		return EventResult::kContinue;
 	}
 
@@ -4830,6 +4901,11 @@ namespace IED
 				if (auto& e = g.get(slot); !e)
 				{
 					e = CreateDefaultSlotConfig(slot);
+
+					if (slot == ObjectSlot::kAmmo)
+					{
+						e->visit([](auto& a_v) { a_v.flags.set(BaseFlags::kDisabled); });
+					}
 				}
 			}
 		}

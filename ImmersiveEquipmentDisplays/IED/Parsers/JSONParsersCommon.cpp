@@ -27,8 +27,11 @@ namespace IED
 				{ "bow", ObjectSlot::kBow },
 				{ "crossbow", ObjectSlot::kCrossBow },
 				{ "shield", ObjectSlot::kShield },
-				{ "torch", ObjectSlot::kTorch }
-			} {}
+				{ "torch", ObjectSlot::kTorch },
+				{ "ammo", ObjectSlot::kAmmo }
+			} 
+		{
+		}
 
 		const char* SlotKeyParser::SlotToKey(ObjectSlot a_slot) const noexcept
 		{
@@ -70,6 +73,8 @@ namespace IED
 				return "shield";
 			case ObjectSlot::kTorch:
 				return "torch";
+			case ObjectSlot::kAmmo:
+				return "ammo";
 			default:
 				return nullptr;
 			}

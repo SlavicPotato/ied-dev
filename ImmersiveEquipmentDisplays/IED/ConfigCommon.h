@@ -25,6 +25,10 @@ namespace IED
 			kShield,
 			kTorch,
 
+			kV1Max = kTorch,
+
+			kAmmo,
+
 			kMax
 		};
 
@@ -41,6 +45,7 @@ namespace IED
 			kCrossBow,
 			kShield,
 			kTorch,
+			kAmmo,
 
 			kMax
 		};

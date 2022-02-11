@@ -15,9 +15,9 @@
 #include "IMaintenance.h"
 #include "IObjectManager.h"
 #include "IUI.h"
-#include "NodeProcessorTask.h"
+#include "ActorProcessorTask.h"
 
-#include "../SettingHolder.h"
+#include "IED/SettingHolder.h"
 
 #include "Localization/ILocalization.h"
 
@@ -33,7 +33,7 @@ namespace IED
 		public IForm,
 		private IEquipment,
 		public IObjectManager,
-		public NodeProcessorTask,
+		public ActorProcessorTask,
 		public IUI,
 		public IMaintenance,
 		public IJSONSerialization,
@@ -47,15 +47,17 @@ namespace IED
 		public BSTEventSink<TESSwitchRaceCompleteEvent>,
 		public BSTEventSink<MenuOpenCloseEvent>,
 		public BSTEventSink<SKSENiNodeUpdateEvent>,
-		public BSTEventSink<TESQuestStartStopEvent>
+		public BSTEventSink<TESQuestStartStopEvent>,
+		public BSTEventSink<TESActorLocationChangeEvent>
 	{
 		enum class SerializationVersion : std::uint32_t
 		{
 			kDataVersion1 = 1,
 			kDataVersion2 = 2,
 			kDataVersion3 = 3,
+			kDataVersion4 = 4,
 
-			kCurrentVersion = kDataVersion3
+			kCurrentVersion = kDataVersion4
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -87,7 +89,7 @@ namespace IED
 		using actorLookupResultMap_t =
 			std::unordered_map<Game::ObjectRefHandle, NiPointer<Actor>>;
 
-		friend class NodeProcessorTask;
+		friend class ActorProcessorTask;
 
 	public:
 		enum class EventSinkInstallationFlags : std::uint8_t
@@ -715,11 +717,13 @@ namespace IED
 			processParams_t& a_params,
 			const Data::collectorData_t::itemData_t& a_itemData,
 			const Data::configCustom_t& a_config,
+			const Data::configBaseValues_t& a_baseConfig,
 			bool& a_hasMinCount);
 
 		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
 			processParams_t& a_params,
 			const Data::configCustom_t& a_config,
+			const Data::configBaseValues_t& a_baseConfig,
 			bool& a_hasMinCount);
 
 		bool IsBlockedByChance(
@@ -745,13 +749,13 @@ namespace IED
 		void ProcessCustom(processParams_t& a_params);
 
 		void SaveLastEquippedItems(
-			Actor* a_actor,
+			processParams_t& a_params,
 			const equippedItemInfo_t& a_info,
 			ActorObjectHolder& a_cache);
 
 		bool GetVisibilitySwitch(
 			Actor* a_actor,
-			stl::flag<Data::FlagsBase> a_flags,
+			stl::flag<Data::BaseFlags> a_flags,
 			processParams_t& a_params);
 
 		bool LookupTrackedActor(
@@ -805,8 +809,12 @@ namespace IED
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESQuestStartStopEvent* evn,
+			const TESQuestStartStopEvent* a_evn,
 			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;
+		
+		virtual EventResult ReceiveEvent(
+			const TESActorLocationChangeEvent* a_evn,
+			BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher) override;
 
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
 		//void FillInitialConfig(Data::configStore_t& a_data) const;

@@ -7,7 +7,6 @@ namespace IED
 {
 	using namespace Data;
 
-
 	EntryDataList* GetEntryDataList(Actor* a_actor)
 	{
 		if (auto containerChanges = a_actor->extraData.Get<ExtraContainerChanges>())
@@ -47,12 +46,7 @@ namespace IED
 			return false;
 		}
 
-		if (a_form->formID.IsTemporary())
-		{
-			return false;
-		}
-
-		if (m_isPlayer && !a_form->IsPlayable())
+		if (a_form->formID.IsTemporary())  // ?
 		{
 			return false;
 		}
@@ -256,20 +250,41 @@ namespace IED
 
 			auto form = e.second.form;
 
+			if (m_isPlayer && !form->IsPlayable())
+			{
+				continue;
+			}
+
 			std::uint16_t damage;
 
-			if (auto weap = form->As<TESObjectWEAP>())
+			switch (form->formType)
 			{
-				if (weap->IsBound())
+			case TESObjectWEAP::kTypeID:
 				{
-					continue;
-				}
+					auto weap = static_cast<TESObjectWEAP*>(form);
 
-				damage = weap->damage.attackDamage;
-			}
-			else
-			{
+					if (weap->IsBound())
+					{
+						continue;
+					}
+
+					damage = weap->damage.attackDamage;
+				}
+				break;
+			case TESAmmo::kTypeID:
+
+				damage = static_cast<std::uint16_t>(
+					std::clamp(
+						static_cast<TESAmmo*>(form)->settings.damage,
+						static_cast<float>(
+							std::numeric_limits<std::uint16_t>::min()),
+						static_cast<float>(
+							std::numeric_limits<std::uint16_t>::max())));
+
+				break;
+			default:
 				damage = 0;
+				break;
 			}
 
 			auto& entry = m_slotResults[stl::underlying(e.second.type)];

@@ -16,11 +16,11 @@ namespace IED
 
 	struct objectEntryBase_t;
 
-	class NodeProcessorTask :
+	class ActorProcessorTask :
 		public TaskDelegateFixed
 	{
 	public:
-		NodeProcessorTask(
+		ActorProcessorTask(
 			Controller& a_controller);
 
 		[[nodiscard]] inline constexpr auto NodeProcessorGetTime() const noexcept

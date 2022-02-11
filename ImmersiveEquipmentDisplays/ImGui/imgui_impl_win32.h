@@ -48,11 +48,11 @@ IMGUI_IMPL_API float
 IMGUI_IMPL_API float
 	ImGui_ImplWin32_GetDpiScaleForMonitor(void* monitor);  // HMONITOR monitor
 
-struct IOUserData
+struct SKMP_ImGuiUserData
 {
 	struct
 	{
-		float X;
-		float Y;
+		float X{ 1.0f };
+		float Y{ 1.0f };
 	} btsRatio;
 };

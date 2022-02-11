@@ -39,7 +39,7 @@ namespace IED
 			{
 				ImGui::Columns(3, nullptr, false);
 
-				ImGui::TextUnformatted("Nodeproc:");
+				ImGui::TextUnformatted("AP:");
 				ImGui::TextUnformatted("UI:");
 				ImGui::TextUnformatted("FC:");
 
@@ -99,7 +99,7 @@ namespace IED
 
 		void UIStats::DrawActorTable()
 		{
-			constexpr int NUM_COLUMNS = 7;
+			constexpr int NUM_COLUMNS = 8;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5, 5 });
 
@@ -123,6 +123,7 @@ namespace IED
 				ImGui::TableSetupColumn(LS(CommonStrings::Equipment), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Custom), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Age), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(LS(UIStatsStrings::CellAttached), ImGuiTableColumnFlags_None);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -217,6 +218,13 @@ namespace IED
 					ImGui::TableSetColumnIndex(6);
 
 					ImGui::Text("%lld", e.age);
+
+					ImGui::TableSetColumnIndex(7);
+
+					ImGui::TextUnformatted(
+						e.obj.second.IsCellAttached() ?
+                            "true" :
+                            "false");
 
 					ImGui::PopID();
 				}
@@ -331,6 +339,21 @@ namespace IED
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
 							return a_rhs.age > a_lhs.age;
+						};
+					}
+				case 7:
+					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
+					{
+						return [](auto& a_rhs, auto& a_lhs) {
+							return a_rhs.obj.second.IsCellAttached() <
+							       a_lhs.obj.second.IsCellAttached();
+						};
+					}
+					else
+					{
+						return [](auto& a_rhs, auto& a_lhs) {
+							return a_rhs.obj.second.IsCellAttached() >
+							       a_lhs.obj.second.IsCellAttached();
 						};
 					}
 				default:

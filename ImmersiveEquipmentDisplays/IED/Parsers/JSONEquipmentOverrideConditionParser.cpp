@@ -21,7 +21,7 @@ namespace IED
 
 			if (auto& v = a_in["form"])
 			{
-				if (!formParser.Parse(v, a_out.form))
+				if (!cachedFormParser.Parse(v, a_out.form))
 				{
 					SetHasErrors();
 					Error("%s: failed to parse form ID", __FUNCTION__);
@@ -63,9 +63,9 @@ namespace IED
 			Parser<Game::FormID> formParser(m_state);
 			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
-			if (a_data.form)
+			if (a_data.form.get_id())
 			{
-				formParser.Create(a_data.form, a_out["form"]);
+				cachedFormParser.Create(a_data.form, a_out["form"]);
 			}
 
 			if (a_data.keyword.get_id())

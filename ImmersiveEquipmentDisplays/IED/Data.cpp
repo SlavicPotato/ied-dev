@@ -65,22 +65,17 @@ namespace IED
 
 		ObjectSlot ItemData::GetObjectSlotLeft(TESObjectLIGH* a_form) noexcept
 		{
-			if (a_form->CanCarry())
-			{
-				return ObjectSlot::kTorch;
-			}
-
-			return ObjectSlot::kMax;
+			return a_form->CanCarry() ? ObjectSlot::kTorch : ObjectSlot::kMax;
 		}
 
 		ObjectSlot ItemData::GetObjectSlot(TESObjectARMO* a_form) noexcept
 		{
-			if (a_form->IsShield())
-			{
-				return ObjectSlot::kShield;
-			}
+			return a_form->IsShield() ? ObjectSlot::kShield : ObjectSlot::kMax;
+		}
 
-			return ObjectSlot::kMax;
+		ObjectSlot ItemData::GetObjectSlot(TESAmmo* a_form) noexcept
+		{
+			return ObjectSlot::kAmmo;
 		}
 
 		ObjectSlot ItemData::GetObjectSlot(TESForm* a_form) noexcept
@@ -89,6 +84,8 @@ namespace IED
 			{
 			case TESObjectWEAP::kTypeID:
 				return ItemData::GetObjectSlot(static_cast<TESObjectWEAP*>(a_form));
+			case TESAmmo::kTypeID:
+				return ItemData::GetObjectSlot(static_cast<TESAmmo*>(a_form));
 			}
 
 			return ObjectSlot::kMax;
@@ -117,6 +114,11 @@ namespace IED
 		ObjectType ItemData::GetItemType(TESObjectLIGH* a_form) noexcept
 		{
 			return a_form->CanCarry() ? ObjectType::kTorch : ObjectType::kMax;
+		}
+
+		ObjectType ItemData::GetItemType(TESAmmo* a_form) noexcept
+		{
+			return ObjectType::kAmmo;
 		}
 
 		ObjectType ItemData::GetItemType(TESObjectWEAP* a_form) noexcept
@@ -156,6 +158,8 @@ namespace IED
 				return ItemData::GetItemType(static_cast<TESObjectARMO*>(a_form));
 			case TESObjectLIGH::kTypeID:
 				return ItemData::GetItemType(static_cast<TESObjectLIGH*>(a_form));
+			case TESAmmo::kTypeID:
+				return ItemData::GetItemType(static_cast<TESAmmo*>(a_form));
 			}
 
 			return ObjectType::kMax;
@@ -339,6 +343,8 @@ namespace IED
 				return ObjectSlot::kShield;
 			case ObjectType::kTorch:
 				return ObjectSlot::kTorch;
+			case ObjectType::kAmmo:
+				return ObjectSlot::kAmmo;
 			default:
 				HALT("FIXME");
 			}
@@ -514,6 +520,8 @@ namespace IED
 				return ObjectSlot::kShield;
 			case ObjectSlotExtra::kTorch:
 				return ObjectSlot::kTorch;
+			case ObjectSlotExtra::kAmmo:
+				return ObjectSlot::kAmmo;
 			default:
 				return ObjectSlot::kMax;
 			}
@@ -559,6 +567,8 @@ namespace IED
 				return ObjectSlotExtra::kShield;
 			case ObjectSlot::kTorch:
 				return ObjectSlotExtra::kTorch;
+			case ObjectSlot::kAmmo:
+				return ObjectSlotExtra::kAmmo;
 			default:
 				return ObjectSlotExtra::kNone;
 			}
@@ -641,6 +651,8 @@ namespace IED
 				return { BSStringHolder::NINODE_SHIELD_BACK };
 			case ObjectSlot::kTorch:
 				return { BSStringHolder::NINODE_AXE_LEFT_REVERSE };
+			case ObjectSlot::kAmmo:
+				return { BSStringHolder::NINODE_QUIVER, NodeDescriptorFlags::kManaged };
 			default:
 				return {};
 			}
@@ -710,6 +722,8 @@ namespace IED
 			case ObjectSlot::kShield:
 			case ObjectSlot::kTorch:
 				return Biped::BIPED_OBJECT::kShield;
+			case ObjectSlot::kAmmo:
+				return Biped::BIPED_OBJECT::kQuiver;
 			default:
 				return Biped::BIPED_OBJECT::kNone;
 			}
@@ -818,6 +832,8 @@ namespace IED
 				return "Shield";
 			case ObjectSlot::kTorch:
 				return "Torch";
+			case ObjectSlot::kAmmo:
+				return "Ammo";
 			default:
 				return nullptr;
 			}

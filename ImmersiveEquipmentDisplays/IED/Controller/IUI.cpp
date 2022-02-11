@@ -85,7 +85,8 @@ namespace IED
 				m_UIContext->Reset();
 			}
 
-			if ((m_UIContext->GetUISettings().closeOnESC && ImGui::GetIO().KeysDown[VK_ESCAPE]) ||
+			if ((m_UIContext->GetUISettings().closeOnESC &&
+			     ImGui::GetIO().KeysDown[VK_ESCAPE]) ||
 			    (!UIGetEnabledInMenu() && Game::InPausedMenu()))
 			{
 				m_UIContext->SetOpenState(false);
@@ -123,4 +124,4 @@ namespace IED
 		return UIOpenResult::kResultNone;
 	}
 
-}  // namespace IED
+}

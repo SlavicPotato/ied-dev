@@ -369,10 +369,10 @@ namespace IED
 
 				auto slot = static_cast<Data::ObjectSlot>(i);
 
-				auto& name = StringHolder::GetSingleton().GetSlotName(slot);
-
 				char buf[std::numeric_limits<enum_type>::digits10 + 3];
 				stl::snprintf(buf, "%u", i);
+
+				auto& name = StringHolder::GetSingleton().GetSlotName(slot);
 
 				if (ImGui::MenuItem(LMKID<2>(name.c_str(), buf)))
 				{

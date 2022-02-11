@@ -354,6 +354,10 @@ namespace IED
 								{ "MOV QUIVERDefault", { "Quiver" } },
 								{ "MOV QUIVERChesko", { "Quiver Chesko" } },
 								{ "MOV QUIVERLeftHipBolt", { "Quiver Left-Hip Bolt" } },
+								{ "MOV BOLTDefault", { "Bolt" } },
+								{ "MOV BOLTChesko", { "Bolt Chesko" } },
+								{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip" } },
+								{ "MOV BOLTABQ", { "Bolt ABQ" } },
 							}
 
 						} },

@@ -11,7 +11,7 @@ namespace IED
 			kNone = 0,
 
 			kAlwaysUnload = 1u << 0,
-			kCheckCannotWear = 1u << 1
+			kCheckCannotWear = 1u << 1,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(SlotFlags);

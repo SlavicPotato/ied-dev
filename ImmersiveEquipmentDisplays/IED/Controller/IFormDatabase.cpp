@@ -5,7 +5,7 @@
 namespace IED
 {
 	auto IFormDatabase::GetFormDatabase()
-		-> std::shared_ptr<data_type>
+		-> result_type
 	{
 		if (auto data = m_data.lock())
 		{
@@ -64,9 +64,12 @@ namespace IED
 				GetFormName(form));
 		}
 
-		std::sort(holder.begin(), holder.end(), [](auto& a_rhs, auto& a_lhs) {
-			return a_rhs.formid < a_lhs.formid;
-		});
+		std::sort(
+			holder.begin(),
+			holder.end(),
+			[](auto& a_rhs, auto& a_lhs) {
+				return a_rhs.formid < a_lhs.formid;
+			});
 	}
 
 	template <class T, class Tf>
@@ -102,13 +105,16 @@ namespace IED
 				GetFormName(e));
 		}
 
-		std::sort(holder.begin(), holder.end(), [](auto& a_rhs, auto& a_lhs) {
-			return a_rhs.formid < a_lhs.formid;
-		});
+		std::sort(
+			holder.begin(),
+			holder.end(),
+			[](auto& a_rhs, auto& a_lhs) {
+				return a_rhs.formid < a_lhs.formid;
+			});
 	}
 
 	auto IFormDatabase::Create()
-		-> std::shared_ptr<data_type>
+		-> result_type
 	{
 		auto result = std::make_unique<data_type>();
 
@@ -141,6 +147,7 @@ namespace IED
 		Populate(*result, dh->quests);
 		Populate(*result, dh->arrGRAS);
 		Populate(*result, dh->arrANIO);
+		Populate(*result, dh->arrLCTN);
 		Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
 		Populate2(
