@@ -306,6 +306,12 @@ namespace IED
 
 		void UIConditionParamEditorWidget::GetFormDesc(Game::FormID a_form)
 		{
+			if (!a_form)
+			{
+				m_descBuffer[0] = 0;
+				return;
+			}
+
 			if (auto info = LookupForm(a_form))
 			{
 				stl::snprintf(

@@ -238,14 +238,14 @@ namespace IED
 
 		void configNodeOverrideHolder_t::__init(const configNodeOverrideHolderCopy_t& a_rhs)
 		{
-			for (auto& e : a_rhs.data)
+			for (auto& [i, e] : a_rhs.data)
 			{
-				data.emplace(e.first, e.second.second);
+				data.emplace(i, e.second);
 			}
 
-			for (auto& e : a_rhs.placementData)
+			for (auto& [i, e] : a_rhs.placementData)
 			{
-				placementData.emplace(e.first, e.second.second);
+				placementData.emplace(i, e.second);
 			}
 
 			flags = a_rhs.flags;
@@ -253,14 +253,14 @@ namespace IED
 
 		void configNodeOverrideHolder_t::__init(configNodeOverrideHolderCopy_t&& a_rhs)
 		{
-			for (auto& e : a_rhs.data)
+			for (auto& [i, e] : a_rhs.data)
 			{
-				data.emplace(e.first, std::move(e.second.second));
+				data.emplace(i, std::move(e.second));
 			}
 
-			for (auto& e : a_rhs.placementData)
+			for (auto& [i, e] : a_rhs.placementData)
 			{
-				placementData.emplace(e.first, std::move(e.second.second));
+				placementData.emplace(i, std::move(e.second));
 			}
 
 			flags = a_rhs.flags;
@@ -270,14 +270,14 @@ namespace IED
 			const configNodeOverrideHolder_t& a_rhs,
 			ConfigClass a_initclass)
 		{
-			for (auto& e : a_rhs.data)
+			for (auto& [i, e] : a_rhs.data)
 			{
-				data.try_emplace(e.first, a_initclass, e.second);
+				data.try_emplace(i, a_initclass, e);
 			}
 
-			for (auto& e : a_rhs.placementData)
+			for (auto& [i, e] : a_rhs.placementData)
 			{
-				placementData.try_emplace(e.first, a_initclass, e.second);
+				placementData.try_emplace(i, a_initclass, e);
 			}
 
 			flags = a_rhs.flags;
@@ -287,14 +287,14 @@ namespace IED
 			configNodeOverrideHolder_t&& a_rhs,
 			ConfigClass a_initclass)
 		{
-			for (auto& e : a_rhs.data)
+			for (auto& [i, e] : a_rhs.data)
 			{
-				data.try_emplace(e.first, a_initclass, std::move(e.second));
+				data.try_emplace(i, a_initclass, std::move(e));
 			}
 
-			for (auto& e : a_rhs.placementData)
+			for (auto& [i, e] : a_rhs.placementData)
 			{
-				placementData.try_emplace(e.first, a_initclass, std::move(e.second));
+				placementData.try_emplace(i, a_initclass, std::move(e));
 			}
 
 			flags = a_rhs.flags;
@@ -305,19 +305,19 @@ namespace IED
 		{
 			configNodeOverrideHolder_t result;
 
-			for (auto& e : data)
+			for (auto& [i, e] : data)
 			{
-				if (e.second.first == a_class)
+				if (e.first == a_class)
 				{
-					result.data.emplace(e.first, e.second.second);
+					result.data.emplace(i, e.second);
 				}
 			}
 
-			for (auto& e : placementData)
+			for (auto& [i, e] : placementData)
 			{
-				if (e.second.first == a_class)
+				if (e.first == a_class)
 				{
-					result.placementData.emplace(e.first, e.second.second);
+					result.placementData.emplace(i, e.second);
 				}
 			}
 
@@ -332,19 +332,19 @@ namespace IED
 		{
 			a_dst.clear();
 
-			for (auto& e : data)
+			for (auto& [i, e] : data)
 			{
-				if (e.second.first == a_class)
+				if (e.first == a_class)
 				{
-					a_dst.data.emplace(e.first, e.second.second);
+					a_dst.data.emplace(i, e.second);
 				}
 			}
 
-			for (auto& e : placementData)
+			for (auto& [i, e] : placementData)
 			{
-				if (e.second.first == a_class)
+				if (e.first == a_class)
 				{
-					a_dst.placementData.emplace(e.first, e.second.second);
+					a_dst.placementData.emplace(i, e.second);
 				}
 			}
 

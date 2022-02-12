@@ -144,9 +144,9 @@ namespace IED
 		{
 			auto& profileData = a_profile.Data();
 
-			for (auto& e : profileData.data)
+			for (auto& [i, e] : profileData.data)
 			{
-				a_data.data.data.insert_or_assign(e.first, e.second);
+				a_data.data.data.insert_or_assign(i, e);
 			}
 
 			GetOrCreateConfigSlotHolder(a_data.handle) = a_data.data;

@@ -223,6 +223,8 @@ namespace IED
 			return GetFullName<BGSExplosion>(a_form);
 		case BGSLocation::kTypeID:
 			return GetFullName<BGSLocation>(a_form);
+		case TESWorldSpace::kTypeID:
+			return GetFullName<TESWorldSpace>(a_form);
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -313,6 +315,8 @@ namespace IED
 			return "Explosion";
 		case BGSLocation::kTypeID:
 			return "Location";
+		case TESWorldSpace::kTypeID:
+			return "Worldspace";
 		default:
 			return nullptr;
 		}

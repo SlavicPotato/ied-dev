@@ -30,7 +30,10 @@ namespace IED
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		m_cellAttached(a_actor->IsParentCellAttached()),
-		m_inInterior(a_actor->IsInInteriorCell()),
+		m_locData{
+			a_actor->IsInInteriorCell(),
+			a_actor->GetParentCellWorldspace()
+		},
 		m_created(IPerfCounter::Query())
 	{
 		if (a_nodeOverrideEnabled &&

@@ -35,5 +35,6 @@ namespace IED
 		Grass = 5226,
 		AnimObject = 5227,
 		Locations = 5228,
+		Worldspaces = 5229,
 	};
 }

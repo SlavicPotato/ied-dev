@@ -47,6 +47,11 @@ namespace IED
 			BGSLocation* a_current,
 			BGSKeyword* a_keyword);
 
+		bool match_worldspace(
+			TESWorldSpace* a_current,
+			Game::FormID a_wsId,
+			bool a_matchParent);
+
 		template <class Tm, class Tf, class Tp>
 		constexpr bool match_biped(
 			CommonParams& a_params,
@@ -204,7 +209,7 @@ namespace IED
 						}
 
 						if (a_match.flags.test(Tf::kNegateMatch1) ==
-						    Conditions::is_in_location(current, location))
+						    is_in_location(current, location))
 						{
 							return false;
 						}
@@ -220,8 +225,8 @@ namespace IED
 
 						if (a_match.flags.test(Tf::kNegateMatch2) ==
 						    (location ?
-                                 Conditions::is_in_location(current, keyword, location) :
-                                 Conditions::is_in_location(current, keyword)))
+                                 is_in_location(current, keyword, location) :
+                                 is_in_location(current, keyword)))
 						{
 							return false;
 						}
@@ -245,6 +250,33 @@ namespace IED
 						{
 							return false;
 						}
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_worldspace(
+			CommonParams& a_params,
+			const Tm& a_match)
+		{
+			if (auto current = a_params.get_worldspace())
+			{
+				if (a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    match_worldspace(
+							current,
+							a_match.form.get_id(),
+							a_match.flags.test(Tf::kExtraFlag1)))
+					{
+						return false;
 					}
 				}
 

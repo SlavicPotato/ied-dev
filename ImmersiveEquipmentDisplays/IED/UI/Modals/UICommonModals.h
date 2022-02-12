@@ -135,7 +135,7 @@ namespace IED
 					ImGui::Separator();
 				}
 
-				if (!disabled && a_buf[0] == 0)
+				if (a_buf[0] == 0)
 				{
 					disabled = true;
 				}
@@ -153,8 +153,8 @@ namespace IED
 				UICommon::PopDisabled(disabled);
 
 				ImGui::SameLine();
-				ImGui::SetItemDefaultFocus();
 
+				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button(
 						LS(CommonStrings::Cancel, "ctl_2"),
 						{ 120.f, 0.f }))

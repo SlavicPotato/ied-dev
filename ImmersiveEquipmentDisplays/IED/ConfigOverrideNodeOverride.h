@@ -60,7 +60,7 @@ namespace IED
 			// ignore scb (Node)
 			kExtraFlag0 = 1u << 10,
 
-			// laying down (Furniture), is child (Location)
+			// laying down (Furniture), is child (Location), match parent (Worldspace)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped)
@@ -85,7 +85,8 @@ namespace IED
 			Actor,
 			NPC,
 			Extra,
-			Location
+			Location,
+			Worldspace
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -179,9 +180,11 @@ namespace IED
 				if (a_type == NodeOverrideConditionType::Race ||
 				    a_type == NodeOverrideConditionType::Furniture ||
 				    a_type == NodeOverrideConditionType::Group ||
-				    a_type == NodeOverrideConditionType::Location)
+				    a_type == NodeOverrideConditionType::Location ||
+				    a_type == NodeOverrideConditionType::Worldspace)
 				{
-					if (a_type == NodeOverrideConditionType::Location)
+					if (a_type == NodeOverrideConditionType::Location||
+					    a_type == NodeOverrideConditionType::Worldspace)
 					{
 						flags = NodeOverrideConditionFlags::kExtraFlag0;
 					}

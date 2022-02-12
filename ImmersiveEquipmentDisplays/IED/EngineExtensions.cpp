@@ -65,6 +65,11 @@ namespace IED
 				Patch_AdjustSkip_SE();
 			}
 		}
+
+		if (a_config->m_immediateFavUpdate)
+		{
+			Patch_ToggleFav();
+		}
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
@@ -391,6 +396,22 @@ namespace IED
 		LogPatchEnd(__FUNCTION__);
 	}
 
+	void EngineExtensions::Patch_ToggleFav()
+	{
+		if (Hook::Call5(
+				ISKSE::GetBranchTrampoline(),
+				m_toggleFav1_a,
+				std::uintptr_t(ToggleFavGetExtraList_Hook),
+				m_toggleFavGetExtraList_o))
+		{
+			Debug("[%s] Installed toggle fav hook", __FUNCTION__);
+		}
+		else
+		{
+			Error("[%s] Failed to install toggle fav hook", __FUNCTION__);
+		}
+	}
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
 		{
@@ -554,6 +575,13 @@ namespace IED
 		}
 
 		return a_refr->animGraphHolder.SetVariableOnGraphsFloat(a_animVarName, a_val);
+	}
+
+	BaseExtraList* EngineExtensions::ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor)
+	{
+		m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, true, false);
+
+		return m_Instance->m_toggleFavGetExtraList_o(a_actor);
 	}
 
 	bool EngineExtensions::AdjustSkip_Test(BSFixedString& a_name)

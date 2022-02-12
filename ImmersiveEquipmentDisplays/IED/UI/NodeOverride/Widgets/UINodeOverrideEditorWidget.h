@@ -1860,18 +1860,6 @@ namespace IED
 							}
 							else
 							{
-								/*if (ImGui::CheckboxFlagsT(
-										"Absolute rotation##ctl",
-										stl::underlying(std::addressof(e.offsetFlags.value)),
-										stl::underlying(Data::NodeOverrideOffsetFlags::kAbsoluteRotation)))
-								{
-									HandleValueUpdate(
-										a_handle,
-										a_data,
-										a_params,
-										a_exists);
-								}*/
-
 								ImGui::Spacing();
 
 								if (DrawTransformHeaderContextMenu(
@@ -2727,8 +2715,22 @@ namespace IED
 
 						result = NodeOverrideCommonAction::Insert;
 					}
+					
+					if (ImGui::MenuItem(LS(CommonStrings::Worldspace, "D")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Worldspace);
 
-					if (LCG_BM(CommonStrings::Extra, "D"))
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "E"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -2753,7 +2755,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "E")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "F")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Group);
@@ -2770,7 +2772,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "F")))
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "G")))
 				{
 					a_entry.clear();
 
@@ -2785,7 +2787,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "G")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "H")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2793,7 +2795,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideConditionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "H"),
+						LS(CommonStrings::PasteOver, "I"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -2957,10 +2959,11 @@ namespace IED
 
 							break;
 
+						case Data::NodeOverrideConditionType::Race:
 						case Data::NodeOverrideConditionType::Furniture:
 						case Data::NodeOverrideConditionType::Group:
 						case Data::NodeOverrideConditionType::Location:
-						case Data::NodeOverrideConditionType::Race:
+						case Data::NodeOverrideConditionType::Worldspace:
 
 							it = a_entry.emplace(
 								it,
@@ -3195,6 +3198,17 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Location);
+
+								break;
+							case Data::NodeOverrideConditionType::Worldspace:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Worldspace);
 
 								break;
 							default:
@@ -3727,19 +3741,21 @@ namespace IED
 					{
 						result.action = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Furniture;
-
-						ImGui::CloseCurrentPopup();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Furniture, "C")))
+					if (ImGui::MenuItem(LS(CommonStrings::Location, "C")))
 					{
 						result.action = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Location;
-
-						ImGui::CloseCurrentPopup();
+					}
+					
+					if (ImGui::MenuItem(LS(CommonStrings::Worldspace, "D")))
+					{
+						result.action = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Worldspace;
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "D"))
+					if (LCG_BM(CommonStrings::Extra, "E"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -3757,7 +3773,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "E")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "F")))
 					{
 						result.action = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Group;
@@ -3768,7 +3784,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "F")))
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "G")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}
@@ -3893,6 +3909,14 @@ namespace IED
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
 
 				break;
+			case Data::NodeOverrideConditionType::Worldspace:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::MatchParentWorldspace, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -4013,8 +4037,12 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Keyword));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
-			case Data::EquipmentOverrideConditionType::Location:
+			case Data::NodeOverrideConditionType::Location:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Location));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Worldspace:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Worldspace));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

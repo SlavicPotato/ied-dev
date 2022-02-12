@@ -164,5 +164,6 @@ namespace IED
 		Primary = 235,
 		Style = 236,
 		Location = 237,
+		Worldspace = 238,
 	};
 }

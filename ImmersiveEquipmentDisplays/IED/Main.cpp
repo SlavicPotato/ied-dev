@@ -109,7 +109,7 @@ namespace IED
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
 
-			g_controller->SinkEventsT1();
+			ASSERT(g_controller->SinkEventsT1());
 
 			break;
 		case SKSEMessagingInterface::kMessage_PreLoadGame:

@@ -73,6 +73,7 @@ namespace IED
 		bool m_weaponAdjustFix{ true };
 		bool m_forceDefaultConfig{ false };
 		bool m_disableNPCProcessing{ false };
+		bool m_immediateFavUpdate{ false };
 		LogLevel m_logLevel{ LogLevel::Message };
 
 		bool m_enableInMenus{ false };

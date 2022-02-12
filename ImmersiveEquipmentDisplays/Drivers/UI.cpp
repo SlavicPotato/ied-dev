@@ -356,11 +356,11 @@ namespace IED
 		{
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_drawTasks)
+			for (auto& [i, e] : m_drawTasks)
 			{
-				if (e.second->m_options.lock != e.second->m_state.holdsLock)
+				if (e->m_options.lock != e->m_state.holdsLock)
 				{
-					if (e.second->m_state.holdsLock = e.second->m_options.lock)
+					if (e->m_state.holdsLock = e->m_options.lock)
 					{
 						m_state.lockCounter++;
 					}
@@ -370,9 +370,9 @@ namespace IED
 					}
 				}
 
-				if (e.second->m_options.freeze != e.second->m_state.holdsFreeze)
+				if (e->m_options.freeze != e->m_state.holdsFreeze)
 				{
-					if (e.second->m_state.holdsFreeze = e.second->m_options.freeze)
+					if (e->m_state.holdsFreeze = e->m_options.freeze)
 					{
 						m_state.freezeCounter++;
 					}

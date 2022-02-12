@@ -41,6 +41,11 @@ namespace IED
 
 	bool ItemCandidateCollector::CheckForm(TESForm* a_form)
 	{
+		if (!a_form)
+		{
+			return false;
+		}
+
 		if (a_form->IsDeleted())  // ?
 		{
 			return false;
@@ -54,7 +59,7 @@ namespace IED
 		return true;
 	}
 
-	bool ItemCandidateCollector::Accept(TESContainer::ConfigEntry* entry)
+	bool ItemCandidateCollector::Accept(TESContainer::Entry* entry)
 	{
 		if (!entry)
 		{
@@ -62,11 +67,6 @@ namespace IED
 		}
 
 		auto form = entry->form;
-
-		if (!form)
-		{
-			return true;
-		}
 
 		if (!CheckForm(form))
 		{
@@ -101,11 +101,6 @@ namespace IED
 		}
 
 		auto form = a_entryData->type;
-
-		if (!form)
-		{
-			return true;
-		}
 
 		if (!CheckForm(form))
 		{

@@ -1185,10 +1185,11 @@ namespace IED
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						}
 						break;
+					case Data::EquipmentOverrideConditionType::Race:
 					case Data::EquipmentOverrideConditionType::Furniture:
 					case Data::EquipmentOverrideConditionType::Group:
 					case Data::EquipmentOverrideConditionType::Location:
-					case Data::EquipmentOverrideConditionType::Race:
+					case Data::EquipmentOverrideConditionType::Worldspace:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1374,10 +1375,11 @@ namespace IED
 								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 							}
 							break;
+						case Data::EquipmentOverrideConditionType::Race:
 						case Data::EquipmentOverrideConditionType::Furniture:
 						case Data::EquipmentOverrideConditionType::Group:
 						case Data::EquipmentOverrideConditionType::Location:
-						case Data::EquipmentOverrideConditionType::Race:
+						case Data::EquipmentOverrideConditionType::Worldspace:
 
 							it = a_entry.emplace(
 								it,
@@ -1602,6 +1604,17 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Location);
+
+								break;
+							case Data::EquipmentOverrideConditionType::Worldspace:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Worldspace);
 
 								break;
 							default:
@@ -1876,8 +1889,14 @@ namespace IED
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Location;
 					}
+					
+					if (LCG_MI(CommonStrings::Worldspace, "C"))
+					{
+						result.action = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Worldspace;
+					}
 
-					if (LCG_BM(CommonStrings::Extra, "C"))
+					if (LCG_BM(CommonStrings::Extra, "D"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -1892,7 +1911,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "D"))
+					if (LCG_MI(CommonStrings::Group, "E"))
 					{
 						result.action = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
@@ -1903,14 +1922,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "E"))
+				if (LCG_MI(CommonStrings::Delete, "F"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "F"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "G"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -1919,7 +1938,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "F"))
+					if (LCG_MI(CommonStrings::Copy, "G"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -1927,7 +1946,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "G"),
+							LS(CommonStrings::PasteOver, "H"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2175,6 +2194,15 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Worldspace:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::MatchParentWorldspace, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2297,6 +2325,10 @@ namespace IED
 				break;
 			case Data::EquipmentOverrideConditionType::Location:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Location));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Worldspace:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Worldspace));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

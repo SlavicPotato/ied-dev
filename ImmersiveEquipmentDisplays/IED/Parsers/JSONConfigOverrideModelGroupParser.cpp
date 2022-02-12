@@ -57,9 +57,9 @@ namespace IED
 
 				Parser<Data::configModelGroupEntry_t> eparser(m_state);
 
-				for (auto& e : a_data.entries)
+				for (auto& [i, e] : a_data.entries)
 				{
-					eparser.Create(e.second, entries[e.first]);
+					eparser.Create(e, entries[i]);
 				}
 			}
 

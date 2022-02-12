@@ -481,20 +481,20 @@ namespace IED
 					LS(UISettingsStrings::LogLevel, "ll_sel"),
 					desc))
 			{
-				for (auto& e : ILog::GetLogLevels())
+				for (auto& [i, e] : ILog::GetLogLevels())
 				{
-					bool selected = e.second == current;
+					bool selected = e == current;
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
 							ImGui::SetScrollHereY();
 					}
 
-					if (ImGui::Selectable(e.first.c_str(), selected))
+					if (ImGui::Selectable(i.c_str(), selected))
 					{
-						settings.data.logLevel = e.second;
+						settings.data.logLevel = e;
 						settings.mark_dirty();
-						gLog.SetLogLevel(e.second);
+						gLog.SetLogLevel(e);
 					}
 				}
 

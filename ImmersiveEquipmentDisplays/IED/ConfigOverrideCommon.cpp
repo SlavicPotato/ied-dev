@@ -87,6 +87,7 @@ namespace IED
 			case BGSHeadPart::kTypeID:
 			case BGSExplosion::kTypeID:
 			case BGSLocation::kTypeID:
+			case TESWorldSpace::kTypeID:
 				return form;
 			default:
 				return nullptr;

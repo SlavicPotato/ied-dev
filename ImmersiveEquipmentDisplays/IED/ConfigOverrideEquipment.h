@@ -35,7 +35,7 @@ namespace IED
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			// laying down (Furniture), loc child (Location)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped)
@@ -60,7 +60,8 @@ namespace IED
 			Actor,
 			NPC,
 			Extra,
-			Location
+			Location,
+			Worldspace
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -179,9 +180,11 @@ namespace IED
 				if (a_matchType == EquipmentOverrideConditionType::Race || 
 					a_matchType == EquipmentOverrideConditionType::Furniture ||
 				    a_matchType == EquipmentOverrideConditionType::Group ||
-				    a_matchType == EquipmentOverrideConditionType::Location)
+				    a_matchType == EquipmentOverrideConditionType::Location ||
+				    a_matchType == EquipmentOverrideConditionType::Worldspace)
 				{
-					if (a_matchType == EquipmentOverrideConditionType::Location)
+					if (a_matchType == EquipmentOverrideConditionType::Location ||
+					    a_matchType == EquipmentOverrideConditionType::Worldspace)
 					{
 						flags = EquipmentOverrideConditionFlags::kExtraFlag1;
 					}

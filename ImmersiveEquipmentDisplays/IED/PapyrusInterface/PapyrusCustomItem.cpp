@@ -408,6 +408,64 @@ namespace IED
 					GetSex(a_female),
 					a_switch);
 			}
+			
+			template <class T>
+			static bool SetItemUseWorldModel(
+				StaticFunctionTag*,
+				T* a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool a_female,
+				bool a_switch)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemUseWorldModelImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_switch);
+			}
+			
+			template <class T>
+			static bool SetIgnoreRaceEquipTypes(
+				StaticFunctionTag*,
+				T* a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool a_female,
+				bool a_switch)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetIgnoreRaceEquipTypesImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_switch);
+			}
 
 			template <class T>
 			static bool SetItemLoadChance(
@@ -996,6 +1054,48 @@ namespace IED
 						"SetItemLeftWeaponRace",
 						SCRIPT_NAME,
 						SetItemLeftWeapon<TESRace>,
+						a_registry));
+				
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemUseWorldModelActor",
+						SCRIPT_NAME,
+						SetItemUseWorldModel<Actor>,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemUseWorldModelNPC",
+						SCRIPT_NAME,
+						SetItemUseWorldModel<TESNPC>,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemUseWorldModelRace",
+						SCRIPT_NAME,
+						SetItemUseWorldModel<TESRace>,
+						a_registry));
+				
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetIgnoreRaceEquipTypesActor",
+						SCRIPT_NAME,
+						SetIgnoreRaceEquipTypes<Actor>,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetIgnoreRaceEquipTypesNPC",
+						SCRIPT_NAME,
+						SetIgnoreRaceEquipTypes<TESNPC>,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetIgnoreRaceEquipTypesRace",
+						SCRIPT_NAME,
+						SetIgnoreRaceEquipTypes<TESRace>,
 						a_registry));
 
 				a_registry->RegisterFunction(

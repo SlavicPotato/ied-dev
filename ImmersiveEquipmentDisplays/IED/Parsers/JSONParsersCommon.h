@@ -73,12 +73,12 @@ namespace IED
 			Parser<Game::FormID> pform(a_state);
 			Parser<Th> pholder(a_state);
 
-			for (auto& e : a_data)
+			for (auto& [i, e] : a_data)
 			{
 				auto &v = data.append(Json::Value());
 
-				pform.Create(e.first, v["form"]);
-				pholder.Create(e.second, v["data"]);
+				pform.Create(i, v["form"]);
+				pholder.Create(e, v["data"]);
 			}
 
 			a_out["version"] = a_version;

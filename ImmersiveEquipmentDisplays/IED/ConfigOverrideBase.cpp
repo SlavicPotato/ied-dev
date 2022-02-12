@@ -420,6 +420,12 @@ namespace IED
 				return Conditions::match_location<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Worldspace:
+
+				return Conditions::match_worldspace<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -663,6 +669,12 @@ namespace IED
 				return Conditions::match_location<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Worldspace:
+
+				return Conditions::match_worldspace<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -898,6 +910,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Location:
 
 				return Conditions::match_location<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Worldspace:
+
+				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
@@ -1141,29 +1159,6 @@ namespace IED
 			}
 
 			return nullptr;
-		}
-
-		bool configBase_t::has_equipment_override_form(
-			Game::FormID a_formid) const
-		{
-			/*auto it = std::find_if(
-				equipmentOverrides.begin(),
-				equipmentOverrides.end(),
-				[a_formid](auto& a_entry) { return a_formid == a_entry.form; });
-
-			return it != equipmentOverrides.end();*/
-			return false;
-		}
-
-		bool configBase_t::has_equipment_override_type(ObjectTypeExtra a_type) const
-		{
-			/*auto it = std::find_if(
-				equipmentOverrides.begin(),
-				equipmentOverrides.end(),
-				[a_type](auto& a_entry) { return a_type == a_entry.type; });
-
-			return it != equipmentOverrides.end();*/
-			return false;
 		}
 
 		bool configBaseFiltersHolder_t::run_filters(const processParams_t& a_params) const

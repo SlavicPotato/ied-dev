@@ -19,6 +19,7 @@ namespace IED
 		mutable stl::optional<bool> isDead;
 		mutable stl::optional<bool> inInterior;
 		mutable stl::optional<BGSLocation*> location;
+		mutable stl::optional<TESWorldSpace*> worldspace;
 
 		bool get_using_furniture() const
 		{
@@ -184,6 +185,16 @@ namespace IED
 			}
 
 			return *location;
+		}
+
+		constexpr auto get_worldspace() const
+		{
+			if (!worldspace)
+			{
+				worldspace = actor->GetWorldspace();
+			}
+
+			return *worldspace;
 		}
 	};
 }

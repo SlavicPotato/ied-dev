@@ -92,6 +92,7 @@ namespace IED
 								 LS(CommonStrings::Rename),
 								 "%s",
 								 LS(UIDialogImportExportStrings::RenamePrompt))
+							.fmt_input("%s", selected->m_key.c_str())
 							.call([this, item = *selected](const auto& a_p) {
 								std::string file(a_p.GetInput());
 

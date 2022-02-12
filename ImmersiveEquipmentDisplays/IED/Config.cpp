@@ -42,6 +42,8 @@ namespace IED
 			parsers.reader.Get(SECT_GENERAL, "LogCloseAfterInit", false);
 		m_forceDefaultConfig =
 			parsers.reader.Get(SECT_GENERAL, "ForceDefaultConfig", false);
+		m_immediateFavUpdate =
+			parsers.reader.Get(SECT_GENERAL, "ImmediateUpdateOnFav", false);
 
 		m_nodeOverrideEnabled =
 			parsers.reader.Get(SECT_NODE_OVERRIDE, "Enable", true);

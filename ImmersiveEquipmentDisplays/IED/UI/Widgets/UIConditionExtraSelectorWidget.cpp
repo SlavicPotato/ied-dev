@@ -30,11 +30,11 @@ namespace IED
 					condition_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_data)
+				for (auto& [i, e] : m_data)
 				{
-					ImGui::PushID(stl::underlying(e.first));
+					ImGui::PushID(stl::underlying(i));
 
-					bool selected = (e.first == a_type);
+					bool selected = (i == a_type);
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
@@ -42,10 +42,10 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIConditionExtraSelectorWidgetStrings, 3>(e.second, "1"),
+							LS<UIConditionExtraSelectorWidgetStrings, 3>(e, "1"),
 							selected))
 					{
-						a_type = e.first;
+						a_type = i;
 						result = true;
 					}
 

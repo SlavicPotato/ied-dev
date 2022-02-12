@@ -146,7 +146,7 @@ namespace IED
 					vkCode = VK_SHIFT;
 					break;
 				default:
-					vkCode = MapVirtualKeyExW(a_evn.key, MAPVK_VSC_TO_VK, nullptr);
+					vkCode = MapVirtualKeyExW(a_evn.key, MAPVK_VSC_TO_VK, layout);
 					break;
 				}
 

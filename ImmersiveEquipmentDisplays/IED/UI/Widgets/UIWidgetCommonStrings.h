@@ -82,6 +82,7 @@ namespace IED
 			ClearSelection = 2071,
 			IsFavorited = 2072,
 			IsChildLoc = 2073,
+			MatchParentWorldspace = 2074
 		};
 	}
 }

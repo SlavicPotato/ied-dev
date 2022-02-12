@@ -87,5 +87,26 @@ namespace IED
 
 			return false;
 		}
+
+		bool match_worldspace(
+			TESWorldSpace* a_current,
+			Game::FormID a_wsId,
+			bool a_matchParent)
+		{
+			if (a_current->formID == a_wsId)
+			{
+				return true;
+			}
+
+			if (a_matchParent)
+			{
+				if (auto parent = a_current->GetParentWorldspace())
+				{
+					return parent->formID == a_wsId;
+				}
+			}
+
+			return false;
+		}
 	}
 }

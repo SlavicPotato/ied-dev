@@ -283,6 +283,12 @@ namespace IED
 			bool visible;
 		};
 
+		struct actorLocationData_t
+		{
+			bool inInterior{ false };
+			TESWorldSpace* worldspace{ nullptr };
+		};
+
 	public:
 		using slot_container_type = objectEntrySlot_t[stl::underlying(Data::ObjectSlot::kMax)];
 
@@ -472,7 +478,8 @@ namespace IED
 		Game::FormID m_formid;
 
 		bool m_cellAttached{ false };
-		bool m_inInterior{ false };
+
+		actorLocationData_t m_locData;
 
 		IObjectManager& m_owner;
 	};

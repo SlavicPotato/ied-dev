@@ -1621,7 +1621,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
@@ -1645,6 +1644,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp">
       <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ProcessParams.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

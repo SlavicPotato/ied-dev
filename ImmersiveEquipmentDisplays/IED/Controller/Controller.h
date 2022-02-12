@@ -47,7 +47,7 @@ namespace IED
 		public BSTEventSink<TESSwitchRaceCompleteEvent>,
 		public BSTEventSink<MenuOpenCloseEvent>,
 		public BSTEventSink<SKSENiNodeUpdateEvent>,
-		public BSTEventSink<TESQuestStartStopEvent>,
+		//public BSTEventSink<TESQuestStartStopEvent>,
 		public BSTEventSink<TESActorLocationChangeEvent>
 	{
 		enum class SerializationVersion : std::uint32_t
@@ -808,9 +808,9 @@ namespace IED
 			const MenuOpenCloseEvent* evn,
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
 
-		virtual EventResult ReceiveEvent(
+		/*virtual EventResult ReceiveEvent(
 			const TESQuestStartStopEvent* a_evn,
-			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;
+			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;*/
 		
 		virtual EventResult ReceiveEvent(
 			const TESActorLocationChangeEvent* a_evn,

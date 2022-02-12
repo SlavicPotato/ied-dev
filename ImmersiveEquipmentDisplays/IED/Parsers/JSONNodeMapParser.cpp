@@ -60,14 +60,14 @@ namespace IED
 
 			Parser<Data::NodeMap::value_type> parser(m_state);
 
-			for (auto& e : a_data)
+			for (auto& [i, e] : a_data)
 			{
-				if (a_extraOnly && !e.second.flags.test(Data::NodeDescriptorFlags::kExtra))
+				if (a_extraOnly && !e.flags.test(Data::NodeDescriptorFlags::kExtra))
 				{
 					continue;
 				}
 
-				parser.Create(e.second, data[e.first.c_str()]);
+				parser.Create(e, data[i.c_str()]);
 			}
 
 			a_out["version"] = CURRENT_VERSION;

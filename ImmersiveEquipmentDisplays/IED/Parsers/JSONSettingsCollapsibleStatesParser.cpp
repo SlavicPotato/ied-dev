@@ -32,12 +32,12 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
-			for (auto& e : a_data.data())
+			for (auto& [i, e] : a_data.data())
 			{
 				auto& v = data.append(Json::Value(Json::ValueType::arrayValue));
 
-				v.append(e.first);
-				v.append(e.second);
+				v.append(i);
+				v.append(e);
 			}
 
 			a_out["version"] = CURRENT_VERSION;

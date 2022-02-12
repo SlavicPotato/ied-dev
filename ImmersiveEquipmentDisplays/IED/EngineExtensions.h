@@ -173,6 +173,7 @@ namespace IED
 		void Patch_CreateWeaponNodes();
 		void Patch_AdjustSkip_SE();
 		void Patch_AdjustSkip_AE();
+		void Patch_ToggleFav();
 
 		static void RemoveAllBipedParts_Hook(Biped* a_biped);
 		static void Character_Resurrect_Hook(
@@ -195,29 +196,30 @@ namespace IED
 		static void ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
 		static bool GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
+		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
 
 		static bool AdjustSkip_Test(BSFixedString& a_name);
 
 		inline static const auto m_vtblCharacter_a = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a = IAL::Address<std::uintptr_t>(260538, 207511);
 		inline static const auto m_createWeaponNodes_a = IAL::Address<std::uintptr_t>(19342, 19769);
-
 		inline static const auto m_removeAllBipedParts_a = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
 		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
 		inline static const auto m_armorUpdate_a = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
 		inline static const auto m_garbageCollectorREFR_a = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
 		inline static const auto m_weapAdj_a = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, 0x427);
 		inline static const auto m_adjustSkip_a = IAL::Address<std::uintptr_t>(62933, 63856);
+		inline static const auto m_toggleFav1_a = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
 
-		decltype(&Character_Resurrect_Hook) m_characterResurrect_o;
-		decltype(&Character_Release3D_Hook) m_characterRelease3D_o;
-		decltype(&Actor_Release3D_Hook) m_actorRelease3D_o;
-		decltype(&ReanimateActorStateUpdate_Hook) m_ReanimActorStateUpd_o;
-		decltype(&ArmorUpdate_Hook) m_ArmorChange_o;
-		decltype(&GarbageCollectorReference_Hook) m_garbageCollectorReference_o;
-
-		decltype(&CreateWeaponNodes_Hook) m_createWeaponNodes_o;
-		decltype(&RemoveAllBipedParts_Hook) m_removeAllBipedParts_o;
+		decltype(&Character_Resurrect_Hook) m_characterResurrect_o{ nullptr };
+		decltype(&Character_Release3D_Hook) m_characterRelease3D_o{ nullptr };
+		decltype(&Actor_Release3D_Hook) m_actorRelease3D_o{ nullptr };
+		decltype(&ReanimateActorStateUpdate_Hook) m_ReanimActorStateUpd_o{ nullptr };
+		decltype(&ArmorUpdate_Hook) m_ArmorChange_o{ nullptr };
+		decltype(&GarbageCollectorReference_Hook) m_garbageCollectorReference_o{ nullptr };
+		decltype(&CreateWeaponNodes_Hook) m_createWeaponNodes_o{ nullptr };
+		decltype(&RemoveAllBipedParts_Hook) m_removeAllBipedParts_o{ nullptr };
+		decltype(&ToggleFavGetExtraList_Hook) m_toggleFavGetExtraList_o{ nullptr };
 
 		struct
 		{

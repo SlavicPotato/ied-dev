@@ -179,41 +179,62 @@ namespace IED
 
 		m_timer.Begin();
 
-		for (auto& e : m_controller.m_objects)
+		for (auto& [i, e] : m_controller.m_objects)
 		{
-			if (!e.second.m_actor->formID)
+			if (!e.m_actor->formID)
 			{
 				continue;
 			}
 
-			auto cell = e.second.m_actor->parentCell;
-
-			if (bool interior = cell && cell->IsInterior();
-			    interior != e.second.m_inInterior)
+			auto cell = e.m_actor->GetParentCell();
+			if (cell && cell->IsAttached())
 			{
-				e.second.m_inInterior = interior;
-				e.second.RequestEvalDefer();
+				e.m_cellAttached = true;
 			}
-
-			if (!(e.second.m_cellAttached = cell && cell->IsAttached()))
+			else
 			{
+				e.m_cellAttached = false;
 				continue;
 			}
 
-			ProcessEvalRequest(e.second);
-
-			if (CheckMonitorNodes(e.second))
+			if (bool interior = cell->IsInterior();
+			    interior != e.m_locData.inInterior)
 			{
-				e.second.RequestTransformUpdateDeferNoSkip();
+				e.m_locData.inInterior = interior;
+				e.RequestEvalDefer();
 			}
 
-			ProcessTransformUpdateRequest(e.second);
+			if (auto ws = cell->GetWorldSpace();
+			    ws != e.m_locData.worldspace)
+			{
+				/*_DMESSAGE(
+					"%X: changed ws: %X -> %X",
+					e.m_actor->formID,
+					e.m_locData.worldspace ?
+                        e.m_locData.worldspace->formID :
+                        0,
+					ws ?
+                        ws->formID :
+                        0);*/
+
+				e.m_locData.worldspace = ws;
+				e.RequestEvalDefer();
+			}
+
+			ProcessEvalRequest(e);
+
+			if (CheckMonitorNodes(e))
+			{
+				e.RequestTransformUpdateDeferNoSkip();
+			}
+
+			ProcessTransformUpdateRequest(e);
 
 			bool update = false;
 
-			for (auto& f : e.second.m_entriesSlot)
+			for (auto& f : e.m_entriesSlot)
 			{
-				UpdateRef(e.second, f);
+				UpdateRef(e, f);
 
 				if (f.hideCountdown)
 				{
@@ -235,20 +256,20 @@ namespace IED
 				}
 			}
 
-			for (auto& f : e.second.m_entriesCustom)
+			for (auto& f : e.m_entriesCustom)
 			{
 				for (auto& g : f)
 				{
 					for (auto& h : g.second)
 					{
-						UpdateRef(e.second, h.second);
+						UpdateRef(e, h.second);
 					}
 				}
 			}
 
 			if (update)
 			{
-				e.second.RequestTransformUpdateDeferNoSkip();
+				e.RequestTransformUpdateDeferNoSkip();
 			}
 		}
 

@@ -64,9 +64,10 @@ namespace IED
 			const auto& raceConf = GetRaceSettings();
 			auto& rl = Data::IData::GetRaceList();
 
-			for (auto& e : rl)
+			for (auto& [i, e] : rl)
 			{
-				if (raceConf.playableOnly && !e.second.playable)
+				if (raceConf.playableOnly &&
+				    !e.playable)
 				{
 					continue;
 				}
@@ -74,12 +75,12 @@ namespace IED
 				stl::snprintf(
 					m_listBuf1,
 					"[%.8X] %s",
-					e.first.get(),
+					i.get(),
 					raceConf.showEditorIDs ?
-                        e.second.edid.c_str() :
-                        e.second.fullname.c_str());
+                        e.edid.c_str() :
+                        e.fullname.c_str());
 
-				m_listData.try_emplace(e.first, m_listBuf1);
+				m_listData.try_emplace(i, m_listBuf1);
 			}
 
 			if (m_listData.empty())

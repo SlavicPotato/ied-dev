@@ -531,6 +531,12 @@ namespace IED
 			return Conditions::match_location<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Worldspace:
+
+			return Conditions::match_worldspace<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}
 
 		return false;

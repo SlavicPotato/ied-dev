@@ -57,14 +57,14 @@ namespace IED
 
 			Parser<Data::configCustom_t> pslot(m_state);
 
-			for (auto& e : a_data.data)
+			for (auto& [i, e] : a_data.data)
 			{
 				parserDescConst_t<Data::configCustom_t> desc[]{
-					{ "m", e.second(ConfigSex::Male) },
-					{ "f", e.second(ConfigSex::Female) }
+					{ "m", e(ConfigSex::Male) },
+					{ "f", e(ConfigSex::Female) }
 				};
 
-				auto& v = data[e.first];
+				auto& v = data[i];
 
 				for (auto& f : desc)
 				{

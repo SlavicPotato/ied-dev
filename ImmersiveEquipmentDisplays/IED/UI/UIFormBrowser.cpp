@@ -42,7 +42,8 @@ namespace IED
 			      { UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
 			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
 			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID },
-			      { UIFormBrowserStrings::Locations, BGSLocation::kTypeID }
+			      { UIFormBrowserStrings::Locations, BGSLocation::kTypeID },
+			      { UIFormBrowserStrings::Worldspaces, TESWorldSpace::kTypeID }
 
 			    }
 			}
@@ -51,6 +52,7 @@ namespace IED
 			m_formIDFilter.SetFlags(
 				ImGuiInputTextFlags_EnterReturnsTrue |
 				ImGuiInputTextFlags_CharsHexadecimal);
+
 			m_formNameFilter.SetFlags(ImGuiInputTextFlags_EnterReturnsTrue);
 		}
 

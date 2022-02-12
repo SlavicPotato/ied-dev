@@ -855,6 +855,80 @@ namespace IED
 				return true;
 			}
 
+			bool SetItemUseWorldModelImpl(
+				Game::FormID a_target,
+				Data::ConfigClass a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex a_sex,
+				bool a_switch)
+			{
+				IScopedLock lock(g_controller->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				auto old = e.flags;
+
+				if (a_switch)
+				{
+					e.flags.set(BaseFlags::kUseWorldModel);
+				}
+				else
+				{
+					e.flags.clear(BaseFlags::kUseWorldModel);
+				}
+
+				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueReset(a_target, a_class, a_key, a_name);
+				}
+
+				return true;
+			}
+
+			bool SetIgnoreRaceEquipTypesImpl(
+				Game::FormID a_target,
+				Data::ConfigClass a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex a_sex,
+				bool a_switch)
+			{
+				IScopedLock lock(g_controller->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				auto old = e.flags;
+
+				if (a_switch)
+				{
+					e.flags.set(BaseFlags::kIgnoreRaceEquipTypes);
+				}
+				else
+				{
+					e.flags.clear(BaseFlags::kIgnoreRaceEquipTypes);
+				}
+
+				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueReset(a_target, a_class, a_key, a_name);
+				}
+
+				return true;
+			}
+
 			bool SetItemLoadChanceImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,

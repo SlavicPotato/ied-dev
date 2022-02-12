@@ -228,10 +228,6 @@ namespace IED
 				const slot_container_type& a_data,
 				const equipmentOverrideCondition_t& a_match);
 
-		public:
-			bool has_equipment_override_form(Game::FormID a_formid) const;
-			bool has_equipment_override_type(ObjectTypeExtra a_type) const;
-
 		protected:
 			template <class Archive>
 			void serialize(Archive& ar, const unsigned int version)

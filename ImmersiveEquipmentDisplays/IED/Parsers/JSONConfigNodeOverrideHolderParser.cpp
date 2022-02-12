@@ -88,14 +88,14 @@ namespace IED
 
 			auto& vdata = (data["data"] = Json::Value(Json::ValueType::objectValue));
 
-			for (auto& e : a_data.data)
+			for (auto& [i, e] : a_data.data)
 			{
 				parserDescConst_t<Data::configNodeOverrideTransform_t> desc[]{
-					{ "m", e.second(ConfigSex::Male) },
-					{ "f", e.second(ConfigSex::Female) }
+					{ "m", e(ConfigSex::Male) },
+					{ "f", e(ConfigSex::Female) }
 				};
 
-				auto& v = vdata[e.first];
+				auto& v = vdata[i];
 
 				for (auto& f : desc)
 				{
@@ -105,14 +105,14 @@ namespace IED
 
 			auto& pdata = (data["pdata"] = Json::Value(Json::ValueType::objectValue));
 
-			for (auto& e : a_data.placementData)
+			for (auto& [i, e] : a_data.placementData)
 			{
 				parserDescConst_t<Data::configNodeOverridePlacement_t> desc[]{
-					{ "m", e.second(ConfigSex::Male) },
-					{ "f", e.second(ConfigSex::Female) }
+					{ "m", e(ConfigSex::Male) },
+					{ "f", e(ConfigSex::Female) }
 				};
 
-				auto& v = pdata[e.first];
+				auto& v = pdata[i];
 
 				for (auto& f : desc)
 				{

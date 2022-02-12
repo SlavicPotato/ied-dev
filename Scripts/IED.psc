@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 2
+	return 3
 EndFunction
 
 Int Function GetVersion() native global
@@ -66,6 +66,14 @@ Bool Function SetItemEquipmentModeRace(Race akRace, string asPlugin, string asNa
 Bool Function SetItemLeftWeaponActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
 Bool Function SetItemLeftWeaponNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
 Bool Function SetItemLeftWeaponRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
+
+Bool Function SetItemUseWorldModelActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
+Bool Function SetItemUseWorldModelNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
+Bool Function SetItemUseWorldModelRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
+
+Bool Function SetIgnoreRaceEquipTypesActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
+Bool Function SetIgnoreRaceEquipTypesNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
+Bool Function SetIgnoreRaceEquipTypesRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
 
 Bool Function SetItemLoadChanceActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEnable, float afPercentChance) native global
 Bool Function SetItemLoadChanceNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable, float afPercentChance) native global

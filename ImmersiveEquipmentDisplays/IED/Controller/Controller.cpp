@@ -599,9 +599,18 @@ namespace IED
 		bool a_xfrmUpdate,
 		bool a_xfrmUpdateNoDefer) const
 	{
-		ITaskPool::AddTask([this, a_actor, a_defer, a_xfrmUpdate, a_xfrmUpdateNoDefer]() {
-			RequestEvaluate(a_actor, a_defer, a_xfrmUpdate, a_xfrmUpdateNoDefer);
-		});
+		ITaskPool::AddTask(
+			[this,
+		     a_actor,
+		     a_defer,
+		     a_xfrmUpdate,
+		     a_xfrmUpdateNoDefer]() {
+				RequestEvaluate(
+					a_actor,
+					a_defer,
+					a_xfrmUpdate,
+					a_xfrmUpdateNoDefer);
+			});
 	}
 
 	void Controller::RequestEvaluate(
@@ -4493,8 +4502,8 @@ namespace IED
 			auto& e = biped->objects[Biped::BIPED_OBJECT::kQuiver];
 
 			if (e.item &&
-			    e.item != e.addon && 
-				e.item->formType == TESAmmo::kTypeID)
+			    e.item != e.addon &&
+			    e.item->formType == TESAmmo::kTypeID)
 			{
 				auto& slot = a_cache.GetSlot(ObjectSlot::kAmmo);
 
@@ -4671,19 +4680,22 @@ namespace IED
 			    a_evn->menuName ==
 			        uish->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu))
 			{
-				QueueEvaluate(*g_thePlayer, ControllerUpdateFlags::kAll);
+				if (auto player = *g_thePlayer)
+				{
+					RequestEvaluate(player->formID, false, false, false);
+				}
 			}
 		}
 
 		return EventResult::kContinue;
 	}
 
-	EventResult Controller::ReceiveEvent(
+	/*EventResult Controller::ReceiveEvent(
 		const TESQuestStartStopEvent* a_evn,
 		BSTEventSource<TESQuestStartStopEvent>*)
 	{
 		return EventResult::kContinue;
-	}
+	}*/
 
 	EventResult Controller::ReceiveEvent(
 		const TESActorLocationChangeEvent* a_evn,

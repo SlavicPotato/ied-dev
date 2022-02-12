@@ -118,45 +118,46 @@ namespace IED
 	{
 		auto result = std::make_unique<data_type>();
 
-		auto dh = DataHandler::GetSingleton();
-		ASSERT(dh);
+		if (auto dh = DataHandler::GetSingleton())
+		{
+			Populate(*result, dh->weapons);
+			Populate(*result, dh->armors);
+			Populate(*result, dh->miscObjects);
+			Populate(*result, dh->arrSLGM);
+			Populate(*result, dh->arrLIGH);
+			Populate(*result, dh->arrSTAT);
+			Populate(*result, dh->keys);
+			Populate(*result, dh->books);
+			Populate(*result, dh->ingredients);
+			Populate(*result, dh->potions);
+			Populate(*result, dh->scrolls);
+			Populate(*result, dh->ammo);
+			Populate(*result, dh->keywords);
+			Populate(*result, dh->npcs);
+			Populate(*result, dh->arrFLOR);
+			Populate(*result, dh->arrFURN);
+			Populate(*result, dh->spells);
+			Populate(*result, dh->races);
+			Populate(*result, dh->arrARTO);
+			Populate(*result, dh->arrTREE);
+			Populate(*result, dh->arrACTI);
+			Populate(*result, dh->arrTACT);
+			Populate(*result, dh->arrSNDR);
+			Populate(*result, dh->quests);
+			Populate(*result, dh->arrGRAS);
+			Populate(*result, dh->arrANIO);
+			Populate(*result, dh->arrLCTN);
+			Populate(*result, dh->arrWRLD);
+			Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
-		Populate(*result, dh->weapons);
-		Populate(*result, dh->armors);
-		Populate(*result, dh->miscObjects);
-		Populate(*result, dh->arrSLGM);
-		Populate(*result, dh->arrLIGH);
-		Populate(*result, dh->arrSTAT);
-		Populate(*result, dh->keys);
-		Populate(*result, dh->books);
-		Populate(*result, dh->ingredients);
-		Populate(*result, dh->potions);
-		Populate(*result, dh->scrolls);
-		Populate(*result, dh->ammo);
-		Populate(*result, dh->keywords);
-		Populate(*result, dh->npcs);
-		Populate(*result, dh->arrFLOR);
-		Populate(*result, dh->arrFURN);
-		Populate(*result, dh->spells);
-		Populate(*result, dh->races);
-		Populate(*result, dh->arrARTO);
-		Populate(*result, dh->arrTREE);
-		Populate(*result, dh->arrACTI);
-		Populate(*result, dh->arrTACT);
-		Populate(*result, dh->arrSNDR);
-		Populate(*result, dh->quests);
-		Populate(*result, dh->arrGRAS);
-		Populate(*result, dh->arrANIO);
-		Populate(*result, dh->arrLCTN);
-		Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
-
-		Populate2(
-			*result,
-			dh->armors,
-			EXTRA_TYPE_ARMOR,
-			[](TESObjectARMO* a_armor) {
-				return !a_armor->IsShield();
-			});
+			Populate2(
+				*result,
+				dh->armors,
+				EXTRA_TYPE_ARMOR,
+				[](auto a_armor) {
+					return !a_armor->IsShield();
+				});
+		}
 
 		return result;
 	}

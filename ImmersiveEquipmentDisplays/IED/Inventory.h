@@ -28,11 +28,6 @@ namespace IED
 	struct ItemCandidateCollector
 	{
 	private:
-		struct slots_t
-		{
-			Data::ObjectSlot slot;
-			Data::ObjectSlot slotLeft;
-		};
 
 	public:
 		ItemCandidateCollector(
@@ -42,7 +37,7 @@ namespace IED
 			TESContainer& a_container,
 			EntryDataList* a_dataList);
 
-		SKMP_FORCEINLINE bool Accept(TESContainer::ConfigEntry* entry);
+		SKMP_FORCEINLINE bool Accept(TESContainer::Entry* entry);
 		SKMP_FORCEINLINE bool Accept(InventoryEntryData* a_entryData);
 
 		void GenerateSlotCandidates(bool a_checkFav);

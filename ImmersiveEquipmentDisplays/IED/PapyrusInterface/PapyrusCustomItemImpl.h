@@ -181,6 +181,22 @@ namespace IED
 				Data::ConfigSex a_sex,
 				bool a_switch);
 			
+			bool SetItemUseWorldModelImpl(
+				Game::FormID a_target,
+				Data::ConfigClass a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex a_sex,
+				bool a_switch);
+			
+			bool SetIgnoreRaceEquipTypesImpl(
+				Game::FormID a_target,
+				Data::ConfigClass a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex a_sex,
+				bool a_switch);
+			
 			bool SetItemLoadChanceImpl(
 				Game::FormID a_target,
 				Data::ConfigClass a_class,
