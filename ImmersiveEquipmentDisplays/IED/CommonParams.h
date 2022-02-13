@@ -197,6 +197,12 @@ namespace IED
 			return *worldspace;
 		}
 
+		[[nodiscard]] inline constexpr auto is_player_teammate() const noexcept
+		{
+			return actor != *g_thePlayer &&
+			       actor->IsPlayerTeammate();
+		}
+		
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && (race->validEquipTypes & a_mask) == a_mask;

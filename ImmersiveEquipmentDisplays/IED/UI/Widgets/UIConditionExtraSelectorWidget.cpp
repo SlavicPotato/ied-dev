@@ -11,6 +11,9 @@ namespace IED
 			{ Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield },
 			{ Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
+			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
+			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
+			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
 
 		} };
 
@@ -69,6 +72,12 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsDead);
 			case Data::ExtraConditionType::kInInterior:
 				return LS(UIConditionExtraSelectorWidgetStrings::InInterior);
+			case Data::ExtraConditionType::kIsPlayerTeammate:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate);
+			case Data::ExtraConditionType::kIsGuard:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsGuard);
+			case Data::ExtraConditionType::kIsMount:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsMount);
 			default:
 				return nullptr;
 			}

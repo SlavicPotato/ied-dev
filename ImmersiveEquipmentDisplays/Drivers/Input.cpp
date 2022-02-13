@@ -13,10 +13,15 @@ namespace IED
 
 		Input Input::m_Instance;
 
-		bool Input::PlayerControls_InputEvent_ProcessEvent_Hook(
+		bool Input::PlayerControls_InputEvent_ProcessEvents_Hook(
 			const InputEvent** a_evns)
 		{
-			bool blocked = m_Instance.m_inputBlocked.load(
+			return m_Instance.ProcessEventsHookImpl(a_evns);
+		}
+
+		bool Input::ProcessEventsHookImpl(const InputEvent** a_evns)
+		{
+			bool blocked = m_inputBlocked.load(
 				std::memory_order_relaxed);
 
 			if (blocked)
@@ -33,58 +38,63 @@ namespace IED
 
 			if (a_evns)
 			{
-				for (auto inputEvent = *a_evns; inputEvent; inputEvent = inputEvent->next)
-				{
-					auto buttonEvent = inputEvent->AsButtonEvent();
-					if (!buttonEvent)
-					{
-						continue;
-					}
-
-					auto deviceType = buttonEvent->device;
-					std::uint32_t keyCode;
-
-					if (deviceType == INPUT_DEVICE::kMouse)
-					{
-						keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
-					}
-					else if (deviceType == INPUT_DEVICE::kKeyboard)
-					{
-						keyCode = buttonEvent->GetIDCode();
-					}
-					else
-					{
-						continue;
-					}
-					
-					if (!keyCode || keyCode >= InputMap::kMaxMacros)
-					{
-						continue;
-					}
-
-					//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
-
-					if (buttonEvent->IsDown())
-					{
-						m_Instance.DispatchPriorityKeyEvent(
-							KeyEventState::KeyDown,
-							keyCode);
-					}
-					else if (buttonEvent->IsUpLF())
-					{
-						m_Instance.DispatchPriorityKeyEvent(
-							KeyEventState::KeyUp,
-							keyCode);
-					}
-				}
+				ProcessPriorityEvents(a_evns);
 			}
 
-			if (m_Instance.m_nextIEPCall)
+			if (m_nextIEPCall)
 			{
-				blocked |= m_Instance.m_nextIEPCall(a_evns);
+				blocked |= m_nextIEPCall(a_evns);
 			}
 
 			return blocked;
+		}
+
+		void Input::ProcessPriorityEvents(const InputEvent** a_evns)
+		{
+			for (auto it = *a_evns; it; it = it->next)
+			{
+				auto buttonEvent = it->AsButtonEvent();
+				if (!buttonEvent)
+				{
+					continue;
+				}
+
+				auto deviceType = buttonEvent->device;
+				std::uint32_t keyCode;
+
+				if (deviceType == INPUT_DEVICE::kMouse)
+				{
+					keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
+				}
+				else if (deviceType == INPUT_DEVICE::kKeyboard)
+				{
+					keyCode = buttonEvent->GetIDCode();
+				}
+				else
+				{
+					continue;
+				}
+
+				if (!keyCode || keyCode >= InputMap::kMaxMacros)
+				{
+					continue;
+				}
+
+				//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
+
+				if (buttonEvent->IsDown())
+				{
+					DispatchPriorityKeyEvent(
+						KeyEventState::KeyDown,
+						keyCode);
+				}
+				else if (buttonEvent->IsUpLF())
+				{
+					DispatchPriorityKeyEvent(
+						KeyEventState::KeyUp,
+						keyCode);
+				}
+			}
 		}
 
 		auto Input::ReceiveEvent(
@@ -94,9 +104,9 @@ namespace IED
 		{
 			if (a_evns)
 			{
-				for (auto inputEvent = *a_evns; inputEvent; inputEvent = inputEvent->next)
+				for (auto it = *a_evns; it; it = it->next)
 				{
-					auto buttonEvent = inputEvent->AsButtonEvent();
+					auto buttonEvent = it->AsButtonEvent();
 					if (!buttonEvent)
 					{
 						continue;
@@ -280,16 +290,16 @@ namespace IED
 					dq(a_targetAddr + 0x5);
 
 					L(callLabel);
-					dq(std::uintptr_t(PlayerControls_InputEvent_ProcessEvent_Hook));
+					dq(std::uintptr_t(PlayerControls_InputEvent_ProcessEvents_Hook));
 				}
 			};
 
 			if ((IAL::IsAE() ?
                      ExtractHookCallAddr<true>(
-						 m_unkIEProc_a,
+						 m_inputEventpProc_a,
 						 m_Instance.m_nextIEPCall) :
                      ExtractHookCallAddr<false>(
-						 m_unkIEProc_a,
+						 m_inputEventpProc_a,
 						 m_Instance.m_nextIEPCall)))
 			{
 				m_Instance.Debug(
@@ -303,7 +313,7 @@ namespace IED
 				{
 					ASSERT_STR(
 						Patching::validate_mem(
-							m_unkIEProc_a,
+							m_inputEventpProc_a,
 							{ 0x48, 0x3B, 0xF3, 0x74, 0x61 }),
 						"Memory validation failed");
 				}
@@ -311,7 +321,7 @@ namespace IED
 				{
 					ASSERT_STR(
 						Patching::validate_mem(
-							m_unkIEProc_a,
+							m_inputEventpProc_a,
 							{ 0x48, 0x3B, 0xFB, 0x74, 0x65 }),
 						"Memory validation failed");
 				}
@@ -319,9 +329,9 @@ namespace IED
 
 			m_Instance.LogPatchBegin(__FUNCTION__);
 			{
-				ProcessInputEvent code(m_unkIEProc_a);
+				ProcessInputEvent code(m_inputEventpProc_a);
 
-				ISKSE::GetBranchTrampoline().Write5Branch(m_unkIEProc_a, code.get());
+				ISKSE::GetBranchTrampoline().Write5Branch(m_inputEventpProc_a, code.get());
 			}
 			m_Instance.LogPatchEnd(__FUNCTION__);
 		}

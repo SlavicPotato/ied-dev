@@ -11,7 +11,8 @@ namespace IED
 	ActorProcessorTask::ActorProcessorTask(
 		Controller& a_controller) :
 		m_controller(a_controller)
-	{}
+	{
+	}
 
 	void ActorProcessorTask::UpdateRef(
 		const ActorObjectHolder& a_record,
@@ -207,18 +208,22 @@ namespace IED
 			if (auto ws = cell->GetWorldSpace();
 			    ws != e.m_locData.worldspace)
 			{
-				/*_DMESSAGE(
-					"%X: changed ws: %X -> %X",
-					e.m_actor->formID,
-					e.m_locData.worldspace ?
-                        e.m_locData.worldspace->formID :
-                        0,
-					ws ?
-                        ws->formID :
-                        0);*/
-
 				e.m_locData.worldspace = ws;
 				e.RequestEvalDefer();
+			}
+
+			if (IPerfCounter::delta_us(
+					e.m_lastLFStateCheck,
+					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_LOW)
+			{
+				e.m_lastLFStateCheck = m_timer.GetStartTime();
+
+				if (auto n = e.m_actor->IsPlayerTeammate();
+				    n != e.m_isPlayerTeammate)
+				{
+					e.m_isPlayerTeammate = n;
+					e.RequestEvalDefer();
+				}
 			}
 
 			ProcessEvalRequest(e);

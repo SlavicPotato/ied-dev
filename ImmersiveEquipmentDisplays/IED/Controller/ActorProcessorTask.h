@@ -29,6 +29,9 @@ namespace IED
 		}
 
 	private:
+
+		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
+
 		virtual void Run() override;
 
 		SKMP_FORCEINLINE void UpdateRef(

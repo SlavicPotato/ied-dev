@@ -478,6 +478,8 @@ namespace IED
 		Game::FormID m_formid;
 
 		bool m_cellAttached{ false };
+		bool m_isPlayerTeammate{ false };
+		long long m_lastLFStateCheck;
 
 		actorLocationData_t m_locData;
 

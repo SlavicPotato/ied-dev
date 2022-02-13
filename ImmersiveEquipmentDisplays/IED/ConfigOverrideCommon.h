@@ -164,6 +164,9 @@ namespace IED
 			kCanDualWield = 0,
 			kIsDead = 1,
 			kInInterior = 2,
+			kIsPlayerTeammate = 3,
+			kIsGuard = 4,
+			kIsMount = 5,
 		};
 	}
 }

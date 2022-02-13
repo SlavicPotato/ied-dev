@@ -18,23 +18,22 @@ namespace IED
 				return a_params.get_actor_dead();
 			case Data::ExtraConditionType::kInInterior:
 				return a_params.get_in_interior();
+			case Data::ExtraConditionType::kIsPlayerTeammate:
+				return a_params.is_player_teammate();
+			case Data::ExtraConditionType::kIsGuard:
+				return a_params.actor->IsGuard();
+			case Data::ExtraConditionType::kIsMount:
+				return a_params.actor->IsMount();
+			default:
+				return false;
 			}
-
-			return false;
 		}
 
 		bool match_form(
 			Game::FormID a_formid,
 			TESForm* a_form)
 		{
-			if (a_formid)
-			{
-				return a_form->formID == a_formid;
-			}
-			else
-			{
-				return false;
-			}
+			return a_formid && a_form->formID == a_formid;
 		}
 
 		bool is_in_location(

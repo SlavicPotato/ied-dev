@@ -3160,22 +3160,11 @@ namespace IED
 			return;
 		}
 
-		if (refr->formID != a_objects.m_formid)
-		{
-			Warning(
-				"%s [%u]: form id mismatch (%.8X != %.8X, %hhu)",
-				__FUNCTION__,
-				__LINE__,
-				refr->formID,
-				a_objects.m_formid,
-				refr->formType);
-		}
-
 		auto actor = refr->As<Actor>();
 		if (!actor)
 		{
 			Warning(
-				"%s [%u]: %.8X: not an actor (%u, %hhu)",
+				"%s [%u]: %.8X: not an actor (%.8X, %hhu)",
 				__FUNCTION__,
 				__LINE__,
 				refr->formID.get(),
@@ -3185,12 +3174,20 @@ namespace IED
 			return;
 		}
 
-		if (!IsREFRValid(refr))
+		if (refr != a_objects.m_actor)
 		{
-			return;
+			Warning(
+				"%s [%u]: actor mismatch (%.8X != %.8X)",
+				__FUNCTION__,
+				__LINE__,
+				refr->formID,
+				a_objects.m_formid);
 		}
 
-		EvaluateImpl(actor, handle, a_objects, a_flags);
+		if (IsREFRValid(refr))
+		{
+			EvaluateImpl(actor, handle, a_objects, a_flags);
+		}
 	}
 
 	void Controller::EvaluateTransformsImpl(Game::FormID a_actor)

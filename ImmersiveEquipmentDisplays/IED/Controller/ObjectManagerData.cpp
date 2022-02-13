@@ -36,6 +36,8 @@ namespace IED
 		},
 		m_created(IPerfCounter::Query())
 	{
+		m_lastLFStateCheck = m_created;
+
 		if (a_nodeOverrideEnabled &&
 		    (a_actor != *g_thePlayer ||
 		     a_nodeOverrideEnabledPlayer))

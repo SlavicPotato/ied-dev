@@ -41,7 +41,10 @@ namespace IED
 				InputEvent* const* a_evns,
 				BSTEventSource<InputEvent*>* a_dispatcher) override;
 
-			static bool PlayerControls_InputEvent_ProcessEvent_Hook(const InputEvent** a_evns);
+			static bool PlayerControls_InputEvent_ProcessEvents_Hook(const InputEvent** a_evns);
+
+			bool ProcessEventsHookImpl(const InputEvent** a_evns);
+			void ProcessPriorityEvents(const InputEvent** a_evns);
 
 			void DispatchPriorityKeyEvent(
 				KeyEventState a_event,
@@ -56,9 +59,9 @@ namespace IED
 
 			std::atomic_bool m_inputBlocked{ false };
 
-			decltype(&PlayerControls_InputEvent_ProcessEvent_Hook) m_nextIEPCall{ nullptr };
+			decltype(&PlayerControls_InputEvent_ProcessEvents_Hook) m_nextIEPCall{ nullptr };
 
-			static inline const auto m_unkIEProc_a = IAL::Address<std::uintptr_t>(67355, 68655, 0x11E, 0x133);
+			static inline const auto m_inputEventpProc_a = IAL::Address<std::uintptr_t>(67355, 68655, 0x11E, 0x133);
 
 			static Input m_Instance;
 		};
