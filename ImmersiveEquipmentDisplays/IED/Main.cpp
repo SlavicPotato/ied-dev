@@ -223,7 +223,7 @@ namespace IED
 			dispatcher->AddEventSink(g_controller.get());
 		}*/
 
-		EngineExtensions::Initialize(
+		EngineExtensions::Install(
 			g_controller,
 			config);
 

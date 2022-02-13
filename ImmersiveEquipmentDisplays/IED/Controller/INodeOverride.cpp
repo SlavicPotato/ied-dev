@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "Controller.h"
 #include "IED/ConfigConditionsCommon.h"
 #include "IED/ConfigOverrideNodeOverride.h"
 #include "IED/EngineExtensions.h"

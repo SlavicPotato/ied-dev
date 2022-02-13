@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "Controller/ControllerCommon.h"
+#include "Controller/Controller.h"
 #include "EngineExtensions.h"
 #include "Util/Logging.h"
 
@@ -25,17 +25,25 @@ constexpr static auto mv_failstr = "Memory validation failed";
 
 namespace IED
 {
-	EngineExtensions* EngineExtensions::m_Instance{ nullptr };
+	EngineExtensions EngineExtensions::m_Instance;
 
-	EngineExtensions::EngineExtensions(
+	void EngineExtensions::Install(
 		Controller* a_controller,
-		const std::shared_ptr<ConfigINI>& a_config) :
-		m_controller(a_controller)
+		const std::shared_ptr<ConfigINI>& a_config)
 	{
+		m_Instance.InstallImpl(a_controller, a_config);
+	}
+
+	void EngineExtensions::InstallImpl(
+		Controller* a_controller,
+		const std::shared_ptr<ConfigINI>& a_config)
+	{
+		m_controller = a_controller;
+
 		Patch_RemoveAllBipedParts();
-		Patch_GarbageCollector();
-		Patch_Actor_Resurrect();
-		Patch_Actor_3DEvents();
+		InstallHook_REFR_GarbageCollector();
+		InstallHook_Actor_Resurrect();
+		InstallHook_Actor_3DEvents();
 
 		if (a_config->m_nodeOverrideEnabled)
 		{
@@ -43,7 +51,7 @@ namespace IED
 			m_conf.nodeOverridePlayerEnabled = a_config->m_nodeOverridePlayerEnabled;
 			m_conf.disableNPCProcessing = a_config->m_disableNPCProcessing;
 
-			Patch_Armor_Update();
+			InstallHook_Armor_Update();
 			Patch_CreateWeaponNodes();
 		}
 
@@ -68,7 +76,7 @@ namespace IED
 
 		if (a_config->m_immediateFavUpdate)
 		{
-			Patch_ToggleFav();
+			InstallHook_ToggleFav();
 		}
 	}
 
@@ -96,7 +104,7 @@ namespace IED
 			}
 		};
 
-		LogPatchBegin(__FUNCTION__);
+		LogPatchBegin();
 		{
 			Assembly code(m_removeAllBipedParts_a);
 			m_removeAllBipedParts_o = code.get<decltype(m_removeAllBipedParts_o)>();
@@ -105,10 +113,10 @@ namespace IED
 				m_removeAllBipedParts_a,
 				std::uintptr_t(RemoveAllBipedParts_Hook));
 		}
-		LogPatchEnd(__FUNCTION__);
+		LogPatchEnd();
 	}
 
-	void EngineExtensions::Patch_GarbageCollector()
+	void EngineExtensions::InstallHook_REFR_GarbageCollector()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -116,7 +124,7 @@ namespace IED
 				std::uintptr_t(GarbageCollectorReference_Hook),
 				m_garbageCollectorReference_o))
 		{
-			Debug("[%s] Installed garbage collector hook", __FUNCTION__);
+			Debug("[%s] Installed", __FUNCTION__);
 		}
 		else
 		{
@@ -124,7 +132,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Patch_Actor_Resurrect()
+	void EngineExtensions::InstallHook_Actor_Resurrect()
 	{
 		if (VTable::Detour2(
 				m_vtblCharacter_a,
@@ -153,7 +161,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Patch_Actor_3DEvents()
+	void EngineExtensions::InstallHook_Actor_3DEvents()
 	{
 		if (VTable::Detour2(
 				m_vtblCharacter_a,
@@ -182,7 +190,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Patch_Armor_Update()
+	void EngineExtensions::InstallHook_Armor_Update()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -190,7 +198,7 @@ namespace IED
 				std::uintptr_t(ArmorUpdate_Hook),
 				m_ArmorChange_o))
 		{
-			Debug("[%s] Installed armor update hook", __FUNCTION__);
+			Debug("[%s] Installed", __FUNCTION__);
 		}
 		else
 		{
@@ -226,14 +234,14 @@ namespace IED
 			}
 		};
 
-		LogPatchBegin(__FUNCTION__);
+		LogPatchBegin();
 		{
 			Assembly code(m_weapAdj_a);
 			ISKSE::GetBranchTrampoline().Write5Branch(
 				m_weapAdj_a,
 				code.get());
 		}
-		LogPatchEnd(__FUNCTION__);
+		LogPatchEnd();
 	}
 
 	void EngineExtensions::Patch_CreateWeaponNodes()
@@ -258,7 +266,7 @@ namespace IED
 			}
 		};
 
-		LogPatchBegin(__FUNCTION__);
+		LogPatchBegin();
 		{
 			Assembly code(m_createWeaponNodes_a);
 			m_createWeaponNodes_o = code.get<decltype(m_createWeaponNodes_o)>();
@@ -266,7 +274,7 @@ namespace IED
 				m_createWeaponNodes_a,
 				std::uintptr_t(CreateWeaponNodes_Hook));
 		}
-		LogPatchEnd(__FUNCTION__);
+		LogPatchEnd();
 	}
 
 	void EngineExtensions::Patch_AdjustSkip_SE()
@@ -312,7 +320,7 @@ namespace IED
 			}
 		};
 
-		LogPatchBegin(__FUNCTION__);
+		LogPatchBegin();
 		{
 			Assembly code(addr);
 
@@ -320,7 +328,7 @@ namespace IED
 				addr,
 				code.get());
 		}
-		LogPatchEnd(__FUNCTION__);
+		LogPatchEnd();
 	}
 
 	void EngineExtensions::Patch_AdjustSkip_AE()
@@ -383,7 +391,7 @@ namespace IED
 			}
 		};
 
-		LogPatchBegin(__FUNCTION__);
+		LogPatchBegin();
 		{
 			{
 				Assembly code(addr);
@@ -393,10 +401,10 @@ namespace IED
 					code.get());
 			}
 		}
-		LogPatchEnd(__FUNCTION__);
+		LogPatchEnd();
 	}
 
-	void EngineExtensions::Patch_ToggleFav()
+	void EngineExtensions::InstallHook_ToggleFav()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -404,11 +412,11 @@ namespace IED
 				std::uintptr_t(ToggleFavGetExtraList_Hook),
 				m_toggleFavGetExtraList_o))
 		{
-			Debug("[%s] Installed toggle fav hook", __FUNCTION__);
+			Debug("[%s] Installed", __FUNCTION__);
 		}
 		else
 		{
-			Error("[%s] Failed to install toggle fav hook", __FUNCTION__);
+			Error("[%s] Failed", __FUNCTION__);
 		}
 	}
 
@@ -423,18 +431,18 @@ namespace IED
 				{
 					if (ITaskPool::IsRunningOnCurrentThread())
 					{
-						m_Instance->FailsafeCleanupAndEval(actor);
+						m_Instance.FailsafeCleanupAndEval(actor);
 					}
 					else
 					{
-						m_Instance->m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
-						m_Instance->m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+						m_Instance.m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
+						m_Instance.m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
 					}
 				}
 			}
 		}
 
-		m_Instance->m_removeAllBipedParts_o(a_biped);
+		m_Instance.m_removeAllBipedParts_o(a_biped);
 	}
 
 	void EngineExtensions::Character_Resurrect_Hook(
@@ -444,12 +452,12 @@ namespace IED
 	{
 		if (a_attach3D)
 		{
-			m_Instance->m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
 
 			//_DMESSAGE("resurrect %X", a_actor->formID.get());
 		}
 
-		m_Instance->m_characterResurrect_o(a_actor, a_resetInventory, a_attach3D);
+		m_Instance.m_characterResurrect_o(a_actor, a_resetInventory, a_attach3D);
 	}
 
 	void EngineExtensions::Actor_Release3D_Hook(
@@ -461,21 +469,21 @@ namespace IED
 		{
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
-				m_Instance->FailsafeCleanupAndEval(a_actor);
+				m_Instance.FailsafeCleanupAndEval(a_actor);
 			}
 			else
 			{
-				m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+				m_Instance.m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
 
 				eval = true;
 			}
 		}
 
-		m_Instance->m_actorRelease3D_o(a_actor);
+		m_Instance.m_actorRelease3D_o(a_actor);
 
 		if (eval)
 		{
-			m_Instance->m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
 		}
 	}
 
@@ -488,21 +496,21 @@ namespace IED
 		{
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
-				m_Instance->FailsafeCleanupAndEval(a_actor);
+				m_Instance.FailsafeCleanupAndEval(a_actor);
 			}
 			else
 			{
-				m_Instance->m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+				m_Instance.m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
 
 				eval = true;
 			}
 		}
 
-		m_Instance->m_characterRelease3D_o(a_actor);
+		m_Instance.m_characterRelease3D_o(a_actor);
 
 		if (eval)
 		{
-			m_Instance->m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
 		}
 	}
 
@@ -522,12 +530,12 @@ namespace IED
 		Actor* a_actor,
 		bool a_unk1)
 	{
-		m_Instance->m_ReanimActorStateUpd_o(a_actor, a_unk1);
+		m_Instance.m_ReanimActorStateUpd_o(a_actor, a_unk1);
 
 		if (a_actor->actorState.actorState1.lifeState ==
 		    ActorState::ACTOR_LIFE_STATE::kReanimate)
 		{
-			m_Instance->m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
 
 			//_DMESSAGE("reanimate %X", a_actor->formID.get());
 		}
@@ -541,11 +549,11 @@ namespace IED
                           a_visitor.actor->formID :
                           0;
 
-		m_Instance->m_ArmorChange_o(a_ic, a_visitor);
+		m_Instance.m_ArmorChange_o(a_ic, a_visitor);
 
 		if (formid)
 		{
-			m_Instance->m_controller->QueueRequestEvaluate(formid, false, true);
+			m_Instance.m_controller->QueueRequestEvaluate(formid, false, true);
 		}
 	}
 
@@ -553,10 +561,10 @@ namespace IED
 	{
 		if (auto actor = a_refr->As<Actor>())
 		{
-			m_Instance->m_controller->RemoveActor(actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->RemoveActor(actor, ControllerUpdateFlags::kNone);
 		}
 
-		return m_Instance->m_garbageCollectorReference_o(a_refr);
+		return m_Instance.m_garbageCollectorReference_o(a_refr);
 	}
 
 	bool EngineExtensions::SetWeapAdjAnimVar_Hook(
@@ -565,7 +573,7 @@ namespace IED
 		float a_val,
 		Biped* a_biped)
 	{
-		if (m_Instance->m_conf.weaponAdjustFix)
+		if (m_Instance.m_conf.weaponAdjustFix)
 		{
 			auto& biped3p = a_refr->GetBiped(false);
 			if (!biped3p || biped3p.get() != a_biped)
@@ -579,14 +587,14 @@ namespace IED
 
 	BaseExtraList* EngineExtensions::ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor)
 	{
-		m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, true, false);
+		m_Instance.m_controller->QueueRequestEvaluate(a_actor->formID, true, false);
 
-		return m_Instance->m_toggleFavGetExtraList_o(a_actor);
+		return m_Instance.m_toggleFavGetExtraList_o(a_actor);
 	}
 
 	bool EngineExtensions::AdjustSkip_Test(BSFixedString& a_name)
 	{
-		auto sh = m_Instance->m_controller->GetBSStringHolder();
+		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
 		if (a_name == sh->m_weaponAxe ||
 		    a_name == sh->m_weaponMace ||
@@ -609,11 +617,11 @@ namespace IED
 		TESForm* a_object,
 		bool a_left)
 	{
-		m_Instance->m_createWeaponNodes_o(a_actor, a_object, a_left);
+		m_Instance.m_createWeaponNodes_o(a_actor, a_object, a_left);
 
 		if (a_actor)
 		{
-			m_Instance->m_controller->QueueRequestEvaluate(a_actor->formID, false, true, true);
+			m_Instance.m_controller->QueueRequestEvaluate(a_actor->formID, false, true, true);
 		}
 	}
 
@@ -658,7 +666,7 @@ namespace IED
 			AttachResultFlags::kNone
 		};
 
-		if (auto bsxFlags = m_Instance->GetBSXFlags(a_object))
+		if (auto bsxFlags = m_Instance.GetBSXFlags(a_object))
 		{
 			stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
@@ -712,7 +720,7 @@ namespace IED
 
 		a_object->DecRef();
 
-		auto sh = m_Instance->m_controller->GetBSStringHolder();
+		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
 		a_object->m_name.Set_ref(sh->m_object);
 

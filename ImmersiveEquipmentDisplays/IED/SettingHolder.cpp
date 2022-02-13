@@ -40,6 +40,7 @@ namespace IED
 				return false;
 			}
 		}
+
 		bool SettingHolder::Save()
 		{
 			try

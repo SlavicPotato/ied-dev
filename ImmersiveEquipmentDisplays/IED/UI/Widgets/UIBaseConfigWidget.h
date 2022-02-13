@@ -2189,18 +2189,29 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Location:
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::IsChildLoc, "1"),
+					LS(UIWidgetCommonStrings::MatchParent, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				DrawTip(UITip::MatchChildLoc);
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::MatchEither, "2"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchCategoryOperOR));
+
+				DrawTip(UITip::MatchEitherFormKW);
 
 				break;
 
 			case Data::EquipmentOverrideConditionType::Worldspace:
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::MatchParentWorldspace, "1"),
+					LS(UIWidgetCommonStrings::MatchParent, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				DrawTip(UITip::MatchWorldspaceParent);
 
 				break;
 			}
@@ -2303,12 +2314,16 @@ namespace IED
 		{
 			switch (a_type)
 			{
+			case Data::EquipmentOverrideConditionType::Race:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
 			case Data::EquipmentOverrideConditionType::Furniture:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Furniture));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
-			case Data::EquipmentOverrideConditionType::Race:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
+			case Data::EquipmentOverrideConditionType::Quest:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Quest));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Actor:
@@ -2317,10 +2332,6 @@ namespace IED
 				break;
 			case Data::EquipmentOverrideConditionType::NPC:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
-				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-				break;
-			case Data::EquipmentOverrideConditionType::Quest:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Quest));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			case Data::EquipmentOverrideConditionType::Location:

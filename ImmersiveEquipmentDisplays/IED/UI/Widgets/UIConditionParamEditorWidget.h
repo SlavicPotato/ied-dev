@@ -90,6 +90,7 @@ namespace IED
 
 			void OpenConditionParamEditorPopup();
 			bool DrawConditionParamEditorPopup();
+			bool DrawConditionParamEditorPanel();
 
 			inline constexpr auto& GetFormPicker() noexcept
 			{

@@ -2302,7 +2302,7 @@ namespace IED
 					candidates,
 					objectEntry.slotState.lastEquipped);
 
-				const configBaseValues_t* usedConf =
+				const configBaseValues_t* usedBaseConf =
 					!item ? configEntry.get_equipment_override(
 								a_params.collector.m_data,
 								a_params) :
@@ -2311,27 +2311,17 @@ namespace IED
 								{ item->form, ItemData::SlotToExtraSlot(objectEntry.slotid) },
 								a_params);
 
-				if (!usedConf)
+				if (!usedBaseConf)
 				{
-					usedConf = std::addressof(configEntry);
+					usedBaseConf = std::addressof(
+						static_cast<const configBaseValues_t&>(configEntry));
 				}
 
-				if (usedConf->flags.test(BaseFlags::kDisabled))
-				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
-
-					continue;
-				}
-
-				if (a_params.actor != *g_thePlayer &&
-				    !usedConf->flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
-				    slot != ObjectSlot::kAmmo &&
-				    (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag))
+				if (usedBaseConf->flags.test(BaseFlags::kDisabled) ||
+				    (a_params.actor != *g_thePlayer &&
+				     !usedBaseConf->flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+				     slot != ObjectSlot::kAmmo &&
+				     !a_params.test_equipment_flags(equipmentFlag)))
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2345,8 +2335,8 @@ namespace IED
 
 				if ((slot == ObjectSlot::kAmmo &&
 				     a_params.collector.m_data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
-				    (slot == equippedInfo.leftSlot ||
-				     slot == equippedInfo.rightSlot))
+				    slot == equippedInfo.leftSlot ||
+				    slot == equippedInfo.rightSlot)
 				{
 					auto& settings = m_config.settings.data;
 
@@ -2389,7 +2379,7 @@ namespace IED
 
 				bool visible = GetVisibilitySwitch(
 					a_params.actor,
-					usedConf->flags,
+					usedBaseConf->flags,
 					a_params);
 
 				if (objectEntry.state &&
@@ -2397,9 +2387,9 @@ namespace IED
 				{
 					if (ProcessItemUpdate(
 							a_params,
-							*usedConf,
+							*usedBaseConf,
 							nullptr,
-							usedConf->targetNode,
+							usedBaseConf->targetNode,
 							objectEntry,
 							visible))
 					{
@@ -2415,8 +2405,8 @@ namespace IED
 
 				if (LoadAndAttach(
 						a_params,
-						*usedConf,
-						usedConf->targetNode,
+						*usedBaseConf,
+						usedBaseConf->targetNode,
 						objectEntry,
 						item->form,
 						nullptr,
@@ -2556,8 +2546,8 @@ namespace IED
 			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
 			    a_params.actor != *g_thePlayer)
 			{
-				auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(a_itemData.type);
-				if (!equipmentFlag || (a_params.race->validEquipTypes & equipmentFlag) != equipmentFlag)
+				if (!a_params.test_equipment_flags(
+						ItemData::GetRaceEquipmentFlagFromType(a_itemData.type)))
 				{
 					return false;
 				}
@@ -2710,7 +2700,8 @@ namespace IED
 
 		if (!usedBaseConf)
 		{
-			usedBaseConf = std::addressof(a_config);
+			usedBaseConf = std::addressof(
+				static_cast<const configBaseValues_t&>(a_config));
 		}
 
 		if (usedBaseConf->flags.test(BaseFlags::kDisabled))
@@ -5036,9 +5027,7 @@ namespace IED
 	{
 		IScopedLock lock(m_lock);
 
-		auto o = GetODBLevel();
-
-		if (a_level != o)
+		if (a_level != GetODBLevel())
 		{
 			SetODBLevel(a_level);
 

@@ -28,7 +28,7 @@ namespace IED
 			};
 
 		public:
-			bool UpdateFileList(bool a_createPath, bool a_select = true);
+			bool UpdateFileList();
 
 		protected:
 			UIFileSelector(
@@ -67,6 +67,8 @@ namespace IED
 
 		private:
 			bool Delete(const fs::path& a_file);
+
+			static std::string get_key(const fs::path& a_filename);
 
 			stl::optional<SelectedFile> m_selected;
 			storage_type m_files;

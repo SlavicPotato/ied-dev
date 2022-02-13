@@ -4,6 +4,8 @@ namespace IED
 {
 	namespace Serialization
 	{
+		inline static constexpr auto SER_NOT_IMPL_STR = "Not implemented";
+
 		enum class ParserStateFlags : std::uint32_t
 		{
 			kNone = 0,
@@ -56,12 +58,12 @@ namespace IED
 			}
 
 		protected:
-			inline void SetHasErrors() const noexcept
+			inline constexpr void SetHasErrors() const noexcept
 			{
 				m_state.m_flags.set(ParserStateFlags::kHasErrors);
 			}
 
-			inline void ClearState() const noexcept
+			inline constexpr void ClearState() const noexcept
 			{
 				m_state.clear();
 			}
@@ -84,28 +86,28 @@ namespace IED
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out, bool a_arg) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
-		inline void Parser<T>::Create(
+		void Parser<T>::Create(
 			const T& a_in,
 			Json::Value& a_out,
 			std::uint32_t a_arg) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		bool Parser<T>::Parse(const Json::Value& a_in, T& a_out) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -114,7 +116,7 @@ namespace IED
 			T& a_out,
 			const std::uint32_t a_version) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -124,7 +126,7 @@ namespace IED
 			const std::uint32_t a_version,
 			bool a_arg) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -133,13 +135,13 @@ namespace IED
 			T& a_out,
 			bool a_arg) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		void Parser<T>::GetDefault(T& a_out) const
 		{
-			static_assert(false, "Not implemented");
+			static_assert(false, SER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -228,7 +230,10 @@ namespace IED
 			ifs.open(a_path, std::ifstream::in | std::ifstream::binary);
 			if (!ifs.is_open())
 			{
-				throw std::system_error(errno, std::system_category(), a_path.string());
+				throw std::system_error(
+					errno,
+					std::system_category(),
+					str_conv::wstr_to_str(a_path.wstring()));
 			}
 
 			ifs >> a_root;
@@ -242,12 +247,12 @@ namespace IED
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
 
-			CreateRootPath(tmpPath);
-
 			tmpPath += ".tmp";
 
 			try
 			{
+				CreateRootPath(tmpPath);
+
 				{
 					std::ofstream ofs;
 					ofs.open(
@@ -260,7 +265,7 @@ namespace IED
 						throw std::system_error(
 							errno,
 							std::system_category(),
-							tmpPath.string());
+							str_conv::wstr_to_str(tmpPath.wstring()));
 					}
 
 					if (!a_styled)
@@ -293,12 +298,12 @@ namespace IED
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
 
-			CreateRootPath(tmpPath);
-
 			tmpPath += ".tmp";
 
 			try
 			{
+				CreateRootPath(tmpPath);
+
 				{
 					std::ofstream ofs;
 					ofs.open(
@@ -311,7 +316,7 @@ namespace IED
 						throw std::system_error(
 							errno,
 							std::system_category(),
-							tmpPath.string());
+							str_conv::wstr_to_str(tmpPath.wstring()));
 					}
 
 					ofs << a_root;

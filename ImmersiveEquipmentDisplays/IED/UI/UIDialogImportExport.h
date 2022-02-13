@@ -41,11 +41,7 @@ namespace IED
 
 			void DoExport(const fs::path& a_path);
 
-			bool DoUpdate(bool a_select);
-
-			bool CheckFileName(const std::string& a_path) const;
-
-			std::regex m_rFileCheck;
+			bool DoUpdate();
 
 			Controller& m_controller;
 		};

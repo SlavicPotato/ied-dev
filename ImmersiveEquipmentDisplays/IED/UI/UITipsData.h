@@ -55,6 +55,9 @@ namespace IED
 			UseWorldModel = 1044,
 			ReleaseFontData = 1045,
 			IgnoreRaceEquipTypesSlot = 1046,
+			MatchChildLoc = 1047,
+			MatchEitherFormKW = 1048,
+			MatchWorldspaceParent = 1049,
 		};
 
 	}

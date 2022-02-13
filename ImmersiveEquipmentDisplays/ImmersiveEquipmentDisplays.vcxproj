@@ -247,6 +247,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h" />
+    <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h" />
     <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h" />
     <ClInclude Include="Drivers\Input.h" />
     <ClInclude Include="Drivers\Input\DeadKey.h" />
@@ -542,6 +543,9 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseAVX2 MT|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\str_conv.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

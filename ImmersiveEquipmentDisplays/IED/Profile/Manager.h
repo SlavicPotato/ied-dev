@@ -16,11 +16,8 @@ namespace IED
 		using profile_data_type = typename T::base_type;
 		using storage_type = stl::vectormap<stl::fixed_string, T>;
 
-		ProfileManager(
-			const std::string& a_fc,
-			const fs::path& a_ext = ".json");
+		ProfileManager(const fs::path& a_ext = ".json");
 
-		ProfileManager() = delete;
 		virtual ~ProfileManager() noexcept = default;
 
 		ProfileManager(const ProfileManager<T>&) = delete;
@@ -36,8 +33,10 @@ namespace IED
 			T& a_out,
 			bool a_save = false);
 
-		[[nodiscard]] bool AddProfile(const T& a_in);
-		[[nodiscard]] bool AddProfile(T&& a_in);
+		template <
+			class Tp,
+			class = std::enable_if_t<std::is_convertible_v<Tp, T>>>
+		[[nodiscard]] bool AddProfile(Tp&& a_in);
 		[[nodiscard]] bool DeleteProfile(const stl::fixed_string& a_name);
 
 		[[nodiscard]] bool RenameProfile(
@@ -60,31 +59,6 @@ namespace IED
 			return m_storage;
 		}
 
-		[[nodiscard]] inline auto Find(const stl::fixed_string& a_key) const
-		{
-			return m_storage.find(a_key);
-		};
-
-		[[nodiscard]] inline auto Find(const stl::fixed_string& a_key)
-		{
-			return m_storage.find(a_key);
-		};
-
-		[[nodiscard]] inline auto End() const noexcept
-		{
-			return m_storage.end();
-		};
-
-		[[nodiscard]] inline auto End() noexcept
-		{
-			return m_storage.end();
-		};
-
-		[[nodiscard]] inline bool Contains(const stl::fixed_string& a_key) const
-		{
-			return m_storage.contains(a_key);
-		};
-
 		[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
 		{
 			return m_lastExcept;
@@ -95,21 +69,9 @@ namespace IED
 			return m_isInitialized;
 		}
 
-		[[nodiscard]] inline constexpr auto Size() const noexcept
-		{
-			return m_storage.size();
-		}
-
-		[[nodiscard]] inline constexpr bool Empty() const noexcept
-		{
-			return m_storage.empty();
-		}
-
 		FN_NAMEPROC("ProfileManager");
 
 	private:
-		void CheckProfileKey(const stl::fixed_string& a_key) const;
-
 		virtual void OnProfileAdd(T& a_profile);
 		virtual void OnProfileDelete(T& a_profile);
 		virtual void OnProfileRename(T& a_profile, const stl::fixed_string& a_oldName);
@@ -119,16 +81,13 @@ namespace IED
 		storage_type m_storage;
 		fs::path m_root;
 		fs::path m_ext;
-		std::regex m_rFileCheck;
 		except::descriptor m_lastExcept;
 		bool m_isInitialized{ false };
 	};
 
 	template <typename T>
 	ProfileManager<T>::ProfileManager(
-		const std::string& a_fc,
 		const fs::path& a_ext) :
-		m_rFileCheck(a_fc, std::regex_constants::ECMAScript),
 		m_ext(a_ext)
 	{}
 
@@ -158,32 +117,36 @@ namespace IED
 				try
 				{
 					if (!entry.is_regular_file())
+					{
 						continue;
+					}
 
 					auto& path = entry.path();
-					if (!path.has_extension() || path.extension() != m_ext)
+					if (!path.has_extension() ||
+					    path.extension() != m_ext)
+					{
 						continue;
+					}
 
-					T profile(path);
+					T profile;
 
-					if (!std::regex_match(*profile.Name(), m_rFileCheck))
-						throw std::exception("Invalid characters in profile name");
+					profile.SetPath(path);
 
 					if (!profile.Load())
 					{
 						Error(
 							"Failed loading profile '%s': %s",
-							profile.Name().c_str(),
+							profile.PathStr().c_str(),
 							profile.GetLastException().what());
+
 						continue;
 					}
 
 					if (profile.HasParserErrors())
 					{
 						Warning(
-							"Errors occured while parsing profile '%s' [%s]",
-							profile.Name().c_str(),
-							Serialization::SafeGetPath(entry.path()).c_str());
+							"Errors occured while parsing profile '%s'",
+							profile.PathStr().c_str());
 					}
 
 					m_storage.emplace(profile.Name(), std::move(profile));
@@ -194,6 +157,7 @@ namespace IED
 						"Exception occured while processing profile '%s': %s",
 						Serialization::SafeGetPath(entry.path()).c_str(),
 						e.what());
+
 					continue;
 				}
 			}
@@ -254,15 +218,18 @@ namespace IED
 			if (!a_name.size())
 				throw std::exception("Profile name length == 0");
 
-			if (!std::regex_match(a_name, m_rFileCheck))
-				throw std::exception("Invalid characters in profile name");
-
 			fs::path path(m_root);
 
-			path /= a_name;
+			auto fn = fs::path(str_conv::str_to_wstr(a_name)).filename();
+			if (!fn.has_filename())
+			{
+				throw std::exception("Bad filename");
+			}
+
+			path /= fn;
 			path += m_ext;
 
-			auto filename = path.filename().string();
+			auto filename = path.filename().wstring();
 
 			if (fs::exists(path))
 				throw std::exception("Profile already exists");
@@ -287,7 +254,8 @@ namespace IED
 	}
 
 	template <class T>
-	bool ProfileManager<T>::AddProfile(const T& a_in)
+	template <class Tp, class>
+	bool ProfileManager<T>::AddProfile(Tp&& a_in)
 	{
 		try
 		{
@@ -296,9 +264,9 @@ namespace IED
 
 			auto& key = a_in.Name();
 
-			CheckProfileKey(key);
+			//CheckProfileKey(key);
 
-			auto r = m_storage.emplace(key, a_in);
+			auto r = m_storage.emplace(key, std::forward<Tp>(a_in));
 			if (r.second)
 			{
 				sort();
@@ -325,54 +293,6 @@ namespace IED
 			m_lastExcept = e;
 			return false;
 		}
-	}
-
-	template <class T>
-	bool ProfileManager<T>::AddProfile(T&& a_in)
-	{
-		try
-		{
-			if (!m_isInitialized)
-				throw std::exception("Not initialized");
-
-			auto key = a_in.Name();
-
-			CheckProfileKey(key);
-
-			auto r = m_storage.emplace(std::move(key), std::move(a_in));
-			if (r.second)
-			{
-				sort();
-
-				OnProfileAdd(r.first->second);
-				ProfileManagerEvent<T> evn{
-					ProfileManagerEvent<T>::EventType::kProfileAdd,
-					nullptr,
-					std::addressof(r.first->first),
-					std::addressof(r.first->second)
-				};
-				SendEvent(evn);
-			}
-			else
-			{
-				throw std::exception("Profile already exists");
-			}
-
-			return true;
-		}
-		catch (const std::exception& e)
-		{
-			Error("%s: %s", __FUNCTION__, e.what());
-			m_lastExcept = e;
-			return false;
-		}
-	}
-
-	template <class T>
-	void ProfileManager<T>::CheckProfileKey(const stl::fixed_string& a_key) const
-	{
-		if (!std::regex_match(a_key.get(), m_rFileCheck))
-			throw std::exception("Invalid characters in profile name");
 	}
 
 	template <class T>
@@ -436,9 +356,6 @@ namespace IED
 
 			if (m_storage.find(a_newName) != m_storage.end())
 				throw std::exception("A profile with that name already exists");
-
-			if (!std::regex_match(a_newName, m_rFileCheck))
-				throw std::exception("Invalid characters in profile name");
 
 			fs::path newFilename(a_newName);
 			newFilename += m_ext;
@@ -545,15 +462,18 @@ namespace IED
 
 	template <class T>
 	void ProfileManager<T>::OnProfileAdd(T&)
-	{}
+	{
+	}
 
 	template <class T>
 	void ProfileManager<T>::OnProfileDelete(T&)
-	{}
+	{
+	}
 
 	template <class T>
 	void ProfileManager<T>::OnProfileRename(T&, const stl::fixed_string&)
-	{}
+	{
+	}
 
 	template <class T>
 	inline void ProfileManager<T>::sort()

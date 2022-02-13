@@ -213,6 +213,11 @@ namespace IED
 						{
 							return false;
 						}
+
+						if (a_match.flags.test(Tf::kMatchCategoryOperOR))
+						{
+							return true;
+						}
 					}
 
 					if (a_match.keyword.get_id())
@@ -240,6 +245,11 @@ namespace IED
 						    (a_match.form.get_id() == current->formID))
 						{
 							return false;
+						}
+
+						if (a_match.flags.test(Tf::kMatchCategoryOperOR))
+						{
+							return true;
 						}
 					}
 

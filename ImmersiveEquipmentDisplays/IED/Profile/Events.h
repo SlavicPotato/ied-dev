@@ -18,4 +18,4 @@ namespace IED
 		const stl::fixed_string* m_profile{ nullptr };
 		T* m_data{ nullptr };
 	};
-}  // namespace IED
+}

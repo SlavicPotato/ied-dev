@@ -41,13 +41,13 @@ namespace IED
 			};
 
 			template <class T, class data_type = stl::strip_type<T>>
-			static const data_type* Get() noexcept;
+			static constexpr const data_type* Get() noexcept;
 
 			template <class T, class = std::enable_if_t<std::is_copy_constructible_v<T>, void>>
-			static void Set(const T& a_data);
+			static constexpr void Set(const T& a_data);
 
 			template <class T, class... Args>
-			static void Set(Args&&... a_data);
+			static constexpr void Set(Args&&... a_data);
 
 			static void clear();
 
@@ -56,10 +56,10 @@ namespace IED
 			~UIClipboard();
 
 			template <class T>
-			static void erase();
+			static constexpr void erase();
 
 			template <class T>
-			static void set_type();
+			static constexpr void set_type();
 
 			entry_t m_data;
 
@@ -67,7 +67,7 @@ namespace IED
 		};
 
 		template <class T, class data_type>
-		inline const data_type* UIClipboard::Get() noexcept
+		inline constexpr const data_type* UIClipboard::Get() noexcept
 		{
 			auto& data = m_Instance.m_data;
 
@@ -234,7 +234,7 @@ namespace IED
 		}
 
 		template <class T, class>
-		inline void UIClipboard::Set(const T& a_data)
+		inline constexpr void UIClipboard::Set(const T& a_data)
 		{
 			clear();
 
@@ -244,7 +244,7 @@ namespace IED
 		}
 
 		template <class T, class... Args>
-		inline void UIClipboard::Set(Args&&... a_data)
+		inline constexpr void UIClipboard::Set(Args&&... a_data)
 		{
 			clear();
 
@@ -254,7 +254,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline void UIClipboard::erase()
+		inline constexpr void UIClipboard::erase()
 		{
 			auto& data = m_Instance.m_data;
 
@@ -269,7 +269,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline void UIClipboard::set_type()
+		inline constexpr void UIClipboard::set_type()
 		{
 			auto& data = m_Instance.m_data;
 

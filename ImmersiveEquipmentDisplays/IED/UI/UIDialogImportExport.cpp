@@ -21,10 +21,7 @@ namespace IED
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIImportWidget(a_controller),
-			m_controller(a_controller),
-			m_rFileCheck(
-				"^[a-zA-Z0-9_\\-\\+ \\'\\\"\\,\\(\\)\\[\\]\\.]+$",
-				std::regex_constants::ECMAScript)
+			m_controller(a_controller)
 		{
 		}
 
@@ -101,48 +98,42 @@ namespace IED
 									return;
 								}
 
-								if (!CheckFileName(file))
+								try
 								{
-									auto& queue = m_controller.UIGetPopupQueue();
+									fs::path name(str_conv::str_to_wstr(file));
+									name += ".json";
 
-									queue.push(
-										UIPopupType::Message,
-										LS(CommonStrings::Error),
-										LS(UIWidgetCommonStrings::IllegalFilename));
-								}
-								else
-								{
-									try
-									{
-										fs::path name(file);
-										name += ".json";
-
-										if (!RenameItem(item, name))
-										{
-											auto& queue = m_controller.UIGetPopupQueue();
-
-											queue.push(
-												UIPopupType::Message,
-												LS(CommonStrings::Error),
-												"%s\n\n%s",
-												LS(UIDialogImportExportStrings::RenameError),
-												GetLastException().what());
-										}
-									}
-									catch (std::exception& e)
+									if (!RenameItem(item, name))
 									{
 										auto& queue = m_controller.UIGetPopupQueue();
 
 										queue.push(
 											UIPopupType::Message,
 											LS(CommonStrings::Error),
-											"%s",
-											e.what());
+											"%s\n\n%s",
+											LS(UIDialogImportExportStrings::RenameError),
+											GetLastException().what());
 									}
+								}
+								catch (std::exception& e)
+								{
+									auto& queue = m_controller.UIGetPopupQueue();
+
+									queue.push(
+										UIPopupType::Message,
+										LS(CommonStrings::Error),
+										"%s: %s",
+										__FUNCTION__,
+										e.what());
 								}
 							});
 					}
 
+					ImGui::SameLine();
+					if (ImGui::Button(LS(CommonStrings::Refresh, "3")))
+					{
+						UpdateFileList();
+					}
 				}
 
 				ImGui::PopTextWrapPos();
@@ -223,23 +214,29 @@ namespace IED
 								return;
 							}
 
-							if (!CheckFileName(file))
+							try
+							{
+								fs::path path(PATHS::EXPORTS);
+								auto fn = fs::path(str_conv::str_to_wstr(file)).filename();
+								if (!fn.has_filename())
+								{
+									throw std::exception("bad filename");
+								}
+								path /= fn;
+								path += ".json";
+
+								DoExport(path);
+							}
+							catch (const std::exception& e)
 							{
 								auto& queue = m_controller.UIGetPopupQueue();
 
 								queue.push(
 									UIPopupType::Message,
 									LS(CommonStrings::Error),
-									"%s",
-									LS(UIWidgetCommonStrings::IllegalFilename));
-							}
-							else
-							{
-								fs::path path = PATHS::EXPORTS;
-								path /= file;
-								path += ".json";
-
-								DoExport(path);
+									"%s: %s",
+									__FUNCTION__,
+									e.what());
 							}
 						})
 						.set_text_wrap_size(23.f);
@@ -282,9 +279,9 @@ namespace IED
 		{
 			try
 			{
-				auto& conf = m_controller.GetConfigStore().settings;
+				const auto& settings = m_controller.GetConfigStore().settings;
 
-				if (!m_controller.ExportData(a_path, conf.data.ui.importExport.exportFlags))
+				if (!m_controller.ExportData(a_path, settings.data.ui.importExport.exportFlags))
 				{
 					auto& queue = m_controller.UIGetPopupQueue();
 
@@ -297,13 +294,9 @@ namespace IED
 				}
 				else
 				{
-					if (DoUpdate(false))
+					if (DoUpdate())
 					{
-						auto file = a_path.filename().stem().string();
-						if (HasFile(file))
-						{
-							SelectItem(file);
-						}
+						SelectItem(str_conv::wstr_to_str(a_path.filename().stem().wstring()));
 					}
 				}
 			}
@@ -314,19 +307,20 @@ namespace IED
 				queue.push(
 					UIPopupType::Message,
 					LS(CommonStrings::Error),
-					"%s",
+					"%s: %s",
+					__FUNCTION__,
 					e.what());
 			}
 		}
 
 		void UIDialogImportExport::OnOpen()
 		{
-			DoUpdate(true);
+			DoUpdate();
 		}
 
-		bool UIDialogImportExport::DoUpdate(bool a_select)
+		bool UIDialogImportExport::DoUpdate()
 		{
-			if (!UpdateFileList(a_select))
+			if (!UpdateFileList())
 			{
 				auto& queue = m_controller.UIGetPopupQueue();
 				queue.push(
@@ -342,16 +336,5 @@ namespace IED
 			return true;
 		}
 
-		bool UIDialogImportExport::CheckFileName(const std::string& a_path) const
-		{
-			try
-			{
-				return std::regex_match(a_path, m_rFileCheck);
-			}
-			catch (const std::exception&)
-			{
-				return false;
-			}
-		}
-	}  // namespace UI
-}  // namespace IED
+	}
+}

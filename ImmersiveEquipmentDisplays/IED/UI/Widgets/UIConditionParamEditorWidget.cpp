@@ -29,7 +29,7 @@ namespace IED
 
 		bool UIConditionParamEditorWidget::DrawConditionParamEditorPopup()
 		{
-			bool result = false;
+			bool result;
 
 			ImGui::SetNextWindowSizeConstraints(
 				{ ImGui::GetFontSize() * 34.0f, 0.0f },
@@ -37,139 +37,152 @@ namespace IED
 
 			if (ImGui::BeginPopup("match_param_editor"))
 			{
-				ImGui::PushItemWidth(ImGui::GetFontSize() * -5.5f);
-
-				GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
-				GetKeywordPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearKeyword));
-
-				if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
-				{
-					result |= DrawCMNodeSelector(
-						LS(CommonStrings::Node, "ns"),
-						e.As1<stl::fixed_string>(),
-						NodeOverrideData::GetCMENodeData(),
-						static_cast<const stl::fixed_string*>(e.p2));
-
-					ImGui::Spacing();
-				}
-
-				if (const auto& e = get(ConditionParamItem::BipedSlot); e.p1)
-				{
-					result |= DrawBipedObjectSelector(
-						LS(CommonStrings::Node, "bp"),
-						e.As1<Biped::BIPED_OBJECT>());
-
-					ImGui::Spacing();
-				}
-
-				if (const auto& e = get(ConditionParamItem::EquipmentSlot); e.p1)
-				{
-					result |= DrawObjectSlotSelector(
-						LS(CommonStrings::Slot, "ss"),
-						e.As1<Data::ObjectSlot>());
-
-					ImGui::Spacing();
-				}
-
-				if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
-				{
-					result |= DrawObjectSlotSelector(
-						LS(CommonStrings::Slot, "ss"),
-						e.As1<Data::ObjectSlotExtra>());
-
-					ImGui::Spacing();
-				}
-
-				if (const auto& e = get(ConditionParamItem::Form); e.p1)
-				{
-					ConditionParamItemExtraArgs args;
-
-					if (m_extraInterface)
-					{
-						if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-						{
-							args.p1 = e.p1;
-							args.p2 = e.p2;
-							args.p3 = f.p1;
-
-							result |= m_extraInterface->DrawConditionItemExtra(
-								ConditionParamItem::Form,
-								args);
-						}
-					}
-
-					UICommon::PushDisabled(args.disable);
-
-					result |= m_formPickerForm.DrawFormPicker(
-						"fp_1",
-						LS(CommonStrings::Form),
-						e.As1<Game::FormID>());
-
-					UICommon::PopDisabled(args.disable);
-				}
-
-				if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
-				{
-					ConditionParamItemExtraArgs args;
-
-					if (m_extraInterface)
-					{
-						if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-						{
-							args.p1 = e.p1;
-							args.p2 = e.p2;
-							args.p3 = f.p1;
-
-							result |= m_extraInterface->DrawConditionItemExtra(
-								ConditionParamItem::Keyword,
-								args);
-						}
-					}
-
-					UICommon::PushDisabled(args.disable);
-
-					result |= m_formPickerKeyword.DrawFormPicker(
-						"fp_2",
-						LS(CommonStrings::Keyword),
-						e.As1<Game::FormID>());
-
-					UICommon::PopDisabled(args.disable);
-				}
-
-				if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
-				{
-					if (ImGui::RadioButton(
-							LS(CommonStrings::Complete, "qts"),
-							e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
-					{
-						e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
-						result = true;
-					}
-
-					ImGui::Spacing();
-				}
-
-				if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
-				{
-					result |= DrawExtraConditionSelector(
-						e.As1<Data::ExtraConditionType>());
-				}
-
-				if (m_extraInterface)
-				{
-					if (const auto& e = get(ConditionParamItem::Extra); e.p1)
-					{
-						result |= m_extraInterface->DrawConditionParamExtra(e.p1, e.p2);
-					}
-				}
-
-				GetFormPicker().SetAllowClear(true);
-				GetKeywordPicker().SetAllowClear(true);
-
-				ImGui::PopItemWidth();
+				result = DrawConditionParamEditorPanel();
 
 				ImGui::EndPopup();
 			}
+			else
+			{
+				result = false;
+			}
+
+			return result;
+		}
+
+		bool UIConditionParamEditorWidget::DrawConditionParamEditorPanel()
+		{
+			bool result = false;
+
+			ImGui::PushItemWidth(ImGui::GetFontSize() * -5.5f);
+
+			GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
+			GetKeywordPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearKeyword));
+
+			if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
+			{
+				result |= DrawCMNodeSelector(
+					LS(CommonStrings::Node, "ns"),
+					e.As1<stl::fixed_string>(),
+					NodeOverrideData::GetCMENodeData(),
+					static_cast<const stl::fixed_string*>(e.p2));
+
+				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::BipedSlot); e.p1)
+			{
+				result |= DrawBipedObjectSelector(
+					LS(CommonStrings::Node, "bp"),
+					e.As1<Biped::BIPED_OBJECT>());
+
+				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::EquipmentSlot); e.p1)
+			{
+				result |= DrawObjectSlotSelector(
+					LS(CommonStrings::Slot, "ss"),
+					e.As1<Data::ObjectSlot>());
+
+				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
+			{
+				result |= DrawObjectSlotSelector(
+					LS(CommonStrings::Slot, "ss"),
+					e.As1<Data::ObjectSlotExtra>());
+
+				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::Form); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				if (m_extraInterface)
+				{
+					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+					{
+						args.p1 = e.p1;
+						args.p2 = e.p2;
+						args.p3 = f.p1;
+
+						result |= m_extraInterface->DrawConditionItemExtra(
+							ConditionParamItem::Form,
+							args);
+					}
+				}
+
+				UICommon::PushDisabled(args.disable);
+
+				result |= m_formPickerForm.DrawFormPicker(
+					"fp_1",
+					LS(CommonStrings::Form),
+					e.As1<Game::FormID>());
+
+				UICommon::PopDisabled(args.disable);
+			}
+
+			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				if (m_extraInterface)
+				{
+					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+					{
+						args.p1 = e.p1;
+						args.p2 = e.p2;
+						args.p3 = f.p1;
+
+						result |= m_extraInterface->DrawConditionItemExtra(
+							ConditionParamItem::Keyword,
+							args);
+					}
+				}
+
+				UICommon::PushDisabled(args.disable);
+
+				result |= m_formPickerKeyword.DrawFormPicker(
+					"fp_2",
+					LS(CommonStrings::Keyword),
+					e.As1<Game::FormID>());
+
+				UICommon::PopDisabled(args.disable);
+			}
+
+			if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
+			{
+				if (ImGui::RadioButton(
+						LS(CommonStrings::Complete, "qts"),
+						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
+				{
+					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
+					result = true;
+				}
+
+				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
+			{
+				result |= DrawExtraConditionSelector(
+					e.As1<Data::ExtraConditionType>());
+			}
+
+			if (m_extraInterface)
+			{
+				if (const auto& e = get(ConditionParamItem::Extra); e.p1)
+				{
+					result |= m_extraInterface->DrawConditionParamExtra(e.p1, e.p2);
+				}
+			}
+
+			GetFormPicker().SetAllowClear(true);
+			GetKeywordPicker().SetAllowClear(true);
+
+			ImGui::PopItemWidth();
 
 			return result;
 		}

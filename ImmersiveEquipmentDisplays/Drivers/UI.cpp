@@ -128,9 +128,8 @@ namespace IED
 
 			bool exp = true;
 
-			if (m_updateFlags.test(UpdateFlags::kResetInput))
+			if (m_updateFlags.consume(UpdateFlags::kResetInput))
 			{
-				m_updateFlags.clear(UpdateFlags::kResetInput);
 				ResetInput();
 			}
 
@@ -152,9 +151,8 @@ namespace IED
 				UpdateStyle();
 			}
 
-			if (m_updateFlags.test(UpdateFlags::kStyleAlpha))
+			if (m_updateFlags.consume(UpdateFlags::kStyleAlpha))
 			{
-				m_updateFlags.clear(UpdateFlags::kStyleAlpha);
 				UpdateStyleAlpha();
 			}
 

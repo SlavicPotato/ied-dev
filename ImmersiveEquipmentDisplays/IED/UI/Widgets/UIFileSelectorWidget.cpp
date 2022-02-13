@@ -33,16 +33,18 @@ namespace IED
 
 		void UIFileSelector::DrawFileSelector()
 		{
-			const char* curSelName = m_selected ? m_selected->m_key.c_str() : nullptr;
+			const char* preview = m_selected ?
+                                      m_selected->m_key.c_str() :
+                                      nullptr;
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
 			if (ImGui::BeginCombo(
 					LS(CommonStrings::Files, "file_sel"),
-					curSelName,
+					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_files)
+				for (const auto& e : m_files)
 				{
 					ImGui::PushID(std::addressof(e));
 
@@ -70,12 +72,10 @@ namespace IED
 			ImGui::PopItemWidth();
 		}
 
-		bool UIFileSelector::UpdateFileList(bool a_createPath, bool a_select)
+		bool UIFileSelector::UpdateFileList()
 		{
 			try
 			{
-				storage_type tmp;
-
 				if (!fs::exists(m_root))
 				{
 					fs::create_directories(m_root);
@@ -83,8 +83,10 @@ namespace IED
 
 				if (fs::exists(m_root) && !fs::is_directory(m_root))
 				{
-					throw std::exception("bad dir");
+					throw std::exception("bad root path");
 				}
+
+				storage_type tmp;
 
 				for (const auto& entry : fs::directory_iterator(m_root))
 				{
@@ -97,13 +99,16 @@ namespace IED
 
 						if (!m_ext.empty())
 						{
-							if (!path.has_extension() || path.extension() != m_ext)
+							if (!path.has_extension() ||
+							    path.extension() != m_ext)
+							{
 								continue;
+							}
 						}
 
 						auto file = path.filename();
 
-						tmp.emplace(file.stem().string(), file);
+						tmp.emplace(get_key(file), file);
 					}
 					catch (const std::exception& e)
 					{
@@ -114,27 +119,25 @@ namespace IED
 					}
 				}
 
-				if (tmp.empty())
+				m_files = std::move(tmp);
+
+				if (m_files.empty())
 				{
 					m_selected.clear();
 				}
 				else
 				{
-					m_files = std::move(tmp);
-
-					if (a_select)
+					if (!m_selected ||
+					    !m_files.contains(m_selected->m_key))
 					{
-						if (!m_selected || !m_files.contains(m_selected->m_key))
-						{
-							m_selected.insert(
-								m_root,
-								*m_files.begin());
-						}
+						m_selected.insert(
+							m_root,
+							*m_files.begin());
+					}
 
-						if (m_selected)
-						{
-							m_selected->UpdateInfo();
-						}
+					if (m_selected)
+					{
+						m_selected->UpdateInfo();
 					}
 				}
 
@@ -217,7 +220,7 @@ namespace IED
 
 			try
 			{
-				fkey = a_newFileName.stem().string();
+				fkey = get_key(a_newFileName);
 
 				fs::rename(a_item.m_fullpath, m_root / a_newFileName);
 			}
@@ -249,5 +252,16 @@ namespace IED
 				m_selected->UpdateInfo();
 			}
 		}
+
+		std::string UIFileSelector::get_key(const fs::path& a_filename)
+		{
+			auto key = str_conv::wstr_to_str(a_filename.stem().wstring());
+			if (key.empty())
+			{
+				throw std::exception("bad key");
+			}
+			return key;
+		}
+
 	}
 }

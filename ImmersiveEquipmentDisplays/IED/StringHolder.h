@@ -115,6 +115,8 @@ namespace IED
 	class StringHolder
 	{
 	public:
+		static inline constexpr auto FMT_NINODE_IED_GROUP = "IED GROUP [%.8X]";
+
 		[[nodiscard]] inline static constexpr const auto& GetSingleton() noexcept
 		{
 			return m_Instance;

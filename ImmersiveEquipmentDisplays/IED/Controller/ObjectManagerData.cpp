@@ -3,8 +3,8 @@
 #include "INodeOverride.h"
 #include "ObjectManagerData.h"
 
+#include "Controller.h"
 #include "IED/ActorState.h"
-#include "IED/Controller/INode.h"
 #include "IED/Data.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"

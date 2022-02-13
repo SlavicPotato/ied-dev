@@ -21,7 +21,7 @@ namespace IED
 		mutable stl::optional<BGSLocation*> location;
 		mutable stl::optional<TESWorldSpace*> worldspace;
 
-		bool get_using_furniture() const
+		[[nodiscard]] bool get_using_furniture() const
 		{
 			if (!furnHandle)
 			{
@@ -40,7 +40,7 @@ namespace IED
 			return *furnHandle != Game::ObjectRefHandle{};
 		}
 
-		auto get_furniture() const
+		[[nodiscard]] auto get_furniture() const
 		{
 			if (!furniture)
 			{
@@ -63,7 +63,7 @@ namespace IED
 			return *furniture;
 		}
 
-		bool get_laying_down() const
+		[[nodiscard]] bool get_laying_down() const
 		{
 			if (!layingDown)
 			{
@@ -88,7 +88,7 @@ namespace IED
 			return *layingDown;
 		}
 
-		constexpr auto get_biped() const
+		[[nodiscard]] constexpr auto get_biped() const
 		{
 			if (!biped)
 			{
@@ -98,7 +98,7 @@ namespace IED
 			return *biped;
 		}
 
-		constexpr auto get_actor_skin() const
+		[[nodiscard]] constexpr auto get_actor_skin() const
 		{
 			if (!actorSkin)
 			{
@@ -108,7 +108,7 @@ namespace IED
 			return *actorSkin;
 		}
 
-		constexpr bool can_dual_wield() const
+		[[nodiscard]] constexpr bool can_dual_wield() const
 		{
 			if (!canDualWield)
 			{
@@ -143,7 +143,7 @@ namespace IED
 			return *canDualWield;
 		}
 
-		constexpr bool get_actor_dead() const
+		[[nodiscard]] constexpr bool get_actor_dead() const
 		{
 			if (!isDead)
 			{
@@ -153,7 +153,7 @@ namespace IED
 			return *isDead;
 		}
 
-		constexpr bool get_in_interior() const
+		[[nodiscard]] constexpr bool get_in_interior() const
 		{
 			if (!inInterior)
 			{
@@ -163,7 +163,7 @@ namespace IED
 			return *inInterior;
 		}
 
-		constexpr auto get_location() const
+		[[nodiscard]] constexpr auto get_location() const
 		{
 			if (!location)
 			{
@@ -187,7 +187,7 @@ namespace IED
 			return *location;
 		}
 
-		constexpr auto get_worldspace() const
+		[[nodiscard]] constexpr auto get_worldspace() const
 		{
 			if (!worldspace)
 			{
@@ -195,6 +195,11 @@ namespace IED
 			}
 
 			return *worldspace;
+		}
+
+		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
+		{
+			return a_mask && (race->validEquipTypes & a_mask) == a_mask;
 		}
 	};
 }

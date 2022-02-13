@@ -15,9 +15,9 @@ namespace IED
 			fontInfoEntry_t& a_out,
 			std::uint32_t a_version) const
 		{
-			auto file = a_in["file"].asString();
+			fs::path path(str_conv::str_to_wstr(a_in["file"].asString()));
 
-			if (file.empty())
+			if (path.empty())
 			{
 				Error("%s: empty font filename", __FUNCTION__);
 				return false;
@@ -25,31 +25,24 @@ namespace IED
 
 			bool win_font = a_in.get("win_font", false).asBool();
 
-			if (win_font)
+			if (win_font && !path.is_absolute())
 			{
-				if (fs::path(file).is_absolute())
+				fs::path tmp;
+
+				if (!WinApi::get_windows_path(tmp))
 				{
-					a_out.path = std::move(file);
+					Error("%s: failed getting windows path", __FUNCTION__);
+					return false;
 				}
-				else
-				{
-					fs::path tmp;
 
-					if (!WinApi::get_windows_path(tmp))
-					{
-						Error("%s: failed getting windows path", __FUNCTION__);
-						return false;
-					}
+				tmp /= "Fonts";
+				tmp /= path;
 
-					tmp /= "Fonts";
-					tmp /= file;
-
-					a_out.path = tmp.string();
-				}
+				a_out.path = str_conv::wstr_to_str(tmp.wstring());
 			}
 			else
 			{
-				a_out.path = std::move(file);
+				a_out.path = str_conv::wstr_to_str(path.wstring());
 			}
 
 			Parser<fontGlyphData_t> gparser(m_state);

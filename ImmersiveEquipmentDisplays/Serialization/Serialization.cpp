@@ -56,7 +56,7 @@ namespace IED
 		{
 			try
 			{
-				return a_path.string();
+				return str_conv::wstr_to_str(a_path.wstring());
 			}
 			catch (...)
 			{
@@ -66,16 +66,16 @@ namespace IED
 
 		void CreateRootPath(const std::filesystem::path& a_path)
 		{
-			auto form = a_path.parent_path();
+			auto path = a_path.parent_path();
 
-			if (!std::filesystem::exists(form))
+			if (!std::filesystem::exists(path))
 			{
-				if (!std::filesystem::create_directories(form))
+				if (!std::filesystem::create_directories(path))
 				{
 					throw std::exception("Couldn't create base directory");
 				}
 			}
-			else if (!std::filesystem::is_directory(form))
+			else if (!std::filesystem::is_directory(path))
 			{
 				throw std::exception("Root path is not a directory");
 			}

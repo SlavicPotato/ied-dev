@@ -12,13 +12,6 @@ namespace IED
 
 		ProfileBase() = default;
 
-		ProfileBase(const std::filesystem::path& a_path) :
-			m_path(a_path),
-			m_pathStr(a_path.string()),
-			m_name(a_path.stem().string())
-		{
-		}
-
 		virtual bool Load() = 0;
 		virtual bool Save(const T& a_data, bool a_store) = 0;
 		virtual void SetDefaults() noexcept = 0;
@@ -28,11 +21,11 @@ namespace IED
 			return Save(m_data, false);
 		}
 
-		void SetPath(const fs::path& a_path) noexcept
+		void SetPath(const fs::path& a_path)
 		{
 			m_path = a_path;
-			m_pathStr = a_path.string();
-			m_name = a_path.stem().string();
+			m_pathStr = str_conv::wstr_to_str(a_path.wstring());
+			m_name = str_conv::wstr_to_str(a_path.stem().wstring());
 		}
 
 		inline void SetDescription(const std::string& a_text) noexcept

@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "Controller.h"
 #include "IED/EngineExtensions.h"
 #include "IObjectManager.h"
 
@@ -484,7 +485,7 @@ namespace IED
 			itemRoot,
 			targetNodes.ref);
 
-		UpdateDownwardPass(targetNodes.obj);
+		UpdateDownwardPass(itemRoot);
 
 		auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
@@ -498,6 +499,8 @@ namespace IED
 			a_config.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok);
+
+		UpdateDownwardPass(object);
 
 		FinalizeObjectState(
 			state,
@@ -669,7 +672,7 @@ namespace IED
 
 		stl::snprintf(
 			buffer,
-			"IED GROUP [%.8X]",
+			StringHolder::FMT_NINODE_IED_GROUP,
 			a_form->formID.get());
 
 		auto groupRoot = CreateNode(buffer);
@@ -681,6 +684,8 @@ namespace IED
 			state->transform,
 			groupRoot,
 			targetNodes.ref);
+
+		UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
 		{
@@ -713,7 +718,7 @@ namespace IED
 				n.object,
 				nullptr);
 
-			UpdateDownwardPass(targetNodes.obj);
+			UpdateDownwardPass(itemRoot);
 
 			EngineExtensions::AttachObject(
 				a_params.actor,
@@ -731,6 +736,8 @@ namespace IED
 				a_config.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
+
+			UpdateDownwardPass(e.object);
 
 			e.object = itemRoot;
 		}
@@ -791,4 +798,4 @@ namespace IED
 		}
 	}
 
-}  // namespace IED
+}

@@ -15,6 +15,7 @@
 #include <ext/Set.h>
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
+#include <ext/str_conv.h>
 
 #include <skse64/GameAudio.h>
 #include <skse64/GameEvents.h>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Config.h"
-#include "Controller/Controller.h"
 #include "Controller/ModelType.h"
 
 #include <ext/GameCommon.h>
@@ -11,6 +10,8 @@
 
 namespace IED
 {
+	class Controller;
+
 	enum class AttachResultFlags : std::uint8_t
 	{
 		kNone = 0,
@@ -81,23 +82,14 @@ namespace IED
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
-		EngineExtensions(
-			Controller* a_controller,
-			const std::shared_ptr<ConfigINI>& a_config);
-
 		EngineExtensions(const EngineExtensions&) = delete;
 		EngineExtensions(EngineExtensions&&) = delete;
 		EngineExtensions& operator=(const EngineExtensions&) = delete;
 		EngineExtensions& operator=(EngineExtensions&&) = delete;
 
-		template <class... Args>
-		static void Initialize(Args&&... a_args)
-		{
-			if (!m_Instance)
-			{
-				m_Instance = new EngineExtensions(std::forward<Args>(a_args)...);
-			}
-		}
+		static void Install(
+			Controller* a_controller,
+			const std::shared_ptr<ConfigINI>& a_config);
 
 		static bool RemoveAllChildren(
 			NiNode* a_object,
@@ -140,6 +132,12 @@ namespace IED
 		FN_NAMEPROC("EngineExtensions");
 
 	private:
+		EngineExtensions() = default;
+
+		void InstallImpl(
+			Controller* a_controller,
+			const std::shared_ptr<ConfigINI>& a_config);
+
 		inline static const auto m_shadowSceneNode =
 			IAL::Address<ShadowSceneNode**>(513211, 390951);
 
@@ -165,15 +163,15 @@ namespace IED
 		BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
 		void Patch_RemoveAllBipedParts();
-		void Patch_GarbageCollector();
-		void Patch_Actor_Resurrect();
-		void Patch_Actor_3DEvents();
-		void Patch_Armor_Update();
+		void InstallHook_REFR_GarbageCollector();
+		void InstallHook_Actor_Resurrect();
+		void InstallHook_Actor_3DEvents();
+		void InstallHook_Armor_Update();
 		void Patch_SetWeapAdjAnimVar();
 		void Patch_CreateWeaponNodes();
 		void Patch_AdjustSkip_SE();
 		void Patch_AdjustSkip_AE();
-		void Patch_ToggleFav();
+		void InstallHook_ToggleFav();
 
 		static void RemoveAllBipedParts_Hook(Biped* a_biped);
 		static void Character_Resurrect_Hook(
@@ -231,6 +229,6 @@ namespace IED
 
 		Controller* m_controller{ nullptr };
 
-		static EngineExtensions* m_Instance;
+		static EngineExtensions m_Instance;
 	};
 }  // namespace IED

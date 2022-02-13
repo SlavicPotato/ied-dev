@@ -165,5 +165,6 @@ namespace IED
 		Style = 236,
 		Location = 237,
 		Worldspace = 238,
+		Refresh = 239,
 	};
 }
