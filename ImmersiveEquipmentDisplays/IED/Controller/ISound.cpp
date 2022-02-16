@@ -6,8 +6,8 @@ namespace IED
 {
 	void ISound::SoundPlay(
 		std::uint8_t a_formType,
-		NiAVObject* a_object,
-		bool a_equip) const
+		NiAVObject*  a_object,
+		bool         a_equip) const
 	{
 		auto audioManager = BSAudioManager::GetSingleton();
 		if (!audioManager)
@@ -35,7 +35,7 @@ namespace IED
 	BGSSoundDescriptorForm*
 		ISound::SoundRefHolder::Get(
 			std::uint8_t a_formType,
-			bool a_equip) const
+			bool         a_equip) const
 	{
 		const soundPair_t* pair;
 
@@ -81,7 +81,7 @@ namespace IED
 	}
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
-		const IPluginInfo& a_pinfo,
+		const IPluginInfo&                     a_pinfo,
 		const stl::optional<Data::ConfigForm>& a_form)
 	{
 		if (!a_form)
@@ -100,7 +100,7 @@ namespace IED
 	}
 
 	[[nodiscard]] ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
-		const IPluginInfo& a_pinfo,
+		const IPluginInfo&                                      a_pinfo,
 		const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_in)
 	{
 		return {

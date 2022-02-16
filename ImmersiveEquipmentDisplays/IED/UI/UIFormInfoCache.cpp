@@ -34,7 +34,7 @@ namespace IED
 			{
 				m_controller.QueueLookupFormInfo(
 					a_form,
-					[this, a_form](std::unique_ptr<formInfoResult_t> a_info) {
+					[this, a_form](IForm::info_result a_info) {
 						auto it = m_data.find(a_form);
 						if (it != m_data.end())
 						{

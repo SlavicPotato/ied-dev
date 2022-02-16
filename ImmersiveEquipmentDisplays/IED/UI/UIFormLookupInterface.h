@@ -9,7 +9,6 @@ namespace IED
 	{
 		class UIFormLookupInterface
 		{
-
 		public:
 			UIFormLookupInterface(
 				Controller& a_controller);
@@ -17,7 +16,6 @@ namespace IED
 			const formInfoResult_t* LookupForm(Game::FormID a_form) const;
 
 		private:
-
 			Controller& m_controller;
 		};
 

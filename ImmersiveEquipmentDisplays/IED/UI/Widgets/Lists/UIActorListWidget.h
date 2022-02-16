@@ -33,7 +33,7 @@ namespace IED
 
 			UIActorList(
 				Controller& a_controller,
-				float a_itemWidthScalar = -6.5f);
+				float       a_itemWidthScalar = -6.5f);
 
 			virtual ~UIActorList() noexcept = default;
 
@@ -60,7 +60,7 @@ namespace IED
 		template <class Td>
 		UIActorList<Td>::UIActorList(
 			Controller& a_controller,
-			float a_itemWidthScalar) :
+			float       a_itemWidthScalar) :
 			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UIActorInfoAddInterface(a_controller),
 			UISettingsInterface(a_controller),
@@ -75,7 +75,7 @@ namespace IED
 			m_listFirstUpdate = true;
 
 			const auto& actorSettings = GetActorSettings();
-			auto& actorInfo = GetActorInfo();
+			auto&       actorInfo     = GetActorInfo();
 
 			m_listData.clear();
 
@@ -153,7 +153,7 @@ namespace IED
 			if (cacheUpdateId != m_lastCacheUpdateId)
 			{
 				m_lastCacheUpdateId = cacheUpdateId;
-				m_listNextUpdate = true;
+				m_listNextUpdate    = true;
 			}
 
 			UIListBase<Td, Game::FormID>::ListTick();
@@ -170,8 +170,8 @@ namespace IED
 		void UIActorList<Td>::ListDrawInfoText(const listValue_t& a_entry)
 		{
 			auto& actorInfo = GetActorInfo();
-			auto& raceInfo = Data::IData::GetRaceList();
-			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
+			auto& raceInfo  = Data::IData::GetRaceList();
+			auto& modList   = Data::IData::GetPluginInfo().GetIndexMap();
 
 			ImGui::Columns(2, nullptr, false);
 

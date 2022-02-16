@@ -8,6 +8,7 @@
 #include "../Data.h"
 #include "../Inventory.h"
 #include "../StringHolder.h"
+#include "ActorProcessorTask.h"
 #include "ControllerCommon.h"
 #include "IEquipment.h"
 #include "IForm.h"
@@ -15,7 +16,6 @@
 #include "IMaintenance.h"
 #include "IObjectManager.h"
 #include "IUI.h"
-#include "ActorProcessorTask.h"
 
 #include "IED/SettingHolder.h"
 
@@ -48,6 +48,7 @@ namespace IED
 		public BSTEventSink<MenuOpenCloseEvent>,
 		public BSTEventSink<SKSENiNodeUpdateEvent>,
 		//public BSTEventSink<TESQuestStartStopEvent>,
+		//public BSTEventSink<TESPackageEvent>,
 		public BSTEventSink<TESActorLocationChangeEvent>
 	{
 		enum class SerializationVersion : std::uint32_t
@@ -64,25 +65,25 @@ namespace IED
 
 		struct actorLookupResult_t
 		{
-			NiPointer<Actor> actor;
+			NiPointer<Actor>      actor;
 			Game::ObjectRefHandle handle;
 		};
 
 		struct actorInfo_t
 		{
-			NiPointer<Actor> actor;
-			Game::ObjectRefHandle handle;
-			TESNPC* npc;
-			TESRace* race;
-			NiNode* root;
-			NiNode* npcRoot;
-			Data::ConfigSex sex;
+			NiPointer<Actor>         actor;
+			Game::ObjectRefHandle    handle;
+			TESNPC*                  npc;
+			TESRace*                 race;
+			NiNode*                  root;
+			NiNode*                  npcRoot;
+			Data::ConfigSex          sex;
 			const ActorObjectHolder* objects;
 		};
 
 		struct npcRacePair_t
 		{
-			TESNPC* npc;
+			TESNPC*  npc;
 			TESRace* race;
 		};
 
@@ -104,7 +105,7 @@ namespace IED
 		Controller(const std::shared_ptr<const ConfigINI>& a_config);
 
 		Controller(const Controller&) = delete;
-		Controller(Controller&&) = delete;
+		Controller(Controller&&)      = delete;
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) = delete;
 
@@ -130,16 +131,16 @@ namespace IED
 		}
 
 		bool RemoveActor(
-			TESObjectREFR* a_actor,
-			Game::ObjectRefHandle a_handle,
+			TESObjectREFR*                   a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		bool RemoveActor(
-			TESObjectREFR* a_actor,
+			TESObjectREFR*                   a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		bool RemoveActor(
-			Game::FormID a_actor,
+			Game::FormID                     a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		/*void RemoveActorByHandle(
@@ -158,6 +159,7 @@ namespace IED
 
 		// use when acquiring global lock may be detrimental to performance
 		void QueueRequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer = false) const;
+		void QueueRequestEvaluate(TESObjectREFR* a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer = false) const;
 
 		void RequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer) const;
 		void QueueEvaluateAll(stl::flag<ControllerUpdateFlags> a_flags);
@@ -197,171 +199,171 @@ namespace IED
 		void QueueAttachCustomNodeAll(Data::ObjectSlot a_slot, bool a_evalIfNone);*/
 
 		void QueueResetCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueResetCustomNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueResetCustomRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueResetCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueResetCustomNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueResetCustomRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueResetCustom(
-			Game::FormID a_actor,
+			Game::FormID      a_actor,
 			Data::ConfigClass a_class);
 
 		void QueueResetCustomNPC(
-			Game::FormID a_npc,
+			Game::FormID      a_npc,
 			Data::ConfigClass a_class);
 
 		void QueueResetCustomRace(
-			Game::FormID a_race,
+			Game::FormID      a_race,
 			Data::ConfigClass a_class);
 
 		void QueueResetCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueResetCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueResetCustomAll(
 			Data::ConfigClass a_class);
 
 		void QueueUpdateTransformCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateTransformCustomNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateTransformCustomRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateTransformCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateTransformCustomNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateTransformCustomRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateTransformCustom(
-			Game::FormID a_actor,
+			Game::FormID      a_actor,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateTransformCustomNPC(
-			Game::FormID a_npc,
+			Game::FormID      a_npc,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateTransformCustomRace(
-			Game::FormID a_race,
+			Game::FormID      a_race,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateTransformCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateTransformCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateTransformCustomAll(
 			Data::ConfigClass a_class);
 
 		void QueueUpdateAttachCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateAttachCustomNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateAttachCustomRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateAttachCustom(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateAttachNPC(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateAttachRace(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateAttachCustom(
-			Game::FormID a_actor,
+			Game::FormID      a_actor,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateAttachCustomNPC(
-			Game::FormID a_npc,
+			Game::FormID      a_npc,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateAttachCustomRace(
-			Game::FormID a_race,
+			Game::FormID      a_race,
 			Data::ConfigClass a_class);
 
 		void QueueUpdateAttachCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void QueueUpdateAttachCustomAll(
-			Data::ConfigClass a_class,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateAttachCustomAll(
@@ -378,8 +380,8 @@ namespace IED
 		void QueueUpdateSoundForms();
 
 		void Evaluate(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void AddActorBlock(Game::FormID a_actor, const stl::fixed_string& a_key);
@@ -466,43 +468,43 @@ namespace IED
 		struct updateActionFunc_t
 		{
 			using func_t = std::function<bool(
-				actorInfo_t& a_info,
+				actorInfo_t&                     a_info,
 				const Data::configCustomEntry_t& a_confEntry,
-				objectEntryCustom_t& a_entry)>;
+				objectEntryCustom_t&             a_entry)>;
 
-			func_t func;
-			bool evalDirty{ false };
+			func_t       func;
+			bool         evalDirty{ false };
 			mutable bool clean{ false };
 		};
 
 		void EvaluateImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
-			ActorObjectHolder& a_objects,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
+			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
-			NiNode* a_root,
-			NiNode* a_npcroot,
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
+			NiNode*                          a_root,
+			NiNode*                          a_npcroot,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
-			NiNode* a_root,
-			NiNode* a_npcroot,
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
-			ActorObjectHolder& a_objects,
+			NiNode*                          a_root,
+			NiNode*                          a_npcroot,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
+			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
-			ActorObjectHolder& a_objects,
+			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateTransformsImpl(
@@ -512,50 +514,50 @@ namespace IED
 			const ActorObjectHolder& a_objects);
 
 		bool ProcessTransformsImpl(
-			NiNode* a_npcRoot,
-			Actor* a_actor,
-			TESNPC* a_npc,
-			TESRace* a_race,
-			Data::ConfigSex a_sex,
-			const ActorObjectHolder& a_objects,
+			NiNode*                                      a_npcRoot,
+			Actor*                                       a_actor,
+			TESNPC*                                      a_npc,
+			TESRace*                                     a_race,
+			Data::ConfigSex                              a_sex,
+			const ActorObjectHolder&                     a_objects,
 			const Data::collectorData_t::container_type* a_equippedForms);
 
 		void ActorResetImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void ActorResetImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags,
-			Data::ObjectSlot a_slot);
+			Data::ObjectSlot                 a_slot);
 
 		void ResetCustomImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
-			Data::ConfigClass a_class,
+			Actor*                   a_actor,
+			Game::ObjectRefHandle    a_handle,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey);
 
 		void ResetCustomImpl(
-			Actor* a_actor,
-			Game::ObjectRefHandle a_handle,
-			Data::ConfigClass a_class,
+			Actor*                   a_actor,
+			Game::ObjectRefHandle    a_handle,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_vkey);
 
 		void ResetCustomImpl(
-			Actor* a_actor,
+			Actor*                a_actor,
 			Game::ObjectRefHandle a_handle,
-			Data::ConfigClass a_class);
+			Data::ConfigClass     a_class);
 
 		void UpdateTransformSlotImpl(
-			Game::FormID a_actor,
+			Game::FormID     a_actor,
 			Data::ObjectSlot a_slot);
 
 		void UpdateTransformSlotImpl(
 			ActorObjectHolder& a_record,
-			Data::ObjectSlot a_slot);
+			Data::ObjectSlot   a_slot);
 
 		static void UpdateRootPaused(NiNode* a_root);
 
@@ -563,212 +565,210 @@ namespace IED
 		updateActionFunc_t MakeAttachUpdateFunc();
 
 		static const Data::configBaseValues_t& GetConfigForActor(
-			Actor* a_actor,
-			TESRace* a_race,
-			const Data::configCustom_t& a_config,
+			const actorInfo_t&                            a_info,
+			const Data::configCustom_t&                   a_config,
 			const ActorObjectHolder::slot_container_type& a_slots);
 
 		static const Data::configBaseValues_t& GetConfigForActor(
-			Actor* a_actor,
-			TESRace* a_race,
+			const actorInfo_t&        a_info,
 			const Data::configSlot_t& a_config,
-			const objectEntrySlot_t& a_entry);
+			const objectEntrySlot_t&  a_entry);
 
 		void UpdateCustomImpl(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
 			const stl::fixed_string& a_pkey,
 			const stl::fixed_string& a_vkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomNPCImpl(
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			const stl::fixed_string& a_vkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomRaceImpl(
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			const stl::fixed_string& a_vkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomImpl(
+			Game::FormID             a_actor,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomNPCImpl(
+			Game::FormID             a_npc,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomRaceImpl(
+			Game::FormID             a_race,
+			Data::ConfigClass        a_class,
+			const stl::fixed_string& a_pkey,
+			updateActionFunc_t       a_func);
+
+		void UpdateCustomImpl(
+			Game::FormID       a_actor,
+			Data::ConfigClass  a_class,
 			updateActionFunc_t a_func);
 
 		void UpdateCustomNPCImpl(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey,
+			Game::FormID       a_npc,
+			Data::ConfigClass  a_class,
 			updateActionFunc_t a_func);
 
 		void UpdateCustomRaceImpl(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey,
+			Game::FormID       a_race,
+			Data::ConfigClass  a_class,
 			updateActionFunc_t a_func);
 
 		void UpdateCustomImpl(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomNPCImpl(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomRaceImpl(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomImpl(
-			Game::FormID a_actor,
-			Data::ConfigClass a_class,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomNPCImpl(
-			Game::FormID a_npc,
-			Data::ConfigClass a_class,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomRaceImpl(
-			Game::FormID a_race,
-			Data::ConfigClass a_class,
-			updateActionFunc_t a_func);
-
-		void UpdateCustomImpl(
-			ActorObjectHolder& a_record,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey,
+			ActorObjectHolder&        a_record,
+			Data::ConfigClass         a_class,
+			const stl::fixed_string&  a_pkey,
+			const stl::fixed_string&  a_vkey,
 			const updateActionFunc_t& a_func);
 
 		void UpdateCustomImpl(
-			ActorObjectHolder& a_record,
-			Data::ConfigClass a_class,
-			const stl::fixed_string& a_pkey,
+			ActorObjectHolder&        a_record,
+			Data::ConfigClass         a_class,
+			const stl::fixed_string&  a_pkey,
 			const updateActionFunc_t& a_func);
 
 		void UpdateCustomImpl(
-			ActorObjectHolder& a_record,
-			Data::ConfigClass a_class,
+			ActorObjectHolder&        a_record,
+			Data::ConfigClass         a_class,
 			const updateActionFunc_t& a_func);
 
 		void UpdateCustomImpl(
-			actorInfo_t& a_info,
-			const Data::configCustomPluginMap_t& a_confPluginMap,
+			actorInfo_t&                          a_info,
+			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey,
-			const updateActionFunc_t& a_func);
+			const stl::fixed_string&              a_pkey,
+			const stl::fixed_string&              a_vkey,
+			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomAllImpl(
-			actorInfo_t& a_info,
-			const Data::configCustomPluginMap_t& a_confPluginMap,
+			actorInfo_t&                          a_info,
+			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
-			const stl::fixed_string& a_pkey,
-			const updateActionFunc_t& a_func);
+			const stl::fixed_string&              a_pkey,
+			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomAllImpl(
-			actorInfo_t& a_info,
-			const Data::configCustomPluginMap_t& a_confPluginMap,
+			actorInfo_t&                          a_info,
+			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
-			const updateActionFunc_t& a_func);
+			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomImpl(
-			actorInfo_t& a_info,
-			const Data::configCustomEntryMap_t& a_confEntryMap,
+			actorInfo_t&                         a_info,
+			const Data::configCustomEntryMap_t&  a_confEntryMap,
 			ActorObjectHolder::customEntryMap_t& a_entryMap,
-			const stl::fixed_string& a_vkey,
-			const updateActionFunc_t& a_func);
+			const stl::fixed_string&             a_vkey,
+			const updateActionFunc_t&            a_func);
 
 		void UpdateTransformCustomImpl(
-			actorInfo_t& a_info,
-			const Data::configCustom_t& a_configEntry,
+			actorInfo_t&                   a_info,
+			const Data::configCustom_t&    a_configEntry,
 			const Data::configTransform_t& a_xfrmConfigEntry,
-			objectEntryCustom_t& a_entry);
+			objectEntryCustom_t&           a_entry);
 
 		void AttachSlotNodeImpl(
-			Game::FormID a_actor,
+			Game::FormID     a_actor,
 			Data::ObjectSlot a_slot,
-			bool a_evalIfNone);
+			bool             a_evalIfNone);
 
 		bool AttachSlotNodeImpl(
 			ActorObjectHolder& a_record,
-			Data::ObjectSlot a_slot,
-			bool a_evalIfNone);
+			Data::ObjectSlot   a_slot,
+			bool               a_evalIfNone);
 
 		bool AttachNodeImpl(
-			const actorInfo_t& a_info,
-			NiNode* a_root,
+			const actorInfo_t&          a_info,
+			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
-			bool a_atmReference,
-			objectEntryBase_t& a_cacheEntry);
+			bool                        a_atmReference,
+			objectEntryBase_t&          a_cacheEntry);
 
 		bool AttachNodeImpl(
-			NiNode* a_root,
+			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
-			bool a_atmReference,
-			objectEntryBase_t& a_cacheEntry);
+			bool                        a_atmReference,
+			objectEntryBase_t&          a_cacheEntry);
 
 		bool ProcessItemUpdate(
-			processParams_t& a_params,
+			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_config,
 			const Data::configModelGroup_t* a_groupConfig,
-			const Data::NodeDescriptor& a_node,
-			objectEntryBase_t& a_entry,
-			bool a_visible);
+			const Data::NodeDescriptor&     a_node,
+			objectEntryBase_t&              a_entry,
+			bool                            a_visible);
 
 		void ProcessSlots(processParams_t& a_params);
 
 		bool CustomEntryValidateInventoryForm(
-			processParams_t& a_params,
+			processParams_t&                         a_params,
 			const Data::collectorData_t::itemData_t& a_itemData,
-			const Data::configCustom_t& a_config,
-			const Data::configBaseValues_t& a_baseConfig,
-			bool& a_hasMinCount);
+			const Data::configCustom_t&              a_config,
+			const Data::configBaseValues_t&          a_baseConfig,
+			bool&                                    a_hasMinCount);
 
 		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
-			processParams_t& a_params,
-			const Data::configCustom_t& a_config,
+			processParams_t&                a_params,
+			const Data::configCustom_t&     a_config,
 			const Data::configBaseValues_t& a_baseConfig,
-			bool& a_hasMinCount);
+			bool&                           a_hasMinCount);
 
 		bool IsBlockedByChance(
-			processParams_t& a_params,
+			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			objectEntryCustom_t& a_objectEntry);
+			objectEntryCustom_t&        a_objectEntry);
 
 		bool ProcessCustomEntry(
-			processParams_t& a_params,
+			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			objectEntryCustom_t& a_cacheEntry);
+			objectEntryCustom_t&        a_cacheEntry);
 
 		void ProcessCustomEntryMap(
-			processParams_t& a_params,
-			const Data::configCustomHolder_t& a_confData,
+			processParams_t&                     a_params,
+			const Data::configCustomHolder_t&    a_confData,
 			ActorObjectHolder::customEntryMap_t& a_entryMap);
 
 		void ProcessCustomMap(
-			processParams_t& a_params,
+			processParams_t&                     a_params,
 			const Data::configCustomPluginMap_t& a_confPluginMap,
-			Data::ConfigClass a_class);
+			Data::ConfigClass                    a_class);
 
 		void ProcessCustom(processParams_t& a_params);
 
 		void SaveLastEquippedItems(
-			processParams_t& a_params,
+			processParams_t&          a_params,
 			const equippedItemInfo_t& a_info,
-			ActorObjectHolder& a_cache);
+			ActorObjectHolder&        a_cache);
 
 		bool GetVisibilitySwitch(
-			Actor* a_actor,
+			Actor*                     a_actor,
 			stl::flag<Data::BaseFlags> a_flags,
-			processParams_t& a_params);
+			processParams_t&           a_params);
 
 		bool LookupTrackedActor(
-			Game::FormID a_actor,
+			Game::FormID         a_actor,
 			actorLookupResult_t& a_out);
 
 		bool LookupTrackedActor(
 			const ActorObjectHolder& a_record,
-			actorLookupResult_t& a_out);
+			actorLookupResult_t&     a_out);
 
 		bool LookupCachedActorInfo(
 			const ActorObjectHolder& a_record,
-			actorInfo_t& a_out);
+			actorInfo_t&             a_out);
 
 		void CollectKnownActors(
 			actorLookupResultMap_t& a_out);
@@ -777,43 +777,47 @@ namespace IED
 
 		// events
 		virtual EventResult ReceiveEvent(
-			const TESObjectLoadedEvent* a_evn,
+			const TESObjectLoadedEvent*           a_evn,
 			BSTEventSource<TESObjectLoadedEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESInitScriptEvent* a_evn,
+			const TESInitScriptEvent*           a_evn,
 			BSTEventSource<TESInitScriptEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESEquipEvent* evn,
+			const TESEquipEvent*           evn,
 			BSTEventSource<TESEquipEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESContainerChangedEvent* a_evn,
+			const TESContainerChangedEvent*           a_evn,
 			BSTEventSource<TESContainerChangedEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESFurnitureEvent* a_evn,
+			const TESFurnitureEvent*           a_evn,
 			BSTEventSource<TESFurnitureEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESDeathEvent* a_evn,
+			const TESDeathEvent*           a_evn,
 			BSTEventSource<TESDeathEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const TESSwitchRaceCompleteEvent* a_evn,
+			const TESSwitchRaceCompleteEvent*           a_evn,
 			BSTEventSource<TESSwitchRaceCompleteEvent>* a_dispatcher) override;
 
 		virtual EventResult ReceiveEvent(
-			const MenuOpenCloseEvent* evn,
+			const MenuOpenCloseEvent*           evn,
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
 
 		/*virtual EventResult ReceiveEvent(
 			const TESQuestStartStopEvent* a_evn,
 			BSTEventSource<TESQuestStartStopEvent>* a_dispatcher) override;*/
-		
+
+		/*virtual EventResult ReceiveEvent(
+			const TESPackageEvent*           a_evn,
+			BSTEventSource<TESPackageEvent>* a_dispatcher) override;*/
+
 		virtual EventResult ReceiveEvent(
-			const TESActorLocationChangeEvent* a_evn,
+			const TESActorLocationChangeEvent*           a_evn,
 			BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher) override;
 
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
@@ -826,8 +830,8 @@ namespace IED
 		virtual std::size_t Store(boost::archive::binary_oarchive& a_out) override;
 
 		virtual std::size_t Load(
-			SKSESerializationInterface* a_intfc,
-			std::uint32_t a_version,
+			SKSESerializationInterface*      a_intfc,
+			std::uint32_t                    a_version,
 			boost::archive::binary_iarchive& a_in) override;
 
 		// ui overrides
@@ -862,10 +866,9 @@ namespace IED
 
 		// members
 
-		std::unique_ptr<BSStringHolder> m_bsstrings;
+		std::unique_ptr<BSStringHolder>  m_bsstrings;
 		std::shared_ptr<const ConfigINI> m_iniconf;
-
-		Data::actorBlockList_t m_actorBlockList;
+		Data::actorBlockList_t           m_actorBlockList;
 
 		bool m_nodeOverrideEnabled{ false };
 		bool m_nodeOverridePlayerEnabled{ false };
@@ -887,17 +890,12 @@ namespace IED
 			Data::SettingHolder settings;
 		} m_config;
 
-		Data::actorStateHolder_t m_storedActorStates;
-
-		RandomNumberGenerator<float> m_rng1;
-
-		std::vector<Game::ObjectRefHandle> m_activeHandles;
-
+		Data::actorStateHolder_t              m_storedActorStates;
+		RandomNumberGenerator<float>          m_rng1;
+		std::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
-
-		except::descriptor m_lastException;
-
-		mutable WCriticalSection m_lock;
+		except::descriptor                    m_lastException;
+		mutable WCriticalSection              m_lock;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);

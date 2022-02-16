@@ -22,7 +22,7 @@ namespace IED
 
 		public:
 			UINodeOverrideEditorWindow(
-				Controller& a_controller,
+				Controller&                  a_controller,
 				UIProfileEditorNodeOverride& a_profileEditor);
 
 			void Initialize();

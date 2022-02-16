@@ -8,8 +8,8 @@ namespace IED
 	{
 		struct SingleCustomConfigUpdateParams
 		{
-			stl::fixed_string name;
-			Data::ConfigSex sex;
+			stl::fixed_string          name;
+			Data::ConfigSex            sex;
 			Data::configCustomEntry_t& entry;
 		};
 

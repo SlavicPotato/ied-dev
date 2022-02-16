@@ -119,7 +119,7 @@ namespace IED
 				ImGui::Indent();
 
 				auto& settings = m_controller.GetConfigStore().settings;
-				auto& data = settings.data;
+				auto& data     = settings.data;
 
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::KeepEquippedLoaded, "1"),
@@ -215,7 +215,7 @@ namespace IED
 				ImGui::Indent();
 
 				auto& settings = m_controller.GetConfigStore().settings;
-				auto& ui = settings.data.ui;
+				auto& ui       = settings.data.ui;
 
 				if (settings.mark_if(DrawStylePresetSelector(ui.stylePreset)))
 				{
@@ -475,7 +475,7 @@ namespace IED
 			auto& settings = m_controller.GetConfigStore().settings;
 
 			auto current = gLog.GetLogLevel();
-			auto desc = ILog::GetLogLevelString(current);
+			auto desc    = ILog::GetLogLevelString(current);
 
 			if (ImGui::BeginCombo(
 					LS(UISettingsStrings::LogLevel, "ll_sel"),
@@ -512,7 +512,7 @@ namespace IED
 			{
 				auto& settings = m_controller.GetConfigStore().settings;
 
-				char buf[std::numeric_limits<std::uint32_t>::digits10 + 3];
+				char        buf[std::numeric_limits<std::uint32_t>::digits10 + 3];
 				const char* preview;
 
 				auto current = m_controller.GetODBLevel();
@@ -595,8 +595,8 @@ namespace IED
 				ImGui::Spacing();
 
 				auto& settings = m_controller.GetConfigStore().settings;
-				auto& ldm = Localization::LocalizationDataManager::GetSingleton();
-				auto& current = m_controller.GetCurrentLanguageTable();
+				auto& ldm      = Localization::LocalizationDataManager::GetSingleton();
+				auto& current  = m_controller.GetCurrentLanguageTable();
 
 				if (ImGui::BeginCombo(
 						LS(CommonStrings::Language, "1"),
@@ -746,7 +746,7 @@ namespace IED
 				decltype(s_extraGlyphs)::size_type i = 0;
 
 				auto mid = s_extraGlyphs.size() / 2;
-				bool sw = false;
+				bool sw  = false;
 
 				ImGui::Columns(2, nullptr, false);
 
@@ -785,7 +785,7 @@ namespace IED
 		void UISettings::DrawFontMiscOptions()
 		{
 			auto& settings = m_controller.GetConfigStore().settings;
-			auto& ui = settings.data.ui;
+			auto& ui       = settings.data.ui;
 
 			ImGui::PushID("font_misc_opt");
 
@@ -835,8 +835,8 @@ namespace IED
 		}
 
 		bool UISettings::DrawSoundPair(
-			const char* a_strid,
-			Localization::StringID a_label,
+			const char*                                   a_strid,
+			Localization::StringID                        a_label,
 			Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair)
 		{
 			bool result = false;

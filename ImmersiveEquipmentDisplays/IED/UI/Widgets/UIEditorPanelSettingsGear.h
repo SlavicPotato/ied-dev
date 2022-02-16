@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UIEditorPanelSettings.h"
 #include "IED/UI/UILocalizationInterface.h"
+#include "UIEditorPanelSettings.h"
 
 namespace IED
 {
@@ -14,7 +14,6 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 		public:
-
 			UIEditorPanelSettingsGear(Controller& a_controller);
 
 		protected:

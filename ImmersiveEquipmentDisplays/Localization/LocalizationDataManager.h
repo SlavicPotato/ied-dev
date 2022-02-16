@@ -52,7 +52,7 @@ namespace IED
 
 			[[nodiscard]] bool LookupTable(
 				const stl::fixed_string& a_lang,
-				shared_string_table& a_out) const;
+				shared_string_table&     a_out) const;
 
 			FN_NAMEPROC("LocalizationDataManager");
 
@@ -60,7 +60,7 @@ namespace IED
 			std::unordered_map<stl::fixed_string, std::shared_ptr<StringTable>> m_data;
 
 			mutable std::unique_ptr<StringTable::container_type> m_emptyTable;
-			shared_string_table m_defaultTable;
+			shared_string_table                                  m_defaultTable;
 
 			bool m_loaded{ false };
 

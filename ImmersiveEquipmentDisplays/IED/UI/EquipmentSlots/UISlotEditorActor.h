@@ -57,7 +57,7 @@ namespace IED
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
-			
+
 			virtual void ApplyProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 				const SlotProfile& a_profile) override;
@@ -106,6 +106,9 @@ namespace IED
 				bool a_infoDrawn) override;
 
 			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
+
+			virtual entrySlotData_t GetCurrentData(
+				Game::FormID a_handle) override;
 
 			Controller& m_controller;
 		};

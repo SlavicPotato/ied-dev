@@ -26,15 +26,14 @@ namespace IED
 			UIImportWidget(Controller& a_controller);
 
 			void QueueImportPopup(
-				const fs::path& a_fullpath,
+				const fs::path&          a_fullpath,
 				const stl::fixed_string& a_key);
 
 		private:
-
 			virtual void OnDataImport(bool a_success) = 0;
 
 			void DoImport(
-				Data::configStore_t&& a_data,
+				Data::configStore_t&&  a_data,
 				stl::flag<ImportFlags> a_flags);
 
 			Controller& m_controller;

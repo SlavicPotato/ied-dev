@@ -22,7 +22,7 @@ namespace IED
 		{
 			return m_actorInfo;
 		}
-		
+
 		[[nodiscard]] inline constexpr const auto& GetNPCInfo() const noexcept
 		{
 			return m_npcInfo;
@@ -38,7 +38,7 @@ namespace IED
 			return m_crosshairRef;
 		}
 
-		bool LookupCrosshairRef(NiPointer<TESObjectREFR> &a_out);
+		bool LookupCrosshairRef(NiPointer<TESObjectREFR>& a_out);
 
 	private:
 		virtual constexpr const Data::configStore_t& AIGetConfigStore() noexcept = 0;
@@ -55,6 +55,6 @@ namespace IED
 		std::uint64_t m_actorInfoUpdateID{ 0 };
 
 		ActorInfoHolder m_actorInfo;
-		NPCInfoHolder m_npcInfo;
+		NPCInfoHolder   m_npcInfo;
 	};
 }  // namespace IED

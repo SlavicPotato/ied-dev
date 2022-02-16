@@ -19,7 +19,7 @@ namespace IED
 		if (n > 1)
 		{
 			comboKey = e[0];
-			key = e[1];
+			key      = e[1];
 		}
 		else if (n == 1)
 		{
@@ -61,13 +61,13 @@ namespace IED
 
 		m_taskPoolBudget = parsers.reader.Get<long long>(SECT_GENERAL, "TaskPoolBudget", 0);
 
-		m_enableUI = parsers.reader.Get(SECT_GUI, "Enabled", true);
+		m_enableUI     = parsers.reader.Get(SECT_GUI, "Enabled", true);
 		m_dpiAwareness = parsers.reader.Get(SECT_GUI, "EnableProcessDPIAwareness", false);
 		m_UIOpenKeys.Parse(parsers.reader.Get(SECT_GUI, "ToggleKeys", "0x0E"));
-		m_forceUIOpenKeys = parsers.reader.Get(SECT_GUI, "OverrideToggleKeys", false);
+		m_forceUIOpenKeys      = parsers.reader.Get(SECT_GUI, "OverrideToggleKeys", false);
 		m_enableUIRestrictions = parsers.reader.Get(SECT_GUI, "EnableRestrictions", false);
-		m_UIScaling = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
-		m_enableInMenus = parsers.reader.Get(SECT_GUI, "EnableInMenus", false);
+		m_UIScaling            = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
+		m_enableInMenus        = parsers.reader.Get(SECT_GUI, "EnableInMenus", false);
 
 		ParseForm(
 			parsers.reader.Get(SECT_SOUND, "WeaponEquipSD", ""),
@@ -93,7 +93,7 @@ namespace IED
 		ParseForm(
 			parsers.reader.Get(SECT_SOUND, "ArrowUnequipSD", ""),
 			m_sound.arrow.second);
-		
+
 		return (m_loaded = (parsers.reader.ParseError() == 0));
 	}
 

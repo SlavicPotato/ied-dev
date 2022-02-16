@@ -39,46 +39,46 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void                         OnCollapsibleStatesUpdate();
 
 			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
-			virtual void OnEditorPanelSettingsChange() override;
+			virtual void                                    OnEditorPanelSettingsChange() override;
 
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
 				const profileSelectorParamsCustom_t<int>& a_data,
-				const CustomProfile& a_profile) override;
-			
+				const CustomProfile&                      a_profile) override;
+
 			virtual void MergeProfile(
 				const profileSelectorParamsCustom_t<int>& a_data,
-				const CustomProfile& a_profile) override;
+				const CustomProfile&                      a_profile) override;
 
 			virtual void OnBaseConfigChange(
-				int a_handle,
-				const void* a_params,
+				int              a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
-				int a_handle,
+				int                             a_handle,
 				const CustomConfigUpdateParams& a_params) override;
 
 			virtual bool OnCreateNew(
-				int a_handle,
+				int                          a_handle,
 				const CustomConfigNewParams& a_params) override;
 
 			virtual void OnErase(
-				int a_handle,
+				int                            a_handle,
 				const CustomConfigEraseParams& a_params) override;
 
 			virtual bool OnRename(
-				int a_handle,
+				int                             a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
 			void UpdateData();
 
 			entryCustomData_t m_data;
-			Controller& m_controller;
+			Controller&       m_controller;
 		};
 	}
 }

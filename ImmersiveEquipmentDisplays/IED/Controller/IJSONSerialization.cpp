@@ -30,7 +30,7 @@ namespace IED
 
 	static void CopyCustomPapyrusEntries(
 		const Data::configCustomPluginMap_t& a_src,
-		Data::configCustomPluginMap_t& a_dst)
+		Data::configCustomPluginMap_t&       a_dst)
 	{
 		for (auto& e : a_src)
 		{
@@ -45,7 +45,7 @@ namespace IED
 
 	static void CopyCustomPapyrusEntries(
 		const Data::configMapCustom_t& a_src,
-		Data::configMapCustom_t& a_dst)
+		Data::configMapCustom_t&       a_dst)
 	{
 		for (auto& e : a_src)
 		{
@@ -64,7 +64,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::ImportData(
-		Data::configStore_t&& a_in,
+		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
 		if (a_flags.test(ImportFlags::kEraseTemporary))
@@ -88,7 +88,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::DoImportOverwrite(
-		Data::configStore_t&& a_in,
+		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
 		IScopedLock lock(JSGetLock());
@@ -122,7 +122,7 @@ namespace IED
 
 	static void MergeConfig(
 		Data::configFormMap_t<Data::configCustomPluginMap_t>&& a_in,
-		Data::configFormMap_t<Data::configCustomPluginMap_t>& a_out)
+		Data::configFormMap_t<Data::configCustomPluginMap_t>&  a_out)
 	{
 		for (auto& e : a_in)
 		{
@@ -137,7 +137,7 @@ namespace IED
 
 	static void MergeConfig(
 		Data::configCustomPluginMap_t&& a_in,
-		Data::configCustomPluginMap_t& a_dst)
+		Data::configCustomPluginMap_t&  a_dst)
 	{
 		if (auto it = a_in.find(StringHolder::GetSingleton().IED); it != a_in.end())
 		{
@@ -148,7 +148,7 @@ namespace IED
 	template <class T>
 	static void MergeConfig(
 		Data::configFormMap_t<T>&& a_in,
-		Data::configFormMap_t<T>& a_out)
+		Data::configFormMap_t<T>&  a_out)
 	{
 		for (auto& e : a_in)
 		{
@@ -159,7 +159,7 @@ namespace IED
 	template <class Ti, class To>
 	static void MergeConfig(
 		Ti&& a_in,
-		To& a_out)
+		To&  a_out)
 	{
 		auto& fm = a_in.GetFormMaps();
 
@@ -190,7 +190,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::DoImportMerge(
-		Data::configStore_t&& a_in,
+		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
 		IScopedLock lock(JSGetLock());
@@ -207,7 +207,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::ExportData(
-		const fs::path& a_path,
+		const fs::path&                                a_path,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)
 	{
 		try
@@ -215,7 +215,7 @@ namespace IED
 			ParserState state;
 
 			Parser<Data::configStore_t> parser(state);
-			Json::Value root;
+			Json::Value                 root;
 
 			Data::configStore_t tmp;
 
@@ -239,7 +239,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::LoadConfigStore(
-		const fs::path& a_path,
+		const fs::path&      a_path,
 		Data::configStore_t& a_out) const
 	{
 		Serialization::ParserState state;
@@ -247,8 +247,8 @@ namespace IED
 	}
 
 	bool IJSONSerialization::LoadConfigStore(
-		const fs::path& a_path,
-		Data::configStore_t& a_out,
+		const fs::path&             a_path,
+		Data::configStore_t&        a_out,
 		Serialization::ParserState& a_state) const
 	{
 		using namespace Serialization;
@@ -260,7 +260,7 @@ namespace IED
 			ReadData(a_path, root);
 
 			Parser<Data::configStore_t> parser(a_state);
-			Data::configStore_t tmp;
+			Data::configStore_t         tmp;
 
 			if (!parser.Parse(root, tmp))
 			{
@@ -294,16 +294,16 @@ namespace IED
 	}
 
 	bool IJSONSerialization::SaveConfigStore(
-		const fs::path& a_path,
+		const fs::path&            a_path,
 		const Data::configStore_t& a_data) const
 	{
 		using namespace Serialization;
 
 		try
 		{
-			ParserState state;
+			ParserState                 state;
 			Parser<Data::configStore_t> parser(state);
-			Json::Value root;
+			Json::Value                 root;
 
 			parser.Create(
 				a_data,
@@ -328,7 +328,7 @@ namespace IED
 	}
 
 	Data::configStore_t IJSONSerialization::CreateExportData(
-		const Data::configStore_t& a_data,
+		const Data::configStore_t&                     a_data,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)
 	{
 		using namespace Data;
@@ -421,7 +421,7 @@ namespace IED
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kCustomGlobal))
 		{
-			auto& sh = StringHolder::GetSingleton();
+			auto& sh   = StringHolder::GetSingleton();
 			auto& data = a_data.custom.GetGlobalData()[0];
 
 			if (auto it = data.find(sh.IED); it != data.end())

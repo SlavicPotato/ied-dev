@@ -24,14 +24,14 @@ namespace IED
 
 				template <class... Args>
 				cachedItem_t(
-					const stl::fixed_string &a_name,
+					const stl::fixed_string& a_name,
 					Args&&... a_args) :
 					name(a_name),
 					data(std::forward<Args>(a_args)...)
 				{
 				}
 
-				stl::fixed_string name;
+				stl::fixed_string       name;
 				entryNodeOverrideData_t data;
 			};
 
@@ -48,7 +48,7 @@ namespace IED
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
 			virtual ProfileManager<NodeOverrideProfile>& GetProfileManager() const override;
-			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
+			virtual UIPopupQueue&                        GetPopupQueue_ProfileBase() const override;
 
 			virtual NodeOverrideEditorCurrentData GetCurrentData() override;
 
@@ -64,7 +64,7 @@ namespace IED
 
 			virtual void OnProfileSave(
 				const stl::fixed_string& a_name,
-				NodeOverrideProfile& a_profile) override;
+				NodeOverrideProfile&     a_profile) override;
 
 			virtual void OnProfileReload(
 				const NodeOverrideProfile& a_profile) override;
@@ -81,31 +81,31 @@ namespace IED
 			virtual void OnCollapsibleStatesUpdate();
 
 			virtual void OnUpdate(
-				int a_handle,
+				int                                            a_handle,
 				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int a_handle,
+				int                                            a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int a_handle,
+				int                             a_handle,
 				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
-				int a_handle,
+				int                                  a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearPlacement(
-				int a_handle,
+				int                                  a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllTransforms(
-				int a_handle,
+				int                                     a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
-				int a_handle,
+				int                                     a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual WindowLayoutData GetWindowDimensions() const;
@@ -115,7 +115,7 @@ namespace IED
 			template <class Tp>
 			void UpdateConfigSingle(
 				const Tp& a_params,
-				bool a_syncSex);
+				bool      a_syncSex);
 
 			void UpdateConfig(const NodeOverrideUpdateParams& a_params);
 
@@ -129,7 +129,7 @@ namespace IED
 		template <class Tp>
 		void UIProfileEditorNodeOverride::UpdateConfigSingle(
 			const Tp& a_params,
-			bool a_syncSex)
+			bool      a_syncSex)
 		{
 			auto profile = GetCurrentProfile();
 			if (!profile)
@@ -147,7 +147,7 @@ namespace IED
 				auto og = Data::GetOppositeSex(a_params.sex);
 
 				a_params.entry.second(og) = a_params.entry.second(a_params.sex);
-				confEntry = a_params.entry.second;
+				confEntry                 = a_params.entry.second;
 			}
 			else
 			{

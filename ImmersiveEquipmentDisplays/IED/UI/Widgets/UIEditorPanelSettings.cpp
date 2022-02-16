@@ -14,7 +14,7 @@ namespace IED
 
 		void UIEditorPanelSettings::SetSex(
 			Data::ConfigSex a_sex,
-			bool a_sendEvent)
+			bool            a_sendEvent)
 		{
 			m_sex = a_sex;
 			OnSexChanged(a_sex);

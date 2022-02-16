@@ -140,13 +140,13 @@ namespace IED
 
 		void NodeMap::Merge(std::initializer_list<map_type::value_type> a_init)
 		{
-			m_data = a_init;
+			m_data  = a_init;
 			m_dirty = true;
 		}
 
 		auto NodeMap::Add(
-			const char* a_node,
-			const char* a_desc,
+			const char*                    a_node,
+			const char*                    a_desc,
 			stl::flag<NodeDescriptorFlags> a_flags)
 			-> std::pair<map_type::iterator, bool>
 		{
@@ -202,9 +202,9 @@ namespace IED
 			{
 				IScopedLock lock(m_rwLock);
 
-				ParserState state;
+				ParserState      state;
 				Parser<map_type> parser(state);
-				Json::Value root;
+				Json::Value      root;
 
 				parser.Create(m_data.getmap(), root, true);
 
@@ -231,9 +231,9 @@ namespace IED
 
 				ReadData(a_path, root);
 
-				ParserState state;
+				ParserState      state;
 				Parser<map_type> parser(state);
-				map_type tmp;
+				map_type         tmp;
 
 				if (!parser.Parse(root, tmp, false))
 				{

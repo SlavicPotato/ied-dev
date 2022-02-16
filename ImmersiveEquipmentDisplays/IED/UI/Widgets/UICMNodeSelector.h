@@ -13,19 +13,19 @@ namespace IED
 		public:
 			template <class T>
 			static bool DrawCMNodeSelector(
-				const char* a_label,
-				stl::fixed_string& a_current,
-				const T& a_data,
-				const stl::fixed_string* a_skip = nullptr,
+				const char*                           a_label,
+				stl::fixed_string&                    a_current,
+				const T&                              a_data,
+				const stl::fixed_string*              a_skip       = nullptr,
 				const NodeOverrideData::cm_data_type* a_descLookup = nullptr);
 		};
 
 		template <class T>
 		bool UICMNodeSelectorWidget::DrawCMNodeSelector(
-			const char* a_label,
-			stl::fixed_string& a_current,
-			const T& a_data,
-			const stl::fixed_string* a_skip,
+			const char*                           a_label,
+			stl::fixed_string&                    a_current,
+			const T&                              a_data,
+			const stl::fixed_string*              a_skip,
 			const NodeOverrideData::cm_data_type* a_descLookup)
 		{
 			const char* descName{ nullptr };
@@ -33,9 +33,9 @@ namespace IED
 			if (!a_current.empty())
 			{
 				if (a_descLookup)
-				{					
-					if (auto it = a_descLookup->find(a_current); 
-						it != a_descLookup->end())
+				{
+					if (auto it = a_descLookup->find(a_current);
+					    it != a_descLookup->end())
 					{
 						descName = it->second.desc;
 					}
@@ -78,7 +78,7 @@ namespace IED
 					if (ImGui::Selectable(e->second.desc, selected))
 					{
 						a_current = e->first;
-						result = true;
+						result    = true;
 					}
 
 					ImGui::PopID();

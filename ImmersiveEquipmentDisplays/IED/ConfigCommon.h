@@ -111,9 +111,9 @@ namespace IED
 
 		enum class ConfigClass : std::uint32_t
 		{
-			Race = 0,
-			NPC = 1,
-			Actor = 2,
+			Race   = 0,
+			NPC    = 1,
+			Actor  = 2,
 			Global = 3
 		};
 
@@ -122,7 +122,7 @@ namespace IED
 		enum class GlobalConfigType : std::uint32_t
 		{
 			Player = 0,
-			NPC = 1
+			NPC    = 1
 		};
 
 		enum class SelectionMode

@@ -10,25 +10,25 @@ namespace IED
 			template <class... Args>
 			bool SliderFloat(
 				const char* a_label,
-				float* a_value,
-				float a_min,
-				float a_max,
+				float*      a_value,
+				float       a_min,
+				float       a_max,
 				Args... a_args) const;
 
 			template <class... Args>
 			bool SliderFloat3(
 				const char* a_label,
-				float* a_value,
-				float a_min,
-				float a_max,
+				float*      a_value,
+				float       a_min,
+				float       a_max,
 				Args... a_args) const;
 
 			template <class... Args>
 			bool SliderInt(
 				const char* a_label,
-				int* a_value,
-				int a_min,
-				int a_max,
+				int*        a_value,
+				int         a_min,
+				int         a_max,
 				Args... a_args)
 				const;
 
@@ -47,9 +47,9 @@ namespace IED
 		template <class... Args>
 		bool UIControls::SliderFloat(
 			const char* a_label,
-			float* a_value,
-			float a_min,
-			float a_max,
+			float*      a_value,
+			float       a_min,
+			float       a_max,
 			Args... a_args) const
 		{
 			bool res = ImGui::SliderFloat(
@@ -72,9 +72,9 @@ namespace IED
 		template <class... Args>
 		bool UIControls::SliderFloat3(
 			const char* a_label,
-			float* a_value,
-			float a_min,
-			float a_max,
+			float*      a_value,
+			float       a_min,
+			float       a_max,
 			Args... a_args) const
 		{
 			bool res = ImGui::SliderFloat3(
@@ -100,9 +100,9 @@ namespace IED
 		template <class... Args>
 		bool UIControls::SliderInt(
 			const char* a_label,
-			int* a_value,
-			int a_min,
-			int a_max,
+			int*        a_value,
+			int         a_min,
+			int         a_max,
 			Args... a_args)
 			const
 		{

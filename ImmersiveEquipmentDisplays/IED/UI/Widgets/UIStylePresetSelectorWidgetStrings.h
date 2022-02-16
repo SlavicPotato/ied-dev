@@ -8,16 +8,16 @@ namespace IED
 	{
 		enum class UIStylePresetSelectorWidgetStrings : Localization::StringID
 		{
-			Dark = 5600,
-			Light = 5601,
-			Classic = 5602,
-			DeepDark = 5603,
-			DarkRed = 5604,
+			Dark         = 5600,
+			Light        = 5601,
+			Classic      = 5602,
+			DeepDark     = 5603,
+			DarkRed      = 5604,
 			SteamClassic = 5605,
-			ItaDark = 5606,
-			ItaLight = 5607,
-			S56 = 5608,
-			CorpGrey = 5609,
+			ItaDark      = 5606,
+			ItaLight     = 5607,
+			S56          = 5608,
+			CorpGrey     = 5609,
 			CorpGreyFlat = 5610,
 		};
 	}

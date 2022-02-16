@@ -42,14 +42,14 @@ namespace IED
 			static ObjectSlotExtra GetItemSlotLeftExtra(TESForm* a_form) noexcept;
 
 			// static ObjectType GetTypeFromSlot(ObjectSlot a_slot);
-			static ObjectSlot GetSlotFromType(ObjectType a_type) noexcept;
+			static ObjectSlot      GetSlotFromType(ObjectType a_type) noexcept;
 			static ObjectSlotExtra GetSlotFromTypeExtra(ObjectTypeExtra a_type) noexcept;
 			static ObjectTypeExtra GetTypeFromSlotExtra(ObjectSlotExtra a_type) noexcept;
 
-			static ObjectSlot GetLeftSlot(ObjectSlot a_slot) noexcept;
+			static ObjectSlot      GetLeftSlot(ObjectSlot a_slot) noexcept;
 			static ObjectSlotExtra GetLeftSlotExtra(ObjectSlotExtra a_slot) noexcept;
 
-			static ObjectSlot ExtraSlotToSlot(ObjectSlotExtra a_slot) noexcept;
+			static ObjectSlot      ExtraSlotToSlot(ObjectSlotExtra a_slot) noexcept;
 			static ObjectSlotExtra SlotToExtraSlot(ObjectSlot a_slot) noexcept;
 
 			static bool IsLeftWeaponSlot(ObjectSlot a_slot) noexcept;
@@ -68,10 +68,9 @@ namespace IED
 
 		struct raceCacheEntry_t
 		{
-			bool playable;
-			std::string fullname;
-			std::string edid;
-			std::uint32_t flags;
+			std::string              fullname;
+			std::string              edid;
+			stl::flag<TESRace::Flag> flags;
 		};
 
 		class IData
@@ -103,7 +102,7 @@ namespace IED
 
 		private:
 			std::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
-			IPluginInfo m_pluginInfo;
+			IPluginInfo                                        m_pluginInfo;
 
 			Game::FormID m_playerRefID{ 0x14 };
 			Game::FormID m_playerBaseID{ 0x7 };

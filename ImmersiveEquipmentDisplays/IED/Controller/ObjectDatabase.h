@@ -24,11 +24,11 @@ namespace IED
 		//static inline constexpr long long DEFAULT_MAX_TIME_UNUSED = 120000000;
 
 		[[nodiscard]] bool GetUniqueObject(
-			const char* a_path,
+			const char*          a_path,
 			ObjectDatabaseEntry& a_entry,
-			NiPointer<NiNode>& a_object);
+			NiPointer<NiNode>&   a_object);
 
-		bool ValidateObject(const char* a_path, NiAVObject* a_object);
+		bool        ValidateObject(const char* a_path, NiAVObject* a_object);
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object);
 
 		void RunObjectCleanup();

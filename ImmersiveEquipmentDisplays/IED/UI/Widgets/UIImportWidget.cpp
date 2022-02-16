@@ -19,7 +19,7 @@ namespace IED
 		}
 
 		void UIImportWidget::QueueImportPopup(
-			const fs::path& a_fullpath,
+			const fs::path&          a_fullpath,
 			const stl::fixed_string& a_key)
 		{
 			auto data = std::make_shared<Data::configStore_t>();
@@ -114,7 +114,7 @@ namespace IED
 		}
 
 		void UIImportWidget::DoImport(
-			Data::configStore_t&& a_data,
+			Data::configStore_t&&  a_data,
 			stl::flag<ImportFlags> a_flags)
 		{
 			OnDataImport(m_controller.ImportData(std::move(a_data), a_flags));

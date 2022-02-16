@@ -2,12 +2,12 @@
 
 #include "IED/ConfigOverrideCommon.h"
 
-#include "../UIPopupToggleButtonWidget.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "UIFormSelectorWidget.h"
 
-#include "../../UIClipboard.h"
-#include "../../UICommon.h"
-#include "../../UIFormLookupInterface.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/UIFormLookupInterface.h"
 
 #include "IED/GlobalProfileManager.h"
 
@@ -37,27 +37,27 @@ namespace IED
 
 		public:
 			UIFormFilterWidget(
-				Controller& a_controller,
+				Controller&           a_controller,
 				UIFormSelectorWidget& a_formSelector);
 
 			void DrawFormFiltersTree(
-				const char* a_label,
-				T& a_params,
+				const char*               a_label,
+				T&                        a_params,
 				Data::configFormFilter_t& a_data);
 
 			template <class Tfo>
 			void DrawFormFiltersTree(
-				const char* a_label,
-				T& a_params,
+				const char*               a_label,
+				T&                        a_params,
 				Data::configFormFilter_t& a_data,
-				Tfo a_func);
+				Tfo                       a_func);
 
 			void DrawFormFilters(
-				T& a_params,
+				T&                        a_params,
 				Data::configFormFilter_t& a_data);
 
 			void DrawFormFiltersBase(
-				T& a_params,
+				T&                            a_params,
 				Data::configFormFilterBase_t& a_data);
 
 			inline void SetOnChangeFunc(callback_func_t a_func)
@@ -67,31 +67,31 @@ namespace IED
 
 		private:
 			FormFilterAction DrawFormFiltersHeaderTreeContextMenu(
-				T& a_params,
+				T&                        a_params,
 				Data::configFormFilter_t& a_data);
 
 			FormFilterAction DrawFormFilterHeaderContextMenu(
-				T& a_params,
+				T&                     a_params,
 				Data::configFormSet_t& a_data);
 
 			void DrawFormFilterTable(
-				T& a_params,
+				T&                     a_params,
 				Data::configFormSet_t& a_data);
 
 			FormFilterAction DrawFormFilterEntryContextMenu();
 
 			void DrawProfileSelectorCombo(
-				T& a_params,
+				T&                        a_params,
 				Data::configFormFilter_t& a_data);
 
-			Game::FormID m_ffNewEntryID;
+			Game::FormID          m_ffNewEntryID;
 			UIFormSelectorWidget& m_formSelector;
-			callback_func_t m_onChangeFunc;
+			callback_func_t       m_onChangeFunc;
 		};
 
 		template <class T>
 		UIFormFilterWidget<T>::UIFormFilterWidget(
-			Controller& a_controller,
+			Controller&           a_controller,
 			UIFormSelectorWidget& a_formSelector) :
 			UIFormLookupInterface(a_controller),
 			UILocalizationInterface(a_controller),
@@ -101,8 +101,8 @@ namespace IED
 
 		template <class T>
 		void UIFormFilterWidget<T>::DrawFormFiltersTree(
-			const char* a_label,
-			T& a_params,
+			const char*               a_label,
+			T&                        a_params,
 			Data::configFormFilter_t& a_data)
 		{
 			DrawFormFiltersTree(a_label, a_params, a_data, [] {});
@@ -111,10 +111,10 @@ namespace IED
 		template <class T>
 		template <class Tfo>
 		void UIFormFilterWidget<T>::DrawFormFiltersTree(
-			const char* a_label,
-			T& a_params,
+			const char*               a_label,
+			T&                        a_params,
 			Data::configFormFilter_t& a_data,
-			Tfo a_func)
+			Tfo                       a_func)
 		{
 			if (DrawFormFiltersHeaderTreeContextMenu(
 					a_params,
@@ -142,7 +142,7 @@ namespace IED
 
 		template <class T>
 		void UIFormFilterWidget<T>::DrawFormFilters(
-			T& a_params,
+			T&                        a_params,
 			Data::configFormFilter_t& a_data)
 		{
 			ImGui::PushID("ff_area");
@@ -177,7 +177,7 @@ namespace IED
 
 		template <class T>
 		inline void UIFormFilterWidget<T>::DrawFormFiltersBase(
-			T& a_params,
+			T&                            a_params,
 			Data::configFormFilterBase_t& a_data)
 		{
 			ImGui::PushID("ff_base_area");
@@ -283,7 +283,7 @@ namespace IED
 
 		template <class T>
 		FormFilterAction UIFormFilterWidget<T>::DrawFormFiltersHeaderTreeContextMenu(
-			T& a_params,
+			T&                        a_params,
 			Data::configFormFilter_t& a_data)
 		{
 			FormFilterAction result{ FormFilterAction::None };
@@ -334,7 +334,7 @@ namespace IED
 
 		template <class T>
 		FormFilterAction UIFormFilterWidget<T>::DrawFormFilterHeaderContextMenu(
-			T& a_params,
+			T&                     a_params,
 			Data::configFormSet_t& a_data)
 		{
 			FormFilterAction result{ FormFilterAction::None };
@@ -440,7 +440,7 @@ namespace IED
 
 		template <class T>
 		void UIFormFilterWidget<T>::DrawFormFilterTable(
-			T& a_params,
+			T&                     a_params,
 			Data::configFormSet_t& a_data)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5, 5 });
@@ -560,7 +560,7 @@ namespace IED
 
 		template <class T>
 		void UIFormFilterWidget<T>::DrawProfileSelectorCombo(
-			T& a_params,
+			T&                        a_params,
 			Data::configFormFilter_t& a_data)
 		{
 			auto& data = GlobalProfileManager::GetSingleton<FormFilterProfile>().Data();
@@ -590,7 +590,7 @@ namespace IED
 							selected))
 					{
 						a_data.profile.name = e->first;
-						selectedNew = true;
+						selectedNew         = true;
 					}
 
 					ImGui::PopID();

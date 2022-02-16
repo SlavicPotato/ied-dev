@@ -17,7 +17,6 @@ namespace IED
 			void DrawNPCInfoAdd(Game::FormID a_current = {});
 
 		private:
-
 			virtual void OnNPCInfoAdded(Game::FormID a_npc) = 0;
 
 			Controller& m_controller;

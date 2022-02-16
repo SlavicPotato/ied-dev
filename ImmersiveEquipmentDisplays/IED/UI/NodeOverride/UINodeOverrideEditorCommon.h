@@ -27,35 +27,35 @@ namespace IED
 		protected:
 			template <class Td>
 			void UpdateConfigSingle(
-				T a_handle,
+				T         a_handle,
 				const Td& a_params,
-				bool a_syncSex);
+				bool      a_syncSex);
 
 			void UpdateConfig(
-				T a_handle,
+				T                               a_handle,
 				const NodeOverrideUpdateParams& a_params);
 
 			template <class Td>
 			bool EraseConfig(
-				T a_handle,
+				T                               a_handle,
 				Data::configMapNodeOverrides_t& a_map,
-				const stl::fixed_string& a_name);
+				const stl::fixed_string&        a_name);
 
 			template <class Td>
 			void PostClear(
-				const Td& a_data,
-				Td& a_workingData,
+				const Td&                a_data,
+				Td&                      a_workingData,
 				const stl::fixed_string& a_name);
 
 			void MergeProfileData(
 				const profileSelectorParamsNodeOverride_t<T>& a_data,
-				const NodeOverrideProfile& a_profile);
+				const NodeOverrideProfile&                    a_profile);
 
 			void DrawPlayerDisabledWarning();
 
 		private:
 			virtual void DrawMainHeaderControlsExtra(
-				T a_handle,
+				T                        a_handle,
 				entryNodeOverrideData_t& a_data) override;
 
 			virtual Data::configNodeOverrideHolder_t&
@@ -81,9 +81,9 @@ namespace IED
 		template <class T>
 		template <class Td>
 		void UINodeOverrideEditorCommon<T>::UpdateConfigSingle(
-			T a_handle,
+			T         a_handle,
 			const Td& a_params,
-			bool a_syncSex)
+			bool      a_syncSex)
 		{
 			auto& confEntry = GetOrCreateConfigHolder(a_handle)
 			                      .get_data<decltype(a_params.entry.second)>()
@@ -95,7 +95,7 @@ namespace IED
 				auto og = Data::GetOppositeSex(a_params.sex);
 
 				a_params.entry.second(og) = a_params.entry.second(a_params.sex);
-				confEntry = a_params.entry.second;
+				confEntry                 = a_params.entry.second;
 			}
 			else
 			{
@@ -107,7 +107,7 @@ namespace IED
 
 		template <class T>
 		void UINodeOverrideEditorCommon<T>::UpdateConfig(
-			T a_handle,
+			T                               a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			a_params.data.copy_cc(
@@ -118,9 +118,9 @@ namespace IED
 		template <class T>
 		template <class Td>
 		bool UINodeOverrideEditorCommon<T>::EraseConfig(
-			T a_handle,
+			T                               a_handle,
 			Data::configMapNodeOverrides_t& a_map,
-			const stl::fixed_string& a_name)
+			const stl::fixed_string&        a_name)
 		{
 			auto it = a_map.find(a_handle);
 			if (it != a_map.end())
@@ -143,8 +143,8 @@ namespace IED
 		template <class T>
 		template <class Td>
 		void UINodeOverrideEditorCommon<T>::PostClear(
-			const Td& a_data,
-			Td& a_workingData,
+			const Td&                a_data,
+			Td&                      a_workingData,
 			const stl::fixed_string& a_name)
 		{
 			if (auto it = a_data.find(a_name); it != a_data.end())
@@ -156,9 +156,9 @@ namespace IED
 		template <class T>
 		void UINodeOverrideEditorCommon<T>::MergeProfileData(
 			const profileSelectorParamsNodeOverride_t<T>& a_data,
-			const NodeOverrideProfile& a_profile)
+			const NodeOverrideProfile&                    a_profile)
 		{
-			auto& conf = GetOrCreateConfigHolder(a_data.handle);
+			auto& conf  = GetOrCreateConfigHolder(a_data.handle);
 			auto& pdata = a_profile.Data();
 
 			for (auto& e : pdata.data)
@@ -189,7 +189,7 @@ namespace IED
 
 		template <class T>
 		void UINodeOverrideEditorCommon<T>::DrawMainHeaderControlsExtra(
-			T a_handle,
+			T                        a_handle,
 			entryNodeOverrideData_t& a_data)
 		{
 			ImGui::Separator();

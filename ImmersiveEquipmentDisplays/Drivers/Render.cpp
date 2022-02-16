@@ -54,9 +54,9 @@ namespace IED
 				return;
 			}
 
-			m_Instance.m_device = renderManager->forwarder;
-			m_Instance.m_context = renderManager->context;
-			m_Instance.m_swapChain = renderManager->swapChain;
+			m_Instance.m_device       = renderManager->forwarder;
+			m_Instance.m_context      = renderManager->context;
+			m_Instance.m_swapChain    = renderManager->swapChain;
 			m_Instance.m_bufferSize.x = static_cast<float>(sd.BufferDesc.Width);
 			m_Instance.m_bufferSize.y = static_cast<float>(sd.BufferDesc.Height);
 			m_Instance.m_bufferSize.z =

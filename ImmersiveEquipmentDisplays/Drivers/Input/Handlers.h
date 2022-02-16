@@ -77,7 +77,7 @@ namespace IED
 			}
 
 			std::uint32_t m_key{ 0 };
-			bool m_processPaused{ true };
+			bool          m_processPaused{ true };
 
 			func_t m_func;
 		};
@@ -107,8 +107,7 @@ namespace IED
 			}
 
 		private:
-			bool m_comboKeyDown{ false };
-
+			bool          m_comboKeyDown{ false };
 			std::uint32_t m_comboKey{ 0 };
 
 			virtual void Receive(const KeyEvent& a_evn) override;

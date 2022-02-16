@@ -20,7 +20,7 @@ namespace IED
 			};
 
 			configForm_t lastEquipped;
-			long long lastSeenEquipped{ std::numeric_limits<long long>::min() };
+			long long    lastSeenEquipped{ std::numeric_limits<long long>::min() };
 
 		private:
 			template <class Archive>
@@ -59,7 +59,6 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-
 			actorStateHolder_t() = default;
 			actorStateHolder_t(const ObjectManagerData& a_data);
 

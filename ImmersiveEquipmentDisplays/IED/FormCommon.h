@@ -11,9 +11,9 @@ namespace IED
 	{
 		kNone = 0,
 
-		kInventory = 1u << 0,
+		kInventory   = 1u << 0,
 		kValidCustom = 1u << 1,
-		kValidSlot = 1u << 2,
+		kValidSlot   = 1u << 2,
 
 		kAll = (kInventory | kValidCustom | kValidSlot)
 	};
@@ -46,7 +46,7 @@ namespace IED
 
 		template <class T>
 		inline static bool HasKeyword(
-			T* a_form,
+			T*           a_form,
 			Game::FormID a_keyword)
 		{
 			if (auto keyword = a_keyword.As<BGSKeyword>())
@@ -61,8 +61,8 @@ namespace IED
 
 		template <class T>
 		inline static constexpr bool HasKeyword(
-			T* a_form,
-			const Data::configCachedForm_t& a_keyword) 
+			T*                              a_form,
+			const Data::configCachedForm_t& a_keyword)
 		{
 			if (auto form = a_keyword.get_form())
 			{

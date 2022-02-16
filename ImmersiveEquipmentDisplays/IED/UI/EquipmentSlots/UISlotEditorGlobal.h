@@ -44,28 +44,28 @@ namespace IED
 
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<int>& a_data,
-				const SlotProfile& a_profile) override;
-			
+				const SlotProfile&                      a_profile) override;
+
 			/*virtual void ApplyProfile(
 				const profileSelectorParamsSlot_t<int>& a_data,
 				const SlotProfile& a_profile) override;*/
 
 			virtual void OnBaseConfigChange(
-				int a_handle,
-				const void* a_params,
+				int              a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void
 				OnFullConfigChange(
-					int a_handle,
+					int                           a_handle,
 					const SlotConfigUpdateParams& a_params) override;
 
 			virtual void OnSingleSlotClear(
-				int a_handle,
+				int                                a_handle,
 				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int a_handle,
+				int                              a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnSexChanged(
@@ -75,9 +75,12 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
-			virtual void OnCollapsibleStatesUpdate() override;
+			virtual void                         OnCollapsibleStatesUpdate() override;
 
-			void UpdateData(entrySlotData_t &a_data);
+			void UpdateData(entrySlotData_t& a_data);
+
+			virtual entrySlotData_t GetCurrentData(
+				int a_handle) override;
 
 			entrySlotData_t m_data;
 

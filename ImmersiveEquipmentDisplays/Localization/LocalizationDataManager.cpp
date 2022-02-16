@@ -91,7 +91,7 @@ namespace IED
 
 		bool LocalizationDataManager::LookupTable(
 			const stl::fixed_string& a_lang,
-			shared_string_table& a_out) const
+			shared_string_table&     a_out) const
 		{
 			auto it = m_data.find(a_lang);
 			if (it != m_data.end())

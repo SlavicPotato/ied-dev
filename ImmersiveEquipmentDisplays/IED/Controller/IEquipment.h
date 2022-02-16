@@ -8,8 +8,8 @@ namespace IED
 {
 	struct equippedItemInfo_t
 	{
-		TESForm* left;
-		TESForm* right;
+		TESForm*         left;
+		TESForm*         right;
 		Data::ObjectSlot leftSlot;
 		Data::ObjectSlot rightSlot;
 	};
@@ -38,10 +38,10 @@ namespace IED
 		static equippedItemInfo_t CreateEquippedItemInfo(ActorProcessManager* a_pm);
 
 		static selectedItem_t SelectItem(
-			Actor* a_actor,
-			const Data::configSlot_t& a_entry,
+			Actor*                            a_actor,
+			const Data::configSlot_t&         a_entry,
 			SlotItemCandidates::storage_type& a_candidates,
-			Game::FormID a_lastEquipped);
+			Game::FormID                      a_lastEquipped);
 	};
 
 }  // namespace IED

@@ -8,7 +8,7 @@ namespace IED
 	{
 		enum class UIActorListStrings : Localization::StringID
 		{
-			
+
 		};
 	}
 }

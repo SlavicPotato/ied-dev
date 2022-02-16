@@ -13,7 +13,7 @@ namespace IED
 	namespace UI
 	{
 		UIEditorTabPanel::UIEditorTabPanel(
-			Controller& a_controller,
+			Controller&            a_controller,
 			Localization::StringID a_menuName) :
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
@@ -139,7 +139,7 @@ namespace IED
 		{
 			if (LCG_BM(CommonStrings::Actions, "et_mb"))
 			{
-				auto i = stl::underlying(m_currentClass);
+				auto  i = stl::underlying(m_currentClass);
 				auto& e = m_interfaces[i];
 
 				if (e.ptr)
@@ -174,8 +174,8 @@ namespace IED
 		}
 
 		void UIEditorTabPanel::SetEditor(
-			Data::ConfigClass a_class,
-			UIEditorInterface& a_interface,
+			Data::ConfigClass      a_class,
+			UIEditorInterface&     a_interface,
 			Localization::StringID a_label)
 		{
 			m_interfaces[stl::underlying(a_class)] = {

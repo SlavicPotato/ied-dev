@@ -46,11 +46,36 @@ namespace IED
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ BGSKeyword::kTypeID }),
-							
+
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-					{ TESWorldSpace::kTypeID })
+					{ TESWorldSpace::kTypeID }),
+
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESPackage::kTypeID }),
+
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESShout::kTypeID }),
+
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESFaction::kTypeID }),
+
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESCombatStyle::kTypeID }),
+
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESClass::kTypeID })
 
 			} }
 		{

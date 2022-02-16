@@ -7,12 +7,12 @@ namespace IED
 	namespace UI
 	{
 		bool UIControlKeySelectorWidget::DrawKeySelector(
-			const char* a_label,
+			const char*                      a_label,
 			const UIData::controlDescData_t& a_data,
-			std::uint32_t& a_key,
-			bool a_allowNone)
+			std::uint32_t&                   a_key,
+			bool                             a_allowNone)
 		{
-			char buf[9];
+			char        buf[9];
 			const char* preview;
 
 			bool result = false;
@@ -57,7 +57,7 @@ namespace IED
 					{
 						if (a_key != e->first)
 						{
-							a_key = e->first;
+							a_key  = e->first;
 							result = true;
 						}
 					}

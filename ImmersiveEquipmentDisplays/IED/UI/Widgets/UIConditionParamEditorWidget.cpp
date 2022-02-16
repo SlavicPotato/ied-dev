@@ -15,6 +15,7 @@ namespace IED
 			UIFormLookupInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIConditionExtraSelectorWidget(a_controller),
+			UIPackageTypeSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
 		{
@@ -57,6 +58,12 @@ namespace IED
 
 			GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
 			GetKeywordPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearKeyword));
+
+			if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
+			{
+				result |= DrawExtraConditionSelector(
+					e.As1<Data::ExtraConditionType>());
+			}
 
 			if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
 			{
@@ -114,14 +121,17 @@ namespace IED
 					}
 				}
 
-				UICommon::PushDisabled(args.disable);
+				if (!args.hide)
+				{
+					UICommon::PushDisabled(args.disable);
 
-				result |= m_formPickerForm.DrawFormPicker(
-					"fp_1",
-					LS(CommonStrings::Form),
-					e.As1<Game::FormID>());
+					result |= m_formPickerForm.DrawFormPicker(
+						"fp_1",
+						LS(CommonStrings::Form),
+						e.As1<Game::FormID>());
 
-				UICommon::PopDisabled(args.disable);
+					UICommon::PopDisabled(args.disable);
+				}
 			}
 
 			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
@@ -142,14 +152,17 @@ namespace IED
 					}
 				}
 
-				UICommon::PushDisabled(args.disable);
+				if (!args.hide)
+				{
+					UICommon::PushDisabled(args.disable);
 
-				result |= m_formPickerKeyword.DrawFormPicker(
-					"fp_2",
-					LS(CommonStrings::Keyword),
-					e.As1<Game::FormID>());
+					result |= m_formPickerKeyword.DrawFormPicker(
+						"fp_2",
+						LS(CommonStrings::Keyword),
+						e.As1<Game::FormID>());
 
-				UICommon::PopDisabled(args.disable);
+					UICommon::PopDisabled(args.disable);
+				}
 			}
 
 			if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
@@ -165,10 +178,26 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
+			if (const auto& e = get(ConditionParamItem::PackageType); e.p1)
 			{
-				result |= DrawExtraConditionSelector(
-					e.As1<Data::ExtraConditionType>());
+				ConditionParamItemExtraArgs args;
+
+				if (m_extraInterface)
+				{
+					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+					{
+						args.p1 = e.p1;
+						args.p2 = e.p2;
+						args.p3 = f.p1;
+
+						result |= m_extraInterface->DrawConditionItemExtra(
+							ConditionParamItem::PackageType,
+							args);
+					}
+				}
+
+				result |= DrawPackageTypeSelector(
+					e.As1<PACKAGE_PROCEDURE_TYPE>());
 			}
 
 			if (m_extraInterface)
@@ -307,6 +336,23 @@ namespace IED
 						}
 					}
 					m_descBuffer[0] = 0x0;
+				}
+				break;
+			case ConditionParamItem::PackageType:
+				{
+					if (const auto& e = get(a_item); e.p1)
+					{
+						const auto& type = e.As1<PACKAGE_PROCEDURE_TYPE>();
+
+						return GetFormKeywordExtraDesc(
+							type != PACKAGE_PROCEDURE_TYPE::kNone ?
+                                procedure_type_to_desc(type) :
+                                nullptr);
+					}
+					else
+					{
+						m_descBuffer[0] = 0x0;
+					}
 				}
 				break;
 			default:

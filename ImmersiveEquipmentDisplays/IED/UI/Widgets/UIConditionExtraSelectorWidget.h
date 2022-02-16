@@ -29,7 +29,7 @@ namespace IED
 				std::pair<
 					Data::ExtraConditionType,
 					UIConditionExtraSelectorWidgetStrings>,
-				6>;
+				9>;
 
 			static data_type m_data;
 		};

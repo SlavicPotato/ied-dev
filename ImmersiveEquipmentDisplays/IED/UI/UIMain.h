@@ -1,15 +1,16 @@
 #pragma once
 
+#include "UIAboutModal.h"
 #include "UIDialogImportExport.h"
 #include "UIFormBrowser.h"
 #include "UIFormInfoCache.h"
+#include "UILocalizationInterface.h"
 #include "UILog.h"
 #include "UIMainCommon.h"
 #include "UIMainStrings.h"
 #include "UINodeMapEditor.h"
 #include "UISettings.h"
 #include "UIStats.h"
-#include "UIAboutModal.h"
 
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
@@ -22,14 +23,12 @@
 
 #include "FormFilters/UIProfileEditorFormFilters.h"
 
+#include "Window/UIWindow.h"
+
 #include "Widgets/UIExportFilterWidget.h"
 
 #include "IED/ConfigOverrideDefault.h"
 #include "IED/SettingHolder.h"
-
-#include "Window/UIWindow.h"
-
-#include "UILocalizationInterface.h"
 
 namespace IED
 {
@@ -44,7 +43,7 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto TITLE_NAME = PLUGIN_NAME_FULL;
-			inline static constexpr auto WINDOW_ID = "ied_main";
+			inline static constexpr auto WINDOW_ID  = "ied_main";
 
 		public:
 			UIMain(Controller& a_controller);
@@ -87,19 +86,19 @@ namespace IED
 
 			void SetTitle(Localization::StringID a_strid);
 
-			UIFormBrowser m_formBrowser;
-			UISettings m_settings;
-			UIDialogImportExport m_importExport;
-			UIProfileEditorSlot m_slotProfileEditor;
-			UIProfileEditorCustom m_customProfileEditor;
+			UIFormBrowser               m_formBrowser;
+			UISettings                  m_settings;
+			UIDialogImportExport        m_importExport;
+			UIProfileEditorSlot         m_slotProfileEditor;
+			UIProfileEditorCustom       m_customProfileEditor;
 			UIProfileEditorNodeOverride m_nodeOverrideProfileEditor;
-			UINodeMapEditor m_nodeMapEditor;
-			UINodeOverrideEditorWindow m_nodeOverrideEditor;
-			UIProfileEditorFormFilters m_formFiltersProfileEditor;
-			UILog m_log;
-			UIStats m_stats;
+			UINodeMapEditor             m_nodeMapEditor;
+			UINodeOverrideEditorWindow  m_nodeOverrideEditor;
+			UIProfileEditorFormFilters  m_formFiltersProfileEditor;
+			UILog                       m_log;
+			UIStats                     m_stats;
 
-			UISlotEditorTabPanel m_slotTabPanel;
+			UISlotEditorTabPanel   m_slotTabPanel;
 			UICustomEditorTabPanel m_customTabPanel;
 
 			UIEditorPanel m_currentEditorPanel{ UIEditorPanel::Slot };

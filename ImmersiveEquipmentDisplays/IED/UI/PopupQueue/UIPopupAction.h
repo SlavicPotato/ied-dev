@@ -18,15 +18,14 @@ namespace IED
 		{
 			friend class UIPopupQueue;
 
-			using func_type = std::function<void(const UIPopupAction&)>;
+			using func_type      = std::function<void(const UIPopupAction&)>;
 			using func_type_draw = std::function<bool()>;
 
 		public:
 			UIPopupAction() = delete;
 
 			UIPopupAction(const UIPopupAction&) = delete;
-			UIPopupAction(UIPopupAction&&) = delete;
-
+			UIPopupAction(UIPopupAction&&)      = delete;
 			UIPopupAction& operator=(const UIPopupAction&) = delete;
 			UIPopupAction& operator=(UIPopupAction&&) = delete;
 
@@ -69,14 +68,14 @@ namespace IED
 				m_funcDraw = std::move(a_func);
 				return *this;
 			}
-			
+
 			inline auto& set_text_wrap_size(float a_size) noexcept
 			{
 				m_textWrapSize = a_size;
 				return *this;
 			}
-			
-			template <class ...Args>
+
+			template <class... Args>
 			inline constexpr auto& fmt_input(const char* a_fmt, Args... a_args) noexcept
 			{
 				stl::snprintf(m_input, a_fmt, a_args...);
@@ -108,8 +107,8 @@ namespace IED
 			char m_buf[512]{ 0 };
 			char m_input[512]{ 0 };
 
-			UIPopupType m_type;
-			func_type m_func;
+			UIPopupType    m_type;
+			func_type      m_func;
 			func_type_draw m_funcDraw;
 
 			stl::optional<float> m_textWrapSize;

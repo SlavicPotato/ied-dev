@@ -9,7 +9,7 @@ namespace IED
 			float m_offset;
 			float m_width;
 			float m_height;
-			bool m_centered;
+			bool  m_centered;
 		};
 
 	}

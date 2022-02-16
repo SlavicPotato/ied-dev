@@ -99,16 +99,16 @@ namespace IED
 			-> Data::configSlotHolder_t&
 		{
 			auto& store = m_controller.GetConfigStore().active;
-			auto& data = store.slot.GetRaceData();
+			auto& data  = store.slot.GetRaceData();
 
 			return data.try_emplace(a_handle).first->second;
 		}
 
 		void UISlotEditorRace::MergeProfile(
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-			const SlotProfile& a_profile)
+			const SlotProfile&                               a_profile)
 		{
-			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
+			DoMerge(a_data.handle, a_profile.Data());
 
 			a_data.data = GetData(a_data.handle);
 
@@ -119,9 +119,9 @@ namespace IED
 
 		void UISlotEditorRace::ApplyProfile(
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-			const SlotProfile& a_profile)
+			const SlotProfile&                               a_profile)
 		{
-			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
+			DoApply(a_data.handle, a_profile.Data());
 
 			a_data.data = GetData(a_data.handle);
 
@@ -131,8 +131,8 @@ namespace IED
 		}
 
 		void UISlotEditorRace::OnBaseConfigChange(
-			Game::FormID a_handle,
-			const void* a_params,
+			Game::FormID     a_handle,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
@@ -172,7 +172,7 @@ namespace IED
 		}
 
 		void UISlotEditorRace::OnFullConfigChange(
-			Game::FormID a_handle,
+			Game::FormID                  a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
@@ -183,7 +183,7 @@ namespace IED
 		}
 
 		void UISlotEditorRace::OnSingleSlotClear(
-			Game::FormID a_handle,
+			Game::FormID                       a_handle,
 			const SingleSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
@@ -196,7 +196,7 @@ namespace IED
 		}
 
 		void UISlotEditorRace::OnFullConfigClear(
-			Game::FormID a_handle,
+			Game::FormID                     a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
@@ -259,6 +259,11 @@ namespace IED
 			}
 
 			return nullptr;
+		}
+
+		entrySlotData_t UISlotEditorRace::GetCurrentData(Game::FormID a_handle)
+		{
+			return GetData(a_handle);
 		}
 
 		void UISlotEditorRace::OnOpen()

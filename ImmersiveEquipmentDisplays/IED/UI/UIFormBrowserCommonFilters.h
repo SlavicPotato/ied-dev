@@ -15,7 +15,12 @@ namespace IED
 			Quest,
 			Location,
 			Keyword,
-			Worldspace
+			Worldspace,
+			Package,
+			Shout,
+			Faction,
+			CombatStyle,
+			Class
 		};
 
 		class UIFormBrowserCommonFilters
@@ -29,7 +34,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 8> m_filters;
+			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 13> m_filters;
 
 			static UIFormBrowserCommonFilters m_Instance;
 		};

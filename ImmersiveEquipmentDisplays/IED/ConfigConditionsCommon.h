@@ -10,13 +10,41 @@ namespace IED
 {
 	namespace Conditions
 	{
-		bool match_extra(
+		template <class Tm, class Tf>
+		constexpr bool match_extra(
 			CommonParams& a_params,
-			Data::ExtraConditionType a_type);
+			const Tm&     a_match)
+		{
+			switch (a_match.extraCondType)
+			{
+			case Data::ExtraConditionType::kCanDualWield:
+				return a_params.can_dual_wield();
+			case Data::ExtraConditionType::kIsDead:
+				return a_params.get_actor_dead();
+			case Data::ExtraConditionType::kInInterior:
+				return a_params.get_in_interior();
+			case Data::ExtraConditionType::kIsPlayerTeammate:
+				return a_params.is_player_teammate();
+			case Data::ExtraConditionType::kIsGuard:
+				return a_params.actor->IsGuard();
+			case Data::ExtraConditionType::kIsMount:
+				return a_params.actor->IsMount();
+			case Data::ExtraConditionType::kShoutEquipped:
+				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->equippedShout);
+			case Data::ExtraConditionType::kInMerchantFaction:
+				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);
+			case Data::ExtraConditionType::kCombatStyle:
+				return match_form_with_id<Tm, Tf>(a_match, a_params.get_combat_style());
+			case Data::ExtraConditionType::kClass:
+				return match_form_with_id<Tm, Tf>(a_match, a_params.npc->GetClass());
+			default:
+				return false;
+			}
+		}
 
 		bool match_form(
 			Game::FormID a_formid,
-			TESForm* a_form);
+			TESForm*     a_form);
 
 		inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot)
 		{
@@ -25,9 +53,9 @@ namespace IED
 		}
 
 		inline constexpr bool is_valid_form_for_slot(
-			TESForm* a_form,
+			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot,
-			bool a_left)
+			bool                  a_left)
 		{
 			return a_left ?
                        Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
@@ -40,23 +68,23 @@ namespace IED
 
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSKeyword* a_keyword,
+			BGSKeyword*  a_keyword,
 			BGSLocation* a_matched);
 
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSKeyword* a_keyword);
+			BGSKeyword*  a_keyword);
 
 		bool match_worldspace(
 			TESWorldSpace* a_current,
-			Game::FormID a_wsId,
-			bool a_matchParent);
+			Game::FormID   a_wsId,
+			bool           a_matchParent);
 
 		template <class Tm, class Tf, class Tp>
 		constexpr bool match_biped(
 			CommonParams& a_params,
-			const Tm& a_match,
-			Tp a_post)
+			const Tm&     a_match,
+			Tp            a_post)
 		{
 			if (a_match.bipedSlot >= Biped::kTotal)
 			{
@@ -121,7 +149,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_race(
 			CommonParams& a_params,
-			const Tm& a_match)
+			const Tm&     a_match)
 		{
 			if (a_match.form.get_id())
 			{
@@ -141,13 +169,31 @@ namespace IED
 				}
 			}
 
+			if (a_match.flags.test(Tf::kExtraFlag1))
+			{
+				if (a_match.flags.test(Tf::kNegateMatch3) ==
+				    a_params.race->data.raceFlags.test(TESRace::Flag::kPlayable))
+				{
+					return false;
+				}
+			}
+			
+			if (a_match.flags.test(Tf::kExtraFlag2))
+			{
+				if (a_match.flags.test(Tf::kNegateMatch4) ==
+				    a_params.race->data.raceFlags.test(TESRace::Flag::kChild))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
 		template <class Tm, class Tf>
 		constexpr bool match_furniture(
 			CommonParams& a_params,
-			const Tm& a_match)
+			const Tm&     a_match)
 		{
 			if (a_match.form.get_id())
 			{
@@ -192,9 +238,9 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_location(
 			CommonParams& a_params,
-			const Tm& a_match)
+			const Tm&     a_match)
 		{
-			if (auto current = a_params.get_location())
+			if (auto current = a_params.get_current_location())
 			{
 				if (a_match.flags.test(Tf::kExtraFlag1))
 				{
@@ -274,7 +320,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_worldspace(
 			CommonParams& a_params,
-			const Tm& a_match)
+			const Tm&     a_match)
 		{
 			if (auto current = a_params.get_worldspace())
 			{
@@ -285,6 +331,63 @@ namespace IED
 							current,
 							a_match.form.get_id(),
 							a_match.flags.test(Tf::kExtraFlag1)))
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_package(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (auto current = a_params.actor->GetCurrentPackage())
+			{
+				if (a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == current->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.procedureType != PACKAGE_PROCEDURE_TYPE::kNone)
+				{
+					if (a_match.flags.test(Tf::kNegateMatch2) ==
+					    (a_match.procedureType == current->packData.type()))
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class Tm, class Tf>
+		bool match_form_with_id(
+			const Tm& a_match,
+			TESForm*  a_form)
+		{
+			if (a_form)
+			{
+				if (a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == a_form->formID))
 					{
 						return false;
 					}

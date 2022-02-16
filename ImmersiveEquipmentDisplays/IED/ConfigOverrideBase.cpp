@@ -14,7 +14,7 @@ namespace IED
 	{
 		const equipmentOverride_t* configBase_t::get_equipment_override(
 			const collectorData_t& a_data,
-			CommonParams& a_params) const
+			CommonParams&          a_params) const
 		{
 			for (auto& e : equipmentOverrides)
 			{
@@ -28,9 +28,9 @@ namespace IED
 		}
 
 		const equipmentOverride_t* configBase_t::get_equipment_override(
-			const collectorData_t& a_data,
+			const collectorData_t&     a_data,
 			const slot_container_type& a_slots,
-			CommonParams& a_params) const
+			CommonParams&              a_params) const
 		{
 			for (auto& e : equipmentOverrides)
 			{
@@ -45,8 +45,8 @@ namespace IED
 
 		const equipmentOverride_t* configBase_t::get_equipment_override(
 			const collectorData_t& a_data,
-			const formSlotPair_t& a_checkForm,
-			CommonParams& a_params) const
+			const formSlotPair_t&  a_checkForm,
+			CommonParams&          a_params) const
 		{
 			for (auto& e : equipmentOverrides)
 			{
@@ -60,7 +60,7 @@ namespace IED
 		}
 
 		static TESForm* match_pm_equipped(
-			Actor* a_actor,
+			Actor*       a_actor,
 			Game::FormID a_form)
 		{
 			if (auto pm = a_actor->processManager)
@@ -78,7 +78,7 @@ namespace IED
 		}
 
 		static bool match_quest(
-			CommonParams& a_params,
+			CommonParams&                       a_params,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto form = a_match.keyword.get_form<TESQuest>();
@@ -98,7 +98,7 @@ namespace IED
 		}
 
 		constexpr bool configBase_t::match_equipped_type(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto slot = stl::underlying(a_match.slot);
@@ -203,7 +203,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_carried_type(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto type = Data::ItemData::GetTypeFromSlotExtra(a_match.slot);
@@ -264,7 +264,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_equipped_form(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto form = match_pm_equipped(a_data.actor, a_match.form.get_id());
@@ -297,7 +297,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_carried_form(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto it = a_data.forms.find(a_match.form.get_id());
@@ -323,9 +323,9 @@ namespace IED
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match,
-			CommonParams& a_params)
+			CommonParams&                       a_params)
 		{
 			switch (a_match.fbf.type)
 			{
@@ -413,7 +413,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Extra:
 
-				return Conditions::match_extra(a_params, a_match.extraCondType);
+				return Conditions::match_extra<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -426,16 +428,22 @@ namespace IED
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Package:
+
+				return Conditions::match_package<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_data,
+			const collectorData_t&                  a_data,
 			const equipmentOverrideConditionList_t& a_matches,
-			CommonParams& a_params,
-			bool a_default)
+			CommonParams&                           a_params,
+			bool                                    a_default)
 		{
 			bool result = a_default;
 
@@ -475,10 +483,10 @@ namespace IED
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_cdata,
-			const slot_container_type& a_data,
+			const collectorData_t&              a_cdata,
+			const slot_container_type&          a_data,
 			const equipmentOverrideCondition_t& a_match,
-			CommonParams& a_params)
+			CommonParams&                       a_params)
 		{
 			switch (a_match.fbf.type)
 			{
@@ -490,10 +498,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -555,10 +563,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -590,10 +598,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -662,7 +670,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Extra:
 
-				return Conditions::match_extra(a_params, a_match.extraCondType);
+				return Conditions::match_extra<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -675,17 +685,23 @@ namespace IED
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Package:
+
+				return Conditions::match_package<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_cdata,
-			const slot_container_type& a_data,
+			const collectorData_t&                  a_cdata,
+			const slot_container_type&              a_data,
 			const equipmentOverrideConditionList_t& a_matches,
-			CommonParams& a_params,
-			bool a_default)
+			CommonParams&                           a_params,
+			bool                                    a_default)
 		{
 			bool result = a_default;
 
@@ -725,10 +741,10 @@ namespace IED
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_data,
+			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match,
-			const formSlotPair_t& a_checkForm,
-			CommonParams& a_params)
+			const formSlotPair_t&               a_checkForm,
+			CommonParams&                       a_params)
 		{
 			switch (a_match.fbf.type)
 			{
@@ -740,10 +756,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -799,10 +815,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -834,10 +850,10 @@ namespace IED
 					}
 
 					std::uint32_t result = 0;
-					std::uint32_t min = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
-					                            !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                            2u :
-                                            1u;
+					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
+                                                !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
+                                               2u :
+                                               1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -905,7 +921,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Extra:
 
-				return Conditions::match_extra(a_params, a_match.extraCondType);
+				return Conditions::match_extra<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -918,17 +936,23 @@ namespace IED
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Package:
+
+				return Conditions::match_package<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
 		}
 
 		constexpr bool configBase_t::match(
-			const collectorData_t& a_data,
+			const collectorData_t&                  a_data,
 			const equipmentOverrideConditionList_t& a_matches,
-			const formSlotPair_t& a_checkForm,
-			CommonParams& a_params,
-			bool a_default)
+			const formSlotPair_t&                   a_checkForm,
+			CommonParams&                           a_params,
+			bool                                    a_default)
 		{
 			bool result = a_default;
 
@@ -969,7 +993,7 @@ namespace IED
 
 		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
-			const collectorData_t& a_data)
+			const collectorData_t&    a_data)
 		{
 			if (auto form = a_keyword.get_form())
 			{
@@ -1004,7 +1028,7 @@ namespace IED
 
 		bool configBase_t::has_keyword_carried(
 			const configCachedForm_t& a_keyword,
-			const collectorData_t& a_data)
+			const collectorData_t&    a_data)
 		{
 			if (auto form = a_keyword.get_form())
 			{
@@ -1027,7 +1051,7 @@ namespace IED
 		}
 
 		bool configBase_t::has_keyword(
-			const configCachedForm_t& a_keyword,
+			const configCachedForm_t&  a_keyword,
 			const slot_container_type& a_data)
 		{
 			if (auto form = a_keyword.get_form())
@@ -1052,7 +1076,7 @@ namespace IED
 
 		bool configBase_t::has_keyword(
 			const configCachedForm_t& a_keyword,
-			TESForm* a_form)
+			TESForm*                  a_form)
 		{
 			if (auto form = a_keyword.get_form())
 			{
@@ -1070,8 +1094,8 @@ namespace IED
 
 		bool configBase_t::has_keyword_carried(
 			const configCachedForm_t& a_keyword,
-			ObjectTypeExtra a_type,
-			const collectorData_t& a_data)
+			ObjectTypeExtra           a_type,
+			const collectorData_t&    a_data)
 		{
 			if (auto form = a_keyword.get_form())
 			{
@@ -1095,8 +1119,8 @@ namespace IED
 
 		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
-			ObjectSlotExtra a_slot,
-			const collectorData_t& a_data)
+			ObjectSlotExtra           a_slot,
+			const collectorData_t&    a_data)
 		{
 			if (auto form = a_keyword.get_form())
 			{
@@ -1120,8 +1144,8 @@ namespace IED
 		}
 
 		bool configBase_t::has_keyword(
-			const configCachedForm_t& a_keyword,
-			ObjectSlot a_slot,
+			const configCachedForm_t&  a_keyword,
+			ObjectSlot                 a_slot,
 			const slot_container_type& a_data)
 		{
 			if (auto form = a_keyword.get_form())
@@ -1144,7 +1168,7 @@ namespace IED
 		}
 
 		TESForm* configBase_t::match_slot_form(
-			const slot_container_type& a_data,
+			const slot_container_type&          a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			for (auto& e : a_data)

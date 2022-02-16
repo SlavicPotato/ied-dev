@@ -10,7 +10,7 @@ namespace IED
 		{
 		protected:
 			static bool DrawExportFilters(
-				stl::flag<Data::ConfigStoreSerializationFlags> &a_flags);
+				stl::flag<Data::ConfigStoreSerializationFlags>& a_flags);
 		};
 	}
 }

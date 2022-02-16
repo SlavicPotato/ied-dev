@@ -17,7 +17,7 @@ namespace IED
 				UICollapsibleStates() = default;
 
 				[[nodiscard]] bool& get(ImGuiID a_key, bool a_default = true);
-				void insert(ImGuiID a_key, bool a_value);
+				void                insert(ImGuiID a_key, bool a_value);
 
 				[[nodiscard]] bool& operator[](ImGuiID a_key);
 

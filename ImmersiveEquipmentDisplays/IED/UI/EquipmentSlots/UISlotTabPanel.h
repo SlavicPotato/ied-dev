@@ -21,10 +21,10 @@ namespace IED
 		public:
 			UISlotEditorTabPanel(Controller& a_controller);
 
-			UISlotEditorActor m_slotEditorActor;
-			UISlotEditorRace m_slotEditorRace;
+			UISlotEditorActor  m_slotEditorActor;
+			UISlotEditorRace   m_slotEditorRace;
 			UISlotEditorGlobal m_slotEditorGlobal;
-			UISlotEditorNPC m_slotEditorNPC;
+			UISlotEditorNPC    m_slotEditorNPC;
 
 		private:
 			virtual Data::SettingHolder::EditorPanel& GetEditorConfig() override;

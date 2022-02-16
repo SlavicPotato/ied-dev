@@ -88,6 +88,11 @@ namespace IED
 			case BGSExplosion::kTypeID:
 			case BGSLocation::kTypeID:
 			case TESWorldSpace::kTypeID:
+			case TESPackage::kTypeID:
+			case TESShout::kTypeID:
+			case TESFaction::kTypeID:
+			case TESCombatStyle::kTypeID:
+			case TESClass::kTypeID:
 				return form;
 			default:
 				return nullptr;

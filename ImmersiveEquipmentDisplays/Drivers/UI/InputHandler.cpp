@@ -70,7 +70,7 @@ namespace IED
 			switch (a_evn.key)
 			{
 			case InputMap::kMacro_MouseButtonOffset:
-				
+
 				if (a_evn.state == KeyEventState::KeyDown)
 				{
 					GetKeyPressQueue().AddTask(KeyEventType::Mouse, 0);
@@ -192,7 +192,7 @@ namespace IED
 						}
 						else
 						{
-							m_dk = cbuf[0];
+							m_dk    = cbuf[0];
 							cbuf[0] = 0;
 						}
 					}
@@ -201,7 +201,7 @@ namespace IED
 						if (m_dk)
 						{
 							const WCHAR srcStr[3]{ cbuf[0], m_dk.comb(), 0 };
-							WCHAR dstStr[3]{ 0 };
+							WCHAR       dstStr[3]{ 0 };
 
 							if (auto l = FoldStringW(
 									MAP_PRECOMPOSED,
@@ -262,9 +262,9 @@ namespace IED
 			std::memset(io.MouseDown, 0x0, sizeof(io.MouseDown));
 
 			io.MouseWheel = 0.0f;
-			io.KeyCtrl = false;
-			io.KeyShift = false;
-			io.KeyAlt = false;
+			io.KeyCtrl    = false;
+			io.KeyShift   = false;
+			io.KeyAlt     = false;
 		}
 	}
 }

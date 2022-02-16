@@ -38,52 +38,52 @@ namespace IED
 		public:
 			UIModelGroupEditorWidget(
 				UIFormPickerWidget& a_formPicker,
-				Controller& a_controller);
+				Controller&         a_controller);
 
 			void DrawModelGroupEditorWidget(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data);
+				Data::configModelGroup_t&             a_data);
 
 			void DrawModelGroupEditorWidgetTree(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data);
+				Data::configModelGroup_t&             a_data);
 
 		protected:
 			void CreatePrimaryModelGroup(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data);
+				Data::configModelGroup_t&             a_data);
 
 		private:
 			void DrawEntry(
-				T a_handle,
-				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data,
+				T                                                a_handle,
+				const SingleCustomConfigUpdateParams&            a_params,
+				Data::configModelGroup_t&                        a_data,
 				Data::configModelGroup_t::data_type::value_type& a_value);
 
 			void DrawFlags(
-				T a_handle,
-				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data,
+				T                                                a_handle,
+				const SingleCustomConfigUpdateParams&            a_params,
+				Data::configModelGroup_t&                        a_data,
 				Data::configModelGroup_t::data_type::value_type& a_value);
 
 			void DrawHeaderContextMenu(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data);
+				Data::configModelGroup_t&             a_data);
 
 			void DrawEntryHeaderContextMenu(
-				T a_handle,
-				const SingleCustomConfigUpdateParams& a_params,
-				Data::configModelGroup_t& a_data,
+				T                                              a_handle,
+				const SingleCustomConfigUpdateParams&          a_params,
+				Data::configModelGroup_t&                      a_data,
 				Data::configModelGroup_t::data_type::iterator& a_it);
 
 			virtual void OnModelGroupEditorChange(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				ModelGroupEditorOnChangeEventType a_type) = 0;
+				ModelGroupEditorOnChangeEventType     a_type) = 0;
 
 			UIFormPickerWidget& m_formPicker;
 		};
@@ -91,7 +91,7 @@ namespace IED
 		template <class T>
 		UIModelGroupEditorWidget<T>::UIModelGroupEditorWidget(
 			UIFormPickerWidget& a_formPicker,
-			Controller& a_controller) :
+			Controller&         a_controller) :
 			UILocalizationInterface(a_controller),
 			UINotificationInterface(a_controller),
 			m_formPicker(a_formPicker)
@@ -100,9 +100,9 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawModelGroupEditorWidget(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data)
+			Data::configModelGroup_t&             a_data)
 		{
 			auto& data = a_params.entry(a_params.sex);
 
@@ -165,9 +165,9 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawModelGroupEditorWidgetTree(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data)
+			Data::configModelGroup_t&             a_data)
 		{
 			ImGui::PushID("mg_area");
 
@@ -199,9 +199,9 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::CreatePrimaryModelGroup(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data)
+			Data::configModelGroup_t&             a_data)
 		{
 			auto& data = a_params.entry(a_params.sex);
 
@@ -215,13 +215,13 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawEntry(
-			T a_handle,
-			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data,
+			T                                                a_handle,
+			const SingleCustomConfigUpdateParams&            a_params,
+			Data::configModelGroup_t&                        a_data,
 			Data::configModelGroup_t::data_type::value_type& a_value)
 		{
 			auto& entry = a_value.second;
-			auto& data = a_params.entry(a_params.sex);
+			auto& data  = a_params.entry(a_params.sex);
 
 			if (m_formPicker.DrawFormPicker(
 					"fp",
@@ -286,9 +286,9 @@ namespace IED
 		}
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawFlags(
-			T a_handle,
-			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data,
+			T                                                a_handle,
+			const SingleCustomConfigUpdateParams&            a_params,
+			Data::configModelGroup_t&                        a_data,
 			Data::configModelGroup_t::data_type::value_type& a_value)
 		{
 			auto& entry = a_value.second;
@@ -346,7 +346,7 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			DrawTip(UITip::Load1pWeaponModel);
-			
+
 			if (ImGui::CheckboxFlagsT(
 					LS(UIBaseConfigString::UseWorldModel, "5"),
 					stl::underlying(std::addressof(entry.flags.value)),
@@ -390,9 +390,9 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawHeaderContextMenu(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data)
+			Data::configModelGroup_t&             a_data)
 		{
 			ImGui::PushID("context_area");
 
@@ -436,9 +436,9 @@ namespace IED
 
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawEntryHeaderContextMenu(
-			T a_handle,
-			const SingleCustomConfigUpdateParams& a_params,
-			Data::configModelGroup_t& a_data,
+			T                                              a_handle,
+			const SingleCustomConfigUpdateParams&          a_params,
+			Data::configModelGroup_t&                      a_data,
 			Data::configModelGroup_t::data_type::iterator& a_it)
 		{
 			ImGui::PushID("context_area");

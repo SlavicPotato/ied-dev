@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigCommon.h"
+#include "ConfigUUIDTag.h"
 
 namespace IED
 {
@@ -28,7 +29,8 @@ namespace IED
 			using Game::FormID::FormID;
 			using Game::FormID::operator=;
 
-			configForm_t(Game::FormID a_rhs) :
+			inline constexpr configForm_t(
+				const Game::FormID& a_rhs) noexcept :
 				Game::FormID(a_rhs)
 			{
 			}
@@ -76,7 +78,7 @@ namespace IED
 
 			inline configCachedForm_t& operator=(Game::FormID a_id) noexcept
 			{
-				id = a_id;
+				id   = a_id;
 				form = nullptr;
 				return *this;
 			}
@@ -144,7 +146,7 @@ namespace IED
 
 			static TESForm* lookup_form(Game::FormID a_form) noexcept;
 
-			Game::FormID id;
+			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -156,17 +158,21 @@ namespace IED
 
 			kComplete = 0,
 		};
-		
+
 		enum class ExtraConditionType : std::uint32_t
 		{
 			kNone = static_cast<std::underlying_type_t<ExtraConditionType>>(-1),
 
-			kCanDualWield = 0,
-			kIsDead = 1,
-			kInInterior = 2,
-			kIsPlayerTeammate = 3,
-			kIsGuard = 4,
-			kIsMount = 5,
+			kCanDualWield      = 0,
+			kIsDead            = 1,
+			kInInterior        = 2,
+			kIsPlayerTeammate  = 3,
+			kIsGuard           = 4,
+			kIsMount           = 5,
+			kShoutEquipped     = 6,
+			kInMerchantFaction = 7,
+			kCombatStyle       = 8,
+			kClass             = 9,
 		};
 	}
 }
@@ -190,36 +196,34 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			configSexRoot_t() = default;
-
 			[[nodiscard]] inline constexpr auto& operator()() noexcept
 			{
 				return m_configs;
 			}
 
-			[[nodiscard]] inline constexpr const auto& operator()() const noexcept
+			[[nodiscard]] inline constexpr auto& operator()() const noexcept
 			{
 				return m_configs;
 			}
 
-			[[nodiscard]] inline auto& operator()(ConfigSex a_sex) noexcept
-			{
-				return get(a_sex);
-			}
-
-			[[nodiscard]] inline const auto& operator()(ConfigSex a_sex) const noexcept
-			{
-				return get(a_sex);
-			}
-
-			[[nodiscard]] inline auto& get(ConfigSex a_sex) noexcept
+			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) noexcept
 			{
 				return m_configs[stl::underlying(a_sex)];
 			}
 
-			[[nodiscard]] inline const auto& get(ConfigSex a_sex) const noexcept
+			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) const noexcept
 			{
 				return m_configs[stl::underlying(a_sex)];
+			}
+
+			[[nodiscard]] inline constexpr auto& operator()(ConfigSex a_sex) noexcept
+			{
+				return get(a_sex);
+			}
+
+			[[nodiscard]] inline constexpr auto& operator()(ConfigSex a_sex) const noexcept
+			{
+				return get(a_sex);
 			}
 
 			void clear()
@@ -231,12 +235,35 @@ namespace IED
 			}
 
 			template <class Tf>
-			void visit(Tf a_func)
+			constexpr void visit(Tf a_func)
 			{
 				for (auto& e : m_configs)
 				{
 					a_func(e);
 				}
+			}
+
+			template <class Tf>
+			constexpr void visit(Tf a_func) const
+			{
+				for (auto& e : m_configs)
+				{
+					a_func(e);
+				}
+			}
+
+			template <class Tf>
+			constexpr void visit2(Tf a_func)
+			{
+				a_func(ConfigSex::Male, get(ConfigSex::Male));
+				a_func(ConfigSex::Female, get(ConfigSex::Female));
+			}
+
+			template <class Tf>
+			constexpr void visit2(Tf a_func) const
+			{
+				a_func(ConfigSex::Male, get(ConfigSex::Male));
+				a_func(ConfigSex::Female, get(ConfigSex::Female));
 			}
 
 		private:
@@ -363,7 +390,7 @@ namespace IED
 			}
 
 			configFormMap_t<data_type> data[3];
-			data_type global[2];
+			data_type                  global[2];
 		};
 
 		class configFormSet_t :
@@ -405,8 +432,8 @@ namespace IED
 			};
 
 			stl::flag<FormFilterBaseFlags> flags{ FormFilterBaseFlags::kNone };
-			configFormSet_t allow;
-			configFormSet_t deny;
+			configFormSet_t                allow;
+			configFormSet_t                deny;
 
 			inline bool test(
 				Game::FormID a_form) const
@@ -456,7 +483,7 @@ namespace IED
 			};
 
 			stl::flag<FormFilterFlags> filterFlags{ FormFilterFlags::kNone };
-			configFormFilterProfile_t profile;
+			configFormFilterProfile_t  profile;
 
 			bool test(Game::FormID a_form) const;
 
@@ -481,14 +508,14 @@ namespace IED
 
 		const mapped_type* get_actor(
 			Game::FormID a_actor,
-			const T& a_data) const
+			const T&     a_data) const
 		{
 			if (!actor_set)
 			{
 				auto it = a_data.find(a_actor);
 
 				actor = it != a_data.end() ?
-                            std::addressof(it->second) :
+				            std::addressof(it->second) :
                             nullptr;
 
 				actor_set = true;
@@ -499,14 +526,14 @@ namespace IED
 
 		const mapped_type* get_npc(
 			Game::FormID a_npc,
-			const T& a_data) const
+			const T&     a_data) const
 		{
 			if (!npc_set)
 			{
 				auto it = a_data.find(a_npc);
 
 				npc = it != a_data.end() ?
-                          std::addressof(it->second) :
+				          std::addressof(it->second) :
                           nullptr;
 
 				npc_set = true;
@@ -517,14 +544,14 @@ namespace IED
 
 		const mapped_type* get_race(
 			Game::FormID a_race,
-			const T& a_data) const
+			const T&     a_data) const
 		{
 			if (!race_set)
 			{
 				auto it = a_data.find(a_race);
 
 				race = it != a_data.end() ?
-                           std::addressof(it->second) :
+				           std::addressof(it->second) :
                            nullptr;
 
 				race_set = true;
@@ -535,7 +562,7 @@ namespace IED
 
 		template <class Td>
 		SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
-			const Td& a_data,
+			const Td&                    a_data,
 			const typename Td::key_type& a_key)
 		{
 			if (a_data.empty())
@@ -546,7 +573,7 @@ namespace IED
 			{
 				auto it = a_data.find(a_key);
 				return it != a_data.end() ?
-                           std::addressof(it->second) :
+				           std::addressof(it->second) :
                            nullptr;
 			}
 		}

@@ -12,13 +12,13 @@ namespace IED
 		{
 			struct entry_t
 			{
-				std::uint64_t fcaccess{ 0 };
-				std::unique_ptr<formInfoResult_t> info;
+				std::uint64_t      fcaccess{ 0 };
+				IForm::info_result info;
 			};
 
-			inline static constexpr std::size_t CLEANUP_THRESHOLD = 1250;
-			inline static constexpr std::size_t CLEANUP_TARGET = 1000;
-			inline static constexpr long long CLEANUP_RUN_INTERVAL = 30000000;
+			inline static constexpr std::size_t CLEANUP_THRESHOLD    = 1250;
+			inline static constexpr std::size_t CLEANUP_TARGET       = 1000;
+			inline static constexpr long long   CLEANUP_RUN_INTERVAL = 30000000;
 
 		public:
 			UIFormInfoCache(

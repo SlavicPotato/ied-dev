@@ -3,9 +3,9 @@
 #include "IED/ConfigCommon.h"
 
 #include "UICustomEditorActor.h"
-#include "UICustomEditorRace.h"
-#include "UICustomEditorNPC.h"
 #include "UICustomEditorGlobal.h"
+#include "UICustomEditorNPC.h"
+#include "UICustomEditorRace.h"
 
 #include "IED/UI/UIEditorTabPanel.h"
 
@@ -21,10 +21,10 @@ namespace IED
 		public:
 			UICustomEditorTabPanel(Controller& a_controller);
 
-			UICustomEditorActor m_editorActor;
-			UICustomEditorRace m_editorRace;
+			UICustomEditorActor  m_editorActor;
+			UICustomEditorRace   m_editorRace;
 			UICustomEditorGlobal m_editorGlobal;
-			UICustomEditorNPC m_editorNPC;
+			UICustomEditorNPC    m_editorNPC;
 
 		private:
 			virtual Data::SettingHolder::EditorPanel& GetEditorConfig() override;

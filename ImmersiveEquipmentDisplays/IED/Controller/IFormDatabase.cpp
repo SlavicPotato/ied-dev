@@ -21,12 +21,12 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate(
-		data_type& a_data,
+		data_type&       a_data,
 		const tArray<T>& a_fromData)
 	{
 		using form_type = stl::strip_type<Tf>;
 
-		auto& r = a_data.try_emplace(form_type::kTypeID);
+		auto& r      = a_data.try_emplace(form_type::kTypeID);
 		auto& holder = r.first->second;
 
 		if (r.second)
@@ -74,12 +74,12 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate2(
-		data_type& a_data,
+		data_type&       a_data,
 		const tArray<T>& a_fromData,
-		std::uint32_t a_type,
-		Tf a_func)
+		std::uint32_t    a_type,
+		Tf               a_func)
 	{
-		auto& r = a_data.try_emplace(a_type);
+		auto& r      = a_data.try_emplace(a_type);
 		auto& holder = r.first->second;
 
 		if (r.second)
@@ -148,6 +148,11 @@ namespace IED
 			Populate(*result, dh->arrANIO);
 			Populate(*result, dh->arrLCTN);
 			Populate(*result, dh->arrWRLD);
+			Populate(*result, dh->arrPACK);
+			Populate(*result, dh->arrSHOU);
+			Populate(*result, dh->arrFACT);
+			Populate(*result, dh->arrCSTY);
+			Populate(*result, dh->arrCLAS);
 			Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
 			Populate2(

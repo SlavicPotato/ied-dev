@@ -7,34 +7,42 @@ namespace IED
 {
 	struct CommonParams
 	{
-		Actor* actor;
-		TESNPC* npc;
-		TESRace* race;
-		mutable stl::optional<TESFurniture*> furniture;
+		Actor*                                       actor;
+		TESNPC*                                      npc;
+		TESRace*                                     race;
+		mutable stl::optional<TESFurniture*>         furniture;
 		mutable stl::optional<Game::ObjectRefHandle> furnHandle;
-		mutable stl::optional<bool> layingDown;
-		mutable stl::optional<Biped*> biped;
-		mutable stl::optional<TESObjectARMO*> actorSkin;
-		mutable stl::optional<bool> canDualWield;
-		mutable stl::optional<bool> isDead;
-		mutable stl::optional<bool> inInterior;
-		mutable stl::optional<BGSLocation*> location;
-		mutable stl::optional<TESWorldSpace*> worldspace;
+		mutable stl::optional<bool>                  layingDown;
+		mutable stl::optional<Biped*>                biped;
+		mutable stl::optional<TESObjectARMO*>        actorSkin;
+		mutable stl::optional<bool>                  canDualWield;
+		mutable stl::optional<bool>                  isDead;
+		mutable stl::optional<bool>                  inInterior;
+		mutable stl::optional<BGSLocation*>          location;
+		mutable stl::optional<TESWorldSpace*>        worldspace;
+		mutable stl::optional<TESCombatStyle*>       combatStyle;
+
+		[[nodiscard]] inline constexpr bool is_player() const noexcept
+		{
+			return actor == *g_thePlayer;
+		}
 
 		[[nodiscard]] bool get_using_furniture() const
 		{
 			if (!furnHandle)
 			{
-				furnHandle = Game::ObjectRefHandle{};
+				Game::ObjectRefHandle handle;
 
 				if (auto pm = actor->processManager)
 				{
 					if (actor->actorState.actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSitting ||
 					    actor->actorState.actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSleeping)
 					{
-						furnHandle = pm->GetOccupiedFurniture();
+						handle = pm->GetOccupiedFurniture();
 					}
 				}
+
+				furnHandle = handle;
 			}
 
 			return *furnHandle != Game::ObjectRefHandle{};
@@ -108,36 +116,50 @@ namespace IED
 			return *actorSkin;
 		}
 
+		[[nodiscard]] constexpr auto get_combat_style() const
+		{
+			if (!combatStyle)
+			{
+				TESCombatStyle* cs = nullptr;
+
+				if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
+				{
+					cs = extraCombatStyle->combatStyle;
+				}
+
+				if (!cs)
+				{
+					cs = npc->combatStyle;
+				}
+
+				combatStyle = cs;
+			}
+
+			return *combatStyle;
+		}
+
 		[[nodiscard]] constexpr bool can_dual_wield() const
 		{
 			if (!canDualWield)
 			{
-				if (actor == *g_thePlayer)
+				bool result = false;
+
+				if (is_player())
 				{
-					canDualWield = true;
+					result = true;
 				}
 				else
 				{
-					if ((race->data.raceFlags & TESRace::kRace_CanDualWield) == TESRace::kRace_CanDualWield)
+					if (race->data.raceFlags.test(TESRace::Flag::kCanDualWield))
 					{
-						if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
+						if (auto cs = get_combat_style())
 						{
-							if (auto cs = extraCombatStyle->combatStyle)
-							{
-								canDualWield = (cs->flags & TESCombatStyle::kFlag_AllowDualWielding) == TESCombatStyle::kFlag_AllowDualWielding;
-								return *canDualWield;
-							}
-						}
-
-						if (auto cs = npc->combatStyle)
-						{
-							canDualWield = (cs->flags & TESCombatStyle::kFlag_AllowDualWielding) == TESCombatStyle::kFlag_AllowDualWielding;
-							return *canDualWield;
+							result = cs->AllowDualWielding();
 						}
 					}
-
-					canDualWield = false;
 				}
+
+				canDualWield = result;
 			}
 
 			return *canDualWield;
@@ -163,7 +185,7 @@ namespace IED
 			return *inInterior;
 		}
 
-		[[nodiscard]] constexpr auto get_location() const
+		[[nodiscard]] constexpr auto get_current_location() const
 		{
 			if (!location)
 			{
@@ -173,14 +195,7 @@ namespace IED
 				}
 				else
 				{
-					if (auto extraLocation = actor->extraData.Get<ExtraLocation>())
-					{
-						location = extraLocation->location;
-					}
-					else
-					{
-						location = nullptr;
-					}
+					location = actor->GetCurrentLocation();
 				}
 			}
 
@@ -202,10 +217,10 @@ namespace IED
 			return actor != *g_thePlayer &&
 			       actor->IsPlayerTeammate();
 		}
-		
+
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
-			return a_mask && (race->validEquipTypes & a_mask) == a_mask;
+			return a_mask && race->validEquipTypes.test(a_mask);
 		}
 	};
 }

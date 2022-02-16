@@ -6,7 +6,8 @@ namespace IED
 {
 	namespace UI
 	{
-		const char* UIBipedObjectSelectorWidget::m_desc[]{
+		UIBipedObjectSelectorWidget::data_type UIBipedObjectSelectorWidget::m_desc{ {
+
 			"30 - Head",
 			"31 - Hair",
 			"32 - Body",
@@ -49,12 +50,15 @@ namespace IED
 			"Staff",
 			"Crossbow",
 			"Quiver"
-		};
+
+		} };
 
 		bool UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
-			const char* a_label,
+			const char*          a_label,
 			Biped::BIPED_OBJECT& a_data)
 		{
+			static_assert(m_desc.size() == stl::underlying(Biped::BIPED_OBJECT::kTotal));
+
 			bool result = false;
 
 			ImGui::PushID("biped_object_selector");

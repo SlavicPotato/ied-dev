@@ -8,14 +8,13 @@ namespace IED
 		{
 			kNone = 0,
 
-			kManaged = 1ui32 << 0,
+			kManaged    = 1ui32 << 0,
 			kDoNotTouch = 1ui32 << 1,
-			kPapyrus = 1ui32 << 2,
-			kXP32 = 1ui32 << 3,
-			kDefault = 1ui32 << 4,
-			kWeapon = 1ui32 << 5,
-
-			kExtra = 1ui32 << 15,
+			kPapyrus    = 1ui32 << 2,
+			kXP32       = 1ui32 << 3,
+			kDefault    = 1ui32 << 4,
+			kWeapon     = 1ui32 << 5,
+			kExtra      = 1ui32 << 15,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeDescriptorFlags);
@@ -30,7 +29,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::fixed_string name;
+			stl::fixed_string              name;
 			stl::flag<NodeDescriptorFlags> flags{ NodeDescriptorFlags::kNone };
 
 			[[nodiscard]] inline constexpr bool managed() const noexcept

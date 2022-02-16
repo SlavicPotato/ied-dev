@@ -5,13 +5,13 @@
 namespace IED
 {
 	bool ObjectDatabase::GetUniqueObject(
-		const char* a_path,
+		const char*          a_path,
 		ObjectDatabaseEntry& a_entry,
-		NiPointer<NiNode>& a_object)
+		NiPointer<NiNode>&   a_object)
 	{
 		using namespace ::Util::Model;
 
-		char path_buffer[MAX_PATH];
+		char        path_buffer[MAX_PATH];
 		const char* path;
 
 		if (!MakePath("meshes", a_path, path_buffer, path))
@@ -64,10 +64,10 @@ namespace IED
 			it->second->accessed = IPerfCounter::Query();
 
 			//a_entry.db = this;
-			a_entry = it->second;
+			a_entry  = it->second;
 			a_object = CreateClone(*it->second);
 		}
-		
+
 		return true;
 	}
 

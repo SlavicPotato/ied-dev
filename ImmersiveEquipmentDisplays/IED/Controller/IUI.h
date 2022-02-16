@@ -12,7 +12,7 @@ namespace IED
 		class UIFormBrowser;
 		class UIFormInfoCache;
 		class UIPopupQueue;
-	} 
+	}
 
 	class IUI :
 		public Tasks::UIRenderTaskBase,
@@ -26,29 +26,29 @@ namespace IED
 		};
 
 	public:
-		IUI() = default;
+		IUI()                   = default;
 		virtual ~IUI() noexcept = default;
 
-		UI::UIPopupQueue& UIGetPopupQueue() noexcept;
-		UI::UIFormBrowser& UIGetFormBrowser() noexcept;
+		UI::UIPopupQueue&    UIGetPopupQueue() noexcept;
+		UI::UIFormBrowser&   UIGetFormBrowser() noexcept;
 		UI::UIFormInfoCache& UIGetFormLookupCache() noexcept;
-		void UIReset();
+		void                 UIReset();
 
 	protected:
-		void UIInitialize(Controller& a_controller);
+		void         UIInitialize(Controller& a_controller);
 		UIOpenResult UIToggle();
 		UIOpenResult UIOpen();
 
 		[[nodiscard]] bool UIIsInitialized() const noexcept;
 
 	private:
-		virtual bool UIRunTask() override;
+		virtual bool                        UIRunTask() override;
 		virtual constexpr WCriticalSection& UIGetLock() noexcept = 0;
-		virtual void OnUIOpen(){};
+		virtual void                        OnUIOpen(){};
 
 		UIOpenResult UIOpenImpl();
 
 		std::unique_ptr<UI::UIMain> m_UIContext;
-		bool m_resetUI{ false };
+		bool                        m_resetUI{ false };
 	};
 }  // namespace IED

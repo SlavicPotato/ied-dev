@@ -60,7 +60,7 @@ namespace IED
 
 			virtual void OnProfileSave(
 				const stl::fixed_string& a_name,
-				FormFilterProfile& a_profile) override;
+				FormFilterProfile&       a_profile) override;
 
 			virtual void OnProfileReload(
 				const FormFilterProfile& a_profile) override;

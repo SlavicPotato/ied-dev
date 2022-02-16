@@ -6,17 +6,17 @@ namespace IED
 	{
 		kNone = 0,
 
-		kDefault = 1u << 0,
-		kCyrilic = 1u << 1,
-		kJapanese = 1u << 2,
+		kDefault                 = 1u << 0,
+		kCyrilic                 = 1u << 1,
+		kJapanese                = 1u << 2,
 		kChineseSimplifiedCommon = 1u << 3,
-		kChineseFull = 1u << 4,
-		kKorean = 1u << 5,
-		kLatinFull = 1u << 6,
-		kThai = 1u << 7,
-		kVietnamise = 1u << 8,
-		kGreek = 1u << 9,
-		kArabic = 1u << 10,
+		kChineseFull             = 1u << 4,
+		kKorean                  = 1u << 5,
+		kLatinFull               = 1u << 6,
+		kThai                    = 1u << 7,
+		kVietnamise              = 1u << 8,
+		kGreek                   = 1u << 9,
+		kArabic                  = 1u << 10,
 
 		kArrows = 1u << 21,
 		kCommon = 1u << 22,
@@ -31,22 +31,22 @@ namespace IED
 	struct fontGlyphData_t
 	{
 		stl::flag<GlyphPresetFlags> glyph_preset_flags{ GlyphPresetFlags::kNone };
-		std::string extra_glyphs;
-		fontGlyphRange_t glyph_ranges;
+		std::string                 extra_glyphs;
+		fontGlyphRange_t            glyph_ranges;
 	};
 
 	struct fontInfoEntry_t :
 		public fontGlyphData_t
 	{
 		std::string path;
-		float size;
+		float       size;
 	};
 
 	struct fontInfoMap_t
 	{
 		std::unordered_map<stl::fixed_string, fontInfoEntry_t> fonts;
-		fontGlyphData_t default_glyph_data;
-		float default_font_size{ 13.0f };
+		fontGlyphData_t                                        default_glyph_data;
+		float                                                  default_font_size{ 13.0f };
 	};
 
 }

@@ -10,10 +10,10 @@
 namespace IED
 {
 	bool IObjectManager::RemoveObject(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
-		objectEntryBase_t& a_objectEntry,
-		const ActorObjectHolder& a_data,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
+		objectEntryBase_t&               a_objectEntry,
+		const ActorObjectHolder&         a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (!a_objectEntry.state)
@@ -48,8 +48,8 @@ namespace IED
 	}
 
 	bool IObjectManager::RemoveActorImpl(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor->formID);
@@ -70,7 +70,7 @@ namespace IED
 	}
 
 	bool IObjectManager::RemoveActorImpl(
-		TESObjectREFR* a_actor,
+		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor->formID);
@@ -96,7 +96,7 @@ namespace IED
 	}
 
 	bool IObjectManager::RemoveActorImpl(
-		Game::FormID a_actor,
+		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor);
@@ -122,9 +122,9 @@ namespace IED
 	}
 
 	void IObjectManager::CleanupActorObjectsImpl(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ActorObjectHolder& a_objects,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (a_actor && a_actor == *g_thePlayer)
@@ -163,8 +163,8 @@ namespace IED
 	}
 
 	void IObjectManager::RemoveActorGear(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor->formID);
@@ -175,9 +175,9 @@ namespace IED
 	}
 
 	void IObjectManager::RemoveActorGear(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ActorObjectHolder& a_objects,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		a_objects.visit([&](objectEntryBase_t& a_object) {
@@ -196,7 +196,7 @@ namespace IED
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
-		ActorObjectHolder& a_objects,
+		ActorObjectHolder&    a_objects,
 		Game::ObjectRefHandle a_handle)
 	{
 		bool result = false;
@@ -277,23 +277,23 @@ namespace IED
 	}
 
 	bool IObjectManager::ConstructArmorNode(
-		TESForm* a_form,
-		const std::vector<TESObjectARMA*>& a_in,
-		bool a_isFemale,
+		TESForm*                                          a_form,
+		const std::vector<TESObjectARMA*>&                a_in,
+		bool                                              a_isFemale,
 		std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
-		NiPointer<NiNode>& a_out)
+		NiPointer<NiNode>&                                a_out)
 	{
 		bool result = false;
 
 		for (auto& e : a_in)
 		{
 			auto texSwap = std::addressof(e->models[0][a_isFemale ? 1 : 0]);
-			auto path = texSwap->GetModelName();
+			auto path    = texSwap->GetModelName();
 
 			if (!path || path[0] == 0)
 			{
 				texSwap = std::addressof(e->models[0][a_isFemale ? 0 : 1]);
-				path = texSwap->GetModelName();
+				path    = texSwap->GetModelName();
 
 				if (!path || path[0] == 0)
 				{
@@ -301,7 +301,7 @@ namespace IED
 				}
 			}
 
-			NiPointer<NiNode> object;
+			NiPointer<NiNode>   object;
 			ObjectDatabaseEntry entry;
 
 			if (!GetUniqueObject(path, entry, object))
@@ -311,7 +311,7 @@ namespace IED
 
 			if (!a_out)
 			{
-				a_out = NiNode::Create(1);
+				a_out          = NiNode::Create(1);
 				a_out->m_flags = NiAVObject::kFlag_SelectiveUpdate |
 				                 NiAVObject::kFlag_SelectiveUpdateTransforms |
 				                 NiAVObject::kFlag_kSelectiveUpdateController;
@@ -343,7 +343,7 @@ namespace IED
 	}
 
 	void IObjectManager::GetNodeName(
-		TESForm* a_form,
+		TESForm*             a_form,
 		const modelParams_t& a_params,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])
 	{
@@ -356,7 +356,7 @@ namespace IED
 			GetArmorNodeName(
 				a_form->formID,
 				a_params.arma ?
-                    a_params.arma->formID :
+					a_params.arma->formID :
                     Game::FormID{},
 				a_out);
 			break;
@@ -370,15 +370,15 @@ namespace IED
 	}
 
 	bool IObjectManager::LoadAndAttach(
-		processParams_t& a_params,
+		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_config,
-		const Data::NodeDescriptor& a_node,
-		objectEntryBase_t& a_objectEntry,
-		TESForm* a_form,
-		TESForm* a_modelForm,
-		bool a_leftWeapon,
-		bool a_visible,
-		bool a_disableHavok)
+		const Data::NodeDescriptor&     a_node,
+		objectEntryBase_t&              a_objectEntry,
+		TESForm*                        a_form,
+		TESForm*                        a_modelForm,
+		bool                            a_leftWeapon,
+		bool                            a_visible,
+		bool                            a_disableHavok)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -442,7 +442,7 @@ namespace IED
 
 		auto state = std::make_unique<objectEntryBase_t::State>();
 
-		NiPointer<NiNode> object;
+		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry entry;
 
 		if (!GetUniqueObject(modelParams.path, entry, object))
@@ -464,7 +464,9 @@ namespace IED
 
 		if (modelParams.swap)
 		{
-			EngineExtensions::ApplyTextureSwap(modelParams.swap, object);
+			EngineExtensions::ApplyTextureSwap(
+				modelParams.swap,
+				object);
 		}
 
 		object->m_localTransform = {};
@@ -519,21 +521,25 @@ namespace IED
 
 		if (a_visible)
 		{
-			PlayObjectSound(a_params, a_config, a_objectEntry, true);
+			PlayObjectSound(
+				a_params,
+				a_config,
+				a_objectEntry,
+				true);
 		}
 
 		return true;
 	}
 
 	bool IObjectManager::LoadAndAttachGroup(
-		processParams_t& a_params,
+		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_config,
 		const Data::configModelGroup_t& a_group,
-		const Data::NodeDescriptor& a_node,
-		objectEntryBase_t& a_objectEntry,
-		TESForm* a_form,
-		bool a_leftWeapon,
-		bool a_visible)
+		const Data::NodeDescriptor&     a_node,
+		objectEntryBase_t&              a_objectEntry,
+		TESForm*                        a_form,
+		bool                            a_leftWeapon,
+		bool                            a_visible)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -565,13 +571,13 @@ namespace IED
 
 		struct tmpdata_t
 		{
-			const decltype(a_group.entries)::value_type* entry;
-			TESForm* form;
-			modelParams_t params;
-			NiPointer<NiNode> object;
+			const Data::configModelGroup_t::data_type::value_type* entry{ nullptr };
+			TESForm*                                               form{ nullptr };
+			modelParams_t                                          params;
+			NiPointer<NiNode>                                      object;
 		};
 
-		std::vector<tmpdata_t> modelParams;
+		std::list<tmpdata_t> modelParams;
 
 		for (auto& e : a_group.entries)
 		{
@@ -698,7 +704,9 @@ namespace IED
 
 			if (e.params.swap)
 			{
-				EngineExtensions::ApplyTextureSwap(e.params.swap, e.object);
+				EngineExtensions::ApplyTextureSwap(
+					e.params.swap,
+					e.object);
 			}
 
 			GetNodeName(e.form, e.params, buffer);
@@ -754,7 +762,11 @@ namespace IED
 
 		if (a_visible)
 		{
-			PlayObjectSound(a_params, a_config, a_objectEntry, true);
+			PlayObjectSound(
+				a_params,
+				a_config,
+				a_objectEntry,
+				true);
 		}
 
 		return true;
@@ -762,26 +774,26 @@ namespace IED
 
 	void IObjectManager::FinalizeObjectState(
 		std::unique_ptr<objectEntryBase_t::State>& a_state,
-		TESForm* a_form,
-		NiNode* a_node,
-		nodesRef_t& a_targetNodes,
-		const Data::NodeDescriptor& a_nodeDesc,
-		const Data::configBaseValues_t& a_config)
+		TESForm*                                   a_form,
+		NiNode*                                    a_node,
+		nodesRef_t&                                a_targetNodes,
+		const Data::NodeDescriptor&                a_nodeDesc,
+		const Data::configBaseValues_t&            a_config)
 	{
-		a_state->form = a_form;
-		a_state->formid = a_form->formID;
-		a_state->nodes.obj = a_node;
-		a_state->nodes.ref = std::move(a_targetNodes.ref);
-		a_state->nodeDesc = a_nodeDesc;
+		a_state->form         = a_form;
+		a_state->formid       = a_form->formID;
+		a_state->nodes.obj    = a_node;
+		a_state->nodes.ref    = std::move(a_targetNodes.ref);
+		a_state->nodeDesc     = a_nodeDesc;
 		a_state->atmReference = a_nodeDesc.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 	}
 
 	void IObjectManager::PlayObjectSound(
-		const processParams_t& a_params,
+		const processParams_t&          a_params,
 		const Data::configBaseValues_t& a_config,
-		const objectEntryBase_t& a_objectEntry,
-		bool a_equip)
+		const objectEntryBase_t&        a_objectEntry,
+		bool                            a_equip)
 	{
 		if (a_objectEntry.state &&
 		    a_params.flags.test(ControllerUpdateFlags::kPlaySound) &&

@@ -31,8 +31,8 @@ namespace IED
 				{
 					pc->moveInput = { 0, 0 };
 					pc->lookInput = { 0, 0 };
-					pc->prevMove = { 0, 0 };
-					pc->prevLook = { 0, 0 };
+					pc->prevMove  = { 0, 0 };
+					pc->prevLook  = { 0, 0 };
 				}
 			}
 
@@ -59,7 +59,7 @@ namespace IED
 					continue;
 				}
 
-				auto deviceType = buttonEvent->device;
+				auto          deviceType = buttonEvent->device;
 				std::uint32_t keyCode;
 
 				if (deviceType == INPUT_DEVICE::kMouse)
@@ -98,7 +98,7 @@ namespace IED
 		}
 
 		auto Input::ReceiveEvent(
-			InputEvent* const* a_evns,
+			InputEvent* const*           a_evns,
 			BSTEventSource<InputEvent*>* a_dispatcher)
 			-> EventResult
 		{
@@ -141,7 +141,7 @@ namespace IED
 		template <bool _IsAE, class T>
 		static constexpr bool ExtractHookCallAddr(
 			std::uintptr_t a_dst,
-			T& a_out)
+			T&             a_out)
 		{
 #pragma pack(push, 1)
 

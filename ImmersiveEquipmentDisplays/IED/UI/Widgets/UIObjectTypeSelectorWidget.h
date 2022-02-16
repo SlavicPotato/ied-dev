@@ -9,17 +9,16 @@ namespace IED
 		class UIObjectSlotSelectorWidget
 		{
 		public:
-
 			template <class T>
 			static bool DrawObjectSlotSelector(
 				const char* a_label,
-				T& a_out);
+				T&          a_out);
 		};
 
 		template <class T>
 		bool UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 			const char* a_label,
-			T& a_out)
+			T&          a_out)
 		{
 			bool result = false;
 
@@ -48,7 +47,7 @@ namespace IED
 
 					if (ImGui::Selectable(desc, selected))
 					{
-						a_out = e;
+						a_out  = e;
 						result = true;
 					}
 

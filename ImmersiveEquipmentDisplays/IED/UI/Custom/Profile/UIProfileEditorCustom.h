@@ -33,7 +33,7 @@ namespace IED
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
 			virtual ProfileManager<CustomProfile>& GetProfileManager() const override;
-			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
+			virtual UIPopupQueue&                  GetPopupQueue_ProfileBase() const override;
 
 			virtual CustomEditorCurrentData GetCurrentData() override;
 
@@ -51,7 +51,7 @@ namespace IED
 
 			virtual void OnProfileSave(
 				const stl::fixed_string& a_name,
-				CustomProfile& a_profile) override;
+				CustomProfile&           a_profile) override;
 
 			virtual void OnProfileReload(
 				const CustomProfile& a_profile) override;
@@ -69,7 +69,7 @@ namespace IED
 
 			virtual void OnBaseConfigChange(
 				int,
-				const void* a_params,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
@@ -77,15 +77,15 @@ namespace IED
 				const CustomConfigUpdateParams& a_params) override;
 
 			virtual bool OnCreateNew(
-				int a_handle,
+				int                          a_handle,
 				const CustomConfigNewParams& a_params) override;
 
 			virtual void OnErase(
-				int a_handle,
+				int                            a_handle,
 				const CustomConfigEraseParams& a_params) override;
 
 			virtual bool OnRename(
-				int a_handle,
+				int                             a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
 			virtual constexpr bool BaseConfigStoreCC() const override;

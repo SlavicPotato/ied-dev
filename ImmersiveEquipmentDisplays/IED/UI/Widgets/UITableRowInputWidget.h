@@ -12,8 +12,8 @@ namespace IED
 		{
 			struct state_t
 			{
-				int index{ -1 };
-				T key;
+				int  index{ -1 };
+				T    key;
 				bool grabFocus{ true };
 				bool focusObtained{ false };
 
@@ -24,12 +24,12 @@ namespace IED
 
 		public:
 			UITableRowInputWidget(
-				Localization::ILocalization &a_localization,
-				ImGuiInputTextFlags a_inputFlags = ImGuiInputTextFlags_None);
+				Localization::ILocalization& a_localization,
+				ImGuiInputTextFlags          a_inputFlags = ImGuiInputTextFlags_None);
 
 			bool DrawColumn(
-				int a_index,
-				const T& a_key,
+				int         a_index,
+				const T&    a_key,
 				const char* a_text);
 
 			const char* GetBuffer() const;
@@ -43,7 +43,7 @@ namespace IED
 		template <class T>
 		inline UITableRowInputWidget<T>::UITableRowInputWidget(
 			Localization::ILocalization& a_localization,
-			ImGuiInputTextFlags a_inputFlags) :
+			ImGuiInputTextFlags          a_inputFlags) :
 			UILocalizationInterface(a_localization),
 			m_inputFlags(a_inputFlags)
 		{
@@ -51,8 +51,8 @@ namespace IED
 
 		template <class T>
 		bool UITableRowInputWidget<T>::DrawColumn(
-			int a_index,
-			const T& a_key,
+			int         a_index,
+			const T&    a_key,
 			const char* a_text)
 		{
 			bool result = false;

@@ -17,28 +17,28 @@ namespace IED
 
 		void UITipsInterface::DrawTip(
 			UITip a_id,
-			bool a_sameLine) const
+			bool  a_sameLine) const
 		{
 			DrawTipText(GetTipText(a_id), a_sameLine);
 		}
 
 		void UITipsInterface::DrawTipWarn(
 			UITip a_id,
-			bool a_sameLine) const
+			bool  a_sameLine) const
 		{
 			DrawTipTextWarn(GetTipText(a_id), a_sameLine);
 		}
 
 		void UITipsInterface::DrawTip(
 			const char* a_text,
-			bool a_sameLine) const
+			bool        a_sameLine) const
 		{
 			DrawTipText(a_text, a_sameLine);
 		}
 
 		void UITipsInterface::DrawTipText(
 			const char* a_text,
-			bool a_sameLine) const
+			bool        a_sameLine) const
 		{
 			ImGui::SameLine();
 			UICommon::HelpMarker(a_text);
@@ -46,7 +46,7 @@ namespace IED
 
 		void UITipsInterface::DrawTipTextWarn(
 			const char* a_text,
-			bool a_sameLine) const
+			bool        a_sameLine) const
 		{
 			ImGui::SameLine();
 			UICommon::HelpMarkerWarn(a_text);

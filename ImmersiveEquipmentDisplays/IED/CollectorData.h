@@ -37,15 +37,15 @@ namespace IED
 					return equipped || equippedLeft;
 				}
 
-				TESForm* form;
-				ObjectType type{ Data::ObjectType::kMax };
+				TESForm*        form;
+				ObjectType      type{ Data::ObjectType::kMax };
 				ObjectTypeExtra typeExtra{ ObjectTypeExtra::kNone };
-				std::int64_t count{ 0 };
-				std::int64_t sharedCount{ 0 };
-				bool equipped{ false };
-				bool equippedLeft{ false };
-				bool favorited{ false };
-				bool cannotWear{ false };
+				std::int64_t    count{ 0 };
+				std::int64_t    sharedCount{ 0 };
+				bool            equipped{ false };
+				bool            equippedLeft{ false };
+				bool            favorited{ false };
+				bool            cannotWear{ false };
 				extraItemData_t extraEquipped;
 			};
 
@@ -56,9 +56,9 @@ namespace IED
 
 			using container_type = std::unordered_map<Game::FormID, itemData_t>;
 
-			container_type forms;
+			container_type         forms;
 			InventoryPresenceFlags equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{};
-			std::int64_t typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
+			std::int64_t           typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;
 		};

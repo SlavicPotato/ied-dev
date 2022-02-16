@@ -125,7 +125,7 @@ namespace IED
 				"Player##node",
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideGlobalPlayer));
-			
+
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(

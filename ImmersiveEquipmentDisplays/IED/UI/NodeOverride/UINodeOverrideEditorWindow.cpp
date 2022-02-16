@@ -10,7 +10,7 @@ namespace IED
 	namespace UI
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
-			Controller& a_controller,
+			Controller&                  a_controller,
 			UIProfileEditorNodeOverride& a_profileEditor) :
 			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
@@ -105,7 +105,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				m_tabPanel.DrawMenuBarItems();				
+				m_tabPanel.DrawMenuBarItems();
 
 				ImGui::EndMenuBar();
 			}

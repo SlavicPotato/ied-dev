@@ -37,7 +37,7 @@ namespace IED
 			struct entry_t
 			{
 				DataType type{ DataType::None };
-				void* data{ nullptr };
+				void*    data{ nullptr };
 			};
 
 			template <class T, class data_type = stl::strip_type<T>>

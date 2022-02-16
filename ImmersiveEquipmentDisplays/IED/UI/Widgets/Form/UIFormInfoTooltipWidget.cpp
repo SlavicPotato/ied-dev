@@ -20,7 +20,7 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawFormInfoTooltip(
-			const formInfoResult_t& a_info,
+			const formInfoResult_t&  a_info,
 			const objectEntryBase_t& a_entry)
 		{
 			ImGui::BeginTooltip();
@@ -30,15 +30,15 @@ namespace IED
 			ImGui::SameLine();
 			ImGui::Text("%.8X", a_info.form.id.get());
 
+			ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
+
 			if (auto typeDesc = IFormCommon::GetFormTypeDesc(a_info.form.type))
 			{
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
 				ImGui::SameLine();
 				ImGui::TextUnformatted(typeDesc);
 			}
 			else
 			{
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
 				ImGui::SameLine();
 				ImGui::Text("%hhu", a_info.form.type);
 			}
@@ -54,7 +54,7 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawObjectEntryHeaderInfo(
-			const formInfoResult_t* a_info,
+			const formInfoResult_t*  a_info,
 			const objectEntryBase_t& a_entry)
 		{
 			if (!a_entry.state)

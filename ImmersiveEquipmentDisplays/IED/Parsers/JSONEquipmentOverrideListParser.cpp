@@ -24,7 +24,7 @@ namespace IED
 			{
 				if (!parser.Parse(e, a_out.emplace_back(), version))
 				{
-					Error("%s: failed parsing armor override entry", __FUNCTION__);
+					Error("%s: failed parsing equipment override entry", __FUNCTION__);
 					return false;
 				}
 			}

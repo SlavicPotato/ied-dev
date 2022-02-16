@@ -9,7 +9,7 @@ namespace IED
 	auto IEquipment::CreateEquippedItemInfo(ActorProcessManager* a_pm)
 		-> equippedItemInfo_t
 	{
-		auto formLeft = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
+		auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 		auto formRight = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right];
 
 		return equippedItemInfo_t{
@@ -25,10 +25,10 @@ namespace IED
 	}
 
 	auto IEquipment::SelectItem(
-		Actor* a_actor,
-		const Data::configSlot_t& a_entry,
+		Actor*                            a_actor,
+		const Data::configSlot_t&         a_entry,
 		SlotItemCandidates::storage_type& a_candidates,
-		Game::FormID a_lastEquipped)
+		Game::FormID                      a_lastEquipped)
 		-> selectedItem_t
 	{
 		if (a_candidates.empty())

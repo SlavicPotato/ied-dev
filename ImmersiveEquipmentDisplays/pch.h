@@ -16,6 +16,7 @@
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
 #include <ext/str_conv.h>
+#include <ext/IUUID.h>
 
 #include <skse64/GameAudio.h>
 #include <skse64/GameEvents.h>
@@ -34,16 +35,16 @@
 #include <skse64/FormTraits.h>
 
 #include <bitset>
+#include <chrono>
 #include <filesystem>
 #include <functional>
 #include <list>
 #include <memory>
 #include <numbers>
 #include <regex>
+#include <source_location>
 #include <string>
 #include <vector>
-#include <source_location>
-#include <chrono>
 
 #include <d3d11.h>
 #include <dxgi1_5.h>
@@ -65,6 +66,9 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
+
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
 
 #include <boost/locale.hpp>
 

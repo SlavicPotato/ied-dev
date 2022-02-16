@@ -14,7 +14,7 @@ namespace IED
 
 	struct formSlotPair_t
 	{
-		TESForm* form;
+		TESForm*              form;
 		Data::ObjectSlotExtra slot;
 	};
 
@@ -127,105 +127,105 @@ namespace IED
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
-				CommonParams& a_params) const;
+				CommonParams&          a_params) const;
 
 			const equipmentOverride_t* get_equipment_override(
-				const collectorData_t& a_data,
+				const collectorData_t&     a_data,
 				const slot_container_type& a_slots,
-				CommonParams& a_params) const;
+				CommonParams&              a_params) const;
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
-				const formSlotPair_t& a_checkForm,
-				CommonParams& a_params) const;
+				const formSlotPair_t&  a_checkForm,
+				CommonParams&          a_params) const;
 
 		private:
 			static constexpr bool match_equipped_type(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match);
 
 			static bool match_carried_type(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match);
 
 			static bool match_equipped_form(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match);
-			
+
 			static bool match_carried_form(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match);
-			
+
 			static constexpr bool match(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
-				CommonParams& a_params);
+				CommonParams&                       a_params);
 
 			static constexpr bool match(
-				const collectorData_t& a_data,
+				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
-				CommonParams& a_params,
-				bool a_default);
+				CommonParams&                           a_params,
+				bool                                    a_default);
 
 			static constexpr bool match(
-				const collectorData_t& a_cdata,
-				const slot_container_type& a_data,
+				const collectorData_t&              a_cdata,
+				const slot_container_type&          a_data,
 				const equipmentOverrideCondition_t& a_match,
-				CommonParams& a_params);
+				CommonParams&                       a_params);
 
 			static constexpr bool match(
-				const collectorData_t& a_cdata,
-				const slot_container_type& a_data,
+				const collectorData_t&                  a_cdata,
+				const slot_container_type&              a_data,
 				const equipmentOverrideConditionList_t& a_matches,
-				CommonParams& a_params,
-				bool a_default);
+				CommonParams&                           a_params,
+				bool                                    a_default);
 
 			static constexpr bool match(
-				const collectorData_t& a_data,
+				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
-				const formSlotPair_t& a_checkForm,
-				CommonParams& a_params);
+				const formSlotPair_t&               a_checkForm,
+				CommonParams&                       a_params);
 
 			static constexpr bool match(
-				const collectorData_t& a_data,
+				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
-				const formSlotPair_t& a_checkForm,
-				CommonParams& a_params,
-				bool a_default);
+				const formSlotPair_t&                   a_checkForm,
+				CommonParams&                           a_params,
+				bool                                    a_default);
 
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
-				const collectorData_t& a_data);
-			
+				const collectorData_t&    a_data);
+
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
-				const collectorData_t& a_data);
+				const collectorData_t&    a_data);
 
 			static bool has_keyword(
-				const configCachedForm_t& a_keyword,
+				const configCachedForm_t&  a_keyword,
 				const slot_container_type& a_data);
 
 			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
-				TESForm* a_form);
+				TESForm*                  a_form);
 
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
-				ObjectSlotExtra a_type,
-				const collectorData_t& a_data);
-			
+				ObjectSlotExtra           a_type,
+				const collectorData_t&    a_data);
+
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
-				ObjectTypeExtra a_type,
-				const collectorData_t& a_data);
+				ObjectTypeExtra           a_type,
+				const collectorData_t&    a_data);
 
 			static bool has_keyword(
-				const configCachedForm_t& a_keyword,
-				ObjectSlot a_type,
+				const configCachedForm_t&  a_keyword,
+				ObjectSlot                 a_type,
 				const slot_container_type& a_data);
 
 			static TESForm* match_slot_form(
-				const slot_container_type& a_data,
+				const slot_container_type&          a_data,
 				const equipmentOverrideCondition_t& a_match);
 
 		protected:

@@ -68,7 +68,7 @@ namespace IED
 
 		void UINodeMapEditor::DrawNodeTable()
 		{
-			auto& map = Data::NodeMap::GetSingleton();
+			auto& map  = Data::NodeMap::GetSingleton();
 			auto& data = map.GetData();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5, 5 });

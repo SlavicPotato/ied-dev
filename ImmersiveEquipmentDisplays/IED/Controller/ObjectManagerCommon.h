@@ -13,7 +13,7 @@ namespace IED
 
 			void Update(const Data::configTransform_t& a_in) noexcept
 			{
-				scale = a_in.scale;
+				scale    = a_in.scale;
 				position = a_in.position;
 
 				if (a_in.rotation)
@@ -29,6 +29,8 @@ namespace IED
 				{
 					rotation.clear();
 				}
+
+				tag = a_in;
 			}
 
 			void clear() noexcept
@@ -36,11 +38,19 @@ namespace IED
 				scale.clear();
 				position.clear();
 				rotation.clear();
+				tag.reset();
 			}
 
-			stl::optional<NiPoint3> position;
+			[[nodiscard]] inline constexpr bool operator==(
+				const Data::configTransform_t& a_rhs) const
+			{
+				return tag == a_rhs;
+			}
+
+			stl::optional<NiPoint3>   position;
 			stl::optional<NiMatrix33> rotation;
-			stl::optional<float> scale;
+			stl::optional<float>      scale;
+			std::optional<uuid_tag>   tag;
 		};
 	}
 }

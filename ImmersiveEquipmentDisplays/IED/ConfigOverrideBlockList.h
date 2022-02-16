@@ -45,7 +45,7 @@ namespace IED
 			};
 
 			std::unordered_map<configForm_t, actorBlockEntry_t> data;
-			bool playerToggle{ false };
+			bool                                                playerToggle{ false };
 
 			inline void clear()
 			{

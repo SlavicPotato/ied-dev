@@ -13,7 +13,6 @@ namespace IED
 			virtual void OnOpen(){};
 			virtual void OnClose(){};
 			virtual void QueueUpdateCurrent(){};
-
 			virtual void DrawMenuBarItems(){};
 		};
 

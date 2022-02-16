@@ -19,8 +19,9 @@ namespace IED
 		return 0;
 	}
 
-	std::unique_ptr<formInfoResult_t> IForm::LookupFormInfo(
+	auto IForm::LookupFormInfo(
 		Game::FormID a_form)
+		-> info_result
 	{
 		auto form = a_form.Lookup();
 		if (!form)

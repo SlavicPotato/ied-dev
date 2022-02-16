@@ -64,8 +64,8 @@ namespace IED
 		}
 
 		static constexpr bool upd_base_filt(
-			const stl::fixed_string& a_oldName,
-			const stl::fixed_string& a_newName,
+			const stl::fixed_string&   a_oldName,
+			const stl::fixed_string&   a_newName,
 			Data::configBaseFilters_t& a_conf)
 		{
 			bool result = false;
@@ -74,21 +74,21 @@ namespace IED
 			    a_conf.raceFilter.profile.name == a_oldName)
 			{
 				a_conf.raceFilter.profile.name = a_newName;
-				result = true;
+				result                         = true;
 			}
 
 			if (a_conf.npcFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
 			    a_conf.npcFilter.profile.name == a_oldName)
 			{
 				a_conf.npcFilter.profile.name = a_newName;
-				result = true;
+				result                        = true;
 			}
 
 			if (a_conf.actorFilter.filterFlags.test(Data::FormFilterFlags::kUseProfile) &&
 			    a_conf.actorFilter.profile.name == a_oldName)
 			{
 				a_conf.actorFilter.profile.name = a_newName;
-				result = true;
+				result                          = true;
 			}
 
 			return result;
@@ -116,7 +116,7 @@ namespace IED
 				        a_conf.itemFilter.profile.name == a_oldName)
 					{
 						a_conf.itemFilter.profile.name = a_newName;
-						chg = true;
+						chg                            = true;
 					}
 				});
 
@@ -146,7 +146,7 @@ namespace IED
 
 		void UIProfileEditorFormFilters::OnProfileSave(
 			const stl::fixed_string& a_name,
-			FormFilterProfile& a_profile)
+			FormFilterProfile&       a_profile)
 		{
 		}
 

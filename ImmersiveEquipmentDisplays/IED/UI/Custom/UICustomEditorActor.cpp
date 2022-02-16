@@ -96,7 +96,7 @@ namespace IED
 			Game::FormID a_handle) const
 		{
 			auto& data = m_controller.GetConfigStore().active.custom.GetActorData();
-			auto& sh = StringHolder::GetSingleton();
+			auto& sh   = StringHolder::GetSingleton();
 
 			auto& pluginMap = data.try_emplace(a_handle).first->second;
 
@@ -106,7 +106,7 @@ namespace IED
 		entryCustomData_t UICustomEditorActor::GetData(Game::FormID a_handle)
 		{
 			auto& store = m_controller.GetConfigStore();
-			auto& data = store.active.custom.GetActorData();
+			auto& data  = store.active.custom.GetActorData();
 
 			auto it = data.find(static_cast<Data::configForm_t>(a_handle));
 			if (it != data.end())
@@ -219,12 +219,12 @@ namespace IED
 
 		void UICustomEditorActor::ApplyProfile(
 			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-			const CustomProfile& a_profile)
+			const CustomProfile&                               a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
 
 			a_data.data = a_profile.Data();
-			conf = a_profile.Data();
+			conf        = a_profile.Data();
 
 			m_controller.QueueResetCustom(
 				a_data.handle,
@@ -234,7 +234,7 @@ namespace IED
 
 		void UICustomEditorActor::MergeProfile(
 			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-			const CustomProfile& a_profile)
+			const CustomProfile&                               a_profile)
 		{
 			auto& profileData = a_profile.Data();
 
@@ -252,8 +252,8 @@ namespace IED
 		}
 
 		void UICustomEditorActor::OnBaseConfigChange(
-			Game::FormID a_handle,
-			const void* a_params,
+			Game::FormID     a_handle,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
@@ -294,7 +294,7 @@ namespace IED
 		}
 
 		void UICustomEditorActor::OnFullConfigChange(
-			Game::FormID a_handle,
+			Game::FormID                    a_handle,
 			const CustomConfigUpdateParams& a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
@@ -309,7 +309,7 @@ namespace IED
 		}
 
 		bool UICustomEditorActor::OnCreateNew(
-			Game::FormID a_handle,
+			Game::FormID                 a_handle,
 			const CustomConfigNewParams& a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
@@ -325,7 +325,7 @@ namespace IED
 		}
 
 		void UICustomEditorActor::OnErase(
-			Game::FormID a_handle,
+			Game::FormID                   a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.custom.GetActorData();
@@ -341,7 +341,7 @@ namespace IED
 		}
 
 		bool UICustomEditorActor::OnRename(
-			Game::FormID a_handle,
+			Game::FormID                    a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			if (!DoConfigRename(a_handle, a_params))
@@ -392,8 +392,8 @@ namespace IED
 		}
 
 		auto UICustomEditorActor::GetLoadedObject(
-			Game::FormID a_handle,
-			const stl::fixed_string& a_name,
+			Game::FormID                     a_handle,
+			const stl::fixed_string&         a_name,
 			const Data::configCustomEntry_t& a_entry)
 			-> const objectEntryCustom_t*
 		{
@@ -439,10 +439,10 @@ namespace IED
 		}
 
 		bool UICustomEditorActor::DrawExtraItemInfo(
-			Game::FormID a_handle,
-			const stl::fixed_string& a_name,
+			Game::FormID                     a_handle,
+			const stl::fixed_string&         a_name,
 			const Data::configCustomEntry_t& a_entry,
-			bool a_infoDrawn)
+			bool                             a_infoDrawn)
 		{
 			ImGui::TextUnformatted("Item:");
 			ImGui::SameLine();

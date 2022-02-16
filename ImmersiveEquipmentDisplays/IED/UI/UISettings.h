@@ -36,7 +36,7 @@ namespace IED
 
 		private:
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void                         OnCollapsibleStatesUpdate();
 
 			void DrawMenuBar();
 			void DrawFileMenu();
@@ -57,8 +57,8 @@ namespace IED
 
 			bool DrawSoundPairs();
 			bool DrawSoundPair(
-				const char* a_strid,
-				Localization::StringID a_label,
+				const char*                                   a_strid,
+				Localization::StringID                        a_label,
 				Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair);
 
 			template <
@@ -66,9 +66,9 @@ namespace IED
 				class Tl>
 			void DrawCommonResetContextMenu(
 				const char* a_imid,
-				Tl a_strid,
-				bool a_enabled,
-				Tf a_func);
+				Tl          a_strid,
+				bool        a_enabled,
+				Tf          a_func);
 
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
@@ -79,9 +79,9 @@ namespace IED
 		template <class Tf, class Tl>
 		void UISettings::DrawCommonResetContextMenu(
 			const char* a_imid,
-			Tl a_strid,
-			bool a_enabled,
-			Tf a_func)
+			Tl          a_strid,
+			bool        a_enabled,
+			Tf          a_func)
 		{
 			ImGui::PushID(a_imid);
 

@@ -17,13 +17,13 @@ namespace IED
 				SelectedFile() = default;
 
 				SelectedFile(
-					const fs::path& a_root,
+					const fs::path&                 a_root,
 					const storage_type::value_type& a_filename);
 
 				void UpdateInfo();
 
-				fs::path m_fullpath;
-				fs::path m_filename;
+				fs::path          m_fullpath;
+				fs::path          m_filename;
 				stl::fixed_string m_key;
 			};
 
@@ -33,8 +33,8 @@ namespace IED
 		protected:
 			UIFileSelector(
 				Localization::ILocalization& a_loc,
-				const fs::path& a_root,
-				const fs::path& a_ext);
+				const fs::path&              a_root,
+				const fs::path&              a_ext);
 
 			void DrawFileSelector();
 
@@ -45,7 +45,7 @@ namespace IED
 
 			bool RenameItem(
 				const SelectedFile& a_item,
-				const fs::path& a_newFileName);
+				const fs::path&     a_newFileName);
 
 			void SelectItem(
 				const stl::fixed_string& a_itemDesc);
@@ -71,9 +71,9 @@ namespace IED
 			static std::string get_key(const fs::path& a_filename);
 
 			stl::optional<SelectedFile> m_selected;
-			storage_type m_files;
-			fs::path m_root;
-			fs::path m_ext;
+			storage_type                m_files;
+			fs::path                    m_root;
+			fs::path                    m_ext;
 
 			except::descriptor m_lastExcept;
 		};

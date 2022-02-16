@@ -134,7 +134,7 @@ namespace IED
 				}
 
 				auto& objects = m_controller.GetObjects();
-				auto& ai = m_controller.GetActorInfo();
+				auto& ai      = m_controller.GetActorInfo();
 
 				sort_comp_func_t scl;
 
@@ -165,7 +165,7 @@ namespace IED
 
 					v.nslot = e.second.GetNumOccupiedSlots();
 					v.ncust = e.second.GetNumOccupiedCustom();
-					v.age = e.second.GetAge() / 60000000;
+					v.age   = e.second.GetAge() / 60000000;
 
 					auto it = list.begin();
 					while (it != list.end())

@@ -24,9 +24,9 @@ namespace IED
 		struct weaponNodeEntry_t
 		{
 			weaponNodeEntry_t(
-				const char* a_node,
-				const char* a_def,
-				const char* a_desc,
+				const char*                                   a_node,
+				const char*                                   a_def,
+				const char*                                   a_desc,
 				std::initializer_list<nodeList_t::value_type> a_movlist) :
 				bsname(a_node),
 				defParent(a_def),
@@ -36,11 +36,11 @@ namespace IED
 			{
 			}
 
-			BSFixedString bsname;
+			BSFixedString     bsname;
 			stl::fixed_string defParent;
-			BSFixedString bsdefParent;
-			const char* desc;
-			nodeList_t movs;
+			BSFixedString     bsdefParent;
+			const char*       desc;
+			nodeList_t        movs;
 		};
 
 		using weapnode_data_type = stl::vectormap<stl::fixed_string, weaponNodeEntry_t>;
@@ -49,17 +49,17 @@ namespace IED
 
 		struct overrideNodeEntry_t
 		{
-			const char* desc;
-			BSFixedString bsname;
+			const char*                           desc;
+			BSFixedString                         bsname;
 			stl::flag<NodeOverrideDataEntryFlags> flags{ NodeOverrideDataEntryFlags::kNone };
 		};
 
 		struct extraNodeEntry_t
 		{
 			extraNodeEntry_t(
-				const char* a_mov,
-				const char* a_cme,
-				const char *a_parent,
+				const char*                    a_mov,
+				const char*                    a_cme,
+				const char*                    a_parent,
 				const Data::configTransform_t& a_transform_m,
 				const Data::configTransform_t& a_transform_f) :
 				name_cme(a_cme),
@@ -74,14 +74,14 @@ namespace IED
 
 			stl::fixed_string name_cme;
 			stl::fixed_string name_mov;
-			BSFixedString bsname_cme;
-			BSFixedString bsname_mov;
-			BSFixedString name_parent;
-			NiTransform transform_m;
-			NiTransform transform_f;
+			BSFixedString     bsname_cme;
+			BSFixedString     bsname_mov;
+			BSFixedString     name_parent;
+			NiTransform       transform_m;
+			NiTransform       transform_f;
 		};
 
-		using cm_data_type = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
+		using cm_data_type  = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
 		using exn_data_type = std::list<extraNodeEntry_t>;
 
 		static void Create();
@@ -105,7 +105,7 @@ namespace IED
 		{
 			return m_Instance.m_weap;
 		}
-		
+
 		inline static constexpr const auto& GetExtraNodes() noexcept
 		{
 			return m_Instance.m_extra;
@@ -114,11 +114,11 @@ namespace IED
 	private:
 		NodeOverrideData() = default;
 
-		cm_data_type m_cme;
-		cm_data_type m_mov;
-		mon_data_type m_monitor;
+		cm_data_type       m_cme;
+		cm_data_type       m_mov;
+		mon_data_type      m_monitor;
 		weapnode_data_type m_weap;
-		exn_data_type m_extra;
+		exn_data_type      m_extra;
 
 		bool m_initialized{ false };
 

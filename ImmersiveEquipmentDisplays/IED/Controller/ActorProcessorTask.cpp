@@ -16,7 +16,7 @@ namespace IED
 
 	void ActorProcessorTask::UpdateRef(
 		const ActorObjectHolder& a_record,
-		objectEntryBase_t& a_entry)
+		objectEntryBase_t&       a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -222,6 +222,13 @@ namespace IED
 				    n != e.m_isPlayerTeammate)
 				{
 					e.m_isPlayerTeammate = n;
+					e.RequestEvalDefer();
+				}
+
+				if (auto n = e.m_actor->GetCurrentPackage();
+				    n != e.m_currentPackage)
+				{
+					e.m_currentPackage = n;
 					e.RequestEvalDefer();
 				}
 			}

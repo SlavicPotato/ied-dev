@@ -137,7 +137,7 @@ namespace IED
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
-			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
+			DoMerge(a_data.handle, a_profile.Data());
 
 			a_data.data = GetData(a_data.handle);
 
@@ -148,7 +148,7 @@ namespace IED
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
 			const SlotProfile& a_profile)
 		{
-			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), true);
+			DoApply(a_data.handle, a_profile.Data());
 
 			a_data.data = GetData(a_data.handle);
 
@@ -450,6 +450,11 @@ namespace IED
 			}
 
 			return nullptr;
+		}
+
+		entrySlotData_t UISlotEditorActor::GetCurrentData(Game::FormID a_handle)
+		{
+			return GetData(a_handle);
 		}
 	}
 }

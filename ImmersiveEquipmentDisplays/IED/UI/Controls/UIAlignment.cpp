@@ -10,7 +10,7 @@ namespace IED
 	{
 		float UIAlignment::GetNextTextOffset(
 			const stl::fixed_string& a_text,
-			bool a_clear)
+			bool                     a_clear)
 		{
 			if (a_clear)
 			{
@@ -32,7 +32,7 @@ namespace IED
 
 		bool UIAlignment::ButtonRight(
 			const stl::fixed_string& a_text,
-			bool a_disabled)
+			bool                     a_disabled)
 		{
 			UICommon::PushDisabled(a_disabled);
 

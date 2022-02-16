@@ -10,10 +10,10 @@ namespace IED
 	namespace UI
 	{
 		UIFormPickerWidget::UIFormPickerWidget(
-			Controller& a_controller,
+			Controller&   a_controller,
 			FormInfoFlags a_requiredFlags,
-			bool a_restrictTypes,
-			bool a_forceBase) :
+			bool          a_restrictTypes,
+			bool          a_forceBase) :
 			UIFormSelectorWidget(
 				a_controller,
 				a_requiredFlags,
@@ -29,10 +29,10 @@ namespace IED
 		}
 
 		bool UIFormPickerWidget::DrawFormPicker(
-			const char* a_strid,
-			const char* a_label,
+			const char*               a_strid,
+			const char*               a_label,
 			Data::configCachedForm_t& a_form,
-			const char* a_tipText)
+			const char*               a_tipText)
 		{
 			auto tmp = a_form.get_id();
 
@@ -46,10 +46,10 @@ namespace IED
 		}
 
 		bool UIFormPickerWidget::DrawFormPicker(
-			const char* a_strid,
-			const char* a_label,
+			const char*   a_strid,
+			const char*   a_label,
 			Game::FormID& a_form,
-			const char* a_tipText)
+			const char*   a_tipText)
 		{
 			ImGui::PushID("form_picker_widget");
 			ImGui::PushID(a_strid);
@@ -58,7 +58,7 @@ namespace IED
 
 			//ImGui::BeginGroup();
 
-			bool result = false;
+			bool result  = false;
 			bool hasForm = a_form != 0;
 
 			m_currentInfo = nullptr;
@@ -85,7 +85,7 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(0);
 
-				char buf[24];
+				char        buf[24];
 				const char* label;
 
 				if (hasForm)

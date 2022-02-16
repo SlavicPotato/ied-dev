@@ -28,7 +28,7 @@ namespace IED
 	}
 
 	void ItemCandidateCollector::Run(
-		TESContainer& a_container,
+		TESContainer&  a_container,
 		EntryDataList* a_dataList)
 	{
 		a_container.Visit(*this);
@@ -107,7 +107,7 @@ namespace IED
 			return true;
 		}
 
-		auto type = ItemData::GetItemType(form);
+		auto type      = ItemData::GetItemType(form);
 		auto extraType = ItemData::GetItemTypeExtra(form);
 
 		auto& r = m_data.forms.try_emplace(

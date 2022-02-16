@@ -24,68 +24,68 @@ namespace IED
 			UICommonModals(Localization::ILocalization& a_localization);
 
 			ModalStatus TextInputDialog(
-				const char* a_name,
-				const char* a_text,
-				ImGuiInputTextFlags a_flags,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				char* a_buf,
-				std::size_t a_size);
-			
+				const char*                 a_name,
+				const char*                 a_text,
+				ImGuiInputTextFlags         a_flags,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				char*                       a_buf,
+				std::size_t                 a_size);
+
 			template <class... Args>
 			ModalStatus TextInputDialog(
-				const char* a_name,
-				const char* a_text,
-				ImGuiInputTextFlags a_flags,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				char* a_buf,
-				std::size_t a_size,
+				const char*                 a_name,
+				const char*                 a_text,
+				ImGuiInputTextFlags         a_flags,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				char*                       a_buf,
+				std::size_t                 a_size,
 				Args... args);
 
 			ModalStatus MessageDialog(
-				const char* name,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				const char* text);
-			
+				const char*                 name,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				const char*                 text);
+
 			template <class... Args>
 			ModalStatus MessageDialog(
-				const char* name,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				const char* text,
+				const char*                 name,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				const char*                 text,
 				Args... args);
 
 			ModalStatus ConfirmDialog(
-				const char* name,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				const char* text);
-			
+				const char*                 name,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				const char*                 text);
+
 			template <class... Args>
 			ModalStatus ConfirmDialog(
-				const char* name,
-				const cm_func_t& a_func,
-				const stl::optional<float> &a_twsz,
-				const char* text,
+				const char*                 name,
+				const cm_func_t&            a_func,
+				const stl::optional<float>& a_twsz,
+				const char*                 text,
 				Args... args);
 
 			template <class... Args>
 			ModalStatus CustomDialog(
-				const char* name,
+				const char*      name,
 				const cm_func_t& a_func);
 		};
 
 		template <class... Args>
 		auto UICommonModals::TextInputDialog(
-			const char* a_name,
-			const char* a_text,
-			ImGuiInputTextFlags a_flags,
-			const cm_func_t& a_func,
-			const stl::optional<float> &a_twsz,
-			char* a_buf,
-			std::size_t a_size,
+			const char*                 a_name,
+			const char*                 a_text,
+			ImGuiInputTextFlags         a_flags,
+			const cm_func_t&            a_func,
+			const stl::optional<float>& a_twsz,
+			char*                       a_buf,
+			std::size_t                 a_size,
 			Args... args)
 			-> ModalStatus
 		{
@@ -171,10 +171,10 @@ namespace IED
 
 		template <class... Args>
 		auto UICommonModals::MessageDialog(
-			const char* a_name,
-			const cm_func_t& a_func,
-			const stl::optional<float> &a_twsz,
-			const char* a_text,
+			const char*                 a_name,
+			const cm_func_t&            a_func,
+			const stl::optional<float>& a_twsz,
+			const char*                 a_text,
 			Args... args)
 			-> ModalStatus
 		{
@@ -224,10 +224,10 @@ namespace IED
 
 		template <class... Args>
 		auto UICommonModals::ConfirmDialog(
-			const char* name,
-			const cm_func_t& a_func,
-			const stl::optional<float> &a_twsz,
-			const char* text,
+			const char*                 name,
+			const cm_func_t&            a_func,
+			const stl::optional<float>& a_twsz,
+			const char*                 text,
 			Args... args)
 			-> ModalStatus
 		{
@@ -294,7 +294,7 @@ namespace IED
 
 		template <class... Args>
 		auto UICommonModals::CustomDialog(
-			const char* name,
+			const char*      name,
 			const cm_func_t& a_func)
 			-> ModalStatus
 		{

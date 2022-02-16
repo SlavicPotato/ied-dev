@@ -86,7 +86,7 @@ namespace IED
 			Game::FormID a_handle) const
 		{
 			auto& data = m_controller.GetConfigStore().active.custom.GetRaceData();
-			auto& sh = StringHolder::GetSingleton();
+			auto& sh   = StringHolder::GetSingleton();
 
 			auto& pluginMap = data.try_emplace(a_handle).first->second;
 
@@ -96,7 +96,7 @@ namespace IED
 		entryCustomData_t UICustomEditorRace::GetData(Game::FormID a_handle)
 		{
 			auto& store = m_controller.GetConfigStore();
-			auto& data = store.active.custom.GetRaceData();
+			auto& data  = store.active.custom.GetRaceData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -187,12 +187,12 @@ namespace IED
 
 		void UICustomEditorRace::ApplyProfile(
 			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-			const CustomProfile& a_profile)
+			const CustomProfile&                               a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
 
 			a_data.data = a_profile.Data();
-			conf = a_profile.Data();
+			conf        = a_profile.Data();
 
 			m_controller.QueueResetCustomRace(
 				a_data.handle,
@@ -202,7 +202,7 @@ namespace IED
 
 		void UICustomEditorRace::MergeProfile(
 			const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-			const CustomProfile& a_profile)
+			const CustomProfile&                               a_profile)
 		{
 			auto& profileData = a_profile.Data();
 
@@ -220,8 +220,8 @@ namespace IED
 		}
 
 		void UICustomEditorRace::OnBaseConfigChange(
-			Game::FormID a_handle,
-			const void* a_params,
+			Game::FormID     a_handle,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
@@ -262,7 +262,7 @@ namespace IED
 		}
 
 		void UICustomEditorRace::OnFullConfigChange(
-			Game::FormID a_handle,
+			Game::FormID                    a_handle,
 			const CustomConfigUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -278,7 +278,7 @@ namespace IED
 		}
 
 		bool UICustomEditorRace::OnCreateNew(
-			Game::FormID a_handle,
+			Game::FormID                 a_handle,
 			const CustomConfigNewParams& a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
@@ -298,7 +298,7 @@ namespace IED
 		}
 
 		void UICustomEditorRace::OnErase(
-			Game::FormID a_handle,
+			Game::FormID                   a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
 			auto& data = m_controller
@@ -316,7 +316,7 @@ namespace IED
 		}
 
 		bool UICustomEditorRace::OnRename(
-			Game::FormID a_handle,
+			Game::FormID                    a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			if (!DoConfigRename(a_handle, a_params))

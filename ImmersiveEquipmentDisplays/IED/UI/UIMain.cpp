@@ -336,7 +336,7 @@ namespace IED
 								"%s",
 								LS(UIMainStrings::LoadDefaultAsCurrentPrompt))
 					.draw([this,
-				           c_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG),
+				           c_exists  = Serialization::FileExists(PATHS::DEFAULT_CONFIG),
 				           uc_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER)] {
 						auto& settings = m_controller.GetConfigStore().settings;
 

@@ -44,7 +44,7 @@ namespace IED
 
 	public:
 		inline static constexpr std::size_t NODE_NAME_BUFFER_SIZE = MAX_PATH;
-		inline static constexpr auto ATTACHMENT_NODE_FLAGS = NiAVObject::kFlag_SelectiveUpdate |
+		inline static constexpr auto        ATTACHMENT_NODE_FLAGS = NiAVObject::kFlag_SelectiveUpdate |
 		                                                     NiAVObject::kFlag_SelectiveUpdateTransforms |
 		                                                     NiAVObject::kFlag_kSelectiveUpdateController |
 		                                                     NiAVObject::kFlag_kNoAnimSyncS;
@@ -53,21 +53,21 @@ namespace IED
 
 		static bool CreateTargetNode(
 			const Data::configBaseValues_t& a_entry,
-			const Data::NodeDescriptor& a_node,
-			NiNode* a_root,
-			nodesRef_t& a_out);
+			const Data::NodeDescriptor&     a_node,
+			NiNode*                         a_root,
+			nodesRef_t&                     a_out);
 
 		static bool AttachObjectToTargetNode(
 			const Data::NodeDescriptor& a_node,
-			bool a_atmReference,
-			NiNode* a_root,
-			NiAVObject* a_object,
-			NiPointer<NiNode>& a_newRef);
+			bool                        a_atmReference,
+			NiNode*                     a_root,
+			NiAVObject*                 a_object,
+			NiPointer<NiNode>&          a_newRef);
 
 		static void UpdateObjectTransform(
 			const Data::cacheTransform_t& a_trnsf,
-			NiAVObject* a_node,
-			NiNode* a_refNode);
+			NiAVObject*                   a_node,
+			NiNode*                       a_refNode);
 
 		static void GetArmorNodeName(
 			Game::FormID a_formid,
@@ -84,21 +84,18 @@ namespace IED
 
 		static NiNode* CreateAttachmentNode(
 			const BSFixedString& a_nodeName);
-		
+
 	protected:
-		static NiNode* CreateNode(const char *a_name);
+		static NiNode* CreateNode(const char* a_name);
 
 	private:
-		/*static NiNode* CreateAttachmentNode(
-			BSFixedString&& a_nodeName);*/
-
 		static findResult_t FindNodes(
 			const Data::NodeDescriptor& a_node,
-			bool a_atmReference,
-			NiNode* a_root);
+			bool                        a_atmReference,
+			NiNode*                     a_root);
 
 		static BSFixedString GetTargetNodeName(
 			const Data::NodeDescriptor& a_node,
-			bool a_atmReference);
+			bool                        a_atmReference);
 	};
 }  // namespace IED

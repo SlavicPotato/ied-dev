@@ -23,8 +23,8 @@ namespace IED
 				Controller& a_controller);
 
 			bool DrawNodeSelector(
-				const char* a_label,
-				bool a_hideManaged,
+				const char*           a_label,
+				bool                  a_hideManaged,
 				Data::NodeDescriptor& a_data);
 
 		private:

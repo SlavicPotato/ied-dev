@@ -14,7 +14,7 @@ namespace IED
 	{
 		kNone = 0,
 
-		kMenuUpdate = 1ui8 << 0,
+		kMenuUpdate  = 1ui8 << 0,
 		kForceUpdate = 1ui8 << 1,
 
 		kUpdateMask = kMenuUpdate | kForceUpdate,
@@ -33,21 +33,20 @@ namespace IED
 
 	struct processParamsData_t
 	{
-		NiNode* const root;
-		NiNode* const npcroot;
-		const Game::ObjectRefHandle handle;
-		ActorObjectHolder& objects;
-		EntryDataList* const dataList;
-		const Data::ConfigSex configSex;
+		NiNode* const                          root;
+		NiNode* const                          npcroot;
+		const Game::ObjectRefHandle            handle;
+		ActorObjectHolder&                     objects;
+		const Data::ConfigSex                  configSex;
 		const stl::flag<ControllerUpdateFlags> flags;
-		ItemCandidateCollector collector;
+		ItemCandidateCollector                 collector;
 	};
 
 	struct processParams_t :
 		processParamsData_t,
 		CommonParams
 	{
-		processState_t state;	
+		processState_t state;
 	};
 
 }  // namespace IED

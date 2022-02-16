@@ -127,6 +127,7 @@ namespace IED
 		case TESObjectARMO::kTypeID:
 		case TESAmmo::kTypeID:
 		case SpellItem::kTypeID:
+		case TESShout::kTypeID:
 			return true;
 		default:
 			return false;
@@ -225,6 +226,12 @@ namespace IED
 			return GetFullName<BGSLocation>(a_form);
 		case TESWorldSpace::kTypeID:
 			return GetFullName<TESWorldSpace>(a_form);
+		case TESShout::kTypeID:
+			return GetFullName<TESShout>(a_form);
+		case TESFaction::kTypeID:
+			return GetFullName<TESFaction>(a_form);
+		case TESClass::kTypeID:
+			return GetFullName<TESClass>(a_form);
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -235,14 +242,7 @@ namespace IED
 
 	std::string IFormCommon::GetFormName(TESForm* a_form)
 	{
-		if (auto p = GetFormNamePtr(a_form))
-		{
-			return LocaleData::ToUTF8(p);
-		}
-		else
-		{
-			return {};
-		}
+		return LocaleData::ToUTF8(GetFormNamePtr(a_form));
 	}
 
 	const char* IFormCommon::GetFormTypeDesc(std::uint8_t a_type)
@@ -317,6 +317,16 @@ namespace IED
 			return "Location";
 		case TESWorldSpace::kTypeID:
 			return "Worldspace";
+		case TESPackage::kTypeID:
+			return "Package";
+		case TESShout::kTypeID:
+			return "Shout";
+		case TESFaction::kTypeID:
+			return "Faction";
+		case TESCombatStyle::kTypeID:
+			return "Combat Style";
+		case TESClass::kTypeID:
+			return "Class";
 		default:
 			return nullptr;
 		}
@@ -367,7 +377,7 @@ namespace IED
 	}
 
 	bool IFormCommon::HasKeyword(
-		TESForm* a_form,
+		TESForm*     a_form,
 		Game::FormID a_keyword)
 	{
 		if (auto keyword = a_keyword.As<BGSKeyword>())
@@ -381,7 +391,7 @@ namespace IED
 	}
 
 	bool IFormCommon::HasKeyword(
-		TESForm* a_form,
+		TESForm*                        a_form,
 		const Data::configCachedForm_t& a_keyword)
 	{
 		if (auto form = a_keyword.get_form())

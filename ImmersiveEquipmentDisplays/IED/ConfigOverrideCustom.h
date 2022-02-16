@@ -12,17 +12,17 @@ namespace IED
 		{
 			kNone = 0,
 
-			kIsInInventory = 1u << 0,
-			kEquipmentMode = 1u << 1,
-			kIgnorePlayer = 1u << 2,
-			kLeftWeapon = 1u << 3,
-			kAlwaysUnload = 1u << 4,
-			kUseChance = 1u << 5,
+			kIsInInventory        = 1u << 0,
+			kEquipmentMode        = 1u << 1,
+			kIgnorePlayer         = 1u << 2,
+			kLeftWeapon           = 1u << 3,
+			kAlwaysUnload         = 1u << 4,
+			kUseChance            = 1u << 5,
 			kIgnoreRaceEquipTypes = 1u << 6,
-			kDisableIfEquipped = 1u << 7,
-			kDisableHavok = 1u << 8,
-			kUseGroup = 1u << 9,
-			kCheckFav = 1u << 10,
+			kDisableIfEquipped    = 1u << 7,
+			kDisableHavok         = 1u << 8,
+			kUseGroup             = 1u << 9,
+			kCheckFav             = 1u << 10,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);
@@ -42,13 +42,13 @@ namespace IED
 			static inline constexpr auto DEFAULT_CUSTOM_FLAGS = CustomFlags::kAlwaysUnload;
 
 			stl::flag<CustomFlags> customFlags{ DEFAULT_CUSTOM_FLAGS };
-			configCachedForm_t form;
-			configCachedForm_t modelForm;
-			configRange_t countRange;
-			std::uint32_t priority{ 0 };
-			float chance{ 100.0f };
-			configFormList_t extraItems;
-			configModelGroup_t group;
+			configCachedForm_t     form;
+			configCachedForm_t     modelForm;
+			configRange_t          countRange;
+			std::uint32_t          priority{ 0 };
+			float                  chance{ 100.0f };
+			configFormList_t       extraItems;
+			configModelGroup_t     group;
 			//configEffectShaderHolder_t effects;
 
 		private:
@@ -99,8 +99,8 @@ namespace IED
 
 		struct configCustomNameValue_t
 		{
-			stl::fixed_string name;
-			ConfigSex sex{ ConfigSex::Male };
+			stl::fixed_string   name;
+			ConfigSex           sex{ ConfigSex::Male };
 			configCustomEntry_t data;
 		};
 

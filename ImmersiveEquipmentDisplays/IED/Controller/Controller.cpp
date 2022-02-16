@@ -63,9 +63,9 @@ namespace IED
 			return;
 		}
 
-		m_esif.set(EventSinkInstallationFlags::kT0);
-
 		ITaskPool::AddTaskFixed(this);
+
+		m_esif.set(EventSinkInstallationFlags::kT0);
 	}
 
 	bool Controller::SinkEventsT1()
@@ -75,11 +75,11 @@ namespace IED
 			return true;
 		}
 
-		m_esif.set(EventSinkInstallationFlags::kT1);
-
 		if (auto mm = MenuManager::GetSingleton())
 		{
 			mm->MenuOpenCloseEventDispatcher()->AddEventSink(this);
+
+			m_esif.set(EventSinkInstallationFlags::kT1);
 
 			return true;
 		}
@@ -96,8 +96,6 @@ namespace IED
 			return true;
 		}
 
-		m_esif.set(EventSinkInstallationFlags::kT2);
-
 		if (auto edl = ScriptEventSourceHolder::GetSingleton())
 		{
 			edl->AddEventSink<TESInitScriptEvent>(this);
@@ -108,7 +106,10 @@ namespace IED
 			edl->AddEventSink<TESDeathEvent>(this);
 			edl->AddEventSink<TESSwitchRaceCompleteEvent>(this);
 			edl->AddEventSink<TESActorLocationChangeEvent>(this);
+			//edl->AddEventSink<TESPackageEvent>(this);
 			//edl->AddEventSink<TESQuestStartStopEvent>(this);
+
+			m_esif.set(EventSinkInstallationFlags::kT2);
 
 			return true;
 		}
@@ -194,7 +195,7 @@ namespace IED
 
 	static void UpdateSoundPairFromINI(
 		const stl::optional<ConfigForm>& a_src,
-		stl::optional<Game::FormID>& a_dst)
+		stl::optional<Game::FormID>&     a_dst)
 	{
 		if (a_src && !a_dst)
 		{
@@ -209,7 +210,7 @@ namespace IED
 
 	static void UpdateSoundPairFromINI(
 		const ConfigSound<ConfigForm>::soundPair_t& a_src,
-		ConfigSound<Game::FormID>::soundPair_t& a_dst)
+		ConfigSound<Game::FormID>::soundPair_t&     a_dst)
 	{
 		UpdateSoundPairFromINI(a_src.first, a_dst.first);
 		UpdateSoundPairFromINI(a_src.second, a_dst.second);
@@ -372,7 +373,7 @@ namespace IED
 	void Controller::InitializeLocalization()
 	{
 		auto& settings = m_config.settings;
-		auto& clang = settings.data.language;
+		auto& clang    = settings.data.language;
 
 		stl::optional<stl::fixed_string> defaultLang;
 
@@ -397,8 +398,8 @@ namespace IED
 	}
 
 	void Controller::Evaluate(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		IScopedLock lock(m_lock);
@@ -407,8 +408,8 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto root = a_actor->GetNiRootNode(false);
@@ -427,9 +428,9 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ActorObjectHolder& a_objects,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (!IsREFRValid(a_actor))
@@ -463,17 +464,25 @@ namespace IED
 				__LINE__,
 				a_actor->formID.get());
 
-			QueueReset(a_actor, ControllerUpdateFlags::kNone);
+			QueueReset(
+				a_actor,
+				ControllerUpdateFlags::kNone);
 		}
 		else
 		{
-			EvaluateImpl(root, npcroot, a_actor, a_handle, a_objects, a_flags);
+			EvaluateImpl(
+				root,
+				npcroot,
+				a_actor,
+				a_handle,
+				a_objects,
+				a_flags);
 		}
 	}
 
 	bool Controller::RemoveActor(
-		TESObjectREFR* a_actor,
-		Game::ObjectRefHandle a_handle,
+		TESObjectREFR*                   a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		IScopedLock lock(m_lock);
@@ -482,7 +491,7 @@ namespace IED
 	}
 
 	bool Controller::RemoveActor(
-		TESObjectREFR* a_actor,
+		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		IScopedLock lock(m_lock);
@@ -491,7 +500,7 @@ namespace IED
 	}
 
 	bool Controller::RemoveActor(
-		Game::FormID a_actor,
+		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		IScopedLock lock(m_lock);
@@ -513,13 +522,13 @@ namespace IED
 	}
 
 	void Controller::QueueEvaluate(
-		TESObjectREFR* a_actor,
+		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::QueueActorTask(
 			a_actor,
 			[this, a_flags](
-				Actor* a_actor,
+				Actor*            a_actor,
 				Game::ActorHandle a_handle) {
 				Evaluate(
 					a_actor,
@@ -529,13 +538,13 @@ namespace IED
 	}
 
 	void Controller::QueueEvaluate(
-		Game::ActorHandle a_handle,
+		Game::ActorHandle                a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::QueueActorTask(
 			a_handle,
 			[this, a_flags](
-				Actor* a_actor,
+				Actor*            a_actor,
 				Game::ActorHandle a_handle) {
 				Evaluate(
 					a_actor,
@@ -545,7 +554,7 @@ namespace IED
 	}
 
 	void Controller::QueueEvaluate(
-		Game::FormID a_actor,
+		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
@@ -560,7 +569,7 @@ namespace IED
 	}
 
 	void Controller::QueueEvaluateNPC(
-		Game::FormID a_npc,
+		Game::FormID                     a_npc,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
@@ -577,7 +586,7 @@ namespace IED
 	}
 
 	void Controller::QueueEvaluateRace(
-		Game::FormID a_race,
+		Game::FormID                     a_race,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
@@ -595,9 +604,9 @@ namespace IED
 
 	void Controller::QueueRequestEvaluate(
 		Game::FormID a_actor,
-		bool a_defer,
-		bool a_xfrmUpdate,
-		bool a_xfrmUpdateNoDefer) const
+		bool         a_defer,
+		bool         a_xfrmUpdate,
+		bool         a_xfrmUpdateNoDefer) const
 	{
 		ITaskPool::AddTask(
 			[this,
@@ -613,11 +622,27 @@ namespace IED
 			});
 	}
 
+	void Controller::QueueRequestEvaluate(
+		TESObjectREFR* a_actor,
+		bool           a_defer,
+		bool           a_xfrmUpdate,
+		bool           a_xfrmUpdateNoDefer) const
+	{
+		if (IsActorValid(a_actor))
+		{
+			QueueRequestEvaluate(
+				a_actor->formID,
+				a_defer,
+				a_xfrmUpdate,
+				a_xfrmUpdateNoDefer);
+		}
+	}
+
 	void Controller::RequestEvaluate(
 		Game::FormID a_actor,
-		bool a_defer,
-		bool a_xfrmUpdate,
-		bool a_xfrmUpdateNoDefer) const
+		bool         a_defer,
+		bool         a_xfrmUpdate,
+		bool         a_xfrmUpdateNoDefer) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -662,7 +687,7 @@ namespace IED
 
 	void Controller::QueueRequestEvaluateTransformsActor(
 		Game::FormID a_actor,
-		bool a_noDefer) const
+		bool         a_noDefer) const
 	{
 		ITaskPool::AddTask([this, a_actor, a_noDefer]() {
 			RequestEvaluateTransformsActor(a_actor, a_noDefer);
@@ -671,7 +696,7 @@ namespace IED
 
 	void Controller::RequestEvaluateTransformsActor(
 		Game::FormID a_actor,
-		bool a_noDefer) const
+		bool         a_noDefer) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -696,7 +721,7 @@ namespace IED
 
 	void Controller::RequestEvaluateTransformsNPC(
 		Game::FormID a_npc,
-		bool a_noDefer) const
+		bool         a_noDefer) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -723,7 +748,7 @@ namespace IED
 
 	void Controller::RequestEvaluateTransformsRace(
 		Game::FormID a_race,
-		bool a_noDefer) const
+		bool         a_noDefer) const
 	{
 		IScopedLock lock(m_lock);
 
@@ -772,7 +797,7 @@ namespace IED
 	}
 
 	void Controller::QueueActorRemove(
-		TESObjectREFR* a_actor,
+		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::QueueActorTask(
@@ -786,13 +811,13 @@ namespace IED
 	}
 
 	void Controller::QueueReset(
-		TESObjectREFR* a_actor,
+		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::QueueActorTask(
 			a_actor,
 			[this, a_flags](
-				Actor* a_actor,
+				Actor*            a_actor,
 				Game::ActorHandle a_handle) {
 				IScopedLock lock(m_lock);
 
@@ -804,7 +829,7 @@ namespace IED
 	}
 
 	void Controller::QueueReset(
-		Game::FormID a_actor,
+		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
@@ -819,7 +844,7 @@ namespace IED
 	}
 
 	void Controller::QueueResetNPC(
-		Game::FormID a_npc,
+		Game::FormID                     a_npc,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
@@ -851,7 +876,7 @@ namespace IED
 	}
 
 	void Controller::QueueResetRace(
-		Game::FormID a_race,
+		Game::FormID                     a_race,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
@@ -880,9 +905,9 @@ namespace IED
 	}
 
 	void Controller::QueueReset(
-		Game::FormID a_actor,
+		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		ObjectSlot a_slot)
+		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -900,9 +925,9 @@ namespace IED
 	}
 
 	void Controller::QueueResetNPC(
-		Game::FormID a_npc,
+		Game::FormID                     a_npc,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		ObjectSlot a_slot)
+		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -934,9 +959,9 @@ namespace IED
 	}
 
 	void Controller::QueueResetRace(
-		Game::FormID a_race,
+		Game::FormID                     a_race,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		ObjectSlot a_slot)
+		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -970,7 +995,7 @@ namespace IED
 		for (auto& e : m_objects)
 		{
 			NiPointer<TESObjectREFR> ref;
-			auto handle = e.second.GetHandle();
+			auto                     handle = e.second.GetHandle();
 
 			if (handle.Lookup(ref))
 			{
@@ -1020,7 +1045,7 @@ namespace IED
 
 	void Controller::QueueResetAll(
 		stl::flag<ControllerUpdateFlags> a_flags,
-		ObjectSlot a_slot)
+		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -1046,7 +1071,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformSlot(
 		Game::FormID a_actor,
-		ObjectSlot a_slot)
+		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_slot] {
 			IScopedLock lock(m_lock);
@@ -1057,7 +1082,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformSlotNPC(
 		Game::FormID a_npc,
-		ObjectSlot a_slot)
+		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -1074,7 +1099,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformSlotRace(
 		Game::FormID a_race,
-		ObjectSlot a_slot)
+		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_slot]() {
 			IScopedLock lock(m_lock);
@@ -1103,8 +1128,8 @@ namespace IED
 
 	void Controller::QueueAttachSlotNode(
 		Game::FormID a_actor,
-		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		ObjectSlot   a_slot,
+		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_actor, a_slot, a_evalIfNone] {
 			IScopedLock lock(m_lock);
@@ -1118,8 +1143,8 @@ namespace IED
 
 	void Controller::QueueAttachSlotNodeNPC(
 		Game::FormID a_npc,
-		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		ObjectSlot   a_slot,
+		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_npc, a_slot, a_evalIfNone]() {
 			IScopedLock lock(m_lock);
@@ -1139,8 +1164,8 @@ namespace IED
 
 	void Controller::QueueAttachSlotNodeRace(
 		Game::FormID a_race,
-		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		ObjectSlot   a_slot,
+		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_race, a_slot, a_evalIfNone]() {
 			IScopedLock lock(m_lock);
@@ -1160,7 +1185,7 @@ namespace IED
 
 	void Controller::QueueAttachSlotNodeAll(
 		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		bool       a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_slot, a_evalIfNone] {
 			IScopedLock lock(m_lock);
@@ -1176,8 +1201,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1198,8 +1223,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1234,8 +1259,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1267,8 +1292,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey]() {
@@ -1287,8 +1312,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey]() {
@@ -1321,8 +1346,8 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey]() {
@@ -1353,7 +1378,7 @@ namespace IED
 
 	void Controller::QueueResetCustom(
 		Game::FormID a_actor,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class]() {
 			IScopedLock lock(m_lock);
@@ -1371,7 +1396,7 @@ namespace IED
 
 	void Controller::QueueResetCustomNPC(
 		Game::FormID a_npc,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class]() {
 			IScopedLock lock(m_lock);
@@ -1403,7 +1428,7 @@ namespace IED
 
 	void Controller::QueueResetCustomRace(
 		Game::FormID a_race,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class]() {
 			IScopedLock lock(m_lock);
@@ -1431,7 +1456,7 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1454,7 +1479,7 @@ namespace IED
 	}
 
 	void Controller::QueueResetCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey]() {
@@ -1494,8 +1519,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1512,8 +1537,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1530,8 +1555,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1548,8 +1573,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
@@ -1564,8 +1589,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
@@ -1580,8 +1605,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
@@ -1597,7 +1622,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformCustom(
 		Game::FormID a_actor,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class] {
 			IScopedLock lock(m_lock);
@@ -1611,7 +1636,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformCustomNPC(
 		Game::FormID a_npc,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class] {
 			IScopedLock lock(m_lock);
@@ -1625,7 +1650,7 @@ namespace IED
 
 	void Controller::QueueUpdateTransformCustomRace(
 		Game::FormID a_race,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class] {
 			IScopedLock lock(m_lock);
@@ -1638,7 +1663,7 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1658,7 +1683,7 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateTransformCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey] {
@@ -1692,8 +1717,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1710,8 +1735,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1728,8 +1753,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustomRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1746,8 +1771,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustom(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
@@ -1762,8 +1787,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachNPC(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
@@ -1778,8 +1803,8 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachRace(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
@@ -1795,7 +1820,7 @@ namespace IED
 
 	void Controller::QueueUpdateAttachCustom(
 		Game::FormID a_actor,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class] {
 			IScopedLock lock(m_lock);
@@ -1809,7 +1834,7 @@ namespace IED
 
 	void Controller::QueueUpdateAttachCustomNPC(
 		Game::FormID a_npc,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class] {
 			IScopedLock lock(m_lock);
@@ -1823,7 +1848,7 @@ namespace IED
 
 	void Controller::QueueUpdateAttachCustomRace(
 		Game::FormID a_race,
-		ConfigClass a_class)
+		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class] {
 			IScopedLock lock(m_lock);
@@ -1836,7 +1861,7 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -1856,7 +1881,7 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateAttachCustomAll(
-		ConfigClass a_class,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey] {
@@ -1947,7 +1972,7 @@ namespace IED
 	}
 
 	void Controller::QueueLookupFormInfo(
-		Game::FormID a_formId,
+		Game::FormID              a_formId,
 		form_lookup_result_func_t a_func)
 	{
 		ITaskPool::AddTask([this, a_formId, func = std::move(a_func)] {
@@ -2015,7 +2040,7 @@ namespace IED
 	}
 
 	void Controller::AddActorBlock(
-		Game::FormID a_actor,
+		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
 		IScopedLock lock(m_lock);
@@ -2034,7 +2059,7 @@ namespace IED
 	}
 
 	void Controller::RemoveActorBlock(
-		Game::FormID a_actor,
+		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
 		IScopedLock lock(m_lock);
@@ -2124,20 +2149,22 @@ namespace IED
 	}
 
 	bool Controller::ProcessItemUpdate(
-		processParams_t& a_params,
+		processParams_t&          a_params,
 		const configBaseValues_t& a_config,
 		const configModelGroup_t* a_groupConfig,
-		const NodeDescriptor& a_node,
-		objectEntryBase_t& a_entry,
-		bool a_visible)
+		const NodeDescriptor&     a_node,
+		objectEntryBase_t&        a_entry,
+		bool                      a_visible)
 	{
-		if (a_entry.state->resetTriggerFlags !=
+		auto& state = a_entry.state;
+
+		if (state->resetTriggerFlags !=
 		    (a_config.flags & BaseFlags::kResetTriggerFlags))
 		{
 			return false;
 		}
 
-		bool isVisible = a_entry.state->nodes.obj->IsVisible();
+		const bool isVisible = state->nodes.obj->IsVisible();
 
 		if (a_visible)
 		{
@@ -2148,7 +2175,7 @@ namespace IED
 					PlayObjectSound(a_params, a_config, a_entry, true);
 				}
 
-				for (auto& e : a_entry.state->dbEntries)
+				for (auto& e : state->dbEntries)
 				{
 					e->accessed = IPerfCounter::Query();
 				}
@@ -2165,32 +2192,37 @@ namespace IED
 			}
 		}
 
-		if (a_visible != isVisible)
+		if (isVisible != a_visible)
 		{
+			state->nodes.obj->SetVisible(a_visible);
+
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		a_entry.state->nodes.obj->SetVisible(a_visible);
+		state->UpdateFlags(a_config);
 
-		a_entry.state->UpdateFlags(a_config);
-
-		if (a_entry.state->nodeDesc.name != a_node.name)
+		if (state->nodeDesc.name != a_node.name)
 		{
 			AttachNodeImpl(
 				a_params.npcroot,
 				a_node,
 				a_config.flags.test(BaseFlags::kReferenceMode),
 				a_entry);
+
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		a_entry.state->transform.Update(a_config);
+		if (state->transform != a_config)
+		{
+			state->transform.Update(a_config);
 
-		UpdateObjectTransform(
-			a_entry.state->transform,
-			a_entry.state->nodes.obj,
-			a_entry.state->nodes.ref);
+			UpdateObjectTransform(
+				state->transform,
+				state->nodes.obj,
+				state->nodes.ref);
 
-		a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+		}
 
 		return true;
 	}
@@ -2226,7 +2258,7 @@ namespace IED
 			auto type = static_cast<ObjectType>(i);
 
 			auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(type);
-			auto mainSlot = ItemData::GetSlotFromType(type);
+			auto mainSlot      = ItemData::GetSlotFromType(type);
 
 			ObjectSlot slots[2]{
 				mainSlot,
@@ -2252,7 +2284,7 @@ namespace IED
 				}
 			}
 
-			auto& candidates = a_params.collector.m_slotResults[stl::underlying(type)].m_items;
+			auto& candidates = a_params.collector.GetCandidates(type);
 
 			for (auto slot : slots)
 			{
@@ -2318,7 +2350,7 @@ namespace IED
 				}
 
 				if (usedBaseConf->flags.test(BaseFlags::kDisabled) ||
-				    (a_params.actor != *g_thePlayer &&
+				    (!a_params.is_player() &&
 				     !usedBaseConf->flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
 				     slot != ObjectSlot::kAmmo &&
 				     !a_params.test_equipment_flags(equipmentFlag)))
@@ -2344,8 +2376,7 @@ namespace IED
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
 						if (!objectEntry.hideCountdown &&
-						    objectEntry.state &&
-						    objectEntry.state->nodes.obj->IsVisible())
+						    objectEntry.IsNodeVisible())
 						{
 							objectEntry.hideCountdown = 2;
 						}
@@ -2431,9 +2462,9 @@ namespace IED
 	}
 
 	bool Controller::GetVisibilitySwitch(
-		Actor* a_actor,
+		Actor*               a_actor,
 		stl::flag<BaseFlags> a_flags,
-		processParams_t& a_params)
+		processParams_t&     a_params)
 	{
 		if (a_flags.test(BaseFlags::kInvisible))
 		{
@@ -2477,7 +2508,7 @@ namespace IED
 	}
 
 	bool Controller::LookupTrackedActor(
-		Game::FormID a_actor,
+		Game::FormID         a_actor,
 		actorLookupResult_t& a_out)
 	{
 		auto it = m_objects.find(a_actor);
@@ -2491,7 +2522,7 @@ namespace IED
 
 	bool Controller::LookupTrackedActor(
 		const ActorObjectHolder& a_record,
-		actorLookupResult_t& a_out)
+		actorLookupResult_t&     a_out)
 	{
 		auto handle = a_record.GetHandle();
 
@@ -2513,11 +2544,11 @@ namespace IED
 	}
 
 	bool Controller::CustomEntryValidateInventoryForm(
-		processParams_t& a_params,
+		processParams_t&                   a_params,
 		const collectorData_t::itemData_t& a_itemData,
-		const configCustom_t& a_config,
-		const configBaseValues_t& a_baseConfig,
-		bool& a_hasMinCount)
+		const configCustom_t&              a_config,
+		const configBaseValues_t&          a_baseConfig,
+		bool&                              a_hasMinCount)
 	{
 		if (a_itemData.count < 1)
 		{
@@ -2539,12 +2570,12 @@ namespace IED
 
 		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
 		{
-			bool isAmmo = a_itemData.form->formType == TESAmmo::kTypeID;
+			bool isAmmo = a_itemData.form->IsAmmo();
 
 			if (!isAmmo &&
 			    !a_baseConfig.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
 			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
-			    a_params.actor != *g_thePlayer)
+			    !a_params.is_player())
 			{
 				if (!a_params.test_equipment_flags(
 						ItemData::GetRaceEquipmentFlagFromType(a_itemData.type)))
@@ -2598,10 +2629,10 @@ namespace IED
 	}
 
 	collectorData_t::container_type::iterator Controller::CustomEntrySelectInventoryForm(
-		processParams_t& a_params,
-		const configCustom_t& a_config,
+		processParams_t&                a_params,
+		const configCustom_t&           a_config,
 		const Data::configBaseValues_t& a_baseConfig,
-		bool& a_hasMinCount)
+		bool&                           a_hasMinCount)
 	{
 		auto& formData = a_params.collector.m_data.forms;
 
@@ -2644,9 +2675,9 @@ namespace IED
 	}
 
 	bool Controller::IsBlockedByChance(
-		processParams_t& a_params,
+		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		objectEntryCustom_t& a_objectEntry)
+		objectEntryCustom_t&  a_objectEntry)
 	{
 		if (a_config.customFlags.test(CustomFlags::kUseChance))
 		{
@@ -2675,9 +2706,9 @@ namespace IED
 	}
 
 	bool Controller::ProcessCustomEntry(
-		processParams_t& a_params,
+		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		objectEntryCustom_t& a_objectEntry)
+		objectEntryCustom_t&  a_objectEntry)
 	{
 		if (a_config.customFlags.test(CustomFlags::kIgnorePlayer) &&
 		    a_params.actor == *g_thePlayer)
@@ -2794,7 +2825,7 @@ namespace IED
 				auto modelForm = a_config.modelForm.get_form();
 
 				a_objectEntry.modelForm = modelForm ?
-                                              modelForm->formID :
+				                              modelForm->formID :
                                               Game::FormID{};
 
 				result = LoadAndAttach(
@@ -2914,8 +2945,8 @@ namespace IED
 	}
 
 	void Controller::ProcessCustomEntryMap(
-		processParams_t& a_params,
-		const configCustomHolder_t& a_confData,
+		processParams_t&                     a_params,
+		const configCustomHolder_t&          a_confData,
 		ActorObjectHolder::customEntryMap_t& a_entryMap)
 	{
 		for (auto& f : a_confData.data)
@@ -2938,9 +2969,9 @@ namespace IED
 	}
 
 	void Controller::ProcessCustomMap(
-		processParams_t& a_params,
+		processParams_t&               a_params,
 		const configCustomPluginMap_t& a_confPluginMap,
-		ConfigClass a_class)
+		ConfigClass                    a_class)
 	{
 		auto& pluginMap = a_params.objects.GetCustom(a_class);
 
@@ -2963,35 +2994,48 @@ namespace IED
 
 		auto& actorConfig = cstore.GetActorData();
 
-		if (auto it = actorConfig.find(a_params.actor->formID); it != actorConfig.end())
+		if (auto it = actorConfig.find(a_params.actor->formID);
+		    it != actorConfig.end())
 		{
-			ProcessCustomMap(a_params, it->second, ConfigClass::Actor);
+			ProcessCustomMap(
+				a_params,
+				it->second,
+				ConfigClass::Actor);
 		}
 
 		auto& npcConfig = cstore.GetNPCData();
 
-		if (auto it = npcConfig.find(a_params.npc->formID); it != npcConfig.end())
+		if (auto it = npcConfig.find(a_params.npc->formID);
+		    it != npcConfig.end())
 		{
-			ProcessCustomMap(a_params, it->second, ConfigClass::NPC);
+			ProcessCustomMap(
+				a_params,
+				it->second,
+				ConfigClass::NPC);
 		}
 
 		auto& raceConfig = cstore.GetRaceData();
 
-		if (auto it = raceConfig.find(a_params.race->formID); it != raceConfig.end())
+		if (auto it = raceConfig.find(a_params.race->formID);
+		    it != raceConfig.end())
 		{
-			ProcessCustomMap(a_params, it->second, ConfigClass::Race);
+			ProcessCustomMap(
+				a_params,
+				it->second,
+				ConfigClass::Race);
 		}
 
-		auto& globalConfig = cstore.GetGlobalData()[0];
-
-		ProcessCustomMap(a_params, globalConfig, ConfigClass::Global);
+		ProcessCustomMap(
+			a_params,
+			cstore.GetGlobalData()[0],
+			ConfigClass::Global);
 	}
 
 	void Controller::EvaluateImpl(
-		NiNode* a_root,
-		NiNode* a_npcroot,
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
+		NiNode*                          a_root,
+		NiNode*                          a_npcroot,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (!IsREFRValid(a_actor))
@@ -3030,7 +3074,10 @@ namespace IED
 				a_handle.get(),
 				objects.GetHandle().get());
 
-			RemoveActorImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
+			RemoveActorImpl(
+				a_actor,
+				a_handle,
+				ControllerUpdateFlags::kNone);
 
 			return;
 		}
@@ -3055,21 +3102,33 @@ namespace IED
 					m_nodeOverridePlayerEnabled,
 					m_storedActorStates);
 
-				EvaluateImpl(a_root, a_npcroot, a_actor, a_handle, objs, a_flags);
+				EvaluateImpl(
+					a_root,
+					a_npcroot,
+					a_actor,
+					a_handle,
+					objs,
+					a_flags);
 			}
 		}
 		else
 		{
-			EvaluateImpl(a_root, a_npcroot, a_actor, a_handle, objects, a_flags);
+			EvaluateImpl(
+				a_root,
+				a_npcroot,
+				a_actor,
+				a_handle,
+				objects,
+				a_flags);
 		}
 	}
 
 	void Controller::EvaluateImpl(
-		NiNode* a_root,
-		NiNode* a_npcroot,
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ActorObjectHolder& a_objects,
+		NiNode*                          a_root,
+		NiNode*                          a_npcroot,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		/*PerfTimer pt;
@@ -3086,9 +3145,8 @@ namespace IED
 					a_npcroot,
 					a_handle,
 					a_objects,
-					GetEntryDataList(a_actor),
 					nrp.npc->GetSex() == 1 ?
-                        ConfigSex::Female :
+						ConfigSex::Female :
                         ConfigSex::Male,
 					a_flags,
 					{ a_actor },
@@ -3097,7 +3155,9 @@ namespace IED
 					nrp.race
 				};
 
-				if (!params.dataList)
+				auto dataList = GetEntryDataList(a_actor);
+
+				if (!dataList)
 				{
 					Debug(
 						"%s [%u]: %.8X: missing container object list",
@@ -3108,10 +3168,10 @@ namespace IED
 
 				params.collector.Run(
 					nrp.npc->container,
-					params.dataList);
+					dataList);
 
 				if (!m_config.settings.data.disableNPCSlots ||
-				    a_actor == *g_thePlayer)
+				    params.is_player())
 				{
 					ProcessSlots(params);
 				}
@@ -3142,7 +3202,7 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
-		ActorObjectHolder& a_objects,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto handle = a_objects.GetHandle();
@@ -3151,10 +3211,10 @@ namespace IED
 		if (!handle.Lookup(refr))
 		{
 			Warning(
-				"%s [%u]: %.8X: could not lookup by handle (%u)",
+				"%s [%u]: %.8X: could not lookup by handle (%.8X)",
 				__FUNCTION__,
 				__LINE__,
-				a_objects.m_formid,
+				a_objects.GetActorFormID().get(),
 				handle.get());
 
 			return;
@@ -3180,8 +3240,10 @@ namespace IED
 				"%s [%u]: actor mismatch (%.8X != %.8X)",
 				__FUNCTION__,
 				__LINE__,
-				refr->formID,
-				a_objects.m_formid);
+				refr->formID.get(),
+				a_objects.m_actor->formID.get());
+
+			return;
 		}
 
 		if (IsREFRValid(refr))
@@ -3220,12 +3282,12 @@ namespace IED
 	}
 
 	bool Controller::ProcessTransformsImpl(
-		NiNode* a_npcRoot,
-		Actor* a_actor,
-		TESNPC* a_npc,
-		TESRace* a_race,
-		ConfigSex a_sex,
-		const ActorObjectHolder& a_objects,
+		NiNode*                                a_npcRoot,
+		Actor*                                 a_actor,
+		TESNPC*                                a_npc,
+		TESRace*                               a_race,
+		ConfigSex                              a_sex,
+		const ActorObjectHolder&               a_objects,
 		const collectorData_t::container_type* a_equippedForms)
 	{
 		/*PerfTimer pt;
@@ -3315,8 +3377,8 @@ namespace IED
 	}
 
 	void Controller::ActorResetImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		bool eraseState = false;
@@ -3325,7 +3387,7 @@ namespace IED
 		{
 			if (auto it = m_objects.find(a_actor->formID); it != m_objects.end())
 			{
-				m_storedActorStates.data.insert_or_assign(a_actor->formID, it->second).first;
+				m_storedActorStates.data.insert_or_assign(a_actor->formID, it->second);
 				eraseState = true;
 			}
 		}
@@ -3340,17 +3402,11 @@ namespace IED
 	}
 
 	void Controller::ActorResetImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		ObjectSlot a_slot)
+		ObjectSlot                       a_slot)
 	{
-		/*if (IsActorBlockedImpl(a_actor->formID))
-		{
-			RemoveActorImpl(a_actor, a_handle, a_flags);
-			return;
-		}*/
-
 		if (a_slot >= ObjectSlot::kMax)
 		{
 			return;
@@ -3362,14 +3418,24 @@ namespace IED
 			return;
 		}
 
-		RemoveObject(a_actor, a_handle, it->second.GetSlot(a_slot), it->second, a_flags);
-		EvaluateImpl(a_actor, a_handle, it->second, a_flags);
+		RemoveObject(
+			a_actor,
+			a_handle,
+			it->second.GetSlot(a_slot),
+			it->second,
+			a_flags);
+
+		EvaluateImpl(
+			a_actor,
+			a_handle,
+			it->second,
+			a_flags);
 	}
 
 	void Controller::ResetCustomImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ConfigClass a_class,
+		Actor*                   a_actor,
+		Game::ObjectRefHandle    a_handle,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
@@ -3405,9 +3471,9 @@ namespace IED
 	}
 
 	void Controller::ResetCustomImpl(
-		Actor* a_actor,
-		Game::ObjectRefHandle a_handle,
-		ConfigClass a_class,
+		Actor*                   a_actor,
+		Game::ObjectRefHandle    a_handle,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
 		auto it = m_objects.find(a_actor->formID);
@@ -3436,9 +3502,9 @@ namespace IED
 	}
 
 	void Controller::ResetCustomImpl(
-		Actor* a_actor,
+		Actor*                a_actor,
 		Game::ObjectRefHandle a_handle,
-		ConfigClass a_class)
+		ConfigClass           a_class)
 	{
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
@@ -3466,7 +3532,7 @@ namespace IED
 
 	void Controller::UpdateTransformSlotImpl(
 		Game::FormID a_actor,
-		ObjectSlot a_slot)
+		ObjectSlot   a_slot)
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -3477,7 +3543,7 @@ namespace IED
 
 	void Controller::UpdateTransformSlotImpl(
 		ActorObjectHolder& a_record,
-		ObjectSlot a_slot)
+		ObjectSlot         a_slot)
 	{
 		actorInfo_t info;
 		if (!LookupCachedActorInfo(a_record, info))
@@ -3487,6 +3553,12 @@ namespace IED
 
 		if (a_slot < ObjectSlot::kMax)
 		{
+			auto& objectEntry = a_record.GetSlot(a_slot);
+			if (!objectEntry.state)
+			{
+				return;
+			}
+
 			configStoreSlot_t::holderCache_t hc;
 
 			auto config = m_config.active.slot.GetActor(
@@ -3496,17 +3568,10 @@ namespace IED
 				a_slot,
 				hc);
 
-			auto& objectEntry = a_record.GetSlot(a_slot);
-			if (!objectEntry.state)
-			{
-				return;
-			}
-
 			if (config)
 			{
 				auto& conf = GetConfigForActor(
-					info.actor,
-					info.race,
+					info,
 					config->get(info.sex),
 					objectEntry);
 
@@ -3565,9 +3630,9 @@ namespace IED
 	{
 		return {
 			[this](
-				actorInfo_t& a_info,
+				actorInfo_t&               a_info,
 				const configCustomEntry_t& a_confEntry,
-				objectEntryCustom_t& a_entry) {
+				objectEntryCustom_t&       a_entry) {
 				if (!a_entry.state)
 				{
 					return false;
@@ -3575,8 +3640,7 @@ namespace IED
 				else
 				{
 					auto& conf = GetConfigForActor(
-						a_info.actor,
-						a_info.race,
+						a_info,
 						a_confEntry(a_info.sex),
 						a_info.objects->GetSlots());
 
@@ -3596,21 +3660,18 @@ namespace IED
 		-> updateActionFunc_t
 	{
 		return { [this](
-					 const actorInfo_t& a_info,
+					 const actorInfo_t&         a_info,
 					 const configCustomEntry_t& a_confEntry,
-					 objectEntryCustom_t& a_entry) {
+					 objectEntryCustom_t&       a_entry) {
 					if (!a_entry.state)
 					{
 						return false;
 					}
 					else
 					{
-						auto& configEntry = a_confEntry(a_info.sex);
-
 						auto& conf = GetConfigForActor(
-							a_info.actor,
-							a_info.race,
-							configEntry,
+							a_info,
+							a_confEntry(a_info.sex),
 							a_info.objects->GetSlots());
 
 						AttachNodeImpl(
@@ -3627,68 +3688,73 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		Actor* a_actor,
-		TESRace* a_race,
-		const configCustom_t& a_config,
+		const actorInfo_t&                            a_info,
+		const configCustom_t&                         a_config,
 		const ActorObjectHolder::slot_container_type& a_slots)
 	{
-		if (auto entryList = GetEntryDataList(a_actor))
+		ItemCandidateCollector collector(a_info.actor);
+
+		collector.Run(
+			a_info.npc->container,
+			GetEntryDataList(a_info.actor));
+
+		CommonParams params{
+			a_info.actor,
+			a_info.npc,
+			a_info.race
+		};
+
+		if (auto eo = a_config.get_equipment_override(
+				collector.m_data,
+				a_slots,
+				params))
 		{
-			if (auto npc = Game::GetActorBase(a_actor))
-			{
-				ItemCandidateCollector collector(a_actor);
-				collector.Run(npc->container, entryList);
-
-				CommonParams params{ a_actor, npc, a_race };
-
-				if (auto eo = a_config.get_equipment_override(collector.m_data, a_slots, params))
-				{
-					return *eo;
-				}
-			}
+			return *eo;
 		}
 
 		return a_config;
 	}
 
-	const configBaseValues_t& IED::Controller::GetConfigForActor(
-		Actor* a_actor,
-		TESRace* a_race,
-		const configSlot_t& a_config,
+	const configBaseValues_t& Controller::GetConfigForActor(
+		const actorInfo_t&       a_info,
+		const configSlot_t&      a_config,
 		const objectEntrySlot_t& a_entry)
 	{
-		if (auto entryList = GetEntryDataList(a_actor))
+		ItemCandidateCollector collector(a_info.actor);
+
+		collector.Run(
+			a_info.npc->container,
+			GetEntryDataList(a_info.actor));
+
+		auto form = a_entry.GetFormIfActive();
+
+		CommonParams params{
+			a_info.actor,
+			a_info.npc,
+			a_info.race
+		};
+
+		if (auto eo = !form ?
+		                  a_config.get_equipment_override(
+							  collector.m_data,
+							  params) :
+                          a_config.get_equipment_override(
+							  collector.m_data,
+							  { form, ItemData::SlotToExtraSlot(a_entry.slotid) },
+							  params))
 		{
-			if (auto npc = Game::GetActorBase(a_actor))
-			{
-				ItemCandidateCollector collector(a_actor);
-				collector.Run(npc->container, entryList);
-
-				auto form = a_entry.GetFormIfActive();
-
-				CommonParams params{ a_actor, npc, a_race };
-
-				if (auto eo = !form ?
-                                  a_config.get_equipment_override(collector.m_data, params) :
-                                  a_config.get_equipment_override(
-									  collector.m_data,
-									  { form, ItemData::SlotToExtraSlot(a_entry.slotid) },
-									  params))
-				{
-					return *eo;
-				}
-			}
+			return *eo;
 		}
 
 		return a_config;
 	}
 
 	void Controller::UpdateCustomImpl(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -3698,11 +3764,11 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomNPCImpl(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		for (auto& e : m_objects)
 		{
@@ -3714,11 +3780,11 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomRaceImpl(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		for (auto& e : m_objects)
 		{
@@ -3730,10 +3796,10 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID             a_actor,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -3743,10 +3809,10 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomNPCImpl(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID             a_npc,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		for (auto& e : m_objects)
 		{
@@ -3758,10 +3824,10 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomRaceImpl(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID             a_race,
+		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey,
-		updateActionFunc_t a_func)
+		updateActionFunc_t       a_func)
 	{
 		for (auto& e : m_objects)
 		{
@@ -3773,8 +3839,8 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		Game::FormID a_actor,
-		ConfigClass a_class,
+		Game::FormID       a_actor,
+		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
 		auto it = m_objects.find(a_actor);
@@ -3785,8 +3851,8 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomNPCImpl(
-		Game::FormID a_npc,
-		ConfigClass a_class,
+		Game::FormID       a_npc,
+		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
 		for (auto& e : m_objects)
@@ -3799,8 +3865,8 @@ namespace IED
 	}
 
 	void IED::Controller::UpdateCustomRaceImpl(
-		Game::FormID a_race,
-		ConfigClass a_class,
+		Game::FormID       a_race,
+		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
 		for (auto& e : m_objects)
@@ -3813,10 +3879,10 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder& a_record,
-		ConfigClass a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey,
+		ActorObjectHolder&        a_record,
+		ConfigClass               a_class,
+		const stl::fixed_string&  a_pkey,
+		const stl::fixed_string&  a_vkey,
 		const updateActionFunc_t& a_func)
 	{
 		actorInfo_t info;
@@ -3838,7 +3904,7 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto it = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info.actor->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
@@ -3854,7 +3920,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto it = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info.npc->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
@@ -3870,7 +3936,7 @@ namespace IED
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto it = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info.race->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
@@ -3909,9 +3975,9 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder& a_record,
-		ConfigClass a_class,
-		const stl::fixed_string& a_pkey,
+		ActorObjectHolder&        a_record,
+		ConfigClass               a_class,
+		const stl::fixed_string&  a_pkey,
 		const updateActionFunc_t& a_func)
 	{
 		actorInfo_t info;
@@ -3933,7 +3999,7 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto it = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info.actor->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
@@ -3943,7 +4009,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto it = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info.npc->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
@@ -3953,7 +4019,7 @@ namespace IED
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto it = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info.race->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
@@ -3985,8 +4051,8 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		ActorObjectHolder& a_record,
-		ConfigClass a_class,
+		ActorObjectHolder&        a_record,
+		ConfigClass               a_class,
 		const updateActionFunc_t& a_func)
 	{
 		actorInfo_t info;
@@ -4008,7 +4074,7 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto it = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info.actor->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_func);
@@ -4018,7 +4084,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto it = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info.npc->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_func);
@@ -4028,7 +4094,7 @@ namespace IED
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto it = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info.race->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(info, it->second, data, a_func);
@@ -4059,12 +4125,12 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		actorInfo_t& a_info,
-		const configCustomPluginMap_t& a_confPluginMap,
+		actorInfo_t&                          a_info,
+		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey,
-		const updateActionFunc_t& a_func)
+		const stl::fixed_string&              a_pkey,
+		const stl::fixed_string&              a_vkey,
+		const updateActionFunc_t&             a_func)
 	{
 		auto itc = a_confPluginMap.find(a_pkey);
 		if (itc == a_confPluginMap.end())
@@ -4082,11 +4148,11 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomAllImpl(
-		actorInfo_t& a_info,
-		const configCustomPluginMap_t& a_confPluginMap,
+		actorInfo_t&                          a_info,
+		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
-		const stl::fixed_string& a_pkey,
-		const updateActionFunc_t& a_func)
+		const stl::fixed_string&              a_pkey,
+		const updateActionFunc_t&             a_func)
 	{
 		auto itc = a_confPluginMap.find(a_pkey);
 		if (itc == a_confPluginMap.end())
@@ -4101,7 +4167,7 @@ namespace IED
 		}
 
 		bool failed = false;
-		bool ran = false;
+		bool ran    = false;
 
 		for (auto& e : itd->second)
 		{
@@ -4120,13 +4186,13 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomAllImpl(
-		actorInfo_t& a_info,
-		const configCustomPluginMap_t& a_confPluginMap,
+		actorInfo_t&                          a_info,
+		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
-		const updateActionFunc_t& a_func)
+		const updateActionFunc_t&             a_func)
 	{
 		bool failed = false;
-		bool ran = false;
+		bool ran    = false;
 
 		for (auto& e : a_pluginMap)
 		{
@@ -4152,11 +4218,11 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		actorInfo_t& a_info,
-		const configCustomEntryMap_t& a_confEntryMap,
+		actorInfo_t&                         a_info,
+		const configCustomEntryMap_t&        a_confEntryMap,
 		ActorObjectHolder::customEntryMap_t& a_entryMap,
-		const stl::fixed_string& a_vkey,
-		const updateActionFunc_t& a_func)
+		const stl::fixed_string&             a_vkey,
+		const updateActionFunc_t&            a_func)
 	{
 		auto itc = a_confEntryMap.find(a_vkey);
 		if (itc == a_confEntryMap.end())
@@ -4174,10 +4240,10 @@ namespace IED
 	}
 
 	void Controller::UpdateTransformCustomImpl(
-		actorInfo_t& a_info,
-		const configCustom_t& a_configEntry,
+		actorInfo_t&             a_info,
+		const configCustom_t&    a_configEntry,
 		const configTransform_t& a_xfrmConfigEntry,
-		objectEntryCustom_t& a_entry)
+		objectEntryCustom_t&     a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -4206,8 +4272,8 @@ namespace IED
 
 	void Controller::AttachSlotNodeImpl(
 		Game::FormID a_actor,
-		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		ObjectSlot   a_slot,
+		bool         a_evalIfNone)
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -4218,8 +4284,8 @@ namespace IED
 
 	bool Controller::AttachSlotNodeImpl(
 		ActorObjectHolder& a_record,
-		ObjectSlot a_slot,
-		bool a_evalIfNone)
+		ObjectSlot         a_slot,
+		bool               a_evalIfNone)
 	{
 		actorInfo_t info;
 		if (!LookupCachedActorInfo(a_record, info))
@@ -4274,11 +4340,9 @@ namespace IED
 
 				if (config)
 				{
-					auto& configEntry = config->get(info.sex);
 					auto& conf = GetConfigForActor(
-						info.actor,
-						info.race,
-						configEntry,
+						info,
+						config->get(info.sex),
 						objectEntry);
 
 					result = AttachNodeImpl(
@@ -4295,11 +4359,11 @@ namespace IED
 	}
 
 	bool Controller::AttachNodeImpl(
-		const actorInfo_t& a_info,
-		NiNode* a_root,
+		const actorInfo_t&    a_info,
+		NiNode*               a_root,
 		const NodeDescriptor& a_node,
-		bool a_atmReference,
-		objectEntryBase_t& a_entry)
+		bool                  a_atmReference,
+		objectEntryBase_t&    a_entry)
 	{
 		if (!a_node)
 		{
@@ -4330,10 +4394,10 @@ namespace IED
 	}
 
 	bool Controller::AttachNodeImpl(
-		NiNode* a_root,
+		NiNode*               a_root,
 		const NodeDescriptor& a_node,
-		bool a_atmReference,
-		objectEntryBase_t& a_entry)
+		bool                  a_atmReference,
+		objectEntryBase_t&    a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -4349,7 +4413,7 @@ namespace IED
 				a_entry.state->nodes.obj,
 				a_entry.state->nodes.ref))
 		{
-			a_entry.state->nodeDesc = a_node;
+			a_entry.state->nodeDesc     = a_node;
 			a_entry.state->atmReference = a_atmReference;
 
 			a_entry.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
@@ -4360,7 +4424,7 @@ namespace IED
 
 	bool Controller::LookupCachedActorInfo(
 		const ActorObjectHolder& a_objects,
-		actorInfo_t& a_out)
+		actorInfo_t&             a_out)
 	{
 		auto handle = a_objects.GetHandle();
 
@@ -4382,17 +4446,6 @@ namespace IED
 			return false;
 		}
 
-		if (refr->formID != a_objects.m_formid)
-		{
-			Warning(
-				"%s [%u]: form id mismatch (%.8X != %.8X, %hhu)",
-				__FUNCTION__,
-				__LINE__,
-				refr->formID,
-				a_objects.m_formid,
-				refr->formType);
-		}
-
 		auto actor = refr->As<Actor>();
 		if (!actor)
 		{
@@ -4404,6 +4457,16 @@ namespace IED
 				refr->formType);
 
 			return false;
+		}
+
+		if (actor != a_objects.m_actor)
+		{
+			Warning(
+				"%s [%u]: actor mismatch (%.8X != %.8X)",
+				__FUNCTION__,
+				__LINE__,
+				actor->formID.get(),
+				a_objects.m_actor->formID.get());
 		}
 
 		auto npc = Game::GetActorBase(actor);
@@ -4448,24 +4511,24 @@ namespace IED
 			return false;
 		}
 
-		a_out.actor = actor;
-		a_out.handle = handle;
-		a_out.npc = npc;
-		a_out.race = race;
-		a_out.root = root;
+		a_out.actor   = actor;
+		a_out.handle  = handle;
+		a_out.npc     = npc;
+		a_out.race    = race;
+		a_out.root    = root;
 		a_out.npcRoot = npcroot;
-		a_out.sex = npc->GetSex() == 1 ?
-                        ConfigSex::Female :
-                        ConfigSex::Male;
+		a_out.sex     = npc->GetSex() == 1 ?
+		                    ConfigSex::Female :
+                            ConfigSex::Male;
 		a_out.objects = std::addressof(a_objects);
 
 		return true;
 	}
 
 	void Controller::SaveLastEquippedItems(
-		processParams_t& a_params,
+		processParams_t&          a_params,
 		const equippedItemInfo_t& a_info,
-		ActorObjectHolder& a_cache)
+		ActorObjectHolder&        a_cache)
 	{
 		auto ts = IPerfCounter::Query();
 
@@ -4473,7 +4536,7 @@ namespace IED
 		{
 			auto& slot = a_cache.GetSlot(a_info.rightSlot);
 
-			slot.slotState.lastEquipped = a_info.right->formID;
+			slot.slotState.lastEquipped     = a_info.right->formID;
 			slot.slotState.lastSeenEquipped = ts;
 		}
 
@@ -4481,7 +4544,7 @@ namespace IED
 		{
 			auto& slot = a_cache.GetSlot(a_info.leftSlot);
 
-			slot.slotState.lastEquipped = a_info.left->formID;
+			slot.slotState.lastEquipped     = a_info.left->formID;
 			slot.slotState.lastSeenEquipped = ts;
 		}
 
@@ -4495,7 +4558,7 @@ namespace IED
 			{
 				auto& slot = a_cache.GetSlot(ObjectSlot::kAmmo);
 
-				slot.slotState.lastEquipped = e.item->formID;
+				slot.slotState.lastEquipped     = e.item->formID;
 				slot.slotState.lastSeenEquipped = ts;
 			}
 		}
@@ -4541,8 +4604,7 @@ namespace IED
 			{
 				if (auto form = a_evn->baseObject.Lookup())
 				{
-					if (form->formType == SpellItem::kTypeID ||
-					    IFormCommon::IsEquippableForm(form))
+					if (IFormCommon::IsEquippableForm(form))
 					{
 						QueueRequestEvaluate(a_evn->actor->formID, false, true);
 					}
@@ -4594,7 +4656,7 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			QueueEvaluate(a_evn->actor, ControllerUpdateFlags::kAll);
+			QueueRequestEvaluate(a_evn->actor, true, false);
 		}
 
 		return EventResult::kContinue;
@@ -4605,9 +4667,7 @@ namespace IED
 		BSTEventSource<TESDeathEvent>*)
 		-> EventResult
 	{
-		if (a_evn &&
-		    a_evn->source &&
-		    a_evn->source->IsActor())
+		if (a_evn)
 		{
 			ITaskPool::QueueActorTask(
 				a_evn->source,
@@ -4621,14 +4681,10 @@ namespace IED
 							it->second,
 							static_cast<Game::ObjectRefHandle>(a_handle));
 
-						EvaluateImpl(it->second, ControllerUpdateFlags::kNone);
+						it->second.RequestEval();
+						it->second.RequestTransformUpdate();
 					}
 				});
-
-			if (a_evn->dead)
-			{
-				QueueRequestEvaluateTransformsActor(a_evn->source->formID, true);
-			}
 		}
 
 		return EventResult::kContinue;
@@ -4685,43 +4741,32 @@ namespace IED
 		return EventResult::kContinue;
 	}*/
 
+	/*EventResult Controller::ReceiveEvent(
+		const TESPackageEvent*           a_evn,
+		BSTEventSource<TESPackageEvent>* a_dispatcher)
+	{
+		if (a_evn)
+		{
+			QueueRequestEvaluate(a_evn->actor, true, false);
+		}
+
+		return EventResult::kContinue;
+	}*/
+
 	EventResult Controller::ReceiveEvent(
 		const TESActorLocationChangeEvent* a_evn,
 		BSTEventSource<TESActorLocationChangeEvent>*)
 	{
-		if (a_evn && a_evn->actor)
+		if (a_evn)
 		{
-			QueueRequestEvaluate(a_evn->actor->formID, true, false);
-
-			/*std::string n1, n2;
-			Game::FormID f1, f2;
-
-			if (a_evn->oldLocation)
-			{
-				n1 = IFormCommon::GetFormName(a_evn->oldLocation);
-				f1 = a_evn->oldLocation->formID;
-			}
-
-			if (a_evn->newLocation)
-			{
-				n2 = IFormCommon::GetFormName(a_evn->newLocation);
-				f2 = a_evn->newLocation->formID;
-			}
-
-			_DMESSAGE(
-				"%X: %X [%s] -> %X [%s]",
-				a_evn->actor->formID.get(),
-				f1,
-				n1.c_str(),
-				f2,
-				n2.c_str());*/
+			QueueRequestEvaluate(a_evn->actor, true, false);
 		}
 
 		return EventResult::kContinue;
 	}
 
 	bool Controller::GetNPCRacePair(
-		Actor* a_actor,
+		Actor*         a_actor,
 		npcRacePair_t& a_out) noexcept
 	{
 		auto actorBase = a_actor->baseForm;
@@ -4847,8 +4892,8 @@ namespace IED
 	}
 
 	std::size_t Controller::Load(
-		SKSESerializationInterface* a_intfc,
-		std::uint32_t a_version,
+		SKSESerializationInterface*      a_intfc,
+		std::uint32_t                    a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
 		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
@@ -4856,8 +4901,8 @@ namespace IED
 			throw std::exception("unsupported version");
 		}
 
-		actorBlockList_t blockList;
-		configStore_t cfgStore;
+		actorBlockList_t   blockList;
+		configStore_t      cfgStore;
 		actorStateHolder_t actorState;
 
 		a_in >> blockList;
@@ -4964,7 +5009,7 @@ namespace IED
 	}
 
 	void IED::Controller::QueueUpdateActorInfo(
-		Game::FormID a_actor,
+		Game::FormID              a_actor,
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_actor, callback = std::move(a_callback)]() {
@@ -4974,7 +5019,7 @@ namespace IED
 	}
 
 	void Controller::QueueUpdateNPCInfo(
-		Game::FormID a_npc,
+		Game::FormID              a_npc,
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_npc, callback = std::move(a_callback)]() {

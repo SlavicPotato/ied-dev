@@ -28,30 +28,30 @@ namespace IED
 
 		protected:
 			void UpdateConfig(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				bool a_syncSex);
+				bool                                  a_syncSex);
 
 			bool EraseConfig(
 				Data::configCustomPluginMap_t& a_pluginMap,
-				const stl::fixed_string& a_name);
+				const stl::fixed_string&       a_name);
 
 			bool EraseConfig(
-				T a_handle,
+				T                        a_handle,
 				Data::configMapCustom_t& a_map,
 				const stl::fixed_string& a_name);
 
 			bool DoConfigRename(
-				T a_handle,
+				T                               a_handle,
 				const CustomConfigRenameParams& a_params);
 
 			bool HasConfigEntry(
 				const Data::configMapCustom_t& a_data,
-				T a_handle) const;
+				T                              a_handle) const;
 
 		private:
 			virtual void DrawMainHeaderControlsExtra(
-				T a_handle,
+				T                  a_handle,
 				entryCustomData_t& a_data) override;
 
 			virtual CustomProfile::base_type
@@ -78,11 +78,11 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorCommon<T>::UpdateConfig(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			bool a_syncSex)
+			bool                                  a_syncSex)
 		{
-			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
+			auto& conf      = GetOrCreateConfigSlotHolder(a_handle);
 			auto& confEntry = conf.data.try_emplace(a_params.name).first->second;
 
 			if (a_syncSex)
@@ -90,7 +90,7 @@ namespace IED
 				auto og = Data::GetOppositeSex(a_params.sex);
 
 				a_params.entry(og) = a_params.entry(a_params.sex);
-				confEntry = a_params.entry;
+				confEntry          = a_params.entry;
 			}
 			else
 			{
@@ -101,7 +101,7 @@ namespace IED
 		template <class T>
 		bool UICustomEditorCommon<T>::EraseConfig(
 			Data::configCustomPluginMap_t& a_pluginMap,
-			const stl::fixed_string& a_name)
+			const stl::fixed_string&       a_name)
 		{
 			auto& sh = StringHolder::GetSingleton();
 
@@ -125,7 +125,7 @@ namespace IED
 
 		template <class T>
 		bool UICustomEditorCommon<T>::EraseConfig(
-			T a_handle,
+			T                        a_handle,
 			Data::configMapCustom_t& a_map,
 			const stl::fixed_string& a_name)
 		{
@@ -149,7 +149,7 @@ namespace IED
 
 		template <class T>
 		bool UICustomEditorCommon<T>::DoConfigRename(
-			T a_handle,
+			T                               a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
@@ -176,7 +176,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorCommon<T>::DrawMainHeaderControlsExtra(
-			T a_handle,
+			T                  a_handle,
 			entryCustomData_t& a_data)
 		{
 			ImGui::Separator();
@@ -219,7 +219,7 @@ namespace IED
 		template <class T>
 		bool UICustomEditorCommon<T>::HasConfigEntry(
 			const Data::configMapCustom_t& a_data,
-			T a_handle) const
+			T                              a_handle) const
 		{
 			if (auto it1 = a_data.find(a_handle); it1 != a_data.end())
 			{

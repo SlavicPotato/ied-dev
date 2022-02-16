@@ -18,3 +18,4 @@
 5400-5599:		extra cond 
 5600-5699:		style selector
 5700-5799:		log
+5800-5899:		package type

@@ -24,7 +24,7 @@ namespace IED
 					a_value == Data::GlobalConfigType::Player))
 			{
 				a_value = Data::GlobalConfigType::Player;
-				result = true;
+				result  = true;
 			}
 
 			ImGui::SameLine();
@@ -34,7 +34,7 @@ namespace IED
 					a_value == Data::GlobalConfigType::NPC))
 			{
 				a_value = Data::GlobalConfigType::NPC;
-				result = true;
+				result  = true;
 			}
 
 			ImGui::PopID();

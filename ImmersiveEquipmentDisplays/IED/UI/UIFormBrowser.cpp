@@ -13,40 +13,45 @@ namespace IED
 			m_controller(a_controller),
 			m_formIDFilter(true),
 			m_formNameFilter(true),
-			m_tabItems{
-				{ { UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
-			      { UIFormBrowserStrings::Armor, IFormDatabase::EXTRA_TYPE_ARMOR },
-			      { UIFormBrowserStrings::Shields, TESObjectARMO::kTypeID },
-			      { UIFormBrowserStrings::Ammo, TESAmmo::kTypeID },
-			      { UIFormBrowserStrings::Torches, TESObjectLIGH::kTypeID },
-			      { UIFormBrowserStrings::Misc, TESObjectMISC::kTypeID },
-			      { UIFormBrowserStrings::Ingredients, IngredientItem::kTypeID },
-			      { UIFormBrowserStrings::PotionsFood, AlchemyItem::kTypeID },
-			      { UIFormBrowserStrings::Keys, TESKey::kTypeID },
-			      { UIFormBrowserStrings::Books, TESObjectBOOK::kTypeID },
-			      { UIFormBrowserStrings::SoulGems, TESSoulGem::kTypeID },
-			      { UIFormBrowserStrings::Scrolls, ScrollItem::kTypeID },
-			      { UIFormBrowserStrings::Spells, SpellItem::kTypeID },
-			      { UIFormBrowserStrings::Static, TESObjectSTAT::kTypeID },
-			      { UIFormBrowserStrings::MovableStatic, BGSMovableStatic::kTypeID },
-			      { UIFormBrowserStrings::Flora, TESFlora::kTypeID },
-			      { UIFormBrowserStrings::Furniture, TESFurniture::kTypeID },
-			      { UIFormBrowserStrings::Keywords, BGSKeyword::kTypeID },
-			      { UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
-			      { UIFormBrowserStrings::Races, TESRace::kTypeID },
-			      { UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
-			      { UIFormBrowserStrings::AnimObject, TESObjectANIO::kTypeID },
-			      { UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
-			      { UIFormBrowserStrings::Grass, TESGrass::kTypeID },
-			      { UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
-			      { UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
-			      { UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
-			      { UIFormBrowserStrings::Quests, TESQuest::kTypeID },
-			      { UIFormBrowserStrings::Locations, BGSLocation::kTypeID },
-			      { UIFormBrowserStrings::Worldspaces, TESWorldSpace::kTypeID }
+			m_tabItems{ {
 
-			    }
-			}
+				{ UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
+				{ UIFormBrowserStrings::Armor, IFormDatabase::EXTRA_TYPE_ARMOR },
+				{ UIFormBrowserStrings::Shields, TESObjectARMO::kTypeID },
+				{ UIFormBrowserStrings::Ammo, TESAmmo::kTypeID },
+				{ UIFormBrowserStrings::Torches, TESObjectLIGH::kTypeID },
+				{ UIFormBrowserStrings::Misc, TESObjectMISC::kTypeID },
+				{ UIFormBrowserStrings::Ingredients, IngredientItem::kTypeID },
+				{ UIFormBrowserStrings::PotionsFood, AlchemyItem::kTypeID },
+				{ UIFormBrowserStrings::Keys, TESKey::kTypeID },
+				{ UIFormBrowserStrings::Books, TESObjectBOOK::kTypeID },
+				{ UIFormBrowserStrings::SoulGems, TESSoulGem::kTypeID },
+				{ UIFormBrowserStrings::Scrolls, ScrollItem::kTypeID },
+				{ UIFormBrowserStrings::Spells, SpellItem::kTypeID },
+				{ UIFormBrowserStrings::Static, TESObjectSTAT::kTypeID },
+				{ UIFormBrowserStrings::MovableStatic, BGSMovableStatic::kTypeID },
+				{ UIFormBrowserStrings::Flora, TESFlora::kTypeID },
+				{ UIFormBrowserStrings::Furniture, TESFurniture::kTypeID },
+				{ UIFormBrowserStrings::Keywords, BGSKeyword::kTypeID },
+				{ UIFormBrowserStrings::NPCS, TESNPC::kTypeID },
+				{ UIFormBrowserStrings::Races, TESRace::kTypeID },
+				{ UIFormBrowserStrings::ArtObjects, BGSArtObject::kTypeID },
+				{ UIFormBrowserStrings::AnimObject, TESObjectANIO::kTypeID },
+				{ UIFormBrowserStrings::Trees, TESObjectTREE::kTypeID },
+				{ UIFormBrowserStrings::Grass, TESGrass::kTypeID },
+				{ UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
+				{ UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
+				{ UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
+				{ UIFormBrowserStrings::Quests, TESQuest::kTypeID },
+				{ UIFormBrowserStrings::Locations, BGSLocation::kTypeID },
+				{ UIFormBrowserStrings::Worldspaces, TESWorldSpace::kTypeID },
+				{ UIFormBrowserStrings::Package, TESPackage::kTypeID },
+				{ UIFormBrowserStrings::Shout, TESShout::kTypeID },
+				{ UIFormBrowserStrings::Faction, TESFaction::kTypeID },
+				{ UIFormBrowserStrings::CombatStyle, TESCombatStyle::kTypeID },
+				{ UIFormBrowserStrings::Class, TESClass::kTypeID },
+
+			} }
 
 		{
 			m_formIDFilter.SetFlags(
@@ -138,7 +143,7 @@ namespace IED
 		{
 			ClearTabFilter();
 
-			m_hlForm = {};
+			m_hlForm          = {};
 			m_multiSelectMode = a_multisel;
 			m_selectedEntries.clear();
 
@@ -435,7 +440,7 @@ namespace IED
 						else
 						{
 							m_selectedEntry = e;
-							result = true;
+							result          = true;
 							SetOpenState(false);
 						}
 					}
@@ -454,7 +459,7 @@ namespace IED
 			m_data.reset();
 			m_filteredData.reset();
 			m_nextDoFilterUpdate = true;
-			m_dbQueryInProgress = false;
+			m_dbQueryInProgress  = false;
 		}
 
 		bool UIFormBrowser::HasType(std::uint32_t a_type) const
@@ -512,7 +517,7 @@ namespace IED
 				[this](IFormDatabase::result_type a_result) {
 					if (m_dbQueryInProgress)
 					{
-						m_data = a_result;
+						m_data              = a_result;
 						m_dbQueryInProgress = false;
 					}
 				});

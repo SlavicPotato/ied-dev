@@ -38,7 +38,7 @@ namespace IED
 			Input() = default;
 
 			virtual EventResult ReceiveEvent(
-				InputEvent* const* a_evns,
+				InputEvent* const*           a_evns,
 				BSTEventSource<InputEvent*>* a_dispatcher) override;
 
 			static bool PlayerControls_InputEvent_ProcessEvents_Hook(const InputEvent** a_evns);

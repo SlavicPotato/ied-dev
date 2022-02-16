@@ -13,7 +13,7 @@ namespace IED
 			break;
 		case ProfileManagerEvent<FormFilterProfile>::EventType::kProfileRename:
 			OnProfileRename(*a_evn.m_oldProfile, *a_evn.m_profile);
-			
+
 			break;
 		}
 	}

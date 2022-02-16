@@ -9,12 +9,6 @@ namespace IED
 		enum class EquipmentOverrideFlags : std::uint32_t
 		{
 			kNone = 0,
-
-			// unused
-			kSlotItem = 1u << 0,
-			kConditionInventory = 1u << 1,
-			kMatchSlots = 1u << 2,
-			kBothMustMatch = 1u << 3
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideFlags);
@@ -29,20 +23,22 @@ namespace IED
 			kAnd = 1u << 5,
 			kNot = 1u << 6,
 
-			kMatchEquipped = 1u << 7,
-			kMatchSlots = 1u << 8,
+			kMatchEquipped       = 1u << 7,
+			kMatchSlots          = 1u << 8,
 			kMatchCategoryOperOR = 1u << 9,
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			// laying down (Furniture), loc child (Location), match parent (Worldspace)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race)
 			kExtraFlag1 = 1u << 11,
 
-			// match skin (Biped)
+			// match skin (Biped), is child (Race)
 			kExtraFlag2 = 1u << 12,
 
 			kNegateMatch1 = 1u << 13,
-			kNegateMatch2 = 1u << 14
+			kNegateMatch2 = 1u << 14,
+			kNegateMatch3 = 1u << 15,
+			kNegateMatch4 = 1u << 16,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideConditionFlags);
@@ -61,13 +57,14 @@ namespace IED
 			NPC,
 			Extra,
 			Location,
-			Worldspace
+			Worldspace,
+			Package
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
 		{
-			EquipmentOverrideConditionType type: 5 { EquipmentOverrideConditionType::Form };
-			std::uint32_t unused: 27 { 0 };
+			EquipmentOverrideConditionType type  : 5 { EquipmentOverrideConditionType::Form };
+			std::uint32_t                  unused: 27 { 0 };
 		};
 
 		static_assert(sizeof(EquipmentOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
@@ -94,7 +91,7 @@ namespace IED
 			};
 
 			stl::flag<EquipmentOverrideConditionGroupFlags> flags{ EquipmentOverrideConditionGroupFlags::kNone };
-			equipmentOverrideConditionList_t conditions;
+			equipmentOverrideConditionList_t                conditions;
 
 		private:
 			template <class Archive>
@@ -121,7 +118,7 @@ namespace IED
 
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_type,
-				Game::FormID a_form)
+				Game::FormID                   a_form)
 			{
 				if (a_type == EquipmentOverrideConditionType::Race ||
 				    a_type == EquipmentOverrideConditionType::Actor ||
@@ -131,18 +128,18 @@ namespace IED
 				}
 				else if (a_type == EquipmentOverrideConditionType::Form)
 				{
-					form = a_form;
+					form  = a_form;
 					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
 				}
 				else if (a_type == EquipmentOverrideConditionType::Quest)
 				{
-					keyword = a_form;
+					keyword       = a_form;
 					questCondType = QuestConditionType::kComplete;
 				}
 				else if (a_type == EquipmentOverrideConditionType::Keyword)
 				{
 					keyword = a_form;
-					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
+					flags   = EquipmentOverrideConditionFlags::kMatchEquipped;
 				}
 				else
 				{
@@ -177,11 +174,12 @@ namespace IED
 			equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
 			{
-				if (a_matchType == EquipmentOverrideConditionType::Race || 
-					a_matchType == EquipmentOverrideConditionType::Furniture ||
+				if (a_matchType == EquipmentOverrideConditionType::Race ||
+				    a_matchType == EquipmentOverrideConditionType::Furniture ||
 				    a_matchType == EquipmentOverrideConditionType::Group ||
 				    a_matchType == EquipmentOverrideConditionType::Location ||
-				    a_matchType == EquipmentOverrideConditionType::Worldspace)
+				    a_matchType == EquipmentOverrideConditionType::Worldspace ||
+				    a_matchType == EquipmentOverrideConditionType::Package)
 				{
 					if (a_matchType == EquipmentOverrideConditionType::Location ||
 					    a_matchType == EquipmentOverrideConditionType::Worldspace)
@@ -200,21 +198,23 @@ namespace IED
 			union
 			{
 				stl::flag<EquipmentOverrideConditionFlags> flags{ EquipmentOverrideConditionFlags::kNone };
-				EquipmentOverrideConditionFlagsBitfield fbf;
+				EquipmentOverrideConditionFlagsBitfield    fbf;
 			};
 
-			configCachedForm_t form;
-			configCachedForm_t keyword;
+			configCachedForm_t    form;
+			configCachedForm_t    keyword;
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 
 			union
 			{
-				std::uint32_t ui32a{ static_cast<std::uint32_t>(-1) };
-				QuestConditionType questCondType;
-				ExtraConditionType extraCondType;
-				Biped::BIPED_OBJECT bipedSlot;
+				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
+				QuestConditionType     questCondType;
+				ExtraConditionType     extraCondType;
+				Biped::BIPED_OBJECT    bipedSlot;
+				PACKAGE_PROCEDURE_TYPE procedureType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 			};
 
 			equipmentOverrideConditionGroup_t group;
@@ -223,21 +223,21 @@ namespace IED
 			template <class Archive>
 			void save(Archive& ar, const unsigned int version) const
 			{
-				ar& flags.value;
+				ar&          flags.value;
 				configForm_t tmp = form.get_id();
-				ar& tmp;
-				ar& slot;
-				ar& keyword;
-				ar& ui32a;
-				ar& group;
+				ar&          tmp;
+				ar&          slot;
+				ar&          keyword;
+				ar&          ui32a;
+				ar&          group;
 			}
 
 			template <class Archive>
 			void load(Archive& ar, const unsigned int version)
 			{
-				ar& flags.value;
+				ar&          flags.value;
 				configForm_t tmp;
-				ar& tmp;
+				ar&          tmp;
 				form = tmp;
 				ar& slot;
 				ar& keyword;
@@ -271,7 +271,7 @@ namespace IED
 
 			equipmentOverride_t(
 				const configBaseValues_t& a_config,
-				const std::string& a_desc) :
+				const std::string&        a_desc) :
 				configBaseValues_t(a_config),
 				description(a_desc)
 			{
@@ -279,15 +279,15 @@ namespace IED
 
 			equipmentOverride_t(
 				const configBaseValues_t& a_config,
-				std::string&& a_desc) :
+				std::string&&             a_desc) :
 				configBaseValues_t(a_config),
 				description(std::move(a_desc))
 			{
 			}
 
 			stl::flag<EquipmentOverrideFlags> eoFlags{ EquipmentOverrideFlags::kNone };
-			equipmentOverrideConditionList_t conditions;
-			std::string description;
+			equipmentOverrideConditionList_t  conditions;
+			std::string                       description;
 
 		protected:
 			template <class Archive>

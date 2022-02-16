@@ -745,12 +745,8 @@ namespace IED
 				if (race->IsDeleted())
 					continue;
 
-				bool playable = (race->data.raceFlags & TESRace::kRace_Playable) ==
-				                TESRace::kRace_Playable;
-
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
-					playable,
 					LocaleData::ToUTF8(race->fullName.GetName()),
 					LocaleData::ToUTF8(race->editorId.c_str()),
 					race->data.raceFlags);
@@ -947,21 +943,21 @@ namespace IED
 		}
 
 		static void FillDefaultBaseConfig(
-			ObjectSlot a_slot,
+			ObjectSlot                     a_slot,
 			configSlotHolder_t::data_type& a_data)
 		{
 			auto targetNode = ItemData::GetDefaultSlotNode(a_slot);
 
 			auto& nodeMapData = NodeMap::GetSingleton().GetData();
 
-			auto it = nodeMapData.find(targetNode.name);
+			auto it        = nodeMapData.find(targetNode.name);
 			auto nodeFlags = it != nodeMapData.end() ?
                                  it->second.flags.value :
                                  NodeDescriptorFlags::kNone;
 
 			for (auto& e : a_data())
 			{
-				e.targetNode.name = targetNode.name;
+				e.targetNode.name  = targetNode.name;
 				e.targetNode.flags = nodeFlags;
 			}
 		}
@@ -977,7 +973,7 @@ namespace IED
 		}
 
 		std::unique_ptr<configSlotHolderCopy_t::data_type> CreateDefaultSlotConfig(
-			ObjectSlot a_slot,
+			ObjectSlot  a_slot,
 			ConfigClass a_class)
 		{
 			auto r = std::make_unique<configSlotHolderCopy_t::data_type>();

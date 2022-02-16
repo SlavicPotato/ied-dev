@@ -7,11 +7,11 @@ namespace IED
 	namespace UI
 	{
 		UIGenericFilter::UIGenericFilter() :
-			UIFilterBase<std::string>() 
+			UIFilterBase<std::string>()
 		{}
 
 		UIGenericFilter::UIGenericFilter(bool a_isOpen) :
-			UIFilterBase<std::string>(a_isOpen) 
+			UIFilterBase<std::string>(a_isOpen)
 		{}
 
 		bool UIGenericFilter::ProcessInput(const char* a_label)

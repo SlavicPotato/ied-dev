@@ -28,30 +28,30 @@ namespace IED
 	EngineExtensions EngineExtensions::m_Instance;
 
 	void EngineExtensions::Install(
-		Controller* a_controller,
+		Controller*                       a_controller,
 		const std::shared_ptr<ConfigINI>& a_config)
 	{
 		m_Instance.InstallImpl(a_controller, a_config);
 	}
 
 	void EngineExtensions::InstallImpl(
-		Controller* a_controller,
+		Controller*                       a_controller,
 		const std::shared_ptr<ConfigINI>& a_config)
 	{
 		m_controller = a_controller;
 
 		Patch_RemoveAllBipedParts();
-		InstallHook_REFR_GarbageCollector();
-		InstallHook_Actor_Resurrect();
-		InstallHook_Actor_3DEvents();
+		Hook_REFR_GarbageCollector();
+		Hook_Actor_Resurrect();
+		Hook_Actor_3DEvents();
 
 		if (a_config->m_nodeOverrideEnabled)
 		{
-			m_conf.weaponAdjustDisable = a_config->m_weaponAdjustDisable;
+			m_conf.weaponAdjustDisable       = a_config->m_weaponAdjustDisable;
 			m_conf.nodeOverridePlayerEnabled = a_config->m_nodeOverridePlayerEnabled;
-			m_conf.disableNPCProcessing = a_config->m_disableNPCProcessing;
+			m_conf.disableNPCProcessing      = a_config->m_disableNPCProcessing;
 
-			InstallHook_Armor_Update();
+			Hook_Armor_Update();
 			Patch_CreateWeaponNodes();
 		}
 
@@ -76,7 +76,7 @@ namespace IED
 
 		if (a_config->m_immediateFavUpdate)
 		{
-			InstallHook_ToggleFav();
+			Hook_ToggleFav();
 		}
 	}
 
@@ -116,7 +116,7 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::InstallHook_REFR_GarbageCollector()
+	void EngineExtensions::Hook_REFR_GarbageCollector()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -132,7 +132,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::InstallHook_Actor_Resurrect()
+	void EngineExtensions::Hook_Actor_Resurrect()
 	{
 		if (VTable::Detour2(
 				m_vtblCharacter_a,
@@ -161,7 +161,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::InstallHook_Actor_3DEvents()
+	void EngineExtensions::Hook_Actor_3DEvents()
 	{
 		if (VTable::Detour2(
 				m_vtblCharacter_a,
@@ -190,7 +190,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::InstallHook_Armor_Update()
+	void EngineExtensions::Hook_Armor_Update()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -404,7 +404,7 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::InstallHook_ToggleFav()
+	void EngineExtensions::Hook_ToggleFav()
 	{
 		if (Hook::Call5(
 				ISKSE::GetBranchTrampoline(),
@@ -447,8 +447,8 @@ namespace IED
 
 	void EngineExtensions::Character_Resurrect_Hook(
 		Character* a_actor,
-		bool a_resetInventory,
-		bool a_attach3D)
+		bool       a_resetInventory,
+		bool       a_attach3D)
 	{
 		if (a_attach3D)
 		{
@@ -515,7 +515,7 @@ namespace IED
 	}
 
 	void EngineExtensions::FailsafeCleanupAndEval(
-		Actor* a_actor,
+		Actor*                     a_actor,
 		const std::source_location a_loc)
 	{
 		ITaskPool::AddTask([this, fid = a_actor->formID, handle = a_actor->GetHandle()]() {
@@ -528,7 +528,7 @@ namespace IED
 
 	void EngineExtensions::ReanimateActorStateUpdate_Hook(
 		Actor* a_actor,
-		bool a_unk1)
+		bool   a_unk1)
 	{
 		m_Instance.m_ReanimActorStateUpd_o(a_actor, a_unk1);
 
@@ -543,7 +543,7 @@ namespace IED
 
 	void EngineExtensions::ArmorUpdate_Hook(
 		Game::InventoryChanges* a_ic,
-		Game::InitWornVisitor& a_visitor)
+		Game::InitWornVisitor&  a_visitor)
 	{
 		auto formid = a_visitor.actor ?
                           a_visitor.actor->formID :
@@ -568,10 +568,10 @@ namespace IED
 	}
 
 	bool EngineExtensions::SetWeapAdjAnimVar_Hook(
-		TESObjectREFR* a_refr,
+		TESObjectREFR*       a_refr,
 		const BSFixedString& a_animVarName,
-		float a_val,
-		Biped* a_biped)
+		float                a_val,
+		Biped*               a_biped)
 	{
 		if (m_Instance.m_conf.weaponAdjustFix)
 		{
@@ -614,8 +614,8 @@ namespace IED
 
 	void EngineExtensions::CreateWeaponNodes_Hook(
 		TESObjectREFR* a_actor,
-		TESForm* a_object,
-		bool a_left)
+		TESForm*       a_object,
+		bool           a_left)
 	{
 		m_Instance.m_createWeaponNodes_o(a_actor, a_object, a_left);
 
@@ -626,7 +626,7 @@ namespace IED
 	}
 
 	bool EngineExtensions::RemoveAllChildren(
-		NiNode* a_object,
+		NiNode*              a_object,
 		const BSFixedString& a_name)
 	{
 		bool result = false;
@@ -649,17 +649,17 @@ namespace IED
 	}
 
 	auto EngineExtensions::AttachObject(
-		Actor* a_actor,
-		NiNode* a_root,
-		NiNode* a_targetNode,
-		NiNode* a_object,
+		Actor*    a_actor,
+		NiNode*   a_root,
+		NiNode*   a_targetNode,
+		NiNode*   a_object,
 		ModelType a_modelType,
-		bool a_leftWeapon,
-		bool a_shield,
-		bool a_dropOnDeath,
-		bool a_removeScabbards,
-		bool a_keepTorchFlame,
-		bool a_disableHavok)
+		bool      a_leftWeapon,
+		bool      a_shield,
+		bool      a_dropOnDeath,
+		bool      a_removeScabbards,
+		bool      a_keepTorchFlame,
+		bool      a_disableHavok)
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
@@ -686,7 +686,7 @@ namespace IED
 						entry->DecRef();
 						entry = newbsx;
 
-						flags = newbsx->m_data;
+						flags    = newbsx->m_data;
 						bsxFlags = newbsx;
 
 						a_dropOnDeath = false;
@@ -728,7 +728,7 @@ namespace IED
 
 		if (a_modelType == ModelType::kWeapon)
 		{
-			auto scbNode = GetObjectByName(a_object, sh->m_scb, true);
+			auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
 			auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
 
 			if (a_removeScabbards)
@@ -865,16 +865,16 @@ namespace IED
 	}
 
 	void EngineExtensions::SetDropOnDeath(
-		Actor* a_actor,
+		Actor*      a_actor,
 		NiAVObject* a_object,
-		bool a_switch)
+		bool        a_switch)
 	{
 	}
 
 	void EngineExtensions::CleanupObject(
 		Game::ObjectRefHandle a_handle,
-		NiNode* a_object,
-		NiNode* a_root)
+		NiNode*               a_object,
+		NiNode*               a_root)
 	{
 		if (!SceneRendering() &&
 		    ITaskPool::IsRunningOnCurrentThread())
@@ -891,8 +891,8 @@ namespace IED
 			public:
 				NodeCleanupTask(
 					Game::ObjectRefHandle a_handle,
-					NiNode* a_object,
-					NiNode* a_root) :
+					NiNode*               a_object,
+					NiNode*               a_root) :
 					m_handle(a_handle),
 					m_object(a_object),
 					m_root(a_root)
@@ -914,8 +914,8 @@ namespace IED
 
 			private:
 				Game::ObjectRefHandle m_handle;
-				NiPointer<NiNode> m_object;
-				NiPointer<NiNode> m_root;
+				NiPointer<NiNode>     m_object;
+				NiPointer<NiNode>     m_root;
 			};
 
 			ITaskPool::AddPriorityTask<NodeCleanupTask>(

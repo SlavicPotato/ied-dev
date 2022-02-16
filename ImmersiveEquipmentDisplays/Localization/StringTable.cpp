@@ -16,7 +16,7 @@ namespace IED
 
 				Serialization::ReadData(a_path, root);
 
-				Serialization::ParserState state;
+				Serialization::ParserState                            state;
 				Serialization::Parser<StringTable::data_storage_type> parser(state);
 
 				StringTable::data_storage_type tmp;

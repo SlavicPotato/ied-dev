@@ -8,11 +8,10 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIGlobalConfigTypeSelectorWidget : 
+		class UIGlobalConfigTypeSelectorWidget :
 			public virtual UILocalizationInterface
 		{
 		public:
-
 			UIGlobalConfigTypeSelectorWidget(
 				Localization::ILocalization& a_localization);
 

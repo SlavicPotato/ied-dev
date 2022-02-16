@@ -117,7 +117,7 @@ namespace IED
 
 		void UIProfileEditorNodeOverride::OnProfileSave(
 			const stl::fixed_string& a_name,
-			NodeOverrideProfile& a_profile)
+			NodeOverrideProfile&     a_profile)
 		{
 			if (!m_cachedItem)
 			{
@@ -190,28 +190,28 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int a_handle,
+			int                                            a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int a_handle,
+			int                                            a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int a_handle,
+			int                             a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			UpdateConfig(a_params);
 		}
 
 		void UIProfileEditorNodeOverride::OnClearTransform(
-			int a_handle,
+			int                                  a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -221,7 +221,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearPlacement(
-			int a_handle,
+			int                                  a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -231,7 +231,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearAllTransforms(
-			int a_handle,
+			int                                     a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -241,7 +241,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearAllPlacement(
-			int a_handle,
+			int                                     a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())

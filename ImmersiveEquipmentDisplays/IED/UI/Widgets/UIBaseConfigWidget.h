@@ -50,25 +50,25 @@ namespace IED
 
 		struct EquipmentOverrideResult
 		{
-			BaseConfigEditorAction action{ BaseConfigEditorAction::None };
-			Game::FormID form;
+			BaseConfigEditorAction               action{ BaseConfigEditorAction::None };
+			Game::FormID                         form;
 			Data::EquipmentOverrideConditionType entryType;
 
 			union
 			{
-				Biped::BIPED_OBJECT biped;
+				Biped::BIPED_OBJECT      biped;
 				Data::ExtraConditionType excond;
-				Data::ObjectSlotExtra slot;
+				Data::ObjectSlotExtra    slot;
 			};
 
-			std::string desc;
+			std::string   desc;
 			SwapDirection dir;
 		};
 
 		template <class T>
 		struct bcFormFilterParams_t
 		{
-			T handle;
+			T           handle;
 			const void* params;
 		};
 
@@ -89,76 +89,76 @@ namespace IED
 				Controller& a_controller);
 
 			void DrawBaseConfig(
-				T a_handle,
-				Data::configBase_t& a_data,
-				const void* a_params,
+				T                        a_handle,
+				Data::configBase_t&      a_data,
+				const void*              a_params,
 				const stl::fixed_string& a_slotName);
 
 			void DrawBaseConfigValues(
-				T a_handle,
+				T                         a_handle,
 				Data::configBaseValues_t& a_data,
-				const void* a_params,
-				const stl::fixed_string& a_slotName,
-				bool a_storecc,
-				Data::configBase_t* a_baseConfig);
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				Data::configBase_t*       a_baseConfig);
 
 		protected:
 			virtual void OnBaseConfigChange(
-				T a_handle,
-				const void* a_params,
+				T                a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) = 0;
 
 			template <class Tpv>
 			void PropagateToEquipmentOverrides(
 				Data::configBase_t* a_data,
-				std::ptrdiff_t a_offset,
-				Tpv* a_value);
+				std::ptrdiff_t      a_offset,
+				Tpv*                a_value);
 
 			void PropagateFlagToEquipmentOverrides(
 				Data::configBase_t* a_data,
-				Data::BaseFlags a_mask);
+				Data::BaseFlags     a_mask);
 
 		private:
 			virtual void DrawExtraFlags(
-				T a_handle,
+				T                         a_handle,
 				Data::configBaseValues_t& a_data,
-				Data::configBase_t* a_baseConfig,
-				const void* a_params);
+				Data::configBase_t*       a_baseConfig,
+				const void*               a_params);
 
 			BaseConfigEditorAction DrawFiltersTreeContextMenu(
-				T a_handle,
+				T                   a_handle,
 				Data::configBase_t& a_data,
-				const void* a_params);
+				const void*         a_params);
 
 			void DrawFiltersTree(
-				T a_handle,
+				T                   a_handle,
 				Data::configBase_t& a_data,
-				const void* a_params);
+				const void*         a_params);
 
 			virtual constexpr bool BaseConfigStoreCC() const = 0;
 
 			BaseConfigEditorAction DrawEquipmentOverrideTreeContextMenu(
-				T a_handle,
+				T                   a_handle,
 				Data::configBase_t& a_data,
-				const void* a_params);
+				const void*         a_params);
 
 			void DrawEquipmentOverrideList(
-				T a_handle,
-				Data::configBase_t& a_data,
-				const void* a_params,
+				T                        a_handle,
+				Data::configBase_t&      a_data,
+				const void*              a_params,
 				const stl::fixed_string& a_slotName);
 
 			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
-				T a_handle,
+				T                                       a_handle,
 				Data::equipmentOverrideConditionList_t& a_entry,
-				const void* a_params);
+				const void*                             a_params);
 
 			void DrawEquipmentOverrideEntryConditionTable(
-				T a_handle,
-				Data::configBase_t& a_baseData,
+				T                                       a_handle,
+				Data::configBase_t&                     a_baseData,
 				Data::equipmentOverrideConditionList_t& a_entry,
-				const void* a_params,
-				bool a_isnested);
+				const void*                             a_params,
+				bool                                    a_isnested);
 
 			EquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
 				bool a_drawDelete);
@@ -169,41 +169,38 @@ namespace IED
 				const Data::equipmentOverride_t& a_override) const;
 
 			virtual void DrawExtraEquipmentOverrideOptions(
-				T a_handle,
-				Data::configBase_t& a_data,
-				const void* a_params,
+				T                          a_handle,
+				Data::configBase_t&        a_data,
+				const void*                a_params,
 				Data::equipmentOverride_t& a_override);
 
 			EquipmentOverrideResult DrawEquipmentOverrideContextMenu(
-				T a_handle,
-				const void* a_params,
+				T                          a_handle,
+				const void*                a_params,
 				Data::equipmentOverride_t& a_data);
 
 			virtual bool DrawConditionParamExtra(
-				void* a_p1,
+				void*       a_p1,
 				const void* a_p2) override;
 
 			virtual bool DrawConditionItemExtra(
-				ConditionParamItem a_item,
+				ConditionParamItem           a_item,
 				ConditionParamItemExtraArgs& a_args) override;
 
 			void UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type);
 
-			Game::FormID m_aoNewEntryID;
-			Game::FormID m_aoNewEntryKWID;
-			Game::FormID m_aoNewEntryRaceID;
-			Game::FormID m_aoNewEntryActorID;
-			Game::FormID m_aoNewEntryNPCID;
-			Biped::BIPED_OBJECT m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
-			Data::ExtraConditionType m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
-			Data::ObjectSlotExtra m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
-
-			UIConditionParamEditorWidget m_condParamEditor;
-
-			UIFormSelectorWidget m_ffFormSelector;
+			Game::FormID                                m_aoNewEntryID;
+			Game::FormID                                m_aoNewEntryKWID;
+			Game::FormID                                m_aoNewEntryRaceID;
+			Game::FormID                                m_aoNewEntryActorID;
+			Game::FormID                                m_aoNewEntryNPCID;
+			Biped::BIPED_OBJECT                         m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
+			Data::ExtraConditionType                    m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
+			Data::ObjectSlotExtra                       m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
+			UIConditionParamEditorWidget                m_condParamEditor;
+			UIFormSelectorWidget                        m_ffFormSelector;
 			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
-
-			UINotificationInterface m_notif;
+			UINotificationInterface                     m_notif;
 
 			struct
 			{
@@ -255,9 +252,9 @@ namespace IED
 
 		template <class T>
 		inline void UIBaseConfigWidget<T>::DrawBaseConfig(
-			T a_handle,
-			Data::configBase_t& a_data,
-			const void* a_params,
+			T                        a_handle,
+			Data::configBase_t&      a_data,
+			const void*              a_params,
 			const stl::fixed_string& a_slotName)
 		{
 			ImGui::PushID(a_slotName.c_str());
@@ -340,9 +337,9 @@ namespace IED
 
 		template <class T>
 		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawFiltersTreeContextMenu(
-			T a_handle,
+			T                   a_handle,
 			Data::configBase_t& a_data,
-			const void* a_params)
+			const void*         a_params)
 		{
 			BaseConfigEditorAction result{
 				BaseConfigEditorAction::None
@@ -399,9 +396,9 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawFiltersTree(
-			T a_handle,
+			T                   a_handle,
 			Data::configBase_t& a_data,
-			const void* a_params)
+			const void*         a_params)
 		{
 			ImGui::PushID("cnf_filters");
 
@@ -489,8 +486,8 @@ namespace IED
 		template <class Tpv>
 		void UIBaseConfigWidget<T>::PropagateToEquipmentOverrides(
 			Data::configBase_t* a_data,
-			std::ptrdiff_t a_offset,
-			Tpv* a_value)
+			std::ptrdiff_t      a_offset,
+			Tpv*                a_value)
 		{
 			if (!a_data)
 			{
@@ -517,7 +514,7 @@ namespace IED
 		template <class T>
 		void UIBaseConfigWidget<T>::PropagateFlagToEquipmentOverrides(
 			Data::configBase_t* a_data,
-			Data::BaseFlags a_mask)
+			Data::BaseFlags     a_mask)
 		{
 			if (!a_data)
 			{
@@ -537,12 +534,12 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawBaseConfigValues(
-			T a_handle,
+			T                         a_handle,
 			Data::configBaseValues_t& a_data,
-			const void* a_params,
-			const stl::fixed_string& a_slotName,
-			bool a_storecc,
-			Data::configBase_t* a_baseConfig)
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			Data::configBase_t*       a_baseConfig)
 		{
 			auto storecc = BaseConfigStoreCC() && a_storecc;
 
@@ -901,18 +898,18 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawExtraFlags(
-			T a_handle,
+			T                         a_handle,
 			Data::configBaseValues_t& a_data,
-			Data::configBase_t* a_baseConfig,
-			const void* a_params)
+			Data::configBase_t*       a_baseConfig,
+			const void*               a_params)
 		{
 		}
 
 		template <class T>
 		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideTreeContextMenu(
-			T a_handle,
+			T                   a_handle,
 			Data::configBase_t& a_data,
-			const void* a_params)
+			const void*         a_params)
 		{
 			BaseConfigEditorAction result{
 				BaseConfigEditorAction::None
@@ -984,9 +981,9 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideList(
-			T a_handle,
-			Data::configBase_t& a_data,
-			const void* a_params,
+			T                        a_handle,
+			Data::configBase_t&      a_data,
+			const void*              a_params,
 			const stl::fixed_string& a_name)
 		{
 			if (a_data.equipmentOverrides.empty())
@@ -1144,9 +1141,9 @@ namespace IED
 
 		template <class T>
 		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionHeaderContextMenu(
-			T a_handle,
+			T                                       a_handle,
 			Data::equipmentOverrideConditionList_t& a_entry,
-			const void* a_params)
+			const void*                             a_params)
 		{
 			BaseConfigEditorAction action{ BaseConfigEditorAction ::None };
 
@@ -1190,6 +1187,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Group:
 					case Data::EquipmentOverrideConditionType::Location:
 					case Data::EquipmentOverrideConditionType::Worldspace:
+					case Data::EquipmentOverrideConditionType::Package:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1262,11 +1260,11 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionTable(
-			T a_handle,
-			Data::configBase_t& a_baseData,
+			T                                       a_handle,
+			Data::configBase_t&                     a_baseData,
 			Data::equipmentOverrideConditionList_t& a_entry,
-			const void* a_params,
-			bool a_isnested)
+			const void*                             a_params,
+			bool                                    a_isnested)
 		{
 			if (a_isnested)
 			{
@@ -1380,6 +1378,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Group:
 						case Data::EquipmentOverrideConditionType::Location:
 						case Data::EquipmentOverrideConditionType::Worldspace:
+						case Data::EquipmentOverrideConditionType::Package:
 
 							it = a_entry.emplace(
 								it,
@@ -1586,11 +1585,35 @@ namespace IED
 								break;
 							case Data::EquipmentOverrideConditionType::Extra:
 
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
 								m_condParamEditor.SetNext<ConditionParamItem::CondExtra>(
 									e.extraCondType);
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
 								tdesc = LS(CommonStrings::Extra);
+
+								switch (e.extraCondType)
+								{
+								case Data::ExtraConditionType::kShoutEquipped:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Shout));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								case Data::ExtraConditionType::kInMerchantFaction:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Faction));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								case Data::ExtraConditionType::kCombatStyle:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::CombatStyle));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								case Data::ExtraConditionType::kClass:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Class));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								}
 
 								break;
 							case Data::EquipmentOverrideConditionType::Location:
@@ -1615,6 +1638,19 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Worldspace);
+
+								break;
+							case Data::EquipmentOverrideConditionType::Package:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::PackageType>(
+									e.procedureType);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::PackageType);
+								tdesc = LS(CommonStrings::Package);
 
 								break;
 							default:
@@ -1702,14 +1738,14 @@ namespace IED
 
 			if (DrawPopupToggleButton("open", "context_menu"))
 			{
-				m_aoNewEntryID = {};
-				m_aoNewEntryKWID = {};
-				m_aoNewEntryRaceID = {};
+				m_aoNewEntryID      = {};
+				m_aoNewEntryKWID    = {};
+				m_aoNewEntryRaceID  = {};
 				m_aoNewEntryActorID = {};
-				m_aoNewEntryNPCID = {};
-				m_ooNewBiped = Biped::BIPED_OBJECT::kNone;
-				m_aoNewSlot = Data::ObjectSlotExtra::kNone;
-				m_ooNewExtraCond = Data::ExtraConditionType::kNone;
+				m_aoNewEntryNPCID   = {};
+				m_ooNewBiped        = Biped::BIPED_OBJECT::kNone;
+				m_aoNewSlot         = Data::ObjectSlotExtra::kNone;
+				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -1719,7 +1755,7 @@ namespace IED
 				if (ImGui::ArrowButton("up", ImGuiDir_Up))
 				{
 					result.action = BaseConfigEditorAction::Swap;
-					result.dir = SwapDirection::Up;
+					result.dir    = SwapDirection::Up;
 				}
 
 				ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -1727,7 +1763,7 @@ namespace IED
 				if (ImGui::ArrowButton("down", ImGuiDir_Down))
 				{
 					result.action = BaseConfigEditorAction::Swap;
-					result.dir = SwapDirection::Down;
+					result.dir    = SwapDirection::Down;
 				}
 			}
 
@@ -1741,8 +1777,8 @@ namespace IED
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector("##ss", m_aoNewSlot))
 						{
-							result.action = BaseConfigEditorAction::Insert;
-							result.slot = m_aoNewSlot;
+							result.action    = BaseConfigEditorAction::Insert;
+							result.slot      = m_aoNewSlot;
 							result.entryType = Data::EquipmentOverrideConditionType::Type;
 
 							ImGui::CloseCurrentPopup();
@@ -1761,8 +1797,8 @@ namespace IED
 						{
 							if (m_aoNewEntryID)
 							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryID;
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryID;
 								result.entryType = Data::EquipmentOverrideConditionType::Form;
 
 								ImGui::CloseCurrentPopup();
@@ -1780,8 +1816,8 @@ namespace IED
 						{
 							if (m_aoNewEntryKWID)
 							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryKWID;
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryKWID;
 								result.entryType = Data::EquipmentOverrideConditionType::Keyword;
 
 								ImGui::CloseCurrentPopup();
@@ -1797,8 +1833,8 @@ namespace IED
 								LS(CommonStrings::Biped, "bp"),
 								m_ooNewBiped))
 						{
-							result.action = BaseConfigEditorAction::Insert;
-							result.biped = m_ooNewBiped;
+							result.action    = BaseConfigEditorAction::Insert;
+							result.biped     = m_ooNewBiped;
 							result.entryType = Data::EquipmentOverrideConditionType::BipedSlot;
 
 							ImGui::CloseCurrentPopup();
@@ -1817,8 +1853,8 @@ namespace IED
 						{
 							if (m_aoNewEntryActorID)
 							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryActorID;
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryActorID;
 								result.entryType = Data::EquipmentOverrideConditionType::Actor;
 
 								ImGui::CloseCurrentPopup();
@@ -1838,8 +1874,8 @@ namespace IED
 						{
 							if (m_aoNewEntryNPCID)
 							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryNPCID;
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryNPCID;
 								result.entryType = Data::EquipmentOverrideConditionType::NPC;
 
 								ImGui::CloseCurrentPopup();
@@ -1851,13 +1887,13 @@ namespace IED
 
 					if (LCG_MI(CommonStrings::Race, "8"))
 					{
-						result.action = BaseConfigEditorAction::Insert;
+						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Race;
 					}
 
 					if (LCG_MI(CommonStrings::Furniture, "9"))
 					{
-						result.action = BaseConfigEditorAction::Insert;
+						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Furniture;
 
 						ImGui::CloseCurrentPopup();
@@ -1873,8 +1909,8 @@ namespace IED
 						{
 							if (m_aoNewEntryID)
 							{
-								result.action = BaseConfigEditorAction::Insert;
-								result.form = m_aoNewEntryID;
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryID;
 								result.entryType = Data::EquipmentOverrideConditionType::Quest;
 
 								ImGui::CloseCurrentPopup();
@@ -1886,23 +1922,29 @@ namespace IED
 
 					if (LCG_MI(CommonStrings::Location, "B"))
 					{
-						result.action = BaseConfigEditorAction::Insert;
+						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Location;
 					}
-					
+
 					if (LCG_MI(CommonStrings::Worldspace, "C"))
 					{
-						result.action = BaseConfigEditorAction::Insert;
+						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Worldspace;
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "D"))
+					if (LCG_MI(CommonStrings::Package, "D"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Package;
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "E"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
 						{
-							result.action = BaseConfigEditorAction::Insert;
-							result.excond = m_ooNewExtraCond;
+							result.action    = BaseConfigEditorAction::Insert;
+							result.excond    = m_ooNewExtraCond;
 							result.entryType = Data::EquipmentOverrideConditionType::Extra;
 
 							ImGui::CloseCurrentPopup();
@@ -1911,9 +1953,9 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "E"))
+					if (LCG_MI(CommonStrings::Group, "F"))
 					{
-						result.action = BaseConfigEditorAction::Insert;
+						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
 
 						ImGui::CloseCurrentPopup();
@@ -1922,14 +1964,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "F"))
+				if (LCG_MI(CommonStrings::Delete, "G"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "G"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "H"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -1938,7 +1980,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "G"))
+					if (LCG_MI(CommonStrings::Copy, "H"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -1946,7 +1988,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "H"),
+							LS(CommonStrings::PasteOver, "I"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -1972,17 +2014,17 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawExtraEquipmentOverrideOptions(
-			T a_handle,
-			Data::configBase_t& a_data,
-			const void* a_params,
+			T                          a_handle,
+			Data::configBase_t&        a_data,
+			const void*                a_params,
 			Data::equipmentOverride_t& a_override)
 		{
 		}
 
 		template <class T>
 		auto UIBaseConfigWidget<T>::DrawEquipmentOverrideContextMenu(
-			T a_handle,
-			const void* a_params,
+			T                          a_handle,
+			const void*                a_params,
 			Data::equipmentOverride_t& a_data)
 			-> EquipmentOverrideResult
 		{
@@ -2009,7 +2051,7 @@ namespace IED
 			if (ImGui::ArrowButton("up", ImGuiDir_Up))
 			{
 				result.action = BaseConfigEditorAction::Swap;
-				result.dir = SwapDirection::Up;
+				result.dir    = SwapDirection::Up;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -2017,7 +2059,7 @@ namespace IED
 			if (ImGui::ArrowButton("down", ImGuiDir_Down))
 			{
 				result.action = BaseConfigEditorAction::Swap;
-				result.dir = SwapDirection::Down;
+				result.dir    = SwapDirection::Down;
 			}
 
 			ImGui::PopStyleVar();
@@ -2033,7 +2075,7 @@ namespace IED
 						if (DrawDescriptionPopup())
 						{
 							result.action = BaseConfigEditorAction::Insert;
-							result.desc = GetDescriptionPopupBuffer();
+							result.desc   = GetDescriptionPopupBuffer();
 
 							ClearDescriptionPopupBuffer();
 						}
@@ -2067,7 +2109,7 @@ namespace IED
 					if (DrawDescriptionPopup())
 					{
 						result.action = BaseConfigEditorAction::Rename;
-						result.desc = GetDescriptionPopupBuffer();
+						result.desc   = GetDescriptionPopupBuffer();
 
 						ClearDescriptionPopupBuffer();
 					}
@@ -2214,6 +2256,34 @@ namespace IED
 				DrawTip(UITip::MatchWorldspaceParent);
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Race:
+
+				result = ImGui::CheckboxFlagsT(
+					"!##1",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::IsPlayable, "2"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+				
+				result = ImGui::CheckboxFlagsT(
+					"!##3",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::ChildRace, "4"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2223,7 +2293,7 @@ namespace IED
 
 		template <class T>
 		bool UIBaseConfigWidget<T>::DrawConditionItemExtra(
-			ConditionParamItem a_item,
+			ConditionParamItem           a_item,
 			ConditionParamItemExtraArgs& a_args)
 		{
 			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_args.p3);
@@ -2238,6 +2308,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Furniture:
 			case Data::EquipmentOverrideConditionType::BipedSlot:
 			case Data::EquipmentOverrideConditionType::Location:
+			case Data::EquipmentOverrideConditionType::Package:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -2254,7 +2325,9 @@ namespace IED
 
 					ImGui::SameLine();
 				}
-				else if (a_item == ConditionParamItem::Keyword)
+				else if (
+					a_item == ConditionParamItem::Keyword ||
+					a_item == ConditionParamItem::PackageType)
 				{
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_2",
@@ -2301,6 +2374,34 @@ namespace IED
 				}
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Extra:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					switch (match->extraCondType)
+					{
+					case Data::ExtraConditionType::kShoutEquipped:
+					case Data::ExtraConditionType::kInMerchantFaction:
+					case Data::ExtraConditionType::kCombatStyle:
+					case Data::ExtraConditionType::kClass:
+
+						result = ImGui::CheckboxFlagsT(
+							"!##ctl_neg_1",
+							stl::underlying(std::addressof(match->flags.value)),
+							stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+						ImGui::SameLine();
+
+						a_args.hide = false;
+						break;
+					default:
+						a_args.hide = true;
+						break;
+					}
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2340,6 +2441,10 @@ namespace IED
 				break;
 			case Data::EquipmentOverrideConditionType::Worldspace:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Worldspace));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Package:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Package));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

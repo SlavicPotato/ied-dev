@@ -36,11 +36,11 @@ namespace IED
 		protected:
 			inline static constexpr auto POPUP_ID_APPLY = "popup_apply";
 			inline static constexpr auto POPUP_ID_MERGE = "popup_merge";
-			inline static constexpr auto POPUP_ID_SAVE = "popup_save";
+			inline static constexpr auto POPUP_ID_SAVE  = "popup_save";
 
 			UIProfileSelectorBase(
 				Localization::ILocalization& a_localization,
-				UIProfileSelectorFlags a_flags = UIProfileSelectorFlags::kEnableApply);
+				UIProfileSelectorFlags       a_flags = UIProfileSelectorFlags::kEnableApply);
 
 			virtual ~UIProfileSelectorBase() noexcept = default;
 
@@ -52,13 +52,16 @@ namespace IED
 			virtual void DrawProfileSelectorOptions(const T& a_data);
 
 		private:
+			virtual bool DrawProfileImportOptions(const T& a_data, const P& a_profile) { return true; };
+			virtual void ResetProfileImportOptions() {}
+
 			stl::flag<UIProfileSelectorFlags> m_flags;
 		};
 
 		template <class T, class P>
 		UIProfileSelectorBase<T, P>::UIProfileSelectorBase(
 			Localization::ILocalization& a_localization,
-			UIProfileSelectorFlags a_flags) :
+			UIProfileSelectorFlags       a_flags) :
 			UIProfileBase<P>(a_localization),
 			m_flags(a_flags)
 		{
@@ -68,7 +71,7 @@ namespace IED
 		void UIProfileSelectorBase<T, P>::DrawProfileSelector(
 			const T& a_data)
 		{
-			auto& pm = GetProfileManager();
+			auto& pm   = GetProfileManager();
 			auto& data = pm.Data();
 
 			ImGui::PushID("profile_selector_base");
@@ -144,6 +147,7 @@ namespace IED
 							ImGui::SameLine(wcm.x - GetNextTextOffset(sh.apply));
 							if (ButtonRight(sh.apply))
 							{
+								ResetProfileImportOptions();
 								ImGui::OpenPopup(LS(CommonStrings::Confirm, POPUP_ID_APPLY));
 							}
 						}
@@ -153,13 +157,16 @@ namespace IED
 							ImGui::SameLine(wcm.x - GetNextTextOffset(sh.merge));
 							if (ButtonRight(sh.merge))
 							{
+								ResetProfileImportOptions();
 								ImGui::OpenPopup(LS(CommonStrings::Confirm, POPUP_ID_MERGE));
 							}
 						}
 
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_APPLY),
-								cm_func_t{},
+								[&] {
+									return DrawProfileImportOptions(a_data, profile);
+								},
 								stl::optional<float>{},
 								"%s [%s]\n\n%s",
 								LS(UIProfileStrings::LoadDataFromProfile),
@@ -171,7 +178,9 @@ namespace IED
 
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_MERGE),
-								cm_func_t{},
+								[&] {
+									return DrawProfileImportOptions(a_data, profile);
+								},
 								stl::optional<float>{},
 								"%s [%s]\n\n%s",
 								LS(UIProfileStrings::MergeDataFromProfile),

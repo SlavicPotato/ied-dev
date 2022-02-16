@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigCommon.h"
+#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideTransform.h"
 #include "NodeDescriptor.h"
 
@@ -12,21 +13,21 @@ namespace IED
 		{
 			kNone = 0,
 
-			kReserved0 = 1u << 0,
-			kReserved1 = 1u << 1,
-			kInvisible = 1u << 2,
-			kHideIfUsingFurniture = 1u << 3,
-			kDropOnDeath = 1u << 4,
-			kDisabled = 1u << 5,
+			kReserved0              = 1u << 0,
+			kReserved1              = 1u << 1,
+			kInvisible              = 1u << 2,
+			kHideIfUsingFurniture   = 1u << 3,
+			kDropOnDeath            = 1u << 4,
+			kDisabled               = 1u << 5,
 			kSyncReferenceTransform = 1u << 6,
-			kReferenceMode = 1u << 7,
-			kPlaySound = 1u << 8,
-			kKeepTorchFlame = 1u << 9,
-			kRemoveScabbard = 1u << 10,
-			kLoad1pWeaponModel = 1u << 11,
-			kHideLayingDown = 1u << 12,
-			kUseWorldModel = 1u << 13,
-			kIgnoreRaceEquipTypes = 1u << 14,
+			kReferenceMode          = 1u << 7,
+			kPlaySound              = 1u << 8,
+			kKeepTorchFlame         = 1u << 9,
+			kRemoveScabbard         = 1u << 10,
+			kLoad1pWeaponModel      = 1u << 11,
+			kHideLayingDown         = 1u << 12,
+			kUseWorldModel          = 1u << 13,
+			kIgnoreRaceEquipTypes   = 1u << 14,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -52,13 +53,14 @@ namespace IED
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
-				Data::BaseFlags::kDropOnDeath |
-				Data::BaseFlags::kSyncReferenceTransform |
-				Data::BaseFlags::kPlaySound |
-				Data::BaseFlags::kReferenceMode;
+				BaseFlags::kDropOnDeath |
+				BaseFlags::kSyncReferenceTransform |
+				BaseFlags::kPlaySound |
+				BaseFlags::kReferenceMode;
 
-			stl::flag<Data::BaseFlags> flags{ DEFAULT_FLAGS };
-			NodeDescriptor targetNode;
+			stl::flag<BaseFlags>       flags{ DEFAULT_FLAGS };
+			NodeDescriptor             targetNode;
+			//configEffectShaderHolder_t effectShaders;
 
 		protected:
 			template <class Archive>

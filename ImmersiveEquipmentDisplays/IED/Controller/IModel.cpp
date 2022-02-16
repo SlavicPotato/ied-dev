@@ -6,12 +6,12 @@ namespace IED
 {
 	template <class T>
 	static constexpr bool ExtractModelParams(
-		T* a_ptr,
+		T*                     a_ptr,
 		IModel::modelParams_t& a_out,
-		ModelType a_type = ModelType::kMisc)
+		ModelType              a_type = ModelType::kMisc)
 	{
 		TESModelTextureSwap* texSwap{ nullptr };
-		const char* path;
+		const char*          path;
 
 		if constexpr (std::is_same_v<T, TESModel>)
 		{
@@ -20,7 +20,7 @@ namespace IED
 		else
 		{
 			texSwap = std::addressof(a_ptr->texSwap);
-			path = texSwap->GetModelName();
+			path    = texSwap->GetModelName();
 		}
 
 		if (!path || path[0] == 0)
@@ -36,20 +36,20 @@ namespace IED
 
 	template <class T, class>
 	bool IModel::ExtractFormModelParams(
-		TESForm* a_form,
+		TESForm*       a_form,
 		modelParams_t& a_out,
-		ModelType a_type)
+		ModelType      a_type)
 	{
 		return ExtractModelParams(static_cast<T*>(a_form), a_out, a_type);
 	}
 
 	bool IModel::GetModelParams(
-		Actor* a_actor,
-		TESForm* a_form,
-		TESRace* a_race,
-		bool a_isFemale,
-		bool a_1pWeap,
-		bool a_useWorld,
+		Actor*         a_actor,
+		TESForm*       a_form,
+		TESRace*       a_race,
+		bool           a_isFemale,
+		bool           a_1pWeap,
+		bool           a_useWorld,
 		modelParams_t& a_out)
 	{
 		switch (a_form->formType)
@@ -138,12 +138,12 @@ namespace IED
 						}
 
 						auto texSwap = std::addressof(arma->models[0][a_isFemale ? 1 : 0]);
-						auto path = texSwap->GetModelName();
+						auto path    = texSwap->GetModelName();
 
 						if (!path || path[0] == 0)
 						{
 							texSwap = std::addressof(arma->models[0][a_isFemale ? 0 : 1]);
-							path = texSwap->GetModelName();
+							path    = texSwap->GetModelName();
 						}
 
 						if (!path || path[0] == 0)
@@ -167,12 +167,12 @@ namespace IED
 				else
 				{
 					auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
-					auto path = texSwap->GetModelName();
+					auto path    = texSwap->GetModelName();
 
 					if (!path || path[0] == 0)
 					{
 						texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
-						path = texSwap->GetModelName();
+						path    = texSwap->GetModelName();
 					}
 
 					if (!path || path[0] == 0)

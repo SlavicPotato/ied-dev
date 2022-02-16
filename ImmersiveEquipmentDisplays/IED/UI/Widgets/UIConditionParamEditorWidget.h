@@ -5,6 +5,7 @@
 #include "UICMNodeSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
+#include "UIPackageTypeSelectorWidget.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -25,6 +26,7 @@ namespace IED
 		Furniture,
 		QuestCondType,
 		CondExtra,
+		PackageType,
 		Extra,
 
 		Total
@@ -36,6 +38,7 @@ namespace IED
 		const void* p2{ nullptr };
 		void* p3{ nullptr };
 		bool disable{ false };
+		bool hide{ false };
 	};
 
 	namespace UI
@@ -65,6 +68,7 @@ namespace IED
 			public UICMNodeSelectorWidget,
 			public UIFormLookupInterface,
 			public UIConditionExtraSelectorWidget,
+			public UIPackageTypeSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			struct entry_t
@@ -197,6 +201,11 @@ namespace IED
 				Ap == ConditionParamItem::CondExtra)
 			{
 				static_assert(std::is_same_v<T, Data::ExtraConditionType>);
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::PackageType)
+			{
+				static_assert(std::is_same_v<T, PACKAGE_PROCEDURE_TYPE>);
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::Extra)

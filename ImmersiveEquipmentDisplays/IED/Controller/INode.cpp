@@ -10,7 +10,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	static void UpdateNodeDataImpl(
-		NiAVObject* a_node,
+		NiAVObject*                   a_node,
 		const Data::cacheTransform_t& a_trnsf)
 	{
 		if (a_trnsf.scale)
@@ -42,8 +42,8 @@ namespace IED
 	}
 
 	static void UpdateNodeDataImpl(
-		NiAVObject* a_node,
-		NiNode* a_refNode,
+		NiAVObject*                   a_node,
+		NiNode*                       a_refNode,
 		const Data::cacheTransform_t& a_trnsf)
 	{
 		if (a_trnsf.scale)
@@ -92,8 +92,8 @@ namespace IED
 
 	auto INode::FindNodes(
 		const Data::NodeDescriptor& a_node,
-		bool a_atmReference,
-		NiNode* a_root)
+		bool                        a_atmReference,
+		NiNode*                     a_root)
 		-> findResult_t
 	{
 		BSFixedString nodeName(a_node.name.c_str());
@@ -126,7 +126,7 @@ namespace IED
 
 	BSFixedString INode::GetTargetNodeName(
 		const Data::NodeDescriptor& a_node,
-		bool a_atmReference)
+		bool                        a_atmReference)
 	{
 		char tmp[MAX_PATH];
 
@@ -148,9 +148,9 @@ namespace IED
 
 	bool INode::CreateTargetNode(
 		const Data::configBaseValues_t& a_entry,
-		const Data::NodeDescriptor& a_node,
-		NiNode* a_root,
-		nodesRef_t& a_out)
+		const Data::NodeDescriptor&     a_node,
+		NiNode*                         a_root,
+		nodesRef_t&                     a_out)
 	{
 		if (!a_node)
 		{
@@ -191,10 +191,10 @@ namespace IED
 
 	bool INode::AttachObjectToTargetNode(
 		const Data::NodeDescriptor& a_node,
-		bool a_atmReference,
-		NiNode* a_root,
-		NiAVObject* a_object,
-		NiPointer<NiNode>& a_newRef)
+		bool                        a_atmReference,
+		NiNode*                     a_root,
+		NiAVObject*                 a_object,
+		NiPointer<NiNode>&          a_newRef)
 	{
 		if (!a_node || !a_object)
 		{
@@ -226,7 +226,7 @@ namespace IED
 		a_newRef = nodes.ref;
 
 		if (a_object->m_parent &&
-			a_object->m_parent != targetNode)
+		    a_object->m_parent != targetNode)
 		{
 			targetNode->AttachChild(a_object, true);
 			UpdateDownwardPass(a_object);
@@ -237,8 +237,8 @@ namespace IED
 
 	void INode::UpdateObjectTransform(
 		const Data::cacheTransform_t& a_trnsf,
-		NiAVObject* a_object,
-		NiNode* a_refNode)
+		NiAVObject*                   a_object,
+		NiNode*                       a_refNode)
 	{
 		if (!a_object)
 		{

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "UITipsData.h"
 #include "UILocalizationInterface.h"
+#include "UITipsData.h"
 
 namespace IED
 {
@@ -9,16 +9,16 @@ namespace IED
 
 	namespace UI
 	{
-		class UITipsInterface : 
+		class UITipsInterface :
 			public virtual UILocalizationInterface
 		{
 		public:
 			UITipsInterface(Controller& a_controller);
 
 		protected:
-			void DrawTip(UITip a_id, bool a_sameLine = true) const;
-			void DrawTipWarn(UITip a_id, bool a_sameLine = true) const;
-			void DrawTip(const char* a_text, bool a_sameLine = true) const;
+			void        DrawTip(UITip a_id, bool a_sameLine = true) const;
+			void        DrawTipWarn(UITip a_id, bool a_sameLine = true) const;
+			void        DrawTip(const char* a_text, bool a_sameLine = true) const;
 			const char* GetTipText(UITip a_id) const;
 
 		private:

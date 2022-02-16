@@ -12,7 +12,7 @@ namespace IED
 	{
 		bool UICollapsibles::CollapsingHeader(
 			const char* a_label,
-			bool a_default)
+			bool        a_default)
 		{
 			auto window = ImGui::GetCurrentWindow();
 			if (window->SkipItems)
@@ -49,8 +49,8 @@ namespace IED
 
 		bool UICollapsibles::Tree(
 			const char* a_label,
-			bool a_default,
-			bool a_framed)
+			bool        a_default,
+			bool        a_framed)
 		{
 			auto window = ImGui::GetCurrentWindow();
 			if (window->SkipItems)

@@ -7,9 +7,9 @@
 namespace IED
 {
 	void ObjectEntryStatus::set(
-		ObjectEntryStatusCode a_code,
+		ObjectEntryStatusCode  a_code,
 		const processParams_t& a_params,
-		Game::FormID a_form)
+		Game::FormID           a_form)
 	{
 		m_lastStatus = a_code;
 
@@ -45,6 +45,5 @@ namespace IED
 		m_lastStatus = ObjectEntryStatusCode::kNone;
 		m_info.reset();
 	}
-
 
 }

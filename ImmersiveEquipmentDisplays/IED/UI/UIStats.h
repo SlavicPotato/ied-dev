@@ -32,16 +32,16 @@ namespace IED
 
 		private:
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
-			virtual void OnCollapsibleStatesUpdate() override;
+			virtual void                         OnCollapsibleStatesUpdate() override;
 
 			struct sorted_list_entry_t
 			{
 				const ActorObjectMap::value_type& obj;
-				stl::fixed_string name;
-				Game::FormID race;
-				std::size_t nslot;
-				std::size_t ncust;
-				long long age;
+				stl::fixed_string                 name;
+				Game::FormID                      race;
+				std::size_t                       nslot;
+				std::size_t                       ncust;
+				long long                         age;
 			};
 
 			using sort_comp_func_t = std::function<bool(const sorted_list_entry_t&, const sorted_list_entry_t&)>;

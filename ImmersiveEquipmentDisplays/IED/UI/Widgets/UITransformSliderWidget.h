@@ -13,7 +13,6 @@ namespace IED
 			virtual public UIPopupToggleButtonWidget
 		{
 		public:
-
 			enum class TransformUpdateValue
 			{
 				Position,
@@ -24,20 +23,21 @@ namespace IED
 			template <class Tu>
 			void DrawTransformSliders(
 				Data::configTransform_t& a_data,
-				Tu a_updateop);
+				Tu                       a_updateop);
 
 			template <class Tv, class Tp, class Tu>
 			void DrawTransformSliderContextMenu(
-				stl::optional<Tv>& a_value,
-				Tp a_resetop,
-				Tu a_updateop,
-				TransformUpdateValue a_updValue);
+				Data::configTransform_t& a_data,
+				stl::optional<Tv>&       a_value,
+				Tp                       a_resetop,
+				Tu                       a_updateop,
+				TransformUpdateValue     a_updValue);
 		};
 
 		template <class Tu>
 		void UITransformSliderWidget::DrawTransformSliders(
 			Data::configTransform_t& a_data,
-			Tu a_updateop)
+			Tu                       a_updateop)
 		{
 			ImGui::PushID("transform_sliders");
 
@@ -49,6 +49,7 @@ namespace IED
 			ImGui::BeginGroup();
 
 			DrawTransformSliderContextMenu(
+				a_data,
 				a_data.position,
 				[](auto& a_v) { a_v.reset(); },
 				a_updateop,
@@ -72,6 +73,7 @@ namespace IED
 						ImGuiSliderFlags_NoRoundToFormat))
 			{
 				a_data.position.mark(true);
+				a_data.update_tag();
 
 				a_updateop(TransformUpdateValue::Position);
 			}
@@ -88,6 +90,7 @@ namespace IED
 			ImGui::BeginGroup();
 
 			DrawTransformSliderContextMenu(
+				a_data,
 				a_data.rotation,
 				[](auto& a_v) { a_v.reset(); },
 				a_updateop,
@@ -121,6 +124,7 @@ namespace IED
 						ImGuiSliderFlags_NoRoundToFormat))
 			{
 				a_data.rotation = v * (pi / 180.0f);
+				a_data.update_tag();
 
 				a_updateop(TransformUpdateValue::Rotation);
 			}
@@ -137,6 +141,7 @@ namespace IED
 			ImGui::BeginGroup();
 
 			DrawTransformSliderContextMenu(
+				a_data,
 				a_data.scale,
 				[](auto& a_v) { a_v.clear(); *a_v = 1.0f; },
 				a_updateop,
@@ -160,6 +165,7 @@ namespace IED
 						ImGuiSliderFlags_NoRoundToFormat))
 			{
 				a_data.scale.mark(true);
+				a_data.update_tag();
 
 				a_updateop(TransformUpdateValue::Scale);
 			}
@@ -177,10 +183,11 @@ namespace IED
 
 		template <class Tv, class Tp, class Tu>
 		void UITransformSliderWidget::DrawTransformSliderContextMenu(
-			stl::optional<Tv>& a_value,
-			Tp a_resetop,
-			Tu a_updateop,
-			TransformUpdateValue a_updValue)
+			Data::configTransform_t& a_data,
+			stl::optional<Tv>&       a_value,
+			Tp                       a_resetop,
+			Tu                       a_updateop,
+			TransformUpdateValue     a_updValue)
 		{
 			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
 
@@ -195,6 +202,7 @@ namespace IED
 				{
 					if (a_value)
 					{
+						a_data.update_tag();
 						a_resetop(a_value);
 						a_updateop(a_updValue);
 					}

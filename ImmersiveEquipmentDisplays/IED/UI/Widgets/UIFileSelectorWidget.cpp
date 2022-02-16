@@ -8,7 +8,7 @@ namespace IED
 	namespace UI
 	{
 		UIFileSelector::SelectedFile::SelectedFile(
-			const fs::path& a_root,
+			const fs::path&                 a_root,
 			const storage_type::value_type& a_filename) :
 			m_fullpath(a_root / a_filename.second),
 			m_filename(a_filename.second),
@@ -23,8 +23,8 @@ namespace IED
 
 		UIFileSelector::UIFileSelector(
 			Localization::ILocalization& a_loc,
-			const fs::path& a_root,
-			const fs::path& a_ext) :
+			const fs::path&              a_root,
+			const fs::path&              a_ext) :
 			UILocalizationInterface(a_loc),
 			m_root(a_root),
 			m_ext(a_ext)
@@ -214,7 +214,7 @@ namespace IED
 
 		bool UIFileSelector::RenameItem(
 			const SelectedFile& a_item,
-			const fs::path& a_newFileName)
+			const fs::path&     a_newFileName)
 		{
 			std::string fkey;
 
@@ -237,7 +237,7 @@ namespace IED
 			{
 				m_selected->m_fullpath = m_root / r.first->second;
 				m_selected->m_filename = r.first->second;
-				m_selected->m_key = r.first->first;
+				m_selected->m_key      = r.first->first;
 			}
 
 			return true;

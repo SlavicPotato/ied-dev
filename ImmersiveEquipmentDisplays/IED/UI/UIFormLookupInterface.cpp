@@ -1,10 +1,10 @@
 #include "pch.h"
 
-#include "UIFormLookupInterface.h"
 #include "UIFormInfoCache.h"
+#include "UIFormLookupInterface.h"
 
-#include "IED/Controller/IForm.h"
 #include "IED/Controller/Controller.h"
+#include "IED/Controller/IForm.h"
 
 namespace IED
 {

@@ -47,9 +47,9 @@ namespace IED
 			return false;
 		}
 
-		if (f->data.s)
+		if (auto s = f->data.s)
 		{
-			LocaleData::GetSingleton()->SetFromLang(f->data.s);
+			LocaleData::GetSingleton()->SetFromLang(s);
 
 			return true;
 		}
@@ -108,7 +108,6 @@ namespace IED
 			g_controller->InitializeStrings();
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
-
 			ASSERT(g_controller->SinkEventsT1());
 
 			break;
@@ -202,7 +201,7 @@ namespace IED
 		g_controller->SinkInputEvents();
 
 		auto handle = a_skse->GetPluginHandle();
-		auto mi = skse.GetInterface<SKSEMessagingInterface>();
+		auto mi     = skse.GetInterface<SKSEMessagingInterface>();
 
 		mi->RegisterListener(handle, "SKSE", SKSE_MessageHandler);
 
@@ -234,4 +233,4 @@ namespace IED
 
 		return true;
 	}
-}  // namespace IED
+}

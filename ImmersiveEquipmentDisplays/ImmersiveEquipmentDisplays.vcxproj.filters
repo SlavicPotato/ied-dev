@@ -1046,6 +1046,18 @@
     <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\IUUID.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigUUIDTag.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1652,6 +1664,12 @@
       <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="..\..\sse-build-resources\ext\str_conv.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\IUUID.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

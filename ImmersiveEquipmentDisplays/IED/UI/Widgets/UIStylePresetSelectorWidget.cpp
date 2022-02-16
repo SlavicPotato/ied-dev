@@ -58,7 +58,7 @@ namespace IED
 							selected))
 					{
 						a_preset = e;
-						result = true;
+						result   = true;
 					}
 
 					ImGui::PopID();

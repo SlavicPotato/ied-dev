@@ -82,7 +82,7 @@ namespace IED
 		}
 
 		configNodeOverrideHolderCopy_t configStoreNodeOverride_t::GetRaceCopy(
-			Game::FormID a_race,
+			Game::FormID     a_race,
 			GlobalConfigType a_globtype) const
 		{
 			configNodeOverrideHolderCopy_t result;
@@ -111,11 +111,11 @@ namespace IED
 		}
 
 		const configNodeOverrideEntryTransform_t* configStoreNodeOverride_t::GetActorTransform(
-			Game::FormID a_actor,
-			Game::FormID a_npc,
-			Game::FormID a_race,
+			Game::FormID             a_actor,
+			Game::FormID             a_npc,
+			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t& a_hc) const
+			holderCache_t&           a_hc) const
 		{
 			if (auto& actorData = GetActorData(); !actorData.empty())
 			{
@@ -159,11 +159,11 @@ namespace IED
 		}
 
 		const configNodeOverrideEntryPlacement_t* configStoreNodeOverride_t::GetActorPlacement(
-			Game::FormID a_actor,
-			Game::FormID a_npc,
-			Game::FormID a_race,
+			Game::FormID             a_actor,
+			Game::FormID             a_npc,
+			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t& a_hc) const
+			holderCache_t&           a_hc) const
 		{
 			if (auto& actorData = GetActorData(); !actorData.empty())
 			{
@@ -268,7 +268,7 @@ namespace IED
 
 		configNodeOverrideHolderCopy_t::configNodeOverrideHolderCopy_t(
 			const configNodeOverrideHolder_t& a_rhs,
-			ConfigClass a_initclass)
+			ConfigClass                       a_initclass)
 		{
 			for (auto& [i, e] : a_rhs.data)
 			{
@@ -285,7 +285,7 @@ namespace IED
 
 		configNodeOverrideHolderCopy_t::configNodeOverrideHolderCopy_t(
 			configNodeOverrideHolder_t&& a_rhs,
-			ConfigClass a_initclass)
+			ConfigClass                  a_initclass)
 		{
 			for (auto& [i, e] : a_rhs.data)
 			{
@@ -327,7 +327,7 @@ namespace IED
 		}
 
 		void configNodeOverrideHolderCopy_t::copy_cc(
-			ConfigClass a_class,
+			ConfigClass                 a_class,
 			configNodeOverrideHolder_t& a_dst) const
 		{
 			a_dst.clear();

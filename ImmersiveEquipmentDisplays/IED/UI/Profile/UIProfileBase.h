@@ -34,8 +34,8 @@ namespace IED
 
 			void DrawCreateNew();
 
-			virtual ProfileManager<T>& GetProfileManager() const = 0;
-			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const = 0;
+			virtual ProfileManager<T>& GetProfileManager() const         = 0;
+			virtual UIPopupQueue&      GetPopupQueue_ProfileBase() const = 0;
 
 			virtual bool InitializeProfile(T& a_profile);
 			virtual bool AllowCreateNew() const;
@@ -55,9 +55,9 @@ namespace IED
 
 			struct
 			{
-				char new_input[260]{ 0 };
+				char                             new_input[260]{ 0 };
 				stl::optional<stl::fixed_string> selected;
-				except::descriptor lastException;
+				except::descriptor               lastException;
 			} m_state;
 		};
 
@@ -208,13 +208,13 @@ namespace IED
 		template <class T>
 		void UIProfileBase<T>::OnProfileAdd(
 			const stl::fixed_string& a_name,
-			T& a_profile)
+			T&                       a_profile)
 		{}
 
 		template <class T>
 		void UIProfileBase<T>::OnProfileSave(
 			const stl::fixed_string& a_name,
-			T& a_profile)
+			T&                       a_profile)
 		{}
 
 		template <class T>

@@ -14,6 +14,10 @@ namespace IED
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
+			{ Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped },
+			//{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
+			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
+			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
 
 		} };
 
@@ -78,6 +82,14 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsGuard);
 			case Data::ExtraConditionType::kIsMount:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsMount);
+			case Data::ExtraConditionType::kShoutEquipped:
+				return LS(UIConditionExtraSelectorWidgetStrings::ShoutEquipped);
+			/*case Data::ExtraConditionType::kInMerchantFaction:
+				return LS(UIConditionExtraSelectorWidgetStrings::InMerchantFaction);*/
+			case Data::ExtraConditionType::kCombatStyle:
+				return LS(UIConditionExtraSelectorWidgetStrings::CombatStyle);
+			case Data::ExtraConditionType::kClass:
+				return LS(UIConditionExtraSelectorWidgetStrings::Class);
 			default:
 				return nullptr;
 			}

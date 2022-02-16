@@ -14,9 +14,9 @@ namespace IED
 	{
 		struct item_t
 		{
-			TESForm* form;
-			std::uint16_t damage;
-			std::int64_t extra;
+			TESForm*                           form;
+			std::uint16_t                      damage;
+			std::int64_t                       extra;
 			Data::collectorData_t::itemData_t* item;
 		};
 
@@ -27,14 +27,12 @@ namespace IED
 
 	struct ItemCandidateCollector
 	{
-	private:
-
 	public:
 		ItemCandidateCollector(
 			Actor* a_actor);
 
 		void Run(
-			TESContainer& a_container,
+			TESContainer&  a_container,
 			EntryDataList* a_dataList);
 
 		SKMP_FORCEINLINE bool Accept(TESContainer::Entry* entry);
@@ -42,9 +40,13 @@ namespace IED
 
 		void GenerateSlotCandidates(bool a_checkFav);
 
-		SlotItemCandidates m_slotResults[stl::underlying(Data::ObjectType::kMax)];
+		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
+		{
+			return m_slotResults[stl::underlying(a_type)].m_items;
+		}
 
 		Data::collectorData_t m_data;
+		SlotItemCandidates    m_slotResults[stl::underlying(Data::ObjectType::kMax)];
 
 	private:
 		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);

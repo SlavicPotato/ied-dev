@@ -8,8 +8,8 @@ namespace IED
 	{
 		bool ParseFloatArray(
 			const Json::Value& a_in,
-			float* a_out,
-			std::uint32_t a_size)
+			float*             a_out,
+			std::uint32_t      a_size)
 		{
 			if (!a_in.isArray())
 				return false;
@@ -31,9 +31,9 @@ namespace IED
 		}
 
 		void CreateFloatArray(
-			const float* a_in,
+			const float*  a_in,
 			std::uint32_t a_size,
-			Json::Value& a_out)
+			Json::Value&  a_out)
 		{
 			for (std::uint32_t i = 0; i < a_size; i++)
 			{

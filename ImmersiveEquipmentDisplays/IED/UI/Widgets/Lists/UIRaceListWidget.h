@@ -28,7 +28,7 @@ namespace IED
 
 			UIRaceList(
 				Controller& a_controller,
-				float a_itemWidthScalar = -6.5f);
+				float       a_itemWidthScalar = -6.5f);
 
 			virtual ~UIRaceList() noexcept = default;
 
@@ -46,7 +46,7 @@ namespace IED
 		template <class Td>
 		UIRaceList<Td>::UIRaceList(
 			Controller& a_controller,
-			float a_itemWidthScalar) :
+			float       a_itemWidthScalar) :
 			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller)
@@ -62,12 +62,12 @@ namespace IED
 			m_listData.clear();
 
 			const auto& raceConf = GetRaceSettings();
-			auto& rl = Data::IData::GetRaceList();
+			const auto& rl       = Data::IData::GetRaceList();
 
 			for (auto& [i, e] : rl)
 			{
 				if (raceConf.playableOnly &&
-				    !e.playable)
+				    !e.flags.test(TESRace::Flag::kPlayable))
 				{
 					continue;
 				}
@@ -97,7 +97,7 @@ namespace IED
 				if (auto& crosshairRef = GetCrosshairRef())
 				{
 					auto& actorCache = GetActorInfo();
-					auto it = actorCache.find(*crosshairRef);
+					auto  it         = actorCache.find(*crosshairRef);
 					if (it != actorCache.end())
 					{
 						if (m_listData.contains(it->second.race))
@@ -133,7 +133,7 @@ namespace IED
 		void UIRaceList<Td>::ListDrawInfoText(const listValue_t& a_entry)
 		{
 			auto& raceCache = Data::IData::GetRaceList();
-			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
+			auto& modList   = Data::IData::GetPluginInfo().GetIndexMap();
 
 			std::ostringstream ss;
 
@@ -142,7 +142,7 @@ namespace IED
 			{
 				ss << "EDID:  " << itr->second.edid << std::endl;
 				ss << LS(CommonStrings::Name) << ":  " << itr->second.fullname << std::endl;
-				ss << LS(CommonStrings::Flags) << ": " << std::bitset<8>(itr->second.flags) << std::endl;
+				ss << LS(CommonStrings::Flags) << ": " << std::bitset<8>(itr->second.flags.underlying()) << std::endl;
 			}
 
 			std::uint32_t modIndex;

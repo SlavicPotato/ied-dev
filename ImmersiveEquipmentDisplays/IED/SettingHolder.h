@@ -21,7 +21,7 @@ namespace IED
 		enum class DefaultConfigType : std::uint8_t
 		{
 			kDefault = 0,
-			kUser = 1
+			kUser    = 1
 		};
 
 		class SettingHolder
@@ -31,8 +31,8 @@ namespace IED
 
 			struct EditorPanelCommon
 			{
-				bool sexSync{ false };
-				bool eoPropagation{ false };
+				bool                       sexSync{ false };
+				bool                       eoPropagation{ false };
 				EditorPanelCommonFlagsType flags{ 0 };
 
 				template <
@@ -59,8 +59,8 @@ namespace IED
 
 			struct EditorPanelActorSettings
 			{
-				bool autoSelectSex{ true };
-				bool showAll{ true };
+				bool      autoSelectSex{ true };
+				bool      showAll{ true };
 				ConfigSex sex{ Data::ConfigSex::Male };
 
 				Game::FormID lastActor;
@@ -68,8 +68,8 @@ namespace IED
 
 			struct EditorPanelRaceSettings
 			{
-				bool playableOnly{ false };
-				bool showEditorIDs{ true };
+				bool      playableOnly{ false };
+				bool      showEditorIDs{ true };
 				ConfigSex sex{ ConfigSex::Male };
 			};
 
@@ -78,11 +78,11 @@ namespace IED
 			{
 				EditorPanelActorSettings actorConfig;
 				EditorPanelActorSettings npcConfig;
-				EditorPanelRaceSettings raceConfig;
+				EditorPanelRaceSettings  raceConfig;
 
 				GlobalConfigType globalType{ GlobalConfigType::Player };
-				ConfigSex globalSex{ ConfigSex::Male };
-				ConfigClass lastConfigClass{ ConfigClass::Global };
+				ConfigSex        globalSex{ ConfigSex::Male };
+				ConfigClass      lastConfigClass{ ConfigClass::Global };
 
 				UI::UIData::UICollapsibleStates colStates[CONFIG_CLASS_MAX];
 			};
@@ -105,13 +105,13 @@ namespace IED
 					}
 				}
 
-				EditorPanel slotEditor;
-				EditorPanel customEditor;
-				EditorPanel transformEditor;
+				EditorPanel   slotEditor;
+				EditorPanel   customEditor;
+				EditorPanel   transformEditor;
 				ProfileEditor slotProfileEditor;
 				ProfileEditor customProfileEditor;
 				ProfileEditor transformProfileEditor;
-				ImportExport importExport;
+				ImportExport  importExport;
 
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;
@@ -120,15 +120,15 @@ namespace IED
 
 				stl::optional<ConfigKeyPair> openKeys;
 
-				bool enableControlLock{ true };
-				bool enableFreezeTime{ false };
-				bool enableRestrictions{ false };
-				bool selectCrosshairActor{ true };
+				bool  enableControlLock{ true };
+				bool  enableFreezeTime{ false };
+				bool  enableRestrictions{ false };
+				bool  selectCrosshairActor{ true };
 				float scale{ 1.0f };
 
 				std::uint32_t logLimit{ 500 };
-				bool logShowTimestamps{ true };
-				bool logLevels[stl::underlying(LogLevel::Max) + 1];
+				bool          logShowTimestamps{ true };
+				bool          logLevels[stl::underlying(LogLevel::Max) + 1];
 
 				bool closeOnESC{ true };
 
@@ -136,15 +136,15 @@ namespace IED
 					Data::ConfigStoreSerializationFlags::kAll
 				};
 
-				stl::fixed_string font;
-				stl::optional<float> fontSize;
+				stl::fixed_string           font;
+				stl::optional<float>        fontSize;
 				stl::flag<GlyphPresetFlags> extraGlyphs{ GlyphPresetFlags::kNone };
-				bool releaseFontData{ false };
-     
+				bool                        releaseFontData{ false };
+
 				DefaultConfigType selectedDefaultConfImport{ DefaultConfigType::kUser };
 
-				UIStylePreset stylePreset{ UIStylePreset::Dark };
-				float alpha{ 1.0f };
+				UIStylePreset        stylePreset{ UIStylePreset::Dark };
+				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
 			};
 
@@ -152,7 +152,7 @@ namespace IED
 			{
 				UserInterface ui;
 
-				stl::optional<ConfigKeyPair> playerBlockKeys;
+				stl::optional<ConfigKeyPair>    playerBlockKeys;
 				Data::ConfigSound<Game::FormID> sound;
 
 				bool hideEquipped{ false };
@@ -195,7 +195,7 @@ namespace IED
 			inline constexpr void set(Tm& a_member, Tv&& a_value)
 			{
 				a_member = std::forward<Tv>(a_value);
-				m_dirty = true;
+				m_dirty  = true;
 			}
 
 			inline void mark_dirty() noexcept
@@ -226,8 +226,8 @@ namespace IED
 			mutable except::descriptor m_lastException;
 
 			fs::path m_path;
-			bool m_dirty{ false };
-			bool m_loadHasErrors{ false };
+			bool     m_dirty{ false };
+			bool     m_loadHasErrors{ false };
 		};
 
 	}  // namespace Data

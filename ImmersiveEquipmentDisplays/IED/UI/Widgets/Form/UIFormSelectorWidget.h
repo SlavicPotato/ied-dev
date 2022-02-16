@@ -22,16 +22,16 @@ namespace IED
 
 		public:
 			UIFormSelectorWidget(
-				Controller& a_controller,
+				Controller&   a_controller,
 				FormInfoFlags a_requiredFlags,
-				bool a_restrictTypes = false,
-				bool a_enableFormBrowser = true,
-				bool a_forceBase = false);
+				bool          a_restrictTypes     = false,
+				bool          a_enableFormBrowser = true,
+				bool          a_forceBase         = false);
 
 			bool DrawFormSelector(
-				const char* a_label,
+				const char*   a_label,
 				Game::FormID& a_form,
-				const char* a_tipText = nullptr);
+				const char*   a_tipText = nullptr);
 
 			bool DrawFormSelectorMulti();
 
@@ -41,7 +41,7 @@ namespace IED
 			void SetAllowedTypes(std::initializer_list<UIFormBrowser::tab_filter_type::value_type> a_types);
 			void SetAllowedTypes(const std::shared_ptr<const UIFormBrowser::tab_filter_type>& a_types);
 
-			inline void SetFormBrowserEnabled(bool a_switch) noexcept
+			inline constexpr void SetFormBrowserEnabled(bool a_switch) noexcept
 			{
 				m_enableFormBrowser = a_switch;
 			}
@@ -55,16 +55,16 @@ namespace IED
 
 			void ClearSelectedEntries() noexcept;
 
-			bool HasType(const formInfo_t& a_info) const;
+			[[nodiscard]] bool HasType(const formInfo_t& a_info) const;
 
-			inline const auto& GetInfo() const noexcept
+			[[nodiscard]] inline const auto& GetInfo() const noexcept
 			{
 				return m_state->m_currentInfo;
 			}
 
-			bool IsEntryValid(const IFormDatabase::entry_t& a_entry) const;
+			[[nodiscard]] bool IsEntryValid(const IFormDatabase::entry_t& a_entry) const;
 
-			bool IsCurrentValid() const noexcept;
+			[[nodiscard]] bool IsCurrentValid() const noexcept;
 
 			[[nodiscard]] inline constexpr bool IsFormBrowserEnabled() const noexcept
 			{
@@ -72,12 +72,12 @@ namespace IED
 			}
 
 		private:
-			void DrawInfo(Game::FormID a_form);
-			void QueueLookup(Game::FormID);
-			void QueueGetCrosshairRef();
+			void         DrawInfo(Game::FormID a_form);
+			void         QueueLookup(Game::FormID);
+			void         QueueGetCrosshairRef();
 			Game::FormID GetFormIDFromInputBuffer();
-			bool GetInputBufferChanged();
-			void ErrorMessage(const char* a_text);
+			bool         GetInputBufferChanged();
+			void         ErrorMessage(const char* a_text);
 
 			inline constexpr auto& GetCurrentFormInfo() const noexcept
 			{
@@ -88,27 +88,25 @@ namespace IED
 
 			struct state_t
 			{
-				std::unique_ptr<formInfoResult_t> m_currentInfo;
-				Game::FormID m_bufferedFormID;
-				Game::FormID m_lastInputFormID;
-
-				char m_inputBuffer[9]{ 0 };
-				char m_lastInputBuffer[9]{ 0 };
+				IForm::info_result m_currentInfo;
+				Game::FormID       m_bufferedFormID;
+				Game::FormID       m_lastInputFormID;
+				char               m_inputBuffer[9]{ 0 };
+				char               m_lastInputBuffer[9]{ 0 };
 			};
 
 			static void SetInputFormID(
 				const std::shared_ptr<state_t>& a_state,
-				Game::FormID a_form);
+				Game::FormID                    a_form);
 
 			bool m_nextGrabKeyboardFocus{ false };
 			bool m_restrictTypes{ false };
 			bool m_enableFormBrowser{ true };
 			bool m_forceBase{ false };
 
-			FormInfoFlags m_requiredFlags{ FormInfoFlags::kNone };
+			FormInfoFlags                                         m_requiredFlags{ FormInfoFlags::kNone };
 			std::shared_ptr<const UIFormBrowser::tab_filter_type> m_types;
-
-			std::shared_ptr<state_t> m_state;
+			std::shared_ptr<state_t>                              m_state;
 
 			Controller& m_controller;
 

@@ -11,7 +11,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kInvisible = 1u << 0,  // unused
+			kInvisible        = 1u << 0,  // unused
 			kAbsolutePosition = 1u << 1
 		};
 
@@ -30,7 +30,7 @@ namespace IED
 			inline static constexpr auto DEFAULT_FLAGS = NodeOverrideValuesFlags::kAbsolutePosition;
 
 			stl::flag<NodeOverrideValuesFlags> flags{ DEFAULT_FLAGS };
-			configTransform_t transform;
+			configTransform_t                  transform;
 
 		private:
 			template <class Archive>
@@ -51,8 +51,8 @@ namespace IED
 			kAnd = 1u << 5,
 			kNot = 1u << 6,
 
-			kMatchEquipped = 1u << 7,
-			kMatchSlots = 1u << 8,
+			kMatchEquipped       = 1u << 7,
+			kMatchSlots          = 1u << 8,
 			kMatchCategoryOperOR = 1u << 9,
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
@@ -60,14 +60,16 @@ namespace IED
 			// ignore scb (Node)
 			kExtraFlag0 = 1u << 10,
 
-			// laying down (Furniture), is child (Location), match parent (Worldspace)
+			// laying down (Furniture), is child (Location), match parent (Worldspace), playable (Race)
 			kExtraFlag1 = 1u << 11,
 
-			// match skin (Biped)
+			// match skin (Biped), is child (Race)
 			kExtraFlag2 = 1u << 12,
 
 			kNegateMatch1 = 1u << 13,
-			kNegateMatch2 = 1u << 14
+			kNegateMatch2 = 1u << 14,
+			kNegateMatch3 = 1u << 15,
+			kNegateMatch4 = 1u << 16
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionFlags);
@@ -86,13 +88,14 @@ namespace IED
 			NPC,
 			Extra,
 			Location,
-			Worldspace
+			Worldspace,
+			Package
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
 		{
-			NodeOverrideConditionType type: 5 { NodeOverrideConditionType::Node };
-			std::uint32_t unused: 27 { 0 };
+			NodeOverrideConditionType type  : 5 { NodeOverrideConditionType::Node };
+			std::uint32_t             unused: 27 { 0 };
 		};
 
 		static_assert(sizeof(NodeOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
@@ -119,7 +122,7 @@ namespace IED
 			};
 
 			stl::flag<NodeOverrideConditionGroupFlags> flags{ NodeOverrideConditionGroupFlags::kNone };
-			configNodeOverrideConditionList_t conditions;
+			configNodeOverrideConditionList_t          conditions;
 
 		private:
 			template <class Archive>
@@ -148,7 +151,7 @@ namespace IED
 
 			configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type,
-				Game::FormID a_form)
+				Game::FormID              a_form)
 			{
 				if (a_type == NodeOverrideConditionType::Race ||
 				    a_type == NodeOverrideConditionType::Actor ||
@@ -158,13 +161,13 @@ namespace IED
 				}
 				else if (a_type == NodeOverrideConditionType::Form)
 				{
-					form = a_form;
+					form  = a_form;
 					flags = NodeOverrideConditionFlags::kMatchEquipped;
 				}
 				else if (a_type == NodeOverrideConditionType::Keyword)
 				{
 					keyword = a_form;
-					flags = NodeOverrideConditionFlags::kMatchEquipped;
+					flags   = NodeOverrideConditionFlags::kMatchEquipped;
 				}
 				else
 				{
@@ -181,9 +184,10 @@ namespace IED
 				    a_type == NodeOverrideConditionType::Furniture ||
 				    a_type == NodeOverrideConditionType::Group ||
 				    a_type == NodeOverrideConditionType::Location ||
-				    a_type == NodeOverrideConditionType::Worldspace)
+				    a_type == NodeOverrideConditionType::Worldspace ||
+				    a_type == NodeOverrideConditionType::Package)
 				{
-					if (a_type == NodeOverrideConditionType::Location||
+					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{
 						flags = NodeOverrideConditionFlags::kExtraFlag0;
@@ -236,23 +240,25 @@ namespace IED
 			union
 			{
 				stl::flag<NodeOverrideConditionFlags> flags{ NodeOverrideConditionFlags::kNone };
-				NodeOverrideConditionFlagsBitfield fbf;
+				NodeOverrideConditionFlagsBitfield    fbf;
 			};
 
-			stl::fixed_string node;
+			stl::fixed_string  node;
 			configCachedForm_t form;
 			configCachedForm_t keyword;
 
 			union
 			{
-				std::uint32_t ui32a{ static_cast<std::uint32_t>(-1) };
-				ExtraConditionType extraCondType;
-				Biped::BIPED_OBJECT bipedSlot;
+				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
+				ExtraConditionType     extraCondType;
+				Biped::BIPED_OBJECT    bipedSlot;
+				PACKAGE_PROCEDURE_TYPE procedureType;
 
+				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
 			};
 
-			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
+			ObjectSlotExtra                    typeSlot{ Data::ObjectSlotExtra::kNone };
 			configNodeOverrideConditionGroup_t group;
 
 		private:
@@ -291,23 +297,23 @@ namespace IED
 		{
 			kNone = 0,
 
-			kContinue = 1u << 0,
-			kMatchAll = 1u << 1,
-			kWeaponAdjust = 1u << 2,
-			kWeightAdjust = 1u << 3,
-			kAccumulatePos = 1u << 4,
-			kLockToAccum = 1u << 5,
-			kResetAccum = 1u << 6,
-			kRequiresConditionList = 1u << 7,
-			kIsGroup = 1u << 8,
+			kContinue                = 1u << 0,
+			kMatchAll                = 1u << 1,
+			kWeaponAdjust            = 1u << 2,
+			kWeightAdjust            = 1u << 3,
+			kAccumulatePos           = 1u << 4,
+			kLockToAccum             = 1u << 5,
+			kResetAccum              = 1u << 6,
+			kRequiresConditionList   = 1u << 7,
+			kIsGroup                 = 1u << 8,
 			kWeaponAdjustMatchedOnly = 1u << 9,
-			kAbsoluteRotation = 1u << 10,
+			kAbsoluteRotation        = 1u << 10,
 
 			// weapon adjust flags
 
-			kAdjustX = 1u << 16,
-			kAdjustY = 1u << 17,
-			kAdjustZ = 1u << 18,
+			kAdjustX          = 1u << 16,
+			kAdjustY          = 1u << 17,
+			kAdjustZ          = 1u << 18,
 			kAdjustIgnoreDead = 1u << 19,
 
 			kAdjustFlags = kWeaponAdjust | kWeightAdjust
@@ -341,10 +347,10 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideOffsetFlags> offsetFlags{ NodeOverrideOffsetFlags::kNone };
-			configNodeOverrideConditionList_t conditions;
-			std::string description;
-			NiPoint3 adjustScale{ 1.0f, 1.0f, 1.0f };
+			stl::flag<NodeOverrideOffsetFlags>      offsetFlags{ NodeOverrideOffsetFlags::kNone };
+			configNodeOverrideConditionList_t       conditions;
+			std::string                             description;
+			NiPoint3                                adjustScale{ 1.0f, 1.0f, 1.0f };
 			std::vector<configNodeOverrideOffset_t> group;
 
 			void clamp()
@@ -390,7 +396,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kInvisible = 1u << 0,
+			kInvisible                       = 1u << 0,
 			kVisibilityRequiresConditionList = 1u << 1
 		};
 
@@ -407,8 +413,8 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideFlags> overrideFlags{ NodeOverrideFlags::kNone };
-			configNodeOverrideOffsetList_t offsets;
+			stl::flag<NodeOverrideFlags>      overrideFlags{ NodeOverrideFlags::kNone };
+			configNodeOverrideOffsetList_t    offsets;
 			configNodeOverrideConditionList_t visibilityConditionList;
 
 		private:
@@ -440,7 +446,7 @@ namespace IED
 			};
 
 			stl::flag<NodeOverridePlacementValuesFlags> flags{ NodeOverridePlacementValuesFlags::kNone };
-			stl::fixed_string targetNode;
+			stl::fixed_string                           targetNode;
 
 		private:
 			template <class Archive>
@@ -470,8 +476,8 @@ namespace IED
 			};
 
 			stl::flag<NodeOverridePlacementOverrideFlags> overrideFlags{ NodeOverridePlacementOverrideFlags::kNone };
-			configNodeOverrideConditionList_t conditions;
-			std::string description;
+			configNodeOverrideConditionList_t             conditions;
+			std::string                                   description;
 
 		private:
 			template <class Archive>
@@ -504,7 +510,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverridePlacementFlags> pflags{ NodeOverridePlacementFlags::kNone };
+			stl::flag<NodeOverridePlacementFlags>     pflags{ NodeOverridePlacementFlags::kNone };
 			configNodeOverridePlacementOverrideList_t overrides;
 
 		private:
@@ -557,8 +563,8 @@ namespace IED
 				configNodeOverrideHolderCopy_t&& a_rhs);
 
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
-			transform_data_type data;
-			placement_data_type placementData;
+			transform_data_type                data;
+			placement_data_type                placementData;
 
 			void clear() noexcept
 			{
@@ -615,7 +621,7 @@ namespace IED
 			struct data_value_pair
 			{
 				ConfigClass first{ ConfigClass::Global };
-				Td second;
+				Td          second;
 			};
 
 		public:
@@ -626,15 +632,15 @@ namespace IED
 
 			configNodeOverrideHolderCopy_t(
 				const configNodeOverrideHolder_t& a_rhs,
-				ConfigClass a_initclass);
+				ConfigClass                       a_initclass);
 
 			configNodeOverrideHolderCopy_t(
 				configNodeOverrideHolder_t&& a_rhs,
-				ConfigClass a_initclass);
+				ConfigClass                  a_initclass);
 
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
-			transform_data_type data;
-			placement_data_type placementData;
+			transform_data_type                data;
+			placement_data_type                placementData;
 
 			void clear() noexcept
 			{
@@ -675,14 +681,14 @@ namespace IED
 				ConfigClass a_class) const;
 
 			void copy_cc(
-				ConfigClass a_class,
+				ConfigClass                 a_class,
 				configNodeOverrideHolder_t& a_dst) const;
 		};
 
 		struct configNodeOverrideHolderClipboardData_t
 		{
-			ConfigClass conf_class;
-			ConfigSex sex;
+			ConfigClass                conf_class;
+			ConfigSex                  sex;
 			configNodeOverrideHolder_t data;
 		};
 
@@ -698,7 +704,7 @@ namespace IED
 
 			static void CopyEntries(
 				const configNodeOverrideHolder_t& a_src,
-				configNodeOverrideHolder_t& a_dst)
+				configNodeOverrideHolder_t&       a_dst)
 			{
 				for (auto& e : a_src.data)
 				{
@@ -713,8 +719,8 @@ namespace IED
 
 			static void CopyEntries(
 				const configNodeOverrideHolder_t& a_src,
-				configNodeOverrideHolderCopy_t& a_dst,
-				ConfigClass a_class)
+				configNodeOverrideHolderCopy_t&   a_dst,
+				ConfigClass                       a_class)
 			{
 				for (auto& e : a_src.data)
 				{
@@ -737,30 +743,30 @@ namespace IED
 				Game::FormID a_race) const;
 
 			configNodeOverrideHolderCopy_t GetRaceCopy(
-				Game::FormID a_race,
+				Game::FormID     a_race,
 				GlobalConfigType a_globtype) const;
 
 			configNodeOverrideHolderCopy_t GetGlobalCopy(
 				GlobalConfigType a_globtype) const;
 
 			const configNodeOverrideEntryTransform_t* GetActorTransform(
-				Game::FormID a_actor,
-				Game::FormID a_npc,
-				Game::FormID a_race,
+				Game::FormID             a_actor,
+				Game::FormID             a_npc,
+				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const;
+				holderCache_t&           a_hc) const;
 
 			const configNodeOverrideEntryPlacement_t* GetActorPlacement(
-				Game::FormID a_actor,
-				Game::FormID a_npc,
-				Game::FormID a_race,
+				Game::FormID             a_actor,
+				Game::FormID             a_npc,
+				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t& a_hc) const;
+				holderCache_t&           a_hc) const;
 
 		private:
 			template <class Td>
 			SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
-				const Td& a_data,
+				const Td&                    a_data,
 				const typename Td::key_type& a_key)
 			{
 				if (a_data.empty())

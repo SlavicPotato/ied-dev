@@ -10,7 +10,7 @@ namespace IED
 			float a_offsetX,
 			float a_sizeX,
 			float a_sizeY,
-			bool a_centered)
+			bool  a_centered)
 		{
 			if (!m_sizeData.initialized)
 			{
@@ -28,7 +28,7 @@ namespace IED
 
 				if (a_centered)
 				{
-					m_sizeData.pos = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
+					m_sizeData.pos   = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
 					m_sizeData.pivot = { 0.5f, 0.5f };
 				}
 				else

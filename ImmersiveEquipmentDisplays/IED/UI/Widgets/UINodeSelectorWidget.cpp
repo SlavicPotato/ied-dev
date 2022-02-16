@@ -20,8 +20,8 @@ namespace IED
 		}
 
 		bool UINodeSelectorWidget::DrawNodeSelector(
-			const char* a_label,
-			bool a_hideManaged,
+			const char*           a_label,
+			bool                  a_hideManaged,
 			Data::NodeDescriptor& a_data)
 		{
 			const char* currentName = nullptr;
@@ -51,7 +51,7 @@ namespace IED
 			{
 				ImGui::Dummy({ 0.0f, 0.0f });
 				ImGui::SameLine(0.0f, 4.0f);
-				
+
 				m_filter.Draw();
 
 				ImGui::Spacing();
@@ -88,9 +88,9 @@ namespace IED
 
 						if (ImGui::Selectable(LMKID<3>(desc, "1"), selected, flags))
 						{
-							a_data.name = e->first;
+							a_data.name  = e->first;
 							a_data.flags = e->second.flags;
-							result = true;
+							result       = true;
 
 							ImGui::CloseCurrentPopup();
 						}

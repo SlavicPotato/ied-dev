@@ -54,7 +54,7 @@ namespace IED
 			}
 
 			auto& data = GetProfileManager().Data();
-			auto it = data.find(*m_state.selected);
+			auto  it   = data.find(*m_state.selected);
 			if (it != data.end())
 			{
 				return { 0, std::addressof(it->second.Data()) };
@@ -88,7 +88,7 @@ namespace IED
 
 		void UIProfileEditorCustom::OnProfileSave(
 			const stl::fixed_string& a_name,
-			CustomProfile& a_profile)
+			CustomProfile&           a_profile)
 		{
 		}
 
@@ -135,7 +135,7 @@ namespace IED
 
 		void UIProfileEditorCustom::OnBaseConfigChange(
 			int,
-			const void* a_params,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
@@ -155,14 +155,14 @@ namespace IED
 		}
 
 		bool UIProfileEditorCustom::OnCreateNew(
-			int a_handle,
+			int                          a_handle,
 			const CustomConfigNewParams& a_params)
 		{
 			return true;
 		}
 
 		void UIProfileEditorCustom::OnErase(
-			int a_handle,
+			int                            a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
 		}
@@ -182,7 +182,7 @@ namespace IED
 		}
 
 		bool UIProfileEditorCustom::OnRename(
-			int a_handle,
+			int                             a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			return true;

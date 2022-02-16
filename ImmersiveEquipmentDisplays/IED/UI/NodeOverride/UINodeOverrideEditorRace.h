@@ -32,10 +32,10 @@ namespace IED
 			virtual NodeOverrideEditorCurrentData GetCurrentData() override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void                         OnCollapsibleStatesUpdate();
 
 			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
-			virtual void OnEditorPanelSettingsChange() override;
+			virtual void                                    OnEditorPanelSettingsChange() override;
 
 			virtual void OnListOptionsChange() override;
 
@@ -49,38 +49,38 @@ namespace IED
 
 			virtual void ApplyProfile(
 				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
-				const NodeOverrideProfile& a_profile) override;
+				const NodeOverrideProfile&                               a_profile) override;
 
 			virtual void MergeProfile(
 				const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
-				const NodeOverrideProfile& a_profile) override;
+				const NodeOverrideProfile&                               a_profile) override;
 
 			virtual void OnUpdate(
-				Game::FormID a_handle,
+				Game::FormID                                   a_handle,
 				const SingleNodeOverrideTransformUpdateParams& a_params) override;
-			
+
 			virtual void OnUpdate(
-				Game::FormID a_handle,
+				Game::FormID                                   a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				Game::FormID a_handle,
+				Game::FormID                    a_handle,
 				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
-				Game::FormID a_handle,
+				Game::FormID                         a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearPlacement(
-				Game::FormID a_handle,
+				Game::FormID                         a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllTransforms(
-				Game::FormID a_handle,
+				Game::FormID                            a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
-				Game::FormID a_handle,
+				Game::FormID                            a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(

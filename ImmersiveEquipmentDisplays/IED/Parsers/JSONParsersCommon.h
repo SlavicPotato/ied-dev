@@ -15,7 +15,7 @@ namespace IED
 		public:
 			SlotKeyParser();
 
-			const char* SlotToKey(Data::ObjectSlot a_slot) const noexcept;
+			const char*      SlotToKey(Data::ObjectSlot a_slot) const noexcept;
 			Data::ObjectSlot KeyToSlot(const std::string& a_key) const;
 
 		private:
@@ -25,12 +25,12 @@ namespace IED
 		template <class Th, class Tm>
 		constexpr void ParseConfigMap(
 			const Json::Value& a_in,
-			Tm& a_out,
-			std::uint32_t a_version,
-			ParserState& a_state)
+			Tm&                a_out,
+			std::uint32_t      a_version,
+			ParserState&       a_state)
 		{
 			Parser<Game::FormID> pform(a_state);
-			Parser<Th> pholder(a_state);
+			Parser<Th>           pholder(a_state);
 
 			auto& data = a_in["data"];
 
@@ -63,19 +63,19 @@ namespace IED
 
 		template <class Th, class Tm>
 		constexpr void CreateConfigMap(
-			const Tm& a_data,
-			Json::Value& a_out,
+			const Tm&     a_data,
+			Json::Value&  a_out,
 			std::uint32_t a_version,
-			ParserState& a_state)
+			ParserState&  a_state)
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
 			Parser<Game::FormID> pform(a_state);
-			Parser<Th> pholder(a_state);
+			Parser<Th>           pholder(a_state);
 
 			for (auto& [i, e] : a_data)
 			{
-				auto &v = data.append(Json::Value());
+				auto& v = data.append(Json::Value());
 
 				pform.Create(i, v["form"]);
 				pholder.Create(e, v["data"]);
@@ -84,13 +84,12 @@ namespace IED
 			a_out["version"] = a_version;
 		}
 
-		
 		template <class Th, class Tm, class Ts>
 		[[nodiscard]] constexpr bool ParseConfigStore(
 			const Json::Value& a_in,
-			Ts& a_out,
-			std::uint32_t a_version,
-			ParserState &a_state)
+			Ts&                a_out,
+			std::uint32_t      a_version,
+			ParserState&       a_state)
 		{
 			Parser<Tm> pmap(a_state);
 			Parser<Th> pholder(a_state);
@@ -133,13 +132,12 @@ namespace IED
 			return true;
 		}
 
-		
 		template <class Th, class Tm, class Ts>
 		constexpr void CreateConfigStore(
-			const Ts& a_data,
-			Json::Value& a_out,
+			const Ts&     a_data,
+			Json::Value&  a_out,
 			std::uint32_t a_version,
-			ParserState& a_state)
+			ParserState&  a_state)
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 

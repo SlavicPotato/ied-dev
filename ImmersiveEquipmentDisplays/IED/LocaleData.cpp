@@ -30,6 +30,11 @@ namespace IED
 
 	std::string LocaleData::ToUTF8(const char* a_in)
 	{
+		if (!a_in)
+		{
+			return {};
+		}
+
 		if (m_Instance)
 		{
 			try

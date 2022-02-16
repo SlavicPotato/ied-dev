@@ -5,8 +5,7 @@ namespace IED
 	class FormHolder
 	{
 	public:
-
-		static inline constexpr Game::FormID::held_type FID_LAYDOWN_KEYWORD = 0xC482F; 
+		static inline constexpr Game::FormID::held_type FID_LAYDOWN_KEYWORD = 0xC482F;
 
 		static inline constexpr const auto& GetSingleton() noexcept
 		{

@@ -136,7 +136,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::ApplyProfile(
 			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
-			const NodeOverrideProfile& a_profile)
+			const NodeOverrideProfile&                               a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
 
@@ -147,7 +147,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::MergeProfile(
 			const profileSelectorParamsNodeOverride_t<Game::FormID>& a_data,
-			const NodeOverrideProfile& a_profile)
+			const NodeOverrideProfile&                               a_profile)
 		{
 			MergeProfileData(a_data, a_profile);
 
@@ -157,7 +157,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnUpdate(
-			Game::FormID a_handle,
+			Game::FormID                                   a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -168,7 +168,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnUpdate(
-			Game::FormID a_handle,
+			Game::FormID                                   a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -179,7 +179,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnUpdate(
-			Game::FormID a_handle,
+			Game::FormID                    a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params);
@@ -190,7 +190,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnClearTransform(
-			Game::FormID a_handle,
+			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
@@ -207,7 +207,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnClearPlacement(
-			Game::FormID a_handle,
+			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
@@ -224,7 +224,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnClearAllTransforms(
-			Game::FormID a_handle,
+			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
@@ -240,7 +240,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnClearAllPlacement(
-			Game::FormID a_handle,
+			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();

@@ -10,7 +10,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kAlwaysUnload = 1u << 0,
+			kAlwaysUnload    = 1u << 0,
 			kCheckCannotWear = 1u << 1,
 		};
 
@@ -29,8 +29,8 @@ namespace IED
 			static inline constexpr auto DEFAULT_SLOT_FLAGS = SlotFlags::kNone;
 
 			stl::flag<SlotFlags> slotFlags{ DEFAULT_SLOT_FLAGS };
-			configFormList_t preferredItems;
-			configFormFilter_t itemFilter;
+			configFormList_t     preferredItems;
+			configFormFilter_t   itemFilter;
 
 		private:
 			template <class Archive>
@@ -144,7 +144,7 @@ namespace IED
 			struct data_value_pair
 			{
 				ConfigClass first{ ConfigClass::Global };
-				Td second;
+				Td          second;
 			};
 
 		public:
@@ -167,11 +167,11 @@ namespace IED
 
 			configSlotHolderCopy_t(
 				const configSlotHolder_t& a_rhs,
-				ConfigClass a_initclass);
+				ConfigClass               a_initclass);
 
 			configSlotHolderCopy_t(
 				configSlotHolder_t&& a_rhs,
-				ConfigClass a_initclass);
+				ConfigClass          a_initclass);
 
 			void clear() noexcept
 			{
@@ -220,7 +220,7 @@ namespace IED
 				ConfigClass a_class) const;
 
 			void copy_cc(
-				ConfigClass a_class,
+				ConfigClass         a_class,
 				configSlotHolder_t& a_out) const;
 
 			std::unique_ptr<data_type> data[stl::underlying(ObjectSlot::kMax)];
@@ -243,8 +243,8 @@ namespace IED
 
 		private:
 			void FillResultCopy(
-				ConfigClass a_class,
-				const data_type& a_data,
+				ConfigClass             a_class,
+				const data_type&        a_data,
 				configSlotHolderCopy_t& a_out) const
 			{
 				using enum_type = std::underlying_type_t<ObjectSlot>;
@@ -270,7 +270,7 @@ namespace IED
 				GlobalConfigType a_type) const;
 
 			configSlotHolderCopy_t GetRaceCopy(
-				Game::FormID a_race,
+				Game::FormID     a_race,
 				GlobalConfigType a_globtype) const;
 
 			configSlotHolderCopy_t GetNPCCopy(
@@ -283,10 +283,10 @@ namespace IED
 				Game::FormID a_race) const;
 
 			const configSlotHolder_t::data_type* GetActor(
-				Game::FormID a_actor,
-				Game::FormID a_npc,
-				Game::FormID a_race,
-				ObjectSlot a_slot,
+				Game::FormID   a_actor,
+				Game::FormID   a_npc,
+				Game::FormID   a_race,
+				ObjectSlot     a_slot,
 				holderCache_t& a_hc) const;
 
 			template <class Tf>

@@ -12,12 +12,12 @@ namespace IED
 			using value_type = NodeDescriptor;
 
 			using data_type = stl::vectormap<stl::fixed_string, value_type>;
-			using map_type = std::unordered_map<stl::fixed_string, value_type>;
+			using map_type  = std::unordered_map<stl::fixed_string, value_type>;
 
 			struct initializer_type
 			{
-				const char* node;
-				const char* desc;
+				const char*         node;
+				const char*         desc;
 				NodeDescriptorFlags flags;
 			};
 
@@ -45,8 +45,8 @@ namespace IED
 			void Merge(std::initializer_list<map_type::value_type> a_init);
 
 			std::pair<map_type::iterator, bool> Add(
-				const char* a_node,
-				const char* a_desc,
+				const char*                    a_node,
+				const char*                    a_desc,
 				stl::flag<NodeDescriptorFlags> a_flags);
 
 			bool RemoveExtra(const stl::fixed_string& a_node);
@@ -68,11 +68,11 @@ namespace IED
 
 			template <std::size_t _Size>
 			static const char* GetNodeDescription(
-				const char* a_desc,
+				const char*                    a_desc,
 				stl::flag<NodeDescriptorFlags> a_flags,
 				char (&a_out)[_Size]);
 
-			static bool ValidateNodeName(const std::string &a_name) noexcept;
+			static bool ValidateNodeName(const std::string& a_name) noexcept;
 
 		private:
 			NodeMap();
@@ -80,11 +80,11 @@ namespace IED
 			void Sort();
 
 			data_type m_data;
-			map_type m_extraData;
+			map_type  m_extraData;
 
 			bool m_dirty{ false };
 
-			mutable FastSpinLock m_rwLock;
+			mutable FastSpinLock       m_rwLock;
 			mutable except::descriptor m_lastException;
 
 			static NodeMap m_Instance;
@@ -92,11 +92,11 @@ namespace IED
 
 		template <std::size_t _Size>
 		const char* NodeMap::GetNodeDescription(
-			const char* a_desc,
+			const char*                    a_desc,
 			stl::flag<NodeDescriptorFlags> a_flags,
 			char (&a_out)[_Size])
 		{
-			char buf[8];
+			char          buf[8];
 			std::uint32_t index = 0;
 
 			if (a_flags.test(NodeDescriptorFlags::kWeapon))

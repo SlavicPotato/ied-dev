@@ -57,7 +57,7 @@ namespace IED
 		template <class Td>
 		UINPCList<Td>::UINPCList(
 			Controller& a_controller,
-			float a_itemWidthScalar) :
+			float       a_itemWidthScalar) :
 			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
 			UINPCInfoAddInterface(a_controller),
 			UISettingsInterface(a_controller),
@@ -73,7 +73,7 @@ namespace IED
 			m_listFirstUpdate = true;
 
 			const auto& actorSettings = GetActorSettings();
-			auto& npcInfo = GetNPCInfo();
+			auto&       npcInfo       = GetNPCInfo();
 
 			m_listData.clear();
 
@@ -158,7 +158,7 @@ namespace IED
 			if (cacheUpdateId != m_lastCacheUpdateId)
 			{
 				m_lastCacheUpdateId = cacheUpdateId;
-				m_listNextUpdate = true;
+				m_listNextUpdate    = true;
 			}
 
 			UIListBase<Td, Game::FormID>::ListTick();
@@ -174,9 +174,9 @@ namespace IED
 		template <class Td>
 		void UINPCList<Td>::ListDrawInfoText(const listValue_t& a_entry)
 		{
-			auto& npcInfo = GetNPCInfo();
+			auto& npcInfo  = GetNPCInfo();
 			auto& raceInfo = Data::IData::GetRaceList();
-			auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
+			auto& modList  = Data::IData::GetPluginInfo().GetIndexMap();
 
 			ImGui::Columns(2, nullptr, false);
 

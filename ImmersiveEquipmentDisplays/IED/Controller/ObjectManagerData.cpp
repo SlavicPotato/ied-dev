@@ -13,16 +13,18 @@
 
 namespace IED
 {
+	std::atomic_llong ActorObjectHolder::m_lfsc_delta{ 0ll };
+
 	ActorObjectHolder::ActorObjectHolder(
 		const stl::optional<Data::actorStateEntry_t>& a_playerState,
-		Actor* a_actor,
-		NiNode* a_root,
-		NiNode* a_npcroot,
-		IObjectManager& a_owner,
-		Game::ObjectRefHandle a_handle,
-		bool a_nodeOverrideEnabled,
-		bool a_nodeOverrideEnabledPlayer,
-		Data::actorStateHolder_t& a_actorState) :
+		Actor*                                        a_actor,
+		NiNode*                                       a_root,
+		NiNode*                                       a_npcroot,
+		IObjectManager&                               a_owner,
+		Game::ObjectRefHandle                         a_handle,
+		bool                                          a_nodeOverrideEnabled,
+		bool                                          a_nodeOverrideEnabledPlayer,
+		Data::actorStateHolder_t&                     a_actorState) :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
@@ -34,9 +36,14 @@ namespace IED
 			a_actor->IsInInteriorCell(),
 			a_actor->GetParentCellWorldspace()
 		},
+		m_currentPackage(a_actor->GetCurrentPackage()),
 		m_created(IPerfCounter::Query())
 	{
-		m_lastLFStateCheck = m_created;
+		m_lastLFStateCheck = m_created +
+		                     m_lfsc_delta.fetch_add(
+								 IPerfCounter::T(50000),
+								 std::memory_order_relaxed) %
+		                         IPerfCounter::T(1250000);
 
 		if (a_nodeOverrideEnabled &&
 		    (a_actor != *g_thePlayer ||
@@ -108,9 +115,7 @@ namespace IED
 
 		for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 		{
-			auto& e = m_entriesSlot[i];
-
-			e.slotid = static_cast<Data::ObjectSlot>(i);
+			m_entriesSlot[i].slotid = static_cast<Data::ObjectSlot>(i);
 		}
 
 		if (a_actor == *g_thePlayer && a_playerState)
@@ -123,6 +128,7 @@ namespace IED
 			if (it != a_actorState.data.end())
 			{
 				ApplyActorState(it->second);
+
 				a_actorState.data.erase(it);
 			}
 		}
@@ -269,8 +275,8 @@ namespace IED
 	}
 
 	void ActorObjectHolder::CreateExtraNodes(
-		NiNode* a_npcroot,
-		bool a_female,
+		NiNode*                                   a_npcroot,
+		bool                                      a_female,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)
 	{
 		if (m_cmeNodes.contains(a_entry.name_cme) ||
@@ -291,7 +297,7 @@ namespace IED
 		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
 
 		mov->m_localTransform = a_female ?
-                                    a_entry.transform_f :
+		                            a_entry.transform_f :
                                     a_entry.transform_m;
 
 		cme->AttachChild(mov, true);
@@ -304,7 +310,7 @@ namespace IED
 
 	void objectEntryBase_t::reset(
 		Game::ObjectRefHandle a_handle,
-		NiNode* a_root)
+		NiNode*               a_root)
 	{
 		if (!state)
 		{
@@ -325,8 +331,8 @@ namespace IED
 			public:
 				DisposeStateTask(
 					std::unique_ptr<State>&& a_state,
-					Game::ObjectRefHandle a_handle,
-					NiNode* a_root) :
+					Game::ObjectRefHandle    a_handle,
+					NiNode*                  a_root) :
 					m_state(std::move(a_state)),
 					m_handle(a_handle),
 					m_root(a_root)
@@ -347,8 +353,8 @@ namespace IED
 
 			private:
 				std::unique_ptr<State> m_state;
-				Game::ObjectRefHandle m_handle;
-				NiPointer<NiNode> m_root;
+				Game::ObjectRefHandle  m_handle;
+				NiPointer<NiNode>      m_root;
 			};
 
 			ITaskPool::AddPriorityTask<DisposeStateTask>(

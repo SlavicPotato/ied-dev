@@ -60,15 +60,15 @@ namespace IED
 			static void CreateD3D11_Hook();
 
 			decltype(&CreateD3D11_Hook) m_createD3D11_o{ nullptr };
-			decltype(&Present_Pre) m_unkPresent_o{ nullptr };
+			decltype(&Present_Pre)      m_unkPresent_o{ nullptr };
 
-			ID3D11Device* m_device{ nullptr };
+			ID3D11Device*        m_device{ nullptr };
 			ID3D11DeviceContext* m_context{ nullptr };
-			IDXGISwapChain* m_swapChain{ nullptr };
-			NiPoint3 m_bufferSize;
+			IDXGISwapChain*      m_swapChain{ nullptr };
+			NiPoint3             m_bufferSize;
 
 			static inline auto m_createD3D11_a = IAL::Addr(75595, 77226, 0x9, 0x275);
-			static inline auto m_unkPresent_a = IAL::Addr(75461, 77246, 0x9, 0x9);
+			static inline auto m_unkPresent_a  = IAL::Addr(75461, 77246, 0x9, 0x9);
 
 			static Render m_Instance;
 		};

@@ -1,21 +1,21 @@
 #pragma once
 
-#include "WindowLayoutData.h"
 #include "UIWindowBase.h"
+#include "WindowLayoutData.h"
 
 namespace IED
 {
 	namespace UI
 	{
-		class UIWindow : 
+		class UIWindow :
 			public UIWindowBase
 		{
 		protected:
 			void SetWindowDimensions(
-				float a_offsetX = 0.0f,
-				float a_sizeX = -1.0f,
-				float a_sizeY = -1.0f,
-				bool a_centered = false);
+				float a_offsetX  = 0.0f,
+				float a_sizeX    = -1.0f,
+				float a_sizeY    = -1.0f,
+				bool  a_centered = false);
 
 			inline void SetWindowDimensions(const WindowLayoutData& a_data)
 			{
@@ -31,7 +31,7 @@ namespace IED
 		private:
 			struct
 			{
-				bool initialized{ false };
+				bool   initialized{ false };
 				ImVec2 sizeMin;
 				ImVec2 sizeMax;
 				ImVec2 pos;

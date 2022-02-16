@@ -20,7 +20,7 @@ namespace IED
 
 				Settings tmp;
 
-				Serialization::ParserState state;
+				Serialization::ParserState      state;
 				Serialization::Parser<Settings> parser(state);
 
 				if (!parser.Parse(root, tmp))
@@ -47,7 +47,7 @@ namespace IED
 			{
 				Json::Value root;
 
-				Serialization::ParserState state;
+				Serialization::ParserState      state;
 				Serialization::Parser<Settings> parser(state);
 
 				parser.Create(data, root);

@@ -24,17 +24,17 @@ namespace IED
 	public:
 		struct bipedInfoEntry_t
 		{
-			TESForm* item;
+			TESForm*            item;
 			Biped::BIPED_OBJECT bip{ Biped::BIPED_OBJECT::kNone };
-			float weaponAdjust{ 0.0f };
-			bool matched{ false };
+			float               weaponAdjust{ 0.0f };
+			bool                matched{ false };
 		};
 
 		struct nodeOverrideParamsArgs_t
 		{
-			NiNode* npcRoot;
+			NiNode*                  npcRoot;
 			const ActorObjectHolder& objects;
-			Controller& controller;
+			Controller&              controller;
 		};
 
 		struct nodeOverrideParams_t :
@@ -44,10 +44,10 @@ namespace IED
 		public:
 			using item_container_type = std::unordered_map<Game::FormID, bipedInfoEntry_t>;
 
-			stl::optional<float> weaponAdjust;
-			stl::optional<float> weightAdjust;
+			stl::optional<float>                 weaponAdjust;
+			stl::optional<float>                 weightAdjust;
 			std::unique_ptr<item_container_type> itemData;
-			stl::optional<bool> bipedHasArmor;
+			stl::optional<bool>                  bipedHasArmor;
 
 			auto get_biped_has_armor()
 			{
@@ -62,7 +62,6 @@ namespace IED
 			item_container_type* get_item_data();
 
 			float get_weapon_adjust();
-			//SKMP_FORCEINLINE float get_weapon_adjust(const stl::set<Game::FormID>* a_armors);
 
 			constexpr float get_weight_adjust()
 			{
@@ -162,8 +161,8 @@ namespace IED
 		};
 
 		static void ResetNodeOverrideImpl(
-			NiAVObject *a_object);
-		
+			NiAVObject* a_object);
+
 		static void ResetNodeOverride(
 			const cmeNodeEntry_t& a_entry);
 
@@ -172,35 +171,35 @@ namespace IED
 
 	protected:
 		static void ApplyNodeOverride(
-			const cmeNodeEntry_t& a_entry,
+			const cmeNodeEntry_t&                      a_entry,
 			const Data::configNodeOverrideTransform_t& a_data,
-			nodeOverrideParams_t& a_params);
+			nodeOverrideParams_t&                      a_params);
 
 		static void ApplyNodeVisibility(
-			NiNode* a_node,
+			NiNode*                                    a_node,
 			const Data::configNodeOverrideTransform_t& a_data,
-			nodeOverrideParams_t& a_params);
+			nodeOverrideParams_t&                      a_params);
 
 		static void attach_node_to(
-			const weapNodeEntry_t& a_entry,
+			const weapNodeEntry_t&   a_entry,
 			const NiPointer<NiNode>& a_target);
 
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const weapNodeEntry_t& a_entry,
-			nodeOverrideParams_t& a_params);
+			const weapNodeEntry_t&                     a_entry,
+			nodeOverrideParams_t&                      a_params);
 
 	private:
 		static constexpr const stl::fixed_string& get_target_node(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const weapNodeEntry_t& a_entry,
-			nodeOverrideParams_t& a_params);
+			const weapNodeEntry_t&                     a_entry,
+			nodeOverrideParams_t&                      a_params);
 
 		static bool INodeOverride::process_offsets(
 			const Data::configNodeOverrideOffsetList_t& a_data,
-			NiTransform& a_out,
-			NiPoint3& a_posAccum,
-			nodeOverrideParams_t& a_params);
+			NiTransform&                                a_out,
+			NiPoint3&                                   a_posAccum,
+			nodeOverrideParams_t&                       a_params);
 	};
 
 }

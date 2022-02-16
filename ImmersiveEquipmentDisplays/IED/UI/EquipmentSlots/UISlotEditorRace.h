@@ -36,42 +36,41 @@ namespace IED
 			virtual SlotEditorCurrentData GetCurrentData() override;
 
 			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
+
 			virtual void OnEditorPanelSettingsChange() override;
 
-			virtual void ListResetAllValues(
-				Game::FormID a_handle) override;
+			virtual void ListResetAllValues(Game::FormID a_handle) override;
 
-			Data::configSlotHolder_t&
-				GetOrCreateConfigSlotHolder(
-					Game::FormID a_handle) const override;
+			Data::configSlotHolder_t& GetOrCreateConfigSlotHolder(
+				Game::FormID a_handle) const override;
 
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-				const SlotProfile& a_profile) override;
-			
+				const SlotProfile&                               a_profile) override;
+
 			virtual void ApplyProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-				const SlotProfile& a_profile) override;
+				const SlotProfile&                               a_profile) override;
 
 			virtual entrySlotData_t GetData(
 				Game::FormID a_formid) override;
 
 			void OnBaseConfigChange(
-				Game::FormID a_handle,
-				const void* a_params,
+				Game::FormID     a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
-				Game::FormID a_handle,
+				Game::FormID                  a_handle,
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void
 				OnSingleSlotClear(
-					Game::FormID a_handle,
+					Game::FormID                       a_handle,
 					const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				Game::FormID a_handle,
+				Game::FormID                     a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnSexChanged(
@@ -83,9 +82,12 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
-			virtual void OnCollapsibleStatesUpdate() override;
+			virtual void                         OnCollapsibleStatesUpdate() override;
 
 			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
+
+			virtual entrySlotData_t GetCurrentData(
+				Game::FormID a_handle) override;
 
 			Controller& m_controller;
 		};

@@ -10,7 +10,7 @@ namespace IED
 			bool DrawDescriptionPopup();
 
 			void ClearDescriptionPopupBuffer();
-			void SetDescriptionPopupBuffer(const std::string &a_text);
+			void SetDescriptionPopupBuffer(const std::string& a_text);
 
 			inline constexpr const auto& GetDescriptionPopupBuffer() const noexcept
 			{

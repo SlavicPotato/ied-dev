@@ -1,10 +1,13 @@
 #pragma once
 
+#include "ConfigUUIDTag.h"
+
 namespace IED
 {
 	namespace Data
 	{
-		struct configTransform_t
+		struct configTransform_t :
+			configUUIDTag_t
 		{
 			friend class boost::serialization::access;
 
@@ -20,7 +23,7 @@ namespace IED
 			}
 
 			configTransform_t(
-				float a_scale,
+				float           a_scale,
 				const NiPoint3& a_pos,
 				const NiPoint3& a_rot) :
 				scale(a_scale),
@@ -29,11 +32,11 @@ namespace IED
 			{
 			}
 
-			stl::optional<float> scale;
+			stl::optional<float>    scale;
 			stl::optional<NiPoint3> position;
 			stl::optional<NiPoint3> rotation;
 
-			void clamp()
+			void constexpr clamp() noexcept
 			{
 				using namespace ::Math;
 

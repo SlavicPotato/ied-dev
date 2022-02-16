@@ -83,7 +83,7 @@ namespace IED
 	}
 
 	void IMaintenance::CleanCustomConfig(
-		Game::FormID a_id,
+		Game::FormID                   a_id,
 		Data::configCustomPluginMap_t& a_data)
 	{
 		for (auto it = a_data.begin(); it != a_data.end();)

@@ -51,12 +51,12 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void                         OnCollapsibleStatesUpdate();
 
 			virtual void OnListOptionsChange() override;
 
 			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
-			virtual void OnEditorPanelSettingsChange() override;
+			virtual void                                    OnEditorPanelSettingsChange() override;
 
 			virtual void ListResetAllValues(
 				Game::FormID a_handle) override;
@@ -69,44 +69,44 @@ namespace IED
 
 			virtual void ApplyProfile(
 				const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-				const CustomProfile& a_profile) override;
+				const CustomProfile&                               a_profile) override;
 
 			virtual void MergeProfile(
 				const profileSelectorParamsCustom_t<Game::FormID>& a_data,
-				const CustomProfile& a_profile) override;
+				const CustomProfile&                               a_profile) override;
 
 			virtual void OnBaseConfigChange(
-				Game::FormID a_handle,
-				const void* a_params,
+				Game::FormID     a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
-				Game::FormID a_handle,
+				Game::FormID                    a_handle,
 				const CustomConfigUpdateParams& a_params) override;
 
 			virtual bool OnCreateNew(
-				Game::FormID a_handle,
+				Game::FormID                 a_handle,
 				const CustomConfigNewParams& a_params) override;
 
 			virtual void OnErase(
-				Game::FormID a_handle,
+				Game::FormID                   a_handle,
 				const CustomConfigEraseParams& a_params) override;
 
 			virtual bool OnRename(
-				Game::FormID a_handle,
+				Game::FormID                    a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
 			virtual void DrawMenuBarItemsExtra() override;
 
 			virtual bool DrawExtraItemInfo(
-				Game::FormID a_handle,
-				const stl::fixed_string& a_name,
+				Game::FormID                     a_handle,
+				const stl::fixed_string&         a_name,
 				const Data::configCustomEntry_t& a_entry,
-				bool a_infoDrawn) override;
+				bool                             a_infoDrawn) override;
 
 			const objectEntryCustom_t* GetLoadedObject(
-				Game::FormID a_handle,
-				const stl::fixed_string& a_name,
+				Game::FormID                     a_handle,
+				const stl::fixed_string&         a_name,
 				const Data::configCustomEntry_t& a_entry);
 
 			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;

@@ -21,7 +21,7 @@ namespace IED
 		}
 
 		auto configStoreSlot_t::GetRaceCopy(
-			Game::FormID a_race,
+			Game::FormID     a_race,
 			GlobalConfigType a_globtype) const
 			-> configSlotHolderCopy_t
 		{
@@ -113,10 +113,10 @@ namespace IED
 		}
 
 		const configSlotHolder_t::data_type* configStoreSlot_t::GetActor(
-			Game::FormID a_actor,
-			Game::FormID a_npc,
-			Game::FormID a_race,
-			ObjectSlot a_slot,
+			Game::FormID   a_actor,
+			Game::FormID   a_npc,
+			Game::FormID   a_race,
+			ObjectSlot     a_slot,
 			holderCache_t& a_hc) const
 		{
 			if (auto& actorData = GetActorData(); !actorData.empty())
@@ -326,7 +326,7 @@ namespace IED
 
 		configSlotHolderCopy_t::configSlotHolderCopy_t(
 			const configSlotHolder_t& a_rhs,
-			ConfigClass a_initclass)
+			ConfigClass               a_initclass)
 		{
 			using enum_type = std::underlying_type_t<ObjectSlot>;
 
@@ -341,7 +341,7 @@ namespace IED
 
 		configSlotHolderCopy_t::configSlotHolderCopy_t(
 			configSlotHolder_t&& a_rhs,
-			ConfigClass a_initclass)
+			ConfigClass          a_initclass)
 		{
 			using enum_type = std::underlying_type_t<ObjectSlot>;
 
@@ -373,7 +373,7 @@ namespace IED
 		}
 
 		void configSlotHolderCopy_t::copy_cc(
-			ConfigClass a_class,
+			ConfigClass         a_class,
 			configSlotHolder_t& a_out) const
 		{
 			using enum_type = std::underlying_type_t<ObjectSlot>;

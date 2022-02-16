@@ -12,13 +12,13 @@ namespace IED
 		{
 			kNone = 0,
 
-			kDropOnDeath = 1u << 1,
-			kKeepTorchFlame = 1u << 2,
-			kRemoveScabbard = 1u << 3,
+			kDropOnDeath       = 1u << 1,
+			kKeepTorchFlame    = 1u << 2,
+			kRemoveScabbard    = 1u << 3,
 			kLoad1pWeaponModel = 1u << 4,
-			kDisableHavok = 1u << 5,
-			kLeftWeapon = 1u << 6,
-			kUseWorldModel = 1u << 7
+			kDisableHavok      = 1u << 5,
+			kLeftWeapon        = 1u << 6,
+			kUseWorldModel     = 1u << 7
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);
@@ -34,8 +34,8 @@ namespace IED
 			};
 
 			stl::flag<ConfigModelGroupEntryFlags> flags{ ConfigModelGroupEntryFlags::kNone };
-			configCachedForm_t form;
-			configTransform_t transform;
+			configCachedForm_t                    form;
+			configTransform_t                     transform;
 			//configEffectShaderHolder_t effects;
 
 		private:
@@ -73,7 +73,7 @@ namespace IED
 			}
 
 			stl::flag<ConfigModelGroupFlags> flags{ ConfigModelGroupFlags::kNone };
-			data_type entries;
+			data_type                        entries;
 
 		private:
 			template <class Archive>

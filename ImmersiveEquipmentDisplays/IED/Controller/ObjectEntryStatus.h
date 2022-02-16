@@ -25,9 +25,9 @@ namespace IED
 	{
 	public:
 		void set(
-			ObjectEntryStatusCode a_code,
+			ObjectEntryStatusCode  a_code,
 			const processParams_t& a_params,
-			Game::FormID a_form);
+			Game::FormID           a_form);
 
 		void clear() noexcept;
 
@@ -42,7 +42,7 @@ namespace IED
 		}
 
 	private:
-		ObjectEntryStatusCode m_lastStatus{ ObjectEntryStatusCode::kNone };
+		ObjectEntryStatusCode                  m_lastStatus{ ObjectEntryStatusCode::kNone };
 		std::unique_ptr<ObjectEntryStatusInfo> m_info;
 	};
 }

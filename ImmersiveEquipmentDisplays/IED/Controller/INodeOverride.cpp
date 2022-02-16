@@ -47,7 +47,7 @@ namespace IED
 	}
 
 	static constexpr bool match_keyword_slot(
-		BGSKeyword* a_keyword,
+		BGSKeyword*                                a_keyword,
 		const INodeOverride::nodeOverrideParams_t& a_params)
 	{
 		for (auto& e : a_params.objects.GetSlots())
@@ -65,7 +65,7 @@ namespace IED
 	}
 
 	static bool match_keyword_equipped(
-		BGSKeyword* a_keyword,
+		BGSKeyword*                          a_keyword,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
 		if (auto pm = a_params.actor->processManager)
@@ -98,7 +98,7 @@ namespace IED
 	}
 
 	static TESForm* find_equipped_form_pm(
-		Game::FormID a_formid,
+		Game::FormID                               a_formid,
 		const INodeOverride::nodeOverrideParams_t& a_params)
 	{
 		if (auto pm = a_params.actor->processManager)
@@ -116,7 +116,7 @@ namespace IED
 	}
 
 	static auto find_equipped_form(
-		Game::FormID a_form,
+		Game::FormID                         a_form,
 		INodeOverride::nodeOverrideParams_t& a_params)
 		-> std::pair<TESForm*, INodeOverride::nodeOverrideParams_t::item_container_type::value_type*>
 	{
@@ -138,7 +138,7 @@ namespace IED
 
 	static bool match_form_equipped(
 		const Data::configNodeOverrideCondition_t& a_data,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		INodeOverride::nodeOverrideParams_t&       a_params)
 	{
 		auto r = find_equipped_form(a_data.form.get_id(), a_params);
 
@@ -166,7 +166,7 @@ namespace IED
 
 	constexpr bool match_slotted_type(
 		const Data::configNodeOverrideCondition_t& a_match,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		INodeOverride::nodeOverrideParams_t&       a_params)
 	{
 		auto slot = stl::underlying(Data::ItemData::ExtraSlotToSlot(a_match.typeSlot));
 		if (slot >= stl::underlying(Data::ObjectSlot::kMax))
@@ -205,7 +205,7 @@ namespace IED
 
 	bool match_equipped_type(
 		const Data::configNodeOverrideCondition_t& a_match,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		INodeOverride::nodeOverrideParams_t&       a_params)
 	{
 		TESForm* form;
 
@@ -332,8 +332,8 @@ namespace IED
 
 	static bool match(
 		const Data::configNodeOverrideCondition_t& a_data,
-		INodeOverride::nodeOverrideParams_t& a_params,
-		bool a_ignoreNode = false)
+		INodeOverride::nodeOverrideParams_t&       a_params,
+		bool                                       a_ignoreNode = false)
 	{
 		switch (a_data.fbf.type)
 		{
@@ -419,8 +419,7 @@ namespace IED
 					return false;
 				}
 
-				if (stl::underlying(a_data.typeSlot) >=
-				    stl::underlying(Data::ObjectSlotExtra::kMax))
+				if (a_data.typeSlot >= Data::ObjectSlotExtra::kMax)
 				{
 					return false;
 				}
@@ -525,7 +524,9 @@ namespace IED
 
 		case Data::NodeOverrideConditionType::Extra:
 
-			return Conditions::match_extra(a_params, a_data.extraCondType);
+			return Conditions::match_extra<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
 		case Data::NodeOverrideConditionType::Location:
 
@@ -538,6 +539,12 @@ namespace IED
 			return Conditions::match_worldspace<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Package:
+
+			return Conditions::match_package<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}
 
 		return false;
@@ -545,9 +552,9 @@ namespace IED
 
 	static constexpr bool run_matches(
 		const Data::configNodeOverrideConditionList_t& a_data,
-		INodeOverride::nodeOverrideParams_t& a_params,
-		bool a_default,
-		bool a_ignoreNode = false)
+		INodeOverride::nodeOverrideParams_t&           a_params,
+		bool                                           a_default,
+		bool                                           a_ignoreNode = false)
 	{
 		bool result = a_default;
 
@@ -588,7 +595,7 @@ namespace IED
 
 	static constexpr bool run_matches(
 		const Data::configNodeOverrideOffset_t& a_data,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		INodeOverride::nodeOverrideParams_t&    a_params)
 	{
 		return run_matches(
 			a_data.conditions,
@@ -598,7 +605,7 @@ namespace IED
 
 	static constexpr bool run_visibility_matches(
 		const Data::configNodeOverrideTransform_t& a_data,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		INodeOverride::nodeOverrideParams_t&       a_params)
 	{
 		return run_matches(
 			a_data.visibilityConditionList,
@@ -609,8 +616,8 @@ namespace IED
 
 	void constexpr apply_transform(
 		const Data::configNodeOverrideOffset_t& a_data,
-		NiTransform& a_out,
-		NiPoint3& a_posAccum)
+		NiTransform&                            a_out,
+		NiPoint3&                               a_posAccum)
 	{
 		auto& xfrm = a_data.transform;
 
@@ -688,9 +695,9 @@ namespace IED
 
 	void apply_adjust(
 		const Data::configNodeOverrideOffset_t& a_data,
-		NiTransform& a_out,
-		float a_adjust,
-		NiPoint3& a_posAccum)
+		NiTransform&                            a_out,
+		float                                   a_adjust,
+		NiPoint3&                               a_posAccum)
 	{
 		NiPoint3 offset;
 
@@ -725,9 +732,9 @@ namespace IED
 	}
 
 	void INodeOverride::ApplyNodeOverride(
-		const cmeNodeEntry_t& a_entry,
+		const cmeNodeEntry_t&                      a_entry,
 		const Data::configNodeOverrideTransform_t& a_data,
-		nodeOverrideParams_t& a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		NiTransform xfrm;
 
@@ -799,9 +806,9 @@ namespace IED
 
 	bool INodeOverride::process_offsets(
 		const Data::configNodeOverrideOffsetList_t& a_data,
-		NiTransform& a_out,
-		NiPoint3& a_posAccum,
-		nodeOverrideParams_t& a_params)
+		NiTransform&                                a_out,
+		NiPoint3&                                   a_posAccum,
+		nodeOverrideParams_t&                       a_params)
 	{
 		bool matched = false;
 
@@ -875,9 +882,9 @@ namespace IED
 	}
 
 	void INodeOverride::ApplyNodeVisibility(
-		NiNode* a_node,
+		NiNode*                                    a_node,
 		const Data::configNodeOverrideTransform_t& a_data,
-		nodeOverrideParams_t& a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		bool visible = true;
 
@@ -890,7 +897,7 @@ namespace IED
 	}
 
 	void INodeOverride::attach_node_to(
-		const weapNodeEntry_t& a_entry,
+		const weapNodeEntry_t&   a_entry,
 		const NiPointer<NiNode>& a_target)
 	{
 		if (a_target &&
@@ -925,8 +932,8 @@ namespace IED
 
 	void INodeOverride::ApplyNodePlacement(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const weapNodeEntry_t& a_entry,
-		nodeOverrideParams_t& a_params)
+		const weapNodeEntry_t&                     a_entry,
+		nodeOverrideParams_t&                      a_params)
 	{
 		auto& target = get_target_node(
 			a_data,
@@ -955,8 +962,8 @@ namespace IED
 
 	constexpr auto INodeOverride::get_target_node(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const weapNodeEntry_t& a_entry,
-		nodeOverrideParams_t& a_params)
+		const weapNodeEntry_t&                     a_entry,
+		nodeOverrideParams_t&                      a_params)
 		-> const stl::fixed_string&
 	{
 		for (auto& e : a_data.overrides)

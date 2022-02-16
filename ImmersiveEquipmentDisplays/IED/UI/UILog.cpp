@@ -66,7 +66,7 @@ namespace IED
 
 			ImGui::PushID("ctls");
 
-			const int step = 1;
+			const int step     = 1;
 			const int stepFast = 100;
 
 			std::uint32_t limit = data.GetLimit();
@@ -130,7 +130,7 @@ namespace IED
 					if (auto curSize = data.Size(); curSize != m_lastSize)
 					{
 						m_doScrollBottom = true;
-						m_lastSize = curSize;
+						m_lastSize       = curSize;
 					}
 
 					for (auto& e : data)
@@ -195,7 +195,7 @@ namespace IED
 			auto lt = std::chrono::floor<std::chrono::days>(a_entry.ts());
 
 			std::chrono::year_month_day ymd{ lt };
-			std::chrono::hh_mm_ss hms{ a_entry.ts() - lt };
+			std::chrono::hh_mm_ss       hms{ a_entry.ts() - lt };
 
 			ImGui::Text(
 				"[%d-%.2u-%.2u %.2d:%.2d:%.2lld.%lld]",

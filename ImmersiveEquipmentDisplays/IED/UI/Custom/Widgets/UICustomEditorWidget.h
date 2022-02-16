@@ -34,7 +34,7 @@ namespace IED
 		template <class T>
 		struct profileSelectorParamsCustom_t
 		{
-			T handle;
+			T                  handle;
 			entryCustomData_t& data;
 		};
 
@@ -45,7 +45,7 @@ namespace IED
 
 		struct CustomConfigNewParams
 		{
-			stl::fixed_string name;
+			stl::fixed_string          name;
 			Data::configCustomEntry_t& entry;
 		};
 
@@ -79,7 +79,7 @@ namespace IED
 				Controller& a_controller);
 
 			void DrawCustomEditor(
-				T a_handle,
+				T                  a_handle,
 				entryCustomData_t& a_data);
 
 		protected:
@@ -88,15 +88,15 @@ namespace IED
 			void QueueAddItemPopup();
 
 			void QueueCopySlotSexPopup(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_data);
 
 			void QueueErasePopup(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_data);
 
 			void QueueRenamePopup(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_data);
 
 			void OnPasteFail(const Data::configCustomNameValue_t* a_data);
@@ -107,94 +107,94 @@ namespace IED
 			virtual void DrawMenuBarItemsExtra();
 
 			virtual void DrawItemContextMenu(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params);
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
 		private:
 			void DrawFormSelectors(
-				T a_handle,
+				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
 			void DrawCustomConfig(
-				T a_handle,
+				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
 			ExtraItemsAction DrawExtraItemsHeaderContextMenu(
-				T a_handle,
+				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
 			void DrawExtraItems(
-				T a_handle,
+				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
 			void DrawExtraItemsTable(
-				T a_handle,
+				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
 			void DrawCustomEntry(
-				T a_handle,
-				const stl::fixed_string& a_name,
+				T                          a_handle,
+				const stl::fixed_string&   a_name,
 				Data::configCustomEntry_t& a_entry);
 
 			virtual void DrawMainHeaderControlsExtra(
-				T a_handle,
+				T                  a_handle,
 				entryCustomData_t& a_data);
 
 			void DrawItemHeaderControls(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params);
 
 			void DrawCountRangeContextMenu(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params);
 
 			void DrawItemFilter();
 
 			virtual void DrawExtraFlags(
-				T a_handle,
+				T                         a_handle,
 				Data::configBaseValues_t& a_data,
-				Data::configBase_t* a_baseConfig,
-				const void* a_params) override;
+				Data::configBase_t*       a_baseConfig,
+				const void*               a_params) override;
 
-			virtual UIPopupQueue& GetPopupQueue() = 0;
+			virtual UIPopupQueue&           GetPopupQueue()  = 0;
 			virtual CustomEditorCurrentData GetCurrentData() = 0;
 
 			virtual bool GetEnableEquipmentOverridePropagation() override;
 
 			virtual void OnFullConfigChange(
-				T a_handle,
+				T                               a_handle,
 				const CustomConfigUpdateParams& a_params) = 0;
 
 			virtual bool OnCreateNew(
-				T a_handle,
+				T                            a_handle,
 				const CustomConfigNewParams& a_params) = 0;
 
 			virtual void OnErase(
-				T a_handle,
+				T                              a_handle,
 				const CustomConfigEraseParams& a_params) = 0;
 
 			virtual bool OnRename(
-				T a_handle,
+				T                               a_handle,
 				const CustomConfigRenameParams& a_params) = 0;
 
 			virtual void DrawExtraEquipmentOverrideOptions(
-				T a_handle,
-				Data::configBase_t& a_data,
-				const void* a_params,
+				T                          a_handle,
+				Data::configBase_t&        a_data,
+				const void*                a_params,
 				Data::equipmentOverride_t& a_override) override;
 
 			virtual bool DrawExtraItemInfo(
-				T a_handle,
-				const stl::fixed_string& a_name,
+				T                                a_handle,
+				const stl::fixed_string&         a_name,
 				const Data::configCustomEntry_t& a_entry,
-				bool a_infoDrawn);
+				bool                             a_infoDrawn);
 
 			virtual void OnModelGroupEditorChange(
-				T a_handle,
+				T                                     a_handle,
 				const SingleCustomConfigUpdateParams& a_params,
-				ModelGroupEditorOnChangeEventType a_type) override;
+				ModelGroupEditorOnChangeEventType     a_type) override;
 
 			UIGenericFilter m_itemFilter;
 
@@ -244,7 +244,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawCustomEditor(
-			T a_handle,
+			T                  a_handle,
 			entryCustomData_t& a_data)
 		{
 			ImGui::PushID("custom_editor");
@@ -359,7 +359,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::QueueCopySlotSexPopup(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_data)
 		{
 			auto& queue = GetPopupQueue();
@@ -371,9 +371,9 @@ namespace IED
 					 LS(UIWidgetCommonStrings::CopyFromOppositeSexPrompt))
 				.call([this,
 			           handle = a_handle,
-			           name = a_data.name,
-			           tsex = a_data.sex,
-			           ssex = GetOppositeSex(a_data.sex)](
+			           name   = a_data.name,
+			           tsex   = a_data.sex,
+			           ssex   = GetOppositeSex(a_data.sex)](
 						  const auto&) {
 					auto current = GetCurrentData();
 					if (!current)
@@ -409,7 +409,7 @@ namespace IED
 
 		template <class T>
 		inline void UICustomEditorWidget<T>::QueueErasePopup(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_data)
 		{
 			auto& queue = GetPopupQueue();
@@ -421,7 +421,7 @@ namespace IED
 					 LS(UIWidgetCommonStrings::DeleteItemPrompt))
 				.call([this,
 			           handle = a_handle,
-			           name = a_data.name](
+			           name   = a_data.name](
 						  const auto&) {
 					auto current = GetCurrentData();
 					if (!current)
@@ -442,7 +442,7 @@ namespace IED
 
 		template <class T>
 		inline void UICustomEditorWidget<T>::QueueRenamePopup(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_data)
 		{
 			auto& queue = GetPopupQueue();
@@ -605,7 +605,7 @@ namespace IED
 
 		template <class T>
 		inline void UICustomEditorWidget<T>::DrawItemContextMenu(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params)
 		{
 			if (ImGui::MenuItem(LS(CommonStrings::Delete, "1")))
@@ -659,7 +659,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawFormSelectors(
-			T a_handle,
+			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -722,7 +722,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawCustomConfig(
-			T a_handle,
+			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -966,7 +966,7 @@ namespace IED
 
 		template <class T>
 		ExtraItemsAction UICustomEditorWidget<T>::DrawExtraItemsHeaderContextMenu(
-			T a_handle,
+			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			ExtraItemsAction result{ ExtraItemsAction ::None };
@@ -1072,7 +1072,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawExtraItems(
-			T a_handle,
+			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -1119,7 +1119,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawExtraItemsTable(
-			T a_handle,
+			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
@@ -1246,8 +1246,8 @@ namespace IED
 
 		template <class T>
 		inline void UICustomEditorWidget<T>::DrawCustomEntry(
-			T a_handle,
-			const stl::fixed_string& a_name,
+			T                          a_handle,
+			const stl::fixed_string&   a_name,
 			Data::configCustomEntry_t& a_entry)
 		{
 			SingleCustomConfigUpdateParams params{ a_name, GetSex(), a_entry };
@@ -1307,14 +1307,14 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawMainHeaderControlsExtra(
-			T a_handle,
+			T                  a_handle,
 			entryCustomData_t& a_data)
 		{
 		}
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawItemHeaderControls(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params)
 		{
 			ImGui::PushID("header_controls");
@@ -1332,7 +1332,7 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawCountRangeContextMenu(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params)
 		{
 			ImGui::PushID("cr_context_area");
@@ -1383,10 +1383,10 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawExtraFlags(
-			T a_handle,
+			T                         a_handle,
 			Data::configBaseValues_t& a_data,
-			Data::configBase_t* a_baseConfig,
-			const void* a_params)
+			Data::configBase_t*       a_baseConfig,
+			const void*               a_params)
 		{
 			ImGui::Separator();
 
@@ -1444,28 +1444,28 @@ namespace IED
 
 		template <class T>
 		void UICustomEditorWidget<T>::DrawExtraEquipmentOverrideOptions(
-			T a_handle,
-			Data::configBase_t& a_data,
-			const void* a_params,
+			T                          a_handle,
+			Data::configBase_t&        a_data,
+			const void*                a_params,
 			Data::equipmentOverride_t& a_override)
 		{
 		}
 
 		template <class T>
 		bool UICustomEditorWidget<T>::DrawExtraItemInfo(
-			T a_handle,
-			const stl::fixed_string& a_name,
+			T                                a_handle,
+			const stl::fixed_string&         a_name,
 			const Data::configCustomEntry_t& a_entry,
-			bool a_infoDrawn)
+			bool                             a_infoDrawn)
 		{
 			return false;
 		}
 
 		template <class T>
 		void UICustomEditorWidget<T>::OnModelGroupEditorChange(
-			T a_handle,
+			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params,
-			ModelGroupEditorOnChangeEventType a_type)
+			ModelGroupEditorOnChangeEventType     a_type)
 		{
 			switch (a_type)
 			{

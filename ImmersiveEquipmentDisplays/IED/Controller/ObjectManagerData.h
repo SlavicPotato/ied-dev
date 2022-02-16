@@ -14,23 +14,22 @@ namespace IED
 {
 	struct effectShaderData_t
 	{
-		struct EffectShaderDataEntry
+		struct Entry
 		{
-			RE::BSTSmartPointer<BSEffectShaderData> data;
+			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
+			std::list<NiPointer<NiNode>>            nodes;
 		};
 
-		std::unordered_map<stl::fixed_string, EffectShaderDataEntry> effectShaderData;
+		std::unordered_map<stl::fixed_string, Entry> data;
 	};
 
 	enum class ObjectEntryFlags : std::uint32_t
 	{
-		kNone = 0,
-
+		kNone                       = 0,
 		kRefSyncDisableFailedOrphan = 1u << 1,
-		kScbLeft = 1u << 2,
-
-		kSyncReferenceTransform = 1u << 6,
-		kPlaySound = 1u << 8
+		kScbLeft                    = 1u << 2,
+		kSyncReferenceTransform     = 1u << 6,
+		kPlaySound                  = 1u << 8
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
@@ -40,7 +39,7 @@ namespace IED
 		objectEntryBase_t() = default;
 
 		objectEntryBase_t(const objectEntryBase_t&) = delete;
-		objectEntryBase_t(objectEntryBase_t&&) = delete;
+		objectEntryBase_t(objectEntryBase_t&&)      = delete;
 		objectEntryBase_t& operator=(const objectEntryBase_t&) = delete;
 		objectEntryBase_t& operator=(objectEntryBase_t&&) = delete;
 
@@ -69,13 +68,13 @@ namespace IED
 			return state && state->nodes.obj->IsVisible();
 		}
 
-		struct State
+		struct State :
+			effectShaderData_t
 		{
 			struct GroupObject
 			{
-				NiPointer<NiNode> object;
+				NiPointer<NiNode>      object;
 				Data::cacheTransform_t transform;
-				//effectShaderData_t effectShaderData;
 			};
 
 			void UpdateData(
@@ -116,17 +115,17 @@ namespace IED
 
 			void CleanupObjects(Game::ObjectRefHandle a_handle);
 
-			TESForm* form{ nullptr };
-			Game::FormID formid;
-			stl::flag<ObjectEntryFlags> flags{ ObjectEntryFlags::kNone };
-			Data::NodeDescriptor nodeDesc;
-			nodesRef_t nodes;
-			Data::cacheTransform_t transform;
-			std::list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
+			TESForm*                                           form{ nullptr };
+			Game::FormID                                       formid;
+			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
+			Data::NodeDescriptor                               nodeDesc;
+			nodesRef_t                                         nodes;
+			Data::cacheTransform_t                             transform;
+			std::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			//effectShaderData_t effectShaderData;
-			stl::flag<Data::BaseFlags> resetTriggerFlags{ Data::BaseFlags::kNone };
-			bool atmReference{ true };
+			effectShaderData_t                                 effectShaders;
+			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
+			bool                                               atmReference{ true };
 		};
 
 		std::unique_ptr<State> state;
@@ -136,8 +135,8 @@ namespace IED
 		objectEntryBase_t
 	{
 		Data::actorStateSlotEntry_t slotState;
-		Data::ObjectSlot slotid{ Data::ObjectSlot::kMax };
-		std::uint8_t hideCountdown{ 0 };
+		Data::ObjectSlot            slotid{ Data::ObjectSlot::kMax };
+		std::uint8_t                hideCountdown{ 0 };
 
 		inline constexpr void ResetDeferedHide() noexcept
 		{
@@ -151,7 +150,7 @@ namespace IED
 
 		kProcessedChance = 1u << 0,
 		kBlockedByChance = 1u << 1,
-		kUseGroup = 1u << 2,
+		kUseGroup        = 1u << 2,
 
 		kChanceMask = kProcessedChance | kBlockedByChance
 	};
@@ -166,7 +165,7 @@ namespace IED
 			cflags.clear(CustomObjectEntryFlags::kChanceMask);
 		}
 
-		Game::FormID modelForm;
+		Game::FormID                      modelForm;
 		stl::flag<CustomObjectEntryFlags> cflags{ CustomObjectEntryFlags::kNone };
 	};
 
@@ -179,35 +178,35 @@ namespace IED
 	{
 		kNone = 0,
 
-		kWantTransformUpdate = 1u << 0,
+		kWantTransformUpdate      = 1u << 0,
 		kImmediateTransformUpdate = 1u << 1,
-		kSkipNextTransformUpdate = 1u << 2,
+		kSkipNextTransformUpdate  = 1u << 2,
 
-		kRequestTransformUpdateDefer = kWantTransformUpdate | kSkipNextTransformUpdate,
+		kRequestTransformUpdateDefer     = kWantTransformUpdate | kSkipNextTransformUpdate,
 		kRequestTransformUpdateImmediate = kWantTransformUpdate | kImmediateTransformUpdate,
-		kRequestTransformUpdateMask = kWantTransformUpdate | kImmediateTransformUpdate | kSkipNextTransformUpdate,
+		kRequestTransformUpdateMask      = kWantTransformUpdate | kImmediateTransformUpdate | kSkipNextTransformUpdate,
 
-		kWantEval = 1u << 3,
-		kImmediateEval = 1u << 4,
+		kWantEval       = 1u << 3,
+		kImmediateEval  = 1u << 4,
 		kEvalCountdown1 = 1u << 5,
 		kEvalCountdown2 = 1u << 6,
 
-		kRequestEval = kWantEval,
+		kRequestEval          = kWantEval,
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
-		kRequestEvalMask = kWantEval | kImmediateEval | kEvalCountdown1 | kEvalCountdown2
+		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdown1 | kEvalCountdown2
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
 
 	struct ActorObjectHolderFlagsBitfield
 	{
-		std::uint32_t wantTransformUpdate: 1;
+		std::uint32_t wantTransformUpdate     : 1;
 		std::uint32_t immediateTransformUpdate: 1;
-		std::uint32_t skipNextTransformUpdate: 1;
-		std::uint32_t wantEval: 1;
-		std::uint32_t immediateEval: 1;
-		std::uint32_t evalCountdown: 2;
-		std::uint32_t unused: 25;
+		std::uint32_t skipNextTransformUpdate : 1;
+		std::uint32_t wantEval                : 1;
+		std::uint32_t immediateEval           : 1;
+		std::uint32_t evalCountdown           : 2;
+		std::uint32_t unused                  : 25;
 	};
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
@@ -219,8 +218,8 @@ namespace IED
 	public:
 		weapNodeEntry_t(
 			const stl::fixed_string& a_nodeName,
-			NiNode* a_node,
-			NiNode* a_defaultNode) :
+			NiNode*                  a_node,
+			NiNode*                  a_defaultNode) :
 			nodeName(a_nodeName),
 			node(a_node),
 			defaultNode(a_defaultNode)
@@ -228,16 +227,8 @@ namespace IED
 		}
 
 		const stl::fixed_string nodeName;
-		NiPointer<NiNode> node;
-		NiPointer<NiNode> defaultNode;
-
-		/*inline constexpr const auto& get_current_target() const noexcept
-		{
-			return currentTarget;
-		}
-
-	private:
-		mutable stl::fixed_string currentTarget;*/
+		NiPointer<NiNode>       node;
+		NiPointer<NiNode>       defaultNode;
 
 	private:
 		mutable NiPointer<NiNode> target;
@@ -256,7 +247,7 @@ namespace IED
 			NiAVObject* a_object) noexcept;
 
 		static constexpr bool find_visible_geometry(
-			NiAVObject* a_object,
+			NiAVObject*          a_object,
 			const BSFixedString& a_scb,
 			const BSFixedString& a_scbLeft) noexcept;
 
@@ -279,13 +270,13 @@ namespace IED
 		{
 			NiPointer<NiNode> node;
 			NiPointer<NiNode> parent;
-			std::uint16_t size;
-			bool visible;
+			std::uint16_t     size;
+			bool              visible;
 		};
 
 		struct actorLocationData_t
 		{
-			bool inInterior{ false };
+			bool           inInterior{ false };
 			TESWorldSpace* worldspace{ nullptr };
 		};
 
@@ -295,43 +286,41 @@ namespace IED
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
 			const stl::optional<Data::actorStateEntry_t>& a_playerState,
-			Actor* a_actor,
-			NiNode* a_root,
-			NiNode* a_npcroot,
-			IObjectManager& a_owner,
-			Game::ObjectRefHandle a_handle,
-			bool a_nodeOverrideEnabled,
-			bool a_nodeOverrideEnabledPlayer,
-			Data::actorStateHolder_t& a_actorState);
+			Actor*                                        a_actor,
+			NiNode*                                       a_root,
+			NiNode*                                       a_npcroot,
+			IObjectManager&                               a_owner,
+			Game::ObjectRefHandle                         a_handle,
+			bool                                          a_nodeOverrideEnabled,
+			bool                                          a_nodeOverrideEnabledPlayer,
+			Data::actorStateHolder_t&                     a_actorState);
 
 		~ActorObjectHolder();
 
 		ActorObjectHolder(const ActorObjectHolder&) = delete;
-		ActorObjectHolder(ActorObjectHolder&&) = default;
+		ActorObjectHolder(ActorObjectHolder&&)      = default;
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
 		ActorObjectHolder& operator=(ActorObjectHolder&&) = default;
 
-		[[nodiscard]] inline auto& GetSlot(
+		[[nodiscard]] inline constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
 		{
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
-		[[nodiscard]] inline const auto& GetSlot(
+		[[nodiscard]] inline constexpr const auto& GetSlot(
 			Data::ObjectSlot a_slot) const noexcept
 		{
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetSlots() const noexcept
+		[[nodiscard]] inline constexpr auto& GetSlots() const noexcept
 		{
 			return m_entriesSlot;
 		}
 
-		[[nodiscard]] bool AnySlotOccupied() const noexcept;
-
+		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedSlots() const noexcept;
-
 		[[nodiscard]] std::size_t GetNumOccupiedCustom() const noexcept;
 
 		[[nodiscard]] inline auto GetAge() const noexcept
@@ -339,7 +328,7 @@ namespace IED
 			return IPerfCounter::delta_us(m_created, IPerfCounter::Query());
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetHandle() const noexcept
+		[[nodiscard]] inline constexpr auto& GetHandle() const noexcept
 		{
 			return m_handle;
 		}
@@ -406,7 +395,7 @@ namespace IED
 			}
 		}
 
-		inline void RequestEvalDefer() const noexcept
+		inline constexpr void RequestEvalDefer() const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEval);
 			if (m_flagsbf.evalCountdown == 0)
@@ -415,7 +404,7 @@ namespace IED
 			}
 		}
 
-		inline void RequestEval() const noexcept
+		inline constexpr void RequestEval() const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEvalImmediate);
 		}
@@ -425,11 +414,11 @@ namespace IED
 		[[nodiscard]] bool IsActorNPC(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
-		using customEntryMap_t = std::unordered_map<stl::fixed_string, objectEntryCustom_t>;
+		using customEntryMap_t  = std::unordered_map<stl::fixed_string, objectEntryCustom_t>;
 		using customPluginMap_t = std::unordered_map<stl::fixed_string, customEntryMap_t>;
 
 		template <class Tv>
-		void visit(Tv a_func)
+		constexpr void visit(Tv a_func)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -448,42 +437,49 @@ namespace IED
 			}
 		}
 
+		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
+		{
+			return m_formid;
+		}
+
 	private:
 		void CreateExtraNodes(
-			NiNode* a_npcroot,
-			bool a_female,
+			NiNode*                                   a_npcroot,
+			bool                                      a_female,
 			const NodeOverrideData::extraNodeEntry_t& a_entry);
 
 		Game::ObjectRefHandle m_handle;
-		long long m_created{ 0 };
+		long long             m_created{ 0 };
 
 		union
 		{
 			mutable stl::flag<ActorObjectHolderFlags> m_flags{ ActorObjectHolderFlags::kNone };
-			mutable ActorObjectHolderFlagsBitfield m_flagsbf;
+			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 
 		slot_container_type m_entriesSlot;
-		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX];
+		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX];
 
-		std::vector<monitorNodeEntry_t> m_monitorNodes;
+		std::vector<monitorNodeEntry_t>                       m_monitorNodes;
 		std::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
 		std::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
-		std::vector<weapNodeEntry_t> m_weapNodes;
+		std::vector<weapNodeEntry_t>                          m_weapNodes;
 
-		NiPointer<Actor> m_actor;
+		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
 		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_formid;
 
-		bool m_cellAttached{ false };
-		bool m_isPlayerTeammate{ false };
-		long long m_lastLFStateCheck;
-
+		bool                m_cellAttached{ false };
+		bool                m_isPlayerTeammate{ false };
+		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;
+		TESPackage*         m_currentPackage{ nullptr };
 
 		IObjectManager& m_owner;
+
+		static std::atomic_llong m_lfsc_delta;
 	};
 
 	using ActorObjectMap = std::unordered_map<Game::FormID, ActorObjectHolder>;
@@ -515,7 +511,7 @@ namespace IED
 		}
 
 	protected:
-		ActorObjectMap m_objects;
+		ActorObjectMap                         m_objects;
 		stl::optional<Data::actorStateEntry_t> m_playerState;
 	};
 
@@ -549,7 +545,7 @@ namespace IED
 	}
 
 	constexpr bool cmeNodeEntry_t::find_visible_geometry(
-		NiAVObject* a_object,
+		NiAVObject*          a_object,
 		const BSFixedString& a_scb,
 		const BSFixedString& a_scbLeft) noexcept
 	{

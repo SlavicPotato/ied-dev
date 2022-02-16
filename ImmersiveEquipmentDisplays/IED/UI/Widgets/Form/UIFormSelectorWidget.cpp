@@ -13,11 +13,11 @@ namespace IED
 	namespace UI
 	{
 		UIFormSelectorWidget::UIFormSelectorWidget(
-			Controller& a_controller,
+			Controller&   a_controller,
 			FormInfoFlags a_requiredFlags,
-			bool a_restrictTypes,
-			bool a_enableFormBrowser,
-			bool a_forceBase) :
+			bool          a_restrictTypes,
+			bool          a_enableFormBrowser,
+			bool          a_forceBase) :
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
@@ -31,9 +31,9 @@ namespace IED
 		}
 
 		bool UIFormSelectorWidget::DrawFormSelector(
-			const char* a_label,
+			const char*   a_label,
 			Game::FormID& a_form,
-			const char* a_tipText)
+			const char*   a_tipText)
 		{
 			ImGui::PushID("form_sel_w");
 
@@ -42,7 +42,7 @@ namespace IED
 			if (a_form != m_state->m_lastInputFormID)
 			{
 				m_state->m_lastInputFormID = a_form;
-				m_state->m_bufferedFormID = a_form;
+				m_state->m_bufferedFormID  = a_form;
 
 				if (a_form)
 				{
@@ -57,7 +57,7 @@ namespace IED
 				}
 				else
 				{
-					m_state->m_inputBuffer[0] = 0;
+					m_state->m_inputBuffer[0]     = 0;
 					m_state->m_lastInputBuffer[0] = 0;
 					m_state->m_currentInfo.reset();
 				}
@@ -247,10 +247,10 @@ namespace IED
 
 		void UIFormSelectorWidget::Reset()
 		{
-			m_state->m_bufferedFormID = {};
+			m_state->m_bufferedFormID  = {};
 			m_state->m_lastInputFormID = {};
 			m_state->m_currentInfo.reset();
-			m_state->m_inputBuffer[0] = 0;
+			m_state->m_inputBuffer[0]     = 0;
 			m_state->m_lastInputBuffer[0] = 0;
 		}
 
@@ -403,7 +403,7 @@ namespace IED
 		{
 			m_controller.QueueLookupFormInfo(
 				a_formId,
-				[state = m_state](std::unique_ptr<formInfoResult_t> a_info) {
+				[state = m_state](IForm::info_result a_info) {
 					state->m_currentInfo = std::move(a_info);
 				});
 		}
@@ -411,7 +411,7 @@ namespace IED
 		void UIFormSelectorWidget::QueueGetCrosshairRef()
 		{
 			/*m_controller.QueueLookupFormInfoCrosshairRef(
-				[state = m_state](std::unique_ptr<formInfoResult_t> a_info) {
+				[state = m_state](IForm::info_result a_info) {
 					if (a_info)
 					{
 						stl::snprintf(state->m_inputBuffer, "%.8X", a_info->form.id.get());
@@ -454,7 +454,7 @@ namespace IED
 
 		void UIFormSelectorWidget::SetInputFormID(
 			const std::shared_ptr<state_t>& a_state,
-			Game::FormID a_form)
+			Game::FormID                    a_form)
 		{
 			stl::snprintf(a_state->m_inputBuffer, "%.8X", a_form.get());
 		}

@@ -9,8 +9,8 @@ namespace IED
 		enum class UIFileSelectorWidgetStrings : Localization::StringID
 		{
 			ErrorRootPathNotDir = 4900,
-			ErrorInvalidPath = 4901,
-			ErrorFileDelFailed = 4902,
+			ErrorInvalidPath    = 4901,
+			ErrorFileDelFailed  = 4902,
 		};
 	}
 }

@@ -15,8 +15,8 @@ namespace IED
 
 			struct data_storage_type
 			{
-				stl::fixed_string lang;
-				container_type data;
+				stl::fixed_string                lang;
+				container_type                   data;
 				std::shared_ptr<fontGlyphData_t> glyph_data;
 			};
 
@@ -31,7 +31,7 @@ namespace IED
 			{
 				return m_data.lang;
 			}
-			
+
 			inline constexpr const auto& GetGlyphData() const noexcept
 			{
 				return m_data.glyph_data;

@@ -35,7 +35,7 @@ namespace IED
 				return std::addressof(m_filter);
 			}*/
 
-			inline void NextSetFocus() noexcept
+			inline constexpr void NextSetFocus() noexcept
 			{
 				m_nextSetFocus = true;
 			}
@@ -50,7 +50,7 @@ namespace IED
 				return m_filterBuf;
 			}
 
-			inline void SetFlags(ImGuiInputTextFlags a_flags) noexcept
+			inline constexpr void SetFlags(ImGuiInputTextFlags a_flags) noexcept
 			{
 				m_inputTextFlags = a_flags;
 			}
@@ -59,26 +59,28 @@ namespace IED
 			UIFilterBase();
 			UIFilterBase(bool a_isOpen);
 
-			virtual bool ProcessInput(const char* a_label) = 0;
+			virtual bool        ProcessInput(const char* a_label) = 0;
 			virtual const char* GetHelpText() { return nullptr; };
 
 			char m_filterBuf[128]{ 0 };
 
 			stl::optional<T> m_filter;
-			bool m_searchOpen{ false };
-			bool m_nextSetFocus{ false };
+			bool             m_searchOpen{ false };
+			bool             m_nextSetFocus{ false };
 
 			ImGuiInputTextFlags m_inputTextFlags{ ImGuiInputTextFlags_None };
 		};
 
 		template <typename T>
 		UIFilterBase<T>::UIFilterBase()
-		{}
+		{
+		}
 
 		template <typename T>
 		UIFilterBase<T>::UIFilterBase(bool a_isOpen) :
 			m_searchOpen(a_isOpen)
-		{}
+		{
+		}
 
 		template <typename T>
 		void UIFilterBase<T>::DrawButton()

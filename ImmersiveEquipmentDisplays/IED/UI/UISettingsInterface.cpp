@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		UISettingsInterface::UISettingsInterface(
-			Controller& a_controller) : 
+			Controller& a_controller) :
 			m_controller(a_controller)
 		{
 		}

@@ -29,7 +29,7 @@ namespace IED
 
 			template <class Te, std::uint32_t _NumHash = 2>
 			inline constexpr const char* LS(
-				Te a_id,
+				Te          a_id,
 				const char* a_im_id) const noexcept
 			{
 				return LMKID<_NumHash>(LS(a_id), a_im_id);
@@ -37,7 +37,7 @@ namespace IED
 
 			template <class Te>
 			inline constexpr bool LCG_BM(
-				Te a_id,
+				Te          a_id,
 				const char* a_im_id) const
 			{
 				return ImGui::BeginMenu(LMKID<2>(LS(a_id), a_im_id));
@@ -45,7 +45,7 @@ namespace IED
 
 			template <class Te>
 			inline constexpr bool LCG_MI(
-				Te a_id,
+				Te          a_id,
 				const char* a_im_id) const
 			{
 				return ImGui::MenuItem(LMKID<2>(LS(a_id), a_im_id));

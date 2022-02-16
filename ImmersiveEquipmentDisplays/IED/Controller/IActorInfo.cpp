@@ -9,9 +9,9 @@
 namespace IED
 {
 	void IActorInfo::FillActorInfoEntry(
-		Actor* a_actor,
+		Actor*            a_actor,
 		actorInfoEntry_t& a_out,
-		bool a_updateNPC)
+		bool              a_updateNPC)
 	{
 		a_out.name = IFormCommon::GetFormName(a_actor);
 
@@ -24,7 +24,7 @@ namespace IED
 			a_out.race = {};
 		}
 
-		a_out.weight = a_actor->GetWeight();
+		a_out.weight   = a_actor->GetWeight();
 		a_out.attached = a_actor->IsParentCellAttached();
 
 		a_out.ts = IPerfCounter::Query();
@@ -57,14 +57,14 @@ namespace IED
 	}
 
 	void IActorInfo::FillNPCInfoEntry(
-		TESNPC* a_npc,
+		TESNPC*         a_npc,
 		npcInfoEntry_t& a_out)
 	{
-		a_out.name = IFormCommon::GetFormName(a_npc);
-		a_out.form = a_npc->formID;
-		a_out.flags = a_npc->flags;
+		a_out.name   = IFormCommon::GetFormName(a_npc);
+		a_out.form   = a_npc->formID;
+		a_out.flags  = a_npc->flags;
 		a_out.female = a_npc->GetSex() == 1;
-		a_out.race = a_npc->race.race ? a_npc->race.race->formID : 0;
+		a_out.race   = a_npc->race.race ? a_npc->race.race->formID : 0;
 		a_out.weight = Game::GetNPCWeight(a_npc);
 	}
 
@@ -232,7 +232,7 @@ namespace IED
 
 	void IActorInfo::UpdateActorInfo(
 		const ActorObjectMap& a_cache,
-		Game::FormID a_actor)
+		Game::FormID          a_actor)
 	{
 		auto it = a_cache.find(a_actor);
 		if (it != a_cache.end())

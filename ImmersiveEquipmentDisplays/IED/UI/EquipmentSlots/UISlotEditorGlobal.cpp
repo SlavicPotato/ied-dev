@@ -96,9 +96,9 @@ namespace IED
 
 		void UISlotEditorGlobal::MergeProfile(
 			const profileSelectorParamsSlot_t<int>& a_data,
-			const SlotProfile& a_profile)
+			const SlotProfile&                      a_profile)
 		{
-			UpdateConfigFromProfile(a_data.handle, a_profile.Data(), false);
+			DoMerge(a_data.handle, a_profile.Data());
 
 			UpdateData(a_data.data);
 
@@ -123,8 +123,8 @@ namespace IED
 		}*/
 
 		void UISlotEditorGlobal::OnBaseConfigChange(
-			int a_handle,
-			const void* a_params,
+			int              a_handle,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
@@ -151,7 +151,7 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::OnFullConfigChange(
-			int a_handle,
+			int                           a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
@@ -216,6 +216,11 @@ namespace IED
 					settings.data.ui.slotEditor.globalType),
 				Data::ConfigClass::Global
 			};
+		}
+
+		entrySlotData_t UISlotEditorGlobal::GetCurrentData(int)
+		{
+			return m_data;
 		}
 
 		void UISlotEditorGlobal::OnOpen()

@@ -64,13 +64,13 @@ namespace IED
 			ASSERT(IMGUI_CHECKVERSION());
 			ImGui::CreateContext();
 
-			auto& io = ImGui::GetIO();
-			io.MouseDrawCursor = true;
-			io.WantSetMousePos = true;
+			auto& io                             = ImGui::GetIO();
+			io.MouseDrawCursor                   = true;
+			io.WantSetMousePos                   = true;
 			io.ConfigWindowsMoveFromTitleBarOnly = true;
-			io.DisplaySize = { m_info.bufferSize.width, m_info.bufferSize.height };
-			io.MousePos = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
-			io.UserData = static_cast<void*>(std::addressof(m_ioUserData));
+			io.DisplaySize                       = { m_info.bufferSize.width, m_info.bufferSize.height };
+			io.MousePos                          = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
+			io.UserData                          = static_cast<void*>(std::addressof(m_ioUserData));
 
 			io.IniFilename =
 				!m_conf.imgui_ini.empty() ?
@@ -206,8 +206,8 @@ namespace IED
 		}
 
 		LRESULT CALLBACK UI::WndProc_Hook(
-			HWND hWnd,
-			UINT uMsg,
+			HWND   hWnd,
+			UINT   uMsg,
 			WPARAM wParam,
 			LPARAM lParam)
 		{
@@ -249,7 +249,7 @@ namespace IED
 						if (auto pc = PlayerCamera::GetSingleton())
 						{
 							m_state.autoVanityAllowState = pc->allowAutoVanityMode;
-							pc->allowAutoVanityMode = false;
+							pc->allowAutoVanityMode      = false;
 						}
 					}
 				}
@@ -295,7 +295,7 @@ namespace IED
 				return false;
 			}
 
-			a_task->m_state.holdsLock = a_task->m_options.lock;
+			a_task->m_state.holdsLock   = a_task->m_options.lock;
 			a_task->m_state.holdsFreeze = a_task->m_options.freeze;
 
 			if (a_task->m_state.holdsLock)
@@ -529,7 +529,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.extraGlyphPresets = a_flags;
-			m_fontUpdateData.dirty = true;
+			m_fontUpdateData.dirty             = true;
 		}
 
 		void UI::QueueSetLanguageGlyphDataImpl(
@@ -538,14 +538,14 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.langGlyphData = a_data;
-			m_fontUpdateData.dirty = true;
+			m_fontUpdateData.dirty         = true;
 		}
 
 		void UI::QueueFontChangeImpl(const stl::fixed_string& a_font)
 		{
 			IScopedLock lock(m_lock);
 
-			m_fontUpdateData.font = a_font;
+			m_fontUpdateData.font  = a_font;
 			m_fontUpdateData.dirty = true;
 		}
 
@@ -554,7 +554,7 @@ namespace IED
 			IScopedLock lock(m_lock);
 
 			m_fontUpdateData.fontsize = a_size;
-			m_fontUpdateData.dirty = true;
+			m_fontUpdateData.dirty    = true;
 		}
 
 		void UI::QueueResetFontSizeImpl()
@@ -574,38 +574,38 @@ namespace IED
 
 		static constexpr void ScaleStyle(ImGuiStyle& a_style, float a_factor) noexcept
 		{
-			a_style.WindowPadding.x = (a_style.WindowPadding.x * a_factor);
-			a_style.WindowPadding.y = (a_style.WindowPadding.y * a_factor);
-			a_style.WindowRounding = (a_style.WindowRounding * a_factor);
-			a_style.WindowMinSize.x = (a_style.WindowMinSize.x * a_factor);
-			a_style.WindowMinSize.y = (a_style.WindowMinSize.y * a_factor);
-			a_style.ChildRounding = (a_style.ChildRounding * a_factor);
-			a_style.PopupRounding = (a_style.PopupRounding * a_factor);
-			a_style.FramePadding.x = (a_style.FramePadding.x * a_factor);
-			a_style.FramePadding.y = (a_style.FramePadding.y * a_factor);
-			a_style.FrameRounding = (a_style.FrameRounding * a_factor);
-			a_style.ItemSpacing.x = (a_style.ItemSpacing.x * a_factor);
-			a_style.ItemSpacing.y = (a_style.ItemSpacing.y * a_factor);
-			a_style.ItemInnerSpacing.x = (a_style.ItemInnerSpacing.x * a_factor);
-			a_style.ItemInnerSpacing.y = (a_style.ItemInnerSpacing.y * a_factor);
-			a_style.CellPadding.x = (a_style.CellPadding.x * a_factor);
-			a_style.CellPadding.y = (a_style.CellPadding.y * a_factor);
-			a_style.TouchExtraPadding.x = (a_style.TouchExtraPadding.x * a_factor);
-			a_style.TouchExtraPadding.y = (a_style.TouchExtraPadding.y * a_factor);
-			a_style.IndentSpacing = (a_style.IndentSpacing * a_factor);
-			a_style.ColumnsMinSpacing = (a_style.ColumnsMinSpacing * a_factor);
-			a_style.ScrollbarSize = (a_style.ScrollbarSize * a_factor);
-			a_style.ScrollbarRounding = (a_style.ScrollbarRounding * a_factor);
-			a_style.GrabMinSize = (a_style.GrabMinSize * a_factor);
-			a_style.GrabRounding = (a_style.GrabRounding * a_factor);
-			a_style.LogSliderDeadzone = (a_style.LogSliderDeadzone * a_factor);
-			a_style.TabRounding = (a_style.TabRounding * a_factor);
+			a_style.WindowPadding.x           = (a_style.WindowPadding.x * a_factor);
+			a_style.WindowPadding.y           = (a_style.WindowPadding.y * a_factor);
+			a_style.WindowRounding            = (a_style.WindowRounding * a_factor);
+			a_style.WindowMinSize.x           = (a_style.WindowMinSize.x * a_factor);
+			a_style.WindowMinSize.y           = (a_style.WindowMinSize.y * a_factor);
+			a_style.ChildRounding             = (a_style.ChildRounding * a_factor);
+			a_style.PopupRounding             = (a_style.PopupRounding * a_factor);
+			a_style.FramePadding.x            = (a_style.FramePadding.x * a_factor);
+			a_style.FramePadding.y            = (a_style.FramePadding.y * a_factor);
+			a_style.FrameRounding             = (a_style.FrameRounding * a_factor);
+			a_style.ItemSpacing.x             = (a_style.ItemSpacing.x * a_factor);
+			a_style.ItemSpacing.y             = (a_style.ItemSpacing.y * a_factor);
+			a_style.ItemInnerSpacing.x        = (a_style.ItemInnerSpacing.x * a_factor);
+			a_style.ItemInnerSpacing.y        = (a_style.ItemInnerSpacing.y * a_factor);
+			a_style.CellPadding.x             = (a_style.CellPadding.x * a_factor);
+			a_style.CellPadding.y             = (a_style.CellPadding.y * a_factor);
+			a_style.TouchExtraPadding.x       = (a_style.TouchExtraPadding.x * a_factor);
+			a_style.TouchExtraPadding.y       = (a_style.TouchExtraPadding.y * a_factor);
+			a_style.IndentSpacing             = (a_style.IndentSpacing * a_factor);
+			a_style.ColumnsMinSpacing         = (a_style.ColumnsMinSpacing * a_factor);
+			a_style.ScrollbarSize             = (a_style.ScrollbarSize * a_factor);
+			a_style.ScrollbarRounding         = (a_style.ScrollbarRounding * a_factor);
+			a_style.GrabMinSize               = (a_style.GrabMinSize * a_factor);
+			a_style.GrabRounding              = (a_style.GrabRounding * a_factor);
+			a_style.LogSliderDeadzone         = (a_style.LogSliderDeadzone * a_factor);
+			a_style.TabRounding               = (a_style.TabRounding * a_factor);
 			a_style.TabMinWidthForCloseButton = (a_style.TabMinWidthForCloseButton != FLT_MAX) ? (a_style.TabMinWidthForCloseButton * a_factor) : FLT_MAX;
-			a_style.DisplayWindowPadding.x = (a_style.DisplayWindowPadding.x * a_factor);
-			a_style.DisplayWindowPadding.y = (a_style.DisplayWindowPadding.y * a_factor);
-			a_style.DisplaySafeAreaPadding.x = (a_style.DisplaySafeAreaPadding.x * a_factor);
-			a_style.DisplaySafeAreaPadding.y = (a_style.DisplaySafeAreaPadding.y * a_factor);
-			a_style.MouseCursorScale = (a_style.MouseCursorScale * a_factor);
+			a_style.DisplayWindowPadding.x    = (a_style.DisplayWindowPadding.x * a_factor);
+			a_style.DisplayWindowPadding.y    = (a_style.DisplayWindowPadding.y * a_factor);
+			a_style.DisplaySafeAreaPadding.x  = (a_style.DisplaySafeAreaPadding.x * a_factor);
+			a_style.DisplaySafeAreaPadding.y  = (a_style.DisplaySafeAreaPadding.y * a_factor);
+			a_style.MouseCursorScale          = (a_style.MouseCursorScale * a_factor);
 		}
 
 		bool UI::UpdateFontData(bool a_force)
@@ -713,7 +713,7 @@ namespace IED
 		}
 
 		bool UI::LoadFonts(
-			font_data_container& a_data,
+			font_data_container&     a_data,
 			const stl::fixed_string& a_font)
 		{
 			fontInfoMap_t info;
@@ -740,7 +740,7 @@ namespace IED
 
 				Serialization::ReadData(PATHS::FONT_META, root);
 
-				Serialization::ParserState state;
+				Serialization::ParserState           state;
 				Serialization::Parser<fontInfoMap_t> parser(state);
 
 				return parser.Parse(root, a_out);
@@ -754,7 +754,7 @@ namespace IED
 
 		void UI::AddFontRanges(
 			ImFontGlyphRangesBuilder& a_builder,
-			const fontGlyphRange_t& a_range)
+			const fontGlyphRange_t&   a_range)
 		{
 			using iter_type = std::conditional_t<
 				(IM_UNICODE_CODEPOINT_MAX < std::numeric_limits<std::uint32_t>::max() &&
@@ -773,7 +773,7 @@ namespace IED
 
 		void UI::AddFontRanges(
 			ImFontGlyphRangesBuilder& a_builder,
-			const fontGlyphData_t& a_data)
+			const fontGlyphData_t&    a_data)
 		{
 			auto& io = ImGui::GetIO();
 
@@ -873,8 +873,8 @@ namespace IED
 		}
 
 		bool UI::BuildFonts(
-			const fontInfoMap_t& a_info,
-			font_data_container& a_out,
+			const fontInfoMap_t&     a_info,
+			font_data_container&     a_out,
 			const stl::fixed_string& a_font)
 		{
 			auto& io = ImGui::GetIO();
@@ -899,7 +899,7 @@ namespace IED
 
 				ImFontConfig defaultConf;
 
-				defaultConf.SizePixels = r.first->second.size * m_fontUpdateData.scale;
+				defaultConf.SizePixels  = r.first->second.size * m_fontUpdateData.scale;
 				defaultConf.GlyphRanges = r.first->second.ranges.Data;
 
 				r.first->second.font = io.Fonts->AddFontDefault(std::addressof(defaultConf));

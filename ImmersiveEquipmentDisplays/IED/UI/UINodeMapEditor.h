@@ -20,6 +20,7 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_nodemap";
+
 		public:
 			UINodeMapEditor(Controller& a_controller);
 

@@ -16,13 +16,18 @@ namespace IED
 		std::memset(m_data, 0, sizeof(m_data));
 	}
 
-	void KeyState::SetKeyState(KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk)
+	void KeyState::SetKeyState(
+		KeyEventState a_ev,
+		std::uint32_t a_sc,
+		UINT          a_vk)
 	{
 		SetKeyState(a_ev, a_vk);
 		SetLRKeyState(a_ev, a_sc, a_vk);
 	}
 
-	void KeyState::SetKeyState(KeyEventState a_ev, UINT a_key)
+	void KeyState::SetKeyState(
+		KeyEventState a_ev,
+		UINT          a_key)
 	{
 		if (a_ev == KeyEventState::KeyUp)
 		{
@@ -40,7 +45,8 @@ namespace IED
 		m_data[a_key] = 0;
 	}
 
-	void KeyState::SetLRKeyState(KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk)
+	void KeyState::SetLRKeyState(
+		KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk)
 	{
 		switch (a_vk)
 		{

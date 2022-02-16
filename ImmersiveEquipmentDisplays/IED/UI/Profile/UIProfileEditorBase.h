@@ -18,8 +18,8 @@ namespace IED
 		{
 		public:
 			UIProfileEditorBase(
-				UIProfileStrings a_title,
-				const char* a_strid,
+				UIProfileStrings             a_title,
+				const char*                  a_strid,
 				Localization::ILocalization& a_localization);
 
 			virtual ~UIProfileEditorBase() noexcept = default;
@@ -43,15 +43,15 @@ namespace IED
 
 			void DrawMenuBar();
 
-			UIGenericFilter m_filter;
+			UIGenericFilter  m_filter;
 			UIProfileStrings m_title;
-			const char* m_strid;
+			const char*      m_strid;
 		};
 
 		template <class T>
 		UIProfileEditorBase<T>::UIProfileEditorBase(
-			UIProfileStrings a_title,
-			const char* a_strid,
+			UIProfileStrings             a_title,
+			const char*                  a_strid,
 			Localization::ILocalization& a_localization) :
 			UIProfileBase<T>(a_localization),
 			m_title(a_title),

@@ -13,13 +13,14 @@ namespace IED
 		{
 			static_assert(sizeof(WCHAR) == sizeof(ImWchar16));
 
-			SKMP_ALIGN(16) class KeyEventTaskPress
+			SKMP_ALIGN(16)
+			class KeyEventTaskPress
 			{
 			public:
 				KeyEventTaskPress() = delete;
 
 				inline explicit KeyEventTaskPress(
-					UINT a_key,
+					UINT  a_key,
 					WCHAR a_char) :
 					m_keys{ a_key, a_char },
 					m_type(KeyEventType::Keyboard)
@@ -28,7 +29,7 @@ namespace IED
 
 				inline explicit KeyEventTaskPress(
 					KeyEventType a_type,
-					UINT a_key) :
+					UINT         a_key) :
 					m_keys{ a_key, 0 },
 					m_type(a_type)
 				{
@@ -50,7 +51,7 @@ namespace IED
 				{
 					struct
 					{
-						UINT key;
+						UINT  key;
 						WCHAR chr;
 					} m_keys;
 
@@ -68,7 +69,7 @@ namespace IED
 
 				inline explicit KeyEventTaskRelease(
 					KeyEventType a_type,
-					UINT a_vkey) :
+					UINT         a_vkey) :
 					m_type(a_type),
 					m_key(a_vkey)
 				{
@@ -77,7 +78,7 @@ namespace IED
 				void Run();
 
 			private:
-				UINT m_key;
+				UINT         m_key;
 				KeyEventType m_type;
 			};
 
@@ -100,7 +101,7 @@ namespace IED
 			void ResetInput();
 
 		private:
-			TaskQueueStatic<KeyEventTaskPress> m_keyPressQueue;
+			TaskQueueStatic<KeyEventTaskPress>   m_keyPressQueue;
 			TaskQueueStatic<KeyEventTaskRelease> m_keyReleaseQueue;
 
 			DeadKey m_dk;

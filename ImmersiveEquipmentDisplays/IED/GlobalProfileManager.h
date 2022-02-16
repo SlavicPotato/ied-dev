@@ -1,17 +1,17 @@
 #pragma once
 
 #include "IED/Parsers/JSONConfigCustomHolderParser.h"
-#include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
+#include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONFormFilterBaseParser.h"
 #include "IED/Profile/Manager.h"
 
 namespace IED
 {
-	using SlotProfile = Profile<Data::configSlotHolder_t>;
-	using CustomProfile = Profile<Data::configCustomHolder_t>;
+	using SlotProfile         = Profile<Data::configSlotHolder_t>;
+	using CustomProfile       = Profile<Data::configCustomHolder_t>;
 	using NodeOverrideProfile = Profile<Data::configNodeOverrideHolder_t>;
-	using FormFilterProfile = Profile<Data::configFormFilterBase_t>;
+	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
 
 	class GlobalProfileManager
 	{
@@ -34,7 +34,7 @@ namespace IED
 		private:
 			using ProfileManager<CustomProfile>::ProfileManager;
 		};
-		
+
 		class ProfileManagerNodeOverride :
 			public ProfileManager<NodeOverrideProfile>
 		{
@@ -44,7 +44,7 @@ namespace IED
 		private:
 			using ProfileManager<NodeOverrideProfile>::ProfileManager;
 		};
-		
+
 		class ProfileManagerFormFilter :
 			public ProfileManager<FormFilterProfile>
 		{
@@ -67,13 +67,13 @@ namespace IED
 		{
 			return m_customManager;
 		}
-		
+
 		template <class T, std::enable_if_t<std::is_same_v<T, NodeOverrideProfile>, int> = 0>
 		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
 		{
 			return m_nodeOverrideManager;
 		}
-		
+
 		template <class T, std::enable_if_t<std::is_same_v<T, FormFilterProfile>, int> = 0>
 		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
 		{
@@ -81,10 +81,10 @@ namespace IED
 		}
 
 	private:
-		static ProfileManagerSlot m_slotManager;
-		static ProfileManagerCustom m_customManager;
+		static ProfileManagerSlot         m_slotManager;
+		static ProfileManagerCustom       m_customManager;
 		static ProfileManagerNodeOverride m_nodeOverrideManager;
-		static ProfileManagerFormFilter m_formFilterManager;
+		static ProfileManagerFormFilter   m_formFilterManager;
 	};
 
 }  // namespace IED

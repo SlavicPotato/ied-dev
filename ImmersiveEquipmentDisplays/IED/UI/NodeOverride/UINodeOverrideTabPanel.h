@@ -2,8 +2,8 @@
 
 #include "IED/ConfigCommon.h"
 
-#include "UINodeOverrideEditorGlobal.h"
 #include "UINodeOverrideEditorActor.h"
+#include "UINodeOverrideEditorGlobal.h"
 #include "UINodeOverrideEditorNPC.h"
 #include "UINodeOverrideEditorRace.h"
 
@@ -22,9 +22,9 @@ namespace IED
 			UINodeOverrideTabPanel(Controller& a_controller);
 
 			UINodeOverrideEditorGlobal m_editorGlobal;
-			UINodeOverrideEditorActor m_editorActor;
-			UINodeOverrideEditorNPC m_editorNPC;
-			UINodeOverrideEditorRace m_editorRace;
+			UINodeOverrideEditorActor  m_editorActor;
+			UINodeOverrideEditorNPC    m_editorNPC;
+			UINodeOverrideEditorRace   m_editorRace;
 
 		private:
 			virtual Data::SettingHolder::EditorPanel& GetEditorConfig() override;

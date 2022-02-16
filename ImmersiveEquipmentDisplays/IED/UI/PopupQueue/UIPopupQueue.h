@@ -12,10 +12,10 @@ namespace IED
 			UICommonModals
 		{
 		public:
-			UIPopupQueue(Localization::ILocalization &a_localization);
+			UIPopupQueue(Localization::ILocalization& a_localization);
 
 			UIPopupQueue(const UIPopupQueue&) = delete;
-			UIPopupQueue(UIPopupQueue&&) = delete;
+			UIPopupQueue(UIPopupQueue&&)      = delete;
 
 			UIPopupQueue& operator=(const UIPopupQueue&) = delete;
 			UIPopupQueue& operator=(UIPopupQueue&&) = delete;

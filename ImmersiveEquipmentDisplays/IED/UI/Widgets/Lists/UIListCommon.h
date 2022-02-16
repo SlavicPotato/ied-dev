@@ -28,15 +28,15 @@ namespace IED
 			inline void QueueListUpdate(typename Th a_desiredHandle)
 			{
 				m_listNextUpdate = true;
-				m_desiredHandle = a_desiredHandle;
+				m_desiredHandle  = a_desiredHandle;
 			}
 
 		protected:
 			struct listValue_t
 			{
-				Th handle;
+				Th                handle;
 				stl::fixed_string desc;
-				mutable Td data{};
+				mutable Td        data{};
 			};
 
 			virtual void ListReset();
@@ -46,8 +46,8 @@ namespace IED
 			void ListDrawInfo(const listValue_t& a_entry);
 
 			UIListBase(
-				Localization::ILocalization &a_localization,
-				float a_itemWidthScalar = -12.0f) noexcept;
+				Localization::ILocalization& a_localization,
+				float                        a_itemWidthScalar = -12.0f) noexcept;
 
 			virtual ~UIListBase() noexcept = default;
 
@@ -88,13 +88,13 @@ namespace IED
 			bool m_listNextUpdateCurrent{ false };
 			bool m_listNextUpdate{ true };
 
-			list_type m_listData;
+			list_type                  m_listData;
 			stl::optional<listValue_t> m_listCurrent;
-			stl::optional<Th> m_desiredHandle;
+			stl::optional<Th>          m_desiredHandle;
 
-			char m_listBuf1[256]{ 0 };
+			char            m_listBuf1[256]{ 0 };
 			UIGenericFilter m_listFilter;
-			float m_itemWidthScalar;
+			float           m_itemWidthScalar;
 
 			static_assert(std::is_convertible_v<Th, std::uint64_t>);
 		};
@@ -102,7 +102,7 @@ namespace IED
 		template <class Td, class Th>
 		UIListBase<Td, Th>::UIListBase(
 			Localization::ILocalization& a_localization,
-			float a_itemWidthScalar) noexcept :
+			float                        a_itemWidthScalar) noexcept :
 			UILocalizationInterface(a_localization),
 			m_itemWidthScalar(a_itemWidthScalar)
 		{
@@ -312,8 +312,8 @@ namespace IED
 		void UIListBase<Td, Th>::ListReset()
 		{
 			m_listNextUpdateCurrent = false;
-			m_listFirstUpdate = false;
-			m_listNextUpdate = true;
+			m_listFirstUpdate       = false;
+			m_listNextUpdate        = true;
 			m_listData.clear();
 		}
 

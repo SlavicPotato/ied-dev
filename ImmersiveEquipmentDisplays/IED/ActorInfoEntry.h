@@ -6,23 +6,23 @@ namespace IED
 {
 	struct npcInfoEntry_t
 	{
-		Game::FormID form;
-		std::string name;
-		bool active{ false };
-		Game::FormID race;
+		Game::FormID  form;
+		std::string   name;
+		bool          active{ false };
+		Game::FormID  race;
 		std::uint32_t flags;
-		float weight;
-		bool female;
+		float         weight;
+		bool          female;
 	};
 
 	struct actorInfoEntry_t
 	{
-		bool active{ false };
-		bool attached{ false };
-		std::string name;
+		bool         active{ false };
+		bool         attached{ false };
+		std::string  name;
 		Game::FormID race;
-		float weight;
-		long long ts{ 0 };
+		float        weight;
+		long long    ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 
@@ -52,5 +52,5 @@ namespace IED
 	};
 
 	using ActorInfoHolder = std::unordered_map<Game::FormID, actorInfoEntry_t>;
-	using NPCInfoHolder = std::unordered_map<Game::FormID, std::shared_ptr<npcInfoEntry_t>>;
+	using NPCInfoHolder   = std::unordered_map<Game::FormID, std::shared_ptr<npcInfoEntry_t>>;
 }

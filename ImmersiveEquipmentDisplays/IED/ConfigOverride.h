@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ConfigOverrideCustom.h"
-#include "ConfigOverrideSlot.h"
 #include "ConfigOverrideNodeOverride.h"
+#include "ConfigOverrideSlot.h"
 
 namespace IED
 {
@@ -20,13 +20,13 @@ namespace IED
 
 			inline void clear()
 			{
-				slot = {};
-				custom = {};
+				slot       = {};
+				custom     = {};
 				transforms = {};
 			}
 
-			configStoreSlot_t slot;
-			configStoreCustom_t custom;
+			configStoreSlot_t         slot;
+			configStoreCustom_t       custom;
 			configStoreNodeOverride_t transforms;
 
 		private:

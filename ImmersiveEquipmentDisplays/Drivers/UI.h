@@ -30,10 +30,10 @@ namespace IED
 		{
 			struct UIFontUpdateData
 			{
-				float scale{ 1.0f };
-				stl::fixed_string font;
-				stl::optional<float> fontsize;
-				stl::flag<GlyphPresetFlags> extraGlyphPresets{ GlyphPresetFlags::kNone };
+				float                            scale{ 1.0f };
+				stl::fixed_string                font;
+				stl::optional<float>             fontsize;
+				stl::flag<GlyphPresetFlags>      extraGlyphPresets{ GlyphPresetFlags::kNone };
 				std::shared_ptr<fontGlyphData_t> langGlyphData;
 
 				bool dirty{ false };
@@ -43,27 +43,27 @@ namespace IED
 			{
 				FontEntry(
 					ImFont* a_font,
-					float a_default_size) :
+					float   a_default_size) :
 					font(a_font),
 					size(a_default_size)
 				{
 				}
 
 				FontEntry(const FontEntry&) = delete;
-				FontEntry(FontEntry&&) = delete;
+				FontEntry(FontEntry&&)      = delete;
 
 				FontEntry& operator=(const FontEntry&) = delete;
 				FontEntry& operator=(FontEntry&&) = delete;
 
-				ImFont* font;
-				float size;
+				ImFont*           font;
+				float             size;
 				ImVector<ImWchar> ranges;
 			};
 
 			using font_data_container = std::unordered_map<stl::fixed_string, FontEntry>;
 
 			inline static constexpr auto DEFAULT_FONT_NAME = "Default";
-			inline static constexpr auto DEFAULT_STYLE = UIStylePreset::Dark;
+			inline static constexpr auto DEFAULT_STYLE     = UIStylePreset::Dark;
 
 		public:
 			enum class UpdateFlags : std::uint8_t
@@ -71,7 +71,7 @@ namespace IED
 				kNone = 0,
 
 				kResetInput = 1ui8 << 0,
-				kStyle = 1ui8 << 1,
+				kStyle      = 1ui8 << 1,
 				kStyleAlpha = 1ui8 << 2,
 
 				kStyleMask = kStyle |
@@ -86,7 +86,7 @@ namespace IED
 			}
 
 			[[nodiscard]] static bool AddTask(
-				std::uint32_t a_id,
+				std::uint32_t            a_id,
 				Tasks::UIRenderTaskBase* a_task);
 
 			static void RemoveTask(std::uint32_t a_id);
@@ -198,8 +198,8 @@ namespace IED
 			virtual void Receive(const Events::IDXGISwapChainPresent& a_evn) override;
 
 			static LRESULT CALLBACK WndProc_Hook(
-				HWND hWnd,
-				UINT uMsg,
+				HWND   hWnd,
+				UINT   uMsg,
 				WPARAM wParam,
 				LPARAM lParam);
 
@@ -227,22 +227,22 @@ namespace IED
 			void UpdateStyleAlpha();
 
 			bool LoadFonts(
-				font_data_container& a_data,
+				font_data_container&     a_data,
 				const stl::fixed_string& a_font);
 
 			bool LoadFontMetadata(fontInfoMap_t& a_out);
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,
-				const fontGlyphRange_t& a_range);
+				const fontGlyphRange_t&   a_range);
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,
-				const fontGlyphData_t& a_data);
+				const fontGlyphData_t&    a_data);
 
 			bool BuildFonts(
-				const fontInfoMap_t& a_in,
-				font_data_container& a_out,
+				const fontInfoMap_t&     a_in,
+				font_data_container&     a_out,
 				const stl::fixed_string& a_font);
 
 			void UpdateAvailableFontsImpl(const fontInfoMap_t& a_data);
@@ -267,17 +267,17 @@ namespace IED
 
 			struct
 			{
-				std::string imgui_ini;
-				UIStylePreset style{ DEFAULT_STYLE };
-				float alpha{ 1.0f };
+				std::string          imgui_ini;
+				UIStylePreset        style{ DEFAULT_STYLE };
+				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
-				bool releaseFontData{ false };
+				bool                 releaseFontData{ false };
 			} m_conf;
 
 			struct
 			{
 				PerfTimerInt timer{ 1000000LL };
-				long long current{ 0L };
+				long long    current{ 0L };
 			} m_uiRenderPerf;
 
 			stl::map<std::uint32_t, Tasks::UIRenderTaskBase*> m_drawTasks;
@@ -286,15 +286,15 @@ namespace IED
 			bool m_suspended{ true };
 
 			SKMP_ImGuiUserData m_ioUserData;
-			UIFontUpdateData m_fontUpdateData;
+			UIFontUpdateData   m_fontUpdateData;
 
-			font_data_container m_fontData;
+			font_data_container                    m_fontData;
 			const font_data_container::value_type* m_currentFont{ nullptr };
 
 			UIStylePreset m_currentStyle{ DEFAULT_STYLE };
 
 			stl::set<stl::fixed_string> m_availableFonts;
-			stl::fixed_string m_sDefaultFont{ DEFAULT_FONT_NAME };
+			stl::fixed_string           m_sDefaultFont{ DEFAULT_FONT_NAME };
 
 			std::uint64_t m_frameCount{ 0 };
 

@@ -29,7 +29,7 @@ namespace IED
 				{ "shield", ObjectSlot::kShield },
 				{ "torch", ObjectSlot::kTorch },
 				{ "ammo", ObjectSlot::kAmmo }
-			} 
+			}
 		{
 		}
 

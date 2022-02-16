@@ -35,11 +35,11 @@ namespace IED
 
 	class ConfigINI
 	{
-		inline static constexpr auto SECT_GENERAL = "General";
-		inline static constexpr auto SECT_DEBUG = "Debug";
-		inline static constexpr auto SECT_GUI = "GUI";
+		inline static constexpr auto SECT_GENERAL       = "General";
+		inline static constexpr auto SECT_DEBUG         = "Debug";
+		inline static constexpr auto SECT_GUI           = "GUI";
 		inline static constexpr auto SECT_NODE_OVERRIDE = "NodeOverride";
-		inline static constexpr auto SECT_SOUND = "Sound";
+		inline static constexpr auto SECT_SOUND         = "Sound";
 
 		struct parsers_t
 		{
@@ -59,22 +59,22 @@ namespace IED
 
 		ConfigKeyCombo m_toggleBlockKeys;
 
-		bool m_enableUI{ true };
-		bool m_dpiAwareness{ false };
+		bool           m_enableUI{ true };
+		bool           m_dpiAwareness{ false };
 		ConfigKeyCombo m_UIOpenKeys;
-		bool m_forceUIOpenKeys{ false };
-		bool m_enableUIRestrictions{ false };
-		long long m_taskPoolBudget{ 0 };
-		bool m_closeLogFile{ false };
-		bool m_UIScaling{ true };
-		bool m_nodeOverrideEnabled{ false };
-		bool m_nodeOverridePlayerEnabled{ false };
-		bool m_weaponAdjustDisable{ false };
-		bool m_weaponAdjustFix{ true };
-		bool m_forceDefaultConfig{ false };
-		bool m_disableNPCProcessing{ false };
-		bool m_immediateFavUpdate{ false };
-		LogLevel m_logLevel{ LogLevel::Message };
+		bool           m_forceUIOpenKeys{ false };
+		bool           m_enableUIRestrictions{ false };
+		long long      m_taskPoolBudget{ 0 };
+		bool           m_closeLogFile{ false };
+		bool           m_UIScaling{ true };
+		bool           m_nodeOverrideEnabled{ false };
+		bool           m_nodeOverridePlayerEnabled{ false };
+		bool           m_weaponAdjustDisable{ false };
+		bool           m_weaponAdjustFix{ true };
+		bool           m_forceDefaultConfig{ false };
+		bool           m_disableNPCProcessing{ false };
+		bool           m_immediateFavUpdate{ false };
+		LogLevel       m_logLevel{ LogLevel::Message };
 
 		bool m_enableInMenus{ false };
 

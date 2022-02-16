@@ -18,7 +18,7 @@ namespace IED
 		{
 			struct Interface
 			{
-				UIEditorInterface* ptr{ nullptr };
+				UIEditorInterface*     ptr{ nullptr };
 				Localization::StringID label;
 
 				ImGuiTabBarFlags flags{ ImGuiTabItemFlags_None };
@@ -26,7 +26,7 @@ namespace IED
 
 		public:
 			UIEditorTabPanel(
-				Controller& a_controller,
+				Controller&            a_controller,
 				Localization::StringID a_menuName);
 
 			void Initialize();
@@ -38,8 +38,8 @@ namespace IED
 			void OnClose();
 
 			void SetEditor(
-				Data::ConfigClass a_class,
-				UIEditorInterface& a_interface,
+				Data::ConfigClass      a_class,
+				UIEditorInterface&     a_interface,
 				Localization::StringID a_label);
 
 		private:

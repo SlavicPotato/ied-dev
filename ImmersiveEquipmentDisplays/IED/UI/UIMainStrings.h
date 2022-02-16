@@ -8,18 +8,18 @@ namespace IED
 	{
 		enum class UIMainStrings : Localization::StringID
 		{
-			SaveCurrentAsDefault = 4602,
-			NodeOverride = 4603,
-			ProfileEditors = 4604,
-			FormFilters = 4605,
-			EvaluateAll = 4606,
-			ResetAll = 4607,
+			SaveCurrentAsDefault       = 4602,
+			NodeOverride               = 4603,
+			ProfileEditors             = 4604,
+			FormFilters                = 4605,
+			EvaluateAll                = 4606,
+			ResetAll                   = 4607,
 			SaveCurrentAsDefaultPrompt = 4608,
-			SaveCurrentAsDefaultError = 4609,
-			ImportExport = 4610,
-			LoadDefaultAsCurrent = 4611,
+			SaveCurrentAsDefaultError  = 4609,
+			ImportExport               = 4610,
+			LoadDefaultAsCurrent       = 4611,
 			LoadDefaultAsCurrentPrompt = 4612,
-			DefaultConfig = 4613,
+			DefaultConfig              = 4613,
 		};
 	}
 }

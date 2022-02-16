@@ -71,8 +71,8 @@ namespace IED
 		private:
 			bool ParseVersion(
 				const Json::Value& a_in,
-				const char* a_key,
-				std::uint32_t& a_out) const;
+				const char*        a_key,
+				std::uint32_t&     a_out) const;
 
 			ParserState& m_state;
 		};
@@ -97,8 +97,8 @@ namespace IED
 
 		template <class T>
 		void Parser<T>::Create(
-			const T& a_in,
-			Json::Value& a_out,
+			const T&      a_in,
+			Json::Value&  a_out,
 			std::uint32_t a_arg) const
 		{
 			static_assert(false, SER_NOT_IMPL_STR);
@@ -112,8 +112,8 @@ namespace IED
 
 		template <class T>
 		bool Parser<T>::Parse(
-			const Json::Value& a_in,
-			T& a_out,
+			const Json::Value&  a_in,
+			T&                  a_out,
 			const std::uint32_t a_version) const
 		{
 			static_assert(false, SER_NOT_IMPL_STR);
@@ -121,10 +121,10 @@ namespace IED
 
 		template <class T>
 		bool Parser<T>::Parse(
-			const Json::Value& a_in,
-			T& a_out,
+			const Json::Value&  a_in,
+			T&                  a_out,
 			const std::uint32_t a_version,
-			bool a_arg) const
+			bool                a_arg) const
 		{
 			static_assert(false, SER_NOT_IMPL_STR);
 		}
@@ -132,8 +132,8 @@ namespace IED
 		template <class T>
 		bool Parser<T>::Parse(
 			const Json::Value& a_in,
-			T& a_out,
-			bool a_arg) const
+			T&                 a_out,
+			bool               a_arg) const
 		{
 			static_assert(false, SER_NOT_IMPL_STR);
 		}
@@ -147,8 +147,8 @@ namespace IED
 		template <class T>
 		bool Parser<T>::ParseVersion(
 			const Json::Value& a_in,
-			const char* a_key,
-			std::uint32_t& a_out) const
+			const char*        a_key,
+			std::uint32_t&     a_out) const
 		{
 			if (a_in.isMember(a_key))
 			{
@@ -197,8 +197,8 @@ namespace IED
 
 		bool ParseFloatArray(
 			const Json::Value& a_in,
-			float* a_out,
-			std::uint32_t a_size);
+			float*             a_out,
+			std::uint32_t      a_size);
 
 		template <std::size_t _Size>
 		void CreateFloatArray(const float (&a_in)[_Size], Json::Value& a_out)
@@ -210,20 +210,20 @@ namespace IED
 		}
 
 		void CreateFloatArray(
-			const float* a_in,
+			const float*  a_in,
 			std::uint32_t a_size,
-			Json::Value& a_out);
+			Json::Value&  a_out);
 
-		void SafeCleanup(const fs::path& a_path) noexcept;
+		void        SafeCleanup(const fs::path& a_path) noexcept;
 		std::string SafeGetPath(const fs::path& a_path) noexcept;
-		void CreateRootPath(const std::filesystem::path& a_path);
+		void        CreateRootPath(const std::filesystem::path& a_path);
 
 		bool FileExists(const fs::path& a_path) noexcept;
 
 		template <class T>
 		void ReadData(
 			const fs::path& a_path,
-			T& a_root)
+			T&              a_root)
 		{
 			std::ifstream ifs;
 
@@ -241,9 +241,9 @@ namespace IED
 
 		template <class Tp>
 		void WriteData(
-			Tp&& a_path,
+			Tp&&               a_path,
 			const Json::Value& a_root,
-			bool a_styled = false)
+			bool               a_styled = false)
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
 
@@ -271,7 +271,7 @@ namespace IED
 					if (!a_styled)
 					{
 						Json::StreamWriterBuilder builder;
-						builder["indentation"] = "";
+						builder["indentation"]  = "";
 						builder["commentStyle"] = "None";
 						std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
 						writer->write(a_root, std::addressof(ofs));
@@ -293,7 +293,7 @@ namespace IED
 
 		template <class T, class Tp>
 		void WriteData(
-			Tp&& a_path,
+			Tp&&     a_path,
 			const T& a_root)
 		{
 			fs::path tmpPath(std::forward<Tp>(a_path));
@@ -335,14 +335,14 @@ namespace IED
 		struct parserDesc_t
 		{
 			const char* member;
-			T& data;
+			T&          data;
 		};
 
 		template <class T>
 		struct parserDescConst_t
 		{
 			const char* member;
-			const T& data;
+			const T&    data;
 		};
 	}
 }
