@@ -15,10 +15,12 @@ namespace IED
 				a_controller),
 			UISlotEditorBase<int>(a_controller),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			m_controller(a_controller)
-		{}
+		{
+		}
 
 		void UIProfileEditorSlot::Initialize()
 		{

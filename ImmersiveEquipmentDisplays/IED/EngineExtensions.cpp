@@ -78,6 +78,8 @@ namespace IED
 		{
 			Hook_ToggleFav();
 		}
+
+		Hook_ProcessEffectShaders();
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
@@ -275,6 +277,16 @@ namespace IED
 				std::uintptr_t(CreateWeaponNodes_Hook));
 		}
 		LogPatchEnd();
+
+		/*LogPatchBegin();
+		{
+			Assembly code(m_resetEffectShaders_a);
+			m_resetEffectShaders_o = code.get<decltype(m_resetEffectShaders_o)>();
+			ISKSE::GetBranchTrampoline().Write6Branch(
+				m_resetEffectShaders_a,
+				std::uintptr_t(ResetEffectShaders_Hook));
+		}
+		LogPatchEnd();*/
 	}
 
 	void EngineExtensions::Patch_AdjustSkip_SE()
@@ -420,6 +432,22 @@ namespace IED
 		}
 	}
 
+	void EngineExtensions::Hook_ProcessEffectShaders()
+	{
+		if (Hook::Call5(
+				ISKSE::GetBranchTrampoline(),
+				m_processEffectShaders_a,
+				std::uintptr_t(ProcessEffectShaders_Hook),
+				m_processEffectShaders_o))
+		{
+			Debug("[%s] Installed", __FUNCTION__);
+		}
+		else
+		{
+			Error("[%s] Failed", __FUNCTION__);
+		}
+	}
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
 		{
@@ -546,7 +574,7 @@ namespace IED
 		Game::InitWornVisitor&  a_visitor)
 	{
 		auto formid = a_visitor.actor ?
-                          a_visitor.actor->formID :
+		                  a_visitor.actor->formID :
                           0;
 
 		m_Instance.m_ArmorChange_o(a_ic, a_visitor);
@@ -592,7 +620,16 @@ namespace IED
 		return m_Instance.m_toggleFavGetExtraList_o(a_actor);
 	}
 
-	bool EngineExtensions::AdjustSkip_Test(BSFixedString& a_name)
+	void EngineExtensions::ProcessEffectShaders_Hook(
+		Game::ProcessLists* a_pl,
+		float               a_unk1)
+	{
+		m_Instance.m_processEffectShaders_o(a_pl, a_unk1);
+
+		m_Instance.m_controller->ProcessEffectShaders();
+	}
+
+	bool EngineExtensions::AdjustSkip_Test(const BSFixedString& a_name)
 	{
 		auto sh = m_Instance.m_controller->GetBSStringHolder();
 

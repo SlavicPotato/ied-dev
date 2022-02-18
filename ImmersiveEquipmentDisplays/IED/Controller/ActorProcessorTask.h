@@ -33,7 +33,7 @@ namespace IED
 
 		virtual void Run() override;
 
-		SKMP_FORCEINLINE void UpdateRef(
+		SKMP_FORCEINLINE void UpdateNode(
 			const ActorObjectHolder& a_record,
 			objectEntryBase_t&       a_entry);
 

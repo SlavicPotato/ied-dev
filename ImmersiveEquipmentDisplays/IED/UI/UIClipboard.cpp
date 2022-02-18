@@ -77,6 +77,18 @@ namespace IED
 			case DataType::FormFilter:
 				erase<Data::configFormFilter_t>();
 				break;
+			case DataType::EffectShaderList:
+				erase<Data::effectShaderList_t>();
+				break;
+			case DataType::EffectShaderHolder:
+				erase<Data::configEffectShaderHolder_t>();
+				break;
+			case DataType::EquipmentOverrideList:
+				erase<Data::equipmentOverrideList_t>();
+				break;
+			case DataType::EffectShaderData:
+				erase<Data::configEffectShaderData_t>();
+				break;
 			}
 		}
 

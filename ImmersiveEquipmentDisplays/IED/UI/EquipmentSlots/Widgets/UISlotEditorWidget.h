@@ -257,8 +257,6 @@ namespace IED
 			ImGui::TextWrapped("%s", LS(UISlotEditorWidgetStrings::NPCDisabledWarning));
 			ImGui::PopStyleColor();
 			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
 		}
 
 		template <class T>

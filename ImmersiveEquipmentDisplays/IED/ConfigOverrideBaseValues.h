@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ConfigCommon.h"
-#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideTransform.h"
 #include "NodeDescriptor.h"
 
@@ -60,7 +59,6 @@ namespace IED
 
 			stl::flag<BaseFlags>       flags{ DEFAULT_FLAGS };
 			NodeDescriptor             targetNode;
-			//configEffectShaderHolder_t effectShaders;
 
 		protected:
 			template <class Archive>

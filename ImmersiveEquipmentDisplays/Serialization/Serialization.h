@@ -4,7 +4,7 @@ namespace IED
 {
 	namespace Serialization
 	{
-		inline static constexpr auto SER_NOT_IMPL_STR = "Not implemented";
+		inline static constexpr auto PARSER_NOT_IMPL_STR = "Not implemented";
 
 		enum class ParserStateFlags : std::uint32_t
 		{
@@ -27,7 +27,7 @@ namespace IED
 			}
 
 		private:
-			inline void clear() noexcept
+			inline constexpr void clear() noexcept
 			{
 				m_flags = ParserStateFlags::kNone;
 			}
@@ -39,7 +39,7 @@ namespace IED
 		class Parser : ILog
 		{
 		public:
-			Parser(ParserState& a_state);
+			constexpr Parser(ParserState& a_state);
 
 			void Create(const T& a_in, Json::Value& a_out) const;
 			void Create(const T& a_in, Json::Value& a_out, bool a_arg) const;
@@ -52,7 +52,7 @@ namespace IED
 
 			void GetDefault(T& a_out) const;
 
-			inline constexpr bool HasErrors() const noexcept
+			[[nodiscard]] inline constexpr bool HasErrors() const noexcept
 			{
 				return m_state.m_flags.test(ParserStateFlags::kHasErrors);
 			}
@@ -69,16 +69,11 @@ namespace IED
 			}
 
 		private:
-			bool ParseVersion(
-				const Json::Value& a_in,
-				const char*        a_key,
-				std::uint32_t&     a_out) const;
-
 			ParserState& m_state;
 		};
 
 		template <class T>
-		Parser<T>::Parser(ParserState& a_state) :
+		inline constexpr Parser<T>::Parser(ParserState& a_state) :
 			m_state(a_state)
 		{
 		}
@@ -86,13 +81,13 @@ namespace IED
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out, bool a_arg) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -101,13 +96,13 @@ namespace IED
 			Json::Value&  a_out,
 			std::uint32_t a_arg) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		bool Parser<T>::Parse(const Json::Value& a_in, T& a_out) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -116,7 +111,7 @@ namespace IED
 			T&                  a_out,
 			const std::uint32_t a_version) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -126,7 +121,7 @@ namespace IED
 			const std::uint32_t a_version,
 			bool                a_arg) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -135,42 +130,19 @@ namespace IED
 			T&                 a_out,
 			bool               a_arg) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		void Parser<T>::GetDefault(T& a_out) const
 		{
-			static_assert(false, SER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		bool Parser<T>::ParseVersion(
-			const Json::Value& a_in,
-			const char*        a_key,
-			std::uint32_t&     a_out) const
-		{
-			if (a_in.isMember(a_key))
-			{
-				auto& v = a_in[a_key];
-
-				if (!v.isNumeric())
-				{
-					return false;
-				}
-
-				a_out = static_cast<std::uint32_t>(v.asUInt());
-			}
-			else
-			{
-				a_out = 0;
-			}
-
-			return true;
+			static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <std::size_t _Size>
-		bool ParseFloatArray(const Json::Value& a_in, float (&a_out)[_Size])
+		constexpr bool ParseFloatArray(
+			const Json::Value& a_in,
+			float (&a_out)[_Size])
 		{
 			if (!a_in.isArray())
 			{
@@ -201,7 +173,9 @@ namespace IED
 			std::uint32_t      a_size);
 
 		template <std::size_t _Size>
-		void CreateFloatArray(const float (&a_in)[_Size], Json::Value& a_out)
+		constexpr void CreateFloatArray(
+			const float (&a_in)[_Size],
+			Json::Value& a_out)
 		{
 			for (auto& e : a_in)
 			{
@@ -216,45 +190,53 @@ namespace IED
 
 		void        SafeCleanup(const fs::path& a_path) noexcept;
 		std::string SafeGetPath(const fs::path& a_path) noexcept;
-		void        CreateRootPath(const std::filesystem::path& a_path);
+		void        CreateRootPath(const fs::path& a_path);
 
 		bool FileExists(const fs::path& a_path) noexcept;
 
+		inline static constexpr auto TMP_EXT = ".tmp";
+
 		template <class T>
-		void ReadData(
+		constexpr void ReadData(
 			const fs::path& a_path,
 			T&              a_root)
 		{
 			std::ifstream ifs;
 
-			ifs.open(a_path, std::ifstream::in | std::ifstream::binary);
+			ifs.open(
+				a_path,
+				std::ifstream::in | std::ifstream::binary,
+				_SH_DENYWR);
+
 			if (!ifs.is_open())
 			{
 				throw std::system_error(
 					errno,
 					std::system_category(),
-					str_conv::wstr_to_str(a_path.wstring()));
+					SafeGetPath(a_path));
 			}
 
 			ifs >> a_root;
 		}
 
-		template <class Tp>
-		void WriteData(
-			Tp&&               a_path,
-			const Json::Value& a_root,
-			bool               a_styled = false)
+		template <class Tp, class Td>
+		constexpr void WriteData(
+			const Tp& a_path,
+			const Td& a_root,
+			bool      a_styled = false)
 		{
-			fs::path tmpPath(std::forward<Tp>(a_path));
+			fs::path tmpPath(a_path);
 
-			tmpPath += ".tmp";
+			tmpPath += TMP_EXT;
+
+			// yes this should throw here
+			CreateRootPath(tmpPath);
 
 			try
 			{
-				CreateRootPath(tmpPath);
-
 				{
 					std::ofstream ofs;
+
 					ofs.open(
 						tmpPath,
 						std::ofstream::out | std::ofstream::binary | std::ofstream::trunc,
@@ -265,61 +247,29 @@ namespace IED
 						throw std::system_error(
 							errno,
 							std::system_category(),
-							str_conv::wstr_to_str(tmpPath.wstring()));
+							SafeGetPath(tmpPath));
 					}
 
-					if (!a_styled)
+					if constexpr (std::is_convertible_v<Td, Json::Value>)
 					{
-						Json::StreamWriterBuilder builder;
-						builder["indentation"]  = "";
-						builder["commentStyle"] = "None";
-						std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-						writer->write(a_root, std::addressof(ofs));
+						if (!a_styled)
+						{
+							Json::StreamWriterBuilder builder;
+							builder["indentation"]  = "";
+							builder["commentStyle"] = "None";
+
+							std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+							writer->write(a_root, std::addressof(ofs));
+						}
+						else
+						{
+							ofs << a_root;
+						}
 					}
 					else
 					{
 						ofs << a_root;
 					}
-				}
-
-				fs::rename(tmpPath, a_path);
-			}
-			catch (const std::exception& e)
-			{
-				SafeCleanup(tmpPath);
-				throw e;
-			}
-		}
-
-		template <class T, class Tp>
-		void WriteData(
-			Tp&&     a_path,
-			const T& a_root)
-		{
-			fs::path tmpPath(std::forward<Tp>(a_path));
-
-			tmpPath += ".tmp";
-
-			try
-			{
-				CreateRootPath(tmpPath);
-
-				{
-					std::ofstream ofs;
-					ofs.open(
-						tmpPath,
-						std::ofstream::out | std::ofstream::binary | std::ofstream::trunc,
-						_SH_DENYWR);
-
-					if (!ofs.is_open())
-					{
-						throw std::system_error(
-							errno,
-							std::system_category(),
-							str_conv::wstr_to_str(tmpPath.wstring()));
-					}
-
-					ofs << a_root;
 				}
 
 				fs::rename(tmpPath, a_path);
@@ -344,18 +294,19 @@ namespace IED
 			const char* member;
 			const T&    data;
 		};
+
+		bool ParseVersion(
+			const Json::Value& a_in,
+			const char*        a_key,
+			std::uint32_t&     a_out);
+
+		std::uint32_t ExtractVersion(
+			const Json::Value& a_in,
+			std::uint32_t      a_current,
+			const char*        a_func);
+
 	}
 }
 
-#define JSON_PARSE_VERSION()                                                                 \
-	std::uint32_t version;                                                                   \
-	if (!ParseVersion(a_in, "version", version))                                             \
-	{                                                                                        \
-		Error("%s: bad version data", __FUNCTION__);                                         \
-		throw std::exception("failed parsing version data");                                 \
-	}                                                                                        \
-	if (version > CURRENT_VERSION)                                                           \
-	{                                                                                        \
-		Error("%s: unsupported version (%u > %u) ", __FUNCTION__, version, CURRENT_VERSION); \
-		throw std::exception("unsupported version");                                         \
-	}
+#define JSON_PARSE_VERSION() \
+	auto version = ExtractVersion(a_in, CURRENT_VERSION, __FUNCTION__);

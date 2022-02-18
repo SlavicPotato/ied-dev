@@ -13,7 +13,7 @@ namespace IED
 	using namespace Serialization;
 
 	template <class T>
-	void EraseTemporary(T& a_in)
+	constexpr void EraseTemporary(T& a_in)
 	{
 		for (auto it = a_in.begin(); it != a_in.end();)
 		{
@@ -51,14 +51,13 @@ namespace IED
 		{
 			for (auto& f : e.second)
 			{
-				if (f.first == StringHolder::GetSingleton().IED)
+				if (f.first != StringHolder::GetSingleton().IED)
 				{
-					continue;
+					a_dst
+						.try_emplace(e.first)
+						.first->second
+						.emplace(f.first, f.second);
 				}
-
-				auto& x = a_dst.try_emplace(e.first);
-
-				x.first->second.emplace(f.first, f.second);
 			}
 		}
 	}
@@ -126,7 +125,8 @@ namespace IED
 	{
 		for (auto& e : a_in)
 		{
-			if (auto it = e.second.find(StringHolder::GetSingleton().IED); it != e.second.end())
+			if (auto it = e.second.find(StringHolder::GetSingleton().IED);
+			    it != e.second.end())
 			{
 				a_out.try_emplace(e.first)
 					.first->second
@@ -139,7 +139,8 @@ namespace IED
 		Data::configCustomPluginMap_t&& a_in,
 		Data::configCustomPluginMap_t&  a_dst)
 	{
-		if (auto it = a_in.find(StringHolder::GetSingleton().IED); it != a_in.end())
+		if (auto it = a_in.find(StringHolder::GetSingleton().IED);
+		    it != a_in.end())
 		{
 			a_dst.insert_or_assign(it->first, std::move(it->second));
 		}

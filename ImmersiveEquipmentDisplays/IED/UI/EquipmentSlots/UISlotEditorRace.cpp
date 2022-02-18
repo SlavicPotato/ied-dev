@@ -12,6 +12,7 @@ namespace IED
 			UISlotEditorCommon<Game::FormID>(a_controller),
 			UIRaceList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),

@@ -9,17 +9,17 @@ namespace IED
 		{
 		public:
 			inline configUUIDTag_t() noexcept :
-				uuid_tag(IUUID::generate())
+				uuid_tag(IUUID()())
 			{
 			}
 
 			inline configUUIDTag_t(const configUUIDTag_t& a_rhs) noexcept :
-				uuid_tag(IUUID::generate())
+				uuid_tag(IUUID()())
 			{
 			}
 
 			inline configUUIDTag_t(configUUIDTag_t&& a_rhs) noexcept :
-				uuid_tag(IUUID::generate())
+				uuid_tag(IUUID()())
 			{
 			}
 
@@ -37,7 +37,7 @@ namespace IED
 
 			inline void update_tag() noexcept
 			{
-				static_cast<uuid_tag&>(*this) = IUUID::generate();
+				static_cast<uuid_tag&>(*this) = IUUID()();
 			}
 		};
 	}

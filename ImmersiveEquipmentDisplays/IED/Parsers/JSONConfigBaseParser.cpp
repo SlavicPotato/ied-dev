@@ -2,6 +2,7 @@
 
 #include "JSONConfigBaseParser.h"
 #include "JSONConfigBaseValuesParser.h"
+#include "JSONEffectShaderListParser.h"
 #include "JSONEquipmentOverrideListParser.h"
 #include "JSONFormFilterParser.h"
 
@@ -11,13 +12,14 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configBase_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&  a_in,
 			Data::configBase_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::configBaseValues_t>      bvParser(m_state);
 			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
-			Parser<Data::configFormFilter_t> pfset(m_state);
+			Parser<Data::configFormFilter_t>      pfset(m_state);
+			Parser<Data::effectShaderList_t>      eslist(m_state);
 
 			if (!bvParser.Parse(a_in, a_out, a_version))
 			{
@@ -56,17 +58,26 @@ namespace IED
 				a_out.filters = std::move(tmp);
 			}
 
+			if (auto& esl = a_in["esl"])
+			{
+				if (!eslist.Parse(esl, a_out.effectShaders))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
 		template <>
 		void Parser<Data::configBase_t>::Create(
 			const Data::configBase_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&              a_out) const
 		{
-			Parser<Data::configBaseValues_t> bvParser(m_state);
+			Parser<Data::configBaseValues_t>      bvParser(m_state);
 			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
-			Parser<Data::configFormFilter_t> pfset(m_state);
+			Parser<Data::configFormFilter_t>      pfset(m_state);
+			Parser<Data::effectShaderList_t>      eslist(m_state);
 
 			bvParser.Create(a_data, a_out);
 			if (!a_data.equipmentOverrides.empty())
@@ -81,6 +92,11 @@ namespace IED
 				pfset.Create(a_data.filters->raceFilter, filtData["r"]);
 				pfset.Create(a_data.filters->actorFilter, filtData["a"]);
 				pfset.Create(a_data.filters->npcFilter, filtData["n"]);
+			}
+
+			if (!a_data.effectShaders.empty())
+			{
+				eslist.Create(a_data.effectShaders, a_out["esl"]);
 			}
 		}
 

@@ -11,6 +11,7 @@ namespace IED
 		UISlotEditorGlobal::UISlotEditorGlobal(Controller& a_controller) :
 			UISlotEditorCommon<int>(a_controller, true),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIGlobalConfigTypeSelectorWidget(a_controller),
@@ -42,10 +43,33 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
+				bool sep = false;
+
+				if (settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::Player &&
+					m_controller.IsActorBlockedImpl(Data::IData::GetPlayerRefID()))
+				{
+					ImGui::TextColored(
+						UICommon::g_colorWarning,
+						"%s",
+						LS(UIWidgetCommonStrings::ActorBlocked));
+
+					ImGui::Spacing();
+
+					sep = true;
+				}
+
 				if (settings.data.disableNPCSlots &&
 				    settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::NPC)
 				{
 					DrawSlotEditorNPCWarningHeader();
+
+					sep = true;
+				}
+
+				if (sep)
+				{
+					ImGui::Separator();
+					ImGui::Spacing();
 				}
 
 				DrawSlotEditor(0, m_data);

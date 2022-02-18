@@ -1,0 +1,77 @@
+#include "pch.h"
+
+#include "JSONEffectShaderDataParser.h"
+#include "JSONEffectShaderHolderParser.h"
+#include "JSONEquipmentOverrideConditionListParser.h"
+
+namespace IED
+{
+	namespace Serialization
+	{
+		static constexpr std::uint32_t CURRENT_VERSION = 1;
+
+		template <>
+		bool Parser<Data::configEffectShaderHolder_t>::Parse(
+			const Json::Value&                a_in,
+			Data::configEffectShaderHolder_t& a_out) const
+		{
+			JSON_PARSE_VERSION();
+
+			auto& data = a_in["data"];
+
+			a_out.flags       = data.get("flags", stl::underlying(Data::configEffectShaderHolder_t::DEFAULT_FLAGS)).asUInt();
+			a_out.description = data["desc"].asString();
+
+			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
+
+			if (!mlParser.Parse(data["cond"], a_out.conditions))
+			{
+				return false;
+			}
+
+			Parser<Data::configEffectShaderData_t> parser(m_state);
+
+			if (auto& esdata = data["esd"])
+			{
+				for (auto it = esdata.begin(); it != esdata.end(); ++it)
+				{
+					parser.Parse(*it, a_out.data.try_emplace(it.key().asString()).first->second);
+				}
+			}
+
+			return true;
+		}
+
+		template <>
+		void Parser<Data::configEffectShaderHolder_t>::Create(
+			const Data::configEffectShaderHolder_t& a_data,
+			Json::Value&                            a_out) const
+		{
+			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
+
+			data["flags"] = a_data.flags.underlying();
+			data["desc"]  = a_data.description;
+
+			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
+
+			mlParser.Create(a_data.conditions, data["cond"]);
+
+			Parser<Data::configEffectShaderData_t> parser(m_state);
+
+			auto& esdata = (data["esd"] = Json::Value(Json::ValueType::objectValue));
+
+			for (auto& e : a_data.data)
+			{
+				parser.Create(e.second, esdata[*e.first]);
+			}
+
+			a_out["version"] = CURRENT_VERSION;
+		}
+
+		template <>
+		void Parser<Data::configEffectShaderHolder_t>::GetDefault(
+			Data::configEffectShaderHolder_t& a_out) const
+		{
+		}
+	}
+}

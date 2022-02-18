@@ -85,6 +85,7 @@ namespace IED
 			MatchEither                   = 2074,
 			IsPlayable                    = 2075,
 			ChildRace                     = 2076,
+			Options                       = 2077,
 		};
 	}
 }

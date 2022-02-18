@@ -138,27 +138,25 @@ namespace IED
 			Controller*                       a_controller,
 			const std::shared_ptr<ConfigINI>& a_config);
 
-		inline static const auto m_shadowSceneNode =
-			IAL::Address<ShadowSceneNode**>(513211, 390951);
+		inline static const auto m_shadowSceneNode = IAL::Address<ShadowSceneNode**>(513211, 390951);
 
 		inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
 		inline static const auto SetRootOnShaderProperties = IAL::Address<unk1291cc0_t>(98895, 105542);
 		inline static const auto fUnk12ba3e0               = IAL::Address<unkSSN1_t>(99702, 106336);
 		inline static const auto fUnk12b99f0               = IAL::Address<unkSSN1_t>(99696, 106330);
+		inline static const auto fUnk1CD130                = IAL::Address<unk1CD130_t>(15567, 15745);
+		inline static const auto fUnk5C3C40                = IAL::Address<unk5C3C40_t>(35950, 36925);
+		inline static const auto fUnk5EBD90                = IAL::Address<unk5EBD90_t>(36559, 37560);
+		inline static const auto fUnk5C39F0                = IAL::Address<unk5C39F0_t>(35947, 36922);
+		inline static const auto AttachAddonNodes          = IAL::Address<attachAddonNodes_t>(19207, 19633);
+		inline static const auto ShrinkToSize              = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
+		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
+		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
+		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
-
-		inline static const auto fUnk1CD130       = IAL::Address<unk1CD130_t>(15567, 15745);
-		inline static const auto fUnk5C3C40       = IAL::Address<unk5C3C40_t>(35950, 36925);
-		inline static const auto fUnk5EBD90       = IAL::Address<unk5EBD90_t>(36559, 37560);
-		inline static const auto fUnk5C39F0       = IAL::Address<unk5C39F0_t>(35947, 36922);
-		inline static const auto AttachAddonNodes = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto ShrinkToSize     = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
-		inline static const auto fUnkDC6140       = IAL::Address<fUnk140DC6140_t>(76545, 78389);
-		inline static const auto fUnk12BAFB0      = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
-		inline static const auto fUnk28BAD0 = IAL::Address<unk14028BAD0_t>(19206, 19632);
 
 		BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
@@ -172,31 +170,25 @@ namespace IED
 		void Patch_AdjustSkip_SE();
 		void Patch_AdjustSkip_AE();
 		void Hook_ToggleFav();
-
-		static void RemoveAllBipedParts_Hook(Biped* a_biped);
-		static void Character_Resurrect_Hook(
-			Character* a_actor,
-			bool       a_resetInventory,
-			bool       a_attach3D);
-
-		static void Actor_Release3D_Hook(
-			Actor* a_actor);
-
-		static void Character_Release3D_Hook(
-			Character* a_actor);
+		void Hook_ProcessEffectShaders();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
 			const std::source_location a_loc = std::source_location::current());
 
+		static void           RemoveAllBipedParts_Hook(Biped* a_biped);
+		static void           Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
+		static void           Actor_Release3D_Hook(Actor* a_actor);
+		static void           Character_Release3D_Hook(Character* a_actor);
 		static void           ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
 		static void           CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
 		static void           ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
 		static bool           GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool           SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
+		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_unk1);
 
-		static bool AdjustSkip_Test(BSFixedString& a_name);
+		static bool AdjustSkip_Test(const BSFixedString& a_name);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
@@ -208,6 +200,7 @@ namespace IED
 		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, 0x427);
 		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
 		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
+		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };
@@ -218,6 +211,7 @@ namespace IED
 		decltype(&CreateWeaponNodes_Hook)         m_createWeaponNodes_o{ nullptr };
 		decltype(&RemoveAllBipedParts_Hook)       m_removeAllBipedParts_o{ nullptr };
 		decltype(&ToggleFavGetExtraList_Hook)     m_toggleFavGetExtraList_o{ nullptr };
+		decltype(&ProcessEffectShaders_Hook)      m_processEffectShaders_o{ nullptr };
 
 		struct
 		{

@@ -4,6 +4,7 @@
 #include "CommonParams.h"
 #include "ConfigOverrideBaseValues.h"
 #include "ConfigOverrideCommon.h"
+#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideEquipment.h"
 #include "ConfigOverrideTransform.h"
 #include "NodeDescriptor.h"
@@ -109,8 +110,8 @@ namespace IED
 		};
 
 		struct configBase_t :
-			public configBaseValues_t,
-			public configBaseFiltersHolder_t
+			configBaseValues_t,
+			configBaseFiltersHolder_t
 		{
 		private:
 			friend class boost::serialization::access;
@@ -120,10 +121,12 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			equipmentOverrideList_t equipmentOverrides;
+			effectShaderList_t      effectShaders;
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
@@ -135,6 +138,20 @@ namespace IED
 				CommonParams&              a_params) const;
 
 			const equipmentOverride_t* get_equipment_override(
+				const collectorData_t& a_data,
+				const formSlotPair_t&  a_checkForm,
+				CommonParams&          a_params) const;
+
+			const configEffectShaderHolder_t* get_effect_shader(
+				const collectorData_t& a_data,
+				CommonParams&          a_params) const;
+
+			const configEffectShaderHolder_t* get_effect_shader(
+				const collectorData_t&     a_data,
+				const slot_container_type& a_slots,
+				CommonParams&              a_params) const;
+
+			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
@@ -230,12 +247,28 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void save(Archive& ar, const unsigned int version) const
+			{
+				ar& static_cast<const configBaseValues_t&>(*this);
+				ar& static_cast<const configBaseFiltersHolder_t&>(*this);
+				ar& equipmentOverrides;
+				ar& effectShaders;
+			}
+
+			template <class Archive>
+			void load(Archive& ar, const unsigned int version)
 			{
 				ar& static_cast<configBaseValues_t&>(*this);
 				ar& static_cast<configBaseFiltersHolder_t&>(*this);
 				ar& equipmentOverrides;
+
+				if (version >= DataVersion2)
+				{
+					ar& effectShaders;
+				}
 			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 	}
@@ -251,4 +284,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBase_t,
-	IED::Data::configBase_t::Serialization::DataVersion1);
+	IED::Data::configBase_t::Serialization::DataVersion2);

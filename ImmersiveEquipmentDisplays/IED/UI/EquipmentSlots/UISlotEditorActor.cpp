@@ -16,6 +16,7 @@ namespace IED
 			UISlotEditorCommon<Game::FormID>(a_controller),
 			UIActorList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIFormInfoTooltipWidget(a_controller),
 			UISettingsInterface(a_controller),
@@ -43,6 +44,8 @@ namespace IED
 
 				if (m_listCurrent)
 				{
+					bool sep = false;
+
 					if (m_controller.IsActorBlockedImpl(m_listCurrent->handle))
 					{
 						ImGui::TextColored(
@@ -51,6 +54,8 @@ namespace IED
 							LS(UIWidgetCommonStrings::ActorBlocked));
 
 						ImGui::Spacing();
+
+						sep = true;
 					}
 
 					auto& settings = m_controller.GetConfigStore().settings;
@@ -59,6 +64,14 @@ namespace IED
 					    m_listCurrent->handle != Data::IData::GetPlayerRefID())
 					{
 						DrawSlotEditorNPCWarningHeader();
+
+						sep = true;
+					}
+
+					if (sep)
+					{
+						ImGui::Separator();
+						ImGui::Spacing();
 					}
 
 					DrawSlotEditor(m_listCurrent->handle, m_listCurrent->data);

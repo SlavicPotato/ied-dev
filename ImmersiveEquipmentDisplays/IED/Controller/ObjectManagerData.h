@@ -16,11 +16,44 @@ namespace IED
 	{
 		struct Entry
 		{
-			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
-			std::list<NiPointer<NiNode>>            nodes;
+			RE::BSTSmartPointer<BSEffectShaderData>                                    shaderData;
+			std::vector<std::pair<NiPointer<BSShaderProperty>, NiPointer<BSGeometry>>> nodes;
 		};
 
-		std::unordered_map<stl::fixed_string, Entry> data;
+		using data_type = std::unordered_map<stl::fixed_string, Entry>;
+
+		[[nodiscard]] inline constexpr bool operator==(
+			const Data::effectShaderList_t& a_rhs) const
+		{
+			return tag == a_rhs;
+		}
+
+		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		{
+			return tag.has_value();
+		}
+
+		void clear();
+
+		void Update(
+			NiNode*                                 a_object,
+			const uuid_tag&                         a_tag,
+			const Data::configEffectShaderHolder_t& a_data);
+
+		template <class Tf>
+		constexpr void visit_nodes(Tf a_func)
+		{
+			for (auto& e : data)
+			{
+				for (auto& f : e.second.nodes)
+				{
+					a_func(e, f);
+				}
+			}
+		}
+
+		data_type               data;
+		std::optional<uuid_tag> tag;
 	};
 
 	enum class ObjectEntryFlags : std::uint32_t
@@ -319,6 +352,11 @@ namespace IED
 			return m_entriesSlot;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetActor() const noexcept
+		{
+			return m_actor;
+		}
+
 		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedSlots() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedCustom() const noexcept;
@@ -418,7 +456,27 @@ namespace IED
 		using customPluginMap_t = std::unordered_map<stl::fixed_string, customEntryMap_t>;
 
 		template <class Tv>
-		constexpr void visit(Tv a_func)
+		void visit(Tv a_func)
+		{
+			for (auto& e : m_entriesSlot)
+			{
+				a_func(e);
+			}
+
+			for (auto& e : m_entriesCustom)
+			{
+				for (auto& f : e)
+				{
+					for (auto& g : f.second)
+					{
+						a_func(g.second);
+					}
+				}
+			}
+		}
+
+		template <class Tv>
+		void visit(Tv a_func) const
 		{
 			for (auto& e : m_entriesSlot)
 			{

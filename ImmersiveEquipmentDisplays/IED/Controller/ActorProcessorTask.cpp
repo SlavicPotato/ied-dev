@@ -14,16 +14,18 @@ namespace IED
 	{
 	}
 
-	void ActorProcessorTask::UpdateRef(
+	void ActorProcessorTask::UpdateNode(
 		const ActorObjectHolder& a_record,
 		objectEntryBase_t&       a_entry)
 	{
-		if (!a_entry.state)
+		auto state = a_entry.state.get();
+
+		if (!state)
 		{
 			return;
 		}
 
-		auto& nodes = a_entry.state->nodes;
+		auto& nodes = state->nodes;
 
 		if (!nodes.ref)
 		{
@@ -32,7 +34,7 @@ namespace IED
 
 		if (nodes.IsReferenceMovedOrOphaned())
 		{
-			if (a_entry.state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
+			if (state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
 			{
 				return;
 			}
@@ -44,8 +46,8 @@ namespace IED
 			{
 				if (result = m_controller.AttachNodeImpl(
 						info.npcRoot,
-						a_entry.state->nodeDesc,
-						a_entry.state->atmReference,
+						state->nodeDesc,
+						state->atmReference,
 						a_entry))
 				{
 					m_controller.UpdateRootPaused(info.root);
@@ -55,7 +57,7 @@ namespace IED
 
 			if (!result)
 			{
-				a_entry.state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+				state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 				return;
 			}
 
@@ -65,33 +67,33 @@ namespace IED
 			}
 		}
 
-		if (a_entry.state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
+		if (state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
 		    nodes.obj->IsVisible())
 		{
-			if (a_entry.state->transform.scale)
+			if (state->transform.scale)
 			{
 				nodes.obj->m_localTransform.scale =
-					nodes.ref->m_localTransform.scale * *a_entry.state->transform.scale;
+					nodes.ref->m_localTransform.scale * *state->transform.scale;
 			}
 			else
 			{
 				nodes.obj->m_localTransform.scale = nodes.ref->m_localTransform.scale;
 			}
 
-			if (a_entry.state->transform.rotation)
+			if (state->transform.rotation)
 			{
 				nodes.obj->m_localTransform.rot =
-					nodes.ref->m_localTransform.rot * *a_entry.state->transform.rotation;
+					nodes.ref->m_localTransform.rot * *state->transform.rotation;
 			}
 			else
 			{
 				nodes.obj->m_localTransform.rot = nodes.ref->m_localTransform.rot;
 			}
 
-			if (a_entry.state->transform.position)
+			if (state->transform.position)
 			{
 				nodes.obj->m_localTransform.pos =
-					nodes.ref->m_localTransform * *a_entry.state->transform.position;
+					nodes.ref->m_localTransform * *state->transform.position;
 			}
 			else
 			{
@@ -246,7 +248,7 @@ namespace IED
 
 			for (auto& f : e.m_entriesSlot)
 			{
-				UpdateRef(e, f);
+				UpdateNode(e, f);
 
 				if (f.hideCountdown)
 				{
@@ -274,7 +276,7 @@ namespace IED
 				{
 					for (auto& h : g.second)
 					{
-						UpdateRef(e, h.second);
+						UpdateNode(e, h.second);
 					}
 				}
 			}

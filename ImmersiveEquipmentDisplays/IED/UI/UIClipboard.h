@@ -31,7 +31,11 @@ namespace IED
 				NodeOverrideOffsetList,
 				NodeOverrideOffsetConditionList,
 				ConfigTransform,
-				FormFilter
+				FormFilter,
+				EffectShaderList,
+				EffectShaderHolder,
+				EquipmentOverrideList,
+				EffectShaderData
 			};
 
 			struct entry_t
@@ -227,6 +231,30 @@ namespace IED
 					return nullptr;
 				}
 			}
+			else if constexpr (std::is_same_v<data_type, Data::effectShaderList_t>)
+			{
+				return data.type == DataType::EffectShaderList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configEffectShaderHolder_t>)
+			{
+				return data.type == DataType::EffectShaderHolder ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::equipmentOverrideList_t>)
+			{
+				return data.type == DataType::EquipmentOverrideList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configEffectShaderData_t>)
+			{
+				return data.type == DataType::EffectShaderData ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				static_assert(false);
@@ -352,6 +380,22 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configFormFilter_t>)
 			{
 				data.type = DataType::FormFilter;
+			}
+			else if constexpr (std::is_same_v<T, Data::effectShaderList_t>)
+			{
+				data.type = DataType::EffectShaderList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configEffectShaderHolder_t>)
+			{
+				data.type = DataType::EffectShaderHolder;
+			}
+			else if constexpr (std::is_same_v<T, Data::equipmentOverrideList_t>)
+			{
+				data.type = DataType::EquipmentOverrideList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configEffectShaderData_t>)
+			{
+				data.type = DataType::EffectShaderData;
 			}
 			else
 			{

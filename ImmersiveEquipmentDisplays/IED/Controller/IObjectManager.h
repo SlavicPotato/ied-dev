@@ -105,7 +105,6 @@ namespace IED
 		bool LoadAndAttach(
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_entry,
-			const Data::NodeDescriptor&     a_node,
 			objectEntryBase_t&              a_objectEntry,
 			TESForm*                        a_form,
 			TESForm*                        a_modelForm,
@@ -117,7 +116,6 @@ namespace IED
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_configEntry,
 			const Data::configModelGroup_t& a_group,
-			const Data::NodeDescriptor&     a_node,
 			objectEntryBase_t&              a_objectEntry,
 			TESForm*                        a_form,
 			bool                            a_leftWeapon,
@@ -128,7 +126,6 @@ namespace IED
 			TESForm*                                   a_form,
 			NiNode*                                    a_node,
 			nodesRef_t&                                a_targetNodes,
-			const Data::NodeDescriptor&                a_nodeDesc,
 			const Data::configBaseValues_t&            a_config);
 
 		void PlayObjectSound(

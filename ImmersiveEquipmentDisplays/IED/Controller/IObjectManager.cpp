@@ -82,7 +82,7 @@ namespace IED
 		auto handle = it->second.GetHandle();
 
 		NiPointer<TESObjectREFR> ref;
-		LookupREFRByHandle(handle, ref);
+		(void)handle.LookupZH(ref);
 
 		CleanupActorObjectsImpl(
 			a_actor,
@@ -108,7 +108,7 @@ namespace IED
 		auto handle = it->second.GetHandle();
 
 		NiPointer<TESObjectREFR> ref;
-		LookupREFRByHandle(handle, ref);
+		(void)handle.LookupZH(ref);
 
 		CleanupActorObjectsImpl(
 			nullptr,
@@ -372,7 +372,6 @@ namespace IED
 	bool IObjectManager::LoadAndAttach(
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_config,
-		const Data::NodeDescriptor&     a_node,
 		objectEntryBase_t&              a_objectEntry,
 		TESForm*                        a_form,
 		TESForm*                        a_modelForm,
@@ -387,7 +386,7 @@ namespace IED
 			a_params.objects,
 			a_params.flags);
 
-		if (!a_node)
+		if (!a_config.targetNode)
 		{
 			return false;
 		}
@@ -426,7 +425,7 @@ namespace IED
 
 		if (!CreateTargetNode(
 				a_config,
-				a_node,
+				a_config.targetNode,
 				a_params.npcroot,
 				targetNodes))
 		{
@@ -435,7 +434,7 @@ namespace IED
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_modelForm->formID.get(),
-				a_node.name.c_str());
+				a_config.targetNode.name.c_str());
 
 			return false;
 		}
@@ -489,6 +488,13 @@ namespace IED
 
 		UpdateDownwardPass(itemRoot);
 
+		/*Data::configEffectShaderHolder_t hh;
+
+		auto& r     = hh.data.try_emplace("abcd").first->second;
+		r.fillColor = Data::configColorRGBA_t{ 0, 0, 0, 0 };
+		r.rimColor  = Data::configColorRGBA_t{ 1, 1, 1, 1 };
+		r.targetNodes.emplace("glassdagger");*/
+
 		auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
 			a_params.root,
@@ -509,7 +515,6 @@ namespace IED
 			a_form,
 			itemRoot,
 			targetNodes,
-			a_node,
 			a_config);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
@@ -535,7 +540,6 @@ namespace IED
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_config,
 		const Data::configModelGroup_t& a_group,
-		const Data::NodeDescriptor&     a_node,
 		objectEntryBase_t&              a_objectEntry,
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
@@ -548,7 +552,7 @@ namespace IED
 			a_params.objects,
 			a_params.flags);
 
-		if (!a_node)
+		if (!a_config.targetNode)
 		{
 			return false;
 		}
@@ -625,7 +629,7 @@ namespace IED
 
 		if (!CreateTargetNode(
 				a_config,
-				a_node,
+				a_config.targetNode,
 				a_params.npcroot,
 				targetNodes))
 		{
@@ -634,7 +638,7 @@ namespace IED
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_form->formID.get(),
-				a_node.name.c_str());
+				a_config.targetNode.name.c_str());
 
 			return false;
 		}
@@ -755,7 +759,6 @@ namespace IED
 			a_form,
 			groupRoot,
 			targetNodes,
-			a_node,
 			a_config);
 
 		a_objectEntry.state = std::move(state);
@@ -777,15 +780,25 @@ namespace IED
 		TESForm*                                   a_form,
 		NiNode*                                    a_node,
 		nodesRef_t&                                a_targetNodes,
-		const Data::NodeDescriptor&                a_nodeDesc,
 		const Data::configBaseValues_t&            a_config)
 	{
+		/*Data::configEffectShaderHolder_t hh;
+
+		auto& r     = hh.data.try_emplace("abcd").first->second;
+		r.fillColor = Data::configColorRGBA_t{ 0, 0, 0, 0 };
+		r.rimColor  = Data::configColorRGBA_t{ 1, 1, 1, 1 };
+		r.targetNodes.emplace("glassdagger");
+
+		a_state->effectShaders.Update(
+			a_node,
+			hh);*/
+
 		a_state->form         = a_form;
 		a_state->formid       = a_form->formID;
 		a_state->nodes.obj    = a_node;
 		a_state->nodes.ref    = std::move(a_targetNodes.ref);
-		a_state->nodeDesc     = a_nodeDesc;
-		a_state->atmReference = a_nodeDesc.managed() ||
+		a_state->nodeDesc     = a_config.targetNode;
+		a_state->atmReference = a_config.targetNode.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 	}
 

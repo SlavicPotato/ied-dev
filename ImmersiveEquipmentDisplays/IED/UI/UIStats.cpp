@@ -40,6 +40,7 @@ namespace IED
 				ImGui::Columns(3, nullptr, false);
 
 				ImGui::TextUnformatted("AP:");
+				ImGui::TextUnformatted("EP:");
 				ImGui::TextUnformatted("UI:");
 				ImGui::TextUnformatted("FC:");
 
@@ -53,6 +54,7 @@ namespace IED
 				ImGui::NextColumn();
 
 				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
+				ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 				ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
 

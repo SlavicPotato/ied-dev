@@ -10,6 +10,7 @@
 #include "../StringHolder.h"
 #include "ActorProcessorTask.h"
 #include "ControllerCommon.h"
+#include "EffectController.h"
 #include "IEquipment.h"
 #include "IForm.h"
 #include "IJSONSerialization.h"
@@ -33,6 +34,7 @@ namespace IED
 		public IForm,
 		private IEquipment,
 		public IObjectManager,
+		public EffectController,
 		public ActorProcessorTask,
 		public IUI,
 		public IMaintenance,
@@ -462,6 +464,8 @@ namespace IED
 
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
+		void ProcessEffectShaders();
+
 	private:
 		FN_NAMEPROC("Controller");
 
@@ -704,12 +708,17 @@ namespace IED
 			objectEntryBase_t&          a_cacheEntry);
 
 		bool ProcessItemUpdate(
-			processParams_t&                a_params,
-			const Data::configBaseValues_t& a_config,
-			const Data::configModelGroup_t* a_groupConfig,
-			const Data::NodeDescriptor&     a_node,
-			objectEntryBase_t&              a_entry,
-			bool                            a_visible);
+			processParams_t&                 a_params,
+			const Data::configBaseValues_t&  a_config,
+			const Data::equipmentOverride_t* a_override,
+			objectEntryBase_t&               a_entry,
+			bool                             a_visible);
+
+		template <class Ta, class Tb>
+		static constexpr void UpdateObjectEffectShaders(
+			processParams_t& a_params,
+			const Ta&        a_config,
+			Tb&              a_objectEntry);
 
 		void ProcessSlots(processParams_t& a_params);
 

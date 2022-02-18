@@ -64,7 +64,7 @@ namespace IED
 			}
 		}
 
-		void CreateRootPath(const std::filesystem::path& a_path)
+		void CreateRootPath(const fs::path& a_path)
 		{
 			auto path = a_path.parent_path();
 
@@ -87,10 +87,62 @@ namespace IED
 			{
 				return std::filesystem::exists(a_path);
 			}
-			catch (const std::exception&)
+			catch (...)
 			{
 				return false;
 			}
+		}
+
+		bool ParseVersion(
+			const Json::Value& a_in,
+			const char*        a_key,
+			std::uint32_t&     a_out)
+		{
+			if (a_in.isMember(a_key))
+			{
+				auto& v = a_in[a_key];
+
+				if (!v.isIntegral())
+				{
+					return false;
+				}
+
+				a_out = v.asUInt();
+			}
+			else
+			{
+				a_out = 0;
+			}
+
+			return true;
+		}
+
+		std::uint32_t ExtractVersion(
+			const Json::Value& a_in,
+			std::uint32_t      a_current,
+			const char*        a_func)
+		{
+			std::uint32_t version;
+
+			if (!ParseVersion(a_in, "version", version))
+			{
+				gLog.Error("%s: bad version data", a_func);
+
+				throw std::exception("bad version data");
+			}
+
+			if (version > a_current)
+			{
+				gLog.Error(
+					"%s: unsupported version (%u > %u) ",
+					a_func,
+					version,
+					a_current);
+
+				throw std::exception("unsupported version");
+			}
+
+			return version;
 		}
 	}
 }

@@ -2149,12 +2149,11 @@ namespace IED
 	}
 
 	bool Controller::ProcessItemUpdate(
-		processParams_t&          a_params,
-		const configBaseValues_t& a_config,
-		const configModelGroup_t* a_groupConfig,
-		const NodeDescriptor&     a_node,
-		objectEntryBase_t&        a_entry,
-		bool                      a_visible)
+		processParams_t&                 a_params,
+		const configBaseValues_t&        a_config,
+		const Data::equipmentOverride_t* a_override,
+		objectEntryBase_t&               a_entry,
+		bool                             a_visible)
 	{
 		auto& state = a_entry.state;
 
@@ -2201,11 +2200,11 @@ namespace IED
 
 		state->UpdateFlags(a_config);
 
-		if (state->nodeDesc.name != a_node.name)
+		if (state->nodeDesc.name != a_config.targetNode.name)
 		{
 			AttachNodeImpl(
 				a_params.npcroot,
-				a_node,
+				a_config.targetNode,
 				a_config.flags.test(BaseFlags::kReferenceMode),
 				a_entry);
 
@@ -2224,7 +2223,73 @@ namespace IED
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
+		/*if (state->effectShaders != a_config.effectShaders)
+		{
+			state->effectShaders.Update(
+				state->nodes.obj,
+				a_config.effectShaders);
+
+			a_params.state.ResetEffectShaders(a_params.handle);
+		}*/
+
 		return true;
+	}
+
+	template <class Ta, class Tb>
+	constexpr void Controller::UpdateObjectEffectShaders(
+		processParams_t& a_params,
+		const Ta&        a_config,
+		Tb&              a_objectEntry)
+	{
+		if (!a_objectEntry.state)
+		{
+			return;
+		}
+
+		const configEffectShaderHolder_t* es;
+
+		if constexpr (std::is_same_v<Ta, configCustom_t>)
+		{
+			static_assert(std::is_same_v<Tb, objectEntryCustom_t>);
+
+			es = a_config.get_effect_shader(
+				a_params.collector.m_data,
+				a_params.objects.m_entriesSlot,
+				a_params);
+		}
+		else if constexpr (std::is_same_v<Ta, configSlot_t>)
+		{
+			static_assert(std::is_same_v<Tb, objectEntrySlot_t>);
+
+			es = a_config.get_effect_shader(
+				a_params.collector.m_data,
+				{ a_objectEntry.state->form,
+			      ItemData::SlotToExtraSlot(a_objectEntry.slotid) },
+				a_params);
+		}
+		else
+		{
+			static_assert(false);
+		}
+
+		if (es)
+		{
+			a_objectEntry.state->effectShaders.Update(
+				a_objectEntry.state->nodes.obj,
+				a_config.effectShaders,
+				*es);
+
+			a_params.state.ResetEffectShaders(a_params.handle);
+		}
+		else
+		{
+			if (a_objectEntry.state->effectShaders)
+			{
+				a_objectEntry.state->effectShaders.clear();
+
+				a_params.state.ResetEffectShaders(a_params.handle);
+			}
+		}
 	}
 
 	void Controller::ProcessSlots(processParams_t& a_params)
@@ -2236,6 +2301,7 @@ namespace IED
 				"%s: [%.8X] actor has no process manager",
 				__FUNCTION__,
 				a_params.actor->formID.get());
+
 			return;
 		}
 
@@ -2334,7 +2400,7 @@ namespace IED
 					candidates,
 					objectEntry.slotState.lastEquipped);
 
-				const configBaseValues_t* usedBaseConf =
+				auto configOverride =
 					!item ? configEntry.get_equipment_override(
 								a_params.collector.m_data,
 								a_params) :
@@ -2343,15 +2409,14 @@ namespace IED
 								{ item->form, ItemData::SlotToExtraSlot(objectEntry.slotid) },
 								a_params);
 
-				if (!usedBaseConf)
-				{
-					usedBaseConf = std::addressof(
-						static_cast<const configBaseValues_t&>(configEntry));
-				}
+				const auto& usedBaseConf =
+					configOverride ?
+						static_cast<const configBaseValues_t&>(*configOverride) :
+                        configEntry;
 
-				if (usedBaseConf->flags.test(BaseFlags::kDisabled) ||
+				if (usedBaseConf.flags.test(BaseFlags::kDisabled) ||
 				    (!a_params.is_player() &&
-				     !usedBaseConf->flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+				     !usedBaseConf.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
 				     slot != ObjectSlot::kAmmo &&
 				     !a_params.test_equipment_flags(equipmentFlag)))
 				{
@@ -2410,7 +2475,7 @@ namespace IED
 
 				bool visible = GetVisibilitySwitch(
 					a_params.actor,
-					usedBaseConf->flags,
+					usedBaseConf.flags,
 					a_params);
 
 				if (objectEntry.state &&
@@ -2418,9 +2483,8 @@ namespace IED
 				{
 					if (ProcessItemUpdate(
 							a_params,
-							*usedBaseConf,
-							nullptr,
-							usedBaseConf->targetNode,
+							usedBaseConf,
+							configOverride,
 							objectEntry,
 							visible))
 					{
@@ -2430,14 +2494,23 @@ namespace IED
 						}
 
 						item.consume(candidates);
+
+						if (objectEntry.state->effectShaders !=
+						    configEntry.effectShaders)
+						{
+							UpdateObjectEffectShaders(
+								a_params,
+								configEntry,
+								objectEntry);
+						}
+
 						continue;
 					}
 				}
 
 				if (LoadAndAttach(
 						a_params,
-						*usedBaseConf,
-						usedBaseConf->targetNode,
+						usedBaseConf,
 						objectEntry,
 						item->form,
 						nullptr,
@@ -2446,17 +2519,23 @@ namespace IED
 						false))
 				{
 					objectEntry.state->nodes.obj->SetVisible(visible);
-					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
 					if (visible)
 					{
 						item->item->sharedCount--;
 					}
+
 					item.consume(candidates);
+
+					UpdateObjectEffectShaders(
+						a_params,
+						configEntry,
+						objectEntry);
+
+					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 				}
 
-				// Debug("%X: (%.8X) attached | %u ", a_actor->formID, item->formID,
-				// slot);
+				// Debug("%X: (%.8X) attached | %u ", a_actor->formID, item->formID, slot);
 			}
 		}
 	}
@@ -2636,7 +2715,8 @@ namespace IED
 	{
 		auto& formData = a_params.collector.m_data.forms;
 
-		if (a_config.form.get_id())
+		if (a_config.form.get_id() &&
+		    !a_config.form.get_id().IsTemporary())
 		{
 			if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
 			{
@@ -2654,7 +2734,7 @@ namespace IED
 
 		for (auto& e : a_config.extraItems)
 		{
-			if (e)
+			if (e && !e.IsTemporary())
 			{
 				if (auto it = formData.find(e); it != formData.end())
 				{
@@ -2723,19 +2803,18 @@ namespace IED
 			return false;
 		}
 
-		const configBaseValues_t* usedBaseConf =
+		auto configOverride =
 			a_config.get_equipment_override(
 				a_params.collector.m_data,
 				a_params.objects.m_entriesSlot,
 				a_params);
 
-		if (!usedBaseConf)
-		{
-			usedBaseConf = std::addressof(
-				static_cast<const configBaseValues_t&>(a_config));
-		}
+		const auto& usedBaseConf =
+			configOverride ?
+				static_cast<const configBaseValues_t&>(*configOverride) :
+                a_config;
 
-		if (usedBaseConf->flags.test(BaseFlags::kDisabled))
+		if (usedBaseConf.flags.test(BaseFlags::kDisabled))
 		{
 			a_objectEntry.clear_chance_flags();
 			return false;
@@ -2753,7 +2832,7 @@ namespace IED
 		{
 			bool hasMinCount;
 
-			auto it = CustomEntrySelectInventoryForm(a_params, a_config, *usedBaseConf, hasMinCount);
+			auto it = CustomEntrySelectInventoryForm(a_params, a_config, usedBaseConf, hasMinCount);
 			if (it == a_params.collector.m_data.forms.end())
 			{
 				return false;
@@ -2768,10 +2847,11 @@ namespace IED
 
 			bool visible = GetVisibilitySwitch(
 				a_params.actor,
-				usedBaseConf->flags,
+				usedBaseConf.flags,
 				a_params);
 
-			if (a_objectEntry.state && a_objectEntry.state->form == itemData.form)
+			if (a_objectEntry.state &&
+			    a_objectEntry.state->form == itemData.form)
 			{
 				if (a_config.customFlags.test(CustomFlags::kUseGroup) ==
 				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
@@ -2780,9 +2860,8 @@ namespace IED
 
 					if (ProcessItemUpdate(
 							a_params,
-							*usedBaseConf,
-							std::addressof(a_config.group),
-							usedBaseConf->targetNode,
+							usedBaseConf,
+							configOverride,
 							a_objectEntry,
 							_visible))
 					{
@@ -2792,6 +2871,15 @@ namespace IED
 							{
 								itemData.sharedCount--;
 							}
+						}
+
+						if (a_objectEntry.state->effectShaders !=
+						    a_config.effectShaders)
+						{
+							UpdateObjectEffectShaders(
+								a_params,
+								a_config,
+								a_objectEntry);
 						}
 
 						return true;
@@ -2810,9 +2898,8 @@ namespace IED
 			{
 				result = LoadAndAttachGroup(
 					a_params,
-					*usedBaseConf,
+					usedBaseConf,
 					a_config.group,
-					usedBaseConf->targetNode,
 					a_objectEntry,
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
@@ -2830,8 +2917,7 @@ namespace IED
 
 				result = LoadAndAttach(
 					a_params,
-					*usedBaseConf,
-					usedBaseConf->targetNode,
+					usedBaseConf,
 					a_objectEntry,
 					itemData.form,
 					modelForm,
@@ -2850,6 +2936,11 @@ namespace IED
 				{
 					itemData.sharedCount--;
 				}
+
+				UpdateObjectEffectShaders(
+					a_params,
+					a_config,
+					a_objectEntry);
 
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -2878,22 +2969,31 @@ namespace IED
 
 			bool visible = GetVisibilitySwitch(
 				a_params.actor,
-				usedBaseConf->flags,
+				usedBaseConf.flags,
 				a_params);
 
-			if (a_objectEntry.state && a_objectEntry.state->form == form)
+			if (a_objectEntry.state &&
+			    a_objectEntry.state->form == form)
 			{
 				if (a_config.customFlags.test(CustomFlags::kUseGroup) ==
 				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
 				{
 					if (ProcessItemUpdate(
 							a_params,
-							*usedBaseConf,
-							std::addressof(a_config.group),
-							usedBaseConf->targetNode,
+							usedBaseConf,
+							configOverride,
 							a_objectEntry,
 							visible))
 					{
+						if (a_objectEntry.state->effectShaders !=
+						    a_config.effectShaders)
+						{
+							UpdateObjectEffectShaders(
+								a_params,
+								a_config,
+								a_objectEntry);
+						}
+
 						return true;
 					}
 				}
@@ -2907,9 +3007,8 @@ namespace IED
 			{
 				result = LoadAndAttachGroup(
 					a_params,
-					*usedBaseConf,
+					usedBaseConf,
 					a_config.group,
-					usedBaseConf->targetNode,
 					a_objectEntry,
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
@@ -2921,8 +3020,7 @@ namespace IED
 			{
 				result = LoadAndAttach(
 					a_params,
-					*usedBaseConf,
-					usedBaseConf->targetNode,
+					usedBaseConf,
 					a_objectEntry,
 					form,
 					nullptr,
@@ -2936,6 +3034,11 @@ namespace IED
 			if (result)
 			{
 				a_objectEntry.SetNodeVisible(visible);
+
+				UpdateObjectEffectShaders(
+					a_params,
+					a_config,
+					a_objectEntry);
 
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -5091,5 +5194,12 @@ namespace IED
 
 			SetLanguageImpl(a_lang);
 		});
+	}
+
+	void Controller::ProcessEffectShaders()
+	{
+		IScopedLock lock(m_lock);
+
+		ProcessEffects(m_objects);
 	}
 }

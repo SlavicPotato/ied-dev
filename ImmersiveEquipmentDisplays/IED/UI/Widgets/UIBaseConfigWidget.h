@@ -1,27 +1,27 @@
 #pragma once
 
-#include "IED/UI//Controls/UICollapsibles.h"
-#include "IED/UI//UIClipboard.h"
-#include "IED/UI//UICommon.h"
-#include "IED/UI//UITips.h"
-
-#include "IED/ConfigOverride.h"
-#include "IED/StringHolder.h"
-
+#include "IED/UI/Controls/UICollapsibles.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UITips.h"
 
 #include "Form/UIFormFilterWidget.h"
 #include "Form/UIFormSelectorWidget.h"
 #include "UIBaseConfigWidgetStrings.h"
 #include "UIConditionParamEditorWidget.h"
 #include "UIDescriptionPopup.h"
+#include "UIEffectShaderEditorWidget.h"
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
 #include "UITransformSliderWidget.h"
 #include "UIWidgetsCommon.h"
+
+#include "IED/ConfigOverride.h"
+#include "IED/StringHolder.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -45,7 +45,8 @@ namespace IED
 			ClearKeyword,
 			Copy,
 			Paste,
-			PasteOver
+			PasteOver,
+			Create
 		};
 
 		struct EquipmentOverrideResult
@@ -73,16 +74,26 @@ namespace IED
 		};
 
 		template <class T>
+		struct baseEffectShaderEditorParams_t
+		{
+			T                         handle;
+			const void*               params;
+			Data::effectShaderList_t& list;
+		};
+
+		template <class T>
 		class UIBaseConfigWidget :
 			public UINodeSelectorWidget,
 			public UIFormLookupInterface,
 			UIConditionParamExtraInterface,
-			virtual public UICollapsibles,
-			virtual public UIDescriptionPopupWidget,
-			virtual public UITransformSliderWidget,
-			virtual public UITipsInterface,
-			virtual public UIPopupToggleButtonWidget,
-			virtual public UILocalizationInterface
+			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
+			public virtual UICollapsibles,
+			public virtual UIDescriptionPopupWidget,
+			public virtual UITransformSliderWidget,
+			public virtual UITipsInterface,
+			public virtual UINotificationInterface,
+			public virtual UIPopupToggleButtonWidget,
+			public virtual UILocalizationInterface
 		{
 		public:
 			UIBaseConfigWidget(
@@ -119,6 +130,12 @@ namespace IED
 				Data::BaseFlags     a_mask);
 
 		private:
+			void DrawEquipmentOverrides(
+				T                        a_handle,
+				Data::configBase_t&      a_data,
+				const void*              a_params,
+				const stl::fixed_string& a_slotName);
+
 			virtual void DrawExtraFlags(
 				T                         a_handle,
 				Data::configBaseValues_t& a_data,
@@ -148,17 +165,19 @@ namespace IED
 				const void*              a_params,
 				const stl::fixed_string& a_slotName);
 
+			template <class Tu>
 			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 				T                                       a_handle,
 				Data::equipmentOverrideConditionList_t& a_entry,
-				const void*                             a_params);
+				Tu                                      a_updFunc);
 
+			template <class Tu>
 			void DrawEquipmentOverrideEntryConditionTable(
 				T                                       a_handle,
 				Data::configBase_t&                     a_baseData,
 				Data::equipmentOverrideConditionList_t& a_entry,
-				const void*                             a_params,
-				bool                                    a_isnested);
+				bool                                    a_isnested,
+				Tu                                      a_updFunc);
 
 			EquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
 				bool a_drawDelete);
@@ -189,6 +208,37 @@ namespace IED
 
 			void UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType a_type);
 
+			BaseConfigEditorAction DrawEffectShaderTreeContextMenu(
+				T                   a_handle,
+				Data::configBase_t& a_data,
+				const void*         a_params);
+
+			void DrawEffectShaders(
+				T                        a_handle,
+				Data::configBase_t&      a_data,
+				const void*              a_params,
+				const stl::fixed_string& a_slotName);
+
+			EquipmentOverrideResult DrawEffectShaderHolderContextMenu(
+				T                                 a_handle,
+				const void*                       a_params,
+				Data::effectShaderList_t&         a_list,
+				Data::configEffectShaderHolder_t& a_data);
+
+			void DrawEffectShaderHolderList(
+				T                        a_handle,
+				Data::configBase_t&      a_data,
+				const void*              a_params,
+				const stl::fixed_string& a_slotName);
+
+			void TriggerEffectShaderUpdate(
+				T                         a_handle,
+				Data::effectShaderList_t& a_data,
+				const void*               a_params);
+
+			virtual void OnEffectShaderUpdate(
+				const baseEffectShaderEditorParams_t<T>& a_params) override;
+
 			Game::FormID                                m_aoNewEntryID;
 			Game::FormID                                m_aoNewEntryKWID;
 			Game::FormID                                m_aoNewEntryRaceID;
@@ -200,7 +250,6 @@ namespace IED
 			UIConditionParamEditorWidget                m_condParamEditor;
 			UIFormSelectorWidget                        m_ffFormSelector;
 			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
-			UINotificationInterface                     m_notif;
 
 			struct
 			{
@@ -215,11 +264,12 @@ namespace IED
 			Controller& a_controller) :
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
+			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_condParamEditor(a_controller),
-			m_notif(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
 			m_formFilter(a_controller, m_ffFormSelector)
 		{
@@ -271,62 +321,22 @@ namespace IED
 
 			ImGui::PopID();
 
-			auto storecc = BaseConfigStoreCC();
-
-			ImGui::PushID("config_equipment_overrides");
-
-			const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_data, a_params);
-
-			const bool empty = a_data.equipmentOverrides.empty();
-
-			UICommon::PushDisabled(empty);
-
-			if (!empty)
-			{
-				if (result == BaseConfigEditorAction::Insert)
-				{
-					ImGui::SetNextItemOpen(true);
-				}
-			}
-
-			bool r;
-
-			if (storecc)
-			{
-				r = TreeEx("tree", true, "%s", LS(UIBaseConfigString::EquipmentOverrides));
-			}
-			else
-			{
-				r = ImGui::TreeNodeEx(
-					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth |
-						ImGuiTreeNodeFlags_DefaultOpen,
-					"%s",
-					LS(UIBaseConfigString::EquipmentOverrides));
-			}
-
-			if (r)
-			{
-				if (!empty)
-				{
-					ImGui::Spacing();
-
-					DrawEquipmentOverrideList(a_handle, a_data, a_params, a_slotName);
-
-					ImGui::Spacing();
-				}
-
-				ImGui::TreePop();
-			}
-
-			UICommon::PopDisabled(empty);
-
-			ImGui::PopID();
+			DrawEquipmentOverrides(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName);
 
 			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled) &&
 			                      a_data.equipmentOverrides.empty();
 
 			UICommon::PushDisabled(disabled);
+
+			DrawEffectShaders(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName);
 
 			DrawFiltersTree(a_handle, a_data, a_params);
 
@@ -897,6 +907,74 @@ namespace IED
 		}
 
 		template <class T>
+		void UIBaseConfigWidget<T>::DrawEquipmentOverrides(
+			T                        a_handle,
+			Data::configBase_t&      a_data,
+			const void*              a_params,
+			const stl::fixed_string& a_slotName)
+		{
+			auto storecc = BaseConfigStoreCC();
+
+			ImGui::PushID("config_equipment_overrides");
+
+			const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_data, a_params);
+
+			const bool empty = a_data.equipmentOverrides.empty();
+
+			UICommon::PushDisabled(empty);
+
+			if (!empty)
+			{
+				if (result == BaseConfigEditorAction::Insert)
+				{
+					ImGui::SetNextItemOpen(true);
+				}
+			}
+
+			bool r;
+
+			if (storecc)
+			{
+				r = TreeEx(
+					"tree",
+					true,
+					"%s",
+					LS(UIBaseConfigString::EquipmentOverrides));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen,
+					"%s",
+					LS(UIBaseConfigString::EquipmentOverrides));
+			}
+
+			if (r)
+			{
+				if (!empty)
+				{
+					ImGui::Spacing();
+
+					DrawEquipmentOverrideList(
+						a_handle,
+						a_data,
+						a_params,
+						a_slotName);
+
+					ImGui::Spacing();
+				}
+
+				ImGui::TreePop();
+			}
+
+			UICommon::PopDisabled(empty);
+
+			ImGui::PopID();
+		}
+
+		template <class T>
 		void UIBaseConfigWidget<T>::DrawExtraFlags(
 			T                         a_handle,
 			Data::configBaseValues_t& a_data,
@@ -915,7 +993,7 @@ namespace IED
 				BaseConfigEditorAction::None
 			};
 
-			ImGui::PushID("ao_tree_context_area");
+			ImGui::PushID("eo_tree_context_area");
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
@@ -951,23 +1029,53 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				auto clipData = UIClipboard::Get<Data::equipmentOverride_t>();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "2"),
-						nullptr,
-						false,
-						clipData != nullptr))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
 				{
-					if (clipData)
-					{
-						a_data.equipmentOverrides.emplace_back(*clipData);
-						OnBaseConfigChange(
-							a_handle,
-							a_params,
-							PostChangeAction::Evaluate);
+					UIClipboard::Set<Data::equipmentOverrideList_t>(a_data.equipmentOverrides);
+				}
 
-						result = BaseConfigEditorAction::Paste;
+				{
+					auto clipData = UIClipboard::Get<Data::equipmentOverride_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Paste, "3"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						if (clipData)
+						{
+							a_data.equipmentOverrides.emplace_back(*clipData);
+							OnBaseConfigChange(
+								a_handle,
+								a_params,
+								PostChangeAction::Evaluate);
+
+							result = BaseConfigEditorAction::Paste;
+						}
+					}
+				}
+
+				{
+					auto clipData = UIClipboard::Get<Data::equipmentOverrideList_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::PasteOver, "4"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						if (clipData)
+						{
+							a_data.equipmentOverrides = *clipData;
+
+							OnBaseConfigChange(
+								a_handle,
+								a_params,
+								PostChangeAction::Evaluate);
+
+							result = BaseConfigEditorAction::Paste;
+						}
 					}
 				}
 
@@ -993,7 +1101,7 @@ namespace IED
 
 			ImGui::PushID("equipment_override_list");
 
-			std::size_t i = 0;
+			int i = 0;
 
 			auto it = a_data.equipmentOverrides.begin();
 
@@ -1062,14 +1170,15 @@ namespace IED
 
 						DrawExtraEquipmentOverrideOptions(a_handle, a_data, a_params, e);
 
-						/*auto disabled = !e.eoFlags.test_any(Data::EquipmentOverrideFlags::kConditioningEnabled);
-
-						UICommon::PushDisabled(disabled);*/
-
 						const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
 							e.conditions,
-							a_params);
+							[this, a_handle, a_params] {
+								OnBaseConfigChange(
+									a_handle,
+									a_params,
+									PostChangeAction::Evaluate);
+							});
 
 						bool empty = e.conditions.empty();
 
@@ -1099,8 +1208,13 @@ namespace IED
 									a_handle,
 									a_data,
 									e.conditions,
-									a_params,
-									false);
+									false,
+									[this, a_handle, a_params] {
+										OnBaseConfigChange(
+											a_handle,
+											a_params,
+											PostChangeAction::Evaluate);
+									});
 							}
 
 							ImGui::TreePop();
@@ -1124,8 +1238,6 @@ namespace IED
 
 						ImGui::Spacing();
 
-						//UICommon::PopDisabled(disabled);
-
 						ImGui::TreePop();
 					}
 
@@ -1140,10 +1252,11 @@ namespace IED
 		}
 
 		template <class T>
+		template <class Tu>
 		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 			T                                       a_handle,
 			Data::equipmentOverrideConditionList_t& a_entry,
-			const void*                             a_params)
+			Tu                                      a_updFunc)
 		{
 			BaseConfigEditorAction action{ BaseConfigEditorAction ::None };
 
@@ -1163,7 +1276,7 @@ namespace IED
 
 							action = result.action;
 
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 						break;
 					case Data::EquipmentOverrideConditionType::Form:
@@ -1179,7 +1292,7 @@ namespace IED
 
 							action = result.action;
 
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 						break;
 					case Data::EquipmentOverrideConditionType::Race:
@@ -1194,7 +1307,7 @@ namespace IED
 
 						action = result.action;
 
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						a_updFunc();
 
 						break;
 					case Data::EquipmentOverrideConditionType::BipedSlot:
@@ -1205,7 +1318,7 @@ namespace IED
 
 							action = result.action;
 
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 						break;
 					case Data::EquipmentOverrideConditionType::Extra:
@@ -1216,7 +1329,7 @@ namespace IED
 
 							action = result.action;
 
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 						break;
 					}
@@ -1235,10 +1348,7 @@ namespace IED
 				{
 					a_entry = *clipData;
 
-					OnBaseConfigChange(
-						a_handle,
-						a_params,
-						PostChangeAction::Evaluate);
+					a_updFunc();
 
 					action = BaseConfigEditorAction::PasteOver;
 				}
@@ -1248,10 +1358,8 @@ namespace IED
 
 				action = BaseConfigEditorAction::Delete;
 
-				OnBaseConfigChange(
-					a_handle,
-					a_params,
-					PostChangeAction::Evaluate);
+				a_updFunc();
+
 				break;
 			}
 
@@ -1259,12 +1367,13 @@ namespace IED
 		}
 
 		template <class T>
+		template <class Tu>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionTable(
 			T                                       a_handle,
 			Data::configBase_t&                     a_baseData,
 			Data::equipmentOverrideConditionList_t& a_entry,
-			const void*                             a_params,
-			bool                                    a_isnested)
+			bool                                    a_isnested,
+			Tu                                      a_updFunc)
 		{
 			if (a_isnested)
 			{
@@ -1335,13 +1444,13 @@ namespace IED
 					{
 					case BaseConfigEditorAction::Delete:
 						it = a_entry.erase(it);
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						a_updFunc();
 						break;
 					case BaseConfigEditorAction::ClearKeyword:
 						if (it->keyword.get_id())
 						{
 							it->keyword = 0;
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 						break;
 					case BaseConfigEditorAction::Insert:
@@ -1355,7 +1464,7 @@ namespace IED
 									it,
 									result.slot);
 
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+								a_updFunc();
 							}
 							break;
 						case Data::EquipmentOverrideConditionType::Form:
@@ -1370,7 +1479,7 @@ namespace IED
 									result.entryType,
 									result.form);
 
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+								a_updFunc();
 							}
 							break;
 						case Data::EquipmentOverrideConditionType::Race:
@@ -1384,7 +1493,7 @@ namespace IED
 								it,
 								result.entryType);
 
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 
 							break;
 						case Data::EquipmentOverrideConditionType::BipedSlot:
@@ -1394,7 +1503,7 @@ namespace IED
 									it,
 									result.biped);
 
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+								a_updFunc();
 							}
 							break;
 						case Data::EquipmentOverrideConditionType::Extra:
@@ -1404,7 +1513,7 @@ namespace IED
 									it,
 									result.excond);
 
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+								a_updFunc();
 							}
 							break;
 						}
@@ -1415,7 +1524,7 @@ namespace IED
 
 						if (IterSwap(a_entry, it, result.dir))
 						{
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 
 						break;
@@ -1438,14 +1547,14 @@ namespace IED
 							const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 								a_handle,
 								e.group.conditions,
-								a_params);
+								a_updFunc);
 
 							DrawEquipmentOverrideEntryConditionTable(
 								a_handle,
 								a_baseData,
 								e.group.conditions,
-								a_params,
-								true);
+								true,
+								a_updFunc);
 
 							ImGui::PopID();
 						}
@@ -1682,7 +1791,7 @@ namespace IED
 
 							if (m_condParamEditor.DrawConditionParamEditorPopup())
 							{
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+								a_updFunc();
 							}
 						}
 
@@ -1695,7 +1804,7 @@ namespace IED
 								stl::underlying(std::addressof(e.flags.value)),
 								stl::underlying(Data::EquipmentOverrideConditionFlags::kAnd)))
 						{
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 
 						ImGui::TableSetColumnIndex(4);
@@ -1705,7 +1814,7 @@ namespace IED
 								stl::underlying(std::addressof(e.flags.value)),
 								stl::underlying(Data::EquipmentOverrideConditionFlags::kNot)))
 						{
-							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							a_updFunc();
 						}
 
 						ImGui::PopStyleVar();
@@ -2270,7 +2379,7 @@ namespace IED
 					LS(UIWidgetCommonStrings::IsPlayable, "2"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-				
+
 				result = ImGui::CheckboxFlagsT(
 					"!##3",
 					stl::underlying(std::addressof(match->flags.value)),
@@ -2452,6 +2561,513 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			}
+		}
+
+		template <class T>
+		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEffectShaderTreeContextMenu(
+			T                   a_handle,
+			Data::configBase_t& a_data,
+			const void*         a_params)
+		{
+			BaseConfigEditorAction result{
+				BaseConfigEditorAction::None
+			};
+
+			ImGui::PushID("es_tree_context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			if (DrawPopupToggleButton("open", "context_menu"))
+			{
+				ClearDescriptionPopupBuffer();
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (LCG_BM(CommonStrings::New, "1"))
+				{
+					if (DrawDescriptionPopup())
+					{
+						a_data.effectShaders.data.emplace_back(
+							GetDescriptionPopupBuffer());
+
+						TriggerEffectShaderUpdate(
+							a_handle,
+							a_data.effectShaders,
+							a_params);
+
+						ClearDescriptionPopupBuffer();
+
+						result = BaseConfigEditorAction::Insert;
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				{
+					UIClipboard::Set<Data::effectShaderList_t>(a_data.effectShaders);
+				}
+
+				{
+					auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Paste, "3"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						if (clipData)
+						{
+							a_data.effectShaders.data.emplace_back(*clipData);
+
+							TriggerEffectShaderUpdate(
+								a_handle,
+								a_data.effectShaders,
+								a_params);
+
+							result = BaseConfigEditorAction::Paste;
+						}
+					}
+				}
+
+				{
+					auto clipData = UIClipboard::Get<Data::effectShaderList_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::PasteOver, "4"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						if (clipData)
+						{
+							a_data.effectShaders = *clipData;
+
+							TriggerEffectShaderUpdate(
+								a_handle,
+								a_data.effectShaders,
+								a_params);
+
+							result = BaseConfigEditorAction::Paste;
+						}
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawEffectShaders(
+			T                        a_handle,
+			Data::configBase_t&      a_data,
+			const void*              a_params,
+			const stl::fixed_string& a_slotName)
+		{
+			auto storecc = BaseConfigStoreCC();
+
+			ImGui::PushID("config_effect_shaders");
+
+			const auto result = DrawEffectShaderTreeContextMenu(a_handle, a_data, a_params);
+
+			const bool empty = a_data.effectShaders.empty();
+
+			UICommon::PushDisabled(empty);
+
+			if (!empty)
+			{
+				if (result == BaseConfigEditorAction::Insert)
+				{
+					ImGui::SetNextItemOpen(true);
+				}
+			}
+
+			bool r;
+
+			if (storecc)
+			{
+				r = TreeEx(
+					"tree",
+					true,
+					"%s",
+					LS(UIBaseConfigString::EffectShaders));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen,
+					"%s",
+					LS(UIBaseConfigString::EffectShaders));
+			}
+
+			if (r)
+			{
+				if (!empty)
+				{
+					ImGui::Spacing();
+
+					DrawEffectShaderHolderList(
+						a_handle,
+						a_data,
+						a_params,
+						a_slotName);
+
+					ImGui::Spacing();
+				}
+
+				ImGui::TreePop();
+			}
+
+			UICommon::PopDisabled(empty);
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		EquipmentOverrideResult UIBaseConfigWidget<T>::DrawEffectShaderHolderContextMenu(
+			T                                 a_handle,
+			const void*                       a_params,
+			Data::effectShaderList_t&         a_list,
+			Data::configEffectShaderHolder_t& a_data)
+		{
+			EquipmentOverrideResult result;
+
+			ImGui::PushID("es_holder_context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			if (DrawPopupToggleButton("open", "context_menu"))
+			{
+				ClearDescriptionPopupBuffer();
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("up", ImGuiDir_Up))
+			{
+				result.action = BaseConfigEditorAction::Swap;
+				result.dir    = SwapDirection::Up;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("down", ImGuiDir_Down))
+			{
+				result.action = BaseConfigEditorAction::Swap;
+				result.dir    = SwapDirection::Down;
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (LCG_BM(CommonStrings::Insert, "1"))
+				{
+					if (LCG_BM(CommonStrings::New, "2"))
+					{
+						if (DrawDescriptionPopup())
+						{
+							result.action = BaseConfigEditorAction::Insert;
+							result.desc   = GetDescriptionPopupBuffer();
+
+							ClearDescriptionPopupBuffer();
+						}
+
+						ImGui::EndMenu();
+					}
+
+					auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Paste, "3"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						result.action = BaseConfigEditorAction::Paste;
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (LCG_BM(UIBaseConfigString::AddShaderEntry, "2"))
+				{
+					if (DrawDescriptionPopup())
+					{
+						result.action = BaseConfigEditorAction::Create;
+						result.desc   = GetDescriptionPopupBuffer();
+
+						ClearDescriptionPopupBuffer();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "4")))
+				{
+					result.action = BaseConfigEditorAction::Delete;
+				}
+
+				if (LCG_BM(CommonStrings::Rename, "5"))
+				{
+					if (DrawDescriptionPopup())
+					{
+						result.action = BaseConfigEditorAction::Rename;
+						result.desc   = GetDescriptionPopupBuffer();
+
+						ClearDescriptionPopupBuffer();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "7")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "8"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data = *clipData;
+
+						TriggerEffectShaderUpdate(
+							a_handle,
+							a_list,
+							a_params);
+
+						result.action = BaseConfigEditorAction::PasteOver;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawEffectShaderHolderList(
+			T                        a_handle,
+			Data::configBase_t&      a_data,
+			const void*              a_params,
+			const stl::fixed_string& a_slotName)
+		{
+			auto& list = a_data.effectShaders.data;
+
+			if (list.empty())
+			{
+				return;
+			}
+
+			ImGui::PushID("es_list");
+
+			int i = 0;
+
+			auto it = list.begin();
+
+			while (it != list.end())
+			{
+				ImGui::PushID(i);
+
+				const auto result = DrawEffectShaderHolderContextMenu(
+					a_handle,
+					a_params,
+					a_data.effectShaders,
+					*it);
+
+				switch (result.action)
+				{
+				case BaseConfigEditorAction::Delete:
+					it = list.erase(it);
+					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					break;
+				case BaseConfigEditorAction::Insert:
+					it = list.emplace(it, result.desc);
+					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					ImGui::SetNextItemOpen(true);
+					break;
+				case BaseConfigEditorAction::Create:
+
+					if (it->data.try_emplace(result.desc).second)
+					{
+						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+						ImGui::SetNextItemOpen(true);
+					}
+					else
+					{
+						QueueNotification(
+							LS(CommonStrings::Error),
+							"%s",
+							LS(UIBaseConfigString::EffectShaderEntryExists));
+					}
+
+					break;
+				case BaseConfigEditorAction::Swap:
+
+					if (IterSwap(list, it, result.dir))
+					{
+						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					}
+
+					break;
+				case BaseConfigEditorAction::Rename:
+					it->description = result.desc;
+					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					break;
+				case BaseConfigEditorAction::Paste:
+					if (auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>())
+					{
+						it = list.emplace(it, *clipData);
+						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					}
+					// fallthrough
+				case BaseConfigEditorAction::PasteOver:
+					ImGui::SetNextItemOpen(true);
+					break;
+				}
+
+				if (it != list.end())
+				{
+					auto& e = *it;
+
+					if (ImGui::TreeNodeEx(
+							"es_item",
+							ImGuiTreeNodeFlags_SpanAvailWidth,
+							"%s",
+							e.description.c_str()))
+					{
+						ImGui::Spacing();
+
+						const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+							a_handle,
+							e.conditions,
+							[this, a_handle, a_params, &a_data] {
+								TriggerEffectShaderUpdate(
+									a_handle,
+									a_data.effectShaders,
+									a_params);
+							});
+
+						bool empty = e.conditions.empty();
+
+						if (!empty)
+						{
+							if (result == BaseConfigEditorAction::PasteOver ||
+							    result == BaseConfigEditorAction::Insert)
+							{
+								ImGui::SetNextItemOpen(true);
+							}
+						}
+
+						UICommon::PushDisabled(empty);
+
+						if (ImGui::TreeNodeEx(
+								"es_item_match",
+								ImGuiTreeNodeFlags_SpanAvailWidth |
+									ImGuiTreeNodeFlags_DefaultOpen,
+								"%s",
+								LS(CommonStrings::Conditions)))
+						{
+							if (!empty)
+							{
+								ImGui::Spacing();
+
+								DrawEquipmentOverrideEntryConditionTable(
+									a_handle,
+									a_data,
+									e.conditions,
+									false,
+									[this, a_handle, a_params, &a_data] {
+										TriggerEffectShaderUpdate(
+											a_handle,
+											a_data.effectShaders,
+											a_params);
+									});
+							}
+
+							ImGui::TreePop();
+						}
+
+						UICommon::PopDisabled(empty);
+
+						ImGui::Spacing();
+
+						ImGui::PushID("es_conf_entry");
+
+						baseEffectShaderEditorParams_t<T> params{
+							a_handle,
+							a_params,
+							a_data.effectShaders
+						};
+
+						DrawEffectShaderEditor(params, e);
+
+						ImGui::PopID();
+
+						ImGui::Spacing();
+
+						ImGui::TreePop();
+					}
+
+					i++;
+					++it;
+				}
+
+				ImGui::PopID();
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::TriggerEffectShaderUpdate(
+			T                         a_handle,
+			Data::effectShaderList_t& a_data,
+			const void*               a_params)
+		{
+			a_data.update_tag();
+			OnBaseConfigChange(
+				a_handle,
+				a_params,
+				PostChangeAction::Evaluate);
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::OnEffectShaderUpdate(
+			const baseEffectShaderEditorParams_t<T>& a_params)
+		{
+			TriggerEffectShaderUpdate(
+				a_params.handle,
+				a_params.list,
+				a_params.params);
 		}
 
 	}

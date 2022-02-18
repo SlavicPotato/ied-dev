@@ -174,6 +174,12 @@
     <Filter Include="Source\ImGui\Styles">
       <UniqueIdentifier>{be1e456c-36f0-4c1a-90f1-435785aabdeb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\UI\Widgets\BaseConfig">
+      <UniqueIdentifier>{19d49780-ce9a-4cbd-9583-592d5e281eda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\EffectShaders">
+      <UniqueIdentifier>{597096f8-8b5f-4d10-813d-e8034c9369a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -282,9 +288,6 @@
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIWidgetsCommon.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="IED\SettingHolder.h">
@@ -854,9 +857,6 @@
     <ClInclude Include="IED\UI\UILocalizationInterface.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidgetStrings.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIWidgetCommonStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
@@ -974,9 +974,6 @@
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h">
       <Filter>Source\IED\UI\Custom\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\ConfigOverrideEffectShader.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
@@ -1057,6 +1054,39 @@
     </ClInclude>
     <ClInclude Include="IED\ConfigUUIDTag.h">
       <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\EffectController.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidget.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1636,9 +1666,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
-    <ClCompile Include="IED\UI\Widgets\UIEffectShaderEditorWidget.cpp">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
@@ -1671,6 +1698,30 @@
     </ClCompile>
     <ClCompile Include="..\..\sse-build-resources\ext\IUUID.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigOverrideEffectShader.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\EffectController.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderDataParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

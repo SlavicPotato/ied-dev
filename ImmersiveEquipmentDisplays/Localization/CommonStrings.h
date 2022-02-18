@@ -167,5 +167,8 @@ namespace IED
 		Worldspace   = 238,
 		Refresh      = 239,
 		Package      = 240,
+		White        = 241,
+		Grey         = 242,
+		Texture      = 243,
 	};
 }

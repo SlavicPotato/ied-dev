@@ -1,6 +1,8 @@
 #pragma once
 
-#include "IED/ConfigCommon.h"
+#include "ConfigCommon.h"
+#include "ConfigOverrideCommon.h"
+#include "ConfigOverrideBaseValues.h"
 
 namespace IED
 {
@@ -67,7 +69,7 @@ namespace IED
 			std::uint32_t                  unused: 27 { 0 };
 		};
 
-		static_assert(sizeof(EquipmentOverrideConditionFlagsBitfield) == sizeof(std::uint32_t));
+		static_assert(sizeof(EquipmentOverrideConditionFlagsBitfield) == sizeof(EquipmentOverrideConditionFlags));
 
 		struct equipmentOverrideCondition_t;
 

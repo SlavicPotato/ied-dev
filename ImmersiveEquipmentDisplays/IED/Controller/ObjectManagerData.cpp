@@ -148,7 +148,7 @@ namespace IED
 
 		stl::optional<Game::ObjectRefHandle> handle;
 
-		visit([&](objectEntryBase_t& a_entry) {
+		visit([&](auto& a_entry) {
 			if (!a_entry.state)
 			{
 				return;
@@ -159,7 +159,7 @@ namespace IED
 				handle = GetHandle();
 
 				NiPointer<TESObjectREFR> refr;
-				LookupREFRByHandle(*handle, refr);
+				(void)handle->LookupZH(refr);
 			}
 
 			if (!a_entry.state->dbEntries.empty())
@@ -381,6 +381,75 @@ namespace IED
 		EngineExtensions::CleanupNodeImpl(
 			a_handle,
 			nodes.obj);
+	}
+
+	void effectShaderData_t::clear()
+	{
+		if (!data.empty())
+		{
+			visit_nodes([](auto& a_e1, auto& a_e2) {
+				a_e2.first->ClearEffectShaderData();
+			});
+
+			data.clear();
+		}
+
+		tag.reset();
+	}
+
+	void effectShaderData_t::Update(
+		NiNode*                                 a_object,
+		const uuid_tag&                         a_tag,
+		const Data::configEffectShaderHolder_t& a_data)
+	{
+		clear();
+
+		for (auto& [i, e] : a_data.data)
+		{
+			Entry tmp;
+
+			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
+				if (!e.targetNodes.empty())
+				{
+					auto s = a_geometry->m_name.c_str();
+					if (!s)
+					{
+						return Util::Node::VisitorControl::kContinue;
+					}
+
+					if (!e.targetNodes.contains(s))
+					{
+						return Util::Node::VisitorControl::kContinue;
+					}
+				}
+
+				if (auto& effect = a_geometry->m_spEffectState)
+				{
+					auto shaderProp = ni_cast(effect.get(), BSShaderProperty);
+
+					if (shaderProp && shaderProp->AcceptsEffectData())
+					{
+						tmp.nodes.emplace_back(shaderProp, a_geometry);
+					}
+				}
+
+				return Util::Node::VisitorControl::kContinue;
+			});
+
+			if (tmp.nodes.empty())
+			{
+				continue;
+			}
+
+			if (!e.create_shader_data(tmp.shaderData))
+			{
+				continue;
+			}
+
+			data.emplace(i, std::move(tmp));
+		}
+
+		tag = a_tag;
 	}
 
 }

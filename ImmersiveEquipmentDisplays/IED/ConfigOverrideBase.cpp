@@ -59,6 +59,68 @@ namespace IED
 			return nullptr;
 		}
 
+		const configEffectShaderHolder_t* configBase_t::get_effect_shader(
+			const collectorData_t& a_data,
+			CommonParams&          a_params) const
+		{
+			for (auto& e : effectShaders.data)
+			{
+				if (!e.enabled())
+				{
+					continue;
+				}
+
+				if (match(a_data, e.conditions, a_params, true))
+				{
+					return std::addressof(e);
+				}
+			}
+
+			return nullptr;
+		}
+
+		const configEffectShaderHolder_t* configBase_t::get_effect_shader(
+			const collectorData_t&     a_data,
+			const slot_container_type& a_slots,
+			CommonParams&              a_params) const
+		{
+			for (auto& e : effectShaders.data)
+			{
+				if (!e.enabled())
+				{
+					continue;
+				}
+
+				if (match(a_data, a_slots, e.conditions, a_params, true))
+				{
+					return std::addressof(e);
+				}
+			}
+
+			return nullptr;
+		}
+
+		const configEffectShaderHolder_t* configBase_t::get_effect_shader(
+			const collectorData_t& a_data,
+			const formSlotPair_t&  a_checkForm,
+			CommonParams&          a_params) const
+		{
+			for (auto& e : effectShaders.data)
+			{
+				if (!e.enabled())
+				{
+					continue;
+				}
+
+				if (match(a_data, e.conditions, a_checkForm, a_params, true))
+				{
+					return std::addressof(e);
+				}
+			}
+
+			return nullptr;
+		}
+
 		static TESForm* match_pm_equipped(
 			Actor*       a_actor,
 			Game::FormID a_form)
@@ -500,7 +562,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
@@ -565,7 +627,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
@@ -600,7 +662,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
@@ -758,7 +820,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
@@ -817,7 +879,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
@@ -852,7 +914,7 @@ namespace IED
 					std::uint32_t result = 0;
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                               2u :
+					                           2u :
                                                1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))

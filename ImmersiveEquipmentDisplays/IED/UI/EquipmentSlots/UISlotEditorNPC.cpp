@@ -16,6 +16,7 @@ namespace IED
 			UISlotEditorCommon<Game::FormID>(a_controller),
 			UINPCList<entrySlotData_t>(a_controller),
 			UITipsInterface(a_controller),
+			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
@@ -49,6 +50,9 @@ namespace IED
 					    m_listCurrent->handle != Data::IData::GetPlayerBaseID())
 					{
 						DrawSlotEditorNPCWarningHeader();
+
+						ImGui::Separator();
+						ImGui::Spacing();
 					}
 
 					DrawSlotEditor(m_listCurrent->handle, m_listCurrent->data);
