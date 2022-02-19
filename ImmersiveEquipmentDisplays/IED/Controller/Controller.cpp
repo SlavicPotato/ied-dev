@@ -23,6 +23,7 @@ namespace IED
 	Controller::Controller(
 		const std::shared_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(*this),
+		EffectController(a_config->m_effectShaders),
 		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
@@ -392,7 +393,7 @@ namespace IED
 		}
 	}
 
-	void Controller::InitializeStrings()
+	void Controller::InitializeBSFixedStringTable()
 	{
 		m_bsstrings = std::make_unique<BSStringHolder>();
 	}
@@ -850,25 +851,19 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t actors;
+			CollectKnownActors(actors);
 
-				if (auto baseForm = result.actor->baseForm)
+			for (auto& e : actors)
+			{
+				if (auto npc = Game::GetActorBase(e.second))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
+					if (npc->formID == a_npc)
 					{
-						if (npc->formID == a_npc)
-						{
-							ActorResetImpl(
-								result.actor,
-								result.handle,
-								a_flags);
-						}
+						ActorResetImpl(
+							e.second,
+							e.first,
+							a_flags);
 					}
 				}
 			}
@@ -882,21 +877,18 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_flags]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t actors;
+			CollectKnownActors(actors);
 
-				if (auto race = Game::GetActorRace(result.actor))
+			for (auto& e : actors)
+			{
+				if (auto race = Game::GetActorRace(e.second))
 				{
 					if (race->formID == a_race)
 					{
 						ActorResetImpl(
-							result.actor,
-							result.handle,
+							e.second,
+							e.first,
 							a_flags);
 					}
 				}
@@ -932,26 +924,20 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t actors;
+			CollectKnownActors(actors);
 
-				if (auto baseForm = result.actor->baseForm)
+			for (auto& e : actors)
+			{
+				if (auto npc = Game::GetActorBase(e.second))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
+					if (npc->formID == a_npc)
 					{
-						if (npc->formID == a_npc)
-						{
-							ActorResetImpl(
-								result.actor,
-								result.handle,
-								a_flags,
-								a_slot);
-						}
+						ActorResetImpl(
+							e.second,
+							e.first,
+							a_flags,
+							a_slot);
 					}
 				}
 			}
@@ -966,21 +952,18 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_flags, a_slot]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t actors;
+			CollectKnownActors(actors);
 
-				if (auto race = Game::GetActorRace(result.actor))
+			for (auto& e : actors)
+			{
+				if (auto race = Game::GetActorRace(e.second))
 				{
 					if (race->formID == a_race)
 					{
 						ActorResetImpl(
-							result.actor,
-							result.handle,
+							e.second,
+							e.first,
 							a_flags,
 							a_slot);
 					}
@@ -2223,15 +2206,6 @@ namespace IED
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		/*if (state->effectShaders != a_config.effectShaders)
-		{
-			state->effectShaders.Update(
-				state->nodes.obj,
-				a_config.effectShaders);
-
-			a_params.state.ResetEffectShaders(a_params.handle);
-		}*/
-
 		return true;
 	}
 
@@ -2241,7 +2215,8 @@ namespace IED
 		const Ta&        a_config,
 		Tb&              a_objectEntry)
 	{
-		if (!a_objectEntry.state)
+		if (!EffectControllerEnabled() ||
+		    !a_objectEntry.state)
 		{
 			return;
 		}
@@ -2471,7 +2446,7 @@ namespace IED
 					continue;
 				}
 
-				objectEntry.ResetDeferedHide();
+				objectEntry.ResetDeferredHide();
 
 				bool visible = GetVisibilitySwitch(
 					a_params.actor,
