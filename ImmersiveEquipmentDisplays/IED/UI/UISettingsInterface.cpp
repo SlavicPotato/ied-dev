@@ -23,5 +23,10 @@ namespace IED
 		{
 			return m_controller.GetConfigStore().active;
 		}
+
+		bool UISettingsInterface::GetEffectControllerEnabled() const noexcept
+		{
+			return m_controller.EffectControllerEnabled();
+		}
 	}
 }

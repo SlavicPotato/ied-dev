@@ -1,10 +1,9 @@
 #include "pch.h"
 
-#include "../Data.h"
-#include "../StringHolder.h"
+#include "IED/Data.h"
+#include "IED/StringHolder.h"
 
 #include "PapyrusCommon.h"
-
 
 namespace IED
 {

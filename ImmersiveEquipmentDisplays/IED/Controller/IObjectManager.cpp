@@ -325,7 +325,7 @@ namespace IED
 				a_form->formID.get(),
 				e->formID.get());
 
-			object->m_name.Set(buffer);
+			object->m_name = buffer;
 
 			EngineExtensions::ApplyTextureSwap(texSwap, object);
 
@@ -487,13 +487,6 @@ namespace IED
 			targetNodes.ref);
 
 		UpdateDownwardPass(itemRoot);
-
-		/*Data::configEffectShaderHolder_t hh;
-
-		auto& r     = hh.data.try_emplace("abcd").first->second;
-		r.fillColor = Data::configColorRGBA_t{ 0, 0, 0, 0 };
-		r.rimColor  = Data::configColorRGBA_t{ 1, 1, 1, 1 };
-		r.targetNodes.emplace("glassdagger");*/
 
 		auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
@@ -782,17 +775,6 @@ namespace IED
 		nodesRef_t&                                a_targetNodes,
 		const Data::configBaseValues_t&            a_config)
 	{
-		/*Data::configEffectShaderHolder_t hh;
-
-		auto& r     = hh.data.try_emplace("abcd").first->second;
-		r.fillColor = Data::configColorRGBA_t{ 0, 0, 0, 0 };
-		r.rimColor  = Data::configColorRGBA_t{ 1, 1, 1, 1 };
-		r.targetNodes.emplace("glassdagger");
-
-		a_state->effectShaders.Update(
-			a_node,
-			hh);*/
-
 		a_state->form         = a_form;
 		a_state->formid       = a_form->formID;
 		a_state->nodes.obj    = a_node;
@@ -813,7 +795,7 @@ namespace IED
 		    a_config.flags.test(Data::BaseFlags::kPlaySound) &&
 		    m_playSound)
 		{
-			if (a_params.actor == *g_thePlayer || m_playSoundNPC)
+			if (a_params.is_player() || m_playSoundNPC)
 			{
 				SoundPlay(
 					a_objectEntry.state->form->formType,

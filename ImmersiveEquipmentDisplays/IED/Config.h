@@ -74,6 +74,7 @@ namespace IED
 		bool           m_forceDefaultConfig{ false };
 		bool           m_disableNPCProcessing{ false };
 		bool           m_immediateFavUpdate{ false };
+		bool           m_effectShaders{ false };
 		LogLevel       m_logLevel{ LogLevel::Message };
 
 		bool m_enableInMenus{ false };

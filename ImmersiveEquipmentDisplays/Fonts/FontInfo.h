@@ -17,9 +17,8 @@ namespace IED
 		kVietnamise              = 1u << 8,
 		kGreek                   = 1u << 9,
 		kArabic                  = 1u << 10,
-
-		kArrows = 1u << 21,
-		kCommon = 1u << 22,
+		kArrows                  = 1u << 21,
+		kCommon                  = 1u << 22,
 
 		kAll = static_cast<std::underlying_type_t<GlyphPresetFlags>>(-1)
 	};

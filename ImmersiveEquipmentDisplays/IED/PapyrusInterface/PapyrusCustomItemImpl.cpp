@@ -17,14 +17,14 @@ namespace IED
 			using namespace Data;
 
 			bool CreateItemImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				TESForm* a_form,
-				bool a_inventoryForm,
-				const BSFixedString& a_node)
+				ConfigSex                a_sex,
+				TESForm*                 a_form,
+				bool                     a_inventoryForm,
+				const BSFixedString&     a_node)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -55,17 +55,16 @@ namespace IED
 				}
 				e.targetNode = std::move(node);
 
-				for (auto& f : re.first->second())
-				{
-					f.flags.set(BaseFlags::kDisabled);
-				}
+				re.first->second.visit([](auto& a_v) {
+					a_v.flags.set(BaseFlags::kDisabled);
+				});
 
 				return true;
 			}
 
 			bool DeleteItemImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
@@ -105,8 +104,8 @@ namespace IED
 			}
 
 			bool DeleteAllImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key)
 			{
 				IScopedLock lock(g_controller->GetLock());
@@ -155,7 +154,7 @@ namespace IED
 							if (itp->first == a_key)
 							{
 								itp = itd->second.erase(itp);
-								ee = true;
+								ee  = true;
 							}
 							else
 							{
@@ -188,13 +187,13 @@ namespace IED
 			}
 
 			bool SetItemAttachmentModeImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				int a_attachmentMode,
-				bool a_syncReference)
+				ConfigSex                a_sex,
+				int                      a_attachmentMode,
+				bool                     a_syncReference)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -240,12 +239,12 @@ namespace IED
 			}
 
 			bool SetItemEnabledImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				bool a_switch)
+				ConfigSex                a_sex,
+				bool                     a_switch)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -272,12 +271,12 @@ namespace IED
 			}
 
 			bool SetItemNodeImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				const BSFixedString& a_node)
+				ConfigSex                a_sex,
+				const BSFixedString&     a_node)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -312,12 +311,12 @@ namespace IED
 			}
 
 			bool SetItemPositionImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				const NiPoint3& a_position)
+				ConfigSex                a_sex,
+				const NiPoint3&          a_position)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -340,12 +339,12 @@ namespace IED
 			}
 
 			bool SetItemRotationImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				const NiPoint3& a_rotation)
+				ConfigSex                a_sex,
+				const NiPoint3&          a_rotation)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -368,12 +367,12 @@ namespace IED
 			}
 
 			bool SetItemScaleImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				float a_scale)
+				ConfigSex                a_sex,
+				float                    a_scale)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -396,11 +395,11 @@ namespace IED
 			}
 
 			bool ClearItemTransformImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
-				const stl::fixed_string& a_key,
-				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
+				Game::FormID                   a_target,
+				ConfigClass                    a_class,
+				const stl::fixed_string&       a_key,
+				const stl::fixed_string&       a_name,
+				ConfigSex                      a_sex,
 				stl::flag<TransformClearFlags> a_flags)
 			{
 				IScopedLock lock(g_controller->GetLock());
@@ -438,12 +437,12 @@ namespace IED
 			}
 
 			bool SetItemInventoryImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				bool a_switch)
+				ConfigSex                a_sex,
+				bool                     a_switch)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -473,12 +472,12 @@ namespace IED
 			}
 
 			bool SetItemFormImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				TESForm* a_form)
+				ConfigSex                a_sex,
+				TESForm*                 a_form)
 			{
 				if (!IFormCommon::IsValidCustomForm(a_form))
 				{
@@ -506,13 +505,13 @@ namespace IED
 			}
 
 			bool AddItemExtraFormImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				TESForm* a_form,
-				std::int32_t a_index)
+				Data::ConfigSex          a_sex,
+				TESForm*                 a_form,
+				std::int32_t             a_index)
 			{
 				if (!IFormCommon::IsValidCustomForm(a_form))
 				{
@@ -570,12 +569,12 @@ namespace IED
 			}
 
 			bool RemoveItemExtraFormImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				TESForm* a_form)
+				Data::ConfigSex          a_sex,
+				TESForm*                 a_form)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -608,12 +607,12 @@ namespace IED
 			}
 
 			bool RemoveItemExtraFormImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				std::int32_t a_index)
+				Data::ConfigSex          a_sex,
+				std::int32_t             a_index)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -642,11 +641,11 @@ namespace IED
 			}
 
 			std::int32_t GetNumExtraFormsImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex)
+				Data::ConfigSex          a_sex)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -667,12 +666,12 @@ namespace IED
 			}
 
 			bool SetItemModelSwapFormImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				TESForm* a_form)
+				ConfigSex                a_sex,
+				TESForm*                 a_form)
 			{
 				if (!IFormCommon::IsValidCustomForm(a_form))
 				{
@@ -700,11 +699,11 @@ namespace IED
 			}
 
 			bool ClearItemModelSwapFormImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex)
+				Data::ConfigSex          a_sex)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -732,13 +731,13 @@ namespace IED
 			}
 
 			bool SetItemCountRangeImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex,
-				std::int32_t a_min,
-				std::int32_t a_max)
+				ConfigSex                a_sex,
+				std::int32_t             a_min,
+				std::int32_t             a_max)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -764,14 +763,14 @@ namespace IED
 			}
 
 			bool SetItemEquipmentModeImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				bool a_switch,
-				bool a_ignoreRaceEquipTypes,
-				bool a_disableIfEquipped)
+				Data::ConfigSex          a_sex,
+				bool                     a_switch,
+				bool                     a_ignoreRaceEquipTypes,
+				bool                     a_disableIfEquipped)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -819,12 +818,12 @@ namespace IED
 			}
 
 			bool SetItemLeftWeaponImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				bool a_switch)
+				Data::ConfigSex          a_sex,
+				bool                     a_switch)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -856,12 +855,12 @@ namespace IED
 			}
 
 			bool SetItemUseWorldModelImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				bool a_switch)
+				Data::ConfigSex          a_sex,
+				bool                     a_switch)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -893,12 +892,12 @@ namespace IED
 			}
 
 			bool SetIgnoreRaceEquipTypesImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				bool a_switch)
+				Data::ConfigSex          a_sex,
+				bool                     a_switch)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -930,13 +929,13 @@ namespace IED
 			}
 
 			bool SetItemLoadChanceImpl(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				Data::ConfigSex a_sex,
-				bool a_enable,
-				float a_chance)
+				Data::ConfigSex          a_sex,
+				bool                     a_enable,
+				float                    a_chance)
 			{
 				IScopedLock lock(g_controller->GetLock());
 
@@ -968,8 +967,8 @@ namespace IED
 			}
 
 			bool ItemExistsImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
@@ -979,11 +978,11 @@ namespace IED
 			}
 
 			bool ItemEnabledImpl(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name,
-				ConfigSex a_sex)
+				ConfigSex                a_sex)
 			{
 				IScopedLock lock(g_controller->GetLock());
 

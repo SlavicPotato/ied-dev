@@ -79,7 +79,10 @@ namespace IED
 			Hook_ToggleFav();
 		}
 
-		Hook_ProcessEffectShaders();
+		if (a_config->m_effectShaders)
+		{
+			Hook_ProcessEffectShaders();
+		}
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
@@ -622,9 +625,9 @@ namespace IED
 
 	void EngineExtensions::ProcessEffectShaders_Hook(
 		Game::ProcessLists* a_pl,
-		float               a_unk1)
+		float               a_frameTimerSlow)
 	{
-		m_Instance.m_processEffectShaders_o(a_pl, a_unk1);
+		m_Instance.m_processEffectShaders_o(a_pl, a_frameTimerSlow);
 
 		m_Instance.m_controller->ProcessEffectShaders();
 	}
@@ -759,7 +762,7 @@ namespace IED
 
 		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
-		a_object->m_name.Set_ref(sh->m_object);
+		a_object->m_name = sh->m_object;
 
 		std::uint32_t collisionFilterInfo = 0;
 

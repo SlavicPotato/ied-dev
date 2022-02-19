@@ -50,47 +50,47 @@ namespace IED
 			}
 
 			void QueueReset(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
-			
+
 			void QueueReset(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key);
-			
+
 			void QueueReset(
-				Game::FormID a_target,
+				Game::FormID      a_target,
 				Data::ConfigClass a_class);
 
 			void QueueTransformUpdate(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
 
 			void QueueAttach(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
 
 			void QueueEvaluate(
-				Game::FormID a_target,
+				Game::FormID      a_target,
 				Data::ConfigClass a_class);
 
 			keyPair_t GetKeys(
 				const BSFixedString& a_key,
 				const BSFixedString& a_name);
-			
+
 			Data::NodeDescriptor GetOrCreateNodeDescriptor(const BSFixedString& a_node);
 
 			Data::configMapCustom_t& GetConfigMap(Data::ConfigClass a_class) noexcept;
 
 			Data::configCustomEntry_t* LookupConfig(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
 
@@ -100,7 +100,7 @@ namespace IED
 			{
 				Position = 1i8 << 0,
 				Rotation = 1i8 << 1,
-				Scale = 1i8 << 1,
+				Scale    = 1i8 << 1,
 
 				All = Position | Rotation | Scale
 			};

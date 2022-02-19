@@ -48,7 +48,7 @@ namespace IED
 		return std::make_unique<formInfoResult_t>(
 			form,
 			base ?
-                std::make_unique<formInfo_t>(base) :
+				std::make_unique<formInfo_t>(base) :
                 nullptr);
 	}
 

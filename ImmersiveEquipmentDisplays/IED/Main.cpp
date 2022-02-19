@@ -63,6 +63,33 @@ namespace IED
 	{
 		switch (a_message->type)
 		{
+		case SKSEMessagingInterface::kMessage_InputLoaded:
+
+			NodeOverrideData::Create();
+			g_controller->InitializeBSFixedStringTable();
+
+			ASSERT(Drivers::Input::SinkToInputDispatcher());
+			ASSERT(g_controller->SinkEventsT1());
+
+			/*while (true)
+			{
+				__debugbreak();
+				BSFixedString a1("abcd");
+				BSFixedString a1_1("123456781_");
+				__debugbreak();
+				a1 = std::move(a1_1);
+				a1_1 = std::move(a1);
+
+				_DMESSAGE(
+					"%s | %s",
+					a1.c_str(),
+					a1_1.c_str());
+
+				__debugbreak();
+			}
+			__debugbreak();*/
+
+			break;
 		case SKSEMessagingInterface::kMessage_DataLoaded:
 			{
 				LocaleData::CreateSingleton();
@@ -101,15 +128,6 @@ namespace IED
 
 				ASSERT(g_controller->SinkEventsT2());
 			}
-			break;
-		case SKSEMessagingInterface::kMessage_InputLoaded:
-
-			NodeOverrideData::Create();
-			g_controller->InitializeStrings();
-
-			ASSERT(Drivers::Input::SinkToInputDispatcher());
-			ASSERT(g_controller->SinkEventsT1());
-
 			break;
 		case SKSEMessagingInterface::kMessage_PreLoadGame:
 			g_controller->StoreActiveHandles();

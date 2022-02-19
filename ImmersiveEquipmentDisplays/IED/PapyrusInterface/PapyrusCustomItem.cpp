@@ -22,15 +22,21 @@ namespace IED
 			template <class T>
 			static bool CreateItem(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				TESForm* a_form,
-				bool a_inventoryForm,
+				bool          a_female,
+				TESForm*      a_form,
+				bool          a_inventoryForm,
 				BSFixedString a_node)
 			{
 				if (!a_target || !a_form)
+				{
+					return false;
+				}
+
+				if (!a_form->formID ||
+				    a_form->formID.IsTemporary())
 				{
 					return false;
 				}
@@ -60,7 +66,7 @@ namespace IED
 			template <class T>
 			static bool DeleteItem(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name)
 			{
@@ -85,7 +91,7 @@ namespace IED
 			template <class T>
 			static bool DeleteAll(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key)
 			{
 				if (!a_target)
@@ -121,12 +127,12 @@ namespace IED
 			template <class T>
 			static bool SetItemAttachmentMode(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				int a_attachmentMode,
-				bool a_syncReference)
+				bool          a_female,
+				int           a_attachmentMode,
+				bool          a_syncReference)
 			{
 				if (!a_target)
 				{
@@ -152,11 +158,11 @@ namespace IED
 			template <class T>
 			static bool SetItemEnabled(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch)
+				bool          a_female,
+				bool          a_switch)
 			{
 				if (!a_target)
 				{
@@ -181,10 +187,10 @@ namespace IED
 			template <class T>
 			static bool SetItemNode(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
+				bool          a_female,
 				BSFixedString a_node)
 			{
 				if (!a_target)
@@ -210,10 +216,10 @@ namespace IED
 			template <class T>
 			static bool SetItemPosition(
 				StaticFunctionTag*,
-				T* a_target,
-				BSFixedString a_key,
-				BSFixedString a_name,
-				bool a_female,
+				T*             a_target,
+				BSFixedString  a_key,
+				BSFixedString  a_name,
+				bool           a_female,
 				VMArray<float> a_pos)
 			{
 				if (!a_target)
@@ -250,10 +256,10 @@ namespace IED
 			template <class T>
 			static bool SetItemRotation(
 				StaticFunctionTag*,
-				T* a_target,
-				BSFixedString a_key,
-				BSFixedString a_name,
-				bool a_female,
+				T*             a_target,
+				BSFixedString  a_key,
+				BSFixedString  a_name,
+				bool           a_female,
 				VMArray<float> a_pos)
 			{
 				if (!a_target)
@@ -292,11 +298,11 @@ namespace IED
 			template <class T>
 			static bool SetItemScale(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				float a_scale)
+				bool          a_female,
+				float         a_scale)
 			{
 				if (!a_target)
 				{
@@ -321,11 +327,11 @@ namespace IED
 			template <class T>
 			static bool SetItemInventory(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch)
+				bool          a_female,
+				bool          a_switch)
 			{
 				if (!a_target)
 				{
@@ -350,13 +356,13 @@ namespace IED
 			template <class T>
 			static bool SetItemEquipmentMode(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch,
-				bool a_ignoreRaceEquipTypes,
-				bool a_disableIfEquipped)
+				bool          a_female,
+				bool          a_switch,
+				bool          a_ignoreRaceEquipTypes,
+				bool          a_disableIfEquipped)
 			{
 				if (!a_target)
 				{
@@ -383,11 +389,11 @@ namespace IED
 			template <class T>
 			static bool SetItemLeftWeapon(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch)
+				bool          a_female,
+				bool          a_switch)
 			{
 				if (!a_target)
 				{
@@ -408,15 +414,15 @@ namespace IED
 					GetSex(a_female),
 					a_switch);
 			}
-			
+
 			template <class T>
 			static bool SetItemUseWorldModel(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch)
+				bool          a_female,
+				bool          a_switch)
 			{
 				if (!a_target)
 				{
@@ -437,15 +443,15 @@ namespace IED
 					GetSex(a_female),
 					a_switch);
 			}
-			
+
 			template <class T>
 			static bool SetIgnoreRaceEquipTypes(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_switch)
+				bool          a_female,
+				bool          a_switch)
 			{
 				if (!a_target)
 				{
@@ -470,12 +476,12 @@ namespace IED
 			template <class T>
 			static bool SetItemLoadChance(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				bool a_enable,
-				float a_chance)
+				bool          a_female,
+				bool          a_enable,
+				float         a_chance)
 			{
 				if (!a_target)
 				{
@@ -500,11 +506,11 @@ namespace IED
 
 			template <class T>
 			static bool DoClearTransform(
-				T* a_target,
+				T*                   a_target,
 				const BSFixedString& a_key,
 				const BSFixedString& a_name,
-				bool a_female,
-				TransformClearFlags a_flags)
+				bool                 a_female,
+				TransformClearFlags  a_flags)
 			{
 				if (!a_target)
 				{
@@ -529,10 +535,10 @@ namespace IED
 			template <class T>
 			static bool ClearItemPosition(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				return DoClearTransform(
 					a_target,
@@ -545,10 +551,10 @@ namespace IED
 			template <class T>
 			static bool ClearItemRotation(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				return DoClearTransform(
 					a_target,
@@ -561,10 +567,10 @@ namespace IED
 			template <class T>
 			static bool ClearItemScale(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				return DoClearTransform(
 					a_target,
@@ -577,11 +583,11 @@ namespace IED
 			template <class T>
 			static bool SetItemForm(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				TESForm* a_form)
+				bool          a_female,
+				TESForm*      a_form)
 			{
 				if (!a_target || !a_form)
 				{
@@ -606,12 +612,12 @@ namespace IED
 			template <class T>
 			static bool AddItemExtraForm(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				TESForm* a_form,
-				std::int32_t a_index)
+				bool          a_female,
+				TESForm*      a_form,
+				std::int32_t  a_index)
 			{
 				if (!a_target || !a_form)
 				{
@@ -637,11 +643,11 @@ namespace IED
 			template <class T>
 			static bool RemoveItemExtraForm(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				TESForm* a_form)
+				bool          a_female,
+				TESForm*      a_form)
 			{
 				if (!a_target || !a_form)
 				{
@@ -666,11 +672,11 @@ namespace IED
 			template <class T>
 			static bool RemovetemExtraFormByIndex(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				std::int32_t a_index)
+				bool          a_female,
+				std::int32_t  a_index)
 			{
 				if (!a_target)
 				{
@@ -695,10 +701,10 @@ namespace IED
 			template <class T>
 			static std::int32_t GetNumExtraForms(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				if (!a_target)
 				{
@@ -722,11 +728,11 @@ namespace IED
 			template <class T>
 			static bool SetItemModelSwapForm(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				TESForm* a_form)
+				bool          a_female,
+				TESForm*      a_form)
 			{
 				if (!a_target || !a_form)
 				{
@@ -751,10 +757,10 @@ namespace IED
 			template <class T>
 			static bool ClearItemModelSwapForm(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				if (!a_target)
 				{
@@ -778,12 +784,12 @@ namespace IED
 			template <class T>
 			static bool SetItemCountRange(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female,
-				std::int32_t a_min,
-				std::int32_t a_max)
+				bool          a_female,
+				std::int32_t  a_min,
+				std::int32_t  a_max)
 			{
 				if (!a_target)
 				{
@@ -809,7 +815,7 @@ namespace IED
 			template <class T>
 			static bool ItemExists(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name)
 			{
@@ -834,10 +840,10 @@ namespace IED
 			template <class T>
 			static bool ItemEnabled(
 				StaticFunctionTag*,
-				T* a_target,
+				T*            a_target,
 				BSFixedString a_key,
 				BSFixedString a_name,
-				bool a_female)
+				bool          a_female)
 			{
 				if (!a_target)
 				{
@@ -1055,7 +1061,7 @@ namespace IED
 						SCRIPT_NAME,
 						SetItemLeftWeapon<TESRace>,
 						a_registry));
-				
+
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemUseWorldModelActor",
@@ -1076,7 +1082,7 @@ namespace IED
 						SCRIPT_NAME,
 						SetItemUseWorldModel<TESRace>,
 						a_registry));
-				
+
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetIgnoreRaceEquipTypesActor",

@@ -16,6 +16,14 @@ namespace IED
 	{
 		struct Entry
 		{
+			Entry()  = default;
+			~Entry() = default;
+
+			Entry(const Entry&) = delete;
+			Entry(Entry&&)      = default;
+			Entry& operator=(const Entry&) = delete;
+			Entry& operator=(Entry&&) = default;
+
 			RE::BSTSmartPointer<BSEffectShaderData>                                    shaderData;
 			std::vector<std::pair<NiPointer<BSShaderProperty>, NiPointer<BSGeometry>>> nodes;
 		};
@@ -69,7 +77,8 @@ namespace IED
 
 	struct objectEntryBase_t
 	{
-		objectEntryBase_t() = default;
+		objectEntryBase_t()  = default;
+		~objectEntryBase_t() = default;
 
 		objectEntryBase_t(const objectEntryBase_t&) = delete;
 		objectEntryBase_t(objectEntryBase_t&&)      = delete;
@@ -101,9 +110,16 @@ namespace IED
 			return state && state->nodes.obj->IsVisible();
 		}
 
-		struct State :
-			effectShaderData_t
+		struct State
 		{
+			State()  = default;
+			~State() = default;
+
+			State(const State&) = delete;
+			State(State&&)      = delete;
+			State& operator=(const State&) = delete;
+			State& operator=(State&&) = delete;
+
 			struct GroupObject
 			{
 				NiPointer<NiNode>      object;
@@ -171,7 +187,7 @@ namespace IED
 		Data::ObjectSlot            slotid{ Data::ObjectSlot::kMax };
 		std::uint8_t                hideCountdown{ 0 };
 
-		inline constexpr void ResetDeferedHide() noexcept
+		inline constexpr void ResetDeferredHide() noexcept
 		{
 			hideCountdown = 0;
 		}

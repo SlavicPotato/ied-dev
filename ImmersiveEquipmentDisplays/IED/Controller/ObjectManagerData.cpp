@@ -408,27 +408,34 @@ namespace IED
 		{
 			Entry tmp;
 
+			std::optional<std::set<BSFixedString>> tset;
+
 			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
-				if (!e.targetNodes.empty())
-				{
-					auto s = a_geometry->m_name.c_str();
-					if (!s)
-					{
-						return Util::Node::VisitorControl::kContinue;
-					}
-
-					if (!e.targetNodes.contains(s))
-					{
-						return Util::Node::VisitorControl::kContinue;
-					}
-				}
-
+				
 				if (auto& effect = a_geometry->m_spEffectState)
 				{
 					auto shaderProp = ni_cast(effect.get(), BSShaderProperty);
 
 					if (shaderProp && shaderProp->AcceptsEffectData())
 					{
+						if (!e.targetNodes.empty())
+						{
+							if (!tset)
+							{
+								tset.emplace();
+
+								for (auto& f : e.targetNodes)
+								{
+									tset->emplace(f.c_str());
+								}
+							}
+
+							if (!tset->contains(a_geometry->m_name))
+							{
+								return Util::Node::VisitorControl::kContinue;
+							}
+						}
+
 						tmp.nodes.emplace_back(shaderProp, a_geometry);
 					}
 				}

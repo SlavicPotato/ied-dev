@@ -84,7 +84,7 @@ namespace IED
 	{
 		auto node = NiNode::Create(1);
 
-		node->m_name.Set_ref(a_nodeName);
+		node->m_name = a_nodeName;
 		node->m_flags = ATTACHMENT_NODE_FLAGS;
 
 		return node;
@@ -99,8 +99,6 @@ namespace IED
 		BSFixedString nodeName(a_node.name.c_str());
 
 		auto obj = a_root->GetObjectByName(nodeName);
-
-		nodeName.Release();
 
 		if (!obj)
 		{
@@ -181,8 +179,6 @@ namespace IED
 			UpdateDownwardPass(node);
 		}
 
-		targetNodeName.Release();
-
 		a_out.obj = node;
 		a_out.ref = nodes.ref;
 
@@ -220,8 +216,6 @@ namespace IED
 			nodes.parent->AttachChild(targetNode, true);
 			UpdateDownwardPass(targetNode);
 		}
-
-		targetNodeName.Release();
 
 		a_newRef = nodes.ref;
 
@@ -295,7 +289,7 @@ namespace IED
 	{
 		auto node = NiNode::Create(1);
 
-		node->m_name.Set(a_name);
+		node->m_name = a_name;
 		node->m_flags = ATTACHMENT_NODE_FLAGS;
 
 		return node;

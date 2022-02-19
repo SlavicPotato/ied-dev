@@ -19,7 +19,10 @@ namespace IED
 				PLUGIN_VERSION_REVISION);
 		}
 
-		static void AddActorBlock(StaticFunctionTag*, Actor* a_actor, BSFixedString a_key)
+		static void AddActorBlock(
+			StaticFunctionTag*,
+			Actor*        a_actor,
+			BSFixedString a_key)
 		{
 			if (!a_actor)
 			{
@@ -38,7 +41,10 @@ namespace IED
 				});
 		}
 
-		static void RemoveActorBlock(StaticFunctionTag*, Actor* a_actor, BSFixedString a_key)
+		static void RemoveActorBlock(
+			StaticFunctionTag*,
+			Actor*        a_actor,
+			BSFixedString a_key)
 		{
 			if (!a_actor)
 			{
@@ -57,7 +63,9 @@ namespace IED
 				});
 		}
 
-		static void Evaluate(StaticFunctionTag*, Actor* a_actor)
+		static void Evaluate(
+			StaticFunctionTag*,
+			Actor* a_actor)
 		{
 			if (a_actor)
 			{
@@ -70,7 +78,9 @@ namespace IED
 			g_controller->QueueEvaluateAll(ControllerUpdateFlags::kNone);
 		}
 
-		static void Reset(StaticFunctionTag*, Actor* a_actor)
+		static void Reset(
+			StaticFunctionTag*,
+			Actor* a_actor)
 		{
 			if (a_actor)
 			{

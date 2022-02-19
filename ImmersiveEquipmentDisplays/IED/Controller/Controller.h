@@ -116,7 +116,7 @@ namespace IED
 		bool SinkEventsT1();
 		bool SinkEventsT2();
 		void InitializeData();
-		void InitializeStrings();
+		void InitializeBSFixedStringTable();
 
 	private:
 		void InitializeSound();
@@ -715,7 +715,7 @@ namespace IED
 			bool                             a_visible);
 
 		template <class Ta, class Tb>
-		static constexpr void UpdateObjectEffectShaders(
+		constexpr void UpdateObjectEffectShaders(
 			processParams_t& a_params,
 			const Ta&        a_config,
 			Tb&              a_objectEntry);

@@ -6,7 +6,7 @@ namespace IED
 	{
 		inline static constexpr auto SCRIPT_NAME = "IED";
 
-		static inline constexpr bool ValidateString(const BSFixedString& a_str)
+		[[nodiscard]] static inline constexpr bool ValidateString(const BSFixedString& a_str) noexcept
 		{
 			return a_str.data != nullptr && a_str.data[0] != 0;
 		}

@@ -17,6 +17,8 @@ namespace IED
 			Data::SettingHolder& GetSettings() const noexcept;
 			Data::configStore_t& GetConfigStore() const noexcept;
 
+			bool GetEffectControllerEnabled() const noexcept;
+
 		private:
 			Controller& m_controller;
 		};

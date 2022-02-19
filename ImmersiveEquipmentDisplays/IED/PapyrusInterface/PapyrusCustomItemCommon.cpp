@@ -3,10 +3,10 @@
 #include "PapyrusCommon.h"
 #include "PapyrusCustomItemCommon.h"
 
-#include "../ConfigOverrideCommon.h"
-#include "../Controller/Controller.h"
-#include "../Data.h"
-#include "../Main.h"
+#include "IED/ConfigOverrideCommon.h"
+#include "IED/Controller/Controller.h"
+#include "IED/Data.h"
+#include "IED/Main.h"
 
 namespace IED
 {
@@ -45,8 +45,8 @@ namespace IED
 			}
 
 			void QueueReset(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
@@ -77,8 +77,8 @@ namespace IED
 			}
 
 			void QueueReset(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key)
 			{
 				switch (a_class)
@@ -105,7 +105,7 @@ namespace IED
 			}
 
 			void QueueReset(
-				Game::FormID a_target,
+				Game::FormID      a_target,
 				Data::ConfigClass a_class)
 			{
 				switch (a_class)
@@ -129,8 +129,8 @@ namespace IED
 			}
 
 			void QueueTransformUpdate(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
@@ -161,8 +161,8 @@ namespace IED
 			}
 
 			void QueueAttach(
-				Game::FormID a_target,
-				Data::ConfigClass a_class,
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
@@ -193,7 +193,7 @@ namespace IED
 			}
 
 			void QueueEvaluate(
-				Game::FormID a_target,
+				Game::FormID      a_target,
 				Data::ConfigClass a_class)
 			{
 				switch (a_class)
@@ -264,8 +264,8 @@ namespace IED
 			}
 
 			configCustomEntry_t* LookupConfig(
-				Game::FormID a_target,
-				ConfigClass a_class,
+				Game::FormID             a_target,
+				ConfigClass              a_class,
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{

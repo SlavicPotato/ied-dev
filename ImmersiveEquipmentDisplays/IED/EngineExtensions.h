@@ -186,7 +186,7 @@ namespace IED
 		static bool           GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool           SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
-		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_unk1);
+		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 
 		static bool AdjustSkip_Test(const BSFixedString& a_name);
 

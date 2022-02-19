@@ -6,6 +6,7 @@
 #include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UISettingsInterface.h"
 #include "IED/UI/UITips.h"
 
 #include "Form/UIFormFilterWidget.h"
@@ -93,7 +94,8 @@ namespace IED
 			public virtual UITipsInterface,
 			public virtual UINotificationInterface,
 			public virtual UIPopupToggleButtonWidget,
-			public virtual UILocalizationInterface
+			public virtual UILocalizationInterface,
+			public virtual UISettingsInterface
 		{
 		public:
 			UIBaseConfigWidget(
@@ -268,6 +270,7 @@ namespace IED
 			UITipsInterface(a_controller),
 			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UISettingsInterface(a_controller),
 			m_controller(a_controller),
 			m_condParamEditor(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
@@ -2674,6 +2677,10 @@ namespace IED
 			const void*              a_params,
 			const stl::fixed_string& a_slotName)
 		{
+			bool disabled = !GetEffectControllerEnabled();
+
+			UICommon::PushDisabled(disabled);
+
 			auto storecc = BaseConfigStoreCC();
 
 			ImGui::PushID("config_effect_shaders");
@@ -2690,6 +2697,11 @@ namespace IED
 				{
 					ImGui::SetNextItemOpen(true);
 				}
+			}
+
+			if (disabled)
+			{
+				ImGui::SetNextItemOpen(false);
 			}
 
 			bool r;
@@ -2733,6 +2745,8 @@ namespace IED
 			UICommon::PopDisabled(empty);
 
 			ImGui::PopID();
+
+			UICommon::PopDisabled(disabled);
 		}
 
 		template <class T>

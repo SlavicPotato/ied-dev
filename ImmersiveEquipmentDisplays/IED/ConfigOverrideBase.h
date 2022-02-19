@@ -252,7 +252,7 @@ namespace IED
 				ar& static_cast<const configBaseValues_t&>(*this);
 				ar& static_cast<const configBaseFiltersHolder_t&>(*this);
 				ar& equipmentOverrides;
-				ar& effectShaders;
+				//ar& effectShaders;
 			}
 
 			template <class Archive>
@@ -264,7 +264,7 @@ namespace IED
 
 				if (version >= DataVersion2)
 				{
-					ar& effectShaders;
+					//ar& effectShaders;
 				}
 			}
 
@@ -284,4 +284,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBase_t,
-	IED::Data::configBase_t::Serialization::DataVersion2);
+	IED::Data::configBase_t::Serialization::DataVersion1);

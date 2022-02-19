@@ -70,7 +70,7 @@ namespace IED
 	{
 		if (auto pm = a_params.actor->processManager)
 		{
-			for (auto& e : pm->equippedObject)
+			for (auto e : pm->equippedObject)
 			{
 				if (e && IFormCommon::HasKeyword(e, a_keyword))
 				{
@@ -103,7 +103,7 @@ namespace IED
 	{
 		if (auto pm = a_params.actor->processManager)
 		{
-			for (auto& e : pm->equippedObject)
+			for (auto e : pm->equippedObject)
 			{
 				if (e && e->formID == a_formid)
 				{
