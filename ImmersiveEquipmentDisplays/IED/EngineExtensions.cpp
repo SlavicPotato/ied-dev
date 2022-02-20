@@ -280,16 +280,6 @@ namespace IED
 				std::uintptr_t(CreateWeaponNodes_Hook));
 		}
 		LogPatchEnd();
-
-		/*LogPatchBegin();
-		{
-			Assembly code(m_resetEffectShaders_a);
-			m_resetEffectShaders_o = code.get<decltype(m_resetEffectShaders_o)>();
-			ISKSE::GetBranchTrampoline().Write6Branch(
-				m_resetEffectShaders_a,
-				std::uintptr_t(ResetEffectShaders_Hook));
-		}
-		LogPatchEnd();*/
 	}
 
 	void EngineExtensions::Patch_AdjustSkip_SE()

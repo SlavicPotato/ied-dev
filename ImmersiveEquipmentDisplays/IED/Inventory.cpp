@@ -135,7 +135,7 @@ namespace IED
 					continue;
 				}
 
-				BSReadLocker locker(std::addressof(extraDataList->m_lock));
+				BSReadLocker locker(extraDataList->m_lock);
 
 				auto presence = extraDataList->m_presence;
 				if (!presence)

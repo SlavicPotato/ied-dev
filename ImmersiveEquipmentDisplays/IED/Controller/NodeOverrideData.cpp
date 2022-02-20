@@ -5,13 +5,10 @@
 
 namespace IED
 {
-	NodeOverrideData NodeOverrideData::m_Instance;
+	std::unique_ptr<NodeOverrideData> NodeOverrideData::m_Instance;
 
-	void NodeOverrideData::Create()
-	{
-		ASSERT(!m_Instance.m_initialized);
-
-		m_Instance.m_cme = {
+	NodeOverrideData::NodeOverrideData() :
+		m_cme(std::initializer_list<init_list_cm>{
 
 			{ "CME WeaponAxeDefault", { "Axe", "CME WeaponAxeDefault" } },
 			{ "CME WeaponAxeLeftDefault", { "Axe Left", "CME WeaponAxeLeftDefault" } },
@@ -64,9 +61,9 @@ namespace IED
 			{ "CME BOLTABQ", { "Bolt ABQ", "CME BOLTABQ" } },
 			{ "CME ShieldBackDefault", { "Shield Back", "CME ShieldBackDefault" } }
 
-		};
+		}),
 
-		m_Instance.m_mov = {
+		m_mov(std::initializer_list<init_list_cm>{
 
 			{ "MOV WeaponAxeDefault", { "Axe", "MOV WeaponAxeDefault" } },
 			{ "MOV WeaponAxeLeftDefault", { "Axe Left", "MOV WeaponAxeLeftDefault" } },
@@ -119,30 +116,9 @@ namespace IED
 			{ "MOV BOLTABQ", { "Bolt ABQ", "MOV BOLTABQ" } },
 			{ "MOV ShieldBackDefault", { "Shield Back", "MOV ShieldBackDefault" } }
 
-		};
+		}),
 
-		m_Instance.m_extra = {
-			{
-
-				"MOV WeaponDaggerOnBack",
-				"CME WeaponDaggerOnBack",
-				"CME Spine2 [Spn2]",
-				{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
-				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } }
-
-			},
-			{
-
-				"MOV WeaponDaggerLeftOnBack",
-				"CME WeaponDaggerLeftOnBack",
-				"CME Spine2 [Spn2]",
-				{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
-				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } }
-
-			},
-		};
-
-		m_Instance.m_monitor = {
+		m_monitor({
 
 			"WeaponAxe",
 			"WeaponMace",
@@ -159,9 +135,9 @@ namespace IED
 			"WeaponStaff",
 			"WeaponStaffLeft"
 
-		};
+		}),
 
-		m_Instance.m_weap = {
+		m_weap(std::initializer_list<init_list_weap>{
 
 			{ "WeaponSword", {
 
@@ -374,8 +350,36 @@ namespace IED
 
 							} }
 
-		};
+		}),
 
-		m_Instance.m_initialized = true;
+		m_extra({
+			{
+
+				"MOV WeaponDaggerOnBack",
+				"CME WeaponDaggerOnBack",
+				"CME Spine2 [Spn2]",
+				{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
+				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } }
+
+			},
+			{
+
+				"MOV WeaponDaggerLeftOnBack",
+				"CME WeaponDaggerLeftOnBack",
+				"CME Spine2 [Spn2]",
+				{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
+				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } }
+
+			},
+		})
+	{
+	}
+
+	void NodeOverrideData::Create()
+	{
+		if (!m_Instance)
+		{
+			m_Instance = std::make_unique<NodeOverrideData>();
+		}
 	}
 }

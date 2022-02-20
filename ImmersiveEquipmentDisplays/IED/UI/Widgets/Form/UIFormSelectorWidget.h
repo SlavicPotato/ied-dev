@@ -82,7 +82,7 @@ namespace IED
 			inline constexpr auto& GetCurrentFormInfo() const noexcept
 			{
 				return !m_forceBase ?
-                           m_state->m_currentInfo->form :
+				           m_state->m_currentInfo->form :
                            m_state->m_currentInfo->get_base();
 			}
 

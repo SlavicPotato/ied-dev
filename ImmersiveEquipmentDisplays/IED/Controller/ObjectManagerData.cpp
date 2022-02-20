@@ -226,10 +226,7 @@ namespace IED
 
 		for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 		{
-			auto& s = a_data.slots[i];
-			auto& d = m_entriesSlot[i];
-
-			d.slotState = s;
+			m_entriesSlot[i].slotState = a_data.slots[i];
 		}
 	}
 
@@ -242,12 +239,9 @@ namespace IED
 		{
 			if (auto actor = refr->As<Actor>())
 			{
-				if (auto baseForm = actor->baseForm)
+				if (auto npc = Game::GetActorBase(actor))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
-					{
-						return (npc->formID == a_npc);
-					}
+					return (npc->formID == a_npc);
 				}
 			}
 		}
@@ -411,7 +405,6 @@ namespace IED
 			std::optional<std::set<BSFixedString>> tset;
 
 			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
-				
 				if (auto& effect = a_geometry->m_spEffectState)
 				{
 					auto shaderProp = ni_cast(effect.get(), BSShaderProperty);

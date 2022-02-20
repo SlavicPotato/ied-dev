@@ -21,18 +21,23 @@ namespace IED
 
 		using nodeList_t = stl::vectormap<stl::fixed_string, weaponNodeListEntry_t>;
 
+		struct weap_ctor_init_t
+		{
+			const char*                                                node;
+			const char*                                                def;
+			const char*                                                desc;
+			std::initializer_list<std::pair<const char*, const char*>> movlist;
+		};
+
 		struct weaponNodeEntry_t
 		{
 			weaponNodeEntry_t(
-				const char*                                   a_node,
-				const char*                                   a_def,
-				const char*                                   a_desc,
-				std::initializer_list<nodeList_t::value_type> a_movlist) :
-				bsname(a_node),
-				defParent(a_def),
-				bsdefParent(a_def),
-				desc(a_desc),
-				movs(a_movlist)
+				const weap_ctor_init_t& a_init) :
+				bsname(a_init.node),
+				defParent(a_init.def),
+				bsdefParent(a_init.def),
+				desc(a_init.desc),
+				movs(a_init.movlist)
 			{
 			}
 
@@ -49,26 +54,59 @@ namespace IED
 
 		struct overrideNodeEntry_t
 		{
+			overrideNodeEntry_t() = delete;
+
+			overrideNodeEntry_t(
+				const char* a_desc,
+				const char* a_name) :
+				desc(a_desc),
+				bsname(a_name),
+				flags(NodeOverrideDataEntryFlags::kNone)
+			{
+			}
+
+			overrideNodeEntry_t(
+				const std::pair<const char*, const char*>& a_pair) :
+				desc(a_pair.first),
+				bsname(a_pair.second),
+				flags(NodeOverrideDataEntryFlags::kNone)
+			{
+			}
+
 			const char*                           desc;
 			BSFixedString                         bsname;
-			stl::flag<NodeOverrideDataEntryFlags> flags{ NodeOverrideDataEntryFlags::kNone };
+			stl::flag<NodeOverrideDataEntryFlags> flags;
+		};
+
+		struct exn_ctor_init_t
+		{
+			const char*       mov;
+			const char*       cme;
+			const char*       parent;
+			const NiTransform xfrm_m;
+			const NiTransform xfrm_f;
 		};
 
 		struct extraNodeEntry_t
 		{
 			extraNodeEntry_t(
-				const char*                    a_mov,
-				const char*                    a_cme,
-				const char*                    a_parent,
-				const Data::configTransform_t& a_transform_m,
-				const Data::configTransform_t& a_transform_f) :
+				const char*        a_mov,
+				const char*        a_cme,
+				const char*        a_parent,
+				const NiTransform& a_transform_m,
+				const NiTransform& a_transform_f) :
 				name_cme(a_cme),
 				name_mov(a_mov),
 				bsname_cme(a_cme),
 				bsname_mov(a_mov),
 				name_parent(a_parent),
-				transform_m(a_transform_m.to_nitransform()),
-				transform_f(a_transform_f.to_nitransform())
+				transform_m(a_transform_m),
+				transform_f(a_transform_f)
+			{
+			}
+			
+			extraNodeEntry_t(
+				const exn_ctor_init_t& a_init)
 			{
 			}
 
@@ -81,47 +119,48 @@ namespace IED
 			NiTransform       transform_f;
 		};
 
+		using init_list_cm   = std::pair<const char*, std::pair<const char*, const char*>>;
+		using init_list_weap = std::pair<const char*, weap_ctor_init_t>;
+
 		using cm_data_type  = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
-		using exn_data_type = std::list<extraNodeEntry_t>;
+		using exn_data_type = std::vector<extraNodeEntry_t>;
+
+		NodeOverrideData();
 
 		static void Create();
 
-		inline static constexpr const auto& GetCMENodeData() noexcept
+		inline static const auto& GetCMENodeData() noexcept
 		{
-			return m_Instance.m_cme;
+			return m_Instance->m_cme;
 		}
 
-		inline static constexpr const auto& GetMOVNodeData() noexcept
+		inline static const auto& GetMOVNodeData() noexcept
 		{
-			return m_Instance.m_mov;
+			return m_Instance->m_mov;
 		}
 
-		inline static constexpr const auto& GetMonitorNodeData() noexcept
+		inline static const auto& GetMonitorNodeData() noexcept
 		{
-			return m_Instance.m_monitor;
+			return m_Instance->m_monitor;
 		}
 
-		inline static constexpr const auto& GetWeaponNodeData() noexcept
+		inline static const auto& GetWeaponNodeData() noexcept
 		{
-			return m_Instance.m_weap;
+			return m_Instance->m_weap;
 		}
 
-		inline static constexpr const auto& GetExtraNodes() noexcept
+		inline static const auto& GetExtraNodes() noexcept
 		{
-			return m_Instance.m_extra;
+			return m_Instance->m_extra;
 		}
 
 	private:
-		NodeOverrideData() = default;
-
 		cm_data_type       m_cme;
 		cm_data_type       m_mov;
 		mon_data_type      m_monitor;
 		weapnode_data_type m_weap;
 		exn_data_type      m_extra;
 
-		bool m_initialized{ false };
-
-		static NodeOverrideData m_Instance;
+		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};
 }

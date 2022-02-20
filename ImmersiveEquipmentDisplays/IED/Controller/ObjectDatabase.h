@@ -21,7 +21,6 @@ namespace IED
 		using ObjectDatabaseEntry = std::shared_ptr<entry_t>;
 
 		static inline constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kDisabled;
-		//static inline constexpr long long DEFAULT_MAX_TIME_UNUSED = 120000000;
 
 		[[nodiscard]] bool GetUniqueObject(
 			const char*          a_path,
@@ -75,7 +74,6 @@ namespace IED
 		ObjectDatabaseLevel m_level{ DEFAULT_LEVEL };
 
 		bool m_runCleanup{ false };
-		//long long m_maxTimeUnused{ DEFAULT_MAX_TIME_UNUSED };
 
 		using container_type = std::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
 

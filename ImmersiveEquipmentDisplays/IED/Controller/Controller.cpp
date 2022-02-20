@@ -1214,27 +1214,21 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto baseForm = result.actor->baseForm)
+			for (auto& e : result)
+			{
+				if (auto npc = Game::GetActorBase(e.second))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
+					if (npc->formID == a_npc)
 					{
-						if (npc->formID == a_npc)
-						{
-							ResetCustomImpl(
-								result.actor,
-								result.handle,
-								a_class,
-								a_pkey,
-								a_vkey);
-						}
+						ResetCustomImpl(
+							e.second,
+							e.first,
+							a_class,
+							a_pkey,
+							a_vkey);
 					}
 				}
 			}
@@ -1250,21 +1244,18 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto race = Game::GetActorRace(result.actor))
+			for (auto& e : result)
+			{
+				if (auto race = Game::GetActorRace(e.second))
 				{
 					if (race->formID == a_race)
 					{
 						ResetCustomImpl(
-							result.actor,
-							result.handle,
+							e.second,
+							e.first,
 							a_class,
 							a_pkey,
 							a_vkey);
@@ -1302,26 +1293,20 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto baseForm = result.actor->baseForm)
+			for (auto& e : result)
+			{
+				if (auto npc = Game::GetActorBase(e.second))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
+					if (npc->formID == a_npc)
 					{
-						if (npc->formID == a_npc)
-						{
-							ResetCustomImpl(
-								result.actor,
-								result.handle,
-								a_class,
-								a_pkey);
-						}
+						ResetCustomImpl(
+							e.second,
+							e.first,
+							a_class,
+							a_pkey);
 					}
 				}
 			}
@@ -1336,21 +1321,18 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto race = Game::GetActorRace(result.actor))
+			for (auto& e : result)
+			{
+				if (auto race = Game::GetActorRace(e.second))
 				{
 					if (race->formID == a_race)
 					{
 						ResetCustomImpl(
-							result.actor,
-							result.handle,
+							e.second,
+							e.first,
 							a_class,
 							a_pkey);
 					}
@@ -1384,25 +1366,19 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_class]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto baseForm = result.actor->baseForm)
+			for (auto& e : result)
+			{
+				if (auto npc = Game::GetActorBase(e.second))
 				{
-					if (auto npc = baseForm->As<TESNPC>())
+					if (npc->formID == a_npc)
 					{
-						if (npc->formID == a_npc)
-						{
-							ResetCustomImpl(
-								result.actor,
-								result.handle,
-								a_class);
-						}
+						ResetCustomImpl(
+							e.second,
+							e.first,
+							a_class);
 					}
 				}
 			}
@@ -1416,21 +1392,18 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_class]() {
 			IScopedLock lock(m_lock);
 
-			for (auto& e : m_objects)
-			{
-				actorLookupResult_t result;
-				if (!LookupTrackedActor(e.second, result))
-				{
-					continue;
-				}
+			actorLookupResultMap_t result;
+			CollectKnownActors(result);
 
-				if (auto race = Game::GetActorRace(result.actor))
+			for (auto& e : result)
+			{
+				if (auto race = Game::GetActorRace(e.second))
 				{
 					if (race->formID == a_race)
 					{
 						ResetCustomImpl(
-							result.actor,
-							result.handle,
+							e.second,
+							e.first,
 							a_class);
 					}
 				}

@@ -65,29 +65,13 @@ namespace IED
 		{
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
+			ASSERT(StringCache::IsInitialized());
+
 			NodeOverrideData::Create();
 			g_controller->InitializeBSFixedStringTable();
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
 			ASSERT(g_controller->SinkEventsT1());
-
-			/*while (true)
-			{
-				__debugbreak();
-				BSFixedString a1("abcd");
-				BSFixedString a1_1("123456781_");
-				__debugbreak();
-				a1 = std::move(a1_1);
-				a1_1 = std::move(a1);
-
-				_DMESSAGE(
-					"%s | %s",
-					a1.c_str(),
-					a1_1.c_str());
-
-				__debugbreak();
-			}
-			__debugbreak();*/
 
 			break;
 		case SKSEMessagingInterface::kMessage_DataLoaded:
@@ -160,6 +144,8 @@ namespace IED
 
 	bool Initialize(const SKSEInterface* a_skse)
 	{
+		gLog.Debug("Loading INI..");
+
 		auto config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE);
 
 		if (!config->IsLoaded())
@@ -177,6 +163,8 @@ namespace IED
 
 		auto& skse = ISKSE::GetSingleton();
 
+		gLog.Debug("Creating trampolines..");
+
 		if (!skse.CreateTrampolines(a_skse))
 		{
 			return false;
@@ -188,9 +176,16 @@ namespace IED
 
 		if (config->m_enableUI)
 		{
+			gLog.Debug("Initializing render interface..");
+
 			if (Drivers::Render::Initialize())
 			{
+				gLog.Debug("Installing priority input hook..");
+
 				Drivers::Input::InstallPriorityHook();
+
+				gLog.Debug("Initializing UI driver..");
+
 				Drivers::UI::Initialize();
 				Drivers::UI::SetImGuiIni(PATHS::IMGUI_INI);
 
@@ -214,18 +209,34 @@ namespace IED
 			ISKSE::CloseBacklog();
 		}
 
+		gLog.Debug("Creating controller..");
+
 		g_controller = new Controller(config);
+
+		gLog.Debug("Sinking controller events..");
+
 		g_controller->SinkEventsT0();
 		g_controller->SinkInputEvents();
 
-		auto handle = a_skse->GetPluginHandle();
-		auto mi     = skse.GetInterface<SKSEMessagingInterface>();
+		gLog.Debug("Registering SKSE listeners..");
+
+		auto handle = skse.GetPluginHandle();
+
+		auto mi = skse.GetInterface<SKSEMessagingInterface>();
+
+		ASSERT(mi != nullptr);
 
 		mi->RegisterListener(handle, "SKSE", SKSE_MessageHandler);
 
+		gLog.Debug("Registering papyrus functions..");
+
 		skse.GetInterface<SKSEPapyrusInterface>()->Register(Papyrus::Register);
 
+		gLog.Debug("Setting serialization callbacks..");
+
 		auto si = skse.GetInterface<SKSESerializationInterface>();
+
+		ASSERT(si != nullptr);
 
 		si->SetUniqueID(handle, 'ADEI');
 		si->SetRevertCallback(handle, RevertHandler);
@@ -240,14 +251,20 @@ namespace IED
 			dispatcher->AddEventSink(g_controller.get());
 		}*/
 
+		gLog.Debug("Installing engine extensions..");
+
 		EngineExtensions::Install(
 			g_controller,
 			config);
 
 		if (config->m_closeLogFile)
 		{
+			gLog.Debug("Closing log..");
+
 			gLog.Close();
 		}
+
+		gLog.Debug("Initialization done");
 
 		return true;
 	}

@@ -884,9 +884,6 @@
     <ClInclude Include="IED\UI\UIStatsStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\ObjectEntryStatus.h">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UIDialogImportExportStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
@@ -1210,9 +1207,6 @@
     <ClCompile Include="IED\ConfigOverrideBase.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ConfigParsers.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Data.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
@@ -1501,9 +1495,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideOffsetListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
-    <ClCompile Include="IED\CollectorData.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.cpp">
       <Filter>Source\IED\UI\Widgets\Lists</Filter>
     </ClCompile>
@@ -1605,9 +1596,6 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONFontGlyphDataParser.cpp">
       <Filter>Source\IED\JSONParsers\Font</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Controller\ObjectEntryStatus.cpp">
-      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\Modals\UICommonModals.cpp">
       <Filter>Source\IED\UI\Modals</Filter>

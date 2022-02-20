@@ -89,8 +89,8 @@ namespace IED
 
 			struct ImportExport
 			{
-				stl::flag<Data::ConfigStoreSerializationFlags> exportFlags{
-					Data::ConfigStoreSerializationFlags::kAll
+				stl::flag<ConfigStoreSerializationFlags> exportFlags{
+					ConfigStoreSerializationFlags::kAll
 				};
 				stl::flag<ImportFlags> importFlags{ ImportFlags::kEraseTemporary };
 			};
@@ -198,12 +198,12 @@ namespace IED
 				m_dirty  = true;
 			}
 
-			inline void mark_dirty() noexcept
+			inline constexpr void mark_dirty() noexcept
 			{
 				m_dirty = true;
 			}
 
-			inline bool mark_if(bool a_isTrue) noexcept
+			inline constexpr bool mark_if(bool a_isTrue) noexcept
 			{
 				if (a_isTrue)
 				{

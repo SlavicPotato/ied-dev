@@ -11,8 +11,8 @@ namespace IED
 		bool          active{ false };
 		Game::FormID  race;
 		std::uint32_t flags;
-		float         weight;
-		bool          female;
+		float         weight{ 0.0f };
+		bool          female{ false };
 	};
 
 	struct actorInfoEntry_t
@@ -21,7 +21,7 @@ namespace IED
 		bool         attached{ false };
 		std::string  name;
 		Game::FormID race;
-		float        weight;
+		float        weight{ 0.0f };
 		long long    ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
@@ -46,7 +46,7 @@ namespace IED
 		inline constexpr auto GetSex() const noexcept
 		{
 			return npc && npc->female ?
-                       Data::ConfigSex::Female :
+			           Data::ConfigSex::Female :
                        Data::ConfigSex::Male;
 		}
 	};

@@ -26,7 +26,7 @@ namespace IED
 	{
 		using form_type = stl::strip_type<Tf>;
 
-		auto& r      = a_data.try_emplace(form_type::kTypeID);
+		auto  r      = a_data.try_emplace(form_type::kTypeID);
 		auto& holder = r.first->second;
 
 		if (r.second)
@@ -79,7 +79,7 @@ namespace IED
 		std::uint32_t    a_type,
 		Tf               a_func)
 	{
-		auto& r      = a_data.try_emplace(a_type);
+		auto  r      = a_data.try_emplace(a_type);
 		auto& holder = r.first->second;
 
 		if (r.second)

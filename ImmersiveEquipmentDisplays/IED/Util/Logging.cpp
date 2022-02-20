@@ -22,6 +22,6 @@ namespace IED
 				WinApi::MessageBoxErrorLog(PLUGIN_NAME, a_message);
 				std::_Exit(1);
 			}
-		}  // namespace Logging
-	}      // namespace Util
-}  // namespace IED
+		}
+	}
+}

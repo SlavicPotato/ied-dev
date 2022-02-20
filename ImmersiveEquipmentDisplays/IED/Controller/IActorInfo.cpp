@@ -30,7 +30,7 @@ namespace IED
 		a_out.ts = IPerfCounter::Query();
 
 		auto npc = a_actor->baseForm ?
-                       a_actor->baseForm->As<TESNPC>() :
+		               a_actor->baseForm->As<TESNPC>() :
                        nullptr;
 
 		if (npc)
@@ -64,7 +64,9 @@ namespace IED
 		a_out.form   = a_npc->formID;
 		a_out.flags  = a_npc->flags;
 		a_out.female = a_npc->GetSex() == 1;
-		a_out.race   = a_npc->race.race ? a_npc->race.race->formID : 0;
+		a_out.race   = a_npc->race.race ?
+		                   a_npc->race.race->formID :
+                           0;
 		a_out.weight = Game::GetNPCWeight(a_npc);
 	}
 

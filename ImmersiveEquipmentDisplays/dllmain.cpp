@@ -9,25 +9,50 @@ static bool Initialize(const SKSEInterface* a_skse)
 {
 	auto& skse = ISKSE::GetSingleton();
 
-	if (!skse.QueryInterfaces(a_skse))
+	bool ret = false;
+
+	try
 	{
-		gLog.FatalError("Could not query SKSE interfaces");
-		return false;
+		gLog.Debug("Querying SKSE interfaces..");
+
+		if (!skse.QueryInterfaces(a_skse))
+		{
+			gLog.FatalError("Could not query SKSE interfaces");
+			return false;
+		}
+
+		ret = IED::Initialize(a_skse);
+
+		if (ret)
+		{
+			auto usageBranch = skse.GetTrampolineUsage(TrampolineID::kBranch);
+			auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
+
+			gLog.Message(
+				"Loaded, trampolines: branch:[%zu/%zu] codegen:[%zu/%zu]",
+				usageBranch.used,
+				usageBranch.total,
+				usageLocal.used,
+				usageLocal.total);
+		}
+
 	}
-
-	auto ret = IED::Initialize(a_skse);
-
-	if (ret)
+	catch (const std::exception& e)
 	{
-		auto usageBranch = skse.GetTrampolineUsage(TrampolineID::kBranch);
-		auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
+		WinApi::MessageBoxErrorFmtLog(
+			PLUGIN_NAME,
+			"An exception occured during initialization:\n\n%s",
+			e.what());
 
-		gLog.Message(
-			"Loaded, trampolines: branch:[%zu/%zu] codegen:[%zu/%zu]",
-			usageBranch.used,
-			usageBranch.total,
-			usageLocal.used,
-			usageLocal.total);
+		ret = false;
+	}
+	catch (...)
+	{
+		WinApi::MessageBoxErrorFmtLog(
+			PLUGIN_NAME,
+			"An exception occured during initialization");
+
+		ret = false;
 	}
 
 	return ret;
@@ -88,7 +113,7 @@ extern "C" {
 		}
 
 		bool ret = Initialize(a_skse);
-
+		
 		if (!ret)
 		{
 			WinApi::MessageBoxError(

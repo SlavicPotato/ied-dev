@@ -35,27 +35,30 @@ namespace IED
 	BGSSoundDescriptorForm*
 		ISound::SoundRefHolder::Get(
 			std::uint8_t a_formType,
-			bool         a_equip) const
+			bool         a_equip) const noexcept
 	{
-		const soundPair_t* pair;
+		auto& pair = get_pair(a_formType);
 
+		return a_equip ?
+		           pair.equip :
+                   pair.unequip;
+	}
+
+	auto ISound::SoundRefHolder::get_pair(
+		std::uint8_t a_formType) const noexcept
+		-> const soundPair_t&
+	{
 		switch (a_formType)
 		{
 		case TESObjectWEAP::kTypeID:
-			pair = std::addressof(weapon);
-			break;
+			return weapon;
 		case TESAmmo::kTypeID:
-			pair = std::addressof(arrow);
-			break;
+			return arrow;
 		case TESObjectARMO::kTypeID:
-			pair = std::addressof(armor);
-			break;
+			return armor;
 		default:
-			pair = std::addressof(gen);
-			break;
+			return gen;
 		}
-
-		return a_equip ? pair->equip : pair->unequip;
 	}
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
@@ -114,10 +117,10 @@ namespace IED
 	{
 		return {
 			a_in.first ?
-                GetSoundForm(*a_in.first) :
+				GetSoundForm(*a_in.first) :
                 nullptr,
 			a_in.first ?
-                GetSoundForm(*a_in.second) :
+				GetSoundForm(*a_in.second) :
                 nullptr
 		};
 	}

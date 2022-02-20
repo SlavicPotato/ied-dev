@@ -8,5 +8,5 @@ namespace IED
 		{
 			bool IsREFRValid(const TESObjectREFR* a_refr);
 		}
-	}  // namespace Util
-}  // namespace IED
+	}
+}

@@ -14,9 +14,7 @@ namespace IED
 
 		for (enum_type i = 0; i < std::size(slotNames); i++)
 		{
-			auto slotName = Data::GetSlotName(static_cast<Data::ObjectSlot>(i));
-			ASSERT(slotName);
-			slotNames[i] = slotName;
+			slotNames[i] = Data::GetSlotName(static_cast<Data::ObjectSlot>(i));
 		}
 	}
-}  // namespace IED
+}

@@ -28,6 +28,13 @@ namespace IED
 		static inline constexpr auto NINODE_WEAPON           = "WEAPON";
 		static inline constexpr auto NINODE_NPCROOT          = "NPC Root [Root]";
 
+		static inline constexpr auto NINODE_SCB           = "Scb";
+		static inline constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
+		static inline constexpr auto BSX                  = "BSX";
+		static inline constexpr auto NINODE_TORCH_FIRE    = "TorchFire";
+		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
+		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
+
 		static inline constexpr auto NINODE_IED_1HSWORD      = "IED WeaponOneHandedSword";
 		static inline constexpr auto NINODE_IED_1HSWORD_LEFT = "IED WeaponOneHandedSwordLeft";
 		static inline constexpr auto NINODE_IED_1HAXE        = "IED WeaponOneHandedAxe";
@@ -46,13 +53,6 @@ namespace IED
 		static inline constexpr auto NINODE_IED_CROSSBOW     = "IED WeaponCrossbow";
 		static inline constexpr auto NINODE_IED_SHIELD       = "IED ArmorShield";
 		static inline constexpr auto NINODE_IED_TORCH        = "IED Torch";
-
-		static inline constexpr auto NINODE_SCB               = "Scb";
-		static inline constexpr auto NINODE_SCB_LEFT          = "ScbLeft";
-		static inline constexpr auto BSX                      = "BSX";
-		static inline constexpr auto NINODE_TORCH_FIRE        = "TorchFire";
-		static inline constexpr auto NINODE_IED_ATTACH_LIGHT  = "AttachLight";
-		static inline constexpr auto NINODE_IED_GLOW_ADD_MESH = "GlowAddMesh";
 
 		static inline constexpr auto NINODE_IED_OBJECT = "IED OBJECT";
 
@@ -79,8 +79,8 @@ namespace IED
 		BSFixedString m_bsx{ BSX };
 		BSFixedString m_torchFire{ NINODE_TORCH_FIRE };
 		BSFixedString m_object{ NINODE_IED_OBJECT };
-		BSFixedString m_attachLight{ NINODE_IED_ATTACH_LIGHT };
-		BSFixedString m_glowAddMesh{ NINODE_IED_GLOW_ADD_MESH };
+		BSFixedString m_attachLight{ NINODE_ATTACH_LIGHT };
+		BSFixedString m_glowAddMesh{ NINODE_GLOW_ADD_MESH };
 
 		BSFixedString m_weaponAxe{ NINODE_AXE };
 		BSFixedString m_weaponMace{ NINODE_MACE };

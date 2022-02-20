@@ -17,7 +17,10 @@ namespace IED
 
 			BGSSoundDescriptorForm* Get(
 				std::uint8_t a_formType,
-				bool         a_equip) const;
+				bool         a_equip) const noexcept;
+
+			const soundPair_t& get_pair(
+				std::uint8_t a_formType) const noexcept;
 
 			soundPair_t arrow;
 			soundPair_t armor;
