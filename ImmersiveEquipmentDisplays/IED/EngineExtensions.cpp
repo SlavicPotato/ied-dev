@@ -6,6 +6,7 @@
 
 #include <ext/IHook.h>
 #include <ext/JITASM.h>
+#include <ext/Node.h>
 #include <ext/VFT.h>
 
 constexpr static auto mv_failstr = "Memory validation failed";
@@ -696,6 +697,18 @@ namespace IED
 			AttachResultFlags::kNone
 		};
 
+		if (a_disableHavok)
+		{
+			::Util::Node::Traverse(
+				a_object,
+				[&](NiAVObject* a_object) {
+					a_object->collisionObject.reset();
+					return ::Util::Node::VisitorControl::kContinue;
+				});
+
+			a_dropOnDeath = false;
+		}
+
 		if (auto bsxFlags = m_Instance.GetBSXFlags(a_object))
 		{
 			stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
@@ -718,8 +731,6 @@ namespace IED
 
 						flags    = newbsx->m_data;
 						bsxFlags = newbsx;
-
-						a_dropOnDeath = false;
 					}
 				}
 			}
@@ -860,17 +871,21 @@ namespace IED
 
 		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
 
-		if (auto cell = a_actor->parentCell)
+		if (auto cell = a_actor->GetParentCell())
 		{
 			if (auto world = cell->GetHavokWorld())
 			{
 				NiPointer<Actor> mountedActor;
 
-				auto isMounted = a_actor->GetMountedActor(mountedActor);
+				bool isMounted = a_actor->GetMountedActor(mountedActor);
 
 				unks_01 tmp;
 
-				if (auto r = fUnk5EBD90(isMounted ? mountedActor.get() : a_actor, std::addressof(tmp)))
+				if (auto r = fUnk5EBD90(
+						isMounted ?
+							mountedActor.get() :
+                            a_actor,
+						std::addressof(tmp)))
 				{
 					fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
 				}
