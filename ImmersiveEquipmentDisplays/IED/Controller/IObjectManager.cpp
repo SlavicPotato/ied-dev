@@ -536,7 +536,8 @@ namespace IED
 		objectEntryBase_t&              a_objectEntry,
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
-		bool                            a_visible)
+		bool                            a_visible,
+		bool                            a_disableHavok)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -740,7 +741,8 @@ namespace IED
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
 				a_config.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
-				e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
+				a_disableHavok ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
 			UpdateDownwardPass(e.object);
 

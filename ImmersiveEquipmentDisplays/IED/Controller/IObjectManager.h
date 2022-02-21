@@ -119,7 +119,8 @@ namespace IED
 			objectEntryBase_t&              a_objectEntry,
 			TESForm*                        a_form,
 			bool                            a_leftWeapon,
-			bool                            a_visible);
+			bool                            a_visible,
+			bool                            a_disableHavok);
 
 		void FinalizeObjectState(
 			std::unique_ptr<objectEntryBase_t::State>& a_state,

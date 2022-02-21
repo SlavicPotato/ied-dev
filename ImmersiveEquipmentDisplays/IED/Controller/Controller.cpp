@@ -2851,7 +2851,8 @@ namespace IED
 					a_objectEntry,
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
-					visible);
+					visible,
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -2960,7 +2961,8 @@ namespace IED
 					a_objectEntry,
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
-					visible);
+					visible,
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -4008,6 +4010,7 @@ namespace IED
 				a_pkey,
 				a_vkey,
 				a_func);
+
 			break;
 		}
 
@@ -4078,14 +4081,13 @@ namespace IED
 			}
 			break;
 		default:
-			{
-				UpdateCustomAllImpl(
-					info,
-					conf.GetGlobalData()[0],
-					data,
-					a_pkey,
-					a_func);
-			}
+			UpdateCustomAllImpl(
+				info,
+				conf.GetGlobalData()[0],
+				data,
+				a_pkey,
+				a_func);
+
 			break;
 		}
 
@@ -4820,13 +4822,7 @@ namespace IED
 		Actor*         a_actor,
 		npcRacePair_t& a_out) noexcept
 	{
-		auto actorBase = a_actor->baseForm;
-		if (!actorBase)
-		{
-			return false;
-		}
-
-		auto npc = actorBase->As<TESNPC>();
+		auto npc = Game::GetActorBase(a_actor);
 		if (!npc)
 		{
 			return false;
@@ -4878,8 +4874,6 @@ namespace IED
 
 	void Controller::LoadGameHandler(SKSESerializationInterface* a_intfc)
 	{
-		IScopedLock lock(m_lock);
-
 		std::uint32_t type, length, version;
 
 		while (a_intfc->GetNextRecordInfo(
@@ -4890,7 +4884,11 @@ namespace IED
 			switch (type)
 			{
 			case SKSE_SERIALIZATION_TYPE_ID:
-				ReadRecord(a_intfc, type, version);
+				{
+					IScopedLock lock(m_lock);
+
+					ReadRecord(a_intfc, type, version);
+				}
 				break;
 			default:
 				Warning(
