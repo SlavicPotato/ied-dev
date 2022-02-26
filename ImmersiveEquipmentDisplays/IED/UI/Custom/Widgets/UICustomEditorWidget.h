@@ -869,7 +869,7 @@ namespace IED
 						UICommon::PushDisabled(disabled);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::IgnoreRaceEquipTypes, "7"),
+								LS(UICustomEditorString::IgnoreRaceEquipTypes, "8"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIgnoreRaceEquipTypes)))
 						{
@@ -882,7 +882,7 @@ namespace IED
 						DrawTip(UITip::IgnoreRaceEquipTypes);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::DisableIfEquipped, "8"),
+								LS(UICustomEditorString::DisableIfEquipped, "9"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
 						{
@@ -929,7 +929,7 @@ namespace IED
 						};
 
 						if (ImGui::DragScalarN(
-								LS(CommonStrings::Limits, "9"),
+								LS(CommonStrings::Limits, "A"),
 								ImGuiDataType_U32,
 								std::addressof(data.countRange),
 								2,
@@ -1102,6 +1102,19 @@ namespace IED
 			{
 				if (!disabled)
 				{
+					ImGui::Spacing();
+
+					if (ImGui::CheckboxFlagsT(
+							LS(UIWidgetCommonStrings::SelectRandomForm, "hctl_1"),
+							stl::underlying(std::addressof(data.customFlags.value)),
+							stl::underlying(Data::CustomFlags::kSelectInvRandom)))
+					{
+						OnBaseConfigChange(
+							a_handle,
+							std::addressof(a_params),
+							PostChangeAction::Reset);
+					}
+
 					ImGui::Spacing();
 
 					DrawExtraItemsTable(a_handle, a_params);

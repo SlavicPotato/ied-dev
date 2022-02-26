@@ -60,7 +60,7 @@ namespace IED
 			// ignore scb (Node)
 			kExtraFlag0 = 1u << 10,
 
-			// laying down (Furniture), is child (Location), match parent (Worldspace), playable (Race)
+			// laying down (Furniture), is child (Location), match parent (Worldspace), playable (Race), is bolt (Biped)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)
@@ -777,7 +777,7 @@ namespace IED
 				{
 					auto it = a_data.find(a_key);
 					return it != a_data.end() ?
-                               std::addressof(it->second) :
+					           std::addressof(it->second) :
                                nullptr;
 				}
 			}

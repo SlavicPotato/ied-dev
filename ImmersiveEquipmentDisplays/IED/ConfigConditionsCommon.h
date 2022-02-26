@@ -58,7 +58,7 @@ namespace IED
 			bool                  a_left)
 		{
 			return a_left ?
-                       Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
+			           Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
                        Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
@@ -141,6 +141,15 @@ namespace IED
 				}
 			}
 
+			if (a_match.flags.test(Tf::kExtraFlag1))
+			{
+				if (a_match.flags.test(Tf::kNegateMatch3) ==
+				    is_ammo_bolt(form))
+				{
+					return false;
+				}
+			}
+
 			a_post(form);
 
 			return true;
@@ -177,7 +186,7 @@ namespace IED
 					return false;
 				}
 			}
-			
+
 			if (a_match.flags.test(Tf::kExtraFlag2))
 			{
 				if (a_match.flags.test(Tf::kNegateMatch4) ==
@@ -276,7 +285,7 @@ namespace IED
 
 						if (a_match.flags.test(Tf::kNegateMatch2) ==
 						    (location ?
-                                 is_in_location(current, keyword, location) :
+						         is_in_location(current, keyword, location) :
                                  is_in_location(current, keyword)))
 						{
 							return false;
@@ -400,6 +409,8 @@ namespace IED
 				return false;
 			}
 		}
+
+		bool is_ammo_bolt(TESForm* a_form);
 
 	}
 }

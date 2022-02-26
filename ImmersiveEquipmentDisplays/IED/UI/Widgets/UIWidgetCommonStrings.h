@@ -86,6 +86,7 @@ namespace IED
 			IsPlayable                    = 2075,
 			ChildRace                     = 2076,
 			Options                       = 2077,
+			SelectRandomForm              = 2078,
 		};
 	}
 }

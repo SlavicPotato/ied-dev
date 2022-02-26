@@ -352,10 +352,10 @@ namespace IED
 				}
 
 				std::uint32_t result = 0;
-				std::uint32_t min = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
-				                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                        2u :
-                                        1u;
+				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
+                                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
+				                           2u :
+                                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -389,10 +389,10 @@ namespace IED
 				}
 
 				std::uint32_t result = 0;
-				std::uint32_t min = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
-				                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                        2u :
-                                        1u;
+				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
+                                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
+				                           2u :
+                                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -425,10 +425,10 @@ namespace IED
 				}
 
 				std::uint32_t result = 0;
-				std::uint32_t min = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
-				                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
-                                        2u :
-                                        1u;
+				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
+                                            !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
+				                           2u :
+                                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -459,7 +459,7 @@ namespace IED
 						if (a_form->IsArmor())
 						{
 							auto data = a_params.get_item_data();
-							auto it = data->find(a_form->formID);
+							auto it   = data->find(a_form->formID);
 							if (it != data->end())
 							{
 								it->second.matched = true;
@@ -814,24 +814,26 @@ namespace IED
 
 		for (auto& e : a_data)
 		{
-			if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
+			if (run_matches(e, a_params))
 			{
-				if (process_offsets(e.group, a_out, a_posAccum, a_params))
+				if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
+				{
+					if (process_offsets(e.group, a_out, a_posAccum, a_params))
+					{
+						matched = true;
+
+						if (!e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kContinue))
+						{
+							break;
+						}
+					}
+				}
+				else
 				{
 					matched = true;
 
-					if (!e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kContinue))
-					{
-						break;
-					}
-				}
-			}
-			else
-			{
-				a_params.clear_matched_items();
+					a_params.clear_matched_items();
 
-				if (run_matches(e, a_params))
-				{
 					if (e.offsetFlags.test_any(Data::NodeOverrideOffsetFlags::kAdjustFlags))
 					{
 						if (!(e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAdjustIgnoreDead) && a_params.get_actor_dead()))
@@ -867,8 +869,6 @@ namespace IED
 					{
 						a_posAccum = {};
 					}
-
-					matched = true;
 
 					if (!e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kContinue))
 					{
@@ -909,7 +909,7 @@ namespace IED
 			{
 				ITaskPool::AddPriorityTask(
 					[target = a_target,
-				     node = a_entry.node]() {
+				     node   = a_entry.node]() {
 						if (node->m_parent &&
 					        node->m_parent != target)
 						{

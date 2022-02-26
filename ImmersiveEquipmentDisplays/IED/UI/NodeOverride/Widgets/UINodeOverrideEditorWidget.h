@@ -1053,7 +1053,13 @@ namespace IED
 				ImGui::TreePop();
 			}
 
-			DrawOverrideOffsets(a_handle, a_data, data.offsets, a_params, a_exists, nullptr);
+			DrawOverrideOffsets(
+				a_handle,
+				a_data,
+				data.offsets,
+				a_params,
+				a_exists,
+				nullptr);
 		}
 
 		template <class T>
@@ -1196,13 +1202,23 @@ namespace IED
 				}
 			}
 
-			if (TreeEx("offsets", true, "%s", LS(CommonStrings::Offsets)))
+			if (ImGui::TreeNodeEx(
+					"offsets",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Offsets)))
 			{
 				if (!empty)
 				{
 					ImGui::Spacing();
 
-					DrawOverrideOffsetList(a_handle, a_data, a_entry, a_params, a_exists);
+					DrawOverrideOffsetList(
+						a_handle,
+						a_data,
+						a_entry,
+						a_params,
+						a_exists);
 				}
 
 				ImGui::TreePop();
@@ -1673,6 +1689,12 @@ namespace IED
 				{
 					auto& e = *it;
 
+					/*if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
+					{
+						ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+						ImGui::TextUnformatted("[G]");
+					}*/
+
 					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 					if (ImGui::TreeNodeEx(
@@ -1682,63 +1704,57 @@ namespace IED
 							"%s",
 							e.description.c_str()))
 					{
+						ImGui::Spacing();
+
+						DrawOverrideConditionTree(
+							a_handle,
+							a_data,
+							e.conditions,
+							a_params,
+							a_exists,
+							false);
+
+						if (ImGui::CheckboxFlagsT(
+								LS(CommonStrings::Continue, "hctl_1"),
+								stl::underlying(std::addressof(e.offsetFlags.value)),
+								stl::underlying(Data::NodeOverrideOffsetFlags::kContinue)))
+						{
+							HandleValueUpdate(
+								a_handle,
+								a_data,
+								a_params,
+								a_exists);
+						}
+
+						if (ImGui::CheckboxFlagsT(
+								LS(UIWidgetCommonStrings::RequiresMatchList, "hctl_2"),
+								stl::underlying(std::addressof(e.offsetFlags.value)),
+								stl::underlying(Data::NodeOverrideOffsetFlags::kRequiresConditionList)))
+						{
+							HandleValueUpdate(
+								a_handle,
+								a_data,
+								a_params,
+								a_exists);
+						}
+
 						if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
 						{
 							ImGui::PushID("group");
 
-							ImGui::Spacing();
-
-							if (ImGui::CheckboxFlagsT(
-									LS(CommonStrings::Continue, "1"),
-									stl::underlying(std::addressof(e.offsetFlags.value)),
-									stl::underlying(Data::NodeOverrideOffsetFlags::kContinue)))
-							{
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-							}
-
-							DrawOverrideOffsets(a_handle, a_data, e.group, a_params, a_exists, std::addressof(e));
+							DrawOverrideOffsets(
+								a_handle,
+								a_data,
+								e.group,
+								a_params,
+								a_exists,
+								std::addressof(e));
 
 							ImGui::PopID();
 						}
 						else
 						{
-							ImGui::Spacing();
-
-							DrawOverrideConditionTree(
-								a_handle,
-								a_data,
-								e.conditions,
-								a_params,
-								a_exists,
-								false);
-
-							if (ImGui::CheckboxFlagsT(
-									LS(CommonStrings::Continue, "1"),
-									stl::underlying(std::addressof(e.offsetFlags.value)),
-									stl::underlying(Data::NodeOverrideOffsetFlags::kContinue)))
-							{
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-							}
-
-							if (ImGui::CheckboxFlagsT(
-									LS(UIWidgetCommonStrings::RequiresMatchList, "2"),
-									stl::underlying(std::addressof(e.offsetFlags.value)),
-									stl::underlying(Data::NodeOverrideOffsetFlags::kRequiresConditionList)))
-							{
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-							}
+							ImGui::PushID("override");
 
 							if (ImGui::CheckboxFlagsT(
 									LS(UINodeOverrideEditorStrings::WeaponAdjust, "3"),
@@ -1896,6 +1912,8 @@ namespace IED
 									ImGui::TreePop();
 								}
 							}
+
+							ImGui::PopID();
 						}
 
 						ImGui::Spacing();
@@ -2054,7 +2072,7 @@ namespace IED
 			const bool                               a_exists,
 			const bool                               a_ignoreNode)
 		{
-			ImGui::PushID("override_match_tree");
+			ImGui::PushID("ovr_cond_tree");
 
 			const auto result = DrawOverrideConditionHeaderContextMenu(
 				a_handle,
@@ -3914,6 +3932,18 @@ namespace IED
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
 
 				DrawTip(UITip::MatchSkin);
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##2",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UINodeOverrideEditorStrings::IsBolt, "3"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
 
 				break;
 			case Data::NodeOverrideConditionType::Form:

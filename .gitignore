@@ -361,3 +361,6 @@ FodyWeavers.xsd
 /x64_v143/common_1_5_97_vc14/ReleaseAVX2 MT
 /ImmersiveEquipmentDisplays/gitparams.h
 /x64_v143/common_1_5_97_vc14/Release MT
+/x64_v142/common_1_5_97_vc14/Release MD/common_1_5_97_vc14.lib
+/x64_v143/common_1_5_97_vc14/ReleaseAVX2 MD/common_1_5_97_vc14.lib
+/x64_v142/common_1_5_97_vc14/Release MT/common_1_5_97_vc14.lib

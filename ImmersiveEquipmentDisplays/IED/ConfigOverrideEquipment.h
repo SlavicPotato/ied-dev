@@ -31,7 +31,7 @@ namespace IED
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)

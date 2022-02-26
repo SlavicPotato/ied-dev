@@ -2659,32 +2659,76 @@ namespace IED
 		processParams_t&                a_params,
 		const configCustom_t&           a_config,
 		const Data::configBaseValues_t& a_baseConfig,
+		objectEntryCustom_t&            a_objectEntry,
 		bool&                           a_hasMinCount)
 	{
 		auto& formData = a_params.collector.m_data.forms;
 
-		if (a_config.form.get_id() &&
-		    !a_config.form.get_id().IsTemporary())
+		if (a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
+		    !a_config.extraItems.empty())
 		{
-			if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
+			if (a_objectEntry.state)
 			{
-				if (CustomEntryValidateInventoryForm(
-						a_params,
-						it->second,
-						a_config,
-						a_baseConfig,
-						a_hasMinCount))
+				auto fid = a_objectEntry.state->formid;
+
+				if (fid == a_config.form.get_id() ||
+				    std::find(
+						a_config.extraItems.begin(),
+						a_config.extraItems.end(),
+						fid) != a_config.extraItems.end())
 				{
-					return it;
+					if (auto it = formData.find(fid); it != formData.end())
+					{
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_baseConfig,
+								a_hasMinCount))
+						{
+							return it;
+						}
+					}
 				}
 			}
-		}
 
-		for (auto& e : a_config.extraItems)
-		{
-			if (e && !e.IsTemporary())
+			auto tmp(a_config.extraItems);
+
+			tmp.emplace_back(a_config.form.get_id());
+
+			while (tmp.begin() != tmp.end())
 			{
-				if (auto it = formData.find(e); it != formData.end())
+				using diff_type = decltype(tmp)::difference_type;
+
+				RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.begin(), tmp.end()) - 1);
+
+				auto ite = tmp.begin() + rng.Get(m_rngBase);
+
+				if (*ite && !ite->IsTemporary())
+				{
+					if (auto it = formData.find(*ite); it != formData.end())
+					{
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_baseConfig,
+								a_hasMinCount))
+						{
+							return it;
+						}
+					}
+				}
+
+				tmp.erase(ite);
+			}
+		}
+		else
+		{
+			if (a_config.form.get_id() &&
+			    !a_config.form.get_id().IsTemporary())
+			{
+				if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
 				{
 					if (CustomEntryValidateInventoryForm(
 							a_params,
@@ -2694,6 +2738,25 @@ namespace IED
 							a_hasMinCount))
 					{
 						return it;
+					}
+				}
+			}
+
+			for (auto& e : a_config.extraItems)
+			{
+				if (e && !e.IsTemporary())
+				{
+					if (auto it = formData.find(e); it != formData.end())
+					{
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_baseConfig,
+								a_hasMinCount))
+						{
+							return it;
+						}
 					}
 				}
 			}
@@ -2711,7 +2774,7 @@ namespace IED
 		{
 			if (!a_objectEntry.cflags.test(CustomObjectEntryFlags::kProcessedChance))
 			{
-				if (m_rng1.Get() > a_config.chance)
+				if (m_rng1.Get(m_rngBase) > a_config.chance)
 				{
 					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
 				}
@@ -2780,7 +2843,13 @@ namespace IED
 		{
 			bool hasMinCount;
 
-			auto it = CustomEntrySelectInventoryForm(a_params, a_config, usedBaseConf, hasMinCount);
+			auto it = CustomEntrySelectInventoryForm(
+				a_params,
+				a_config,
+				usedBaseConf,
+				a_objectEntry,
+				hasMinCount);
+
 			if (it == a_params.collector.m_data.forms.end())
 			{
 				return false;

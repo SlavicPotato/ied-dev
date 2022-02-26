@@ -240,7 +240,8 @@ namespace IED
 			m_formSelector.SetAllowedTypes(
 				{ TESObjectWEAP::kTypeID,
 			      TESObjectARMO::kTypeID,
-			      TESObjectLIGH::kTypeID });
+			      TESObjectLIGH::kTypeID,
+			      TESAmmo::kTypeID });
 
 			m_formFilter.SetOnChangeFunc([this](slotFormFilterParams_t<T>& a_params) {
 				OnBaseConfigChange(

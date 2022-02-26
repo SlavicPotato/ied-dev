@@ -158,7 +158,7 @@ namespace IED
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
-		BSXFlags* GetBSXFlags(NiObjectNET* a_object);
+		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
 		void Patch_RemoveAllBipedParts();
 		void Hook_REFR_GarbageCollector();

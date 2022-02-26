@@ -19,6 +19,7 @@ namespace IED
 			PlayerDisabledWarning = 4308,
 			PasteOverFullPrompt   = 4309,
 			AbsolutePosition      = 4310,
+			IsBolt                = 4311,
 		};
 	}
 }

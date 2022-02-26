@@ -192,22 +192,30 @@ namespace IED
 
 		void UILog::DrawTimeStampLine(const BackLog::Entry& a_entry)
 		{
-			auto lt = std::chrono::floor<std::chrono::days>(a_entry.ts());
+#if defined(SKMP_TIMESTAMP_LOGS)
+			try
+			{
+				auto lt = std::chrono::floor<std::chrono::days>(a_entry.ts());
 
-			std::chrono::year_month_day ymd{ lt };
-			std::chrono::hh_mm_ss       hms{ a_entry.ts() - lt };
+				std::chrono::year_month_day ymd{ lt };
+				std::chrono::hh_mm_ss       hms{ a_entry.ts() - lt };
 
-			ImGui::Text(
-				"[%d-%.2u-%.2u %.2d:%.2d:%.2lld.%lld]",
-				static_cast<int>(ymd.year()),
-				static_cast<std::uint32_t>(ymd.month()),
-				static_cast<std::uint32_t>(ymd.day()),
-				static_cast<int>(hms.hours().count()),
-				static_cast<int>(hms.minutes().count()),
-				static_cast<long long>(hms.seconds().count()),
-				static_cast<long long>(hms.subseconds().count()));
+				ImGui::Text(
+					"[%d-%.2u-%.2u %.2d:%.2d:%.2lld.%lld]",
+					static_cast<int>(ymd.year()),
+					static_cast<std::uint32_t>(ymd.month()),
+					static_cast<std::uint32_t>(ymd.day()),
+					static_cast<int>(hms.hours().count()),
+					static_cast<int>(hms.minutes().count()),
+					static_cast<long long>(hms.seconds().count()),
+					static_cast<long long>(hms.subseconds().count()));
 
-			ImGui::SameLine();
+				ImGui::SameLine();
+			}
+			catch (...)
+			{
+			}
+#endif
 		}
 
 		void UILog::DrawLevelCheckbox(const char* a_label, LogLevel a_level)

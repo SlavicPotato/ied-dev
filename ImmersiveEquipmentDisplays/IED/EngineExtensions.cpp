@@ -709,7 +709,7 @@ namespace IED
 			a_dropOnDeath = false;
 		}
 
-		if (auto bsxFlags = m_Instance.GetBSXFlags(a_object))
+		if (auto bsxFlags = GetBSXFlags(a_object))
 		{
 			stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
@@ -972,7 +972,7 @@ namespace IED
 
 	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object)
 	{
-		auto sh = m_controller->GetBSStringHolder();
+		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
 		if (auto r = a_object->GetExtraData(sh->m_bsx))
 		{

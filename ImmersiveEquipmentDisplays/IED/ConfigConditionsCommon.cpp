@@ -84,5 +84,17 @@ namespace IED
 
 			return false;
 		}
+
+		bool is_ammo_bolt(TESForm* a_form)
+		{
+			if (auto ammo = a_form->As<TESAmmo>())
+			{
+				return ammo->isBolt();
+			}
+			else
+			{
+				return false;
+			}
+		}
 	}
 }

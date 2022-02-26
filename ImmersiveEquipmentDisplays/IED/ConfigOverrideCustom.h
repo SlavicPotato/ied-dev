@@ -23,6 +23,7 @@ namespace IED
 			kDisableHavok         = 1u << 8,
 			kUseGroup             = 1u << 9,
 			kCheckFav             = 1u << 10,
+			kSelectInvRandom      = 1u << 11,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);

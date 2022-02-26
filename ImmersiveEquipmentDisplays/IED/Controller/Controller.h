@@ -733,6 +733,7 @@ namespace IED
 			processParams_t&                a_params,
 			const Data::configCustom_t&     a_config,
 			const Data::configBaseValues_t& a_baseConfig,
+			objectEntryCustom_t&            a_objectEntry,
 			bool&                           a_hasMinCount);
 
 		bool IsBlockedByChance(
@@ -900,7 +901,8 @@ namespace IED
 		} m_config;
 
 		Data::actorStateHolder_t              m_storedActorStates;
-		RandomNumberGenerator<float>          m_rng1;
+		RandomNumberGeneratorBase             m_rngBase;
+		RandomNumberGenerator3<float>         m_rng1;
 		std::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;

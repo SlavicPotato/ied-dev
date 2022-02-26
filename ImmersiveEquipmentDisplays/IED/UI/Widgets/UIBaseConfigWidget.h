@@ -2338,6 +2338,18 @@ namespace IED
 
 				DrawTip(UITip::MatchSkin);
 
+				result |= ImGui::CheckboxFlagsT(
+					"!##2",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UINodeOverrideEditorStrings::IsBolt, "3"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
 				break;
 
 			case Data::EquipmentOverrideConditionType::Location:
