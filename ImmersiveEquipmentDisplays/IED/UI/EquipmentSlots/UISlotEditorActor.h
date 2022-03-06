@@ -7,9 +7,6 @@
 #include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 
 #include "UISlotEditorCommon.h"
-#include "Widgets/UISlotEditorWidget.h"
-
-#include "IED/GlobalProfileManager.h"
 
 namespace IED
 {
@@ -18,7 +15,6 @@ namespace IED
 	namespace UI
 	{
 		class UISlotEditorActor :
-			// public UISlotEditorWidget<Game::FormID>,
 			public UISlotEditorCommon<Game::FormID>,
 			UIActorList<entrySlotData_t>,
 			UIFormInfoTooltipWidget
@@ -42,7 +38,7 @@ namespace IED
 			virtual SlotEditorCurrentData GetCurrentData() override;
 
 			virtual Data::SettingHolder::EditorPanelCommon& GetEditorPanelSettings() override;
-			virtual void OnEditorPanelSettingsChange() override;
+			virtual void                                    OnEditorPanelSettingsChange() override;
 
 			virtual void ListResetAllValues(
 				Game::FormID a_handle) override;
@@ -56,28 +52,28 @@ namespace IED
 
 			virtual void MergeProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-				const SlotProfile& a_profile) override;
+				const SlotProfile&                               a_profile) override;
 
 			virtual void ApplyProfile(
 				const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-				const SlotProfile& a_profile) override;
+				const SlotProfile&                               a_profile) override;
 
 			virtual void OnBaseConfigChange(
-				Game::FormID a_handle,
-				const void* a_params,
+				Game::FormID     a_handle,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
-				Game::FormID a_handle,
+				Game::FormID                  a_handle,
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void
 				OnSingleSlotClear(
-					Game::FormID a_handle,
+					Game::FormID                       a_handle,
 					const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				Game::FormID a_handle,
+				Game::FormID                     a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnListChangeCurrentItem(
@@ -92,7 +88,7 @@ namespace IED
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
-			virtual void OnCollapsibleStatesUpdate() override;
+			virtual void                         OnCollapsibleStatesUpdate() override;
 
 			virtual void DrawMenuBarItemsExtra() override;
 
@@ -100,10 +96,10 @@ namespace IED
 				const listValue_t& a_entry) override;
 
 			virtual bool DrawExtraSlotInfo(
-				Game::FormID a_handle,
-				Data::ObjectSlot a_slot,
+				Game::FormID                      a_handle,
+				Data::ObjectSlot                  a_slot,
 				const entrySlotData_t::data_type& a_entry,
-				bool a_infoDrawn) override;
+				bool                              a_infoDrawn) override;
 
 			virtual const ImVec4* HighlightEntry(Game::FormID a_handle) override;
 

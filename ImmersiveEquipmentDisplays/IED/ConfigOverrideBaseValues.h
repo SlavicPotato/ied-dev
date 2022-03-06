@@ -62,11 +62,11 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configTransform_t&>(*this);
-				ar& flags.value;
-				ar& targetNode;
+				a_ar& static_cast<configTransform_t&>(*this);
+				a_ar& flags.value;
+				a_ar& targetNode;
 			}
 		};
 

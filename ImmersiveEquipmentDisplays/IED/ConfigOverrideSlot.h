@@ -34,12 +34,12 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configBase_t&>(*this);
-				ar& slotFlags.value;
-				ar& preferredItems;
-				ar& itemFilter;
+				a_ar& static_cast<configBase_t&>(*this);
+				a_ar& slotFlags.value;
+				a_ar& preferredItems;
+				a_ar& itemFilter;
 			}
 		};
 
@@ -129,9 +129,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
+				a_ar& data;
 			}
 		};
 
@@ -181,7 +181,7 @@ namespace IED
 				}
 			}
 
-			bool constexpr empty() const noexcept
+			constexpr bool empty() const noexcept
 			{
 				for (auto& e : data)
 				{
@@ -227,9 +227,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
+				a_ar& data;
 			}
 		};
 
@@ -311,5 +311,5 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configSlot_t,
-	IED::Data::configSlot_t::Serialization::DataVersion1);
+	::IED::Data::configSlot_t,
+	::IED::Data::configSlot_t::Serialization::DataVersion1);

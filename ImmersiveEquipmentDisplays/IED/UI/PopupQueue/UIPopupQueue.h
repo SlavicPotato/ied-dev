@@ -30,7 +30,7 @@ namespace IED
 
 			inline void clear() noexcept
 			{
-				m_queue.swap(decltype(m_queue)());
+				m_queue = {};
 			}
 
 		private:

@@ -55,9 +55,9 @@ namespace IED
 
 		bool UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
 			const char*          a_label,
-			Biped::BIPED_OBJECT& a_data)
+			BIPED_OBJECT& a_data)
 		{
-			static_assert(m_desc.size() == stl::underlying(Biped::BIPED_OBJECT::kTotal));
+			static_assert(m_desc.size() == stl::underlying(BIPED_OBJECT::kTotal));
 
 			bool result = false;
 
@@ -67,11 +67,11 @@ namespace IED
 
 			if (ImGui::BeginCombo(a_label, preview, ImGuiComboFlags_HeightLarge))
 			{
-				using enum_type = std::underlying_type_t<Biped::BIPED_OBJECT>;
+				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
-				for (enum_type i = 0; i < stl::underlying(Biped::BIPED_OBJECT::kTotal); i++)
+				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 				{
-					auto e = static_cast<Biped::BIPED_OBJECT>(i);
+					auto e = static_cast<BIPED_OBJECT>(i);
 
 					ImGui::PushID(i);
 

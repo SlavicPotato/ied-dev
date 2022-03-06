@@ -12,8 +12,6 @@ namespace IED
 	namespace UI
 	{
 		UIImportWidget::UIImportWidget(Controller& a_controller) :
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}

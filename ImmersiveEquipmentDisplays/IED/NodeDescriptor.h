@@ -46,17 +46,17 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& name;
-				ar& flags.value;
+				a_ar& name;
+				a_ar& flags.value;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& name;
-				ar& flags.value;
+				a_ar& name;
+				a_ar& flags.value;
 
 				lookup_flags();
 			}
@@ -64,9 +64,9 @@ namespace IED
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
-	}  // namespace Data
-}  // namespace IED
+	}
+}
 
 BOOST_CLASS_VERSION(
-	IED::Data::NodeDescriptor,
-	IED::Data::NodeDescriptor::Serialization::DataVersion1);
+	::IED::Data::NodeDescriptor,
+	::IED::Data::NodeDescriptor::Serialization::DataVersion1);

@@ -1,13 +1,11 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
+
+#include "IED/UI/Widgets/Lists/UINPCLIstWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
+
 #include "UISlotEditorCommon.h"
-
-#include "IED/GlobalProfileManager.h"
-
-#include "../Widgets/Lists/UINPCLIstWidget.h"
-#include "../Widgets/UIProfileSelectorWidget.h"
-#include "Widgets/UISlotEditorWidget.h"
 
 namespace IED
 {
@@ -16,7 +14,6 @@ namespace IED
 	namespace UI
 	{
 		class UISlotEditorNPC :
-			// public UISlotEditorWidget<Game::FormID>,
 			public UISlotEditorCommon<Game::FormID>,
 			UINPCList<entrySlotData_t>
 		{

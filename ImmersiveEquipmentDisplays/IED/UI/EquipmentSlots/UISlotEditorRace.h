@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../UICommon.h"
-#include "UISlotEditorCommon.h"
+#include "IED/UI/UICommon.h"
 
-#include "../Widgets/Lists/UIRaceListWidget.h"
-#include "../Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/Widgets/Lists/UIRaceListWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 #include "Widgets/UISlotEditorWidget.h"
+
+#include "UISlotEditorCommon.h"
 
 namespace IED
 {
@@ -14,7 +15,6 @@ namespace IED
 	namespace UI
 	{
 		class UISlotEditorRace :
-			// public UISlotEditorWidget<Game::FormID>,
 			public UISlotEditorCommon<Game::FormID>,
 			UIRaceList<entrySlotData_t>
 		{

@@ -126,8 +126,6 @@ namespace IED
 
 			m_uiRenderPerf.timer.Begin();
 
-			bool exp = true;
-
 			if (m_updateFlags.consume(UpdateFlags::kResetInput))
 			{
 				ResetInput();
@@ -358,7 +356,9 @@ namespace IED
 			{
 				if (e->m_options.lock != e->m_state.holdsLock)
 				{
-					if (e->m_state.holdsLock = e->m_options.lock)
+					e->m_state.holdsLock = e->m_options.lock;
+
+					if (e->m_state.holdsLock)
 					{
 						m_state.lockCounter++;
 					}
@@ -370,7 +370,9 @@ namespace IED
 
 				if (e->m_options.freeze != e->m_state.holdsFreeze)
 				{
-					if (e->m_state.holdsFreeze = e->m_options.freeze)
+					e->m_state.holdsFreeze = e->m_options.freeze;
+
+					if (e->m_state.holdsFreeze)
 					{
 						m_state.freezeCounter++;
 					}

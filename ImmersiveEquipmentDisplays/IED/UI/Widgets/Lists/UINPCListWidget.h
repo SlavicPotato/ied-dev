@@ -59,9 +59,7 @@ namespace IED
 			Controller& a_controller,
 			float       a_itemWidthScalar) :
 			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
-			UINPCInfoAddInterface(a_controller),
-			UISettingsInterface(a_controller),
-			UIActorInfoInterface(a_controller)
+			UINPCInfoAddInterface(a_controller)
 		{
 		}
 

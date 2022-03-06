@@ -47,10 +47,9 @@ namespace IED
 		UIRaceList<Td>::UIRaceList(
 			Controller& a_controller,
 			float       a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
-			UISettingsInterface(a_controller),
-			UIActorInfoInterface(a_controller)
-		{}
+			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar)
+		{
+		}
 
 		template <class Td>
 		void UIRaceList<Td>::ListUpdate()

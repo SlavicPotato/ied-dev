@@ -36,9 +36,9 @@ namespace IED
 
 				auto& targetData = GetConfigMap(a_class);
 
-				auto& data = targetData.try_emplace(a_target);
+				auto r = targetData.try_emplace(a_target);
 
-				auto rp = data.first->second.try_emplace(a_key);
+				auto rp = r.first->second.try_emplace(a_key);
 				auto re = rp.first->second.data.try_emplace(a_name);
 
 				if (!re.second)

@@ -6,6 +6,7 @@
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidgetStrings.h"
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UITransformSliderWidget.h"
 
 #include "UIModelGroupEditorWidgetStrings.h"
@@ -92,8 +93,6 @@ namespace IED
 		UIModelGroupEditorWidget<T>::UIModelGroupEditorWidget(
 			UIFormPickerWidget& a_formPicker,
 			Controller&         a_controller) :
-			UILocalizationInterface(a_controller),
-			UINotificationInterface(a_controller),
 			m_formPicker(a_formPicker)
 		{
 		}
@@ -104,8 +103,6 @@ namespace IED
 			const SingleCustomConfigUpdateParams& a_params,
 			Data::configModelGroup_t&             a_data)
 		{
-			auto& data = a_params.entry(a_params.sex);
-
 			constexpr auto TREE_FLAGS = ImGuiTreeNodeFlags_DefaultOpen |
 			                            ImGuiTreeNodeFlags_SpanAvailWidth;
 
@@ -259,31 +256,24 @@ namespace IED
 				ImGui::TreePop();
 			}
 
-			if (ImGui::TreeNodeEx(
-					"xfrm",
-					ImGuiTreeNodeFlags_DefaultOpen |
-						ImGuiTreeNodeFlags_SpanAvailWidth,
-					"%s",
-					LS(CommonStrings::Transform)))
-			{
-				ImGui::Spacing();
-				ImGui::Indent();
+			bool disabled = entry.flags.test(Data::ConfigModelGroupEntryFlags::kDisabled);
 
-				DrawTransformSliders(
-					entry.transform,
-					[&](auto a_v) {
-						OnModelGroupEditorChange(
-							a_handle,
-							a_params,
-							ModelGroupEditorOnChangeEventType::Transform);
-					});
+			UICommon::PushDisabled(disabled);
 
-				ImGui::Unindent();
-				ImGui::Spacing();
+			DrawTransformTree(
+				entry.transform,
+				false,
+				[&](auto a_v) {
+					OnModelGroupEditorChange(
+						a_handle,
+						a_params,
+						ModelGroupEditorOnChangeEventType::Transform);
+				},
+				[] {});
 
-				ImGui::TreePop();
-			}
+			UICommon::PopDisabled(disabled);
 		}
+
 		template <class T>
 		void UIModelGroupEditorWidget<T>::DrawFlags(
 			T                                                a_handle,
@@ -296,6 +286,21 @@ namespace IED
 			ImGui::PushID("flags");
 
 			ImGui::Columns(2, nullptr, false);
+
+			if (ImGui::CheckboxFlagsT(
+					LS(CommonStrings::Disable, "0"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisabled)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+
+			bool disabled = entry.flags.test(Data::ConfigModelGroupEntryFlags::kDisabled);
+
+			UICommon::PushDisabled(disabled);
 
 			if (ImGui::CheckboxFlagsT(
 					LS(UIBaseConfigString::DropOnDeath, "1"),
@@ -383,6 +388,8 @@ namespace IED
 			}
 			DrawTipWarn(UITip::DisableHavok);
 
+			UICommon::PopDisabled(disabled);
+
 			ImGui::Columns();
 
 			ImGui::PopID();
@@ -398,7 +405,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
@@ -445,7 +452,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 

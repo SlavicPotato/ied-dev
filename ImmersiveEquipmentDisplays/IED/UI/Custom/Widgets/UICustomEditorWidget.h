@@ -864,9 +864,9 @@ namespace IED
 
 						ImGui::NextColumn();
 
-						bool disabled = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
+						bool cd = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
 
-						UICommon::PushDisabled(disabled);
+						UICommon::PushDisabled(cd);
 
 						if (ImGui::CheckboxFlagsT(
 								LS(UICustomEditorString::IgnoreRaceEquipTypes, "8"),
@@ -894,7 +894,7 @@ namespace IED
 
 						DrawTip(UITip::DisableIfEquipped);
 
-						UICommon::PopDisabled(disabled);
+						UICommon::PopDisabled(cd);
 
 						ImGui::Columns();
 
@@ -902,9 +902,9 @@ namespace IED
 
 						ImGui::PushItemWidth(ImGui::GetFontSize() * -13.5f);
 
-						disabled = data.customFlags.test(Data::CustomFlags::kUseGroup);
+						cd = data.customFlags.test(Data::CustomFlags::kUseGroup);
 
-						UICommon::PushDisabled(disabled);
+						UICommon::PushDisabled(cd);
 
 						if (m_formPicker.DrawFormPicker(
 								"fp_m",
@@ -918,7 +918,7 @@ namespace IED
 								PostChangeAction::Reset);
 						}
 
-						UICommon::PopDisabled(disabled);
+						UICommon::PopDisabled(cd);
 
 						ImGui::BeginGroup();
 						DrawCountRangeContextMenu(a_handle, a_params);

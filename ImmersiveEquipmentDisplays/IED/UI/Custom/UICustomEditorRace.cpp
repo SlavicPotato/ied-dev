@@ -19,6 +19,7 @@ namespace IED
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
 			UINotificationInterface(a_controller),
+			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -265,8 +266,6 @@ namespace IED
 			Game::FormID                    a_handle,
 			const CustomConfigUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
-
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
 
 			conf = a_params.data;

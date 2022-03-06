@@ -44,11 +44,13 @@ namespace IED
 			Controller::actorInfo_t info;
 			if (m_controller.LookupCachedActorInfo(a_record, info))
 			{
-				if (result = m_controller.AttachNodeImpl(
-						info.npcRoot,
-						state->nodeDesc,
-						state->atmReference,
-						a_entry))
+				result = m_controller.AttachNodeImpl(
+					info.npcRoot,
+					state->nodeDesc,
+					state->atmReference,
+					a_entry);
+
+				if (result)
 				{
 					m_controller.UpdateRootPaused(info.root);
 					a_record.RequestTransformUpdateDefer();

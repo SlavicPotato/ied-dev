@@ -36,7 +36,7 @@ namespace IED
 			stl::optional<NiPoint3> position;
 			stl::optional<NiPoint3> rotation;
 
-			void constexpr clamp() noexcept
+			constexpr void clamp() noexcept
 			{
 				using namespace ::Math;
 
@@ -87,21 +87,28 @@ namespace IED
 				return result;
 			}
 
+			constexpr void clear()
+			{
+				scale.clear();
+				position.clear();
+				rotation.clear();
+			}
+
 		protected:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& scale;
-				ar& position;
-				ar& rotation;
+				a_ar& scale;
+				a_ar& position;
+				a_ar& rotation;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& scale;
-				ar& position;
-				ar& rotation;
+				a_ar& scale;
+				a_ar& position;
+				a_ar& rotation;
 
 				clamp();
 			}
@@ -112,5 +119,5 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configTransform_t,
-	IED::Data::configTransform_t::Serialization::DataVersion1);
+	::IED::Data::configTransform_t,
+	::IED::Data::configTransform_t::Serialization::DataVersion1);

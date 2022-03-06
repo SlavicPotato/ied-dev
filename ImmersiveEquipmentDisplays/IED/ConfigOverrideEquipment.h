@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ConfigCommon.h"
-#include "ConfigOverrideCommon.h"
 #include "ConfigOverrideBaseValues.h"
+#include "ConfigOverrideCommon.h"
 
 namespace IED
 {
@@ -41,6 +41,8 @@ namespace IED
 			kNegateMatch2 = 1u << 14,
 			kNegateMatch3 = 1u << 15,
 			kNegateMatch4 = 1u << 16,
+
+			//kMatchTemplate = 1u << 30
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideConditionFlags);
@@ -97,10 +99,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& conditions;
+				a_ar& flags.value;
+				a_ar& conditions;
 			}
 		};
 
@@ -160,7 +162,7 @@ namespace IED
 			}
 
 			equipmentOverrideCondition_t(
-				Biped::BIPED_OBJECT a_slot) :
+				BIPED_OBJECT a_slot) :
 				bipedSlot(a_slot)
 			{
 				fbf.type = EquipmentOverrideConditionType::BipedSlot;
@@ -212,10 +214,10 @@ namespace IED
 				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
 				QuestConditionType     questCondType;
 				ExtraConditionType     extraCondType;
-				Biped::BIPED_OBJECT    bipedSlot;
+				BIPED_OBJECT           bipedSlot;
 				PACKAGE_PROCEDURE_TYPE procedureType;
 
-				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 			};
 
@@ -223,34 +225,34 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar&          flags.value;
+				a_ar&          flags.value;
 				configForm_t tmp = form.get_id();
-				ar&          tmp;
-				ar&          slot;
-				ar&          keyword;
-				ar&          ui32a;
-				ar&          group;
+				a_ar&          tmp;
+				a_ar&          slot;
+				a_ar&          keyword;
+				a_ar&          ui32a;
+				a_ar&          group;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar&          flags.value;
+				a_ar&          flags.value;
 				configForm_t tmp;
-				ar&          tmp;
+				a_ar&          tmp;
 				form = tmp;
-				ar& slot;
-				ar& keyword;
+				a_ar& slot;
+				a_ar& keyword;
 
-				if (version >= DataVersion2)
+				if (a_version >= DataVersion2)
 				{
-					ar& ui32a;
+					a_ar& ui32a;
 
-					if (version >= DataVersion3)
+					if (a_version >= DataVersion3)
 					{
-						ar& group;
+						a_ar& group;
 					}
 				}
 			}
@@ -293,12 +295,12 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configBaseValues_t&>(*this);
-				ar& eoFlags.value;
-				ar& conditions;
-				ar& description;
+				a_ar& static_cast<configBaseValues_t&>(*this);
+				a_ar& eoFlags.value;
+				a_ar& conditions;
+				a_ar& description;
 			}
 		};
 
@@ -308,13 +310,13 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::equipmentOverride_t,
-	IED::Data::equipmentOverride_t::Serialization::DataVersion1);
+	::IED::Data::equipmentOverride_t,
+	::IED::Data::equipmentOverride_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::equipmentOverrideConditionGroup_t,
-	IED::Data::equipmentOverrideConditionGroup_t::Serialization::DataVersion1);
+	::IED::Data::equipmentOverrideConditionGroup_t,
+	::IED::Data::equipmentOverrideConditionGroup_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::equipmentOverrideCondition_t,
-	IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion3);
+	::IED::Data::equipmentOverrideCondition_t,
+	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion3);

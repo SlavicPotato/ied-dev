@@ -579,6 +579,11 @@ namespace IED
 
 		for (auto& e : a_group.entries)
 		{
+			if (e.second.flags.test(Data::ConfigModelGroupEntryFlags::kDisabled))
+			{
+				continue;
+			}
+
 			auto form = e.second.form.get_form();
 			if (!form)
 			{
@@ -611,7 +616,10 @@ namespace IED
 				continue;
 			}
 
-			modelParams.emplace_back(std::addressof(e), form, std::move(params));
+			modelParams.emplace_back(
+				std::addressof(e),
+				form,
+				std::move(params));
 		}
 
 		if (modelParams.empty())

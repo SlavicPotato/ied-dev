@@ -13,7 +13,6 @@ namespace IED
 	{
 		UINPCInfoAddInterface::UINPCInfoAddInterface(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}

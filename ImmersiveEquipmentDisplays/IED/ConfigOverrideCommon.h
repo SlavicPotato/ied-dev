@@ -37,15 +37,15 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& static_cast<const Game::FormID&>(*this);
+				a_ar& static_cast<const Game::FormID&>(*this);
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<Game::FormID&>(*this);
+				a_ar& static_cast<Game::FormID&>(*this);
 
 				if (*this)
 				{
@@ -70,13 +70,15 @@ namespace IED
 
 			configCachedForm_t() = default;
 
-			inline configCachedForm_t(Game::FormID a_id) noexcept :
+			inline constexpr configCachedForm_t(
+				const Game::FormID& a_id) noexcept :
 				id(a_id),
 				form(nullptr)
 			{
 			}
 
-			inline configCachedForm_t& operator=(Game::FormID a_id) noexcept
+			inline configCachedForm_t& operator=(
+				const Game::FormID& a_id) noexcept
 			{
 				id   = a_id;
 				form = nullptr;
@@ -101,9 +103,9 @@ namespace IED
 			template <class T, class form_type = stl::strip_type<T>>
 			inline form_type* get_form() const noexcept
 			{
-				if (auto form = get_form())
+				if (auto f = get_form())
 				{
-					return form->As<form_type>();
+					return f->As<form_type>();
 				}
 				else
 				{
@@ -127,27 +129,28 @@ namespace IED
 			}*/
 
 		private:
+			static TESForm* lookup_form(Game::FormID a_form) noexcept;
+
+			Game::FormID     id;
+			mutable TESForm* form{ nullptr };
+
+		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& id;
+				a_ar& id;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& id;
+				a_ar& id;
 
 				if (id)
 				{
 					id = resolve_form(id);
 				}
 			}
-
-			static TESForm* lookup_form(Game::FormID a_form) noexcept;
-
-			Game::FormID     id;
-			mutable TESForm* form{ nullptr };
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
@@ -174,15 +177,7 @@ namespace IED
 			kCombatStyle       = 8,
 			kClass             = 9,
 		};
-	}
-}
 
-STD_SPECIALIZE_HASH(IED::Data::configForm_t);
-
-namespace IED
-{
-	namespace Data
-	{
 		template <class T>
 		class configSexRoot_t
 		{
@@ -270,11 +265,11 @@ namespace IED
 			T m_configs[2];
 
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				for (auto& e : m_configs)
 				{
-					ar& e;
+					a_ar& e;
 				}
 			}
 		};
@@ -294,7 +289,6 @@ namespace IED
 			};
 
 			using data_type = T;
-			//using config_type = typename T::data_type::config_type;
 
 			inline constexpr auto& GetActorData() noexcept
 			{
@@ -381,12 +375,12 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data[stl::underlying(ConfigClass::Actor)];
-				ar& data[stl::underlying(ConfigClass::NPC)];
-				ar& data[stl::underlying(ConfigClass::Race)];
-				ar& global;
+				a_ar& data[stl::underlying(ConfigClass::Actor)];
+				a_ar& data[stl::underlying(ConfigClass::NPC)];
+				a_ar& data[stl::underlying(ConfigClass::Race)];
+				a_ar& global;
 			}
 
 			configFormMap_t<data_type> data[3];
@@ -406,9 +400,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<stl::set<configForm_t>&>(*this);
+				a_ar& static_cast<stl::set<configForm_t>&>(*this);
 			}
 		};
 
@@ -449,11 +443,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& allow;
-				ar& deny;
+				a_ar& flags.value;
+				a_ar& allow;
+				a_ar& deny;
 			}
 		};
 
@@ -489,11 +483,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configFormFilterBase_t&>(*this);
-				ar& filterFlags.value;
-				ar& profile.name;
+				a_ar& static_cast<configFormFilterBase_t&>(*this);
+				a_ar& filterFlags.value;
+				a_ar& profile.name;
 			}
 		};
 
@@ -510,58 +504,52 @@ namespace IED
 			Game::FormID a_actor,
 			const T&     a_data) const
 		{
-			if (!actor_set)
+			if (!actor)
 			{
 				auto it = a_data.find(a_actor);
 
 				actor = it != a_data.end() ?
 				            std::addressof(it->second) :
                             nullptr;
-
-				actor_set = true;
 			}
 
-			return actor;
+			return *actor;
 		}
 
 		const mapped_type* get_npc(
 			Game::FormID a_npc,
 			const T&     a_data) const
 		{
-			if (!npc_set)
+			if (!npc)
 			{
 				auto it = a_data.find(a_npc);
 
 				npc = it != a_data.end() ?
 				          std::addressof(it->second) :
                           nullptr;
-
-				npc_set = true;
 			}
 
-			return npc;
+			return *npc;
 		}
 
 		const mapped_type* get_race(
 			Game::FormID a_race,
 			const T&     a_data) const
 		{
-			if (!race_set)
+			if (!race)
 			{
 				auto it = a_data.find(a_race);
 
 				race = it != a_data.end() ?
 				           std::addressof(it->second) :
                            nullptr;
-
-				race_set = true;
 			}
 
-			return race;
+			return *race;
 		}
 
 		template <class Td>
-		SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
+		SKMP_FORCEINLINE static constexpr const typename Td::mapped_type* get_entry(
 			const Td&                    a_data,
 			const typename Td::key_type& a_key)
 		{
@@ -579,39 +567,38 @@ namespace IED
 		}
 
 	private:
-		mutable bool actor_set{ false };
-		mutable bool npc_set{ false };
-		mutable bool race_set{ false };
-
-		mutable const mapped_type* actor;
-		mutable const mapped_type* npc;
-		mutable const mapped_type* race;
+		mutable std::optional<const mapped_type*> actor;
+		mutable std::optional<const mapped_type*> npc;
+		mutable std::optional<const mapped_type*> race;
 	};
 
 }
 
-BOOST_CLASS_VERSION(
-	IED::Data::configCachedForm_t,
-	IED::Data::configCachedForm_t::Serialization::DataVersion1);
+STD_SPECIALIZE_HASH(::IED::Data::configForm_t);
+
 
 BOOST_CLASS_VERSION(
-	IED::Data::configFormFilterBase_t,
-	IED::Data::configFormFilterBase_t::Serialization::DataVersion1);
+	::IED::Data::configCachedForm_t,
+	::IED::Data::configCachedForm_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configFormFilter_t,
-	IED::Data::configFormFilter_t::Serialization::DataVersion1);
+	::IED::Data::configFormFilterBase_t,
+	::IED::Data::configFormFilterBase_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configFormSet_t,
-	IED::Data::configFormSet_t::Serialization::DataVersion1);
+	::IED::Data::configFormFilter_t,
+	::IED::Data::configFormFilter_t::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
+	::IED::Data::configFormSet_t,
+	::IED::Data::configFormSet_t::Serialization::DataVersion1);
 
 BOOST_CLASS_TEMPLATE_VERSION(
 	class T,
-	IED::Data::configSexRoot_t<T>,
-	IED::Data::configSexRoot_t<T>::Serialization::DataVersion1);
+	::IED::Data::configSexRoot_t<T>,
+	::IED::Data::configSexRoot_t<T>::Serialization::DataVersion1);
 
 BOOST_CLASS_TEMPLATE_VERSION(
 	class T,
-	IED::Data::configStoreBase_t<T>,
-	IED::Data::configStoreBase_t<T>::Serialization::DataVersion1);
+	::IED::Data::configStoreBase_t<T>,
+	::IED::Data::configStoreBase_t<T>::Serialization::DataVersion1);

@@ -309,4 +309,4 @@ namespace IED
 }
 
 #define JSON_PARSE_VERSION() \
-	auto version = ExtractVersion(a_in, CURRENT_VERSION, __FUNCTION__);
+	[[maybe_unused]] auto version = ExtractVersion(a_in, CURRENT_VERSION, __FUNCTION__);

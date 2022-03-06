@@ -14,7 +14,6 @@ namespace IED
 	{
 		UIActorInfoAddInterface::UIActorInfoAddInterface(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_formSelector(a_controller, FormInfoFlags::kNone, true, false),
 			m_controller(a_controller)
 		{

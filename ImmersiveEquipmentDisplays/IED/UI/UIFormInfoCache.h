@@ -26,7 +26,7 @@ namespace IED
 
 			inline void clear() noexcept
 			{
-				m_data.swap(decltype(m_data)());
+				m_data.clear();
 			}
 
 			inline auto size() const noexcept

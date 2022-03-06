@@ -20,18 +20,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& keys;
+				a_ar& keys;
 			}
-
-			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
-			{
-				ar& keys;
-			}
-
-			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		struct actorBlockList_t
@@ -55,10 +47,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
-				ar& playerToggle;
+				a_ar& data;
+				a_ar& playerToggle;
 			}
 		};
 
@@ -66,9 +58,9 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::actorBlockEntry_t,
-	IED::Data::actorBlockEntry_t::Serialization::DataVersion1);
+	::IED::Data::actorBlockEntry_t,
+	::IED::Data::actorBlockEntry_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::actorBlockList_t,
-	IED::Data::actorBlockList_t::Serialization::DataVersion1);
+	::IED::Data::actorBlockList_t,
+	::IED::Data::actorBlockList_t::Serialization::DataVersion1);

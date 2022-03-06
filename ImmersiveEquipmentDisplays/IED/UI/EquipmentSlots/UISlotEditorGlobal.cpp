@@ -15,6 +15,7 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIGlobalConfigTypeSelectorWidget(a_controller),
+			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -152,8 +153,6 @@ namespace IED
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
-
-			auto& store = m_controller.GetConfigStore();
 
 			UpdateConfigSingleSlot(a_handle, params, GetEditorPanelSettings().sexSync);
 

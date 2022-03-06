@@ -31,11 +31,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& slot;
-				ar& custom;
-				ar& transforms;
+				a_ar& slot;
+				a_ar& custom;
+				a_ar& transforms;
 			}
 		};
 	}

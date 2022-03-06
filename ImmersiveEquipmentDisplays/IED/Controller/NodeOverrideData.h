@@ -34,7 +34,6 @@ namespace IED
 			weaponNodeEntry_t(
 				const weap_ctor_init_t& a_init) :
 				bsname(a_init.node),
-				defParent(a_init.def),
 				bsdefParent(a_init.def),
 				desc(a_init.desc),
 				movs(a_init.movlist)
@@ -42,7 +41,6 @@ namespace IED
 			}
 
 			BSFixedString     bsname;
-			stl::fixed_string defParent;
 			BSFixedString     bsdefParent;
 			const char*       desc;
 			nodeList_t        movs;

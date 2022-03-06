@@ -7,6 +7,7 @@
 #include <ext/INIReader.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ITaskPool.h>
+#include <ext/IUUID.h>
 #include <ext/Map.h>
 #include <ext/Math.h>
 #include <ext/Model.h>
@@ -16,8 +17,9 @@
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
 #include <ext/str_conv.h>
-#include <ext/IUUID.h>
 
+#include <skse64/BipedObject.h>
+#include <skse64/FormTraits.h>
 #include <skse64/GameAudio.h>
 #include <skse64/GameEvents.h>
 #include <skse64/GameExtraData.h>
@@ -31,8 +33,6 @@
 #include <skse64/NiSerialization.h>
 #include <skse64/PapyrusNativeFunctions.h>
 #include <skse64/PluginAPI.h>
-
-#include <skse64/FormTraits.h>
 
 #include <bitset>
 #include <chrono>

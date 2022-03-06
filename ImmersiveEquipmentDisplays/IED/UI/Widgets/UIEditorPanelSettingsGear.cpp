@@ -11,8 +11,7 @@ namespace IED
 	{
 		UIEditorPanelSettingsGear::UIEditorPanelSettingsGear(
 			Controller& a_controller) :
-			UIEditorPanelSettings(a_controller),
-			UILocalizationInterface(a_controller)
+			UIEditorPanelSettings(a_controller)
 		{
 		}
 
@@ -27,12 +26,12 @@ namespace IED
 			ImGui::SameLine(0.0f, 15.0f);
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::PropagateToEquipmentOverrides, "1"),
+					LS(UIWidgetCommonStrings::PropagateMemberToEquipmentOverrides, "1"),
 					std::addressof(data.eoPropagation)))
 			{
 				OnEditorPanelSettingsChange();
 			}
-			DrawTip(UITip::PropagateToEquipmentOverrides);
+			DrawTip(UITip::PropagateMemberToEquipmentOverrides);
 		}
 	}
 }

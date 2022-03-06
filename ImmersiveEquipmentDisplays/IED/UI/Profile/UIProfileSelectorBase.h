@@ -207,8 +207,7 @@ namespace IED
 								LS(UIProfileStrings::SaveCurrentToProfile),
 								profile.Name().c_str()) == ModalStatus::kAccept)
 						{
-							auto& profileData = GetData(a_data);
-							if (!pm.SaveProfile(profile.Name(), profileData))
+							if (!pm.SaveProfile(profile.Name(), GetData(a_data)))
 							{
 								m_state.lastException = pm.GetLastException();
 

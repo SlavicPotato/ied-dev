@@ -12,9 +12,10 @@ namespace IED
 
 		ProfileBase() = default;
 
-		virtual bool Load() = 0;
+		virtual bool Load()                              = 0;
 		virtual bool Save(const T& a_data, bool a_store) = 0;
-		virtual void SetDefaults() noexcept = 0;
+		virtual bool Save(T&& a_data, bool a_store)      = 0;
+		virtual void SetDefaults() noexcept              = 0;
 
 		virtual bool Save()
 		{
@@ -23,9 +24,9 @@ namespace IED
 
 		void SetPath(const fs::path& a_path)
 		{
-			m_path = a_path;
+			m_path    = a_path;
 			m_pathStr = str_conv::wstr_to_str(a_path.wstring());
-			m_name = str_conv::wstr_to_str(a_path.stem().wstring());
+			m_name    = str_conv::wstr_to_str(a_path.stem().wstring());
 		}
 
 		inline void SetDescription(const std::string& a_text) noexcept
@@ -90,11 +91,11 @@ namespace IED
 
 	protected:
 		std::filesystem::path m_path;
-		stl::fixed_string m_pathStr;
-		stl::fixed_string m_name;
+		stl::fixed_string     m_pathStr;
+		stl::fixed_string     m_name;
 
-		std::uint64_t m_id{ 0 };
-		stl::optional<std::string> m_desc;
+		std::uint64_t              m_id{ 0 };
+		std::optional<std::string> m_desc;
 
 		T m_data;
 
@@ -113,6 +114,7 @@ namespace IED
 
 		virtual bool Load() override;
 		virtual bool Save(const T& a_data, bool a_store) override;
+		virtual bool Save(T&& a_data, bool a_store) override;
 
 		virtual void SetDefaults() noexcept override;
 
@@ -122,41 +124,23 @@ namespace IED
 		}
 
 	private:
+		template <class Td>
+		bool SaveImpl(Td&& a_data, bool a_store);
+
 		Serialization::ParserState m_state;
-		bool m_hasParserErrors{ false };
+		bool                       m_hasParserErrors{ false };
 	};
 
 	template <class T>
 	bool Profile<T>::Save(const T& a_data, bool a_store)
 	{
-		try
-		{
-			if (m_path.empty())
-				throw std::exception("Bad path");
+		return SaveImpl(a_data, a_store);
+	}
 
-			Json::Value root;
-
-			Serialization::ParserState state;
-			Serialization::Parser<T> parser(state);
-
-			parser.Create(a_data, root);
-
-			root["id"] = m_id;
-			if (m_desc)
-				root["desc"] = *m_desc;
-
-			Serialization::WriteData(m_path, root);
-
-			if (a_store)
-				m_data = a_data;
-
-			return true;
-		}
-		catch (const std::exception& e)
-		{
-			m_lastExcept = e;
-			return false;
-		}
+	template <class T>
+	bool Profile<T>::Save(T&& a_data, bool a_store)
+	{
+		return SaveImpl(std::move(a_data), a_store);
 	}
 
 	template <class T>
@@ -165,36 +149,46 @@ namespace IED
 		try
 		{
 			if (m_path.empty())
-				throw std::exception("Bad path");
+			{
+				throw std::exception("bad path");
+			}
 
 			std::ifstream fs;
 			fs.open(m_path, std::ifstream::in | std::ifstream::binary);
+
 			if (!fs.is_open())
-				throw std::exception("Could not open file for reading");
+			{
+				throw std::system_error(
+					errno,
+					std::system_category(),
+					Serialization::SafeGetPath(m_path));
+			}
 
 			Json::Value root;
 			fs >> root;
 
 			Serialization::ParserState state;
-			Serialization::Parser<T> parser(state);
+			Serialization::Parser<T>   parser(state);
 
 			T tmp;
 
 			if (!parser.Parse(root, tmp))
-				throw std::exception("Parser error");
+			{
+				throw std::exception("parser error");
+			}
 
 			m_hasParserErrors = parser.HasErrors();
 
-			auto& id = root["id"];
+			m_id = root.get("id", 0).asUInt64();
 
-			m_id = !id.isNumeric() ? 0 : id.asUInt64();
-
-			auto& desc = root["desc"];
-
-			if (!desc.isString())
-				m_desc.reset();
-			else
+			if (auto& desc = root["desc"])
+			{
 				m_desc = desc.asString();
+			}
+			else
+			{
+				m_desc.reset();
+			}
 
 			m_data = std::move(tmp);
 
@@ -211,8 +205,51 @@ namespace IED
 	void Profile<T>::SetDefaults() noexcept
 	{
 		Serialization::ParserState state;
-		Serialization::Parser<T> parser(state);
+		Serialization::Parser<T>   parser(state);
 
 		parser.GetDefault(m_data);
 	}
-}  // namespace IED
+
+	template <class T>
+	template <class Td>
+	bool Profile<T>::SaveImpl(
+		Td&& a_data,
+		bool a_store)
+	{
+		try
+		{
+			if (m_path.empty())
+			{
+				throw std::exception("bad path");
+			}
+
+			Json::Value root;
+
+			Serialization::ParserState state;
+			Serialization::Parser<T>   parser(state);
+
+			parser.Create(a_data, root);
+
+			root["id"] = m_id;
+			if (m_desc)
+			{
+				root["desc"] = *m_desc;
+			}
+
+			Serialization::WriteData(m_path, root);
+
+			if (a_store)
+			{
+				m_data = std::forward<Td>(a_data);
+			}
+
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			m_lastExcept = e;
+			return false;
+		}
+	}
+
+}

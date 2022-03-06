@@ -14,10 +14,10 @@ namespace IED
 	{
 		struct item_t
 		{
-			TESForm*                           form;
-			std::uint16_t                      damage;
-			std::int64_t                       extra;
-			Data::collectorData_t::itemData_t* item;
+			TESForm*                                 form;
+			std::uint16_t                            damage;
+			std::int64_t                             extra;
+			const Data::collectorData_t::itemData_t* item;
 		};
 
 		using storage_type = std::vector<item_t>;

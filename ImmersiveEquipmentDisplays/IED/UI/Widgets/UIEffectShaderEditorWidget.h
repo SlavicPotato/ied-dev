@@ -74,9 +74,7 @@ namespace IED
 
 		template <class T>
 		UIEffectShaderEditorWidget<T>::UIEffectShaderEditorWidget(
-			Controller& a_controller) :
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller)
+			Controller& a_controller)
 		{
 		}
 

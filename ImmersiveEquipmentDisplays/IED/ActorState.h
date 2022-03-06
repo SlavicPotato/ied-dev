@@ -24,10 +24,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& lastEquipped;
-				ar& lastSeenEquipped;
+				a_ar& lastEquipped;
+				a_ar& lastSeenEquipped;
 			}
 		};
 
@@ -48,9 +48,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& slots;
+				a_ar& slots;
 			}
 		};
 
@@ -76,9 +76,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
+				a_ar& data;
 			}
 		};
 
@@ -86,13 +86,13 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::actorStateSlotEntry_t,
-	IED::Data::actorStateSlotEntry_t::Serialization::DataVersion1);
+	::IED::Data::actorStateSlotEntry_t,
+	::IED::Data::actorStateSlotEntry_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::actorStateEntry_t,
-	IED::Data::actorStateEntry_t::Serialization::DataVersion1);
+	::IED::Data::actorStateEntry_t,
+	::IED::Data::actorStateEntry_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::actorStateHolder_t,
-	IED::Data::actorStateHolder_t::Serialization::DataVersion1);
+	::IED::Data::actorStateHolder_t,
+	::IED::Data::actorStateHolder_t::Serialization::DataVersion1);

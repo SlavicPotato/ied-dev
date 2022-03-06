@@ -180,46 +180,75 @@ namespace IED
 			else if constexpr (
 				Ap == ConditionParamItem::BipedSlot)
 			{
-				static_assert(std::is_same_v<T, Biped::BIPED_OBJECT>);
+				static_assert(std::is_same_v<T, BIPED_OBJECT>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::EquipmentSlot)
 			{
 				static_assert(std::is_same_v<T, Data::ObjectSlot>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::EquipmentSlotExtra)
 			{
 				static_assert(std::is_same_v<T, Data::ObjectSlotExtra>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::QuestCondType)
 			{
 				static_assert(std::is_same_v<T, Data::QuestConditionType>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::CondExtra)
 			{
 				static_assert(std::is_same_v<T, Data::ExtraConditionType>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::PackageType)
 			{
 				static_assert(std::is_same_v<T, PACKAGE_PROCEDURE_TYPE>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::Extra)
 			{
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
 			}
 			else
 			{
 				static_assert(false);
 			}
-
-			e = {
-				static_cast<void*>(std::addressof(a_p1)),
-				nullptr
-			};
 		}
 
 		template <ConditionParamItem Ap, class Tp1, class Tp2>
@@ -246,16 +275,15 @@ namespace IED
 			else if constexpr (
 				Ap == ConditionParamItem::Extra)
 			{
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					static_cast<const void*>(std::addressof(a_p2))
+				};
 			}
 			else
 			{
 				static_assert(false);
 			}
-
-			e = {
-				static_cast<void*>(std::addressof(a_p1)),
-				static_cast<const void*>(std::addressof(a_p2))
-			};
 		}
 	}
 }

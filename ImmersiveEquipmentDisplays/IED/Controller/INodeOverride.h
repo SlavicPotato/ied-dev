@@ -24,10 +24,10 @@ namespace IED
 	public:
 		struct bipedInfoEntry_t
 		{
-			TESForm*            item;
-			Biped::BIPED_OBJECT bip{ Biped::BIPED_OBJECT::kNone };
-			float               weaponAdjust{ 0.0f };
-			bool                matched{ false };
+			TESForm*     item;
+			BIPED_OBJECT bip{ BIPED_OBJECT::kNone };
+			float        weaponAdjust{ 0.0f };
+			bool         matched{ false };
 		};
 
 		struct nodeOverrideParamsArgs_t
@@ -106,24 +106,24 @@ namespace IED
 			bool equipped_armor_visitor(
 				Tf a_func)
 			{
-				auto biped = get_biped();
-				if (!biped)
+				auto bip = get_biped();
+				if (!bip)
 				{
 					return false;
 				}
 
 				auto skin = get_actor_skin();
 
-				using enum_type = std::underlying_type_t<Biped::BIPED_OBJECT>;
+				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
-				for (enum_type i = Biped::kHead; i < Biped::kEditorTotal; i++)
+				for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kEditorTotal); i++)
 				{
-					if (is_av_ignored_slot(i))
+					if (is_av_ignored_slot(static_cast<BIPED_OBJECT>(i)))
 					{
 						continue;
 					}
 
-					auto& e = biped->objects[i];
+					auto& e = bip->objects[i];
 
 					if (e.item &&
 					    e.item != e.addon &&
@@ -142,17 +142,14 @@ namespace IED
 
 		private:
 			inline static constexpr bool is_av_ignored_slot(
-				std::underlying_type_t<Biped::BIPED_OBJECT> a_slot) noexcept
+				BIPED_OBJECT a_slot) noexcept
 			{
 				switch (a_slot)
 				{
-				case Biped::kHair:
-				case Biped::kShield:
-				case Biped::kTail:
-				case Biped::kLongHair:
-				case Biped::kDecapitateHead:
-				case Biped::kDecapitate:
-				case Biped::kFX01:
+				case BIPED_OBJECT::kShield:
+				case BIPED_OBJECT::kDecapitateHead:
+				case BIPED_OBJECT::kDecapitate:
+				case BIPED_OBJECT::kFX01:
 					return true;
 				default:
 					return false;

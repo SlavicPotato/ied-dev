@@ -103,7 +103,6 @@ namespace IED
 		UIListBase<Td, Th>::UIListBase(
 			Localization::ILocalization& a_localization,
 			float                        a_itemWidthScalar) noexcept :
-			UILocalizationInterface(a_localization),
 			m_itemWidthScalar(a_itemWidthScalar)
 		{
 		}

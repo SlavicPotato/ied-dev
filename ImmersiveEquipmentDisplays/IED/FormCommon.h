@@ -64,12 +64,9 @@ namespace IED
 			T*                              a_form,
 			const Data::configCachedForm_t& a_keyword)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
-				{
-					return HasKeyword(a_form, keyword);
-				}
+				return HasKeyword(a_form, keyword);
 			}
 
 			return false;

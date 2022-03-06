@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ConfigOverrideBase.h"
-#include "ConfigOverrideEffectShader.h"
 #include "ConfigOverrideModelGroup.h"
 
 namespace IED
@@ -50,50 +49,26 @@ namespace IED
 			float                  chance{ 100.0f };
 			configFormList_t       extraItems;
 			configModelGroup_t     group;
-			//configEffectShaderHolder_t effects;
 
 		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<const configBase_t&>(*this);
-				ar& customFlags.value;
-				ar& form;
-				ar& modelForm;
-				ar& countRange.min;
-				ar& countRange.max;
-				ar& priority;
-				ar& chance;
-				ar& extraItems;
-				ar& group;
-				//ar& effects;
-			}
+				a_ar& static_cast<configBase_t&>(*this);
+				a_ar& customFlags.value;
+				a_ar& form;
+				a_ar& modelForm;
+				a_ar& countRange.min;
+				a_ar& countRange.max;
+				a_ar& priority;
+				a_ar& chance;
+				a_ar& extraItems;
 
-			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
-			{
-				ar& static_cast<configBase_t&>(*this);
-				ar& customFlags.value;
-				ar& form;
-				ar& modelForm;
-				ar& countRange.min;
-				ar& countRange.max;
-				ar& priority;
-				ar& chance;
-				ar& extraItems;
-
-				if (version >= DataVersion2)
+				if (a_version >= DataVersion2)
 				{
-					ar& group;
-
-					/*if (version >= DataVersion3)
-					{
-						ar& effects;
-					}*/
+					a_ar& group;
 				}
 			}
-
-			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		using configCustomEntry_t = configSexRoot_t<configCustom_t>;
@@ -143,9 +118,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
+				a_ar& data;
 			}
 		};
 
@@ -190,9 +165,9 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configCustom_t,
-	IED::Data::configCustom_t::Serialization::DataVersion2);
+	::IED::Data::configCustom_t,
+	::IED::Data::configCustom_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configCustomHolder_t,
-	IED::Data::configCustomHolder_t::Serialization::DataVersion1);
+	::IED::Data::configCustomHolder_t,
+	::IED::Data::configCustomHolder_t::Serialization::DataVersion1);

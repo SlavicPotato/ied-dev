@@ -294,7 +294,7 @@ namespace IED
 					return false;
 				}
 
-				auto& e = biped->objects[Biped::BIPED_OBJECT::kQuiver];
+				auto& e = biped->get_object(BIPED_OBJECT::kQuiver);
 
 				form = e.item;
 
@@ -1000,9 +1000,9 @@ namespace IED
 
 			if (auto data = get_biped())
 			{
-				using enum_type = std::underlying_type_t<Biped::BIPED_OBJECT>;
+				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
-				for (enum_type i = Biped::kHead; i < Biped::kTotal; i++)
+				for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 				{
 					auto item = data->objects[i].item;
 					if (!item)
@@ -1019,7 +1019,7 @@ namespace IED
 					auto r = itemData->try_emplace(
 						item->formID,
 						item,
-						static_cast<Biped::BIPED_OBJECT>(i));
+						static_cast<BIPED_OBJECT>(i));
 
 					if (addon)
 					{

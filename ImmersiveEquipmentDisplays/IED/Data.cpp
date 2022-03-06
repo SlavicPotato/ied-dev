@@ -690,30 +690,30 @@ namespace IED
 			}
 		}
 
-		Biped::BIPED_OBJECT ItemData::SlotToBipedObject(ObjectSlot a_slot) noexcept
+		BIPED_OBJECT ItemData::SlotToBipedObject(ObjectSlot a_slot) noexcept
 		{
 			switch (a_slot)
 			{
 			case ObjectSlot::k1HSword:
-				return Biped::BIPED_OBJECT::kOneHandSword;
+				return BIPED_OBJECT::kOneHandSword;
 			case ObjectSlot::k1HAxe:
-				return Biped::BIPED_OBJECT::kOneHandAxe;
+				return BIPED_OBJECT::kOneHandAxe;
 			case ObjectSlot::k2HSword:
 			case ObjectSlot::k2HAxe:
-				return Biped::BIPED_OBJECT::kTwoHandMelee;
+				return BIPED_OBJECT::kTwoHandMelee;
 			case ObjectSlot::k2HSwordLeft:
 			case ObjectSlot::k2HAxeLeft:
-				return Biped::BIPED_OBJECT::kNone;
+				return BIPED_OBJECT::kNone;
 			case ObjectSlot::kMace:
-				return Biped::BIPED_OBJECT::kOneHandMace;
+				return BIPED_OBJECT::kOneHandMace;
 			case ObjectSlot::kDagger:
-				return Biped::BIPED_OBJECT::kOneHandDagger;
+				return BIPED_OBJECT::kOneHandDagger;
 			case ObjectSlot::kStaff:
-				return Biped::BIPED_OBJECT::kStaff;
+				return BIPED_OBJECT::kStaff;
 			case ObjectSlot::kBow:
-				return Biped::BIPED_OBJECT::kBow;
+				return BIPED_OBJECT::kBow;
 			case ObjectSlot::kCrossBow:
-				return Biped::BIPED_OBJECT::kCrossbow;
+				return BIPED_OBJECT::kCrossbow;
 			case ObjectSlot::kDaggerLeft:
 			case ObjectSlot::k1HSwordLeft:
 			case ObjectSlot::k1HAxeLeft:
@@ -721,11 +721,11 @@ namespace IED
 			case ObjectSlot::kStaffLeft:
 			case ObjectSlot::kShield:
 			case ObjectSlot::kTorch:
-				return Biped::BIPED_OBJECT::kShield;
+				return BIPED_OBJECT::kShield;
 			case ObjectSlot::kAmmo:
-				return Biped::BIPED_OBJECT::kQuiver;
+				return BIPED_OBJECT::kQuiver;
 			default:
-				return Biped::BIPED_OBJECT::kNone;
+				return BIPED_OBJECT::kNone;
 			}
 		}
 

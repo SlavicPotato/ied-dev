@@ -40,11 +40,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& actorFilter;
-				ar& npcFilter;
-				ar& raceFilter;
+				a_ar& actorFilter;
+				a_ar& npcFilter;
+				a_ar& raceFilter;
 			}
 		};
 
@@ -103,9 +103,9 @@ namespace IED
 			}
 
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& filters;
+				a_ar& filters;
 			}
 		};
 
@@ -247,41 +247,30 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<const configBaseValues_t&>(*this);
-				ar& static_cast<const configBaseFiltersHolder_t&>(*this);
-				ar& equipmentOverrides;
-				//ar& effectShaders;
-			}
+				a_ar& static_cast<configBaseValues_t&>(*this);
+				a_ar& static_cast<configBaseFiltersHolder_t&>(*this);
+				a_ar& equipmentOverrides;
 
-			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
-			{
-				ar& static_cast<configBaseValues_t&>(*this);
-				ar& static_cast<configBaseFiltersHolder_t&>(*this);
-				ar& equipmentOverrides;
-
-				if (version >= DataVersion2)
+				if (a_version >= DataVersion2)
 				{
-					//ar& effectShaders;
+					//a_ar& effectShaders;
 				}
 			}
-
-			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 	}
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configBaseFilters_t,
-	IED::Data::configBaseFilters_t::Serialization::DataVersion1);
+	::IED::Data::configBaseFilters_t,
+	::IED::Data::configBaseFilters_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configBaseFiltersHolder_t,
-	IED::Data::configBaseFiltersHolder_t::Serialization::DataVersion1);
+	::IED::Data::configBaseFiltersHolder_t,
+	::IED::Data::configBaseFiltersHolder_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configBase_t,
-	IED::Data::configBase_t::Serialization::DataVersion1);
+	::IED::Data::configBase_t,
+	::IED::Data::configBase_t::Serialization::DataVersion1);

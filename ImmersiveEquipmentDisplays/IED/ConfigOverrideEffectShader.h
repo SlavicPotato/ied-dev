@@ -78,10 +78,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& path;
+				a_ar& flags.value;
+				a_ar& path;
 			}
 		};
 
@@ -112,15 +112,15 @@ namespace IED
 				NiPointer<NiTexture>&              a_out);
 
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& targetNodes;
-				ar& baseTexture;
-				ar& paletteTexture;
-				ar& blockOutTexture;
-				ar& fillColor;
-				ar& rimColor;
+				a_ar& flags.value;
+				a_ar& targetNodes;
+				a_ar& baseTexture;
+				a_ar& paletteTexture;
+				a_ar& blockOutTexture;
+				a_ar& fillColor;
+				a_ar& rimColor;
 			}
 		};
 
@@ -170,12 +170,12 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& description;
-				ar& conditions;
-				ar& data;
+				a_ar& flags.value;
+				a_ar& description;
+				a_ar& conditions;
+				a_ar& data;
 			}
 		};
 
@@ -199,9 +199,9 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& data;
+				a_ar& data;
 			}
 		};
 
@@ -209,17 +209,17 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configEffectShaderData_t,
-	IED::Data::configEffectShaderData_t::Serialization::DataVersion1);
+	::IED::Data::configEffectShaderData_t,
+	::IED::Data::configEffectShaderData_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configEffectShaderHolder_t,
-	IED::Data::configEffectShaderHolder_t::Serialization::DataVersion1);
+	::IED::Data::configEffectShaderHolder_t,
+	::IED::Data::configEffectShaderHolder_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::effectShaderList_t,
-	IED::Data::effectShaderList_t::Serialization::DataVersion1);
+	::IED::Data::effectShaderList_t,
+	::IED::Data::effectShaderList_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configEffectShaderTexture_t,
-	IED::Data::configEffectShaderTexture_t::Serialization::DataVersion1);
+	::IED::Data::configEffectShaderTexture_t,
+	::IED::Data::configEffectShaderTexture_t::Serialization::DataVersion1);

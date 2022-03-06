@@ -22,13 +22,13 @@ namespace IED
 				ImGui::SetKeyboardFocusHere();
 			}
 
-			bool r;
+			bool r = ImGui::InputText(
+				a_label,
+				m_filterBuf,
+				sizeof(m_filterBuf),
+				m_inputTextFlags);
 
-			if ((r = ImGui::InputText(
-					 a_label,
-					 m_filterBuf,
-					 sizeof(m_filterBuf),
-					 m_inputTextFlags)))
+			if (r)
 			{
 				if (stl::strlen(m_filterBuf))
 					m_filter = m_filterBuf;

@@ -86,7 +86,7 @@ namespace IED
 			const Tm&     a_match,
 			Tp            a_post)
 		{
-			if (a_match.bipedSlot >= Biped::kTotal)
+			if (a_match.bipedSlot >= BIPED_OBJECT::kTotal)
 			{
 				return false;
 			}
@@ -97,7 +97,7 @@ namespace IED
 				return false;
 			}
 
-			auto& e = biped->objects[a_match.bipedSlot];
+			auto& e = biped->get_object(a_match.bipedSlot);
 
 			auto form = e.item;
 			if (!form || e.addon == form)
@@ -408,6 +408,54 @@ namespace IED
 			{
 				return false;
 			}
+		}
+
+		template <class Tm, class Tf>
+		bool match_form_or_template(
+			const Tm& a_match,
+			TESForm*  a_form)
+		{
+			if (a_match.form.get_id() == a_form->formID)
+			{
+				return true;
+			}
+
+			if (a_match.flags.test(Tf::kMatchTemplate))
+			{
+				if (auto armor = a_form->As<TESObjectARMO>())
+				{
+					if (auto tnam = armor->templateArmor)
+					{
+						return a_match.form.get_id() == tnam->formID;
+					}
+				}
+			}
+
+			return false;
+		}
+		
+		template <class Tm, class Tf>
+		bool match_form_kw_or_template(
+			const Tm& a_match,
+			TESForm*  a_form)
+		{
+			if (IFormCommon::HasKeyword(a_form, a_match.keyword))
+			{
+				return true;
+			}
+
+			if (a_match.flags.test(Tf::kMatchTemplate))
+			{
+				if (auto armor = a_form->As<TESObjectARMO>())
+				{
+					if (auto tnam = armor->templateArmor)
+					{
+						return IFormCommon::HasKeyword(tnam, a_match.keyword);
+					}
+				}
+			}
+
+			return false;
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);

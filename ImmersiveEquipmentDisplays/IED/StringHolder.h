@@ -35,6 +35,8 @@ namespace IED
 		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
 		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
 
+		// IED-added
+
 		static inline constexpr auto NINODE_IED_1HSWORD      = "IED WeaponOneHandedSword";
 		static inline constexpr auto NINODE_IED_1HSWORD_LEFT = "IED WeaponOneHandedSwordLeft";
 		static inline constexpr auto NINODE_IED_1HAXE        = "IED WeaponOneHandedAxe";
@@ -66,6 +68,7 @@ namespace IED
 		static inline constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER  = "pFireENBLight01-Emitter";
 		static inline constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
 
+		//BSStringHolder();
 		BSStringHolder() = default;
 
 		BSStringHolder(const BSStringHolder&) = delete;
@@ -97,6 +100,8 @@ namespace IED
 		BSFixedString m_attachENBLight{ BSVALUENODE_ATTACH_ENB_LIGHT };
 		BSFixedString m_enbFireLightEmitter{ NINODE_ENB_FIRE_LIGHT_EMITTER };
 		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
+
+		//stl::set<BSFixedString> m_sheathNodes;
 	};
 
 	class StringHolder

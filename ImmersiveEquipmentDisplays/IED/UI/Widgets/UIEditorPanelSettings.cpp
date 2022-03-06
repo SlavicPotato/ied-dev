@@ -7,8 +7,7 @@ namespace IED
 	namespace UI
 	{
 		UIEditorPanelSettings::UIEditorPanelSettings(
-			Controller& a_controller) :
-			UITipsInterface(a_controller)
+			Controller& a_controller)
 		{
 		}
 

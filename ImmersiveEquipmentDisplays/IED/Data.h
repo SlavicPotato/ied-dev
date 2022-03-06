@@ -57,11 +57,11 @@ namespace IED
 
 			static NodeDescriptor GetDefaultSlotNode(ObjectSlot a_slot) noexcept;
 
-			// static Biped::BIPED_OBJECT GetBipedObject(ObjectSlot a_slot);
+			// static BIPED_OBJECT GetBipedObject(ObjectSlot a_slot);
 
 			static TESRace::EquipmentFlag GetRaceEquipmentFlagFromType(ObjectType a_type) noexcept;
 
-			static Biped::BIPED_OBJECT SlotToBipedObject(ObjectSlot a_slot) noexcept;
+			static BIPED_OBJECT SlotToBipedObject(ObjectSlot a_slot) noexcept;
 
 		private:
 		};

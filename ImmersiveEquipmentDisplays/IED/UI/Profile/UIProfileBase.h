@@ -64,7 +64,6 @@ namespace IED
 		template <class T>
 		inline UIProfileBase<T>::UIProfileBase(
 			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization),
 			UICommonModals(a_localization)
 		{
 		}

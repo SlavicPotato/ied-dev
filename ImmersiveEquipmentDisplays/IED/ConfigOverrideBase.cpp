@@ -1057,30 +1057,24 @@ namespace IED
 			const configCachedForm_t& a_keyword,
 			const collectorData_t&    a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				if (auto pm = a_data.actor->processManager)
 				{
-					if (auto pm = a_data.actor->processManager)
+					for (auto e : pm->equippedObject)
 					{
-						for (auto& e : pm->equippedObject)
+						if (e && IFormCommon::HasKeyword(e, keyword))
 						{
-							if (e && IFormCommon::HasKeyword(e, keyword))
-							{
-								return true;
-							}
+							return true;
 						}
 					}
+				}
 
-					for (auto& e : a_data.forms)
+				for (auto& e : a_data.equippedForms)
+				{
+					if (IFormCommon::HasKeyword(e->form, keyword))
 					{
-						if (e.second.equipped || e.second.equippedLeft)
-						{
-							if (IFormCommon::HasKeyword(e.second.form, keyword))
-							{
-								return true;
-							}
-						}
+						return true;
 					}
 				}
 			}
@@ -1092,18 +1086,15 @@ namespace IED
 			const configCachedForm_t& a_keyword,
 			const collectorData_t&    a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				for (auto& e : a_data.forms)
 				{
-					for (auto& e : a_data.forms)
+					if (e.second.count > 0)
 					{
-						if (e.second.count > 0)
+						if (IFormCommon::HasKeyword(e.second.form, keyword))
 						{
-							if (IFormCommon::HasKeyword(e.second.form, keyword))
-							{
-								return true;
-							}
+							return true;
 						}
 					}
 				}
@@ -1116,18 +1107,15 @@ namespace IED
 			const configCachedForm_t&  a_keyword,
 			const slot_container_type& a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				for (auto& e : a_data)
 				{
-					for (auto& e : a_data)
+					if (auto iform = e.GetFormIfActive())
 					{
-						if (auto iform = e.GetFormIfActive())
+						if (IFormCommon::HasKeyword(iform, keyword))
 						{
-							if (IFormCommon::HasKeyword(iform, keyword))
-							{
-								return true;
-							}
+							return true;
 						}
 					}
 				}
@@ -1140,14 +1128,11 @@ namespace IED
 			const configCachedForm_t& a_keyword,
 			TESForm*                  a_form)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				if (IFormCommon::HasKeyword(a_form, keyword))
 				{
-					if (IFormCommon::HasKeyword(a_form, keyword))
-					{
-						return true;
-					}
+					return true;
 				}
 			}
 
@@ -1159,18 +1144,15 @@ namespace IED
 			ObjectTypeExtra           a_type,
 			const collectorData_t&    a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				for (auto& e : a_data.forms)
 				{
-					for (auto& e : a_data.forms)
+					if (e.second.count > 0 && e.second.typeExtra == a_type)
 					{
-						if (e.second.count > 0 && e.second.typeExtra == a_type)
+						if (IFormCommon::HasKeyword(e.second.form, keyword))
 						{
-							if (IFormCommon::HasKeyword(e.second.form, keyword))
-							{
-								return true;
-							}
+							return true;
 						}
 					}
 				}
@@ -1184,19 +1166,16 @@ namespace IED
 			ObjectSlotExtra           a_slot,
 			const collectorData_t&    a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
+				for (auto& e : a_data.equippedForms)
 				{
-					for (auto& e : a_data.forms)
+					if (e->extraEquipped.slot == a_slot ||
+					    e->extraEquipped.slotLeft == a_slot)
 					{
-						if (e.second.extraEquipped.slot == a_slot ||
-						    e.second.extraEquipped.slotLeft == a_slot)
+						if (IFormCommon::HasKeyword(e->form, keyword))
 						{
-							if (IFormCommon::HasKeyword(e.second.form, keyword))
-							{
-								return true;
-							}
+							return true;
 						}
 					}
 				}
@@ -1210,18 +1189,15 @@ namespace IED
 			ObjectSlot                 a_slot,
 			const slot_container_type& a_data)
 		{
-			if (auto form = a_keyword.get_form())
+			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto keyword = form->As<BGSKeyword>())
-				{
-					auto& slot = a_data[stl::underlying(a_slot)];
+				auto& slot = a_data[stl::underlying(a_slot)];
 
-					if (auto iform = slot.GetFormIfActive())
+				if (auto iform = slot.GetFormIfActive())
+				{
+					if (IFormCommon::HasKeyword(iform, keyword))
 					{
-						if (IFormCommon::HasKeyword(iform, keyword))
-						{
-							return true;
-						}
+						return true;
 					}
 				}
 			}

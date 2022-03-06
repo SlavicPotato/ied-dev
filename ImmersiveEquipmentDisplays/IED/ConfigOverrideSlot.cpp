@@ -119,33 +119,33 @@ namespace IED
 			ObjectSlot     a_slot,
 			holderCache_t& a_hc) const
 		{
-			if (auto& actorData = GetActorData(); !actorData.empty())
+			if (auto& b = GetActorData(); !b.empty())
 			{
-				if (auto data = a_hc.get_actor(a_actor, actorData))
+				if (auto d = a_hc.get_actor(a_actor, b))
 				{
-					if (auto r = data->data[stl::underlying(a_slot)].get())
+					if (auto r = d->get(a_slot).get())
 					{
 						return r;
 					}
 				}
 			}
 
-			if (auto& npcData = GetNPCData(); !npcData.empty())
+			if (auto& b = GetNPCData(); !b.empty())
 			{
-				if (auto data = a_hc.get_npc(a_npc, npcData))
+				if (auto d = a_hc.get_npc(a_npc, b))
 				{
-					if (auto r = data->data[stl::underlying(a_slot)].get())
+					if (auto r = d->get(a_slot).get())
 					{
 						return r;
 					}
 				}
 			}
 
-			if (auto& raceData = GetRaceData(); !raceData.empty())
+			if (auto& b = GetRaceData(); !b.empty())
 			{
-				if (auto data = a_hc.get_race(a_race, raceData))
+				if (auto d = a_hc.get_race(a_race, b))
 				{
-					if (auto r = data->data[stl::underlying(a_slot)].get())
+					if (auto r = d->get(a_slot).get())
 					{
 						return r;
 					}
@@ -157,7 +157,7 @@ namespace IED
                     GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return GetGlobalData(type).data[stl::underlying(a_slot)].get();
+			return GetGlobalData(type).get(a_slot).get();
 		}
 
 		configSlotHolder_t::configSlotHolder_t(const configSlotHolder_t& a_rhs)

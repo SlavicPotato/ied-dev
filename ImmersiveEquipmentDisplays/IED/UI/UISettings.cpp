@@ -244,7 +244,7 @@ namespace IED
 				bool hasAlpha = ui.bgAlpha.has();
 
 				float tmpbga = hasAlpha ?
-                                   *ui.bgAlpha :
+				                   *ui.bgAlpha :
                                    ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
 
 				if (!hasAlpha)
@@ -315,7 +315,7 @@ namespace IED
 				ImGui::Spacing();
 
 				auto tmp = m_scaleTemp ?
-                               *m_scaleTemp :
+				               *m_scaleTemp :
                                ui.scale;
 
 				if (ImGui::SliderFloat(
@@ -601,7 +601,7 @@ namespace IED
 				if (ImGui::BeginCombo(
 						LS(CommonStrings::Language, "1"),
 						current ?
-                            current->GetLang().c_str() :
+							current->GetLang().c_str() :
                             nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{
@@ -850,13 +850,21 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				if ((result |= DrawFormPicker("1", LS(CommonStrings::Equip), *a_soundPair.first)))
+				if (DrawFormPicker(
+						"1",
+						LS(CommonStrings::Equip),
+						*a_soundPair.first))
 				{
+					result = true;
 					a_soundPair.first.mark(true);
 				}
 
-				if ((result |= DrawFormPicker("2", LS(CommonStrings::Unequip), *a_soundPair.second)))
+				if (DrawFormPicker(
+						"2",
+						LS(CommonStrings::Unequip),
+						*a_soundPair.second))
 				{
+					result = true;
 					a_soundPair.second.mark(true);
 				}
 

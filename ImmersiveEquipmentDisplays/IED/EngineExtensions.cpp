@@ -399,13 +399,11 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			{
-				Assembly code(addr);
+			Assembly code(addr);
 
-				ISKSE::GetBranchTrampoline().Write6Branch(
-					addr,
-					code.get());
-			}
+			ISKSE::GetBranchTrampoline().Write6Branch(
+				addr,
+				code.get());
 		}
 		LogPatchEnd();
 	}
@@ -625,6 +623,10 @@ namespace IED
 
 	bool EngineExtensions::AdjustSkip_Test(const BSFixedString& a_name)
 	{
+		/*auto &data = m_Instance.m_controller->GetBSStringHolder()->m_sheathNodes;
+
+		return data.find(a_name) == data.end();*/
+
 		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
 		if (a_name == sh->m_weaponAxe ||

@@ -130,7 +130,9 @@ namespace IED
 
 				if (ImGui::BeginPopup("form_sel_popup"))
 				{
-					if (result |= DrawFormSelector("##fs", a_form, a_tipText))
+					result |= DrawFormSelector("##fs", a_form, a_tipText);
+
+					if (result)
 					{
 						ImGui::CloseCurrentPopup();
 					}
@@ -142,7 +144,9 @@ namespace IED
 
 				if (hasForm)
 				{
-					if (m_currentInfo = LookupForm(a_form))
+					m_currentInfo = LookupForm(a_form);
+
+					if (m_currentInfo)
 					{
 						ImGui::TableSetColumnIndex(1);
 

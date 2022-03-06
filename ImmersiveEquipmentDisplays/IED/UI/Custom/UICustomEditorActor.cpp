@@ -21,6 +21,7 @@ namespace IED
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
 			UINotificationInterface(a_controller),
+			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -434,7 +435,7 @@ namespace IED
 			return HasConfigEntry(
 					   m_controller.GetConfigStore().active.custom.GetActorData(),
 					   a_handle) ?
-                       std::addressof(UICommon::g_colorLimeGreen) :
+			           std::addressof(UICommon::g_colorLimeGreen) :
                        nullptr;
 		}
 

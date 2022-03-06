@@ -33,21 +33,21 @@ namespace IED
 		template <class T>
 		struct profileSelectorParamsSlot_t
 		{
-			T handle;
+			T                handle;
 			entrySlotData_t& data;
 		};
 
 		struct SingleSlotConfigUpdateParams
 		{
-			Data::ObjectSlot slot;
-			Data::ConfigSex sex;
+			Data::ObjectSlot            slot;
+			Data::ConfigSex             sex;
 			entrySlotData_t::data_type& entry;
 		};
 
 		struct SingleSlotConfigClearParams
 		{
 			Data::ObjectSlot slot;
-			Data::ConfigSex sex;
+			Data::ConfigSex  sex;
 			entrySlotData_t& data;
 		};
 
@@ -74,14 +74,14 @@ namespace IED
 		struct FormEntryActionResult
 		{
 			FormEntryAction action{ FormEntryAction::None };
-			Game::FormID form;
-			SwapDirection dir;
+			Game::FormID    form;
+			SwapDirection   dir;
 		};
 
 		template <class T>
 		struct slotFormFilterParams_t
 		{
-			T handle;
+			T                             handle;
 			SingleSlotConfigUpdateParams& params;
 		};
 
@@ -98,7 +98,7 @@ namespace IED
 				Controller& a_controller);
 
 			void DrawSlotEditor(
-				T a_handle,
+				T                a_handle,
 				entrySlotData_t& a_data);
 
 			virtual void DrawMenuBarItems() override;
@@ -117,35 +117,35 @@ namespace IED
 			virtual bool PermitDeletion() const;
 
 			virtual bool DrawExtraSlotInfo(
-				T a_handle,
-				Data::ObjectSlot a_slot,
+				T                                 a_handle,
+				Data::ObjectSlot                  a_slot,
 				const entrySlotData_t::data_type& a_entry,
-				bool a_infoDrawn);
+				bool                              a_infoDrawn);
 
 			virtual void DrawExtraFlags(
-				T a_handle,
+				T                         a_handle,
 				Data::configBaseValues_t& a_data,
-				Data::configBase_t* a_baseConfig,
-				const void* a_params) override;
+				Data::configBase_t*       a_baseConfig,
+				const void*               a_params) override;
 
-			virtual UIPopupQueue& GetPopupQueue() = 0;
+			virtual UIPopupQueue&         GetPopupQueue()  = 0;
 			virtual SlotEditorCurrentData GetCurrentData() = 0;
 
 			virtual void
 				OnFullConfigChange(
-					T a_handle,
+					T                             a_handle,
 					const SlotConfigUpdateParams& a_params) = 0;
 
 			virtual void OnSingleSlotClear(
-				T a_handle,
+				T                                  a_handle,
 				const SingleSlotConfigClearParams& a_params) = 0;
 
 			virtual void OnFullConfigClear(
-				T a_handle,
+				T                                a_handle,
 				const FullSlotConfigClearParams& a_params) = 0;
 
 			virtual void DrawMainHeaderControlsExtra(
-				T a_handle,
+				T                a_handle,
 				entrySlotData_t& a_data);
 
 			virtual void DrawMenuBarItemsExtra();
@@ -153,59 +153,59 @@ namespace IED
 			virtual bool GetEnableEquipmentOverridePropagation() override;
 
 			void DrawSlotConfig(
-				T a_handle,
+				T                             a_handle,
 				SingleSlotConfigUpdateParams& a_params);
 
 			void DrawPreferredItemsTree(
-				T a_handle,
+				T                             a_handle,
 				SingleSlotConfigUpdateParams& a_params,
-				Data::configSlot_t& a_data);
+				Data::configSlot_t&           a_data);
 
 			void DrawPreferredItemsTable(
-				T a_handle,
+				T                             a_handle,
 				SingleSlotConfigUpdateParams& a_params,
-				Data::configFormList_t& a_data);
+				Data::configFormList_t&       a_data);
 
 			void DrawEditPreferredItemEntryFormPopup(
-				T a_handle,
+				T                             a_handle,
 				SingleSlotConfigUpdateParams& a_params,
-				Game::FormID& a_out);
+				Game::FormID&                 a_out);
 
 			void DrawFormInfoText(Game::FormID a_form);
 
 			FormEntryActionResult DrawPreferredItemEntryContextMenu();
 
 			FormEntryActionResult DrawPreferredItemsHeaderContextMenu(
-				T a_handle,
+				T                             a_handle,
 				SingleSlotConfigUpdateParams& a_params,
-				Data::configFormList_t& a_data);
+				Data::configFormList_t&       a_data);
 
 			void QueueCopySlotSexPopup(
-				T a_handle,
-				Data::ConfigSex a_ssex,
+				T                a_handle,
+				Data::ConfigSex  a_ssex,
 				Data::ObjectSlot a_slot);
 
 			void QueueClearSlot(
-				T a_handle,
-				Data::ConfigSex a_sex,
+				T                a_handle,
+				Data::ConfigSex  a_sex,
 				Data::ObjectSlot a_slot);
 
 			void QueueSetAllSlotsEnabled(
-				T a_handle,
+				T               a_handle,
 				Data::ConfigSex a_sex,
-				bool a_switch);
+				bool            a_switch);
 
 			void DrawSlotContextMenu(
-				T a_handle,
+				T                                   a_handle,
 				const SingleSlotConfigUpdateParams& a_params);
 
 			void DrawSlotHeaderControls(
-				T a_handle,
+				T                                   a_handle,
 				const SingleSlotConfigUpdateParams& a_params);
 
 			void DrawSlotEntry(
-				T a_handle,
-				Data::ObjectSlot a_slot,
+				T                           a_handle,
+				Data::ObjectSlot            a_slot,
 				entrySlotData_t::data_type& a_entry);
 
 			void DrawSlotFilter();
@@ -218,8 +218,8 @@ namespace IED
 			}
 
 		private:
-			UIGenericFilter m_slotFilter;
-			UIFormSelectorWidget m_formSelector;
+			UIGenericFilter                               m_slotFilter;
+			UIFormSelectorWidget                          m_formSelector;
 			UIFormFilterWidget<slotFormFilterParams_t<T>> m_formFilter;
 
 			Game::FormID m_ffNewEntryID;
@@ -231,7 +231,6 @@ namespace IED
 		UISlotEditorWidget<T>::UISlotEditorWidget(
 			Controller& a_controller) :
 			UIBaseConfigWidget<T>(a_controller),
-			UISettingsInterface(a_controller),
 			UIEditorPanelSettingsGear(a_controller),
 			m_formSelector(a_controller, FormInfoFlags::kValidSlot, true, true, false),
 			m_formFilter(a_controller, m_formSelector),
@@ -274,20 +273,20 @@ namespace IED
 
 		template <class T>
 		bool UISlotEditorWidget<T>::DrawExtraSlotInfo(
-			T a_handle,
-			Data::ObjectSlot a_slot,
+			T                                 a_handle,
+			Data::ObjectSlot                  a_slot,
 			const entrySlotData_t::data_type& a_entry,
-			bool a_infoDrawn)
+			bool                              a_infoDrawn)
 		{
 			return false;
 		}
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawExtraFlags(
-			T a_handle,
+			T                         a_handle,
 			Data::configBaseValues_t& a_data,
-			Data::configBase_t* a_baseConfig,
-			const void* a_params)
+			Data::configBase_t*       a_baseConfig,
+			const void*               a_params)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
@@ -337,7 +336,7 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotEditor(
-			T a_handle,
+			T                a_handle,
 			entrySlotData_t& a_data)
 		{
 			ImGui::PushID("slot_editor_widget");
@@ -500,12 +499,11 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::QueueCopySlotSexPopup(
-			T a_handle,
-			Data::ConfigSex a_tsex,
+			T                a_handle,
+			Data::ConfigSex  a_tsex,
 			Data::ObjectSlot a_slot)
 		{
 			auto& queue = GetPopupQueue();
-			auto& slotName = StringHolder::GetSingleton().GetSlotName(a_slot);
 
 			queue.push(
 					 UIPopupType::Confirm,
@@ -514,9 +512,9 @@ namespace IED
 					 LS(UISlotEditorWidgetStrings::CopyOppositeSexSlotPrompt))
 				.call([this,
 			           handle = a_handle,
-			           slot = a_slot,
-			           tsex = a_tsex,
-			           ssex = GetOppositeSex(a_tsex)](
+			           slot   = a_slot,
+			           tsex   = a_tsex,
+			           ssex   = GetOppositeSex(a_tsex)](
 						  const auto&) {
 					auto current = GetCurrentData();
 					if (!current)
@@ -548,12 +546,11 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::QueueClearSlot(
-			T a_handle,
-			Data::ConfigSex a_sex,
+			T                a_handle,
+			Data::ConfigSex  a_sex,
 			Data::ObjectSlot a_slot)
 		{
 			auto& queue = GetPopupQueue();
-			auto& slotName = StringHolder::GetSingleton().GetSlotName(a_slot);
 
 			queue.push(
 					 UIPopupType::Confirm,
@@ -592,9 +589,9 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::QueueSetAllSlotsEnabled(
-			T a_handle,
+			T               a_handle,
 			Data::ConfigSex a_sex,
-			bool a_switch)
+			bool            a_switch)
 		{
 			auto& queue = GetPopupQueue();
 
@@ -603,7 +600,7 @@ namespace IED
 					 LS(CommonStrings::Confirm),
 					 "%s",
 					 a_switch ?
-                         LS(UISlotEditorWidgetStrings::EnableAllSlotsPrompt) :
+						 LS(UISlotEditorWidgetStrings::EnableAllSlotsPrompt) :
                          LS(UISlotEditorWidgetStrings::DisableAllSlotsPrompt))
 				.call([this, a_handle, a_sex, a_switch](
 						  const auto&) {
@@ -660,7 +657,7 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotContextMenu(
-			T a_handle,
+			T                                   a_handle,
 			const SingleSlotConfigUpdateParams& a_params)
 		{
 			if (ImGui::MenuItem(LS(UIWidgetCommonStrings::CopyFromOppositeSex, "1")))
@@ -711,7 +708,7 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotHeaderControls(
-			T a_handle,
+			T                                   a_handle,
 			const SingleSlotConfigUpdateParams& a_params)
 		{
 			ImGui::PushID("header_controls");
@@ -729,8 +726,8 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotEntry(
-			T a_handle,
-			Data::ObjectSlot a_slot,
+			T                           a_handle,
+			Data::ObjectSlot            a_slot,
 			entrySlotData_t::data_type& a_entry)
 		{
 			SingleSlotConfigUpdateParams params{ a_slot, GetSex(), a_entry };
@@ -751,9 +748,9 @@ namespace IED
 
 				ImGui::Indent();
 
-				bool infoDrawn;
+				bool infoDrawn = ShowConfigClassIndicator();
 
-				if (infoDrawn = ShowConfigClassIndicator())
+				if (infoDrawn)
 				{
 					ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
 					ImGui::SameLine();
@@ -786,7 +783,7 @@ namespace IED
 				}
 
 				auto& data = params.entry.second.get(params.sex);
-				auto& sh = StringHolder::GetSingleton();
+				auto& sh   = StringHolder::GetSingleton();
 
 				ImGui::PushID("base_config");
 
@@ -812,7 +809,7 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawMainHeaderControlsExtra(
-			T a_handle,
+			T                a_handle,
 			entrySlotData_t& a_data)
 		{}
 
@@ -828,7 +825,7 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotConfig(
-			T a_handle,
+			T                             a_handle,
 			SingleSlotConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry.second.get(a_params.sex);
@@ -861,9 +858,9 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawPreferredItemsTree(
-			T a_handle,
+			T                             a_handle,
 			SingleSlotConfigUpdateParams& a_params,
-			Data::configSlot_t& a_data)
+			Data::configSlot_t&           a_data)
 		{
 			const auto result = DrawPreferredItemsHeaderContextMenu(
 				a_handle,
@@ -906,9 +903,9 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawPreferredItemsTable(
-			T a_handle,
+			T                             a_handle,
 			SingleSlotConfigUpdateParams& a_params,
-			Data::configFormList_t& a_data)
+			Data::configFormList_t&       a_data)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5.f, 5.f });
 
@@ -1016,9 +1013,9 @@ namespace IED
 
 		template <class T>
 		void UISlotEditorWidget<T>::DrawEditPreferredItemEntryFormPopup(
-			T a_handle,
+			T                             a_handle,
 			SingleSlotConfigUpdateParams& a_params,
-			Game::FormID& a_out)
+			Game::FormID&                 a_out)
 		{
 			if (ImGui::BeginPopup("form_edit_context_menu"))
 			{
@@ -1083,7 +1080,7 @@ namespace IED
 			if (ImGui::ArrowButton("up", ImGuiDir_Up))
 			{
 				result.action = FormEntryAction::Swap;
-				result.dir = SwapDirection::Up;
+				result.dir    = SwapDirection::Up;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -1091,7 +1088,7 @@ namespace IED
 			if (ImGui::ArrowButton("down", ImGuiDir_Down))
 			{
 				result.action = FormEntryAction::Swap;
-				result.dir = SwapDirection::Down;
+				result.dir    = SwapDirection::Down;
 			}
 
 			ImGui::PopStyleVar();
@@ -1109,7 +1106,7 @@ namespace IED
 						if (m_piNewEntryID)
 						{
 							result.action = FormEntryAction::Add;
-							result.form = m_piNewEntryID;
+							result.form   = m_piNewEntryID;
 						}
 
 						ImGui::CloseCurrentPopup();
@@ -1133,9 +1130,9 @@ namespace IED
 
 		template <class T>
 		FormEntryActionResult UISlotEditorWidget<T>::DrawPreferredItemsHeaderContextMenu(
-			T a_handle,
+			T                             a_handle,
 			SingleSlotConfigUpdateParams& a_params,
-			Data::configFormList_t& a_data)
+			Data::configFormList_t&       a_data)
 		{
 			FormEntryActionResult result;
 

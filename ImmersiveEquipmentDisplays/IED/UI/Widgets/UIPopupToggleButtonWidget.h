@@ -7,11 +7,11 @@ namespace IED
 		class UIPopupToggleButtonWidget
 		{
 		public:
-			bool DrawPopupToggleButton(
+			static bool DrawPopupToggleButton(
 				const char* a_id,
 				const char* a_popupId);
 
-			bool DrawPopupToggleButtonNoOpen(
+			static bool DrawPopupToggleButtonNoOpen(
 				const char* a_id,
 				const char* a_popupId);
 

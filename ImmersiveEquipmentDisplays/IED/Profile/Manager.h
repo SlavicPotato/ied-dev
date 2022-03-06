@@ -14,6 +14,9 @@ namespace IED
 	{
 	public:
 		using profile_data_type = typename T::base_type;
+
+		static_assert(std::is_base_of_v<ProfileBase<profile_data_type>, T>);
+
 		using storage_type = stl::vectormap<stl::fixed_string, T>;
 
 		ProfileManager(const fs::path& a_ext = ".json");
@@ -43,9 +46,10 @@ namespace IED
 			const stl::fixed_string& a_oldName,
 			const std::string& a_newName);
 
+		template <class Td>
 		[[nodiscard]] bool SaveProfile(
 			const stl::fixed_string& a_name,
-			const profile_data_type& a_in);
+			Td&& a_in);
 
 		[[nodiscard]] bool SaveProfile(const stl::fixed_string& a_name);
 
@@ -240,7 +244,9 @@ namespace IED
 			if (a_save)
 			{
 				if (!a_out.Save())
+				{
 					throw std::exception(a_out.GetLastException().what());
+				}
 			}
 
 			return true;
@@ -398,9 +404,10 @@ namespace IED
 	}
 
 	template <class T>
+	template <class Td>
 	bool ProfileManager<T>::SaveProfile(
 		const stl::fixed_string& a_name,
-		const profile_data_type& a_in)
+		Td&& a_in)
 	{
 		try
 		{
@@ -408,7 +415,7 @@ namespace IED
 			if (it == m_storage.end())
 				throw std::exception("No such profile exists");
 
-			if (!it->second.Save(a_in, true))
+			if (!it->second.Save(std::forward<Td>(a_in), true))
 				throw it->second.GetLastException();
 
 			ProfileManagerEvent<T> evn{

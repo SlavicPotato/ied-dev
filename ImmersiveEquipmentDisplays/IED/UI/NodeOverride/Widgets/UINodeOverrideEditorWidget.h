@@ -110,7 +110,7 @@ namespace IED
 
 			union
 			{
-				Biped::BIPED_OBJECT      biped;
+				BIPED_OBJECT      biped;
 				Data::ExtraConditionType excond;
 				Data::ObjectSlotExtra    type;
 			};
@@ -212,13 +212,6 @@ namespace IED
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideValues_t&              a_values,
-				const SingleNodeOverrideTransformUpdateParams& a_params,
-				const bool                                     a_exists);
-
-			NodeOverrideCommonAction DrawTransformHeaderContextMenu(
-				T                                              a_handle,
-				entryNodeOverrideData_t&                       a_data,
-				Data::configTransform_t&                       a_entry,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
@@ -390,7 +383,7 @@ namespace IED
 			Game::FormID m_ooNewEntryIDActor;
 			Game::FormID m_ooNewEntryIDNPC;
 
-			Biped::BIPED_OBJECT      m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
+			BIPED_OBJECT      m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ObjectSlotExtra    m_ooNewSlot{ Data::ObjectSlotExtra::kNone };
 			Data::ExtraConditionType m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 
@@ -409,10 +402,8 @@ namespace IED
 		template <class T>
 		UINodeOverrideEditorWidget<T>::UINodeOverrideEditorWidget(
 			Controller& a_controller) :
-			UISettingsInterface(a_controller),
 			UIFormLookupInterface(a_controller),
 			UIEditorPanelSettings(a_controller),
-			UILocalizationInterface(a_controller),
 			m_itemFilter(true),
 			m_condParamEditor(a_controller)
 		{
@@ -843,8 +834,6 @@ namespace IED
 						false,
 						clipData != nullptr))
 				{
-					bool update = false;
-
 					if (clipData)
 					{
 						auto sex = GetSex();
@@ -936,8 +925,6 @@ namespace IED
 						false,
 						clipData != nullptr))
 				{
-					bool update = false;
-
 					if (clipData)
 					{
 						auto sex = GetSex();
@@ -973,38 +960,32 @@ namespace IED
 		{
 			auto& data = a_params.entry.second(a_params.sex);
 
-			if (DrawTransformHeaderContextMenu(
-					a_handle,
-					a_data,
-					data.transform,
-					a_params,
-					a_exists) == NodeOverrideCommonAction::PasteOver)
-			{
-				ImGui::SetNextItemOpen(true);
-			}
-
-			if (TreeEx("tree1", true, "%s", LS(CommonStrings::Transform)))
-			{
-				ImGui::Spacing();
-
-				DrawValueFlags(a_handle, a_data, data, a_params, a_exists);
-
-				ImGui::Spacing();
-
-				DrawTransformSliders(data.transform, [&](auto a_v) {
+			DrawTransformTree(
+				data.transform,
+				false,
+				[&](auto a_v) {
 					HandleValueUpdate(
 						a_handle,
 						a_data,
 						a_params,
 						a_exists);
+				},
+				[&] {
+					DrawValueFlags(
+						a_handle,
+						a_data,
+						data,
+						a_params,
+						a_exists);
+
+					ImGui::Spacing();
 				});
 
-				ImGui::Spacing();
-
-				ImGui::TreePop();
-			}
-
-			if (TreeEx("tree2", true, "%s", LS(CommonStrings::Visibility)))
+			if (TreeEx(
+					"tree2",
+					true,
+					"%s",
+					LS(CommonStrings::Visibility)))
 			{
 				ImGui::Spacing();
 
@@ -1297,67 +1278,6 @@ namespace IED
 			}
 
 			ImGui::PopID();
-		}
-
-		template <class T>
-		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawTransformHeaderContextMenu(
-			T                                              a_handle,
-			entryNodeOverrideData_t&                       a_data,
-			Data::configTransform_t&                       a_entry,
-			const SingleNodeOverrideTransformUpdateParams& a_params,
-			const bool                                     a_exists)
-		{
-			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
-
-			ImGui::PushID("xfrm_tree_ctx");
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-			DrawPopupToggleButton("open", "context_menu");
-
-			ImGui::PopStyleVar();
-
-			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "1")))
-				{
-					UIClipboard::Set(a_entry);
-				}
-
-				auto clipData = UIClipboard::Get<Data::configTransform_t>();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "2"),
-						nullptr,
-						false,
-						clipData != nullptr))
-				{
-					if (clipData)
-					{
-						a_entry = *clipData;
-
-						HandleValueUpdate(
-							a_handle,
-							a_data,
-							a_params,
-							a_exists);
-
-						result = NodeOverrideCommonAction::PasteOver;
-					}
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopStyleVar();
-
-			ImGui::PopID();
-
-			return result;
 		}
 
 		template <class T>
@@ -1878,39 +1798,26 @@ namespace IED
 							{
 								ImGui::Spacing();
 
-								if (DrawTransformHeaderContextMenu(
-										a_handle,
-										a_data,
-										e.transform,
-										a_params,
-										a_exists) == NodeOverrideCommonAction::PasteOver)
-								{
-									ImGui::SetNextItemOpen(true);
-								}
-
-								if (ImGui::TreeNodeEx(
-										"xtree",
-										ImGuiTreeNodeFlags_SpanAvailWidth |
-											ImGuiTreeNodeFlags_DefaultOpen,
-										"%s",
-										LS(CommonStrings::Transform)))
-								{
-									ImGui::Spacing();
-
-									DrawValueFlags(a_handle, a_data, e, a_params, a_exists);
-
-									ImGui::Spacing();
-
-									DrawTransformSliders(e.transform, [&](auto a_v) {
+								DrawTransformTree(
+									e.transform,
+									false,
+									[&](auto a_v) {
 										HandleValueUpdate(
 											a_handle,
 											a_data,
 											a_params,
 											a_exists);
-									});
+									},
+									[&] {
+										DrawValueFlags(
+											a_handle,
+											a_data,
+											e,
+											a_params,
+											a_exists);
 
-									ImGui::TreePop();
-								}
+										ImGui::Spacing();
+									});
 							}
 
 							ImGui::PopID();
@@ -2262,15 +2169,15 @@ namespace IED
 				{
 					bool update = false;
 
-					if (auto clipData = UIClipboard::Get<Data::configNodeOverrideOffset_t>())
+					if (auto cd1 = UIClipboard::Get<Data::configNodeOverrideOffset_t>())
 					{
-						a_entry = *clipData;
+						a_entry = *cd1;
 
 						update = true;
 					}
-					else if (auto clipData = UIClipboard::Get<Data::configNodeOverrideValues_t>())
+					else if (auto cd2 = UIClipboard::Get<Data::configNodeOverrideValues_t>())
 					{
-						static_cast<Data::configNodeOverrideValues_t&>(a_entry) = *clipData;
+						static_cast<Data::configNodeOverrideValues_t&>(a_entry) = *cd2;
 
 						update = true;
 					}
@@ -2417,15 +2324,15 @@ namespace IED
 				{
 					bool update = false;
 
-					if (auto clipData = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>())
+					if (auto cd1 = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>())
 					{
-						a_entry = *clipData;
+						a_entry = *cd1;
 
 						update = true;
 					}
-					else if (auto clipData = UIClipboard::Get<Data::configNodeOverridePlacementValues_t>())
+					else if (auto cd2 = UIClipboard::Get<Data::configNodeOverridePlacementValues_t>())
 					{
-						static_cast<Data::configNodeOverridePlacementValues_t&>(a_entry) = *clipData;
+						static_cast<Data::configNodeOverridePlacementValues_t&>(a_entry) = *cd2;
 
 						update = true;
 					}
@@ -2476,7 +2383,7 @@ namespace IED
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
 				m_ooNewSlot         = Data::ObjectSlotExtra::kNone;
-				m_ooNewBiped        = Biped::BIPED_OBJECT::kNone;
+				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
 			}
 
@@ -2589,7 +2496,7 @@ namespace IED
 								LS(CommonStrings::Biped, "bp"),
 								m_ooNewBiped))
 						{
-							if (m_ooNewBiped != Biped::BIPED_OBJECT::kNone)
+							if (m_ooNewBiped != BIPED_OBJECT::kNone)
 							{
 								a_entry.emplace_back(m_ooNewBiped);
 
@@ -2972,7 +2879,7 @@ namespace IED
 
 							break;
 						case Data::NodeOverrideConditionType::BipedSlot:
-							if (result.biped != Biped::BIPED_OBJECT::kNone)
+							if (result.biped != BIPED_OBJECT::kNone)
 							{
 								it = a_entry.emplace(
 									it,
@@ -3058,7 +2965,7 @@ namespace IED
 
 							ImGui::PushID("cond_grp");
 
-							const auto result = DrawOverrideConditionHeaderContextMenu(
+							DrawOverrideConditionHeaderContextMenu(
 								a_handle,
 								a_data,
 								e.group.conditions,
@@ -3296,14 +3203,14 @@ namespace IED
 
 							ImGui::TableSetColumnIndex(2);
 
-							bool result = ImGui::Selectable(
+							bool r = ImGui::Selectable(
 								LMKID<3>(vdesc, "sel_ctl"),
 								false,
 								ImGuiSelectableFlags_DontClosePopups);
 
 							UICommon::ToolTip(vdesc);
 
-							if (result)
+							if (r)
 							{
 								m_condParamEditor.OpenConditionParamEditorPopup();
 							}
@@ -3629,7 +3536,7 @@ namespace IED
 				m_ooNewEntryIDRace  = {};
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
-				m_ooNewBiped        = Biped::BIPED_OBJECT::kNone;
+				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_ooNewSlot         = Data::ObjectSlotExtra::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
 			}

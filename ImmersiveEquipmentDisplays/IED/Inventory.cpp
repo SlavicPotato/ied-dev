@@ -205,6 +205,8 @@ namespace IED
 					m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
+
+			m_data.equippedForms.emplace_back(std::addressof(r));
 		}
 
 		return true;
@@ -214,7 +216,7 @@ namespace IED
 	{
 		bool checkFav = m_isPlayer && a_checkFav;
 
-		for (auto& e : m_data.forms)
+		for (const auto& e : m_data.forms)
 		{
 			if (e.second.type == ObjectType::kMax)
 			{

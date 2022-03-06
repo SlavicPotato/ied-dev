@@ -4492,13 +4492,13 @@ namespace IED
 			return false;
 		}
 
-		bool result;
+		bool result = AttachNodeImpl(
+			a_root,
+			a_node,
+			a_atmReference,
+			a_entry);
 
-		if (result = AttachNodeImpl(
-				a_root,
-				a_node,
-				a_atmReference,
-				a_entry))
+		if (result)
 		{
 			RequestEvaluateTransformsActor(a_info.actor->formID, false);
 			UpdateRootPaused(a_info.root);
@@ -4526,14 +4526,14 @@ namespace IED
 			return false;
 		}
 
-		bool result;
+		bool result = AttachObjectToTargetNode(
+			a_node,
+			a_atmReference,
+			a_root,
+			a_entry.state->nodes.obj,
+			a_entry.state->nodes.ref);
 
-		if (result = AttachObjectToTargetNode(
-				a_node,
-				a_atmReference,
-				a_root,
-				a_entry.state->nodes.obj,
-				a_entry.state->nodes.ref))
+		if (result)
 		{
 			a_entry.state->nodeDesc     = a_node;
 			a_entry.state->atmReference = a_atmReference;
@@ -4672,11 +4672,11 @@ namespace IED
 
 		if (auto biped = a_params.get_biped())
 		{
-			auto& e = biped->objects[Biped::BIPED_OBJECT::kQuiver];
+			auto& e = biped->get_object(BIPED_OBJECT::kQuiver);
 
 			if (e.item &&
 			    e.item != e.addon &&
-			    e.item->formType == TESAmmo::kTypeID)
+			    e.item->IsAmmo())
 			{
 				auto& slot = a_cache.GetSlot(ObjectSlot::kAmmo);
 

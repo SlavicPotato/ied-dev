@@ -34,10 +34,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& transform;
+				a_ar& flags.value;
+				a_ar& transform;
 			}
 		};
 
@@ -69,7 +69,9 @@ namespace IED
 			kNegateMatch1 = 1u << 13,
 			kNegateMatch2 = 1u << 14,
 			kNegateMatch3 = 1u << 15,
-			kNegateMatch4 = 1u << 16
+			kNegateMatch4 = 1u << 16,
+
+			//kMatchTemplate = 1u << 30
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionFlags);
@@ -126,10 +128,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& conditions;
+				a_ar& flags.value;
+				a_ar& conditions;
 			}
 		};
 
@@ -216,7 +218,7 @@ namespace IED
 			}
 
 			inline configNodeOverrideCondition_t(
-				Biped::BIPED_OBJECT a_biped) :
+				BIPED_OBJECT a_biped) :
 				bipedSlot(a_biped)
 			{
 				fbf.type = NodeOverrideConditionType::BipedSlot;
@@ -251,11 +253,11 @@ namespace IED
 			{
 				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
 				ExtraConditionType     extraCondType;
-				Biped::BIPED_OBJECT    bipedSlot;
+				BIPED_OBJECT           bipedSlot;
 				PACKAGE_PROCEDURE_TYPE procedureType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
-				static_assert(std::is_same_v<std::underlying_type_t<Biped::BIPED_OBJECT>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 			};
 
 			ObjectSlotExtra                    typeSlot{ Data::ObjectSlotExtra::kNone };
@@ -263,34 +265,20 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& node;
-				ar& form;
-				ar& keyword;
-				ar& ui32a;
-				ar& typeSlot;
-				ar& group;
-			}
+				a_ar& flags.value;
+				a_ar& node;
+				a_ar& form;
+				a_ar& keyword;
+				a_ar& ui32a;
+				a_ar& typeSlot;
 
-			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
-			{
-				ar& flags.value;
-				ar& node;
-				ar& form;
-				ar& keyword;
-				ar& ui32a;
-				ar& typeSlot;
-
-				if (version >= DataVersion2)
+				if (a_version >= DataVersion2)
 				{
-					ar& group;
+					a_ar& group;
 				}
 			}
-
-			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		enum class NodeOverrideOffsetFlags : std::uint32_t
@@ -364,25 +352,25 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& static_cast<const configNodeOverrideValues_t&>(*this);
-				ar& offsetFlags.value;
-				ar& conditions;
-				ar& description;
-				ar& adjustScale;
-				ar& group;
+				a_ar& static_cast<const configNodeOverrideValues_t&>(*this);
+				a_ar& offsetFlags.value;
+				a_ar& conditions;
+				a_ar& description;
+				a_ar& adjustScale;
+				a_ar& group;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configNodeOverrideValues_t&>(*this);
-				ar& offsetFlags.value;
-				ar& conditions;
-				ar& description;
-				ar& adjustScale;
-				ar& group;
+				a_ar& static_cast<configNodeOverrideValues_t&>(*this);
+				a_ar& offsetFlags.value;
+				a_ar& conditions;
+				a_ar& description;
+				a_ar& adjustScale;
+				a_ar& group;
 
 				clamp();
 			}
@@ -419,12 +407,12 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configNodeOverrideValues_t&>(*this);
-				ar& offsets;
-				ar& overrideFlags.value;
-				ar& visibilityConditionList;
+				a_ar& static_cast<configNodeOverrideValues_t&>(*this);
+				a_ar& offsets;
+				a_ar& overrideFlags.value;
+				a_ar& visibilityConditionList;
 			}
 		};
 
@@ -450,10 +438,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& targetNode;
+				a_ar& flags.value;
+				a_ar& targetNode;
 			}
 		};
 
@@ -481,12 +469,12 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configNodeOverridePlacementValues_t&>(*this);
-				ar& overrideFlags.value;
-				ar& conditions;
-				ar& description;
+				a_ar& static_cast<configNodeOverridePlacementValues_t&>(*this);
+				a_ar& overrideFlags.value;
+				a_ar& conditions;
+				a_ar& description;
 			}
 		};
 
@@ -515,11 +503,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configNodeOverridePlacementValues_t&>(*this);
-				ar& pflags.value;
-				ar& overrides;
+				a_ar& static_cast<configNodeOverridePlacementValues_t&>(*this);
+				a_ar& pflags.value;
+				a_ar& overrides;
 			}
 		};
 
@@ -604,11 +592,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& data;
-				ar& placementData;
+				a_ar& flags.value;
+				a_ar& data;
+				a_ar& placementData;
 			}
 
 			void __init(const configNodeOverrideHolderCopy_t& a_rhs);
@@ -786,37 +774,37 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideTransform_t,
-	IED::Data::configNodeOverrideTransform_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideTransform_t,
+	::IED::Data::configNodeOverrideTransform_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideOffset_t,
-	IED::Data::configNodeOverrideOffset_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideOffset_t,
+	::IED::Data::configNodeOverrideOffset_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideConditionGroup_t,
-	IED::Data::configNodeOverrideConditionGroup_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideConditionGroup_t,
+	::IED::Data::configNodeOverrideConditionGroup_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideCondition_t,
-	IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion2);
+	::IED::Data::configNodeOverrideCondition_t,
+	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideValues_t,
-	IED::Data::configNodeOverrideValues_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideValues_t,
+	::IED::Data::configNodeOverrideValues_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverridePlacement_t,
-	IED::Data::configNodeOverridePlacement_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverridePlacement_t,
+	::IED::Data::configNodeOverridePlacement_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverridePlacementValues_t,
-	IED::Data::configNodeOverridePlacementValues_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverridePlacementValues_t,
+	::IED::Data::configNodeOverridePlacementValues_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverridePlacementOverride_t,
-	IED::Data::configNodeOverridePlacementOverride_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverridePlacementOverride_t,
+	::IED::Data::configNodeOverridePlacementOverride_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configNodeOverrideHolder_t,
-	IED::Data::configNodeOverrideHolder_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideHolder_t,
+	::IED::Data::configNodeOverrideHolder_t::Serialization::DataVersion1);

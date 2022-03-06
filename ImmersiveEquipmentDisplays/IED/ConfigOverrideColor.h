@@ -46,19 +46,19 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& r;
-				ar& g;
-				ar& b;
+				a_ar& r;
+				a_ar& g;
+				a_ar& b;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& r;
-				ar& g;
-				ar& b;
+				a_ar& r;
+				a_ar& g;
+				a_ar& b;
 
 				clamp();
 			}
@@ -101,17 +101,17 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void save(Archive& ar, const unsigned int version) const
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				ar& static_cast<const configColorRGB_t&>(*this);
-				ar& a;
+				a_ar& static_cast<const configColorRGB_t&>(*this);
+				a_ar& a;
 			}
 
 			template <class Archive>
-			void load(Archive& ar, const unsigned int version)
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& static_cast<configColorRGB_t&>(*this);
-				ar& a;
+				a_ar& static_cast<configColorRGB_t&>(*this);
+				a_ar& a;
 
 				a = std::clamp(a, 0.0f, 1.0f);
 			}
@@ -127,9 +127,9 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configColorRGB_t,
-	IED::Data::configColorRGB_t::Serialization::DataVersion1);
+	::IED::Data::configColorRGB_t,
+	::IED::Data::configColorRGB_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configColorRGBA_t,
-	IED::Data::configColorRGBA_t::Serialization::DataVersion1);
+	::IED::Data::configColorRGBA_t,
+	::IED::Data::configColorRGBA_t::Serialization::DataVersion1);

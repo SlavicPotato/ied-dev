@@ -32,21 +32,21 @@ namespace IED
 
 			struct itemData_t
 			{
-				inline constexpr bool is_equipped() const noexcept
+				[[nodiscard]] inline constexpr bool is_equipped() const noexcept
 				{
 					return equipped || equippedLeft;
 				}
 
-				TESForm*        form;
-				ObjectType      type{ Data::ObjectType::kMax };
-				ObjectTypeExtra typeExtra{ ObjectTypeExtra::kNone };
-				std::int64_t    count{ 0 };
-				std::int64_t    sharedCount{ 0 };
-				bool            equipped{ false };
-				bool            equippedLeft{ false };
-				bool            favorited{ false };
-				bool            cannotWear{ false };
-				extraItemData_t extraEquipped;
+				TESForm*             form;
+				ObjectType           type{ Data::ObjectType::kMax };
+				ObjectTypeExtra      typeExtra{ ObjectTypeExtra::kNone };
+				std::int64_t         count{ 0 };
+				mutable std::int64_t sharedCount{ 0 };
+				bool                 equipped{ false };
+				bool                 equippedLeft{ false };
+				bool                 favorited{ false };
+				bool                 cannotWear{ false };
+				extraItemData_t      extraEquipped;
 			};
 
 			[[nodiscard]] inline constexpr bool IsSlotEquipped(ObjectSlotExtra a_slot) const noexcept
@@ -56,9 +56,10 @@ namespace IED
 
 			using container_type = std::unordered_map<Game::FormID, itemData_t>;
 
-			container_type         forms;
-			InventoryPresenceFlags equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{};
-			std::int64_t           typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
+			container_type                 forms;
+			std::vector<const itemData_t*> equippedForms;
+			InventoryPresenceFlags         equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{};
+			std::int64_t                   typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;
 		};

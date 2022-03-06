@@ -17,6 +17,7 @@ namespace IED
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
+			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}

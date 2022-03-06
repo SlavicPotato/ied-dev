@@ -15,7 +15,6 @@ namespace IED
 		UIEditorTabPanel::UIEditorTabPanel(
 			Controller&            a_controller,
 			Localization::StringID a_menuName) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_menuName(a_menuName)
 		{}

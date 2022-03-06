@@ -18,7 +18,8 @@ namespace IED
 			kLoad1pWeaponModel = 1u << 4,
 			kDisableHavok      = 1u << 5,
 			kLeftWeapon        = 1u << 6,
-			kUseWorldModel     = 1u << 7
+			kUseWorldModel     = 1u << 7,
+			kDisabled          = 1u << 8
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);
@@ -40,11 +41,11 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& form;
-				ar& transform;
+				a_ar& flags.value;
+				a_ar& form;
+				a_ar& transform;
 			}
 		};
 
@@ -77,10 +78,10 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& ar, const unsigned int version)
+			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				ar& flags.value;
-				ar& entries;
+				a_ar& flags.value;
+				a_ar& entries;
 			}
 		};
 
@@ -88,9 +89,9 @@ namespace IED
 }
 
 BOOST_CLASS_VERSION(
-	IED::Data::configModelGroup_t,
-	IED::Data::configModelGroup_t::Serialization::DataVersion1);
+	::IED::Data::configModelGroup_t,
+	::IED::Data::configModelGroup_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
-	IED::Data::configModelGroupEntry_t,
-	IED::Data::configModelGroupEntry_t::Serialization::DataVersion1);
+	::IED::Data::configModelGroupEntry_t,
+	::IED::Data::configModelGroupEntry_t::Serialization::DataVersion1);

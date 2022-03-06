@@ -9,8 +9,7 @@ namespace IED
 	{
 		void NodeDescriptor::lookup_flags()
 		{
-			const auto& nodeMap = Data::NodeMap::GetSingleton();
-			const auto& data = nodeMap.GetData();
+			const auto& data = Data::NodeMap::GetSingleton().GetData();
 
 			if (auto it = data.find(name); it != data.end())
 			{

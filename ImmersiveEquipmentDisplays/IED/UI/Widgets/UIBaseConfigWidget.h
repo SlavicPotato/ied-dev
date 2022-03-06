@@ -58,7 +58,7 @@ namespace IED
 
 			union
 			{
-				Biped::BIPED_OBJECT      biped;
+				BIPED_OBJECT      biped;
 				Data::ExtraConditionType excond;
 				Data::ObjectSlotExtra    slot;
 			};
@@ -122,10 +122,14 @@ namespace IED
 				PostChangeAction a_action) = 0;
 
 			template <class Tpv>
-			void PropagateToEquipmentOverrides(
+			void PropagateMemberToEquipmentOverrides(
 				Data::configBase_t* a_data,
 				std::ptrdiff_t      a_offset,
-				Tpv*                a_value);
+				const Tpv&          a_value);
+
+			template <class Tpv>
+			void PropagateToEquipmentOverrides(
+				Data::configBase_t* a_data);
 
 			void PropagateFlagToEquipmentOverrides(
 				Data::configBase_t* a_data,
@@ -246,7 +250,7 @@ namespace IED
 			Game::FormID                                m_aoNewEntryRaceID;
 			Game::FormID                                m_aoNewEntryActorID;
 			Game::FormID                                m_aoNewEntryNPCID;
-			Biped::BIPED_OBJECT                         m_ooNewBiped{ Biped::BIPED_OBJECT::kNone };
+			BIPED_OBJECT                         m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ExtraConditionType                    m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 			Data::ObjectSlotExtra                       m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
 			UIConditionParamEditorWidget                m_condParamEditor;
@@ -267,10 +271,6 @@ namespace IED
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
-			UITipsInterface(a_controller),
-			UINotificationInterface(a_controller),
-			UILocalizationInterface(a_controller),
-			UISettingsInterface(a_controller),
 			m_controller(a_controller),
 			m_condParamEditor(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
@@ -497,10 +497,10 @@ namespace IED
 
 		template <class T>
 		template <class Tpv>
-		void UIBaseConfigWidget<T>::PropagateToEquipmentOverrides(
+		void UIBaseConfigWidget<T>::PropagateMemberToEquipmentOverrides(
 			Data::configBase_t* a_data,
 			std::ptrdiff_t      a_offset,
-			Tpv*                a_value)
+			const Tpv&          a_value)
 		{
 			if (!a_data)
 			{
@@ -521,6 +521,31 @@ namespace IED
 				auto dstVal = reinterpret_cast<Tpv*>(std::uintptr_t(std::addressof(static_cast<Data::configBaseValues_t&>(e))) + a_offset);
 
 				*dstVal = *srcVal;
+			}
+		}
+
+		template <class T>
+		template <class Tpv>
+		void UIBaseConfigWidget<T>::PropagateToEquipmentOverrides(
+			Data::configBase_t* a_data)
+		{
+			if (!a_data)
+			{
+				return;
+			}
+
+			if (!GetEnableEquipmentOverridePropagation())
+			{
+				return;
+			}
+
+			auto src = static_cast<const Tpv*>(a_data);
+
+			for (auto& e : a_data->equipmentOverrides)
+			{
+				auto& dst = static_cast<Tpv&>(e);
+
+				dst = *src;
 			}
 		}
 
@@ -847,10 +872,10 @@ namespace IED
 							!a_data.flags.test(Data::BaseFlags::kReferenceMode),
 							a_data.targetNode))
 					{
-						PropagateToEquipmentOverrides(
+						PropagateMemberToEquipmentOverrides(
 							a_baseConfig,
 							offsetof(Data::configBaseValues_t, targetNode),
-							std::addressof(a_data.targetNode));
+							a_data.targetNode);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::AttachNode);
 					}
@@ -868,28 +893,34 @@ namespace IED
 
 					ImGui::Spacing();
 
-					DrawTransformSliders(
+					DrawTransformTree(
 						static_cast<Data::configTransform_t&>(a_data),
-						[&](auto a_v) {
+						false,
+						[&](TransformUpdateValue a_v) {
 							switch (a_v)
 							{
 							case TransformUpdateValue::Position:
-								PropagateToEquipmentOverrides(
+								PropagateMemberToEquipmentOverrides(
 									a_baseConfig,
 									offsetof(Data::configBaseValues_t, position),
-									std::addressof(a_data.position));
+									a_data.position);
 								break;
 							case TransformUpdateValue::Rotation:
-								PropagateToEquipmentOverrides(
+								PropagateMemberToEquipmentOverrides(
 									a_baseConfig,
 									offsetof(Data::configBaseValues_t, rotation),
-									std::addressof(a_data.rotation));
+									a_data.rotation);
 								break;
 							case TransformUpdateValue::Scale:
-								PropagateToEquipmentOverrides(
+								PropagateMemberToEquipmentOverrides(
 									a_baseConfig,
 									offsetof(Data::configBaseValues_t, scale),
-									std::addressof(a_data.scale));
+									a_data.scale);
+								break;
+							case TransformUpdateValue::All:
+								PropagateToEquipmentOverrides<
+									Data::configTransform_t>(
+									a_baseConfig);
 								break;
 							}
 
@@ -897,7 +928,8 @@ namespace IED
 								a_handle,
 								a_params,
 								PostChangeAction::UpdateTransform);
-						});
+						},
+						[] {});
 
 					UICommon::PopDisabled(disabled);
 
@@ -1173,7 +1205,7 @@ namespace IED
 
 						DrawExtraEquipmentOverrideOptions(a_handle, a_data, a_params, e);
 
-						const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
 							e.conditions,
 							[this, a_handle, a_params] {
@@ -1187,8 +1219,8 @@ namespace IED
 
 						if (!empty)
 						{
-							if (result == BaseConfigEditorAction::PasteOver ||
-							    result == BaseConfigEditorAction::Insert)
+							if (r == BaseConfigEditorAction::PasteOver ||
+							    r == BaseConfigEditorAction::Insert)
 							{
 								ImGui::SetNextItemOpen(true);
 							}
@@ -1314,7 +1346,7 @@ namespace IED
 
 						break;
 					case Data::EquipmentOverrideConditionType::BipedSlot:
-						if (result.biped != Biped::BIPED_OBJECT::kNone)
+						if (result.biped != BIPED_OBJECT::kNone)
 						{
 							a_entry.emplace_back(
 								result.biped);
@@ -1500,7 +1532,7 @@ namespace IED
 
 							break;
 						case Data::EquipmentOverrideConditionType::BipedSlot:
-							if (result.biped != Biped::BIPED_OBJECT::kNone)
+							if (result.biped != BIPED_OBJECT::kNone)
 							{
 								it = a_entry.emplace(
 									it,
@@ -1547,7 +1579,7 @@ namespace IED
 
 							ImGui::PushID("cond_grp");
 
-							const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+							DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 								a_handle,
 								e.group.conditions,
 								a_updFunc);
@@ -1780,14 +1812,14 @@ namespace IED
 
 							ImGui::TableSetColumnIndex(2);
 
-							bool result = ImGui::Selectable(
+							bool r = ImGui::Selectable(
 								LMKID<3>(vdesc, "sel_ctl"),
 								false,
 								ImGuiSelectableFlags_DontClosePopups);
 
 							UICommon::ToolTip(vdesc);
 
-							if (result)
+							if (r)
 							{
 								m_condParamEditor.OpenConditionParamEditorPopup();
 							}
@@ -1855,7 +1887,7 @@ namespace IED
 				m_aoNewEntryRaceID  = {};
 				m_aoNewEntryActorID = {};
 				m_aoNewEntryNPCID   = {};
-				m_ooNewBiped        = Biped::BIPED_OBJECT::kNone;
+				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_aoNewSlot         = Data::ObjectSlotExtra::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
 			}
@@ -2252,15 +2284,15 @@ namespace IED
 				{
 					bool update = false;
 
-					if (auto clipData = UIClipboard::Get<Data::equipmentOverride_t>())
+					if (auto cd1 = UIClipboard::Get<Data::equipmentOverride_t>())
 					{
-						a_data = *clipData;
+						a_data = *cd1;
 
 						update = true;
 					}
-					else if (auto clipData = UIClipboard::Get<Data::configBaseValues_t>())
+					else if (auto cd2 = UIClipboard::Get<Data::configBaseValues_t>())
 					{
-						static_cast<Data::configBaseValues_t&>(a_data) = *clipData;
+						static_cast<Data::configBaseValues_t&>(a_data) = *cd2;
 
 						update = true;
 					}
@@ -2992,7 +3024,7 @@ namespace IED
 					{
 						ImGui::Spacing();
 
-						const auto result = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
 							e.conditions,
 							[this, a_handle, a_params, &a_data] {
@@ -3006,8 +3038,8 @@ namespace IED
 
 						if (!empty)
 						{
-							if (result == BaseConfigEditorAction::PasteOver ||
-							    result == BaseConfigEditorAction::Insert)
+							if (r == BaseConfigEditorAction::PasteOver ||
+							    r == BaseConfigEditorAction::Insert)
 							{
 								ImGui::SetNextItemOpen(true);
 							}

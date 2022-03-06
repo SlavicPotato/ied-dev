@@ -80,7 +80,7 @@ namespace IED
 			{
 				result |= DrawBipedObjectSelector(
 					LS(CommonStrings::Node, "bp"),
-					e.As1<Biped::BIPED_OBJECT>());
+					e.As1<BIPED_OBJECT>());
 
 				ImGui::Spacing();
 			}
@@ -254,7 +254,7 @@ namespace IED
 					if (const auto& e = get(a_item); e.p1)
 					{
 						return GetFormKeywordExtraDesc(GetBipedSlotDesc(
-							e.As1<Biped::BIPED_OBJECT>()));
+							e.As1<BIPED_OBJECT>()));
 					}
 					else
 					{

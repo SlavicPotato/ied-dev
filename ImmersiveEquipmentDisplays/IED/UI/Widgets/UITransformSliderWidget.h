@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UIClipboard.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/UILocalizationInterface.h"
 
 #include "IED/ConfigOverrideTransform.h"
 #include "UIPopupToggleButtonWidget.h"
@@ -9,16 +11,41 @@ namespace IED
 {
 	namespace UI
 	{
+		enum class TransformSliderContextAction
+		{
+			None,
+			PasteOver
+		};
+
 		class UITransformSliderWidget :
-			virtual public UIPopupToggleButtonWidget
+			public virtual UILocalizationInterface
 		{
 		public:
 			enum class TransformUpdateValue
 			{
 				Position,
 				Rotation,
-				Scale
+				Scale,
+				All
 			};
+
+			UITransformSliderWidget(
+				Localization::ILocalization& a_localization) :
+				UILocalizationInterface(a_localization)
+			{
+			}
+
+			template <class Tu>
+			TransformSliderContextAction DrawTransformHeaderContextMenu(
+				Data::configTransform_t& a_data,
+				Tu                       a_updateop);
+
+			template <class Tu, class Te>
+			void DrawTransformTree(
+				Data::configTransform_t& a_data,
+				const bool               a_indent,
+				Tu                       a_updateop,
+				Te                       a_extra);
 
 			template <class Tu>
 			void DrawTransformSliders(
@@ -33,6 +60,117 @@ namespace IED
 				Tu                       a_updateop,
 				TransformUpdateValue     a_updValue);
 		};
+
+		template <class Tu>
+		TransformSliderContextAction UITransformSliderWidget::DrawTransformHeaderContextMenu(
+			Data::configTransform_t& a_data,
+			Tu                       a_updateop)
+		{
+			TransformSliderContextAction result{ TransformSliderContextAction::None };
+
+			ImGui::PushID("xfrm_tree_ctx");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "1")))
+				{
+					a_data.clear();
+					a_updateop(TransformUpdateValue::All);
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				auto clipData = UIClipboard::Get<Data::configTransform_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "3"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data = *clipData;
+
+						a_updateop(TransformUpdateValue::All);
+
+						result = TransformSliderContextAction::PasteOver;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class Tu, class Te>
+		void UITransformSliderWidget::DrawTransformTree(
+			Data::configTransform_t& a_data,
+			const bool               a_indent,
+			Tu                       a_updateop,
+			Te                       a_extra)
+		{
+			ImGui::PushID("xfrm_tree");
+
+			if (DrawTransformHeaderContextMenu(
+					a_data,
+					a_updateop) == TransformSliderContextAction::PasteOver)
+			{
+				ImGui::SetNextItemOpen(true);
+			}
+
+			if (ImGui::TreeNodeEx(
+					"xfrm",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Transform)))
+			{
+				ImGui::Spacing();
+
+				a_extra();
+
+				if (a_indent)
+				{
+					ImGui::Indent();
+				}
+
+				DrawTransformSliders(
+					a_data,
+					a_updateop);
+
+				if (a_indent)
+				{
+					ImGui::Unindent();
+				}
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
 
 		template <class Tu>
 		void UITransformSliderWidget::DrawTransformSliders(
@@ -104,7 +242,9 @@ namespace IED
 
 			if (!tmpb)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+				ImGui::PushStyleVar(
+					ImGuiStyleVar_Alpha,
+					ImGui::GetStyle().Alpha * 0.5f);
 			}
 			else
 			{
@@ -151,7 +291,9 @@ namespace IED
 
 			if (!tmpb)
 			{
-				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+				ImGui::PushStyleVar(
+					ImGuiStyleVar_Alpha,
+					ImGui::GetStyle().Alpha * 0.5f);
 			}
 
 			if (ImGui::DragFloat(
@@ -193,7 +335,7 @@ namespace IED
 
 			ImGui::PushID("context_area");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (ImGui::BeginPopup("context_menu"))
