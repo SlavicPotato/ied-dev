@@ -83,7 +83,7 @@ namespace IED
 							m_buffer);
 
 						auto flags = a_hideManaged && e->second.managed() ?
-                                         ImGuiSelectableFlags_Disabled :
+						                 ImGuiSelectableFlags_Disabled :
                                          ImGuiSelectableFlags_None;
 
 						if (ImGui::Selectable(LMKID<3>(desc, "1"), selected, flags))
@@ -110,5 +110,5 @@ namespace IED
 			return result;
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

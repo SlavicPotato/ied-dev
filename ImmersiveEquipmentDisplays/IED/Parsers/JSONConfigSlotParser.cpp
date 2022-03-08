@@ -65,5 +65,5 @@ namespace IED
 			a_out["sflags"] = stl::underlying(a_in.slotFlags.value);
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

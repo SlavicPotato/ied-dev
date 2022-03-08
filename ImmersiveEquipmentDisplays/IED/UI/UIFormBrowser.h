@@ -25,15 +25,14 @@ namespace IED
 			struct TabItem
 			{
 				UIFormBrowserStrings label;
-				std::uint32_t type{ 0 };
-				bool enabled{ true };
-				bool state{ false };
+				std::uint32_t        type{ 0 };
+				bool                 enabled{ true };
+				bool                 state{ false };
 			};
 
 			inline static constexpr auto POPUP_ID = "form_browser";
 
 		public:
-
 			using selected_form_list = stl::vectormap<Game::FormID, IFormDatabase::entry_t>;
 
 			struct FormBrowserDrawResult
@@ -47,17 +46,17 @@ namespace IED
 				}
 			};
 
-			using tab_filter_type = stl::set<std::uint32_t>;
+			using tab_filter_type   = stl::set<std::uint32_t>;
 			using select_callback_t = std::function<void(const IFormDatabase::entry_t&)>;
 
 			UIFormBrowser(Controller& a_controller);
 
 			FormBrowserDrawResult Draw();
-			bool Open(bool a_multisel);
-			bool IsBrowserOpen() const;
-			void SetTabFilter(const tab_filter_type& a_filter);
-			void SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
-			void ClearTabFilter();
+			bool                  Open(bool a_multisel);
+			bool                  IsBrowserOpen() const;
+			void                  SetTabFilter(const tab_filter_type& a_filter);
+			void                  SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
+			void                  ClearTabFilter();
 
 			void OnClose();
 
@@ -65,12 +64,12 @@ namespace IED
 			{
 				return m_selectedEntry;
 			}
-			
+
 			inline constexpr const auto& GetSelectedEntries() const noexcept
 			{
 				return m_selectedEntries;
 			}
-			
+
 			inline void ClearSelectedEntries() noexcept
 			{
 				m_selectedEntries.clear();
@@ -108,14 +107,14 @@ namespace IED
 			stl::optional<std::vector<IFormDatabase::entry_t>> m_filteredData;
 
 			std::uint32_t m_currentType{ 0 };
-			Game::FormID m_hlForm;
+			Game::FormID  m_hlForm;
 
 			std::array<TabItem, 35> m_tabItems;
 
 			//select_callback_t m_current;
 
 			stl::optional<IFormDatabase::entry_t> m_selectedEntry;
-			selected_form_list m_selectedEntries;
+			selected_form_list                    m_selectedEntries;
 
 			bool m_dbQueryInProgress{ false };
 			bool m_multiSelectMode{ false };
@@ -123,6 +122,6 @@ namespace IED
 			Controller& m_controller;
 		};
 
-	}  // namespace UI
+	}
 
-}  // namespace IED
+}

@@ -47,7 +47,7 @@ namespace IED
 				bool sep = false;
 
 				if (settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::Player &&
-					m_controller.IsActorBlockedImpl(Data::IData::GetPlayerRefID()))
+				    m_controller.IsActorBlockedImpl(Data::IData::GetPlayerRefID()))
 				{
 					ImGui::TextColored(
 						UICommon::g_colorWarning,

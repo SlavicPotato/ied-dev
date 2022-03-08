@@ -33,5 +33,5 @@ namespace IED
 			ImGui::PopStyleColor();
 		};
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

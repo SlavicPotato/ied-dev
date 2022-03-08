@@ -295,7 +295,7 @@ namespace IED
 			};
 
 			if ((IAL::IsAE() ?
-                     ExtractHookCallAddr<true>(
+			         ExtractHookCallAddr<true>(
 						 m_inputEventpProc_a,
 						 m_Instance.m_nextIEPCall) :
                      ExtractHookCallAddr<false>(
@@ -396,5 +396,5 @@ namespace IED
 
 			m_handlers.SendEvent(evn);
 		}
-	}  // namespace Drivers
-}  // namespace IED
+	}
+}

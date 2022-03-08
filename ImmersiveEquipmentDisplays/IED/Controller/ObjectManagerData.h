@@ -676,4 +676,4 @@ namespace IED
 		return find_visible_geometry(node, a_scb, a_scbLeft);
 	}
 
-}  // namespace IED
+}

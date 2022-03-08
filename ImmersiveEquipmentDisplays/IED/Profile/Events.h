@@ -13,9 +13,9 @@ namespace IED
 			kProfileSave
 		};
 
-		EventType m_type;
+		EventType                m_type;
 		const stl::fixed_string* m_oldProfile{ nullptr };
 		const stl::fixed_string* m_profile{ nullptr };
-		T* m_data{ nullptr };
+		T*                       m_data{ nullptr };
 	};
 }

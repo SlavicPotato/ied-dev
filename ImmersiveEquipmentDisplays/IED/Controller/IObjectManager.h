@@ -140,4 +140,4 @@ namespace IED
 		bool m_playSoundNPC{ false };
 	};
 
-}  // namespace IED
+}

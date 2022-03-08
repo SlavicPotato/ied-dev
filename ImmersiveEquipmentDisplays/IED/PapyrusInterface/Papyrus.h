@@ -6,4 +6,4 @@ namespace IED
 	{
 		bool Register(VMClassRegistry* a_registry);
 	}
-}  // namespace IED
+}

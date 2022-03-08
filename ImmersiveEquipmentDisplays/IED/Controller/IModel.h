@@ -37,4 +37,4 @@ namespace IED
 			modelParams_t& a_out);
 	};
 
-}  // namespace IED
+}

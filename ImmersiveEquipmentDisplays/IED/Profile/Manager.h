@@ -24,7 +24,7 @@ namespace IED
 		virtual ~ProfileManager() noexcept = default;
 
 		ProfileManager(const ProfileManager<T>&) = delete;
-		ProfileManager(ProfileManager<T>&&) = delete;
+		ProfileManager(ProfileManager<T>&&)      = delete;
 		ProfileManager<T>& operator=(const ProfileManager<T>&) = delete;
 		ProfileManager<T>& operator=(ProfileManager<T>&&) = delete;
 
@@ -33,8 +33,8 @@ namespace IED
 
 		[[nodiscard]] bool CreateProfile(
 			const std::string& a_name,
-			T& a_out,
-			bool a_save = false);
+			T&                 a_out,
+			bool               a_save = false);
 
 		template <
 			class Tp,
@@ -44,12 +44,12 @@ namespace IED
 
 		[[nodiscard]] bool RenameProfile(
 			const stl::fixed_string& a_oldName,
-			const std::string& a_newName);
+			const std::string&       a_newName);
 
 		template <class Td>
 		[[nodiscard]] bool SaveProfile(
 			const stl::fixed_string& a_name,
-			Td&& a_in);
+			Td&&                     a_in);
 
 		[[nodiscard]] bool SaveProfile(const stl::fixed_string& a_name);
 
@@ -82,11 +82,11 @@ namespace IED
 
 		void sort();
 
-		storage_type m_storage;
-		fs::path m_root;
-		fs::path m_ext;
+		storage_type       m_storage;
+		fs::path           m_root;
+		fs::path           m_ext;
 		except::descriptor m_lastExcept;
-		bool m_isInitialized{ false };
+		bool               m_isInitialized{ false };
 	};
 
 	template <typename T>
@@ -211,8 +211,8 @@ namespace IED
 	template <class T>
 	bool ProfileManager<T>::CreateProfile(
 		const std::string& a_name,
-		T& a_out,
-		bool a_save)
+		T&                 a_out,
+		bool               a_save)
 	{
 		try
 		{
@@ -348,7 +348,7 @@ namespace IED
 	template <class T>
 	bool ProfileManager<T>::RenameProfile(
 		const stl::fixed_string& a_oldName,
-		const std::string& a_newName)
+		const std::string&       a_newName)
 	{
 		try
 		{
@@ -406,7 +406,7 @@ namespace IED
 	template <class Td>
 	bool ProfileManager<T>::SaveProfile(
 		const stl::fixed_string& a_name,
-		Td&& a_in)
+		Td&&                     a_in)
 	{
 		try
 		{
@@ -489,4 +489,4 @@ namespace IED
 		});
 	}
 
-}  // namespace IED
+}

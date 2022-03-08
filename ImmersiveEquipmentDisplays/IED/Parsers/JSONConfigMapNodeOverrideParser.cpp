@@ -36,5 +36,5 @@ namespace IED
 				m_state);
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

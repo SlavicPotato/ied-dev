@@ -109,7 +109,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::ApplyProfile(
 			const profileSelectorParamsNodeOverride_t<int>& a_data,
-			const NodeOverrideProfile& a_profile)
+			const NodeOverrideProfile&                      a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
 			UpdateData(a_data.data);
@@ -119,7 +119,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::MergeProfile(
 			const profileSelectorParamsNodeOverride_t<int>& a_data,
-			const NodeOverrideProfile& a_profile)
+			const NodeOverrideProfile&                      a_profile)
 		{
 			MergeProfileData(a_data, a_profile);
 			UpdateData(a_data.data);
@@ -128,7 +128,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int a_handle,
+			int                                            a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -142,7 +142,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int a_handle,
+			int                                            a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -156,7 +156,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int a_handle,
+			int                             a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params);

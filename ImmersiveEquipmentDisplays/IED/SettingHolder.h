@@ -230,5 +230,5 @@ namespace IED
 			bool     m_loadHasErrors{ false };
 		};
 
-	}  // namespace Data
-}  // namespace IED
+	}
+}

@@ -49,4 +49,4 @@ namespace IED
 		processState_t state;
 	};
 
-}  // namespace IED
+}

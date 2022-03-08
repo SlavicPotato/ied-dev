@@ -19,5 +19,5 @@ namespace IED
 			const Data::configNodeOverridePlacementOverride_t& a_data,
 			Json::Value& a_out) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

@@ -138,4 +138,4 @@ namespace IED
 		static StringHolder m_Instance;
 	};
 
-}  // namespace IED
+}

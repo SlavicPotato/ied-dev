@@ -92,5 +92,5 @@ namespace IED
 				return ObjectSlot::kMax;
 			}
 		}
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

@@ -53,4 +53,4 @@ namespace IED
 	private:
 		SoundRefHolder m_sounds;
 	};
-}  // namespace IED
+}

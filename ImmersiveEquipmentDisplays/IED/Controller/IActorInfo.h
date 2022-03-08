@@ -57,4 +57,4 @@ namespace IED
 		ActorInfoHolder m_actorInfo;
 		NPCInfoHolder   m_npcInfo;
 	};
-}  // namespace IED
+}

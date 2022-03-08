@@ -86,4 +86,4 @@ namespace IED
 	private:
 		bool m_loaded{ false };
 	};
-}  // namespace IED
+}

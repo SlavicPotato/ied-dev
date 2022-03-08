@@ -7,7 +7,7 @@ namespace IED
 		class UIDescriptionPopupWidget
 		{
 		public:
-			bool DrawDescriptionPopup(const char *a_label = nullptr);
+			bool DrawDescriptionPopup(const char* a_label = nullptr);
 
 			void ClearDescriptionPopupBuffer();
 			void SetDescriptionPopupBuffer(const std::string& a_text);

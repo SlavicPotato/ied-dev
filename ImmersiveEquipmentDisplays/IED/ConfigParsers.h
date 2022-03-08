@@ -37,5 +37,5 @@ namespace IED
 			}
 		}
 
-	}  // namespace Data
-}  // namespace IED
+	}
+}

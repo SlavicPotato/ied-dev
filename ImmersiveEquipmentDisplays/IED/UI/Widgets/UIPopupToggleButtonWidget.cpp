@@ -11,7 +11,7 @@ namespace IED
 			const char* a_popupId)
 		{
 			const auto dir = ImGui::IsPopupOpen(a_popupId) ?
-                                 ImGuiDir_Down :
+			                     ImGuiDir_Down :
                                  ImGuiDir_Right;
 
 			bool result = ImGui::ArrowButton(a_id, dir);
@@ -29,7 +29,7 @@ namespace IED
 			const char* a_popupId)
 		{
 			const auto dir = ImGui::IsPopupOpen(a_popupId) ?
-                                 ImGuiDir_Down :
+			                     ImGuiDir_Down :
                                  ImGuiDir_Right;
 
 			return ImGui::ArrowButton(a_id, dir);

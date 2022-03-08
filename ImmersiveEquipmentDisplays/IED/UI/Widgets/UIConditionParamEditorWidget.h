@@ -34,11 +34,11 @@ namespace IED
 
 	struct ConditionParamItemExtraArgs
 	{
-		void* p1{ nullptr };
+		void*       p1{ nullptr };
 		const void* p2{ nullptr };
-		void* p3{ nullptr };
-		bool disable{ false };
-		bool hide{ false };
+		void*       p3{ nullptr };
+		bool        disable{ false };
+		bool        hide{ false };
 	};
 
 	namespace UI
@@ -48,7 +48,7 @@ namespace IED
 		public:
 			virtual bool DrawConditionParamExtra(void* a_p1, const void* a_p2) = 0;
 			virtual bool DrawConditionItemExtra(
-				ConditionParamItem a_item,
+				ConditionParamItem           a_item,
 				ConditionParamItemExtraArgs& a_args);
 		};
 
@@ -56,7 +56,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kNoClearForm = 1ui8 << 0,
+			kNoClearForm    = 1ui8 << 0,
 			kNoClearKeyword = 1ui8 << 1
 		};
 
@@ -85,7 +85,7 @@ namespace IED
 					return *static_cast<const T*>(p2);
 				}
 
-				void* p1{ nullptr };
+				void*       p1{ nullptr };
 				const void* p2{ nullptr };
 			};
 

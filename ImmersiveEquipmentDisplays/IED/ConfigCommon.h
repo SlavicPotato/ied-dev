@@ -135,7 +135,7 @@ namespace IED
 		inline static constexpr auto GetOppositeSex(Data::ConfigSex a_sex) noexcept
 		{
 			return a_sex == Data::ConfigSex::Female ?
-                       Data::ConfigSex::Male :
+			           Data::ConfigSex::Male :
                        Data::ConfigSex::Female;
 		}
 
@@ -180,5 +180,5 @@ namespace IED
 			std::uint32_t comboKey{ 0 };
 		};
 
-	}  // namespace Data
-}  // namespace IED
+	}
+}

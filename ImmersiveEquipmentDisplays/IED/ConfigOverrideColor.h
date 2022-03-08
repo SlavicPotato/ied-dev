@@ -92,7 +92,7 @@ namespace IED
 					a
 				};
 			}
-			
+
 			constexpr void clamp()
 			{
 				configColorRGB_t::clamp();

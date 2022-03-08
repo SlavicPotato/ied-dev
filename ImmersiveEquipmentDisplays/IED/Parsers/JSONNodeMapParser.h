@@ -20,5 +20,5 @@ namespace IED
 			Json::Value&                   a_out,
 			bool                           a_extraOnly) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

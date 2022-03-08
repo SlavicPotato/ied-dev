@@ -72,5 +72,5 @@ namespace IED
 
 			return result;
 		}
-	}  // namespace UI
-}  // namespace IED
+	}
+}

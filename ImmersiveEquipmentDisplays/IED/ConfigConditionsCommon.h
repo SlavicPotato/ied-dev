@@ -433,7 +433,7 @@ namespace IED
 
 			return false;
 		}
-		
+
 		template <class Tm, class Tf>
 		bool match_form_kw_or_template(
 			const Tm& a_match,

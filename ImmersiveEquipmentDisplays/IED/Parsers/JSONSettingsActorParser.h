@@ -18,5 +18,5 @@ namespace IED
 			const Data::SettingHolder::EditorPanelActorSettings& a_data,
 			Json::Value&                                         a_out) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

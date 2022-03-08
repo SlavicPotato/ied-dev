@@ -58,4 +58,4 @@ namespace IED
 
 		std::weak_ptr<data_type> m_data;
 	};
-}  // namespace IED
+}

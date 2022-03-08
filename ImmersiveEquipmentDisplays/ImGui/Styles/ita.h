@@ -23,7 +23,7 @@ namespace IED
 
 					for (ImGuiCol i = 0; i <= ImGuiCol_COUNT; i++)
 					{
-						auto ei = static_cast<ImGuiCol_>(i);
+						auto  ei  = static_cast<ImGuiCol_>(i);
 						auto& col = a_style.Colors[i];
 
 						if ((ImGuiCol_ModalWindowDimBg != ei) &&
@@ -34,12 +34,12 @@ namespace IED
 						}
 					}
 
-					a_style.ChildBorderSize = 1.0f;
-					a_style.FrameBorderSize = 0.0f;
-					a_style.PopupBorderSize = 1.0f;
+					a_style.ChildBorderSize  = 1.0f;
+					a_style.FrameBorderSize  = 0.0f;
+					a_style.PopupBorderSize  = 1.0f;
 					a_style.WindowBorderSize = 0.0f;
-					a_style.FrameRounding = 3.0f;
-					a_style.Alpha = 1.0f;
+					a_style.FrameRounding    = 3.0f;
+					a_style.Alpha            = 1.0f;
 				}
 			}
 		}

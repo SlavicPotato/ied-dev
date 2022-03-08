@@ -172,7 +172,7 @@ namespace IED
 						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
 				{
 					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
-					result = true;
+					result                            = true;
 				}
 
 				ImGui::Spacing();
@@ -303,7 +303,7 @@ namespace IED
 								m_descBuffer2,
 								"LD: %s",
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
-                                    LS(CommonStrings::True) :
+									LS(CommonStrings::True) :
                                     LS(CommonStrings::False));
 						}
 						else
@@ -313,7 +313,7 @@ namespace IED
 								"%s, LD: %s",
 								r,
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
-                                    LS(CommonStrings::True) :
+									LS(CommonStrings::True) :
                                     LS(CommonStrings::False));
 						}
 
@@ -346,7 +346,7 @@ namespace IED
 
 						return GetFormKeywordExtraDesc(
 							type != PACKAGE_PROCEDURE_TYPE::kNone ?
-                                procedure_type_to_desc(type) :
+								procedure_type_to_desc(type) :
                                 nullptr);
 					}
 					else
@@ -539,7 +539,7 @@ namespace IED
 		}
 
 		bool UIConditionParamExtraInterface::DrawConditionItemExtra(
-			ConditionParamItem a_item,
+			ConditionParamItem           a_item,
 			ConditionParamItemExtraArgs& a_args)
 		{
 			return false;

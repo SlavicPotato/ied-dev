@@ -152,7 +152,7 @@ namespace IED
 			if (it != npcInfo.end())
 			{
 				auto sex = it->second->female ?
-                               Data::ConfigSex::Female :
+				               Data::ConfigSex::Female :
                                Data::ConfigSex::Male;
 
 				SetSex(sex, false);

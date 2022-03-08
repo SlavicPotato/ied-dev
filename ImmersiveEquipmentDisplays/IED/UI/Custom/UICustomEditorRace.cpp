@@ -2,7 +2,7 @@
 
 #include "UICustomEditorRace.h"
 
-#include "../Widgets/UIWidgetsCommon.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/Controller/Controller.h"
 
@@ -339,7 +339,7 @@ namespace IED
 						   .GetConfigStore()
 						   .active.custom.GetRaceData(),
 					   a_handle) ?
-                       std::addressof(UICommon::g_colorPurple) :
+			           std::addressof(UICommon::g_colorPurple) :
                        nullptr;
 		}
 	}

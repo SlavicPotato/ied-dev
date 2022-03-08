@@ -159,5 +159,5 @@ namespace IED
 			a_out["version"] = a_version;
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

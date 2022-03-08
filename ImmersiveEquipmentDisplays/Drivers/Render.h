@@ -73,5 +73,5 @@ namespace IED
 			static Render m_Instance;
 		};
 
-	}  // namespace Drivers
-}  // namespace IED
+	}
+}

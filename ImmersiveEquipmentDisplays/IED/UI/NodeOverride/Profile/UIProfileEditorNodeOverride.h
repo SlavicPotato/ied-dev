@@ -157,5 +157,5 @@ namespace IED
 			a_params.entry.first = GetConfigClass();
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

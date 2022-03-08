@@ -225,7 +225,7 @@ namespace IED
 
 					ImGui::TextUnformatted(
 						e.obj.second.IsCellAttached() ?
-                            "true" :
+							"true" :
                             "false");
 
 					ImGui::PopID();

@@ -46,4 +46,4 @@ namespace IED
 		virtual constexpr Data::configStore_t& JSGetConfigStore() noexcept = 0;
 		virtual void                           JSOnDataImport()            = 0;
 	};
-}  // namespace IED
+}

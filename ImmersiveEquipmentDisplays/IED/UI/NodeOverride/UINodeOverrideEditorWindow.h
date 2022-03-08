@@ -43,5 +43,5 @@ namespace IED
 			Controller& m_controller;
 		};
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

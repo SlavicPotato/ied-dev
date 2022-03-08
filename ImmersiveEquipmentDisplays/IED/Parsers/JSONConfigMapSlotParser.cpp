@@ -32,5 +32,5 @@ namespace IED
 			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, CURRENT_VERSION, m_state);
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

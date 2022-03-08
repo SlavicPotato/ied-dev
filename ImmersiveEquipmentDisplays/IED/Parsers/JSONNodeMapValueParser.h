@@ -19,5 +19,5 @@ namespace IED
 			const Data::NodeMap::value_type& a_data,
 			Json::Value&                     a_out) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

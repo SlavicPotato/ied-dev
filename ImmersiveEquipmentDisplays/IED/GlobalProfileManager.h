@@ -87,4 +87,4 @@ namespace IED
 		static ProfileManagerFormFilter   m_formFilterManager;
 	};
 
-}  // namespace IED
+}

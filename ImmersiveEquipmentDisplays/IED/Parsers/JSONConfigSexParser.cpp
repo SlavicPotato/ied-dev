@@ -28,5 +28,5 @@ namespace IED
 			a_out["sex"] = stl::underlying(a_data);
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

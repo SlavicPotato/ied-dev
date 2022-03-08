@@ -74,12 +74,12 @@
 //  when io.MouseDrawCursor is set.
 
 // Win32 Data
-static HWND g_hWnd = nullptr;
-static INT64 g_Time = 0;
-static INT64 g_TicksPerSecond = 0;
-static ImGuiMouseCursor g_LastMouseCursor = ImGuiMouseCursor_COUNT;
-static bool g_HasGamepad = false;
-static bool g_WantUpdateHasGamepad = true;
+static HWND             g_hWnd                 = nullptr;
+static INT64            g_Time                 = 0;
+static INT64            g_TicksPerSecond       = 0;
+static ImGuiMouseCursor g_LastMouseCursor      = ImGuiMouseCursor_COUNT;
+static bool             g_HasGamepad           = false;
+static bool             g_WantUpdateHasGamepad = true;
 
 // Functions
 bool ImGui_ImplWin32_Init(void* hwnd)
@@ -90,7 +90,7 @@ bool ImGui_ImplWin32_Init(void* hwnd)
 		return false;
 
 	// Setup back-end capabilities flags
-	g_hWnd = (HWND)hwnd;
+	g_hWnd      = (HWND)hwnd;
 	ImGuiIO& io = ImGui::GetIO();
 	io.BackendFlags |=
 		ImGuiBackendFlags_HasMouseCursors;  // We can honor GetMouseCursor() values
@@ -99,32 +99,32 @@ bool ImGui_ImplWin32_Init(void* hwnd)
 		ImGuiBackendFlags_HasSetMousePos;  // We can honor io.WantSetMousePos
 										   // requests (optional, rarely used)
 	io.BackendPlatformName = "imgui_impl_win32";
-	io.ImeWindowHandle = hwnd;
+	io.ImeWindowHandle     = hwnd;
 
 	// Keyboard mapping. ImGui will use those indices to peek into the
 	// io.KeysDown[] array that we will update during the application lifetime.
-	io.KeyMap[ImGuiKey_Tab] = VK_TAB;
-	io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
-	io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
-	io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
-	io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
-	io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
-	io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
-	io.KeyMap[ImGuiKey_Home] = VK_HOME;
-	io.KeyMap[ImGuiKey_End] = VK_END;
-	io.KeyMap[ImGuiKey_Insert] = VK_INSERT;
-	io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
-	io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
-	io.KeyMap[ImGuiKey_Space] = VK_SPACE;
-	io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
-	io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+	io.KeyMap[ImGuiKey_Tab]         = VK_TAB;
+	io.KeyMap[ImGuiKey_LeftArrow]   = VK_LEFT;
+	io.KeyMap[ImGuiKey_RightArrow]  = VK_RIGHT;
+	io.KeyMap[ImGuiKey_UpArrow]     = VK_UP;
+	io.KeyMap[ImGuiKey_DownArrow]   = VK_DOWN;
+	io.KeyMap[ImGuiKey_PageUp]      = VK_PRIOR;
+	io.KeyMap[ImGuiKey_PageDown]    = VK_NEXT;
+	io.KeyMap[ImGuiKey_Home]        = VK_HOME;
+	io.KeyMap[ImGuiKey_End]         = VK_END;
+	io.KeyMap[ImGuiKey_Insert]      = VK_INSERT;
+	io.KeyMap[ImGuiKey_Delete]      = VK_DELETE;
+	io.KeyMap[ImGuiKey_Backspace]   = VK_BACK;
+	io.KeyMap[ImGuiKey_Space]       = VK_SPACE;
+	io.KeyMap[ImGuiKey_Enter]       = VK_RETURN;
+	io.KeyMap[ImGuiKey_Escape]      = VK_ESCAPE;
 	io.KeyMap[ImGuiKey_KeyPadEnter] = VK_RETURN;
-	io.KeyMap[ImGuiKey_A] = 'A';
-	io.KeyMap[ImGuiKey_C] = 'C';
-	io.KeyMap[ImGuiKey_V] = 'V';
-	io.KeyMap[ImGuiKey_X] = 'X';
-	io.KeyMap[ImGuiKey_Y] = 'Y';
-	io.KeyMap[ImGuiKey_Z] = 'Z';
+	io.KeyMap[ImGuiKey_A]           = 'A';
+	io.KeyMap[ImGuiKey_C]           = 'C';
+	io.KeyMap[ImGuiKey_V]           = 'V';
+	io.KeyMap[ImGuiKey_X]           = 'X';
+	io.KeyMap[ImGuiKey_Y]           = 'Y';
+	io.KeyMap[ImGuiKey_Z]           = 'Z';
 
 	return true;
 }
@@ -202,7 +202,7 @@ static void ImGui_ImplWin32_UpdateMousePos()
 		if (active_window == g_hWnd || ::IsChild(active_window, g_hWnd))
 			if (::GetCursorPos(&pos) && ::ScreenToClient(g_hWnd, &pos))
 			{
-				auto ud = static_cast<SKMP_ImGuiUserData*>(io.UserData);
+				auto ud     = static_cast<SKMP_ImGuiUserData*>(io.UserData);
 				io.MousePos = ImVec2(
 					(float)pos.x * ud->btsRatio.X,
 					(float)pos.y * ud->btsRatio.Y);
@@ -312,15 +312,15 @@ void ImGui_ImplWin32_NewFrame()
 	INT64 current_time;
 	::QueryPerformanceCounter((LARGE_INTEGER*)&current_time);
 	io.DeltaTime = (float)(current_time - g_Time) / g_TicksPerSecond;
-	g_Time = current_time;
+	g_Time       = current_time;
 
 	// Read keyboard modifiers inputs
 	// io.KeyCtrl = (::GetKeyState(VK_CONTROL) & 0x8000) != 0;
 	// io.KeyShift = (::GetKeyState(VK_SHIFT) & 0x8000) != 0;
 	// io.KeyAlt = (::GetKeyState(VK_MENU) & 0x8000) != 0;
 	io.KeyShift = io.KeysDown[VK_SHIFT];
-	io.KeyCtrl = io.KeysDown[VK_CONTROL];
-	io.KeyAlt = io.KeysDown[VK_MENU];
+	io.KeyCtrl  = io.KeysDown[VK_CONTROL];
+	io.KeyAlt   = io.KeysDown[VK_MENU];
 	io.KeySuper = false;
 
 	// io.KeysDown[], io.MousePos, io.MouseDown[], io.MouseWheel: filled by the
@@ -385,8 +385,8 @@ IMGUI_IMPL_API void ImGui_DInput_Handler(uint32_t code, bool down)
 }
 
 IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
-	HWND hwnd,
-	UINT msg,
+	HWND   hwnd,
+	UINT   msg,
 	WPARAM wParam,
 	LPARAM lParam)
 {
@@ -514,34 +514,34 @@ static BOOL _IsWindowsVersionOrGreater(WORD major, WORD minor, WORD)
 	if (RtlVerifyVersionInfoFn == NULL)
 		return FALSE;
 
-	RTL_OSVERSIONINFOEXW versionInfo = {};
-	ULONGLONG conditionMask = 0;
-	versionInfo.dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOEXW);
-	versionInfo.dwMajorVersion = major;
-	versionInfo.dwMinorVersion = minor;
+	RTL_OSVERSIONINFOEXW versionInfo   = {};
+	ULONGLONG            conditionMask = 0;
+	versionInfo.dwOSVersionInfoSize    = sizeof(RTL_OSVERSIONINFOEXW);
+	versionInfo.dwMajorVersion         = major;
+	versionInfo.dwMinorVersion         = minor;
 	VER_SET_CONDITION(conditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
 	VER_SET_CONDITION(conditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
 	return (RtlVerifyVersionInfoFn(&versionInfo, VER_MAJORVERSION | VER_MINORVERSION, conditionMask) == 0) ? TRUE : FALSE;
 }
 
-#define _IsWindowsVistaOrGreater() _IsWindowsVersionOrGreater(HIBYTE(0x0600), LOBYTE(0x0600), 0)    // _WIN32_WINNT_VISTA
-#define _IsWindows8OrGreater() _IsWindowsVersionOrGreater(HIBYTE(0x0602), LOBYTE(0x0602), 0)        // _WIN32_WINNT_WIN8
+#define _IsWindowsVistaOrGreater()   _IsWindowsVersionOrGreater(HIBYTE(0x0600), LOBYTE(0x0600), 0)  // _WIN32_WINNT_VISTA
+#define _IsWindows8OrGreater()       _IsWindowsVersionOrGreater(HIBYTE(0x0602), LOBYTE(0x0602), 0)  // _WIN32_WINNT_WIN8
 #define _IsWindows8Point1OrGreater() _IsWindowsVersionOrGreater(HIBYTE(0x0603), LOBYTE(0x0603), 0)  // _WIN32_WINNT_WINBLUE
-#define _IsWindows10OrGreater() _IsWindowsVersionOrGreater(HIBYTE(0x0A00), LOBYTE(0x0A00), 0)       // _WIN32_WINNT_WINTHRESHOLD / _WIN32_WINNT_WIN10
+#define _IsWindows10OrGreater()      _IsWindowsVersionOrGreater(HIBYTE(0x0A00), LOBYTE(0x0A00), 0)  // _WIN32_WINNT_WINTHRESHOLD / _WIN32_WINNT_WIN10
 
 #ifndef DPI_ENUMS_DECLARED
 typedef enum
 {
-	PROCESS_DPI_UNAWARE = 0,
-	PROCESS_SYSTEM_DPI_AWARE = 1,
+	PROCESS_DPI_UNAWARE           = 0,
+	PROCESS_SYSTEM_DPI_AWARE      = 1,
 	PROCESS_PER_MONITOR_DPI_AWARE = 2
 } PROCESS_DPI_AWARENESS;
 typedef enum
 {
 	MDT_EFFECTIVE_DPI = 0,
-	MDT_ANGULAR_DPI = 1,
-	MDT_RAW_DPI = 2,
-	MDT_DEFAULT = MDT_EFFECTIVE_DPI
+	MDT_ANGULAR_DPI   = 1,
+	MDT_RAW_DPI       = 2,
+	MDT_DEFAULT       = MDT_EFFECTIVE_DPI
 } MONITOR_DPI_TYPE;
 #endif
 #ifndef _DPI_AWARENESS_CONTEXTS_
@@ -590,7 +590,7 @@ float ImGui_ImplWin32_GetDpiScaleForMonitor(void* monitor)
 	UINT xdpi = 96, ydpi = 96;
 	if (_IsWindows8Point1OrGreater())
 	{
-		static HINSTANCE shcore_dll = ::LoadLibraryA("shcore.dll");  // Reference counted per-process
+		static HINSTANCE            shcore_dll         = ::LoadLibraryA("shcore.dll");  // Reference counted per-process
 		static PFN_GetDpiForMonitor GetDpiForMonitorFn = NULL;
 		if (GetDpiForMonitorFn == NULL && shcore_dll != NULL)
 			GetDpiForMonitorFn = (PFN_GetDpiForMonitor)::GetProcAddress(shcore_dll, "GetDpiForMonitor");
@@ -603,8 +603,8 @@ float ImGui_ImplWin32_GetDpiScaleForMonitor(void* monitor)
 	}
 #ifndef NOGDI
 	const HDC dc = ::GetDC(NULL);
-	xdpi = ::GetDeviceCaps(dc, LOGPIXELSX);
-	ydpi = ::GetDeviceCaps(dc, LOGPIXELSY);
+	xdpi         = ::GetDeviceCaps(dc, LOGPIXELSX);
+	ydpi         = ::GetDeviceCaps(dc, LOGPIXELSY);
 	IM_ASSERT(xdpi == ydpi);  // Please contact me if you hit this assert!
 	::ReleaseDC(NULL, dc);
 #endif

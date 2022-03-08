@@ -52,5 +52,5 @@ namespace IED
 			ImGui::Spacing();*/
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

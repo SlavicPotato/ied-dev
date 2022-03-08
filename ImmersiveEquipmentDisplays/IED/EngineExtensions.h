@@ -225,4 +225,4 @@ namespace IED
 
 		static EngineExtensions m_Instance;
 	};
-}  // namespace IED
+}

@@ -19,5 +19,5 @@ namespace IED
 			const Data::configSlot_t& a_in,
 			Json::Value& a_out) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

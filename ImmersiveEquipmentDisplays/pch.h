@@ -67,9 +67,6 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 
-//#include <boost/uuid/uuid.hpp>
-//#include <boost/uuid/uuid_generators.hpp>
-
 #include <boost/locale.hpp>
 
 #include <imgui.h>
@@ -84,8 +81,5 @@ namespace fs = std::filesystem;
 #include "paths.h"
 #include "plugin.h"
 #include "skse.h"
-
-
-//#include <ext/BSTHashMap.h>
 
 #endif  // PCH_H

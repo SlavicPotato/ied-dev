@@ -51,4 +51,4 @@ namespace IED
 		std::unique_ptr<UI::UIMain> m_UIContext;
 		bool                        m_resetUI{ false };
 	};
-}  // namespace IED
+}

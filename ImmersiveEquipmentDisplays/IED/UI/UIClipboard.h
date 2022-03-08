@@ -115,97 +115,97 @@ namespace IED
 			else if constexpr (std::is_same_v<data_type, Data::configCustomNameValue_t>)
 			{
 				return data.type == DataType::ConfigCustom ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configSlot_t>)
 			{
 				return data.type == DataType::ConfigSlot ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::equipmentOverride_t>)
 			{
 				return data.type == DataType::EquipmentOverride ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::equipmentOverrideConditionList_t>)
 			{
 				return data.type == DataType::EquipmentOverrideConditionList ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configFormSet_t>)
 			{
 				return data.type == DataType::FormSet ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configFormList_t>)
 			{
 				return data.type == DataType::FormList ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideTransform_t>)
 			{
 				return data.type == DataType::NodeOverrideTransform ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideHolderClipboardData_t>)
 			{
 				return data.type == DataType::NodeOverrideHolder ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacement_t>)
 			{
 				return data.type == DataType::NodeOverridePlacement ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacementOverride_t>)
 			{
 				return data.type == DataType::NodeOverridePlacementOverride ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePlacementOverrideList_t>)
 			{
 				return data.type == DataType::NodeOverridePlacementOverrideList ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideOffset_t>)
 			{
 				return data.type == DataType::NodeOverrideOffset ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideOffsetList_t>)
 			{
 				return data.type == DataType::NodeOverrideOffsetList ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideConditionList_t>)
 			{
 				return data.type == DataType::NodeOverrideOffsetConditionList ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configTransform_t>)
 			{
 				return data.type == DataType::ConfigTransform ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configFormFilter_t>)
 			{
 				return data.type == DataType::FormFilter ?
-                           static_cast<data_type*>(data.data) :
+				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideValues_t>)

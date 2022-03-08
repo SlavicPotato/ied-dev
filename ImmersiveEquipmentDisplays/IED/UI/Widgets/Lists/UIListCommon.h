@@ -370,5 +370,5 @@ namespace IED
 			}
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

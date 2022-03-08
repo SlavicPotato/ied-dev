@@ -15,5 +15,5 @@ namespace IED
 				std::uint32_t&                   a_key,
 				bool                             a_allowNone = false);
 		};
-	}  // namespace UI
-}  // namespace IED
+	}
+}

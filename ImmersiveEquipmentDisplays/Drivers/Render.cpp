@@ -80,5 +80,5 @@ namespace IED
 
 			m_Instance.GetEventDispatcher<Events::IDXGISwapChainPresent>().SendEvent(evn);
 		}
-	}  // namespace Drivers
-}  // namespace IED
+	}
+}

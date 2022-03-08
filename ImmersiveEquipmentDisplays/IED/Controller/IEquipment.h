@@ -44,4 +44,4 @@ namespace IED
 			Game::FormID                      a_lastEquipped);
 	};
 
-}  // namespace IED
+}

@@ -25,7 +25,7 @@ namespace IED
 
 				auto it = data.find(a_id);
 				return it != data.end() ?
-                           it->second :
+				           it->second :
                            get_default_str(a_id);
 			}
 			else

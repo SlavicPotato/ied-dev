@@ -68,5 +68,5 @@ namespace IED
 			return m_dirty ? Save() : false;
 		}
 
-	}  // namespace Data
-}  // namespace IED
+	}
+}

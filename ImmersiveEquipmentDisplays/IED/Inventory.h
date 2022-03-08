@@ -54,4 +54,4 @@ namespace IED
 		bool m_isPlayer;
 	};
 
-}  // namespace IED
+}

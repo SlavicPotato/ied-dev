@@ -74,7 +74,7 @@ namespace IED
 
 			io.IniFilename =
 				!m_conf.imgui_ini.empty() ?
-                    m_conf.imgui_ini.c_str() :
+					m_conf.imgui_ini.c_str() :
                     nullptr;
 
 			ImGui::StyleColorsDark();
@@ -629,7 +629,7 @@ namespace IED
 
 			auto requestedfont(
 				m_fontUpdateData.font.empty() ?
-                    m_currentFont->first :
+					m_currentFont->first :
                     m_fontUpdateData.font);
 
 			auto& io = ImGui::GetIO();
@@ -782,7 +782,7 @@ namespace IED
 			a_builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
 
 			auto langFlags = m_fontUpdateData.langGlyphData ?
-                                 m_fontUpdateData.langGlyphData->glyph_preset_flags :
+			                     m_fontUpdateData.langGlyphData->glyph_preset_flags :
                                  GlyphPresetFlags::kNone;
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kCyrilic) ||
@@ -889,7 +889,7 @@ namespace IED
 				AddFontRanges(builder, a_info.default_glyph_data.glyph_ranges);
 
 				const auto& fontsize = m_fontUpdateData.fontsize ?
-                                           *m_fontUpdateData.fontsize :
+				                           *m_fontUpdateData.fontsize :
                                            a_info.default_font_size;
 
 				auto r = a_out.try_emplace(
@@ -916,7 +916,7 @@ namespace IED
 					AddFontRanges(builder, it->second);
 
 					const auto& fontsize = m_fontUpdateData.fontsize ?
-                                               *m_fontUpdateData.fontsize :
+					                           *m_fontUpdateData.fontsize :
                                                it->second.size;
 
 					auto r = a_out.try_emplace(it->first, nullptr, fontsize);

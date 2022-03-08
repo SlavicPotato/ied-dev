@@ -23,5 +23,5 @@ namespace IED
 			return GlobalProfileManager::GetSingleton<P>();
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

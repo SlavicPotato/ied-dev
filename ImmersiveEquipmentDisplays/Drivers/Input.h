@@ -65,5 +65,5 @@ namespace IED
 
 			static Input m_Instance;
 		};
-	}  // namespace Drivers
-}  // namespace IED
+	}
+}

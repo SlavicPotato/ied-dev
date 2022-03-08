@@ -49,5 +49,5 @@ namespace IED
 			}
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

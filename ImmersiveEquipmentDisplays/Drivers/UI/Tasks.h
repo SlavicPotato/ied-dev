@@ -6,7 +6,7 @@ namespace IED
 	{
 		class UI;
 	}
-}  // namespace IED
+}
 
 namespace IED
 {
@@ -69,5 +69,5 @@ namespace IED
 			renderTaskOptions_t m_options;
 			renderTaskState_t   m_state;
 		};
-	}  // namespace Tasks
-}  // namespace IED
+	}
+}

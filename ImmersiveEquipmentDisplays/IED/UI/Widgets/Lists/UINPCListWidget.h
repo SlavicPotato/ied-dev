@@ -295,5 +295,5 @@ namespace IED
 			QueueListUpdate(a_npc);
 		}
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

@@ -89,7 +89,7 @@ namespace IED
 
 			inline constexpr void SetComboKey(std::uint32_t a_key) noexcept
 			{
-				m_comboKey = a_key;
+				m_comboKey     = a_key;
 				m_comboKeyDown = false;
 			}
 
@@ -112,6 +112,6 @@ namespace IED
 
 			virtual void Receive(const KeyEvent& a_evn) override;
 		};
-	}  // namespace Handlers
+	}
 
-}  // namespace IED
+}

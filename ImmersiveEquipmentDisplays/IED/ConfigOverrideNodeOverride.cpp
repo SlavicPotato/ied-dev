@@ -41,7 +41,7 @@ namespace IED
 
 			auto type =
 				a_actor == Data::IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			CopyEntries(GetGlobalData(type), result, ConfigClass::Global);
@@ -73,7 +73,7 @@ namespace IED
 
 			auto type =
 				a_npc == Data::IData::GetPlayerBaseID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			CopyEntries(GetGlobalData(type), result, ConfigClass::Global);
@@ -152,7 +152,7 @@ namespace IED
 
 			auto type =
 				a_actor == Data::IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			return a_hc.get_entry(GetGlobalData(type).data, a_node);
@@ -200,7 +200,7 @@ namespace IED
 
 			auto type =
 				a_actor == Data::IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			return a_hc.get_entry(GetGlobalData(type).placementData, a_node);

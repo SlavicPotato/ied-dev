@@ -191,7 +191,7 @@ namespace IED
 			if (it != npcInfo.end())
 			{
 				auto sex = it->second->female ?
-                               Data::ConfigSex::Female :
+				               Data::ConfigSex::Female :
                                Data::ConfigSex::Male;
 
 				SetSex(sex, false);
@@ -355,7 +355,7 @@ namespace IED
 			return HasConfigEntry(
 					   m_controller.GetConfigStore().active.custom.GetNPCData(),
 					   a_handle) ?
-                       std::addressof(UICommon::g_colorLightOrange) :
+			           std::addressof(UICommon::g_colorLightOrange) :
                        nullptr;
 		}
 	}

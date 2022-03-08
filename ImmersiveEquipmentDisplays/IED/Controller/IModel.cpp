@@ -66,7 +66,7 @@ namespace IED
 				a_form,
 				a_out,
 				static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
-                    ModelType::kLight :
+					ModelType::kLight :
                     ModelType::kMisc);
 
 		case BGSArtObject::kTypeID:
@@ -199,4 +199,4 @@ namespace IED
 		return false;
 	}
 
-}  // namespace IED
+}

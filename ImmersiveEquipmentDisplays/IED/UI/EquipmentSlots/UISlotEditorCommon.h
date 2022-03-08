@@ -112,7 +112,7 @@ namespace IED
 				a_controller,
 				UIProfileSelectorFlags::kEnableMerge |
 					(!a_disableApply ?
-                         UIProfileSelectorFlags::kEnableApply :
+		                 UIProfileSelectorFlags::kEnableApply :
                          UIProfileSelectorFlags::kNone))
 		{
 		}

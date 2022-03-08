@@ -16,10 +16,10 @@ namespace IED
 			formLeft,
 			formRight,
 			formLeft ?
-                ItemData::GetObjectSlotLeft(formLeft) :
+				ItemData::GetObjectSlotLeft(formLeft) :
                 ObjectSlot::kMax,
 			formRight ?
-                ItemData::GetObjectSlot(formRight) :
+				ItemData::GetObjectSlot(formRight) :
                 ObjectSlot::kMax
 		};
 	}
@@ -119,4 +119,4 @@ namespace IED
 		}
 	}
 
-}  // namespace IED
+}

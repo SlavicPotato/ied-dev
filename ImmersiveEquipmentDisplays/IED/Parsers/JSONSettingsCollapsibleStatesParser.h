@@ -18,5 +18,5 @@ namespace IED
 			const UI::UIData::UICollapsibleStates& a_data,
 			Json::Value&                           a_out) const;
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

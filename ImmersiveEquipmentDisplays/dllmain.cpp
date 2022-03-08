@@ -35,7 +35,6 @@ static bool Initialize(const SKSEInterface* a_skse)
 				usageLocal.used,
 				usageLocal.total);
 		}
-
 	}
 	catch (const std::exception& e)
 	{
@@ -113,7 +112,7 @@ extern "C" {
 		}
 
 		bool ret = Initialize(a_skse);
-		
+
 		if (!ret)
 		{
 			WinApi::MessageBoxError(

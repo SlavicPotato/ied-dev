@@ -46,7 +46,9 @@ namespace IED
 	}
 
 	void KeyState::SetLRKeyState(
-		KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk)
+		KeyEventState a_ev,
+		std::uint32_t a_sc,
+		UINT          a_vk)
 	{
 		switch (a_vk)
 		{

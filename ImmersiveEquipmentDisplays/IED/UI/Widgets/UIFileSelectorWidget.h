@@ -77,5 +77,5 @@ namespace IED
 
 			except::descriptor m_lastExcept;
 		};
-	}  // namespace UI
-}  // namespace IED
+	}
+}

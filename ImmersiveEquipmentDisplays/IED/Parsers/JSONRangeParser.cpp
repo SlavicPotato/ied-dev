@@ -26,5 +26,5 @@ namespace IED
 			a_out["max"] = a_data.max;
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

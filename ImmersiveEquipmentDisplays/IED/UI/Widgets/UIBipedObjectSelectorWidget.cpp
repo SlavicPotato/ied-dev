@@ -54,7 +54,7 @@ namespace IED
 		} };
 
 		bool UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
-			const char*          a_label,
+			const char*   a_label,
 			BIPED_OBJECT& a_data)
 		{
 			static_assert(m_desc.size() == stl::underlying(BIPED_OBJECT::kTotal));

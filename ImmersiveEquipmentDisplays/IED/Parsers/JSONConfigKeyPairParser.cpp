@@ -26,5 +26,5 @@ namespace IED
 			a_out["combo_key"] = a_data.comboKey;
 		}
 
-	}  // namespace Serialization
-}  // namespace IED
+	}
+}

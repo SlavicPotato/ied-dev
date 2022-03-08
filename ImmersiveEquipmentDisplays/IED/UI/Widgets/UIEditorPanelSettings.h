@@ -39,5 +39,5 @@ namespace IED
 
 			Data::ConfigSex m_sex{ Data::ConfigSex::Male };
 		};
-	}  // namespace UI
-}  // namespace IED
+	}
+}

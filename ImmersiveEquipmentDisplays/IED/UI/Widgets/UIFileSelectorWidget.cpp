@@ -34,7 +34,7 @@ namespace IED
 		void UIFileSelector::DrawFileSelector()
 		{
 			const char* preview = m_selected ?
-                                      m_selected->m_key.c_str() :
+			                          m_selected->m_key.c_str() :
                                       nullptr;
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);

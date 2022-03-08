@@ -62,7 +62,7 @@ namespace IED
 
 			auto type =
 				a_npc == IData::GetPlayerBaseID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			FillResultCopy(
@@ -101,7 +101,7 @@ namespace IED
 
 			auto type =
 				a_actor == IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			FillResultCopy(
@@ -154,7 +154,7 @@ namespace IED
 
 			auto type =
 				a_actor == Data::IData::GetPlayerRefID() ?
-                    GlobalConfigType::Player :
+					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
 			return GetGlobalData(type).get(a_slot).get();

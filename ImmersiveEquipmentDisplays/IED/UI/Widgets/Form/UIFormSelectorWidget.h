@@ -111,5 +111,5 @@ namespace IED
 			on_open_func_t m_onOpenFunc;
 		};
 
-	}  // namespace UI
-}  // namespace IED
+	}
+}

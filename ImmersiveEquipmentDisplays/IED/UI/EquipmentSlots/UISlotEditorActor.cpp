@@ -149,7 +149,7 @@ namespace IED
 
 		void UISlotEditorActor::MergeProfile(
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-			const SlotProfile& a_profile)
+			const SlotProfile&                               a_profile)
 		{
 			DoMerge(a_data.handle, a_profile.Data());
 
@@ -160,7 +160,7 @@ namespace IED
 
 		void UISlotEditorActor::ApplyProfile(
 			const profileSelectorParamsSlot_t<Game::FormID>& a_data,
-			const SlotProfile& a_profile)
+			const SlotProfile&                               a_profile)
 		{
 			DoApply(a_data.handle, a_profile.Data());
 
@@ -170,8 +170,8 @@ namespace IED
 		}
 
 		void UISlotEditorActor::OnBaseConfigChange(
-			Game::FormID a_handle,
-			const void* a_params,
+			Game::FormID     a_handle,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
@@ -201,7 +201,7 @@ namespace IED
 		}
 
 		void UISlotEditorActor::OnFullConfigChange(
-			Game::FormID a_handle,
+			Game::FormID                  a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
@@ -212,7 +212,7 @@ namespace IED
 		}
 
 		void UISlotEditorActor::OnSingleSlotClear(
-			Game::FormID a_handle,
+			Game::FormID                       a_handle,
 			const SingleSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
@@ -224,7 +224,7 @@ namespace IED
 		}
 
 		void UISlotEditorActor::OnFullConfigClear(
-			Game::FormID a_handle,
+			Game::FormID                     a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore().active;
@@ -384,8 +384,8 @@ namespace IED
 
 			for (enum_type j = 0; j < stl::underlying(Data::ObjectSlot::kMax); j++)
 			{
-				auto slotId = static_cast<Data::ObjectSlot>(j);
-				auto& slot = it->second.GetSlot(slotId);
+				auto  slotId = static_cast<Data::ObjectSlot>(j);
+				auto& slot   = it->second.GetSlot(slotId);
 
 				if (!slot.state)
 				{
@@ -419,10 +419,10 @@ namespace IED
 		}
 
 		bool UISlotEditorActor::DrawExtraSlotInfo(
-			Game::FormID a_handle,
-			Data::ObjectSlot a_slot,
+			Game::FormID                      a_handle,
+			Data::ObjectSlot                  a_slot,
 			const entrySlotData_t::data_type& a_entry,
-			bool a_infoDrawn)
+			bool                              a_infoDrawn)
 		{
 			auto& data = m_controller.GetObjects();
 

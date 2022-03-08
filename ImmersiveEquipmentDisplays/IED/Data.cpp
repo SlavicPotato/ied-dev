@@ -308,7 +308,7 @@ namespace IED
 				return ItemData::GetItemSlotLeftExtra(static_cast<TESObjectWEAP*>(a_form));
 			case TESObjectARMO::kTypeID:
 				return static_cast<TESObjectARMO*>(a_form)->IsShield() ?
-                           ObjectSlotExtra::kShield :
+				           ObjectSlotExtra::kShield :
                            ObjectSlotExtra::kNone;
 			case SpellItem::kTypeID:
 				return ObjectSlotExtra::kSpellLeft;
@@ -952,7 +952,7 @@ namespace IED
 
 			auto it        = nodeMapData.find(targetNode.name);
 			auto nodeFlags = it != nodeMapData.end() ?
-                                 it->second.flags.value :
+			                     it->second.flags.value :
                                  NodeDescriptorFlags::kNone;
 
 			for (auto& e : a_data())

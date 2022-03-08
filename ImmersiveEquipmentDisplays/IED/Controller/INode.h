@@ -108,4 +108,4 @@ namespace IED
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference);
 	};
-}  // namespace IED
+}

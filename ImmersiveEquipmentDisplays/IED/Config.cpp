@@ -100,4 +100,4 @@ namespace IED
 		return (m_loaded = (parsers.reader.ParseError() == 0));
 	}
 
-}  // namespace IED
+}
