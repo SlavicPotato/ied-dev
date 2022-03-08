@@ -96,12 +96,22 @@ namespace IED
 			};
 
 			stl::flag<EffectShaderDataFlags> flags{ EffectShaderDataFlags::kNone };
-			stl::set<stl::fixed_string>      targetNodes;
+			configFixedStringSet_t           targetNodes;
 			configEffectShaderTexture_t      baseTexture{ EffectShaderTextureFlags::kTextureWhite };
 			configEffectShaderTexture_t      paletteTexture;
 			configEffectShaderTexture_t      blockOutTexture;
 			configColorRGBA_t                fillColor;
 			configColorRGBA_t                rimColor;
+			TextureAddressMode               textureClampMode{ TextureAddressMode::kWrapSWrapT };
+			float                            baseFillScale{ 1.0f };
+			float                            baseFillAlpha{ 1.0f };
+			float                            baseRimAlpha{ 1.0f };
+			float                            uOffset{ 0.0f };
+			float                            vOffset{ 0.0f };
+			float                            uScale{ 1.0f };
+			float                            vScale{ 1.0f };
+			float                            edgeExponent{ 1.0f };
+			float                            boundDiameter{ 0.0f };
 
 			bool create_shader_data(RE::BSTSmartPointer<BSEffectShaderData>& a_out) const;
 
@@ -121,6 +131,16 @@ namespace IED
 				a_ar& blockOutTexture;
 				a_ar& fillColor;
 				a_ar& rimColor;
+				a_ar& textureClampMode;
+				a_ar& baseFillScale;
+				a_ar& baseFillAlpha;
+				a_ar& baseRimAlpha;
+				a_ar& uOffset;
+				a_ar& vOffset;
+				a_ar& uScale;
+				a_ar& vScale;
+				a_ar& edgeExponent;
+				a_ar& boundDiameter;
 			}
 		};
 
@@ -156,11 +176,6 @@ namespace IED
 			[[nodiscard]] inline constexpr bool enabled() const noexcept
 			{
 				return flags.test(EffectShaderHolderFlags::kEnabled);
-			}
-
-			[[nodiscard]] inline bool empty() const noexcept
-			{
-				return data.empty();
 			}
 
 			stl::flag<EffectShaderHolderFlags>                              flags{ DEFAULT_FLAGS };

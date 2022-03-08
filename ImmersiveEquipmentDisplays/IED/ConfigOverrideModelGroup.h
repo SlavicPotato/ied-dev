@@ -19,7 +19,8 @@ namespace IED
 			kDisableHavok      = 1u << 5,
 			kLeftWeapon        = 1u << 6,
 			kUseWorldModel     = 1u << 7,
-			kDisabled          = 1u << 8
+			kDisabled          = 1u << 8,
+			kPlayAnimation     = 1u << 9
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);
@@ -31,13 +32,14 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			stl::flag<ConfigModelGroupEntryFlags> flags{ ConfigModelGroupEntryFlags::kNone };
 			configCachedForm_t                    form;
 			configTransform_t                     transform;
-			//configEffectShaderHolder_t effects;
+			stl::fixed_string                     niControllerSequence;
 
 		private:
 			template <class Archive>
@@ -46,6 +48,11 @@ namespace IED
 				a_ar& flags.value;
 				a_ar& form;
 				a_ar& transform;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& niControllerSequence;
+				}
 			}
 		};
 
@@ -94,4 +101,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configModelGroupEntry_t,
-	::IED::Data::configModelGroupEntry_t::Serialization::DataVersion1);
+	::IED::Data::configModelGroupEntry_t::Serialization::DataVersion2);

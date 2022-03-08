@@ -10,27 +10,39 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configBaseValues_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&        a_in,
 			Data::configBaseValues_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t       a_version) const
 		{
 			a_out.flags = static_cast<Data::BaseFlags>(
 				a_in.get("flags", stl::underlying(Data::configBaseValues_t::DEFAULT_FLAGS)).asUInt());
 
-			Parser<Data::NodeDescriptor> nvParser(m_state);
-			Parser<Data::configTransform_t> tfParser(m_state);
-
-			if (!tfParser.Parse(a_in["xfrm"], a_out, a_version))
+			if (auto& xfrm = a_in["xfrm"])
 			{
-				return false;
+				Parser<Data::configTransform_t> tfParser(m_state);
+
+				if (!tfParser.Parse(xfrm, a_out, a_version))
+				{
+					return false;
+				}
 			}
 
-			if (!nvParser.Parse(a_in["node"], a_out.targetNode, a_version))
+			if (auto& node = a_in["node"])
 			{
-				return false;
+				Parser<Data::NodeDescriptor> nvParser(m_state);
+
+				if (!nvParser.Parse(node, a_out.targetNode, a_version))
+				{
+					return false;
+				}
 			}
 
 			a_out.targetNode.lookup_flags();
+
+			if (auto& nics = a_in["nics"])
+			{
+				a_out.niControllerSequence = nics.asString();
+			}
 
 			return true;
 		}
@@ -38,19 +50,29 @@ namespace IED
 		template <>
 		void Parser<Data::configBaseValues_t>::Create(
 			const Data::configBaseValues_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                    a_out) const
 		{
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 
-			Parser<Data::NodeDescriptor> nvParser(m_state);
-			Parser<Data::configTransform_t> tfParser(m_state);
+			if (!a_data.empty())
+			{
+				Parser<Data::configTransform_t> tfParser(m_state);
 
-			tfParser.Create(a_data, a_out["xfrm"]);
-			nvParser.Create(a_data.targetNode, a_out["node"]);
+				tfParser.Create(a_data, a_out["xfrm"]);
+			}
+
+			if (a_data.targetNode)
+			{
+				Parser<Data::NodeDescriptor> nvParser(m_state);
+
+				nvParser.Create(a_data.targetNode, a_out["node"]);
+			}
+
+			if (!a_data.niControllerSequence.empty())
+			{
+				a_out["nics"] = *a_data.niControllerSequence;
+			}
 		}
 
-		template <>
-		void Parser<Data::configBaseValues_t>::GetDefault(Data::configBaseValues_t& a_out) const
-		{}
 	}  // namespace Serialization
 }  // namespace IED

@@ -11,6 +11,7 @@ namespace IED
 	{
 		NiPointer<NiNode> obj;
 		NiPointer<NiNode> ref;
+		NiPointer<NiNode> main;
 
 		SKMP_FORCEINLINE bool IsReferenceMovedOrOphaned() const noexcept
 		{
@@ -82,8 +83,17 @@ namespace IED
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
 
-		static NiNode* CreateAttachmentNode(
-			const BSFixedString& a_nodeName);
+		template <class Ts>
+		static constexpr NiNode* CreateAttachmentNode(
+			Ts&& a_nodeName)
+		{
+			auto node = NiNode::Create(1);
+
+			node->m_name  = std::forward<Ts>(a_nodeName);
+			node->m_flags = ATTACHMENT_NODE_FLAGS;
+
+			return node;
+		}
 
 	protected:
 		static NiNode* CreateNode(const char* a_name);

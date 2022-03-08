@@ -53,9 +53,5 @@ namespace IED
 			}
 		}
 
-		template <>
-		void Parser<Data::configTransform_t>::GetDefault(Data::configTransform_t& a_out) const
-		{}
-
 	}  // namespace Serialization
 }  // namespace IED

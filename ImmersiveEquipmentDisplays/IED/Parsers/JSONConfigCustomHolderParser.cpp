@@ -53,8 +53,6 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			using enum_type = std::underlying_type_t<ObjectSlot>;
-
 			Parser<Data::configCustom_t> pslot(m_state);
 
 			for (auto& [i, e] : a_data.data)
@@ -73,12 +71,6 @@ namespace IED
 			}
 
 			a_out["version"] = CURRENT_VERSION;
-		}
-
-		template <>
-		void Parser<Data::configCustomHolder_t>::GetDefault(
-			Data::configCustomHolder_t& a_out) const
-		{
 		}
 
 	}

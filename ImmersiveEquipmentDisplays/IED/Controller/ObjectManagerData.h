@@ -70,7 +70,8 @@ namespace IED
 		kRefSyncDisableFailedOrphan = 1u << 1,
 		kScbLeft                    = 1u << 2,
 		kSyncReferenceTransform     = 1u << 6,
-		kPlaySound                  = 1u << 8
+		kPlaySound                  = 1u << 8,
+		kIsGroup                    = 1u << 9,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
@@ -123,7 +124,10 @@ namespace IED
 			struct GroupObject
 			{
 				NiPointer<NiNode>      object;
+				NiPointer<NiNode>      main;
 				Data::cacheTransform_t transform;
+
+				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
 			};
 
 			void UpdateData(
@@ -164,6 +168,10 @@ namespace IED
 
 			void CleanupObjects(Game::ObjectRefHandle a_handle);
 
+			void UpdateAndPlayAnimation(
+				Actor*                   a_actor,
+				const stl::fixed_string& a_sequence);
+
 			TESForm*                                           form{ nullptr };
 			Game::FormID                                       formid;
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
@@ -173,6 +181,7 @@ namespace IED
 			std::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			effectShaderData_t                                 effectShaders;
+			stl::fixed_string                                  currentSequence;
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			bool                                               atmReference{ true };
 		};

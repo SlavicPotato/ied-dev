@@ -10,7 +10,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::SettingHolder::ImportExport>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                 a_in,
 			Data::SettingHolder::ImportExport& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -19,7 +19,7 @@ namespace IED
 
 			a_out.exportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
-			
+
 			a_out.importFlags = static_cast<ImportFlags>(
 				data.get("import_flags", stl::underlying(ImportFlags::kEraseTemporary)).asUInt());
 
@@ -29,7 +29,7 @@ namespace IED
 		template <>
 		void Parser<Data::SettingHolder::ImportExport>::Create(
 			const Data::SettingHolder::ImportExport& a_data,
-			Json::Value& a_out) const
+			Json::Value&                             a_out) const
 		{
 			auto& data = a_out["data"];
 
@@ -38,11 +38,6 @@ namespace IED
 
 			a_out["version"] = CURRENT_VERSION;
 		}
-
-		template <>
-		void Parser<Data::SettingHolder::ImportExport>::GetDefault(
-			Data::SettingHolder::ImportExport& a_out) const
-		{}
 
 	}
 }

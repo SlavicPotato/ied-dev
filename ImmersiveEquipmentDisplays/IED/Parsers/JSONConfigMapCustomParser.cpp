@@ -42,10 +42,5 @@ namespace IED
 				m_state);
 		}
 
-		template <>
-		void Parser<Data::configMapCustom_t>::GetDefault(
-			Data::configMapCustom_t& a_out) const
-		{}
-
 	}  // namespace Serialization
 }  // namespace IED

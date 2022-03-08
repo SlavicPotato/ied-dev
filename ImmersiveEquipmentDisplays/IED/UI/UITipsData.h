@@ -58,6 +58,7 @@ namespace IED
 			MatchChildLoc                       = 1047,
 			MatchEitherFormKW                   = 1048,
 			MatchWorldspaceParent               = 1049,
+			PlayAnimation                       = 1050,
 		};
 
 	}

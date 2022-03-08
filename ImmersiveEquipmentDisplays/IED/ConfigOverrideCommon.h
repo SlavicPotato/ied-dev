@@ -18,6 +18,11 @@ namespace IED
 			{
 				return std::addressof(min);
 			}
+
+			[[nodiscard]] inline constexpr bool empty() const noexcept
+			{
+				return !min && !max;
+			}
 		};
 
 		struct configForm_t :
@@ -491,7 +496,9 @@ namespace IED
 			}
 		};
 
-		using configFormList_t = std::vector<configForm_t>;
+		using configFormList_t       = std::vector<configForm_t>;
+		using configFixedStringSet_t = stl::set<stl::fixed_string>;
+
 	}
 
 	template <class T>
@@ -575,7 +582,6 @@ namespace IED
 }
 
 STD_SPECIALIZE_HASH(::IED::Data::configForm_t);
-
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configCachedForm_t,

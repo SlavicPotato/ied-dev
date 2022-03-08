@@ -15,7 +15,7 @@ namespace IED
 					m_comboKeyDown = true;
 				}
 
-				if ((m_key && a_evn.key == m_key) && (!m_comboKey || m_comboKeyDown))
+				if (m_key && a_evn.key == m_key && (!m_comboKey || m_comboKeyDown))
 				{
 					Trigger();
 				}

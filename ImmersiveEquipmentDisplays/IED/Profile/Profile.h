@@ -15,7 +15,6 @@ namespace IED
 		virtual bool Load()                              = 0;
 		virtual bool Save(const T& a_data, bool a_store) = 0;
 		virtual bool Save(T&& a_data, bool a_store)      = 0;
-		virtual void SetDefaults() noexcept              = 0;
 
 		virtual bool Save()
 		{
@@ -116,8 +115,6 @@ namespace IED
 		virtual bool Save(const T& a_data, bool a_store) override;
 		virtual bool Save(T&& a_data, bool a_store) override;
 
-		virtual void SetDefaults() noexcept override;
-
 		inline constexpr bool HasParserErrors() const noexcept
 		{
 			return m_hasParserErrors;
@@ -199,15 +196,6 @@ namespace IED
 			m_lastExcept = e;
 			return false;
 		}
-	}
-
-	template <class T>
-	void Profile<T>::SetDefaults() noexcept
-	{
-		Serialization::ParserState state;
-		Serialization::Parser<T>   parser(state);
-
-		parser.GetDefault(m_data);
 	}
 
 	template <class T>

@@ -18,13 +18,16 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configEffectShaderHolder_t> parser(m_state);
-
-			for (auto& e : data["list"])
+			if (auto& list = data["list"])
 			{
-				if (!parser.Parse(e, a_out.data.emplace_back()))
+				Parser<Data::configEffectShaderHolder_t> parser(m_state);
+
+				for (auto& e : list)
 				{
-					return false;
+					if (!parser.Parse(e, a_out.data.emplace_back()))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -38,22 +41,20 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configEffectShaderHolder_t> parser(m_state);
-
-			auto& out = (data["list"] = Json::Value(Json::ValueType::arrayValue));
-
-			for (auto& e : a_data.data)
+			if (!a_data.data.empty())
 			{
-				parser.Create(e, out.append(Json::Value()));
+				Parser<Data::configEffectShaderHolder_t> parser(m_state);
+
+				auto& out = (data["list"] = Json::Value(Json::ValueType::arrayValue));
+
+				for (auto& e : a_data.data)
+				{
+					parser.Create(e, out.append(Json::Value()));
+				}
 			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::effectShaderList_t>::GetDefault(
-			Data::effectShaderList_t& a_out) const
-		{
-		}
 	}
 }

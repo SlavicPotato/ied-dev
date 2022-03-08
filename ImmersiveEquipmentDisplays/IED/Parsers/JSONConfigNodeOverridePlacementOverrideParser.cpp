@@ -15,16 +15,20 @@ namespace IED
 			const std::uint32_t a_version) const
 		{
 			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
-			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 
 			if (!vparser.Parse(a_in, a_out, a_version))
 			{
 				return false;
 			}
 
-			if (!mlparser.Parse(a_in["matches"], a_out.conditions))
+			if (auto& matches = a_in["matches"])
 			{
-				return false;
+				Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
+
+				if (!mlparser.Parse(matches, a_out.conditions))
+				{
+					return false;
+				}
 			}
 
 			a_out.overrideFlags = static_cast<Data::NodeOverridePlacementOverrideFlags>(
@@ -41,19 +45,19 @@ namespace IED
 			Json::Value& a_out) const
 		{
 			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
-			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 
 			vparser.Create(a_data, a_out);
-			mlparser.Create(a_data.conditions, a_out["matches"]);
+
+			if (!a_data.conditions.empty())
+			{
+				Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
+
+				mlparser.Create(a_data.conditions, a_out["matches"]);
+			}
 
 			a_out["override_flags"] = stl::underlying(a_data.overrideFlags.value);
 			a_out["desc"] = a_data.description;
 		}
 
-		template <>
-		void Parser<Data::configNodeOverridePlacementOverride_t>::GetDefault(
-			Data::configNodeOverridePlacementOverride_t& a_out) const
-		{
-		}
 	}
 }

@@ -377,6 +377,75 @@ namespace IED
 			nodes.obj);
 	}
 
+	void objectEntryBase_t::State::GroupObject::PlayAnimation(
+		Actor*                   a_actor,
+		const stl::fixed_string& a_sequence)
+	{
+		if (a_sequence.empty())
+		{
+			return;
+		}
+
+		if (!main)
+		{
+			return;
+		}
+
+		if (auto controller = main->GetControllers())
+		{
+			if (auto manager = controller->AsNiControllerManager())
+			{
+				if (auto nseq = manager->GetSequenceByName(a_sequence.c_str()))
+				{
+					a_actor->PlayAnimation(
+						manager,
+						nseq,
+						nseq);
+				}
+			}
+		}
+	}
+
+	void objectEntryBase_t::State::UpdateAndPlayAnimation(
+		Actor*                   a_actor,
+		const stl::fixed_string& a_sequence)
+	{
+		if (a_sequence.empty())
+		{
+			return;
+		}
+
+		if (a_sequence == currentSequence)
+		{
+			return;
+		}
+
+		if (!nodes.main)
+		{
+			return;
+		}
+
+		if (auto controller = nodes.main->GetControllers())
+		{
+			if (auto manager = controller->AsNiControllerManager())
+			{
+				if (auto nseq = manager->GetSequenceByName(a_sequence.c_str()))
+				{
+					auto cseq = !currentSequence.empty() ?
+					                manager->GetSequenceByName(currentSequence.c_str()) :
+                                    nullptr;
+
+					a_actor->PlayAnimation(
+						manager,
+						nseq,
+						cseq ? cseq : nseq);
+
+					currentSequence = a_sequence;
+				}
+			}
+		}
+	}
+
 	void effectShaderData_t::clear()
 	{
 		if (!data.empty())

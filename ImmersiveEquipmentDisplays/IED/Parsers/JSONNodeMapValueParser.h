@@ -10,18 +10,14 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::NodeMap::value_type>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&         a_in,
 			Data::NodeMap::value_type& a_outData,
-			const std::uint32_t a_versions) const;
+			const std::uint32_t        a_versions) const;
 
 		template <>
 		void Parser<Data::NodeMap::value_type>::Create(
 			const Data::NodeMap::value_type& a_data,
-			Json::Value& a_out) const;
-
-		template <>
-		void Parser<Data::NodeMap::value_type>::GetDefault(
-			Data::NodeMap::value_type& a_out) const;
+			Json::Value&                     a_out) const;
 
 	}  // namespace Serialization
 }  // namespace IED

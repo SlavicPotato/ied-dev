@@ -11,7 +11,7 @@ namespace IED
 		template <>
 		bool Parser<Game::FormID>::Parse(
 			const Json::Value& a_in,
-			Game::FormID& a_out) const
+			Game::FormID&      a_out) const
 		{
 			if (a_in.empty())
 			{
@@ -61,7 +61,7 @@ namespace IED
 		template <>
 		void Parser<Game::FormID>::Create(
 			const Game::FormID& a_data,
-			Json::Value& a_out) const
+			Json::Value&        a_out) const
 		{
 			std::uint32_t pluginIndex;
 			if (a_data && a_data.GetPluginPartialIndex(pluginIndex))
@@ -71,7 +71,7 @@ namespace IED
 				if (auto it = data.find(pluginIndex); it != data.end())
 				{
 					a_out["plugin"] = *it->second.name;
-					a_out["id"] = it->second.GetFormIDLower(a_data).get();
+					a_out["id"]     = it->second.GetFormIDLower(a_data).get();
 				}
 				else
 				{
@@ -82,12 +82,6 @@ namespace IED
 			{
 				a_out["id"] = a_data.get();
 			}
-		}
-
-		template <>
-		void Parser<Game::FormID>::GetDefault(Game::FormID& a_out) const
-		{
-			a_out = {};
 		}
 
 	}  // namespace Serialization

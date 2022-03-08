@@ -89,6 +89,9 @@ namespace IED
 			case DataType::EffectShaderData:
 				erase<Data::configEffectShaderData_t>();
 				break;
+			case DataType::FixedStringSet:
+				erase<Data::configFixedStringSet_t>();
+				break;
 			}
 		}
 

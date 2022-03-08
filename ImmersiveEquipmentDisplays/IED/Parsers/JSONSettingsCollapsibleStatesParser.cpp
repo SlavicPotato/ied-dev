@@ -10,7 +10,7 @@ namespace IED
 
 		template <>
 		bool Parser<UI::UIData::UICollapsibleStates>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&               a_in,
 			UI::UIData::UICollapsibleStates& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -28,7 +28,7 @@ namespace IED
 		template <>
 		void Parser<UI::UIData::UICollapsibleStates>::Create(
 			const UI::UIData::UICollapsibleStates& a_data,
-			Json::Value& a_out) const
+			Json::Value&                           a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
@@ -42,11 +42,6 @@ namespace IED
 
 			a_out["version"] = CURRENT_VERSION;
 		}
-
-		template <>
-		void Parser<UI::UIData::UICollapsibleStates>::GetDefault(
-			UI::UIData::UICollapsibleStates& a_out) const
-		{}
 
 	}  // namespace Serialization
 }  // namespace IED

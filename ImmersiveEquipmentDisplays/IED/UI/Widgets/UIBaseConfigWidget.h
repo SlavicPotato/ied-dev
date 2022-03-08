@@ -58,7 +58,7 @@ namespace IED
 
 			union
 			{
-				BIPED_OBJECT      biped;
+				BIPED_OBJECT             biped;
 				Data::ExtraConditionType excond;
 				Data::ObjectSlotExtra    slot;
 			};
@@ -93,7 +93,6 @@ namespace IED
 			public virtual UITransformSliderWidget,
 			public virtual UITipsInterface,
 			public virtual UINotificationInterface,
-			public virtual UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface
 		{
@@ -250,7 +249,7 @@ namespace IED
 			Game::FormID                                m_aoNewEntryRaceID;
 			Game::FormID                                m_aoNewEntryActorID;
 			Game::FormID                                m_aoNewEntryNPCID;
-			BIPED_OBJECT                         m_ooNewBiped{ BIPED_OBJECT::kNone };
+			BIPED_OBJECT                                m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ExtraConditionType                    m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 			Data::ObjectSlotExtra                       m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
 			UIConditionParamEditorWidget                m_condParamEditor;
@@ -362,7 +361,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 
@@ -686,10 +685,58 @@ namespace IED
 
 					DrawTipWarn(UITip::IgnoreRaceEquipTypesSlot);
 
+					bool paChanged = ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::PlayAnimation, "7"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kPlayAnimation));
+
+					if (paChanged)
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kPlayAnimation);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					}
+
+					DrawTip(UITip::PlayAnimation);
+
+					if (a_data.flags.test(Data::BaseFlags::kPlayAnimation))
+					{
+						if (paChanged &&
+						    a_data.niControllerSequence.empty())
+						{
+							ImGui::OpenPopup("7ctx");
+						}
+
+						ImGui::SameLine();
+						if (UIPopupToggleButtonWidget::DrawPopupToggleButton("7b", "7ctx"))
+						{
+							SetDescriptionPopupBuffer(a_data.niControllerSequence);
+						}
+
+						if (ImGui::BeginPopup("7ctx"))
+						{
+							if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
+							{
+								a_data.niControllerSequence = GetDescriptionPopupBuffer();
+
+								PropagateMemberToEquipmentOverrides(
+									a_baseConfig,
+									offsetof(Data::configBaseValues_t, niControllerSequence),
+									a_data.niControllerSequence);
+
+								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							}
+
+							ImGui::EndPopup();
+						}
+					}
+
 					ImGui::NextColumn();
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::DropOnDeath, "7"),
+							LS(UIBaseConfigString::DropOnDeath, "9"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kDropOnDeath)))
 					{
@@ -706,7 +753,7 @@ namespace IED
 					UICommon::PushDisabled(!atmReference);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::SyncReference, "8"),
+							LS(UIBaseConfigString::SyncReference, "A"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kSyncReferenceTransform)))
 					{
@@ -722,7 +769,7 @@ namespace IED
 					DrawTip(UITip::SyncReferenceNode);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Invisible, "9"),
+							LS(CommonStrings::Invisible, "B"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kInvisible)))
 					{
@@ -736,7 +783,7 @@ namespace IED
 					DrawTip(UITip::Invisible);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::Use1pWeaponModels, "A"),
+							LS(UIBaseConfigString::Use1pWeaponModels, "C"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
 					{
@@ -750,7 +797,7 @@ namespace IED
 					DrawTip(UITip::Load1pWeaponModel);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::UseWorldModel, "B"),
+							LS(UIBaseConfigString::UseWorldModel, "D"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kUseWorldModel)))
 					{
@@ -764,7 +811,7 @@ namespace IED
 					DrawTip(UITip::UseWorldModel);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::KeepTorchFlame, "C"),
+							LS(UIBaseConfigString::KeepTorchFlame, "E"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
 					{
@@ -1032,7 +1079,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
@@ -1880,7 +1927,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_aoNewEntryID      = {};
 				m_aoNewEntryKWID    = {};
@@ -2178,7 +2225,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				if (!a_data.description.empty())
 				{
@@ -2624,7 +2671,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
@@ -2806,7 +2853,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}

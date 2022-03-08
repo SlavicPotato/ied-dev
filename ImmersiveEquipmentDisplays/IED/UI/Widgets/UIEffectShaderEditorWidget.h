@@ -21,7 +21,8 @@ namespace IED
 		{
 			None,
 			Delete,
-			PasteOver
+			PasteOver,
+			Add
 		};
 
 		struct EffectShaderEntryResult
@@ -31,7 +32,6 @@ namespace IED
 
 		template <class T>
 		class UIEffectShaderEditorWidget :
-			public virtual UIPopupToggleButtonWidget,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITipsInterface,
 			public virtual UILocalizationInterface
@@ -66,6 +66,18 @@ namespace IED
 			void DrawEffectShaderFlags(
 				const T&                        a_params,
 				Data::configEffectShaderData_t& a_data);
+
+			EffectShaderContextAction DrawTargetNodesContextMenu(
+				const T&                      a_params,
+				Data::configFixedStringSet_t& a_data);
+
+			void DrawTargetNodes(
+				const T&                      a_params,
+				Data::configFixedStringSet_t& a_data);
+
+			void DrawTargetNodeTable(
+				const T&                      a_params,
+				Data::configFixedStringSet_t& a_data);
 
 			virtual void OnEffectShaderUpdate(const T& a_params) = 0;
 
@@ -117,11 +129,11 @@ namespace IED
 		{
 			EffectShaderContextAction result{ EffectShaderContextAction::None };
 
-			ImGui::PushID("ent_context_area");
+			ImGui::PushID("tn_context_area");
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
@@ -172,7 +184,7 @@ namespace IED
 			const T&                          a_params,
 			Data::configEffectShaderHolder_t& a_data)
 		{
-			if (a_data.empty())
+			if (a_data.data.empty())
 			{
 				return;
 			}
@@ -282,6 +294,10 @@ namespace IED
 			ImGui::Spacing();
 
 			DrawEffectShaderFlags(a_params, a_data);
+
+			ImGui::Spacing();
+
+			DrawTargetNodes(a_params, a_data.targetNodes);
 		}
 
 		template <class T>
@@ -355,7 +371,7 @@ namespace IED
 					m_inputBuffer1[l] = 0;
 
 					if (ImGui::InputText(
-							LS(CommonStrings::Texture, "3"),
+							LS(CommonStrings::Texture, "4"),
 							m_inputBuffer1,
 							sizeof(m_inputBuffer1),
 							ImGuiInputTextFlags_EnterReturnsTrue))
@@ -442,5 +458,187 @@ namespace IED
 
 			ImGui::PopID();
 		}
+
+		template <class T>
+		EffectShaderContextAction UIEffectShaderEditorWidget<T>::DrawTargetNodesContextMenu(
+			const T&                      a_params,
+			Data::configFixedStringSet_t& a_data)
+		{
+			EffectShaderContextAction result{ EffectShaderContextAction::None };
+
+			ImGui::PushID("tn_context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
+			{
+				ClearDescriptionPopupBuffer();
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PopStyleVar();
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::BeginMenu(LS(CommonStrings::Add, "1")))
+				{
+					if (DrawDescriptionPopup())
+					{
+						auto r = a_data.emplace(GetDescriptionPopupBuffer());
+						if (r.second)
+						{
+							result = EffectShaderContextAction::Add;
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				auto clipData = UIClipboard::Get<Data::configFixedStringSet_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "3"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data = *clipData;
+
+						OnEffectShaderUpdate(a_params);
+
+						result = EffectShaderContextAction::PasteOver;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIEffectShaderEditorWidget<T>::DrawTargetNodes(
+			const T&                      a_params,
+			Data::configFixedStringSet_t& a_data)
+		{
+			ImGui::PushID("tn_area");
+
+			const auto result = DrawTargetNodesContextMenu(
+				a_params,
+				a_data);
+
+			switch (result)
+			{
+			case EffectShaderContextAction::Add:
+			case EffectShaderContextAction::PasteOver:
+				OnEffectShaderUpdate(a_params);
+				ImGui::SetNextItemOpen(true);
+				break;
+			}
+
+			if (ImGui::TreeNodeEx(
+					"tn_tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(UIEffectShaderEditorWidgetStrings::TargetNodes)))
+			{
+				if (!a_data.empty())
+				{
+					ImGui::Spacing();
+
+					DrawTargetNodeTable(a_params, a_data);
+
+					ImGui::Spacing();
+				}
+
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UIEffectShaderEditorWidget<T>::DrawTargetNodeTable(
+			const T&                      a_params,
+			Data::configFixedStringSet_t& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			constexpr int NUM_COLUMNS = 2;
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.f }))
+			{
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 1.1f);
+				ImGui::TableSetupColumn(LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 75.0f);
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				auto it = a_data.begin();
+
+				int i = 0;
+
+				while (it != a_data.end())
+				{
+					ImGui::PushID(i);
+
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+
+					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+					if (ImGui::Button("X"))
+					{
+						it = a_data.erase(it);
+
+						OnEffectShaderUpdate(a_params);
+					}
+
+					ImGui::PopStyleVar();
+
+					if (it != a_data.end())
+					{
+						ImGui::TableSetColumnIndex(1);
+
+						ImGui::Text("%s", it->c_str());
+
+						++it;
+						i++;
+					}
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
 	}
 }

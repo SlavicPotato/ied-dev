@@ -34,7 +34,7 @@ namespace IED
 						return false;
 					}
 
-					a_out.entries.try_emplace(key, std::move(tmp)).first->second;
+					a_out.entries.try_emplace(std::move(key), std::move(tmp));
 				}
 			}
 
@@ -66,12 +66,6 @@ namespace IED
 			data["flags"] = stl::underlying(a_data.flags.value);
 
 			a_out["version"] = CURRENT_VERSION;
-		}
-
-		template <>
-		void Parser<Data::configModelGroup_t>::GetDefault(
-			Data::configModelGroup_t& a_out) const
-		{
 		}
 
 	}

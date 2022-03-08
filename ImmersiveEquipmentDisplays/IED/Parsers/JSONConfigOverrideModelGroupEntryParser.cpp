@@ -20,20 +20,29 @@ namespace IED
 			auto& data = a_in["data"];
 
 			Parser<Data::configCachedForm_t> fparser(m_state);
-			Parser<Data::configTransform_t> tparser(m_state);
 
 			if (!fparser.Parse(data["form"], a_out.form))
 			{
 				return false;
 			}
 
-			if (!tparser.Parse(data["xfrm"], a_out.transform, version))
+			if (auto& xfrm = data["xfrm"])
 			{
-				return false;
+				Parser<Data::configTransform_t> tparser(m_state);
+
+				if (!tparser.Parse(xfrm, a_out.transform, version))
+				{
+					return false;
+				}
 			}
 
 			a_out.flags = static_cast<Data::ConfigModelGroupEntryFlags>(
 				data.get("flags", stl::underlying(Data::ConfigModelGroupEntryFlags::kNone)).asUInt());
+
+			if (auto& nics = data["nics"])
+			{
+				a_out.niControllerSequence = nics.asString();
+			}
 
 			return true;
 		}
@@ -46,20 +55,24 @@ namespace IED
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
 			Parser<Data::configCachedForm_t> fparser(m_state);
-			Parser<Data::configTransform_t> tparser(m_state);
 
 			fparser.Create(a_data.form, data["form"]);
-			tparser.Create(a_data.transform, data["xfrm"]);
+
+			if (!a_data.transform.empty())
+			{
+				Parser<Data::configTransform_t> tparser(m_state);
+
+				tparser.Create(a_data.transform, data["xfrm"]);
+			}
 
 			data["flags"] = stl::underlying(a_data.flags.value);
 
-			a_out["version"] = CURRENT_VERSION;
-		}
+			if (!a_data.niControllerSequence.empty())
+			{
+				data["nics"] = *a_data.niControllerSequence;
+			}
 
-		template <>
-		void Parser<Data::configModelGroupEntry_t>::GetDefault(
-			Data::configModelGroupEntry_t& a_out) const
-		{
+			a_out["version"] = CURRENT_VERSION;
 		}
 
 	}

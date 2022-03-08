@@ -239,7 +239,6 @@ namespace IED
 				throw std::exception("Profile already exists");
 
 			a_out.SetPath(path);
-			a_out.SetDefaults();
 
 			if (a_save)
 			{

@@ -22,17 +22,20 @@ namespace IED
 			a_out.flags       = data.get("flags", stl::underlying(Data::configEffectShaderHolder_t::DEFAULT_FLAGS)).asUInt();
 			a_out.description = data["desc"].asString();
 
-			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
-
-			if (!mlParser.Parse(data["cond"], a_out.conditions))
+			if (auto& cond = data["cond"])
 			{
-				return false;
-			}
+				Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
 
-			Parser<Data::configEffectShaderData_t> parser(m_state);
+				if (!mlParser.Parse(cond, a_out.conditions))
+				{
+					return false;
+				}
+			}
 
 			if (auto& esdata = data["esd"])
 			{
+				Parser<Data::configEffectShaderData_t> parser(m_state);
+
 				for (auto it = esdata.begin(); it != esdata.end(); ++it)
 				{
 					parser.Parse(*it, a_out.data.try_emplace(it.key().asString()).first->second);
@@ -52,26 +55,27 @@ namespace IED
 			data["flags"] = a_data.flags.underlying();
 			data["desc"]  = a_data.description;
 
-			Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
-
-			mlParser.Create(a_data.conditions, data["cond"]);
-
-			Parser<Data::configEffectShaderData_t> parser(m_state);
-
-			auto& esdata = (data["esd"] = Json::Value(Json::ValueType::objectValue));
-
-			for (auto& e : a_data.data)
+			if (!a_data.conditions.empty())
 			{
-				parser.Create(e.second, esdata[*e.first]);
+				Parser<Data::equipmentOverrideConditionList_t> mlParser(m_state);
+
+				mlParser.Create(a_data.conditions, data["cond"]);
+			}
+
+			if (!a_data.data.empty())
+			{
+				Parser<Data::configEffectShaderData_t> parser(m_state);
+
+				auto& esdata = (data["esd"] = Json::Value(Json::ValueType::objectValue));
+
+				for (auto& e : a_data.data)
+				{
+					parser.Create(e.second, esdata[*e.first]);
+				}
 			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configEffectShaderHolder_t>::GetDefault(
-			Data::configEffectShaderHolder_t& a_out) const
-		{
-		}
 	}
 }

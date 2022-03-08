@@ -27,6 +27,17 @@ namespace IED
 			result->fillColor = fillColor;
 			result->rimColor  = rimColor;
 
+			result->textureClampMode = textureClampMode;
+			result->baseFillScale    = baseFillScale;
+			result->baseFillAlpha    = baseFillAlpha;
+			result->baseRimAlpha     = baseRimAlpha;
+			result->uOffset          = uOffset;
+			result->vOffset          = vOffset;
+			result->uScale           = uScale;
+			result->vScale           = vScale;
+			result->edgeExponent     = edgeExponent;
+			result->boundDiameter    = boundDiameter;
+
 			if (result->paletteTexture)
 			{
 				result->grayscaleToColor = flags.test(EffectShaderDataFlags::kGrayscaleToColor);

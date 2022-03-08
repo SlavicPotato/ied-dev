@@ -18,9 +18,5 @@ namespace IED
 			const Data::ConfigSound<Game::FormID>& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::ConfigSound<Game::FormID>>::GetDefault(
-			Data::ConfigSound<Game::FormID>& a_out) const;
-
 	}
 }

@@ -94,6 +94,11 @@ namespace IED
 				rotation.clear();
 			}
 
+			[[nodiscard]] inline constexpr bool empty() const noexcept
+			{
+				return !scale && !position && !rotation;
+			}
+
 		protected:
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const

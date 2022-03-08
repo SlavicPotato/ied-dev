@@ -10,17 +10,13 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::SettingHolder::EditorPanel>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                a_in,
 			Data::SettingHolder::EditorPanel& a_outData) const;
 
 		template <>
 		void Parser<Data::SettingHolder::EditorPanel>::Create(
 			const Data::SettingHolder::EditorPanel& a_data,
-			Json::Value& a_out) const;
-
-		template <>
-		void Parser<Data::SettingHolder::EditorPanel>::GetDefault(
-			Data::SettingHolder::EditorPanel& a_out) const;
+			Json::Value&                            a_out) const;
 
 	}  // namespace Serialization
 }  // namespace IED

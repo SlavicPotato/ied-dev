@@ -18,9 +18,5 @@ namespace IED
 			const Data::configColorRGBA_t& a_data,
 			Json::Value&                          a_out) const;
 
-		template <>
-		void Parser<Data::configColorRGBA_t>::GetDefault(
-			Data::configColorRGBA_t& a_out) const;
-
 	}
 }

@@ -30,7 +30,6 @@ namespace IED
 		template <class T>
 		class UIFormFilterWidget :
 			UIFormLookupInterface,
-			UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
 		{
 			using callback_func_t = std::function<void(T&)>;
@@ -292,7 +291,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 
@@ -343,7 +342,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_ffNewEntryID = {};
 			}
@@ -537,7 +536,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 

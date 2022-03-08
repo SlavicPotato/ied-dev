@@ -83,8 +83,5 @@ namespace IED
 			gparser.Create(a_data.group, a_out["group"]);
 		}
 
-		template <>
-		void Parser<Data::equipmentOverrideCondition_t>::GetDefault(Data::equipmentOverrideCondition_t& a_out) const
-		{}
 	}
 }

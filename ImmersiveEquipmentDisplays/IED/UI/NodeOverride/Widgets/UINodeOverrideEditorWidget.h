@@ -135,7 +135,6 @@ namespace IED
 			UIConditionParamExtraInterface,
 			public virtual UISettingsInterface,
 			public virtual UITransformSliderWidget,
-			public virtual UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
 		{
 		public:
@@ -762,7 +761,7 @@ namespace IED
 
 			ImGui::PushID("context_area");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 
@@ -871,7 +870,7 @@ namespace IED
 
 			ImGui::PushID("context_area");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 
@@ -1294,7 +1293,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
@@ -1425,7 +1424,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
@@ -2047,7 +2046,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				if (!a_entry.description.empty())
 				{
@@ -2218,7 +2217,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				if (!a_entry.description.empty())
 				{
@@ -2375,7 +2374,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_ooNewEntryID      = {};
 				m_ooNewEntryIDKW    = {};
@@ -3529,7 +3528,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_ooNewEntryID      = {};
 				m_ooNewEntryIDKW    = {};

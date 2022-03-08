@@ -13,13 +13,13 @@ namespace IED
 		template <>
 		bool Parser<fontInfoMap_t>::Parse(
 			const Json::Value& a_in,
-			fontInfoMap_t& a_out) const
+			fontInfoMap_t&     a_out) const
 		{
 			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
-			Parser<fontInfoEntry_t> parser(m_state);
+			Parser<fontInfoEntry_t>  parser(m_state);
 			Parser<fontGlyphRange_t> rangeParser(m_state);
 
 			for (auto it = data.begin(); it != data.end(); ++it)
@@ -55,14 +55,9 @@ namespace IED
 		template <>
 		void Parser<fontInfoMap_t>::Create(
 			const fontInfoMap_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&         a_out) const
 		{
 		}
-
-		template <>
-		void Parser<fontInfoMap_t>::GetDefault(
-			fontInfoMap_t& a_out) const
-		{}
 
 	}
 }

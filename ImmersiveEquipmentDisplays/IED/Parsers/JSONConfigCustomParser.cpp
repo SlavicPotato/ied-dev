@@ -21,7 +21,6 @@ namespace IED
 			Parser<Data::configBase_t> pbase(m_state);
 			Parser<Data::configRange_t> prange(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
-			Parser<Data::configFormList_t> pformList(m_state);
 			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
@@ -37,9 +36,14 @@ namespace IED
 				return false;
 			}
 
-			if (!pformList.Parse(a_in["extra"], a_out.extraItems, a_version))
+			if (auto& extra = a_in["extra"])
 			{
-				return false;
+				Parser<Data::configFormList_t> pformList(m_state);
+
+				if (!pformList.Parse(extra, a_out.extraItems, a_version))
+				{
+					return false;
+				}
 			}
 
 			if (!gparser.Parse(a_in["mgrp"], a_out.group))
@@ -47,10 +51,9 @@ namespace IED
 				return false;
 			}
 
-			a_out.customFlags = static_cast<Data::CustomFlags>(
-				a_in.get("cflags", stl::underlying(Data::configCustom_t::DEFAULT_CUSTOM_FLAGS)).asUInt());
+			a_out.customFlags = a_in.get("cflags", stl::underlying(Data::configCustom_t::DEFAULT_CUSTOM_FLAGS)).asUInt();
 
-			a_out.priority = a_in.get("prio", 0u).asUInt();
+			//a_out.priority = a_in.get("prio", 0u).asUInt();
 			a_out.chance = a_in.get("chance", 100.0f).asFloat();
 
 			return true;
@@ -62,9 +65,7 @@ namespace IED
 			Json::Value& a_out) const
 		{
 			Parser<Data::configBase_t> pbase(m_state);
-			Parser<Data::configRange_t> prange(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
-			Parser<Data::configFormList_t> pformList(m_state);
 			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			pbase.Create(a_in, a_out);
@@ -79,26 +80,26 @@ namespace IED
 				pform.Create(a_in.modelForm.get_id(), a_out["model"]);
 			}
 
-			if (a_in.countRange.min || a_in.countRange.max)
+			if (!a_in.countRange.empty())
 			{
+				Parser<Data::configRange_t> prange(m_state);
+
 				prange.Create(a_in.countRange, a_out["cr"]);
 			}
 
 			if (!a_in.extraItems.empty())
 			{
+				Parser<Data::configFormList_t> pformList(m_state);
+
 				pformList.Create(a_in.extraItems, a_out["extra"]);
 			}
 
 			gparser.Create(a_in.group, a_out["mgrp"]);
 
-			a_out["cflags"] = stl::underlying(a_in.customFlags.value);
-			a_out["prio"] = a_in.priority;
+			a_out["cflags"] = a_in.customFlags.underlying();
+			//a_out["prio"] = a_in.priority;
 			a_out["chance"] = a_in.chance;
 		}
 
-		template <>
-		void Parser<Data::configCustom_t>::GetDefault(Data::configCustom_t& a_out) const
-		{
-		}
 	}
 }

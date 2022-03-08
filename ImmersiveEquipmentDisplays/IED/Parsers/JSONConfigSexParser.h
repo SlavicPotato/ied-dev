@@ -19,8 +19,5 @@ namespace IED
 			const Data::ConfigSex& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::ConfigSex>::GetDefault(Data::ConfigSex& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

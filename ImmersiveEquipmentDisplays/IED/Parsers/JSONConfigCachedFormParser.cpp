@@ -33,11 +33,5 @@ namespace IED
 			formParser.Create(a_data.get_id(), a_out);
 		}
 
-		template <>
-		void Parser<Data::configCachedForm_t>::GetDefault(
-			Data::configCachedForm_t& a_out) const
-		{
-		}
-
 	}  // namespace Serialization
 }  // namespace IED

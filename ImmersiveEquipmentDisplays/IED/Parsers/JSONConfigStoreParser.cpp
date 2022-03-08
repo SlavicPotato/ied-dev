@@ -62,10 +62,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configStore_t>::GetDefault(Data::configStore_t& a_out) const
-		{
-		}
-
 	}  // namespace Serialization
 }  // namespace IED

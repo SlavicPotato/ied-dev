@@ -5,6 +5,7 @@
 #include "IED/UI/PopupQueue/UIPopupQueue.h"
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormBrowser.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
 #include "IED/Controller/Controller.h"
 
@@ -85,7 +86,7 @@ namespace IED
 				}
 			}
 
-			if (DrawPopupToggleButtonNoOpen("open_ctx", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButtonNoOpen("open_ctx", "context_menu"))
 			{
 				ImGui::OpenPopup("context_menu");
 			}
@@ -321,12 +322,12 @@ namespace IED
 					ImGui::PushStyleColor(
 						ImGuiCol_Text,
 						isValid ?
-                            UICommon::g_colorOK :
+							UICommon::g_colorOK :
                             UICommon::g_colorError);
 
 					ImGui::TextUnformatted(
 						isValid ?
-                            LS(CommonStrings::OK) :
+							LS(CommonStrings::OK) :
                             LS(CommonStrings::Invalid));
 
 					ImGui::SameLine();
@@ -336,7 +337,7 @@ namespace IED
 
 				auto& base = m_state->m_currentInfo->get_base();
 				auto& info = !m_forceBase ?
-                                 m_state->m_currentInfo->form :
+				                 m_state->m_currentInfo->form :
                                  base;
 
 				if (m_state->m_currentInfo->is_ref())

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../UIPopupToggleButtonWidget.h"
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/UINotificationInterface.h"
 #include "IED/UI/UITips.h"
@@ -15,7 +14,6 @@ namespace IED
 		class UIFormPickerWidget :
 			public UIFormSelectorWidget,
 			UINotificationInterface,
-			public virtual UIPopupToggleButtonWidget,
 			public virtual UIFormLookupInterface
 		{
 		public:

@@ -25,12 +25,8 @@ namespace IED
 			const Data::ConfigSex& a_data,
 			Json::Value& a_out) const
 		{
-			a_out["sex"] = static_cast<std::uint32_t>(a_data);
+			a_out["sex"] = stl::underlying(a_data);
 		}
-
-		template <>
-		void Parser<Data::ConfigSex>::GetDefault(Data::ConfigSex& a_out) const
-		{}
 
 	}  // namespace Serialization
 }  // namespace IED

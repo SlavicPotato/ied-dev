@@ -56,10 +56,5 @@ namespace IED
 			a_out["override_flags"] = stl::underlying(a_data.overrideFlags.value);
 		}
 
-		template <>
-		void Parser<Data::configNodeOverrideTransform_t>::GetDefault(
-			Data::configNodeOverrideTransform_t& a_out) const
-		{
-		}
 	}
 }

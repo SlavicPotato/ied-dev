@@ -14,7 +14,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::SettingHolder::Settings>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&             a_in,
 			Data::SettingHolder::Settings& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -22,8 +22,8 @@ namespace IED
 			auto& data = a_in["data"];
 
 			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
-			Parser<Data::ConfigKeyPair> controlsParser(m_state);
-			Parser<Data::ConfigSound<Game::FormID>> soundParser(m_state);
+			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
+			Parser<Data::ConfigSound<Game::FormID>>    soundParser(m_state);
 
 			if (!uiParser.Parse(data["ui"], a_out.ui))
 			{
@@ -49,9 +49,9 @@ namespace IED
 				return false;
 			}
 
-			a_out.toggleKeepLoaded = data.get("toggle_keep_loaded", false).asBool();
-			a_out.hideEquipped = data.get("hide_equipped", false).asBool();
-			a_out.disableNPCSlots = data.get("disable_npc_slots", false).asBool();
+			a_out.toggleKeepLoaded     = data.get("toggle_keep_loaded", false).asBool();
+			a_out.hideEquipped         = data.get("hide_equipped", false).asBool();
+			a_out.disableNPCSlots      = data.get("disable_npc_slots", false).asBool();
 			a_out.removeFavRestriction = data.get("remove_fav_restriction", false).asBool();
 
 			auto& logLevel = data["log_level"];
@@ -72,13 +72,13 @@ namespace IED
 		template <>
 		void Parser<Data::SettingHolder::Settings>::Create(
 			const Data::SettingHolder::Settings& a_data,
-			Json::Value& a_out) const
+			Json::Value&                         a_out) const
 		{
 			auto& data = a_out["data"];
 
 			Parser<Data::SettingHolder::UserInterface> uiParser(m_state);
-			Parser<Data::ConfigKeyPair> controlsParser(m_state);
-			Parser<Data::ConfigSound<Game::FormID>> soundParser(m_state);
+			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
+			Parser<Data::ConfigSound<Game::FormID>>    soundParser(m_state);
 
 			uiParser.Create(a_data.ui, data["ui"]);
 
@@ -89,9 +89,9 @@ namespace IED
 
 			soundParser.Create(a_data.sound, data["sound"]);
 
-			data["toggle_keep_loaded"] = a_data.toggleKeepLoaded;
-			data["hide_equipped"] = a_data.hideEquipped;
-			data["disable_npc_slots"] = a_data.disableNPCSlots;
+			data["toggle_keep_loaded"]     = a_data.toggleKeepLoaded;
+			data["hide_equipped"]          = a_data.hideEquipped;
+			data["disable_npc_slots"]      = a_data.disableNPCSlots;
 			data["remove_fav_restriction"] = a_data.removeFavRestriction;
 
 			if (a_data.logLevel)
@@ -104,11 +104,6 @@ namespace IED
 			data["language"] = *a_data.language;
 
 			a_out["version"] = CURRENT_VERSION;
-		}
-
-		template <>
-		void Parser<Data::SettingHolder>::GetDefault(Data::SettingHolder& a_out) const
-		{
 		}
 
 	}  // namespace Serialization

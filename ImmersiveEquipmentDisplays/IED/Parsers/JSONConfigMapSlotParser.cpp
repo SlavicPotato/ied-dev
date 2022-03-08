@@ -32,10 +32,5 @@ namespace IED
 			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, CURRENT_VERSION, m_state);
 		}
 
-		template <>
-		void Parser<Data::configMapSlot_t>::GetDefault(
-			Data::configMapSlot_t& a_out) const
-		{}
-
 	}  // namespace Serialization
 }  // namespace IED

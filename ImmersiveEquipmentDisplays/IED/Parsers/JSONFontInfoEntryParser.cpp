@@ -12,8 +12,8 @@ namespace IED
 		template <>
 		bool Parser<fontInfoEntry_t>::Parse(
 			const Json::Value& a_in,
-			fontInfoEntry_t& a_out,
-			std::uint32_t a_version) const
+			fontInfoEntry_t&   a_out,
+			std::uint32_t      a_version) const
 		{
 			fs::path path(str_conv::str_to_wstr(a_in["file"].asString()));
 
@@ -60,14 +60,9 @@ namespace IED
 		template <>
 		void Parser<fontInfoEntry_t>::Create(
 			const fontInfoEntry_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&           a_out) const
 		{
 		}
-
-		template <>
-		void Parser<fontInfoEntry_t>::GetDefault(
-			fontInfoEntry_t& a_out) const
-		{}
 
 	}
 }

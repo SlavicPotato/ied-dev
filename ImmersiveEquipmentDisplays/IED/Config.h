@@ -4,6 +4,8 @@
 
 #include "ConfigParsers.h"
 
+#include <ext/INIConfReader.h>
+
 namespace IED
 {
 	struct ConfigKeyCombo : public Data::ConfigKeyPair
@@ -43,7 +45,7 @@ namespace IED
 
 		struct parsers_t
 		{
-			INIReader reader;
+			INIConfReader reader;
 		};
 
 	public:

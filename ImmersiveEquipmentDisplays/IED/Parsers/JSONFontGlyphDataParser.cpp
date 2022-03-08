@@ -10,7 +10,7 @@ namespace IED
 		template <>
 		bool Parser<fontGlyphData_t>::Parse(
 			const Json::Value& a_in,
-			fontGlyphData_t& a_out) const
+			fontGlyphData_t&   a_out) const
 		{
 			if (auto& gp = a_in["glyph_presets"])
 			{
@@ -62,14 +62,9 @@ namespace IED
 		template <>
 		void Parser<fontGlyphData_t>::Create(
 			const fontGlyphData_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&           a_out) const
 		{
 		}
-
-		template <>
-		void Parser<fontGlyphData_t>::GetDefault(
-			fontGlyphData_t& a_out) const
-		{}
 
 	}
 }

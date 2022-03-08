@@ -24,12 +24,8 @@ namespace IED
 			Json::Value&                             a_out) const
 		{
 			a_out["flags"] = a_data.flags.underlying();
-			a_out["btex"]  = a_data.path;
+			a_out["path"]  = a_data.path;
 		}
 
-		template <>
-		void Parser<Data::configEffectShaderTexture_t>::GetDefault(
-			Data::configEffectShaderTexture_t& a_out) const
-		{}
 	}
 }

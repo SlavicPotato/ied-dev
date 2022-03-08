@@ -16,7 +16,6 @@ namespace IED
 			const std::uint32_t a_version) const
 		{
 			Parser<Data::configBase_t> pbase(m_state);
-			Parser<Data::configFormList_t> pformList(m_state);
 			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
@@ -24,9 +23,14 @@ namespace IED
 				return false;
 			}
 
-			if (!pformList.Parse(a_in["pil"], a_out.preferredItems, a_version))
+			if (auto& pil = a_in["pil"])
 			{
-				return false;
+				Parser<Data::configFormList_t> pformList(m_state);
+
+				if (!pformList.Parse(pil, a_out.preferredItems, a_version))
+				{
+					return false;
+				}
 			}
 
 			if (!pfset.Parse(a_in["iflt"], a_out.itemFilter))
@@ -50,6 +54,7 @@ namespace IED
 			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			pbase.Create(a_in, a_out);
+
 			if (!a_in.preferredItems.empty())
 			{
 				pformList.Create(a_in.preferredItems, a_out["pil"]);
@@ -60,8 +65,5 @@ namespace IED
 			a_out["sflags"] = stl::underlying(a_in.slotFlags.value);
 		}
 
-		template <>
-		void Parser<Data::configSlot_t>::GetDefault(Data::configSlot_t& a_out) const
-		{}
 	}  // namespace Serialization
 }  // namespace IED

@@ -70,10 +70,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::ConfigSound<Game::FormID>>::GetDefault(
-			Data::ConfigSound<Game::FormID>& a_out) const
-		{
-		}
 	}
 }

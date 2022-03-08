@@ -59,8 +59,9 @@ namespace IED
 			kDataVersion2 = 2,
 			kDataVersion3 = 3,
 			kDataVersion4 = 4,
+			kDataVersion5 = 5,
 
-			kCurrentVersion = kDataVersion4
+			kCurrentVersion = kDataVersion5
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';

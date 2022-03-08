@@ -18,9 +18,5 @@ namespace IED
 			const Data::effectShaderList_t& a_data,
 			Json::Value&                            a_out) const;
 
-		template <>
-		void Parser<Data::effectShaderList_t>::GetDefault(
-			Data::effectShaderList_t& a_out) const;
-
 	}
 }

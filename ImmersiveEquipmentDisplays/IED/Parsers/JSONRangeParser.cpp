@@ -26,9 +26,5 @@ namespace IED
 			a_out["max"] = a_data.max;
 		}
 
-		template <>
-		void Parser<Data::configRange_t>::GetDefault(Data::configRange_t& a_out) const
-		{}
-
 	}  // namespace Serialization
 }  // namespace IED

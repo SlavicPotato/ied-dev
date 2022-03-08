@@ -28,9 +28,5 @@ namespace IED
 			a_out["b"] = a_data.b;
 		}
 
-		template <>
-		void Parser<Data::configColorRGB_t>::GetDefault(
-			Data::configColorRGB_t& a_out) const
-		{}
 	}
 }

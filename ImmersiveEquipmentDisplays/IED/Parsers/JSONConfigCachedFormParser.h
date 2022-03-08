@@ -18,8 +18,5 @@ namespace IED
 			const Data::configCachedForm_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configCachedForm_t>::GetDefault(Data::configCachedForm_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

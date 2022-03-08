@@ -11,7 +11,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::SettingHolder::EditorPanelActorSettings>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                             a_in,
 			Data::SettingHolder::EditorPanelActorSettings& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -26,7 +26,7 @@ namespace IED
 			}
 
 			a_out.autoSelectSex = data.get("auto_select_sex", true).asBool();
-			a_out.showAll = data.get("show_all", true).asBool();
+			a_out.showAll       = data.get("show_all", true).asBool();
 
 			return true;
 		}
@@ -34,7 +34,7 @@ namespace IED
 		template <>
 		void Parser<Data::SettingHolder::EditorPanelActorSettings>::Create(
 			const Data::SettingHolder::EditorPanelActorSettings& a_data,
-			Json::Value& a_out) const
+			Json::Value&                                         a_out) const
 		{
 			auto& data = a_out["data"];
 
@@ -43,15 +43,10 @@ namespace IED
 			sexParser.Create(a_data.sex, data);
 
 			data["auto_select_sex"] = a_data.autoSelectSex;
-			data["show_all"] = a_data.showAll;
+			data["show_all"]        = a_data.showAll;
 
 			a_out["version"] = CURRENT_VERSION;
 		}
-
-		template <>
-		void Parser<Data::SettingHolder::EditorPanelActorSettings>::GetDefault(
-			Data::SettingHolder::EditorPanelActorSettings& a_out) const
-		{}
 
 	}  // namespace Serialization
 }  // namespace IED

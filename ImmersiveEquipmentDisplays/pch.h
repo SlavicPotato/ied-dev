@@ -4,7 +4,6 @@
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
 #include <ext/ICommon.h>
-#include <ext/INIReader.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ITaskPool.h>
 #include <ext/IUUID.h>
@@ -28,6 +27,7 @@
 #include <skse64/GameRTTI.h>
 #include <skse64/GameStreams.h>
 #include <skse64/GameThreads.h>
+#include <skse64/NiControllers.h>
 #include <skse64/NiGeometry.h>
 #include <skse64/NiNodes.h>
 #include <skse64/NiSerialization.h>
@@ -84,5 +84,8 @@ namespace fs = std::filesystem;
 #include "paths.h"
 #include "plugin.h"
 #include "skse.h"
+
+
+//#include <ext/BSTHashMap.h>
 
 #endif  // PCH_H

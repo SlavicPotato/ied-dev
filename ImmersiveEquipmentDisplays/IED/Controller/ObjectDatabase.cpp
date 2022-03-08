@@ -56,14 +56,9 @@ namespace IED
 
 				QueueDatabaseCleanup();
 			}
-			/*else
-			{
-				_DMESSAGE("db hit: %s", path);
-			}*/
 
 			it->second->accessed = IPerfCounter::Query();
 
-			//a_entry.db = this;
 			a_entry  = it->second;
 			a_object = CreateClone(*it->second);
 		}
@@ -97,24 +92,6 @@ namespace IED
 			}
 
 			return Util::Node::VisitorControl::kContinue;
-
-			/*
-			if (!dismemberSkinInstance->partitions)
-			{
-				return;
-			}
-
-			dismemberSkinInstance->unk98 = false;
-
-			for (std::int32_t i = 0; i < dismemberSkinInstance->numPartitions; i++)
-			{
-				auto& data = dismemberSkinInstance->partitions[i];
-
-				dismemberSkinInstance->unk98 = true;
-				data.editorVisible = true;
-
-				//_DMESSAGE("set %s | %s", object->m_name.c_str(), a_geometry->m_name.c_str());
-			}*/
 		});
 
 		return r == Util::Node::VisitorControl::kStop;
@@ -197,7 +174,7 @@ namespace IED
 		std::size_t total = 0;
 		for (auto& e : m_data)
 		{
-			if (e.second.use_count() < 2)
+			if (e.second.use_count() <= 1)
 			{
 				total++;
 			}

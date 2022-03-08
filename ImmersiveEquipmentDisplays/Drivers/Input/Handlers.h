@@ -27,7 +27,7 @@ namespace IED
 			{
 			}
 
-			inline void SetKey(std::uint32_t a_key) noexcept
+			inline constexpr void SetKey(std::uint32_t a_key) noexcept
 			{
 				m_key = a_key;
 			}
@@ -37,7 +37,7 @@ namespace IED
 				return m_key;
 			}
 
-			inline void SetProcessPaused(bool a_switch) noexcept
+			inline constexpr void SetProcessPaused(bool a_switch) noexcept
 			{
 				m_processPaused = a_switch;
 			}
@@ -87,13 +87,13 @@ namespace IED
 		public:
 			using KeyPressHandler::KeyPressHandler;
 
-			inline void SetComboKey(std::uint32_t a_key) noexcept
+			inline constexpr void SetComboKey(std::uint32_t a_key) noexcept
 			{
 				m_comboKey = a_key;
 				m_comboKeyDown = false;
 			}
 
-			inline void SetKeys(
+			inline constexpr void SetKeys(
 				std::uint32_t a_comboKey,
 				std::uint32_t a_key) noexcept
 			{

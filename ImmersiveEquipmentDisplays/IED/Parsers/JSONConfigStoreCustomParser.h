@@ -18,8 +18,5 @@ namespace IED
 			const Data::configStoreCustom_t& a_in,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configStoreCustom_t>::GetDefault(Data::configStoreCustom_t& a_out) const;
-
 	}
 }

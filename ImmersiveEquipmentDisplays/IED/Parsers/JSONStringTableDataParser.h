@@ -18,9 +18,5 @@ namespace IED
 			const Localization::StringTable::data_storage_type& a_data,
 			Json::Value&                                        a_out) const;
 
-		template <>
-		void Parser<Localization::StringTable::data_storage_type>::GetDefault(
-			Localization::StringTable::data_storage_type& a_out) const;
-
 	}
 }

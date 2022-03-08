@@ -49,9 +49,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::equipmentOverrideConditionList_t>::GetDefault(
-			Data::equipmentOverrideConditionList_t& a_out) const
-		{}
 	}
 }

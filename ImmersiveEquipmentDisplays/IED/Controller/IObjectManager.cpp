@@ -507,8 +507,14 @@ namespace IED
 			state,
 			a_form,
 			itemRoot,
+			object,
 			targetNodes,
 			a_config);
+
+		if (a_config.flags.test(Data::BaseFlags::kPlayAnimation))
+		{
+			state->UpdateAndPlayAnimation(a_params.actor, a_config.niControllerSequence);
+		}
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
@@ -722,7 +728,8 @@ namespace IED
 
 			auto& n = state->groupObjects.try_emplace(
 											 e.entry->first,
-											 itemRoot)
+											 itemRoot,
+											 e.object)
 			              .first->second;
 
 			n.transform.Update(e.entry->second.transform);
@@ -754,6 +761,11 @@ namespace IED
 
 			UpdateDownwardPass(e.object);
 
+			if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kPlayAnimation))
+			{
+				n.PlayAnimation(a_params.actor, e.entry->second.niControllerSequence);
+			}
+
 			e.object = itemRoot;
 		}
 
@@ -761,8 +773,11 @@ namespace IED
 			state,
 			a_form,
 			groupRoot,
+			nullptr,
 			targetNodes,
 			a_config);
+
+		state->flags.set(ObjectEntryFlags::kIsGroup);
 
 		a_objectEntry.state = std::move(state);
 
@@ -782,6 +797,7 @@ namespace IED
 		std::unique_ptr<objectEntryBase_t::State>& a_state,
 		TESForm*                                   a_form,
 		NiNode*                                    a_node,
+		NiNode*                                    a_objectNode,
 		nodesRef_t&                                a_targetNodes,
 		const Data::configBaseValues_t&            a_config)
 	{
@@ -789,6 +805,7 @@ namespace IED
 		a_state->formid       = a_form->formID;
 		a_state->nodes.obj    = a_node;
 		a_state->nodes.ref    = std::move(a_targetNodes.ref);
+		a_state->nodes.main   = a_objectNode;
 		a_state->nodeDesc     = a_config.targetNode;
 		a_state->atmReference = a_config.targetNode.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);

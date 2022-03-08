@@ -113,18 +113,16 @@ namespace IED
 				return false;
 			}
 
-			auto& f = a_out.GetGlobalData();
-
 			if (!pholder.Parse(
 					data["default_player"],
-					f[stl::underlying(GlobalConfigType::Player)]))
+					a_out.GetGlobalData(GlobalConfigType::Player)))
 			{
 				return false;
 			}
 
 			if (!pholder.Parse(
 					data["default_npc"],
-					f[stl::underlying(GlobalConfigType::NPC)]))
+					a_out.GetGlobalData(GlobalConfigType::NPC)))
 			{
 				return false;
 			}
@@ -150,14 +148,12 @@ namespace IED
 			pmap.Create(g[stl::underlying(ConfigClass::NPC)], data["npc"]);
 			pmap.Create(g[stl::underlying(ConfigClass::Race)], data["race"]);
 
-			auto& f = a_data.GetGlobalData();
-
 			pholder.Create(
-				f[stl::underlying(GlobalConfigType::Player)],
+				a_data.GetGlobalData(GlobalConfigType::Player),
 				data["default_player"]);
 
 			pholder.Create(
-				f[stl::underlying(GlobalConfigType::NPC)],
+				a_data.GetGlobalData(GlobalConfigType::NPC),
 				data["default_npc"]);
 
 			a_out["version"] = a_version;

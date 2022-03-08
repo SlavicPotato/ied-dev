@@ -18,9 +18,5 @@ namespace IED
 			const Data::configSlotHolder_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configSlotHolder_t>::GetDefault(
-			Data::configSlotHolder_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

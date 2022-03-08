@@ -2119,6 +2119,13 @@ namespace IED
 			return false;
 		}
 
+		if (!state->flags.test(ObjectEntryFlags::kIsGroup) &&
+		    !state->currentSequence.empty() &&
+		    !a_config.flags.test(BaseFlags::kPlayAnimation))
+		{
+			return false;
+		}
+
 		const bool isVisible = state->nodes.obj->IsVisible();
 
 		if (a_visible)
@@ -2167,7 +2174,7 @@ namespace IED
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		if (state->transform != a_config)
+		if (state->transform != static_cast<const configTransform_t&>(a_config))
 		{
 			state->transform.Update(a_config);
 
@@ -2177,6 +2184,15 @@ namespace IED
 				state->nodes.ref);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+		}
+
+		if (!state->flags.test(ObjectEntryFlags::kIsGroup) &&
+		    a_config.flags.test(BaseFlags::kPlayAnimation))
+		{
+			if (a_config.niControllerSequence != state->currentSequence)
+			{
+				state->UpdateAndPlayAnimation(a_params.actor, a_config.niControllerSequence);
+			}
 		}
 
 		return true;

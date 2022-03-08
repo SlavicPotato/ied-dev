@@ -50,8 +50,6 @@ namespace IED
 			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version, bool a_arg) const;
 			bool Parse(const Json::Value& a_in, T& a_out, bool a_arg) const;
 
-			void GetDefault(T& a_out) const;
-
 			[[nodiscard]] inline constexpr bool HasErrors() const noexcept
 			{
 				return m_state.m_flags.test(ParserStateFlags::kHasErrors);
@@ -129,12 +127,6 @@ namespace IED
 			const Json::Value& a_in,
 			T&                 a_out,
 			bool               a_arg) const
-		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		void Parser<T>::GetDefault(T& a_out) const
 		{
 			static_assert(false, PARSER_NOT_IMPL_STR);
 		}

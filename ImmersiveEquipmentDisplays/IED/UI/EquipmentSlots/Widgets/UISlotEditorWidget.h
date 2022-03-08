@@ -90,8 +90,7 @@ namespace IED
 			public UIEditorInterface,
 			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
-			public virtual UISettingsInterface,
-			public virtual UIPopupToggleButtonWidget
+			public virtual UISettingsInterface
 		{
 		public:
 			UISlotEditorWidget(
@@ -713,7 +712,7 @@ namespace IED
 		{
 			ImGui::PushID("header_controls");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -1070,7 +1069,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_piNewEntryID = {};
 			}
@@ -1140,7 +1139,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			if (DrawPopupToggleButton("open", "context_menu"))
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				m_piNewEntryID = 0;
 			}

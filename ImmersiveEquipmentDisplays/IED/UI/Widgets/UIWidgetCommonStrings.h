@@ -87,6 +87,7 @@ namespace IED
 			ChildRace                           = 2076,
 			Options                             = 2077,
 			SelectRandomForm                    = 2078,
+			PlayAnimation                       = 2079,
 		};
 	}
 }

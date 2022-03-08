@@ -83,10 +83,5 @@ namespace IED
 		{
 		}
 
-		template <>
-		void Parser<Localization::StringTable::data_storage_type>::GetDefault(
-			Localization::StringTable::data_storage_type& a_out) const
-		{}
-
 	}
 }

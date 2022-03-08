@@ -255,7 +255,7 @@ namespace IED
 
 				if (a_version >= DataVersion2)
 				{
-					//a_ar& effectShaders;
+					a_ar& effectShaders;
 				}
 			}
 		};
@@ -273,4 +273,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configBase_t,
-	::IED::Data::configBase_t::Serialization::DataVersion1);
+	::IED::Data::configBase_t::Serialization::DataVersion2);

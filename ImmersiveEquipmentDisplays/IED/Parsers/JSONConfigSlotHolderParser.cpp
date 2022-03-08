@@ -103,11 +103,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configSlotHolder_t>::GetDefault(
-			Data::configSlotHolder_t& a_out) const
-		{
-		}
-
 	}  // namespace Serialization
 }  // namespace IED

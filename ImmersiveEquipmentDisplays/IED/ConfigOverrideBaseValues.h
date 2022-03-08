@@ -27,6 +27,7 @@ namespace IED
 			kHideLayingDown         = 1u << 12,
 			kUseWorldModel          = 1u << 13,
 			kIgnoreRaceEquipTypes   = 1u << 14,
+			kPlayAnimation          = 1u << 15,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -48,7 +49,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
@@ -57,8 +59,9 @@ namespace IED
 				BaseFlags::kPlaySound |
 				BaseFlags::kReferenceMode;
 
-			stl::flag<BaseFlags>       flags{ DEFAULT_FLAGS };
-			NodeDescriptor             targetNode;
+			stl::flag<BaseFlags> flags{ DEFAULT_FLAGS };
+			NodeDescriptor       targetNode;
+			stl::fixed_string    niControllerSequence;
 
 		protected:
 			template <class Archive>
@@ -67,6 +70,11 @@ namespace IED
 				a_ar& static_cast<configTransform_t&>(*this);
 				a_ar& flags.value;
 				a_ar& targetNode;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& niControllerSequence;
+				}
 			}
 		};
 
@@ -75,4 +83,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion1);
+	IED::Data::configBaseValues_t::Serialization::DataVersion2);

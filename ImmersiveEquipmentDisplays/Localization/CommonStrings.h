@@ -170,5 +170,6 @@ namespace IED
 		White        = 241,
 		Grey         = 242,
 		Texture      = 243,
+		Sequence     = 244,
 	};
 }

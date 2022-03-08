@@ -19,9 +19,5 @@ namespace IED
 			const Data::configNodeOverrideCondition_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configNodeOverrideCondition_t>::GetDefault(
-			Data::configNodeOverrideCondition_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

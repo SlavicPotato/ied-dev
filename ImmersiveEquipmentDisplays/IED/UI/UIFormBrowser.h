@@ -3,7 +3,6 @@
 #include "Widgets/Filters/UIGenericFilter.h"
 #include "Widgets/Form/UIFormBrowserOwner.h"
 #include "Widgets/UIWidgetsCommon.h"
-#include "Widgets/UIPopupToggleButtonWidget.h"
 
 #include "Window/UIWindow.h"
 
@@ -21,7 +20,6 @@ namespace IED
 	{
 		class UIFormBrowser :
 			public UIWindow,
-			UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
 		{
 			struct TabItem

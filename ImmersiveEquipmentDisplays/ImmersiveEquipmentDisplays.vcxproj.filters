@@ -180,6 +180,9 @@
     <Filter Include="Source\IED\JSONParsers\Config\EffectShaders">
       <UniqueIdentifier>{597096f8-8b5f-4d10-813d-e8034c9369a2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\ModelGroup">
+      <UniqueIdentifier>{62edb0c0-d32c-4d38-949d-0e166974b7fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -953,12 +956,6 @@
     <ClInclude Include="IED\ConfigOverrideModelGroup.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
@@ -1084,6 +1081,12 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h">
       <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1645,12 +1648,6 @@
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigFormSetParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
@@ -1710,6 +1707,12 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

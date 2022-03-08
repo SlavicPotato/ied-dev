@@ -10,17 +10,13 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configFormFilterBase_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&            a_in,
 			Data::configFormFilterBase_t& a_out) const;
 
 		template <>
 		void Parser<Data::configFormFilterBase_t>::Create(
 			const Data::configFormFilterBase_t& a_in,
-			Json::Value& a_out) const;
-
-		template <>
-		void Parser<Data::configFormFilterBase_t>::GetDefault(
-			Data::configFormFilterBase_t& a_out) const;
+			Json::Value&                        a_out) const;
 
 	}
 }

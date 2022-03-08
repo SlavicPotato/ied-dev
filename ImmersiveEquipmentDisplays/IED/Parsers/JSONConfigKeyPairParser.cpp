@@ -26,10 +26,5 @@ namespace IED
 			a_out["combo_key"] = a_data.comboKey;
 		}
 
-		template <>
-		void Parser<Data::ConfigKeyPair>::GetDefault(
-			Data::ConfigKeyPair& a_out) const
-		{}
-
 	}  // namespace Serialization
 }  // namespace IED

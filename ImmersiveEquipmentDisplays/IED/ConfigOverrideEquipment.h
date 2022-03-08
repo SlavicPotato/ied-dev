@@ -227,21 +227,21 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar&          flags.value;
+				a_ar&        flags.value;
 				configForm_t tmp = form.get_id();
-				a_ar&          tmp;
-				a_ar&          slot;
-				a_ar&          keyword;
-				a_ar&          ui32a;
-				a_ar&          group;
+				a_ar&        tmp;
+				a_ar&        slot;
+				a_ar&        keyword;
+				a_ar&        ui32a;
+				a_ar&        group;
 			}
 
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar&          flags.value;
+				a_ar&        flags.value;
 				configForm_t tmp;
-				a_ar&          tmp;
+				a_ar&        tmp;
 				form = tmp;
 				a_ar& slot;
 				a_ar& keyword;

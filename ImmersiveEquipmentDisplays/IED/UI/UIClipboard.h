@@ -35,7 +35,8 @@ namespace IED
 				EffectShaderList,
 				EffectShaderHolder,
 				EquipmentOverrideList,
-				EffectShaderData
+				EffectShaderData,
+				FixedStringSet
 			};
 
 			struct entry_t
@@ -255,6 +256,12 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configFixedStringSet_t>)
+			{
+				return data.type == DataType::FixedStringSet ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				static_assert(false);
@@ -396,6 +403,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configEffectShaderData_t>)
 			{
 				data.type = DataType::EffectShaderData;
+			}
+			else if constexpr (std::is_same_v<T, Data::configFixedStringSet_t>)
+			{
+				data.type = DataType::FixedStringSet;
 			}
 			else
 			{

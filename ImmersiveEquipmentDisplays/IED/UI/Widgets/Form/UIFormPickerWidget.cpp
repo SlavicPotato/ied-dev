@@ -2,7 +2,9 @@
 
 #include "UIFormPickerWidget.h"
 
-#include "../../UICommon.h"
+#include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
+
+#include "IED/UI/UICommon.h"
 #include "IED/Controller/Controller.h"
 
 namespace IED
@@ -203,7 +205,7 @@ namespace IED
 
 		bool UIFormPickerWidget::DrawContextMenu(Game::FormID& a_form)
 		{
-			DrawPopupToggleButton("context_button", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("context_button", "context_menu");
 
 			bool result = false;
 

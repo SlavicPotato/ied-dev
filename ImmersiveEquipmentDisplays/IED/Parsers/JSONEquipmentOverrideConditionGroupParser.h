@@ -18,9 +18,5 @@ namespace IED
 			const Data::equipmentOverrideConditionGroup_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::equipmentOverrideConditionGroup_t>::GetDefault(
-			Data::equipmentOverrideConditionGroup_t& a_out) const;
-
 	}
 }

@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "JSONFormFilterBaseParser.h"
 #include "JSONConfigFormSetParser.h"
+#include "JSONFormFilterBaseParser.h"
 
 namespace IED
 {
@@ -11,7 +11,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configFormFilterBase_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&            a_in,
 			Data::configFormFilterBase_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -39,7 +39,7 @@ namespace IED
 		template <>
 		void Parser<Data::configFormFilterBase_t>::Create(
 			const Data::configFormFilterBase_t& a_in,
-			Json::Value& a_out) const
+			Json::Value&                        a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
@@ -60,10 +60,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configFormFilterBase_t>::GetDefault(
-			Data::configFormFilterBase_t& a_out) const
-		{
-		}
 	}
 }

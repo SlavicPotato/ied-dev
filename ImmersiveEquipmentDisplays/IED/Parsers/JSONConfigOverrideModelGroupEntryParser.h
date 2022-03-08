@@ -18,9 +18,5 @@ namespace IED
 			const Data::configModelGroupEntry_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configModelGroupEntry_t>::GetDefault(
-			Data::configModelGroupEntry_t& a_out) const;
-
 	}
 }

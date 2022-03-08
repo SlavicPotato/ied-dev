@@ -79,17 +79,6 @@ namespace IED
 		}
 	}
 
-	NiNode* INode::CreateAttachmentNode(
-		const BSFixedString& a_nodeName)
-	{
-		auto node = NiNode::Create(1);
-
-		node->m_name = a_nodeName;
-		node->m_flags = ATTACHMENT_NODE_FLAGS;
-
-		return node;
-	}
-
 	auto INode::FindNodes(
 		const Data::NodeDescriptor& a_node,
 		bool                        a_atmReference,
@@ -138,7 +127,8 @@ namespace IED
 	void INode::UpdateDownwardPass(NiAVObject* a_object)
 	{
 		NiAVObject::ControllerUpdateContext ctx{
-			static_cast<float>(*EngineExtensions::m_unkglob0),
+			//static_cast<float>(*EngineExtensions::m_unkglob0),
+			0,
 			0
 		};
 		a_object->UpdateDownwardPass(ctx, nullptr);
@@ -167,14 +157,14 @@ namespace IED
 			return false;
 		}
 
-		auto targetNodeName = GetTargetNodeName(
+		auto targetNodeName(GetTargetNodeName(
 			a_node,
-			atmReference);
+			atmReference));
 
 		auto node = FindChildNode(nodes.parent, targetNodeName);
 		if (!node)
 		{
-			node = CreateAttachmentNode(targetNodeName);
+			node = CreateAttachmentNode(std::move(targetNodeName));
 			nodes.parent->AttachChild(node, true);
 			UpdateDownwardPass(node);
 		}
@@ -207,12 +197,12 @@ namespace IED
 			return false;
 		}
 
-		auto targetNodeName = GetTargetNodeName(a_node, a_atmReference);
+		auto targetNodeName(GetTargetNodeName(a_node, a_atmReference));
 
 		auto targetNode = FindChildNode(nodes.parent, targetNodeName);
 		if (!targetNode)
 		{
-			targetNode = CreateAttachmentNode(targetNodeName);
+			targetNode = CreateAttachmentNode(std::move(targetNodeName));
 			nodes.parent->AttachChild(targetNode, true);
 			UpdateDownwardPass(targetNode);
 		}
@@ -289,7 +279,7 @@ namespace IED
 	{
 		auto node = NiNode::Create(1);
 
-		node->m_name = a_name;
+		node->m_name  = a_name;
 		node->m_flags = ATTACHMENT_NODE_FLAGS;
 
 		return node;

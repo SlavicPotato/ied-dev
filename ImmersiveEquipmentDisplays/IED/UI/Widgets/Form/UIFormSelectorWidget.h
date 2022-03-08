@@ -5,8 +5,6 @@
 #include "IED/UI/UILocalizationInterface.h"
 #include "IED/UI/UITips.h"
 
-#include "../UIPopupToggleButtonWidget.h"
-
 namespace IED
 {
 	class Controller;
@@ -15,7 +13,6 @@ namespace IED
 	{
 		class UIFormSelectorWidget :
 			public virtual UITipsInterface,
-			public virtual UIPopupToggleButtonWidget,
 			public virtual UILocalizationInterface
 		{
 			using on_open_func_t = std::function<void(UIFormSelectorWidget&, UIFormBrowser&)>;

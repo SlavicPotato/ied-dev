@@ -16,21 +16,18 @@ namespace IED
 			Data::configBase_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBaseValues_t>      bvParser(m_state);
-			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
-			Parser<Data::configFormFilter_t>      pfset(m_state);
-			Parser<Data::effectShaderList_t>      eslist(m_state);
+			Parser<Data::configBaseValues_t> bvParser(m_state);
 
 			if (!bvParser.Parse(a_in, a_out, a_version))
 			{
 				return false;
 			}
 
-			auto& aoData = a_in["ao"];
-
-			if (!aoData.empty())
+			if (auto& ao = a_in["ao"])
 			{
-				if (!aoListParser.Parse(aoData, a_out.equipmentOverrides))
+				Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+
+				if (!aoListParser.Parse(ao, a_out.equipmentOverrides))
 				{
 					return false;
 				}
@@ -38,28 +35,30 @@ namespace IED
 
 			if (auto& filtData = a_in["bflt"])
 			{
-				auto tmp = std::make_unique<Data::configBaseFilters_t>();
+				Parser<Data::configFormFilter_t> pfset(m_state);
 
-				if (!pfset.Parse(filtData["r"], tmp->raceFilter))
+				a_out.filters = std::make_unique<Data::configBaseFilters_t>();
+
+				if (!pfset.Parse(filtData["r"], a_out.filters->raceFilter))
 				{
 					return false;
 				}
 
-				if (!pfset.Parse(filtData["a"], tmp->actorFilter))
+				if (!pfset.Parse(filtData["a"], a_out.filters->actorFilter))
 				{
 					return false;
 				}
 
-				if (!pfset.Parse(filtData["n"], tmp->npcFilter))
+				if (!pfset.Parse(filtData["n"], a_out.filters->npcFilter))
 				{
 					return false;
 				}
-
-				a_out.filters = std::move(tmp);
 			}
 
 			if (auto& esl = a_in["esl"])
 			{
+				Parser<Data::effectShaderList_t> eslist(m_state);
+
 				if (!eslist.Parse(esl, a_out.effectShaders))
 				{
 					return false;
@@ -74,19 +73,20 @@ namespace IED
 			const Data::configBase_t& a_data,
 			Json::Value&              a_out) const
 		{
-			Parser<Data::configBaseValues_t>      bvParser(m_state);
-			Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
-			Parser<Data::configFormFilter_t>      pfset(m_state);
-			Parser<Data::effectShaderList_t>      eslist(m_state);
+			Parser<Data::configBaseValues_t> bvParser(m_state);
 
 			bvParser.Create(a_data, a_out);
 			if (!a_data.equipmentOverrides.empty())
 			{
+				Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+
 				aoListParser.Create(a_data.equipmentOverrides, a_out["ao"]);
 			}
 
 			if (a_data.filters)
 			{
+				Parser<Data::configFormFilter_t> pfset(m_state);
+
 				auto& filtData = (a_out["bflt"] = Json::Value(Json::ValueType::objectValue));
 
 				pfset.Create(a_data.filters->raceFilter, filtData["r"]);
@@ -96,12 +96,11 @@ namespace IED
 
 			if (!a_data.effectShaders.empty())
 			{
+				Parser<Data::effectShaderList_t> eslist(m_state);
+
 				eslist.Create(a_data.effectShaders, a_out["esl"]);
 			}
 		}
 
-		template <>
-		void Parser<Data::configBase_t>::GetDefault(Data::configBase_t& a_out) const
-		{}
 	}  // namespace Serialization
 }  // namespace IED

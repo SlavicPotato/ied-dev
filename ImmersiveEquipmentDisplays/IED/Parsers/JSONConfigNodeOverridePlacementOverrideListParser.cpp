@@ -48,10 +48,5 @@ namespace IED
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configNodeOverridePlacementOverrideList_t>::GetDefault(
-			Data::configNodeOverridePlacementOverrideList_t& a_out) const
-		{
-		}
 	}
 }

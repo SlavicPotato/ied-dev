@@ -17,18 +17,18 @@ namespace IED
 
 		template <>
 		bool Parser<Data::SettingHolder::UserInterface>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                  a_in,
 			Data::SettingHolder::UserInterface& a_out) const
 		{
 			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>   editorPanelParser(m_state);
 			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair> controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
+			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>  ieParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates>    colStatesParser(m_state);
 
 			if (!editorPanelParser.Parse(data["slot_editor"], a_out.slotEditor))
 			{
@@ -111,13 +111,13 @@ namespace IED
 				a_out.openKeys.mark(true);
 			}
 
-			a_out.enableControlLock = data.get("enable_control_lock", true).asBool();
-			a_out.enableFreezeTime = data.get("enable_freeze_time", false).asBool();
-			a_out.enableRestrictions = data.get("enable_restrictions", false).asBool();
+			a_out.enableControlLock    = data.get("enable_control_lock", true).asBool();
+			a_out.enableFreezeTime     = data.get("enable_freeze_time", false).asBool();
+			a_out.enableRestrictions   = data.get("enable_restrictions", false).asBool();
 			a_out.selectCrosshairActor = data.get("select_crosshair_actor", true).asBool();
-			a_out.scale = data.get("scale", 1.0f).asFloat();
-			a_out.logLimit = data.get("log_limit", 200).asUInt();
-			a_out.logShowTimestamps = data.get("log_show_ts", true).asBool();
+			a_out.scale                = data.get("scale", 1.0f).asFloat();
+			a_out.logLimit             = data.get("log_limit", 200).asUInt();
+			a_out.logShowTimestamps    = data.get("log_show_ts", true).asBool();
 
 			auto& levels = data["log_levels"];
 			for (std::underlying_type_t<LogLevel> i = 0; i <= stl::underlying(LogLevel::Max); i++)
@@ -161,15 +161,15 @@ namespace IED
 		template <>
 		void Parser<Data::SettingHolder::UserInterface>::Create(
 			const Data::SettingHolder::UserInterface& a_data,
-			Json::Value& a_out) const
+			Json::Value&                              a_out) const
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::EditorPanel> editorPanelParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>   editorPanelParser(m_state);
 			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair> controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport> ieParser(m_state);
-			Parser<UI::UIData::UICollapsibleStates> colStatesParser(m_state);
+			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>  ieParser(m_state);
+			Parser<UI::UIData::UICollapsibleStates>    colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
 			editorPanelParser.Create(a_data.customEditor, data["custom_editor"]);
@@ -201,13 +201,13 @@ namespace IED
 				controlsParser.Create(*a_data.openKeys, data["toggle_keys"]);
 			}
 
-			data["enable_control_lock"] = a_data.enableControlLock;
-			data["enable_freeze_time"] = a_data.enableFreezeTime;
-			data["enable_restrictions"] = a_data.enableRestrictions;
+			data["enable_control_lock"]    = a_data.enableControlLock;
+			data["enable_freeze_time"]     = a_data.enableFreezeTime;
+			data["enable_restrictions"]    = a_data.enableRestrictions;
 			data["select_crosshair_actor"] = a_data.selectCrosshairActor;
-			data["scale"] = a_data.scale;
-			data["log_limit"] = a_data.logLimit;
-			data["log_show_ts"] = a_data.logShowTimestamps;
+			data["scale"]                  = a_data.scale;
+			data["log_limit"]              = a_data.logLimit;
+			data["log_show_ts"]            = a_data.logShowTimestamps;
 
 			auto& levels = (data["log_levels"] = Json::Value(Json::ValueType::arrayValue));
 			for (auto& e : a_data.logLevels)
@@ -224,13 +224,13 @@ namespace IED
 			{
 				data["font_size"] = *a_data.fontSize;
 			}
-			data["extra_glyphs"] = stl::underlying(a_data.extraGlyphs.value);
+			data["extra_glyphs"]      = stl::underlying(a_data.extraGlyphs.value);
 			data["release_font_data"] = a_data.releaseFontData;
 
 			data["sel_def_conf_import"] = stl::underlying(a_data.selectedDefaultConfImport);
 
 			data["style_preset"] = stl::underlying(a_data.stylePreset);
-			data["alpha"] = a_data.alpha;
+			data["alpha"]        = a_data.alpha;
 
 			if (a_data.bgAlpha)
 			{
@@ -239,11 +239,6 @@ namespace IED
 
 			a_out["version"] = CURRENT_VERSION;
 		}
-
-		template <>
-		void Parser<Data::SettingHolder::UserInterface>::GetDefault(
-			Data::SettingHolder::UserInterface& a_out) const
-		{}
 
 	}  // namespace Serialization
 }  // namespace IED

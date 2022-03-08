@@ -31,9 +31,7 @@ namespace IED
 
 			for (auto it = vdata.begin(); it != vdata.end(); ++it)
 			{
-				auto key = it.key().asString();
-
-				auto& v = a_out.data.try_emplace(key).first->second;
+				auto& v = a_out.data.try_emplace(it.key().asString()).first->second;
 
 				parserDesc_t<Data::configNodeOverrideTransform_t> desc[]{
 					{ "m", v(ConfigSex::Male) },
@@ -53,9 +51,7 @@ namespace IED
 
 			for (auto it = pdata.begin(); it != pdata.end(); ++it)
 			{
-				auto key = it.key().asString();
-
-				auto& v = a_out.placementData.try_emplace(key).first->second;
+				auto& v = a_out.placementData.try_emplace(it.key().asString()).first->second;
 
 				parserDesc_t<Data::configNodeOverridePlacement_t> desc[]{
 					{ "m", v(ConfigSex::Male) },
@@ -86,47 +82,48 @@ namespace IED
 
 			data["flags"] = stl::underlying(a_data.flags.value);
 
-			auto& vdata = (data["data"] = Json::Value(Json::ValueType::objectValue));
-
-			for (auto& [i, e] : a_data.data)
+			if (!a_data.data.empty())
 			{
-				parserDescConst_t<Data::configNodeOverrideTransform_t> desc[]{
-					{ "m", e(ConfigSex::Male) },
-					{ "f", e(ConfigSex::Female) }
-				};
+				auto& vdata = (data["data"] = Json::Value(Json::ValueType::objectValue));
 
-				auto& v = vdata[i];
-
-				for (auto& f : desc)
+				for (auto& [i, e] : a_data.data)
 				{
-					parser.Create(f.data, v[f.member]);
+					parserDescConst_t<Data::configNodeOverrideTransform_t> desc[]{
+						{ "m", e(ConfigSex::Male) },
+						{ "f", e(ConfigSex::Female) }
+					};
+
+					auto& v = vdata[i];
+
+					for (auto& f : desc)
+					{
+						parser.Create(f.data, v[f.member]);
+					}
 				}
 			}
 
-			auto& pdata = (data["pdata"] = Json::Value(Json::ValueType::objectValue));
-
-			for (auto& [i, e] : a_data.placementData)
+			if (!a_data.placementData.empty())
 			{
-				parserDescConst_t<Data::configNodeOverridePlacement_t> desc[]{
-					{ "m", e(ConfigSex::Male) },
-					{ "f", e(ConfigSex::Female) }
-				};
+				auto& pdata = (data["pdata"] = Json::Value(Json::ValueType::objectValue));
 
-				auto& v = pdata[i];
-
-				for (auto& f : desc)
+				for (auto& [i, e] : a_data.placementData)
 				{
-					pparser.Create(f.data, v[f.member]);
+					parserDescConst_t<Data::configNodeOverridePlacement_t> desc[]{
+						{ "m", e(ConfigSex::Male) },
+						{ "f", e(ConfigSex::Female) }
+					};
+
+					auto& v = pdata[i];
+
+					for (auto& f : desc)
+					{
+						pparser.Create(f.data, v[f.member]);
+					}
 				}
 			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}
 
-		template <>
-		void Parser<Data::configNodeOverrideHolder_t>::GetDefault(
-			Data::configNodeOverrideHolder_t& a_out) const
-		{
-		}
 	}
 }

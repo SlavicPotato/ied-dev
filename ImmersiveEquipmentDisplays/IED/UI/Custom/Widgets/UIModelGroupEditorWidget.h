@@ -338,10 +338,54 @@ namespace IED
 			}
 			DrawTip(UITip::LeftWeapon);
 
+			bool paChanged = ImGui::CheckboxFlagsT(
+				LS(UIWidgetCommonStrings::PlayAnimation, "4"),
+				stl::underlying(std::addressof(entry.flags.value)),
+				stl::underlying(Data::ConfigModelGroupEntryFlags::kPlayAnimation));
+
+			if (paChanged)
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::PlayAnimation);
+
+			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kPlayAnimation))
+			{
+				if (paChanged &&
+				    entry.niControllerSequence.empty())
+				{
+					ImGui::OpenPopup("4ctx");
+				}
+
+				ImGui::SameLine();
+				if (UIPopupToggleButtonWidget::DrawPopupToggleButton("4b", "4ctx"))
+				{
+					SetDescriptionPopupBuffer(entry.niControllerSequence);
+				}
+
+				if (ImGui::BeginPopup("4ctx"))
+				{
+					if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
+					{
+						entry.niControllerSequence = GetDescriptionPopupBuffer();
+
+						OnModelGroupEditorChange(
+							a_handle,
+							a_params,
+							ModelGroupEditorOnChangeEventType::Flags);
+					}
+
+					ImGui::EndPopup();
+				}
+			}
+
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::Use1pWeaponModels, "4"),
+					LS(UIBaseConfigString::Use1pWeaponModels, "A"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel)))
 			{
@@ -353,7 +397,7 @@ namespace IED
 			DrawTip(UITip::Load1pWeaponModel);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::UseWorldModel, "5"),
+					LS(UIBaseConfigString::UseWorldModel, "B"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kUseWorldModel)))
 			{
@@ -365,7 +409,7 @@ namespace IED
 			DrawTip(UITip::UseWorldModel);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::RemoveScabbard, "6"),
+					LS(UIBaseConfigString::RemoveScabbard, "C"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveScabbard)))
 			{
@@ -377,7 +421,7 @@ namespace IED
 			DrawTip(UITip::RemoveScabbard);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "7"),
+					LS(UIWidgetCommonStrings::DisableHavok, "D"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{

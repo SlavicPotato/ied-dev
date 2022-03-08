@@ -38,10 +38,5 @@ namespace IED
 			tfparser.Create(a_data.transform, a_out);
 		}
 
-		template <>
-		void Parser<Data::configNodeOverrideValues_t>::GetDefault(
-			Data::configNodeOverrideValues_t& a_out) const
-		{
-		}
 	}
 }

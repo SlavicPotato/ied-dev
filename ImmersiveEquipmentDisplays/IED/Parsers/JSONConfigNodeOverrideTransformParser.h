@@ -19,9 +19,5 @@ namespace IED
 			const Data::configNodeOverrideTransform_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configNodeOverrideTransform_t>::GetDefault(
-			Data::configNodeOverrideTransform_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

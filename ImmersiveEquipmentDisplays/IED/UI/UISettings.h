@@ -6,6 +6,7 @@
 
 #include "Widgets/Form/UIFormPickerWidget.h"
 #include "Widgets/UIControlKeySelectorWidget.h"
+#include "Widgets/UIPopupToggleButtonWidget.h"
 #include "Widgets/UIStylePresetSelectorWidget.h"
 
 #include "IED/UI/Controls/UICollapsibles.h"
@@ -87,7 +88,7 @@ namespace IED
 
 			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			//ImGui::PopStyleVar();
 

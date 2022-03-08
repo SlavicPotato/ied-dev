@@ -18,9 +18,5 @@ namespace IED
 			const Data::configNodeOverrideOffsetList_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configNodeOverrideOffsetList_t>::GetDefault(
-			Data::configNodeOverrideOffsetList_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED

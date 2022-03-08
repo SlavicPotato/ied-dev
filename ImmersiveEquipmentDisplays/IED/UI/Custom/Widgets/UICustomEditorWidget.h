@@ -71,8 +71,7 @@ namespace IED
 			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
 			public UIEditorInterface,
-			public UIModelGroupEditorWidget<T>,
-			public virtual UIPopupToggleButtonWidget
+			public UIModelGroupEditorWidget<T>
 		{
 		public:
 			UICustomEditorWidget(
@@ -975,7 +974,7 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::PopStyleVar();
 
@@ -1332,7 +1331,7 @@ namespace IED
 		{
 			ImGui::PushID("header_controls");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
@@ -1350,7 +1349,7 @@ namespace IED
 		{
 			ImGui::PushID("cr_context_area");
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (ImGui::BeginPopup("context_menu"))

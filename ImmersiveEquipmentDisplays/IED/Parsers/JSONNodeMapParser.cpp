@@ -11,9 +11,9 @@ namespace IED
 
 		template <>
 		bool Parser<Data::NodeMap::map_type>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&       a_in,
 			Data::NodeMap::map_type& a_out,
-			bool a_extraOnly) const
+			bool                     a_extraOnly) const
 		{
 			JSON_PARSE_VERSION()
 
@@ -53,8 +53,8 @@ namespace IED
 		template <>
 		void Parser<Data::NodeMap::map_type>::Create(
 			const Data::NodeMap::map_type& a_data,
-			Json::Value& a_out,
-			bool a_extraOnly) const
+			Json::Value&                   a_out,
+			bool                           a_extraOnly) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
@@ -72,11 +72,6 @@ namespace IED
 
 			a_out["version"] = CURRENT_VERSION;
 		}
-
-		template <>
-		void Parser<Data::NodeMap::map_type>::GetDefault(
-			Data::NodeMap::map_type& a_out) const
-		{}
 
 	}  // namespace Serialization
 }  // namespace IED

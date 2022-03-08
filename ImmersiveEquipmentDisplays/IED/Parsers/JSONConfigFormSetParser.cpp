@@ -44,10 +44,5 @@ namespace IED
 			}
 		}
 
-		template <>
-		void Parser<Data::configFormSet_t>::GetDefault(
-			Data::configFormSet_t& a_out) const
-		{
-		}
 	}
 }

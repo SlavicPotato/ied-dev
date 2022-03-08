@@ -20,7 +20,10 @@ namespace IED
 			a_out.flags = static_cast<Data::NodeOverrideConditionFlags>(
 				a_in.get("flags", stl::underlying(Data::NodeOverrideConditionFlags::kNone)).asUInt());
 
-			a_out.node = a_in["node"].asString();
+			if (auto& node = a_in["node"])
+			{
+				a_out.node = node.asString();
+			}
 
 			if (auto& v = a_in["form"])
 			{
@@ -62,7 +65,11 @@ namespace IED
 			Parser<Data::configCachedForm_t> fparser(m_state);
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
-			a_out["node"] = *a_data.node;
+
+			if (!a_data.node.empty())
+			{
+				a_out["node"] = *a_data.node;
+			}
 
 			fparser.Create(a_data.form, a_out["form"]);
 			fparser.Create(a_data.keyword, a_out["kw"]);
@@ -75,10 +82,5 @@ namespace IED
 			gparser.Create(a_data.group, a_out["group"]);
 		}
 
-		template <>
-		void Parser<Data::configNodeOverrideCondition_t>::GetDefault(
-			Data::configNodeOverrideCondition_t& a_out) const
-		{
-		}
 	}
 }

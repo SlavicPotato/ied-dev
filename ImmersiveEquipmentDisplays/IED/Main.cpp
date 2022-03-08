@@ -146,7 +146,7 @@ namespace IED
 	{
 		gLog.Debug("Loading INI..");
 
-		auto config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE);
+		auto config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE_NOEXT);
 
 		if (!config->IsLoaded())
 		{

@@ -2,6 +2,8 @@
 
 #include "UIFormBrowser.h"
 
+#include "Widgets/UIPopupToggleButtonWidget.h"
+
 #include "IED/Controller/Controller.h"
 
 namespace IED
@@ -482,7 +484,7 @@ namespace IED
 				ImGuiStyleVar_WindowPadding,
 				{ 8, 8 });
 
-			DrawPopupToggleButton("open", "context_menu");
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 

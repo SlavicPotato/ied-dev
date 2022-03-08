@@ -8,10 +8,13 @@ namespace IED
 {
 	namespace UI
 	{
-		bool UIDescriptionPopupWidget::DrawDescriptionPopup()
+		bool UIDescriptionPopupWidget::DrawDescriptionPopup(
+			const char* a_label)
 		{
 			bool ret = ImGui::InputText(
-				"##desc_input",
+				a_label ?
+					a_label :
+                    "##desc_input",
 				std::addressof(m_buffer),
 				ImGuiInputTextFlags_EnterReturnsTrue);
 

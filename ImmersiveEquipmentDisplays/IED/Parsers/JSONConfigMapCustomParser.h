@@ -18,8 +18,5 @@ namespace IED
 			const Data::configMapCustom_t& a_in,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configMapCustom_t>::GetDefault(Data::configMapCustom_t& a_out) const;
-
 	}
 }

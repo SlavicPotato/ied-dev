@@ -19,8 +19,5 @@ namespace IED
 			const Data::configBase_t& a_data,
 			Json::Value& a_out) const;
 
-		template <>
-		void Parser<Data::configBase_t>::GetDefault(Data::configBase_t& a_out) const;
-
 	}  // namespace Serialization
 }  // namespace IED
