@@ -92,6 +92,9 @@ namespace IED
 					case EffectShaderSelectedTexture::Grey:
 						a_out = gstate->defaultTextureGrey;
 						break;
+					case EffectShaderSelectedTexture::Black:
+						a_out = gstate->unk058;
+						break;
 					}
 
 					if (!a_out && a_force_default)

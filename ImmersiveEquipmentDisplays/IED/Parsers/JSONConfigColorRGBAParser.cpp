@@ -10,13 +10,14 @@ namespace IED
 		template <>
 		bool Parser<Data::configColorRGBA_t>::Parse(
 			const Json::Value&       a_in,
-			Data::configColorRGBA_t& a_out) const
+			Data::configColorRGBA_t& a_out,
+			float                    a_defaultAlpha) const
 		{
 			Parser<Data::configColorRGB_t> rgbparser(m_state);
 
 			rgbparser.Parse(a_in, a_out);
 
-			a_out.a = std::clamp(a_in.get("a", 1.0f).asFloat(), 0.0f, 1.0f);
+			a_out.a = std::clamp(a_in.get("a", a_defaultAlpha).asFloat(), 0.0f, 1.0f);
 
 			return true;
 		}

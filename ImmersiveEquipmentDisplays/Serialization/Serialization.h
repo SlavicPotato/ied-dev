@@ -49,6 +49,7 @@ namespace IED
 			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version) const;
 			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version, bool a_arg) const;
 			bool Parse(const Json::Value& a_in, T& a_out, bool a_arg) const;
+			bool Parse(const Json::Value& a_in, T& a_out, float a_arg) const;
 
 			[[nodiscard]] inline constexpr bool HasErrors() const noexcept
 			{
@@ -129,6 +130,15 @@ namespace IED
 			bool               a_arg) const
 		{
 			static_assert(false, PARSER_NOT_IMPL_STR);
+		}
+
+		template <class T>
+		bool Parser<T>::Parse(
+			const Json::Value& a_in,
+			T&                 a_out,
+			float              a_arg) const
+		{
+			static_assert(false, PARSER_NOT_IMPL_STR)
 		}
 
 		template <std::size_t _Size>

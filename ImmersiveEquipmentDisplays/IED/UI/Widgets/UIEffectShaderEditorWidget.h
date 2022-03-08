@@ -336,7 +336,17 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::White, "1"),
+						LS(CommonStrings::Black, "1"),
+						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Black))
+				{
+					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Black;
+					OnEffectShaderUpdate(a_params);
+				}
+
+				ImGui::SameLine();
+				
+				if (ImGui::RadioButton(
+						LS(CommonStrings::White, "2"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::White))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::White;
@@ -346,7 +356,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Grey, "2"),
+						LS(CommonStrings::Grey, "3"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Grey))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Grey;
@@ -356,7 +366,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Custom, "3"),
+						LS(CommonStrings::Custom, "4"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Custom))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Custom;
@@ -371,7 +381,7 @@ namespace IED
 					m_inputBuffer1[l] = 0;
 
 					if (ImGui::InputText(
-							LS(CommonStrings::Texture, "4"),
+							LS(CommonStrings::Texture, "5"),
 							m_inputBuffer1,
 							sizeof(m_inputBuffer1),
 							ImGuiInputTextFlags_EnterReturnsTrue))

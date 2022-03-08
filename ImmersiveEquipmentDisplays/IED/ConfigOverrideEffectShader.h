@@ -27,9 +27,9 @@ namespace IED
 		{
 			kNone = 0,
 
-			kSelectedMask = 0xF,
+			kTextureWhite = 1u << 0,
 
-			kTextureWhite = 1u << 0
+			kSelectedMask = 0xF
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderTextureFlags);
@@ -39,6 +39,7 @@ namespace IED
 			None   = 0,
 			White  = 1,
 			Grey   = 2,
+			Black  = 3,
 			Custom = 15
 		};
 
@@ -101,7 +102,7 @@ namespace IED
 			configEffectShaderTexture_t      paletteTexture;
 			configEffectShaderTexture_t      blockOutTexture;
 			configColorRGBA_t                fillColor;
-			configColorRGBA_t                rimColor;
+			configColorRGBA_t                rimColor{ 0.0f, 0.0f, 0.0f, 0.0f };
 			TextureAddressMode               textureClampMode{ TextureAddressMode::kWrapSWrapT };
 			float                            baseFillScale{ 1.0f };
 			float                            baseFillAlpha{ 1.0f };
@@ -113,7 +114,7 @@ namespace IED
 			float                            edgeExponent{ 1.0f };
 			float                            boundDiameter{ 0.0f };
 
-			bool create_shader_data(RE::BSTSmartPointer<BSEffectShaderData>& a_out) const;
+			[[nodiscard]] bool create_shader_data(RE::BSTSmartPointer<BSEffectShaderData>& a_out) const;
 
 		private:
 			static void load_texture(

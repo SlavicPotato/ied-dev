@@ -35,8 +35,8 @@ namespace IED
 
 			Parser<Data::configColorRGBA_t> rgbaparser(m_state);
 
-			rgbaparser.Parse(a_in["fcol"], a_out.fillColor);
-			rgbaparser.Parse(a_in["rcol"], a_out.rimColor);
+			rgbaparser.Parse(a_in["fcol"], a_out.fillColor, 1.0f);
+			rgbaparser.Parse(a_in["rcol"], a_out.rimColor, 0.0f);
 
 			a_out.textureClampMode = static_cast<TextureAddressMode>(
 				a_in.get("tcm", stl::underlying(TextureAddressMode::kWrapSWrapT)).asInt());
