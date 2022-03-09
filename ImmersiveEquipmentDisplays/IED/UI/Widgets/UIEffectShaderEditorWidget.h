@@ -344,7 +344,7 @@ namespace IED
 				}
 
 				ImGui::SameLine();
-				
+
 				if (ImGui::RadioButton(
 						LS(CommonStrings::White, "2"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::White))
@@ -377,7 +377,10 @@ namespace IED
 
 				if (a_data.fbf.selected == Data::EffectShaderSelectedTexture::Custom)
 				{
-					auto l            = a_data.path.copy(m_inputBuffer1, sizeof(m_inputBuffer1) - 1);
+					auto l = a_data.path.get().copy(
+						m_inputBuffer1,
+						sizeof(m_inputBuffer1) - 1);
+
 					m_inputBuffer1[l] = 0;
 
 					if (ImGui::InputText(

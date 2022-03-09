@@ -75,7 +75,7 @@ namespace IED
 				EffectShaderTextureFlagsBitfield    fbf;
 			};
 
-			std::string path;
+			stl::fixed_string path;
 
 		private:
 			template <class Archive>
