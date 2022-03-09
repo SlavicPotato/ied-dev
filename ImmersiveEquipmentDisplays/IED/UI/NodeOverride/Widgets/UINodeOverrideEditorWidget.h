@@ -531,7 +531,7 @@ namespace IED
 				ImGui::Spacing();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UINodeOverrideEditorStrings::UnrestrictedPlacement, "3"),
+						LS(UINodeOverrideEditorWidgetStrings::UnrestrictedPlacement, "3"),
 						stl::underlying(std::addressof(flags.value)),
 						stl::underlying(NodeOverrideEditorFlags::kUnrestrictedNodePlacement)))
 				{
@@ -1265,7 +1265,7 @@ namespace IED
 			ImGui::PushID("value_flags");
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorStrings::AbsolutePosition, "1"),
+					LS(UINodeOverrideEditorWidgetStrings::AbsolutePosition, "1"),
 					stl::underlying(std::addressof(a_values.flags.value)),
 					stl::underlying(Data::NodeOverrideValuesFlags::kAbsolutePosition)))
 			{
@@ -1676,7 +1676,7 @@ namespace IED
 							ImGui::PushID("override");
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorStrings::WeaponAdjust, "3"),
+									LS(UINodeOverrideEditorWidgetStrings::WeaponAdjust, "3"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kWeaponAdjust)))
 							{
@@ -1690,7 +1690,7 @@ namespace IED
 							ImGui::SameLine(0.0f, 10.0f);
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorStrings::WeightAdjust, "4"),
+									LS(UINodeOverrideEditorWidgetStrings::WeightAdjust, "4"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kWeightAdjust)))
 							{
@@ -1706,7 +1706,7 @@ namespace IED
 								ImGui::Indent();
 
 								if (ImGui::CheckboxFlagsT(
-										LS(UINodeOverrideEditorStrings::UseAdjustsFromMatched, "5"),
+										LS(UINodeOverrideEditorWidgetStrings::UseAdjustsFromMatched, "5"),
 										stl::underlying(std::addressof(e.offsetFlags.value)),
 										stl::underlying(Data::NodeOverrideOffsetFlags::kWeaponAdjustMatchedOnly)))
 								{
@@ -1721,7 +1721,7 @@ namespace IED
 							}
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorStrings::AccumulatePosition, "6"),
+									LS(UINodeOverrideEditorWidgetStrings::AccumulatePosition, "6"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kAccumulatePos)))
 							{
@@ -1737,7 +1737,7 @@ namespace IED
 							UICommon::PushDisabled(disabled);
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorStrings::LockToAccum, "7"),
+									LS(UINodeOverrideEditorWidgetStrings::LockToAccum, "7"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kLockToAccum)))
 							{
@@ -3414,7 +3414,7 @@ namespace IED
 					 UIPopupType::Confirm,
 					 LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UINodeOverrideEditorStrings::ClearAllPrompt))
+					 LS(UINodeOverrideEditorWidgetStrings::ClearAllPrompt))
 				.call([this,
 			           handle       = a_data.handle,
 			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
@@ -3472,7 +3472,7 @@ namespace IED
 					 UIPopupType::Confirm,
 					 LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UINodeOverrideEditorStrings::PasteOverFullPrompt))
+					 LS(UINodeOverrideEditorWidgetStrings::PasteOverFullPrompt))
 				.call([this,
 			           handle       = a_data.handle,
 			           dstSex       = GetSex(),
@@ -3833,7 +3833,7 @@ namespace IED
 			case Data::NodeOverrideConditionType::BipedSlot:
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorStrings::MatchSkin, "1"),
+					LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
 
@@ -3847,7 +3847,7 @@ namespace IED
 				ImGui::SameLine();
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorStrings::IsBolt, "3"),
+					LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
 

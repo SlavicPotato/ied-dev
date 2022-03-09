@@ -2411,7 +2411,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::BipedSlot:
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorStrings::MatchSkin, "1"),
+					LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
@@ -2425,7 +2425,7 @@ namespace IED
 				ImGui::SameLine();
 
 				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorStrings::IsBolt, "3"),
+					LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 

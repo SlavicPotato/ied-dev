@@ -24,7 +24,7 @@ namespace IED
 			Json::Value&                             a_out) const
 		{
 			a_out["flags"] = a_data.flags.underlying();
-			a_out["path"]  = a_data.path;
+			a_out["path"]  = *a_data.path;
 		}
 
 	}

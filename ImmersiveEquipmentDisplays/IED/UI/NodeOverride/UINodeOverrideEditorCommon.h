@@ -180,7 +180,7 @@ namespace IED
 			ImGui::TextColored(
 				UICommon::g_colorWarning,
 				"%s",
-				LS(UINodeOverrideEditorStrings::PlayerDisabledWarning));
+				LS(UINodeOverrideEditorWidgetStrings::PlayerDisabledWarning));
 
 			ImGui::Spacing();
 			ImGui::Separator();
