@@ -8,8 +8,8 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::ConfigSex>::Parse(
-			const Json::Value& a_in,
-			Data::ConfigSex& a_out,
+			const Json::Value&  a_in,
+			Data::ConfigSex&    a_out,
 			const std::uint32_t a_version) const
 		{
 			auto tmp =
@@ -23,7 +23,7 @@ namespace IED
 		template <>
 		void Parser<Data::ConfigSex>::Create(
 			const Data::ConfigSex& a_data,
-			Json::Value& a_out) const
+			Json::Value&           a_out) const
 		{
 			a_out["sex"] = stl::underlying(a_data);
 		}

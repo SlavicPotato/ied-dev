@@ -16,7 +16,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configSlotHolder_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&        a_in,
 			Data::configSlotHolder_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -64,7 +64,7 @@ namespace IED
 		template <>
 		void Parser<Data::configSlotHolder_t>::Create(
 			const Data::configSlotHolder_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                    a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 

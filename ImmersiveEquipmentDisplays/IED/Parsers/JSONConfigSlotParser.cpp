@@ -11,11 +11,11 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configSlot_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&  a_in,
 			Data::configSlot_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
 			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
@@ -47,10 +47,10 @@ namespace IED
 		template <>
 		void Parser<Data::configSlot_t>::Create(
 			const Data::configSlot_t& a_in,
-			Json::Value& a_out) const
+			Json::Value&              a_out) const
 		{
-			Parser<Data::configBase_t> pbase(m_state);
-			Parser<Data::configFormList_t> pformList(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
+			Parser<Data::configFormList_t>   pformList(m_state);
 			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			pbase.Create(a_in, a_out);

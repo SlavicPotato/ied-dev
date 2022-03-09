@@ -11,7 +11,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::ConfigSound<Game::FormID>>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&               a_in,
 			Data::ConfigSound<Game::FormID>& a_out) const
 		{
 			JSON_PARSE_VERSION();
@@ -44,7 +44,7 @@ namespace IED
 			}
 
 			a_out.enabled = data.get("enable", false).asBool();
-			a_out.npc = data.get("npc", false).asBool();
+			a_out.npc     = data.get("npc", false).asBool();
 
 			return true;
 		}
@@ -52,9 +52,9 @@ namespace IED
 		template <>
 		void Parser<Data::ConfigSound<Game::FormID>>::Create(
 			const Data::ConfigSound<Game::FormID>& a_data,
-			Json::Value& a_out) const
+			Json::Value&                           a_out) const
 		{
-			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
+			auto& data  = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 			auto& forms = (data["forms"] = Json::Value(Json::ValueType::objectValue));
 
 			Parser<Data::ConfigSound<Game::FormID>::soundPair_t> pparser(m_state);
@@ -65,7 +65,7 @@ namespace IED
 			pparser.Create(a_data.gen, forms["generic"]);
 
 			data["enable"] = a_data.enabled;
-			data["npc"] = a_data.npc;
+			data["npc"]    = a_data.npc;
 
 			a_out["version"] = CURRENT_VERSION;
 		}

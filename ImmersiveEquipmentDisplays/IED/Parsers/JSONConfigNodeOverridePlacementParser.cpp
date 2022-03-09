@@ -1,8 +1,8 @@
 #include "pch.h"
 
+#include "JSONConfigNodeOverridePlacementOverrideListParser.h"
 #include "JSONConfigNodeOverridePlacementParser.h"
 #include "JSONConfigNodeOverridePlacementValuesParser.h"
-#include "JSONConfigNodeOverridePlacementOverrideListParser.h"
 
 namespace IED
 {
@@ -10,9 +10,9 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodeOverridePlacement_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                   a_in,
 			Data::configNodeOverridePlacement_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t                  a_version) const
 		{
 			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
 
@@ -40,7 +40,7 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverridePlacement_t>::Create(
 			const Data::configNodeOverridePlacement_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                               a_out) const
 		{
 			Parser<Data::configNodeOverridePlacementValues_t> vparser(m_state);
 

@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "JSONEffectShaderListParser.h"
 #include "JSONEffectShaderHolderParser.h"
+#include "JSONEffectShaderListParser.h"
 
 namespace IED
 {

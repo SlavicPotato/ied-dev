@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideHolderParser.h"
-#include "JSONConfigNodeOverrideTransformParser.h"
 #include "JSONConfigNodeOverridePlacementParser.h"
+#include "JSONConfigNodeOverrideTransformParser.h"
 
 namespace IED
 {
@@ -14,7 +14,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configNodeOverrideHolder_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                a_in,
 			Data::configNodeOverrideHolder_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -73,7 +73,7 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverrideHolder_t>::Create(
 			const Data::configNodeOverrideHolder_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                            a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 

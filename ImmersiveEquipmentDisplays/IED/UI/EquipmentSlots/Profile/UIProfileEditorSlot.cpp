@@ -119,7 +119,7 @@ namespace IED
 
 		void UIProfileEditorSlot::OnProfileSave(
 			const stl::fixed_string& a_name,
-			SlotProfile& a_profile)
+			SlotProfile&             a_profile)
 		{
 			//_DMESSAGE("save: %s", a_name.c_str());
 
@@ -191,7 +191,7 @@ namespace IED
 
 		void UIProfileEditorSlot::OnBaseConfigChange(
 			int,
-			const void* a_params,
+			const void*      a_params,
 			PostChangeAction a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
@@ -202,7 +202,7 @@ namespace IED
 			if (it != data.end())
 			{
 				auto sync = GetEditorPanelSettings().sexSync;
-				auto sex = GetSex();
+				auto sex  = GetSex();
 
 				auto& src = params->entry.second;
 				auto& dst = it->second.Data().get(params->slot);
@@ -257,7 +257,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnFullConfigClear(
-			int a_handle,
+			int                              a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();

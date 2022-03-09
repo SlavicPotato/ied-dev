@@ -198,7 +198,7 @@ namespace IED
 					ImGui::TextWrapped(
 						"%s",
 						it->second.npc->female ?
-                            LS(CommonStrings::Female) :
+							LS(CommonStrings::Female) :
                             LS(CommonStrings::Male));
 				}
 				else

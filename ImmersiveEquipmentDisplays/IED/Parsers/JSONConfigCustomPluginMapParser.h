@@ -10,13 +10,13 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configCustomPluginMap_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&             a_in,
 			Data::configCustomPluginMap_t& a_out) const;
 
 		template <>
 		void Parser<Data::configCustomPluginMap_t>::Create(
 			const Data::configCustomPluginMap_t& a_in,
-			Json::Value& a_out) const;
+			Json::Value&                         a_out) const;
 
 	}
 }

@@ -11,7 +11,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configNodeOverridePlacementOverrideList_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                               a_in,
 			Data::configNodeOverridePlacementOverrideList_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -34,7 +34,7 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverridePlacementOverrideList_t>::Create(
 			const Data::configNodeOverridePlacementOverrideList_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                                           a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 

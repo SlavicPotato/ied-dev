@@ -14,7 +14,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configMapCustom_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&       a_in,
 			Data::configMapCustom_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -32,7 +32,7 @@ namespace IED
 		template <>
 		void Parser<Data::configMapCustom_t>::Create(
 			const Data::configMapCustom_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                   a_out) const
 		{
 			CreateConfigMap<
 				Data::configCustomPluginMap_t>(

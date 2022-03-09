@@ -10,14 +10,14 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodeOverridePlacement_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                   a_in,
 			Data::configNodeOverridePlacement_t& a_outData,
-			const std::uint32_t a_version) const;
+			const std::uint32_t                  a_version) const;
 
 		template <>
 		void Parser<Data::configNodeOverridePlacement_t>::Create(
 			const Data::configNodeOverridePlacement_t& a_data,
-			Json::Value& a_out) const;
+			Json::Value&                               a_out) const;
 
 	}
 }

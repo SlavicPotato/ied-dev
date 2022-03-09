@@ -14,7 +14,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configMapSlot_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&     a_in,
 			Data::configMapSlot_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -27,7 +27,7 @@ namespace IED
 		template <>
 		void Parser<Data::configMapSlot_t>::Create(
 			const Data::configMapSlot_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                 a_out) const
 		{
 			CreateConfigMap<Data::configSlotHolder_t>(a_data, a_out, CURRENT_VERSION, m_state);
 		}

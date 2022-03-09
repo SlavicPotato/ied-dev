@@ -28,7 +28,7 @@
 
 #include "IED/Controller/NodeOverrideData.h"
 
-#include "UINodeOverrideEditorStrings.h"
+#include "UINodeOverrideEditorWidgetStrings.h"
 
 namespace IED
 {
@@ -110,7 +110,7 @@ namespace IED
 
 			union
 			{
-				BIPED_OBJECT      biped;
+				BIPED_OBJECT             biped;
 				Data::ExtraConditionType excond;
 				Data::ObjectSlotExtra    type;
 			};
@@ -382,7 +382,7 @@ namespace IED
 			Game::FormID m_ooNewEntryIDActor;
 			Game::FormID m_ooNewEntryIDNPC;
 
-			BIPED_OBJECT      m_ooNewBiped{ BIPED_OBJECT::kNone };
+			BIPED_OBJECT             m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ObjectSlotExtra    m_ooNewSlot{ Data::ObjectSlotExtra::kNone };
 			Data::ExtraConditionType m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 

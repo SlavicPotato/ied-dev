@@ -40,10 +40,10 @@ namespace IED
 			{
 			}
 
-			BSFixedString     bsname;
-			BSFixedString     bsdefParent;
-			const char*       desc;
-			nodeList_t        movs;
+			BSFixedString bsname;
+			BSFixedString bsdefParent;
+			const char*   desc;
+			nodeList_t    movs;
 		};
 
 		using weapnode_data_type = stl::vectormap<stl::fixed_string, weaponNodeEntry_t>;
@@ -102,7 +102,7 @@ namespace IED
 				transform_f(a_transform_f)
 			{
 			}
-			
+
 			extraNodeEntry_t(
 				const exn_ctor_init_t& a_init)
 			{

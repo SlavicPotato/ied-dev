@@ -18,5 +18,5 @@ namespace IED
 			const Data::configEffectShaderData_t& a_data,
 			Json::Value&                          a_out) const;
 
-	}  
-} 
+	}
+}

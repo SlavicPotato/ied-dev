@@ -26,7 +26,7 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
-#include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorStrings.h"
+#include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidgetStrings.h"
 
 namespace IED
 {

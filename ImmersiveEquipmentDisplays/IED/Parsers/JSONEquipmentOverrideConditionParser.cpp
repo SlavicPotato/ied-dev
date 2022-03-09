@@ -12,11 +12,11 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::equipmentOverrideCondition_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                  a_in,
 			Data::equipmentOverrideCondition_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t                 a_version) const
 		{
-			Parser<Game::FormID> formParser(m_state);
+			Parser<Game::FormID>             formParser(m_state);
 			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
 			if (auto& v = a_in["form"])
@@ -58,9 +58,9 @@ namespace IED
 		template <>
 		void Parser<Data::equipmentOverrideCondition_t>::Create(
 			const Data::equipmentOverrideCondition_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                              a_out) const
 		{
-			Parser<Game::FormID> formParser(m_state);
+			Parser<Game::FormID>             formParser(m_state);
 			Parser<Data::configCachedForm_t> cachedFormParser(m_state);
 
 			if (a_data.form.get_id())
@@ -73,7 +73,7 @@ namespace IED
 				cachedFormParser.Create(a_data.keyword, a_out["keyword"]);
 			}
 
-			a_out["type"] = stl::underlying(a_data.slot);
+			a_out["type"]  = stl::underlying(a_data.slot);
 			a_out["bslot"] = a_data.ui32a;
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);

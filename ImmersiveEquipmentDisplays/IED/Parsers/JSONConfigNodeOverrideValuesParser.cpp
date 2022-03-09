@@ -9,9 +9,9 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodeOverrideValues_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                a_in,
 			Data::configNodeOverrideValues_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t               a_version) const
 		{
 			Parser<Data::configTransform_t> tfparser(m_state);
 
@@ -29,7 +29,7 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverrideValues_t>::Create(
 			const Data::configNodeOverrideValues_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                            a_out) const
 		{
 			Parser<Data::configTransform_t> tfparser(m_state);
 

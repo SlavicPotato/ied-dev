@@ -10,9 +10,9 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::equipmentOverride_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&         a_in,
 			Data::equipmentOverride_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t        a_version) const
 		{
 			Parser<Data::configBaseValues_t> bvParser(m_state);
 
@@ -44,7 +44,7 @@ namespace IED
 		template <>
 		void Parser<Data::equipmentOverride_t>::Create(
 			const Data::equipmentOverride_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                     a_out) const
 		{
 			Parser<Data::configBaseValues_t> bvParser(m_state);
 

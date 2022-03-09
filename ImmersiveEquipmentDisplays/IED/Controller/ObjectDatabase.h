@@ -61,7 +61,7 @@ namespace IED
 		{
 			m_level =
 				a_level != ObjectDatabaseLevel::kDisabled ?
-                    std::clamp(
+					std::clamp(
 						a_level,
 						ObjectDatabaseLevel::kNone,
 						ObjectDatabaseLevel::kMax) :

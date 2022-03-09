@@ -1,9 +1,9 @@
 #include "pch.h"
 
 #include "JSONConfigStoreCustomParser.h"
+#include "JSONConfigStoreNodeOverrideParser.h"
 #include "JSONConfigStoreParser.h"
 #include "JSONConfigStoreSlotParser.h"
-#include "JSONConfigStoreNodeOverrideParser.h"
 
 namespace IED
 {
@@ -15,15 +15,15 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configStore_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&   a_in,
 			Data::configStore_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configStoreSlot_t> sparser(m_state);
-			Parser<Data::configStoreCustom_t> cparser(m_state);
+			Parser<Data::configStoreSlot_t>         sparser(m_state);
+			Parser<Data::configStoreCustom_t>       cparser(m_state);
 			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
 
 			if (!sparser.Parse(data["slot"], a_out.slot))
@@ -35,7 +35,7 @@ namespace IED
 			{
 				return false;
 			}
-			
+
 			if (!eparser.Parse(data["transforms"], a_out.transforms))
 			{
 				return false;
@@ -47,12 +47,12 @@ namespace IED
 		template <>
 		void Parser<Data::configStore_t>::Create(
 			const Data::configStore_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&               a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configStoreSlot_t> sparser(m_state);
-			Parser<Data::configStoreCustom_t> cparser(m_state);
+			Parser<Data::configStoreSlot_t>         sparser(m_state);
+			Parser<Data::configStoreCustom_t>       cparser(m_state);
 			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
 
 			sparser.Create(a_data.slot, data["slot"]);

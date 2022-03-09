@@ -15,7 +15,7 @@ namespace IED
 
 		template <>
 		bool Parser<Data::configStoreNodeOverride_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&               a_in,
 			Data::configStoreNodeOverride_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
@@ -32,7 +32,7 @@ namespace IED
 		template <>
 		void Parser<Data::configStoreNodeOverride_t>::Create(
 			const Data::configStoreNodeOverride_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                           a_out) const
 		{
 			CreateConfigStore<
 				configNodeOverrideHolder_t,

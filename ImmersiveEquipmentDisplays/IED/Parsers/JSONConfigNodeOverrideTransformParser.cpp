@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "JSONConfigNodeOverrideOffsetListParser.h"
 #include "JSONConfigNodeOverrideConditionListParser.h"
+#include "JSONConfigNodeOverrideOffsetListParser.h"
 #include "JSONConfigNodeOverrideTransformParser.h"
 #include "JSONConfigNodeOverrideValuesParser.h"
 
@@ -11,12 +11,12 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodeOverrideTransform_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                   a_in,
 			Data::configNodeOverrideTransform_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t                  a_version) const
 		{
-			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
-			Parser<Data::configNodeOverrideOffsetList_t> lparser(m_state);
+			Parser<Data::configNodeOverrideValues_t>        vparser(m_state);
+			Parser<Data::configNodeOverrideOffsetList_t>    lparser(m_state);
 			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 
 			if (!vparser.Parse(a_in, a_out, a_version))
@@ -43,10 +43,10 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverrideTransform_t>::Create(
 			const Data::configNodeOverrideTransform_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                               a_out) const
 		{
-			Parser<Data::configNodeOverrideValues_t> vparser(m_state);
-			Parser<Data::configNodeOverrideOffsetList_t> lparser(m_state);
+			Parser<Data::configNodeOverrideValues_t>        vparser(m_state);
+			Parser<Data::configNodeOverrideOffsetList_t>    lparser(m_state);
 			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 
 			vparser.Create(a_data, a_out);

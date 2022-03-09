@@ -131,7 +131,7 @@ namespace IED
 			if (ImGui::BeginCombo(
 					m_listBuf1,
 					m_listCurrent ?
-                        m_listCurrent->desc.c_str() :
+						m_listCurrent->desc.c_str() :
                         nullptr,
 					ImGuiComboFlags_HeightLarge))
 			{

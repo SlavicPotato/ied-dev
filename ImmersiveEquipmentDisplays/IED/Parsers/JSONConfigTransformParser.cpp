@@ -8,9 +8,9 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configTransform_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&       a_in,
 			Data::configTransform_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t      a_version) const
 		{
 			if (ParseFloatArray(a_in["pos"], *a_out.position, 3))
 			{
@@ -35,7 +35,7 @@ namespace IED
 		template <>
 		void Parser<Data::configTransform_t>::Create(
 			const Data::configTransform_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                   a_out) const
 		{
 			if (a_data.position)
 			{

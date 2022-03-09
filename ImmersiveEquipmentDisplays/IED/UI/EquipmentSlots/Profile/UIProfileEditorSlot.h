@@ -32,7 +32,7 @@ namespace IED
 				}
 
 				stl::fixed_string name;
-				entrySlotData_t data;
+				entrySlotData_t   data;
 			};
 
 		public:
@@ -52,7 +52,7 @@ namespace IED
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
 			virtual ProfileManager<SlotProfile>& GetProfileManager() const override;
-			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
+			virtual UIPopupQueue&                GetPopupQueue_ProfileBase() const override;
 
 			virtual SlotEditorCurrentData GetCurrentData() override;
 
@@ -70,7 +70,7 @@ namespace IED
 
 			virtual void OnProfileSave(
 				const stl::fixed_string& a_name,
-				SlotProfile& a_profile) override;
+				SlotProfile&             a_profile) override;
 
 			virtual void OnProfileReload(
 				const SlotProfile& a_profile) override;
@@ -88,7 +88,7 @@ namespace IED
 
 			virtual void OnBaseConfigChange(
 				int,
-				const void* a_params,
+				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void
@@ -101,7 +101,7 @@ namespace IED
 				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int a_handle,
+				int                              a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			bool CreateSlot(Data::ObjectSlot a_slot);

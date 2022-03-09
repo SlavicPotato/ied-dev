@@ -200,7 +200,7 @@ namespace IED
 				ImGui::TextWrapped(
 					"%s",
 					it->second->female ?
-                        LS(CommonStrings::Female) :
+						LS(CommonStrings::Female) :
                         LS(CommonStrings::Male));
 
 				auto race = it->second->race;

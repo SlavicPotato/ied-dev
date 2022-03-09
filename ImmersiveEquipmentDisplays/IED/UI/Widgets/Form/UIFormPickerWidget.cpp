@@ -4,8 +4,8 @@
 
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
-#include "IED/UI/UICommon.h"
 #include "IED/Controller/Controller.h"
+#include "IED/UI/UICommon.h"
 
 namespace IED
 {

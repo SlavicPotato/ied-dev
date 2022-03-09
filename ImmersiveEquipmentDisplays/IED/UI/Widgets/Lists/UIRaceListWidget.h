@@ -76,7 +76,7 @@ namespace IED
 					"[%.8X] %s",
 					i.get(),
 					raceConf.showEditorIDs ?
-                        e.edid.c_str() :
+						e.edid.c_str() :
                         e.fullname.c_str());
 
 				m_listData.try_emplace(i, m_listBuf1);

@@ -6,7 +6,7 @@ namespace IED
 {
 	namespace UI
 	{
-		enum class UINodeOverrideEditorStrings : Localization::StringID
+		enum class UINodeOverrideEditorWidgetStrings : Localization::StringID
 		{
 			UnrestrictedPlacement = 4300,
 			WeaponAdjust          = 4301,

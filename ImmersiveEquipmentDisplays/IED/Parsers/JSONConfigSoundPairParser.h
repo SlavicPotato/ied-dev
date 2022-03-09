@@ -10,13 +10,13 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::ConfigSound<Game::FormID>::soundPair_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                            a_in,
 			Data::ConfigSound<Game::FormID>::soundPair_t& a_outData) const;
 
 		template <>
 		void Parser<Data::ConfigSound<Game::FormID>::soundPair_t>::Create(
 			const Data::ConfigSound<Game::FormID>::soundPair_t& a_data,
-			Json::Value& a_out) const;
+			Json::Value&                                        a_out) const;
 
 	}
 }

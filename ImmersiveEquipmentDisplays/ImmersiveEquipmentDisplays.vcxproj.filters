@@ -869,9 +869,6 @@
     <ClInclude Include="IED\UI\Custom\Widgets\UICustomEditorStrings.h">
       <Filter>Source\IED\UI\Custom\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorStrings.h">
-      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UISettingsStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
@@ -898,9 +895,6 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Lists\UIActorListStrings.h">
       <Filter>Source\IED\UI\Widgets\Lists</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorStrings.h">
-      <Filter>Source\IED\UI\NodeOverride</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIFormBrowserStrings.h">
       <Filter>Source\IED\UI</Filter>
@@ -1087,6 +1081,9 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h">
       <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

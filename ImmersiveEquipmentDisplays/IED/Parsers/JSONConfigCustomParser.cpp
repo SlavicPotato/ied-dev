@@ -14,12 +14,12 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configCustom_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&    a_in,
 			Data::configCustom_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t   a_version) const
 		{
-			Parser<Data::configBase_t> pbase(m_state);
-			Parser<Data::configRange_t> prange(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
+			Parser<Data::configRange_t>      prange(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
 			Parser<Data::configModelGroup_t> gparser(m_state);
 
@@ -62,9 +62,9 @@ namespace IED
 		template <>
 		void Parser<Data::configCustom_t>::Create(
 			const Data::configCustom_t& a_in,
-			Json::Value& a_out) const
+			Json::Value&                a_out) const
 		{
-			Parser<Data::configBase_t> pbase(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
 			Parser<Data::configCachedForm_t> pform(m_state);
 			Parser<Data::configModelGroup_t> gparser(m_state);
 

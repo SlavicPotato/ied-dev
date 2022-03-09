@@ -122,7 +122,7 @@ namespace IED
 				if (ImGui::BeginCombo(
 						LS(CommonStrings::Profile, "combo"),
 						m_state.selected ?
-                            m_state.selected->c_str() :
+							m_state.selected->c_str() :
                             nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{

@@ -9,7 +9,7 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configCachedForm_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&        a_in,
 			Data::configCachedForm_t& a_out) const
 		{
 			Parser<Game::FormID> formParser(m_state);
@@ -26,7 +26,7 @@ namespace IED
 		template <>
 		void Parser<Data::configCachedForm_t>::Create(
 			const Data::configCachedForm_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                    a_out) const
 		{
 			Parser<Game::FormID> formParser(m_state);
 

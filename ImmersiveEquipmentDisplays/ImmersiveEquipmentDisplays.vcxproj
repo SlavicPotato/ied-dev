@@ -468,6 +468,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\UIAboutModal.h" />
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
@@ -646,10 +647,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorGlobal.h" />
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorNPC.h" />
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorRace.h" />
-    <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorStrings.h" />
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorWindow.h" />
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideTabPanel.h" />
-    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorStrings.h" />
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidget.h" />
     <ClInclude Include="IED\UI\PopupQueue\UIPopupAction.h" />
     <ClInclude Include="IED\UI\PopupQueue\UIPopupQueue.h" />

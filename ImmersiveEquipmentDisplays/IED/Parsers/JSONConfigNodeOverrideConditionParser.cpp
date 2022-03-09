@@ -11,9 +11,9 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodeOverrideCondition_t>::Parse(
-			const Json::Value& a_in,
+			const Json::Value&                   a_in,
 			Data::configNodeOverrideCondition_t& a_out,
-			const std::uint32_t a_version) const
+			const std::uint32_t                  a_version) const
 		{
 			Parser<Data::configCachedForm_t> fparser(m_state);
 
@@ -43,7 +43,7 @@ namespace IED
 				}
 			}
 
-			a_out.ui32a = a_in.get("bip", static_cast<std::uint32_t>(-1)).asUInt();
+			a_out.ui32a    = a_in.get("bip", static_cast<std::uint32_t>(-1)).asUInt();
 			a_out.typeSlot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
@@ -60,7 +60,7 @@ namespace IED
 		template <>
 		void Parser<Data::configNodeOverrideCondition_t>::Create(
 			const Data::configNodeOverrideCondition_t& a_data,
-			Json::Value& a_out) const
+			Json::Value&                               a_out) const
 		{
 			Parser<Data::configCachedForm_t> fparser(m_state);
 
@@ -74,7 +74,7 @@ namespace IED
 			fparser.Create(a_data.form, a_out["form"]);
 			fparser.Create(a_data.keyword, a_out["kw"]);
 
-			a_out["bip"] = a_data.ui32a;
+			a_out["bip"]  = a_data.ui32a;
 			a_out["type"] = stl::underlying(a_data.typeSlot);
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
