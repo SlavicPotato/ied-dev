@@ -32,6 +32,22 @@ namespace IED
 					weather_class_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
+				ImGui::PushID("1");
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::All, "1"),
+						stl::underlying(std::addressof(a_type)),
+						stl::underlying(WeatherClassificationFlags::kAll)))
+				{
+					result = true;
+				}
+
+				ImGui::PopID();
+
+				ImGui::Separator();
+
+				ImGui::PushID("2");
+
 				for (auto& [i, e] : m_data)
 				{
 					ImGui::PushID(stl::underlying(i));
@@ -54,6 +70,8 @@ namespace IED
 					ImGui::PopID();
 				}
 
+				ImGui::PopID();
+
 				ImGui::EndCombo();
 			}
 
@@ -66,6 +84,10 @@ namespace IED
 			if (a_type.test(WeatherClassificationFlags::kAll))
 			{
 				return LS(CommonStrings::Any);
+			}
+			else if (!a_type.test_any(WeatherClassificationFlags::kAll))
+			{
+				return LS(CommonStrings::None);
 			}
 			else
 			{

@@ -72,7 +72,7 @@ namespace IED
 			m_bufferSize.y = static_cast<float>(sd.BufferDesc.Height);
 			m_bufferSize.z = m_bufferSize.x / m_bufferSize.y;
 
-			Debug("%s: initialized, sending event", __FUNCTION__);
+			Debug("%s: Sending event", __FUNCTION__);
 
 			Events::D3D11CreateEventPost evd_post{
 				std::addressof(sd),
