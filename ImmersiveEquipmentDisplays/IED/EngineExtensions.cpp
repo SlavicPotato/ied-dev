@@ -845,13 +845,22 @@ namespace IED
 					result.set(AttachResultFlags::kTorchFlameRemoved);
 				}
 
-				shrink |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
-				shrink |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
-				shrink |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
-				shrink |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
-				shrink |= RemoveAllChildren(a_object, sh->m_attachENBLight);
-				shrink |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
-				shrink |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
+				bool custRemoved = false;
+
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
+
+				if (custRemoved)
+				{
+					result.set(AttachResultFlags::kTorchCustomRemoved);
+				}
+
+				shrink |= custRemoved;
 
 				if (shrink)
 				{
@@ -883,14 +892,8 @@ namespace IED
 
 				unks_01 tmp;
 
-				if (auto r = fUnk5EBD90(
-						isMounted ?
-							mountedActor.get() :
-                            a_actor,
-						std::addressof(tmp)))
-				{
-					fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r->p2);
-				}
+				auto& r = fUnk5EBD90(isMounted ? mountedActor.get() : a_actor, tmp);
+				fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r.p2);
 			}
 		}
 

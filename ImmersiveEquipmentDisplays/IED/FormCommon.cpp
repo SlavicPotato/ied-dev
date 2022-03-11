@@ -327,6 +327,8 @@ namespace IED
 			return "Combat Style";
 		case TESClass::kTypeID:
 			return "Class";
+		case TESWeather::kTypeID:
+			return "Weather";
 		default:
 			return nullptr;
 		}

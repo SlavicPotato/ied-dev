@@ -292,6 +292,8 @@ namespace IED
 			}
 
 			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
 
 			DrawEffectShaderFlags(a_params, a_data);
 
@@ -410,6 +412,20 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
+					LS(CommonStrings::Yield, "1"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::EffectShaderDataFlags::kYield)))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+
+			ImGui::Columns();
+
+			ImGui::Spacing();
+
+			ImGui::Columns(2, nullptr, false);
+
+			if (ImGui::CheckboxFlagsT(
 					"kGrayscaleToColor",
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kGrayscaleToColor)))
@@ -433,6 +449,8 @@ namespace IED
 				OnEffectShaderUpdate(a_params);
 			}
 
+			ImGui::NextColumn();
+
 			if (ImGui::CheckboxFlagsT(
 					"kBaseTextureProjectedUVs",
 					stl::underlying(std::addressof(a_data.flags.value)),
@@ -440,8 +458,6 @@ namespace IED
 			{
 				OnEffectShaderUpdate(a_params);
 			}
-
-			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
 					"kIgnoreBaseGeomTexAlpha",

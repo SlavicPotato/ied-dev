@@ -4,6 +4,8 @@
 #include "ConfigOverrideBaseValues.h"
 #include "ConfigOverrideCommon.h"
 
+#include "WeatherClassificationFlags.h"
+
 namespace IED
 {
 	namespace Data
@@ -62,7 +64,8 @@ namespace IED
 			Extra,
 			Location,
 			Worldspace,
-			Package
+			Package,
+			Weather
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -183,7 +186,8 @@ namespace IED
 				    a_matchType == EquipmentOverrideConditionType::Group ||
 				    a_matchType == EquipmentOverrideConditionType::Location ||
 				    a_matchType == EquipmentOverrideConditionType::Worldspace ||
-				    a_matchType == EquipmentOverrideConditionType::Package)
+				    a_matchType == EquipmentOverrideConditionType::Package ||
+				    a_matchType == EquipmentOverrideConditionType::Weather)
 				{
 					if (a_matchType == EquipmentOverrideConditionType::Location ||
 					    a_matchType == EquipmentOverrideConditionType::Worldspace)
@@ -216,9 +220,11 @@ namespace IED
 				ExtraConditionType     extraCondType;
 				BIPED_OBJECT           bipedSlot;
 				PACKAGE_PROCEDURE_TYPE procedureType;
+				WeatherClassificationFlags  weatherClass;
 
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<WeatherClassificationFlags>, std::uint32_t>);
 			};
 
 			equipmentOverrideConditionGroup_t group;

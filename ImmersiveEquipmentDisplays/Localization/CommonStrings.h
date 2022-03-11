@@ -172,5 +172,8 @@ namespace IED
 		Texture      = 243,
 		Sequence     = 244,
 		Black        = 245,
+		Yield        = 246,
+		Any          = 247,
+		Weather      = 248,
 	};
 }

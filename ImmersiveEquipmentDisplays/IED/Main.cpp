@@ -200,7 +200,10 @@ namespace IED
 			else
 			{
 				config->m_enableUI = false;
-				gLog.Error("Failed initializing render driver, UI disabled");
+
+				WinApi::MessageBoxErrorLog(
+					PLUGIN_NAME,
+					"Failed initializing render driver, UI disabled");
 			}
 		}
 
@@ -230,7 +233,11 @@ namespace IED
 
 		gLog.Debug("Registering papyrus functions..");
 
-		skse.GetInterface<SKSEPapyrusInterface>()->Register(Papyrus::Register);
+		auto pi = skse.GetInterface<SKSEPapyrusInterface>();
+
+		ASSERT(pi != nullptr);
+
+		pi->Register(Papyrus::Register);
 
 		gLog.Debug("Setting serialization callbacks..");
 

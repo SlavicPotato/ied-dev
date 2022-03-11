@@ -6,6 +6,7 @@
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
+#include "UIWeatherClassSelectorWidget.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -27,6 +28,7 @@ namespace IED
 		QuestCondType,
 		CondExtra,
 		PackageType,
+		WeatherClass,
 		Extra,
 
 		Total
@@ -69,6 +71,7 @@ namespace IED
 			public UIFormLookupInterface,
 			public UIConditionExtraSelectorWidget,
 			public UIPackageTypeSelectorWidget,
+			public UIWeatherClassSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			struct entry_t
@@ -231,6 +234,16 @@ namespace IED
 				Ap == ConditionParamItem::PackageType)
 			{
 				static_assert(std::is_same_v<T, PACKAGE_PROCEDURE_TYPE>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::WeatherClass)
+			{
+				static_assert(std::is_same_v<T, WeatherClassificationFlags>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

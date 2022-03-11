@@ -35,23 +35,24 @@ namespace IED
 	{
 		for (auto& e : a_data.data)
 		{
-			for (auto& f : e.second.nodes)
+			if (e.second.flags.test(effectShaderData_t::EntryFlags::kYield))
 			{
-				/*auto& effect = geometry->m_spEffectState;
-				if (!effect)
+				for (auto& f : e.second.nodes)
 				{
-					continue;
+					if (!f.first->effectData)
+					{
+						f.first->SetEffectShaderData(e.second.shaderData);
+					}
 				}
-
-				auto shaderProp = ni_cast(effect.get(), BSShaderProperty);
-				if (!shaderProp || !shaderProp->AcceptsEffectData())
+			}
+			else
+			{
+				for (auto& f : e.second.nodes)
 				{
-					continue;
-				}*/
-
-				if (f.first->effectData != e.second.shaderData)
-				{
-					f.first->SetEffectShaderData(e.second.shaderData);
+					if (f.first->effectData != e.second.shaderData)
+					{
+						f.first->SetEffectShaderData(e.second.shaderData);
+					}
 				}
 			}
 		}

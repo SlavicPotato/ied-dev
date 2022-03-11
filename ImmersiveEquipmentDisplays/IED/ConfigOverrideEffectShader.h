@@ -12,6 +12,8 @@ namespace IED
 		{
 			kNone = 0,
 
+			kYield = 1u << 0,
+
 			kGrayscaleToColor        = 1u << 10,
 			kGrayscaleToAlpha        = 1u << 11,
 			kIgnoreTextureAlpha      = 1u << 12,
@@ -29,7 +31,7 @@ namespace IED
 
 			kTextureWhite = 1u << 0,
 
-			kSelectedMask = 0xF
+			kSelectedMask = 0xF,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderTextureFlags);
@@ -96,7 +98,9 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<EffectShaderDataFlags> flags{ EffectShaderDataFlags::kNone };
+			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kYield;
+
+			stl::flag<EffectShaderDataFlags> flags{ DEFAULT_FLAGS };
 			configFixedStringSet_t           targetNodes;
 			configEffectShaderTexture_t      baseTexture{ EffectShaderTextureFlags::kTextureWhite };
 			configEffectShaderTexture_t      paletteTexture;

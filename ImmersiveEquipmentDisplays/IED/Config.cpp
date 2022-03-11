@@ -37,67 +37,69 @@ namespace IED
 		parsers_t parsers{ a_path };
 
 		m_toggleBlockKeys.Parse(
-			parsers.reader.Get(SECT_GENERAL, "TogglePlayerDisplayKeys", ""));
+			parsers.reader.GetValue(SECT_GENERAL, "TogglePlayerDisplayKeys", ""));
 		m_closeLogFile =
-			parsers.reader.Get(SECT_GENERAL, "LogCloseAfterInit", false);
+			parsers.reader.GetBoolValue(SECT_GENERAL, "LogCloseAfterInit", false);
 		m_forceDefaultConfig =
-			parsers.reader.Get(SECT_GENERAL, "ForceDefaultConfig", false);
+			parsers.reader.GetBoolValue(SECT_GENERAL, "ForceDefaultConfig", false);
 		m_immediateFavUpdate =
-			parsers.reader.Get(SECT_GENERAL, "ImmediateUpdateOnFav", false);
+			parsers.reader.GetBoolValue(SECT_GENERAL, "ImmediateUpdateOnFav", false);
 
 		m_nodeOverrideEnabled =
-			parsers.reader.Get(SECT_NODE_OVERRIDE, "Enable", true);
+			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "Enable", true);
 		m_nodeOverridePlayerEnabled =
-			parsers.reader.Get(SECT_NODE_OVERRIDE, "EnablePlayer", true);
+			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnablePlayer", true);
 		m_weaponAdjustDisable =
-			parsers.reader.Get(SECT_NODE_OVERRIDE, "DisableVanillaWeaponAdjust", true);
+			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "DisableVanillaWeaponAdjust", true);
 		m_weaponAdjustFix =
-			parsers.reader.Get(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
+			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
 
 		m_disableNPCProcessing =
-			parsers.reader.Get(SECT_DEBUG, "DisableNPCProcessing", false);
+			parsers.reader.GetBoolValue(SECT_DEBUG, "DisableNPCProcessing", false);
 
-		m_logLevel = ILog::TranslateLogLevel(parsers.reader.Get(SECT_GENERAL, "LogLevel", "debug"));
+		m_logLevel = ILog::TranslateLogLevel(parsers.reader.GetValue(SECT_GENERAL, "LogLevel", "debug"));
 
-		m_taskPoolBudget = parsers.reader.Get<long long>(SECT_GENERAL, "TaskPoolBudget", 0);
+		m_taskPoolBudget = parsers.reader.GetLongValue(SECT_GENERAL, "TaskPoolBudget", 0);
 
-		m_enableUI             = parsers.reader.Get(SECT_GUI, "Enabled", true);
-		m_dpiAwareness         = parsers.reader.Get(SECT_GUI, "EnableProcessDPIAwareness", false);
-		m_forceUIOpenKeys      = parsers.reader.Get(SECT_GUI, "OverrideToggleKeys", false);
-		m_enableUIRestrictions = parsers.reader.Get(SECT_GUI, "EnableRestrictions", false);
-		m_UIScaling            = parsers.reader.Get(SECT_GUI, "EnableScaling", true);
-		m_enableInMenus        = parsers.reader.Get(SECT_GUI, "EnableInMenus", false);
+		m_enableUI             = parsers.reader.GetBoolValue(SECT_GUI, "Enabled", true);
+		m_dpiAwareness         = parsers.reader.GetBoolValue(SECT_GUI, "EnableProcessDPIAwareness", false);
+		m_forceUIOpenKeys      = parsers.reader.GetBoolValue(SECT_GUI, "OverrideToggleKeys", false);
+		m_enableUIRestrictions = parsers.reader.GetBoolValue(SECT_GUI, "EnableRestrictions", false);
+		m_UIScaling            = parsers.reader.GetBoolValue(SECT_GUI, "EnableScaling", true);
+		m_enableInMenus        = parsers.reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
 
-		m_UIOpenKeys.Parse(parsers.reader.Get(SECT_GUI, "ToggleKeys", "0x0E"));
+		m_UIOpenKeys.Parse(parsers.reader.GetValue(SECT_GUI, "ToggleKeys", "0x0E"));
 
-		m_effectShaders = parsers.reader.Get("Testing", "EffectShaders", false);
+		m_effectShaders = parsers.reader.GetBoolValue("Testing", "EffectShaders", false);
 
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "WeaponEquipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "WeaponEquipSD", ""),
 			m_sound.weapon.first);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "WeaponUnequipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "WeaponUnequipSD", ""),
 			m_sound.weapon.second);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "GenericEquipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "GenericEquipSD", ""),
 			m_sound.gen.first);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "GenericUnequipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "GenericUnequipSD", ""),
 			m_sound.gen.second);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "ArmorEquipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "ArmorEquipSD", ""),
 			m_sound.armor.first);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "ArmorUnequipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "ArmorUnequipSD", ""),
 			m_sound.armor.second);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "ArrowEquipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "ArrowEquipSD", ""),
 			m_sound.arrow.first);
 		ParseForm(
-			parsers.reader.Get(SECT_SOUND, "ArrowUnequipSD", ""),
+			parsers.reader.GetValue(SECT_SOUND, "ArrowUnequipSD", ""),
 			m_sound.arrow.second);
 
-		return (m_loaded = (parsers.reader.ParseError() == 0));
+		m_loaded = parsers.reader.is_loaded();
+
+		return m_loaded;
 	}
 
 }

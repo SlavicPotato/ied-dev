@@ -15,7 +15,7 @@ namespace IED
 	{
 		a_out.name = IFormCommon::GetFormName(a_actor);
 
-		if (auto race = Game::GetActorRace(a_actor))
+		if (auto race = a_actor->GetRace())
 		{
 			a_out.race = race->formID;
 		}
@@ -67,7 +67,7 @@ namespace IED
 		a_out.race   = a_npc->race.race ?
 		                   a_npc->race.race->formID :
                            0;
-		a_out.weight = Game::GetNPCWeight(a_npc);
+		a_out.weight = a_npc->GetWeight();
 	}
 
 	void IActorInfo::AddExtraActorEntry(Game::FormID a_formid)

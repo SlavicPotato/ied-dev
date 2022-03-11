@@ -856,7 +856,7 @@ namespace IED
 
 			for (auto& e : actors)
 			{
-				if (auto npc = Game::GetActorBase(e.second))
+				if (auto npc = e.second->GetActorBase())
 				{
 					if (npc->formID == a_npc)
 					{
@@ -882,7 +882,7 @@ namespace IED
 
 			for (auto& e : actors)
 			{
-				if (auto race = Game::GetActorRace(e.second))
+				if (auto race = e.second->GetRace())
 				{
 					if (race->formID == a_race)
 					{
@@ -929,7 +929,7 @@ namespace IED
 
 			for (auto& e : actors)
 			{
-				if (auto npc = Game::GetActorBase(e.second))
+				if (auto npc = e.second->GetActorBase())
 				{
 					if (npc->formID == a_npc)
 					{
@@ -957,7 +957,7 @@ namespace IED
 
 			for (auto& e : actors)
 			{
-				if (auto race = Game::GetActorRace(e.second))
+				if (auto race = e.second->GetRace())
 				{
 					if (race->formID == a_race)
 					{
@@ -1219,7 +1219,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto npc = Game::GetActorBase(e.second))
+				if (auto npc = e.second->GetActorBase())
 				{
 					if (npc->formID == a_npc)
 					{
@@ -1249,7 +1249,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto race = Game::GetActorRace(e.second))
+				if (auto race = e.second->GetRace())
 				{
 					if (race->formID == a_race)
 					{
@@ -1298,7 +1298,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto npc = Game::GetActorBase(e.second))
+				if (auto npc = e.second->GetActorBase())
 				{
 					if (npc->formID == a_npc)
 					{
@@ -1326,7 +1326,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto race = Game::GetActorRace(e.second))
+				if (auto race = e.second->GetRace())
 				{
 					if (race->formID == a_race)
 					{
@@ -1371,7 +1371,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto npc = Game::GetActorBase(e.second))
+				if (auto npc = e.second->GetActorBase())
 				{
 					if (npc->formID == a_npc)
 					{
@@ -1397,7 +1397,7 @@ namespace IED
 
 			for (auto& e : result)
 			{
-				if (auto race = Game::GetActorRace(e.second))
+				if (auto race = e.second->GetRace())
 				{
 					if (race->formID == a_race)
 					{
@@ -3228,7 +3228,10 @@ namespace IED
 				__LINE__,
 				a_actor->formID.get());
 
-			if (RemoveActorImpl(a_actor, a_handle, ControllerUpdateFlags::kNone))
+			if (RemoveActorImpl(
+					a_actor,
+					a_handle,
+					ControllerUpdateFlags::kNone))
 			{
 				auto& objs = GetObjectHolder(
 					a_actor,
@@ -3274,69 +3277,90 @@ namespace IED
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
-			npcRacePair_t nrp;
-
-			if (GetNPCRacePair(a_actor, nrp))
-			{
-				processParams_t params{
-					a_root,
-					a_npcroot,
-					a_handle,
-					a_objects,
-					nrp.npc->GetSex() == 1 ?
-						ConfigSex::Female :
-                        ConfigSex::Male,
-					a_flags,
-					{ a_actor },
-					a_actor,
-					nrp.npc,
-					nrp.race
-				};
-
-				auto dataList = GetEntryDataList(a_actor);
-
-				if (!dataList)
-				{
-					Debug(
-						"%s [%u]: %.8X: missing container object list",
-						__FUNCTION__,
-						__LINE__,
-						a_actor->formID.get());
-				}
-
-				params.collector.Run(
-					nrp.npc->container,
-					dataList);
-
-				if (!m_config.settings.data.disableNPCSlots ||
-				    params.is_player())
-				{
-					ProcessSlots(params);
-				}
-
-				ProcessCustom(params);
-
-				if (params.state.flags.test_any(ProcessStateUpdateFlags::kUpdateMask))
-				{
-					if (params.state.flags.test(ProcessStateUpdateFlags::kForceUpdate))
-					{
-						EngineExtensions::UpdateRoot(a_root);
-					}
-					else
-					{
-						UpdateRootPaused(a_root);
-					}
-				}
-			}
+			DoObjectEvaluation(
+				a_root,
+				a_npcroot,
+				a_actor,
+				a_handle,
+				a_objects,
+				a_flags);
 		}
 		else
 		{
-			RemoveActorGear(a_actor, a_handle, a_objects, a_flags);
+			RemoveActorGear(
+				a_actor,
+				a_handle,
+				a_objects,
+				a_flags);
 		}
 
 		a_objects.RequestTransformUpdateDefer();
 
 		//Debug("%X : %f", a_actor->formID.get(), pt.Stop());
+	}
+
+	void Controller::DoObjectEvaluation(
+		NiNode*                          a_root,
+		NiNode*                          a_npcroot,
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&               a_objects,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		auto nrp = GetNPCRacePair(a_actor);
+		if (!nrp)
+		{
+			return;
+		}
+
+		processParams_t params{
+			a_root,
+			a_npcroot,
+			a_handle,
+			a_objects,
+			a_objects.m_female ?
+				ConfigSex::Female :
+                ConfigSex::Male,
+			a_flags,
+			{ a_actor },
+			a_actor,
+			nrp->npc,
+			nrp->race
+		};
+
+		auto dataList = GetEntryDataList(a_actor);
+		if (!dataList)
+		{
+			Debug(
+				"%s [%u]: %.8X: missing container object list",
+				__FUNCTION__,
+				__LINE__,
+				a_actor->formID.get());
+		}
+
+		params.collector.Run(
+			nrp->npc->container,
+			dataList);
+
+		if (!m_config.settings.data.disableNPCSlots ||
+		    params.is_player())
+		{
+			ProcessSlots(params);
+		}
+
+		ProcessCustom(params);
+
+		if (params.state.flags.test_any(ProcessStateUpdateFlags::kUpdateMask))
+		{
+			if (params.state.flags.test(ProcessStateUpdateFlags::kForceUpdate))
+			{
+				EngineExtensions::UpdateRoot(a_root);
+			}
+			else
+			{
+				UpdateRootPaused(a_root);
+			}
+		}
 	}
 
 	void Controller::EvaluateImpl(
@@ -3402,19 +3426,18 @@ namespace IED
 	void Controller::EvaluateTransformsImpl(
 		const ActorObjectHolder& a_objects)
 	{
-		Controller::actorInfo_t info;
-		if (LookupCachedActorInfo(a_objects, info))
+		if (auto info = LookupCachedActorInfo(a_objects))
 		{
 			if (ProcessTransformsImpl(
-					info.npcRoot,
-					info.actor,
-					info.npc,
-					info.race,
-					info.sex,
+					info->npcRoot,
+					info->actor,
+					info->npc,
+					info->race,
+					info->sex,
 					a_objects,
 					nullptr))
 			{
-				UpdateRootPaused(info.root);
+				UpdateRootPaused(info->root);
 			}
 		}
 	}
@@ -3683,8 +3706,8 @@ namespace IED
 		ActorObjectHolder& a_record,
 		ObjectSlot         a_slot)
 	{
-		actorInfo_t info;
-		if (!LookupCachedActorInfo(a_record, info))
+		auto info = LookupCachedActorInfo(a_record);
+		if (!info)
 		{
 			return;
 		}
@@ -3700,17 +3723,17 @@ namespace IED
 			configStoreSlot_t::holderCache_t hc;
 
 			auto config = m_config.active.slot.GetActor(
-				info.actor->formID,
-				info.npc->formID,
-				info.race->formID,
+				info->actor->formID,
+				info->npc->formID,
+				info->race->formID,
 				a_slot,
 				hc);
 
 			if (config)
 			{
 				auto& conf = GetConfigForActor(
-					info,
-					config->get(info.sex),
+					*info,
+					config->get(info->sex),
 					objectEntry);
 
 				objectEntry.state->transform.Update(conf);
@@ -3720,7 +3743,7 @@ namespace IED
 					objectEntry.state->nodes.obj,
 					objectEntry.state->nodes.ref);
 
-				UpdateRootPaused(info.root);
+				UpdateRootPaused(info->root);
 			}
 		}
 	}
@@ -3780,7 +3803,7 @@ namespace IED
 					auto& conf = GetConfigForActor(
 						a_info,
 						a_confEntry(a_info.sex),
-						a_info.objects->GetSlots());
+						a_info.objects.GetSlots());
 
 					UpdateTransformCustomImpl(
 						a_info,
@@ -3810,7 +3833,7 @@ namespace IED
 						auto& conf = GetConfigForActor(
 							a_info,
 							a_confEntry(a_info.sex),
-							a_info.objects->GetSlots());
+							a_info.objects.GetSlots());
 
 						AttachNodeImpl(
 							a_info,
@@ -4023,8 +4046,8 @@ namespace IED
 		const stl::fixed_string&  a_vkey,
 		const updateActionFunc_t& a_func)
 	{
-		actorInfo_t info;
-		if (!LookupCachedActorInfo(a_record, info))
+		auto info = LookupCachedActorInfo(a_record);
+		if (!info)
 		{
 			return;
 		}
@@ -4042,11 +4065,11 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto  it      = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info->actor->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
-						info,
+						*info,
 						it->second,
 						data,
 						a_pkey,
@@ -4058,11 +4081,11 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info->npc->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
-						info,
+						*info,
 						it->second,
 						data,
 						a_pkey,
@@ -4074,11 +4097,11 @@ namespace IED
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto  it      = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info->race->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
-						info,
+						*info,
 						it->second,
 						data,
 						a_pkey,
@@ -4089,7 +4112,7 @@ namespace IED
 			break;
 		default:
 			UpdateCustomImpl(
-				info,
+				*info,
 				conf.GetGlobalData()[0],
 				data,
 				a_pkey,
@@ -4102,10 +4125,10 @@ namespace IED
 		if (a_func.evalDirty && !a_func.clean)
 		{
 			EvaluateImpl(
-				info.root,
-				info.npcRoot,
-				info.actor,
-				info.handle,
+				info->root,
+				info->npcRoot,
+				info->actor,
+				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
 		}
@@ -4119,8 +4142,8 @@ namespace IED
 		const stl::fixed_string&  a_pkey,
 		const updateActionFunc_t& a_func)
 	{
-		actorInfo_t info;
-		if (!LookupCachedActorInfo(a_record, info))
+		auto info = LookupCachedActorInfo(a_record);
+		if (!info)
 		{
 			return;
 		}
@@ -4138,36 +4161,36 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto  it      = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info->actor->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_pkey, a_func);
 				}
 			}
 			break;
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info->npc->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_pkey, a_func);
 				}
 			}
 			break;
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto  it      = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info->race->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_pkey, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_pkey, a_func);
 				}
 			}
 			break;
 		default:
 			UpdateCustomAllImpl(
-				info,
+				*info,
 				conf.GetGlobalData()[0],
 				data,
 				a_pkey,
@@ -4179,10 +4202,10 @@ namespace IED
 		if (!a_func.clean)
 		{
 			EvaluateImpl(
-				info.root,
-				info.npcRoot,
-				info.actor,
-				info.handle,
+				info->root,
+				info->npcRoot,
+				info->actor,
+				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
 		}
@@ -4193,8 +4216,8 @@ namespace IED
 		ConfigClass               a_class,
 		const updateActionFunc_t& a_func)
 	{
-		actorInfo_t info;
-		if (!LookupCachedActorInfo(a_record, info))
+		auto info = LookupCachedActorInfo(a_record);
+		if (!info)
 		{
 			return;
 		}
@@ -4212,37 +4235,37 @@ namespace IED
 		case ConfigClass::Actor:
 			{
 				auto& cfgdata = conf.GetActorData();
-				auto  it      = cfgdata.find(info.actor->formID);
+				auto  it      = cfgdata.find(info->actor->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_func);
 				}
 			}
 			break;
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info.npc->formID);
+				auto  it      = cfgdata.find(info->npc->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_func);
 				}
 			}
 			break;
 		case ConfigClass::Race:
 			{
 				auto& cfgdata = conf.GetRaceData();
-				auto  it      = cfgdata.find(info.race->formID);
+				auto  it      = cfgdata.find(info->race->formID);
 				if (it != cfgdata.end())
 				{
-					UpdateCustomAllImpl(info, it->second, data, a_func);
+					UpdateCustomAllImpl(*info, it->second, data, a_func);
 				}
 			}
 			break;
 		default:
 			{
 				UpdateCustomAllImpl(
-					info,
+					*info,
 					conf.GetGlobalData()[0],
 					data,
 					a_func);
@@ -4253,10 +4276,10 @@ namespace IED
 		if (!a_func.clean)
 		{
 			EvaluateImpl(
-				info.root,
-				info.npcRoot,
-				info.actor,
-				info.handle,
+				info->root,
+				info->npcRoot,
+				info->actor,
+				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
 		}
@@ -4425,13 +4448,13 @@ namespace IED
 		ObjectSlot         a_slot,
 		bool               a_evalIfNone)
 	{
-		actorInfo_t info;
-		if (!LookupCachedActorInfo(a_record, info))
+		auto info = LookupCachedActorInfo(a_record);
+		if (!info)
 		{
 			return false;
 		}
 
-		if (IsActorBlockedImpl(info.actor->formID))
+		if (IsActorBlockedImpl(info->actor->formID))
 		{
 			return false;
 		}
@@ -4449,10 +4472,10 @@ namespace IED
 				if (a_evalIfNone)
 				{
 					EvaluateImpl(
-						info.root,
-						info.npcRoot,
-						info.actor,
-						info.handle,
+						info->root,
+						info->npcRoot,
+						info->actor,
+						info->handle,
 						a_record,
 						ControllerUpdateFlags::kNone);
 
@@ -4470,22 +4493,22 @@ namespace IED
 				configStoreSlot_t::holderCache_t hc;
 
 				auto config = m_config.active.slot.GetActor(
-					info.actor->formID,
-					info.npc->formID,
-					info.race->formID,
+					info->actor->formID,
+					info->npc->formID,
+					info->race->formID,
 					a_slot,
 					hc);
 
 				if (config)
 				{
 					auto& conf = GetConfigForActor(
-						info,
-						config->get(info.sex),
+						*info,
+						config->get(info->sex),
 						objectEntry);
 
 					result = AttachNodeImpl(
-						info,
-						info.npcRoot,
+						*info,
+						info->npcRoot,
 						conf.targetNode,
 						conf.flags.test(BaseFlags::kReferenceMode),
 						objectEntry);
@@ -4560,9 +4583,9 @@ namespace IED
 		return result;
 	}
 
-	bool Controller::LookupCachedActorInfo(
-		const ActorObjectHolder& a_objects,
-		actorInfo_t&             a_out)
+	auto Controller::LookupCachedActorInfo(
+		const ActorObjectHolder& a_objects)
+		-> std::optional<actorInfo_t>
 	{
 		auto handle = a_objects.GetHandle();
 
@@ -4576,12 +4599,12 @@ namespace IED
 				a_objects.m_formid,
 				handle.get());
 
-			return false;
+			return {};
 		}
 
 		if (!IsREFRValid(refr))
 		{
-			return false;
+			return {};
 		}
 
 		auto actor = refr->As<Actor>();
@@ -4594,7 +4617,7 @@ namespace IED
 				handle.get(),
 				refr->formType);
 
-			return false;
+			return {};
 		}
 
 		if (actor != a_objects.m_actor)
@@ -4607,7 +4630,11 @@ namespace IED
 				a_objects.m_actor->formID.get());
 		}
 
-		auto npc = Game::GetActorBase(actor);
+		auto npc = actor->GetActorBase();
+		if (!npc)
+		{
+			return {};
+		}
 
 		auto race = actor->race;
 		if (!race)
@@ -4616,7 +4643,7 @@ namespace IED
 
 			if (!race)
 			{
-				return false;
+				return {};
 			}
 		}
 
@@ -4628,7 +4655,7 @@ namespace IED
 				__FUNCTION__,
 				actor->formID.get());
 
-			return false;
+			return {};
 		}
 
 		if (root != a_objects.m_root)
@@ -4640,27 +4667,29 @@ namespace IED
 
 			QueueReset(actor, ControllerUpdateFlags::kNone);
 
-			return false;
+			return {};
 		}
 
 		auto npcroot = FindNode(root, m_bsstrings->m_npcroot);
 		if (!npcroot)
 		{
-			return false;
+			return {};
 		}
 
-		a_out.actor   = actor;
-		a_out.handle  = handle;
-		a_out.npc     = npc;
-		a_out.race    = race;
-		a_out.root    = root;
-		a_out.npcRoot = npcroot;
-		a_out.sex     = npc->GetSex() == 1 ?
-		                    ConfigSex::Female :
-                            ConfigSex::Male;
-		a_out.objects = std::addressof(a_objects);
+		actorInfo_t result{
+			actor,
+			handle,
+			npc,
+			race,
+			root,
+			npcroot,
+			npc->GetSex() == 1 ?
+				ConfigSex::Female :
+                ConfigSex::Male,
+			a_objects
+		};
 
-		return true;
+		return result;
 	}
 
 	void Controller::SaveLastEquippedItems(
@@ -4903,14 +4932,14 @@ namespace IED
 		return EventResult::kContinue;
 	}
 
-	bool Controller::GetNPCRacePair(
-		Actor*         a_actor,
-		npcRacePair_t& a_out) noexcept
+	auto Controller::GetNPCRacePair(
+		Actor* a_actor) noexcept
+		-> std::optional<npcRacePair_t>
 	{
-		auto npc = Game::GetActorBase(a_actor);
+		auto npc = a_actor->GetActorBase();
 		if (!npc)
 		{
-			return false;
+			return {};
 		}
 
 		auto race = a_actor->race;
@@ -4920,13 +4949,11 @@ namespace IED
 
 			if (!race)
 			{
-				return false;
+				return {};
 			}
 		}
 
-		a_out = { npc, race };
-
-		return true;
+		return npcRacePair_t{ npc, race };
 	}
 
 	bool Controller::SaveCurrentConfigAsDefault(

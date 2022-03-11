@@ -6,7 +6,6 @@
 #include <ext/ICommon.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ITaskPool.h>
-#include <ext/IUUID.h>
 #include <ext/Map.h>
 #include <ext/Math.h>
 #include <ext/Model.h>
@@ -51,8 +50,6 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
-
-//#include "ska/unordered_map.hpp"
 
 #include <json/json.h>
 

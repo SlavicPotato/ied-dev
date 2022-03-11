@@ -20,3 +20,4 @@
 5700-5799:		log
 5800-5899:		package type
 5900-5999:		effect shader editor
+6000-6100:		weather class sel widget

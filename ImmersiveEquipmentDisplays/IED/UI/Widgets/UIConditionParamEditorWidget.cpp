@@ -16,6 +16,7 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UIConditionExtraSelectorWidget(a_controller),
 			UIPackageTypeSelectorWidget(a_controller),
+			UIWeatherClassSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
 		{
@@ -32,9 +33,11 @@ namespace IED
 		{
 			bool result;
 
+			float w = ImGui::GetFontSize() * 34.0f;
+
 			ImGui::SetNextWindowSizeConstraints(
-				{ ImGui::GetFontSize() * 34.0f, 0.0f },
-				{ 800.0f, 800.0f });
+				{ w, 0.0f },
+				{ w, 800.0f });
 
 			if (ImGui::BeginPopup("match_param_editor"))
 			{
@@ -54,7 +57,7 @@ namespace IED
 		{
 			bool result = false;
 
-			ImGui::PushItemWidth(ImGui::GetFontSize() * -5.5f);
+			ImGui::PushItemWidth(ImGui::GetFontSize() * -6.0f);
 
 			GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
 			GetKeywordPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearKeyword));
@@ -198,6 +201,28 @@ namespace IED
 
 				result |= DrawPackageTypeSelector(
 					e.As1<PACKAGE_PROCEDURE_TYPE>());
+			}
+
+			if (const auto& e = get(ConditionParamItem::WeatherClass); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				if (m_extraInterface)
+				{
+					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+					{
+						args.p1 = e.p1;
+						args.p2 = e.p2;
+						args.p3 = f.p1;
+
+						result |= m_extraInterface->DrawConditionItemExtra(
+							ConditionParamItem::WeatherClass,
+							args);
+					}
+				}
+
+				result |= DrawWeatherClassSelector(
+					e.As1<WeatherClassificationFlags>());
 			}
 
 			if (m_extraInterface)
@@ -348,6 +373,20 @@ namespace IED
 							type != PACKAGE_PROCEDURE_TYPE::kNone ?
 								procedure_type_to_desc(type) :
                                 nullptr);
+					}
+					else
+					{
+						m_descBuffer[0] = 0x0;
+					}
+				}
+				break;
+			case ConditionParamItem::WeatherClass:
+				{
+					if (const auto& e = get(a_item); e.p1)
+					{
+						const auto& type = e.As1<WeatherClassificationFlags>();
+
+						return GetFormKeywordExtraDesc(weather_class_to_desc(type));
 					}
 					else
 					{

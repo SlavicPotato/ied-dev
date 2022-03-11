@@ -496,6 +496,12 @@ namespace IED
 				return Conditions::match_package<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Weather:
+
+				return Conditions::match_weather<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -753,6 +759,12 @@ namespace IED
 				return Conditions::match_package<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Weather:
+
+				return Conditions::match_weather<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -1002,6 +1014,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Package:
 
 				return Conditions::match_package<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Weather:
+
+				return Conditions::match_weather<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}

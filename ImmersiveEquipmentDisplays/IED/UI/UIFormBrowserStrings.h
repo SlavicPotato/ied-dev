@@ -41,5 +41,6 @@ namespace IED
 		Faction           = 5232,
 		CombatStyle       = 5233,
 		Class             = 5234,
+		Weather           = 5235,
 	};
 }

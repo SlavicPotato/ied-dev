@@ -88,6 +88,7 @@ namespace IED
 			Options                             = 2077,
 			SelectRandomForm                    = 2078,
 			PlayAnimation                       = 2079,
+			WeatherClass                        = 2080,
 		};
 	}
 }

@@ -43,9 +43,13 @@ namespace IED
 
 	struct fontInfoMap_t
 	{
-		std::unordered_map<stl::fixed_string, fontInfoEntry_t> fonts;
-		fontGlyphData_t                                        default_glyph_data;
-		float                                                  default_font_size{ 13.0f };
+		using font_map_t = std::unordered_map<
+			stl::fixed_string,
+			fontInfoEntry_t>;
+
+		font_map_t      fonts;
+		fontGlyphData_t default_glyph_data;
+		float           default_font_size{ 13.0f };
 	};
 
 }

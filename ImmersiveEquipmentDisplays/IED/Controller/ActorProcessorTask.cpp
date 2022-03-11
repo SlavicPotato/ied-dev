@@ -6,10 +6,14 @@
 #include "IED/Inventory.h"
 #include "IObjectManager.h"
 
+#include <ext/Sky.h>
+#include <ext/TESWeather.h>
+
 namespace IED
 {
 	ActorProcessorTask::ActorProcessorTask(
 		Controller& a_controller) :
+		m_state{ IPerfCounter::Query() - STATE_CHECK_INTERVAL_LOW },
 		m_controller(a_controller)
 	{
 	}
@@ -41,18 +45,17 @@ namespace IED
 
 			bool result = false;
 
-			Controller::actorInfo_t info;
-			if (m_controller.LookupCachedActorInfo(a_record, info))
+			if (auto info = m_controller.LookupCachedActorInfo(a_record))
 			{
 				result = m_controller.AttachNodeImpl(
-					info.npcRoot,
+					info->npcRoot,
 					state->nodeDesc,
 					state->atmReference,
 					a_entry);
 
 				if (result)
 				{
-					m_controller.UpdateRootPaused(info.root);
+					m_controller.UpdateRootPaused(info->root);
 					a_record.RequestTransformUpdateDefer();
 				}
 			}
@@ -178,11 +181,42 @@ namespace IED
 		return result;
 	}
 
+	void ActorProcessorTask::UpdateState()
+	{
+		if (IPerfCounter::delta_us(
+				m_state.lastRun,
+				m_timer.GetStartTime()) < STATE_CHECK_INTERVAL_LOW)
+		{
+			return;
+		}
+
+		m_state.lastRun = m_timer.GetStartTime();
+
+		bool changed = false;
+
+		if (auto nw = RE::Sky::GetCurrentWeather();
+		    nw != m_state.currentWeather)
+		{
+			m_state.currentWeather = nw;
+			changed                = true;
+		}
+
+		if (changed)
+		{
+			for (auto& e : m_controller.m_objects)
+			{
+				e.second.m_wantLFUpdate = true;
+			}
+		}
+	}
+
 	void ActorProcessorTask::Run()
 	{
 		IScopedLock lock(m_controller.m_lock);
 
 		m_timer.Begin();
+
+		UpdateState();
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
@@ -233,6 +267,12 @@ namespace IED
 				    n != e.m_currentPackage)
 				{
 					e.m_currentPackage = n;
+					e.RequestEvalDefer();
+				}
+
+				if (e.m_wantLFUpdate)
+				{
+					e.m_wantLFUpdate = false;
 					e.RequestEvalDefer();
 				}
 			}

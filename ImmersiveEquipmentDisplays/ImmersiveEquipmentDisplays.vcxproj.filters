@@ -1085,6 +1085,15 @@
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h">
       <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\WeatherClassificationFlags.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1710,6 +1719,9 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ModelGroup</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

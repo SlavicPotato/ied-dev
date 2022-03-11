@@ -52,6 +52,7 @@ namespace IED
 				{ UIFormBrowserStrings::Faction, TESFaction::kTypeID },
 				{ UIFormBrowserStrings::CombatStyle, TESCombatStyle::kTypeID },
 				{ UIFormBrowserStrings::Class, TESClass::kTypeID },
+				{ UIFormBrowserStrings::Weather, TESWeather::kTypeID },
 
 			} }
 

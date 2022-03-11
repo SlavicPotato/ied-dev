@@ -45,6 +45,11 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
 
+		if (auto npc = a_actor->GetActorBase())
+		{
+			m_female = npc->GetSex() == 1;
+		}
+
 		if (a_nodeOverrideEnabled &&
 		    (a_actor != *g_thePlayer ||
 		     a_nodeOverrideEnabledPlayer))
@@ -99,14 +104,9 @@ namespace IED
 			    !m_cmeNodes.empty() &&
 			    !m_movNodes.empty())
 			{
-				if (auto npc = Game::GetActorBase(a_actor))
+				for (auto& e : NodeOverrideData::GetExtraNodes())
 				{
-					bool female = npc->GetSex() == 1;
-
-					for (auto& e : NodeOverrideData::GetExtraNodes())
-					{
-						CreateExtraNodes(a_npcroot, female, e);
-					}
+					CreateExtraNodes(a_npcroot, m_female, e);
 				}
 			}
 		}
@@ -239,7 +239,7 @@ namespace IED
 		{
 			if (auto actor = refr->As<Actor>())
 			{
-				if (auto npc = Game::GetActorBase(actor))
+				if (auto npc = actor->GetActorBase())
 				{
 					return (npc->formID == a_npc);
 				}
@@ -258,7 +258,7 @@ namespace IED
 		{
 			if (auto actor = refr->As<Actor>())
 			{
-				if (auto race = Game::GetActorRace(actor))
+				if (auto race = actor->GetRace())
 				{
 					return (race->formID == a_race);
 				}
@@ -513,6 +513,11 @@ namespace IED
 			if (!e.create_shader_data(tmp.shaderData))
 			{
 				continue;
+			}
+
+			if (e.flags.test(Data::EffectShaderDataFlags::kYield))
+			{
+				tmp.flags.set(effectShaderData_t::EntryFlags::kYield);
 			}
 
 			data.emplace(i, std::move(tmp));

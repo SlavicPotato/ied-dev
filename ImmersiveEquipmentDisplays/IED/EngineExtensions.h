@@ -16,8 +16,9 @@ namespace IED
 	{
 		kNone = 0,
 
-		kScbLeft           = 1ui8 << 0,
-		kTorchFlameRemoved = 1ui8 << 1,
+		kScbLeft            = 1ui8 << 0,
+		kTorchFlameRemoved  = 1ui8 << 1,
+		kTorchCustomRemoved = 1ui8 << 2,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(AttachResultFlags);
@@ -44,7 +45,7 @@ namespace IED
 			NiAVObject*   a_object,
 			std::uint32_t a_unk3,
 			bool          a_unk4);
-		typedef unks_01* (*unk5EBD90_t)(TESObjectREFR* a_ref, unks_01* a_in);
+		typedef unks_01& (*unk5EBD90_t)(TESObjectREFR* a_ref, unks_01& a_out);
 		typedef void (*unk5C39F0_t)(
 			BSTaskPool*   a_taskpool,
 			NiAVObject*   a_object,

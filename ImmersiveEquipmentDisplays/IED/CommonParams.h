@@ -2,25 +2,31 @@
 
 #include "FormCommon.h"
 #include "FormHolder.h"
+#include "WeatherClassificationFlags.h"
+
+#include <ext/Sky.h>
+#include <ext/TESWeather.h>
 
 namespace IED
 {
 	struct CommonParams
 	{
-		Actor*                                       actor;
-		TESNPC*                                      npc;
-		TESRace*                                     race;
-		mutable stl::optional<TESFurniture*>         furniture;
-		mutable stl::optional<Game::ObjectRefHandle> furnHandle;
-		mutable stl::optional<bool>                  layingDown;
-		mutable stl::optional<Biped*>                biped;
-		mutable stl::optional<TESObjectARMO*>        actorSkin;
-		mutable stl::optional<bool>                  canDualWield;
-		mutable stl::optional<bool>                  isDead;
-		mutable stl::optional<bool>                  inInterior;
-		mutable stl::optional<BGSLocation*>          location;
-		mutable stl::optional<TESWorldSpace*>        worldspace;
-		mutable stl::optional<TESCombatStyle*>       combatStyle;
+		Actor*                                                       actor;
+		TESNPC*                                                      npc;
+		TESRace*                                                     race;
+		mutable stl::optional<TESFurniture*>                         furniture;
+		mutable stl::optional<Game::ObjectRefHandle>                 furnHandle;
+		mutable stl::optional<bool>                                  layingDown;
+		mutable stl::optional<Biped*>                                biped;
+		mutable stl::optional<TESObjectARMO*>                        actorSkin;
+		mutable stl::optional<bool>                                  canDualWield;
+		mutable stl::optional<bool>                                  isDead;
+		mutable stl::optional<bool>                                  inInterior;
+		mutable stl::optional<BGSLocation*>                          location;
+		mutable stl::optional<TESWorldSpace*>                        worldspace;
+		mutable stl::optional<TESCombatStyle*>                       combatStyle;
+		mutable stl::optional<RE::TESWeather*>                       currentWeather;
+		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -110,7 +116,7 @@ namespace IED
 		{
 			if (!actorSkin)
 			{
-				actorSkin = Game::GetActorSkin(actor);
+				actorSkin = actor->GetSkin();
 			}
 
 			return *actorSkin;
@@ -216,6 +222,34 @@ namespace IED
 		{
 			return actor != *g_thePlayer &&
 			       actor->IsPlayerTeammate();
+		}
+
+		[[nodiscard]] constexpr auto get_current_weather() const
+		{
+			if (!currentWeather)
+			{
+				currentWeather = RE::Sky::GetCurrentWeather();
+			}
+
+			return *currentWeather;
+		}
+
+		[[nodiscard]] constexpr auto get_weather_class() const
+		{
+			if (!weatherClass)
+			{
+				if (auto w = get_current_weather())
+				{
+					auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
+					weatherClass = static_cast<WeatherClassificationFlags>(f);
+				}
+				else
+				{
+					weatherClass = WeatherClassificationFlags::kNone;
+				}
+			}
+
+			return *weatherClass;
 		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept

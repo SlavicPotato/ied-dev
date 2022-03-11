@@ -2,6 +2,11 @@
 
 #include "IED/ConfigCommon.h"
 
+namespace RE
+{
+	class TESWeather;
+}
+
 namespace IED
 {
 	enum class TransformUpdateFlags
@@ -29,6 +34,13 @@ namespace IED
 		}
 
 	private:
+		struct State
+		{
+			long long lastRun;
+
+			RE::TESWeather* currentWeather{ nullptr };
+		};
+
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
 
 		virtual void Run() override;
@@ -45,6 +57,10 @@ namespace IED
 
 		SKMP_FORCEINLINE bool CheckMonitorNodes(
 			ActorObjectHolder& a_data);
+
+		void UpdateState();
+
+		State m_state;
 
 		PerfTimerInt m_timer{ 1000000LL };
 		long long    m_currentTime{ 0LL };

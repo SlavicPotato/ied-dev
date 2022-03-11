@@ -14,6 +14,13 @@ namespace IED
 {
 	struct effectShaderData_t
 	{
+		enum class EntryFlags : std::uint32_t
+		{
+			kNone = 0,
+
+			kYield = 1u << 0
+		};
+
 		struct Entry
 		{
 			Entry()  = default;
@@ -24,6 +31,7 @@ namespace IED
 			Entry& operator=(const Entry&) = delete;
 			Entry& operator=(Entry&&) = default;
 
+			stl::flag<EntryFlags>                                                      flags{ EntryFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>                                    shaderData;
 			std::vector<std::pair<NiPointer<BSShaderProperty>, NiPointer<BSGeometry>>> nodes;
 		};
@@ -63,6 +71,8 @@ namespace IED
 		data_type               data;
 		std::optional<uuid_tag> tag;
 	};
+
+	DEFINE_ENUM_CLASS_BITWISE(effectShaderData_t::EntryFlags);
 
 	enum class ObjectEntryFlags : std::uint32_t
 	{
@@ -553,9 +563,11 @@ namespace IED
 		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_formid;
+		bool         m_female{ false };
 
 		bool                m_cellAttached{ false };
 		bool                m_isPlayerTeammate{ false };
+		bool                m_wantLFUpdate{ false };
 		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;
 		TESPackage*         m_currentPackage{ nullptr };

@@ -1,7 +1,9 @@
 #pragma once
 
-#include "IED/ConfigOverrideCommon.h"
-#include "IED/ConfigOverrideTransform.h"
+#include "ConfigOverrideCommon.h"
+#include "ConfigOverrideTransform.h"
+
+#include "WeatherClassificationFlags.h"
 
 namespace IED
 {
@@ -91,7 +93,8 @@ namespace IED
 			Extra,
 			Location,
 			Worldspace,
-			Package
+			Package,
+			Weather
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -187,7 +190,8 @@ namespace IED
 				    a_type == NodeOverrideConditionType::Group ||
 				    a_type == NodeOverrideConditionType::Location ||
 				    a_type == NodeOverrideConditionType::Worldspace ||
-				    a_type == NodeOverrideConditionType::Package)
+				    a_type == NodeOverrideConditionType::Package ||
+				    a_type == NodeOverrideConditionType::Weather)
 				{
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
@@ -251,13 +255,15 @@ namespace IED
 
 			union
 			{
-				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
-				ExtraConditionType     extraCondType;
-				BIPED_OBJECT           bipedSlot;
-				PACKAGE_PROCEDURE_TYPE procedureType;
+				std::uint32_t              ui32a{ static_cast<std::uint32_t>(-1) };
+				ExtraConditionType         extraCondType;
+				BIPED_OBJECT               bipedSlot;
+				PACKAGE_PROCEDURE_TYPE     procedureType;
+				WeatherClassificationFlags weatherClass;
 
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<WeatherClassificationFlags>, std::uint32_t>);
 			};
 
 			ObjectSlotExtra                    typeSlot{ Data::ObjectSlotExtra::kNone };

@@ -2,6 +2,8 @@
 
 #include "IFormDatabase.h"
 
+#include <ext/TESWeather.h>
+
 namespace IED
 {
 	auto IFormDatabase::GetFormDatabase()
@@ -153,6 +155,7 @@ namespace IED
 			Populate(*result, dh->arrFACT);
 			Populate(*result, dh->arrCSTY);
 			Populate(*result, dh->arrCLAS);
+			Populate(*result, dh->arrWTHR);
 			Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 
 			Populate2(

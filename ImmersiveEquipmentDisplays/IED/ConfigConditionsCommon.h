@@ -3,6 +3,7 @@
 #include "CommonParams.h"
 #include "ConfigOverrideCommon.h"
 #include "FormCommon.h"
+#include "WeatherClassificationFlags.h"
 
 #include "IED/Data.h"
 
@@ -456,6 +457,36 @@ namespace IED
 			}
 
 			return false;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_weather(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (auto current = a_params.get_current_weather())
+			{
+				if (a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == current->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.flags.test(Tf::kNegateMatch2) ==
+				    a_params.get_weather_class().test_any(a_match.weatherClass))
+				{
+					return false;
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);

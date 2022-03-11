@@ -19,7 +19,9 @@ namespace IED
 
 		using storage_type = stl::vectormap<stl::fixed_string, T>;
 
-		ProfileManager(const fs::path& a_ext = ".json");
+		ProfileManager() = default;
+		ProfileManager(const fs::path& a_ext);
+		ProfileManager(fs::path&& a_ext);
 
 		virtual ~ProfileManager() noexcept = default;
 
@@ -84,18 +86,26 @@ namespace IED
 
 		storage_type       m_storage;
 		fs::path           m_root;
-		fs::path           m_ext;
+		fs::path           m_ext{ ".json" };
 		except::descriptor m_lastExcept;
 		bool               m_isInitialized{ false };
 	};
 
-	template <typename T>
+	template <class T>
 	ProfileManager<T>::ProfileManager(
 		const fs::path& a_ext) :
 		m_ext(a_ext)
-	{}
+	{
+	}
 
-	template <typename T>
+	template <class T>
+	ProfileManager<T>::ProfileManager(
+		fs::path&& a_ext) :
+		m_ext(std::move(a_ext))
+	{
+	}
+
+	template <class T>
 	bool ProfileManager<T>::Load(const fs::path& a_path)
 	{
 		try

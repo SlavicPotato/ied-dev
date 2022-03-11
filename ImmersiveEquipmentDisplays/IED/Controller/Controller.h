@@ -81,7 +81,7 @@ namespace IED
 			NiNode*                  root;
 			NiNode*                  npcRoot;
 			Data::ConfigSex          sex;
-			const ActorObjectHolder* objects;
+			const ActorObjectHolder& objects;
 		};
 
 		struct npcRacePair_t
@@ -508,6 +508,14 @@ namespace IED
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
+		void DoObjectEvaluation(
+			NiNode*                          a_root,
+			NiNode*                          a_npcroot,
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
+			ActorObjectHolder&               a_objects,
+			stl::flag<ControllerUpdateFlags> a_flags);
+
 		void EvaluateImpl(
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
@@ -777,9 +785,8 @@ namespace IED
 			const ActorObjectHolder& a_record,
 			actorLookupResult_t&     a_out);
 
-		bool LookupCachedActorInfo(
-			const ActorObjectHolder& a_record,
-			actorInfo_t&             a_out);
+		std::optional<actorInfo_t> LookupCachedActorInfo(
+			const ActorObjectHolder& a_record);
 
 		void CollectKnownActors(
 			actorLookupResultMap_t& a_out);
@@ -834,7 +841,7 @@ namespace IED
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
 		//void FillInitialConfig(Data::configStore_t& a_data) const;
 
-		static bool GetNPCRacePair(Actor* a_actor, npcRacePair_t& a_out) noexcept;
+		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
 
 		// serialization
 

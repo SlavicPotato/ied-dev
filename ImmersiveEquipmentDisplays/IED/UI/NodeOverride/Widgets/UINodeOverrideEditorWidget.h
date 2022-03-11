@@ -2668,7 +2668,21 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "F"))
+					if (ImGui::MenuItem(LS(CommonStrings::Weather, "F")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Weather);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "G"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -2693,7 +2707,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "G")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "H")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Group);
@@ -2710,7 +2724,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "H")))
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "I")))
 				{
 					a_entry.clear();
 
@@ -2725,7 +2739,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "I")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "J")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2733,7 +2747,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideConditionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "J"),
+						LS(CommonStrings::PasteOver, "K"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -2903,6 +2917,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Location:
 						case Data::NodeOverrideConditionType::Worldspace:
 						case Data::NodeOverrideConditionType::Package:
+						case Data::NodeOverrideConditionType::Weather:
 
 							it = a_entry.emplace(
 								it,
@@ -3187,6 +3202,21 @@ namespace IED
 								tdesc = LS(CommonStrings::Package);
 
 								break;
+
+							case Data::NodeOverrideConditionType::Weather:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::WeatherClass>(
+									e.weatherClass);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::WeatherClass);
+								tdesc = LS(CommonStrings::Weather);
+
+								break;
+
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -3737,7 +3767,13 @@ namespace IED
 						result.matchType = Data::NodeOverrideConditionType::Package;
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "F"))
+					if (ImGui::MenuItem(LS(CommonStrings::Weather, "F")))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Weather;
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "G"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -3755,7 +3791,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "G")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "H")))
 					{
 						result.action    = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Group;
@@ -3766,7 +3802,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "H")))
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "I")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}
@@ -4069,6 +4105,29 @@ namespace IED
 				}
 
 				break;
+
+			case Data::NodeOverrideConditionType::Weather:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::WeatherClass)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
+
+					ImGui::SameLine();
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -4112,6 +4171,10 @@ namespace IED
 				break;
 			case Data::NodeOverrideConditionType::Package:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Package));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Weather:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Weather));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

@@ -1383,6 +1383,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Location:
 					case Data::EquipmentOverrideConditionType::Worldspace:
 					case Data::EquipmentOverrideConditionType::Package:
+					case Data::EquipmentOverrideConditionType::Weather:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1570,6 +1571,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Location:
 						case Data::EquipmentOverrideConditionType::Worldspace:
 						case Data::EquipmentOverrideConditionType::Package:
+						case Data::EquipmentOverrideConditionType::Weather:
 
 							it = a_entry.emplace(
 								it,
@@ -1842,6 +1844,19 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::PackageType);
 								tdesc = LS(CommonStrings::Package);
+
+								break;
+							case Data::EquipmentOverrideConditionType::Weather:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::WeatherClass>(
+									e.weatherClass);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::WeatherClass);
+								tdesc = LS(CommonStrings::Weather);
 
 								break;
 							default:
@@ -2128,8 +2143,14 @@ namespace IED
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Package;
 					}
+					
+					if (LCG_MI(CommonStrings::Weather, "E"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Weather;
+					}
 
-					if (LCG_BM(CommonStrings::Extra, "E"))
+					if (LCG_BM(CommonStrings::Extra, "F"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -2144,7 +2165,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "F"))
+					if (LCG_MI(CommonStrings::Group, "G"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
@@ -2155,14 +2176,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "G"))
+				if (LCG_MI(CommonStrings::Delete, "H"))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
 				if (!a_header)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "H"))
+					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "I"))
 					{
 						result.action = BaseConfigEditorAction::ClearKeyword;
 					}
@@ -2171,7 +2192,7 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Copy, "H"))
+					if (LCG_MI(CommonStrings::Copy, "I"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
 					}
@@ -2179,7 +2200,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "I"),
+							LS(CommonStrings::PasteOver, "J"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2605,6 +2626,29 @@ namespace IED
 				}
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Weather:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::WeatherClass)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
+
+					ImGui::SameLine();
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2648,6 +2692,10 @@ namespace IED
 				break;
 			case Data::EquipmentOverrideConditionType::Package:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Package));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Weather:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Weather));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
@@ -3065,7 +3113,8 @@ namespace IED
 
 					if (ImGui::TreeNodeEx(
 							"es_item",
-							ImGuiTreeNodeFlags_SpanAvailWidth,
+							ImGuiTreeNodeFlags_SpanAvailWidth |
+								ImGuiTreeNodeFlags_DefaultOpen,
 							"%s",
 							e.description.c_str()))
 					{
