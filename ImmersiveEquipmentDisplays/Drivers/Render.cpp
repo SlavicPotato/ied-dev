@@ -41,35 +41,47 @@ namespace IED
 		void Render::CreateD3D11_Hook()
 		{
 			m_Instance.m_createD3D11_o();
+			m_Instance.InitializeD3D();
+		}
 
+		void Render::InitializeD3D()
+		{
 			auto renderManager = BSRenderManager::GetSingleton();
 
 			ASSERT(renderManager != nullptr);
-			ASSERT(renderManager->swapChain != nullptr);
+
+			auto swapChain = renderManager->swapChain;
+
+			ASSERT(swapChain != nullptr);
 
 			DXGI_SWAP_CHAIN_DESC sd{};
-			if (renderManager->swapChain->GetDesc(std::addressof(sd)) != S_OK)
+			if (FAILED(swapChain->GetDesc(std::addressof(sd))))
 			{
-				m_Instance.Error("IDXGISwapChain::GetDesc failed");
+				constexpr auto error_msg = "IDXGISwapChain::GetDesc failed";
+
+				Error(error_msg);
+				WinApi::MessageBoxError(PLUGIN_NAME, error_msg);
+
 				return;
 			}
 
-			m_Instance.m_device       = renderManager->forwarder;
-			m_Instance.m_context      = renderManager->context;
-			m_Instance.m_swapChain    = renderManager->swapChain;
-			m_Instance.m_bufferSize.x = static_cast<float>(sd.BufferDesc.Width);
-			m_Instance.m_bufferSize.y = static_cast<float>(sd.BufferDesc.Height);
-			m_Instance.m_bufferSize.z =
-				m_Instance.m_bufferSize.x / m_Instance.m_bufferSize.y;
+			m_device       = renderManager->forwarder;
+			m_context      = renderManager->context;
+			m_swapChain    = swapChain;
+			m_bufferSize.x = static_cast<float>(sd.BufferDesc.Width);
+			m_bufferSize.y = static_cast<float>(sd.BufferDesc.Height);
+			m_bufferSize.z = m_bufferSize.x / m_bufferSize.y;
+
+			Debug("%s: initialized, sending event", __FUNCTION__);
 
 			Events::D3D11CreateEventPost evd_post{
 				std::addressof(sd),
 				renderManager->forwarder,
 				renderManager->context,
-				renderManager->swapChain
+				swapChain
 			};
 
-			m_Instance.GetEventDispatcher<Events::D3D11CreateEventPost>().SendEvent(evd_post);
+			GetEventDispatcher<Events::D3D11CreateEventPost>().SendEvent(evd_post);
 		}
 
 		void Render::Present_Pre(std::uint32_t a_p1)

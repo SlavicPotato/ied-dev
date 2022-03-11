@@ -59,6 +59,8 @@ namespace IED
 			static void Present_Pre(std::uint32_t a_p1);
 			static void CreateD3D11_Hook();
 
+			void InitializeD3D();
+
 			decltype(&CreateD3D11_Hook) m_createD3D11_o{ nullptr };
 			decltype(&Present_Pre)      m_unkPresent_o{ nullptr };
 
