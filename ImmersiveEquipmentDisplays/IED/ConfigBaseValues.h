@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConfigCommon.h"
-#include "ConfigOverrideTransform.h"
+#include "ConfigData.h"
+#include "ConfigTransform.h"
 #include "NodeDescriptor.h"
 
 namespace IED

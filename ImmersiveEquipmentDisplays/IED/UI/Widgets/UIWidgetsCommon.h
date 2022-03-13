@@ -3,7 +3,7 @@
 #define sshex(size) \
 	std::uppercase << std::setfill('0') << std::setw(size) << std::hex
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 
 #include "UIWidgetCommonStrings.h"
 

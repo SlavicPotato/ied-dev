@@ -1,13 +1,15 @@
 #pragma once
 
-#include "../ActorState.h"
-#include "../Config.h"
-#include "../ConfigOverride.h"
-#include "../ConfigOverrideBlockList.h"
-#include "../ConfigOverrideDefault.h"
-#include "../Data.h"
-#include "../Inventory.h"
-#include "../StringHolder.h"
+#include "IED/ActorState.h"
+#include "IED/ConfigBlockList.h"
+#include "IED/ConfigINI.h"
+#include "IED/ConfigSerializationFlags.h"
+#include "IED/ConfigStore.h"
+#include "IED/Data.h"
+#include "IED/Inventory.h"
+#include "IED/SettingHolder.h"
+#include "IED/StringHolder.h"
+
 #include "ActorProcessorTask.h"
 #include "ControllerCommon.h"
 #include "EffectController.h"
@@ -18,13 +20,9 @@
 #include "IObjectManager.h"
 #include "IUI.h"
 
-#include "IED/SettingHolder.h"
-
 #include "Localization/ILocalization.h"
 
 #include "Drivers/Input/Handlers.h"
-
-#include <ext/Serialization.h>
 
 namespace IED
 {
@@ -40,6 +38,9 @@ namespace IED
 		public IMaintenance,
 		public IJSONSerialization,
 		public Localization::ILocalization,
+		public ::Events::EventSink<SKSESerializationEvent>,
+		public ::Events::EventSink<SKSESerializationLoadEvent>,
+		public ::Events::EventSink<SKSEMessagingEvent>,
 		public BSTEventSink<TESObjectLoadedEvent>,
 		public BSTEventSink<TESInitScriptEvent>,
 		public BSTEventSink<TESEquipEvent>,
@@ -112,12 +113,7 @@ namespace IED
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) = delete;
 
-		void SinkInputEvents();
 		void SinkEventsT0();
-		bool SinkEventsT1();
-		bool SinkEventsT2();
-		void InitializeData();
-		void InitializeBSFixedStringTable();
 
 	private:
 		void InitializeSound();
@@ -126,8 +122,32 @@ namespace IED
 		void InitializeUI();
 		void InitializeConfig();
 		void InitializeLocalization();
+		void InitializeData();
+		void InitializeBSFixedStringTable();
+
+		void SinkInputEvents();
+		bool SinkEventsT1();
+		bool SinkEventsT2();
+
+		void OnDataLoaded();
+
+		void StoreActiveHandles();
+		void EvaluateStoredHandles(ControllerUpdateFlags a_flags);
+		void ClearStoredHandles();
+
+		// serialization handlers
+
+		void SaveGameHandler(SKSESerializationInterface* a_intfc);
+		//void LoadGameHandler(SKSESerializationInterface* a_intfc);
+		void RevertHandler(SKSESerializationInterface* a_intfc);
 
 	public:
+		template <class Tc>
+		inline auto make_timed_ui_task(long long a_lifetime)
+		{
+			return std::make_shared<IUITimedRenderTask<Tc>>(*this, *this, a_lifetime);
+		}
+
 		[[nodiscard]] inline const auto* GetBSStringHolder() const noexcept
 		{
 			return m_bsstrings.get();
@@ -393,12 +413,6 @@ namespace IED
 		bool IsActorBlocked(Game::FormID a_actor) const;
 		bool IsActorBlockedImpl(Game::FormID a_actor) const;
 
-		// serialization handlers
-
-		void SaveGameHandler(SKSESerializationInterface* a_intfc);
-		void LoadGameHandler(SKSESerializationInterface* a_intfc);
-		void RevertHandler(SKSESerializationInterface* a_intfc);
-
 		[[nodiscard]] inline constexpr auto& GetConfigStore() noexcept
 		{
 			return m_config;
@@ -446,9 +460,6 @@ namespace IED
 		{
 			return m_nodeOverridePlayerEnabled;
 		}
-
-		void StoreActiveHandles();
-		void EvaluateStoredHandles(ControllerUpdateFlags a_flags);
 
 		void QueueObjectDatabaseClear();
 		void SetObjectDatabaseLevel(ObjectDatabaseLevel a_level);
@@ -793,7 +804,13 @@ namespace IED
 
 		bool SetLanguageImpl(const stl::fixed_string& a_lang);
 
-		// events
+		// internal events
+
+		virtual void Receive(const SKSESerializationEvent& a_evn) override;
+		virtual void Receive(const SKSESerializationLoadEvent& a_evn) override;
+		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
+
+		// bs events
 		virtual EventResult ReceiveEvent(
 			const TESObjectLoadedEvent*           a_evn,
 			BSTEventSource<TESObjectLoadedEvent>* a_dispatcher) override;

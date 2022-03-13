@@ -16,7 +16,7 @@
 #include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigOverrideCustom.h"
+#include "IED/ConfigCustom.h"
 
 #include "Serialization/Serialization.h"
 

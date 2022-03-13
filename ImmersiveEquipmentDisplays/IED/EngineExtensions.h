@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.h"
+#include "ConfigINI.h"
 #include "Controller/ModelType.h"
 
 #include <ext/GameCommon.h>

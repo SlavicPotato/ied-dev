@@ -12,7 +12,7 @@ namespace IED
 			std::uint32_t&                   a_key,
 			bool                             a_allowNone)
 		{
-			char        buf[9];
+			char        buf[12];
 			const char* preview;
 
 			bool result = false;
@@ -24,7 +24,7 @@ namespace IED
 			}
 			else
 			{
-				stl::snprintf(buf, "%X", a_key);
+				stl::snprintf(buf, "0x%X", a_key);
 				preview = buf;
 			}
 

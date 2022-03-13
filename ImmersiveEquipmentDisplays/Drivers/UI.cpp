@@ -71,17 +71,20 @@ namespace IED
 			io.DisplaySize                       = { m_info.bufferSize.width, m_info.bufferSize.height };
 			io.MousePos                          = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
 			io.UserData                          = static_cast<void*>(std::addressof(m_ioUserData));
-
-			io.IniFilename =
-				!m_conf.imgui_ini.empty() ?
-					m_conf.imgui_ini.c_str() :
-                    nullptr;
+			io.IniFilename                       = !m_conf.imgui_ini.empty() ? m_conf.imgui_ini.c_str() : nullptr;
 
 			ImGui::StyleColorsDark();
 
+			if (!::ImGui_ImplWin32_Init(
+					a_evn.m_pSwapChainDesc->OutputWindow))
+			{
+				Error("ImGui initialization failed (Win32)");
+				return;
+			}
+
 			if (!LoadFonts(m_fontData, m_fontUpdateData.font))
 			{
-				Warning("UI unavailable due to missing font atlas");
+				Error("UI unavailable due to missing font atlas");
 				return;
 			}
 
@@ -90,8 +93,13 @@ namespace IED
 			SetCurrentFont(m_sDefaultFont);
 			UpdateStyleAlpha();
 
-			::ImGui_ImplWin32_Init(a_evn.m_pSwapChainDesc->OutputWindow);
-			::ImGui_ImplDX11_Init(a_evn.m_pDevice, a_evn.m_pImmediateContext);
+			if (!::ImGui_ImplDX11_Init(
+					a_evn.m_pDevice,
+					a_evn.m_pImmediateContext))
+			{
+				Error("ImGui initialization failed (DX11)");
+				return;
+			}
 
 			m_imInitialized = true;
 
@@ -104,7 +112,7 @@ namespace IED
 
 			if (!m_pfnWndProc)
 			{
-				m_Instance.Warning(
+				Warning(
 					"[0x%llX] SetWindowLongPtrA failed",
 					a_evn.m_pSwapChainDesc->OutputWindow);
 			}
@@ -112,14 +120,14 @@ namespace IED
 
 		void UI::Receive(const IDXGISwapChainPresent& a_evn)
 		{
-			if (m_suspended)
+			if (m_suspended.load(std::memory_order_relaxed))
 			{
 				return;
 			}
 
 			IScopedLock lock(m_lock);
 
-			if (!m_Instance.m_imInitialized)
+			if (!m_imInitialized)
 			{
 				return;
 			}
@@ -167,12 +175,12 @@ namespace IED
 			while (it != m_drawTasks.end())
 			{
 				ImGui::PushID(it->first);
-				bool res = it->second->UIRunTask();
+				bool res = it->second->Run();
 				ImGui::PopID();
 
-				if (!res)
+				if (!res || it->second->m_stopMe)
 				{
-					OnTaskRemove(it->second);
+					OnTaskRemove(it->second.get());
 					it = m_drawTasks.erase(it);
 				}
 				else
@@ -226,7 +234,7 @@ namespace IED
 
 		void UI::Receive(const Handlers::KeyEvent& a_evn)
 		{
-			if (!m_Instance.m_suspended)
+			if (!m_Instance.m_suspended.load(std::memory_order_relaxed))
 			{
 				ProcessEvent(a_evn);
 			}
@@ -274,72 +282,34 @@ namespace IED
 			});
 		}
 
-		bool UI::AddTask(std::uint32_t a_id, UIRenderTaskBase* a_task)
-		{
-			if (!a_task)
-			{
-				return false;
-			}
-
-			IScopedLock lock(m_Instance.m_lock);
-
-			if (!m_Instance.m_imInitialized)
-			{
-				return false;
-			}
-
-			if (auto r = m_Instance.m_drawTasks.emplace(a_id, a_task); !r.second)
-			{
-				return false;
-			}
-
-			a_task->m_state.holdsLock   = a_task->m_options.lock;
-			a_task->m_state.holdsFreeze = a_task->m_options.freeze;
-
-			if (a_task->m_state.holdsLock)
-			{
-				m_Instance.m_state.lockCounter++;
-			}
-
-			if (a_task->m_state.holdsFreeze)
-			{
-				m_Instance.m_state.freezeCounter++;
-			}
-
-			if (!m_Instance.m_state.controlsLocked &&
-			    m_Instance.m_state.lockCounter > 0)
-			{
-				m_Instance.LockControls(true);
-			}
-
-			if (!m_Instance.m_state.timeFrozen &&
-			    m_Instance.m_state.freezeCounter > 0)
-			{
-				m_Instance.FreezeTime(true);
-			}
-
-			m_Instance.m_suspended = false;
-
-			return true;
-		}
-
-		void UI::RemoveTask(uint32_t id)
+		void UI::RemoveTask(uint32_t a_id)
 		{
 			IScopedLock lock(m_Instance.m_lock);
 
-			auto it = m_Instance.m_drawTasks.find(id);
+			auto it = m_Instance.m_drawTasks.find(a_id);
 			if (it == m_Instance.m_drawTasks.end())
 			{
 				return;
 			}
 
-			m_Instance.OnTaskRemove(it->second);
+			m_Instance.OnTaskRemove(it->second.get());
 
 			m_Instance.m_drawTasks.erase(it);
 
 			if (m_Instance.m_drawTasks.empty())
 			{
 				m_Instance.Suspend();
+			}
+		}
+
+		void UI::QueueRemoveTask(std::uint32_t a_id)
+		{
+			IScopedLock lock(m_Instance.m_lock);
+
+			auto it = m_Instance.m_drawTasks.find(a_id);
+			if (it != m_Instance.m_drawTasks.end())
+			{
+				it->second->m_stopMe = true;
 			}
 		}
 
@@ -381,6 +351,20 @@ namespace IED
 						m_state.freezeCounter--;
 					}
 				}
+
+				if (e->m_options.wantCursor != e->m_state.holdsWantCursor)
+				{
+					e->m_state.holdsWantCursor = e->m_options.wantCursor;
+
+					if (e->m_state.holdsWantCursor)
+					{
+						m_state.wantCursorCounter++;
+					}
+					else
+					{
+						m_state.wantCursorCounter--;
+					}
+				}
 			}
 
 			if (m_state.controlsLocked)
@@ -412,6 +396,8 @@ namespace IED
 					FreezeTime(true);
 				}
 			}
+
+			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
 		}
 
 		bool UI::SetCurrentFont(const stl::fixed_string& a_font)
@@ -495,6 +481,54 @@ namespace IED
 			m_Instance.MarkFontUpdateDataDirtyImpl();
 		}
 
+		void UI::OnTaskAdd(Tasks::UIRenderTaskBase* a_task)
+		{
+			a_task->m_state.holdsLock       = a_task->m_options.lock;
+			a_task->m_state.holdsFreeze     = a_task->m_options.freeze;
+			a_task->m_state.holdsWantCursor = a_task->m_options.wantCursor;
+
+			if (a_task->m_state.holdsLock)
+			{
+				m_state.lockCounter++;
+			}
+
+			if (a_task->m_state.holdsFreeze)
+			{
+				m_state.freezeCounter++;
+			}
+
+			if (a_task->m_state.holdsWantCursor)
+			{
+				m_state.wantCursorCounter++;
+			}
+
+			a_task->m_state.running   = true;
+			a_task->m_state.startTime = IPerfCounter::Query();
+
+			a_task->OnTaskStart();
+
+			if (!m_state.controlsLocked &&
+			    m_state.lockCounter > 0)
+			{
+				LockControls(true);
+			}
+
+			if (!m_state.timeFrozen &&
+			    m_state.freezeCounter > 0)
+			{
+				FreezeTime(true);
+			}
+
+			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
+
+			if (m_suspended.load(std::memory_order_relaxed))
+			{
+				ImGui_ImplWin32_ResetFrameTimer();
+			}
+
+			m_suspended.store(false, std::memory_order_relaxed);
+		}
+
 		void UI::OnTaskRemove(UIRenderTaskBase* a_task)
 		{
 			if (a_task->m_state.holdsLock)
@@ -507,6 +541,16 @@ namespace IED
 				m_state.freezeCounter--;
 			}
 
+			if (a_task->m_state.holdsWantCursor)
+			{
+				m_state.wantCursorCounter--;
+			}
+
+			a_task->m_state.running = false;
+			a_task->m_stopMe        = false;
+
+			a_task->OnTaskStop();
+
 			if (m_state.controlsLocked && m_state.lockCounter == 0)
 			{
 				LockControls(false);
@@ -516,6 +560,8 @@ namespace IED
 			{
 				FreezeTime(false);
 			}
+
+			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
 		}
 
 		void UI::QueueSetScaleImpl(float a_scale)
@@ -984,7 +1030,7 @@ namespace IED
 				FreezeTime(false);
 			}
 
-			m_suspended = true;
+			m_suspended.store(true, std::memory_order_relaxed);
 		}
 
 	}

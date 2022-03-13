@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IED/ActorInfoEntry.h"
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/SettingHolder.h"
 

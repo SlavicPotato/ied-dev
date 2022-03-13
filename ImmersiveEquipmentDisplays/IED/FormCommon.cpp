@@ -1,9 +1,7 @@
 #include "pch.h"
 
+#include "ConfigCommon.h"
 #include "FormCommon.h"
-
-#include "ConfigOverrideCommon.h"
-
 #include "LocaleData.h"
 
 namespace IED

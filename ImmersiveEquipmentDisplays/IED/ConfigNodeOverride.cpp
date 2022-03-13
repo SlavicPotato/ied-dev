@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "ConfigOverrideNodeOverride.h"
+#include "ConfigNodeOverride.h"
 
 #include "IED/Data.h"
 

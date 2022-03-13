@@ -265,7 +265,11 @@ namespace IED
 			                 .GetConfigStore()
 			                 .active.transforms.GetActorData();
 
-			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
+			if (EraseConfig<
+					Data::configNodeOverrideEntryPlacement_t>(
+					a_handle,
+					data,
+					a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}

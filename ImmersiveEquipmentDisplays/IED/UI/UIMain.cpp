@@ -9,6 +9,7 @@ namespace IED
 	namespace UI
 	{
 		UIMain::UIMain(Controller& a_controller) :
+			UIContextBase(a_controller),
 			UILocalizationInterface(a_controller),
 			UIAboutModal(a_controller),
 			m_controller(a_controller),

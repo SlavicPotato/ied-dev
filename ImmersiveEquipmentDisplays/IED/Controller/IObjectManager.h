@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ControllerCommon.h"
-#include "IED/ConfigOverride.h"
-#include "IED/ConfigOverrideModelGroup.h"
+#include "IED/ConfigModelGroup.h"
+#include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/ProcessParams.h"
 #include "IModel.h"
@@ -74,10 +74,6 @@ namespace IED
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		/*void CleanupActorObjectsImpl(
-			ActorObjectHolder& a_objects,
-			Game::ObjectRefHandle a_rhandle);*/
-
 		bool RemoveInvisibleObjects(
 			ActorObjectHolder&    a_objects,
 			Game::ObjectRefHandle a_handle);
@@ -90,12 +86,6 @@ namespace IED
 			bool                                              a_isFemale,
 			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
 			NiPointer<NiNode>&                                a_out);
-
-		/*bool ConstructModelGroup(
-			const Data::configModelGroup_t& a_in,
-			bool a_isFemale,
-			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
-			NiPointer<NiNode>& a_out);*/
 
 		void GetNodeName(
 			TESForm*             a_form,

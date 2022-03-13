@@ -4,7 +4,7 @@
 
 #include "Filters/UIGenericFilter.h"
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/NodeMap.h"
 
 #include "IED/UI/UILocalizationInterface.h"

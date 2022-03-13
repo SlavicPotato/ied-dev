@@ -2,8 +2,6 @@
 
 #include "UINodeOverrideTabPanel.h"
 
-#include "Profile/UIProfileEditorNodeOverride.h"
-
 #include "IED/UI/Window/UIWindow.h"
 
 #include "IED/UI/UILocalizationInterface.h"
@@ -11,6 +9,7 @@
 namespace IED
 {
 	class Controller;
+	class UIProfileEditorNodeOverride;
 
 	namespace UI
 	{
@@ -22,8 +21,8 @@ namespace IED
 
 		public:
 			UINodeOverrideEditorWindow(
-				Controller&                  a_controller,
-				UIProfileEditorNodeOverride& a_profileEditor);
+				Controller&   a_controller,
+				UIWindowBase& a_profileEditor);
 
 			void Initialize();
 			void Reset();
@@ -38,7 +37,7 @@ namespace IED
 
 			UINodeOverrideTabPanel m_tabPanel;
 
-			UIProfileEditorNodeOverride& m_profileEditor;
+			UIWindowBase& m_profileEditor;
 
 			Controller& m_controller;
 		};

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigOverrideEffectShader.h"
+#include "IED/ConfigEffectShader.h"
 
 #include "Serialization/Serialization.h"
 

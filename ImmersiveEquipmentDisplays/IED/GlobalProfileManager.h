@@ -4,6 +4,7 @@
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
 #include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONFormFilterBaseParser.h"
+
 #include "IED/Profile/Manager.h"
 
 namespace IED
@@ -56,28 +57,29 @@ namespace IED
 		};
 
 	public:
-		template <class T, std::enable_if_t<std::is_same_v<T, SlotProfile>, int> = 0>
-		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
+		template <class T>
+		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
 		{
-			return m_slotManager;
-		}
-
-		template <class T, std::enable_if_t<std::is_same_v<T, CustomProfile>, int> = 0>
-		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
-		{
-			return m_customManager;
-		}
-
-		template <class T, std::enable_if_t<std::is_same_v<T, NodeOverrideProfile>, int> = 0>
-		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
-		{
-			return m_nodeOverrideManager;
-		}
-
-		template <class T, std::enable_if_t<std::is_same_v<T, FormFilterProfile>, int> = 0>
-		[[nodiscard]] static constexpr ProfileManager<T>& GetSingleton() noexcept
-		{
-			return m_formFilterManager;
+			if constexpr (std::is_same_v<T, SlotProfile>)
+			{
+				return m_slotManager;
+			}
+			else if constexpr (std::is_same_v<T, CustomProfile>)
+			{
+				return m_customManager;
+			}
+			else if constexpr (std::is_same_v<T, NodeOverrideProfile>)
+			{
+				return m_nodeOverrideManager;
+			}
+			else if constexpr (std::is_same_v<T, FormFilterProfile>)
+			{
+				return m_formFilterManager;
+			}
+			else
+			{
+				static_assert(false, "Unrecognized profile");
+			}
 		}
 
 	private:

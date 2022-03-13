@@ -3,7 +3,7 @@
 #include "PapyrusCommon.h"
 #include "PapyrusCustomItemCommon.h"
 
-#include "IED/ConfigOverrideCommon.h"
+#include "IED/ConfigCommon.h"
 #include "IED/Controller/Controller.h"
 #include "IED/Data.h"
 #include "IED/Main.h"
@@ -53,21 +53,21 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueResetCustom(
+					Initializer::GetController()->QueueResetCustom(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueResetCustomNPC(
+					Initializer::GetController()->QueueResetCustomNPC(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueResetCustomRace(
+					Initializer::GetController()->QueueResetCustomRace(
 						a_target,
 						a_class,
 						a_key,
@@ -84,19 +84,19 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueResetCustom(
+					Initializer::GetController()->QueueResetCustom(
 						a_target,
 						a_class,
 						a_key);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueResetCustomNPC(
+					Initializer::GetController()->QueueResetCustomNPC(
 						a_target,
 						a_class,
 						a_key);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueResetCustomRace(
+					Initializer::GetController()->QueueResetCustomRace(
 						a_target,
 						a_class,
 						a_key);
@@ -111,17 +111,17 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueResetCustom(
+					Initializer::GetController()->QueueResetCustom(
 						a_target,
 						a_class);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueResetCustomNPC(
+					Initializer::GetController()->QueueResetCustomNPC(
 						a_target,
 						a_class);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueResetCustomRace(
+					Initializer::GetController()->QueueResetCustomRace(
 						a_target,
 						a_class);
 					break;
@@ -137,21 +137,21 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueUpdateTransformCustom(
+					Initializer::GetController()->QueueUpdateTransformCustom(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueUpdateTransformCustomNPC(
+					Initializer::GetController()->QueueUpdateTransformCustomNPC(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueUpdateTransformCustomRace(
+					Initializer::GetController()->QueueUpdateTransformCustomRace(
 						a_target,
 						a_class,
 						a_key,
@@ -169,21 +169,21 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueUpdateAttachCustom(
+					Initializer::GetController()->QueueUpdateAttachCustom(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueUpdateAttachCustomNPC(
+					Initializer::GetController()->QueueUpdateAttachCustomNPC(
 						a_target,
 						a_class,
 						a_key,
 						a_name);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueUpdateAttachCustomRace(
+					Initializer::GetController()->QueueUpdateAttachCustomRace(
 						a_target,
 						a_class,
 						a_key,
@@ -199,17 +199,17 @@ namespace IED
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					g_controller->QueueEvaluate(
+					Initializer::GetController()->QueueEvaluate(
 						a_target,
 						ControllerUpdateFlags::kNone);
 					break;
 				case ConfigClass::NPC:
-					g_controller->QueueEvaluateNPC(
+					Initializer::GetController()->QueueEvaluateNPC(
 						a_target,
 						ControllerUpdateFlags::kNone);
 					break;
 				case ConfigClass::Race:
-					g_controller->QueueEvaluateRace(
+					Initializer::GetController()->QueueEvaluateRace(
 						a_target,
 						ControllerUpdateFlags::kNone);
 					break;
@@ -248,7 +248,7 @@ namespace IED
 
 			configMapCustom_t& GetConfigMap(ConfigClass a_class) noexcept
 			{
-				auto& store = g_controller->GetConfigStore();
+				auto& store = Initializer::GetController()->GetConfigStore();
 
 				switch (a_class)
 				{

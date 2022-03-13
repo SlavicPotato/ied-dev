@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIAboutModal.h"
+#include "UIContextBase.h"
 #include "UIDialogImportExport.h"
 #include "UIFormBrowser.h"
 #include "UIFormInfoCache.h"
@@ -27,7 +28,7 @@
 
 #include "Widgets/UIExportFilterWidget.h"
 
-#include "IED/ConfigOverrideDefault.h"
+#include "IED/ConfigSerializationFlags.h"
 #include "IED/SettingHolder.h"
 
 namespace IED
@@ -37,7 +38,7 @@ namespace IED
 	namespace UI
 	{
 		class UIMain :
-			public UIWindow,
+			public UIContextBase,
 			UIExportFilterWidget,
 			UIAboutModal,
 			public virtual UILocalizationInterface
@@ -48,12 +49,14 @@ namespace IED
 		public:
 			UIMain(Controller& a_controller);
 
-			void Initialize();
-			void Reset();
-			void Draw();
+			virtual ~UIMain() noexcept = default;
 
-			void OnOpen();
-			void OnClose();
+			virtual void Initialize() override;
+			virtual void Reset() override;
+			virtual void Draw() override;
+
+			virtual void OnOpen() override;
+			virtual void OnClose() override;
 
 			inline constexpr auto& GetPopupQueue() noexcept
 			{

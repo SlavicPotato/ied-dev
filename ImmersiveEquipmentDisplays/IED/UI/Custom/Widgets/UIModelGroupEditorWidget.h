@@ -11,7 +11,7 @@
 
 #include "UIModelGroupEditorWidgetStrings.h"
 
-#include "IED/ConfigOverrideModelGroup.h"
+#include "IED/ConfigModelGroup.h"
 
 #include "UISingleCustomConfigUpdateParams.h"
 

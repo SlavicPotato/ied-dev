@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ConfigOverride.h"
+#include "../ConfigStore.h"
 #include "../Data.h"
 #include "../Inventory.h"
 

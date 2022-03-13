@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConfigOverrideBase.h"
-#include "ConfigOverrideModelGroup.h"
+#include "ConfigBase.h"
+#include "ConfigModelGroup.h"
 
 namespace IED
 {

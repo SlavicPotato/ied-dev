@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigOverrideDefault.h"
+#include "IED/ConfigSerializationFlags.h"
 
 namespace IED
 {

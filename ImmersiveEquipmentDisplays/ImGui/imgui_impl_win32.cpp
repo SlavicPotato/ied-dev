@@ -296,6 +296,13 @@ static void ImGui_ImplWin32_UpdateGamepads()
 #endif  // #ifndef IMGUI_IMPL_WIN32_DISABLE_GAMEPAD
 }
 
+void ImGui_ImplWin32_ResetFrameTimer()
+{
+	INT64 current_time;
+	::QueryPerformanceCounter((LARGE_INTEGER*)&current_time);
+	g_Time = current_time;
+}
+
 void ImGui_ImplWin32_NewFrame()
 {
 	ImGuiIO& io = ImGui::GetIO();

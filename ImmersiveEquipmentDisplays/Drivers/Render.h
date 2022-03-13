@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Events/Dispatcher.h"
 #include "Render/Events.h"
 
 namespace IED

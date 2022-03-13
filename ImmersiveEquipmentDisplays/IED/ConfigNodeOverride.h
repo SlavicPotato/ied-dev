@@ -1,7 +1,8 @@
 #pragma once
 
-#include "ConfigOverrideCommon.h"
-#include "ConfigOverrideTransform.h"
+#include "ConfigCommon.h"
+#include "ConfigData.h"
+#include "ConfigTransform.h"
 
 #include "WeatherClassificationFlags.h"
 
@@ -149,50 +150,54 @@ namespace IED
 				DataVersion2 = 2,
 			};
 
+			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
+				NodeOverrideConditionFlags::kMatchEquipped |
+				NodeOverrideConditionFlags::kMatchCategoryOperOR;
+
 			inline configNodeOverrideCondition_t()
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			};
 
-			configNodeOverrideCondition_t(
+			inline configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type,
 				Game::FormID              a_form)
 			{
-				if (a_type == NodeOverrideConditionType::Race ||
-				    a_type == NodeOverrideConditionType::Actor ||
-				    a_type == NodeOverrideConditionType::NPC)
+				switch (a_type)
 				{
+				case NodeOverrideConditionType::Race:
+				case NodeOverrideConditionType::Actor:
+				case NodeOverrideConditionType::NPC:
 					form = a_form;
-				}
-				else if (a_type == NodeOverrideConditionType::Form)
-				{
+					break;
+				case NodeOverrideConditionType::Form:
 					form  = a_form;
-					flags = NodeOverrideConditionFlags::kMatchEquipped;
-				}
-				else if (a_type == NodeOverrideConditionType::Keyword)
-				{
+					flags = DEFAULT_MATCH_CATEGORY_FLAGS;
+					break;
+				case NodeOverrideConditionType::Keyword:
 					keyword = a_form;
-					flags   = NodeOverrideConditionFlags::kMatchEquipped;
-				}
-				else
-				{
+					flags   = DEFAULT_MATCH_CATEGORY_FLAGS;
+					break;
+				default:
 					HALT("FIXME");
+					break;
 				}
 
 				fbf.type = a_type;
 			}
 
-			configNodeOverrideCondition_t(
+			inline configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type)
 			{
-				if (a_type == NodeOverrideConditionType::Race ||
-				    a_type == NodeOverrideConditionType::Furniture ||
-				    a_type == NodeOverrideConditionType::Group ||
-				    a_type == NodeOverrideConditionType::Location ||
-				    a_type == NodeOverrideConditionType::Worldspace ||
-				    a_type == NodeOverrideConditionType::Package ||
-				    a_type == NodeOverrideConditionType::Weather)
+				switch (a_type)
 				{
+				case NodeOverrideConditionType::Race:
+				case NodeOverrideConditionType::Furniture:
+				case NodeOverrideConditionType::Group:
+				case NodeOverrideConditionType::Location:
+				case NodeOverrideConditionType::Worldspace:
+				case NodeOverrideConditionType::Package:
+				case NodeOverrideConditionType::Weather:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{
@@ -200,10 +205,10 @@ namespace IED
 					}
 
 					fbf.type = a_type;
-				}
-				else
-				{
+					break;
+				default:
 					HALT("FIXME");
+					break;
 				}
 			}
 
@@ -238,7 +243,7 @@ namespace IED
 			inline configNodeOverrideCondition_t(
 				ObjectSlotExtra a_slot) :
 				typeSlot(a_slot),
-				flags(NodeOverrideConditionFlags::kMatchEquipped)
+				flags(DEFAULT_MATCH_CATEGORY_FLAGS)
 			{
 				fbf.type = NodeOverrideConditionType::Type;
 			}
@@ -648,27 +653,28 @@ namespace IED
 				return data.empty() && placementData.empty();
 			}
 
-			template <class Td, class data_type = stl::strip_type<Td>>
-			inline constexpr auto& get_data() noexcept
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			requires stl::is_any_same_v<
+				data_type,
+				transform_data_type,
+				configNodeOverrideEntryTransform_t>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept
 			{
-				if constexpr (stl::is_any_same_v<
-								  data_type,
-								  transform_data_type,
-								  configNodeOverrideEntryTransform_t>)
-				{
-					return data;
-				}
-				else if constexpr (stl::is_any_same_v<
-									   data_type,
-									   placement_data_type,
-									   configNodeOverrideEntryPlacement_t>)
-				{
-					return placementData;
-				}
-				else
-				{
-					static_assert(false);
-				}
+				return data;
+			}
+
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			requires stl::is_any_same_v<
+				data_type,
+				placement_data_type,
+				configNodeOverrideEntryPlacement_t>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept
+			{
+				return placementData;
 			}
 
 			configNodeOverrideHolder_t copy_cc(

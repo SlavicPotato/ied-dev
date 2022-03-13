@@ -21,7 +21,7 @@
 #include "UITransformSliderWidget.h"
 #include "UIWidgetsCommon.h"
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/StringHolder.h"
 
 #include "IED/UI/UILocalizationInterface.h"
@@ -2143,7 +2143,7 @@ namespace IED
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Package;
 					}
-					
+
 					if (LCG_MI(CommonStrings::Weather, "E"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;

@@ -2,7 +2,7 @@
 
 #include "Serialization/Serialization.h"
 
-#include "IED/ConfigOverrideTransform.h"
+#include "IED/ConfigTransform.h"
 
 namespace IED
 {

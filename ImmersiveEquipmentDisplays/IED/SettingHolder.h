@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConfigOverride.h"
-#include "ConfigOverrideDefault.h"
+#include "ConfigSerializationFlags.h"
+#include "ConfigStore.h"
 #include "NodeMap.h"
 
 #include "Controller/ObjectDatabaseLevel.h"
@@ -131,6 +131,7 @@ namespace IED
 				bool          logLevels[stl::underlying(LogLevel::Max) + 1];
 
 				bool closeOnESC{ true };
+				bool showIntroBanner{ true };
 
 				stl::flag<Data::ConfigStoreSerializationFlags> defaultExportFlags{
 					Data::ConfigStoreSerializationFlags::kAll

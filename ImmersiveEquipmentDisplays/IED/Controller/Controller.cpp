@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#include "ActorProcessorTask.h"
 #include "Controller.h"
 
 #include "IED/EngineExtensions.h"
@@ -9,10 +8,15 @@
 #include "IED/UI/UIMain.h"
 #include "IED/Util/Common.h"
 
+#include "IED/UI/UIIntroBanner.h"
+
 #include "Drivers/Input.h"
 #include "Drivers/UI.h"
 
 #include "IED/Parsers/JSONConfigStoreParser.h"
+
+#include <ext/SKSEMessagingHandler.h>
+#include <ext/SKSESerializationEventHandler.h>
 
 namespace IED
 {
@@ -64,7 +68,9 @@ namespace IED
 			return;
 		}
 
+		SKSEMessagingHandler::GetSingleton().AddSink(this);
 		ITaskPool::AddTaskFixed(this);
+		SinkInputEvents();
 
 		m_esif.set(EventSinkInstallationFlags::kT0);
 	}
@@ -78,7 +84,7 @@ namespace IED
 
 		if (auto mm = MenuManager::GetSingleton())
 		{
-			mm->MenuOpenCloseEventDispatcher()->AddEventSink(this);
+			mm->GetMenuOpenCloseEventDispatcher().AddEventSink(this);
 
 			m_esif.set(EventSinkInstallationFlags::kT1);
 
@@ -274,13 +280,17 @@ namespace IED
 
 		const auto& config = m_config.settings.data;
 
-		UIEnableRestrictions(config.ui.enableRestrictions);
-		UISetLock(config.ui.enableControlLock);
-		UISetFreeze(config.ui.enableFreezeTime);
-		UISetEnabledInMenu(m_iniconf->m_enableInMenus);
+		if (auto& drawTask = UIGetDrawTask())
+		{
+			drawTask->SetLock(config.ui.enableControlLock);
+			drawTask->SetFreeze(config.ui.enableFreezeTime);
+			drawTask->SetWantCursor(true);
+			drawTask->SetEnabledInMenu(m_iniconf->m_enableInMenus);
+			drawTask->EnableRestrictions(config.ui.enableRestrictions);
+		}
 
 		if (m_iniconf->m_forceUIOpenKeys &&
-		    m_iniconf->m_UIOpenKeys.Has())
+		    m_iniconf->m_UIOpenKeys)
 		{
 			m_inputHandlers.uiOpen.SetKeys(
 				m_iniconf->m_UIOpenKeys.GetComboKey(),
@@ -296,7 +306,7 @@ namespace IED
 					config.ui.openKeys->comboKey,
 					config.ui.openKeys->key);
 			}
-			else if (m_iniconf->m_UIOpenKeys.Has())
+			else if (m_iniconf->m_UIOpenKeys)
 			{
 				m_inputHandlers.uiOpen.SetKeys(
 					m_iniconf->m_UIOpenKeys.GetComboKey(),
@@ -335,6 +345,22 @@ namespace IED
 		Drivers::UI::SetReleaseFontData(config.ui.releaseFontData);
 		Drivers::UI::SetAlpha(config.ui.alpha);
 		Drivers::UI::SetBGAlpha(config.ui.bgAlpha);
+
+		if (config.ui.showIntroBanner)
+		{
+			auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000);
+
+			task->SetLock(false);
+			task->SetFreeze(false);
+			task->SetWantCursor(false);
+			task->SetEnabledInMenu(true);
+			task->EnableRestrictions(false);
+
+			if (!Drivers::UI::AddTask(0, std::move(task)))
+			{
+				Warning("Couldn't dispatch intro banner render task");
+			}
+		}
 	}
 
 	void Controller::InitializeConfig()
@@ -396,6 +422,19 @@ namespace IED
 	void Controller::InitializeBSFixedStringTable()
 	{
 		m_bsstrings = std::make_unique<BSStringHolder>();
+	}
+
+	void Controller::OnDataLoaded()
+	{
+		InitializeData();
+
+		ASSERT(SinkEventsT1());
+		ASSERT(SinkEventsT2());
+
+		auto& seh = SKSESerializationEventHandler::GetSingleton();
+
+		seh.AddSink(this);
+		ASSERT(seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this));
 	}
 
 	void Controller::Evaluate(
@@ -2830,6 +2869,8 @@ namespace IED
 			return false;
 		}
 
+		str_conv::to_native(std::string());
+
 		auto configOverride =
 			a_config.get_equipment_override(
 				a_params.collector.m_data,
@@ -4731,6 +4772,72 @@ namespace IED
 		}
 	}
 
+	void Controller::Receive(const SKSESerializationEvent& a_evn)
+	{
+		switch (a_evn.type)
+		{
+		case SKSESerializationEventType::kSave:
+			SaveGameHandler(a_evn.intfc);
+			break;
+		case SKSESerializationEventType::kRevert:
+			RevertHandler(a_evn.intfc);
+			break;
+		}
+	}
+
+	void Controller::Receive(const SKSESerializationLoadEvent& a_evn)
+	{
+		IScopedLock lock(m_lock);
+
+		ReadRecord(a_evn.intfc, a_evn.type, a_evn.version, a_evn.length);
+	}
+
+	void Controller::Receive(const SKSEMessagingEvent& a_evn)
+	{
+		switch (a_evn.message->type)
+		{
+		case SKSEMessagingInterface::kMessage_InputLoaded:
+
+			InitializeBSFixedStringTable();
+
+			break;
+		case SKSEMessagingInterface::kMessage_DataLoaded:
+
+			OnDataLoaded();
+
+			break;
+		case SKSEMessagingInterface::kMessage_NewGame:
+
+			Drivers::UI::QueueRemoveTask(0);
+
+			break;
+		case SKSEMessagingInterface::kMessage_PreLoadGame:
+
+			Drivers::UI::QueueRemoveTask(0);
+
+			StoreActiveHandles();
+
+			break;
+		case SKSEMessagingInterface::kMessage_PostLoadGame:
+
+			if (static_cast<bool>(a_evn.message->data))
+			{
+				EvaluateStoredHandles(ControllerUpdateFlags::kNone);
+			}
+			else
+			{
+				ClearStoredHandles();
+			}
+
+			break;
+		case SKSEMessagingInterface::kMessage_SaveGame:
+
+			SaveSettings();
+
+			break;
+		}
+	}
+
 	auto Controller::ReceiveEvent(
 		const TESObjectLoadedEvent* a_evn,
 		BSTEventSource<TESObjectLoadedEvent>*)
@@ -4984,7 +5091,7 @@ namespace IED
 			stl::underlying(SerializationVersion::kCurrentVersion));
 	}
 
-	void Controller::LoadGameHandler(SKSESerializationInterface* a_intfc)
+	/*void Controller::LoadGameHandler(SKSESerializationInterface* a_intfc)
 	{
 		std::uint32_t type, length, version;
 
@@ -4999,7 +5106,7 @@ namespace IED
 				{
 					IScopedLock lock(m_lock);
 
-					ReadRecord(a_intfc, type, version);
+					ReadRecord(a_intfc, type, version, length);
 				}
 				break;
 			default:
@@ -5010,7 +5117,7 @@ namespace IED
 				break;
 			}
 		}
-	}
+	}*/
 
 	void Controller::RevertHandler(SKSESerializationInterface* a_intfc)
 	{
@@ -5125,6 +5232,7 @@ namespace IED
 
 	void Controller::OnUIOpen()
 	{
+		//Drivers::UI::QueueRemoveTask(0);
 		UpdateActorInfo(m_objects);
 	}
 
@@ -5214,6 +5322,11 @@ namespace IED
 			}
 		}
 
+		ClearStoredHandles();
+	}
+
+	void Controller::ClearStoredHandles()
+	{
 		m_activeHandles.clear();
 	}
 

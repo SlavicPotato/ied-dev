@@ -1,7 +1,6 @@
 #include "pch.h"
 
-#include "Config.h"
-#include "StringHolder.h"
+#include "ConfigINI.h"
 
 namespace IED
 {

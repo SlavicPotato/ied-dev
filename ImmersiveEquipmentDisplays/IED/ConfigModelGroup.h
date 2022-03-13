@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ConfigOverrideCommon.h"
-#include "ConfigOverrideEffectShader.h"
-#include "ConfigOverrideTransform.h"
+#include "ConfigData.h"
+#include "ConfigEffectShader.h"
+#include "ConfigTransform.h"
 
 namespace IED
 {

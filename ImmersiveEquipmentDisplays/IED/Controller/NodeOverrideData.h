@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigOverrideTransform.h"
+#include "IED/ConfigTransform.h"
 
 namespace IED
 {

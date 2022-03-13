@@ -31,6 +31,7 @@ namespace IED
 			ReleaseFontData             = 4420,
 			Alpha                       = 4421,
 			BGAlpha                     = 4422,
+			ShowIntroBanner             = 4423,
 		};
 	}
 }

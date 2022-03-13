@@ -3,8 +3,6 @@
 #include "Events.h"
 #include "Profile.h"
 
-#include "Events/Dispatcher.h"
-
 namespace IED
 {
 	template <class T>

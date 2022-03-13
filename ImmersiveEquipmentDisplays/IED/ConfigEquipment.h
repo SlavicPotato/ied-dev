@@ -1,8 +1,8 @@
 #pragma once
 
+#include "ConfigBaseValues.h"
 #include "ConfigCommon.h"
-#include "ConfigOverrideBaseValues.h"
-#include "ConfigOverrideCommon.h"
+#include "ConfigData.h"
 
 #include "WeatherClassificationFlags.h"
 
@@ -121,74 +121,78 @@ namespace IED
 				DataVersion3 = 3,
 			};
 
+			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
+				EquipmentOverrideConditionFlags::kMatchEquipped |
+				EquipmentOverrideConditionFlags::kMatchCategoryOperOR;
+
 			equipmentOverrideCondition_t() = default;
 
-			equipmentOverrideCondition_t(
+			inline equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_type,
 				Game::FormID                   a_form)
 			{
-				if (a_type == EquipmentOverrideConditionType::Race ||
-				    a_type == EquipmentOverrideConditionType::Actor ||
-				    a_type == EquipmentOverrideConditionType::NPC)
+				switch (a_type)
 				{
+				case EquipmentOverrideConditionType::Race:
+				case EquipmentOverrideConditionType::Actor:
+				case EquipmentOverrideConditionType::NPC:
 					form = a_form;
-				}
-				else if (a_type == EquipmentOverrideConditionType::Form)
-				{
+					break;
+				case EquipmentOverrideConditionType::Form:
 					form  = a_form;
-					flags = EquipmentOverrideConditionFlags::kMatchEquipped;
-				}
-				else if (a_type == EquipmentOverrideConditionType::Quest)
-				{
+					flags = DEFAULT_MATCH_CATEGORY_FLAGS;
+					break;
+				case EquipmentOverrideConditionType::Quest:
 					keyword       = a_form;
 					questCondType = QuestConditionType::kComplete;
-				}
-				else if (a_type == EquipmentOverrideConditionType::Keyword)
-				{
+					break;
+				case EquipmentOverrideConditionType::Keyword:
 					keyword = a_form;
-					flags   = EquipmentOverrideConditionFlags::kMatchEquipped;
-				}
-				else
-				{
+					flags   = DEFAULT_MATCH_CATEGORY_FLAGS;
+					break;
+				default:
 					HALT("FIXME");
+					break;
 				}
 
 				fbf.type = a_type;
 			}
 
-			equipmentOverrideCondition_t(
+			inline equipmentOverrideCondition_t(
 				Data::ObjectSlotExtra a_slot) :
 				slot(a_slot),
-				flags(EquipmentOverrideConditionFlags::kMatchEquipped)
+				flags(DEFAULT_MATCH_CATEGORY_FLAGS)
 			{
 				fbf.type = EquipmentOverrideConditionType::Type;
 			}
 
-			equipmentOverrideCondition_t(
+			inline equipmentOverrideCondition_t(
 				BIPED_OBJECT a_slot) :
 				bipedSlot(a_slot)
 			{
 				fbf.type = EquipmentOverrideConditionType::BipedSlot;
 			}
 
-			equipmentOverrideCondition_t(
+			inline equipmentOverrideCondition_t(
 				ExtraConditionType a_type) :
 				extraCondType(a_type)
 			{
 				fbf.type = EquipmentOverrideConditionType::Extra;
 			}
 
-			equipmentOverrideCondition_t(
+			inline equipmentOverrideCondition_t(
 				EquipmentOverrideConditionType a_matchType)
 			{
-				if (a_matchType == EquipmentOverrideConditionType::Race ||
-				    a_matchType == EquipmentOverrideConditionType::Furniture ||
-				    a_matchType == EquipmentOverrideConditionType::Group ||
-				    a_matchType == EquipmentOverrideConditionType::Location ||
-				    a_matchType == EquipmentOverrideConditionType::Worldspace ||
-				    a_matchType == EquipmentOverrideConditionType::Package ||
-				    a_matchType == EquipmentOverrideConditionType::Weather)
+				switch (a_matchType)
 				{
+				case EquipmentOverrideConditionType::Race:
+				case EquipmentOverrideConditionType::Furniture:
+				case EquipmentOverrideConditionType::Group:
+				case EquipmentOverrideConditionType::Location:
+				case EquipmentOverrideConditionType::Worldspace:
+				case EquipmentOverrideConditionType::Package:
+				case EquipmentOverrideConditionType::Weather:
+
 					if (a_matchType == EquipmentOverrideConditionType::Location ||
 					    a_matchType == EquipmentOverrideConditionType::Worldspace)
 					{
@@ -196,10 +200,12 @@ namespace IED
 					}
 
 					fbf.type = a_matchType;
-				}
-				else
-				{
+
+					break;
+
+				default:
 					HALT("FIXME");
+					break;
 				}
 			}
 
@@ -215,12 +221,12 @@ namespace IED
 
 			union
 			{
-				std::uint32_t          ui32a{ static_cast<std::uint32_t>(-1) };
-				QuestConditionType     questCondType;
-				ExtraConditionType     extraCondType;
-				BIPED_OBJECT           bipedSlot;
-				PACKAGE_PROCEDURE_TYPE procedureType;
-				WeatherClassificationFlags  weatherClass;
+				std::uint32_t              ui32a{ static_cast<std::uint32_t>(-1) };
+				QuestConditionType         questCondType;
+				ExtraConditionType         extraCondType;
+				BIPED_OBJECT               bipedSlot;
+				PACKAGE_PROCEDURE_TYPE     procedureType;
+				WeatherClassificationFlags weatherClass;
 
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);

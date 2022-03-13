@@ -52,13 +52,6 @@ namespace IED
 				{
 					ImGui::PushID(stl::underlying(i));
 
-					bool selected = (i == a_type);
-					if (selected)
-					{
-						if (ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-					}
-
 					if (ImGui::CheckboxFlagsT(
 							LS<UIWeatherClassSelectorWidgetStrings, 3>(e, "1"),
 							stl::underlying(std::addressof(a_type)),
@@ -95,7 +88,7 @@ namespace IED
 
 				if (a_type.test(WeatherClassificationFlags::kPleasant))
 				{
-					m_buf = LS(UIWeatherClassSelectorWidgetStrings::Pleasant);
+					m_buf += LS(UIWeatherClassSelectorWidgetStrings::Pleasant);
 				}
 
 				if (a_type.test(WeatherClassificationFlags::kCloudy))

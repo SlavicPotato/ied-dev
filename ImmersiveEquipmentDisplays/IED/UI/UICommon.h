@@ -11,8 +11,10 @@ namespace IED
 			extern const ImVec4 g_colorFatalError;
 			extern const ImVec4 g_colorOK;
 			extern const ImVec4 g_colorGreyed;
+			extern const ImVec4 g_colorLightGrey;
 			// extern const ImVec4 g_colorLightRed;
 			extern const ImVec4 g_colorLightOrange;
+			extern const ImVec4 g_colorDarkOrange;
 			extern const ImVec4 g_colorLimeGreen;
 			extern const ImVec4 g_colorLightBlue;
 			extern const ImVec4 g_colorLightBlue2;
@@ -45,6 +47,26 @@ namespace IED
 
 			void PushDisabled(bool a_switch);
 			void PopDisabled(bool a_switch);
+
+			template <
+				class T,
+				T _Min,
+				T _Max,
+				T _Speed>
+			requires std::is_floating_point_v<T>
+			struct float_anim_t
+			{
+			public:
+				constexpr T step()
+				{
+					auto result = current;
+					current     = std::clamp(current + static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed, _Min, _Max);
+					return result;
+				}
+
+			private:
+				T current{ _Min };
+			};
 
 		}
 	}

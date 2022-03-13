@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IED/ConfigOverride.h"
-#include "IED/ConfigOverrideBlockList.h"
+#include "IED/ConfigBlockList.h"
+#include "IED/ConfigStore.h"
 
 namespace IED
 {

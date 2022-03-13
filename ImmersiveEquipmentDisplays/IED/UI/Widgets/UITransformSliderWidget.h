@@ -4,7 +4,7 @@
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UILocalizationInterface.h"
 
-#include "IED/ConfigOverrideTransform.h"
+#include "IED/ConfigTransform.h"
 #include "UIPopupToggleButtonWidget.h"
 
 namespace IED

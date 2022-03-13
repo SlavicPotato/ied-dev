@@ -125,7 +125,8 @@ namespace IED
 				a_out.logLevels[i] = levels.get(i, true).asBool();
 			}
 
-			a_out.closeOnESC = data.get("close_on_esc", true).asBool();
+			a_out.closeOnESC      = data.get("close_on_esc", true).asBool();
+			a_out.showIntroBanner = data.get("show_intro_banner", true).asBool();
 
 			a_out.defaultExportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("default_export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
@@ -215,7 +216,8 @@ namespace IED
 				levels.append(e);
 			}
 
-			data["close_on_esc"] = a_data.closeOnESC;
+			data["close_on_esc"]      = a_data.closeOnESC;
+			data["show_intro_banner"] = a_data.showIntroBanner;
 
 			data["default_export_flags"] = stl::underlying(a_data.defaultExportFlags.value);
 

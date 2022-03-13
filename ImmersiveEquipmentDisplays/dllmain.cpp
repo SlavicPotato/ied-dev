@@ -21,7 +21,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 			return false;
 		}
 
-		ret = IED::Initialize(a_skse);
+		ret = IED::Initializer::GetSingleton().Run(a_skse);
 
 		if (ret)
 		{

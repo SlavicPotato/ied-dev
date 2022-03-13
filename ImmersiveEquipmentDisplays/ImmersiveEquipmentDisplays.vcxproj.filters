@@ -57,9 +57,6 @@
     <Filter Include="Source\ImGui">
       <UniqueIdentifier>{d10e5aca-e9be-47e4-ad6e-83751bbc7eaa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Events">
-      <UniqueIdentifier>{5ba272b3-9953-4ed9-8288-80993246b7a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Serialization">
       <UniqueIdentifier>{8bbf867f-c3c5-4adc-80a7-60cbb3e13a06}</UniqueIdentifier>
     </Filter>
@@ -183,6 +180,12 @@
     <Filter Include="Source\IED\JSONParsers\Config\ModelGroup">
       <UniqueIdentifier>{62edb0c0-d32c-4d38-949d-0e166974b7fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\Config">
+      <UniqueIdentifier>{8c617e1f-8238-4167-b6d4-2727481ac84d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ext">
+      <UniqueIdentifier>{62ec8304-a334-4130-88a3-d0be36261136}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -206,12 +209,6 @@
     <ClInclude Include="IED\Main.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigCommon.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Config.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\StringHolder.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
@@ -222,9 +219,6 @@
       <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\EngineExtensions.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigParsers.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="Drivers\Input.h">
@@ -250,18 +244,6 @@
     </ClInclude>
     <ClInclude Include="ImGui\imgui_impl_win32.h">
       <Filter>Source\ImGui</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverride.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="Events\Dispatcher.h">
-      <Filter>Source\Events</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="IED\ProcessParams.h">
       <Filter>Source\IED</Filter>
@@ -437,18 +419,6 @@
     <ClInclude Include="IED\UI\UITipsData.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideSlot.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideBase.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideCustom.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideCommon.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Controller\ObjectManagerCommon.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
@@ -511,9 +481,6 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Custom\UICustomTabPanel.h">
       <Filter>Source\IED\UI\Custom</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideDefault.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\PapyrusInterface\Papyrus.h">
       <Filter>Source\IED\PapyrusInterface</Filter>
@@ -602,12 +569,6 @@
     <ClInclude Include="IED\Parsers\JSONConfigTransformParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideEquipment.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideBaseValues.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Custom\UICustomEditorGlobal.h">
       <Filter>Source\IED\UI\Custom</Filter>
     </ClInclude>
@@ -620,14 +581,8 @@
     <ClInclude Include="IED\UI\EquipmentSlots\UISlotEditorBase.h">
       <Filter>Source\IED\UI\Equipment</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideBlockList.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONFormListParser.h">
       <Filter>Source\IED\JSONParsers\Form</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideNodeOverride.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideTransformParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
@@ -689,9 +644,6 @@
     <ClInclude Include="IED\UI\NodeOverride\Profile\UIProfileEditorNodeOverride.h">
       <Filter>Source\IED\UI\NodeOverride\Profile</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideTransform.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UITransformSliderWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
@@ -736,9 +688,6 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\FormHolder.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Form\UIFormFilterWidget.h">
       <Filter>Source\IED\UI\Widgets\Form</Filter>
@@ -947,9 +896,6 @@
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideModelGroup.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigFormSetParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
@@ -962,20 +908,11 @@
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h">
       <Filter>Source\IED\UI\Custom\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideEffectShader.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigOverrideColor.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigConditionsCommon.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="Drivers\Input\KeyState.h">
       <Filter>Source\Drivers\Input</Filter>
@@ -1028,20 +965,11 @@
     <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\IUUID.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ConfigUUIDTag.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\EffectController.h">
       <Filter>Source\IED\Controller</Filter>
@@ -1093,6 +1021,93 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigINI.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigData.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigConditionsCommon.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigStore.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigBase.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigBaseValues.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigBlockList.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigColor.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigCommon.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigCustom.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigSerializationFlags.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigEffectShader.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigEquipment.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigModelGroup.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigNodeOverride.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigSlot.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigTransform.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigParsers.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigUUIDTag.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\SKSEMessagingHandler.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\IUUID.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\FormHolder.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h">
+      <Filter>Source\ext</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIContextBase.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIIntroBanner.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIIntroBannerStrings.h">
+      <Filter>Source\IED\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1210,12 +1225,6 @@
     <ClCompile Include="IED\Util\Logging.cpp">
       <Filter>Source\IED\Util</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Config.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ConfigOverrideBase.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Data.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
@@ -1267,16 +1276,10 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="skse.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\ActorProcessorTask.cpp">
@@ -1356,9 +1359,6 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONSettingsImportExport.cpp">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ConfigOverrideCommon.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UINotificationInterface.cpp">
       <Filter>Source\IED\UI</Filter>
@@ -1516,9 +1516,6 @@
     <ClCompile Include="IED\UI\Widgets\UIBipedObjectSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="IED\FormHolder.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Controller\IMaintenance.cpp">
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
@@ -1530,9 +1527,6 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\FormFilterMaintenance.cpp">
       <Filter>Source\IED\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ConfigOverrideSlot.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIExportFilterWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
@@ -1639,9 +1633,6 @@
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ConfigOverrideNodeOverride.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
@@ -1659,9 +1650,6 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ConfigConditionsCommon.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="Drivers\Input\KeyState.cpp">
       <Filter>Source\Drivers\Input</Filter>
@@ -1681,17 +1669,8 @@
     <ClCompile Include="IED\ProcessParams.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\str_conv.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\IUUID.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ConfigOverrideEffectShader.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\EffectController.cpp">
       <Filter>Source\IED\Controller</Filter>
@@ -1722,6 +1701,51 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigINI.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigConditionsCommon.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigBase.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigCommon.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigEffectShader.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigNodeOverride.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConfigSlot.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\SKSEMessagingHandler.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\IUUID.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\FormHolder.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\sse-build-resources\ext\str_conv.cpp">
+      <Filter>Source\ext</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIIntroBanner.cpp">
+      <Filter>Source\IED\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

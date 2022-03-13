@@ -5,12 +5,14 @@
 #include <ext/GameCommon.h>
 #include <ext/ICommon.h>
 #include <ext/IPluginInfo.h>
+#include <ext/ISerializationBase.h>
 #include <ext/ITaskPool.h>
 #include <ext/Map.h>
 #include <ext/Math.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
-#include <ext/Serialization.h>
+#include <ext/SKSEMessagingEvents.h>
+#include <ext/SKSESerializationEvents.h>
 #include <ext/Set.h>
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>

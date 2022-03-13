@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "UIMain.h"
 #include "UISettings.h"
 #include "UISettingsStrings.h"
 
@@ -274,6 +275,18 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
+				ImGui::Columns(2, nullptr, false);
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::ShowIntroBanner, "3"),
+						std::addressof(ui.showIntroBanner))))
+				{
+					if (!ui.showIntroBanner)
+					{
+						Drivers::UI::QueueRemoveTask(0);
+					}
+				}
+
 				settings.mark_if(ImGui::Checkbox(
 					LS(UISettingsStrings::CloseOnEsc, "4"),
 					std::addressof(ui.closeOnESC)));
@@ -281,27 +294,21 @@ namespace IED
 				DrawTip(UITip::CloseOnESC);
 
 				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::EnableRestrictions, "5"),
-						std::addressof(ui.enableRestrictions))))
-				{
-					m_controller.UIEnableRestrictions(ui.enableRestrictions);
-				}
-				DrawTip(UITip::EnableRestrictions);
-
-				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::ControlLock, "6"),
 						std::addressof(ui.enableControlLock))))
 				{
-					m_controller.UISetLock(ui.enableControlLock);
+					m_controller.UIGetDrawTask()->SetLock(ui.enableControlLock);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::ControlLock);
+
+				ImGui::NextColumn();
 
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::FreezeTime, "7"),
 						std::addressof(ui.enableFreezeTime))))
 				{
-					m_controller.UISetFreeze(ui.enableFreezeTime);
+					m_controller.UIGetDrawTask()->SetFreeze(ui.enableFreezeTime);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::FreezeTime);
@@ -311,6 +318,16 @@ namespace IED
 					std::addressof(ui.selectCrosshairActor)));
 
 				DrawTip(UITip::SelectCrosshairActor);
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::EnableRestrictions, "5"),
+						std::addressof(ui.enableRestrictions))))
+				{
+					m_controller.UIGetDrawTask()->EnableRestrictions(ui.enableRestrictions);
+				}
+				DrawTip(UITip::EnableRestrictions);
+
+				ImGui::Columns();
 
 				ImGui::Spacing();
 

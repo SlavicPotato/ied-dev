@@ -2,7 +2,7 @@
 
 #include "Serialization/Serialization.h"
 
-#include "IED/ConfigOverrideModelGroup.h"
+#include "IED/ConfigModelGroup.h"
 
 namespace IED
 {

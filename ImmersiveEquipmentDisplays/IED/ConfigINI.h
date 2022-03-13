@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConfigCommon.h"
+#include "ConfigData.h"
 
 #include "ConfigParsers.h"
 

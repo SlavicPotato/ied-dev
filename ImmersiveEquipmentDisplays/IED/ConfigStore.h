@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ConfigOverrideCustom.h"
-#include "ConfigOverrideNodeOverride.h"
-#include "ConfigOverrideSlot.h"
+#include "ConfigCustom.h"
+#include "ConfigNodeOverride.h"
+#include "ConfigSlot.h"
 
 namespace IED
 {

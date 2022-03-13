@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ConfigOverride.h"
-#include "../ConfigOverrideDefault.h"
+#include "../ConfigSerializationFlags.h"
+#include "../ConfigStore.h"
 #include "ImportFlags.h"
 
 #include "Serialization/Serialization.h"

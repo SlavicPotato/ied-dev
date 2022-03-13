@@ -9,7 +9,6 @@ namespace IED
 		struct configUUIDTag_t :
 			uuid_tag
 		{
-		public:
 			inline configUUIDTag_t() noexcept :
 				uuid_tag(IUUID()())
 			{

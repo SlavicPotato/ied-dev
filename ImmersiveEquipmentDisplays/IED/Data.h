@@ -1,11 +1,8 @@
 #pragma once
 
-#include "Config.h"
-#include "ConfigCommon.h"
-#include "ConfigOverride.h"
-
-#include <ext/IPluginInfo.h>
-#include <ext/Threads.h>
+#include "ConfigData.h"
+#include "ConfigINI.h"
+#include "ConfigStore.h"
 
 namespace IED
 {

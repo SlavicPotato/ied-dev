@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Events/Dispatcher.h"
 #include "ImGui/Styles/StylePreset.h"
 #include "Input/Handlers.h"
 #include "Render/Events.h"
@@ -85,11 +84,14 @@ namespace IED
 				return !m_Instance.m_drawTasks.empty();
 			}
 
+			template <class Tp>
+			requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
 			[[nodiscard]] static bool AddTask(
-				std::uint32_t            a_id,
-				Tasks::UIRenderTaskBase* a_task);
+				std::uint32_t a_id,
+				Tp&&          a_task);
 
 			static void RemoveTask(std::uint32_t a_id);
+			static void QueueRemoveTask(std::uint32_t a_id);
 
 			static void EvaluateTaskState();
 
@@ -210,6 +212,7 @@ namespace IED
 			void LockControls(bool a_switch);
 			void FreezeTime(bool a_switch);
 
+			void OnTaskAdd(Tasks::UIRenderTaskBase* a_task);
 			void OnTaskRemove(Tasks::UIRenderTaskBase* a_task);
 
 			bool SetCurrentFont(const stl::fixed_string& a_font);
@@ -253,6 +256,7 @@ namespace IED
 			{
 				std::uint64_t lockCounter{ 0 };
 				std::uint64_t freezeCounter{ 0 };
+				std::uint64_t wantCursorCounter{ 0 };
 
 				stl::optional<bool> autoVanityAllowState;
 
@@ -280,10 +284,10 @@ namespace IED
 				long long    current{ 0L };
 			} m_uiRenderPerf;
 
-			stl::map<std::uint32_t, Tasks::UIRenderTaskBase*> m_drawTasks;
+			stl::map<std::uint32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
 
-			bool m_imInitialized{ false };
-			bool m_suspended{ true };
+			bool              m_imInitialized{ false };
+			std::atomic<bool> m_suspended{ true };
 
 			SKMP_ImGuiUserData m_ioUserData;
 			UIFontUpdateData   m_fontUpdateData;
@@ -306,6 +310,31 @@ namespace IED
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(UI::UpdateFlags);
+
+		template <class Tp>
+		requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
+		bool UI::AddTask(std::uint32_t a_id, Tp&& a_task)
+		{
+			assert(a_task);
+
+			IScopedLock lock(m_Instance.m_lock);
+
+			if (!m_Instance.m_imInitialized)
+			{
+				return false;
+			}
+
+			auto r = m_Instance.m_drawTasks.emplace(a_id, std::forward<Tp>(a_task));
+
+			if (!r.second)
+			{
+				return false;
+			}
+
+			m_Instance.OnTaskAdd(r.first->second.get());
+
+			return true;
+		}
 
 	}
 }

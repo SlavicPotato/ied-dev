@@ -10,7 +10,7 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
-#include "IED/ConfigOverrideCommon.h"
+#include "IED/ConfigCommon.h"
 
 namespace IED
 {

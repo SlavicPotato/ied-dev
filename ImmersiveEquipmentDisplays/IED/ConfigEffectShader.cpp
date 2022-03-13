@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "ConfigOverrideEffectShader.h"
+#include "ConfigEffectShader.h"
 
 #include <ext/BSGraphics.h>
 #include <ext/Model.h>

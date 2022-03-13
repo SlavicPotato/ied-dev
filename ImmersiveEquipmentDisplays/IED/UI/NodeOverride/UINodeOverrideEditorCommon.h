@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
-#include "../Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 #include "Widgets/UINodeOverrideEditorWidget.h"
 
 namespace IED

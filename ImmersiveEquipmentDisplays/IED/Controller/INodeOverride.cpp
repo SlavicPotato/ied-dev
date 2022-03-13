@@ -2,7 +2,7 @@
 
 #include "Controller.h"
 #include "IED/ConfigConditionsCommon.h"
-#include "IED/ConfigOverrideNodeOverride.h"
+#include "IED/ConfigNodeOverride.h"
 #include "IED/EngineExtensions.h"
 #include "IED/FormCommon.h"
 #include "IED/Inventory.h"

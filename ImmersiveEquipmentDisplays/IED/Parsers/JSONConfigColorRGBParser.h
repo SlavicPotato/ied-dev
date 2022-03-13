@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigOverrideColor.h"
+#include "IED/ConfigColor.h"
 
 #include "Serialization/Serialization.h"
 

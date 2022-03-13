@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "ConfigOverrideSlot.h"
+#include "ConfigSlot.h"
 #include "Data.h"
 
 namespace IED

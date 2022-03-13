@@ -13,7 +13,7 @@
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"

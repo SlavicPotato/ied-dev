@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../ConfigOverride.h"
-#include "../Data.h"
+#include "IED/ConfigStore.h"
+#include "IED/Data.h"
 
 #include "ObjectManagerCommon.h"
 

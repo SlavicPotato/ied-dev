@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "Config.h"
+#include "ConfigINI.h"
 #include "Data.h"
 #include "FormCommon.h"
 #include "LocaleData.h"

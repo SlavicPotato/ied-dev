@@ -2,11 +2,11 @@
 
 #include "CollectorData.h"
 #include "CommonParams.h"
-#include "ConfigOverrideBaseValues.h"
-#include "ConfigOverrideCommon.h"
-#include "ConfigOverrideEffectShader.h"
-#include "ConfigOverrideEquipment.h"
-#include "ConfigOverrideTransform.h"
+#include "ConfigBaseValues.h"
+#include "ConfigData.h"
+#include "ConfigEffectShader.h"
+#include "ConfigEquipment.h"
+#include "ConfigTransform.h"
 #include "NodeDescriptor.h"
 
 namespace IED

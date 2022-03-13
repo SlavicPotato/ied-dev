@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ConfigOverrideColor.h"
-#include "ConfigOverrideEquipment.h"
+#include "ConfigColor.h"
+#include "ConfigEquipment.h"
 #include "ConfigUUIDTag.h"
 
 namespace IED

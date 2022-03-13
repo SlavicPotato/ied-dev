@@ -17,57 +17,88 @@ namespace IED
 			friend class IED::Drivers::UI;
 
 		public:
-			inline constexpr void UISetLock(bool a_switch) noexcept
+			virtual ~UIRenderTaskBase() noexcept = default;
+
+			inline constexpr void SetLock(bool a_switch) noexcept
 			{
 				m_options.lock = a_switch;
 			}
 
-			inline constexpr void UISetFreeze(bool a_switch) noexcept
+			inline constexpr void SetFreeze(bool a_switch) noexcept
 			{
 				m_options.freeze = a_switch;
 			}
 
-			inline constexpr void UIEnableRestrictions(bool a_switch) noexcept
+			inline constexpr void SetWantCursor(bool a_switch) noexcept
+			{
+				m_options.wantCursor = a_switch;
+			}
+
+			inline constexpr void EnableRestrictions(bool a_switch) noexcept
 			{
 				m_options.enableChecks = a_switch;
 			}
 
-			inline constexpr bool UIGetFreeze() const
+			inline constexpr bool GetFreeze() const noexcept
 			{
 				return m_options.freeze;
 			}
 
-			inline constexpr void UISetEnabledInMenu(bool a_switch) noexcept
+			inline constexpr bool GetWantCursor() const noexcept
+			{
+				return m_options.wantCursor;
+			}
+
+			inline constexpr void SetEnabledInMenu(bool a_switch) noexcept
 			{
 				m_options.enableInMenu = a_switch;
 			}
 
-			inline constexpr bool UIGetEnabledInMenu() const noexcept
+			inline constexpr bool GetEnabledInMenu() const noexcept
 			{
 				return m_options.enableInMenu;
 			}
 
-		protected:
-			virtual bool UIRunTask() = 0;
-			virtual bool UIRunEnableChecks() const;
+			long long GetRunTime() const noexcept;
 
-		private:
+			inline constexpr bool IsRunning() const noexcept
+			{
+				return m_state.running;
+			}
+
+			virtual bool RunEnableChecks() const;
+
+		protected:
+			virtual bool Run() = 0;
+
 			struct renderTaskOptions_t
 			{
 				bool lock{ true };
 				bool freeze{ false };
 				bool enableChecks{ false };
 				bool enableInMenu{ false };
+				bool wantCursor{ true };
 			};
 
 			struct renderTaskState_t
 			{
+				long long startTime{ 0 };
+
+				bool running{ false };
 				bool holdsLock{ false };
 				bool holdsFreeze{ false };
+				bool holdsWantCursor{ false };
 			};
 
 			renderTaskOptions_t m_options;
 			renderTaskState_t   m_state;
+
+			bool m_stopMe{ false };
+
+		private:
+			virtual void OnTaskStart(){};
+			virtual void OnTaskStop(){};
 		};
+
 	}
 }

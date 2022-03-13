@@ -151,7 +151,7 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 		desc.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		desc.MiscFlags      = 0;
-		if (g_pd3dDevice->CreateBuffer(&desc, nullptr, &g_pVB) < 0)
+		if (FAILED(g_pd3dDevice->CreateBuffer(&desc, nullptr, &g_pVB)))
 			return;
 	}
 	if (!g_pIB || g_IndexBufferSize < draw_data->TotalIdxCount)
@@ -168,15 +168,15 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 		desc.ByteWidth      = g_IndexBufferSize * sizeof(ImDrawIdx);
 		desc.BindFlags      = D3D11_BIND_INDEX_BUFFER;
 		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		if (g_pd3dDevice->CreateBuffer(&desc, nullptr, &g_pIB) < 0)
+		if (FAILED(g_pd3dDevice->CreateBuffer(&desc, nullptr, &g_pIB)))
 			return;
 	}
 
 	// Upload vertex/index data into a single contiguous GPU buffer
 	D3D11_MAPPED_SUBRESOURCE vtx_resource, idx_resource;
-	if (ctx->Map(g_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &vtx_resource) != S_OK)
+	if (FAILED(ctx->Map(g_pVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &vtx_resource)))
 		return;
-	if (ctx->Map(g_pIB, 0, D3D11_MAP_WRITE_DISCARD, 0, &idx_resource) != S_OK)
+	if (FAILED(ctx->Map(g_pIB, 0, D3D11_MAP_WRITE_DISCARD, 0, &idx_resource)))
 		return;
 	ImDrawVert* vtx_dst = (ImDrawVert*)vtx_resource.pData;
 	ImDrawIdx*  idx_dst = (ImDrawIdx*)idx_resource.pData;
@@ -203,12 +203,12 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
 	// (0,0) for single viewport apps.
 	{
 		D3D11_MAPPED_SUBRESOURCE mapped_resource;
-		if (ctx->Map(
+		if (FAILED(ctx->Map(
 				g_pVertexConstantBuffer,
 				0,
 				D3D11_MAP_WRITE_DISCARD,
 				0,
-				&mapped_resource) != S_OK)
+				&mapped_resource)))
 			return;
 		VERTEX_CONSTANT_BUFFER* constant_buffer =
 			(VERTEX_CONSTANT_BUFFER*)mapped_resource.pData;
@@ -537,11 +537,11 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
 						   // error showing in (const
 						   // char*)pErrorBlob->GetBufferPointer(). Make sure to
 						   // Release() the blob!
-		if (g_pd3dDevice->CreateVertexShader(
+		if (FAILED(g_pd3dDevice->CreateVertexShader(
 				vertexShaderBlob->GetBufferPointer(),
 				vertexShaderBlob->GetBufferSize(),
 				nullptr,
-				&g_pVertexShader) != S_OK)
+				&g_pVertexShader)))
 		{
 			vertexShaderBlob->Release();
 			return false;
@@ -571,12 +571,12 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
 			  D3D11_INPUT_PER_VERTEX_DATA,
 			  0 },
 		};
-		if (g_pd3dDevice->CreateInputLayout(
+		if (FAILED(g_pd3dDevice->CreateInputLayout(
 				local_layout,
 				3,
 				vertexShaderBlob->GetBufferPointer(),
 				vertexShaderBlob->GetBufferSize(),
-				&g_pInputLayout) != S_OK)
+				&g_pInputLayout)))
 		{
 			vertexShaderBlob->Release();
 			return false;
@@ -630,11 +630,11 @@ bool ImGui_ImplDX11_CreateDeviceObjects()
 						   // error showing in (const
 						   // char*)pErrorBlob->GetBufferPointer(). Make sure to
 						   // Release() the blob!
-		if (g_pd3dDevice->CreatePixelShader(
+		if (FAILED(g_pd3dDevice->CreatePixelShader(
 				pixelShaderBlob->GetBufferPointer(),
 				pixelShaderBlob->GetBufferSize(),
 				nullptr,
-				&g_pPixelShader) != S_OK)
+				&g_pPixelShader)))
 		{
 			pixelShaderBlob->Release();
 			return false;
@@ -766,23 +766,33 @@ bool ImGui_ImplDX11_Init(
 												 // ImDrawCmd::VtxOffset field,
 												 // allowing for large meshes.
 
-	// Get factory from device
+	// Get factory from device (what for?)
 	IDXGIDevice*  pDXGIDevice  = nullptr;
 	IDXGIAdapter* pDXGIAdapter = nullptr;
 	IDXGIFactory* pFactory     = nullptr;
 
-	if (device->QueryInterface(IID_PPV_ARGS(&pDXGIDevice)) == S_OK)
-		if (pDXGIDevice->GetParent(IID_PPV_ARGS(&pDXGIAdapter)) == S_OK)
-			if (pDXGIAdapter->GetParent(IID_PPV_ARGS(&pFactory)) == S_OK)
-			{
-				g_pd3dDevice        = device;
-				g_pd3dDeviceContext = device_context;
-				g_pFactory          = pFactory;
-			}
-	if (pDXGIDevice)
-		pDXGIDevice->Release();
-	if (pDXGIAdapter)
-		pDXGIAdapter->Release();
+	if (FAILED(device->QueryInterface(IID_PPV_ARGS(&pDXGIDevice))))
+	{
+		return false;
+	}
+
+	if (FAILED(pDXGIDevice->GetParent(IID_PPV_ARGS(&pDXGIAdapter))))
+	{
+		return false;
+	}
+
+	if (FAILED(pDXGIAdapter->GetParent(IID_PPV_ARGS(&pFactory))))
+	{
+		return false;
+	}
+
+	g_pd3dDevice        = device;
+	g_pd3dDeviceContext = device_context;
+	g_pFactory          = pFactory;
+
+	pDXGIDevice->Release();
+	pDXGIAdapter->Release();
+
 	g_pd3dDevice->AddRef();
 	g_pd3dDeviceContext->AddRef();
 

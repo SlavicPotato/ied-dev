@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConfigOverrideCommon.h"
+#include "ConfigData.h"
 
 namespace IED
 {

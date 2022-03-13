@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ConfigOverride.h"
+#include "../ConfigStore.h"
 #include "ObjectManagerData.h"
 
 #include "../ActorInfoEntry.h"

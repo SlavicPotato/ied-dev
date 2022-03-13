@@ -8,48 +8,50 @@
 
 #include "Drivers/UI.h"
 
-#include <ext/GameCommon.h>
-
 namespace IED
 {
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		m_UIContext = std::make_unique<UI::UIMain>(a_controller);
-		m_UIContext->Initialize();
+		m_task = std::make_unique<IUIRenderTaskMain>(*this, a_controller);
 	}
 
 	bool IUI::UIIsInitialized() const noexcept
 	{
-		return m_UIContext.get() != nullptr;
+		return m_task.get() != nullptr;
 	}
 
 	UI::UIPopupQueue& IUI::UIGetPopupQueue() noexcept
 	{
-		return m_UIContext->GetPopupQueue();
+		return m_task->GetContext()->GetPopupQueue();
 	}
 
 	UI::UIFormBrowser& IUI::UIGetFormBrowser() noexcept
 	{
-		return m_UIContext->GetFormBrowser();
+		return m_task->GetContext()->GetFormBrowser();
 	}
 
 	UI::UIFormInfoCache& IUI::UIGetFormLookupCache() noexcept
 	{
-		return m_UIContext->GetFormLookupCache();
+		return m_task->GetContext()->GetFormLookupCache();
 	}
 
 	void IUI::UIReset()
 	{
-		m_UIContext->Reset();
+		m_task->QueueReset();
 	}
 
 	auto IUI::UIToggle() -> UIOpenResult
 	{
 		IScopedLock lock(UIGetLock());
 
-		if (m_UIContext->IsWindowOpen())
+		if (!m_task)
 		{
-			m_UIContext->SetOpenState(false);
+			return UIOpenResult::kResultNone;
+		}
+
+		if (m_task->IsRunning())
+		{
+			m_task->GetContext()->SetOpenState(false);
 
 			return UIOpenResult::kResultDisabled;
 		}
@@ -63,43 +65,32 @@ namespace IED
 	{
 		IScopedLock lock(UIGetLock());
 
-		if (!m_UIContext->IsWindowOpen())
-		{
-			return UIOpenImpl();
-		}
-		else
-		{
-			return UIOpenResult::kResultNone;
-		}
+		return UIOpenImpl();
 	}
 
-	bool IUI::UIRunTask()
+	auto IUI::UIOpenImpl() -> UIOpenResult
 	{
-		IScopedLock lock(UIGetLock());
+		if (m_task && m_task->RunEnableChecks())
+		{
+			if (Drivers::UI::AddTask(0xFF, m_task))
+			{
+				return UIOpenResult::kResultEnabled;
+			}
+		}
+
+		return UIOpenResult::kResultNone;
+	}
+
+	void IUIRenderTaskMain::OnTaskStart()
+	{
+		IScopedLock lock(m_owner.UIGetLock());
 
 		try
 		{
-			if (m_resetUI)
-			{
-				m_resetUI = false;
-				m_UIContext->Reset();
-			}
-
-			if ((m_UIContext->GetUISettings().closeOnESC &&
-			     ImGui::GetIO().KeysDown[VK_ESCAPE]) ||
-			    (!UIGetEnabledInMenu() && Game::InPausedMenu()))
-			{
-				m_UIContext->SetOpenState(false);
-			}
-
-			m_UIContext->Draw();
-
-			if (!m_UIContext->IsWindowOpen())
-			{
-				m_UIContext->OnClose();
-			}
-
-			return m_UIContext->IsWindowOpen();
+			m_context->SetOpenState(true);
+			m_owner.OnUIOpen();
+			m_context->OnOpen();
+			OnStart();
 		}
 		catch (const std::exception& e)
 		{
@@ -107,21 +98,11 @@ namespace IED
 		}
 	}
 
-	auto IUI::UIOpenImpl() -> UIOpenResult
+	bool IUIRenderTaskMain::ShouldClose()
 	{
-		if (UIRunEnableChecks())
-		{
-			if (Drivers::UI::AddTask(0, this))
-			{
-				m_UIContext->SetOpenState(true);
-				OnUIOpen();
-				m_UIContext->OnOpen();
-
-				return UIOpenResult::kResultEnabled;
-			}
-		}
-
-		return UIOpenResult::kResultNone;
+		return GetContext()->GetUISettings().closeOnESC &&
+		           ImGui::GetIO().KeysDown[VK_ESCAPE] ||
+		       (!GetEnabledInMenu() && Game::InPausedMenu());
 	}
 
 }

@@ -8,8 +8,27 @@ namespace IED
 {
 	namespace Tasks
 	{
-		bool UIRenderTaskBase::UIRunEnableChecks() const
+		long long UIRenderTaskBase::GetRunTime() const noexcept
 		{
+			if (m_state.running)
+			{
+				IPerfCounter::delta_us(
+					m_state.startTime,
+					IPerfCounter::Query());
+			}
+			else
+			{
+				return 0;
+			}
+		}
+
+		bool UIRenderTaskBase::RunEnableChecks() const
+		{
+			if (m_state.running)
+			{
+				return false;
+			}
+
 			if (!m_options.enableInMenu && Game::InPausedMenu())
 			{
 				//Game::Debug::Notification("UI unavailable while an in-game menu is open");
@@ -65,6 +84,28 @@ namespace IED
 
 			return true;
 		}
+
+		/*bool UIRenderTimedTask::IsExpired()
+		{
+			return IPerfCounter::Query() >= m_deadline;
+		}
+
+		bool UIRenderTimedTask::UIRunTask()
+		{
+			if (IPerfCounter::Query() >= m_deadline)
+			{
+				return false;
+			}
+			else
+			{
+				return UIRunTimedTask();
+			}
+		}
+
+		void UIRenderTimedTask::UIOnTaskStart()
+		{
+			m_deadline = m_state.startTime + IPerfCounter::T(m_maxRunTime);
+		}*/
 
 	}
 }

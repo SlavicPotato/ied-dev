@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Events/Dispatcher.h"
-
 #include "IED/Profile/Manager.h"
 #include "IED/StringHolder.h"
 

@@ -37,7 +37,7 @@ namespace IED
 
 			ITaskPool::AddTask(
 				[actor = a_actor->formID, key = std::move(key)]() {
-					g_controller->AddActorBlock(actor, key);
+					Initializer::GetController()->AddActorBlock(actor, key);
 				});
 		}
 
@@ -59,7 +59,7 @@ namespace IED
 
 			ITaskPool::AddTask(
 				[actor = a_actor->formID, key = std::move(key)]() {
-					g_controller->RemoveActorBlock(actor, key);
+					Initializer::GetController()->RemoveActorBlock(actor, key);
 				});
 		}
 
@@ -69,13 +69,13 @@ namespace IED
 		{
 			if (a_actor)
 			{
-				g_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+				Initializer::GetController()->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
 			}
 		}
 
 		static void EvaluateAll(StaticFunctionTag*)
 		{
-			g_controller->QueueEvaluateAll(ControllerUpdateFlags::kNone);
+			Initializer::GetController()->QueueEvaluateAll(ControllerUpdateFlags::kNone);
 		}
 
 		static void Reset(
@@ -84,13 +84,13 @@ namespace IED
 		{
 			if (a_actor)
 			{
-				g_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
+				Initializer::GetController()->QueueReset(a_actor, ControllerUpdateFlags::kNone);
 			}
 		}
 
 		static void ResetAll(StaticFunctionTag*)
 		{
-			g_controller->QueueResetAll(ControllerUpdateFlags::kNone);
+			Initializer::GetController()->QueueResetAll(ControllerUpdateFlags::kNone);
 		}
 
 		bool Register(VMClassRegistry* a_registry)

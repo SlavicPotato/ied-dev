@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CommonParams.h"
-#include "ConfigOverrideCommon.h"
+#include "ConfigData.h"
 #include "FormCommon.h"
 #include "WeatherClassificationFlags.h"
 

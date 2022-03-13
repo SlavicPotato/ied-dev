@@ -240,7 +240,7 @@ namespace IED
 			{
 				if (auto w = get_current_weather())
 				{
-					auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
+					auto f       = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
 					weatherClass = static_cast<WeatherClassificationFlags>(f);
 				}
 				else

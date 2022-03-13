@@ -22,7 +22,7 @@
 #include "IED/UI/Widgets/UITransformSliderWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "IED/ConfigOverride.h"
+#include "IED/ConfigStore.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
@@ -726,7 +726,7 @@ namespace IED
 					}
 					else
 					{
-						decltype(it->second) tmp;
+						stl::strip_type<decltype(it->second)> tmp;
 
 						DrawPlacementEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
 					}

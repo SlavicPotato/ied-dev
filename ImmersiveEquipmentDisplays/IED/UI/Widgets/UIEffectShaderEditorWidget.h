@@ -5,7 +5,7 @@
 #include "UIDescriptionPopup.h"
 #include "UIPopupToggleButtonWidget.h"
 
-#include "IED/ConfigOverrideEffectShader.h"
+#include "IED/ConfigEffectShader.h"
 
 #include "UIEffectShaderEditorWidgetStrings.h"
 

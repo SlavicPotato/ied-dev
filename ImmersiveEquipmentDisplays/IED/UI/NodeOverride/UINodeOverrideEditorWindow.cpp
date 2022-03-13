@@ -10,8 +10,8 @@ namespace IED
 	namespace UI
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
-			Controller&                  a_controller,
-			UIProfileEditorNodeOverride& a_profileEditor) :
+			Controller&   a_controller,
+			UIWindowBase& a_profileEditor) :
 			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
 			m_profileEditor(a_profileEditor),

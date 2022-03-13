@@ -11,6 +11,24 @@ namespace IED
 			extern const controlDescData_t g_comboControlMap;
 			extern const controlDescData_t g_controlMap;
 
+			template <std::size_t _Size>
+			const char* get_control_key_desc(
+				const controlDescData_t& a_data,
+				std::uint32_t            a_key,
+				char (&a_buffer)[_Size])
+			{
+				auto it = a_data.find(a_key);
+				if (it != a_data.end())
+				{
+					return it->second;
+				}
+				else
+				{
+					stl::snprintf(a_buffer, "0x%X", a_key);
+					return a_buffer;
+				}
+			}
+
 			class UICollapsibleStates
 			{
 			public:
