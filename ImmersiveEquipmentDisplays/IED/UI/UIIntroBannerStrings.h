@@ -11,6 +11,7 @@ namespace IED
 			UIOpenKeys   = 6100,
 			NoKeyWarning = 6101,
 			HeaderAppend = 6102,
+			KeyInfoAppend = 6103,
 		};
 	}
 }

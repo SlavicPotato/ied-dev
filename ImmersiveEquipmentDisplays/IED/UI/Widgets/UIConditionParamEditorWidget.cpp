@@ -82,8 +82,9 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::BipedSlot); e.p1)
 			{
 				result |= DrawBipedObjectSelector(
-					LS(CommonStrings::Node, "bp"),
-					e.As1<BIPED_OBJECT>());
+					LS(CommonStrings::Biped, "bp"),
+					e.As1<BIPED_OBJECT>(),
+					m_tempFlags.test(UIConditionParamEditorTempFlags::kAllowBipedNone));
 
 				ImGui::Spacing();
 			}
@@ -100,7 +101,7 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
 			{
 				result |= DrawObjectSlotSelector(
-					LS(CommonStrings::Slot, "ss"),
+					LS(CommonStrings::Slot, "sse"),
 					e.As1<Data::ObjectSlotExtra>());
 
 				ImGui::Spacing();

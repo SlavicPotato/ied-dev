@@ -10,8 +10,6 @@
 
 #include "Drivers/UI.h"
 
-#include "gitparams.h"
-
 namespace IED
 {
 	namespace UI
@@ -56,53 +54,62 @@ namespace IED
 					PLUGIN_VERSION_VERSTRING,
 					LS(UIIntroBannerStrings::HeaderAppend));
 
-				ImGui::Spacing();
-				ImGui::Separator();
-				ImGui::Spacing();
-
-				auto& ih = m_controller.GetInputHandlers();
-
-				if (ih.uiOpen.GetKey())
+				if (auto& renderTask = m_controller.UIGetRenderTask())
 				{
-					char buf1[12];
+					ImGui::Spacing();
+					ImGui::Separator();
+					ImGui::Spacing();
 
-					auto key = UIData::get_control_key_desc(
-						UIData::g_controlMap,
-						ih.uiOpen.GetKey(),
-						buf1);
+					auto& ih = m_controller.GetInputHandlers();
 
-					ImGui::Text("%s", LS(UIIntroBannerStrings::UIOpenKeys));
-					ImGui::SameLine();
-
-					if (ih.uiOpen.GetComboKey())
+					if (ih.uiOpen.GetKey())
 					{
-						char buf2[12];
+						char buf1[12];
 
-						auto comboKey = UIData::get_control_key_desc(
-							UIData::g_comboControlMap,
-							ih.uiOpen.GetComboKey(),
-							buf2);
+						auto key = UIData::get_control_key_desc(
+							UIData::g_controlMap,
+							ih.uiOpen.GetKey(),
+							buf1);
 
-						ImGui::TextColored(
-							UICommon::g_colorLightOrange,
-							"%s + %s",
-							comboKey,
-							key);
+						ImGui::Text("%s", LS(UIIntroBannerStrings::UIOpenKeys));
+						ImGui::SameLine();
+
+						if (ih.uiOpen.GetComboKey())
+						{
+							char buf2[12];
+
+							auto comboKey = UIData::get_control_key_desc(
+								UIData::g_comboControlMap,
+								ih.uiOpen.GetComboKey(),
+								buf2);
+
+							ImGui::TextColored(
+								UICommon::g_colorLightOrange,
+								"%s + %s",
+								comboKey,
+								key);
+						}
+						else
+						{
+							ImGui::TextColored(
+								UICommon::g_colorLightOrange,
+								"%s",
+								key);
+						}
+
+						if (!renderTask->GetEnabledInMenu())
+						{
+							ImGui::SameLine();
+							ImGui::Text("%s", LS(UIIntroBannerStrings::KeyInfoAppend));
+						}
 					}
 					else
 					{
 						ImGui::TextColored(
-							UICommon::g_colorLightOrange,
+							UICommon::g_colorWarning,
 							"%s",
-							key);
+							LS(UIIntroBannerStrings::NoKeyWarning));
 					}
-				}
-				else
-				{
-					ImGui::TextColored(
-						UICommon::g_colorWarning,
-						"%s",
-						LS(UIIntroBannerStrings::NoKeyWarning));
 				}
 
 				ImGui::PopStyleColor();

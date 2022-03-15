@@ -79,7 +79,7 @@ namespace IED
 
 			static void Initialize();
 
-			[[nodiscard]] inline static constexpr bool HasCallbacks() noexcept
+			[[nodiscard]] inline static bool HasCallbacks() noexcept
 			{
 				return !m_Instance.m_drawTasks.empty();
 			}
@@ -87,15 +87,15 @@ namespace IED
 			template <class Tp>
 			requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
 			[[nodiscard]] static bool AddTask(
-				std::uint32_t a_id,
-				Tp&&          a_task);
+				std::int32_t a_id,
+				Tp&&         a_task);
 
-			static void RemoveTask(std::uint32_t a_id);
-			static void QueueRemoveTask(std::uint32_t a_id);
+			static void RemoveTask(std::int32_t a_id);
+			static void QueueRemoveTask(std::int32_t a_id);
 
 			static void EvaluateTaskState();
 
-			[[nodiscard]] inline static constexpr bool HasCallback(std::uint32_t a_id)
+			[[nodiscard]] inline static bool HasCallback(std::int32_t a_id)
 			{
 				return m_Instance.m_drawTasks.contains(a_id);
 			}
@@ -284,7 +284,7 @@ namespace IED
 				long long    current{ 0L };
 			} m_uiRenderPerf;
 
-			stl::map<std::uint32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
+			std::map<std::int32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
 
 			bool              m_imInitialized{ false };
 			std::atomic<bool> m_suspended{ true };
@@ -313,7 +313,7 @@ namespace IED
 
 		template <class Tp>
 		requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
-		bool UI::AddTask(std::uint32_t a_id, Tp&& a_task)
+		bool UI::AddTask(std::int32_t a_id, Tp&& a_task)
 		{
 			assert(a_task);
 

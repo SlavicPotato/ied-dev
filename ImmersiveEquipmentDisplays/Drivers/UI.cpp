@@ -194,8 +194,6 @@ namespace IED
 			ImGui::Render();
 			::ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-			ProcessReleaseQueue();
-
 			m_frameCount++;
 
 			if (m_drawTasks.empty())
@@ -206,6 +204,10 @@ namespace IED
 				{
 					ImGui_ImplDX11_ReleaseFontsTexture();
 				}
+			}
+			else
+			{
+				ProcessReleaseQueue();
 			}
 
 			m_uiRenderPerf.timer.End(m_uiRenderPerf.current);
@@ -282,7 +284,7 @@ namespace IED
 			});
 		}
 
-		void UI::RemoveTask(uint32_t a_id)
+		void UI::RemoveTask(std::int32_t a_id)
 		{
 			IScopedLock lock(m_Instance.m_lock);
 
@@ -302,7 +304,7 @@ namespace IED
 			}
 		}
 
-		void UI::QueueRemoveTask(std::uint32_t a_id)
+		void UI::QueueRemoveTask(std::int32_t a_id)
 		{
 			IScopedLock lock(m_Instance.m_lock);
 
@@ -397,7 +399,7 @@ namespace IED
 				}
 			}
 
-			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
+			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
 		}
 
 		bool UI::SetCurrentFont(const stl::fixed_string& a_font)
@@ -519,7 +521,7 @@ namespace IED
 				FreezeTime(true);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
+			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
 
 			if (m_suspended.load(std::memory_order_relaxed))
 			{
@@ -561,7 +563,7 @@ namespace IED
 				FreezeTime(false);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = m_state.wantCursorCounter > 0;
+			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
 		}
 
 		void UI::QueueSetScaleImpl(float a_scale)
@@ -1029,6 +1031,8 @@ namespace IED
 				m_state.freezeCounter = 0;
 				FreezeTime(false);
 			}
+
+			ImGui::GetIO().MouseDrawCursor = true;
 
 			m_suspended.store(true, std::memory_order_relaxed);
 		}

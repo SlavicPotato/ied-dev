@@ -35,11 +35,11 @@ namespace IED
 	{
 		for (auto& e : a_data.data)
 		{
-			if (e.second.flags.test(effectShaderData_t::EntryFlags::kYield))
+			if (e.second.flags.test(effectShaderData_t::EntryFlags::kForce))
 			{
 				for (auto& f : e.second.nodes)
 				{
-					if (!f.first->effectData)
+					if (f.first->effectData != e.second.shaderData)
 					{
 						f.first->SetEffectShaderData(e.second.shaderData);
 					}
@@ -49,7 +49,7 @@ namespace IED
 			{
 				for (auto& f : e.second.nodes)
 				{
-					if (f.first->effectData != e.second.shaderData)
+					if (!f.first->effectData)
 					{
 						f.first->SetEffectShaderData(e.second.shaderData);
 					}

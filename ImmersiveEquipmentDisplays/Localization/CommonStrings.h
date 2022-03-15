@@ -175,5 +175,6 @@ namespace IED
 		Yield        = 246,
 		Any          = 247,
 		Weather      = 248,
+		Force        = 249,
 	};
 }

@@ -476,7 +476,7 @@ namespace IED
 
 		GetNodeName(a_modelForm, modelParams, buffer);
 
-		auto itemRoot = CreateNode(buffer);
+		auto itemRoot = CreateAttachmentNode(buffer);
 
 		targetNodes.obj->AttachChild(itemRoot, true);
 
@@ -693,7 +693,7 @@ namespace IED
 			StringHolder::FMT_NINODE_IED_GROUP,
 			a_form->formID.get());
 
-		auto groupRoot = CreateNode(buffer);
+		auto groupRoot = CreateAttachmentNode(buffer);
 
 		targetNodes.obj->AttachChild(groupRoot, true);
 
@@ -723,7 +723,7 @@ namespace IED
 
 			GetNodeName(e.form, e.params, buffer);
 
-			auto itemRoot = CreateNode(buffer);
+			auto itemRoot = CreateAttachmentNode(buffer);
 			groupRoot->AttachChild(itemRoot, true);
 
 			auto& n = state->groupObjects.try_emplace(

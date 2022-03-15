@@ -371,6 +371,12 @@ namespace IED
 				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } }
 
 			},
+		}),
+		m_extraCopy({
+
+			{ "WeaponBack", "WeaponBackIED" },
+			{ "WeaponBow", "WeaponBowIED" },
+
 		})
 	{
 	}

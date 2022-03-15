@@ -280,13 +280,13 @@ namespace IED
 
 		const auto& config = m_config.settings.data;
 
-		if (auto& drawTask = UIGetDrawTask())
+		if (auto& renderTask = UIGetRenderTask())
 		{
-			drawTask->SetLock(config.ui.enableControlLock);
-			drawTask->SetFreeze(config.ui.enableFreezeTime);
-			drawTask->SetWantCursor(true);
-			drawTask->SetEnabledInMenu(m_iniconf->m_enableInMenus);
-			drawTask->EnableRestrictions(config.ui.enableRestrictions);
+			renderTask->SetLock(config.ui.enableControlLock);
+			renderTask->SetFreeze(config.ui.enableFreezeTime);
+			renderTask->SetWantCursor(true);
+			renderTask->SetEnabledInMenu(m_iniconf->m_enableInMenus);
+			renderTask->EnableRestrictions(config.ui.enableRestrictions);
 		}
 
 		if (m_iniconf->m_forceUIOpenKeys &&
@@ -356,7 +356,7 @@ namespace IED
 			task->SetEnabledInMenu(true);
 			task->EnableRestrictions(false);
 
-			if (!Drivers::UI::AddTask(0, std::move(task)))
+			if (!Drivers::UI::AddTask(-0xFFFF, std::move(task)))
 			{
 				Warning("Couldn't dispatch intro banner render task");
 			}
@@ -2719,7 +2719,8 @@ namespace IED
 	{
 		auto& formData = a_params.collector.m_data.forms;
 
-		if (a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
+		if (!a_config.customFlags.test(CustomFlags::kUseGroup) &&
+		    a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
 		    !a_config.extraItems.empty())
 		{
 			if (a_objectEntry.state)
@@ -2797,20 +2798,23 @@ namespace IED
 				}
 			}
 
-			for (auto& e : a_config.extraItems)
+			if (!a_config.customFlags.test(CustomFlags::kUseGroup))
 			{
-				if (e && !e.IsTemporary())
+				for (auto& e : a_config.extraItems)
 				{
-					if (auto it = formData.find(e); it != formData.end())
+					if (e && !e.IsTemporary())
 					{
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_baseConfig,
-								a_hasMinCount))
+						if (auto it = formData.find(e); it != formData.end())
 						{
-							return it;
+							if (CustomEntryValidateInventoryForm(
+									a_params,
+									it->second,
+									a_config,
+									a_baseConfig,
+									a_hasMinCount))
+							{
+								return it;
+							}
 						}
 					}
 				}
@@ -2868,8 +2872,6 @@ namespace IED
 			a_objectEntry.clear_chance_flags();
 			return false;
 		}
-
-		str_conv::to_native(std::string());
 
 		auto configOverride =
 			a_config.get_equipment_override(
@@ -4808,12 +4810,12 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_NewGame:
 
-			Drivers::UI::QueueRemoveTask(0);
+			Drivers::UI::QueueRemoveTask(-0xFFFF);
 
 			break;
 		case SKSEMessagingInterface::kMessage_PreLoadGame:
 
-			Drivers::UI::QueueRemoveTask(0);
+			Drivers::UI::QueueRemoveTask(-0xFFFF);
 
 			StoreActiveHandles();
 
@@ -5000,7 +5002,7 @@ namespace IED
 			{
 				if (auto player = *g_thePlayer)
 				{
-					RequestEvaluate(player->formID, false, false, false);
+					QueueRequestEvaluate(player->formID, false, false, false);
 				}
 			}
 		}
@@ -5232,7 +5234,7 @@ namespace IED
 
 	void Controller::OnUIOpen()
 	{
-		//Drivers::UI::QueueRemoveTask(0);
+		//Drivers::UI::QueueRemoveTask(-0xFFFF);
 		UpdateActorInfo(m_objects);
 	}
 

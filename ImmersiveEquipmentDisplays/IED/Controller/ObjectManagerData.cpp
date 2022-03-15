@@ -109,6 +109,11 @@ namespace IED
 					CreateExtraNodes(a_npcroot, m_female, e);
 				}
 			}
+
+			for (auto& e : NodeOverrideData::GetExtraCopyNodes())
+			{
+				CreateExtraCopyNode(a_npcroot, e);
+			}
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
@@ -300,6 +305,36 @@ namespace IED
 
 		m_cmeNodes.try_emplace(a_entry.name_cme, cme);
 		m_movNodes.try_emplace(a_entry.name_mov, mov);
+	}
+
+	void ActorObjectHolder::CreateExtraCopyNode(
+		NiNode*                                       a_npcroot,
+		const NodeOverrideData::extraNodeCopyEntry_t& a_entry)
+	{
+		auto source = ::Util::Node::FindNode(a_npcroot, a_entry.src);
+		if (!source)
+		{
+			return;
+		}
+
+		auto parent = source->m_parent;
+		if (!parent)
+		{
+			return;
+		}
+
+		if (::Util::Node::FindChildObject(parent, a_entry.dst))
+		{
+			return;
+		}
+
+		auto node = INode::CreateAttachmentNode(a_entry.dst);
+
+		node->m_localTransform = source->m_localTransform;
+
+		parent->AttachChild(node, true);
+
+		INode::UpdateDownwardPass(node);
 	}
 
 	void objectEntryBase_t::reset(
@@ -515,15 +550,90 @@ namespace IED
 				continue;
 			}
 
-			if (e.flags.test(Data::EffectShaderDataFlags::kYield))
+			if (e.flags.test(Data::EffectShaderDataFlags::kForce))
 			{
-				tmp.flags.set(effectShaderData_t::EntryFlags::kYield);
+				tmp.flags.set(effectShaderData_t::EntryFlags::kForce);
 			}
 
 			data.emplace(i, std::move(tmp));
 		}
 
 		tag = a_tag;
+	}
+
+	bool cmeNodeEntry_t::find_visible_geometry(
+		NiAVObject*           a_object,
+		const BSStringHolder* a_sh) noexcept
+	{
+		using namespace ::Util::Node;
+
+		auto result = Traverse(a_object, [a_sh](NiAVObject* a_object) {
+			if (a_object->IsHidden())
+			{
+				return VisitorControl::kSkip;
+			}
+
+			if (a_sh)
+			{
+				if (a_object->m_name == a_sh->m_scb ||
+				    a_object->m_name == a_sh->m_scbLeft)
+				{
+					return VisitorControl::kSkip;
+				}
+			}
+
+			return a_object->GetAsBSGeometry() ?
+			           VisitorControl::kStop :
+                       VisitorControl::kContinue;
+		});
+
+		return result == VisitorControl::kStop;
+	}
+
+	bool cmeNodeEntry_t::has_visible_geometry(
+		const BSStringHolder* a_sh) const noexcept
+	{
+		return find_visible_geometry(node, a_sh);
+	}
+
+	bool cmeNodeEntry_t::has_visible_object(
+		NiAVObject* a_findObject) const noexcept
+	{
+		using namespace ::Util::Node;
+
+		struct
+		{
+			NiAVObject* findObject;
+			bool        result{ false };
+		} args{
+			a_findObject
+		};
+
+		Traverse(node, [&args](NiAVObject* a_object) {
+			if (args.findObject == a_object)
+			{  // object found, verify is has visible geometry
+
+				auto visitorResult = Traverse(a_object, [](NiAVObject* a_object) {
+					return a_object->IsHidden() ?
+					           VisitorControl::kSkip :
+                               (a_object->GetAsBSGeometry() ?
+					                VisitorControl::kStop :
+                                    VisitorControl::kContinue);
+				});
+
+				args.result = visitorResult == VisitorControl::kStop;
+
+				return VisitorControl::kStop;
+			}
+			else
+			{
+				return a_object->IsHidden() ?
+				           VisitorControl::kSkip :
+                           VisitorControl::kContinue;
+			}
+		});
+
+		return args.result;
 	}
 
 }

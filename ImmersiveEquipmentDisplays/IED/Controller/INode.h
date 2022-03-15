@@ -13,7 +13,7 @@ namespace IED
 		NiPointer<NiNode> ref;
 		NiPointer<NiNode> main;
 
-		SKMP_FORCEINLINE bool IsReferenceMovedOrOphaned() const noexcept
+		SKMP_FORCEINLINE constexpr bool IsReferenceMovedOrOphaned() const noexcept
 		{
 			if (auto objParent = obj->m_parent)
 			{
@@ -96,7 +96,6 @@ namespace IED
 		}
 
 	protected:
-		static NiNode* CreateNode(const char* a_name);
 
 	private:
 		static findResult_t FindNodes(

@@ -8,13 +8,14 @@ namespace IED
 		{
 			kNone = 0,
 
-			kManaged    = 1ui32 << 0,
-			kDoNotTouch = 1ui32 << 1,
-			kPapyrus    = 1ui32 << 2,
-			kXP32       = 1ui32 << 3,
-			kDefault    = 1ui32 << 4,
-			kWeapon     = 1ui32 << 5,
-			kExtra      = 1ui32 << 15,
+			kManaged     = 1ui32 << 0,
+			kDoNotTouch  = 1ui32 << 1,
+			kPapyrus     = 1ui32 << 2,
+			kXP32        = 1ui32 << 3,
+			kDefault     = 1ui32 << 4,
+			kWeapon      = 1ui32 << 5,
+			kDefaultCopy = 1ui32 << 6,
+			kExtra       = 1ui32 << 15,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeDescriptorFlags);

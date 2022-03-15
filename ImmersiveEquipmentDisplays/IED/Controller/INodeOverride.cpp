@@ -483,23 +483,30 @@ namespace IED
 					return false;
 				}
 
-				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0))
+				if (a_data.bipedSlot < BIPED_OBJECT::kTotal)
 				{
-					auto sh = a_params.controller.GetBSStringHolder();
-					if (!it->second.has_visible_geometry(sh->m_scb, sh->m_scbLeft))
+					auto biped = a_params.get_biped();
+					if (!biped)
 					{
 						return false;
 					}
+
+					auto object = biped->get_object(a_data.bipedSlot).object.get();
+					if (!object)
+					{
+						return false;
+					}
+
+					return it->second.has_visible_object(object);
 				}
 				else
 				{
-					if (!it->second.has_visible_geometry())
-					{
-						return false;
-					}
-				}
+					auto sh = a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0) ?
+					              a_params.controller.GetBSStringHolder() :
+                                  nullptr;
 
-				return true;
+					return it->second.has_visible_geometry(sh);
+				}
 			}
 			break;
 		case Data::NodeOverrideConditionType::Race:

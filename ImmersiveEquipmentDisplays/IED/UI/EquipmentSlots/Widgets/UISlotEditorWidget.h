@@ -919,7 +919,10 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.f }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 4.0f);
+				auto w =
+					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
+
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
 				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
 				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 
@@ -1092,7 +1095,7 @@ namespace IED
 
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+			//ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (ImGui::BeginPopup("context_menu"))
 			{

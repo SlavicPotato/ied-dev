@@ -2831,7 +2831,10 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ width, 0.0f }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 4.0f);
+				auto w =
+					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
+
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
 				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_None, 40.0f);
 				ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_None, 200.0f);
 				ImGui::TableSetupColumn("And", ImGuiTableColumnFlags_None, 17.0f);
@@ -2854,8 +2857,6 @@ namespace IED
 					ImGui::PushID(i);
 
 					ImGui::TableNextRow();
-
-					//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
 
 					ImGui::TableSetColumnIndex(0);
 
@@ -3011,9 +3012,13 @@ namespace IED
 							{
 							case Data::NodeOverrideConditionType::Node:
 
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kAllowBipedNone);
+
 								m_condParamEditor.SetNext<ConditionParamItem::CMENode>(
 									e.node,
 									a_params.name);
+								m_condParamEditor.SetNext<ConditionParamItem::BipedSlot>(
+									e.bipedSlot);
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
@@ -3289,8 +3294,6 @@ namespace IED
 						++it;
 						i++;
 					}
-
-					//ImGui::PopStyleVar();
 
 					ImGui::PopID();
 				}
@@ -3588,7 +3591,7 @@ namespace IED
 
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+			//ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
 
@@ -3915,10 +3918,18 @@ namespace IED
 
 			case Data::NodeOverrideConditionType::Node:
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::IgnoreScabbards, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag0));
+				{
+					bool disabled = match->bipedSlot < BIPED_OBJECT::kTotal;
+
+					UICommon::PushDisabled(disabled);
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::IgnoreScabbards, "1"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag0));
+
+					UICommon::PopDisabled(disabled);
+				}
 
 				break;
 

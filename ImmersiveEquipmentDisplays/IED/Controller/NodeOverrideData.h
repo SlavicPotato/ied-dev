@@ -117,11 +117,31 @@ namespace IED
 			NiTransform       transform_f;
 		};
 
+		struct exn_copy_ctor_init_t
+		{
+			const char* src;
+			const char* dst;
+		};
+
+		struct extraNodeCopyEntry_t
+		{
+			extraNodeCopyEntry_t(
+				const char* a_src,
+				const char* a_dst) :
+				src(a_src),
+				dst(a_dst)
+			{}
+
+			BSFixedString src;
+			BSFixedString dst;
+		};
+
 		using init_list_cm   = std::pair<const char*, std::pair<const char*, const char*>>;
 		using init_list_weap = std::pair<const char*, weap_ctor_init_t>;
 
-		using cm_data_type  = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
-		using exn_data_type = std::vector<extraNodeEntry_t>;
+		using cm_data_type       = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
+		using exn_data_type      = std::vector<extraNodeEntry_t>;
+		using exn_copy_data_type = std::vector<extraNodeCopyEntry_t>;
 
 		NodeOverrideData();
 
@@ -151,6 +171,11 @@ namespace IED
 		{
 			return m_Instance->m_extra;
 		}
+		
+		inline static const auto& GetExtraCopyNodes() noexcept
+		{
+			return m_Instance->m_extraCopy;
+		}
 
 	private:
 		cm_data_type       m_cme;
@@ -158,6 +183,7 @@ namespace IED
 		mon_data_type      m_monitor;
 		weapnode_data_type m_weap;
 		exn_data_type      m_extra;
+		exn_copy_data_type m_extraCopy;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

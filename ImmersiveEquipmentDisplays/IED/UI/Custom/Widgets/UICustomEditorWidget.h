@@ -1078,11 +1078,15 @@ namespace IED
 
 			ImGui::PushID("extra_items");
 
+			bool disabled = data.customFlags.test(Data::CustomFlags::kUseGroup);
+
+			UICommon::PushDisabled(disabled);
+
 			auto result = DrawExtraItemsHeaderContextMenu(a_handle, a_params);
 
-			bool disabled = data.extraItems.empty();
+			bool treeDisabled = disabled || data.extraItems.empty();
 
-			if (!disabled)
+			if (!treeDisabled && !disabled)
 			{
 				if (result == ExtraItemsAction::Add)
 				{
@@ -1090,7 +1094,7 @@ namespace IED
 				}
 			}
 
-			UICommon::PushDisabled(disabled);
+			UICommon::PushDisabled(treeDisabled);
 
 			if (ImGui::TreeNodeEx(
 					"tree",
@@ -1099,7 +1103,7 @@ namespace IED
 					"%s",
 					LS(UIWidgetCommonStrings::AdditionalItems)))
 			{
-				if (!disabled)
+				if (!treeDisabled)
 				{
 					ImGui::Spacing();
 
@@ -1123,6 +1127,8 @@ namespace IED
 
 				ImGui::TreePop();
 			}
+
+			UICommon::PopDisabled(treeDisabled);
 
 			UICommon::PopDisabled(disabled);
 
@@ -1154,7 +1160,11 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.f }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 4.0f);
+				auto w = 
+					((ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 2.0f) + 2.0f + 
+					ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f + 2.0f); 
+
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
 				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
 				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 

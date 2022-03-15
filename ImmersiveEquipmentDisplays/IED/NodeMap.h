@@ -96,7 +96,7 @@ namespace IED
 			stl::flag<NodeDescriptorFlags> a_flags,
 			char (&a_out)[_Size])
 		{
-			char          buf[8];
+			char          buf[10];
 			std::uint32_t index = 0;
 
 			if (a_flags.test(NodeDescriptorFlags::kWeapon))
@@ -126,6 +126,12 @@ namespace IED
 			if (a_flags.test(NodeDescriptorFlags::kExtra))
 			{
 				buf[index] = 'E';
+				index++;
+			}
+			
+			if (a_flags.test(NodeDescriptorFlags::kDefaultCopy))
+			{
+				buf[index] = 'C';
 				index++;
 			}
 

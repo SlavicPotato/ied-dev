@@ -8,64 +8,6 @@ namespace IED
 {
 	using namespace Data;
 
-	/*void IMaintenance::CleanEquipmentOverrideList(
-		Data::equipmentOverrideList_t& a_list)
-	{
-		for (auto& e : a_list)
-		{
-			for (auto it = e.conditions.begin(); it != e.conditions.end();)
-			{
-				if ((it->fbf.type == EquipmentOverrideConditionType::Form && !it->form) ||
-				    (it->fbf.type == EquipmentOverrideConditionType::Keyword && !it->keyword.get_id()) ||
-				    (it->fbf.type == EquipmentOverrideConditionType::Race && !it->form))
-				{
-					it = e.conditions.erase(it);
-				}
-				else
-				{
-					++it;
-				}
-			}
-		}
-	}
-
-	void IMaintenance::CleanNodeOverrideConditionList(
-		Data::configNodeOverrideConditionList_t& a_list)
-	{
-		auto it = a_list.begin();
-		while (it != a_list.end())
-		{
-			if ((it->fbf.type == NodeOverrideConditionType::Form && !it->form.get_id()) ||
-			    (it->fbf.type == NodeOverrideConditionType::Keyword && !it->keyword.get_id()) ||
-			    (it->fbf.type == NodeOverrideConditionType::Race && !it->form.get_id()))
-			{
-				it = a_list.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
-	}
-
-	void IMaintenance::CleanNodeOverrideOffsetList(
-		Data::configNodeOverrideOffsetList_t& a_list)
-	{
-		for (auto& e : a_list)
-		{
-			CleanNodeOverrideConditionList(e.conditions);
-		}
-	}
-
-	void IMaintenance::CleanNodeOverridePlacementOverrideList(
-		Data::configNodeOverridePlacementOverrideList_t& a_list)
-	{
-		for (auto& e : a_list)
-		{
-			CleanNodeOverrideConditionList(e.conditions);
-		}
-	}*/
-
 	void IMaintenance::CleanFormList(Data::configFormList_t& a_list)
 	{
 		auto it = a_list.begin();
@@ -114,7 +56,6 @@ namespace IED
 				{
 					for (auto& i : h.second())
 					{
-						/*CleanEquipmentOverrideList(i.equipmentOverrides);*/
 						CleanFormList(i.extraItems);
 						if (i.filters)
 						{
@@ -145,7 +86,6 @@ namespace IED
 
 				for (auto& h : (*g)())
 				{
-					/*CleanEquipmentOverrideList(h.equipmentOverrides);*/
 					CleanFormList(h.preferredItems);
 					if (h.filters)
 					{
@@ -162,27 +102,6 @@ namespace IED
 
 		return empty;
 	}
-
-	/*void IMaintenance::CleanNodeOverrideConfig(
-		Data::configNodeOverrideHolder_t& a_data)
-	{
-		for (auto& g : a_data.data)
-		{
-			for (auto& h : g.second())
-			{
-				CleanNodeOverrideOffsetList(h.offsets);
-				CleanNodeOverrideConditionList(h.visibilityConditionList);
-			}
-		}
-
-		for (auto& g : a_data.placementData)
-		{
-			for (auto& h : g.second())
-			{
-				CleanNodeOverridePlacementOverrideList(h.overrides);
-			}
-		}
-	}*/
 
 	void IMaintenance::CleanBlockList(Data::actorBlockList_t& a_data)
 	{
@@ -280,16 +199,10 @@ namespace IED
 				}
 				else
 				{
-					//CleanNodeOverrideConfig(it->second);
 					++it;
 				}
 			}
 		}
-
-		/*for (auto& e : a_data.transforms.GetGlobalData())
-		{
-			
-		}*/
 	}
 
 }

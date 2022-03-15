@@ -59,7 +59,8 @@ namespace IED
 			kNone = 0,
 
 			kNoClearForm    = 1ui8 << 0,
-			kNoClearKeyword = 1ui8 << 1
+			kNoClearKeyword = 1ui8 << 1,
+			kAllowBipedNone = 1ui8 << 2,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(UIConditionParamEditorTempFlags);

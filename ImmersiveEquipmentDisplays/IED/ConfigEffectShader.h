@@ -12,7 +12,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kYield = 1u << 0,
+			kForce = 1u << 0,
 
 			kGrayscaleToColor        = 1u << 10,
 			kGrayscaleToAlpha        = 1u << 11,
@@ -98,7 +98,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kYield;
+			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kNone;
 
 			stl::flag<EffectShaderDataFlags> flags{ DEFAULT_FLAGS };
 			configFixedStringSet_t           targetNodes;

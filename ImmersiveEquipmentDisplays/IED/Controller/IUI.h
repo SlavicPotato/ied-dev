@@ -209,7 +209,7 @@ namespace IED
 		UI::UIFormInfoCache& UIGetFormLookupCache() noexcept;
 		void                 UIReset();
 
-		[[nodiscard]] inline constexpr auto& UIGetDrawTask() noexcept
+		[[nodiscard]] inline constexpr auto& UIGetRenderTask() noexcept
 		{
 			return m_task;
 		}

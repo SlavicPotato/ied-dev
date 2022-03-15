@@ -17,7 +17,7 @@ namespace IED
 		{
 			kNone = 0,
 
-			kYield = 1u << 0
+			kForce = 1u << 0
 		};
 
 		struct Entry
@@ -301,22 +301,21 @@ namespace IED
 		mutable NiPointer<NiNode> target;
 	};
 
+	class BSStringHolder;
+
 	struct cmeNodeEntry_t
 	{
 		NiPointer<NiNode> node;
 
-		constexpr bool has_visible_geometry() const noexcept;
-		constexpr bool has_visible_geometry(
-			const BSFixedString& a_scb,
-			const BSFixedString& a_scbLeft) const noexcept;
+		static bool find_visible_geometry(
+			NiAVObject*           a_object,
+			const BSStringHolder* a_sh) noexcept;
 
-		static constexpr bool find_visible_geometry(
-			NiAVObject* a_object) noexcept;
+		bool has_visible_geometry(
+			const BSStringHolder* a_sh) const noexcept;
 
-		static constexpr bool find_visible_geometry(
-			NiAVObject*          a_object,
-			const BSFixedString& a_scb,
-			const BSFixedString& a_scbLeft) noexcept;
+		bool has_visible_object(
+			NiAVObject* a_findObject) const noexcept;
 
 		mutable const Data::configNodeOverrideEntryTransform_t* cachedConfCME{ nullptr };
 	};
@@ -540,6 +539,10 @@ namespace IED
 			bool                                      a_female,
 			const NodeOverrideData::extraNodeEntry_t& a_entry);
 
+		void CreateExtraCopyNode(
+			NiNode*                                       a_npcroot,
+			const NodeOverrideData::extraNodeCopyEntry_t& a_entry);
+
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
 
@@ -609,7 +612,7 @@ namespace IED
 		stl::optional<Data::actorStateEntry_t> m_playerState;
 	};
 
-	constexpr bool cmeNodeEntry_t::find_visible_geometry(NiAVObject* a_object) noexcept
+	/*constexpr bool cmeNodeEntry_t::find_visible_geometry(NiAVObject* a_object) noexcept
 	{
 		if (!a_object->IsVisible())
 		{
@@ -643,14 +646,14 @@ namespace IED
 		const BSFixedString& a_scb,
 		const BSFixedString& a_scbLeft) noexcept
 	{
-		if (!a_object->IsVisible())
+		if (!a_object->IsVisible() ||
+		    a_object->m_name == a_scb ||
+		    a_object->m_name == a_scbLeft)
 		{
 			return false;
 		}
 
-		if (a_object->GetAsBSGeometry() &&
-		    a_object->m_name != a_scb &&
-		    a_object->m_name != a_scbLeft)
+		if (a_object->GetAsBSGeometry())
 		{
 			return true;
 		}
@@ -675,6 +678,7 @@ namespace IED
 		return false;
 	}
 
+	
 	constexpr bool cmeNodeEntry_t::has_visible_geometry() const noexcept
 	{
 		return find_visible_geometry(node);
@@ -685,6 +689,6 @@ namespace IED
 		const BSFixedString& a_scbLeft) const noexcept
 	{
 		return find_visible_geometry(node, a_scb, a_scbLeft);
-	}
+	}*/
 
 }

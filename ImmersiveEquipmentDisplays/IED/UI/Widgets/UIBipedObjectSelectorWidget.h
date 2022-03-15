@@ -7,7 +7,7 @@ namespace IED
 		class UIBipedObjectSelectorWidget
 		{
 		public:
-			static bool DrawBipedObjectSelector(const char* a_label, BIPED_OBJECT& a_data);
+			static bool DrawBipedObjectSelector(const char* a_label, BIPED_OBJECT& a_data, bool a_allowNone = false);
 
 			[[nodiscard]] inline static constexpr const char* GetBipedSlotDesc(BIPED_OBJECT a_slot) noexcept
 			{

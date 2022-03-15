@@ -72,7 +72,7 @@ namespace IED
 	{
 		if (m_task && m_task->RunEnableChecks())
 		{
-			if (Drivers::UI::AddTask(0xFF, m_task))
+			if (Drivers::UI::AddTask(0, m_task))
 			{
 				return UIOpenResult::kResultEnabled;
 			}

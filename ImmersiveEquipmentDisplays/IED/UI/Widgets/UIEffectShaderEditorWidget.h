@@ -412,9 +412,9 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Yield, "1"),
+					LS(CommonStrings::Force, "1"),
 					stl::underlying(std::addressof(a_data.flags.value)),
-					stl::underlying(Data::EffectShaderDataFlags::kYield)))
+					stl::underlying(Data::EffectShaderDataFlags::kForce)))
 			{
 				OnEffectShaderUpdate(a_params);
 			}
@@ -617,7 +617,7 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.f }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() * 1.1f);
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f));
 				ImGui::TableSetupColumn(LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 75.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);

@@ -55,7 +55,8 @@ namespace IED
 
 		bool UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
 			const char*   a_label,
-			BIPED_OBJECT& a_data)
+			BIPED_OBJECT& a_data,
+			bool          a_allowNone)
 		{
 			static_assert(m_desc.size() == stl::underlying(BIPED_OBJECT::kTotal));
 
@@ -63,10 +64,32 @@ namespace IED
 
 			ImGui::PushID("biped_object_selector");
 
-			auto preview = GetBipedSlotDesc(a_data);
+			auto preview = a_data != BIPED_OBJECT::kNone ?
+			                   GetBipedSlotDesc(a_data) :
+                               "None";
 
-			if (ImGui::BeginCombo(a_label, preview, ImGuiComboFlags_HeightLarge))
+			if (ImGui::BeginCombo(
+					a_label,
+					preview,
+					ImGuiComboFlags_HeightLarge))
 			{
+				ImGui::PushID("header");
+
+				if (a_allowNone)
+				{
+					if (ImGui::Selectable("None##1", a_data == BIPED_OBJECT::kNone))
+					{
+						a_data = BIPED_OBJECT::kNone;
+						result = true;
+					}
+
+					ImGui::Separator();
+				}
+
+				ImGui::PopID();
+
+				ImGui::PushID("list");
+
 				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
 				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
@@ -90,6 +113,8 @@ namespace IED
 
 					ImGui::PopID();
 				}
+
+				ImGui::PopID();
 
 				ImGui::EndCombo();
 			}

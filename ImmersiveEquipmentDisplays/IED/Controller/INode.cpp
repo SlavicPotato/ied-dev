@@ -275,14 +275,4 @@ namespace IED
 		stl::snprintf(a_out, "IED MISC [%.8X]", a_formid.get());
 	}
 
-	NiNode* INode::CreateNode(const char* a_name)
-	{
-		auto node = NiNode::Create(1);
-
-		node->m_name  = a_name;
-		node->m_flags = ATTACHMENT_NODE_FLAGS;
-
-		return node;
-	}
-
 }

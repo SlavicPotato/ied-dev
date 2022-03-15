@@ -15,6 +15,7 @@ namespace IED
 			Merge({
 
 				{ "WeaponBack", "Two-Handed Weapons Back", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
+				{ "WeaponBackIED", "Two-Handed Weapons Back IED", NodeDescriptorFlags::kWeapon | NodeDescriptorFlags::kDefaultCopy },
 				{ "WeaponBackSWP", "Two-Handed Weapons Back SWP", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 				{ "WeaponBackAxeMace", "Weapon Back Axe/Mace", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
 				{ "WeaponBackAxeMaceSWP", "Weapon Back Axe/Mace SWP", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
@@ -34,6 +35,7 @@ namespace IED
 				{ "WeaponStaff", "Staff", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
 				{ "WeaponStaffLeft", "Staff Left", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
 				{ "WeaponBow", "Bow", NodeDescriptorFlags::kManaged | NodeDescriptorFlags::kDefault | NodeDescriptorFlags::kWeapon },
+				{ "WeaponBowIED", "Bow IED", NodeDescriptorFlags::kWeapon | NodeDescriptorFlags::kDefaultCopy },
 				{ "WeaponBowFSM", "Bow FSM", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 				{ "WeaponBowBetter", "Better Bow", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
 				{ "WeaponBowChesko", "Chesko Bow", NodeDescriptorFlags::kXP32 | NodeDescriptorFlags::kWeapon },
