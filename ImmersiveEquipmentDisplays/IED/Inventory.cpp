@@ -252,7 +252,7 @@ namespace IED
 				continue;
 			}
 
-			std::uint16_t damage;
+			std::uint32_t rating;
 
 			switch (form->formType)
 			{
@@ -265,28 +265,33 @@ namespace IED
 						continue;
 					}
 
-					damage = weap->damage.attackDamage;
+					rating = weap->damage.attackDamage;
 				}
 				break;
 			case TESAmmo::kTypeID:
 
-				damage = static_cast<std::uint16_t>(
+				rating = static_cast<std::uint32_t>(
 					std::clamp(
 						static_cast<TESAmmo*>(form)->settings.damage,
 						static_cast<float>(
-							std::numeric_limits<std::uint16_t>::min()),
+							std::numeric_limits<std::uint32_t>::min()),
 						static_cast<float>(
-							std::numeric_limits<std::uint16_t>::max())));
+							std::numeric_limits<std::uint32_t>::max())));
+
+				break;
+			case TESObjectARMO::kTypeID:
+
+				rating = static_cast<TESObjectARMO*>(form)->armorRating;
 
 				break;
 			default:
-				damage = 0;
+				rating = 0;
 				break;
 			}
 
 			auto& entry = m_slotResults[stl::underlying(e.second.type)];
 
-			entry.m_items.emplace_back(form, damage, extra, std::addressof(e.second));
+			entry.m_items.emplace_back(form, rating, extra, std::addressof(e.second));
 		}
 
 		for (auto& e : m_slotResults)
@@ -297,7 +302,7 @@ namespace IED
 				e.m_items.begin(),
 				e.m_items.end(),
 				[](auto& a_lhs, auto& a_rhs) {
-					return a_lhs.damage > a_rhs.damage;
+					return a_lhs.rating > a_rhs.rating;
 				});
 		}
 	}
