@@ -745,11 +745,12 @@ namespace IED
 	}
 
 	void INodeOverride::ApplyNodeOverride(
+		const stl::fixed_string&                   a_name,
 		const cmeNodeEntry_t&                      a_entry,
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params)
 	{
-		NiTransform xfrm;
+		auto xfrm = a_entry.orig;
 
 		if (a_data.transform.scale)
 		{
@@ -758,10 +759,12 @@ namespace IED
 
 		if (a_data.transform.rotation)
 		{
-			xfrm.rot.SetEulerAngles(
+			NiMatrix33 rot(
 				a_data.transform.rotation->x,
 				a_data.transform.rotation->y,
 				a_data.transform.rotation->z);
+
+			xfrm.rot = xfrm.rot * rot;
 		}
 
 		if (a_data.transform.position)
@@ -772,7 +775,7 @@ namespace IED
 			}
 			else
 			{
-				xfrm.pos = (xfrm.rot * *a_data.transform.position) * xfrm.scale;
+				xfrm.pos += (xfrm.rot * *a_data.transform.position) * xfrm.scale;
 			}
 		}
 
@@ -794,9 +797,11 @@ namespace IED
 		}
 	}
 
-	void INodeOverride::ResetNodeOverrideImpl(NiAVObject* a_object)
+	void INodeOverride::ResetNodeOverrideImpl(
+		NiAVObject*       a_object,
+		const NiTransform a_orig)
 	{
-		a_object->m_localTransform = {};
+		a_object->m_localTransform = a_orig;
 		a_object->SetVisible(true);
 	}
 
@@ -807,13 +812,17 @@ namespace IED
 		    !ITaskPool::IsRunningOnCurrentThread())
 		{
 			ITaskPool::AddPriorityTask(
-				[node = a_entry.node]() {
-					ResetNodeOverrideImpl(node);
+				[entry = a_entry]() {
+					ResetNodeOverrideImpl(
+						entry.node,
+						entry.orig);
 				});
 		}
 		else
 		{
-			ResetNodeOverrideImpl(a_entry.node);
+			ResetNodeOverrideImpl(
+				a_entry.node,
+				a_entry.orig);
 		}
 	}
 
@@ -928,8 +937,7 @@ namespace IED
 						{
 							target->AttachChild(node, true);
 
-							NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-							node->UpdateDownwardPass(ctx, nullptr);
+							INode::UpdateDownwardPass(node);
 						}
 					});
 			}
@@ -937,8 +945,7 @@ namespace IED
 			{
 				a_target->AttachChild(a_entry.node, true);
 
-				NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-				a_entry.node->UpdateDownwardPass(ctx, nullptr);
+				INode::UpdateDownwardPass(a_entry.node);
 			}
 		}
 	}

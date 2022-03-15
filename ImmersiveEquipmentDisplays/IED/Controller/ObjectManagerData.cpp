@@ -9,7 +9,6 @@
 #include "IED/Data.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
-#include "IED/SkeletonCache.h"
 
 #include <ext/Node.h>
 
@@ -47,6 +46,8 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
 
+		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
+
 		if (auto npc = a_actor->GetActorBase())
 		{
 			m_female = npc->GetSex() == 1;
@@ -74,7 +75,8 @@ namespace IED
 				{
 					m_cmeNodes.try_emplace(
 						e->first,
-						node);
+						node,
+						GetCachedOrDefaultTransform(e->second.name));
 				}
 			}
 
@@ -275,6 +277,21 @@ namespace IED
 		return false;
 	}
 
+	NiTransform ActorObjectHolder::GetCachedOrDefaultTransform(
+		const stl::fixed_string& a_name) const
+	{
+		if (m_skeletonCache)
+		{
+			auto it = m_skeletonCache->find(a_name);
+			if (it != m_skeletonCache->end())
+			{
+				return it->second.transform;
+			}
+		}
+
+		return {};
+	}
+
 	void ActorObjectHolder::CreateExtraNodes(
 		NiNode*                                   a_npcroot,
 		bool                                      a_female,
@@ -312,7 +329,7 @@ namespace IED
 	void ActorObjectHolder::CreateExtraCopyNode(
 		Actor*                                        a_actor,
 		NiNode*                                       a_npcroot,
-		const NodeOverrideData::extraNodeCopyEntry_t& a_entry)
+		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const
 	{
 		auto source = ::Util::Node::FindNode(a_npcroot, a_entry.bssrc);
 		if (!source)
@@ -331,12 +348,20 @@ namespace IED
 			return;
 		}
 
-		auto node  = INode::CreateAttachmentNode(a_entry.dst);
-		auto entry = SkeletonCache::GetSingleton().GetNode(a_actor, a_entry.src);
+		auto node = INode::CreateAttachmentNode(a_entry.dst);
 
-		node->m_localTransform = entry ?
-		                             entry->transform :
-                                     source->m_localTransform;
+		if (auto& cache = GetSkeletonCache())
+		{
+			auto it = cache->find(a_entry.src);
+
+			node->m_localTransform = it != cache->end() ?
+			                             it->second.transform :
+                                         source->m_localTransform;
+		}
+		else
+		{
+			node->m_localTransform = source->m_localTransform;
+		}
 
 		parent->AttachChild(node, true);
 
@@ -371,7 +396,8 @@ namespace IED
 					m_state(std::move(a_state)),
 					m_handle(a_handle),
 					m_root(a_root)
-				{}
+				{
+				}
 
 				virtual void Run() override
 				{

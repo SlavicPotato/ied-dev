@@ -66,7 +66,9 @@ namespace IED
 				}
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 				ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
-				ImGui::Text("%zu", SkeletonCache::GetSingleton().GetSize());
+
+				auto& sc = SkeletonCache::GetSingleton();
+				ImGui::Text("%zu [%zu]", sc.GetSize(), sc.GetTotalEntries());
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{

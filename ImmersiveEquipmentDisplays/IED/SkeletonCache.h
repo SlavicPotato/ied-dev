@@ -10,10 +10,11 @@ namespace IED
 			NiTransform transform;
 		};
 
-		using actor_entry_type = std::unordered_map<stl::fixed_string, Entry>;
-		using data_type        = std::unordered_map<stl::fixed_string, actor_entry_type>;
-
 	public:
+		using actor_entry_type       = std::shared_ptr<std::unordered_map<stl::fixed_string, Entry>>;
+		using const_actor_entry_type = std::shared_ptr<const std::unordered_map<stl::fixed_string, Entry>>;
+		using data_type              = std::unordered_map<stl::fixed_string, actor_entry_type>;
+
 		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
@@ -23,16 +24,26 @@ namespace IED
 			TESObjectREFR*           a_refr,
 			const stl::fixed_string& a_name);
 
+		const_actor_entry_type Get(
+			TESObjectREFR* a_refr);
+
 		[[nodiscard]] inline auto GetSize() const noexcept
 		{
+			IScopedLock lock(m_lock);
 			return m_data.size();
 		}
 
+		[[nodiscard]] std::size_t GetTotalEntries() const noexcept;
+
 	private:
+		SkeletonCache() = default;
+
 		static stl::fixed_string mk_key(TESObjectREFR* a_refr);
 
 		data_type::const_iterator get_or_create(const stl::fixed_string& a_key);
 		void                      fill(const stl::fixed_string& a_key, data_type::iterator a_it);
+
+		mutable FastSpinLock m_lock;
 
 		data_type m_data;
 

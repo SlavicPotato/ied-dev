@@ -478,14 +478,13 @@ namespace IED
 
 		auto itemRoot = CreateAttachmentNode(buffer);
 
-		targetNodes.obj->AttachChild(itemRoot, true);
-
 		state->UpdateData(a_config);
 		UpdateObjectTransform(
 			state->transform,
 			itemRoot,
 			targetNodes.ref);
 
+		targetNodes.obj->AttachChild(itemRoot, true);
 		UpdateDownwardPass(itemRoot);
 
 		auto ar = EngineExtensions::AttachObject(
@@ -501,7 +500,7 @@ namespace IED
 			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok);
 
-		UpdateDownwardPass(object);
+		UpdateDownwardPass(itemRoot);
 
 		FinalizeObjectState(
 			state,
@@ -695,14 +694,13 @@ namespace IED
 
 		auto groupRoot = CreateAttachmentNode(buffer);
 
-		targetNodes.obj->AttachChild(groupRoot, true);
-
 		state->UpdateData(a_config);
 		UpdateObjectTransform(
 			state->transform,
 			groupRoot,
 			targetNodes.ref);
 
+		targetNodes.obj->AttachChild(groupRoot, true);
 		UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
@@ -724,7 +722,6 @@ namespace IED
 			GetNodeName(e.form, e.params, buffer);
 
 			auto itemRoot = CreateAttachmentNode(buffer);
-			groupRoot->AttachChild(itemRoot, true);
 
 			auto& n = state->groupObjects.try_emplace(
 											 e.entry->first,
@@ -739,6 +736,7 @@ namespace IED
 				n.object,
 				nullptr);
 
+			groupRoot->AttachChild(itemRoot, true);
 			UpdateDownwardPass(itemRoot);
 
 			EngineExtensions::AttachObject(
@@ -768,6 +766,8 @@ namespace IED
 
 			e.object = itemRoot;
 		}
+
+		//UpdateDownwardPass(groupRoot);
 
 		FinalizeObjectState(
 			state,

@@ -14,16 +14,10 @@ namespace IED
 		const stl::fixed_string& a_name)
 		-> const Entry*
 	{
-		auto key = mk_key(a_refr);
-		if (key.empty())
-		{
-			return nullptr;
-		}
+		auto data = Get(a_refr);
 
-		auto it1 = get_or_create(key);
-
-		if (auto it2 = it1->second.find(a_name);
-		    it2 != it1->second.end())
+		if (auto it2 = data->find(a_name);
+		    it2 != data->end())
 		{
 			return std::addressof(it2->second);
 		}
@@ -31,6 +25,35 @@ namespace IED
 		{
 			return nullptr;
 		}
+	}
+
+	auto SkeletonCache::Get(
+		TESObjectREFR*           a_refr)
+		-> const_actor_entry_type
+	{
+		IScopedLock lock(m_lock);
+
+		auto key = mk_key(a_refr);
+		if (key.empty())
+		{
+			return {};
+		}
+
+		return get_or_create(key)->second;
+	}
+
+	std::size_t SkeletonCache::GetTotalEntries() const noexcept
+	{
+		IScopedLock lock(m_lock);
+
+		std::size_t result = 0;
+
+		for (auto& e : m_data)
+		{
+			result += e.second->size();
+		}
+
+		return result;
 	}
 
 	stl::fixed_string SkeletonCache::mk_key(
@@ -63,6 +86,8 @@ namespace IED
 
 		if (r.second)
 		{
+			r.first->second = std::make_unique<actor_entry_type::element_type>();
+
 			fill(a_key, r.first);
 		}
 
@@ -73,13 +98,13 @@ namespace IED
 		const stl::fixed_string& a_key,
 		data_type::iterator      a_it)
 	{
-		::Util::Stream::NiStreamWrapper stream;
-
 		BSResourceNiBinaryStream binaryStream(a_key.c_str());
 		if (!binaryStream.IsValid())
 		{
 			return;
 		}
+
+		::Util::Stream::NiStreamWrapper stream;
 
 		if (!stream->LoadStream(std::addressof(binaryStream)))
 		{
@@ -98,27 +123,22 @@ namespace IED
 				continue;
 			}
 
-			auto object = ni_cast(e, NiNode);
+			auto object = ni_cast(e, NiAVObject);
 			if (!object)
 			{
 				continue;
 			}
 
 			::Util::Node::Traverse(object, [&](NiAVObject* a_object) {
-				if (auto node = a_object->GetAsNiNode())
-				{
-					auto& name = node->m_name;
+				auto& name = a_object->m_name;
 
-					if (*name.data() != 0)
-					{
-						a_it->second.try_emplace(name.data(), node->m_localTransform);
-					}
+				if (*name.data() != 0)
+				{
+					a_it->second->try_emplace(name.data(), a_object->m_localTransform);
 				}
 
 				return ::Util::Node::VisitorControl::kContinue;
 			});
-
-			break;
 		}
 	}
 }

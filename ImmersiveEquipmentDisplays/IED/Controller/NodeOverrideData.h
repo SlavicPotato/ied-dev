@@ -58,6 +58,7 @@ namespace IED
 				const char* a_desc,
 				const char* a_name) :
 				desc(a_desc),
+				name(a_name),
 				bsname(a_name),
 				flags(NodeOverrideDataEntryFlags::kNone)
 			{
@@ -66,12 +67,14 @@ namespace IED
 			overrideNodeEntry_t(
 				const std::pair<const char*, const char*>& a_pair) :
 				desc(a_pair.first),
+				name(a_pair.second),
 				bsname(a_pair.second),
 				flags(NodeOverrideDataEntryFlags::kNone)
 			{
 			}
 
 			const char*                           desc;
+			stl::fixed_string                     name;
 			BSFixedString                         bsname;
 			stl::flag<NodeOverrideDataEntryFlags> flags;
 		};
@@ -134,8 +137,8 @@ namespace IED
 			{}
 
 			stl::fixed_string src;
-			BSFixedString bssrc;
-			BSFixedString dst;
+			BSFixedString     bssrc;
+			BSFixedString     dst;
 		};
 
 		using init_list_cm   = std::pair<const char*, std::pair<const char*, const char*>>;
@@ -173,7 +176,7 @@ namespace IED
 		{
 			return m_Instance->m_extra;
 		}
-		
+
 		inline static const auto& GetExtraCopyNodes() noexcept
 		{
 			return m_Instance->m_extraCopy;

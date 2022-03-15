@@ -1,13 +1,14 @@
 #pragma once
 
-#include "IED/ConfigModelGroup.h"
-#include "IED/ConfigStore.h"
 #include "INode.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerCommon.h"
 
 #include "IED/ActorState.h"
+#include "IED/ConfigModelGroup.h"
+#include "IED/ConfigStore.h"
+#include "IED/SkeletonCache.h"
 
 namespace IED
 {
@@ -306,6 +307,7 @@ namespace IED
 	struct cmeNodeEntry_t
 	{
 		NiPointer<NiNode> node;
+		NiTransform       orig;  // cached or default, never read from loaded actor 3D
 
 		static bool find_visible_geometry(
 			NiAVObject*           a_object,
@@ -533,6 +535,14 @@ namespace IED
 			return m_formid;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetSkeletonCache() const noexcept
+		{
+			return m_skeletonCache;
+		}
+
+		[[nodiscard]] NiTransform GetCachedOrDefaultTransform(
+			const stl::fixed_string& a_name) const;
+
 	private:
 		void CreateExtraNodes(
 			NiNode*                                   a_npcroot,
@@ -542,7 +552,7 @@ namespace IED
 		void CreateExtraCopyNode(
 			Actor*                                        a_actor,
 			NiNode*                                       a_npcroot,
-			const NodeOverrideData::extraNodeCopyEntry_t& a_entry);
+			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
@@ -574,6 +584,8 @@ namespace IED
 		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;
 		TESPackage*         m_currentPackage{ nullptr };
+
+		SkeletonCache::const_actor_entry_type m_skeletonCache;
 
 		IObjectManager& m_owner;
 
@@ -612,84 +624,5 @@ namespace IED
 		ActorObjectMap                         m_objects;
 		stl::optional<Data::actorStateEntry_t> m_playerState;
 	};
-
-	/*constexpr bool cmeNodeEntry_t::find_visible_geometry(NiAVObject* a_object) noexcept
-	{
-		if (!a_object->IsVisible())
-		{
-			return false;
-		}
-
-		if (a_object->GetAsBSGeometry())
-		{
-			return true;
-		}
-
-		if (auto node = a_object->GetAsNiNode())
-		{
-			for (auto object : node->m_children)
-			{
-				if (object)
-				{
-					if (find_visible_geometry(object))
-					{
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	constexpr bool cmeNodeEntry_t::find_visible_geometry(
-		NiAVObject*          a_object,
-		const BSFixedString& a_scb,
-		const BSFixedString& a_scbLeft) noexcept
-	{
-		if (!a_object->IsVisible() ||
-		    a_object->m_name == a_scb ||
-		    a_object->m_name == a_scbLeft)
-		{
-			return false;
-		}
-
-		if (a_object->GetAsBSGeometry())
-		{
-			return true;
-		}
-
-		if (auto node = a_object->GetAsNiNode())
-		{
-			for (auto object : node->m_children)
-			{
-				if (object)
-				{
-					if (find_visible_geometry(
-							object,
-							a_scb,
-							a_scbLeft))
-					{
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
-	
-	constexpr bool cmeNodeEntry_t::has_visible_geometry() const noexcept
-	{
-		return find_visible_geometry(node);
-	}
-
-	constexpr bool cmeNodeEntry_t::has_visible_geometry(
-		const BSFixedString& a_scb,
-		const BSFixedString& a_scbLeft) const noexcept
-	{
-		return find_visible_geometry(node, a_scb, a_scbLeft);
-	}*/
 
 }

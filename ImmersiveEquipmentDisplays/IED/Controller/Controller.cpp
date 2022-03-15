@@ -3564,6 +3564,7 @@ namespace IED
 			if (e.second.cachedConfCME)
 			{
 				ApplyNodeOverride(
+					e.first,
 					e.second,
 					e.second.cachedConfCME->get(a_sex),
 					params);
@@ -3571,7 +3572,7 @@ namespace IED
 			else
 			{
 				// only called from main, no need to run checks
-				ResetNodeOverrideImpl(e.second.node);
+				ResetNodeOverrideImpl(e.second.node, e.second.orig);
 			}
 		}
 
