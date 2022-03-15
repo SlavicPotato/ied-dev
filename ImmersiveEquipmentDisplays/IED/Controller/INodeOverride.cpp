@@ -798,8 +798,8 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodeOverrideImpl(
-		NiAVObject*       a_object,
-		const NiTransform a_orig)
+		NiAVObject*        a_object,
+		const NiTransform& a_orig)
 	{
 		a_object->m_localTransform = a_orig;
 		a_object->SetVisible(true);

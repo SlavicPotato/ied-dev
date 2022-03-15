@@ -158,8 +158,8 @@ namespace IED
 		};
 
 		static void ResetNodeOverrideImpl(
-			NiAVObject* a_object,
-			const NiTransform a_orig);
+			NiAVObject*        a_object,
+			const NiTransform& a_orig);
 
 		static void ResetNodeOverride(
 			const cmeNodeEntry_t& a_entry);
