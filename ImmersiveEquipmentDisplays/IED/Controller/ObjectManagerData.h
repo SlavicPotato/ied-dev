@@ -540,6 +540,7 @@ namespace IED
 			const NodeOverrideData::extraNodeEntry_t& a_entry);
 
 		void CreateExtraCopyNode(
+			Actor*                                        a_actor,
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry);
 

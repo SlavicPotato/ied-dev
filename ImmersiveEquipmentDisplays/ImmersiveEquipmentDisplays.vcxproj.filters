@@ -1109,6 +1109,9 @@
     <ClInclude Include="IED\UI\UIIntroBannerStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\SkeletonCache.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1746,6 +1749,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\UIIntroBanner.cpp">
       <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\SkeletonCache.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

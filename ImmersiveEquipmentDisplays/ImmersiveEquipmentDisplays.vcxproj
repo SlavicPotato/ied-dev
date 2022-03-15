@@ -524,6 +524,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
+    <ClInclude Include="IED\SkeletonCache.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
@@ -879,6 +880,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
+    <ClCompile Include="IED\SkeletonCache.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />

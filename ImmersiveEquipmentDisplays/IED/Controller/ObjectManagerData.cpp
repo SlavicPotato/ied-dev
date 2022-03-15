@@ -4,10 +4,12 @@
 #include "ObjectManagerData.h"
 
 #include "Controller.h"
+
 #include "IED/ActorState.h"
 #include "IED/Data.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
+#include "IED/SkeletonCache.h"
 
 #include <ext/Node.h>
 
@@ -112,7 +114,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 			{
-				CreateExtraCopyNode(a_npcroot, e);
+				CreateExtraCopyNode(a_actor, a_npcroot, e);
 			}
 		}
 
@@ -308,10 +310,11 @@ namespace IED
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(
+		Actor*                                        a_actor,
 		NiNode*                                       a_npcroot,
 		const NodeOverrideData::extraNodeCopyEntry_t& a_entry)
 	{
-		auto source = ::Util::Node::FindNode(a_npcroot, a_entry.src);
+		auto source = ::Util::Node::FindNode(a_npcroot, a_entry.bssrc);
 		if (!source)
 		{
 			return;
@@ -328,9 +331,12 @@ namespace IED
 			return;
 		}
 
-		auto node = INode::CreateAttachmentNode(a_entry.dst);
+		auto node  = INode::CreateAttachmentNode(a_entry.dst);
+		auto entry = SkeletonCache::GetSingleton().GetNode(a_actor, a_entry.src);
 
-		node->m_localTransform = source->m_localTransform;
+		node->m_localTransform = entry ?
+		                             entry->transform :
+                                     source->m_localTransform;
 
 		parent->AttachChild(node, true);
 

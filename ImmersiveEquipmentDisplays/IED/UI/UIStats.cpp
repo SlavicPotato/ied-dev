@@ -4,6 +4,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "IED/SkeletonCache.h"
+
 #include "Drivers/UI.h"
 
 #include "UIStatsStrings.h"
@@ -46,6 +48,7 @@ namespace IED
 				}
 				ImGui::TextUnformatted("UI:");
 				ImGui::TextUnformatted("FC:");
+				ImGui::TextUnformatted("SC:");
 
 				auto odbLevel = m_controller.GetODBLevel();
 
@@ -63,6 +66,7 @@ namespace IED
 				}
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 				ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
+				ImGui::Text("%zu", SkeletonCache::GetSingleton().GetSize());
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{

@@ -129,10 +129,12 @@ namespace IED
 				const char* a_src,
 				const char* a_dst) :
 				src(a_src),
+				bssrc(a_src),
 				dst(a_dst)
 			{}
 
-			BSFixedString src;
+			stl::fixed_string src;
+			BSFixedString bssrc;
 			BSFixedString dst;
 		};
 
