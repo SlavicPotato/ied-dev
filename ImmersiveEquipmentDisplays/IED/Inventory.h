@@ -8,7 +8,7 @@ namespace IED
 {
 	class Controller;
 
-	EntryDataList* GetEntryDataList(Actor* a_actor);
+	RE::BSSimpleList<InventoryEntryData*>* GetEntryDataList(Actor* a_actor);
 
 	struct SlotItemCandidates
 	{
@@ -32,8 +32,8 @@ namespace IED
 			Actor* a_actor);
 
 		void Run(
-			TESContainer&  a_container,
-			EntryDataList* a_dataList);
+			TESContainer&                          a_container,
+			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
 
 		SKMP_FORCEINLINE bool Accept(TESContainer::Entry* entry);
 		SKMP_FORCEINLINE bool Accept(InventoryEntryData* a_entryData);

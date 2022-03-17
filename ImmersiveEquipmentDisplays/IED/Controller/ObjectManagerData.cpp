@@ -124,7 +124,9 @@ namespace IED
 
 		for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 		{
-			m_entriesSlot[i].slotid = static_cast<Data::ObjectSlot>(i);
+			m_entriesSlot[i].slotid   = static_cast<Data::ObjectSlot>(i);
+			m_entriesSlot[i].slotidex = Data::ItemData::SlotToExtraSlot(
+				static_cast<Data::ObjectSlot>(i));
 		}
 
 		if (a_actor == *g_thePlayer && a_playerState)
@@ -527,9 +529,23 @@ namespace IED
 		tag.reset();
 	}
 
+	bool effectShaderData_t::UpdateIfChanged(
+		NiNode*                                 a_object,
+		const Data::configEffectShaderHolder_t& a_data)
+	{
+		if (tag == a_data)
+		{
+			return false;
+		}
+		else
+		{
+			Update(a_object, a_data);
+			return true;
+		}
+	}
+
 	void effectShaderData_t::Update(
 		NiNode*                                 a_object,
-		const uuid_tag&                         a_tag,
 		const Data::configEffectShaderHolder_t& a_data)
 	{
 		clear();
@@ -590,7 +606,7 @@ namespace IED
 			data.emplace(i, std::move(tmp));
 		}
 
-		tag = a_tag;
+		tag = a_data;
 	}
 
 	bool cmeNodeEntry_t::find_visible_geometry(

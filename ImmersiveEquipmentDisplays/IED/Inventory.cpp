@@ -7,17 +7,18 @@ namespace IED
 {
 	using namespace Data;
 
-	EntryDataList* GetEntryDataList(Actor* a_actor)
+	RE::BSSimpleList<InventoryEntryData*>* GetEntryDataList(Actor* a_actor)
 	{
 		if (auto containerChanges = a_actor->extraData.Get<ExtraContainerChanges>())
 		{
-			if (auto containerData = containerChanges->data)
-			{
-				return containerData->objList;
-			}
+			return containerChanges->data ?
+			           containerChanges->data->GetObjList() :
+                       nullptr;
 		}
-
-		return nullptr;
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	ItemCandidateCollector::ItemCandidateCollector(
@@ -28,14 +29,20 @@ namespace IED
 	}
 
 	void ItemCandidateCollector::Run(
-		TESContainer&  a_container,
-		EntryDataList* a_dataList)
+		TESContainer&                          a_container,
+		RE::BSSimpleList<InventoryEntryData*>* a_dataList)
 	{
-		a_container.Visit(*this);
+		for (auto& e : a_container)
+		{
+			Accept(e);
+		}
 
 		if (a_dataList)
 		{
-			a_dataList->Visit(*this);
+			for (auto& e : *a_dataList)
+			{
+				Accept(e);
+			}
 		}
 	}
 
@@ -125,19 +132,13 @@ namespace IED
 			m_data.typeCount[i] += a_entryData->countDelta;
 		}
 
-		if (auto extendDataList = a_entryData->extendDataList)
+		if (auto extendDataList = a_entryData->GetDataList())
 		{
-			for (auto it = extendDataList->Begin(); !it.End(); ++it)
+			for (auto& e : *extendDataList)
 			{
-				auto extraDataList = *it;
-				if (!extraDataList)
-				{
-					continue;
-				}
+				BSReadLocker locker(e->m_lock);
 
-				BSReadLocker locker(extraDataList->m_lock);
-
-				auto presence = extraDataList->m_presence;
+				auto& presence = e->m_presence;
 				if (!presence)
 				{
 					continue;
@@ -270,13 +271,8 @@ namespace IED
 				break;
 			case TESAmmo::kTypeID:
 
-				rating = static_cast<std::uint32_t>(
-					std::clamp(
-						static_cast<TESAmmo*>(form)->settings.damage,
-						static_cast<float>(
-							std::numeric_limits<std::uint32_t>::min()),
-						static_cast<float>(
-							std::numeric_limits<std::uint32_t>::max())));
+				rating = stl::safe_float_cast<std::uint32_t>(
+					static_cast<TESAmmo*>(form)->settings.damage);
 
 				break;
 			case TESObjectARMO::kTypeID:

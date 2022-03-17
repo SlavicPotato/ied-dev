@@ -28,7 +28,7 @@ namespace IED
 				const char*                 a_text,
 				ImGuiInputTextFlags         a_flags,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				char*                       a_buf,
 				std::size_t                 a_size);
 
@@ -38,7 +38,7 @@ namespace IED
 				const char*                 a_text,
 				ImGuiInputTextFlags         a_flags,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				char*                       a_buf,
 				std::size_t                 a_size,
 				Args... args);
@@ -46,28 +46,28 @@ namespace IED
 			ModalStatus MessageDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				const char*                 text);
 
 			template <class... Args>
 			ModalStatus MessageDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				const char*                 text,
 				Args... args);
 
 			ModalStatus ConfirmDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				const char*                 text);
 
 			template <class... Args>
 			ModalStatus ConfirmDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
-				const stl::optional<float>& a_twsz,
+				const std::optional<float>& a_twsz,
 				const char*                 text,
 				Args... args);
 
@@ -83,7 +83,7 @@ namespace IED
 			const char*                 a_text,
 			ImGuiInputTextFlags         a_flags,
 			const cm_func_t&            a_func,
-			const stl::optional<float>& a_twsz,
+			const std::optional<float>& a_twsz,
 			char*                       a_buf,
 			std::size_t                 a_size,
 			Args... args)
@@ -173,7 +173,7 @@ namespace IED
 		auto UICommonModals::MessageDialog(
 			const char*                 a_name,
 			const cm_func_t&            a_func,
-			const stl::optional<float>& a_twsz,
+			const std::optional<float>& a_twsz,
 			const char*                 a_text,
 			Args... args)
 			-> ModalStatus
@@ -226,7 +226,7 @@ namespace IED
 		auto UICommonModals::ConfirmDialog(
 			const char*                 name,
 			const cm_func_t&            a_func,
-			const stl::optional<float>& a_twsz,
+			const std::optional<float>& a_twsz,
 			const char*                 text,
 			Args... args)
 			-> ModalStatus

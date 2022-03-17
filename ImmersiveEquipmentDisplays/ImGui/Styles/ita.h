@@ -10,15 +10,26 @@ namespace IED
 		{
 			namespace ITA
 			{
-				inline void Setup(ImGuiStyle& a_style, bool a_dark, float a_alpha)
+				enum class Template
 				{
-					if (a_dark)
+					Dark,
+					Light,
+					Classic
+				};
+
+				inline void Setup(ImGuiStyle& a_style, Template a_templ, float a_alpha)
+				{
+					switch (a_templ)
 					{
-						ImGui::StyleColorsDark(std::addressof(a_style));
-					}
-					else
-					{
+					case Template::Light:
 						ImGui::StyleColorsLight(std::addressof(a_style));
+						break;
+					case Template::Classic:
+						ImGui::StyleColorsClassic(std::addressof(a_style));
+						break;
+					default:
+						ImGui::StyleColorsDark(std::addressof(a_style));
+						break;
 					}
 
 					for (ImGuiCol i = 0; i <= ImGuiCol_COUNT; i++)
@@ -30,7 +41,7 @@ namespace IED
 						    (ImGuiCol_NavWindowingDimBg != ei) &&
 						    (col.w < 1.00f || (ImGuiCol_FrameBg == ei) || (ImGuiCol_WindowBg == ei) || (ImGuiCol_ChildBg == ei)))
 						{
-							col.w = a_alpha * col.w;
+							col.w *= a_alpha;
 						}
 					}
 
@@ -38,8 +49,10 @@ namespace IED
 					a_style.FrameBorderSize  = 0.0f;
 					a_style.PopupBorderSize  = 1.0f;
 					a_style.WindowBorderSize = 0.0f;
-					a_style.FrameRounding    = 3.0f;
 					a_style.Alpha            = 1.0f;
+					a_style.WindowRounding   = 3.0f;
+					a_style.FrameRounding    = 2.0f;
+					a_style.PopupRounding    = 2.0f;
 				}
 			}
 		}

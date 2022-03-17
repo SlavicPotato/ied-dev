@@ -142,10 +142,16 @@ namespace IED
 		void RevertHandler(SKSESerializationInterface* a_intfc);
 
 	public:
-		template <class Tc>
-		inline auto make_timed_ui_task(long long a_lifetime)
+		template <class Tc, class... Args>
+		inline auto make_timed_ui_task(
+			long long a_lifetime,
+			Args&&... a_args)
 		{
-			return std::make_shared<IUITimedRenderTask<Tc>>(*this, *this, a_lifetime);
+			return std::make_shared<IUITimedRenderTask<Tc>>(
+				*this,
+				*this,
+				a_lifetime,
+				std::forward<Args>(a_args)...);
 		}
 
 		[[nodiscard]] inline const auto* GetBSStringHolder() const noexcept
@@ -738,7 +744,14 @@ namespace IED
 		constexpr void UpdateObjectEffectShaders(
 			processParams_t& a_params,
 			const Ta&        a_config,
-			Tb&              a_objectEntry);
+			Tb&              a_objectEntry) requires(
+
+			(std::is_same_v<Ta, Data::configCustom_t> &&
+		     std::is_same_v<Tb, objectEntryCustom_t>) ||
+			(std::is_same_v<Ta, Data::configSlot_t> &&
+		     std::is_same_v<Tb, objectEntrySlot_t>)
+
+		);
 
 		void ProcessSlots(processParams_t& a_params);
 
@@ -931,7 +944,8 @@ namespace IED
 		std::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;
-		mutable WCriticalSection              m_lock;
+
+		mutable WCriticalSection m_lock;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);

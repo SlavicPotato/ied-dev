@@ -39,7 +39,7 @@ namespace IED
 		using data_type = std::unordered_map<stl::fixed_string, Entry>;
 
 		[[nodiscard]] inline constexpr bool operator==(
-			const Data::effectShaderList_t& a_rhs) const
+			const Data::configEffectShaderHolder_t& a_rhs) const
 		{
 			return tag == a_rhs;
 		}
@@ -51,9 +51,12 @@ namespace IED
 
 		void clear();
 
+		bool UpdateIfChanged(
+			NiNode*                                 a_object,
+			const Data::configEffectShaderHolder_t& a_data);
+
 		void Update(
 			NiNode*                                 a_object,
-			const uuid_tag&                         a_tag,
 			const Data::configEffectShaderHolder_t& a_data);
 
 		template <class Tf>
@@ -204,6 +207,7 @@ namespace IED
 	{
 		Data::actorStateSlotEntry_t slotState;
 		Data::ObjectSlot            slotid{ Data::ObjectSlot::kMax };
+		Data::ObjectSlotExtra       slotidex{ Data::ObjectSlotExtra::kNone };
 		std::uint8_t                hideCountdown{ 0 };
 
 		inline constexpr void ResetDeferredHide() noexcept

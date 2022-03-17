@@ -85,10 +85,10 @@ namespace IED
 			}
 
 			template <class Tp>
-			requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
+
 			[[nodiscard]] static bool AddTask(
 				std::int32_t a_id,
-				Tp&&         a_task);
+				Tp&&         a_task) requires(std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>);
 
 			static void RemoveTask(std::int32_t a_id);
 			static void QueueRemoveTask(std::int32_t a_id);
@@ -312,8 +312,8 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(UI::UpdateFlags);
 
 		template <class Tp>
-		requires std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
-		bool UI::AddTask(std::int32_t a_id, Tp&& a_task)
+		bool UI::AddTask(std::int32_t a_id, Tp&& a_task) requires(
+			std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>)
 		{
 			assert(a_task);
 

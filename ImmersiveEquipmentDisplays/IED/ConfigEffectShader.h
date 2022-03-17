@@ -158,7 +158,8 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderHolderFlags);
 
-		struct configEffectShaderHolder_t
+		struct configEffectShaderHolder_t :
+			configUUIDTag_t
 		{
 			friend class boost::serialization::access;
 
@@ -199,8 +200,7 @@ namespace IED
 			}
 		};
 
-		struct effectShaderList_t :
-			configUUIDTag_t
+		struct effectShaderList_t
 		{
 			friend class boost::serialization::access;
 

@@ -139,6 +139,7 @@ namespace IED
 				ImGui::PopTextWrapPos();
 
 				ImGui::Separator();
+				ImGui::Spacing();
 
 				if (selected)
 				{

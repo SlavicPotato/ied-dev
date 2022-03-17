@@ -346,9 +346,10 @@ namespace IED
 		Drivers::UI::SetAlpha(config.ui.alpha);
 		Drivers::UI::SetBGAlpha(config.ui.bgAlpha);
 
-		if (config.ui.showIntroBanner)
+		if (config.ui.showIntroBanner &&
+		    !m_iniconf->m_disableIntroBanner)
 		{
-			auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000);
+			auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000, m_iniconf->m_introBannerVOffset);
 
 			task->SetLock(false);
 			task->SetFreeze(false);
@@ -2241,7 +2242,14 @@ namespace IED
 	constexpr void Controller::UpdateObjectEffectShaders(
 		processParams_t& a_params,
 		const Ta&        a_config,
-		Tb&              a_objectEntry)
+		Tb&              a_objectEntry) requires(
+
+		(std::is_same_v<Ta, Data::configCustom_t> &&
+	     std::is_same_v<Tb, objectEntryCustom_t>) ||
+		(std::is_same_v<Ta, Data::configSlot_t> &&
+	     std::is_same_v<Tb, objectEntrySlot_t>)
+
+	)
 	{
 		if (!EffectControllerEnabled() ||
 		    !a_objectEntry.state)
@@ -2253,8 +2261,6 @@ namespace IED
 
 		if constexpr (std::is_same_v<Ta, configCustom_t>)
 		{
-			static_assert(std::is_same_v<Tb, objectEntryCustom_t>);
-
 			es = a_config.get_effect_shader(
 				a_params.collector.m_data,
 				a_params.objects.m_entriesSlot,
@@ -2262,27 +2268,21 @@ namespace IED
 		}
 		else if constexpr (std::is_same_v<Ta, configSlot_t>)
 		{
-			static_assert(std::is_same_v<Tb, objectEntrySlot_t>);
-
 			es = a_config.get_effect_shader(
 				a_params.collector.m_data,
 				{ a_objectEntry.state->form,
-			      ItemData::SlotToExtraSlot(a_objectEntry.slotid) },
+			      a_objectEntry.slotidex },
 				a_params);
-		}
-		else
-		{
-			static_assert(false);
 		}
 
 		if (es)
 		{
-			a_objectEntry.state->effectShaders.Update(
-				a_objectEntry.state->nodes.obj,
-				a_config.effectShaders,
-				*es);
-
-			a_params.state.ResetEffectShaders(a_params.handle);
+			if (a_objectEntry.state->effectShaders.UpdateIfChanged(
+					a_objectEntry.state->nodes.obj,
+					*es))
+			{
+				a_params.state.ResetEffectShaders(a_params.handle);
+			}
 		}
 		else
 		{
@@ -2409,7 +2409,7 @@ namespace IED
 								a_params) :
                             configEntry.get_equipment_override(
 								a_params.collector.m_data,
-								{ item->form, ItemData::SlotToExtraSlot(objectEntry.slotid) },
+								{ item->form, objectEntry.slotidex },
 								a_params);
 
 				const auto& usedBaseConf =
@@ -2498,14 +2498,10 @@ namespace IED
 
 						item.consume(candidates);
 
-						if (objectEntry.state->effectShaders !=
-						    configEntry.effectShaders)
-						{
-							UpdateObjectEffectShaders(
-								a_params,
-								configEntry,
-								objectEntry);
-						}
+						UpdateObjectEffectShaders(
+							a_params,
+							configEntry,
+							objectEntry);
 
 						continue;
 					}
@@ -2949,14 +2945,10 @@ namespace IED
 							}
 						}
 
-						if (a_objectEntry.state->effectShaders !=
-						    a_config.effectShaders)
-						{
-							UpdateObjectEffectShaders(
-								a_params,
-								a_config,
-								a_objectEntry);
-						}
+						UpdateObjectEffectShaders(
+							a_params,
+							a_config,
+							a_objectEntry);
 
 						return true;
 					}
@@ -3062,14 +3054,10 @@ namespace IED
 							a_objectEntry,
 							visible))
 					{
-						if (a_objectEntry.state->effectShaders !=
-						    a_config.effectShaders)
-						{
-							UpdateObjectEffectShaders(
-								a_params,
-								a_config,
-								a_objectEntry);
-						}
+						UpdateObjectEffectShaders(
+							a_params,
+							a_config,
+							a_objectEntry);
 
 						return true;
 					}
@@ -3945,7 +3933,7 @@ namespace IED
 							  params) :
                           a_config.get_equipment_override(
 							  collector.m_data,
-							  { form, ItemData::SlotToExtraSlot(a_entry.slotid) },
+							  { form, a_entry.slotidex },
 							  params))
 		{
 			return *eo;

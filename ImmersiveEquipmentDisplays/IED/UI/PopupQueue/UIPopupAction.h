@@ -69,7 +69,7 @@ namespace IED
 				return *this;
 			}
 
-			inline auto& set_text_wrap_size(float a_size) noexcept
+			inline constexpr auto& set_text_wrap_size(float a_size) noexcept
 			{
 				m_textWrapSize = a_size;
 				return *this;
@@ -111,7 +111,7 @@ namespace IED
 			func_type      m_func;
 			func_type_draw m_funcDraw;
 
-			stl::optional<float> m_textWrapSize;
+			std::optional<float> m_textWrapSize;
 		};
 
 	}

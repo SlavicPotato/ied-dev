@@ -577,6 +577,10 @@ namespace IED
 				break;
 			}
 
+			bool disabled = a_data.empty();
+
+			UICommon::PushDisabled(disabled);
+
 			if (ImGui::TreeNodeEx(
 					"tn_tree",
 					ImGuiTreeNodeFlags_DefaultOpen |
@@ -595,6 +599,8 @@ namespace IED
 
 				ImGui::TreePop();
 			}
+
+			UICommon::PopDisabled(disabled);
 
 			ImGui::PopID();
 		}

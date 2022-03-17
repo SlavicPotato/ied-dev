@@ -77,9 +77,9 @@ namespace IED
 		template <class T>
 		struct baseEffectShaderEditorParams_t
 		{
-			T                         handle;
-			const void*               params;
-			Data::effectShaderList_t& list;
+			T                                 handle;
+			const void*                       params;
+			Data::configEffectShaderHolder_t& data;
 		};
 
 		template <class T>
@@ -237,9 +237,9 @@ namespace IED
 				const stl::fixed_string& a_slotName);
 
 			void TriggerEffectShaderUpdate(
-				T                         a_handle,
-				Data::effectShaderList_t& a_data,
-				const void*               a_params);
+				T                                 a_handle,
+				Data::configEffectShaderHolder_t& a_data,
+				const void*                       a_params);
 
 			virtual void OnEffectShaderUpdate(
 				const baseEffectShaderEditorParams_t<T>& a_params) override;
@@ -2740,10 +2740,10 @@ namespace IED
 						a_data.effectShaders.data.emplace_back(
 							GetDescriptionPopupBuffer());
 
-						TriggerEffectShaderUpdate(
+						OnBaseConfigChange(
 							a_handle,
-							a_data.effectShaders,
-							a_params);
+							a_params,
+							PostChangeAction::Evaluate);
 
 						ClearDescriptionPopupBuffer();
 
@@ -2771,10 +2771,10 @@ namespace IED
 						{
 							a_data.effectShaders.data.emplace_back(*clipData);
 
-							TriggerEffectShaderUpdate(
+							OnBaseConfigChange(
 								a_handle,
-								a_data.effectShaders,
-								a_params);
+								a_params,
+								PostChangeAction::Evaluate);
 
 							result = BaseConfigEditorAction::Paste;
 						}
@@ -2794,10 +2794,10 @@ namespace IED
 						{
 							a_data.effectShaders = *clipData;
 
-							TriggerEffectShaderUpdate(
+							OnBaseConfigChange(
 								a_handle,
-								a_data.effectShaders,
-								a_params);
+								a_params,
+								PostChangeAction::Evaluate);
 
 							result = BaseConfigEditorAction::Paste;
 						}
@@ -3014,7 +3014,7 @@ namespace IED
 
 						TriggerEffectShaderUpdate(
 							a_handle,
-							a_list,
+							a_data,
 							a_params);
 
 						result.action = BaseConfigEditorAction::PasteOver;
@@ -3063,18 +3063,28 @@ namespace IED
 				{
 				case BaseConfigEditorAction::Delete:
 					it = list.erase(it);
-					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+
+					OnBaseConfigChange(
+						a_handle,
+						a_params,
+						PostChangeAction::Evaluate);
+
 					break;
 				case BaseConfigEditorAction::Insert:
 					it = list.emplace(it, result.desc);
-					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+
+					OnBaseConfigChange(
+						a_handle,
+						a_params,
+						PostChangeAction::Evaluate);
+
 					ImGui::SetNextItemOpen(true);
 					break;
 				case BaseConfigEditorAction::Create:
 
 					if (it->data.try_emplace(result.desc).second)
 					{
-						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+						TriggerEffectShaderUpdate(a_handle, *it, a_params);
 						ImGui::SetNextItemOpen(true);
 					}
 					else
@@ -3090,19 +3100,26 @@ namespace IED
 
 					if (IterSwap(list, it, result.dir))
 					{
-						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
 					}
 
 					break;
 				case BaseConfigEditorAction::Rename:
 					it->description = result.desc;
-					TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+					//TriggerEffectShaderUpdate(a_handle, *it, a_params);
 					break;
 				case BaseConfigEditorAction::Paste:
 					if (auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>())
 					{
 						it = list.emplace(it, *clipData);
-						TriggerEffectShaderUpdate(a_handle, a_data.effectShaders, a_params);
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
 					}
 					// fallthrough
 				case BaseConfigEditorAction::PasteOver:
@@ -3116,8 +3133,7 @@ namespace IED
 
 					if (ImGui::TreeNodeEx(
 							"es_item",
-							ImGuiTreeNodeFlags_SpanAvailWidth |
-								ImGuiTreeNodeFlags_DefaultOpen,
+							ImGuiTreeNodeFlags_SpanAvailWidth,
 							"%s",
 							e.description.c_str()))
 					{
@@ -3126,10 +3142,10 @@ namespace IED
 						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
 							e.conditions,
-							[this, a_handle, a_params, &a_data] {
+							[this, a_handle, a_params, &a_data, &e] {
 								TriggerEffectShaderUpdate(
 									a_handle,
-									a_data.effectShaders,
+									e,
 									a_params);
 							});
 
@@ -3162,10 +3178,10 @@ namespace IED
 									a_data,
 									e.conditions,
 									false,
-									[this, a_handle, a_params, &a_data] {
+									[this, a_handle, a_params, &a_data, &e] {
 										TriggerEffectShaderUpdate(
 											a_handle,
-											a_data.effectShaders,
+											e,
 											a_params);
 									});
 							}
@@ -3182,7 +3198,7 @@ namespace IED
 						baseEffectShaderEditorParams_t<T> params{
 							a_handle,
 							a_params,
-							a_data.effectShaders
+							e
 						};
 
 						DrawEffectShaderEditor(params, e);
@@ -3206,11 +3222,12 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::TriggerEffectShaderUpdate(
-			T                         a_handle,
-			Data::effectShaderList_t& a_data,
-			const void*               a_params)
+			T                                 a_handle,
+			Data::configEffectShaderHolder_t& a_data,
+			const void*                       a_params)
 		{
 			a_data.update_tag();
+
 			OnBaseConfigChange(
 				a_handle,
 				a_params,
@@ -3223,7 +3240,7 @@ namespace IED
 		{
 			TriggerEffectShaderUpdate(
 				a_params.handle,
-				a_params.list,
+				a_params.data,
 				a_params.params);
 		}
 

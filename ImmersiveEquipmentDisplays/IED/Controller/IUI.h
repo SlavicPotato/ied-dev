@@ -23,9 +23,11 @@ namespace IED
 		public Tasks::UIRenderTaskBase
 	{
 	public:
+		template <class... Args>
 		IUIRenderTask(
 			IUI&        a_interface,
-			Controller& a_controller);
+			Controller& a_controller,
+			Args&&... a_args);
 
 		virtual ~IUIRenderTask() noexcept = default;
 
@@ -54,6 +56,18 @@ namespace IED
 
 		IUI& m_owner;
 	};
+
+	template <class T>
+	template <class... Args>
+	IUIRenderTask<T>::IUIRenderTask(
+		IUI&        a_interface,
+		Controller& a_controller,
+		Args&&... a_args) :
+		m_owner(a_interface)
+	{
+		m_context = std::make_unique<T>(a_controller, std::forward<Args>(a_args)...);
+		m_context->Initialize();
+	}
 
 	template <class T>
 	bool IUIRenderTask<T>::Run()
@@ -122,16 +136,6 @@ namespace IED
 		return false;
 	}
 
-	template <class T>
-	IUIRenderTask<T>::IUIRenderTask(
-		IUI&        a_interface,
-		Controller& a_controller) :
-		m_owner(a_interface)
-	{
-		m_context = std::make_unique<T>(a_controller);
-		m_context->Initialize();
-	}
-
 	class IUIRenderTaskMain :
 		public IUIRenderTask<UI::UIMain>
 	{
@@ -148,10 +152,12 @@ namespace IED
 		public IUIRenderTask<T>
 	{
 	public:
+		template <class... Args>
 		IUITimedRenderTask(
 			IUI&        a_interface,
 			Controller& a_controller,
-			long long   a_lifetime);
+			long long   a_lifetime,
+			Args&&... a_args);
 
 	private:
 		virtual bool ShouldClose() override;
@@ -162,13 +168,16 @@ namespace IED
 	};
 
 	template <class T>
+	template <class... Args>
 	IUITimedRenderTask<T>::IUITimedRenderTask(
 		IUI&        a_interface,
 		Controller& a_controller,
-		long long   a_lifetime) :
+		long long   a_lifetime,
+		Args&&... a_args) :
 		IUIRenderTask<T>(
 			a_interface,
-			a_controller),
+			a_controller,
+			std::forward<Args>(a_args)...),
 		m_lifetime(a_lifetime)
 	{
 	}

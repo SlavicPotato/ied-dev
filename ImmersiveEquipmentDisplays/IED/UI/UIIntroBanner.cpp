@@ -15,9 +15,11 @@ namespace IED
 	namespace UI
 	{
 		UIIntroBanner::UIIntroBanner(
-			Controller& a_controller) :
+			Controller& a_controller,
+			float       a_voffset) :
 			UIContextBase(a_controller),
-			UILocalizationInterface(a_controller)
+			UILocalizationInterface(a_controller),
+			m_voffset(a_voffset)
 		{
 		}
 
@@ -34,9 +36,9 @@ namespace IED
 
 			ImGui::SetNextWindowPos(
 				{ io.DisplaySize.x * 0.5f,
-			      125.0f },
+			      std::clamp(m_voffset, 0.0f, io.DisplaySize.y * 0.5f) },
 				ImGuiCond_Always,
-				{ 0.5f, 0.5f });
+				{ 0.5f, 0.0f });
 
 			ImGui::SetNextWindowBgAlpha(0.5f);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_animbg.step());

@@ -656,11 +656,11 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			requires stl::is_any_same_v<
-				data_type,
-				transform_data_type,
-				configNodeOverrideEntryTransform_t>
 			[[nodiscard]] inline constexpr auto& get_data() noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					transform_data_type,
+					configNodeOverrideEntryTransform_t>
 			{
 				return data;
 			}
@@ -668,11 +668,11 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			requires stl::is_any_same_v<
-				data_type,
-				placement_data_type,
-				configNodeOverrideEntryPlacement_t>
 			[[nodiscard]] inline constexpr auto& get_data() noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					placement_data_type,
+					configNodeOverrideEntryPlacement_t>
 			{
 				return placementData;
 			}

@@ -716,10 +716,13 @@ namespace IED
 				ImGui::StyleColorsClassic(std::addressof(newStyle));
 				break;
 			case UIStylePreset::ItaDark:
-				Styles::ITA::Setup(newStyle, true, 1.0f);
+				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Dark, 1.0f);
 				break;
 			case UIStylePreset::ItaLight:
-				Styles::ITA::Setup(newStyle, false, 1.0f);
+				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Light, 1.0f);
+				break;
+			case UIStylePreset::ItaClassic:
+				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Classic, 1.0f);
 				break;
 			case UIStylePreset::SteamClassic:
 				Styles::SteamClassic::Setup(newStyle);

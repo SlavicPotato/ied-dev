@@ -8,17 +8,18 @@ namespace IED
 	{
 		UIStylePresetSelectorWidget::data_type UIStylePresetSelectorWidget::m_data{ {
 
-			UIStylePresetSelectorWidgetStrings::Dark,
-			UIStylePresetSelectorWidgetStrings::Light,
-			UIStylePresetSelectorWidgetStrings::Classic,
-			UIStylePresetSelectorWidgetStrings::DeepDark,
-			UIStylePresetSelectorWidgetStrings::DarkRed,
-			UIStylePresetSelectorWidgetStrings::SteamClassic,
-			UIStylePresetSelectorWidgetStrings::ItaDark,
-			UIStylePresetSelectorWidgetStrings::ItaLight,
-			UIStylePresetSelectorWidgetStrings::S56,
-			UIStylePresetSelectorWidgetStrings::CorpGrey,
-			UIStylePresetSelectorWidgetStrings::CorpGreyFlat,
+			{ UIStylePreset::Dark, UIStylePresetSelectorWidgetStrings::Dark },
+			{ UIStylePreset::Light, UIStylePresetSelectorWidgetStrings::Light },
+			{ UIStylePreset::Classic, UIStylePresetSelectorWidgetStrings::Classic },
+			{ UIStylePreset::DeepDark, UIStylePresetSelectorWidgetStrings::DeepDark },
+			{ UIStylePreset::DarkRed, UIStylePresetSelectorWidgetStrings::DarkRed },
+			{ UIStylePreset::SteamClassic, UIStylePresetSelectorWidgetStrings::SteamClassic },
+			{ UIStylePreset::ItaDark, UIStylePresetSelectorWidgetStrings::ItaDark },
+			{ UIStylePreset::ItaLight, UIStylePresetSelectorWidgetStrings::ItaLight },
+			{ UIStylePreset::ItaClassic, UIStylePresetSelectorWidgetStrings::ItaClassic },
+			{ UIStylePreset::S56, UIStylePresetSelectorWidgetStrings::S56 },
+			{ UIStylePreset::CorpGrey, UIStylePresetSelectorWidgetStrings::CorpGrey },
+			{ UIStylePreset::CorpGreyFlat, UIStylePresetSelectorWidgetStrings::CorpGreyFlat },
 
 		} };
 
@@ -38,15 +39,11 @@ namespace IED
 					preset_to_desc(a_preset),
 					ImGuiComboFlags_HeightLarge))
 			{
-				using enum_type = std::underlying_type_t<UIStylePreset>;
-
-				for (enum_type i = 0; i < m_data.size(); i++)
+				for (auto& e : m_data)
 				{
-					auto e = static_cast<UIStylePreset>(i);
+					ImGui::PushID(stl::underlying(e.first));
 
-					ImGui::PushID(i);
-
-					bool selected = (e == a_preset);
+					bool selected = (e.first == a_preset);
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
@@ -54,10 +51,10 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIStylePresetSelectorWidgetStrings, 3>(m_data[i], "1"),
+							LS<UIStylePresetSelectorWidgetStrings, 3>(e.second, "1"),
 							selected))
 					{
-						a_preset = e;
+						a_preset = e.first;
 						result   = true;
 					}
 
@@ -71,17 +68,35 @@ namespace IED
 		}
 
 		const char* UIStylePresetSelectorWidget::preset_to_desc(
-			UIStylePreset a_preset)
+			UIStylePreset a_preset) const
 		{
-			static_assert(!std::is_signed_v<
-						  std::underlying_type_t<UIStylePreset>>);
-
-			if (stl::underlying(a_preset) < m_data.size())
+			switch (a_preset)
 			{
-				return LS(m_data[stl::underlying(a_preset)]);
-			}
-			else
-			{
+			case UIStylePreset::Dark:
+				return LS(UIStylePresetSelectorWidgetStrings::Dark);
+			case UIStylePreset::Light:
+				return LS(UIStylePresetSelectorWidgetStrings::Light);
+			case UIStylePreset::Classic:
+				return LS(UIStylePresetSelectorWidgetStrings::Classic);
+			case UIStylePreset::DeepDark:
+				return LS(UIStylePresetSelectorWidgetStrings::DeepDark);
+			case UIStylePreset::DarkRed:
+				return LS(UIStylePresetSelectorWidgetStrings::DarkRed);
+			case UIStylePreset::SteamClassic:
+				return LS(UIStylePresetSelectorWidgetStrings::SteamClassic);
+			case UIStylePreset::ItaDark:
+				return LS(UIStylePresetSelectorWidgetStrings::ItaDark);
+			case UIStylePreset::ItaLight:
+				return LS(UIStylePresetSelectorWidgetStrings::ItaLight);
+			case UIStylePreset::S56:
+				return LS(UIStylePresetSelectorWidgetStrings::S56);
+			case UIStylePreset::CorpGrey:
+				return LS(UIStylePresetSelectorWidgetStrings::CorpGrey);
+			case UIStylePreset::CorpGreyFlat:
+				return LS(UIStylePresetSelectorWidgetStrings::CorpGreyFlat);
+			case UIStylePreset::ItaClassic:
+				return LS(UIStylePresetSelectorWidgetStrings::ItaClassic);
+			default:
 				return nullptr;
 			}
 		}

@@ -234,6 +234,14 @@ namespace IED
 
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
+
+				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
+
+				Debug(
+					"Loaded plugins: %zu, light: %zu [%zu total]",
+					pluginInfo.plugins,
+					pluginInfo.light,
+					pluginInfo.total);
 			}
 			break;
 		}

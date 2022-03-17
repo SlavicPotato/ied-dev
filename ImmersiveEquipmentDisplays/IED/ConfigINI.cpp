@@ -66,6 +66,8 @@ namespace IED
 		m_enableUIRestrictions = parsers.reader.GetBoolValue(SECT_GUI, "EnableRestrictions", false);
 		m_UIScaling            = parsers.reader.GetBoolValue(SECT_GUI, "EnableScaling", true);
 		m_enableInMenus        = parsers.reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
+		m_disableIntroBanner   = parsers.reader.GetBoolValue(SECT_GUI, "DisableIntroBanner", false);
+		m_introBannerVOffset   = static_cast<float>(parsers.reader.GetDoubleValue(SECT_GUI, "IntroBannerVerticalOffset", 110.0f));
 
 		m_UIOpenKeys.Parse(parsers.reader.GetValue(SECT_GUI, "ToggleKeys", "0x0E"));
 

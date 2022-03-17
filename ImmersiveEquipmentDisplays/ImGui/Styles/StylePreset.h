@@ -15,6 +15,7 @@ namespace IED
 		S56,
 		CorpGrey,
 		CorpGreyFlat,
+		ItaClassic,
 
 		Max
 	};
