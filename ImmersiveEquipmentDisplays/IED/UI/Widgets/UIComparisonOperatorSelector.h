@@ -29,7 +29,7 @@ namespace IED
 				std::pair<
 					Data::ExtraComparisonOperator,
 					UIComparisonOperatorSelectorStrings>,
-				5>;
+				6>;
 
 			static data_type m_data;
 		};

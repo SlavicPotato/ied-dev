@@ -186,10 +186,11 @@ namespace IED
 		enum class ExtraComparisonOperator : std::uint32_t
 		{
 			kEqual          = 0,
-			kGreater        = 1,
-			kLower          = 2,
-			kGreaterOrEqual = 3,
-			kLowerOrEqual   = 4
+			kNotEqual       = 1,
+			kGreater        = 2,
+			kLower          = 3,
+			kGreaterOrEqual = 4,
+			kLowerOrEqual   = 5
 		};
 
 		template <class T>

@@ -9,10 +9,11 @@ namespace IED
 		enum class UIComparisonOperatorSelectorStrings : Localization::StringID
 		{
 			Equal          = 6200,
-			Greater        = 6201,
-			Lower          = 6202,
-			GreaterOrEqual = 6203,
-			LowerOrEqual   = 6204,
+			NotEqual       = 6201,
+			Greater        = 6202,
+			Lower          = 6203,
+			GreaterOrEqual = 6204,
+			LowerOrEqual   = 6205,
 		};
 	}
 }

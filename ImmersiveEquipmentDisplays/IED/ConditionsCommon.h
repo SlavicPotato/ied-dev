@@ -511,6 +511,9 @@ namespace IED
 			case Data::ExtraComparisonOperator::kEqual:
 				result = glob->value == matchval;
 				break;
+			case Data::ExtraComparisonOperator::kNotEqual:
+				result = glob->value != matchval;
+				break;
 			case Data::ExtraComparisonOperator::kGreater:
 				result = glob->value > matchval;
 				break;
@@ -527,7 +530,7 @@ namespace IED
 				return false;
 			}
 
-			return a_match.flags.test(Tf::kNegateMatch1) != result;
+			return result;
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);

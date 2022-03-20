@@ -9,6 +9,7 @@ namespace IED
 		UIComparisonOperatorSelector::data_type UIComparisonOperatorSelector::m_data{ {
 
 			{ Data::ExtraComparisonOperator::kEqual, UIComparisonOperatorSelectorStrings::Equal },
+			{ Data::ExtraComparisonOperator::kNotEqual, UIComparisonOperatorSelectorStrings::NotEqual },
 			{ Data::ExtraComparisonOperator::kGreater, UIComparisonOperatorSelectorStrings::Greater },
 			{ Data::ExtraComparisonOperator::kLower, UIComparisonOperatorSelectorStrings::Lower },
 			{ Data::ExtraComparisonOperator::kGreaterOrEqual, UIComparisonOperatorSelectorStrings::GreaterOrEqual },
@@ -67,6 +68,8 @@ namespace IED
 			{
 			case Data::ExtraComparisonOperator::kEqual:
 				return LS(UIComparisonOperatorSelectorStrings::Equal);
+			case Data::ExtraComparisonOperator::kNotEqual:
+				return LS(UIComparisonOperatorSelectorStrings::NotEqual);
 			case Data::ExtraComparisonOperator::kGreater:
 				return LS(UIComparisonOperatorSelectorStrings::Greater);
 			case Data::ExtraComparisonOperator::kLower:

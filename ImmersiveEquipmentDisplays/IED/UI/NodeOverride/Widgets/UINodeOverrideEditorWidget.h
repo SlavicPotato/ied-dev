@@ -2432,7 +2432,7 @@ namespace IED
 
 					if (LCG_BM(CommonStrings::Item, "3"))
 					{
-						if (LCG_BM(CommonStrings::Form, "4"))
+						if (LCG_BM(CommonStrings::Form, "1"))
 						{
 							UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Form);
 
@@ -2460,7 +2460,7 @@ namespace IED
 							ImGui::EndMenu();
 						}
 
-						if (LCG_BM(CommonStrings::Keyword, "5"))
+						if (LCG_BM(CommonStrings::Keyword, "2"))
 						{
 							if (m_condParamEditor.GetKeywordPicker().DrawFormSelector(
 									m_ooNewEntryIDKW))
@@ -2489,10 +2489,10 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(UIWidgetCommonStrings::BipedSlot, "6"))
+					if (LCG_BM(UIWidgetCommonStrings::BipedSlot, "3"))
 					{
 						if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
-								LS(CommonStrings::Biped, "bp"),
+								LS(CommonStrings::Biped, "1"),
 								m_ooNewBiped))
 						{
 							if (m_ooNewBiped != BIPED_OBJECT::kNone)
@@ -2514,10 +2514,10 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Type, "7"))
+					if (LCG_BM(CommonStrings::Type, "4"))
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-								LS(CommonStrings::Type, "ss"),
+								LS(CommonStrings::Type, "1"),
 								m_ooNewSlot))
 						{
 							if (m_ooNewSlot < Data::ObjectSlotExtra::kMax)
@@ -2539,7 +2539,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Actor, "8"))
+					if (LCG_BM(CommonStrings::Actor, "5"))
 					{
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Actor);
 
@@ -2567,7 +2567,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::NPC, "9"))
+					if (LCG_BM(CommonStrings::NPC, "6"))
 					{
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::NPC);
 
@@ -2595,7 +2595,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Race, "A"))
+					if (LCG_MI(CommonStrings::Race, "7"))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Race,
@@ -2610,7 +2610,7 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Furniture, "B")))
+					if (ImGui::MenuItem(LS(CommonStrings::Furniture, "8")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Furniture);
@@ -2624,7 +2624,7 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Location, "C")))
+					if (ImGui::MenuItem(LS(CommonStrings::Location, "9")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Location);
@@ -2638,7 +2638,7 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Worldspace, "D")))
+					if (ImGui::MenuItem(LS(CommonStrings::Worldspace, "A")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Worldspace);
@@ -2652,7 +2652,7 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Package, "E")))
+					if (ImGui::MenuItem(LS(CommonStrings::Package, "B")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Package);
@@ -2666,7 +2666,7 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Weather, "F")))
+					if (ImGui::MenuItem(LS(CommonStrings::Weather, "C")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Weather);
@@ -2679,8 +2679,8 @@ namespace IED
 
 						result = NodeOverrideCommonAction::Insert;
 					}
-					
-					if (LCG_BM(CommonStrings::Global, "G"))
+
+					if (LCG_BM(CommonStrings::Global, "D"))
 					{
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Global);
 
@@ -2708,7 +2708,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "H"))
+					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -2733,7 +2733,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "I")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "Z")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Group);
@@ -2750,7 +2750,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "J")))
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "2")))
 				{
 					a_entry.clear();
 
@@ -2765,7 +2765,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "K")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2773,7 +2773,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideConditionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "L"),
+						LS(CommonStrings::PasteOver, "4"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -3248,7 +3248,7 @@ namespace IED
 								tdesc = LS(CommonStrings::Weather);
 
 								break;
-								
+
 							case Data::NodeOverrideConditionType::Global:
 
 								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
@@ -3259,8 +3259,6 @@ namespace IED
 									e.compOperator);
 								m_condParamEditor.SetNext<ConditionParamItem::Float>(
 									e.f32a);
-								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
-									e);
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Global);
@@ -4195,20 +4193,6 @@ namespace IED
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-				}
-
-				break;
-
-			case Data::NodeOverrideConditionType::Global:
-
-				if (a_item == ConditionParamItem::CompOper)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
 
 					ImGui::SameLine();
 				}

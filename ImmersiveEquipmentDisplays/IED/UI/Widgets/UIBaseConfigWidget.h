@@ -1875,8 +1875,6 @@ namespace IED
 									e.compOperator);
 								m_condParamEditor.SetNext<ConditionParamItem::Float>(
 									e.f32a);
-								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
-									e);
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Global);
@@ -2683,19 +2681,6 @@ namespace IED
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
-
-					ImGui::SameLine();
-				}
-
-				break;
-			case Data::EquipmentOverrideConditionType::Global:
-
-				if (a_item == ConditionParamItem::CompOper)
-				{
-					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_1",
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
 					ImGui::SameLine();
 				}
