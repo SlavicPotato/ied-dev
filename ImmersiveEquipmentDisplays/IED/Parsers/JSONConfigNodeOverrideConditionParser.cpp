@@ -47,6 +47,8 @@ namespace IED
 			a_out.typeSlot = static_cast<Data::ObjectSlotExtra>(
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
+			a_out.f32a = a_in.get("f32a", 0.0f).asFloat();
+
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 
 			if (!gparser.Parse(a_in["group"], a_out.group))
@@ -76,6 +78,7 @@ namespace IED
 
 			a_out["bip"]  = a_data.ui32a;
 			a_out["type"] = stl::underlying(a_data.typeSlot);
+			a_out["f32a"] = a_data.f32a;
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 

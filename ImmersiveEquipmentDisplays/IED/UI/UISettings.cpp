@@ -869,7 +869,7 @@ namespace IED
 
 				if (DrawFormPicker(
 						"1",
-						LS(CommonStrings::Equip),
+						static_cast<Localization::StringID>(CommonStrings::Equip),
 						*a_soundPair.first))
 				{
 					result = true;
@@ -878,7 +878,7 @@ namespace IED
 
 				if (DrawFormPicker(
 						"2",
-						LS(CommonStrings::Unequip),
+						static_cast<Localization::StringID>(CommonStrings::Unequip),
 						*a_soundPair.second))
 				{
 					result = true;

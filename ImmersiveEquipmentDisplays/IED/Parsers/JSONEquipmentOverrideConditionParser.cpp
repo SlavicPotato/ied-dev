@@ -41,9 +41,10 @@ namespace IED
 				a_in.get("type", stl::underlying(Data::ObjectSlotExtra::kNone)).asUInt());
 
 			a_out.ui32a = a_in.get("bslot", static_cast<std::uint32_t>(-1)).asUInt();
+			a_out.f32a  = a_in.get("f32a", 0.0f).asFloat();
 
 			a_out.flags = static_cast<Data::EquipmentOverrideConditionFlags>(
-				a_in.get("flags", 0).asUInt());
+				a_in.get("flags", stl::underlying(Data::EquipmentOverrideConditionFlags::kNone)).asUInt());
 
 			Parser<Data::equipmentOverrideConditionGroup_t> gparser(m_state);
 
@@ -75,6 +76,7 @@ namespace IED
 
 			a_out["type"]  = stl::underlying(a_data.slot);
 			a_out["bslot"] = a_data.ui32a;
+			a_out["f32a"] = a_data.f32a;
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 

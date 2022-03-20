@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "ConfigConditionsCommon.h"
+#include "ConditionsCommon.h"
 
 namespace IED
 {

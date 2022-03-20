@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "Controller.h"
-#include "IED/ConfigConditionsCommon.h"
+#include "IED/ConditionsCommon.h"
 #include "IED/ConfigNodeOverride.h"
 #include "IED/EngineExtensions.h"
 #include "IED/FormCommon.h"
@@ -556,6 +556,12 @@ namespace IED
 		case Data::NodeOverrideConditionType::Weather:
 
 			return Conditions::match_weather<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Global:
+
+			return Conditions::match_global<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}

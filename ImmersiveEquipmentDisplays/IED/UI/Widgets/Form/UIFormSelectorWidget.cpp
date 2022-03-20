@@ -32,7 +32,6 @@ namespace IED
 		}
 
 		bool UIFormSelectorWidget::DrawFormSelector(
-			const char*   a_label,
 			Game::FormID& a_form,
 			const char*   a_tipText)
 		{
@@ -145,7 +144,7 @@ namespace IED
 
 			bool select = false;
 
-			bool valid = IsCurrentValid();
+			const bool valid = IsCurrentValid();
 
 			UICommon::PushDisabled(!valid);
 
@@ -161,17 +160,13 @@ namespace IED
 				ImGui::SetKeyboardFocusHere();
 			}
 
-			ImGui::PushID("input");
-
 			select |= ImGui::InputText(
-				a_label,
+				LS(CommonStrings::Form, "fs_input"),
 				m_state->m_inputBuffer,
 				sizeof(m_state->m_inputBuffer),
 				ImGuiInputTextFlags_CharsHexadecimal |
 					ImGuiInputTextFlags_CharsUppercase |
 					ImGuiInputTextFlags_EnterReturnsTrue);
-
-			ImGui::PopID();
 
 			if (select)
 			{

@@ -1022,7 +1022,6 @@ namespace IED
 			if (ImGui::BeginPopup("form_edit_context_menu"))
 			{
 				if (m_formSelector.DrawFormSelector(
-						LS(CommonStrings::Form, "fs"),
 						m_piEditEntryID))
 				{
 					if (m_piEditEntryID)
@@ -1102,7 +1101,6 @@ namespace IED
 				if (LCG_BM(CommonStrings::Insert, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
-							LS(CommonStrings::Form, "fs"),
 							m_piNewEntryID))
 					{
 						if (m_piNewEntryID)
@@ -1156,7 +1154,6 @@ namespace IED
 				if (LCG_BM(CommonStrings::Add, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
-							LS(CommonStrings::Form, "fs"),
 							m_piNewEntryID))
 					{
 						a_data.emplace_back(m_piNewEntryID);

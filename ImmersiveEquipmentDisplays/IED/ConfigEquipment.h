@@ -51,21 +51,22 @@ namespace IED
 
 		enum class EquipmentOverrideConditionType : std::uint32_t
 		{
-			Form,
-			Type,
-			Keyword,
-			Race,
-			Furniture,
-			BipedSlot,
-			Group,
-			Quest,
-			Actor,
-			NPC,
-			Extra,
-			Location,
-			Worldspace,
-			Package,
-			Weather
+			Form       = 0,
+			Type       = 1,
+			Keyword    = 2,
+			Race       = 3,
+			Furniture  = 4,
+			BipedSlot  = 5,
+			Group      = 6,
+			Quest      = 7,
+			Actor      = 8,
+			NPC        = 9,
+			Extra      = 10,
+			Location   = 11,
+			Worldspace = 12,
+			Package    = 13,
+			Weather    = 14,
+			Global     = 15
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -119,6 +120,7 @@ namespace IED
 				DataVersion1 = 1,
 				DataVersion2 = 2,
 				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -133,6 +135,9 @@ namespace IED
 			{
 				switch (a_type)
 				{
+				case EquipmentOverrideConditionType::Global:
+					compOperator = ExtraComparisonOperator::kEqual;
+				// fallthrough
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
@@ -215,8 +220,9 @@ namespace IED
 				EquipmentOverrideConditionFlagsBitfield    fbf;
 			};
 
-			configCachedForm_t    form;
-			configCachedForm_t    keyword;
+			configCachedForm_t form;
+			configCachedForm_t keyword;
+
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
 
 			union
@@ -227,11 +233,17 @@ namespace IED
 				BIPED_OBJECT               bipedSlot;
 				PACKAGE_PROCEDURE_TYPE     procedureType;
 				WeatherClassificationFlags weatherClass;
+				ExtraComparisonOperator    compOperator;
 
+				static_assert(std::is_same_v<std::underlying_type_t<QuestConditionType>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ExtraConditionType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<WeatherClassificationFlags>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ExtraComparisonOperator>, std::uint32_t>);
 			};
+
+			float f32a{ 0.0f };
 
 			equipmentOverrideConditionGroup_t group;
 
@@ -239,13 +251,14 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar&        flags.value;
-				configForm_t tmp = form.get_id();
-				a_ar&        tmp;
-				a_ar&        slot;
-				a_ar&        keyword;
-				a_ar&        ui32a;
-				a_ar&        group;
+				a_ar&              flags.value;
+				const configForm_t tmp = form.get_id();
+				a_ar&              tmp;
+				a_ar&              slot;
+				a_ar&              keyword;
+				a_ar&              ui32a;
+				a_ar&              group;
+				a_ar&              f32a;
 			}
 
 			template <class Archive>
@@ -265,6 +278,11 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& group;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& f32a;
+						}
 					}
 				}
 			}
@@ -331,4 +349,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::equipmentOverrideCondition_t,
-	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion3);
+	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion4);

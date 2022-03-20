@@ -53,6 +53,7 @@ namespace IED
 				{ UIFormBrowserStrings::CombatStyle, TESCombatStyle::kTypeID },
 				{ UIFormBrowserStrings::Class, TESClass::kTypeID },
 				{ UIFormBrowserStrings::Weather, TESWeather::kTypeID },
+				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
 
 			} }
 
@@ -61,7 +62,8 @@ namespace IED
 				ImGuiInputTextFlags_EnterReturnsTrue |
 				ImGuiInputTextFlags_CharsHexadecimal);
 
-			m_formNameFilter.SetFlags(ImGuiInputTextFlags_EnterReturnsTrue);
+			m_formNameFilter.SetFlags(
+				ImGuiInputTextFlags_EnterReturnsTrue);
 		}
 
 		auto UIFormBrowser::Draw()

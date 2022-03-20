@@ -3,6 +3,7 @@
 #include "Form/UIFormPickerWidget.h"
 #include "UIBipedObjectSelectorWidget.h"
 #include "UICMNodeSelector.h"
+#include "UIComparisonOperatorSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
@@ -29,6 +30,8 @@ namespace IED
 		CondExtra,
 		PackageType,
 		WeatherClass,
+		CompOper,
+		Float,
 		Extra,
 
 		Total
@@ -73,6 +76,7 @@ namespace IED
 			public UIConditionExtraSelectorWidget,
 			public UIPackageTypeSelectorWidget,
 			public UIWeatherClassSelectorWidget,
+			public UIComparisonOperatorSelector,
 			public virtual UILocalizationInterface
 		{
 			struct entry_t
@@ -134,6 +138,11 @@ namespace IED
 			const char* GetFormKeywordExtraDesc(const char* a_idesc) const noexcept;
 
 		private:
+			bool DrawExtra(
+				const entry_t&               a_entry,
+				ConditionParamItemExtraArgs& a_args,
+				ConditionParamItem           a_item);
+
 			void GetFormDesc(Game::FormID a_form);
 
 			entry_t m_entries[stl::underlying(ConditionParamItem::Total)];
@@ -245,6 +254,26 @@ namespace IED
 				Ap == ConditionParamItem::WeatherClass)
 			{
 				static_assert(std::is_same_v<T, WeatherClassificationFlags>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::CompOper)
+			{
+				static_assert(std::is_same_v<T, Data::ExtraComparisonOperator>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::Float)
+			{
+				static_assert(std::is_same_v<T, float>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

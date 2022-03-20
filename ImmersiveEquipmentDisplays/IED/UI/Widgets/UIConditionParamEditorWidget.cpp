@@ -17,6 +17,7 @@ namespace IED
 			UIConditionExtraSelectorWidget(a_controller),
 			UIPackageTypeSelectorWidget(a_controller),
 			UIWeatherClassSelectorWidget(a_controller),
+			UIComparisonOperatorSelector(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
 		{
@@ -111,19 +112,7 @@ namespace IED
 			{
 				ConditionParamItemExtraArgs args;
 
-				if (m_extraInterface)
-				{
-					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-					{
-						args.p1 = e.p1;
-						args.p2 = e.p2;
-						args.p3 = f.p1;
-
-						result |= m_extraInterface->DrawConditionItemExtra(
-							ConditionParamItem::Form,
-							args);
-					}
-				}
+				result |= DrawExtra(e, args, ConditionParamItem::Form);
 
 				if (!args.hide)
 				{
@@ -131,7 +120,7 @@ namespace IED
 
 					result |= m_formPickerForm.DrawFormPicker(
 						"fp_1",
-						LS(CommonStrings::Form),
+						static_cast<Localization::StringID>(CommonStrings::Form),
 						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
@@ -142,19 +131,7 @@ namespace IED
 			{
 				ConditionParamItemExtraArgs args;
 
-				if (m_extraInterface)
-				{
-					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-					{
-						args.p1 = e.p1;
-						args.p2 = e.p2;
-						args.p3 = f.p1;
-
-						result |= m_extraInterface->DrawConditionItemExtra(
-							ConditionParamItem::Keyword,
-							args);
-					}
-				}
+				result |= DrawExtra(e, args, ConditionParamItem::Keyword);
 
 				if (!args.hide)
 				{
@@ -162,7 +139,7 @@ namespace IED
 
 					result |= m_formPickerKeyword.DrawFormPicker(
 						"fp_2",
-						LS(CommonStrings::Keyword),
+						static_cast<Localization::StringID>(CommonStrings::Keyword),
 						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
@@ -186,19 +163,7 @@ namespace IED
 			{
 				ConditionParamItemExtraArgs args;
 
-				if (m_extraInterface)
-				{
-					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-					{
-						args.p1 = e.p1;
-						args.p2 = e.p2;
-						args.p3 = f.p1;
-
-						result |= m_extraInterface->DrawConditionItemExtra(
-							ConditionParamItem::PackageType,
-							args);
-					}
-				}
+				result |= DrawExtra(e, args, ConditionParamItem::PackageType);
 
 				result |= DrawPackageTypeSelector(
 					e.As1<PACKAGE_PROCEDURE_TYPE>());
@@ -208,22 +173,37 @@ namespace IED
 			{
 				ConditionParamItemExtraArgs args;
 
-				if (m_extraInterface)
-				{
-					if (const auto& f = get(ConditionParamItem::Extra); f.p1)
-					{
-						args.p1 = e.p1;
-						args.p2 = e.p2;
-						args.p3 = f.p1;
-
-						result |= m_extraInterface->DrawConditionItemExtra(
-							ConditionParamItem::WeatherClass,
-							args);
-					}
-				}
+				result |= DrawExtra(e, args, ConditionParamItem::WeatherClass);
 
 				result |= DrawWeatherClassSelector(
 					e.As1<WeatherClassificationFlags>());
+			}
+
+			if (const auto& e = get(ConditionParamItem::CompOper); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::CompOper);
+
+				ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+
+				result |= DrawComparisonOperatorSelector(
+					e.As1<Data::ExtraComparisonOperator>());
+
+				ImGui::PopItemWidth();
+
+				ImGui::SameLine();
+			}
+
+			if (const auto& e = get(ConditionParamItem::Float); e.p1)
+			{
+				result |= ImGui::InputFloat(
+					"##in_flt",
+					reinterpret_cast<float*>(e.p1),
+					0.0f,
+					0.0f,
+					"%f",
+					ImGuiInputTextFlags_EnterReturnsTrue);
 			}
 
 			if (m_extraInterface)
@@ -401,6 +381,30 @@ namespace IED
 			}
 
 			return m_descBuffer;
+		}
+
+		bool UIConditionParamEditorWidget::DrawExtra(
+			const entry_t&               a_entry,
+			ConditionParamItemExtraArgs& a_args,
+			ConditionParamItem           a_item)
+		{
+			bool result = false;
+
+			if (m_extraInterface)
+			{
+				if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+				{
+					a_args.p1 = a_entry.p1;
+					a_args.p2 = a_entry.p2;
+					a_args.p3 = f.p1;
+
+					result = m_extraInterface->DrawConditionItemExtra(
+						a_item,
+						a_args);
+				}
+			}
+
+			return result;
 		}
 
 		void UIConditionParamEditorWidget::GetFormDesc(Game::FormID a_form)

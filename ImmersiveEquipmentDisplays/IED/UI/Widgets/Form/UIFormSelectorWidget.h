@@ -26,7 +26,6 @@ namespace IED
 				bool          a_forceBase         = false);
 
 			bool DrawFormSelector(
-				const char*   a_label,
 				Game::FormID& a_form,
 				const char*   a_tipText = nullptr);
 

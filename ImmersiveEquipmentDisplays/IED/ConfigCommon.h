@@ -183,6 +183,15 @@ namespace IED
 			kClass             = 9,
 		};
 
+		enum class ExtraComparisonOperator : std::uint32_t
+		{
+			kEqual          = 0,
+			kGreater        = 1,
+			kLower          = 2,
+			kGreaterOrEqual = 3,
+			kLowerOrEqual   = 4
+		};
+
 		template <class T>
 		class configSexRoot_t
 		{

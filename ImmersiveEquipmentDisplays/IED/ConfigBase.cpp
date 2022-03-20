@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #include "ConfigBase.h"
-#include "ConfigConditionsCommon.h"
+#include "ConditionsCommon.h"
 #include "FormCommon.h"
 
 #include "Controller/ObjectManagerData.h"
@@ -502,6 +502,12 @@ namespace IED
 				return Conditions::match_weather<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Global:
+
+				return Conditions::match_global<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -765,6 +771,12 @@ namespace IED
 				return Conditions::match_weather<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Global:
+
+				return Conditions::match_global<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
 
 			return false;
@@ -1020,6 +1032,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Weather:
 
 				return Conditions::match_weather<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Global:
+
+				return Conditions::match_global<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}

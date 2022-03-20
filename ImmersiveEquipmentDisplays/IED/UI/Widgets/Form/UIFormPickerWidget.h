@@ -25,15 +25,15 @@ namespace IED
 
 			bool DrawFormPicker(
 				const char*               a_strid,
-				const char*               a_label,
+				Localization::StringID    a_label,
 				Data::configCachedForm_t& a_form,
 				const char*               a_tipText = nullptr);
 
 			bool DrawFormPicker(
-				const char*   a_strid,
-				const char*   a_label,
-				Game::FormID& a_form,
-				const char*   a_tipText = nullptr);
+				const char*            a_strid,
+				Localization::StringID a_label,
+				Game::FormID&          a_form,
+				const char*            a_tipText = nullptr);
 
 			inline constexpr const auto GetCurrentInfo() const noexcept
 			{

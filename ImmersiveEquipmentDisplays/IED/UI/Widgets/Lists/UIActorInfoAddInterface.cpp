@@ -31,7 +31,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("popup"))
 			{
-				if (m_formSelector.DrawFormSelector(LS(CommonStrings::Actor, "fs"), m_form))
+				if (m_formSelector.DrawFormSelector(m_form))
 				{
 					m_controller.QueueUpdateActorInfo(
 						m_form,

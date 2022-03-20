@@ -489,6 +489,47 @@ namespace IED
 			}
 		}
 
+		template <class Tm, class Tf>
+		constexpr bool match_global(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			auto glob = a_match.form.get_form<TESGlobal>();
+			if (!glob)
+			{
+				return false;
+			}
+
+			float matchval = glob->type == TESGlobal::Type::kFloat ?
+			                     a_match.f32a :
+                                 static_cast<float>(static_cast<long>(a_match.f32a));
+
+			bool result;
+
+			switch (a_match.compOperator)
+			{
+			case Data::ExtraComparisonOperator::kEqual:
+				result = glob->value == matchval;
+				break;
+			case Data::ExtraComparisonOperator::kGreater:
+				result = glob->value > matchval;
+				break;
+			case Data::ExtraComparisonOperator::kLower:
+				result = glob->value < matchval;
+				break;
+			case Data::ExtraComparisonOperator::kGreaterOrEqual:
+				result = glob->value >= matchval;
+				break;
+			case Data::ExtraComparisonOperator::kLowerOrEqual:
+				result = glob->value <= matchval;
+				break;
+			default:
+				return false;
+			}
+
+			return a_match.flags.test(Tf::kNegateMatch1) != result;
+		}
+
 		bool is_ammo_bolt(TESForm* a_form);
 
 	}

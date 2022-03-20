@@ -42,5 +42,6 @@ namespace IED
 		CombatStyle       = 5233,
 		Class             = 5234,
 		Weather           = 5235,
+		Global            = 5236,
 	};
 }

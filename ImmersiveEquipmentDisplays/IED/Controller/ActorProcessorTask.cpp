@@ -210,12 +210,6 @@ namespace IED
 		}
 	}
 
-	struct bbb
-	{
-		TESForm* source;
-		TESForm* effect;
-	};
-
 	void ActorProcessorTask::Run()
 	{
 		IScopedLock lock(m_controller.m_lock);
@@ -223,7 +217,7 @@ namespace IED
 		m_timer.Begin();
 
 		UpdateState();
-
+		
 		for (auto& [i, e] : m_controller.m_objects)
 		{
 			if (!e.m_actor->formID)

@@ -705,7 +705,7 @@ namespace IED
 			{
 				if (m_formPicker.DrawFormPicker(
 						"fp",
-						LS(CommonStrings::Item),
+						static_cast<Localization::StringID>(CommonStrings::Item),
 						data.form,
 						GetTipText(UITip::CustomForm)))
 				{
@@ -907,7 +907,7 @@ namespace IED
 
 						if (m_formPicker.DrawFormPicker(
 								"fp_m",
-								LS(UICustomEditorString::ModelSwap),
+								static_cast<Localization::StringID>(UICustomEditorString::ModelSwap),
 								data.modelForm,
 								GetTipText(UITip::CustomFormModelSwap)))
 						{
@@ -984,7 +984,7 @@ namespace IED
 			{
 				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
-					if (m_formPicker.DrawFormSelector("##fs", m_fsNew))
+					if (m_formPicker.DrawFormSelector(m_fsNew))
 					{
 						auto& data = a_params.entry(a_params.sex);
 

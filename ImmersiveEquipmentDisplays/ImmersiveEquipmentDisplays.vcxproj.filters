@@ -1028,9 +1028,6 @@
     <ClInclude Include="IED\ConfigData.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigConditionsCommon.h">
-      <Filter>Source\IED\Config</Filter>
-    </ClInclude>
     <ClInclude Include="IED\ConfigStore.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
@@ -1110,6 +1107,15 @@
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\SkeletonCache.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIComparisonOperatorSelector.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIComparisonOperatorSelectorStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConditionsCommon.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1708,9 +1714,6 @@
     <ClCompile Include="IED\ConfigINI.cpp">
       <Filter>Source\IED\Config</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ConfigConditionsCommon.cpp">
-      <Filter>Source\IED\Config</Filter>
-    </ClCompile>
     <ClCompile Include="IED\ConfigBase.cpp">
       <Filter>Source\IED\Config</Filter>
     </ClCompile>
@@ -1751,6 +1754,12 @@
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
     <ClCompile Include="IED\SkeletonCache.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIComparisonOperatorSelector.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConditionsCommon.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>

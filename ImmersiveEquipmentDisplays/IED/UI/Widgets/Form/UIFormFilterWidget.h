@@ -356,7 +356,6 @@ namespace IED
 				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
-							LS(CommonStrings::Form, "fs"),
 							m_ffNewEntryID))
 					{
 						a_data.emplace(m_ffNewEntryID);

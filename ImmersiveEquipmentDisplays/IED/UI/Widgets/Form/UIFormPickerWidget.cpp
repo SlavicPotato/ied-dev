@@ -32,7 +32,7 @@ namespace IED
 
 		bool UIFormPickerWidget::DrawFormPicker(
 			const char*               a_strid,
-			const char*               a_label,
+			Localization::StringID    a_label,
 			Data::configCachedForm_t& a_form,
 			const char*               a_tipText)
 		{
@@ -48,10 +48,10 @@ namespace IED
 		}
 
 		bool UIFormPickerWidget::DrawFormPicker(
-			const char*   a_strid,
-			const char*   a_label,
-			Game::FormID& a_form,
-			const char*   a_tipText)
+			const char*            a_strid,
+			Localization::StringID a_label,
+			Game::FormID&          a_form,
+			const char*            a_tipText)
 		{
 			ImGui::PushID("form_picker_widget");
 			ImGui::PushID(a_strid);
@@ -132,7 +132,7 @@ namespace IED
 
 				if (ImGui::BeginPopup("form_sel_popup"))
 				{
-					result |= DrawFormSelector("##fs", a_form, a_tipText);
+					result |= DrawFormSelector(a_form, a_tipText);
 
 					if (result)
 					{
@@ -190,7 +190,7 @@ namespace IED
 
 			ImGui::SameLine();
 			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(a_label);
+			ImGui::TextUnformatted(LS(a_label));
 
 			if (a_tipText)
 			{

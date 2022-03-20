@@ -230,6 +230,8 @@ namespace IED
 			return GetFullName<TESFaction>(a_form);
 		case TESClass::kTypeID:
 			return GetFullName<TESClass>(a_form);
+		case TESGlobal::kTypeID:
+			return static_cast<TESGlobal*>(a_form)->formEditorID.c_str();
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -327,6 +329,8 @@ namespace IED
 			return "Class";
 		case TESWeather::kTypeID:
 			return "Weather";
+		case TESGlobal::kTypeID:
+			return "Global";
 		default:
 			return nullptr;
 		}

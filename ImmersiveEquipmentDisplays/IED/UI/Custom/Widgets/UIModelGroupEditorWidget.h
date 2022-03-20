@@ -222,7 +222,7 @@ namespace IED
 
 			if (m_formPicker.DrawFormPicker(
 					"fp",
-					LS(CommonStrings::Form),
+					static_cast<Localization::StringID>(CommonStrings::Form),
 					entry.form))
 			{
 				if (a_value.first.empty())

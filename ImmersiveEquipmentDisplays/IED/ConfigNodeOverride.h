@@ -81,21 +81,22 @@ namespace IED
 
 		enum class NodeOverrideConditionType : std::uint32_t
 		{
-			Node,
-			Form,
-			Keyword,
-			BipedSlot,
-			Type,
-			Race,
-			Furniture,
-			Group,
-			Actor,
-			NPC,
-			Extra,
-			Location,
-			Worldspace,
-			Package,
-			Weather
+			Node       = 0,
+			Form       = 1,
+			Keyword    = 2,
+			BipedSlot  = 3,
+			Type       = 4,
+			Race       = 5,
+			Furniture  = 6,
+			Group      = 7,
+			Actor      = 8,
+			NPC        = 9,
+			Extra      = 10,
+			Location   = 11,
+			Worldspace = 12,
+			Package    = 13,
+			Weather    = 14,
+			Global     = 15
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -148,6 +149,7 @@ namespace IED
 			{
 				DataVersion1 = 1,
 				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -165,6 +167,9 @@ namespace IED
 			{
 				switch (a_type)
 				{
+				case NodeOverrideConditionType::Global:
+					compOperator = ExtraComparisonOperator::kEqual;
+				// fallthrough
 				case NodeOverrideConditionType::Race:
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
@@ -258,6 +263,8 @@ namespace IED
 			configCachedForm_t form;
 			configCachedForm_t keyword;
 
+			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
+
 			union
 			{
 				std::uint32_t              ui32a{ static_cast<std::uint32_t>(-1) };
@@ -265,13 +272,17 @@ namespace IED
 				BIPED_OBJECT               bipedSlot;
 				PACKAGE_PROCEDURE_TYPE     procedureType;
 				WeatherClassificationFlags weatherClass;
+				ExtraComparisonOperator    compOperator;
 
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ExtraConditionType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<WeatherClassificationFlags>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ExtraComparisonOperator>, std::uint32_t>);
 			};
 
-			ObjectSlotExtra                    typeSlot{ Data::ObjectSlotExtra::kNone };
+			float f32a{ 0.0f };
+
 			configNodeOverrideConditionGroup_t group;
 
 		private:
@@ -288,6 +299,11 @@ namespace IED
 				if (a_version >= DataVersion2)
 				{
 					a_ar& group;
+
+					if (a_version >= DataVersion3)
+					{
+						a_ar& f32a;
+					}
 				}
 			}
 		};
@@ -799,7 +815,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideCondition_t,
-	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion2);
+	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion3);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideValues_t,

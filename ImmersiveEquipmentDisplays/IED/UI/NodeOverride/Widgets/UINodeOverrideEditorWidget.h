@@ -381,6 +381,7 @@ namespace IED
 			Game::FormID m_ooNewEntryIDRace;
 			Game::FormID m_ooNewEntryIDActor;
 			Game::FormID m_ooNewEntryIDNPC;
+			Game::FormID m_ooNewEntryIDGlob;
 
 			BIPED_OBJECT             m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ObjectSlotExtra    m_ooNewSlot{ Data::ObjectSlotExtra::kNone };
@@ -2381,6 +2382,7 @@ namespace IED
 				m_ooNewEntryIDRace  = {};
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
+				m_ooNewEntryIDGlob  = {};
 				m_ooNewSlot         = Data::ObjectSlotExtra::kNone;
 				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
@@ -2435,7 +2437,6 @@ namespace IED
 							UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Form);
 
 							if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-									LS(CommonStrings::Form, "fs"),
 									m_ooNewEntryID))
 							{
 								if (m_ooNewEntryID)
@@ -2462,7 +2463,6 @@ namespace IED
 						if (LCG_BM(CommonStrings::Keyword, "5"))
 						{
 							if (m_condParamEditor.GetKeywordPicker().DrawFormSelector(
-									LS(CommonStrings::Form, "fs"),
 									m_ooNewEntryIDKW))
 							{
 								if (m_ooNewEntryIDKW)
@@ -2544,7 +2544,6 @@ namespace IED
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Actor);
 
 						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Form, "fs"),
 								m_ooNewEntryIDActor))
 						{
 							if (m_ooNewEntryIDActor)
@@ -2573,7 +2572,6 @@ namespace IED
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::NPC);
 
 						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Form, "fs"),
 								m_ooNewEntryIDNPC))
 						{
 							if (m_ooNewEntryIDNPC)
@@ -2681,8 +2679,36 @@ namespace IED
 
 						result = NodeOverrideCommonAction::Insert;
 					}
+					
+					if (LCG_BM(CommonStrings::Global, "G"))
+					{
+						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Global);
 
-					if (LCG_BM(CommonStrings::Extra, "G"))
+						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
+								m_ooNewEntryIDGlob))
+						{
+							if (m_ooNewEntryIDGlob)
+							{
+								a_entry.emplace_back(
+									Data::NodeOverrideConditionType::Global,
+									m_ooNewEntryIDGlob);
+
+								HandleValueUpdate(
+									a_handle,
+									a_data,
+									a_params,
+									a_exists);
+
+								result = NodeOverrideCommonAction::Insert;
+							}
+
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "H"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -2707,7 +2733,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "H")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "I")))
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Group);
@@ -2724,7 +2750,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "I")))
+				if (ImGui::MenuItem(LS(CommonStrings::Clear, "J")))
 				{
 					a_entry.clear();
 
@@ -2739,7 +2765,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "J")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "K")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2747,7 +2773,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideConditionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "K"),
+						LS(CommonStrings::PasteOver, "L"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -2885,6 +2911,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Keyword:
 						case Data::NodeOverrideConditionType::Actor:
 						case Data::NodeOverrideConditionType::NPC:
+						case Data::NodeOverrideConditionType::Global:
 
 							it = a_entry.emplace(
 								it,
@@ -3145,9 +3172,6 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
-								tdesc = LS(CommonStrings::Extra);
-
 								switch (e.extraCondType)
 								{
 								case Data::ExtraConditionType::kShoutEquipped:
@@ -3167,6 +3191,9 @@ namespace IED
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									break;
 								}
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
+								tdesc = LS(CommonStrings::Extra);
 
 								break;
 
@@ -3219,6 +3246,24 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::WeatherClass);
 								tdesc = LS(CommonStrings::Weather);
+
+								break;
+								
+							case Data::NodeOverrideConditionType::Global:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
+									e.compOperator);
+								m_condParamEditor.SetNext<ConditionParamItem::Float>(
+									e.f32a);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Global);
 
 								break;
 
@@ -3568,6 +3613,7 @@ namespace IED
 				m_ooNewEntryIDRace  = {};
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
+				m_ooNewEntryIDGlob  = {};
 				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_ooNewSlot         = Data::ObjectSlotExtra::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
@@ -3632,7 +3678,6 @@ namespace IED
 							UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Form);
 
 							if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-									LS(CommonStrings::Form, "fs"),
 									m_ooNewEntryID))
 							{
 								if (m_ooNewEntryID)
@@ -3650,7 +3695,6 @@ namespace IED
 						if (LCG_BM(CommonStrings::Keyword, "5"))
 						{
 							if (m_condParamEditor.GetKeywordPicker().DrawFormSelector(
-									LS(CommonStrings::Form, "fs"),
 									m_ooNewEntryIDKW))
 							{
 								if (m_ooNewEntryIDKW)
@@ -3705,7 +3749,6 @@ namespace IED
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Actor);
 
 						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Form, "fs"),
 								m_ooNewEntryIDActor))
 						{
 							if (m_ooNewEntryIDActor)
@@ -3725,7 +3768,6 @@ namespace IED
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::NPC);
 
 						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								LS(CommonStrings::Form, "fs"),
 								m_ooNewEntryIDNPC))
 						{
 							if (m_ooNewEntryIDNPC)
@@ -3776,7 +3818,26 @@ namespace IED
 						result.matchType = Data::NodeOverrideConditionType::Weather;
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "G"))
+					if (LCG_BM(CommonStrings::Global, "G"))
+					{
+						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Global);
+
+						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
+								m_ooNewEntryIDGlob))
+						{
+							if (m_ooNewEntryIDGlob)
+							{
+								result.action    = NodeOverrideCommonAction::Insert;
+								result.form      = m_ooNewEntryIDGlob;
+								result.matchType = Data::NodeOverrideConditionType::Global;
+							}
+
+							ImGui::CloseCurrentPopup();
+						}
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -3794,7 +3855,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(CommonStrings::Group, "H")))
+					if (ImGui::MenuItem(LS(CommonStrings::Group, "Z")))
 					{
 						result.action    = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Group;
@@ -3805,7 +3866,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "I")))
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}
@@ -4139,6 +4200,20 @@ namespace IED
 				}
 
 				break;
+
+			case Data::NodeOverrideConditionType::Global:
+
+				if (a_item == ConditionParamItem::CompOper)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -4186,6 +4261,10 @@ namespace IED
 				break;
 			case Data::NodeOverrideConditionType::Weather:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Weather));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Global:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Global));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

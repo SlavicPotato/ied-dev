@@ -94,6 +94,7 @@ namespace IED
 			case TESCombatStyle::kTypeID:
 			case TESClass::kTypeID:
 			case TESWeather::kTypeID:
+			case TESGlobal::kTypeID:
 				return form;
 			default:
 				return nullptr;
