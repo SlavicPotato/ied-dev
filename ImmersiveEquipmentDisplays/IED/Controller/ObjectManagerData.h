@@ -105,13 +105,13 @@ namespace IED
 		{
 			if (state)
 			{
-				state->nodes.obj->SetVisible(a_switch);
+				state->nodes.rootNode->SetVisible(a_switch);
 			}
 		}
 
 		SKMP_FORCEINLINE auto IsActive() const noexcept
 		{
-			return state && state->nodes.obj->IsVisible();
+			return state && state->nodes.rootNode->IsVisible();
 		}
 
 		SKMP_FORCEINLINE auto GetFormIfActive() const noexcept
@@ -121,7 +121,7 @@ namespace IED
 
 		SKMP_FORCEINLINE auto IsNodeVisible() const noexcept
 		{
-			return state && state->nodes.obj->IsVisible();
+			return state && state->nodes.rootNode->IsVisible();
 		}
 
 		struct State
@@ -136,8 +136,8 @@ namespace IED
 
 			struct GroupObject
 			{
+				NiPointer<NiNode>      rootNode;
 				NiPointer<NiNode>      object;
-				NiPointer<NiNode>      main;
 				Data::cacheTransform_t transform;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
@@ -195,6 +195,7 @@ namespace IED
 			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			effectShaderData_t                                 effectShaders;
 			stl::fixed_string                                  currentSequence;
+			long long                                          created{ 0 };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			bool                                               atmReference{ true };
 		};

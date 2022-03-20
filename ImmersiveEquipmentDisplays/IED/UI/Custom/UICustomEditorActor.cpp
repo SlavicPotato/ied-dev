@@ -486,7 +486,7 @@ namespace IED
 
 					if (ImGui::IsItemHovered())
 					{
-						DrawFormInfoTooltip(*formInfo, *object);
+						DrawFormInfoTooltip(formInfo, *object);
 					}
 				}
 			}

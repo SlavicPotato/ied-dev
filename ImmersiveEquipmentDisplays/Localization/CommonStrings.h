@@ -176,5 +176,6 @@ namespace IED
 		Any          = 247,
 		Weather      = 248,
 		Force        = 249,
+		Hidden       = 250,
 	};
 }

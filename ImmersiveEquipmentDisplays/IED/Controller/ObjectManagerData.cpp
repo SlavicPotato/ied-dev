@@ -438,12 +438,12 @@ namespace IED
 		{
 			EngineExtensions::CleanupNodeImpl(
 				a_handle,
-				e.second.object);
+				e.second.rootNode);
 		}
 
 		EngineExtensions::CleanupNodeImpl(
 			a_handle,
-			nodes.obj);
+			nodes.rootNode);
 	}
 
 	void objectEntryBase_t::State::GroupObject::PlayAnimation(
@@ -455,12 +455,12 @@ namespace IED
 			return;
 		}
 
-		if (!main)
+		if (!object)
 		{
 			return;
 		}
 
-		if (auto controller = main->GetControllers())
+		if (auto controller = object->GetControllers())
 		{
 			if (auto manager = controller->AsNiControllerManager())
 			{
@@ -489,12 +489,12 @@ namespace IED
 			return;
 		}
 
-		if (!nodes.main)
+		if (!nodes.object)
 		{
 			return;
 		}
 
-		if (auto controller = nodes.main->GetControllers())
+		if (auto controller = nodes.object->GetControllers())
 		{
 			if (auto manager = controller->AsNiControllerManager())
 			{

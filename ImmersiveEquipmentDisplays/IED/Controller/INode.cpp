@@ -169,7 +169,7 @@ namespace IED
 			UpdateDownwardPass(node);
 		}
 
-		a_out.obj = node;
+		a_out.rootNode = node;
 		a_out.ref = nodes.ref;
 
 		return true;

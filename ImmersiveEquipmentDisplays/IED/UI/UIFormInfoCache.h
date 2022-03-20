@@ -16,6 +16,8 @@ namespace IED
 				IForm::info_result info;
 			};
 
+			using container_type = std::unordered_map<Game::FormID, entry_t>;
+
 			inline static constexpr std::size_t CLEANUP_THRESHOLD    = 1250;
 			inline static constexpr std::size_t CLEANUP_TARGET       = 1000;
 			inline static constexpr long long   CLEANUP_RUN_INTERVAL = 30000000;
@@ -41,7 +43,7 @@ namespace IED
 		private:
 			long long m_lastCleanup{ 0 };
 
-			std::unordered_map<Game::FormID, entry_t> m_data;
+			container_type m_data;
 
 			Controller& m_controller;
 		};

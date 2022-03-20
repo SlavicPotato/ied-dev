@@ -2166,7 +2166,7 @@ namespace IED
 			return false;
 		}
 
-		const bool isVisible = state->nodes.obj->IsVisible();
+		const bool isVisible = state->nodes.rootNode->IsVisible();
 
 		if (a_visible)
 		{
@@ -2196,7 +2196,7 @@ namespace IED
 
 		if (isVisible != a_visible)
 		{
-			state->nodes.obj->SetVisible(a_visible);
+			state->nodes.rootNode->SetVisible(a_visible);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
@@ -2220,7 +2220,7 @@ namespace IED
 
 			UpdateObjectTransform(
 				state->transform,
-				state->nodes.obj,
+				state->nodes.rootNode,
 				state->nodes.ref);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
@@ -2278,7 +2278,7 @@ namespace IED
 		if (es)
 		{
 			if (a_objectEntry.state->effectShaders.UpdateIfChanged(
-					a_objectEntry.state->nodes.obj,
+					a_objectEntry.state->nodes.rootNode,
 					*es))
 			{
 				a_params.state.ResetEffectShaders(a_params.handle);
@@ -2517,7 +2517,7 @@ namespace IED
 						visible,
 						false))
 				{
-					objectEntry.state->nodes.obj->SetVisible(visible);
+					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
 					if (visible)
 					{
@@ -3772,7 +3772,7 @@ namespace IED
 
 				UpdateObjectTransform(
 					objectEntry.state->transform,
-					objectEntry.state->nodes.obj,
+					objectEntry.state->nodes.rootNode,
 					objectEntry.state->nodes.ref);
 
 				UpdateRootPaused(info->root);
@@ -4447,7 +4447,7 @@ namespace IED
 
 		UpdateObjectTransform(
 			a_entry.state->transform,
-			a_entry.state->nodes.obj,
+			a_entry.state->nodes.rootNode,
 			a_entry.state->nodes.ref);
 
 		a_entry.state->UpdateGroupTransforms(a_configEntry.group);
@@ -4456,7 +4456,7 @@ namespace IED
 		{
 			UpdateObjectTransform(
 				e.second.transform,
-				e.second.object,
+				e.second.rootNode,
 				nullptr);
 		}
 
@@ -4601,7 +4601,7 @@ namespace IED
 			a_node,
 			a_atmReference,
 			a_root,
-			a_entry.state->nodes.obj,
+			a_entry.state->nodes.rootNode,
 			a_entry.state->nodes.ref);
 
 		if (result)

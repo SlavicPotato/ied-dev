@@ -73,36 +73,36 @@ namespace IED
 		}
 
 		if (state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    nodes.obj->IsVisible())
+		    nodes.rootNode->IsVisible())
 		{
 			if (state->transform.scale)
 			{
-				nodes.obj->m_localTransform.scale =
+				nodes.rootNode->m_localTransform.scale =
 					nodes.ref->m_localTransform.scale * *state->transform.scale;
 			}
 			else
 			{
-				nodes.obj->m_localTransform.scale = nodes.ref->m_localTransform.scale;
+				nodes.rootNode->m_localTransform.scale = nodes.ref->m_localTransform.scale;
 			}
 
 			if (state->transform.rotation)
 			{
-				nodes.obj->m_localTransform.rot =
+				nodes.rootNode->m_localTransform.rot =
 					nodes.ref->m_localTransform.rot * *state->transform.rotation;
 			}
 			else
 			{
-				nodes.obj->m_localTransform.rot = nodes.ref->m_localTransform.rot;
+				nodes.rootNode->m_localTransform.rot = nodes.ref->m_localTransform.rot;
 			}
 
 			if (state->transform.position)
 			{
-				nodes.obj->m_localTransform.pos =
+				nodes.rootNode->m_localTransform.pos =
 					nodes.ref->m_localTransform * *state->transform.position;
 			}
 			else
 			{
-				nodes.obj->m_localTransform.pos = nodes.ref->m_localTransform.pos;
+				nodes.rootNode->m_localTransform.pos = nodes.ref->m_localTransform.pos;
 			}
 		}
 	}
@@ -210,6 +210,12 @@ namespace IED
 		}
 	}
 
+	struct bbb
+	{
+		TESForm* source;
+		TESForm* effect;
+	};
+
 	void ActorProcessorTask::Run()
 	{
 		IScopedLock lock(m_controller.m_lock);
@@ -304,9 +310,9 @@ namespace IED
 
 						if (f.hideCountdown == 0)
 						{
-							update |= f.state->nodes.obj->IsVisible();
+							update |= f.state->nodes.rootNode->IsVisible();
 
-							f.state->nodes.obj->SetVisible(false);
+							f.state->nodes.rootNode->SetVisible(false);
 						}
 					}
 				}

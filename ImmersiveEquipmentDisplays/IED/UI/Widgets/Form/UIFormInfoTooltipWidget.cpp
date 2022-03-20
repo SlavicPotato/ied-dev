@@ -20,34 +20,45 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawFormInfoTooltip(
-			const formInfoResult_t&  a_info,
+			const formInfoResult_t*  a_info,
 			const objectEntryBase_t& a_entry)
 		{
 			ImGui::BeginTooltip();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
 
-			ImGui::TextUnformatted(LS(UIWidgetCommonStrings::FormIDColon));
-			ImGui::SameLine();
-			ImGui::Text("%.8X", a_info.form.id.get());
-
-			ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
-
-			if (auto typeDesc = IFormCommon::GetFormTypeDesc(a_info.form.type))
+			if (a_info)
 			{
+				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::FormIDColon));
 				ImGui::SameLine();
-				ImGui::TextUnformatted(typeDesc);
-			}
-			else
-			{
-				ImGui::SameLine();
-				ImGui::Text("%hhu", a_info.form.type);
+				ImGui::Text("%.8X", a_info->form.id.get());
+
+				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
+
+				if (auto typeDesc = IFormCommon::GetFormTypeDesc(a_info->form.type))
+				{
+					ImGui::SameLine();
+					ImGui::TextUnformatted(typeDesc);
+				}
+				else
+				{
+					ImGui::SameLine();
+					ImGui::Text("%hhu", a_info->form.type);
+				}
+
+				ImGui::Spacing();
 			}
 
 			if (a_entry.state->flags.test(ObjectEntryFlags::kScbLeft))
 			{
-				ImGui::Spacing();
 				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::LeftScbAttached));
+				ImGui::Spacing();
 			}
+
+			auto dt = IPerfCounter::delta_us(
+				a_entry.state->created,
+				PerfCounter::Query());
+
+			ImGui::Text("%s: %lld min", LS(CommonStrings::Age), dt / (1000000ll * 60));
 
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
@@ -62,12 +73,12 @@ namespace IED
 				return;
 			}
 
-			if (!a_entry.state->nodes.obj->IsVisible())
+			if (!a_entry.state->nodes.rootNode->IsVisible())
 			{
 				ImGui::TextColored(
 					UICommon::g_colorGreyed,
-					"%s",
-					LS(UIWidgetCommonStrings::HiddenBrackets));
+					"[%s]",
+					LS(CommonStrings::Hidden));
 
 				ImGui::SameLine();
 			}
@@ -91,7 +102,7 @@ namespace IED
 
 				if (ImGui::IsItemHovered())
 				{
-					DrawFormInfoTooltip(*a_info, a_entry);
+					DrawFormInfoTooltip(a_info, a_entry);
 				}
 			}
 			else
@@ -101,9 +112,9 @@ namespace IED
 					"%.8X",
 					a_entry.state->formid.get());
 
-				if (a_entry.state->flags.test(ObjectEntryFlags::kScbLeft))
+				if (ImGui::IsItemHovered())
 				{
-					UICommon::HelpMarker(LS(UIWidgetCommonStrings::LeftScbAttached));
+					DrawFormInfoTooltip(nullptr, a_entry);
 				}
 			}
 		}

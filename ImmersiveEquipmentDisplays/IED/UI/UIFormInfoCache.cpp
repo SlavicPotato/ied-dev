@@ -69,7 +69,7 @@ namespace IED
 
 			auto fc = Drivers::UI::GetFrameCount();
 
-			std::vector<decltype(m_data)::const_iterator> candidates;
+			std::vector<container_type::const_iterator> candidates;
 
 			for (auto it = m_data.begin(); it != m_data.end(); ++it)
 			{
@@ -99,6 +99,7 @@ namespace IED
 					break;
 				}
 
+				// spec: only iterator to the erased element is invalidated, this should be safe
 				m_data.erase(e);
 			}
 		}

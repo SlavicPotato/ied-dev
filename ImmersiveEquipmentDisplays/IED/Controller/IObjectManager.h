@@ -115,7 +115,7 @@ namespace IED
 		void FinalizeObjectState(
 			std::unique_ptr<objectEntryBase_t::State>& a_state,
 			TESForm*                                   a_form,
-			NiNode*                                    a_node,
+			NiNode*                                    a_rootNode,
 			NiNode*                                    a_objectNode,
 			nodesRef_t&                                a_targetNodes,
 			const Data::configBaseValues_t&            a_config);

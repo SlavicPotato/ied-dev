@@ -667,9 +667,9 @@ namespace IED
 		// some massive paranoia
 		std::uint32_t maxiter = 1000;
 
-		while (auto node = GetObjectByName(a_object, a_name, true))
+		while (auto object = GetObjectByName(a_object, a_name, true))
 		{
-			node->m_parent->RemoveChild(node);
+			object->m_parent->RemoveChild(object);
 			result = true;
 
 			if (!--maxiter)

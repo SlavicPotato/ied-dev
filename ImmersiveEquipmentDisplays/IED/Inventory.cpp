@@ -271,7 +271,7 @@ namespace IED
 				break;
 			case TESAmmo::kTypeID:
 
-				rating = stl::safe_float_cast<std::uint32_t>(
+				rating = stl::clamped_num_cast<std::uint32_t>(
 					static_cast<TESAmmo*>(form)->settings.damage);
 
 				break;

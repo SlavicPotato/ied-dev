@@ -404,7 +404,7 @@ namespace IED
 					ss << " [ScbLeft]";
 				}
 
-				if (!slot.state->nodes.obj->IsVisible())
+				if (!slot.state->nodes.rootNode->IsVisible())
 				{
 					ss << " ";
 					ss << L(UIWidgetCommonStrings::HiddenBrackets);

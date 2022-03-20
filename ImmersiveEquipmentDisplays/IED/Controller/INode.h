@@ -9,13 +9,13 @@ namespace IED
 {
 	struct nodesRef_t
 	{
-		NiPointer<NiNode> obj;
+		NiPointer<NiNode> rootNode;
 		NiPointer<NiNode> ref;
-		NiPointer<NiNode> main;
+		NiPointer<NiNode> object;
 
 		SKMP_FORCEINLINE constexpr bool IsReferenceMovedOrOphaned() const noexcept
 		{
-			if (auto objParent = obj->m_parent)
+			if (auto objParent = rootNode->m_parent)
 			{
 				if (auto objParentParent = objParent->m_parent)
 				{

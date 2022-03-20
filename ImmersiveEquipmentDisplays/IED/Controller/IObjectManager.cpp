@@ -28,12 +28,12 @@ namespace IED
 			a_actor &&
 			a_actor->loadedState &&
 			(a_actor == *g_thePlayer || m_playSoundNPC) &&
-			a_objectEntry.state->nodes.obj->m_parent &&
-			a_objectEntry.state->nodes.obj->IsVisible())
+			a_objectEntry.state->nodes.rootNode->m_parent &&
+			a_objectEntry.state->nodes.rootNode->IsVisible())
 		{
 			SoundPlay(
 				a_objectEntry.state->form->formType,
-				a_objectEntry.state->nodes.obj->m_parent,
+				a_objectEntry.state->nodes.rootNode->m_parent,
 				false);
 		}
 
@@ -204,7 +204,7 @@ namespace IED
 		for (auto& e : a_objects.m_entriesSlot)
 		{
 			if (e.state &&
-			    !e.state->nodes.obj->IsVisible())
+			    !e.state->nodes.rootNode->IsVisible())
 			{
 				RemoveObject(
 					nullptr,
@@ -224,7 +224,7 @@ namespace IED
 				for (auto it2 = it1->second.begin(); it2 != it1->second.end();)
 				{
 					if (it2->second.state &&
-					    !it2->second.state->nodes.obj->IsVisible())
+					    !it2->second.state->nodes.rootNode->IsVisible())
 					{
 						RemoveObject(
 							nullptr,
@@ -484,7 +484,7 @@ namespace IED
 			itemRoot,
 			targetNodes.ref);
 
-		targetNodes.obj->AttachChild(itemRoot, true);
+		targetNodes.rootNode->AttachChild(itemRoot, true);
 		UpdateDownwardPass(itemRoot);
 
 		auto ar = EngineExtensions::AttachObject(
@@ -577,7 +577,8 @@ namespace IED
 			const Data::configModelGroup_t::data_type::value_type* entry{ nullptr };
 			TESForm*                                               form{ nullptr };
 			modelParams_t                                          params;
-			NiPointer<NiNode>                                      object;
+			NiPointer<NiNode>                                      rootNode;
+			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
 		};
 
 		std::list<tmpdata_t> modelParams;
@@ -658,7 +659,7 @@ namespace IED
 		{
 			ObjectDatabaseEntry entry;
 
-			if (!GetUniqueObject(e.params.path, entry, e.object))
+			if (!GetUniqueObject(e.params.path, entry, e.rootNode))
 			{
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -700,23 +701,23 @@ namespace IED
 			groupRoot,
 			targetNodes.ref);
 
-		targetNodes.obj->AttachChild(groupRoot, true);
+		targetNodes.rootNode->AttachChild(groupRoot, true);
 		UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
 		{
-			if (!e.object)
+			if (!e.rootNode)
 			{
 				continue;
 			}
 
-			e.object->m_localTransform = {};
+			e.rootNode->m_localTransform = {};
 
 			if (e.params.swap)
 			{
 				EngineExtensions::ApplyTextureSwap(
 					e.params.swap,
-					e.object);
+					e.rootNode);
 			}
 
 			GetNodeName(e.form, e.params, buffer);
@@ -726,14 +727,14 @@ namespace IED
 			auto& n = state->groupObjects.try_emplace(
 											 e.entry->first,
 											 itemRoot,
-											 e.object)
+											 e.rootNode)
 			              .first->second;
 
 			n.transform.Update(e.entry->second.transform);
 
 			UpdateObjectTransform(
 				n.transform,
-				n.object,
+				n.rootNode,
 				nullptr);
 
 			groupRoot->AttachChild(itemRoot, true);
@@ -743,7 +744,7 @@ namespace IED
 				a_params.actor,
 				a_params.root,
 				itemRoot,
-				e.object,
+				e.rootNode,
 				e.params.type,
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
@@ -757,17 +758,26 @@ namespace IED
 				a_disableHavok ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
-			UpdateDownwardPass(e.object);
+			//UpdateDownwardPass(e.object);
+
+			e.grpObject = std::addressof(n);
+			e.rootNode  = itemRoot;
+		}
+
+		UpdateDownwardPass(groupRoot);
+
+		for (auto& e : modelParams)
+		{
+			if (!e.grpObject)
+			{
+				continue;
+			}
 
 			if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kPlayAnimation))
 			{
-				n.PlayAnimation(a_params.actor, e.entry->second.niControllerSequence);
+				e.grpObject->PlayAnimation(a_params.actor, e.entry->second.niControllerSequence);
 			}
-
-			e.object = itemRoot;
 		}
-
-		//UpdateDownwardPass(groupRoot);
 
 		FinalizeObjectState(
 			state,
@@ -796,18 +806,19 @@ namespace IED
 	void IObjectManager::FinalizeObjectState(
 		std::unique_ptr<objectEntryBase_t::State>& a_state,
 		TESForm*                                   a_form,
-		NiNode*                                    a_node,
+		NiNode*                                    a_rootNode,
 		NiNode*                                    a_objectNode,
 		nodesRef_t&                                a_targetNodes,
 		const Data::configBaseValues_t&            a_config)
 	{
-		a_state->form         = a_form;
-		a_state->formid       = a_form->formID;
-		a_state->nodes.obj    = a_node;
-		a_state->nodes.ref    = std::move(a_targetNodes.ref);
-		a_state->nodes.main   = a_objectNode;
-		a_state->nodeDesc     = a_config.targetNode;
-		a_state->atmReference = a_config.targetNode.managed() ||
+		a_state->form           = a_form;
+		a_state->formid         = a_form->formID;
+		a_state->nodes.rootNode = a_rootNode;
+		a_state->nodes.ref      = std::move(a_targetNodes.ref);
+		a_state->nodes.object   = a_objectNode;
+		a_state->nodeDesc       = a_config.targetNode;
+		a_state->created        = IPerfCounter::Query();
+		a_state->atmReference   = a_config.targetNode.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 	}
 
@@ -826,7 +837,7 @@ namespace IED
 			{
 				SoundPlay(
 					a_objectEntry.state->form->formType,
-					a_objectEntry.state->nodes.obj,
+					a_objectEntry.state->nodes.rootNode,
 					a_equip);
 			}
 		}
