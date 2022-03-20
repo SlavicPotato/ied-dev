@@ -96,7 +96,6 @@ namespace IED
 		}
 
 	protected:
-
 	private:
 		static findResult_t FindNodes(
 			const Data::NodeDescriptor& a_node,

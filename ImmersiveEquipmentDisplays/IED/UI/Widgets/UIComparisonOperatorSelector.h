@@ -19,15 +19,15 @@ namespace IED
 			UIComparisonOperatorSelector(Localization::ILocalization& a_localization);
 
 			bool DrawComparisonOperatorSelector(
-				Data::ExtraComparisonOperator& a_comp);
+				Data::ComparisonOperator& a_comp);
 
 		protected:
-			const char* comp_operator_to_desc(Data::ExtraComparisonOperator a_comp);
+			const char* comp_operator_to_desc(Data::ComparisonOperator a_comp);
 
 		private:
 			using data_type = std::array<
 				std::pair<
-					Data::ExtraComparisonOperator,
+					Data::ComparisonOperator,
 					UIComparisonOperatorSelectorStrings>,
 				6>;
 

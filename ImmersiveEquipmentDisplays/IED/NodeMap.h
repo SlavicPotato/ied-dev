@@ -128,7 +128,7 @@ namespace IED
 				buf[index] = 'E';
 				index++;
 			}
-			
+
 			if (a_flags.test(NodeDescriptorFlags::kDefaultCopy))
 			{
 				buf[index] = 'C';

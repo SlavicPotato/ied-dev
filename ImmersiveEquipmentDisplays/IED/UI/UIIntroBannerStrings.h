@@ -8,9 +8,9 @@ namespace IED
 	{
 		enum class UIIntroBannerStrings : Localization::StringID
 		{
-			UIOpenKeys   = 6100,
-			NoKeyWarning = 6101,
-			HeaderAppend = 6102,
+			UIOpenKeys    = 6100,
+			NoKeyWarning  = 6101,
+			HeaderAppend  = 6102,
 			KeyInfoAppend = 6103,
 		};
 	}

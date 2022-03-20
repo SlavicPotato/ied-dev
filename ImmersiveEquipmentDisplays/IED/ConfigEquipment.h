@@ -136,7 +136,7 @@ namespace IED
 				switch (a_type)
 				{
 				case EquipmentOverrideConditionType::Global:
-					compOperator = ExtraComparisonOperator::kEqual;
+					compOperator = ComparisonOperator::kEqual;
 				// fallthrough
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
@@ -233,14 +233,14 @@ namespace IED
 				BIPED_OBJECT               bipedSlot;
 				PACKAGE_PROCEDURE_TYPE     procedureType;
 				WeatherClassificationFlags weatherClass;
-				ExtraComparisonOperator    compOperator;
+				ComparisonOperator         compOperator;
 
 				static_assert(std::is_same_v<std::underlying_type_t<QuestConditionType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ExtraConditionType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<BIPED_OBJECT>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<PACKAGE_PROCEDURE_TYPE>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<WeatherClassificationFlags>, std::uint32_t>);
-				static_assert(std::is_same_v<std::underlying_type_t<ExtraComparisonOperator>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ComparisonOperator>, std::uint32_t>);
 			};
 
 			float f32a{ 0.0f };

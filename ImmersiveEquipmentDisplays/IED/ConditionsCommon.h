@@ -508,22 +508,22 @@ namespace IED
 
 			switch (a_match.compOperator)
 			{
-			case Data::ExtraComparisonOperator::kEqual:
+			case Data::ComparisonOperator::kEqual:
 				result = glob->value == matchval;
 				break;
-			case Data::ExtraComparisonOperator::kNotEqual:
+			case Data::ComparisonOperator::kNotEqual:
 				result = glob->value != matchval;
 				break;
-			case Data::ExtraComparisonOperator::kGreater:
+			case Data::ComparisonOperator::kGreater:
 				result = glob->value > matchval;
 				break;
-			case Data::ExtraComparisonOperator::kLower:
+			case Data::ComparisonOperator::kLower:
 				result = glob->value < matchval;
 				break;
-			case Data::ExtraComparisonOperator::kGreaterOrEqual:
+			case Data::ComparisonOperator::kGreaterOrEqual:
 				result = glob->value >= matchval;
 				break;
-			case Data::ExtraComparisonOperator::kLowerOrEqual:
+			case Data::ComparisonOperator::kLowerOrEqual:
 				result = glob->value <= matchval;
 				break;
 			default:

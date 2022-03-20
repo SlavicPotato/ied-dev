@@ -28,7 +28,7 @@ namespace IED
 	}
 
 	auto SkeletonCache::Get(
-		TESObjectREFR*           a_refr)
+		TESObjectREFR* a_refr)
 		-> const_actor_entry_type
 	{
 		IScopedLock lock(m_lock);

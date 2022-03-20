@@ -45,7 +45,7 @@ namespace IED
 			configCachedForm_t     form;
 			configCachedForm_t     modelForm;
 			configRange_t          countRange;
-			std::uint32_t          priority{ 0 }; // unused
+			std::uint32_t          priority{ 0 };  // unused
 			float                  chance{ 100.0f };
 			configFormList_t       extraItems;
 			configModelGroup_t     group;

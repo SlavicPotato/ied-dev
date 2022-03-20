@@ -263,7 +263,7 @@ namespace IED
 			else if constexpr (
 				Ap == ConditionParamItem::CompOper)
 			{
-				static_assert(std::is_same_v<T, Data::ExtraComparisonOperator>);
+				static_assert(std::is_same_v<T, Data::ComparisonOperator>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

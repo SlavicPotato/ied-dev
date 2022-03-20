@@ -8,12 +8,12 @@ namespace IED
 	{
 		UIComparisonOperatorSelector::data_type UIComparisonOperatorSelector::m_data{ {
 
-			{ Data::ExtraComparisonOperator::kEqual, UIComparisonOperatorSelectorStrings::Equal },
-			{ Data::ExtraComparisonOperator::kNotEqual, UIComparisonOperatorSelectorStrings::NotEqual },
-			{ Data::ExtraComparisonOperator::kGreater, UIComparisonOperatorSelectorStrings::Greater },
-			{ Data::ExtraComparisonOperator::kLower, UIComparisonOperatorSelectorStrings::Lower },
-			{ Data::ExtraComparisonOperator::kGreaterOrEqual, UIComparisonOperatorSelectorStrings::GreaterOrEqual },
-			{ Data::ExtraComparisonOperator::kLowerOrEqual, UIComparisonOperatorSelectorStrings::LowerOrEqual },
+			{ Data::ComparisonOperator::kEqual, UIComparisonOperatorSelectorStrings::Equal },
+			{ Data::ComparisonOperator::kNotEqual, UIComparisonOperatorSelectorStrings::NotEqual },
+			{ Data::ComparisonOperator::kGreater, UIComparisonOperatorSelectorStrings::Greater },
+			{ Data::ComparisonOperator::kLower, UIComparisonOperatorSelectorStrings::Lower },
+			{ Data::ComparisonOperator::kGreaterOrEqual, UIComparisonOperatorSelectorStrings::GreaterOrEqual },
+			{ Data::ComparisonOperator::kLowerOrEqual, UIComparisonOperatorSelectorStrings::LowerOrEqual },
 
 		} };
 
@@ -24,7 +24,7 @@ namespace IED
 		}
 
 		bool UIComparisonOperatorSelector::DrawComparisonOperatorSelector(
-			Data::ExtraComparisonOperator& a_type)
+			Data::ComparisonOperator& a_type)
 		{
 			bool result = false;
 
@@ -62,21 +62,21 @@ namespace IED
 		}
 
 		const char* UIComparisonOperatorSelector::comp_operator_to_desc(
-			Data::ExtraComparisonOperator a_comp)
+			Data::ComparisonOperator a_comp)
 		{
 			switch (a_comp)
 			{
-			case Data::ExtraComparisonOperator::kEqual:
+			case Data::ComparisonOperator::kEqual:
 				return LS(UIComparisonOperatorSelectorStrings::Equal);
-			case Data::ExtraComparisonOperator::kNotEqual:
+			case Data::ComparisonOperator::kNotEqual:
 				return LS(UIComparisonOperatorSelectorStrings::NotEqual);
-			case Data::ExtraComparisonOperator::kGreater:
+			case Data::ComparisonOperator::kGreater:
 				return LS(UIComparisonOperatorSelectorStrings::Greater);
-			case Data::ExtraComparisonOperator::kLower:
+			case Data::ComparisonOperator::kLower:
 				return LS(UIComparisonOperatorSelectorStrings::Lower);
-			case Data::ExtraComparisonOperator::kGreaterOrEqual:
+			case Data::ComparisonOperator::kGreaterOrEqual:
 				return LS(UIComparisonOperatorSelectorStrings::GreaterOrEqual);
-			case Data::ExtraComparisonOperator::kLowerOrEqual:
+			case Data::ComparisonOperator::kLowerOrEqual:
 				return LS(UIComparisonOperatorSelectorStrings::LowerOrEqual);
 			default:
 				return nullptr;

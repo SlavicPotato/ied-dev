@@ -7,7 +7,6 @@
 #include "IObjectManager.h"
 
 #include <ext/Sky.h>
-#include <ext/TESWeather.h>
 
 namespace IED
 {
@@ -194,10 +193,10 @@ namespace IED
 
 		bool changed = false;
 
-		if (auto nw = RE::Sky::GetCurrentWeather();
-		    nw != m_state.currentWeather)
+		if (auto current = RE::Sky::GetCurrentWeather();
+		    current != m_state.currentWeather)
 		{
-			m_state.currentWeather = nw;
+			m_state.currentWeather = current;
 			changed                = true;
 		}
 
@@ -217,7 +216,7 @@ namespace IED
 		m_timer.Begin();
 
 		UpdateState();
-		
+
 		for (auto& [i, e] : m_controller.m_objects)
 		{
 			if (!e.m_actor->formID)

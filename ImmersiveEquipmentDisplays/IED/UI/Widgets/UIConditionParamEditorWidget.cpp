@@ -188,7 +188,7 @@ namespace IED
 				ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
 
 				result |= DrawComparisonOperatorSelector(
-					e.As1<Data::ExtraComparisonOperator>());
+					e.As1<Data::ComparisonOperator>());
 
 				ImGui::PopItemWidth();
 

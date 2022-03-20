@@ -1,7 +1,7 @@
 #include "pch.h"
 
-#include "ConfigBase.h"
 #include "ConditionsCommon.h"
+#include "ConfigBase.h"
 #include "FormCommon.h"
 
 #include "Controller/ObjectManagerData.h"

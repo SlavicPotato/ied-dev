@@ -183,7 +183,7 @@ namespace IED
 			kClass             = 9,
 		};
 
-		enum class ExtraComparisonOperator : std::uint32_t
+		enum class ComparisonOperator : std::uint32_t
 		{
 			kEqual          = 0,
 			kNotEqual       = 1,
