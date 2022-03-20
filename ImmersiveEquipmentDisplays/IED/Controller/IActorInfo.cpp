@@ -54,6 +54,11 @@ namespace IED
 				a_out.npc = it->second;
 			}
 		}
+
+		if (a_out.npc)
+		{
+			a_out.npc->active = a_out.active;
+		}
 	}
 
 	void IActorInfo::FillNPCInfoEntry(
