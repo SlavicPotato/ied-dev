@@ -17,6 +17,8 @@ namespace IED
 			NiPointer<NiNode> object;
 		};
 
+		inline static constexpr long long CLEANUP_DELAY = 1000000;
+
 	public:
 		using ObjectDatabaseEntry = std::shared_ptr<entry_t>;
 
@@ -31,14 +33,7 @@ namespace IED
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object);
 
 		void RunObjectCleanup();
-
-		inline void QueueDatabaseCleanup() noexcept
-		{
-			if (m_level != ObjectDatabaseLevel::kDisabled)
-			{
-				m_runCleanup = true;
-			}
-		}
+		void QueueDatabaseCleanup() noexcept;
 
 		[[nodiscard]] inline constexpr auto GetODBLevel() const noexcept
 		{
@@ -73,7 +68,7 @@ namespace IED
 
 		ObjectDatabaseLevel m_level{ DEFAULT_LEVEL };
 
-		bool m_runCleanup{ false };
+		std::optional<long long> m_cleanupDeadline;
 
 		using container_type = std::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
 

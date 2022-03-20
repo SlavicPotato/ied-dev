@@ -99,12 +99,17 @@ namespace IED
 
 	void ObjectDatabase::RunObjectCleanup()
 	{
-		if (!m_runCleanup)
+		if (!m_cleanupDeadline)
 		{
 			return;
 		}
 
-		m_runCleanup = false;
+		if (IPerfCounter::Query() < *m_cleanupDeadline)
+		{
+			return;
+		}
+
+		m_cleanupDeadline.reset();
 
 		if (m_level == ObjectDatabaseLevel::kDisabled)
 		{
@@ -114,7 +119,7 @@ namespace IED
 		{
 			for (auto it = m_data.begin(); it != m_data.end();)
 			{
-				if (it->second.use_count() < 2)
+				if (it->second.use_count() <= 1)
 				{
 					it = m_data.erase(it);
 				}
@@ -126,7 +131,24 @@ namespace IED
 			return;
 		}
 
-		if (m_data.size() <= stl::underlying(m_level))
+		auto level = stl::underlying(m_level);
+
+		if (m_data.size() <= level)
+		{
+			return;
+		}
+
+		std::size_t numCandidates = 0;
+
+		for (auto& e : m_data)
+		{
+			if (e.second.use_count() <= 1)
+			{
+				numCandidates++;
+			}
+		}
+
+		if (numCandidates <= level)
 		{
 			return;
 		}
@@ -135,37 +157,39 @@ namespace IED
 
 		for (auto it = m_data.begin(); it != m_data.end(); ++it)
 		{
-			if (it->second.use_count() < 2)
+			if (it->second.use_count() <= 1)
 			{
 				candidates.emplace_back(it);
 			}
 		}
 
-		auto level = stl::underlying(m_level);
-
-		if (candidates.size() <= level)
-		{
-			return;
-		}
-
 		std::sort(
 			candidates.begin(),
 			candidates.end(),
-			[](const auto& a_lhs, const auto& a_rhs) {
+			[](const auto& a_lhs,
+		       const auto& a_rhs) {
 				return a_lhs->second->accessed <
 			           a_rhs->second->accessed;
 			});
 
-		auto num_erase = candidates.size() - level;
-
 		for (const auto& e : candidates)
 		{
-			m_data.erase(e);
-
-			if (!(--num_erase))
+			if (m_data.size() <= level)
 			{
 				break;
 			}
+
+			// spec: only iterator to the erased element is invalidated, this should be safe
+			m_data.erase(e);
+		}
+	}
+
+	void ObjectDatabase::QueueDatabaseCleanup() noexcept
+	{
+		if (m_level != ObjectDatabaseLevel::kDisabled &&
+		    !m_cleanupDeadline)
+		{
+			m_cleanupDeadline = IPerfCounter::get_tp(CLEANUP_DELAY);
 		}
 	}
 
@@ -185,7 +209,7 @@ namespace IED
 	void ObjectDatabase::ClearObjectDatabase()
 	{
 		m_data.clear();
-		m_runCleanup = false;
+		m_cleanupDeadline.reset();
 	}
 
 	NiNode* ObjectDatabase::CreateClone(const entry_t& a_entry)
