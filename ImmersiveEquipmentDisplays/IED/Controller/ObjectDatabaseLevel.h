@@ -13,7 +13,7 @@ namespace IED
 		kMedium   = 15,
 		kHigh     = 20,
 		kVeryHigh = 25,
-		kExtreme  = 30,
-		kMax      = 40
+		kExtreme  = 35,
+		kMax      = 50
 	};
 }
