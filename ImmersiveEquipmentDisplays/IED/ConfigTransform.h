@@ -36,8 +36,13 @@ namespace IED
 			stl::optional<NiPoint3> position;
 			stl::optional<NiPoint3> rotation;
 
-			constexpr void clamp() noexcept
+			void clamp() noexcept
 			{
+				if (!scale && !position && !rotation)
+				{
+					return;
+				}
+
 				using namespace ::Math;
 
 				if (scale)
@@ -60,6 +65,8 @@ namespace IED
 					rotation->y = std::clamp(zero_nan(rotation->y), -pi2, pi2);
 					rotation->z = std::clamp(zero_nan(rotation->z), -pi2, pi2);
 				}
+
+				update_tag();
 			}
 
 			NiTransform to_nitransform() const
@@ -87,11 +94,15 @@ namespace IED
 				return result;
 			}
 
-			constexpr void clear()
+			void clear()
 			{
 				scale.clear();
-				position.clear();
-				rotation.clear();
+				*scale = 1.0f;
+
+				position.reset();
+				rotation.reset();
+
+				update_tag();
 			}
 
 			[[nodiscard]] inline constexpr bool empty() const noexcept
