@@ -146,8 +146,6 @@ namespace IED
 					"%s",
 					LS(CommonStrings::Transform)))
 			{
-				ImGui::Spacing();
-
 				a_extra();
 
 				if (a_indent)
@@ -163,8 +161,6 @@ namespace IED
 				{
 					ImGui::Unindent();
 				}
-
-				ImGui::Spacing();
 
 				ImGui::TreePop();
 			}
@@ -331,8 +327,6 @@ namespace IED
 			Tu                       a_updateop,
 			TransformUpdateValue     a_updValue)
 		{
-			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
-
 			ImGui::PushID("context_area");
 
 			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
@@ -354,8 +348,6 @@ namespace IED
 			}
 
 			ImGui::PopID();
-
-			//ImGui::PopStyleVar();
 		}
 
 	}

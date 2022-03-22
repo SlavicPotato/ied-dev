@@ -971,14 +971,15 @@ namespace IED
 						a_exists);
 				},
 				[&] {
+
+					ImGui::Spacing();
+
 					DrawValueFlags(
 						a_handle,
 						a_data,
 						data,
 						a_params,
 						a_exists);
-
-					ImGui::Spacing();
 				});
 
 			if (TreeEx(
@@ -1809,14 +1810,14 @@ namespace IED
 											a_exists);
 									},
 									[&] {
+										ImGui::Spacing();
+
 										DrawValueFlags(
 											a_handle,
 											a_data,
 											e,
 											a_params,
 											a_exists);
-
-										ImGui::Spacing();
 									});
 							}
 

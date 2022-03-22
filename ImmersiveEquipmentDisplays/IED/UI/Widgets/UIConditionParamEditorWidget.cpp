@@ -185,25 +185,55 @@ namespace IED
 
 				result |= DrawExtra(e, args, ConditionParamItem::CompOper);
 
-				ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+				if (!args.hide)
+				{
+					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
 
-				result |= DrawComparisonOperatorSelector(
-					e.As1<Data::ComparisonOperator>());
+					result |= DrawComparisonOperatorSelector(
+						e.As1<Data::ComparisonOperator>());
 
-				ImGui::PopItemWidth();
+					ImGui::PopItemWidth();
 
-				ImGui::SameLine();
+					ImGui::SameLine();
+				}
 			}
 
 			if (const auto& e = get(ConditionParamItem::Float); e.p1)
 			{
-				result |= ImGui::InputFloat(
-					"##in_flt",
-					reinterpret_cast<float*>(e.p1),
-					0.0f,
-					0.0f,
-					"%f",
-					ImGuiInputTextFlags_EnterReturnsTrue);
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::Float);
+
+				if (!args.hide)
+				{
+					result |= ImGui::InputScalar(
+						"##in_flt",
+						ImGuiDataType_Float,
+						reinterpret_cast<float*>(e.p1),
+						nullptr,
+						nullptr,
+						"%f",
+						ImGuiInputTextFlags_EnterReturnsTrue);
+				}
+			}
+
+			if (const auto& e = get(ConditionParamItem::UInt32); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::UInt32);
+
+				if (!args.hide)
+				{
+					result |= ImGui::InputScalar(
+						"##in_ui32",
+						ImGuiDataType_U32,
+						reinterpret_cast<std::uint32_t*>(e.p1),
+						nullptr,
+						nullptr,
+						"%u",
+						ImGuiInputTextFlags_EnterReturnsTrue);
+				}
 			}
 
 			if (m_extraInterface)

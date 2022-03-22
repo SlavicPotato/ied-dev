@@ -283,6 +283,11 @@ namespace IED
 
 			float f32a{ 0.0f };
 
+			union
+			{
+				std::uint32_t ui32b{ 0 };
+			};
+
 			configNodeOverrideConditionGroup_t group;
 
 		private:
@@ -303,6 +308,7 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& f32a;
+						a_ar& ui32b;
 					}
 				}
 			}

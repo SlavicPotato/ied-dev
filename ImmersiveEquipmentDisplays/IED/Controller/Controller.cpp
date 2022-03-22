@@ -3303,8 +3303,10 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		/*PerfTimer pt;
-		pt.Start();*/
+#if IED_ENABLE_STATS != 0
+		PerfTimer pt;
+		pt.Start();
+#endif
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
@@ -3327,7 +3329,9 @@ namespace IED
 
 		a_objects.RequestTransformUpdateDefer();
 
-		//Debug("%X : %f", a_actor->formID.get(), pt.Stop());
+#if IED_ENABLE_STATS != 0
+		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
+#endif
 	}
 
 	void Controller::DoObjectEvaluation(

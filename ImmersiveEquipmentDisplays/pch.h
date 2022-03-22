@@ -81,4 +81,6 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
+#define IED_ENABLE_STATS 0
+
 #endif  // PCH_H

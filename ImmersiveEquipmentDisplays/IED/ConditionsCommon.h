@@ -489,6 +489,31 @@ namespace IED
 			}
 		}
 
+		template <class Tv, class Tm>
+		constexpr bool compare(
+			Data::ComparisonOperator a_oper,
+			const Tv&                a_value,
+			const Tm&                a_match)
+		{
+			switch (a_oper)
+			{
+			case Data::ComparisonOperator::kEqual:
+				return a_value == a_match;
+			case Data::ComparisonOperator::kNotEqual:
+				return a_value != a_match;
+			case Data::ComparisonOperator::kGreater:
+				return a_value > a_match;
+			case Data::ComparisonOperator::kLower:
+				return a_value < a_match;
+			case Data::ComparisonOperator::kGreaterOrEqual:
+				return a_value >= a_match;
+			case Data::ComparisonOperator::kLowerOrEqual:
+				return a_value <= a_match;
+			default:
+				return false;
+			}
+		}
+
 		template <class Tm, class Tf>
 		constexpr bool match_global(
 			CommonParams& a_params,
@@ -504,33 +529,7 @@ namespace IED
 			                     a_match.f32a :
                                  static_cast<float>(static_cast<long>(a_match.f32a));
 
-			bool result;
-
-			switch (a_match.compOperator)
-			{
-			case Data::ComparisonOperator::kEqual:
-				result = glob->value == matchval;
-				break;
-			case Data::ComparisonOperator::kNotEqual:
-				result = glob->value != matchval;
-				break;
-			case Data::ComparisonOperator::kGreater:
-				result = glob->value > matchval;
-				break;
-			case Data::ComparisonOperator::kLower:
-				result = glob->value < matchval;
-				break;
-			case Data::ComparisonOperator::kGreaterOrEqual:
-				result = glob->value >= matchval;
-				break;
-			case Data::ComparisonOperator::kLowerOrEqual:
-				result = glob->value <= matchval;
-				break;
-			default:
-				return false;
-			}
-
-			return result;
+			return compare(a_match.compOperator, glob->value, matchval);
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);

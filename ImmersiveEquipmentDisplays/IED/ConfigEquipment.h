@@ -33,7 +33,7 @@ namespace IED
 
 			kMatchAll = kMatchEquipped | kMatchSlots,
 
-			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)
@@ -144,8 +144,10 @@ namespace IED
 					form = a_form;
 					break;
 				case EquipmentOverrideConditionType::Form:
-					form  = a_form;
-					flags = DEFAULT_MATCH_CATEGORY_FLAGS;
+					form         = a_form;
+					compOperator = ComparisonOperator::kEqual;
+					count        = 1;
+					flags        = DEFAULT_MATCH_CATEGORY_FLAGS;
 					break;
 				case EquipmentOverrideConditionType::Quest:
 					keyword       = a_form;
@@ -245,6 +247,12 @@ namespace IED
 
 			float f32a{ 0.0f };
 
+			union
+			{
+				std::uint32_t ui32b{ 0 };
+				std::uint32_t count;
+			};
+
 			equipmentOverrideConditionGroup_t group;
 
 		private:
@@ -259,6 +267,7 @@ namespace IED
 				a_ar&              ui32a;
 				a_ar&              group;
 				a_ar&              f32a;
+				a_ar&              ui32b;
 			}
 
 			template <class Archive>
@@ -282,6 +291,7 @@ namespace IED
 						if (a_version >= DataVersion4)
 						{
 							a_ar& f32a;
+							a_ar& ui32b;
 						}
 					}
 				}

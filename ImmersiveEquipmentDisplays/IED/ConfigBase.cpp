@@ -368,9 +368,19 @@ namespace IED
 				return false;
 			}
 
-			if (it->second.count < 1)
+			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
 			{
-				return false;
+				if (!Conditions::compare(a_match.compOperator, it->second.count, a_match.count))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (it->second.count < 1)
+				{
+					return false;
+				}
 			}
 
 			if (a_match.keyword.get_id())

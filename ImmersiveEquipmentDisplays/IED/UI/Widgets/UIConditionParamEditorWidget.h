@@ -32,6 +32,7 @@ namespace IED
 		WeatherClass,
 		CompOper,
 		Float,
+		UInt32,
 		Extra,
 
 		Total
@@ -274,6 +275,16 @@ namespace IED
 				Ap == ConditionParamItem::Float)
 			{
 				static_assert(std::is_same_v<T, float>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::UInt32)
+			{
+				static_assert(std::is_same_v<T, std::uint32_t>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

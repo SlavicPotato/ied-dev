@@ -86,6 +86,7 @@ namespace IED
 		class UIBaseConfigWidget :
 			public UINodeSelectorWidget,
 			public UIFormLookupInterface,
+			public UIComparisonOperatorSelector,
 			UIConditionParamExtraInterface,
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
 			public virtual UICollapsibles,
@@ -270,6 +271,7 @@ namespace IED
 			Controller& a_controller) :
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
+			UIComparisonOperatorSelector(a_controller),
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
 			m_controller(a_controller),
 			m_condParamEditor(a_controller),
@@ -2454,6 +2456,38 @@ namespace IED
 					LS(CommonStrings::Displayed, "3"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSlots));
+
+				if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchAll))
+				{
+					ImGui::Spacing();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Count, "4"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+					{
+						ImGui::SameLine();
+
+						ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+
+						result |= DrawComparisonOperatorSelector(match->compOperator);
+
+						ImGui::PopItemWidth();
+
+						ImGui::SameLine();
+
+						result |= ImGui::InputScalar(
+							"##in_ui32",
+							ImGuiDataType_U32,
+							std::addressof(match->count),
+							nullptr,
+							nullptr,
+							"%u",
+							ImGuiInputTextFlags_EnterReturnsTrue);
+					}
+				}
 
 				break;
 
