@@ -971,7 +971,6 @@ namespace IED
 						a_exists);
 				},
 				[&] {
-
 					ImGui::Spacing();
 
 					DrawValueFlags(
@@ -3973,6 +3972,15 @@ namespace IED
 					LS(CommonStrings::Displayed, "3"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kMatchSlots));
+
+				DrawTip(UITip::EquippedConditions);
+
+				if (!match->flags.test_any(Data::NodeOverrideConditionFlags::kMatchAll))
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped("%s", LS(UINodeOverrideEditorWidgetStrings::CondMatchWarn));
+					ImGui::PopStyleColor();
+				}
 
 				break;
 

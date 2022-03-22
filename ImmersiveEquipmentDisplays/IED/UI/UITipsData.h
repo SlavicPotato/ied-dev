@@ -59,6 +59,7 @@ namespace IED
 			MatchEitherFormKW                   = 1048,
 			MatchWorldspaceParent               = 1049,
 			PlayAnimation                       = 1050,
+			EquippedConditions                  = 1051,
 		};
 
 	}

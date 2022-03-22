@@ -2457,6 +2457,8 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSlots));
 
+				DrawTip(UITip::EquippedConditions);
+
 				if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchAll))
 				{
 					ImGui::Spacing();
