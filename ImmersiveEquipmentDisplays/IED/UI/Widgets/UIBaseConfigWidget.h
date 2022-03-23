@@ -2459,7 +2459,8 @@ namespace IED
 
 				DrawTip(UITip::EquippedConditions);
 
-				if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchAll))
+				if (match->fbf.type == Data::EquipmentOverrideConditionType::Form &&
+				    !match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchAll))
 				{
 					ImGui::Spacing();
 
@@ -2468,27 +2469,30 @@ namespace IED
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
-					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
-					{
-						ImGui::SameLine();
+					bool disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
 
-						ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+					UICommon::PushDisabled(disabled);
 
-						result |= DrawComparisonOperatorSelector(match->compOperator);
+					ImGui::SameLine();
 
-						ImGui::PopItemWidth();
+					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
 
-						ImGui::SameLine();
+					result |= DrawComparisonOperatorSelector(match->compOperator);
 
-						result |= ImGui::InputScalar(
-							"##in_ui32",
-							ImGuiDataType_U32,
-							std::addressof(match->count),
-							nullptr,
-							nullptr,
-							"%u",
-							ImGuiInputTextFlags_EnterReturnsTrue);
-					}
+					ImGui::PopItemWidth();
+
+					ImGui::SameLine();
+
+					result |= ImGui::InputScalar(
+						"##5",
+						ImGuiDataType_U32,
+						std::addressof(match->count),
+						nullptr,
+						nullptr,
+						"%u",
+						ImGuiInputTextFlags_EnterReturnsTrue);
+
+					UICommon::PopDisabled(disabled);
 				}
 
 				break;
