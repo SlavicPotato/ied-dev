@@ -20,12 +20,27 @@ namespace IED
 				continue;
 			}
 
-			e.second.visit([](auto& a_object) {
-				if (a_object.state)
+			for (auto& f : e.second.GetSlots())
+			{
+				if (f.state)
 				{
-					UpdateEffects(a_object.state->effectShaders);
+					UpdateEffects(f.state->effectShaders);
 				}
-			});
+			}
+
+			for (auto& f : e.second.GetCustom())
+			{
+				for (auto& g : f)
+				{
+					for (auto& h : g.second)
+					{
+						if (h.second.state)
+						{
+							UpdateEffects(h.second.state->effectShaders);
+						}
+					}
+				}
+			}
 		}
 
 		m_timer.End(m_currentTime);
@@ -35,23 +50,34 @@ namespace IED
 	{
 		for (auto& e : a_data.data)
 		{
-			if (e.second.flags.test(effectShaderData_t::EntryFlags::kForce))
+			if (e.flags.test(effectShaderData_t::EntryFlags::kForce))
 			{
-				for (auto& f : e.second.nodes)
+				for (auto& f : e.nodes)
 				{
-					if (f.first->effectData != e.second.shaderData)
+					if (f->effectData != e.shaderData)
 					{
-						f.first->SetEffectShaderData(e.second.shaderData);
+						f->SetEffectShaderData(e.shaderData);
 					}
 				}
 			}
 			else
 			{
-				for (auto& f : e.second.nodes)
+				for (auto& f : e.nodes)
 				{
-					if (!f.first->effectData)
+					if (!f->effectData)
 					{
-						f.first->SetEffectShaderData(e.second.shaderData);
+						if (f->AcceptsEffectData())
+						{
+							f->SetEffectShaderData(e.shaderData);
+						}
+					}
+					else
+					{
+						if (f->effectData == e.shaderData &&
+						    !f->AcceptsEffectData())
+						{
+							f->ClearEffectShaderData();
+						}
 					}
 				}
 			}

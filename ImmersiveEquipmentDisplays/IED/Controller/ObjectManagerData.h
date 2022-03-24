@@ -31,12 +31,12 @@ namespace IED
 			Entry& operator=(const Entry&) = delete;
 			Entry& operator=(Entry&&) = default;
 
-			stl::flag<EntryFlags>                                                      flags{ EntryFlags::kNone };
-			RE::BSTSmartPointer<BSEffectShaderData>                                    shaderData;
-			std::vector<std::pair<NiPointer<BSShaderProperty>, NiPointer<BSGeometry>>> nodes;
+			stl::flag<EntryFlags>                    flags{ EntryFlags::kNone };
+			RE::BSTSmartPointer<BSEffectShaderData>  shaderData;
+			std::vector<NiPointer<BSShaderProperty>> nodes;
 		};
 
-		using data_type = std::unordered_map<stl::fixed_string, Entry>;
+		using data_type = std::vector<Entry>;
 
 		[[nodiscard]] inline constexpr bool operator==(
 			const Data::configEffectShaderHolder_t& a_rhs) const
@@ -64,7 +64,7 @@ namespace IED
 		{
 			for (auto& e : data)
 			{
-				for (auto& f : e.second.nodes)
+				for (auto& f : e.nodes)
 				{
 					a_func(e, f);
 				}
@@ -371,9 +371,9 @@ namespace IED
 		~ActorObjectHolder();
 
 		ActorObjectHolder(const ActorObjectHolder&) = delete;
-		ActorObjectHolder(ActorObjectHolder&&)      = default;
+		ActorObjectHolder(ActorObjectHolder&&)      = delete;
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
-		ActorObjectHolder& operator=(ActorObjectHolder&&) = default;
+		ActorObjectHolder& operator=(ActorObjectHolder&&) = delete;
 
 		[[nodiscard]] inline constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
@@ -416,22 +416,27 @@ namespace IED
 			return m_entriesCustom[stl::underlying(a_class)];
 		}
 
-		[[nodiscard]] inline const auto& GetCustom(Data::ConfigClass a_class) const noexcept
+		[[nodiscard]] inline auto& GetCustom(Data::ConfigClass a_class) const noexcept
 		{
 			return m_entriesCustom[stl::underlying(a_class)];
 		}
+		
+		[[nodiscard]] inline constexpr auto& GetCustom() const noexcept
+		{
+			return m_entriesCustom;
+		}
 
-		[[nodiscard]] inline constexpr const auto& GetCMENodes() const noexcept
+		[[nodiscard]] inline constexpr auto& GetCMENodes() const noexcept
 		{
 			return m_cmeNodes;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetMOVNodes() const noexcept
+		[[nodiscard]] inline constexpr auto& GetMOVNodes() const noexcept
 		{
 			return m_movNodes;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetWeapNodes() const noexcept
+		[[nodiscard]] inline constexpr auto& GetWeapNodes() const noexcept
 		{
 			return m_weapNodes;
 		}
@@ -534,7 +539,7 @@ namespace IED
 				}
 			}
 		}
-
+		
 		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
 		{
 			return m_formid;

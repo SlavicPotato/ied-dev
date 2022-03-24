@@ -519,8 +519,11 @@ namespace IED
 	{
 		if (!data.empty())
 		{
-			visit_nodes([](auto& a_e1, auto& a_e2) {
-				a_e2.first->ClearEffectShaderData();
+			visit_nodes([](auto& a_entry, auto& a_prop) {
+				if (a_prop->effectData == a_entry.shaderData)
+				{
+					a_prop->ClearEffectShaderData();
+				}
 			});
 
 			data.clear();
@@ -559,9 +562,7 @@ namespace IED
 			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
 				if (auto& effect = a_geometry->m_spEffectState)
 				{
-					auto shaderProp = ni_cast(effect.get(), BSShaderProperty);
-
-					if (shaderProp && shaderProp->AcceptsEffectData())
+					if (auto shaderProp = ni_cast(effect.get(), BSShaderProperty))
 					{
 						if (!e.targetNodes.empty())
 						{
@@ -581,7 +582,7 @@ namespace IED
 							}
 						}
 
-						tmp.nodes.emplace_back(shaderProp, a_geometry);
+						tmp.nodes.emplace_back(shaderProp);
 					}
 				}
 
@@ -603,7 +604,7 @@ namespace IED
 				tmp.flags.set(effectShaderData_t::EntryFlags::kForce);
 			}
 
-			data.emplace(i, std::move(tmp));
+			data.emplace_back(std::move(tmp));
 		}
 
 		tag = a_data;
@@ -669,7 +670,7 @@ namespace IED
                                     VisitorControl::kContinue);
 				});
 
-				args.result = visitorResult == VisitorControl::kStop;
+				args.result = (visitorResult == VisitorControl::kStop);
 
 				return VisitorControl::kStop;
 			}

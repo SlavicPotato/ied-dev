@@ -25,7 +25,7 @@ namespace IED
 		}
 
 	protected:
-		static void UpdateEffects(const effectShaderData_t& a_data);
+		SKMP_FORCEINLINE static void UpdateEffects(const effectShaderData_t& a_data);
 
 		mutable PerfTimerInt m_timer{ 1000000LL };
 		mutable long long    m_currentTime{ 0LL };
