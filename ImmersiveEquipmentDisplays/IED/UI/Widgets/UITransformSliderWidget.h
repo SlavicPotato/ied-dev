@@ -148,6 +148,8 @@ namespace IED
 			{
 				a_extra();
 
+				ImGui::Spacing();
+
 				if (a_indent)
 				{
 					ImGui::Indent();
@@ -161,6 +163,8 @@ namespace IED
 				{
 					ImGui::Unindent();
 				}
+
+				ImGui::Spacing();
 
 				ImGui::TreePop();
 			}
@@ -176,8 +180,6 @@ namespace IED
 			ImGui::PushID("transform_sliders");
 
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.005f : 0.5f;
-
-			ImGui::Spacing();
 
 			ImGui::PushID("vpos");
 			ImGui::BeginGroup();
