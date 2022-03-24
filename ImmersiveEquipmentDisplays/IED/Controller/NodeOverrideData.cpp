@@ -58,6 +58,7 @@ namespace IED
 			{ "CME BOLTDefault", { "Bolt", "CME BOLTDefault" } },
 			{ "CME BOLTChesko", { "Bolt Chesko", "CME BOLTChesko" } },
 			{ "CME BOLTLeftHipBolt", { "Bolt Left-Hip", "CME BOLTLeftHipBolt" } },
+			{ "CME BOLTXP32", { "Bolt XP32", "CME BOLTXP32" } },
 			{ "CME BOLTABQ", { "Bolt ABQ", "CME BOLTABQ" } },
 			{ "CME ShieldBackDefault", { "Shield Back", "CME ShieldBackDefault" } }
 
@@ -114,6 +115,7 @@ namespace IED
 			{ "MOV BOLTChesko", { "Bolt Chesko", "MOV BOLTChesko" } },
 			{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip", "MOV BOLTLeftHipBolt" } },
 			{ "MOV BOLTABQ", { "Bolt ABQ", "MOV BOLTABQ" } },
+			{ "MOV BOLTXP32", { "Bolt XP32", "MOV BOLTXP32" } },
 			{ "MOV ShieldBackDefault", { "Shield Back", "MOV ShieldBackDefault" } }
 
 		}),
