@@ -336,6 +336,7 @@ namespace IED
 								{ "MOV BOLTChesko", { "Bolt Chesko" } },
 								{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip" } },
 								{ "MOV BOLTABQ", { "Bolt ABQ" } },
+								{ "MOV BOLTXP32", { "Bolt XP32" } },
 							}
 
 						} },
