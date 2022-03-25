@@ -136,6 +136,11 @@ namespace IED
 		{
 			for (auto& e : *extendDataList)
 			{
+				if (!e)
+				{
+					continue;
+				}
+
 				BSReadLocker locker(e->m_lock);
 
 				auto& presence = e->m_presence;
