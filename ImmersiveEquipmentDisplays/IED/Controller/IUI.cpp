@@ -23,17 +23,17 @@ namespace IED
 
 	UI::UIPopupQueue& IUI::UIGetPopupQueue() noexcept
 	{
-		return m_task->GetContext<UI::UIMain>()->GetPopupQueue();
+		return GetContext()->GetPopupQueue();
 	}
 
 	UI::UIFormBrowser& IUI::UIGetFormBrowser() noexcept
 	{
-		return m_task->GetContext<UI::UIMain>()->GetFormBrowser();
+		return GetContext()->GetFormBrowser();
 	}
 
 	UI::UIFormInfoCache& IUI::UIGetFormLookupCache() noexcept
 	{
-		return m_task->GetContext<UI::UIMain>()->GetFormLookupCache();
+		return GetContext()->GetFormLookupCache();
 	}
 
 	void IUI::UIReset()
@@ -52,7 +52,7 @@ namespace IED
 
 		if (m_task->IsRunning())
 		{
-			m_task->GetContext<UI::UIMain>()->SetOpenState(false);
+			GetContext()->SetOpenState(false);
 
 			return UIOpenResult::kResultDisabled;
 		}
@@ -82,6 +82,11 @@ namespace IED
 		}
 
 		return UIOpenResult::kResultNone;
+	}
+
+	UI::UIMain* IUI::GetContext() const noexcept
+	{
+		return static_cast<UI::UIMain*>(m_task->GetContext());
 	}
 
 	IUIRenderTask::IUIRenderTask(
@@ -176,18 +181,17 @@ namespace IED
 
 	bool IUIRenderTaskMain::ShouldClose()
 	{
-		return GetContext<UI::UIMain>()->GetUISettings().closeOnESC &&
+		return static_cast<UI::UIMain*>(GetContext())->GetUISettings().closeOnESC &&
 		           ImGui::GetIO().KeysDown[VK_ESCAPE] ||
 		       (!GetEnabledInMenu() && Game::InPausedMenu());
 	}
 
-	
 	IUITimedRenderTask::IUITimedRenderTask(
 		IUI&      a_interface,
 		long long a_lifetime) :
 		IUIRenderTask(a_interface),
 		m_lifetime(a_lifetime)
-	{		
+	{
 	}
 
 	void IUITimedRenderTask::OnStart()
@@ -199,6 +203,5 @@ namespace IED
 	{
 		return IPerfCounter::Query() >= m_deadline;
 	}
-
 
 }

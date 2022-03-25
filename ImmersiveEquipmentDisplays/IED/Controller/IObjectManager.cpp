@@ -377,7 +377,8 @@ namespace IED
 		TESForm*                        a_modelForm,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok)
+		bool                            a_disableHavok,
+		bool                            a_enableDeadScatter)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -493,6 +494,7 @@ namespace IED
 			itemRoot,
 			object,
 			modelParams.type,
+			a_enableDeadScatter && a_params.get_actor_dead(),
 			a_leftWeapon,
 			modelParams.isShield,
 			a_config.flags.test(Data::BaseFlags::kDropOnDeath),
@@ -542,7 +544,8 @@ namespace IED
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok)
+		bool                            a_disableHavok,
+		bool                            a_enableDeadScatter)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -577,7 +580,7 @@ namespace IED
 			const Data::configModelGroup_t::data_type::value_type* entry{ nullptr };
 			TESForm*                                               form{ nullptr };
 			modelParams_t                                          params;
-			NiPointer<NiNode>                                      rootNode;
+			NiPointer<NiNode>                                      object;
 			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
 		};
 
@@ -659,7 +662,7 @@ namespace IED
 		{
 			ObjectDatabaseEntry entry;
 
-			if (!GetUniqueObject(e.params.path, entry, e.rootNode))
+			if (!GetUniqueObject(e.params.path, entry, e.object))
 			{
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -706,18 +709,18 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
-			if (!e.rootNode)
+			if (!e.object)
 			{
 				continue;
 			}
 
-			e.rootNode->m_localTransform = {};
+			e.object->m_localTransform = {};
 
 			if (e.params.swap)
 			{
 				EngineExtensions::ApplyTextureSwap(
 					e.params.swap,
-					e.rootNode);
+					e.object);
 			}
 
 			GetNodeName(e.form, e.params, buffer);
@@ -727,7 +730,7 @@ namespace IED
 			auto& n = state->groupObjects.try_emplace(
 											 e.entry->first,
 											 itemRoot,
-											 e.rootNode)
+											 e.object)
 			              .first->second;
 
 			n.transform.Update(e.entry->second.transform);
@@ -744,8 +747,9 @@ namespace IED
 				a_params.actor,
 				a_params.root,
 				itemRoot,
-				e.rootNode,
+				e.object,
 				e.params.type,
+				a_enableDeadScatter && a_params.get_actor_dead(),
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
 				e.params.isShield,
@@ -761,7 +765,6 @@ namespace IED
 			//UpdateDownwardPass(e.object);
 
 			e.grpObject = std::addressof(n);
-			e.rootNode  = itemRoot;
 		}
 
 		UpdateDownwardPass(groupRoot);

@@ -1091,6 +1091,30 @@ namespace IED
 		});
 	}
 
+	void Controller::QueueResetGearAll(
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		ITaskPool::AddTask([this, a_flags]() {
+			IScopedLock lock(m_lock);
+
+			for (auto& e : m_objects)
+			{
+				NiPointer<TESObjectREFR> ref;
+				auto                     handle = e.second.GetHandle();
+
+				if (!handle.Lookup(ref))
+				{
+					continue;
+				}
+
+				if (auto actor = ref->As<Actor>())
+				{
+					ResetGearImpl(actor, handle, e.second, a_flags);
+				}
+			}
+		});
+	}
+
 	void Controller::QueueClearObjects()
 	{
 		ITaskPool::AddTask([this] {
@@ -2316,8 +2340,10 @@ namespace IED
 			return;
 		}
 
+		const auto& settings = m_config.settings.data;
+
 		a_params.collector.GenerateSlotCandidates(
-			!m_config.settings.data.removeFavRestriction);
+			!settings.removeFavRestriction);
 
 		auto equippedInfo = CreateEquippedItemInfo(pm);
 
@@ -2446,8 +2472,6 @@ namespace IED
 				    slot == equippedInfo.leftSlot ||
 				    slot == equippedInfo.rightSlot)
 				{
-					auto& settings = m_config.settings.data;
-
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
@@ -2523,7 +2547,8 @@ namespace IED
 						nullptr,
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
-						false))
+						false,
+						settings.enableDeadScatter))
 				{
 					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
@@ -2980,7 +3005,8 @@ namespace IED
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					m_config.settings.data.enableDeadScatter);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3000,7 +3026,8 @@ namespace IED
 					modelForm,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					m_config.settings.data.enableDeadScatter);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3086,7 +3113,8 @@ namespace IED
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					m_config.settings.data.enableDeadScatter);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3100,7 +3128,8 @@ namespace IED
 					nullptr,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					m_config.settings.data.enableDeadScatter);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3335,7 +3364,14 @@ namespace IED
 				a_flags);
 		}
 
-		a_objects.RequestTransformUpdateDefer();
+		if (a_flags.test(ControllerUpdateFlags::kImmediateUpdateTransforms))
+		{
+			a_objects.RequestTransformUpdate();
+		}
+		else
+		{
+			a_objects.RequestTransformUpdateDefer();
+		}
 
 #if IED_ENABLE_STATS != 0
 		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
@@ -3598,7 +3634,7 @@ namespace IED
 		}
 
 		RemoveActorImpl(a_actor, a_handle, a_flags);
-		EvaluateImpl(a_actor, a_handle, a_flags);
+		EvaluateImpl(a_actor, a_handle, a_flags | ControllerUpdateFlags::kImmediateUpdateTransforms);
 
 		if (eraseState)
 		{
@@ -3634,7 +3670,7 @@ namespace IED
 			a_actor,
 			a_handle,
 			it->second,
-			a_flags);
+			a_flags | ControllerUpdateFlags::kImmediateUpdateTransforms);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -3733,6 +3769,16 @@ namespace IED
 		}
 
 		EvaluateImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
+	}
+
+	void Controller::ResetGearImpl(
+		Actor*                           a_actor,
+		Game::ObjectRefHandle            a_handle,
+		ActorObjectHolder&         a_objects,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		RemoveActorGear(a_actor, a_handle, a_objects, a_flags);
+		EvaluateImpl(a_actor, a_handle, a_objects, a_flags);
 	}
 
 	void Controller::UpdateTransformSlotImpl(
@@ -4850,7 +4896,7 @@ namespace IED
 		{
 			if (auto actor = a_evn->formId.As<Actor>())
 			{
-				QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+				QueueEvaluate(actor, ControllerUpdateFlags::kImmediateUpdateTransforms);
 			}
 		}
 
@@ -4864,7 +4910,7 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			QueueEvaluate(a_evn->reference, ControllerUpdateFlags::kNone);
+			QueueEvaluate(a_evn->reference, ControllerUpdateFlags::kImmediateUpdateTransforms);
 		}
 
 		return EventResult::kContinue;

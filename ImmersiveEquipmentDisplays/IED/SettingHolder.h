@@ -160,6 +160,7 @@ namespace IED
 				bool toggleKeepLoaded{ false };
 				bool disableNPCSlots{ false };
 				bool removeFavRestriction{ false };
+				bool enableDeadScatter{ false };
 
 				stl::optional<LogLevel> logLevel;
 

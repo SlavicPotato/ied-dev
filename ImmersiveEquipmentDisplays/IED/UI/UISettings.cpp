@@ -135,7 +135,7 @@ namespace IED
 						LS(UISettingsStrings::DisableNPCEquipmentSlots, "2"),
 						std::addressof(data.disableNPCSlots))))
 				{
-					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+					m_controller.QueueResetGearAll(ControllerUpdateFlags::kNone);
 				}
 
 				if (settings.mark_if(ImGui::Checkbox(
@@ -147,6 +147,14 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::NoCheckFav);
+				
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::DeadScatter, "4"),
+						std::addressof(data.enableDeadScatter))))
+				{
+					m_controller.QueueResetGearAll(ControllerUpdateFlags::kNone);
+				}
+				DrawTip(UITip::DeadScatter);
 
 				ImGui::Spacing();
 
@@ -188,16 +196,16 @@ namespace IED
 						data.playerBlockKeys.mark(true);
 					}
 
+					ImGui::Spacing();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::KeepLoadedWhenToggledOff, "3"),
+							std::addressof(data.toggleKeepLoaded))))
+					{
+						m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
+					}
+
 					ImGui::TreePop();
-				}
-
-				ImGui::Spacing();
-
-				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::KeepLoadedWhenToggledOff, "4"),
-						std::addressof(data.toggleKeepLoaded))))
-				{
-					m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 				}
 
 				ImGui::Unindent();

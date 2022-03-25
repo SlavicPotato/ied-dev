@@ -687,6 +687,7 @@ namespace IED
 		NiNode*   a_targetNode,
 		NiNode*   a_object,
 		ModelType a_modelType,
+		bool      a_isDead,
 		bool      a_leftWeapon,
 		bool      a_shield,
 		bool      a_dropOnDeath,
@@ -890,8 +891,11 @@ namespace IED
 		}
 
 		fUnk1CD130(a_object, collisionFilterInfo);
-
-		fUnk5C3C40(BSTaskPool::GetSingleton(), a_object, a_dropOnDeath ? 4 : 0, true);
+		fUnk5C3C40(
+			BSTaskPool::GetSingleton(),
+			a_object,
+			a_dropOnDeath ? (a_isDead ? 1 : 4) : 0,
+			true);
 
 		if (auto cell = a_actor->GetParentCell())
 		{

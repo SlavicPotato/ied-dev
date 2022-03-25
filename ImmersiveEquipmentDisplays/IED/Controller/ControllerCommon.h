@@ -6,8 +6,9 @@ namespace IED
 	{
 		kNone = 0,
 
-		kPlaySound        = 1u << 2,
-		kVisibilitySounds = 1u << 3,
+		kPlaySound                 = 1u << 2,
+		kVisibilitySounds          = 1u << 3,
+		kImmediateUpdateTransforms = 1u << 4,
 
 		kAll      = kPlaySound,
 		kSoundAll = kPlaySound | kVisibilitySounds

@@ -28,11 +28,18 @@ namespace IED
 
 		virtual ~IUIRenderTask() noexcept = default;
 
-		template <class T = UI::UIContextBase> 
+		template <class T = UI::UIContextBase>
 		[[nodiscard]] inline constexpr T* GetContext() const noexcept requires
 			std::is_base_of_v<UI::UIContextBase, T>
 		{
-			return static_cast<T*>(m_context.get());
+			auto result = dynamic_cast<T*>(m_context.get());
+			assert(result);
+			return result;
+		}
+
+		[[nodiscard]] inline auto* GetContext() const noexcept
+		{
+			return m_context.get();
 		}
 
 		template <class T, class... Args>
@@ -80,8 +87,8 @@ namespace IED
 	{
 	public:
 		IUITimedRenderTask(
-			IUI&        a_interface,
-			long long   a_lifetime);
+			IUI&      a_interface,
+			long long a_lifetime);
 
 	private:
 		virtual bool ShouldClose() override;
@@ -131,6 +138,8 @@ namespace IED
 	private:
 		virtual constexpr WCriticalSection& UIGetLock() noexcept = 0;
 		virtual void                        OnUIOpen(){};
+
+		UI::UIMain* GetContext() const noexcept;
 
 		UIOpenResult UIOpenImpl();
 

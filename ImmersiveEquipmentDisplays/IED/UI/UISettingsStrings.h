@@ -32,6 +32,7 @@ namespace IED
 			Alpha                       = 4421,
 			BGAlpha                     = 4422,
 			ShowIntroBanner             = 4423,
+			DeadScatter                 = 4424,
 		};
 	}
 }

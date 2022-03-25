@@ -111,6 +111,7 @@ namespace IED
 			NiNode*   a_targetNode,
 			NiNode*   a_object,
 			ModelType a_modelType,
+			bool      a_isDead,
 			bool      a_leftWeapon,
 			bool      a_shield,
 			bool      a_dropOnDeath,
@@ -128,10 +129,10 @@ namespace IED
 		inline static const auto GetObjectByName =
 			IAL::Address<fGetObjectByName_t>(74481, 76207);
 
-		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
-		inline static const auto m_unkglob0       = IAL::Address<std::int32_t*>(523662, 410201);
-		inline static const auto SceneRendering   = IAL::Address<unk63F810_t>(38079, 39033);
-		inline static const auto CleanupObjectImpl  = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
+		inline static const auto ApplyTextureSwap  = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
+		inline static const auto m_unkglob0        = IAL::Address<std::int32_t*>(523662, 410201);
+		inline static const auto SceneRendering    = IAL::Address<unk63F810_t>(38079, 39033);
+		inline static const auto CleanupObjectImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		//inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance

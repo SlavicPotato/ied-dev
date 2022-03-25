@@ -214,6 +214,7 @@ namespace IED
 		void QueueResetRace(Game::FormID a_race, stl::flag<ControllerUpdateFlags> a_flags, Data::ObjectSlot a_slot);
 		void QueueResetAll(stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueResetAll(stl::flag<ControllerUpdateFlags> a_flags, Data::ObjectSlot a_slot);
+		void QueueResetGearAll(stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueClearObjects();
 
 		void QueueUpdateTransformSlot(Game::FormID a_actor, Data::ObjectSlot a_slot);
@@ -583,6 +584,12 @@ namespace IED
 			Actor*                a_actor,
 			Game::ObjectRefHandle a_handle,
 			Data::ConfigClass     a_class);
+
+		void ResetGearImpl(
+			Actor*                           a_actor,
+			Game::ObjectRefHandle            a_handle,
+			ActorObjectHolder&         a_objects,
+			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void UpdateTransformSlotImpl(
 			Game::FormID     a_actor,
