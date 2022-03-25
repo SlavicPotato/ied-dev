@@ -17,26 +17,22 @@ namespace IED
 
 			BGSSoundDescriptorForm* Get(
 				std::uint8_t a_formType,
-				bool         a_equip) const noexcept;
+				bool         a_equip) const;
 
-			const soundPair_t& get_pair(
-				std::uint8_t a_formType) const noexcept;
-
-			soundPair_t arrow;
-			soundPair_t armor;
-			soundPair_t weapon;
-			soundPair_t gen;
+			std::unordered_map<std::uint8_t, soundPair_t> data;
 		};
 
 		void SoundPlay(std::uint8_t a_formType, NiAVObject* a_object, bool a_equip) const;
 
-		template <class... Args>
-		void SetSounds(Args&&... a_args)
+	protected:
+		template <class Tr>
+		void AddSound(std::uint8_t a_formType, Tr&& a_value)
 		{
-			m_sounds = { std::forward<Args>(a_args)... };
+			m_sounds.data.emplace(a_formType, std::forward<Tr>(a_value));
 		}
 
-	protected:
+		void ClearSounds();
+
 		static BGSSoundDescriptorForm* GetSoundForm(Game::FormID a_formid);
 
 		static BGSSoundDescriptorForm* GetSoundForm(

@@ -66,18 +66,18 @@ namespace IED
 		return true;
 	}
 
-	bool ItemCandidateCollector::Accept(TESContainer::Entry* entry)
+	void ItemCandidateCollector::Accept(TESContainer::Entry* entry)
 	{
 		if (!entry)
 		{
-			return true;
+			return;
 		}
 
 		auto form = entry->form;
 
 		if (!CheckForm(form))
 		{
-			return true;
+			return;
 		}
 
 		auto extraType = ItemData::GetItemTypeExtra(form);
@@ -97,21 +97,21 @@ namespace IED
 			m_data.typeCount[i] += entry->count;
 		}
 
-		return true;
+		return;
 	}
 
-	bool ItemCandidateCollector::Accept(InventoryEntryData* a_entryData)
+	void ItemCandidateCollector::Accept(InventoryEntryData* a_entryData)
 	{
 		if (!a_entryData)
 		{
-			return true;
+			return;
 		}
 
 		auto form = a_entryData->type;
 
 		if (!CheckForm(form))
 		{
-			return true;
+			return;
 		}
 
 		auto type      = ItemData::GetItemType(form);
@@ -126,10 +126,9 @@ namespace IED
 
 		r.sharedCount = (r.count += a_entryData->countDelta);
 
-		if (auto i = stl::underlying(extraType);
-		    i < stl::underlying(Data::ObjectTypeExtra::kMax))
+		if (extraType < Data::ObjectTypeExtra::kMax)
 		{
-			m_data.typeCount[i] += a_entryData->countDelta;
+			m_data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
 		}
 
 		if (auto extendDataList = a_entryData->GetDataList())
@@ -194,28 +193,26 @@ namespace IED
 			{
 				r.extraEquipped.slot = slot;
 
-				auto i = stl::underlying(slot);
-				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
+				if (slot < Data::ObjectSlotExtra::kMax)
 				{
-					m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
+					m_data.equippedTypeFlags[stl::underlying(slot)] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 
 			if (r.equippedLeft)
 			{
-				r.extraEquipped.slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
+				auto slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
 
-				auto i = stl::underlying(r.extraEquipped.slotLeft);
-				if (i < stl::underlying(Data::ObjectSlotExtra::kMax))
+				r.extraEquipped.slotLeft = slotLeft;
+
+				if (slotLeft < Data::ObjectSlotExtra::kMax)
 				{
-					m_data.equippedTypeFlags[i] |= Data::InventoryPresenceFlags::kSet;
+					m_data.equippedTypeFlags[stl::underlying(slotLeft)] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 
 			m_data.equippedForms.emplace_back(std::addressof(r));
 		}
-
-		return true;
 	}
 
 	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
@@ -224,7 +221,7 @@ namespace IED
 
 		for (const auto& e : m_data.forms)
 		{
-			if (e.second.type == ObjectType::kMax)
+			if (e.second.type >= ObjectType::kMax)
 			{
 				continue;
 			}
@@ -292,7 +289,7 @@ namespace IED
 
 			auto& entry = m_slotResults[stl::underlying(e.second.type)];
 
-			entry.m_items.emplace_back(form, rating, extra, std::addressof(e.second));
+			entry.m_items.emplace_back(form, extra, std::addressof(e.second), rating);
 		}
 
 		for (auto& e : m_slotResults)

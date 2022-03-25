@@ -6,6 +6,7 @@
 
 #include "Widgets/Form/UIFormPickerWidget.h"
 #include "Widgets/UIControlKeySelectorWidget.h"
+#include "Widgets/UIFormTypeSelectorWidget.h"
 #include "Widgets/UIPopupToggleButtonWidget.h"
 #include "Widgets/UIStylePresetSelectorWidget.h"
 
@@ -26,9 +27,17 @@ namespace IED
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,
 			UIStylePresetSelectorWidget,
+			public virtual UIFormTypeSelectorWidget,
 			public virtual UITipsInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_settings";
+
+			enum class ContextMenuAction
+			{
+				None,
+				Delete,
+				Add
+			};
 
 		public:
 			UISettings(Controller& a_controller);
@@ -44,22 +53,25 @@ namespace IED
 			void DrawToolsMenu();
 			void DrawMaintenanceMenu();
 
-			void DrawGeneralSection();
-			void DrawDisplaysSection();
-			void DrawUISection();
-			void DrawSoundSection();
-			void DrawLogLevelSelector();
-			void DrawObjectDatabaseSection();
-			void DrawLocalizationSection();
+			void              DrawGeneralSection();
+			void              DrawDisplaysSection();
+			void              DrawUISection();
+			ContextMenuAction DrawSoundContextMenu(Data::ConfigSound<Game::FormID>& a_data);
+			void              DrawSoundSection();
+			void              DrawLogLevelSelector();
+			void              DrawObjectDatabaseSection();
+			void              DrawLocalizationSection();
 
 			void DrawFontSelector();
 			void DrawExtraGlyphs();
 			void DrawFontMiscOptions();
 
 			bool DrawSoundPairs();
+
+			ContextMenuAction DrawSoundPairContextMenu();
+
 			bool DrawSoundPair(
-				const char*                                   a_strid,
-				Localization::StringID                        a_label,
+				std::uint8_t                                  a_formType,
 				Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair);
 
 			template <
@@ -73,6 +85,8 @@ namespace IED
 
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
+
+			std::uint8_t m_tmpFormType{ 0xFF };
 
 			Controller& m_controller;
 		};

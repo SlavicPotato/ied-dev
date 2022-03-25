@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
+
 #include "IED/UI/UILocalizationInterface.h"
 
 namespace IED
@@ -10,6 +12,7 @@ namespace IED
 	namespace UI
 	{
 		class UIFormInfoTooltipWidget :
+			public virtual UIFormTypeSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 		public:

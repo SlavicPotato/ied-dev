@@ -436,12 +436,12 @@ namespace IED
 	{
 		for (auto& e : groupObjects)
 		{
-			EngineExtensions::CleanupNodeImpl(
+			EngineExtensions::CleanupObjectImpl(
 				a_handle,
 				e.second.rootNode);
 		}
 
-		EngineExtensions::CleanupNodeImpl(
+		EngineExtensions::CleanupObjectImpl(
 			a_handle,
 			nodes.rootNode);
 	}
@@ -562,7 +562,7 @@ namespace IED
 			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
 				if (auto& effect = a_geometry->m_spEffectState)
 				{
-					if (auto shaderProp = ni_cast(effect.get(), BSShaderProperty))
+					if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
 					{
 						if (!e.targetNodes.empty())
 						{

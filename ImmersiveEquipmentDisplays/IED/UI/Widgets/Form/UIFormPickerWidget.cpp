@@ -24,8 +24,9 @@ namespace IED
 				a_forceBase),
 			UINotificationInterface(a_controller),
 			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
+			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -152,7 +153,7 @@ namespace IED
 					{
 						ImGui::TableSetColumnIndex(1);
 
-						auto desc = IForm::GetFormTypeDesc(m_currentInfo->form.type);
+						auto desc = form_type_to_desc(m_currentInfo->form.type);
 
 						if (!m_currentInfo->form.name.empty())
 						{

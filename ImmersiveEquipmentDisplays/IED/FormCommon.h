@@ -24,6 +24,7 @@ namespace IED
 	{
 	public:
 		static bool IsValidCustomForm(TESForm* a_form);
+		static bool IsValidCustomFormType(std::uint8_t a_type);
 		static bool IsInventoryForm(TESForm* a_form);
 		static bool IsInventoryFormType(std::uint8_t a_type);
 		static bool IsValidSlotForm(TESForm* a_form);
@@ -32,7 +33,6 @@ namespace IED
 		static stl::flag<FormInfoFlags> GetFormFlags(TESForm* a_form);
 
 		static std::string GetFormName(TESForm* a_form);
-		static const char* GetFormTypeDesc(std::uint8_t a_type);
 
 		static bool HasKeyword(TESForm* a_form, BGSKeyword* a_keyword);
 		static bool HasKeyword(TESForm* a_form, Game::FormID a_keyword);

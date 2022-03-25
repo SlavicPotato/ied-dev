@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
+
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/UINotificationInterface.h"
 #include "IED/UI/UITips.h"
@@ -14,6 +16,7 @@ namespace IED
 		class UIFormPickerWidget :
 			public UIFormSelectorWidget,
 			UINotificationInterface,
+			public virtual UIFormTypeSelectorWidget,
 			public virtual UIFormLookupInterface
 		{
 		public:

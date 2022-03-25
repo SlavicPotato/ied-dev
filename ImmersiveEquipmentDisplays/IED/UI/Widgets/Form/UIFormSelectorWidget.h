@@ -1,9 +1,12 @@
 #pragma once
 
-#include "IED/Controller/IForm.h"
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
+
 #include "IED/UI/UIFormBrowser.h"
 #include "IED/UI/UILocalizationInterface.h"
 #include "IED/UI/UITips.h"
+
+#include "IED/Controller/IForm.h"
 
 namespace IED
 {
@@ -13,6 +16,7 @@ namespace IED
 	{
 		class UIFormSelectorWidget :
 			public virtual UITipsInterface,
+			public virtual UIFormTypeSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			using on_open_func_t = std::function<void(UIFormSelectorWidget&, UIFormBrowser&)>;

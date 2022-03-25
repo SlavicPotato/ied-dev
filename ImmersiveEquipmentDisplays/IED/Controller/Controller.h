@@ -126,6 +126,7 @@ namespace IED
 		void InitializeBSFixedStringTable();
 
 		void SinkInputEvents();
+		void SinkSerializationEvents();
 		bool SinkEventsT1();
 		bool SinkEventsT2();
 
@@ -147,11 +148,13 @@ namespace IED
 			long long a_lifetime,
 			Args&&... a_args)
 		{
-			return std::make_shared<IUITimedRenderTask<Tc>>(
+			auto result = std::make_shared<IUITimedRenderTask>(
 				*this,
-				*this,
-				a_lifetime,
-				std::forward<Args>(a_args)...);
+				a_lifetime);
+
+			result->InitializeContext<Tc>(*this, std::forward<Args>(a_args)...);
+
+			return result;
 		}
 
 		[[nodiscard]] inline const auto* GetBSStringHolder() const noexcept

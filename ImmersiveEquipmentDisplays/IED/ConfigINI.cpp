@@ -73,30 +73,49 @@ namespace IED
 
 		m_effectShaders = parsers.reader.GetBoolValue("Testing", "EffectShaders", false);
 
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "WeaponEquipSD", ""),
-			m_sound.weapon.first);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "WeaponUnequipSD", ""),
-			m_sound.weapon.second);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "GenericEquipSD", ""),
-			m_sound.gen.first);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "GenericUnequipSD", ""),
-			m_sound.gen.second);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "ArmorEquipSD", ""),
-			m_sound.armor.first);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "ArmorUnequipSD", ""),
-			m_sound.armor.second);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "ArrowEquipSD", ""),
-			m_sound.arrow.first);
-		ParseForm(
-			parsers.reader.GetValue(SECT_SOUND, "ArrowUnequipSD", ""),
-			m_sound.arrow.second);
+		{
+			auto r = m_sound.data.try_emplace(TESObjectWEAP::kTypeID);
+
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "WeaponEquipSD", ""),
+				r.first->second.first);
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "WeaponUnequipSD", ""),
+				r.first->second.second);
+		}
+
+		{
+			auto r = m_sound.data.try_emplace(TESForm::kTypeID);
+
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "GenericEquipSD", ""),
+				r.first->second.first);
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "GenericUnequipSD", ""),
+				r.first->second.second);
+		}
+
+		{
+			auto r = m_sound.data.try_emplace(TESObjectARMO::kTypeID);
+
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "ArmorEquipSD", ""),
+				r.first->second.first);
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "ArmorUnequipSD", ""),
+				r.first->second.second);
+		}
+
+		{
+			auto r = m_sound.data.try_emplace(TESAmmo::kTypeID);
+
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "ArrowEquipSD", ""),
+				r.first->second.first);
+			ParseForm(
+				parsers.reader.GetValue(SECT_SOUND, "ArrowUnequipSD", ""),
+				r.first->second.second);
+		}
 
 		m_loaded = parsers.reader.is_loaded();
 

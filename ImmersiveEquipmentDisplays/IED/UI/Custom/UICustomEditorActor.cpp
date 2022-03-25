@@ -22,6 +22,7 @@ namespace IED
 			UIActorInfoInterface(a_controller),
 			UINotificationInterface(a_controller),
 			UITransformSliderWidget(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}

@@ -6,7 +6,7 @@ namespace IED
 	{
 		enum class ObjectSlot : std::uint32_t
 		{
-			k1HSword,
+			k1HSword = 0,
 			k1HSwordLeft,
 			k1HAxe,
 			k1HAxeLeft,
@@ -34,7 +34,7 @@ namespace IED
 
 		enum class ObjectType : std::uint32_t
 		{
-			k1HSword,
+			k1HSword = 0,
 			k1HAxe,
 			k2HSword,
 			k2HAxe,
@@ -105,8 +105,8 @@ namespace IED
 
 		enum class ConfigSex : std::uint32_t
 		{
-			Male,
-			Female
+			Male   = 0,
+			Female = 1
 		};
 
 		enum class ConfigClass : std::uint32_t
@@ -127,9 +127,9 @@ namespace IED
 
 		enum class SelectionMode
 		{
-			kLastEquipped,
-			kStrongest,
-			kRandom
+			kLastEquipped = 0,
+			kStrongest    = 1,
+			kRandom       = 2
 		};
 
 		inline static constexpr auto GetOppositeSex(Data::ConfigSex a_sex) noexcept
@@ -143,12 +143,11 @@ namespace IED
 
 		template <
 			class T,
-			class form_descriptor_type = std::enable_if_t<
-				stl::is_any_same_v<
-					stl::strip_type<T>,
-					ConfigForm,
-					Game::FormID>,
-				stl::strip_type<T>>>
+			class form_descriptor_type = stl::strip_type<T>>
+		requires stl::is_any_same_v<
+			form_descriptor_type,
+			ConfigForm,
+			Game::FormID>
 		struct ConfigSound
 		{
 			using soundPair_t = std::pair<
@@ -158,10 +157,7 @@ namespace IED
 			bool enabled{ false };
 			bool npc{ false };
 
-			soundPair_t gen;
-			soundPair_t weapon;
-			soundPair_t armor;
-			soundPair_t arrow;
+			std::map<std::uint8_t, soundPair_t> data;
 		};
 
 		struct ConfigKeyPair

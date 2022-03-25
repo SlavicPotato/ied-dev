@@ -15,9 +15,9 @@ namespace IED
 		struct item_t
 		{
 			TESForm*                                 form;
-			std::uint32_t                            rating;
 			std::int64_t                             extra;
 			const Data::collectorData_t::itemData_t* item;
+			std::uint32_t                            rating;
 		};
 
 		using storage_type = std::vector<item_t>;
@@ -35,8 +35,8 @@ namespace IED
 			TESContainer&                          a_container,
 			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
 
-		SKMP_FORCEINLINE bool Accept(TESContainer::Entry* entry);
-		SKMP_FORCEINLINE bool Accept(InventoryEntryData* a_entryData);
+		SKMP_FORCEINLINE void Accept(TESContainer::Entry* entry);
+		SKMP_FORCEINLINE void Accept(InventoryEntryData* a_entryData);
 
 		void GenerateSlotCandidates(bool a_checkFav);
 

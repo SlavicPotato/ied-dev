@@ -123,7 +123,7 @@ namespace IED
 				continue;
 			}
 
-			auto object = ni_cast(e, NiAVObject);
+			auto object = NRTTI<NiAVObject>()(e);
 			if (!object)
 			{
 				continue;

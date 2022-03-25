@@ -1118,6 +1118,12 @@
     <ClInclude Include="IED\ConditionsCommon.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1761,6 +1767,9 @@
     </ClCompile>
     <ClCompile Include="IED\ConditionsCommon.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

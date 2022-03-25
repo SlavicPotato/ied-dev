@@ -15,6 +15,7 @@ namespace IED
 				"ied_pe_ff",
 				a_controller),
 			UIFormFilterWidget<FFPEFormFilterParams_t>(a_controller, m_formSelector),
+			UIFormTypeSelectorWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			m_formSelector(a_controller, FormInfoFlags::kNone, false),
 			m_controller(a_controller)

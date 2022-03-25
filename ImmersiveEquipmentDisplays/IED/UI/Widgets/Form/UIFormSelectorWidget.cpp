@@ -20,6 +20,7 @@ namespace IED
 			bool          a_enableFormBrowser,
 			bool          a_forceBase) :
 			UITipsInterface(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_requiredFlags(a_requiredFlags),
@@ -366,7 +367,7 @@ namespace IED
 
 				ImGui::Text("%s: %hhu", LS(CommonStrings::Type), info.type);
 
-				if (auto typeDesc = IFormCommon::GetFormTypeDesc(info.type))
+				if (auto typeDesc = form_type_to_desc(info.type))
 				{
 					ImGui::SameLine();
 					ImGui::Text("(%s)", typeDesc);

@@ -26,12 +26,12 @@ namespace IED
 	public:
 		FN_NAMEPROC("IObjectManager");
 
-		inline void SetPlaySound(bool a_switch) noexcept
+		inline constexpr void SetPlaySound(bool a_switch) noexcept
 		{
 			m_playSound = a_switch;
 		}
 
-		inline void SetPlaySoundNPC(bool a_switch) noexcept
+		inline constexpr void SetPlaySoundNPC(bool a_switch) noexcept
 		{
 			m_playSoundNPC = a_switch;
 		}

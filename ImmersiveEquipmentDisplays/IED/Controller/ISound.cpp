@@ -9,6 +9,11 @@ namespace IED
 		NiAVObject*  a_object,
 		bool         a_equip) const
 	{
+		if (!a_object)
+		{
+			return;
+		}
+
 		auto audioManager = BSAudioManager::GetSingleton();
 		if (!audioManager)
 		{
@@ -35,30 +40,29 @@ namespace IED
 	BGSSoundDescriptorForm*
 		ISound::SoundRefHolder::Get(
 			std::uint8_t a_formType,
-			bool         a_equip) const noexcept
+			bool         a_equip) const
 	{
-		auto& pair = get_pair(a_formType);
+		auto it = data.find(a_formType);
+		if (it == data.end())
+		{
+			it = data.find(TESForm::kTypeID);
+		}
 
-		return a_equip ?
-		           pair.equip :
-                   pair.unequip;
+		if (it != data.end())
+		{
+			return a_equip ?
+			           it->second.equip :
+                       it->second.unequip;
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
-	auto ISound::SoundRefHolder::get_pair(
-		std::uint8_t a_formType) const noexcept
-		-> const soundPair_t&
+	void ISound::ClearSounds()
 	{
-		switch (a_formType)
-		{
-		case TESObjectWEAP::kTypeID:
-			return weapon;
-		case TESAmmo::kTypeID:
-			return arrow;
-		case TESObjectARMO::kTypeID:
-			return armor;
-		default:
-			return gen;
-		}
+		m_sounds.data.clear();
 	}
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
@@ -119,7 +123,7 @@ namespace IED
 			a_in.first ?
 				GetSoundForm(*a_in.first) :
                 nullptr,
-			a_in.first ?
+			a_in.second ?
 				GetSoundForm(*a_in.second) :
                 nullptr
 		};

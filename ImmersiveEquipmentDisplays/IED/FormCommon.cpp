@@ -46,6 +46,40 @@ namespace IED
 		}
 	}
 
+	bool IFormCommon::IsValidCustomFormType(std::uint8_t a_type)
+	{
+		switch (a_type)
+		{
+		case TESObjectMISC::kTypeID:
+		case TESObjectSTAT::kTypeID:
+		case BGSMovableStatic::kTypeID:
+		case TESObjectTREE::kTypeID:
+		case TESGrass::kTypeID:
+		case TESObjectWEAP::kTypeID:
+		case TESObjectBOOK::kTypeID:
+		case TESObjectACTI::kTypeID:
+		case TESObjectANIO::kTypeID:
+		case TESObjectDOOR::kTypeID:
+		case BGSTalkingActivator::kTypeID:
+		case TESSoulGem::kTypeID:
+		case TESKey::kTypeID:
+		case TESAmmo::kTypeID:
+		case BGSArtObject::kTypeID:
+		case IngredientItem::kTypeID:
+		case AlchemyItem::kTypeID:
+		case ScrollItem::kTypeID:
+		case TESFlora::kTypeID:
+		case TESFurniture::kTypeID:
+		case BGSStaticCollection::kTypeID:
+		case BGSExplosion::kTypeID:
+		case TESObjectARMO::kTypeID:
+		case TESObjectLIGH::kTypeID:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	bool IFormCommon::IsInventoryForm(TESForm* a_form)
 	{
 		if (a_form->IsDeleted())
@@ -243,97 +277,6 @@ namespace IED
 	std::string IFormCommon::GetFormName(TESForm* a_form)
 	{
 		return LocaleData::ToUTF8(GetFormNamePtr(a_form));
-	}
-
-	const char* IFormCommon::GetFormTypeDesc(std::uint8_t a_type)
-	{
-		switch (a_type)
-		{
-		case TESObjectWEAP::kTypeID:
-			return "Weapon";
-		case TESObjectARMO::kTypeID:
-			return "Armor";
-		case TESNPC::kTypeID:
-			return "NPC";
-		case TESSoulGem::kTypeID:
-			return "Soul Gem";
-		case TESKey::kTypeID:
-			return "Key";
-		case TESObjectMISC::kTypeID:
-			return "Misc";
-		case TESObjectLIGH::kTypeID:
-			return "Light";
-		case TESObjectBOOK::kTypeID:
-			return "Book";
-		case AlchemyItem::kTypeID:
-			return "Potion/Food";
-		case IngredientItem::kTypeID:
-			return "Ingredient";
-		case ScrollItem::kTypeID:
-			return "Scroll";
-		case TESObjectSTAT::kTypeID:
-			return "Static";
-		case BGSMovableStatic::kTypeID:
-			return "Movable Static";
-		case TESObjectTREE::kTypeID:
-			return "Tree";
-		case TESGrass::kTypeID:
-			return "Grass";
-		case BGSHeadPart::kTypeID:
-			return "Head Part";
-		case TESAmmo::kTypeID:
-			return "Ammo";
-		case BGSKeyword::kTypeID:
-			return "Keyword";
-		case TESFlora::kTypeID:
-			return "Flora";
-		case TESFurniture::kTypeID:
-			return "Furniture";
-		case TESObjectACTI::kTypeID:
-			return "Activator";
-		case BGSTalkingActivator::kTypeID:
-			return "Talking Activator";
-		case TESObjectREFR::kTypeID:
-			return "Reference";
-		case Actor::kTypeID:
-			return "Actor";
-		case TESQuest::kTypeID:
-			return "Quest";
-		case SpellItem::kTypeID:
-			return "Spell";
-		case TESRace::kTypeID:
-			return "Race";
-		case BGSArtObject::kTypeID:
-			return "Art Object";
-		case BGSSoundDescriptorForm::kTypeID:
-			return "Sound Descriptor";
-		case TESObjectANIO::kTypeID:
-			return "Anim Object";
-		case TESObjectDOOR::kTypeID:
-			return "Door";
-		case BGSExplosion::kTypeID:
-			return "Explosion";
-		case BGSLocation::kTypeID:
-			return "Location";
-		case TESWorldSpace::kTypeID:
-			return "Worldspace";
-		case TESPackage::kTypeID:
-			return "Package";
-		case TESShout::kTypeID:
-			return "Shout";
-		case TESFaction::kTypeID:
-			return "Faction";
-		case TESCombatStyle::kTypeID:
-			return "Combat Style";
-		case TESClass::kTypeID:
-			return "Class";
-		case TESWeather::kTypeID:
-			return "Weather";
-		case TESGlobal::kTypeID:
-			return "Global";
-		default:
-			return nullptr;
-		}
 	}
 
 	template <class T>

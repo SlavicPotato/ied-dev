@@ -15,6 +15,7 @@ namespace IED
 	{
 		UIFormInfoTooltipWidget::UIFormInfoTooltipWidget(
 			Localization::ILocalization& a_localization) :
+			UIFormTypeSelectorWidget(a_localization),
 			UILocalizationInterface(a_localization)
 		{
 		}
@@ -34,7 +35,7 @@ namespace IED
 
 				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
 
-				if (auto typeDesc = IFormCommon::GetFormTypeDesc(a_info->form.type))
+				if (auto typeDesc = form_type_to_desc(a_info->form.type))
 				{
 					ImGui::SameLine();
 					ImGui::TextUnformatted(typeDesc);

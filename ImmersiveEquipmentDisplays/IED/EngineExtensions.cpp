@@ -934,13 +934,13 @@ namespace IED
 
 	void EngineExtensions::CleanupObject(
 		Game::ObjectRefHandle a_handle,
-		NiNode*               a_object,
+		NiAVObject*           a_object,
 		NiNode*               a_root)
 	{
 		if (!SceneRendering() &&
 		    ITaskPool::IsRunningOnCurrentThread())
 		{
-			CleanupNodeImpl(a_handle, a_object);
+			CleanupObjectImpl(a_handle, a_object);
 		}
 		else
 		{
@@ -952,7 +952,7 @@ namespace IED
 			public:
 				NodeCleanupTask(
 					Game::ObjectRefHandle a_handle,
-					NiNode*               a_object,
+					NiAVObject*           a_object,
 					NiNode*               a_root) :
 					m_handle(a_handle),
 					m_object(a_object),
@@ -962,7 +962,7 @@ namespace IED
 
 				virtual void Run() override
 				{
-					CleanupNodeImpl(m_handle, m_object);
+					CleanupObjectImpl(m_handle, m_object);
 
 					m_object.reset();
 					m_root.reset();
@@ -975,7 +975,7 @@ namespace IED
 
 			private:
 				Game::ObjectRefHandle m_handle;
-				NiPointer<NiNode>     m_object;
+				NiPointer<NiAVObject> m_object;
 				NiPointer<NiNode>     m_root;
 			};
 
@@ -992,7 +992,7 @@ namespace IED
 
 		if (auto r = a_object->GetExtraData(sh->m_bsx))
 		{
-			if (INiRTTI::IsType(r->GetRTTI(), TNiRTTI::BSXFlags))
+			if (NRTTI<BSXFlags>::IsType(r))
 			{
 				return static_cast<BSXFlags*>(r);
 			}

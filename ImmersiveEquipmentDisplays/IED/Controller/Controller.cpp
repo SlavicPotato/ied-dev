@@ -61,18 +61,23 @@ namespace IED
 		}
 	}
 
+	void Controller::SinkSerializationEvents()
+	{
+		auto& seh = SKSESerializationEventHandler::GetSingleton();
+
+		seh.AddSink(this);
+		ASSERT(seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this));
+	}
+
 	void Controller::SinkEventsT0()
 	{
-		if (m_esif.test(EventSinkInstallationFlags::kT0))
-		{
-			return;
-		}
+		IScopedLock lock(m_lock);
 
 		SKSEMessagingHandler::GetSingleton().AddSink(this);
 		ITaskPool::AddTaskFixed(this);
-		SinkInputEvents();
 
-		m_esif.set(EventSinkInstallationFlags::kT0);
+		SinkInputEvents();
+		SinkSerializationEvents();
 	}
 
 	bool Controller::SinkEventsT1()
@@ -128,8 +133,6 @@ namespace IED
 
 	void Controller::InitializeData()
 	{
-		IScopedLock lock(m_lock);
-
 		m_config.settings.SetPath(PATHS::SETTINGS);
 
 		if (!m_config.settings.Load())
@@ -197,6 +200,8 @@ namespace IED
 			InitializeUI();
 		}
 
+		m_safeToOpenUI = true;
+
 		m_iniconf.reset();
 	}
 
@@ -227,10 +232,11 @@ namespace IED
 	{
 		auto& settings = m_config.settings.data.sound;
 
-		UpdateSoundPairFromINI(m_iniconf->m_sound.arrow, settings.arrow);
-		UpdateSoundPairFromINI(m_iniconf->m_sound.armor, settings.armor);
-		UpdateSoundPairFromINI(m_iniconf->m_sound.weapon, settings.weapon);
-		UpdateSoundPairFromINI(m_iniconf->m_sound.gen, settings.gen);
+		for (auto& e : m_iniconf->m_sound.data)
+		{
+			auto r = settings.data.try_emplace(e.first);
+			UpdateSoundPairFromINI(e.second, r.first->second);
+		}
 
 		UpdateSoundForms();
 
@@ -240,20 +246,21 @@ namespace IED
 
 	void Controller::UpdateSoundForms()
 	{
-		auto& settings = m_config.settings.data.sound;
+		const auto& settings = m_config.settings.data.sound;
 
-		SetSounds(
-			MakeSoundPair(settings.arrow),
-			MakeSoundPair(settings.armor),
-			MakeSoundPair(settings.weapon),
-			MakeSoundPair(settings.gen));
+		ClearSounds();
+
+		for (auto& e : settings.data)
+		{
+			AddSound(e.first, MakeSoundPair(e.second));
+		}
 	}
 
 	void Controller::InitializeInputHandlers()
 	{
 		m_inputHandlers.playerBlock.SetLambda([this] {
 			ITaskPool::AddTask(
-				[this]() {
+				[this] {
 					TogglePlayerBlock();
 				});
 		});
@@ -422,20 +429,21 @@ namespace IED
 
 	void Controller::InitializeBSFixedStringTable()
 	{
+		ASSERT(StringCache::IsInitialized());
+
+		IScopedLock lock(m_lock);
+
 		m_bsstrings = std::make_unique<BSStringHolder>();
 	}
 
 	void Controller::OnDataLoaded()
 	{
+		IScopedLock lock(m_lock);
+
 		InitializeData();
 
 		ASSERT(SinkEventsT1());
 		ASSERT(SinkEventsT2());
-
-		auto& seh = SKSESerializationEventHandler::GetSingleton();
-
-		seh.AddSink(this);
-		ASSERT(seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this));
 	}
 
 	void Controller::Evaluate(
@@ -5322,6 +5330,8 @@ namespace IED
 
 	void Controller::ClearStoredHandles()
 	{
+		IScopedLock lock(m_lock);
+
 		m_activeHandles.clear();
 	}
 

@@ -12,6 +12,7 @@
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
 #include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
@@ -90,7 +91,8 @@ namespace IED
 			public UIEditorInterface,
 			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
-			public virtual UISettingsInterface
+			public virtual UISettingsInterface,
+			public virtual UIFormTypeSelectorWidget
 		{
 		public:
 			UISlotEditorWidget(
@@ -1045,7 +1047,7 @@ namespace IED
 		{
 			if (auto formInfo = LookupForm(a_form))
 			{
-				if (auto typeDesc = IFormCommon::GetFormTypeDesc(formInfo->form.type))
+				if (auto typeDesc = form_type_to_desc(formInfo->form.type))
 				{
 					ImGui::Text(
 						"[%s] %s",

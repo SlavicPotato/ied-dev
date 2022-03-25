@@ -7,7 +7,7 @@ namespace IED
 {
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
 		bool Parser<Data::ConfigSound<Game::FormID>>::Parse(
@@ -22,24 +22,57 @@ namespace IED
 
 			if (auto& forms = data["forms"])
 			{
-				if (!pparser.Parse(forms["armor"], a_out.armor))
+				if (version > 1)
 				{
-					return false;
-				}
+					for (auto it = forms.begin(); it != forms.end(); ++it)
+					{
+						auto key = it.key().asString();
 
-				if (!pparser.Parse(forms["arrow"], a_out.arrow))
-				{
-					return false;
-				}
+						char* end = nullptr;
 
-				if (!pparser.Parse(forms["weapon"], a_out.weapon))
-				{
-					return false;
-				}
+						auto formType = std::strtoul(key.c_str(), &end, 0);
 
-				if (!pparser.Parse(forms["generic"], a_out.gen))
+						if (!(end > key.c_str()))
+						{
+							Error("%s: bad key: %s", __FUNCTION__, key.c_str());
+							SetHasErrors();
+							continue;
+						}
+
+						if (formType > std::numeric_limits<std::uint8_t>::max())
+						{
+							Error("%s: [%s] form type out of range: %lu", __FUNCTION__, key.c_str(), formType);
+							SetHasErrors();
+							continue;
+						}
+
+						if (!pparser.Parse(*it, a_out.data.try_emplace(static_cast<std::uint8_t>(formType)).first->second))
+						{
+							return false;
+						}
+					}
+				}
+				else
 				{
-					return false;
+					if (!pparser.Parse(forms["armor"], a_out.data.try_emplace(TESObjectARMO::kTypeID).first->second))
+					{
+						return false;
+					}
+
+					if (!pparser.Parse(forms["arrow"], a_out.data.try_emplace(TESAmmo::kTypeID).first->second))
+					{
+						return false;
+					}
+
+					if (!pparser.Parse(forms["weapon"], a_out.data.try_emplace(TESObjectWEAP::kTypeID).first->second))
+					{
+						return false;
+					}
+
+					if (!pparser.Parse(forms["generic"], a_out.data.try_emplace(TESForm::kTypeID).first->second))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -59,10 +92,10 @@ namespace IED
 
 			Parser<Data::ConfigSound<Game::FormID>::soundPair_t> pparser(m_state);
 
-			pparser.Create(a_data.armor, forms["armor"]);
-			pparser.Create(a_data.arrow, forms["arrow"]);
-			pparser.Create(a_data.weapon, forms["weapon"]);
-			pparser.Create(a_data.gen, forms["generic"]);
+			for (auto& e : a_data.data)
+			{
+				pparser.Create(e.second, forms[std::to_string(e.first)]);
+			}
 
 			data["enable"] = a_data.enabled;
 			data["npc"]    = a_data.npc;

@@ -2,6 +2,7 @@
 
 #include "IED/ConfigCommon.h"
 
+#include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "UIFormSelectorWidget.h"
 
@@ -30,6 +31,7 @@ namespace IED
 		template <class T>
 		class UIFormFilterWidget :
 			UIFormLookupInterface,
+			public virtual UIFormTypeSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			using callback_func_t = std::function<void(T&)>;
@@ -59,7 +61,7 @@ namespace IED
 				T&                            a_params,
 				Data::configFormFilterBase_t& a_data);
 
-			inline void SetOnChangeFunc(callback_func_t a_func)
+			inline constexpr void SetOnChangeFunc(callback_func_t a_func)
 			{
 				m_onChangeFunc = std::move(a_func);
 			}
@@ -93,6 +95,7 @@ namespace IED
 			Controller&           a_controller,
 			UIFormSelectorWidget& a_formSelector) :
 			UIFormLookupInterface(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			m_formSelector(a_formSelector)
 		{
@@ -498,7 +501,7 @@ namespace IED
 
 						if (auto formInfo = LookupForm(form))
 						{
-							if (auto typeDesc = IFormCommon::GetFormTypeDesc(formInfo->form.type))
+							if (auto typeDesc = form_type_to_desc(formInfo->form.type))
 							{
 								ImGui::Text(
 									"[%s] %s",

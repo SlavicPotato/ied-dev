@@ -54,6 +54,7 @@ namespace IED
 			UIFormPickerWidget(a_controller, FormInfoFlags::kNone, true),
 			UIFormLookupInterface(a_controller),
 			UIStylePresetSelectorWidget(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
 			m_controller(a_controller)
 		{
 			SetAllowedTypes({ BGSSoundDescriptorForm::kTypeID });
@@ -441,18 +442,73 @@ namespace IED
 			}
 		}
 
+		auto UISettings::DrawSoundContextMenu(
+			Data::ConfigSound<Game::FormID>& a_data)
+			-> ContextMenuAction
+		{
+			ContextMenuAction result{ ContextMenuAction ::None };
+
+			ImGui::PushID("context_area");
+
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
+			{
+				m_tmpFormType = 0xFF;
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::BeginMenu(
+						LS(CommonStrings::Add, "1"),
+						a_data.enabled))
+				{
+					if (DrawFormTypeSelector(
+							m_tmpFormType,
+							[](std::uint8_t a_formType) {
+								return IFormCommon::IsValidCustomFormType(a_formType);
+							}))
+					{
+						a_data.data.try_emplace(m_tmpFormType);
+
+						result = ContextMenuAction::Add;
+
+						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
 		void UISettings::DrawSoundSection()
 		{
+			auto& settings = m_controller.GetConfigStore().settings;
+
+			ImGui::PushID("sound_sect");
+
+			const auto result = DrawSoundContextMenu(settings.data.sound);
+
+			if (result == ContextMenuAction::Add)
+			{
+				settings.mark_dirty();
+				ImGui::SetNextItemOpen(true);
+			}
+
 			if (CollapsingHeader(
-					"tree_snd",
+					"tree",
 					false,
 					"%s",
 					LS(CommonStrings::Sound)))
 			{
 				ImGui::Spacing();
 				ImGui::Indent();
-
-				auto& settings = m_controller.GetConfigStore().settings;
 
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::EnableEquipSounds, "1"),
@@ -478,6 +534,7 @@ namespace IED
 
 					if (DrawSoundPairs())
 					{
+						settings.mark_dirty();
 						m_controller.QueueUpdateSoundForms();
 					}
 				}
@@ -485,6 +542,8 @@ namespace IED
 				ImGui::Unindent();
 				ImGui::Spacing();
 			}
+
+			ImGui::PopID();
 		}
 
 		void UISettings::DrawLogLevelSelector()
@@ -824,27 +883,59 @@ namespace IED
 
 			bool result = false;
 
+			auto& data = settings.data.sound.data;
+
 			ImGui::PushID("snd_pairs");
 
-			result |= settings.mark_if(DrawSoundPair(
-				"1",
-				stl::underlying(CommonStrings::Weapon),
-				settings.data.sound.weapon));
+			for (auto it = data.begin(); it != data.end();)
+			{
+				ImGui::PushID(it->first);
 
-			result |= settings.mark_if(DrawSoundPair(
-				"3",
-				stl::underlying(CommonStrings::Armor),
-				settings.data.sound.armor));
+				const auto r = DrawSoundPairContextMenu();
 
-			result |= settings.mark_if(DrawSoundPair(
-				"2",
-				stl::underlying(CommonStrings::Arrow),
-				settings.data.sound.arrow));
+				if (r == ContextMenuAction::Delete)
+				{
+					it     = data.erase(it);
+					result = true;
+				}
+				else
+				{
+					result |= DrawSoundPair(it->first, it->second);
+					++it;
+				}
 
-			result |= settings.mark_if(DrawSoundPair(
-				"4",
-				stl::underlying(CommonStrings::Generic),
-				settings.data.sound.gen));
+				ImGui::PopID();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		auto UISettings::DrawSoundPairContextMenu()
+			-> ContextMenuAction
+		{
+			ContextMenuAction result{ ContextMenuAction ::None };
+
+			ImGui::PushID("context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (LCG_MI(CommonStrings::Delete, "1"))
+				{
+					result = ContextMenuAction::Delete;
+				}
+
+				ImGui::EndPopup();
+			}
 
 			ImGui::PopID();
 
@@ -852,17 +943,33 @@ namespace IED
 		}
 
 		bool UISettings::DrawSoundPair(
-			const char*                                   a_strid,
-			Localization::StringID                        a_label,
+			std::uint8_t                                  a_formType,
 			Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair)
 		{
 			bool result = false;
 
-			if (TreeEx(
-					a_strid,
-					true,
+			bool r;
+
+			if (auto desc = form_type_to_desc(a_formType))
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(a_label)))
+					desc);
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%hhu",
+					a_formType);
+			}
+
+			if (r)
 			{
 				ImGui::Indent();
 				ImGui::Spacing();
@@ -873,7 +980,7 @@ namespace IED
 						*a_soundPair.first))
 				{
 					result = true;
-					a_soundPair.first.mark(true);
+					a_soundPair.first.mark(*a_soundPair.first != 0);
 				}
 
 				if (DrawFormPicker(
@@ -882,7 +989,7 @@ namespace IED
 						*a_soundPair.second))
 				{
 					result = true;
-					a_soundPair.second.mark(true);
+					a_soundPair.second.mark(*a_soundPair.second != 0);
 				}
 
 				ImGui::Spacing();

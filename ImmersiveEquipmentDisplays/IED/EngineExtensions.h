@@ -121,7 +121,7 @@ namespace IED
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
 
-		static void CleanupObject(Game::ObjectRefHandle a_handle, NiNode* a_object, NiNode* a_root);
+		static void CleanupObject(Game::ObjectRefHandle a_handle, NiAVObject* a_object, NiNode* a_root);
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
@@ -131,7 +131,7 @@ namespace IED
 		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0       = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto SceneRendering   = IAL::Address<unk63F810_t>(38079, 39033);
-		inline static const auto CleanupNodeImpl  = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
+		inline static const auto CleanupObjectImpl  = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		//inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance
