@@ -735,6 +735,17 @@ namespace IED
 						bsxFlags = newbsx;
 					}
 				}
+
+				/*if (auto callback = *removeHavokFuncPtr)
+				{
+					removeHavokData_t data{
+						0,
+						true,
+						1
+					};
+
+					RecursiveProcessHavok(a_object, std::addressof(data), callback);
+				}*/
 			}
 
 			if (flags.test(BSXFlags::Flag::kAddon))
@@ -981,12 +992,13 @@ namespace IED
 
 		if (auto r = a_object->GetExtraData(sh->m_bsx))
 		{
-			return RTTI<BSXFlags>()(r);
+			if (INiRTTI::IsType(r->GetRTTI(), TNiRTTI::BSXFlags))
+			{
+				return static_cast<BSXFlags*>(r);
+			}
 		}
-		else
-		{
-			return nullptr;
-		}
+
+		return nullptr;
 	}
 
 }

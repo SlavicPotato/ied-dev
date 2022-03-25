@@ -64,7 +64,7 @@ namespace IED
 
 				auto mslen = d - std::min(std::strlen(a_im_id), d);
 
-				std::size_t i = 0;
+				std::uint32_t i = 0;
 
 				for (; i < mslen; i++)
 				{
@@ -93,6 +93,8 @@ namespace IED
 						break;
 					}
 				}
+
+				assert(i < sizeof(buffer));
 
 				buffer[i] = 0;
 

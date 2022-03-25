@@ -105,7 +105,9 @@ namespace IED
 				return form;
 			}
 
-			template <class T, class form_type = stl::strip_type<T>>
+			template <
+				class T,
+				class form_type = stl::strip_type<T>>
 			inline form_type* get_form() const noexcept
 			{
 				if (auto f = get_form())
@@ -185,7 +187,7 @@ namespace IED
 
 		enum class ComparisonOperator : std::uint32_t
 		{
-			kEqual          = 0,
+			kEqual          = static_cast<std::underlying_type_t<ExtraConditionType>>(-1),
 			kNotEqual       = 1,
 			kGreater        = 2,
 			kLower          = 3,
@@ -194,6 +196,12 @@ namespace IED
 		};
 
 		template <class T>
+		concept AcceptDataClear = requires(T a_data)
+		{
+			a_data.clear();
+		};
+
+		template <AcceptDataClear T>
 		class configSexRoot_t
 		{
 			friend class boost::serialization::access;
@@ -208,22 +216,22 @@ namespace IED
 
 			[[nodiscard]] inline constexpr auto& operator()() noexcept
 			{
-				return m_configs;
+				return data;
 			}
 
 			[[nodiscard]] inline constexpr auto& operator()() const noexcept
 			{
-				return m_configs;
+				return data;
 			}
 
 			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) noexcept
 			{
-				return m_configs[stl::underlying(a_sex)];
+				return data[stl::underlying(a_sex)];
 			}
 
 			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) const noexcept
 			{
-				return m_configs[stl::underlying(a_sex)];
+				return data[stl::underlying(a_sex)];
 			}
 
 			[[nodiscard]] inline constexpr auto& operator()(ConfigSex a_sex) noexcept
@@ -236,9 +244,9 @@ namespace IED
 				return get(a_sex);
 			}
 
-			void clear()
+			constexpr void clear()
 			{
-				for (auto& e : m_configs)
+				for (auto& e : data)
 				{
 					e.clear();
 				}
@@ -247,7 +255,7 @@ namespace IED
 			template <class Tf>
 			constexpr void visit(Tf a_func)
 			{
-				for (auto& e : m_configs)
+				for (auto& e : data)
 				{
 					a_func(e);
 				}
@@ -256,7 +264,7 @@ namespace IED
 			template <class Tf>
 			constexpr void visit(Tf a_func) const
 			{
-				for (auto& e : m_configs)
+				for (auto& e : data)
 				{
 					a_func(e);
 				}
@@ -277,12 +285,12 @@ namespace IED
 			}
 
 		private:
-			T m_configs[2];
+			T data[2];
 
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				for (auto& e : m_configs)
+				for (auto& e : data)
 				{
 					a_ar& e;
 				}
@@ -292,7 +300,7 @@ namespace IED
 		template <class T>
 		using configFormMap_t = std::unordered_map<configForm_t, T>;
 
-		template <class T>
+		template <AcceptDataClear T>
 		class configStoreBase_t
 		{
 			friend class boost::serialization::access;
@@ -375,7 +383,7 @@ namespace IED
 				return data;
 			}
 
-			void clear()
+			constexpr void clear()
 			{
 				for (auto& e : data)
 				{
@@ -444,7 +452,7 @@ namespace IED
 			configFormSet_t                allow;
 			configFormSet_t                deny;
 
-			inline bool test(
+			inline constexpr bool test(
 				Game::FormID a_form) const
 			{
 				if (allow.contains(a_form))
@@ -512,18 +520,32 @@ namespace IED
 	}
 
 	template <class T>
+	concept AcceptHolderCacheData = requires(T a_data)
+	{
+		{
+			std::addressof(a_data.find(typename T::key_type())->second)
+			} -> std::convertible_to<const typename T::mapped_type*>;
+	};
+
+	template <class T>
 	struct configHolderCache_t
 	{
 	public:
 		using mapped_type = typename T::mapped_type;
+		using key_type    = typename T::key_type;
+
+		static_assert(
+			std::is_convertible_v<Game::FormID, typename T::key_type> &&
+				std::is_convertible_v<typename T::key_type, Game::FormID>,
+			"FormID <-> key_type must be convertible");
 
 		const mapped_type* get_actor(
-			Game::FormID a_actor,
-			const T&     a_data) const
+			const key_type& a_key,
+			const T&        a_data) const
 		{
 			if (!actor)
 			{
-				auto it = a_data.find(a_actor);
+				auto it = a_data.find(a_key);
 
 				actor = it != a_data.end() ?
 				            std::addressof(it->second) :
@@ -534,12 +556,12 @@ namespace IED
 		}
 
 		const mapped_type* get_npc(
-			Game::FormID a_npc,
-			const T&     a_data) const
+			const key_type& a_key,
+			const T&        a_data) const
 		{
 			if (!npc)
 			{
-				auto it = a_data.find(a_npc);
+				auto it = a_data.find(a_key);
 
 				npc = it != a_data.end() ?
 				          std::addressof(it->second) :
@@ -550,12 +572,12 @@ namespace IED
 		}
 
 		const mapped_type* get_race(
-			Game::FormID a_race,
-			const T&     a_data) const
+			const key_type& a_key,
+			const T&        a_data) const
 		{
 			if (!race)
 			{
-				auto it = a_data.find(a_race);
+				auto it = a_data.find(a_key);
 
 				race = it != a_data.end() ?
 				           std::addressof(it->second) :
@@ -565,7 +587,7 @@ namespace IED
 			return *race;
 		}
 
-		template <class Td>
+		template <AcceptHolderCacheData Td>
 		SKMP_FORCEINLINE static constexpr const typename Td::mapped_type* get_entry(
 			const Td&                    a_data,
 			const typename Td::key_type& a_key)
@@ -591,7 +613,18 @@ namespace IED
 
 }
 
-STD_SPECIALIZE_HASH(::IED::Data::configForm_t);
+namespace std
+{
+	template <>
+	struct hash<::IED::Data::configForm_t>
+	{
+		inline constexpr std::size_t operator()(
+			::IED::Data::configForm_t const& a_in) const noexcept
+		{
+			return hash<Game::FormID>()(a_in);
+		}
+	};
+}
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configCachedForm_t,

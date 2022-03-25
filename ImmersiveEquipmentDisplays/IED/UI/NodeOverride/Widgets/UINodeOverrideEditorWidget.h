@@ -458,8 +458,7 @@ namespace IED
 
 				if (ImGui::BeginChild(
 						"ep_editor_panel",
-						{ -1.0f, 0.0f },
-						false))
+						{ -1.0f, 0.0f }))
 				{
 					ImGui::PushItemWidth(ImGui::GetFontSize() * -11.f);
 
@@ -1853,7 +1852,7 @@ namespace IED
 
 			ImGui::PushID("override_list");
 
-			std::size_t i = 0;
+			int i = 0;
 
 			auto it = a_entry.begin();
 
@@ -1861,7 +1860,12 @@ namespace IED
 			{
 				ImGui::PushID(i);
 
-				const auto result = DrawOverridePlacementOverrideContextMenu(a_handle, a_data, *it, a_params, a_exists);
+				const auto result = DrawOverridePlacementOverrideContextMenu(
+					a_handle,
+					a_data,
+					*it,
+					a_params,
+					a_exists);
 
 				switch (result.action)
 				{

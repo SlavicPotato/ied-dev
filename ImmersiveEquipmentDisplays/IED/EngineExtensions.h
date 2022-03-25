@@ -32,6 +32,13 @@ namespace IED
 			std::uint16_t p2;
 		};
 
+		struct removeHavokData_t
+		{
+			std::uint64_t p1;
+			bool          p2;
+			std::uint32_t p3;
+		};
+
 		class ShadowSceneNode;
 
 		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object);
@@ -79,6 +86,8 @@ namespace IED
 		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor* a_actor, NiAVObject* a_object);
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
+
+		typedef void (*removeHavokArgs_t)(NiAVObject* a_object, void* a_data, void* a_callback);
 
 		// typedef void (*playSound_t)(const char* a_editorID);
 
@@ -140,6 +149,7 @@ namespace IED
 			const std::shared_ptr<ConfigINI>& a_config);
 
 		inline static const auto m_shadowSceneNode = IAL::Address<ShadowSceneNode**>(513211, 390951);
+		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 
 		inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
 		inline static const auto SetRootOnShaderProperties = IAL::Address<unk1291cc0_t>(98895, 105542);
@@ -154,6 +164,7 @@ namespace IED
 		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
+		//inline static const auto RecursiveProcessHavok      = IAL::Address<removeHavokArgs_t>(76050, 77883);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);

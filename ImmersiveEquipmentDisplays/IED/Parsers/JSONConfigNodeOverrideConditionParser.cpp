@@ -77,9 +77,9 @@ namespace IED
 			fparser.Create(a_data.form, a_out["form"]);
 			fparser.Create(a_data.keyword, a_out["kw"]);
 
-			a_out["bip"]  = a_data.ui32a;
-			a_out["type"] = stl::underlying(a_data.typeSlot);
-			a_out["f32a"] = a_data.f32a;
+			a_out["bip"]   = a_data.ui32a;
+			a_out["type"]  = stl::underlying(a_data.typeSlot);
+			a_out["f32a"]  = a_data.f32a;
 			a_out["ui32b"] = a_data.ui32b;
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);

@@ -54,6 +54,7 @@ namespace IED
 
 					ImGui::CloseCurrentPopup();
 				}
+
 				ImGui::EndPopup();
 			}
 

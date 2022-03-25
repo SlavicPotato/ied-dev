@@ -1269,7 +1269,8 @@ namespace IED
 			return nullptr;
 		}
 
-		bool configBaseFiltersHolder_t::run_filters(const processParams_t& a_params) const
+		bool configBaseFiltersHolder_t::run_filters(
+			const processParams_t& a_params) const
 		{
 			if (filters)
 			{

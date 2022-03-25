@@ -136,8 +136,6 @@ namespace IED
 				switch (a_type)
 				{
 				case EquipmentOverrideConditionType::Global:
-					compOperator = ComparisonOperator::kEqual;
-				// fallthrough
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
@@ -145,7 +143,6 @@ namespace IED
 					break;
 				case EquipmentOverrideConditionType::Form:
 					form         = a_form;
-					compOperator = ComparisonOperator::kEqual;
 					count        = 1;
 					flags        = DEFAULT_MATCH_CATEGORY_FLAGS;
 					break;

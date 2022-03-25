@@ -59,7 +59,7 @@ namespace IED
 
 				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
 
-				if (ImGui::BeginChild("combo", { -1.0f, 250.0f }, false))
+				if (ImGui::BeginChild("combo", { -1.0f, 250.0f }))
 				{
 					for (auto& e : data.getvec())
 					{

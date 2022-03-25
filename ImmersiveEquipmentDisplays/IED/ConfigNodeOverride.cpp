@@ -117,33 +117,33 @@ namespace IED
 			const stl::fixed_string& a_node,
 			holderCache_t&           a_hc) const
 		{
-			if (auto& actorData = GetActorData(); !actorData.empty())
+			if (auto& c = GetActorData(); !c.empty())
 			{
-				if (auto d = a_hc.get_actor(a_actor, actorData))
+				if (auto d = a_hc.get_actor(a_actor, c))
 				{
-					if (auto r = get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->data, a_node))
 					{
 						return r;
 					}
 				}
 			}
 
-			if (auto& npcData = GetNPCData(); !npcData.empty())
+			if (auto& c = GetNPCData(); !c.empty())
 			{
-				if (auto d = a_hc.get_npc(a_npc, npcData))
+				if (auto d = a_hc.get_npc(a_npc, c))
 				{
-					if (auto r = get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->data, a_node))
 					{
 						return r;
 					}
 				}
 			}
 
-			if (auto& raceData = GetRaceData(); !raceData.empty())
+			if (auto& c = GetRaceData(); !c.empty())
 			{
-				if (auto d = a_hc.get_race(a_race, raceData))
+				if (auto d = a_hc.get_race(a_race, c))
 				{
-					if (auto r = get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->data, a_node))
 					{
 						return r;
 					}
@@ -155,7 +155,7 @@ namespace IED
 					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return a_hc.get_entry(GetGlobalData(type).data, a_node);
+			return holderCache_t::get_entry(GetGlobalData(type).data, a_node);
 		}
 
 		const configNodeOverrideEntryPlacement_t* configStoreNodeOverride_t::GetActorPlacement(
@@ -169,7 +169,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_actor(a_actor, c))
 				{
-					if (auto r = a_hc.get_entry(d->placementData, a_node))
+					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
 					{
 						return r;
 					}
@@ -180,7 +180,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_npc(a_npc, c))
 				{
-					if (auto r = a_hc.get_entry(d->placementData, a_node))
+					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
 					{
 						return r;
 					}
@@ -191,7 +191,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_race(a_race, c))
 				{
-					if (auto r = a_hc.get_entry(d->placementData, a_node))
+					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
 					{
 						return r;
 					}
@@ -203,7 +203,7 @@ namespace IED
 					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return a_hc.get_entry(GetGlobalData(type).placementData, a_node);
+			return holderCache_t::get_entry(GetGlobalData(type).placementData, a_node);
 		}
 
 		configNodeOverrideHolder_t::configNodeOverrideHolder_t(

@@ -35,6 +35,12 @@ namespace IED
 			stl::flag<NodeOverrideValuesFlags> flags{ DEFAULT_FLAGS };
 			configTransform_t                  transform;
 
+			void clear()
+			{
+				flags = DEFAULT_FLAGS;
+				transform.clear();
+			}
+
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
@@ -168,8 +174,6 @@ namespace IED
 				switch (a_type)
 				{
 				case NodeOverrideConditionType::Global:
-					compOperator = ComparisonOperator::kEqual;
-				// fallthrough
 				case NodeOverrideConditionType::Race:
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
@@ -438,6 +442,14 @@ namespace IED
 			configNodeOverrideOffsetList_t    offsets;
 			configNodeOverrideConditionList_t visibilityConditionList;
 
+			void clear()
+			{
+				configNodeOverrideValues_t::clear();
+				overrideFlags = NodeOverrideFlags::kNone;
+				offsets.clear();
+				visibilityConditionList.clear();
+			}
+
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
@@ -469,6 +481,12 @@ namespace IED
 			stl::flag<NodeOverridePlacementValuesFlags> flags{ NodeOverridePlacementValuesFlags::kNone };
 			stl::fixed_string                           targetNode;
 
+			constexpr void clear()
+			{
+				flags = NodeOverridePlacementValuesFlags::kNone;
+				targetNode.clear();
+			}
+
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
@@ -495,6 +513,13 @@ namespace IED
 			{
 				DataVersion1 = 1
 			};
+
+			constexpr void clear()
+			{
+				configNodeOverridePlacementValues_t::clear();
+				overrideFlags = NodeOverridePlacementOverrideFlags::kNone;
+				description.clear();
+			}
 
 			stl::flag<NodeOverridePlacementOverrideFlags> overrideFlags{ NodeOverridePlacementOverrideFlags::kNone };
 			configNodeOverrideConditionList_t             conditions;
@@ -530,6 +555,13 @@ namespace IED
 			{
 				DataVersion1 = 1
 			};
+
+			void clear()
+			{
+				configNodeOverridePlacementValues_t::clear();
+				pflags = NodeOverridePlacementFlags::kNone;
+				overrides.clear();
+			}
 
 			stl::flag<NodeOverridePlacementFlags>     pflags{ NodeOverridePlacementFlags::kNone };
 			configNodeOverridePlacementOverrideList_t overrides;
@@ -784,25 +816,6 @@ namespace IED
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
 				holderCache_t&           a_hc) const;
-
-		private:
-			template <class Td>
-			SKMP_FORCEINLINE static const typename Td::mapped_type* get_entry(
-				const Td&                    a_data,
-				const typename Td::key_type& a_key)
-			{
-				if (a_data.empty())
-				{
-					return nullptr;
-				}
-				else
-				{
-					auto it = a_data.find(a_key);
-					return it != a_data.end() ?
-					           std::addressof(it->second) :
-                               nullptr;
-				}
-			}
 		};
 	}
 }
