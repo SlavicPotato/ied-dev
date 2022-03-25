@@ -142,9 +142,9 @@ namespace IED
 					form = a_form;
 					break;
 				case EquipmentOverrideConditionType::Form:
-					form         = a_form;
-					count        = 1;
-					flags        = DEFAULT_MATCH_CATEGORY_FLAGS;
+					form  = a_form;
+					count = 1;
+					flags = DEFAULT_MATCH_CATEGORY_FLAGS;
 					break;
 				case EquipmentOverrideConditionType::Quest:
 					keyword       = a_form;

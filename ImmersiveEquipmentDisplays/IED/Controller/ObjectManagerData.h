@@ -420,7 +420,7 @@ namespace IED
 		{
 			return m_entriesCustom[stl::underlying(a_class)];
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetCustom() const noexcept
 		{
 			return m_entriesCustom;
@@ -539,7 +539,7 @@ namespace IED
 				}
 			}
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
 		{
 			return m_formid;

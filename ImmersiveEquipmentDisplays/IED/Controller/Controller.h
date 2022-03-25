@@ -588,7 +588,7 @@ namespace IED
 		void ResetGearImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&         a_objects,
+			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void UpdateTransformSlotImpl(

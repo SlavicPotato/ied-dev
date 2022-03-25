@@ -147,7 +147,7 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::NoCheckFav);
-				
+
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::DeadScatter, "4"),
 						std::addressof(data.enableDeadScatter))))

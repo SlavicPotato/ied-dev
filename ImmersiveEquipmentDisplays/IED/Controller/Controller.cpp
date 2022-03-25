@@ -3774,7 +3774,7 @@ namespace IED
 	void Controller::ResetGearImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&         a_objects,
+		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		RemoveActorGear(a_actor, a_handle, a_objects, a_flags);
