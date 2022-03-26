@@ -376,10 +376,20 @@ namespace IED
 			},
 		}),
 		m_extraCopy({
-
 			{ "WeaponBack", "WeaponBackIED" },
 			{ "WeaponBow", "WeaponBowIED" },
-
+		}),
+		m_transformOverride({
+			{ "WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },
+			{ "HDT WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },
+			{ "WeaponAxeLeft", { -2.579556f, -0.866133f, -1.205785f } },
+			{ "HDT WeaponAxeLeft", { -2.579556f, -0.866133f, -1.205785f } },
+			{ "WeaponMaceLeft", { 1.595767f, 1.240697f, -3.068691f } },
+			{ "HDT WeaponMaceLeft", { 1.595767f, 1.240697f, -3.068691f } },
+			{ "WeaponDaggerLeft", { -0.444131f, -0.803249f, -1.805654f } },
+			{ "HDT WeaponDaggerLeft", { -0.444131f, -0.803249f, -1.805654f } },
+			{ "WeaponStaffLeft", { 0.445457f, -0.274162f, 1.455669f } },
+			{ "HDT WeaponStaffLeft", { 0.445457f, -0.274162f, 1.455669f } },
 		})
 	{
 	}

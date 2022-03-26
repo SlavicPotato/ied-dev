@@ -114,6 +114,7 @@ namespace IED
 		Controller& operator=(Controller&&) = delete;
 
 		void SinkEventsT0();
+		bool DispatchIntroBanner();
 
 	private:
 		void InitializeSound();
@@ -933,6 +934,7 @@ namespace IED
 		bool m_forceDefaultConfig{ false };
 		bool m_npcProcessingDisabled{ false };
 		bool m_iniKeysForced{ false };
+		bool m_applyTransformOverrides{ false };
 
 		struct
 		{

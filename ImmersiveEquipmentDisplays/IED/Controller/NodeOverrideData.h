@@ -79,15 +79,6 @@ namespace IED
 			stl::flag<NodeOverrideDataEntryFlags> flags;
 		};
 
-		struct exn_ctor_init_t
-		{
-			const char*       mov;
-			const char*       cme;
-			const char*       parent;
-			const NiTransform xfrm_m;
-			const NiTransform xfrm_f;
-		};
-
 		struct extraNodeEntry_t
 		{
 			extraNodeEntry_t(
@@ -106,11 +97,6 @@ namespace IED
 			{
 			}
 
-			extraNodeEntry_t(
-				const exn_ctor_init_t& a_init)
-			{
-			}
-
 			stl::fixed_string name_cme;
 			stl::fixed_string name_mov;
 			BSFixedString     bsname_cme;
@@ -118,12 +104,6 @@ namespace IED
 			BSFixedString     name_parent;
 			NiTransform       transform_m;
 			NiTransform       transform_f;
-		};
-
-		struct exn_copy_ctor_init_t
-		{
-			const char* src;
-			const char* dst;
 		};
 
 		struct extraNodeCopyEntry_t
@@ -141,12 +121,27 @@ namespace IED
 			BSFixedString     dst;
 		};
 
+		struct xfrmOverrideNodeEntry_t
+		{
+			xfrmOverrideNodeEntry_t(
+				const char* a_name,
+				NiPoint3    a_rot) :
+				name(a_name)
+			{
+				rot.SetEulerAngles(a_rot.x, a_rot.y, a_rot.z);
+			}
+
+			BSFixedString name;
+			NiMatrix33    rot;
+		};
+
 		using init_list_cm   = std::pair<const char*, std::pair<const char*, const char*>>;
 		using init_list_weap = std::pair<const char*, weap_ctor_init_t>;
 
-		using cm_data_type       = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
-		using exn_data_type      = std::vector<extraNodeEntry_t>;
-		using exn_copy_data_type = std::vector<extraNodeCopyEntry_t>;
+		using cm_data_type            = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
+		using exn_data_type           = std::vector<extraNodeEntry_t>;
+		using exn_copy_data_type      = std::vector<extraNodeCopyEntry_t>;
+		using xfrm_override_data_type = std::vector<xfrmOverrideNodeEntry_t>;
 
 		NodeOverrideData();
 
@@ -182,13 +177,32 @@ namespace IED
 			return m_Instance->m_extraCopy;
 		}
 
+		inline static const auto& GetTransformOverrideData() noexcept
+		{
+			return m_Instance->m_transformOverride;
+		}
+
+		inline static const auto& GetNPCNodeName() noexcept
+		{
+			return m_Instance->m_npcNodeName;
+		}
+
+		inline static const auto& GetXPMSEExtraDataName() noexcept
+		{
+			return m_Instance->m_XPMSE;
+		}
+
 	private:
-		cm_data_type       m_cme;
-		cm_data_type       m_mov;
-		mon_data_type      m_monitor;
-		weapnode_data_type m_weap;
-		exn_data_type      m_extra;
-		exn_copy_data_type m_extraCopy;
+		cm_data_type            m_cme;
+		cm_data_type            m_mov;
+		mon_data_type           m_monitor;
+		weapnode_data_type      m_weap;
+		exn_data_type           m_extra;
+		exn_copy_data_type      m_extraCopy;
+		xfrm_override_data_type m_transformOverride;
+
+		BSFixedString m_npcNodeName{ "NPC" };
+		BSFixedString m_XPMSE{ "XPMSE" };
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

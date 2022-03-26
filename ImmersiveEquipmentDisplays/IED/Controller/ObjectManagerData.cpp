@@ -25,6 +25,7 @@ namespace IED
 		Game::ObjectRefHandle                         a_handle,
 		bool                                          a_nodeOverrideEnabled,
 		bool                                          a_nodeOverrideEnabledPlayer,
+		bool                                          a_applyTransformOverrides,
 		Data::actorStateHolder_t&                     a_actorState) :
 		m_owner(a_owner),
 		m_handle(a_handle),
@@ -113,11 +114,16 @@ namespace IED
 					CreateExtraNodes(a_npcroot, m_female, e);
 				}
 			}
+		}
 
-			for (auto& e : NodeOverrideData::GetExtraCopyNodes())
-			{
-				CreateExtraCopyNode(a_actor, a_npcroot, e);
-			}
+		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
+		{
+			CreateExtraCopyNode(a_actor, a_npcroot, e);
+		}
+
+		if (a_applyTransformOverrides)
+		{
+			ApplyNodeTransformOverrides(a_root);
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
@@ -368,6 +374,39 @@ namespace IED
 		parent->AttachChild(node, true);
 
 		INode::UpdateDownwardPass(node);
+	}
+
+	void ActorObjectHolder::ApplyNodeTransformOverrides(NiNode* a_root) const
+	{
+		auto npcNode = ::Util::Node::FindChildNode(a_root, NodeOverrideData::GetNPCNodeName());
+		if (!npcNode)
+		{
+			return;
+		}
+
+		auto extraData = npcNode->GetExtraData(NodeOverrideData::GetXPMSEExtraDataName());
+		if (!extraData)
+		{
+			return;
+		}
+
+		if (!NRTTI<NiFloatExtraData>::IsType(extraData))
+		{
+			return;
+		}
+
+		if (static_cast<NiFloatExtraData*>(extraData)->m_data < 3.6f)
+		{
+			return;
+		}
+
+		for (auto& e : NodeOverrideData::GetTransformOverrideData())
+		{
+			if (auto node = ::Util::Node::FindNode(npcNode, e.name))
+			{
+				node->m_localTransform.rot = e.rot;
+			}
+		}
 	}
 
 	void objectEntryBase_t::reset(

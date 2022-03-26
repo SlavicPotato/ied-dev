@@ -79,6 +79,7 @@ namespace IED
 		bool           m_effectShaders{ false };
 		bool           m_disableIntroBanner{ true };
 		bool           m_corpseScatterPatch{ false };
+		bool           m_applyTransformOverrides{ true };
 		float          m_introBannerVOffset{ 110.0f };
 		LogLevel       m_logLevel{ LogLevel::Message };
 

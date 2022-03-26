@@ -37,7 +37,7 @@ namespace IED
 			return result;
 		}
 
-		[[nodiscard]] inline auto* GetContext() const noexcept
+		[[nodiscard]] inline UI::UIContextBase* GetContext() const noexcept
 		{
 			return m_context.get();
 		}
@@ -75,7 +75,11 @@ namespace IED
 		public IUIRenderTask
 	{
 	public:
-		using IUIRenderTask::IUIRenderTask;
+		IUIRenderTaskMain(
+			IUI&        a_interface,
+			Controller& a_controller);
+
+		UI::UIMain* GetContext() const noexcept;
 
 	private:
 		virtual void OnTaskStart() override;
@@ -121,7 +125,7 @@ namespace IED
 		UI::UIFormInfoCache& UIGetFormLookupCache() noexcept;
 		void                 UIReset();
 
-		[[nodiscard]] inline constexpr auto& UIGetRenderTask() noexcept
+		[[nodiscard]] inline constexpr auto& UIGetRenderTask() const noexcept
 		{
 			return m_task;
 		}
@@ -138,8 +142,6 @@ namespace IED
 	private:
 		virtual constexpr WCriticalSection& UIGetLock() noexcept = 0;
 		virtual void                        OnUIOpen(){};
-
-		UI::UIMain* GetContext() const noexcept;
 
 		UIOpenResult UIOpenImpl();
 

@@ -366,6 +366,7 @@ namespace IED
 			Game::ObjectRefHandle                         a_handle,
 			bool                                          a_nodeOverrideEnabled,
 			bool                                          a_nodeOverrideEnabledPlayer,
+			bool                                          a_applyTransformOverrides,
 			Data::actorStateHolder_t&                     a_actorState);
 
 		~ActorObjectHolder();
@@ -563,6 +564,9 @@ namespace IED
 			Actor*                                        a_actor,
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
+
+		void ApplyNodeTransformOverrides(
+			NiNode* a_root) const;
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };

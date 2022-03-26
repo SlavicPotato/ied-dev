@@ -12,8 +12,7 @@ namespace IED
 {
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		m_task = std::make_unique<IUIRenderTaskMain>(*this);
-		m_task->InitializeContext<UI::UIMain>(a_controller);
+		m_task = std::make_unique<IUIRenderTaskMain>(*this, a_controller);
 	}
 
 	bool IUI::UIIsInitialized() const noexcept
@@ -23,17 +22,17 @@ namespace IED
 
 	UI::UIPopupQueue& IUI::UIGetPopupQueue() noexcept
 	{
-		return GetContext()->GetPopupQueue();
+		return m_task->GetContext()->GetPopupQueue();
 	}
 
 	UI::UIFormBrowser& IUI::UIGetFormBrowser() noexcept
 	{
-		return GetContext()->GetFormBrowser();
+		return m_task->GetContext()->GetFormBrowser();
 	}
 
 	UI::UIFormInfoCache& IUI::UIGetFormLookupCache() noexcept
 	{
-		return GetContext()->GetFormLookupCache();
+		return m_task->GetContext()->GetFormLookupCache();
 	}
 
 	void IUI::UIReset()
@@ -52,7 +51,7 @@ namespace IED
 
 		if (m_task->IsRunning())
 		{
-			GetContext()->SetOpenState(false);
+			m_task->GetContext()->SetOpenState(false);
 
 			return UIOpenResult::kResultDisabled;
 		}
@@ -82,11 +81,6 @@ namespace IED
 		}
 
 		return UIOpenResult::kResultNone;
-	}
-
-	UI::UIMain* IUI::GetContext() const noexcept
-	{
-		return static_cast<UI::UIMain*>(m_task->GetContext());
 	}
 
 	IUIRenderTask::IUIRenderTask(
@@ -162,6 +156,19 @@ namespace IED
 	{
 	}
 
+	IUIRenderTaskMain::IUIRenderTaskMain(
+		IUI&        a_interface,
+		Controller& a_controller) :
+		IUIRenderTask(a_interface)
+	{
+		InitializeContext<UI::UIMain>(a_controller);
+	}
+
+	UI::UIMain* IUIRenderTaskMain::GetContext() const noexcept
+	{
+		return static_cast<UI::UIMain*>(m_context.get());
+	}
+
 	void IUIRenderTaskMain::OnTaskStart()
 	{
 		IScopedLock lock(m_owner.UIGetLock());
@@ -181,7 +188,7 @@ namespace IED
 
 	bool IUIRenderTaskMain::ShouldClose()
 	{
-		return static_cast<UI::UIMain*>(GetContext())->GetUISettings().closeOnESC &&
+		return GetContext()->GetUISettings().closeOnESC &&
 		           ImGui::GetIO().KeysDown[VK_ESCAPE] ||
 		       (!GetEnabledInMenu() && Game::InPausedMenu());
 	}

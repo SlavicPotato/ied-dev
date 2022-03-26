@@ -33,7 +33,8 @@ namespace IED
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
-		m_npcProcessingDisabled(a_config->m_disableNPCProcessing)
+		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
+		m_applyTransformOverrides(a_config->m_applyTransformOverrides)
 	{
 		InitializeInputHandlers();
 	}
@@ -356,19 +357,24 @@ namespace IED
 		if (config.ui.showIntroBanner &&
 		    !m_iniconf->m_disableIntroBanner)
 		{
-			auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000, m_iniconf->m_introBannerVOffset);
-
-			task->SetLock(false);
-			task->SetFreeze(false);
-			task->SetWantCursor(false);
-			task->SetEnabledInMenu(true);
-			task->EnableRestrictions(false);
-
-			if (!Drivers::UI::AddTask(-0xFFFF, std::move(task)))
+			if (!DispatchIntroBanner())
 			{
 				Warning("Couldn't dispatch intro banner render task");
 			}
 		}
+	}
+
+	bool Controller::DispatchIntroBanner()
+	{
+		auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000, m_iniconf->m_introBannerVOffset);
+
+		task->SetLock(false);
+		task->SetFreeze(false);
+		task->SetWantCursor(false);
+		task->SetEnabledInMenu(true);
+		task->EnableRestrictions(false);
+
+		return Drivers::UI::AddTask(-0xFFFF, std::move(task));
 	}
 
 	void Controller::InitializeConfig()
@@ -3268,6 +3274,7 @@ namespace IED
 			a_handle,
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
+			m_applyTransformOverrides,
 			m_storedActorStates);
 
 		if (a_handle != objects.GetHandle())
@@ -3309,6 +3316,7 @@ namespace IED
 					a_handle,
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
+					m_applyTransformOverrides,
 					m_storedActorStates);
 
 				EvaluateImpl(

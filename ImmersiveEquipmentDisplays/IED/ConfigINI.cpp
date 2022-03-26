@@ -45,6 +45,8 @@ namespace IED
 			parsers.reader.GetBoolValue(SECT_GENERAL, "ImmediateUpdateOnFav", false);
 		m_corpseScatterPatch =
 			parsers.reader.GetBoolValue(SECT_GENERAL, "CorpseScatterPatch", false);
+		m_applyTransformOverrides =
+			parsers.reader.GetBoolValue(SECT_GENERAL, "XP32LeftHandRotationFix", true);
 
 		m_nodeOverrideEnabled =
 			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "Enable", true);
