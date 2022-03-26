@@ -292,7 +292,7 @@ namespace IED
 				{
 					if (!ui.showIntroBanner)
 					{
-						Drivers::UI::QueueRemoveTask(0);
+						Drivers::UI::QueueRemoveTask(-0xFFFF);
 					}
 				}
 
