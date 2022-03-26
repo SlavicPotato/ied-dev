@@ -192,6 +192,11 @@ namespace IED
 			return m_Instance->m_XPMSE;
 		}
 
+		inline static const auto& GetSkelIDExtraDataName() noexcept
+		{
+			return m_Instance->m_skeletonID;
+		}
+
 	private:
 		cm_data_type            m_cme;
 		cm_data_type            m_mov;
@@ -203,6 +208,7 @@ namespace IED
 
 		BSFixedString m_npcNodeName{ "NPC" };
 		BSFixedString m_XPMSE{ "XPMSE" };
+		BSFixedString m_skeletonID{ "SkeletonID" };
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

@@ -378,24 +378,43 @@ namespace IED
 
 	void ActorObjectHolder::ApplyNodeTransformOverrides(NiNode* a_root) const
 	{
+		auto skelIDExtraData = a_root->GetExtraData(NodeOverrideData::GetSkelIDExtraDataName());
+		if (!skelIDExtraData)
+		{
+			return;
+		}
+
+		if (!NRTTI<NiIntegerExtraData>::IsType(skelIDExtraData))
+		{
+			return;
+		}
+
+		auto skelID = static_cast<NiIntegerExtraData*>(skelIDExtraData)->m_data;
+
+		if (skelID != 628145516 &&  // female
+		    skelID != 1361955)      // male
+		{
+			return;
+		}
+
 		auto npcNode = ::Util::Node::FindChildNode(a_root, NodeOverrideData::GetNPCNodeName());
 		if (!npcNode)
 		{
 			return;
 		}
 
-		auto extraData = npcNode->GetExtraData(NodeOverrideData::GetXPMSEExtraDataName());
-		if (!extraData)
+		auto xpExtraData = npcNode->GetExtraData(NodeOverrideData::GetXPMSEExtraDataName());
+		if (!xpExtraData)
 		{
 			return;
 		}
 
-		if (!NRTTI<NiFloatExtraData>::IsType(extraData))
+		if (!NRTTI<NiFloatExtraData>::IsType(xpExtraData))
 		{
 			return;
 		}
 
-		if (static_cast<NiFloatExtraData*>(extraData)->m_data < 3.6f)
+		if (static_cast<NiFloatExtraData*>(xpExtraData)->m_data < 3.6f)
 		{
 			return;
 		}
