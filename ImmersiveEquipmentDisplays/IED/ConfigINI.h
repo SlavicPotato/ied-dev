@@ -78,6 +78,7 @@ namespace IED
 		bool           m_immediateFavUpdate{ false };
 		bool           m_effectShaders{ false };
 		bool           m_disableIntroBanner{ true };
+		bool           m_corpseScatterPatch{ false };
 		float          m_introBannerVOffset{ 110.0f };
 		LogLevel       m_logLevel{ LogLevel::Message };
 

@@ -43,6 +43,8 @@ namespace IED
 			parsers.reader.GetBoolValue(SECT_GENERAL, "ForceDefaultConfig", false);
 		m_immediateFavUpdate =
 			parsers.reader.GetBoolValue(SECT_GENERAL, "ImmediateUpdateOnFav", false);
+		m_corpseScatterPatch =
+			parsers.reader.GetBoolValue(SECT_GENERAL, "CorpseScatterPatch", false);
 
 		m_nodeOverrideEnabled =
 			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "Enable", true);

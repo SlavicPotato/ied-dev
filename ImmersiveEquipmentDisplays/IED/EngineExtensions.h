@@ -32,13 +32,6 @@ namespace IED
 			std::uint16_t p2;
 		};
 
-		struct removeHavokData_t
-		{
-			std::uint64_t p1;
-			bool          p2;
-			std::uint32_t p3;
-		};
-
 		class ShadowSceneNode;
 
 		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object);
@@ -87,8 +80,6 @@ namespace IED
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
 
-		typedef void (*removeHavokArgs_t)(NiAVObject* a_object, void* a_data, void* a_callback);
-
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -133,7 +124,6 @@ namespace IED
 		inline static const auto m_unkglob0        = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto SceneRendering    = IAL::Address<unk63F810_t>(38079, 39033);
 		inline static const auto CleanupObjectImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
-		//inline static const auto StrDismemberedLimb = IAL::Address<const char*>(241891, 0);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -157,7 +147,7 @@ namespace IED
 		inline static const auto fUnk12ba3e0               = IAL::Address<unkSSN1_t>(99702, 106336);
 		inline static const auto fUnk12b99f0               = IAL::Address<unkSSN1_t>(99696, 106330);
 		inline static const auto fUnk1CD130                = IAL::Address<unk1CD130_t>(15567, 15745);
-		inline static const auto fUnk5C3C40                = IAL::Address<unk5C3C40_t>(35950, 36925);
+		inline static const auto QueueAttachHavok          = IAL::Address<unk5C3C40_t>(35950, 36925);
 		inline static const auto fUnk5EBD90                = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0                = IAL::Address<unk5C39F0_t>(35947, 36922);
 		inline static const auto AttachAddonNodes          = IAL::Address<attachAddonNodes_t>(19207, 19633);
@@ -165,7 +155,6 @@ namespace IED
 		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
-		//inline static const auto RecursiveProcessHavok      = IAL::Address<removeHavokArgs_t>(76050, 77883);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
@@ -184,6 +173,7 @@ namespace IED
 		void Patch_AdjustSkip_AE();
 		void Hook_ToggleFav();
 		void Hook_ProcessEffectShaders();
+		void Patch_CorpseScatter();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
@@ -200,6 +190,7 @@ namespace IED
 		static bool           SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
 		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
+		static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
 
 		static bool AdjustSkip_Test(const BSFixedString& a_name);
 
@@ -214,6 +205,7 @@ namespace IED
 		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
 		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
 		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
+		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };

@@ -84,6 +84,11 @@ namespace IED
 		{
 			Hook_ProcessEffectShaders();
 		}
+
+		if (a_config->m_corpseScatterPatch)
+		{
+			Patch_CorpseScatter();
+		}
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
@@ -440,6 +445,60 @@ namespace IED
 		}
 	}
 
+	void EngineExtensions::Patch_CorpseScatter()
+	{
+		ASSERT_STR(
+			Patching::validate_mem(
+				m_bipedAttachHavok_a,
+				{ 0x41, 0xB1, 0x01, 0x41, 0xB8, 0x04, 0x00, 0x00, 0x00 }),
+			mv_failstr);
+
+		struct Assembly : JITASM::JITASM
+		{
+			Assembly(
+				std::uintptr_t a_targetAddr) :
+				JITASM(ISKSE::GetLocalTrampoline())
+			{
+				Xbyak::Label callLabel;
+				Xbyak::Label retnLabel;
+
+				mov(rcx, rbx);  // actor
+
+				if (IAL::IsAE())
+				{
+					mov(edx, r15d);  // slot
+					sub(edx, 0xFFFFFFE0);
+				}
+				else
+				{
+					mov(edx, r14d);  // slot
+				}
+
+				call(ptr[rip + callLabel]);
+
+				mov(r8d, eax);
+				mov(r9b, 1);
+
+				jmp(ptr[rip + retnLabel]);
+
+				L(retnLabel);
+				dq(a_targetAddr + 0x9);
+
+				L(callLabel);
+				dq(std::uintptr_t(Biped_QueueAttachHavok_Hook));
+			}
+		};
+
+		LogPatchBegin();
+		{
+			Assembly code(m_bipedAttachHavok_a);
+			ISKSE::GetBranchTrampoline().Write6Branch(
+				m_bipedAttachHavok_a,
+				code.get());
+		}
+		LogPatchEnd();
+	}
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
 		{
@@ -621,12 +680,33 @@ namespace IED
 		m_Instance.m_controller->ProcessEffectShaders();
 	}
 
+	std::uint32_t EngineExtensions::Biped_QueueAttachHavok_Hook(
+		TESObjectREFR* a_actor,
+		BIPED_OBJECT   a_slot)
+	{
+		std::uint32_t result = 4;
+
+		if (a_actor && a_slot != BIPED_OBJECT::kNone)
+		{
+			if (auto actor = a_actor->As<Actor>())
+			{
+				if ((a_slot >= BIPED_OBJECT::kOneHandSword &&
+				     a_slot <= BIPED_OBJECT::kCrossbow) ||
+				    a_slot == actor->GetShieldBipedObject())
+				{
+					if (actor->IsDead())
+					{
+						result = 1;
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
 	bool EngineExtensions::AdjustSkip_Test(const BSFixedString& a_name)
 	{
-		/*auto &data = m_Instance.m_controller->GetBSStringHolder()->m_sheathNodes;
-
-		return data.find(a_name) == data.end();*/
-
 		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
 		if (a_name == sh->m_weaponAxe ||
@@ -736,17 +816,6 @@ namespace IED
 						bsxFlags = newbsx;
 					}
 				}
-
-				/*if (auto callback = *removeHavokFuncPtr)
-				{
-					removeHavokData_t data{
-						0,
-						true,
-						1
-					};
-
-					RecursiveProcessHavok(a_object, std::addressof(data), callback);
-				}*/
 			}
 
 			if (flags.test(BSXFlags::Flag::kAddon))
@@ -891,7 +960,8 @@ namespace IED
 		}
 
 		fUnk1CD130(a_object, collisionFilterInfo);
-		fUnk5C3C40(
+
+		QueueAttachHavok(
 			BSTaskPool::GetSingleton(),
 			a_object,
 			a_dropOnDeath ? (a_isDead ? 1 : 4) : 0,
