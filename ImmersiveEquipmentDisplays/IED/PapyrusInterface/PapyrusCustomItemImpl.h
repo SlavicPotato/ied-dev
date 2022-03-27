@@ -206,6 +206,22 @@ namespace IED
 				bool                     a_enable,
 				float                    a_chance);
 
+			bool SetItemAnimationEnabledImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_enable);
+			
+			bool SetItemAnimationSequenceImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				const stl::fixed_string& a_sequence);
+
 			bool ItemExistsImpl(
 				Game::FormID             a_target,
 				Data::ConfigClass        a_class,

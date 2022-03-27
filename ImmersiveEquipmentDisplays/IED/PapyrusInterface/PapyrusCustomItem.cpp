@@ -505,6 +505,71 @@ namespace IED
 			}
 
 			template <class T>
+			static bool SetItemAnimationEnabled(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_enable)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemAnimationEnabledImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_enable);
+			}
+
+			template <class T>
+			static bool SetItemAnimationSequence(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				BSFixedString a_sequence)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				if (!ValidateString(a_sequence))
+				{
+					return false;
+				}
+
+				stl::fixed_string seq(a_sequence.c_str());
+
+				return SetItemAnimationSequenceImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					seq);
+			}
+
+			template <class T>
 			static bool DoClearTransform(
 				T*                   a_target,
 				const BSFixedString& a_key,
@@ -870,63 +935,63 @@ namespace IED
 					new NativeFunction7<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*, bool, BSFixedString>(
 						"CreateItemActor",
 						SCRIPT_NAME,
-						CreateItem<Actor>,
+						CreateItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction7<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*, bool, BSFixedString>(
 						"CreateItemNPC",
 						SCRIPT_NAME,
-						CreateItem<TESNPC>,
+						CreateItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction7<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*, bool, BSFixedString>(
 						"CreateItemRace",
 						SCRIPT_NAME,
-						CreateItem<TESRace>,
+						CreateItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString>(
 						"DeleteItemActor",
 						SCRIPT_NAME,
-						DeleteItem<Actor>,
+						DeleteItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString>(
 						"DeleteItemNPC",
 						SCRIPT_NAME,
-						DeleteItem<TESNPC>,
+						DeleteItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString>(
 						"DeleteItemRace",
 						SCRIPT_NAME,
-						DeleteItem<TESRace>,
+						DeleteItem,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction2<StaticFunctionTag, bool, Actor*, BSFixedString>(
 						"DeleteAllActor",
 						SCRIPT_NAME,
-						DeleteAll<Actor>,
+						DeleteAll,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction2<StaticFunctionTag, bool, TESNPC*, BSFixedString>(
 						"DeleteAllNPC",
 						SCRIPT_NAME,
-						DeleteAll<TESNPC>,
+						DeleteAll,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction2<StaticFunctionTag, bool, TESRace*, BSFixedString>(
 						"DeleteAllRace",
 						SCRIPT_NAME,
-						DeleteAll<TESRace>,
+						DeleteAll,
 						a_registry));
 
 				a_registry->RegisterFunction(
@@ -940,525 +1005,567 @@ namespace IED
 					new NativeFunction6<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, int, bool>(
 						"SetItemAttachmentModeActor",
 						SCRIPT_NAME,
-						SetItemAttachmentMode<Actor>,
+						SetItemAttachmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, int, bool>(
 						"SetItemAttachmentModeNPC",
 						SCRIPT_NAME,
-						SetItemAttachmentMode<TESNPC>,
+						SetItemAttachmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, int, bool>(
 						"SetItemAttachmentModeRace",
 						SCRIPT_NAME,
-						SetItemAttachmentMode<TESRace>,
+						SetItemAttachmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemEnabledActor",
 						SCRIPT_NAME,
-						SetItemEnabled<Actor>,
+						SetItemEnabled,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemEnabledNPC",
 						SCRIPT_NAME,
-						SetItemEnabled<TESNPC>,
+						SetItemEnabled,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemEnabledRace",
 						SCRIPT_NAME,
-						SetItemEnabled<TESRace>,
+						SetItemEnabled,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, BSFixedString>(
 						"SetItemNodeActor",
 						SCRIPT_NAME,
-						SetItemNode<Actor>,
+						SetItemNode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, BSFixedString>(
 						"SetItemNodeNPC",
 						SCRIPT_NAME,
-						SetItemNode<TESNPC>,
+						SetItemNode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, BSFixedString>(
 						"SetItemNodeRace",
 						SCRIPT_NAME,
-						SetItemNode<TESRace>,
+						SetItemNode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemInventoryActor",
 						SCRIPT_NAME,
-						SetItemInventory<Actor>,
+						SetItemInventory,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemInventoryNPC",
 						SCRIPT_NAME,
-						SetItemInventory<TESNPC>,
+						SetItemInventory,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemInventoryRace",
 						SCRIPT_NAME,
-						SetItemInventory<TESRace>,
+						SetItemInventory,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction7<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeActor",
 						SCRIPT_NAME,
-						SetItemEquipmentMode<Actor>,
+						SetItemEquipmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction7<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeNPC",
 						SCRIPT_NAME,
-						SetItemEquipmentMode<TESNPC>,
+						SetItemEquipmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction7<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool, bool, bool>(
 						"SetItemEquipmentModeRace",
 						SCRIPT_NAME,
-						SetItemEquipmentMode<TESRace>,
+						SetItemEquipmentMode,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemLeftWeaponActor",
 						SCRIPT_NAME,
-						SetItemLeftWeapon<Actor>,
+						SetItemLeftWeapon,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemLeftWeaponNPC",
 						SCRIPT_NAME,
-						SetItemLeftWeapon<TESNPC>,
+						SetItemLeftWeapon,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemLeftWeaponRace",
 						SCRIPT_NAME,
-						SetItemLeftWeapon<TESRace>,
+						SetItemLeftWeapon,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemUseWorldModelActor",
 						SCRIPT_NAME,
-						SetItemUseWorldModel<Actor>,
+						SetItemUseWorldModel,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemUseWorldModelNPC",
 						SCRIPT_NAME,
-						SetItemUseWorldModel<TESNPC>,
+						SetItemUseWorldModel,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemUseWorldModelRace",
 						SCRIPT_NAME,
-						SetItemUseWorldModel<TESRace>,
+						SetItemUseWorldModel,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetIgnoreRaceEquipTypesActor",
 						SCRIPT_NAME,
-						SetIgnoreRaceEquipTypes<Actor>,
+						SetIgnoreRaceEquipTypes,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
 						"SetIgnoreRaceEquipTypesNPC",
 						SCRIPT_NAME,
-						SetIgnoreRaceEquipTypes<TESNPC>,
+						SetIgnoreRaceEquipTypes,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
 						"SetIgnoreRaceEquipTypesRace",
 						SCRIPT_NAME,
-						SetIgnoreRaceEquipTypes<TESRace>,
+						SetIgnoreRaceEquipTypes,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool, float>(
 						"SetItemLoadChanceActor",
 						SCRIPT_NAME,
-						SetItemLoadChance<Actor>,
+						SetItemLoadChance,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool, float>(
 						"SetItemLoadChanceNPC",
 						SCRIPT_NAME,
-						SetItemLoadChance<TESNPC>,
+						SetItemLoadChance,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool, float>(
 						"SetItemLoadChanceRace",
 						SCRIPT_NAME,
-						SetItemLoadChance<TESRace>,
+						SetItemLoadChance,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEnabledActor",
+						SCRIPT_NAME,
+						SetItemAnimationEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEnabledNPC",
+						SCRIPT_NAME,
+						SetItemAnimationEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEnabledRace",
+						SCRIPT_NAME,
+						SetItemAnimationEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationSequenceActor",
+						SCRIPT_NAME,
+						SetItemAnimationSequence,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationSequenceNPC",
+						SCRIPT_NAME,
+						SetItemAnimationSequence,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationSequenceRace",
+						SCRIPT_NAME,
+						SetItemAnimationSequence,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemPositionActor",
 						SCRIPT_NAME,
-						SetItemPosition<Actor>,
+						SetItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemPositionNPC",
 						SCRIPT_NAME,
-						SetItemPosition<TESNPC>,
+						SetItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemPositionRace",
 						SCRIPT_NAME,
-						SetItemPosition<TESRace>,
+						SetItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemRotationActor",
 						SCRIPT_NAME,
-						SetItemRotation<Actor>,
+						SetItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemRotationNPC",
 						SCRIPT_NAME,
-						SetItemRotation<TESNPC>,
+						SetItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, VMArray<float>>(
 						"SetItemRotationRace",
 						SCRIPT_NAME,
-						SetItemRotation<TESRace>,
+						SetItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, float>(
 						"SetItemScaleActor",
 						SCRIPT_NAME,
-						SetItemScale<Actor>,
+						SetItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, float>(
 						"SetItemScaleNPC",
 						SCRIPT_NAME,
-						SetItemScale<TESNPC>,
+						SetItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, float>(
 						"SetItemScaleRace",
 						SCRIPT_NAME,
-						SetItemScale<TESRace>,
+						SetItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool>(
 						"ClearItemPositionActor",
 						SCRIPT_NAME,
-						ClearItemPosition<Actor>,
+						ClearItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"ClearItemPositionNPC",
 						SCRIPT_NAME,
-						ClearItemPosition<TESNPC>,
+						ClearItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool>(
 						"ClearItemPositionRace",
 						SCRIPT_NAME,
-						ClearItemPosition<TESRace>,
+						ClearItemPosition,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool>(
 						"ClearItemRotationActor",
 						SCRIPT_NAME,
-						ClearItemRotation<Actor>,
+						ClearItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"ClearItemRotationNPC",
 						SCRIPT_NAME,
-						ClearItemRotation<TESNPC>,
+						ClearItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool>(
 						"ClearItemRotationRace",
 						SCRIPT_NAME,
-						ClearItemRotation<TESRace>,
+						ClearItemRotation,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool>(
 						"ClearItemScaleActor",
 						SCRIPT_NAME,
-						ClearItemScale<Actor>,
+						ClearItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"ClearItemScaleNPC",
 						SCRIPT_NAME,
-						ClearItemScale<TESNPC>,
+						ClearItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool>(
 						"ClearItemScaleRace",
 						SCRIPT_NAME,
-						ClearItemScale<TESRace>,
+						ClearItemScale,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemFormActor",
 						SCRIPT_NAME,
-						SetItemForm<Actor>,
+						SetItemForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemFormNPC",
 						SCRIPT_NAME,
-						SetItemForm<TESNPC>,
+						SetItemForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemFormRace",
 						SCRIPT_NAME,
-						SetItemForm<TESRace>,
+						SetItemForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*, std::int32_t>(
 						"AddItemExtraFormActor",
 						SCRIPT_NAME,
-						AddItemExtraForm<Actor>,
+						AddItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*, std::int32_t>(
 						"AddItemExtraFormNPC",
 						SCRIPT_NAME,
-						AddItemExtraForm<TESNPC>,
+						AddItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*, std::int32_t>(
 						"AddItemExtraFormRace",
 						SCRIPT_NAME,
-						AddItemExtraForm<TESRace>,
+						AddItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"RemoveItemExtraFormActor",
 						SCRIPT_NAME,
-						RemoveItemExtraForm<Actor>,
+						RemoveItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"RemoveItemExtraFormNPC",
 						SCRIPT_NAME,
-						RemoveItemExtraForm<TESNPC>,
+						RemoveItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"RemoveItemExtraFormRace",
 						SCRIPT_NAME,
-						RemoveItemExtraForm<TESRace>,
+						RemoveItemExtraForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, std::int32_t>(
 						"RemoveItemExtraFormByIndexActor",
 						SCRIPT_NAME,
-						RemovetemExtraFormByIndex<Actor>,
+						RemovetemExtraFormByIndex,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, std::int32_t>(
 						"RemoveItemExtraFormByIndexNPC",
 						SCRIPT_NAME,
-						RemovetemExtraFormByIndex<TESNPC>,
+						RemovetemExtraFormByIndex,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, std::int32_t>(
 						"RemoveItemExtraFormByIndexRace",
 						SCRIPT_NAME,
-						RemovetemExtraFormByIndex<TESRace>,
+						RemovetemExtraFormByIndex,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, std::int32_t, Actor*, BSFixedString, BSFixedString, bool>(
 						"GetNumExtraFormsActor",
 						SCRIPT_NAME,
-						GetNumExtraForms<Actor>,
+						GetNumExtraForms,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, std::int32_t, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"GetNumExtraFormsNPC",
 						SCRIPT_NAME,
-						GetNumExtraForms<TESNPC>,
+						GetNumExtraForms,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, std::int32_t, TESRace*, BSFixedString, BSFixedString, bool>(
 						"GetNumExtraFormsRace",
 						SCRIPT_NAME,
-						GetNumExtraForms<TESRace>,
+						GetNumExtraForms,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemModelSwapFormActor",
 						SCRIPT_NAME,
-						SetItemModelSwapForm<Actor>,
+						SetItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemModelSwapFormNPC",
 						SCRIPT_NAME,
-						SetItemModelSwapForm<TESNPC>,
+						SetItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, TESForm*>(
 						"SetItemModelSwapFormRace",
 						SCRIPT_NAME,
-						SetItemModelSwapForm<TESRace>,
+						SetItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool>(
 						"ClearItemModelSwapFormActor",
 						SCRIPT_NAME,
-						ClearItemModelSwapForm<Actor>,
+						ClearItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"ClearItemModelSwapFormNPC",
 						SCRIPT_NAME,
-						ClearItemModelSwapForm<TESNPC>,
+						ClearItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool>(
 						"ClearItemModelSwapFormRace",
 						SCRIPT_NAME,
-						ClearItemModelSwapForm<TESRace>,
+						ClearItemModelSwapForm,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, std::int32_t, std::int32_t>(
 						"SetItemCountRangeActor",
 						SCRIPT_NAME,
-						SetItemCountRange<Actor>,
+						SetItemCountRange,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, std::int32_t, std::int32_t>(
 						"SetItemCountRangeNPC",
 						SCRIPT_NAME,
-						SetItemCountRange<TESNPC>,
+						SetItemCountRange,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction6<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, std::int32_t, std::int32_t>(
 						"SetItemCountRangeRace",
 						SCRIPT_NAME,
-						SetItemCountRange<TESRace>,
+						SetItemCountRange,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString>(
 						"ItemExistsActor",
 						SCRIPT_NAME,
-						ItemExists<Actor>,
+						ItemExists,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString>(
 						"ItemExistsNPC",
 						SCRIPT_NAME,
-						ItemExists<TESNPC>,
+						ItemExists,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction3<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString>(
 						"ItemExistsRace",
 						SCRIPT_NAME,
-						ItemExists<TESRace>,
+						ItemExists,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool>(
 						"ItemEnabledActor",
 						SCRIPT_NAME,
-						ItemEnabled<Actor>,
+						ItemEnabled,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool>(
 						"ItemEnabledNPC",
 						SCRIPT_NAME,
-						ItemEnabled<TESNPC>,
+						ItemEnabled,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction4<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool>(
 						"ItemEnabledRace",
 						SCRIPT_NAME,
-						ItemEnabled<TESRace>,
+						ItemEnabled,
 						a_registry));
 
 				return true;

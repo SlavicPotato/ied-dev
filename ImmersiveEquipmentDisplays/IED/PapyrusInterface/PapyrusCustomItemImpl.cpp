@@ -659,10 +659,10 @@ namespace IED
 
 				using size_type = decltype(e.extraItems)::size_type;
 
-				return std::clamp(
+				return static_cast<std::int32_t>(std::clamp(
 					e.extraItems.size(),
 					size_type(0),
-					size_type(std::numeric_limits<std::int32_t>::max()));
+					size_type(std::numeric_limits<std::int32_t>::max())));
 			}
 
 			bool SetItemModelSwapFormImpl(
@@ -957,6 +957,74 @@ namespace IED
 				}
 
 				e.chance = std::clamp(a_chance, 0.0f, 100.0f);
+
+				if (!e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueEvaluate(a_target, a_class);
+				}
+
+				return true;
+			}
+
+			bool SetItemAnimationEnabledImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_enable)
+			{
+				IScopedLock lock(Initializer::GetController()->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				if (a_enable)
+				{
+					e.flags.set(BaseFlags::kPlayAnimation);
+				}
+				else
+				{
+					e.flags.clear(BaseFlags::kPlayAnimation);
+				}
+
+				if (!e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueReset(a_target, a_class);
+				}
+
+				return true;
+			}
+
+			bool SetItemAnimationSequenceImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				const stl::fixed_string& a_sequence)
+			{
+				if (a_sequence.empty())
+				{
+					return false;
+				}
+
+				IScopedLock lock(Initializer::GetController()->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				e.niControllerSequence = a_sequence;
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
