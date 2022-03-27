@@ -76,7 +76,7 @@ namespace IED
 					a_style.WindowBorderSize = 1;
 					a_style.ChildBorderSize  = 1;
 					a_style.PopupBorderSize  = 1;
-					a_style.FrameBorderSize  = a_flat ? 0 : 1;
+					a_style.FrameBorderSize  = a_flat ? 0.f : 1.f;
 
 					a_style.WindowRounding    = 3;
 					a_style.ChildRounding     = 3;
@@ -84,7 +84,7 @@ namespace IED
 					a_style.ScrollbarRounding = 2;
 					a_style.GrabRounding      = 3;
 
-					a_style.TabBorderSize = a_flat ? 0 : 1;
+					a_style.TabBorderSize = a_flat ? 0.f : 1.f;
 					a_style.TabRounding   = 3;
 
 #ifdef IMGUI_HAS_DOCK

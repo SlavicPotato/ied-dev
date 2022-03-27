@@ -58,7 +58,7 @@ namespace IED
 
 			static TESRace::EquipmentFlag GetRaceEquipmentFlagFromType(ObjectType a_type) noexcept;
 
-			static BIPED_OBJECT SlotToBipedObject(ObjectSlot a_slot) noexcept;
+			static BIPED_OBJECT SlotToBipedObject(Actor *a_actor, ObjectSlot a_slot) noexcept;
 
 		private:
 		};

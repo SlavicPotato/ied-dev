@@ -235,7 +235,7 @@ namespace IED
 				if (settings.mark_if(ImGui::SliderFloat(
 						LS(UISettingsStrings::Alpha, "1"),
 						std::addressof(ui.alpha),
-						0.15,
+						0.15f,
 						1.0f,
 						"%.2f")))
 				{
@@ -460,7 +460,7 @@ namespace IED
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
-				m_tmpFormType = 0xFF;
+				m_tmpFormType.reset();
 			}
 
 			ImGui::SameLine();
@@ -477,9 +477,11 @@ namespace IED
 								return IFormCommon::IsValidCustomFormType(a_formType);
 							}))
 					{
-						a_data.data.try_emplace(m_tmpFormType);
+						a_data.data.try_emplace(*m_tmpFormType);
 
 						result = ContextMenuAction::Add;
+
+						m_tmpFormType.reset();
 
 						ImGui::CloseCurrentPopup();
 					}

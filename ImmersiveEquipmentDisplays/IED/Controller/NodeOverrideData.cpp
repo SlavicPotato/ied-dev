@@ -375,10 +375,12 @@ namespace IED
 
 			},
 		}),
+
 		m_extraCopy({
 			{ "WeaponBack", "WeaponBackIED" },
 			{ "WeaponBow", "WeaponBowIED" },
 		}),
+
 		m_transformOverride({
 			{ "WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },
 			{ "HDT WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },

@@ -804,7 +804,7 @@ namespace IED
 				NiPointer newbsx = BSXFlags::Create(
 					flags.value & ~BSXFlags::Flag::kHavok);
 
-				if (auto index = a_object->GetIndexOf(newbsx); index >= 0)
+				if (auto index = a_object->GetIndexOf(newbsx->m_pcName); index >= 0)
 				{
 					if (auto& entry = a_object->m_extraData[index]; entry == bsxFlags)
 					{

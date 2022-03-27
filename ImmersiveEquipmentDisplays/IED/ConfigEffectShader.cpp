@@ -12,7 +12,7 @@ namespace IED
 		bool configEffectShaderData_t::create_shader_data(
 			RE::BSTSmartPointer<BSEffectShaderData>& a_out) const
 		{
-			RE::BSTSmartPointer<BSEffectShaderData> result(new BSEffectShaderData());
+			auto result = RE::make_smart<BSEffectShaderData>();
 
 			load_texture(baseTexture, true, result->baseTexture);
 

@@ -69,7 +69,7 @@ namespace IED
 			const int step     = 1;
 			const int stepFast = 100;
 
-			std::uint32_t limit = data.GetLimit();
+			std::uint32_t limit = static_cast<std::uint32_t>(data.GetLimit());
 
 			if (ImGui::InputScalar(
 					LS(CommonStrings::Limit, "1"),

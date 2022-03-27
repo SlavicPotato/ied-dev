@@ -21,7 +21,7 @@ namespace IED
 			UIFormTypeSelectorWidget(Localization::ILocalization& a_localization);
 
 			bool DrawFormTypeSelector(
-				std::uint8_t& a_type,
+				stl::optional<std::uint8_t>& a_type,
 				filter_func_t a_filter);
 
 		protected:

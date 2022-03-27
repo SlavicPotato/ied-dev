@@ -690,7 +690,7 @@ namespace IED
 			}
 		}
 
-		BIPED_OBJECT ItemData::SlotToBipedObject(ObjectSlot a_slot) noexcept
+		BIPED_OBJECT ItemData::SlotToBipedObject(Actor* a_actor, ObjectSlot a_slot) noexcept
 		{
 			switch (a_slot)
 			{
@@ -721,7 +721,7 @@ namespace IED
 			case ObjectSlot::kStaffLeft:
 			case ObjectSlot::kShield:
 			case ObjectSlot::kTorch:
-				return BIPED_OBJECT::kShield;
+				return a_actor->GetShieldBipedObject();
 			case ObjectSlot::kAmmo:
 				return BIPED_OBJECT::kQuiver;
 			default:

@@ -34,14 +34,14 @@ namespace IED
 	{
 		for (auto& e : a_container)
 		{
-			Accept(e);
+			Process(e);
 		}
 
 		if (a_dataList)
 		{
 			for (auto& e : *a_dataList)
 			{
-				Accept(e);
+				Process(e);
 			}
 		}
 	}
@@ -66,14 +66,14 @@ namespace IED
 		return true;
 	}
 
-	void ItemCandidateCollector::Accept(TESContainer::Entry* entry)
+	void ItemCandidateCollector::Process(TESContainer::Entry* a_entry)
 	{
-		if (!entry)
+		if (!a_entry)
 		{
 			return;
 		}
 
-		auto form = entry->form;
+		auto form = a_entry->form;
 
 		if (!CheckForm(form))
 		{
@@ -82,25 +82,24 @@ namespace IED
 
 		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& r = m_data.forms.try_emplace(
-								  form->formID,
-								  form,
-								  ItemData::GetItemType(form),
-								  extraType)
-		              .first->second;
+		auto& entry = m_data.forms.try_emplace(
+									  form->formID,
+									  form,
+									  ItemData::GetItemType(form),
+									  extraType)
+		                  .first->second;
 
-		r.sharedCount = (r.count += entry->count);
+		entry.sharedCount = (entry.count += a_entry->count);
 
-		if (auto i = stl::underlying(extraType);
-		    i < stl::underlying(Data::ObjectTypeExtra::kMax))
+		if (extraType < Data::ObjectTypeExtra::kMax)
 		{
-			m_data.typeCount[i] += entry->count;
+			m_data.typeCount[stl::underlying(extraType)] += a_entry->count;
 		}
 
 		return;
 	}
 
-	void ItemCandidateCollector::Accept(InventoryEntryData* a_entryData)
+	void ItemCandidateCollector::Process(InventoryEntryData* a_entryData)
 	{
 		if (!a_entryData)
 		{
@@ -117,14 +116,14 @@ namespace IED
 		auto type      = ItemData::GetItemType(form);
 		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& r = m_data.forms.try_emplace(
-								  form->formID,
-								  form,
-								  type,
-								  extraType)
-		              .first->second;
+		auto& entry = m_data.forms.try_emplace(
+									  form->formID,
+									  form,
+									  type,
+									  extraType)
+		                  .first->second;
 
-		r.sharedCount = (r.count += a_entryData->countDelta);
+		entry.sharedCount = (entry.count += a_entryData->countDelta);
 
 		if (extraType < Data::ObjectTypeExtra::kMax)
 		{
@@ -142,56 +141,56 @@ namespace IED
 
 				BSReadLocker locker(e->m_lock);
 
-				auto& presence = e->m_presence;
+				auto presence = e->m_presence;
 				if (!presence)
 				{
 					continue;
 				}
 
-				if (!r.equipped)
+				if (!entry.equipped)
 				{
 					if (presence->HasType(ExtraWorn::EXTRA_DATA))
 					{
-						r.equipped = true;
+						entry.equipped = true;
 					}
 				}
 
-				if (!r.equippedLeft)
+				if (!entry.equippedLeft)
 				{
 					if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
 					{
-						r.equippedLeft = true;
+						entry.equippedLeft = true;
 					}
 				}
 
-				if (m_isPlayer && !r.favorited)
+				if (m_isPlayer && !entry.favorited)
 				{
 					if (presence->HasType(ExtraHotkey::EXTRA_DATA))
 					{
-						r.favorited = true;
+						entry.favorited = true;
 					}
 				}
 
-				if (!r.cannotWear)
+				if (!entry.cannotWear)
 				{
 					if (presence->HasType(ExtraCannotWear::EXTRA_DATA))
 					{
-						r.cannotWear = true;
+						entry.cannotWear = true;
 					}
 				}
 			}
 		}
 
 		if (extraType != Data::ObjectTypeExtra::kNone &&
-		    (r.equipped || r.equippedLeft))
+		    (entry.equipped || entry.equippedLeft))
 		{
-			r.extraEquipped.type = extraType;
+			entry.extraEquipped.type = extraType;
 
 			auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
 
-			if (r.equipped)
+			if (entry.equipped)
 			{
-				r.extraEquipped.slot = slot;
+				entry.extraEquipped.slot = slot;
 
 				if (slot < Data::ObjectSlotExtra::kMax)
 				{
@@ -199,11 +198,11 @@ namespace IED
 				}
 			}
 
-			if (r.equippedLeft)
+			if (entry.equippedLeft)
 			{
 				auto slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
 
-				r.extraEquipped.slotLeft = slotLeft;
+				entry.extraEquipped.slotLeft = slotLeft;
 
 				if (slotLeft < Data::ObjectSlotExtra::kMax)
 				{
@@ -211,7 +210,7 @@ namespace IED
 				}
 			}
 
-			m_data.equippedForms.emplace_back(std::addressof(r));
+			m_data.equippedForms.emplace_back(std::addressof(entry));
 		}
 	}
 

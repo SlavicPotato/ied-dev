@@ -86,7 +86,7 @@ namespace IED
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
 
-			std::uint8_t m_tmpFormType{ 0xFF };
+			stl::optional<std::uint8_t> m_tmpFormType;
 
 			Controller& m_controller;
 		};

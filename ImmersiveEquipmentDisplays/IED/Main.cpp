@@ -29,6 +29,11 @@ namespace IED
 
 	bool Initializer::Run(const SKSEInterface* a_skse)
 	{
+		if (m_done)
+		{
+			return false;
+		}
+
 		Debug("Loading INI..");
 
 		auto config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE_NOEXT);
@@ -122,6 +127,8 @@ namespace IED
 			gLog.Close();
 		}
 
+		m_done = true;
+
 		return true;
 	}
 
@@ -165,27 +172,30 @@ namespace IED
 
 		auto handle = a_skse->GetPluginHandle();
 
-		auto mi = skse.GetInterface<SKSEMessagingInterface>();
+		auto messagingInterface = skse.GetInterface<SKSEMessagingInterface>();
 
-		ASSERT(mi != nullptr);
+		ASSERT(messagingInterface);
 
-		SKSEMessagingHandler::GetSingleton().Setup(handle, mi);
+		SKSEMessagingHandler::GetSingleton().Setup(handle, messagingInterface);
 
 		Debug("Registering papyrus functions..");
 
-		auto pi = skse.GetInterface<SKSEPapyrusInterface>();
+		auto papyrusInterface = skse.GetInterface<SKSEPapyrusInterface>();
 
-		ASSERT(pi != nullptr);
+		ASSERT(papyrusInterface);
 
-		pi->Register(Papyrus::Register);
+		papyrusInterface->Register(Papyrus::Register);
 
 		Debug("Setting up SKSE serialization handler..");
 
-		auto si = skse.GetInterface<SKSESerializationInterface>();
+		auto serializationInterface = skse.GetInterface<SKSESerializationInterface>();
 
-		ASSERT(si != nullptr);
+		ASSERT(serializationInterface);
 
-		SKSESerializationEventHandler::GetSingleton().Setup(handle, 'ADEI', si);
+		SKSESerializationEventHandler::GetSingleton().Setup(
+			handle,
+			SKSE_SERIALIZATION_UID,
+			serializationInterface);
 	}
 
 	void Initializer::Receive(const SKSEMessagingEvent& a_evn)

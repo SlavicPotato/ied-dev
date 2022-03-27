@@ -9,7 +9,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 {
 	auto& skse = ISKSE::GetSingleton();
 
-	bool ret = false;
+	bool result = false;
 
 	try
 	{
@@ -21,9 +21,9 @@ static bool Initialize(const SKSEInterface* a_skse)
 			return false;
 		}
 
-		ret = IED::Initializer::GetSingleton().Run(a_skse);
+		result = IED::Initializer::GetSingleton().Run(a_skse);
 
-		if (ret)
+		if (result)
 		{
 			auto usageBranch = skse.GetTrampolineUsage(TrampolineID::kBranch);
 			auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
@@ -43,7 +43,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 			"An exception occured during initialization:\n\n%s",
 			e.what());
 
-		ret = false;
+		result = false;
 	}
 	catch (...)
 	{
@@ -51,10 +51,10 @@ static bool Initialize(const SKSEInterface* a_skse)
 			PLUGIN_NAME,
 			"An exception occured during initialization");
 
-		ret = false;
+		result = false;
 	}
 
-	return ret;
+	return result;
 }
 
 extern "C" {

@@ -59,14 +59,18 @@ namespace IED
 		}
 
 		bool UIFormTypeSelectorWidget::DrawFormTypeSelector(
-			std::uint8_t& a_type,
-			filter_func_t a_filter)
+			stl::optional<std::uint8_t>& a_type,
+			filter_func_t                a_filter)
 		{
 			bool result = false;
 
+			auto preview = a_type ?
+			                   form_type_to_desc(*a_type) :
+                               nullptr;
+
 			if (ImGui::BeginCombo(
 					"##ex_ft_sel",
-					form_type_to_desc(a_type),
+					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
 				for (auto& [i, e] : m_data)
@@ -78,7 +82,7 @@ namespace IED
 
 					ImGui::PushID(i);
 
-					bool selected = (i == a_type);
+					bool selected = (a_type == i);
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())

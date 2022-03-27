@@ -27,6 +27,7 @@ namespace IED
 		mutable stl::optional<TESCombatStyle*>                       combatStyle;
 		mutable stl::optional<RE::TESWeather*>                       currentWeather;
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
+		mutable stl::optional<BIPED_OBJECT>                           shieldSlot;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -250,6 +251,16 @@ namespace IED
 			}
 
 			return *weatherClass;
+		}
+		
+		[[nodiscard]] constexpr auto get_shield_slot() const
+		{
+			if (!shieldSlot)
+			{
+				shieldSlot = actor->GetShieldBipedObject();
+			}
+
+			return *shieldSlot;
 		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept

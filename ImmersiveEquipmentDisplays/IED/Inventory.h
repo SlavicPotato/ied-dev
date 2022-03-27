@@ -35,8 +35,8 @@ namespace IED
 			TESContainer&                          a_container,
 			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
 
-		SKMP_FORCEINLINE void Accept(TESContainer::Entry* entry);
-		SKMP_FORCEINLINE void Accept(InventoryEntryData* a_entryData);
+		SKMP_FORCEINLINE void Process(TESContainer::Entry* entry);
+		SKMP_FORCEINLINE void Process(InventoryEntryData* a_entryData);
 
 		void GenerateSlotCandidates(bool a_checkFav);
 

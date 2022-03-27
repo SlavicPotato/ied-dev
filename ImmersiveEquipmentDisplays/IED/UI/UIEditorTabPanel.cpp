@@ -76,9 +76,7 @@ namespace IED
 		{
 			if (ImGui::BeginTabBar("gen_editor_panel"))
 			{
-				using enum_type = std::underlying_type_t<Data::ConfigClass>;
-
-				enum_type i = std::size(m_interfaces);
+				auto i = Data::CONFIG_CLASS_MAX;
 
 				while (i)
 				{

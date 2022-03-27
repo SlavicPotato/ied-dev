@@ -551,7 +551,7 @@ namespace IED
 			return m_skeletonCache;
 		}
 
-		[[nodiscard]] NiTransform GetCachedOrDefaultTransform(
+		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
 
 	private:

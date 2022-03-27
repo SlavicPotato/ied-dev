@@ -984,6 +984,8 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
+				auto old = e.flags;
+
 				if (a_enable)
 				{
 					e.flags.set(BaseFlags::kPlayAnimation);
@@ -993,7 +995,7 @@ namespace IED
 					e.flags.clear(BaseFlags::kPlayAnimation);
 				}
 
-				if (!e.flags.test(BaseFlags::kDisabled))
+				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueReset(a_target, a_class);
 				}

@@ -77,7 +77,7 @@ namespace IED
 					m_cmeNodes.try_emplace(
 						e->first,
 						node,
-						GetCachedOrDefaultTransform(e->second.name));
+						GetCachedOrZeroTransform(e->second.name));
 				}
 			}
 
@@ -285,7 +285,7 @@ namespace IED
 		return false;
 	}
 
-	NiTransform ActorObjectHolder::GetCachedOrDefaultTransform(
+	NiTransform ActorObjectHolder::GetCachedOrZeroTransform(
 		const stl::fixed_string& a_name) const
 	{
 		if (m_skeletonCache)
@@ -378,21 +378,16 @@ namespace IED
 
 	void ActorObjectHolder::ApplyNodeTransformOverrides(NiNode* a_root) const
 	{
-		auto skelIDExtraData = a_root->GetExtraData(NodeOverrideData::GetSkelIDExtraDataName());
+		auto skelIDExtraData = a_root->GetExtraData<NiIntegerExtraData>(
+			NodeOverrideData::GetSkelIDExtraDataName());
+
 		if (!skelIDExtraData)
 		{
 			return;
 		}
 
-		if (!NRTTI<NiIntegerExtraData>::IsType(skelIDExtraData))
-		{
-			return;
-		}
-
-		auto skelID = static_cast<NiIntegerExtraData*>(skelIDExtraData)->m_data;
-
-		if (skelID != 628145516 &&  // female
-		    skelID != 1361955)      // male
+		if (skelIDExtraData->m_data != 628145516 &&  // female
+		    skelIDExtraData->m_data != 1361955)      // male
 		{
 			return;
 		}
@@ -403,18 +398,15 @@ namespace IED
 			return;
 		}
 
-		auto xpExtraData = npcNode->GetExtraData(NodeOverrideData::GetXPMSEExtraDataName());
+		auto xpExtraData = npcNode->GetExtraData<NiFloatExtraData>(
+			NodeOverrideData::GetXPMSEExtraDataName());
+
 		if (!xpExtraData)
 		{
 			return;
 		}
 
-		if (!NRTTI<NiFloatExtraData>::IsType(xpExtraData))
-		{
-			return;
-		}
-
-		if (static_cast<NiFloatExtraData*>(xpExtraData)->m_data < 3.6f)
+		if (xpExtraData->m_data < 3.6f)
 		{
 			return;
 		}

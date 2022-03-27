@@ -206,9 +206,9 @@ namespace IED
 							if (auto l = FoldStringW(
 									MAP_PRECOMPOSED,
 									srcStr,
-									std::size(srcStr),
+									static_cast<int>(std::size(srcStr)),
 									dstStr,
-									std::size(dstStr));
+									static_cast<int>(std::size(dstStr)));
 							    l == 2)
 							{
 								cbuf[0] = dstStr[0];

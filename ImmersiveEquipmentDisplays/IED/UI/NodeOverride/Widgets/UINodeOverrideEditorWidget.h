@@ -1531,7 +1531,7 @@ namespace IED
 
 			ImGui::PushID("offset_list");
 
-			std::size_t i = 0;
+			int i = 0;
 
 			auto it = a_entry.begin();
 

@@ -8,6 +8,8 @@ namespace IED
 		ILog,
 		::Events::EventSink<SKSEMessagingEvent>
 	{
+		inline static constexpr std::uint32_t SKSE_SERIALIZATION_UID = 'ADEI';
+
 	public:
 		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
 		{
@@ -32,6 +34,8 @@ namespace IED
 		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
 
 		Controller* m_controller{ nullptr };
+
+		bool m_done{ false };
 
 		static Initializer m_Instance;
 	};
