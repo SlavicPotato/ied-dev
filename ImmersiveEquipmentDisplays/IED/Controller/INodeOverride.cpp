@@ -79,15 +79,15 @@ namespace IED
 			}
 		}
 
-		auto data = a_params.get_item_data();
+		auto& data = a_params.get_item_data();
 
-		for (auto& e : *data)
+		for (auto& e : data)
 		{
 			if (IFormCommon::HasKeyword(e.second.item, a_keyword))
 			{
 				if (e.second.item->IsArmor())
 				{
-					e.second.matched = true;
+					a_params.set_matched_item(e.second.bip);
 				}
 
 				return true;
@@ -125,10 +125,10 @@ namespace IED
 			return { form, nullptr };
 		}
 
-		auto data = a_params.get_item_data();
+		auto& data = a_params.get_item_data();
 
-		auto it = data->find(a_form);
-		if (it != data->end())
+		auto it = data.find(a_form);
+		if (it != data.end())
 		{
 			return { it->second.item, std::addressof(*it) };
 		}
@@ -158,7 +158,7 @@ namespace IED
 
 		if (r.second && r.second->second.item->IsArmor())
 		{
-			r.second->second.matched = true;
+			a_params.set_matched_item(r.second->second.bip);
 		}
 
 		return true;
@@ -242,13 +242,13 @@ namespace IED
 
 				if (a_match.form.get_id())
 				{
-					auto data = a_params.get_item_data();
+					auto& data = a_params.get_item_data();
 
-					auto it = data->find(a_match.form.get_id());
+					auto it = data.find(a_match.form.get_id());
 
 					auto rv = a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1);
 
-					if (it == data->end())
+					if (it == data.end())
 					{
 						return rv;
 					}
@@ -269,7 +269,10 @@ namespace IED
 						}
 					}
 
-					it->second.matched = !rv;
+					if (!rv)
+					{
+						a_params.set_matched_item(it->second.bip);
+					}
 
 					return !rv;
 				}
@@ -458,11 +461,11 @@ namespace IED
 					[&](TESForm* a_form) {
 						if (a_form->IsArmor())
 						{
-							auto data = a_params.get_item_data();
-							auto it   = data->find(a_form->formID);
-							if (it != data->end())
+							auto& data = a_params.get_item_data();
+							auto  it   = data.find(a_form->formID);
+							if (it != data.end())
 							{
-								it->second.matched = true;
+								a_params.set_matched_item(it->second.bip);
 							}
 						}
 					});
@@ -842,6 +845,8 @@ namespace IED
 
 		for (auto& e : a_data)
 		{
+			a_params.clear_matched_items();
+
 			if (run_matches(e, a_params))
 			{
 				if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
@@ -859,8 +864,6 @@ namespace IED
 				else
 				{
 					matched = true;
-
-					a_params.clear_matched_items();
 
 					if (e.offsetFlags.test_any(Data::NodeOverrideOffsetFlags::kAdjustFlags))
 					{
@@ -1018,7 +1021,7 @@ namespace IED
 	}
 
 	auto INodeOverride::nodeOverrideParams_t::get_item_data()
-		-> item_container_type*
+		-> item_container_type&
 	{
 		if (!itemData)
 		{
@@ -1063,7 +1066,7 @@ namespace IED
 			}
 		}
 
-		return itemData.get();
+		return *itemData;
 	}
 
 	float INodeOverride::nodeOverrideParams_t::get_weapon_adjust()

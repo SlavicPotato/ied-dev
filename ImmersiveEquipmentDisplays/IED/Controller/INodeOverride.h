@@ -27,7 +27,6 @@ namespace IED
 			TESForm*     item;
 			BIPED_OBJECT bip{ BIPED_OBJECT::kNone };
 			float        weaponAdjust{ 0.0f };
-			bool         matched{ false };
 		};
 
 		struct nodeOverrideParamsArgs_t
@@ -48,6 +47,7 @@ namespace IED
 			stl::optional<float>                 weightAdjust;
 			std::unique_ptr<item_container_type> itemData;
 			stl::optional<bool>                  bipedHasArmor;
+			std::uint64_t                        matchedSlotFlags{ 0 };
 
 			auto get_biped_has_armor()
 			{
@@ -59,7 +59,7 @@ namespace IED
 				return *bipedHasArmor;
 			}
 
-			item_container_type* get_item_data();
+			item_container_type& get_item_data();
 
 			float get_weapon_adjust();
 
@@ -73,15 +73,14 @@ namespace IED
 				return *weightAdjust;
 			}
 
-			void clear_matched_items() noexcept
+			inline constexpr void clear_matched_items() noexcept
 			{
-				if (itemData)
-				{
-					for (auto& e : *itemData)
-					{
-						e.second.matched = false;
-					}
-				}
+				matchedSlotFlags = 0;
+			}
+
+			inline constexpr void set_matched_item(BIPED_OBJECT a_object) noexcept
+			{
+				matchedSlotFlags |= 1ui64 << stl::underlying(a_object);
 			}
 
 			float get_matched_weapon_adjust() const noexcept
@@ -92,7 +91,7 @@ namespace IED
 				{
 					for (auto& e : *itemData)
 					{
-						if (e.second.matched)
+						if (matchedSlotFlags & (1ui64 << stl::underlying(e.second.bip)))
 						{
 							result += e.second.weaponAdjust;
 						}
@@ -103,7 +102,7 @@ namespace IED
 			}
 
 			template <class Tf>
-			bool equipped_armor_visitor(
+			constexpr bool equipped_armor_visitor(
 				Tf a_func)
 			{
 				auto bip = get_biped();
@@ -127,12 +126,14 @@ namespace IED
 
 					if (e.item &&
 					    e.item != e.addon &&
-					    e.item != skin &&
-					    e.item->IsArmor())
+					    e.item != skin)
 					{
-						if (a_func(e.item))
+						if (auto armor = e.item->As<TESObjectARMO>())
 						{
-							return true;
+							if (a_func(armor) == true)
+							{
+								return true;
+							}
 						}
 					}
 				}
@@ -141,12 +142,17 @@ namespace IED
 			}
 
 		private:
-			inline static constexpr bool is_av_ignored_slot(
+			inline constexpr bool is_av_ignored_slot(
 				BIPED_OBJECT a_slot) noexcept
 			{
+				if (a_slot == get_shield_slot())
+				{
+					return true;
+				}
+
 				switch (a_slot)
 				{
-				case BIPED_OBJECT::kShield:
+					// ??
 				case BIPED_OBJECT::kDecapitateHead:
 				case BIPED_OBJECT::kDecapitate:
 				case BIPED_OBJECT::kFX01:
