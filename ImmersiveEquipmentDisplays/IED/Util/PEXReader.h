@@ -54,10 +54,11 @@ namespace IED
 
 			return
 #if defined(BOOST_ENDIAN_BIG_BYTE)
-				swap_endian(result);
+				swap_endian(result)
 #else
-				return result;
+				result
 #endif
+					;
 		}
 
 		std::string read_string();
