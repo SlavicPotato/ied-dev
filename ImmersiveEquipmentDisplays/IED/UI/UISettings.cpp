@@ -162,8 +162,7 @@ namespace IED
 				{
 					if (data.enableXP32AA)
 					{
-						m_controller.QueueEvaluate(
-							Data::IData::GetPlayerRefID(),
+						m_controller.QueueEvaluateAll(
 							ControllerUpdateFlags::kNone);
 					}
 					else

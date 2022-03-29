@@ -96,10 +96,10 @@ namespace IED
 			{ "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left", "MOV WeaponDaggerLeftOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponBackDefault", { "Two-Handed", "MOV WeaponBackDefault" } },
 			{ "MOV WeaponBackSWP", { "Two-Handed SWP", "MOV WeaponBackSWP" } },
-			{ "MOV WeaponBackFSM", { "Two-Handed FSM", "MOV WeaponBackFSM" } },
+			{ "MOV WeaponBackFSM", { "Two-Handed FSM", "MOV WeaponBackFSM", WeaponPlacementID::AtHip } },
 			{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace", "MOV WeaponBackAxeMaceDefault" } },
 			{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP", "MOV WeaponBackAxeMaceSWP" } },
-			{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM", "MOV WeaponBackAxeMaceFSM" } },
+			{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM", "MOV WeaponBackAxeMaceFSM", WeaponPlacementID::AtHip } },
 			{ "MOV WeaponStaffDefault", { "Staff", "MOV WeaponStaffDefault" } },
 			{ "MOV WeaponStaffLeftDefault", { "Staff Left", "MOV WeaponStaffLeftDefault" } },
 			{ "MOV WeaponBowDefault", { "Bow", "MOV WeaponBowDefault" } },
@@ -109,13 +109,13 @@ namespace IED
 			{ "MOV WeaponCrossbowDefault", { "Crossbow", "MOV WeaponCrossbowDefault" } },
 			{ "MOV WeaponCrossbowChesko", { "Crossbow Chesko", "MOV WeaponCrossbowChesko" } },
 			{ "MOV QUIVERDefault", { "Quiver", "MOV QUIVERDefault" } },
-			{ "MOV QUIVERChesko", { "Quiver Chesko", "MOV QUIVERChesko" } },
+			{ "MOV QUIVERChesko", { "Quiver Chesko", "MOV QUIVERChesko", WeaponPlacementID::Frostfall } },
 			{ "MOV QUIVERLeftHipBolt", { "Quiver Left-Hip Bolt", "MOV QUIVERLeftHipBolt" } },
 			{ "MOV BOLTDefault", { "Bolt", "MOV BOLTDefault" } },
-			{ "MOV BOLTChesko", { "Bolt Chesko", "MOV BOLTChesko" } },
+			{ "MOV BOLTChesko", { "Bolt Chesko", "MOV BOLTChesko", WeaponPlacementID::Frostfall } },
 			{ "MOV BOLTLeftHipBolt", { "Bolt Left-Hip", "MOV BOLTLeftHipBolt" } },
 			{ "MOV BOLTABQ", { "Bolt ABQ", "MOV BOLTABQ" } },
-			{ "MOV BOLTXP32", { "Bolt XP32", "MOV BOLTXP32" } },
+			{ "MOV BOLTXP32", { "Bolt XP32", "MOV BOLTXP32", WeaponPlacementID::Frostfall } },
 			{ "MOV ShieldBackDefault", { "Shield Back", "MOV ShieldBackDefault" } }
 
 		}),
@@ -306,7 +306,7 @@ namespace IED
 								"WeaponBack",
 								"MOV WeaponBackDefault",
 								"Two-Handed",
-								AnimationWeaponSlot::None,
+								AnimationWeaponSlot::TwoHanded,
 								{
 
 									{ "MOV WeaponBackDefault", { "Two-Handed" } },
@@ -340,7 +340,7 @@ namespace IED
 							"QUIVER",
 							"MOV QUIVERDefault",
 							"Quiver",
-							AnimationWeaponSlot::None,
+							AnimationWeaponSlot::Quiver,
 							{
 								{ "MOV QUIVERDefault", { "Quiver" } },
 								{ "MOV QUIVERChesko", { "Quiver Chesko" } },

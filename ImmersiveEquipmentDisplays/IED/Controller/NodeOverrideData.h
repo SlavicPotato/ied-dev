@@ -19,7 +19,9 @@ namespace IED
 		Default,
 		OnBack,
 		OnBackHip,
-		Ankle
+		Ankle,
+		AtHip,
+		Frostfall,
 	};
 
 	class NodeOverrideData

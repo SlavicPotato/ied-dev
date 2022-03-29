@@ -64,27 +64,29 @@ namespace IED
 
 		ConfigKeyCombo m_toggleBlockKeys;
 
-		bool               m_enableUI{ true };
-		bool               m_dpiAwareness{ false };
-		ConfigKeyCombo     m_UIOpenKeys;
-		bool               m_forceUIOpenKeys{ false };
-		bool               m_enableUIRestrictions{ false };
-		long long          m_taskPoolBudget{ 0 };
-		bool               m_closeLogFile{ false };
-		bool               m_UIScaling{ true };
-		bool               m_nodeOverrideEnabled{ false };
-		bool               m_nodeOverridePlayerEnabled{ false };
-		bool               m_weaponAdjustDisable{ false };
-		bool               m_weaponAdjustFix{ true };
-		bool               m_forceDefaultConfig{ false };
-		bool               m_disableNPCProcessing{ false };
-		bool               m_immediateFavUpdate{ false };
-		bool               m_effectShaders{ false };
-		bool               m_disableIntroBanner{ true };
-		bool               m_corpseScatterPatch{ false };
-		bool               m_applyTransformOverrides{ true };
-		float              m_introBannerVOffset{ 110.0f };
-		LogLevel           m_logLevel{ LogLevel::Message };
+		bool           m_enableUI{ true };
+		bool           m_dpiAwareness{ false };
+		ConfigKeyCombo m_UIOpenKeys;
+		bool           m_forceUIOpenKeys{ false };
+		bool           m_enableUIRestrictions{ false };
+		long long      m_taskPoolBudget{ 0 };
+		bool           m_closeLogFile{ false };
+		bool           m_UIScaling{ true };
+		bool           m_nodeOverrideEnabled{ false };
+		bool           m_nodeOverridePlayerEnabled{ false };
+		bool           m_weaponAdjustDisable{ false };
+		bool           m_weaponAdjustFix{ true };
+		bool           m_forceDefaultConfig{ false };
+		bool           m_disableNPCProcessing{ false };
+		bool           m_immediateFavUpdate{ false };
+		bool           m_effectShaders{ false };
+		bool           m_disableIntroBanner{ true };
+		bool           m_corpseScatterPatch{ false };
+		bool           m_applyTransformOverrides{ true };
+		float          m_introBannerVOffset{ 110.0f };
+		LogLevel       m_logLevel{ LogLevel::Message };
+
+		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;
 
 		bool m_enableInMenus{ false };

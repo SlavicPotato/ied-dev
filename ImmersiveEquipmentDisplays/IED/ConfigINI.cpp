@@ -121,24 +121,38 @@ namespace IED
 				r.first->second.second);
 		}
 
-		m_agInfo.crc = static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "CRC", 0));
+		if (m_agManualMode = parsers.reader.GetLongValue(SECT_ANIM, "Mode", 0); m_agManualMode > 0)
+		{
+			m_agInfo.crc = static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "CRC", 0));
 
-		m_agInfo.set_base(
-			AnimationWeaponType::Sword,
-			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseSword", 0)));
-		
-		m_agInfo.set_base(
-			AnimationWeaponType::Axe,
-			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseAxe", 0)));
-		
-		m_agInfo.set_base(
-			AnimationWeaponType::Dagger,
-			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseDagger", 0)));
-		
-		m_agInfo.set_base(
-			AnimationWeaponType::Mace,
-			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseMace", 0)));
+			m_agInfo.set_base(
+				AnimationWeaponType::Sword,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseSword", 0)));
 
+			m_agInfo.set_base(
+				AnimationWeaponType::Axe,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseAxe", 0)));
+
+			m_agInfo.set_base(
+				AnimationWeaponType::Dagger,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseDagger", 0)));
+
+			m_agInfo.set_base(
+				AnimationWeaponType::Mace,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseMace", 0)));
+
+			m_agInfo.set_base(
+				AnimationWeaponType::TwoHandedSword,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBase2HSword", 0)));
+
+			m_agInfo.set_base(
+				AnimationWeaponType::TwoHandedAxe,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBase2HAxe", 0)));
+
+			m_agInfo.set_base(
+				AnimationWeaponType::Bow,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseBow", 0)));
+		}
 		m_loaded = parsers.reader.is_loaded();
 
 		return m_loaded;

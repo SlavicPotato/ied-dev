@@ -6,8 +6,6 @@
 
 #include "IED/Util/PEXReader.h"
 
-#include <ext/StrHelpers.h>
-
 namespace IED
 {
 
@@ -20,24 +18,25 @@ namespace IED
 	{
 		if (!m_strings)
 		{
-			m_strings = std::make_unique<const AnimStringHolder>();
+			m_strings = std::make_unique<AnimStringHolder>();
 		}
 	}
 
-	void IAnimationManager::ExtractAnimationInfoFromPEX(AnimationGroupInfo& a_out)
+	AnimationGroupInfo IAnimationManager::ExtractAnimationInfoFromPEX()
 	{
-		PEXReader reader;
+		PEXReader          reader;
+		AnimationGroupInfo result;
 
 		reader.Open(FNIS_AA2_PEX_PATH);
 		reader.ReadData();
+
+		// validate data first
 
 		auto& st = reader.GetStringTable();
 		if (st.size() != 224)
 		{
 			throw std::exception("unexpected string table size");
 		}
-
-		// validate the ranges first
 
 		auto modIdBegin = st.begin() + 33;
 		auto modIdEnd   = st.begin() + 63;
@@ -46,7 +45,7 @@ namespace IED
 		{
 			if (it->size() != 3)
 			{
-				throw std::exception("unexpected mod prefix string length");
+				throw std::exception("mod prefix strlen != 3");
 			}
 		}
 
@@ -57,7 +56,7 @@ namespace IED
 		{
 			if (it->size() != 6)
 			{
-				throw std::exception("unexpected aa set string length");
+				throw std::exception("aa set strlen != 6");
 			}
 		}
 
@@ -65,10 +64,10 @@ namespace IED
 
 		if (!numMods)
 		{
-			throw std::exception("no animation mods found");
+			throw std::exception("numMods == 0");
 		}
 
-		if (numMods < 1 || numMods > 30)
+		if (numMods < 0 || numMods > 30)
 		{
 			throw std::exception("numMods out of range");
 		}
@@ -79,7 +78,7 @@ namespace IED
 
 		if (!numSets)
 		{
-			throw std::exception("no aa sets found");
+			throw std::exception("numSets == 0");
 		}
 
 		if (numSets < 0 || numSets > 128)
@@ -92,39 +91,33 @@ namespace IED
 			throw std::exception("unexpected crc string length");
 		}
 
-		std::int32_t crc = std::stol(st[74]);
+		// attempt to extract the info
 
-		// find the mod id
+		result.crc = std::stol(st[74]);
+
 		std::int32_t modId = -1;
 		std::int32_t i     = 0;
 
-		std::string modPrefix("xpe");
-
-		for (auto it = modIdBegin; it != modIdEnd; ++it)
+		// find the mod id
+		for (auto it = modIdBegin; it != modIdEnd; ++it, i++)
 		{
-			if (StrHelpers::iequal(modPrefix, *it))
+			if (_stricmp(it->data(), "xpe") == 0)
 			{
 				modId = i;
 				break;
 			}
-
-			i++;
 		}
 
 		if (modId < 0)
 		{
-			throw std::exception("xpe mod prefix not found");
+			throw std::exception("mod prefix not found (xpe)");
 		}
-
-		std::int32_t groupBaseSword  = -1;
-		std::int32_t groupBaseAxe    = -1;
-		std::int32_t groupBaseDagger = -1;
-		std::int32_t groupBaseMace   = -1;
-
-		std::uint8_t presenceFlags = 0;
 
 		setsEnd = setsBegin + numSets;
 
+		stl::flag<PresenceFlags> presenceFlags{ PresenceFlags::kNone };
+
+		// find ag base values
 		for (auto it = setsBegin; it != setsEnd; ++it)
 		{
 			std::int32_t data = std::stol(*it);
@@ -136,53 +129,66 @@ namespace IED
 				auto group = c / 100;
 				auto base  = c - group * 100;
 
-				//_DMESSAGE("%d", group);
-
 				switch (group)
 				{
 				case 37:
-					groupBaseSword = base;
-					presenceFlags |= 0x1;
+					result.set_base(AnimationWeaponType::Sword, base);
+					presenceFlags.set(PresenceFlags::kSword);
+					break;
+				case 38:
+					result.set_base(AnimationWeaponType::TwoHandedAxe, base);
+					presenceFlags.set(PresenceFlags::k2hSword);
+					break;
+				case 39:
+					result.set_base(AnimationWeaponType::TwoHandedSword, base);
+					presenceFlags.set(PresenceFlags::k2hAxe);
 					break;
 				case 40:
-					groupBaseAxe = base;
-					presenceFlags |= 0x2;
+					result.set_base(AnimationWeaponType::Axe, base);
+					presenceFlags.set(PresenceFlags::kAxe);
+					break;
+				case 41:
+					result.set_base(AnimationWeaponType::Bow, base);
+					presenceFlags.set(PresenceFlags::kBow);
 					break;
 				case 43:
-					groupBaseDagger = base;
-					presenceFlags |= 0x4;
+					result.set_base(AnimationWeaponType::Dagger, base);
+					presenceFlags.set(PresenceFlags::kDagger);
 					break;
 				case 45:
-					groupBaseMace = base;
-					presenceFlags |= 0x8;
+					result.set_base(AnimationWeaponType::Mace, base);
+					presenceFlags.set(PresenceFlags::kMace);
 					break;
 				}
 
-				if ((presenceFlags & 0xF) == 0xF)
+				if (presenceFlags.test(PresenceFlags::kAll))
 				{
 					break;
 				}
 			}
 		}
 
-		if (groupBaseSword < 0 ||
-		    groupBaseAxe < 0 ||
-		    groupBaseDagger < 0 ||
-		    groupBaseMace < 0)
+		if (!presenceFlags.test(PresenceFlags::kAll))
 		{
-			throw std::exception("one or more group base values could not be determined");
+			throw std::exception("one or more ag base values weren't found");
 		}
 
-		a_out.crc = crc;
-		a_out.set_base(AnimationWeaponType::Sword, groupBaseSword);
-		a_out.set_base(AnimationWeaponType::Axe, groupBaseAxe);
-		a_out.set_base(AnimationWeaponType::Dagger, groupBaseDagger);
-		a_out.set_base(AnimationWeaponType::Mace, groupBaseMace);
+		return result;
 	}
 
-	void IAnimationManager::SetAnimationInfo(const AnimationGroupInfo& a_in)
+	inline static constexpr bool should_select_back_left_anim(
+		AnimationWeaponType  a_leftID,
+		ActorAnimationState& a_state,
+		TESForm*             a_objLeft) noexcept
 	{
-		m_groupInfo = a_in;
+		return (a_leftID == AnimationWeaponType::Sword &&
+		        a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
+		       (a_leftID == AnimationWeaponType::Dagger &&
+		        (a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip ||
+		         a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack)) ||
+		       (a_leftID == AnimationWeaponType::Axe &&
+		        a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
+		       is_shield(a_objLeft);
 	}
 
 	void IAnimationManager::UpdateAA(
@@ -219,18 +225,25 @@ namespace IED
 
 					if ((leftID == AnimationWeaponType::Sword &&
 					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
-					    ((leftID == AnimationWeaponType::Dagger &&
-					      a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
-					     (leftID == AnimationWeaponType::Axe &&
-					      a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack)) ||
+					    (leftID == AnimationWeaponType::Dagger &&
+					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
+					    (leftID == AnimationWeaponType::Axe &&
+					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
 					    is_shield(objLeft))
 					{
 						animVar = 2;
+					}
+					else if (
+						leftID == AnimationWeaponType::Dagger &&
+						a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip)
+					{
+						animVar = 4;
 					}
 					else
 					{
 						animVar = 1;
 					}
+
 					break;
 
 				default:
@@ -258,31 +271,58 @@ namespace IED
 					type,
 					animVar);
 			}
+
 			break;
+
 		case AnimationWeaponType::Dagger:
 
 			{
-				auto leftID = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Left]);
+				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
+				auto leftID  = GetObjectType(objLeft);
 
 				std::int32_t animVar;
 
 				switch (a_state.get_placement(AnimationWeaponSlot::Dagger))
 				{
+				case WeaponPlacementID::OnBackHip:
+
+					if (leftID == AnimationWeaponType::Dagger &&
+					    a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip)
+					{
+						animVar = 2;
+					}
+					else if (
+						(leftID == AnimationWeaponType::Dagger &&
+					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
+						(leftID == AnimationWeaponType::Sword &&
+					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
+						(leftID == AnimationWeaponType::Axe &&
+					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
+						is_shield(objLeft))
+					{
+						animVar = 5;
+					}
+					else
+					{
+						animVar = 1;
+					}
+
+					break;
+
+				case WeaponPlacementID::OnBack:
+
+					animVar = should_select_back_left_anim(leftID, a_state, objLeft) ?
+					              2 :
+                                  1;
+
+					break;
+
 				case WeaponPlacementID::Ankle:
 
 					animVar = leftID == AnimationWeaponType::Dagger &&
 					                  a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::Ankle ?
 					              4 :
                                   3;
-
-					break;
-
-				case WeaponPlacementID::OnBackHip:
-
-					animVar = leftID == AnimationWeaponType::Dagger &&
-					                  a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip ?
-					              2 :
-                                  1;
 
 					break;
 
@@ -304,6 +344,7 @@ namespace IED
 			}
 
 			break;
+
 		case AnimationWeaponType::Axe:
 
 			{
@@ -318,18 +359,25 @@ namespace IED
 
 					if ((leftID == AnimationWeaponType::Axe &&
 					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-					    ((leftID == AnimationWeaponType::Dagger &&
-					      a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
-					     (leftID == AnimationWeaponType::Sword &&
-					      a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack)) ||
+					    (leftID == AnimationWeaponType::Dagger &&
+					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
+					    (leftID == AnimationWeaponType::Sword &&
+					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
 					    is_shield(objLeft))
 					{
 						animVar = 2;
+					}
+					else if (
+						leftID == AnimationWeaponType::Dagger &&
+						a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip)
+					{
+						animVar = 4;
 					}
 					else
 					{
 						animVar = 1;
 					}
+
 					break;
 
 				default:
@@ -358,14 +406,61 @@ namespace IED
 					animVar);
 			}
 			break;
+
 		case AnimationWeaponType::Mace:
 
 			{
-				auto leftID = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Left]);
+				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
+				auto leftID  = GetObjectType(objLeft);
 
+				std::int32_t animVar;
+
+				if (leftID == AnimationWeaponType::Mace &&
+				    a_state.get_placement(AnimationWeaponSlot::MaceLeft) == WeaponPlacementID::Default)
+				{
+					animVar = 0;
+				}
+				else if (is_shield(objLeft))
+				{
+					animVar = 1;
+				}
+				else
+				{
+					animVar = -1;
+				}
+
+				SetAnimationVar(
+					a_actor,
+					a_state,
+					type,
+					animVar);
+			}
+
+			break;
+
+		case AnimationWeaponType::TwoHandedSword:
+		case AnimationWeaponType::TwoHandedAxe:
+
+			{
 				std::int32_t animVar =
-					leftID == AnimationWeaponType::Mace &&
-							a_state.get_placement(AnimationWeaponSlot::MaceLeft) == WeaponPlacementID::Default ?
+					a_state.get_placement(AnimationWeaponSlot::TwoHanded) == WeaponPlacementID::AtHip ?
+						0 :
+                        -1;
+
+				SetAnimationVar(
+					a_actor,
+					a_state,
+					type,
+					animVar);
+			}
+
+			break;
+
+		case AnimationWeaponType::Bow:
+
+			{
+				std::int32_t animVar =
+					a_state.get_placement(AnimationWeaponSlot::Quiver) == WeaponPlacementID::Frostfall ?
 						0 :
                         -1;
 
@@ -417,7 +512,7 @@ namespace IED
 			a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_crc, m_groupInfo->crc);
 			a_actor->animGraphHolder.SetVariableOnGraphsInt(se.crc, m_groupInfo->crc);
 
-			//gLog.Debug("%.8X: %s: %d", a_actor->formID, se.name.c_str(), value);
+			gLog.Debug("%.8X: %s: %d", a_actor->formID, se.name.c_str(), value);
 		}
 	}
 
@@ -444,6 +539,12 @@ namespace IED
 			return AnimationWeaponType::Axe;
 		case TESObjectWEAP::GameData::kType_OneHandMace:
 			return AnimationWeaponType::Mace;
+		case TESObjectWEAP::GameData::kType_TwoHandSword:
+			return AnimationWeaponType::TwoHandedSword;
+		case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			return AnimationWeaponType::TwoHandedAxe;
+		case TESObjectWEAP::GameData::kType_Bow:
+			return AnimationWeaponType::Bow;
 		default:
 			return AnimationWeaponType::None;
 		}
@@ -455,6 +556,9 @@ namespace IED
 			{ "FNISaa_axeeqp", "FNISaa_axeeqp_crc" },
 			{ "FNISaa_dageqp", "FNISaa_dageqp_crc" },
 			{ "FNISaa_maceqp", "FNISaa_maceqp_crc" },
+			{ "FNISaa_2hmeqp", "FNISaa_2hmeqp_crc" },
+			{ "FNISaa_2hweqp", "FNISaa_2hweqp_crc" },
+			{ "FNISaa_boweqp", "FNISaa_boweqp_crc" },
 		}
 	{
 	}

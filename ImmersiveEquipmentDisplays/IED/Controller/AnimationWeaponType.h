@@ -10,6 +10,9 @@ namespace IED
 		Axe,
 		Dagger,
 		Mace,
+		TwoHandedSword,
+		TwoHandedAxe,
+		Bow,
 
 		Max
 	};

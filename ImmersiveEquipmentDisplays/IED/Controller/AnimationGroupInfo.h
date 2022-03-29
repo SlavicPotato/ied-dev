@@ -11,17 +11,19 @@ namespace IED
 			std::int32_t base{ 0 };
 		};
 
+		using data_type = Group[stl::underlying(AnimationWeaponType::Max)];
+
 		[[nodiscard]] inline constexpr std::int32_t get_value(
 			AnimationWeaponType a_id,
 			std::int32_t        a_value) const noexcept
 		{
 			assert(a_id < AnimationWeaponType::Max);
 
-			return a_value < 0 ?
-			           0 :
-                       data[stl::underlying(a_id)].base + a_value;
+			auto base = data[stl::underlying(a_id)].base;
+
+			return base > 0 ? base + a_value : 0;
 		}
-		
+
 		[[nodiscard]] inline constexpr std::int32_t get_base(
 			AnimationWeaponType a_id) const noexcept
 		{
@@ -38,7 +40,7 @@ namespace IED
 		}
 
 		std::int32_t crc{ 0 };
-		Group        data[stl::underlying(AnimationWeaponType::Max)];
+		data_type    data{};
 	};
 
 }

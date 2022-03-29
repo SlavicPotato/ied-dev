@@ -37,7 +37,6 @@ namespace IED
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides)
 	{
 		InitializeInputHandlers();
-		SetAnimationInfo(a_config->m_agInfo);
 	}
 
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
@@ -55,6 +54,8 @@ namespace IED
 
 	void Controller::SinkInputEvents()
 	{
+		assert(m_iniconf);
+
 		Drivers::Input::RegisterForKeyEvents(m_inputHandlers.playerBlock);
 
 		if (m_iniconf->m_enableUI)
@@ -135,6 +136,8 @@ namespace IED
 
 	void Controller::InitializeData()
 	{
+		assert(m_iniconf);
+
 		m_config.settings.SetPath(PATHS::SETTINGS);
 
 		if (!m_config.settings.Load())
@@ -233,6 +236,8 @@ namespace IED
 
 	void Controller::InitializeSound()
 	{
+		assert(m_iniconf);
+
 		auto& settings = m_config.settings.data.sound;
 
 		for (auto& e : m_iniconf->m_sound.data)
@@ -261,6 +266,8 @@ namespace IED
 
 	void Controller::InitializeInputHandlers()
 	{
+		assert(m_iniconf);
+
 		m_inputHandlers.playerBlock.SetLambda([this] {
 			ITaskPool::AddTask(
 				[this] {
@@ -286,6 +293,8 @@ namespace IED
 
 	void Controller::InitializeUI()
 	{
+		assert(m_iniconf);
+
 		UIInitialize(*this);
 
 		const auto& config = m_config.settings.data;
@@ -437,24 +446,44 @@ namespace IED
 
 	void Controller::LoadAnimationData()
 	{
-		try
+		assert(m_iniconf);
+
+		if (m_iniconf->m_agManualMode >= 2)
 		{
-			AnimationGroupInfo info;
-			ExtractAnimationInfoFromPEX(info);
-
-			Debug(
-				"Got anim info: crc:[%d], groups:[sword:%d, axe: %d, dagger: %d, mace: %d]",
-				info.crc,
-				info.get_base(AnimationWeaponType::Sword),
-				info.get_base(AnimationWeaponType::Axe),
-				info.get_base(AnimationWeaponType::Dagger),
-				info.get_base(AnimationWeaponType::Mace));
-
-			SetAnimationInfo(info);
+			SetAnimationInfo(m_iniconf->m_agInfo);
 		}
-		catch (const std::exception& e)
+		else
 		{
-			Error("Couldn't extract animation info: %s", e.what());
+			try
+			{
+				auto info = ExtractAnimationInfoFromPEX();
+				SetAnimationInfo(info);
+			}
+			catch (const std::exception& e)
+			{
+				Error("Couldn't extract animation info: %s", e.what());
+			}
+
+			if (!GetAnimationInfo() &&
+			    m_iniconf->m_agManualMode == 1)
+			{
+				SetAnimationInfo(m_iniconf->m_agInfo);
+			}
+		}
+
+		if (auto& info = GetAnimationInfo())
+		{
+			Debug(
+				"XP32 aa: crc:[%d], xpe:[sword:%d, axe: %d, dagger: %d, mace: %d, 2hsword: %d, 2haxe: %d, bow: %d]",
+				info->crc,
+				info->get_base(AnimationWeaponType::Sword),
+				info->get_base(AnimationWeaponType::Axe),
+				info->get_base(AnimationWeaponType::Dagger),
+				info->get_base(AnimationWeaponType::Mace),
+				info->get_base(AnimationWeaponType::TwoHandedSword),
+				info->get_base(AnimationWeaponType::TwoHandedAxe),
+				info->get_base(AnimationWeaponType::Bow)
+			);
 		}
 	}
 

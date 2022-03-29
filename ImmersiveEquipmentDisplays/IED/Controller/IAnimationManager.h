@@ -37,11 +37,42 @@ namespace IED
 			BSFixedString FNISaa_crc{ "FNISaa_crc" };
 		};
 
-	protected:
-		void        InitializeAnimationStrings();
-		static void ExtractAnimationInfoFromPEX(AnimationGroupInfo& a_out);
+	public:
+		enum class PresenceFlags : std::uint32_t
+		{
+			kNone = 0,
 
-		void SetAnimationInfo(const AnimationGroupInfo& a_in);
+			kSword   = 1u << 0,
+			kAxe     = 1u << 1,
+			kDagger  = 1u << 2,
+			kMace    = 1u << 3,
+			k2hSword = 1u << 4,
+			k2hAxe   = 1u << 5,
+			kBow     = 1u << 6,
+
+			kAll = kSword |
+			       kAxe |
+			       kDagger |
+			       kMace |
+			       k2hSword |
+			       k2hAxe |
+			       kBow
+		};
+
+	protected:
+		void                      InitializeAnimationStrings();
+		static AnimationGroupInfo ExtractAnimationInfoFromPEX();
+
+		inline constexpr void SetAnimationInfo(const AnimationGroupInfo& a_in) noexcept(
+			std::is_nothrow_constructible_v<AnimationGroupInfo>)
+		{
+			m_groupInfo.emplace(a_in);
+		}
+
+		[[nodiscard]] inline constexpr auto& GetAnimationInfo() const noexcept
+		{
+			return m_groupInfo;
+		}
 
 		void UpdateAA(Actor* a_actor, ActorAnimationState& a_state);
 		void ResetAA(Actor* a_actor, ActorAnimationState& a_state);
@@ -58,4 +89,6 @@ namespace IED
 		std::optional<AnimationGroupInfo>       m_groupInfo;
 		std::unique_ptr<const AnimStringHolder> m_strings;
 	};
+
+	DEFINE_ENUM_CLASS_BITWISE(IAnimationManager::PresenceFlags);
 }

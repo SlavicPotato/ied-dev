@@ -17,7 +17,7 @@ namespace IED
 
 		struct Entry
 		{
-			std::int32_t      animVar{ -1 };
+			std::int32_t animVar{ -1 };
 		};
 
 		[[nodiscard]] inline constexpr auto& get(AnimationWeaponType a_id) noexcept
@@ -25,8 +25,8 @@ namespace IED
 			assert(a_id < AnimationWeaponType::Max);
 			return data[stl::underlying(a_id)];
 		}
-		
-		[[nodiscard]] inline constexpr const WeaponPlacementID get_placement(AnimationWeaponSlot a_id) noexcept
+
+		[[nodiscard]] inline constexpr auto& get_placement(AnimationWeaponSlot a_id) const noexcept
 		{
 			assert(a_id < AnimationWeaponSlot::Max);
 			return placement[stl::underlying(a_id)];

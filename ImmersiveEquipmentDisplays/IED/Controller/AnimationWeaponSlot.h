@@ -14,6 +14,8 @@ namespace IED
 		DaggerLeft,
 		Mace,
 		MaceLeft,
+		TwoHanded,
+		Quiver,
 
 		Max
 	};
