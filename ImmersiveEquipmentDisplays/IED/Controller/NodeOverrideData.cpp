@@ -70,16 +70,16 @@ namespace IED
 			{ "MOV WeaponAxeLeftDefault", { "Axe Left", "MOV WeaponAxeLeftDefault" } },
 			{ "MOV WeaponAxeReverse", { "Axe Reverse", "MOV WeaponAxeReverse" } },
 			{ "MOV WeaponAxeLeftReverse", { "Axe Reverse Left", "MOV WeaponAxeLeftReverse" } },
-			{ "MOV WeaponAxeOnBack", { "Axe Back", "MOV WeaponAxeOnBack" } },
-			{ "MOV WeaponAxeLeftOnBack", { "Axe Back Left", "MOV WeaponAxeLeftOnBack" } },
+			{ "MOV WeaponAxeOnBack", { "Axe Back", "MOV WeaponAxeOnBack", WeaponPlacementID::OnBack } },
+			{ "MOV WeaponAxeLeftOnBack", { "Axe Back Left", "MOV WeaponAxeLeftOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponMaceDefault", { "Mace", "MOV WeaponMaceDefault" } },
 			{ "MOV WeaponMaceLeftDefault", { "Mace Left", "MOV WeaponMaceLeftDefault" } },
 			{ "MOV WeaponSwordDefault", { "Sword", "MOV WeaponSwordDefault" } },
 			{ "MOV WeaponSwordLeftDefault", { "Sword Left", "MOV WeaponSwordLeftDefault" } },
-			{ "MOV WeaponSwordOnBack", { "Sword Back", "MOV WeaponSwordOnBack" } },
-			{ "MOV WeaponSwordLeftOnBack", { "Sword Back Left", "MOV WeaponSwordLeftOnBack" } },
-			{ "MOV WeaponSwordSWP", { "Sword SWP", "MOV WeaponSwordSWP" } },
-			{ "MOV WeaponSwordLeftSWP", { "Sword SWP Left", "MOV WeaponSwordLeftSWP" } },
+			{ "MOV WeaponSwordOnBack", { "Sword Back", "MOV WeaponSwordOnBack", WeaponPlacementID::OnBack } },
+			{ "MOV WeaponSwordLeftOnBack", { "Sword Back Left", "MOV WeaponSwordLeftOnBack", WeaponPlacementID::OnBack } },
+			{ "MOV WeaponSwordSWP", { "Sword SWP", "MOV WeaponSwordSWP", WeaponPlacementID::OnBack } },
+			{ "MOV WeaponSwordLeftSWP", { "Sword SWP Left", "MOV WeaponSwordLeftSWP", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponSwordFSM", { "Sword FSM", "MOV WeaponSwordFSM" } },
 			{ "MOV WeaponSwordLeftFSM", { "Sword FSM Left", "MOV WeaponSwordLeftFSM" } },
 			{ "MOV WeaponSwordLeftHip", { "Sword Left-Hip", "MOV WeaponSwordLeftHip" } },
@@ -88,12 +88,12 @@ namespace IED
 			{ "MOV WeaponSwordLeftNMD", { "Sword NMD Left", "MOV WeaponSwordLeftNMD" } },
 			{ "MOV WeaponDaggerDefault", { "Dagger", "MOV WeaponDaggerDefault" } },
 			{ "MOV WeaponDaggerLeftDefault", { "Dagger Left", "MOV WeaponDaggerLeftDefault" } },
-			{ "MOV WeaponDaggerBackHip", { "Dagger Back Hip", "MOV WeaponDaggerBackHip" } },
-			{ "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "MOV WeaponDaggerLeftBackHip" } },
-			{ "MOV WeaponDaggerAnkle", { "Dagger Ankle", "MOV WeaponDaggerAnkle" } },
-			{ "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "MOV WeaponDaggerLeftAnkle" } },
-			{ "MOV WeaponDaggerOnBack", { "Dagger On Back", "MOV WeaponDaggerOnBack" } },
-			{ "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left", "MOV WeaponDaggerLeftOnBack" } },
+			{ "MOV WeaponDaggerBackHip", { "Dagger Back Hip", "MOV WeaponDaggerBackHip", WeaponPlacementID::OnBackHip } },
+			{ "MOV WeaponDaggerLeftBackHip", { "Dagger Back Hip Left", "MOV WeaponDaggerLeftBackHip", WeaponPlacementID::OnBackHip } },
+			{ "MOV WeaponDaggerAnkle", { "Dagger Ankle", "MOV WeaponDaggerAnkle", WeaponPlacementID::Ankle } },
+			{ "MOV WeaponDaggerLeftAnkle", { "Dagger Ankle Left", "MOV WeaponDaggerLeftAnkle", WeaponPlacementID::Ankle } },
+			{ "MOV WeaponDaggerOnBack", { "Dagger On Back", "MOV WeaponDaggerOnBack", WeaponPlacementID::OnBack } },
+			{ "MOV WeaponDaggerLeftOnBack", { "Dagger On Back Left", "MOV WeaponDaggerLeftOnBack", WeaponPlacementID::OnBack } },
 			{ "MOV WeaponBackDefault", { "Two-Handed", "MOV WeaponBackDefault" } },
 			{ "MOV WeaponBackSWP", { "Two-Handed SWP", "MOV WeaponBackSWP" } },
 			{ "MOV WeaponBackFSM", { "Two-Handed FSM", "MOV WeaponBackFSM" } },
@@ -146,6 +146,7 @@ namespace IED
 								 "WeaponSword",
 								 "MOV WeaponSwordDefault",
 								 "Sword",
+								 AnimationWeaponSlot::Sword,
 								 {
 
 									 { "MOV WeaponSwordDefault", { "Sword" } },
@@ -164,6 +165,7 @@ namespace IED
 									 "WeaponSwordLeft",
 									 "MOV WeaponSwordLeftDefault",
 									 "Sword Left",
+									 AnimationWeaponSlot::SwordLeft,
 									 {
 
 										 { "MOV WeaponSwordLeftDefault", { "Sword Left" } },
@@ -182,6 +184,7 @@ namespace IED
 							   "WeaponAxe",
 							   "MOV WeaponAxeDefault",
 							   "Axe",
+							   AnimationWeaponSlot::Axe,
 							   {
 
 								   { "MOV WeaponAxeDefault", { "Axe" } },
@@ -197,6 +200,7 @@ namespace IED
 								   "WeaponAxeLeft",
 								   "MOV WeaponAxeLeftDefault",
 								   "Axe Left",
+								   AnimationWeaponSlot::AxeLeft,
 								   {
 
 									   { "MOV WeaponAxeLeftDefault", { "Axe Left" } },
@@ -212,6 +216,7 @@ namespace IED
 								  "WeaponDagger",
 								  "MOV WeaponDaggerDefault",
 								  "Dagger",
+								  AnimationWeaponSlot::Dagger,
 								  {
 
 									  { "MOV WeaponDaggerDefault", { "Dagger" } },
@@ -228,6 +233,7 @@ namespace IED
 									  "WeaponDaggerLeft",
 									  "MOV WeaponDaggerLeftDefault",
 									  "Dagger Left",
+									  AnimationWeaponSlot::DaggerLeft,
 									  {
 
 										  { "MOV WeaponDaggerLeftDefault", { "Dagger Left" } },
@@ -244,6 +250,7 @@ namespace IED
 								"WeaponMace",
 								"MOV WeaponMaceDefault",
 								"Mace",
+								AnimationWeaponSlot::Mace,
 								{
 
 									{ "MOV WeaponMaceDefault", { "Mace" } },
@@ -257,6 +264,7 @@ namespace IED
 									"WeaponMaceLeft",
 									"MOV WeaponMaceLeftDefault",
 									"Mace Left",
+									AnimationWeaponSlot::MaceLeft,
 									{
 
 										{ "MOV WeaponMaceLeftDefault", { "Mace Left" } },
@@ -270,6 +278,7 @@ namespace IED
 								 "WeaponStaff",
 								 "MOV WeaponStaffDefault",
 								 "Staff",
+								 AnimationWeaponSlot::None,
 								 {
 
 									 { "MOV WeaponStaffDefault", { "Staff" } },
@@ -283,6 +292,7 @@ namespace IED
 									 "WeaponStaffLeft",
 									 "MOV WeaponStaffLeftDefault",
 									 "Staff Left",
+									 AnimationWeaponSlot::None,
 									 {
 
 										 { "MOV WeaponStaffLeftDefault", { "Staff Left" } }
@@ -296,6 +306,7 @@ namespace IED
 								"WeaponBack",
 								"MOV WeaponBackDefault",
 								"Two-Handed",
+								AnimationWeaponSlot::None,
 								{
 
 									{ "MOV WeaponBackDefault", { "Two-Handed" } },
@@ -314,6 +325,7 @@ namespace IED
 							   "WeaponBow",
 							   "MOV WeaponBowDefault",
 							   "Bow",
+							   AnimationWeaponSlot::None,
 							   {
 								   { "MOV WeaponBowDefault", { "Bow" } },
 								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
@@ -328,6 +340,7 @@ namespace IED
 							"QUIVER",
 							"MOV QUIVERDefault",
 							"Quiver",
+							AnimationWeaponSlot::None,
 							{
 								{ "MOV QUIVERDefault", { "Quiver" } },
 								{ "MOV QUIVERChesko", { "Quiver Chesko" } },
@@ -346,6 +359,7 @@ namespace IED
 								"ShieldBack",
 								"MOV ShieldBackDefault",
 								"Shield",
+								AnimationWeaponSlot::None,
 								{
 
 									{ "MOV ShieldBackDefault", { "Shield Back" } },
@@ -362,7 +376,8 @@ namespace IED
 				"CME WeaponDaggerOnBack",
 				"CME Spine2 [Spn2]",
 				{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
-				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } }
+				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
+				WeaponPlacementID::OnBack
 
 			},
 			{
@@ -371,7 +386,8 @@ namespace IED
 				"CME WeaponDaggerLeftOnBack",
 				"CME Spine2 [Spn2]",
 				{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
-				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } }
+				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
+				WeaponPlacementID::OnBack
 
 			},
 		}),

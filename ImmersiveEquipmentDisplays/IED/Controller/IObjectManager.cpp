@@ -132,14 +132,17 @@ namespace IED
 			m_playerState.insert(a_objects);
 		}
 
-		for (auto& e : a_objects.m_cmeNodes)
+		if (a_objects.m_actor->loadedState)
 		{
-			ResetNodeOverride(e.second);
-		}
+			for (auto& e : a_objects.m_cmeNodes)
+			{
+				ResetNodeOverride(e.second);
+			}
 
-		for (auto& e : a_objects.m_weapNodes)
-		{
-			ResetNodePlacement(e);
+			for (auto& e : a_objects.m_weapNodes)
+			{
+				ResetNodePlacement(e, nullptr);
+			}
 		}
 
 		a_objects.visit([&](objectEntryBase_t& a_object) {

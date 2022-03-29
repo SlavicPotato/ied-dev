@@ -39,7 +39,7 @@ namespace IED
 
 		static selectedItem_t SelectItem(
 			Actor*                            a_actor,
-			const Data::configSlot_t&         a_entry,
+			const Data::configSlot_t&         a_config,
 			SlotItemCandidates::storage_type& a_candidates,
 			Game::FormID                      a_lastEquipped);
 	};

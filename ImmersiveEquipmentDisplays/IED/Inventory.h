@@ -14,9 +14,8 @@ namespace IED
 	{
 		struct item_t
 		{
-			TESForm*                                 form;
-			std::int64_t                             extra;
 			const Data::collectorData_t::itemData_t* item;
+			std::uint32_t                            extra;
 			std::uint32_t                            rating;
 		};
 

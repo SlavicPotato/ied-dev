@@ -26,7 +26,7 @@ namespace IED
 
 	auto IEquipment::SelectItem(
 		Actor*                            a_actor,
-		const Data::configSlot_t&         a_entry,
+		const Data::configSlot_t&         a_config,
 		SlotItemCandidates::storage_type& a_candidates,
 		Game::FormID                      a_lastEquipped)
 		-> selectedItem_t
@@ -36,17 +36,17 @@ namespace IED
 			return {};
 		}
 
-		bool checkCannotWear = a_entry.slotFlags.test(Data::SlotFlags::kCheckCannotWear);
+		bool checkCannotWear = a_config.slotFlags.test(Data::SlotFlags::kCheckCannotWear);
 
-		if (!a_entry.preferredItems.empty())
+		if (!a_config.preferredItems.empty())
 		{
-			for (auto& e : a_entry.preferredItems)
+			for (auto& e : a_config.preferredItems)
 			{
 				auto it = std::find_if(
 					a_candidates.begin(),
 					a_candidates.end(),
-					[id = e](const auto& a_item) {
-						return (id == a_item.form->formID);
+					[&](const auto& a_item) {
+						return (e == a_item.item->form->formID);
 					});
 
 				if (it != a_candidates.end())
@@ -62,13 +62,13 @@ namespace IED
 
 		if (a_lastEquipped)
 		{
-			if (a_entry.itemFilter.test(a_lastEquipped))
+			if (a_config.itemFilter.test(a_lastEquipped))
 			{
 				auto it = std::find_if(
 					a_candidates.begin(),
 					a_candidates.end(),
 					[&](const auto& a_item) {
-						return (a_item.form->formID == a_lastEquipped);
+						return (a_item.item->form->formID == a_lastEquipped);
 					});
 
 				if (it != a_candidates.end())
@@ -91,7 +91,7 @@ namespace IED
 					return false;
 				}
 
-				return a_entry.itemFilter.test(a_item.form->formID);
+				return a_config.itemFilter.test(a_item.item->form->formID);
 			});
 
 		if (it != a_candidates.end())
@@ -107,7 +107,7 @@ namespace IED
 	void IEquipment::selectedItem_t::consume(
 		SlotItemCandidates::storage_type& a_candidates)
 	{
-		auto it(*item);
+		auto& it = *item;
 
 		if (it->extra == 0)
 		{

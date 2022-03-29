@@ -281,8 +281,8 @@ namespace IED
 					if (a_match.keyword.get_id())
 					{
 						return a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch2) ==
-						       a_params.equipped_armor_visitor([&](auto* a_form) {
-								   return IFormCommon::HasKeyword(a_form, a_match.keyword);
+						       a_params.equipped_armor_visitor([&](auto* a_armor) {
+								   return IFormCommon::HasKeyword(a_armor, a_match.keyword);
 							   });
 					}
 
@@ -929,32 +929,49 @@ namespace IED
 
 	void INodeOverride::attach_node_to(
 		const weapNodeEntry_t&   a_entry,
-		const NiPointer<NiNode>& a_target)
+		const NiPointer<NiNode>& a_target,
+		nodeOverrideParams_t*    a_params,
+		WeaponPlacementID        a_placementID)
 	{
 		if (a_target &&
-		    a_entry.node->m_parent &&
-		    a_entry.node->m_parent != a_target)
+		    a_entry.node->m_parent)
 		{
-			if (EngineExtensions::SceneRendering() ||
-			    !ITaskPool::IsRunningOnCurrentThread())
+			if (a_entry.node->m_parent != a_target)
 			{
-				ITaskPool::AddPriorityTask(
-					[target = a_target,
-				     node   = a_entry.node]() {
-						if (node->m_parent &&
-					        node->m_parent != target)
-						{
-							target->AttachChild(node, true);
+				if (EngineExtensions::SceneRendering() ||
+				    !ITaskPool::IsRunningOnCurrentThread())
+				{
+					ITaskPool::AddPriorityTask(
+						[target = a_target,
+					     node   = a_entry.node]() {
+							if (node->m_parent &&
+						        node->m_parent != target)
+							{
+								target->AttachChild(node, true);
 
-							INode::UpdateDownwardPass(node);
-						}
-					});
+								INode::UpdateDownwardPass(node);
+							}
+						});
+				}
+				else
+				{
+					a_target->AttachChild(a_entry.node, true);
+
+					INode::UpdateDownwardPass(a_entry.node);
+				}
 			}
-			else
-			{
-				a_target->AttachChild(a_entry.node, true);
 
-				INode::UpdateDownwardPass(a_entry.node);
+			if (a_params &&
+			    a_entry.animSlot < AnimationWeaponSlot::Max)
+			{
+				auto& state = a_params->objects.GetAnimState();
+
+				auto index = stl::underlying(a_entry.animSlot);
+				if (state.placement[index] != a_placementID)
+				{
+					state.placement[index] = a_placementID;
+					state.flags.set(ActorAnimationState::Flags::kNeedUpdate);
+				}
 			}
 		}
 	}
@@ -980,12 +997,16 @@ namespace IED
 					a_entry.target = it->second.node;
 				}
 
-				attach_node_to(a_entry, a_entry.target);
+				attach_node_to(
+					a_entry,
+					a_entry.target,
+					std::addressof(a_params),
+					it->second.placementID);
 			}
 		}
 		else
 		{
-			ResetNodePlacement(a_entry);
+			ResetNodePlacement(a_entry, std::addressof(a_params));
 		}
 	}
 
@@ -1011,12 +1032,18 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodePlacement(
-		const weapNodeEntry_t& a_entry)
+		const weapNodeEntry_t& a_entry,
+		nodeOverrideParams_t*  a_params)
 	{
 		if (a_entry.target != nullptr)
 		{
 			a_entry.target.reset();
-			attach_node_to(a_entry, a_entry.defaultNode);
+
+			attach_node_to(
+				a_entry,
+				a_entry.defaultNode,
+				a_params,
+				WeaponPlacementID::Default);
 		}
 	}
 

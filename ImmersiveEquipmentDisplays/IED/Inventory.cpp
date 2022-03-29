@@ -288,7 +288,10 @@ namespace IED
 
 			auto& entry = m_slotResults[stl::underlying(e.second.type)];
 
-			entry.m_items.emplace_back(form, extra, std::addressof(e.second), rating);
+			entry.m_items.emplace_back(
+				std::addressof(e.second),
+				static_cast<std::uint32_t>(extra),
+				rating);
 		}
 
 		for (auto& e : m_slotResults)

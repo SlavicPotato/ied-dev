@@ -37,6 +37,7 @@ namespace IED
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides)
 	{
 		InitializeInputHandlers();
+		SetAnimationInfo(a_config->m_agInfo);
 	}
 
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
@@ -195,6 +196,7 @@ namespace IED
 
 		InitializeLocalization();
 		InitializeConfig();
+		LoadAnimationData();
 
 		if (Drivers::UI::IsImInitialized())
 		{
@@ -433,13 +435,41 @@ namespace IED
 		}
 	}
 
+	void Controller::LoadAnimationData()
+	{
+		try
+		{
+			AnimationGroupInfo info;
+			ExtractAnimationInfoFromPEX(info);
+
+			Debug(
+				"Got anim info: crc:[%d], groups:[sword:%d, axe: %d, dagger: %d, mace: %d]",
+				info.crc,
+				info.get_base(AnimationWeaponType::Sword),
+				info.get_base(AnimationWeaponType::Axe),
+				info.get_base(AnimationWeaponType::Dagger),
+				info.get_base(AnimationWeaponType::Mace));
+
+			SetAnimationInfo(info);
+		}
+		catch (const std::exception& e)
+		{
+			Error("Couldn't extract animation info: %s", e.what());
+		}
+	}
+
 	void Controller::InitializeBSFixedStringTable()
 	{
 		ASSERT(StringCache::IsInitialized());
 
 		IScopedLock lock(m_lock);
 
-		m_bsstrings = std::make_unique<BSStringHolder>();
+		if (!m_bsstrings)
+		{
+			m_bsstrings = std::make_unique<BSStringHolder>();
+		}
+
+		InitializeAnimationStrings();
 	}
 
 	void Controller::OnDataLoaded()
@@ -1257,6 +1287,22 @@ namespace IED
 					e.second,
 					a_slot,
 					a_evalIfNone);
+			}
+		});
+	}
+
+	void Controller::QueueResetAAAll()
+	{
+		ITaskPool::AddTask([this] {
+			IScopedLock lock(m_lock);
+
+			for (auto& e : m_objects)
+			{
+				actorLookupResult_t result;
+				if (LookupTrackedActor(e.first, result))
+				{
+					ResetAA(result.actor, e.second.GetAnimState());
+				}
 			}
 		});
 	}
@@ -2449,7 +2495,7 @@ namespace IED
 								a_params) :
                             configEntry.get_equipment_override(
 								a_params.collector.m_data,
-								{ item->form, objectEntry.slotidex },
+								{ item->item->form, objectEntry.slotidex },
 								a_params);
 
 				const auto& usedBaseConf =
@@ -2520,7 +2566,7 @@ namespace IED
 					a_params);
 
 				if (objectEntry.state &&
-				    objectEntry.state->form == item->form)
+				    objectEntry.state->form == item->item->form)
 				{
 					if (ProcessItemUpdate(
 							a_params,
@@ -2549,7 +2595,7 @@ namespace IED
 						a_params,
 						usedBaseConf,
 						objectEntry,
-						item->form,
+						item->item->form,
 						nullptr,
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
@@ -3372,6 +3418,11 @@ namespace IED
 				a_flags);
 		}
 
+		if (m_config.settings.data.enableXP32AA)
+		{
+			UpdateAA(a_actor, a_objects.m_animState);
+		}
+
 		if (a_flags.test(ControllerUpdateFlags::kImmediateUpdateTransforms))
 		{
 			a_objects.RequestTransformUpdate();
@@ -3579,7 +3630,7 @@ namespace IED
 			}
 			else
 			{
-				ResetNodePlacement(e);
+				ResetNodePlacement(e, std::addressof(params));
 			}
 		}
 
@@ -3618,6 +3669,12 @@ namespace IED
 				// only called from main, no need to run checks
 				ResetNodeOverrideImpl(e.second.node, e.second.orig);
 			}
+		}
+
+		if (m_config.settings.data.enableXP32AA &&
+		    a_objects.m_animState.flags.test(ActorAnimationState::Flags::kNeedUpdate))
+		{
+			UpdateAA(a_actor, a_objects.m_animState);
 		}
 
 		//Debug("%X : %f", a_actor->formID.get(), pt.Stop());

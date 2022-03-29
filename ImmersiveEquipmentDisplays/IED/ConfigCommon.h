@@ -285,7 +285,7 @@ namespace IED
 			}
 
 		private:
-			T data[2];
+			T data[2]{};
 
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
@@ -406,8 +406,8 @@ namespace IED
 				a_ar& global;
 			}
 
-			configFormMap_t<data_type> data[3];
-			data_type                  global[2];
+			configFormMap_t<data_type> data[3]{};
+			data_type                  global[2]{};
 		};
 
 		class configFormSet_t :

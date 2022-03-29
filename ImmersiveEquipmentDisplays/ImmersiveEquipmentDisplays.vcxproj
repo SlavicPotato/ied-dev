@@ -509,7 +509,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigUUIDTag.h" />
+    <ClInclude Include="IED\Controller\ActorAnimationState.h" />
+    <ClInclude Include="IED\Controller\AnimationGroupInfo.h" />
+    <ClInclude Include="IED\Controller\AnimationWeaponSlot.h" />
+    <ClInclude Include="IED\Controller\AnimationWeaponType.h" />
     <ClInclude Include="IED\Controller\EffectController.h" />
+    <ClInclude Include="IED\Controller\IAnimationManager.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
@@ -555,6 +560,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\Util\PEXReader.h" />
     <ClInclude Include="IED\WeatherClassificationFlags.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
@@ -870,6 +876,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\Controller\EffectController.cpp" />
+    <ClCompile Include="IED\Controller\IAnimationManager.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
@@ -898,6 +905,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
+    <ClCompile Include="IED\Util\PEXReader.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />
     <ClCompile Include="Localization\ILocalization.cpp" />

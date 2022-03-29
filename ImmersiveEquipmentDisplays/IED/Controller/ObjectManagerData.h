@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ActorAnimationState.h"
 #include "INode.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
@@ -292,16 +293,19 @@ namespace IED
 		weapNodeEntry_t(
 			const stl::fixed_string& a_nodeName,
 			NiNode*                  a_node,
-			NiNode*                  a_defaultNode) :
+			NiNode*                  a_defaultNode,
+			AnimationWeaponSlot       a_animID) :
 			nodeName(a_nodeName),
 			node(a_node),
-			defaultNode(a_defaultNode)
+			defaultNode(a_defaultNode),
+			animSlot(a_animID)
 		{
 		}
 
 		const stl::fixed_string nodeName;
 		NiPointer<NiNode>       node;
 		NiPointer<NiNode>       defaultNode;
+		AnimationWeaponSlot      animSlot;
 
 	private:
 		mutable NiPointer<NiNode> target;
@@ -330,6 +334,7 @@ namespace IED
 	struct movNodeEntry_t
 	{
 		NiPointer<NiNode> node;
+		WeaponPlacementID placementID;
 	};
 
 	class ActorObjectHolder
@@ -551,6 +556,11 @@ namespace IED
 			return m_skeletonCache;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetAnimState() const noexcept
+		{
+			return m_animState;
+		}
+
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
 
@@ -577,8 +587,8 @@ namespace IED
 			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 
-		slot_container_type m_entriesSlot;
-		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX];
+		slot_container_type m_entriesSlot{};
+		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
 
 		std::vector<monitorNodeEntry_t>                       m_monitorNodes;
 		std::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
@@ -600,6 +610,8 @@ namespace IED
 		TESPackage*         m_currentPackage{ nullptr };
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
+
+		mutable ActorAnimationState m_animState;
 
 		IObjectManager& m_owner;
 

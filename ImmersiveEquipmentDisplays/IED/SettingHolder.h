@@ -161,6 +161,7 @@ namespace IED
 				bool disableNPCSlots{ false };
 				bool removeFavRestriction{ false };
 				bool enableDeadScatter{ false };
+				bool enableXP32AA{ false };
 
 				stl::optional<LogLevel> logLevel;
 

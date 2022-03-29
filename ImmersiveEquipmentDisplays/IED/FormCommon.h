@@ -20,6 +20,16 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(FormInfoFlags);
 
+	template <class T>
+	concept AcceptHasKeyword =
+		std::is_base_of_v<TESForm, T> &&
+		requires(T a_form, BGSKeyword* a_keyword)
+	{
+		{
+			a_form.keyword.HasKeyword(a_keyword)
+			} -> std::same_as<bool>;
+	};
+
 	class IFormCommon
 	{
 	public:
@@ -38,20 +48,20 @@ namespace IED
 		static bool HasKeyword(TESForm* a_form, Game::FormID a_keyword);
 		static bool HasKeyword(TESForm* a_form, const Data::configCachedForm_t& a_keyword);
 
-		template <class T>
+		template <AcceptHasKeyword T>
 		inline static constexpr bool HasKeyword(T* a_form, BGSKeyword* a_keyword) noexcept
 		{
 			return a_form->keyword.HasKeyword(a_keyword);
 		}
 
-		template <class T>
-		inline static bool HasKeyword(
+		template <AcceptHasKeyword T>
+		inline static constexpr bool HasKeyword(
 			T*           a_form,
 			Game::FormID a_keyword)
 		{
 			if (auto keyword = a_keyword.As<BGSKeyword>())
 			{
-				return HasKeyword(a_form, keyword);
+				return a_form->keyword.HasKeyword(keyword);
 			}
 			else
 			{
@@ -59,14 +69,14 @@ namespace IED
 			}
 		}
 
-		template <class T>
+		template <AcceptHasKeyword T>
 		inline static constexpr bool HasKeyword(
 			T*                              a_form,
 			const Data::configCachedForm_t& a_keyword)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				return HasKeyword(a_form, keyword);
+				return a_form->keyword.HasKeyword(keyword);
 			}
 
 			return false;

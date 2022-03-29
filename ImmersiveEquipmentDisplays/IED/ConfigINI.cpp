@@ -121,6 +121,24 @@ namespace IED
 				r.first->second.second);
 		}
 
+		m_agInfo.crc = static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "CRC", 0));
+
+		m_agInfo.set_base(
+			AnimationWeaponType::Sword,
+			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseSword", 0)));
+		
+		m_agInfo.set_base(
+			AnimationWeaponType::Axe,
+			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseAxe", 0)));
+		
+		m_agInfo.set_base(
+			AnimationWeaponType::Dagger,
+			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseDagger", 0)));
+		
+		m_agInfo.set_base(
+			AnimationWeaponType::Mace,
+			static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseMace", 0)));
+
 		m_loaded = parsers.reader.is_loaded();
 
 		return m_loaded;

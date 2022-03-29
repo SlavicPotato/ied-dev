@@ -61,6 +61,7 @@ namespace IED
 			PlayAnimation                       = 1050,
 			EquippedConditions                  = 1051,
 			DeadScatter                         = 1052,
+			XP32AA                              = 1053,
 		};
 
 	}

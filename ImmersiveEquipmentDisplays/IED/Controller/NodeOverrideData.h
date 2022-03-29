@@ -2,6 +2,8 @@
 
 #include "IED/ConfigTransform.h"
 
+#include "AnimationWeaponSlot.h"
+
 namespace IED
 {
 	enum class NodeOverrideDataEntryFlags : std::uint32_t
@@ -10,6 +12,15 @@ namespace IED
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(NodeOverrideDataEntryFlags);
+
+	enum class WeaponPlacementID : std::uint32_t
+	{
+		None,
+		Default,
+		OnBack,
+		OnBackHip,
+		Ankle
+	};
 
 	class NodeOverrideData
 	{
@@ -26,6 +37,7 @@ namespace IED
 			const char*                                                node;
 			const char*                                                def;
 			const char*                                                desc;
+			AnimationWeaponSlot                                        animSlot;
 			std::initializer_list<std::pair<const char*, const char*>> movlist;
 		};
 
@@ -36,47 +48,46 @@ namespace IED
 				bsname(a_init.node),
 				bsdefParent(a_init.def),
 				desc(a_init.desc),
+				animSlot(a_init.animSlot),
 				movs(a_init.movlist)
 			{
 			}
 
-			BSFixedString bsname;
-			BSFixedString bsdefParent;
-			const char*   desc;
-			nodeList_t    movs;
+			BSFixedString       bsname;
+			BSFixedString       bsdefParent;
+			const char*         desc;
+			AnimationWeaponSlot animSlot;
+			nodeList_t          movs;
 		};
 
 		using weapnode_data_type = stl::vectormap<stl::fixed_string, weaponNodeEntry_t>;
 
 		using mon_data_type = std::vector<BSFixedString>;
 
+		struct overrideNodeEntryInit_t
+		{
+			const char*       p1;
+			const char*       p2;
+			WeaponPlacementID p3{ WeaponPlacementID::Default };
+		};
+
 		struct overrideNodeEntry_t
 		{
 			overrideNodeEntry_t() = delete;
 
 			overrideNodeEntry_t(
-				const char* a_desc,
-				const char* a_name) :
-				desc(a_desc),
-				name(a_name),
-				bsname(a_name),
-				flags(NodeOverrideDataEntryFlags::kNone)
+				const overrideNodeEntryInit_t& a_pair) :
+				desc(a_pair.p1),
+				name(a_pair.p2),
+				bsname(a_pair.p2),
+				placementID(a_pair.p3)
 			{
 			}
 
-			overrideNodeEntry_t(
-				const std::pair<const char*, const char*>& a_pair) :
-				desc(a_pair.first),
-				name(a_pair.second),
-				bsname(a_pair.second),
-				flags(NodeOverrideDataEntryFlags::kNone)
-			{
-			}
-
-			const char*                           desc;
-			stl::fixed_string                     name;
-			BSFixedString                         bsname;
-			stl::flag<NodeOverrideDataEntryFlags> flags;
+			const char*       desc;
+			stl::fixed_string name;
+			BSFixedString     bsname;
+			WeaponPlacementID placementID;
 		};
 
 		struct extraNodeEntry_t
@@ -86,14 +97,16 @@ namespace IED
 				const char*        a_cme,
 				const char*        a_parent,
 				const NiTransform& a_transform_m,
-				const NiTransform& a_transform_f) :
+				const NiTransform& a_transform_f,
+				WeaponPlacementID  a_placementID) :
 				name_cme(a_cme),
 				name_mov(a_mov),
 				bsname_cme(a_cme),
 				bsname_mov(a_mov),
 				name_parent(a_parent),
 				transform_m(a_transform_m),
-				transform_f(a_transform_f)
+				transform_f(a_transform_f),
+				placementID(a_placementID)
 			{
 			}
 
@@ -104,6 +117,7 @@ namespace IED
 			BSFixedString     name_parent;
 			NiTransform       transform_m;
 			NiTransform       transform_f;
+			WeaponPlacementID placementID;
 		};
 
 		struct extraNodeCopyEntry_t
@@ -135,7 +149,7 @@ namespace IED
 			NiMatrix33    rot;
 		};
 
-		using init_list_cm   = std::pair<const char*, std::pair<const char*, const char*>>;
+		using init_list_cm   = std::pair<const char*, overrideNodeEntryInit_t>;
 		using init_list_weap = std::pair<const char*, weap_ctor_init_t>;
 
 		using cm_data_type            = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;

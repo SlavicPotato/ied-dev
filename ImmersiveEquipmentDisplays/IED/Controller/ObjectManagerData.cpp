@@ -87,7 +87,8 @@ namespace IED
 				{
 					m_movNodes.try_emplace(
 						e->first,
-						node);
+						node,
+						e->second.placementID);
 				}
 			}
 
@@ -100,7 +101,8 @@ namespace IED
 						m_weapNodes.emplace_back(
 							e->first,
 							node,
-							defParentNode);
+							defParentNode,
+							e->second.animSlot);
 					}
 				}
 			}
@@ -153,14 +155,17 @@ namespace IED
 
 	ActorObjectHolder::~ActorObjectHolder()
 	{
-		for (auto& e : m_cmeNodes)
+		if (m_actor->loadedState)
 		{
-			INodeOverride::ResetNodeOverride(e.second);
-		}
+			for (auto& e : m_cmeNodes)
+			{
+				INodeOverride::ResetNodeOverride(e.second);
+			}
 
-		for (auto& e : m_weapNodes)
-		{
-			INodeOverride::ResetNodePlacement(e);
+			for (auto& e : m_weapNodes)
+			{
+				INodeOverride::ResetNodePlacement(e, nullptr);
+			}
 		}
 
 		stl::optional<Game::ObjectRefHandle> handle;
@@ -331,7 +336,7 @@ namespace IED
 		INode::UpdateDownwardPass(cme);
 
 		m_cmeNodes.try_emplace(a_entry.name_cme, cme);
-		m_movNodes.try_emplace(a_entry.name_mov, mov);
+		m_movNodes.try_emplace(a_entry.name_mov, mov, a_entry.placementID);
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(

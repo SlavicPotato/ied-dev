@@ -13,6 +13,7 @@
 #include "ActorProcessorTask.h"
 #include "ControllerCommon.h"
 #include "EffectController.h"
+#include "IAnimationManager.h"
 #include "IEquipment.h"
 #include "IForm.h"
 #include "IJSONSerialization.h"
@@ -37,6 +38,7 @@ namespace IED
 		public IUI,
 		public IMaintenance,
 		public IJSONSerialization,
+		public IAnimationManager,
 		public Localization::ILocalization,
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
@@ -123,6 +125,7 @@ namespace IED
 		void InitializeUI();
 		void InitializeConfig();
 		void InitializeLocalization();
+		void LoadAnimationData();
 		void InitializeData();
 		void InitializeBSFixedStringTable();
 
@@ -226,6 +229,8 @@ namespace IED
 		void QueueAttachSlotNodeNPC(Game::FormID a_npc, Data::ObjectSlot a_slot, bool a_evalIfNone);
 		void QueueAttachSlotNodeRace(Game::FormID a_race, Data::ObjectSlot a_slot, bool a_evalIfNone);
 		void QueueAttachSlotNodeAll(Data::ObjectSlot a_slot, bool a_evalIfNone);
+
+		void QueueResetAAAll();
 
 		/*void QueueUpdateTransformCustom(Game::FormID a_actor, Data::ObjectSlot a_slot);
 		void QueueUpdateTransformCustomAll(Data::ObjectSlot a_slot);

@@ -186,6 +186,9 @@
     <Filter Include="Source\ext">
       <UniqueIdentifier>{62ec8304-a334-4130-88a3-d0be36261136}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\Controller\Animation">
+      <UniqueIdentifier>{bfc7455f-88ee-4d3e-8785-a6575bea8116}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1124,6 +1127,24 @@
     <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ActorAnimationState.h">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IAnimationManager.h">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\AnimationWeaponSlot.h">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\AnimationWeaponType.h">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\AnimationGroupInfo.h">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Util\PEXReader.h">
+      <Filter>Source\IED\Util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1770,6 +1791,12 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IAnimationManager.cpp">
+      <Filter>Source\IED\Controller\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Util\PEXReader.cpp">
+      <Filter>Source\IED\Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

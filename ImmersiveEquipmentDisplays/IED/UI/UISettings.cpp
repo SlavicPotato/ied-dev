@@ -155,6 +155,23 @@ namespace IED
 					m_controller.QueueResetGearAll(ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::DeadScatter);
+				
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::XP32AA, "5"),
+						std::addressof(data.enableXP32AA))))
+				{
+					if (data.enableXP32AA)
+					{
+						m_controller.QueueEvaluate(
+							Data::IData::GetPlayerRefID(),
+							ControllerUpdateFlags::kNone);
+					}
+					else
+					{
+						m_controller.QueueResetAAAll();
+					}
+				}
+				DrawTip(UITip::XP32AA);
 
 				ImGui::Spacing();
 
