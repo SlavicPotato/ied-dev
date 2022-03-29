@@ -34,8 +34,8 @@ namespace IED
 
 		stl::flag<Flags> flags{ Flags::kNone };
 
-		Entry             data[stl::underlying(AnimationWeaponType::Max)];
-		WeaponPlacementID placement[stl::underlying(AnimationWeaponSlot::Max)]{ WeaponPlacementID::None };
+		std::array<Entry, stl::underlying(AnimationWeaponType::Max)>             data{};
+		std::array<WeaponPlacementID, stl::underlying(AnimationWeaponSlot::Max)> placement{ WeaponPlacementID::None };
 
 		//std::pair<TESForm*, TESForm*> equipped{ nullptr, nullptr };
 	};

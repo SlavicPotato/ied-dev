@@ -11,7 +11,7 @@ namespace IED
 			std::int32_t base{ 0 };
 		};
 
-		using data_type = Group[stl::underlying(AnimationWeaponType::Max)];
+		using data_type = std::array<Group, stl::underlying(AnimationWeaponType::Max)>;
 
 		[[nodiscard]] inline constexpr std::int32_t get_value(
 			AnimationWeaponType a_id,

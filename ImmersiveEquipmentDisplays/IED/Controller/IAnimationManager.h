@@ -33,8 +33,8 @@ namespace IED
 				return eqp[stl::underlying(a_id)];
 			}
 
-			EquipEntry    eqp[stl::underlying(AnimationWeaponType::Max)]{};
-			BSFixedString FNISaa_crc{ "FNISaa_crc" };
+			std::array<EquipEntry, stl::underlying(AnimationWeaponType::Max)> eqp;
+			BSFixedString                                                     FNISaa_crc{ "FNISaa_crc" };
 		};
 
 	public:

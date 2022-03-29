@@ -184,8 +184,7 @@ namespace IED
 		return (a_leftID == AnimationWeaponType::Sword &&
 		        a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
 		       (a_leftID == AnimationWeaponType::Dagger &&
-		        (a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip ||
-		         a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack)) ||
+		        a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
 		       (a_leftID == AnimationWeaponType::Axe &&
 		        a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
 		       is_shield(a_objLeft);
@@ -223,13 +222,7 @@ namespace IED
 				{
 				case WeaponPlacementID::OnBack:
 
-					if ((leftID == AnimationWeaponType::Sword &&
-					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
-					    (leftID == AnimationWeaponType::Dagger &&
-					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
-					    (leftID == AnimationWeaponType::Axe &&
-					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-					    is_shield(objLeft))
+					if (should_select_back_left_anim(leftID, a_state, objLeft))
 					{
 						animVar = 2;
 					}
@@ -248,8 +241,7 @@ namespace IED
 
 				default:
 
-					if (leftID == AnimationWeaponType::Sword &&
-					    a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::Default)
+					if (leftID == AnimationWeaponType::Sword)
 					{
 						animVar = 0;
 					}
@@ -291,14 +283,7 @@ namespace IED
 					{
 						animVar = 2;
 					}
-					else if (
-						(leftID == AnimationWeaponType::Dagger &&
-					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
-						(leftID == AnimationWeaponType::Sword &&
-					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
-						(leftID == AnimationWeaponType::Axe &&
-					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-						is_shield(objLeft))
+					else if (should_select_back_left_anim(leftID, a_state, objLeft))
 					{
 						animVar = 5;
 					}
@@ -309,11 +294,23 @@ namespace IED
 
 					break;
 
-				case WeaponPlacementID::OnBack:
+				case WeaponPlacementID::OnBack:  // no anim, use back hip
 
-					animVar = should_select_back_left_anim(leftID, a_state, objLeft) ?
-					              2 :
-                                  1;
+					if ((leftID == AnimationWeaponType::Sword &&
+					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
+					    (leftID == AnimationWeaponType::Dagger &&
+					     (a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBackHip ||
+					      a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack)) ||
+					    (leftID == AnimationWeaponType::Axe &&
+					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
+					    is_shield(objLeft))
+					{
+						animVar = 2;
+					}
+					else
+					{
+						animVar = 1;
+					}
 
 					break;
 
@@ -328,8 +325,7 @@ namespace IED
 
 				default:
 
-					animVar = leftID == AnimationWeaponType::Dagger &&
-					                  a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::Default ?
+					animVar = leftID == AnimationWeaponType::Dagger ?
 					              0 :
                                   -1;
 
@@ -357,13 +353,7 @@ namespace IED
 				{
 				case WeaponPlacementID::OnBack:
 
-					if ((leftID == AnimationWeaponType::Axe &&
-					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-					    (leftID == AnimationWeaponType::Dagger &&
-					     a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
-					    (leftID == AnimationWeaponType::Sword &&
-					     a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
-					    is_shield(objLeft))
+					if (should_select_back_left_anim(leftID, a_state, objLeft))
 					{
 						animVar = 2;
 					}
@@ -382,8 +372,7 @@ namespace IED
 
 				default:
 
-					if (leftID == AnimationWeaponType::Axe &&
-					    a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::Default)
+					if (leftID == AnimationWeaponType::Axe)
 					{
 						animVar = 0;
 					}
@@ -415,8 +404,7 @@ namespace IED
 
 				std::int32_t animVar;
 
-				if (leftID == AnimationWeaponType::Mace &&
-				    a_state.get_placement(AnimationWeaponSlot::MaceLeft) == WeaponPlacementID::Default)
+				if (leftID == AnimationWeaponType::Mace)
 				{
 					animVar = 0;
 				}
@@ -551,15 +539,17 @@ namespace IED
 	}
 
 	IAnimationManager::AnimStringHolder::AnimStringHolder() :
-		eqp{
+		eqp{ {
+
 			{ "FNISaa_1hmeqp", "FNISaa_1hmeqp_crc" },
 			{ "FNISaa_axeeqp", "FNISaa_axeeqp_crc" },
 			{ "FNISaa_dageqp", "FNISaa_dageqp_crc" },
 			{ "FNISaa_maceqp", "FNISaa_maceqp_crc" },
 			{ "FNISaa_2hmeqp", "FNISaa_2hmeqp_crc" },
 			{ "FNISaa_2hweqp", "FNISaa_2hweqp_crc" },
-			{ "FNISaa_boweqp", "FNISaa_boweqp_crc" },
-		}
+			{ "FNISaa_boweqp", "FNISaa_boweqp_crc" }
+
+		} }
 	{
 	}
 
