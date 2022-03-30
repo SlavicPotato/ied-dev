@@ -45,6 +45,7 @@ namespace IED
 		inline static constexpr auto SECT_NODE_OVERRIDE = "NodeOverride";
 		inline static constexpr auto SECT_SOUND         = "Sound";
 		inline static constexpr auto SECT_ANIM          = "Animation";
+		inline static constexpr auto SECT_EXPERIMENTAL  = "Experimental";
 
 		struct parsers_t
 		{
@@ -81,8 +82,8 @@ namespace IED
 		bool           m_immediateFavUpdate{ false };
 		bool           m_effectShaders{ false };
 		bool           m_disableIntroBanner{ true };
-		bool           m_corpseScatterPatch{ false };
 		bool           m_applyTransformOverrides{ true };
+		bool           m_enableCorpseScatter{ false };
 		float          m_introBannerVOffset{ 110.0f };
 		LogLevel       m_logLevel{ LogLevel::Message };
 

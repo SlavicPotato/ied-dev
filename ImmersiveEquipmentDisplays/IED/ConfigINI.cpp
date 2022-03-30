@@ -43,8 +43,6 @@ namespace IED
 			parsers.reader.GetBoolValue(SECT_GENERAL, "ForceDefaultConfig", false);
 		m_immediateFavUpdate =
 			parsers.reader.GetBoolValue(SECT_GENERAL, "ImmediateUpdateOnFav", false);
-		m_corpseScatterPatch =
-			parsers.reader.GetBoolValue(SECT_GENERAL, "CorpseScatterPatch", false);
 		m_applyTransformOverrides =
 			parsers.reader.GetBoolValue(SECT_GENERAL, "XP32LeftHandRotationFix", true);
 
@@ -153,6 +151,9 @@ namespace IED
 				AnimationWeaponType::Bow,
 				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseBow", 0)));
 		}
+
+		m_enableCorpseScatter = parsers.reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);
+
 		m_loaded = parsers.reader.is_loaded();
 
 		return m_loaded;

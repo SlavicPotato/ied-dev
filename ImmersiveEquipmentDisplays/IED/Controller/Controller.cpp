@@ -34,7 +34,8 @@ namespace IED
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
-		m_applyTransformOverrides(a_config->m_applyTransformOverrides)
+		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
+		m_enableCorpseScatter(a_config->m_enableCorpseScatter)
 	{
 		InitializeInputHandlers();
 	}
@@ -2629,7 +2630,7 @@ namespace IED
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
 						false,
-						settings.enableDeadScatter))
+						m_enableCorpseScatter))
 				{
 					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
@@ -3087,7 +3088,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_config.settings.data.enableDeadScatter);
+					m_enableCorpseScatter);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3108,7 +3109,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_config.settings.data.enableDeadScatter);
+					m_enableCorpseScatter);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3195,7 +3196,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_config.settings.data.enableDeadScatter);
+					m_enableCorpseScatter);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3210,7 +3211,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_config.settings.data.enableDeadScatter);
+					m_enableCorpseScatter);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}

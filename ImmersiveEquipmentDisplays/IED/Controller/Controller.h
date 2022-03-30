@@ -940,6 +940,7 @@ namespace IED
 		bool m_npcProcessingDisabled{ false };
 		bool m_iniKeysForced{ false };
 		bool m_applyTransformOverrides{ false };
+		bool m_enableCorpseScatter{ false };
 
 		struct
 		{

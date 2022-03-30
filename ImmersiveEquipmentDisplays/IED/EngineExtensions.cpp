@@ -85,7 +85,7 @@ namespace IED
 			Hook_ProcessEffectShaders();
 		}
 
-		if (a_config->m_corpseScatterPatch)
+		if (a_config->m_enableCorpseScatter)
 		{
 			Patch_CorpseScatter();
 		}
@@ -694,7 +694,7 @@ namespace IED
 				     a_slot <= BIPED_OBJECT::kCrossbow) ||
 				    a_slot == actor->GetShieldBipedObject())
 				{
-					if (actor->IsDead())
+					if (actor->IsDead() && actor->GetNiNode())
 					{
 						result = 1;
 					}
@@ -1064,15 +1064,7 @@ namespace IED
 	{
 		auto sh = m_Instance.m_controller->GetBSStringHolder();
 
-		if (auto r = a_object->GetExtraData(sh->m_bsx))
-		{
-			if (NRTTI<BSXFlags>::IsType(r))
-			{
-				return static_cast<BSXFlags*>(r);
-			}
-		}
-
-		return nullptr;
+		return a_object->GetExtraData<BSXFlags>(sh->m_bsx);
 	}
 
 }

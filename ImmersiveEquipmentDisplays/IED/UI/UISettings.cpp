@@ -149,14 +149,6 @@ namespace IED
 				DrawTip(UITip::NoCheckFav);
 
 				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::DeadScatter, "4"),
-						std::addressof(data.enableDeadScatter))))
-				{
-					m_controller.QueueResetGearAll(ControllerUpdateFlags::kNone);
-				}
-				DrawTip(UITip::DeadScatter);
-				
-				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::XP32AA, "5"),
 						std::addressof(data.enableXP32AA))))
 				{
