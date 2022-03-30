@@ -2,8 +2,7 @@
 
 #include "IAnimationManager.h"
 
-#include "ActorAnimationState.h"
-
+#include "IED/SettingHolder.h"
 #include "IED/Util/PEXReader.h"
 
 namespace IED
@@ -12,6 +11,12 @@ namespace IED
 	inline static constexpr bool is_shield(TESForm* a_form) noexcept
 	{
 		return a_form && a_form->IsArmor() && static_cast<TESObjectARMO*>(a_form)->IsShield();
+	}
+
+	IAnimationManager::IAnimationManager(
+		Data::SettingHolder& a_settings) :
+		m_settings(a_settings)
+	{
 	}
 
 	void IAnimationManager::InitializeAnimationStrings()
@@ -131,6 +136,12 @@ namespace IED
 
 				switch (group)
 				{
+				case 4:
+					result.set_base_extra(AnimationExtraGroup::BowIdle, base);
+					break;
+				case 31:
+					result.set_base_extra(AnimationExtraGroup::BowAttack, base);
+					break;
 				case 37:
 					result.set_base(AnimationWeaponType::Sword, base);
 					presenceFlags.set(PresenceFlags::kSword);
@@ -209,14 +220,14 @@ namespace IED
 
 		auto type = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Right]);
 
+		std::int32_t animVar;
+
 		switch (type)
 		{
 		case AnimationWeaponType::Sword:
 			{
 				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 				auto leftID  = GetObjectType(objLeft);
-
-				std::int32_t animVar;
 
 				switch (a_state.get_placement(AnimationWeaponSlot::Sword))
 				{
@@ -271,8 +282,6 @@ namespace IED
 			{
 				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 				auto leftID  = GetObjectType(objLeft);
-
-				std::int32_t animVar;
 
 				switch (a_state.get_placement(AnimationWeaponSlot::Dagger))
 				{
@@ -347,8 +356,6 @@ namespace IED
 				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 				auto leftID  = GetObjectType(objLeft);
 
-				std::int32_t animVar;
-
 				switch (a_state.get_placement(AnimationWeaponSlot::Axe))
 				{
 				case WeaponPlacementID::OnBack:
@@ -394,6 +401,7 @@ namespace IED
 					type,
 					animVar);
 			}
+
 			break;
 
 		case AnimationWeaponType::Mace:
@@ -401,8 +409,6 @@ namespace IED
 			{
 				auto objLeft = pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
 				auto leftID  = GetObjectType(objLeft);
-
-				std::int32_t animVar;
 
 				if (leftID == AnimationWeaponType::Mace)
 				{
@@ -429,35 +435,31 @@ namespace IED
 		case AnimationWeaponType::TwoHandedSword:
 		case AnimationWeaponType::TwoHandedAxe:
 
-			{
-				std::int32_t animVar =
-					a_state.get_placement(AnimationWeaponSlot::TwoHanded) == WeaponPlacementID::AtHip ?
-						0 :
-                        -1;
+			animVar =
+				a_state.get_placement(AnimationWeaponSlot::TwoHanded) == WeaponPlacementID::AtHip ?
+					0 :
+                    -1;
 
-				SetAnimationVar(
-					a_actor,
-					a_state,
-					type,
-					animVar);
-			}
+			SetAnimationVar(
+				a_actor,
+				a_state,
+				type,
+				animVar);
 
 			break;
 
 		case AnimationWeaponType::Bow:
 
-			{
-				std::int32_t animVar =
-					a_state.get_placement(AnimationWeaponSlot::Quiver) == WeaponPlacementID::Frostfall ?
-						0 :
-                        -1;
+			animVar =
+				a_state.get_placement(AnimationWeaponSlot::Quiver) == WeaponPlacementID::Frostfall ?
+					0 :
+                    -1;
 
-				SetAnimationVar(
-					a_actor,
-					a_state,
-					type,
-					animVar);
-			}
+			SetAnimationVar(
+				a_actor,
+				a_state,
+				type,
+				animVar);
 
 			break;
 		}
@@ -496,11 +498,25 @@ namespace IED
 
 			a_actor->animGraphHolder.SetVariableOnGraphsInt(se.name, value);
 
-			// these can probably be set once after actor load
 			a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_crc, m_groupInfo->crc);
 			a_actor->animGraphHolder.SetVariableOnGraphsInt(se.crc, m_groupInfo->crc);
 
-			gLog.Debug("%.8X: %s: %d", a_actor->formID, se.name.c_str(), value);
+			if (a_id == AnimationWeaponType::Bow)
+			{
+				std::int32_t av;
+
+				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowIdle, m_settings.data.XP32AABowIdle ? a_value : -1);
+
+				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowidle, av);
+				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowidle_crc, m_groupInfo->crc);
+
+				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowAttack, m_settings.data.XP32AABowAtk ? a_value : -1);
+
+				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowatk, av);
+				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowatk_crc, m_groupInfo->crc);
+			}
+
+			//gLog.Debug("%.8X: %s: %d", a_actor->formID, se.name.c_str(), value);
 		}
 	}
 

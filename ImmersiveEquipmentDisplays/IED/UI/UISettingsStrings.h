@@ -34,6 +34,9 @@ namespace IED
 			ShowIntroBanner             = 4423,
 			DeadScatter                 = 4424,
 			XP32AA                      = 4425,
+			XP32_FF                     = 4426,
+			XP32_FF_Idle                = 4427,
+			XP32_FF_Attack              = 4428,
 		};
 	}
 }

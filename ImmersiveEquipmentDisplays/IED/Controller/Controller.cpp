@@ -28,6 +28,7 @@ namespace IED
 		const std::shared_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(*this),
 		EffectController(a_config->m_effectShaders),
+		IAnimationManager(m_config.settings),
 		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
@@ -483,8 +484,7 @@ namespace IED
 				info->get_base(AnimationWeaponType::Mace),
 				info->get_base(AnimationWeaponType::TwoHandedSword),
 				info->get_base(AnimationWeaponType::TwoHandedAxe),
-				info->get_base(AnimationWeaponType::Bow)
-			);
+				info->get_base(AnimationWeaponType::Bow));
 		}
 	}
 

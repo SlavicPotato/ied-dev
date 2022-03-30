@@ -540,7 +540,9 @@ namespace IED
 
 		enum class NodeOverridePlacementFlags : std::uint32_t
 		{
-			kNone = 0
+			kNone = 0,
+
+			kRandomGenerated = 1u << 0,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverridePlacementFlags);

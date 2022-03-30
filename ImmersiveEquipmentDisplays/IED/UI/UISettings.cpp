@@ -164,6 +164,39 @@ namespace IED
 				}
 				DrawTip(UITip::XP32AA);
 
+				if (data.enableXP32AA)
+				{
+					ImGui::Indent();
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("%s:", LS(UISettingsStrings::XP32_FF));
+					ImGui::SameLine();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::XP32_FF_Idle, "6"),
+							std::addressof(data.XP32AABowIdle))))
+					{
+						m_controller.QueueResetAAAll();
+						m_controller.QueueEvaluateAll(
+							ControllerUpdateFlags::kNone);
+					}
+
+					ImGui::SameLine();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::XP32_FF_Attack, "7"),
+							std::addressof(data.XP32AABowAtk))))
+					{
+						m_controller.QueueResetAAAll();
+						m_controller.QueueEvaluateAll(
+							ControllerUpdateFlags::kNone);
+					}
+
+					DrawTip(UITip::XP32AA_FF);
+
+					ImGui::Unindent();
+				}
+
 				ImGui::Spacing();
 
 				if (ImGui::TreeNodeEx(

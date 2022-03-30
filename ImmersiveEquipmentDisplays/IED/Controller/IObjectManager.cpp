@@ -127,7 +127,7 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_actor && a_actor == *g_thePlayer)
+		if (a_objects.m_actor == *g_thePlayer)
 		{
 			m_playerState.insert(a_objects);
 		}
@@ -267,7 +267,7 @@ namespace IED
 			auto handle = e.second.GetHandle();
 
 			NiPointer<TESObjectREFR> ref;
-			LookupREFRByHandle(handle, ref);
+			(void)handle.LookupZH(ref);
 
 			CleanupActorObjectsImpl(
 				nullptr,

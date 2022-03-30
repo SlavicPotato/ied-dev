@@ -34,6 +34,8 @@ namespace IED
 			a_out.pflags = static_cast<Data::NodeOverridePlacementFlags>(
 				a_in.get("parent_flags", stl::underlying(Data::NodeOverridePlacementFlags::kNone)).asUInt());
 
+			a_out.pflags.clear(Data::NodeOverridePlacementFlags::kRandomGenerated);
+
 			return true;
 		}
 

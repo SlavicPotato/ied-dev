@@ -150,6 +150,14 @@ namespace IED
 			m_agInfo.set_base(
 				AnimationWeaponType::Bow,
 				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseBow", 0)));
+
+			m_agInfo.set_base_extra(
+				AnimationExtraGroup::BowAttack,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseBowAttack", 0)));
+
+			m_agInfo.set_base_extra(
+				AnimationExtraGroup::BowIdle,
+				static_cast<std::int32_t>(parsers.reader.GetLongValue(SECT_ANIM, "GroupBaseBowIdle", 0)));
 		}
 
 		m_enableCorpseScatter = parsers.reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);

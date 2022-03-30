@@ -7,6 +7,11 @@
 
 namespace IED
 {
+	namespace Data
+	{
+		class SettingHolder;
+	}
+
 	class IAnimationManager
 	{
 		inline static constexpr auto FNIS_AA2_PEX_PATH = "Data\\Scripts\\FNIS_aa2.pex";
@@ -35,9 +40,16 @@ namespace IED
 
 			std::array<EquipEntry, stl::underlying(AnimationWeaponType::Max)> eqp;
 			BSFixedString                                                     FNISaa_crc{ "FNISaa_crc" };
+			BSFixedString                                                     FNISaa_bowatk{ "FNISaa_bowatk" };
+			BSFixedString                                                     FNISaa_bowidle{ "FNISaa_bowidle" };
+			BSFixedString                                                     FNISaa_bowatk_crc{ "FNISaa_bowatk_crc" };
+			BSFixedString                                                     FNISaa_bowidle_crc{ "FNISaa_bowidle_crc" };
 		};
 
 	public:
+
+		IAnimationManager(Data::SettingHolder& a_settings);
+
 		enum class PresenceFlags : std::uint32_t
 		{
 			kNone = 0,
@@ -85,6 +97,8 @@ namespace IED
 			std::int32_t         a_value);
 
 		AnimationWeaponType GetObjectType(TESForm* a_object);
+
+		Data::SettingHolder& m_settings;
 
 		std::optional<AnimationGroupInfo>       m_groupInfo;
 		std::unique_ptr<const AnimStringHolder> m_strings;
