@@ -193,7 +193,7 @@ namespace IED
 
 			for (auto it = e.begin(); it != e.end();)
 			{
-				if (it->second.data.empty())
+				if (it->second.empty())
 				{
 					it = e.erase(it);
 				}
