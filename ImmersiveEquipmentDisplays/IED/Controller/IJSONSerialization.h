@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../ConfigSerializationFlags.h"
-#include "../ConfigStore.h"
+#include "ExportFlags.h"
+#include "IED/ConfigSerializationFlags.h"
+#include "IED/ConfigStore.h"
 #include "ImportFlags.h"
 
 #include "Serialization/Serialization.h"
@@ -14,7 +15,10 @@ namespace IED
 	public:
 		bool ImportData(Data::configStore_t&& a_in, stl::flag<ImportFlags> a_flags);
 
-		bool ExportData(const fs::path& a_path, stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
+		bool ExportData(
+			const fs::path&                                a_path,
+			stl::flag<ExportFlags>                         a_exportFlags,
+			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out) const;
 		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out, Serialization::ParserState& a_state) const;
@@ -27,6 +31,7 @@ namespace IED
 
 		Data::configStore_t CreateExportData(
 			const Data::configStore_t&                     a_data,
+			stl::flag<ExportFlags>                         a_exportFlags,
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		FN_NAMEPROC("JSONSerialization");

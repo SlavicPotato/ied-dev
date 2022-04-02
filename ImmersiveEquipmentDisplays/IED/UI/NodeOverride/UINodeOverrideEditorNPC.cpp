@@ -247,7 +247,11 @@ namespace IED
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
 
-			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
+			if (EraseConfig<
+					Data::configNodeOverrideEntryTransform_t>(
+					a_handle,
+					data,
+					a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
@@ -264,7 +268,11 @@ namespace IED
 		{
 			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
 
-			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
+			if (EraseConfig<
+					Data::configNodeOverrideEntryPlacement_t>(
+					a_handle,
+					data,
+					a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}
@@ -284,6 +292,7 @@ namespace IED
 			auto it = data.find(a_handle);
 			if (it != data.end())
 			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 				it->second.data.clear();
 
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
@@ -301,6 +310,7 @@ namespace IED
 			auto it = data.find(a_handle);
 			if (it != data.end())
 			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 				it->second.placementData.clear();
 
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
@@ -311,9 +321,15 @@ namespace IED
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorNPC::GetOrCreateConfigHolder(Game::FormID a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& result = m_controller
+			                   .GetConfigStore()
+			                   .active.transforms.GetNPCData()
+			                   .try_emplace(a_handle)
+			                   .first->second;
 
-			return data.try_emplace(a_handle).first->second;
+			result.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
+
+			return result;
 		}
 
 		UIPopupQueue& UINodeOverrideEditorNPC::GetPopupQueue_ProfileBase() const

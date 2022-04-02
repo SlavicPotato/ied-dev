@@ -127,9 +127,9 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_objects.m_actor == *g_thePlayer)
+		if (a_actor == *g_thePlayer)
 		{
-			m_playerState.insert(a_objects);
+			m_playerState.emplace(a_objects);
 		}
 
 		if (a_objects.m_actor->loadedState)

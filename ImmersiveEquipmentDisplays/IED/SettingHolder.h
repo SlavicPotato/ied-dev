@@ -163,6 +163,7 @@ namespace IED
 				bool enableXP32AA{ false };
 				bool XP32AABowIdle{ false };
 				bool XP32AABowAtk{ false };
+				bool placementRandomization{ false };
 
 				stl::optional<LogLevel> logLevel;
 

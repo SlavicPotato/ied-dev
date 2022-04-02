@@ -246,7 +246,11 @@ namespace IED
 			                 .GetConfigStore()
 			                 .active.transforms.GetActorData();
 
-			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
+			if (EraseConfig<
+					Data::configNodeOverrideEntryTransform_t>(
+					a_handle,
+					data,
+					a_params.name))
 			{
 				m_controller.RequestEvaluateTransformsActor(a_handle, true);
 			}
@@ -289,6 +293,7 @@ namespace IED
 			auto it = data.find(a_handle);
 			if (it != data.end())
 			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 				it->second.data.clear();
 
 				m_controller.RequestEvaluateTransformsActor(a_handle, true);
@@ -306,6 +311,7 @@ namespace IED
 			auto it = data.find(a_handle);
 			if (it != data.end())
 			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 				it->second.placementData.clear();
 
 				m_controller.RequestEvaluateTransformsActor(a_handle, true);
@@ -317,11 +323,15 @@ namespace IED
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorActor::GetOrCreateConfigHolder(
 			Game::FormID a_handle) const
 		{
-			return m_controller
-			    .GetConfigStore()
-			    .active.transforms.GetActorData()
-			    .try_emplace(a_handle)
-			    .first->second;
+			auto& result = m_controller
+			                   .GetConfigStore()
+			                   .active.transforms.GetActorData()
+			                   .try_emplace(a_handle)
+			                   .first->second;
+
+			result.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
+
+			return result;
 		}
 
 		UIPopupQueue& UINodeOverrideEditorActor::GetPopupQueue_ProfileBase() const

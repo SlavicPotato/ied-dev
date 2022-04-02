@@ -110,6 +110,7 @@ namespace IED
 			T                               a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
+			a_params.data.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 			a_params.data.copy_cc(
 				GetConfigClass(),
 				GetOrCreateConfigHolder(a_handle));
@@ -125,6 +126,8 @@ namespace IED
 			auto it = a_map.find(a_handle);
 			if (it != a_map.end())
 			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
+
 				bool r = it->second.get_data<Td>().erase(a_name) > 0;
 
 				if (it->second.empty())
@@ -172,6 +175,7 @@ namespace IED
 			}
 
 			conf.flags = pdata.flags;
+			conf.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 		}
 
 		template <class T>
@@ -220,6 +224,7 @@ namespace IED
 		NodeOverrideProfile::base_type UINodeOverrideEditorCommon<T>::GetData(
 			const profileSelectorParamsNodeOverride_t<T>& a_params)
 		{
+			a_params.data.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 			return a_params.data.copy_cc(GetConfigClass());
 		}
 	}

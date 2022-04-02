@@ -29,8 +29,9 @@ namespace IED
 
 	AnimationGroupInfo IAnimationManager::ExtractAnimationInfoFromPEX()
 	{
-		PEXReader          reader;
 		AnimationGroupInfo result;
+
+		PEXReader          reader;
 
 		reader.Open(FNIS_AA2_PEX_PATH);
 		reader.ReadData();
@@ -40,7 +41,7 @@ namespace IED
 		auto& st = reader.GetStringTable();
 		if (st.size() != 224)
 		{
-			throw std::exception("unexpected string table size");
+			throw std::length_error("unexpected string table size");
 		}
 
 		auto modIdBegin = st.begin() + 33;
@@ -50,7 +51,7 @@ namespace IED
 		{
 			if (it->size() != 3)
 			{
-				throw std::exception("mod prefix strlen != 3");
+				throw std::length_error("mod prefix strlen != 3");
 			}
 		}
 
@@ -61,7 +62,7 @@ namespace IED
 		{
 			if (it->size() != 6)
 			{
-				throw std::exception("aa set strlen != 6");
+				throw std::length_error("aa set strlen != 6");
 			}
 		}
 
@@ -69,12 +70,12 @@ namespace IED
 
 		if (!numMods)
 		{
-			throw std::exception("numMods == 0");
+			throw std::length_error("numMods == 0");
 		}
 
 		if (numMods < 0 || numMods > 30)
 		{
-			throw std::exception("numMods out of range");
+			throw std::out_of_range("numMods out of range");
 		}
 
 		modIdEnd = modIdBegin + numMods;
@@ -83,17 +84,17 @@ namespace IED
 
 		if (!numSets)
 		{
-			throw std::exception("numSets == 0");
+			throw std::length_error("numSets == 0");
 		}
 
 		if (numSets < 0 || numSets > 128)
 		{
-			throw std::exception("numSets out of range");
+			throw std::out_of_range("numSets out of range");
 		}
 
 		if (st[74].size() != 6)
 		{
-			throw std::exception("unexpected crc string length");
+			throw std::length_error("unexpected crc string length");
 		}
 
 		// attempt to extract the info
@@ -115,7 +116,7 @@ namespace IED
 
 		if (modId < 0)
 		{
-			throw std::exception("mod prefix not found (xpe)");
+			throw std::runtime_error("mod prefix not found (xpe)");
 		}
 
 		setsEnd = setsBegin + numSets;
@@ -181,7 +182,7 @@ namespace IED
 
 		if (!presenceFlags.test(PresenceFlags::kAll))
 		{
-			throw std::exception("one or more ag base values weren't found");
+			throw std::runtime_error("one or more ag base values weren't found");
 		}
 
 		return result;

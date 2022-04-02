@@ -2,7 +2,7 @@
 
 #include "IJSONSerialization.h"
 
-#include "../Parsers/JSONConfigStoreParser.h"
+#include "IED/Parsers/JSONConfigStoreParser.h"
 #include "Serialization/Serialization.h"
 
 #include "IED/Data.h"
@@ -209,6 +209,7 @@ namespace IED
 
 	bool IJSONSerialization::ExportData(
 		const fs::path&                                a_path,
+		stl::flag<ExportFlags>                         a_exportFlags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)
 	{
 		try
@@ -223,7 +224,7 @@ namespace IED
 			{
 				IScopedLock lock(JSGetLock());
 
-				tmp = CreateExportData(JSGetConfigStore(), a_flags);
+				tmp = CreateExportData(JSGetConfigStore(), a_exportFlags, a_flags);
 			}
 
 			parser.Create(tmp, root);
@@ -330,6 +331,7 @@ namespace IED
 
 	Data::configStore_t IJSONSerialization::CreateExportData(
 		const Data::configStore_t&                     a_data,
+		stl::flag<ExportFlags>                         a_exportFlags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)
 	{
 		using namespace Data;
@@ -416,6 +418,24 @@ namespace IED
 		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideRace))
 		{
 			result.transforms.GetRaceData() = a_data.transforms.GetRaceData();
+		}
+
+		if (!a_exportFlags.test(ExportFlags::kKeepGenerated))
+		{
+			for (auto& e : result.transforms.GetFormMaps())
+			{
+				for (auto it = e.begin(); it != e.end();)
+				{
+					if (it->second.flags.test(Data::NodeOverrideHolderFlags::RandomGenerated))
+					{
+						it = e.erase(it);
+					}
+					else
+					{
+						++it;
+					}
+				}
+			}
 		}
 
 		//

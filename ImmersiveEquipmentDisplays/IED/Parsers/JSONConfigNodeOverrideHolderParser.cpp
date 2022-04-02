@@ -27,6 +27,8 @@ namespace IED
 			a_out.flags = static_cast<Data::NodeOverrideHolderFlags>(
 				data.get("flags", stl::underlying(Data::NodeOverrideHolderFlags::kNone)).asUInt());
 
+			a_out.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
+
 			auto& vdata = data["data"];
 
 			for (auto it = vdata.begin(); it != vdata.end(); ++it)
@@ -80,7 +82,7 @@ namespace IED
 			Parser<Data::configNodeOverrideTransform_t> parser(m_state);
 			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
 
-			data["flags"] = stl::underlying(a_data.flags.value);
+			data["flags"] = a_data.flags.underlying();
 
 			if (!a_data.data.empty())
 			{

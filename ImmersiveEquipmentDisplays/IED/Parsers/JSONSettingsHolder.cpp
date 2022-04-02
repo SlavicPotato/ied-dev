@@ -49,13 +49,14 @@ namespace IED
 				return false;
 			}
 
-			a_out.toggleKeepLoaded     = data.get("toggle_keep_loaded", false).asBool();
-			a_out.hideEquipped         = data.get("hide_equipped", false).asBool();
-			a_out.disableNPCSlots      = data.get("disable_npc_slots", false).asBool();
-			a_out.removeFavRestriction = data.get("remove_fav_restriction", false).asBool();
-			a_out.enableXP32AA         = data.get("enable_xp32_aa", false).asBool();
-			a_out.XP32AABowAtk         = data.get("xp32_aa_bow_atk", false).asBool();
-			a_out.XP32AABowIdle        = data.get("xp32_aa_bow_idle", false).asBool();
+			a_out.toggleKeepLoaded       = data.get("toggle_keep_loaded", false).asBool();
+			a_out.hideEquipped           = data.get("hide_equipped", false).asBool();
+			a_out.disableNPCSlots        = data.get("disable_npc_slots", false).asBool();
+			a_out.removeFavRestriction   = data.get("remove_fav_restriction", false).asBool();
+			a_out.enableXP32AA           = data.get("enable_xp32_aa", false).asBool();
+			a_out.XP32AABowAtk           = data.get("xp32_aa_bow_atk", false).asBool();
+			a_out.XP32AABowIdle          = data.get("xp32_aa_bow_idle", false).asBool();
+			a_out.placementRandomization = data.get("placement_randomization", false).asBool();
 
 			auto& logLevel = data["log_level"];
 
@@ -92,13 +93,14 @@ namespace IED
 
 			soundParser.Create(a_data.sound, data["sound"]);
 
-			data["toggle_keep_loaded"]     = a_data.toggleKeepLoaded;
-			data["hide_equipped"]          = a_data.hideEquipped;
-			data["disable_npc_slots"]      = a_data.disableNPCSlots;
-			data["remove_fav_restriction"] = a_data.removeFavRestriction;
-			data["enable_xp32_aa"]         = a_data.enableXP32AA;
-			data["xp32_aa_bow_atk"]        = a_data.XP32AABowAtk;
-			data["xp32_aa_bow_idle"]       = a_data.XP32AABowIdle;
+			data["toggle_keep_loaded"]      = a_data.toggleKeepLoaded;
+			data["hide_equipped"]           = a_data.hideEquipped;
+			data["disable_npc_slots"]       = a_data.disableNPCSlots;
+			data["remove_fav_restriction"]  = a_data.removeFavRestriction;
+			data["enable_xp32_aa"]          = a_data.enableXP32AA;
+			data["xp32_aa_bow_atk"]         = a_data.XP32AABowAtk;
+			data["xp32_aa_bow_idle"]        = a_data.XP32AABowIdle;
+			data["placement_randomization"] = a_data.placementRandomization;
 
 			if (a_data.logLevel)
 			{

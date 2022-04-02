@@ -34,7 +34,7 @@ namespace IED
 				UIPopupType a_type,
 				const char* a_key,
 				const char* a_fmt,
-				Args... a_args) noexcept
+				Args... a_args)
 				:
 				m_type(a_type),
 				m_key(a_key)
@@ -49,7 +49,7 @@ namespace IED
 			template <class... Args>
 			UIPopupAction(
 				UIPopupType a_type,
-				const char* a_key) noexcept
+				const char* a_key)
 				:
 				m_type(a_type),
 				m_key(a_key)
@@ -57,38 +57,41 @@ namespace IED
 				mk_key();
 			}
 
-			auto& call(func_type a_func) noexcept
+			auto& call(func_type a_func) noexcept(
+				std::is_nothrow_move_assignable_v<func_type>)
 			{
 				m_func = std::move(a_func);
 				return *this;
 			}
 
-			auto& draw(func_type_draw a_func) noexcept
+			auto& draw(func_type_draw a_func) noexcept(
+				std::is_nothrow_move_assignable_v<func_type_draw>)
 			{
 				m_funcDraw = std::move(a_func);
 				return *this;
 			}
 
-			inline constexpr auto& set_text_wrap_size(float a_size) noexcept
+			inline constexpr auto& set_text_wrap_size(float a_size) noexcept(
+				std::is_nothrow_assignable_v<decltype(m_textWrapSize), float>)
 			{
 				m_textWrapSize = a_size;
 				return *this;
 			}
 
 			template <class... Args>
-			inline constexpr auto& fmt_input(const char* a_fmt, Args... a_args) noexcept
+			inline constexpr auto& fmt_input(const char* a_fmt, Args... a_args)
 			{
 				stl::snprintf(m_input, a_fmt, a_args...);
 				return *this;
 			}
 
-			inline constexpr const auto& GetInput() const noexcept
+			inline constexpr auto& GetInput() const noexcept
 			{
 				return m_input;
 			}
 
 		private:
-			void mk_key() noexcept
+			void mk_key()
 			{
 				if (auto it = std::find(
 						m_key.begin(),

@@ -20,11 +20,12 @@ namespace IED
 					if (form->IsDeleted())
 					{
 						gLog.Warning("%s: form %.8X is deleted", __FUNCTION__, a_form.get());
+						return {};
 					}
 				}
 				else
 				{
-					gLog.Debug("%s: form %.8X not found", __FUNCTION__, a_form.get());
+					//gLog.Debug("%s: form %.8X not found", __FUNCTION__, a_form.get());
 				}
 
 				return tmp;

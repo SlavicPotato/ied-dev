@@ -514,6 +514,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\AnimationWeaponSlot.h" />
     <ClInclude Include="IED\Controller\AnimationWeaponType.h" />
     <ClInclude Include="IED\Controller\EffectController.h" />
+    <ClInclude Include="IED\Controller\ExportFlags.h" />
     <ClInclude Include="IED\Controller\IAnimationManager.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
     <ClInclude Include="IED\LocaleData.h" />

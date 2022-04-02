@@ -276,10 +276,10 @@ namespace IED
 
 				fs::rename(tmpPath, a_path);
 			}
-			catch (const std::exception& e)
+			catch (...)
 			{
 				SafeCleanup(tmpPath);
-				throw e;
+				throw;
 			}
 		}
 

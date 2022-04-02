@@ -120,7 +120,7 @@ namespace IED
 
 		}),
 
-		m_monitor({
+		m_monitor(std::initializer_list<const char*>{
 
 			"WeaponAxe",
 			"WeaponMace",
@@ -369,7 +369,7 @@ namespace IED
 
 		}),
 
-		m_extra({
+		m_extra(std::initializer_list<exn_ctor_init_t>{
 			{
 
 				"MOV WeaponDaggerOnBack",
@@ -392,12 +392,12 @@ namespace IED
 			},
 		}),
 
-		m_extraCopy({
+		m_extraCopy(std::initializer_list<exn_copy_ctor_init_t>{
 			{ "WeaponBack", "WeaponBackIED" },
 			{ "WeaponBow", "WeaponBowIED" },
 		}),
 
-		m_transformOverride({
+		m_transformOverride(std::initializer_list<xfrm_ovr_ctor_init_t>{
 			{ "WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },
 			{ "HDT WeaponSwordLeft", { -1.687309f, -0.940114f, -3.022884f } },
 			{ "WeaponAxeLeft", { -2.579556f, -0.866133f, -1.205785f } },
@@ -408,6 +408,62 @@ namespace IED
 			{ "HDT WeaponDaggerLeft", { -0.444131f, -0.803249f, -1.805654f } },
 			{ "WeaponStaffLeft", { 0.445457f, -0.274162f, 1.455669f } },
 			{ "HDT WeaponStaffLeft", { 0.445457f, -0.274162f, 1.455669f } },
+		}),
+
+		m_randPlacement(std::initializer_list<rw_ctor_init_t>{
+
+			{
+
+				"WeaponSword",
+				"WeaponSwordLeft",
+				{
+
+					{ "MOV WeaponSwordDefault", "MOV WeaponSwordLeftDefault" },
+					{ "MOV WeaponSwordOnBack", "MOV WeaponSwordLeftOnBack" },
+					{ "MOV WeaponSwordSWP", "MOV WeaponSwordLeftSWP" },
+
+				}
+
+			},
+			{
+
+				"WeaponAxe",
+				"WeaponAxeLeft",
+				{
+
+					{ "MOV WeaponAxeDefault", "MOV WeaponAxeLeftDefault" },
+					{ "MOV WeaponAxeOnBack", "MOV WeaponAxeLeftOnBack" },
+
+				}
+
+			},
+			{
+
+				"WeaponDagger",
+				"WeaponDaggerLeft",
+				{
+
+					{ "MOV WeaponDaggerDefault", "MOV WeaponDaggerLeftDefault" },
+					{ "MOV WeaponDaggerBackHip", "MOV WeaponDaggerLeftBackHip" },
+					{ "MOV WeaponDaggerAnkle", "MOV WeaponDaggerLeftAnkle" },
+
+				}
+
+			},
+			/*{
+
+				"WeaponBow",
+				nullptr,
+				{
+
+					{ "MOV WeaponBowDefault", nullptr },
+					{ "MOV WeaponBowChesko", nullptr },
+					{ "MOV WeaponBowBetter", nullptr },
+
+				}
+
+			},*/
+
 		})
 	{
 	}
@@ -419,4 +475,24 @@ namespace IED
 			m_Instance = std::make_unique<NodeOverrideData>();
 		}
 	}
+
+	auto NodeOverrideData::randWeapEntry_t::get_rand_entry() const
+		-> const NodeOverrideData::randPlacementEntry_t*
+	{
+		if (!rng)
+		{
+			return nullptr;
+		}
+
+		try
+		{
+			auto index = rng->Get();
+			return std::addressof(movs[index]);
+		}
+		catch (...)
+		{
+			return nullptr;
+		}
+	}
+
 }

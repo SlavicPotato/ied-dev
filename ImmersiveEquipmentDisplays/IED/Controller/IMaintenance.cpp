@@ -205,4 +205,22 @@ namespace IED
 		}
 	}
 
+	void IMaintenance::ClearConfigStoreRand(Data::configStore_t& a_data)
+	{
+		for (auto& e : a_data.transforms.GetFormMaps())
+		{
+			for (auto it = e.begin(); it != e.end();)
+			{
+				if (it->second.flags.test(Data::NodeOverrideHolderFlags::RandomGenerated))
+				{
+					it = e.erase(it);
+				}
+				else
+				{
+					++it;
+				}
+			}
+		}
+	}
+
 }

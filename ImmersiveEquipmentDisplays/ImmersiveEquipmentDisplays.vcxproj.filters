@@ -1145,6 +1145,9 @@
     <ClInclude Include="IED\Util\PEXReader.h">
       <Filter>Source\IED\Util</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ExportFlags.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">

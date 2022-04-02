@@ -17,16 +17,13 @@ namespace IED
 	std::atomic_llong ActorObjectHolder::m_lfsc_delta{ 0ll };
 
 	ActorObjectHolder::ActorObjectHolder(
-		const stl::optional<Data::actorStateEntry_t>& a_playerState,
-		Actor*                                        a_actor,
-		NiNode*                                       a_root,
-		NiNode*                                       a_npcroot,
-		IObjectManager&                               a_owner,
-		Game::ObjectRefHandle                         a_handle,
-		bool                                          a_nodeOverrideEnabled,
-		bool                                          a_nodeOverrideEnabledPlayer,
-		bool                                          a_applyTransformOverrides,
-		Data::actorStateHolder_t&                     a_actorState) :
+		Actor*                a_actor,
+		NiNode*               a_root,
+		NiNode*               a_npcroot,
+		IObjectManager&       a_owner,
+		Game::ObjectRefHandle a_handle,
+		bool                  a_nodeOverrideEnabled,
+		bool                  a_nodeOverrideEnabledPlayer) :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
@@ -106,26 +103,6 @@ namespace IED
 					}
 				}
 			}
-
-			if (!m_weapNodes.empty() &&
-			    !m_cmeNodes.empty() &&
-			    !m_movNodes.empty())
-			{
-				for (auto& e : NodeOverrideData::GetExtraNodes())
-				{
-					CreateExtraNodes(a_npcroot, m_female, e);
-				}
-			}
-		}
-
-		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
-		{
-			CreateExtraCopyNode(a_actor, a_npcroot, e);
-		}
-
-		if (a_applyTransformOverrides)
-		{
-			ApplyNodeTransformOverrides(a_root);
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
@@ -135,21 +112,6 @@ namespace IED
 			m_entriesSlot[i].slotid   = static_cast<Data::ObjectSlot>(i);
 			m_entriesSlot[i].slotidex = Data::ItemData::SlotToExtraSlot(
 				static_cast<Data::ObjectSlot>(i));
-		}
-
-		if (a_actor == *g_thePlayer && a_playerState)
-		{
-			ApplyActorState(*a_playerState);
-		}
-		else
-		{
-			auto it = a_actorState.data.find(a_actor->formID);
-			if (it != a_actorState.data.end())
-			{
-				ApplyActorState(it->second);
-
-				a_actorState.data.erase(it);
-			}
 		}
 	}
 
@@ -738,6 +700,25 @@ namespace IED
 		});
 
 		return args.result;
+	}
+
+	void ObjectManagerData::ApplyActorState(
+		ActorObjectHolder& a_holder)
+	{
+		if (a_holder.m_actor == *g_thePlayer && m_playerState)
+		{
+			a_holder.ApplyActorState(*m_playerState);
+		}
+		else
+		{
+			auto it = m_storedActorStates.data.find(a_holder.m_actor->formID);
+			if (it != m_storedActorStates.data.end())
+			{
+				a_holder.ApplyActorState(it->second);
+
+				m_storedActorStates.data.erase(it);
+			}
+		}
 	}
 
 }

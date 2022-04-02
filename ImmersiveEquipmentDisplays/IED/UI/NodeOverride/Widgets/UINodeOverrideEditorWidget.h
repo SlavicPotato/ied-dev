@@ -673,7 +673,7 @@ namespace IED
 
 			auto& data = NodeOverrideData::GetWeaponNodeData();
 
-			for (auto e : data.getvec())
+			for (auto &e : data.getvec())
 			{
 				if (!m_itemFilter.Test(e->second.desc))
 				{

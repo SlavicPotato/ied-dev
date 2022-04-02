@@ -294,7 +294,7 @@ namespace IED
 			const stl::fixed_string& a_nodeName,
 			NiNode*                  a_node,
 			NiNode*                  a_defaultNode,
-			AnimationWeaponSlot       a_animID) :
+			AnimationWeaponSlot      a_animID) :
 			nodeName(a_nodeName),
 			node(a_node),
 			defaultNode(a_defaultNode),
@@ -305,7 +305,7 @@ namespace IED
 		const stl::fixed_string nodeName;
 		NiPointer<NiNode>       node;
 		NiPointer<NiNode>       defaultNode;
-		AnimationWeaponSlot      animSlot;
+		AnimationWeaponSlot     animSlot;
 
 	private:
 		mutable NiPointer<NiNode> target;
@@ -363,16 +363,13 @@ namespace IED
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
-			const stl::optional<Data::actorStateEntry_t>& a_playerState,
-			Actor*                                        a_actor,
-			NiNode*                                       a_root,
-			NiNode*                                       a_npcroot,
-			IObjectManager&                               a_owner,
-			Game::ObjectRefHandle                         a_handle,
-			bool                                          a_nodeOverrideEnabled,
-			bool                                          a_nodeOverrideEnabledPlayer,
-			bool                                          a_applyTransformOverrides,
-			Data::actorStateHolder_t&                     a_actorState);
+			Actor*                a_actor,
+			NiNode*               a_root,
+			NiNode*               a_npcroot,
+			IObjectManager&       a_owner,
+			Game::ObjectRefHandle a_handle,
+			bool                  a_nodeOverrideEnabled,
+			bool                  a_nodeOverrideEnabledPlayer);
 
 		~ActorObjectHolder();
 
@@ -628,27 +625,39 @@ namespace IED
 			Actor* a_actor,
 			Args&&... a_args)
 		{
-			return m_objects.try_emplace(
-								a_actor->formID,
-								m_playerState,
-								a_actor,
-								std::forward<Args>(a_args)...)
-			    .first->second;
+			auto r = m_objects.try_emplace(
+				a_actor->formID,
+				a_actor,
+				std::forward<Args>(a_args)...);
+
+			if (r.second)
+			{
+				ApplyActorState(r.first->second);
+				OnActorAcquire(r.first->second);
+			}
+
+			return r.first->second;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetData() const noexcept
+		[[nodiscard]] inline constexpr auto& GetData() const noexcept
 		{
 			return m_objects;
 		}
 
 		inline constexpr void ClearPlayerState() noexcept
 		{
-			m_playerState.clear();
+			m_playerState.reset();
 		}
+
+	private:
+		void ApplyActorState(ActorObjectHolder &a_holder);
+
+		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
 
 	protected:
 		ActorObjectMap                         m_objects;
-		stl::optional<Data::actorStateEntry_t> m_playerState;
+		std::optional<Data::actorStateEntry_t> m_playerState;
+		Data::actorStateHolder_t               m_storedActorStates;
 	};
 
 }

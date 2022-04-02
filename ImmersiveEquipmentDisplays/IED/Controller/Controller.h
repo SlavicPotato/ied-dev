@@ -418,6 +418,8 @@ namespace IED
 
 		void QueueUpdateSoundForms();
 
+		void QueueClearRand();
+
 		void Evaluate(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -449,7 +451,9 @@ namespace IED
 			return m_lastException;
 		}
 
-		bool SaveCurrentConfigAsDefault(stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
+		bool SaveCurrentConfigAsDefault(
+			stl::flag<ExportFlags>                         a_exportFlags,
+			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		void SaveSettings();
 
@@ -833,6 +837,10 @@ namespace IED
 
 		bool SetLanguageImpl(const stl::fixed_string& a_lang);
 
+		void GenerateRandomPlacementEntries(const ActorObjectHolder& a_holder);
+
+		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
+
 		// internal events
 
 		virtual void Receive(const SKSESerializationEvent& a_evn) override;
@@ -956,7 +964,6 @@ namespace IED
 			Data::SettingHolder settings;
 		} m_config;
 
-		Data::actorStateHolder_t              m_storedActorStates;
 		RandomNumberGeneratorBase             m_rngBase;
 		RandomNumberGenerator3<float>         m_rng1;
 		std::vector<Game::ObjectRefHandle>    m_activeHandles;

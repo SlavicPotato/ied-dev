@@ -1124,6 +1124,114 @@ namespace IED
 		return result;
 	}
 
+	void Controller::GenerateRandomPlacementEntries(
+		const ActorObjectHolder& a_holder)
+	{
+		if (a_holder.m_actor == *g_thePlayer)
+		{
+			return;
+		}
+
+		auto npc = a_holder.m_actor->GetActorBase();
+		if (!npc)
+		{
+			return;
+		}
+
+		/*if (npc->formID.IsTemporary())
+		{
+			return;
+		}*/
+
+		if (m_config.active
+		        .transforms.GetActorData()
+		        .contains(a_holder.m_actor->formID))
+		{
+			return;
+		}
+
+		if (m_config.active
+		        .transforms.GetNPCData()
+		        .contains(npc->formID))
+		{
+			return;
+		}
+
+		configNodeOverrideHolder_t tmp;
+
+		tmp.flags.set(Data::NodeOverrideHolderFlags::RandomGenerated);
+
+		for (auto& e : NodeOverrideData::GetRandPlacementData())
+		{
+			auto me = e.get_rand_entry();
+			if (!me)
+			{
+				continue;
+			}
+
+			auto& pd = tmp.get_data<configNodeOverrideEntryPlacement_t>();
+
+			for (auto& g : pd.try_emplace(e.node).first->second())
+			{
+				g.targetNode = me->node;
+			}
+
+			if (!e.leftNode.empty() && !me->nodeLeft.empty())
+			{
+				for (auto& g : pd.try_emplace(e.leftNode).first->second())
+				{
+					g.targetNode = me->nodeLeft;
+				}
+			}
+
+			Debug("%X: %s | %s", npc->formID, me->node.c_str(), me->nodeLeft.c_str());
+		}
+
+		if (tmp.placementData.empty())
+		{
+			return;
+		}
+
+		m_config.active
+			.transforms.GetNPCData()
+			.emplace(npc->formID, std::move(tmp));
+	}
+
+	void Controller::OnActorAcquire(ActorObjectHolder& a_holder)
+	{
+		if (!a_holder.m_weapNodes.empty() &&
+		    !a_holder.m_cmeNodes.empty() &&
+		    !a_holder.m_movNodes.empty())
+		{
+			for (auto& e : NodeOverrideData::GetExtraNodes())
+			{
+				a_holder.CreateExtraNodes(
+					a_holder.m_npcroot,
+					a_holder.m_female,
+					e);
+			}
+		}
+
+		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
+		{
+			a_holder.CreateExtraCopyNode(
+				a_holder.m_actor,
+				a_holder.m_npcroot,
+				e);
+		}
+
+		if (m_applyTransformOverrides)
+		{
+			a_holder.ApplyNodeTransformOverrides(a_holder.m_root);
+		}
+
+		if (m_config.settings.data.placementRandomization &&
+		    !a_holder.m_movNodes.empty())
+		{
+			GenerateRandomPlacementEntries(a_holder);
+		}
+	}
+
 	void Controller::QueueResetAll(
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
@@ -2146,6 +2254,14 @@ namespace IED
 		ITaskPool::AddTask([this] {
 			IScopedLock lock(m_lock);
 			UpdateSoundForms();
+		});
+	}
+
+	void Controller::QueueClearRand()
+	{
+		ITaskPool::AddTask([this] {
+			IScopedLock lock(m_lock);
+			ClearConfigStoreRand(m_config.active);
 		});
 	}
 
@@ -3349,9 +3465,7 @@ namespace IED
 			*this,
 			a_handle,
 			m_nodeOverrideEnabled,
-			m_nodeOverridePlayerEnabled,
-			m_applyTransformOverrides,
-			m_storedActorStates);
+			m_nodeOverridePlayerEnabled);
 
 		if (a_handle != objects.GetHandle())
 		{
@@ -3391,9 +3505,7 @@ namespace IED
 					*this,
 					a_handle,
 					m_nodeOverrideEnabled,
-					m_nodeOverridePlayerEnabled,
-					m_applyTransformOverrides,
-					m_storedActorStates);
+					m_nodeOverridePlayerEnabled);
 
 				EvaluateImpl(
 					a_root,
@@ -3803,7 +3915,10 @@ namespace IED
 			}
 		}
 
-		EvaluateImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
+		EvaluateImpl(
+			a_actor,
+			a_handle,
+			ControllerUpdateFlags::kImmediateUpdateTransforms);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -3834,7 +3949,10 @@ namespace IED
 			}
 		}
 
-		EvaluateImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
+		EvaluateImpl(
+			a_actor,
+			a_handle,
+			ControllerUpdateFlags::kImmediateUpdateTransforms);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -3863,7 +3981,10 @@ namespace IED
 			data.clear();
 		}
 
-		EvaluateImpl(a_actor, a_handle, ControllerUpdateFlags::kNone);
+		EvaluateImpl(
+			a_actor,
+			a_handle,
+			ControllerUpdateFlags::kImmediateUpdateTransforms);
 	}
 
 	void Controller::ResetGearImpl(
@@ -3945,6 +4066,8 @@ namespace IED
 			{
 				auto sh = UIStringHolder::GetSingleton();
 
+				assert(sh);
+
 				if (mm->IsMenuOpen(
 						sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
 				    mm->IsMenuOpen(
@@ -4005,32 +4128,34 @@ namespace IED
 	auto Controller::MakeAttachUpdateFunc()
 		-> updateActionFunc_t
 	{
-		return { [this](
-					 const actorInfo_t&         a_info,
-					 const configCustomEntry_t& a_confEntry,
-					 objectEntryCustom_t&       a_entry) {
-					if (!a_entry.state)
-					{
-						return false;
-					}
-					else
-					{
-						auto& conf = GetConfigForActor(
-							a_info,
-							a_confEntry(a_info.sex),
-							a_info.objects.GetSlots());
+		return {
+			[this](
+				const actorInfo_t&         a_info,
+				const configCustomEntry_t& a_confEntry,
+				objectEntryCustom_t&       a_entry) {
+				if (!a_entry.state)
+				{
+					return false;
+				}
+				else
+				{
+					auto& conf = GetConfigForActor(
+						a_info,
+						a_confEntry(a_info.sex),
+						a_info.objects.GetSlots());
 
-						AttachNodeImpl(
-							a_info,
-							a_info.npcRoot,
-							conf.targetNode,
-							conf.flags.test(BaseFlags::kReferenceMode),
-							a_entry);
+					AttachNodeImpl(
+						a_info,
+						a_info.npcRoot,
+						conf.targetNode,
+						conf.flags.test(BaseFlags::kReferenceMode),
+						a_entry);
 
-						return true;
-					}
-				},
-			     true };
+					return true;
+				}
+			},
+			true
+		};
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
@@ -4931,8 +5056,6 @@ namespace IED
 
 	void Controller::Receive(const SKSESerializationLoadEvent& a_evn)
 	{
-		IScopedLock lock(m_lock);
-
 		ReadRecord(a_evn.intfc, a_evn.type, a_evn.version, a_evn.length);
 	}
 
@@ -5208,9 +5331,10 @@ namespace IED
 	}
 
 	bool Controller::SaveCurrentConfigAsDefault(
+		stl::flag<ExportFlags>                   a_exportFlags,
 		stl::flag<ConfigStoreSerializationFlags> a_flags)
 	{
-		auto tmp = CreateExportData(m_config.active, a_flags);
+		auto tmp = CreateExportData(m_config.active, a_exportFlags, a_flags);
 
 		FillGlobalSlotConfig(tmp.slot);
 		CleanConfigStore(tmp);
@@ -5227,41 +5351,11 @@ namespace IED
 
 	void Controller::SaveGameHandler(SKSESerializationInterface* a_intfc)
 	{
-		IScopedLock lock(m_lock);
-
 		WriteRecord(
 			a_intfc,
 			SKSE_SERIALIZATION_TYPE_ID,
 			stl::underlying(SerializationVersion::kCurrentVersion));
 	}
-
-	/*void Controller::LoadGameHandler(SKSESerializationInterface* a_intfc)
-	{
-		std::uint32_t type, length, version;
-
-		while (a_intfc->GetNextRecordInfo(
-			std::addressof(type),
-			std::addressof(version),
-			std::addressof(length)))
-		{
-			switch (type)
-			{
-			case SKSE_SERIALIZATION_TYPE_ID:
-				{
-					IScopedLock lock(m_lock);
-
-					ReadRecord(a_intfc, type, version, length);
-				}
-				break;
-			default:
-				Warning(
-					"%s: unrecognized record type: '%.4s'",
-					__FUNCTION__,
-					std::addressof(type));
-				break;
-			}
-		}
-	}*/
 
 	void Controller::RevertHandler(SKSESerializationInterface* a_intfc)
 	{
@@ -5271,6 +5365,7 @@ namespace IED
 
 		m_actorBlockList.clear();
 		m_storedActorStates.clear();
+
 		if (m_forceDefaultConfig)
 		{
 			m_config.stash = m_config.initial;
@@ -5280,13 +5375,15 @@ namespace IED
 			m_config.active = m_config.initial;
 		}
 
-		ClearPlayerState();
 		ClearObjectsImpl();
+		ClearPlayerState();
 	}
 
 	std::size_t Controller::Store(
 		boost::archive::binary_oarchive& a_out)
 	{
+		IScopedLock lock(m_lock);
+
 		a_out << m_actorBlockList;
 
 		if (m_forceDefaultConfig)
@@ -5298,7 +5395,9 @@ namespace IED
 			a_out << m_config.active;
 		}
 
-		a_out << actorStateHolder_t(*this);
+		actorStateHolder_t actorState(*this);
+
+		a_out << actorState;
 
 		return 3;
 	}
@@ -5308,6 +5407,8 @@ namespace IED
 		std::uint32_t                    a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
+		IScopedLock lock(m_lock);
+
 		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
 		{
 			throw std::exception("unsupported version");

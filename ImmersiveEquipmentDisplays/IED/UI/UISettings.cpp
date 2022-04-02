@@ -197,6 +197,19 @@ namespace IED
 					ImGui::Unindent();
 				}
 
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::RandPlacement, "8"),
+						std::addressof(data.placementRandomization))))
+				{
+					if (!data.placementRandomization)
+					{
+						m_controller.QueueClearRand();
+					}
+
+					m_controller.QueueResetAll(
+						ControllerUpdateFlags::kNone);
+				}
+
 				ImGui::Spacing();
 
 				if (ImGui::TreeNodeEx(

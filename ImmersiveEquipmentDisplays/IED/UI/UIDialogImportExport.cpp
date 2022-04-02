@@ -282,7 +282,10 @@ namespace IED
 			{
 				const auto& settings = m_controller.GetConfigStore().settings;
 
-				if (!m_controller.ExportData(a_path, settings.data.ui.importExport.exportFlags))
+				if (!m_controller.ExportData(
+						a_path,
+						ExportFlags::kNone,
+						settings.data.ui.importExport.exportFlags))
 				{
 					auto& queue = m_controller.UIGetPopupQueue();
 

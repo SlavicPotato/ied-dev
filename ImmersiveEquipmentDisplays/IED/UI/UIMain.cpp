@@ -411,8 +411,11 @@ namespace IED
 						return true;
 					})
 					.call([this](const auto&) {
-						auto& conf = m_controller.GetConfigStore().settings.data.ui;
-						if (!m_controller.SaveCurrentConfigAsDefault(conf.defaultExportFlags))
+						const auto& conf = m_controller.GetConfigStore().settings.data.ui;
+
+						if (!m_controller.SaveCurrentConfigAsDefault(
+								ExportFlags::kNone,
+								conf.defaultExportFlags))
 						{
 							m_popupQueue.push(
 								UIPopupType::Message,

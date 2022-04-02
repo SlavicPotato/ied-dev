@@ -540,9 +540,7 @@ namespace IED
 
 		enum class NodeOverridePlacementFlags : std::uint32_t
 		{
-			kNone = 0,
-
-			kRandomGenerated = 1u << 0,
+			kNone = 0
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverridePlacementFlags);
@@ -580,7 +578,9 @@ namespace IED
 
 		enum class NodeOverrideHolderFlags : std::uint32_t
 		{
-			kNone = 0
+			kNone = 0,
+
+			RandomGenerated = 1u << 0
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideHolderFlags);
@@ -634,27 +634,28 @@ namespace IED
 				       placementData.empty();
 			}
 
-			template <class Td, class data_type = stl::strip_type<Td>>
-			inline constexpr auto& get_data() noexcept
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					transform_data_type,
+					configNodeOverrideEntryTransform_t>
 			{
-				if constexpr (stl::is_any_same_v<
-								  data_type,
-								  transform_data_type,
-								  configNodeOverrideEntryTransform_t>)
-				{
-					return data;
-				}
-				else if constexpr (stl::is_any_same_v<
-									   data_type,
-									   placement_data_type,
-									   configNodeOverrideEntryPlacement_t>)
-				{
-					return placementData;
-				}
-				else
-				{
-					static_assert(false);
-				}
+				return data;
+			}
+
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					placement_data_type,
+					configNodeOverrideEntryPlacement_t>
+			{
+				return placementData;
 			}
 
 		private:
@@ -753,8 +754,6 @@ namespace IED
 		class configStoreNodeOverride_t :
 			public configStoreBase_t<configNodeOverrideHolder_t>
 		{
-			//using merged_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntry_t>;
-
 		public:
 			using holderCache_t = configHolderCache_t<configMapNodeOverrides_t>;
 
