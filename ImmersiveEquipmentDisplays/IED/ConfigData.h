@@ -157,7 +157,7 @@ namespace IED
 			bool enabled{ false };
 			bool npc{ false };
 
-			std::map<std::uint8_t, soundPair_t> data;
+			stl::map<std::uint8_t, soundPair_t> data;
 		};
 
 		struct ConfigKeyPair

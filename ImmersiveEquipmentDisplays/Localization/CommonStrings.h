@@ -178,5 +178,7 @@ namespace IED
 		Force        = 249,
 		Hidden       = 250,
 		Count        = 251,
+		Cell         = 252,
+		Skin         = 253,
 	};
 }

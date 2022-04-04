@@ -31,7 +31,7 @@ namespace IED
 	{
 		AnimationGroupInfo result;
 
-		PEXReader          reader;
+		PEXReader reader;
 
 		reader.Open(FNIS_AA2_PEX_PATH);
 		reader.ReadData();
@@ -182,7 +182,7 @@ namespace IED
 
 		if (!presenceFlags.test(PresenceFlags::kAll))
 		{
-			throw std::runtime_error("one or more ag base values weren't found");
+			throw std::runtime_error("one or more ag base values not found");
 		}
 
 		return result;

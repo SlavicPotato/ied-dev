@@ -9,7 +9,7 @@ namespace IED
 		class UIFileSelector :
 			public virtual UILocalizationInterface
 		{
-			using storage_type = std::map<stl::fixed_string, fs::path>;
+			using storage_type = stl::map<stl::fixed_string, fs::path>;
 
 			class SelectedFile
 			{

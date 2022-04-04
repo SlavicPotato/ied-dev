@@ -34,10 +34,10 @@ namespace IED
 
 			stl::flag<EntryFlags>                    flags{ EntryFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>  shaderData;
-			std::vector<NiPointer<BSShaderProperty>> nodes;
+			stl::vector<NiPointer<BSShaderProperty>> nodes;
 		};
 
-		using data_type = std::vector<Entry>;
+		using data_type = stl::vector<Entry>;
 
 		[[nodiscard]] inline constexpr bool operator==(
 			const Data::configEffectShaderHolder_t& a_rhs) const
@@ -192,8 +192,8 @@ namespace IED
 			Data::NodeDescriptor                               nodeDesc;
 			nodesRef_t                                         nodes;
 			Data::cacheTransform_t                             transform;
-			std::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
-			std::unordered_map<stl::fixed_string, GroupObject> groupObjects;
+			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
+			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			effectShaderData_t                                 effectShaders;
 			stl::fixed_string                                  currentSequence;
 			long long                                          created{ 0 };
@@ -291,21 +291,24 @@ namespace IED
 
 	public:
 		weapNodeEntry_t(
-			const stl::fixed_string& a_nodeName,
-			NiNode*                  a_node,
-			NiNode*                  a_defaultNode,
-			AnimationWeaponSlot      a_animID) :
+			const stl::fixed_string&          a_nodeName,
+			NiNode*                           a_node,
+			NiNode*                           a_defaultNode,
+			AnimationWeaponSlot               a_animID,
+			const std::optional<NiTransform>& a_xfrm) :
 			nodeName(a_nodeName),
 			node(a_node),
 			defaultNode(a_defaultNode),
-			animSlot(a_animID)
+			animSlot(a_animID),
+			originalTransform(a_xfrm)
 		{
 		}
 
-		const stl::fixed_string nodeName;
-		NiPointer<NiNode>       node;
-		NiPointer<NiNode>       defaultNode;
-		AnimationWeaponSlot     animSlot;
+		const stl::fixed_string    nodeName;
+		NiPointer<NiNode>          node;
+		NiPointer<NiNode>          defaultNode;
+		AnimationWeaponSlot        animSlot;
+		std::optional<NiTransform> originalTransform;
 
 	private:
 		mutable NiPointer<NiNode> target;
@@ -316,7 +319,7 @@ namespace IED
 	struct cmeNodeEntry_t
 	{
 		NiPointer<NiNode> node;
-		NiTransform       orig;  // cached or default, never read from loaded actor 3D
+		NiTransform       orig;  // cached or zero, never read from loaded actor 3D
 
 		static bool find_visible_geometry(
 			NiAVObject*           a_object,
@@ -500,8 +503,8 @@ namespace IED
 		[[nodiscard]] bool IsActorNPC(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
-		using customEntryMap_t  = std::unordered_map<stl::fixed_string, objectEntryCustom_t>;
-		using customPluginMap_t = std::unordered_map<stl::fixed_string, customEntryMap_t>;
+		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;
+		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
 
 		template <class Tv>
 		void visit(Tv a_func)
@@ -561,6 +564,9 @@ namespace IED
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
 
+		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
+			const stl::fixed_string& a_name) const;
+
 	private:
 		void CreateExtraNodes(
 			NiNode*                                   a_npcroot,
@@ -587,10 +593,10 @@ namespace IED
 		slot_container_type m_entriesSlot{};
 		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
 
-		std::vector<monitorNodeEntry_t>                       m_monitorNodes;
-		std::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
-		std::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
-		std::vector<weapNodeEntry_t>                          m_weapNodes;
+		stl::vector<monitorNodeEntry_t>                       m_monitorNodes;
+		stl::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
+		stl::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
+		stl::vector<weapNodeEntry_t>                          m_weapNodes;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
@@ -615,7 +621,7 @@ namespace IED
 		static std::atomic_llong m_lfsc_delta;
 	};
 
-	using ActorObjectMap = std::unordered_map<Game::FormID, ActorObjectHolder>;
+	using ActorObjectMap = stl::unordered_map<Game::FormID, ActorObjectHolder>;
 
 	class ObjectManagerData
 	{
@@ -650,7 +656,7 @@ namespace IED
 		}
 
 	private:
-		void ApplyActorState(ActorObjectHolder &a_holder);
+		void ApplyActorState(ActorObjectHolder& a_holder);
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
 

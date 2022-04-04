@@ -153,7 +153,7 @@ namespace IED
 			return;
 		}
 
-		std::vector<container_type::const_iterator> candidates;
+		stl::vector<container_type::const_iterator> candidates;
 
 		for (auto it = m_data.begin(); it != m_data.end(); ++it)
 		{

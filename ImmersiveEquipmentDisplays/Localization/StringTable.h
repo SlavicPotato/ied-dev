@@ -11,7 +11,7 @@ namespace IED
 		class StringTable
 		{
 		public:
-			using container_type = std::unordered_map<StringID, std::string>;
+			using container_type = stl::unordered_map<StringID, std::string>;
 
 			struct data_storage_type
 			{

@@ -10,14 +10,10 @@ namespace IED
 		{
 			bool IsREFRValid(const TESObjectREFR* a_refr)
 			{
-				if (a_refr == nullptr ||
-				    a_refr->formID == 0 ||
-				    a_refr->loadedState == nullptr ||
-				    a_refr->IsDeleted())
-				{
-					return false;
-				}
-				return true;
+				return a_refr &&
+				       a_refr->formID != 0 &&
+				       a_refr->loadedState &&
+				       !a_refr->IsDeleted();
 			}
 		}
 	}

@@ -17,6 +17,7 @@
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
 #include <ext/str_conv.h>
+#include <ext/stl_containers.h>
 
 #include <skse64/BipedObject.h>
 #include <skse64/FormTraits.h>
@@ -81,6 +82,6 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
-#define IED_ENABLE_STATS 0
+#define IED_ENABLE_STATS
 
 #endif  // PCH_H

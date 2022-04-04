@@ -140,7 +140,7 @@ namespace IED
 
 				auto& store = Initializer::GetController()->GetConfigStore();
 
-				std::unordered_set<Game::FormID> erased;
+				stl::unordered_set<Game::FormID> erased;
 
 				for (auto& e : store.active.custom.GetFormMaps())
 				{

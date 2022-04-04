@@ -19,7 +19,7 @@ namespace IED
 				std::uint8_t a_formType,
 				bool         a_equip) const;
 
-			std::unordered_map<std::uint8_t, soundPair_t> data;
+			stl::unordered_map<std::uint8_t, soundPair_t> data;
 		};
 
 		void SoundPlay(std::uint8_t a_formType, NiAVObject* a_object, bool a_equip) const;

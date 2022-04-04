@@ -38,10 +38,10 @@ namespace IED
 			{
 				const ActorObjectMap::value_type& obj;
 				stl::fixed_string                 name;
-				Game::FormID                      race;
 				std::size_t                       nslot;
 				std::size_t                       ncust;
 				long long                         age;
+				Game::FormID                      race;
 			};
 
 			using sort_comp_func_t = std::function<bool(const sorted_list_entry_t&, const sorted_list_entry_t&)>;

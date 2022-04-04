@@ -55,7 +55,7 @@ namespace IED
 			assert(a_id < AnimationWeaponType::Max);
 			data[stl::underlying(a_id)].base = a_value;
 		}
-		
+
 		[[nodiscard]] inline constexpr void set_base_extra(
 			AnimationExtraGroup a_id,
 			std::int32_t        a_value) noexcept

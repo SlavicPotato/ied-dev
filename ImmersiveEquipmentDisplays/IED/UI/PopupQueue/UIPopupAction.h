@@ -34,8 +34,7 @@ namespace IED
 				UIPopupType a_type,
 				const char* a_key,
 				const char* a_fmt,
-				Args... a_args)
-				:
+				Args... a_args) :
 				m_type(a_type),
 				m_key(a_key)
 			{
@@ -49,8 +48,7 @@ namespace IED
 			template <class... Args>
 			UIPopupAction(
 				UIPopupType a_type,
-				const char* a_key)
-				:
+				const char* a_key) :
 				m_type(a_type),
 				m_key(a_key)
 			{

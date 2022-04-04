@@ -21,6 +21,9 @@ namespace IED
 		bool         attached{ false };
 		std::string  name;
 		Game::FormID race;
+		Game::FormID worldspace;
+		Game::FormID cell;
+		Game::FormID skin;
 		float        weight{ 0.0f };
 		long long    ts{ 0 };
 
@@ -51,6 +54,6 @@ namespace IED
 		}
 	};
 
-	using ActorInfoHolder = std::unordered_map<Game::FormID, actorInfoEntry_t>;
-	using NPCInfoHolder   = std::unordered_map<Game::FormID, std::shared_ptr<npcInfoEntry_t>>;
+	using ActorInfoHolder = stl::unordered_map<Game::FormID, actorInfoEntry_t>;
+	using NPCInfoHolder   = stl::unordered_map<Game::FormID, std::shared_ptr<npcInfoEntry_t>>;
 }

@@ -63,7 +63,7 @@ namespace IED
 
 		std::string read_string();
 
-		std::vector<std::string> m_stringTable;
+		stl::vector<std::string> m_stringTable;
 
 		std::ifstream m_stream;
 	};

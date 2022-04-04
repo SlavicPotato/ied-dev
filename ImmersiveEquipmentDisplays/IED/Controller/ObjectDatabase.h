@@ -70,7 +70,7 @@ namespace IED
 
 		std::optional<long long> m_cleanupDeadline;
 
-		using container_type = std::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
+		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
 
 		container_type m_data;
 	};

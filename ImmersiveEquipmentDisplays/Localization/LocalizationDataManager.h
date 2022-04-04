@@ -57,7 +57,7 @@ namespace IED
 			FN_NAMEPROC("LocalizationDataManager");
 
 		private:
-			std::unordered_map<stl::fixed_string, std::shared_ptr<StringTable>> m_data;
+			stl::unordered_map<stl::fixed_string, std::shared_ptr<StringTable>> m_data;
 
 			mutable std::unique_ptr<StringTable::container_type> m_emptyTable;
 			shared_string_table                                  m_defaultTable;

@@ -59,7 +59,7 @@ namespace IED
 				ImVector<ImWchar> ranges;
 			};
 
-			using font_data_container = std::unordered_map<stl::fixed_string, FontEntry>;
+			using font_data_container = stl::unordered_map<stl::fixed_string, FontEntry>;
 
 			inline static constexpr auto DEFAULT_FONT_NAME = "Default";
 			inline static constexpr auto DEFAULT_STYLE     = UIStylePreset::Dark;
@@ -284,7 +284,7 @@ namespace IED
 				long long    current{ 0L };
 			} m_uiRenderPerf;
 
-			std::map<std::int32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
+			stl::map<std::int32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
 
 			bool              m_imInitialized{ false };
 			std::atomic<bool> m_suspended{ true };

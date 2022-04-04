@@ -130,6 +130,11 @@ namespace IED
 
 		//inline static const auto fUnk362E90 = IAL::Address<fUnk362E90_t>(24220, 0);
 
+		[[nodiscard]] inline static constexpr bool IsWeaponAdjustDisabled() noexcept
+		{
+			return m_Instance.m_conf.weaponAdjustDisable;
+		}
+
 		FN_NAMEPROC("EngineExtensions");
 
 	private:

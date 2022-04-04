@@ -58,7 +58,7 @@ namespace IED
 
 			static TESRace::EquipmentFlag GetRaceEquipmentFlagFromType(ObjectType a_type) noexcept;
 
-			static BIPED_OBJECT SlotToBipedObject(Actor *a_actor, ObjectSlot a_slot) noexcept;
+			static BIPED_OBJECT SlotToBipedObject(Actor* a_actor, ObjectSlot a_slot) noexcept;
 
 		private:
 		};
@@ -98,7 +98,7 @@ namespace IED
 			}
 
 		private:
-			std::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
+			stl::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
 			IPluginInfo                                        m_pluginInfo;
 
 			Game::FormID m_playerRefID{ 0x14 };

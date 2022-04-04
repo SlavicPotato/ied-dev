@@ -41,7 +41,7 @@ namespace IED
 			CommonParams
 		{
 		public:
-			using item_container_type = std::unordered_map<Game::FormID, bipedInfoEntry_t>;
+			using item_container_type = stl::unordered_map<Game::FormID, bipedInfoEntry_t>;
 
 			stl::optional<float>                 weaponAdjust;
 			stl::optional<float>                 weightAdjust;

@@ -94,7 +94,7 @@ namespace IED
 		};
 
 		using actorLookupResultMap_t =
-			std::unordered_map<Game::ObjectRefHandle, NiPointer<Actor>>;
+			stl::unordered_map<Game::ObjectRefHandle, NiPointer<Actor>>;
 
 		friend class ActorProcessorTask;
 
@@ -949,6 +949,7 @@ namespace IED
 		bool m_iniKeysForced{ false };
 		bool m_applyTransformOverrides{ false };
 		bool m_enableCorpseScatter{ false };
+		bool m_forceOrigWeapXFRM{ false };
 
 		struct
 		{
@@ -966,7 +967,7 @@ namespace IED
 
 		RandomNumberGeneratorBase             m_rngBase;
 		RandomNumberGenerator3<float>         m_rng1;
-		std::vector<Game::ObjectRefHandle>    m_activeHandles;
+		stl::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;
 

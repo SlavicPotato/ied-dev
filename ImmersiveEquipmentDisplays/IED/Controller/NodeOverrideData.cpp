@@ -147,6 +147,7 @@ namespace IED
 								 "MOV WeaponSwordDefault",
 								 "Sword",
 								 AnimationWeaponSlot::Sword,
+								 true,
 								 {
 
 									 { "MOV WeaponSwordDefault", { "Sword" } },
@@ -166,6 +167,7 @@ namespace IED
 									 "MOV WeaponSwordLeftDefault",
 									 "Sword Left",
 									 AnimationWeaponSlot::SwordLeft,
+									 false,
 									 {
 
 										 { "MOV WeaponSwordLeftDefault", { "Sword Left" } },
@@ -185,6 +187,7 @@ namespace IED
 							   "MOV WeaponAxeDefault",
 							   "Axe",
 							   AnimationWeaponSlot::Axe,
+							   true,
 							   {
 
 								   { "MOV WeaponAxeDefault", { "Axe" } },
@@ -201,6 +204,7 @@ namespace IED
 								   "MOV WeaponAxeLeftDefault",
 								   "Axe Left",
 								   AnimationWeaponSlot::AxeLeft,
+								   false,
 								   {
 
 									   { "MOV WeaponAxeLeftDefault", { "Axe Left" } },
@@ -217,6 +221,7 @@ namespace IED
 								  "MOV WeaponDaggerDefault",
 								  "Dagger",
 								  AnimationWeaponSlot::Dagger,
+								  true,
 								  {
 
 									  { "MOV WeaponDaggerDefault", { "Dagger" } },
@@ -234,6 +239,7 @@ namespace IED
 									  "MOV WeaponDaggerLeftDefault",
 									  "Dagger Left",
 									  AnimationWeaponSlot::DaggerLeft,
+									  false,
 									  {
 
 										  { "MOV WeaponDaggerLeftDefault", { "Dagger Left" } },
@@ -251,6 +257,7 @@ namespace IED
 								"MOV WeaponMaceDefault",
 								"Mace",
 								AnimationWeaponSlot::Mace,
+								true,
 								{
 
 									{ "MOV WeaponMaceDefault", { "Mace" } },
@@ -265,6 +272,7 @@ namespace IED
 									"MOV WeaponMaceLeftDefault",
 									"Mace Left",
 									AnimationWeaponSlot::MaceLeft,
+									false,
 									{
 
 										{ "MOV WeaponMaceLeftDefault", { "Mace Left" } },
@@ -279,6 +287,7 @@ namespace IED
 								 "MOV WeaponStaffDefault",
 								 "Staff",
 								 AnimationWeaponSlot::None,
+								 false,
 								 {
 
 									 { "MOV WeaponStaffDefault", { "Staff" } },
@@ -293,6 +302,7 @@ namespace IED
 									 "MOV WeaponStaffLeftDefault",
 									 "Staff Left",
 									 AnimationWeaponSlot::None,
+									 false,
 									 {
 
 										 { "MOV WeaponStaffLeftDefault", { "Staff Left" } }
@@ -307,6 +317,7 @@ namespace IED
 								"MOV WeaponBackDefault",
 								"Two-Handed",
 								AnimationWeaponSlot::TwoHanded,
+								true,
 								{
 
 									{ "MOV WeaponBackDefault", { "Two-Handed" } },
@@ -326,6 +337,7 @@ namespace IED
 							   "MOV WeaponBowDefault",
 							   "Bow",
 							   AnimationWeaponSlot::None,
+							   true,
 							   {
 								   { "MOV WeaponBowDefault", { "Bow" } },
 								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
@@ -341,6 +353,7 @@ namespace IED
 							"MOV QUIVERDefault",
 							"Quiver",
 							AnimationWeaponSlot::Quiver,
+							true,
 							{
 								{ "MOV QUIVERDefault", { "Quiver" } },
 								{ "MOV QUIVERChesko", { "Quiver Chesko" } },
@@ -360,6 +373,7 @@ namespace IED
 								"MOV ShieldBackDefault",
 								"Shield",
 								AnimationWeaponSlot::None,
+								false,
 								{
 
 									{ "MOV ShieldBackDefault", { "Shield Back" } },

@@ -36,22 +36,19 @@ namespace IED
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
-		m_enableCorpseScatter(a_config->m_enableCorpseScatter)
+		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
+		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM)
 	{
 		InitializeInputHandlers();
 	}
 
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
 	{
-		if (a_refr == nullptr ||
-		    a_refr->formID == 0 ||
-		    a_refr->loadedState == nullptr ||
-		    a_refr->IsDeleted() ||
-		    !a_refr->IsActor())
-		{
-			return false;
-		}
-		return true;
+		return a_refr &&
+		       a_refr->formID != 0 &&
+		       a_refr->loadedState &&
+		       !a_refr->IsDeleted() &&
+		       a_refr->IsActor();
 	}
 
 	void Controller::SinkInputEvents()
@@ -640,7 +637,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::QueueActorTask(
+		ITaskPool::QueueLoadedActorTask(
 			a_actor,
 			[this, a_flags](
 				Actor*            a_actor,
@@ -656,7 +653,7 @@ namespace IED
 		Game::ActorHandle                a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::QueueActorTask(
+		ITaskPool::QueueLoadedActorTask(
 			a_handle,
 			[this, a_flags](
 				Actor*            a_actor,
@@ -915,7 +912,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::QueueActorTask(
+		ITaskPool::QueueLoadedActorTask(
 			a_actor,
 			[this, a_flags](Actor* a_actor, Game::ActorHandle a_handle) {
 				RemoveActor(
@@ -929,7 +926,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::QueueActorTask(
+		ITaskPool::QueueLoadedActorTask(
 			a_actor,
 			[this, a_flags](
 				Actor*            a_actor,
@@ -1184,7 +1181,7 @@ namespace IED
 				}
 			}
 
-			Debug("%X: %s | %s", npc->formID, me->node.c_str(), me->nodeLeft.c_str());
+			//Debug("%X: %s | %s", npc->formID, me->node.c_str(), me->nodeLeft.c_str());
 		}
 
 		if (tmp.placementData.empty())
@@ -3536,7 +3533,7 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-#if IED_ENABLE_STATS != 0
+#if defined(IED_ENABLE_STATS)
 		PerfTimer pt;
 		pt.Start();
 #endif
@@ -3574,7 +3571,7 @@ namespace IED
 			a_objects.RequestTransformUpdateDefer();
 		}
 
-#if IED_ENABLE_STATS != 0
+#if defined(IED_ENABLE_STATS)
 		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
 #endif
 	}
@@ -3688,10 +3685,7 @@ namespace IED
 			return;
 		}
 
-		if (IsREFRValid(refr))
-		{
-			EvaluateImpl(actor, handle, a_objects, a_flags);
-		}
+		EvaluateImpl(actor, handle, a_objects, a_flags);
 	}
 
 	void Controller::EvaluateTransformsImpl(Game::FormID a_actor)
@@ -3810,6 +3804,17 @@ namespace IED
 			{
 				// only called from main, no need to run checks
 				ResetNodeOverrideImpl(e.second.node, e.second.orig);
+			}
+		}
+
+		if (EngineExtensions::IsWeaponAdjustDisabled() && m_forceOrigWeapXFRM)
+		{
+			for (auto& e : a_objects.m_weapNodes)
+			{
+				if (e.originalTransform)
+				{
+					e.node->m_localTransform = *e.originalTransform;
+				}
 			}
 		}
 
@@ -4986,7 +4991,7 @@ namespace IED
 			return {};
 		}
 
-		actorInfo_t result{
+		return actorInfo_t{
 			actor,
 			handle,
 			npc,
@@ -4998,8 +5003,6 @@ namespace IED
                 ConfigSex::Male,
 			a_objects
 		};
-
-		return result;
 	}
 
 	void Controller::SaveLastEquippedItems(
@@ -5210,7 +5213,7 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			ITaskPool::QueueActorTask(
+			ITaskPool::QueueLoadedActorTask(
 				a_evn->source,
 				[this](Actor* a_actor, Game::ActorHandle a_handle) {
 					IScopedLock lock(m_lock);

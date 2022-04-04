@@ -30,9 +30,9 @@ namespace IED
 			}
 		};
 
-		using entry_holder_type = std::vector<entry_t>;
+		using entry_holder_type = stl::vector<entry_t>;
 
-		using data_type   = std::unordered_map<std::uint32_t, entry_holder_type>;
+		using data_type   = stl::unordered_map<std::uint32_t, entry_holder_type>;
 		using value_type  = typename data_type::value_type;
 		using result_type = std::shared_ptr<data_type>;
 

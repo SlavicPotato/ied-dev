@@ -54,11 +54,11 @@ namespace IED
 				return (equippedTypeFlags[stl::underlying(a_slot)] & InventoryPresenceFlags::kSet) == InventoryPresenceFlags::kSet;
 			}
 
-			using container_type = std::unordered_map<Game::FormID, itemData_t>;
+			using container_type = stl::unordered_map<Game::FormID, itemData_t>;
 
 			container_type                 forms;
-			std::vector<const itemData_t*> equippedForms;
-			InventoryPresenceFlags         equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{};
+			stl::vector<const itemData_t*> equippedForms;
+			InventoryPresenceFlags         equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{ InventoryPresenceFlags::kNone };
 			std::int64_t                   typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;

@@ -29,7 +29,7 @@ namespace IED
 		template <class T, class I>
 		concept AcceptVectorInit = requires(std::initializer_list<I> a_init)
 		{
-			std::vector<T>(a_init.begin(), a_init.end());
+			stl::vector<T>(a_init.begin(), a_init.end());
 		};
 	}
 
@@ -68,6 +68,7 @@ namespace IED
 			const char*                                                          def;
 			const char*                                                          desc;
 			AnimationWeaponSlot                                                  animSlot;
+			bool                                                                 vanilla;
 			std::initializer_list<std::pair<const char*, weaponNodeListEntry_t>> movlist;
 		};
 
@@ -79,19 +80,21 @@ namespace IED
 				bsdefParent(a_init.def),
 				desc(a_init.desc),
 				animSlot(a_init.animSlot),
+				vanilla(a_init.vanilla),
 				movs(a_init.movlist)
 			{
 			}
 
 			weaponNodeEntry_t(const weaponNodeEntry_t&) = delete;
 			weaponNodeEntry_t& operator=(const weaponNodeEntry_t&) = delete;
-			weaponNodeEntry_t(weaponNodeEntry_t&&) = delete;
+			weaponNodeEntry_t(weaponNodeEntry_t&&)                 = delete;
 			weaponNodeEntry_t& operator=(weaponNodeEntry_t&&) = delete;
 
 			BSFixedString       bsname;
 			BSFixedString       bsdefParent;
 			const char*         desc;
 			AnimationWeaponSlot animSlot;
+			bool                vanilla;
 			nodeList_t          movs;
 		};
 
@@ -117,7 +120,7 @@ namespace IED
 
 			overrideNodeEntry_t(const overrideNodeEntry_t&) = delete;
 			overrideNodeEntry_t& operator=(const overrideNodeEntry_t&) = delete;
-			overrideNodeEntry_t(overrideNodeEntry_t&&) = delete;
+			overrideNodeEntry_t(overrideNodeEntry_t&&)                 = delete;
 			overrideNodeEntry_t& operator=(overrideNodeEntry_t&&) = delete;
 
 			const char*       desc;
@@ -153,7 +156,7 @@ namespace IED
 
 			extraNodeEntry_t(const extraNodeEntry_t&) = delete;
 			extraNodeEntry_t& operator=(const extraNodeEntry_t&) = delete;
-			extraNodeEntry_t(extraNodeEntry_t&&) = delete;
+			extraNodeEntry_t(extraNodeEntry_t&&)                 = delete;
 			extraNodeEntry_t& operator=(extraNodeEntry_t&&) = delete;
 
 			stl::fixed_string name_cme;
@@ -184,7 +187,7 @@ namespace IED
 
 			extraNodeCopyEntry_t(const extraNodeCopyEntry_t&) = delete;
 			extraNodeCopyEntry_t& operator=(const extraNodeCopyEntry_t&) = delete;
-			extraNodeCopyEntry_t(extraNodeCopyEntry_t&&) = delete;
+			extraNodeCopyEntry_t(extraNodeCopyEntry_t&&)                 = delete;
 			extraNodeCopyEntry_t& operator=(extraNodeCopyEntry_t&&) = delete;
 
 			stl::fixed_string src;
@@ -209,7 +212,7 @@ namespace IED
 
 			xfrmOverrideNodeEntry_t(const xfrmOverrideNodeEntry_t&) = delete;
 			xfrmOverrideNodeEntry_t& operator=(const xfrmOverrideNodeEntry_t&) = delete;
-			xfrmOverrideNodeEntry_t(xfrmOverrideNodeEntry_t&&) = delete;
+			xfrmOverrideNodeEntry_t(xfrmOverrideNodeEntry_t&&)                 = delete;
 			xfrmOverrideNodeEntry_t& operator=(xfrmOverrideNodeEntry_t&&) = delete;
 
 			BSFixedString name;
@@ -265,7 +268,7 @@ namespace IED
 
 			randWeapEntry_t(const randWeapEntry_t&) = delete;
 			randWeapEntry_t& operator=(const randWeapEntry_t&) = delete;
-			randWeapEntry_t(randWeapEntry_t&&) = delete;
+			randWeapEntry_t(randWeapEntry_t&&)                 = delete;
 			randWeapEntry_t& operator=(randWeapEntry_t&&) = delete;
 
 			const randPlacementEntry_t* get_rand_entry() const;

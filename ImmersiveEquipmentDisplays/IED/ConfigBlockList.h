@@ -16,7 +16,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::set<stl::fixed_string, stl::fixed_string_less_equal_p> keys;
+			stl::set_sa<stl::fixed_string, stl::fixed_string_less_equal_p> keys;
 
 		private:
 			template <class Archive>

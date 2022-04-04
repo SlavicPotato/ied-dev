@@ -180,6 +180,21 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Sex));
 				ImGui::Text("%s:", LS(CommonStrings::Race));
 				ImGui::Text("%s:", LS(CommonStrings::Weight));
+
+				if (it->second.worldspace)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Worldspace));
+				}
+
+				if (it->second.cell)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Cell));
+				}
+
+				if (it->second.skin)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Skin));
+				}
 			}
 
 			ImGui::Text("%s:", LS(CommonStrings::Mod));
@@ -223,6 +238,21 @@ namespace IED
 				}
 
 				ImGui::TextWrapped("%.0f", it->second.weight);
+
+				if (it->second.worldspace)
+				{
+					ImGui::TextWrapped("%.8X", it->second.worldspace.get());
+				}
+
+				if (it->second.cell)
+				{
+					ImGui::TextWrapped("%.8X", it->second.cell.get());
+				}
+
+				if (it->second.skin)
+				{
+					ImGui::TextWrapped("%.8X", it->second.skin.get());
+				}
 			}
 
 			std::uint32_t modIndex;

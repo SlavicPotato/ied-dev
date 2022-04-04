@@ -63,6 +63,7 @@ namespace IED
 			DeadScatter                         = 1052,
 			XP32AA                              = 1053,
 			XP32AA_FF                           = 1054,
+			RandPlacement                       = 1055,
 		};
 
 	}

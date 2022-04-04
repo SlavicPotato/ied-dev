@@ -184,14 +184,14 @@ namespace IED
 
 			std::uintptr_t traddr;
 
-			if (!Hook::GetDst5<0xE9>(a_dst, traddr))
+			if (!hook::get_dst5<0xE9>(a_dst, traddr))
 			{
 				return false;
 			}
 
 			const payload_t* pl{ nullptr };
 
-			if (!Hook::GetDst6<0x25>(traddr, pl))
+			if (!hook::get_dst6<0x25>(traddr, pl))
 			{
 				return false;
 			}
@@ -227,7 +227,7 @@ namespace IED
 				}
 			}
 
-			return Hook::GetDst6<0x15>(
+			return hook::get_dst6<0x15>(
 				std::uintptr_t(std::addressof(pl->escape)),
 				a_out);
 		}
@@ -327,13 +327,13 @@ namespace IED
 				}
 			}
 
-			m_Instance.LogPatchBegin(__FUNCTION__);
+			m_Instance.LogPatchBegin();
 			{
 				ProcessInputEvent code(m_inputEventpProc_a);
 
 				ISKSE::GetBranchTrampoline().Write5Branch(m_inputEventpProc_a, code.get());
 			}
-			m_Instance.LogPatchEnd(__FUNCTION__);
+			m_Instance.LogPatchEnd();
 		}
 
 		bool Input::SinkToInputDispatcher()

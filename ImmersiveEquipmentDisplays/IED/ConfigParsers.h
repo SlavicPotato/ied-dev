@@ -11,7 +11,7 @@ namespace IED
 		{
 			try
 			{
-				std::vector<std::string> e;
+				stl::vector<std::string> e;
 				StrHelpers::SplitString(a_in, '|', e);
 
 				if (e.size() < 2)

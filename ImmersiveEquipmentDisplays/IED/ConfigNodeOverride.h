@@ -658,9 +658,10 @@ namespace IED
 				return placementData;
 			}
 
-		private:
+		private :
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void
+			serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
 				a_ar& data;

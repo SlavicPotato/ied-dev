@@ -16,7 +16,7 @@ namespace IED
 		class UIListBase :
 			public virtual UILocalizationInterface
 		{
-			using list_type = std::map<Th, stl::fixed_string>;
+			using list_type = stl::map<Th, stl::fixed_string>;
 
 		public:
 			inline void QueueListUpdateCurrent()

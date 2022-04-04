@@ -8,7 +8,7 @@ namespace IED
 
 	void ConfigKeyCombo::Parse(const std::string& a_input)
 	{
-		std::vector<std::uint32_t> e;
+		stl::vector<std::uint32_t> e;
 		StrHelpers::SplitString(a_input, '+', e, true, true);
 
 		*this = {};
@@ -54,6 +54,8 @@ namespace IED
 			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "DisableVanillaWeaponAdjust", true);
 		m_weaponAdjustFix =
 			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
+		m_forceOrigWeapXFRM =
+			parsers.reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceOriginalWeaponTransform", true);
 
 		m_disableNPCProcessing =
 			parsers.reader.GetBoolValue(SECT_DEBUG, "DisableNPCProcessing", false);

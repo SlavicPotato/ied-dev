@@ -411,7 +411,7 @@ namespace IED
 		};
 
 		class configFormSet_t :
-			public stl::set<configForm_t>
+			public stl::set_sa<configForm_t>
 		{
 			friend class boost::serialization::access;
 
@@ -425,7 +425,7 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& static_cast<stl::set<configForm_t>&>(*this);
+				a_ar& static_cast<stl::set_sa<configForm_t>&>(*this);
 			}
 		};
 
@@ -515,7 +515,7 @@ namespace IED
 		};
 
 		using configFormList_t       = std::vector<configForm_t>;
-		using configFixedStringSet_t = stl::set<stl::fixed_string>;
+		using configFixedStringSet_t = stl::set_sa<stl::fixed_string>;
 
 	}
 

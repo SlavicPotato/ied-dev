@@ -19,7 +19,7 @@ namespace IED
 			Data::ObjectSlot KeyToSlot(const std::string& a_key) const;
 
 		private:
-			std::unordered_map<std::string, Data::ObjectSlot> m_keyToSlot;
+			stl::unordered_map<std::string, Data::ObjectSlot> m_keyToSlot;
 		};
 
 		template <class Th, class Tm>

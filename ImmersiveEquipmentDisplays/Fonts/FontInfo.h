@@ -25,7 +25,7 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(GlyphPresetFlags);
 
-	using fontGlyphRange_t = std::vector<std::pair<ImWchar, ImWchar>>;
+	using fontGlyphRange_t = stl::vector<std::pair<ImWchar, ImWchar>>;
 
 	struct fontGlyphData_t
 	{
@@ -43,7 +43,7 @@ namespace IED
 
 	struct fontInfoMap_t
 	{
-		using font_map_t = std::unordered_map<
+		using font_map_t = stl::unordered_map<
 			stl::fixed_string,
 			fontInfoEntry_t>;
 

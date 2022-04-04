@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "IJSONSerialization.h"
+#include "IMaintenance.h"
 
 #include "IED/Parsers/JSONConfigStoreParser.h"
 #include "Serialization/Serialization.h"
@@ -422,20 +423,7 @@ namespace IED
 
 		if (!a_exportFlags.test(ExportFlags::kKeepGenerated))
 		{
-			for (auto& e : result.transforms.GetFormMaps())
-			{
-				for (auto it = e.begin(); it != e.end();)
-				{
-					if (it->second.flags.test(Data::NodeOverrideHolderFlags::RandomGenerated))
-					{
-						it = e.erase(it);
-					}
-					else
-					{
-						++it;
-					}
-				}
-			}
+			IMaintenance::ClearConfigStoreRand(result);
 		}
 
 		//

@@ -14,8 +14,8 @@ namespace IED
 		bool CleanSlotConfig(Data::configSlotHolder_t& a_data);
 
 	public:
-		void CleanConfigStore(Data::configStore_t& a_data);
-		void ClearConfigStoreRand(Data::configStore_t& a_data);
-		void CleanBlockList(Data::actorBlockList_t& a_data);
+		void        CleanConfigStore(Data::configStore_t& a_data);
+		static void ClearConfigStoreRand(Data::configStore_t& a_data);
+		void        CleanBlockList(Data::actorBlockList_t& a_data);
 	};
 }

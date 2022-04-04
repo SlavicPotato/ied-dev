@@ -47,7 +47,6 @@ namespace IED
 		};
 
 	public:
-
 		IAnimationManager(Data::SettingHolder& a_settings);
 
 		enum class PresenceFlags : std::uint32_t
@@ -70,6 +69,11 @@ namespace IED
 			       k2hAxe |
 			       kBow
 		};
+
+		[[nodiscard]] inline constexpr bool HasAnimationInfo() const noexcept
+		{
+			return m_groupInfo.has_value();
+		}
 
 	protected:
 		void                      InitializeAnimationStrings();

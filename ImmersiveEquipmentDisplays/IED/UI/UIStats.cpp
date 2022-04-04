@@ -161,7 +161,7 @@ namespace IED
 					scl = get_sort_comp_lambda_default();
 				}
 
-				std::list<sorted_list_entry_t> list;
+				stl::list<sorted_list_entry_t> list;
 
 				for (auto& e : objects)
 				{

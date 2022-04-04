@@ -202,7 +202,7 @@ namespace IED
 
 				if (m_conf.releaseFontData)
 				{
-					ImGui_ImplDX11_ReleaseFontsTexture();
+					::ImGui_ImplDX11_ReleaseFontsTexture();
 				}
 			}
 			else

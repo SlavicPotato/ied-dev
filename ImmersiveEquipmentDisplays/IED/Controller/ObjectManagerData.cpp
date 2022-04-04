@@ -44,7 +44,12 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
 
+		PerfTimer pt;
+		pt.Start();
+
 		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
+
+		_DMESSAGE("%.8X: %f", a_actor->formID.get(), pt.Stop());
 
 		if (auto npc = a_actor->GetActorBase())
 		{
@@ -99,7 +104,10 @@ namespace IED
 							e->first,
 							node,
 							defParentNode,
-							e->second.animSlot);
+							e->second.animSlot,
+							e->second.vanilla ?
+								GetCachedTransform(e->first) :
+                                std::optional<NiTransform>{});
 					}
 				}
 			}
@@ -253,6 +261,21 @@ namespace IED
 	}
 
 	NiTransform ActorObjectHolder::GetCachedOrZeroTransform(
+		const stl::fixed_string& a_name) const
+	{
+		if (m_skeletonCache)
+		{
+			auto it = m_skeletonCache->find(a_name);
+			if (it != m_skeletonCache->end())
+			{
+				return it->second.transform;
+			}
+		}
+
+		return {};
+	}
+
+	std::optional<NiTransform> ActorObjectHolder::GetCachedTransform(
 		const stl::fixed_string& a_name) const
 	{
 		if (m_skeletonCache)
@@ -574,7 +597,7 @@ namespace IED
 		{
 			Entry tmp;
 
-			std::optional<std::set<BSFixedString>> tset;
+			std::optional<stl::set<BSFixedString>> tset;
 
 			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
 				if (auto& effect = a_geometry->m_spEffectState)

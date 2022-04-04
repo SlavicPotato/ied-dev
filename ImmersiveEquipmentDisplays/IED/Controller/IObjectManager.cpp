@@ -281,9 +281,9 @@ namespace IED
 
 	bool IObjectManager::ConstructArmorNode(
 		TESForm*                                          a_form,
-		const std::vector<TESObjectARMA*>&                a_in,
+		const stl::vector<TESObjectARMA*>&                a_in,
 		bool                                              a_isFemale,
-		std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
+		stl::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
 		NiPointer<NiNode>&                                a_out)
 	{
 		bool result = false;
@@ -587,7 +587,7 @@ namespace IED
 			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
 		};
 
-		std::list<tmpdata_t> modelParams;
+		stl::list<tmpdata_t> modelParams;
 
 		for (auto& e : a_group.entries)
 		{

@@ -19,7 +19,7 @@ namespace IED
 			std::uint32_t                            rating;
 		};
 
-		using storage_type = std::vector<item_t>;
+		using storage_type = stl::vector<item_t>;
 
 		storage_type m_items;
 	};
@@ -44,8 +44,8 @@ namespace IED
 			return m_slotResults[stl::underlying(a_type)].m_items;
 		}
 
-		Data::collectorData_t m_data;
-		SlotItemCandidates    m_slotResults[stl::underlying(Data::ObjectType::kMax)];
+		Data::collectorData_t                                                   m_data;
+		std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)> m_slotResults;
 
 	private:
 		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);

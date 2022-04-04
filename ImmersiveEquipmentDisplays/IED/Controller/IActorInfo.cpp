@@ -23,6 +23,33 @@ namespace IED
 		{
 			a_out.race = {};
 		}
+		
+		if (auto worldspace = a_actor->GetWorldspace())
+		{
+			a_out.worldspace = worldspace->formID;
+		}
+		else
+		{
+			a_out.worldspace = {};
+		}
+		
+		if (auto cell = a_actor->GetParentCell())
+		{
+			a_out.cell = cell->formID;
+		}
+		else
+		{
+			a_out.cell = {};
+		}
+		
+		if (auto skin = a_actor->GetSkin())
+		{
+			a_out.skin = skin->formID;
+		}
+		else
+		{
+			a_out.skin = {};
+		}
 
 		a_out.weight   = a_actor->GetWeight();
 		a_out.attached = a_actor->IsParentCellAttached();

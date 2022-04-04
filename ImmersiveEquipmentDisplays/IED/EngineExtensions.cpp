@@ -129,7 +129,7 @@ namespace IED
 
 	void EngineExtensions::Hook_REFR_GarbageCollector()
 	{
-		if (Hook::Call5(
+		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				m_garbageCollectorREFR_a,
 				std::uintptr_t(GarbageCollectorReference_Hook),
@@ -158,7 +158,7 @@ namespace IED
 			HALT("Failed to install Character::Resurrect vtbl hook");
 		}
 
-		if (Hook::Call5(
+		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				m_reanimActorStateUpdate_a,
 				std::uintptr_t(ReanimateActorStateUpdate_Hook),
@@ -203,7 +203,7 @@ namespace IED
 
 	void EngineExtensions::Hook_Armor_Update()
 	{
-		if (Hook::Call5(
+		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				m_armorUpdate_a,
 				std::uintptr_t(ArmorUpdate_Hook),
@@ -415,7 +415,7 @@ namespace IED
 
 	void EngineExtensions::Hook_ToggleFav()
 	{
-		if (Hook::Call5(
+		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				m_toggleFav1_a,
 				std::uintptr_t(ToggleFavGetExtraList_Hook),
@@ -431,7 +431,7 @@ namespace IED
 
 	void EngineExtensions::Hook_ProcessEffectShaders()
 	{
-		if (Hook::Call5(
+		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				m_processEffectShaders_a,
 				std::uintptr_t(ProcessEffectShaders_Hook),
@@ -1024,7 +1024,7 @@ namespace IED
 				public TaskDelegate
 			{
 			public:
-				NodeCleanupTask(
+				inline NodeCleanupTask(
 					Game::ObjectRefHandle a_handle,
 					NiAVObject*           a_object,
 					NiNode*               a_root) :

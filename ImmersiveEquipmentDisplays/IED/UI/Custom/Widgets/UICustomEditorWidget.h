@@ -269,7 +269,7 @@ namespace IED
 
 			if (ImGui::BeginChild("custom_editor_panel", { -1.0f, 0.0f }))
 			{
-				std::vector<decltype(a_data.data)::value_type*> sorted;
+				stl::vector<decltype(a_data.data)::value_type*> sorted;
 
 				for (auto& e : a_data.data)
 				{

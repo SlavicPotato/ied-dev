@@ -11,8 +11,8 @@ namespace IED
 		public:
 			using value_type = NodeDescriptor;
 
-			using data_type = stl::vectormap<stl::fixed_string, value_type>;
-			using map_type  = std::unordered_map<stl::fixed_string, value_type>;
+			using map_type  = stl::unordered_map<stl::fixed_string, value_type>;
+			using data_type = stl::vectormap<stl::fixed_string, value_type, map_type>;
 
 			struct initializer_type
 			{
@@ -84,7 +84,7 @@ namespace IED
 
 			bool m_dirty{ false };
 
-			mutable FastSpinLock       m_rwLock;
+			mutable WCriticalSection   m_rwLock;
 			mutable except::descriptor m_lastException;
 
 			static NodeMap m_Instance;

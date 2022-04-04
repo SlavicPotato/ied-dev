@@ -14,8 +14,8 @@ namespace IED
 
 		bool Render::Initialize()
 		{
-			if (!Hook::CheckDst5<0xE8>(m_Instance.m_createD3D11_a) ||
-			    !Hook::CheckDst5<0xE8>(m_Instance.m_unkPresent_a))
+			if (!hook::check_dst5<0xE8>(m_Instance.m_createD3D11_a) ||
+			    !hook::check_dst5<0xE8>(m_Instance.m_unkPresent_a))
 			{
 				m_Instance.Error("Unable to hook, one or more invalid targets");
 				return false;
@@ -23,13 +23,13 @@ namespace IED
 
 			auto& skse = ISKSE::GetSingleton();
 
-			ASSERT(Hook::Call5(
+			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
 				m_Instance.m_createD3D11_a,
 				std::uintptr_t(CreateD3D11_Hook),
 				m_Instance.m_createD3D11_o));
 
-			ASSERT(Hook::Call5(
+			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
 				m_Instance.m_unkPresent_a,
 				std::uintptr_t(Present_Pre),

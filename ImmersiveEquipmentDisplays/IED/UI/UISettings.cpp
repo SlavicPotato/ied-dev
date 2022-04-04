@@ -80,6 +80,7 @@ namespace IED
 
 				DrawGeneralSection();
 				DrawDisplaysSection();
+				DrawGearPosSection();
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
@@ -148,68 +149,6 @@ namespace IED
 				}
 				DrawTip(UITip::NoCheckFav);
 
-				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::XP32AA, "5"),
-						std::addressof(data.enableXP32AA))))
-				{
-					if (data.enableXP32AA)
-					{
-						m_controller.QueueEvaluateAll(
-							ControllerUpdateFlags::kNone);
-					}
-					else
-					{
-						m_controller.QueueResetAAAll();
-					}
-				}
-				DrawTip(UITip::XP32AA);
-
-				if (data.enableXP32AA)
-				{
-					ImGui::Indent();
-
-					ImGui::AlignTextToFramePadding();
-					ImGui::Text("%s:", LS(UISettingsStrings::XP32_FF));
-					ImGui::SameLine();
-
-					if (settings.mark_if(ImGui::Checkbox(
-							LS(UISettingsStrings::XP32_FF_Idle, "6"),
-							std::addressof(data.XP32AABowIdle))))
-					{
-						m_controller.QueueResetAAAll();
-						m_controller.QueueEvaluateAll(
-							ControllerUpdateFlags::kNone);
-					}
-
-					ImGui::SameLine();
-
-					if (settings.mark_if(ImGui::Checkbox(
-							LS(UISettingsStrings::XP32_FF_Attack, "7"),
-							std::addressof(data.XP32AABowAtk))))
-					{
-						m_controller.QueueResetAAAll();
-						m_controller.QueueEvaluateAll(
-							ControllerUpdateFlags::kNone);
-					}
-
-					DrawTip(UITip::XP32AA_FF);
-
-					ImGui::Unindent();
-				}
-
-				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::RandPlacement, "8"),
-						std::addressof(data.placementRandomization))))
-				{
-					if (!data.placementRandomization)
-					{
-						m_controller.QueueClearRand();
-					}
-
-					m_controller.QueueResetAll(
-						ControllerUpdateFlags::kNone);
-				}
-
 				ImGui::Spacing();
 
 				if (ImGui::TreeNodeEx(
@@ -261,6 +200,100 @@ namespace IED
 
 					ImGui::TreePop();
 				}
+
+				ImGui::Unindent();
+				ImGui::Spacing();
+			}
+		}
+
+		void UISettings::DrawGearPosSection()
+		{
+			if (CollapsingHeader(
+					"tree_gearpos",
+					true,
+					"%s",
+					LS(UISettingsStrings::GearPositioning)))
+			{
+				ImGui::Spacing();
+				ImGui::Indent();
+
+				auto& settings = m_controller.GetConfigStore().settings;
+				auto& data     = settings.data;
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::XP32AA, "1"),
+						std::addressof(data.enableXP32AA))))
+				{
+					if (data.enableXP32AA)
+					{
+						m_controller.QueueEvaluateAll(
+							ControllerUpdateFlags::kNone);
+					}
+					else
+					{
+						m_controller.QueueResetAAAll();
+					}
+				}
+				DrawTip(UITip::XP32AA);
+
+				if (data.enableXP32AA)
+				{
+					ImGui::Indent();
+
+					if (!m_controller.HasAnimationInfo())
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+						ImGui::TextWrapped(
+							"%s",
+							LS(UISettingsStrings::NoAnimInfoWarning));
+						ImGui::PopStyleColor();
+
+						ImGui::Spacing();
+					}
+
+					ImGui::AlignTextToFramePadding();
+					ImGui::Text("%s:", LS(UISettingsStrings::XP32_FF));
+					ImGui::SameLine();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::XP32_FF_Idle, "2"),
+							std::addressof(data.XP32AABowIdle))))
+					{
+						m_controller.QueueResetAAAll();
+						m_controller.QueueEvaluateAll(
+							ControllerUpdateFlags::kNone);
+					}
+
+					ImGui::SameLine();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::XP32_FF_Attack, "3"),
+							std::addressof(data.XP32AABowAtk))))
+					{
+						m_controller.QueueResetAAAll();
+						m_controller.QueueEvaluateAll(
+							ControllerUpdateFlags::kNone);
+					}
+
+					DrawTip(UITip::XP32AA_FF);
+
+					ImGui::Unindent();
+				}
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::RandPlacement, "4"),
+						std::addressof(data.placementRandomization))))
+				{
+					if (!data.placementRandomization)
+					{
+						m_controller.QueueClearRand();
+					}
+
+					m_controller.QueueResetAll(
+						ControllerUpdateFlags::kNone);
+				}
+
+				DrawTip(UITip::RandPlacement);
 
 				ImGui::Unindent();
 				ImGui::Spacing();

@@ -22,7 +22,7 @@ namespace IED
 
 			bool DrawFormTypeSelector(
 				stl::optional<std::uint8_t>& a_type,
-				filter_func_t a_filter);
+				filter_func_t                a_filter);
 
 		protected:
 			const char* form_type_to_desc(std::uint8_t a_type);

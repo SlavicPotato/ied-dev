@@ -82,9 +82,9 @@ namespace IED
 
 		bool ConstructArmorNode(
 			TESForm*                                          a_form,
-			const std::vector<TESObjectARMA*>&                a_in,
+			const stl::vector<TESObjectARMA*>&                a_in,
 			bool                                              a_isFemale,
-			std::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
+			stl::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
 			NiPointer<NiNode>&                                a_out);
 
 		void GetNodeName(

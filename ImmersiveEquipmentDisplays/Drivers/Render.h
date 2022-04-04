@@ -68,8 +68,8 @@ namespace IED
 			IDXGISwapChain*      m_swapChain{ nullptr };
 			NiPoint3             m_bufferSize;
 
-			static inline auto m_createD3D11_a = IAL::Addr(75595, 77226, 0x9, 0x275);
-			static inline auto m_unkPresent_a  = IAL::Addr(75461, 77246, 0x9, 0x9);
+			static inline const auto m_createD3D11_a = IAL::Address<std::uintptr_t>(75595, 77226, 0x9, 0x275);
+			static inline const auto m_unkPresent_a  = IAL::Address<std::uintptr_t>(75461, 77246, 0x9, 0x9);
 
 			static Render m_Instance;
 		};

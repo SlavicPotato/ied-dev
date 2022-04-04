@@ -46,7 +46,7 @@ namespace IED
 				}
 			};
 
-			using tab_filter_type   = stl::set<std::uint32_t>;
+			using tab_filter_type   = stl::set_sa<std::uint32_t>;
 			using select_callback_t = std::function<void(const IFormDatabase::entry_t&)>;
 
 			UIFormBrowser(Controller& a_controller);
@@ -104,7 +104,7 @@ namespace IED
 			UIGenericFilter m_formIDFilter;
 			UIGenericFilter m_formNameFilter;
 
-			stl::optional<std::vector<IFormDatabase::entry_t>> m_filteredData;
+			stl::optional<stl::vector<IFormDatabase::entry_t>> m_filteredData;
 
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;
