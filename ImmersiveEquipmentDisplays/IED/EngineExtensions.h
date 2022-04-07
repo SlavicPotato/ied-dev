@@ -36,9 +36,9 @@ namespace IED
 
 		struct hkaGetSkeletonNodeResult
 		{
-			NiAVObject*   object;  // 00
-			std::uint32_t unk08;   // 08 - index?
-			std::uint32_t pad1C;   // 1C
+			NiNode*       root;   // 00
+			std::uint32_t unk08;  // 08 - index?
+			std::uint32_t pad1C;  // 1C
 		};
 
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
@@ -118,7 +118,6 @@ namespace IED
 			NiNode*   a_targetNode,
 			NiNode*   a_object,
 			ModelType a_modelType,
-			bool      a_isDead,
 			bool      a_leftWeapon,
 			bool      a_shield,
 			bool      a_dropOnDeath,
@@ -192,10 +191,10 @@ namespace IED
 		void Hook_Armor_Update();
 		void Patch_SetWeapAdjAnimVar();
 		void Patch_CreateWeaponNodes();
-		void Patch_hkaSkipWeaponNodes();
+		void Patch_WeaponAdjustDisable();
 		void Hook_ToggleFav();
 		void Hook_ProcessEffectShaders();
-		void Patch_CorpseScatter();
+		//void Patch_CorpseScatter();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,

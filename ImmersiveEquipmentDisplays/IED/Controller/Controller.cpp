@@ -2742,8 +2742,7 @@ namespace IED
 						nullptr,
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
-						false,
-						m_enableCorpseScatter))
+						false))
 				{
 					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
@@ -3200,8 +3199,7 @@ namespace IED
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_enableCorpseScatter);
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3221,8 +3219,7 @@ namespace IED
 					modelForm,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_enableCorpseScatter);
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3308,8 +3305,7 @@ namespace IED
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_enableCorpseScatter);
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3323,8 +3319,7 @@ namespace IED
 					nullptr,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					m_enableCorpseScatter);
+					a_config.customFlags.test(CustomFlags::kDisableHavok));
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}

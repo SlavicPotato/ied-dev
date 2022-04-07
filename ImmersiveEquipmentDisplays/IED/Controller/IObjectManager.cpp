@@ -380,8 +380,7 @@ namespace IED
 		TESForm*                        a_modelForm,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok,
-		bool                            a_enableDeadScatter)
+		bool                            a_disableHavok)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -497,7 +496,6 @@ namespace IED
 			itemRoot,
 			object,
 			modelParams.type,
-			a_enableDeadScatter && a_params.get_actor_dead(),
 			a_leftWeapon,
 			modelParams.isShield,
 			a_config.flags.test(Data::BaseFlags::kDropOnDeath),
@@ -547,8 +545,7 @@ namespace IED
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok,
-		bool                            a_enableDeadScatter)
+		bool                            a_disableHavok)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -752,7 +749,6 @@ namespace IED
 				itemRoot,
 				e.object,
 				e.params.type,
-				a_enableDeadScatter && a_params.get_actor_dead(),
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
 				e.params.isShield,

@@ -65,7 +65,7 @@ namespace IED
 
 		if (m_conf.weaponAdjustDisable)
 		{
-			Patch_hkaSkipWeaponNodes();
+			Patch_WeaponAdjustDisable();
 		}
 
 		if (a_config->m_immediateFavUpdate)
@@ -78,10 +78,10 @@ namespace IED
 			Hook_ProcessEffectShaders();
 		}
 
-		if (a_config->m_enableCorpseScatter)
+		/*if (a_config->m_enableCorpseScatter)
 		{
 			Patch_CorpseScatter();
-		}
+		}*/
 	}
 
 	void EngineExtensions::Patch_RemoveAllBipedParts()
@@ -281,7 +281,8 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::Patch_hkaSkipWeaponNodes()
+	// actually blocks the node from havok entirely
+	void EngineExtensions::Patch_WeaponAdjustDisable()
 	{
 		ASSERT_STR(
 			Patching::validate_mem(
@@ -352,7 +353,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Patch_CorpseScatter()
+	/*void EngineExtensions::Patch_CorpseScatter()
 	{
 		ASSERT_STR(
 			Patching::validate_mem(
@@ -404,7 +405,7 @@ namespace IED
 				code.get());
 		}
 		LogPatchEnd();
-	}
+	}*/ 
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
@@ -631,8 +632,8 @@ namespace IED
 			    a_name == sh->m_weaponBow ||
 			    a_name == sh->m_quiver)
 			{
-				a_result.object = nullptr;
-				a_result.unk08  = std::numeric_limits<std::uint32_t>::max();
+				a_result.root  = nullptr;
+				a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
 				return false;
 			}
 		}
@@ -682,7 +683,6 @@ namespace IED
 		NiNode*   a_targetNode,
 		NiNode*   a_object,
 		ModelType a_modelType,
-		bool      a_isDead,
 		bool      a_leftWeapon,
 		bool      a_shield,
 		bool      a_dropOnDeath,
@@ -879,7 +879,7 @@ namespace IED
 		QueueAttachHavok(
 			BSTaskPool::GetSingleton(),
 			a_object,
-			a_dropOnDeath ? (a_isDead ? 1 : 4) : 0,
+			a_dropOnDeath ? 4 : 0,
 			true);
 
 		if (auto cell = a_actor->GetParentCell())

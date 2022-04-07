@@ -100,8 +100,7 @@ namespace IED
 			TESForm*                        a_modelForm,
 			bool                            a_leftWeapon,
 			bool                            a_visible,
-			bool                            a_disableHavok,
-			bool                            a_enableDeadScatter);
+			bool                            a_disableHavok);
 
 		bool LoadAndAttachGroup(
 			processParams_t&                a_params,
@@ -111,8 +110,7 @@ namespace IED
 			TESForm*                        a_form,
 			bool                            a_leftWeapon,
 			bool                            a_visible,
-			bool                            a_disableHavok,
-			bool                            a_enableDeadScatter);
+			bool                            a_disableHavok);
 
 		void FinalizeObjectState(
 			std::unique_ptr<objectEntryBase_t::State>& a_state,
