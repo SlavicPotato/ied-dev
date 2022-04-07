@@ -68,7 +68,7 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-			using data_type = std::unordered_map<stl::fixed_string, configModelGroupEntry_t>;
+			using data_type = stl::boost_unordered_map<stl::fixed_string, configModelGroupEntry_t>;
 
 			enum Serialization : unsigned int
 			{

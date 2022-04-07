@@ -44,12 +44,12 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
 
-		PerfTimer pt;
-		pt.Start();
+		/*PerfTimer pt;
+		pt.Start();*/
 
 		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
 
-		_DMESSAGE("%.8X: %f", a_actor->formID.get(), pt.Stop());
+		//_DMESSAGE("%.8X: %f", a_actor->formID.get(), pt.Stop());
 
 		if (auto npc = a_actor->GetActorBase())
 		{
@@ -560,9 +560,9 @@ namespace IED
 		if (!data.empty())
 		{
 			visit_nodes([](auto& a_entry, auto& a_prop) {
-				if (a_prop->effectData == a_entry.shaderData)
+				if (a_prop.prop->effectData == a_entry.shaderData)
 				{
-					a_prop->ClearEffectShaderData();
+					a_prop.prop->ClearEffectShaderData();
 				}
 			});
 

@@ -23,8 +23,8 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate(
-		data_type&       a_data,
-		const tArray<T>& a_fromData)
+		data_type&             a_data,
+		const RE::BSTArray<T>& a_fromData)
 	{
 		using form_type = stl::strip_type<Tf>;
 
@@ -33,14 +33,19 @@ namespace IED
 
 		if (r.second)
 		{
-			holder.reserve(a_fromData.count);
+			holder.reserve(a_fromData.size());
 		}
 
-		for (auto e : a_fromData)
+		for (auto& e : a_fromData)
 		{
 			auto form = static_cast<form_type*>(e);
 
 			if (!form)
+			{
+				continue;
+			}
+
+			if (form->formType != form_type::kTypeID)
 			{
 				continue;
 			}
@@ -76,22 +81,29 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate2(
-		data_type&       a_data,
-		const tArray<T>& a_fromData,
-		std::uint32_t    a_type,
-		Tf               a_func)
+		data_type&             a_data,
+		const RE::BSTArray<T>& a_fromData,
+		std::uint32_t          a_type,
+		Tf                     a_func)
 	{
+		using form_type = stl::strip_type<T>;
+
 		auto  r      = a_data.try_emplace(a_type);
 		auto& holder = r.first->second;
 
 		if (r.second)
 		{
-			holder.reserve(a_fromData.count);
+			holder.reserve(a_fromData.size());
 		}
 
-		for (auto e : a_fromData)
+		for (auto& e : a_fromData)
 		{
 			if (!e)
+			{
+				continue;
+			}
+
+			if (e->formType != form_type::kTypeID)
 			{
 				continue;
 			}
@@ -163,7 +175,7 @@ namespace IED
 				*result,
 				dh->armors,
 				EXTRA_TYPE_ARMOR,
-				[](auto a_armor) {
+				[](const auto& a_armor) {
 					return !a_armor->IsShield();
 				});
 		}

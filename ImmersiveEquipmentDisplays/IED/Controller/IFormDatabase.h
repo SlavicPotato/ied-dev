@@ -15,14 +15,14 @@ namespace IED
 			stl::flag<FormInfoFlags> flags{ FormInfoFlags::kNone };
 			std::string              name;
 
-			inline friend bool operator<(
+			inline friend constexpr bool operator<(
 				const entry_t& a_lhs,
 				const entry_t& a_rhs) noexcept
 			{
 				return a_lhs.formid < a_rhs.formid;
 			}
 
-			inline friend bool operator==(
+			inline friend constexpr bool operator==(
 				const entry_t& a_lhs,
 				const entry_t& a_rhs) noexcept
 			{
@@ -44,15 +44,15 @@ namespace IED
 	private:
 		template <class T, class Tf = T>
 		constexpr static void Populate(
-			data_type&       a_data,
-			const tArray<T>& a_fromData);
+			data_type&             a_data,
+			const RE::BSTArray<T>& a_fromData);
 
 		template <class T, class Tf>
 		constexpr static void Populate2(
-			data_type&       a_data,
-			const tArray<T>& a_fromData,
-			std::uint32_t    a_type,
-			Tf               a_func);
+			data_type&             a_data,
+			const RE::BSTArray<T>& a_fromData,
+			std::uint32_t          a_type,
+			Tf                     a_func);
 
 		static result_type Create();
 

@@ -2489,14 +2489,14 @@ namespace IED
 		if constexpr (std::is_same_v<Ta, configCustom_t>)
 		{
 			es = a_config.get_effect_shader(
-				a_params.collector.m_data,
+				a_params.collector.data,
 				a_params.objects.m_entriesSlot,
 				a_params);
 		}
 		else if constexpr (std::is_same_v<Ta, configSlot_t>)
 		{
 			es = a_config.get_effect_shader(
-				a_params.collector.m_data,
+				a_params.collector.data,
 				{ a_objectEntry.state->form,
 			      a_objectEntry.slotidex },
 				a_params);
@@ -2634,10 +2634,10 @@ namespace IED
 
 				auto configOverride =
 					!item ? configEntry.get_equipment_override(
-								a_params.collector.m_data,
+								a_params.collector.data,
 								a_params) :
                             configEntry.get_equipment_override(
-								a_params.collector.m_data,
+								a_params.collector.data,
 								{ item->item->form, objectEntry.slotidex },
 								a_params);
 
@@ -2663,7 +2663,7 @@ namespace IED
 				}
 
 				if ((slot == ObjectSlot::kAmmo &&
-				     a_params.collector.m_data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
+				     a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
 				    slot == equippedInfo.leftSlot ||
 				    slot == equippedInfo.rightSlot)
 				{
@@ -2941,7 +2941,7 @@ namespace IED
 		objectEntryCustom_t&            a_objectEntry,
 		bool&                           a_hasMinCount)
 	{
-		auto& formData = a_params.collector.m_data.forms;
+		auto& formData = a_params.collector.data.forms;
 
 		if (!a_config.customFlags.test(CustomFlags::kUseGroup) &&
 		    a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
@@ -3099,7 +3099,7 @@ namespace IED
 
 		auto configOverride =
 			a_config.get_equipment_override(
-				a_params.collector.m_data,
+				a_params.collector.data,
 				a_params.objects.m_entriesSlot,
 				a_params);
 
@@ -3133,7 +3133,7 @@ namespace IED
 				a_objectEntry,
 				hasMinCount);
 
-			if (it == a_params.collector.m_data.forms.end())
+			if (it == a_params.collector.data.forms.end())
 			{
 				return false;
 			}
@@ -3533,7 +3533,7 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-#if defined(IED_ENABLE_STATS)
+#if defined(IED_ENABLE_STATS_G)
 		PerfTimer pt;
 		pt.Start();
 #endif
@@ -3571,7 +3571,7 @@ namespace IED
 			a_objects.RequestTransformUpdateDefer();
 		}
 
-#if defined(IED_ENABLE_STATS)
+#if defined(IED_ENABLE_STATS_G)
 		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
 #endif
 	}
@@ -3725,8 +3725,10 @@ namespace IED
 		const ActorObjectHolder&               a_objects,
 		const collectorData_t::container_type* a_equippedForms)
 	{
-		/*PerfTimer pt;
-		pt.Start();*/
+#if defined(IED_ENABLE_STATS_T)
+		PerfTimer pt;
+		pt.Start();
+#endif
 
 		if (a_actor == *g_thePlayer &&
 		    !m_nodeOverridePlayerEnabled)
@@ -3807,7 +3809,7 @@ namespace IED
 			}
 		}
 
-		if (EngineExtensions::IsWeaponAdjustDisabled() && m_forceOrigWeapXFRM)
+		if (m_forceOrigWeapXFRM)
 		{
 			for (auto& e : a_objects.m_weapNodes)
 			{
@@ -3824,7 +3826,9 @@ namespace IED
 			UpdateAA(a_actor, a_objects.m_animState);
 		}
 
-		//Debug("%X : %f", a_actor->formID.get(), pt.Stop());
+#if defined(IED_ENABLE_STATS_T)
+		Debug("T: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
+#endif
 
 		return true;
 	}
@@ -4181,7 +4185,7 @@ namespace IED
 		};
 
 		if (auto eo = a_config.get_equipment_override(
-				collector.m_data,
+				collector.data,
 				a_slots,
 				params))
 		{
@@ -4212,10 +4216,10 @@ namespace IED
 
 		if (auto eo = !form ?
 		                  a_config.get_equipment_override(
-							  collector.m_data,
+							  collector.data,
 							  params) :
                           a_config.get_equipment_override(
-							  collector.m_data,
+							  collector.data,
 							  { form, a_entry.slotidex },
 							  params))
 		{

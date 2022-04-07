@@ -29,11 +29,15 @@ static bool Initialize(const SKSEInterface* a_skse)
 			auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
 
 			gLog.Message(
-				"Loaded, trampolines: branch:[%zu/%zu] codegen:[%zu/%zu]",
+				"Loaded, trampolines: branch:[%zu/%zu] codegen:[%zu/%zu] IAL:[%lld ms]",
 				usageBranch.used,
 				usageBranch.total,
 				usageLocal.used,
-				usageLocal.total);
+				usageLocal.total,
+				IPerfCounter::delta_us(
+					IAL::GetLoadStart(),
+					IAL::GetLoadEnd()) /
+					1000ll);
 		}
 	}
 	catch (const std::exception& e)
@@ -84,16 +88,38 @@ extern "C" {
 			GET_EXE_VERSION_BUILD(a_skse->runtimeVersion),
 			GET_EXE_VERSION_SUB(a_skse->runtimeVersion));
 
-		gLog.Message(
-			"boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
-			BOOST_VERSION / 100000,
-			BOOST_VERSION / 100 % 1000,
-			BOOST_VERSION % 100,
-			JSONCPP_VERSION_MAJOR,
-			JSONCPP_VERSION_MINOR,
-			JSONCPP_VERSION_PATCH,
-			IMGUI_VERSION,
-			IMGUI_VERSION_NUM);
+		if constexpr (
+			stl::containers_use_mimalloc || 
+			VersionDb::use_mimalloc || 
+			TaskQueueBase<void*>::use_mimalloc ||
+			string_cache::data_pool::use_mimalloc)
+		{
+			gLog.Message(
+				"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
+				MI_MALLOC_VERSION / 100,
+				MI_MALLOC_VERSION % 100,
+				BOOST_VERSION / 100000,
+				BOOST_VERSION / 100 % 1000,
+				BOOST_VERSION % 100,
+				JSONCPP_VERSION_MAJOR,
+				JSONCPP_VERSION_MINOR,
+				JSONCPP_VERSION_PATCH,
+				IMGUI_VERSION,
+				IMGUI_VERSION_NUM);
+		}
+		else
+		{
+			gLog.Message(
+				"boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
+				BOOST_VERSION / 100000,
+				BOOST_VERSION / 100 % 1000,
+				BOOST_VERSION % 100,
+				JSONCPP_VERSION_MAJOR,
+				JSONCPP_VERSION_MINOR,
+				JSONCPP_VERSION_PATCH,
+				IMGUI_VERSION,
+				IMGUI_VERSION_NUM);
+		}
 
 		if (!IAL::IsLoaded())
 		{

@@ -11,6 +11,8 @@ namespace IED
 		class UIPopupQueue :
 			UICommonModals
 		{
+			using queue_type = stl::queue<UIPopupAction>;
+
 		public:
 			UIPopupQueue(Localization::ILocalization& a_localization);
 
@@ -28,13 +30,14 @@ namespace IED
 				return m_queue.emplace(std::forward<Args>(a_v)...);
 			}
 
-			inline void clear() noexcept
+			inline void clear() noexcept(
+				std::is_nothrow_move_assignable_v<queue_type>)
 			{
 				m_queue = {};
 			}
 
 		private:
-			std::queue<UIPopupAction> m_queue;
+			queue_type m_queue;
 		};
 
 	}

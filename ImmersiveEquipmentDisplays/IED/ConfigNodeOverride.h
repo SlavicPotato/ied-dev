@@ -122,7 +122,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionGroupFlags);
 
-		using configNodeOverrideConditionList_t = std::vector<configNodeOverrideCondition_t>;
+		using configNodeOverrideConditionList_t = stl::boost_vector<configNodeOverrideCondition_t>;
 
 		struct configNodeOverrideConditionGroup_t
 		{
@@ -376,7 +376,7 @@ namespace IED
 			configNodeOverrideConditionList_t       conditions;
 			std::string                             description;
 			NiPoint3                                adjustScale{ 1.0f, 1.0f, 1.0f };
-			std::vector<configNodeOverrideOffset_t> group;
+			stl::boost_vector<configNodeOverrideOffset_t> group;
 
 			void clamp()
 			{
@@ -415,7 +415,7 @@ namespace IED
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
-		using configNodeOverrideOffsetList_t = std::vector<configNodeOverrideOffset_t>;
+		using configNodeOverrideOffsetList_t = stl::boost_vector<configNodeOverrideOffset_t>;
 
 		enum class NodeOverrideFlags : std::uint32_t
 		{
@@ -536,7 +536,7 @@ namespace IED
 			}
 		};
 
-		using configNodeOverridePlacementOverrideList_t = std::vector<configNodeOverridePlacementOverride_t>;
+		using configNodeOverridePlacementOverrideList_t = stl::boost_vector<configNodeOverridePlacementOverride_t>;
 
 		enum class NodeOverridePlacementFlags : std::uint32_t
 		{
@@ -595,8 +595,8 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-			using transform_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntryTransform_t>;
-			using placement_data_type = std::unordered_map<stl::fixed_string, configNodeOverrideEntryPlacement_t>;
+			using transform_data_type = stl::boost_unordered_map<stl::fixed_string, configNodeOverrideEntryTransform_t>;
+			using placement_data_type = stl::boost_unordered_map<stl::fixed_string, configNodeOverrideEntryPlacement_t>;
 
 			enum Serialization : unsigned int
 			{
@@ -682,8 +682,8 @@ namespace IED
 			};
 
 		public:
-			using transform_data_type = std::unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryTransform_t>>;
-			using placement_data_type = std::unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryPlacement_t>>;
+			using transform_data_type = stl::boost_unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryTransform_t>>;
+			using placement_data_type = stl::boost_unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryPlacement_t>>;
 
 			configNodeOverrideHolderCopy_t() = default;
 

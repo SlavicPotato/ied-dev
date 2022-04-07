@@ -298,7 +298,7 @@ namespace IED
 		};
 
 		template <class T>
-		using configFormMap_t = std::unordered_map<configForm_t, T>;
+		using configFormMap_t = stl::boost_unordered_map<configForm_t, T>;
 
 		template <AcceptDataClear T>
 		class configStoreBase_t
@@ -411,9 +411,17 @@ namespace IED
 		};
 
 		class configFormSet_t :
-			public stl::set_sa<configForm_t>
+			public stl::set_sa<
+				configForm_t,
+				std::less_equal<configForm_t>,
+				stl::boost_container_allocator<configForm_t>>
 		{
 			friend class boost::serialization::access;
+
+			using super = stl::set_sa<
+				configForm_t,
+				std::less_equal<configForm_t>,
+				stl::boost_container_allocator<configForm_t>>;
 
 		public:
 			enum Serialization : unsigned int
@@ -425,7 +433,7 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& static_cast<stl::set_sa<configForm_t>&>(*this);
+				a_ar& static_cast<super&>(*this);
 			}
 		};
 
@@ -514,8 +522,11 @@ namespace IED
 			}
 		};
 
-		using configFormList_t       = std::vector<configForm_t>;
-		using configFixedStringSet_t = stl::set_sa<stl::fixed_string>;
+		using configFormList_t       = stl::boost_vector<configForm_t>;
+		using configFixedStringSet_t = stl::set_sa<
+			stl::fixed_string,
+			std::less_equal<stl::fixed_string>,
+			stl::boost_container_allocator<stl::fixed_string>>;
 
 	}
 

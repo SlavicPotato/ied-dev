@@ -16,7 +16,11 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::set_sa<stl::fixed_string, stl::fixed_string_less_equal_p> keys;
+			stl::set_sa<
+				stl::fixed_string,
+				stl::fixed_string_less_equal_p,
+				stl::boost_container_allocator<stl::fixed_string>>
+				keys;
 
 		private:
 			template <class Archive>
@@ -36,8 +40,8 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			std::unordered_map<configForm_t, actorBlockEntry_t> data;
-			bool                                                playerToggle{ false };
+			stl::boost_unordered_map<configForm_t, actorBlockEntry_t> data;
+			bool                                                      playerToggle{ false };
 
 			inline void clear()
 			{

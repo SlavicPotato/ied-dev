@@ -354,13 +354,9 @@ namespace IED
 						char buf[16];
 						stl::snprintf(buf, "0x%s", m_formIDFilter.GetBuffer());
 
-						char* end = nullptr;
-
-						auto v = std::strtoul(buf, &end, 0);
-
-						if (end > buf)
+						if (auto v = str_conv::ston<unsigned long>(buf, 0))
 						{
-							formID = v;
+							formID = *v;
 						}
 					}
 

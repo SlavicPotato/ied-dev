@@ -3,21 +3,23 @@
 
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
-#include <ext/ICommon.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ISerializationBase.h>
 #include <ext/ITaskPool.h>
-#include <ext/Map.h>
 #include <ext/Math.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
-#include <ext/Set.h>
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
-#include <ext/str_conv.h>
 #include <ext/stl_containers.h>
+#include <ext/str_conv.h>
+
+#include <ext/stl_boost_serialization_containers.h>
+
+#include <ext/stl_map_sa.h>
+#include <ext/stl_set_sa.h>
 
 #include <skse64/BipedObject.h>
 #include <skse64/FormTraits.h>
@@ -82,6 +84,6 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
-#define IED_ENABLE_STATS
+//#define IED_ENABLE_STATS_G
 
 #endif  // PCH_H

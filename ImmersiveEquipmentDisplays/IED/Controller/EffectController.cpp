@@ -54,9 +54,9 @@ namespace IED
 			{
 				for (auto& f : e.nodes)
 				{
-					if (f->effectData != e.shaderData)
+					if (f.prop->effectData != e.shaderData)
 					{
-						f->SetEffectShaderData(e.shaderData);
+						f.prop->SetEffectShaderData(e.shaderData);
 					}
 				}
 			}
@@ -64,19 +64,19 @@ namespace IED
 			{
 				for (auto& f : e.nodes)
 				{
-					if (!f->effectData)
+					if (!f.prop->effectData)
 					{
-						if (f->AcceptsEffectData())
+						if (f.prop->AcceptsEffectData())
 						{
-							f->SetEffectShaderData(e.shaderData);
+							f.prop->SetEffectShaderData(e.shaderData);
 						}
 					}
 					else
 					{
-						if (f->effectData == e.shaderData &&
-						    !f->AcceptsEffectData())
+						if (f.prop->effectData == e.shaderData &&
+						    !f.prop->AcceptsEffectData())
 						{
-							f->ClearEffectShaderData();
+							f.prop->ClearEffectShaderData();
 						}
 					}
 				}

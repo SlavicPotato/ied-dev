@@ -187,7 +187,7 @@ namespace IED
 			stl::flag<EffectShaderHolderFlags>                              flags{ DEFAULT_FLAGS };
 			std::string                                                     description;
 			equipmentOverrideConditionList_t                                conditions;
-			std::unordered_map<stl::fixed_string, configEffectShaderData_t> data;
+			stl::boost_unordered_map<stl::fixed_string, configEffectShaderData_t> data;
 
 		private:
 			template <class Archive>
@@ -215,7 +215,7 @@ namespace IED
 				return data.empty();
 			}
 
-			std::vector<configEffectShaderHolder_t> data;
+			stl::boost_vector<configEffectShaderHolder_t> data;
 
 		private:
 			template <class Archive>

@@ -10,7 +10,7 @@ namespace IED
 	{
 		m_stream.open(a_path, std::ios_base::binary | std::ios_base::in);
 
-		if (!m_stream.is_open())
+		if (!m_stream || !m_stream.is_open())
 		{
 			throw std::system_error(
 				errno,

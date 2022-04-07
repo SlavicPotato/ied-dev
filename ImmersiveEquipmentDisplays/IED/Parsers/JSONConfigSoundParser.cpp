@@ -28,13 +28,15 @@ namespace IED
 					{
 						auto key = it.key().asString();
 
-						char* end = nullptr;
+						unsigned long formType;
 
-						auto formType = std::strtoul(key.c_str(), &end, 0);
-
-						if (!(end > key.c_str()))
+						try
 						{
-							Error("%s: bad key: %s", __FUNCTION__, key.c_str());
+							formType = std::stoul(key);
+						}
+						catch (const std::exception& e)
+						{
+							Error("%s: bad key '%s': %s", __FUNCTION__, key.c_str(), e.what());
 							SetHasErrors();
 							continue;
 						}

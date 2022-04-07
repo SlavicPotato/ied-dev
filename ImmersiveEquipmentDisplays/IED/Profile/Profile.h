@@ -153,7 +153,7 @@ namespace IED
 			std::ifstream fs;
 			fs.open(m_path, std::ifstream::in | std::ifstream::binary);
 
-			if (!fs.is_open())
+			if (!fs || !fs.is_open())
 			{
 				throw std::system_error(
 					errno,

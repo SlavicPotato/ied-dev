@@ -432,21 +432,12 @@ namespace IED
 				return {};
 			}
 
-			char* end = nullptr;
-
 			char tmp[16];
 			stl::snprintf(tmp, "0x%s", m_state->m_inputBuffer);
 
-			auto v = std::strtoul(tmp, &end, 0);
+			auto v = str_conv::ston<unsigned long>(tmp, 0);
 
-			if (end > tmp)
-			{
-				return v;
-			}
-			else
-			{
-				return {};
-			}
+			return v ? *v : Game::FormID{};
 		}
 
 		void UIFormSelectorWidget::SetInputFormID(

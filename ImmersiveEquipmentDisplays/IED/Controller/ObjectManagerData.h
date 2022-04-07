@@ -32,9 +32,14 @@ namespace IED
 			Entry& operator=(const Entry&) = delete;
 			Entry& operator=(Entry&&) = default;
 
-			stl::flag<EntryFlags>                    flags{ EntryFlags::kNone };
-			RE::BSTSmartPointer<BSEffectShaderData>  shaderData;
-			stl::vector<NiPointer<BSShaderProperty>> nodes;
+			struct node_t
+			{
+				NiPointer<BSShaderProperty> prop;
+			};
+
+			stl::flag<EntryFlags>                   flags{ EntryFlags::kNone };
+			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
+			stl::vector<node_t>                     nodes;
 		};
 
 		using data_type = stl::vector<Entry>;
@@ -80,7 +85,8 @@ namespace IED
 
 	enum class ObjectEntryFlags : std::uint32_t
 	{
-		kNone                       = 0,
+		kNone = 0,
+
 		kRefSyncDisableFailedOrphan = 1u << 1,
 		kScbLeft                    = 1u << 2,
 		kSyncReferenceTransform     = 1u << 6,
@@ -160,8 +166,8 @@ namespace IED
 
 				static_assert(
 					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::BaseFlags>> &&
-					stl::underlying((ObjectEntryFlags::kPlaySound)) == stl::underlying((Data::BaseFlags::kPlaySound)) &&
-					stl::underlying((ObjectEntryFlags::kSyncReferenceTransform)) == stl::underlying((Data::BaseFlags::kSyncReferenceTransform)));
+					stl::underlying(ObjectEntryFlags::kPlaySound) == stl::underlying(Data::BaseFlags::kPlaySound) &&
+					stl::underlying(ObjectEntryFlags::kSyncReferenceTransform) == stl::underlying(Data::BaseFlags::kSyncReferenceTransform));
 
 				flags =
 					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
@@ -362,7 +368,7 @@ namespace IED
 		};
 
 	public:
-		using slot_container_type = objectEntrySlot_t[stl::underlying(Data::ObjectSlot::kMax)];
+		using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
@@ -594,9 +600,9 @@ namespace IED
 		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
 
 		stl::vector<monitorNodeEntry_t>                       m_monitorNodes;
+		stl::vector<weapNodeEntry_t>                          m_weapNodes;
 		stl::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
 		stl::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
-		stl::vector<weapNodeEntry_t>                          m_weapNodes;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;

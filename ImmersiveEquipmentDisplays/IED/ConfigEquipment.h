@@ -86,7 +86,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideConditionGroupFlags);
 
-		using equipmentOverrideConditionList_t = std::vector<equipmentOverrideCondition_t>;
+		using equipmentOverrideConditionList_t = stl::boost_vector<equipmentOverrideCondition_t>;
 
 		struct equipmentOverrideConditionGroup_t
 		{
@@ -341,7 +341,7 @@ namespace IED
 			}
 		};
 
-		using equipmentOverrideList_t = std::vector<equipmentOverride_t>;
+		using equipmentOverrideList_t = stl::boost_vector<equipmentOverride_t>;
 
 	}
 }

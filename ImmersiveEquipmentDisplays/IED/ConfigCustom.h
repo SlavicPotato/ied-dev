@@ -81,7 +81,7 @@ namespace IED
 		};
 
 		using configCustomEntryMap_t =
-			std::unordered_map<stl::fixed_string, configCustomEntry_t>;
+			stl::boost_unordered_map<stl::fixed_string, configCustomEntry_t>;
 
 		struct configCustomHolder_t
 		{
@@ -124,7 +124,7 @@ namespace IED
 			}
 		};
 
-		using configCustomPluginMap_t = std::unordered_map<stl::fixed_string, configCustomHolder_t>;
+		using configCustomPluginMap_t = stl::boost_unordered_map<stl::fixed_string, configCustomHolder_t>;
 
 		using configMapCustom_t = configFormMap_t<configCustomPluginMap_t>;
 

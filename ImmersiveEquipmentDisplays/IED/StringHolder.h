@@ -108,6 +108,7 @@ namespace IED
 	{
 	public:
 		static inline constexpr auto FMT_NINODE_IED_GROUP = "IED GROUP [%.8X]";
+		static inline constexpr auto HK_NPC_ROOT          = "NPC Root[Root]";
 
 		[[nodiscard]] inline static constexpr const auto& GetSingleton() noexcept
 		{

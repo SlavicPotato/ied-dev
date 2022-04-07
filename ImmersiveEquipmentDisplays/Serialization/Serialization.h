@@ -210,7 +210,7 @@ namespace IED
 				std::ifstream::in | std::ifstream::binary,
 				_SH_DENYWR);
 
-			if (!ifs.is_open())
+			if (!ifs || !ifs.is_open())
 			{
 				throw std::system_error(
 					errno,
@@ -244,7 +244,7 @@ namespace IED
 						std::ofstream::out | std::ofstream::binary | std::ofstream::trunc,
 						_SH_DENYWR);
 
-					if (!ofs.is_open())
+					if (!ofs || !ofs.is_open())
 					{
 						throw std::system_error(
 							errno,

@@ -116,7 +116,7 @@ namespace IED
 		private:
 			friend class boost::serialization::access;
 
-			using slot_container_type = objectEntrySlot_t[stl::underlying(Data::ObjectSlot::kMax)];
+			using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
 
 		public:
 			enum Serialization : unsigned int
