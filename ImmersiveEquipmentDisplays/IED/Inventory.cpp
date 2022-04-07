@@ -23,8 +23,8 @@ namespace IED
 
 	ItemCandidateCollector::ItemCandidateCollector(
 		Actor* a_actor) :
-		m_isPlayer(a_actor == *g_thePlayer),
-		m_data(a_actor)
+		isPlayer(a_actor == *g_thePlayer),
+		data(a_actor)
 	{
 	}
 
@@ -32,6 +32,16 @@ namespace IED
 		TESContainer&                          a_container,
 		RE::BSSimpleList<InventoryEntryData*>* a_dataList)
 	{
+		if (isPlayer)
+		{
+			data.forms.reserve(1000);
+			data.equippedForms.reserve(20);
+		}
+		else
+		{
+			data.forms.reserve(100);
+		}
+
 		for (auto& e : a_container)
 		{
 			Process(e);
@@ -80,20 +90,26 @@ namespace IED
 			return;
 		}
 
+		auto type      = ItemData::GetItemType(form);
 		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& entry = m_data.forms.try_emplace(
-									  form->formID,
-									  form,
-									  ItemData::GetItemType(form),
-									  extraType)
+		auto& entry = data.forms.try_emplace(
+									form->formID,
+									form,
+									type,
+									extraType)
 		                  .first->second;
 
 		entry.sharedCount = (entry.count += a_entry->count);
 
 		if (extraType < Data::ObjectTypeExtra::kMax)
 		{
-			m_data.typeCount[stl::underlying(extraType)] += a_entry->count;
+			data.typeCount[stl::underlying(extraType)] += a_entry->count;
+		}
+
+		if (type < Data::ObjectType::kMax)
+		{
+			slotResults[stl::underlying(type)].reserve++;
 		}
 
 		return;
@@ -116,18 +132,23 @@ namespace IED
 		auto type      = ItemData::GetItemType(form);
 		auto extraType = ItemData::GetItemTypeExtra(form);
 
-		auto& entry = m_data.forms.try_emplace(
-									  form->formID,
-									  form,
-									  type,
-									  extraType)
+		auto& entry = data.forms.try_emplace(
+									form->formID,
+									form,
+									type,
+									extraType)
 		                  .first->second;
 
 		entry.sharedCount = (entry.count += a_entryData->countDelta);
 
 		if (extraType < Data::ObjectTypeExtra::kMax)
 		{
-			m_data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
+			data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
+		}
+
+		if (type < Data::ObjectType::kMax)
+		{
+			slotResults[stl::underlying(type)].reserve++;
 		}
 
 		if (auto extendDataList = a_entryData->GetDataList())
@@ -163,7 +184,7 @@ namespace IED
 					}
 				}
 
-				if (m_isPlayer && !entry.favorited)
+				if (isPlayer && !entry.favorited)
 				{
 					if (presence->HasType(ExtraHotkey::EXTRA_DATA))
 					{
@@ -194,7 +215,7 @@ namespace IED
 
 				if (slot < Data::ObjectSlotExtra::kMax)
 				{
-					m_data.equippedTypeFlags[stl::underlying(slot)] |= Data::InventoryPresenceFlags::kSet;
+					data.equippedTypeFlags[stl::underlying(slot)] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 
@@ -206,19 +227,24 @@ namespace IED
 
 				if (slotLeft < Data::ObjectSlotExtra::kMax)
 				{
-					m_data.equippedTypeFlags[stl::underlying(slotLeft)] |= Data::InventoryPresenceFlags::kSet;
+					data.equippedTypeFlags[stl::underlying(slotLeft)] |= Data::InventoryPresenceFlags::kSet;
 				}
 			}
 
-			m_data.equippedForms.emplace_back(std::addressof(entry));
+			data.equippedForms.emplace_back(std::addressof(entry));
 		}
 	}
 
 	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
 	{
-		bool checkFav = m_isPlayer && a_checkFav;
+		for (auto& e : slotResults)
+		{
+			e.items.reserve(e.reserve);
+		}
 
-		for (const auto& e : m_data.forms)
+		bool checkFav = isPlayer && a_checkFav;
+
+		for (const auto& e : data.forms)
 		{
 			if (e.second.type >= ObjectType::kMax)
 			{
@@ -249,7 +275,7 @@ namespace IED
 
 			auto form = e.second.form;
 
-			if (m_isPlayer && !form->IsPlayable())
+			if (isPlayer && !form->IsPlayable())
 			{
 				continue;
 			}
@@ -286,21 +312,21 @@ namespace IED
 				break;
 			}
 
-			auto& entry = m_slotResults[stl::underlying(e.second.type)];
+			auto& entry = slotResults[stl::underlying(e.second.type)];
 
-			entry.m_items.emplace_back(
+			entry.items.emplace_back(
 				std::addressof(e.second),
 				static_cast<std::uint32_t>(extra),
 				rating);
 		}
 
-		for (auto& e : m_slotResults)
+		for (auto& e : slotResults)
 		{
 			// apparently this is generally faster than inserting into a vector with upper_bound when there's lots of entries
 
 			std::sort(
-				e.m_items.begin(),
-				e.m_items.end(),
+				e.items.begin(),
+				e.items.end(),
 				[](auto& a_lhs, auto& a_rhs) {
 					return a_lhs.rating > a_rhs.rating;
 				});

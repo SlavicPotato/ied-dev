@@ -21,7 +21,8 @@ namespace IED
 
 		using storage_type = stl::vector<item_t>;
 
-		storage_type m_items;
+		storage_type items;
+		std::size_t  reserve{ 0 };
 	};
 
 	struct ItemCandidateCollector
@@ -41,16 +42,16 @@ namespace IED
 
 		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
 		{
-			return m_slotResults[stl::underlying(a_type)].m_items;
+			return slotResults[stl::underlying(a_type)].items;
 		}
 
-		Data::collectorData_t                                                   m_data;
-		std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)> m_slotResults;
+		Data::collectorData_t                                                   data;
+		std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)> slotResults;
 
 	private:
 		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);
 
-		bool m_isPlayer;
+		bool isPlayer;
 	};
 
 }
