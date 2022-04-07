@@ -6,6 +6,8 @@
 #include <ext/GameCommon.h>
 #include <ext/ITasks.h>
 
+#include <ext/hkaSkeleton.h>
+
 #include <skse64/NiExtraData.h>
 
 namespace IED
@@ -31,6 +33,15 @@ namespace IED
 			std::uint16_t p1;
 			std::uint16_t p2;
 		};
+
+		struct hkaGetSkeletonNodeResult
+		{
+			NiAVObject*   object;  // 00
+			std::uint32_t unk08;   // 08 - index?
+			std::uint32_t pad1C;   // 1C
+		};
+
+		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
 
 		class ShadowSceneNode;
 
@@ -79,6 +90,11 @@ namespace IED
 		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor* a_actor, NiAVObject* a_object);
 
 		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
+
+		typedef bool (*hkaLookupSkeletonNode_t)(
+			NiNode*                   a_root,
+			const BSFixedString&      a_name,
+			hkaGetSkeletonNodeResult& a_result);
 
 		// typedef void (*playSound_t)(const char* a_editorID);
 
@@ -165,6 +181,8 @@ namespace IED
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
+		inline static const auto fhkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732, 0, 0);
+
 		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
 		void Patch_RemoveAllBipedParts();
@@ -174,8 +192,7 @@ namespace IED
 		void Hook_Armor_Update();
 		void Patch_SetWeapAdjAnimVar();
 		void Patch_CreateWeaponNodes();
-		void Patch_AdjustSkip_SE();
-		void Patch_AdjustSkip_AE();
+		void Patch_hkaSkipWeaponNodes();
 		void Hook_ToggleFav();
 		void Hook_ProcessEffectShaders();
 		void Patch_CorpseScatter();
@@ -196,8 +213,7 @@ namespace IED
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
 		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 		static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
-
-		static bool AdjustSkip_Test(const BSFixedString& a_name);
+		static bool           hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
@@ -211,6 +227,7 @@ namespace IED
 		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
 		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
 		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
+		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };

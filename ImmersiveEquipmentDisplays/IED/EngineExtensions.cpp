@@ -65,14 +65,7 @@ namespace IED
 
 		if (m_conf.weaponAdjustDisable)
 		{
-			if (IAL::IsAE())
-			{
-				Patch_AdjustSkip_AE();
-			}
-			else
-			{
-				Patch_AdjustSkip_SE();
-			}
+			Patch_hkaSkipWeaponNodes();
 		}
 
 		if (a_config->m_immediateFavUpdate)
@@ -288,14 +281,12 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::Patch_AdjustSkip_SE()
+	void EngineExtensions::Patch_hkaSkipWeaponNodes()
 	{
-		auto addr = m_adjustSkip_a + 0x91;
-
 		ASSERT_STR(
 			Patching::validate_mem(
-				addr,
-				{ 0x48, 0x8B, 0x43, 0x70, 0x48, 0x85, 0xC0 }),
+				m_hkaLookupSkeletonBones_a,
+				{ 0xE8 }),
 			mv_failstr);
 
 		struct Assembly : JITASM::JITASM
@@ -304,110 +295,26 @@ namespace IED
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
 				Xbyak::Label callLabel;
-				Xbyak::Label retnContinueLabel;
-				Xbyak::Label retnSkipLabel;
-				Xbyak::Label skip;
+				Xbyak::Label retnLabel;
 
-				lea(rcx, qword[rbx + 0x78]);
+				mov(r9, IAL::IsAE() ? r13 : r15);
 				call(ptr[rip + callLabel]);
-				test(al, al);
-				je(skip);
+				jmp(ptr[rip + retnLabel]);
 
-				mov(rax, qword[rbx + 0x70]);
-				test(rax, rax);
-
-				jmp(ptr[rip + retnContinueLabel]);
-				L(skip);
-				jmp(ptr[rip + retnSkipLabel]);
-
-				L(retnContinueLabel);
-				dq(a_targetAddr + 0x7);
-
-				L(retnSkipLabel);
-				dq(a_targetAddr + 0xE5);
+				L(retnLabel);
+				dq(a_targetAddr + 0x5);
 
 				L(callLabel);
-				dq(std::uintptr_t(AdjustSkip_Test));
+				dq(std::uintptr_t(hkaLookupSkeletonNode_Hook));
 			}
 		};
 
 		LogPatchBegin();
 		{
-			Assembly code(addr);
+			Assembly code(m_hkaLookupSkeletonBones_a);
 
-			ISKSE::GetBranchTrampoline().Write6Branch(
-				addr,
-				code.get());
-		}
-		LogPatchEnd();
-	}
-
-	void EngineExtensions::Patch_AdjustSkip_AE()
-	{
-		auto addr = m_adjustSkip_a + 0x97;
-
-		ASSERT_STR(
-			Patching::validate_mem(
-				addr,
-				{ 0x48, 0x8B, 0x42, 0x70, 0x48, 0x85, 0xC0 }),
-			mv_failstr);
-
-		struct Assembly : JITASM::JITASM
-		{
-			Assembly(std::uintptr_t a_targetAddr) :
-				JITASM(ISKSE::GetLocalTrampoline())
-			{
-				Xbyak::Label callLabel;
-				Xbyak::Label retnContinueLabel;
-				Xbyak::Label retnSkipLabel;
-				Xbyak::Label skip;
-
-				push(rdx);
-				push(r8);
-				push(r9);
-				push(r10);
-				push(r11);
-				sub(rsp, 0x28);
-
-				lea(rcx, qword[rdx + 0x78]);
-
-				call(ptr[rip + callLabel]);
-
-				add(rsp, 0x28);
-				pop(r11);
-				pop(r10);
-				pop(r9);
-				pop(r8);
-				pop(rdx);
-
-				test(al, al);
-				je(skip);
-
-				mov(rax, qword[rdx + 0x70]);
-				test(rax, rax);
-
-				jmp(ptr[rip + retnContinueLabel]);
-
-				L(skip);
-				jmp(ptr[rip + retnSkipLabel]);
-
-				L(retnContinueLabel);
-				dq(a_targetAddr + 0x7);
-
-				L(retnSkipLabel);
-				dq(a_targetAddr + 0x179);
-
-				L(callLabel);
-				dq(std::uintptr_t(AdjustSkip_Test));
-			}
-		};
-
-		LogPatchBegin();
-		{
-			Assembly code(addr);
-
-			ISKSE::GetBranchTrampoline().Write6Branch(
-				addr,
+			ISKSE::GetBranchTrampoline().Write5Branch(
+				m_hkaLookupSkeletonBones_a,
 				code.get());
 		}
 		LogPatchEnd();
@@ -705,24 +612,32 @@ namespace IED
 		return result;
 	}
 
-	bool EngineExtensions::AdjustSkip_Test(const BSFixedString& a_name)
+	bool EngineExtensions::hkaLookupSkeletonNode_Hook(
+		NiNode*                   a_root,
+		const BSFixedString&      a_name,
+		hkaGetSkeletonNodeResult& a_result,
+		const RE::hkaSkeleton&    a_hkaSkeleton)
 	{
-		auto sh = m_Instance.m_controller->GetBSStringHolder();
+		if (a_hkaSkeleton.name &&
+		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) == 0)
+		{
+			auto sh = m_Instance.m_controller->GetBSStringHolder();
 
-		if (a_name == sh->m_weaponAxe ||
-		    a_name == sh->m_weaponMace ||
-		    a_name == sh->m_weaponSword ||
-		    a_name == sh->m_weaponDagger ||
-		    a_name == sh->m_weaponBack ||
-		    a_name == sh->m_weaponBow ||
-		    a_name == sh->m_quiver)
-		{
-			return false;
+			if (a_name == sh->m_weaponAxe ||
+			    a_name == sh->m_weaponMace ||
+			    a_name == sh->m_weaponSword ||
+			    a_name == sh->m_weaponDagger ||
+			    a_name == sh->m_weaponBack ||
+			    a_name == sh->m_weaponBow ||
+			    a_name == sh->m_quiver)
+			{
+				a_result.object = nullptr;
+				a_result.unk08  = std::numeric_limits<std::uint32_t>::max();
+				return false;
+			}
 		}
-		else
-		{
-			return true;
-		}
+
+		return fhkaGetSkeletonNode(a_root, a_name, a_result);
 	}
 
 	void EngineExtensions::CreateWeaponNodes_Hook(
