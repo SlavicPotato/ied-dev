@@ -130,7 +130,7 @@ namespace IED
 
 				return store.slot.GetActorCopy(
 					a_handle,
-					it->second.GetBase(),
+					it->second.GetBaseOrTemplate(),
 					it->second.GetRace());
 			}
 			else

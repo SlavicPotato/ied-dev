@@ -506,7 +506,7 @@ namespace IED
 
 		void ApplyActorState(const Data::actorStateEntry_t& a_data);
 
-		[[nodiscard]] bool IsActorNPC(Game::FormID a_npc) const;
+		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;

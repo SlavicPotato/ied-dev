@@ -6,7 +6,13 @@ namespace IED
 {
 	struct npcInfoEntry_t
 	{
+		inline constexpr auto& get_npc_or_template() const noexcept
+		{
+			return templ ? templ : form;
+		}
+
 		Game::FormID  form;
+		Game::FormID  templ;
 		std::string   name;
 		bool          active{ false };
 		Game::FormID  race;
@@ -29,7 +35,7 @@ namespace IED
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 
-		inline auto GetRace() const noexcept
+		inline Game::FormID GetRace() const noexcept
 		{
 			if (race)
 			{
@@ -41,9 +47,14 @@ namespace IED
 			}
 		}
 
-		inline auto GetBase() const noexcept
+		inline Game::FormID GetBase() const noexcept
 		{
 			return npc ? npc->form : 0;
+		}
+		
+		inline Game::FormID GetBaseOrTemplate() const noexcept
+		{
+			return npc ? npc->get_npc_or_template() : 0;
 		}
 
 		inline constexpr auto GetSex() const noexcept

@@ -68,13 +68,17 @@ namespace IED
 		static inline constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER  = "pFireENBLight01-Emitter";
 		static inline constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
 
-		//BSStringHolder();
 		BSStringHolder() = default;
 
 		BSStringHolder(const BSStringHolder&) = delete;
 		BSStringHolder(BSStringHolder&&)      = delete;
 		BSStringHolder& operator=(const BSStringHolder&) = delete;
 		BSStringHolder& operator=(BSStringHolder&&) = delete;
+
+		/*inline constexpr auto& GetSheathNodes() const noexcept
+		{
+			return m_sheathNodes;
+		}*/
 
 		BSFixedString m_npcroot{ NINODE_NPCROOT };
 		BSFixedString m_scb{ NINODE_SCB };
@@ -101,7 +105,7 @@ namespace IED
 		BSFixedString m_enbFireLightEmitter{ NINODE_ENB_FIRE_LIGHT_EMITTER };
 		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
 
-		//stl::set<BSFixedString> m_sheathNodes;
+		//stl::set_sa<BSFixedString> m_sheathNodes;
 	};
 
 	class StringHolder

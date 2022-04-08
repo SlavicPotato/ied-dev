@@ -84,7 +84,10 @@ namespace IED
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
-				Game::FormID) const override;
+				Game::FormID a_handle) const override;
+
+			virtual Data::configNodeOverrideHolder_t*
+				GetConfigHolder(Game::FormID a_handle) const override;
 
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 

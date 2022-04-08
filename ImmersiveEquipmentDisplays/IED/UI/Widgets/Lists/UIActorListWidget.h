@@ -177,6 +177,12 @@ namespace IED
 			if (it != actorInfo.end())
 			{
 				ImGui::Text("%s:", LS(CommonStrings::Base));
+
+				if (it->second.npc && it->second.npc->templ)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Template));
+				}
+
 				ImGui::Text("%s:", LS(CommonStrings::Sex));
 				ImGui::Text("%s:", LS(CommonStrings::Race));
 				ImGui::Text("%s:", LS(CommonStrings::Weight));
@@ -209,6 +215,13 @@ namespace IED
 						"%.8X [%s]",
 						it->second.npc->form.get(),
 						std::bitset<8>(it->second.npc->flags).to_string().c_str());
+
+					if (it->second.npc->templ)
+					{
+						ImGui::TextWrapped(
+							"%.8X",
+							it->second.npc->templ.get());
+					}
 
 					ImGui::TextWrapped(
 						"%s",

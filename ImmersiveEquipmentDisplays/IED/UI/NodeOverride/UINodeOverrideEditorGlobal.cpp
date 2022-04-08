@@ -232,6 +232,14 @@ namespace IED
 				store.settings.data.ui.transformEditor.globalType);
 		}
 
+		Data::configNodeOverrideHolder_t* UINodeOverrideEditorGlobal::GetConfigHolder(int) const
+		{
+			auto& store = m_controller.GetConfigStore();
+
+			return std::addressof(store.active.transforms.GetGlobalData(
+				store.settings.data.ui.transformEditor.globalType));
+		}
+
 		UIPopupQueue& UINodeOverrideEditorGlobal::GetPopupQueue_ProfileBase() const
 		{
 			return m_controller.UIGetPopupQueue();

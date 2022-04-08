@@ -13,6 +13,7 @@ namespace IED
 	{
 		Actor* const                                                 actor;
 		TESNPC* const                                                npc;
+		TESNPC* const                                                npcOrTemplate;
 		TESRace* const                                               race;
 		mutable stl::optional<TESFurniture*>                         furniture;
 		mutable stl::optional<Game::ObjectRefHandle>                 furnHandle;

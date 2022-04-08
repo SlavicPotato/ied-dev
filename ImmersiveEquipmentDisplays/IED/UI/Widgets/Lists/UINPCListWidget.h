@@ -82,13 +82,15 @@ namespace IED
 					continue;
 				}
 
+				auto& id = e.second->get_npc_or_template();
+
 				stl::snprintf(
 					m_listBuf1,
 					"[%.8X] %s",
-					e.first.get(),
+					id.get(),
 					e.second->name.c_str());
 
-				m_listData.try_emplace(e.first, m_listBuf1);
+				m_listData.try_emplace(id.get(), m_listBuf1);
 			}
 
 			if (m_listData.empty())
@@ -109,9 +111,9 @@ namespace IED
 					{
 						if (it->second.npc)
 						{
-							if (m_listData.contains(it->second.npc->form))
+							if (m_listData.contains(it->second.npc->get_npc_or_template()))
 							{
-								if (ListSetCurrentItem(it->second.npc->form))
+								if (ListSetCurrentItem(it->second.npc->get_npc_or_template()))
 								{
 									return;
 								}
@@ -181,6 +183,10 @@ namespace IED
 			auto it = npcInfo.find(a_entry.handle);
 			if (it != npcInfo.end())
 			{
+				if (it->second->templ)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Template));
+				}
 				ImGui::Text("%s:", LS(CommonStrings::Flags));
 				ImGui::Text("%s:", LS(CommonStrings::Sex));
 				ImGui::Text("%s:", LS(CommonStrings::Race));
@@ -193,6 +199,13 @@ namespace IED
 
 			if (it != npcInfo.end())
 			{
+				if (it->second->templ)
+				{
+					ImGui::TextWrapped(
+						"%.8X",
+						it->second->templ.get());
+				}
+
 				ImGui::TextWrapped(
 					"%s",
 					std::bitset<8>(it->second->flags).to_string().c_str());

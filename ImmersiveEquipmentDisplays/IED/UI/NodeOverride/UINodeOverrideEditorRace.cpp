@@ -264,6 +264,17 @@ namespace IED
 			return data.try_emplace(a_handle).first->second;
 		}
 
+		Data::configNodeOverrideHolder_t* UINodeOverrideEditorRace::GetConfigHolder(Game::FormID a_handle) const
+		{
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.transforms.GetRaceData();
+
+			auto it = data.find(a_handle);
+
+			return it != data.end() ? std::addressof(it->second) : nullptr;
+		}
+
 		UIPopupQueue& UINodeOverrideEditorRace::GetPopupQueue_ProfileBase() const
 		{
 			return m_controller.UIGetPopupQueue();

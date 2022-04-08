@@ -76,6 +76,9 @@ namespace IED
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
 				int) const override;
 
+			virtual Data::configNodeOverrideHolder_t*
+				GetConfigHolder(int) const override;
+
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 
 			virtual UIPopupQueue& GetPopupQueue() override;

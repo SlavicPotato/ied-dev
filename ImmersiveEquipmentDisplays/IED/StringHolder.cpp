@@ -20,6 +20,7 @@ namespace IED
 
 	/*BSStringHolder::BSStringHolder()
 	{
+		m_sheathNodes.reserve(7);
 		m_sheathNodes.emplace(NINODE_AXE);
 		m_sheathNodes.emplace(NINODE_MACE);
 		m_sheathNodes.emplace(NINODE_SWORD);

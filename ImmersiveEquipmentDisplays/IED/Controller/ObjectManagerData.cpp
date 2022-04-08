@@ -222,7 +222,7 @@ namespace IED
 		}
 	}
 
-	bool ActorObjectHolder::IsActorNPC(Game::FormID a_npc) const
+	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const
 	{
 		auto handle = GetHandle();
 
@@ -233,7 +233,7 @@ namespace IED
 			{
 				if (auto npc = actor->GetActorBase())
 				{
-					return (npc->formID == a_npc);
+					return (npc->GetTemplateOrThis()->formID == a_npc);
 				}
 			}
 		}

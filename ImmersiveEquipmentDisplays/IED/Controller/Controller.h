@@ -80,6 +80,7 @@ namespace IED
 			NiPointer<Actor>         actor;
 			Game::ObjectRefHandle    handle;
 			TESNPC*                  npc;
+			TESNPC*                  npcOrTemplate;
 			TESRace*                 race;
 			NiNode*                  root;
 			NiNode*                  npcRoot;

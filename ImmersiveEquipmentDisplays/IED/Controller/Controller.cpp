@@ -689,7 +689,7 @@ namespace IED
 
 			for (auto& e : m_objects)
 			{
-				if (e.second.IsActorNPC(a_npc))
+				if (e.second.IsActorNPCOrTemplate(a_npc))
 				{
 					EvaluateImpl(e.second, a_flags);
 				}
@@ -844,7 +844,7 @@ namespace IED
 
 		for (auto& e : m_objects)
 		{
-			if (e.second.IsActorNPC(a_npc))
+			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
 				if (a_noDefer)
 				{
@@ -969,7 +969,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->formID == a_npc)
+					if (npc->GetTemplateOrThis()->formID == a_npc)
 					{
 						ActorResetImpl(
 							e.second,
@@ -1042,7 +1042,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->formID == a_npc)
+					if (npc->GetTemplateOrThis()->formID == a_npc)
 					{
 						ActorResetImpl(
 							e.second,
@@ -1129,16 +1129,18 @@ namespace IED
 			return;
 		}
 
-		auto npc = a_holder.m_actor->GetActorBase();
-		if (!npc)
+		auto anpc = a_holder.m_actor->GetActorBase();
+		if (!anpc)
 		{
 			return;
 		}
 
-		/*if (npc->formID.IsTemporary())
+		auto npc = anpc->GetTemplateOrThis();
+
+		if (npc->formID.IsTemporary())
 		{
 			return;
-		}*/
+		}
 
 		if (m_config.active
 		        .transforms.GetActorData()
@@ -1315,7 +1317,7 @@ namespace IED
 
 			for (auto& e : m_objects)
 			{
-				if (e.second.IsActorNPC(a_npc))
+				if (e.second.IsActorNPCOrTemplate(a_npc))
 				{
 					UpdateTransformSlotImpl(e.second, a_slot);
 				}
@@ -1377,7 +1379,7 @@ namespace IED
 
 			for (auto& e : m_objects)
 			{
-				if (e.second.IsActorNPC(a_npc))
+				if (e.second.IsActorNPCOrTemplate(a_npc))
 				{
 					AttachSlotNodeImpl(
 						e.second,
@@ -1480,7 +1482,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->formID == a_npc)
+					if (npc->GetTemplateOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -1559,7 +1561,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->formID == a_npc)
+					if (npc->GetTemplateOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -1632,7 +1634,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->formID == a_npc)
+					if (npc->GetTemplateOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -2595,7 +2597,7 @@ namespace IED
 
 				auto entry = m_config.active.slot.GetActor(
 					a_params.actor->formID,
-					a_params.npc->formID,
+					a_params.npcOrTemplate->formID,
 					a_params.race->formID,
 					slot,
 					hc);
@@ -3401,7 +3403,7 @@ namespace IED
 
 		auto& npcConfig = cstore.GetNPCData();
 
-		if (auto it = npcConfig.find(a_params.npc->formID);
+		if (auto it = npcConfig.find(a_params.npcOrTemplate->formID);
 		    it != npcConfig.end())
 		{
 			ProcessCustomMap(
@@ -3597,6 +3599,7 @@ namespace IED
 			{ a_actor },
 			a_actor,
 			nrp->npc,
+			nrp->npc->GetTemplateOrThis(),
 			nrp->race
 		};
 
@@ -3743,6 +3746,7 @@ namespace IED
 			*this,
 			a_actor,
 			a_npc,
+			a_npc->GetTemplateOrThis(),
 			a_race
 		};
 
@@ -3752,7 +3756,7 @@ namespace IED
 		{
 			auto r = m_config.active.transforms.GetActorPlacement(
 				a_actor->formID,
-				a_npc->formID,
+				params.npcOrTemplate->formID,
 				a_race->formID,
 				e.nodeName,
 				hc);
@@ -3771,7 +3775,7 @@ namespace IED
 		{
 			auto r = m_config.active.transforms.GetActorTransform(
 				a_actor->formID,
-				a_npc->formID,
+				params.npcOrTemplate->formID,
 				a_race->formID,
 				e.first,
 				hc);
@@ -4034,7 +4038,7 @@ namespace IED
 
 			auto config = m_config.active.slot.GetActor(
 				info->actor->formID,
-				info->npc->formID,
+				info->npcOrTemplate->formID,
 				info->race->formID,
 				a_slot,
 				hc);
@@ -4176,6 +4180,7 @@ namespace IED
 		CommonParams params{
 			a_info.actor,
 			a_info.npc,
+			a_info.npcOrTemplate,
 			a_info.race
 		};
 
@@ -4206,6 +4211,7 @@ namespace IED
 		CommonParams params{
 			a_info.actor,
 			a_info.npc,
+			a_info.npcOrTemplate,
 			a_info.race
 		};
 
@@ -4247,7 +4253,7 @@ namespace IED
 	{
 		for (auto& e : m_objects)
 		{
-			if (e.second.IsActorNPC(a_npc))
+			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
 				UpdateCustomImpl(e.second, a_class, a_pkey, a_vkey, a_func);
 			}
@@ -4291,7 +4297,7 @@ namespace IED
 	{
 		for (auto& e : m_objects)
 		{
-			if (e.second.IsActorNPC(a_npc))
+			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
 				UpdateCustomImpl(e.second, a_class, a_pkey, a_func);
 			}
@@ -4332,7 +4338,7 @@ namespace IED
 	{
 		for (auto& e : m_objects)
 		{
-			if (e.second.IsActorNPC(a_npc))
+			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
 				UpdateCustomImpl(e.second, a_class, a_func);
 			}
@@ -4395,7 +4401,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info->npc->formID);
+				auto  it      = cfgdata.find(info->npcOrTemplate->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomImpl(
@@ -4485,7 +4491,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info->npc->formID);
+				auto  it      = cfgdata.find(info->npcOrTemplate->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(*info, it->second, data, a_pkey, a_func);
@@ -4559,7 +4565,7 @@ namespace IED
 		case ConfigClass::NPC:
 			{
 				auto& cfgdata = conf.GetNPCData();
-				auto  it      = cfgdata.find(info->npc->formID);
+				auto  it      = cfgdata.find(info->npcOrTemplate->formID);
 				if (it != cfgdata.end())
 				{
 					UpdateCustomAllImpl(*info, it->second, data, a_func);
@@ -4808,7 +4814,7 @@ namespace IED
 
 				auto config = m_config.active.slot.GetActor(
 					info->actor->formID,
-					info->npc->formID,
+					info->npcOrTemplate->formID,
 					info->race->formID,
 					a_slot,
 					hc);
@@ -4994,6 +5000,7 @@ namespace IED
 			actor,
 			handle,
 			npc,
+			npc->GetTemplateOrThis(),
 			race,
 			root,
 			npcroot,

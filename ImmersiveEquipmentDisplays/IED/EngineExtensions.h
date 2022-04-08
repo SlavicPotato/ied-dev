@@ -180,7 +180,7 @@ namespace IED
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
-		inline static const auto fhkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732, 0, 0);
+		inline static const auto fhkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 
 		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
@@ -211,7 +211,7 @@ namespace IED
 		static bool           SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
 		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
-		static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
+		//static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
 		static bool           hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);

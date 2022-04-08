@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ConfigStore.h"
-#include "ObjectManagerData.h"
+#include "IED/ActorInfoEntry.h"
+#include "IED/ConfigStore.h"
 
-#include "../ActorInfoEntry.h"
+#include "ObjectManagerData.h"
 
 namespace IED
 {

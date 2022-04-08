@@ -162,6 +162,10 @@ namespace IED
 				T                        a_handle,
 				entryNodeOverrideData_t& a_data);
 
+			virtual bool DrawExtraInfoAndWarnings(
+				T                              a_handle,
+				const entryNodeOverrideData_t& a_data) const;
+
 			virtual void DrawExtraEditorPanelSettings() override;
 
 			void DrawItemFilter();
@@ -443,6 +447,12 @@ namespace IED
 			DrawItemFilter();
 
 			ImGui::Separator();
+
+			if (DrawExtraInfoAndWarnings(a_handle, a_data))
+			{
+				ImGui::Separator();
+			}
+
 			ImGui::Spacing();
 
 			auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
@@ -495,6 +505,14 @@ namespace IED
 			T                        a_handle,
 			entryNodeOverrideData_t& a_data)
 		{
+		}
+
+		template <class T>
+		bool UINodeOverrideEditorWidget<T>::DrawExtraInfoAndWarnings(
+			T                              a_handle,
+			const entryNodeOverrideData_t& a_data) const
+		{
+			return false;
 		}
 
 		template <class T>

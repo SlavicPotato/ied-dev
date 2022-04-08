@@ -165,7 +165,7 @@ namespace IED
 
 				return store.active.transforms.GetActorCopy(
 					a_handle,
-					it->second.GetBase(),
+					it->second.GetBaseOrTemplate(),
 					it->second.GetRace());
 			}
 			else
@@ -332,6 +332,17 @@ namespace IED
 			result.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 
 			return result;
+		}
+
+		Data::configNodeOverrideHolder_t* UINodeOverrideEditorActor::GetConfigHolder(Game::FormID a_handle) const
+		{
+			auto& data = m_controller
+			                       .GetConfigStore()
+			                       .active.transforms.GetActorData();
+
+			auto it = data.find(a_handle);
+
+			return it != data.end() ? std::addressof(it->second) : nullptr;
 		}
 
 		UIPopupQueue& UINodeOverrideEditorActor::GetPopupQueue_ProfileBase() const

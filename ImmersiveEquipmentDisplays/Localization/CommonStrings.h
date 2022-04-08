@@ -180,5 +180,6 @@ namespace IED
 		Count        = 251,
 		Cell         = 252,
 		Skin         = 253,
+		Template     = 254,
 	};
 }

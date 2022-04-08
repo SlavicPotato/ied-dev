@@ -23,7 +23,7 @@ namespace IED
 		{
 			a_out.race = {};
 		}
-		
+
 		if (auto worldspace = a_actor->GetWorldspace())
 		{
 			a_out.worldspace = worldspace->formID;
@@ -32,7 +32,7 @@ namespace IED
 		{
 			a_out.worldspace = {};
 		}
-		
+
 		if (auto cell = a_actor->GetParentCell())
 		{
 			a_out.cell = cell->formID;
@@ -41,7 +41,7 @@ namespace IED
 		{
 			a_out.cell = {};
 		}
-		
+
 		if (auto skin = a_actor->GetSkin())
 		{
 			a_out.skin = skin->formID;
@@ -56,14 +56,10 @@ namespace IED
 
 		a_out.ts = IPerfCounter::Query();
 
-		auto npc = a_actor->baseForm ?
-		               a_actor->baseForm->As<TESNPC>() :
-                       nullptr;
-
-		if (npc)
-		{
-			auto it = m_npcInfo.find(npc->formID);
-			if (it == m_npcInfo.end())
+		if (auto npc = a_actor->GetActorBase())
+		{			
+			if (auto it = m_npcInfo.find(npc->formID); 
+				it == m_npcInfo.end())
 			{
 				a_out.npc = std::make_unique<npcInfoEntry_t>();
 
@@ -80,6 +76,26 @@ namespace IED
 
 				a_out.npc = it->second;
 			}
+
+			if (auto templ = npc->GetTemplate())
+			{
+				if (auto it = m_npcInfo.find(templ->formID); 
+					it == m_npcInfo.end())
+				{
+					auto t = std::make_unique<npcInfoEntry_t>();
+
+					FillNPCInfoEntry(templ, *t);
+
+					m_npcInfo.emplace(templ->formID, std::move(t));
+				}
+				else
+				{
+					if (a_updateNPC)
+					{
+						FillNPCInfoEntry(templ, *it->second);
+					}
+				}
+			}
 		}
 
 		if (a_out.npc)
@@ -92,8 +108,11 @@ namespace IED
 		TESNPC*         a_npc,
 		npcInfoEntry_t& a_out)
 	{
+		auto templ = a_npc->GetTemplate();
+
 		a_out.name   = IFormCommon::GetFormName(a_npc);
 		a_out.form   = a_npc->formID;
+		a_out.templ  = templ ? templ->formID : 0;
 		a_out.flags  = a_npc->flags;
 		a_out.female = a_npc->GetSex() == 1;
 		a_out.race   = a_npc->race.race ?

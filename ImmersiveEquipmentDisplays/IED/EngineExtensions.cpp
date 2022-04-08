@@ -588,7 +588,7 @@ namespace IED
 		m_Instance.m_controller->ProcessEffectShaders();
 	}
 
-	std::uint32_t EngineExtensions::Biped_QueueAttachHavok_Hook(
+	/*std::uint32_t EngineExtensions::Biped_QueueAttachHavok_Hook(
 		TESObjectREFR* a_actor,
 		BIPED_OBJECT   a_slot)
 	{
@@ -611,7 +611,7 @@ namespace IED
 		}
 
 		return result;
-	}
+	}*/
 
 	bool EngineExtensions::hkaLookupSkeletonNode_Hook(
 		NiNode*                   a_root,
@@ -622,19 +622,20 @@ namespace IED
 		if (a_hkaSkeleton.name &&
 		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) == 0)
 		{
-			auto sh = m_Instance.m_controller->GetBSStringHolder();
-
-			if (a_name == sh->m_weaponAxe ||
-			    a_name == sh->m_weaponMace ||
-			    a_name == sh->m_weaponSword ||
-			    a_name == sh->m_weaponDagger ||
-			    a_name == sh->m_weaponBack ||
-			    a_name == sh->m_weaponBow ||
-			    a_name == sh->m_quiver)
+			if (auto sh = m_Instance.m_controller->GetBSStringHolder())
 			{
-				a_result.root  = nullptr;
-				a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
-				return false;
+				if (a_name == sh->m_weaponAxe ||
+				    a_name == sh->m_weaponMace ||
+				    a_name == sh->m_weaponSword ||
+				    a_name == sh->m_weaponDagger ||
+				    a_name == sh->m_weaponBack ||
+				    a_name == sh->m_weaponBow ||
+				    a_name == sh->m_quiver)
+				{
+					a_result.root  = nullptr;
+					a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
+					return false;
+				}
 			}
 		}
 
