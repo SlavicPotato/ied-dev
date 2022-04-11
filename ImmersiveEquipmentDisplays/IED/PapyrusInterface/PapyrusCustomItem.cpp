@@ -241,7 +241,7 @@ namespace IED
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					tmp[i] = std::clamp(Math::zero_nan(tmp[i]), -5000.0f, 5000.0f);
+					tmp[i] = std::clamp(stl::zero_nan(tmp[i]), -5000.0f, 5000.0f);
 				}
 
 				return SetItemPositionImpl(
@@ -283,7 +283,7 @@ namespace IED
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					tmp[i] = std::clamp(Math::zero_nan(tmp[i]), -360.0f, 360.0f) * (pi / 180.0f);
+					tmp[i] = std::clamp(stl::zero_nan(tmp[i]), -360.0f, 360.0f) * (pi / 180.0f);
 				}
 
 				return SetItemRotationImpl(
@@ -321,7 +321,7 @@ namespace IED
 					keys.key,
 					keys.name,
 					GetSex(a_female),
-					std::clamp(Math::zero_nan(a_scale), 0.01f, 100.0f));
+					std::clamp(stl::zero_nan(a_scale), 0.01f, 100.0f));
 			}
 
 			template <class T>

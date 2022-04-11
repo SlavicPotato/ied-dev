@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 3
+	return 5
 EndFunction
 
 Int Function GetVersion() native global
@@ -79,6 +79,14 @@ Bool Function SetItemLoadChanceActor(Actor akActor, string asPlugin, string asNa
 Bool Function SetItemLoadChanceNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable, float afPercentChance) native global
 Bool Function SetItemLoadChanceRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEnable, float afPercentChance) native global
 
+Bool Function SetItemAnimationEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+Bool Function SetItemAnimationEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+Bool Function SetItemAnimationEnabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+
+Bool Function SetItemAnimationSequenceActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
+Bool Function SetItemAnimationSequenceNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
+Bool Function SetItemAnimationSequenceRace(Race akRace, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
+
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeRace(Race akRace, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
@@ -129,3 +137,34 @@ Bool Function ItemExistsRace(Race akRace, string asPlugin, string asName) native
 Bool Function ItemEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale) native global
 Bool Function ItemEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale) native global
 Bool Function ItemEnabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale) native global
+
+
+;; Equipment slot functions
+;
+; Slot ids:
+;
+;	1h sword 		= 0
+;	1h sword left 	= 1
+;	1h axe 			= 2
+;	1h axe left 	= 3
+;	2h sword 		= 4
+;	2h sword left 	= 5
+;	2h axe 			= 6
+;	2h axe left 	= 7
+;	dagger 			= 8
+;	dagger left 	= 9
+;	mace 			= 10
+;	mace left 		= 11
+;	staff 			= 12
+;	staff left 		= 13
+;	bow 			= 14
+;	crossbow 		= 15
+;	shield 			= 16
+;	torch 			= 17
+;	ammo 			= 18
+;
+
+
+; Returns form displayed in aiSlot or None if empty or hidden
+Form Function GetSlottedForm(Actor akActor, int aiSlot) native global
+

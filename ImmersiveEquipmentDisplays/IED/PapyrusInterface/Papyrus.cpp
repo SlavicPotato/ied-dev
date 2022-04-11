@@ -6,6 +6,7 @@
 #include "Papyrus.h"
 #include "PapyrusCommon.h"
 #include "PapyrusCustomItem.h"
+#include "PapyrusSlotItem.h"
 
 namespace IED
 {
@@ -145,6 +146,7 @@ namespace IED
 					a_registry));
 
 			Custom::Register(a_registry);
+			Slot::Register(a_registry);
 
 			return true;
 		}

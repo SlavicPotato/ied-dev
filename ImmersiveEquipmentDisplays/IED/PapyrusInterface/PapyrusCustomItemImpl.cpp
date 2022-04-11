@@ -2,11 +2,11 @@
 
 #include "PapyrusCustomItemImpl.h"
 
-#include "../Controller/Controller.h"
-#include "../FormCommon.h"
-#include "../Main.h"
-#include "../NodeMap.h"
-#include "../StringHolder.h"
+#include "IED/Controller/Controller.h"
+#include "IED/FormCommon.h"
+#include "IED/Main.h"
+#include "IED/NodeMap.h"
+#include "IED/StringHolder.h"
 
 namespace IED
 {
@@ -26,7 +26,7 @@ namespace IED
 				bool                     a_inventoryForm,
 				const BSFixedString&     a_node)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto node = GetOrCreateNodeDescriptor(a_node);
 				if (!node)
@@ -68,7 +68,7 @@ namespace IED
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto& targetData = GetConfigMap(a_class);
 
@@ -108,7 +108,7 @@ namespace IED
 				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto& targetData = GetConfigMap(a_class);
 
@@ -136,7 +136,7 @@ namespace IED
 			bool DeleteAllImpl(
 				const stl::fixed_string& a_key)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto& store = Initializer::GetController()->GetConfigStore();
 
@@ -195,7 +195,7 @@ namespace IED
 				int                      a_attachmentMode,
 				bool                     a_syncReference)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -219,16 +219,11 @@ namespace IED
 					}
 					e.flags.clear(BaseFlags::kReferenceMode);
 					break;
+				default:
+					return false;
 				}
 
-				if (a_syncReference)
-				{
-					e.flags.set(BaseFlags::kSyncReferenceTransform);
-				}
-				else
-				{
-					e.flags.clear(BaseFlags::kSyncReferenceTransform);
-				}
+				e.flags.set(BaseFlags::kSyncReferenceTransform, a_syncReference);
 
 				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -246,7 +241,7 @@ namespace IED
 				ConfigSex                a_sex,
 				bool                     a_switch)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -256,14 +251,7 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				if (!a_switch)
-				{
-					e.flags.set(BaseFlags::kDisabled);
-				}
-				else
-				{
-					e.flags.clear(BaseFlags::kDisabled);
-				}
+				e.flags.set(BaseFlags::kDisabled, !a_switch);
 
 				QueueEvaluate(a_target, a_class);
 
@@ -278,7 +266,7 @@ namespace IED
 				ConfigSex                a_sex,
 				const BSFixedString&     a_node)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto node = GetOrCreateNodeDescriptor(a_node);
 				if (!node)
@@ -318,7 +306,7 @@ namespace IED
 				ConfigSex                a_sex,
 				const NiPoint3&          a_position)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -346,7 +334,7 @@ namespace IED
 				ConfigSex                a_sex,
 				const NiPoint3&          a_rotation)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -374,7 +362,7 @@ namespace IED
 				ConfigSex                a_sex,
 				float                    a_scale)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -402,7 +390,7 @@ namespace IED
 				ConfigSex                      a_sex,
 				stl::flag<TransformClearFlags> a_flags)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -424,7 +412,7 @@ namespace IED
 
 				if (a_flags.test(TransformClearFlags::Scale))
 				{
-					e.scale.reset();
+					e.scale.clear();
 					*e.scale = 1.0f;
 				}
 
@@ -444,7 +432,7 @@ namespace IED
 				ConfigSex                a_sex,
 				bool                     a_switch)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -454,14 +442,7 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				if (a_switch)
-				{
-					e.customFlags.set(Data::CustomFlags::kIsInInventory);
-				}
-				else
-				{
-					e.customFlags.clear(Data::CustomFlags::kIsInInventory);
-				}
+				e.customFlags.set(Data::CustomFlags::kIsInInventory, a_switch);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
@@ -484,7 +465,7 @@ namespace IED
 					return false;
 				}
 
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -518,7 +499,7 @@ namespace IED
 					return false;
 				}
 
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -576,7 +557,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				TESForm*                 a_form)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -614,7 +595,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				std::int32_t             a_index)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -647,7 +628,7 @@ namespace IED
 				const stl::fixed_string& a_name,
 				Data::ConfigSex          a_sex)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -678,7 +659,7 @@ namespace IED
 					return false;
 				}
 
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -705,7 +686,7 @@ namespace IED
 				const stl::fixed_string& a_name,
 				Data::ConfigSex          a_sex)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -739,7 +720,7 @@ namespace IED
 				std::int32_t             a_min,
 				std::int32_t             a_max)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -772,7 +753,7 @@ namespace IED
 				bool                     a_ignoreRaceEquipTypes,
 				bool                     a_disableIfEquipped)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -782,32 +763,9 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				if (a_switch)
-				{
-					e.customFlags.set(Data::CustomFlags::kEquipmentMode);
-				}
-				else
-				{
-					e.customFlags.clear(Data::CustomFlags::kEquipmentMode);
-				}
-
-				if (a_ignoreRaceEquipTypes)
-				{
-					e.customFlags.set(Data::CustomFlags::kIgnoreRaceEquipTypes);
-				}
-				else
-				{
-					e.customFlags.clear(Data::CustomFlags::kIgnoreRaceEquipTypes);
-				}
-
-				if (a_disableIfEquipped)
-				{
-					e.customFlags.set(Data::CustomFlags::kDisableIfEquipped);
-				}
-				else
-				{
-					e.customFlags.clear(Data::CustomFlags::kDisableIfEquipped);
-				}
+				e.customFlags.set(Data::CustomFlags::kEquipmentMode, a_switch);
+				e.customFlags.set(Data::CustomFlags::kIgnoreRaceEquipTypes, a_ignoreRaceEquipTypes);
+				e.customFlags.set(Data::CustomFlags::kDisableIfEquipped, a_disableIfEquipped);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
@@ -825,7 +783,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				bool                     a_switch)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -837,14 +795,7 @@ namespace IED
 
 				auto old = e.customFlags;
 
-				if (a_switch)
-				{
-					e.customFlags.set(CustomFlags::kLeftWeapon);
-				}
-				else
-				{
-					e.customFlags.clear(CustomFlags::kLeftWeapon);
-				}
+				e.customFlags.set(CustomFlags::kLeftWeapon, a_switch);
 
 				if (e.customFlags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -862,7 +813,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				bool                     a_switch)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -874,14 +825,7 @@ namespace IED
 
 				auto old = e.flags;
 
-				if (a_switch)
-				{
-					e.flags.set(BaseFlags::kUseWorldModel);
-				}
-				else
-				{
-					e.flags.clear(BaseFlags::kUseWorldModel);
-				}
+				e.flags.set(BaseFlags::kUseWorldModel, a_switch);
 
 				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -899,7 +843,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				bool                     a_switch)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -911,14 +855,7 @@ namespace IED
 
 				auto old = e.flags;
 
-				if (a_switch)
-				{
-					e.flags.set(BaseFlags::kIgnoreRaceEquipTypes);
-				}
-				else
-				{
-					e.flags.clear(BaseFlags::kIgnoreRaceEquipTypes);
-				}
+				e.flags.set(BaseFlags::kIgnoreRaceEquipTypes, a_switch);
 
 				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -937,7 +874,7 @@ namespace IED
 				bool                     a_enable,
 				float                    a_chance)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -947,14 +884,7 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				if (a_enable)
-				{
-					e.customFlags.set(CustomFlags::kUseChance);
-				}
-				else
-				{
-					e.customFlags.clear(CustomFlags::kUseChance);
-				}
+				e.customFlags.set(CustomFlags::kUseChance, a_enable);
 
 				e.chance = std::clamp(a_chance, 0.0f, 100.0f);
 
@@ -974,7 +904,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				bool                     a_enable)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -986,14 +916,7 @@ namespace IED
 
 				auto old = e.flags;
 
-				if (a_enable)
-				{
-					e.flags.set(BaseFlags::kPlayAnimation);
-				}
-				else
-				{
-					e.flags.clear(BaseFlags::kPlayAnimation);
-				}
+				e.flags.set(BaseFlags::kPlayAnimation, a_enable);
 
 				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -1016,7 +939,7 @@ namespace IED
 					return false;
 				}
 
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
@@ -1042,7 +965,7 @@ namespace IED
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				return LookupConfig(a_target, a_class, a_key, a_name) != nullptr;
 			}
@@ -1054,7 +977,7 @@ namespace IED
 				const stl::fixed_string& a_name,
 				ConfigSex                a_sex)
 			{
-				IScopedLock lock(Initializer::GetController()->GetLock());
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
 
 				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
 				if (!conf)
