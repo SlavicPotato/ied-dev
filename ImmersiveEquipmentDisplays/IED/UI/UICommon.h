@@ -2,6 +2,11 @@
 
 namespace IED
 {
+	namespace Data
+	{
+		struct configUniqueObjectTag_t;
+	}
+
 	namespace UI
 	{
 		namespace UICommon
@@ -47,6 +52,9 @@ namespace IED
 
 			void PushDisabled(bool a_switch);
 			void PopDisabled(bool a_switch);
+
+			void PushLUID(const Data::configUniqueObjectTag_t& a_id);
+			void PopLUID();
 
 			template <
 				class T,

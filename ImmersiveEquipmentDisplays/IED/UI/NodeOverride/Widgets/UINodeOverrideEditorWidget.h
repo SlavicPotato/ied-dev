@@ -1562,14 +1562,17 @@ namespace IED
 				switch (result.action)
 				{
 				case NodeOverrideCommonAction::Delete:
+
 					it = a_entry.erase(it);
 					HandleValueUpdate(
 						a_handle,
 						a_data,
 						a_params,
 						a_exists);
+
 					break;
 				case NodeOverrideCommonAction::Insert:
+
 					it              = a_entry.emplace(it);
 					it->description = result.desc;
 					if (result.isGroup)
@@ -1582,6 +1585,7 @@ namespace IED
 						a_params,
 						a_exists);
 					ImGui::SetNextItemOpen(true);
+
 					break;
 				case NodeOverrideCommonAction::Swap:
 
@@ -1599,14 +1603,17 @@ namespace IED
 
 					break;
 				case NodeOverrideCommonAction::Rename:
+
 					it->description = result.desc;
 					HandleValueUpdate(
 						a_handle,
 						a_data,
 						a_params,
 						a_exists);
+
 					break;
 				case NodeOverrideCommonAction::Paste:
+
 					if (auto clipData = UIClipboard::Get<Data::configNodeOverrideOffset_t>())
 					{
 						it = a_entry.emplace(it, *clipData);

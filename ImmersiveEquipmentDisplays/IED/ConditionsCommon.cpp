@@ -35,7 +35,7 @@ namespace IED
 		{
 			for (auto it = a_current; it; it = it->parentLoc)
 			{
-				if (it->keyword.HasKeyword(a_keyword))
+				if (it->HasKeyword(a_keyword))
 				{
 					return true;
 				}
@@ -55,7 +55,7 @@ namespace IED
 		{
 			for (auto it = a_current; it; it = it->parentLoc)
 			{
-				if (it->keyword.HasKeyword(a_keyword))
+				if (it->HasKeyword(a_keyword))
 				{
 					return true;
 				}

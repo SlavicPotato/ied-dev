@@ -27,20 +27,25 @@ namespace IED
 
 		void UIConditionParamEditorWidget::OpenConditionParamEditorPopup()
 		{
-			ImGui::OpenPopup("match_param_editor");
+			ImGui::OpenPopup(POPUP_ID);
 		}
 
 		bool UIConditionParamEditorWidget::DrawConditionParamEditorPopup()
 		{
+			if (!ImGui::IsPopupOpen(POPUP_ID))
+			{
+				return false;
+			}
+
 			bool result;
 
-			float w = ImGui::GetFontSize() * 34.0f;
+			const float w = ImGui::GetFontSize() * 34.0f;
 
 			ImGui::SetNextWindowSizeConstraints(
 				{ w, 0.0f },
 				{ w, 800.0f });
 
-			if (ImGui::BeginPopup("match_param_editor"))
+			if (ImGui::BeginPopup(POPUP_ID))
 			{
 				result = DrawConditionParamEditorPanel();
 

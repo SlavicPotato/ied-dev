@@ -84,8 +84,8 @@ namespace IED
 
 			bool m_dirty{ false };
 
-			mutable WCriticalSection   m_rwLock;
-			mutable except::descriptor m_lastException;
+			mutable stl::critical_section m_rwLock;
+			mutable except::descriptor    m_lastException;
 
 			static NodeMap m_Instance;
 		};

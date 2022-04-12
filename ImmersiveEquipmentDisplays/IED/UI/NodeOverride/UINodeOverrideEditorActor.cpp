@@ -337,8 +337,8 @@ namespace IED
 		Data::configNodeOverrideHolder_t* UINodeOverrideEditorActor::GetConfigHolder(Game::FormID a_handle) const
 		{
 			auto& data = m_controller
-			                       .GetConfigStore()
-			                       .active.transforms.GetActorData();
+			                 .GetConfigStore()
+			                 .active.transforms.GetActorData();
 
 			auto it = data.find(a_handle);
 

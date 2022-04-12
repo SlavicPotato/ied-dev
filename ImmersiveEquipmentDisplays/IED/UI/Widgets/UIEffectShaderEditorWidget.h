@@ -1,15 +1,15 @@
 #pragma once
 
+#include "IED/UI/UILocalizationInterface.h"
 #include "IED/UI/UITips.h"
 
 #include "UIDescriptionPopup.h"
+#include "UIEffectShaderFunctionEditorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
 
 #include "IED/ConfigEffectShader.h"
 
 #include "UIEffectShaderEditorWidgetStrings.h"
-
-#include "IED/UI/UILocalizationInterface.h"
 
 namespace IED
 {
@@ -22,7 +22,15 @@ namespace IED
 			None,
 			Delete,
 			PasteOver,
-			Add
+			Add,
+			Swap,
+		};
+
+		struct EffectShaderFunctionContextResult
+		{
+			EffectShaderContextAction      action{ EffectShaderContextAction::None };
+			Data::EffectShaderFunctionType functionType;
+			SwapDirection                  dir;
 		};
 
 		struct EffectShaderEntryResult
@@ -32,6 +40,7 @@ namespace IED
 
 		template <class T>
 		class UIEffectShaderEditorWidget :
+			UIEffectShaderFunctionEditorWidget,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITipsInterface,
 			public virtual UILocalizationInterface
@@ -79,14 +88,33 @@ namespace IED
 				const T&                      a_params,
 				Data::configFixedStringSet_t& a_data);
 
-			virtual void OnEffectShaderUpdate(const T& a_params) = 0;
+			EffectShaderContextAction DrawFunctionsContextMenu(
+				const T&                                a_params,
+				Data::configEffectShaderFunctionList_t& a_data);
+
+			void DrawFunctions(
+				const T&                                a_params,
+				Data::configEffectShaderFunctionList_t& a_data);
+
+			EffectShaderFunctionContextResult DrawFunctionTableEntryContextMenu(
+				const T&                            a_params,
+				Data::configEffectShaderFunction_t& a_data);
+
+			void DrawFunctionTable(
+				const T&                                a_params,
+				Data::configEffectShaderFunctionList_t& a_data);
+
+			virtual void OnEffectShaderUpdate(const T& a_params, bool a_updateTag = true) = 0;
+
+			Data::EffectShaderFunctionType m_newType{ Data::EffectShaderFunctionType::None };
 
 			char m_inputBuffer1[MAX_PATH]{ 0 };
 		};
 
 		template <class T>
 		UIEffectShaderEditorWidget<T>::UIEffectShaderEditorWidget(
-			Controller& a_controller)
+			Controller& a_controller) :
+			UIEffectShaderFunctionEditorWidget(a_controller)
 		{
 		}
 
@@ -278,7 +306,7 @@ namespace IED
 			{
 				a_data.fillColor.clamp();
 
-				OnEffectShaderUpdate(a_params);
+				OnEffectShaderUpdate(a_params, false);
 			}
 
 			if (ImGui::ColorEdit4(
@@ -288,7 +316,7 @@ namespace IED
 			{
 				a_data.rimColor.clamp();
 
-				OnEffectShaderUpdate(a_params);
+				OnEffectShaderUpdate(a_params, false);
 			}
 
 			ImGui::Spacing();
@@ -300,6 +328,7 @@ namespace IED
 			ImGui::Spacing();
 
 			DrawTargetNodes(a_params, a_data.targetNodes);
+			DrawFunctions(a_params, a_data.functions);
 		}
 
 		template <class T>
@@ -623,7 +652,11 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.f }))
 			{
-				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f));
+				ImGui::TableSetupColumn(
+					"",
+					ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed,
+					ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f));
+
 				ImGui::TableSetupColumn(LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 75.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
@@ -661,6 +694,315 @@ namespace IED
 						ImGui::TableSetColumnIndex(1);
 
 						ImGui::Text("%s", it->c_str());
+
+						++it;
+						i++;
+					}
+
+					ImGui::PopID();
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
+		template <class T>
+		EffectShaderContextAction UIEffectShaderEditorWidget<T>::DrawFunctionsContextMenu(
+			const T&                                a_params,
+			Data::configEffectShaderFunctionList_t& a_data)
+		{
+			EffectShaderContextAction result{ EffectShaderContextAction::None };
+
+			ImGui::PushID("fn_context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
+			{
+				m_newType = Data::EffectShaderFunctionType::None;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PopStyleVar();
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::BeginMenu(LS(CommonStrings::Add, "1")))
+				{
+					if (DrawEffectShaderFunctionSelector(m_newType))
+					{
+						if (m_newType != Data::EffectShaderFunctionType::None)
+						{
+							a_data.emplace_back(m_newType);
+							result = EffectShaderContextAction::Add;
+
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				auto clipData = UIClipboard::Get<Data::configEffectShaderFunctionList_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "3"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data = *clipData;
+
+						result = EffectShaderContextAction::PasteOver;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIEffectShaderEditorWidget<T>::DrawFunctions(
+			const T&                                a_params,
+			Data::configEffectShaderFunctionList_t& a_data)
+		{
+			ImGui::PushID("fn_area");
+
+			const auto result = DrawFunctionsContextMenu(
+				a_params,
+				a_data);
+
+			switch (result)
+			{
+			case EffectShaderContextAction::Add:
+			case EffectShaderContextAction::PasteOver:
+				OnEffectShaderUpdate(a_params);
+				ImGui::SetNextItemOpen(true);
+				break;
+			}
+
+			bool disabled = a_data.empty();
+
+			UICommon::PushDisabled(disabled);
+
+			if (ImGui::TreeNodeEx(
+					"fn_tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Functions)))
+			{
+				if (!a_data.empty())
+				{
+					ImGui::Spacing();
+
+					DrawFunctionTable(a_params, a_data);
+
+					ImGui::Spacing();
+				}
+
+				ImGui::TreePop();
+			}
+
+			UICommon::PopDisabled(disabled);
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		EffectShaderFunctionContextResult UIEffectShaderEditorWidget<T>::DrawFunctionTableEntryContextMenu(
+			const T&                            a_params,
+			Data::configEffectShaderFunction_t& a_data)
+		{
+			EffectShaderFunctionContextResult result;
+
+			ImGui::PushID("ft_context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
+			{
+				m_newType = Data::EffectShaderFunctionType::None;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("up", ImGuiDir_Up))
+			{
+				result.action = EffectShaderContextAction::Swap;
+				result.dir    = SwapDirection::Up;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("down", ImGuiDir_Down))
+			{
+				result.action = EffectShaderContextAction::Swap;
+				result.dir    = SwapDirection::Down;
+			}
+
+			ImGui::PopStyleVar();
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::BeginMenu(LS(CommonStrings::Insert, "1")))
+				{
+					if (DrawEffectShaderFunctionSelector(m_newType))
+					{
+						if (m_newType != Data::EffectShaderFunctionType::None)
+						{
+							result.action       = EffectShaderContextAction::Add;
+							result.functionType = m_newType;
+
+							ImGui::CloseCurrentPopup();
+						}
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
+				{
+					result.action = EffectShaderContextAction::Delete;
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "X")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				auto clipData = UIClipboard::Get<Data::configEffectShaderFunction_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "Y"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data = *clipData;
+
+						OnEffectShaderUpdate(a_params);
+
+						result.action = EffectShaderContextAction::PasteOver;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIEffectShaderEditorWidget<T>::DrawFunctionTable(
+			const T&                                a_params,
+			Data::configEffectShaderFunctionList_t& a_data)
+		{
+			ImGui::PushStyleVar(
+				ImGuiStyleVar_CellPadding,
+				{ 5.f, 5.f });
+
+			constexpr int NUM_COLUMNS = 2;
+
+			if (ImGui::BeginTable(
+					"ef_table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.f }))
+			{
+				auto w =
+					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
+
+				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
+				ImGui::TableSetupColumn(LS(CommonStrings::Name), ImGuiTableColumnFlags_None, 200.0f);
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				int i = 0;
+
+				auto it = a_data.begin();
+
+				while (it != a_data.end())
+				{
+					ImGui::PushID(i);
+
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+
+					const auto result = DrawFunctionTableEntryContextMenu(a_params, *it);
+
+					switch (result.action)
+					{
+					case EffectShaderContextAction::Add:
+						if (result.functionType != Data::EffectShaderFunctionType::None)
+						{
+							it = a_data.emplace(it, result.functionType);
+							OnEffectShaderUpdate(a_params);
+						}
+						break;
+					case EffectShaderContextAction::Delete:
+						it = a_data.erase(it);
+						OnEffectShaderUpdate(a_params);
+						break;
+					case EffectShaderContextAction::Swap:
+						if (IterSwap(a_data, it, result.dir))
+						{
+							OnEffectShaderUpdate(a_params);
+						}
+						break;
+					}
+
+					if (it != a_data.end())
+					{
+						auto& e = *it;
+
+						ImGui::TableSetColumnIndex(1);
+
+						if (ImGui::Selectable(
+								LMKID<3>(esf_to_desc(e.type), "sel_ctl"),
+								false,
+								ImGuiSelectableFlags_DontClosePopups))
+						{
+							OpenEffectShaderFunctionEditor();
+						}
+
+						auto r = DrawEffectShaderFunction(e);
+						if (r)
+						{
+							OnEffectShaderUpdate(a_params, r.reset);
+						}
 
 						++it;
 						i++;

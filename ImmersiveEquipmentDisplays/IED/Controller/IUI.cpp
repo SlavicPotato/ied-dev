@@ -42,7 +42,7 @@ namespace IED
 
 	auto IUI::UIToggle() -> UIOpenResult
 	{
-		IScopedLock lock(UIGetLock());
+		stl::scoped_lock lock(UIGetLock());
 
 		if (!m_task || !m_safeToOpenUI)
 		{
@@ -63,7 +63,7 @@ namespace IED
 
 	auto IUI::UIOpen() -> UIOpenResult
 	{
-		IScopedLock lock(UIGetLock());
+		stl::scoped_lock lock(UIGetLock());
 
 		return UIOpenImpl();
 	}
@@ -91,7 +91,7 @@ namespace IED
 
 	bool IUIRenderTask::Run()
 	{
-		IScopedLock lock(m_owner.UIGetLock());
+		stl::scoped_lock lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -118,7 +118,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStop()
 	{
-		IScopedLock lock(m_owner.UIGetLock());
+		stl::scoped_lock lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -133,7 +133,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStart()
 	{
-		IScopedLock lock(m_owner.UIGetLock());
+		stl::scoped_lock lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -171,7 +171,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStart()
 	{
-		IScopedLock lock(m_owner.UIGetLock());
+		stl::scoped_lock lock(m_owner.UIGetLock());
 
 		try
 		{

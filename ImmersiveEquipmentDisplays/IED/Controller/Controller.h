@@ -765,14 +765,12 @@ namespace IED
 		constexpr void UpdateObjectEffectShaders(
 			processParams_t& a_params,
 			const Ta&        a_config,
-			Tb&              a_objectEntry) requires(
-
-			(std::is_same_v<Ta, Data::configCustom_t> &&
-		     std::is_same_v<Tb, objectEntryCustom_t>) ||
+			Tb&              a_objectEntry,
+			bool             a_updateValues = false) requires(  //
+			(std::is_same_v<Ta, Data::configCustom_t>&&
+		         std::is_same_v<Tb, objectEntryCustom_t>) ||
 			(std::is_same_v<Ta, Data::configSlot_t> &&
-		     std::is_same_v<Tb, objectEntrySlot_t>)
-
-		);
+		     std::is_same_v<Tb, objectEntrySlot_t>));
 
 		void ProcessSlots(processParams_t& a_params);
 
@@ -909,7 +907,7 @@ namespace IED
 
 		// ui overrides
 
-		virtual constexpr WCriticalSection& UIGetLock() noexcept override
+		virtual constexpr stl::critical_section& UIGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -925,7 +923,7 @@ namespace IED
 
 		// json serialization
 
-		virtual constexpr WCriticalSection& JSGetLock() noexcept override
+		virtual constexpr stl::critical_section& JSGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -972,7 +970,7 @@ namespace IED
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;
 
-		mutable WCriticalSection m_lock;
+		mutable stl::critical_section m_lock;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);

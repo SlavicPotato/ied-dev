@@ -11,6 +11,10 @@ static bool Initialize(const SKSEInterface* a_skse)
 
 	bool result = false;
 
+	//std::is_const<std::remove_reference_t<decltype(f.value)>::value;
+
+	//_DMESSAGE("%d", f.set)
+
 	try
 	{
 		gLog.Debug("Querying SKSE interfaces..");
@@ -89,10 +93,7 @@ extern "C" {
 			GET_EXE_VERSION_SUB(a_skse->runtimeVersion));
 
 		if constexpr (
-			stl::containers_use_mimalloc || 
-			VersionDb::use_mimalloc || 
-			TaskQueueBase<void*>::use_mimalloc ||
-			string_cache::data_pool::use_mimalloc)
+			stl::is_mi_allocator<stl::pref_allocator<void*>>)
 		{
 			gLog.Message(
 				"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",

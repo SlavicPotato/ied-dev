@@ -16,6 +16,11 @@ namespace IED
 	{
 		auto data = Get(a_refr);
 
+		if (!data)
+		{
+			return nullptr;
+		}
+
 		if (auto it2 = data->find(a_name);
 		    it2 != data->end())
 		{
@@ -31,7 +36,7 @@ namespace IED
 		TESObjectREFR* a_refr)
 		-> const_actor_entry_type
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		auto key = mk_key(a_refr);
 		if (key.empty())
@@ -44,7 +49,7 @@ namespace IED
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		std::size_t result = 0;
 

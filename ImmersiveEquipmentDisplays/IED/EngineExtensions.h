@@ -212,7 +212,7 @@ namespace IED
 		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
 		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 		//static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
-		static bool           hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
+		static bool hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);

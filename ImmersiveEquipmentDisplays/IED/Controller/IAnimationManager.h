@@ -80,7 +80,7 @@ namespace IED
 		static AnimationGroupInfo ExtractAnimationInfoFromPEX();
 
 		inline constexpr void SetAnimationInfo(const AnimationGroupInfo& a_in) noexcept(
-			std::is_nothrow_constructible_v<AnimationGroupInfo>)
+			std::is_nothrow_copy_constructible_v<AnimationGroupInfo>)
 		{
 			m_groupInfo.emplace(a_in);
 		}

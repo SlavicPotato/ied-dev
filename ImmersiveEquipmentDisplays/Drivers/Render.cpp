@@ -14,8 +14,8 @@ namespace IED
 
 		bool Render::Initialize()
 		{
-			if (!hook::check_dst5<0xE8>(m_Instance.m_createD3D11_a) ||
-			    !hook::check_dst5<0xE8>(m_Instance.m_unkPresent_a))
+			if (!hook::check_dst5<0xE8>(m_Instance.m_createD3D11_a.get()) ||
+			    !hook::check_dst5<0xE8>(m_Instance.m_unkPresent_a.get()))
 			{
 				m_Instance.Error("Unable to hook, one or more invalid targets");
 				return false;
@@ -25,13 +25,13 @@ namespace IED
 
 			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
-				m_Instance.m_createD3D11_a,
+				m_Instance.m_createD3D11_a.get(),
 				std::uintptr_t(CreateD3D11_Hook),
 				m_Instance.m_createD3D11_o));
 
 			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
-				m_Instance.m_unkPresent_a,
+				m_Instance.m_unkPresent_a.get(),
 				std::uintptr_t(Present_Pre),
 				m_Instance.m_unkPresent_o));
 

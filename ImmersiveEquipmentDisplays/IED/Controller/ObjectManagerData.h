@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ActorAnimationState.h"
+#include "EffectShaderData.h"
 #include "INode.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
@@ -13,75 +14,6 @@
 
 namespace IED
 {
-	struct effectShaderData_t
-	{
-		enum class EntryFlags : std::uint32_t
-		{
-			kNone = 0,
-
-			kForce = 1u << 0
-		};
-
-		struct Entry
-		{
-			Entry()  = default;
-			~Entry() = default;
-
-			Entry(const Entry&) = delete;
-			Entry(Entry&&)      = default;
-			Entry& operator=(const Entry&) = delete;
-			Entry& operator=(Entry&&) = default;
-
-			struct node_t
-			{
-				NiPointer<BSShaderProperty> prop;
-			};
-
-			stl::flag<EntryFlags>                   flags{ EntryFlags::kNone };
-			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
-			stl::vector<node_t>                     nodes;
-		};
-
-		using data_type = stl::vector<Entry>;
-
-		[[nodiscard]] inline constexpr bool operator==(
-			const Data::configEffectShaderHolder_t& a_rhs) const
-		{
-			return tag == a_rhs;
-		}
-
-		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
-		{
-			return tag.has_value();
-		}
-
-		void clear();
-
-		bool UpdateIfChanged(
-			NiNode*                                 a_object,
-			const Data::configEffectShaderHolder_t& a_data);
-
-		void Update(
-			NiNode*                                 a_object,
-			const Data::configEffectShaderHolder_t& a_data);
-
-		template <class Tf>
-		constexpr void visit_nodes(Tf a_func)
-		{
-			for (auto& e : data)
-			{
-				for (auto& f : e.nodes)
-				{
-					a_func(e, f);
-				}
-			}
-		}
-
-		data_type               data;
-		std::optional<uuid_tag> tag;
-	};
-
-	DEFINE_ENUM_CLASS_BITWISE(effectShaderData_t::EntryFlags);
 
 	enum class ObjectEntryFlags : std::uint32_t
 	{
@@ -108,7 +40,7 @@ namespace IED
 
 		void reset(Game::ObjectRefHandle a_handle, NiNode* a_root);
 
-		inline void SetNodeVisible(bool a_switch) noexcept
+		inline void SetNodeVisible(bool a_switch)
 		{
 			if (state)
 			{
@@ -116,17 +48,17 @@ namespace IED
 			}
 		}
 
-		SKMP_FORCEINLINE auto IsActive() const noexcept
+		SKMP_FORCEINLINE auto IsActive() const
 		{
 			return state && state->nodes.rootNode->IsVisible();
 		}
 
-		SKMP_FORCEINLINE auto GetFormIfActive() const noexcept
+		SKMP_FORCEINLINE auto GetFormIfActive() const
 		{
 			return IsActive() ? state->form : nullptr;
 		}
 
-		SKMP_FORCEINLINE auto IsNodeVisible() const noexcept
+		SKMP_FORCEINLINE auto IsNodeVisible() const
 		{
 			return state && state->nodes.rootNode->IsVisible();
 		}
@@ -151,7 +83,7 @@ namespace IED
 			};
 
 			void UpdateData(
-				const Data::configBaseValues_t& a_in) noexcept
+				const Data::configBaseValues_t& a_in)
 			{
 				UpdateFlags(a_in);
 				transform.Update(a_in);
@@ -200,7 +132,7 @@ namespace IED
 			Data::cacheTransform_t                             transform;
 			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			effectShaderData_t                                 effectShaders;
+			EffectShaderData                                   effectShaders;
 			stl::fixed_string                                  currentSequence;
 			long long                                          created{ 0 };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
@@ -370,6 +302,9 @@ namespace IED
 	public:
 		using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
 
+		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;
+		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
+
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
 			Actor*                a_actor,
@@ -390,12 +325,14 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
 		{
+			assert(a_slot < Data::ObjectSlot::kMax);
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
 		[[nodiscard]] inline constexpr const auto& GetSlot(
 			Data::ObjectSlot a_slot) const noexcept
 		{
+			assert(a_slot < Data::ObjectSlot::kMax);
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
@@ -509,11 +446,8 @@ namespace IED
 		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
-		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;
-		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
-
-		template <class Tv>
-		void visit(Tv a_func)
+		template <class Tf>
+		constexpr void visit(Tf a_func)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -532,8 +466,8 @@ namespace IED
 			}
 		}
 
-		template <class Tv>
-		void visit(Tv a_func) const
+		template <class Tf>
+		constexpr void visit(Tf a_func) const
 		{
 			for (auto& e : m_entriesSlot)
 			{

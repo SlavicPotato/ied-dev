@@ -13,8 +13,7 @@ namespace IED
 		{
 			static_assert(sizeof(WCHAR) == sizeof(ImWchar16));
 
-			SKMP_ALIGN(16)
-			class KeyEventTaskPress
+			class SKMP_ALIGN(16) KeyEventTaskPress
 			{
 			public:
 				KeyEventTaskPress() = delete;

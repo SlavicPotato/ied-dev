@@ -290,12 +290,12 @@ namespace IED
 
 		for (auto& e : a_in)
 		{
-			auto texSwap = std::addressof(e->models[0][a_isFemale ? 1 : 0]);
+			auto texSwap = std::addressof(e->bipedModels[a_isFemale ? 1 : 0]);
 			auto path    = texSwap->GetModelName();
 
 			if (!path || path[0] == 0)
 			{
-				texSwap = std::addressof(e->models[0][a_isFemale ? 0 : 1]);
+				texSwap = std::addressof(e->bipedModels[a_isFemale ? 0 : 1]);
 				path    = texSwap->GetModelName();
 
 				if (!path || path[0] == 0)

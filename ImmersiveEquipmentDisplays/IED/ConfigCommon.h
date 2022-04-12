@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ConfigData.h"
-#include "ConfigUUIDTag.h"
+#include "ConfigLUIDTag.h"
 
 namespace IED
 {

@@ -125,7 +125,7 @@ namespace IED
 			if (ImGui::BeginChild("log_text", { -1.0f, 0.0f }))
 			{
 				{
-					IScopedLock lock(data.GetLock());
+					stl::scoped_lock lock(data.GetLock());
 
 					if (auto curSize = data.Size(); curSize != m_lastSize)
 					{

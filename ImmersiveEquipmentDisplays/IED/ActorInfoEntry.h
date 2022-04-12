@@ -8,11 +8,12 @@ namespace IED
 	{
 		inline constexpr auto& get_npc_or_template() const noexcept
 		{
-			return templ ? templ : form;
+			return nontemp;
 		}
 
 		Game::FormID  form;
 		Game::FormID  templ;
+		Game::FormID  nontemp;
 		std::string   name;
 		bool          active{ false };
 		Game::FormID  race;
@@ -51,7 +52,7 @@ namespace IED
 		{
 			return npc ? npc->form : 0;
 		}
-		
+
 		inline Game::FormID GetBaseOrTemplate() const noexcept
 		{
 			return npc ? npc->get_npc_or_template() : 0;

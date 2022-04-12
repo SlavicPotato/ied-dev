@@ -87,7 +87,7 @@ namespace IED
 	void EngineExtensions::Patch_RemoveAllBipedParts()
 	{
 		VALIDATE_MEMORY(
-			m_removeAllBipedParts_a,
+			m_removeAllBipedParts_a.get(),
 			({ 0x40, 0x57, 0x48, 0x83, 0xEC, 0x30 }),
 			({ 0x40, 0x56, 0x57, 0x41, 0x56, 0x48, 0x83, 0xEC, 0x30 }));
 
@@ -110,11 +110,11 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_removeAllBipedParts_a);
+			Assembly code(m_removeAllBipedParts_a.get());
 			m_removeAllBipedParts_o = code.get<decltype(m_removeAllBipedParts_o)>();
 
 			ISKSE::GetBranchTrampoline().Write6Branch(
-				m_removeAllBipedParts_a,
+				m_removeAllBipedParts_a.get(),
 				std::uintptr_t(RemoveAllBipedParts_Hook));
 		}
 		LogPatchEnd();
@@ -124,7 +124,7 @@ namespace IED
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_garbageCollectorREFR_a,
+				m_garbageCollectorREFR_a.get(),
 				std::uintptr_t(GarbageCollectorReference_Hook),
 				m_garbageCollectorReference_o))
 		{
@@ -139,7 +139,7 @@ namespace IED
 	void EngineExtensions::Hook_Actor_Resurrect()
 	{
 		if (VTable::Detour2(
-				m_vtblCharacter_a,
+				m_vtblCharacter_a.get(),
 				0xAB,
 				Character_Resurrect_Hook,
 				&m_characterResurrect_o))
@@ -153,7 +153,7 @@ namespace IED
 
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_reanimActorStateUpdate_a,
+				m_reanimActorStateUpdate_a.get(),
 				std::uintptr_t(ReanimateActorStateUpdate_Hook),
 				m_ReanimActorStateUpd_o))
 		{
@@ -168,7 +168,7 @@ namespace IED
 	void EngineExtensions::Hook_Actor_3DEvents()
 	{
 		if (VTable::Detour2(
-				m_vtblCharacter_a,
+				m_vtblCharacter_a.get(),
 				0x6B,
 				Character_Release3D_Hook,
 				&m_characterRelease3D_o))
@@ -181,7 +181,7 @@ namespace IED
 		}
 
 		if (VTable::Detour2(
-				m_vtblActor_a,
+				m_vtblActor_a.get(),
 				0x6B,
 				Actor_Release3D_Hook,
 				&m_actorRelease3D_o))
@@ -198,7 +198,7 @@ namespace IED
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_armorUpdate_a,
+				m_armorUpdate_a.get(),
 				std::uintptr_t(ArmorUpdate_Hook),
 				m_ArmorChange_o))
 		{
@@ -213,7 +213,7 @@ namespace IED
 	void EngineExtensions::Patch_SetWeapAdjAnimVar()
 	{
 		VALIDATE_MEMORY(
-			m_weapAdj_a,
+			m_weapAdj_a.get(),
 			({ 0xE8 }),
 			({ 0xE8 }));
 
@@ -240,9 +240,9 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_weapAdj_a);
+			Assembly code(m_weapAdj_a.get());
 			ISKSE::GetBranchTrampoline().Write5Branch(
-				m_weapAdj_a,
+				m_weapAdj_a.get(),
 				code.get());
 		}
 		LogPatchEnd();
@@ -251,7 +251,7 @@ namespace IED
 	void EngineExtensions::Patch_CreateWeaponNodes()
 	{
 		VALIDATE_MEMORY(
-			m_createWeaponNodes_a,
+			m_createWeaponNodes_a.get(),
 			({ 0x40, 0x56, 0x57, 0x41, 0x54, 0x41, 0x56 }),
 			({ 0x40, 0x56, 0x57, 0x41, 0x54, 0x41, 0x56 }));
 
@@ -272,10 +272,10 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_createWeaponNodes_a);
+			Assembly code(m_createWeaponNodes_a.get());
 			m_createWeaponNodes_o = code.get<decltype(m_createWeaponNodes_o)>();
 			ISKSE::GetBranchTrampoline().Write6Branch(
-				m_createWeaponNodes_a,
+				m_createWeaponNodes_a.get(),
 				std::uintptr_t(CreateWeaponNodes_Hook));
 		}
 		LogPatchEnd();
@@ -286,7 +286,7 @@ namespace IED
 	{
 		ASSERT_STR(
 			Patching::validate_mem(
-				m_hkaLookupSkeletonBones_a,
+				m_hkaLookupSkeletonBones_a.get(),
 				{ 0xE8 }),
 			mv_failstr);
 
@@ -312,10 +312,10 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_hkaLookupSkeletonBones_a);
+			Assembly code(m_hkaLookupSkeletonBones_a.get());
 
 			ISKSE::GetBranchTrampoline().Write5Branch(
-				m_hkaLookupSkeletonBones_a,
+				m_hkaLookupSkeletonBones_a.get(),
 				code.get());
 		}
 		LogPatchEnd();
@@ -325,7 +325,7 @@ namespace IED
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_toggleFav1_a,
+				m_toggleFav1_a.get(),
 				std::uintptr_t(ToggleFavGetExtraList_Hook),
 				m_toggleFavGetExtraList_o))
 		{
@@ -341,7 +341,7 @@ namespace IED
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_processEffectShaders_a,
+				m_processEffectShaders_a.get(),
 				std::uintptr_t(ProcessEffectShaders_Hook),
 				m_processEffectShaders_o))
 		{
@@ -405,7 +405,7 @@ namespace IED
 				code.get());
 		}
 		LogPatchEnd();
-	}*/ 
+	}*/
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
@@ -519,7 +519,7 @@ namespace IED
 	{
 		m_Instance.m_ReanimActorStateUpd_o(a_actor, a_unk1);
 
-		if (a_actor->actorState.actorState1.lifeState ==
+		if (a_actor->actorState1.lifeState ==
 		    ActorState::ACTOR_LIFE_STATE::kReanimate)
 		{
 			m_Instance.m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
@@ -569,7 +569,7 @@ namespace IED
 			}
 		}
 
-		return a_refr->animGraphHolder.SetVariableOnGraphsFloat(a_animVarName, a_val);
+		return a_refr->SetVariableOnGraphsFloat(a_animVarName, a_val);
 	}
 
 	BaseExtraList* EngineExtensions::ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor)

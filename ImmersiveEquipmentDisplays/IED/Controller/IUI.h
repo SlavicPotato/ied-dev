@@ -140,8 +140,8 @@ namespace IED
 		bool m_safeToOpenUI{ false };
 
 	private:
-		virtual constexpr WCriticalSection& UIGetLock() noexcept = 0;
-		virtual void                        OnUIOpen(){};
+		virtual constexpr stl::critical_section& UIGetLock() noexcept = 0;
+		virtual void                             OnUIOpen(){};
 
 		UIOpenResult UIOpenImpl();
 

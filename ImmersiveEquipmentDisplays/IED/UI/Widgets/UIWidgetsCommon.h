@@ -27,7 +27,10 @@ namespace IED
 		};
 
 		template <class T>
-		bool IterSwap(T& a_data, typename T::iterator& a_it, SwapDirection a_dir)
+		constexpr bool IterSwap(
+			T&                    a_data,
+			typename T::iterator& a_it,
+			SwapDirection         a_dir)
 		{
 			auto sit = a_it;
 

@@ -57,9 +57,9 @@ namespace IED
 		a_out.ts = IPerfCounter::Query();
 
 		if (auto npc = a_actor->GetActorBase())
-		{			
-			if (auto it = m_npcInfo.find(npc->formID); 
-				it == m_npcInfo.end())
+		{
+			if (auto it = m_npcInfo.find(npc->formID);
+			    it == m_npcInfo.end())
 			{
 				a_out.npc = std::make_unique<npcInfoEntry_t>();
 
@@ -77,10 +77,10 @@ namespace IED
 				a_out.npc = it->second;
 			}
 
-			if (auto templ = npc->GetTemplate())
+			if (auto templ = npc->GetFirstNonTemporaryOrThis(); templ && templ != npc)
 			{
-				if (auto it = m_npcInfo.find(templ->formID); 
-					it == m_npcInfo.end())
+				if (auto it = m_npcInfo.find(templ->formID);
+				    it == m_npcInfo.end())
 				{
 					auto t = std::make_unique<npcInfoEntry_t>();
 
@@ -110,15 +110,16 @@ namespace IED
 	{
 		auto templ = a_npc->GetTemplate();
 
-		a_out.name   = IFormCommon::GetFormName(a_npc);
-		a_out.form   = a_npc->formID;
-		a_out.templ  = templ ? templ->formID : 0;
-		a_out.flags  = a_npc->flags;
-		a_out.female = a_npc->GetSex() == 1;
-		a_out.race   = a_npc->race.race ?
-		                   a_npc->race.race->formID :
-                           0;
-		a_out.weight = a_npc->GetWeight();
+		a_out.name    = IFormCommon::GetFormName(a_npc);
+		a_out.form    = a_npc->formID;
+		a_out.templ   = templ ? templ->formID : 0;
+		a_out.nontemp = a_npc->GetFirstNonTemporaryOrThis()->formID;
+		a_out.flags   = a_npc->flags;
+		a_out.female  = a_npc->GetSex() == 1;
+		a_out.race    = a_npc->race ?
+		                    a_npc->race->formID :
+                            0;
+		a_out.weight  = a_npc->GetWeight();
 	}
 
 	void IActorInfo::AddExtraActorEntry(Game::FormID a_formid)

@@ -296,10 +296,10 @@ namespace IED
 
 			if ((IAL::IsAE() ?
 			         ExtractHookCallAddr<true>(
-						 m_inputEventpProc_a,
+						 m_inputEventpProc_a.get(),
 						 m_Instance.m_nextIEPCall) :
                      ExtractHookCallAddr<false>(
-						 m_inputEventpProc_a,
+						 m_inputEventpProc_a.get(),
 						 m_Instance.m_nextIEPCall)))
 			{
 				m_Instance.Debug(
@@ -313,7 +313,7 @@ namespace IED
 				{
 					ASSERT_STR(
 						Patching::validate_mem(
-							m_inputEventpProc_a,
+							m_inputEventpProc_a.get(),
 							{ 0x48, 0x3B, 0xF3, 0x74, 0x61 }),
 						"Memory validation failed");
 				}
@@ -321,7 +321,7 @@ namespace IED
 				{
 					ASSERT_STR(
 						Patching::validate_mem(
-							m_inputEventpProc_a,
+							m_inputEventpProc_a.get(),
 							{ 0x48, 0x3B, 0xFB, 0x74, 0x65 }),
 						"Memory validation failed");
 				}
@@ -329,9 +329,9 @@ namespace IED
 
 			m_Instance.LogPatchBegin();
 			{
-				ProcessInputEvent code(m_inputEventpProc_a);
+				ProcessInputEvent code(m_inputEventpProc_a.get());
 
-				ISKSE::GetBranchTrampoline().Write5Branch(m_inputEventpProc_a, code.get());
+				ISKSE::GetBranchTrampoline().Write5Branch(m_inputEventpProc_a.get(), code.get());
 			}
 			m_Instance.LogPatchEnd();
 		}

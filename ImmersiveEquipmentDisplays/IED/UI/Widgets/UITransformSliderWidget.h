@@ -199,7 +199,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat3(
-					"Position",
+					LS(CommonStrings::Position, "1"),
 					*a_data.position,
 					dragSpeed,
 					-5000.0f,
@@ -252,7 +252,7 @@ namespace IED
 			constexpr auto degmax = (pi * 2.0f) * (180.0f / pi);
 
 			if (ImGui::DragFloat3(
-					"Rotation",
+					LS(CommonStrings::Rotation, "2"),
 					v,
 					dragSpeed,
 					-degmax,
@@ -295,7 +295,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat(
-					"Scale",
+					LS(CommonStrings::Scale, "3"),
 					std::addressof(*a_data.scale),
 					dragSpeed * 0.01f,
 					0.01f,

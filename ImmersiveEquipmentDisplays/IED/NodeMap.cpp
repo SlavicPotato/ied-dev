@@ -202,7 +202,7 @@ namespace IED
 
 			try
 			{
-				IScopedLock lock(m_rwLock);
+				stl::scoped_lock lock(m_rwLock);
 
 				ParserState      state;
 				Parser<map_type> parser(state);
@@ -227,7 +227,7 @@ namespace IED
 
 			try
 			{
-				IScopedLock lock(m_rwLock);
+				stl::scoped_lock lock(m_rwLock);
 
 				Json::Value root;
 

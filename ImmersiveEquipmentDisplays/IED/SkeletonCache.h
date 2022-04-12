@@ -29,7 +29,7 @@ namespace IED
 
 		[[nodiscard]] inline auto GetSize() const noexcept
 		{
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			return m_data.size();
 		}
 
@@ -43,7 +43,7 @@ namespace IED
 		data_type::const_iterator get_or_create(const stl::fixed_string& a_key);
 		void                      fill(const stl::fixed_string& a_key, data_type::iterator a_it);
 
-		mutable FastSpinLock m_lock;
+		mutable stl::fast_spin_lock m_lock;
 
 		data_type m_data;
 

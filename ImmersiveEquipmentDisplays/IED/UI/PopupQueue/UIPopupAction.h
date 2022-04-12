@@ -45,7 +45,6 @@ namespace IED
 					a_args...);
 			}
 
-			template <class... Args>
 			UIPopupAction(
 				UIPopupType a_type,
 				const char* a_key) :

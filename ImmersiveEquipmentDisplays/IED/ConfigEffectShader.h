@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ConfigColor.h"
+#include "ConfigEffectShaderFunction.h"
 #include "ConfigEquipment.h"
-#include "ConfigUUIDTag.h"
+#include "ConfigLUIDTag.h"
 
 namespace IED
 {
@@ -95,7 +96,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kNone;
@@ -117,6 +119,7 @@ namespace IED
 			float                            vScale{ 1.0f };
 			float                            edgeExponent{ 1.0f };
 			float                            boundDiameter{ 0.0f };
+			configEffectShaderFunctionList_t functions;
 
 			[[nodiscard]] bool create_shader_data(RE::BSTSmartPointer<BSEffectShaderData>& a_out) const;
 
@@ -146,6 +149,11 @@ namespace IED
 				a_ar& vScale;
 				a_ar& edgeExponent;
 				a_ar& boundDiameter;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& functions;
+				}
 			}
 		};
 
@@ -159,7 +167,7 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderHolderFlags);
 
 		struct configEffectShaderHolder_t :
-			configUUIDTag_t
+			configLUIDTag_t
 		{
 			friend class boost::serialization::access;
 
@@ -184,9 +192,9 @@ namespace IED
 				return flags.test(EffectShaderHolderFlags::kEnabled);
 			}
 
-			stl::flag<EffectShaderHolderFlags>                              flags{ DEFAULT_FLAGS };
-			std::string                                                     description;
-			equipmentOverrideConditionList_t                                conditions;
+			stl::flag<EffectShaderHolderFlags>                                    flags{ DEFAULT_FLAGS };
+			std::string                                                           description;
+			equipmentOverrideConditionList_t                                      conditions;
 			stl::boost_unordered_map<stl::fixed_string, configEffectShaderData_t> data;
 
 		private:
@@ -230,7 +238,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configEffectShaderData_t,
-	::IED::Data::configEffectShaderData_t::Serialization::DataVersion1);
+	::IED::Data::configEffectShaderData_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configEffectShaderHolder_t,

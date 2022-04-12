@@ -80,6 +80,8 @@ namespace IED
 			public UIComparisonOperatorSelector,
 			public virtual UILocalizationInterface
 		{
+			inline static constexpr auto POPUP_ID = "mpr_ed";
+
 			struct entry_t
 			{
 				template <class T>

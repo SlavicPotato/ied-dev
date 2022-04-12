@@ -91,7 +91,7 @@ namespace IED
 		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
-		IScopedLock lock(JSGetLock());
+		stl::scoped_lock lock(JSGetLock());
 
 		auto& store = JSGetConfigStore();
 
@@ -195,7 +195,7 @@ namespace IED
 		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
-		IScopedLock lock(JSGetLock());
+		stl::scoped_lock lock(JSGetLock());
 
 		auto& store = JSGetConfigStore();
 
@@ -223,7 +223,7 @@ namespace IED
 			Data::configStore_t tmp;
 
 			{
-				IScopedLock lock(JSGetLock());
+				stl::scoped_lock lock(JSGetLock());
 
 				tmp = CreateExportData(JSGetConfigStore(), a_exportFlags, a_flags);
 			}

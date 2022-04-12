@@ -8,20 +8,17 @@ namespace IED
 	static constexpr bool ExtractModelParams(
 		T*                     a_ptr,
 		IModel::modelParams_t& a_out,
-		ModelType              a_type = ModelType::kMisc)
+		ModelType              a_type = ModelType::kMisc) requires
+		std::is_base_of_v<TESModel, T>
 	{
 		TESModelTextureSwap* texSwap{ nullptr };
-		const char*          path;
 
-		if constexpr (std::is_same_v<T, TESModel>)
+		if constexpr (std::is_base_of_v<TESModelTextureSwap, T>)
 		{
-			path = a_ptr->GetModelName();
+			texSwap = static_cast<TESModelTextureSwap*>(a_ptr);
 		}
-		else
-		{
-			texSwap = std::addressof(a_ptr->texSwap);
-			path    = texSwap->GetModelName();
-		}
+
+		const char* path = a_ptr->GetModelName();
 
 		if (!path || path[0] == 0)
 		{
@@ -34,11 +31,12 @@ namespace IED
 		}
 	}
 
-	template <class T, class>
-	bool IModel::ExtractFormModelParams(
-		TESForm*       a_form,
-		modelParams_t& a_out,
-		ModelType      a_type)
+	template <class T>
+	inline static constexpr bool ExtractFormModelParams(
+		TESForm*               a_form,
+		IModel::modelParams_t& a_out,
+		ModelType              a_type = ModelType::kMisc) requires
+		std::is_base_of_v<TESForm, T>
 	{
 		return ExtractModelParams(static_cast<T*>(a_form), a_out, a_type);
 	}
@@ -95,11 +93,11 @@ namespace IED
 		case TESObjectDOOR::kTypeID:
 			return ExtractFormModelParams<TESObjectDOOR>(a_form, a_out);
 		case TESObjectTREE::kTypeID:
-			return ExtractModelParams(std::addressof(static_cast<TESObjectTREE*>(a_form)->model), a_out);
+			return ExtractFormModelParams<TESObjectTREE>(a_form, a_out);
 		case TESGrass::kTypeID:
-			return ExtractModelParams(std::addressof(static_cast<TESGrass*>(a_form)->model), a_out);
+			return ExtractFormModelParams<TESGrass>(a_form, a_out);
 		case BGSExplosion::kTypeID:
-			return ExtractModelParams(std::addressof(static_cast<BGSExplosion*>(a_form)->model), a_out);
+			return ExtractFormModelParams<BGSExplosion>(a_form, a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)
@@ -137,12 +135,12 @@ namespace IED
 							continue;
 						}
 
-						auto texSwap = std::addressof(arma->models[0][a_isFemale ? 1 : 0]);
+						auto texSwap = std::addressof(arma->bipedModels[a_isFemale ? 1 : 0]);
 						auto path    = texSwap->GetModelName();
 
 						if (!path || path[0] == 0)
 						{
-							texSwap = std::addressof(arma->models[0][a_isFemale ? 0 : 1]);
+							texSwap = std::addressof(arma->bipedModels[a_isFemale ? 0 : 1]);
 							path    = texSwap->GetModelName();
 						}
 
@@ -166,12 +164,12 @@ namespace IED
 				}
 				else
 				{
-					auto texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 1 : 0]);
+					auto texSwap = std::addressof(armor->textureSwap[a_isFemale ? 1 : 0]);
 					auto path    = texSwap->GetModelName();
 
 					if (!path || path[0] == 0)
 					{
-						texSwap = std::addressof(armor->bipedModel.textureSwap[a_isFemale ? 0 : 1]);
+						texSwap = std::addressof(armor->textureSwap[a_isFemale ? 0 : 1]);
 						path    = texSwap->GetModelName();
 					}
 

@@ -6,7 +6,6 @@
 #include <ext/IPluginInfo.h>
 #include <ext/ISerializationBase.h>
 #include <ext/ITaskPool.h>
-#include <ext/Math.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
 #include <ext/SKSEMessagingEvents.h>
@@ -19,6 +18,7 @@
 #include <ext/stl_boost_serialization_containers.h>
 
 #include <ext/stl_map_sa.h>
+#include <ext/stl_math.h>
 #include <ext/stl_set_sa.h>
 
 #include <skse64/BipedObject.h>

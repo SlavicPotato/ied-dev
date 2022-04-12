@@ -9,7 +9,7 @@ namespace IED
 		namespace Slot
 		{
 			TESForm* GetSlottedFormImpl(
-				Game::FormID           a_actor,
+				Game::FormID     a_actor,
 				Data::ObjectSlot a_slot);
 		}
 	}

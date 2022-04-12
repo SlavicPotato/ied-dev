@@ -47,8 +47,8 @@ namespace IED
 
 		mutable except::descriptor m_lastException;
 
-		virtual constexpr WCriticalSection&    JSGetLock() noexcept        = 0;
-		virtual constexpr Data::configStore_t& JSGetConfigStore() noexcept = 0;
-		virtual void                           JSOnDataImport()            = 0;
+		virtual constexpr stl::critical_section& JSGetLock() noexcept        = 0;
+		virtual constexpr Data::configStore_t&   JSGetConfigStore() noexcept = 0;
+		virtual void                             JSOnDataImport()            = 0;
 	};
 }

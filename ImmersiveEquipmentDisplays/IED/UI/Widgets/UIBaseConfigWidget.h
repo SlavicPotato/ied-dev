@@ -5,6 +5,7 @@
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/UIFormLookupInterface.h"
+#include "IED/UI/UILocalizationInterface.h"
 #include "IED/UI/UINotificationInterface.h"
 #include "IED/UI/UISettingsInterface.h"
 #include "IED/UI/UITips.h"
@@ -23,8 +24,6 @@
 
 #include "IED/ConfigStore.h"
 #include "IED/StringHolder.h"
-
-#include "IED/UI/UILocalizationInterface.h"
 
 #include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidgetStrings.h"
 
@@ -243,7 +242,8 @@ namespace IED
 				const void*                       a_params);
 
 			virtual void OnEffectShaderUpdate(
-				const baseEffectShaderEditorParams_t<T>& a_params) override;
+				const baseEffectShaderEditorParams_t<T>& a_params,
+				bool                                     a_updateTag) override;
 
 			Game::FormID                                m_aoNewEntryID;
 			Game::FormID                                m_aoNewEntryKWID;
@@ -3314,12 +3314,23 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::OnEffectShaderUpdate(
-			const baseEffectShaderEditorParams_t<T>& a_params)
+			const baseEffectShaderEditorParams_t<T>& a_params,
+			bool                                     a_updateTag)
 		{
-			TriggerEffectShaderUpdate(
-				a_params.handle,
-				a_params.data,
-				a_params.params);
+			if (a_updateTag)
+			{
+				TriggerEffectShaderUpdate(
+					a_params.handle,
+					a_params.data,
+					a_params.params);
+			}
+			else
+			{
+				OnBaseConfigChange(
+					a_params.handle,
+					a_params.params,
+					PostChangeAction::Evaluate);
+			}
 		}
 
 	}

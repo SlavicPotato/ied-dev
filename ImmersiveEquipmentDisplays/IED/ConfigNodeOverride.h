@@ -372,19 +372,17 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideOffsetFlags>      offsetFlags{ NodeOverrideOffsetFlags::kNone };
-			configNodeOverrideConditionList_t       conditions;
-			std::string                             description;
-			NiPoint3                                adjustScale{ 1.0f, 1.0f, 1.0f };
+			stl::flag<NodeOverrideOffsetFlags>            offsetFlags{ NodeOverrideOffsetFlags::kNone };
+			configNodeOverrideConditionList_t             conditions;
+			std::string                                   description;
+			NiPoint3                                      adjustScale{ 1.0f, 1.0f, 1.0f };
 			stl::boost_vector<configNodeOverrideOffset_t> group;
 
-			void clamp()
+			constexpr void clamp()
 			{
-				using namespace ::Math;
-
-				adjustScale.x = std::clamp(zero_nan(adjustScale.x), -100.0f, 100.0f);
-				adjustScale.y = std::clamp(zero_nan(adjustScale.y), -100.0f, 100.0f);
-				adjustScale.z = std::clamp(zero_nan(adjustScale.z), -100.0f, 100.0f);
+				adjustScale.x = std::clamp(stl::zero_nan(adjustScale.x), -100.0f, 100.0f);
+				adjustScale.y = std::clamp(stl::zero_nan(adjustScale.y), -100.0f, 100.0f);
+				adjustScale.z = std::clamp(stl::zero_nan(adjustScale.z), -100.0f, 100.0f);
 			}
 
 		private:

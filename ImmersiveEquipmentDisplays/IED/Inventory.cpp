@@ -293,7 +293,7 @@ namespace IED
 						continue;
 					}
 
-					rating = weap->damage.attackDamage;
+					rating = weap->attackDamage;
 				}
 				break;
 			case TESAmmo::kTypeID:

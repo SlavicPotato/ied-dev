@@ -88,7 +88,8 @@ namespace IED
 
 			[[nodiscard]] static bool AddTask(
 				std::int32_t a_id,
-				Tp&&         a_task) requires(std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>);
+				Tp&&         a_task) requires
+				std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>;
 
 			static void RemoveTask(std::int32_t a_id);
 			static void QueueRemoveTask(std::int32_t a_id);
@@ -107,7 +108,7 @@ namespace IED
 
 			static void QueueResetInput() noexcept
 			{
-				IScopedLock lock(m_Instance.m_lock);
+				stl::scoped_lock lock(m_Instance.m_lock);
 				m_Instance.m_updateFlags.set(UpdateFlags::kResetInput);
 			}
 
@@ -148,26 +149,26 @@ namespace IED
 
 			static void SetStyle(UIStylePreset a_style) noexcept
 			{
-				IScopedLock lock(m_Instance.m_lock);
+				stl::scoped_lock lock(m_Instance.m_lock);
 				m_Instance.m_conf.style = a_style;
 			}
 
 			static void SetReleaseFontData(bool a_switch) noexcept
 			{
-				IScopedLock lock(m_Instance.m_lock);
+				stl::scoped_lock lock(m_Instance.m_lock);
 				m_Instance.m_conf.releaseFontData = a_switch;
 			}
 
 			static void SetAlpha(float a_value) noexcept
 			{
-				IScopedLock lock(m_Instance.m_lock);
+				stl::scoped_lock lock(m_Instance.m_lock);
 				m_Instance.m_conf.alpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyleAlpha);
 			}
 
 			static void SetBGAlpha(const stl::optional<float>& a_value) noexcept
 			{
-				IScopedLock lock(m_Instance.m_lock);
+				stl::scoped_lock lock(m_Instance.m_lock);
 				m_Instance.m_conf.bgAlpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyle);
 			}
@@ -304,7 +305,7 @@ namespace IED
 
 			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
 
-			WCriticalSection m_lock;
+			stl::critical_section m_lock;
 
 			static UI m_Instance;
 		};
@@ -312,12 +313,12 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(UI::UpdateFlags);
 
 		template <class Tp>
-		bool UI::AddTask(std::int32_t a_id, Tp&& a_task) requires(
-			std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>)
+		bool UI::AddTask(std::int32_t a_id, Tp&& a_task) requires
+			std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
 		{
 			assert(a_task);
 
-			IScopedLock lock(m_Instance.m_lock);
+			stl::scoped_lock lock(m_Instance.m_lock);
 
 			if (!m_Instance.m_imInitialized)
 			{

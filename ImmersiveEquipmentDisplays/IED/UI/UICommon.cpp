@@ -2,6 +2,8 @@
 
 #include "UICommon.h"
 
+#include "IED/ConfigLUIDTag.h"
+
 namespace IED
 {
 	namespace UI
@@ -72,6 +74,19 @@ namespace IED
 					ImGui::PopItemFlag();
 					ImGui::PopStyleVar();
 				}
+			}
+
+			void PushLUID(const Data::configUniqueObjectTag_t& a_id)
+			{
+				auto& d = a_id.get_tag_data();
+				ImGui::PushID(reinterpret_cast<const void*>(d.p1));
+				ImGui::PushID(reinterpret_cast<const void*>(d.p2));
+			}
+
+			void PopLUID()
+			{
+				ImGui::PopID();
+				ImGui::PopID();
 			}
 		}
 

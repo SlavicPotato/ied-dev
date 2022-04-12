@@ -1,6 +1,6 @@
 #pragma once
 
-#include "skse64_common/skse_version.h"
+#include "skse_version.h"
 
 #include <ext/macro_helpers.h>
 

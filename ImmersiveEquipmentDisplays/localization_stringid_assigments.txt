@@ -24,3 +24,4 @@
 6100-6199:		intro banner
 6200-6299:		comp oper selector
 6300-6599:		form type selector
+6400-6499:		es func selector

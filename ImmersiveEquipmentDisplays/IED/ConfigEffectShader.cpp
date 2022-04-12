@@ -74,7 +74,7 @@ namespace IED
 				{
 					LoadTexture(
 						path,
-						1,
+						std::uint8_t(1),
 						a_out,
 						false);
 				}

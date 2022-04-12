@@ -645,7 +645,7 @@ namespace IED
 
 		if (xfrm.scale)
 		{
-			a_out.scale = std::clamp(Math::zero_nan(a_out.scale * *xfrm.scale), 0.01f, 100.0f);
+			a_out.scale = std::clamp(stl::zero_nan(a_out.scale * *xfrm.scale), 0.01f, 100.0f);
 		}
 
 		if (xfrm.rotation)
@@ -763,7 +763,7 @@ namespace IED
 
 		if (a_data.transform.scale)
 		{
-			xfrm.scale = std::clamp(Math::zero_nan(xfrm.scale * *a_data.transform.scale), 0.01f, 100.0f);
+			xfrm.scale = std::clamp(stl::zero_nan(xfrm.scale * *a_data.transform.scale), 0.01f, 100.0f);
 		}
 
 		if (a_data.transform.rotation)
@@ -1084,7 +1084,7 @@ namespace IED
 							if (auto arma = addon->As<TESObjectARMA>())
 							{
 								r.first->second.weaponAdjust = std::max(
-									Math::zero_nan(arma->data.weaponAdjust),
+									stl::zero_nan(arma->data.weaponAdjust),
 									r.first->second.weaponAdjust);
 							}
 						}
@@ -1111,7 +1111,7 @@ namespace IED
 						if (auto arma = e.addon->As<TESObjectARMA>())
 						{
 							*weaponAdjust = std::max(
-								Math::zero_nan(arma->data.weaponAdjust),
+								stl::zero_nan(arma->data.weaponAdjust),
 								*weaponAdjust);
 						}
 					}

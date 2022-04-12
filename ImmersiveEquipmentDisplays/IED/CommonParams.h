@@ -43,8 +43,8 @@ namespace IED
 
 				if (auto pm = actor->processManager)
 				{
-					if (actor->actorState.actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSitting ||
-					    actor->actorState.actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSleeping)
+					if (actor->actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSitting ||
+					    actor->actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSleeping)
 					{
 						handle = pm->GetOccupiedFurniture();
 					}

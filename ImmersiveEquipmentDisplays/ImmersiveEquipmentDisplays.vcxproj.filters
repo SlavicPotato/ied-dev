@@ -189,6 +189,15 @@
     <Filter Include="Source\IED\Controller\Animation">
       <UniqueIdentifier>{bfc7455f-88ee-4d3e-8785-a6575bea8116}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\Controller\EffectShader">
+      <UniqueIdentifier>{133bd569-d56f-45ea-aa93-2f266c259ae1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\EffectShader\Functions">
+      <UniqueIdentifier>{64663a5a-f3f0-4a40-ab74-477645b4dd64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets\BaseConfig\EffectShader">
+      <UniqueIdentifier>{47b6de0e-0807-40b5-9322-8a8b1b38e14b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -983,9 +992,6 @@
     <ClInclude Include="IED\UI\Widgets\UIBaseConfigWidget.h">
       <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h">
-      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h">
       <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
     </ClInclude>
@@ -1000,9 +1006,6 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h">
       <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidgetStrings.h">
-      <Filter>Source\IED\UI\Widgets\BaseConfig</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h">
       <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
@@ -1076,7 +1079,7 @@
     <ClInclude Include="IED\ConfigParsers.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConfigUUIDTag.h">
+    <ClInclude Include="IED\ConfigLUIDTag.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
     <ClInclude Include="..\..\sse-build-resources\ext\SKSEMessagingHandler.h">
@@ -1085,7 +1088,7 @@
     <ClInclude Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.h">
       <Filter>Source\ext</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\IUUID.h">
+    <ClInclude Include="..\..\sse-build-resources\ext\ILUID.h">
       <Filter>Source\ext</Filter>
     </ClInclude>
     <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h">
@@ -1147,6 +1150,48 @@
     </ClInclude>
     <ClInclude Include="IED\Controller\ExportFlags.h">
       <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\EffectShaderFunctionBase.h">
+      <Filter>Source\IED\Controller\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ESF_UVLinearMotion.h">
+      <Filter>Source\IED\Controller\EffectShader\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigEffectShaderFunction.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ESF_Pulse.h">
+      <Filter>Source\IED\Controller\EffectShader\Functions</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\EffectShaderData.h">
+      <Filter>Source\IED\Controller\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelectorStrings.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1765,7 +1810,7 @@
     <ClCompile Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.cpp">
       <Filter>Source\ext</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\IUUID.cpp">
+    <ClCompile Include="..\..\sse-build-resources\ext\ILUID.cpp">
       <Filter>Source\ext</Filter>
     </ClCompile>
     <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
@@ -1800,6 +1845,27 @@
     </ClCompile>
     <ClCompile Include="IED\Util\PEXReader.cpp">
       <Filter>Source\IED\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ESF_UVLinearMotion.cpp">
+      <Filter>Source\IED\Controller\EffectShader\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ESF_Pulse.cpp">
+      <Filter>Source\IED\Controller\EffectShader\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\EffectShaderData.cpp">
+      <Filter>Source\IED\Controller\EffectShader</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.cpp">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

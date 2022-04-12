@@ -11,7 +11,7 @@ namespace IED
 				return std::isnan(a_value) ? 0.0f : a_value;
 			}
 
-			void Update(const Data::configTransform_t& a_in) noexcept
+			void Update(const Data::configTransform_t& a_in)
 			{
 				scale    = a_in.scale;
 				position = a_in.position;
@@ -50,7 +50,7 @@ namespace IED
 			stl::optional<NiPoint3>   position;
 			stl::optional<NiMatrix33> rotation;
 			stl::optional<float>      scale;
-			std::optional<uuid_tag>   tag;
+			std::optional<luid_tag>   tag;
 		};
 	}
 }

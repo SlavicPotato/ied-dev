@@ -46,11 +46,13 @@ namespace IED
 		m_timer.End(m_currentTime);
 	}
 
-	void EffectController::UpdateEffects(const effectShaderData_t& a_data)
+	void EffectController::UpdateEffects(EffectShaderData& a_data)
 	{
 		for (auto& e : a_data.data)
 		{
-			if (e.flags.test(effectShaderData_t::EntryFlags::kForce))
+			e.update_effect_data();
+
+			if (e.flags.test(EffectShaderData::EntryFlags::kForce))
 			{
 				for (auto& f : e.nodes)
 				{

@@ -73,7 +73,7 @@ namespace IED
 
 	void Controller::SinkEventsT0()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		SKSEMessagingHandler::GetSingleton().AddSink(this);
 		ITaskPool::AddTaskFixed(this);
@@ -339,7 +339,11 @@ namespace IED
 				DIK_BACKSPACE);
 		}
 
-		if (!Math::IsEqual(config.ui.scale, 1.0f))
+		std::vector<int> a;
+
+		stl::destroy_in_place(a);
+
+		if (!stl::is_equal(config.ui.scale, 1.0f))
 		{
 			Drivers::UI::QueueSetScale(config.ui.scale);
 		}
@@ -489,7 +493,7 @@ namespace IED
 	{
 		ASSERT(StringCache::IsInitialized());
 
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (!m_bsstrings)
 		{
@@ -501,7 +505,7 @@ namespace IED
 
 	void Controller::OnDataLoaded()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		InitializeData();
 
@@ -514,7 +518,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		EvaluateImpl(a_actor, a_handle, a_flags);
 	}
@@ -597,7 +601,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		return RemoveActorImpl(a_actor, a_handle, a_flags);
 	}
@@ -606,7 +610,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		return RemoveActorImpl(a_actor, a_flags);
 	}
@@ -615,7 +619,7 @@ namespace IED
 		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		return RemoveActorImpl(a_actor, a_flags);
 	}
@@ -670,7 +674,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -685,7 +689,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -702,7 +706,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -756,7 +760,7 @@ namespace IED
 		bool         a_xfrmUpdate,
 		bool         a_xfrmUpdateNoDefer) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -788,7 +792,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -810,7 +814,7 @@ namespace IED
 		Game::FormID a_actor,
 		bool         a_noDefer) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -835,7 +839,7 @@ namespace IED
 		Game::FormID a_npc,
 		bool         a_noDefer) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -862,7 +866,7 @@ namespace IED
 		Game::FormID a_race,
 		bool         a_noDefer) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -888,7 +892,7 @@ namespace IED
 	void Controller::RequestEvaluateTransformsAll(
 		bool a_noDefer) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -931,7 +935,7 @@ namespace IED
 			[this, a_flags](
 				Actor*            a_actor,
 				Game::ActorHandle a_handle) {
-				IScopedLock lock(m_lock);
+				stl::scoped_lock lock(m_lock);
 
 				ActorResetImpl(
 					a_actor,
@@ -945,7 +949,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -960,7 +964,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -969,7 +973,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->GetTemplateOrThis()->formID == a_npc)
+					if (npc->GetFirstNonTemporaryOrThis()->formID == a_npc)
 					{
 						ActorResetImpl(
 							e.second,
@@ -986,7 +990,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1013,7 +1017,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1033,7 +1037,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1042,7 +1046,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->GetTemplateOrThis()->formID == a_npc)
+					if (npc->GetFirstNonTemporaryOrThis()->formID == a_npc)
 					{
 						ActorResetImpl(
 							e.second,
@@ -1061,7 +1065,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1135,7 +1139,7 @@ namespace IED
 			return;
 		}
 
-		auto npc = anpc->GetTemplateOrThis();
+		auto npc = anpc->GetFirstNonTemporaryOrThis();
 
 		if (npc->formID.IsTemporary())
 		{
@@ -1235,7 +1239,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1252,7 +1256,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_flags, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1268,7 +1272,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1291,7 +1295,7 @@ namespace IED
 	void Controller::QueueClearObjects()
 	{
 		ITaskPool::AddTask([this] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			ClearObjectsImpl();
 		});
@@ -1302,7 +1306,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_slot] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateTransformSlotImpl(a_actor, a_slot);
 		});
@@ -1313,7 +1317,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1330,7 +1334,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_slot]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1345,7 +1349,7 @@ namespace IED
 	void Controller::QueueUpdateTransformSlotAll(ObjectSlot a_slot)
 	{
 		ITaskPool::AddTask([this, a_slot] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1360,7 +1364,7 @@ namespace IED
 		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_actor, a_slot, a_evalIfNone] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			AttachSlotNodeImpl(
 				a_actor,
@@ -1375,7 +1379,7 @@ namespace IED
 		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_npc, a_slot, a_evalIfNone]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1396,7 +1400,7 @@ namespace IED
 		bool         a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_race, a_slot, a_evalIfNone]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1416,7 +1420,7 @@ namespace IED
 		bool       a_evalIfNone)
 	{
 		ITaskPool::AddTask([this, a_slot, a_evalIfNone] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1431,7 +1435,7 @@ namespace IED
 	void Controller::QueueResetAAAll()
 	{
 		ITaskPool::AddTask([this] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1451,7 +1455,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1473,7 +1477,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1482,7 +1486,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->GetTemplateOrThis()->formID == a_npc)
+					if (npc->GetFirstNonTemporaryOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -1503,7 +1507,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1532,7 +1536,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1552,7 +1556,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1561,7 +1565,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->GetTemplateOrThis()->formID == a_npc)
+					if (npc->GetFirstNonTemporaryOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -1580,7 +1584,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1607,7 +1611,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1625,7 +1629,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1634,7 +1638,7 @@ namespace IED
 			{
 				if (auto npc = e.second->GetActorBase())
 				{
-					if (npc->GetTemplateOrThis()->formID == a_npc)
+					if (npc->GetFirstNonTemporaryOrThis()->formID == a_npc)
 					{
 						ResetCustomImpl(
 							e.second,
@@ -1651,7 +1655,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1678,7 +1682,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1700,7 +1704,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1720,7 +1724,7 @@ namespace IED
 		ConfigClass a_class)
 	{
 		ITaskPool::AddTask([this, a_class]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1742,7 +1746,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1760,7 +1764,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1778,7 +1782,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1795,7 +1799,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1811,7 +1815,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1827,7 +1831,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1842,7 +1846,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1856,7 +1860,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1870,7 +1874,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1885,7 +1889,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1904,7 +1908,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1921,7 +1925,7 @@ namespace IED
 		ConfigClass a_class)
 	{
 		ITaskPool::AddTask([this, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1940,7 +1944,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1958,7 +1962,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1976,7 +1980,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1993,7 +1997,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -2009,7 +2013,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -2025,7 +2029,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -2040,7 +2044,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -2054,7 +2058,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -2068,7 +2072,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -2083,7 +2087,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -2102,7 +2106,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -2119,7 +2123,7 @@ namespace IED
 		ConfigClass a_class)
 	{
 		ITaskPool::AddTask([this, a_class] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -2134,7 +2138,7 @@ namespace IED
 	void Controller::QueueEvaluateNearbyActors(bool a_removeFirst)
 	{
 		ITaskPool::AddTask([this, a_removeFirst] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			auto player = *g_thePlayer;
 			if (player)
@@ -2195,7 +2199,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_formId, func = std::move(a_func)] {
 			auto result = LookupFormInfo(a_formId);
 
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			func(std::move(result));
 		});
@@ -2215,7 +2219,7 @@ namespace IED
 				}
 			}
 
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			func(std::move(result));
 		});
@@ -2224,7 +2228,7 @@ namespace IED
 	void Controller::QueueGetFormDatabase(form_db_get_func_t a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			func(GetFormDatabase());
 		});
@@ -2243,7 +2247,7 @@ namespace IED
 				}
 			}
 
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			func(result);
 		});
 	}
@@ -2251,7 +2255,7 @@ namespace IED
 	void Controller::QueueUpdateSoundForms()
 	{
 		ITaskPool::AddTask([this] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			UpdateSoundForms();
 		});
 	}
@@ -2259,7 +2263,7 @@ namespace IED
 	void Controller::QueueClearRand()
 	{
 		ITaskPool::AddTask([this] {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			ClearConfigStoreRand(m_config.active);
 		});
 	}
@@ -2268,7 +2272,7 @@ namespace IED
 		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		auto r = m_actorBlockList.data.try_emplace(a_actor);
 		r.first->second.keys.emplace(a_key);
@@ -2287,7 +2291,7 @@ namespace IED
 		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		auto it = m_actorBlockList.data.find(a_actor);
 
@@ -2316,7 +2320,7 @@ namespace IED
 			return;
 		}
 
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		m_actorBlockList.playerToggle = !m_actorBlockList.playerToggle;
 
@@ -2350,7 +2354,7 @@ namespace IED
 
 	bool Controller::IsActorBlocked(Game::FormID a_actor) const
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		return IsActorBlockedImpl(a_actor);
 	}
@@ -2471,14 +2475,12 @@ namespace IED
 	constexpr void Controller::UpdateObjectEffectShaders(
 		processParams_t& a_params,
 		const Ta&        a_config,
-		Tb&              a_objectEntry) requires(
-
-		(std::is_same_v<Ta, Data::configCustom_t> &&
-	     std::is_same_v<Tb, objectEntryCustom_t>) ||
+		Tb&              a_objectEntry,
+		bool             a_updateValues) requires(  //
+		(std::is_same_v<Ta, Data::configCustom_t>&&
+	         std::is_same_v<Tb, objectEntryCustom_t>) ||
 		(std::is_same_v<Ta, Data::configSlot_t> &&
-	     std::is_same_v<Tb, objectEntrySlot_t>)
-
-	)
+	     std::is_same_v<Tb, objectEntrySlot_t>))
 	{
 		if (!EffectControllerEnabled() ||
 		    !a_objectEntry.state)
@@ -2511,6 +2513,13 @@ namespace IED
 					*es))
 			{
 				a_params.state.ResetEffectShaders(a_params.handle);
+			}
+			else
+			{
+				if (a_updateValues)
+				{
+					a_objectEntry.state->effectShaders.UpdateConfigValues(*es);
+				}
 			}
 		}
 		else
@@ -2730,7 +2739,8 @@ namespace IED
 						UpdateObjectEffectShaders(
 							a_params,
 							configEntry,
-							objectEntry);
+							objectEntry,
+							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 						continue;
 					}
@@ -2758,7 +2768,8 @@ namespace IED
 					UpdateObjectEffectShaders(
 						a_params,
 						configEntry,
-						objectEntry);
+						objectEntry,
+						a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 				}
@@ -3177,7 +3188,8 @@ namespace IED
 						UpdateObjectEffectShaders(
 							a_params,
 							a_config,
-							a_objectEntry);
+							a_objectEntry,
+							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 						return true;
 					}
@@ -3238,7 +3250,8 @@ namespace IED
 				UpdateObjectEffectShaders(
 					a_params,
 					a_config,
-					a_objectEntry);
+					a_objectEntry,
+					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -3286,7 +3299,8 @@ namespace IED
 						UpdateObjectEffectShaders(
 							a_params,
 							a_config,
-							a_objectEntry);
+							a_objectEntry,
+							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 						return true;
 					}
@@ -3333,7 +3347,8 @@ namespace IED
 				UpdateObjectEffectShaders(
 					a_params,
 					a_config,
-					a_objectEntry);
+					a_objectEntry,
+					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -3599,7 +3614,7 @@ namespace IED
 			{ a_actor },
 			a_actor,
 			nrp->npc,
-			nrp->npc->GetTemplateOrThis(),
+			nrp->npc->GetFirstNonTemporaryOrThis(),
 			nrp->race
 		};
 
@@ -3614,7 +3629,7 @@ namespace IED
 		}
 
 		params.collector.Run(
-			nrp->npc->container,
+			*nrp->npc,
 			dataList);
 
 		if (!m_config.settings.data.disableNPCSlots ||
@@ -3746,7 +3761,7 @@ namespace IED
 			*this,
 			a_actor,
 			a_npc,
-			a_npc->GetTemplateOrThis(),
+			a_npc->GetFirstNonTemporaryOrThis(),
 			a_race
 		};
 
@@ -4174,7 +4189,7 @@ namespace IED
 		ItemCandidateCollector collector(a_info.actor);
 
 		collector.Run(
-			a_info.npc->container,
+			*a_info.npc,
 			GetEntryDataList(a_info.actor));
 
 		CommonParams params{
@@ -4203,7 +4218,7 @@ namespace IED
 		ItemCandidateCollector collector(a_info.actor);
 
 		collector.Run(
-			a_info.npc->container,
+			*a_info.npc,
 			GetEntryDataList(a_info.actor));
 
 		auto form = a_entry.GetFormIfActive();
@@ -4959,7 +4974,7 @@ namespace IED
 		auto race = actor->race;
 		if (!race)
 		{
-			race = npc->race.race;
+			race = npc->race;
 
 			if (!race)
 			{
@@ -5000,7 +5015,7 @@ namespace IED
 			actor,
 			handle,
 			npc,
-			npc->GetTemplateOrThis(),
+			npc->GetFirstNonTemporaryOrThis(),
 			race,
 			root,
 			npcroot,
@@ -5222,7 +5237,7 @@ namespace IED
 			ITaskPool::QueueLoadedActorTask(
 				a_evn->source,
 				[this](Actor* a_actor, Game::ActorHandle a_handle) {
-					IScopedLock lock(m_lock);
+					stl::scoped_lock lock(m_lock);
 
 					auto it = m_objects.find(a_actor->formID);
 					if (it != m_objects.end())
@@ -5328,7 +5343,7 @@ namespace IED
 		auto race = a_actor->race;
 		if (!race)
 		{
-			race = npc->race.race;
+			race = npc->race;
 
 			if (!race)
 			{
@@ -5370,7 +5385,7 @@ namespace IED
 	{
 		Debug("Reverting..");
 
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		m_actorBlockList.clear();
 		m_storedActorStates.clear();
@@ -5391,7 +5406,7 @@ namespace IED
 	std::size_t Controller::Store(
 		boost::archive::binary_oarchive& a_out)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		a_out << m_actorBlockList;
 
@@ -5416,7 +5431,7 @@ namespace IED
 		std::uint32_t                    a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
 		{
@@ -5480,7 +5495,7 @@ namespace IED
 
 	void Controller::SaveSettings()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 		m_config.settings.SaveIfDirty();
 	}
 
@@ -5507,7 +5522,7 @@ namespace IED
 			if (auto actor = a_evn->reference->As<Actor>())
 			{
 				{
-					IScopedLock lock(m_lock);
+					stl::scoped_lock lock(m_lock);
 
 					auto it = m_objects.find(actor->formID);
 					if (it != m_objects.end())
@@ -5526,7 +5541,7 @@ namespace IED
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)
 	{
 		ITaskPool::AddTask([this, a_actor]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			UpdateActorInfo(m_objects, a_actor);
 		});
 	}
@@ -5536,7 +5551,7 @@ namespace IED
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_actor, callback = std::move(a_callback)]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			callback(UpdateActorInfo(a_actor));
 		});
 	}
@@ -5546,14 +5561,14 @@ namespace IED
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_npc, callback = std::move(a_callback)]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 			callback(UpdateNPCInfo(a_npc));
 		});
 	}
 
 	void Controller::StoreActiveHandles()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		m_activeHandles.clear();
 
@@ -5565,7 +5580,7 @@ namespace IED
 
 	void Controller::EvaluateStoredHandles(ControllerUpdateFlags a_flags)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		for (auto& e : m_activeHandles)
 		{
@@ -5581,7 +5596,7 @@ namespace IED
 
 	void Controller::ClearStoredHandles()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		m_activeHandles.clear();
 	}
@@ -5589,7 +5604,7 @@ namespace IED
 	void Controller::QueueObjectDatabaseClear()
 	{
 		ITaskPool::AddTask([this]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			ClearObjectDatabase();
 		});
@@ -5597,7 +5612,7 @@ namespace IED
 
 	void Controller::SetObjectDatabaseLevel(ObjectDatabaseLevel a_level)
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		if (a_level != GetODBLevel())
 		{
@@ -5617,7 +5632,7 @@ namespace IED
 	void Controller::QueueSetLanguage(const stl::fixed_string& a_lang)
 	{
 		ITaskPool::AddTask([this, a_lang]() {
-			IScopedLock lock(m_lock);
+			stl::scoped_lock lock(m_lock);
 
 			SetLanguageImpl(a_lang);
 		});
@@ -5625,7 +5640,7 @@ namespace IED
 
 	void Controller::ProcessEffectShaders()
 	{
-		IScopedLock lock(m_lock);
+		stl::scoped_lock lock(m_lock);
 
 		ProcessEffects(m_objects);
 	}

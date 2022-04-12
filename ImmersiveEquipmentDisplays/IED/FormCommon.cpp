@@ -189,12 +189,13 @@ namespace IED
 	}
 
 	template <class T>
-	inline static constexpr const char* GetFullName(TESForm* a_form)
+	inline static constexpr const char* GetFullName(TESForm* a_form) requires
+		std::is_base_of_v<TESFullName, T>
 	{
-		return static_cast<T*>(a_form)->fullName.name.c_str();
+		return static_cast<T*>(a_form)->name.c_str();
 	}
 
-	inline static const char* GetKeywordString(BGSKeyword* a_form)
+	inline static constexpr const char* GetKeywordString(BGSKeyword* a_form)
 	{
 		return a_form->keyword.c_str();
 	}
@@ -205,7 +206,7 @@ namespace IED
 		return a_form->editorId.c_str();
 	}
 
-	inline static const char* GetReferenceName(TESObjectREFR* a_form)
+	inline static constexpr const char* GetReferenceName(TESObjectREFR* a_form)
 	{
 		return a_form->GetReferenceName();
 	}
@@ -282,7 +283,14 @@ namespace IED
 	template <class T>
 	inline static constexpr bool HasKeywordImpl(TESForm* a_form, BGSKeyword* a_keyword) noexcept
 	{
-		return static_cast<T*>(a_form)->keyword.HasKeyword(a_keyword);
+		if constexpr (std::is_base_of_v<BGSKeywordForm, T>)
+		{
+			return static_cast<T*>(a_form)->HasKeyword(a_keyword);
+		}
+		else
+		{
+			return static_cast<T*>(a_form)->keyword.HasKeyword(a_keyword);
+		}
 	}
 
 	bool IFormCommon::HasKeyword(TESForm* a_form, BGSKeyword* a_keyword)

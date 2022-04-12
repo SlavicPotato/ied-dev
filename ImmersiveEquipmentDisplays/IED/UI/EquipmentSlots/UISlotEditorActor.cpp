@@ -187,16 +187,26 @@ namespace IED
 			switch (a_action)
 			{
 			case PostChangeAction::Evaluate:
-				m_controller.QueueEvaluate(a_handle, ControllerUpdateFlags::kNone);
+				m_controller.QueueEvaluate(
+					a_handle,
+					ControllerUpdateFlags::kWantEffectShaderConfigUpdate);
 				break;
 			case PostChangeAction::Reset:
-				m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone, params->slot);
+				m_controller.QueueReset(
+					a_handle,
+					ControllerUpdateFlags::kNone,
+					params->slot);
 				break;
 			case PostChangeAction::UpdateTransform:
-				m_controller.QueueUpdateTransformSlot(a_handle, params->slot);
+				m_controller.QueueUpdateTransformSlot(
+					a_handle,
+					params->slot);
 				break;
 			case PostChangeAction::AttachNode:
-				m_controller.QueueAttachSlotNode(a_handle, params->slot, true);
+				m_controller.QueueAttachSlotNode(
+					a_handle,
+					params->slot,
+					true);
 				break;
 			}
 		}

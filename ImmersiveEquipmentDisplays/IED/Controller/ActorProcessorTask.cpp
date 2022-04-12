@@ -211,7 +211,7 @@ namespace IED
 
 	void ActorProcessorTask::Run()
 	{
-		IScopedLock lock(m_controller.m_lock);
+		stl::scoped_lock lock(m_controller.m_lock);
 
 		m_timer.Begin();
 

@@ -497,10 +497,10 @@ namespace IED
 
 			auto& se = m_strings->get_eqp(a_id);
 
-			a_actor->animGraphHolder.SetVariableOnGraphsInt(se.name, value);
+			a_actor->SetVariableOnGraphsInt(se.name, value);
 
-			a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_crc, m_groupInfo->crc);
-			a_actor->animGraphHolder.SetVariableOnGraphsInt(se.crc, m_groupInfo->crc);
+			a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_crc, m_groupInfo->crc);
+			a_actor->SetVariableOnGraphsInt(se.crc, m_groupInfo->crc);
 
 			if (a_id == AnimationWeaponType::Bow)
 			{
@@ -508,13 +508,13 @@ namespace IED
 
 				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowIdle, m_settings.data.XP32AABowIdle ? a_value : -1);
 
-				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowidle, av);
-				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowidle_crc, m_groupInfo->crc);
+				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowidle, av);
+				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowidle_crc, m_groupInfo->crc);
 
 				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowAttack, m_settings.data.XP32AABowAtk ? a_value : -1);
 
-				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowatk, av);
-				a_actor->animGraphHolder.SetVariableOnGraphsInt(m_strings->FNISaa_bowatk_crc, m_groupInfo->crc);
+				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowatk, av);
+				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowatk_crc, m_groupInfo->crc);
 			}
 
 			//gLog.Debug("%.8X: %s: %d", a_actor->formID, se.name.c_str(), value);

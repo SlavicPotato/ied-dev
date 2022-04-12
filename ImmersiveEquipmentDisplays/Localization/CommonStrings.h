@@ -181,5 +181,18 @@ namespace IED
 		Cell         = 252,
 		Skin         = 253,
 		Template     = 254,
+		Functions    = 255,
+		Speed        = 256,
+		Angle        = 257,
+		Position     = 258,
+		Rotation     = 259,
+		Function     = 260,
+		Sine         = 261,
+		Cosine       = 262,
+		Offset       = 263,
+		Red          = 264,
+		Green        = 265,
+		Blue         = 266,
+		Alpha        = 267,
 	};
 }

@@ -160,7 +160,7 @@ namespace IED
 			switch (a_action)
 			{
 			case PostChangeAction::Evaluate:
-				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
+				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kWantEffectShaderConfigUpdate);
 				break;
 			case PostChangeAction::Reset:
 				m_controller.QueueResetAll(ControllerUpdateFlags::kNone, params->slot);

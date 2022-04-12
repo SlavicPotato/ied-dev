@@ -150,8 +150,7 @@ namespace IED
 			{
 				handle = GetHandle();
 
-				NiPointer<TESObjectREFR> refr;
-				(void)handle->LookupZH(refr);
+				(void)handle->get_ptr_zh();
 			}
 
 			if (!a_entry.state->dbEntries.empty())
@@ -233,7 +232,7 @@ namespace IED
 			{
 				if (auto npc = actor->GetActorBase())
 				{
-					return (npc->GetTemplateOrThis()->formID == a_npc);
+					return (npc->GetFirstNonTemporaryOrThis()->formID == a_npc);
 				}
 			}
 		}
@@ -553,101 +552,6 @@ namespace IED
 				}
 			}
 		}
-	}
-
-	void effectShaderData_t::clear()
-	{
-		if (!data.empty())
-		{
-			visit_nodes([](auto& a_entry, auto& a_prop) {
-				if (a_prop.prop->effectData == a_entry.shaderData)
-				{
-					a_prop.prop->ClearEffectShaderData();
-				}
-			});
-
-			data.clear();
-		}
-
-		tag.reset();
-	}
-
-	bool effectShaderData_t::UpdateIfChanged(
-		NiNode*                                 a_object,
-		const Data::configEffectShaderHolder_t& a_data)
-	{
-		if (tag == a_data)
-		{
-			return false;
-		}
-		else
-		{
-			Update(a_object, a_data);
-			return true;
-		}
-	}
-
-	void effectShaderData_t::Update(
-		NiNode*                                 a_object,
-		const Data::configEffectShaderHolder_t& a_data)
-	{
-		clear();
-
-		for (auto& [i, e] : a_data.data)
-		{
-			Entry tmp;
-
-			std::optional<stl::set<BSFixedString>> tset;
-
-			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
-				if (auto& effect = a_geometry->m_spEffectState)
-				{
-					if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
-					{
-						if (!e.targetNodes.empty())
-						{
-							if (!tset)
-							{
-								tset.emplace();
-
-								for (auto& f : e.targetNodes)
-								{
-									tset->emplace(f.c_str());
-								}
-							}
-
-							if (!tset->contains(a_geometry->m_name))
-							{
-								return Util::Node::VisitorControl::kContinue;
-							}
-						}
-
-						tmp.nodes.emplace_back(shaderProp);
-					}
-				}
-
-				return Util::Node::VisitorControl::kContinue;
-			});
-
-			if (tmp.nodes.empty())
-			{
-				continue;
-			}
-
-			if (!e.create_shader_data(tmp.shaderData))
-			{
-				continue;
-			}
-
-			if (e.flags.test(Data::EffectShaderDataFlags::kForce))
-			{
-				tmp.flags.set(effectShaderData_t::EntryFlags::kForce);
-			}
-
-			data.emplace_back(std::move(tmp));
-		}
-
-		tag = a_data;
 	}
 
 	bool cmeNodeEntry_t::find_visible_geometry(
