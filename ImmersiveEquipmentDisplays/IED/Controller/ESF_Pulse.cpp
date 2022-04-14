@@ -11,32 +11,71 @@ namespace IED
 		void Pulse::UpdateConfigImpl(
 			const Data::configEffectShaderFunction_t& a_data)
 		{
-			function =
-				a_data.flags.test(Data::EffectShaderFunctionFlags::kOpt1) ?
-					PulseFunction ::Cosine :
-                    PulseFunction::Sine;
+			function    = a_data.fbf.type;
+			flags       = a_data.pulseFlags;
+			ftp         = std::clamp(a_data.speed, 0.01f, 300.0f) * PI2;
+			inverse     = a_data.flags.test(Data::EffectShaderFunctionFlags::kAdditiveInverse);
+			exponential = a_data.flags.test(Data::EffectShaderFunctionFlags::kExponential);
 
-			flags = a_data.pulseFlags;
-			speed = std::clamp(a_data.speed, 0.01f, 100.0f);
+			if (exponential)
+			{
+				exponent = std::clamp(a_data.exponent, -20.0f, 20.0f);
+				if (stl::is_equal(exponent, 0.0f))
+				{
+					exponential = false;
+				}
+				else
+				{
+					maxexpr = std::powf(2.0f, exponent) - 1.0f;
+				}
+			}
 		}
 
 		void Pulse::UpdateConfigInitImpl(
 			const Data::configEffectShaderFunction_t& a_data)
 		{
-			mod = std::clamp(a_data.initmod * PI_X_2, 0.0f, PI_X_2);
+			pos = std::clamp(a_data.initpos * PI2, 0.0f, PI2);
 		}
 
 		void Pulse::Run(
 			BSEffectShaderData* a_data,
 			float               a_step)
 		{
-			mod = stl::fmod(mod + a_step * speed, PI_X_2);
+			float v;
 
-			auto v = ((function == PulseFunction::Cosine ?
-			               std::cosf(mod) :
-                           std::sinf(mod)) +
-			          1.0f) *
-			         0.5f;
+			pos = stl::fmod(pos + a_step * ftp, PI2);
+
+			switch (function)
+			{
+			case Data::EffectShaderWaveform::Sine:
+				v = (std::sinf(pos) + 1.0f) * 0.5f;
+				break;
+			case Data::EffectShaderWaveform::Cosine:
+				v = (std::cosf(pos) + 1.0f) * 0.5f;
+				break;
+			case Data::EffectShaderWaveform::Square:
+				v = pos < PI ? 1.0f : 0.0f;
+				break;
+			case Data::EffectShaderWaveform::Triangle:
+				v = std::fabsf(pos - PI) / PI;
+				break;
+			case Data::EffectShaderWaveform::Sawtooth:
+				v = pos / PI2;
+				break;
+			default:
+				v = pos = 0.0f;
+				break;
+			}
+
+			if (exponential)
+			{
+				v = (std::powf(1.0f + v, exponent) - 1.0f) / maxexpr;
+			}
+
+			if (inverse)
+			{
+				v = 1.0f - v;
+			}
 
 			auto f = flags;
 

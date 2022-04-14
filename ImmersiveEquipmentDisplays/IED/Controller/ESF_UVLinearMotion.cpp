@@ -24,11 +24,8 @@ namespace IED
 			BSEffectShaderData* a_data,
 			float               a_step)
 		{
-			uvOffsetX = stl::fmod_1(uvOffsetX + angleSin * a_step);
-			uvOffsetY = stl::fmod_1(uvOffsetY + angleCos * a_step);
-
-			a_data->uOffset = uvOffsetX;
-			a_data->vOffset = uvOffsetY;
+			a_data->uOffset = uOffset = stl::fmod_1(uOffset + angleSin * a_step);
+			a_data->vOffset = vOffset = stl::fmod_1(vOffset + angleCos * a_step);
 		}
 	}
 }

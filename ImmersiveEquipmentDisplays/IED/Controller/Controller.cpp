@@ -40,6 +40,10 @@ namespace IED
 		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM)
 	{
 		InitializeInputHandlers();
+
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+		m_activeWriteCMETransforms = a_config->m_activeWriteCMETransforms;
+#endif
 	}
 
 	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
@@ -1233,6 +1237,11 @@ namespace IED
 		{
 			GenerateRandomPlacementEntries(a_holder);
 		}
+
+		/*for (auto& e : a_holder.m_cmeNodes)
+		{
+			a_holder.m_cmeLookup.try_emplace(e.first, e.second);
+		}*/
 	}
 
 	void Controller::QueueResetAll(
@@ -3462,7 +3471,7 @@ namespace IED
 			return;
 		}
 
-		if (!a_actor->GetBiped(false))
+		if (!a_actor->GetBiped1(false))
 		{
 			return;
 		}
@@ -3823,7 +3832,8 @@ namespace IED
 			}
 		}
 
-		if (m_forceOrigWeapXFRM)
+		if (m_forceOrigWeapXFRM &&
+		    EngineExtensions::IsWeaponAdjustDisabled())
 		{
 			for (auto& e : a_objects.m_weapNodes)
 			{

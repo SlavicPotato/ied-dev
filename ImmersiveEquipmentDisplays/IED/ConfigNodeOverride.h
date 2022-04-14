@@ -4,6 +4,7 @@
 #include "ConfigData.h"
 #include "ConfigTransform.h"
 
+#include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
 
 namespace IED
@@ -290,6 +291,9 @@ namespace IED
 			union
 			{
 				std::uint32_t ui32b{ 0 };
+				TimeOfDay     timeOfDay;
+
+				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 			};
 
 			configNodeOverrideConditionGroup_t group;

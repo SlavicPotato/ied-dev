@@ -62,7 +62,7 @@ namespace IED
 		}
 
 		const char* UIComparisonOperatorSelector::comp_operator_to_desc(
-			Data::ComparisonOperator a_comp)
+			Data::ComparisonOperator a_comp) const
 		{
 			switch (a_comp)
 			{

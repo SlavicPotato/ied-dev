@@ -38,6 +38,8 @@ namespace IED
 				return match_form_with_id<Tm, Tf>(a_match, a_params.get_combat_style());
 			case Data::ExtraConditionType::kClass:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.npc->GetClass());
+			case Data::ExtraConditionType::kTimeOfDay:
+				return match_time_of_day<Tm>(a_params, a_match);
 			default:
 				return false;
 			}
@@ -493,7 +495,7 @@ namespace IED
 		constexpr bool compare(
 			Data::ComparisonOperator a_oper,
 			const Tv&                a_value,
-			const Tm&                a_match)
+			const Tm&                a_match) noexcept
 		{
 			switch (a_oper)
 			{
@@ -530,6 +532,22 @@ namespace IED
                                  static_cast<float>(static_cast<long>(a_match.f32a));
 
 			return compare(a_match.compOperator, glob->value, matchval);
+		}
+
+		template <class Tm>
+		constexpr bool match_time_of_day(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (auto tod = a_params.get_time_of_day();
+			    tod != Data::TimeOfDay::kNone)
+			{
+				return tod == a_match.timeOfDay;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);

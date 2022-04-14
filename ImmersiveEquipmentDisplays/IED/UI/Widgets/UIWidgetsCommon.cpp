@@ -2,7 +2,7 @@
 
 #include "UIWidgetsCommon.h"
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
 
 #include "IED/Data.h"
 

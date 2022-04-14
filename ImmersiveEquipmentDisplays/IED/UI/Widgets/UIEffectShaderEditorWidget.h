@@ -748,7 +748,14 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(LS(CommonStrings::Sync, "2")))
+				{
+					OnEffectShaderUpdate(a_params);
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -756,7 +763,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configEffectShaderFunctionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "3"),
+						LS(CommonStrings::PasteOver, "4"),
 						nullptr,
 						false,
 						clipData != nullptr))

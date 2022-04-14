@@ -72,6 +72,8 @@ namespace IED
 				}
 			}
 
+			//m_cmeNodes.reserve(NodeOverrideData::GetCMENodeData().size());
+
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
@@ -82,6 +84,8 @@ namespace IED
 						GetCachedOrZeroTransform(e->second.name));
 				}
 			}
+
+			//m_cmeNodes.shrink_to_fit();
 
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
@@ -150,7 +154,8 @@ namespace IED
 			{
 				handle = GetHandle();
 
-				(void)handle->get_ptr_zh();
+				NiPointer<TESObjectREFR> ref;
+				(void)handle->LookupZH(ref);
 			}
 
 			if (!a_entry.state->dbEntries.empty())
@@ -319,7 +324,7 @@ namespace IED
 
 		INode::UpdateDownwardPass(cme);
 
-		m_cmeNodes.try_emplace(a_entry.name_cme, cme);
+		m_cmeNodes.try_emplace(a_entry.name_cme, cme, cme->m_localTransform);
 		m_movNodes.try_emplace(a_entry.name_mov, mov, a_entry.placementID);
 	}
 

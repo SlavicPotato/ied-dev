@@ -18,6 +18,7 @@
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/ConfigStore.h"
+#include "IED/Data.h"
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
@@ -332,7 +333,7 @@ namespace IED
 		template <class T>
 		const char* UISlotEditorWidget<T>::GetDisplayName() const
 		{
-			return GetConfigClassName(GetConfigClass());
+			return Data::GetConfigClassName(GetConfigClass());
 		}
 
 		template <class T>

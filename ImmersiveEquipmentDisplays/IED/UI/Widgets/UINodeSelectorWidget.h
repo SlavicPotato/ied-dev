@@ -28,7 +28,7 @@ namespace IED
 				Data::NodeDescriptor& a_data);
 
 		private:
-			char m_buffer[256];
+			char m_buffer[256]{ 0 };
 
 			UIGenericFilter m_filter;
 

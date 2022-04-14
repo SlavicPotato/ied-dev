@@ -183,6 +183,7 @@ namespace IED
 			kInMerchantFaction = 7,
 			kCombatStyle       = 8,
 			kClass             = 9,
+			kTimeOfDay         = 10,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

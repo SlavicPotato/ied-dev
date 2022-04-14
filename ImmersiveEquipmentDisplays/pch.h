@@ -85,5 +85,6 @@ namespace fs = std::filesystem;
 #include "skse.h"
 
 //#define IED_ENABLE_STATS_G
+#define IED_ENABLE_STATS_T
 
 #endif  // PCH_H

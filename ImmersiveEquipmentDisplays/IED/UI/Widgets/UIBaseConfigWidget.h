@@ -1790,26 +1790,31 @@ namespace IED
 									e);
 								m_condParamEditor.SetNext<ConditionParamItem::CondExtra>(
 									e.extraCondType);
-								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form.get_id());
 
 								switch (e.extraCondType)
 								{
 								case Data::ExtraConditionType::kShoutEquipped:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Shout));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;
 								case Data::ExtraConditionType::kInMerchantFaction:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Faction));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;
 								case Data::ExtraConditionType::kCombatStyle:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::CombatStyle));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;
 								case Data::ExtraConditionType::kClass:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Class));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
+									break;
+								case Data::ExtraConditionType::kTimeOfDay:
+									m_condParamEditor.SetNext<ConditionParamItem::TimeOfDay>(e.timeOfDay);
 									break;
 								}
 
@@ -2560,7 +2565,7 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Race:
 
-				result = ImGui::CheckboxFlagsT(
+				result |= ImGui::CheckboxFlagsT(
 					"!##1",
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
@@ -2572,7 +2577,7 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
-				result = ImGui::CheckboxFlagsT(
+				result |= ImGui::CheckboxFlagsT(
 					"!##3",
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));

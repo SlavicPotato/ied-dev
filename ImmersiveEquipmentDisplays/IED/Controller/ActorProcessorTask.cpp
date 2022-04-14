@@ -180,6 +180,17 @@ namespace IED
 		return result;
 	}
 
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+	void ActorProcessorTask::WriteCMETransforms(
+		ActorObjectHolder& a_data)
+	{
+		for (auto& e : a_data.m_cmeNodes)
+		{
+			e.second.node->m_localTransform = e.second.current;
+		}
+	}
+#endif
+
 	void ActorProcessorTask::UpdateState()
 	{
 		if (IPerfCounter::delta_us(
@@ -193,11 +204,20 @@ namespace IED
 
 		bool changed = false;
 
-		if (auto current = RE::Sky::GetCurrentWeather();
+		auto sky = RE::Sky::GetSingleton();
+
+		if (auto current = (sky ? sky->currentWeather : nullptr);
 		    current != m_state.currentWeather)
 		{
 			m_state.currentWeather = current;
 			changed                = true;
+		}
+
+		if (auto tod = Data::GetTimeOfDay(sky);
+		    tod != m_state.timeOfDay)
+		{
+			m_state.timeOfDay = tod;
+			changed           = true;
 		}
 
 		if (changed)
@@ -274,6 +294,13 @@ namespace IED
 					e.m_wantLFUpdate = false;
 					e.RequestEvalDefer();
 				}
+
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+				if (m_activeWriteCMETransforms)
+				{
+					WriteCMETransforms(e);
+				}
+#endif
 			}
 
 			ProcessEvalRequest(e);

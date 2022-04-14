@@ -256,8 +256,24 @@ namespace IED
 
 	struct cmeNodeEntry_t
 	{
+		cmeNodeEntry_t(
+			NiNode*            a_node,
+			const NiTransform& a_originalTransform) :
+			node(a_node),
+			orig(a_originalTransform)
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+			,
+			current(a_originalTransform)
+#endif
+		{
+		}
+
 		NiPointer<NiNode> node;
 		NiTransform       orig;  // cached or zero, never read from loaded actor 3D
+
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+		mutable NiTransform current;
+#endif
 
 		static bool find_visible_geometry(
 			NiAVObject*           a_object,
@@ -533,8 +549,15 @@ namespace IED
 		slot_container_type m_entriesSlot{};
 		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
 
-		stl::vector<monitorNodeEntry_t>                       m_monitorNodes;
-		stl::vector<weapNodeEntry_t>                          m_weapNodes;
+		stl::vector<monitorNodeEntry_t> m_monitorNodes;
+		stl::vector<weapNodeEntry_t>    m_weapNodes;
+
+		/*stl::map_sa<
+			stl::fixed_string,
+			cmeNodeEntry_t,
+			stl::fixed_string_less_equal_p>
+			m_cmeNodes;*/
+
 		stl::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
 		stl::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
 

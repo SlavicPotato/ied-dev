@@ -18,6 +18,7 @@ namespace IED
 			//{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
 			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
+			{ Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay },
 
 		} };
 
@@ -66,7 +67,7 @@ namespace IED
 		}
 
 		const char* UIConditionExtraSelectorWidget::condition_type_to_desc(
-			Data::ExtraConditionType a_type)
+			Data::ExtraConditionType a_type) const
 		{
 			switch (a_type)
 			{
@@ -90,6 +91,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::CombatStyle);
 			case Data::ExtraConditionType::kClass:
 				return LS(UIConditionExtraSelectorWidgetStrings::Class);
+			case Data::ExtraConditionType::kTimeOfDay:
+				return LS(UIConditionExtraSelectorWidgetStrings::TimeOfDay);
 			default:
 				return nullptr;
 			}

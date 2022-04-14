@@ -562,7 +562,7 @@ namespace IED
 	{
 		if (m_Instance.m_conf.weaponAdjustFix)
 		{
-			auto& biped3p = a_refr->GetBiped(false);
+			auto& biped3p = a_refr->GetBiped1(false);
 			if (!biped3p || biped3p.get() != a_biped)
 			{
 				return false;

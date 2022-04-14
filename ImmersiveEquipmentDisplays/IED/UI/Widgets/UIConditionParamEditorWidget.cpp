@@ -18,6 +18,7 @@ namespace IED
 			UIPackageTypeSelectorWidget(a_controller),
 			UIWeatherClassSelectorWidget(a_controller),
 			UIComparisonOperatorSelector(a_controller),
+			UITimeOfDaySelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
 		{
@@ -70,8 +71,26 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::CondExtra); e.p1)
 			{
-				result |= DrawExtraConditionSelector(
-					e.As1<Data::ExtraConditionType>());
+				auto c = e.As1<Data::ExtraConditionType>();
+
+				if (DrawExtraConditionSelector(
+						e.As1<Data::ExtraConditionType>()))
+				{
+					if (c != e.As1<Data::ExtraConditionType>())
+					{
+						if (const auto& f = get(ConditionParamItem::Form); f.p1)
+						{
+							f.As1<Game::FormID>() = {};
+						}
+
+						if (const auto& f = get(ConditionParamItem::TimeOfDay); f.p1)
+						{
+							f.As1<Data::TimeOfDay>() = Data::TimeOfDay::kNone;
+						}
+					}
+
+					result = true;
+				}
 			}
 
 			if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
@@ -111,6 +130,11 @@ namespace IED
 					e.As1<Data::ObjectSlotExtra>());
 
 				ImGui::Spacing();
+			}
+
+			if (const auto& e = get(ConditionParamItem::TimeOfDay); e.p1)
+			{
+				result |= DrawTimeOfDaySelector(e.As1<Data::TimeOfDay>());
 			}
 
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
@@ -371,7 +395,23 @@ namespace IED
 				{
 					if (const auto& e = get(a_item); e.p1)
 					{
-						if (auto r = condition_type_to_desc(e.As1<Data::ExtraConditionType>()))
+						auto type = e.As1<Data::ExtraConditionType>();
+
+						if (type == Data::ExtraConditionType::kTimeOfDay)
+						{
+							if (const auto& f = get(ConditionParamItem::TimeOfDay); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%s]",
+									condition_type_to_desc(type),
+									time_of_day_to_desc(f.As1<Data::TimeOfDay>()));
+
+								return m_descBuffer;
+							}
+						}
+
+						if (auto r = condition_type_to_desc(type))
 						{
 							return r;
 						}

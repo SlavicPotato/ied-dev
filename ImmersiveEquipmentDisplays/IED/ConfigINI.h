@@ -46,11 +46,7 @@ namespace IED
 		inline static constexpr auto SECT_SOUND         = "Sound";
 		inline static constexpr auto SECT_ANIM          = "Animation";
 		inline static constexpr auto SECT_EXPERIMENTAL  = "Experimental";
-
-		struct parsers_t
-		{
-			INIConfReader reader;
-		};
+		inline static constexpr auto SECT_EFFECTSHADERS = "EffectShaders";
 
 	public:
 		ConfigINI() = default;
@@ -85,8 +81,11 @@ namespace IED
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
-		float          m_introBannerVOffset{ 110.0f };
-		LogLevel       m_logLevel{ LogLevel::Message };
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+		bool m_activeWriteCMETransforms{ false };
+#endif
+		float    m_introBannerVOffset{ 110.0f };
+		LogLevel m_logLevel{ LogLevel::Message };
 
 		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;

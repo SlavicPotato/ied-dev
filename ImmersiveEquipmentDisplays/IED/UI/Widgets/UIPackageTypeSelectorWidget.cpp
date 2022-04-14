@@ -96,7 +96,7 @@ namespace IED
 		}
 
 		const char* UIPackageTypeSelectorWidget::procedure_type_to_desc(
-			PACKAGE_PROCEDURE_TYPE a_type)
+			PACKAGE_PROCEDURE_TYPE a_type) const
 		{
 			switch (a_type)
 			{

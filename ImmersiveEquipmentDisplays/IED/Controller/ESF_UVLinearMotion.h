@@ -23,8 +23,8 @@ namespace IED
 			float angleSin;
 			float angleCos;
 
-			float uvOffsetX{ 0.0f };
-			float uvOffsetY{ 0.0f };
+			float uOffset{ 0.0f };
+			float vOffset{ 0.0f };
 		};
 	}
 }

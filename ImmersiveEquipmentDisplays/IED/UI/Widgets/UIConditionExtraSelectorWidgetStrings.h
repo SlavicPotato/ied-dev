@@ -18,6 +18,7 @@ namespace IED
 			InMerchantFaction = 5407,
 			CombatStyle       = 5408,
 			Class             = 5409,
+			TimeOfDay         = 5410,
 		};
 	}
 }

@@ -8,7 +8,6 @@ namespace IED
 	{
 		enum class UIEffectShaderFunctionEditorWidgetStrings : Localization::StringID
 		{
-			__ = 6500,
 		};
 	}
 }

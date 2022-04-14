@@ -4,6 +4,7 @@
 #include "ConfigCommon.h"
 #include "ConfigData.h"
 
+#include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
 
 namespace IED
@@ -248,6 +249,9 @@ namespace IED
 			{
 				std::uint32_t ui32b{ 0 };
 				std::uint32_t count;
+				TimeOfDay     timeOfDay;
+
+				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 			};
 
 			equipmentOverrideConditionGroup_t group;

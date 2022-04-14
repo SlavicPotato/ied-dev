@@ -143,25 +143,25 @@ Bool Function ItemEnabledRace(Race akRace, string asPlugin, string asName, bool 
 ;
 ; Slot ids:
 ;
-;	1h sword 		= 0
-;	1h sword left 	= 1
-;	1h axe 			= 2
-;	1h axe left 	= 3
-;	2h sword 		= 4
-;	2h sword left 	= 5
-;	2h axe 			= 6
-;	2h axe left 	= 7
-;	dagger 			= 8
-;	dagger left 	= 9
-;	mace 			= 10
-;	mace left 		= 11
-;	staff 			= 12
-;	staff left 		= 13
-;	bow 			= 14
-;	crossbow 		= 15
-;	shield 			= 16
-;	torch 			= 17
-;	ammo 			= 18
+;	1h sword        = 0
+;	1h sword left   = 1
+;	1h axe          = 2
+;	1h axe left     = 3
+;	2h sword        = 4
+;	2h sword left   = 5
+;	2h axe          = 6
+;	2h axe left     = 7
+;	dagger          = 8
+;	dagger left     = 9
+;	mace            = 10
+;	mace left       = 11
+;	staff           = 12
+;	staff left      = 13
+;	bow             = 14
+;	crossbow        = 15
+;	shield          = 16
+;	torch           = 17
+;	ammo            = 18
 ;
 
 

@@ -275,7 +275,7 @@ namespace IED
 
 			auto form = e.second.form;
 
-			if (isPlayer && !form->IsPlayable())
+			if (isPlayer && !form->GetPlayable())
 			{
 				continue;
 			}

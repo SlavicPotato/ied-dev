@@ -797,10 +797,14 @@ namespace IED
 						  std::addressof(xfrm),
 						  sizeof(NiTransform)) != 0;
 
-		a_entry.node->m_localTransform = xfrm;
-
 		if (update)
 		{
+			a_entry.node->m_localTransform = xfrm;
+
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+			a_entry.current = xfrm;
+#endif
+
 			NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
 			a_entry.node->UpdateDownwardPass(ctx, nullptr);
 		}
@@ -821,10 +825,11 @@ namespace IED
 		    !ITaskPool::IsRunningOnCurrentThread())
 		{
 			ITaskPool::AddPriorityTask(
-				[entry = a_entry]() {
+				[node = a_entry.node,
+			     orig = a_entry.orig]() {
 					ResetNodeOverrideImpl(
-						entry.node,
-						entry.orig);
+						node,
+						orig);
 				});
 		}
 		else

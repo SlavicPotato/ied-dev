@@ -30,7 +30,7 @@ namespace IED
 
 		if (audioManager->BuildSoundDataFromDescriptor(
 				handle,
-				std::addressof(soundForm->soundDescriptor)))
+				soundForm))
 		{
 			handle.SetObjectToFollow(a_object);
 			handle.Play();

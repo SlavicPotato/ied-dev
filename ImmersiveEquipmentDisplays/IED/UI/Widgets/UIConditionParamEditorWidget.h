@@ -7,6 +7,7 @@
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
+#include "UITimeOfDaySelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
 
 #include "IED/UI/UILocalizationInterface.h"
@@ -33,6 +34,7 @@ namespace IED
 		CompOper,
 		Float,
 		UInt32,
+		TimeOfDay,
 		Extra,
 
 		Total
@@ -49,10 +51,15 @@ namespace IED
 
 	namespace UI
 	{
+		inline static constexpr std::size_t COND_PE_DESC_BUFFER_SIZE = 256;
+
 		class UIConditionParamExtraInterface
 		{
 		public:
-			virtual bool DrawConditionParamExtra(void* a_p1, const void* a_p2) = 0;
+			virtual bool DrawConditionParamExtra(
+				void*       a_p1,
+				const void* a_p2) = 0;
+
 			virtual bool DrawConditionItemExtra(
 				ConditionParamItem           a_item,
 				ConditionParamItemExtraArgs& a_args);
@@ -78,6 +85,7 @@ namespace IED
 			public UIPackageTypeSelectorWidget,
 			public UIWeatherClassSelectorWidget,
 			public UIComparisonOperatorSelector,
+			public UITimeOfDaySelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto POPUP_ID = "mpr_ed";
@@ -123,7 +131,7 @@ namespace IED
 				m_tempFlags.set(a_mask);
 			}
 
-			inline void SetExtraInterface(
+			inline constexpr void SetExtraInterface(
 				UIConditionParamExtraInterface* a_if) noexcept
 			{
 				m_extraInterface = a_if;
@@ -160,8 +168,8 @@ namespace IED
 				return m_entries[stl::underlying(a_item)];
 			}
 
-			mutable char m_descBuffer[256]{ 0 };
-			mutable char m_descBuffer2[256]{ 0 };
+			mutable char m_descBuffer[COND_PE_DESC_BUFFER_SIZE]{ 0 };
+			mutable char m_descBuffer2[COND_PE_DESC_BUFFER_SIZE]{ 0 };
 
 			UIConditionParamExtraInterface* m_extraInterface{ nullptr };
 
@@ -287,6 +295,16 @@ namespace IED
 				Ap == ConditionParamItem::UInt32)
 			{
 				static_assert(std::is_same_v<T, std::uint32_t>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::TimeOfDay)
+			{
+				static_assert(std::is_same_v<T, Data::TimeOfDay>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

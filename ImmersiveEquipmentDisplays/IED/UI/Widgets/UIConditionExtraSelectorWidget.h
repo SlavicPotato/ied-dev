@@ -21,15 +21,14 @@ namespace IED
 			bool DrawExtraConditionSelector(
 				Data::ExtraConditionType& a_type);
 
-		protected:
-			const char* condition_type_to_desc(Data::ExtraConditionType a_type);
+			const char* condition_type_to_desc(Data::ExtraConditionType a_type) const;
 
 		private:
 			using data_type = std::array<
 				std::pair<
 					Data::ExtraConditionType,
 					UIConditionExtraSelectorWidgetStrings>,
-				9>;
+				10>;
 
 			static data_type m_data;
 		};

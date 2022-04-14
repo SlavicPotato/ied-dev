@@ -5,6 +5,10 @@
 #include "UIEffectShaderEditorWidgetStrings.h"
 #include "UIEffectShaderFunctionEditorWidgetStrings.h"
 
+#include "IED/UI/UICommon.h"
+
+#include <ext/stl_math.h>
+
 namespace IED
 {
 	namespace UI
@@ -79,8 +83,7 @@ namespace IED
 					-degmax,
 					degmax,
 					"%.2f",
-					ImGuiSliderFlags_AlwaysClamp |
-						ImGuiSliderFlags_NoRoundToFormat))
+					ImGuiSliderFlags_AlwaysClamp))
 			{
 				a_data.angle   = angle * (pi / 180.0f);
 				result.changed = true;
@@ -106,51 +109,124 @@ namespace IED
 		{
 			ESFEditorResult result;
 
-			constexpr auto pi2 = std::numbers::pi_v<float> * 2.0f;
+			float dragSpeed = ImGui::GetIO().KeyShift ? 0.0005f : 0.05f;
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(LS(CommonStrings::Function));
+			ImGui::Text("%s:", LS(CommonStrings::Waveform));
+			ImGui::Spacing();
 
-			ImGui::SameLine();
+			ImGui::Columns(3, nullptr, false);
+
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Sine, "1"),
-					!a_data.flags.test(Data::EffectShaderFunctionFlags::kOpt1)))
+					LS(CommonStrings::Sine, "0"),
+					a_data.fbf.type == Data::EffectShaderWaveform::Sine))
 			{
-				a_data.flags.clear(Data::EffectShaderFunctionFlags::kOpt1);
-				result = true;
+				a_data.fbf.type = Data::EffectShaderWaveform::Sine;
+				result          = true;
 			}
 
-			ImGui::SameLine();
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Cosine, "2"),
-					a_data.flags.test(Data::EffectShaderFunctionFlags::kOpt1)))
+					LS(CommonStrings::Cosine, "1"),
+					a_data.fbf.type == Data::EffectShaderWaveform::Cosine))
 			{
-				a_data.flags.set(Data::EffectShaderFunctionFlags::kOpt1);
-				result = true;
+				a_data.fbf.type = Data::EffectShaderWaveform::Cosine;
+				result          = true;
 			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Triangle, "2"),
+					a_data.fbf.type == Data::EffectShaderWaveform::Triangle))
+			{
+				a_data.fbf.type = Data::EffectShaderWaveform::Triangle;
+				result          = true;
+			}
+
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Sawtooth, "3"),
+					a_data.fbf.type == Data::EffectShaderWaveform::Sawtooth))
+			{
+				a_data.fbf.type = Data::EffectShaderWaveform::Sawtooth;
+				result          = true;
+			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Square, "4"),
+					a_data.fbf.type == Data::EffectShaderWaveform::Square))
+			{
+				a_data.fbf.type = Data::EffectShaderWaveform::Square;
+				result          = true;
+			}
+
+			ImGui::Columns();
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			result |= ImGui::CheckboxFlagsT(
+				LS(CommonStrings::Exponential, "5"),
+				stl::underlying(std::addressof(a_data.flags.value)),
+				stl::underlying(Data::EffectShaderFunctionFlags::kExponential));
+
+			if (a_data.flags.test(Data::EffectShaderFunctionFlags::kExponential))
+			{
+				ImGui::Indent();
+				ImGui::Spacing();
+
+				bool warn = stl::is_equal(a_data.exponent, 0.0f);
+
+				if (warn)
+				{
+					ImGui::PushStyleColor(
+						ImGuiCol_Text,
+						UICommon::g_colorError);
+				}
+
+				result |= ImGui::SliderFloat(
+					LS(CommonStrings::Exponent, "6"),
+					std::addressof(a_data.exponent),
+					-20.0f,
+					20.0f,
+					"%.1f",
+					ImGuiSliderFlags_AlwaysClamp);
+
+				if (warn)
+				{
+					ImGui::PopStyleColor();
+				}
+
+				ImGui::Spacing();
+				ImGui::Unindent();
+			}
+
+			result |= ImGui::CheckboxFlagsT(
+				LS(CommonStrings::AdditiveInverse, "7"),
+				stl::underlying(std::addressof(a_data.flags.value)),
+				stl::underlying(Data::EffectShaderFunctionFlags::kAdditiveInverse));
 
 			ImGui::Spacing();
 
-			float dragSpeed = ImGui::GetIO().KeyShift ? 0.0005f : 0.05f;
-
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Speed, "3"),
+					LS(CommonStrings::Frequency, "8"),
 					std::addressof(a_data.speed),
 					dragSpeed,
 					0.01f,
-					50.0f,
+					60.0f,
 					"%.2f"))
 			{
-				a_data.speed = std::clamp(a_data.speed, 0.01f, 100.0f);
+				a_data.speed = std::clamp(a_data.speed, 0.01f, 300.0f);
 				result       = true;
 			}
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Offset, "4"),
-					std::addressof(a_data.initmod),
-					dragSpeed,
+					LS(CommonStrings::Offset, "9"),
+					std::addressof(a_data.initpos),
+					0.0005f,
 					0.0f,
-					pi2,
+					1.0f,
 					"%.2f",
 					ImGuiSliderFlags_AlwaysClamp))
 			{

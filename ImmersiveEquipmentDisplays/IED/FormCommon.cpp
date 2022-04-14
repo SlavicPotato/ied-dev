@@ -189,10 +189,10 @@ namespace IED
 	}
 
 	template <class T>
-	inline static constexpr const char* GetFullName(TESForm* a_form) requires
-		std::is_base_of_v<TESFullName, T>
+	inline static constexpr const char* GetFullName(TESForm* a_form)  //
+		requires(std::is_convertible_v<T*, TESFullName*>)
 	{
-		return static_cast<T*>(a_form)->name.c_str();
+		return static_cast<T*>(a_form)->GetFullName();
 	}
 
 	inline static constexpr const char* GetKeywordString(BGSKeyword* a_form)
@@ -222,7 +222,9 @@ namespace IED
 		case TESNPC::kTypeID:
 			return GetFullName<TESNPC>(a_form);
 		case TESSoulGem::kTypeID:
+			return GetFullName<TESSoulGem>(a_form);
 		case TESKey::kTypeID:
+			return GetFullName<TESKey>(a_form);
 		case TESObjectMISC::kTypeID:
 			return GetFullName<TESObjectMISC>(a_form);
 		case TESObjectLIGH::kTypeID:
@@ -230,17 +232,23 @@ namespace IED
 		case TESObjectBOOK::kTypeID:
 			return GetFullName<TESObjectBOOK>(a_form);
 		case AlchemyItem::kTypeID:
+			return GetFullName<AlchemyItem>(a_form);
 		case IngredientItem::kTypeID:
+			return GetFullName<IngredientItem>(a_form);
 		case SpellItem::kTypeID:
+			return GetFullName<SpellItem>(a_form);
 		case ScrollItem::kTypeID:
-			return GetFullName<MagicItem>(a_form);
+			return GetFullName<ScrollItem>(a_form);
 		case TESAmmo::kTypeID:
 			return GetFullName<TESAmmo>(a_form);
 		case TESObjectACTI::kTypeID:
-		case BGSTalkingActivator::kTypeID:
-		case TESFlora::kTypeID:
-		case TESFurniture::kTypeID:
 			return GetFullName<TESObjectACTI>(a_form);
+		case BGSTalkingActivator::kTypeID:
+			return GetFullName<BGSTalkingActivator>(a_form);
+		case TESFlora::kTypeID:
+			return GetFullName<TESFlora>(a_form);
+		case TESFurniture::kTypeID:
+			return GetFullName<TESFurniture>(a_form);
 		case BGSHeadPart::kTypeID:
 			return GetFullName<BGSHeadPart>(a_form);
 		case BGSKeyword::kTypeID:
@@ -280,52 +288,46 @@ namespace IED
 		return LocaleData::ToUTF8(GetFormNamePtr(a_form));
 	}
 
-	template <class T>
-	inline static constexpr bool HasKeywordImpl(TESForm* a_form, BGSKeyword* a_keyword) noexcept
-	{
-		if constexpr (std::is_base_of_v<BGSKeywordForm, T>)
-		{
-			return static_cast<T*>(a_form)->HasKeyword(a_keyword);
-		}
-		else
-		{
-			return static_cast<T*>(a_form)->keyword.HasKeyword(a_keyword);
-		}
-	}
-
-	bool IFormCommon::HasKeyword(TESForm* a_form, BGSKeyword* a_keyword)
+	bool IFormCommon::HasKeyword(
+		TESForm*    a_form,
+		BGSKeyword* a_keyword)
 	{
 		switch (a_form->formType)
 		{
 		case TESObjectWEAP::kTypeID:
-			return HasKeywordImpl<TESObjectWEAP>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESObjectWEAP>(a_form, a_keyword);
 		case TESObjectARMO::kTypeID:
-			return HasKeywordImpl<TESObjectARMO>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESObjectARMO>(a_form, a_keyword);
 		case TESSoulGem::kTypeID:
+			return FormHasKeywordImpl<TESSoulGem>(a_form, a_keyword);
 		case TESKey::kTypeID:
+			return FormHasKeywordImpl<TESKey>(a_form, a_keyword);
 		case TESObjectMISC::kTypeID:
-			return HasKeywordImpl<TESObjectMISC>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESObjectMISC>(a_form, a_keyword);
 		case TESObjectBOOK::kTypeID:
-			return HasKeywordImpl<TESObjectBOOK>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESObjectBOOK>(a_form, a_keyword);
 		case AlchemyItem::kTypeID:
-			return HasKeywordImpl<AlchemyItem>(a_form, a_keyword);
+			return FormHasKeywordImpl<AlchemyItem>(a_form, a_keyword);
 		case IngredientItem::kTypeID:
-			return HasKeywordImpl<IngredientItem>(a_form, a_keyword);
+			return FormHasKeywordImpl<IngredientItem>(a_form, a_keyword);
 		case ScrollItem::kTypeID:
-			return HasKeywordImpl<ScrollItem>(a_form, a_keyword);
+			return FormHasKeywordImpl<ScrollItem>(a_form, a_keyword);
 		case TESAmmo::kTypeID:
-			return HasKeywordImpl<TESAmmo>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESAmmo>(a_form, a_keyword);
 		case SpellItem::kTypeID:
-			return HasKeywordImpl<SpellItem>(a_form, a_keyword);
+			return FormHasKeywordImpl<SpellItem>(a_form, a_keyword);
 		case TESRace::kTypeID:
-			return HasKeywordImpl<TESRace>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESRace>(a_form, a_keyword);
 		case TESObjectACTI::kTypeID:
+			return FormHasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
 		case BGSTalkingActivator::kTypeID:
+			return FormHasKeywordImpl<BGSTalkingActivator>(a_form, a_keyword);
 		case TESFlora::kTypeID:
+			return FormHasKeywordImpl<TESFlora>(a_form, a_keyword);
 		case TESFurniture::kTypeID:
-			return HasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
+			return FormHasKeywordImpl<TESFurniture>(a_form, a_keyword);
 		case BGSLocation::kTypeID:
-			return HasKeywordImpl<BGSLocation>(a_form, a_keyword);
+			return FormHasKeywordImpl<BGSLocation>(a_form, a_keyword);
 		default:
 			return false;
 		}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/ConfigCommon.h"
+#include "IED/ConfigData.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 

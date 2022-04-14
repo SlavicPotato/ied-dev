@@ -10,11 +10,30 @@ namespace IED
 		{
 			kNone = 0u,
 
-			kOpt1 = 1u << 0,
-			kOpt2 = 1u << 1,
+			kFuncMask = 0x1F,
+
+			kAdditiveInverse = 1u << 6,
+			kExponential     = 1u << 7,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderFunctionFlags);
+
+		enum class EffectShaderWaveform
+		{
+			Sine,
+			Cosine,
+			Square,
+			Triangle,
+			Sawtooth
+		};
+
+		struct EffectShaderFunctionFlagsBitfield
+		{
+			EffectShaderWaveform type  : 5 { EffectShaderWaveform::Sine };
+			std::uint32_t        unused: 27 { 0 };
+		};
+
+		static_assert(sizeof(EffectShaderFunctionFlagsBitfield) == sizeof(EffectShaderFunctionFlags));
 
 		enum class EffectShaderFunctionType : std::uint16_t
 		{
@@ -57,8 +76,10 @@ namespace IED
 			{
 				switch (a_type)
 				{
-				case EffectShaderFunctionType::UVLinearMotion:
 				case EffectShaderFunctionType::Pulse:
+					exponent = 2.0f;
+					// fallthrough
+				case EffectShaderFunctionType::UVLinearMotion:
 					speed = 1.0f;
 					break;
 				}
@@ -69,20 +90,31 @@ namespace IED
 				return uniqueID;
 			}
 
-			stl::flag<EffectShaderFunctionFlags> flags{ EffectShaderFunctionFlags::kNone };
-			EffectShaderFunctionType             type{ EffectShaderFunctionType::None };
+			union
+			{
+				stl::flag<EffectShaderFunctionFlags> flags{ EffectShaderFunctionFlags::kNone };
+				EffectShaderFunctionFlagsBitfield    fbf;
+			};
+
+			EffectShaderFunctionType type{ EffectShaderFunctionType::None };
 
 			union
 			{
 				float f32a{ 0.0f };
 				float angle;
-				float initmod;  // pulse
+				float initpos;  // pulse
 			};
 
 			union
 			{
 				float f32b{ 0.0f };
 				float speed;
+			};
+
+			union
+			{
+				float f32c{ 0.0f };
+				float exponent;  // pulse
 			};
 
 			union
@@ -101,6 +133,7 @@ namespace IED
 				a_ar& type;
 				a_ar& f32a;
 				a_ar& f32b;
+				a_ar& f32c;
 				a_ar& u32a;
 			}
 		};

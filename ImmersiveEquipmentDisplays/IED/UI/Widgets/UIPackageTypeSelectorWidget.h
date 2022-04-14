@@ -20,7 +20,8 @@ namespace IED
 				PACKAGE_PROCEDURE_TYPE& a_type);
 
 		protected:
-			const char* procedure_type_to_desc(PACKAGE_PROCEDURE_TYPE a_type);
+			const char* procedure_type_to_desc(
+				PACKAGE_PROCEDURE_TYPE a_type) const;
 
 		private:
 			using data_type = std::array<

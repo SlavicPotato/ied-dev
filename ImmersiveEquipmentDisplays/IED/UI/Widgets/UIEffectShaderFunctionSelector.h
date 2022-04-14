@@ -22,7 +22,7 @@ namespace IED
 				Data::EffectShaderFunctionType& a_type);
 
 		protected:
-			const char* esf_to_desc(Data::EffectShaderFunctionType a_type);
+			const char* esf_to_desc(Data::EffectShaderFunctionType a_type) const;
 
 		private:
 			using data_type = std::array<

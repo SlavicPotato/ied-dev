@@ -1,7 +1,5 @@
 #pragma once
 
-#include "IED/ConfigCommon.h"
-
 #include "UIFormTypeSelectorWidgetStrings.h"
 
 #include "IED/UI/UILocalizationInterface.h"

@@ -58,7 +58,7 @@ namespace IED
 		}
 
 		const char* UIEffectShaderFunctionSelector::esf_to_desc(
-			Data::EffectShaderFunctionType a_type)
+			Data::EffectShaderFunctionType a_type) const
 		{
 			switch (a_type)
 			{

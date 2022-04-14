@@ -2,6 +2,7 @@
 
 #include "FormCommon.h"
 #include "FormHolder.h"
+#include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
 
 #include <ext/Sky.h>
@@ -29,6 +30,7 @@ namespace IED
 		mutable stl::optional<RE::TESWeather*>                       currentWeather;
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
 		mutable stl::optional<BIPED_OBJECT>                          shieldSlot;
+		mutable stl::optional<Data::TimeOfDay>                       timeOfDay;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -108,7 +110,7 @@ namespace IED
 		{
 			if (!biped)
 			{
-				biped = actor->GetBiped(false).get();
+				biped = actor->GetBiped1(false).get();
 			}
 
 			return *biped;
@@ -262,6 +264,16 @@ namespace IED
 			}
 
 			return *shieldSlot;
+		}
+
+		[[nodiscard]] constexpr auto get_time_of_day() const
+		{
+			if (!timeOfDay)
+			{
+				timeOfDay = Data::GetTimeOfDay(RE::Sky::GetSingleton());
+			}
+
+			return *timeOfDay;
 		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept

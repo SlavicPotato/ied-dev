@@ -549,6 +549,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
+    <ClInclude Include="IED\TimeOfDay.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
@@ -581,6 +582,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidgetStrings.h" />
     <ClInclude Include="IED\Util\PEXReader.h" />
@@ -934,6 +937,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
     <ClCompile Include="IED\Util\PEXReader.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />

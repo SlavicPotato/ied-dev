@@ -22,7 +22,8 @@ namespace IED
 				Data::ComparisonOperator& a_comp);
 
 		protected:
-			const char* comp_operator_to_desc(Data::ComparisonOperator a_comp);
+			const char* comp_operator_to_desc(
+				Data::ComparisonOperator a_comp) const;
 
 		private:
 			using data_type = std::array<

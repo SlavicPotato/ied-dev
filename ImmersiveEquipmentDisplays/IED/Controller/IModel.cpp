@@ -5,19 +5,12 @@
 namespace IED
 {
 	template <class T>
-	static constexpr bool ExtractModelParams(
+	inline static constexpr bool ExtractModelParams(
 		T*                     a_ptr,
 		IModel::modelParams_t& a_out,
-		ModelType              a_type = ModelType::kMisc) requires
-		std::is_base_of_v<TESModel, T>
+		ModelType              a_type = ModelType::kMisc)  //
+		requires(std::is_convertible_v<T*, TESModel*>)
 	{
-		TESModelTextureSwap* texSwap{ nullptr };
-
-		if constexpr (std::is_base_of_v<TESModelTextureSwap, T>)
-		{
-			texSwap = static_cast<TESModelTextureSwap*>(a_ptr);
-		}
-
 		const char* path = a_ptr->GetModelName();
 
 		if (!path || path[0] == 0)
@@ -26,7 +19,23 @@ namespace IED
 		}
 		else
 		{
-			a_out = { a_type, path, texSwap };
+			if constexpr (std::is_convertible_v<T*, TESModelTextureSwap*>)
+			{
+				a_out = {
+					a_type,
+					path,
+					static_cast<TESModelTextureSwap*>(a_ptr)
+				};
+			}
+			else
+			{
+				a_out = {
+					a_type,
+					path,
+					nullptr
+				};
+			}
+
 			return true;
 		}
 	}
@@ -35,8 +44,8 @@ namespace IED
 	inline static constexpr bool ExtractFormModelParams(
 		TESForm*               a_form,
 		IModel::modelParams_t& a_out,
-		ModelType              a_type = ModelType::kMisc) requires
-		std::is_base_of_v<TESForm, T>
+		ModelType              a_type = ModelType::kMisc)  //
+		requires(std::is_convertible_v<T*, TESModel*>)
 	{
 		return ExtractModelParams(static_cast<T*>(a_form), a_out, a_type);
 	}
@@ -53,7 +62,9 @@ namespace IED
 		switch (a_form->formType)
 		{
 		case TESSoulGem::kTypeID:
+			return ExtractFormModelParams<TESSoulGem>(a_form, a_out);
 		case TESKey::kTypeID:
+			return ExtractFormModelParams<TESKey>(a_form, a_out);
 		case TESObjectMISC::kTypeID:
 			return ExtractFormModelParams<TESObjectMISC>(a_form, a_out);
 		case TESAmmo::kTypeID:
@@ -78,10 +89,13 @@ namespace IED
 		case ScrollItem::kTypeID:
 			return ExtractFormModelParams<ScrollItem>(a_form, a_out);
 		case TESObjectACTI::kTypeID:
-		case TESFlora::kTypeID:
-		case TESFurniture::kTypeID:
-		case BGSTalkingActivator::kTypeID:
 			return ExtractFormModelParams<TESObjectACTI>(a_form, a_out);
+		case TESFlora::kTypeID:
+			return ExtractFormModelParams<TESFlora>(a_form, a_out);
+		case TESFurniture::kTypeID:
+			return ExtractFormModelParams<TESFurniture>(a_form, a_out);
+		case BGSTalkingActivator::kTypeID:
+			return ExtractFormModelParams<BGSTalkingActivator>(a_form, a_out);
 		case TESObjectSTAT::kTypeID:
 			return ExtractFormModelParams<TESObjectSTAT>(a_form, a_out);
 		case BGSMovableStatic::kTypeID:
@@ -105,7 +119,7 @@ namespace IED
 					if (auto weapon = static_cast<TESObjectWEAP*>(a_form); weapon->model)
 					{
 						// 1p model
-						if (ExtractFormModelParams<TESObjectSTAT>(
+						if (ExtractModelParams(
 								weapon->model,
 								a_out,
 								ModelType::kWeapon))

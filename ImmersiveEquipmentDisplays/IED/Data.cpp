@@ -737,7 +737,7 @@ namespace IED
 			if (!dh)
 				return false;
 
-			for (auto race : dh->races)
+			for (auto& race : dh->races)
 			{
 				if (!race)
 					continue;
@@ -747,7 +747,7 @@ namespace IED
 
 				m_Instance.m_raceList.try_emplace(
 					race->formID,
-					LocaleData::ToUTF8(race->fullName.GetName()),
+					LocaleData::ToUTF8(race->GetFullName()),
 					LocaleData::ToUTF8(race->editorId.c_str()),
 					race->data.raceFlags);
 			}

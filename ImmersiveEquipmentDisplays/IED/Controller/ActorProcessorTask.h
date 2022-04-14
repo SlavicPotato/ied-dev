@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigCommon.h"
+#include "IED/TimeOfDay.h"
 
 namespace RE
 {
@@ -33,12 +34,16 @@ namespace IED
 			return m_currentTime;
 		}
 
+	protected:
+		bool m_activeWriteCMETransforms{ false };
+
 	private:
 		struct State
 		{
 			long long lastRun;
 
 			RE::TESWeather* currentWeather{ nullptr };
+			Data::TimeOfDay timeOfDay{ Data::TimeOfDay::kDay };
 		};
 
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
@@ -57,6 +62,11 @@ namespace IED
 
 		SKMP_FORCEINLINE bool CheckMonitorNodes(
 			ActorObjectHolder& a_data);
+
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
+		void WriteCMETransforms(
+			ActorObjectHolder& a_data);
+#endif
 
 		void UpdateState();
 

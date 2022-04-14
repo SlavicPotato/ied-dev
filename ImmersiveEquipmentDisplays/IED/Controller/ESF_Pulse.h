@@ -17,7 +17,8 @@ namespace IED
 		class Pulse :
 			public EffectShaderFunctionBase
 		{
-			inline static constexpr auto PI_X_2 = std::numbers::pi_v<float> * 2.0f;
+			inline static constexpr auto PI  = std::numbers::pi_v<float>;
+			inline static constexpr auto PI2 = PI * 2.0f;
 
 		public:
 			using EffectShaderFunctionBase::EffectShaderFunctionBase;
@@ -33,11 +34,14 @@ namespace IED
 				const Data::configEffectShaderFunction_t& a_data) override;
 
 		private:
-			PulseFunction                function;
+			Data::EffectShaderWaveform   function;
 			Data::EffectShaderPulseFlags flags;
-			float                        speed;
-
-			float mod{ 0.0f };
+			float                        ftp;
+			float                        exponent;
+			bool                         inverse;
+			bool                         exponential;
+			float                        pos{ 0.0f };
+			float                        maxexpr{ 1.0f };
 		};
 	}
 }

@@ -23,7 +23,8 @@ namespace IED
 				WeatherClassificationFlags& a_type);
 
 		protected:
-			const char* weather_class_to_desc(stl::flag<WeatherClassificationFlags> a_type);
+			const char* weather_class_to_desc(
+				stl::flag<WeatherClassificationFlags> a_type);
 
 		private:
 			using data_type = std::array<
