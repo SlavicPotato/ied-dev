@@ -28,6 +28,11 @@ namespace IED
 		NiNode*                                 a_object,
 		const Data::configEffectShaderHolder_t& a_data)
 	{
+		/*if (tag)
+		{
+			_DMESSAGE("%llx | %llx  ::  %llx | %llx", a_data.get_tag_data().p1, a_data.get_tag_data().p2, tag->get_tag_data().p1, tag->get_tag_data().p2);
+		}*/
+
 		if (tag == a_data)
 		{
 			return false;
@@ -104,7 +109,7 @@ namespace IED
 		tag = a_data;
 	}
 
-	void EffectShaderData::UpdateConfigValues(
+	bool EffectShaderData::UpdateConfigValues(
 		const Data::configEffectShaderHolder_t& a_data)
 	{
 		for (auto& e : data)
@@ -112,11 +117,17 @@ namespace IED
 			auto it = a_data.data.find(e.key);
 			if (it == a_data.data.end())
 			{
-				continue;
+				return false;
 			}
 
-			e.shaderData->fillColor = it->second.fillColor;
-			e.shaderData->rimColor  = it->second.rimColor;
+			e.shaderData->fillColor    = it->second.fillColor;
+			e.shaderData->rimColor     = it->second.rimColor;
+			e.shaderData->uOffset      = it->second.uvo.uOffset;
+			e.shaderData->vOffset      = it->second.uvo.vOffset;
+			e.shaderData->uScale       = it->second.uvp.uScale;
+			e.shaderData->vScale       = it->second.uvp.vScale;
+			e.shaderData->edgeExponent = it->second.edgeExponent;
+			//e.shaderData->boundDiameter = it->second.boundDiameter;
 
 			for (auto& f : e.functions)
 			{
@@ -131,16 +142,26 @@ namespace IED
 
 				if (itf == d.end())
 				{
-					continue;
+					return false;
 				}
 
-				f->UpdateConfig(*itf);
+				if (!f->UpdateConfig(*itf))
+				{
+					return false;
+				}
 			}
 		}
+
+		return true;
 	}
 
 	void EffectShaderData::Entry::update_effect_data() const
 	{
+		if (functions.empty())
+		{
+			return;
+		}
+
 		auto sdata = shaderData.get();
 		assert(sdata);
 

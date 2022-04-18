@@ -196,7 +196,7 @@ namespace IED
 		void UIMain::DrawViewMenu()
 		{
 			if (ImGui::MenuItem(
-					LS(CommonStrings::Equipment, "1"),
+					LS(UIMainStrings::EquipmentDisplays, "1"),
 					nullptr,
 					m_currentEditorPanel == UIEditorPanel::Slot))
 			{
@@ -204,7 +204,7 @@ namespace IED
 			}
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::Custom, "2"),
+					LS(UIMainStrings::CustomDisplays, "2"),
 					nullptr,
 					m_currentEditorPanel == UIEditorPanel::Custom))
 			{

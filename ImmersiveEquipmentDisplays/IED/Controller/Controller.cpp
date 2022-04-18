@@ -2527,7 +2527,14 @@ namespace IED
 			{
 				if (a_updateValues)
 				{
-					a_objectEntry.state->effectShaders.UpdateConfigValues(*es);
+					if (!a_objectEntry.state->effectShaders.UpdateConfigValues(*es))
+					{
+						a_objectEntry.state->effectShaders.Update(
+							a_objectEntry.state->nodes.rootNode,
+							*es);
+
+						a_params.state.ResetEffectShaders(a_params.handle);
+					}
 				}
 			}
 		}

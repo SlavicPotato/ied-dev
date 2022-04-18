@@ -67,7 +67,7 @@ namespace IED
 			NiNode*                                 a_object,
 			const Data::configEffectShaderHolder_t& a_data);
 
-		void UpdateConfigValues(
+		bool UpdateConfigValues(
 			const Data::configEffectShaderHolder_t& a_data);
 
 		template <class Tf>

@@ -54,6 +54,8 @@ namespace IED
 			kRimG  = 1u << 5,
 			kRimB  = 1u << 6,
 			kRimA  = 1u << 7,
+			uScale = 1u << 8,
+			vScale = 1u << 9,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderPulseFlags);
@@ -77,7 +79,13 @@ namespace IED
 				switch (a_type)
 				{
 				case EffectShaderFunctionType::Pulse:
-					exponent = 2.0f;
+					exponent   = 2.0f;
+					uMinMax[0] = 0.5f;
+					uMinMax[1] = 1.5f;
+					vMinMax[0] = 0.5f;
+					vMinMax[1] = 1.5f;
+					range[0]   = 0.0f;
+					range[1]   = 1.0f;
 					// fallthrough
 				case EffectShaderFunctionType::UVLinearMotion:
 					speed = 1.0f;
@@ -119,12 +127,45 @@ namespace IED
 
 			union
 			{
+				float f32a2a[2]{ 0.0f, 0.0f };
+				struct
+				{
+					float f32d;
+					float f32e;
+				} fde;
+				float uMinMax[2];
+			};
+
+			union
+			{
+				float f32a2b[2]{ 0.0f, 0.0f };
+				struct
+				{
+					float f32f;
+					float f32g;
+				} ffg;
+				float vMinMax[2];
+			};
+
+			union
+			{
+				float f32a2c[2]{ 0.0f, 0.0f };
+				struct
+				{
+					float f32h;
+					float f32i;
+				} fhi;
+				float range[2];
+			};
+
+			union
+			{
 				std::uint32_t          u32a{ 0 };
 				EffectShaderPulseFlags pulseFlags;
 			};
 
 		private:
-			configLUIDTag_t uniqueID;
+			configLUIDTagMCG_t uniqueID;
 
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
@@ -134,6 +175,9 @@ namespace IED
 				a_ar& f32a;
 				a_ar& f32b;
 				a_ar& f32c;
+				a_ar& f32a2a;
+				a_ar& f32a2b;
+				a_ar& f32a2c;
 				a_ar& u32a;
 			}
 		};

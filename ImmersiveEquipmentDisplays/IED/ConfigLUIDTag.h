@@ -6,12 +6,35 @@ namespace IED
 {
 	namespace Data
 	{
-		struct configLUIDTag_t :
+		// always generate
+		struct configLUIDTagAG_t :
 			luid_tag
 		{
-			inline configLUIDTag_t() noexcept :
+			inline configLUIDTagAG_t() noexcept :
 				luid_tag(ILUID()())
 			{
+			}
+
+			configLUIDTagAG_t(const configLUIDTagAG_t&) noexcept :
+				luid_tag(ILUID()())
+			{
+			}
+
+			configLUIDTagAG_t(configLUIDTagAG_t&&) noexcept :
+				luid_tag(ILUID()())
+			{
+			}
+
+			configLUIDTagAG_t& operator=(const configLUIDTagAG_t&)
+			{
+				static_cast<luid_tag&>(*this) = ILUID()();
+				return *this;
+			}
+
+			configLUIDTagAG_t operator=(configLUIDTagAG_t&&)
+			{
+				static_cast<luid_tag&>(*this) = ILUID()();
+				return *this;
 			}
 
 			inline void update_tag() noexcept
@@ -20,32 +43,57 @@ namespace IED
 			}
 		};
 
-		struct configUniqueObjectTag_t :
+		// generate in copy ctor, default elsewhere
+		struct configLUIDTagAC_t :
 			luid_tag
 		{
-			inline configUniqueObjectTag_t() noexcept :
+			inline configLUIDTagAC_t() noexcept :
 				luid_tag(ILUID()())
 			{
 			}
 
-			configUniqueObjectTag_t(const configUniqueObjectTag_t&) noexcept :
+			configLUIDTagAC_t(const configLUIDTagAC_t&) noexcept :
 				luid_tag(ILUID()())
 			{
 			}
 
-			configUniqueObjectTag_t(configUniqueObjectTag_t&&) noexcept :
+			configLUIDTagAC_t(configLUIDTagAC_t&&) noexcept = default;
+
+			configLUIDTagAC_t& operator=(const configLUIDTagAC_t&) = default;
+			configLUIDTagAC_t& operator=(configLUIDTagAC_t&&) = default;
+
+			inline void update_tag() noexcept
+			{
+				static_cast<luid_tag&>(*this) = ILUID()();
+			}
+		};
+
+		// generate in copy ctor, noop in copy assign, default move ctor/assign
+		struct configLUIDTagMCG_t :
+			luid_tag
+		{
+			inline configLUIDTagMCG_t() noexcept :
 				luid_tag(ILUID()())
 			{
 			}
 
-			configUniqueObjectTag_t& operator=(const configUniqueObjectTag_t&)
+			configLUIDTagMCG_t(const configLUIDTagMCG_t&) noexcept :
+				luid_tag(ILUID()())
+			{
+			}
+
+			configLUIDTagMCG_t(configLUIDTagMCG_t&&) noexcept = default;
+
+			configLUIDTagMCG_t& operator=(const configLUIDTagMCG_t&)
 			{
 				return *this;
 			}
 
-			configUniqueObjectTag_t operator=(configUniqueObjectTag_t&&)
+			configLUIDTagMCG_t& operator=(configLUIDTagMCG_t&&) = default;
+
+			configLUIDTagMCG_t(const luid_tag& a_rhs) noexcept :
+				luid_tag(a_rhs)
 			{
-				return *this;
 			}
 		};
 	}

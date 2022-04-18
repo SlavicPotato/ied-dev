@@ -35,7 +35,9 @@ namespace IED
 		}
 
 	protected:
+#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		bool m_activeWriteCMETransforms{ false };
+#endif
 
 	private:
 		struct State

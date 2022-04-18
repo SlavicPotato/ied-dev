@@ -7,7 +7,7 @@ namespace IED
 	namespace Data
 	{
 		struct configTransform_t :
-			configLUIDTag_t
+			configLUIDTagAG_t
 		{
 			friend class boost::serialization::access;
 

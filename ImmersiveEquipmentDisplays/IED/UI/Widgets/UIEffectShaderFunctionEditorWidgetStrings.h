@@ -8,6 +8,10 @@ namespace IED
 	{
 		enum class UIEffectShaderFunctionEditorWidgetStrings : Localization::StringID
 		{
+			uMinMax = 6600,
+			vMinMax = 6601,
+			uvScale = 6602,
+			Range   = 6603,
 		};
 	}
 }

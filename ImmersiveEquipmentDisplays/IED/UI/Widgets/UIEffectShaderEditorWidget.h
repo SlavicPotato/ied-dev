@@ -4,8 +4,11 @@
 #include "IED/UI/UITips.h"
 
 #include "UIDescriptionPopup.h"
+#include "UIEffectShaderAlphaFunctionSelector.h"
+#include "UIEffectShaderDepthModeSelector.h"
 #include "UIEffectShaderFunctionEditorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
+#include "UITextureClampModeSelector.h"
 
 #include "IED/ConfigEffectShader.h"
 
@@ -24,6 +27,7 @@ namespace IED
 			PasteOver,
 			Add,
 			Swap,
+			Paste
 		};
 
 		struct EffectShaderFunctionContextResult
@@ -41,6 +45,9 @@ namespace IED
 		template <class T>
 		class UIEffectShaderEditorWidget :
 			UIEffectShaderFunctionEditorWidget,
+			UITextureClampModeSelector,
+			UIEffectShaderDepthModeSelector,
+			UIEffectShaderAlphaFunctionSelector,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITipsInterface,
 			public virtual UILocalizationInterface
@@ -114,6 +121,9 @@ namespace IED
 		template <class T>
 		UIEffectShaderEditorWidget<T>::UIEffectShaderEditorWidget(
 			Controller& a_controller) :
+			UITextureClampModeSelector(a_controller),
+			UIEffectShaderDepthModeSelector(a_controller),
+			UIEffectShaderAlphaFunctionSelector(a_controller),
 			UIEffectShaderFunctionEditorWidget(a_controller)
 		{
 		}
@@ -299,6 +309,40 @@ namespace IED
 
 			ImGui::Spacing();
 
+			if (DrawTextureClampModeSelector(
+					static_cast<Localization::StringID>(
+						UIEffectShaderEditorWidgetStrings::TextureClampMode),
+					a_data.textureClampMode))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+
+			if (DrawAlphaFuncSelector(
+					static_cast<Localization::StringID>(
+						UIEffectShaderEditorWidgetStrings::SrcBlend),
+					a_data.srcBlend))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+
+			if (DrawAlphaFuncSelector(
+					static_cast<Localization::StringID>(
+						UIEffectShaderEditorWidgetStrings::DstBlend),
+					a_data.destBlend))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+
+			if (DrawDepthModeSelector(
+					static_cast<Localization::StringID>(
+						UIEffectShaderEditorWidgetStrings::zTestFunc),
+					a_data.zTestFunc))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+
+			ImGui::Spacing();
+
 			if (ImGui::ColorEdit4(
 					LS(UIEffectShaderEditorWidgetStrings::FillColor, "4"),
 					a_data.fillColor,
@@ -316,6 +360,60 @@ namespace IED
 			{
 				a_data.rimColor.clamp();
 
+				OnEffectShaderUpdate(a_params, false);
+			}
+
+			if (ImGui::DragFloat(
+					LS(UIEffectShaderEditorWidgetStrings::EdgeExponent, "6"),
+					std::addressof(a_data.edgeExponent),
+					0.01f,
+					0.0f,
+					25.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}
+
+			/*if (ImGui::DragFloat(
+					LS(UIEffectShaderEditorWidgetStrings::BoundDiameter, "7"),
+					std::addressof(a_data.boundDiameter),
+					0.01f,
+					0.0f,
+					125.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}*/
+
+			ImGui::Spacing();
+
+			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
+
+			if (ImGui::DragFloat2(
+					LS(UIEffectShaderEditorWidgetStrings::uvOffset, "8"),
+					a_data.uvOffset,
+					dragSpeed,
+					-25.0f,
+					25.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}
+
+			dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.01f;
+
+			if (ImGui::DragFloat2(
+					LS(UIEffectShaderEditorWidgetStrings::uvScale, "9"),
+					a_data.uvScale,
+					dragSpeed,
+					0.0f,
+					1000.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
 				OnEffectShaderUpdate(a_params, false);
 			}
 
@@ -571,8 +669,6 @@ namespace IED
 					if (clipData)
 					{
 						a_data = *clipData;
-
-						OnEffectShaderUpdate(a_params);
 
 						result = EffectShaderContextAction::PasteOver;
 					}
@@ -870,15 +966,29 @@ namespace IED
 			{
 				if (ImGui::BeginMenu(LS(CommonStrings::Insert, "1")))
 				{
-					if (DrawEffectShaderFunctionSelector(m_newType))
+					if (ImGui::BeginMenu(LS(CommonStrings::New, "1")))
 					{
-						if (m_newType != Data::EffectShaderFunctionType::None)
+						if (DrawEffectShaderFunctionSelector(m_newType))
 						{
-							result.action       = EffectShaderContextAction::Add;
-							result.functionType = m_newType;
+							if (m_newType != Data::EffectShaderFunctionType::None)
+							{
+								result.action       = EffectShaderContextAction::Add;
+								result.functionType = m_newType;
 
-							ImGui::CloseCurrentPopup();
+								ImGui::CloseCurrentPopup();
+							}
 						}
+
+						ImGui::EndMenu();
+					}
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Paste, "2"),
+							nullptr,
+							false,
+							UIClipboard::Get<Data::configEffectShaderFunction_t>() != nullptr))
+					{
+						result.action       = EffectShaderContextAction::Paste;
 					}
 
 					ImGui::EndMenu();
@@ -904,7 +1014,7 @@ namespace IED
 						false,
 						clipData != nullptr))
 				{
-					if (clipData)
+					if (clipData && clipData->type == a_data.type)
 					{
 						a_data = *clipData;
 
@@ -931,7 +1041,7 @@ namespace IED
 				ImGuiStyleVar_CellPadding,
 				{ 5.f, 5.f });
 
-			constexpr int NUM_COLUMNS = 2;
+			constexpr int NUM_COLUMNS = 3;
 
 			if (ImGui::BeginTable(
 					"ef_table",
@@ -947,6 +1057,7 @@ namespace IED
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
 				ImGui::TableSetupColumn(LS(CommonStrings::Name), ImGuiTableColumnFlags_None, 200.0f);
+				ImGui::TableSetupColumn("LUID", ImGuiTableColumnFlags_None, 200.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -976,6 +1087,13 @@ namespace IED
 						if (result.functionType != Data::EffectShaderFunctionType::None)
 						{
 							it = a_data.emplace(it, result.functionType);
+							OnEffectShaderUpdate(a_params);
+						}
+						break;
+					case EffectShaderContextAction::Paste:
+						if (auto clipData = UIClipboard::Get<Data::configEffectShaderFunction_t>())
+						{
+							it = a_data.emplace(it, *clipData);
 							OnEffectShaderUpdate(a_params);
 						}
 						break;
@@ -1010,6 +1128,12 @@ namespace IED
 						{
 							OnEffectShaderUpdate(a_params, r.reset);
 						}
+
+						ImGui::TableSetColumnIndex(2);
+
+						auto& luid = e.get_unique_id().get_tag_data();
+
+						ImGui::Text("%llx.%llx", luid.p1, luid.p2);
 
 						++it;
 						i++;

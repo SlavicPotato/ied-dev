@@ -4,12 +4,14 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "IED/UI/UIMainStrings.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		UISlotEditorTabPanel::UISlotEditorTabPanel(Controller& a_controller) :
-			UIEditorTabPanel(a_controller, stl::underlying(CommonStrings::Equipment)),
+			UIEditorTabPanel(a_controller, stl::underlying(UIMainStrings::EquipmentDisplays)),
 			UILocalizationInterface(a_controller),
 			m_slotEditorActor(a_controller),
 			m_slotEditorRace(a_controller),

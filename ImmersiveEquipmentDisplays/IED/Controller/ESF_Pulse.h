@@ -40,8 +40,15 @@ namespace IED
 			float                        exponent;
 			bool                         inverse;
 			bool                         exponential;
+			bool                         nonstdrange{ false };
 			float                        pos{ 0.0f };
 			float                        maxexpr{ 1.0f };
+			float                        ummd;
+			float                        umin;
+			float                        vmmd;
+			float                        vmin;
+			float                        rmmd;
+			float                        rmin;
 		};
 	}
 }

@@ -4,12 +4,14 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "IED/UI/UIMainStrings.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		UICustomEditorTabPanel::UICustomEditorTabPanel(Controller& a_controller) :
-			UIEditorTabPanel(a_controller, stl::underlying(CommonStrings::Custom)),
+			UIEditorTabPanel(a_controller, stl::underlying(UIMainStrings::CustomDisplays)),
 			UILocalizationInterface(a_controller),
 			m_editorActor(a_controller),
 			m_editorRace(a_controller),

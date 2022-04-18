@@ -1202,6 +1202,21 @@
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UITextureClampModeSelector.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderAlphaFunctionSelector.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.h">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1878,6 +1893,21 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UITextureClampModeSelector.cpp">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\EffectShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderAlphaFunctionSelector.cpp">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.cpp">
+      <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

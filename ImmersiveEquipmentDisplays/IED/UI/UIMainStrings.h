@@ -20,6 +20,8 @@ namespace IED
 			LoadDefaultAsCurrent       = 4611,
 			LoadDefaultAsCurrentPrompt = 4612,
 			DefaultConfig              = 4613,
+			EquipmentDisplays          = 4614,
+			CustomDisplays             = 4615,
 		};
 	}
 }

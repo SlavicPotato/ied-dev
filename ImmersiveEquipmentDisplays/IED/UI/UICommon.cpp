@@ -76,7 +76,7 @@ namespace IED
 				}
 			}
 
-			void PushLUID(const Data::configUniqueObjectTag_t& a_id)
+			/*void PushLUID(const Data::configLUIDTagMCG_t& a_id)
 			{
 				auto& d = a_id.get_tag_data();
 				ImGui::PushID(reinterpret_cast<const void*>(d.p1));
@@ -87,7 +87,7 @@ namespace IED
 			{
 				ImGui::PopID();
 				ImGui::PopID();
-			}
+			}*/
 		}
 
 	}

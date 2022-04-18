@@ -3222,6 +3222,12 @@ namespace IED
 					{
 						ImGui::Spacing();
 
+						auto& luid = e.get_tag_data();
+
+						ImGui::Text("LUID: %llx.%llx", luid.p1, luid.p2);
+
+						ImGui::Spacing();
+
 						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
 							e.conditions,

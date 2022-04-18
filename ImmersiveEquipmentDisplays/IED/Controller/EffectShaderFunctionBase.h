@@ -5,21 +5,30 @@
 namespace IED
 {
 	class EffectShaderFunctionBase :
-		public Data::configLUIDTag_t
+		public Data::configLUIDTagMCG_t
 	{
 	public:
 		EffectShaderFunctionBase(
 			const Data::configEffectShaderFunction_t& a_data) noexcept :
-			Data::configLUIDTag_t(a_data.get_unique_id())
+			Data::configLUIDTagMCG_t(static_cast<const luid_tag&>(a_data.get_unique_id())),
+			type(a_data.type)
 		{
 		}
 
 		virtual ~EffectShaderFunctionBase() noexcept = default;
 
-		void UpdateConfig(const Data::configEffectShaderFunction_t& a_data)
+		[[nodiscard]] bool UpdateConfig(const Data::configEffectShaderFunction_t& a_data)
 		{
-			UpdateConfigImpl(a_data);
-			static_cast<Data::configLUIDTag_t&>(*this) = a_data.get_unique_id();
+			if (a_data.get_unique_id() != *this ||
+				a_data.type != type)
+			{
+				return false;
+			}
+			else
+			{
+				UpdateConfigImpl(a_data);
+				return true;
+			}
 		}
 
 		virtual void Run(BSEffectShaderData* a_data, float a_step)                      = 0;
@@ -27,6 +36,9 @@ namespace IED
 		virtual void UpdateConfigInitImpl(const Data::configEffectShaderFunction_t& a_data){};
 
 		SKMP_REDEFINE_NEW_PREF()  //
+
+	private:
+		Data::EffectShaderFunctionType type;
 	};
 
 	template <class T>
@@ -36,8 +48,8 @@ namespace IED
 		requires(std::is_base_of_v<EffectShaderFunctionBase, T>)
 	{
 		auto result = std::make_unique<T>(a_data);
-		result->UpdateConfigImpl(a_data);
 		result->UpdateConfigInitImpl(a_data);
+		result->UpdateConfigImpl(a_data);
 		return result;
 	}
 }

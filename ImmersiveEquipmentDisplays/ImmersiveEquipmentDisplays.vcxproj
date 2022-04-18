@@ -544,6 +544,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
@@ -568,6 +570,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIConditionExtraSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UICurrentData.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderAlphaFunctionSelector.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidget.h" />
@@ -582,6 +586,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UITextureClampModeSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.h" />
@@ -917,6 +922,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderDataParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
@@ -930,6 +937,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIComparisonOperatorSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderAlphaFunctionSelector.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp" />
@@ -937,6 +946,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UITextureClampModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
     <ClCompile Include="IED\Util\PEXReader.cpp" />

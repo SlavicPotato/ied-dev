@@ -163,6 +163,19 @@ namespace IED
 			ImGui::Columns();
 
 			ImGui::Spacing();
+
+			result |= ImGui::DragFloatRange2(
+				LS(UIEffectShaderFunctionEditorWidgetStrings::Range, "R"),
+				std::addressof(a_data.range[0]),
+				std::addressof(a_data.range[1]),
+				0.0005f,
+				0.0f,
+				1.0f,
+				"%.3f",
+				nullptr,
+				ImGuiSliderFlags_AlwaysClamp);
+
+			ImGui::Spacing();
 			ImGui::Separator();
 			ImGui::Spacing();
 
@@ -215,7 +228,7 @@ namespace IED
 					dragSpeed,
 					0.01f,
 					60.0f,
-					"%.2f"))
+					"%.2f Hz"))
 			{
 				a_data.speed = std::clamp(a_data.speed, 0.01f, 300.0f);
 				result       = true;
@@ -303,6 +316,66 @@ namespace IED
 				LS(CommonStrings::Alpha, "H"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kRimA));
+
+			ImGui::Unindent();
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			ImGui::Text(
+				"%s:",
+				LS(UIEffectShaderFunctionEditorWidgetStrings::uvScale));
+
+			ImGui::Indent();
+
+			result |= ImGui::CheckboxFlagsT(
+				"##J",
+				stl::underlying(std::addressof(a_data.pulseFlags)),
+				stl::underlying(Data::EffectShaderPulseFlags::uScale));
+
+			bool uvdisabled = (a_data.pulseFlags & Data::EffectShaderPulseFlags::uScale) != Data::EffectShaderPulseFlags::uScale;
+
+			UICommon::PushDisabled(uvdisabled);
+
+			ImGui::SameLine();
+
+			result |= ImGui::DragFloatRange2(
+				LS(UIEffectShaderFunctionEditorWidgetStrings::uMinMax, "K"),
+				std::addressof(a_data.uMinMax[0]),
+				std::addressof(a_data.uMinMax[1]),
+				dragSpeed,
+				0.0f,
+				1000.0f,
+				"%.3f",
+				nullptr,
+				ImGuiSliderFlags_AlwaysClamp);
+
+			UICommon::PopDisabled(uvdisabled);
+
+			result |= ImGui::CheckboxFlagsT(
+				"##L",
+				stl::underlying(std::addressof(a_data.pulseFlags)),
+				stl::underlying(Data::EffectShaderPulseFlags::vScale));
+
+			uvdisabled = (a_data.pulseFlags & Data::EffectShaderPulseFlags::vScale) != Data::EffectShaderPulseFlags::vScale;
+
+			UICommon::PushDisabled(uvdisabled);
+
+			ImGui::SameLine();
+
+			result |= ImGui::DragFloatRange2(
+				LS(UIEffectShaderFunctionEditorWidgetStrings::vMinMax, "M"),
+				std::addressof(a_data.vMinMax[0]),
+				std::addressof(a_data.vMinMax[1]),
+				dragSpeed,
+				0.0f,
+				1000.0f,
+				"%.3f",
+				nullptr,
+				ImGuiSliderFlags_AlwaysClamp);
+
+			UICommon::PopDisabled(uvdisabled);
 
 			ImGui::Unindent();
 

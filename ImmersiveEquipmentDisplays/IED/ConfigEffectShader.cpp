@@ -28,15 +28,18 @@ namespace IED
 			result->rimColor  = rimColor;
 
 			result->textureClampMode = textureClampMode;
+			result->zTestFunc        = zTestFunc;
+			result->srcBlend         = srcBlend;
+			result->destBlend        = destBlend;
 			result->baseFillScale    = baseFillScale;
 			result->baseFillAlpha    = baseFillAlpha;
 			result->baseRimAlpha     = baseRimAlpha;
-			result->uOffset          = uOffset;
-			result->vOffset          = vOffset;
-			result->uScale           = uScale;
-			result->vScale           = vScale;
+			result->uOffset          = uvo.uOffset;
+			result->vOffset          = uvo.vOffset;
+			result->uScale           = std::clamp(uvp.uScale, 0.0f, 1000.0f);
+			result->vScale           = std::clamp(uvp.vScale, 0.0f, 1000.0f);
 			result->edgeExponent     = edgeExponent;
-			result->boundDiameter    = boundDiameter;
+			//result->boundDiameter    = boundDiameter;
 
 			if (result->paletteTexture)
 			{

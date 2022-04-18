@@ -103,20 +103,37 @@ namespace IED
 			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kNone;
 
 			stl::flag<EffectShaderDataFlags> flags{ DEFAULT_FLAGS };
+			TextureAddressMode               textureClampMode{ TextureAddressMode::kWrapSWrapT };
+			DepthStencilDepthMode            zTestFunc{ DepthStencilDepthMode::kTest };
+			NiAlphaProperty::AlphaFunction   srcBlend{ NiAlphaProperty::AlphaFunction::kSrcAlpha };
+			NiAlphaProperty::AlphaFunction   destBlend{ NiAlphaProperty::AlphaFunction::kInvSrcAlpha };
 			configFixedStringSet_t           targetNodes;
 			configEffectShaderTexture_t      baseTexture{ EffectShaderTextureFlags::kTextureWhite };
 			configEffectShaderTexture_t      paletteTexture;
 			configEffectShaderTexture_t      blockOutTexture;
 			configColorRGBA_t                fillColor;
 			configColorRGBA_t                rimColor{ 0.0f, 0.0f, 0.0f, 0.0f };
-			TextureAddressMode               textureClampMode{ TextureAddressMode::kWrapSWrapT };
 			float                            baseFillScale{ 1.0f };
 			float                            baseFillAlpha{ 1.0f };
 			float                            baseRimAlpha{ 1.0f };
-			float                            uOffset{ 0.0f };
-			float                            vOffset{ 0.0f };
-			float                            uScale{ 1.0f };
-			float                            vScale{ 1.0f };
+			union
+			{
+				float uvOffset[2]{ 0.0f, 0.0f };
+				struct
+				{
+					float uOffset;
+					float vOffset;
+				} uvo;
+			};
+			union
+			{
+				float uvScale[2]{ 1.0f, 1.0f };
+				struct
+				{
+					float uScale;
+					float vScale;
+				} uvp;
+			};
 			float                            edgeExponent{ 1.0f };
 			float                            boundDiameter{ 0.0f };
 			configEffectShaderFunctionList_t functions;
@@ -143,15 +160,18 @@ namespace IED
 				a_ar& baseFillScale;
 				a_ar& baseFillAlpha;
 				a_ar& baseRimAlpha;
-				a_ar& uOffset;
-				a_ar& vOffset;
-				a_ar& uScale;
-				a_ar& vScale;
+				a_ar& uvo.uOffset;
+				a_ar& uvo.vOffset;
+				a_ar& uvp.uScale;
+				a_ar& uvp.vScale;
 				a_ar& edgeExponent;
 				a_ar& boundDiameter;
 
 				if (a_version >= DataVersion2)
 				{
+					a_ar& zTestFunc;
+					a_ar& srcBlend;
+					a_ar& destBlend;
 					a_ar& functions;
 				}
 			}
@@ -167,7 +187,7 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderHolderFlags);
 
 		struct configEffectShaderHolder_t :
-			configLUIDTag_t
+			configLUIDTagAC_t
 		{
 			friend class boost::serialization::access;
 
