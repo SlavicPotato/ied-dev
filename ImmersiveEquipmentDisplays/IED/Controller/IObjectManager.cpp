@@ -792,7 +792,7 @@ namespace IED
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims) &&
 				e.params.type == ModelType::kWeapon)
 			{
-				EngineExtensions::CreateWeaponBehaviorGraph(e.grpObject->object, state->weapGraphHolder);
+				EngineExtensions::CreateWeaponBehaviorGraph(e.grpObject->object, e.grpObject->weapGraphHolder);
 			}
 		}
 
