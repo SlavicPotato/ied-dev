@@ -260,8 +260,7 @@ namespace IED
 				return false;
 			}
 
-			bool result = false;
-
+			bool result       = false;
 			bool filterUpdate = false;
 
 			if (a_type != m_currentType)
@@ -341,15 +340,15 @@ namespace IED
 			{
 				m_nextDoFilterUpdate = false;
 
-				if (m_formIDFilter.Has() ||
-				    m_formNameFilter.Has())
+				if (m_formIDFilter ||
+				    m_formNameFilter)
 				{
 					m_filteredData->clear();
 					m_filteredData->reserve(it->second.size());
 
 					Game::FormID formID;
 
-					if (m_formIDFilter.Has())
+					if (m_formIDFilter)
 					{
 						char buf[16];
 						stl::snprintf(buf, "0x%s", m_formIDFilter.GetBuffer());
@@ -360,14 +359,16 @@ namespace IED
 						}
 					}
 
-					for (auto& e : it->second)
-					{
-						if ((!formID || e.formid == formID) &&
-						    m_formNameFilter.Test(e.name))
-						{
-							m_filteredData->emplace_back(e);
-						}
-					}
+					std::copy_if(
+						it->second.begin(),
+						it->second.end(),
+						std::back_inserter(*m_filteredData),
+						[&](auto& a_e) {
+							return (!formID || a_e.formid == formID) &&
+						           m_formNameFilter.Test(a_e.name);
+						});
+
+					m_filteredData->shrink_to_fit();
 
 					m_filteredData.mark(true);
 				}

@@ -240,6 +240,7 @@ namespace IED
 			      TESObjectANIO::kTypeID,
 			      TESObjectDOOR::kTypeID,
 			      BGSExplosion::kTypeID,
+			      BGSMaterialObject::kTypeID,
 			      IFormDatabase::EXTRA_TYPE_ARMOR });
 		}
 

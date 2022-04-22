@@ -531,6 +531,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ESF_UVLinearMotion.h" />
     <ClInclude Include="IED\Controller\ExportFlags.h" />
     <ClInclude Include="IED\Controller\IAnimationManager.h" />
+    <ClInclude Include="IED\Controller\IFirstPersonState.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
@@ -911,6 +912,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\ESF_Pulse.cpp" />
     <ClCompile Include="IED\Controller\ESF_UVLinearMotion.cpp" />
     <ClCompile Include="IED\Controller\IAnimationManager.cpp" />
+    <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />

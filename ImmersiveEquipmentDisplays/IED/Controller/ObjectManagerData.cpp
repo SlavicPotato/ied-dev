@@ -36,6 +36,7 @@ namespace IED
 			a_actor->GetParentCellWorldspace()
 		},
 		m_currentPackage(a_actor->GetCurrentPackage()),
+		m_inCombat(Game::GetActorInCombat(a_actor)),
 		m_created(IPerfCounter::Query())
 	{
 		m_lastLFStateCheck = m_created +
@@ -54,6 +55,14 @@ namespace IED
 		if (auto npc = a_actor->GetActorBase())
 		{
 			m_female = npc->GetSex() == 1;
+		}
+
+		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
+		{
+			CreateExtraCopyNode(
+				a_actor,
+				a_npcroot,
+				e);
 		}
 
 		if (a_nodeOverrideEnabled &&
@@ -447,7 +456,7 @@ namespace IED
 
 				virtual void Run() override
 				{
-					m_state->CleanupObjects(m_handle);
+					m_state->Cleanup(m_handle);
 
 					m_state.reset();
 					m_root.reset();
@@ -471,18 +480,28 @@ namespace IED
 		}
 		else
 		{
-			state->CleanupObjects(a_handle);
+			state->Cleanup(a_handle);
 			state.reset();
 		}
 	}
 
-	void objectEntryBase_t::State::CleanupObjects(Game::ObjectRefHandle a_handle)
+	void objectEntryBase_t::State::Cleanup(Game::ObjectRefHandle a_handle)
 	{
 		for (auto& e : groupObjects)
 		{
+			if (e.second.weapGraphHolder)
+			{
+				EngineExtensions::CleanupWeaponBehaviorGraph(e.second.weapGraphHolder);
+			}
+
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
 				e.second.rootNode);
+		}
+
+		if (weapGraphHolder)
+		{
+			EngineExtensions::CleanupWeaponBehaviorGraph(weapGraphHolder);
 		}
 
 		EngineExtensions::CleanupObjectImpl(

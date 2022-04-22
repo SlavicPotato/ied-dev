@@ -10,27 +10,33 @@
 
 namespace IED
 {
+	class ActorObjectHolder;
+	class Controller;
+
 	struct CommonParams
 	{
 		Actor* const                                                 actor;
 		TESNPC* const                                                npc;
 		TESNPC* const                                                npcOrTemplate;
 		TESRace* const                                               race;
-		mutable stl::optional<TESFurniture*>                         furniture;
-		mutable stl::optional<Game::ObjectRefHandle>                 furnHandle;
-		mutable stl::optional<bool>                                  layingDown;
-		mutable stl::optional<Biped*>                                biped;
-		mutable stl::optional<TESObjectARMO*>                        actorSkin;
-		mutable stl::optional<bool>                                  canDualWield;
-		mutable stl::optional<bool>                                  isDead;
-		mutable stl::optional<bool>                                  inInterior;
-		mutable stl::optional<BGSLocation*>                          location;
-		mutable stl::optional<TESWorldSpace*>                        worldspace;
-		mutable stl::optional<TESCombatStyle*>                       combatStyle;
-		mutable stl::optional<RE::TESWeather*>                       currentWeather;
+		ActorObjectHolder&                                           objects;
+		Controller&                                                  controller;
+		mutable std::optional<TESFurniture*>                         furniture;
+		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
+		mutable std::optional<bool>                                  layingDown;
+		mutable std::optional<Biped*>                                biped;
+		mutable std::optional<TESObjectARMO*>                        actorSkin;
+		mutable std::optional<bool>                                  canDualWield;
+		mutable std::optional<bool>                                  isDead;
+		mutable std::optional<bool>                                  inInterior;
+		mutable std::optional<BGSLocation*>                          location;
+		mutable std::optional<TESWorldSpace*>                        worldspace;
+		mutable std::optional<TESCombatStyle*>                       combatStyle;
+		mutable std::optional<RE::TESWeather*>                       currentWeather;
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
-		mutable stl::optional<BIPED_OBJECT>                          shieldSlot;
-		mutable stl::optional<Data::TimeOfDay>                       timeOfDay;
+		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
+		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
+		mutable std::optional<bool>                                  inCombat;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -275,7 +281,17 @@ namespace IED
 
 			return *timeOfDay;
 		}
+		
+		[[nodiscard]] constexpr auto is_in_combat() const
+		{
+			if (!inCombat)
+			{
+				inCombat = Game::GetActorInCombat(actor);
+			}
 
+			return *inCombat;
+		}
+		
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);

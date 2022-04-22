@@ -40,6 +40,12 @@ namespace IED
 				return match_form_with_id<Tm, Tf>(a_match, a_params.npc->GetClass());
 			case Data::ExtraConditionType::kTimeOfDay:
 				return match_time_of_day<Tm>(a_params, a_match);
+			case Data::ExtraConditionType::kIsInFirstPerson:
+				return is_in_first_person(a_params);
+			case Data::ExtraConditionType::kInCombat:
+				return a_params.is_in_combat();
+			case Data::ExtraConditionType::kIsFemale:
+				return is_female(a_params);
 			default:
 				return false;
 			}
@@ -49,7 +55,7 @@ namespace IED
 			Game::FormID a_formid,
 			TESForm*     a_form);
 
-		inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot)
+		inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot) noexcept
 		{
 			return a_slot != Data::ObjectSlotExtra::kArmor &&
 			       a_slot != Data::ObjectSlotExtra::kAmmo;
@@ -58,7 +64,7 @@ namespace IED
 		inline constexpr bool is_valid_form_for_slot(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot,
-			bool                  a_left)
+			bool                  a_left) noexcept
 		{
 			return a_left ?
 			           Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
@@ -551,6 +557,7 @@ namespace IED
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);
-
+		bool is_in_first_person(CommonParams& a_params);
+		bool is_female(CommonParams& a_params);
 	}
 }

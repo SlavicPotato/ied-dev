@@ -1217,6 +1217,9 @@
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.h">
       <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\IFirstPersonState.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1908,6 +1911,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.cpp">
       <Filter>Source\IED\UI\Widgets\BaseConfig\EffectShader</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IFirstPersonState.cpp">
+      <Filter>Source\IED\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

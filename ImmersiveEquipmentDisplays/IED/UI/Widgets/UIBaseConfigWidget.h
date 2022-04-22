@@ -826,6 +826,20 @@ namespace IED
 					}
 
 					DrawTip(UITip::KeepTorchFlame);
+					
+					if (ImGui::CheckboxFlagsT(
+							LS(UIWidgetCommonStrings::DisableWeaponAnims, "F"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kDisableWeaponAnims);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					}
+
+					DrawTip(UITip::DisableWeaponAnims);
 
 					UICommon::PopDisabled(disabled);
 

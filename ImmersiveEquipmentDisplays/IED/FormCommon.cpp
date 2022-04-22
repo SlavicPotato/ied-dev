@@ -37,6 +37,7 @@ namespace IED
 		case TESFurniture::kTypeID:
 		case BGSStaticCollection::kTypeID:
 		case BGSExplosion::kTypeID:
+		case BGSMaterialObject::kTypeID:
 		case TESObjectARMO::kTypeID:
 			return true;
 		case TESObjectLIGH::kTypeID:
@@ -72,6 +73,7 @@ namespace IED
 		case TESFurniture::kTypeID:
 		case BGSStaticCollection::kTypeID:
 		case BGSExplosion::kTypeID:
+		case BGSMaterialObject::kTypeID:
 		case TESObjectARMO::kTypeID:
 		case TESObjectLIGH::kTypeID:
 			return true;

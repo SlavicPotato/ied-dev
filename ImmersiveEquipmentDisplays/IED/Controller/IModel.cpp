@@ -112,6 +112,8 @@ namespace IED
 			return ExtractFormModelParams<TESGrass>(a_form, a_out);
 		case BGSExplosion::kTypeID:
 			return ExtractFormModelParams<BGSExplosion>(a_form, a_out);
+		case BGSMaterialObject::kTypeID:
+			return ExtractFormModelParams<BGSMaterialObject>(a_form, a_out);
 		case TESObjectWEAP::kTypeID:
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)

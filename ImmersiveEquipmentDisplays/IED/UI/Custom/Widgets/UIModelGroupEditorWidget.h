@@ -421,7 +421,19 @@ namespace IED
 			DrawTip(UITip::RemoveScabbard);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "D"),
+					LS(UIWidgetCommonStrings::DisableWeaponAnims, "D"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::DisableWeaponAnims);
+
+			if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::DisableHavok, "E"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{

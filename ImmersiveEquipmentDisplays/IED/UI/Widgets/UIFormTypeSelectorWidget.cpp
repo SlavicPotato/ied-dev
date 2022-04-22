@@ -39,6 +39,7 @@ namespace IED
 			{ TESObjectANIO::kTypeID, UIFormTypeSelectorWidgetStrings::AnimObject },
 			{ TESObjectDOOR::kTypeID, UIFormTypeSelectorWidgetStrings::Door },
 			{ BGSExplosion::kTypeID, UIFormTypeSelectorWidgetStrings::Explosion },
+			{ BGSMaterialObject::kTypeID, UIFormTypeSelectorWidgetStrings::Material },
 			{ BGSLocation::kTypeID, UIFormTypeSelectorWidgetStrings::Location },
 			{ TESWorldSpace::kTypeID, UIFormTypeSelectorWidgetStrings::Worldspace },
 			{ TESPackage::kTypeID, UIFormTypeSelectorWidgetStrings::Package },
@@ -175,6 +176,8 @@ namespace IED
 				return LS(UIFormTypeSelectorWidgetStrings::Door);
 			case BGSExplosion::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Explosion);
+			case BGSMaterialObject::kTypeID:
+				return LS(UIFormTypeSelectorWidgetStrings::Material);
 			case BGSLocation::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Location);
 			case TESWorldSpace::kTypeID:

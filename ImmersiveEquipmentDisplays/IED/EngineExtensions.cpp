@@ -4,6 +4,7 @@
 #include "EngineExtensions.h"
 #include "Util/Logging.h"
 
+#include <ext/GarbageCollector.h>
 #include <ext/IHook.h>
 #include <ext/JITASM.h>
 #include <ext/Node.h>
@@ -634,12 +635,13 @@ namespace IED
 				{
 					a_result.root  = nullptr;
 					a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
+
 					return false;
 				}
 			}
 		}
 
-		return fhkaGetSkeletonNode(a_root, a_name, a_result);
+		return hkaGetSkeletonNode(a_root, a_name, a_result);
 	}
 
 	void EngineExtensions::CreateWeaponNodes_Hook(
@@ -903,6 +905,61 @@ namespace IED
 		a_actor->UpdateAlpha();
 
 		return result;
+	}
+
+	bool EngineExtensions::CreateWeaponBehaviorGraph(
+		NiAVObject*                               a_object,
+		RE::WeaponAnimationGraphManagerHolderPtr& a_out)
+	{
+		auto sh = m_Instance.m_controller->GetBSStringHolder();
+
+		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
+		if (!bged)
+		{
+			return false;
+		}
+
+		if (bged->controlsBaseSkeleton)
+		{
+			return false;
+		}
+
+		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
+
+		if (!LoadWeaponGraph(
+				*result,
+				bged->behaviorGraphFile.c_str()))
+		{
+			return false;
+		}
+
+		a_out = std::move(result);
+
+		if (!BindAnimationObject(*a_out, a_object))
+		{
+			return false;
+		}
+
+		/*if (Game::IsPaused())
+		{
+			BSAnimationUpdateData data{ std::numeric_limits<float>::epsilon() };
+			data.forceUpdate = true;
+			a_out->Update(data);
+		}*/
+
+		return true;
+	}
+
+	void EngineExtensions::CleanupWeaponBehaviorGraph(
+		RE::WeaponAnimationGraphManagerHolderPtr& a_graph)
+	{
+		RE::BSAnimationGraphManagerPtr manager;
+		if (a_graph->GetAnimationGraphManagerImpl(manager))
+		{
+			auto gc = RE::GarbageCollector::GetSingleton();
+			assert(gc);
+			gc->QueueBehaviorGraph(manager);
+		}
 	}
 
 	void EngineExtensions::UpdateRoot(NiNode* a_root)

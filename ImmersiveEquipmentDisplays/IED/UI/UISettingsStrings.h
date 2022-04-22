@@ -40,6 +40,7 @@ namespace IED
 			RandPlacement               = 4429,
 			GearPositioning             = 4430,
 			NoAnimInfoWarning           = 4431,
+			BhkAnims                    = 4432,
 		};
 	}
 }

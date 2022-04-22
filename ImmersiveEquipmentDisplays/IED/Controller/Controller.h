@@ -49,8 +49,10 @@ namespace IED
 		public BSTEventSink<TESContainerChangedEvent>,
 		public BSTEventSink<TESFurnitureEvent>,
 		public BSTEventSink<TESDeathEvent>,
+		//public BSTEventSink<TESCombatEvent>, // useless
 		public BSTEventSink<TESSwitchRaceCompleteEvent>,
 		public BSTEventSink<MenuOpenCloseEvent>,
+		//public BSTEventSink<TESSceneEvent>,
 		//public BSTEventSink<SKSENiNodeUpdateEvent>,
 		//public BSTEventSink<TESQuestStartStopEvent>,
 		//public BSTEventSink<TESPackageEvent>,
@@ -78,15 +80,15 @@ namespace IED
 
 		struct actorInfo_t
 		{
-			NiPointer<Actor>         actor;
-			Game::ObjectRefHandle    handle;
-			TESNPC*                  npc;
-			TESNPC*                  npcOrTemplate;
-			TESRace*                 race;
-			NiNode*                  root;
-			NiNode*                  npcRoot;
-			Data::ConfigSex          sex;
-			const ActorObjectHolder& objects;
+			NiPointer<Actor>      actor;
+			Game::ObjectRefHandle handle;
+			TESNPC*               npc;
+			TESNPC*               npcOrTemplate;
+			TESRace*              race;
+			NiNode*               root;
+			NiNode*               npcRoot;
+			Data::ConfigSex       sex;
+			ActorObjectHolder&    objects;
 		};
 
 		struct npcRacePair_t
@@ -557,7 +559,7 @@ namespace IED
 			Game::FormID a_actor);
 
 		void EvaluateTransformsImpl(
-			const ActorObjectHolder& a_objects);
+			ActorObjectHolder& a_objects);
 
 		bool ProcessTransformsImpl(
 			NiNode*                                      a_npcRoot,
@@ -565,7 +567,7 @@ namespace IED
 			TESNPC*                                      a_npc,
 			TESRace*                                     a_race,
 			Data::ConfigSex                              a_sex,
-			const ActorObjectHolder&                     a_objects,
+			ActorObjectHolder&                           a_objects,
 			const Data::collectorData_t::container_type* a_equippedForms);
 
 		void ActorResetImpl(
@@ -611,17 +613,17 @@ namespace IED
 			ActorObjectHolder& a_record,
 			Data::ObjectSlot   a_slot);
 
-		static void UpdateRootPaused(NiNode* a_root);
+		static void UpdateIfPaused(NiNode* a_root);
 
 		updateActionFunc_t MakeTransformUpdateFunc();
 		updateActionFunc_t MakeAttachUpdateFunc();
 
-		static const Data::configBaseValues_t& GetConfigForActor(
+		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&                            a_info,
 			const Data::configCustom_t&                   a_config,
 			const ActorObjectHolder::slot_container_type& a_slots);
 
-		static const Data::configBaseValues_t& GetConfigForActor(
+		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&        a_info,
 			const Data::configSlot_t& a_config,
 			const objectEntrySlot_t&  a_entry);
@@ -830,7 +832,7 @@ namespace IED
 			actorLookupResult_t&     a_out);
 
 		std::optional<actorInfo_t> LookupCachedActorInfo(
-			const ActorObjectHolder& a_record);
+			ActorObjectHolder& a_record);
 
 		void CollectKnownActors(
 			actorLookupResultMap_t& a_out);
@@ -871,6 +873,10 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const TESDeathEvent*           a_evn,
 			BSTEventSource<TESDeathEvent>* a_dispatcher) override;
+		
+		/*virtual EventResult ReceiveEvent(
+			const TESCombatEvent*           a_evn,
+			BSTEventSource<TESCombatEvent>* a_dispatcher) override;*/
 
 		virtual EventResult ReceiveEvent(
 			const TESSwitchRaceCompleteEvent*           a_evn,
@@ -879,6 +885,10 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const MenuOpenCloseEvent*           evn,
 			BSTEventSource<MenuOpenCloseEvent>* a_dispatcher) override;
+
+		/*virtual EventResult ReceiveEvent(
+			const TESSceneEvent*           evn,
+			BSTEventSource<TESSceneEvent>* a_dispatcher) override;*/
 
 		/*virtual EventResult ReceiveEvent(
 			const TESQuestStartStopEvent* a_evn,

@@ -6,6 +6,8 @@
 #include <ext/GameCommon.h>
 #include <ext/ITasks.h>
 
+#include <ext/BSAnimationGraphManager.h>
+#include <ext/WeaponAnimationGraphManagerHolder.h>
 #include <ext/hkaSkeleton.h>
 
 #include <skse64/NiExtraData.h>
@@ -60,7 +62,7 @@ namespace IED
 		typedef void (*unk5C39F0_t)(
 			BSTaskPool*   a_taskpool,
 			NiAVObject*   a_object,
-			bhkWorld*     a_world,
+			RE::bhkWorld* a_world,
 			std::uint32_t a_unk4);
 		typedef void (*attachAddonNodes_t)(NiAVObject* a_object);
 		typedef bool (*unk63F810_t)(void);
@@ -96,6 +98,19 @@ namespace IED
 			const BSFixedString&      a_name,
 			hkaGetSkeletonNodeResult& a_result);
 
+		typedef bool (*loadAndRegisterWeaponGraph_t)(
+			RE::WeaponAnimationGraphManagerHolder& a_weapHolder,
+			const char*                            a_hkxPath,
+			RE::IAnimationGraphManagerHolder&      a_characterHolder);
+
+		typedef bool (*loadWeaponGraph_t)(
+			RE::WeaponAnimationGraphManagerHolder& a_weapHolder,
+			const char*                            a_hkxPath);
+
+		typedef bool (*bindAnimationObject_t)(
+			RE::IAnimationGraphManagerHolder& a_holder,
+			NiAVObject*                       a_object);
+
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -124,6 +139,13 @@ namespace IED
 			bool      a_removeScabbards,
 			bool      a_keepTorchFlame,
 			bool      a_disableHavok);
+
+		static bool CreateWeaponBehaviorGraph(
+			NiAVObject*                               a_object,
+			RE::WeaponAnimationGraphManagerHolderPtr& a_out);
+
+		static void CleanupWeaponBehaviorGraph(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
 
 		static void UpdateRoot(NiNode* a_root);
 		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
@@ -180,7 +202,11 @@ namespace IED
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
-		inline static const auto fhkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
+		//inline static const auto fLoadAndRegisterWeaponGraph = IAL::Address<loadAndRegisterWeaponGraph_t>(32249, 32984);
+		inline static const auto LoadWeaponGraph     = IAL::Address<loadWeaponGraph_t>(32148, 32892);
+		inline static const auto BindAnimationObject = IAL::Address<bindAnimationObject_t>(32250, 32985);
+
+		inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 
 		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 

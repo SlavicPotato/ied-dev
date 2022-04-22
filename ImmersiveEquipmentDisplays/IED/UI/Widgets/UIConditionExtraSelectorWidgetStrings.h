@@ -19,6 +19,9 @@ namespace IED
 			CombatStyle       = 5408,
 			Class             = 5409,
 			TimeOfDay         = 5410,
+			InFirstPerson     = 5411,
+			InCombat          = 5412,
+			IsFemale          = 5413,
 		};
 	}
 }

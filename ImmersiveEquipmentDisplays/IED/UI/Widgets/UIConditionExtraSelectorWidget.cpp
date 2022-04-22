@@ -19,6 +19,9 @@ namespace IED
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
 			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
 			{ Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay },
+			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
+			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
+			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
 
 		} };
 
@@ -93,6 +96,12 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::Class);
 			case Data::ExtraConditionType::kTimeOfDay:
 				return LS(UIConditionExtraSelectorWidgetStrings::TimeOfDay);
+			case Data::ExtraConditionType::kIsInFirstPerson:
+				return LS(UIConditionExtraSelectorWidgetStrings::InFirstPerson);
+			case Data::ExtraConditionType::kInCombat:
+				return LS(UIConditionExtraSelectorWidgetStrings::InCombat);
+			case Data::ExtraConditionType::kIsFemale:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsFemale);
 			default:
 				return nullptr;
 			}

@@ -8,6 +8,8 @@ namespace IED
 	{
 		m_timer.Begin();
 
+		auto steps = Game::Unk2f6b948::GetSteps();
+
 		for (auto& e : a_map)
 		{
 			if (!e.second.GetActor()->formID)
@@ -20,11 +22,15 @@ namespace IED
 				continue;
 			}
 
+			auto& step = e.second.GetActor().get() == *g_thePlayer ?
+			                 steps.player :
+                             steps.npc;
+
 			for (auto& f : e.second.GetSlots())
 			{
 				if (f.state)
 				{
-					UpdateEffects(f.state->effectShaders);
+					UpdateEffects(f.state->effectShaders, step);
 				}
 			}
 
@@ -36,7 +42,7 @@ namespace IED
 					{
 						if (h.second.state)
 						{
-							UpdateEffects(h.second.state->effectShaders);
+							UpdateEffects(h.second.state->effectShaders, step);
 						}
 					}
 				}
@@ -46,11 +52,11 @@ namespace IED
 		m_timer.End(m_currentTime);
 	}
 
-	void EffectController::UpdateEffects(EffectShaderData& a_data)
+	void EffectController::UpdateEffects(EffectShaderData& a_data, float a_step)
 	{
 		for (auto& e : a_data.data)
 		{
-			e.update_effect_data();
+			e.update_effect_data(a_step);
 
 			if (e.flags.test(EffectShaderData::EntryFlags::kForce))
 			{

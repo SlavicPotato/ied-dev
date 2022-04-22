@@ -28,11 +28,6 @@ namespace IED
 		NiNode*                                 a_object,
 		const Data::configEffectShaderHolder_t& a_data)
 	{
-		/*if (tag)
-		{
-			_DMESSAGE("%llx | %llx  ::  %llx | %llx", a_data.get_tag_data().p1, a_data.get_tag_data().p2, tag->get_tag_data().p1, tag->get_tag_data().p2);
-		}*/
-
 		if (tag == a_data)
 		{
 			return false;
@@ -155,7 +150,7 @@ namespace IED
 		return true;
 	}
 
-	void EffectShaderData::Entry::update_effect_data() const
+	void EffectShaderData::Entry::update_effect_data(float a_step) const
 	{
 		if (functions.empty())
 		{
@@ -165,11 +160,9 @@ namespace IED
 		auto sdata = shaderData.get();
 		assert(sdata);
 
-		auto step = *Game::g_frameTimerSlow;
-
 		for (auto& e : functions)
 		{
-			e->Run(sdata, step);
+			e->Run(sdata, a_step);
 		}
 	}
 

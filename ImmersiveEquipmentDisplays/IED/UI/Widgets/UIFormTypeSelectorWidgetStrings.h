@@ -50,6 +50,7 @@ namespace IED
 			Class            = 6339,
 			Weather          = 6340,
 			Global           = 6341,
+			Material         = 6342,
 		};
 	}
 }

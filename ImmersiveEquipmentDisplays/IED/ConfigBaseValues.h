@@ -28,15 +28,17 @@ namespace IED
 			kUseWorldModel          = 1u << 13,
 			kIgnoreRaceEquipTypes   = 1u << 14,
 			kPlayAnimation          = 1u << 15,
+			kPapyrus                = 1u << 16,
+			kDisableWeaponAnims     = 1u << 17,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
 			                     kKeepTorchFlame |
 			                     kRemoveScabbard |
 			                     kLoad1pWeaponModel |
-			                     kUseWorldModel,
+			                     kUseWorldModel |
+			                     kDisableWeaponAnims
 
-			kPapyrus = 1u << 16,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(BaseFlags);

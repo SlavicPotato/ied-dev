@@ -380,7 +380,8 @@ namespace IED
 		TESForm*                        a_modelForm,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok)
+		bool                            a_disableHavok,
+		bool                            a_bhkAnims)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -503,8 +504,6 @@ namespace IED
 			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok);
 
-		UpdateDownwardPass(itemRoot);
-
 		FinalizeObjectState(
 			state,
 			a_form,
@@ -517,6 +516,15 @@ namespace IED
 		{
 			state->UpdateAndPlayAnimation(a_params.actor, a_config.niControllerSequence);
 		}
+		else if (
+			a_bhkAnims &&
+			!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
+			modelParams.type == ModelType::kWeapon)
+		{
+			EngineExtensions::CreateWeaponBehaviorGraph(object, state->weapGraphHolder);
+		}
+
+		UpdateDownwardPass(itemRoot);
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
@@ -545,7 +553,8 @@ namespace IED
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
-		bool                            a_disableHavok)
+		bool                            a_disableHavok,
+		bool                            a_bhkAnims)
 	{
 		RemoveObject(
 			a_params.actor,
@@ -766,8 +775,6 @@ namespace IED
 			e.grpObject = std::addressof(n);
 		}
 
-		UpdateDownwardPass(groupRoot);
-
 		for (auto& e : modelParams)
 		{
 			if (!e.grpObject)
@@ -779,7 +786,17 @@ namespace IED
 			{
 				e.grpObject->PlayAnimation(a_params.actor, e.entry->second.niControllerSequence);
 			}
+			else if (
+				a_bhkAnims &&
+				!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
+				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims) &&
+				e.params.type == ModelType::kWeapon)
+			{
+				EngineExtensions::CreateWeaponBehaviorGraph(e.grpObject->object, state->weapGraphHolder);
+			}
 		}
+
+		UpdateDownwardPass(groupRoot);
 
 		FinalizeObjectState(
 			state,

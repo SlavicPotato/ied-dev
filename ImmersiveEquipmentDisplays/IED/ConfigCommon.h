@@ -184,6 +184,9 @@ namespace IED
 			kCombatStyle       = 8,
 			kClass             = 9,
 			kTimeOfDay         = 10,
+			kIsInFirstPerson   = 11,
+			kInCombat          = 12,
+			kIsFemale          = 13,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -526,7 +529,7 @@ namespace IED
 		using configFormList_t       = stl::boost_vector<configForm_t>;
 		using configFixedStringSet_t = stl::set_sa<
 			stl::fixed_string,
-			std::less_equal<stl::fixed_string>,
+			stl::fixed_string_less_equal_p,
 			stl::boost_container_allocator<stl::fixed_string>>;
 
 	}

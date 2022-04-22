@@ -331,6 +331,26 @@ namespace IED
 
 							} },
 
+			{ "WeaponBackIED", {
+
+								"WeaponBackIED",
+								"MOV WeaponBackDefault",
+								"Two-Handed IED",
+								AnimationWeaponSlot::None,
+								false,
+								{
+
+									{ "MOV WeaponBackDefault", { "Two-Handed" } },
+									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+
+								}
+
+							} },
+
 			{ "WeaponBow", {
 
 							   "WeaponBow",
@@ -338,6 +358,22 @@ namespace IED
 							   "Bow",
 							   AnimationWeaponSlot::None,
 							   true,
+							   {
+								   { "MOV WeaponBowDefault", { "Bow" } },
+								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
+								   { "MOV WeaponBowBetter", { "Bow Better" } },
+								   { "MOV WeaponBowFSM", { "Bow FSM" } },
+							   }
+
+						   } },
+				
+			{ "WeaponBowIED", {
+
+							   "WeaponBowIED",
+							   "MOV WeaponBowDefault",
+							   "Bow IED",
+							   AnimationWeaponSlot::None,
+							   false,
 							   {
 								   { "MOV WeaponBowDefault", { "Bow" } },
 								   { "MOV WeaponBowChesko", { "Bow Chesko" } },

@@ -2,6 +2,8 @@
 
 #include "ConditionsCommon.h"
 
+#include "Controller/Controller.h"
+
 namespace IED
 {
 	namespace Conditions
@@ -95,6 +97,17 @@ namespace IED
 			{
 				return false;
 			}
+		}
+
+		bool is_in_first_person(CommonParams& a_params)
+		{
+			return a_params.is_player() &&
+			       a_params.controller.IsInFirstPerson();
+		}
+
+		bool is_female(CommonParams& a_params)
+		{
+			return a_params.objects.IsFemale();
 		}
 	}
 }

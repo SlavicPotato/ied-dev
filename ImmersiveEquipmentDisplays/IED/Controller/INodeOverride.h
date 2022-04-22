@@ -32,8 +32,6 @@ namespace IED
 		struct nodeOverrideParamsArgs_t
 		{
 			NiNode*                  npcRoot;
-			const ActorObjectHolder& objects;
-			Controller&              controller;
 		};
 
 		struct nodeOverrideParams_t :

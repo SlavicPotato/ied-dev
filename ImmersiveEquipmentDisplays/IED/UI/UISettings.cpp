@@ -148,6 +148,14 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::NoCheckFav);
+				
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::BhkAnims, "4"),
+						std::addressof(data.behaviorGraphWeaponAnims))))
+				{
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+				}
+				DrawTip(UITip::BhkAnims);
 
 				ImGui::Spacing();
 

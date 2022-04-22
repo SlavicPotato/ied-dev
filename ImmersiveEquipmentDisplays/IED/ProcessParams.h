@@ -36,7 +36,6 @@ namespace IED
 		NiNode* const                          root;
 		NiNode* const                          npcroot;
 		const Game::ObjectRefHandle            handle;
-		ActorObjectHolder&                     objects;
 		const Data::ConfigSex                  configSex;
 		const stl::flag<ControllerUpdateFlags> flags;
 		ItemCandidateCollector                 collector;

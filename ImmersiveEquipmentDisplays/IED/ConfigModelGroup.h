@@ -12,15 +12,16 @@ namespace IED
 		{
 			kNone = 0,
 
-			kDropOnDeath       = 1u << 1,
-			kKeepTorchFlame    = 1u << 2,
-			kRemoveScabbard    = 1u << 3,
-			kLoad1pWeaponModel = 1u << 4,
-			kDisableHavok      = 1u << 5,
-			kLeftWeapon        = 1u << 6,
-			kUseWorldModel     = 1u << 7,
-			kDisabled          = 1u << 8,
-			kPlayAnimation     = 1u << 9
+			kDropOnDeath        = 1u << 1,
+			kKeepTorchFlame     = 1u << 2,
+			kRemoveScabbard     = 1u << 3,
+			kLoad1pWeaponModel  = 1u << 4,
+			kDisableHavok       = 1u << 5,
+			kLeftWeapon         = 1u << 6,
+			kUseWorldModel      = 1u << 7,
+			kDisabled           = 1u << 8,
+			kPlayAnimation      = 1u << 9,
+			kDisableWeaponAnims = 1u << 10
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);

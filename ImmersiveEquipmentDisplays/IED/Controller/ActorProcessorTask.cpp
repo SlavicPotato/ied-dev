@@ -6,6 +6,7 @@
 #include "IED/Inventory.h"
 #include "IObjectManager.h"
 
+#include <ext/BSAnimationUpdateData.h>
 #include <ext/Sky.h>
 
 namespace IED
@@ -18,14 +19,32 @@ namespace IED
 	}
 
 	void ActorProcessorTask::UpdateNode(
-		const ActorObjectHolder& a_record,
-		objectEntryBase_t&       a_entry)
+		ActorObjectHolder&                          a_record,
+		objectEntryBase_t&                          a_entry,
+		const std::optional<BSAnimationUpdateData>& a_animUpdateData)
 	{
 		auto state = a_entry.state.get();
 
 		if (!state)
 		{
 			return;
+		}
+
+		if (a_animUpdateData)
+		{
+			if (state->weapGraphHolder)
+			{
+				//data.reference = a_record.m_actor.get();
+				state->weapGraphHolder->Update(*a_animUpdateData);
+			}
+
+			for (auto& e : state->groupObjects)
+			{
+				if (e.second.weapGraphHolder)
+				{
+					e.second.weapGraphHolder->Update(*a_animUpdateData);
+				}
+			}
 		}
 
 		auto& nodes = state->nodes;
@@ -54,7 +73,7 @@ namespace IED
 
 				if (result)
 				{
-					m_controller.UpdateRootPaused(info->root);
+					m_controller.UpdateIfPaused(info->root);
 					a_record.RequestTransformUpdateDefer();
 				}
 			}
@@ -107,7 +126,7 @@ namespace IED
 	}
 
 	void ActorProcessorTask::ProcessTransformUpdateRequest(
-		const ActorObjectHolder& a_data)
+		ActorObjectHolder& a_data)
 	{
 		if (!a_data.m_flags.test(ActorObjectHolderFlags::kWantTransformUpdate))
 		{
@@ -193,6 +212,18 @@ namespace IED
 
 	void ActorProcessorTask::UpdateState()
 	{
+		if (auto fpstate = IsInFirstPerson();
+		    fpstate != m_state.inFirstPerson)
+		{
+			m_state.inFirstPerson = fpstate;
+
+			if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
+			    it != m_controller.m_objects.end())
+			{
+				it->second.RequestEvalDefer();
+			}
+		}
+
 		if (IPerfCounter::delta_us(
 				m_state.lastRun,
 				m_timer.GetStartTime()) < STATE_CHECK_INTERVAL_LOW)
@@ -237,6 +268,9 @@ namespace IED
 
 		UpdateState();
 
+		auto steps  = Game::Unk2f6b948::GetSteps();
+		bool paused = Game::IsPaused();
+
 		for (auto& [i, e] : m_controller.m_objects)
 		{
 			if (!e.m_actor->formID)
@@ -266,6 +300,13 @@ namespace IED
 			    ws != e.m_locData.worldspace)
 			{
 				e.m_locData.worldspace = ws;
+				e.RequestEvalDefer();
+			}
+
+			if (auto cstate = Game::GetActorInCombat(e.m_actor);
+			    cstate != e.m_inCombat)
+			{
+				e.m_inCombat = cstate;
 				e.RequestEvalDefer();
 			}
 
@@ -314,9 +355,18 @@ namespace IED
 
 			bool update = false;
 
+			std::optional<BSAnimationUpdateData> animUpdateData;
+
+			if (!paused)
+			{
+				animUpdateData.emplace(e.m_actor == *g_thePlayer ? steps.player : steps.npc);
+				//animUpdateData->reference = e.m_actor.get();
+				//animUpdateData->forceUpdate = true;
+			}
+
 			for (auto& f : e.m_entriesSlot)
 			{
-				UpdateNode(e, f);
+				UpdateNode(e, f, animUpdateData);
 
 				if (f.hideCountdown)
 				{
@@ -344,7 +394,7 @@ namespace IED
 				{
 					for (auto& h : g.second)
 					{
-						UpdateNode(e, h.second);
+						UpdateNode(e, h.second, animUpdateData);
 					}
 				}
 			}

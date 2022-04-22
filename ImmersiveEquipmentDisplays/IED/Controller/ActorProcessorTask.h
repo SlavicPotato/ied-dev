@@ -3,6 +3,8 @@
 #include "IED/ConfigCommon.h"
 #include "IED/TimeOfDay.h"
 
+#include "IFirstPersonState.h"
+
 namespace RE
 {
 	class TESWeather;
@@ -23,7 +25,8 @@ namespace IED
 	struct objectEntryBase_t;
 
 	class ActorProcessorTask :
-		public TaskDelegateFixed
+		public TaskDelegateFixed,
+		public IFirstPersonState
 	{
 	public:
 		ActorProcessorTask(
@@ -46,6 +49,7 @@ namespace IED
 
 			RE::TESWeather* currentWeather{ nullptr };
 			Data::TimeOfDay timeOfDay{ Data::TimeOfDay::kDay };
+			bool            inFirstPerson{ false };
 		};
 
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
@@ -53,11 +57,12 @@ namespace IED
 		virtual void Run() override;
 
 		SKMP_FORCEINLINE void UpdateNode(
-			const ActorObjectHolder& a_record,
-			objectEntryBase_t&       a_entry);
+			ActorObjectHolder&                          a_record,
+			objectEntryBase_t&                          a_entry,
+			const std::optional<BSAnimationUpdateData>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
-			const ActorObjectHolder& a_data);
+			ActorObjectHolder& a_data);
 
 		SKMP_FORCEINLINE void ProcessEvalRequest(
 			ActorObjectHolder& a_data);

@@ -87,6 +87,7 @@ namespace IED
 			case SpellItem::kTypeID:
 			case BGSHeadPart::kTypeID:
 			case BGSExplosion::kTypeID:
+			case BGSMaterialObject::kTypeID:
 			case BGSLocation::kTypeID:
 			case TESWorldSpace::kTypeID:
 			case TESPackage::kTypeID:

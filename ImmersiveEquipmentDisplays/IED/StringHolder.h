@@ -31,6 +31,7 @@ namespace IED
 		static inline constexpr auto NINODE_SCB           = "Scb";
 		static inline constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
 		static inline constexpr auto BSX                  = "BSX";
+		static inline constexpr auto BGED                 = "BGED";
 		static inline constexpr auto NINODE_TORCH_FIRE    = "TorchFire";
 		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
 		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
@@ -84,6 +85,7 @@ namespace IED
 		BSFixedString m_scb{ NINODE_SCB };
 		BSFixedString m_scbLeft{ NINODE_SCB_LEFT };
 		BSFixedString m_bsx{ BSX };
+		BSFixedString m_bged{ BGED };
 		BSFixedString m_torchFire{ NINODE_TORCH_FIRE };
 		BSFixedString m_object{ NINODE_IED_OBJECT };
 		BSFixedString m_attachLight{ NINODE_ATTACH_LIGHT };

@@ -40,7 +40,7 @@ namespace IED
 			stl::vector<node_t>                                    nodes;
 			stl::vector<std::unique_ptr<EffectShaderFunctionBase>> functions;
 
-			void update_effect_data() const;
+			void update_effect_data(float a_step) const;
 			void create_function_list(const Data::configEffectShaderFunctionList_t& a_data);
 		};
 

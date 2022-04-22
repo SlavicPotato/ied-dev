@@ -124,6 +124,8 @@ namespace IED
 			edl->AddEventSink<TESDeathEvent>(this);
 			edl->AddEventSink<TESSwitchRaceCompleteEvent>(this);
 			edl->AddEventSink<TESActorLocationChangeEvent>(this);
+			//edl->AddEventSink<TESCombatEvent>(this);
+			//edl->AddEventSink<TESSceneEvent>(this);
 			//edl->AddEventSink<TESPackageEvent>(this);
 			//edl->AddEventSink<TESQuestStartStopEvent>(this);
 
@@ -511,10 +513,16 @@ namespace IED
 	{
 		stl::scoped_lock lock(m_lock);
 
+		InitializeFPStateData();
 		InitializeData();
 
 		ASSERT(SinkEventsT1());
 		ASSERT(SinkEventsT2());
+
+		if (IFPV_Detected())
+		{
+			Debug("IFPV detector plugin was found");
+		}
 	}
 
 	void Controller::Evaluate(
@@ -1217,14 +1225,6 @@ namespace IED
 					a_holder.m_female,
 					e);
 			}
-		}
-
-		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
-		{
-			a_holder.CreateExtraCopyNode(
-				a_holder.m_actor,
-				a_holder.m_npcroot,
-				e);
 		}
 
 		if (m_applyTransformOverrides)
@@ -2401,11 +2401,22 @@ namespace IED
 			return false;
 		}
 
-		if (!state->flags.test(ObjectEntryFlags::kIsGroup) &&
-		    !state->currentSequence.empty() &&
-		    !a_config.flags.test(BaseFlags::kPlayAnimation))
+		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
 		{
-			return false;
+			if (a_config.flags.test(BaseFlags::kPlayAnimation))
+			{
+				if (state->weapGraphHolder)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (!state->currentSequence.empty())
+				{
+					return false;
+				}
+			}
 		}
 
 		const bool isVisible = state->nodes.rootNode->IsVisible();
@@ -2770,7 +2781,8 @@ namespace IED
 						nullptr,
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
-						false))
+						false,
+						settings.behaviorGraphWeaponAnims))
 				{
 					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
@@ -3150,6 +3162,8 @@ namespace IED
 			return false;
 		}
 
+		auto& settings = m_config.settings.data;
+
 		if (a_config.customFlags.test(CustomFlags::kIsInInventory))
 		{
 			bool hasMinCount;
@@ -3229,7 +3243,8 @@ namespace IED
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					settings.behaviorGraphWeaponAnims);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3249,7 +3264,8 @@ namespace IED
 					modelForm,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					settings.behaviorGraphWeaponAnims);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3337,7 +3353,8 @@ namespace IED
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					settings.behaviorGraphWeaponAnims);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3351,7 +3368,8 @@ namespace IED
 					nullptr,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
-					a_config.customFlags.test(CustomFlags::kDisableHavok));
+					a_config.customFlags.test(CustomFlags::kDisableHavok),
+					settings.behaviorGraphWeaponAnims);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3622,7 +3640,6 @@ namespace IED
 			a_root,
 			a_npcroot,
 			a_handle,
-			a_objects,
 			a_objects.m_female ?
 				ConfigSex::Female :
                 ConfigSex::Male,
@@ -3631,7 +3648,9 @@ namespace IED
 			a_actor,
 			nrp->npc,
 			nrp->npc->GetFirstNonTemporaryOrThis(),
-			nrp->race
+			nrp->race,
+			a_objects,
+			*this
 		};
 
 		auto dataList = GetEntryDataList(a_actor);
@@ -3664,7 +3683,7 @@ namespace IED
 			}
 			else
 			{
-				UpdateRootPaused(a_root);
+				UpdateIfPaused(a_root);
 			}
 		}
 	}
@@ -3727,7 +3746,7 @@ namespace IED
 	}
 
 	void Controller::EvaluateTransformsImpl(
-		const ActorObjectHolder& a_objects)
+		ActorObjectHolder& a_objects)
 	{
 		if (auto info = LookupCachedActorInfo(a_objects))
 		{
@@ -3740,7 +3759,7 @@ namespace IED
 					a_objects,
 					nullptr))
 			{
-				UpdateRootPaused(info->root);
+				UpdateIfPaused(info->root);
 			}
 		}
 	}
@@ -3751,7 +3770,7 @@ namespace IED
 		TESNPC*                                a_npc,
 		TESRace*                               a_race,
 		ConfigSex                              a_sex,
-		const ActorObjectHolder&               a_objects,
+		ActorObjectHolder&                     a_objects,
 		const collectorData_t::container_type* a_equippedForms)
 	{
 #if defined(IED_ENABLE_STATS_T)
@@ -3773,12 +3792,12 @@ namespace IED
 
 		nodeOverrideParams_t params{
 			a_npcRoot,
-			a_objects,
-			*this,
 			a_actor,
 			a_npc,
 			a_npc->GetFirstNonTemporaryOrThis(),
-			a_race
+			a_race,
+			a_objects,
+			*this
 		};
 
 		configStoreNodeOverride_t::holderCache_t hc;
@@ -4089,14 +4108,14 @@ namespace IED
 					objectEntry.state->nodes.rootNode,
 					objectEntry.state->nodes.ref);
 
-				UpdateRootPaused(info->root);
+				UpdateIfPaused(info->root);
 			}
 		}
 	}
 
-	void Controller::UpdateRootPaused(NiNode* a_root)
+	void Controller::UpdateIfPaused(NiNode* a_root)
 	{
-		bool update = Game::Main::GetSingleton()->freezeTime;
+		/*bool update = Game::Main::GetSingleton()->freezeTime;
 
 		if (!update)
 		{
@@ -4129,6 +4148,13 @@ namespace IED
 		}
 
 		if (update)
+		{
+			EngineExtensions::UpdateRoot(a_root);
+		}
+
+		return update;*/
+
+		if (Game::IsPaused())
 		{
 			EngineExtensions::UpdateRoot(a_root);
 		}
@@ -4213,7 +4239,9 @@ namespace IED
 			a_info.actor,
 			a_info.npc,
 			a_info.npcOrTemplate,
-			a_info.race
+			a_info.race,
+			a_info.objects,
+			*this
 		};
 
 		if (auto eo = a_config.get_equipment_override(
@@ -4244,7 +4272,9 @@ namespace IED
 			a_info.actor,
 			a_info.npc,
 			a_info.npcOrTemplate,
-			a_info.race
+			a_info.race,
+			a_info.objects,
+			*this
 		};
 
 		if (auto eo = !form ?
@@ -4780,7 +4810,7 @@ namespace IED
 				nullptr);
 		}
 
-		UpdateRootPaused(a_info.root);
+		UpdateIfPaused(a_info.root);
 	}
 
 	void Controller::AttachSlotNodeImpl(
@@ -4892,7 +4922,7 @@ namespace IED
 		if (result)
 		{
 			RequestEvaluateTransformsActor(a_info.actor->formID, false);
-			UpdateRootPaused(a_info.root);
+			UpdateIfPaused(a_info.root);
 		}
 		else
 		{
@@ -4936,7 +4966,7 @@ namespace IED
 	}
 
 	auto Controller::LookupCachedActorInfo(
-		const ActorObjectHolder& a_objects)
+		ActorObjectHolder& a_objects)
 		-> std::optional<actorInfo_t>
 	{
 		auto handle = a_objects.GetHandle();
@@ -5272,6 +5302,29 @@ namespace IED
 		return EventResult::kContinue;
 	}
 
+	/*EventResult IED::Controller::ReceiveEvent(
+		const TESCombatEvent*           a_evn,
+		BSTEventSource<TESCombatEvent>* a_dispatcher)
+	{
+		if (a_evn)
+		{
+			_DMESSAGE("%X -> %X", a_evn->actor ? a_evn->actor->formID : 0, a_evn->targetActor ? a_evn->targetActor->formID : 0, a_evn->newState);
+
+			if (a_evn->actor)
+			{
+				QueueRequestEvaluate(a_evn->actor->formID, true, true);
+			}
+
+			
+			if (a_evn->targetActor)
+			{
+				QueueRequestEvaluate(a_evn->targetActor->formID, true, true);
+			}
+		}
+
+		return EventResult::kContinue;
+	}*/
+
 	EventResult Controller::ReceiveEvent(
 		const TESSwitchRaceCompleteEvent* a_evn,
 		BSTEventSource<TESSwitchRaceCompleteEvent>*)
@@ -5315,6 +5368,18 @@ namespace IED
 
 		return EventResult::kContinue;
 	}
+
+	/*EventResult Controller::ReceiveEvent(
+		const TESSceneEvent*           a_evn,
+		BSTEventSource<TESSceneEvent>* a_dispatcher)
+	{
+		if (a_evn)
+		{
+			_DMESSAGE("%.8X: %u | %s", a_evn->scene, a_evn->state, a_evn->callback->GetCallbackName().c_str());
+		}
+
+		return EventResult::kContinue;
+	}*/
 
 	/*EventResult Controller::ReceiveEvent(
 		const TESQuestStartStopEvent* a_evn,

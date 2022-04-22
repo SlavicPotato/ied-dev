@@ -12,6 +12,8 @@
 #include "IED/ConfigStore.h"
 #include "IED/SkeletonCache.h"
 
+#include <ext/WeaponAnimationGraphManagerHolder.h>
+
 namespace IED
 {
 
@@ -75,9 +77,10 @@ namespace IED
 
 			struct GroupObject
 			{
-				NiPointer<NiNode>      rootNode;
-				NiPointer<NiNode>      object;
-				Data::cacheTransform_t transform;
+				NiPointer<NiNode>                        rootNode;
+				NiPointer<NiNode>                        object;
+				RE::WeaponAnimationGraphManagerHolderPtr weapGraphHolder;
+				Data::cacheTransform_t                   transform;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
 			};
@@ -118,7 +121,7 @@ namespace IED
 				}
 			}
 
-			void CleanupObjects(Game::ObjectRefHandle a_handle);
+			void Cleanup(Game::ObjectRefHandle a_handle);
 
 			void UpdateAndPlayAnimation(
 				Actor*                   a_actor,
@@ -129,6 +132,7 @@ namespace IED
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
 			nodesRef_t                                         nodes;
+			RE::WeaponAnimationGraphManagerHolderPtr           weapGraphHolder;
 			Data::cacheTransform_t                             transform;
 			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
@@ -517,6 +521,11 @@ namespace IED
 			return m_animState;
 		}
 
+		[[nodiscard]] inline constexpr bool IsFemale() const noexcept
+		{
+			return m_female;
+		}
+
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
 
@@ -571,6 +580,7 @@ namespace IED
 		bool                m_cellAttached{ false };
 		bool                m_isPlayerTeammate{ false };
 		bool                m_wantLFUpdate{ false };
+		bool                m_inCombat{ false };
 		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;
 		TESPackage*         m_currentPackage{ nullptr };
