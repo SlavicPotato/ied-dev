@@ -30,6 +30,64 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
 
+	/*class AnimationEventFilter
+	{
+	public:
+		SKMP_FORCEINLINE bool test(const BSFixedString& a_event)
+		{
+			if (m_allow.contains(a_event))
+			{
+				return true;
+			}
+
+			return !m_denyAll &&
+			       !m_deny.contains(a_event);
+		}
+
+		bool                              m_denyAll{ false };
+		stl::unordered_set<BSFixedString> m_allow;
+		stl::unordered_set<BSFixedString> m_deny;
+	};*/
+
+	class AnimationEventRegistrationList
+	{
+	public:
+		void Add(RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		{
+			stl::scoped_lock lock(m_lock);
+
+			m_data.emplace_back(a_ptr);
+		}
+
+		void Remove(RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		{
+			stl::scoped_lock lock(m_lock);
+
+			m_data.remove(a_ptr);
+		}
+
+		void Notify(const BSFixedString& a_event) const
+		{
+			stl::scoped_lock lock(m_lock);
+
+			for (auto& e : m_data)
+			{
+				e->NotifyAnimationGraph(a_event);
+			}
+		}
+
+		void Clear() noexcept
+		{
+			stl::scoped_lock lock(m_lock);
+
+			m_data.clear();
+		}
+
+	private:
+		mutable stl::fast_spin_lock                         m_lock;
+		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
+	};
+
 	struct objectEntryBase_t
 	{
 		objectEntryBase_t()  = default;
@@ -65,7 +123,16 @@ namespace IED
 			return state && state->nodes.rootNode->IsVisible();
 		}
 
-		struct State
+		struct AnimationState
+		{
+			RE::WeaponAnimationGraphManagerHolderPtr weapAnimGraphManagerHolder;
+			stl::fixed_string                        currentAnimationEvent;
+
+			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event);
+		};
+
+		struct State :
+			AnimationState
 		{
 			State()  = default;
 			~State() = default;
@@ -75,12 +142,20 @@ namespace IED
 			State& operator=(const State&) = delete;
 			State& operator=(State&&) = delete;
 
-			struct GroupObject
+			struct GroupObject :
+				AnimationState
 			{
-				NiPointer<NiNode>                        rootNode;
-				NiPointer<NiNode>                        object;
-				RE::WeaponAnimationGraphManagerHolderPtr weapGraphHolder;
-				Data::cacheTransform_t                   transform;
+				GroupObject(
+					NiNode*            a_rootNode,
+					NiPointer<NiNode>& a_object) :
+					rootNode(a_rootNode),
+					object(a_object)
+				{
+				}
+
+				NiPointer<NiNode>      rootNode;
+				NiPointer<NiNode>      object;
+				Data::cacheTransform_t transform;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
 			};
@@ -109,7 +184,7 @@ namespace IED
 					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
 
-			void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
+			/*void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
 			{
 				for (auto& e : a_group.entries)
 				{
@@ -119,7 +194,7 @@ namespace IED
 						it->second.transform.Update(e.second.transform);
 					}
 				}
-			}
+			}*/
 
 			void Cleanup(Game::ObjectRefHandle a_handle);
 
@@ -132,7 +207,6 @@ namespace IED
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
 			nodesRef_t                                         nodes;
-			RE::WeaponAnimationGraphManagerHolderPtr           weapGraphHolder;
 			Data::cacheTransform_t                             transform;
 			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
@@ -298,7 +372,8 @@ namespace IED
 		WeaponPlacementID placementID;
 	};
 
-	class ActorObjectHolder
+	class ActorObjectHolder :
+		public BSTEventSink<BSAnimationGraphEvent>
 	{
 		friend class IObjectManager;
 		friend class Controller;
@@ -333,7 +408,8 @@ namespace IED
 			IObjectManager&       a_owner,
 			Game::ObjectRefHandle a_handle,
 			bool                  a_nodeOverrideEnabled,
-			bool                  a_nodeOverrideEnabledPlayer);
+			bool                  a_nodeOverrideEnabledPlayer,
+			bool                  a_animEventForwarding);
 
 		~ActorObjectHolder();
 
@@ -525,12 +601,37 @@ namespace IED
 		{
 			return m_female;
 		}
+		
+		[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
+		{
+			return m_enableAnimEventForwarding;
+		}
 
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
 
 		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
 			const stl::fixed_string& a_name) const;
+
+		void ReSinkAnimationGraphs();
+
+		inline void RegisterWeaponAnimationGraphManagerHolder(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		{
+			if (m_enableAnimEventForwarding)
+			{
+				m_animEventForwardRegistrations.Add(a_ptr);
+			}
+		}
+
+		inline void UnregisterWeaponAnimationGraphManagerHolder(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		{
+			if (m_enableAnimEventForwarding)
+			{
+				m_animEventForwardRegistrations.Remove(a_ptr);
+			}
+		}
 
 	private:
 		void CreateExtraNodes(
@@ -545,6 +646,10 @@ namespace IED
 
 		void ApplyNodeTransformOverrides(
 			NiNode* a_root) const;
+
+		EventResult ReceiveEvent(
+			const BSAnimationGraphEvent*           a_event,
+			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
@@ -588,6 +693,9 @@ namespace IED
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 
 		mutable ActorAnimationState m_animState;
+
+		AnimationEventRegistrationList m_animEventForwardRegistrations;
+		bool                           m_enableAnimEventForwarding{ false };
 
 		IObjectManager& m_owner;
 

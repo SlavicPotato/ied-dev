@@ -165,11 +165,6 @@ namespace IED
 			return result;
 		}
 
-		[[nodiscard]] inline const auto* GetBSStringHolder() const noexcept
-		{
-			return m_bsstrings.get();
-		}
-
 		bool RemoveActor(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -460,11 +455,6 @@ namespace IED
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		void SaveSettings();
-
-		[[nodiscard]] inline constexpr auto& GetLock() const noexcept
-		{
-			return m_lock;
-		}
 
 		[[nodiscard]] inline constexpr const auto& GetObjects() const noexcept
 		{
@@ -873,7 +863,7 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const TESDeathEvent*           a_evn,
 			BSTEventSource<TESDeathEvent>* a_dispatcher) override;
-		
+
 		/*virtual EventResult ReceiveEvent(
 			const TESCombatEvent*           a_evn,
 			BSTEventSource<TESCombatEvent>* a_dispatcher) override;*/
@@ -948,7 +938,6 @@ namespace IED
 
 		// members
 
-		std::unique_ptr<BSStringHolder>  m_bsstrings;
 		std::shared_ptr<const ConfigINI> m_iniconf;
 		Data::actorBlockList_t           m_actorBlockList;
 
@@ -980,8 +969,6 @@ namespace IED
 		stl::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;
-
-		mutable stl::critical_section m_lock;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);

@@ -610,7 +610,7 @@ namespace IED
 					ImGui::Columns(2, nullptr, false);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Disabled, "1"),
+							LS(CommonStrings::Disabled, "0"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kDisabled)))
 					{
@@ -622,6 +622,19 @@ namespace IED
 					}
 
 					UICommon::PushDisabled(disabled);
+
+					if (ImGui::CheckboxFlagsT(
+							LS(CommonStrings::Invisible, "1"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::BaseFlags::kInvisible)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kInvisible);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					}
+					DrawTip(UITip::Invisible);
 
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::HideInFurniture, "2"),
@@ -662,17 +675,17 @@ namespace IED
 					}
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::RemoveScabbard, "5"),
+							LS(UIBaseConfigString::DropOnDeath, "5"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kRemoveScabbard)))
+							stl::underlying(Data::BaseFlags::kDropOnDeath)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::BaseFlags::kRemoveScabbard);
+							Data::BaseFlags::kDropOnDeath);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-					DrawTip(UITip::RemoveScabbard);
+					DrawTip(UITip::DropOnDeath);
 
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::IgnoreRaceEquipTypes, "6"),
@@ -691,25 +704,26 @@ namespace IED
 					bool paChanged = ImGui::CheckboxFlagsT(
 						LS(UIWidgetCommonStrings::PlayAnimation, "7"),
 						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kPlayAnimation));
+						stl::underlying(Data::BaseFlags::kPlaySequence));
 
 					if (paChanged)
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::BaseFlags::kPlayAnimation);
+							Data::BaseFlags::kPlaySequence);
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
 
 					DrawTip(UITip::PlayAnimation);
 
-					if (a_data.flags.test(Data::BaseFlags::kPlayAnimation))
+					if (a_data.flags.test(Data::BaseFlags::kPlaySequence))
 					{
 						if (paChanged &&
 						    a_data.niControllerSequence.empty())
 						{
 							ImGui::OpenPopup("7ctx");
+							ClearDescriptionPopupBuffer();
 						}
 
 						ImGui::SameLine();
@@ -738,19 +752,6 @@ namespace IED
 
 					ImGui::NextColumn();
 
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::DropOnDeath, "9"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDropOnDeath)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDropOnDeath);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::DropOnDeath);
-
 					const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
 
 					UICommon::PushDisabled(!atmReference);
@@ -772,18 +773,17 @@ namespace IED
 					DrawTip(UITip::SyncReferenceNode);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Invisible, "B"),
+							LS(UIBaseConfigString::RemoveScabbard, "B"),
 							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kInvisible)))
+							stl::underlying(Data::BaseFlags::kRemoveScabbard)))
 					{
 						PropagateFlagToEquipmentOverrides(
 							a_baseConfig,
-							Data::BaseFlags::kInvisible);
+							Data::BaseFlags::kRemoveScabbard);
 
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
-					DrawTip(UITip::Invisible);
+					DrawTip(UITip::RemoveScabbard);
 
 					if (ImGui::CheckboxFlagsT(
 							LS(UIBaseConfigString::Use1pWeaponModels, "C"),
@@ -826,7 +826,7 @@ namespace IED
 					}
 
 					DrawTip(UITip::KeepTorchFlame);
-					
+
 					if (ImGui::CheckboxFlagsT(
 							LS(UIWidgetCommonStrings::DisableWeaponAnims, "F"),
 							stl::underlying(std::addressof(a_data.flags.value)),
@@ -840,6 +840,68 @@ namespace IED
 					}
 
 					DrawTip(UITip::DisableWeaponAnims);
+
+					if (ImGui::CheckboxFlagsT(
+							LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "G"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kDisableAnimEventForwarding);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					}
+					DrawTip(UITip::DisableAnimEventForwarding);
+
+					paChanged = ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::AnimationEvent, "H"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kAnimationEvent));
+
+					if (paChanged)
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kAnimationEvent);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					}
+
+					DrawTip(UITip::AnimationEvent);
+
+					if (a_data.flags.test(Data::BaseFlags::kAnimationEvent))
+					{
+						if (paChanged &&
+						    a_data.animationEvent.empty())
+						{
+							ImGui::OpenPopup("Hctx");
+							ClearDescriptionPopupBuffer();
+						}
+
+						ImGui::SameLine();
+						if (UIPopupToggleButtonWidget::DrawPopupToggleButton("Hb", "Hctx"))
+						{
+							SetDescriptionPopupBuffer(a_data.animationEvent);
+						}
+
+						if (ImGui::BeginPopup("Hctx"))
+						{
+							if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
+							{
+								a_data.animationEvent = GetDescriptionPopupBuffer();
+
+								PropagateMemberToEquipmentOverrides(
+									a_baseConfig,
+									offsetof(Data::configBaseValues_t, animationEvent),
+									a_data.animationEvent);
+
+								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+							}
+
+							ImGui::EndPopup();
+						}
+					}
 
 					UICommon::PopDisabled(disabled);
 

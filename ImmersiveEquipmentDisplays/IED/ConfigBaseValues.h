@@ -12,24 +12,26 @@ namespace IED
 		{
 			kNone = 0,
 
-			kReserved0              = 1u << 0,
-			kReserved1              = 1u << 1,
-			kInvisible              = 1u << 2,
-			kHideIfUsingFurniture   = 1u << 3,
-			kDropOnDeath            = 1u << 4,
-			kDisabled               = 1u << 5,
-			kSyncReferenceTransform = 1u << 6,
-			kReferenceMode          = 1u << 7,
-			kPlaySound              = 1u << 8,
-			kKeepTorchFlame         = 1u << 9,
-			kRemoveScabbard         = 1u << 10,
-			kLoad1pWeaponModel      = 1u << 11,
-			kHideLayingDown         = 1u << 12,
-			kUseWorldModel          = 1u << 13,
-			kIgnoreRaceEquipTypes   = 1u << 14,
-			kPlayAnimation          = 1u << 15,
-			kPapyrus                = 1u << 16,
-			kDisableWeaponAnims     = 1u << 17,
+			kReserved0                  = 1u << 0,
+			kReserved1                  = 1u << 1,
+			kInvisible                  = 1u << 2,
+			kHideIfUsingFurniture       = 1u << 3,
+			kDropOnDeath                = 1u << 4,
+			kDisabled                   = 1u << 5,
+			kSyncReferenceTransform     = 1u << 6,
+			kReferenceMode              = 1u << 7,
+			kPlaySound                  = 1u << 8,
+			kKeepTorchFlame             = 1u << 9,
+			kRemoveScabbard             = 1u << 10,
+			kLoad1pWeaponModel          = 1u << 11,
+			kHideLayingDown             = 1u << 12,
+			kUseWorldModel              = 1u << 13,
+			kIgnoreRaceEquipTypes       = 1u << 14,
+			kPlaySequence               = 1u << 15,
+			kPapyrus                    = 1u << 16,
+			kDisableWeaponAnims         = 1u << 17,
+			kDisableAnimEventForwarding = 1u << 18,
+			kAnimationEvent             = 1u << 19,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -53,6 +55,7 @@ namespace IED
 			{
 				DataVersion1 = 1,
 				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
@@ -64,6 +67,7 @@ namespace IED
 			stl::flag<BaseFlags> flags{ DEFAULT_FLAGS };
 			NodeDescriptor       targetNode;
 			stl::fixed_string    niControllerSequence;
+			stl::fixed_string    animationEvent;
 
 		protected:
 			template <class Archive>
@@ -76,6 +80,11 @@ namespace IED
 				if (a_version >= DataVersion2)
 				{
 					a_ar& niControllerSequence;
+
+					if (a_version >= DataVersion3)
+					{
+						a_ar& animationEvent;
+					}
 				}
 			}
 		};
@@ -85,4 +94,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion2);
+	IED::Data::configBaseValues_t::Serialization::DataVersion3);

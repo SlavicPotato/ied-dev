@@ -13,7 +13,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
 		objectEntryBase_t&               a_objectEntry,
-		const ActorObjectHolder&         a_data,
+		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (!a_objectEntry.state)
@@ -40,6 +40,21 @@ namespace IED
 		if (!a_objectEntry.state->dbEntries.empty())
 		{
 			QueueDatabaseCleanup();
+		}
+
+		if (a_objectEntry.state->weapAnimGraphManagerHolder)
+		{
+			a_data.UnregisterWeaponAnimationGraphManagerHolder(
+				a_objectEntry.state->weapAnimGraphManagerHolder);
+		}
+
+		for (auto& e : a_objectEntry.state->groupObjects)
+		{
+			if (e.second.weapAnimGraphManagerHolder)
+			{
+				a_data.UnregisterWeaponAnimationGraphManagerHolder(
+					e.second.weapAnimGraphManagerHolder);
+			}
 		}
 
 		a_objectEntry.reset(a_handle, a_data.m_root);
@@ -121,6 +136,23 @@ namespace IED
 		return true;
 	}
 
+	void IObjectManager::QueueReSinkAnimationGraphs(
+		Game::FormID a_actor)
+	{
+		ITaskPool::AddPriorityTask([this, a_actor]() {
+			stl::scoped_lock lock(m_lock);
+
+			auto it = m_objects.find(a_actor);
+			if (it != m_objects.end())
+			{
+				if (it->second.IsAnimEventForwardingEnabled())
+				{
+					it->second.ReSinkAnimationGraphs();
+				}
+			}
+		});
+	}
+
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
@@ -145,7 +177,7 @@ namespace IED
 			}
 		}
 
-		a_objects.visit([&](objectEntryBase_t& a_object) {
+		a_objects.visit([&](auto& a_object) {
 			RemoveObject(
 				a_actor,
 				a_handle,
@@ -183,7 +215,7 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		a_objects.visit([&](objectEntryBase_t& a_object) {
+		a_objects.visit([&](auto& a_object) {
 			RemoveObject(
 				a_actor,
 				a_handle,
@@ -504,6 +536,8 @@ namespace IED
 			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok);
 
+		UpdateDownwardPass(itemRoot);
+
 		FinalizeObjectState(
 			state,
 			a_form,
@@ -512,19 +546,47 @@ namespace IED
 			targetNodes,
 			a_config);
 
-		if (a_config.flags.test(Data::BaseFlags::kPlayAnimation))
+		if (a_config.flags.test(Data::BaseFlags::kPlaySequence))
 		{
-			state->UpdateAndPlayAnimation(a_params.actor, a_config.niControllerSequence);
+			state->UpdateAndPlayAnimation(
+				a_params.actor,
+				a_config.niControllerSequence);
 		}
 		else if (
 			a_bhkAnims &&
 			!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
 			modelParams.type == ModelType::kWeapon)
 		{
-			EngineExtensions::CreateWeaponBehaviorGraph(object, state->weapGraphHolder);
-		}
+			if (EngineExtensions::CreateWeaponBehaviorGraph(
+					object,
+					state->weapAnimGraphManagerHolder))
+			{
+				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
+				{
+					state->UpdateAndSendAnimationEvent(
+						a_config.animationEvent);
+				}
+				else
+				{
+					state->currentAnimationEvent =
+						StringHolder::GetSingleton().weaponSheathe;
 
-		UpdateDownwardPass(itemRoot);
+					state->weapAnimGraphManagerHolder->NotifyAnimationGraph(
+						BSStringHolder::GetSingleton()->m_weaponSheathe);
+				}
+
+				/*BSAnimationUpdateData data{ 0 };
+				state->weapAnimGraphManagerHolder->Update(data);
+				UpdateDownwardPass(object);*/
+
+				if (!a_config.flags.test(
+						Data::BaseFlags::kDisableAnimEventForwarding))
+				{
+					a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+						state->weapAnimGraphManagerHolder);
+				}
+			}
+		}
 
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
@@ -654,7 +716,7 @@ namespace IED
 				targetNodes))
 		{
 			Debug(
-				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node(s): %s",
+				"[%.8X] [race: %.8X] [item: %.8X] couldn't get target node: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_form->formID.get(),
@@ -770,10 +832,10 @@ namespace IED
 				a_disableHavok ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
-			//UpdateDownwardPass(e.object);
-
 			e.grpObject = std::addressof(n);
 		}
+
+		UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
 		{
@@ -782,9 +844,12 @@ namespace IED
 				continue;
 			}
 
-			if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kPlayAnimation))
+			if (e.entry->second.flags.test(
+					Data::ConfigModelGroupEntryFlags::kPlaySequence))
 			{
-				e.grpObject->PlayAnimation(a_params.actor, e.entry->second.niControllerSequence);
+				e.grpObject->PlayAnimation(
+					a_params.actor,
+					e.entry->second.niControllerSequence);
 			}
 			else if (
 				a_bhkAnims &&
@@ -792,11 +857,32 @@ namespace IED
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims) &&
 				e.params.type == ModelType::kWeapon)
 			{
-				EngineExtensions::CreateWeaponBehaviorGraph(e.grpObject->object, e.grpObject->weapGraphHolder);
+				if (EngineExtensions::CreateWeaponBehaviorGraph(
+						e.grpObject->object,
+						e.grpObject->weapAnimGraphManagerHolder))
+				{
+					if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+					{
+						e.grpObject->UpdateAndSendAnimationEvent(
+							e.entry->second.animationEvent);
+					}
+					else
+					{
+						e.grpObject->currentAnimationEvent =
+							StringHolder::GetSingleton().weaponSheathe;
+						e.grpObject->weapAnimGraphManagerHolder->NotifyAnimationGraph(
+							BSStringHolder::GetSingleton()->m_weaponSheathe);
+					}
+
+					if (!e.entry->second.flags.test(
+							Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding))
+					{
+						a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+							e.grpObject->weapAnimGraphManagerHolder);
+					}
+				}
 			}
 		}
-
-		UpdateDownwardPass(groupRoot);
 
 		FinalizeObjectState(
 			state,
@@ -826,7 +912,7 @@ namespace IED
 		std::unique_ptr<objectEntryBase_t::State>& a_state,
 		TESForm*                                   a_form,
 		NiNode*                                    a_rootNode,
-		NiNode*                                    a_objectNode,
+		const NiPointer<NiNode>&                   a_objectNode,
 		nodesRef_t&                                a_targetNodes,
 		const Data::configBaseValues_t&            a_config)
 	{

@@ -31,7 +31,7 @@ namespace IED
 
 		struct nodeOverrideParamsArgs_t
 		{
-			NiNode*                  npcRoot;
+			NiNode* npcRoot;
 		};
 
 		struct nodeOverrideParams_t :

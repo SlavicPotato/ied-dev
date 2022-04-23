@@ -20,7 +20,7 @@ namespace IED
 		[[nodiscard]] bool UpdateConfig(const Data::configEffectShaderFunction_t& a_data)
 		{
 			if (a_data.get_unique_id() != *this ||
-				a_data.type != type)
+			    a_data.type != type)
 			{
 				return false;
 			}

@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 5
+	return 6
 EndFunction
 
 Int Function GetVersion() native global
@@ -20,8 +20,10 @@ Function ResetAll() native global
 ;
 ;  asPlugin = your plugin name
 ;
-;  asPlugin must be loaded or the call will fail
-;  Items registered to plugins removed mid-save are automatically purged
+;  asPlugin must be loaded otherwise any call will fail. Do not attempt to register items to other plugins or base/dlc masters.
+;
+;  Items and any settings applied to them persist in the save. You only need to set things up once.
+;  Items registered to plugins removed mid-save are automatically purged.
 
 Bool Function CreateItemActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, Form akForm, bool abIsInventoryForm, string asNode) native global
 Bool Function CreateItemNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, Form akForm, bool abIsInventoryForm, string asNode) native global
@@ -83,9 +85,19 @@ Bool Function SetItemAnimationEnabledActor(Actor akActor, string asPlugin, strin
 Bool Function SetItemAnimationEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
 Bool Function SetItemAnimationEnabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
 
+; Must be switched on with SetItemAnimationEnabled* before it takes effect
 Bool Function SetItemAnimationSequenceActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
 Bool Function SetItemAnimationSequenceNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
 Bool Function SetItemAnimationSequenceRace(Race akRace, string asPlugin, string asName, bool abIsFemale, string asSequence) native global
+
+Bool Function SetItemAnimationEventEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+Bool Function SetItemAnimationEventEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+Bool Function SetItemAnimationEventEnabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
+
+; Must be switched on with SetItemAnimationEventEnabled* before it takes effect
+Bool Function SetItemAnimationEventActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, string asAnimationEvent) native global
+Bool Function SetItemAnimationEventNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, string asAnimationEvent) native global
+Bool Function SetItemAnimationEventRace(Race akRace, string asPlugin, string asName, bool abIsFemale, string asAnimationEvent) native global
 
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global

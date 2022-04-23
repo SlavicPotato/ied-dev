@@ -501,11 +501,6 @@ namespace IED
 
 		stl::scoped_lock lock(m_lock);
 
-		if (!m_bsstrings)
-		{
-			m_bsstrings = std::make_unique<BSStringHolder>();
-		}
-
 		InitializeAnimationStrings();
 	}
 
@@ -546,7 +541,7 @@ namespace IED
 			return;
 		}
 
-		auto npcroot = FindNode(root, m_bsstrings->m_npcroot);
+		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return;
@@ -578,7 +573,7 @@ namespace IED
 			return;
 		}
 
-		auto npcroot = FindNode(root, m_bsstrings->m_npcroot);
+		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return;
@@ -1242,6 +1237,8 @@ namespace IED
 		{
 			a_holder.m_cmeLookup.try_emplace(e.first, e.second);
 		}*/
+
+		//Debug("%X : acquire | %s", a_holder.m_actor->formID.get(), a_holder.m_root->m_name.c_str());
 	}
 
 	void Controller::QueueResetAll(
@@ -2403,9 +2400,9 @@ namespace IED
 
 		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
 		{
-			if (a_config.flags.test(BaseFlags::kPlayAnimation))
+			if (a_config.flags.test(BaseFlags::kPlaySequence))
 			{
-				if (state->weapGraphHolder)
+				if (state->weapAnimGraphManagerHolder)
 				{
 					return false;
 				}
@@ -2479,12 +2476,29 @@ namespace IED
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		if (!state->flags.test(ObjectEntryFlags::kIsGroup) &&
-		    a_config.flags.test(BaseFlags::kPlayAnimation))
+		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
 		{
-			if (a_config.niControllerSequence != state->currentSequence)
+			if (a_config.flags.test(BaseFlags::kPlaySequence))
 			{
-				state->UpdateAndPlayAnimation(a_params.actor, a_config.niControllerSequence);
+				if (a_config.niControllerSequence != state->currentSequence)
+				{
+					state->UpdateAndPlayAnimation(
+						a_params.actor,
+						a_config.niControllerSequence);
+				}
+			}
+			else if (state->weapAnimGraphManagerHolder)
+			{
+				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
+				{
+					state->UpdateAndSendAnimationEvent(
+						a_config.animationEvent);
+				}
+				else
+				{
+					state->UpdateAndSendAnimationEvent(
+						StringHolder::GetSingleton().weaponSheathe);
+				}
 			}
 		}
 
@@ -2782,7 +2796,7 @@ namespace IED
 						ItemData::IsLeftWeaponSlot(slot),
 						visible,
 						false,
-						settings.behaviorGraphWeaponAnims))
+						settings.hkWeaponAnimations))
 				{
 					objectEntry.state->nodes.rootNode->SetVisible(visible);
 
@@ -3244,7 +3258,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.behaviorGraphWeaponAnims);
+					settings.hkWeaponAnimations);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3265,7 +3279,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.behaviorGraphWeaponAnims);
+					settings.hkWeaponAnimations);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3354,7 +3368,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.behaviorGraphWeaponAnims);
+					settings.hkWeaponAnimations);
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3369,7 +3383,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.behaviorGraphWeaponAnims);
+					settings.hkWeaponAnimations);
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
 			}
@@ -3508,7 +3522,9 @@ namespace IED
 			*this,
 			a_handle,
 			m_nodeOverrideEnabled,
-			m_nodeOverridePlayerEnabled);
+			m_nodeOverridePlayerEnabled,
+			m_config.settings.data.hkWeaponAnimations &&
+				m_config.settings.data.animEventForwarding);
 
 		if (a_handle != objects.GetHandle())
 		{
@@ -3548,7 +3564,9 @@ namespace IED
 					*this,
 					a_handle,
 					m_nodeOverrideEnabled,
-					m_nodeOverridePlayerEnabled);
+					m_nodeOverridePlayerEnabled,
+					m_config.settings.data.hkWeaponAnimations &&
+						m_config.settings.data.animEventForwarding);
 
 				EvaluateImpl(
 					a_root,
@@ -4115,7 +4133,7 @@ namespace IED
 
 	void Controller::UpdateIfPaused(NiNode* a_root)
 	{
-		/*bool update = Game::Main::GetSingleton()->freezeTime;
+		bool update = Game::Main::GetSingleton()->freezeTime;
 
 		if (!update)
 		{
@@ -4127,23 +4145,14 @@ namespace IED
 
 				assert(sh);
 
-				if (mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
-				    mm->IsMenuOpen(
-						sh->GetString(UIStringHolder::STRING_INDICES::kconsole)))
-				{
-					update = true;
-				}
+				update =
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kconsole));
 			}
 		}
 
@@ -4152,12 +4161,10 @@ namespace IED
 			EngineExtensions::UpdateRoot(a_root);
 		}
 
-		return update;*/
-
-		if (Game::IsPaused())
+		/*if (Game::IsPaused())
 		{
 			EngineExtensions::UpdateRoot(a_root);
-		}
+		}*/
 	}
 
 	auto Controller::MakeTransformUpdateFunc()
@@ -4800,7 +4807,28 @@ namespace IED
 			a_entry.state->nodes.rootNode,
 			a_entry.state->nodes.ref);
 
-		a_entry.state->UpdateGroupTransforms(a_configEntry.group);
+		//a_entry.state->UpdateGroupTransforms(a_configEntry.group);
+
+		for (auto& e : a_configEntry.group.entries)
+		{
+			if (auto it = a_entry.state->groupObjects.find(e.first);
+			    it != a_entry.state->groupObjects.end())
+			{
+				it->second.transform.Update(e.second.transform);
+
+				if (it->second.weapAnimGraphManagerHolder)
+				{
+					if (e.second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+					{
+						it->second.UpdateAndSendAnimationEvent(e.second.animationEvent);
+					}
+					else
+					{
+						it->second.UpdateAndSendAnimationEvent(StringHolder::GetSingleton().weaponSheathe);
+					}
+				}
+			}
+		}
 
 		for (auto& e : a_entry.state->groupObjects)
 		{
@@ -5052,7 +5080,7 @@ namespace IED
 			return {};
 		}
 
-		auto npcroot = FindNode(root, m_bsstrings->m_npcroot);
+		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return {};
@@ -5185,7 +5213,7 @@ namespace IED
 		{
 			if (auto actor = a_evn->formId.As<Actor>())
 			{
-				QueueEvaluate(actor, ControllerUpdateFlags::kImmediateUpdateTransforms);
+				QueueReset(actor, ControllerUpdateFlags::kImmediateUpdateTransforms);
 			}
 		}
 
@@ -5199,7 +5227,7 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			QueueEvaluate(a_evn->reference, ControllerUpdateFlags::kImmediateUpdateTransforms);
+			QueueReset(a_evn->reference, ControllerUpdateFlags::kImmediateUpdateTransforms);
 		}
 
 		return EventResult::kContinue;

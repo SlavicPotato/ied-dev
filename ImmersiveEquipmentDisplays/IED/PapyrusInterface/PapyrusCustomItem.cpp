@@ -1,10 +1,10 @@
 #include "pch.h"
 
-#include "../Controller/Controller.h"
-#include "../FormCommon.h"
-#include "../Main.h"
-#include "../NodeMap.h"
-#include "../StringHolder.h"
+#include "IED/Controller/Controller.h"
+#include "IED/FormCommon.h"
+#include "IED/Main.h"
+#include "IED/NodeMap.h"
+#include "IED/StringHolder.h"
 
 #include "PapyrusCommon.h"
 #include "PapyrusCustomItem.h"
@@ -567,6 +567,70 @@ namespace IED
 					keys.name,
 					GetSex(a_female),
 					seq);
+			}
+			template <class T>
+			static bool SetItemAnimationEventEnabled(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_enable)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemAnimationEventEnabledImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_enable);
+			}
+
+			template <class T>
+			static bool SetItemAnimationEvent(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				BSFixedString a_event)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				if (!ValidateString(a_event))
+				{
+					return false;
+				}
+
+				stl::fixed_string ev(a_event.c_str());
+
+				return SetItemAnimationEventImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					ev);
 			}
 
 			template <class T>
@@ -1230,6 +1294,48 @@ namespace IED
 						"SetItemAnimationSequenceRace",
 						SCRIPT_NAME,
 						SetItemAnimationSequence,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEventEnabledActor",
+						SCRIPT_NAME,
+						SetItemAnimationEventEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEventEnabledNPC",
+						SCRIPT_NAME,
+						SetItemAnimationEventEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemAnimationEventEnabledRace",
+						SCRIPT_NAME,
+						SetItemAnimationEventEnabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationEventActor",
+						SCRIPT_NAME,
+						SetItemAnimationEvent,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationEventNPC",
+						SCRIPT_NAME,
+						SetItemAnimationEvent,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, BSFixedString>(
+						"SetItemAnimationEventRace",
+						SCRIPT_NAME,
+						SetItemAnimationEvent,
 						a_registry));
 
 				a_registry->RegisterFunction(

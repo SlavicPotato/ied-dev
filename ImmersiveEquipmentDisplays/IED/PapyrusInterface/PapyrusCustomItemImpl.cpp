@@ -916,7 +916,7 @@ namespace IED
 
 				auto old = e.flags;
 
-				e.flags.set(BaseFlags::kPlayAnimation, a_enable);
+				e.flags.set(BaseFlags::kPlaySequence, a_enable);
 
 				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
 				{
@@ -950,6 +950,69 @@ namespace IED
 				auto& e = conf->get(a_sex);
 
 				e.niControllerSequence = a_sequence;
+
+				if (!e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueEvaluate(a_target, a_class);
+				}
+
+				return true;
+			}
+
+			bool SetItemAnimationEventEnabledImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_enable)
+			{
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				auto old = e.flags;
+
+				e.flags.set(BaseFlags::kAnimationEvent, a_enable);
+
+				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueReset(a_target, a_class);
+				}
+
+				return true;
+			}
+
+			bool SetItemAnimationEventImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				const stl::fixed_string& a_event)
+			{
+				if (a_event.empty())
+				{
+					return false;
+				}
+
+				stl::scoped_lock lock(Initializer::GetController()->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				e.animationEvent = a_event;
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{

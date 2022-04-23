@@ -49,15 +49,16 @@ namespace IED
 				return false;
 			}
 
-			a_out.toggleKeepLoaded         = data.get("toggle_keep_loaded", false).asBool();
-			a_out.hideEquipped             = data.get("hide_equipped", false).asBool();
-			a_out.disableNPCSlots          = data.get("disable_npc_slots", false).asBool();
-			a_out.removeFavRestriction     = data.get("remove_fav_restriction", false).asBool();
-			a_out.enableXP32AA             = data.get("enable_xp32_aa", false).asBool();
-			a_out.XP32AABowAtk             = data.get("xp32_aa_bow_atk", false).asBool();
-			a_out.XP32AABowIdle            = data.get("xp32_aa_bow_idle", false).asBool();
-			a_out.placementRandomization   = data.get("placement_randomization", false).asBool();
-			a_out.behaviorGraphWeaponAnims = data.get("bged_weap_anims", true).asBool();
+			a_out.toggleKeepLoaded       = data.get("toggle_keep_loaded", false).asBool();
+			a_out.hideEquipped           = data.get("hide_equipped", false).asBool();
+			a_out.disableNPCSlots        = data.get("disable_npc_slots", false).asBool();
+			a_out.removeFavRestriction   = data.get("remove_fav_restriction", false).asBool();
+			a_out.enableXP32AA           = data.get("enable_xp32_aa", false).asBool();
+			a_out.XP32AABowAtk           = data.get("xp32_aa_bow_atk", false).asBool();
+			a_out.XP32AABowIdle          = data.get("xp32_aa_bow_idle", false).asBool();
+			a_out.placementRandomization = data.get("placement_randomization", false).asBool();
+			a_out.hkWeaponAnimations     = data.get("hk_weap_anims", true).asBool();
+			a_out.animEventForwarding    = data.get("anim_event_forwarding", false).asBool();
 
 			auto& logLevel = data["log_level"];
 
@@ -102,7 +103,8 @@ namespace IED
 			data["xp32_aa_bow_atk"]         = a_data.XP32AABowAtk;
 			data["xp32_aa_bow_idle"]        = a_data.XP32AABowIdle;
 			data["placement_randomization"] = a_data.placementRandomization;
-			data["bged_weap_anims"]         = a_data.behaviorGraphWeaponAnims;
+			data["hk_weap_anims"]           = a_data.hkWeaponAnimations;
+			data["anim_event_forwarding"]   = a_data.animEventForwarding;
 
 			if (a_data.logLevel)
 			{

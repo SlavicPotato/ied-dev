@@ -148,14 +148,29 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::NoCheckFav);
-				
+
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::BhkAnims, "4"),
-						std::addressof(data.behaviorGraphWeaponAnims))))
+						std::addressof(data.hkWeaponAnimations))))
 				{
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::BhkAnims);
+
+				if (data.hkWeaponAnimations)
+				{
+					ImGui::Indent();
+
+					if (settings.mark_if(ImGui::Checkbox(
+							LS(UISettingsStrings::AnimEventForwarding, "5"),
+							std::addressof(data.animEventForwarding))))
+					{
+						m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+					}
+					DrawTip(UITip::AnimEventForwarding);
+
+					ImGui::Unindent();
+				}
 
 				ImGui::Spacing();
 

@@ -18,7 +18,7 @@ namespace IED
 				Localization::ILocalization& a_localization);
 
 			bool DrawAlphaFuncSelector(
-				Localization::StringID a_label,
+				Localization::StringID     a_label,
 				NiProperty::AlphaFunction& a_data);
 
 		protected:

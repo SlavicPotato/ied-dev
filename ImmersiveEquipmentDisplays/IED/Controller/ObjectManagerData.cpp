@@ -23,13 +23,15 @@ namespace IED
 		IObjectManager&       a_owner,
 		Game::ObjectRefHandle a_handle,
 		bool                  a_nodeOverrideEnabled,
-		bool                  a_nodeOverrideEnabledPlayer) :
+		bool                  a_nodeOverrideEnabledPlayer,
+		bool                  a_animEventForwarding) :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
 		m_root(a_root),
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
+		m_enableAnimEventForwarding(a_animEventForwarding),
 		m_cellAttached(a_actor->IsParentCellAttached()),
 		m_locData{
 			a_actor->IsInInteriorCell(),
@@ -134,18 +136,50 @@ namespace IED
 			m_entriesSlot[i].slotidex = Data::ItemData::SlotToExtraSlot(
 				static_cast<Data::ObjectSlot>(i));
 		}
+
+		if (m_enableAnimEventForwarding)
+		{
+			RE::BSAnimationGraphManagerPtr agm;
+			if (a_actor->GetAnimationGraphManagerImpl(agm))
+			{
+				if (!agm->graphs.empty())
+				{
+					if (auto& e = agm->graphs.front())
+					{
+						e->AddEventSink(this);
+					}
+				}
+			}
+		}
 	}
 
 	ActorObjectHolder::~ActorObjectHolder()
 	{
+		if (m_enableAnimEventForwarding)
+		{
+			RE::BSAnimationGraphManagerPtr agm;
+			if (m_actor->GetAnimationGraphManagerImpl(agm))
+			{
+				for (auto& e : agm->graphs)
+				{
+					if (e)
+					{
+						e->RemoveEventSink(this);
+					}
+				}
+			}
+
+			m_animEventForwardRegistrations.Clear();
+		}
+
 		if (m_actor->loadedState)
 		{
-			for (auto& e : m_cmeNodes)
+			for (const auto& e : m_cmeNodes)
 			{
 				INodeOverride::ResetNodeOverride(e.second);
 			}
 
-			for (auto& e : m_weapNodes)
+			for (const auto& e : m_weapNodes)
 			{
 				INodeOverride::ResetNodePlacement(e, nullptr);
 			}
@@ -423,6 +457,58 @@ namespace IED
 		}
 	}
 
+	EventResult ActorObjectHolder::ReceiveEvent(
+		const BSAnimationGraphEvent*           a_event,
+		BSTEventSource<BSAnimationGraphEvent>* a_eventSource)
+	{
+		if (a_event)
+		{
+			/*PerfTimer pt;
+			pt.Start();*/
+
+			auto sh = BSStringHolder::GetSingleton();
+
+			if (a_event->tag == sh->m_graphDeleting)
+			{
+				m_owner.QueueReSinkAnimationGraphs(m_formid);
+			}
+			else
+			{
+				if (!sh->m_animEventFilter.contains(a_event->tag))
+				{
+					m_animEventForwardRegistrations.Notify(a_event->tag);
+				}
+			}
+
+			//_DMESSAGE("%f | %X : %s | %s", pt.Stop(), m_formid.get(), a_event->payload.c_str(), a_event->tag.c_str());
+		}
+
+		return EventResult::kContinue;
+	}
+
+	void ActorObjectHolder::ReSinkAnimationGraphs()
+	{
+		RE::BSAnimationGraphManagerPtr agm;
+		if (m_actor->GetAnimationGraphManagerImpl(agm))
+		{
+			if (!agm->graphs.empty())
+			{
+				for (auto& e : agm->graphs)
+				{
+					if (e)
+					{
+						e->RemoveEventSink(this);
+					}
+				}
+
+				if (auto& e = agm->graphs.front())
+				{
+					e->AddEventSink(this);
+				}
+			}
+		}
+	}
+
 	void objectEntryBase_t::reset(
 		Game::ObjectRefHandle a_handle,
 		NiNode*               a_root)
@@ -489,9 +575,10 @@ namespace IED
 	{
 		for (auto& e : groupObjects)
 		{
-			if (e.second.weapGraphHolder)
+			if (e.second.weapAnimGraphManagerHolder)
 			{
-				EngineExtensions::CleanupWeaponBehaviorGraph(e.second.weapGraphHolder);
+				EngineExtensions::CleanupWeaponBehaviorGraph(
+					e.second.weapAnimGraphManagerHolder);
 			}
 
 			EngineExtensions::CleanupObjectImpl(
@@ -499,9 +586,10 @@ namespace IED
 				e.second.rootNode);
 		}
 
-		if (weapGraphHolder)
+		if (weapAnimGraphManagerHolder)
 		{
-			EngineExtensions::CleanupWeaponBehaviorGraph(weapGraphHolder);
+			EngineExtensions::CleanupWeaponBehaviorGraph(
+				weapAnimGraphManagerHolder);
 		}
 
 		EngineExtensions::CleanupObjectImpl(
@@ -669,6 +757,23 @@ namespace IED
 
 				m_storedActorStates.data.erase(it);
 			}
+		}
+	}
+
+	void objectEntryBase_t::AnimationState::UpdateAndSendAnimationEvent(
+		const stl::fixed_string& a_event)
+	{
+		assert(weapAnimGraphManagerHolder);
+
+		if (a_event.empty())
+		{
+			return;
+		}
+
+		if (a_event != currentAnimationEvent)
+		{
+			currentAnimationEvent = a_event;
+			weapAnimGraphManagerHolder->NotifyAnimationGraph(a_event.c_str());
 		}
 	}
 

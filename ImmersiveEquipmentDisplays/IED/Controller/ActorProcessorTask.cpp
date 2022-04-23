@@ -32,17 +32,17 @@ namespace IED
 
 		if (a_animUpdateData)
 		{
-			if (state->weapGraphHolder)
+			if (state->weapAnimGraphManagerHolder)
 			{
 				//data.reference = a_record.m_actor.get();
-				state->weapGraphHolder->Update(*a_animUpdateData);
+				state->weapAnimGraphManagerHolder->Update(*a_animUpdateData);
 			}
 
 			for (auto& e : state->groupObjects)
 			{
-				if (e.second.weapGraphHolder)
+				if (e.second.weapAnimGraphManagerHolder)
 				{
-					e.second.weapGraphHolder->Update(*a_animUpdateData);
+					e.second.weapAnimGraphManagerHolder->Update(*a_animUpdateData);
 				}
 			}
 		}

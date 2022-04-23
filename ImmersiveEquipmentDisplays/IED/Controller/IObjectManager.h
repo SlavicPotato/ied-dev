@@ -36,6 +36,11 @@ namespace IED
 			m_playSoundNPC = a_switch;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetLock() const noexcept
+		{
+			return m_lock;
+		}
+
 		bool RemoveActorImpl(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -49,6 +54,9 @@ namespace IED
 			Game::FormID                     a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
+		void QueueReSinkAnimationGraphs(
+			Game::FormID a_actor);
+
 	protected:
 		void CleanupActorObjectsImpl(
 			TESObjectREFR*                   a_actor,
@@ -60,7 +68,7 @@ namespace IED
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
 			objectEntryBase_t&               a_objectEntry,
-			const ActorObjectHolder&         a_data,
+			ActorObjectHolder&               a_data,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void RemoveActorGear(
@@ -118,7 +126,7 @@ namespace IED
 			std::unique_ptr<objectEntryBase_t::State>& a_state,
 			TESForm*                                   a_form,
 			NiNode*                                    a_rootNode,
-			NiNode*                                    a_objectNode,
+			const NiPointer<NiNode>&                   a_objectNode,
 			nodesRef_t&                                a_targetNodes,
 			const Data::configBaseValues_t&            a_config);
 
@@ -130,6 +138,8 @@ namespace IED
 
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
+
+		mutable stl::critical_section m_lock;
 	};
 
 }

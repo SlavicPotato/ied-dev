@@ -30,4 +30,24 @@ namespace IED
 		m_sheathNodes.emplace(NINODE_QUIVER);
 	}*/
 
+	std::unique_ptr<BSStringHolder> BSStringHolder::m_Instance;
+
+	BSStringHolder::BSStringHolder()
+	{
+		for (auto& e : ANIM_EVENTS)
+		{
+			m_animEventFilter.emplace(e);
+		}
+	}
+
+	void BSStringHolder::Create()
+	{
+		if (!m_Instance)
+		{
+			ASSERT(StringCache::IsInitialized());
+
+			m_Instance = std::make_unique<BSStringHolder>();
+		}
+	}
+
 }

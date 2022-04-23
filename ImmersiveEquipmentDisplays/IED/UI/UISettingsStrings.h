@@ -41,6 +41,7 @@ namespace IED
 			GearPositioning             = 4430,
 			NoAnimInfoWarning           = 4431,
 			BhkAnims                    = 4432,
+			AnimEventForwarding         = 4433,
 		};
 	}
 }

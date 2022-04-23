@@ -623,7 +623,7 @@ namespace IED
 		if (a_hkaSkeleton.name &&
 		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) == 0)
 		{
-			if (auto sh = m_Instance.m_controller->GetBSStringHolder())
+			if (auto sh = BSStringHolder::GetSingleton())
 			{
 				if (a_name == sh->m_weaponAxe ||
 				    a_name == sh->m_weaponMace ||
@@ -762,7 +762,7 @@ namespace IED
 
 		a_object->DecRef();
 
-		auto sh = m_Instance.m_controller->GetBSStringHolder();
+		auto sh = BSStringHolder::GetSingleton();
 
 		a_object->m_name = sh->m_object;
 
@@ -911,7 +911,7 @@ namespace IED
 		NiAVObject*                               a_object,
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out)
 	{
-		auto sh = m_Instance.m_controller->GetBSStringHolder();
+		auto sh = BSStringHolder::GetSingleton();
 
 		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
 		if (!bged)
@@ -1035,9 +1035,7 @@ namespace IED
 
 	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object)
 	{
-		auto sh = m_Instance.m_controller->GetBSStringHolder();
-
-		return a_object->GetExtraData<BSXFlags>(sh->m_bsx);
+		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
 	}
 
 }

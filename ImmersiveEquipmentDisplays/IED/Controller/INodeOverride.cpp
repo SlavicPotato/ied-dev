@@ -505,7 +505,7 @@ namespace IED
 				else
 				{
 					auto sh = a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0) ?
-					              a_params.controller.GetBSStringHolder() :
+					              BSStringHolder::GetSingleton() :
                                   nullptr;
 
 					return it->second.has_visible_geometry(sh);

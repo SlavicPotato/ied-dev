@@ -333,23 +333,23 @@ namespace IED
 
 			{ "WeaponBackIED", {
 
-								"WeaponBackIED",
-								"MOV WeaponBackDefault",
-								"Two-Handed IED",
-								AnimationWeaponSlot::None,
-								false,
-								{
+								   "WeaponBackIED",
+								   "MOV WeaponBackDefault",
+								   "Two-Handed IED",
+								   AnimationWeaponSlot::None,
+								   false,
+								   {
 
-									{ "MOV WeaponBackDefault", { "Two-Handed" } },
-									{ "MOV WeaponBackSWP", { "Two-Handed SWP" } },
-									{ "MOV WeaponBackFSM", { "Two-Handed FSM" } },
-									{ "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
-									{ "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
-									{ "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+									   { "MOV WeaponBackDefault", { "Two-Handed" } },
+									   { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+									   { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+									   { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+									   { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+									   { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
 
-								}
+								   }
 
-							} },
+							   } },
 
 			{ "WeaponBow", {
 
@@ -366,22 +366,22 @@ namespace IED
 							   }
 
 						   } },
-				
+
 			{ "WeaponBowIED", {
 
-							   "WeaponBowIED",
-							   "MOV WeaponBowDefault",
-							   "Bow IED",
-							   AnimationWeaponSlot::None,
-							   false,
-							   {
-								   { "MOV WeaponBowDefault", { "Bow" } },
-								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
-								   { "MOV WeaponBowBetter", { "Bow Better" } },
-								   { "MOV WeaponBowFSM", { "Bow FSM" } },
-							   }
+								  "WeaponBowIED",
+								  "MOV WeaponBowDefault",
+								  "Bow IED",
+								  AnimationWeaponSlot::None,
+								  false,
+								  {
+									  { "MOV WeaponBowDefault", { "Bow" } },
+									  { "MOV WeaponBowChesko", { "Bow Chesko" } },
+									  { "MOV WeaponBowBetter", { "Bow Better" } },
+									  { "MOV WeaponBowFSM", { "Bow FSM" } },
+								  }
 
-						   } },
+							  } },
 
 			{ "QUIVER", {
 

@@ -281,7 +281,7 @@ namespace IED
 
 			return *timeOfDay;
 		}
-		
+
 		[[nodiscard]] constexpr auto is_in_combat() const
 		{
 			if (!inCombat)
@@ -291,7 +291,7 @@ namespace IED
 
 			return *inCombat;
 		}
-		
+
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);

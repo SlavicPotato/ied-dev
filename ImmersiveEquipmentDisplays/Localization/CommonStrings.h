@@ -202,5 +202,6 @@ namespace IED
 		Triangle        = 273,
 		Square          = 274,
 		Frequency       = 275,
+		Event           = 276,
 	};
 }

@@ -18,7 +18,7 @@ namespace IED
 				Localization::ILocalization& a_localization);
 
 			bool DrawDepthModeSelector(
-				Localization::StringID     a_label,
+				Localization::StringID a_label,
 				DepthStencilDepthMode& a_data);
 
 		protected:

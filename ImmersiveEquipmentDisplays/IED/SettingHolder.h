@@ -164,7 +164,8 @@ namespace IED
 				bool XP32AABowIdle{ false };
 				bool XP32AABowAtk{ false };
 				bool placementRandomization{ false };
-				bool behaviorGraphWeaponAnims{ true };
+				bool hkWeaponAnimations{ true };
+				bool animEventForwarding{ false };
 
 				stl::optional<LogLevel> logLevel;
 

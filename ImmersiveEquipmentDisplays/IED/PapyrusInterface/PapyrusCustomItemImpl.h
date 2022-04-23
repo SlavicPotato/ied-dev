@@ -222,6 +222,22 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				const stl::fixed_string& a_sequence);
 
+			bool SetItemAnimationEventEnabledImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_enable);
+
+			bool SetItemAnimationEventImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				const stl::fixed_string& a_event);
+
 			bool ItemExistsImpl(
 				Game::FormID             a_target,
 				Data::ConfigClass        a_class,

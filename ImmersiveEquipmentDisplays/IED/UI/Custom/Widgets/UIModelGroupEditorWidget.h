@@ -341,7 +341,7 @@ namespace IED
 			bool paChanged = ImGui::CheckboxFlagsT(
 				LS(UIWidgetCommonStrings::PlayAnimation, "4"),
 				stl::underlying(std::addressof(entry.flags.value)),
-				stl::underlying(Data::ConfigModelGroupEntryFlags::kPlayAnimation));
+				stl::underlying(Data::ConfigModelGroupEntryFlags::kPlaySequence));
 
 			if (paChanged)
 			{
@@ -352,12 +352,13 @@ namespace IED
 			}
 			DrawTip(UITip::PlayAnimation);
 
-			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kPlayAnimation))
+			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kPlaySequence))
 			{
 				if (paChanged &&
 				    entry.niControllerSequence.empty())
 				{
 					ImGui::OpenPopup("4ctx");
+					ClearDescriptionPopupBuffer();
 				}
 
 				ImGui::SameLine();
@@ -382,8 +383,6 @@ namespace IED
 				}
 			}
 
-			ImGui::NextColumn();
-
 			if (ImGui::CheckboxFlagsT(
 					LS(UIBaseConfigString::Use1pWeaponModels, "A"),
 					stl::underlying(std::addressof(entry.flags.value)),
@@ -395,6 +394,8 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			DrawTip(UITip::Load1pWeaponModel);
+
+			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
 					LS(UIBaseConfigString::UseWorldModel, "B"),
@@ -433,7 +434,64 @@ namespace IED
 			DrawTip(UITip::DisableWeaponAnims);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "E"),
+					LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "E"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::DisableAnimEventForwarding);
+
+			paChanged = ImGui::CheckboxFlagsT(
+				LS(UIWidgetCommonStrings::AnimationEvent, "F"),
+				stl::underlying(std::addressof(entry.flags.value)),
+				stl::underlying(Data::ConfigModelGroupEntryFlags::kAnimationEvent));
+
+			if (paChanged)
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Transform);
+			}
+			DrawTip(UITip::AnimationEvent);
+
+			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+			{
+				if (paChanged &&
+				    entry.animationEvent.empty())
+				{
+					ImGui::OpenPopup("Fctx");
+					ClearDescriptionPopupBuffer();
+				}
+
+				ImGui::SameLine();
+				if (UIPopupToggleButtonWidget::DrawPopupToggleButton("Fb", "Fctx"))
+				{
+					SetDescriptionPopupBuffer(entry.animationEvent);
+				}
+
+				if (ImGui::BeginPopup("Fctx"))
+				{
+					if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
+					{
+						entry.animationEvent = GetDescriptionPopupBuffer();
+
+						OnModelGroupEditorChange(
+							a_handle,
+							a_params,
+							ModelGroupEditorOnChangeEventType::Transform);
+					}
+
+					ImGui::EndPopup();
+				}
+			}
+
+			if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::DisableHavok, "G"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{

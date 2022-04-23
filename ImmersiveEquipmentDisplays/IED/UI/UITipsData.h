@@ -66,6 +66,9 @@ namespace IED
 			RandPlacement                       = 1055,
 			BhkAnims                            = 1056,
 			DisableWeaponAnims                  = 1057,
+			DisableAnimEventForwarding          = 1058,
+			AnimEventForwarding                 = 1059,
+			AnimationEvent                      = 1060,
 		};
 
 	}

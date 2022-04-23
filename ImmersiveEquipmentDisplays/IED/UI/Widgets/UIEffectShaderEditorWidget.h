@@ -988,7 +988,7 @@ namespace IED
 							false,
 							UIClipboard::Get<Data::configEffectShaderFunction_t>() != nullptr))
 					{
-						result.action       = EffectShaderContextAction::Paste;
+						result.action = EffectShaderContextAction::Paste;
 					}
 
 					ImGui::EndMenu();

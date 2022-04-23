@@ -44,6 +44,11 @@ namespace IED
 				a_out.niControllerSequence = nics.asString();
 			}
 
+			if (auto& aev = data["aev"])
+			{
+				a_out.animationEvent = aev.asString();
+			}
+
 			return true;
 		}
 
@@ -65,11 +70,16 @@ namespace IED
 				tparser.Create(a_data.transform, data["xfrm"]);
 			}
 
-			data["flags"] = stl::underlying(a_data.flags.value);
+			data["flags"] = a_data.flags.underlying();
 
 			if (!a_data.niControllerSequence.empty())
 			{
 				data["nics"] = *a_data.niControllerSequence;
+			}
+
+			if (!a_data.animationEvent.empty())
+			{
+				data["aev"] = *a_data.animationEvent;
 			}
 
 			a_out["version"] = CURRENT_VERSION;

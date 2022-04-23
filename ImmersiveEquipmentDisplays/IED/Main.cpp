@@ -206,6 +206,7 @@ namespace IED
 
 			ASSERT(StringCache::IsInitialized());
 
+			BSStringHolder::Create();
 			NodeOverrideData::Create();
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
@@ -214,6 +215,7 @@ namespace IED
 		case SKSEMessagingInterface::kMessage_DataLoaded:
 			{
 				LocaleData::CreateSingleton();
+
 				if (!SetLocaleFromLang())
 				{
 					LocaleData::GetSingleton()->SetFromLang("english");

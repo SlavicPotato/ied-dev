@@ -69,12 +69,61 @@ namespace IED
 		static inline constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER  = "pFireENBLight01-Emitter";
 		static inline constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
 
-		BSStringHolder() = default;
+		// animation
+
+		static inline constexpr auto WEAPON_SHEATHE = "WeaponSheathe";
+		static inline constexpr auto GRAPH_DELETING = "GraphDeleting";
+
+		static constinit inline const char* ANIM_EVENTS[] = {
+			//"tailUnequip",
+			//"tailEquip",
+			"BeginWeaponDraw",
+			"BeginWeaponSheathe",
+			"WeaponSheathe",
+			"WeaponDraw",
+			"weaponSwing",
+			"weaponLeftSwing",
+			"BowDraw",
+			"BowDrawn",
+			"BowDrawStart",
+			"BowDrawEnd",
+			"BowReset",
+			"BowReleaseFast",
+			"BowRelease",
+			"BowZoomStart",
+			"BowZoomStop",
+			"BowEnd",
+			"ArrowAttach",
+			"ArrowDetach",
+			"ArrowRelease",
+			"AttackStart",
+			"AttackStop",
+			"Unequip_Out",
+			"Unequip_OutMoving",
+			"WeapEquip_OutMoving",
+			"WeapEquip_Out",
+			"AttackWinStart",
+			"PowerAttack_Start_end",
+			"AttackWinStartLeft",
+			"AttackWinEndLeft",
+			"AttackWinStart",
+			"AttackWinEnd",
+			"PowerAttackStop",
+		};
+
+		BSStringHolder();
 
 		BSStringHolder(const BSStringHolder&) = delete;
 		BSStringHolder(BSStringHolder&&)      = delete;
 		BSStringHolder& operator=(const BSStringHolder&) = delete;
 		BSStringHolder& operator=(BSStringHolder&&) = delete;
+
+		static void Create();
+
+		inline static const auto* GetSingleton() noexcept
+		{
+			return m_Instance.get();
+		}
 
 		/*inline constexpr auto& GetSheathNodes() const noexcept
 		{
@@ -107,7 +156,14 @@ namespace IED
 		BSFixedString m_enbFireLightEmitter{ NINODE_ENB_FIRE_LIGHT_EMITTER };
 		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
 
+		BSFixedString m_weaponSheathe{ WEAPON_SHEATHE };
+		BSFixedString m_graphDeleting{ GRAPH_DELETING };
+
+		stl::unordered_set<BSFixedString> m_animEventFilter;
+
 		//stl::set_sa<BSFixedString> m_sheathNodes;
+
+		static std::unique_ptr<BSStringHolder> m_Instance;
 	};
 
 	class StringHolder
@@ -136,6 +192,7 @@ namespace IED
 		stl::fixed_string apply{ "Apply" };
 		stl::fixed_string merge{ "Merge" };
 		stl::fixed_string IED{ "IED" };
+		stl::fixed_string weaponSheathe{ "WeaponSheathe" };
 
 		stl::fixed_string slotNames[stl::underlying(Data::ObjectSlot::kMax)];
 
