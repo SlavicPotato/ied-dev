@@ -17,11 +17,11 @@ namespace IED
 
 		void ClearAnimationUpdateList();
 
-		void UpdateActorAnimations(
+		void UpdateQueuedAnimationList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data);
 
-		static void UpdatePlayerAnimations(
+		static void UpdateActorAnimationList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
 			Controller*                  a_controller);

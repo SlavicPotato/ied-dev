@@ -348,11 +348,13 @@ namespace IED
 
 	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
+		auto addrRefUpdate = m_animUpdateRef_a.get() + 0x74;
+
 		VALIDATE_MEMORY(
-			m_animUpdateRef_a.get() + 0xAB,
-			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }),
-			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }));
-		
+			addrRefUpdate,
+			({ 0xE8 }),
+			({ 0xE8 }));
+
 		VALIDATE_MEMORY(
 			m_animUpdatePlayer_a.get() + 0xD0,
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }),
@@ -384,30 +386,75 @@ namespace IED
 			HALT("Failed to install post anim update hook");
 		}
 
-		struct Assembly : JITASM::JITASM
-		{
-			Assembly(std::uintptr_t a_callAddr) :
-				JITASM(ISKSE::GetLocalTrampoline())
-			{
-				Xbyak::Label callLabel;
-
-				lea(rdx, ptr[rsp + 0x8 + 0x28]);  // +0x8 for return address
-				jmp(ptr[rip + callLabel]);
-
-				L(callLabel);
-				dq(a_callAddr);
-			}
-		};
-
 		LogPatchBegin();
 		{
+			struct Assembly : JITASM::JITASM
+			{
+				Assembly(
+					std::uintptr_t a_targetAddr) :
+					JITASM(ISKSE::GetLocalTrampoline())
+				{
+					static_assert(sizeof(BSAnimationUpdateData) == 0x30);
+
+					Xbyak::Label callLabel;
+					Xbyak::Label execLabel;
+					Xbyak::Label retnLabel;
+
+					call(ptr[rip + callLabel]);
+
+					lea(rdx, ptr[rsp - 0x58]);  // update data should still be here, copy it
+
+					sub(rsp, 0x50);
+
+					movups(xmm0, ptr[rdx]);
+					movaps(ptr[rsp + 0x20], xmm0);
+					movups(xmm0, ptr[rdx + 0x10]);
+					movaps(ptr[rsp + 0x30], xmm0);
+					movups(xmm0, ptr[rdx + 0x20]);
+					movaps(ptr[rsp + 0x40], xmm0);
+
+					mov(rcx, rbx);  // ref
+					lea(rdx, ptr[rsp + 0x20]);
+					call(ptr[rip + execLabel]);
+
+					add(rsp, 0x50);
+
+					jmp(ptr[rip + retnLabel]);
+
+					L(callLabel);
+					dq(m_updateRefAnim_func.get());
+
+					L(execLabel);
+					dq(std::uintptr_t(UpdateRefAnim_Exec));
+
+					L(retnLabel);
+					dq(a_targetAddr + 0x5);
+				}
+			};
+
 			Assembly code(
-				reinterpret_cast<std::uintptr_t>(UpdateRefAnim_Hook));
-			ISKSE::GetBranchTrampoline().Write6Call(
-				m_animUpdateRef_a.get() + 0xAB,
+				addrRefUpdate);
+
+			ISKSE::GetBranchTrampoline().Write5Branch(
+				addrRefUpdate,
 				code.get());
 		}
 		{
+			struct Assembly : JITASM::JITASM
+			{
+				Assembly(std::uintptr_t a_callAddr) :
+					JITASM(ISKSE::GetLocalTrampoline())
+				{
+					Xbyak::Label callLabel;
+
+					lea(rdx, ptr[rsp + 0x8 + 0x28]);  // +0x8 for return address
+					jmp(ptr[rip + callLabel]);
+
+					L(callLabel);
+					dq(a_callAddr);
+				}
+			};
+
 			Assembly code(
 				reinterpret_cast<std::uintptr_t>(UpdatePlayerAnim_Hook));
 			ISKSE::GetBranchTrampoline().Write6Call(
@@ -439,7 +486,7 @@ namespace IED
 
 						m_Instance.m_controller->QueueEvaluate(
 							actor,
-							ControllerUpdateFlags::kNone);
+							ControllerUpdateFlags::kImmediateTransformUpdate);
 					}
 				}
 			}
@@ -455,7 +502,9 @@ namespace IED
 	{
 		if (a_attach3D)
 		{
-			m_Instance.m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueReset(
+				a_actor,
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 
 			//_DMESSAGE("resurrect %X", a_actor->formID.get());
 		}
@@ -490,7 +539,7 @@ namespace IED
 		{
 			m_Instance.m_controller->QueueEvaluate(
 				a_actor,
-				ControllerUpdateFlags::kNone);
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
 	}
 
@@ -521,7 +570,7 @@ namespace IED
 		{
 			m_Instance.m_controller->QueueEvaluate(
 				a_actor,
-				ControllerUpdateFlags::kNone);
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
 	}
 
@@ -535,9 +584,10 @@ namespace IED
 			m_controller->RemoveActor(
 				fid,
 				ControllerUpdateFlags::kNone);
+
 			m_controller->QueueEvaluate(
 				handle,
-				ControllerUpdateFlags::kNone);
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 		});
 
 		Debug(
@@ -555,7 +605,9 @@ namespace IED
 		if (a_actor->actorState1.lifeState ==
 		    ActorState::ACTOR_LIFE_STATE::kReanimate)
 		{
-			m_Instance.m_controller->QueueReset(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueReset(
+				a_actor,
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 
 			//_DMESSAGE("reanimate %X", a_actor->formID.get());
 		}
@@ -665,23 +717,21 @@ namespace IED
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
 	}
 
-	const RE::BSTSmartPointer<Biped>& EngineExtensions::UpdateRefAnim_Hook(
+	void EngineExtensions::UpdateRefAnim_Exec(
 		TESObjectREFR*               a_ref,
 		const BSAnimationUpdateData& a_data)
 	{
-		auto& bip = a_ref->GetBiped2();
+		assert(a_data.reference == a_ref);
 
-		if (bip)  // skip if no biped data
+		if (auto actor = a_ref->As<Actor>())
 		{
-			if (auto actor = a_ref->As<Actor>())
+			if (a_ref->GetBiped2())  // skip if no biped data
 			{
-				m_Instance.UpdateActorAnimations(
+				m_Instance.UpdateQueuedAnimationList(
 					actor,
 					a_data);
 			}
 		}
-
-		return bip;
 	}
 
 	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
@@ -694,7 +744,7 @@ namespace IED
 		{
 			if (auto actor = a_player->As<Actor>())
 			{
-				UpdatePlayerAnimations(
+				UpdateActorAnimationList(
 					actor,
 					a_data,
 					m_Instance.m_controller);

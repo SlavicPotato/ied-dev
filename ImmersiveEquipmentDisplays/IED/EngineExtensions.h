@@ -245,7 +245,7 @@ namespace IED
 		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
-		static const RE::BSTSmartPointer<Biped>& UpdateRefAnim_Hook(TESObjectREFR* a_ref, const BSAnimationUpdateData& a_data);        // getbiped2
+		static void                              UpdateRefAnim_Exec(TESObjectREFR* a_ref, const BSAnimationUpdateData& a_data);
 		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data);  // getbiped1
 
 		//static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
@@ -264,8 +264,10 @@ namespace IED
 		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
 		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
 		inline static const auto m_animUpdateDispatcher_a   = IAL::Address<std::uintptr_t>(38098, 39054);
-		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(19729, 20123);
+		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(40436, 41453);
 		inline static const auto m_animUpdatePlayer_a       = IAL::Address<std::uintptr_t>(39445, 40521);
+
+		inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };

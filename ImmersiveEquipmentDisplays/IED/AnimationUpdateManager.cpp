@@ -11,8 +11,8 @@ namespace IED
 	{
 		stl::scoped_lock lock(m_lock);  // REMOVE ME
 
-		ASSERT(!m_running.load(std::memory_order_relaxed));
-		ASSERT(m_data.empty());
+		assert(!m_running.load(std::memory_order_relaxed));
+		assert(m_data.empty());
 
 		/*PerfTimer pt;
 		pt.Start();*/
@@ -53,14 +53,14 @@ namespace IED
 	{
 		stl::scoped_lock lock(m_lock);  // REMOVE ME
 
-		ASSERT(m_running.load(std::memory_order_relaxed));
+		assert(m_running.load(std::memory_order_relaxed));
 
 		m_running.store(false, std::memory_order_relaxed);
 
 		m_data.clear();
 	}
 
-	void AnimationUpdateManager::UpdateActorAnimations(
+	void AnimationUpdateManager::UpdateQueuedAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data)
 	{
@@ -89,7 +89,7 @@ namespace IED
 		//_DMESSAGE("%f", pt.Stop());
 	}
 
-	void AnimationUpdateManager::UpdatePlayerAnimations(
+	void AnimationUpdateManager::UpdateActorAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
 		Controller*                  a_controller)
