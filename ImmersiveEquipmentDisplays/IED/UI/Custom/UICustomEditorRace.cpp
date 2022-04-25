@@ -237,7 +237,8 @@ namespace IED
 			case PostChangeAction::Evaluate:
 				m_controller.QueueEvaluateRace(
 					a_handle,
-					ControllerUpdateFlags::kWantEffectShaderConfigUpdate);
+					ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+						ControllerUpdateFlags::kImmediateTransformUpdate);
 				break;
 			case PostChangeAction::Reset:
 				m_controller.QueueResetCustomRace(

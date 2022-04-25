@@ -11,10 +11,6 @@ static bool Initialize(const SKSEInterface* a_skse)
 
 	bool result = false;
 
-	//std::is_const<std::remove_reference_t<decltype(f.value)>::value;
-
-	//_DMESSAGE("%d", f.set)
-
 	try
 	{
 		gLog.Debug("Querying SKSE interfaces..");

@@ -363,6 +363,8 @@ namespace IED
 								   { "MOV WeaponBowChesko", { "Bow Chesko" } },
 								   { "MOV WeaponBowBetter", { "Bow Better" } },
 								   { "MOV WeaponBowFSM", { "Bow FSM" } },
+								   { "MOV WeaponCrossbowDefault", { "Crossbow" } },
+								   { "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
 							   }
 
 						   } },
@@ -379,6 +381,8 @@ namespace IED
 									  { "MOV WeaponBowChesko", { "Bow Chesko" } },
 									  { "MOV WeaponBowBetter", { "Bow Better" } },
 									  { "MOV WeaponBowFSM", { "Bow FSM" } },
+									  { "MOV WeaponCrossbowDefault", { "Crossbow" } },
+									  { "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
 								  }
 
 							  } },

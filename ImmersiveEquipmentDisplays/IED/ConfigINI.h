@@ -81,6 +81,7 @@ namespace IED
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
+		bool           m_parallelAnimationUpdates{ false };
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		bool m_activeWriteCMETransforms{ false };
 #endif

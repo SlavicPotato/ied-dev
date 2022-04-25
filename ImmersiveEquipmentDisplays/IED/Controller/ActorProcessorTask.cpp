@@ -3,6 +3,7 @@
 #include "ActorProcessorTask.h"
 
 #include "Controller.h"
+#include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IObjectManager.h"
 
@@ -19,9 +20,9 @@ namespace IED
 	}
 
 	void ActorProcessorTask::UpdateNode(
-		ActorObjectHolder&                          a_record,
-		objectEntryBase_t&                          a_entry,
-		const std::optional<BSAnimationUpdateData>& a_animUpdateData)
+		ActorObjectHolder&                     a_record,
+		objectEntryBase_t&                     a_entry,
+		const std::optional<animUpdateData_t>& a_animUpdateData)
 	{
 		auto state = a_entry.state.get();
 
@@ -30,24 +31,25 @@ namespace IED
 			return;
 		}
 
-		if (a_animUpdateData)
+		auto& nodes = state->nodes;
+
+		bool visible = nodes.rootNode->IsVisible();
+
+		if (a_animUpdateData && visible)
 		{
 			if (state->weapAnimGraphManagerHolder)
 			{
-				//data.reference = a_record.m_actor.get();
-				state->weapAnimGraphManagerHolder->Update(*a_animUpdateData);
+				state->weapAnimGraphManagerHolder->Update(a_animUpdateData->data);
 			}
 
 			for (auto& e : state->groupObjects)
 			{
 				if (e.second.weapAnimGraphManagerHolder)
 				{
-					e.second.weapAnimGraphManagerHolder->Update(*a_animUpdateData);
+					e.second.weapAnimGraphManagerHolder->Update(a_animUpdateData->data);
 				}
 			}
 		}
-
-		auto& nodes = state->nodes;
 
 		if (!nodes.ref)
 		{
@@ -91,7 +93,7 @@ namespace IED
 		}
 
 		if (state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    nodes.rootNode->IsVisible())
+		    visible)
 		{
 			if (state->transform.scale)
 			{
@@ -268,8 +270,12 @@ namespace IED
 
 		UpdateState();
 
-		auto steps  = Game::Unk2f6b948::GetSteps();
-		bool paused = Game::IsPaused();
+		std::optional<animUpdateData_t> animUpdateData;
+
+		if (!EngineExtensions::ParallelAnimationUpdatesEnabled() && !Game::IsPaused())
+		{
+			animUpdateData.emplace(Game::Unk2f6b948::GetSteps());
+		}
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
@@ -355,13 +361,14 @@ namespace IED
 
 			bool update = false;
 
-			std::optional<BSAnimationUpdateData> animUpdateData;
-
-			if (!paused)
+			if (animUpdateData)
 			{
-				animUpdateData.emplace(e.m_actor == *g_thePlayer ? steps.player : steps.npc);
-				//animUpdateData->reference = e.m_actor.get();
-				//animUpdateData->forceUpdate = true;
+				animUpdateData->data.step =
+					e.m_actor == *g_thePlayer ?
+						animUpdateData->steps.player :
+                        animUpdateData->steps.npc;
+
+				animUpdateData->data.reference = e.m_actor.get();
 			}
 
 			for (auto& f : e.m_entriesSlot)

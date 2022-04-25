@@ -145,10 +145,7 @@ namespace IED
 			auto it = m_objects.find(a_actor);
 			if (it != m_objects.end())
 			{
-				if (it->second.IsAnimEventForwardingEnabled())
-				{
-					it->second.ReSinkAnimationGraphs();
-				}
+				it->second.ReSinkAnimationGraphs();
 			}
 		});
 	}
@@ -415,12 +412,15 @@ namespace IED
 		bool                            a_disableHavok,
 		bool                            a_bhkAnims)
 	{
-		RemoveObject(
+		if (RemoveObject(
 			a_params.actor,
 			a_params.handle,
 			a_objectEntry,
 			a_params.objects,
-			a_params.flags);
+			a_params.flags))
+		{
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+		}
 
 		if (!a_config.targetNode)
 		{
@@ -554,8 +554,8 @@ namespace IED
 		}
 		else if (
 			a_bhkAnims &&
-			!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
-			modelParams.type == ModelType::kWeapon)
+			modelParams.type == ModelType::kWeapon &&
+			!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims))
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
@@ -574,10 +574,6 @@ namespace IED
 					state->weapAnimGraphManagerHolder->NotifyAnimationGraph(
 						BSStringHolder::GetSingleton()->m_weaponSheathe);
 				}
-
-				/*BSAnimationUpdateData data{ 0 };
-				state->weapAnimGraphManagerHolder->Update(data);
-				UpdateDownwardPass(object);*/
 
 				if (!a_config.flags.test(
 						Data::BaseFlags::kDisableAnimEventForwarding))
@@ -655,7 +651,8 @@ namespace IED
 			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
 		};
 
-		stl::list<tmpdata_t> modelParams;
+		stl::vector<tmpdata_t> modelParams;
+		modelParams.reserve(a_group.entries.size());
 
 		for (auto& e : a_group.entries)
 		{
@@ -853,9 +850,9 @@ namespace IED
 			}
 			else if (
 				a_bhkAnims &&
+				e.params.type == ModelType::kWeapon &&
 				!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
-				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims) &&
-				e.params.type == ModelType::kWeapon)
+				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims))
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,

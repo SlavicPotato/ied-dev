@@ -43,8 +43,8 @@ namespace IED
 
 	template <class T>
 	inline constexpr auto make_effect_shader_function(
-		const Data::configEffectShaderFunction_t& a_data)  //
-		noexcept(std::is_nothrow_constructible_v<T>)       //
+		const Data::configEffectShaderFunction_t& a_data)                                        //
+		noexcept(std::is_nothrow_constructible_v<T, const Data::configEffectShaderFunction_t&>)  //
 		requires(std::is_base_of_v<EffectShaderFunctionBase, T>)
 	{
 		auto result = std::make_unique<T>(a_data);

@@ -8,7 +8,7 @@ namespace IED
 
 		kPlaySound                    = 1u << 2,
 		kVisibilitySounds             = 1u << 3,
-		kImmediateUpdateTransforms    = 1u << 4,
+		kImmediateTransformUpdate     = 1u << 4,
 		kWantEffectShaderConfigUpdate = 1u << 5,
 
 		kAll      = kPlaySound,

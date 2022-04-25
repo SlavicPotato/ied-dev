@@ -40,9 +40,10 @@ namespace IED
 		Controller*                       a_controller,
 		const std::shared_ptr<ConfigINI>& a_config)
 	{
-		m_controller = a_controller;
+		m_controller                    = a_controller;
+		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
 
-		Patch_RemoveAllBipedParts();
+		Install_RemoveAllBipedParts();
 		Hook_REFR_GarbageCollector();
 		Hook_Actor_Resurrect();
 		Hook_Actor_3DEvents();
@@ -54,19 +55,19 @@ namespace IED
 			m_conf.disableNPCProcessing      = a_config->m_disableNPCProcessing;
 
 			Hook_Armor_Update();
-			Patch_CreateWeaponNodes();
+			Install_CreateWeaponNodes();
 		}
 
 		if (a_config->m_weaponAdjustFix)
 		{
 			m_conf.weaponAdjustFix = a_config->m_weaponAdjustFix;
 
-			Patch_SetWeapAdjAnimVar();
+			Install_SetWeapAdjAnimVar();
 		}
 
 		if (m_conf.weaponAdjustDisable)
 		{
-			Patch_WeaponAdjustDisable();
+			Install_WeaponAdjustDisable();
 		}
 
 		if (a_config->m_immediateFavUpdate)
@@ -79,13 +80,13 @@ namespace IED
 			Hook_ProcessEffectShaders();
 		}
 
-		/*if (a_config->m_enableCorpseScatter)
+		if (m_conf.parallelAnimationUpdates)
 		{
-			Patch_CorpseScatter();
-		}*/
+			Install_ParallelAnimationUpdate();
+		}
 	}
 
-	void EngineExtensions::Patch_RemoveAllBipedParts()
+	void EngineExtensions::Install_RemoveAllBipedParts()
 	{
 		VALIDATE_MEMORY(
 			m_removeAllBipedParts_a.get(),
@@ -211,7 +212,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Patch_SetWeapAdjAnimVar()
+	void EngineExtensions::Install_SetWeapAdjAnimVar()
 	{
 		VALIDATE_MEMORY(
 			m_weapAdj_a.get(),
@@ -220,19 +221,14 @@ namespace IED
 
 		struct Assembly : JITASM::JITASM
 		{
-			Assembly(std::uintptr_t targetAddr) :
+			Assembly() :
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
 				Xbyak::Label callLabel;
-				Xbyak::Label retnLabel;
 
 				mov(rcx, rsi);
 				mov(r9, r13);  // Biped
-				call(ptr[rip + callLabel]);
-				jmp(ptr[rip + retnLabel]);
-
-				L(retnLabel);
-				dq(targetAddr + 0x5);
+				jmp(ptr[rip + callLabel]);
 
 				L(callLabel);
 				dq(std::uintptr_t(SetWeapAdjAnimVar_Hook));
@@ -241,15 +237,15 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_weapAdj_a.get());
-			ISKSE::GetBranchTrampoline().Write5Branch(
+			Assembly code;
+			ISKSE::GetBranchTrampoline().Write5Call(
 				m_weapAdj_a.get(),
 				code.get());
 		}
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::Patch_CreateWeaponNodes()
+	void EngineExtensions::Install_CreateWeaponNodes()
 	{
 		VALIDATE_MEMORY(
 			m_createWeaponNodes_a.get(),
@@ -283,28 +279,24 @@ namespace IED
 	}
 
 	// actually blocks the node from havok entirely
-	void EngineExtensions::Patch_WeaponAdjustDisable()
+	void EngineExtensions::Install_WeaponAdjustDisable()
 	{
-		ASSERT_STR(
-			Patching::validate_mem(
+		if (!hook::get_dst5<0xE8>(
 				m_hkaLookupSkeletonBones_a.get(),
-				{ 0xE8 }),
-			mv_failstr);
+				m_hkaLookupSkeletonNode_o))
+		{
+			HALT("Couldn't get hkaLookupSkeletonBones call address");
+		}
 
 		struct Assembly : JITASM::JITASM
 		{
-			Assembly(std::uintptr_t a_targetAddr) :
+			Assembly() :
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
 				Xbyak::Label callLabel;
-				Xbyak::Label retnLabel;
 
 				mov(r9, IAL::IsAE() ? r13 : r15);
-				call(ptr[rip + callLabel]);
-				jmp(ptr[rip + retnLabel]);
-
-				L(retnLabel);
-				dq(a_targetAddr + 0x5);
+				jmp(ptr[rip + callLabel]);
 
 				L(callLabel);
 				dq(std::uintptr_t(hkaLookupSkeletonNode_Hook));
@@ -313,9 +305,9 @@ namespace IED
 
 		LogPatchBegin();
 		{
-			Assembly code(m_hkaLookupSkeletonBones_a.get());
+			Assembly code;
 
-			ISKSE::GetBranchTrampoline().Write5Branch(
+			ISKSE::GetBranchTrampoline().Write5Call(
 				m_hkaLookupSkeletonBones_a.get(),
 				code.get());
 		}
@@ -354,59 +346,76 @@ namespace IED
 		}
 	}
 
-	/*void EngineExtensions::Patch_CorpseScatter()
+	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
-		ASSERT_STR(
-			Patching::validate_mem(
-				m_bipedAttachHavok_a,
-				{ 0x41, 0xB1, 0x01, 0x41, 0xB8, 0x04, 0x00, 0x00, 0x00 }),
-			mv_failstr);
+		VALIDATE_MEMORY(
+			m_animUpdateRef_a.get() + 0xAB,
+			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }),
+			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }));
+		
+		VALIDATE_MEMORY(
+			m_animUpdatePlayer_a.get() + 0xD0,
+			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }),
+			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }));
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0),
+				std::uintptr_t(PrepareAnimUpdateLists_Hook),
+				m_prepareAnimUpdateLists_o))
+		{
+			Debug("[%s] Installed anim list prep hook", __FUNCTION__);
+		}
+		else
+		{
+			HALT("Failed to install anim list prep hook");
+		}
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2),
+				std::uintptr_t(ClearAnimUpdateLists_Hook),
+				m_clearAnimUpdateLists_o))
+		{
+			Debug("[%s] Installed post anim update hook", __FUNCTION__);
+		}
+		else
+		{
+			HALT("Failed to install post anim update hook");
+		}
 
 		struct Assembly : JITASM::JITASM
 		{
-			Assembly(
-				std::uintptr_t a_targetAddr) :
+			Assembly(std::uintptr_t a_callAddr) :
 				JITASM(ISKSE::GetLocalTrampoline())
 			{
 				Xbyak::Label callLabel;
-				Xbyak::Label retnLabel;
 
-				mov(rcx, rbx);  // actor
-
-				if (IAL::IsAE())
-				{
-					mov(edx, r15d);  // slot
-					sub(edx, 0xFFFFFFE0);
-				}
-				else
-				{
-					mov(edx, r14d);  // slot
-				}
-
-				call(ptr[rip + callLabel]);
-
-				mov(r8d, eax);
-				mov(r9b, 1);
-
-				jmp(ptr[rip + retnLabel]);
-
-				L(retnLabel);
-				dq(a_targetAddr + 0x9);
+				lea(rdx, ptr[rsp + 0x8 + 0x28]);  // +0x8 for return address
+				jmp(ptr[rip + callLabel]);
 
 				L(callLabel);
-				dq(std::uintptr_t(Biped_QueueAttachHavok_Hook));
+				dq(a_callAddr);
 			}
 		};
 
 		LogPatchBegin();
 		{
-			Assembly code(m_bipedAttachHavok_a);
-			ISKSE::GetBranchTrampoline().Write6Branch(
-				m_bipedAttachHavok_a,
+			Assembly code(
+				reinterpret_cast<std::uintptr_t>(UpdateRefAnim_Hook));
+			ISKSE::GetBranchTrampoline().Write6Call(
+				m_animUpdateRef_a.get() + 0xAB,
+				code.get());
+		}
+		{
+			Assembly code(
+				reinterpret_cast<std::uintptr_t>(UpdatePlayerAnim_Hook));
+			ISKSE::GetBranchTrampoline().Write6Call(
+				m_animUpdatePlayer_a.get() + 0xD0,
 				code.get());
 		}
 		LogPatchEnd();
-	}*/
+	}
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
@@ -423,8 +432,14 @@ namespace IED
 					}
 					else
 					{
-						m_Instance.m_controller->RemoveActor(actor, a_biped->handle, ControllerUpdateFlags::kNone);
-						m_Instance.m_controller->QueueEvaluate(actor, ControllerUpdateFlags::kNone);
+						m_Instance.m_controller->RemoveActor(
+							actor,
+							a_biped->handle,
+							ControllerUpdateFlags::kNone);
+
+						m_Instance.m_controller->QueueEvaluate(
+							actor,
+							ControllerUpdateFlags::kNone);
 					}
 				}
 			}
@@ -461,7 +476,9 @@ namespace IED
 			}
 			else
 			{
-				m_Instance.m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+				m_Instance.m_controller->RemoveActor(
+					a_actor,
+					ControllerUpdateFlags::kNone);
 
 				eval = true;
 			}
@@ -471,7 +488,9 @@ namespace IED
 
 		if (eval)
 		{
-			m_Instance.m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueEvaluate(
+				a_actor,
+				ControllerUpdateFlags::kNone);
 		}
 	}
 
@@ -488,7 +507,9 @@ namespace IED
 			}
 			else
 			{
-				m_Instance.m_controller->RemoveActor(a_actor, ControllerUpdateFlags::kNone);
+				m_Instance.m_controller->RemoveActor(
+					a_actor,
+					ControllerUpdateFlags::kNone);
 
 				eval = true;
 			}
@@ -498,7 +519,9 @@ namespace IED
 
 		if (eval)
 		{
-			m_Instance.m_controller->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->QueueEvaluate(
+				a_actor,
+				ControllerUpdateFlags::kNone);
 		}
 	}
 
@@ -506,12 +529,21 @@ namespace IED
 		Actor*                     a_actor,
 		const std::source_location a_loc)
 	{
-		ITaskPool::AddTask([this, fid = a_actor->formID, handle = a_actor->GetHandle()]() {
-			m_controller->RemoveActor(fid, ControllerUpdateFlags::kNone);
-			m_controller->QueueEvaluate(handle, ControllerUpdateFlags::kNone);
+		ITaskPool::AddTask([this,
+		                    fid    = a_actor->formID,
+		                    handle = a_actor->GetHandle()]() {
+			m_controller->RemoveActor(
+				fid,
+				ControllerUpdateFlags::kNone);
+			m_controller->QueueEvaluate(
+				handle,
+				ControllerUpdateFlags::kNone);
 		});
 
-		Debug("[%.8X] [%s]: called from ITaskPool", a_actor->formID.get(), a_loc.function_name());
+		Debug(
+			"[%.8X] [%s]: called from ITaskPool",
+			a_actor->formID.get(),
+			a_loc.function_name());
 	}
 
 	void EngineExtensions::ReanimateActorStateUpdate_Hook(
@@ -541,7 +573,7 @@ namespace IED
 
 		if (formid)
 		{
-			m_Instance.m_controller->QueueRequestEvaluate(formid, false, true);
+			m_Instance.m_controller->QueueRequestEvaluate(formid, false, true, true);
 		}
 	}
 
@@ -589,31 +621,6 @@ namespace IED
 		m_Instance.m_controller->ProcessEffectShaders();
 	}
 
-	/*std::uint32_t EngineExtensions::Biped_QueueAttachHavok_Hook(
-		TESObjectREFR* a_actor,
-		BIPED_OBJECT   a_slot)
-	{
-		std::uint32_t result = 4;
-
-		if (a_actor && a_slot != BIPED_OBJECT::kNone)
-		{
-			if (auto actor = a_actor->As<Actor>())
-			{
-				if ((a_slot >= BIPED_OBJECT::kOneHandSword &&
-				     a_slot <= BIPED_OBJECT::kCrossbow) ||
-				    a_slot == actor->GetShieldBipedObject())
-				{
-					if (actor->IsDead() && actor->GetNiNode())
-					{
-						result = 1;
-					}
-				}
-			}
-		}
-
-		return result;
-	}*/
-
 	bool EngineExtensions::hkaLookupSkeletonNode_Hook(
 		NiNode*                   a_root,
 		const BSFixedString&      a_name,
@@ -641,7 +648,60 @@ namespace IED
 			}
 		}
 
-		return hkaGetSkeletonNode(a_root, a_name, a_result);
+		return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
+	}
+
+	void EngineExtensions::PrepareAnimUpdateLists_Hook(
+		Game::ProcessLists* a_pl,
+		void*               a_unk)
+	{
+		m_Instance.PrepareAnimationUpdateList(m_Instance.m_controller);
+		m_Instance.m_prepareAnimUpdateLists_o(a_pl, a_unk);
+	}
+
+	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk)
+	{
+		m_Instance.ClearAnimationUpdateList();
+		m_Instance.m_clearAnimUpdateLists_o(a_unk);
+	}
+
+	const RE::BSTSmartPointer<Biped>& EngineExtensions::UpdateRefAnim_Hook(
+		TESObjectREFR*               a_ref,
+		const BSAnimationUpdateData& a_data)
+	{
+		auto& bip = a_ref->GetBiped2();
+
+		if (bip)  // skip if no biped data
+		{
+			if (auto actor = a_ref->As<Actor>())
+			{
+				m_Instance.UpdateActorAnimations(
+					actor,
+					a_data);
+			}
+		}
+
+		return bip;
+	}
+
+	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
+		TESObjectREFR*               a_player,
+		const BSAnimationUpdateData& a_data)
+	{
+		auto& bip = a_player->GetBiped1(false);
+
+		if (bip)  // skip if no biped data
+		{
+			if (auto actor = a_player->As<Actor>())
+			{
+				UpdatePlayerAnimations(
+					actor,
+					a_data,
+					m_Instance.m_controller);
+			}
+		}
+
+		return bip;
 	}
 
 	void EngineExtensions::CreateWeaponNodes_Hook(
@@ -653,7 +713,11 @@ namespace IED
 
 		if (a_actor)
 		{
-			m_Instance.m_controller->QueueRequestEvaluate(a_actor->formID, false, true, true);
+			m_Instance.m_controller->QueueRequestEvaluate(
+				a_actor->formID,
+				false,
+				true,
+				true);
 		}
 	}
 
@@ -924,9 +988,14 @@ namespace IED
 			return false;
 		}
 
+		if (bged->behaviorGraphFile.empty())
+		{
+			return false;
+		}
+
 		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
 
-		if (!LoadWeaponGraph(
+		if (!LoadWeaponAnimationBehahaviorGraph(
 				*result,
 				bged->behaviorGraphFile.c_str()))
 		{
@@ -939,13 +1008,6 @@ namespace IED
 		{
 			return false;
 		}
-
-		/*if (Game::IsPaused())
-		{
-			BSAnimationUpdateData data{ std::numeric_limits<float>::epsilon() };
-			data.forceUpdate = true;
-			a_out->Update(data);
-		}*/
 
 		return true;
 	}
@@ -970,67 +1032,6 @@ namespace IED
 		a_root->Update(ctx);
 
 		fUnk12BAFB0(*m_shadowSceneNode, a_root, false);
-	}
-
-	void EngineExtensions::SetDropOnDeath(
-		Actor*      a_actor,
-		NiAVObject* a_object,
-		bool        a_switch)
-	{
-	}
-
-	void EngineExtensions::CleanupObject(
-		Game::ObjectRefHandle a_handle,
-		NiAVObject*           a_object,
-		NiNode*               a_root)
-	{
-		if (!SceneRendering() &&
-		    ITaskPool::IsRunningOnCurrentThread())
-		{
-			CleanupObjectImpl(a_handle, a_object);
-		}
-		else
-		{
-			//BSTaskPool::GetSingleton()->QueueCleanupNode(a_handle, a_object);
-
-			class NodeCleanupTask :
-				public TaskDelegate
-			{
-			public:
-				inline NodeCleanupTask(
-					Game::ObjectRefHandle a_handle,
-					NiAVObject*           a_object,
-					NiNode*               a_root) :
-					m_handle(a_handle),
-					m_object(a_object),
-					m_root(a_root)
-				{
-				}
-
-				virtual void Run() override
-				{
-					CleanupObjectImpl(m_handle, m_object);
-
-					m_object.reset();
-					m_root.reset();
-				}
-
-				virtual void Dispose() override
-				{
-					delete this;
-				}
-
-			private:
-				Game::ObjectRefHandle m_handle;
-				NiPointer<NiAVObject> m_object;
-				NiPointer<NiNode>     m_root;
-			};
-
-			ITaskPool::AddPriorityTask<NodeCleanupTask>(
-				a_handle,
-				a_object,
-				a_root);
-		}
 	}
 
 	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object)

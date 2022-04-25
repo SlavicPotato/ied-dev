@@ -197,9 +197,10 @@ namespace IED
 
 			template <
 				class Tm,
-				class Tv,
-				class = std::enable_if_t<std::is_convertible_v<Tv, Tm>>>
-			inline constexpr void set(Tm& a_member, Tv&& a_value)
+				class Tv>
+			inline constexpr void set(Tm& a_member, Tv&& a_value)  //
+				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>) //
+				requires(std::is_assignable_v<Tm&, Tv&&>)
 			{
 				a_member = std::forward<Tv>(a_value);
 				m_dirty  = true;

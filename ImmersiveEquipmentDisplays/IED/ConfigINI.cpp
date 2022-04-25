@@ -169,6 +169,8 @@ namespace IED
 
 		m_effectShaders = reader.GetBoolValue(SECT_EFFECTSHADERS, "Enable", false);
 
+		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
+
 		m_loaded = reader.is_loaded();
 
 		return m_loaded;

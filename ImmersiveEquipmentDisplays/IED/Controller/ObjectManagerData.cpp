@@ -32,6 +32,7 @@ namespace IED
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		m_enableAnimEventForwarding(a_animEventForwarding),
+		m_animationUpdateList(std::make_unique<AnimationGraphManagerHolderList>()),
 		m_cellAttached(a_actor->IsParentCellAttached()),
 		m_locData{
 			a_actor->IsInInteriorCell(),
@@ -488,6 +489,11 @@ namespace IED
 
 	void ActorObjectHolder::ReSinkAnimationGraphs()
 	{
+		if (!m_enableAnimEventForwarding)
+		{
+			return;
+		}
+
 		RE::BSAnimationGraphManagerPtr agm;
 		if (m_actor->GetAnimationGraphManagerImpl(agm))
 		{
@@ -506,6 +512,34 @@ namespace IED
 					e->AddEventSink(this);
 				}
 			}
+		}
+	}
+
+	void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
+		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+	{
+		if (m_enableAnimEventForwarding)
+		{
+			m_animEventForwardRegistrations.Add(a_ptr);
+		}
+
+		if (EngineExtensions::ParallelAnimationUpdatesEnabled())
+		{
+			m_animationUpdateList->Add(a_ptr);
+		}
+	}
+
+	void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
+		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+	{
+		if (m_enableAnimEventForwarding)
+		{
+			m_animEventForwardRegistrations.Remove(a_ptr);
+		}
+
+		if (EngineExtensions::ParallelAnimationUpdatesEnabled())
+		{
+			m_animationUpdateList->Remove(a_ptr);
 		}
 	}
 

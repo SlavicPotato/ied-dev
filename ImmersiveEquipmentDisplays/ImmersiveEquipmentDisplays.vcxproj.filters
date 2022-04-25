@@ -1220,6 +1220,9 @@
     <ClInclude Include="IED\Controller\IFirstPersonState.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
+    <ClInclude Include="IED\AnimationUpdateManager.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1914,6 +1917,9 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp">
       <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\AnimationUpdateManager.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

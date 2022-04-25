@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AnimationUpdateManager.h"
 #include "ConfigINI.h"
 #include "Controller/ModelType.h"
 
@@ -28,6 +29,7 @@ namespace IED
 	DEFINE_ENUM_CLASS_BITWISE(AttachResultFlags);
 
 	class EngineExtensions :
+		AnimationUpdateManager,
 		ILog
 	{
 		struct unks_01
@@ -148,9 +150,6 @@ namespace IED
 			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
 
 		static void UpdateRoot(NiNode* a_root);
-		static void SetDropOnDeath(Actor* a_actor, NiAVObject* a_object, bool a_switch);
-
-		static void CleanupObject(Game::ObjectRefHandle a_handle, NiAVObject* a_object, NiNode* a_root);
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
@@ -170,6 +169,11 @@ namespace IED
 		[[nodiscard]] inline static constexpr bool IsWeaponAdjustDisabled() noexcept
 		{
 			return m_Instance.m_conf.weaponAdjustDisable;
+		}
+
+		[[nodiscard]] inline static constexpr bool ParallelAnimationUpdatesEnabled() noexcept
+		{
+			return m_Instance.m_conf.parallelAnimationUpdates;
 		}
 
 		FN_NAMEPROC("EngineExtensions");
@@ -203,42 +207,48 @@ namespace IED
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
 		//inline static const auto fLoadAndRegisterWeaponGraph = IAL::Address<loadAndRegisterWeaponGraph_t>(32249, 32984);
-		inline static const auto LoadWeaponGraph     = IAL::Address<loadWeaponGraph_t>(32148, 32892);
-		inline static const auto BindAnimationObject = IAL::Address<bindAnimationObject_t>(32250, 32985);
+		inline static const auto LoadWeaponAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
+		inline static const auto BindAnimationObject                = IAL::Address<bindAnimationObject_t>(32250, 32985);
 
-		inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
+		//inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 
 		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
 
-		void Patch_RemoveAllBipedParts();
+		void Install_RemoveAllBipedParts();
 		void Hook_REFR_GarbageCollector();
 		void Hook_Actor_Resurrect();
 		void Hook_Actor_3DEvents();
 		void Hook_Armor_Update();
-		void Patch_SetWeapAdjAnimVar();
-		void Patch_CreateWeaponNodes();
-		void Patch_WeaponAdjustDisable();
+		void Install_SetWeapAdjAnimVar();
+		void Install_CreateWeaponNodes();
+		void Install_WeaponAdjustDisable();
 		void Hook_ToggleFav();
 		void Hook_ProcessEffectShaders();
+		void Install_ParallelAnimationUpdate();
 		//void Patch_CorpseScatter();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
 			const std::source_location a_loc = std::source_location::current());
 
-		static void           RemoveAllBipedParts_Hook(Biped* a_biped);
-		static void           Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
-		static void           Actor_Release3D_Hook(Actor* a_actor);
-		static void           Character_Release3D_Hook(Character* a_actor);
-		static void           ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
-		static void           CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
-		static void           ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
-		static bool           GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
-		static bool           SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
-		static BaseExtraList* ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
-		static void           ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
+		static void                              RemoveAllBipedParts_Hook(Biped* a_biped);
+		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
+		static void                              Actor_Release3D_Hook(Actor* a_actor);
+		static void                              Character_Release3D_Hook(Character* a_actor);
+		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
+		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
+		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
+		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
+		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
+		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
+		static void                              ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
+		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
+		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
+		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
+		static const RE::BSTSmartPointer<Biped>& UpdateRefAnim_Hook(TESObjectREFR* a_ref, const BSAnimationUpdateData& a_data);        // getbiped2
+		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data);  // getbiped1
+
 		//static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
-		static bool hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
@@ -253,6 +263,9 @@ namespace IED
 		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
 		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
 		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
+		inline static const auto m_animUpdateDispatcher_a   = IAL::Address<std::uintptr_t>(38098, 39054);
+		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(19729, 20123);
+		inline static const auto m_animUpdatePlayer_a       = IAL::Address<std::uintptr_t>(39445, 40521);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };
@@ -264,6 +277,9 @@ namespace IED
 		decltype(&RemoveAllBipedParts_Hook)       m_removeAllBipedParts_o{ nullptr };
 		decltype(&ToggleFavGetExtraList_Hook)     m_toggleFavGetExtraList_o{ nullptr };
 		decltype(&ProcessEffectShaders_Hook)      m_processEffectShaders_o{ nullptr };
+		decltype(&PrepareAnimUpdateLists_Hook)    m_prepareAnimUpdateLists_o{ nullptr };
+		decltype(&ClearAnimUpdateLists_Hook)      m_clearAnimUpdateLists_o{ nullptr };
+		hkaLookupSkeletonNode_t                   m_hkaLookupSkeletonNode_o{ nullptr };
 
 		struct
 		{
@@ -271,6 +287,7 @@ namespace IED
 			bool weaponAdjustFix{ false };
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
+			bool parallelAnimationUpdates{ false };
 		} m_conf;
 
 		Controller* m_controller{ nullptr };

@@ -345,10 +345,6 @@ namespace IED
 				DIK_BACKSPACE);
 		}
 
-		std::vector<int> a;
-
-		stl::destroy_in_place(a);
-
 		if (!stl::is_equal(config.ui.scale, 1.0f))
 		{
 			Drivers::UI::QueueSetScale(config.ui.scale);
@@ -3626,7 +3622,7 @@ namespace IED
 			UpdateAA(a_actor, a_objects.m_animState);
 		}
 
-		if (a_flags.test(ControllerUpdateFlags::kImmediateUpdateTransforms))
+		if (a_flags.test(ControllerUpdateFlags::kImmediateTransformUpdate))
 		{
 			a_objects.RequestTransformUpdate();
 		}
@@ -3703,6 +3699,8 @@ namespace IED
 			{
 				UpdateIfPaused(a_root);
 			}
+
+			a_objects.RequestTransformUpdate();
 		}
 	}
 
@@ -3917,8 +3915,15 @@ namespace IED
 			}
 		}
 
-		RemoveActorImpl(a_actor, a_handle, a_flags);
-		EvaluateImpl(a_actor, a_handle, a_flags | ControllerUpdateFlags::kImmediateUpdateTransforms);
+		RemoveActorImpl(
+			a_actor,
+			a_handle,
+			a_flags);
+
+		EvaluateImpl(
+			a_actor,
+			a_handle,
+			a_flags | ControllerUpdateFlags::kImmediateTransformUpdate);
 
 		if (eraseState)
 		{
@@ -3954,7 +3959,7 @@ namespace IED
 			a_actor,
 			a_handle,
 			it->second,
-			a_flags | ControllerUpdateFlags::kImmediateUpdateTransforms);
+			a_flags | ControllerUpdateFlags::kImmediateTransformUpdate);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -3995,7 +4000,7 @@ namespace IED
 		EvaluateImpl(
 			a_actor,
 			a_handle,
-			ControllerUpdateFlags::kImmediateUpdateTransforms);
+			ControllerUpdateFlags::kImmediateTransformUpdate);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -4029,7 +4034,7 @@ namespace IED
 		EvaluateImpl(
 			a_actor,
 			a_handle,
-			ControllerUpdateFlags::kImmediateUpdateTransforms);
+			ControllerUpdateFlags::kImmediateTransformUpdate);
 	}
 
 	void Controller::ResetCustomImpl(
@@ -4061,7 +4066,7 @@ namespace IED
 		EvaluateImpl(
 			a_actor,
 			a_handle,
-			ControllerUpdateFlags::kImmediateUpdateTransforms);
+			ControllerUpdateFlags::kImmediateTransformUpdate);
 	}
 
 	void Controller::ResetGearImpl(
@@ -4818,13 +4823,16 @@ namespace IED
 
 				if (it->second.weapAnimGraphManagerHolder)
 				{
-					if (e.second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+					if (e.second.flags.test(
+							Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 					{
-						it->second.UpdateAndSendAnimationEvent(e.second.animationEvent);
+						it->second.UpdateAndSendAnimationEvent(
+							e.second.animationEvent);
 					}
 					else
 					{
-						it->second.UpdateAndSendAnimationEvent(StringHolder::GetSingleton().weaponSheathe);
+						it->second.UpdateAndSendAnimationEvent(
+							StringHolder::GetSingleton().weaponSheathe);
 					}
 				}
 			}
@@ -5213,7 +5221,9 @@ namespace IED
 		{
 			if (auto actor = a_evn->formId.As<Actor>())
 			{
-				QueueReset(actor, ControllerUpdateFlags::kImmediateUpdateTransforms);
+				QueueReset(
+					actor,
+					ControllerUpdateFlags::kImmediateTransformUpdate);
 			}
 		}
 
@@ -5227,7 +5237,9 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			QueueReset(a_evn->reference, ControllerUpdateFlags::kImmediateUpdateTransforms);
+			QueueReset(
+				a_evn->reference,
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
 
 		return EventResult::kContinue;

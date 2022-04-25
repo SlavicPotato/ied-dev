@@ -49,7 +49,7 @@ namespace IED
 		stl::unordered_set<BSFixedString> m_deny;
 	};*/
 
-	class AnimationEventRegistrationList
+	class AnimationGraphManagerHolderList
 	{
 	public:
 		void Add(RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
@@ -73,6 +73,16 @@ namespace IED
 			for (auto& e : m_data)
 			{
 				e->NotifyAnimationGraph(a_event);
+			}
+		}
+
+		void Update(const BSAnimationUpdateData& a_data) const
+		{
+			stl::scoped_lock lock(m_lock);
+
+			for (auto& e : m_data)
+			{
+				e->Update(a_data);
 			}
 		}
 
@@ -601,7 +611,7 @@ namespace IED
 		{
 			return m_female;
 		}
-		
+
 		[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
 		{
 			return m_enableAnimEventForwarding;
@@ -615,22 +625,16 @@ namespace IED
 
 		void ReSinkAnimationGraphs();
 
-		inline void RegisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
-		{
-			if (m_enableAnimEventForwarding)
-			{
-				m_animEventForwardRegistrations.Add(a_ptr);
-			}
-		}
+		void RegisterWeaponAnimationGraphManagerHolder(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
 
-		inline void UnregisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		void UnregisterWeaponAnimationGraphManagerHolder(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
+
+		inline std::shared_ptr<AnimationGraphManagerHolderList> GetAnimationUpdateList() const  //
+			noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<AnimationGraphManagerHolderList>>)
 		{
-			if (m_enableAnimEventForwarding)
-			{
-				m_animEventForwardRegistrations.Remove(a_ptr);
-			}
+			return m_animationUpdateList;
 		}
 
 	private:
@@ -694,8 +698,9 @@ namespace IED
 
 		mutable ActorAnimationState m_animState;
 
-		AnimationEventRegistrationList m_animEventForwardRegistrations;
-		bool                           m_enableAnimEventForwarding{ false };
+		std::shared_ptr<AnimationGraphManagerHolderList> m_animationUpdateList;
+		AnimationGraphManagerHolderList                  m_animEventForwardRegistrations;
+		bool                                             m_enableAnimEventForwarding{ false };
 
 		IObjectManager& m_owner;
 

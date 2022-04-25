@@ -176,7 +176,8 @@ namespace IED
 			{
 			case PostChangeAction::Evaluate:
 				m_controller.QueueEvaluateAll(
-					ControllerUpdateFlags::kWantEffectShaderConfigUpdate);
+					ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+					ControllerUpdateFlags::kImmediateTransformUpdate);
 				break;
 			case PostChangeAction::Reset:
 				m_controller.QueueResetCustomAll(

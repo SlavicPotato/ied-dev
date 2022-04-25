@@ -28,6 +28,12 @@ namespace IED
 		public TaskDelegateFixed,
 		public IFirstPersonState
 	{
+		struct animUpdateData_t
+		{
+			Game::Unk2f6b948::Steps steps;
+			BSAnimationUpdateData   data;
+		};
+
 	public:
 		ActorProcessorTask(
 			Controller& a_controller);
@@ -59,7 +65,7 @@ namespace IED
 		SKMP_FORCEINLINE void UpdateNode(
 			ActorObjectHolder&                          a_record,
 			objectEntryBase_t&                          a_entry,
-			const std::optional<BSAnimationUpdateData>& a_animUpdateData);
+			const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
 			ActorObjectHolder& a_data);
