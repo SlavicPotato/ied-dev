@@ -76,15 +76,7 @@ namespace IED
 			}
 		}
 
-		void Update(const BSAnimationUpdateData& a_data) const
-		{
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_data)
-			{
-				e->Update(a_data);
-			}
-		}
+		void Update(const BSAnimationUpdateData& a_data) const;
 
 		void Clear() noexcept
 		{
@@ -93,8 +85,18 @@ namespace IED
 			m_data.clear();
 		}
 
+		inline constexpr auto& GetList() const noexcept
+		{
+			return m_data;
+		}
+		
+		inline bool Empty() const noexcept
+		{
+			return m_data.empty();
+		}
+
 	private:
-		mutable stl::fast_spin_lock                         m_lock;
+		mutable stl::critical_section                       m_lock;
 		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
 	};
 

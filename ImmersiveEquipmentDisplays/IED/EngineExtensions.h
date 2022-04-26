@@ -113,6 +113,10 @@ namespace IED
 			RE::IAnimationGraphManagerHolder& a_holder,
 			NiAVObject*                       a_object);
 
+		typedef bool (*updateAnimationGraph_t)(
+			RE::IAnimationGraphManagerHolder* a_holder,
+			const BSAnimationUpdateData&      a_data);
+
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -156,10 +160,12 @@ namespace IED
 		inline static const auto GetObjectByName =
 			IAL::Address<fGetObjectByName_t>(74481, 76207);
 
-		inline static const auto ApplyTextureSwap  = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
-		inline static const auto m_unkglob0        = IAL::Address<std::int32_t*>(523662, 410201);
-		inline static const auto SceneRendering    = IAL::Address<unk63F810_t>(38079, 39033);
-		inline static const auto CleanupObjectImpl = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
+		inline static const auto ApplyTextureSwap     = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
+		inline static const auto m_unkglob0           = IAL::Address<std::int32_t*>(523662, 410201);
+		inline static const auto SceneRendering       = IAL::Address<unk63F810_t>(38079, 39033);
+		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
+		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
+		inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -225,7 +231,6 @@ namespace IED
 		void Hook_ToggleFav();
 		void Hook_ProcessEffectShaders();
 		void Install_ParallelAnimationUpdate();
-		//void Patch_CorpseScatter();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
@@ -245,10 +250,9 @@ namespace IED
 		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
-		static void                              UpdateRefAnim_Exec(TESObjectREFR* a_ref, const BSAnimationUpdateData& a_data);
 		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data);  // getbiped1
 
-		//static std::uint32_t  Biped_QueueAttachHavok_Hook(TESObjectREFR* a_actor, BIPED_OBJECT a_slot);  // never runs for 1p
+		static void UpdateReferenceAnimations(TESObjectREFR* a_refr, float a_step);
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
@@ -267,7 +271,7 @@ namespace IED
 		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(40436, 41453);
 		inline static const auto m_animUpdatePlayer_a       = IAL::Address<std::uintptr_t>(39445, 40521);
 
-		inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
+		//inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };

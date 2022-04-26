@@ -4,6 +4,8 @@
 
 #include "Controller/Controller.h"
 
+//PerfTimerInt pt(1000000);
+
 namespace IED
 {
 	void AnimationUpdateManager::PrepareAnimationUpdateList(
@@ -13,6 +15,8 @@ namespace IED
 
 		assert(!m_running.load(std::memory_order_relaxed));
 		assert(m_data.empty());
+
+		//pt.Begin();
 
 		/*PerfTimer pt;
 		pt.Start();*/
@@ -58,16 +62,23 @@ namespace IED
 		m_running.store(false, std::memory_order_relaxed);
 
 		m_data.clear();
+
+		/*long long a;
+		if (pt.End(a)) {
+			_DMESSAGE("%lld", a);
+		}*/
 	}
 
 	void AnimationUpdateManager::UpdateQueuedAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data)
 	{
-		if (!m_running.load(std::memory_order_relaxed))
+		assert(m_running.load(std::memory_order_relaxed));
+
+		/*if (!m_running.load(std::memory_order_relaxed))
 		{
 			return;
-		}
+		}*/
 
 		/*PerfTimer pt;
 		pt.Start();*/

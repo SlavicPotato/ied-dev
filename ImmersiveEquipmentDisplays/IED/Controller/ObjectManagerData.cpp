@@ -523,7 +523,7 @@ namespace IED
 			m_animEventForwardRegistrations.Add(a_ptr);
 		}
 
-		if (EngineExtensions::ParallelAnimationUpdatesEnabled())
+		//if (EngineExtensions::ParallelAnimationUpdatesEnabled())
 		{
 			m_animationUpdateList->Add(a_ptr);
 		}
@@ -537,7 +537,7 @@ namespace IED
 			m_animEventForwardRegistrations.Remove(a_ptr);
 		}
 
-		if (EngineExtensions::ParallelAnimationUpdatesEnabled())
+		//if (EngineExtensions::ParallelAnimationUpdatesEnabled())
 		{
 			m_animationUpdateList->Remove(a_ptr);
 		}
@@ -808,6 +808,16 @@ namespace IED
 		{
 			currentAnimationEvent = a_event;
 			weapAnimGraphManagerHolder->NotifyAnimationGraph(a_event.c_str());
+		}
+	}
+
+	void AnimationGraphManagerHolderList::Update(const BSAnimationUpdateData& a_data) const
+	{
+		stl::scoped_lock lock(m_lock);
+
+		for (auto& e : m_data)
+		{
+			EngineExtensions::UpdateAnimationGraph(e.get(), a_data);
 		}
 	}
 

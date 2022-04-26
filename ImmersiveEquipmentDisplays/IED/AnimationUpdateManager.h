@@ -31,9 +31,9 @@ namespace IED
 			Actor*      a_actor,
 			Controller* a_controller);
 
-		std::vector<entry_type> m_data;
+		stl::vector<entry_type> m_data;
 
-		std::atomic<bool>   m_running{ false };
-		stl::fast_spin_lock m_lock;
+		std::atomic<bool>     m_running{ false };
+		stl::critical_section m_lock;
 	};
 }

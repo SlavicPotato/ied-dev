@@ -348,7 +348,8 @@ namespace IED
 
 	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
-		auto addrRefUpdate = m_animUpdateRef_a.get() + 0x74;
+		auto addrRefUpdate    = m_animUpdateRef_a.get() + 0x74;
+		auto addrPlayerUpdate = m_animUpdatePlayer_a.get() + 0xD0;
 
 		VALIDATE_MEMORY(
 			addrRefUpdate,
@@ -356,7 +357,7 @@ namespace IED
 			({ 0xE8 }));
 
 		VALIDATE_MEMORY(
-			m_animUpdatePlayer_a.get() + 0xD0,
+			addrPlayerUpdate,
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }),
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }));
 
@@ -386,59 +387,21 @@ namespace IED
 			HALT("Failed to install post anim update hook");
 		}
 
-		LogPatchBegin();
-		{
-			struct Assembly : JITASM::JITASM
-			{
-				Assembly(
-					std::uintptr_t a_targetAddr) :
-					JITASM(ISKSE::GetLocalTrampoline())
-				{
-					static_assert(sizeof(BSAnimationUpdateData) == 0x30);
-
-					Xbyak::Label callLabel;
-					Xbyak::Label execLabel;
-					Xbyak::Label retnLabel;
-
-					call(ptr[rip + callLabel]);
-
-					lea(rdx, ptr[rsp - 0x58]);  // update data should still be here, copy it
-
-					sub(rsp, 0x50);
-
-					movups(xmm0, ptr[rdx]);
-					movaps(ptr[rsp + 0x20], xmm0);
-					movups(xmm0, ptr[rdx + 0x10]);
-					movaps(ptr[rsp + 0x30], xmm0);
-					movups(xmm0, ptr[rdx + 0x20]);
-					movaps(ptr[rsp + 0x40], xmm0);
-
-					mov(rcx, rbx);  // ref
-					lea(rdx, ptr[rsp + 0x20]);
-					call(ptr[rip + execLabel]);
-
-					add(rsp, 0x50);
-
-					jmp(ptr[rip + retnLabel]);
-
-					L(callLabel);
-					dq(m_updateRefAnim_func.get());
-
-					L(execLabel);
-					dq(std::uintptr_t(UpdateRefAnim_Exec));
-
-					L(retnLabel);
-					dq(a_targetAddr + 0x5);
-				}
-			};
-
-			Assembly code(
-				addrRefUpdate);
-
-			ISKSE::GetBranchTrampoline().Write5Branch(
+		std::uintptr_t dummy;
+		if (hook::call(
+				ISKSE::GetBranchTrampoline(),
 				addrRefUpdate,
-				code.get());
+				std::uintptr_t(UpdateReferenceAnimations),
+				dummy))
+		{
+			Debug("[%s] Replaced anim update call", __FUNCTION__);
 		}
+		else
+		{
+			HALT("Failed to replace anim update call");
+		}
+
+		LogPatchBegin();
 		{
 			struct Assembly : JITASM::JITASM
 			{
@@ -457,8 +420,9 @@ namespace IED
 
 			Assembly code(
 				reinterpret_cast<std::uintptr_t>(UpdatePlayerAnim_Hook));
+
 			ISKSE::GetBranchTrampoline().Write6Call(
-				m_animUpdatePlayer_a.get() + 0xD0,
+				addrPlayerUpdate,
 				code.get());
 		}
 		LogPatchEnd();
@@ -715,23 +679,6 @@ namespace IED
 	{
 		m_Instance.ClearAnimationUpdateList();
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
-	}
-
-	void EngineExtensions::UpdateRefAnim_Exec(
-		TESObjectREFR*               a_ref,
-		const BSAnimationUpdateData& a_data)
-	{
-		assert(a_data.reference == a_ref);
-
-		if (auto actor = a_ref->As<Actor>())
-		{
-			if (a_ref->GetBiped2())  // skip if no biped data
-			{
-				m_Instance.UpdateQueuedAnimationList(
-					actor,
-					a_data);
-			}
-		}
 	}
 
 	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
@@ -1087,6 +1034,64 @@ namespace IED
 	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object)
 	{
 		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
+	}
+
+	static inline bool should_update(TESObjectREFR* a_refr)
+	{
+		if (a_refr->GetMustUpdate())
+		{
+			return true;
+		}
+
+		if (auto door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
+		{
+			return door->doorFlags.test(TESObjectDOOR::Flag::kAutomatic);
+		}
+
+		return false;
+	}
+
+	void EngineExtensions::UpdateReferenceAnimations(
+		TESObjectREFR* a_refr,
+		float          a_step)
+	{
+		struct TLSData
+		{
+			std::uint8_t  unk000[0x768];  // 000
+			std::uint32_t unk768;         // 768
+		};
+
+		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
+
+		auto& tlsUnk768 = tlsData[*tlsIndex]->unk768;
+
+		std::uint32_t oldUnk768 = tlsUnk768;
+		tlsUnk768               = 0x3A;
+
+		BSAnimationUpdateData data{ a_step };
+		data.reference   = a_refr;
+		data.forceUpdate = should_update(a_refr);
+
+		a_refr->ModifyAnimationUpdateData(data);
+		UpdateAnimationGraph(a_refr, data);
+
+		if (auto& bip = a_refr->GetBiped2())
+		{
+			for (auto& e : bip->objects)
+			{
+				if (e.weaponAnimationGraphManagerHolder)
+				{
+					UpdateAnimationGraph(e.weaponAnimationGraphManagerHolder.get(), data);
+				}
+			}
+
+			if (auto actor = a_refr->As<Actor>())
+			{
+				m_Instance.UpdateQueuedAnimationList(actor, data);
+			}
+		}
+
+		tlsUnk768 = oldUnk768;
 	}
 
 }
