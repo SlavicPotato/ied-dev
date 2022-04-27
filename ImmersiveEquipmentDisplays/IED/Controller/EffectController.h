@@ -24,14 +24,26 @@ namespace IED
 			return m_enabled;
 		}
 
-	protected:
-		SKMP_FORCEINLINE static void UpdateEffects(EffectShaderData& a_data, float a_step);
+		inline constexpr void SetEffectControllerParallelUpdates(bool a_switch)
+		{
+			m_parallel = a_switch;
+		}
 
+	protected:
+		static void UpdateActor(
+			const Game::Unk2f6b948::Steps& a_steps,
+			const ActorObjectHolder&       a_holder);
+
+		SKMP_FORCEINLINE static void UpdateEffects(
+			EffectShaderData& a_data,
+			float             a_step);
+
+	private:
 		mutable PerfTimerInt m_timer{ 1000000LL };
 		mutable long long    m_currentTime{ 0LL };
 
-	private:
 		bool m_enabled{ false };
+		bool m_parallel{ false };
 	};
 
 }

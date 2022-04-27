@@ -22,11 +22,11 @@ namespace IED
 			DrawTipText(GetTipText(a_id), a_sameLine);
 		}
 
-		void UITipsInterface::DrawTipWarn(
+		void UITipsInterface::DrawTipImportant(
 			UITip a_id,
 			bool  a_sameLine) const
 		{
-			DrawTipTextWarn(GetTipText(a_id), a_sameLine);
+			DrawTipTextImportant(GetTipText(a_id), a_sameLine);
 		}
 
 		void UITipsInterface::DrawTip(
@@ -44,12 +44,12 @@ namespace IED
 			UICommon::HelpMarker(a_text);
 		}
 
-		void UITipsInterface::DrawTipTextWarn(
+		void UITipsInterface::DrawTipTextImportant(
 			const char* a_text,
 			bool        a_sameLine) const
 		{
 			ImGui::SameLine();
-			UICommon::HelpMarkerWarn(a_text);
+			UICommon::HelpMarkerImportant(a_text);
 		}
 
 		const char* UITipsInterface::GetTipText(UITip a_id) const

@@ -20,9 +20,9 @@ namespace IED
 	}
 
 	void ActorProcessorTask::UpdateNode(
-		ActorObjectHolder&                     a_record,
-		objectEntryBase_t&                     a_entry,
-		const std::optional<animUpdateData_t>& a_animUpdateData)
+		ActorObjectHolder& a_record,
+		objectEntryBase_t& a_entry)
+	//const std::optional<animUpdateData_t>& a_animUpdateData)
 	{
 		auto state = a_entry.state.get();
 
@@ -35,21 +35,25 @@ namespace IED
 
 		bool visible = nodes.rootNode->IsVisible();
 
-		if (a_animUpdateData && visible)
+		/*if (a_animUpdateData)
 		{
 			if (state->weapAnimGraphManagerHolder)
 			{
-				state->weapAnimGraphManagerHolder->Update(a_animUpdateData->data);
+				EngineExtensions::UpdateAnimationGraph(
+					state->weapAnimGraphManagerHolder.get(),
+					a_animUpdateData->data);
 			}
 
 			for (auto& e : state->groupObjects)
 			{
 				if (e.second.weapAnimGraphManagerHolder)
 				{
-					e.second.weapAnimGraphManagerHolder->Update(a_animUpdateData->data);
+					EngineExtensions::UpdateAnimationGraph(
+						e.second.weapAnimGraphManagerHolder.get(),
+						a_animUpdateData->data);
 				}
 			}
-		}
+		}*/
 
 		if (!nodes.ref)
 		{
@@ -262,6 +266,40 @@ namespace IED
 		}
 	}
 
+	static void UpdateActorGearAnimations(
+		Actor*                                 a_actor,
+		const AnimationGraphManagerHolderList& a_list,
+		float                                  a_step)
+	{
+		assert(!EngineExtensions::ParallelAnimationUpdatesEnabled());
+
+		struct TLSData
+		{
+			std::uint8_t  unk000[0x768];  // 000
+			std::uint32_t unk768;         // 768
+		};
+
+		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
+
+		auto& tlsUnk768 = tlsData[*EngineExtensions::tlsIndex]->unk768;
+
+		std::uint32_t oldUnk768 = tlsUnk768;
+		tlsUnk768               = 0x3A;
+
+		BSAnimationUpdateData data{ a_step };
+		data.reference   = a_actor;
+		data.shouldUpdate = a_actor->GetMustUpdate();
+
+		a_actor->ModifyAnimationUpdateData(data);
+
+		for (auto& e : a_list.GetList())
+		{
+			EngineExtensions::UpdateAnimationGraph(e.get(), data);
+		}
+
+		tlsUnk768 = oldUnk768;
+	}
+
 	void ActorProcessorTask::Run()
 	{
 		stl::scoped_lock lock(m_controller.m_lock);
@@ -361,19 +399,19 @@ namespace IED
 
 			bool update = false;
 
-			if (animUpdateData)
+			if (animUpdateData && !e.m_animationUpdateList->Empty())
 			{
-				animUpdateData->data.step =
-					e.m_actor == *g_thePlayer ?
+				float step =
+					e.m_formid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;
 
-				animUpdateData->data.reference = e.m_actor.get();
+				UpdateActorGearAnimations(e.m_actor.get(), *e.m_animationUpdateList, step);
 			}
 
 			for (auto& f : e.m_entriesSlot)
 			{
-				UpdateNode(e, f, animUpdateData);
+				UpdateNode(e, f);
 
 				if (f.hideCountdown)
 				{
@@ -401,7 +439,7 @@ namespace IED
 				{
 					for (auto& h : g.second)
 					{
-						UpdateNode(e, h.second, animUpdateData);
+						UpdateNode(e, h.second);
 					}
 				}
 			}

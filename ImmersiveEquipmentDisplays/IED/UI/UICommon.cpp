@@ -38,9 +38,11 @@ namespace IED
 				ToolTip(a_desc, 50.0f);
 			}
 
-			void HelpMarkerWarn(const char* a_desc)
+			void HelpMarkerImportant(const char* a_desc)
 			{
-				ImGui::TextDisabled("[!]");
+				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorLightOrange);
+				ImGui::TextUnformatted("[!]");
+				ImGui::PopStyleColor();
 				ToolTip(a_desc, 50.0f);
 			}
 

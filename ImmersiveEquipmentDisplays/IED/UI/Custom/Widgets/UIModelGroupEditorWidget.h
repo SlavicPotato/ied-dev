@@ -500,7 +500,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTipWarn(UITip::DisableHavok);
+			DrawTipImportant(UITip::DisableHavok);
 
 			UICommon::PopDisabled(disabled);
 

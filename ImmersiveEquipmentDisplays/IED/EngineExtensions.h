@@ -181,6 +181,11 @@ namespace IED
 		{
 			return m_Instance.m_conf.parallelAnimationUpdates;
 		}
+		
+		[[nodiscard]] inline static constexpr bool EffectShadersEnabled() noexcept
+		{
+			return m_Instance.m_conf.effectShaders;
+		}
 
 		FN_NAMEPROC("EngineExtensions");
 
@@ -294,6 +299,7 @@ namespace IED
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };
+			bool effectShaders{ false };
 		} m_conf;
 
 		Controller* m_controller{ nullptr };

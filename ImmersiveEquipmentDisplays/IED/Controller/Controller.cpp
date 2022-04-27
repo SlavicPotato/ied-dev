@@ -211,6 +211,12 @@ namespace IED
 			InitializeUI();
 		}
 
+		if (EngineExtensions::EffectShadersEnabled())
+		{
+			SetEffectControllerParallelUpdates(
+				settings.effectShaderParallelUpdates);
+		}
+
 		m_safeToOpenUI = true;
 
 		m_iniconf.reset();

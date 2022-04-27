@@ -192,6 +192,9 @@ namespace IED
 		a_objects.m_movNodes.clear();
 		a_objects.m_weapNodes.clear();
 		a_objects.m_monitorNodes.clear();
+
+		assert(a_objects.m_animationUpdateList->Empty());
+		assert(a_objects.m_animEventForwardRegistrations.Empty());
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -225,6 +228,9 @@ namespace IED
 		{
 			e.clear();
 		}
+
+		assert(a_objects.m_animationUpdateList->Empty());
+		assert(a_objects.m_animEventForwardRegistrations.Empty());
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
@@ -413,11 +419,11 @@ namespace IED
 		bool                            a_bhkAnims)
 	{
 		if (RemoveObject(
-			a_params.actor,
-			a_params.handle,
-			a_objectEntry,
-			a_params.objects,
-			a_params.flags))
+				a_params.actor,
+				a_params.handle,
+				a_objectEntry,
+				a_params.objects,
+				a_params.flags))
 		{
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
@@ -575,12 +581,9 @@ namespace IED
 						BSStringHolder::GetSingleton()->m_weaponSheathe);
 				}
 
-				if (!a_config.flags.test(
-						Data::BaseFlags::kDisableAnimEventForwarding))
-				{
-					a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
-						state->weapAnimGraphManagerHolder);
-				}
+				a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+					state->weapAnimGraphManagerHolder,
+					!a_config.flags.test(Data::BaseFlags::kDisableAnimEventForwarding));
 			}
 		}
 
@@ -871,12 +874,10 @@ namespace IED
 							BSStringHolder::GetSingleton()->m_weaponSheathe);
 					}
 
-					if (!e.entry->second.flags.test(
-							Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding))
-					{
-						a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
-							e.grpObject->weapAnimGraphManagerHolder);
-					}
+					a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+						e.grpObject->weapAnimGraphManagerHolder,
+						!a_config.flags.test(Data::BaseFlags::kDisableAnimEventForwarding) &&
+							!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding));
 				}
 			}
 		}

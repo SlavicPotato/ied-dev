@@ -38,8 +38,10 @@
 #include <skse64/PapyrusNativeFunctions.h>
 #include <skse64/PluginAPI.h>
 
+#include <algorithm>
 #include <bitset>
 #include <chrono>
+#include <execution>
 #include <filesystem>
 #include <functional>
 #include <list>

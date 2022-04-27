@@ -164,8 +164,9 @@ namespace IED
 				bool XP32AABowIdle{ false };
 				bool XP32AABowAtk{ false };
 				bool placementRandomization{ false };
-				bool hkWeaponAnimations{ true };
+				bool hkWeaponAnimations{ false };
 				bool animEventForwarding{ false };
+				bool effectShaderParallelUpdates{ false };
 
 				stl::optional<LogLevel> logLevel;
 
@@ -199,7 +200,7 @@ namespace IED
 				class Tm,
 				class Tv>
 			inline constexpr void set(Tm& a_member, Tv&& a_value)  //
-				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>) //
+				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>)  //
 				requires(std::is_assignable_v<Tm&, Tv&&>)
 			{
 				a_member = std::forward<Tv>(a_value);

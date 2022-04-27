@@ -516,17 +516,15 @@ namespace IED
 	}
 
 	void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
-		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
+		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
+		bool                                      a_forward)
 	{
-		if (m_enableAnimEventForwarding)
+		if (a_forward && m_enableAnimEventForwarding)
 		{
 			m_animEventForwardRegistrations.Add(a_ptr);
 		}
 
-		//if (EngineExtensions::ParallelAnimationUpdatesEnabled())
-		{
-			m_animationUpdateList->Add(a_ptr);
-		}
+		m_animationUpdateList->Add(a_ptr);
 	}
 
 	void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
@@ -537,10 +535,7 @@ namespace IED
 			m_animEventForwardRegistrations.Remove(a_ptr);
 		}
 
-		//if (EngineExtensions::ParallelAnimationUpdatesEnabled())
-		{
-			m_animationUpdateList->Remove(a_ptr);
-		}
+		m_animationUpdateList->Remove(a_ptr);
 	}
 
 	void objectEntryBase_t::reset(

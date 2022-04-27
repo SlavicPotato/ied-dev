@@ -69,6 +69,7 @@ namespace IED
 			DisableAnimEventForwarding          = 1058,
 			AnimEventForwarding                 = 1059,
 			AnimationEvent                      = 1060,
+			EffectShadersParallelUpdates        = 1061,
 		};
 
 	}

@@ -6,6 +6,7 @@
 
 #include "IED/Controller/Controller.h"
 #include "IED/Controller/ObjectDatabaseLevel.h"
+#include "IED/EngineExtensions.h"
 #include "IED/StringHolder.h"
 
 #include "Widgets/UIWidgetCommonStrings.h"
@@ -81,6 +82,10 @@ namespace IED
 				DrawGeneralSection();
 				DrawDisplaysSection();
 				DrawGearPosSection();
+				if (EngineExtensions::EffectShadersEnabled())
+				{
+					DrawEffectShadersSection();
+				}
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
@@ -315,8 +320,35 @@ namespace IED
 					m_controller.QueueResetAll(
 						ControllerUpdateFlags::kNone);
 				}
-
 				DrawTip(UITip::RandPlacement);
+
+				ImGui::Unindent();
+				ImGui::Spacing();
+			}
+		}
+
+		void UISettings::DrawEffectShadersSection()
+		{
+			if (CollapsingHeader(
+					"tree_es",
+					false,
+					"%s",
+					LS(UISettingsStrings::EffectShaders)))
+			{
+				ImGui::Spacing();
+				ImGui::Indent();
+
+				auto& settings = m_controller.GetConfigStore().settings;
+				auto& data     = settings.data;
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::ParallelUpdates, "1"),
+						std::addressof(data.effectShaderParallelUpdates))))
+				{
+					m_controller.SetEffectControllerParallelUpdates(
+						data.effectShaderParallelUpdates);
+				}
+				DrawTipImportant(UITip::EffectShadersParallelUpdates);
 
 				ImGui::Unindent();
 				ImGui::Spacing();
@@ -992,7 +1024,7 @@ namespace IED
 				Drivers::UI::SetReleaseFontData(ui.releaseFontData);
 			}
 
-			DrawTipWarn(UITip::ReleaseFontData);
+			DrawTipImportant(UITip::ReleaseFontData);
 
 			ImGui::PopID();
 		}

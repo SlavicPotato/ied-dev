@@ -42,6 +42,7 @@ namespace IED
 	{
 		m_controller                    = a_controller;
 		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
+		m_conf.effectShaders            = a_config->m_effectShaders;
 
 		Install_RemoveAllBipedParts();
 		Hook_REFR_GarbageCollector();
@@ -1070,7 +1071,7 @@ namespace IED
 
 		BSAnimationUpdateData data{ a_step };
 		data.reference   = a_refr;
-		data.forceUpdate = should_update(a_refr);
+		data.shouldUpdate = should_update(a_refr);
 
 		a_refr->ModifyAnimationUpdateData(data);
 		UpdateAnimationGraph(a_refr, data);

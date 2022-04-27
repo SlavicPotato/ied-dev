@@ -89,7 +89,7 @@ namespace IED
 		{
 			return m_data;
 		}
-		
+
 		inline bool Empty() const noexcept
 		{
 			return m_data.empty();
@@ -453,7 +453,7 @@ namespace IED
 		{
 			return m_actor;
 		}
-
+		
 		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedSlots() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedCustom() const noexcept;
@@ -628,7 +628,8 @@ namespace IED
 		void ReSinkAnimationGraphs();
 
 		void RegisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
+			bool                                      a_forward);
 
 		void UnregisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
@@ -702,7 +703,7 @@ namespace IED
 
 		std::shared_ptr<AnimationGraphManagerHolderList> m_animationUpdateList;
 		AnimationGraphManagerHolderList                  m_animEventForwardRegistrations;
-		bool                                             m_enableAnimEventForwarding{ false };
+		const bool                                       m_enableAnimEventForwarding{ false };
 
 		IObjectManager& m_owner;
 

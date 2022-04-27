@@ -31,7 +31,7 @@ namespace IED
 		struct animUpdateData_t
 		{
 			Game::Unk2f6b948::Steps steps;
-			BSAnimationUpdateData   data;
+			//BSAnimationUpdateData   data;
 		};
 
 	public:
@@ -63,9 +63,9 @@ namespace IED
 		virtual void Run() override;
 
 		SKMP_FORCEINLINE void UpdateNode(
-			ActorObjectHolder&                          a_record,
-			objectEntryBase_t&                          a_entry,
-			const std::optional<animUpdateData_t>& a_animUpdateData);
+			ActorObjectHolder& a_record,
+			objectEntryBase_t& a_entry);
+			//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
 			ActorObjectHolder& a_data);

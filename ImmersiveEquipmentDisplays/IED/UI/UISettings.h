@@ -56,6 +56,7 @@ namespace IED
 			void              DrawGeneralSection();
 			void              DrawDisplaysSection();
 			void              DrawGearPosSection();
+			void              DrawEffectShadersSection();
 			void              DrawUISection();
 			ContextMenuAction DrawSoundContextMenu(Data::ConfigSound<Game::FormID>& a_data);
 			void              DrawSoundSection();

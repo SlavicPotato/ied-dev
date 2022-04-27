@@ -42,6 +42,8 @@ namespace IED
 			NoAnimInfoWarning           = 4431,
 			BhkAnims                    = 4432,
 			AnimEventForwarding         = 4433,
+			EffectShaders               = 4434,
+			ParallelUpdates             = 4435,
 		};
 	}
 }

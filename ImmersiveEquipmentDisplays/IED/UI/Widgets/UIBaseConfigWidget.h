@@ -698,8 +698,7 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
-
-					DrawTipWarn(UITip::IgnoreRaceEquipTypesSlot);
+					DrawTip(UITip::IgnoreRaceEquipTypesSlot);
 
 					bool paChanged = ImGui::CheckboxFlagsT(
 						LS(UIWidgetCommonStrings::PlayAnimation, "7"),
@@ -714,7 +713,6 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
 					DrawTip(UITip::PlayAnimation);
 
 					if (a_data.flags.test(Data::BaseFlags::kPlaySequence))
