@@ -26,15 +26,15 @@ namespace IED
 				ImGui::SetKeyboardFocusHere();
 			}
 
-			bool r;
+			bool result = ImGui::InputText(
+				a_label,
+				m_filterBuf,
+				sizeof(m_filterBuf),
+				m_inputTextFlags);
 
-			if ((r = ImGui::InputText(
-					 a_label,
-					 m_filterBuf,
-					 sizeof(m_filterBuf),
-					 m_inputTextFlags)))
+			if (result)
 			{
-				if (stl::strlen(m_filterBuf))
+				if (m_filterBuf[0] != 0)
 				{
 					try
 					{
@@ -45,27 +45,30 @@ namespace IED
 								std::regex_constants::icase);
 
 						if (m_lastException)
-							m_lastException.clear();
+						{
+							m_lastException.reset();
+						}
 					}
 					catch (const std::exception& e)
 					{
 						m_lastException = e;
-						m_filter.clear();
+						m_filter.reset();
 					}
 				}
 				else
 				{
 					if (m_lastException)
-						m_lastException.clear();
+					{
+						m_lastException.reset();
+					}
 
-					m_filter.clear();
+					m_filter.reset();
 				}
 
 				NextSetFocus();
 			}
 
-			auto helpText = GetHelpText();
-			if (helpText)
+			if (auto helpText = GetHelpText())
 			{
 				UICommon::HelpMarker(helpText);
 			}
@@ -76,15 +79,7 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			return r;
-		}
-
-		bool UIRegexFilter::Test(const std::string& a_haystack) const
-		{
-			if (!m_filter)
-				return true;
-
-			return std::regex_search(a_haystack, *m_filter);
+			return result;
 		}
 
 	}

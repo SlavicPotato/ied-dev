@@ -13,8 +13,6 @@ namespace IED
 			void clear();
 			void Toggle();
 
-			[[nodiscard]] virtual bool Test(const std::string& a_haystack) const = 0;
-
 			[[nodiscard]] inline constexpr bool IsOpen() const noexcept
 			{
 				return m_searchOpen;
@@ -22,7 +20,7 @@ namespace IED
 
 			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 			{
-				return m_filter.has();
+				return m_filter.has_value();
 			}
 
 			/*[[nodiscard]] inline constexpr const auto& operator*() const noexcept
@@ -42,7 +40,7 @@ namespace IED
 
 			[[nodiscard]] inline constexpr bool Has() const noexcept
 			{
-				return m_filter.has();
+				return m_filter.has_value();
 			}
 
 			[[nodiscard]] inline constexpr const char* GetBuffer() const noexcept
@@ -64,25 +62,25 @@ namespace IED
 
 			char m_filterBuf[128]{ 0 };
 
-			stl::optional<T> m_filter;
+			std::optional<T> m_filter;
 			bool             m_searchOpen{ false };
 			bool             m_nextSetFocus{ false };
 
 			ImGuiInputTextFlags m_inputTextFlags{ ImGuiInputTextFlags_None };
 		};
 
-		template <typename T>
+		template <class T>
 		UIFilterBase<T>::UIFilterBase()
 		{
 		}
 
-		template <typename T>
+		template <class T>
 		UIFilterBase<T>::UIFilterBase(bool a_isOpen) :
 			m_searchOpen(a_isOpen)
 		{
 		}
 
-		template <typename T>
+		template <class T>
 		void UIFilterBase<T>::DrawButton()
 		{
 			if (ImGui::ArrowButton(
@@ -95,7 +93,7 @@ namespace IED
 			}
 		}
 
-		template <typename T>
+		template <class T>
 		bool UIFilterBase<T>::Draw(const char* a_label)
 		{
 			if (!m_searchOpen)
@@ -112,13 +110,13 @@ namespace IED
 			return r;
 		}
 
-		template <typename T>
+		template <class T>
 		void UIFilterBase<T>::Toggle()
 		{
 			m_searchOpen = !m_searchOpen;
 		}
 
-		template <typename T>
+		template <class T>
 		void UIFilterBase<T>::clear()
 		{
 			m_filter.clear();

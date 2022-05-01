@@ -43,6 +43,16 @@ namespace IED
 			return m_currentTime;
 		}
 
+		[[nodiscard]] inline constexpr auto PlayerHasEnemiesNearby() const noexcept
+		{
+			return m_state.playerEnemiesNearby;
+		}
+
+		[[nodiscard]] inline constexpr void SetProcessorTaskRunState(bool a_state) noexcept
+		{
+			m_run = a_state;
+		}
+
 	protected:
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		bool m_activeWriteCMETransforms{ false };
@@ -56,6 +66,7 @@ namespace IED
 			RE::TESWeather* currentWeather{ nullptr };
 			Data::TimeOfDay timeOfDay{ Data::TimeOfDay::kDay };
 			bool            inFirstPerson{ false };
+			bool            playerEnemiesNearby{ false };
 		};
 
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
@@ -65,7 +76,7 @@ namespace IED
 		SKMP_FORCEINLINE void UpdateNode(
 			ActorObjectHolder& a_record,
 			objectEntryBase_t& a_entry);
-			//const std::optional<animUpdateData_t>& a_animUpdateData);
+		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
 			ActorObjectHolder& a_data);
@@ -87,6 +98,7 @@ namespace IED
 
 		PerfTimerInt m_timer{ 1000000LL };
 		long long    m_currentTime{ 0LL };
+		bool         m_run{ false };
 
 		Controller& m_controller;
 	};

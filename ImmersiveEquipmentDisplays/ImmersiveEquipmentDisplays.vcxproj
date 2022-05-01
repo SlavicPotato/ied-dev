@@ -514,6 +514,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Drivers\UI\Tasks.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="IED\ActorSkeletonTreeData.h" />
     <ClInclude Include="IED\AnimationUpdateManager.h" />
     <ClInclude Include="IED\ConditionsCommon.h" />
     <ClInclude Include="IED\ConfigColor.h" />
@@ -534,6 +535,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\IAnimationManager.h" />
     <ClInclude Include="IED\Controller\IFirstPersonState.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
+    <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h" />
@@ -552,6 +554,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
+    <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
     <ClInclude Include="IED\TimeOfDay.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
@@ -566,6 +569,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIIntroBannerStrings.h" />
     <ClInclude Include="IED\UI\UILogStrings.h" />
     <ClInclude Include="IED\UI\UIContextBase.h" />
+    <ClInclude Include="IED\UI\UISkeletonExplorer.h" />
+    <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIComparisonOperatorSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UIComparisonOperatorSelectorStrings.h" />
@@ -915,6 +920,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\ESF_UVLinearMotion.cpp" />
     <ClCompile Include="IED\Controller\IAnimationManager.cpp" />
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
+    <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
@@ -932,12 +938,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONEffectShaderListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />
     <ClCompile Include="IED\UI\UIIntroBanner.cpp" />
+    <ClCompile Include="IED\UI\UISkeletonExplorer.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIComparisonOperatorSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIConditionExtraSelectorWidget.cpp" />

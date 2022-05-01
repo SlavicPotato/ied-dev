@@ -82,7 +82,7 @@ namespace IED
 				DrawGeneralSection();
 				DrawDisplaysSection();
 				DrawGearPosSection();
-				if (EngineExtensions::EffectShadersEnabled())
+				if (m_controller.EffectControllerEnabled())
 				{
 					DrawEffectShadersSection();
 				}

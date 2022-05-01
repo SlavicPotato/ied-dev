@@ -43,9 +43,8 @@ namespace IED
 		data_type::const_iterator get_or_create(const stl::fixed_string& a_key);
 		void                      fill(const stl::fixed_string& a_key, data_type::iterator a_it);
 
-		mutable stl::fast_spin_lock m_lock;
-
-		data_type m_data;
+		mutable stl::critical_section m_lock;
+		data_type                     m_data;
 
 		static SkeletonCache m_Instance;
 	};

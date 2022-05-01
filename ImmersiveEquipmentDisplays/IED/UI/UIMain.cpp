@@ -27,6 +27,7 @@ namespace IED
 			m_nodeOverrideEditor(a_controller, m_nodeOverrideProfileEditor),
 			m_nodeOverrideProfileEditor(a_controller),
 			m_formFiltersProfileEditor(a_controller),
+			m_skeletonExplorer(a_controller),
 			m_popupQueue(a_controller)
 		{
 			stl::snprintf(m_currentTitle, "%s###%s", TITLE_NAME, WINDOW_ID);
@@ -104,6 +105,7 @@ namespace IED
 			m_log.Draw();
 			m_nodeOverrideEditor.Draw();
 			m_formFiltersProfileEditor.DrawProfileEditor();
+			m_skeletonExplorer.Draw();
 
 			if (m_formFiltersProfileEditor.ChangedConfig())
 			{
@@ -296,10 +298,22 @@ namespace IED
 			{
 				m_log.ToggleOpenState();
 			}
+			
+			if (ImGui::MenuItem(
+					LS(UIWidgetCommonStrings::SkeletonExplorer, "6"),
+					nullptr,
+					m_skeletonExplorer.IsWindowOpen()))
+			{
+				m_skeletonExplorer.ToggleOpenState();
+				if (m_skeletonExplorer.IsWindowOpen())
+				{
+					m_skeletonExplorer.OnOpen();
+				}
+			}
 
 			ImGui::Separator();
 
-			if (LCG_BM(CommonStrings::Actions, "6"))
+			if (LCG_BM(CommonStrings::Actions, "X"))
 			{
 				DrawActionsMenu();
 				ImGui::EndMenu();
@@ -485,6 +499,11 @@ namespace IED
 			{
 				m_nodeOverrideEditor.OnOpen();
 			}
+
+			if (m_skeletonExplorer.IsWindowOpen())
+			{
+				m_skeletonExplorer.OnOpen();
+			}
 		}
 
 		void UIMain::OnClose()
@@ -495,6 +514,7 @@ namespace IED
 			m_slotTabPanel.OnClose();
 			m_customTabPanel.OnClose();
 			m_formBrowser.OnClose();
+			m_skeletonExplorer.OnClose();
 
 			m_formLookupCache.clear();
 

@@ -142,7 +142,7 @@ namespace IED
 							continue;
 						}
 
-						if (!m_filter.Test(e))
+						if (!m_filter.Test(e.string()))
 						{
 							continue;
 						}

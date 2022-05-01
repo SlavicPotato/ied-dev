@@ -95,6 +95,16 @@ namespace IED
 				stl::flag<ImportFlags> importFlags{ ImportFlags::kEraseTemporary };
 			};
 
+			struct SkeletonExplorer
+			{
+				EditorPanelActorSettings        actorSettings;
+				UI::UIData::UICollapsibleStates colStates;
+
+				bool firstPerson{ false };
+				bool filterShowChildNodes{ false };
+				bool showLoadedSkeleton{ true };
+			};
+
 			struct UserInterface
 			{
 				UserInterface() noexcept
@@ -105,13 +115,14 @@ namespace IED
 					}
 				}
 
-				EditorPanel   slotEditor;
-				EditorPanel   customEditor;
-				EditorPanel   transformEditor;
-				ProfileEditor slotProfileEditor;
-				ProfileEditor customProfileEditor;
-				ProfileEditor transformProfileEditor;
-				ImportExport  importExport;
+				EditorPanel      slotEditor;
+				EditorPanel      customEditor;
+				EditorPanel      transformEditor;
+				ProfileEditor    slotProfileEditor;
+				ProfileEditor    customProfileEditor;
+				ProfileEditor    transformProfileEditor;
+				ImportExport     importExport;
+				SkeletonExplorer skeletonExplorer;
 
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;

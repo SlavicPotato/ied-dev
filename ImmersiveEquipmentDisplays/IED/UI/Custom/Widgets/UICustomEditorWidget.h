@@ -274,7 +274,7 @@ namespace IED
 
 				for (auto& e : a_data.data)
 				{
-					if (!m_itemFilter.Test(e.first))
+					if (!m_itemFilter.Test(*e.first))
 					{
 						continue;
 					}

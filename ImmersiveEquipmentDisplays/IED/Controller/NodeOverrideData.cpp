@@ -423,7 +423,7 @@ namespace IED
 
 		}),
 
-		m_extra(std::initializer_list<exn_ctor_init_t>{
+		m_extramov(std::initializer_list<exn_ctor_init_t>{
 			{
 
 				"MOV WeaponDaggerOnBack",

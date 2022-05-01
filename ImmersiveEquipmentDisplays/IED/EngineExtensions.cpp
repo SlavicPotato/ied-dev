@@ -42,7 +42,6 @@ namespace IED
 	{
 		m_controller                    = a_controller;
 		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
-		m_conf.effectShaders            = a_config->m_effectShaders;
 
 		Install_RemoveAllBipedParts();
 		Hook_REFR_GarbageCollector();
@@ -395,11 +394,11 @@ namespace IED
 				std::uintptr_t(UpdateReferenceAnimations),
 				dummy))
 		{
-			Debug("[%s] Replaced anim update call", __FUNCTION__);
+			Debug("[%s] Replaced reference anim update call", __FUNCTION__);
 		}
 		else
 		{
-			HALT("Failed to replace anim update call");
+			HALT("Failed to replace reference anim update call");
 		}
 
 		LogPatchBegin();
@@ -1070,7 +1069,7 @@ namespace IED
 		tlsUnk768               = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
-		data.reference   = a_refr;
+		data.reference    = a_refr;
 		data.shouldUpdate = should_update(a_refr);
 
 		a_refr->ModifyAnimationUpdateData(data);

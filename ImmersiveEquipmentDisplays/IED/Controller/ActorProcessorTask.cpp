@@ -205,6 +205,64 @@ namespace IED
 		return result;
 	}
 
+	/*static bool GetEnemiesNearby(
+		ActorObjectHolder& a_data,
+		ActorObjectMap&    a_map)
+	{
+		NiPointer<TESObjectREFR> refr;
+		if (!a_data.GetHandle().Lookup(refr))
+		{
+			return false;
+		}
+
+		auto actor = refr->As<Actor>();
+		if (!actor)
+		{
+			return false;
+		}
+
+		for (auto& [i, e] : a_map)
+		{
+			if (!e.IsCellAttached())
+			{
+				continue;
+			}
+
+			if (e.GetActorFormID() == actor->formID ||
+			    e.GetActorFormID() == Data::IData::GetPlayerRefID())
+			{
+				continue;
+			}
+
+			NiPointer<TESObjectREFR> r;
+			if (!e.GetHandle().Lookup(r))
+			{
+				continue;
+			}
+
+			auto a = r->As<Actor>();
+			if (!a)
+			{
+				continue;
+			}
+
+			if (a->IsDead())
+			{
+				continue;
+			}
+
+			//...
+
+			if (!a->IsHostileToActor(actor))
+			{
+				return true;
+			}
+
+		}
+
+		return false;
+	}*/
+
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 	void ActorProcessorTask::WriteCMETransforms(
 		ActorObjectHolder& a_data)
@@ -242,6 +300,7 @@ namespace IED
 		bool changed = false;
 
 		auto sky = RE::Sky::GetSingleton();
+		assert(sky);
 
 		if (auto current = (sky ? sky->currentWeather : nullptr);
 		    current != m_state.currentWeather)
@@ -255,6 +314,27 @@ namespace IED
 		{
 			m_state.timeOfDay = tod;
 			changed           = true;
+		}
+
+		auto player = *g_thePlayer;
+		assert(player);
+
+		if (player->loadedState)
+		{
+			auto pl = Game::ProcessLists::GetSingleton();
+			assert(pl);
+
+			if (bool n = pl->PlayerHasEnemiesNearby(0);
+			    n != m_state.playerEnemiesNearby)
+			{
+				m_state.playerEnemiesNearby = n;
+
+				if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
+				    it != m_controller.m_objects.end())
+				{
+					it->second.RequestEvalDefer();
+				}
+			}
 		}
 
 		if (changed)
@@ -287,7 +367,7 @@ namespace IED
 		tlsUnk768               = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
-		data.reference   = a_actor;
+		data.reference    = a_actor;
 		data.shouldUpdate = a_actor->GetMustUpdate();
 
 		a_actor->ModifyAnimationUpdateData(data);
@@ -303,6 +383,11 @@ namespace IED
 	void ActorProcessorTask::Run()
 	{
 		stl::scoped_lock lock(m_controller.m_lock);
+
+		if (!m_run)
+		{
+			return;
+		}
 
 		m_timer.Begin();
 
@@ -373,6 +458,18 @@ namespace IED
 					e.m_currentPackage = n;
 					e.RequestEvalDefer();
 				}
+
+				/*PerfTimer pt;
+				pt.Start();*/
+
+				/*if (auto n = GetEnemiesNearby(e, m_controller.m_objects);
+				    n != e.m_enemiesNearby)
+				{
+					e.m_enemiesNearby = n;
+					e.RequestEvalDefer();
+				}*/
+
+				//_DMESSAGE("%X: %f", e.m_formid, pt.Stop());
 
 				if (e.m_wantLFUpdate)
 				{

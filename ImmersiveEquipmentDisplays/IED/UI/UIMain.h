@@ -12,6 +12,7 @@
 #include "UINodeMapEditor.h"
 #include "UISettings.h"
 #include "UIStats.h"
+#include "UISkeletonExplorer.h"
 
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
@@ -100,6 +101,7 @@ namespace IED
 			UIProfileEditorFormFilters  m_formFiltersProfileEditor;
 			UILog                       m_log;
 			UIStats                     m_stats;
+			UISkeletonExplorer          m_skeletonExplorer;
 
 			UISlotEditorTabPanel   m_slotTabPanel;
 			UICustomEditorTabPanel m_customTabPanel;

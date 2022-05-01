@@ -22,6 +22,7 @@ namespace IED
 			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
 			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
+			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
 
 		} };
 
@@ -102,6 +103,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::InCombat);
 			case Data::ExtraConditionType::kIsFemale:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsFemale);
+			case Data::ExtraConditionType::kPlayerEnemiesNearby:
+				return LS(UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby);
 			default:
 				return nullptr;
 			}

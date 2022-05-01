@@ -137,7 +137,7 @@ namespace IED
 			::Util::Node::Traverse(object, [&](NiAVObject* a_object) {
 				auto& name = a_object->m_name;
 
-				if (*name.data() != 0)
+				if (!name.empty())
 				{
 					a_it->second->try_emplace(name.data(), a_object->m_localTransform);
 				}

@@ -453,7 +453,7 @@ namespace IED
 		{
 			return m_actor;
 		}
-		
+
 		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedSlots() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedCustom() const noexcept;
@@ -502,6 +502,11 @@ namespace IED
 		{
 			return m_cellAttached;
 		}
+		
+		/*[[nodiscard]] inline constexpr bool GetEnemiesNearby() const noexcept
+		{
+			return m_enemiesNearby;
+		}*/
 
 		inline constexpr void UpdateCellAttached()
 		{
@@ -641,7 +646,7 @@ namespace IED
 		}
 
 	private:
-		void CreateExtraNodes(
+		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
 			bool                                      a_female,
 			const NodeOverrideData::extraNodeEntry_t& a_entry);
@@ -693,6 +698,7 @@ namespace IED
 		bool                m_isPlayerTeammate{ false };
 		bool                m_wantLFUpdate{ false };
 		bool                m_inCombat{ false };
+		//bool                m_enemiesNearby{ false };
 		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;
 		TESPackage*         m_currentPackage{ nullptr };

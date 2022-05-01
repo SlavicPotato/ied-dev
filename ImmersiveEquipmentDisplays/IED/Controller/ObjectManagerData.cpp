@@ -84,8 +84,6 @@ namespace IED
 				}
 			}
 
-			//m_cmeNodes.reserve(NodeOverrideData::GetCMENodeData().size());
-
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
@@ -96,8 +94,6 @@ namespace IED
 						GetCachedOrZeroTransform(e->second.name));
 				}
 			}
-
-			//m_cmeNodes.shrink_to_fit();
 
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
@@ -338,7 +334,7 @@ namespace IED
 		return {};
 	}
 
-	void ActorObjectHolder::CreateExtraNodes(
+	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode*                                   a_npcroot,
 		bool                                      a_female,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)

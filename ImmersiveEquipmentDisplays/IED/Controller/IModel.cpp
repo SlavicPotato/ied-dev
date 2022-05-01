@@ -50,6 +50,37 @@ namespace IED
 		return ExtractModelParams(static_cast<T*>(a_form), a_out, a_type);
 	}
 
+	struct ModelData
+	{
+		const char*          path;
+		TESModelTextureSwap* swap;
+	};
+
+	template <class T>
+	static std::optional<ModelData> GetModelData(
+		T*   a_form,
+		bool a_female)  //
+		requires(std::is_base_of_v<TESObjectARMO, T> || std::is_base_of_v<TESObjectARMA, T>)
+	{
+		auto texSwap = std::addressof(a_form->GetBipedModelTextureSwap(a_female));
+		auto path    = texSwap->GetModelName();
+
+		if (!path || path[0] == 0)
+		{
+			texSwap = std::addressof(a_form->GetBipedModelTextureSwap(!a_female));
+			path    = texSwap->GetModelName();
+		}
+
+		if (!path || path[0] == 0)
+		{
+			return {};
+		}
+		else
+		{
+			return std::make_optional<ModelData>(path, texSwap);
+		}
+	}
+
 	bool IModel::GetModelParams(
 		Actor*         a_actor,
 		TESForm*       a_form,
@@ -118,11 +149,11 @@ namespace IED
 			{
 				if (a_actor == *g_thePlayer || a_1pWeap)
 				{
-					if (auto weapon = static_cast<TESObjectWEAP*>(a_form); weapon->model)
+					if (auto weapon = static_cast<TESObjectWEAP*>(a_form); weapon->firstPersonModelObject)
 					{
 						// 1p model
 						if (ExtractModelParams(
-								weapon->model,
+								weapon->firstPersonModelObject,
 								a_out,
 								ModelType::kWeapon))
 						{
@@ -151,59 +182,44 @@ namespace IED
 							continue;
 						}
 
-						auto texSwap = std::addressof(arma->bipedModels[a_isFemale ? 1 : 0]);
-						auto path    = texSwap->GetModelName();
-
-						if (!path || path[0] == 0)
-						{
-							texSwap = std::addressof(arma->bipedModels[a_isFemale ? 0 : 1]);
-							path    = texSwap->GetModelName();
-						}
-
-						if (!path || path[0] == 0)
-						{
-							return false;
-						}
-						else
+						auto modelData = GetModelData(arma, a_isFemale);
+						if (modelData)
 						{
 							a_out = {
 								ModelType::kArmor,
-								path,
-								texSwap,
+								modelData->path,
+								modelData->swap,
 								true,
 								arma
 							};
 
 							return true;
 						}
+						else
+						{
+							return false;
+						}
 					}
 				}
 				else
 				{
-					auto texSwap = std::addressof(armor->textureSwap[a_isFemale ? 1 : 0]);
-					auto path    = texSwap->GetModelName();
+					auto modelData = GetModelData(armor, a_isFemale);
 
-					if (!path || path[0] == 0)
-					{
-						texSwap = std::addressof(armor->textureSwap[a_isFemale ? 0 : 1]);
-						path    = texSwap->GetModelName();
-					}
-
-					if (!path || path[0] == 0)
-					{
-						return false;
-					}
-					else
+					if (modelData)
 					{
 						a_out = {
 							ModelType::kArmor,
-							path,
-							texSwap,
+							modelData->path,
+							modelData->swap,
 							false,
 							nullptr
 						};
 
 						return true;
+					}
+					else
+					{
+						return false;
 					}
 				}
 			}

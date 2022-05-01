@@ -314,9 +314,9 @@ namespace IED
 			return m_Instance->m_weap;
 		}
 
-		inline static const auto& GetExtraNodes() noexcept
+		inline static const auto& GetExtraMovNodes() noexcept
 		{
-			return m_Instance->m_extra;
+			return m_Instance->m_extramov;
 		}
 
 		inline static const auto& GetExtraCopyNodes() noexcept
@@ -354,7 +354,7 @@ namespace IED
 		cm_data_type             m_mov;
 		mon_data_type            m_monitor;
 		weapnode_data_type       m_weap;
-		exn_data_type            m_extra;
+		exn_data_type            m_extramov;
 		exn_copy_data_type       m_extraCopy;
 		xfrm_override_data_type  m_transformOverride;
 		rand_placement_data_type m_randPlacement;

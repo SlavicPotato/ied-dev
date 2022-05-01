@@ -372,7 +372,7 @@ namespace IED
 
 					auto& slotName = StringHolder::GetSingleton().GetSlotName(slot);
 
-					if (!m_slotFilter.Test(slotName))
+					if (!m_slotFilter.Test(*slotName))
 					{
 						continue;
 					}

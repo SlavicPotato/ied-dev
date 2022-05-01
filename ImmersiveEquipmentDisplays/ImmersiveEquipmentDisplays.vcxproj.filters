@@ -1223,6 +1223,21 @@
     <ClInclude Include="IED\AnimationUpdateManager.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UISkeletonExplorer.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorSkeletonTreeData.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ISkeletonInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1919,6 +1934,15 @@
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
     <ClCompile Include="IED\AnimationUpdateManager.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UISkeletonExplorer.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ISkeletonInfo.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>

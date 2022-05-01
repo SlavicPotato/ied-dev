@@ -22,27 +22,33 @@ namespace IED
 				ImGui::SetKeyboardFocusHere();
 			}
 
-			bool r = ImGui::InputText(
+			bool result = ImGui::InputText(
 				a_label,
 				m_filterBuf,
 				sizeof(m_filterBuf),
 				m_inputTextFlags);
 
-			if (r)
+			if (result)
 			{
-				if (stl::strlen(m_filterBuf))
+				if (m_filterBuf[0] != 0)
+				{
 					m_filter = m_filterBuf;
+				}
 				else
-					m_filter.clear();
+				{
+					m_filter.reset();
+				}
 			}
 
-			return r;
+			return result;
 		}
 
 		bool UIGenericFilter::Test(const char* a_haystack) const
 		{
 			if (!m_filter)
+			{
 				return true;
+			}
 
 			auto end = a_haystack + std::strlen(a_haystack);
 
@@ -52,27 +58,10 @@ namespace IED
 				m_filter->begin(),
 				m_filter->end(),
 				[](char a_lhs, char a_rhs) {
-					return std::tolower(a_lhs) == std::tolower(a_rhs);
+					return ::hash::toupper(a_lhs) == ::hash::toupper(a_rhs);
 				});
 
 			return (p != end);
-		}
-
-		bool UIGenericFilter::Test(const std::string& a_haystack) const
-		{
-			if (!m_filter)
-				return true;
-
-			auto it = std::search(
-				a_haystack.begin(),
-				a_haystack.end(),
-				m_filter->begin(),
-				m_filter->end(),
-				[](char a_lhs, char a_rhs) {
-					return std::tolower(a_lhs) == std::tolower(a_rhs);
-				});
-
-			return (it != a_haystack.end());
 		}
 
 	}

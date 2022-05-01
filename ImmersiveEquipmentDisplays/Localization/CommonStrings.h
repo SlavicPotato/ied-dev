@@ -203,5 +203,6 @@ namespace IED
 		Square          = 274,
 		Frequency       = 275,
 		Event           = 276,
+		Path            = 277,
 	};
 }

@@ -46,6 +46,8 @@ namespace IED
 				return a_params.is_in_combat();
 			case Data::ExtraConditionType::kIsFemale:
 				return is_female(a_params);
+			case Data::ExtraConditionType::kPlayerEnemiesNearby:
+				return enemies_nearby(a_params);
 			default:
 				return false;
 			}
@@ -557,7 +559,8 @@ namespace IED
 		}
 
 		bool is_ammo_bolt(TESForm* a_form);
-		bool is_in_first_person(CommonParams& a_params);
-		bool is_female(CommonParams& a_params);
+		bool is_in_first_person(CommonParams& a_params) noexcept;
+		bool is_female(CommonParams& a_params) noexcept;
+		bool enemies_nearby(CommonParams& a_params) noexcept;
 	}
 }

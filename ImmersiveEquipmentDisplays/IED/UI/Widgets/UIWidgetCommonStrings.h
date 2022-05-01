@@ -93,6 +93,7 @@ namespace IED
 			DisableWeaponAnims                  = 2082,
 			DisableAnimEventForwarding          = 2083,
 			AnimationEvent                      = 2084,
+			SkeletonExplorer                    = 2085,
 		};
 	}
 }

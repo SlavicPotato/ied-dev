@@ -8,20 +8,21 @@ namespace IED
 	{
 		enum class UIConditionExtraSelectorWidgetStrings : Localization::StringID
 		{
-			CanDualWield      = 5400,
-			IsDead            = 5401,
-			InInterior        = 5402,
-			IsPlayerTeammate  = 5403,
-			IsGuard           = 5404,
-			IsMount           = 5405,
-			ShoutEquipped     = 5406,
-			InMerchantFaction = 5407,
-			CombatStyle       = 5408,
-			Class             = 5409,
-			TimeOfDay         = 5410,
-			InFirstPerson     = 5411,
-			InCombat          = 5412,
-			IsFemale          = 5413,
+			CanDualWield        = 5400,
+			IsDead              = 5401,
+			InInterior          = 5402,
+			IsPlayerTeammate    = 5403,
+			IsGuard             = 5404,
+			IsMount             = 5405,
+			ShoutEquipped       = 5406,
+			InMerchantFaction   = 5407,
+			CombatStyle         = 5408,
+			Class               = 5409,
+			TimeOfDay           = 5410,
+			InFirstPerson       = 5411,
+			InCombat            = 5412,
+			IsFemale            = 5413,
+			PlayerEnemiesNearby = 5414,
 		};
 	}
 }

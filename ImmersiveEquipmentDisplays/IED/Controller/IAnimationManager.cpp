@@ -7,12 +7,6 @@
 
 namespace IED
 {
-
-	inline static constexpr bool is_shield(TESForm* a_form) noexcept
-	{
-		return a_form && a_form->IsArmor() && static_cast<TESObjectARMO*>(a_form)->IsShield();
-	}
-
 	IAnimationManager::IAnimationManager(
 		Data::SettingHolder& a_settings) :
 		m_settings(a_settings)
@@ -186,6 +180,11 @@ namespace IED
 		}
 
 		return result;
+	}
+
+	inline static constexpr bool is_shield(TESForm* a_form) noexcept
+	{
+		return a_form && a_form->IsArmor() && static_cast<TESObjectARMO*>(a_form)->IsShield();
 	}
 
 	inline static constexpr bool should_select_back_left_anim(
@@ -536,19 +535,19 @@ namespace IED
 
 		switch (weap->type())
 		{
-		case TESObjectWEAP::GameData::kType_OneHandSword:
+		case WEAPON_TYPE::kOneHandSword:
 			return AnimationWeaponType::Sword;
-		case TESObjectWEAP::GameData::kType_OneHandDagger:
+		case WEAPON_TYPE::kOneHandDagger:
 			return AnimationWeaponType::Dagger;
-		case TESObjectWEAP::GameData::kType_OneHandAxe:
+		case WEAPON_TYPE::kOneHandAxe:
 			return AnimationWeaponType::Axe;
-		case TESObjectWEAP::GameData::kType_OneHandMace:
+		case WEAPON_TYPE::kOneHandMace:
 			return AnimationWeaponType::Mace;
-		case TESObjectWEAP::GameData::kType_TwoHandSword:
+		case WEAPON_TYPE::kTwoHandSword:
 			return AnimationWeaponType::TwoHandedSword;
-		case TESObjectWEAP::GameData::kType_TwoHandAxe:
+		case WEAPON_TYPE::kTwoHandAxe:
 			return AnimationWeaponType::TwoHandedAxe;
-		case TESObjectWEAP::GameData::kType_Bow:
+		case WEAPON_TYPE::kBow:
 			return AnimationWeaponType::Bow;
 		default:
 			return AnimationWeaponType::None;

@@ -10,8 +10,8 @@
 #include "Widgets/UIPopupToggleButtonWidget.h"
 #include "Widgets/UIStylePresetSelectorWidget.h"
 
-#include "IED/UI/Controls/UICollapsibles.h"
-#include "IED/UI/Window/UIWindow.h"
+#include "Controls/UICollapsibles.h"
+#include "Window/UIWindow.h"
 
 #include "IED/ConfigCommon.h"
 

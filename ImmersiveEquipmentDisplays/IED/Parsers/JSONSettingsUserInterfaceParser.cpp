@@ -6,6 +6,7 @@
 #include "JSONSettingsImportExport.h"
 #include "JSONSettingsProfileEditorParser.h"
 #include "JSONSettingsUserInterfaceParser.h"
+#include "JSONSkeletonExplorerParser.h"
 
 #include "Fonts/FontInfo.h"
 
@@ -24,11 +25,12 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::EditorPanel>   editorPanelParser(m_state);
-			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport>  ieParser(m_state);
-			Parser<UI::UIData::UICollapsibleStates>    colStatesParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>      editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor>    profileEditorParser(m_state);
+			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
+			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
+			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
 
 			if (!editorPanelParser.Parse(data["slot_editor"], a_out.slotEditor))
 			{
@@ -83,6 +85,13 @@ namespace IED
 			if (!colStatesParser.Parse(
 					data["stats_col_states"],
 					a_out.statsColStates))
+			{
+				return false;
+			}
+
+			if (!skelExp.Parse(
+					data["skel_exp"],
+					a_out.skeletonExplorer))
 			{
 				return false;
 			}
@@ -166,11 +175,12 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::EditorPanel>   editorPanelParser(m_state);
-			Parser<Data::SettingHolder::ProfileEditor> profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair>                controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport>  ieParser(m_state);
-			Parser<UI::UIData::UICollapsibleStates>    colStatesParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>      editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor>    profileEditorParser(m_state);
+			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
+			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
+			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
 			editorPanelParser.Create(a_data.customEditor, data["custom_editor"]);
@@ -191,6 +201,10 @@ namespace IED
 			ieParser.Create(
 				a_data.importExport,
 				data["import_export"]);
+
+			skelExp.Create(
+				a_data.skeletonExplorer,
+				data["skel_exp"]);
 
 			colStatesParser.Create(a_data.settingsColStates, data["settings_col_states"]);
 			colStatesParser.Create(a_data.statsColStates, data["stats_col_states"]);

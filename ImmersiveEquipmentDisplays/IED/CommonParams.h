@@ -37,6 +37,7 @@ namespace IED
 		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
 		mutable std::optional<bool>                                  inCombat;
+		mutable std::optional<bool>                                  enemiesNearby;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -291,6 +292,8 @@ namespace IED
 
 			return *inCombat;
 		}
+		
+		[[nodiscard]] bool enemies_nearby() const;
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{

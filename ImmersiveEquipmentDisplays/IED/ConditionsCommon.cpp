@@ -99,15 +99,20 @@ namespace IED
 			}
 		}
 
-		bool is_in_first_person(CommonParams& a_params)
+		bool is_in_first_person(CommonParams& a_params) noexcept
 		{
 			return a_params.is_player() &&
 			       a_params.controller.IsInFirstPerson();
 		}
 
-		bool is_female(CommonParams& a_params)
+		bool is_female(CommonParams& a_params) noexcept
 		{
 			return a_params.objects.IsFemale();
+		}
+
+		bool enemies_nearby(CommonParams& a_params) noexcept
+		{
+			return a_params.controller.PlayerHasEnemiesNearby();
 		}
 	}
 }

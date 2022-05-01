@@ -139,7 +139,7 @@ namespace IED
 
 				for (const auto& e : m_listData)
 				{
-					if (!m_listFilter.Test(e.second))
+					if (!m_listFilter.Test(*e.second))
 					{
 						continue;
 					}
@@ -216,7 +216,7 @@ namespace IED
 		{
 			for (const auto& e : m_listData)
 			{
-				if (!m_listFilter.Test(e.second))
+				if (!m_listFilter.Test(*e.second))
 				{
 					continue;
 				}
@@ -234,7 +234,7 @@ namespace IED
 		{
 			if (m_listCurrent)
 			{
-				if (!m_listFilter.Test(m_listCurrent->desc))
+				if (!m_listFilter.Test(*m_listCurrent->desc))
 				{
 					if (!ListSelectFirstAvailable())
 					{

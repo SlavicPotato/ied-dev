@@ -61,11 +61,11 @@ namespace IED
 		template <class T>
 		void UIProfileEditorBase<T>::SelectFirstPassed()
 		{
-			auto& data = GetProfileManager().Data();
+			const auto& data = GetProfileManager().Data();
 
 			for (const auto& e : data.getvec())
 			{
-				if (m_filter.Test(e->first))
+				if (m_filter.Test(*e->first))
 				{
 					SetSelected(e->first);
 					break;
@@ -100,7 +100,7 @@ namespace IED
 				{
 					if (!data.contains(*m_state.selected))
 					{
-						m_state.selected.clear();
+						m_state.selected.reset();
 					}
 				}
 
@@ -110,9 +110,9 @@ namespace IED
 				}
 				else
 				{
-					if (!m_filter.Test(*m_state.selected))
+					if (!m_filter.Test(*(*m_state.selected)))
 					{
-						m_state.selected.clear();
+						m_state.selected.reset();
 						SelectFirstPassed();
 					}
 				}
@@ -130,7 +130,7 @@ namespace IED
 
 					for (const auto& e : data.getvec())
 					{
-						if (!m_filter.Test(e->first))
+						if (!m_filter.Test(*e->first))
 						{
 							continue;
 						}

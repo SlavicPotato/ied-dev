@@ -211,7 +211,7 @@ namespace IED
 			InitializeUI();
 		}
 
-		if (EngineExtensions::EffectShadersEnabled())
+		if (EffectControllerEnabled())
 		{
 			SetEffectControllerParallelUpdates(
 				settings.effectShaderParallelUpdates);
@@ -520,6 +520,8 @@ namespace IED
 		{
 			Debug("IFPV detector plugin was found");
 		}
+
+		SetProcessorTaskRunState(true);
 	}
 
 	void Controller::Evaluate(
@@ -1183,16 +1185,16 @@ namespace IED
 
 			auto& pd = tmp.get_data<configNodeOverrideEntryPlacement_t>();
 
-			for (auto& g : pd.try_emplace(e.node).first->second())
+			for (auto& f : pd.try_emplace(e.node).first->second())
 			{
-				g.targetNode = me->node;
+				f.targetNode = me->node;
 			}
 
 			if (!e.leftNode.empty() && !me->nodeLeft.empty())
 			{
-				for (auto& g : pd.try_emplace(e.leftNode).first->second())
+				for (auto& f : pd.try_emplace(e.leftNode).first->second())
 				{
-					g.targetNode = me->nodeLeft;
+					f.targetNode = me->nodeLeft;
 				}
 			}
 
@@ -1215,9 +1217,9 @@ namespace IED
 		    !a_holder.m_cmeNodes.empty() &&
 		    !a_holder.m_movNodes.empty())
 		{
-			for (auto& e : NodeOverrideData::GetExtraNodes())
+			for (auto& e : NodeOverrideData::GetExtraMovNodes())
 			{
-				a_holder.CreateExtraNodes(
+				a_holder.CreateExtraMovNodes(
 					a_holder.m_npcroot,
 					a_holder.m_female,
 					e);
@@ -5100,7 +5102,7 @@ namespace IED
 			return {};
 		}
 
-		return actorInfo_t{
+		return std::make_optional<actorInfo_t>(
 			actor,
 			handle,
 			npc,
@@ -5112,7 +5114,7 @@ namespace IED
 				ConfigSex::Female :
                 ConfigSex::Male,
 			a_objects
-		};
+		);
 	}
 
 	void Controller::SaveLastEquippedItems(

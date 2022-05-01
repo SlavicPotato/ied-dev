@@ -363,7 +363,7 @@ namespace IED
 						it->second.begin(),
 						it->second.end(),
 						std::back_inserter(*m_filteredData),
-						[&](auto& a_e) {
+						[&](const auto& a_e) {
 							return (!formID || a_e.formid == formID) &&
 						           m_formNameFilter.Test(a_e.name);
 						});
@@ -392,7 +392,9 @@ namespace IED
 				std::min(a_data.size(), std::size_t(std::numeric_limits<int>::max() - 1)));
 
 			ImGuiListClipper clipper;
+
 			clipper.Begin(size);
+
 			while (clipper.Step())
 			{
 				for (auto i = clipper.DisplayStart; i < clipper.DisplayEnd; i++)

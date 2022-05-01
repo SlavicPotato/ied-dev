@@ -15,25 +15,25 @@ namespace IED
 
 		ObjectSlot ItemData::GetObjectSlot(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectSlot::k1HSword;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectSlot::kDagger;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectSlot::k1HAxe;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectSlot::kMace;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectSlot::k2HSword;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectSlot::k2HAxe;
-			case TESObjectWEAP::GameData::kType_Bow:
+			case WEAPON_TYPE::kBow:
 				return ObjectSlot::kBow;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectSlot::kStaff;
-			case TESObjectWEAP::GameData::kType_CrossBow:
+			case WEAPON_TYPE::kCrossbow:
 				return ObjectSlot::kCrossBow;
 			default:
 				return ObjectSlot::kMax;
@@ -42,21 +42,21 @@ namespace IED
 
 		ObjectSlot ItemData::GetObjectSlotLeft(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectSlot::k1HSwordLeft;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectSlot::k1HAxeLeft;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectSlot::k2HSwordLeft;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectSlot::k2HAxeLeft;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectSlot::kDaggerLeft;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectSlot::kMaceLeft;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectSlot::kStaffLeft;
 			default:
 				return ObjectSlot::kMax;
@@ -123,25 +123,25 @@ namespace IED
 
 		ObjectType ItemData::GetItemType(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectType::k1HSword;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectType::kDagger;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectType::k1HAxe;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectType::kMace;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectType::k2HSword;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectType::k2HAxe;
-			case TESObjectWEAP::GameData::kType_Bow:
+			case WEAPON_TYPE::kBow:
 				return ObjectType::kBow;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectType::kStaff;
-			case TESObjectWEAP::GameData::kType_CrossBow:
+			case WEAPON_TYPE::kCrossbow:
 				return ObjectType::kCrossBow;
 			default:
 				return ObjectType::kMax;
@@ -177,25 +177,25 @@ namespace IED
 
 		ObjectTypeExtra ItemData::GetItemTypeExtra(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectTypeExtra::k1HSword;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectTypeExtra::kDagger;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectTypeExtra::k1HAxe;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectTypeExtra::kMace;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectTypeExtra::k2HSword;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectTypeExtra::k2HAxe;
-			case TESObjectWEAP::GameData::kType_Bow:
+			case WEAPON_TYPE::kBow:
 				return ObjectTypeExtra::kBow;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectTypeExtra::kStaff;
-			case TESObjectWEAP::GameData::kType_CrossBow:
+			case WEAPON_TYPE::kCrossbow:
 				return ObjectTypeExtra::kCrossBow;
 			default:
 				return ObjectTypeExtra::kNone;
@@ -228,25 +228,25 @@ namespace IED
 
 		ObjectSlotExtra ItemData::GetItemSlotExtra(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectSlotExtra::k1HSword;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectSlotExtra::kDagger;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectSlotExtra::k1HAxe;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectSlotExtra::kMace;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectSlotExtra::k2HSword;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectSlotExtra::k2HAxe;
-			case TESObjectWEAP::GameData::kType_Bow:
+			case WEAPON_TYPE::kBow:
 				return ObjectSlotExtra::kBow;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectSlotExtra::kStaff;
-			case TESObjectWEAP::GameData::kType_CrossBow:
+			case WEAPON_TYPE::kCrossbow:
 				return ObjectSlotExtra::kCrossBow;
 			default:
 				return ObjectSlotExtra::kNone;
@@ -279,21 +279,21 @@ namespace IED
 
 		ObjectSlotExtra ItemData::GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept
 		{
-			switch (a_form->gameData.type)
+			switch (a_form->type())
 			{
-			case TESObjectWEAP::GameData::kType_OneHandSword:
+			case WEAPON_TYPE::kOneHandSword:
 				return ObjectSlotExtra::k1HSwordLeft;
-			case TESObjectWEAP::GameData::kType_OneHandDagger:
+			case WEAPON_TYPE::kOneHandDagger:
 				return ObjectSlotExtra::kDaggerLeft;
-			case TESObjectWEAP::GameData::kType_OneHandAxe:
+			case WEAPON_TYPE::kOneHandAxe:
 				return ObjectSlotExtra::k1HAxeLeft;
-			case TESObjectWEAP::GameData::kType_OneHandMace:
+			case WEAPON_TYPE::kOneHandMace:
 				return ObjectSlotExtra::kMaceLeft;
-			case TESObjectWEAP::GameData::kType_TwoHandSword:
+			case WEAPON_TYPE::kTwoHandSword:
 				return ObjectSlotExtra::k2HSwordLeft;
-			case TESObjectWEAP::GameData::kType_TwoHandAxe:
+			case WEAPON_TYPE::kTwoHandAxe:
 				return ObjectSlotExtra::k2HAxeLeft;
-			case TESObjectWEAP::GameData::kType_Staff:
+			case WEAPON_TYPE::kStaff:
 				return ObjectSlotExtra::kStaffLeft;
 			default:
 				return ObjectSlotExtra::kNone;
