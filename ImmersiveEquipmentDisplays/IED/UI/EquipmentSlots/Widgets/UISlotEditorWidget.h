@@ -589,7 +589,9 @@ namespace IED
 				}
 				else
 				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorGreyed);
 					ImGui::TextUnformatted(LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
+					ImGui::PopStyleColor();
 				}
 
 				ImGui::TreePop();
@@ -672,21 +674,17 @@ namespace IED
 			ImGui::Text("%s:", LS(UISlotEditorWidgetStrings::MaxActiveTypes));
 			ImGui::SameLine();
 
-			if (ImGui::InputScalar(
-					"##0",
-					ImGuiDataType_U32,
-					std::addressof(data.limit),
-					nullptr,
-					nullptr,
-					"%u"))
-			{
-				data.limit = std::clamp(
-					data.limit,
-					1u,
-					stl::underlying(Data::ObjectType::kMax));
+			std::uint32_t lmin = 1;
+			std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
 
-				changed = true;
-			}
+			changed |= ImGui::SliderScalar(
+				"##0",
+				ImGuiDataType_U32,
+				std::addressof(data.limit),
+				std::addressof(lmin),
+				std::addressof(lmax),
+				"%u",
+				ImGuiSliderFlags_AlwaysClamp);
 
 			ImGui::PopItemWidth();
 
