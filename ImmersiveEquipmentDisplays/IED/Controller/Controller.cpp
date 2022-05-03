@@ -2605,11 +2605,34 @@ namespace IED
 
 		configStoreSlot_t::holderCache_t hc;
 
+		const configSlotPriority_t* prio;
+
+		if (auto d = m_config.active.slot.GetActorPriority(
+				a_params.actor->formID,
+				a_params.npcOrTemplate->formID,
+				a_params.race->formID,
+				hc))
+		{
+			prio = std::addressof(d->get(a_params.configSex));
+		}
+		else
+		{
+			prio = nullptr;
+		}
+
+		auto limit = prio ?
+		                 prio->limit :
+                         stl::underlying(ObjectType::kMax);
+
+		std::uint32_t activeTypes = 0;
+
 		using enum_type = std::underlying_type_t<ObjectType>;
 
 		for (enum_type i = 0; i < stl::underlying(ObjectType::kMax); i++)
 		{
-			auto type = static_cast<ObjectType>(i);
+			auto type = prio ?
+			                prio->translate_type_safe(i) :
+                            static_cast<ObjectType>(i);
 
 			auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(type);
 			auto mainSlot      = ItemData::GetSlotFromType(type);
@@ -2638,6 +2661,8 @@ namespace IED
 				}
 			}
 
+			bool typeActive = false;
+
 			auto& candidates = a_params.collector.GetCandidates(type);
 
 			for (auto slot : slots)
@@ -2648,6 +2673,18 @@ namespace IED
 				}
 
 				auto& objectEntry = a_params.objects.GetSlot(slot);
+
+				if (activeTypes >= limit)
+				{
+					RemoveObject(
+						a_params.actor,
+						a_params.handle,
+						objectEntry,
+						a_params.objects,
+						a_params.flags);
+
+					continue;
+				}
 
 				auto entry = m_config.active.slot.GetActor(
 					a_params.actor->formID,
@@ -2787,6 +2824,8 @@ namespace IED
 							objectEntry,
 							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
+						typeActive |= visible;
+
 						continue;
 					}
 				}
@@ -2818,9 +2857,16 @@ namespace IED
 						a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+
+					typeActive |= visible;
 				}
 
 				// Debug("%X: (%.8X) attached | %u ", a_actor->formID, item->formID, slot);
+			}
+
+			if (typeActive)
+			{
+				activeTypes++;
 			}
 		}
 	}
@@ -5113,8 +5159,7 @@ namespace IED
 			npc->GetSex() == 1 ?
 				ConfigSex::Female :
                 ConfigSex::Male,
-			a_objects
-		);
+			a_objects);
 	}
 
 	void Controller::SaveLastEquippedItems(

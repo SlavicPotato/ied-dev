@@ -18,6 +18,8 @@ namespace IED
 			DisableAllSlotsPrompt     = 4108,
 			Left2HSlotWarning         = 4109,
 			NPCDisabledWarning        = 4110,
+			MaxActiveTypes            = 4111,
+			EmptyPrioMsg              = 4112,
 		};
 	}
 }

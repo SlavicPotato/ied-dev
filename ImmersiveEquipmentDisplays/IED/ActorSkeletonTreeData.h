@@ -32,12 +32,14 @@ namespace IED
 	struct SI_Root
 	{
 		Game::FormID          actor;
-		SI_NiObject           object;
 		std::string           path;
+		SI_NiObject           object;
 		bool                  initialized{ false };
 		bool                  succeeded{ false };
 		bool                  isLoadedData{ true };
-		long long             lastUpdate;
+		long long             lastUpdate{ 0 };
 		stl::critical_section lock;
+
+		SKMP_REDEFINE_NEW_PREF();
 	};
 }

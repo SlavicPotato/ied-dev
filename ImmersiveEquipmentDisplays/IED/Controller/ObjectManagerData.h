@@ -502,7 +502,7 @@ namespace IED
 		{
 			return m_cellAttached;
 		}
-		
+
 		/*[[nodiscard]] inline constexpr bool GetEnemiesNearby() const noexcept
 		{
 			return m_enemiesNearby;
@@ -694,10 +694,10 @@ namespace IED
 		Game::FormID m_formid;
 		bool         m_female{ false };
 
-		bool                m_cellAttached{ false };
-		bool                m_isPlayerTeammate{ false };
-		bool                m_wantLFUpdate{ false };
-		bool                m_inCombat{ false };
+		bool m_cellAttached{ false };
+		bool m_isPlayerTeammate{ false };
+		bool m_wantLFUpdate{ false };
+		bool m_inCombat{ false };
 		//bool                m_enemiesNearby{ false };
 		long long           m_lastLFStateCheck;
 		actorLocationData_t m_locData;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigBase.h"
+#include "ConfigSlotPriority.h"
 
 namespace IED
 {
@@ -53,11 +54,14 @@ namespace IED
 			friend class configStoreSlot_t;
 
 		public:
-			using data_type = configSexRoot_t<configSlot_t>;
+			using data_type       = configSexRoot_t<configSlot_t>;
+			using prio_data_type  = configSexRoot_t<configSlotPriority_t>;
+			using array_data_type = std::unique_ptr<data_type>[stl::underlying(ObjectSlot::kMax)];
 
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			configSlotHolder_t() = default;
@@ -88,10 +92,17 @@ namespace IED
 				{
 					e.reset();
 				}
+
+				priority.reset();
 			}
 
-			bool constexpr empty() const noexcept
+			bool empty() const noexcept
 			{
+				if (priority)
+				{
+					return false;
+				}
+
 				for (auto& e : data)
 				{
 					if (e)
@@ -103,12 +114,12 @@ namespace IED
 				return true;
 			}
 
-			inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
+			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
 				return data[stl::underlying(a_slot)];
 			}
 
-			inline constexpr auto& get(ObjectSlot a_slot) noexcept
+			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
 				return data[stl::underlying(a_slot)];
 			}
@@ -125,21 +136,27 @@ namespace IED
 				}
 			}
 
-			std::unique_ptr<data_type> data[stl::underlying(ObjectSlot::kMax)];
+			array_data_type                                        data;
+			std::unique_ptr<configSexRoot_t<configSlotPriority_t>> priority;
 
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& data;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& priority;
+				}
 			}
 		};
 
 		struct configSlotHolderCopy_t
 		{
-			friend class boost::serialization::access;
 			friend class configStoreSlot_t;
 
+		public:
 			template <class Td>
 			struct data_value_pair
 			{
@@ -147,13 +164,9 @@ namespace IED
 				Td          second;
 			};
 
-		public:
-			using data_type = data_value_pair<configSexRoot_t<configSlot_t>>;
-
-			enum Serialization : unsigned int
-			{
-				DataVersion1 = 1
-			};
+			using data_type       = data_value_pair<configSexRoot_t<configSlot_t>>;
+			using prio_data_type  = data_value_pair<configSexRoot_t<configSlotPriority_t>>;
+			using array_data_type = std::unique_ptr<data_type>[stl::underlying(ObjectSlot::kMax)];
 
 			configSlotHolderCopy_t() = default;
 
@@ -179,10 +192,17 @@ namespace IED
 				{
 					e.reset();
 				}
+
+				priority.reset();
 			}
 
-			constexpr bool empty() const noexcept
+			bool empty() const noexcept
 			{
+				if (priority)
+				{
+					return false;
+				}
+
 				for (auto& e : data)
 				{
 					if (e)
@@ -194,12 +214,12 @@ namespace IED
 				return true;
 			}
 
-			inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
+			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
 				return data[stl::underlying(a_slot)];
 			}
 
-			inline constexpr auto& get(ObjectSlot a_slot) noexcept
+			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
 				return data[stl::underlying(a_slot)];
 			}
@@ -223,14 +243,12 @@ namespace IED
 				ConfigClass         a_class,
 				configSlotHolder_t& a_out) const;
 
-			std::unique_ptr<data_type> data[stl::underlying(ObjectSlot::kMax)];
+			void copy_cc_prio(
+				ConfigClass         a_class,
+				configSlotHolder_t& a_out) const;
 
-		private:
-			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
-			{
-				a_ar& data;
-			}
+			array_data_type                 data;
+			std::unique_ptr<prio_data_type> priority;
 		};
 
 		using configMapSlot_t = configFormMap_t<configSlotHolder_t>;
@@ -245,25 +263,7 @@ namespace IED
 			void FillResultCopy(
 				ConfigClass             a_class,
 				const data_type&        a_data,
-				configSlotHolderCopy_t& a_out) const
-			{
-				using enum_type = std::underlying_type_t<ObjectSlot>;
-
-				for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
-				{
-					auto& from = a_data.data[i];
-
-					if (!from)
-					{
-						continue;
-					}
-
-					if (auto& to = a_out.data[i]; !to)
-					{
-						to = std::make_unique<configSlotHolderCopy_t::data_type>(a_class, *from);
-					}
-				}
-			}
+				configSlotHolderCopy_t& a_out) const;
 
 		public:
 			configSlotHolderCopy_t GetGlobalCopy(
@@ -289,6 +289,12 @@ namespace IED
 				ObjectSlot     a_slot,
 				holderCache_t& a_hc) const;
 
+			const configSlotHolder_t::prio_data_type* GetActorPriority(
+				Game::FormID   a_actor,
+				Game::FormID   a_npc,
+				Game::FormID   a_race,
+				holderCache_t& a_hc) const;
+
 			template <class Tf>
 			void visit(Tf a_func)
 			{
@@ -307,9 +313,81 @@ namespace IED
 			}
 		};
 
+		template <class Td>
+		inline constexpr void assign_uptr(
+			const std::unique_ptr<Td>& a_src,
+			std::unique_ptr<Td>&       a_dst)
+		{
+			if (a_src)
+			{
+				if (a_dst)
+				{
+					*a_dst = *a_src;
+				}
+				else
+				{
+					a_dst = std::make_unique<Td>(*a_src);
+				}
+			}
+			else
+			{
+				a_dst.reset();
+			}
+		}
+
+		template <class Td>
+		inline constexpr void assign_uptr(
+			const std::unique_ptr<configSlotHolderCopy_t::data_value_pair<Td>>& a_src,
+			std::unique_ptr<Td>&                                                a_dst)
+		{
+			if (a_src)
+			{
+				if (a_dst)
+				{
+					*a_dst = a_src->second;
+				}
+				else
+				{
+					a_dst = std::make_unique<Td>(a_src->second);
+				}
+			}
+			else
+			{
+				a_dst.reset();
+			}
+		}
+
+		template <class Td>
+		inline constexpr void assign_uptr(
+			std::unique_ptr<configSlotHolderCopy_t::data_value_pair<Td>>&& a_src,
+			std::unique_ptr<Td>&                                           a_dst)
+		{
+			if (a_src)
+			{
+				if (a_dst)
+				{
+					*a_dst = std::move(a_src->second);
+				}
+				else
+				{
+					a_dst = std::make_unique<Td>(std::move(a_src->second));
+				}
+
+				a_src.reset();
+			}
+			else
+			{
+				a_dst.reset();
+			}
+		}
+
 	}
 }
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configSlot_t,
 	::IED::Data::configSlot_t::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
+	::IED::Data::configSlotHolder_t,
+	::IED::Data::configSlotHolder_t::Serialization::DataVersion2);

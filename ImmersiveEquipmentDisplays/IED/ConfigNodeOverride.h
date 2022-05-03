@@ -189,7 +189,7 @@ namespace IED
 					flags   = DEFAULT_MATCH_CATEGORY_FLAGS;
 					break;
 				default:
-					HALT("FIXME");
+					assert(false);
 					break;
 				}
 
@@ -217,7 +217,7 @@ namespace IED
 					fbf.type = a_type;
 					break;
 				default:
-					HALT("FIXME");
+					assert(false);
 					break;
 				}
 			}
@@ -376,10 +376,10 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::flag<NodeOverrideOffsetFlags>            offsetFlags{ NodeOverrideOffsetFlags::kNone };
+			stl::flag<NodeOverrideOffsetFlags>            offsetFlags{ NodeOverrideOffsetFlags::kContinue };
+			NiPoint3                                      adjustScale{ 1.0f, 1.0f, 1.0f };
 			configNodeOverrideConditionList_t             conditions;
 			std::string                                   description;
-			NiPoint3                                      adjustScale{ 1.0f, 1.0f, 1.0f };
 			stl::boost_vector<configNodeOverrideOffset_t> group;
 
 			constexpr void clamp()
@@ -684,8 +684,13 @@ namespace IED
 			};
 
 		public:
-			using transform_data_type = stl::boost_unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryTransform_t>>;
-			using placement_data_type = stl::boost_unordered_map<stl::fixed_string, data_value_pair<configNodeOverrideEntryPlacement_t>>;
+			using transform_data_type = stl::boost_unordered_map<
+				stl::fixed_string,
+				data_value_pair<configNodeOverrideEntryTransform_t>>;
+
+			using placement_data_type = stl::boost_unordered_map<
+				stl::fixed_string,
+				data_value_pair<configNodeOverrideEntryPlacement_t>>;
 
 			configNodeOverrideHolderCopy_t() = default;
 
@@ -716,11 +721,11 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept
-				requires stl::is_any_same_v<
-					data_type,
-					transform_data_type,
-					configNodeOverrideEntryTransform_t>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+				requires(stl::is_any_same_v<
+						 data_type,
+						 transform_data_type,
+						 configNodeOverrideEntryTransform_t>)
 			{
 				return data;
 			}
@@ -728,11 +733,11 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept
-				requires stl::is_any_same_v<
-					data_type,
-					placement_data_type,
-					configNodeOverrideEntryPlacement_t>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+				requires(stl::is_any_same_v<
+						 data_type,
+						 placement_data_type,
+						 configNodeOverrideEntryPlacement_t>)
 			{
 				return placementData;
 			}

@@ -371,9 +371,7 @@ namespace IED
 
 		ActorSkeletonData UISkeletonExplorer::GetData(Game::FormID a_handle)
 		{
-			ActorSkeletonData result{
-				std::make_shared<SI_Root>()
-			};
+			ActorSkeletonData result;
 
 			const auto& settings = m_controller
 			                           .GetConfigStore()

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Serialization/Serialization.h"
-
 #include "IED/ConfigTransform.h"
+
+#include "Serialization/Serialization.h"
 
 namespace IED
 {

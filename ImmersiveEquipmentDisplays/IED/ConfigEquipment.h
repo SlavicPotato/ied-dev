@@ -156,7 +156,7 @@ namespace IED
 					flags   = DEFAULT_MATCH_CATEGORY_FLAGS;
 					break;
 				default:
-					HALT("FIXME");
+					assert(false);
 					break;
 				}
 
@@ -209,7 +209,7 @@ namespace IED
 					break;
 
 				default:
-					HALT("FIXME");
+					assert(false);
 					break;
 				}
 			}
@@ -314,19 +314,15 @@ namespace IED
 
 			equipmentOverride_t() = default;
 
+			template <class Td, class Ts>
 			equipmentOverride_t(
-				const configBaseValues_t& a_config,
-				const std::string&        a_desc) :
-				configBaseValues_t(a_config),
-				description(a_desc)
-			{
-			}
-
-			equipmentOverride_t(
-				const configBaseValues_t& a_config,
-				std::string&&             a_desc) :
-				configBaseValues_t(a_config),
-				description(std::move(a_desc))
+				Td&& a_config,
+				Ts&& a_desc)  //
+				requires(
+					std::is_constructible_v<configBaseValues_t, Td&&>&&
+						std::is_constructible_v<std::string, Ts&&>) :
+				configBaseValues_t(std::forward<Td>(a_config)),
+				description(std::forward<Ts>(a_desc))
 			{
 			}
 

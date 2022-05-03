@@ -42,6 +42,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
 		{
+			assert(a_type < Data::ObjectType::kMax);
 			return slotResults[stl::underlying(a_type)].items;
 		}
 

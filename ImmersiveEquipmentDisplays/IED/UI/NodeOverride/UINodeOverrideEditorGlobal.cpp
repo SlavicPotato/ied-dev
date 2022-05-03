@@ -131,7 +131,7 @@ namespace IED
 			int                                            a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			UpdateConfigSingle(
 				a_handle,
@@ -145,7 +145,7 @@ namespace IED
 			int                                            a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			UpdateConfigSingle(
 				a_handle,

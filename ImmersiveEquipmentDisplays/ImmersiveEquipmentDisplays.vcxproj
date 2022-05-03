@@ -522,6 +522,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
+    <ClInclude Include="IED\ConfigSlotPriority.h" />
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\AnimationGroupInfo.h" />
     <ClInclude Include="IED\Controller\AnimationWeaponSlot.h" />
@@ -545,6 +546,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h" />
@@ -929,6 +931,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderDataParser.cpp" />

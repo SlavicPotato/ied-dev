@@ -244,26 +244,26 @@ namespace IED
 
 		bool checkFav = isPlayer && a_checkFav;
 
-		for (const auto& e : data.forms)
+		for (const auto& [i, e] : data.forms)
 		{
-			if (e.second.type >= ObjectType::kMax)
+			if (e.type >= ObjectType::kMax)
 			{
 				continue;
 			}
 
-			if (checkFav && !e.second.favorited)
+			if (checkFav && !e.favorited)
 			{
 				continue;
 			}
 
-			std::int64_t extra = e.second.count - 1;
+			std::int64_t extra = e.count - 1;
 
-			if (e.second.equipped)
+			if (e.equipped)
 			{
 				extra--;
 			}
 
-			if (e.second.equippedLeft)
+			if (e.equippedLeft)
 			{
 				extra--;
 			}
@@ -273,7 +273,7 @@ namespace IED
 				continue;
 			}
 
-			auto form = e.second.form;
+			auto form = e.form;
 
 			if (isPlayer && !form->GetPlayable())
 			{
@@ -312,10 +312,10 @@ namespace IED
 				break;
 			}
 
-			auto& entry = slotResults[stl::underlying(e.second.type)];
+			auto& entry = slotResults[stl::underlying(e.type)];
 
 			entry.items.emplace_back(
-				std::addressof(e.second),
+				std::addressof(e),
 				static_cast<std::uint32_t>(extra),
 				rating);
 		}

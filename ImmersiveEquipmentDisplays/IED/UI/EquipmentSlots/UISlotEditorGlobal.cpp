@@ -155,7 +155,7 @@ namespace IED
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
-			UpdateConfigSingleSlot(a_handle, params, GetEditorPanelSettings().sexSync);
+			UpdateConfigSingle(a_handle, *params, GetEditorPanelSettings().sexSync);
 
 			switch (a_action)
 			{
@@ -184,6 +184,35 @@ namespace IED
 			UpdateData(a_params.data);
 
 			m_controller.QueueReset(a_handle, ControllerUpdateFlags::kNone);
+		}
+
+		void UISlotEditorGlobal::OnPriorityConfigChange(
+			int                                   a_handle,
+			const SlotPriorityConfigUpdateParams& a_params)
+		{
+			UpdateConfigSingle(
+				a_handle,
+				a_params,
+				GetEditorPanelSettings().sexSync);
+
+			m_controller.QueueEvaluateAll(
+				ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+				ControllerUpdateFlags::kImmediateTransformUpdate);
+		}
+
+		void UISlotEditorGlobal::OnPriorityConfigClear(
+			int                           a_handle,
+			const SlotConfigUpdateParams& a_params)
+		{
+			UpdateConfig(
+				a_handle,
+				a_params.data);
+
+			UpdateData(a_params.data);
+
+			m_controller.QueueEvaluateAll(
+				ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+				ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
 
 		void UISlotEditorGlobal::OnSingleSlotClear(

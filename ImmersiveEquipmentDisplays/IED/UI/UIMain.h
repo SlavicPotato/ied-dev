@@ -11,8 +11,8 @@
 #include "UIMainStrings.h"
 #include "UINodeMapEditor.h"
 #include "UISettings.h"
-#include "UIStats.h"
 #include "UISkeletonExplorer.h"
+#include "UIStats.h"
 
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "EquipmentSlots/UISlotTabPanel.h"

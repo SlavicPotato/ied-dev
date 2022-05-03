@@ -289,6 +289,8 @@ namespace IED
 				a_func(ConfigSex::Female, get(ConfigSex::Female));
 			}
 
+			SKMP_REDEFINE_NEW_PREF();
+
 		private:
 			T data[2]{};
 

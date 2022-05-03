@@ -292,7 +292,7 @@ namespace IED
 
 			return *inCombat;
 		}
-		
+
 		[[nodiscard]] bool enemies_nearby() const;
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept

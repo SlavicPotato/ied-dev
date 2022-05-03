@@ -161,27 +161,28 @@ namespace IED
 					scl = get_sort_comp_lambda_default();
 				}
 
-				stl::list<sorted_list_entry_t> list;
+				stl::vector<std::unique_ptr<sorted_list_entry_t>> list;
+				list.reserve(objects.size());
 
 				for (auto& e : objects)
 				{
-					sorted_list_entry_t v{ e };
+					auto v = std::make_unique<sorted_list_entry_t>(e);
 
 					if (auto it = ai.find(e.first); it != ai.cend())
 					{
-						v.name = it->second.name;
-						v.race = it->second.race;
+						v->name = it->second.name;
+						v->race = it->second.race;
 					}
 					else
 					{
 						m_controller.QueueUpdateActorInfo(e.first);
 					}
 
-					v.nslot = e.second.GetNumOccupiedSlots();
-					v.ncust = e.second.GetNumOccupiedCustom();
-					v.age   = e.second.GetAge() / 60000000;
+					v->nslot = e.second.GetNumOccupiedSlots();
+					v->ncust = e.second.GetNumOccupiedCustom();
+					v->age   = e.second.GetAge() / 60000000;
 
-					auto it = list.begin();
+					/*auto it = list.begin();
 					while (it != list.end())
 					{
 						if (scl(v, *it))
@@ -190,7 +191,9 @@ namespace IED
 						}
 
 						++it;
-					}
+					}*/
+
+					auto it = std::upper_bound(list.begin(), list.end(), v, scl);
 
 					list.emplace(it, std::move(v));
 				}
@@ -199,44 +202,44 @@ namespace IED
 				{
 					ImGui::TableNextRow();
 
-					ImGui::PushID(e.obj.first.get());
+					ImGui::PushID(e->obj.first.get());
 
 					ImGui::TableSetColumnIndex(0);
 
-					ImGui::Text("%.8X", e.obj.first.get());
+					ImGui::Text("%.8X", e->obj.first.get());
 
 					ImGui::TableSetColumnIndex(1);
 
-					ImGui::Text("%.8X", e.obj.second.GetHandle().get());
+					ImGui::Text("%.8X", e->obj.second.GetHandle().get());
 
-					if (!e.name.empty())
+					if (!e->name.empty())
 					{
 						ImGui::TableSetColumnIndex(2);
-						ImGui::TextUnformatted(e.name.c_str());
+						ImGui::TextUnformatted(e->name.c_str());
 					}
 
-					if (e.race)
+					if (e->race)
 					{
 						ImGui::TableSetColumnIndex(3);
-						ImGui::Text("%.8X", e.race.get());
+						ImGui::Text("%.8X", e->race.get());
 					}
 
 					ImGui::TableSetColumnIndex(4);
 
-					ImGui::Text("%zu", e.nslot);
+					ImGui::Text("%zu", e->nslot);
 
 					ImGui::TableSetColumnIndex(5);
 
-					ImGui::Text("%zu", e.ncust);
+					ImGui::Text("%zu", e->ncust);
 
 					ImGui::TableSetColumnIndex(6);
 
-					ImGui::Text("%lld", e.age);
+					ImGui::Text("%lld", e->age);
 
 					ImGui::TableSetColumnIndex(7);
 
 					ImGui::TextUnformatted(
-						e.obj.second.IsCellAttached() ?
+						e->obj.second.IsCellAttached() ?
 							"true" :
                             "false");
 
@@ -253,7 +256,7 @@ namespace IED
 			-> sort_comp_func_t
 		{
 			return [](auto& a_rhs, auto& a_lhs) {
-				return a_rhs.obj.first < a_lhs.obj.first;
+				return a_rhs->obj.first < a_lhs->obj.first;
 			};
 		}
 
@@ -274,100 +277,100 @@ namespace IED
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.obj.first > a_lhs.obj.first;
+							return a_rhs->obj.first > a_lhs->obj.first;
 						};
 					}
 				case 1:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.obj.second.GetHandle() < a_lhs.obj.second.GetHandle();
+							return a_rhs->obj.second.GetHandle() < a_lhs->obj.second.GetHandle();
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.obj.second.GetHandle() > a_lhs.obj.second.GetHandle();
+							return a_rhs->obj.second.GetHandle() > a_lhs->obj.second.GetHandle();
 						};
 					}
 				case 2:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.name < a_lhs.name;
+							return a_rhs->name < a_lhs->name;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.name > a_lhs.name;
+							return a_rhs->name > a_lhs->name;
 						};
 					}
 				case 3:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.race < a_lhs.race;
+							return a_rhs->race < a_lhs->race;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.race > a_lhs.race;
+							return a_rhs->race > a_lhs->race;
 						};
 					}
 				case 4:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.nslot < a_lhs.nslot;
+							return a_rhs->nslot < a_lhs->nslot;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.nslot > a_lhs.nslot;
+							return a_rhs->nslot > a_lhs->nslot;
 						};
 					}
 				case 5:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.ncust < a_lhs.ncust;
+							return a_rhs->ncust < a_lhs->ncust;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.ncust > a_lhs.ncust;
+							return a_rhs->ncust > a_lhs->ncust;
 						};
 					}
 				case 6:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.age < a_lhs.age;
+							return a_rhs->age < a_lhs->age;
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.age > a_lhs.age;
+							return a_rhs->age > a_lhs->age;
 						};
 					}
 				case 7:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.obj.second.IsCellAttached() <
-							       a_lhs.obj.second.IsCellAttached();
+							return a_rhs->obj.second.IsCellAttached() <
+							       a_lhs->obj.second.IsCellAttached();
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs.obj.second.IsCellAttached() >
-							       a_lhs.obj.second.IsCellAttached();
+							return a_rhs->obj.second.IsCellAttached() >
+							       a_lhs->obj.second.IsCellAttached();
 						};
 					}
 				default:

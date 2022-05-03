@@ -63,7 +63,13 @@ namespace IED
 			entrySlotData_t& data;
 		};
 
-		enum class FormEntryAction : std::uint8_t
+		struct SlotPriorityConfigUpdateParams
+		{
+			Data::ConfigSex                  sex;
+			entrySlotData_t::prio_data_type& entry;
+		};
+
+		enum class SlotContextAction : std::uint8_t
 		{
 			None,
 			Add,
@@ -75,9 +81,9 @@ namespace IED
 
 		struct FormEntryActionResult
 		{
-			FormEntryAction action{ FormEntryAction::None };
-			Game::FormID    form;
-			SwapDirection   dir;
+			SlotContextAction action{ SlotContextAction::None };
+			Game::FormID      form;
+			SwapDirection     dir;
 		};
 
 		template <class T>
@@ -115,6 +121,22 @@ namespace IED
 			void DrawSlotEditorNPCWarningHeader();
 
 		private:
+			void DrawSlotEntries(
+				T                                 a_handle,
+				entrySlotData_t::array_data_type& a_data);
+
+			SlotContextAction DrawPriorityContextMenu(
+				T                a_handle,
+				entrySlotData_t& a_data);
+
+			void DrawPriority(
+				T                a_handle,
+				entrySlotData_t& a_data);
+
+			void DrawPriorityEntry(
+				T                                a_handle,
+				entrySlotData_t::prio_data_type& a_data);
+
 			virtual bool ShowConfigClassIndicator() const;
 			virtual bool PermitDeletion() const;
 
@@ -135,6 +157,16 @@ namespace IED
 
 			virtual void
 				OnFullConfigChange(
+					T                             a_handle,
+					const SlotConfigUpdateParams& a_params) = 0;
+
+			virtual void
+				OnPriorityConfigChange(
+					T                                     a_handle,
+					const SlotPriorityConfigUpdateParams& a_params) = 0;
+
+			virtual void
+				OnPriorityConfigClear(
 					T                             a_handle,
 					const SlotConfigUpdateParams& a_params) = 0;
 
@@ -364,32 +396,13 @@ namespace IED
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -10.5f);
 
-				using enum_type = std::underlying_type_t<Data::ObjectSlot>;
+				DrawPriority(a_handle, a_data);
 
-				for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-				{
-					auto slot = static_cast<Data::ObjectSlot>(i);
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
 
-					auto& slotName = StringHolder::GetSingleton().GetSlotName(slot);
-
-					if (!m_slotFilter.Test(*slotName))
-					{
-						continue;
-					}
-
-					auto& entry = a_data.data[i];
-
-					if (entry)
-					{
-						ImGui::PushID(i);
-
-						DrawSlotEntry(a_handle, slot, *entry);
-
-						ImGui::PopID();
-
-						ImGui::Spacing();
-					}
-				}
+				DrawSlotEntries(a_handle, a_data.data);
 
 				ImGui::PopItemWidth();
 			}
@@ -397,6 +410,290 @@ namespace IED
 			ImGui::EndChild();
 
 			ImGui::PopID();
+		}
+
+		template <class T>
+		void UISlotEditorWidget<T>::DrawSlotEntries(
+			T                                 a_handle,
+			entrySlotData_t::array_data_type& a_data)
+		{
+			ImGui::PushID("slots");
+
+			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
+			{
+				auto slot = static_cast<Data::ObjectSlot>(i);
+
+				auto& slotName = StringHolder::GetSingleton().GetSlotName(slot);
+
+				if (!m_slotFilter.Test(*slotName))
+				{
+					continue;
+				}
+
+				auto& entry = a_data[i];
+
+				if (entry)
+				{
+					ImGui::PushID(i);
+
+					DrawSlotEntry(a_handle, slot, *entry);
+
+					ImGui::PopID();
+
+					ImGui::Spacing();
+				}
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		SlotContextAction UISlotEditorWidget<T>::DrawPriorityContextMenu(
+			T                a_handle,
+			entrySlotData_t& a_data)
+		{
+			SlotContextAction result{ SlotContextAction::None };
+
+			ImGui::PushID("context_area");
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (a_data.priority)
+				{
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Clear, "1"),
+							nullptr,
+							false,
+							a_data.priority->first == GetConfigClass()))
+					{
+						a_data.priority.reset();
+
+						OnPriorityConfigClear(a_handle, { a_data });
+
+						result = SlotContextAction::Delete;
+					}
+				}
+				else
+				{
+					if (ImGui::MenuItem(LS(CommonStrings::Create, "1")))
+					{
+						a_data.priority = std::make_unique<Data::configSlotHolderCopy_t::prio_data_type>();
+
+						OnPriorityConfigChange(a_handle, { GetSex(), *a_data.priority });
+
+						result = SlotContextAction::Add;
+					}
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Copy, "2"),
+						nullptr,
+						false,
+						a_data.priority.get() != nullptr))
+				{
+					if (a_data.priority)
+					{
+						UIClipboard::Set(a_data.priority->second.get(GetSex()));
+					}
+				}
+
+				auto clipData = UIClipboard::Get<Data::configSlotPriority_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Paste, "3"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						if (!a_data.priority)
+						{
+							a_data.priority = std::make_unique<Data::configSlotHolderCopy_t::prio_data_type>();
+						}
+
+						auto sex = GetSex();
+
+						a_data.priority->second.get(sex) = *clipData;
+
+						OnPriorityConfigChange(a_handle, { sex, *a_data.priority });
+
+						result = SlotContextAction::Paste;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UISlotEditorWidget<T>::DrawPriority(
+			T                a_handle,
+			entrySlotData_t& a_data)
+		{
+			const auto ctxresult = DrawPriorityContextMenu(a_handle, a_data);
+
+			switch (ctxresult)
+			{
+			case SlotContextAction::Add:
+			case SlotContextAction::Paste:
+				ImGui::SetNextItemOpen(true);
+				break;
+			}
+
+			ImGui::SameLine();
+
+			if (TreeEx(
+					"prio",
+					false,
+					"%s",
+					LS(CommonStrings::Priority)))
+			{
+				ImGui::Spacing();
+
+				if (auto& pdata = a_data.priority)
+				{
+					bool pvar = pdata->first != GetConfigClass();
+
+					if (pvar)
+					{
+						ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+					}
+
+					if (ShowConfigClassIndicator())
+					{
+						ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
+						ImGui::SameLine();
+						DrawConfigClassInUse(pdata->first);
+
+						ImGui::Separator();
+						ImGui::Spacing();
+					}
+
+					DrawPriorityEntry(a_handle, *pdata);
+
+					if (pvar)
+					{
+						ImGui::PopStyleVar();
+					}
+				}
+				else
+				{
+					ImGui::TextUnformatted(LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
+				}
+
+				ImGui::TreePop();
+			}
+		}
+
+		template <class T>
+		void UISlotEditorWidget<T>::DrawPriorityEntry(
+			T                                a_handle,
+			entrySlotData_t::prio_data_type& a_data)
+		{
+			auto  sex  = GetSex();
+			auto& data = a_data.second.get(sex);
+
+			bool changed = false;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			std::underlying_type_t<Data::ObjectType> i = 0;
+
+			for (auto it = data.order.begin(); it != data.order.end(); ++it)
+			{
+				ImGui::PushID(i);
+
+				bool pvar = i >= data.limit;
+
+				if (pvar)
+				{
+					ImGui::PushStyleVar(
+						ImGuiStyleVar_Alpha,
+						std::max(ImGui::GetStyle().Alpha - 0.33f, 0.33f));
+				}
+
+				auto swapdir = SwapDirection::None;
+
+				if (ImGui::ArrowButton("0", ImGuiDir_Up))
+				{
+					swapdir = SwapDirection::Up;
+				}
+
+				ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+				if (ImGui::ArrowButton("1", ImGuiDir_Down))
+				{
+					swapdir = SwapDirection::Down;
+				}
+
+				if (swapdir != SwapDirection::None)
+				{
+					IterSwap(data.order, it, swapdir);
+					changed = true;
+				}
+
+				if (it != data.order.end())
+				{
+					ImGui::SameLine();
+
+					ImGui::Text("%u: %s", i, Data::GetObjectTypeName(*it));
+				}
+
+				if (pvar)
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::PopID();
+
+				i++;
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			ImGui::PushItemWidth(ImGui::GetFontSize() * 5.0f);
+
+			ImGui::AlignTextToFramePadding();
+			ImGui::Text("%s:", LS(UISlotEditorWidgetStrings::MaxActiveTypes));
+			ImGui::SameLine();
+
+			if (ImGui::InputScalar(
+					"##0",
+					ImGuiDataType_U32,
+					std::addressof(data.limit),
+					nullptr,
+					nullptr,
+					"%u"))
+			{
+				data.limit = std::clamp(
+					data.limit,
+					1u,
+					stl::underlying(Data::ObjectType::kMax));
+
+				changed = true;
+			}
+
+			ImGui::PopItemWidth();
+
+			if (changed)
+			{
+				OnPriorityConfigChange(a_handle, { sex, a_data });
+			}
 		}
 
 		template <class T>
@@ -875,8 +1172,8 @@ namespace IED
 
 			if (!empty)
 			{
-				if (result.action == FormEntryAction::Add ||
-				    result.action == FormEntryAction::Paste)
+				if (result.action == SlotContextAction::Add ||
+				    result.action == SlotContextAction::Paste)
 				{
 					ImGui::SetNextItemOpen(true);
 				}
@@ -950,7 +1247,7 @@ namespace IED
 					auto result = DrawPreferredItemEntryContextMenu();
 					switch (result.action)
 					{
-					case FormEntryAction::Add:
+					case SlotContextAction::Add:
 						it = a_data.emplace(it, result.form);
 
 						OnBaseConfigChange(
@@ -961,7 +1258,7 @@ namespace IED
 						ImGui::SetNextItemOpen(true);
 
 						break;
-					case FormEntryAction::Delete:
+					case SlotContextAction::Delete:
 						it = a_data.erase(it);
 
 						OnBaseConfigChange(
@@ -970,7 +1267,7 @@ namespace IED
 							PostChangeAction::Evaluate);
 
 						break;
-					case FormEntryAction::Swap:
+					case SlotContextAction::Swap:
 						if (IterSwap(a_data, it, result.dir))
 						{
 							OnBaseConfigChange(
@@ -1083,7 +1380,7 @@ namespace IED
 
 			if (ImGui::ArrowButton("up", ImGuiDir_Up))
 			{
-				result.action = FormEntryAction::Swap;
+				result.action = SlotContextAction::Swap;
 				result.dir    = SwapDirection::Up;
 			}
 
@@ -1091,7 +1388,7 @@ namespace IED
 
 			if (ImGui::ArrowButton("down", ImGuiDir_Down))
 			{
-				result.action = FormEntryAction::Swap;
+				result.action = SlotContextAction::Swap;
 				result.dir    = SwapDirection::Down;
 			}
 
@@ -1108,7 +1405,7 @@ namespace IED
 					{
 						if (m_piNewEntryID)
 						{
-							result.action = FormEntryAction::Add;
+							result.action = SlotContextAction::Add;
 							result.form   = m_piNewEntryID;
 						}
 
@@ -1120,7 +1417,7 @@ namespace IED
 
 				if (LCG_MI(CommonStrings::Delete, "2"))
 				{
-					result.action = FormEntryAction::Delete;
+					result.action = SlotContextAction::Delete;
 				}
 
 				ImGui::EndPopup();
@@ -1168,7 +1465,7 @@ namespace IED
 
 						ImGui::CloseCurrentPopup();
 
-						result.action = FormEntryAction::Add;
+						result.action = SlotContextAction::Add;
 					}
 
 					ImGui::EndMenu();
@@ -1196,7 +1493,7 @@ namespace IED
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
 
-						result.action = FormEntryAction::Paste;
+						result.action = SlotContextAction::Paste;
 					}
 				}
 

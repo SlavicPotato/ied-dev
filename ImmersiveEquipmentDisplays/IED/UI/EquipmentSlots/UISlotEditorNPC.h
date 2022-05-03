@@ -64,6 +64,14 @@ namespace IED
 				Game::FormID                  a_handle,
 				const SlotConfigUpdateParams& a_params) override;
 
+			virtual void OnPriorityConfigChange(
+				Game::FormID                          a_handle,
+				const SlotPriorityConfigUpdateParams& a_params) override;
+
+			virtual void OnPriorityConfigClear(
+				Game::FormID                  a_handle,
+				const SlotConfigUpdateParams& a_params) override;
+
 			virtual void
 				OnSingleSlotClear(
 					Game::FormID                       a_handle,

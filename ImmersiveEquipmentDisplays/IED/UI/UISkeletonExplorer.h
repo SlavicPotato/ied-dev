@@ -17,6 +17,11 @@ namespace IED
 	{
 		struct ActorSkeletonData
 		{
+			ActorSkeletonData() :
+				data(std::make_shared<SkeletonInfoLookupResult::element_type>())
+			{
+			}
+
 			SkeletonInfoLookupResult data;
 		};
 

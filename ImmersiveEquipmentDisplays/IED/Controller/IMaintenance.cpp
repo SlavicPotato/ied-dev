@@ -25,7 +25,7 @@ namespace IED
 	}
 
 	void IMaintenance::CleanCustomConfig(
-		Game::FormID                   a_id,
+		Game::FormID                   a_handle,
 		Data::configCustomPluginMap_t& a_data)
 	{
 		for (auto it = a_data.begin(); it != a_data.end();)
@@ -43,7 +43,7 @@ namespace IED
 					{
 						Warning(
 							"%.8X: erasing %zu custom item(s) from missing plugin '%s'",
-							a_id.get(),
+							a_handle.get(),
 							it->second.data.size(),
 							it->first.c_str());
 
@@ -74,11 +74,26 @@ namespace IED
 		}
 	}
 
-	bool IMaintenance::CleanSlotConfig(Data::configSlotHolder_t& a_data)
+	bool IMaintenance::CleanSlotConfig(
+		Game::FormID              a_handle,
+		Data::configSlotHolder_t& a_data)
 	{
-		bool empty = true;
+		if (a_data.priority)
+		{
+			for (auto& e : (*a_data.priority)())
+			{
+				if (!e.validate())
+				{
+					Warning("%.8X: bad priority data, resetting", a_handle.get());
 
-		for (auto& g : a_data.data)
+					e = {};
+				}
+			}
+		}
+
+		bool empty = a_data.priority == nullptr;
+
+		for (const auto& g : a_data.data)
 		{
 			if (g)
 			{
@@ -171,7 +186,7 @@ namespace IED
 
 			for (auto it = e.begin(); it != e.end();)
 			{
-				if (CleanSlotConfig(it->second))
+				if (CleanSlotConfig(it->first, it->second))
 				{
 					it = e.erase(it);
 				}
@@ -184,7 +199,7 @@ namespace IED
 
 		for (auto& e : a_data.slot.GetGlobalData())
 		{
-			CleanSlotConfig(e);
+			CleanSlotConfig(0, e);
 		}
 
 		for (auto& e : a_data.transforms.GetFormMaps())

@@ -22,6 +22,7 @@ namespace IED
 
 		enum class SwapDirection : std::uint8_t
 		{
+			None,
 			Up,
 			Down
 		};

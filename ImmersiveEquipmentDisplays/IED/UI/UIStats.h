@@ -42,9 +42,14 @@ namespace IED
 				std::size_t                       ncust;
 				long long                         age;
 				Game::FormID                      race;
+
+				SKMP_REDEFINE_NEW_PREF();
 			};
 
-			using sort_comp_func_t = std::function<bool(const sorted_list_entry_t&, const sorted_list_entry_t&)>;
+			using sort_comp_func_t = std::function<
+				bool(
+					const std::unique_ptr<sorted_list_entry_t>&,
+					const std::unique_ptr<sorted_list_entry_t>&)>;
 
 			static sort_comp_func_t get_sort_comp_lambda_default();
 			static sort_comp_func_t get_sort_comp_lambda(const ImGuiTableSortSpecs* a_specs);

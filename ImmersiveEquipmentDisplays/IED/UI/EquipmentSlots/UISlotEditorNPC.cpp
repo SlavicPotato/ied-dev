@@ -164,9 +164,9 @@ namespace IED
 
 			auto& store = m_controller.GetConfigStore();
 
-			UpdateConfigSingleSlot(
+			UpdateConfigSingle(
 				a_handle,
-				params,
+				*params,
 				store.settings.data.ui.slotEditor.sexSync);
 
 			switch (a_action)
@@ -208,6 +208,37 @@ namespace IED
 			m_controller.QueueResetNPC(
 				a_handle,
 				ControllerUpdateFlags::kNone);
+		}
+
+		void UISlotEditorNPC::OnPriorityConfigChange(
+			Game::FormID                          a_handle,
+			const SlotPriorityConfigUpdateParams& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+
+			UpdateConfigSingle(
+				a_handle,
+				a_params,
+				store.settings.data.ui.slotEditor.sexSync);
+
+			m_controller.QueueEvaluateNPC(
+				a_handle,
+				ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+					ControllerUpdateFlags::kImmediateTransformUpdate);
+		}
+
+		void UISlotEditorNPC::OnPriorityConfigClear(
+			Game::FormID                  a_handle,
+			const SlotConfigUpdateParams& a_params)
+		{
+			UpdateConfig(a_handle, a_params.data);
+
+			a_params.data = GetData(a_handle);
+
+			m_controller.QueueEvaluateNPC(
+				a_handle,
+				ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+					ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
 
 		void UISlotEditorNPC::OnSingleSlotClear(

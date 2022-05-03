@@ -203,7 +203,7 @@ namespace IED
 			if (it != data.end())
 			{
 				auto sync = GetEditorPanelSettings().sexSync;
-				auto sex  = GetSex();
+				auto sex  = params->sex;
 
 				auto& src = params->entry.second;
 				auto& dst = it->second.Data().get(params->slot);
@@ -241,6 +241,59 @@ namespace IED
 			if (it != data.end())
 			{
 				it->second.Data() = a_params.data;
+			}
+		}
+
+		void UIProfileEditorSlot::OnPriorityConfigChange(
+			int,
+			const SlotPriorityConfigUpdateParams& a_params)
+		{
+			auto& data = GetProfileManager().Data();
+
+			auto it = data.find(m_cachedItem->name);
+			if (it != data.end())
+			{
+				auto sync = GetEditorPanelSettings().sexSync;
+				auto sex  = a_params.sex;
+
+				auto& src = a_params.entry.second;
+				auto& dst = it->second.Data().priority;
+
+				if (sync)
+				{
+					src.get(Data::GetOppositeSex(sex)) = src.get(sex);
+				}
+
+				if (!dst)
+				{
+					dst = std::make_unique<Data::configSlotHolder_t::prio_data_type>(src);
+				}
+				else
+				{
+					if (sync)
+					{
+						*dst = src;
+					}
+					else
+					{
+						dst->get(sex) = src.get(sex);
+					}
+				}
+			}
+		}
+
+		void UIProfileEditorSlot::OnPriorityConfigClear(
+			int                           a_handle,
+			const SlotConfigUpdateParams& a_params)
+		{
+			auto& data = GetProfileManager().Data();
+
+			auto it = data.find(m_cachedItem->name);
+			if (it != data.end())
+			{
+				Data::assign_uptr(
+					a_params.data.priority,
+					it->second.Data().priority);
 			}
 		}
 

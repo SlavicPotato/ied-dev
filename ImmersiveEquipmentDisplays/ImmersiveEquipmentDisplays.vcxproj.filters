@@ -1238,6 +1238,12 @@
     <ClInclude Include="IED\ISkeletonInfo.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigSlotPriority.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1944,6 +1950,9 @@
     </ClCompile>
     <ClCompile Include="IED\ISkeletonInfo.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

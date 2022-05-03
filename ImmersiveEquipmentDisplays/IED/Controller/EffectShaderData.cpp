@@ -124,7 +124,7 @@ namespace IED
 			e.shaderData->edgeExponent = it->second.edgeExponent;
 			//e.shaderData->boundDiameter = it->second.boundDiameter;
 
-			for (auto& f : e.functions)
+			for (const auto& f : e.functions)
 			{
 				auto& d = it->second.functions;
 

@@ -12,7 +12,6 @@
 #include <ext/SKSESerializationEvents.h>
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
-#include <ext/stl_containers.h>
 #include <ext/str_conv.h>
 
 #include <ext/stl_boost_serialization_containers.h>
@@ -60,6 +59,7 @@
 
 #include <json/json.h>
 
+#include <boost/serialization/array.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/split_member.hpp>

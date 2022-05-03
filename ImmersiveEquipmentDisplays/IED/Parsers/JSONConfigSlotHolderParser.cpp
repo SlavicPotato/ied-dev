@@ -2,6 +2,7 @@
 
 #include "JSONConfigSlotHolderParser.h"
 #include "JSONConfigSlotParser.h"
+#include "JSONConfigSlotPriorityParser.h"
 #include "JSONParsersCommon.h"
 
 namespace IED
@@ -21,7 +22,7 @@ namespace IED
 		{
 			JSON_PARSE_VERSION()
 
-			Parser<Data::configSlot_t> pslot(m_state);
+			Parser<configSlot_t> pslot(m_state);
 
 			auto& data = a_in["data"];
 
@@ -41,10 +42,10 @@ namespace IED
 
 				if (!v)
 				{
-					v = std::make_unique<Data::configSlotHolder_t::data_type>();
+					v = std::make_unique<configSlotHolder_t::data_type>();
 				}
 
-				parserDesc_t<Data::configSlot_t> desc[]{
+				parserDesc_t<configSlot_t> desc[]{
 					{ "m", (*v)(ConfigSex::Male) },
 					{ "f", (*v)(ConfigSex::Female) }
 				};
@@ -54,6 +55,37 @@ namespace IED
 					if (!pslot.Parse((*it)[e.member], e.data, version))
 					{
 						return false;
+					}
+				}
+			}
+
+			if (auto& prio = a_in["prio"])
+			{
+				Parser<configSlotPriority_t> pprio(m_state);
+
+				auto& v = a_out.priority;
+
+				if (!v)
+				{
+					v = std::make_unique<Data::configSlotHolder_t::prio_data_type>();
+				}
+
+				parserDesc_t<configSlotPriority_t> desc[]{
+					{ "m", (*v)(ConfigSex::Male) },
+					{ "f", (*v)(ConfigSex::Female) }
+				};
+
+				for (auto& e : desc)
+				{
+					if (!pprio.Parse(prio[e.member], e.data))
+					{
+						return false;
+					}
+
+					if (!e.data.validate())
+					{
+						Warning("%s: bad priority data", __FUNCTION__);
+						SetHasErrors();
 					}
 				}
 			}
@@ -70,7 +102,7 @@ namespace IED
 
 			using enum_type = std::underlying_type_t<ObjectSlot>;
 
-			Parser<Data::configSlot_t> pslot(m_state);
+			Parser<configSlot_t> pslot(m_state);
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
@@ -85,9 +117,9 @@ namespace IED
 
 				auto key = s_slotKeyParser.SlotToKey(slot);
 
-				ASSERT(key);
+				assert(key);
 
-				parserDesc_t<Data::configSlot_t> desc[]{
+				parserDesc_t<configSlot_t> desc[]{
 					{ "m", (*v)(ConfigSex::Male) },
 					{ "f", (*v)(ConfigSex::Female) }
 				};
@@ -97,6 +129,23 @@ namespace IED
 				for (auto& f : desc)
 				{
 					pslot.Create(f.data, e[f.member]);
+				}
+			}
+
+			if (auto& prio = a_data.priority)
+			{
+				Parser<configSlotPriority_t> pprio(m_state);
+
+				auto& pout = (a_out["prio"] = Json::Value(Json::ValueType::objectValue));
+
+				parserDesc_t<configSlotPriority_t> desc[]{
+					{ "m", (*prio)(ConfigSex::Male) },
+					{ "f", (*prio)(ConfigSex::Female) }
+				};
+
+				for (auto& e : desc)
+				{
+					pprio.Create(e.data, pout[e.member]);
 				}
 			}
 

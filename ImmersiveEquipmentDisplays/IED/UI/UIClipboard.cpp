@@ -20,6 +20,9 @@ namespace IED
 			case DataType::ConfigSlot:
 				erase<Data::configSlot_t>();
 				break;
+			case DataType::ConfigSlotPriority:
+				erase<Data::configSlotPriority_t>();
+				break;
 			case DataType::ConfigCustom:
 				erase<Data::configCustomNameValue_t>();
 				break;

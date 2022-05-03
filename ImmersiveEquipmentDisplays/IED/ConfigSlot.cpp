@@ -7,6 +7,34 @@ namespace IED
 {
 	namespace Data
 	{
+		void configStoreSlot_t::FillResultCopy(
+			ConfigClass             a_class,
+			const data_type&        a_data,
+			configSlotHolderCopy_t& a_out) const
+		{
+			using enum_type = std::underlying_type_t<ObjectSlot>;
+
+			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			{
+				auto& from = a_data.data[i];
+
+				if (!from)
+				{
+					continue;
+				}
+
+				if (auto& to = a_out.data[i]; !to)
+				{
+					to = std::make_unique<configSlotHolderCopy_t::data_type>(a_class, *from);
+				}
+			}
+
+			if (a_data.priority && !a_out.priority)
+			{
+				a_out.priority = std::make_unique<configSlotHolderCopy_t::prio_data_type>(a_class, *a_data.priority);
+			}
+		}
+
 		auto configStoreSlot_t::GetGlobalCopy(GlobalConfigType a_type) const
 			-> configSlotHolderCopy_t
 		{
@@ -160,6 +188,53 @@ namespace IED
 			return GetGlobalData(type).get(a_slot).get();
 		}
 
+		const configSlotHolder_t::prio_data_type* configStoreSlot_t::GetActorPriority(
+			Game::FormID   a_actor,
+			Game::FormID   a_npc,
+			Game::FormID   a_race,
+			holderCache_t& a_hc) const
+		{
+			if (auto& b = GetActorData(); !b.empty())
+			{
+				if (auto d = a_hc.get_actor(a_actor, b))
+				{
+					if (d->priority)
+					{
+						return d->priority.get();
+					}
+				}
+			}
+
+			if (auto& b = GetNPCData(); !b.empty())
+			{
+				if (auto d = a_hc.get_npc(a_npc, b))
+				{
+					if (d->priority)
+					{
+						return d->priority.get();
+					}
+				}
+			}
+
+			if (auto& b = GetRaceData(); !b.empty())
+			{
+				if (auto d = a_hc.get_race(a_race, b))
+				{
+					if (d->priority)
+					{
+						return d->priority.get();
+					}
+				}
+			}
+
+			auto type =
+				a_actor == Data::IData::GetPlayerRefID() ?
+					GlobalConfigType::Player :
+                    GlobalConfigType::NPC;
+
+			return GetGlobalData(type).priority.get();
+		}
+
 		configSlotHolder_t::configSlotHolder_t(const configSlotHolder_t& a_rhs)
 		{
 			using enum_type = std::underlying_type_t<ObjectSlot>;
@@ -171,6 +246,11 @@ namespace IED
 					data[i] = std::make_unique<data_type>(*src);
 				}
 			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<configSlotHolder_t::prio_data_type>(*a_rhs.priority);
+			}
 		}
 
 		configSlotHolder_t& configSlotHolder_t::operator=(const configSlotHolder_t& a_rhs)
@@ -179,24 +259,10 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				auto& dst = data[i];
-
-				if (auto& src = a_rhs.data[i])
-				{
-					if (dst)
-					{
-						*dst = *src;
-					}
-					else
-					{
-						dst = std::make_unique<data_type>(*src);
-					}
-				}
-				else
-				{
-					dst.reset();
-				}
+				assign_uptr(a_rhs.data[i], data[i]);
 			}
+
+			assign_uptr(a_rhs.priority, priority);
 
 			return *this;
 		}
@@ -212,6 +278,11 @@ namespace IED
 					data[i] = std::make_unique<data_type>(src->second);
 				}
 			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<configSlotHolder_t::prio_data_type>(a_rhs.priority->second);
+			}
 		}
 
 		configSlotHolder_t::configSlotHolder_t(configSlotHolderCopy_t&& a_rhs)
@@ -223,7 +294,16 @@ namespace IED
 				if (auto& src = a_rhs.data[i])
 				{
 					data[i] = std::make_unique<data_type>(std::move(src->second));
+
+					src.reset();
 				}
+			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<configSlotHolder_t::prio_data_type>(std::move(a_rhs.priority->second));
+
+				a_rhs.priority.reset();
 			}
 		}
 
@@ -233,24 +313,10 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				auto& dst = data[i];
-
-				if (auto& src = a_rhs.data[i])
-				{
-					if (dst)
-					{
-						*dst = src->second;
-					}
-					else
-					{
-						dst = std::make_unique<data_type>(src->second);
-					}
-				}
-				else
-				{
-					dst.reset();
-				}
+				assign_uptr(a_rhs.data[i], data[i]);
 			}
+
+			assign_uptr(a_rhs.priority, priority);
 
 			return *this;
 		}
@@ -261,24 +327,10 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				auto& dst = data[i];
-
-				if (auto& src = a_rhs.data[i])
-				{
-					if (dst)
-					{
-						*dst = std::move(src->second);
-					}
-					else
-					{
-						data[i] = std::make_unique<data_type>(std::move(src->second));
-					}
-				}
-				else
-				{
-					dst.reset();
-				}
+				assign_uptr(std::move(a_rhs.data[i]), data[i]);
 			}
+
+			assign_uptr(std::move(a_rhs.priority), priority);
 
 			return *this;
 		}
@@ -294,6 +346,11 @@ namespace IED
 					data[i] = std::make_unique<data_type>(*src);
 				}
 			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<prio_data_type>(*a_rhs.priority);
+			}
 		}
 
 		configSlotHolderCopy_t& configSlotHolderCopy_t::operator=(const configSlotHolderCopy_t& a_rhs)
@@ -302,24 +359,10 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
-				auto& dst = data[i];
-
-				if (auto& src = a_rhs.data[i])
-				{
-					if (dst)
-					{
-						*dst = *src;
-					}
-					else
-					{
-						dst = std::make_unique<data_type>(*src);
-					}
-				}
-				else
-				{
-					dst.reset();
-				}
+				assign_uptr(a_rhs.data[i], data[i]);
 			}
+
+			assign_uptr(a_rhs.priority, priority);
 
 			return *this;
 		}
@@ -337,6 +380,11 @@ namespace IED
 					data[i] = std::make_unique<data_type>(a_initclass, *src);
 				}
 			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<prio_data_type>(a_initclass, *a_rhs.priority);
+			}
 		}
 
 		configSlotHolderCopy_t::configSlotHolderCopy_t(
@@ -350,7 +398,16 @@ namespace IED
 				if (auto& src = a_rhs.data[i])
 				{
 					data[i] = std::make_unique<data_type>(a_initclass, std::move(*src));
+
+					src.reset();
 				}
+			}
+
+			if (a_rhs.priority)
+			{
+				priority = std::make_unique<prio_data_type>(a_initclass, std::move(*a_rhs.priority));
+
+				a_rhs.priority.reset();
 			}
 		}
 
@@ -369,6 +426,11 @@ namespace IED
 				}
 			}
 
+			if (priority && priority->first == a_class)
+			{
+				result.priority = std::make_unique<configSlotHolder_t::prio_data_type>(priority->second);
+			}
+
 			return result;
 		}
 
@@ -380,14 +442,46 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
 			{
+				auto& dst = a_out.data[i];
+
 				if (auto& src = data[i]; src && src->first == a_class)
 				{
-					a_out.data[i] = std::make_unique<configSlotHolder_t::data_type>(src->second);
+					if (dst)
+					{
+						*dst = src->second;
+					}
+					else
+					{
+						dst = std::make_unique<configSlotHolder_t::data_type>(src->second);
+					}
 				}
 				else
 				{
-					a_out.data[i].reset();
+					dst.reset();
 				}
+			}
+
+			copy_cc_prio(a_class, a_out);
+		}
+
+		void configSlotHolderCopy_t::copy_cc_prio(
+			ConfigClass         a_class,
+			configSlotHolder_t& a_out) const
+		{
+			if (auto& src = priority; src && src->first == a_class)
+			{
+				if (auto& dst = a_out.priority)
+				{
+					*dst = src->second;
+				}
+				else
+				{
+					dst = std::make_unique<configSlotHolder_t::prio_data_type>(src->second);
+				}
+			}
+			else
+			{
+				a_out.priority.reset();
 			}
 		}
 

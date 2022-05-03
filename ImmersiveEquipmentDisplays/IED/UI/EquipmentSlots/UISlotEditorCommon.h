@@ -37,10 +37,16 @@ namespace IED
 				bool        a_disableApply = false);
 
 		protected:
-			void UpdateConfigSingleSlot(
+			/*void UpdateConfigSingleSlot(
 				T                                   a_handle,
 				const SingleSlotConfigUpdateParams* a_params,
-				bool                                a_syncSex);
+				bool                                a_syncSex);*/
+
+			template <class Tp>
+			void UpdateConfigSingle(
+				T         a_handle,
+				const Tp& a_params,
+				bool      a_syncSex);
 
 			bool ResetConfigSlot(
 				T                      a_handle,
@@ -96,6 +102,9 @@ namespace IED
 				const Data::configSlotHolder_t& a_data,
 				Tf                              a_func);
 
+			template <class Tp>
+			auto& extract_dst(T a_handle, const Tp& a_params);
+
 			stl::flag<UISlotImportFlags> m_importFlags{ UISlotImportFlags::kEverything };
 		};
 
@@ -117,7 +126,7 @@ namespace IED
 		{
 		}
 
-		template <class T>
+		/*template <class T>
 		void UISlotEditorCommon<T>::UpdateConfigSingleSlot(
 			T                                   a_handle,
 			const SingleSlotConfigUpdateParams* a_params,
@@ -149,6 +158,61 @@ namespace IED
 				else
 				{
 					slot->get(a_params->sex) = src;
+				}
+			}
+		}*/
+
+		template <class T>
+		template <class Tp>
+		auto& UISlotEditorCommon<T>::extract_dst(T a_handle, const Tp& a_params)
+		{
+			auto& holder = GetOrCreateConfigSlotHolder(a_handle);
+
+			if constexpr (std::is_same_v<Tp, SingleSlotConfigUpdateParams>)
+			{
+				return holder.get(a_params.slot);
+			}
+			else if constexpr (std::is_same_v<Tp, SlotPriorityConfigUpdateParams>)
+			{
+				return holder.priority;
+			}
+			else
+			{
+				static_assert(false);
+			}
+		}
+
+		template <class T>
+		template <class Tp>
+		void UISlotEditorCommon<T>::UpdateConfigSingle(
+			T         a_handle,
+			const Tp& a_params,
+			bool      a_syncSex)
+		{
+			auto& dst = extract_dst(a_handle, a_params);
+			auto& src = a_params.entry.second.get(a_params.sex);
+
+			if (a_syncSex)
+			{
+				a_params.entry.second.get(Data::GetOppositeSex(a_params.sex)) = src;
+			}
+
+			a_params.entry.first = GetConfigClass();
+
+			if (!dst)
+			{
+				dst = std::make_unique<decltype(a_params.entry.second)>(
+					a_params.entry.second);
+			}
+			else
+			{
+				if (a_syncSex)
+				{
+					*dst = a_params.entry.second;
+				}
+				else
+				{
+					dst->get(a_params.sex) = src;
 				}
 			}
 		}
@@ -232,6 +296,18 @@ namespace IED
 					}
 				}
 			}
+
+			if (a_data.priority)
+			{
+				holder.priority = std::make_unique<Data::configSlotHolder_t::prio_data_type>(*a_data.priority);
+			}
+			else
+			{
+				if (a_resetEmpty)
+				{
+					holder.priority.reset();
+				}
+			}
 		}
 
 		template <class T>
@@ -245,32 +321,32 @@ namespace IED
 			}
 			else
 			{
-				if (m_importFlags.test(UISlotImportFlags::kOverrides))
-				{
-					PartialImport(
-						a_handle,
-						a_data,
-						[](
-							auto& a_currentData,
-							auto  a_slotId,
-							auto& a_dstSlot,
-							auto  a_sex,
-							auto& a_data) {
+				PartialImport(
+					a_handle,
+					a_data,
+					[&](
+						auto& a_sourceData,
+						auto  a_slotId,
+						auto& a_dstSlot,
+						auto  a_sex,
+						auto& a_data) {
+						if (!a_dstSlot)
+						{
+							if (auto& srcSlot = a_sourceData.get(a_slotId))
+							{
+								a_dstSlot = std::make_unique<
+									Data::configSlotHolder_t::data_type>(srcSlot->second);
+							}
+							else
+							{
+								return;
+							}
+						}
+
+						if (m_importFlags.test(UISlotImportFlags::kOverrides))
+						{
 							for (auto& e : a_data.equipmentOverrides)
 							{
-								if (!a_dstSlot)
-								{
-									if (auto& cSlot = a_currentData.get(a_slotId))
-									{
-										a_dstSlot =
-											std::make_unique<Data::configSlotHolder_t::data_type>(cSlot->second);
-									}
-									else
-									{
-										continue;
-									}
-								}
-
 								auto& dst = a_dstSlot->get(a_sex).equipmentOverrides;
 
 								auto it = std::find_if(
@@ -285,8 +361,8 @@ namespace IED
 
 								dst.emplace_back(e);
 							}
-						});
-				}
+						}
+					});
 			}
 		}
 
@@ -301,33 +377,33 @@ namespace IED
 			}
 			else
 			{
-				if (m_importFlags.test(UISlotImportFlags::kOverrides))
-				{
-					PartialImport(
-						a_handle,
-						a_data,
-						[](
-							auto& a_currentData,
-							auto  a_slotId,
-							auto& a_dstSlot,
-							auto  a_sex,
-							auto& a_data) {
-							if (!a_dstSlot)
+				PartialImport(
+					a_handle,
+					a_data,
+					[&](
+						auto& a_sourceData,
+						auto  a_slotId,
+						auto& a_dstSlot,
+						auto  a_sex,
+						auto& a_data) {
+						if (!a_dstSlot)
+						{
+							if (auto& srcSlot = a_sourceData.get(a_slotId))
 							{
-								if (auto& cSlot = a_currentData.get(a_slotId))
-								{
-									a_dstSlot =
-										std::make_unique<Data::configSlotHolder_t::data_type>(cSlot->second);
-								}
-								else
-								{
-									return;
-								}
+								a_dstSlot = std::make_unique<
+									Data::configSlotHolder_t::data_type>(srcSlot->second);
 							}
+							else
+							{
+								return;
+							}
+						}
 
+						if (m_importFlags.test(UISlotImportFlags::kOverrides))
+						{
 							a_dstSlot->get(a_sex).equipmentOverrides = a_data.equipmentOverrides;
-						});
-				}
+						}
+					});
 			}
 		}
 

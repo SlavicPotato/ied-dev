@@ -60,6 +60,14 @@ namespace IED
 					int                           a_handle,
 					const SlotConfigUpdateParams& a_params) override;
 
+			virtual void OnPriorityConfigChange(
+				int                                   a_handle,
+				const SlotPriorityConfigUpdateParams& a_params) override;
+
+			virtual void OnPriorityConfigClear(
+				int                           a_handle,
+				const SlotConfigUpdateParams& a_params) override;
+
 			virtual void OnSingleSlotClear(
 				int                                a_handle,
 				const SingleSlotConfigClearParams& a_params) override;

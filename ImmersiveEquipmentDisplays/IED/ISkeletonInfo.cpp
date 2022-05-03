@@ -17,7 +17,7 @@ namespace IED
 			return;
 		}
 
-		ITaskPool::AddTask([=]() {
+		ITaskPool::AddTask([=] {
 			SkeletonInfoLookupImpl(
 				a_actor,
 				a_firstPerson,
@@ -52,21 +52,21 @@ namespace IED
 		SI_NiObject& a_data,
 		Tf           a_func)
 	{
-		if (!a_object)
-		{
-			return;
-		}
-
 		a_func(a_object, a_data);
 
 		if (auto node = a_object->GetAsNiNode())
 		{
+			a_data.children.reserve(node->m_children.m_size);
+
 			for (auto& object : node->m_children)
 			{
-				VisitNodeTree(
-					object,
-					a_data.children.emplace_back(),
-					a_func);
+				if (object)
+				{
+					VisitNodeTree(
+						object,
+						a_data.children.emplace_back(),
+						a_func);
+				}
 			}
 		}
 	}

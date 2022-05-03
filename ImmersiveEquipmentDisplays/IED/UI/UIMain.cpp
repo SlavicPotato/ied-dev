@@ -298,7 +298,7 @@ namespace IED
 			{
 				m_log.ToggleOpenState();
 			}
-			
+
 			if (ImGui::MenuItem(
 					LS(UIWidgetCommonStrings::SkeletonExplorer, "6"),
 					nullptr,

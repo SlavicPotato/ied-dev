@@ -184,6 +184,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr const auto& GetSlotName(Data::ObjectSlot a_slot) const noexcept
 		{
+			assert(a_slot < Data::ObjectSlot::kMax);
 			return slotNames[stl::underlying(a_slot)];
 		}
 
@@ -194,7 +195,7 @@ namespace IED
 		stl::fixed_string IED{ "IED" };
 		stl::fixed_string weaponSheathe{ "WeaponSheathe" };
 
-		stl::fixed_string slotNames[stl::underlying(Data::ObjectSlot::kMax)];
+		std::array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)> slotNames;
 
 	private:
 		StringHolder();

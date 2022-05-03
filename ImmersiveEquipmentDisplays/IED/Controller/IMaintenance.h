@@ -10,8 +10,8 @@ namespace IED
 	{
 	private:
 		void CleanFormList(Data::configFormList_t& a_list);
-		void CleanCustomConfig(Game::FormID a_id, Data::configCustomPluginMap_t& a_data);
-		bool CleanSlotConfig(Data::configSlotHolder_t& a_data);
+		void CleanCustomConfig(Game::FormID a_handle, Data::configCustomPluginMap_t& a_data);
+		bool CleanSlotConfig(Game::FormID a_handle, Data::configSlotHolder_t& a_data);
 
 	public:
 		void        CleanConfigStore(Data::configStore_t& a_data);

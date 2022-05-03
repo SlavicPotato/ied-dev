@@ -15,6 +15,7 @@ namespace IED
 				ConfigBaseValues,
 				ConfigBase,
 				ConfigSlot,
+				ConfigSlotPriority,
 				ConfigCustom,
 				EquipmentOverride,
 				EquipmentOverrideConditionList,
@@ -123,6 +124,12 @@ namespace IED
 			else if constexpr (std::is_same_v<data_type, Data::configSlot_t>)
 			{
 				return data.type == DataType::ConfigSlot ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configSlotPriority_t>)
+			{
+				return data.type == DataType::ConfigSlotPriority ?
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
@@ -337,6 +344,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configSlot_t>)
 			{
 				data.type = DataType::ConfigSlot;
+			}
+			else if constexpr (std::is_same_v<T, Data::configSlotPriority_t>)
+			{
+				data.type = DataType::ConfigSlotPriority;
 			}
 			else if constexpr (std::is_same_v<T, Data::equipmentOverride_t>)
 			{

@@ -51,7 +51,7 @@ namespace IED
 		                a_steps.player :
                         a_steps.npc;
 
-		for (auto& f : a_holder.GetSlots())
+		for (const auto& f : a_holder.GetSlots())
 		{
 			if (f.state)
 			{
@@ -59,15 +59,15 @@ namespace IED
 			}
 		}
 
-		for (auto& f : a_holder.GetCustom())
+		for (const auto& f : a_holder.GetCustom())
 		{
-			for (auto& g : f)
+			for (const auto& g : f)
 			{
-				for (auto& h : g.second)
+				for (const auto& h : g.second)
 				{
-					if (h.second.state)
+					if (auto& state = h.second.state)
 					{
-						UpdateEffects(h.second.state->effectShaders, step);
+						UpdateEffects(state->effectShaders, step);
 					}
 				}
 			}
@@ -76,13 +76,13 @@ namespace IED
 
 	void EffectController::UpdateEffects(EffectShaderData& a_data, float a_step)
 	{
-		for (auto& e : a_data.data)
+		for (const auto& e : a_data.data)
 		{
 			e.update_effect_data(a_step);
 
 			if (e.flags.test(EffectShaderData::EntryFlags::kForce))
 			{
-				for (auto& f : e.nodes)
+				for (const auto& f : e.nodes)
 				{
 					if (f.prop->effectData != e.shaderData)
 					{
@@ -92,7 +92,7 @@ namespace IED
 			}
 			else
 			{
-				for (auto& f : e.nodes)
+				for (const auto& f : e.nodes)
 				{
 					if (!f.prop->effectData)
 					{
