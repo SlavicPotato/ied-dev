@@ -16,19 +16,29 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 		public:
-			UIConditionExtraSelectorWidget(Localization::ILocalization& a_localization);
+			UIConditionExtraSelectorWidget(
+				Localization::ILocalization& a_localization);
 
 			bool DrawExtraConditionSelector(
 				Data::ExtraConditionType& a_type);
 
-			const char* condition_type_to_desc(Data::ExtraConditionType a_type) const;
+			const char* condition_type_to_desc(
+				Data::ExtraConditionType a_type) const;
 
 		private:
-			using data_type = std::array<
-				std::pair<
-					Data::ExtraConditionType,
-					UIConditionExtraSelectorWidgetStrings>,
-				14>;
+			inline static constexpr std::size_t NUM_CONDITIONS =
+#if defined(IED_ENABLE_CONDITION_EN)
+				21
+#else
+				22
+#endif
+				;
+
+				using data_type = std::array<
+					std::pair<
+						Data::ExtraConditionType,
+						UIConditionExtraSelectorWidgetStrings>,
+				NUM_CONDITIONS>;
 
 			static data_type m_data;
 		};

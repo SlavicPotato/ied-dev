@@ -407,7 +407,23 @@ namespace IED
 		};
 
 	public:
-		using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
+		inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
+			Actor::Flags1::kInWater |
+			Actor::Flags1::kSwimming |
+			Actor::Flags1::kPlayerTeammate |
+			Actor::Flags1::kGuard |
+			Actor::Flags1::kParalyzed;
+
+		inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_2 =
+			Actor::Flags2::kIsAMount |
+			Actor::Flags2::kInBleedoutAnimation |
+			Actor::Flags2::kIsTrespassing |
+			Actor::Flags2::kIsCommandedActor |
+			Actor::Flags2::kUnderwater;
+
+		using slot_container_type = std::array<
+			objectEntrySlot_t,
+			stl::underlying(Data::ObjectSlot::kMax)>;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
@@ -559,6 +575,18 @@ namespace IED
 		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
+		template <class Tv>
+		inline constexpr void state_var_update(
+			Tv&       a_var,
+			const Tv& a_current) noexcept
+		{
+			if (a_var != a_current)
+			{
+				a_var = a_current;
+				RequestEvalDefer();
+			}
+		}
+
 		template <class Tf>
 		constexpr void visit(Tf a_func)
 		{
@@ -694,12 +722,14 @@ namespace IED
 		Game::FormID m_formid;
 		bool         m_female{ false };
 
-		bool m_cellAttached{ false };
-		bool m_isPlayerTeammate{ false };
-		bool m_wantLFUpdate{ false };
-		bool m_inCombat{ false };
-		//bool                m_enemiesNearby{ false };
+		bool                m_cellAttached{ false };
+		bool                m_isPlayerTeammate{ false };
+		bool                m_wantLFUpdate{ false };
+		bool                m_inCombat{ false };
+		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
+		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
 		long long           m_lastLFStateCheck;
+		long long           m_lastHFStateCheck;
 		actorLocationData_t m_locData;
 		TESPackage*         m_currentPackage{ nullptr };
 
@@ -713,7 +743,8 @@ namespace IED
 
 		IObjectManager& m_owner;
 
-		static std::atomic_llong m_lfsc_delta;
+		static std::atomic_llong m_lfsc_delta_lf;
+		static std::atomic_llong m_lfsc_delta_hf;
 	};
 
 	using ActorObjectMap = stl::unordered_map<Game::FormID, ActorObjectHolder>;

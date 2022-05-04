@@ -23,6 +23,13 @@ namespace IED
 			InCombat            = 5412,
 			IsFemale            = 5413,
 			PlayerEnemiesNearby = 5414,
+			InWater             = 5415,
+			Underwater          = 5416,
+			Swimming            = 5417,
+			BleedingOut         = 5418,
+			Tresspassing        = 5419,
+			IsCommanded         = 5420,
+			Paralyzed           = 5421,
 		};
 	}
 }

@@ -188,6 +188,13 @@ namespace IED
 			kInCombat            = 12,
 			kIsFemale            = 13,
 			kPlayerEnemiesNearby = 14,
+			kInWater             = 15,
+			kUnderwater          = 16,
+			kSwimming            = 17,
+			kBleedingOut         = 18,
+			kTresspassing        = 19,
+			kIsCommanded         = 20,
+			kParalyzed           = 21,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

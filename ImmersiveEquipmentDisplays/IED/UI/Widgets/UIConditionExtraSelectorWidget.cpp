@@ -22,7 +22,17 @@ namespace IED
 			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
 			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
+#if defined(IED_ENABLE_CONDITION_EN)
 			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
+#endif
+
+			{ Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater },
+			{ Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater },
+			{ Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming },
+			{ Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut },
+			{ Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing },
+			{ Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded },
+			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
 
 		} };
 
@@ -103,8 +113,24 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::InCombat);
 			case Data::ExtraConditionType::kIsFemale:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsFemale);
+#if defined(IED_ENABLE_CONDITION_EN)
 			case Data::ExtraConditionType::kPlayerEnemiesNearby:
 				return LS(UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby);
+#endif
+			case Data::ExtraConditionType::kInWater:
+				return LS(UIConditionExtraSelectorWidgetStrings::InWater);
+			case Data::ExtraConditionType::kUnderwater:
+				return LS(UIConditionExtraSelectorWidgetStrings::Underwater);
+			case Data::ExtraConditionType::kSwimming:
+				return LS(UIConditionExtraSelectorWidgetStrings::Swimming);
+			case Data::ExtraConditionType::kBleedingOut:
+				return LS(UIConditionExtraSelectorWidgetStrings::BleedingOut);
+			case Data::ExtraConditionType::kTresspassing:
+				return LS(UIConditionExtraSelectorWidgetStrings::Tresspassing);
+			case Data::ExtraConditionType::kIsCommanded:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsCommanded);
+			case Data::ExtraConditionType::kParalyzed:
+				return LS(UIConditionExtraSelectorWidgetStrings::Paralyzed);
 			default:
 				return nullptr;
 			}

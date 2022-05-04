@@ -316,6 +316,8 @@ namespace IED
 			changed           = true;
 		}
 
+#if defined(IED_ENABLE_CONDITION_EN)
+
 		auto player = *g_thePlayer;
 		assert(player);
 
@@ -336,6 +338,8 @@ namespace IED
 				}
 			}
 		}
+
+#endif
 
 		if (changed)
 		{
@@ -418,25 +422,18 @@ namespace IED
 				continue;
 			}
 
-			if (bool interior = cell->IsInterior();
-			    interior != e.m_locData.inInterior)
-			{
-				e.m_locData.inInterior = interior;
-				e.RequestEvalDefer();
-			}
+			e.state_var_update(e.m_locData.inInterior, cell->IsInterior());
+			e.state_var_update(e.m_locData.worldspace, cell->GetWorldSpace());
+			e.state_var_update(e.m_inCombat, Game::GetActorInCombat(e.m_actor));
 
-			if (auto ws = cell->GetWorldSpace();
-			    ws != e.m_locData.worldspace)
+			if (IPerfCounter::delta_us(
+					e.m_lastHFStateCheck,
+					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_HIGH)
 			{
-				e.m_locData.worldspace = ws;
-				e.RequestEvalDefer();
-			}
+				e.m_lastHFStateCheck = m_timer.GetStartTime();
 
-			if (auto cstate = Game::GetActorInCombat(e.m_actor);
-			    cstate != e.m_inCombat)
-			{
-				e.m_inCombat = cstate;
-				e.RequestEvalDefer();
+				e.state_var_update(e.m_cflags1, (e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1));
+				e.state_var_update(e.m_cflags2, (e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2));
 			}
 
 			if (IPerfCounter::delta_us(
@@ -445,31 +442,7 @@ namespace IED
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
 
-				if (auto n = e.m_actor->IsPlayerTeammate();
-				    n != e.m_isPlayerTeammate)
-				{
-					e.m_isPlayerTeammate = n;
-					e.RequestEvalDefer();
-				}
-
-				if (auto n = e.m_actor->GetCurrentPackage();
-				    n != e.m_currentPackage)
-				{
-					e.m_currentPackage = n;
-					e.RequestEvalDefer();
-				}
-
-				/*PerfTimer pt;
-				pt.Start();*/
-
-				/*if (auto n = GetEnemiesNearby(e, m_controller.m_objects);
-				    n != e.m_enemiesNearby)
-				{
-					e.m_enemiesNearby = n;
-					e.RequestEvalDefer();
-				}*/
-
-				//_DMESSAGE("%X: %f", e.m_formid, pt.Stop());
+				e.state_var_update(e.m_currentPackage, e.m_actor->GetCurrentPackage());
 
 				if (e.m_wantLFUpdate)
 				{

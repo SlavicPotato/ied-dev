@@ -3,18 +3,12 @@
 #include "ConditionsCommon.h"
 
 #include "Controller/Controller.h"
+#include "Controller/ObjectManagerData.h"
 
 namespace IED
 {
 	namespace Conditions
 	{
-		bool match_form(
-			Game::FormID a_formid,
-			TESForm*     a_form)
-		{
-			return a_formid && a_form->formID == a_formid;
-		}
-
 		bool is_in_location(
 			BGSLocation* a_current,
 			BGSLocation* a_loc)
@@ -87,18 +81,6 @@ namespace IED
 			return false;
 		}
 
-		bool is_ammo_bolt(TESForm* a_form)
-		{
-			if (auto ammo = a_form->As<TESAmmo>())
-			{
-				return ammo->isBolt();
-			}
-			else
-			{
-				return false;
-			}
-		}
-
 		bool is_in_first_person(CommonParams& a_params) noexcept
 		{
 			return a_params.is_player() &&
@@ -110,9 +92,12 @@ namespace IED
 			return a_params.objects.IsFemale();
 		}
 
+#if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{
-			return a_params.controller.PlayerHasEnemiesNearby();
+			return a_params.is_player() &&
+			       a_params.controller.PlayerHasEnemiesNearby();
 		}
+#endif
 	}
 }

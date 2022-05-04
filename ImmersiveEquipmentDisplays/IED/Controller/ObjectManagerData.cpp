@@ -14,7 +14,8 @@
 
 namespace IED
 {
-	std::atomic_llong ActorObjectHolder::m_lfsc_delta{ 0ll };
+	std::atomic_llong ActorObjectHolder::m_lfsc_delta_lf{ 0ll };
+	std::atomic_llong ActorObjectHolder::m_lfsc_delta_hf{ 0ll };
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
@@ -40,13 +41,21 @@ namespace IED
 		},
 		m_currentPackage(a_actor->GetCurrentPackage()),
 		m_inCombat(Game::GetActorInCombat(a_actor)),
+		m_cflags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
+		m_cflags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
 		m_created(IPerfCounter::Query())
 	{
 		m_lastLFStateCheck = m_created +
-		                     m_lfsc_delta.fetch_add(
+		                     m_lfsc_delta_lf.fetch_add(
 								 IPerfCounter::T(50000),
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
+		
+		m_lastHFStateCheck = m_created +
+		                     m_lfsc_delta_hf.fetch_add(
+								 IPerfCounter::T(4000),
+								 std::memory_order_relaxed) %
+		                         IPerfCounter::T(100000);
 
 		/*PerfTimer pt;
 		pt.Start();*/

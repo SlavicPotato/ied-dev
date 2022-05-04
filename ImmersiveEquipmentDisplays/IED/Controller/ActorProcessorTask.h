@@ -43,10 +43,12 @@ namespace IED
 			return m_currentTime;
 		}
 
+#if defined(IED_ENABLE_CONDITION_EN)
 		[[nodiscard]] inline constexpr auto PlayerHasEnemiesNearby() const noexcept
 		{
 			return m_state.playerEnemiesNearby;
 		}
+#endif
 
 		[[nodiscard]] inline constexpr void SetProcessorTaskRunState(bool a_state) noexcept
 		{
@@ -66,10 +68,13 @@ namespace IED
 			RE::TESWeather* currentWeather{ nullptr };
 			Data::TimeOfDay timeOfDay{ Data::TimeOfDay::kDay };
 			bool            inFirstPerson{ false };
-			bool            playerEnemiesNearby{ false };
+#if defined(IED_ENABLE_CONDITION_EN)
+			bool playerEnemiesNearby{ false };
+#endif
 		};
 
-		inline static constexpr long long STATE_CHECK_INTERVAL_LOW = 1250000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1250000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 100000;
 
 		virtual void Run() override;
 

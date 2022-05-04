@@ -155,15 +155,13 @@ namespace IED
 			virtual UIPopupQueue&         GetPopupQueue()  = 0;
 			virtual SlotEditorCurrentData GetCurrentData() = 0;
 
-			virtual void
-				OnFullConfigChange(
-					T                             a_handle,
-					const SlotConfigUpdateParams& a_params) = 0;
+			virtual void OnFullConfigChange(
+				T                             a_handle,
+				const SlotConfigUpdateParams& a_params) = 0;
 
-			virtual void
-				OnPriorityConfigChange(
-					T                                     a_handle,
-					const SlotPriorityConfigUpdateParams& a_params) = 0;
+			virtual void OnPriorityConfigChange(
+				T                                     a_handle,
+				const SlotPriorityConfigUpdateParams& a_params) = 0;
 
 			virtual void
 				OnPriorityConfigClear(
@@ -266,7 +264,12 @@ namespace IED
 			Controller& a_controller) :
 			UIBaseConfigWidget<T>(a_controller),
 			UIEditorPanelSettingsGear(a_controller),
-			m_formSelector(a_controller, FormInfoFlags::kValidSlot, true, true, false),
+			m_formSelector(
+				a_controller,
+				FormInfoFlags::kValidSlot,
+				true,
+				true,
+				false),
 			m_formFilter(a_controller, m_formSelector),
 			m_slotFilter(true)
 		{
@@ -551,7 +554,7 @@ namespace IED
 				break;
 			}
 
-			ImGui::SameLine();
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (TreeEx(
 					"prio",
@@ -610,7 +613,9 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			std::underlying_type_t<Data::ObjectType> i = 0;
+			ImGui::PushID("0");
+
+			std::uint32_t i = 0;
 
 			for (auto it = data.order.begin(); it != data.order.end(); ++it)
 			{
@@ -662,23 +667,21 @@ namespace IED
 				i++;
 			}
 
+			ImGui::PopID();
+
 			ImGui::PopStyleVar();
 
 			ImGui::Spacing();
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			ImGui::PushItemWidth(ImGui::GetFontSize() * 5.0f);
-
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("%s:", LS(UISlotEditorWidgetStrings::MaxActiveTypes));
-			ImGui::SameLine();
+			ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 
 			std::uint32_t lmin = 1;
 			std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
 
 			changed |= ImGui::SliderScalar(
-				"##0",
+				LS(UISlotEditorWidgetStrings::MaxActiveTypes, "1"),
 				ImGuiDataType_U32,
 				std::addressof(data.limit),
 				std::addressof(lmin),

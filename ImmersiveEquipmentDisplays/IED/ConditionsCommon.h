@@ -32,8 +32,8 @@ namespace IED
 				return a_params.actor->IsMount();
 			case Data::ExtraConditionType::kShoutEquipped:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->equippedShout);
-			case Data::ExtraConditionType::kInMerchantFaction:
-				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);
+			/*case Data::ExtraConditionType::kInMerchantFaction:
+				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);*/
 			case Data::ExtraConditionType::kCombatStyle:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.get_combat_style());
 			case Data::ExtraConditionType::kClass:
@@ -46,16 +46,35 @@ namespace IED
 				return a_params.is_in_combat();
 			case Data::ExtraConditionType::kIsFemale:
 				return is_female(a_params);
+#if defined(IED_ENABLE_CONDITION_EN)
 			case Data::ExtraConditionType::kPlayerEnemiesNearby:
 				return enemies_nearby(a_params);
+#endif
+			case Data::ExtraConditionType::kInWater:
+				return a_params.actor->flags1.test(Actor::Flags1::kInWater);
+			case Data::ExtraConditionType::kUnderwater:
+				return a_params.actor->flags2.test(Actor::Flags2::kUnderwater);
+			case Data::ExtraConditionType::kSwimming:
+				return a_params.actor->flags1.test(Actor::Flags1::kSwimming);
+			case Data::ExtraConditionType::kBleedingOut:
+				return a_params.actor->flags2.test(Actor::Flags2::kInBleedoutAnimation);
+			case Data::ExtraConditionType::kTresspassing:
+				return a_params.actor->flags2.test(Actor::Flags2::kIsTrespassing);
+			case Data::ExtraConditionType::kIsCommanded:
+				return a_params.actor->flags2.test(Actor::Flags2::kIsCommandedActor);
+			case Data::ExtraConditionType::kParalyzed:
+				return a_params.actor->flags1.test(Actor::Flags1::kParalyzed);
 			default:
 				return false;
 			}
 		}
 
-		bool match_form(
+		inline constexpr bool match_form(
 			Game::FormID a_formid,
-			TESForm*     a_form);
+			TESForm*     a_form) noexcept
+		{
+			return a_formid && a_form->formID == a_formid;
+		}
 
 		inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot) noexcept
 		{
@@ -329,6 +348,15 @@ namespace IED
 					}
 				}
 
+				/*if (a_match.flags.test(Tf::kExtraFlag2))
+				{
+					if (a_match.flags.test(Tf::kNegateMatch3) ==
+					    current->IsCleared())
+					{
+						return false;
+					}
+				}*/
+
 				return true;
 			}
 			else
@@ -421,7 +449,7 @@ namespace IED
 			}
 		}
 
-		template <class Tm, class Tf>
+		/*template <class Tm, class Tf>
 		bool match_form_or_template(
 			const Tm& a_match,
 			TESForm*  a_form)
@@ -467,7 +495,7 @@ namespace IED
 			}
 
 			return false;
-		}
+		}*/
 
 		template <class Tm, class Tf>
 		constexpr bool match_weather(
@@ -558,9 +586,23 @@ namespace IED
 			}
 		}
 
-		bool is_ammo_bolt(TESForm* a_form);
+		inline constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
+		{
+			if (auto ammo = a_form->As<TESAmmo>())
+			{
+				return ammo->isBolt();
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_female(CommonParams& a_params) noexcept;
+
+#if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept;
+#endif
 	}
 }
