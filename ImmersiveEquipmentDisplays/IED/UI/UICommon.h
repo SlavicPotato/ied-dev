@@ -43,6 +43,19 @@ namespace IED
 				}
 			}
 
+			template <class Tf>
+			void ToolTip(float a_width, Tf a_func)
+			{
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
+					a_func();
+					ImGui::PopTextWrapPos();
+					ImGui::EndTooltip();
+				}
+			}
+			
 			template <class... Args>
 			void HelpMarkerFormatted(const char* a_desc, Args... a_args)
 			{

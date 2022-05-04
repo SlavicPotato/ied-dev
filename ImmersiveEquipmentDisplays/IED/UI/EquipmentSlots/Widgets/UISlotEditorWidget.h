@@ -593,7 +593,7 @@ namespace IED
 				else
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorGreyed);
-					ImGui::TextUnformatted(LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
+					ImGui::TextWrapped("%s", LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
 					ImGui::PopStyleColor();
 				}
 

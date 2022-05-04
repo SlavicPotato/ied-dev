@@ -2,10 +2,11 @@
 
 #include "UIFormPickerWidget.h"
 
+#include "IED/UI/UICommon.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
 #include "IED/Controller/Controller.h"
-#include "IED/UI/UICommon.h"
+#include "IED/Data.h"
 
 namespace IED
 {
@@ -56,10 +57,6 @@ namespace IED
 		{
 			ImGui::PushID("form_picker_widget");
 			ImGui::PushID(a_strid);
-
-			//_DMESSAGE("%f %f", window->DC.ItemWidth, ImGui::CalcItemWidth());
-
-			//ImGui::BeginGroup();
 
 			bool result  = false;
 			bool hasForm = a_form != 0;
@@ -161,26 +158,66 @@ namespace IED
 								"%s [%s]",
 								m_currentInfo->form.name.c_str(),
 								desc);
-
-							UICommon::ToolTip(
-								100.0f,
-								"[%.8X] %s [%s]",
-								a_form.get(),
-								m_currentInfo->form.name.c_str(),
-								desc);
 						}
 						else
 						{
-							ImGui::Text(
-								"%s",
-								desc);
-
-							UICommon::ToolTip(
-								100.0f,
-								"%.8X [%s]",
-								a_form.get(),
-								desc);
+							ImGui::Text("%s", desc);
 						}
+
+						UICommon::ToolTip(100.0f, [&] {
+							stl::fixed_string modName;
+
+							std::uint32_t modIndex;
+
+							if (a_form.GetPluginPartialIndex(modIndex))
+							{
+								auto& imap = Data::IData::GetPluginInfo().GetIndexMap();
+
+								if (auto it = imap.find(modIndex); it != imap.end())
+								{
+									modName = it->second.name;
+								}
+							}
+
+							if (!m_currentInfo->form.name.empty())
+							{
+								if (!modName.empty())
+								{
+									ImGui::Text(
+										"[%.8X | %s] %s [%s]",
+										a_form.get(),
+										modName.c_str(),
+										m_currentInfo->form.name.c_str(),
+										desc);
+								}
+								else
+								{
+									ImGui::Text(
+										"[%.8X] %s [%s]",
+										a_form.get(),
+										m_currentInfo->form.name.c_str(),
+										desc);
+								}
+							}
+							else
+							{
+								if (!modName.empty())
+								{
+									ImGui::Text(
+										"[%.8X | %s] [%s]",
+										a_form.get(),
+										modName.c_str(),
+										desc);
+								}
+								else
+								{
+									ImGui::Text(
+										"%.8X [%s]",
+										a_form.get(),
+										desc);
+								}
+							}
+						});
 					}
 				}
 
