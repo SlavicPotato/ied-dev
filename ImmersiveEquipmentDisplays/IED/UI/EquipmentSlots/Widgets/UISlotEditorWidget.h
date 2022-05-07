@@ -544,6 +544,8 @@ namespace IED
 			T                a_handle,
 			entrySlotData_t& a_data)
 		{
+			ImGui::PushID("prio");
+
 			const auto ctxresult = DrawPriorityContextMenu(a_handle, a_data);
 
 			switch (ctxresult)
@@ -557,7 +559,7 @@ namespace IED
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (TreeEx(
-					"prio",
+					"tree",
 					false,
 					"%s",
 					LS(CommonStrings::Priority)))
@@ -599,6 +601,8 @@ namespace IED
 
 				ImGui::TreePop();
 			}
+
+			ImGui::PopID();
 		}
 
 		template <class T>
