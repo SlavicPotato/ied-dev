@@ -17,7 +17,7 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			a_out.exportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
+			a_out.serializationFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
 
 			a_out.importFlags = static_cast<ImportFlags>(
@@ -33,7 +33,7 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			data["export_flags"] = stl::underlying(a_data.exportFlags.value);
+			data["export_flags"] = stl::underlying(a_data.serializationFlags.value);
 			data["import_flags"] = stl::underlying(a_data.importFlags.value);
 
 			a_out["version"] = CURRENT_VERSION;

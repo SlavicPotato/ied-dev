@@ -64,26 +64,29 @@ namespace IED
 	}
 
 	bool IJSONSerialization::ImportData(
-		Data::configStore_t&&  a_in,
-		stl::flag<ImportFlags> a_flags)
+		const Data::configStore_t& a_in,
+		stl::flag<ImportFlags>                         a_flags,
+		stl::flag<Data::ConfigStoreSerializationFlags> a_serFlags)
 	{
+		auto data = CreateExportData(a_in, ExportFlags::kNone, a_serFlags);
+
 		if (a_flags.test(ImportFlags::kEraseTemporary))
 		{
-			EraseTemporary(a_in.slot.GetActorData());
-			EraseTemporary(a_in.slot.GetNPCData());
-			EraseTemporary(a_in.custom.GetActorData());
-			EraseTemporary(a_in.custom.GetNPCData());
-			EraseTemporary(a_in.transforms.GetActorData());
-			EraseTemporary(a_in.transforms.GetNPCData());
+			EraseTemporary(data.slot.GetActorData());
+			EraseTemporary(data.slot.GetNPCData());
+			EraseTemporary(data.custom.GetActorData());
+			EraseTemporary(data.custom.GetNPCData());
+			EraseTemporary(data.transforms.GetActorData());
+			EraseTemporary(data.transforms.GetNPCData());
 		}
 
 		if (a_flags.test(ImportFlags::kMerge))
 		{
-			return DoImportMerge(std::move(a_in), a_flags);
+			return DoImportMerge(std::move(data), a_flags);
 		}
 		else
 		{
-			return DoImportOverwrite(std::move(a_in), a_flags);
+			return DoImportOverwrite(std::move(data), a_flags);
 		}
 	}
 

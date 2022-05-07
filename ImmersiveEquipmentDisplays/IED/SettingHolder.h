@@ -89,7 +89,7 @@ namespace IED
 
 			struct ImportExport
 			{
-				stl::flag<ConfigStoreSerializationFlags> exportFlags{
+				stl::flag<ConfigStoreSerializationFlags> serializationFlags{
 					ConfigStoreSerializationFlags::kAll
 				};
 				stl::flag<ImportFlags> importFlags{ ImportFlags::kEraseTemporary };

@@ -203,9 +203,9 @@ namespace IED
 						.draw([this] {
 							auto& conf = m_controller.GetConfigStore().settings;
 
-							conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+							conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
-							return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
+							return conf.data.ui.importExport.serializationFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 						})
 						.call([this](const auto& a_p) {
 							std::string file(a_p.GetInput());
@@ -261,9 +261,9 @@ namespace IED
 							.draw([this] {
 								auto& conf = m_controller.GetConfigStore().settings;
 
-								conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+								conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
-								return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
+								return conf.data.ui.importExport.serializationFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 							})
 							.call([this, path = selected->m_fullpath](auto&) {
 								DoExport(path);
@@ -285,7 +285,7 @@ namespace IED
 				if (!m_controller.ExportData(
 						a_path,
 						ExportFlags::kNone,
-						settings.data.ui.importExport.exportFlags))
+						settings.data.ui.importExport.serializationFlags))
 				{
 					auto& queue = m_controller.UIGetPopupQueue();
 
