@@ -178,6 +178,8 @@ namespace IED
 			m_animEventForwardRegistrations.Clear();
 		}
 
+		m_animationUpdateList->Clear();
+
 		if (m_actor->loadedState)
 		{
 			for (const auto& e : m_cmeNodes)
@@ -530,6 +532,8 @@ namespace IED
 		}
 
 		m_animationUpdateList->Add(a_ptr);
+
+		//_DMESSAGE("reg %p", a_ptr.get());
 	}
 
 	void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
@@ -541,11 +545,13 @@ namespace IED
 		}
 
 		m_animationUpdateList->Remove(a_ptr);
+
+		//_DMESSAGE("unreg %p", a_ptr.get());
 	}
 
 	void objectEntryBase_t::reset(
 		Game::ObjectRefHandle a_handle,
-		NiNode*               a_root)
+		NiPointer<NiNode>&    a_root)
 	{
 		if (!state)
 		{
@@ -567,7 +573,7 @@ namespace IED
 				DisposeStateTask(
 					std::unique_ptr<State>&& a_state,
 					Game::ObjectRefHandle    a_handle,
-					NiNode*                  a_root) :
+					NiPointer<NiNode>&       a_root) :
 					m_state(std::move(a_state)),
 					m_handle(a_handle),
 					m_root(a_root)
@@ -609,26 +615,26 @@ namespace IED
 	{
 		for (auto& e : groupObjects)
 		{
+			EngineExtensions::CleanupObjectImpl(
+				a_handle,
+				e.second.rootNode);
+
 			if (e.second.weapAnimGraphManagerHolder)
 			{
 				EngineExtensions::CleanupWeaponBehaviorGraph(
 					e.second.weapAnimGraphManagerHolder);
 			}
-
-			EngineExtensions::CleanupObjectImpl(
-				a_handle,
-				e.second.rootNode);
 		}
+
+		EngineExtensions::CleanupObjectImpl(
+			a_handle,
+			nodes.rootNode);
 
 		if (weapAnimGraphManagerHolder)
 		{
 			EngineExtensions::CleanupWeaponBehaviorGraph(
 				weapAnimGraphManagerHolder);
 		}
-
-		EngineExtensions::CleanupObjectImpl(
-			a_handle,
-			nodes.rootNode);
 	}
 
 	void objectEntryBase_t::State::GroupObject::PlayAnimation(

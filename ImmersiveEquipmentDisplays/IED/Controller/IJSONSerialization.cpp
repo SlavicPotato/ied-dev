@@ -68,7 +68,7 @@ namespace IED
 		stl::flag<ImportFlags>                         a_flags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_serFlags)
 	{
-		auto data = CreateExportData(a_in, ExportFlags::kNone, a_serFlags);
+		auto data = CreateFilteredConfigStore(a_in, ExportFlags::kNone, a_serFlags);
 
 		if (a_flags.test(ImportFlags::kEraseTemporary))
 		{
@@ -228,7 +228,7 @@ namespace IED
 			{
 				stl::scoped_lock lock(JSGetLock());
 
-				tmp = CreateExportData(JSGetConfigStore(), a_exportFlags, a_flags);
+				tmp = CreateFilteredConfigStore(JSGetConfigStore(), a_exportFlags, a_flags);
 			}
 
 			parser.Create(tmp, root);
@@ -333,7 +333,7 @@ namespace IED
 		}
 	}
 
-	Data::configStore_t IJSONSerialization::CreateExportData(
+	Data::configStore_t IJSONSerialization::CreateFilteredConfigStore(
 		const Data::configStore_t&                     a_data,
 		stl::flag<ExportFlags>                         a_exportFlags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)

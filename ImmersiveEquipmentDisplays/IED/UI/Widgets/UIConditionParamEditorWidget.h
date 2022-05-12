@@ -36,6 +36,7 @@ namespace IED
 		UInt32,
 		TimeOfDay,
 		Extra,
+		Race,
 
 		Total
 	};
@@ -124,6 +125,11 @@ namespace IED
 			{
 				return m_formPickerKeyword;
 			}
+			
+			inline constexpr auto& GetRacePicker() noexcept
+			{
+				return m_formPickerRace;
+			}
 
 			inline constexpr void SetTempFlags(
 				UIConditionParamEditorTempFlags a_mask) noexcept
@@ -146,7 +152,7 @@ namespace IED
 			constexpr void SetNext(Tp1& a_p1, const Tp2& a_p2) noexcept;
 
 			const char* GetItemDesc(ConditionParamItem a_item);
-			const char* GetFormKeywordExtraDesc(const char* a_idesc) const noexcept;
+			const char* GetFormKeywordExtraDesc(const char* a_idesc, bool a_race = false) const noexcept;
 
 		private:
 			bool DrawExtra(
@@ -175,6 +181,7 @@ namespace IED
 
 			UIFormPickerWidget m_formPickerForm;
 			UIFormPickerWidget m_formPickerKeyword;
+			UIFormPickerWidget m_formPickerRace;
 
 			stl::flag<UIConditionParamEditorTempFlags> m_tempFlags{
 				UIConditionParamEditorTempFlags::kNone
@@ -190,7 +197,8 @@ namespace IED
 
 			if constexpr (
 				Ap == ConditionParamItem::Form ||
-				Ap == ConditionParamItem::Keyword)
+				Ap == ConditionParamItem::Keyword ||
+				Ap == ConditionParamItem::Race)
 			{
 				static_assert(std::is_convertible_v<T, Game::FormID>);
 

@@ -19,6 +19,7 @@
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
+#include "UISimpleStringSet.h"
 #include "UITransformSliderWidget.h"
 #include "UIWidgetsCommon.h"
 
@@ -94,7 +95,8 @@ namespace IED
 			public virtual UITipsInterface,
 			public virtual UINotificationInterface,
 			public virtual UILocalizationInterface,
-			public virtual UISettingsInterface
+			public virtual UISettingsInterface,
+			public virtual UISimpleStringSetWidget
 		{
 		public:
 			UIBaseConfigWidget(
@@ -251,6 +253,7 @@ namespace IED
 			Game::FormID                                m_aoNewEntryActorID;
 			Game::FormID                                m_aoNewEntryNPCID;
 			Game::FormID                                m_aoNewEntryGlobID;
+			Game::FormID                                m_aoNewEntryMountID;
 			BIPED_OBJECT                                m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ExtraConditionType                    m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 			Data::ObjectSlotExtra                       m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
@@ -1063,6 +1066,26 @@ namespace IED
 				}
 			}
 			ImGui::PopID();
+
+			UICommon::PushDisabled(disabled);
+
+			if (DrawStringSetTree(
+					"bc_hkx_flt",
+					static_cast<Localization::StringID>(UIWidgetCommonStrings::BehaviorGraphFilter),
+					a_data.hkxFilter))
+			{
+				PropagateMemberToEquipmentOverrides(
+					a_baseConfig,
+					offsetof(Data::configBaseValues_t, hkxFilter),
+					a_data.hkxFilter);
+
+				OnBaseConfigChange(
+					a_handle,
+					a_params,
+					PostChangeAction::Reset);
+			}
+
+			UICommon::PopDisabled(disabled);
 		}
 
 		template <class T>
@@ -1462,6 +1485,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Worldspace:
 					case Data::EquipmentOverrideConditionType::Package:
 					case Data::EquipmentOverrideConditionType::Weather:
+					case Data::EquipmentOverrideConditionType::Mount:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1654,6 +1678,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Worldspace:
 						case Data::EquipmentOverrideConditionType::Package:
 						case Data::EquipmentOverrideConditionType::Weather:
+						case Data::EquipmentOverrideConditionType::Mount:
 
 							it = a_entry.emplace(
 								it,
@@ -1961,6 +1986,19 @@ namespace IED
 								tdesc = LS(CommonStrings::Global);
 
 								break;
+							case Data::EquipmentOverrideConditionType::Mount:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Race>(
+									e.keyword.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
+								tdesc = LS(UIWidgetCommonStrings::Mount);
+
+								break;
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2052,6 +2090,7 @@ namespace IED
 				m_aoNewEntryActorID = {};
 				m_aoNewEntryNPCID   = {};
 				m_aoNewEntryGlobID  = {};
+				m_aoNewEntryMountID = {};
 				m_ooNewBiped        = BIPED_OBJECT::kNone;
 				m_aoNewSlot         = Data::ObjectSlotExtra::kNone;
 				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
@@ -2266,6 +2305,12 @@ namespace IED
 						}
 
 						ImGui::EndMenu();
+					}
+					
+					if (LCG_MI(UIWidgetCommonStrings::Mount, "G"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Mount;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -2664,6 +2709,7 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
 				break;
+
 			}
 
 			ImGui::PopID();
@@ -2805,6 +2851,28 @@ namespace IED
 				}
 
 				break;
+			case Data::EquipmentOverrideConditionType::Mount:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::Race)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
+
+					ImGui::SameLine();
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2835,6 +2903,7 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			case Data::EquipmentOverrideConditionType::NPC:
+			case Data::EquipmentOverrideConditionType::Mount:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;

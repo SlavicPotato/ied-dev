@@ -67,7 +67,8 @@ namespace IED
 			Worldspace = 12,
 			Package    = 13,
 			Weather    = 14,
-			Global     = 15
+			Global     = 15,
+			Mount      = 16
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -197,6 +198,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Worldspace:
 				case EquipmentOverrideConditionType::Package:
 				case EquipmentOverrideConditionType::Weather:
+				case EquipmentOverrideConditionType::Mount:
 
 					if (a_matchType == EquipmentOverrideConditionType::Location ||
 					    a_matchType == EquipmentOverrideConditionType::Worldspace)

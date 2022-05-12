@@ -64,6 +64,8 @@ namespace IED
 				return a_params.actor->flags2.test(Actor::Flags2::kIsCommandedActor);
 			case Data::ExtraConditionType::kParalyzed:
 				return a_params.actor->flags1.test(Actor::Flags1::kParalyzed);
+			case Data::ExtraConditionType::kIsOnMount:
+				return a_params.is_on_mount();
 			default:
 				return false;
 			}
@@ -579,6 +581,63 @@ namespace IED
 			    tod != Data::TimeOfDay::kNone)
 			{
 				return tod == a_match.timeOfDay;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_mount(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (a_params.is_on_mount())
+			{
+				if (a_match.form.get_id())
+				{
+					auto& mountedActor = a_params.get_mounted_actor();
+					if (!mountedActor)
+					{
+						return false;
+					}
+
+					auto base = mountedActor->GetActorBase();
+					if (!base)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == base->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.keyword.get_id()) // actually race
+				{
+					auto& mountedActor = a_params.get_mounted_actor();
+					if (!mountedActor)
+					{
+						return false;
+					}
+
+					auto race = mountedActor->GetRace();
+					if (!race)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch2) ==
+					    (a_match.keyword.get_id() == race->formID))
+					{
+						return false;
+					}
+				}
+
+				return true;
 			}
 			else
 			{

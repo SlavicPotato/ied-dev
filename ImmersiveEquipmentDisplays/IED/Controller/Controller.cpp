@@ -1139,11 +1139,6 @@ namespace IED
 	void Controller::GenerateRandomPlacementEntries(
 		const ActorObjectHolder& a_holder)
 	{
-		if (a_holder.m_actor == *g_thePlayer)
-		{
-			return;
-		}
-
 		auto anpc = a_holder.m_actor->GetActorBase();
 		if (!anpc)
 		{
@@ -1153,6 +1148,11 @@ namespace IED
 		auto npc = anpc->GetFirstNonTemporaryOrThis();
 
 		if (npc->formID.IsTemporary())
+		{
+			return;
+		}
+
+		if (npc->formID == IData::GetPlayerBaseID())
 		{
 			return;
 		}
@@ -5533,7 +5533,7 @@ namespace IED
 		stl::flag<ExportFlags>                   a_exportFlags,
 		stl::flag<ConfigStoreSerializationFlags> a_flags)
 	{
-		auto tmp = CreateExportData(m_config.active, a_exportFlags, a_flags);
+		auto tmp = CreateFilteredConfigStore(m_config.active, a_exportFlags, a_flags);
 
 		FillGlobalSlotConfig(tmp.slot);
 		CleanConfigStore(tmp);

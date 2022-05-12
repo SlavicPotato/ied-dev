@@ -462,7 +462,7 @@ namespace IED
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npc);
+				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -516,6 +516,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Global:
 
 				return Conditions::match_global<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mount:
+
+				return Conditions::match_mount<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
@@ -731,7 +737,7 @@ namespace IED
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npc);
+				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -785,6 +791,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Global:
 
 				return Conditions::match_global<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mount:
+
+				return Conditions::match_mount<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
@@ -994,7 +1006,7 @@ namespace IED
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npc);
+				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -1048,6 +1060,12 @@ namespace IED
 			case EquipmentOverrideConditionType::Global:
 
 				return Conditions::match_global<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mount:
+
+				return Conditions::match_mount<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}

@@ -38,6 +38,8 @@ namespace IED
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
 		mutable std::optional<bool>                                  inCombat;
 		mutable std::optional<bool>                                  enemiesNearby;
+		mutable std::optional<bool>                                  isMounted;
+		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -293,7 +295,33 @@ namespace IED
 			return *inCombat;
 		}
 
-		[[nodiscard]] bool enemies_nearby() const;
+		[[nodiscard]] constexpr auto is_on_mount() const
+		{
+			if (!isMounted)
+			{
+				isMounted = actor->IsOnMount();
+			}
+
+			return *isMounted;
+		}
+
+		[[nodiscard]] auto& get_mounted_actor() const
+		{
+			if (!mountedActor)
+			{
+				NiPointer<Actor> tmp;
+				if (actor->GetMountedActor(tmp))
+				{
+					mountedActor.emplace(tmp);
+				}
+				else
+				{
+					mountedActor = nullptr;
+				}
+			}
+
+			return *mountedActor;
+		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{

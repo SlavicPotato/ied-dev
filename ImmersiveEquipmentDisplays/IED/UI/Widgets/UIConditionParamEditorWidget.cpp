@@ -20,10 +20,13 @@ namespace IED
 			UIComparisonOperatorSelector(a_controller),
 			UITimeOfDaySelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
-			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true)
+			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
+			m_formPickerRace(a_controller, FormInfoFlags::kNone, true)
 		{
-			GetKeywordPicker().SetAllowedTypes(
+			m_formPickerKeyword.SetAllowedTypes(
 				{ BGSKeyword::kTypeID });
+			m_formPickerRace.SetAllowedTypes(
+				{ TESRace::kTypeID });
 		}
 
 		void UIConditionParamEditorWidget::OpenConditionParamEditorPopup()
@@ -169,6 +172,25 @@ namespace IED
 					result |= m_formPickerKeyword.DrawFormPicker(
 						"fp_2",
 						static_cast<Localization::StringID>(CommonStrings::Keyword),
+						e.As1<Game::FormID>());
+
+					UICommon::PopDisabled(args.disable);
+				}
+			}
+
+			if (const auto& e = get(ConditionParamItem::Race); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::Race);
+
+				if (!args.hide)
+				{
+					UICommon::PushDisabled(args.disable);
+
+					result |= m_formPickerRace.DrawFormPicker(
+						"fp_3",
+						static_cast<Localization::StringID>(CommonStrings::Race),
 						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
@@ -508,7 +530,8 @@ namespace IED
 		}
 
 		const char* UIConditionParamEditorWidget::GetFormKeywordExtraDesc(
-			const char* a_idesc) const noexcept
+			const char* a_idesc,
+			bool        a_race) const noexcept
 		{
 			Game::FormID a_iform;
 			Game::FormID a_ikw;
@@ -518,7 +541,21 @@ namespace IED
 				a_iform = e.As1<Game::FormID>();
 			}
 
-			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
+			const char* kwtag;
+			ConditionParamItem kwparam;
+
+			if (a_race)
+			{
+				kwtag = "R";
+				kwparam = ConditionParamItem::Race;
+			}
+			else
+			{
+				kwtag = "KW";
+				kwparam = ConditionParamItem::Keyword;
+			}
+
+			if (const auto& e = get(kwparam); e.p1)
 			{
 				a_ikw = e.As1<Game::FormID>();
 			}
@@ -529,17 +566,19 @@ namespace IED
 				{
 					stl::snprintf(
 						m_descBuffer,
-						"%s, F: %.8X, KW: %.8X",
+						"%s, F: %.8X, %s: %.8X",
 						a_idesc,
 						a_iform.get(),
+						kwtag,
 						a_ikw.get());
 				}
 				else
 				{
 					stl::snprintf(
 						m_descBuffer,
-						"F: %.8X, KW: %.8X",
+						"F: %.8X, %s: %.8X",
 						a_iform.get(),
+						kwtag,
 						a_ikw.get());
 				}
 			}
@@ -596,8 +635,9 @@ namespace IED
 					{
 						stl::snprintf(
 							m_descBuffer,
-							"%s, KW: [%.8X] %s",
+							"%s, %s: [%.8X] %s",
 							a_idesc,
+							kwtag,
 							a_ikw.get(),
 							info->form.name.c_str());
 					}
@@ -605,8 +645,9 @@ namespace IED
 					{
 						stl::snprintf(
 							m_descBuffer,
-							"%s, KW: %.8X",
+							"%s, %s: %.8X",
 							a_idesc,
+							kwtag,
 							a_ikw.get());
 					}
 				}
@@ -616,7 +657,8 @@ namespace IED
 					{
 						stl::snprintf(
 							m_descBuffer,
-							"KW: [%.8X] %s",
+							"%s: [%.8X] %s",
+							kwtag,
 							a_ikw.get(),
 							info->form.name.c_str());
 					}
@@ -624,7 +666,8 @@ namespace IED
 					{
 						stl::snprintf(
 							m_descBuffer,
-							"KW: %.8X",
+							"%s: %.8X",
+							kwtag,
 							a_ikw.get());
 					}
 				}

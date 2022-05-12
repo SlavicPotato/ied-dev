@@ -94,6 +94,8 @@ namespace IED
 			DisableAnimEventForwarding          = 2083,
 			AnimationEvent                      = 2084,
 			SkeletonExplorer                    = 2085,
+			BehaviorGraphFilter                 = 2086,
+			Mount                               = 2087,
 		};
 	}
 }

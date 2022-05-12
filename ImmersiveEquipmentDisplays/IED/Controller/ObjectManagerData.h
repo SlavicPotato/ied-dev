@@ -63,7 +63,11 @@ namespace IED
 		{
 			stl::scoped_lock lock(m_lock);
 
-			m_data.remove(a_ptr);
+			auto it = std::find(m_data.begin(), m_data.end(), a_ptr);
+			if (it != m_data.end())
+			{
+				m_data.erase(it);
+			}
 		}
 
 		void Notify(const BSFixedString& a_event) const
@@ -110,7 +114,7 @@ namespace IED
 		objectEntryBase_t& operator=(const objectEntryBase_t&) = delete;
 		objectEntryBase_t& operator=(objectEntryBase_t&&) = delete;
 
-		void reset(Game::ObjectRefHandle a_handle, NiNode* a_root);
+		void reset(Game::ObjectRefHandle a_handle, NiPointer<NiNode>& a_root);
 
 		inline void SetNodeVisible(bool a_switch)
 		{
@@ -307,8 +311,8 @@ namespace IED
 		std::uint32_t skipNextTransformUpdate : 1;
 		std::uint32_t wantEval                : 1;
 		std::uint32_t immediateEval           : 1;
-		std::uint32_t evalCountdown           : 2;
-		std::uint32_t unused                  : 25;
+		std::uint32_t evalCountdown           : 8;
+		std::uint32_t unused                  : 19;
 	};
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
@@ -416,6 +420,7 @@ namespace IED
 
 		inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_2 =
 			Actor::Flags2::kIsAMount |
+			Actor::Flags2::kGettingOnOffMount |
 			Actor::Flags2::kInBleedoutAnimation |
 			Actor::Flags2::kIsTrespassing |
 			Actor::Flags2::kIsCommandedActor |
@@ -524,7 +529,7 @@ namespace IED
 			return m_enemiesNearby;
 		}*/
 
-		inline constexpr void UpdateCellAttached()
+		inline constexpr void UpdateCellAttached() noexcept
 		{
 			m_cellAttached = m_actor->IsParentCellAttached();
 		}
@@ -556,12 +561,12 @@ namespace IED
 			}
 		}
 
-		inline constexpr void RequestEvalDefer() const noexcept
+		inline constexpr void RequestEvalDefer(std::uint32_t a_delay = 2) const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEval);
 			if (m_flagsbf.evalCountdown == 0)
 			{
-				m_flagsbf.evalCountdown = 2;
+				m_flagsbf.evalCountdown = a_delay;
 			}
 		}
 
@@ -583,7 +588,20 @@ namespace IED
 			if (a_var != a_current)
 			{
 				a_var = a_current;
-				RequestEvalDefer();
+				RequestEval();
+			}
+		}
+		
+		template <class Tv>
+		inline constexpr void state_var_update_defer(
+			Tv&       a_var,
+			const Tv& a_current,
+			std::uint32_t a_delay = 2) noexcept
+		{
+			if (a_var != a_current)
+			{
+				a_var = a_current;
+				RequestEvalDefer(a_delay);
 			}
 		}
 

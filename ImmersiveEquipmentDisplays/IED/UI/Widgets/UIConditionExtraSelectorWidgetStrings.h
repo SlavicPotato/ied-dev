@@ -30,6 +30,7 @@ namespace IED
 			Tresspassing        = 5419,
 			IsCommanded         = 5420,
 			Paralyzed           = 5421,
+			IsOnMount           = 5422,
 		};
 	}
 }

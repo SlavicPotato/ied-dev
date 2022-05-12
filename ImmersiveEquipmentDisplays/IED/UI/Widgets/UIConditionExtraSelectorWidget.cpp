@@ -14,6 +14,7 @@ namespace IED
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
+			{ Data::ExtraConditionType::kIsOnMount, UIConditionExtraSelectorWidgetStrings::IsOnMount },
 			{ Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped },
 			//{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
@@ -25,7 +26,6 @@ namespace IED
 #if defined(IED_ENABLE_CONDITION_EN)
 			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
 #endif
-
 			{ Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater },
 			{ Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater },
 			{ Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming },
@@ -131,6 +131,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsCommanded);
 			case Data::ExtraConditionType::kParalyzed:
 				return LS(UIConditionExtraSelectorWidgetStrings::Paralyzed);
+			case Data::ExtraConditionType::kIsOnMount:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsOnMount);
 			default:
 				return nullptr;
 			}

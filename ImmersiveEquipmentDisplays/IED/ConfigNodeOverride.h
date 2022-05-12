@@ -103,7 +103,8 @@ namespace IED
 			Worldspace = 12,
 			Package    = 13,
 			Weather    = 14,
-			Global     = 15
+			Global     = 15,
+			Mount      = 16
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -208,6 +209,7 @@ namespace IED
 				case NodeOverrideConditionType::Worldspace:
 				case NodeOverrideConditionType::Package:
 				case NodeOverrideConditionType::Weather:
+				case NodeOverrideConditionType::Mount:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{

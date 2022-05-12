@@ -2738,6 +2738,20 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mount, "F")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Mount);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -2942,6 +2956,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Actor:
 						case Data::NodeOverrideConditionType::NPC:
 						case Data::NodeOverrideConditionType::Global:
+						case Data::NodeOverrideConditionType::Mount:
 
 							it = a_entry.emplace(
 								it,
@@ -3297,6 +3312,20 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Global);
+
+								break;
+								
+							case Data::NodeOverrideConditionType::Mount:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Race>(
+									e.keyword.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
+								tdesc = LS(UIWidgetCommonStrings::Mount);
 
 								break;
 
@@ -3870,6 +3899,12 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mount, "H")))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Mount;
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -4242,6 +4277,28 @@ namespace IED
 				}
 
 				break;
+			case Data::NodeOverrideConditionType::Mount:
+
+				if (a_item == ConditionParamItem::Form)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::Race)
+				{
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
+
+					ImGui::SameLine();
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -4272,6 +4329,7 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			case Data::NodeOverrideConditionType::NPC:
+			case Data::NodeOverrideConditionType::Mount:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
