@@ -207,7 +207,10 @@ namespace IED
 				const xfrm_ovr_ctor_init_t& a_init) :
 				name(a_init.name)
 			{
-				rot.SetEulerAngles(a_init.rot.x, a_init.rot.y, a_init.rot.z);
+				rot.SetEulerAnglesIntrinsic(
+					a_init.rot.x,
+					a_init.rot.y,
+					a_init.rot.z);
 			}
 
 			xfrmOverrideNodeEntry_t(const xfrmOverrideNodeEntry_t&) = delete;

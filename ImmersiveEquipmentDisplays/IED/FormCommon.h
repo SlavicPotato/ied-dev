@@ -57,7 +57,9 @@ namespace IED
 		static bool HasKeyword(TESForm* a_form, const Data::configCachedForm_t& a_keyword);
 
 		template <class T>
-		inline static constexpr bool HasKeyword(T* a_form, BGSKeyword* a_keyword)  //
+		inline static constexpr bool HasKeyword(
+			T*          a_form,
+			BGSKeyword* a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return HasKeywordImpl(a_form, a_keyword);

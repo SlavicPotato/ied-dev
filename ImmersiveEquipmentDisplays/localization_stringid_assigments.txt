@@ -28,3 +28,4 @@
 6500-6599:		time of day selector
 6600-6699:		es func editor
 6700-6799:		skeleton explorer
+6800-6899:		transform widget

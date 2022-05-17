@@ -13,7 +13,7 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 		public:
-			UITipsInterface(Controller& a_controller);
+			UITipsInterface(Localization::ILocalization& a_controller);
 
 		protected:
 			void        DrawTip(UITip a_id, bool a_sameLine = true) const;

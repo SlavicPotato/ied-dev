@@ -761,8 +761,8 @@ namespace IED
 
 		IObjectManager& m_owner;
 
-		static std::atomic_llong m_lfsc_delta_lf;
-		static std::atomic_llong m_lfsc_delta_hf;
+		static std::atomic_ullong m_lfsc_delta_lf;
+		static std::atomic_ullong m_lfsc_delta_hf;
 	};
 
 	using ActorObjectMap = stl::unordered_map<Game::FormID, ActorObjectHolder>;

@@ -95,7 +95,7 @@ namespace IED
 			case TESFaction::kTypeID:
 			case TESCombatStyle::kTypeID:
 			case TESClass::kTypeID:
-			case TESWeather::kTypeID:
+			case RE::TESWeather::kTypeID:
 			case TESGlobal::kTypeID:
 				return form;
 			default:

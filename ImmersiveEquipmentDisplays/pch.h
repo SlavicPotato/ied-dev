@@ -3,6 +3,8 @@
 
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
+#include <ext/IDebugLog.h>
+#include <ext/IOS.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ISerializationBase.h>
 #include <ext/ITaskPool.h>

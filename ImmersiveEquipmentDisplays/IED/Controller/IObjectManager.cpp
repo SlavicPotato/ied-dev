@@ -193,8 +193,8 @@ namespace IED
 		a_objects.m_weapNodes.clear();
 		a_objects.m_monitorNodes.clear();
 
-		assert(a_objects.m_animationUpdateList->Empty());
-		assert(a_objects.m_animEventForwardRegistrations.Empty());
+		/*assert(a_objects.m_animationUpdateList->Empty());
+		assert(a_objects.m_animEventForwardRegistrations.Empty());*/
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -229,8 +229,8 @@ namespace IED
 			e.clear();
 		}
 
-		assert(a_objects.m_animationUpdateList->Empty());
-		assert(a_objects.m_animEventForwardRegistrations.Empty());
+		/*assert(a_objects.m_animationUpdateList->Empty());
+		assert(a_objects.m_animEventForwardRegistrations.Empty());*/
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
@@ -565,7 +565,17 @@ namespace IED
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
-					state->weapAnimGraphManagerHolder))
+					state->weapAnimGraphManagerHolder,
+					[&](const char* a_path) {
+						if (a_config.hkxFilter.empty())
+						{
+							return true;
+						}
+						else
+						{
+							return !a_config.hkxFilter.contains(a_path);
+						}
+					}))
 			{
 				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
 				{
@@ -654,8 +664,7 @@ namespace IED
 			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
 		};
 
-		stl::vector<tmpdata_t> modelParams;
-		modelParams.reserve(a_group.entries.size());
+		stl::list<tmpdata_t> modelParams;
 
 		for (auto& e : a_group.entries)
 		{
@@ -859,13 +868,19 @@ namespace IED
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,
-						e.grpObject->weapAnimGraphManagerHolder))
+						e.grpObject->weapAnimGraphManagerHolder,
+						[](const char*) { return true; }))
 				{
 					if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 					{
 						e.grpObject->UpdateAndSendAnimationEvent(
 							e.entry->second.animationEvent);
 					}
+					/*else if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
+					{
+						e.grpObject->UpdateAndSendAnimationEvent(
+							a_config.animationEvent);
+					}*/
 					else
 					{
 						e.grpObject->currentAnimationEvent =

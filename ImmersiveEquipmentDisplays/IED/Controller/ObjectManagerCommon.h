@@ -18,10 +18,20 @@ namespace IED
 
 				if (a_in.rotation)
 				{
-					rotation->SetEulerAngles(
-						a_in.rotation->x,
-						a_in.rotation->y,
-						a_in.rotation->z);
+					if (a_in.xfrmFlags.test(ConfigTransformFlags::kExtrinsicRotation))
+					{
+						rotation->SetEulerAnglesExtrinsic(
+							a_in.rotation->x,
+							a_in.rotation->y,
+							a_in.rotation->z);
+					}
+					else
+					{
+						rotation->SetEulerAnglesIntrinsic(
+							a_in.rotation->x,
+							a_in.rotation->y,
+							a_in.rotation->z);
+					}
 
 					rotation.mark(true);
 				}

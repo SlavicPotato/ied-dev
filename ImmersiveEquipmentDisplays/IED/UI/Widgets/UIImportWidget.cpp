@@ -59,7 +59,7 @@ namespace IED
 
 						auto& conf = m_controller.GetConfigStore().settings;
 
-						conf.mark_if(DrawExportFilters(conf.data.ui.importExport.exportFlags));
+						conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
 						ImGui::Separator();
 						ImGui::Spacing();
@@ -101,21 +101,25 @@ namespace IED
 
 						ImGui::Spacing();
 
-						return conf.data.ui.importExport.exportFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
+						return conf.data.ui.importExport.serializationFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 					})
 					.call([this, data = std::move(data)](const auto&) mutable {
-						auto& conf = m_controller.GetConfigStore().settings;
-						DoImport(std::move(*data), conf.data.ui.importExport.importFlags);
+						const auto& conf = m_controller.GetConfigStore().settings;
+						DoImport(
+							*data,
+							conf.data.ui.importExport.importFlags,
+							conf.data.ui.importExport.serializationFlags);
 					})
 					.set_text_wrap_size(23.f);
 			}
 		}
 
 		void UIImportWidget::DoImport(
-			Data::configStore_t&&  a_data,
-			stl::flag<ImportFlags> a_flags)
+			const Data::configStore_t&                     a_data,
+			stl::flag<ImportFlags>                         a_flags,
+			stl::flag<Data::ConfigStoreSerializationFlags> a_serFlags)
 		{
-			OnDataImport(m_controller.ImportData(std::move(a_data), a_flags));
+			OnDataImport(m_controller.ImportData(a_data, a_flags, a_serFlags));
 		}
 
 	}

@@ -14,7 +14,8 @@ namespace IED
 		stl::scoped_lock lock(m_lock);  // REMOVE ME
 
 		assert(!m_running.load(std::memory_order_relaxed));
-		assert(m_data.empty());
+		
+		ASSERT(m_data.empty());
 
 		//pt.Begin();
 
@@ -116,6 +117,8 @@ namespace IED
 		Controller* a_controller)
 		-> std::shared_ptr<AnimationGraphManagerHolderList>
 	{
+		std::shared_ptr<AnimationGraphManagerHolderList> result;
+
 		stl::scoped_lock lock(a_controller->GetLock());
 
 		auto& data = a_controller->GetData();
@@ -123,12 +126,10 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			return it->second.GetAnimationUpdateList();
+			result = it->second.GetAnimationUpdateList();
 		}
-		else
-		{
-			return {};
-		}
+		
+		return result;
 	}
 
 }

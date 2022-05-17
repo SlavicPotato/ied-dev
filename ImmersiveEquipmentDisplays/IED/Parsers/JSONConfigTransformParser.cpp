@@ -12,6 +12,12 @@ namespace IED
 			Data::configTransform_t& a_out,
 			const std::uint32_t      a_version) const
 		{
+			// default to intrinsic for older versions!
+			a_out.xfrmFlags = a_in.get(
+									  "xfrmflags",
+									  stl::underlying(Data::ConfigTransformFlags::kNone))
+			                      .asUInt();
+
 			if (ParseFloatArray(a_in["pos"], *a_out.position, 3))
 			{
 				a_out.position.mark(true);
@@ -37,6 +43,8 @@ namespace IED
 			const Data::configTransform_t& a_data,
 			Json::Value&                   a_out) const
 		{
+			a_out["xfrmflags"] = a_data.xfrmFlags.underlying();
+
 			if (a_data.position)
 			{
 				CreateFloatArray(*a_data.position, 3, a_out["pos"]);

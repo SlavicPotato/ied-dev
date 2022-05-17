@@ -3,14 +3,12 @@
 #include "UICommon.h"
 #include "UITips.h"
 
-#include "IED/Controller/Controller.h"
-
 namespace IED
 {
 	namespace UI
 	{
 		UITipsInterface::UITipsInterface(
-			Controller& a_controller) :
+			Localization::ILocalization& a_controller) :
 			UILocalizationInterface(a_controller)
 		{
 		}

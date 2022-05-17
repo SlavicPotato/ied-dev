@@ -9,11 +9,9 @@ namespace IED
 {
 	namespace Serialization
 	{
-		using namespace Data;
-
 		static SlotKeyParser s_slotKeyParser;
 
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
 		bool Parser<Data::configSlotHolder_t>::Parse(
@@ -22,7 +20,7 @@ namespace IED
 		{
 			JSON_PARSE_VERSION()
 
-			Parser<configSlot_t> pslot(m_state);
+			Parser<Data::configSlot_t> pslot(m_state);
 
 			auto& data = a_in["data"];
 
@@ -32,7 +30,7 @@ namespace IED
 
 				auto slot = s_slotKeyParser.KeyToSlot(key);
 
-				if (slot == ObjectSlot::kMax)
+				if (slot == Data::ObjectSlot::kMax)
 				{
 					Error("%s: unrecognized slot key: '%s'", __FUNCTION__, key.c_str());
 					return false;
@@ -42,12 +40,12 @@ namespace IED
 
 				if (!v)
 				{
-					v = std::make_unique<configSlotHolder_t::data_type>();
+					v = std::make_unique<Data::configSlotHolder_t::data_type>();
 				}
 
-				parserDesc_t<configSlot_t> desc[]{
-					{ "m", (*v)(ConfigSex::Male) },
-					{ "f", (*v)(ConfigSex::Female) }
+				parserDesc_t<Data::configSlot_t> desc[]{
+					{ "m", (*v)(Data::ConfigSex::Male) },
+					{ "f", (*v)(Data::ConfigSex::Female) }
 				};
 
 				for (auto& e : desc)
@@ -61,7 +59,7 @@ namespace IED
 
 			if (auto& prio = a_in["prio"])
 			{
-				Parser<configSlotPriority_t> pprio(m_state);
+				Parser<Data::configSlotPriority_t> pprio(m_state);
 
 				auto& v = a_out.priority;
 
@@ -70,9 +68,9 @@ namespace IED
 					v = std::make_unique<Data::configSlotHolder_t::prio_data_type>();
 				}
 
-				parserDesc_t<configSlotPriority_t> desc[]{
-					{ "m", (*v)(ConfigSex::Male) },
-					{ "f", (*v)(ConfigSex::Female) }
+				parserDesc_t<Data::configSlotPriority_t> desc[]{
+					{ "m", (*v)(Data::ConfigSex::Male) },
+					{ "f", (*v)(Data::ConfigSex::Female) }
 				};
 
 				for (auto& e : desc)
@@ -100,13 +98,13 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			using enum_type = std::underlying_type_t<ObjectSlot>;
+			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
 
-			Parser<configSlot_t> pslot(m_state);
+			Parser<Data::configSlot_t> pslot(m_state);
 
-			for (enum_type i = 0; i < stl::underlying(ObjectSlot::kMax); i++)
+			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 			{
-				auto slot = static_cast<ObjectSlot>(i);
+				auto slot = static_cast<Data::ObjectSlot>(i);
 
 				auto& v = a_data.get(slot);
 
@@ -119,9 +117,9 @@ namespace IED
 
 				assert(key);
 
-				parserDesc_t<configSlot_t> desc[]{
-					{ "m", (*v)(ConfigSex::Male) },
-					{ "f", (*v)(ConfigSex::Female) }
+				parserDesc_t<Data::configSlot_t> desc[]{
+					{ "m", (*v)(Data::ConfigSex::Male) },
+					{ "f", (*v)(Data::ConfigSex::Female) }
 				};
 
 				auto& e = data[key];
@@ -134,13 +132,13 @@ namespace IED
 
 			if (auto& prio = a_data.priority)
 			{
-				Parser<configSlotPriority_t> pprio(m_state);
+				Parser<Data::configSlotPriority_t> pprio(m_state);
 
 				auto& pout = (a_out["prio"] = Json::Value(Json::ValueType::objectValue));
 
-				parserDesc_t<configSlotPriority_t> desc[]{
-					{ "m", (*prio)(ConfigSex::Male) },
-					{ "f", (*prio)(ConfigSex::Female) }
+				parserDesc_t<Data::configSlotPriority_t> desc[]{
+					{ "m", (*prio)(Data::ConfigSex::Male) },
+					{ "f", (*prio)(Data::ConfigSex::Female) }
 				};
 
 				for (auto& e : desc)

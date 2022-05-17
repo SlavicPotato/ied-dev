@@ -10,7 +10,7 @@ namespace IED
 
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
 		bool Parser<Data::configNodeOverrideHolder_t>::Parse(

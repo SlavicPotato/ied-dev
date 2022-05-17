@@ -31,6 +31,7 @@ Global
 		ReleaseAVX2|x64 = ReleaseAVX2|x64
 		Release-L MD|x64 = Release-L MD|x64
 		Release-L-D MD|x64 = Release-L-D MD|x64
+		Release-L-MT|x64 = Release-L-MT|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Debug|x64.ActiveCfg = Debug|x64
@@ -73,6 +74,8 @@ Global
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release-L MD|x64.Build.0 = Release-L MD|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release-L-D MD|x64.ActiveCfg = Release-L-D MD|x64
 		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release-L-D MD|x64.Build.0 = Release-L-D MD|x64
+		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release-L-MT|x64.ActiveCfg = Release-L-MT|x64
+		{A0AF6C5A-B0F8-4F7F-B622-535C5B9DCFF1}.Release-L-MT|x64.Build.0 = Release-L-MT|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Debug|x64.ActiveCfg = Debug|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Debug|x64.Build.0 = Debug|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Dep-AVX|x64.ActiveCfg = Dep-AVX|x64
@@ -109,10 +112,12 @@ Global
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.ReleaseAVX2 MT|x64.Build.0 = ReleaseAVX2 MT|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.ReleaseAVX2|x64.ActiveCfg = ReleaseAVX2|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.ReleaseAVX2|x64.Build.0 = ReleaseAVX2|x64
-		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L MD|x64.ActiveCfg = Release-L MD|x64
-		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L MD|x64.Build.0 = Release-L MD|x64
+		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L MD|x64.ActiveCfg = Release-L-OA MD|x64
+		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L MD|x64.Build.0 = Release-L-OA MD|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L-D MD|x64.ActiveCfg = Release-L-D MD|x64
 		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L-D MD|x64.Build.0 = Release-L-D MD|x64
+		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L-MT|x64.ActiveCfg = Release-L-MT|x64
+		{C59E5569-E3F3-4DA5-8313-12D90229B8C0}.Release-L-MT|x64.Build.0 = Release-L-MT|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Debug|x64.ActiveCfg = Debug|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Debug|x64.Build.0 = Debug|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Dep-AVX|x64.ActiveCfg = Dep-AVX|x64
@@ -153,6 +158,8 @@ Global
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release-L MD|x64.Build.0 = Release-L MD|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release-L-D MD|x64.ActiveCfg = Release-L-D MD|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release-L-D MD|x64.Build.0 = Release-L-D MD|x64
+		{9F316E83-5AE5-4939-A723-305A94F48005}.Release-L-MT|x64.ActiveCfg = Release-L-MT|x64
+		{9F316E83-5AE5-4939-A723-305A94F48005}.Release-L-MT|x64.Build.0 = Release-L-MT|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

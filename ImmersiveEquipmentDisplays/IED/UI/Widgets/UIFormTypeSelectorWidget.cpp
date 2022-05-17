@@ -47,7 +47,7 @@ namespace IED
 			{ TESFaction::kTypeID, UIFormTypeSelectorWidgetStrings::Faction },
 			{ TESCombatStyle::kTypeID, UIFormTypeSelectorWidgetStrings::CombatStyle },
 			{ TESClass::kTypeID, UIFormTypeSelectorWidgetStrings::Class },
-			{ TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather },
+			{ RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather },
 			{ TESGlobal::kTypeID, UIFormTypeSelectorWidgetStrings::Global },
 			{ TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form },
 
@@ -192,7 +192,7 @@ namespace IED
 				return LS(UIFormTypeSelectorWidgetStrings::CombatStyle);
 			case TESClass::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Class);
-			case TESWeather::kTypeID:
+			case RE::TESWeather::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Weather);
 			case TESGlobal::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Global);

@@ -7,6 +7,8 @@
 
 #include "IED/Controller/ImportFlags.h"
 
+#include "IED/ConfigSerializationFlags.h"
+
 namespace IED
 {
 	namespace Data
@@ -33,8 +35,9 @@ namespace IED
 			virtual void OnDataImport(bool a_success) = 0;
 
 			void DoImport(
-				Data::configStore_t&&  a_data,
-				stl::flag<ImportFlags> a_flags);
+				const Data::configStore_t&                     a_data,
+				stl::flag<ImportFlags>                         a_flags,
+				stl::flag<Data::ConfigStoreSerializationFlags> a_serFlags);
 
 			Controller& m_controller;
 		};

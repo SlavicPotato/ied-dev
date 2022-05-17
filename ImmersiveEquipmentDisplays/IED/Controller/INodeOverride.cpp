@@ -524,7 +524,7 @@ namespace IED
 
 		case Data::NodeOverrideConditionType::NPC:
 
-			return Conditions::match_form(a_data.form.get_id(), a_params.npc);
+			return Conditions::match_form(a_data.form.get_id(), a_params.npcOrTemplate);
 
 		case Data::NodeOverrideConditionType::Furniture:
 
@@ -565,6 +565,12 @@ namespace IED
 		case Data::NodeOverrideConditionType::Global:
 
 			return Conditions::match_global<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Mount:
+
+			return Conditions::match_mount<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}
@@ -648,14 +654,9 @@ namespace IED
 			a_out.scale = std::clamp(stl::zero_nan(a_out.scale * *xfrm.scale), 0.01f, 100.0f);
 		}
 
-		if (xfrm.rotation)
+		if (xfrm.rotationMatrix)
 		{
-			NiMatrix33 rot(
-				xfrm.rotation->x,
-				xfrm.rotation->y,
-				xfrm.rotation->z);
-
-			a_out.rot = a_out.rot * rot;
+			a_out.rot = a_out.rot * *xfrm.rotationMatrix;
 		}
 
 		if (xfrm.position)
@@ -766,14 +767,9 @@ namespace IED
 			xfrm.scale = std::clamp(stl::zero_nan(xfrm.scale * *a_data.transform.scale), 0.01f, 100.0f);
 		}
 
-		if (a_data.transform.rotation)
+		if (a_data.transform.rotationMatrix)
 		{
-			NiMatrix33 rot(
-				a_data.transform.rotation->x,
-				a_data.transform.rotation->y,
-				a_data.transform.rotation->z);
-
-			xfrm.rot = xfrm.rot * rot;
+			xfrm.rot = xfrm.rot * *a_data.transform.rotationMatrix;
 		}
 
 		if (a_data.transform.position)
@@ -806,7 +802,7 @@ namespace IED
 #endif
 
 			NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-			a_entry.node->UpdateDownwardPass(ctx, nullptr);
+			a_entry.node->UpdateDownwardPass(ctx, 0);
 		}
 	}
 

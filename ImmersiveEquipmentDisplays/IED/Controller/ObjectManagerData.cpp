@@ -14,8 +14,8 @@
 
 namespace IED
 {
-	std::atomic_llong ActorObjectHolder::m_lfsc_delta_lf{ 0ll };
-	std::atomic_llong ActorObjectHolder::m_lfsc_delta_hf{ 0ll };
+	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
+	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
@@ -727,7 +727,7 @@ namespace IED
 				}
 			}
 
-			return a_object->GetAsBSGeometry() ?
+			return a_object->AsGeometry() ?
 			           VisitorControl::kStop :
                        VisitorControl::kContinue;
 		});
@@ -761,7 +761,7 @@ namespace IED
 				auto visitorResult = Traverse(a_object, [](NiAVObject* a_object) {
 					return a_object->IsHidden() ?
 					           VisitorControl::kSkip :
-                               (a_object->GetAsBSGeometry() ?
+                               (a_object->AsGeometry() ?
 					                VisitorControl::kStop :
                                     VisitorControl::kContinue);
 				});

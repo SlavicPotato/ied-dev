@@ -7,6 +7,8 @@
 #include "IED/ConfigTransform.h"
 #include "UIPopupToggleButtonWidget.h"
 
+#include "UITransformSliderWidgetStrings.h"
+
 namespace IED
 {
 	namespace UI
@@ -18,7 +20,7 @@ namespace IED
 		};
 
 		class UITransformSliderWidget :
-			public virtual UILocalizationInterface
+			public virtual UITipsInterface
 		{
 		public:
 			enum class TransformUpdateValue
@@ -31,6 +33,7 @@ namespace IED
 
 			UITransformSliderWidget(
 				Localization::ILocalization& a_localization) :
+				UITipsInterface(a_localization),
 				UILocalizationInterface(a_localization)
 			{
 			}
@@ -46,6 +49,11 @@ namespace IED
 				const bool               a_indent,
 				Tu                       a_updateop,
 				Te                       a_extra);
+
+			template <class Tu>
+			void DrawTransformFlags(
+				Data::configTransform_t& a_data,
+				Tu                       a_updateop);
 
 			template <class Tu>
 			void DrawTransformSliders(
@@ -155,9 +163,9 @@ namespace IED
 					ImGui::Indent();
 				}
 
-				DrawTransformSliders(
-					a_data,
-					a_updateop);
+				DrawTransformFlags(a_data, a_updateop);
+				ImGui::Spacing();
+				DrawTransformSliders(a_data, a_updateop);
 
 				if (a_indent)
 				{
@@ -167,6 +175,27 @@ namespace IED
 				ImGui::Spacing();
 
 				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class Tu>
+		void UITransformSliderWidget::DrawTransformFlags(
+			Data::configTransform_t& a_data,
+			Tu                       a_updateop)
+		{
+			ImGui::PushID("flags");
+
+			if (ImGui::CheckboxFlagsT(
+					LS(UITransformSliderWidgetStrings::FixedFrameRotation, "0"),
+					stl::underlying(std::addressof(a_data.xfrmFlags.value)),
+					stl::underlying(Data::ConfigTransformFlags::kExtrinsicRotation)))
+			{
+				a_data.update_rotation_matrix();
+				a_data.update_tag();
+
+				a_updateop(TransformUpdateValue::Rotation);
 			}
 
 			ImGui::PopID();
@@ -228,7 +257,7 @@ namespace IED
 			DrawTransformSliderContextMenu(
 				a_data,
 				a_data.rotation,
-				[](auto& a_v) { a_v.reset(); },
+				[&](auto& a_v) { a_v.reset(); a_data.rotationMatrix.reset(); },
 				a_updateop,
 				TransformUpdateValue::Rotation);
 
@@ -262,10 +291,13 @@ namespace IED
 						ImGuiSliderFlags_NoRoundToFormat))
 			{
 				a_data.rotation = v * (pi / 180.0f);
+
+				a_data.update_rotation_matrix();
 				a_data.update_tag();
 
 				a_updateop(TransformUpdateValue::Rotation);
 			}
+			DrawTip(UITip::Rotation);
 
 			if (!tmpb)
 			{

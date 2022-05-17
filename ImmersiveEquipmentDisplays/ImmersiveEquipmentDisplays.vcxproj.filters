@@ -731,9 +731,6 @@
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.h">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UISimpleNodeList.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\CommonParams.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
@@ -1244,6 +1241,15 @@
     <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h">
       <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UITransformSliderWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UISimpleStringSet.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1678,9 +1684,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePlacementValuesParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\NodeOverride</Filter>
     </ClCompile>
-    <ClCompile Include="IED\UI\Widgets\UISimpleNodeList.cpp">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Controller\ObjectDatabase.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
@@ -1953,6 +1956,12 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\Slot</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UISimpleStringSet.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -15,8 +15,8 @@ namespace IED
 			Data::configSlot_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBase_t>       pbase(m_state);
-			Parser<Data::configFormFilter_t> pfset(m_state);
+			Parser<Data::configBase_t>           pbase(m_state);
+			Parser<Data::configFormFilter_t>     pfset(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
 			{
@@ -49,9 +49,10 @@ namespace IED
 			const Data::configSlot_t& a_in,
 			Json::Value&              a_out) const
 		{
-			Parser<Data::configBase_t>       pbase(m_state);
-			Parser<Data::configFormList_t>   pformList(m_state);
-			Parser<Data::configFormFilter_t> pfset(m_state);
+			Parser<Data::configBase_t>           pbase(m_state);
+			Parser<Data::configFormList_t>       pformList(m_state);
+			Parser<Data::configFormFilter_t>     pfset(m_state);
+			Parser<Data::configFixedStringSet_t> fssparser(m_state);
 
 			pbase.Create(a_in, a_out);
 

@@ -96,7 +96,7 @@ namespace IED
 
 		if (a_node.managed() || a_atmReference)
 		{
-			if (auto refNode = obj->GetAsNiNode())
+			if (auto refNode = obj->AsNode())
 			{
 				return { refNode->m_parent, refNode };
 			}
@@ -107,7 +107,7 @@ namespace IED
 		}
 		else
 		{
-			return { obj->GetAsNiNode() };
+			return { obj->AsNode() };
 		}
 	}
 
@@ -131,7 +131,7 @@ namespace IED
 			0,
 			0
 		};
-		a_object->UpdateDownwardPass(ctx, nullptr);
+		a_object->UpdateDownwardPass(ctx, 0);
 	}
 
 	bool INode::CreateTargetNode(

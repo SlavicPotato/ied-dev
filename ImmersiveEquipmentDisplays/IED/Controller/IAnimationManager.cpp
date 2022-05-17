@@ -469,6 +469,11 @@ namespace IED
 		Actor*               a_actor,
 		ActorAnimationState& a_state)
 	{
+		if (!m_groupInfo)
+		{
+			return;
+		}
+
 		using enum_type = std::underlying_type_t<AnimationWeaponType>;
 
 		for (enum_type i = 0; i < stl::underlying(AnimationWeaponType::Max); i++)

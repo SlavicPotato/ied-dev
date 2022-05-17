@@ -8,6 +8,8 @@ namespace IED
 {
 	void IFirstPersonState::InitializeFPStateData()
 	{
+		assert(Data::IData::GetPluginInfo().IsPopulated());
+
 		m_ifpvState = Data::IData::GetPluginInfo().LookupForm<TESGlobal>("IFPVDetector.esl", 0x801);
 	}
 

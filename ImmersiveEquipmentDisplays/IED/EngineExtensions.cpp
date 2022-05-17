@@ -729,7 +729,7 @@ namespace IED
 
 		while (auto object = GetObjectByName(a_object, a_name, true))
 		{
-			object->m_parent->RemoveChild(object);
+			object->m_parent->DetachChild2(object);
 			result = true;
 
 			if (!--maxiter)
@@ -814,7 +814,7 @@ namespace IED
 			0
 		};
 
-		a_object->UpdateDownwardPass(ctx, nullptr);
+		a_object->UpdateDownwardPass(ctx, 0);
 
 		a_object->IncRef();
 
@@ -840,12 +840,12 @@ namespace IED
 				{
 					if (scbNode)
 					{
-						scbNode->m_parent->RemoveChild(scbNode);
+						scbNode->m_parent->DetachChild2(scbNode);
 					}
 
 					if (scbLeftNode)
 					{
-						scbLeftNode->m_parent->RemoveChild(scbLeftNode);
+						scbLeftNode->m_parent->DetachChild2(scbLeftNode);
 					}
 
 					ShrinkToSize(a_object);
@@ -882,7 +882,7 @@ namespace IED
 
 					if (scbRemove)
 					{
-						scbRemove->m_parent->RemoveChild(scbRemove);
+						scbRemove->m_parent->DetachChild2(scbRemove);
 					}
 
 					ShrinkToSize(a_object);
@@ -899,7 +899,7 @@ namespace IED
 
 				if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
 				{
-					node->m_parent->RemoveChild(node);
+					node->m_parent->DetachChild2(node);
 					shrink = true;
 
 					result.set(AttachResultFlags::kTorchFlameRemoved);
@@ -968,47 +968,7 @@ namespace IED
 		return result;
 	}
 
-	bool EngineExtensions::CreateWeaponBehaviorGraph(
-		NiAVObject*                               a_object,
-		RE::WeaponAnimationGraphManagerHolderPtr& a_out)
-	{
-		auto sh = BSStringHolder::GetSingleton();
-
-		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
-		if (!bged)
-		{
-			return false;
-		}
-
-		if (bged->controlsBaseSkeleton)
-		{
-			return false;
-		}
-
-		if (bged->behaviorGraphFile.empty())
-		{
-			return false;
-		}
-
-		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
-
-		if (!LoadWeaponAnimationBehahaviorGraph(
-				*result,
-				bged->behaviorGraphFile.c_str()))
-		{
-			return false;
-		}
-
-		a_out = std::move(result);
-
-		if (!BindAnimationObject(*a_out, a_object))
-		{
-			return false;
-		}
-
-		return true;
-	}
-
+	
 	void EngineExtensions::CleanupWeaponBehaviorGraph(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_graph)
 	{

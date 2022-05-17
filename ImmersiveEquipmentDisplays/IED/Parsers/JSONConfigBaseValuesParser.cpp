@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigBaseValuesParser.h"
+#include "JSONConfigFixedStringSetParser.h"
 #include "JSONConfigTransformParser.h"
 #include "JSONNodeMapValueParser.h"
 
@@ -49,6 +50,16 @@ namespace IED
 				a_out.animationEvent = aev.asString();
 			}
 
+			if (auto& hkxflt = a_in["hkxflt"])
+			{
+				Parser<Data::configFixedStringSet_t> fssparser(m_state);
+
+				if (!fssparser.Parse(hkxflt, a_out.hkxFilter))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -81,6 +92,15 @@ namespace IED
 			if (!a_data.animationEvent.empty())
 			{
 				a_out["aev"] = *a_data.animationEvent;
+			}
+
+			if (!a_data.hkxFilter.empty())
+			{
+				Parser<Data::configFixedStringSet_t> fssparser(m_state);
+
+				auto& outset = (a_out["hkxflt"] = Json::Value(Json::ValueType::arrayValue));
+
+				fssparser.Create(a_data.hkxFilter, outset);
 			}
 		}
 

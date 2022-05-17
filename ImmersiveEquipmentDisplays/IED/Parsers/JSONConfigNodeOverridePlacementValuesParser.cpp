@@ -12,8 +12,6 @@ namespace IED
 			Data::configNodeOverridePlacementValues_t& a_out,
 			const std::uint32_t                        a_version) const
 		{
-			Parser<Data::configTransform_t> tfparser(m_state);
-
 			if (auto& target = a_in["target"])
 			{
 				a_out.targetNode = target.asString();
@@ -30,8 +28,6 @@ namespace IED
 			const Data::configNodeOverridePlacementValues_t& a_data,
 			Json::Value&                                     a_out) const
 		{
-			Parser<Data::configTransform_t> tfparser(m_state);
-
 			if (!a_data.targetNode.empty())
 			{
 				a_out["target"] = *a_data.targetNode;

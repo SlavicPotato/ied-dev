@@ -54,7 +54,7 @@ namespace IED
 	{
 		a_func(a_object, a_data);
 
-		if (auto node = a_object->GetAsNiNode())
+		if (auto node = a_object->AsNode())
 		{
 			a_data.children.reserve(node->m_children.m_size);
 

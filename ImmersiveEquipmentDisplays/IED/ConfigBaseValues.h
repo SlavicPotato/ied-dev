@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ConfigData.h"
+#include "ConfigCommon.h"
 #include "ConfigTransform.h"
 #include "NodeDescriptor.h"
 
@@ -56,6 +56,7 @@ namespace IED
 				DataVersion1 = 1,
 				DataVersion2 = 2,
 				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
@@ -64,10 +65,11 @@ namespace IED
 				BaseFlags::kPlaySound |
 				BaseFlags::kReferenceMode;
 
-			stl::flag<BaseFlags> flags{ DEFAULT_FLAGS };
-			NodeDescriptor       targetNode;
-			stl::fixed_string    niControllerSequence;
-			stl::fixed_string    animationEvent;
+			stl::flag<BaseFlags>   flags{ DEFAULT_FLAGS };
+			NodeDescriptor         targetNode;
+			stl::fixed_string      niControllerSequence;
+			stl::fixed_string      animationEvent;
+			configFixedStringSet_t hkxFilter;
 
 		protected:
 			template <class Archive>
@@ -84,6 +86,11 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& animationEvent;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& hkxFilter;
+						}
 					}
 				}
 			}
@@ -94,4 +101,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion3);
+	IED::Data::configBaseValues_t::Serialization::DataVersion4);

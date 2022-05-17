@@ -6,6 +6,13 @@ namespace IED
 {
 	namespace Data
 	{
+		enum class ConfigTransformFlags : std::uint32_t
+		{
+			kNone = 0,
+
+			kExtrinsicRotation = 1u << 0
+		};
+
 		struct configTransform_t :
 			configLUIDTagAG_t
 		{
@@ -14,8 +21,11 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
+
+			inline static constexpr auto TRANSFORM_DEFAULT_FLAGS = ConfigTransformFlags::kExtrinsicRotation;
 
 			configTransform_t()
 			{
@@ -32,11 +42,13 @@ namespace IED
 			{
 			}
 
-			stl::optional<float>    scale;
-			stl::optional<NiPoint3> position;
-			stl::optional<NiPoint3> rotation;
+			stl::flag<ConfigTransformFlags> xfrmFlags{ TRANSFORM_DEFAULT_FLAGS };
+			stl::optional<float>            scale;
+			stl::optional<NiPoint3>         position;
+			stl::optional<NiPoint3>         rotation;
+			stl::optional<NiMatrix33>       rotationMatrix;
 
-			void clamp() noexcept
+			void clamp()
 			{
 				if (!scale && !position && !rotation)
 				{
@@ -64,7 +76,35 @@ namespace IED
 					rotation->z = std::clamp(stl::zero_nan(rotation->z), -pi2, pi2);
 				}
 
+				update_rotation_matrix();
 				update_tag();
+			}
+
+			void update_rotation_matrix()
+			{
+				if (rotation)
+				{
+					if (xfrmFlags.test(ConfigTransformFlags::kExtrinsicRotation))
+					{
+						rotationMatrix->SetEulerAnglesExtrinsic(
+							rotation->x,
+							rotation->y,
+							rotation->z);
+					}
+					else
+					{
+						rotationMatrix->SetEulerAnglesIntrinsic(
+							rotation->x,
+							rotation->y,
+							rotation->z);
+					}
+
+					rotationMatrix.mark(true);
+				}
+				else
+				{
+					rotationMatrix.reset();
+				}
 			}
 
 			NiTransform to_nitransform() const
@@ -83,10 +123,20 @@ namespace IED
 
 				if (rotation)
 				{
-					result.rot.SetEulerAngles(
-						rotation->x,
-						rotation->y,
-						rotation->z);
+					if (xfrmFlags.test(ConfigTransformFlags::kExtrinsicRotation))
+					{
+						result.rot.SetEulerAnglesExtrinsic(
+							rotation->x,
+							rotation->y,
+							rotation->z);
+					}
+					else
+					{
+						result.rot.SetEulerAnglesIntrinsic(
+							rotation->x,
+							rotation->y,
+							rotation->z);
+					}
 				}
 
 				return result;
@@ -99,6 +149,7 @@ namespace IED
 
 				position.reset();
 				rotation.reset();
+				rotationMatrix.reset();
 
 				update_tag();
 			}
@@ -112,6 +163,7 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
+				a_ar& xfrmFlags.value;
 				a_ar& scale;
 				a_ar& position;
 				a_ar& rotation;
@@ -120,6 +172,16 @@ namespace IED
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
+				if (a_version >= DataVersion2)
+				{
+					a_ar& xfrmFlags.value;
+				}
+				else
+				{
+					// default to intrinsic for older versions!
+					xfrmFlags.clear(ConfigTransformFlags::kExtrinsicRotation);
+				}
+
 				a_ar& scale;
 				a_ar& position;
 				a_ar& rotation;
@@ -134,4 +196,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configTransform_t,
-	::IED::Data::configTransform_t::Serialization::DataVersion1);
+	::IED::Data::configTransform_t::Serialization::DataVersion2);

@@ -146,9 +146,11 @@ namespace IED
 			bool      a_keepTorchFlame,
 			bool      a_disableHavok);
 
+		template <class Tf>
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
-			RE::WeaponAnimationGraphManagerHolderPtr& a_out);
+			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+			Tf                                        a_filter);
 
 		static void CleanupWeaponBehaviorGraph(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
@@ -300,4 +302,53 @@ namespace IED
 
 		static EngineExtensions m_Instance;
 	};
+
+	template <class Tf>
+	bool EngineExtensions::CreateWeaponBehaviorGraph(
+		NiAVObject*                               a_object,
+		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+		Tf                                        a_filter)
+	{
+		auto sh = BSStringHolder::GetSingleton();
+
+		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
+		if (!bged)
+		{
+			return false;
+		}
+
+		if (bged->controlsBaseSkeleton)
+		{
+			return false;
+		}
+
+		if (bged->behaviorGraphFile.empty())
+		{
+			return false;
+		}
+
+		if (!a_filter(bged->behaviorGraphFile.c_str()))
+		{
+			return false;
+		}
+
+		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
+
+		if (!LoadWeaponAnimationBehahaviorGraph(
+				*result,
+				bged->behaviorGraphFile.c_str()))
+		{
+			return false;
+		}
+
+		a_out = std::move(result);
+
+		if (!BindAnimationObject(*a_out, a_object))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 }

@@ -74,7 +74,7 @@ namespace IED
 				if (get_using_furniture())
 				{
 					NiPointer<TESObjectREFR> ref;
-					if (furnHandle->Lookup(ref))
+					if (furnHandle->IsValid() && furnHandle->Lookup(ref))
 					{
 						if (auto base = ref->baseForm)
 						{
@@ -312,7 +312,7 @@ namespace IED
 				NiPointer<Actor> tmp;
 				if (actor->GetMountedActor(tmp))
 				{
-					mountedActor.emplace(tmp);
+					mountedActor.emplace(std::move(tmp));
 				}
 				else
 				{

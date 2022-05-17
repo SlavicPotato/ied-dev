@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigColorRGBAParser.h"
+#include "JSONConfigFixedStringSetParser.h"
 #include "JSONEffectShaderDataParser.h"
 #include "JSONEffectShaderFunctionListParser.h"
 #include "JSONEffectShaderTextureParser.h"
@@ -36,17 +37,15 @@ namespace IED
 			const Json::Value&              a_in,
 			Data::configEffectShaderData_t& a_out) const
 		{
+			Parser<Data::configFixedStringSet_t> fssparser(m_state);
+
 			a_out.flags = a_in.get("flags", stl::underlying(Data::EffectShaderDataFlags::kNone)).asUInt();
 
 			if (auto& inset = a_in["tn"])
 			{
-				for (auto& e : inset)
+				if (!fssparser.Parse(inset, a_out.targetNodes))
 				{
-					auto tmp = e.asString();
-					if (!tmp.empty())
-					{
-						a_out.targetNodes.emplace(std::move(tmp));
-					}
+					return false;
 				}
 			}
 
@@ -133,17 +132,13 @@ namespace IED
 		{
 			a_out["flags"] = a_data.flags.underlying();
 
+			Parser<Data::configFixedStringSet_t> fssparser(m_state);
+
 			if (!a_data.targetNodes.empty())
 			{
 				auto& outset = (a_out["tn"] = Json::Value(Json::ValueType::arrayValue));
 
-				for (auto& e : a_data.targetNodes)
-				{
-					if (!e.empty())
-					{
-						outset.append(*e);
-					}
-				}
+				fssparser.Create(a_data.targetNodes, outset);
 			}
 
 			Parser<Data::configEffectShaderTexture_t> texparser(m_state);

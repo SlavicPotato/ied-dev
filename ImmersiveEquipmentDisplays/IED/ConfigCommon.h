@@ -195,6 +195,7 @@ namespace IED
 			kTresspassing        = 19,
 			kIsCommanded         = 20,
 			kParalyzed           = 21,
+			kIsOnMount           = 22,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
