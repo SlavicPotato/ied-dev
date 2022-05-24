@@ -826,5 +826,13 @@ namespace IED
 			EngineExtensions::UpdateAnimationGraph(e.get(), a_data);
 		}
 	}
+	
+	void AnimationGraphManagerHolderList::UpdateNoLock(const BSAnimationUpdateData& a_data) const
+	{
+		for (auto& e : m_data)
+		{
+			EngineExtensions::UpdateAnimationGraph(e.get(), a_data);
+		}
+	}
 
 }

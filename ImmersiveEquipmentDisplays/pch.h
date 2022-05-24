@@ -10,6 +10,7 @@
 #include <ext/ITaskPool.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
+#include <ext/PluginInterfaceSDS.h>
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
 #include <ext/StrHelpers.h>

@@ -187,10 +187,18 @@ namespace IED
 		return a_form && a_form->IsArmor() && static_cast<TESObjectARMO*>(a_form)->IsShield();
 	}
 
-	inline static constexpr bool should_select_back_left_anim(
+	inline static constexpr bool shield_on_back_enabled(
+		Actor*              a_actor,
+		PluginInterfaceSDS* a_interface) noexcept
+	{
+		return !a_interface || a_interface->GetShieldOnBackEnabled(a_actor);
+	}
+
+	bool IAnimationManager::should_select_back_left_anim(
 		AnimationWeaponType  a_leftID,
 		ActorAnimationState& a_state,
-		TESForm*             a_objLeft) noexcept
+		TESForm*             a_objLeft,
+		Actor*               a_actor) noexcept
 	{
 		return (a_leftID == AnimationWeaponType::Sword &&
 		        a_state.get_placement(AnimationWeaponSlot::SwordLeft) == WeaponPlacementID::OnBack) ||
@@ -198,7 +206,7 @@ namespace IED
 		        a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
 		       (a_leftID == AnimationWeaponType::Axe &&
 		        a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-		       is_shield(a_objLeft);
+		       (is_shield(a_objLeft) && shield_on_back_enabled(a_actor, m_interface));
 	}
 
 	void IAnimationManager::UpdateAA(
@@ -233,7 +241,7 @@ namespace IED
 				{
 				case WeaponPlacementID::OnBack:
 
-					if (should_select_back_left_anim(leftID, a_state, objLeft))
+					if (should_select_back_left_anim(leftID, a_state, objLeft, a_actor))
 					{
 						animVar = 2;
 					}
@@ -292,7 +300,7 @@ namespace IED
 					{
 						animVar = 2;
 					}
-					else if (should_select_back_left_anim(leftID, a_state, objLeft))
+					else if (should_select_back_left_anim(leftID, a_state, objLeft, a_actor))
 					{
 						animVar = 5;
 					}
@@ -360,7 +368,7 @@ namespace IED
 				{
 				case WeaponPlacementID::OnBack:
 
-					if (should_select_back_left_anim(leftID, a_state, objLeft))
+					if (should_select_back_left_anim(leftID, a_state, objLeft, a_actor))
 					{
 						animVar = 2;
 					}

@@ -15,11 +15,13 @@ namespace IED
 		void PrepareAnimationUpdateList(
 			Controller* a_controller);
 
-		void ClearAnimationUpdateList();
+		void ClearAnimationUpdateList(
+			Controller* a_controller);
 
 		void UpdateQueuedAnimationList(
 			Actor*                       a_actor,
-			const BSAnimationUpdateData& a_data);
+			const BSAnimationUpdateData& a_data,
+			Controller*                  a_controller);
 
 		static void UpdateActorAnimationList(
 			Actor*                       a_actor,
@@ -27,13 +29,7 @@ namespace IED
 			Controller*                  a_controller);
 
 	private:
-		static std::shared_ptr<AnimationGraphManagerHolderList> GetActorAnimationUpdateList(
-			Actor*      a_actor,
-			Controller* a_controller);
-
-		stl::vector<entry_type> m_data;
 
 		std::atomic<bool>     m_running{ false };
-		stl::critical_section m_lock;
 	};
 }

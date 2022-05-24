@@ -25,6 +25,8 @@
 
 #include "Drivers/Input/Handlers.h"
 
+#include <ext/SDSPlayerShieldOnBackSwitchEvent.h>
+
 namespace IED
 {
 	class Controller :
@@ -43,6 +45,7 @@ namespace IED
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
 		public ::Events::EventSink<SKSEMessagingEvent>,
+		public ::Events::EventSink<SDSPlayerShieldOnBackSwitchEvent>,
 		public BSTEventSink<TESObjectLoadedEvent>,
 		public BSTEventSink<TESInitScriptEvent>,
 		public BSTEventSink<TESEquipEvent>,
@@ -131,6 +134,7 @@ namespace IED
 		void InitializeLocalization();
 		void LoadAnimationData();
 		void InitializeData();
+		void GetSDSInterface();
 		void InitializeBSFixedStringTable();
 
 		void SinkInputEvents();
@@ -838,6 +842,7 @@ namespace IED
 		virtual void Receive(const SKSESerializationEvent& a_evn) override;
 		virtual void Receive(const SKSESerializationLoadEvent& a_evn) override;
 		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
+		virtual void Receive(const SDSPlayerShieldOnBackSwitchEvent& a_evn) override;
 
 		// bs events
 		virtual EventResult ReceiveEvent(

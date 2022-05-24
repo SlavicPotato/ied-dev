@@ -4,6 +4,7 @@
 #include "AnimationGroupInfo.h"
 #include "AnimationWeaponSlot.h"
 #include "AnimationWeaponType.h"
+#include "PluginInterfaceHolder.h"
 
 namespace IED
 {
@@ -12,7 +13,8 @@ namespace IED
 		class SettingHolder;
 	}
 
-	class IAnimationManager
+	class IAnimationManager :
+		public PluginInterfaceHolder<PluginInterfaceSDS>
 	{
 		inline static constexpr auto FNIS_AA2_PEX_PATH = "Data\\Scripts\\FNIS_aa2.pex";
 
@@ -101,6 +103,12 @@ namespace IED
 			std::int32_t         a_value);
 
 		AnimationWeaponType GetObjectType(TESForm* a_object);
+
+		bool should_select_back_left_anim(
+			AnimationWeaponType  a_leftID,
+			ActorAnimationState& a_state,
+			TESForm*             a_objLeft,
+			Actor*               a_actor) noexcept;
 
 		Data::SettingHolder& m_settings;
 

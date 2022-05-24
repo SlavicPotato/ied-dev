@@ -677,7 +677,7 @@ namespace IED
 
 	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk)
 	{
-		m_Instance.ClearAnimationUpdateList();
+		m_Instance.ClearAnimationUpdateList(m_Instance.m_controller);
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
 	}
 
@@ -1047,7 +1047,7 @@ namespace IED
 
 			if (auto actor = a_refr->As<Actor>())
 			{
-				m_Instance.UpdateQueuedAnimationList(actor, data);
+				m_Instance.UpdateQueuedAnimationList(actor, data, m_Instance.m_controller);
 			}
 		}
 

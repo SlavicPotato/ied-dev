@@ -376,10 +376,7 @@ namespace IED
 
 		a_actor->ModifyAnimationUpdateData(data);
 
-		for (auto& e : a_list.GetList())
-		{
-			EngineExtensions::UpdateAnimationGraph(e.get(), data);
-		}
+		a_list.UpdateNoLock(data);
 
 		tlsUnk768 = oldUnk768;
 	}

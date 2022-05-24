@@ -81,6 +81,8 @@ namespace IED
 		}
 
 		void Update(const BSAnimationUpdateData& a_data) const;
+		
+		void UpdateNoLock(const BSAnimationUpdateData& a_data) const;
 
 		void Clear() noexcept
 		{
@@ -591,11 +593,11 @@ namespace IED
 				RequestEval();
 			}
 		}
-		
+
 		template <class Tv>
 		inline constexpr void state_var_update_defer(
-			Tv&       a_var,
-			const Tv& a_current,
+			Tv&           a_var,
+			const Tv&     a_current,
 			std::uint32_t a_delay = 2) noexcept
 		{
 			if (a_var != a_current)
@@ -685,8 +687,12 @@ namespace IED
 		void UnregisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
 
-		inline std::shared_ptr<AnimationGraphManagerHolderList> GetAnimationUpdateList() const  //
-			noexcept(std::is_nothrow_copy_constructible_v<std::shared_ptr<AnimationGraphManagerHolderList>>)
+		inline auto& GetAnimationUpdateList()
+		{
+			return m_animationUpdateList;
+		}
+
+		inline auto& GetAnimationUpdateList() const
 		{
 			return m_animationUpdateList;
 		}

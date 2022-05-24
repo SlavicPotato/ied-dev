@@ -4,101 +4,42 @@
 
 #include "Controller/Controller.h"
 
-//PerfTimerInt pt(1000000);
-
 namespace IED
 {
 	void AnimationUpdateManager::PrepareAnimationUpdateList(
 		Controller* a_controller)
 	{
-		stl::scoped_lock lock(m_lock);  // REMOVE ME
+		auto prev = m_running.exchange(true);
+		ASSERT(prev == false);
 
-		assert(!m_running.load(std::memory_order_relaxed));
-		
-		ASSERT(m_data.empty());
-
-		//pt.Begin();
-
-		/*PerfTimer pt;
-		pt.Start();*/
-
-		{
-			stl::scoped_lock ctrllock(a_controller->GetLock());
-
-			auto& data = a_controller->GetData();
-
-			m_data.reserve(data.size());
-
-			for (auto& e : data)
-			{
-				if (e.first == 0x14)
-				{
-					continue;
-				}
-
-				m_data.emplace_back(
-					e.first.get(),
-					e.second.GetAnimationUpdateList());
-			}
-		}
-
-		std::sort(
-			m_data.begin(),
-			m_data.end(),
-			[](const auto& a_lhs, const auto& a_rhs) {
-				return a_lhs.first < a_rhs.first;
-			});
-
-		//_DMESSAGE("%f", pt.Stop());
-
-		m_running.store(true, std::memory_order_relaxed);
+		a_controller->GetLock().lock();
+		//_DMESSAGE("beg: %u", GetCurrentThreadId());
 	}
 
-	void AnimationUpdateManager::ClearAnimationUpdateList()
+	void AnimationUpdateManager::ClearAnimationUpdateList(
+		Controller* a_controller)
 	{
-		stl::scoped_lock lock(m_lock);  // REMOVE ME
+		auto prev = m_running.exchange(false);
+		ASSERT(prev == true);
 
-		assert(m_running.load(std::memory_order_relaxed));
-
-		m_running.store(false, std::memory_order_relaxed);
-
-		m_data.clear();
-
-		/*long long a;
-		if (pt.End(a)) {
-			_DMESSAGE("%lld", a);
-		}*/
+		a_controller->GetLock().unlock();
+		//_DMESSAGE("end: %u", GetCurrentThreadId());
 	}
 
 	void AnimationUpdateManager::UpdateQueuedAnimationList(
 		Actor*                       a_actor,
-		const BSAnimationUpdateData& a_data)
+		const BSAnimationUpdateData& a_data,
+		Controller*                  a_controller)
 	{
-		assert(m_running.load(std::memory_order_relaxed));
+		ASSERT(m_running.load() == true);
 
-		/*if (!m_running.load(std::memory_order_relaxed))
+		auto& data = a_controller->GetData();
+
+		auto it = data.find(a_actor->formID);
+		if (it != data.end())
 		{
-			return;
-		}*/
-
-		/*PerfTimer pt;
-		pt.Start();*/
-
-		auto it = std::lower_bound(
-			m_data.begin(),
-			m_data.end(),
-			a_actor->formID.get(),
-			[](auto& a_lhs, auto& a_rhs) {
-				return a_lhs.first < a_rhs;
-			});
-
-		if (it != m_data.end() &&
-		    it->first == a_actor->formID)
-		{
-			it->second->Update(a_data);
+			it->second.GetAnimationUpdateList()->Update(a_data);
 		}
-
-		//_DMESSAGE("%f", pt.Stop());
 	}
 
 	void AnimationUpdateManager::UpdateActorAnimationList(
@@ -106,19 +47,6 @@ namespace IED
 		const BSAnimationUpdateData& a_data,
 		Controller*                  a_controller)
 	{
-		if (auto list = GetActorAnimationUpdateList(a_actor, a_controller))
-		{
-			list->Update(a_data);
-		}
-	}
-
-	auto AnimationUpdateManager::GetActorAnimationUpdateList(
-		Actor*      a_actor,
-		Controller* a_controller)
-		-> std::shared_ptr<AnimationGraphManagerHolderList>
-	{
-		std::shared_ptr<AnimationGraphManagerHolderList> result;
-
 		stl::scoped_lock lock(a_controller->GetLock());
 
 		auto& data = a_controller->GetData();
@@ -126,10 +54,8 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			result = it->second.GetAnimationUpdateList();
+			it->second.GetAnimationUpdateList()->Update(a_data);
 		}
-		
-		return result;
 	}
 
 }

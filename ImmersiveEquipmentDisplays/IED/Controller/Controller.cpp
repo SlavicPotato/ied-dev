@@ -222,6 +222,28 @@ namespace IED
 		m_iniconf.reset();
 	}
 
+	void Controller::GetSDSInterface()
+	{
+		auto intfc = PluginInterfaceBase::get_interface<PluginInterfaceSDS>("SimpleDualSheath.dll");
+		if (!intfc)
+		{
+			return;
+		}
+
+		auto pluginVersion = intfc->GetPluginVersion();
+
+		Debug(
+			"Found SDS interface [%s %u.%u.%u, interface ver: %.8X]",
+			intfc->GetPluginName(),
+			GET_PLUGIN_VERSION_MAJOR(pluginVersion),
+			GET_PLUGIN_VERSION_MINOR(pluginVersion),
+			GET_PLUGIN_VERSION_REV(pluginVersion),
+			intfc->GetInterfaceVersion());
+
+		SetPluginInterface(intfc);
+		intfc->RegisterForPlayerShieldOnBackEvent(this);
+	}
+
 	static void UpdateSoundPairFromINI(
 		const stl::optional<ConfigForm>& a_src,
 		stl::optional<Game::FormID>&     a_dst)
@@ -5223,6 +5245,11 @@ namespace IED
 	{
 		switch (a_evn.message->type)
 		{
+		case SKSEMessagingInterface::kMessage_PostPostLoad:
+
+			GetSDSInterface();
+
+			break;
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
 			InitializeBSFixedStringTable();
@@ -5263,6 +5290,11 @@ namespace IED
 
 			break;
 		}
+	}
+
+	void Controller::Receive(const SDSPlayerShieldOnBackSwitchEvent& a_evn)
+	{
+		QueueRequestEvaluate(*g_thePlayer, false, true);
 	}
 
 	auto Controller::ReceiveEvent(
