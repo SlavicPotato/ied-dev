@@ -59,7 +59,7 @@ namespace IED
 			MatchEitherFormKW                   = 1048,
 			MatchWorldspaceParent               = 1049,
 			PlayAnimation                       = 1050,
-			EquippedConditions                  = 1051,
+			EquippedConditionsEquipment         = 1051,
 			DeadScatter                         = 1052,
 			XP32AA                              = 1053,
 			XP32AA_FF                           = 1054,
@@ -70,6 +70,8 @@ namespace IED
 			AnimEventForwarding                 = 1059,
 			AnimationEvent                      = 1060,
 			EffectShadersParallelUpdates        = 1061,
+			EquippedConditionsGearPositioning   = 1062,
+			CustomLastEquipped                  = 1063,
 		};
 
 	}

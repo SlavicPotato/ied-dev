@@ -96,6 +96,9 @@ namespace IED
 			SkeletonExplorer                    = 2085,
 			BehaviorGraphFilter                 = 2086,
 			Mount                               = 2087,
+			BipedSlotData                       = 2088,
+			BipedSlots                          = 2089,
+			GeometryVisible                     = 2090,
 		};
 	}
 }

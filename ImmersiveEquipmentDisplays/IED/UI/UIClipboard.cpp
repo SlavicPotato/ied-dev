@@ -101,6 +101,9 @@ namespace IED
 			case DataType::EffectShaderFunctionList:
 				erase<Data::configEffectShaderFunctionList_t>();
 				break;
+			case DataType::BipedObjectList:
+				erase<Data::configBipedObjectList_t>();
+				break;
 			}
 		}
 

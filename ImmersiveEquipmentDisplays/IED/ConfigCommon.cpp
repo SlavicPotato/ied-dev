@@ -23,9 +23,35 @@ namespace IED
 						return {};
 					}
 				}
+
+				return tmp;
+			}
+			else
+			{
+				gLog.Error("%s: failed resolving %.8X", __FUNCTION__, a_form.get());
+				return {};
+			}
+		}
+
+		Game::FormID resolve_form_zero_missing(Game::FormID a_form)
+		{
+			auto intfc = ISKSE::GetSingleton().GetInterface<SKSESerializationInterface>();
+
+			Game::FormID tmp;
+			if (ISKSE::ResolveFormID(intfc, a_form, tmp))
+			{
+				if (auto form = tmp.Lookup())
+				{
+					if (form->IsDeleted())
+					{
+						gLog.Warning("%s: form %.8X is deleted", __FUNCTION__, a_form.get());
+						return {};
+					}
+				}
 				else
 				{
-					//gLog.Debug("%s: form %.8X not found", __FUNCTION__, a_form.get());
+					gLog.Debug("%s: form %.8X not found", __FUNCTION__, a_form.get());
+					return {};
 				}
 
 				return tmp;

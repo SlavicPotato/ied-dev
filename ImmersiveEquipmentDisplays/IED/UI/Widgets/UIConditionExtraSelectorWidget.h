@@ -34,10 +34,10 @@ namespace IED
 #endif
 				;
 
-				using data_type = std::array<
-					std::pair<
-						Data::ExtraConditionType,
-						UIConditionExtraSelectorWidgetStrings>,
+			using data_type = std::array<
+				std::pair<
+					Data::ExtraConditionType,
+					UIConditionExtraSelectorWidgetStrings>,
 				NUM_CONDITIONS>;
 
 			static data_type m_data;

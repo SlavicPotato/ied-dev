@@ -104,7 +104,7 @@ namespace IED
 			UIGenericFilter m_formIDFilter;
 			UIGenericFilter m_formNameFilter;
 
-			stl::optional<stl::vector<IFormDatabase::entry_t>> m_filteredData;
+			std::optional<stl::vector<IFormDatabase::entry_t>> m_filteredData;
 
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;

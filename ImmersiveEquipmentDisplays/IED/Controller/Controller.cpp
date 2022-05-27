@@ -37,7 +37,8 @@ namespace IED
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
 		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
-		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM)
+		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
+		m_bipedCache(a_config->m_bipedSlotCacheMaxSize)
 	{
 		InitializeInputHandlers();
 
@@ -2555,14 +2556,14 @@ namespace IED
 			es = a_config.get_effect_shader(
 				a_params.collector.data,
 				a_params.objects.m_entriesSlot,
+				{ a_objectEntry.state->form, ObjectSlotExtra::kNone },
 				a_params);
 		}
 		else if constexpr (std::is_same_v<Ta, configSlot_t>)
 		{
 			es = a_config.get_effect_shader(
 				a_params.collector.data,
-				{ a_objectEntry.state->form,
-			      a_objectEntry.slotidex },
+				{ a_objectEntry.state->form, a_objectEntry.slotidex },
 				a_params);
 		}
 
@@ -2762,8 +2763,7 @@ namespace IED
                         configEntry;
 
 				if (usedBaseConf.flags.test(BaseFlags::kDisabled) ||
-				    (!a_params.is_player() &&
-				     !usedBaseConf.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+				    (!a_params.is_player() && !usedBaseConf.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
 				     slot != ObjectSlot::kAmmo &&
 				     !a_params.test_equipment_flags(equipmentFlag)))
 				{
@@ -2777,8 +2777,7 @@ namespace IED
 					continue;
 				}
 
-				if ((slot == ObjectSlot::kAmmo &&
-				     a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
+				if ((slot == ObjectSlot::kAmmo && a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
 				    slot == equippedInfo.leftSlot ||
 				    slot == equippedInfo.rightSlot)
 				{
@@ -2975,11 +2974,22 @@ namespace IED
 		}
 	}
 
+	inline static constexpr bool is_non_shield_armor(TESForm* a_form) noexcept
+	{
+		if (auto armor = a_form->As<TESObjectARMO>())
+		{
+			return !armor->IsShield();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	bool Controller::CustomEntryValidateInventoryForm(
 		processParams_t&                   a_params,
 		const collectorData_t::itemData_t& a_itemData,
 		const configCustom_t&              a_config,
-		const configBaseValues_t&          a_baseConfig,
 		bool&                              a_hasMinCount)
 	{
 		if (a_itemData.count < 1)
@@ -2994,19 +3004,19 @@ namespace IED
 		}
 
 		if (a_config.customFlags.test(CustomFlags::kCheckFav) &&
-		    a_params.actor == *g_thePlayer &&
+		    a_params.is_player() &&
 		    !a_itemData.favorited)
 		{
 			return false;
 		}
 
-		if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
+		if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
 		{
 			bool isAmmo = a_itemData.form->IsAmmo();
 
 			if (!isAmmo &&
-			    !a_baseConfig.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
 			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
+			    !is_non_shield_armor(a_itemData.form) &&
 			    !a_params.is_player())
 			{
 				if (!a_params.test_equipment_flags(
@@ -3061,109 +3071,234 @@ namespace IED
 	}
 
 	collectorData_t::container_type::iterator Controller::CustomEntrySelectInventoryForm(
-		processParams_t&                a_params,
-		const configCustom_t&           a_config,
-		const Data::configBaseValues_t& a_baseConfig,
-		objectEntryCustom_t&            a_objectEntry,
-		bool&                           a_hasMinCount)
+		processParams_t&      a_params,
+		const configCustom_t& a_config,
+		objectEntryCustom_t&  a_objectEntry,
+		bool&                 a_hasMinCount)
 	{
 		auto& formData = a_params.collector.data.forms;
 
-		if (!a_config.customFlags.test(CustomFlags::kUseGroup) &&
-		    a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
-		    !a_config.extraItems.empty())
+		if (a_config.customFlags.test(CustomFlags::kUseLastEquipped))
 		{
-			if (a_objectEntry.state)
-			{
-				auto fid = a_objectEntry.state->formid;
+			const auto& data = a_params.objects.m_lastEquipped->data;
 
-				if (fid == a_config.form.get_id() ||
-				    std::find(
-						a_config.extraItems.begin(),
-						a_config.extraItems.end(),
-						fid) != a_config.extraItems.end())
+			if (a_config.customFlags.test(CustomFlags::kDisableIfSlotOccupied))
+			{
+				auto it = std::find_if(
+					a_config.bipedSlots.begin(),
+					a_config.bipedSlots.end(),
+					[&](auto& a_v) {
+						return a_v <= BIPED_OBJECT::kTotal &&
+					           data[stl::underlying(a_v)].occupied;
+					});
+
+				if (it != a_config.bipedSlots.end())
 				{
-					if (auto it = formData.find(fid); it != formData.end())
+					return formData.end();
+				}
+			}
+
+			if (a_config.customFlags.test(CustomFlags::kPrioritizeRecentSlots) &&
+			    a_config.bipedSlots.size() > 1)
+			{
+				for (auto& e : a_config.bipedSlots)
+				{
+					if (e >= BIPED_OBJECT::kTotal)
 					{
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_baseConfig,
-								a_hasMinCount))
+						continue;
+					}
+
+					if (auto& v = data[stl::underlying(e)]; v.occupied)
+					{
+						return formData.end();
+					}
+				}
+
+				auto& tmp = m_temp.le;
+
+				tmp.clear();
+				tmp.reserve(a_config.bipedSlots.size());
+
+				for (auto& e : a_config.bipedSlots)
+				{
+					if (e >= BIPED_OBJECT::kTotal)
+					{
+						continue;
+					}
+
+					tmp.emplace_back(std::addressof(data[stl::underlying(e)]));
+				}
+
+				std::sort(
+					tmp.begin(),
+					tmp.end(),
+					[](auto& a_lhs, auto& a_rhs) {
+						return a_lhs->seen > a_rhs->seen;
+					});
+
+				for (auto& e : tmp)
+				{
+					for (auto& formid : e->forms)
+					{
+						if (formid && !formid.IsTemporary())
 						{
-							return it;
+							if (auto it = formData.find(formid); it != formData.end())
+							{
+								if (configBase_t::do_match(
+										a_params.collector.data,
+										a_config.bipedFilterConditions,
+										{ it->second.form, Data::ObjectSlotExtra::kNone },
+										a_params,
+										true))
+								{
+									if (CustomEntryValidateInventoryForm(
+											a_params,
+											it->second,
+											a_config,
+											a_hasMinCount))
+									{
+										return it;
+									}
+								}
+							}
 						}
 					}
 				}
 			}
-
-			auto tmp(a_config.extraItems);
-
-			tmp.emplace_back(a_config.form.get_id());
-
-			while (tmp.begin() != tmp.end())
+			else
 			{
-				using diff_type = decltype(tmp)::difference_type;
-
-				RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.begin(), tmp.end()) - 1);
-
-				auto ite = tmp.begin() + rng.Get(m_rngBase);
-
-				if (*ite && !ite->IsTemporary())
+				for (auto& e : a_config.bipedSlots)
 				{
-					if (auto it = formData.find(*ite); it != formData.end())
+					if (e >= BIPED_OBJECT::kTotal)
 					{
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_baseConfig,
-								a_hasMinCount))
+						continue;
+					}
+
+					auto& v = data[stl::underlying(e)];
+
+					for (auto& formid : v.forms)
+					{
+						if (formid && !formid.IsTemporary())
 						{
-							return it;
+							if (auto it = formData.find(formid); it != formData.end())
+							{
+								if (configBase_t::do_match(
+										a_params.collector.data,
+										a_config.bipedFilterConditions,
+										{ it->second.form, Data::ObjectSlotExtra::kNone },
+										a_params,
+										true))
+								{
+									if (CustomEntryValidateInventoryForm(
+											a_params,
+											it->second,
+											a_config,
+											a_hasMinCount))
+									{
+										return it;
+									}
+								}
+							}
 						}
 					}
 				}
-
-				tmp.erase(ite);
 			}
 		}
 		else
 		{
-			if (a_config.form.get_id() &&
-			    !a_config.form.get_id().IsTemporary())
+			if (!a_config.customFlags.test(CustomFlags::kUseGroup) &&
+			    a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
+			    !a_config.extraItems.empty())
 			{
-				if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
+				if (a_objectEntry.state)
 				{
-					if (CustomEntryValidateInventoryForm(
-							a_params,
-							it->second,
-							a_config,
-							a_baseConfig,
-							a_hasMinCount))
-					{
-						return it;
-					}
-				}
-			}
+					auto fid = a_objectEntry.state->formid;
 
-			if (!a_config.customFlags.test(CustomFlags::kUseGroup))
-			{
-				for (auto& e : a_config.extraItems)
-				{
-					if (e && !e.IsTemporary())
+					if (fid == a_config.form.get_id() ||
+					    std::find(
+							a_config.extraItems.begin(),
+							a_config.extraItems.end(),
+							fid) != a_config.extraItems.end())
 					{
-						if (auto it = formData.find(e); it != formData.end())
+						if (auto it = formData.find(fid); it != formData.end())
 						{
 							if (CustomEntryValidateInventoryForm(
 									a_params,
 									it->second,
 									a_config,
-									a_baseConfig,
 									a_hasMinCount))
 							{
 								return it;
+							}
+						}
+					}
+				}
+
+				auto& tmp = m_temp.fl;
+
+				tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
+				tmp.emplace_back(a_config.form.get_id());
+
+				while (tmp.begin() != tmp.end())
+				{
+					using diff_type = configFormList_t::difference_type;
+
+					RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.begin(), tmp.end()) - 1);
+
+					auto ite = tmp.begin() + rng.Get(m_rngBase);
+
+					if (*ite && !ite->IsTemporary())
+					{
+						if (auto it = formData.find(*ite); it != formData.end())
+						{
+							if (CustomEntryValidateInventoryForm(
+									a_params,
+									it->second,
+									a_config,
+									a_hasMinCount))
+							{
+								return it;
+							}
+						}
+					}
+
+					tmp.erase(ite);
+				}
+			}
+			else
+			{
+				if (a_config.form.get_id() &&
+				    !a_config.form.get_id().IsTemporary())
+				{
+					if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
+					{
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_hasMinCount))
+						{
+							return it;
+						}
+					}
+				}
+
+				if (!a_config.customFlags.test(CustomFlags::kUseGroup))
+				{
+					for (auto& e : a_config.extraItems)
+					{
+						if (e && !e.IsTemporary())
+						{
+							if (auto it = formData.find(e); it != formData.end())
+							{
+								if (CustomEntryValidateInventoryForm(
+										a_params,
+										it->second,
+										a_config,
+										a_hasMinCount))
+								{
+									return it;
+								}
 							}
 						}
 					}
@@ -3210,6 +3345,13 @@ namespace IED
 		const configCustom_t& a_config,
 		objectEntryCustom_t&  a_objectEntry)
 	{
+		if (a_config.equipmentOverrides.empty() &&
+		    a_config.flags.test(BaseFlags::kDisabled))
+		{
+			a_objectEntry.clear_chance_flags();
+			return false;
+		}
+
 		if (a_config.customFlags.test(CustomFlags::kIgnorePlayer) &&
 		    a_params.actor == *g_thePlayer)
 		{
@@ -3223,45 +3365,46 @@ namespace IED
 			return false;
 		}
 
-		auto configOverride =
-			a_config.get_equipment_override(
-				a_params.collector.data,
-				a_params.objects.m_entriesSlot,
-				a_params);
-
-		const auto& usedBaseConf =
-			configOverride ?
-				static_cast<const configBaseValues_t&>(*configOverride) :
-                a_config;
-
-		if (usedBaseConf.flags.test(BaseFlags::kDisabled))
-		{
-			a_objectEntry.clear_chance_flags();
-			return false;
-		}
-
-		if (IsBlockedByChance(
-				a_params,
-				a_config,
-				a_objectEntry))
-		{
-			return false;
-		}
-
 		auto& settings = m_config.settings.data;
 
-		if (a_config.customFlags.test(CustomFlags::kIsInInventory))
+		if (a_config.customFlags.test_any(CustomFlags::kIsInInventoryMask))
 		{
 			bool hasMinCount;
 
 			auto it = CustomEntrySelectInventoryForm(
 				a_params,
 				a_config,
-				usedBaseConf,
 				a_objectEntry,
 				hasMinCount);
 
 			if (it == a_params.collector.data.forms.end())
+			{
+				a_objectEntry.clear_chance_flags();
+				return false;
+			}
+
+			auto configOverride =
+				a_config.get_equipment_override(
+					a_params.collector.data,
+					a_params.objects.m_entriesSlot,
+					{ it->second.form, ObjectSlotExtra::kNone },
+					a_params);
+
+			const auto& usedBaseConf =
+				configOverride ?
+					static_cast<const configBaseValues_t&>(*configOverride) :
+                    a_config;
+
+			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
+			{
+				a_objectEntry.clear_chance_flags();
+				return false;
+			}
+
+			if (IsBlockedByChance(
+					a_params,
+					a_config,
+					a_objectEntry))
 			{
 				return false;
 			}
@@ -3295,7 +3438,7 @@ namespace IED
 					{
 						if (_visible)
 						{
-							if (a_config.customFlags.test(CustomFlags::kEquipmentMode))
+							if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
 							{
 								itemData.sharedCount--;
 							}
@@ -3360,7 +3503,7 @@ namespace IED
 			{
 				a_objectEntry.SetNodeVisible(visible);
 
-				if (a_config.customFlags.test(CustomFlags::kEquipmentMode) && visible)
+				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
 				{
 					itemData.sharedCount--;
 				}
@@ -3381,6 +3524,8 @@ namespace IED
 			if (!a_config.form.get_id() ||
 			    a_config.form.get_id().IsTemporary())
 			{
+				a_objectEntry.clear_chance_flags();
+
 				return false;
 			}
 
@@ -3393,6 +3538,34 @@ namespace IED
 					a_params.actor->formID.get(),
 					a_config.form.get_id().get());
 
+				a_objectEntry.clear_chance_flags();
+
+				return false;
+			}
+
+			auto configOverride =
+				a_config.get_equipment_override(
+					a_params.collector.data,
+					a_params.objects.m_entriesSlot,
+					{ form, ObjectSlotExtra::kNone },
+					a_params);
+
+			const auto& usedBaseConf =
+				configOverride ?
+					static_cast<const configBaseValues_t&>(*configOverride) :
+                    a_config;
+
+			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
+			{
+				a_objectEntry.clear_chance_flags();
+				return false;
+			}
+
+			if (IsBlockedByChance(
+					a_params,
+					a_config,
+					a_objectEntry))
+			{
 				return false;
 			}
 
@@ -3587,6 +3760,8 @@ namespace IED
 			return;
 		}
 
+		IncrementCycles();
+
 		auto& objects = GetObjectHolder(
 			a_actor,
 			a_root,
@@ -3596,7 +3771,8 @@ namespace IED
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
 			m_config.settings.data.hkWeaponAnimations &&
-				m_config.settings.data.animEventForwarding);
+				m_config.settings.data.animEventForwarding,
+			m_bipedCache.GetOrCreate(a_actor->formID, GetNumCycles()));
 
 		if (a_handle != objects.GetHandle())
 		{
@@ -3638,7 +3814,8 @@ namespace IED
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
 					m_config.settings.data.hkWeaponAnimations &&
-						m_config.settings.data.animEventForwarding);
+						m_config.settings.data.animEventForwarding,
+					m_bipedCache.GetOrCreate(a_actor->formID, GetNumCycles()));
 
 				EvaluateImpl(
 					a_root,
@@ -3673,6 +3850,8 @@ namespace IED
 		PerfTimer pt;
 		pt.Start();
 #endif
+
+		IncrementCycles();
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
@@ -3710,6 +3889,75 @@ namespace IED
 #if defined(IED_ENABLE_STATS_G)
 		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
 #endif
+	}
+
+	void Controller::UpdateBipedSlotCache(
+		processParams_t&   a_params,
+		ActorObjectHolder& a_objects)
+	{
+		/*PerfTimer pt;
+		pt.Start();*/
+
+		auto& data = a_objects.m_lastEquipped->data;
+
+		auto& biped = a_params.actor->GetBiped1(false);
+		if (!biped)
+		{
+			std::for_each(
+				data.begin(),
+				data.end(),
+				[](auto& a_v) { a_v.occupied = false; });
+
+			return;
+		}
+
+		auto skin = a_params.get_actor_skin();
+
+		using enum_type = std::underlying_type_t<BIPED_OBJECT>;
+
+		for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
+		{
+			auto& e = biped->objects[i];
+			auto& f = data[i];
+
+			if (e.item &&
+			    e.item != skin &&
+			    e.item != e.addon)
+			{
+				auto fid = e.item->formID;
+				if (f.forms.empty() || f.forms.front() != fid)
+				{
+					auto itex = std::find(f.forms.begin(), f.forms.end(), fid);
+					if (itex != f.forms.end())
+					{
+						f.forms.erase(itex);
+					}
+
+					f.forms.emplace(f.forms.begin(), fid);
+					if (f.forms.size() > BipedSlotEntry::MAX_FORMS)
+					{
+						f.forms.pop_back();
+					}
+				}
+
+				f.seen     = GetNumCycles();
+				f.occupied = true;
+			}
+			else
+			{
+				f.occupied = false;
+			}
+
+			/*if (a_params.actor == *g_thePlayer)
+			{
+				if (!f.forms.empty())
+				{
+					_DMESSAGE("%u: %x", i, f.forms.front());
+				}
+			}*/
+		}
+
+		//_DMESSAGE("%f", pt.Stop());
 	}
 
 	void Controller::DoObjectEvaluation(
@@ -3752,6 +4000,8 @@ namespace IED
 				__LINE__,
 				a_actor->formID.get());
 		}
+
+		UpdateBipedSlotCache(params, a_objects);
 
 		params.collector.Run(
 			*nrp->npc,
@@ -4265,7 +4515,8 @@ namespace IED
 					auto& conf = GetConfigForActor(
 						a_info,
 						a_confEntry(a_info.sex),
-						a_info.objects.GetSlots());
+						a_info.objects.GetSlots(),
+						a_entry);
 
 					UpdateTransformCustomImpl(
 						a_info,
@@ -4296,7 +4547,8 @@ namespace IED
 					auto& conf = GetConfigForActor(
 						a_info,
 						a_confEntry(a_info.sex),
-						a_info.objects.GetSlots());
+						a_info.objects.GetSlots(),
+						a_entry);
 
 					AttachNodeImpl(
 						a_info,
@@ -4315,8 +4567,11 @@ namespace IED
 	const configBaseValues_t& Controller::GetConfigForActor(
 		const actorInfo_t&                            a_info,
 		const configCustom_t&                         a_config,
-		const ActorObjectHolder::slot_container_type& a_slots)
+		const ActorObjectHolder::slot_container_type& a_slots,
+		objectEntryCustom_t&                          a_entry)
 	{
+		assert(a_entry.state);
+
 		ItemCandidateCollector collector(a_info.actor);
 
 		collector.Run(
@@ -4335,6 +4590,7 @@ namespace IED
 		if (auto eo = a_config.get_equipment_override(
 				collector.data,
 				a_slots,
+				{ a_entry.state->form, Data::ObjectSlotExtra::kNone },
 				params))
 		{
 			return *eo;
@@ -4348,13 +4604,13 @@ namespace IED
 		const configSlot_t&      a_config,
 		const objectEntrySlot_t& a_entry)
 	{
+		assert(a_entry.state);
+
 		ItemCandidateCollector collector(a_info.actor);
 
 		collector.Run(
 			*a_info.npc,
 			GetEntryDataList(a_info.actor));
-
-		auto form = a_entry.GetFormIfActive();
 
 		CommonParams params{
 			a_info.actor,
@@ -4365,14 +4621,10 @@ namespace IED
 			*this
 		};
 
-		if (auto eo = !form ?
-		                  a_config.get_equipment_override(
-							  collector.data,
-							  params) :
-                          a_config.get_equipment_override(
-							  collector.data,
-							  { form, a_entry.slotidex },
-							  params))
+		if (auto eo = a_config.get_equipment_override(
+				collector.data,
+				{ a_entry.state->form, a_entry.slotidex },
+				params))
 		{
 			return *eo;
 		}
@@ -5565,7 +5817,10 @@ namespace IED
 		stl::flag<ExportFlags>                   a_exportFlags,
 		stl::flag<ConfigStoreSerializationFlags> a_flags)
 	{
-		auto tmp = CreateFilteredConfigStore(m_config.active, a_exportFlags, a_flags);
+		auto tmp = CreateFilteredConfigStore(
+			m_config.active,
+			a_exportFlags,
+			a_flags);
 
 		FillGlobalSlotConfig(tmp.slot);
 		CleanConfigStore(tmp);
@@ -5608,6 +5863,9 @@ namespace IED
 
 		ClearObjectsImpl();
 		ClearPlayerState();
+
+		m_bipedCache.clear();
+		ResetCycles();
 	}
 
 	std::size_t Controller::Store(
@@ -5629,8 +5887,9 @@ namespace IED
 		actorStateHolder_t actorState(*this);
 
 		a_out << actorState;
+		a_out << *this;
 
-		return 3;
+		return 4;
 	}
 
 	std::size_t Controller::Load(
@@ -5670,7 +5929,12 @@ namespace IED
 
 		m_storedActorStates = std::move(actorState);
 
-		return 3;
+		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
+		{
+			a_in >> *this;
+		}
+
+		return 4;
 	}
 
 	void Controller::FillGlobalSlotConfig(

@@ -7,6 +7,7 @@
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
+#include "IED/UI/Widgets/Lists/UIBipedObjectList.h"
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
 #include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
@@ -73,6 +74,7 @@ namespace IED
 			public UIBaseConfigWidget<T>,
 			public UIEditorInterface,
 			public UIModelGroupEditorWidget<T>,
+			public UIBipedObjectList,
 			public virtual UIFormTypeSelectorWidget
 		{
 		public:
@@ -115,6 +117,10 @@ namespace IED
 
 		private:
 			void DrawFormSelectors(
+				T                               a_handle,
+				SingleCustomConfigUpdateParams& a_params);
+
+			void DrawLastEquippedPanel(
 				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
@@ -212,6 +218,7 @@ namespace IED
 			UIEditorPanelSettingsGear(a_controller),
 			UIBaseConfigWidget<T>(a_controller),
 			UIModelGroupEditorWidget<T>(m_formPicker, a_controller),
+			UIBipedObjectList(a_controller),
 			m_itemFilter(true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
@@ -271,6 +278,7 @@ namespace IED
 			if (ImGui::BeginChild("custom_editor_panel", { -1.0f, 0.0f }))
 			{
 				stl::vector<decltype(a_data.data)::value_type*> sorted;
+				sorted.reserve(a_data.data.size());
 
 				for (auto& e : a_data.data)
 				{
@@ -659,6 +667,27 @@ namespace IED
 			}
 		}
 
+		enum class CustomObjectMode
+		{
+			kSingle,
+			kGroup,
+			kLastEquipped
+		};
+
+		inline static constexpr CustomObjectMode GetMode(
+			const stl::flag<Data::CustomFlags>& a_flags) noexcept
+		{
+			if (a_flags.test(Data::CustomFlags::kUseLastEquipped))
+			{
+				return CustomObjectMode::kLastEquipped;
+			}
+			if (a_flags.test(Data::CustomFlags::kUseGroup))
+			{
+				return CustomObjectMode::kGroup;
+			}
+			return CustomObjectMode::kSingle;
+		}
+
 		template <class T>
 		void UICustomEditorWidget<T>::DrawFormSelectors(
 			T                               a_handle,
@@ -670,11 +699,13 @@ namespace IED
 
 			ImGui::PushID("gs");
 
+			auto mode = GetMode(data.customFlags);
+
 			if (ImGui::RadioButton(
 					LS(CommonStrings::Single, "1"),
-					!data.customFlags.test(Data::CustomFlags::kUseGroup)))
+					mode == CustomObjectMode::kSingle))
 			{
-				data.customFlags.clear(Data::CustomFlags::kUseGroup);
+				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
 
 				OnBaseConfigChange(
 					a_handle,
@@ -686,8 +717,9 @@ namespace IED
 
 			if (ImGui::RadioButton(
 					LS(CommonStrings::Group, "2"),
-					data.customFlags.test(Data::CustomFlags::kUseGroup)))
+					mode == CustomObjectMode::kGroup))
 			{
+				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
 				data.customFlags.set(Data::CustomFlags::kUseGroup);
 
 				CreatePrimaryModelGroup(a_handle, a_params, data.group);
@@ -698,14 +730,43 @@ namespace IED
 					PostChangeAction::Reset);
 			}
 
+			ImGui::SameLine();
+
+			if (ImGui::RadioButton(
+					LS(UIWidgetCommonStrings::BipedSlotData, "3"),
+					mode == CustomObjectMode::kLastEquipped))
+			{
+				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
+				data.customFlags.set(Data::CustomFlags::kUseLastEquipped);
+
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Reset);
+			}
+
+			ImGui::SameLine();
+
+			DrawTip(UITip::CustomLastEquipped);
+
 			ImGui::PopID();
 
-			if (data.customFlags.test(Data::CustomFlags::kUseGroup))
+			switch (mode)
 			{
+			case CustomObjectMode::kLastEquipped:
+
+				DrawLastEquippedPanel(a_handle, a_params);
+
+				break;
+
+			case CustomObjectMode::kGroup:
+
 				DrawModelGroupEditorWidgetTree(a_handle, a_params, data.group);
-			}
-			else
-			{
+
+				break;
+
+			default:
+
 				if (m_formPicker.DrawFormPicker(
 						"fp",
 						static_cast<Localization::StringID>(CommonStrings::Item),
@@ -717,6 +778,95 @@ namespace IED
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
 				}
+
+				break;
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UICustomEditorWidget<T>::DrawLastEquippedPanel(
+			T                               a_handle,
+			SingleCustomConfigUpdateParams& a_params)
+		{
+			auto& data = a_params.entry(a_params.sex);
+
+			ImGui::PushID("leqp");
+
+			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+				a_handle,
+				data.bipedFilterConditions,
+				[this, a_handle, a_params] {
+					OnBaseConfigChange(
+						a_handle,
+						std::addressof(a_params),
+						PostChangeAction::Evaluate);
+				});
+
+			bool empty = data.bipedFilterConditions.empty();
+
+			if (!empty)
+			{
+				if (r == BaseConfigEditorAction::PasteOver ||
+				    r == BaseConfigEditorAction::Insert)
+				{
+					ImGui::SetNextItemOpen(true);
+				}
+			}
+
+			UICommon::PushDisabled(empty);
+
+			if (ImGui::TreeNodeEx(
+					"flt_tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen,
+					"%s",
+					LS(UICustomEditorString::LastEquippedFilterCond)))
+			{
+				if (!empty)
+				{
+					ImGui::Spacing();
+
+					DrawEquipmentOverrideEntryConditionTable(
+						a_handle,
+						data.bipedFilterConditions,
+						false,
+						[this, a_handle, a_params] {
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						});
+				}
+
+				ImGui::TreePop();
+			}
+
+			UICommon::PopDisabled(empty);
+
+			if (DrawBipedObjectTree(
+					data.bipedSlots,
+					[&] {
+						bool result = ImGui::CheckboxFlagsT(
+							LS(UICustomEditorString::PrioritizeRecentSlots, "1"),
+							stl::underlying(std::addressof(data.customFlags.value)),
+							stl::underlying(Data::CustomFlags::kPrioritizeRecentSlots));
+
+						result |= ImGui::CheckboxFlagsT(
+							LS(UICustomEditorString::DisableIfOccupied, "2"),
+							stl::underlying(std::addressof(data.customFlags.value)),
+							stl::underlying(Data::CustomFlags::kDisableIfSlotOccupied));
+
+						ImGui::Spacing();
+
+						return result;
+					}))
+			{
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Evaluate);
 			}
 
 			ImGui::PopID();
@@ -792,31 +942,51 @@ namespace IED
 
 					DrawTip(UITip::CustomChance);
 
-					if (ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::IsInventoryItem, "3"),
-							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kIsInInventory)))
+					bool cd = data.customFlags.test(Data::CustomFlags::kUseLastEquipped);
+
+					UICommon::PushDisabled(cd);
+
+					if (cd)
 					{
-						OnBaseConfigChange(
-							a_handle,
-							std::addressof(a_params),
-							PostChangeAction::Evaluate);
+						bool dummy = true;
+						ImGui::Checkbox(
+							LS(UICustomEditorString::IsInventoryItem, "3"),
+							std::addressof(dummy));
 					}
+					else
+					{
+						if (ImGui::CheckboxFlagsT(
+								LS(UICustomEditorString::IsInventoryItem, "3"),
+								stl::underlying(std::addressof(data.customFlags.value)),
+								stl::underlying(Data::CustomFlags::kIsInInventory)))
+						{
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						}
+					}
+
+					UICommon::PopDisabled(cd);
+
 					DrawTip(UITip::CustomInventoryItem);
 
-					if (data.customFlags.test(Data::CustomFlags::kIsInInventory))
+					if (data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask))
 					{
 						ImGui::Indent();
 
-						if (auto formInfo = m_formPicker.GetCurrentInfo())
+						if (!data.customFlags.test(Data::CustomFlags::kUseLastEquipped))
 						{
-							if (!IFormCommon::IsInventoryFormType(formInfo->form.type))
+							if (auto formInfo = m_formPicker.GetCurrentInfo())
 							{
-								ImGui::Spacing();
-								ImGui::TextColored(
-									UICommon::g_colorWarning,
-									"%s",
-									LS(UICustomEditorString::SelectedItemNotInventory));
+								if (!IFormCommon::IsInventoryFormType(formInfo->form.type))
+								{
+									ImGui::Spacing();
+									ImGui::TextColored(
+										UICommon::g_colorWarning,
+										"%s",
+										LS(UICustomEditorString::SelectedItemNotInventory));
+								}
 							}
 						}
 
@@ -828,6 +998,19 @@ namespace IED
 
 						ImGui::Columns(2, nullptr, false);
 
+						/*cd = data.customFlags.test(Data::CustomFlags::kUseLastEquipped);
+
+						UICommon::PushDisabled(cd);
+
+						if (cd)
+						{
+							bool dummy = true;
+							ImGui::Checkbox(
+								LS(UICustomEditorString::EquipmentMode, "4"),
+								std::addressof(dummy));
+						}
+						else
+						{*/
 						if (ImGui::CheckboxFlagsT(
 								LS(UICustomEditorString::EquipmentMode, "4"),
 								stl::underlying(std::addressof(data.customFlags.value)),
@@ -838,6 +1021,10 @@ namespace IED
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
 						}
+						/*}
+
+						UICommon::PopDisabled(cd);*/
+
 						DrawTip(UITip::CustomEquipmentMode);
 
 						if (ImGui::CheckboxFlagsT(
@@ -866,7 +1053,7 @@ namespace IED
 
 						ImGui::NextColumn();
 
-						bool cd = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
+						cd = !data.customFlags.test_any(Data::CustomFlags::kEquipmentModeMask);
 
 						UICommon::PushDisabled(cd);
 
@@ -977,7 +1164,10 @@ namespace IED
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
+			{
+				m_fsNew = {};
+			}
 
 			ImGui::PopStyleVar();
 
@@ -1005,7 +1195,7 @@ namespace IED
 
 							result = ExtraItemsAction::Add;
 
-							m_fsNew = 0;
+							m_fsNew = {};
 						}
 
 						ImGui::CloseCurrentPopup();
@@ -1081,11 +1271,11 @@ namespace IED
 
 			ImGui::PushID("extra_items");
 
-			bool disabled = data.customFlags.test(Data::CustomFlags::kUseGroup);
+			bool disabled = data.customFlags.test_any(Data::CustomFlags::kNonSingleMask);
 
 			UICommon::PushDisabled(disabled);
 
-			auto result = DrawExtraItemsHeaderContextMenu(a_handle, a_params);
+			const auto result = DrawExtraItemsHeaderContextMenu(a_handle, a_params);
 
 			bool treeDisabled = disabled || data.extraItems.empty();
 

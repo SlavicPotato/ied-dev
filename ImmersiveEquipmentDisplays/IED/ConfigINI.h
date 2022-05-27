@@ -82,6 +82,7 @@ namespace IED
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
 		bool           m_parallelAnimationUpdates{ false };
+		std::size_t    m_bipedSlotCacheMaxSize{ 1200 };
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		bool m_activeWriteCMETransforms{ false };
 #endif

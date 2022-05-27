@@ -38,7 +38,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList()->Update(a_data);
+			it->second.GetAnimationUpdateList().Update(a_data);
 		}
 	}
 
@@ -54,7 +54,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList()->Update(a_data);
+			it->second.GetAnimationUpdateList().Update(a_data);
 		}
 	}
 

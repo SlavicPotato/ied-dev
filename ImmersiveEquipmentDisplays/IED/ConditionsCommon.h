@@ -94,6 +94,23 @@ namespace IED
                        Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
+		inline constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
+		{
+			if (auto ammo = a_form->As<TESAmmo>())
+			{
+				return ammo->isBolt();
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		inline constexpr bool is_geometry_visible(NiPointer<NiAVObject>& a_object) noexcept
+		{
+			return a_object && a_object->IsVisible();
+		}
+
 		bool is_in_location(
 			BGSLocation* a_current,
 			BGSLocation* a_loc);
@@ -177,6 +194,15 @@ namespace IED
 			{
 				if (a_match.flags.test(Tf::kNegateMatch3) ==
 				    is_ammo_bolt(form))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.flags.test(Tf::kExtraFlag3))
+			{
+				if (a_match.flags.test(Tf::kNegateMatch4) ==
+				    is_geometry_visible(e.object))
 				{
 					return false;
 				}
@@ -616,7 +642,7 @@ namespace IED
 					}
 				}
 
-				if (a_match.keyword.get_id()) // actually race
+				if (a_match.keyword.get_id())  // actually race
 				{
 					auto& mountedActor = a_params.get_mounted_actor();
 					if (!mountedActor)
@@ -638,18 +664,6 @@ namespace IED
 				}
 
 				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		inline constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
-		{
-			if (auto ammo = a_form->As<TESAmmo>())
-			{
-				return ammo->isBolt();
 			}
 			else
 			{

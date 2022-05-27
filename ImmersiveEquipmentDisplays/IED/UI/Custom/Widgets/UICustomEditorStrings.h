@@ -16,6 +16,9 @@ namespace IED
 			ModelSwap                = 4205,
 			LoadARMA                 = 4206,
 			ModelGroup               = 4207,
+			PrioritizeRecentSlots    = 4208,
+			DisableIfOccupied        = 4209,
+			LastEquippedFilterCond   = 4210,
 		};
 	}
 }

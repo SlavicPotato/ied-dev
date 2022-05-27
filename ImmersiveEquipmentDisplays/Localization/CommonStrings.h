@@ -205,5 +205,6 @@ namespace IED
 		Event           = 276,
 		Path            = 277,
 		Priority        = 278,
+		This            = 279,
 	};
 }

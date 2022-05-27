@@ -4,6 +4,7 @@
 #include "JSONConfigCachedFormParser.h"
 #include "JSONConfigCustomParser.h"
 #include "JSONConfigOverrideModelGroupParser.h"
+#include "JSONEquipmentOverrideConditionListParser.h"
 #include "JSONFormListParser.h"
 #include "JSONFormParser.h"
 #include "JSONRangeParser.h"
@@ -18,10 +19,10 @@ namespace IED
 			Data::configCustom_t& a_out,
 			const std::uint32_t   a_version) const
 		{
-			Parser<Data::configBase_t>       pbase(m_state);
-			Parser<Data::configRange_t>      prange(m_state);
-			Parser<Data::configCachedForm_t> pform(m_state);
-			Parser<Data::configModelGroup_t> gparser(m_state);
+			Parser<Data::configBase_t>                     pbase(m_state);
+			Parser<Data::configRange_t>                    prange(m_state);
+			Parser<Data::configCachedForm_t>               pform(m_state);
+			Parser<Data::configModelGroup_t>               gparser(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
 			{
@@ -46,6 +47,31 @@ namespace IED
 				}
 			}
 
+			if (auto& bsl = a_in["bsl"])
+			{
+				for (auto& e : bsl)
+				{
+					auto v = e.asUInt();
+					if (v >= stl::underlying(BIPED_OBJECT::kTotal))
+					{
+						Error("%s: bad biped slot index", __FUNCTION__);
+						return false;
+					}
+
+					a_out.bipedSlots.emplace_back(static_cast<BIPED_OBJECT>(v));
+				}
+			}
+
+			if (auto& bfc = a_in["bfc"])
+			{
+				Parser<Data::equipmentOverrideConditionList_t> cparser(m_state);
+
+				if (!cparser.Parse(bfc, a_out.bipedFilterConditions))
+				{
+					return false;
+				}
+			}
+
 			if (!gparser.Parse(a_in["mgrp"], a_out.group))
 			{
 				return false;
@@ -64,9 +90,9 @@ namespace IED
 			const Data::configCustom_t& a_in,
 			Json::Value&                a_out) const
 		{
-			Parser<Data::configBase_t>       pbase(m_state);
-			Parser<Data::configCachedForm_t> pform(m_state);
-			Parser<Data::configModelGroup_t> gparser(m_state);
+			Parser<Data::configBase_t>                     pbase(m_state);
+			Parser<Data::configCachedForm_t>               pform(m_state);
+			Parser<Data::configModelGroup_t>               gparser(m_state);
 
 			pbase.Create(a_in, a_out);
 
@@ -92,6 +118,22 @@ namespace IED
 				Parser<Data::configFormList_t> pformList(m_state);
 
 				pformList.Create(a_in.extraItems, a_out["extra"]);
+			}
+
+			if (!a_in.bipedSlots.empty())
+			{
+				auto& out = (a_out["bsl"] = Json::Value(Json::ValueType::arrayValue));
+				for (auto& e : a_in.bipedSlots)
+				{
+					out.append(stl::underlying(e));
+				}
+			}
+
+			if (!a_in.bipedFilterConditions.empty())
+			{
+				Parser<Data::equipmentOverrideConditionList_t> cparser(m_state);
+
+				cparser.Create(a_in.bipedFilterConditions, a_out["bfc"]);
 			}
 
 			gparser.Create(a_in.group, a_out["mgrp"]);

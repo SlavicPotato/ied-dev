@@ -968,7 +968,6 @@ namespace IED
 		return result;
 	}
 
-	
 	void EngineExtensions::CleanupWeaponBehaviorGraph(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_graph)
 	{

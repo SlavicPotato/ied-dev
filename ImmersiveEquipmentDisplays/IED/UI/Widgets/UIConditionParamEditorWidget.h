@@ -125,7 +125,7 @@ namespace IED
 			{
 				return m_formPickerKeyword;
 			}
-			
+
 			inline constexpr auto& GetRacePicker() noexcept
 			{
 				return m_formPickerRace;

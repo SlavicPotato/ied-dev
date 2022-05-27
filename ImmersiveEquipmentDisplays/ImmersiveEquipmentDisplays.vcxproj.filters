@@ -1253,6 +1253,21 @@
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\BipedSlotData.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\BipedDataCache.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ISessionCycleCounter.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIBipedObjectList.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigBipedObjectList.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1965,6 +1980,12 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\BipedDataCache.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Lists\UIBipedObjectList.cpp">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

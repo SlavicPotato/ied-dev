@@ -133,28 +133,30 @@ namespace IED
 				CommonParams&          a_params) const;
 
 			const equipmentOverride_t* get_equipment_override(
-				const collectorData_t&     a_data,
-				const slot_container_type& a_slots,
-				CommonParams&              a_params) const;
+				const collectorData_t& a_data,
+				const formSlotPair_t&  a_checkForm,
+				CommonParams&          a_params) const;
 
 			const equipmentOverride_t* get_equipment_override(
+				const collectorData_t&     a_data,
+				const slot_container_type& a_slots,
+				const formSlotPair_t&      a_checkForm,
+				CommonParams&              a_params) const;
+
+			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t& a_data,
-				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t& a_data,
+				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t&     a_data,
 				const slot_container_type& a_slots,
+				const formSlotPair_t&      a_checkForm,
 				CommonParams&              a_params) const;
-
-			const configEffectShaderHolder_t* get_effect_shader(
-				const collectorData_t& a_data,
-				const formSlotPair_t&  a_checkForm,
-				CommonParams&          a_params) const;
 
 		private:
 			static constexpr bool match_equipped_type(
@@ -173,39 +175,45 @@ namespace IED
 				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match);
 
-			static constexpr bool match(
+			static constexpr bool match_equipped(
 				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams&                       a_params);
 
-			static constexpr bool match(
+			static constexpr bool do_match(
 				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				CommonParams&                           a_params,
 				bool                                    a_default);
 
-			static constexpr bool match(
+			static constexpr bool match_equipped_or_slot(
 				const collectorData_t&              a_cdata,
 				const slot_container_type&          a_data,
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams&                       a_params);
 
-			static constexpr bool match(
-				const collectorData_t&                  a_cdata,
-				const slot_container_type&              a_data,
-				const equipmentOverrideConditionList_t& a_matches,
-				CommonParams&                           a_params,
-				bool                                    a_default);
-
-			static constexpr bool match(
+			template <
+				EquipmentOverrideConditionFlags a_maskAll,
+				EquipmentOverrideConditionFlags a_maskSlots>
+			static constexpr bool match_equipped_or_form(
 				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
 				const formSlotPair_t&               a_checkForm,
 				CommonParams&                       a_params);
 
-			static constexpr bool match(
+		public:
+			static bool do_match(
 				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
+				const formSlotPair_t&                   a_checkForm,
+				CommonParams&                           a_params,
+				bool                                    a_default);
+
+		private:
+			static constexpr bool do_match(
+				const collectorData_t&                  a_data,
+				const equipmentOverrideConditionList_t& a_matches,
+				const slot_container_type&              a_slotData,
 				const formSlotPair_t&                   a_checkForm,
 				CommonParams&                           a_params,
 				bool                                    a_default);

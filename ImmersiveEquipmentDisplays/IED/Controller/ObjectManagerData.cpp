@@ -18,14 +18,15 @@ namespace IED
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	ActorObjectHolder::ActorObjectHolder(
-		Actor*                a_actor,
-		NiNode*               a_root,
-		NiNode*               a_npcroot,
-		IObjectManager&       a_owner,
-		Game::ObjectRefHandle a_handle,
-		bool                  a_nodeOverrideEnabled,
-		bool                  a_nodeOverrideEnabledPlayer,
-		bool                  a_animEventForwarding) :
+		Actor*                  a_actor,
+		NiNode*                 a_root,
+		NiNode*                 a_npcroot,
+		IObjectManager&         a_owner,
+		Game::ObjectRefHandle   a_handle,
+		bool                    a_nodeOverrideEnabled,
+		bool                    a_nodeOverrideEnabledPlayer,
+		bool                    a_animEventForwarding,
+		const BipedSlotDataPtr& a_lastEquipped) :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
@@ -33,7 +34,6 @@ namespace IED
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		m_enableAnimEventForwarding(a_animEventForwarding),
-		m_animationUpdateList(std::make_unique<AnimationGraphManagerHolderList>()),
 		m_cellAttached(a_actor->IsParentCellAttached()),
 		m_locData{
 			a_actor->IsInInteriorCell(),
@@ -43,14 +43,15 @@ namespace IED
 		m_inCombat(Game::GetActorInCombat(a_actor)),
 		m_cflags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
 		m_cflags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
-		m_created(IPerfCounter::Query())
+		m_created(IPerfCounter::Query()),
+		m_lastEquipped(a_lastEquipped)
 	{
 		m_lastLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
 								 IPerfCounter::T(50000),
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(1250000);
-		
+
 		m_lastHFStateCheck = m_created +
 		                     m_lfsc_delta_hf.fetch_add(
 								 IPerfCounter::T(4000),
@@ -178,7 +179,7 @@ namespace IED
 			m_animEventForwardRegistrations.Clear();
 		}
 
-		m_animationUpdateList->Clear();
+		m_animationUpdateList.Clear();
 
 		if (m_actor->loadedState)
 		{
@@ -193,7 +194,10 @@ namespace IED
 			}
 		}
 
-		stl::optional<Game::ObjectRefHandle> handle;
+		m_owner.IncrementCycles();
+		m_lastEquipped->accessed = m_owner.GetNumCycles();
+
+		std::optional<Game::ObjectRefHandle> handle;
 
 		visit([&](auto& a_entry) {
 			if (!a_entry.state)
@@ -531,7 +535,7 @@ namespace IED
 			m_animEventForwardRegistrations.Add(a_ptr);
 		}
 
-		m_animationUpdateList->Add(a_ptr);
+		m_animationUpdateList.Add(a_ptr);
 
 		//_DMESSAGE("reg %p", a_ptr.get());
 	}
@@ -544,7 +548,7 @@ namespace IED
 			m_animEventForwardRegistrations.Remove(a_ptr);
 		}
 
-		m_animationUpdateList->Remove(a_ptr);
+		m_animationUpdateList.Remove(a_ptr);
 
 		//_DMESSAGE("unreg %p", a_ptr.get());
 	}
@@ -826,7 +830,7 @@ namespace IED
 			EngineExtensions::UpdateAnimationGraph(e.get(), a_data);
 		}
 	}
-	
+
 	void AnimationGraphManagerHolderList::UpdateNoLock(const BSAnimationUpdateData& a_data) const
 	{
 		for (auto& e : m_data)

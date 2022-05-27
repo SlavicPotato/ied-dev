@@ -8,6 +8,7 @@ namespace IED
 	namespace Data
 	{
 		Game::FormID resolve_form(Game::FormID a_form);
+		Game::FormID resolve_form_zero_missing(Game::FormID a_form);
 
 		struct configRange_t
 		{
@@ -62,6 +63,44 @@ namespace IED
 		};
 
 		static_assert(sizeof(configForm_t) == sizeof(Game::FormID));
+
+		struct configFormZeroMissing_t :
+			Game::FormID
+		{
+			friend class boost::serialization::access;
+
+		public:
+			using Game::FormID::FormID;
+			using Game::FormID::operator=;
+
+			inline constexpr configFormZeroMissing_t(
+				const Game::FormID& a_rhs) noexcept :
+				Game::FormID(a_rhs)
+			{
+			}
+
+		private:
+			template <class Archive>
+			void save(Archive& a_ar, const unsigned int a_version) const
+			{
+				a_ar& static_cast<const Game::FormID&>(*this);
+			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& static_cast<Game::FormID&>(*this);
+
+				if (*this)
+				{
+					*this = resolve_form_zero_missing(*this);
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
+		};
+
+		static_assert(sizeof(configFormZeroMissing_t) == sizeof(Game::FormID));
 
 		struct configCachedForm_t
 		{
@@ -155,7 +194,7 @@ namespace IED
 
 				if (id)
 				{
-					id = resolve_form(id);
+					id = resolve_form_zero_missing(id);
 				}
 			}
 

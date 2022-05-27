@@ -2,6 +2,7 @@
 
 #include "IED/ActorState.h"
 #include "IED/ConfigBlockList.h"
+#include "IED/ConfigCommon.h"
 #include "IED/ConfigINI.h"
 #include "IED/ConfigSerializationFlags.h"
 #include "IED/ConfigStore.h"
@@ -11,6 +12,7 @@
 #include "IED/StringHolder.h"
 
 #include "ActorProcessorTask.h"
+#include "BipedDataCache.h"
 #include "ControllerCommon.h"
 #include "EffectController.h"
 #include "IAnimationManager.h"
@@ -61,6 +63,8 @@ namespace IED
 		//public BSTEventSink<TESPackageEvent>,
 		public BSTEventSink<TESActorLocationChangeEvent>
 	{
+		friend class boost::serialization::access;
+
 		enum class SerializationVersion : std::uint32_t
 		{
 			kDataVersion1 = 1,
@@ -69,8 +73,9 @@ namespace IED
 			kDataVersion4 = 4,
 			kDataVersion5 = 5,
 			kDataVersion6 = 6,
+			kDataVersion7 = 7,
 
-			kCurrentVersion = kDataVersion6
+			kCurrentVersion = kDataVersion7
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -106,6 +111,11 @@ namespace IED
 		friend class ActorProcessorTask;
 
 	public:
+		enum : unsigned int
+		{
+			DataVersion1 = 1,
+		};
+
 		enum class EventSinkInstallationFlags : std::uint8_t
 		{
 			kNone = 0,
@@ -492,6 +502,16 @@ namespace IED
 			return m_iniKeysForced;
 		}
 
+		[[nodiscard]] inline auto GetEquippedItemCacheSize() const noexcept
+		{
+			return m_bipedCache.size();
+		}
+
+		[[nodiscard]] inline constexpr auto GetEquippedItemCacheSizeMax() const noexcept
+		{
+			return m_bipedCache.max_size();
+		}
+
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 		void ProcessEffectShaders();
@@ -536,6 +556,10 @@ namespace IED
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
+
+		void UpdateBipedSlotCache(
+			processParams_t&   a_params,
+			ActorObjectHolder& a_objects);
 
 		void DoObjectEvaluation(
 			NiNode*                          a_root,
@@ -615,7 +639,8 @@ namespace IED
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&                            a_info,
 			const Data::configCustom_t&                   a_config,
-			const ActorObjectHolder::slot_container_type& a_slots);
+			const ActorObjectHolder::slot_container_type& a_slots,
+			objectEntryCustom_t&                          a_entry);
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&        a_info,
@@ -775,15 +800,13 @@ namespace IED
 			processParams_t&                         a_params,
 			const Data::collectorData_t::itemData_t& a_itemData,
 			const Data::configCustom_t&              a_config,
-			const Data::configBaseValues_t&          a_baseConfig,
 			bool&                                    a_hasMinCount);
 
 		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
-			processParams_t&                a_params,
-			const Data::configCustom_t&     a_config,
-			const Data::configBaseValues_t& a_baseConfig,
-			objectEntryCustom_t&            a_objectEntry,
-			bool&                           a_hasMinCount);
+			processParams_t&            a_params,
+			const Data::configCustom_t& a_config,
+			objectEntryCustom_t&        a_objectEntry,
+			bool&                       a_hasMinCount);
 
 		bool IsBlockedByChance(
 			processParams_t&            a_params,
@@ -946,15 +969,6 @@ namespace IED
 		std::shared_ptr<const ConfigINI> m_iniconf;
 		Data::actorBlockList_t           m_actorBlockList;
 
-		bool m_nodeOverrideEnabled{ false };
-		bool m_nodeOverridePlayerEnabled{ false };
-		bool m_forceDefaultConfig{ false };
-		bool m_npcProcessingDisabled{ false };
-		bool m_iniKeysForced{ false };
-		bool m_applyTransformOverrides{ false };
-		bool m_enableCorpseScatter{ false };
-		bool m_forceOrigWeapXFRM{ false };
-
 		struct
 		{
 			Handlers::ComboKeyPressHandler playerBlock;
@@ -974,8 +988,36 @@ namespace IED
 		stl::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;
+
+		BipedDataCache m_bipedCache;
+
+		struct
+		{
+			std::vector<const BipedSlotEntry*> le;
+			Data::configFormList_t             fl;
+		} m_temp;
+
+		bool m_nodeOverrideEnabled{ false };
+		bool m_nodeOverridePlayerEnabled{ false };
+		bool m_forceDefaultConfig{ false };
+		bool m_npcProcessingDisabled{ false };
+		bool m_iniKeysForced{ false };
+		bool m_applyTransformOverrides{ false };
+		bool m_enableCorpseScatter{ false };
+		bool m_forceOrigWeapXFRM{ false };
+
+		template <class Archive>
+		void serialize(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& static_cast<ISessionCycleCounter&>(*this);
+			a_ar& m_bipedCache;
+		}
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);
 
 }
+
+BOOST_CLASS_VERSION(
+	::IED::Controller,
+	::IED::Controller::DataVersion1);

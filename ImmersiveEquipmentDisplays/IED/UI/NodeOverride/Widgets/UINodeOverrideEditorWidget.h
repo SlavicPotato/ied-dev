@@ -1624,7 +1624,7 @@ namespace IED
 							a_params,
 							a_exists);
 					}
-					// fallthrough
+					[[fallthrough]];
 				case NodeOverrideCommonAction::PasteOver:
 					ImGui::SetNextItemOpen(true);
 					break;
@@ -1946,7 +1946,7 @@ namespace IED
 							a_params,
 							a_exists);
 					}
-					// fallthrough
+					[[fallthrough]];
 				case NodeOverrideCommonAction::PasteOver:
 					ImGui::SetNextItemOpen(true);
 					break;
@@ -3314,7 +3314,7 @@ namespace IED
 								tdesc = LS(CommonStrings::Global);
 
 								break;
-								
+
 							case Data::NodeOverrideConditionType::Mount:
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
@@ -3999,26 +3999,50 @@ namespace IED
 			switch (match->fbf.type)
 			{
 			case Data::NodeOverrideConditionType::BipedSlot:
+				{
+					result |= ImGui::CheckboxFlagsT(
+						LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
+					DrawTip(UITip::MatchSkin);
 
-				DrawTip(UITip::MatchSkin);
+					bool disabled = !match->flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1);
 
-				result |= ImGui::CheckboxFlagsT(
-					"!##2",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+					UICommon::PushDisabled(disabled);
 
-				ImGui::SameLine();
+					result |= ImGui::CheckboxFlagsT(
+						"!##2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+					UICommon::PopDisabled(disabled);
 
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+
+					disabled = !match->flags.test(Data::NodeOverrideConditionFlags::kExtraFlag3);
+
+					UICommon::PushDisabled(disabled);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##4",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch4));
+
+					UICommon::PopDisabled(disabled);
+
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::GeometryVisible, "5"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag3));
+				}
 				break;
 			case Data::NodeOverrideConditionType::Form:
 			case Data::NodeOverrideConditionType::Keyword:
@@ -4043,7 +4067,7 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kMatchSlots));
 
-				DrawTip(UITip::EquippedConditions);
+				DrawTip(UITip::EquippedConditionsGearPositioning);
 
 				if (!match->flags.test_any(Data::NodeOverrideConditionFlags::kMatchAll))
 				{

@@ -37,7 +37,7 @@ namespace IED
 				{
 					ImGui::SetNextItemOpen(true);
 				}
-			// fallthrough
+				[[fallthrough]];
 			case SimpleStringSetContextResult::Clear:
 				result = true;
 				break;

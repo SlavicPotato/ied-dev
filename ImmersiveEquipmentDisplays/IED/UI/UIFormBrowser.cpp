@@ -343,7 +343,15 @@ namespace IED
 				if (m_formIDFilter ||
 				    m_formNameFilter)
 				{
-					m_filteredData->clear();
+					if (m_filteredData)
+					{
+						m_filteredData->clear();
+					}
+					else
+					{
+						m_filteredData.emplace();
+					}
+
 					m_filteredData->reserve(it->second.size());
 
 					Game::FormID formID;
@@ -367,10 +375,6 @@ namespace IED
 							return (!formID || a_e.formid == formID) &&
 						           m_formNameFilter.Test(a_e.name);
 						});
-
-					m_filteredData->shrink_to_fit();
-
-					m_filteredData.mark(true);
 				}
 				else
 				{

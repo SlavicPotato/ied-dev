@@ -49,6 +49,8 @@ namespace IED
 				ImGui::TextUnformatted("UI:");
 				ImGui::TextUnformatted("FC:");
 				ImGui::TextUnformatted("SC:");
+				ImGui::TextUnformatted("CC:");
+				ImGui::TextUnformatted("EC:");
 
 				auto odbLevel = m_controller.GetODBLevel();
 
@@ -69,6 +71,13 @@ namespace IED
 
 				auto& sc = SkeletonCache::GetSingleton();
 				ImGui::Text("%zu [%zu]", sc.GetSize(), sc.GetTotalEntries());
+
+				ImGui::Text("%zu", m_controller.GetNumCycles());
+
+				ImGui::Text(
+					"%zu/%zu",
+					m_controller.GetEquippedItemCacheSize(),
+					m_controller.GetEquippedItemCacheSizeMax());
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{

@@ -29,7 +29,6 @@ namespace IED
 			Controller*                  a_controller);
 
 	private:
-
-		std::atomic<bool>     m_running{ false };
+		std::atomic<bool> m_running{ false };
 	};
 }

@@ -39,7 +39,8 @@ namespace IED
 				EffectShaderData,
 				FixedStringSet,
 				EffectShaderFunction,
-				EffectShaderFunctionList
+				EffectShaderFunctionList,
+				BipedObjectList
 			};
 
 			struct entry_t
@@ -283,6 +284,12 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configBipedObjectList_t>)
+			{
+				return data.type == DataType::BipedObjectList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				static_assert(false);
@@ -440,6 +447,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configEffectShaderFunctionList_t>)
 			{
 				data.type = DataType::EffectShaderFunctionList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configBipedObjectList_t>)
+			{
+				data.type = DataType::BipedObjectList;
 			}
 			else
 			{

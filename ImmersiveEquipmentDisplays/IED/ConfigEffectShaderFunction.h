@@ -86,7 +86,8 @@ namespace IED
 					vMinMax[1] = 1.5f;
 					range[0]   = 0.0f;
 					range[1]   = 1.0f;
-					// fallthrough
+
+					[[fallthrough]];
 				case EffectShaderFunctionType::UVLinearMotion:
 					speed = 1.0f;
 					break;

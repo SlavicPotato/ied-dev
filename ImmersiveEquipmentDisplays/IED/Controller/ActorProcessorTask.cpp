@@ -469,14 +469,14 @@ namespace IED
 
 			bool update = false;
 
-			if (animUpdateData && !e.m_animationUpdateList->Empty())
+			if (animUpdateData && !e.m_animationUpdateList.Empty())
 			{
 				float step =
 					e.m_formid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;
 
-				UpdateActorGearAnimations(e.m_actor.get(), *e.m_animationUpdateList, step);
+				UpdateActorGearAnimations(e.m_actor.get(), e.m_animationUpdateList, step);
 			}
 
 			for (auto& f : e.m_entriesSlot)

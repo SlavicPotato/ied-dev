@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigBase.h"
+#include "ConfigBipedObjectList.h"
 #include "ConfigModelGroup.h"
 
 namespace IED
@@ -11,18 +12,25 @@ namespace IED
 		{
 			kNone = 0,
 
-			kIsInInventory        = 1u << 0,
-			kEquipmentMode        = 1u << 1,
-			kIgnorePlayer         = 1u << 2,
-			kLeftWeapon           = 1u << 3,
-			kAlwaysUnload         = 1u << 4,
-			kUseChance            = 1u << 5,
-			kIgnoreRaceEquipTypes = 1u << 6,
-			kDisableIfEquipped    = 1u << 7,
-			kDisableHavok         = 1u << 8,
-			kUseGroup             = 1u << 9,
-			kCheckFav             = 1u << 10,
-			kSelectInvRandom      = 1u << 11,
+			kIsInInventory         = 1u << 0,
+			kEquipmentMode         = 1u << 1,
+			kIgnorePlayer          = 1u << 2,
+			kLeftWeapon            = 1u << 3,
+			kAlwaysUnload          = 1u << 4,
+			kUseChance             = 1u << 5,
+			kIgnoreRaceEquipTypes  = 1u << 6,
+			kDisableIfEquipped     = 1u << 7,
+			kDisableHavok          = 1u << 8,
+			kUseGroup              = 1u << 9,
+			kCheckFav              = 1u << 10,
+			kSelectInvRandom       = 1u << 11,
+			kUseLastEquipped       = 1u << 12,
+			kPrioritizeRecentSlots = 1u << 13,
+			kDisableIfSlotOccupied = 1u << 14,
+
+			kNonSingleMask     = kUseGroup | kUseLastEquipped,
+			kEquipmentModeMask = kEquipmentMode,  //| kUseLastEquipped,
+			kIsInInventoryMask = kIsInInventory | kUseLastEquipped,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);
@@ -37,18 +45,25 @@ namespace IED
 			{
 				DataVersion1 = 1,
 				DataVersion2 = 2,
+				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
-			static inline constexpr auto DEFAULT_CUSTOM_FLAGS = CustomFlags::kAlwaysUnload;
+			static inline constexpr auto DEFAULT_CUSTOM_FLAGS =
+				CustomFlags::kAlwaysUnload |
+				CustomFlags::kPrioritizeRecentSlots |
+				CustomFlags::kDisableIfSlotOccupied;
 
-			stl::flag<CustomFlags> customFlags{ DEFAULT_CUSTOM_FLAGS };
-			configCachedForm_t     form;
-			configCachedForm_t     modelForm;
-			configRange_t          countRange;
-			std::uint32_t          priority{ 0 };  // unused
-			float                  chance{ 100.0f };
-			configFormList_t       extraItems;
-			configModelGroup_t     group;
+			stl::flag<CustomFlags>           customFlags{ DEFAULT_CUSTOM_FLAGS };
+			configCachedForm_t               form;
+			configCachedForm_t               modelForm;
+			configRange_t                    countRange;
+			std::uint32_t                    priority{ 0 };  // unused
+			float                            chance{ 100.0f };
+			configFormList_t                 extraItems;
+			configModelGroup_t               group;
+			configBipedObjectList_t          bipedSlots;
+			equipmentOverrideConditionList_t bipedFilterConditions;
 
 		private:
 			template <class Archive>
@@ -67,6 +82,16 @@ namespace IED
 				if (a_version >= DataVersion2)
 				{
 					a_ar& group;
+
+					if (a_version >= DataVersion3)
+					{
+						a_ar& bipedSlots;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& bipedFilterConditions;
+						}
+					}
 				}
 			}
 		};
@@ -166,7 +191,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configCustom_t,
-	::IED::Data::configCustom_t::Serialization::DataVersion2);
+	::IED::Data::configCustom_t::Serialization::DataVersion4);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configCustomHolder_t,

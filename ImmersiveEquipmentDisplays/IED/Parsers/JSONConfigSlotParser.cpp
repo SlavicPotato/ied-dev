@@ -15,8 +15,8 @@ namespace IED
 			Data::configSlot_t& a_out,
 			const std::uint32_t a_version) const
 		{
-			Parser<Data::configBase_t>           pbase(m_state);
-			Parser<Data::configFormFilter_t>     pfset(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
+			Parser<Data::configFormFilter_t> pfset(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
 			{

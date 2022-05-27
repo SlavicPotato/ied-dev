@@ -28,11 +28,15 @@ namespace IED
 			kAnd = 1u << 5,
 			kNot = 1u << 6,
 
-			kMatchEquipped       = 1u << 7,
-			kMatchSlots          = 1u << 8,
-			kMatchCategoryOperOR = 1u << 9,
+			kMatchEquipped          = 1u << 7,
+			kMatchAllEquipmentSlots = 1u << 8,
+			kMatchCategoryOperOR    = 1u << 9,
+			kMatchThisItem          = 1u << 10,
 
-			kMatchAll = kMatchEquipped | kMatchSlots,
+			kMatchMaskEquippedAndThis     = kMatchEquipped | kMatchThisItem,
+			kMatchMaskEquippedAndSlots    = kMatchEquipped | kMatchAllEquipmentSlots,
+			kMatchMaskAllEquipmentAndThis = kMatchAllEquipmentSlots | kMatchThisItem,
+			kMatchMaskAny                 = kMatchEquipped | kMatchMaskAllEquipmentAndThis,
 
 			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form)
 			kExtraFlag1 = 1u << 11,
@@ -44,6 +48,9 @@ namespace IED
 			kNegateMatch2 = 1u << 14,
 			kNegateMatch3 = 1u << 15,
 			kNegateMatch4 = 1u << 16,
+
+			kExtraFlag3 = 1u << 17,
+			kExtraFlag4 = 1u << 18,
 
 			//kMatchTemplate = 1u << 30
 		};

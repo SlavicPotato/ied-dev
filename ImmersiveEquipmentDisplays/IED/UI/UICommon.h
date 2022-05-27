@@ -55,7 +55,7 @@ namespace IED
 					ImGui::EndTooltip();
 				}
 			}
-			
+
 			template <class... Args>
 			void HelpMarkerFormatted(const char* a_desc, Args... a_args)
 			{

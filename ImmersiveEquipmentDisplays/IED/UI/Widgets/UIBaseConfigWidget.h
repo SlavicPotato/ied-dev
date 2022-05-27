@@ -172,6 +172,7 @@ namespace IED
 				const void*              a_params,
 				const stl::fixed_string& a_slotName);
 
+		protected:
 			template <class Tu>
 			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 				T                                       a_handle,
@@ -181,11 +182,11 @@ namespace IED
 			template <class Tu>
 			void DrawEquipmentOverrideEntryConditionTable(
 				T                                       a_handle,
-				Data::configBase_t&                     a_baseData,
 				Data::equipmentOverrideConditionList_t& a_entry,
 				bool                                    a_isnested,
 				Tu                                      a_updFunc);
 
+		private:
 			EquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
 				bool a_drawDelete);
 
@@ -1332,7 +1333,7 @@ namespace IED
 						it = a_data.equipmentOverrides.emplace(it, *clipData);
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
-					// fallthrough
+					[[fallthrough]];
 				case BaseConfigEditorAction::PasteOver:
 					ImGui::SetNextItemOpen(true);
 					break;
@@ -1388,7 +1389,6 @@ namespace IED
 
 								DrawEquipmentOverrideEntryConditionTable(
 									a_handle,
-									a_data,
 									e.conditions,
 									false,
 									[this, a_handle, a_params] {
@@ -1555,7 +1555,6 @@ namespace IED
 		template <class Tu>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionTable(
 			T                                       a_handle,
-			Data::configBase_t&                     a_baseData,
 			Data::equipmentOverrideConditionList_t& a_entry,
 			bool                                    a_isnested,
 			Tu                                      a_updFunc)
@@ -1742,7 +1741,6 @@ namespace IED
 
 							DrawEquipmentOverrideEntryConditionTable(
 								a_handle,
-								a_baseData,
 								e.group.conditions,
 								true,
 								a_updFunc);
@@ -2306,7 +2304,7 @@ namespace IED
 
 						ImGui::EndMenu();
 					}
-					
+
 					if (LCG_MI(UIWidgetCommonStrings::Mount, "G"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;
@@ -2575,21 +2573,47 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchCategoryOperOR));
 
 				ImGui::SameLine();
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("%s:", LS(CommonStrings::Displayed));
+				ImGui::SameLine();
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Displayed, "3"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchSlots));
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::All, "3"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots)))
+				{
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots))
+					{
+						match->flags.clear(Data::EquipmentOverrideConditionFlags::kMatchThisItem);
+					}
 
-				DrawTip(UITip::EquippedConditions);
+					result = true;
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::This, "4"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchThisItem)))
+				{
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchThisItem))
+					{
+						match->flags.clear(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots);
+					}
+
+					result = true;
+				}
+
+				DrawTip(UITip::EquippedConditionsEquipment);
 
 				if (match->fbf.type == Data::EquipmentOverrideConditionType::Form &&
-				    !match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchAll))
+				    !match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskAny))
 				{
 					ImGui::Spacing();
 
 					result |= ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Count, "4"),
+						LS(CommonStrings::Count, "5"),
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
@@ -2631,26 +2655,50 @@ namespace IED
 				break;
 
 			case Data::EquipmentOverrideConditionType::BipedSlot:
+				{
+					result |= ImGui::CheckboxFlagsT(
+						LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorWidgetStrings::MatchSkin, "1"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
+					DrawTip(UITip::MatchSkin);
 
-				DrawTip(UITip::MatchSkin);
+					bool disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
 
-				result |= ImGui::CheckboxFlagsT(
-					"!##2",
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+					UICommon::PushDisabled(disabled);
 
-				ImGui::SameLine();
+					result |= ImGui::CheckboxFlagsT(
+						"!##2",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
 
-				result |= ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
-					stl::underlying(std::addressof(match->flags.value)),
-					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+					UICommon::PopDisabled(disabled);
 
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(UINodeOverrideEditorWidgetStrings::IsBolt, "3"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+					disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag3);
+
+					UICommon::PushDisabled(disabled);
+
+					result |= ImGui::CheckboxFlagsT(
+						"!##4",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
+
+					UICommon::PopDisabled(disabled);
+
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::GeometryVisible, "5"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
+				}
 				break;
 
 			case Data::EquipmentOverrideConditionType::Location:
@@ -2709,7 +2757,6 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
 				break;
-
 			}
 
 			ImGui::PopID();
@@ -3347,7 +3394,7 @@ namespace IED
 							a_params,
 							PostChangeAction::Evaluate);
 					}
-					// fallthrough
+					[[fallthrough]];
 				case BaseConfigEditorAction::PasteOver:
 					ImGui::SetNextItemOpen(true);
 					break;
@@ -3407,7 +3454,6 @@ namespace IED
 
 								DrawEquipmentOverrideEntryConditionTable(
 									a_handle,
-									a_data,
 									e.conditions,
 									false,
 									[this, a_handle, a_params, &a_data, &e] {

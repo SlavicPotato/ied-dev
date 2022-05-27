@@ -64,7 +64,7 @@ namespace IED
 	}
 
 	bool IJSONSerialization::ImportData(
-		const Data::configStore_t& a_in,
+		const Data::configStore_t&                     a_in,
 		stl::flag<ImportFlags>                         a_flags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_serFlags)
 	{

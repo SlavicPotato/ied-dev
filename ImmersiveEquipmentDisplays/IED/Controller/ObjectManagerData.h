@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ActorAnimationState.h"
+#include "BipedSlotData.h"
 #include "EffectShaderData.h"
 #include "INode.h"
 #include "NodeOverrideData.h"
@@ -81,7 +82,7 @@ namespace IED
 		}
 
 		void Update(const BSAnimationUpdateData& a_data) const;
-		
+
 		void UpdateNoLock(const BSAnimationUpdateData& a_data) const;
 
 		void Clear() noexcept
@@ -437,14 +438,15 @@ namespace IED
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
-			Actor*                a_actor,
-			NiNode*               a_root,
-			NiNode*               a_npcroot,
-			IObjectManager&       a_owner,
-			Game::ObjectRefHandle a_handle,
-			bool                  a_nodeOverrideEnabled,
-			bool                  a_nodeOverrideEnabledPlayer,
-			bool                  a_animEventForwarding);
+			Actor*                  a_actor,
+			NiNode*                 a_root,
+			NiNode*                 a_npcroot,
+			IObjectManager&         a_owner,
+			Game::ObjectRefHandle   a_handle,
+			bool                    a_nodeOverrideEnabled,
+			bool                    a_nodeOverrideEnabledPlayer,
+			bool                    a_animEventForwarding,
+			const BipedSlotDataPtr& a_lastEquipped);
 
 		~ActorObjectHolder();
 
@@ -687,12 +689,12 @@ namespace IED
 		void UnregisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
 
-		inline auto& GetAnimationUpdateList()
+		inline constexpr auto& GetAnimationUpdateList() noexcept
 		{
 			return m_animationUpdateList;
 		}
 
-		inline auto& GetAnimationUpdateList() const
+		inline constexpr auto& GetAnimationUpdateList() const noexcept
 		{
 			return m_animationUpdateList;
 		}
@@ -730,12 +732,6 @@ namespace IED
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<weapNodeEntry_t>    m_weapNodes;
 
-		/*stl::map_sa<
-			stl::fixed_string,
-			cmeNodeEntry_t,
-			stl::fixed_string_less_equal_p>
-			m_cmeNodes;*/
-
 		stl::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
 		stl::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
 
@@ -761,9 +757,11 @@ namespace IED
 
 		mutable ActorAnimationState m_animState;
 
-		std::shared_ptr<AnimationGraphManagerHolderList> m_animationUpdateList;
-		AnimationGraphManagerHolderList                  m_animEventForwardRegistrations;
-		const bool                                       m_enableAnimEventForwarding{ false };
+		AnimationGraphManagerHolderList m_animationUpdateList;
+		AnimationGraphManagerHolderList m_animEventForwardRegistrations;
+		const bool                      m_enableAnimEventForwarding{ false };
+
+		BipedSlotDataPtr m_lastEquipped;
 
 		IObjectManager& m_owner;
 
@@ -800,7 +798,7 @@ namespace IED
 			return m_objects;
 		}
 
-		inline constexpr void ClearPlayerState() noexcept
+		inline void ClearPlayerState() noexcept
 		{
 			m_playerState.reset();
 		}
@@ -811,9 +809,9 @@ namespace IED
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
 
 	protected:
-		ActorObjectMap                         m_objects;
-		std::optional<Data::actorStateEntry_t> m_playerState;
-		Data::actorStateHolder_t               m_storedActorStates;
+		ActorObjectMap                           m_objects;
+		std::unique_ptr<Data::actorStateEntry_t> m_playerState;
+		Data::actorStateHolder_t                 m_storedActorStates;
 	};
 
 }

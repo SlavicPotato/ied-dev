@@ -541,17 +541,17 @@ namespace IED
 				a_iform = e.As1<Game::FormID>();
 			}
 
-			const char* kwtag;
+			const char*        kwtag;
 			ConditionParamItem kwparam;
 
 			if (a_race)
 			{
-				kwtag = "R";
+				kwtag   = "R";
 				kwparam = ConditionParamItem::Race;
 			}
 			else
 			{
-				kwtag = "KW";
+				kwtag   = "KW";
 				kwparam = ConditionParamItem::Keyword;
 			}
 

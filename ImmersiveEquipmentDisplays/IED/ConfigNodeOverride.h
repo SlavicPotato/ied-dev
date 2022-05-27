@@ -81,7 +81,7 @@ namespace IED
 			kNegateMatch3 = 1u << 15,
 			kNegateMatch4 = 1u << 16,
 
-			//kMatchTemplate = 1u << 30
+			kExtraFlag3 = 1u << 17
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionFlags);

@@ -158,7 +158,14 @@ namespace IED
 	{
 		if (a_actor == *g_thePlayer)
 		{
-			m_playerState.emplace(a_objects);
+			if (m_playerState)
+			{
+				*m_playerState = a_objects;
+			}
+			else
+			{
+				m_playerState = std::make_unique<Data::actorStateEntry_t>(a_objects);
+			}
 		}
 
 		if (a_objects.m_actor->loadedState)

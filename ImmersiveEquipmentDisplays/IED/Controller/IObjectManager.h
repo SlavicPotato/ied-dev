@@ -8,6 +8,7 @@
 #include "IModel.h"
 #include "INode.h"
 #include "INodeOverride.h"
+#include "ISessionCycleCounter.h"
 #include "ISound.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerData.h"
@@ -21,6 +22,7 @@ namespace IED
 		public INodeOverride,
 		public ObjectManagerData,
 		public ObjectDatabase,
+		public ISessionCycleCounter,
 		virtual public ILog
 	{
 	public:
