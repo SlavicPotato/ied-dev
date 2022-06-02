@@ -44,21 +44,30 @@ namespace IED
 			void Merge(std::initializer_list<initializer_type> a_init);
 			void Merge(std::initializer_list<map_type::value_type> a_init);
 
+			template <class... Args>
 			std::pair<map_type::iterator, bool> Add(
-				const char*                    a_node,
-				const char*                    a_desc,
-				stl::flag<NodeDescriptorFlags> a_flags);
+				Args&&... a_args)
+			{
+				auto r = m_data.try_emplace(std::forward<Args>(a_args)...);
 
-			bool RemoveExtra(const stl::fixed_string& a_node);
+				if (r.second)
+				{
+					m_dirty = true;
+				}
+
+				return r;
+			}
+
+			bool RemoveUserNode(const stl::fixed_string& a_node);
 
 			void SortIfDirty();
 
-			inline void SetDirty()
+			inline constexpr void SetDirty() noexcept
 			{
 				m_dirty = true;
 			}
 
-			bool SaveExtra(const fs::path& a_path) const;
+			bool SaveUserNodes(const fs::path& a_path) const;
 			bool LoadExtra(const fs::path& a_path);
 
 			inline constexpr const auto& GetLastException() const noexcept
@@ -123,7 +132,7 @@ namespace IED
 				index++;
 			}
 
-			if (a_flags.test(NodeDescriptorFlags::kExtra))
+			if (a_flags.test(NodeDescriptorFlags::kUserNode))
 			{
 				buf[index] = 'E';
 				index++;

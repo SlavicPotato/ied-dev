@@ -26,7 +26,8 @@ namespace IED
 	{
 		a_input.erase(0);
 
-		if (m_maxSizeUpper && a_input.size() > m_maxSizeUpper)
+		if (m_maxSizeUpper &&
+		    a_input.size() > m_maxSizeUpper)
 		{
 			stl::vector<data_type::value_type*> s;
 			s.reserve(a_input.size());

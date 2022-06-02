@@ -180,7 +180,6 @@ namespace IED
 			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
 
-		private:
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
@@ -460,8 +459,8 @@ namespace IED
 				a_ar& global;
 			}
 
-			configFormMap_t<data_type> data[3]{};
-			data_type                  global[2]{};
+			configFormMap_t<data_type> data[3];
+			data_type                  global[2];
 		};
 
 		class configFormSet_t :
@@ -685,6 +684,16 @@ namespace std
 	{
 		inline constexpr std::size_t operator()(
 			::IED::Data::configForm_t const& a_in) const noexcept
+		{
+			return hash<Game::FormID>()(a_in);
+		}
+	};
+
+	template <>
+	struct hash<::IED::Data::configFormZeroMissing_t>
+	{
+		inline constexpr std::size_t operator()(
+			::IED::Data::configFormZeroMissing_t const& a_in) const noexcept
 		{
 			return hash<Game::FormID>()(a_in);
 		}

@@ -10,7 +10,7 @@ namespace IED
 		friend class boost::serialization::access;
 
 	public:
-		inline static constexpr std::size_t MAX_FORMS = 16;
+		inline static constexpr std::size_t DEFAULT_MAX_FORMS = 16;
 
 		enum Serialization : unsigned int
 		{

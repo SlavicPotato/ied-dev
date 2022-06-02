@@ -329,7 +329,7 @@ namespace IED
 						auto it = data.find(e.As1<const stl::fixed_string>());
 						if (it != data.end())
 						{
-							return it->second.desc;
+							return it->second.desc.c_str();
 						}
 					}
 

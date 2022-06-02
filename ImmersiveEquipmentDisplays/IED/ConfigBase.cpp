@@ -842,8 +842,7 @@ namespace IED
 
 					if (a_match.flags.test_any(a_maskSlots))
 					{
-						if (a_checkForm.slot != Data::ObjectSlotExtra::kNone &&
-						    a_match.slot != a_checkForm.slot)
+						if (a_match.slot != a_checkForm.slot)
 						{
 							return false;
 						}

@@ -194,8 +194,8 @@ namespace IED
 			}
 		}
 
-		m_owner.IncrementCycles();
-		m_lastEquipped->accessed = m_owner.GetNumCycles();
+		m_owner.IncrementCounter();
+		m_lastEquipped->accessed = m_owner.GetCounterValue();
 
 		std::optional<Game::ObjectRefHandle> handle;
 
@@ -355,7 +355,8 @@ namespace IED
 		const NodeOverrideData::extraNodeEntry_t& a_entry)
 	{
 		if (m_cmeNodes.contains(a_entry.name_cme) ||
-		    m_movNodes.contains(a_entry.name_mov))
+		    m_movNodes.contains(a_entry.name_mov) ||
+		    a_npcroot->GetObjectByName(a_entry.bsname_node))
 		{
 			return;
 		}
@@ -372,10 +373,18 @@ namespace IED
 		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
 
 		mov->m_localTransform = a_female ?
-		                            a_entry.transform_f :
-                                    a_entry.transform_m;
+		                            a_entry.transform_mov_f :
+                                    a_entry.transform_mov_m;
 
 		cme->AttachChild(mov, true);
+
+		auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
+
+		node->m_localTransform = a_female ?
+		                             a_entry.transform_node_f :
+                                     a_entry.transform_node_m;
+
+		mov->AttachChild(node, true);
 
 		INode::UpdateDownwardPass(cme);
 

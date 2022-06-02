@@ -33,13 +33,13 @@ namespace IED
 
 				Data::NodeMap::value_type tmp;
 
-				if (!parser.Parse((*it), tmp, version))
+				if (!parser.Parse(*it, tmp, version))
 				{
 					Error("%s: parsing value failed (%s)", __FUNCTION__, key.c_str());
 					continue;
 				}
 
-				if (a_extraOnly && !tmp.flags.test(Data::NodeDescriptorFlags::kExtra))
+				if (a_extraOnly && !tmp.flags.test(Data::NodeDescriptorFlags::kUserNode))
 				{
 					continue;
 				}
@@ -62,7 +62,7 @@ namespace IED
 
 			for (auto& [i, e] : a_data)
 			{
-				if (a_extraOnly && !e.flags.test(Data::NodeDescriptorFlags::kExtra))
+				if (a_extraOnly && !e.flags.test(Data::NodeDescriptorFlags::kUserNode))
 				{
 					continue;
 				}

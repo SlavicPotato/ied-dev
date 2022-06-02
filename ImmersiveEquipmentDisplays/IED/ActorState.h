@@ -16,19 +16,44 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
-			configForm_t lastEquipped;
-			long long    lastSeenEquipped{ std::numeric_limits<long long>::min() };
+			configFormZeroMissing_t lastEquipped;
+			long long               lastSeenEquipped{ std::numeric_limits<long long>::min() };
 
 		private:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
 				a_ar& lastEquipped;
 				a_ar& lastSeenEquipped;
 			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				if (a_version < DataVersion2)
+				{
+					configForm_t tmp;
+					a_ar&        tmp;
+					lastEquipped = tmp;
+				}
+				else
+				{
+					a_ar& lastEquipped;
+				}
+
+				a_ar& lastSeenEquipped;
+
+				if (!lastEquipped)
+				{
+					lastSeenEquipped = std::numeric_limits<long long>::min();
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		struct actorStateEntry_t
@@ -76,10 +101,19 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
 				a_ar& data;
 			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& data;
+				data.erase(0);
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 	}
@@ -87,7 +121,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::actorStateSlotEntry_t,
-	::IED::Data::actorStateSlotEntry_t::Serialization::DataVersion1);
+	::IED::Data::actorStateSlotEntry_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::actorStateEntry_t,

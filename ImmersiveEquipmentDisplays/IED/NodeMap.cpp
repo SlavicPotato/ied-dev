@@ -152,25 +152,6 @@ namespace IED
 			m_dirty = true;
 		}
 
-		auto NodeMap::Add(
-			const char*                    a_node,
-			const char*                    a_desc,
-			stl::flag<NodeDescriptorFlags> a_flags)
-			-> std::pair<map_type::iterator, bool>
-		{
-			auto r = m_data.try_emplace(
-				a_node,
-				a_desc,
-				a_flags);
-
-			if (r.second)
-			{
-				m_dirty = true;
-			}
-
-			return r;
-		}
-
 		void NodeMap::Sort()
 		{
 			m_data.sortvec([](const auto& a_lhs, const auto& a_rhs) {
@@ -178,12 +159,11 @@ namespace IED
 			});
 		}
 
-		bool NodeMap::RemoveExtra(const stl::fixed_string& a_node)
+		bool NodeMap::RemoveUserNode(const stl::fixed_string& a_node)
 		{
-			auto it = m_data.find(a_node);
-			if (it != m_data.end())
+			if (auto it = m_data.find(a_node); it != m_data.end())
 			{
-				if (it->second.flags.test(NodeDescriptorFlags::kExtra))
+				if (it->second.flags.test(NodeDescriptorFlags::kUserNode))
 				{
 					m_data.erase(it);
 					return true;
@@ -202,7 +182,7 @@ namespace IED
 			}
 		}
 
-		bool NodeMap::SaveExtra(const fs::path& a_path) const
+		bool NodeMap::SaveUserNodes(const fs::path& a_path) const
 		{
 			using namespace Serialization;
 
@@ -250,7 +230,10 @@ namespace IED
 
 				for (auto& e : tmp)
 				{
-					Add(e.first.c_str(), e.second.name.c_str(), e.second.flags);
+					Add(
+						e.first,
+						std::move(e.second.name),
+						e.second.flags);
 				}
 
 				return true;
@@ -269,14 +252,12 @@ namespace IED
 				return false;
 			}
 
-			for (auto& e : a_name)
-			{
-				if (e < 0x20 || e > 0x7E)
-				{
-					return false;
-				}
-			}
-			return true;
+			return std::find_if(
+					   a_name.begin(),
+					   a_name.end(),
+					   [](auto& a_v) {
+						   return a_v < 0x20 || a_v > 0x7E;
+					   }) == a_name.end();
 		}
 
 	}

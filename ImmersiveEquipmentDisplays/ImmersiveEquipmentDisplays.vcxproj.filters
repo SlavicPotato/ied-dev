@@ -198,6 +198,9 @@
     <Filter Include="Source\IED\UI\Widgets\BaseConfig\EffectShader">
       <UniqueIdentifier>{47b6de0e-0807-40b5-9322-8a8b1b38e14b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\ExtraNode">
+      <UniqueIdentifier>{62c4bf7a-82fa-426d-9018-69d8bf63e510}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1259,7 +1262,7 @@
     <ClInclude Include="IED\Controller\BipedDataCache.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\ISessionCycleCounter.h">
+    <ClInclude Include="IED\Controller\IPersistentCounter.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Lists\UIBipedObjectList.h">
@@ -1267,6 +1270,15 @@
     </ClInclude>
     <ClInclude Include="IED\ConfigBipedObjectList.h">
       <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigExtraNode.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeMapParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1986,6 +1998,12 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\Lists\UIBipedObjectList.cpp">
       <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeMapParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -56,7 +56,6 @@ namespace IED
 				if (!treeDisabled)
 				{
 					ImGui::Spacing();
-					ImGui::Indent();
 
 					ImGui::PushID("extra");
 					result |= a_extra();
@@ -64,7 +63,6 @@ namespace IED
 
 					result |= DrawTable(a_data);
 
-					ImGui::Unindent();
 					ImGui::Spacing();
 				}
 

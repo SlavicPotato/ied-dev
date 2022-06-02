@@ -45,8 +45,11 @@ namespace IED
 			reader.GetBoolValue(SECT_GENERAL, "ImmediateUpdateOnFav", false);
 		m_applyTransformOverrides =
 			reader.GetBoolValue(SECT_GENERAL, "XP32LeftHandRotationFix", true);
+
 		m_bipedSlotCacheMaxSize =
-			std::max(reader.GetLongValue(SECT_GENERAL, "BipedSlotCacheMaxSize", 1200l), 0l);
+			std::max(reader.GetLongValue(SECT_BIPCACHE, "MaxSize", 2000l), 0l);
+		m_bipedSlotCacheMaxForms =
+			std::max(reader.GetLongValue(SECT_BIPCACHE, "MaxFormsPerSlot", 16l), 0l);
 
 		m_nodeOverrideEnabled =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "Enable", true);

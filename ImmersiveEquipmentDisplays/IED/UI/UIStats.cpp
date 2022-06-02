@@ -72,7 +72,7 @@ namespace IED
 				auto& sc = SkeletonCache::GetSingleton();
 				ImGui::Text("%zu [%zu]", sc.GetSize(), sc.GetTotalEntries());
 
-				ImGui::Text("%zu", m_controller.GetNumCycles());
+				ImGui::Text("%zu", m_controller.GetCounterValue());
 
 				ImGui::Text(
 					"%zu/%zu",

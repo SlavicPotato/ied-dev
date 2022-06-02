@@ -607,7 +607,7 @@ namespace IED
 
 			for (const auto& e : data.getvec())
 			{
-				if (!m_itemFilter.Test(e->second.desc))
+				if (!m_itemFilter.Test(*e->second.desc))
 				{
 					continue;
 				}
@@ -641,7 +641,7 @@ namespace IED
 						"entry_tree",
 						e->first == (*itb)->first,
 						"%s",
-						e->second.desc))
+						e->second.desc.c_str()))
 				{
 					ImGui::Spacing();
 

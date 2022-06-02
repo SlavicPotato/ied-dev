@@ -38,7 +38,9 @@ namespace IED
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
 		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
 		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
-		m_bipedCache(a_config->m_bipedSlotCacheMaxSize)
+		m_bipedCache(
+			a_config->m_bipedSlotCacheMaxSize,
+			a_config->m_bipedSlotCacheMaxForms)
 	{
 		InitializeInputHandlers();
 
@@ -172,19 +174,6 @@ namespace IED
 		}
 
 		ISKSE::GetBacklog().SetLimit(std::clamp<std::uint32_t>(settings.ui.logLimit, 1, 2000));
-
-		auto& nodeMap = NodeMap::GetSingleton();
-
-		if (!nodeMap.LoadExtra(PATHS::NODEMAP))
-		{
-			if (Serialization::FileExists(PATHS::NODEMAP))
-			{
-				Error(
-					"%s: %s",
-					PATHS::NODEMAP,
-					nodeMap.GetLastException().what());
-			}
-		}
 
 		SetODBLevel(settings.odbLevel);
 
@@ -1245,7 +1234,7 @@ namespace IED
 				a_holder.CreateExtraMovNodes(
 					a_holder.m_npcroot,
 					a_holder.m_female,
-					e);
+					e.second);
 			}
 		}
 
@@ -2556,7 +2545,7 @@ namespace IED
 			es = a_config.get_effect_shader(
 				a_params.collector.data,
 				a_params.objects.m_entriesSlot,
-				{ a_objectEntry.state->form, ObjectSlotExtra::kNone },
+				{ a_objectEntry.state->form, ItemData::GetItemSlotExtra(a_objectEntry.state->form) },
 				a_params);
 		}
 		else if constexpr (std::is_same_v<Ta, configSlot_t>)
@@ -3147,7 +3136,7 @@ namespace IED
 								if (configBase_t::do_match(
 										a_params.collector.data,
 										a_config.bipedFilterConditions,
-										{ it->second.form, Data::ObjectSlotExtra::kNone },
+										{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
 										a_params,
 										true))
 								{
@@ -3185,7 +3174,7 @@ namespace IED
 								if (configBase_t::do_match(
 										a_params.collector.data,
 										a_config.bipedFilterConditions,
-										{ it->second.form, Data::ObjectSlotExtra::kNone },
+										{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
 										a_params,
 										true))
 								{
@@ -3387,7 +3376,7 @@ namespace IED
 				a_config.get_equipment_override(
 					a_params.collector.data,
 					a_params.objects.m_entriesSlot,
-					{ it->second.form, ObjectSlotExtra::kNone },
+					{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -3547,7 +3536,7 @@ namespace IED
 				a_config.get_equipment_override(
 					a_params.collector.data,
 					a_params.objects.m_entriesSlot,
-					{ form, ObjectSlotExtra::kNone },
+					{ form, ItemData::GetItemSlotExtra(form) },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -3760,7 +3749,7 @@ namespace IED
 			return;
 		}
 
-		IncrementCycles();
+		IncrementCounter();
 
 		auto& objects = GetObjectHolder(
 			a_actor,
@@ -3772,7 +3761,7 @@ namespace IED
 			m_nodeOverridePlayerEnabled,
 			m_config.settings.data.hkWeaponAnimations &&
 				m_config.settings.data.animEventForwarding,
-			m_bipedCache.GetOrCreate(a_actor->formID, GetNumCycles()));
+			m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 		if (a_handle != objects.GetHandle())
 		{
@@ -3815,7 +3804,7 @@ namespace IED
 					m_nodeOverridePlayerEnabled,
 					m_config.settings.data.hkWeaponAnimations &&
 						m_config.settings.data.animEventForwarding,
-					m_bipedCache.GetOrCreate(a_actor->formID, GetNumCycles()));
+					m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 				EvaluateImpl(
 					a_root,
@@ -3851,7 +3840,7 @@ namespace IED
 		pt.Start();
 #endif
 
-		IncrementCycles();
+		IncrementCounter();
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
@@ -3934,13 +3923,13 @@ namespace IED
 					}
 
 					f.forms.emplace(f.forms.begin(), fid);
-					if (f.forms.size() > BipedSlotEntry::MAX_FORMS)
+					if (f.forms.size() > m_bipedCache.max_forms())
 					{
 						f.forms.pop_back();
 					}
 				}
 
-				f.seen     = GetNumCycles();
+				f.seen     = GetCounterValue();
 				f.occupied = true;
 			}
 			else
@@ -4590,7 +4579,7 @@ namespace IED
 		if (auto eo = a_config.get_equipment_override(
 				collector.data,
 				a_slots,
-				{ a_entry.state->form, Data::ObjectSlotExtra::kNone },
+				{ a_entry.state->form, ItemData::GetItemSlotExtra(a_entry.state->form) },
 				params))
 		{
 			return *eo;
@@ -5865,7 +5854,7 @@ namespace IED
 		ClearPlayerState();
 
 		m_bipedCache.clear();
-		ResetCycles();
+		ResetCounter();
 	}
 
 	std::size_t Controller::Store(
@@ -5897,12 +5886,12 @@ namespace IED
 		std::uint32_t                    a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
-		stl::scoped_lock lock(m_lock);
-
 		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
 		{
 			throw std::exception("unsupported version");
 		}
+
+		stl::scoped_lock lock(m_lock);
 
 		actorBlockList_t   blockList;
 		configStore_t      cfgStore;

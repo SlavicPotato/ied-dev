@@ -3,6 +3,9 @@
 
 #include "NodeOverrideData.h"
 
+#include "IED/Parsers/JSONConfigExtraNodeMapParser.h"
+#include "Serialization/Serialization.h"
+
 namespace IED
 {
 	std::unique_ptr<NodeOverrideData> NodeOverrideData::m_Instance;
@@ -423,27 +426,40 @@ namespace IED
 
 		}),
 
-		m_extramov(std::initializer_list<exn_ctor_init_t>{
-			{
+		m_extramov(std::initializer_list<init_list_exn>{
+			{ "WeaponDaggerOnBack",
 
-				"MOV WeaponDaggerOnBack",
-				"CME WeaponDaggerOnBack",
-				"CME Spine2 [Spn2]",
-				{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
-				{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
-				WeaponPlacementID::OnBack
+	          {
 
-			},
-			{
+				  "WeaponDaggerOnBack",
+				  "MOV WeaponDaggerOnBack",
+				  "CME WeaponDaggerOnBack",
+				  "CME Spine2 [Spn2]",
+				  { 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
+				  { 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
+				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				  WeaponPlacementID::OnBack,
+				  "Dagger On Back"
 
-				"MOV WeaponDaggerLeftOnBack",
-				"CME WeaponDaggerLeftOnBack",
-				"CME Spine2 [Spn2]",
-				{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
-				{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
-				WeaponPlacementID::OnBack
+			  } },
 
-			},
+			{ "WeaponDaggerLeftOnBack",
+
+	          {
+
+				  "WeaponDaggerLeftOnBack",
+				  "MOV WeaponDaggerLeftOnBack",
+				  "CME WeaponDaggerLeftOnBack",
+				  "CME Spine2 [Spn2]",
+				  { 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
+				  { 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
+				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
+				  WeaponPlacementID::OnBack,
+				  "Dagger On Back Left"
+
+			  } },
 		}),
 
 		m_extraCopy(std::initializer_list<exn_copy_ctor_init_t>{
@@ -530,6 +546,178 @@ namespace IED
 		}
 	}
 
+	void NodeOverrideData::LoadAndAddExtraNodes(const char* a_path)
+	{
+		std::list<Data::configExtraNodeMap_t> data;
+		if (m_Instance->LoadExtraNodesImpl(a_path, data))
+		{
+			m_Instance->AddExtraNodeData(data);
+		}
+	}
+
+	bool NodeOverrideData::LoadExtraNodesImpl(
+		const char*                            a_path,
+		std::list<Data::configExtraNodeMap_t>& a_out)
+	{
+		try
+		{
+			for (const auto& entry : fs::directory_iterator(a_path))
+			{
+				if (!entry.is_regular_file())
+				{
+					continue;
+				}
+
+				auto& path    = entry.path();
+				auto  strPath = Serialization::SafeGetPath(path);
+
+				Data::configExtraNodeMap_t result;
+
+				try
+				{
+					result = LoadExtraNodeFile(entry.path());
+				}
+				catch (const std::exception& e)
+				{
+					Error(
+						"%s: %s - %s",
+						__FUNCTION__,
+						strPath.c_str(),
+						e.what());
+
+					continue;
+				}
+				catch (...)
+				{
+					Error(
+						"%s: exception occured - %s",
+						__FUNCTION__,
+						strPath.c_str());
+
+					continue;
+				}
+
+				Debug(
+					"%s: loaded '%s' [%zu]",
+					__FUNCTION__,
+					strPath.c_str(),
+					result.size());
+
+				a_out.emplace_back(std::move(result));
+			}
+
+			return true;
+		}
+		catch (const std::exception& e)
+		{
+			Error(
+				"%s: %s",
+				__FUNCTION__,
+				e.what());
+
+			return false;
+		}
+		catch (...)
+		{
+			Error(
+				"%s: exception occured",
+				__FUNCTION__);
+
+			return false;
+		}
+	}
+
+	void NodeOverrideData::AddExtraNodeData(
+		const std::list<Data::configExtraNodeMap_t>& a_data)
+	{
+		for (auto& e : a_data)
+		{
+			for (auto& [node, f] : e)
+			{
+				stl::fixed_string mov = std::string("MOV ") + *node;
+				stl::fixed_string cme = std::string("CME ") + *node;
+
+				if (m_mov.contains(mov))
+				{
+					Warning(
+						"%s: '%s' - MOV node already exists",
+						__FUNCTION__,
+						mov.c_str());
+
+					continue;
+				}
+
+				if (m_cme.contains(cme))
+				{
+					Warning(
+						"%s: '%s' - CME node already exists",
+						__FUNCTION__,
+						cme.c_str());
+
+					continue;
+				}
+
+				auto r = m_extramov.try_emplace(
+					node,
+					node,
+					mov,
+					cme,
+					f.parent,
+					f.xfrm_mov_m.to_nitransform(),
+					f.xfrm_mov_f.to_nitransform(),
+					f.xfrm_node_m.to_nitransform(),
+					f.xfrm_node_f.to_nitransform(),
+					WeaponPlacementID::None,
+					f.desc);
+
+				if (!r.second)
+				{
+					Warning(
+						"%s: node entry '%s' already exists",
+						__FUNCTION__,
+						node.c_str());
+
+					continue;
+				}
+
+				const auto& rv = r.first->second;
+
+				m_mov.try_emplace(
+					rv.name_mov,
+					rv.name_mov,
+					rv.desc,
+					WeaponPlacementID::None);
+
+				m_cme.try_emplace(
+					rv.name_cme,
+					rv.name_cme,
+					rv.desc,
+					WeaponPlacementID::None);
+			}
+		}
+	}
+
+	Data::configExtraNodeMap_t NodeOverrideData::LoadExtraNodeFile(const fs::path& a_path)
+	{
+		using namespace Serialization;
+
+		Json::Value root;
+
+		ReadData(a_path, root);
+
+		ParserState                        state;
+		Parser<Data::configExtraNodeMap_t> parser(state);
+
+		Data::configExtraNodeMap_t result;
+
+		if (!parser.Parse(root, result))
+		{
+			throw std::exception("parse failed");
+		}
+
+		return result;
+	}
+
 	auto NodeOverrideData::randWeapEntry_t::get_rand_entry() const
 		-> const NodeOverrideData::randPlacementEntry_t*
 	{
@@ -540,8 +728,7 @@ namespace IED
 
 		try
 		{
-			auto index = rng->Get();
-			return std::addressof(movs[index]);
+			return std::addressof(movs[rng->Get()]);
 		}
 		catch (...)
 		{

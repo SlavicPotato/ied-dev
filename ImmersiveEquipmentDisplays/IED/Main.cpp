@@ -235,6 +235,29 @@ namespace IED
 						ldm.GetLastException().what());
 				}
 
+				auto& nodeMap = IED::Data::NodeMap::GetSingleton();
+
+				if (!nodeMap.LoadExtra(PATHS::NODEMAP))
+				{
+					if (Serialization::FileExists(PATHS::NODEMAP))
+					{
+						Error(
+							"%s: %s",
+							PATHS::NODEMAP,
+							nodeMap.GetLastException().what());
+					}
+				}
+
+				NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
+
+				for (auto& e : NodeOverrideData::GetExtraMovNodes())
+				{
+					nodeMap.Add(
+						e.second.name_node.c_str(),
+						e.second.desc.c_str(),
+						Data::NodeDescriptorFlags::kNone);
+				}
+
 				GlobalProfileManager::GetSingleton<SlotProfile>().Load(
 					PATHS::PROFILE_MANAGER_SLOT);
 

@@ -367,7 +367,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SKMP_TIMESTAMP_LOGS;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
@@ -581,6 +581,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigColor.h" />
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
+    <ClInclude Include="IED\ConfigExtraNode.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
@@ -598,7 +599,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\IAnimationManager.h" />
     <ClInclude Include="IED\Controller\IFirstPersonState.h" />
     <ClInclude Include="IED\Controller\ImportFlags.h" />
-    <ClInclude Include="IED\Controller\ISessionCycleCounter.h" />
+    <ClInclude Include="IED\Controller\IPersistentCounter.h" />
     <ClInclude Include="IED\Controller\BipedSlotData.h" />
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
@@ -608,6 +609,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeMapParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
@@ -1003,6 +1006,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeMapParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />

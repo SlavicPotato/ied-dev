@@ -47,6 +47,7 @@ namespace IED
 		inline static constexpr auto SECT_ANIM          = "Animation";
 		inline static constexpr auto SECT_EXPERIMENTAL  = "Experimental";
 		inline static constexpr auto SECT_EFFECTSHADERS = "EffectShaders";
+		inline static constexpr auto SECT_BIPCACHE      = "BipedSlotCache";
 
 	public:
 		ConfigINI() = default;
@@ -82,7 +83,8 @@ namespace IED
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
 		bool           m_parallelAnimationUpdates{ false };
-		std::size_t    m_bipedSlotCacheMaxSize{ 1200 };
+		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
+		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		bool m_activeWriteCMETransforms{ false };
 #endif

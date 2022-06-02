@@ -15,7 +15,7 @@ namespace IED
 			kDefault     = 1ui32 << 4,
 			kWeapon      = 1ui32 << 5,
 			kDefaultCopy = 1ui32 << 6,
-			kExtra       = 1ui32 << 15,
+			kUserNode    = 1ui32 << 15,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeDescriptorFlags);

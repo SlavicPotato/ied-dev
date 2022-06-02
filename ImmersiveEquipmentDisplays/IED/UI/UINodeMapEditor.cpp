@@ -99,7 +99,7 @@ namespace IED
 
 				for (auto& e : data.getvec())
 				{
-					if (!e->second.flags.test(Data::NodeDescriptorFlags::kExtra))
+					if (!e->second.flags.test(Data::NodeDescriptorFlags::kUserNode))
 					{
 						continue;
 					}
@@ -172,7 +172,7 @@ namespace IED
 					auto r = map.Add(
 						name.c_str(),
 						name.c_str(),
-						Data::NodeDescriptorFlags::kExtra);
+						Data::NodeDescriptorFlags::kUserNode);
 
 					if (!r.second)
 					{
@@ -204,7 +204,7 @@ namespace IED
 				.call([this, a_node](const auto&) {
 					auto& map = Data::NodeMap::GetSingleton();
 
-					if (!map.RemoveExtra(a_node))
+					if (!map.RemoveUserNode(a_node))
 					{
 						auto& queue = m_controller.UIGetPopupQueue();
 
@@ -227,7 +227,7 @@ namespace IED
 			auto& map = Data::NodeMap::GetSingleton();
 			map.SetDirty();
 
-			if (!map.SaveExtra(PATHS::NODEMAP))
+			if (!map.SaveUserNodes(PATHS::NODEMAP))
 			{
 				auto& queue = m_controller.UIGetPopupQueue();
 				queue.push(

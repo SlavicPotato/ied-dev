@@ -1009,7 +1009,7 @@ namespace IED
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)
 		{
-			a_ar& static_cast<ISessionCycleCounter&>(*this);
+			a_ar& static_cast<IPersistentCounter&>(*this);
 			a_ar& m_bipedCache;
 		}
 	};
