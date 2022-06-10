@@ -66,6 +66,8 @@ namespace IED
 				return a_params.actor->flags1.test(Actor::Flags1::kParalyzed);
 			case Data::ExtraConditionType::kIsOnMount:
 				return a_params.is_on_mount();
+			case Data::ExtraConditionType::kHumanoidSkeleton:
+				return has_humanoid_skeleton(a_params);
 			default:
 				return false;
 			}
@@ -673,6 +675,7 @@ namespace IED
 
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_female(CommonParams& a_params) noexcept;
+		bool has_humanoid_skeleton(CommonParams& a_params) noexcept;
 
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept;

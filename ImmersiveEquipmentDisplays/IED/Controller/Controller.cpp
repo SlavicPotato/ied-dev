@@ -1225,22 +1225,18 @@ namespace IED
 
 	void Controller::OnActorAcquire(ActorObjectHolder& a_holder)
 	{
-		if (!a_holder.m_weapNodes.empty() &&
-		    !a_holder.m_cmeNodes.empty() &&
+		if (!a_holder.m_cmeNodes.empty() &&
 		    !a_holder.m_movNodes.empty())
 		{
 			for (auto& e : NodeOverrideData::GetExtraMovNodes())
 			{
-				a_holder.CreateExtraMovNodes(
-					a_holder.m_npcroot,
-					a_holder.m_female,
-					e.second);
+				a_holder.CreateExtraMovNodes(a_holder.m_npcroot, e);
 			}
 		}
 
 		if (m_applyTransformOverrides)
 		{
-			a_holder.ApplyNodeTransformOverrides(a_holder.m_root);
+			a_holder.ApplyNodeTransformOverrides(a_holder.m_npcroot);
 		}
 
 		if (m_config.settings.data.placementRandomization &&
@@ -1248,13 +1244,6 @@ namespace IED
 		{
 			GenerateRandomPlacementEntries(a_holder);
 		}
-
-		/*for (auto& e : a_holder.m_cmeNodes)
-		{
-			a_holder.m_cmeLookup.try_emplace(e.first, e.second);
-		}*/
-
-		//Debug("%X : acquire | %s", a_holder.m_actor->formID.get(), a_holder.m_root->m_name.c_str());
 	}
 
 	void Controller::QueueResetAll(
@@ -2770,6 +2759,11 @@ namespace IED
 				    slot == equippedInfo.leftSlot ||
 				    slot == equippedInfo.rightSlot)
 				{
+					if (prio && prio->flags.test(SlotPriorityFlags::kAccountForEquipped))
+					{
+						typeActive = true;
+					}
+
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
@@ -5668,29 +5662,6 @@ namespace IED
 		return EventResult::kContinue;
 	}
 
-	/*EventResult IED::Controller::ReceiveEvent(
-		const TESCombatEvent*           a_evn,
-		BSTEventSource<TESCombatEvent>* a_dispatcher)
-	{
-		if (a_evn)
-		{
-			_DMESSAGE("%X -> %X", a_evn->actor ? a_evn->actor->formID : 0, a_evn->targetActor ? a_evn->targetActor->formID : 0, a_evn->newState);
-
-			if (a_evn->actor)
-			{
-				QueueRequestEvaluate(a_evn->actor->formID, true, true);
-			}
-
-			
-			if (a_evn->targetActor)
-			{
-				QueueRequestEvaluate(a_evn->targetActor->formID, true, true);
-			}
-		}
-
-		return EventResult::kContinue;
-	}*/
-
 	EventResult Controller::ReceiveEvent(
 		const TESSwitchRaceCompleteEvent* a_evn,
 		BSTEventSource<TESSwitchRaceCompleteEvent>*)
@@ -5742,25 +5713,6 @@ namespace IED
 		if (a_evn)
 		{
 			_DMESSAGE("%.8X: %u | %s", a_evn->scene, a_evn->state, a_evn->callback->GetCallbackName().c_str());
-		}
-
-		return EventResult::kContinue;
-	}*/
-
-	/*EventResult Controller::ReceiveEvent(
-		const TESQuestStartStopEvent* a_evn,
-		BSTEventSource<TESQuestStartStopEvent>*)
-	{
-		return EventResult::kContinue;
-	}*/
-
-	/*EventResult Controller::ReceiveEvent(
-		const TESPackageEvent*           a_evn,
-		BSTEventSource<TESPackageEvent>* a_dispatcher)
-	{
-		if (a_evn)
-		{
-			QueueRequestEvaluate(a_evn->actor, true, false);
 		}
 
 		return EventResult::kContinue;
@@ -5904,6 +5856,11 @@ namespace IED
 		FillGlobalSlotConfig(cfgStore.slot);
 		CleanConfigStore(cfgStore);
 		CleanBlockList(blockList);
+
+		if (!m_config.settings.data.placementRandomization)
+		{
+			ClearConfigStoreRand(cfgStore);
+		}
 
 		m_actorBlockList = std::move(blockList);
 

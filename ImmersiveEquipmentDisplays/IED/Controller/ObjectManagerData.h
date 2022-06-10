@@ -7,6 +7,7 @@
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerCommon.h"
+#include "SkeletonID.h"
 
 #include "IED/ActorState.h"
 #include "IED/ConfigModelGroup.h"
@@ -689,20 +690,24 @@ namespace IED
 		void UnregisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
 
-		inline constexpr auto& GetAnimationUpdateList() noexcept
+		[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() noexcept
 		{
 			return m_animationUpdateList;
 		}
 
-		inline constexpr auto& GetAnimationUpdateList() const noexcept
+		[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() const noexcept
 		{
 			return m_animationUpdateList;
+		}
+
+		[[nodiscard]] inline constexpr bool HasHumanoidSkeleton() const noexcept
+		{
+			return m_humanoidSkeleton;
 		}
 
 	private:
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
-			bool                                      a_female,
 			const NodeOverrideData::extraNodeEntry_t& a_entry);
 
 		void CreateExtraCopyNode(
@@ -741,6 +746,7 @@ namespace IED
 
 		Game::FormID m_formid;
 		bool         m_female{ false };
+		bool         m_humanoidSkeleton{ false };
 
 		bool                m_cellAttached{ false };
 		bool                m_isPlayerTeammate{ false };
@@ -754,6 +760,7 @@ namespace IED
 		TESPackage*         m_currentPackage{ nullptr };
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
+		SkeletonID                            m_skeletonID;
 
 		mutable ActorAnimationState m_animState;
 

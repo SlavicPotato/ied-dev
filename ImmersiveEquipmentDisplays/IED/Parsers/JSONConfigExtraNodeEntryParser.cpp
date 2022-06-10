@@ -10,37 +10,47 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configExtraNodeEntry_t>::Parse(
-			const Json::Value&       a_in,
+			const Json::Value&            a_in,
 			Data::configExtraNodeEntry_t& a_out) const
 		{
 			Parser<Data::configTransform_t> xfrmparser(m_state);
 
+			a_out.name   = a_in["name"].asString();
 			a_out.desc   = a_in["desc"].asString();
 			a_out.parent = a_in["parent"].asString();
 
-			if (auto& xh = a_in["xfrm_mov"])
+			if (auto& skel = a_in["skeleton"])
 			{
-				if (!xfrmparser.Parse(xh["f"], a_out.xfrm_mov_f, 1u))
+				for (auto& e : skel)
 				{
-					return false;
-				}
+					auto& ids = e["ids"];
+					if (!ids || ids.size() == 0)
+					{
+						continue;
+					}
 
-				if (!xfrmparser.Parse(xh["m"], a_out.xfrm_mov_m, 1u))
-				{
-					return false;
-				}
-			}
+					auto& v = a_out.skel.emplace_back();
 
-			if (auto& xh = a_in["xfrm_node"])
-			{
-				if (!xfrmparser.Parse(xh["f"], a_out.xfrm_node_f, 1u))
-				{
-					return false;
-				}
+					for (auto& f : ids)
+					{
+						v.ids.emplace_back(f.asInt());
+					}
 
-				if (!xfrmparser.Parse(xh["m"], a_out.xfrm_node_m, 1u))
-				{
-					return false;
+					if (auto& xh = e["xfrm_mov"])
+					{
+						if (!xfrmparser.Parse(xh, v.transform_mov, 1u))
+						{
+							return false;
+						}
+					}
+
+					if (auto& xh = e["xfrm_node"])
+					{
+						if (!xfrmparser.Parse(xh, v.transform_node, 1u))
+						{
+							return false;
+						}
+					}
 				}
 			}
 
@@ -50,22 +60,8 @@ namespace IED
 		template <>
 		void Parser<Data::configExtraNodeEntry_t>::Create(
 			const Data::configExtraNodeEntry_t& a_data,
-			Json::Value&                   a_out) const
+			Json::Value&                        a_out) const
 		{
-			Parser<Data::configTransform_t> xfrmparser(m_state);
-
-			a_out["desc"]   = *a_data.desc;
-			a_out["parent"] = *a_data.parent;
-
-			auto& xh_mov = a_out["xfrm_mov"];
-
-			xfrmparser.Create(a_data.xfrm_mov_f, xh_mov["f"]);
-			xfrmparser.Create(a_data.xfrm_mov_m, xh_mov["m"]);
-
-			auto& xh_node = a_out["xfrm_node"];
-
-			xfrmparser.Create(a_data.xfrm_node_f, xh_node["f"]);
-			xfrmparser.Create(a_data.xfrm_node_m, xh_node["m"]);
 		}
 	}
 }

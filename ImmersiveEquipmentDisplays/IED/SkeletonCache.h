@@ -20,11 +20,11 @@ namespace IED
 			return m_Instance;
 		}
 
-		const Entry* GetNode(
+		/*const Entry* GetNode(
 			TESObjectREFR*           a_refr,
-			const stl::fixed_string& a_name);
+			const stl::fixed_string& a_name);*/
 
-		const_actor_entry_type Get(
+		std::optional<data_type::const_iterator> Get(
 			TESObjectREFR* a_refr);
 
 		[[nodiscard]] inline auto GetSize() const noexcept

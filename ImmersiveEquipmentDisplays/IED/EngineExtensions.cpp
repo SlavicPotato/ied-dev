@@ -1024,8 +1024,8 @@ namespace IED
 
 		auto& tlsUnk768 = tlsData[*tlsIndex]->unk768;
 
-		std::uint32_t oldUnk768 = tlsUnk768;
-		tlsUnk768               = 0x3A;
+		auto oldUnk768 = tlsUnk768;
+		tlsUnk768      = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
 		data.reference    = a_refr;

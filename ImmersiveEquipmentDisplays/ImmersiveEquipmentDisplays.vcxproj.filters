@@ -1277,8 +1277,11 @@
     <ClInclude Include="IED\ConfigExtraNode.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeMapParser.h">
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\SkeletonID.h">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2002,8 +2005,11 @@
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeMapParser.cpp">
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\SkeletonID.cpp">
+      <Filter>Source\IED\Controller\NodeOverride</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

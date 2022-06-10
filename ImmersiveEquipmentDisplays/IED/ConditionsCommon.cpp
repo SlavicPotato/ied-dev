@@ -92,6 +92,11 @@ namespace IED
 			return a_params.objects.IsFemale();
 		}
 
+		bool has_humanoid_skeleton(CommonParams& a_params) noexcept
+		{
+			return a_params.objects.HasHumanoidSkeleton();
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{

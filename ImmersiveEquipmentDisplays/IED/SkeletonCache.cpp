@@ -9,7 +9,7 @@ namespace IED
 {
 	SkeletonCache SkeletonCache::m_Instance;
 
-	auto SkeletonCache::GetNode(
+	/*auto SkeletonCache::GetNode(
 		TESObjectREFR*           a_refr,
 		const stl::fixed_string& a_name)
 		-> const Entry*
@@ -30,11 +30,11 @@ namespace IED
 		{
 			return nullptr;
 		}
-	}
+	}*/
 
 	auto SkeletonCache::Get(
 		TESObjectREFR* a_refr)
-		-> const_actor_entry_type
+		-> std::optional<data_type::const_iterator>
 	{
 		stl::scoped_lock lock(m_lock);
 
@@ -44,7 +44,7 @@ namespace IED
 			return {};
 		}
 
-		return get_or_create(key)->second;
+		return get_or_create(key);
 	}
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept

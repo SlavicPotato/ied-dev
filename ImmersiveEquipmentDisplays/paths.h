@@ -18,6 +18,6 @@ namespace IED
 		inline static constexpr auto DEFAULT_CONFIG_USER                  = "Data\\SKSE\\Plugins\\IED\\DefaultConfigUser.json";
 		inline static constexpr auto LOCALIZATION                         = "Data\\SKSE\\Plugins\\IED\\Localization";
 		inline static constexpr auto FONT_META                            = "Data\\SKSE\\Plugins\\IED\\Fonts\\meta.json";
-		inline static constexpr auto EXTRA_NODES                          = "Data\\SKSE\\Plugins\\IED\\ExtraNodes";
+		inline static constexpr auto EXTRA_NODES                          = "Data\\SKSE\\Plugins\\IED\\ExtraGearNodes";
 	}
 }

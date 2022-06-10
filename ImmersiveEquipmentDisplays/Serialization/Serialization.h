@@ -161,7 +161,9 @@ namespace IED
 				auto& v = a_in[i];
 
 				if (!v.isNumeric())
+				{
 					return false;
+				}
 
 				a_out[i] = v.asFloat();
 			}

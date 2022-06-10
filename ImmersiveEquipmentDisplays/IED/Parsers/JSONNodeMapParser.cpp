@@ -44,7 +44,7 @@ namespace IED
 					continue;
 				}
 
-				a_out.try_emplace(key, std::move(tmp));
+				a_out.try_emplace(std::move(key), std::move(tmp));
 			}
 
 			return true;

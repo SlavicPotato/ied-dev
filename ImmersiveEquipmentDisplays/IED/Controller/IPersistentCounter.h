@@ -17,7 +17,7 @@ namespace IED
 			m_counter++;
 		}
 
-		inline constexpr auto GetCounterValue() const noexcept
+		[[nodiscard]] inline constexpr auto GetCounterValue() const noexcept
 		{
 			return m_counter;
 		}

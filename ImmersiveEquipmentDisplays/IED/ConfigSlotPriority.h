@@ -8,7 +8,9 @@ namespace IED
 	{
 		enum class SlotPriorityFlags : std::uint32_t
 		{
-			kNone = 0
+			kNone = 0,
+
+			kAccountForEquipped = 1u << 0
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(SlotPriorityFlags);
@@ -87,7 +89,9 @@ namespace IED
 				return true;
 			}
 
-			stl::flag<SlotPriorityFlags> flags{ SlotPriorityFlags::kNone };
+			inline static constexpr auto DEFAULT_FLAGS = SlotPriorityFlags::kAccountForEquipped;
+
+			stl::flag<SlotPriorityFlags> flags{ DEFAULT_FLAGS };
 			std::uint32_t                limit{ stl::underlying(ObjectType::kMax) };
 			order_data_type              order;
 

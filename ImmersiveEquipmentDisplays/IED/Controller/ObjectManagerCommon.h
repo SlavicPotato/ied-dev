@@ -6,12 +6,7 @@ namespace IED
 	{
 		struct cacheTransform_t
 		{
-			inline static constexpr float zero_nan(float a_value) noexcept
-			{
-				return std::isnan(a_value) ? 0.0f : a_value;
-			}
-
-			void Update(const Data::configTransform_t& a_in)
+			constexpr void Update(const Data::configTransform_t& a_in)
 			{
 				scale    = a_in.scale;
 				position = a_in.position;
@@ -43,7 +38,7 @@ namespace IED
 				tag = a_in;
 			}
 
-			void clear() noexcept
+			constexpr void clear() noexcept
 			{
 				scale.clear();
 				position.clear();

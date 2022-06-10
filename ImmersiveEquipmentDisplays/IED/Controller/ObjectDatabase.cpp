@@ -82,10 +82,10 @@ namespace IED
 
 	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object)
 	{
-		auto r = Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
-			if (a_geometry->m_spSkinInstance)
+		auto r = Util::Node::TraverseGeometry(a_object, [](BSGeometry* a_geometry) {
+			if (auto skin = a_geometry->m_spSkinInstance.get())
 			{
-				if (ni_is_type(a_geometry->m_spSkinInstance->GetRTTI(), BSDismemberSkinInstance))
+				if (ni_is_type(skin->GetRTTI(), BSDismemberSkinInstance))
 				{
 					return Util::Node::VisitorControl::kStop;
 				}
@@ -117,17 +117,7 @@ namespace IED
 		}
 		else if (m_level == ObjectDatabaseLevel::kNone)
 		{
-			for (auto it = m_data.begin(); it != m_data.end();)
-			{
-				if (it->second.use_count() <= 1)
-				{
-					it = m_data.erase(it);
-				}
-				else
-				{
-					++it;
-				}
-			}
+			std::erase_if(m_data, [](auto& a_v) { return a_v.second.use_count() <= 1; });
 			return;
 		}
 
@@ -154,6 +144,7 @@ namespace IED
 		}
 
 		stl::vector<container_type::const_iterator> candidates;
+		candidates.reserve(m_data.size());
 
 		for (auto it = m_data.begin(); it != m_data.end(); ++it)
 		{

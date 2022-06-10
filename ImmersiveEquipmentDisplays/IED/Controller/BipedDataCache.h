@@ -71,7 +71,7 @@ namespace IED
 			return m_maxFormsPerSlot;
 		}
 
-		[[nodiscard]] inline void clear()
+		inline void clear()
 		{
 			return m_data.clear();
 		}

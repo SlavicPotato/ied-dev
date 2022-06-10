@@ -31,6 +31,7 @@ namespace IED
 			IsCommanded         = 5420,
 			Paralyzed           = 5421,
 			IsOnMount           = 5422,
+			HumanoidSkeleton    = 5423,
 		};
 	}
 }

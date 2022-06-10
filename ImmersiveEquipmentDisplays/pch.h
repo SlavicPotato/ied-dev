@@ -34,6 +34,7 @@
 #include <skse64/GameStreams.h>
 #include <skse64/GameThreads.h>
 #include <skse64/NiControllers.h>
+#include <skse64/NiExtraData.h>
 #include <skse64/NiGeometry.h>
 #include <skse64/NiNodes.h>
 #include <skse64/NiSerialization.h>

@@ -11,9 +11,9 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<Data::configExtraNodeMap_t>::Parse(
-			const Json::Value&          a_in,
-			Data::configExtraNodeMap_t& a_out) const
+		bool Parser<Data::configExtraNodeList_t>::Parse(
+			const Json::Value&           a_in,
+			Data::configExtraNodeList_t& a_out) const
 		{
 			Parser<Data::configExtraNodeEntry_t> entparser(m_state);
 
@@ -27,26 +27,21 @@ namespace IED
 					return false;
 				}
 
-				if (!Data::NodeMap::ValidateNodeName(tmp.name))
+				if (!IED::Data::NodeMap::ValidateNodeName(tmp.name))
 				{
 					throw std::exception("illegal node name");
 				}
 
-				auto r = a_out.emplace(tmp.name, std::move(tmp));
-
-				if (!r.second)
-				{
-					Warning("%s: duplicate entry - '%s'", __FUNCTION__, tmp.name.c_str());
-				}
+				a_out.emplace_back(std::move(tmp));
 			}
 
 			return true;
 		}
 
 		template <>
-		void Parser<Data::configExtraNodeMap_t>::Create(
-			const Data::configExtraNodeMap_t& a_data,
-			Json::Value&                      a_out) const
+		void Parser<Data::configExtraNodeList_t>::Create(
+			const Data::configExtraNodeList_t& a_data,
+			Json::Value&                       a_out) const
 		{
 			//Parser<Data::configExtraNodeEntry_t> entparser(m_state);
 		}

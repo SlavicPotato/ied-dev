@@ -679,13 +679,20 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
+			changed |= ImGui::CheckboxFlagsT(
+				LS(UISlotEditorWidgetStrings::AccountForEquipped, "1"),
+				stl::underlying(std::addressof(data.flags.value)),
+				stl::underlying(Data::SlotPriorityFlags::kAccountForEquipped));
+
+			ImGui::Spacing();
+
 			ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 
 			std::uint32_t lmin = 1;
 			std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
 
 			changed |= ImGui::SliderScalar(
-				LS(UISlotEditorWidgetStrings::MaxActiveTypes, "1"),
+				LS(UISlotEditorWidgetStrings::MaxActiveTypes, "2"),
 				ImGuiDataType_U32,
 				std::addressof(data.limit),
 				std::addressof(lmin),

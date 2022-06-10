@@ -44,7 +44,8 @@ namespace IED
 		m_cflags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
 		m_cflags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
 		m_created(IPerfCounter::Query()),
-		m_lastEquipped(a_lastEquipped)
+		m_lastEquipped(a_lastEquipped),
+		m_skeletonID(a_root)
 	{
 		m_lastLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
@@ -58,12 +59,13 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(100000);
 
-		/*PerfTimer pt;
-		pt.Start();*/
+		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
+		{
+			auto& it = *r;
 
-		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
-
-		//_DMESSAGE("%.8X: %f", a_actor->formID.get(), pt.Stop());
+			m_humanoidSkeleton = NodeOverrideData::GetHumanoidSkeletons().contains(it->first);
+			m_skeletonCache    = it->second;
+		}
 
 		if (auto npc = a_actor->GetActorBase())
 		{
@@ -72,11 +74,10 @@ namespace IED
 
 		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 		{
-			CreateExtraCopyNode(
-				a_actor,
-				a_npcroot,
-				e);
+			CreateExtraCopyNode(a_actor, a_npcroot, e);
 		}
+
+		using namespace ::Util::Node;
 
 		if (a_nodeOverrideEnabled &&
 		    (a_actor != *g_thePlayer ||
@@ -84,7 +85,7 @@ namespace IED
 		{
 			for (auto& e : NodeOverrideData::GetMonitorNodeData())
 			{
-				if (auto node = ::Util::Node::FindNode(a_npcroot, e))
+				if (auto node = FindNode(a_npcroot, e))
 				{
 					m_monitorNodes.emplace_back(
 						node,
@@ -96,7 +97,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
-				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
+				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
 					m_cmeNodes.try_emplace(
 						e->first,
@@ -107,7 +108,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
-				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname))
+				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
 					m_movNodes.try_emplace(
 						e->first,
@@ -118,9 +119,9 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
-				if (auto node = ::Util::Node::FindNode(a_npcroot, e->second.bsname); node && node->m_parent)
+				if (auto node = FindNode(a_npcroot, e->second.bsname); node && node->m_parent)
 				{
-					if (auto defParentNode = ::Util::Node::FindNode(a_npcroot, e->second.bsdefParent))
+					if (auto defParentNode = FindNode(a_npcroot, e->second.bsdefParent))
 					{
 						m_weapNodes.emplace_back(
 							e->first,
@@ -351,9 +352,14 @@ namespace IED
 
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode*                                   a_npcroot,
-		bool                                      a_female,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)
 	{
+		auto& id = m_skeletonID.get_id();
+		if (!id)
+		{
+			return;
+		}
+
 		if (m_cmeNodes.contains(a_entry.name_cme) ||
 		    m_movNodes.contains(a_entry.name_mov) ||
 		    a_npcroot->GetObjectByName(a_entry.bsname_node))
@@ -367,29 +373,35 @@ namespace IED
 			return;
 		}
 
-		auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
-		target->AttachChild(cme, true);
+		for (auto& e : a_entry.skel)
+		{
+			if (!e.ids.contains(*id))
+			{
+				continue;
+			}
 
-		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
+			auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
+			target->AttachChild(cme, true);
 
-		mov->m_localTransform = a_female ?
-		                            a_entry.transform_mov_f :
-                                    a_entry.transform_mov_m;
+			auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
 
-		cme->AttachChild(mov, true);
+			mov->m_localTransform = e.transform_mov;
 
-		auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
+			cme->AttachChild(mov, true);
 
-		node->m_localTransform = a_female ?
-		                             a_entry.transform_node_f :
-                                     a_entry.transform_node_m;
+			auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
 
-		mov->AttachChild(node, true);
+			node->m_localTransform = e.transform_node;
 
-		INode::UpdateDownwardPass(cme);
+			mov->AttachChild(node, true);
 
-		m_cmeNodes.try_emplace(a_entry.name_cme, cme, cme->m_localTransform);
-		m_movNodes.try_emplace(a_entry.name_mov, mov, a_entry.placementID);
+			INode::UpdateDownwardPass(cme);
+
+			m_cmeNodes.try_emplace(a_entry.name_cme, cme, cme->m_localTransform);
+			m_movNodes.try_emplace(a_entry.name_mov, mov, a_entry.placementID);
+
+			break;
+		}
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(
@@ -436,42 +448,32 @@ namespace IED
 
 	void ActorObjectHolder::ApplyNodeTransformOverrides(NiNode* a_root) const
 	{
-		auto skelIDExtraData = a_root->GetExtraData<NiIntegerExtraData>(
-			NodeOverrideData::GetSkelIDExtraDataName());
-
-		if (!skelIDExtraData)
+		auto& id = m_skeletonID.get_id();
+		if (!id)
 		{
 			return;
 		}
 
-		if (skelIDExtraData->m_data != 628145516 &&  // female
-		    skelIDExtraData->m_data != 1361955)      // male
+		if (id != 628145516 &&  // female
+		    id != 1361955)      // male
 		{
 			return;
 		}
 
-		auto npcNode = ::Util::Node::FindChildNode(a_root, NodeOverrideData::GetNPCNodeName());
-		if (!npcNode)
+		auto& ver = m_skeletonID.get_version();
+		if (!ver)
 		{
 			return;
 		}
 
-		auto xpExtraData = npcNode->GetExtraData<NiFloatExtraData>(
-			NodeOverrideData::GetXPMSEExtraDataName());
-
-		if (!xpExtraData)
-		{
-			return;
-		}
-
-		if (xpExtraData->m_data < 3.6f)
+		if (ver < 3.6f)
 		{
 			return;
 		}
 
 		for (auto& e : NodeOverrideData::GetTransformOverrideData())
 		{
-			if (auto node = ::Util::Node::FindNode(npcNode, e.name))
+			if (auto node = ::Util::Node::FindNode(a_root, e.name))
 			{
 				node->m_localTransform.rot = e.rot;
 			}

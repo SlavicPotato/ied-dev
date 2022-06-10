@@ -253,8 +253,8 @@ namespace IED
 				for (auto& e : NodeOverrideData::GetExtraMovNodes())
 				{
 					nodeMap.Add(
-						e.second.name_node.c_str(),
-						e.second.desc.c_str(),
+						e.name_node.c_str(),
+						e.desc.c_str(),
 						Data::NodeDescriptorFlags::kNone);
 				}
 

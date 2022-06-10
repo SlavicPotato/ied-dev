@@ -85,17 +85,15 @@ namespace IED
 
 		for (auto& f : a_entry.data->data)
 		{
-			for (auto it = f.forms.begin(); it != f.forms.end();)
+			std::erase_if(f.forms, [](auto& a_v) { return !a_v; });
+
+			while (!f.forms.empty() &&
+			       f.forms.size() > m_maxFormsPerSlot)
 			{
-				if (!*it)
-				{
-					it = f.forms.erase(it);
-				}
-				else
-				{
-					++it;
-				}
+				f.forms.pop_back();
 			}
+
+			f.forms.shrink_to_fit();
 		}
 	}
 }

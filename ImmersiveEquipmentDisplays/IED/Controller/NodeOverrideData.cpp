@@ -3,7 +3,7 @@
 
 #include "NodeOverrideData.h"
 
-#include "IED/Parsers/JSONConfigExtraNodeMapParser.h"
+#include "IED/Parsers/JSONConfigExtraNodeListParser.h"
 #include "Serialization/Serialization.h"
 
 namespace IED
@@ -426,41 +426,69 @@ namespace IED
 
 		}),
 
-		m_extramov(std::initializer_list<init_list_exn>{
-			{ "WeaponDaggerOnBack",
+		m_extramov(std::initializer_list<exn_ctor_init_t>{
 
-	          {
+			{
 
-				  "WeaponDaggerOnBack",
-				  "MOV WeaponDaggerOnBack",
-				  "CME WeaponDaggerOnBack",
-				  "CME Spine2 [Spn2]",
-				  { 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
-				  { 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
-				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
-				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
-				  WeaponPlacementID::OnBack,
-				  "Dagger On Back"
+				"WeaponDaggerOnBack",
+				"MOV WeaponDaggerOnBack",
+				"CME WeaponDaggerOnBack",
+				"NPC Spine2 [Spn2]",
 
-			  } },
+				{
 
-			{ "WeaponDaggerLeftOnBack",
+					{
 
-	          {
+						{ 1361955 },
+						{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
+						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
 
-				  "WeaponDaggerLeftOnBack",
-				  "MOV WeaponDaggerLeftOnBack",
-				  "CME WeaponDaggerLeftOnBack",
-				  "CME Spine2 [Spn2]",
-				  { 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
-				  { 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
-				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
-				  { 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } },
-				  WeaponPlacementID::OnBack,
-				  "Dagger On Back Left"
+					},
+					{
 
-			  } },
-		}),
+						{ 628145516 },
+						{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
+						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
+
+					},
+
+				},
+
+				WeaponPlacementID::OnBack,
+				"Dagger On Back"
+
+			},
+
+			{
+
+				"WeaponDaggerLeftOnBack",
+				"MOV WeaponDaggerLeftOnBack",
+				"CME WeaponDaggerLeftOnBack",
+				"NPC Spine2 [Spn2]",
+
+				{
+
+					{
+
+						{ 1361955 },
+						{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
+						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
+
+					},
+					{
+
+						{ 628145516 },
+						{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
+						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
+
+					},
+
+				},
+
+				WeaponPlacementID::OnBack,
+				"Dagger On Back Left"
+
+			} }),
 
 		m_extraCopy(std::initializer_list<exn_copy_ctor_init_t>{
 			{ "WeaponBack", "WeaponBackIED" },
@@ -534,6 +562,15 @@ namespace IED
 
 			},*/
 
+		}),
+
+		m_humanoidSkeletonPaths({
+
+			"meshes\\Actors\\character\\character assets\\skeleton.nif",
+			"meshes\\actors\\character\\character assets\\skeletonbeast.nif",
+			"meshes\\actors\\character\\character assets female\\skeleton_female.nif",
+			"meshes\\actors\\character\\character assets female\\skeletonbeast_female.nif",
+
 		})
 	{
 	}
@@ -548,7 +585,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddExtraNodes(const char* a_path)
 	{
-		std::list<Data::configExtraNodeMap_t> data;
+		std::list<Data::configExtraNodeList_t> data;
 		if (m_Instance->LoadExtraNodesImpl(a_path, data))
 		{
 			m_Instance->AddExtraNodeData(data);
@@ -556,8 +593,8 @@ namespace IED
 	}
 
 	bool NodeOverrideData::LoadExtraNodesImpl(
-		const char*                            a_path,
-		std::list<Data::configExtraNodeMap_t>& a_out)
+		const char*                             a_path,
+		std::list<Data::configExtraNodeList_t>& a_out)
 	{
 		try
 		{
@@ -571,7 +608,7 @@ namespace IED
 				auto& path    = entry.path();
 				auto  strPath = Serialization::SafeGetPath(path);
 
-				Data::configExtraNodeMap_t result;
+				Data::configExtraNodeList_t result;
 
 				try
 				{
@@ -628,19 +665,24 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddExtraNodeData(
-		const std::list<Data::configExtraNodeMap_t>& a_data)
+		const std::list<Data::configExtraNodeList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{
-			for (auto& [node, f] : e)
+			for (auto& f : e)
 			{
-				stl::fixed_string mov = std::string("MOV ") + *node;
-				stl::fixed_string cme = std::string("CME ") + *node;
+				if (f.skel.empty())
+				{
+					continue;
+				}
+
+				stl::fixed_string mov = std::string("MOV ") + *f.name;
+				stl::fixed_string cme = std::string("CME ") + *f.name;
 
 				if (m_mov.contains(mov))
 				{
 					Warning(
-						"%s: '%s' - MOV node already exists",
+						"%s: '%s' - node already exists",
 						__FUNCTION__,
 						mov.c_str());
 
@@ -650,37 +692,45 @@ namespace IED
 				if (m_cme.contains(cme))
 				{
 					Warning(
-						"%s: '%s' - CME node already exists",
+						"%s: '%s' - node already exists",
 						__FUNCTION__,
 						cme.c_str());
 
 					continue;
 				}
 
-				auto r = m_extramov.try_emplace(
-					node,
-					node,
-					mov,
-					cme,
-					f.parent,
-					f.xfrm_mov_m.to_nitransform(),
-					f.xfrm_mov_f.to_nitransform(),
-					f.xfrm_node_m.to_nitransform(),
-					f.xfrm_node_f.to_nitransform(),
-					WeaponPlacementID::None,
-					f.desc);
+				auto it = std::find_if(
+					m_extramov.begin(),
+					m_extramov.end(),
+					[&](const auto& a_v) {
+						return a_v.name_node == f.name;
+					});
 
-				if (!r.second)
+				if (it != m_extramov.end())
 				{
 					Warning(
-						"%s: node entry '%s' already exists",
+						"%s: '%s' - node already exists",
 						__FUNCTION__,
-						node.c_str());
+						f.name.c_str());
 
 					continue;
 				}
 
-				const auto& rv = r.first->second;
+				auto& rv = m_extramov.emplace_back(
+					f.name,
+					mov,
+					cme,
+					f.parent,
+					WeaponPlacementID::None,
+					f.desc);
+
+				for (auto& g : f.skel)
+				{
+					rv.skel.emplace_back(
+						g.ids,
+						g.transform_mov.to_nitransform(),
+						g.transform_node.to_nitransform());
+				}
 
 				m_mov.try_emplace(
 					rv.name_mov,
@@ -697,7 +747,7 @@ namespace IED
 		}
 	}
 
-	Data::configExtraNodeMap_t NodeOverrideData::LoadExtraNodeFile(const fs::path& a_path)
+	Data::configExtraNodeList_t NodeOverrideData::LoadExtraNodeFile(const fs::path& a_path)
 	{
 		using namespace Serialization;
 
@@ -705,10 +755,10 @@ namespace IED
 
 		ReadData(a_path, root);
 
-		ParserState                        state;
-		Parser<Data::configExtraNodeMap_t> parser(state);
+		ParserState                         state;
+		Parser<Data::configExtraNodeList_t> parser(state);
 
-		Data::configExtraNodeMap_t result;
+		Data::configExtraNodeList_t result;
 
 		if (!parser.Parse(root, result))
 		{

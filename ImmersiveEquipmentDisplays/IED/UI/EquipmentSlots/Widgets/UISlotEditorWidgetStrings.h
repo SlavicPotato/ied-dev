@@ -20,6 +20,7 @@ namespace IED
 			NPCDisabledWarning        = 4110,
 			MaxActiveTypes            = 4111,
 			EmptyPrioMsg              = 4112,
+			AccountForEquipped        = 4113,
 		};
 	}
 }

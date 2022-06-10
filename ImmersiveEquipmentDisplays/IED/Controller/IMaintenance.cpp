@@ -10,18 +10,7 @@ namespace IED
 
 	void IMaintenance::CleanFormList(Data::configFormList_t& a_list)
 	{
-		auto it = a_list.begin();
-		while (it != a_list.end())
-		{
-			if (!*it)
-			{
-				it = a_list.erase(it);
-			}
-			else
-			{
-				++it;
-			}
-		}
+		std::erase_if(a_list, [](auto& a_v) { return !a_v; });
 	}
 
 	void IMaintenance::CleanCustomConfig(
@@ -206,36 +195,15 @@ namespace IED
 		{
 			e.erase(0);
 
-			for (auto it = e.begin(); it != e.end();)
-			{
-				if (it->second.empty())
-				{
-					it = e.erase(it);
-				}
-				else
-				{
-					++it;
-				}
-			}
+			std::erase_if(e, [](auto& a_v) { return a_v.second.empty(); });
 		}
 	}
 
 	void IMaintenance::ClearConfigStoreRand(Data::configStore_t& a_data)
 	{
-		for (auto& e : a_data.transforms.GetFormMaps())
-		{
-			for (auto it = e.begin(); it != e.end();)
-			{
-				if (it->second.flags.test(Data::NodeOverrideHolderFlags::RandomGenerated))
-				{
-					it = e.erase(it);
-				}
-				else
-				{
-					++it;
-				}
-			}
-		}
+		std::erase_if(a_data.transforms.GetNPCData(), [](auto& a_v) {
+			return a_v.second.flags.test(Data::NodeOverrideHolderFlags::RandomGenerated);
+		});
 	}
 
 }

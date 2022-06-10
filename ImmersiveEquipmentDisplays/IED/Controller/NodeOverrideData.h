@@ -32,6 +32,12 @@ namespace IED
 		{
 			stl::vector<T>(a_init.begin(), a_init.end());
 		};
+
+		template <class T, class I>
+		concept AcceptListInit = requires(std::initializer_list<I> a_init)
+		{
+			stl::list<T>(a_init.begin(), a_init.end());
+		};
 	}
 
 	class NodeOverrideData :
@@ -53,6 +59,23 @@ namespace IED
 			constexpr vector_init_wrapper(std::initializer_list<Ti> a_rhs) requires
 				concepts::AcceptVectorInit<T, Ti> :
 				super::vector(a_rhs.begin(), a_rhs.end())
+			{
+			}
+		};
+
+		template <class T>
+		class list_init_wrapper :
+			public std::list<T>
+		{
+			using super = std::list<T>;
+
+		public:
+			list_init_wrapper() = delete;
+
+			template <class Ti>
+			constexpr list_init_wrapper(std::initializer_list<Ti> a_rhs) requires
+				concepts::AcceptListInit<T, Ti> :
+				super::list(a_rhs.begin(), a_rhs.end())
 			{
 			}
 		};
@@ -142,18 +165,22 @@ namespace IED
 			WeaponPlacementID placementID;
 		};
 
+		struct extraNodeEntrySkel_t
+		{
+			stl::set_sa<std::int32_t> ids;
+			NiTransform               transform_mov;
+			NiTransform               transform_node;
+		};
+
 		struct exn_ctor_init_t
 		{
-			const char*       node;
-			const char*       mov;
-			const char*       cme;
-			const char*       parent;
-			NiTransform       xfrm_mov_m;
-			NiTransform       xfrm_mov_f;
-			NiTransform       xfrm_m;
-			NiTransform       xfrm_f;
-			WeaponPlacementID placementID;
-			const char*       desc;
+			const char*                       node;
+			const char*                       mov;
+			const char*                       cme;
+			const char*                       parent;
+			std::vector<extraNodeEntrySkel_t> skel;
+			WeaponPlacementID                 placementID;
+			const char*                       desc;
 		};
 
 		using init_list_exn = std::pair<const char*, exn_ctor_init_t>;
@@ -169,10 +196,7 @@ namespace IED
 				bsname_cme(a_init.cme),
 				bsname_mov(a_init.mov),
 				name_parent(a_init.parent),
-				transform_mov_m(a_init.xfrm_mov_m),
-				transform_mov_f(a_init.xfrm_mov_f),
-				transform_node_m(a_init.xfrm_m),
-				transform_node_f(a_init.xfrm_f),
+				skel(a_init.skel),
 				placementID(a_init.placementID),
 				desc(a_init.desc)
 			{
@@ -183,10 +207,6 @@ namespace IED
 				const stl::fixed_string& a_mov,
 				const stl::fixed_string& a_cme,
 				const stl::fixed_string& a_parent,
-				const NiTransform&       a_xfrm_mov_m,
-				const NiTransform&       a_xfrm_mov_f,
-				const NiTransform&       a_xfrm_node_m,
-				const NiTransform&       a_xfrm_node_f,
 				WeaponPlacementID        a_pid,
 				const stl::fixed_string& a_desc) :
 				name_node(a_name),
@@ -196,10 +216,6 @@ namespace IED
 				bsname_cme(a_cme.c_str()),
 				bsname_mov(a_mov.c_str()),
 				name_parent(a_parent.c_str()),
-				transform_mov_m(a_xfrm_mov_m),
-				transform_mov_f(a_xfrm_mov_f),
-				transform_node_m(a_xfrm_node_m),
-				transform_node_f(a_xfrm_node_f),
 				placementID(a_pid),
 				desc(a_desc)
 			{
@@ -210,19 +226,16 @@ namespace IED
 			extraNodeEntry_t(extraNodeEntry_t&&)                 = delete;
 			extraNodeEntry_t& operator=(extraNodeEntry_t&&) = delete;
 
-			stl::fixed_string name_node;
-			stl::fixed_string name_cme;
-			stl::fixed_string name_mov;
-			BSFixedString     bsname_node;
-			BSFixedString     bsname_cme;
-			BSFixedString     bsname_mov;
-			BSFixedString     name_parent;
-			NiTransform       transform_mov_m;
-			NiTransform       transform_mov_f;
-			NiTransform       transform_node_m;
-			NiTransform       transform_node_f;
-			WeaponPlacementID placementID;
-			stl::fixed_string desc;
+			stl::fixed_string                 name_node;
+			stl::fixed_string                 name_cme;
+			stl::fixed_string                 name_mov;
+			stl::fixed_string                 desc;
+			BSFixedString                     bsname_node;
+			BSFixedString                     bsname_cme;
+			BSFixedString                     bsname_mov;
+			BSFixedString                     name_parent;
+			std::vector<extraNodeEntrySkel_t> skel;
+			WeaponPlacementID                 placementID;
 		};
 
 		struct exn_copy_ctor_init_t
@@ -344,7 +357,7 @@ namespace IED
 		using cm_data_type             = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
 		using mon_data_type            = vector_init_wrapper<BSFixedString>;
 		using weapnode_data_type       = stl::vectormap<stl::fixed_string, weaponNodeEntry_t>;
-		using exn_data_type            = stl::vectormap<stl::fixed_string, extraNodeEntry_t>;
+		using exn_data_type            = list_init_wrapper<extraNodeEntry_t>;
 		using exn_copy_data_type       = vector_init_wrapper<extraNodeCopyEntry_t>;
 		using xfrm_override_data_type  = vector_init_wrapper<xfrmOverrideNodeEntry_t>;
 		using rand_placement_data_type = vector_init_wrapper<randWeapEntry_t>;
@@ -408,20 +421,25 @@ namespace IED
 			return m_Instance->m_randPlacement;
 		}
 
+		inline static const auto& GetHumanoidSkeletons() noexcept
+		{
+			return m_Instance->m_humanoidSkeletonPaths;
+		}
+
 		static void LoadAndAddExtraNodes(const char* a_path);
 
 		FN_NAMEPROC("NodeOverrideData");
 
 	private:
-		Data::configExtraNodeMap_t LoadExtraNodeFile(
+		Data::configExtraNodeList_t LoadExtraNodeFile(
 			const fs::path& a_path);
 
 		bool LoadExtraNodesImpl(
-			const char*                            a_path,
-			std::list<Data::configExtraNodeMap_t>& a_out);
+			const char*                             a_path,
+			std::list<Data::configExtraNodeList_t>& a_out);
 
 		void AddExtraNodeData(
-			const std::list<Data::configExtraNodeMap_t>& a_data);
+			const std::list<Data::configExtraNodeList_t>& a_data);
 
 		cm_data_type             m_cme;
 		cm_data_type             m_mov;
@@ -435,6 +453,8 @@ namespace IED
 		BSFixedString m_npcNodeName{ "NPC" };
 		BSFixedString m_XPMSE{ "XPMSE" };
 		BSFixedString m_skeletonID{ "SkeletonID" };
+
+		std::unordered_set<stl::fixed_string> m_humanoidSkeletonPaths;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

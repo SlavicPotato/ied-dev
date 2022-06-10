@@ -126,7 +126,9 @@ namespace IED
 
 			if (!ParseVersion(a_in, "version", version))
 			{
-				gLog.Error("%s: bad version data", a_func);
+				gLog.Error(
+					"%s: bad version data",
+					a_func);
 
 				throw std::exception("bad version data");
 			}

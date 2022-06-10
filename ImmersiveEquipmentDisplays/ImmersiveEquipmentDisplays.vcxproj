@@ -602,6 +602,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\IPersistentCounter.h" />
     <ClInclude Include="IED\Controller\BipedSlotData.h" />
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
+    <ClInclude Include="IED\Controller\SkeletonID.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
@@ -610,7 +611,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
-    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeMapParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
@@ -1000,6 +1001,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\ESF_UVLinearMotion.cpp" />
     <ClCompile Include="IED\Controller\IAnimationManager.cpp" />
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
+    <ClCompile Include="IED\Controller\SkeletonID.cpp" />
     <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
@@ -1007,7 +1009,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeMapParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />

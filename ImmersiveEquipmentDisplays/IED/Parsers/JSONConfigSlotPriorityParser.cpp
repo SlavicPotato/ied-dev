@@ -11,7 +11,7 @@ namespace IED
 			const Json::Value&          a_in,
 			Data::configSlotPriority_t& a_out) const
 		{
-			a_out.flags = a_in.get("flags", stl::underlying(Data::SlotPriorityFlags::kNone)).asUInt();
+			a_out.flags = a_in.get("flags", stl::underlying(Data::configSlotPriority_t::DEFAULT_FLAGS)).asUInt();
 			a_out.limit = a_in.get("limit", stl::underlying(Data::ObjectType::kMax)).asUInt();
 
 			auto& order = a_in["order"];

@@ -20,12 +20,12 @@ namespace IED
 				return m_Instance;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetData() const noexcept
+			[[nodiscard]] inline constexpr auto& GetData() const noexcept
 			{
 				return m_data;
 			}
 
-			[[nodiscard]] inline const auto& GetEmptyTable() const noexcept
+			[[nodiscard]] inline auto& GetEmptyTable() const noexcept
 			{
 				if (!m_emptyTable)
 				{
@@ -35,7 +35,7 @@ namespace IED
 				return m_emptyTable;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetDefaultTable() const noexcept
+			[[nodiscard]] inline constexpr auto& GetDefaultTable() const noexcept
 			{
 				return m_defaultTable;
 			}
@@ -45,7 +45,7 @@ namespace IED
 				return m_loaded;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
+			[[nodiscard]] inline constexpr auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}
