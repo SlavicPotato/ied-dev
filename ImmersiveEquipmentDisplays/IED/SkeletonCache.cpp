@@ -34,7 +34,7 @@ namespace IED
 
 	auto SkeletonCache::Get(
 		TESObjectREFR* a_refr)
-		-> std::optional<data_type::const_iterator>
+		-> std::optional<data_type::value_type>
 	{
 		stl::scoped_lock lock(m_lock);
 
@@ -44,7 +44,7 @@ namespace IED
 			return {};
 		}
 
-		return get_or_create(key);
+		return *get_or_create(key);
 	}
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept

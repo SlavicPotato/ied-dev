@@ -24,7 +24,7 @@ namespace IED
 			TESObjectREFR*           a_refr,
 			const stl::fixed_string& a_name);*/
 
-		std::optional<data_type::const_iterator> Get(
+		std::optional<data_type::value_type> Get(
 			TESObjectREFR* a_refr);
 
 		[[nodiscard]] inline auto GetSize() const noexcept

@@ -48,6 +48,19 @@ namespace IED
 					{
 						DrawPlayerDisabledWarning();
 					}
+					else
+					{
+						if (!m_controller.SkeletonCheck(m_listCurrent->handle))
+						{
+							ImGui::TextColored(
+								UICommon::g_colorWarning,
+								"%s",
+								LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+
+							ImGui::Spacing();
+							ImGui::Separator();
+						}
+					}
 
 					UICommon::PushDisabled(disabled);
 

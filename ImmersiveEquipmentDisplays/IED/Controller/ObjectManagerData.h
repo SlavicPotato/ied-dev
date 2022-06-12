@@ -705,6 +705,11 @@ namespace IED
 			return m_humanoidSkeleton;
 		}
 
+		[[nodiscard]] inline constexpr bool IsXP32Skeleton() const noexcept
+		{
+			return m_skeletonID.get_version().has_value();
+		}
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,

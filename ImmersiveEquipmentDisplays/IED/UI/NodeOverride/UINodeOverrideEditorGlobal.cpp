@@ -43,6 +43,20 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
+				if (settings.data.ui.transformEditor.globalType == Data::GlobalConfigType::Player)
+				{
+					if (!m_controller.SkeletonCheck(Data::IData::GetPlayerRefID()))
+					{
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+
+						ImGui::Spacing();
+						ImGui::Separator();
+					}
+				}
+
 				DrawNodeOverrideEditor(0, m_data);
 			}
 

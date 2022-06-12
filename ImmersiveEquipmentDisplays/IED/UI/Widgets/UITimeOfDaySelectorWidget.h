@@ -20,7 +20,7 @@ namespace IED
 
 			bool DrawTimeOfDaySelector(Data::TimeOfDay& a_tod);
 
-			const char* time_of_day_to_desc(Data::TimeOfDay a_tod) const;
+			const char* time_of_day_to_desc(stl::flag<Data::TimeOfDay> a_tod) const;
 
 		private:
 			using data_type = std::array<
@@ -28,6 +28,8 @@ namespace IED
 					Data::TimeOfDay,
 					UITimeOfDaySelectorWidgetStrings>,
 				4>;
+
+			mutable std::string m_buf;
 
 			static data_type m_data;
 		};

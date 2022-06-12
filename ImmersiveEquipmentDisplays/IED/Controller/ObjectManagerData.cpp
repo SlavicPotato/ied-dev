@@ -61,10 +61,10 @@ namespace IED
 
 		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
 		{
-			auto& it = *r;
+			auto& v = *r;
 
-			m_humanoidSkeleton = NodeOverrideData::GetHumanoidSkeletons().contains(it->first);
-			m_skeletonCache    = it->second;
+			m_humanoidSkeleton = NodeOverrideData::GetHumanoidSkeletons().contains(v.first);
+			m_skeletonCache    = v.second;
 		}
 
 		if (auto npc = a_actor->GetActorBase())

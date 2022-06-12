@@ -61,6 +61,18 @@ namespace IED
 						sep = true;
 					}
 
+					if (!m_controller.SkeletonCheck(m_listCurrent->handle))
+					{
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+
+						ImGui::Spacing();
+
+						sep = true;
+					}
+
 					auto& settings = m_controller.GetConfigStore().settings;
 
 					if (settings.data.disableNPCSlots &&

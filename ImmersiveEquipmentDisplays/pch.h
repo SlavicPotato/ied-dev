@@ -15,13 +15,11 @@
 #include <ext/SKSESerializationEvents.h>
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
-#include <ext/str_conv.h>
-
 #include <ext/stl_boost_serialization_containers.h>
-
 #include <ext/stl_map_sa.h>
 #include <ext/stl_math.h>
 #include <ext/stl_set_sa.h>
+#include <ext/str_conv.h>
 
 #include <skse64/BipedObject.h>
 #include <skse64/FormTraits.h>

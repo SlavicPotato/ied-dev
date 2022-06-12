@@ -99,6 +99,7 @@ namespace IED
 			BipedSlotData                       = 2088,
 			BipedSlots                          = 2089,
 			GeometryVisible                     = 2090,
+			XP32SkeletonWarning                 = 2091,
 		};
 	}
 }

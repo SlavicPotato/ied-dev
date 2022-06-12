@@ -444,6 +444,8 @@ namespace IED
 		bool IsActorBlocked(Game::FormID a_actor) const;
 		bool IsActorBlockedImpl(Game::FormID a_actor) const;
 
+		bool SkeletonCheck(Game::FormID a_actor);
+
 		[[nodiscard]] inline constexpr auto& GetConfigStore() noexcept
 		{
 			return m_config;

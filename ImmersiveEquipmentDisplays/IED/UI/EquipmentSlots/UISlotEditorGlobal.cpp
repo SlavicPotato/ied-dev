@@ -48,17 +48,31 @@ namespace IED
 
 				bool sep = false;
 
-				if (settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::Player &&
-				    m_controller.IsActorBlockedImpl(Data::IData::GetPlayerRefID()))
+				if (settings.data.ui.slotEditor.globalType == Data::GlobalConfigType::Player)
 				{
-					ImGui::TextColored(
-						UICommon::g_colorWarning,
-						"%s",
-						LS(UIWidgetCommonStrings::ActorBlocked));
+					if (m_controller.IsActorBlockedImpl(Data::IData::GetPlayerRefID()))
+					{
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::ActorBlocked));
 
-					ImGui::Spacing();
+						ImGui::Spacing();
 
-					sep = true;
+						sep = true;
+					}
+
+					if (!m_controller.SkeletonCheck(Data::IData::GetPlayerRefID()))
+					{
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+
+						ImGui::Spacing();
+
+						sep = true;
+					}
 				}
 
 				if (settings.data.disableNPCSlots &&

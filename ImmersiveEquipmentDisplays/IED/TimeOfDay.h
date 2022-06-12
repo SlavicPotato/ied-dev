@@ -11,11 +11,18 @@ namespace IED
 		{
 			kNone = 0,
 
-			kDay     = 1,
-			kSunset  = 2,
-			kNight   = 3,
-			kSunrise = 4
+			kDay     = 1u << 0,
+			kSunset  = 1u << 1,
+			kNight   = 1u << 2,
+			kSunrise = 1u << 3,
+
+			kAll = kDay |
+			       kSunset |
+			       kNight |
+			       kSunrise
 		};
+
+		DEFINE_ENUM_CLASS_BITWISE(TimeOfDay);
 
 		inline static constexpr TimeOfDay GetTimeOfDay(RE::Sky* a_sky) noexcept
 		{

@@ -608,7 +608,7 @@ namespace IED
 			if (auto tod = a_params.get_time_of_day();
 			    tod != Data::TimeOfDay::kNone)
 			{
-				return tod == a_match.timeOfDay;
+				return (tod & a_match.timeOfDay) != Data::TimeOfDay::kNone;
 			}
 			else
 			{

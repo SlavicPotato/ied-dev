@@ -2388,6 +2388,18 @@ namespace IED
 		return false;
 	}
 
+	bool Controller::SkeletonCheck(Game::FormID a_actor)
+	{
+		auto it = m_objects.find(a_actor);
+		if (it == m_objects.end())
+		{
+			return true;
+		}
+
+		return !it->second.HasHumanoidSkeleton() ||
+		       it->second.IsXP32Skeleton();
+	}
+
 	bool Controller::ProcessItemUpdate(
 		processParams_t&                 a_params,
 		const configBaseValues_t&        a_config,

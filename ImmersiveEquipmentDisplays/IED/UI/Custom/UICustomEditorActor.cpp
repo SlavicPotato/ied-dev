@@ -58,6 +58,16 @@ namespace IED
 						ImGui::Spacing();
 					}
 
+					if (!m_controller.SkeletonCheck(m_listCurrent->handle))
+					{
+						ImGui::TextColored(
+							UICommon::g_colorWarning,
+							"%s",
+							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+
+						ImGui::Spacing();
+					}
+
 					DrawCustomEditor(m_listCurrent->handle, m_listCurrent->data);
 				}
 			}

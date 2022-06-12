@@ -290,7 +290,7 @@ namespace IED
 			}
 
 			ImGui::Columns();
-
+			
 			ListDrawExtraActorInfo(a_entry);
 		}
 

@@ -31,27 +31,38 @@ namespace IED
 					time_of_day_to_desc(a_tod),
 					ImGuiComboFlags_HeightLarge))
 			{
+				ImGui::PushID("1");
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::All, "1"),
+						stl::underlying(std::addressof(a_tod)),
+						stl::underlying(Data::TimeOfDay::kAll)))
+				{
+					result = true;
+				}
+
+				ImGui::PopID();
+
+				ImGui::Separator();
+
+				ImGui::PushID("2");
+
 				for (auto& [i, e] : m_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 
-					bool selected = (i == a_tod);
-					if (selected)
-					{
-						if (ImGui::IsWindowAppearing())
-							ImGui::SetScrollHereY();
-					}
-
-					if (ImGui::Selectable(
+					if (ImGui::CheckboxFlagsT(
 							LS<UITimeOfDaySelectorWidgetStrings, 3>(e, "1"),
-							selected))
+							stl::underlying(std::addressof(a_tod)),
+							stl::underlying(i)))
 					{
-						a_tod  = i;
 						result = true;
 					}
 
 					ImGui::PopID();
 				}
+
+				ImGui::PopID();
 
 				ImGui::EndCombo();
 			}
@@ -60,20 +71,53 @@ namespace IED
 		}
 
 		const char* UITimeOfDaySelectorWidget::time_of_day_to_desc(
-			Data::TimeOfDay a_tod) const
+			stl::flag<Data::TimeOfDay> a_type) const
 		{
-			switch (a_tod)
+			if (a_type.test(Data::TimeOfDay::kAll))
 			{
-			case Data::TimeOfDay::kDay:
-				return LS(UITimeOfDaySelectorWidgetStrings::Day);
-			case Data::TimeOfDay::kSunset:
-				return LS(UITimeOfDaySelectorWidgetStrings::Sunset);
-			case Data::TimeOfDay::kNight:
-				return LS(UITimeOfDaySelectorWidgetStrings::Night);
-			case Data::TimeOfDay::kSunrise:
-				return LS(UITimeOfDaySelectorWidgetStrings::Sunrise);
-			default:
-				return nullptr;
+				return LS(CommonStrings::Any);
+			}
+			else if (!a_type.test_any(Data::TimeOfDay::kAll))
+			{
+				return LS(CommonStrings::None);
+			}
+			else
+			{
+				m_buf.clear();
+
+				if (a_type.test(Data::TimeOfDay::kSunrise))
+				{
+					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Sunrise);
+				}
+
+				if (a_type.test(Data::TimeOfDay::kDay))
+				{
+					if (!m_buf.empty())
+					{
+						m_buf += ", ";
+					}
+					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Day);
+				}
+
+				if (a_type.test(Data::TimeOfDay::kSunset))
+				{
+					if (!m_buf.empty())
+					{
+						m_buf += ", ";
+					}
+					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Sunset);
+				}
+
+				if (a_type.test(Data::TimeOfDay::kNight))
+				{
+					if (!m_buf.empty())
+					{
+						m_buf += ", ";
+					}
+					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Night);
+				}
+
+				return m_buf.c_str();
 			}
 		}
 	}
