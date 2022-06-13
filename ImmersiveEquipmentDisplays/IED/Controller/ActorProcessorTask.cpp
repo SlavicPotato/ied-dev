@@ -423,8 +423,9 @@ namespace IED
 			e.state_var_update_defer(e.m_locData.worldspace, cell->GetWorldSpace());
 			e.state_var_update_defer(e.m_inCombat, Game::GetActorInCombat(e.m_actor));
 
-			e.state_var_update_defer(e.m_cflags1, (e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1), 6);
-			e.state_var_update_defer(e.m_cflags2, (e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2), 6);
+			e.state_var_update_defer(e.m_cflags1, e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1, 6);
+			e.state_var_update_defer(e.m_cflags2, e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2, 6);
+			e.state_var_update_defer(e.m_swimming, e.m_actor->IsSwimming(), 6);
 
 			/*if (IPerfCounter::delta_us(
 					e.m_lastHFStateCheck,

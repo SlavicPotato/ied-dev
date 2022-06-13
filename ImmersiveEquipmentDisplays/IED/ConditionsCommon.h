@@ -55,7 +55,7 @@ namespace IED
 			case Data::ExtraConditionType::kUnderwater:
 				return a_params.actor->flags2.test(Actor::Flags2::kUnderwater);
 			case Data::ExtraConditionType::kSwimming:
-				return a_params.actor->flags1.test(Actor::Flags1::kSwimming);
+				return a_params.actor->IsSwimming();
 			case Data::ExtraConditionType::kBleedingOut:
 				return a_params.actor->flags2.test(Actor::Flags2::kInBleedoutAnimation);
 			case Data::ExtraConditionType::kTresspassing:

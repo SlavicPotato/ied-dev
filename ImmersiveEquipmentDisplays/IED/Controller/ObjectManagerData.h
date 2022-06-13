@@ -417,7 +417,6 @@ namespace IED
 	public:
 		inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
 			Actor::Flags1::kInWater |
-			Actor::Flags1::kSwimming |
 			Actor::Flags1::kPlayerTeammate |
 			Actor::Flags1::kGuard |
 			Actor::Flags1::kParalyzed;
@@ -757,6 +756,7 @@ namespace IED
 		bool                m_isPlayerTeammate{ false };
 		bool                m_wantLFUpdate{ false };
 		bool                m_inCombat{ false };
+		bool                m_swimming{ false };
 		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
 		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
 		long long           m_lastLFStateCheck;

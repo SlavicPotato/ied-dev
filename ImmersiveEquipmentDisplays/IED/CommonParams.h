@@ -231,7 +231,7 @@ namespace IED
 			return *worldspace;
 		}
 
-		[[nodiscard]] inline constexpr auto is_player_teammate() const noexcept
+		[[nodiscard]] inline constexpr bool is_player_teammate() const noexcept
 		{
 			return actor != *g_thePlayer &&
 			       actor->IsPlayerTeammate();

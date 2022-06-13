@@ -108,12 +108,17 @@ namespace IED
 
 			auto context = ImGui::GetCurrentContext();
 
-			stl::snprintf(context->TempBuffer, a_fmt, a_args...);
+			_snprintf_s(
+				context->TempBuffer.Data,
+				_TRUNCATE,
+				context->TempBuffer.Size,
+				a_fmt,
+				a_args...);
 
 			bool newState = ImGui::TreeNodeBehavior(
 				id,
 				a_flags,
-				context->TempBuffer);
+				context->TempBuffer.Data);
 
 			if (state != newState)
 			{
