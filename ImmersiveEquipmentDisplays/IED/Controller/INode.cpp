@@ -248,7 +248,7 @@ namespace IED
 		{
 			stl::snprintf(
 				a_out,
-				"IED ARMOR [%.8X/%.8X]",
+				"OBJECT ARMOR [%.8X/%.8X]",
 				a_armor.get(),
 				a_arma.get());
 		}
@@ -256,7 +256,7 @@ namespace IED
 		{
 			stl::snprintf(
 				a_out,
-				"IED ARMOR [%.8X]",
+				"OBJECT ARMOR [%.8X]",
 				a_armor.get());
 		}
 	}
@@ -265,14 +265,14 @@ namespace IED
 		Game::FormID a_weapon,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])
 	{
-		stl::snprintf(a_out, "IED WEAPON [%.8X]", a_weapon.get());
+		stl::snprintf(a_out, "OBJECT WEAPON [%.8X]", a_weapon.get());
 	}
 
 	void INode::GetMiscNodeName(
 		Game::FormID a_formid,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])
 	{
-		stl::snprintf(a_out, "IED MISC [%.8X]", a_formid.get());
+		stl::snprintf(a_out, "OBJECT MISC [%.8X]", a_formid.get());
 	}
 
 }

@@ -38,26 +38,26 @@ namespace IED
 
 		// IED-added
 
-		static inline constexpr auto NINODE_IED_1HSWORD      = "IED WeaponOneHandedSword";
-		static inline constexpr auto NINODE_IED_1HSWORD_LEFT = "IED WeaponOneHandedSwordLeft";
-		static inline constexpr auto NINODE_IED_1HAXE        = "IED WeaponOneHandedAxe";
-		static inline constexpr auto NINODE_IED_1HAXE_LEFT   = "IED WeaponOneHandedAxeLeft";
-		static inline constexpr auto NINODE_IED_2HSWORD      = "IED WeaponTwoHandedSword";
-		static inline constexpr auto NINODE_IED_2HSWORD_LEFT = "IED WeaponTwoHandedSwordLeft";
-		static inline constexpr auto NINODE_IED_2HAXE        = "IED WeaponTwoHandedAxe";
-		static inline constexpr auto NINODE_IED_2HAXE_LEFT   = "IED WeaponTwoHandedAxeLeft";
-		static inline constexpr auto NINODE_IED_DAGGER       = "IED WeaponDagger";
-		static inline constexpr auto NINODE_IED_DAGGER_LEFT  = "IED WeaponDaggerLeft";
-		static inline constexpr auto NINODE_IED_MACE         = "IED WeaponMace";
-		static inline constexpr auto NINODE_IED_MACE_LEFT    = "IED WeaponMaceLeft";
-		static inline constexpr auto NINODE_IED_STAFF        = "IED WeaponStaff";
-		static inline constexpr auto NINODE_IED_STAFF_LEFT   = "IED WeaponStaffLeft";
-		static inline constexpr auto NINODE_IED_BOW          = "IED WeaponBow";
-		static inline constexpr auto NINODE_IED_CROSSBOW     = "IED WeaponCrossbow";
-		static inline constexpr auto NINODE_IED_SHIELD       = "IED ArmorShield";
-		static inline constexpr auto NINODE_IED_TORCH        = "IED Torch";
+		static inline constexpr auto NINODE_IED_1HSWORD      = "NODE WeaponOneHandedSword";
+		static inline constexpr auto NINODE_IED_1HSWORD_LEFT = "NODE WeaponOneHandedSwordLeft";
+		static inline constexpr auto NINODE_IED_1HAXE        = "NODE WeaponOneHandedAxe";
+		static inline constexpr auto NINODE_IED_1HAXE_LEFT   = "NODE WeaponOneHandedAxeLeft";
+		static inline constexpr auto NINODE_IED_2HSWORD      = "NODE WeaponTwoHandedSword";
+		static inline constexpr auto NINODE_IED_2HSWORD_LEFT = "NODE WeaponTwoHandedSwordLeft";
+		static inline constexpr auto NINODE_IED_2HAXE        = "NODE WeaponTwoHandedAxe";
+		static inline constexpr auto NINODE_IED_2HAXE_LEFT   = "NODE WeaponTwoHandedAxeLeft";
+		static inline constexpr auto NINODE_IED_DAGGER       = "NODE WeaponDagger";
+		static inline constexpr auto NINODE_IED_DAGGER_LEFT  = "NODE WeaponDaggerLeft";
+		static inline constexpr auto NINODE_IED_MACE         = "NODE WeaponMace";
+		static inline constexpr auto NINODE_IED_MACE_LEFT    = "NODE WeaponMaceLeft";
+		static inline constexpr auto NINODE_IED_STAFF        = "NODE WeaponStaff";
+		static inline constexpr auto NINODE_IED_STAFF_LEFT   = "NODE WeaponStaffLeft";
+		static inline constexpr auto NINODE_IED_BOW          = "NODE WeaponBow";
+		static inline constexpr auto NINODE_IED_CROSSBOW     = "NODE WeaponCrossbow";
+		static inline constexpr auto NINODE_IED_SHIELD       = "NODE ArmorShield";
+		static inline constexpr auto NINODE_IED_TORCH        = "NODE Torch";
 
-		static inline constexpr auto NINODE_IED_OBJECT = "IED OBJECT";
+		static inline constexpr auto NINODE_IED_OBJECT = "OBJECT ROOT";
 
 		// non-vanilla
 

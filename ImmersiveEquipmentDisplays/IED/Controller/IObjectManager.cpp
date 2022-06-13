@@ -366,7 +366,7 @@ namespace IED
 
 			stl::snprintf(
 				buffer,
-				"IED ARMA [%.8X/%.8X]",
+				"OBJECT ARMA [%.8X/%.8X]",
 				a_form->formID.get(),
 				e->formID.get());
 
