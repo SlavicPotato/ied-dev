@@ -8,10 +8,13 @@ namespace IED
 	{
 		UIConditionExtraSelectorWidget::data_type UIConditionExtraSelectorWidget::m_data{ {
 
+			{ Data::ExtraConditionType::kAngryWithPlayer, UIConditionExtraSelectorWidgetStrings::AngryWithPlayer },
 			{ Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut },
+			{ Data::ExtraConditionType::kBribedByPlayer, UIConditionExtraSelectorWidgetStrings::BribedByPlayer },
 			{ Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield },
 			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
+			{ Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential },
 			{ Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
@@ -24,12 +27,16 @@ namespace IED
 			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
 			{ Data::ExtraConditionType::kIsOnMount, UIConditionExtraSelectorWidgetStrings::IsOnMount },
+			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
+			{ Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected },
 #if defined(IED_ENABLE_CONDITION_EN)
 			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
 #endif
 			{ Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped },
+			{ Data::ExtraConditionType::kSitting, UIConditionExtraSelectorWidgetStrings::Sitting },
+			{ Data::ExtraConditionType::kSleeping, UIConditionExtraSelectorWidgetStrings::Sleeping },
 			{ Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming },
 			{ Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay },
 			{ Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing },
@@ -136,6 +143,20 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsOnMount);
 			case Data::ExtraConditionType::kHumanoidSkeleton:
 				return LS(UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton);
+			case Data::ExtraConditionType::kIsPlayer:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayer);
+			case Data::ExtraConditionType::kBribedByPlayer:
+				return LS(UIConditionExtraSelectorWidgetStrings::BribedByPlayer);
+			case Data::ExtraConditionType::kAngryWithPlayer:
+				return LS(UIConditionExtraSelectorWidgetStrings::AngryWithPlayer);
+			case Data::ExtraConditionType::kEssential:
+				return LS(UIConditionExtraSelectorWidgetStrings::Essential);
+			case Data::ExtraConditionType::kProtected:
+				return LS(UIConditionExtraSelectorWidgetStrings::Protected);
+			case Data::ExtraConditionType::kSitting:
+				return LS(UIConditionExtraSelectorWidgetStrings::Sitting);
+			case Data::ExtraConditionType::kSleeping:
+				return LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
 			default:
 				return nullptr;
 			}

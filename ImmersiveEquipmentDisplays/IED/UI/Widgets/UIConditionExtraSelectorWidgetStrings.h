@@ -32,6 +32,13 @@ namespace IED
 			Paralyzed           = 5421,
 			IsOnMount           = 5422,
 			HumanoidSkeleton    = 5423,
+			IsPlayer            = 5424,
+			BribedByPlayer      = 5425,
+			AngryWithPlayer     = 5426,
+			Essential           = 5427,
+			Protected           = 5428,
+			Sitting             = 5429,
+			Sleeping            = 5430,
 		};
 	}
 }

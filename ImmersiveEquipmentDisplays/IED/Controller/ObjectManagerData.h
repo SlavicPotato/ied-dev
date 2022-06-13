@@ -427,6 +427,10 @@ namespace IED
 			Actor::Flags2::kInBleedoutAnimation |
 			Actor::Flags2::kIsTrespassing |
 			Actor::Flags2::kIsCommandedActor |
+			Actor::Flags2::kBribedByPlayer |
+			Actor::Flags2::kAngryWithPlayer |
+			Actor::Flags2::kEssential |
+			Actor::Flags2::kProtected |
 			Actor::Flags2::kUnderwater;
 
 		using slot_container_type = std::array<
@@ -757,6 +761,8 @@ namespace IED
 		bool                m_wantLFUpdate{ false };
 		bool                m_inCombat{ false };
 		bool                m_swimming{ false };
+		bool                m_sitting{ false };
+		bool                m_sleeping{ false };
 		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
 		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
 		long long           m_lastLFStateCheck;

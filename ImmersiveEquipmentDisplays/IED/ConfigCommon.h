@@ -235,6 +235,13 @@ namespace IED
 			kParalyzed           = 21,
 			kIsOnMount           = 22,
 			kHumanoidSkeleton    = 23,
+			kIsPlayer            = 24,
+			kBribedByPlayer      = 25,
+			kAngryWithPlayer     = 26,
+			kEssential           = 27,
+			kProtected           = 28,
+			kSitting             = 29,
+			kSleeping            = 30,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

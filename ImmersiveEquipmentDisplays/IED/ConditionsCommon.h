@@ -68,6 +68,20 @@ namespace IED
 				return a_params.is_on_mount();
 			case Data::ExtraConditionType::kHumanoidSkeleton:
 				return has_humanoid_skeleton(a_params);
+			case Data::ExtraConditionType::kIsPlayer:
+				return a_params.is_player();
+			case Data::ExtraConditionType::kBribedByPlayer:
+				return !a_params.is_player() && a_params.actor->flags2.test(Actor::Flags2::kBribedByPlayer);
+			case Data::ExtraConditionType::kAngryWithPlayer:
+				return !a_params.is_player() && a_params.actor->flags2.test(Actor::Flags2::kAngryWithPlayer);
+			case Data::ExtraConditionType::kEssential:
+				return a_params.actor->flags2.test(Actor::Flags2::kEssential);
+			case Data::ExtraConditionType::kProtected:
+				return a_params.actor->flags2.test(Actor::Flags2::kProtected);
+			case Data::ExtraConditionType::kSitting:
+				return a_params.actor->IsSitting();
+			case Data::ExtraConditionType::kSleeping:
+				return a_params.actor->IsSleeping();
 			default:
 				return false;
 			}
@@ -108,7 +122,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr bool is_geometry_visible(NiPointer<NiAVObject>& a_object) noexcept
+		inline constexpr bool is_object_visible(NiPointer<NiAVObject>& a_object) noexcept
 		{
 			return a_object && a_object->IsVisible();
 		}
@@ -204,7 +218,7 @@ namespace IED
 			if (a_match.flags.test(Tf::kExtraFlag3))
 			{
 				if (a_match.flags.test(Tf::kNegateMatch4) ==
-				    is_geometry_visible(e.object))
+				    is_object_visible(e.object))
 				{
 					return false;
 				}

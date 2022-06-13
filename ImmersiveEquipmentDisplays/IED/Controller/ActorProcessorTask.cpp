@@ -426,16 +426,8 @@ namespace IED
 			e.state_var_update_defer(e.m_cflags1, e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1, 6);
 			e.state_var_update_defer(e.m_cflags2, e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2, 6);
 			e.state_var_update_defer(e.m_swimming, e.m_actor->IsSwimming(), 6);
-
-			/*if (IPerfCounter::delta_us(
-					e.m_lastHFStateCheck,
-					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_HIGH)
-			{
-				e.m_lastHFStateCheck = m_timer.GetStartTime();
-
-				e.state_var_update(e.m_cflags1, (e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1));
-				e.state_var_update(e.m_cflags2, (e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2));
-			}*/
+			e.state_var_update_defer(e.m_sitting, e.m_actor->IsSitting());
+			e.state_var_update_defer(e.m_sleeping, e.m_actor->IsSleeping());
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,

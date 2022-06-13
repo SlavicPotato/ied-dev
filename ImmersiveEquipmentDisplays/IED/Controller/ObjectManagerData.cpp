@@ -44,6 +44,8 @@ namespace IED
 		m_cflags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
 		m_cflags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
 		m_swimming(a_actor->IsSwimming()),
+		m_sitting(a_actor->IsSitting()),
+		m_sleeping(a_actor->IsSleeping()),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root)
