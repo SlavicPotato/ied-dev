@@ -82,6 +82,10 @@ namespace IED
 		static void GetMiscNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+		
+		static void GetAmmoNodeName(
+			Game::FormID a_formid,
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
 
 		template <class Ts>
 		static constexpr NiNode* CreateAttachmentNode(

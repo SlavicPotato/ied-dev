@@ -798,7 +798,6 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
 					DrawTip(UITip::Load1pWeaponModel);
 
 					if (ImGui::CheckboxFlagsT(
@@ -812,7 +811,6 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
 					DrawTip(UITip::UseWorldModel);
 
 					if (ImGui::CheckboxFlagsT(
@@ -826,11 +824,23 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
 					DrawTip(UITip::KeepTorchFlame);
+					
+					if (ImGui::CheckboxFlagsT(
+							LS(UIWidgetCommonStrings::DisableHavok, "F"),
+							stl::underlying(std::addressof(a_data.flags.value)),
+							stl::underlying(Data::BaseFlags::kDisableHavok)))
+					{
+						PropagateFlagToEquipmentOverrides(
+							a_baseConfig,
+							Data::BaseFlags::kDisableHavok);
+
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+					}
+					DrawTip(UITip::DisableHavok);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::DisableWeaponAnims, "F"),
+							LS(UIWidgetCommonStrings::DisableWeaponAnims, "G"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
 					{
@@ -840,11 +850,10 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-
 					DrawTip(UITip::DisableWeaponAnims);
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "G"),
+							LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "H"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
 					{
@@ -857,7 +866,7 @@ namespace IED
 					DrawTip(UITip::DisableAnimEventForwarding);
 
 					paChanged = ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::AnimationEvent, "H"),
+						LS(UIWidgetCommonStrings::AnimationEvent, "I"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kAnimationEvent));
 

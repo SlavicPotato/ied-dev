@@ -32,6 +32,7 @@ namespace IED
 			kDisableWeaponAnims         = 1u << 17,
 			kDisableAnimEventForwarding = 1u << 18,
 			kAnimationEvent             = 1u << 19,
+			kDisableHavok               = 1u << 20,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -39,7 +40,8 @@ namespace IED
 			                     kRemoveScabbard |
 			                     kLoad1pWeaponModel |
 			                     kUseWorldModel |
-			                     kDisableWeaponAnims
+			                     kDisableWeaponAnims |
+			                     kDisableHavok
 
 		};
 

@@ -409,6 +409,9 @@ namespace IED
 		case ModelType::kLight:
 			GetMiscNodeName(a_form->formID, a_out);
 			break;
+		case ModelType::kAmmo:
+			GetAmmoNodeName(a_form->formID, a_out);
+			break;
 		default:
 			HALT("FIXME");
 		}
@@ -547,7 +550,7 @@ namespace IED
 			a_config.flags.test(Data::BaseFlags::kDropOnDeath),
 			a_config.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
-			a_disableHavok);
+			a_disableHavok || a_config.flags.test(Data::BaseFlags::kDisableHavok));
 
 		UpdateDownwardPass(itemRoot);
 
@@ -846,6 +849,7 @@ namespace IED
 				a_config.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				a_disableHavok ||
+					a_config.flags.test(Data::BaseFlags::kDisableHavok) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
 			e.grpObject = std::addressof(n);

@@ -99,7 +99,7 @@ namespace IED
 		case TESObjectMISC::kTypeID:
 			return ExtractFormModelParams<TESObjectMISC>(a_form, a_out);
 		case TESAmmo::kTypeID:
-			return ExtractFormModelParams<TESAmmo>(a_form, a_out);
+			return ExtractFormModelParams<TESAmmo>(a_form, a_out, ModelType::kAmmo);
 		case TESObjectLIGH::kTypeID:
 
 			return ExtractFormModelParams<TESObjectLIGH>(

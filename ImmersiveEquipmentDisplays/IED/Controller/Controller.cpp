@@ -5915,7 +5915,9 @@ namespace IED
 
 					if (slot == ObjectSlot::kAmmo)
 					{
-						e->visit([](auto& a_v) { a_v.flags.set(BaseFlags::kDisabled); });
+						e->visit([](auto& a_v) {
+							a_v.flags.set(BaseFlags::kDisabled | BaseFlags::kDisableHavok);
+						});
 					}
 				}
 			}
@@ -5925,7 +5927,7 @@ namespace IED
 	void Controller::SaveSettings()
 	{
 		stl::scoped_lock lock(m_lock);
-		m_config.settings.SaveIfDirty();
+		m_config.settings.Save();
 	}
 
 	void Controller::OnUIOpen()

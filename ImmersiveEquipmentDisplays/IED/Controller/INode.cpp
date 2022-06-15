@@ -117,7 +117,7 @@ namespace IED
 	{
 		char tmp[MAX_PATH];
 
-		auto fmt = (a_node.managed() || a_atmReference) ? "IED R %s" : "IED P %s";
+		auto fmt = (a_node.managed() || a_atmReference) ? "OBJECT R %s" : "OBJECT P %s";
 
 		stl::snprintf(tmp, fmt, a_node.name.c_str());
 
@@ -273,6 +273,13 @@ namespace IED
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])
 	{
 		stl::snprintf(a_out, "OBJECT MISC [%.8X]", a_formid.get());
+	}
+
+	void INode::GetAmmoNodeName(
+		Game::FormID a_formid,
+		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+	{
+		stl::snprintf(a_out, "OBJECT AMMO [%.8X]", a_formid.get());
 	}
 
 }

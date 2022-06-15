@@ -7,7 +7,8 @@ namespace IED
 		kArmor,
 		kWeapon,
 		kMisc,
-		kLight
+		kLight,
+		kAmmo
 	};
 
 }

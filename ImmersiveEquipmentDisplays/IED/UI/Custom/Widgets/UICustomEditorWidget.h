@@ -1637,7 +1637,7 @@ namespace IED
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTipImportant(UITip::DisableHavok);
+			DrawTip(UITip::DisableHavok);
 
 			/*if (ImGui::CheckboxFlagsT(
 					LS(UICustomEditorString::LoadARMA, "3"),
