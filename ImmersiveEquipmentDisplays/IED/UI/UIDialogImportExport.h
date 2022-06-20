@@ -7,6 +7,7 @@
 #include "Widgets/UIFileSelectorWidget.h"
 
 #include "IED/UI/Window/UIWindow.h"
+#include "IED/UI/Window/UIWindowBase.h"
 
 #include "IED/Controller/ImportFlags.h"
 
@@ -22,6 +23,7 @@ namespace IED
 	{
 		class UIDialogImportExport :
 			public UIWindow,
+			public UIWindowBase,
 			public UIFileSelector,
 			public UIImportWidget,
 			public virtual UITipsInterface

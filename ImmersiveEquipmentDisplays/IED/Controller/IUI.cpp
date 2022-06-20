@@ -116,6 +116,32 @@ namespace IED
 		}
 	}
 
+	void IUIRenderTask::PrepareGameData()
+	{
+		stl::scoped_lock lock(m_owner.UIGetLock());
+
+		try
+		{
+			m_context->PrepareGameData();
+		}
+		catch (const std::exception& e)
+		{
+			HALT(e.what());
+		}
+	}
+
+	void IUIRenderTask::Render()
+	{
+		try
+		{
+			m_context->Render();
+		}
+		catch (const std::exception& e)
+		{
+			HALT(e.what());
+		}
+	}
+
 	void IUIRenderTask::OnTaskStop()
 	{
 		stl::scoped_lock lock(m_owner.UIGetLock());

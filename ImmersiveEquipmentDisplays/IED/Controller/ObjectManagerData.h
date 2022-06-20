@@ -392,8 +392,8 @@ namespace IED
 		WeaponPlacementID placementID;
 	};
 
-	class ActorObjectHolder :
-		public BSTEventSink<BSAnimationGraphEvent>
+	class ActorObjectHolder
+		//public BSTEventSink<BSAnimationGraphEvent>
 	{
 		friend class IObjectManager;
 		friend class Controller;
@@ -449,7 +449,7 @@ namespace IED
 			Game::ObjectRefHandle   a_handle,
 			bool                    a_nodeOverrideEnabled,
 			bool                    a_nodeOverrideEnabledPlayer,
-			bool                    a_animEventForwarding,
+			//bool                    a_animEventForwarding,
 			const BipedSlotDataPtr& a_lastEquipped);
 
 		~ActorObjectHolder();
@@ -481,6 +481,16 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetActor() const noexcept
 		{
 			return m_actor;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetNPCRoot() const noexcept
+		{
+			return m_npcroot;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetRoot() const noexcept
+		{
+			return m_root;
 		}
 
 		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
@@ -673,10 +683,10 @@ namespace IED
 			return m_female;
 		}
 
-		[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
+		/*[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
 		{
 			return m_enableAnimEventForwarding;
-		}
+		}*/
 
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
 			const stl::fixed_string& a_name) const;
@@ -684,7 +694,7 @@ namespace IED
 		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
 			const stl::fixed_string& a_name) const;
 
-		void ReSinkAnimationGraphs();
+		//void ReSinkAnimationGraphs();
 
 		void RegisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
@@ -726,9 +736,9 @@ namespace IED
 		void ApplyNodeTransformOverrides(
 			NiNode* a_root) const;
 
-		EventResult ReceiveEvent(
+		/*EventResult ReceiveEvent(
 			const BSAnimationGraphEvent*           a_event,
-			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;
+			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;*/
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
@@ -763,6 +773,7 @@ namespace IED
 		bool                m_swimming{ false };
 		bool                m_sitting{ false };
 		bool                m_sleeping{ false };
+		bool                m_beingRidden{ false };
 		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
 		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
 		long long           m_lastLFStateCheck;
@@ -776,8 +787,8 @@ namespace IED
 		mutable ActorAnimationState m_animState;
 
 		AnimationGraphManagerHolderList m_animationUpdateList;
-		AnimationGraphManagerHolderList m_animEventForwardRegistrations;
-		const bool                      m_enableAnimEventForwarding{ false };
+		//AnimationGraphManagerHolderList m_animEventForwardRegistrations;
+		//const bool                      m_enableAnimEventForwarding{ false };
 
 		BipedSlotDataPtr m_lastEquipped;
 

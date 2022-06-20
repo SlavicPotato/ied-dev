@@ -7,11 +7,14 @@
 
 #include "IED/Profile/Manager.h"
 
+#include "IED/D3D/D3DAssets.h"
+
 namespace IED
 {
 	using SlotProfile         = Profile<Data::configSlotHolder_t>;
 	using CustomProfile       = Profile<Data::configCustomHolder_t>;
 	using NodeOverrideProfile = Profile<Data::configNodeOverrideHolder_t>;
+	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
 	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
 
 	class GlobalProfileManager
@@ -56,6 +59,16 @@ namespace IED
 			using ProfileManager<FormFilterProfile>::ProfileManager;
 		};
 
+		class ProfileManagerModel :
+			public ProfileManager<ModelProfile>
+		{
+		public:
+			FN_NAMEPROC("ModelManager");
+
+		private:
+			using ProfileManager<ModelProfile>::ProfileManager;
+		};
+
 	public:
 		template <class T>
 		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
@@ -76,6 +89,10 @@ namespace IED
 			{
 				return m_formFilterManager;
 			}
+			else if constexpr (std::is_same_v<T, ModelProfile>)
+			{
+				return m_modelManager;
+			}
 			else
 			{
 				static_assert(false, "Unrecognized profile");
@@ -87,6 +104,7 @@ namespace IED
 		static ProfileManagerCustom       m_customManager;
 		static ProfileManagerNodeOverride m_nodeOverrideManager;
 		static ProfileManagerFormFilter   m_formFilterManager;
+		static ProfileManagerModel        m_modelManager;
 	};
 
 }

@@ -2738,10 +2738,24 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mount, "F")))
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mounting, "F")))
 					{
 						a_entry.emplace_back(
-							Data::NodeOverrideConditionType::Mount);
+							Data::NodeOverrideConditionType::Mounting);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mounted, "G")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Mounted);
 
 						HandleValueUpdate(
 							a_handle,
@@ -2956,7 +2970,8 @@ namespace IED
 						case Data::NodeOverrideConditionType::Actor:
 						case Data::NodeOverrideConditionType::NPC:
 						case Data::NodeOverrideConditionType::Global:
-						case Data::NodeOverrideConditionType::Mount:
+						case Data::NodeOverrideConditionType::Mounting:
+						case Data::NodeOverrideConditionType::Mounted:
 
 							it = a_entry.emplace(
 								it,
@@ -3315,7 +3330,8 @@ namespace IED
 
 								break;
 
-							case Data::NodeOverrideConditionType::Mount:
+							case Data::NodeOverrideConditionType::Mounting:
+							case Data::NodeOverrideConditionType::Mounted:
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
@@ -3325,7 +3341,10 @@ namespace IED
 									e);
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
-								tdesc = LS(UIWidgetCommonStrings::Mount);
+
+								tdesc = e.fbf.type == Data::NodeOverrideConditionType::Mounting ?
+								            LS(UIWidgetCommonStrings::Mounting) :
+                                            LS(UIWidgetCommonStrings::Mounted);
 
 								break;
 
@@ -3899,10 +3918,16 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mount, "H")))
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mounting, "H")))
 					{
 						result.action    = NodeOverrideCommonAction::Insert;
-						result.matchType = Data::NodeOverrideConditionType::Mount;
+						result.matchType = Data::NodeOverrideConditionType::Mounting;
+					}
+
+					if (ImGui::MenuItem(LS(UIWidgetCommonStrings::Mounted, "G")))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Mounted;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -4301,7 +4326,8 @@ namespace IED
 				}
 
 				break;
-			case Data::NodeOverrideConditionType::Mount:
+			case Data::NodeOverrideConditionType::Mounting:
+			case Data::NodeOverrideConditionType::Mounted:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -4353,7 +4379,8 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			case Data::NodeOverrideConditionType::NPC:
-			case Data::NodeOverrideConditionType::Mount:
+			case Data::NodeOverrideConditionType::Mounting:
+			case Data::NodeOverrideConditionType::Mounted:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;

@@ -1,14 +1,12 @@
 #pragma once
 
-#include "UIWindowBase.h"
 #include "WindowLayoutData.h"
 
 namespace IED
 {
 	namespace UI
 	{
-		class UIWindow :
-			public UIWindowBase
+		class UIWindow
 		{
 		protected:
 			void SetWindowDimensions(

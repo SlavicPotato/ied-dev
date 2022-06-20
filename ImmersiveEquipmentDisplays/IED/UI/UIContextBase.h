@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Window/UIWindow.h"
+#include "Window/UIWindowBase.h"
 
 namespace IED
 {
@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		class UIContextBase :
-			public UIWindow
+			public UIWindowBase
 		{
 		public:
 			UIContextBase(Controller& a_controller) :
@@ -21,6 +21,8 @@ namespace IED
 
 			virtual void Initialize(){};
 			virtual void Draw() = 0;
+			virtual void PrepareGameData(){};
+			virtual void Render(){};
 			virtual void Reset(){};
 
 			virtual void OnOpen(){};

@@ -3,7 +3,9 @@
 #include <ext/ILogging.h>
 
 #include "Widgets/Filters/UIGenericFilter.h"
+
 #include "Window/UIWindow.h"
+#include "Window/UIWindowBase.h"
 
 #include "UILocalizationInterface.h"
 
@@ -15,6 +17,7 @@ namespace IED
 	{
 		class UILog :
 			public UIWindow,
+			public UIWindowBase,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_log";

@@ -345,7 +345,6 @@ namespace IED
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
-
 			DrawTip(UITip::AlwaysUnloadSlot);
 
 			ImGui::NextColumn();
@@ -357,9 +356,8 @@ namespace IED
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
-
 			DrawTip(UITip::CheckCannotWear);
-
+			
 			ImGui::Columns();
 
 			UICommon::PopDisabled(disabled);

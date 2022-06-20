@@ -70,12 +70,6 @@ namespace IED
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
 
-			void QueueAttach(
-				Game::FormID             a_target,
-				Data::ConfigClass        a_class,
-				const stl::fixed_string& a_key,
-				const stl::fixed_string& a_name);
-
 			void QueueEvaluate(
 				Game::FormID      a_target,
 				Data::ConfigClass a_class);

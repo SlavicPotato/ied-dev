@@ -16,8 +16,7 @@ namespace IED
 			None,
 			Reset,
 			Evaluate,
-			UpdateTransform,
-			AttachNode
+			UpdateTransform
 		};
 
 		enum class SwapDirection : std::uint8_t

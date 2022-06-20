@@ -5,6 +5,7 @@
 #include "Widgets/UIWidgetsCommon.h"
 
 #include "Window/UIWindow.h"
+#include "Window/UIWindowBase.h"
 
 #include "UILocalizationInterface.h"
 
@@ -20,6 +21,7 @@ namespace IED
 	{
 		class UIFormBrowser :
 			public UIWindow,
+			public UIWindowBase,
 			public virtual UILocalizationInterface
 		{
 			struct TabItem

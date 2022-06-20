@@ -2,6 +2,7 @@
 
 #include "IED/ConfigExtraNode.h"
 #include "IED/ConfigTransform.h"
+#include "IED/I3DIModelID.h"
 
 #include "AnimationWeaponSlot.h"
 
@@ -93,6 +94,7 @@ namespace IED
 			const char*                                                          def;
 			const char*                                                          desc;
 			AnimationWeaponSlot                                                  animSlot;
+			I3DIModelID                                                          modelID;
 			bool                                                                 vanilla;
 			std::initializer_list<std::pair<const char*, weaponNodeListEntry_t>> movlist;
 		};
@@ -105,6 +107,7 @@ namespace IED
 				bsdefParent(a_init.def),
 				desc(a_init.desc),
 				animSlot(a_init.animSlot),
+				modelID(a_init.modelID),
 				vanilla(a_init.vanilla),
 				movs(a_init.movlist)
 			{
@@ -119,6 +122,7 @@ namespace IED
 			BSFixedString       bsdefParent;
 			const char*         desc;
 			AnimationWeaponSlot animSlot;
+			I3DIModelID         modelID;
 			bool                vanilla;
 			nodeList_t          movs;
 		};

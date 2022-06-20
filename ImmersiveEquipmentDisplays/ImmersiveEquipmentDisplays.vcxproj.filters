@@ -48,9 +48,6 @@
     <Filter Include="Source\Drivers\Input">
       <UniqueIdentifier>{001f2af0-ca09-4018-8fd3-1ea9e8c4d3f3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Drivers\UI">
-      <UniqueIdentifier>{d751ccdf-0775-4344-a968-5d1d351edae7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Drivers\Render">
       <UniqueIdentifier>{ba2d0415-f919-4637-9306-311990494f2d}</UniqueIdentifier>
     </Filter>
@@ -200,6 +197,21 @@
     </Filter>
     <Filter Include="Source\IED\JSONParsers\Config\ExtraNode">
       <UniqueIdentifier>{62c4bf7a-82fa-426d-9018-69d8bf63e510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers\RTest">
+      <UniqueIdentifier>{ba3226e3-0478-4fc1-8a21-8185956e8dbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Drivers\UI">
+      <UniqueIdentifier>{d751ccdf-0775-4344-a968-5d1d351edae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\D3D">
+      <UniqueIdentifier>{5045b9c9-b1d6-451a-ae4b-3b6afe2ba439}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Common">
+      <UniqueIdentifier>{6f123491-f4ef-44aa-9ba8-9d5808f1dca8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\I3DI">
+      <UniqueIdentifier>{6832753d-bf0c-49f8-b09a-a44b9ac0f882}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1283,6 +1295,87 @@
     <ClInclude Include="IED\Controller\SkeletonID.h">
       <Filter>Source\IED\Controller\NodeOverride</Filter>
     </ClInclude>
+    <ClInclude Include="Drivers\RTest\RTest.h">
+      <Filter>Source\Drivers\RTest</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DAssets.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DModelData.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DHelpers.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DObject.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\VectorMath.h">
+      <Filter>Source\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DCommon.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DVertices.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DPrimitiveBatch.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\D3D\D3DEffect.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIMain.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIActorContext.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIAssetCache.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIActorSelector.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIObjectSelector.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DICommonData.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIPopupWindow.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIInputHelpers.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIMOVNode.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\I3DIModelID.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIDropTarget.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIDraggable.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIDragDropResult.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIWeaponNode.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIDragDropController.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIObject.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIObjectController.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2010,6 +2103,66 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\SkeletonID.cpp">
       <Filter>Source\IED\Controller\NodeOverride</Filter>
+    </ClCompile>
+    <ClCompile Include="Drivers\RTest\RTest.cpp">
+      <Filter>Source\Drivers\RTest</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DAssets.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DModelData.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DObject.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\VectorMath.cpp">
+      <Filter>Source\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DCommon.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DVertices.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DPrimitiveBatch.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIMain.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIActorContext.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIAssetCache.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIActorSelector.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DICommonData.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIPopupWindow.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIMOVNode.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIDraggable.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIDropTarget.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIWeaponNode.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIDragDropController.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIObjectController.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

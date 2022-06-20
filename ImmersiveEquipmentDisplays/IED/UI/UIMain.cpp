@@ -28,6 +28,7 @@ namespace IED
 			m_nodeOverrideProfileEditor(a_controller),
 			m_formFiltersProfileEditor(a_controller),
 			m_skeletonExplorer(a_controller),
+			m_i3di(a_controller),
 			m_popupQueue(a_controller)
 		{
 			stl::snprintf(m_currentTitle, "%s###%s", TITLE_NAME, WINDOW_ID);
@@ -43,6 +44,10 @@ namespace IED
 			m_log.Initialize();
 			m_nodeOverrideEditor.Initialize();
 			m_formFiltersProfileEditor.Initialize();
+			m_i3di.Initialize();
+
+			m_i3di.SetOpenState(true);
+			m_i3di.OnOpen();
 
 			auto& conf = m_controller.GetConfigStore().settings;
 
@@ -67,6 +72,7 @@ namespace IED
 			m_nodeOverrideProfileEditor.Reset();
 			m_slotProfileEditor.Reset();
 			m_customProfileEditor.Reset();
+			m_i3di.Reset();
 		}
 
 		void UIMain::Draw()
@@ -106,6 +112,7 @@ namespace IED
 			m_nodeOverrideEditor.Draw();
 			m_formFiltersProfileEditor.DrawProfileEditor();
 			m_skeletonExplorer.Draw();
+			m_i3di.Draw();
 
 			if (m_formFiltersProfileEditor.ChangedConfig())
 			{
@@ -116,6 +123,16 @@ namespace IED
 			m_popupQueue.run();
 
 			m_formLookupCache.RunCleanup();
+		}
+
+		void UIMain::PrepareGameData()
+		{
+			m_i3di.PrepareGameData();
+		}
+
+		void UIMain::Render()
+		{
+			m_i3di.Render();
 		}
 
 		const Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
@@ -504,6 +521,11 @@ namespace IED
 			{
 				m_skeletonExplorer.OnOpen();
 			}
+
+			if (m_i3di.IsWindowOpen())
+			{
+				m_i3di.OnOpen();
+			}
 		}
 
 		void UIMain::OnClose()
@@ -515,6 +537,7 @@ namespace IED
 			m_customTabPanel.OnClose();
 			m_formBrowser.OnClose();
 			m_skeletonExplorer.OnClose();
+			m_i3di.OnClose();
 
 			m_formLookupCache.clear();
 

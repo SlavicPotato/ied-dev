@@ -825,7 +825,7 @@ namespace IED
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
 					DrawTip(UITip::KeepTorchFlame);
-					
+
 					if (ImGui::CheckboxFlagsT(
 							LS(UIWidgetCommonStrings::DisableHavok, "F"),
 							stl::underlying(std::addressof(a_data.flags.value)),
@@ -852,7 +852,7 @@ namespace IED
 					}
 					DrawTip(UITip::DisableWeaponAnims);
 
-					if (ImGui::CheckboxFlagsT(
+					/*if (ImGui::CheckboxFlagsT(
 							LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "H"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
@@ -863,7 +863,7 @@ namespace IED
 
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 					}
-					DrawTip(UITip::DisableAnimEventForwarding);
+					DrawTip(UITip::DisableAnimEventForwarding);*/
 
 					paChanged = ImGui::CheckboxFlagsT(
 						LS(UIWidgetCommonStrings::AnimationEvent, "I"),
@@ -1014,7 +1014,7 @@ namespace IED
 							offsetof(Data::configBaseValues_t, targetNode),
 							a_data.targetNode);
 
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::AttachNode);
+						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
 					DrawTip(UITip::TargetNode);
 
@@ -1494,7 +1494,8 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Worldspace:
 					case Data::EquipmentOverrideConditionType::Package:
 					case Data::EquipmentOverrideConditionType::Weather:
-					case Data::EquipmentOverrideConditionType::Mount:
+					case Data::EquipmentOverrideConditionType::Mounting:
+					case Data::EquipmentOverrideConditionType::Mounted:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1686,7 +1687,8 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Worldspace:
 						case Data::EquipmentOverrideConditionType::Package:
 						case Data::EquipmentOverrideConditionType::Weather:
-						case Data::EquipmentOverrideConditionType::Mount:
+						case Data::EquipmentOverrideConditionType::Mounting:
+						case Data::EquipmentOverrideConditionType::Mounted:
 
 							it = a_entry.emplace(
 								it,
@@ -1993,7 +1995,8 @@ namespace IED
 								tdesc = LS(CommonStrings::Global);
 
 								break;
-							case Data::EquipmentOverrideConditionType::Mount:
+							case Data::EquipmentOverrideConditionType::Mounting:
+							case Data::EquipmentOverrideConditionType::Mounted:
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
@@ -2003,7 +2006,9 @@ namespace IED
 									e);
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr, true);
-								tdesc = LS(UIWidgetCommonStrings::Mount);
+								tdesc = e.fbf.type == Data::EquipmentOverrideConditionType::Mounting ?
+								            LS(UIWidgetCommonStrings::Mounting) :
+                                            LS(UIWidgetCommonStrings::Mounted);
 
 								break;
 							default:
@@ -2314,10 +2319,16 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(UIWidgetCommonStrings::Mount, "G"))
+					if (LCG_MI(UIWidgetCommonStrings::Mounting, "G"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;
-						result.entryType = Data::EquipmentOverrideConditionType::Mount;
+						result.entryType = Data::EquipmentOverrideConditionType::Mounting;
+					}
+					
+					if (LCG_MI(UIWidgetCommonStrings::Mounted, "H"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Mounted;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -2907,7 +2918,8 @@ namespace IED
 				}
 
 				break;
-			case Data::EquipmentOverrideConditionType::Mount:
+			case Data::EquipmentOverrideConditionType::Mounting:
+			case Data::EquipmentOverrideConditionType::Mounted:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -2959,7 +2971,8 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			case Data::EquipmentOverrideConditionType::NPC:
-			case Data::EquipmentOverrideConditionType::Mount:
+			case Data::EquipmentOverrideConditionType::Mounting:
+			case Data::EquipmentOverrideConditionType::Mounted:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;

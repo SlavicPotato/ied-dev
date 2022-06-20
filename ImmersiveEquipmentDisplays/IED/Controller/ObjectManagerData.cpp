@@ -25,7 +25,7 @@ namespace IED
 		Game::ObjectRefHandle   a_handle,
 		bool                    a_nodeOverrideEnabled,
 		bool                    a_nodeOverrideEnabledPlayer,
-		bool                    a_animEventForwarding,
+		//bool                    a_animEventForwarding,
 		const BipedSlotDataPtr& a_lastEquipped) :
 		m_owner(a_owner),
 		m_handle(a_handle),
@@ -33,7 +33,7 @@ namespace IED
 		m_root(a_root),
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
-		m_enableAnimEventForwarding(a_animEventForwarding),
+		//m_enableAnimEventForwarding(a_animEventForwarding),
 		m_cellAttached(a_actor->IsParentCellAttached()),
 		m_locData{
 			a_actor->IsInInteriorCell(),
@@ -46,6 +46,7 @@ namespace IED
 		m_swimming(a_actor->IsSwimming()),
 		m_sitting(a_actor->IsSitting()),
 		m_sleeping(a_actor->IsSleeping()),
+		m_beingRidden(a_actor->IsBeingRidden()),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root)
@@ -146,7 +147,7 @@ namespace IED
 				static_cast<Data::ObjectSlot>(i));
 		}
 
-		if (m_enableAnimEventForwarding)
+		/*if (m_enableAnimEventForwarding)
 		{
 			RE::BSAnimationGraphManagerPtr agm;
 			if (a_actor->GetAnimationGraphManagerImpl(agm))
@@ -159,12 +160,12 @@ namespace IED
 					}
 				}
 			}
-		}
+		}*/
 	}
 
 	ActorObjectHolder::~ActorObjectHolder()
 	{
-		if (m_enableAnimEventForwarding)
+		/*if (m_enableAnimEventForwarding)
 		{
 			RE::BSAnimationGraphManagerPtr agm;
 			if (m_actor->GetAnimationGraphManagerImpl(agm))
@@ -179,7 +180,7 @@ namespace IED
 			}
 
 			m_animEventForwardRegistrations.Clear();
-		}
+		}*/
 
 		m_animationUpdateList.Clear();
 
@@ -481,15 +482,12 @@ namespace IED
 		}
 	}
 
-	EventResult ActorObjectHolder::ReceiveEvent(
+	/*EventResult ActorObjectHolder::ReceiveEvent(
 		const BSAnimationGraphEvent*           a_event,
 		BSTEventSource<BSAnimationGraphEvent>* a_eventSource)
 	{
 		if (a_event)
 		{
-			/*PerfTimer pt;
-			pt.Start();*/
-
 			auto sh = BSStringHolder::GetSingleton();
 
 			if (a_event->tag == sh->m_graphDeleting)
@@ -503,14 +501,12 @@ namespace IED
 					m_animEventForwardRegistrations.Notify(a_event->tag);
 				}
 			}
-
-			//_DMESSAGE("%f | %X : %s | %s", pt.Stop(), m_formid.get(), a_event->payload.c_str(), a_event->tag.c_str());
 		}
 
 		return EventResult::kContinue;
-	}
+	}*/
 
-	void ActorObjectHolder::ReSinkAnimationGraphs()
+	/*void ActorObjectHolder::ReSinkAnimationGraphs()
 	{
 		if (!m_enableAnimEventForwarding)
 		{
@@ -536,16 +532,16 @@ namespace IED
 				}
 			}
 		}
-	}
+	}*/
 
 	void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
 		bool                                      a_forward)
 	{
-		if (a_forward && m_enableAnimEventForwarding)
+		/*if (a_forward && m_enableAnimEventForwarding)
 		{
 			m_animEventForwardRegistrations.Add(a_ptr);
-		}
+		}*/
 
 		m_animationUpdateList.Add(a_ptr);
 
@@ -555,10 +551,10 @@ namespace IED
 	void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
 	{
-		if (m_enableAnimEventForwarding)
+		/*if (m_enableAnimEventForwarding)
 		{
 			m_animEventForwardRegistrations.Remove(a_ptr);
-		}
+		}*/
 
 		m_animationUpdateList.Remove(a_ptr);
 

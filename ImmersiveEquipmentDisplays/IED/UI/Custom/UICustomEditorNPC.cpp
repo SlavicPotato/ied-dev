@@ -279,13 +279,6 @@ namespace IED
 					StringHolder::GetSingleton().IED,
 					params->name);
 				break;
-			case PostChangeAction::AttachNode:
-				m_controller.QueueUpdateAttachCustomNPC(
-					a_handle,
-					GetConfigClass(),
-					StringHolder::GetSingleton().IED,
-					params->name);
-				break;
 			}
 		}
 

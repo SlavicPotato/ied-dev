@@ -433,7 +433,7 @@ namespace IED
 			}
 			DrawTip(UITip::DisableWeaponAnims);
 
-			if (ImGui::CheckboxFlagsT(
+			/*if (ImGui::CheckboxFlagsT(
 					LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "E"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding)))
@@ -443,7 +443,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::DisableAnimEventForwarding);
+			DrawTip(UITip::DisableAnimEventForwarding);*/
 
 			paChanged = ImGui::CheckboxFlagsT(
 				LS(UIWidgetCommonStrings::AnimationEvent, "F"),

@@ -31,6 +31,7 @@ namespace IED
 
 			r.GetEventDispatcher<Events::D3D11CreateEventPost>().AddSink(this);
 			r.GetEventDispatcher<Events::IDXGISwapChainPresent>().AddSink(this);
+			r.GetEventDispatcher<Events::PrepareGameDataEvent>().AddSink(this);
 		}
 
 		void UI::Receive(const D3D11CreateEventPost& a_evn)
@@ -43,6 +44,8 @@ namespace IED
 				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width),
 				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height)
 			};
+
+			m_info.hWnd = a_evn.m_pSwapChainDesc->OutputWindow;
 
 			RECT rect{};
 			if (::GetClientRect(
@@ -171,8 +174,8 @@ namespace IED
 
 			ImGui::PushFont(m_currentFont->second.font);
 
-			auto it = m_drawTasks.begin();
-			while (it != m_drawTasks.end())
+			for (auto it = m_drawTasks.begin();
+			     it != m_drawTasks.end();)
 			{
 				ImGui::PushID(it->first);
 				bool res = it->second->Run();
@@ -190,6 +193,11 @@ namespace IED
 			}
 
 			ImGui::PopFont();
+
+			for (auto& e : m_drawTasks)
+			{
+				e.second->Render();
+			}
 
 			ImGui::Render();
 			::ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
@@ -211,6 +219,58 @@ namespace IED
 			}
 
 			m_uiRenderPerf.timer.End(m_uiRenderPerf.current);
+		}
+
+		void UI::Receive(const Events::PrepareGameDataEvent&)
+		{
+			if (m_suspended.load(std::memory_order_relaxed))
+			{
+				return;
+			}
+
+			// *should* never be true
+			if (Game::IsPaused())
+			{
+				return;
+			}
+
+			stl::scoped_lock lock(m_lock);
+
+			if (!m_imInitialized)
+			{
+				return;
+			}
+
+			for (auto& e : m_drawTasks)
+			{
+				e.second->PrepareGameData();
+			}
+		}
+
+		// invokes preps when paused
+		void UI::Run()
+		{
+			if (m_suspended.load(std::memory_order_relaxed))
+			{
+				return;
+			}
+
+			if (!Game::IsPaused())
+			{
+				return;
+			}
+
+			stl::scoped_lock lock(m_lock);
+
+			if (!m_imInitialized)
+			{
+				return;
+			}
+
+			for (auto& e : m_drawTasks)
+			{
+				e.second->PrepareGameData();
+			}
 		}
 
 		LRESULT CALLBACK UI::WndProc_Hook(
@@ -282,26 +342,6 @@ namespace IED
 			ITaskPool::AddTask([a_switch]() {
 				Game::Main::GetSingleton()->freezeTime = a_switch;
 			});
-		}
-
-		void UI::RemoveTask(std::int32_t a_id)
-		{
-			stl::scoped_lock lock(m_Instance.m_lock);
-
-			auto it = m_Instance.m_drawTasks.find(a_id);
-			if (it == m_Instance.m_drawTasks.end())
-			{
-				return;
-			}
-
-			m_Instance.OnTaskRemove(it->second.get());
-
-			m_Instance.m_drawTasks.erase(it);
-
-			if (m_Instance.m_drawTasks.empty())
-			{
-				m_Instance.Suspend();
-			}
 		}
 
 		void UI::QueueRemoveTask(std::int32_t a_id)

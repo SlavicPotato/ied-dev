@@ -26,7 +26,8 @@ namespace IED
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
 			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
-			{ Data::ExtraConditionType::kIsOnMount, UIConditionExtraSelectorWidgetStrings::IsOnMount },
+			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
+			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
 			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
@@ -139,8 +140,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsCommanded);
 			case Data::ExtraConditionType::kParalyzed:
 				return LS(UIConditionExtraSelectorWidgetStrings::Paralyzed);
-			case Data::ExtraConditionType::kIsOnMount:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsOnMount);
+			case Data::ExtraConditionType::kIsRidingMount:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsRidingMount);
 			case Data::ExtraConditionType::kHumanoidSkeleton:
 				return LS(UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton);
 			case Data::ExtraConditionType::kIsPlayer:
@@ -157,6 +158,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::Sitting);
 			case Data::ExtraConditionType::kSleeping:
 				return LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
+			case Data::ExtraConditionType::kBeingRidden:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsBeingRidden);
 			default:
 				return nullptr;
 			}

@@ -791,8 +791,7 @@ namespace IED
 						entry->DecRef();
 						entry = newbsx;
 
-						flags    = newbsx->m_data;
-						bsxFlags = newbsx;
+						flags = newbsx->m_data;
 					}
 				}
 			}

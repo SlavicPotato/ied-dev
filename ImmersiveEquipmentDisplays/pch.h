@@ -24,6 +24,7 @@
 #include <skse64/BipedObject.h>
 #include <skse64/FormTraits.h>
 #include <skse64/GameAudio.h>
+#include <skse64/GameCamera.h>
 #include <skse64/GameEvents.h>
 #include <skse64/GameExtraData.h>
 #include <skse64/GameMenus.h>
@@ -53,14 +54,32 @@
 #include <string>
 #include <vector>
 
+#include <wrl/client.h>
+
+#include <DirectXCollision.h>
+#include <DirectXMath.h>
+
+#include <DirectXTK/CommonStates.h>
+#include <DirectXTK/DirectXHelpers.h>
+#include <DirectXTK/Effects.h>
+#include <DirectXTK/PrimitiveBatch.h>
+#include <DirectXTK/SimpleMath.h>
+#include <DirectXTK/VertexTypes.h>
+
 #include <d3d11.h>
 #include <dxgi1_5.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>
 
+#include <assimp/Exporter.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 #include <json/json.h>
 
+#include <boost/locale.hpp>
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/list.hpp>
 #include <boost/serialization/map.hpp>
@@ -74,7 +93,7 @@
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
 
-#include <boost/locale.hpp>
+#define IMGUI_DEFINE_MATH_OPERATORS
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -89,7 +108,9 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
-#define IED_ENABLE_STATS_G
+//#define IED_ENABLE_STATS_G
 //#define IED_ENABLE_STATS_T
+
+//#define IED_ENABLE_RTEST
 
 #endif  // PCH_H

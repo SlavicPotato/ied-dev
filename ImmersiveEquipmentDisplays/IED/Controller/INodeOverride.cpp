@@ -568,9 +568,15 @@ namespace IED
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
-		case Data::NodeOverrideConditionType::Mount:
+		case Data::NodeOverrideConditionType::Mounting:
 
 			return Conditions::match_mount<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Mounted:
+
+			return Conditions::match_mounted_by<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}

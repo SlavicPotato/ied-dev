@@ -57,6 +57,9 @@ namespace IED
 
 	protected:
 		virtual bool Run() override;
+		virtual void PrepareGameData() override;
+		virtual void Render() override;
+
 		virtual void OnTaskStop() override;
 		virtual void OnTaskStart() override;
 
@@ -106,7 +109,6 @@ namespace IED
 		public IActorInfo
 	{
 		friend class IUIRenderTaskMain;
-
 		friend class IUIRenderTask;
 
 		enum class UIOpenResult

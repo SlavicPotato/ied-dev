@@ -5,7 +5,9 @@
 #include "IED/Controller/ObjectManagerData.h"
 
 #include "IED/UI/Controls/UICollapsibles.h"
+
 #include "IED/UI/Window/UIWindow.h"
+#include "IED/UI/Window/UIWindowBase.h"
 
 #include "UILocalizationInterface.h"
 
@@ -19,6 +21,7 @@ namespace IED
 	{
 		class UIStats :
 			public UIWindow,
+			public UIWindowBase,
 			UICollapsibles,
 			public virtual UILocalizationInterface,
 			public virtual UITipsInterface

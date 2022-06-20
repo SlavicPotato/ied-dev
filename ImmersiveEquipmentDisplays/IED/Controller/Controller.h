@@ -238,18 +238,9 @@ namespace IED
 		void QueueUpdateTransformSlotNPC(Game::FormID a_npc, Data::ObjectSlot a_slot);
 		void QueueUpdateTransformSlotRace(Game::FormID a_race, Data::ObjectSlot a_slot);
 		void QueueUpdateTransformSlotAll(Data::ObjectSlot a_slot);
-		void QueueAttachSlotNode(Game::FormID a_actor, Data::ObjectSlot a_slot, bool a_evalIfNone);
-		void QueueAttachSlotNodeNPC(Game::FormID a_npc, Data::ObjectSlot a_slot, bool a_evalIfNone);
-		void QueueAttachSlotNodeRace(Game::FormID a_race, Data::ObjectSlot a_slot, bool a_evalIfNone);
-		void QueueAttachSlotNodeAll(Data::ObjectSlot a_slot, bool a_evalIfNone);
 
 		void QueueResetAAAll();
 
-		/*void QueueUpdateTransformCustom(Game::FormID a_actor, Data::ObjectSlot a_slot);
-		void QueueUpdateTransformCustomAll(Data::ObjectSlot a_slot);
-		void QueueAttachCustomNode(Game::FormID a_actor, Data::ObjectSlot a_slot, bool a_evalIfNone);
-		void QueueAttachCustomNodeAll(Data::ObjectSlot a_slot, bool a_evalIfNone);*/
-
 		void QueueResetCustom(
 			Game::FormID             a_actor,
 			Data::ConfigClass        a_class,
@@ -362,63 +353,6 @@ namespace IED
 			const stl::fixed_string& a_pkey);
 
 		void QueueUpdateTransformCustomAll(
-			Data::ConfigClass a_class);
-
-		void QueueUpdateAttachCustom(
-			Game::FormID             a_actor,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateAttachCustomNPC(
-			Game::FormID             a_npc,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateAttachCustomRace(
-			Game::FormID             a_race,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateAttachCustom(
-			Game::FormID             a_actor,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateAttachNPC(
-			Game::FormID             a_npc,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateAttachRace(
-			Game::FormID             a_race,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateAttachCustom(
-			Game::FormID      a_actor,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateAttachCustomNPC(
-			Game::FormID      a_npc,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateAttachCustomRace(
-			Game::FormID      a_race,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateAttachCustomAll(
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateAttachCustomAll(
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateAttachCustomAll(
 			Data::ConfigClass a_class);
 
 		void QueueEvaluateNearbyActors(bool a_removeFirst = false);
@@ -636,7 +570,6 @@ namespace IED
 		static void UpdateIfPaused(NiNode* a_root);
 
 		updateActionFunc_t MakeTransformUpdateFunc();
-		updateActionFunc_t MakeAttachUpdateFunc();
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&                            a_info,
@@ -754,23 +687,6 @@ namespace IED
 			const Data::configCustom_t&    a_configEntry,
 			const Data::configTransform_t& a_xfrmConfigEntry,
 			objectEntryCustom_t&           a_entry);
-
-		void AttachSlotNodeImpl(
-			Game::FormID     a_actor,
-			Data::ObjectSlot a_slot,
-			bool             a_evalIfNone);
-
-		bool AttachSlotNodeImpl(
-			ActorObjectHolder& a_record,
-			Data::ObjectSlot   a_slot,
-			bool               a_evalIfNone);
-
-		bool AttachNodeImpl(
-			const actorInfo_t&          a_info,
-			NiNode*                     a_root,
-			const Data::NodeDescriptor& a_node,
-			bool                        a_atmReference,
-			objectEntryBase_t&          a_cacheEntry);
 
 		bool AttachNodeImpl(
 			NiNode*                     a_root,

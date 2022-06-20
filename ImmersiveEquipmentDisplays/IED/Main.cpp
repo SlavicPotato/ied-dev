@@ -23,6 +23,8 @@
 #include <ext/SKSEMessagingHandler.h>
 #include <ext/SKSESerializationEventHandler.h>
 
+#include "Drivers/RTest/RTest.h"
+
 namespace IED
 {
 	Initializer Initializer::m_Instance;
@@ -64,11 +66,13 @@ namespace IED
 			ISKSE::GetBranchTrampoline(),
 			ISKSE::GetLocalTrampoline());
 
+		//RTest::GetSingleton().Initialize();
+
 		if (config->m_enableUI)
 		{
 			Debug("Initializing render interface..");
 
-			if (Drivers::Render::Initialize())
+			if (Drivers::Render::Initialize(true))
 			{
 				Debug("Installing priority input hook..");
 
@@ -269,6 +273,9 @@ namespace IED
 
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
+
+				GlobalProfileManager::GetSingleton<ModelProfile>().Load(
+					PATHS::PROFILE_MANAGER_MODEL);
 
 				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 

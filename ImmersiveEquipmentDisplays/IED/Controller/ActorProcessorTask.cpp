@@ -80,7 +80,7 @@ namespace IED
 				if (result)
 				{
 					m_controller.UpdateIfPaused(info->root);
-					a_record.RequestTransformUpdateDefer();
+					a_record.RequestEvalDefer();
 				}
 			}
 
@@ -428,6 +428,7 @@ namespace IED
 			e.state_var_update_defer(e.m_swimming, e.m_actor->IsSwimming(), 6);
 			e.state_var_update_defer(e.m_sitting, e.m_actor->IsSitting());
 			e.state_var_update_defer(e.m_sleeping, e.m_actor->IsSleeping());
+			e.state_var_update_defer(e.m_beingRidden, e.m_actor->IsBeingRidden());
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,

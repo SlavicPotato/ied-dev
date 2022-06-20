@@ -30,7 +30,7 @@ namespace IED
 			Tresspassing        = 5419,
 			IsCommanded         = 5420,
 			Paralyzed           = 5421,
-			IsOnMount           = 5422,
+			IsRidingMount       = 5422,
 			HumanoidSkeleton    = 5423,
 			IsPlayer            = 5424,
 			BribedByPlayer      = 5425,
@@ -39,6 +39,7 @@ namespace IED
 			Protected           = 5428,
 			Sitting             = 5429,
 			Sleeping            = 5430,
+			IsBeingRidden       = 5431,
 		};
 	}
 }

@@ -39,7 +39,9 @@ namespace IED
 		mutable std::optional<bool>                                  inCombat;
 		mutable std::optional<bool>                                  enemiesNearby;
 		mutable std::optional<bool>                                  isMounted;
+		mutable std::optional<bool>                                  isRidden;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
+		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -304,6 +306,16 @@ namespace IED
 
 			return *isMounted;
 		}
+		
+		[[nodiscard]] constexpr auto is_ridden() const
+		{
+			if (!isRidden)
+			{
+				isRidden = actor->IsBeingRidden();
+			}
+
+			return *isRidden;
+		}
 
 		[[nodiscard]] auto& get_mounted_actor() const
 		{
@@ -321,6 +333,24 @@ namespace IED
 			}
 
 			return *mountedActor;
+		}
+		
+		[[nodiscard]] auto& get_mounted_by_actor() const
+		{
+			if (!mountedByActor)
+			{
+				NiPointer<Actor> tmp;
+				if (actor->GetMountedByActor(tmp))
+				{
+					mountedByActor.emplace(std::move(tmp));
+				}
+				else
+				{
+					mountedByActor = nullptr;
+				}
+			}
+
+			return *mountedByActor;
 		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept

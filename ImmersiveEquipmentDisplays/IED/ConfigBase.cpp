@@ -521,9 +521,15 @@ namespace IED
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Mount:
+			case EquipmentOverrideConditionType::Mounting:
 
 				return Conditions::match_mount<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mounted:
+
+				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
@@ -796,9 +802,15 @@ namespace IED
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Mount:
+			case EquipmentOverrideConditionType::Mounting:
 
 				return Conditions::match_mount<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mounted:
+
+				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}
@@ -1024,9 +1036,15 @@ namespace IED
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 
-			case EquipmentOverrideConditionType::Mount:
+			case EquipmentOverrideConditionType::Mounting:
 
 				return Conditions::match_mount<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Mounted:
+
+				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
 			}

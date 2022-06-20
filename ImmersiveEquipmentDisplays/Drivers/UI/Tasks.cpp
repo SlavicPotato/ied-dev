@@ -85,27 +85,5 @@ namespace IED
 			return true;
 		}
 
-		/*bool UIRenderTimedTask::IsExpired()
-		{
-			return IPerfCounter::Query() >= m_deadline;
-		}
-
-		bool UIRenderTimedTask::UIRunTask()
-		{
-			if (IPerfCounter::Query() >= m_deadline)
-			{
-				return false;
-			}
-			else
-			{
-				return UIRunTimedTask();
-			}
-		}
-
-		void UIRenderTimedTask::UIOnTaskStart()
-		{
-			m_deadline = m_state.startTime + IPerfCounter::T(m_maxRunTime);
-		}*/
-
 	}
 }

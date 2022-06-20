@@ -3,6 +3,8 @@
 #include "UIContextBase.h"
 #include "UILocalizationInterface.h"
 
+#include "Window/UIWindow.h"
+
 #include "UICommon.h"
 
 namespace IED
@@ -13,6 +15,7 @@ namespace IED
 	{
 		class UIIntroBanner :
 			public UIContextBase,
+			public UIWindow,
 			UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_intro";

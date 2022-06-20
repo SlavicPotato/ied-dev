@@ -25,6 +25,8 @@
 
 #include "FormFilters/UIProfileEditorFormFilters.h"
 
+#include "I3DI/I3DIMain.h"
+
 #include "Window/UIWindow.h"
 
 #include "Widgets/UIExportFilterWidget.h"
@@ -40,6 +42,7 @@ namespace IED
 	{
 		class UIMain :
 			public UIContextBase,
+			public UIWindow,
 			UIExportFilterWidget,
 			UIAboutModal,
 			public virtual UILocalizationInterface
@@ -55,6 +58,8 @@ namespace IED
 			virtual void Initialize() override;
 			virtual void Reset() override;
 			virtual void Draw() override;
+			virtual void PrepareGameData() override;
+			virtual void Render() override;
 
 			virtual void OnOpen() override;
 			virtual void OnClose() override;
@@ -102,6 +107,7 @@ namespace IED
 			UILog                       m_log;
 			UIStats                     m_stats;
 			UISkeletonExplorer          m_skeletonExplorer;
+			I3DIMain                    m_i3di;
 
 			UISlotEditorTabPanel   m_slotTabPanel;
 			UICustomEditorTabPanel m_customTabPanel;

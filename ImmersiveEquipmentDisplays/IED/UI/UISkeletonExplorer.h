@@ -3,7 +3,9 @@
 #include "Controls/UICollapsibles.h"
 #include "Widgets/Filters/UIGenericFilter.h"
 #include "Widgets/Lists/UIActorListWidget.h"
+
 #include "Window/UIWindow.h"
+#include "Window/UIWindowBase.h"
 
 #include "UILocalizationInterface.h"
 
@@ -27,6 +29,7 @@ namespace IED
 
 		class UISkeletonExplorer :
 			public UIWindow,
+			public UIWindowBase,
 			UICollapsibles,
 			UIActorList<ActorSkeletonData>,
 			public virtual UILocalizationInterface

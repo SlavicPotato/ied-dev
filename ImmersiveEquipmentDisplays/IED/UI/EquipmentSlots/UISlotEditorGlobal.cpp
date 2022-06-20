@@ -185,9 +185,6 @@ namespace IED
 			case PostChangeAction::UpdateTransform:
 				m_controller.QueueUpdateTransformSlotAll(params->slot);
 				break;
-			case PostChangeAction::AttachNode:
-				m_controller.QueueAttachSlotNodeAll(params->slot, true);
-				break;
 			}
 		}
 

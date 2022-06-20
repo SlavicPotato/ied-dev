@@ -56,8 +56,8 @@ namespace IED
 			Game::FormID                     a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		void QueueReSinkAnimationGraphs(
-			Game::FormID a_actor);
+		/*void QueueReSinkAnimationGraphs(
+			Game::FormID a_actor);*/
 
 	protected:
 		void CleanupActorObjectsImpl(

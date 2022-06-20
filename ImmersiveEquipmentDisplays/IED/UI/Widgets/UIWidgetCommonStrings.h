@@ -100,6 +100,8 @@ namespace IED
 			BipedSlots                          = 2089,
 			GeometryVisible                     = 2090,
 			XP32SkeletonWarning                 = 2091,
+			Mounting                            = 2092,
+			Mounted                             = 2093,
 		};
 	}
 }

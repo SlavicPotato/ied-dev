@@ -25,7 +25,9 @@ namespace IED
 			UIInputHandler,
 			::Events::EventSink<Handlers::KeyEvent>,
 			::Events::EventSink<Events::D3D11CreateEventPost>,
-			::Events::EventSink<Events::IDXGISwapChainPresent>
+			::Events::EventSink<Events::IDXGISwapChainPresent>,
+			::Events::EventSink<Events::PrepareGameDataEvent>,
+			TaskDelegateFixed
 		{
 			struct UIFontUpdateData
 			{
@@ -91,7 +93,6 @@ namespace IED
 				Tp&&         a_task) requires
 				std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>;
 
-			static void RemoveTask(std::int32_t a_id);
 			static void QueueRemoveTask(std::int32_t a_id);
 
 			static void EvaluateTaskState();
@@ -189,6 +190,11 @@ namespace IED
 				return m_Instance.m_imInitialized;
 			}
 
+			[[nodiscard]] static inline constexpr auto GetWindowHandle() noexcept
+			{
+				return m_Instance.m_info.hWnd;
+			}
+
 			FN_NAMEPROC("UI");
 
 		private:
@@ -199,6 +205,9 @@ namespace IED
 			virtual void Receive(const Handlers::KeyEvent& a_evn) override;
 			virtual void Receive(const Events::D3D11CreateEventPost& a_evn) override;
 			virtual void Receive(const Events::IDXGISwapChainPresent& a_evn) override;
+			virtual void Receive(const Events::PrepareGameDataEvent& a_evn) override;
+
+			virtual void Run() override;
 
 			static LRESULT CALLBACK WndProc_Hook(
 				HWND   hWnd,
@@ -267,6 +276,7 @@ namespace IED
 
 			struct
 			{
+				HWND   hWnd{ nullptr };
 				UIRect bufferSize;
 			} m_info;
 

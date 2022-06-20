@@ -160,38 +160,6 @@ namespace IED
 				}
 			}
 
-			void QueueAttach(
-				Game::FormID             a_target,
-				Data::ConfigClass        a_class,
-				const stl::fixed_string& a_key,
-				const stl::fixed_string& a_name)
-			{
-				switch (a_class)
-				{
-				case ConfigClass::Actor:
-					Initializer::GetController()->QueueUpdateAttachCustom(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				case ConfigClass::NPC:
-					Initializer::GetController()->QueueUpdateAttachCustomNPC(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				case ConfigClass::Race:
-					Initializer::GetController()->QueueUpdateAttachCustomRace(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				}
-			}
-
 			void QueueEvaluate(
 				Game::FormID      a_target,
 				Data::ConfigClass a_class)

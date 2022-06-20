@@ -216,12 +216,6 @@ namespace IED
 					a_handle,
 					params->slot);
 				break;
-			case PostChangeAction::AttachNode:
-				m_controller.QueueAttachSlotNode(
-					a_handle,
-					params->slot,
-					true);
-				break;
 			}
 		}
 

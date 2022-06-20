@@ -233,7 +233,7 @@ namespace IED
 			kTresspassing        = 19,
 			kIsCommanded         = 20,
 			kParalyzed           = 21,
-			kIsOnMount           = 22,
+			kIsRidingMount       = 22,
 			kHumanoidSkeleton    = 23,
 			kIsPlayer            = 24,
 			kBribedByPlayer      = 25,
@@ -242,6 +242,7 @@ namespace IED
 			kProtected           = 28,
 			kSitting             = 29,
 			kSleeping            = 30,
+			kBeingRidden         = 31,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -611,7 +612,7 @@ namespace IED
 				std::is_convertible_v<typename T::key_type, Game::FormID>,
 			"FormID <-> key_type must be convertible");
 
-		const mapped_type* get_actor(
+		constexpr const mapped_type* get_actor(
 			const key_type& a_key,
 			const T&        a_data) const
 		{
@@ -627,7 +628,7 @@ namespace IED
 			return *actor;
 		}
 
-		const mapped_type* get_npc(
+		constexpr const mapped_type* get_npc(
 			const key_type& a_key,
 			const T&        a_data) const
 		{
@@ -643,7 +644,7 @@ namespace IED
 			return *npc;
 		}
 
-		const mapped_type* get_race(
+		constexpr const mapped_type* get_race(
 			const key_type& a_key,
 			const T&        a_data) const
 		{

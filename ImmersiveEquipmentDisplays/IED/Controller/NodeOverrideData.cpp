@@ -150,6 +150,7 @@ namespace IED
 								 "MOV WeaponSwordDefault",
 								 "Sword",
 								 AnimationWeaponSlot::Sword,
+								 I3DIModelID::kOneHandedSword,
 								 true,
 								 {
 
@@ -170,6 +171,7 @@ namespace IED
 									 "MOV WeaponSwordLeftDefault",
 									 "Sword Left",
 									 AnimationWeaponSlot::SwordLeft,
+									 I3DIModelID::kOneHandedSword,
 									 false,
 									 {
 
@@ -190,6 +192,7 @@ namespace IED
 							   "MOV WeaponAxeDefault",
 							   "Axe",
 							   AnimationWeaponSlot::Axe,
+							   I3DIModelID::kOneHandedAxe,
 							   true,
 							   {
 
@@ -207,6 +210,7 @@ namespace IED
 								   "MOV WeaponAxeLeftDefault",
 								   "Axe Left",
 								   AnimationWeaponSlot::AxeLeft,
+								   I3DIModelID::kOneHandedAxe,
 								   false,
 								   {
 
@@ -224,6 +228,7 @@ namespace IED
 								  "MOV WeaponDaggerDefault",
 								  "Dagger",
 								  AnimationWeaponSlot::Dagger,
+								  I3DIModelID::kDagger,
 								  true,
 								  {
 
@@ -242,6 +247,7 @@ namespace IED
 									  "MOV WeaponDaggerLeftDefault",
 									  "Dagger Left",
 									  AnimationWeaponSlot::DaggerLeft,
+									  I3DIModelID::kDagger,
 									  false,
 									  {
 
@@ -260,6 +266,7 @@ namespace IED
 								"MOV WeaponMaceDefault",
 								"Mace",
 								AnimationWeaponSlot::Mace,
+								I3DIModelID::kMace,
 								true,
 								{
 
@@ -275,6 +282,7 @@ namespace IED
 									"MOV WeaponMaceLeftDefault",
 									"Mace Left",
 									AnimationWeaponSlot::MaceLeft,
+									I3DIModelID::kMace,
 									false,
 									{
 
@@ -290,6 +298,7 @@ namespace IED
 								 "MOV WeaponStaffDefault",
 								 "Staff",
 								 AnimationWeaponSlot::None,
+								 I3DIModelID::kStaff,
 								 false,
 								 {
 
@@ -305,6 +314,7 @@ namespace IED
 									 "MOV WeaponStaffLeftDefault",
 									 "Staff Left",
 									 AnimationWeaponSlot::None,
+									 I3DIModelID::kStaff,
 									 false,
 									 {
 
@@ -320,6 +330,7 @@ namespace IED
 								"MOV WeaponBackDefault",
 								"Two-Handed",
 								AnimationWeaponSlot::TwoHanded,
+								I3DIModelID::kTwoHanded,
 								true,
 								{
 
@@ -334,25 +345,26 @@ namespace IED
 
 							} },
 
-			{ "WeaponBackIED", {
+			{ "WeaponBackExtra", {
 
-								   "WeaponBackIED",
-								   "MOV WeaponBackDefault",
-								   "Two-Handed IED",
-								   AnimationWeaponSlot::None,
-								   false,
-								   {
+									 "WeaponBackExtra",
+									 "MOV WeaponBackDefault",
+									 "Two-Handed Extra",
+									 AnimationWeaponSlot::None,
+									 I3DIModelID::kTwoHanded,
+									 false,
+									 {
 
-									   { "MOV WeaponBackDefault", { "Two-Handed" } },
-									   { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
-									   { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
-									   { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
-									   { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
-									   { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
+										 { "MOV WeaponBackDefault", { "Two-Handed" } },
+										 { "MOV WeaponBackSWP", { "Two-Handed SWP" } },
+										 { "MOV WeaponBackFSM", { "Two-Handed FSM" } },
+										 { "MOV WeaponBackAxeMaceDefault", { "Two-Handed Axe/Mace" } },
+										 { "MOV WeaponBackAxeMaceSWP", { "Two-Handed Axe/Mace SWP" } },
+										 { "MOV WeaponBackAxeMaceFSM", { "Two-Handed Axe/Mace FSM" } }
 
-								   }
+									 }
 
-							   } },
+								 } },
 
 			{ "WeaponBow", {
 
@@ -360,6 +372,7 @@ namespace IED
 							   "MOV WeaponBowDefault",
 							   "Bow",
 							   AnimationWeaponSlot::None,
+							   I3DIModelID::kBow,
 							   true,
 							   {
 								   { "MOV WeaponBowDefault", { "Bow" } },
@@ -372,23 +385,24 @@ namespace IED
 
 						   } },
 
-			{ "WeaponBowIED", {
+			{ "WeaponBowExtra", {
 
-								  "WeaponBowIED",
-								  "MOV WeaponBowDefault",
-								  "Bow IED",
-								  AnimationWeaponSlot::None,
-								  false,
-								  {
-									  { "MOV WeaponBowDefault", { "Bow" } },
-									  { "MOV WeaponBowChesko", { "Bow Chesko" } },
-									  { "MOV WeaponBowBetter", { "Bow Better" } },
-									  { "MOV WeaponBowFSM", { "Bow FSM" } },
-									  { "MOV WeaponCrossbowDefault", { "Crossbow" } },
-									  { "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
-								  }
+									"WeaponBowExtra",
+									"MOV WeaponBowDefault",
+									"Bow Extra",
+									AnimationWeaponSlot::None,
+									I3DIModelID::kBow,
+									false,
+									{
+										{ "MOV WeaponBowDefault", { "Bow" } },
+										{ "MOV WeaponBowChesko", { "Bow Chesko" } },
+										{ "MOV WeaponBowBetter", { "Bow Better" } },
+										{ "MOV WeaponBowFSM", { "Bow FSM" } },
+										{ "MOV WeaponCrossbowDefault", { "Crossbow" } },
+										{ "MOV WeaponCrossbowChesko", { "Crossbow Chesko" } },
+									}
 
-							  } },
+								} },
 
 			{ "QUIVER", {
 
@@ -396,6 +410,7 @@ namespace IED
 							"MOV QUIVERDefault",
 							"Quiver",
 							AnimationWeaponSlot::Quiver,
+							I3DIModelID::kQuiver,
 							true,
 							{
 								{ "MOV QUIVERDefault", { "Quiver" } },
@@ -416,6 +431,7 @@ namespace IED
 								"MOV ShieldBackDefault",
 								"Shield",
 								AnimationWeaponSlot::None,
+								I3DIModelID::kShield,
 								false,
 								{
 

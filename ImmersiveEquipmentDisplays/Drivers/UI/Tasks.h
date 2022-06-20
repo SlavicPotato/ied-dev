@@ -70,6 +70,8 @@ namespace IED
 
 		protected:
 			virtual bool Run() = 0;
+			virtual void PrepareGameData(){};
+			virtual void Render(){};
 
 			struct renderTaskOptions_t
 			{

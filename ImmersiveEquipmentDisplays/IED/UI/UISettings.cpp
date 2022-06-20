@@ -162,7 +162,7 @@ namespace IED
 				}
 				DrawTip(UITip::BhkAnims);
 
-				if (data.hkWeaponAnimations)
+				/*if (data.hkWeaponAnimations)
 				{
 					ImGui::Indent();
 
@@ -175,7 +175,7 @@ namespace IED
 					DrawTip(UITip::AnimEventForwarding);
 
 					ImGui::Unindent();
-				}
+				}*/
 
 				ImGui::Spacing();
 

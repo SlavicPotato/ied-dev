@@ -11,7 +11,9 @@
 #include "Widgets/UIStylePresetSelectorWidget.h"
 
 #include "Controls/UICollapsibles.h"
+
 #include "Window/UIWindow.h"
+#include "Window/UIWindowBase.h"
 
 #include "IED/ConfigCommon.h"
 
@@ -23,6 +25,7 @@ namespace IED
 	{
 		class UISettings :
 			public UIWindow,
+			public UIWindowBase,
 			UICollapsibles,
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,

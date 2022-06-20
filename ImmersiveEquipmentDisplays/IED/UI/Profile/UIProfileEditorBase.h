@@ -4,7 +4,9 @@
 
 #include "IED/UI/Controls/UIAlignment.h"
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
+
 #include "IED/UI/Window/UIWindow.h"
+#include "IED/UI/Window/UIWindowBase.h"
 
 namespace IED
 {
@@ -13,6 +15,7 @@ namespace IED
 		template <class T>
 		class UIProfileEditorBase :
 			public UIWindow,
+			public UIWindowBase,
 			virtual protected UIAlignment,
 			public UIProfileBase<T>
 		{

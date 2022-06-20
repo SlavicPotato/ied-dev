@@ -275,6 +275,30 @@ namespace IED
 				}
 			}
 
+			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
+			{
+				return static_cast<TESObjectARMO*>(a_form)->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;
+			}
+
+			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESForm* a_form) noexcept
+			{
+				switch (a_form->formType)
+				{
+				case TESObjectWEAP::kTypeID:
+					return GetItemSlotExtra(static_cast<TESObjectWEAP*>(a_form));
+				case TESObjectARMO::kTypeID:
+					return GetItemSlotExtraGeneric(static_cast<TESObjectARMO*>(a_form));
+				case TESObjectLIGH::kTypeID:
+					return GetItemSlotExtra(static_cast<TESObjectLIGH*>(a_form));
+				case TESAmmo::kTypeID:
+					return ObjectSlotExtra::kAmmo;
+				case SpellItem::kTypeID:
+					return ObjectSlotExtra::kSpell;
+				default:
+					return ObjectSlotExtra::kNone;
+				}
+			}
+
 			inline static constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())

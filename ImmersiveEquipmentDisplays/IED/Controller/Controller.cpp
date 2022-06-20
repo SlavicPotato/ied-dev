@@ -1369,80 +1369,6 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueAttachSlotNode(
-		Game::FormID a_actor,
-		ObjectSlot   a_slot,
-		bool         a_evalIfNone)
-	{
-		ITaskPool::AddTask([this, a_actor, a_slot, a_evalIfNone] {
-			stl::scoped_lock lock(m_lock);
-
-			AttachSlotNodeImpl(
-				a_actor,
-				a_slot,
-				a_evalIfNone);
-		});
-	}
-
-	void Controller::QueueAttachSlotNodeNPC(
-		Game::FormID a_npc,
-		ObjectSlot   a_slot,
-		bool         a_evalIfNone)
-	{
-		ITaskPool::AddTask([this, a_npc, a_slot, a_evalIfNone]() {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				if (e.second.IsActorNPCOrTemplate(a_npc))
-				{
-					AttachSlotNodeImpl(
-						e.second,
-						a_slot,
-						a_evalIfNone);
-				}
-			}
-		});
-	}
-
-	void Controller::QueueAttachSlotNodeRace(
-		Game::FormID a_race,
-		ObjectSlot   a_slot,
-		bool         a_evalIfNone)
-	{
-		ITaskPool::AddTask([this, a_race, a_slot, a_evalIfNone]() {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				if (e.second.IsActorRace(a_race))
-				{
-					AttachSlotNodeImpl(
-						e.second,
-						a_slot,
-						a_evalIfNone);
-				}
-			}
-		});
-	}
-
-	void Controller::QueueAttachSlotNodeAll(
-		ObjectSlot a_slot,
-		bool       a_evalIfNone)
-	{
-		ITaskPool::AddTask([this, a_slot, a_evalIfNone] {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				AttachSlotNodeImpl(
-					e.second,
-					a_slot,
-					a_evalIfNone);
-			}
-		});
-	}
-
 	void Controller::QueueResetAAAll()
 	{
 		ITaskPool::AddTask([this] {
@@ -1948,204 +1874,6 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueUpdateAttachCustom(
-		Game::FormID             a_actor,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomNPC(
-		Game::FormID             a_npc,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomRace(
-		Game::FormID             a_race,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustom(
-		Game::FormID             a_actor,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				a_pkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachNPC(
-		Game::FormID             a_npc,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				a_pkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachRace(
-		Game::FormID             a_race,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				a_pkey,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustom(
-		Game::FormID a_actor,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomRace(
-		Game::FormID a_race,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_race, a_class] {
-			stl::scoped_lock lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				MakeAttachUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomAll(
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					a_pkey,
-					a_vkey,
-					MakeAttachUpdateFunc());
-			}
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomAll(
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_class, a_pkey] {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					a_pkey,
-					MakeAttachUpdateFunc());
-			}
-		});
-	}
-
-	void Controller::QueueUpdateAttachCustomAll(
-		ConfigClass a_class)
-	{
-		ITaskPool::AddTask([this, a_class] {
-			stl::scoped_lock lock(m_lock);
-
-			for (auto& e : m_objects)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					MakeAttachUpdateFunc());
-			}
-		});
-	}
-
 	void Controller::QueueEvaluateNearbyActors(bool a_removeFirst)
 	{
 		ITaskPool::AddTask([this, a_removeFirst] {
@@ -2470,6 +2198,8 @@ namespace IED
 
 		state->UpdateFlags(a_config);
 
+		bool updateTransform = false;
+
 		if (state->nodeDesc.name != a_config.targetNode.name)
 		{
 			AttachNodeImpl(
@@ -2478,6 +2208,8 @@ namespace IED
 				a_config.flags.test(BaseFlags::kReferenceMode),
 				a_entry);
 
+			updateTransform = true;
+
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
@@ -2485,12 +2217,17 @@ namespace IED
 		{
 			state->transform.Update(a_config);
 
+			updateTransform = true;
+
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+		}
+
+		if (updateTransform)
+		{
 			UpdateObjectTransform(
 				state->transform,
 				state->nodes.rootNode,
 				state->nodes.ref);
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
@@ -3142,7 +2879,7 @@ namespace IED
 								if (configBase_t::do_match(
 										a_params.collector.data,
 										a_config.bipedFilterConditions,
-										{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
+										{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
 										a_params,
 										true))
 								{
@@ -3180,7 +2917,7 @@ namespace IED
 								if (configBase_t::do_match(
 										a_params.collector.data,
 										a_config.bipedFilterConditions,
-										{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
+										{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
 										a_params,
 										true))
 								{
@@ -3765,8 +3502,8 @@ namespace IED
 			a_handle,
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
-			m_config.settings.data.hkWeaponAnimations &&
-				m_config.settings.data.animEventForwarding,
+			/*m_config.settings.data.hkWeaponAnimations &&
+				m_config.settings.data.animEventForwarding,*/
 			m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 		if (a_handle != objects.GetHandle())
@@ -3808,8 +3545,8 @@ namespace IED
 					a_handle,
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
-					m_config.settings.data.hkWeaponAnimations &&
-						m_config.settings.data.animEventForwarding,
+					/*m_config.settings.data.hkWeaponAnimations &&
+						m_config.settings.data.animEventForwarding,*/
 					m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 				EvaluateImpl(
@@ -4525,40 +4262,6 @@ namespace IED
 		};
 	}
 
-	auto Controller::MakeAttachUpdateFunc()
-		-> updateActionFunc_t
-	{
-		return {
-			[this](
-				const actorInfo_t&         a_info,
-				const configCustomEntry_t& a_confEntry,
-				objectEntryCustom_t&       a_entry) {
-				if (!a_entry.state)
-				{
-					return false;
-				}
-				else
-				{
-					auto& conf = GetConfigForActor(
-						a_info,
-						a_confEntry(a_info.sex),
-						a_info.objects.GetSlots(),
-						a_entry);
-
-					AttachNodeImpl(
-						a_info,
-						a_info.npcRoot,
-						conf.targetNode,
-						conf.flags.test(BaseFlags::kReferenceMode),
-						a_entry);
-
-					return true;
-				}
-			},
-			true
-		};
-	}
-
 	const configBaseValues_t& Controller::GetConfigForActor(
 		const actorInfo_t&                            a_info,
 		const configCustom_t&                         a_config,
@@ -5170,129 +4873,6 @@ namespace IED
 		}
 
 		UpdateIfPaused(a_info.root);
-	}
-
-	void Controller::AttachSlotNodeImpl(
-		Game::FormID a_actor,
-		ObjectSlot   a_slot,
-		bool         a_evalIfNone)
-	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
-		{
-			AttachSlotNodeImpl(it->second, a_slot, a_evalIfNone);
-		}
-	}
-
-	bool Controller::AttachSlotNodeImpl(
-		ActorObjectHolder& a_record,
-		ObjectSlot         a_slot,
-		bool               a_evalIfNone)
-	{
-		auto info = LookupCachedActorInfo(a_record);
-		if (!info)
-		{
-			return false;
-		}
-
-		if (IsActorBlockedImpl(info->actor->formID))
-		{
-			return false;
-		}
-
-		if (a_slot >= ObjectSlot::kMax)
-		{
-			return false;
-		}
-		else
-		{
-			auto& objectEntry = a_record.GetSlot(a_slot);
-
-			if (!objectEntry.state)
-			{
-				if (a_evalIfNone)
-				{
-					EvaluateImpl(
-						info->root,
-						info->npcRoot,
-						info->actor,
-						info->handle,
-						a_record,
-						ControllerUpdateFlags::kNone);
-
-					return objectEntry.state.get() != nullptr;
-				}
-				else
-				{
-					return false;
-				}
-			}
-			else
-			{
-				bool result = false;
-
-				configStoreSlot_t::holderCache_t hc;
-
-				auto config = m_config.active.slot.GetActor(
-					info->actor->formID,
-					info->npcOrTemplate->formID,
-					info->race->formID,
-					a_slot,
-					hc);
-
-				if (config)
-				{
-					auto& conf = GetConfigForActor(
-						*info,
-						config->get(info->sex),
-						objectEntry);
-
-					result = AttachNodeImpl(
-						*info,
-						info->npcRoot,
-						conf.targetNode,
-						conf.flags.test(BaseFlags::kReferenceMode),
-						objectEntry);
-				}
-
-				return result;
-			}
-		}
-	}
-
-	bool Controller::AttachNodeImpl(
-		const actorInfo_t&    a_info,
-		NiNode*               a_root,
-		const NodeDescriptor& a_node,
-		bool                  a_atmReference,
-		objectEntryBase_t&    a_entry)
-	{
-		if (!a_node)
-		{
-			return false;
-		}
-
-		bool result = AttachNodeImpl(
-			a_root,
-			a_node,
-			a_atmReference,
-			a_entry);
-
-		if (result)
-		{
-			RequestEvaluateTransformsActor(a_info.actor->formID, false);
-			UpdateIfPaused(a_info.root);
-		}
-		else
-		{
-			Warning(
-				"[%.8X] [race: %.8X] couldn't attach to node '%s'",
-				a_info.actor->formID.get(),
-				a_info.race->formID.get(),
-				a_node.name.c_str());
-		}
-
-		return result;
 	}
 
 	bool Controller::AttachNodeImpl(

@@ -3,6 +3,7 @@
 #include "UINodeOverrideTabPanel.h"
 
 #include "IED/UI/Window/UIWindow.h"
+#include "IED/UI/Window/UIWindowBase.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -15,6 +16,7 @@ namespace IED
 	{
 		class UINodeOverrideEditorWindow :
 			public UIWindow,
+			public UIWindowBase,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_noe";

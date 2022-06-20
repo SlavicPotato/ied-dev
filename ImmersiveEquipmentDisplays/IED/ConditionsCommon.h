@@ -64,7 +64,7 @@ namespace IED
 				return a_params.actor->flags2.test(Actor::Flags2::kIsCommandedActor);
 			case Data::ExtraConditionType::kParalyzed:
 				return a_params.actor->flags1.test(Actor::Flags1::kParalyzed);
-			case Data::ExtraConditionType::kIsOnMount:
+			case Data::ExtraConditionType::kIsRidingMount:
 				return a_params.is_on_mount();
 			case Data::ExtraConditionType::kHumanoidSkeleton:
 				return has_humanoid_skeleton(a_params);
@@ -82,6 +82,8 @@ namespace IED
 				return a_params.actor->IsSitting();
 			case Data::ExtraConditionType::kSleeping:
 				return a_params.actor->IsSleeping();
+			case Data::ExtraConditionType::kBeingRidden:
+				return a_params.is_ridden();
 			default:
 				return false;
 			}
@@ -667,6 +669,63 @@ namespace IED
 					}
 
 					auto race = mountedActor->GetRace();
+					if (!race)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch2) ==
+					    (a_match.keyword.get_id() == race->formID))
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
+		template <class Tm, class Tf>
+		constexpr bool match_mounted_by(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (a_params.is_ridden())
+			{
+				if (a_match.form.get_id())
+				{
+					auto& mountedByActor = a_params.get_mounted_by_actor();
+					if (!mountedByActor)
+					{
+						return false;
+					}
+
+					auto base = mountedByActor->GetActorBase();
+					if (!base)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == base->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.keyword.get_id())  // actually race
+				{
+					auto& mountedByActor = a_params.get_mounted_by_actor();
+					if (!mountedByActor)
+					{
+						return false;
+					}
+
+					auto race = mountedByActor->GetRace();
 					if (!race)
 					{
 						return false;

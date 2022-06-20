@@ -8,4 +8,5 @@ namespace IED
 	GlobalProfileManager::ProfileManagerCustom       GlobalProfileManager::m_customManager;
 	GlobalProfileManager::ProfileManagerNodeOverride GlobalProfileManager::m_nodeOverrideManager;
 	GlobalProfileManager::ProfileManagerFormFilter   GlobalProfileManager::m_formFilterManager;
+	GlobalProfileManager::ProfileManagerModel        GlobalProfileManager::m_modelManager(".obj");
 }

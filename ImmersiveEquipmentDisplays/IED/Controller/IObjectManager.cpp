@@ -136,7 +136,7 @@ namespace IED
 		return true;
 	}
 
-	void IObjectManager::QueueReSinkAnimationGraphs(
+	/*void IObjectManager::QueueReSinkAnimationGraphs(
 		Game::FormID a_actor)
 	{
 		ITaskPool::AddPriorityTask([this, a_actor]() {
@@ -148,7 +148,7 @@ namespace IED
 				it->second.ReSinkAnimationGraphs();
 			}
 		});
-	}
+	}*/
 
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR*                   a_actor,
