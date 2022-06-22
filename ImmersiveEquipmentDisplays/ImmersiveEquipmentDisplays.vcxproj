@@ -429,7 +429,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT FM|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SKMP_TIMESTAMP_LOGS;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;_XM_AVX_INTRINSICS_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NIMATH_USE_SSE_INTRIN;SKMP_TIMESTAMP_LOGS;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;_XM_AVX_INTRINSICS_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
@@ -671,6 +671,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
     <ClInclude Include="IED\Controller\SkeletonID.h" />
     <ClInclude Include="IED\D3D\D3DAssets.h" />
+    <ClInclude Include="IED\D3D\D3DBoundingOrientedBox.h" />
     <ClInclude Include="IED\D3D\D3DEffect.h" />
     <ClInclude Include="IED\D3D\D3DPrimitiveBatch.h" />
     <ClInclude Include="IED\D3D\D3DCommon.h" />
@@ -708,17 +709,17 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIActorObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DICommonData.h" />
-    <ClInclude Include="IED\UI\I3DI\I3DIDragDropController.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDragDropResult.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDraggable.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDropTarget.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIInputHelpers.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIModelObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObject.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIObjectBase.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObjectController.h" />
-    <ClInclude Include="IED\UI\I3DI\I3DIObjectSelector.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIActorContext.h" />
-    <ClInclude Include="IED\UI\I3DI\I3DIActorSelector.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIAssetCache.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIMain.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIPopupWindow.h" />
@@ -1111,6 +1112,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
     <ClCompile Include="IED\Controller\SkeletonID.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />
+    <ClCompile Include="IED\D3D\D3DBoundingOrientedBox.cpp" />
     <ClCompile Include="IED\D3D\D3DPrimitiveBatch.cpp" />
     <ClCompile Include="IED\D3D\D3DCommon.cpp" />
     <ClCompile Include="IED\D3D\D3DModelData.cpp" />
@@ -1142,13 +1144,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorContext.cpp" />
-    <ClCompile Include="IED\UI\I3DI\I3DIActorSelector.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIActorObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIAssetCache.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DICommonData.cpp" />
-    <ClCompile Include="IED\UI\I3DI\I3DIDragDropController.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIDraggable.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIDropTarget.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIMain.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIModelObject.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIObjectController.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIPopupWindow.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIWeaponNode.cpp" />

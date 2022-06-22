@@ -9,11 +9,11 @@ namespace IED
 	namespace UI
 	{
 		class I3DIDropTarget;
-		class I3DIDragDropController;
+		class I3DIObjectController;
 
 		class I3DIDraggable
 		{
-			friend class I3DIDragDropController;
+			friend class I3DIObjectController;
 
 		public:
 			inline static constexpr std::uint32_t DRAGGABLE_TYPE = static_cast<std::uint32_t>(-1);

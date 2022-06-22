@@ -3438,7 +3438,7 @@ namespace IED
 			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool                                     a_exists)
 		{
-			if (ImGui::CheckboxFlagsT(
+			/*if (ImGui::CheckboxFlagsT(
 					"X##ctl",
 					stl::underlying(std::addressof(a_entry.offsetFlags.value)),
 					stl::underlying(Data::NodeOverrideOffsetFlags::kAdjustX)))
@@ -3480,7 +3480,7 @@ namespace IED
 					a_data,
 					a_params,
 					a_exists);
-			}
+			}*/
 
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
 

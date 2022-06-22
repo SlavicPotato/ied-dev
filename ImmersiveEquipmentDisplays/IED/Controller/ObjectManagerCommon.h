@@ -10,30 +10,7 @@ namespace IED
 			{
 				scale    = a_in.scale;
 				position = a_in.position;
-
-				if (a_in.rotation)
-				{
-					if (a_in.xfrmFlags.test(ConfigTransformFlags::kExtrinsicRotation))
-					{
-						rotation->SetEulerAnglesExtrinsic(
-							a_in.rotation->x,
-							a_in.rotation->y,
-							a_in.rotation->z);
-					}
-					else
-					{
-						rotation->SetEulerAnglesIntrinsic(
-							a_in.rotation->x,
-							a_in.rotation->y,
-							a_in.rotation->z);
-					}
-
-					rotation.mark(true);
-				}
-				else
-				{
-					rotation.clear();
-				}
+				rotation = a_in.rotationMatrix;
 
 				tag = a_in;
 			}

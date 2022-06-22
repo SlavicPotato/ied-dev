@@ -105,7 +105,7 @@ namespace IED
 	}
 
 	void IEquipment::selectedItem_t::consume(
-		SlotItemCandidates::storage_type& a_candidates)
+		SlotItemCandidates::storage_type& a_candidates) const
 	{
 		auto& it = *item;
 

@@ -76,12 +76,4 @@ namespace IED
 		}
 	}
 
-	void D3DObject::Draw(
-		D3DCommon&      a_scene,
-		const XMMATRIX& a_view,
-		const XMMATRIX& a_projection)
-	{
-		SetMatrices(a_view, a_projection);
-		Draw(a_scene);
-	}
 }

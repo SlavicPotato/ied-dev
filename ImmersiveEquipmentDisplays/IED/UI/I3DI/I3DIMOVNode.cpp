@@ -3,6 +3,7 @@
 #include "I3DIMOVNode.h"
 
 #include "I3DIActorContext.h"
+#include "I3DIActorObject.h"
 #include "I3DIWeaponNode.h"
 
 #include "Common/VectorMath.h"
@@ -15,11 +16,12 @@ namespace IED
 	{
 		ID3IMOVNode::ID3IMOVNode(
 			ID3D11Device*                        a_device,
+			ID3D11DeviceContext*                 a_context,
 			const std::shared_ptr<D3DModelData>& a_data,
 			const stl::fixed_string&             a_name,
 			I3DIWeaponNode&                      a_acceptedCandidate,
 			I3DIActorContext&                    a_actorContext) :
-			I3DIObject(a_device, a_data),
+			I3DIModelObject(a_device, a_context, a_data),
 			I3DIDropTarget(*this),
 			m_name(a_name),
 			m_acceptedCandidate(a_acceptedCandidate),
@@ -55,10 +57,14 @@ namespace IED
 
 			//controller.GetConfigStore().
 
-
 			controller.RequestEvaluate(actorid, false, true, true);
 
 			return false;
+		}
+
+		DirectX::XMVECTOR XM_CALLCONV ID3IMOVNode::GetParentCenter() const
+		{
+			return DirectX::XMLoadFloat3(std::addressof(m_actorContext.GetActorObject()->GetAsActorObject()->GetActorBound().Center));
 		}
 	}
 }

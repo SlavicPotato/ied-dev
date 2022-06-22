@@ -2,6 +2,7 @@
 
 #include "I3DIMain.h"
 
+#include "I3DIActorObject.h"
 #include "I3DIInputHelpers.h"
 
 #include "Drivers/Render.h"
@@ -36,15 +37,17 @@ namespace IED
 
 			if (!m_data)
 			{
-				m_data = std::make_unique<Data>(
+				m_data = std::make_unique<I3DICommonData>(
 					rd.GetDevice().Get(),
 					rd.GetContext().Get(),
-					rd.GetSwapChainInfo());
+					rd.GetSwapChainInfo(),
+					m_actorContext);
 
 				m_data->scene.EnableAlpha(true);
 				m_data->scene.EnableDepth(true);
 
 				m_data->batchNoDepth.EnableDepth(false);
+				m_data->batchDepth.EnableDepth(true);
 			}
 
 			ImGui::PushID(WINDOW_ID);
@@ -53,7 +56,7 @@ namespace IED
 
 			m_data->UpdateRay();
 
-			if (!io.WantCaptureMouse)
+			/*if (!io.WantCaptureMouse)
 			{
 				if (auto h = m_data->actorSelector.GetHovered(
 						m_data->ray.origin,
@@ -69,7 +72,14 @@ namespace IED
 						{
 							if (!m_actorContext || m_actorContext->GetActorFormID() != h->first)
 							{
-								m_actorContext = std::make_unique<I3DIActorContext>(*m_data, m_controller, h->first);
+								m_actorContext = std::make_unique<
+									I3DIActorContext>(
+									*m_data,
+									m_controller,
+									h->first,
+									XMLoadFloat3(std::addressof(h->second.bound.Center)));
+
+								m_controller.QueueSendAnimationEventToActor(h->first, "idlestaticposeastart");
 							}
 						}
 
@@ -79,8 +89,6 @@ namespace IED
 							m_data->scene,
 							h->second,
 							origin);
-
-						//ImGui::SetNextWindowPos({ pos.x, pos.y }, ImGuiCond_Always, { 0.5f, 1.f });
 
 						m_data->commonPopup.SetLineWorldOrigin(origin);
 						m_data->commonPopup.SetPosition(pos, { 0.5f, 1.f });
@@ -93,12 +101,41 @@ namespace IED
 						});
 					}
 				}
+			}*/
+
+			if (m_data->queuedActor)
+			{
+				if (m_actorContext)
+				{
+					m_actorContext->UnregisterObjects(m_data->objectController);
+					m_actorContext.reset();
+				}
+
+				auto actorfid = *m_data->queuedActor;
+				m_data->queuedActor.reset();
+
+				auto it = m_data->actors.find(actorfid);
+				if (it != m_data->actors.end())
+				{
+					m_actorContext = std::make_unique<
+						I3DIActorContext>(
+						*m_data,
+						m_controller,
+						it->first,
+						it->second);
+
+					m_actorContext->RegisterObjects(m_data->objectController);
+
+					m_controller.QueueSendAnimationEventToActor(actorfid, "idlestaticposeastart");
+				}
 			}
 
 			if (m_actorContext)
 			{
 				if (m_actorContext->LastUpdateFailed())
+				//m_actorContext->GetActorObject()->IsActorLost())
 				{
+					m_actorContext->UnregisterObjects(m_data->objectController);
 					m_actorContext.reset();
 				}
 				else
@@ -106,6 +143,10 @@ namespace IED
 					m_actorContext->Draw(*m_data);
 				}
 			}
+
+			m_data->objectController.Run(*m_data);
+
+			ImGui::PopID();
 
 			auto& ui = m_controller.GetConfigStore().settings.data.ui;
 
@@ -115,8 +156,6 @@ namespace IED
 				m_controller.UIGetRenderTask()->SetLock(ui.enableControlLock);
 				Drivers::UI::EvaluateTaskState();
 			}
-
-			ImGui::PopID();
 		}
 
 		void I3DIMain::PrepareGameData()
@@ -136,7 +175,7 @@ namespace IED
 				return;
 			}
 
-			m_data->actorSelector.Update(m_controller);
+			UpdateActorObjects();
 
 			if (m_actorContext)
 			{
@@ -166,7 +205,7 @@ namespace IED
 			m_data->scene.PrepareForDraw();
 
 			m_data->batchNoDepth.Draw(m_data->scene);
-			m_data->actorSelector.Render(m_data->scene);
+			m_data->batchDepth.Draw(m_data->scene);
 
 			if (m_actorContext)
 			{
@@ -182,6 +221,59 @@ namespace IED
 		{
 			m_actorContext.reset();
 			m_data.reset();
+		}
+
+		void I3DIMain::UpdateActorObjects()
+		{
+			for (const auto& [i, e] : m_controller.GetData())
+			{
+				auto& actor = e.GetActor();
+
+				if (!e.IsCellAttached() || !actor->formID)
+				{
+					auto it = m_data->actors.find(i);
+					if (it != m_data->actors.end())
+					{
+						m_data->objectController.UnregisterObject(it->second);
+						m_data->actors.erase(it);
+
+						_DMESSAGE("lost (1): %.8X", i);
+					}
+
+					continue;
+				}
+
+				auto it = m_data->actors.find(i);
+
+				if (it == m_data->actors.end())
+				{
+					auto object = std::make_shared<I3DIActorObject>(i);
+
+					it = m_data->actors.try_emplace(i, object).first;
+
+					m_data->objectController.RegisterObject(object);
+
+					_DMESSAGE("acq: %.8X", i);
+				}
+
+				it->second->Update(e);
+			}
+
+			for (auto it = m_data->actors.begin(); it != m_data->actors.end();)
+			{
+				if (!m_controller.GetData().contains(it->first))
+				{
+					_DMESSAGE("lost (2): %.8X", it->first);
+
+					m_data->objectController.UnregisterObject(it->second);
+
+					it = m_data->actors.erase(it);
+				}
+				else
+				{
+					++it;
+				}
+			}
 		}
 
 		bool I3DIMain::GetCameraPV()

@@ -22,7 +22,7 @@ namespace IED
 
 		void ApplyEffect(ID3D11DeviceContext* a_context);
 
-		[[nodiscard]] inline constexpr auto& GetWorldMatrix() const noexcept
+		[[nodiscard]] inline constexpr auto XM_CALLCONV GetWorldMatrix() const noexcept
 		{
 			return m_world;
 		}

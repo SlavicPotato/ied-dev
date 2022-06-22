@@ -7,7 +7,7 @@ namespace IED
 {
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 2;
+		static constexpr std::uint32_t CURRENT_VERSION = 3;
 
 		template <>
 		bool Parser<Data::configNodeOverrideOffsetList_t>::Parse(
@@ -25,6 +25,14 @@ namespace IED
 				if (!parser.Parse(e, a_out.emplace_back(), version))
 				{
 					return false;
+				}
+			}
+
+			if (version < 3)
+			{
+				for (auto& e : a_out)
+				{
+					e.strip_adjust_axis_flags_and_reset();
 				}
 			}
 

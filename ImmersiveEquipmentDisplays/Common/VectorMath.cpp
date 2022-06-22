@@ -119,7 +119,7 @@ namespace VectorMath
 			a_proj,
 			a_view,
 			s_identity);
-	
+
 		a_rayOrigin = XMVector3Unproject(
 			XMVectorSet(a_x, a_y, 0.0f, 0.0f),
 			a_viewport.TopLeftX,
@@ -191,6 +191,25 @@ namespace VectorMath
 			a_proj,
 			a_view,
 			a_world);
+	}
+
+	XMVECTOR XM_CALLCONV WorldToScreenSpace(
+		const CD3D11_VIEWPORT& a_viewport,
+		XMVECTOR               a_pos,
+		CXMMATRIX              a_view,
+		CXMMATRIX              a_proj)
+	{
+		return XMVector3Project(
+			a_pos,
+			a_viewport.TopLeftX,
+			a_viewport.TopLeftY,
+			a_viewport.Width,
+			a_viewport.Height,
+			a_viewport.MinDepth,
+			a_viewport.MaxDepth,
+			a_proj,
+			a_view,
+			s_identity);
 	}
 
 	XMFLOAT2 XM_CALLCONV WorldToScreenSpacePt2(

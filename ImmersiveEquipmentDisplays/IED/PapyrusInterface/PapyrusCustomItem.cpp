@@ -233,15 +233,15 @@ namespace IED
 					return false;
 				}
 
-				NiPoint3 tmp;
-				if (!GetNiPoint3(a_pos, tmp))
+				auto tmp = GetNiPoint3(a_pos);
+				if (!tmp)
 				{
 					return false;
 				}
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					tmp[i] = std::clamp(stl::zero_nan(tmp[i]), -5000.0f, 5000.0f);
+					(*tmp)[i] = std::clamp(stl::zero_nan((*tmp)[i]), -5000.0f, 5000.0f);
 				}
 
 				return SetItemPositionImpl(
@@ -250,7 +250,7 @@ namespace IED
 					keys.key,
 					keys.name,
 					GetSex(a_female),
-					tmp);
+					*tmp);
 			}
 
 			template <class T>
@@ -273,8 +273,8 @@ namespace IED
 					return false;
 				}
 
-				NiPoint3 tmp;
-				if (!GetNiPoint3(a_pos, tmp))
+				auto tmp = GetNiPoint3(a_pos);
+				if (!tmp)
 				{
 					return false;
 				}
@@ -283,7 +283,7 @@ namespace IED
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					tmp[i] = std::clamp(stl::zero_nan(tmp[i]), -360.0f, 360.0f) * (pi / 180.0f);
+					(*tmp)[i] = std::clamp(stl::zero_nan((*tmp)[i]), -360.0f, 360.0f) * (pi / 180.0f);
 				}
 
 				return SetItemRotationImpl(
@@ -292,7 +292,7 @@ namespace IED
 					keys.key,
 					keys.name,
 					GetSex(a_female),
-					tmp);
+					*tmp);
 			}
 
 			template <class T>
@@ -568,6 +568,36 @@ namespace IED
 					GetSex(a_female),
 					seq);
 			}
+
+			template <class T>
+			static bool SetItemWeaponAnimationDisabled(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_disable)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemWeaponAnimationDisabledImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_disable);
+			}
+
 			template <class T>
 			static bool SetItemAnimationEventEnabled(
 				StaticFunctionTag*,
@@ -631,6 +661,35 @@ namespace IED
 					keys.name,
 					GetSex(a_female),
 					ev);
+			}
+
+			template <class T>
+			static bool SetItemDisableHavok(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_disable)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemDisableHavokImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_disable);
 			}
 
 			template <class T>
@@ -1298,6 +1357,27 @@ namespace IED
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemWeaponAnimationDisabledActor",
+						SCRIPT_NAME,
+						SetItemWeaponAnimationDisabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemWeaponAnimationDisabledNPC",
+						SCRIPT_NAME,
+						SetItemWeaponAnimationDisabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemWeaponAnimationDisabledRace",
+						SCRIPT_NAME,
+						SetItemWeaponAnimationDisabled,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
 						"SetItemAnimationEventEnabledActor",
 						SCRIPT_NAME,
 						SetItemAnimationEventEnabled,
@@ -1336,6 +1416,27 @@ namespace IED
 						"SetItemAnimationEventRace",
 						SCRIPT_NAME,
 						SetItemAnimationEvent,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemDisableHavokActor",
+						SCRIPT_NAME,
+						SetItemDisableHavok,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemDisableHavokNPC",
+						SCRIPT_NAME,
+						SetItemDisableHavok,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemDisableHavokRace",
+						SCRIPT_NAME,
+						SetItemDisableHavok,
 						a_registry));
 
 				a_registry->RegisterFunction(

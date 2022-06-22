@@ -367,6 +367,10 @@ namespace IED
 
 		void QueueClearRand();
 
+		void QueueSendAnimationEventToActor(
+			Game::FormID a_actor,
+			std::string  a_event);
+
 		void Evaluate(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -751,7 +755,7 @@ namespace IED
 		void SaveLastEquippedItems(
 			processParams_t&          a_params,
 			const equippedItemInfo_t& a_info,
-			ActorObjectHolder&        a_cache);
+			ActorObjectHolder&        a_objectHolder);
 
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,

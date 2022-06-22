@@ -112,5 +112,6 @@ namespace fs = std::filesystem;
 //#define IED_ENABLE_STATS_T
 
 //#define IED_ENABLE_RTEST
+//#define IED_ENABLE_I3DI
 
 #endif  // PCH_H

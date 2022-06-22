@@ -2007,6 +2007,38 @@ namespace IED
 		});
 	}
 
+	void Controller::QueueSendAnimationEventToActor(
+		Game::FormID a_actor,
+		std::string  a_event)
+	{
+		ITaskPool::AddTask([this, a_actor, ev = std::move(a_event)] {
+			stl::scoped_lock lock(m_lock);
+
+			auto& data = GetData();
+
+			auto it = data.find(a_actor);
+			if (it == data.end())
+			{
+				return;
+			}
+
+			NiPointer<TESObjectREFR> refr;
+
+			if (!it->second.GetHandle().Lookup(refr))
+			{
+				return;
+			}
+
+			auto actor = refr->As<Actor>();
+			if (!actor)
+			{
+				return;
+			}
+
+			actor->NotifyAnimationGraph(ev.c_str());
+		});
+	}
+
 	void Controller::AddActorBlock(
 		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
@@ -2370,61 +2402,113 @@ namespace IED
 			prio = nullptr;
 		}
 
-		auto limit = prio ?
-		                 prio->limit :
-                         stl::underlying(ObjectType::kMax);
-
 		std::uint32_t activeTypes = 0;
 
 		using enum_type = std::underlying_type_t<ObjectType>;
 
-		for (enum_type i = 0; i < stl::underlying(ObjectType::kMax); i++)
+		struct type_entry
 		{
-			auto type = prio ?
-			                prio->translate_type_safe(i) :
-                            static_cast<ObjectType>(i);
-
-			auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(type);
-			auto mainSlot      = ItemData::GetSlotFromType(type);
-
-			ObjectSlot slots[2]{
-				mainSlot,
-				ObjectSlot::kMax
+			struct slot_entry
+			{
+				ObjectSlot slot;
+				bool       equipped;
 			};
 
-			if (auto leftSlot = ItemData::GetLeftSlot(mainSlot);
+			ObjectType type;
+			bool       activeEquipped;
+			slot_entry slots[2];
+		};
+
+		type_entry types[stl::underlying(ObjectType::kMax)];
+
+		for (enum_type i = 0; i < stl::underlying(ObjectType::kMax); i++)
+		{
+			auto& e = types[i];
+
+			const auto type = prio ?
+			                      prio->translate_type_safe(i) :
+                                  static_cast<ObjectType>(i);
+
+			e.type           = type;
+			e.activeEquipped = false;
+
+			const auto mainSlot = ItemData::GetSlotFromType(type);
+
+			if (const auto leftSlot = ItemData::GetLeftSlot(mainSlot);
 			    leftSlot != ObjectSlot::kMax)
 			{
-				auto& cer = a_params.objects.GetSlot(mainSlot);
-				auto& cel = a_params.objects.GetSlot(leftSlot);
+				const auto& cer = a_params.objects.GetSlot(mainSlot);
+				const auto& cel = a_params.objects.GetSlot(leftSlot);
 
 				if (cel.slotState.lastEquipped &&
 				    (!cer.slotState.lastEquipped ||
 				     cer.slotState.lastSeenEquipped < cel.slotState.lastSeenEquipped))
 				{
-					slots[0] = leftSlot;
-					slots[1] = mainSlot;
+					e.slots[0].slot = leftSlot;
+					e.slots[1].slot = mainSlot;
 				}
 				else
 				{
-					slots[1] = leftSlot;
+					e.slots[0].slot = mainSlot;
+					e.slots[1].slot = leftSlot;
 				}
+			}
+			else
+			{
+				e.slots[0].slot = mainSlot;
+				e.slots[1].slot = ObjectSlot::kMax;
 			}
 
 			bool typeActive = false;
 
-			auto& candidates = a_params.collector.GetCandidates(type);
-
-			for (auto slot : slots)
+			for (auto& slot : e.slots)
 			{
-				if (slot == ObjectSlot::kMax)
+				if (slot.slot == ObjectSlot::kMax)
 				{
 					continue;
 				}
 
-				auto& objectEntry = a_params.objects.GetSlot(slot);
+				const bool isEquipped = slot.slot == equippedInfo.leftSlot ||
+				                        slot.slot == equippedInfo.rightSlot ||
+				                        (slot.slot == ObjectSlot::kAmmo && a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo));
 
-				if (activeTypes >= limit)
+				slot.equipped = isEquipped;
+
+				if (isEquipped && prio && prio->flags.test(SlotPriorityFlags::kAccountForEquipped))
+				{
+					e.activeEquipped = true;
+					typeActive       = true;
+				}
+			}
+
+			if (typeActive)
+			{
+				activeTypes++;
+			}
+		}
+
+		auto limit = prio ?
+		                 prio->limit :
+                         stl::underlying(ObjectType::kMax);
+
+		for (const auto& e : types)
+		{
+			const auto equipmentFlag = ItemData::GetRaceEquipmentFlagFromType(e.type);
+
+			auto& candidates = a_params.collector.GetCandidates(e.type);
+
+			bool typeActive = false;
+
+			for (auto& f : e.slots)
+			{
+				if (f.slot == ObjectSlot::kMax)
+				{
+					continue;
+				}
+
+				auto& objectEntry = a_params.objects.GetSlot(f.slot);
+
+				if (!e.activeEquipped && activeTypes >= limit)
 				{
 					RemoveObject(
 						a_params.actor,
@@ -2440,7 +2524,7 @@ namespace IED
 					a_params.actor->formID,
 					a_params.npcOrTemplate->formID,
 					a_params.race->formID,
-					slot,
+					f.slot,
 					hc);
 
 				if (!entry)
@@ -2469,7 +2553,7 @@ namespace IED
 					continue;
 				}
 
-				auto item = SelectItem(
+				const auto item = SelectItem(
 					a_params.actor,
 					configEntry,
 					candidates,
@@ -2490,8 +2574,9 @@ namespace IED
                         configEntry;
 
 				if (usedBaseConf.flags.test(BaseFlags::kDisabled) ||
-				    (!a_params.is_player() && !usedBaseConf.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
-				     slot != ObjectSlot::kAmmo &&
+				    (!a_params.is_player() &&
+				     !usedBaseConf.flags.test(BaseFlags::kIgnoreRaceEquipTypes) &&
+				     f.slot != ObjectSlot::kAmmo &&
 				     !a_params.test_equipment_flags(equipmentFlag)))
 				{
 					RemoveObject(
@@ -2504,15 +2589,8 @@ namespace IED
 					continue;
 				}
 
-				if ((slot == ObjectSlot::kAmmo && a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo)) ||
-				    slot == equippedInfo.leftSlot ||
-				    slot == equippedInfo.rightSlot)
+				if (f.equipped)
 				{
-					if (prio && prio->flags.test(SlotPriorityFlags::kAccountForEquipped))
-					{
-						typeActive = true;
-					}
-
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
@@ -2589,7 +2667,7 @@ namespace IED
 						objectEntry,
 						item->item->form,
 						nullptr,
-						ItemData::IsLeftWeaponSlot(slot),
+						ItemData::IsLeftWeaponSlot(f.slot),
 						visible,
 						false,
 						settings.hkWeaponAnimations))
@@ -2617,7 +2695,7 @@ namespace IED
 				// Debug("%X: (%.8X) attached | %u ", a_actor->formID, item->formID, slot);
 			}
 
-			if (typeActive)
+			if (!e.activeEquipped && typeActive)
 			{
 				activeTypes++;
 			}
@@ -5014,13 +5092,13 @@ namespace IED
 	void Controller::SaveLastEquippedItems(
 		processParams_t&          a_params,
 		const equippedItemInfo_t& a_info,
-		ActorObjectHolder&        a_cache)
+		ActorObjectHolder&        a_objectHolder)
 	{
 		auto ts = IPerfCounter::Query();
 
 		if (a_info.rightSlot < ObjectSlot::kMax)
 		{
-			auto& slot = a_cache.GetSlot(a_info.rightSlot);
+			auto& slot = a_objectHolder.GetSlot(a_info.rightSlot);
 
 			slot.slotState.lastEquipped     = a_info.right->formID;
 			slot.slotState.lastSeenEquipped = ts;
@@ -5028,7 +5106,7 @@ namespace IED
 
 		if (a_info.leftSlot < ObjectSlot::kMax)
 		{
-			auto& slot = a_cache.GetSlot(a_info.leftSlot);
+			auto& slot = a_objectHolder.GetSlot(a_info.leftSlot);
 
 			slot.slotState.lastEquipped     = a_info.left->formID;
 			slot.slotState.lastSeenEquipped = ts;
@@ -5042,7 +5120,7 @@ namespace IED
 			    e.item != e.addon &&
 			    e.item->IsAmmo())
 			{
-				auto& slot = a_cache.GetSlot(ObjectSlot::kAmmo);
+				auto& slot = a_objectHolder.GetSlot(ObjectSlot::kAmmo);
 
 				slot.slotState.lastEquipped     = e.item->formID;
 				slot.slotState.lastSeenEquipped = ts;

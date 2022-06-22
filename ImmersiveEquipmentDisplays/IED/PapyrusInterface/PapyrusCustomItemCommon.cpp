@@ -260,19 +260,21 @@ namespace IED
 				return std::addressof(itv->second);
 			}
 
-			bool GetNiPoint3(VMArray<float>& a_in, NiPoint3& a_out)
+			std::optional<NiPoint3> GetNiPoint3(VMArray<float>& a_in)
 			{
 				if (a_in.Length() != 3)
 				{
-					return false;
+					return {};
 				}
+
+				NiPoint3 result;
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{
-					a_in.Get(std::addressof(a_out[i]), i);
+					a_in.Get(std::addressof(result[i]), i);
 				}
 
-				return true;
+				return result;
 			}
 
 		}

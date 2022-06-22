@@ -15,14 +15,15 @@ namespace IED
 
 	struct CommonParams
 	{
-		Actor* const                                                 actor;
-		TESNPC* const                                                npc;
-		TESNPC* const                                                npcOrTemplate;
-		TESRace* const                                               race;
-		ActorObjectHolder&                                           objects;
-		Controller&                                                  controller;
-		mutable std::optional<TESFurniture*>                         furniture;
+		Actor* const       actor;
+		TESNPC* const      npc;
+		TESNPC* const      npcOrTemplate;
+		TESRace* const     race;
+		ActorObjectHolder& objects;
+		Controller&        controller;
+
 		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
+		mutable std::optional<TESFurniture*>                         furniture;
 		mutable std::optional<bool>                                  layingDown;
 		mutable std::optional<Biped*>                                biped;
 		mutable std::optional<TESObjectARMO*>                        actorSkin;
@@ -48,7 +49,7 @@ namespace IED
 			return actor == *g_thePlayer;
 		}
 
-		[[nodiscard]] bool get_using_furniture() const
+		[[nodiscard]] constexpr bool get_using_furniture() const
 		{
 			if (!furnHandle)
 			{
@@ -196,7 +197,7 @@ namespace IED
 			return *isDead;
 		}
 
-		[[nodiscard]] constexpr bool get_in_interior() const
+		[[nodiscard]] inline constexpr bool get_in_interior() const
 		{
 			if (!inInterior)
 			{
@@ -206,7 +207,7 @@ namespace IED
 			return *inInterior;
 		}
 
-		[[nodiscard]] constexpr auto get_current_location() const
+		[[nodiscard]] inline constexpr auto get_current_location() const
 		{
 			if (!location)
 			{
@@ -223,7 +224,7 @@ namespace IED
 			return *location;
 		}
 
-		[[nodiscard]] constexpr auto get_worldspace() const
+		[[nodiscard]] inline constexpr auto get_worldspace() const
 		{
 			if (!worldspace)
 			{
@@ -249,7 +250,7 @@ namespace IED
 			return *currentWeather;
 		}
 
-		[[nodiscard]] constexpr auto get_weather_class() const
+		[[nodiscard]] inline constexpr auto get_weather_class() const
 		{
 			if (!weatherClass)
 			{
@@ -267,7 +268,7 @@ namespace IED
 			return *weatherClass;
 		}
 
-		[[nodiscard]] constexpr auto get_shield_slot() const
+		[[nodiscard]] inline constexpr auto get_shield_slot() const
 		{
 			if (!shieldSlot)
 			{
@@ -277,7 +278,7 @@ namespace IED
 			return *shieldSlot;
 		}
 
-		[[nodiscard]] constexpr auto get_time_of_day() const
+		[[nodiscard]] inline constexpr auto get_time_of_day() const
 		{
 			if (!timeOfDay)
 			{
@@ -287,7 +288,7 @@ namespace IED
 			return *timeOfDay;
 		}
 
-		[[nodiscard]] constexpr auto is_in_combat() const
+		[[nodiscard]] inline constexpr auto is_in_combat() const
 		{
 			if (!inCombat)
 			{
@@ -297,7 +298,7 @@ namespace IED
 			return *inCombat;
 		}
 
-		[[nodiscard]] constexpr auto is_on_mount() const
+		[[nodiscard]] inline constexpr auto is_on_mount() const
 		{
 			if (!isMounted)
 			{
@@ -306,8 +307,8 @@ namespace IED
 
 			return *isMounted;
 		}
-		
-		[[nodiscard]] constexpr auto is_ridden() const
+
+		[[nodiscard]] inline constexpr auto is_ridden() const
 		{
 			if (!isRidden)
 			{
@@ -334,7 +335,7 @@ namespace IED
 
 			return *mountedActor;
 		}
-		
+
 		[[nodiscard]] auto& get_mounted_by_actor() const
 		{
 			if (!mountedByActor)

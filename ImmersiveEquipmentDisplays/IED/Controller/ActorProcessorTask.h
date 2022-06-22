@@ -12,12 +12,12 @@ namespace RE
 
 namespace IED
 {
-	enum class TransformUpdateFlags
+	/*enum class TransformUpdateFlags : std::uint32_t
 	{
 		kSkipNext = 1u << 0
 	};
 
-	DEFINE_ENUM_CLASS_BITWISE(TransformUpdateFlags);
+	DEFINE_ENUM_CLASS_BITWISE(TransformUpdateFlags);*/
 
 	class Controller;
 	class ActorObjectHolder;

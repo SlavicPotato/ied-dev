@@ -10,20 +10,50 @@ namespace IED
 {
 	namespace UI
 	{
-		void I3DIObjectController::Update(I3DICommonData& a_data)
+		void I3DIObjectController::RegisterObject(
+			const std::shared_ptr<I3DIObject>& a_object)
 		{
-			auto hoveredObject = GetHovered(a_data.ray.origin, a_data.ray.dir);
+			assert(a_object != nullptr);
+
+			m_data.emplace_back(a_object);
+		}
+
+		void I3DIObjectController::UnregisterObject(
+			const std::shared_ptr<I3DIObject>& a_object)
+		{
+			assert(a_object != nullptr);
+
+			std::erase_if(
+				m_data,
+				[&](auto& a_v) {
+					return a_object == a_v.object;
+				});
+
+			if (a_object == m_selected)
+			{
+				m_selected.reset();
+			}
+
+			if (a_object == m_hovered)
+			{
+				m_hovered.reset();
+			}
+		}
+
+		void I3DIObjectController::Run(I3DICommonData& a_data)
+		{
+			auto hoveredObject = GetHovered(a_data);
 
 			if (hoveredObject != m_hovered)
 			{
 				if (m_hovered)
 				{
-					m_hovered->OnMouseMoveOutInt();
+					m_hovered->OnMouseMoveOutInt(a_data);
 				}
 
 				if (hoveredObject)
 				{
-					hoveredObject->OnMouseMoveOverInt();
+					hoveredObject->OnMouseMoveOverInt(a_data);
 				}
 
 				m_hovered = hoveredObject;
@@ -35,35 +65,45 @@ namespace IED
 				{
 					if (m_selected)
 					{
-						m_selected->OnUnselectInt();
+						m_selected->OnUnselectInt(a_data);
 					}
 
 					if (hoveredObject)
 					{
-						hoveredObject->OnSelectInt();
+						if (hoveredObject->OnSelectInt(a_data))
+						{
+							m_selected = hoveredObject;
+						}
 					}
-
-					m_selected = hoveredObject;
+					else
+					{
+						m_selected.reset();
+					}
 				}
+			}
+
+			for (auto& e : m_data)
+			{
+				e.object->DrawObjectExtra(a_data);
 			}
 		}
 
-		I3DIObject* XM_CALLCONV I3DIObjectController::GetHovered(
-			DirectX::XMVECTOR a_rayOrigin,
-			DirectX::XMVECTOR a_rayDir)
+		auto I3DIObjectController::GetHovered(
+			I3DICommonData& a_data)
+			-> std::shared_ptr<I3DIObject>
 		{
 			auto& io = ImGui::GetIO();
 
 			if (io.WantCaptureMouse)
 			{
-				return nullptr;
+				return {};
 			}
 
 			for (auto& e : m_data)
 			{
 				float dist;
 
-				if (e.object->Intersects(a_rayOrigin, a_rayDir, dist))
+				if (e.object->ObjectIntersects(a_data, dist))
 				{
 					e.dist = dist;
 				}

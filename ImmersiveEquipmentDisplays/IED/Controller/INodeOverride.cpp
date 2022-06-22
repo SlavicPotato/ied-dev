@@ -710,7 +710,7 @@ namespace IED
 			}
 			else
 			{
-				auto apos = (a_out.rot * pos) * a_out.scale;
+				auto apos = a_out.rot._simd_mulpt_scale(pos, a_out.scale);
 
 				a_out.pos += apos;
 
@@ -728,22 +728,7 @@ namespace IED
 		float                                   a_adjust,
 		NiPoint3&                               a_posAccum)
 	{
-		NiPoint3 offset;
-
-		if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAdjustX))
-		{
-			offset.x = a_adjust * a_data.adjustScale.x;
-		}
-
-		if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAdjustY))
-		{
-			offset.y = a_adjust * a_data.adjustScale.y;
-		}
-
-		if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAdjustZ))
-		{
-			offset.z = a_adjust * a_data.adjustScale.z;
-		}
+		auto offset = a_data.adjustScale * a_adjust;
 
 		if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
 		{
@@ -756,7 +741,7 @@ namespace IED
 		}
 		else
 		{
-			a_out.pos += (a_out.rot * offset) * a_out.scale;
+			a_out.pos += a_out.rot._simd_mulpt_scale(offset, a_out.scale);
 		}
 	}
 
@@ -786,7 +771,7 @@ namespace IED
 			}
 			else
 			{
-				xfrm.pos += (xfrm.rot * *a_data.transform.position) * xfrm.scale;
+				xfrm.pos += xfrm.rot._simd_mulpt_scale(*a_data.transform.position, xfrm.scale);
 			}
 		}
 

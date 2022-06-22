@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ConfigStore.h"
-#include "../Data.h"
-#include "../Inventory.h"
+#include "IED/ConfigStore.h"
+#include "IED/Data.h"
+#include "IED/Inventory.h"
 
 namespace IED
 {
@@ -21,9 +21,9 @@ namespace IED
 		{
 			stl::optional<SlotItemCandidates::storage_type::iterator> item;
 
-			void consume(SlotItemCandidates::storage_type& a_candidates);
+			void consume(SlotItemCandidates::storage_type& a_candidates) const;
 
-			[[nodiscard]] inline constexpr auto* operator->() noexcept
+			[[nodiscard]] inline constexpr auto* operator->() const noexcept
 			{
 				return std::addressof(*(*item));
 			}

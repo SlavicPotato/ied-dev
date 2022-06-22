@@ -344,9 +344,10 @@ namespace IED
 
 			// weapon adjust flags
 
-			kAdjustX          = 1u << 16,
-			kAdjustY          = 1u << 17,
-			kAdjustZ          = 1u << 18,
+			kAdjustX = 1u << 16,  // deprecated
+			kAdjustY = 1u << 17,  // deprecated
+			kAdjustZ = 1u << 18,  // deprecated
+
 			kAdjustIgnoreDead = 1u << 19,
 
 			kAdjustFlags = kWeaponAdjust | kWeightAdjust
@@ -377,11 +378,12 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			stl::flag<NodeOverrideOffsetFlags>            offsetFlags{ NodeOverrideOffsetFlags::kContinue };
-			NiPoint3                                      adjustScale{ 1.0f, 1.0f, 1.0f };
+			NiPoint3                                      adjustScale{ 0.0f, 0.0f, 0.0f };
 			configNodeOverrideConditionList_t             conditions;
 			std::string                                   description;
 			stl::boost_vector<configNodeOverrideOffset_t> group;
@@ -391,6 +393,24 @@ namespace IED
 				adjustScale.x = std::clamp(stl::zero_nan(adjustScale.x), -100.0f, 100.0f);
 				adjustScale.y = std::clamp(stl::zero_nan(adjustScale.y), -100.0f, 100.0f);
 				adjustScale.z = std::clamp(stl::zero_nan(adjustScale.z), -100.0f, 100.0f);
+			}
+			
+			constexpr void strip_adjust_axis_flags_and_reset() noexcept
+			{
+				if (!offsetFlags.consume(Data::NodeOverrideOffsetFlags::kAdjustX))
+				{
+					adjustScale.x = 0.0f;
+				}
+
+				if (!offsetFlags.consume(Data::NodeOverrideOffsetFlags::kAdjustY))
+				{
+					adjustScale.y = 0.0f;
+				}
+
+				if (!offsetFlags.consume(Data::NodeOverrideOffsetFlags::kAdjustZ))
+				{
+					adjustScale.z = 0.0f;
+				}
 			}
 
 		private:
@@ -416,6 +436,11 @@ namespace IED
 				a_ar& group;
 
 				clamp();
+
+				if (a_version < DataVersion2)
+				{
+					strip_adjust_axis_flags_and_reset();
+				}
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
@@ -839,7 +864,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideOffset_t,
-	::IED::Data::configNodeOverrideOffset_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideOffset_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideConditionGroup_t,

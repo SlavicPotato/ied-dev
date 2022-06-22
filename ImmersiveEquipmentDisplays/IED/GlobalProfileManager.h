@@ -15,7 +15,6 @@ namespace IED
 	using CustomProfile       = Profile<Data::configCustomHolder_t>;
 	using NodeOverrideProfile = Profile<Data::configNodeOverrideHolder_t>;
 	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
-	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
 
 	class GlobalProfileManager
 	{

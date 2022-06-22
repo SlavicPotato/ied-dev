@@ -1,7 +1,9 @@
 #pragma once
 
 #include "I3DIDraggable.h"
-#include "I3DIObject.h"
+#include "I3DIModelObject.h"
+
+#include "IED/Controller/NodeOverrideData.h"
 
 namespace IED
 {
@@ -10,17 +12,21 @@ namespace IED
 		class I3DIActorContext;
 
 		class I3DIWeaponNode :
-			public I3DIObject,
+			public I3DIModelObject,
 			public I3DIDraggable
 		{
 		public:
 			inline static constexpr std::uint32_t DRAGGABLE_TYPE = 1;
 
 			I3DIWeaponNode(
-				ID3D11Device*                        a_device,
-				const std::shared_ptr<D3DModelData>& a_data,
-				const stl::fixed_string&             a_name,
-				I3DIActorContext&                    a_actorContext);
+				ID3D11Device*                              a_device,
+				ID3D11DeviceContext*                       a_context,
+				const std::shared_ptr<D3DModelData>&       a_data,
+				const stl::fixed_string&                   a_nodeName,
+				const NodeOverrideData::weaponNodeEntry_t& a_nodeInfo,
+				I3DIActorContext&                          a_actorContext);
+
+			virtual ~I3DIWeaponNode() noexcept override = default;
 
 			void UpdateLocalMatrix(const NiTransform& a_transform);
 
@@ -31,7 +37,12 @@ namespace IED
 
 			inline constexpr auto& GetNodeName() const noexcept
 			{
-				return m_name;
+				return m_nodeName;
+			}
+			
+			inline constexpr auto GetNodeDesc() const noexcept
+			{
+				return m_nodeInfo.desc;
 			}
 
 			virtual I3DIDraggable* GetAsDraggable() override
@@ -42,8 +53,15 @@ namespace IED
 		private:
 			virtual bool OnDragBegin() override;
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) override;
+			virtual void DrawTooltip(I3DICommonData& a_data) override;
 
-			stl::fixed_string m_name;
+			virtual bool WantDrawTooltip();
+			virtual bool WantDrawBound();
+
+			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const override;
+
+			stl::fixed_string                          m_nodeName;
+			const NodeOverrideData::weaponNodeEntry_t& m_nodeInfo;
 
 			DirectX::XMMATRIX m_localMatrix{ DirectX::SimpleMath::Matrix::Identity };
 

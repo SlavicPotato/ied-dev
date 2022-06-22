@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ext/ILUID.h>
+
 namespace IED
 {
 	namespace UI
@@ -12,13 +14,13 @@ namespace IED
 		public:
 			struct Entry
 			{
-				inline constexpr Entry(I3DIObject* a_object) :
+				inline Entry(const std::shared_ptr<I3DIObject>& a_object) :
 					object(a_object)
 				{
 				}
 
-				std::optional<float> dist;
-				I3DIObject*          object;
+				std::optional<float>        dist;
+				std::shared_ptr<I3DIObject> object;
 			};
 
 			[[nodiscard]] inline constexpr auto& GetData() const noexcept
@@ -26,20 +28,24 @@ namespace IED
 				return m_data;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetData() noexcept
-			{
-				return m_data;
-			}
+			void RegisterObject(const std::shared_ptr<I3DIObject>& a_object);
+			void UnregisterObject(const std::shared_ptr<I3DIObject>& a_object);
 
-			void Update(I3DICommonData& a_data);
+			//template <class T, class... Args>
+			//auto& CreateObject(Args&&... a_args)  //
+			//	requires(std::is_base_of_v<I3DIObject, T>)
+			//{
+			//	return m_data.emplace_back(std::make_shared<T>(std::forward<Args>(a_args)...)).object;
+			//}
+
+			void Run(I3DICommonData& a_data);
 
 		protected:
-			I3DIObject* XM_CALLCONV GetHovered(
-				DirectX::XMVECTOR a_rayOrigin,
-				DirectX::XMVECTOR a_rayDir);
+			std::shared_ptr<I3DIObject> GetHovered(
+				I3DICommonData& a_data);
 
-			I3DIObject* m_hovered{ nullptr };
-			I3DIObject* m_selected{ nullptr };
+			std::shared_ptr<I3DIObject> m_hovered;
+			std::shared_ptr<I3DIObject> m_selected;
 
 			stl::vector<Entry> m_data;
 		};

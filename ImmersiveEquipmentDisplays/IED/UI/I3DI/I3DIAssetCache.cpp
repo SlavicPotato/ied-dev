@@ -4,6 +4,9 @@
 
 #include "IED/GlobalProfileManager.h"
 
+#include "IED/D3D/D3DAssets.h"
+#include "IED/D3D/D3DModelData.h"
+
 namespace IED
 {
 	namespace UI
@@ -14,13 +17,13 @@ namespace IED
 
 			"1hsword",
 			"waraxe",
-			"sphere",
-			"sphere",
+			"mace",
+			"dagger",
 			"greatsword",
-			"sphere",
-			"sphere",
+			"bow",
+			"staff",
 			"quiver",
-			"sphere"
+			"shield"
 		};
 
 		I3DIAssetCache::I3DIAssetCache(

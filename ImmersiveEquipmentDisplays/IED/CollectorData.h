@@ -51,6 +51,7 @@ namespace IED
 
 			[[nodiscard]] inline constexpr bool IsSlotEquipped(ObjectSlotExtra a_slot) const noexcept
 			{
+				assert(a_slot < ObjectSlotExtra::kMax);
 				return (equippedTypeFlags[stl::underlying(a_slot)] & InventoryPresenceFlags::kSet) == InventoryPresenceFlags::kSet;
 			}
 

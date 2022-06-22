@@ -22,7 +22,6 @@ namespace IED
 	void ActorProcessorTask::UpdateNode(
 		ActorObjectHolder& a_record,
 		objectEntryBase_t& a_entry)
-	//const std::optional<animUpdateData_t>& a_animUpdateData)
 	{
 		auto state = a_entry.state.get();
 
@@ -31,29 +30,9 @@ namespace IED
 			return;
 		}
 
-		auto& nodes = state->nodes;
+		const auto& nodes = state->nodes;
 
-		bool visible = nodes.rootNode->IsVisible();
-
-		/*if (a_animUpdateData)
-		{
-			if (state->weapAnimGraphManagerHolder)
-			{
-				EngineExtensions::UpdateAnimationGraph(
-					state->weapAnimGraphManagerHolder.get(),
-					a_animUpdateData->data);
-			}
-
-			for (auto& e : state->groupObjects)
-			{
-				if (e.second.weapAnimGraphManagerHolder)
-				{
-					EngineExtensions::UpdateAnimationGraph(
-						e.second.weapAnimGraphManagerHolder.get(),
-						a_animUpdateData->data);
-				}
-			}
-		}*/
+		const bool visible = nodes.rootNode->IsVisible();
 
 		if (!nodes.ref)
 		{
@@ -205,64 +184,6 @@ namespace IED
 		return result;
 	}
 
-	/*static bool GetEnemiesNearby(
-		ActorObjectHolder& a_data,
-		ActorObjectMap&    a_map)
-	{
-		NiPointer<TESObjectREFR> refr;
-		if (!a_data.GetHandle().Lookup(refr))
-		{
-			return false;
-		}
-
-		auto actor = refr->As<Actor>();
-		if (!actor)
-		{
-			return false;
-		}
-
-		for (auto& [i, e] : a_map)
-		{
-			if (!e.IsCellAttached())
-			{
-				continue;
-			}
-
-			if (e.GetActorFormID() == actor->formID ||
-			    e.GetActorFormID() == Data::IData::GetPlayerRefID())
-			{
-				continue;
-			}
-
-			NiPointer<TESObjectREFR> r;
-			if (!e.GetHandle().Lookup(r))
-			{
-				continue;
-			}
-
-			auto a = r->As<Actor>();
-			if (!a)
-			{
-				continue;
-			}
-
-			if (a->IsDead())
-			{
-				continue;
-			}
-
-			//...
-
-			if (!a->IsHostileToActor(actor))
-			{
-				return true;
-			}
-
-		}
-
-		return false;
-	}*/
-
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 	void ActorProcessorTask::WriteCMETransforms(
 		ActorObjectHolder& a_data)
@@ -276,7 +197,7 @@ namespace IED
 
 	void ActorProcessorTask::UpdateState()
 	{
-		if (auto fpstate = IsInFirstPerson();
+		if (const auto fpstate = IsInFirstPerson();
 		    fpstate != m_state.inFirstPerson)
 		{
 			m_state.inFirstPerson = fpstate;
@@ -302,14 +223,14 @@ namespace IED
 		auto sky = RE::Sky::GetSingleton();
 		assert(sky);
 
-		if (auto current = (sky ? sky->currentWeather : nullptr);
+		if (const auto current = (sky ? sky->currentWeather : nullptr);
 		    current != m_state.currentWeather)
 		{
 			m_state.currentWeather = current;
 			changed                = true;
 		}
 
-		if (auto tod = Data::GetTimeOfDay(sky);
+		if (const auto tod = Data::GetTimeOfDay(sky);
 		    tod != m_state.timeOfDay)
 		{
 			m_state.timeOfDay = tod;
@@ -355,8 +276,6 @@ namespace IED
 		const AnimationGraphManagerHolderList& a_list,
 		float                                  a_step)
 	{
-		assert(!EngineExtensions::ParallelAnimationUpdatesEnabled());
-
 		struct TLSData
 		{
 			std::uint8_t  unk000[0x768];  // 000

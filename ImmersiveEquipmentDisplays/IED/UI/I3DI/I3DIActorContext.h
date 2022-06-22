@@ -1,8 +1,9 @@
 #pragma once
 
 #include "I3DIMOVNode.h"
-#include "I3DIObjectController.h"
 #include "I3DIWeaponNode.h"
+
+#include <ext/ILUID.h>
 
 namespace IED
 {
@@ -11,6 +12,8 @@ namespace IED
 	namespace UI
 	{
 		struct I3DICommonData;
+		class I3DIObjectController;
+		class I3DIActorObject;
 
 		class I3DIActorContext
 		{
@@ -18,7 +21,11 @@ namespace IED
 			I3DIActorContext(
 				I3DICommonData& a_data,
 				Controller&     a_controller,
-				Game::FormID    a_actor) noexcept(false);
+				Game::FormID    a_actor,
+				const std::shared_ptr<I3DIActorObject>& a_actorObject) noexcept(false);
+
+			void RegisterObjects(I3DIObjectController& a_objectController);
+			void UnregisterObjects(I3DIObjectController& a_objectController);
 
 			bool Update();
 			void Draw(I3DICommonData& a_data);
@@ -39,15 +46,20 @@ namespace IED
 				return m_lastUpdateFailed;
 			}
 
+			[[nodiscard]] inline constexpr auto& GetActorObject() const noexcept
+			{
+				return m_actorObject;
+			}
+
 		private:
 			Game::FormID m_actor;
 
-			std::unordered_map<stl::fixed_string, I3DIWeaponNode> m_weaponNodes;
-
-			I3DIObjectController m_objectController;
+			std::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
 
 			bool m_ranFirstUpdate{ false };
 			bool m_lastUpdateFailed{ false };
+
+			std::shared_ptr<I3DIActorObject> m_actorObject;
 
 			Controller& m_controller;
 		};

@@ -9,11 +9,11 @@ namespace IED
 	namespace UI
 	{
 		class I3DIDraggable;
-		class I3DIDragDropController;
+		class I3DIObjectController;
 
 		class I3DIDropTarget
 		{
-			friend class I3DIDragDropController;
+			friend class I3DIObjectController;
 
 		public:
 			I3DIDropTarget(

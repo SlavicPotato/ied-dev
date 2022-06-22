@@ -25,14 +25,16 @@
 
 #include "FormFilters/UIProfileEditorFormFilters.h"
 
-#include "I3DI/I3DIMain.h"
-
 #include "Window/UIWindow.h"
 
 #include "Widgets/UIExportFilterWidget.h"
 
 #include "IED/ConfigSerializationFlags.h"
 #include "IED/SettingHolder.h"
+
+#if defined(IED_ENABLE_I3DI)
+#	include "I3DI/I3DIMain.h"
+#endif
 
 namespace IED
 {
@@ -107,7 +109,10 @@ namespace IED
 			UILog                       m_log;
 			UIStats                     m_stats;
 			UISkeletonExplorer          m_skeletonExplorer;
-			I3DIMain                    m_i3di;
+
+#if defined(IED_ENABLE_I3DI)
+			I3DIMain m_i3di;
+#endif
 
 			UISlotEditorTabPanel   m_slotTabPanel;
 			UICustomEditorTabPanel m_customTabPanel;

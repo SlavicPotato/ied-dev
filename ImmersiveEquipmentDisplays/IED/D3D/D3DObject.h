@@ -1,5 +1,6 @@
 #pragma once
 
+#include "D3DBoundingOrientedBox.h"
 #include "D3DCommon.h"
 #include "D3DEffect.h"
 
@@ -26,8 +27,6 @@ namespace IED
 	};
 	static_assert(sizeof(D3DObjectFlagsBF) == sizeof(D3DObjectFlags));
 
-	class D3DCommon;
-
 	class D3DObject :
 		public D3DEffect<DirectX::VertexPositionNormalColor>
 	{
@@ -44,11 +43,6 @@ namespace IED
 			float&             a_distance) const;
 
 		void Draw(D3DCommon& a_scene);
-
-		void Draw(
-			D3DCommon&               a_scene,
-			const DirectX::XMMATRIX& a_view,
-			const DirectX::XMMATRIX& a_projection);
 
 		[[nodiscard]] inline constexpr auto& GetBound() const noexcept
 		{
@@ -70,20 +64,20 @@ namespace IED
 		{
 			m_flagsbf.rasterizerState = a_value;
 		}
-		
+
 		[[nodiscard]] inline constexpr void SetOverrideDepth(bool a_switch) noexcept
 		{
 			m_flags.set(D3DObjectFlags::kDepth, a_switch);
 			m_flags.set(D3DObjectFlags::kOverrideDepth);
 		}
-		
+
 		[[nodiscard]] inline constexpr void ClearOverrideDepth(bool a_switch) noexcept
 		{
 			m_flags.clear(D3DObjectFlags::kOverrideDepth);
 		}
 
 	private:
-		DirectX::BoundingOrientedBox m_bound;
+		D3DBoundingOrientedBox m_bound;
 
 		std::shared_ptr<D3DModelData> m_data;
 

@@ -53,6 +53,12 @@ namespace VectorMath
 		DirectX::CXMMATRIX     a_view,
 		DirectX::CXMMATRIX     a_proj,
 		DirectX::CXMMATRIX     a_world);
+	
+	DirectX::XMVECTOR XM_CALLCONV WorldToScreenSpace(
+		const CD3D11_VIEWPORT& a_viewport,
+		DirectX::XMVECTOR      a_pos,
+		DirectX::CXMMATRIX     a_view,
+		DirectX::CXMMATRIX     a_proj);
 
 	DirectX::XMFLOAT2 XM_CALLCONV WorldToScreenSpacePt2(
 		const CD3D11_VIEWPORT& a_viewport,

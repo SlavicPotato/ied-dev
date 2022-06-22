@@ -88,7 +88,7 @@ namespace IED
 				const stl::fixed_string& a_key,
 				const stl::fixed_string& a_name);
 
-			bool GetNiPoint3(VMArray<float>& a_in, NiPoint3& a_out);
+			std::optional<NiPoint3> GetNiPoint3(VMArray<float>& a_in);
 
 			enum class TransformClearFlags : std::uint8_t
 			{

@@ -3,6 +3,8 @@
 #include "I3DIActorContext.h"
 
 #include "I3DICommonData.h"
+#include "I3DIObjectController.h"
+#include "I3DIActorObject.h"
 
 #include "IED/Controller/Controller.h"
 #include "IED/Controller/NodeOverrideData.h"
@@ -12,11 +14,13 @@ namespace IED
 	namespace UI
 	{
 		I3DIActorContext::I3DIActorContext(
-			I3DICommonData& a_data,
-			Controller&     a_controller,
-			Game::FormID    a_actor) noexcept(false) :
+			I3DICommonData&                    a_data,
+			Controller&                        a_controller,
+			Game::FormID                       a_actor,
+			const std::shared_ptr<I3DIActorObject>& a_actorObject) noexcept(false) :
 			m_controller(a_controller),
-			m_actor(a_actor)
+			m_actor(a_actor),
+			m_actorObject(a_actorObject)
 		{
 			auto& data = m_controller.GetData();
 
@@ -50,14 +54,33 @@ namespace IED
 					continue;
 				}
 
-				auto r = m_weaponNodes.try_emplace(
+				m_weaponNodes.emplace(
 					e.first,
-					a_data.scene.GetDevice().Get(),
-					model,
-					e.first,
-					*this);
+					std::make_unique<I3DIWeaponNode>(
+						a_data.scene.GetDevice().Get(),
+						a_data.scene.GetContext().Get(),
+						model,
+						e.first,
+						e.second,
+						*this));
+			}
+		}
 
-				m_objectController.GetData().emplace_back(std::addressof(r.first->second));
+		void I3DIActorContext::RegisterObjects(
+			I3DIObjectController& a_objectController)
+		{
+			for (auto& e : m_weaponNodes)
+			{
+				a_objectController.RegisterObject(e.second);
+			}
+		}
+
+		void I3DIActorContext::UnregisterObjects(
+			I3DIObjectController& a_objectController)
+		{
+			for (auto& e : m_weaponNodes)
+			{
+				a_objectController.UnregisterObject(e.second);
 			}
 		}
 
@@ -82,13 +105,13 @@ namespace IED
 					continue;
 				}
 
-				itwn->second.UpdateLocalMatrix(e.node->m_localTransform);
-				itwn->second.UpdateWorldMatrix(e.node->m_worldTransform);
-				itwn->second.UpdateBound();
+				itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
+				itwn->second->UpdateWorldMatrix(e.node->m_worldTransform);
+				itwn->second->UpdateBound();
 			}
 
 			m_lastUpdateFailed = false;
-			m_ranFirstUpdate = true;
+			m_ranFirstUpdate   = true;
 
 			return true;
 		}
@@ -99,8 +122,6 @@ namespace IED
 			{
 				return;
 			}
-
-			m_objectController.Update(a_data);
 		}
 
 		void I3DIActorContext::Render(I3DICommonData& a_data)
@@ -112,7 +133,7 @@ namespace IED
 
 			for (auto& e : m_weaponNodes)
 			{
-				e.second.Draw(a_data.scene);
+				e.second->RenderObject(a_data.scene);
 			}
 		}
 	}

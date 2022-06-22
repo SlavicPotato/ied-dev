@@ -72,7 +72,13 @@ namespace IED
 		{
 			Debug("Initializing render interface..");
 
-			if (Drivers::Render::Initialize(true))
+			if (Drivers::Render::Initialize(
+#if defined(IED_ENABLE_I3DI)
+					true
+#else
+					false
+#endif
+					))
 			{
 				Debug("Installing priority input hook..");
 
@@ -274,8 +280,10 @@ namespace IED
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
 
+#if defined(IED_ENABLE_I3DI)
 				GlobalProfileManager::GetSingleton<ModelProfile>().Load(
 					PATHS::PROFILE_MANAGER_MODEL);
+#endif
 
 				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 
