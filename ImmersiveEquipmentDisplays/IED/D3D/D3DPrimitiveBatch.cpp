@@ -11,13 +11,11 @@ namespace IED
 	D3DPrimitiveBatch::D3DPrimitiveBatch(
 		ID3D11Device*        a_device,
 		ID3D11DeviceContext* a_context) noexcept(false) :
-		D3DEffect(a_device)
+		D3DEffect(
+			a_device,
+			D3DVertexShaderID::kColorVertexShader,
+			D3DPixelShaderID::kBasicPixelShader)
 	{
-		m_effect->SetTextureEnabled(false);
-		m_effect->SetVertexColorEnabled(true);
-
-		CreateInputLayout(a_device);
-
 		m_batch = std::make_unique<PrimitiveBatch<VertexPositionColorAV>>(a_context);
 	}
 
@@ -33,8 +31,12 @@ namespace IED
 
 		a_scene.SetRasterizerState(D3DObjectRasterizerState::kWireframe);
 		a_scene.SetRenderTargets(m_flags.test(D3DPrimitiveBatchFlags::kDepth));
+		a_scene.SetDepthStencilState(D3DDepthStencilState::kNone);
 
-		ApplyEffect(a_scene.GetContext().Get());
+		auto context = a_scene.GetContext().Get();
+
+		context->IASetInputLayout(a_scene.GetILVertexPositionColorAV().Get());
+		ApplyEffect(context, a_scene);
 
 		m_batch->Begin();
 
@@ -60,9 +62,9 @@ namespace IED
 	}
 
 	void XM_CALLCONV D3DPrimitiveBatch::AddLine(
-		DirectX::XMVECTOR a_p1,
-		DirectX::XMVECTOR a_p2,
-		DirectX::XMVECTOR a_c)
+		XMVECTOR a_p1,
+		XMVECTOR a_p2,
+		XMVECTOR a_c)
 	{
 		m_lines.emplace_back(
 			VertexPositionColorAV(a_p1, a_c),

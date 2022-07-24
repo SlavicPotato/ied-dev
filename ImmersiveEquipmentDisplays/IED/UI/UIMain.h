@@ -66,6 +66,8 @@ namespace IED
 			virtual void OnOpen() override;
 			virtual void OnClose() override;
 
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
+
 			inline constexpr auto& GetPopupQueue() noexcept
 			{
 				return m_popupQueue;

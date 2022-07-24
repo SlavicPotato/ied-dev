@@ -566,5 +566,12 @@ namespace IED
 			m_controller.ClearActorInfo();
 		}
 
+		void UIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)
+		{
+#if defined(IED_ENABLE_I3DI)
+			m_i3di.OnMouseMove(a_evn);
+#endif
+		}
+
 	}
 }

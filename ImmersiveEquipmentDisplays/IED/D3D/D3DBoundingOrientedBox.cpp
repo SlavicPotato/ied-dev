@@ -63,11 +63,11 @@ namespace IED
 		const auto extents     = XMLoadFloat3(std::addressof(Extents));
 		const auto orientation = XMLoadFloat4(std::addressof(Orientation));
 
-		a_origin = D3DBoundingOrientedBox::GetPoint(a_direction, center, extents, orientation);
+		a_origin = GetPoint(a_direction, center, extents, orientation);
 
 		return VectorMath::WorldToScreenSpace(
 			a_scene.GetViewport(),
-			D3DBoundingOrientedBox::GetPoint(a_direction, center, extents + XMVectorReplicate(a_offset), orientation),
+			GetPoint(a_direction, center, extents + XMVectorReplicate(a_offset), orientation),
 			a_scene.GetViewMatrix(),
 			a_scene.GetProjectionMatrix());
 	}

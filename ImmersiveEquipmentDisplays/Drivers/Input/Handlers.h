@@ -13,6 +13,12 @@ namespace IED
 			KeyEventState state;
 			std::uint32_t key;
 		};
+		
+		struct MouseMoveEvent
+		{
+			std::int32_t inputX;
+			std::int32_t inputY;
+		};
 
 		class KeyPressHandler : public Events::EventSink<KeyEvent>
 		{

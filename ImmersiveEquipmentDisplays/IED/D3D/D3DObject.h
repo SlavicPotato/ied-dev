@@ -14,8 +14,6 @@ namespace IED
 
 		kWireframe = 1u << 0,
 		kDepth     = 1u << 1,
-
-		kOverrideDepth = 1u << 16,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(D3DObjectFlags);
@@ -28,12 +26,12 @@ namespace IED
 	static_assert(sizeof(D3DObjectFlagsBF) == sizeof(D3DObjectFlags));
 
 	class D3DObject :
-		public D3DEffect<DirectX::VertexPositionNormalColor>
+		public D3DEffect
 	{
 	public:
 		D3DObject(
 			ID3D11Device*                        a_device,
-			const std::shared_ptr<D3DModelData>& a_data) noexcept(false);
+			const std::shared_ptr<D3DModelData>& a_data);
 
 		void UpdateBound();
 
@@ -41,6 +39,18 @@ namespace IED
 			DirectX::FXMVECTOR a_origin,
 			DirectX::FXMVECTOR a_direction,
 			float&             a_distance) const;
+
+		[[nodiscard]] float XM_CALLCONV GetDistance(
+			DirectX::FXMVECTOR a_origin) const;
+
+		[[nodiscard]] float XM_CALLCONV GetDistanceSq(
+			DirectX::FXMVECTOR a_origin) const;
+
+		[[nodiscard]] float XM_CALLCONV GetCenterDistance(
+			DirectX::FXMVECTOR a_origin) const;
+
+		[[nodiscard]] float XM_CALLCONV GetCenterDistanceSq(
+			DirectX::FXMVECTOR a_origin) const;
 
 		void Draw(D3DCommon& a_scene);
 
@@ -54,10 +64,10 @@ namespace IED
 			return m_data;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetEffect() const noexcept
+		/*[[nodiscard]] inline constexpr auto& GetEffect() const noexcept
 		{
 			return m_effect;
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr void SetRasterizerState(
 			D3DObjectRasterizerState a_value) noexcept
@@ -65,15 +75,14 @@ namespace IED
 			m_flagsbf.rasterizerState = a_value;
 		}
 
-		[[nodiscard]] inline constexpr void SetOverrideDepth(bool a_switch) noexcept
+		[[nodiscard]] inline constexpr void EnableDepth(bool a_switch) noexcept
 		{
 			m_flags.set(D3DObjectFlags::kDepth, a_switch);
-			m_flags.set(D3DObjectFlags::kOverrideDepth);
 		}
 
-		[[nodiscard]] inline constexpr void ClearOverrideDepth(bool a_switch) noexcept
+		[[nodiscard]] inline constexpr bool IsOpaque() const noexcept
 		{
-			m_flags.clear(D3DObjectFlags::kOverrideDepth);
+			return alpha >= 1.0f;
 		}
 
 	private:

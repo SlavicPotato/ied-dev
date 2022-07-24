@@ -8,6 +8,8 @@ namespace IED
 	}
 }
 
+#include "Drivers/Input/Handlers.h"
+
 namespace IED
 {
 	namespace Tasks
@@ -19,12 +21,12 @@ namespace IED
 		public:
 			virtual ~UIRenderTaskBase() noexcept = default;
 
-			inline constexpr void SetLock(bool a_switch) noexcept
+			inline constexpr void SetControlLock(bool a_switch) noexcept
 			{
 				m_options.lock = a_switch;
 			}
 
-			inline constexpr void SetFreeze(bool a_switch) noexcept
+			inline constexpr void SetFreezeTime(bool a_switch) noexcept
 			{
 				m_options.freeze = a_switch;
 			}
@@ -72,6 +74,7 @@ namespace IED
 			virtual bool Run() = 0;
 			virtual void PrepareGameData(){};
 			virtual void Render(){};
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent &a_evn){};
 
 			struct renderTaskOptions_t
 			{

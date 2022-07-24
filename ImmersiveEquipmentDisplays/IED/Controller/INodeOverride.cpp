@@ -504,6 +504,25 @@ namespace IED
 				}
 				else
 				{
+#if defined(IED_ENABLE_I3DI)
+					if (a_params.objects.GetNodeConditionForced())
+					{
+						auto& wnodes = a_params.objects.GetWeapNodes();
+
+						auto r = ::Util::Node::Traverse(it->second.node.get(), [&](NiAVObject* a_object) {
+							auto it = std::find_if(wnodes.begin(), wnodes.end(), [&](const auto& a_v) {
+								return a_v.node == a_object;
+							});
+
+							return it != wnodes.end() ?
+							           Util::Node::VisitorControl::kStop :
+                                       Util::Node::VisitorControl::kContinue;
+						});
+
+						return r == Util::Node::VisitorControl::kStop;
+					}
+#endif
+
 					auto sh = a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0) ?
 					              BSStringHolder::GetSingleton() :
                                   nullptr;

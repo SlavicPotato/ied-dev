@@ -2,35 +2,29 @@
 
 #include "I3DIActorContext.h"
 
+#include "I3DIActorObject.h"
 #include "I3DICommonData.h"
 #include "I3DIObjectController.h"
-#include "I3DIActorObject.h"
 
 #include "IED/Controller/Controller.h"
 #include "IED/Controller/NodeOverrideData.h"
+
+#include "Drivers/Input/Handlers.h"
 
 namespace IED
 {
 	namespace UI
 	{
 		I3DIActorContext::I3DIActorContext(
-			I3DICommonData&                    a_data,
-			Controller&                        a_controller,
-			Game::FormID                       a_actor,
-			const std::shared_ptr<I3DIActorObject>& a_actorObject) noexcept(false) :
+			I3DICommonData&                         a_data,
+			Controller&                             a_controller,
+			const ActorObjectHolder&                a_holder,
+			const std::shared_ptr<I3DIActorObject>& a_actorObject) :
 			m_controller(a_controller),
-			m_actor(a_actor),
+			m_actor(a_holder.GetActorFormID()),
 			m_actorObject(a_actorObject)
 		{
-			auto& data = m_controller.GetData();
-
-			auto it = data.find(m_actor);
-			if (it == data.end())
-			{
-				throw std::exception("actor doesn't exist");
-			}
-
-			auto& wn = it->second.GetWeapNodes();
+			auto& wn = a_holder.GetWeapNodes();
 
 			auto& nod = NodeOverrideData::GetWeaponNodeData();
 
@@ -54,7 +48,7 @@ namespace IED
 					continue;
 				}
 
-				m_weaponNodes.emplace(
+				auto r = m_weaponNodes.emplace(
 					e.first,
 					std::make_unique<I3DIWeaponNode>(
 						a_data.scene.GetDevice().Get(),
@@ -63,6 +57,8 @@ namespace IED
 						e.first,
 						e.second,
 						*this));
+
+				r.first->second->EnableDepth(true);
 			}
 		}
 
@@ -108,10 +104,17 @@ namespace IED
 				itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
 				itwn->second->UpdateWorldMatrix(e.node->m_worldTransform);
 				itwn->second->UpdateBound();
+				itwn->second->SetHasWorldData(true);
 			}
 
 			m_lastUpdateFailed = false;
 			m_ranFirstUpdate   = true;
+
+			if (!it->second.GetNodeConditionForced())
+			{
+				it->second.SetNodeConditionForced(true);
+				it->second.RequestTransformUpdate();
+			}
 
 			return true;
 		}
@@ -121,6 +124,11 @@ namespace IED
 			if (!m_ranFirstUpdate)
 			{
 				return;
+			}
+
+			if (auto& camera = m_camera)
+			{
+				camera->CameraSetTranslation();
 			}
 		}
 
@@ -134,6 +142,28 @@ namespace IED
 			for (auto& e : m_weaponNodes)
 			{
 				e.second->RenderObject(a_data.scene);
+			}
+		}
+
+		void I3DIActorContext::UpdateCamera(NiCamera* a_camera)
+		{
+			if (auto &camera = m_camera)
+			{
+				/*auto v = DirectX::XMLoadFloat3(&m_actorObject->GetActorBound().Center);
+
+				camera->CameraUpdate(a_camera, v);*/
+
+				camera->CameraUpdate(a_camera);
+			}
+		}
+
+		void I3DIActorContext::OnMouseMoveEvent(
+			I3DICommonData&                 a_data,
+			const Handlers::MouseMoveEvent& a_evn)
+		{
+			if (auto& camera = m_camera)
+			{
+				camera->CameraProcessMouseInput(a_evn);
 			}
 		}
 	}

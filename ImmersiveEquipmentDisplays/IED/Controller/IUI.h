@@ -59,6 +59,7 @@ namespace IED
 		virtual bool Run() override;
 		virtual void PrepareGameData() override;
 		virtual void Render() override;
+		virtual void OnMouseMove(const Handlers::MouseMoveEvent &a_evn) override;
 
 		virtual void OnTaskStop() override;
 		virtual void OnTaskStart() override;

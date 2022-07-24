@@ -6,27 +6,25 @@
 
 namespace IED
 {
-	void AnimationUpdateManager::PrepareAnimationUpdateList(
+	void AnimationUpdateManager::BeginAnimationUpdate(
 		Controller* a_controller)
 	{
 		auto prev = m_running.exchange(true);
 		ASSERT(prev == false);
 
 		a_controller->GetLock().lock();
-		//_DMESSAGE("beg: %u", GetCurrentThreadId());
 	}
 
-	void AnimationUpdateManager::ClearAnimationUpdateList(
+	void AnimationUpdateManager::EndAnimationUpdate(
 		Controller* a_controller)
 	{
 		auto prev = m_running.exchange(false);
 		ASSERT(prev == true);
 
 		a_controller->GetLock().unlock();
-		//_DMESSAGE("end: %u", GetCurrentThreadId());
 	}
 
-	void AnimationUpdateManager::UpdateQueuedAnimationList(
+	void AnimationUpdateManager::ProcessAnimationUpdateList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
 		Controller*                  a_controller)
@@ -38,7 +36,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList().Update(a_data);
+			it->second.GetAnimationUpdateList().UpdateNoLock(a_data);
 		}
 	}
 
@@ -54,7 +52,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList().Update(a_data);
+			it->second.GetAnimationUpdateList().UpdateNoLock(a_data);
 		}
 	}
 

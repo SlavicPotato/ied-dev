@@ -82,8 +82,8 @@ namespace IED
 
 					if (!e.data.validate())
 					{
-						Warning("%s: bad priority data", __FUNCTION__);
-						SetHasErrors();
+						Error("%s: bad priority data", __FUNCTION__);
+						return false;
 					}
 				}
 			}

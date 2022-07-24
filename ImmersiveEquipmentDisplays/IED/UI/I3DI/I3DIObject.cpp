@@ -13,9 +13,9 @@ namespace IED
 	{
 		using namespace DirectX;
 
-		bool  I3DIObject::ObjectIntersects(
+		bool I3DIObject::ObjectIntersects(
 			I3DICommonData& a_data,
-			float&            a_dist)
+			float&          a_dist)
 		{
 			return false;
 		}
@@ -36,11 +36,14 @@ namespace IED
 
 		bool I3DIObject::OnSelectInt(I3DICommonData& a_data)
 		{
-			m_objectFlags.set(I3DIObjectFlags::kSelected);
+			bool result = OnSelect(a_data);
 
-			OnSelect(a_data);
+			if (result)
+			{
+				m_objectFlags.set(I3DIObjectFlags::kSelected);
+			}
 
-			return true;
+			return result;
 		}
 
 		void I3DIObject::OnUnselectInt(I3DICommonData& a_data)

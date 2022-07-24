@@ -132,9 +132,26 @@ namespace IED
 
 	void IUIRenderTask::Render()
 	{
+		stl::scoped_lock lock(m_owner.UIGetLock());
+
 		try
 		{
 			m_context->Render();
+		}
+		catch (const std::exception& e)
+		{
+			HALT(e.what());
+		}
+	}
+
+	void IUIRenderTask::OnMouseMove(
+		const Handlers::MouseMoveEvent& a_evn)
+	{
+		stl::scoped_lock lock(m_owner.UIGetLock());
+
+		try
+		{
+			m_context->OnMouseMove(a_evn);
 		}
 		catch (const std::exception& e)
 		{

@@ -64,7 +64,7 @@ namespace IED
 			};
 
 			std::string   desc;
-			SwapDirection dir;
+			SwapDirection dir{ SwapDirection::None };
 		};
 
 		template <class T>

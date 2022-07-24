@@ -324,8 +324,8 @@ namespace IED
 
 		if (auto& renderTask = UIGetRenderTask())
 		{
-			renderTask->SetLock(config.ui.enableControlLock);
-			renderTask->SetFreeze(config.ui.enableFreezeTime);
+			renderTask->SetControlLock(config.ui.enableControlLock);
+			renderTask->SetFreezeTime(config.ui.enableFreezeTime);
 			renderTask->SetWantCursor(true);
 			renderTask->SetEnabledInMenu(m_iniconf->m_enableInMenus);
 			renderTask->EnableRestrictions(config.ui.enableRestrictions);
@@ -402,8 +402,8 @@ namespace IED
 	{
 		auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000, m_iniconf->m_introBannerVOffset);
 
-		task->SetLock(false);
-		task->SetFreeze(false);
+		task->SetControlLock(false);
+		task->SetFreezeTime(false);
 		task->SetWantCursor(false);
 		task->SetEnabledInMenu(true);
 		task->EnableRestrictions(false);

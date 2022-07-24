@@ -455,7 +455,8 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "$(SSEPath)\Data\SKSE\Plugins\" /Y</Command>
+      <Command>copy "$(TargetPath)" "$(SSEPath)\Data\SKSE\Plugins\" /Y
+copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Installing to: $(SSEPath)\Data\SKSE\Plugins\</Message>
@@ -673,6 +674,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\D3D\D3DAssets.h" />
     <ClInclude Include="IED\D3D\D3DBoundingOrientedBox.h" />
     <ClInclude Include="IED\D3D\D3DEffect.h" />
+    <ClInclude Include="IED\D3D\D3DEffectResources.h" />
     <ClInclude Include="IED\D3D\D3DPrimitiveBatch.h" />
     <ClInclude Include="IED\D3D\D3DCommon.h" />
     <ClInclude Include="IED\D3D\D3DHelpers.h" />
@@ -709,15 +711,18 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DICamera.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIActorObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DICommonData.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDragDropResult.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDraggable.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIDropTarget.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIFreeCamera.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIInputHelpers.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIModelObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObjectBase.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIObjectCamera.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObjectController.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIActorContext.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIAssetCache.h" />
@@ -1113,6 +1118,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\SkeletonID.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />
     <ClCompile Include="IED\D3D\D3DBoundingOrientedBox.cpp" />
+    <ClCompile Include="IED\D3D\D3DEffect.cpp" />
+    <ClCompile Include="IED\D3D\D3DEffectResources.cpp" />
     <ClCompile Include="IED\D3D\D3DPrimitiveBatch.cpp" />
     <ClCompile Include="IED\D3D\D3DCommon.cpp" />
     <ClCompile Include="IED\D3D\D3DModelData.cpp" />
@@ -1143,15 +1150,18 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DICamera.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorContext.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIAssetCache.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DICommonData.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIDraggable.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIDropTarget.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIFreeCamera.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIMain.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIModelObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIObject.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIObjectCamera.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIObjectController.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIPopupWindow.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIWeaponNode.cpp" />

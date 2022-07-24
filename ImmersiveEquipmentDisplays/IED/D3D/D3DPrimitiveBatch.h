@@ -16,7 +16,7 @@ namespace IED
 	DEFINE_ENUM_CLASS_BITWISE(D3DPrimitiveBatchFlags);
 
 	class D3DPrimitiveBatch :
-		public D3DEffect<VertexPositionColorAV>
+		public D3DEffect
 	{
 	public:
 		D3DPrimitiveBatch(

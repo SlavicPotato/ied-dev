@@ -127,7 +127,7 @@ namespace IED
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;
 
-				UI::UIEditorPanel lastPanel;
+				UI::UIEditorPanel lastPanel{ UI::UIEditorPanel::Slot };
 
 				stl::optional<ConfigKeyPair> openKeys;
 

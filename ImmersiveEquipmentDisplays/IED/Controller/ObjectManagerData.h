@@ -393,7 +393,7 @@ namespace IED
 	};
 
 	class ActorObjectHolder
-		//public BSTEventSink<BSAnimationGraphEvent>
+	//public BSTEventSink<BSAnimationGraphEvent>
 	{
 		friend class IObjectManager;
 		friend class Controller;
@@ -442,13 +442,13 @@ namespace IED
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
-			Actor*                  a_actor,
-			NiNode*                 a_root,
-			NiNode*                 a_npcroot,
-			IObjectManager&         a_owner,
-			Game::ObjectRefHandle   a_handle,
-			bool                    a_nodeOverrideEnabled,
-			bool                    a_nodeOverrideEnabledPlayer,
+			Actor*                a_actor,
+			NiNode*               a_root,
+			NiNode*               a_npcroot,
+			IObjectManager&       a_owner,
+			Game::ObjectRefHandle a_handle,
+			bool                  a_nodeOverrideEnabled,
+			bool                  a_nodeOverrideEnabledPlayer,
 			//bool                    a_animEventForwarding,
 			const BipedSlotDataPtr& a_lastEquipped);
 
@@ -482,12 +482,12 @@ namespace IED
 		{
 			return m_actor;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetNPCRoot() const noexcept
 		{
 			return m_npcroot;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetRoot() const noexcept
 		{
 			return m_root;
@@ -722,6 +722,16 @@ namespace IED
 		{
 			return m_skeletonID.get_version().has_value();
 		}
+		
+		[[nodiscard]] inline constexpr bool GetNodeConditionForced() const noexcept
+		{
+			return m_forceNodeCondTrue;
+		}
+		
+		[[nodiscard]] inline constexpr void SetNodeConditionForced(bool a_switch) noexcept
+		{
+			m_forceNodeCondTrue = a_switch;
+		}
 
 	private:
 		void CreateExtraMovNodes(
@@ -774,6 +784,7 @@ namespace IED
 		bool                m_sitting{ false };
 		bool                m_sleeping{ false };
 		bool                m_beingRidden{ false };
+		bool                m_forceNodeCondTrue{ false };
 		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
 		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
 		long long           m_lastLFStateCheck;
@@ -823,6 +834,11 @@ namespace IED
 		}
 
 		[[nodiscard]] inline constexpr auto& GetData() const noexcept
+		{
+			return m_objects;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetData() noexcept
 		{
 			return m_objects;
 		}

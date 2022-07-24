@@ -26,12 +26,17 @@ namespace IED
 		void UI::InitializeImpl()
 		{
 			Input::RegisterForPriorityKeyEvents(this);
+#if defined(IED_ENABLE_I3DI)
+			Input::RegisterForPriorityMouseMoveEvents(this);
+#endif
 
 			auto& r = Render::GetSingleton();
 
 			r.GetEventDispatcher<Events::D3D11CreateEventPost>().AddSink(this);
 			r.GetEventDispatcher<Events::IDXGISwapChainPresent>().AddSink(this);
+#if defined(IED_ENABLE_I3DI)
 			r.GetEventDispatcher<Events::PrepareGameDataEvent>().AddSink(this);
+#endif
 		}
 
 		void UI::Receive(const D3D11CreateEventPost& a_evn)
@@ -299,6 +304,31 @@ namespace IED
 			if (!m_Instance.m_suspended.load(std::memory_order_relaxed))
 			{
 				ProcessEvent(a_evn);
+			}
+		}
+
+		void UI::Receive(const Handlers::MouseMoveEvent& a_evn)
+		{
+			if (m_Instance.m_suspended.load(std::memory_order_relaxed))
+			{
+				return;
+			}
+
+			if (Game::IsPaused())
+			{
+				return;
+			}
+
+			stl::scoped_lock lock(m_lock);
+
+			if (!m_imInitialized)
+			{
+				return;
+			}
+
+			for (auto& e : m_drawTasks)
+			{
+				e.second->OnMouseMove(a_evn);
 			}
 		}
 

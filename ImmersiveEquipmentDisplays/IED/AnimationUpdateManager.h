@@ -12,13 +12,13 @@ namespace IED
 			std::shared_ptr<AnimationGraphManagerHolderList>>;
 
 	public:
-		void PrepareAnimationUpdateList(
+		void BeginAnimationUpdate(
 			Controller* a_controller);
 
-		void ClearAnimationUpdateList(
+		void EndAnimationUpdate(
 			Controller* a_controller);
 
-		void UpdateQueuedAnimationList(
+		void ProcessAnimationUpdateList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
 			Controller*                  a_controller);

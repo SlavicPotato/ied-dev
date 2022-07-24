@@ -31,7 +31,7 @@ namespace IED
 
 		void ID3IMOVNode::SetAdjustedWorldMatrix(const NiTransform& a_worldTransform)
 		{
-			auto world = VectorMath::NiTransformTo4x4Matrix(a_worldTransform);
+			auto world = VectorMath::NiTransformToMatrix4x4(a_worldTransform);
 
 			UpdateWorldMatrix(world * m_acceptedCandidate.GetLocalMatrix());
 		}

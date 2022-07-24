@@ -9,22 +9,39 @@ class NiTransform;
 
 namespace VectorMath
 {
-	DirectX::XMMATRIX XM_CALLCONV NiTransformTo4x4Matrix(
+	DirectX::XMMATRIX XM_CALLCONV NiTransformToMatrix4x4(
 		const NiTransform& a_in);
 
-	DirectX::XMMATRIX XM_CALLCONV NiTransformGetRotation(
+	NiTransform XM_CALLCONV Matrix4x4ToNiTransform(
+		DirectX::XMMATRIX a_in);
+	
+	NiTransform XM_CALLCONV CreateNiTransformTransposed(
+		DirectX::XMVECTOR a_t,
+		DirectX::XMVECTOR a_q,
+		DirectX::XMVECTOR a_s);
+	
+	NiTransform XM_CALLCONV CreateNiTransform(
+		DirectX::XMVECTOR a_t,
+		DirectX::XMVECTOR a_q,
+		DirectX::XMVECTOR a_s);
+
+	DirectX::XMMATRIX XM_CALLCONV NiTransformGetRotationMatrix(
 		const NiTransform& a_in);
 
-	DirectX::XMMATRIX XM_CALLCONV NiTransformGetScale(
+	DirectX::XMMATRIX XM_CALLCONV NiTransformGetScalingMatrix(
 		const NiTransform& a_in);
 
-	DirectX::XMMATRIX XM_CALLCONV NiTransformGetTranslation(
+	DirectX::XMMATRIX XM_CALLCONV NiTransformGetTranslationMatrix(
+		const NiTransform& a_in);
+	
+	DirectX::XMVECTOR XM_CALLCONV NiTransformGetPosition(
 		const NiTransform& a_in);
 
 	void XM_CALLCONV GetCameraPV(
 		NiCamera*          a_camera,
 		DirectX::XMMATRIX& a_view,
-		DirectX::XMMATRIX& a_proj);
+		DirectX::XMMATRIX& a_proj,
+		DirectX::XMVECTOR& a_pos);
 
 	void XM_CALLCONV RayCastScreenPt(
 		const CD3D11_VIEWPORT& a_viewport,
@@ -53,7 +70,7 @@ namespace VectorMath
 		DirectX::CXMMATRIX     a_view,
 		DirectX::CXMMATRIX     a_proj,
 		DirectX::CXMMATRIX     a_world);
-	
+
 	DirectX::XMVECTOR XM_CALLCONV WorldToScreenSpace(
 		const CD3D11_VIEWPORT& a_viewport,
 		DirectX::XMVECTOR      a_pos,
@@ -72,5 +89,15 @@ namespace VectorMath
 		DirectX::CXMMATRIX     a_view,
 		DirectX::CXMMATRIX     a_proj,
 		DirectX::CXMMATRIX     a_world);
+
+	DirectX::XMVECTOR XM_CALLCONV XMQuaternionSlerpCubic(
+		DirectX::XMVECTOR a_from,
+		DirectX::XMVECTOR a_to,
+		float             a_factor);
+	
+	DirectX::XMVECTOR XM_CALLCONV XMVectorLerpCubic(
+		DirectX::XMVECTOR a_from,
+		DirectX::XMVECTOR a_to,
+		float             a_factor);
 
 }

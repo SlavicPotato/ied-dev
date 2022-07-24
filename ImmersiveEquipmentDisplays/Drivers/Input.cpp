@@ -53,46 +53,58 @@ namespace IED
 		{
 			for (auto it = *a_evns; it; it = it->next)
 			{
-				auto buttonEvent = it->AsButtonEvent();
-				if (!buttonEvent)
+				switch (it->eventType)
 				{
-					continue;
-				}
+				case INPUT_EVENT_TYPE::kButton:
+					{
+						auto buttonEvent = static_cast<const ButtonEvent*>(it);
 
-				auto          deviceType = buttonEvent->device;
-				std::uint32_t keyCode;
+						auto          deviceType = buttonEvent->device;
+						std::uint32_t keyCode;
 
-				if (deviceType == INPUT_DEVICE::kMouse)
-				{
-					keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
-				}
-				else if (deviceType == INPUT_DEVICE::kKeyboard)
-				{
-					keyCode = buttonEvent->GetIDCode();
-				}
-				else
-				{
-					continue;
-				}
+						if (deviceType == INPUT_DEVICE::kMouse)
+						{
+							keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
+						}
+						else if (deviceType == INPUT_DEVICE::kKeyboard)
+						{
+							keyCode = buttonEvent->GetIDCode();
+						}
+						else
+						{
+							continue;
+						}
 
-				if (!keyCode || keyCode >= InputMap::kMaxMacros)
-				{
-					continue;
-				}
+						if (!keyCode || keyCode >= InputMap::kMaxMacros)
+						{
+							continue;
+						}
 
-				//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
+						//_DMESSAGE("%X | %f | %f", keyCode, buttonEvent->value, buttonEvent->heldDownSecs);
 
-				if (buttonEvent->IsDown())
-				{
-					DispatchPriorityKeyEvent(
-						KeyEventState::KeyDown,
-						keyCode);
-				}
-				else if (buttonEvent->IsUpLF())
-				{
-					DispatchPriorityKeyEvent(
-						KeyEventState::KeyUp,
-						keyCode);
+						if (buttonEvent->IsDown())
+						{
+							DispatchPriorityKeyEvent(
+								KeyEventState::KeyDown,
+								keyCode);
+						}
+						else if (buttonEvent->IsUpLF())
+						{
+							DispatchPriorityKeyEvent(
+								KeyEventState::KeyUp,
+								keyCode);
+						}
+					}
+					break;
+#if defined(IED_ENABLE_I3DI)
+				case INPUT_EVENT_TYPE::kMouseMove:
+					{
+						auto mouseMoveEvent = static_cast<const MouseMoveEvent*>(it);
+
+						DispatchPriorityKeyEvent(mouseMoveEvent);
+					}
+					break;
+#endif
 				}
 			}
 		}
@@ -361,6 +373,12 @@ namespace IED
 			m_Instance.m_prioHandlers.AddSink(std::addressof(a_handler));
 		}
 
+		void Input::RegisterForPriorityMouseMoveEvents(
+			EventSink<Handlers::MouseMoveEvent>* const a_handler)
+		{
+			m_Instance.m_prioMMHandlers.AddSink(a_handler);
+		}
+
 		void Input::RegisterForKeyEvents(
 			EventSink<Handlers::KeyEvent>* const a_handler)
 		{
@@ -383,6 +401,16 @@ namespace IED
 			};
 
 			m_prioHandlers.SendEvent(evn);
+		}
+
+		void Input::DispatchPriorityKeyEvent(const MouseMoveEvent* a_evn)
+		{
+			Handlers::MouseMoveEvent evn{
+				a_evn->mouseInputX,
+				a_evn->mouseInputY
+			};
+
+			m_prioMMHandlers.SendEvent(evn);
 		}
 
 		void Input::DispatchKeyEvent(

@@ -35,6 +35,7 @@ namespace IED
 				std::uintptr_t(Present_Pre_Hook),
 				m_Instance.m_unkPresent_o));
 
+#if defined(IED_ENABLE_I3DI)
 			if (a_prepHook)
 			{
 				ASSERT(hook::call5(
@@ -43,6 +44,7 @@ namespace IED
 					std::uintptr_t(PrepareData_Hook),
 					m_Instance.m_prepData_o));
 			}
+#endif
 
 			return true;
 		}

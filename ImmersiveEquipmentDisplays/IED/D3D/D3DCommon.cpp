@@ -10,6 +10,7 @@ namespace IED
 		ID3D11Device*               a_device,
 		ID3D11DeviceContext*        a_context,
 		const DXGI_SWAP_CHAIN_DESC& a_desc) noexcept(false) :
+		D3DEffectResources(a_device),
 		m_device(a_device),
 		m_context(a_context)
 	{
@@ -41,6 +42,36 @@ namespace IED
 			std::addressof(depthStencilViewDesc),
 			m_depthStencilView.ReleaseAndGetAddressOf()));
 
+		/*ID3D11RenderTargetView* RenderTargetViews[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT]{ nullptr };
+		ID3D11DepthStencilView* DepthStencilView = nullptr;
+
+		m_context->OMGetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, RenderTargetViews, &DepthStencilView);
+
+		ASSERT(RenderTargetViews[0] != nullptr);
+		ASSERT(DepthStencilView != nullptr);
+
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> renderTargetViewTexture;
+		CreateTextureResourceFromView(a_device, renderTargetViewTexture, RenderTargetViews[0]);
+
+		D3D11_RENDER_TARGET_VIEW_DESC rvdesc{};
+		RenderTargetViews[0]->GetDesc(std::addressof(rvdesc));
+
+		ThrowIfFailed(m_device->CreateRenderTargetView(
+			renderTargetViewTexture.Get(),
+			std::addressof(rvdesc),
+			m_renderTargetViewGameCopy.ReleaseAndGetAddressOf()));
+
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencilViewTexture;
+		CreateTextureResourceFromView(a_device, depthStencilViewTexture, DepthStencilView);
+
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsdesc{};
+		DepthStencilView->GetDesc(std::addressof(dsdesc));
+
+		ThrowIfFailed(m_device->CreateDepthStencilView(
+			depthStencilViewTexture.Get(),
+			std::addressof(dsdesc),
+			m_depthStencilViewGameCopy.ReleaseAndGetAddressOf()));*/
+
 		m_viewport = CD3D11_VIEWPORT(
 			0.0f,
 			0.0f,
@@ -49,26 +80,32 @@ namespace IED
 
 		//m_states = std::make_unique<DirectX::CommonStates>(a_device);
 
-		D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+		D3D11_DEPTH_STENCIL_DESC dsDesc{};
 
-		dsDesc.DepthEnable    = TRUE;
+		dsDesc.DepthEnable    = true;
 		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 		dsDesc.DepthFunc      = D3D11_COMPARISON_LESS_EQUAL;
 
-		dsDesc.StencilEnable    = FALSE;
+		dsDesc.StencilEnable    = false;
 		dsDesc.StencilReadMask  = D3D11_DEFAULT_STENCIL_READ_MASK;
 		dsDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
-		dsDesc.FrontFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;
-		dsDesc.FrontFace.StencilPassOp      = D3D11_STENCIL_OP_KEEP;
-		dsDesc.FrontFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;
 		dsDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+		dsDesc.FrontFace.StencilFailOp      = D3D11_STENCIL_OP_KEEP;
+		dsDesc.FrontFace.StencilPassOp      = D3D11_STENCIL_OP_REPLACE;
+		dsDesc.FrontFace.StencilFunc        = D3D11_COMPARISON_ALWAYS;
 
 		dsDesc.BackFace = dsDesc.FrontFace;
 
 		ThrowIfFailed(a_device->CreateDepthStencilState(
 			std::addressof(dsDesc),
 			m_depthStencilState.ReleaseAndGetAddressOf()));
+
+		dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+		ThrowIfFailed(a_device->CreateDepthStencilState(
+			std::addressof(dsDesc),
+			m_depthStencilStateRead.ReleaseAndGetAddressOf()));
 
 		D3D11_BLEND_DESC blendDesc{};
 
@@ -114,13 +151,33 @@ namespace IED
 		ThrowIfFailed(a_device->CreateRasterizerState(
 			std::addressof(rastDesc),
 			m_rsWireframe.ReleaseAndGetAddressOf()));
+
+		/*D3DWriteBlobToFile(blobVS.Get(), L"Data\\SKSE\\Plugins\\IED\\Assets\\Shaders\\VertexShader.blob", TRUE);
+		D3DWriteBlobToFile(blobPS.Get(), L"Data\\SKSE\\Plugins\\IED\\Assets\\Shaders\\PixelShader.blob", TRUE);*/
 	}
 
-	void D3DCommon::PrepareForDraw()
+	/*void D3DCommon::ResetRDV(bool a_renderTarget, bool a_depth)
+	{
+		if (a_renderTarget)
+		{
+			CopyResource(m_context.Get(), m_renderTargetViewGameCopy.Get(), m_backup.RenderTargetViews[0]);
+		}
+
+		if (a_depth)
+		{
+			CopyResource(m_context.Get(), m_depthStencilViewGameCopy.Get(), m_backup.DepthStencilView);
+		}
+	}*/
+
+	void D3DCommon::PreDraw()
 	{
 		m_context->RSSetViewports(1, std::addressof(m_viewport));
 
-		SetRenderTargets(m_flags.test(D3DCommonFlags::kDepth));
+		ASSERT(m_backup.RenderTargetViews[0] != nullptr);
+
+		//ResetRDV(true, true);
+
+		//SetRenderTargets(m_flags.test(D3DCommonFlags::kDepth));
 
 		m_context->ClearDepthStencilView(
 			m_depthStencilView.Get(),
@@ -141,6 +198,11 @@ namespace IED
 
 		m_context->OMSetBlendState(m_blendState.Get(), nullptr, 0xFFFFFFFF);
 		m_context->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+	}
+
+	void D3DCommon::PostDraw()
+	{
+		//CopyResource(m_context.Get(), m_backup.RenderTargetViews[0], m_renderTargetViewGameCopy.Get());
 	}
 
 	void D3DCommon::SetRasterizerState(D3DObjectRasterizerState a_rsstate)
@@ -190,6 +252,23 @@ namespace IED
 
 	void D3DCommon::SetRenderTargets(bool a_depth)
 	{
+		/*ID3D11RenderTargetView* rtv[] = { m_renderTargetViewGameCopy.Get() };
+
+		if (a_depth)
+		{
+			m_context->OMSetRenderTargets(
+				1,
+				rtv,
+				m_depthStencilViewGameCopy.Get());
+		}
+		else
+		{
+			m_context->OMSetRenderTargets(
+				1,
+				rtv,
+				m_depthStencilView.Get());
+		}*/
+
 		if (a_depth)
 		{
 			m_context->OMSetRenderTargets(
@@ -206,6 +285,18 @@ namespace IED
 		}
 	}
 
+	void D3DCommon::SetDepthStencilState(D3DDepthStencilState a_state)
+	{
+		if (a_state == D3DDepthStencilState::kWrite)
+		{
+			m_context->OMSetDepthStencilState(m_depthStencilState.Get(), 0);
+		}
+		else
+		{
+			m_context->OMSetDepthStencilState(m_depthStencilStateRead.Get(), 0);
+		}
+	}
+
 	D3D11StateBackupImpl& D3DCommon::GetStateBackup(bool a_memzero)
 	{
 		if (a_memzero)
@@ -214,6 +305,41 @@ namespace IED
 		}
 
 		return m_backup;
+	}
+
+	void D3DCommon::CreateTextureResourceFromView(
+		ID3D11Device*                            a_device,
+		Microsoft::WRL::ComPtr<ID3D11Texture2D>& a_out,
+		ID3D11View*                              a_source)
+	{
+		Microsoft::WRL::ComPtr<ID3D11Resource>  ores;
+		Microsoft::WRL::ComPtr<ID3D11Texture2D> otex;
+
+		a_source->GetResource(ores.ReleaseAndGetAddressOf());
+
+		ThrowIfFailed(ores->QueryInterface(IID_PPV_ARGS(otex.ReleaseAndGetAddressOf())));
+
+		D3D11_TEXTURE2D_DESC descTex{};
+		otex->GetDesc(std::addressof(descTex));
+
+		ThrowIfFailed(a_device->CreateTexture2D(
+			std::addressof(descTex),
+			nullptr,
+			a_out.ReleaseAndGetAddressOf()));
+	}
+
+	void D3DCommon::CopyResource(
+		ID3D11DeviceContext* a_context,
+		ID3D11View*          a_dest,
+		ID3D11View*          a_source)
+	{
+		Microsoft::WRL::ComPtr<ID3D11Resource> srcRes;
+		a_source->GetResource(srcRes.ReleaseAndGetAddressOf());
+
+		Microsoft::WRL::ComPtr<ID3D11Resource> dstRes;
+		a_dest->GetResource(dstRes.ReleaseAndGetAddressOf());
+
+		a_context->CopyResource(dstRes.Get(), srcRes.Get());
 	}
 
 }

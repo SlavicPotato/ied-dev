@@ -24,6 +24,7 @@ namespace IED
 			IGlyphData,
 			UIInputHandler,
 			::Events::EventSink<Handlers::KeyEvent>,
+			::Events::EventSink<Handlers::MouseMoveEvent>,
 			::Events::EventSink<Events::D3D11CreateEventPost>,
 			::Events::EventSink<Events::IDXGISwapChainPresent>,
 			::Events::EventSink<Events::PrepareGameDataEvent>,
@@ -203,6 +204,7 @@ namespace IED
 			void InitializeImpl();
 
 			virtual void Receive(const Handlers::KeyEvent& a_evn) override;
+			virtual void Receive(const Handlers::MouseMoveEvent& a_evn) override;
 			virtual void Receive(const Events::D3D11CreateEventPost& a_evn) override;
 			virtual void Receive(const Events::IDXGISwapChainPresent& a_evn) override;
 			virtual void Receive(const Events::PrepareGameDataEvent& a_evn) override;

@@ -19,7 +19,7 @@ namespace IED
 			struct Interface
 			{
 				UIEditorInterface*     ptr{ nullptr };
-				Localization::StringID label;
+				Localization::StringID label{ 0 };
 
 				ImGuiTabBarFlags flags{ ImGuiTabItemFlags_None };
 			};

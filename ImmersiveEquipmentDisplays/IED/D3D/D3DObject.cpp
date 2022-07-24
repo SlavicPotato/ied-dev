@@ -15,24 +15,16 @@ namespace IED
 
 	D3DObject::D3DObject(
 		ID3D11Device*                        a_device,
-		const std::shared_ptr<D3DModelData>& a_data) noexcept(false) :
-		D3DEffect(a_device),
+		const std::shared_ptr<D3DModelData>& a_data) :
+		D3DEffect(
+			a_device,
+			D3DVertexShaderID::kLightingColorVertexShader,
+			D3DPixelShaderID::kLightingPixelShader),
 		m_data(a_data)
 	{
-		m_effect->SetTextureEnabled(false);
-		m_effect->EnableDefaultLighting();
-
-		if (a_data->HasVertexColors())
-		{
-			m_effect->SetVertexColorEnabled(true);
-			m_effect->SetAlpha(0.5f);
-		}
-		else
-		{
-			m_effect->SetColorAndAlpha({ 0.5f, 0.5f, 0.5f, 0.5f });
-		}
-
-		CreateInputLayout(a_device);
+		SetLightingEnabled(true);
+		SetDiffuseColor({ 0.0f, 1.0f, 1.0f, 0.5f });
+		SetAlpha(0.5f);
 	}
 
 	void D3DObject::UpdateBound()
@@ -48,6 +40,30 @@ namespace IED
 		return m_bound.Intersects(a_origin, a_direction, a_distance);
 	}
 
+	float XM_CALLCONV D3DObject::GetDistance(
+		FXMVECTOR a_origin) const
+	{
+		return XMVectorGetX(XMVector3Length(m_world.r[3] - a_origin));
+	}
+
+	float XM_CALLCONV D3DObject::GetDistanceSq(
+		FXMVECTOR a_origin) const
+	{
+		return XMVectorGetX(XMVector3LengthSq(m_world.r[3] - a_origin));
+	}
+
+	float XM_CALLCONV D3DObject::GetCenterDistance(DirectX::FXMVECTOR a_origin) const
+	{
+		auto center = XMLoadFloat3(std::addressof(m_bound.Center));
+		return XMVectorGetX(XMVector3Length(center - a_origin));
+	}
+
+	float XM_CALLCONV D3DObject::GetCenterDistanceSq(DirectX::FXMVECTOR a_origin) const
+	{
+		auto center = XMLoadFloat3(std::addressof(m_bound.Center));
+		return XMVectorGetX(XMVector3LengthSq(center - a_origin));
+	}
+
 	void D3DObject::Draw(
 		D3DCommon& a_scene)
 	{
@@ -56,24 +72,16 @@ namespace IED
 		SetMatrices(a_scene.GetViewMatrix(), a_scene.GetProjectionMatrix());
 
 		a_scene.SetRasterizerState(m_flagsbf.rasterizerState);
+		a_scene.SetRenderTargets(m_flags.test(D3DObjectFlags::kDepth));
+		a_scene.SetDepthStencilState(
+			alpha >= 1.0f ?
+				D3DDepthStencilState::kWrite :
+                D3DDepthStencilState::kNone);
 
-		std::optional<bool> lastDepthState;
-
-		if (m_flags.test(D3DObjectFlags::kOverrideDepth))
-		{
-			lastDepthState = a_scene.GetDepthEnabled();
-
-			a_scene.SetRenderTargets(m_flags.test(D3DObjectFlags::kDepth));
-		}
-
-		ApplyEffect(context);
+		context->IASetInputLayout(a_scene.GetILVertexPositionNormalColor().Get());
+		ApplyEffect(context, a_scene);
 
 		m_data->Draw(context);
-
-		if (lastDepthState)
-		{
-			a_scene.SetRenderTargets(*lastDepthState);
-		}
 	}
 
 }

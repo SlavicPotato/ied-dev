@@ -1,5 +1,7 @@
 #pragma once
 
+#include "D3DEffectResources.h"
+
 #include <ext/D3D11Backup.h>
 
 namespace IED
@@ -7,10 +9,6 @@ namespace IED
 	enum class D3DCommonFlags : std::uint32_t
 	{
 		kNone = 0,
-
-		kAlpha = 1u << 0,
-		kCull  = 1u << 1,
-		kDepth = 1u << 2,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(D3DCommonFlags);
@@ -21,25 +19,35 @@ namespace IED
 		kWireframe = 1
 	};
 
-	class D3DCommon
+	enum class D3DDepthStencilState : std::uint32_t
+	{
+		kNone  = 0,
+		kWrite = 1
+	};
+
+	class D3DCommon :
+		public D3DEffectResources
 	{
 	public:
 		inline static constexpr auto DEFAULT_FLAGS =
-			D3DCommonFlags::kCull;
+			D3DCommonFlags::kNone;
 
 		D3DCommon(
 			ID3D11Device*               a_device,
 			ID3D11DeviceContext*        a_context,
 			const DXGI_SWAP_CHAIN_DESC& a_desc) noexcept(false);
 
-		void PrepareForDraw();
+		//void ResetRDV(bool a_renderTarget, bool a_depth);
 
-		[[nodiscard]] inline constexpr auto& GetViewport() noexcept
+		void PreDraw();
+		void PostDraw();
+
+		[[nodiscard]] inline constexpr auto& GetViewport() const noexcept
 		{
 			return m_viewport;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetDepthStencilView() noexcept
+		[[nodiscard]] inline constexpr auto& GetDepthStencilView() const noexcept
 		{
 			return m_depthStencilView;
 		}
@@ -54,9 +62,49 @@ namespace IED
 			return m_view;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetViewMatrix() const noexcept
+		{
+			return m_view;
+		}
+
 		[[nodiscard]] inline constexpr auto& GetProjectionMatrix() noexcept
 		{
 			return m_proj;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetProjectionMatrix() const noexcept
+		{
+			return m_proj;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCameraPosition() noexcept
+		{
+			return m_camPos;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCameraPosition() const noexcept
+		{
+			return m_camPos;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCameraMatrix() noexcept
+		{
+			return m_camMatrix;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCameraMatrix() const noexcept
+		{
+			return m_camMatrix;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetCameraSetMatrix() noexcept
+		{
+			return m_camSetMatrix;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCameraSetMatrix() const noexcept
+		{
+			return m_camSetMatrix;
 		}
 
 		[[nodiscard]] inline constexpr auto& GetDevice() const noexcept
@@ -69,40 +117,45 @@ namespace IED
 			return m_context;
 		}
 
-		[[nodiscard]] void SetRasterizerState(D3DObjectRasterizerState a_rsstate);
-		[[nodiscard]] void SetRenderTargets(bool a_depth);
-
-		[[nodiscard]] inline constexpr void EnableDepth(bool a_switch) noexcept
-		{
-			m_flags.set(D3DCommonFlags::kDepth, a_switch);
-		}
-
-		[[nodiscard]] inline constexpr bool GetDepthEnabled() noexcept
-		{
-			return m_flags.test(D3DCommonFlags::kDepth);
-		}
-
-		[[nodiscard]] inline constexpr void EnableAlpha(bool a_switch) noexcept
-		{
-			m_flags.set(D3DCommonFlags::kAlpha, a_switch);
-		}
+		void SetRasterizerState(D3DObjectRasterizerState a_rsstate);
+		void SetRenderTargets(bool a_depth);
+		void SetDepthStencilState(D3DDepthStencilState a_state);
 
 		[[nodiscard]] D3D11StateBackupImpl& GetStateBackup(bool a_memzero = true);
 
 	private:
+		static void CreateTextureResourceFromView(
+			ID3D11Device*                            a_device,
+			Microsoft::WRL::ComPtr<ID3D11Texture2D>& a_out,
+			ID3D11View*                              a_source) noexcept(false);
+
+		static void CopyResource(
+			ID3D11DeviceContext* a_context,
+			ID3D11View*          a_dest,
+			ID3D11View*          a_source);
+
 		DirectX::XMMATRIX m_view{ DirectX::SimpleMath::Matrix::Identity };
 		DirectX::XMMATRIX m_proj{ DirectX::SimpleMath::Matrix::Identity };
+
+		DirectX::XMMATRIX m_camMatrix{ DirectX::SimpleMath::Matrix::Identity };
+		DirectX::XMVECTOR m_camPos{ DirectX::g_XMZero.v };
+
+		std::optional<DirectX::XMMATRIX> m_camSetMatrix;
 
 		Microsoft::WRL::ComPtr<ID3D11Device>        m_device;
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context;
 
-		Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_depthStencilView;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilStateRead;
 		Microsoft::WRL::ComPtr<ID3D11BlendState>        m_blendState;
 		Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsCullClockwise;
 		Microsoft::WRL::ComPtr<ID3D11RasterizerState>   m_rsWireframe;
 
-		CD3D11_VIEWPORT m_viewport;
+		/*Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilViewGameCopy;
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> m_renderTargetViewGameCopy;*/
+
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> m_depthStencilView;
+		CD3D11_VIEWPORT                                m_viewport;
 
 		//std::unique_ptr<DirectX::CommonStates> m_states;
 

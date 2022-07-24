@@ -12,7 +12,7 @@ namespace IED
 		{
 			if (m_state.running)
 			{
-				IPerfCounter::delta_us(
+				return IPerfCounter::delta_us(
 					m_state.startTime,
 					IPerfCounter::Query());
 			}

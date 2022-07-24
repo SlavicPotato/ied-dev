@@ -448,7 +448,7 @@ namespace IED
 						LS(UISettingsStrings::ControlLock, "6"),
 						std::addressof(ui.enableControlLock))))
 				{
-					m_controller.UIGetRenderTask()->SetLock(ui.enableControlLock);
+					m_controller.UIGetRenderTask()->SetControlLock(ui.enableControlLock);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::ControlLock);
@@ -459,7 +459,7 @@ namespace IED
 						LS(UISettingsStrings::FreezeTime, "7"),
 						std::addressof(ui.enableFreezeTime))))
 				{
-					m_controller.UIGetRenderTask()->SetFreeze(ui.enableFreezeTime);
+					m_controller.UIGetRenderTask()->SetFreezeTime(ui.enableFreezeTime);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::FreezeTime);

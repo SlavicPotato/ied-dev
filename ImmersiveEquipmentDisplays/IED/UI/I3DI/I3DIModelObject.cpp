@@ -25,27 +25,28 @@ namespace IED
 
 		void I3DIModelObject::OnMouseMoveOver(I3DICommonData& a_data)
 		{
-			m_effect->SetAlpha(1.0f);
+			SetAlpha(1.0f);
 		}
 
 		void I3DIModelObject::OnMouseMoveOut(I3DICommonData& a_data)
 		{
 			if (!m_objectFlags.test_any(I3DIObjectFlags::kHSMask))
 			{
-				m_effect->SetAlpha(0.5f);
+				SetAlpha(0.5f);
 			}
 		}
 
-		void I3DIModelObject::OnSelect(I3DICommonData& a_data)
+		bool I3DIModelObject::OnSelect(I3DICommonData& a_data)
 		{
-			m_effect->SetAlpha(1.0f);
+			SetAlpha(1.0f);
+			return true;
 		}
 
 		void I3DIModelObject::OnUnselect(I3DICommonData& a_data)
 		{
 			if (!m_objectFlags.test_any(I3DIObjectFlags::kHSMask))
 			{
-				m_effect->SetAlpha(0.5f);
+				SetAlpha(0.5f);
 			}
 		}
 

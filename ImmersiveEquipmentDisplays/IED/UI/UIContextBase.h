@@ -2,6 +2,8 @@
 
 #include "Window/UIWindowBase.h"
 
+#include "Drivers/Input/Handlers.h"
+
 namespace IED
 {
 	class Controller;
@@ -24,6 +26,7 @@ namespace IED
 			virtual void PrepareGameData(){};
 			virtual void Render(){};
 			virtual void Reset(){};
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn){};
 
 			virtual void OnOpen(){};
 			virtual void OnClose(){};

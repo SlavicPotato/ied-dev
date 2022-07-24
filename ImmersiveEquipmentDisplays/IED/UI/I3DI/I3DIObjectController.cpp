@@ -4,12 +4,17 @@
 
 #include "I3DICommonData.h"
 #include "I3DIInputHelpers.h"
+#include "I3DIModelObject.h"
 #include "I3DIObject.h"
+
+#include "I3DIActorObject.h"
 
 namespace IED
 {
 	namespace UI
 	{
+		using namespace DirectX;
+
 		void I3DIObjectController::RegisterObject(
 			const std::shared_ptr<I3DIObject>& a_object)
 		{
@@ -61,23 +66,21 @@ namespace IED
 
 			if (I3DI::IsMouseReleased())
 			{
-				if (hoveredObject != m_selected)
+				if (hoveredObject)
 				{
-					if (m_selected)
-					{
-						m_selected->OnUnselectInt(a_data);
-					}
+					hoveredObject->OnClick(a_data);
 
-					if (hoveredObject)
+					if (hoveredObject->IsSelectable() && hoveredObject != m_selected)
 					{
 						if (hoveredObject->OnSelectInt(a_data))
 						{
+							if (m_selected)
+							{
+								m_selected->OnUnselectInt(a_data);
+							}
+
 							m_selected = hoveredObject;
 						}
-					}
-					else
-					{
-						m_selected.reset();
 					}
 				}
 			}
@@ -85,6 +88,62 @@ namespace IED
 			for (auto& e : m_data)
 			{
 				e.object->DrawObjectExtra(a_data);
+			}
+		}
+
+		void I3DIObjectController::RenderObjects(I3DICommonData& a_data)
+		{
+			m_drawQueueOpaque.clear();
+			m_drawQueueAlpha.clear();
+
+			auto p = a_data.scene.GetCameraPosition();
+
+			for (auto& e : m_data)
+			{
+				if (!e.object->HasWorldData())
+				{
+					continue;
+				}
+
+				if (auto model = e.object->GetAsModelObject())
+				{
+					if (model->IsOpaque())
+					{
+						m_drawQueueOpaque.emplace_back(
+							model->GetCenterDistanceSq(p),
+							model);
+					}
+					else
+					{
+						m_drawQueueAlpha.emplace_back(
+							model->GetCenterDistanceSq(p),
+							model);
+					}
+				}
+			}
+
+			std::sort(
+				m_drawQueueOpaque.begin(),
+				m_drawQueueOpaque.end(),
+				[&](auto& a_lhs, auto& a_rhs) {
+					return a_lhs.first < a_rhs.first;
+				});
+
+			std::sort(
+				m_drawQueueAlpha.begin(),
+				m_drawQueueAlpha.end(),
+				[&](auto& a_lhs, auto& a_rhs) {
+					return a_lhs.first > a_rhs.first;
+				});
+
+			for (auto& e : m_drawQueueOpaque)
+			{
+				e.second->Draw(a_data.scene);
+			}
+
+			for (auto& e : m_drawQueueAlpha)
+			{
+				e.second->Draw(a_data.scene);
 			}
 		}
 

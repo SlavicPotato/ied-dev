@@ -17,7 +17,7 @@ namespace IED
 		std::string   name;
 		bool          active{ false };
 		Game::FormID  race;
-		std::uint32_t flags;
+		std::uint32_t flags{ 0 };
 		float         weight{ 0.0f };
 		bool          female{ false };
 	};

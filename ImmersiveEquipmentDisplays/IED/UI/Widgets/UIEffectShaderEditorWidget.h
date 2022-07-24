@@ -33,8 +33,8 @@ namespace IED
 		struct EffectShaderFunctionContextResult
 		{
 			EffectShaderContextAction      action{ EffectShaderContextAction::None };
-			Data::EffectShaderFunctionType functionType;
-			SwapDirection                  dir;
+			Data::EffectShaderFunctionType functionType{ Data::EffectShaderFunctionType::None };
+			SwapDirection                  dir{ SwapDirection::None };
 		};
 
 		struct EffectShaderEntryResult

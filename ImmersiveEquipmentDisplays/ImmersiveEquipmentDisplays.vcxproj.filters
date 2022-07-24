@@ -216,6 +216,9 @@
     <Filter Include="Source\IED\UI\I3DI\Object">
       <UniqueIdentifier>{a6c645eb-ee6f-44b8-96f4-40d8d5cca95f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\UI\I3DI\Camera">
+      <UniqueIdentifier>{5bc440ea-106a-47aa-a3a0-16c53c49b5e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1382,6 +1385,18 @@
     <ClInclude Include="IED\UI\I3DI\I3DIActorObject.h">
       <Filter>Source\IED\UI\I3DI\Object</Filter>
     </ClInclude>
+    <ClInclude Include="IED\D3D\D3DEffectResources.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DICamera.h">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIFreeCamera.h">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIObjectCamera.h">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2175,6 +2190,21 @@
     </ClCompile>
     <ClCompile Include="IED\UI\I3DI\I3DIActorObject.cpp">
       <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DEffect.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DEffectResources.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DICamera.cpp">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIFreeCamera.cpp">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIObjectCamera.cpp">
+      <Filter>Source\IED\UI\I3DI\Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

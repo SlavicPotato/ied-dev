@@ -25,7 +25,7 @@ namespace IED
 		{
 			if (IsHovered())
 			{
-				if (!a_data.actorContext || a_data.actorContext->GetActorFormID() != m_actor)
+				if (!a_data.actorContext || a_data.actorContext->GetActorObject().get() != this)
 				{
 					m_bound.DrawBox(a_data.batchDepth, XMVectorReplicate(0.5f));
 
@@ -52,8 +52,13 @@ namespace IED
 			}
 		}
 
-		void I3DIActorObject::OnSelect(I3DICommonData& a_data)
+		void I3DIActorObject::OnClick(I3DICommonData& a_data)
 		{
+			if (a_data.actorContext && a_data.actorContext->GetActorObject().get() == this)
+			{
+				return;
+			}
+
 			a_data.queuedActor = m_actor;
 		}
 
@@ -61,7 +66,7 @@ namespace IED
 			I3DICommonData& a_data,
 			float&          a_dist)
 		{
-			if (a_data.actorContext && a_data.actorContext->GetActorFormID() == m_actor)
+			if (a_data.actorContext && a_data.actorContext->GetActorObject().get() == this)
 			{
 				return false;
 			}
@@ -69,7 +74,8 @@ namespace IED
 			return m_bound.Intersects(a_data.ray.origin, a_data.ray.dir, a_dist);
 		}
 
-		void I3DIActorObject::Update(const ActorObjectHolder& a_holder)
+		void I3DIActorObject::Update(
+			const ActorObjectHolder& a_holder)
 		{
 			auto& actor = a_holder.GetActor();
 
@@ -85,7 +91,7 @@ namespace IED
 			XMStoreFloat3(std::addressof(n), extent);
 
 			BoundingOrientedBox tmp(m, n, { 0, 0, 0, 1.0f });
-			tmp.Transform(m_bound, VectorMath::NiTransformTo4x4Matrix(a_holder.GetNPCRoot()->m_worldTransform));
+			tmp.Transform(m_bound, VectorMath::NiTransformToMatrix4x4(a_holder.GetNPCRoot()->m_worldTransform));
 		}
 	}
 }

@@ -671,13 +671,13 @@ namespace IED
 		Game::ProcessLists* a_pl,
 		void*               a_unk)
 	{
-		m_Instance.PrepareAnimationUpdateList(m_Instance.m_controller);
+		m_Instance.BeginAnimationUpdate(m_Instance.m_controller);
 		m_Instance.m_prepareAnimUpdateLists_o(a_pl, a_unk);
 	}
 
 	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk)
 	{
-		m_Instance.ClearAnimationUpdateList(m_Instance.m_controller);
+		m_Instance.EndAnimationUpdate(m_Instance.m_controller);
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
 	}
 
@@ -1045,7 +1045,7 @@ namespace IED
 
 			if (auto actor = a_refr->As<Actor>())
 			{
-				m_Instance.UpdateQueuedAnimationList(actor, data, m_Instance.m_controller);
+				m_Instance.ProcessAnimationUpdateList(actor, data, m_Instance.m_controller);
 			}
 		}
 

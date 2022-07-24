@@ -28,7 +28,8 @@ namespace IED
 
 			kHSMask = kHovered | kSelected,
 
-			kHidden = 1u << 2
+			kHidden       = 1u << 2,
+			kHasWorldData = 1u << 3
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(I3DIObjectFlags);
@@ -62,12 +63,15 @@ namespace IED
 				return nullptr;
 			};
 
+			virtual void RenderObject(D3DCommon& a_data){};
+
 			virtual void DrawObjectExtra(I3DICommonData& a_data){};
 
 			virtual void OnMouseMoveOver(I3DICommonData& a_data){};
 			virtual void OnMouseMoveOut(I3DICommonData& a_data){};
-			virtual void OnSelect(I3DICommonData& a_data){};
+			virtual bool OnSelect(I3DICommonData& a_data) { return false; };
 			virtual void OnUnselect(I3DICommonData& a_data){};
+			virtual void OnClick(I3DICommonData& a_data){};
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
@@ -82,10 +86,20 @@ namespace IED
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kSelected);
 			}
-			
+
 			[[nodiscard]] inline constexpr bool IsHidden() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kHidden);
+			}
+
+			[[nodiscard]] inline constexpr bool HasWorldData() const noexcept
+			{
+				return m_objectFlags.test(I3DIObjectFlags::kHasWorldData);
+			}
+
+			[[nodiscard]] inline constexpr void SetHasWorldData(bool a_switch) noexcept
+			{
+				return m_objectFlags.set(I3DIObjectFlags::kHasWorldData, a_switch);
 			}
 
 		private:
@@ -93,6 +107,8 @@ namespace IED
 			virtual void OnMouseMoveOutInt(I3DICommonData& a_data);
 			virtual bool OnSelectInt(I3DICommonData& a_data);
 			virtual void OnUnselectInt(I3DICommonData& a_data);
+
+			virtual bool IsSelectable() { return false; };
 
 		protected:
 			stl::flag<I3DIObjectFlags> m_objectFlags{ I3DIObjectFlags::kNone };

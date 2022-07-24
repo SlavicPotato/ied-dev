@@ -1,12 +1,11 @@
 #pragma once
 
-#include <ext/ILUID.h>
-
 namespace IED
 {
 	namespace UI
 	{
 		class I3DIObject;
+		class I3DIModelObject;
 		struct I3DICommonData;
 
 		class I3DIObjectController
@@ -39,6 +38,7 @@ namespace IED
 			//}
 
 			void Run(I3DICommonData& a_data);
+			void RenderObjects(I3DICommonData& a_data);
 
 		protected:
 			std::shared_ptr<I3DIObject> GetHovered(
@@ -47,7 +47,9 @@ namespace IED
 			std::shared_ptr<I3DIObject> m_hovered;
 			std::shared_ptr<I3DIObject> m_selected;
 
-			stl::vector<Entry> m_data;
+			stl::vector<Entry>                              m_data;
+			stl::vector<std::pair<float, I3DIModelObject*>> m_drawQueueOpaque;
+			stl::vector<std::pair<float, I3DIModelObject*>> m_drawQueueAlpha;
 		};
 
 	}

@@ -58,6 +58,8 @@ namespace IED
 			virtual bool WantDrawTooltip();
 			virtual bool WantDrawBound();
 
+			virtual bool IsSelectable() override;
+
 			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const override;
 
 			stl::fixed_string                          m_nodeName;

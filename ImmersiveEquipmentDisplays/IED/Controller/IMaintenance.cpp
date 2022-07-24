@@ -75,7 +75,7 @@ namespace IED
 				{
 					Warning("%.8X: bad priority data, resetting", a_handle.get());
 
-					e = {};
+					e.clear();
 				}
 			}
 		}

@@ -59,9 +59,9 @@
 #include <DirectXCollision.h>
 #include <DirectXMath.h>
 
-#include <DirectXTK/CommonStates.h>
-#include <DirectXTK/DirectXHelpers.h>
-#include <DirectXTK/Effects.h>
+//#include <DirectXTK/CommonStates.h>
+//#include <DirectXTK/DirectXHelpers.h>
+//#include <DirectXTK/Effects.h>
 #include <DirectXTK/PrimitiveBatch.h>
 #include <DirectXTK/SimpleMath.h>
 #include <DirectXTK/VertexTypes.h>

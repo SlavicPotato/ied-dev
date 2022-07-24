@@ -27,11 +27,11 @@ namespace IED
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 
-			virtual void OnSelect(I3DICommonData& a_data) override;
+			virtual void OnClick(I3DICommonData& a_data) override;
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
-				float&            a_dist) override;
+				float&          a_dist) override;
 
 			void Update(const ActorObjectHolder& a_holder);
 

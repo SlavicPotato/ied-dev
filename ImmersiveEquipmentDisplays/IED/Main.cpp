@@ -72,13 +72,7 @@ namespace IED
 		{
 			Debug("Initializing render interface..");
 
-			if (Drivers::Render::Initialize(
-#if defined(IED_ENABLE_I3DI)
-					true
-#else
-					false
-#endif
-					))
+			if (Drivers::Render::Initialize(true))
 			{
 				Debug("Installing priority input hook..");
 

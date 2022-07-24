@@ -107,7 +107,7 @@ namespace IED
 			std::string                     desc;
 			Data::NodeOverrideConditionType matchType;
 			Game::FormID                    form;
-			SwapDirection                   dir;
+			SwapDirection                   dir{ SwapDirection::None };
 
 			union
 			{
@@ -116,14 +116,14 @@ namespace IED
 				Data::ObjectSlotExtra    type;
 			};
 
-			bool isGroup;
+			bool isGroup{ false };
 		};
 
 		struct NodeOverridePlacementOverrideResult
 		{
 			NodeOverrideCommonAction action{ NodeOverrideCommonAction::None };
 			std::string              desc;
-			SwapDirection            dir;
+			SwapDirection            dir{ SwapDirection::None };
 		};
 
 		template <class T>

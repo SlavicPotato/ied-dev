@@ -68,4 +68,65 @@ namespace IED
 		bool SaveImpl(const std::shared_ptr<ModelData>& a_data, bool a_store);
 	};
 
+	struct D3DShaderData
+	{
+		friend class boost::serialization::access;
+
+	public:
+		enum Serialization : unsigned int
+		{
+			DataVersion1 = 1
+		};
+
+		stl::boost_vector<std::uint8_t> shaderData;
+
+	private:
+		template <class Archive>
+		void serialize(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& shaderData;
+		}
+	};
+
+	struct D3DShaderDataHolder
+	{
+		friend class boost::serialization::access;
+
+	public:
+		enum Serialization : unsigned int
+		{
+			DataVersion1 = 1
+		};
+
+		D3DShaderData vertexColor;
+		D3DShaderData vertexColorLighting;
+		D3DShaderData pixelBasic;
+		D3DShaderData pixelVertexLighting;
+
+	private:
+		template <class Archive>
+		void serialize(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& vertexColor;
+			a_ar& vertexColorLighting;
+			a_ar& pixelBasic;
+			a_ar& pixelVertexLighting;
+		}
+	};
+
+	class D3DShaderDataIO
+	{
+	public:
+		static void Load(const char* a_path, D3DShaderDataHolder& a_out) noexcept(false);
+		static void Save(const char* a_path, const D3DShaderDataHolder& a_in) noexcept(false);
+	};
+
 }
+
+BOOST_CLASS_VERSION(
+	IED::D3DShaderData,
+	IED::D3DShaderData::Serialization::DataVersion1);
+
+BOOST_CLASS_VERSION(
+	IED::D3DShaderDataHolder,
+	IED::D3DShaderDataHolder::Serialization::DataVersion1);

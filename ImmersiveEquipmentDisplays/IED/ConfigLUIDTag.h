@@ -25,13 +25,13 @@ namespace IED
 			{
 			}
 
-			configLUIDTagAG_t& operator=(const configLUIDTagAG_t&)
+			configLUIDTagAG_t& operator=(const configLUIDTagAG_t&) noexcept
 			{
 				static_cast<luid_tag&>(*this) = ILUID()();
 				return *this;
 			}
 
-			configLUIDTagAG_t operator=(configLUIDTagAG_t&&)
+			configLUIDTagAG_t operator=(configLUIDTagAG_t&&) noexcept
 			{
 				static_cast<luid_tag&>(*this) = ILUID()();
 				return *this;

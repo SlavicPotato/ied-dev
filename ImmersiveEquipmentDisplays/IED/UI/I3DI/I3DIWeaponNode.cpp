@@ -30,7 +30,7 @@ namespace IED
 		void I3DIWeaponNode::UpdateLocalMatrix(
 			const NiTransform& a_transform)
 		{
-			m_localMatrix = VectorMath::NiTransformTo4x4Matrix(a_transform);
+			m_localMatrix = VectorMath::NiTransformToMatrix4x4(a_transform);
 		}
 
 		bool I3DIWeaponNode::OnDragBegin()
@@ -57,6 +57,11 @@ namespace IED
 		bool I3DIWeaponNode::WantDrawBound()
 		{
 			return m_objectFlags.test_any(I3DIObjectFlags::kHSMask);
+		}
+
+		bool I3DIWeaponNode::IsSelectable()
+		{
+			return true;
 		}
 
 		DirectX::XMVECTOR XM_CALLCONV I3DIWeaponNode::GetParentCenter() const

@@ -85,18 +85,15 @@ namespace IED
 					tmp->vertices[i].normal = DirectX::XMFLOAT3(0, 0, 0);
 				}
 
-				/*if (hasColors)
+				if (hasColors)
 				{
 					auto& f                = mesh->mColors[0][i];
-					tmp->vertices[i].color = DirectX::XMFLOAT4(f.r, f.g, f.b, f.a);
+					tmp->vertices[i].color = DirectX::XMFLOAT4(f.r, f.g, f.b, 1.0f);
 				}
 				else
 				{
-					tmp->vertices[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-				}*/
-
-				tmp->vertices[i].color = DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
-				tmp->m_hasVertexColors = true;
+					tmp->vertices[i].color = DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
+				}
 			}
 
 			std::uint32_t numIndices = 0;
@@ -158,5 +155,52 @@ namespace IED
 			sizeof(decltype(vertices)::value_type));
 
 		return result;
+	}
+
+	void D3DShaderDataIO::Load(
+		const char*          a_path,
+		D3DShaderDataHolder& a_out) noexcept(false)
+	{
+		std::ifstream ifs;
+
+		ifs.open(a_path, std::ifstream::in | std::ifstream::binary);
+
+		if (!ifs || !ifs.is_open())
+		{
+			throw std::system_error(
+				errno,
+				std::system_category(),
+				a_path);
+		}
+
+		boost::archive::binary_iarchive ia(ifs);
+
+		ia >> a_out;
+	}
+
+	void D3DShaderDataIO::Save(
+		const char*                a_path,
+		const D3DShaderDataHolder& a_in) noexcept(false)
+	{
+		std::ofstream ofs;
+
+		ofs.open(
+			a_path,
+			std::ofstream::out |
+				std::ofstream::binary |
+				std::ofstream::trunc,
+			_SH_DENYWR);
+
+		if (!ofs || !ofs.is_open())
+		{
+			throw std::system_error(
+				errno,
+				std::system_category(),
+				a_path);
+		}
+
+		boost::archive::binary_oarchive oa(ofs);
+
+		oa << a_in;
 	}
 }

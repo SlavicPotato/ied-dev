@@ -89,7 +89,7 @@ namespace IED
 	{
 		auto r = m_data.try_emplace(a_key);
 
-		if (r.second)
+		if (!r.first->second)
 		{
 			r.first->second = std::make_unique<actor_entry_type::element_type>();
 

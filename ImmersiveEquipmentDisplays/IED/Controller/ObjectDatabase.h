@@ -11,7 +11,7 @@ namespace IED
 		{
 			friend class ObjectDatabase;
 
-			long long accessed;
+			long long accessed{ 0 };
 
 		private:
 			NiPointer<NiNode> object;

@@ -33,16 +33,16 @@ namespace IED
 			};
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
-			virtual void RenderObject(D3DCommon& a_data);
+			virtual void RenderObject(D3DCommon& a_data) override;
 
 			virtual void OnMouseMoveOver(I3DICommonData& a_data) override;
 			virtual void OnMouseMoveOut(I3DICommonData& a_data) override;
-			virtual void OnSelect(I3DICommonData& a_data) override;
+			virtual bool OnSelect(I3DICommonData& a_data) override;
 			virtual void OnUnselect(I3DICommonData& a_data) override;
 
-			virtual bool  ObjectIntersects(
+			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
-				float&            a_dist) override;
+				float&          a_dist) override;
 
 			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const = 0;
 

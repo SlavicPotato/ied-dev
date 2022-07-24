@@ -17,7 +17,7 @@ namespace IED
 
 		NiPoint3 pos;
 		NiPoint3 rot;
-		float    scale;
+		float    scale{ 1.0f };
 	};
 
 	struct SI_NiObject

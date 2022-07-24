@@ -41,9 +41,16 @@ namespace IED
 			virtual void OnOpen() override;
 			virtual void OnClose() override;
 
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
+
 		private:
+			bool CreateCommonData();
+
+			void SwitchToActorContext(Game::FormID a_actor);
 			void UpdateActorObjects();
-			bool GetCameraPV();
+			NiCamera* GetCamera();
+
+			void SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const ;
 
 			std::unique_ptr<I3DICommonData>   m_data;
 			std::unique_ptr<I3DIActorContext> m_actorContext;
