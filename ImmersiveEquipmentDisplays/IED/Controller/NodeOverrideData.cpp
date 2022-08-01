@@ -580,14 +580,16 @@ namespace IED
 
 		}),
 
-		m_humanoidSkeletonPaths({
+		/*m_humanoidSkeletonPaths({
 
 			"meshes\\Actors\\character\\character assets\\skeleton.nif",
 			"meshes\\actors\\character\\character assets\\skeletonbeast.nif",
 			"meshes\\actors\\character\\character assets female\\skeleton_female.nif",
 			"meshes\\actors\\character\\character assets female\\skeletonbeast_female.nif",
 
-		})
+		})*/
+
+		m_humanoidSkeletonIDs({ 628145516, 376140462, 1361955, 207579012 })
 	{
 	}
 

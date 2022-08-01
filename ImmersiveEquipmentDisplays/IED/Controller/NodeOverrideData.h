@@ -425,9 +425,14 @@ namespace IED
 			return m_Instance->m_randPlacement;
 		}
 
-		inline static const auto& GetHumanoidSkeletons() noexcept
+		/*inline static const auto& GetHumanoidSkeletons() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonPaths;
+		}*/
+		
+		inline static const auto& GetHumanoidSkeletonIDs() noexcept
+		{
+			return m_Instance->m_humanoidSkeletonIDs;
 		}
 
 		static void LoadAndAddExtraNodes(const char* a_path);
@@ -458,7 +463,8 @@ namespace IED
 		BSFixedString m_XPMSE{ "XPMSE" };
 		BSFixedString m_skeletonID{ "SkeletonID" };
 
-		std::unordered_set<stl::fixed_string> m_humanoidSkeletonPaths;
+		//std::unordered_set<stl::fixed_string> m_humanoidSkeletonPaths;
+		std::vector<std::int32_t> m_humanoidSkeletonIDs;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

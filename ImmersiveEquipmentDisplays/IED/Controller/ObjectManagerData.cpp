@@ -18,13 +18,13 @@ namespace IED
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	ActorObjectHolder::ActorObjectHolder(
-		Actor*                  a_actor,
-		NiNode*                 a_root,
-		NiNode*                 a_npcroot,
-		IObjectManager&         a_owner,
-		Game::ObjectRefHandle   a_handle,
-		bool                    a_nodeOverrideEnabled,
-		bool                    a_nodeOverrideEnabledPlayer,
+		Actor*                a_actor,
+		NiNode*               a_root,
+		NiNode*               a_npcroot,
+		IObjectManager&       a_owner,
+		Game::ObjectRefHandle a_handle,
+		bool                  a_nodeOverrideEnabled,
+		bool                  a_nodeOverrideEnabledPlayer,
 		//bool                    a_animEventForwarding,
 		const BipedSlotDataPtr& a_lastEquipped) :
 		m_owner(a_owner),
@@ -65,8 +65,13 @@ namespace IED
 
 		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
 		{
-			m_humanoidSkeleton = NodeOverrideData::GetHumanoidSkeletons().contains(r->first);
-			m_skeletonCache    = r->second;
+			m_skeletonCache = r->second;
+		}
+
+		if (auto& id = m_skeletonID.get_id())
+		{
+			auto& ids          = NodeOverrideData::GetHumanoidSkeletonIDs();
+			m_humanoidSkeleton = std::find(ids.begin(), ids.end(), id.value()) != ids.end();
 		}
 
 		if (auto npc = a_actor->GetActorBase())
