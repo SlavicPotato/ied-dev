@@ -915,8 +915,9 @@ namespace IED
 
 		struct
 		{
-			std::vector<const BipedSlotEntry*> le;
+			stl::vector<const BipedSlotEntry*> le;
 			Data::configFormList_t             fl;
+			SlotResults                        sr;
 		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };

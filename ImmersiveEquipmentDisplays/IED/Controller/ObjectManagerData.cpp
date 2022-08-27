@@ -10,12 +10,29 @@
 #include "IED/EngineExtensions.h"
 #include "IED/ProcessParams.h"
 
+#include <ext/BSAnimationUpdateData.h>
 #include <ext/Node.h>
 
 namespace IED
 {
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
+
+	ActorStateData::ActorStateData(Actor* a_actor) :
+		cellAttached(a_actor->IsParentCellAttached()),
+		inInterior(a_actor->IsInInteriorCell()),
+		worldspace(a_actor->GetParentCellWorldspace()),
+		currentPackage(a_actor->GetCurrentPackage()),
+		inCombat(Game::GetActorInCombat(a_actor)),
+		flags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
+		flags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
+		swimming(a_actor->IsSwimming()),
+		sitting(a_actor->IsSitting()),
+		sleeping(a_actor->IsSleeping()),
+		beingRidden(a_actor->IsBeingRidden()),
+		weaponDrawn(a_actor->IsWeaponDrawn())
+	{
+	}
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
@@ -34,22 +51,10 @@ namespace IED
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		//m_enableAnimEventForwarding(a_animEventForwarding),
-		m_cellAttached(a_actor->IsParentCellAttached()),
-		m_locData{
-			a_actor->IsInInteriorCell(),
-			a_actor->GetParentCellWorldspace()
-		},
-		m_currentPackage(a_actor->GetCurrentPackage()),
-		m_inCombat(Game::GetActorInCombat(a_actor)),
-		m_cflags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
-		m_cflags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
-		m_swimming(a_actor->IsSwimming()),
-		m_sitting(a_actor->IsSitting()),
-		m_sleeping(a_actor->IsSleeping()),
-		m_beingRidden(a_actor->IsBeingRidden()),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
-		m_skeletonID(a_root)
+		m_skeletonID(a_root),
+		m_state(a_actor)
 	{
 		m_lastLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
@@ -187,7 +192,7 @@ namespace IED
 			m_animEventForwardRegistrations.Clear();
 		}*/
 
-		m_animationUpdateList.Clear();
+		//m_animationUpdateList.Clear();
 
 		if (m_actor->loadedState)
 		{
@@ -355,6 +360,17 @@ namespace IED
 		}
 
 		return {};
+	}
+
+	void ActorObjectHolder::UpdateAllAnimationGraphs(
+		const BSAnimationUpdateData& a_data) const
+	{
+		visit([&](auto& a_e) {
+			if (auto& state = a_e.state)
+			{
+				state->UpdateAnimationGraphs(a_data);
+			}
+		});
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(
@@ -539,32 +555,32 @@ namespace IED
 		}
 	}*/
 
-	void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
+	/*void ActorObjectHolder::RegisterWeaponAnimationGraphManagerHolder(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
 		bool                                      a_forward)
-	{
-		/*if (a_forward && m_enableAnimEventForwarding)
+	{*/
+	/*if (a_forward && m_enableAnimEventForwarding)
 		{
 			m_animEventForwardRegistrations.Add(a_ptr);
 		}*/
 
-		m_animationUpdateList.Add(a_ptr);
+	//m_animationUpdateList.Add(a_ptr);
 
-		//_DMESSAGE("reg %p", a_ptr.get());
-	}
+	//_DMESSAGE("reg %p", a_ptr.get());
+	//}
 
-	void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
+	/*void ActorObjectHolder::UnregisterWeaponAnimationGraphManagerHolder(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
-	{
-		/*if (m_enableAnimEventForwarding)
+	{*/
+	/*if (m_enableAnimEventForwarding)
 		{
 			m_animEventForwardRegistrations.Remove(a_ptr);
 		}*/
 
-		m_animationUpdateList.Remove(a_ptr);
+	//m_animationUpdateList.Remove(a_ptr);
 
-		//_DMESSAGE("unreg %p", a_ptr.get());
-	}
+	//_DMESSAGE("unreg %p", a_ptr.get());
+	//}
 
 	void objectEntryBase_t::reset(
 		Game::ObjectRefHandle a_handle,
@@ -628,7 +644,29 @@ namespace IED
 		}
 	}
 
-	void objectEntryBase_t::State::Cleanup(Game::ObjectRefHandle a_handle)
+	void objectEntryBase_t::State::UpdateAnimationGraphs(
+		const BSAnimationUpdateData& a_data)
+	{
+		for (auto& e : groupObjects)
+		{
+			if (e.second.weapAnimGraphManagerHolder)
+			{
+				EngineExtensions::UpdateAnimationGraph(
+					e.second.weapAnimGraphManagerHolder.get(),
+					a_data);
+			}
+		}
+
+		if (weapAnimGraphManagerHolder)
+		{
+			EngineExtensions::UpdateAnimationGraph(
+				weapAnimGraphManagerHolder.get(),
+				a_data);
+		}
+	}
+
+	void objectEntryBase_t::State::Cleanup(
+		Game::ObjectRefHandle a_handle)
 	{
 		for (auto& e : groupObjects)
 		{

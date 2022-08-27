@@ -13,6 +13,9 @@
 
 #include "IED/Controller/Controller.h"
 
+#include <ext/Clouds.h>
+#include <ext/Sky.h>
+
 namespace IED
 {
 	namespace UI
@@ -117,22 +120,22 @@ namespace IED
 
 			if (camera)
 			{
-				/*if (auto& context = m_actorContext)
+				if (auto& context = m_actorContext)
 				{
-					if (!context->HasCamera())
+					auto cam = context->GetCamera().get();
+
+					if (!cam)
 					{
-						context->SetCamera(std::make_unique<I3DIObjectCamera>(camera));
+						context->SetCamera(std::make_unique<I3DIFreeCamera>(camera));
+						cam = context->GetCamera().get();
 					}
 
-					if (auto cc = dynamic_cast<I3DIObjectCamera*>(context->GetCamera().get()))
-					{
-						auto& obj = m_actorContext->GetActorObject();
+					cam->CameraUpdate(camera);
 
-						cc->i_p = XMLoadFloat3(&obj->GetActorBound().Center);
+					auto sky = RE::Sky::GetSingleton();
 
-						context->UpdateCamera(camera);
-					}
-				}*/
+					sky->clouds->GetRoot()->m_worldTransform.pos = camera->m_worldTransform.pos;
+				}
 
 				VectorMath::GetCameraPV(
 					camera,

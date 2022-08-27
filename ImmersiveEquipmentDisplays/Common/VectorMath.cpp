@@ -1,3 +1,5 @@
+#include "pch.h"
+
 #include "VectorMath.h"
 
 #include <d3d11.h>

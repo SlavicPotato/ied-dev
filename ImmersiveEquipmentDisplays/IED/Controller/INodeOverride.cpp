@@ -347,9 +347,7 @@ namespace IED
 					return false;
 				}
 
-				auto& formid = a_data.form.get_id();
-
-				if (!formid)
+				if (!a_data.form.get_id())
 				{
 					return false;
 				}

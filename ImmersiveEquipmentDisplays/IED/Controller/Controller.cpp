@@ -2664,6 +2664,7 @@ namespace IED
 				if (LoadAndAttach(
 						a_params,
 						usedBaseConf,
+						configEntry,
 						objectEntry,
 						item->item->form,
 						nullptr,
@@ -3298,6 +3299,7 @@ namespace IED
 				result = LoadAndAttach(
 					a_params,
 					usedBaseConf,
+					a_config,
 					a_objectEntry,
 					itemData.form,
 					modelForm,
@@ -3432,6 +3434,7 @@ namespace IED
 				result = LoadAndAttach(
 					a_params,
 					usedBaseConf,
+					a_config,
 					a_objectEntry,
 					form,
 					nullptr,
@@ -3792,7 +3795,7 @@ namespace IED
 				ConfigSex::Female :
                 ConfigSex::Male,
 			a_flags,
-			{ a_actor },
+			{ m_temp.sr, a_actor },
 			a_actor,
 			nrp->npc,
 			nrp->npc->GetFirstNonTemporaryOrThis(),
@@ -4348,7 +4351,7 @@ namespace IED
 	{
 		assert(a_entry.state);
 
-		ItemCandidateCollector collector(a_info.actor);
+		ItemCandidateCollector collector(m_temp.sr, a_info.actor);
 
 		collector.Run(
 			*a_info.npc,
@@ -4382,7 +4385,7 @@ namespace IED
 	{
 		assert(a_entry.state);
 
-		ItemCandidateCollector collector(a_info.actor);
+		ItemCandidateCollector collector(m_temp.sr, a_info.actor);
 
 		collector.Run(
 			*a_info.npc,

@@ -149,10 +149,6 @@ namespace IED
 		{
 			if (auto &camera = m_camera)
 			{
-				/*auto v = DirectX::XMLoadFloat3(&m_actorObject->GetActorBound().Center);
-
-				camera->CameraUpdate(a_camera, v);*/
-
 				camera->CameraUpdate(a_camera);
 			}
 		}

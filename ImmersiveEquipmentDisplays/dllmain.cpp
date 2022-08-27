@@ -88,77 +88,75 @@ extern "C" {
 			GET_EXE_VERSION_BUILD(a_skse->runtimeVersion),
 			GET_EXE_VERSION_SUB(a_skse->runtimeVersion));
 
-		if constexpr (
-			stl::is_mi_allocator<stl::pref_allocator<void*>>)
-		{
-			gLog.Message(
-				"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
-				MI_MALLOC_VERSION / 100,
-				MI_MALLOC_VERSION % 100,
-				BOOST_VERSION / 100000,
-				BOOST_VERSION / 100 % 1000,
-				BOOST_VERSION % 100,
-				JSONCPP_VERSION_MAJOR,
-				JSONCPP_VERSION_MINOR,
-				JSONCPP_VERSION_PATCH,
-				IMGUI_VERSION,
-				IMGUI_VERSION_NUM);
-		}
-		else
-		{
-			gLog.Message(
-				"boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
-				BOOST_VERSION / 100000,
-				BOOST_VERSION / 100 % 1000,
-				BOOST_VERSION % 100,
-				JSONCPP_VERSION_MAJOR,
-				JSONCPP_VERSION_MINOR,
-				JSONCPP_VERSION_PATCH,
-				IMGUI_VERSION,
-				IMGUI_VERSION_NUM);
-		}
+#if SKMP_CUSTOM_ALLOCATOR == 1
+		gLog.Message(
+			"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
+			MI_MALLOC_VERSION / 100,
+			MI_MALLOC_VERSION % 100,
+			BOOST_VERSION / 100000,
+			BOOST_VERSION / 100 % 1000,
+			BOOST_VERSION % 100,
+			JSONCPP_VERSION_MAJOR,
+			JSONCPP_VERSION_MINOR,
+			JSONCPP_VERSION_PATCH,
+			IMGUI_VERSION,
+			IMGUI_VERSION_NUM);
+#else
 
-		if (!IAL::IsLoaded())
-		{
-			WinApi::MessageBoxErrorLog(
-				PLUGIN_NAME,
-				"Could not load the address library");
-			return false;
-		}
+		gLog.Message(
+			"boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
+			BOOST_VERSION / 100000,
+			BOOST_VERSION / 100 % 1000,
+			BOOST_VERSION % 100,
+			JSONCPP_VERSION_MAJOR,
+			JSONCPP_VERSION_MINOR,
+			JSONCPP_VERSION_PATCH,
+			IMGUI_VERSION,
+			IMGUI_VERSION_NUM);
+#endif
 
-		if (IAL::HasBadQuery())
-		{
-			WinApi::MessageBoxErrorLog(
-				PLUGIN_NAME,
-				"One or more addresses could not be retrieved from the address library");
-			return false;
-		}
-
-		bool ret = Initialize(a_skse);
-
-		if (!ret)
-		{
-			WinApi::MessageBoxError(
-				PLUGIN_NAME,
-				"Plugin initialization failed, see log for more info");
-		}
-
-		IAL::Release();
-
-		return ret;
+	if (!IAL::IsLoaded())
+	{
+		WinApi::MessageBoxErrorLog(
+			PLUGIN_NAME,
+			"Could not load the address library");
+		return false;
 	}
 
-	SKSEPluginVersionData SKSEPlugin_Version = {
-		SKSEPluginVersionData::kVersion,
-		MAKE_PLUGIN_VERSION(
-			PLUGIN_VERSION_MAJOR,
-			PLUGIN_VERSION_MINOR,
-			PLUGIN_VERSION_REVISION),
-		PLUGIN_NAME,
-		PLUGIN_AUTHOR,
-		"n/a",
-		SKSEPluginVersionData::kVersionIndependent_AddressLibraryPostAE,
-		{ RUNTIME_VERSION_1_6_318, RUNTIME_VERSION_1_6_323, 0 },
-		0,
-	};
+	if (IAL::HasBadQuery())
+	{
+		WinApi::MessageBoxErrorLog(
+			PLUGIN_NAME,
+			"One or more addresses could not be retrieved from the address library");
+		return false;
+	}
+
+	bool ret = Initialize(a_skse);
+
+	if (!ret)
+	{
+		WinApi::MessageBoxError(
+			PLUGIN_NAME,
+			"Plugin initialization failed, see log for more info");
+	}
+
+	IAL::Release();
+
+	return ret;
+}
+
+SKSEPluginVersionData SKSEPlugin_Version = {
+	SKSEPluginVersionData::kVersion,
+	MAKE_PLUGIN_VERSION(
+		PLUGIN_VERSION_MAJOR,
+		PLUGIN_VERSION_MINOR,
+		PLUGIN_VERSION_REVISION),
+	PLUGIN_NAME,
+	PLUGIN_AUTHOR,
+	"n/a",
+	SKSEPluginVersionData::kVersionIndependent_AddressLibraryPostAE,
+	{ RUNTIME_VERSION_1_6_318, RUNTIME_VERSION_1_6_323, 0 },
+	0,
 };
+}
+;

@@ -349,6 +349,17 @@ namespace IED
 
 			DrawFiltersTree(a_handle, a_data, a_params);
 
+			if (DrawStringSetTree(
+					"bc_hkx_flt",
+					static_cast<Localization::StringID>(UIWidgetCommonStrings::BehaviorGraphFilter),
+					a_data.hkxFilter))
+			{
+				OnBaseConfigChange(
+					a_handle,
+					a_params,
+					PostChangeAction::Reset);
+			}
+
 			UICommon::PopDisabled(disabled);
 
 			ImGui::PopID();
@@ -1075,27 +1086,8 @@ namespace IED
 					ImGui::TreePop();
 				}
 			}
+
 			ImGui::PopID();
-
-			UICommon::PushDisabled(disabled);
-
-			if (DrawStringSetTree(
-					"bc_hkx_flt",
-					static_cast<Localization::StringID>(UIWidgetCommonStrings::BehaviorGraphFilter),
-					a_data.hkxFilter))
-			{
-				PropagateMemberToEquipmentOverrides(
-					a_baseConfig,
-					offsetof(Data::configBaseValues_t, hkxFilter),
-					a_data.hkxFilter);
-
-				OnBaseConfigChange(
-					a_handle,
-					a_params,
-					PostChangeAction::Reset);
-			}
-
-			UICommon::PopDisabled(disabled);
 		}
 
 		template <class T>
@@ -2324,7 +2316,7 @@ namespace IED
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Mounting;
 					}
-					
+
 					if (LCG_MI(UIWidgetCommonStrings::Mounted, "H"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;

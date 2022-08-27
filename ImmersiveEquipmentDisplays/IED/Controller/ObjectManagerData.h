@@ -16,6 +16,8 @@
 
 #include <ext/WeaponAnimationGraphManagerHolder.h>
 
+struct BSAnimationUpdateData;
+
 namespace IED
 {
 
@@ -203,6 +205,8 @@ namespace IED
 					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
 					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
+
+			void UpdateAnimationGraphs(const BSAnimationUpdateData& a_data);
 
 			/*void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
 			{
@@ -392,6 +396,42 @@ namespace IED
 		WeaponPlacementID placementID;
 	};
 
+	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
+		Actor::Flags1::kInWater |
+		Actor::Flags1::kPlayerTeammate |
+		Actor::Flags1::kGuard |
+		Actor::Flags1::kParalyzed;
+
+	inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_2 =
+		Actor::Flags2::kIsAMount |
+		Actor::Flags2::kGettingOnOffMount |
+		Actor::Flags2::kInBleedoutAnimation |
+		Actor::Flags2::kIsTrespassing |
+		Actor::Flags2::kIsCommandedActor |
+		Actor::Flags2::kBribedByPlayer |
+		Actor::Flags2::kAngryWithPlayer |
+		Actor::Flags2::kEssential |
+		Actor::Flags2::kProtected |
+		Actor::Flags2::kUnderwater;
+
+	struct ActorStateData
+	{
+		ActorStateData(Actor* a_actor);
+
+		TESWorldSpace* worldspace{ nullptr };
+		TESPackage*    currentPackage{ nullptr };
+		Actor::Flags1  flags1{ Actor::Flags1::kNone };
+		Actor::Flags2  flags2{ Actor::Flags2::kNone };
+		bool           cellAttached{ false };
+		bool           inCombat{ false };
+		bool           swimming{ false };
+		bool           sitting{ false };
+		bool           sleeping{ false };
+		bool           beingRidden{ false };
+		bool           weaponDrawn{ false };
+		bool           inInterior{ false };
+	};
+
 	class ActorObjectHolder
 	//public BSTEventSink<BSAnimationGraphEvent>
 	{
@@ -408,31 +448,7 @@ namespace IED
 			bool              visible;
 		};
 
-		struct actorLocationData_t
-		{
-			bool           inInterior{ false };
-			TESWorldSpace* worldspace{ nullptr };
-		};
-
 	public:
-		inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
-			Actor::Flags1::kInWater |
-			Actor::Flags1::kPlayerTeammate |
-			Actor::Flags1::kGuard |
-			Actor::Flags1::kParalyzed;
-
-		inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_2 =
-			Actor::Flags2::kIsAMount |
-			Actor::Flags2::kGettingOnOffMount |
-			Actor::Flags2::kInBleedoutAnimation |
-			Actor::Flags2::kIsTrespassing |
-			Actor::Flags2::kIsCommandedActor |
-			Actor::Flags2::kBribedByPlayer |
-			Actor::Flags2::kAngryWithPlayer |
-			Actor::Flags2::kEssential |
-			Actor::Flags2::kProtected |
-			Actor::Flags2::kUnderwater;
-
 		using slot_container_type = std::array<
 			objectEntrySlot_t,
 			stl::underlying(Data::ObjectSlot::kMax)>;
@@ -539,7 +555,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool IsCellAttached() const noexcept
 		{
-			return m_cellAttached;
+			return m_state.cellAttached;
 		}
 
 		/*[[nodiscard]] inline constexpr bool GetEnemiesNearby() const noexcept
@@ -549,7 +565,7 @@ namespace IED
 
 		inline constexpr void UpdateCellAttached() noexcept
 		{
-			m_cellAttached = m_actor->IsParentCellAttached();
+			m_state.cellAttached = m_actor->IsParentCellAttached();
 		}
 
 		inline void RequestTransformUpdateDefer() const noexcept
@@ -696,14 +712,14 @@ namespace IED
 
 		//void ReSinkAnimationGraphs();
 
-		void RegisterWeaponAnimationGraphManagerHolder(
+		/*void RegisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr,
 			bool                                      a_forward);
 
 		void UnregisterWeaponAnimationGraphManagerHolder(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);
+			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);*/
 
-		[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() noexcept
+		/*[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() noexcept
 		{
 			return m_animationUpdateList;
 		}
@@ -711,7 +727,7 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() const noexcept
 		{
 			return m_animationUpdateList;
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr bool HasHumanoidSkeleton() const noexcept
 		{
@@ -722,16 +738,18 @@ namespace IED
 		{
 			return m_skeletonID.get_version().has_value();
 		}
-		
+
 		[[nodiscard]] inline constexpr bool GetNodeConditionForced() const noexcept
 		{
 			return m_forceNodeCondTrue;
 		}
-		
+
 		[[nodiscard]] inline constexpr void SetNodeConditionForced(bool a_switch) noexcept
 		{
 			m_forceNodeCondTrue = a_switch;
 		}
+
+		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
 
 	private:
 		void CreateExtraMovNodes(
@@ -773,31 +791,23 @@ namespace IED
 		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_formid;
-		bool         m_female{ false };
-		bool         m_humanoidSkeleton{ false };
 
-		bool                m_cellAttached{ false };
-		bool                m_isPlayerTeammate{ false };
-		bool                m_wantLFUpdate{ false };
-		bool                m_inCombat{ false };
-		bool                m_swimming{ false };
-		bool                m_sitting{ false };
-		bool                m_sleeping{ false };
-		bool                m_beingRidden{ false };
-		bool                m_forceNodeCondTrue{ false };
-		Actor::Flags1       m_cflags1{ Actor::Flags1::kNone };
-		Actor::Flags2       m_cflags2{ Actor::Flags2::kNone };
-		long long           m_lastLFStateCheck;
-		long long           m_lastHFStateCheck;
-		actorLocationData_t m_locData;
-		TESPackage*         m_currentPackage{ nullptr };
+		bool m_female{ false };
+		bool m_humanoidSkeleton{ false };
+
+		bool m_forceNodeCondTrue{ false };
+
+		bool      m_wantLFUpdate{ false };
+		long long m_lastLFStateCheck;
+		long long m_lastHFStateCheck;
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonID                            m_skeletonID;
 
+		ActorStateData              m_state;
 		mutable ActorAnimationState m_animState;
 
-		AnimationGraphManagerHolderList m_animationUpdateList;
+		//AnimationGraphManagerHolderList m_animationUpdateList;
 		//AnimationGraphManagerHolderList m_animEventForwardRegistrations;
 		//const bool                      m_enableAnimEventForwarding{ false };
 
@@ -837,7 +847,7 @@ namespace IED
 		{
 			return m_objects;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetData() noexcept
 		{
 			return m_objects;

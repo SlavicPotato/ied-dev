@@ -272,9 +272,9 @@ namespace IED
 	}
 
 	static void UpdateActorGearAnimations(
-		Actor*                                 a_actor,
-		const AnimationGraphManagerHolderList& a_list,
-		float                                  a_step)
+		Actor*                   a_actor,
+		const ActorObjectHolder& a_holder,
+		float                    a_step)
 	{
 		struct TLSData
 		{
@@ -295,7 +295,7 @@ namespace IED
 
 		a_actor->ModifyAnimationUpdateData(data);
 
-		a_list.UpdateNoLock(data);
+		a_holder.UpdateAllAnimationGraphs(data);
 
 		tlsUnk768 = oldUnk768;
 	}
@@ -330,24 +330,25 @@ namespace IED
 			auto cell = e.m_actor->GetParentCell();
 			if (cell && cell->IsAttached())
 			{
-				e.m_cellAttached = true;
+				e.m_state.cellAttached = true;
 			}
 			else
 			{
-				e.m_cellAttached = false;
+				e.m_state.cellAttached = false;
 				continue;
 			}
 
-			e.state_var_update_defer(e.m_locData.inInterior, cell->IsInterior());
-			e.state_var_update_defer(e.m_locData.worldspace, cell->GetWorldSpace());
-			e.state_var_update_defer(e.m_inCombat, Game::GetActorInCombat(e.m_actor));
+			e.state_var_update_defer(e.m_state.inInterior, cell->IsInterior());
+			e.state_var_update_defer(e.m_state.worldspace, cell->GetWorldSpace());
+			e.state_var_update_defer(e.m_state.inCombat, Game::GetActorInCombat(e.m_actor));
 
-			e.state_var_update_defer(e.m_cflags1, e.m_actor->flags1 & ActorObjectHolder::ACTOR_CHECK_FLAGS_1, 6);
-			e.state_var_update_defer(e.m_cflags2, e.m_actor->flags2 & ActorObjectHolder::ACTOR_CHECK_FLAGS_2, 6);
-			e.state_var_update_defer(e.m_swimming, e.m_actor->IsSwimming(), 6);
-			e.state_var_update_defer(e.m_sitting, e.m_actor->IsSitting());
-			e.state_var_update_defer(e.m_sleeping, e.m_actor->IsSleeping());
-			e.state_var_update_defer(e.m_beingRidden, e.m_actor->IsBeingRidden());
+			e.state_var_update_defer(e.m_state.flags1, e.m_actor->flags1 & ACTOR_CHECK_FLAGS_1, 6);
+			e.state_var_update_defer(e.m_state.flags2, e.m_actor->flags2 & ACTOR_CHECK_FLAGS_2, 6);
+			e.state_var_update_defer(e.m_state.swimming, e.m_actor->IsSwimming(), 6);
+			e.state_var_update_defer(e.m_state.sitting, e.m_actor->IsSitting());
+			e.state_var_update_defer(e.m_state.sleeping, e.m_actor->IsSleeping());
+			e.state_var_update_defer(e.m_state.beingRidden, e.m_actor->IsBeingRidden());
+			e.state_var_update_defer(e.m_state.weaponDrawn, e.m_actor->IsWeaponDrawn());
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,
@@ -355,7 +356,7 @@ namespace IED
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
 
-				e.state_var_update(e.m_currentPackage, e.m_actor->GetCurrentPackage());
+				e.state_var_update(e.m_state.currentPackage, e.m_actor->GetCurrentPackage());
 
 				if (e.m_wantLFUpdate)
 				{
@@ -382,14 +383,14 @@ namespace IED
 
 			bool update = false;
 
-			if (animUpdateData && !e.m_animationUpdateList.Empty())
+			if (animUpdateData)
 			{
 				float step =
 					e.m_formid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;
 
-				UpdateActorGearAnimations(e.m_actor.get(), e.m_animationUpdateList, step);
+				UpdateActorGearAnimations(e.m_actor.get(), e, step);
 			}
 
 			for (auto& f : e.m_entriesSlot)

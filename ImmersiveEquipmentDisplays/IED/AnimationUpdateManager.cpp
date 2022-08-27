@@ -36,7 +36,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList().UpdateNoLock(a_data);
+			it->second.UpdateAllAnimationGraphs(a_data);
 		}
 	}
 
@@ -52,7 +52,7 @@ namespace IED
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
 		{
-			it->second.GetAnimationUpdateList().UpdateNoLock(a_data);
+			it->second.UpdateAllAnimationGraphs(a_data);
 		}
 	}
 

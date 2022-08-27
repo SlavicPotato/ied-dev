@@ -2,6 +2,10 @@
 
 #include "ConfigData.h"
 
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+#	include <ext/stl_allocator_mi.h>
+#endif
+
 namespace IED
 {
 	namespace Data
@@ -55,12 +59,37 @@ namespace IED
 				return (equippedTypeFlags[stl::underlying(a_slot)] & InventoryPresenceFlags::kSet) == InventoryPresenceFlags::kSet;
 			}
 
-			using container_type = stl::unordered_map<Game::FormID, itemData_t>;
+			using container_type =
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+				std::unordered_map<
+					Game::FormID,
+					itemData_t,
+					std::hash<Game::FormID>,
+					std::equal_to<Game::FormID>,
+					stl::mi_allocator<
+						std::pair<
+							const Game::FormID,
+							itemData_t>>>
+#else
+				stl::unordered_map<
+					Game::FormID,
+					itemData_t>
+#endif
+				;
 
-			container_type                 forms;
-			stl::vector<const itemData_t*> equippedForms;
-			InventoryPresenceFlags         equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{ InventoryPresenceFlags::kNone };
-			std::int64_t                   typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
+			container_type forms;
+
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+			std::vector<
+				const itemData_t*,
+				stl::mi_allocator<const itemData_t*>>
+#else
+			stl::vector<const itemData_t*>
+#endif
+				equippedForms;
+
+			InventoryPresenceFlags equippedTypeFlags[stl::underlying(ObjectSlotExtra::kMax)]{ InventoryPresenceFlags::kNone };
+			std::int64_t           typeCount[stl::underlying(ObjectTypeExtra::kMax)]{ 0 };
 
 			Actor* actor;
 		};

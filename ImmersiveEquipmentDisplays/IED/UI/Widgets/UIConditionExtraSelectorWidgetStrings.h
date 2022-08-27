@@ -40,6 +40,7 @@ namespace IED
 			Sitting             = 5429,
 			Sleeping            = 5430,
 			IsBeingRidden       = 5431,
+			WeaponDrawn         = 5432,
 		};
 	}
 }

@@ -71,7 +71,6 @@ namespace IED
 			NodeDescriptor         targetNode;
 			stl::fixed_string      niControllerSequence;
 			stl::fixed_string      animationEvent;
-			configFixedStringSet_t hkxFilter;
 
 		protected:
 			template <class Archive>
@@ -88,11 +87,6 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& animationEvent;
-
-						if (a_version >= DataVersion4)
-						{
-							a_ar& hkxFilter;
-						}
 					}
 				}
 			}
@@ -103,4 +97,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion4);
+	IED::Data::configBaseValues_t::Serialization::DataVersion3);

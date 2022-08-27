@@ -88,24 +88,24 @@ namespace IED
 
 		enum class NodeOverrideConditionType : std::uint32_t
 		{
-			Node       = 0,
-			Form       = 1,
-			Keyword    = 2,
-			BipedSlot  = 3,
-			Type       = 4,
-			Race       = 5,
-			Furniture  = 6,
-			Group      = 7,
-			Actor      = 8,
-			NPC        = 9,
-			Extra      = 10,
-			Location   = 11,
-			Worldspace = 12,
-			Package    = 13,
-			Weather    = 14,
-			Global     = 15,
-			Mounting   = 16,
-			Mounted    = 17,
+			Node        = 0,
+			Form        = 1,
+			Keyword     = 2,
+			BipedSlot   = 3,
+			Type        = 4,
+			Race        = 5,
+			Furniture   = 6,
+			Group       = 7,
+			Actor       = 8,
+			NPC         = 9,
+			Extra       = 10,
+			Location    = 11,
+			Worldspace  = 12,
+			Package     = 13,
+			Weather     = 14,
+			Global      = 15,
+			Mounting    = 16,
+			Mounted     = 17
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -394,7 +394,7 @@ namespace IED
 				adjustScale.y = std::clamp(stl::zero_nan(adjustScale.y), -100.0f, 100.0f);
 				adjustScale.z = std::clamp(stl::zero_nan(adjustScale.z), -100.0f, 100.0f);
 			}
-			
+
 			constexpr void strip_adjust_axis_flags_and_reset() noexcept
 			{
 				if (!offsetFlags.consume(Data::NodeOverrideOffsetFlags::kAdjustX))

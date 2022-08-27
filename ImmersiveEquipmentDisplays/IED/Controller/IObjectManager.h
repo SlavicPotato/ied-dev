@@ -104,7 +104,8 @@ namespace IED
 
 		bool LoadAndAttach(
 			processParams_t&                a_params,
-			const Data::configBaseValues_t& a_entry,
+			const Data::configBaseValues_t& a_activeConfig,
+			const Data::configBase_t&       a_config,
 			objectEntryBase_t&              a_objectEntry,
 			TESForm*                        a_form,
 			TESForm*                        a_modelForm,

@@ -22,10 +22,16 @@ namespace IED
 	}
 
 	ItemCandidateCollector::ItemCandidateCollector(
-		Actor* a_actor) :
-		isPlayer(a_actor == *g_thePlayer),
-		data(a_actor)
+		SlotResults& a_slotResults,
+		Actor*       a_actor) :
+		data(a_actor),
+		slotResults(a_slotResults),
+		isPlayer(a_actor == *g_thePlayer)
 	{
+		for (auto& e : a_slotResults)
+		{
+			e.items.clear();
+		}
 	}
 
 	void ItemCandidateCollector::Run(
@@ -107,10 +113,10 @@ namespace IED
 			data.typeCount[stl::underlying(extraType)] += a_entry->count;
 		}
 
-		if (type < Data::ObjectType::kMax)
+		/*if (type < Data::ObjectType::kMax)
 		{
 			slotResults[stl::underlying(type)].reserve++;
-		}
+		}*/
 
 		return;
 	}
@@ -146,10 +152,10 @@ namespace IED
 			data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
 		}
 
-		if (type < Data::ObjectType::kMax)
+		/*if (type < Data::ObjectType::kMax)
 		{
 			slotResults[stl::underlying(type)].reserve++;
-		}
+		}*/
 
 		if (auto extendDataList = a_entryData->GetDataList())
 		{
@@ -237,10 +243,10 @@ namespace IED
 
 	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
 	{
-		for (auto& e : slotResults)
+		/*for (auto& e : slotResults)
 		{
 			e.items.reserve(e.reserve);
-		}
+		}*/
 
 		bool checkFav = isPlayer && a_checkFav;
 

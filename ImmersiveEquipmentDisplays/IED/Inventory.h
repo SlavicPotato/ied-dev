@@ -4,6 +4,10 @@
 #include "Controller/ControllerCommon.h"
 #include "Data.h"
 
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+#	include <ext/stl_allocator_mi.h>
+#endif
+
 namespace IED
 {
 	class Controller;
@@ -19,17 +23,28 @@ namespace IED
 			std::uint32_t                            rating;
 		};
 
-		using storage_type = stl::vector<item_t>;
+		using storage_type =
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+			std::vector<
+				item_t,
+				stl::mi_allocator<item_t>>
+#else
+			stl::vector<item_t>
+#endif
+			;
 
 		storage_type items;
-		std::size_t  reserve{ 0 };
+		//std::size_t  reserve{ 0 };
 	};
+
+	using SlotResults = std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)>;
 
 	struct ItemCandidateCollector
 	{
 	public:
 		ItemCandidateCollector(
-			Actor* a_actor);
+			SlotResults& a_slotResults,
+			Actor*       a_actor);
 
 		void Run(
 			TESContainer&                          a_container,
@@ -46,8 +61,8 @@ namespace IED
 			return slotResults[stl::underlying(a_type)].items;
 		}
 
-		Data::collectorData_t                                                   data;
-		std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)> slotResults;
+		Data::collectorData_t data;
+		SlotResults&          slotResults;
 
 	private:
 		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);

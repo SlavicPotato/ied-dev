@@ -29,10 +29,12 @@ namespace IED
 			void Initialize();
 
 		private:
-			void        DrawHeader();
-			void        DrawLogText();
+			void DrawHeader();
+			void DrawLogText();
+#if defined(SKMP_TIMESTAMP_LOGS)
 			static void DrawTimeStampLine(const BackLog::Entry& a_entry);
-			void        DrawLevelCheckbox(const char* a_label, LogLevel a_level);
+#endif
+			void DrawLevelCheckbox(const char* a_label, LogLevel a_level);
 
 			void AutoScroll();
 

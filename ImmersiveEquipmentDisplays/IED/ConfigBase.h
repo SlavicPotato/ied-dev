@@ -122,11 +122,13 @@ namespace IED
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
-				DataVersion2 = 2
+				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			equipmentOverrideList_t equipmentOverrides;
 			effectShaderList_t      effectShaders;
+			configFixedStringSet_t  hkxFilter;
 
 			const equipmentOverride_t* get_equipment_override(
 				const collectorData_t& a_data,
@@ -264,6 +266,11 @@ namespace IED
 				if (a_version >= DataVersion2)
 				{
 					a_ar& effectShaders;
+
+					if (a_version >= DataVersion3)
+					{
+						a_ar& hkxFilter;
+					}
 				}
 			}
 		};
@@ -281,4 +288,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configBase_t,
-	::IED::Data::configBase_t::Serialization::DataVersion2);
+	::IED::Data::configBase_t::Serialization::DataVersion3);

@@ -42,7 +42,7 @@ namespace IED
 			QueueDatabaseCleanup();
 		}
 
-		if (a_objectEntry.state->weapAnimGraphManagerHolder)
+		/*if (a_objectEntry.state->weapAnimGraphManagerHolder)
 		{
 			a_data.UnregisterWeaponAnimationGraphManagerHolder(
 				a_objectEntry.state->weapAnimGraphManagerHolder);
@@ -55,7 +55,7 @@ namespace IED
 				a_data.UnregisterWeaponAnimationGraphManagerHolder(
 					e.second.weapAnimGraphManagerHolder);
 			}
-		}
+		}*/
 
 		a_objectEntry.reset(a_handle, a_data.m_root);
 
@@ -419,7 +419,8 @@ namespace IED
 
 	bool IObjectManager::LoadAndAttach(
 		processParams_t&                a_params,
-		const Data::configBaseValues_t& a_config,
+		const Data::configBaseValues_t& a_activeConfig,
+		const Data::configBase_t&       a_config,
 		objectEntryBase_t&              a_objectEntry,
 		TESForm*                        a_form,
 		TESForm*                        a_modelForm,
@@ -438,7 +439,7 @@ namespace IED
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
-		if (!a_config.targetNode)
+		if (!a_activeConfig.targetNode)
 		{
 			return false;
 		}
@@ -460,8 +461,8 @@ namespace IED
 				a_modelForm,
 				a_params.race,
 				a_params.configSex == Data::ConfigSex::Female,
-				a_config.flags.test(Data::BaseFlags::kLoad1pWeaponModel),
-				a_config.flags.test(Data::BaseFlags::kUseWorldModel),
+				a_activeConfig.flags.test(Data::BaseFlags::kLoad1pWeaponModel),
+				a_activeConfig.flags.test(Data::BaseFlags::kUseWorldModel),
 				modelParams))
 		{
 			Debug(
@@ -476,8 +477,8 @@ namespace IED
 		nodesRef_t targetNodes;
 
 		if (!CreateTargetNode(
-				a_config,
-				a_config.targetNode,
+				a_activeConfig,
+				a_activeConfig.targetNode,
 				a_params.npcroot,
 				targetNodes))
 		{
@@ -486,7 +487,7 @@ namespace IED
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_modelForm->formID.get(),
-				a_config.targetNode.name.c_str());
+				a_activeConfig.targetNode.name.c_str());
 
 			return false;
 		}
@@ -530,7 +531,7 @@ namespace IED
 
 		auto itemRoot = CreateAttachmentNode(buffer);
 
-		state->UpdateData(a_config);
+		state->UpdateData(a_activeConfig);
 		UpdateObjectTransform(
 			state->transform,
 			itemRoot,
@@ -547,10 +548,10 @@ namespace IED
 			modelParams.type,
 			a_leftWeapon,
 			modelParams.isShield,
-			a_config.flags.test(Data::BaseFlags::kDropOnDeath),
-			a_config.flags.test(Data::BaseFlags::kRemoveScabbard),
-			a_config.flags.test(Data::BaseFlags::kKeepTorchFlame),
-			a_disableHavok || a_config.flags.test(Data::BaseFlags::kDisableHavok));
+			a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath),
+			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
+			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
+			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok));
 
 		UpdateDownwardPass(itemRoot);
 
@@ -560,18 +561,18 @@ namespace IED
 			itemRoot,
 			object,
 			targetNodes,
-			a_config);
+			a_activeConfig);
 
-		if (a_config.flags.test(Data::BaseFlags::kPlaySequence))
+		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySequence))
 		{
 			state->UpdateAndPlayAnimation(
 				a_params.actor,
-				a_config.niControllerSequence);
+				a_activeConfig.niControllerSequence);
 		}
 		else if (
 			a_bhkAnims &&
 			modelParams.type == ModelType::kWeapon &&
-			!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims))
+			!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims))
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
@@ -587,10 +588,10 @@ namespace IED
 						}
 					}))
 			{
-				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
+				if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
 				{
 					state->UpdateAndSendAnimationEvent(
-						a_config.animationEvent);
+						a_activeConfig.animationEvent);
 				}
 				else
 				{
@@ -601,9 +602,9 @@ namespace IED
 						BSStringHolder::GetSingleton()->m_weaponSheathe);
 				}
 
-				a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+				/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
 					state->weapAnimGraphManagerHolder,
-					!a_config.flags.test(Data::BaseFlags::kDisableAnimEventForwarding));
+					!a_activeConfig.flags.test(Data::BaseFlags::kDisableAnimEventForwarding));*/
 			}
 		}
 
@@ -618,7 +619,7 @@ namespace IED
 		{
 			PlayObjectSound(
 				a_params,
-				a_config,
+				a_activeConfig,
 				a_objectEntry,
 				true);
 		}
@@ -887,10 +888,10 @@ namespace IED
 						e.grpObject->UpdateAndSendAnimationEvent(
 							e.entry->second.animationEvent);
 					}
-					/*else if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
+					/*else if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
 					{
 						e.grpObject->UpdateAndSendAnimationEvent(
-							a_config.animationEvent);
+							a_activeConfig.animationEvent);
 					}*/
 					else
 					{
@@ -900,10 +901,10 @@ namespace IED
 							BSStringHolder::GetSingleton()->m_weaponSheathe);
 					}
 
-					a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
+					/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
 						e.grpObject->weapAnimGraphManagerHolder,
-						!a_config.flags.test(Data::BaseFlags::kDisableAnimEventForwarding) &&
-							!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding));
+						!a_activeConfig.flags.test(Data::BaseFlags::kDisableAnimEventForwarding) &&
+							!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding));*/
 				}
 			}
 		}

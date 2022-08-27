@@ -69,7 +69,7 @@ namespace IED
 			const int step     = 1;
 			const int stepFast = 100;
 
-			std::uint32_t limit = static_cast<std::uint32_t>(data.GetLimit());
+			auto limit = static_cast<std::uint32_t>(data.GetLimit());
 
 			if (ImGui::InputScalar(
 					LS(CommonStrings::Limit, "1"),
@@ -105,9 +105,12 @@ namespace IED
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
 
+#if defined(SKMP_TIMESTAMP_LOGS)
+
 			settings.mark_if(ImGui::Checkbox(
 				LS(UILogStrings::ShowTimestamps, "7"),
 				std::addressof(settings.data.ui.logShowTimestamps)));
+#endif
 
 			ImGui::PopID();
 
@@ -147,10 +150,12 @@ namespace IED
 							continue;
 						}
 
+#if defined(SKMP_TIMESTAMP_LOGS)
 						if (settings.data.ui.logShowTimestamps)
 						{
 							DrawTimeStampLine(e);
 						}
+#endif
 
 						bool popcol = true;
 
@@ -190,9 +195,10 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+#if defined(SKMP_TIMESTAMP_LOGS)
+
 		void UILog::DrawTimeStampLine(const BackLog::Entry& a_entry)
 		{
-#if defined(SKMP_TIMESTAMP_LOGS)
 			try
 			{
 				auto lt = std::chrono::floor<std::chrono::days>(a_entry.ts());
@@ -215,8 +221,9 @@ namespace IED
 			catch (...)
 			{
 			}
-#endif
 		}
+
+#endif
 
 		void UILog::DrawLevelCheckbox(const char* a_label, LogLevel a_level)
 		{

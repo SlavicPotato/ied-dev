@@ -79,7 +79,7 @@ namespace IED
 		private:
 			Game::FormID m_actor;
 
-			std::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
+			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
 
 			bool m_ranFirstUpdate{ false };
 			bool m_lastUpdateFailed{ false };

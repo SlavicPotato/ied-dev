@@ -57,7 +57,7 @@ namespace IED
 			//D3DOIT               oit;
 
 			std::optional<Game::FormID>                                        queuedActor;
-			std::unordered_map<Game::FormID, std::shared_ptr<I3DIActorObject>> actors;
+			stl::unordered_map<Game::FormID, std::shared_ptr<I3DIActorObject>> actors;
 			std::unique_ptr<I3DIActorContext>&                                 actorContext;
 
 			void UpdateRay();

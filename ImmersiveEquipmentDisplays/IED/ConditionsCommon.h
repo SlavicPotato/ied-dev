@@ -84,6 +84,8 @@ namespace IED
 				return a_params.actor->IsSleeping();
 			case Data::ExtraConditionType::kBeingRidden:
 				return a_params.is_ridden();
+			case Data::ExtraConditionType::kWeaponDrawn:
+				return a_params.actor->IsWeaponDrawn();
 			default:
 				return false;
 			}

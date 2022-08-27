@@ -82,8 +82,8 @@ namespace IED
 			const auto min = actor->GetBoundMin().GetMM();
 			const auto max = actor->GetBoundMax().GetMM();
 
-			auto center = (min + max) * 0.5f;
-			auto extent = (max - min) * 0.5f;
+			const auto center = (min + max) * 0.5f;
+			const auto extent = (max - min) * 0.5f;
 
 			XMFLOAT3 m, n;
 
