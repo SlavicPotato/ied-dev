@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigEffectShaderFunction.h"
+#include "IED/ConfigLUIDTag.h"
 
 namespace IED
 {
@@ -36,6 +37,9 @@ namespace IED
 		virtual void UpdateConfigInitImpl(const Data::configEffectShaderFunction_t& a_data){};
 
 		SKMP_REDEFINE_NEW_PREF()  //
+
+		inline static constexpr auto PI  = std::numbers::pi_v<float>;
+		inline static constexpr auto PI2 = std::numbers::pi_v<float> * 2.0f;
 
 	private:
 		Data::EffectShaderFunctionType type;

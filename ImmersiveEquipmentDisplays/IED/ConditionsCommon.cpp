@@ -97,6 +97,14 @@ namespace IED
 			return a_params.objects.HasHumanoidSkeleton();
 		}
 
+		bool match_random_percent(
+			CommonParams&   a_params,
+			const luid_tag& a_luid,
+			float           a_percent) noexcept
+		{
+			return a_params.objects.GetRandomPercent(a_luid) <= a_percent;
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{

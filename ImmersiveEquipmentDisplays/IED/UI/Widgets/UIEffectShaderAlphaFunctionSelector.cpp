@@ -9,7 +9,7 @@ namespace IED
 		UIEffectShaderAlphaFunctionSelector::data_type UIEffectShaderAlphaFunctionSelector::m_data{ {
 
 			{ NiProperty::AlphaFunction::kOne, "One" },
-			{ NiProperty::AlphaFunction::kZero, "kZero" },
+			{ NiProperty::AlphaFunction::kZero, "Zero" },
 			{ NiProperty::AlphaFunction::kSrcColor, "SrcColor" },
 			{ NiProperty::AlphaFunction::kInvSrcColor, "InvSrcColor" },
 			{ NiProperty::AlphaFunction::kDestColor, "DestColor" },

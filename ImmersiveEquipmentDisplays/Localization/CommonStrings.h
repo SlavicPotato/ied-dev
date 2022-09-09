@@ -206,5 +206,7 @@ namespace IED
 		Path            = 277,
 		Priority        = 278,
 		This            = 279,
+		Model           = 280,
+		Animation       = 281,
 	};
 }

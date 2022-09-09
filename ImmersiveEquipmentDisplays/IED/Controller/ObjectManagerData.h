@@ -440,6 +440,8 @@ namespace IED
 		friend class ActorProcessorTask;
 		friend class ObjectManagerData;
 
+		inline static constexpr std::size_t MAX_RPC_SIZE = 1024 * 1024;
+
 		struct monitorNodeEntry_t
 		{
 			NiPointer<NiNode> node;
@@ -751,6 +753,8 @@ namespace IED
 
 		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
 
+		float GetRandomPercent(const luid_tag& a_luid);
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
@@ -785,6 +789,8 @@ namespace IED
 
 		stl::unordered_map<stl::fixed_string, cmeNodeEntry_t> m_cmeNodes;
 		stl::unordered_map<stl::fixed_string, movNodeEntry_t> m_movNodes;
+
+		stl::unordered_map<luid_tag, float> m_rpc;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;

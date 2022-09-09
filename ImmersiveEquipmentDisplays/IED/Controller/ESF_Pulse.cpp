@@ -32,8 +32,8 @@ namespace IED
 
 			if ((flags & Data::EffectShaderPulseFlags::uScale) == Data::EffectShaderPulseFlags::uScale)
 			{
-				float min = std::clamp(a_data.uMinMax[0], 0.0f, 1000.0f);
-				float max = std::clamp(a_data.uMinMax[1], 0.0f, 1000.0f);
+				const float min = std::clamp(a_data.uMinMax[0], 0.0f, 1000.0f);
+				const float  max = std::clamp(a_data.uMinMax[1], 0.0f, 1000.0f);
 
 				ummd = max - min;
 				if (ummd <= 0.0f)
@@ -48,8 +48,8 @@ namespace IED
 
 			if ((flags & Data::EffectShaderPulseFlags::vScale) == Data::EffectShaderPulseFlags::vScale)
 			{
-				float min = std::clamp(a_data.vMinMax[0], 0.0f, 1000.0f);
-				float max = std::clamp(a_data.vMinMax[1], 0.0f, 1000.0f);
+				const float min = std::clamp(a_data.vMinMax[0], 0.0f, 1000.0f);
+				const float  max = std::clamp(a_data.vMinMax[1], 0.0f, 1000.0f);
 
 				vmmd = max - min;
 				if (vmmd <= 0.0f)
@@ -62,8 +62,8 @@ namespace IED
 				}
 			}
 
-			float min = std::clamp(a_data.range[0], 0.0f, 1.0f);
-			float max = std::clamp(a_data.range[1], 0.0f, 1.0f);
+			const float min = std::clamp(a_data.range[0], 0.0f, 1.0f);
+			const float  max = std::clamp(a_data.range[1], 0.0f, 1.0f);
 
 			rmmd = max - min;
 			if (rmmd >= 0.0f && rmmd < 1.0f)
@@ -119,7 +119,7 @@ namespace IED
 				v = 1.0f - v;
 			}
 
-			auto f = flags;
+			const auto f = flags;
 
 			if ((f & Data::EffectShaderPulseFlags::uScale) == Data::EffectShaderPulseFlags::uScale)
 			{

@@ -41,6 +41,7 @@ namespace IED
 			Sleeping            = 5430,
 			IsBeingRidden       = 5431,
 			WeaponDrawn         = 5432,
+			RandomPercent       = 5433,
 		};
 	}
 }

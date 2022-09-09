@@ -102,6 +102,7 @@ namespace IED
 			XP32SkeletonWarning                 = 2091,
 			Mounting                            = 2092,
 			Mounted                             = 2093,
+			CurrentItem                         = 2094,
 		};
 	}
 }

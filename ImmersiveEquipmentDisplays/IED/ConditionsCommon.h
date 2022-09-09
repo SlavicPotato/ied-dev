@@ -86,6 +86,8 @@ namespace IED
 				return a_params.is_ridden();
 			case Data::ExtraConditionType::kWeaponDrawn:
 				return a_params.actor->IsWeaponDrawn();
+			case Data::ExtraConditionType::kRandomPercent:
+				return match_random_percent(a_params, a_match, a_match.percent);
 			default:
 				return false;
 			}
@@ -690,7 +692,7 @@ namespace IED
 				return false;
 			}
 		}
-		
+
 		template <class Tm, class Tf>
 		constexpr bool match_mounted_by(
 			CommonParams& a_params,
@@ -751,6 +753,11 @@ namespace IED
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_female(CommonParams& a_params) noexcept;
 		bool has_humanoid_skeleton(CommonParams& a_params) noexcept;
+
+		bool match_random_percent(
+			CommonParams&   a_params,
+			const luid_tag& a_luid,
+			float           a_percent) noexcept;
 
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept;

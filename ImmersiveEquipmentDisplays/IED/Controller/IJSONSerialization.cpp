@@ -249,6 +249,7 @@ namespace IED
 		Data::configStore_t& a_out) const
 	{
 		Serialization::ParserState state;
+
 		return LoadConfigStore(a_path, a_out, state);
 	}
 

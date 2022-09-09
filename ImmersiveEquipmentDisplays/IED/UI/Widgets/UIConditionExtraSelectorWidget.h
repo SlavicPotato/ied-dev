@@ -28,9 +28,9 @@ namespace IED
 		private:
 			inline static constexpr std::size_t NUM_CONDITIONS =
 #if defined(IED_ENABLE_CONDITION_EN)
-				32
+				33
 #else
-				31
+				32
 #endif
 				;
 
@@ -40,7 +40,7 @@ namespace IED
 					UIConditionExtraSelectorWidgetStrings>,
 				NUM_CONDITIONS>;
 
-			static data_type m_data;
+			static const data_type m_data;
 		};
 	}
 

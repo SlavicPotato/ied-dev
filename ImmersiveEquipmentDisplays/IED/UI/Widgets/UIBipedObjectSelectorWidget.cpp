@@ -58,11 +58,9 @@ namespace IED
 			BIPED_OBJECT& a_data,
 			bool          a_allowNone)
 		{
-			static_assert(m_desc.size() == stl::underlying(BIPED_OBJECT::kTotal));
-
 			bool result = false;
 
-			ImGui::PushID("biped_object_selector");
+			ImGui::PushID("bo_sel");
 
 			auto preview = a_data != BIPED_OBJECT::kNone ?
 			                   GetBipedSlotDesc(a_data) :
@@ -102,7 +100,9 @@ namespace IED
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
+						{
 							ImGui::SetScrollHereY();
+						}
 					}
 
 					if (ImGui::Selectable(m_desc[i], selected))

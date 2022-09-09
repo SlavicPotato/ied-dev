@@ -11,9 +11,7 @@ namespace IED
 		void UVLinearMotion::UpdateConfigImpl(
 			const Data::configEffectShaderFunction_t& a_data)
 		{
-			constexpr auto pi2 = std::numbers::pi_v<float> * 2.0f;
-
-			auto angle = std::clamp(a_data.angle, -pi2, pi2);
+			auto angle = std::clamp(a_data.angle, -PI2, PI2);
 			auto speed = std::clamp(a_data.speed, 0.01f, 100.0f);
 
 			DirectX::XMScalarSinCos(

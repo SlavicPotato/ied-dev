@@ -8,18 +8,9 @@ namespace IED
 {
 	namespace ESF
 	{
-		enum class PulseFunction : std::uint8_t
-		{
-			Sine,
-			Cosine
-		};
-
 		class Pulse :
 			public EffectShaderFunctionBase
 		{
-			inline static constexpr auto PI  = std::numbers::pi_v<float>;
-			inline static constexpr auto PI2 = PI * 2.0f;
-
 		public:
 			using EffectShaderFunctionBase::EffectShaderFunctionBase;
 

@@ -6,7 +6,7 @@ namespace IED
 {
 	namespace UI
 	{
-		UIConditionExtraSelectorWidget::data_type UIConditionExtraSelectorWidget::m_data{ {
+		const UIConditionExtraSelectorWidget::data_type UIConditionExtraSelectorWidget::m_data{ {
 
 			{ Data::ExtraConditionType::kAngryWithPlayer, UIConditionExtraSelectorWidgetStrings::AngryWithPlayer },
 			{ Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut },
@@ -32,6 +32,7 @@ namespace IED
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
 			{ Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected },
+			{ Data::ExtraConditionType::kRandomPercent, UIConditionExtraSelectorWidgetStrings::RandomPercent },
 #if defined(IED_ENABLE_CONDITION_EN)
 			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
 #endif
@@ -161,6 +162,10 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
 			case Data::ExtraConditionType::kBeingRidden:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsBeingRidden);
+			case Data::ExtraConditionType::kWeaponDrawn:
+				return LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
+			case Data::ExtraConditionType::kRandomPercent:
+				return LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
 			default:
 				return nullptr;
 			}

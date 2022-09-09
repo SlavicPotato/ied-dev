@@ -116,9 +116,9 @@ namespace IED
 		private:
 			friend class boost::serialization::access;
 
+		public:
 			using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
 
-		public:
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
@@ -134,14 +134,13 @@ namespace IED
 				const collectorData_t& a_data,
 				CommonParams&          a_params) const;
 
-			const equipmentOverride_t* get_equipment_override(
+			const equipmentOverride_t* get_equipment_override_fp(
 				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
 
-			const equipmentOverride_t* get_equipment_override(
+			const equipmentOverride_t* get_equipment_override_sfp(
 				const collectorData_t&     a_data,
-				const slot_container_type& a_slots,
 				const formSlotPair_t&      a_checkForm,
 				CommonParams&              a_params) const;
 
@@ -149,14 +148,13 @@ namespace IED
 				const collectorData_t& a_data,
 				CommonParams&          a_params) const;
 
-			const configEffectShaderHolder_t* get_effect_shader(
+			const configEffectShaderHolder_t* get_effect_shader_fp(
 				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
 
-			const configEffectShaderHolder_t* get_effect_shader(
+			const configEffectShaderHolder_t* get_effect_shader_sfp(
 				const collectorData_t&     a_data,
-				const slot_container_type& a_slots,
 				const formSlotPair_t&      a_checkForm,
 				CommonParams&              a_params) const;
 
@@ -190,7 +188,6 @@ namespace IED
 
 			static constexpr bool match_equipped_or_slot(
 				const collectorData_t&              a_cdata,
-				const slot_container_type&          a_data,
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams&                       a_params);
 
@@ -204,7 +201,14 @@ namespace IED
 				CommonParams&                       a_params);
 
 		public:
-			static bool do_match(
+			static bool do_match_fp(
+				const collectorData_t&                  a_data,
+				const equipmentOverrideConditionList_t& a_matches,
+				const formSlotPair_t&                   a_checkForm,
+				CommonParams&                           a_params,
+				bool                                    a_default);
+
+			static bool do_match_sfp(
 				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t&                   a_checkForm,
@@ -212,14 +216,6 @@ namespace IED
 				bool                                    a_default);
 
 		private:
-			static constexpr bool do_match(
-				const collectorData_t&                  a_data,
-				const equipmentOverrideConditionList_t& a_matches,
-				const slot_container_type&              a_slotData,
-				const formSlotPair_t&                   a_checkForm,
-				CommonParams&                           a_params,
-				bool                                    a_default);
-
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
 				const collectorData_t&    a_data);
@@ -250,10 +246,6 @@ namespace IED
 				const configCachedForm_t&  a_keyword,
 				ObjectSlot                 a_type,
 				const slot_container_type& a_data);
-
-			static TESForm* match_slot_form(
-				const slot_container_type&          a_data,
-				const equipmentOverrideCondition_t& a_match);
 
 		protected:
 			template <class Archive>

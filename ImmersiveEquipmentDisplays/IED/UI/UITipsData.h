@@ -72,6 +72,7 @@ namespace IED
 			EffectShadersParallelUpdates        = 1061,
 			EquippedConditionsGearPositioning   = 1062,
 			CustomLastEquipped                  = 1063,
+			Presence                            = 1064,
 		};
 
 	}

@@ -27,6 +27,7 @@ namespace IED
 			kUseLastEquipped       = 1u << 12,
 			kPrioritizeRecentSlots = 1u << 13,
 			kDisableIfSlotOccupied = 1u << 14,
+			kSkipOccupiedSlots     = 1u << 15,
 
 			kNonSingleMask     = kUseGroup | kUseLastEquipped,
 			kEquipmentModeMask = kEquipmentMode,  //| kUseLastEquipped,

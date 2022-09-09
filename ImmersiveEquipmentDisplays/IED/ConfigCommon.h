@@ -244,6 +244,7 @@ namespace IED
 			kSleeping            = 30,
 			kBeingRidden         = 31,
 			kWeaponDrawn         = 32,
+			kRandomPercent       = 33,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

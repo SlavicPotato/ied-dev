@@ -19,6 +19,7 @@ namespace IED
 			PrioritizeRecentSlots    = 4208,
 			DisableIfOccupied        = 4209,
 			LastEquippedFilterCond   = 4210,
+			SkipOccupiedSlots        = 4211,
 		};
 	}
 }

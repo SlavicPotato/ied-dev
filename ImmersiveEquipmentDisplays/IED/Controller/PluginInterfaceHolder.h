@@ -6,9 +6,14 @@ namespace IED
 	class PluginInterfaceHolder
 	{
 	public:
-		inline constexpr void SetPluginInterface(T* a_interface)
+		inline constexpr void SetPluginInterface(T* a_interface) noexcept
 		{
 			m_interface = a_interface;
+		}
+
+		inline constexpr T* GetPluginInterface() const noexcept
+		{
+			return m_interface;
 		}
 
 	protected:

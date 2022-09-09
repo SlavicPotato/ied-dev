@@ -56,6 +56,33 @@ namespace IED
 					PLUGIN_VERSION_VERSTRING,
 					LS(UIIntroBannerStrings::HeaderAppend));
 
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				const auto* const intfc = m_controller.GetPluginInterface();
+
+				if (!intfc)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+
+					ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSNotFound));
+
+					ImGui::PopStyleColor();
+				}
+				else
+				{
+					const auto pluginVersion = intfc->GetPluginVersion();
+
+					ImGui::Text(
+						"%s %u.%u.%u %s",
+						intfc->GetPluginName(),
+						GET_PLUGIN_VERSION_MAJOR(pluginVersion),
+						GET_PLUGIN_VERSION_MINOR(pluginVersion),
+						GET_PLUGIN_VERSION_REV(pluginVersion),
+						LS(UIIntroBannerStrings::SDSFoundAppend));
+				}
+
 				if (auto& renderTask = m_controller.UIGetRenderTask())
 				{
 					ImGui::Spacing();

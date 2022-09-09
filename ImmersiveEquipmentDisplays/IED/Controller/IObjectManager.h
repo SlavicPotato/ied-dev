@@ -9,6 +9,7 @@
 #include "INode.h"
 #include "INodeOverride.h"
 #include "IPersistentCounter.h"
+#include "IRNG.h"
 #include "ISound.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerData.h"
@@ -23,6 +24,7 @@ namespace IED
 		public ObjectManagerData,
 		public ObjectDatabase,
 		public IPersistentCounter,
+		public IRNG,
 		virtual public ILog
 	{
 	public:

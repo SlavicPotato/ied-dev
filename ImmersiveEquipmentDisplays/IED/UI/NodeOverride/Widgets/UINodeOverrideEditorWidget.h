@@ -3255,6 +3255,9 @@ namespace IED
 								case Data::ExtraConditionType::kTimeOfDay:
 									m_condParamEditor.SetNext<ConditionParamItem::TimeOfDay>(e.timeOfDay);
 									break;
+								case Data::ExtraConditionType::kRandomPercent:
+									m_condParamEditor.SetNext<ConditionParamItem::Percent>(e.percent);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);

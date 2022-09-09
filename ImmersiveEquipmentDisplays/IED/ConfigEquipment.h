@@ -3,6 +3,7 @@
 #include "ConfigBaseValues.h"
 #include "ConfigCommon.h"
 #include "ConfigData.h"
+#include "ConfigLUIDTag.h"
 
 #include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
@@ -28,14 +29,14 @@ namespace IED
 			kAnd = 1u << 5,
 			kNot = 1u << 6,
 
-			kMatchEquipped          = 1u << 7,
-			kMatchAllEquipmentSlots = 1u << 8,
-			kMatchCategoryOperOR    = 1u << 9,
-			kMatchThisItem          = 1u << 10,
+			kMatchEquipped       = 1u << 7,
+			kMatchEquipmentSlots = 1u << 8,
+			kMatchCategoryOperOR = 1u << 9,
+			kMatchThisItem       = 1u << 10,
 
 			kMatchMaskEquippedAndThis     = kMatchEquipped | kMatchThisItem,
-			kMatchMaskEquippedAndSlots    = kMatchEquipped | kMatchAllEquipmentSlots,
-			kMatchMaskAllEquipmentAndThis = kMatchAllEquipmentSlots | kMatchThisItem,
+			kMatchMaskEquippedAndSlots    = kMatchEquipped | kMatchEquipmentSlots,
+			kMatchMaskAllEquipmentAndThis = kMatchEquipmentSlots | kMatchThisItem,
 			kMatchMaskAny                 = kMatchEquipped | kMatchMaskAllEquipmentAndThis,
 
 			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form)
@@ -77,6 +78,7 @@ namespace IED
 			Global     = 15,
 			Mounting   = 16,
 			Mounted    = 17,
+			Presence   = 18
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -120,7 +122,8 @@ namespace IED
 			}
 		};
 
-		struct equipmentOverrideCondition_t
+		struct equipmentOverrideCondition_t :
+			configLUIDTagAC_t
 		{
 			friend class boost::serialization::access;
 
@@ -208,11 +211,17 @@ namespace IED
 				case EquipmentOverrideConditionType::Weather:
 				case EquipmentOverrideConditionType::Mounting:
 				case EquipmentOverrideConditionType::Mounted:
+				case EquipmentOverrideConditionType::Presence:
 
-					if (a_matchType == EquipmentOverrideConditionType::Location ||
-					    a_matchType == EquipmentOverrideConditionType::Worldspace)
+					switch (a_matchType)
 					{
+					case EquipmentOverrideConditionType::Location:
+					case EquipmentOverrideConditionType::Worldspace:
 						flags = EquipmentOverrideConditionFlags::kExtraFlag1;
+						break;
+					case EquipmentOverrideConditionType::Presence:
+						flags = EquipmentOverrideConditionFlags::kMatchCategoryOperOR;
+						break;
 					}
 
 					fbf.type = a_matchType;
@@ -254,7 +263,11 @@ namespace IED
 				static_assert(std::is_same_v<std::underlying_type_t<ComparisonOperator>, std::uint32_t>);
 			};
 
-			float f32a{ 0.0f };
+			union
+			{
+				float f32a{ 0.0f };
+				float percent;
+			};
 
 			union
 			{

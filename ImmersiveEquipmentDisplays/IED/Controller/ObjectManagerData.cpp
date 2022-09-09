@@ -373,6 +373,27 @@ namespace IED
 		});
 	}
 
+	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid)
+	{
+		if (m_rpc.size() > MAX_RPC_SIZE)
+		{
+			m_rpc.clear();
+		}
+
+		auto r = m_rpc.try_emplace(a_luid);
+
+		if (!r.second)
+		{
+			return r.first->second;
+		}
+
+		float value = m_owner.GetRandomPercent();
+
+		r.first->second = value;
+
+		return value;
+	}
+
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode*                                   a_npcroot,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)

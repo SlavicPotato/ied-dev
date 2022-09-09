@@ -576,10 +576,9 @@ namespace IED
 		updateActionFunc_t MakeTransformUpdateFunc();
 
 		const Data::configBaseValues_t& GetConfigForActor(
-			const actorInfo_t&                            a_info,
-			const Data::configCustom_t&                   a_config,
-			const ActorObjectHolder::slot_container_type& a_slots,
-			objectEntryCustom_t&                          a_entry);
+			const actorInfo_t&          a_info,
+			const Data::configCustom_t& a_config,
+			const objectEntryCustom_t&  a_entry);
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&        a_info,
@@ -905,8 +904,6 @@ namespace IED
 			Data::SettingHolder settings;
 		} m_config;
 
-		RandomNumberGeneratorBase             m_rngBase;
-		RandomNumberGenerator3<float>         m_rng1;
 		stl::vector<Game::ObjectRefHandle>    m_activeHandles;
 		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
 		except::descriptor                    m_lastException;

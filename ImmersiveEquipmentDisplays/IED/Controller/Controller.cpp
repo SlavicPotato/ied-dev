@@ -29,7 +29,6 @@ namespace IED
 		ActorProcessorTask(*this),
 		EffectController(a_config->m_effectShaders),
 		IAnimationManager(m_config.settings),
-		m_rng1(0.0f, 100.0f),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
@@ -400,7 +399,7 @@ namespace IED
 
 	bool Controller::DispatchIntroBanner()
 	{
-		auto task = make_timed_ui_task<UI::UIIntroBanner>(6000000, m_iniconf->m_introBannerVOffset);
+		auto task = make_timed_ui_task<UI::UIIntroBanner>(7000000, m_iniconf->m_introBannerVOffset);
 
 		task->SetControlLock(false);
 		task->SetFreezeTime(false);
@@ -2312,15 +2311,14 @@ namespace IED
 
 		if constexpr (std::is_same_v<Ta, configCustom_t>)
 		{
-			es = a_config.get_effect_shader(
+			es = a_config.get_effect_shader_sfp(
 				a_params.collector.data,
-				a_params.objects.m_entriesSlot,
-				{ a_objectEntry.state->form, ItemData::GetItemSlotExtra(a_objectEntry.state->form) },
+				{ a_objectEntry.state->form, ItemData::GetItemSlotExtraGeneric(a_objectEntry.state->form) },
 				a_params);
 		}
 		else if constexpr (std::is_same_v<Ta, configSlot_t>)
 		{
-			es = a_config.get_effect_shader(
+			es = a_config.get_effect_shader_fp(
 				a_params.collector.data,
 				{ a_objectEntry.state->form, a_objectEntry.slotidex },
 				a_params);
@@ -2563,7 +2561,7 @@ namespace IED
 					!item ? configEntry.get_equipment_override(
 								a_params.collector.data,
 								a_params) :
-                            configEntry.get_equipment_override(
+                            configEntry.get_equipment_override_fp(
 								a_params.collector.data,
 								{ item->item->form, objectEntry.slotidex },
 								a_params);
@@ -2865,13 +2863,6 @@ namespace IED
 					a_hasMinCount = a_itemData.sharedCount - delta > 0;
 				}
 			}
-
-			if (!a_hasMinCount &&
-			    (!m_config.settings.data.hideEquipped ||
-			     a_config.customFlags.test(CustomFlags::kAlwaysUnload)))
-			{
-				return false;
-			}
 		}
 		else
 		{
@@ -2899,7 +2890,7 @@ namespace IED
 					a_config.bipedSlots.begin(),
 					a_config.bipedSlots.end(),
 					[&](auto& a_v) {
-						return a_v <= BIPED_OBJECT::kTotal &&
+						return a_v < BIPED_OBJECT::kTotal &&
 					           data[stl::underlying(a_v)].occupied;
 					});
 
@@ -2912,23 +2903,10 @@ namespace IED
 			if (a_config.customFlags.test(CustomFlags::kPrioritizeRecentSlots) &&
 			    a_config.bipedSlots.size() > 1)
 			{
-				for (auto& e : a_config.bipedSlots)
-				{
-					if (e >= BIPED_OBJECT::kTotal)
-					{
-						continue;
-					}
+				auto& bipedSlots = m_temp.le;
 
-					if (auto& v = data[stl::underlying(e)]; v.occupied)
-					{
-						return formData.end();
-					}
-				}
-
-				auto& tmp = m_temp.le;
-
-				tmp.clear();
-				tmp.reserve(a_config.bipedSlots.size());
+				bipedSlots.clear();
+				bipedSlots.reserve(a_config.bipedSlots.size());
 
 				for (auto& e : a_config.bipedSlots)
 				{
@@ -2937,41 +2915,57 @@ namespace IED
 						continue;
 					}
 
-					tmp.emplace_back(std::addressof(data[stl::underlying(e)]));
+					auto& v = data[stl::underlying(e)];
+
+					if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
+					    v.occupied)
+					{
+						continue;
+					}
+
+					bipedSlots.emplace_back(std::addressof(v));
 				}
 
 				std::sort(
-					tmp.begin(),
-					tmp.end(),
+					bipedSlots.begin(),
+					bipedSlots.end(),
 					[](auto& a_lhs, auto& a_rhs) {
 						return a_lhs->seen > a_rhs->seen;
 					});
 
-				for (auto& e : tmp)
+				for (auto& e : bipedSlots)
 				{
 					for (auto& formid : e->forms)
 					{
-						if (formid && !formid.IsTemporary())
+						if (!formid || formid.IsTemporary())
 						{
-							if (auto it = formData.find(formid); it != formData.end())
-							{
-								if (configBase_t::do_match(
-										a_params.collector.data,
-										a_config.bipedFilterConditions,
-										{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-										a_params,
-										true))
-								{
-									if (CustomEntryValidateInventoryForm(
-											a_params,
-											it->second,
-											a_config,
-											a_hasMinCount))
-									{
-										return it;
-									}
-								}
-							}
+							continue;
+						}
+
+						auto it = formData.find(formid);
+
+						if (it == formData.end())
+						{
+							continue;
+						}
+
+						if (!configBase_t::do_match_fp(
+								a_params.collector.data,
+								a_config.bipedFilterConditions,
+								{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
+								a_params,
+								true))
+						{
+							continue;
+						}
+
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_hasMinCount))
+						{
+							return it;
 						}
 					}
 				}
@@ -2987,29 +2981,43 @@ namespace IED
 
 					auto& v = data[stl::underlying(e)];
 
+					if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
+					    v.occupied)
+					{
+						continue;
+					}
+
 					for (auto& formid : v.forms)
 					{
-						if (formid && !formid.IsTemporary())
+						if (!formid || formid.IsTemporary())
 						{
-							if (auto it = formData.find(formid); it != formData.end())
-							{
-								if (configBase_t::do_match(
-										a_params.collector.data,
-										a_config.bipedFilterConditions,
-										{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-										a_params,
-										true))
-								{
-									if (CustomEntryValidateInventoryForm(
-											a_params,
-											it->second,
-											a_config,
-											a_hasMinCount))
-									{
-										return it;
-									}
-								}
-							}
+							continue;
+						}
+
+						auto it = formData.find(formid);
+
+						if (it == formData.end())
+						{
+							continue;
+						}
+
+						if (!configBase_t::do_match_fp(
+								a_params.collector.data,
+								a_config.bipedFilterConditions,
+								{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
+								a_params,
+								true))
+						{
+							continue;
+						}
+
+						if (CustomEntryValidateInventoryForm(
+								a_params,
+								it->second,
+								a_config,
+								a_hasMinCount))
+						{
+							return it;
 						}
 					}
 				}
@@ -3194,11 +3202,19 @@ namespace IED
 				return false;
 			}
 
+			if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
+			    !hasMinCount &&
+			    (!m_config.settings.data.hideEquipped ||
+			     a_config.customFlags.test(CustomFlags::kAlwaysUnload)))
+			{
+				a_objectEntry.clear_chance_flags();
+				return false;
+			}
+
 			auto configOverride =
-				a_config.get_equipment_override(
+				a_config.get_equipment_override_sfp(
 					a_params.collector.data,
-					a_params.objects.m_entriesSlot,
-					{ it->second.form, ItemData::GetItemSlotExtra(it->second.form) },
+					{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -3356,10 +3372,9 @@ namespace IED
 			}
 
 			auto configOverride =
-				a_config.get_equipment_override(
+				a_config.get_equipment_override_sfp(
 					a_params.collector.data,
-					a_params.objects.m_entriesSlot,
-					{ form, ItemData::GetItemSlotExtra(form) },
+					{ form, ItemData::GetItemSlotExtraGeneric(form) },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -4328,7 +4343,6 @@ namespace IED
 					auto& conf = GetConfigForActor(
 						a_info,
 						a_confEntry(a_info.sex),
-						a_info.objects.GetSlots(),
 						a_entry);
 
 					UpdateTransformCustomImpl(
@@ -4344,10 +4358,9 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		const actorInfo_t&                            a_info,
-		const configCustom_t&                         a_config,
-		const ActorObjectHolder::slot_container_type& a_slots,
-		objectEntryCustom_t&                          a_entry)
+		const actorInfo_t&         a_info,
+		const configCustom_t&      a_config,
+		const objectEntryCustom_t& a_entry)
 	{
 		assert(a_entry.state);
 
@@ -4366,10 +4379,9 @@ namespace IED
 			*this
 		};
 
-		if (auto eo = a_config.get_equipment_override(
+		if (auto eo = a_config.get_equipment_override_sfp(
 				collector.data,
-				a_slots,
-				{ a_entry.state->form, ItemData::GetItemSlotExtra(a_entry.state->form) },
+				{ a_entry.state->form, ItemData::GetItemSlotExtraGeneric(a_entry.state->form) },
 				params))
 		{
 			return *eo;
@@ -4400,7 +4412,7 @@ namespace IED
 			*this
 		};
 
-		if (auto eo = a_config.get_equipment_override(
+		if (auto eo = a_config.get_equipment_override_fp(
 				collector.data,
 				{ a_entry.state->form, a_entry.slotidex },
 				params))

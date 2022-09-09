@@ -37,6 +37,7 @@ namespace IED
 		TimeOfDay,
 		Extra,
 		Race,
+		Percent,
 
 		Total
 	};
@@ -153,6 +154,11 @@ namespace IED
 
 			const char* GetItemDesc(ConditionParamItem a_item);
 			const char* GetFormKeywordExtraDesc(const char* a_idesc, bool a_race = false) const noexcept;
+
+			inline constexpr auto &GetDescBuffer() noexcept
+			{
+				return m_descBuffer;
+			}
 
 		private:
 			bool DrawExtra(
@@ -290,7 +296,8 @@ namespace IED
 				};
 			}
 			else if constexpr (
-				Ap == ConditionParamItem::Float)
+				Ap == ConditionParamItem::Float ||
+				Ap == ConditionParamItem::Percent)
 			{
 				static_assert(std::is_same_v<T, float>);
 

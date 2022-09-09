@@ -152,11 +152,6 @@ namespace IED
 
 	void EffectShaderData::Entry::update_effect_data(float a_step) const
 	{
-		if (functions.empty())
-		{
-			return;
-		}
-
 		auto sdata = shaderData.get();
 		assert(sdata);
 
@@ -169,7 +164,7 @@ namespace IED
 	void EffectShaderData::Entry::create_function_list(
 		const Data::configEffectShaderFunctionList_t& a_data)
 	{
-		assert(functions.empty());
+		functions.clear();
 
 		for (auto& e : a_data)
 		{

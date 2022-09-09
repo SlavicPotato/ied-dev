@@ -67,6 +67,8 @@ namespace IED
 		{
 			bool result = false;
 
+			ImGui::PushID("cep");
+
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -6.0f);
 
 			GetFormPicker().SetAllowClear(!m_tempFlags.test(UIConditionParamEditorTempFlags::kNoClearForm));
@@ -89,6 +91,11 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::TimeOfDay); f.p1)
 						{
 							f.As1<Data::TimeOfDay>() = Data::TimeOfDay::kNone;
+						}
+
+						if (const auto& f = get(ConditionParamItem::Percent); f.p1)
+						{
+							f.As1<float>() = 0.0f;
 						}
 					}
 
@@ -143,7 +150,7 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
-
+				
 				result |= DrawExtra(e, args, ConditionParamItem::Form);
 
 				if (!args.hide)
@@ -287,6 +294,24 @@ namespace IED
 				}
 			}
 
+			if (const auto& e = get(ConditionParamItem::Percent); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::Percent);
+
+				if (!args.hide)
+				{
+					result |= ImGui::SliderFloat(
+						LS(CommonStrings::Percent, "in_prcnt"),
+						reinterpret_cast<float*>(e.p1),
+						0.0f,
+						100.0f,
+						"%.2f",
+						ImGuiSliderFlags_AlwaysClamp);
+				}
+			}
+
 			if (m_extraInterface)
 			{
 				if (const auto& e = get(ConditionParamItem::Extra); e.p1)
@@ -299,6 +324,8 @@ namespace IED
 			GetKeywordPicker().SetAllowClear(true);
 
 			ImGui::PopItemWidth();
+
+			ImGui::PopID();
 
 			return result;
 		}
@@ -419,8 +446,10 @@ namespace IED
 					{
 						auto type = e.As1<Data::ExtraConditionType>();
 
-						if (type == Data::ExtraConditionType::kTimeOfDay)
+						switch (type)
 						{
+						case Data::ExtraConditionType::kTimeOfDay:
+
 							if (const auto& f = get(ConditionParamItem::TimeOfDay); f.p1)
 							{
 								stl::snprintf(
@@ -431,6 +460,23 @@ namespace IED
 
 								return m_descBuffer;
 							}
+
+							break;
+
+						case Data::ExtraConditionType::kRandomPercent:
+
+							if (const auto& f = get(ConditionParamItem::Percent); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%.2f]",
+									condition_type_to_desc(type),
+									f.As1<float>());
+
+								return m_descBuffer;
+							}
+
+							break;
 						}
 
 						if (auto r = condition_type_to_desc(type))

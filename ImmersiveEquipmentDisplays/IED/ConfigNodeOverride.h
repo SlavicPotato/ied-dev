@@ -2,6 +2,7 @@
 
 #include "ConfigCommon.h"
 #include "ConfigData.h"
+#include "ConfigLUIDTag.h"
 #include "ConfigTransform.h"
 
 #include "TimeOfDay.h"
@@ -88,24 +89,24 @@ namespace IED
 
 		enum class NodeOverrideConditionType : std::uint32_t
 		{
-			Node        = 0,
-			Form        = 1,
-			Keyword     = 2,
-			BipedSlot   = 3,
-			Type        = 4,
-			Race        = 5,
-			Furniture   = 6,
-			Group       = 7,
-			Actor       = 8,
-			NPC         = 9,
-			Extra       = 10,
-			Location    = 11,
-			Worldspace  = 12,
-			Package     = 13,
-			Weather     = 14,
-			Global      = 15,
-			Mounting    = 16,
-			Mounted     = 17
+			Node       = 0,
+			Form       = 1,
+			Keyword    = 2,
+			BipedSlot  = 3,
+			Type       = 4,
+			Race       = 5,
+			Furniture  = 6,
+			Group      = 7,
+			Actor      = 8,
+			NPC        = 9,
+			Extra      = 10,
+			Location   = 11,
+			Worldspace = 12,
+			Package    = 13,
+			Weather    = 14,
+			Global     = 15,
+			Mounting   = 16,
+			Mounted    = 17
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -149,7 +150,8 @@ namespace IED
 			}
 		};
 
-		struct configNodeOverrideCondition_t
+		struct configNodeOverrideCondition_t :
+			configLUIDTagAC_t
 		{
 			friend class boost::serialization::access;
 
@@ -290,7 +292,11 @@ namespace IED
 				static_assert(std::is_same_v<std::underlying_type_t<ComparisonOperator>, std::uint32_t>);
 			};
 
-			float f32a{ 0.0f };
+			union
+			{
+				float f32a{ 0.0f };
+				float percent;
+			};
 
 			union
 			{

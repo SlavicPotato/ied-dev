@@ -137,6 +137,33 @@ namespace IED
 				Data::BaseFlags     a_mask);
 
 		private:
+			void DrawBaseConfigGeneralFlags(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				bool                      a_disabled,
+				Data::configBase_t*       a_baseConfig);
+
+			void DrawBaseConfig3DFlags(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				bool                      a_disabled,
+				Data::configBase_t*       a_baseConfig);
+
+			void DrawBaseConfigAnimationFlags(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				bool                      a_disabled,
+				Data::configBase_t*       a_baseConfig);
+
 			void DrawEquipmentOverrides(
 				T                        a_handle,
 				Data::configBase_t&      a_data,
@@ -602,343 +629,48 @@ namespace IED
 
 			ImGui::PushID("bc_flags");
 			{
-				bool r;
+				DrawBaseConfigGeneralFlags(
+					a_handle,
+					a_data,
+					a_params,
+					a_slotName,
+					storecc,
+					disabled,
+					a_baseConfig);
 
-				if (storecc)
+				DrawBaseConfig3DFlags(
+					a_handle,
+					a_data,
+					a_params,
+					a_slotName,
+					storecc,
+					disabled,
+					a_baseConfig);
+
+				DrawBaseConfigAnimationFlags(
+					a_handle,
+					a_data,
+					a_params,
+					a_slotName,
+					storecc,
+					disabled,
+					a_baseConfig);
+
+				ImGui::Spacing();
+
+				if (a_baseConfig)
 				{
-					r = TreeEx("tree", true, "%s", LS(CommonStrings::Flags));
-				}
-				else
-				{
-					r = ImGui::TreeNodeEx(
-						"tree",
-						ImGuiTreeNodeFlags_DefaultOpen |
-							ImGuiTreeNodeFlags_SpanAvailWidth,
-						"%s",
-						LS(CommonStrings::Flags));
-				}
-
-				if (r)
-				{
-					ImGui::Spacing();
-
-					ImGui::Columns(2, nullptr, false);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Disabled, "0"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDisabled)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDisabled);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
+					ImGui::PushID("f_ex");
 
 					UICommon::PushDisabled(disabled);
 
-					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Invisible, "1"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kInvisible)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kInvisible);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-					DrawTip(UITip::Invisible);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::HideInFurniture, "2"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kHideIfUsingFurniture)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kHideIfUsingFurniture);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-					DrawTip(UITip::HideInFurniture);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::HideLayingDown, "3"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kHideLayingDown)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kHideLayingDown);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-					DrawTip(UITip::HideLayingDown);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::kPlaySound, "4"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kPlaySound)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kPlaySound);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::DropOnDeath, "5"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDropOnDeath)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDropOnDeath);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::DropOnDeath);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::IgnoreRaceEquipTypes, "6"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kIgnoreRaceEquipTypes)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kIgnoreRaceEquipTypes);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-					DrawTip(UITip::IgnoreRaceEquipTypesSlot);
-
-					bool paChanged = ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::PlayAnimation, "7"),
-						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kPlaySequence));
-
-					if (paChanged)
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kPlaySequence);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::PlayAnimation);
-
-					if (a_data.flags.test(Data::BaseFlags::kPlaySequence))
-					{
-						if (paChanged &&
-						    a_data.niControllerSequence.empty())
-						{
-							ImGui::OpenPopup("7ctx");
-							ClearDescriptionPopupBuffer();
-						}
-
-						ImGui::SameLine();
-						if (UIPopupToggleButtonWidget::DrawPopupToggleButton("7b", "7ctx"))
-						{
-							SetDescriptionPopupBuffer(a_data.niControllerSequence);
-						}
-
-						if (ImGui::BeginPopup("7ctx"))
-						{
-							if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
-							{
-								a_data.niControllerSequence = GetDescriptionPopupBuffer();
-
-								PropagateMemberToEquipmentOverrides(
-									a_baseConfig,
-									offsetof(Data::configBaseValues_t, niControllerSequence),
-									a_data.niControllerSequence);
-
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-							}
-
-							ImGui::EndPopup();
-						}
-					}
-
-					ImGui::NextColumn();
-
-					const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
-
-					UICommon::PushDisabled(!atmReference);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::SyncReference, "A"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kSyncReferenceTransform)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kSyncReferenceTransform);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-
-					UICommon::PopDisabled(!atmReference);
-
-					DrawTip(UITip::SyncReferenceNode);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::RemoveScabbard, "B"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kRemoveScabbard)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kRemoveScabbard);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::RemoveScabbard);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::Use1pWeaponModels, "C"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kLoad1pWeaponModel);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::Load1pWeaponModel);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::UseWorldModel, "D"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kUseWorldModel)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kUseWorldModel);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::UseWorldModel);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIBaseConfigString::KeepTorchFlame, "E"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kKeepTorchFlame);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::KeepTorchFlame);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::DisableHavok, "F"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDisableHavok)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDisableHavok);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::DisableHavok);
-
-					if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::DisableWeaponAnims, "G"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDisableWeaponAnims);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::DisableWeaponAnims);
-
-					/*if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "H"),
-							stl::underlying(std::addressof(a_data.flags.value)),
-							stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kDisableAnimEventForwarding);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-					DrawTip(UITip::DisableAnimEventForwarding);*/
-
-					paChanged = ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::AnimationEvent, "I"),
-						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kAnimationEvent));
-
-					if (paChanged)
-					{
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kAnimationEvent);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-
-					DrawTip(UITip::AnimationEvent);
-
-					if (a_data.flags.test(Data::BaseFlags::kAnimationEvent))
-					{
-						if (paChanged &&
-						    a_data.animationEvent.empty())
-						{
-							ImGui::OpenPopup("Hctx");
-							ClearDescriptionPopupBuffer();
-						}
-
-						ImGui::SameLine();
-						if (UIPopupToggleButtonWidget::DrawPopupToggleButton("Hb", "Hctx"))
-						{
-							SetDescriptionPopupBuffer(a_data.animationEvent);
-						}
-
-						if (ImGui::BeginPopup("Hctx"))
-						{
-							if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
-							{
-								a_data.animationEvent = GetDescriptionPopupBuffer();
-
-								PropagateMemberToEquipmentOverrides(
-									a_baseConfig,
-									offsetof(Data::configBaseValues_t, animationEvent),
-									a_data.animationEvent);
-
-								OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-							}
-
-							ImGui::EndPopup();
-						}
-					}
+					DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
 
 					UICommon::PopDisabled(disabled);
 
-					ImGui::Columns();
-
-					if (a_baseConfig)
-					{
-						ImGui::PushID("extra_flags");
-						DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
-						ImGui::PopID();
-					}
+					ImGui::PopID();
 
 					ImGui::Spacing();
-
-					ImGui::TreePop();
 				}
 			}
 			ImGui::PopID();
@@ -1088,6 +820,453 @@ namespace IED
 			}
 
 			ImGui::PopID();
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigGeneralFlags(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			bool                      a_disabled,
+			Data::configBase_t*       a_baseConfig)
+		{
+			bool tresult;
+
+			if (a_storecc)
+			{
+				tresult = TreeEx(
+					"f_gn",
+					true,
+					"%s",
+					LS(CommonStrings::General));
+			}
+			else
+			{
+				tresult = ImGui::TreeNodeEx(
+					"f_gn",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::General));
+			}
+
+			if (tresult)
+			{
+				ImGui::Spacing();
+
+				ImGui::Columns(2, nullptr, false);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Disabled, "0"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kDisabled)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDisabled);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				UICommon::PushDisabled(a_disabled);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Invisible, "1"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kInvisible)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kInvisible);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				DrawTip(UITip::Invisible);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::HideInFurniture, "2"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kHideIfUsingFurniture)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kHideIfUsingFurniture);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				DrawTip(UITip::HideInFurniture);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::HideLayingDown, "3"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kHideLayingDown)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kHideLayingDown);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				DrawTip(UITip::HideLayingDown);
+
+				ImGui::NextColumn();
+
+				if (ImGui::CheckboxFlagsT(
+						LS(CommonStrings::kPlaySound, "4"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kPlaySound)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kPlaySound);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::IgnoreRaceEquipTypes, "5"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kIgnoreRaceEquipTypes)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kIgnoreRaceEquipTypes);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				DrawTip(UITip::IgnoreRaceEquipTypesSlot);
+
+				const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
+
+				UICommon::PushDisabled(!atmReference);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::SyncReference, "6"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kSyncReferenceTransform)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kSyncReferenceTransform);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+
+				UICommon::PopDisabled(!atmReference);
+
+				DrawTip(UITip::SyncReferenceNode);
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Columns();
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfig3DFlags(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			bool                      a_disabled,
+			Data::configBase_t*       a_baseConfig)
+		{
+			bool tresult;
+
+			if (a_storecc)
+			{
+				tresult = TreeEx(
+					"f_3d",
+					true,
+					"%s",
+					LS(CommonStrings::Model));
+			}
+			else
+			{
+				tresult = ImGui::TreeNodeEx(
+					"f_3d",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Model));
+			}
+
+			if (tresult)
+			{
+				ImGui::Spacing();
+
+				ImGui::Columns(2, nullptr, false);
+
+				UICommon::PushDisabled(a_disabled);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::RemoveScabbard, "1"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kRemoveScabbard)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kRemoveScabbard);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::RemoveScabbard);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::Use1pWeaponModels, "2"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kLoad1pWeaponModel);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::Load1pWeaponModel);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::UseWorldModel, "3"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kUseWorldModel)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kUseWorldModel);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::UseWorldModel);
+
+				ImGui::NextColumn();
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::KeepTorchFlame, "4"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kKeepTorchFlame);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::KeepTorchFlame);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::DisableHavok, "5"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kDisableHavok)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDisableHavok);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::DisableHavok);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::DropOnDeath, "6"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kDropOnDeath)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDropOnDeath);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::DropOnDeath);
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Columns();
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigAnimationFlags(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			bool                      a_disabled,
+			Data::configBase_t*       a_baseConfig)
+		{
+			bool tresult;
+
+			if (a_storecc)
+			{
+				tresult = TreeEx(
+					"f_an",
+					true,
+					"%s",
+					LS(CommonStrings::Animation));
+			}
+			else
+			{
+				tresult = ImGui::TreeNodeEx(
+					"f_an",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Animation));
+			}
+
+			if (tresult)
+			{
+				ImGui::Spacing();
+
+				ImGui::Columns(2, nullptr, false);
+
+				UICommon::PushDisabled(a_disabled);
+
+				bool paChanged = ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::PlayAnimation, "1"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::BaseFlags::kPlaySequence));
+
+				if (paChanged)
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kPlaySequence);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::PlayAnimation);
+
+				if (a_data.flags.test(Data::BaseFlags::kPlaySequence))
+				{
+					if (paChanged &&
+					    a_data.niControllerSequence.empty())
+					{
+						ImGui::OpenPopup("7ctx");
+						ClearDescriptionPopupBuffer();
+					}
+
+					ImGui::SameLine();
+					if (UIPopupToggleButtonWidget::DrawPopupToggleButton("7b", "7ctx"))
+					{
+						SetDescriptionPopupBuffer(a_data.niControllerSequence);
+					}
+
+					if (ImGui::BeginPopup("7ctx"))
+					{
+						if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
+						{
+							a_data.niControllerSequence = GetDescriptionPopupBuffer();
+
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, niControllerSequence),
+								a_data.niControllerSequence);
+
+							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::DisableWeaponAnims, "2"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDisableWeaponAnims);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::DisableWeaponAnims);
+
+				ImGui::NextColumn();
+
+				paChanged = ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::AnimationEvent, "3"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::BaseFlags::kAnimationEvent));
+
+				if (paChanged)
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kAnimationEvent);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				DrawTip(UITip::AnimationEvent);
+
+				if (a_data.flags.test(Data::BaseFlags::kAnimationEvent))
+				{
+					if (paChanged &&
+					    a_data.animationEvent.empty())
+					{
+						ImGui::OpenPopup("Hctx");
+						ClearDescriptionPopupBuffer();
+					}
+
+					ImGui::SameLine();
+					if (UIPopupToggleButtonWidget::DrawPopupToggleButton("Hb", "Hctx"))
+					{
+						SetDescriptionPopupBuffer(a_data.animationEvent);
+					}
+
+					if (ImGui::BeginPopup("Hctx"))
+					{
+						if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
+						{
+							a_data.animationEvent = GetDescriptionPopupBuffer();
+
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, animationEvent),
+								a_data.animationEvent);
+
+							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						}
+
+						ImGui::EndPopup();
+					}
+				}
+
+				/*if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "4"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDisableAnimEventForwarding);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::DisableAnimEventForwarding);*/
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Columns();
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
 		}
 
 		template <class T>
@@ -1488,6 +1667,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Weather:
 					case Data::EquipmentOverrideConditionType::Mounting:
 					case Data::EquipmentOverrideConditionType::Mounted:
+					case Data::EquipmentOverrideConditionType::Presence:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1681,6 +1861,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Weather:
 						case Data::EquipmentOverrideConditionType::Mounting:
 						case Data::EquipmentOverrideConditionType::Mounted:
+						case Data::EquipmentOverrideConditionType::Presence:
 
 							it = a_entry.emplace(
 								it,
@@ -1690,6 +1871,7 @@ namespace IED
 
 							break;
 						case Data::EquipmentOverrideConditionType::BipedSlot:
+
 							if (result.biped != BIPED_OBJECT::kNone)
 							{
 								it = a_entry.emplace(
@@ -1698,8 +1880,10 @@ namespace IED
 
 								a_updFunc();
 							}
+
 							break;
 						case Data::EquipmentOverrideConditionType::Extra:
+
 							if (result.excond != Data::ExtraConditionType::kNone)
 							{
 								it = a_entry.emplace(
@@ -1708,6 +1892,7 @@ namespace IED
 
 								a_updFunc();
 							}
+
 							break;
 						}
 
@@ -1916,6 +2101,9 @@ namespace IED
 								case Data::ExtraConditionType::kTimeOfDay:
 									m_condParamEditor.SetNext<ConditionParamItem::TimeOfDay>(e.timeOfDay);
 									break;
+								case Data::ExtraConditionType::kRandomPercent:
+									m_condParamEditor.SetNext<ConditionParamItem::Percent>(e.percent);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
@@ -2002,6 +2190,38 @@ namespace IED
 								            LS(UIWidgetCommonStrings::Mounting) :
                                             LS(UIWidgetCommonStrings::Mounted);
 
+								break;
+							case Data::EquipmentOverrideConditionType::Presence:
+								{
+									m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+										e);
+
+									auto& db = m_condParamEditor.GetDescBuffer();
+
+									if (e.flags.test(
+											Data::EquipmentOverrideConditionFlags::kMatchEquipped |
+											Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+									{
+										stl::snprintf(db, "%s/%s", LS(CommonStrings::Equipped), LS(CommonStrings::Displayed));
+									}
+									else if (e.flags.test(
+												 Data::EquipmentOverrideConditionFlags::kMatchEquipped))
+									{
+										stl::snprintf(db, "%s", LS(CommonStrings::Equipped));
+									}
+									else if (e.flags.test(
+												 Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+									{
+										stl::snprintf(db, "%s", LS(CommonStrings::Displayed));
+									}
+									else
+									{
+										stl::snprintf(db, "%s", LS(CommonStrings::None));
+									}
+
+									vdesc = db;
+									tdesc = LS(UIWidgetCommonStrings::CurrentItem);
+								}
 								break;
 							default:
 								tdesc = nullptr;
@@ -2323,6 +2543,12 @@ namespace IED
 						result.entryType = Data::EquipmentOverrideConditionType::Mounted;
 					}
 
+					if (LCG_MI(UIWidgetCommonStrings::CurrentItem, "I"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Presence;
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -2592,9 +2818,9 @@ namespace IED
 				if (ImGui::CheckboxFlagsT(
 						LS(CommonStrings::All, "3"),
 						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots)))
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots)))
 				{
-					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots))
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 					{
 						match->flags.clear(Data::EquipmentOverrideConditionFlags::kMatchThisItem);
 					}
@@ -2611,7 +2837,7 @@ namespace IED
 				{
 					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchThisItem))
 					{
-						match->flags.clear(Data::EquipmentOverrideConditionFlags::kMatchAllEquipmentSlots);
+						match->flags.clear(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots);
 					}
 
 					result = true;
@@ -2768,6 +2994,46 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
+				break;
+
+			case Data::EquipmentOverrideConditionType::Presence:
+				{
+					result |= ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Equipped, "0"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipped));
+
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipped))
+					{
+						result |= m_condParamEditor.DrawBipedObjectSelector(
+							LS(CommonStrings::Biped, "1"),
+							match->bipedSlot,
+							true);
+					}
+
+					ImGui::Separator();
+
+					result |= ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Displayed, "6"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots));
+
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+					{
+						result |= m_condParamEditor.DrawObjectSlotSelector(
+							LS(CommonStrings::Slot, "7"),
+							match->slot,
+							true);
+					}
+
+					ImGui::Separator();
+
+					ImGui::Spacing();
+					ImGui::Text("%s:", LS(CommonStrings::Info));
+					ImGui::SameLine();
+					DrawTip(UITip::Presence);
+
+				}
 				break;
 			}
 

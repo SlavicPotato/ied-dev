@@ -848,15 +848,32 @@ namespace IED
 			if (DrawBipedObjectTree(
 					data.bipedSlots,
 					[&] {
+						ImGui::Columns(2, nullptr, false);
+
 						bool result = ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::PrioritizeRecentSlots, "1"),
+							LS(UICustomEditorString::DisableIfOccupied, "1"),
+							stl::underlying(std::addressof(data.customFlags.value)),
+							stl::underlying(Data::CustomFlags::kDisableIfSlotOccupied));
+
+						result |= ImGui::CheckboxFlagsT(
+							LS(UICustomEditorString::PrioritizeRecentSlots, "2"),
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kPrioritizeRecentSlots));
 
+						ImGui::NextColumn();
+
+						bool d = data.customFlags.test(Data::CustomFlags::kDisableIfSlotOccupied);
+
+						UICommon::PushDisabled(d);
+
 						result |= ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::DisableIfOccupied, "2"),
+							LS(UICustomEditorString::SkipOccupiedSlots, "3"),
 							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kDisableIfSlotOccupied));
+							stl::underlying(Data::CustomFlags::kSkipOccupiedSlots));
+
+						UICommon::PopDisabled(d);
+
+						ImGui::Columns();
 
 						ImGui::Spacing();
 
@@ -1027,6 +1044,10 @@ namespace IED
 
 						DrawTip(UITip::CustomEquipmentMode);
 
+						cd = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
+
+						UICommon::PushDisabled(cd);
+
 						if (ImGui::CheckboxFlagsT(
 								LS(UIWidgetCommonStrings::AlwaysUnload, "5"),
 								stl::underlying(std::addressof(data.customFlags.value)),
@@ -1037,6 +1058,9 @@ namespace IED
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
 						}
+
+						UICommon::PopDisabled(cd);
+
 						DrawTip(UITip::AlwaysUnloadCustom);
 
 						if (ImGui::CheckboxFlagsT(

@@ -11,14 +11,7 @@ namespace IED
 
 			[[nodiscard]] inline static constexpr const char* GetBipedSlotDesc(BIPED_OBJECT a_slot) noexcept
 			{
-				if (a_slot < BIPED_OBJECT::kTotal)
-				{
-					return m_desc[stl::underlying(a_slot)];
-				}
-				else
-				{
-					return nullptr;
-				}
+				return a_slot < BIPED_OBJECT::kTotal ? m_desc[stl::underlying(a_slot)] : nullptr;
 			}
 
 		private:
