@@ -5,18 +5,20 @@ namespace IED
 	template <class T>
 	class PluginInterfaceHolder
 	{
+		static_assert(std::is_base_of_v<PluginInterfaceBase, T>);
+
 	public:
 		inline constexpr void SetPluginInterface(T* a_interface) noexcept
 		{
 			m_interface = a_interface;
 		}
 
-		inline constexpr T* GetPluginInterface() const noexcept
+		inline constexpr void GetPluginInterface(T*& a_out) const noexcept
 		{
-			return m_interface;
+			a_out = m_interface;
 		}
 
-	protected:
+	private:
 		T* m_interface{ nullptr };
 	};
 }

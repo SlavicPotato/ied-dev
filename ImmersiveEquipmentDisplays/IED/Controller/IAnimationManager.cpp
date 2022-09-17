@@ -188,10 +188,18 @@ namespace IED
 	}
 
 	inline static constexpr bool shield_on_back_enabled(
-		Actor*              a_actor,
-		PluginInterfaceSDS* a_interface) noexcept
+		Actor*                                     a_actor,
+		PluginInterfaceHolder<PluginInterfaceSDS>* a_holder) noexcept
 	{
-		return !a_interface || a_interface->GetShieldOnBackEnabled(a_actor);
+		PluginInterfaceSDS* intfc;
+		a_holder->GetPluginInterface(intfc);
+
+		if (!intfc)
+		{
+			return true;
+		}
+
+		return intfc->GetShieldOnBackEnabled(a_actor);
 	}
 
 	bool IAnimationManager::should_select_back_left_anim(
@@ -206,7 +214,7 @@ namespace IED
 		        a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack) ||
 		       (a_leftID == AnimationWeaponType::Axe &&
 		        a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-		       (is_shield(a_objLeft) && shield_on_back_enabled(a_actor, m_interface));
+		       (is_shield(a_objLeft) && shield_on_back_enabled(a_actor, this));
 	}
 
 	void IAnimationManager::UpdateAA(

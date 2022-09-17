@@ -73,7 +73,7 @@ namespace IED
 #endif
 		};
 
-		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1250000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
 		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 100000;
 
 		virtual void Run() override;

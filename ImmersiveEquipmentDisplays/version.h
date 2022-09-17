@@ -30,3 +30,5 @@
 #define GET_PLUGIN_VERSION_MAJOR(a) (((a)&0x00FF0000) >> 16)
 #define GET_PLUGIN_VERSION_MINOR(a) (((a)&0x0000FF00) >> 8)
 #define GET_PLUGIN_VERSION_REV(a)   (((a)&0x000000FF) >> 0)
+
+static inline constexpr std::uint64_t VER_1_6_629 = 0x0001000602750000;

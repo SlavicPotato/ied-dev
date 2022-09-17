@@ -160,8 +160,8 @@ namespace IED
 		}
 
 		static TESForm* match_slot_form(
-			const configBase_t::slot_container_type& a_data,
-			Game::FormID                             a_formid)
+			const ObjectSlotArray& a_data,
+			Game::FormID           a_formid)
 		{
 			for (auto& e : a_data)
 			{
@@ -693,7 +693,7 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 					{
-						result += has_keyword(a_match.keyword, a_params.objects.GetSlots());
+						result += has_keyword_slot(a_match.keyword, a_params);
 					}
 
 					return result == min;
@@ -877,15 +877,16 @@ namespace IED
 		{
 			if (a_match.slot == Data::ObjectSlotExtra::kNone)
 			{
-				for (const auto& e : a_params.objects.GetSlots())
-				{
-					if (e.GetFormIfActive() == a_checkForm.form)
-					{
-						return true;
-					}
-				}
+				auto& slots = a_params.objects.GetSlots();
 
-				return false;
+				auto it = std::find_if(
+					slots.begin(),
+					slots.end(),
+					[&](auto& a_e) {
+						return a_e.GetFormIfActive() == a_checkForm.form;
+					});
+
+				return it != slots.end();
 			}
 			else
 			{
@@ -1316,13 +1317,13 @@ namespace IED
 			return false;
 		}
 
-		bool configBase_t::has_keyword(
-			const configCachedForm_t&  a_keyword,
-			const slot_container_type& a_data)
+		bool configBase_t::has_keyword_slot(
+			const configCachedForm_t& a_keyword,
+			CommonParams&             a_params)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				for (auto& e : a_data)
+				for (auto& e : a_params.objects.GetSlots())
 				{
 					if (auto iform = e.GetFormIfActive())
 					{
@@ -1390,27 +1391,6 @@ namespace IED
 						{
 							return true;
 						}
-					}
-				}
-			}
-
-			return false;
-		}
-
-		bool configBase_t::has_keyword(
-			const configCachedForm_t&  a_keyword,
-			ObjectSlot                 a_slot,
-			const slot_container_type& a_data)
-		{
-			if (auto keyword = a_keyword.get_form<BGSKeyword>())
-			{
-				auto& slot = a_data[stl::underlying(a_slot)];
-
-				if (auto iform = slot.GetFormIfActive())
-				{
-					if (IFormCommon::HasKeyword(iform, keyword))
-					{
-						return true;
 					}
 				}
 			}

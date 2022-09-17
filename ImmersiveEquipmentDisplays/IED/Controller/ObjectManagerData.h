@@ -397,7 +397,6 @@ namespace IED
 	};
 
 	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
-		Actor::Flags1::kInWater |
 		Actor::Flags1::kPlayerTeammate |
 		Actor::Flags1::kGuard |
 		Actor::Flags1::kParalyzed;
@@ -411,7 +410,12 @@ namespace IED
 		Actor::Flags2::kBribedByPlayer |
 		Actor::Flags2::kAngryWithPlayer |
 		Actor::Flags2::kEssential |
-		Actor::Flags2::kProtected |
+		Actor::Flags2::kProtected;
+	
+	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_LF_1 =
+		Actor::Flags1::kInWater;
+
+	inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_LF_2 =
 		Actor::Flags2::kUnderwater;
 
 	struct ActorStateData
@@ -422,6 +426,8 @@ namespace IED
 		TESPackage*    currentPackage{ nullptr };
 		Actor::Flags1  flags1{ Actor::Flags1::kNone };
 		Actor::Flags2  flags2{ Actor::Flags2::kNone };
+		Actor::Flags1  flagslf1{ Actor::Flags1::kNone };
+		Actor::Flags2  flagslf2{ Actor::Flags2::kNone };
 		bool           cellAttached{ false };
 		bool           inCombat{ false };
 		bool           swimming{ false };
@@ -431,6 +437,10 @@ namespace IED
 		bool           weaponDrawn{ false };
 		bool           inInterior{ false };
 	};
+
+	using ObjectSlotArray = std::array<
+		objectEntrySlot_t,
+		stl::underlying(Data::ObjectSlot::kMax)>;
 
 	class ActorObjectHolder
 	//public BSTEventSink<BSAnimationGraphEvent>
@@ -451,9 +461,6 @@ namespace IED
 		};
 
 	public:
-		using slot_container_type = std::array<
-			objectEntrySlot_t,
-			stl::underlying(Data::ObjectSlot::kMax)>;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, objectEntryCustom_t>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
@@ -641,6 +648,22 @@ namespace IED
 			}
 		}
 
+		template <class Tv>
+		inline constexpr bool state_var_update_b(
+			Tv&       a_var,
+			const Tv& a_current) noexcept
+		{
+			if (a_var != a_current)
+			{
+				a_var = a_current;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		template <class Tf>
 		constexpr void visit(Tf a_func)
 		{
@@ -781,7 +804,7 @@ namespace IED
 			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 
-		slot_container_type m_entriesSlot{};
+		ObjectSlotArray m_entriesSlot{};
 		customPluginMap_t   m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
 
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;

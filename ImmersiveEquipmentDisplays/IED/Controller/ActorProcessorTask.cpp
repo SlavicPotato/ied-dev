@@ -341,7 +341,6 @@ namespace IED
 			e.state_var_update_defer(e.m_state.inInterior, cell->IsInterior());
 			e.state_var_update_defer(e.m_state.worldspace, cell->GetWorldSpace());
 			e.state_var_update_defer(e.m_state.inCombat, Game::GetActorInCombat(e.m_actor));
-
 			e.state_var_update_defer(e.m_state.flags1, e.m_actor->flags1 & ACTOR_CHECK_FLAGS_1, 6);
 			e.state_var_update_defer(e.m_state.flags2, e.m_actor->flags2 & ACTOR_CHECK_FLAGS_2, 6);
 			e.state_var_update_defer(e.m_state.swimming, e.m_actor->IsSwimming(), 6);
@@ -350,13 +349,15 @@ namespace IED
 			e.state_var_update_defer(e.m_state.beingRidden, e.m_actor->IsBeingRidden());
 			e.state_var_update_defer(e.m_state.weaponDrawn, e.m_actor->IsWeaponDrawn());
 
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.currentPackage, e.m_actor->GetCurrentPackage());
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, e.m_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, e.m_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
+
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,
 					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_LOW)
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
-
-				e.state_var_update(e.m_state.currentPackage, e.m_actor->GetCurrentPackage());
 
 				if (e.m_wantLFUpdate)
 				{

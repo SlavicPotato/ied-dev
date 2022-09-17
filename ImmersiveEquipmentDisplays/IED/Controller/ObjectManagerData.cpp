@@ -26,6 +26,8 @@ namespace IED
 		inCombat(Game::GetActorInCombat(a_actor)),
 		flags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
 		flags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
+		flagslf1(a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1),
+		flagslf2(a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2),
 		swimming(a_actor->IsSwimming()),
 		sitting(a_actor->IsSitting()),
 		sleeping(a_actor->IsSleeping()),

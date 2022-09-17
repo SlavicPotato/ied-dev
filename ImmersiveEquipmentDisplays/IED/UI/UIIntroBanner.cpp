@@ -60,7 +60,9 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				const auto* const intfc = m_controller.GetPluginInterface();
+				PluginInterfaceSDS* intfc;
+
+				m_controller.GetPluginInterface(intfc);
 
 				if (!intfc)
 				{

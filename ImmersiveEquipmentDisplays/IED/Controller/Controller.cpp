@@ -229,8 +229,9 @@ namespace IED
 			GET_PLUGIN_VERSION_REV(pluginVersion),
 			intfc->GetInterfaceVersion());
 
-		SetPluginInterface(intfc);
 		intfc->RegisterForPlayerShieldOnBackEvent(this);
+
+		SetPluginInterface(intfc);
 	}
 
 	static void UpdateSoundPairFromINI(
@@ -3184,7 +3185,7 @@ namespace IED
 			return false;
 		}
 
-		auto& settings = m_config.settings.data;
+		const auto& settings = m_config.settings.data;
 
 		if (a_config.customFlags.test_any(CustomFlags::kIsInInventoryMask))
 		{
@@ -3680,6 +3681,8 @@ namespace IED
 #endif
 
 		IncrementCounter();
+
+		Debug("Eval: %.8X", a_actor->formID);
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{

@@ -263,7 +263,7 @@ namespace IED
 		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
 		inline static const auto m_armorUpdate_a            = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
 		inline static const auto m_garbageCollectorREFR_a   = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
-		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, 0x427);
+		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
 		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
 		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
 		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);

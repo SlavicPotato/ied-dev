@@ -117,8 +117,6 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-			using slot_container_type = std::array<objectEntrySlot_t, stl::underlying(Data::ObjectSlot::kMax)>;
-
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
@@ -140,9 +138,9 @@ namespace IED
 				CommonParams&          a_params) const;
 
 			const equipmentOverride_t* get_equipment_override_sfp(
-				const collectorData_t&     a_data,
-				const formSlotPair_t&      a_checkForm,
-				CommonParams&              a_params) const;
+				const collectorData_t& a_data,
+				const formSlotPair_t&  a_checkForm,
+				CommonParams&          a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t& a_data,
@@ -154,9 +152,9 @@ namespace IED
 				CommonParams&          a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
-				const collectorData_t&     a_data,
-				const formSlotPair_t&      a_checkForm,
-				CommonParams&              a_params) const;
+				const collectorData_t& a_data,
+				const formSlotPair_t&  a_checkForm,
+				CommonParams&          a_params) const;
 
 		private:
 			static constexpr bool match_equipped_type(
@@ -224,9 +222,9 @@ namespace IED
 				const configCachedForm_t& a_keyword,
 				const collectorData_t&    a_data);
 
-			static bool has_keyword(
-				const configCachedForm_t&  a_keyword,
-				const slot_container_type& a_data);
+			static bool has_keyword_slot(
+				const configCachedForm_t& a_keyword,
+				CommonParams&             a_params);
 
 			static bool has_keyword(
 				const configCachedForm_t& a_keyword,
@@ -241,11 +239,6 @@ namespace IED
 				const configCachedForm_t& a_keyword,
 				ObjectTypeExtra           a_type,
 				const collectorData_t&    a_data);
-
-			static bool has_keyword(
-				const configCachedForm_t&  a_keyword,
-				ObjectSlot                 a_type,
-				const slot_container_type& a_data);
 
 		protected:
 			template <class Archive>
