@@ -206,6 +206,8 @@ namespace IED
 				settings.effectShaderParallelUpdates);
 		}
 
+		SetProcessorTaskRunAUState(settings.hkWeaponAnimations);
+
 		m_safeToOpenUI = true;
 
 		m_iniconf.reset();
@@ -3681,8 +3683,6 @@ namespace IED
 #endif
 
 		IncrementCounter();
-
-		Debug("Eval: %.8X", a_actor->formID);
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{

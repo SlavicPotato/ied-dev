@@ -272,10 +272,16 @@ namespace IED
 	}
 
 	static void UpdateActorGearAnimations(
-		Actor*                   a_actor,
 		const ActorObjectHolder& a_holder,
 		float                    a_step)
 	{
+		NiPointer<TESObjectREFR> refr;
+
+		if (!a_holder.GetHandle().Lookup(refr))
+		{
+			return;
+		}
+
 		struct TLSData
 		{
 			std::uint8_t  unk000[0x768];  // 000
@@ -290,10 +296,10 @@ namespace IED
 		tlsUnk768      = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
-		data.reference    = a_actor;
-		data.shouldUpdate = a_actor->GetMustUpdate();
+		data.reference    = refr;
+		data.shouldUpdate = refr->GetMustUpdate();
 
-		a_actor->ModifyAnimationUpdateData(data);
+		refr->ModifyAnimationUpdateData(data);
 
 		a_holder.UpdateAllAnimationGraphs(data);
 
@@ -315,7 +321,9 @@ namespace IED
 
 		std::optional<animUpdateData_t> animUpdateData;
 
-		if (!EngineExtensions::ParallelAnimationUpdatesEnabled() && !Game::IsPaused())
+		if (!EngineExtensions::ParallelAnimationUpdatesEnabled() &&
+		    m_runAnimationUpdates &&
+		    !Game::IsPaused())
 		{
 			animUpdateData.emplace(Game::Unk2f6b948::GetSteps());
 		}
@@ -382,8 +390,6 @@ namespace IED
 
 			ProcessTransformUpdateRequest(e);
 
-			bool update = false;
-
 			if (animUpdateData)
 			{
 				float step =
@@ -391,8 +397,10 @@ namespace IED
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;
 
-				UpdateActorGearAnimations(e.m_actor.get(), e, step);
+				UpdateActorGearAnimations(e, step);
 			}
+
+			bool update = false;
 
 			for (auto& f : e.m_entriesSlot)
 			{

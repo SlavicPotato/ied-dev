@@ -158,6 +158,7 @@ namespace IED
 						LS(UISettingsStrings::BhkAnims, "4"),
 						std::addressof(data.hkWeaponAnimations))))
 				{
+					m_controller.SetProcessorTaskRunAUState(data.hkWeaponAnimations);	
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::BhkAnims);

@@ -54,6 +54,11 @@ namespace IED
 		{
 			m_run = a_state;
 		}
+		
+		[[nodiscard]] inline constexpr void SetProcessorTaskRunAUState(bool a_state) noexcept
+		{
+			m_runAnimationUpdates = a_state;
+		}
 
 	protected:
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
@@ -104,6 +109,7 @@ namespace IED
 		PerfTimerInt m_timer{ 1000000LL };
 		long long    m_currentTime{ 0LL };
 		bool         m_run{ false };
+		bool         m_runAnimationUpdates{ true };
 
 		Controller& m_controller;
 	};
