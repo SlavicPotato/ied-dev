@@ -11,7 +11,7 @@
 
 namespace IED
 {
-	struct objectEntrySlot_t;
+	struct ObjectEntrySlot;
 
 	struct formSlotPair_t
 	{

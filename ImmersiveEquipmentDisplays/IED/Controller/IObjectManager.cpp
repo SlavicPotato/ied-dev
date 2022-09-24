@@ -12,7 +12,7 @@ namespace IED
 	bool IObjectManager::RemoveObject(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		objectEntryBase_t&               a_objectEntry,
+		ObjectEntryBase&                 a_objectEntry,
 		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
@@ -94,10 +94,7 @@ namespace IED
 			return false;
 		}
 
-		auto handle = it->second.GetHandle();
-
-		NiPointer<TESObjectREFR> ref;
-		(void)handle.LookupZH(ref);
+		auto handle = a_actor->GetHandle();
 
 		CleanupActorObjectsImpl(
 			a_actor,
@@ -150,24 +147,82 @@ namespace IED
 		});
 	}*/
 
+	void IObjectManager::RequestEvaluate(
+		Game::FormID a_actor,
+		bool         a_defer,
+		bool         a_xfrmUpdate,
+		bool         a_xfrmUpdateNoDefer) const
+	{
+		stl::scoped_lock lock(m_lock);
+
+		auto it = m_objects.find(a_actor);
+		if (it != m_objects.end())
+		{
+			if (a_defer)
+			{
+				it->second.RequestEvalDefer();
+			}
+			else
+			{
+				it->second.RequestEval();
+			}
+
+			if (a_xfrmUpdate)
+			{
+				if (a_xfrmUpdateNoDefer)
+				{
+					it->second.RequestTransformUpdate();
+				}
+				else
+				{
+					it->second.RequestTransformUpdateDefer();
+				}
+			}
+		}
+	}
+
+	void IObjectManager::QueueRequestEvaluate(
+		Game::FormID a_actor,
+		bool         a_defer,
+		bool         a_xfrmUpdate,
+		bool         a_xfrmUpdateNoDefer) const
+	{
+		ITaskPool::AddTask(
+			[this,
+		     a_actor,
+		     a_defer,
+		     a_xfrmUpdate,
+		     a_xfrmUpdateNoDefer]() {
+				RequestEvaluate(
+					a_actor,
+					a_defer,
+					a_xfrmUpdate,
+					a_xfrmUpdateNoDefer);
+			});
+	}
+
+	void IObjectManager::QueueRequestEvaluate(
+		TESObjectREFR* a_actor,
+		bool           a_defer,
+		bool           a_xfrmUpdate,
+		bool           a_xfrmUpdateNoDefer) const
+	{
+		if (IsActorValid(a_actor))
+		{
+			QueueRequestEvaluate(
+				a_actor->formID,
+				a_defer,
+				a_xfrmUpdate,
+				a_xfrmUpdateNoDefer);
+		}
+	}
+
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_actor == *g_thePlayer)
-		{
-			if (m_playerState)
-			{
-				*m_playerState = a_objects;
-			}
-			else
-			{
-				m_playerState = std::make_unique<Data::actorStateEntry_t>(a_objects);
-			}
-		}
-
 		if (a_objects.m_actor->loadedState)
 		{
 			for (auto& e : a_objects.m_cmeNodes)
@@ -181,19 +236,11 @@ namespace IED
 			}
 		}
 
-		a_objects.visit([&](auto& a_object) {
-			RemoveObject(
-				a_actor,
-				a_handle,
-				a_object,
-				a_objects,
-				a_flags);
-		});
-
-		for (auto& e : a_objects.m_entriesCustom)
-		{
-			e.clear();
-		}
+		RemoveActorGear(
+			a_actor,
+			a_handle,
+			a_objects,
+			a_flags);
 
 		a_objects.m_cmeNodes.clear();
 		a_objects.m_movNodes.clear();
@@ -421,7 +468,7 @@ namespace IED
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_activeConfig,
 		const Data::configBase_t&       a_config,
-		objectEntryBase_t&              a_objectEntry,
+		ObjectEntryBase&                a_objectEntry,
 		TESForm*                        a_form,
 		TESForm*                        a_modelForm,
 		bool                            a_leftWeapon,
@@ -492,7 +539,7 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique<objectEntryBase_t::State>();
+		auto state = std::make_unique<ObjectEntryBase::State>();
 
 		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry entry;
@@ -631,7 +678,7 @@ namespace IED
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_config,
 		const Data::configModelGroup_t& a_group,
-		objectEntryBase_t&              a_objectEntry,
+		ObjectEntryBase&                a_objectEntry,
 		TESForm*                        a_form,
 		bool                            a_leftWeapon,
 		bool                            a_visible,
@@ -672,7 +719,7 @@ namespace IED
 			TESForm*                                               form{ nullptr };
 			modelParams_t                                          params;
 			NiPointer<NiNode>                                      object;
-			objectEntryBase_t::State::GroupObject*                 grpObject{ nullptr };
+			ObjectEntryBase::State::GroupObject*                   grpObject{ nullptr };
 		};
 
 		stl::list<tmpdata_t> modelParams;
@@ -745,7 +792,7 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique<objectEntryBase_t::State>();
+		auto state = std::make_unique<ObjectEntryBase::State>();
 
 		bool loaded = false;
 
@@ -934,12 +981,12 @@ namespace IED
 	}
 
 	void IObjectManager::FinalizeObjectState(
-		std::unique_ptr<objectEntryBase_t::State>& a_state,
-		TESForm*                                   a_form,
-		NiNode*                                    a_rootNode,
-		const NiPointer<NiNode>&                   a_objectNode,
-		nodesRef_t&                                a_targetNodes,
-		const Data::configBaseValues_t&            a_config)
+		std::unique_ptr<ObjectEntryBase::State>& a_state,
+		TESForm*                                 a_form,
+		NiNode*                                  a_rootNode,
+		const NiPointer<NiNode>&                 a_objectNode,
+		nodesRef_t&                              a_targetNodes,
+		const Data::configBaseValues_t&          a_config)
 	{
 		a_state->form           = a_form;
 		a_state->formid         = a_form->formID;
@@ -955,7 +1002,7 @@ namespace IED
 	void IObjectManager::PlayObjectSound(
 		const processParams_t&          a_params,
 		const Data::configBaseValues_t& a_config,
-		const objectEntryBase_t&        a_objectEntry,
+		const ObjectEntryBase&          a_objectEntry,
 		bool                            a_equip)
 	{
 		if (a_objectEntry.state &&

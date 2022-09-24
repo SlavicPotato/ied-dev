@@ -14,7 +14,7 @@
 namespace IED
 {
 	class Controller;
-	struct objectEntryCustom_t;
+	struct ObjectEntryCustom;
 
 	namespace UI
 	{
@@ -104,7 +104,7 @@ namespace IED
 				const Data::configCustomEntry_t& a_entry,
 				bool                             a_infoDrawn) override;
 
-			const objectEntryCustom_t* GetLoadedObject(
+			const ObjectEntryCustom* GetLoadedObject(
 				Game::FormID                     a_handle,
 				const stl::fixed_string&         a_name,
 				const Data::configCustomEntry_t& a_entry);

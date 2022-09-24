@@ -548,6 +548,14 @@ namespace IED
 				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Idle:
+
+				return Conditions::match_idle<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+				break;
 			}
 
 			return false;
@@ -828,6 +836,14 @@ namespace IED
 				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+			case EquipmentOverrideConditionType::Idle:
+
+				return Conditions::match_idle<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
+				break;
 			}
 
 			return false;
@@ -1154,6 +1170,14 @@ namespace IED
 
 					return result == min;
 				}
+				break;
+
+			case EquipmentOverrideConditionType::Idle:
+
+				return Conditions::match_idle<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
+
 				break;
 			}
 

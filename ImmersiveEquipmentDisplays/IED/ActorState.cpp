@@ -1,7 +1,11 @@
 #include "pch.h"
 
 #include "ActorState.h"
+
 #include "Controller/ObjectManagerData.h"
+#include "Controller/ActorObjectHolder.h"
+
+#include "IED/Data.h"
 
 namespace IED
 {

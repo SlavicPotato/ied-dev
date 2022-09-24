@@ -16,6 +16,8 @@ namespace IED
 
 			void DrawNPCInfoAdd(Game::FormID a_current = {});
 
+			void QueueUpdateNPCInfo(Game::FormID a_handle);
+
 		private:
 			virtual void OnNPCInfoAdded(Game::FormID a_npc) = 0;
 

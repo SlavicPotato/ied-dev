@@ -7,23 +7,13 @@
 #include <ext/GarbageCollector.h>
 #include <ext/IHook.h>
 #include <ext/JITASM.h>
+#include <ext/MemoryValidation.h>
 #include <ext/Node.h>
 #include <ext/VFT.h>
 
-constexpr static auto mv_failstr = "Memory validation failed";
-
 #define UNWRAP(...) __VA_ARGS__
-#define VALIDATE_MEMORY(addr, bytes_se, bytes_ae)                                  \
-	{                                                                              \
-		if (IAL::IsAE())                                                           \
-		{                                                                          \
-			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_ae), mv_failstr); \
-		}                                                                          \
-		else                                                                       \
-		{                                                                          \
-			ASSERT_STR(Patching::validate_mem(addr, UNWRAP bytes_se), mv_failstr); \
-		}                                                                          \
-	}
+#define VALIDATE_MEMORY(addr, bytes_se, bytes_ae) \
+	stl::validate_memory_with_report_and_fail(addr, UNWRAP bytes_se, UNWRAP bytes_ae, PLUGIN_NAME)
 
 namespace IED
 {
@@ -130,7 +120,10 @@ namespace IED
 				std::uintptr_t(GarbageCollectorReference_Hook),
 				m_garbageCollectorReference_o))
 		{
-			Debug("[%s] Installed", __FUNCTION__);
+			Debug(
+				"[%s] Installed @0x%.16llX",
+				__FUNCTION__,
+				m_garbageCollectorREFR_a.get());
 		}
 		else
 		{
@@ -144,9 +137,12 @@ namespace IED
 				m_vtblCharacter_a.get(),
 				0xAB,
 				Character_Resurrect_Hook,
-				&m_characterResurrect_o))
+				std::addressof(m_characterResurrect_o)))
 		{
-			Debug("[%s] Detoured Character::Resurrect @0xAB", __FUNCTION__);
+			Debug(
+				"[%s] Detoured Character::Resurrect @0x%.16llX:0xAB",
+				__FUNCTION__,
+				m_vtblCharacter_a.get());
 		}
 		else
 		{
@@ -159,7 +155,10 @@ namespace IED
 				std::uintptr_t(ReanimateActorStateUpdate_Hook),
 				m_ReanimActorStateUpd_o))
 		{
-			Debug("[%s] Installed reanimate hook", __FUNCTION__);
+			Debug(
+				"[%s] Installed reanimate hook @0x%.16llX",
+				__FUNCTION__,
+				m_reanimActorStateUpdate_a.get());
 		}
 		else
 		{
@@ -173,9 +172,12 @@ namespace IED
 				m_vtblCharacter_a.get(),
 				0x6B,
 				Character_Release3D_Hook,
-				&m_characterRelease3D_o))
+				std::addressof(m_characterRelease3D_o)))
 		{
-			Debug("[%s] Detoured Character::Release3D @0x6B", __FUNCTION__);
+			Debug(
+				"[%s] Detoured Character::Release3D @0x%.16llX:0x6B",
+				__FUNCTION__,
+				m_vtblCharacter_a.get());
 		}
 		else
 		{
@@ -186,9 +188,12 @@ namespace IED
 				m_vtblActor_a.get(),
 				0x6B,
 				Actor_Release3D_Hook,
-				&m_actorRelease3D_o))
+				std::addressof(m_actorRelease3D_o)))
 		{
-			Debug("[%s] Detoured Actor::Release3D @0x6B", __FUNCTION__);
+			Debug(
+				"[%s] Detoured Actor::Release3D @0x%.16llX:0x6B",
+				__FUNCTION__,
+				m_vtblActor_a.get());
 		}
 		else
 		{
@@ -204,7 +209,10 @@ namespace IED
 				std::uintptr_t(ArmorUpdate_Hook),
 				m_ArmorChange_o))
 		{
-			Debug("[%s] Installed", __FUNCTION__);
+			Debug(
+				"[%s] Installed @0x%.16llX",
+				__FUNCTION__,
+				m_armorUpdate_a.get());
 		}
 		else
 		{
@@ -316,40 +324,42 @@ namespace IED
 
 	void EngineExtensions::Hook_ToggleFav()
 	{
-		if (hook::call5(
-				ISKSE::GetBranchTrampoline(),
-				m_toggleFav1_a.get(),
-				std::uintptr_t(ToggleFavGetExtraList_Hook),
-				m_toggleFavGetExtraList_o))
-		{
-			Debug("[%s] Installed", __FUNCTION__);
-		}
-		else
-		{
-			Error("[%s] Failed", __FUNCTION__);
-		}
+		bool result = hook::call5(
+			ISKSE::GetBranchTrampoline(),
+			m_toggleFav1_a.get(),
+			std::uintptr_t(ToggleFavGetExtraList_Hook),
+			m_toggleFavGetExtraList_o);
+
+		Debug(
+			"[%s] %s @0x%.16llX",
+			__FUNCTION__,
+			result ? "Installed" :
+                     "Failed",
+			m_toggleFav1_a.get());
 	}
 
 	void EngineExtensions::Hook_ProcessEffectShaders()
 	{
-		if (hook::call5(
-				ISKSE::GetBranchTrampoline(),
-				m_processEffectShaders_a.get(),
-				std::uintptr_t(ProcessEffectShaders_Hook),
-				m_processEffectShaders_o))
-		{
-			Debug("[%s] Installed", __FUNCTION__);
-		}
-		else
-		{
-			Error("[%s] Failed", __FUNCTION__);
-		}
+		bool result = hook::call5(
+			ISKSE::GetBranchTrampoline(),
+			m_processEffectShaders_a.get(),
+			std::uintptr_t(ProcessEffectShaders_Hook),
+			m_processEffectShaders_o);
+
+		Debug(
+			"[%s] %s @0x%.16llX",
+			__FUNCTION__,
+			result ? "Installed" :
+                     "Failed",
+			m_processEffectShaders_a.get());
 	}
 
 	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
-		auto addrRefUpdate    = m_animUpdateRef_a.get() + 0x74;
-		auto addrPlayerUpdate = m_animUpdatePlayer_a.get() + 0xD0;
+		auto addrRefUpdate      = m_animUpdateRef_a.get() + 0x74;
+		auto addrPlayerUpdate   = m_animUpdatePlayer_a.get() + 0xD0;
+		auto addrAnimUpdatePrep = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
+		auto addrAnimUpdatePost = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2);
 
 		VALIDATE_MEMORY(
 			addrRefUpdate,
@@ -363,11 +373,14 @@ namespace IED
 
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0),
+				addrAnimUpdatePrep,
 				std::uintptr_t(PrepareAnimUpdateLists_Hook),
 				m_prepareAnimUpdateLists_o))
 		{
-			Debug("[%s] Installed anim list prep hook", __FUNCTION__);
+			Debug(
+				"[%s] Installed anim list prep hook @0x%.16llX",
+				__FUNCTION__,
+				addrAnimUpdatePrep);
 		}
 		else
 		{
@@ -380,7 +393,10 @@ namespace IED
 				std::uintptr_t(ClearAnimUpdateLists_Hook),
 				m_clearAnimUpdateLists_o))
 		{
-			Debug("[%s] Installed post anim update hook", __FUNCTION__);
+			Debug(
+				"[%s] Installed post anim update hook @0x%.16llX",
+				__FUNCTION__,
+				addrAnimUpdatePost);
 		}
 		else
 		{
@@ -394,7 +410,10 @@ namespace IED
 				std::uintptr_t(UpdateReferenceAnimations),
 				dummy))
 		{
-			Debug("[%s] Replaced reference anim update call", __FUNCTION__);
+			Debug(
+				"[%s] Replaced reference anim update call @0x%.16llX",
+				__FUNCTION__,
+				addrRefUpdate);
 		}
 		else
 		{

@@ -353,6 +353,11 @@ namespace IED
 
 			return *mountedByActor;
 		}
+		
+		[[nodiscard]] auto get_idle() const
+		{
+			return actor->GetFurnitureIdle();
+		}
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{

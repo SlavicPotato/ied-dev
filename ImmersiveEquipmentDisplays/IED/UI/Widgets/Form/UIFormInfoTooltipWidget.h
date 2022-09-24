@@ -7,7 +7,7 @@
 namespace IED
 {
 	struct formInfoResult_t;
-	struct objectEntryBase_t;
+	struct ObjectEntryBase;
 
 	namespace UI
 	{
@@ -20,11 +20,11 @@ namespace IED
 
 			void DrawFormInfoTooltip(
 				const formInfoResult_t*  a_info,
-				const objectEntryBase_t& a_entry);
+				const ObjectEntryBase& a_entry);
 
 			void DrawObjectEntryHeaderInfo(
 				const formInfoResult_t*  a_info,
-				const objectEntryBase_t& a_entry);
+				const ObjectEntryBase& a_entry);
 		};
 	}
 }

@@ -58,5 +58,10 @@ namespace IED
 
 			ImGui::PopID();
 		}
+
+		void UINPCInfoAddInterface::QueueUpdateNPCInfo(Game::FormID a_handle)
+		{
+			m_controller.QueueUpdateNPCInfo(a_handle);
+		}
 	}
 }

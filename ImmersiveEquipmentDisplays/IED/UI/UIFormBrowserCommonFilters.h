@@ -22,7 +22,8 @@ namespace IED
 			CombatStyle,
 			Class,
 			Weather,
-			Global
+			Global,
+			Idle
 		};
 
 		class UIFormBrowserCommonFilters
@@ -36,7 +37,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 15> m_filters;
+			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 16> m_filters;
 
 			static UIFormBrowserCommonFilters m_Instance;
 		};

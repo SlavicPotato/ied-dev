@@ -256,6 +256,14 @@ namespace IED
 			}
 
 			ImGui::Columns();
+
+			if (it != npcInfo.end())
+			{
+				if (IPerfCounter::delta_us(it->second->ts, IPerfCounter::Query()) > 100000)
+				{
+					QueueUpdateNPCInfo(it->first);
+				}
+			}
 		}
 
 		template <class Td>

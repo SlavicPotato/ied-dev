@@ -17,6 +17,7 @@ namespace IED
 			UIActorInfoAddInterface(Controller& a_controller);
 
 			void DrawActorInfoAdd();
+			void QueueUpdateActorInfo(Game::FormID a_handle);
 
 		private:
 			virtual void OnActorInfoAdded(Game::FormID a_handle) = 0;

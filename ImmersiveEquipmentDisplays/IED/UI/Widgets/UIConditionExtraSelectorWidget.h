@@ -28,9 +28,9 @@ namespace IED
 		private:
 			inline static constexpr std::size_t NUM_CONDITIONS =
 #if defined(IED_ENABLE_CONDITION_EN)
-				33
+				36
 #else
-				32
+				35
 #endif
 				;
 

@@ -27,6 +27,7 @@ namespace IED
 		SI_Transform             world;
 		std::uint32_t            flags;
 		stl::vector<SI_NiObject> children;
+		SI_NiObject*             parent{ nullptr };
 	};
 
 	struct SI_Root

@@ -529,6 +529,7 @@ namespace IED
 				}
 			}
 			break;
+
 		case Data::NodeOverrideConditionType::Race:
 
 			return Conditions::match_race<
@@ -594,6 +595,12 @@ namespace IED
 		case Data::NodeOverrideConditionType::Mounted:
 
 			return Conditions::match_mounted_by<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
+
+		case Data::NodeOverrideConditionType::Idle:
+
+			return Conditions::match_idle<
 				Data::configNodeOverrideCondition_t,
 				Data::NodeOverrideConditionFlags>(a_params, a_data);
 		}
@@ -764,7 +771,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodeOverride(
 		const stl::fixed_string&                   a_name,
-		const cmeNodeEntry_t&                      a_entry,
+		const CMENodeEntry&                      a_entry,
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params)
 	{
@@ -823,7 +830,7 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodeOverride(
-		const cmeNodeEntry_t& a_entry)
+		const CMENodeEntry& a_entry)
 	{
 		if (EngineExtensions::SceneRendering() ||
 		    !ITaskPool::IsRunningOnCurrentThread())
@@ -937,7 +944,7 @@ namespace IED
 	}
 
 	void INodeOverride::attach_node_to(
-		const weapNodeEntry_t&   a_entry,
+		const WeaponNodeEntry&   a_entry,
 		const NiPointer<NiNode>& a_target,
 		nodeOverrideParams_t*    a_params,
 		WeaponPlacementID        a_placementID)
@@ -987,7 +994,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodePlacement(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const weapNodeEntry_t&                     a_entry,
+		const WeaponNodeEntry&                     a_entry,
 		nodeOverrideParams_t&                      a_params)
 	{
 		auto& target = get_target_node(
@@ -1021,7 +1028,7 @@ namespace IED
 
 	constexpr auto INodeOverride::get_target_node(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const weapNodeEntry_t&                     a_entry,
+		const WeaponNodeEntry&                     a_entry,
 		nodeOverrideParams_t&                      a_params)
 		-> const stl::fixed_string&
 	{
@@ -1041,7 +1048,7 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodePlacement(
-		const weapNodeEntry_t& a_entry,
+		const WeaponNodeEntry& a_entry,
 		nodeOverrideParams_t*  a_params)
 	{
 		if (a_entry.target != nullptr)

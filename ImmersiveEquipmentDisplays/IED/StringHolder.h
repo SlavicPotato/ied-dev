@@ -27,6 +27,8 @@ namespace IED
 		static inline constexpr auto NINODE_SHIELD           = "SHIELD";
 		static inline constexpr auto NINODE_WEAPON           = "WEAPON";
 		static inline constexpr auto NINODE_NPCROOT          = "NPC Root [Root]";
+		static inline constexpr auto NINODE_NPCSPINE2        = "NPC Spine2 [Spn2]";
+		static inline constexpr auto NINODE_NPCRHAND         = "NPC R Hand [RHnd]";
 
 		static inline constexpr auto NINODE_SCB           = "Scb";
 		static inline constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
@@ -112,6 +114,8 @@ namespace IED
 		}*/
 
 		BSFixedString m_npcroot{ NINODE_NPCROOT };
+		BSFixedString m_npcSpine2{ NINODE_NPCRHAND };
+		BSFixedString m_npcRhand{ NINODE_NPCRHAND };
 		BSFixedString m_scb{ NINODE_SCB };
 		BSFixedString m_scbLeft{ NINODE_SCB_LEFT };
 		BSFixedString m_bsx{ BSX };
@@ -138,7 +142,18 @@ namespace IED
 		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
 
 		BSFixedString m_weaponSheathe{ WEAPON_SHEATHE };
-		BSFixedString m_graphDeleting{ GRAPH_DELETING };
+
+		BSFixedString m_animObjectLute{ "AnimObjectLute" };
+		BSFixedString m_animObjectR{ "AnimObjectR" };
+		BSFixedString m_animObjectAxe{ "AnimObjectAxe" };
+		BSFixedString m_animObjectPickaxe{ "AnimObjectPickaxe" };
+
+		//BSFixedString m_graphDeleting{ GRAPH_DELETING };
+		/*BSFixedString m_animObjectDraw{ "AnimObjDraw" };
+		BSFixedString m_animObjectUnequip{ "AnimObjectUnequip" };
+		BSFixedString m_animObjectAxe{ "AnimObjectAxe" };
+		BSFixedString m_animObjectChopWoodLeft{ "AnimObjectChopWoodLeft" };
+		BSFixedString m_animObjectChopWoodRight{ "AnimObjectChopWoodRight" };*/
 
 		stl::unordered_set<BSFixedString> m_animEventFilter;
 

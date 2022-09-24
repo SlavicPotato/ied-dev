@@ -50,6 +50,7 @@ namespace IED
 			{ RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather },
 			{ TESGlobal::kTypeID, UIFormTypeSelectorWidgetStrings::Global },
 			{ TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form },
+			{ TESIdleForm::kTypeID, UIFormTypeSelectorWidgetStrings::Idle},
 
 		} };
 
@@ -196,6 +197,8 @@ namespace IED
 				return LS(UIFormTypeSelectorWidgetStrings::Weather);
 			case TESGlobal::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Global);
+			case TESIdleForm::kTypeID:
+				return LS(UIFormTypeSelectorWidgetStrings::Idle);
 			case TESForm::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:

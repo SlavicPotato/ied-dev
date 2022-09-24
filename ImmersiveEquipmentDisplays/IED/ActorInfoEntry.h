@@ -20,6 +20,7 @@ namespace IED
 		std::uint32_t flags{ 0 };
 		float         weight{ 0.0f };
 		bool          female{ false };
+		long long     ts{ 0 };
 	};
 
 	struct actorInfoEntry_t
@@ -27,10 +28,14 @@ namespace IED
 		bool         active{ false };
 		bool         attached{ false };
 		std::string  name;
+		std::string  idleName;
 		Game::FormID race;
 		Game::FormID worldspace;
 		Game::FormID cell;
 		Game::FormID skin;
+		Game::FormID idle;
+		Game::FormID package;
+		Game::FormID furniture;
 		float        weight{ 0.0f };
 		long long    ts{ 0 };
 

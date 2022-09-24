@@ -44,6 +44,7 @@ namespace IED
 			AnimEventForwarding         = 4433,
 			EffectShaders               = 4434,
 			ParallelUpdates             = 4435,
+			ExperimentalFeatureWarn     = 4436,
 		};
 	}
 }

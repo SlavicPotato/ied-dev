@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EffectShaderData.h"
 #include "ObjectManagerData.h"
 
 namespace IED

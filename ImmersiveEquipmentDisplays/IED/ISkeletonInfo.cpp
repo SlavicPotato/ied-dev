@@ -50,9 +50,10 @@ namespace IED
 	static void VisitNodeTree(
 		NiAVObject*  a_object,
 		SI_NiObject& a_data,
+		SI_NiObject* a_parent,
 		Tf           a_func)
 	{
-		a_func(a_object, a_data);
+		a_func(a_object, a_data, a_parent);
 
 		if (auto node = a_object->AsNode())
 		{
@@ -65,6 +66,7 @@ namespace IED
 					VisitNodeTree(
 						object,
 						a_data.children.emplace_back(),
+						std::addressof(a_data),
 						a_func);
 				}
 			}
@@ -99,8 +101,12 @@ namespace IED
 		VisitNodeTree(
 			root,
 			a_root.object,
-			[](NiAVObject* a_object, SI_NiObject& a_data) {
-				FillObjectData(a_object, a_data);
+			nullptr,
+			[](
+				NiAVObject*  a_object,
+				SI_NiObject& a_data,
+				SI_NiObject* a_parent) {
+				FillObjectData(a_object, a_data, a_parent);
 			});
 
 		return true;
@@ -197,12 +203,14 @@ namespace IED
 
 	void ISkeletonInfo::FillObjectData(
 		NiAVObject*  a_object,
-		SI_NiObject& a_data) noexcept
+		SI_NiObject& a_data,
+		SI_NiObject* a_parent) noexcept
 	{
-		a_data.name  = a_object->m_name.c_str();
-		a_data.local = a_object->m_localTransform;
-		a_data.world = a_object->m_worldTransform;
-		a_data.flags = a_object->m_flags;
+		a_data.name   = a_object->m_name.c_str();
+		a_data.local  = a_object->m_localTransform;
+		a_data.world  = a_object->m_worldTransform;
+		a_data.flags  = a_object->m_flags;
+		a_data.parent = a_parent;
 	}
 
 }

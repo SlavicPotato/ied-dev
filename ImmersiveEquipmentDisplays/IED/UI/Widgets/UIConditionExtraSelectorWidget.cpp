@@ -15,6 +15,9 @@ namespace IED
 			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
 			{ Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential },
+			{ Data::ExtraConditionType::kAnimLute, UIConditionExtraSelectorWidgetStrings::HasAnimLute },
+			{ Data::ExtraConditionType::kAnimAxe, UIConditionExtraSelectorWidgetStrings::HasAnimAxe },
+			{ Data::ExtraConditionType::kAnimPickaxe, UIConditionExtraSelectorWidgetStrings::HasAnimPickaxe },
 			{ Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
@@ -166,6 +169,12 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
 			case Data::ExtraConditionType::kRandomPercent:
 				return LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
+			case Data::ExtraConditionType::kAnimLute:
+				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimLute);
+			case Data::ExtraConditionType::kAnimAxe:
+				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimAxe);
+			case Data::ExtraConditionType::kAnimPickaxe:
+				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimPickaxe);
 			default:
 				return nullptr;
 			}

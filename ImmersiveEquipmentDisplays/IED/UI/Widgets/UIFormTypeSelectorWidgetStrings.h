@@ -51,6 +51,7 @@ namespace IED
 			Weather          = 6340,
 			Global           = 6341,
 			Material         = 6342,
+			Idle             = 6343,
 		};
 	}
 }

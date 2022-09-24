@@ -206,11 +206,6 @@ namespace IED
 		void QueueEvaluateNPC(Game::FormID a_npc, stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueEvaluateRace(Game::FormID a_race, stl::flag<ControllerUpdateFlags> a_flags);
 
-		// use when acquiring global lock may be detrimental to performance
-		void QueueRequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer = false) const;
-		void QueueRequestEvaluate(TESObjectREFR* a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer = false) const;
-
-		void RequestEvaluate(Game::FormID a_actor, bool a_defer, bool a_xfrmUpdate, bool a_xfrmUpdateNoDefer) const;
 		void QueueEvaluateAll(stl::flag<ControllerUpdateFlags> a_flags);
 
 		// use when acquiring global lock may be detrimental to performance
@@ -417,6 +412,7 @@ namespace IED
 
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);
+		void QueueUpdateNPCInfo(Game::FormID a_npc);
 		void QueueUpdateNPCInfo(Game::FormID a_npc, std::function<void(bool)> a_callback);
 
 		[[nodiscard]] inline constexpr auto GetNodeOverrideEnabled() const noexcept
@@ -464,7 +460,7 @@ namespace IED
 			using func_t = std::function<bool(
 				actorInfo_t&                     a_info,
 				const Data::configCustomEntry_t& a_confEntry,
-				objectEntryCustom_t&             a_entry)>;
+				ObjectEntryCustom&             a_entry)>;
 
 			func_t       func;
 			bool         evalDirty{ false };
@@ -578,12 +574,12 @@ namespace IED
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&          a_info,
 			const Data::configCustom_t& a_config,
-			const objectEntryCustom_t&  a_entry);
+			const ObjectEntryCustom&  a_entry);
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&        a_info,
 			const Data::configSlot_t& a_config,
-			const objectEntrySlot_t&  a_entry);
+			const ObjectEntrySlot&  a_entry);
 
 		void UpdateCustomImpl(
 			Game::FormID             a_actor,
@@ -689,19 +685,19 @@ namespace IED
 			actorInfo_t&                   a_info,
 			const Data::configCustom_t&    a_configEntry,
 			const Data::configTransform_t& a_xfrmConfigEntry,
-			objectEntryCustom_t&           a_entry);
+			ObjectEntryCustom&           a_entry);
 
 		bool AttachNodeImpl(
 			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,
-			objectEntryBase_t&          a_cacheEntry);
+			ObjectEntryBase&          a_cacheEntry);
 
 		bool ProcessItemUpdate(
 			processParams_t&                 a_params,
 			const Data::configBaseValues_t&  a_config,
 			const Data::equipmentOverride_t* a_override,
-			objectEntryBase_t&               a_entry,
+			ObjectEntryBase&               a_entry,
 			bool                             a_visible);
 
 		template <class Ta, class Tb>
@@ -711,9 +707,9 @@ namespace IED
 			Tb&              a_objectEntry,
 			bool             a_updateValues = false) requires(  //
 			(std::is_same_v<Ta, Data::configCustom_t>&&
-		         std::is_same_v<Tb, objectEntryCustom_t>) ||
+		         std::is_same_v<Tb, ObjectEntryCustom>) ||
 			(std::is_same_v<Ta, Data::configSlot_t> &&
-		     std::is_same_v<Tb, objectEntrySlot_t>));
+		     std::is_same_v<Tb, ObjectEntrySlot>));
 
 		void ProcessSlots(processParams_t& a_params);
 
@@ -726,18 +722,18 @@ namespace IED
 		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			objectEntryCustom_t&        a_objectEntry,
+			ObjectEntryCustom&        a_objectEntry,
 			bool&                       a_hasMinCount);
 
 		bool IsBlockedByChance(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			objectEntryCustom_t&        a_objectEntry);
+			ObjectEntryCustom&        a_objectEntry);
 
 		bool ProcessCustomEntry(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			objectEntryCustom_t&        a_cacheEntry);
+			ObjectEntryCustom&        a_cacheEntry);
 
 		void ProcessCustomEntryMap(
 			processParams_t&                     a_params,

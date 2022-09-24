@@ -383,7 +383,6 @@ namespace IED
 
 			Game::FormID m_ooNewEntryID;
 			Game::FormID m_ooNewEntryIDKW;
-			Game::FormID m_ooNewEntryIDRace;
 			Game::FormID m_ooNewEntryIDActor;
 			Game::FormID m_ooNewEntryIDNPC;
 			Game::FormID m_ooNewEntryIDGlob;
@@ -2409,7 +2408,6 @@ namespace IED
 			{
 				m_ooNewEntryID      = {};
 				m_ooNewEntryIDKW    = {};
-				m_ooNewEntryIDRace  = {};
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
 				m_ooNewEntryIDGlob  = {};
@@ -2628,8 +2626,7 @@ namespace IED
 					if (LCG_MI(CommonStrings::Race, "7"))
 					{
 						a_entry.emplace_back(
-							Data::NodeOverrideConditionType::Race,
-							m_ooNewEntryIDRace);
+							Data::NodeOverrideConditionType::Race);
 
 						HandleValueUpdate(
 							a_handle,
@@ -2756,6 +2753,20 @@ namespace IED
 					{
 						a_entry.emplace_back(
 							Data::NodeOverrideConditionType::Mounted);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
+					if (LCG_MI(CommonStrings::Idle, "H"))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Idle);
 
 						HandleValueUpdate(
 							a_handle,
@@ -3006,6 +3017,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Worldspace:
 						case Data::NodeOverrideConditionType::Package:
 						case Data::NodeOverrideConditionType::Weather:
+						case Data::NodeOverrideConditionType::Idle:
 
 							it = a_entry.emplace(
 								it,
@@ -3348,6 +3360,18 @@ namespace IED
 								tdesc = e.fbf.type == Data::NodeOverrideConditionType::Mounting ?
 								            LS(UIWidgetCommonStrings::Mounting) :
                                             LS(UIWidgetCommonStrings::Mounted);
+
+								break;
+
+							case Data::NodeOverrideConditionType::Idle:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Idle);
 
 								break;
 
@@ -3694,7 +3718,6 @@ namespace IED
 			{
 				m_ooNewEntryID      = {};
 				m_ooNewEntryIDKW    = {};
-				m_ooNewEntryIDRace  = {};
 				m_ooNewEntryIDActor = {};
 				m_ooNewEntryIDNPC   = {};
 				m_ooNewEntryIDGlob  = {};
@@ -3931,6 +3954,12 @@ namespace IED
 					{
 						result.action    = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Mounted;
+					}
+
+					if (LCG_MI(CommonStrings::Idle, "H"))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Idle;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -4188,6 +4217,15 @@ namespace IED
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
 
 				break;
+
+			case Data::NodeOverrideConditionType::Idle:
+
+				ImGui::Spacing();
+				ImGui::Text("%s:", LS(CommonStrings::Info));
+				ImGui::SameLine();
+				DrawTip(UITip::IdleCondition);
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -4256,6 +4294,7 @@ namespace IED
 
 				break;
 			case Data::NodeOverrideConditionType::Race:
+			case Data::NodeOverrideConditionType::Idle:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -4406,6 +4445,10 @@ namespace IED
 			case Data::NodeOverrideConditionType::Global:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Global));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Idle:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Idle));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);

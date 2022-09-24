@@ -154,14 +154,43 @@ namespace IED
 				}
 				DrawTip(UITip::NoCheckFav);
 
-				if (settings.mark_if(ImGui::Checkbox(
+				if (ImGui::Checkbox(
 						LS(UISettingsStrings::BhkAnims, "4"),
-						std::addressof(data.hkWeaponAnimations))))
+						std::addressof(data.hkWeaponAnimations)))
 				{
-					m_controller.SetProcessorTaskRunAUState(data.hkWeaponAnimations);	
-					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+					if (data.hkWeaponAnimations && !data.hkWeaponAnimationsWarned)
+					{
+						data.hkWeaponAnimations = false;
+
+						auto& queue = m_controller.UIGetPopupQueue();
+
+						queue.push(
+								 UIPopupType::Confirm,
+								 LS(CommonStrings::Confirm),
+								 "%s",
+								 LS(UISettingsStrings::ExperimentalFeatureWarn))
+							.set_text_wrap_size(30.0f)
+							.call([this](auto&) {
+								auto& settings = m_controller.GetConfigStore().settings;
+								auto& data     = settings.data;
+
+								data.hkWeaponAnimations       = true;
+								data.hkWeaponAnimationsWarned = true;
+
+								settings.mark_dirty();
+
+								m_controller.SetProcessorTaskRunAUState(true);
+								m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+							});
+					}
+					else
+					{
+						settings.mark_dirty();
+						m_controller.SetProcessorTaskRunAUState(data.hkWeaponAnimations);
+						m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+					}
 				}
-				DrawTip(UITip::BhkAnims);
+				DrawTipImportant(UITip::BhkAnims);
 
 				/*if (data.hkWeaponAnimations)
 				{

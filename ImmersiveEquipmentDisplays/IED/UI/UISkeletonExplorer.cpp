@@ -292,8 +292,9 @@ namespace IED
 				if (ImGui::TreeNodeEx(
 						"",
 						flags,
-						"%s",
-						a_object.name.c_str()))
+						"%s [%s]",
+						a_object.name.c_str(),
+						(settings.filterShowChildNodes && a_object.parent) ? a_object.parent->name.c_str() : ""))
 				{
 					DrawObjectInfo(a_object, a_data.isLoadedData);
 					DrawChildNodes(

@@ -42,6 +42,9 @@ namespace IED
 			IsBeingRidden       = 5431,
 			WeaponDrawn         = 5432,
 			RandomPercent       = 5433,
+			HasAnimLute         = 5434,
+			HasAnimAxe          = 5435,
+			HasAnimPickaxe      = 5436,
 		};
 	}
 }

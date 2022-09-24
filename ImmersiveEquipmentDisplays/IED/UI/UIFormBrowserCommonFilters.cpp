@@ -14,8 +14,7 @@ namespace IED
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>{
-						TESFurniture::kTypeID }),
+					{ TESFurniture::kTypeID }),
 
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
@@ -85,7 +84,12 @@ namespace IED
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-					{ TESGlobal::kTypeID })
+					{ TESGlobal::kTypeID }),
+							
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESIdleForm::kTypeID })
 
 			} }
 		{

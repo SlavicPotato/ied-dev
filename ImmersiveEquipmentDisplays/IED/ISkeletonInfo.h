@@ -39,6 +39,7 @@ namespace IED
 
 		static void FillObjectData(
 			NiAVObject*  a_object,
-			SI_NiObject& a_data) noexcept;
+			SI_NiObject& a_data,
+			SI_NiObject* a_parent) noexcept;
 	};
 }

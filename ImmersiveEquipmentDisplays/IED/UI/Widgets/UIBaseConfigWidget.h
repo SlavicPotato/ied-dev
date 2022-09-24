@@ -1668,6 +1668,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Mounting:
 					case Data::EquipmentOverrideConditionType::Mounted:
 					case Data::EquipmentOverrideConditionType::Presence:
+					case Data::EquipmentOverrideConditionType::Idle:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1862,6 +1863,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Mounting:
 						case Data::EquipmentOverrideConditionType::Mounted:
 						case Data::EquipmentOverrideConditionType::Presence:
+						case Data::EquipmentOverrideConditionType::Idle:
 
 							it = a_entry.emplace(
 								it,
@@ -2223,6 +2225,18 @@ namespace IED
 									tdesc = LS(UIWidgetCommonStrings::CurrentItem);
 								}
 								break;
+
+							case Data::EquipmentOverrideConditionType::Idle:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Idle);
+
+								break;
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2547,6 +2561,12 @@ namespace IED
 					{
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Presence;
+					}
+
+					if (LCG_MI(CommonStrings::Idle, "J"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Idle;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -3032,8 +3052,15 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Info));
 					ImGui::SameLine();
 					DrawTip(UITip::Presence);
-
 				}
+				break;
+			case Data::EquipmentOverrideConditionType::Idle:
+
+				ImGui::Spacing();
+				ImGui::Text("%s:", LS(CommonStrings::Info));
+				ImGui::SameLine();
+				DrawTip(UITip::IdleCondition);
+
 				break;
 			}
 
@@ -3104,6 +3131,7 @@ namespace IED
 
 				break;
 			case Data::EquipmentOverrideConditionType::Race:
+			case Data::EquipmentOverrideConditionType::Idle:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -3253,6 +3281,10 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Global:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Global));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::EquipmentOverrideConditionType::Idle:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Idle));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);

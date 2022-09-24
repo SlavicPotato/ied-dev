@@ -22,7 +22,7 @@ namespace IED
 	class Controller;
 	class ActorObjectHolder;
 
-	struct objectEntryBase_t;
+	struct ObjectEntryBase;
 
 	class ActorProcessorTask :
 		public TaskDelegateFixed,
@@ -85,7 +85,7 @@ namespace IED
 
 		SKMP_FORCEINLINE void UpdateNode(
 			ActorObjectHolder& a_record,
-			objectEntryBase_t& a_entry);
+			ObjectEntryBase& a_entry);
 		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(

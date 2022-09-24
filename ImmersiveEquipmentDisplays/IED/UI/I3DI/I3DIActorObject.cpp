@@ -8,6 +8,7 @@
 #include "Common/VectorMath.h"
 
 #include "IED/Controller/ObjectManagerData.h"
+#include "IED/Controller/ActorObjectHolder.h"
 
 namespace IED
 {

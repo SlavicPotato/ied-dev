@@ -60,15 +60,30 @@ namespace IED
 				ImGui::Separator();
 				ImGui::Spacing();
 
-				PluginInterfaceSDS* intfc;
+				PluginInterfaceSDS*            intfc;
+				PluginInterfaceQueryErrorState intfcErrorState;
 
-				m_controller.GetPluginInterface(intfc);
+				m_controller.GetPluginInterface(intfc, intfcErrorState);
 
 				if (!intfc)
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 
-					ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSNotFound));
+					ImGui::Text("%s:", LS(UIIntroBannerStrings::SDSNotFound));
+					ImGui::SameLine();
+
+					switch (intfcErrorState)
+					{
+					case PluginInterfaceQueryErrorState::kDllNotLoaded:
+						ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSNotLoaded));
+						break;
+					case PluginInterfaceQueryErrorState::kEntryPointNotFound:
+						ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSOutOfDate));
+						break;
+					default:
+						ImGui::TextUnformatted(PluginInterfaceBase::get_error_string(intfcErrorState));
+						break;
+					}
 
 					ImGui::PopStyleColor();
 				}

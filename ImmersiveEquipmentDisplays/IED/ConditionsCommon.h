@@ -88,6 +88,12 @@ namespace IED
 				return a_params.actor->IsWeaponDrawn();
 			case Data::ExtraConditionType::kRandomPercent:
 				return match_random_percent(a_params, a_match, a_match.percent);
+			case Data::ExtraConditionType::kAnimLute:
+				return has_anim_object_lute(a_params);
+			case Data::ExtraConditionType::kAnimAxe:
+				return has_anim_object_axe(a_params);
+			case Data::ExtraConditionType::kAnimPickaxe:
+				return has_anim_object_pickaxe(a_params);
 			default:
 				return false;
 			}
@@ -750,9 +756,24 @@ namespace IED
 			}
 		}
 
+		template <class Tm, class Tf>
+		constexpr bool match_idle(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			const auto idle = a_params.get_idle();
+			const auto cfid = idle ? idle->formID : Game::FormID{};
+
+			return a_match.flags.test(Tf::kNegateMatch2) !=
+			       (a_match.form.get_id() == cfid);
+		}
+
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_female(CommonParams& a_params) noexcept;
 		bool has_humanoid_skeleton(CommonParams& a_params) noexcept;
+		bool has_anim_object_lute(CommonParams& a_params) noexcept;
+		bool has_anim_object_axe(CommonParams& a_params) noexcept;
+		bool has_anim_object_pickaxe(CommonParams& a_params) noexcept;
 
 		bool match_random_percent(
 			CommonParams&   a_params,

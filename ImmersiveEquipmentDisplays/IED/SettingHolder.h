@@ -176,6 +176,7 @@ namespace IED
 				bool XP32AABowAtk{ false };
 				bool placementRandomization{ false };
 				bool hkWeaponAnimations{ false };
+				bool hkWeaponAnimationsWarned{ false };
 				bool animEventForwarding{ false };
 				bool effectShaderParallelUpdates{ false };
 

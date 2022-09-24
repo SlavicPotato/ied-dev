@@ -2,6 +2,10 @@
 
 #include "EffectController.h"
 
+#include "ActorObjectHolder.h"
+#include "EffectShaderData.h"
+#include "ObjectManagerData.h"
+
 #include "IED/Data.h"
 
 namespace IED
@@ -51,8 +55,7 @@ namespace IED
 		                a_steps.player :
                         a_steps.npc;
 
-		a_holder.visit([&](auto& a_object)
-		{
+		a_holder.visit([&](auto& a_object) {
 			if (auto& state = a_object.state)
 			{
 				UpdateEffects(state->effectShaders, step);

@@ -106,7 +106,8 @@ namespace IED
 			Weather    = 14,
 			Global     = 15,
 			Mounting   = 16,
-			Mounted    = 17
+			Mounted    = 17,
+			Idle       = 18
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -182,6 +183,7 @@ namespace IED
 				case NodeOverrideConditionType::Race:
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
+				case NodeOverrideConditionType::Idle:
 					form = a_form;
 					break;
 				case NodeOverrideConditionType::Form:
@@ -214,6 +216,7 @@ namespace IED
 				case NodeOverrideConditionType::Weather:
 				case NodeOverrideConditionType::Mounting:
 				case NodeOverrideConditionType::Mounted:
+				case NodeOverrideConditionType::Idle:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{

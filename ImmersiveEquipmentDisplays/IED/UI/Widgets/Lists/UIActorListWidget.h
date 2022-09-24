@@ -201,6 +201,21 @@ namespace IED
 				{
 					ImGui::Text("%s:", LS(CommonStrings::Skin));
 				}
+
+				if (it->second.idle)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Idle));
+				}
+
+				if (it->second.package)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Package));
+				}
+
+				if (it->second.furniture)
+				{
+					ImGui::Text("%s:", LS(CommonStrings::Furniture));
+				}
 			}
 
 			ImGui::Text("%s:", LS(CommonStrings::Mod));
@@ -266,6 +281,24 @@ namespace IED
 				{
 					ImGui::TextWrapped("%.8X", it->second.skin.get());
 				}
+
+				if (it->second.idle)
+				{
+					ImGui::TextWrapped(
+						"%.8X [%s]",
+						it->second.idle.get(),
+						it->second.idleName.c_str());
+				}
+
+				if (it->second.package)
+				{
+					ImGui::TextWrapped("%.8X", it->second.package.get());
+				}
+
+				if (it->second.furniture)
+				{
+					ImGui::TextWrapped("%.8X", it->second.furniture.get());
+				}
 			}
 
 			std::uint32_t modIndex;
@@ -290,8 +323,16 @@ namespace IED
 			}
 
 			ImGui::Columns();
-			
+
 			ListDrawExtraActorInfo(a_entry);
+
+			if (it != actorInfo.end())
+			{
+				if (IPerfCounter::delta_us(it->second.ts, IPerfCounter::Query()) > 100000)
+				{
+					QueueUpdateActorInfo(it->first);
+				}
+			}
 		}
 
 		template <class Td>

@@ -73,6 +73,7 @@ namespace IED
 			EquippedConditionsGearPositioning   = 1062,
 			CustomLastEquipped                  = 1063,
 			Presence                            = 1064,
+			IdleCondition                       = 1065,
 		};
 
 	}

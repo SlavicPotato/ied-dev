@@ -60,5 +60,10 @@ namespace IED
 
 			ImGui::PopID();
 		}
+
+		void UIActorInfoAddInterface::QueueUpdateActorInfo(Game::FormID a_handle)
+		{
+			m_controller.QueueUpdateActorInfo(a_handle);
+		}
 	}
 }

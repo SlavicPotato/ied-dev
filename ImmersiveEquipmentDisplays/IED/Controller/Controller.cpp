@@ -48,15 +48,6 @@ namespace IED
 #endif
 	}
 
-	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
-	{
-		return a_refr &&
-		       a_refr->formID != 0 &&
-		       a_refr->loadedState &&
-		       !a_refr->IsDeleted() &&
-		       a_refr->IsActor();
-	}
-
 	void Controller::SinkInputEvents()
 	{
 		assert(m_iniconf);
@@ -165,7 +156,7 @@ namespace IED
 			}
 		}
 
-		auto& settings = m_config.settings.data;
+		const auto& settings = m_config.settings.data;
 
 		if (settings.logLevel)
 		{
@@ -215,25 +206,27 @@ namespace IED
 
 	void Controller::GetSDSInterface()
 	{
-		auto intfc = PluginInterfaceBase::get_interface<PluginInterfaceSDS>("SimpleDualSheath.dll");
-		if (!intfc)
+		auto result = PluginInterfaceBase::query_interface<PluginInterfaceSDS>();
+
+		SetPluginInterface(result.intfc, result.error);
+
+		if (!result)
 		{
+			Warning("SDS interface not found: %s", PluginInterfaceBase::get_error_string(result.error));
 			return;
 		}
 
-		auto pluginVersion = intfc->GetPluginVersion();
+		auto pluginVersion = result.intfc->GetPluginVersion();
 
 		Debug(
 			"Found SDS interface [%s %u.%u.%u, interface ver: %.8X]",
-			intfc->GetPluginName(),
+			result.intfc->GetPluginName(),
 			GET_PLUGIN_VERSION_MAJOR(pluginVersion),
 			GET_PLUGIN_VERSION_MINOR(pluginVersion),
 			GET_PLUGIN_VERSION_REV(pluginVersion),
-			intfc->GetInterfaceVersion());
+			result.intfc->GetInterfaceVersion());
 
-		intfc->RegisterForPlayerShieldOnBackEvent(this);
-
-		SetPluginInterface(intfc);
+		result.intfc->RegisterForPlayerShieldOnBackEvent(this);
 	}
 
 	static void UpdateSoundPairFromINI(
@@ -532,7 +525,7 @@ namespace IED
 
 		if (IFPV_Detected())
 		{
-			Debug("IFPV detector plugin was found");
+			Debug("IFPV detector plugin found");
 		}
 
 		SetProcessorTaskRunState(true);
@@ -741,76 +734,6 @@ namespace IED
 				}
 			}
 		});
-	}
-
-	void Controller::QueueRequestEvaluate(
-		Game::FormID a_actor,
-		bool         a_defer,
-		bool         a_xfrmUpdate,
-		bool         a_xfrmUpdateNoDefer) const
-	{
-		ITaskPool::AddTask(
-			[this,
-		     a_actor,
-		     a_defer,
-		     a_xfrmUpdate,
-		     a_xfrmUpdateNoDefer]() {
-				RequestEvaluate(
-					a_actor,
-					a_defer,
-					a_xfrmUpdate,
-					a_xfrmUpdateNoDefer);
-			});
-	}
-
-	void Controller::QueueRequestEvaluate(
-		TESObjectREFR* a_actor,
-		bool           a_defer,
-		bool           a_xfrmUpdate,
-		bool           a_xfrmUpdateNoDefer) const
-	{
-		if (IsActorValid(a_actor))
-		{
-			QueueRequestEvaluate(
-				a_actor->formID,
-				a_defer,
-				a_xfrmUpdate,
-				a_xfrmUpdateNoDefer);
-		}
-	}
-
-	void Controller::RequestEvaluate(
-		Game::FormID a_actor,
-		bool         a_defer,
-		bool         a_xfrmUpdate,
-		bool         a_xfrmUpdateNoDefer) const
-	{
-		stl::scoped_lock lock(m_lock);
-
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
-		{
-			if (a_defer)
-			{
-				it->second.RequestEvalDefer();
-			}
-			else
-			{
-				it->second.RequestEval();
-			}
-
-			if (a_xfrmUpdate)
-			{
-				if (a_xfrmUpdateNoDefer)
-				{
-					it->second.RequestTransformUpdate();
-				}
-				else
-				{
-					it->second.RequestTransformUpdateDefer();
-				}
-			}
-		}
 	}
 
 	void Controller::QueueEvaluateAll(
@@ -2166,7 +2089,7 @@ namespace IED
 		processParams_t&                 a_params,
 		const configBaseValues_t&        a_config,
 		const Data::equipmentOverride_t* a_override,
-		objectEntryBase_t&               a_entry,
+		ObjectEntryBase&               a_entry,
 		bool                             a_visible)
 	{
 		auto& state = a_entry.state;
@@ -2300,9 +2223,9 @@ namespace IED
 		Tb&              a_objectEntry,
 		bool             a_updateValues) requires(  //
 		(std::is_same_v<Ta, Data::configCustom_t>&&
-	         std::is_same_v<Tb, objectEntryCustom_t>) ||
+	         std::is_same_v<Tb, ObjectEntryCustom>) ||
 		(std::is_same_v<Ta, Data::configSlot_t> &&
-	     std::is_same_v<Tb, objectEntrySlot_t>))
+	     std::is_same_v<Tb, ObjectEntrySlot>))
 	{
 		if (!EffectControllerEnabled() ||
 		    !a_objectEntry.state)
@@ -2878,7 +2801,7 @@ namespace IED
 	collectorData_t::container_type::iterator Controller::CustomEntrySelectInventoryForm(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		objectEntryCustom_t&  a_objectEntry,
+		ObjectEntryCustom&  a_objectEntry,
 		bool&                 a_hasMinCount)
 	{
 		auto& formData = a_params.collector.data.forms;
@@ -3134,7 +3057,7 @@ namespace IED
 	bool Controller::IsBlockedByChance(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		objectEntryCustom_t&  a_objectEntry)
+		ObjectEntryCustom&  a_objectEntry)
 	{
 		if (a_config.customFlags.test(CustomFlags::kUseChance))
 		{
@@ -3165,7 +3088,7 @@ namespace IED
 	bool Controller::ProcessCustomEntry(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		objectEntryCustom_t&  a_objectEntry)
+		ObjectEntryCustom&  a_objectEntry)
 	{
 		if (a_config.equipmentOverrides.empty() &&
 		    a_config.flags.test(BaseFlags::kDisabled))
@@ -4336,7 +4259,7 @@ namespace IED
 			[this](
 				actorInfo_t&               a_info,
 				const configCustomEntry_t& a_confEntry,
-				objectEntryCustom_t&       a_entry) {
+				ObjectEntryCustom&       a_entry) {
 				if (!a_entry.state)
 				{
 					return false;
@@ -4363,7 +4286,7 @@ namespace IED
 	const configBaseValues_t& Controller::GetConfigForActor(
 		const actorInfo_t&         a_info,
 		const configCustom_t&      a_config,
-		const objectEntryCustom_t& a_entry)
+		const ObjectEntryCustom& a_entry)
 	{
 		assert(a_entry.state);
 
@@ -4396,7 +4319,7 @@ namespace IED
 	const configBaseValues_t& Controller::GetConfigForActor(
 		const actorInfo_t&       a_info,
 		const configSlot_t&      a_config,
-		const objectEntrySlot_t& a_entry)
+		const ObjectEntrySlot& a_entry)
 	{
 		assert(a_entry.state);
 
@@ -4920,7 +4843,7 @@ namespace IED
 		actorInfo_t&             a_info,
 		const configCustom_t&    a_configEntry,
 		const configTransform_t& a_xfrmConfigEntry,
-		objectEntryCustom_t&     a_entry)
+		ObjectEntryCustom&     a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -4975,7 +4898,7 @@ namespace IED
 		NiNode*               a_root,
 		const NodeDescriptor& a_node,
 		bool                  a_atmReference,
-		objectEntryBase_t&    a_entry)
+		ObjectEntryBase&    a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -5649,7 +5572,7 @@ namespace IED
 	{
 		ITaskPool::AddTask([this, a_actor]() {
 			stl::scoped_lock lock(m_lock);
-			UpdateActorInfo(m_objects, a_actor);
+			UpdateActorInfo(a_actor);
 		});
 	}
 
@@ -5660,6 +5583,14 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, callback = std::move(a_callback)]() {
 			stl::scoped_lock lock(m_lock);
 			callback(UpdateActorInfo(a_actor));
+		});
+	}
+
+	void IED::Controller::QueueUpdateNPCInfo(Game::FormID a_npc)
+	{
+		ITaskPool::AddTask([this, a_npc]() {
+			stl::scoped_lock lock(m_lock);
+			UpdateNPCInfo(a_npc);
 		});
 	}
 

@@ -51,6 +51,35 @@ namespace IED
 			a_out.skin = {};
 		}
 
+		if (auto idle = a_actor->GetFurnitureIdle())
+		{
+			a_out.idle = idle->formID;
+			a_out.idleName = idle->editorId.c_str();
+		}
+		else
+		{
+			a_out.idle = {};
+			a_out.idleName.clear();
+		}
+		
+		if (auto package = a_actor->GetCurrentPackage())
+		{
+			a_out.package = package->formID;
+		}
+		else
+		{
+			a_out.package = {};
+		}
+		
+		if (auto furniture = a_actor->GetOccupiedFurniture())
+		{
+			a_out.furniture = furniture->formID;
+		}
+		else
+		{
+			a_out.furniture = {};
+		}
+
 		a_out.weight   = a_actor->GetWeight();
 		a_out.attached = a_actor->IsParentCellAttached();
 
@@ -120,6 +149,8 @@ namespace IED
 		                    a_npc->race->formID :
                             0;
 		a_out.weight  = a_npc->GetWeight();
+
+		a_out.ts = IPerfCounter::Query();
 	}
 
 	void IActorInfo::AddExtraActorEntry(Game::FormID a_formid)

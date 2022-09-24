@@ -3,9 +3,11 @@
 #include "ActorProcessorTask.h"
 
 #include "Controller.h"
+#include "IObjectManager.h"
+
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
-#include "IObjectManager.h"
+#include "IED/StringHolder.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Sky.h>
@@ -21,7 +23,7 @@ namespace IED
 
 	void ActorProcessorTask::UpdateNode(
 		ActorObjectHolder& a_record,
-		objectEntryBase_t& a_entry)
+		ObjectEntryBase&   a_entry)
 	{
 		auto state = a_entry.state.get();
 
@@ -330,12 +332,14 @@ namespace IED
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
-			if (!e.m_actor->formID)
+			auto actor = e.m_actor.get();
+
+			if (!actor->formID)
 			{
 				continue;
 			}
 
-			auto cell = e.m_actor->GetParentCell();
+			auto cell = actor->GetParentCell();
 			if (cell && cell->IsAttached())
 			{
 				e.m_state.cellAttached = true;
@@ -348,18 +352,23 @@ namespace IED
 
 			e.state_var_update_defer(e.m_state.inInterior, cell->IsInterior());
 			e.state_var_update_defer(e.m_state.worldspace, cell->GetWorldSpace());
-			e.state_var_update_defer(e.m_state.inCombat, Game::GetActorInCombat(e.m_actor));
-			e.state_var_update_defer(e.m_state.flags1, e.m_actor->flags1 & ACTOR_CHECK_FLAGS_1, 6);
-			e.state_var_update_defer(e.m_state.flags2, e.m_actor->flags2 & ACTOR_CHECK_FLAGS_2, 6);
-			e.state_var_update_defer(e.m_state.swimming, e.m_actor->IsSwimming(), 6);
-			e.state_var_update_defer(e.m_state.sitting, e.m_actor->IsSitting());
-			e.state_var_update_defer(e.m_state.sleeping, e.m_actor->IsSleeping());
-			e.state_var_update_defer(e.m_state.beingRidden, e.m_actor->IsBeingRidden());
-			e.state_var_update_defer(e.m_state.weaponDrawn, e.m_actor->IsWeaponDrawn());
+			e.state_var_update_defer(e.m_state.currentIdle, actor->GetFurnitureIdle());
+			e.state_var_update_defer(e.m_state.currentPackage, actor->GetCurrentPackage(), 6);
+			e.state_var_update_defer(e.m_state.inCombat, Game::GetActorInCombat(actor));
+			e.state_var_update_defer(e.m_state.flags1, actor->flags1 & ACTOR_CHECK_FLAGS_1, 6);
+			e.state_var_update_defer(e.m_state.flags2, actor->flags2 & ACTOR_CHECK_FLAGS_2, 6);
+			e.state_var_update_defer(e.m_state.sitting, actor->IsSitting());
+			e.state_var_update_defer(e.m_state.sleeping, actor->IsSleeping());
+			e.state_var_update_defer(e.m_state.beingRidden, actor->IsBeingRidden());
+			e.state_var_update_defer(e.m_state.weaponDrawn, actor->IsWeaponDrawn());
 
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.currentPackage, e.m_actor->GetCurrentPackage());
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, e.m_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, e.m_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
+			e.state_var_update_defer(e.m_state.hasLute, e.HasLuteAnimObject());
+			e.state_var_update_defer(e.m_state.hasAxe, e.HasAxeAnimObject());
+			e.state_var_update_defer(e.m_state.hasPickaxe, e.HasPickaxeAnimObject());
+
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
+			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.swimming, actor->IsSwimming());
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,

@@ -2,6 +2,8 @@
 
 #include "ConfigCommon.h"
 
+#include "Controller/ActiveActorAnimation.h"
+
 namespace IED
 {
 	class ObjectManagerData;
@@ -63,13 +65,14 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
 			};
 
 			actorStateEntry_t() = default;
 			actorStateEntry_t(const ActorObjectHolder& a_holder);
 
 			actorStateSlotEntry_t slots[stl::underlying(ObjectSlot::kMax)];
+			ActiveActorAnimation  activeAnimation{ ActiveActorAnimation::kNone };
 
 		private:
 			template <class Archive>

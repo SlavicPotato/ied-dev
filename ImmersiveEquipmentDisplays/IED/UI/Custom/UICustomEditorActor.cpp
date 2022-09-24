@@ -402,7 +402,7 @@ namespace IED
 			Game::FormID                     a_handle,
 			const stl::fixed_string&         a_name,
 			const Data::configCustomEntry_t& a_entry)
-			-> const objectEntryCustom_t*
+			-> const ObjectEntryCustom*
 		{
 			auto& data = m_controller.GetObjects();
 

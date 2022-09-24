@@ -245,6 +245,9 @@ namespace IED
 			kBeingRidden         = 31,
 			kWeaponDrawn         = 32,
 			kRandomPercent       = 33,
+			kAnimLute            = 34,
+			kAnimAxe             = 35,
+			kAnimPickaxe         = 36,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

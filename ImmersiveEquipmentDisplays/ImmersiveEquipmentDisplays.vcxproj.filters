@@ -1400,6 +1400,33 @@
     <ClInclude Include="IED\Controller\IRNG.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ActorObjectHolder.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\TemporaryActorStateData.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectEntryBase.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectEntrySlot.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectEntryCustom.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\WeaponNodeEntry.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\CMENodeEntry.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\MOVNodeEntry.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ActiveActorAnimation.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2211,6 +2238,18 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\IRNG.cpp">
       <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ActorObjectHolder.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\TemporaryActorStateData.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectEntryBase.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\CMENodeEntry.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

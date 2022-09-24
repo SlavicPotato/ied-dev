@@ -16,8 +16,8 @@ namespace IED
 
 	class ActorObjectHolder;
 	class Controller;
-	struct weapNodeEntry_t;
-	struct cmeNodeEntry_t;
+	struct WeaponNodeEntry;
+	struct CMENodeEntry;
 
 	class INodeOverride
 	{
@@ -166,16 +166,16 @@ namespace IED
 			const NiTransform& a_orig);
 
 		static void ResetNodeOverride(
-			const cmeNodeEntry_t& a_entry);
+			const CMENodeEntry& a_entry);
 
 		static void ResetNodePlacement(
-			const weapNodeEntry_t& a_entry,
+			const WeaponNodeEntry& a_entry,
 			nodeOverrideParams_t*  a_params);
 
 	protected:
 		static void ApplyNodeOverride(
 			const stl::fixed_string&                   a_name,
-			const cmeNodeEntry_t&                      a_entry,
+			const CMENodeEntry&                      a_entry,
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t&                      a_params);
 
@@ -185,20 +185,20 @@ namespace IED
 			nodeOverrideParams_t&                      a_params);
 
 		static void attach_node_to(
-			const weapNodeEntry_t&   a_entry,
+			const WeaponNodeEntry&   a_entry,
 			const NiPointer<NiNode>& a_target,
 			nodeOverrideParams_t*    a_params,
 			WeaponPlacementID        a_placementID);
 
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const weapNodeEntry_t&                     a_entry,
+			const WeaponNodeEntry&                     a_entry,
 			nodeOverrideParams_t&                      a_params);
 
 	private:
 		static constexpr const stl::fixed_string& get_target_node(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const weapNodeEntry_t&                     a_entry,
+			const WeaponNodeEntry&                     a_entry,
 			nodeOverrideParams_t&                      a_params);
 
 		static bool INodeOverride::process_offsets(

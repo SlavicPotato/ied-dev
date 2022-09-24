@@ -78,7 +78,8 @@ namespace IED
 			Global     = 15,
 			Mounting   = 16,
 			Mounted    = 17,
-			Presence   = 18
+			Presence   = 18,
+			Idle       = 19,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -212,6 +213,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Mounting:
 				case EquipmentOverrideConditionType::Mounted:
 				case EquipmentOverrideConditionType::Presence:
+				case EquipmentOverrideConditionType::Idle:
 
 					switch (a_matchType)
 					{

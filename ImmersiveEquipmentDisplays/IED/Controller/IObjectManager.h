@@ -16,6 +16,15 @@
 
 namespace IED
 {
+	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
+	{
+		return a_refr &&
+		       a_refr->formID != 0 &&
+		       a_refr->loadedState &&
+		       !a_refr->IsDeleted() &&
+		       a_refr->IsActor();
+	}
+
 	class IObjectManager :
 		public INode,
 		public IModel,
@@ -61,6 +70,25 @@ namespace IED
 		/*void QueueReSinkAnimationGraphs(
 			Game::FormID a_actor);*/
 
+		void RequestEvaluate(
+			Game::FormID a_actor,
+			bool         a_defer,
+			bool         a_xfrmUpdate,
+			bool         a_xfrmUpdateNoDefer) const;
+
+		// use when acquiring global lock may be detrimental to performance
+		void QueueRequestEvaluate(
+			Game::FormID a_actor,
+			bool         a_defer,
+			bool         a_xfrmUpdate,
+			bool         a_xfrmUpdateNoDefer = false) const;
+
+		void QueueRequestEvaluate(
+			TESObjectREFR* a_actor,
+			bool           a_defer,
+			bool           a_xfrmUpdate,
+			bool           a_xfrmUpdateNoDefer = false) const;
+
 	protected:
 		void CleanupActorObjectsImpl(
 			TESObjectREFR*                   a_actor,
@@ -71,7 +99,7 @@ namespace IED
 		bool RemoveObject(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			objectEntryBase_t&               a_objectEntry,
+			ObjectEntryBase&                 a_objectEntry,
 			ActorObjectHolder&               a_data,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
@@ -108,7 +136,7 @@ namespace IED
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_activeConfig,
 			const Data::configBase_t&       a_config,
-			objectEntryBase_t&              a_objectEntry,
+			ObjectEntryBase&                a_objectEntry,
 			TESForm*                        a_form,
 			TESForm*                        a_modelForm,
 			bool                            a_leftWeapon,
@@ -120,7 +148,7 @@ namespace IED
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_configEntry,
 			const Data::configModelGroup_t& a_group,
-			objectEntryBase_t&              a_objectEntry,
+			ObjectEntryBase&                a_objectEntry,
 			TESForm*                        a_form,
 			bool                            a_leftWeapon,
 			bool                            a_visible,
@@ -128,17 +156,17 @@ namespace IED
 			bool                            a_bgedAnims);
 
 		void FinalizeObjectState(
-			std::unique_ptr<objectEntryBase_t::State>& a_state,
-			TESForm*                                   a_form,
-			NiNode*                                    a_rootNode,
-			const NiPointer<NiNode>&                   a_objectNode,
-			nodesRef_t&                                a_targetNodes,
-			const Data::configBaseValues_t&            a_config);
+			std::unique_ptr<ObjectEntryBase::State>& a_state,
+			TESForm*                                 a_form,
+			NiNode*                                  a_rootNode,
+			const NiPointer<NiNode>&                 a_objectNode,
+			nodesRef_t&                              a_targetNodes,
+			const Data::configBaseValues_t&          a_config);
 
 		void PlayObjectSound(
 			const processParams_t&          a_params,
 			const Data::configBaseValues_t& a_config,
-			const objectEntryBase_t&        a_objectEntry,
+			const ObjectEntryBase&          a_objectEntry,
 			bool                            a_equip);
 
 		bool m_playSound{ false };

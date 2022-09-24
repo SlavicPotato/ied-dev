@@ -43,5 +43,6 @@ namespace IED
 		Class             = 5234,
 		Weather           = 5235,
 		Global            = 5236,
+		Idle              = 5237,
 	};
 }

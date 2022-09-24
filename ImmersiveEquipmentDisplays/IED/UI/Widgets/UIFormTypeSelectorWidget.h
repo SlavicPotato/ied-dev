@@ -30,7 +30,7 @@ namespace IED
 				std::pair<
 					std::uint8_t,
 					UIFormTypeSelectorWidgetStrings>,
-				42>;
+				43>;
 
 			static data_type m_data;
 		};

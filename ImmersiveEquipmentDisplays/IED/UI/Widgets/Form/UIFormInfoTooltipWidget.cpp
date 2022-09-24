@@ -22,7 +22,7 @@ namespace IED
 
 		void UIFormInfoTooltipWidget::DrawFormInfoTooltip(
 			const formInfoResult_t*  a_info,
-			const objectEntryBase_t& a_entry)
+			const ObjectEntryBase& a_entry)
 		{
 			ImGui::BeginTooltip();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
@@ -67,7 +67,7 @@ namespace IED
 
 		void UIFormInfoTooltipWidget::DrawObjectEntryHeaderInfo(
 			const formInfoResult_t*  a_info,
-			const objectEntryBase_t& a_entry)
+			const ObjectEntryBase& a_entry)
 		{
 			if (!a_entry.state)
 			{

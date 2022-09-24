@@ -58,6 +58,7 @@ namespace IED
 			a_out.XP32AABowIdle               = data.get("xp32_aa_bow_idle", false).asBool();
 			a_out.placementRandomization      = data.get("placement_randomization", false).asBool();
 			a_out.hkWeaponAnimations          = data.get("hk_weap_anims", false).asBool();
+			a_out.hkWeaponAnimationsWarned    = data.get("hk_weap_anims_warned", false).asBool();
 			a_out.animEventForwarding         = data.get("anim_event_forwarding", false).asBool();
 			a_out.effectShaderParallelUpdates = data.get("es_parallel_updates", false).asBool();
 
@@ -105,6 +106,7 @@ namespace IED
 			data["xp32_aa_bow_idle"]        = a_data.XP32AABowIdle;
 			data["placement_randomization"] = a_data.placementRandomization;
 			data["hk_weap_anims"]           = a_data.hkWeaponAnimations;
+			data["hk_weap_anims_warned"]    = a_data.hkWeaponAnimationsWarned;
 			data["anim_event_forwarding"]   = a_data.animEventForwarding;
 			data["es_parallel_updates"]     = a_data.effectShaderParallelUpdates;
 

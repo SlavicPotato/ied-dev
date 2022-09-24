@@ -54,6 +54,7 @@ namespace IED
 				{ UIFormBrowserStrings::Class, TESClass::kTypeID },
 				{ UIFormBrowserStrings::Weather, RE::TESWeather::kTypeID },
 				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
+				{ UIFormBrowserStrings::Idle, TESIdleForm::kTypeID },
 
 			} }
 
