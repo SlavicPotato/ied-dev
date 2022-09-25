@@ -183,30 +183,26 @@ namespace IED
 				if (it->second.npc)
 				{
 					ImGui::TextWrapped(
-						"%.8X [%s]",
+						"%.8X [%.8X]",
 						it->second.npc->form.get(),
-						std::bitset<8>(it->second.npc->flags).to_string().c_str());
+						it->second.npc->flags);
+
+					if (it->second.npc->templ)
+					{
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("%s:", LS(CommonStrings::Template));
+
+						ImGui::TableSetColumnIndex(1);
+						ImGui::TextWrapped(
+							"%.8X",
+							it->second.npc->templ.get());
+					}
 				}
 				else
 				{
 					ImGui::TextWrapped("%s", "N/A");
-				}
-
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Template));
-
-				ImGui::TableSetColumnIndex(1);
-				if (it->second.npc && it->second.npc->templ)
-				{
-					ImGui::TextWrapped(
-						"%.8X",
-						it->second.npc->templ.get());
-				}
-				else
-				{
-					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 				}
 
 				ImGui::TableNextRow();

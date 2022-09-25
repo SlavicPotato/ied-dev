@@ -201,8 +201,8 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
-					"%s",
-					std::bitset<8>(it->second->flags).to_string().c_str());
+					"%.8X",
+					it->second->flags);
 
 				ImGui::TableNextRow();
 

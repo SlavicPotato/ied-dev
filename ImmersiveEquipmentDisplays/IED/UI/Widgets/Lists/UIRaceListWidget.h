@@ -159,7 +159,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Flags));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%s", std::bitset<8>(itr->second.flags.underlying()).to_string().c_str());
+				ImGui::TextWrapped("%.8X", itr->second.flags.underlying());
 			}
 
 			std::uint32_t modIndex;
