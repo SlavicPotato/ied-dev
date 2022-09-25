@@ -178,47 +178,53 @@ namespace IED
 			auto& raceInfo = Data::IData::GetRaceList();
 			auto& modList  = Data::IData::GetPluginInfo().GetIndexMap();
 
-			ImGui::Columns(2, nullptr, false);
-
 			auto it = npcInfo.find(a_entry.handle);
 			if (it != npcInfo.end())
 			{
 				if (it->second->templ)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
 					ImGui::Text("%s:", LS(CommonStrings::Template));
-				}
-				ImGui::Text("%s:", LS(CommonStrings::Flags));
-				ImGui::Text("%s:", LS(CommonStrings::Sex));
-				ImGui::Text("%s:", LS(CommonStrings::Race));
-				ImGui::Text("%s:", LS(CommonStrings::Weight));
-			}
 
-			ImGui::Text("%s:", LS(CommonStrings::Mod));
-
-			ImGui::NextColumn();
-
-			if (it != npcInfo.end())
-			{
-				if (it->second->templ)
-				{
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%.8X",
 						it->second->templ.get());
 				}
 
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Flags));
+
+				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
 					"%s",
 					std::bitset<8>(it->second->flags).to_string().c_str());
 
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Sex));
+
+				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
 					"%s",
 					it->second->female ?
 						LS(CommonStrings::Female) :
                         LS(CommonStrings::Male));
 
-				auto race = it->second->race;
+				ImGui::TableNextRow();
 
-				auto itr = raceInfo.find(race);
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Race));
+
+				ImGui::TableSetColumnIndex(1);
+
+				auto race = it->second->race;
+				auto itr  = raceInfo.find(race);
 				if (itr != raceInfo.end())
 				{
 					ImGui::TextWrapped(
@@ -231,9 +237,21 @@ namespace IED
 					ImGui::TextWrapped("%s", "N/A");
 				}
 
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Weight));
+
+				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.0f", it->second->weight);
 			}
 
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s:", LS(CommonStrings::Mod));
+
+			ImGui::TableSetColumnIndex(1);
 			std::uint32_t modIndex;
 			if (a_entry.handle.GetPluginPartialIndex(modIndex))
 			{
@@ -254,8 +272,6 @@ namespace IED
 			{
 				ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 			}
-
-			ImGui::Columns();
 
 			if (it != npcInfo.end())
 			{

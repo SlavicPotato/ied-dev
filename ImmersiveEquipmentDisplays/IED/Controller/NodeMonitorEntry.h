@@ -15,7 +15,7 @@ namespace IED
 		{
 		}
 
-		bool Update() noexcept;
+		bool Update();
 
 		[[nodiscard]] inline constexpr bool IsPresent() const noexcept
 		{

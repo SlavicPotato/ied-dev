@@ -16,9 +16,10 @@ namespace IED
 
 		enum class NodeMonitorTestType : std::uint32_t
 		{
-			kObject   = 0,
-			kNode     = 1,
-			kGeometry = 2
+			kObject                = 0,
+			kNode                  = 1,
+			kGeometry              = 2,
+			kNodeWithGeometryChild = 3
 		};
 
 		struct configNodeMonitorEntry_t

@@ -356,12 +356,25 @@ namespace IED
 			if (ImGui::IsItemHovered())
 			{
 				ImGui::PushID("info_text");
-				ImGui::SetNextWindowSizeConstraints({ 500, 0 }, { 800, -1 });
+				ImGui::SetNextWindowSizeConstraints({ 400, 0 }, { 800, -1 });
 
 				ImGui::BeginTooltip();
-				ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+				ImGui::PushTextWrapPos(-1);
 
-				ListDrawInfoText(a_entry);
+				if (ImGui::BeginTable(
+						"table",
+						2,
+							ImGuiTableFlags_NoSavedSettings |
+							ImGuiTableFlags_SizingStretchProp,
+						{ -1.0f, 0.f }))
+				{
+					ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.33f);
+					ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.67f);
+
+					ListDrawInfoText(a_entry);
+
+					ImGui::EndTable();
+				}
 
 				ImGui::PopTextWrapPos();
 				ImGui::EndTooltip();

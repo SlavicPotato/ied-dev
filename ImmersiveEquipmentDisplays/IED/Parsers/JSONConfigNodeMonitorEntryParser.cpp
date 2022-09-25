@@ -23,7 +23,7 @@ namespace IED
 			}
 
 			a_out.testType = static_cast<Data::NodeMonitorTestType>(
-				a_in.get("type", stl::underlying(Data::NodeMonitorTestType::kObject)).asUInt());
+				a_in.get("test", stl::underlying(Data::NodeMonitorTestType::kObject)).asUInt());
 
 			if (auto& skels = a_in["skeletons"])
 			{

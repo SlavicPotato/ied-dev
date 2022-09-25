@@ -7,7 +7,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	inline static bool find_visible_geometry(
-		NiAVObject* a_object) noexcept
+		NiAVObject* a_object)
 	{
 		auto result = Traverse(a_object, [](NiAVObject* a_object) {
 			if (a_object->IsHidden())
@@ -87,6 +87,41 @@ namespace IED
 		return false;
 	}
 
+	inline static bool HasVisibleChildNodeWithGeometryChild(
+		NiNode*              a_node,
+		const BSFixedString& a_name) noexcept
+	{
+		for (auto& object : a_node->m_children)
+		{
+			if (!object)
+			{
+				continue;
+			}
+
+			if (object->m_name == a_name &&
+				object->IsVisible())
+			{
+				if (auto node = object->AsNode())
+				{
+					for (auto& e : node->m_children)
+					{
+						if (!e)
+						{
+							continue;
+						}
+
+						if (find_visible_geometry(e))
+						{
+							return true;
+						}
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
 	template <class Tp>
 	inline static constexpr bool TraverseChildren(
 		NiNode* a_node,
@@ -103,7 +138,7 @@ namespace IED
 		return false;
 	}
 
-	bool NodeMonitorEntry::Update() noexcept
+	bool NodeMonitorEntry::Update()
 	{
 		bool n;
 
@@ -164,6 +199,7 @@ namespace IED
 						return VisitorControl::kSkip;
 					}
 
+
 					return (a_object->m_name == m_config.subject &&
 					        find_visible_geometry(a_object)) ?
 					           VisitorControl::kStop :
@@ -173,6 +209,47 @@ namespace IED
 			else
 			{
 				n = HasVisibleChildGeometry(m_parent, m_config.subject);
+			}
+
+			break;
+
+		case Data::NodeMonitorTestType::kNodeWithGeometryChild:
+
+			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
+			{
+				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) {
+					if (a_object->IsHidden())
+					{
+						return VisitorControl::kSkip;
+					}
+
+					if (a_object->m_name != m_config.subject)
+					{
+						return VisitorControl::kContinue;
+					}
+
+					if (auto node = a_object->AsNode())
+					{
+						for (auto& e : node->m_children)
+						{
+							if (!e)
+							{
+								continue;
+							}
+
+							if (find_visible_geometry(e))
+							{
+								return VisitorControl::kStop;
+							}
+						}
+					}
+
+					return VisitorControl::kContinue;
+				});
+			}
+			else
+			{
+				n = HasVisibleChildNodeWithGeometryChild(m_parent, m_config.subject);
 			}
 
 			break;

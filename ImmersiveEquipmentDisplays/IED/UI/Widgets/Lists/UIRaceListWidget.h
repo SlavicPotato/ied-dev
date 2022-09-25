@@ -134,26 +134,49 @@ namespace IED
 			auto& raceCache = Data::IData::GetRaceList();
 			auto& modList   = Data::IData::GetPluginInfo().GetIndexMap();
 
-			std::ostringstream ss;
-
 			auto itr = raceCache.find(a_entry.handle);
 			if (itr != raceCache.end())
 			{
-				ss << "EDID:  " << itr->second.edid << std::endl;
-				ss << LS(CommonStrings::Name) << ":  " << itr->second.fullname << std::endl;
-				ss << LS(CommonStrings::Flags) << ": " << std::bitset<8>(itr->second.flags.underlying()) << std::endl;
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::TextUnformatted("EDID:");
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%s", itr->second.edid.c_str());
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Name));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%s", itr->second.fullname.c_str());
+				
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Flags));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%s", std::bitset<8>(itr->second.flags.underlying()).to_string().c_str());
 			}
 
 			std::uint32_t modIndex;
 			if (a_entry.handle.GetPluginPartialIndex(modIndex))
 			{
-				auto itm = modList.find(modIndex);
+				const auto itm = modList.find(modIndex);
 				if (itm != modList.end())
-					ss << LS(CommonStrings::Mod) << ":   " << itm->second.name.get() << " [" << sshex(2)
-					   << itm->second.GetPartialIndex() << "]" << std::endl;
-			}
+				{
+					ImGui::TableNextRow();
 
-			ImGui::TextUnformatted(ss.str().c_str());
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Mod));
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::TextWrapped("%s [%.2X]", itm->second.name.c_str(), itm->second.GetPartialIndex());
+				}
+			}
 		}
 
 		template <class Td>

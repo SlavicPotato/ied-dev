@@ -171,73 +171,52 @@ namespace IED
 			auto& raceInfo  = Data::IData::GetRaceList();
 			auto& modList   = Data::IData::GetPluginInfo().GetIndexMap();
 
-			ImGui::Columns(2, nullptr, false);
-
 			auto it = actorInfo.find(a_entry.handle);
 			if (it != actorInfo.end())
 			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
 				ImGui::Text("%s:", LS(CommonStrings::Base));
 
-				if (it->second.npc && it->second.npc->templ)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Template));
-				}
-
-				ImGui::Text("%s:", LS(CommonStrings::Sex));
-				ImGui::Text("%s:", LS(CommonStrings::Race));
-				ImGui::Text("%s:", LS(CommonStrings::Weight));
-
-				if (it->second.worldspace)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Worldspace));
-				}
-
-				if (it->second.cell)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Cell));
-				}
-
-				if (it->second.skin)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Skin));
-				}
-
-				if (it->second.idle)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Idle));
-				}
-
-				if (it->second.package)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Package));
-				}
-
-				if (it->second.furniture)
-				{
-					ImGui::Text("%s:", LS(CommonStrings::Furniture));
-				}
-			}
-
-			ImGui::Text("%s:", LS(CommonStrings::Mod));
-
-			ImGui::NextColumn();
-
-			if (it != actorInfo.end())
-			{
+				ImGui::TableSetColumnIndex(1);
 				if (it->second.npc)
 				{
 					ImGui::TextWrapped(
 						"%.8X [%s]",
 						it->second.npc->form.get(),
 						std::bitset<8>(it->second.npc->flags).to_string().c_str());
+				}
+				else
+				{
+					ImGui::TextWrapped("%s", "N/A");
+				}
 
-					if (it->second.npc->templ)
-					{
-						ImGui::TextWrapped(
-							"%.8X",
-							it->second.npc->templ.get());
-					}
+				ImGui::TableNextRow();
 
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Template));
+
+				ImGui::TableSetColumnIndex(1);
+				if (it->second.npc && it->second.npc->templ)
+				{
+					ImGui::TextWrapped(
+						"%.8X",
+						it->second.npc->templ.get());
+				}
+				else
+				{
+					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
+				}
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Sex));
+
+				ImGui::TableSetColumnIndex(1);
+				if (it->second.npc)
+				{
 					ImGui::TextWrapped(
 						"%s",
 						it->second.npc->female ?
@@ -246,9 +225,15 @@ namespace IED
 				}
 				else
 				{
-					ImGui::TextWrapped("%s", "N/A");
 					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 				}
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Race));
+
+				ImGui::TableSetColumnIndex(1);
 
 				auto race = it->second.GetRace();
 
@@ -265,25 +250,55 @@ namespace IED
 					ImGui::TextWrapped("%s", "N/A");
 				}
 
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Weight));
+
+				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.0f", it->second.weight);
 
 				if (it->second.worldspace)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Worldspace));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.worldspace.get());
 				}
 
 				if (it->second.cell)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Cell));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.cell.get());
 				}
 
 				if (it->second.skin)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Skin));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.skin.get());
 				}
 
 				if (it->second.idle)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Idle));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%.8X [%s]",
 						it->second.idle.get(),
@@ -292,14 +307,33 @@ namespace IED
 
 				if (it->second.package)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Package));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.package.get());
 				}
 
 				if (it->second.furniture)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Furniture));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.furniture.get());
 				}
 			}
+
+			ImGui::TableNextRow();
+
+			ImGui::TableSetColumnIndex(0);
+			ImGui::Text("%s:", LS(CommonStrings::Mod));
+
+			ImGui::TableSetColumnIndex(1);
 
 			std::uint32_t modIndex;
 			if (a_entry.handle.GetPluginPartialIndex(modIndex))
@@ -321,8 +355,6 @@ namespace IED
 			{
 				ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 			}
-
-			ImGui::Columns();
 
 			ListDrawExtraActorInfo(a_entry);
 
