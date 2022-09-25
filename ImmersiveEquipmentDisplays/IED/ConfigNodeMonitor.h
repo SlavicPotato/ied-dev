@@ -16,14 +16,16 @@ namespace IED
 
 		enum class NodeMonitorTestType : std::uint32_t
 		{
-			kPresenceOnly = 0
+			kObject   = 0,
+			kNode     = 1,
+			kGeometry = 2
 		};
 
 		struct configNodeMonitorEntry_t
 		{
 			stl::flag<NodeMonitorFlags> flags{ NodeMonitorFlags::kNone };
 			std::uint32_t               uid{ 0 };
-			NodeMonitorTestType         testType{ NodeMonitorTestType::kPresenceOnly };
+			NodeMonitorTestType         testType{ NodeMonitorTestType::kObject };
 			stl::vector<std::int32_t>   targetSkeletons;
 			stl::fixed_string           description;
 			stl::fixed_string           parent;
