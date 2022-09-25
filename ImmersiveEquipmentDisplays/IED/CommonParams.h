@@ -43,9 +43,6 @@ namespace IED
 		mutable std::optional<bool>                                  isRidden;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
-		mutable std::optional<bool>                                  hasAnimLute;
-		mutable std::optional<bool>                                  hasAnimAxe;
-		mutable std::optional<bool>                                  hasAnimPickaxe;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{

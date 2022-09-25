@@ -43,8 +43,5 @@ namespace IED
 		bool           beingRidden{ false };
 		bool           weaponDrawn{ false };
 		bool           inInterior{ false };
-		bool           hasLute{ false };
-		bool           hasAxe{ false };
-		bool           hasPickaxe{ false };
 	};
 }
