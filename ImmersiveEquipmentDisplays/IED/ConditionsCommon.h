@@ -88,12 +88,8 @@ namespace IED
 				return a_params.actor->IsWeaponDrawn();
 			case Data::ExtraConditionType::kRandomPercent:
 				return match_random_percent(a_params, a_match, a_match.percent);
-			case Data::ExtraConditionType::kAnimLute:
-				return has_anim_object_lute(a_params);
-			case Data::ExtraConditionType::kAnimAxe:
-				return has_anim_object_axe(a_params);
-			case Data::ExtraConditionType::kAnimPickaxe:
-				return has_anim_object_pickaxe(a_params);
+			case Data::ExtraConditionType::kNodeMonitor:
+				return check_node_monitor_value(a_params, a_match.uid);
 			default:
 				return false;
 			}
@@ -771,9 +767,7 @@ namespace IED
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_female(CommonParams& a_params) noexcept;
 		bool has_humanoid_skeleton(CommonParams& a_params) noexcept;
-		bool has_anim_object_lute(CommonParams& a_params) noexcept;
-		bool has_anim_object_axe(CommonParams& a_params) noexcept;
-		bool has_anim_object_pickaxe(CommonParams& a_params) noexcept;
+		bool check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
 
 		bool match_random_percent(
 			CommonParams&   a_params,

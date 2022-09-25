@@ -4,6 +4,8 @@
 #include "NodeOverrideData.h"
 
 #include "IED/Parsers/JSONConfigExtraNodeListParser.h"
+#include "IED/Parsers/JSONConfigNodeMonitorEntryListParser.h"
+
 #include "Serialization/Serialization.h"
 
 namespace IED
@@ -604,15 +606,25 @@ namespace IED
 	void NodeOverrideData::LoadAndAddExtraNodes(const char* a_path)
 	{
 		std::list<Data::configExtraNodeList_t> data;
-		if (m_Instance->LoadExtraNodesImpl(a_path, data))
+		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddExtraNodeData(data);
 		}
 	}
 
-	bool NodeOverrideData::LoadExtraNodesImpl(
-		const char*                             a_path,
-		std::list<Data::configExtraNodeList_t>& a_out)
+	void NodeOverrideData::LoadAndAddNodeMonitor(const char* a_path)
+	{
+		std::list<Data::configNodeMonitorEntryList_t> data;
+		if (m_Instance->LoadEntryList(a_path, data))
+		{
+			m_Instance->AddNodeMonitorData(data);
+		}
+	}
+
+	template <class T>
+	bool NodeOverrideData::LoadEntryList(
+		const char*   a_path,
+		std::list<T>& a_out)
 	{
 		try
 		{
@@ -626,11 +638,11 @@ namespace IED
 				auto& path    = entry.path();
 				auto  strPath = Serialization::SafeGetPath(path);
 
-				Data::configExtraNodeList_t result;
+				T result;
 
 				try
 				{
-					result = LoadExtraNodeFile(entry.path());
+					result = LoadDataFile<T>(entry.path());
 				}
 				catch (const std::exception& e)
 				{
@@ -680,6 +692,28 @@ namespace IED
 
 			return false;
 		}
+	}
+
+	template <class T>
+	T NodeOverrideData::LoadDataFile(const fs::path& a_path)
+	{
+		using namespace Serialization;
+
+		Json::Value root;
+
+		ReadData(a_path, root);
+
+		ParserState state;
+		Parser<T>   parser(state);
+
+		T result;
+
+		if (!parser.Parse(root, result))
+		{
+			throw std::exception("parse failed");
+		}
+
+		return result;
 	}
 
 	void NodeOverrideData::AddExtraNodeData(
@@ -765,25 +799,37 @@ namespace IED
 		}
 	}
 
-	Data::configExtraNodeList_t NodeOverrideData::LoadExtraNodeFile(const fs::path& a_path)
+	void NodeOverrideData::AddNodeMonitorData(
+		const std::list<Data::configNodeMonitorEntryList_t>& a_data)
 	{
-		using namespace Serialization;
-
-		Json::Value root;
-
-		ReadData(a_path, root);
-
-		ParserState                         state;
-		Parser<Data::configExtraNodeList_t> parser(state);
-
-		Data::configExtraNodeList_t result;
-
-		if (!parser.Parse(root, result))
+		for (auto& e : a_data)
 		{
-			throw std::exception("parse failed");
-		}
+			for (auto& f : e)
+			{
+				if (f.uid == 0)
+				{
+					Warning(
+						"%s: [%s] - invalid uid",
+						__FUNCTION__,
+						f.description.c_str());
 
-		return result;
+					continue;
+				}
+
+				auto r = m_nodeMonEntries.try_emplace(f.uid, f);
+
+				if (!r.second)
+				{
+					Warning(
+						"%s: %u [%s] - duplicate entry",
+						__FUNCTION__,
+						f.uid,
+						f.description.c_str());
+
+					continue;
+				}
+			}
+		}
 	}
 
 	auto NodeOverrideData::randWeapEntry_t::get_rand_entry() const

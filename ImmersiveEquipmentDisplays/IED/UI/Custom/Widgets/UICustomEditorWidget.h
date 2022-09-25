@@ -677,11 +677,11 @@ namespace IED
 		inline static constexpr CustomObjectMode GetMode(
 			const stl::flag<Data::CustomFlags>& a_flags) noexcept
 		{
-			if (a_flags.test(Data::CustomFlags::kUseLastEquipped))
+			if (a_flags.test(Data::CustomFlags::kLastEquippedMode))
 			{
 				return CustomObjectMode::kLastEquipped;
 			}
-			if (a_flags.test(Data::CustomFlags::kUseGroup))
+			if (a_flags.test(Data::CustomFlags::kGroupMode))
 			{
 				return CustomObjectMode::kGroup;
 			}
@@ -720,7 +720,7 @@ namespace IED
 					mode == CustomObjectMode::kGroup))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
-				data.customFlags.set(Data::CustomFlags::kUseGroup);
+				data.customFlags.set(Data::CustomFlags::kGroupMode);
 
 				CreatePrimaryModelGroup(a_handle, a_params, data.group);
 
@@ -737,7 +737,7 @@ namespace IED
 					mode == CustomObjectMode::kLastEquipped))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
-				data.customFlags.set(Data::CustomFlags::kUseLastEquipped);
+				data.customFlags.set(Data::CustomFlags::kLastEquippedMode);
 
 				OnBaseConfigChange(
 					a_handle,
@@ -753,25 +753,29 @@ namespace IED
 
 			switch (mode)
 			{
-			case CustomObjectMode::kLastEquipped:
-
-				DrawLastEquippedPanel(a_handle, a_params);
-
-				break;
-
 			case CustomObjectMode::kGroup:
 
 				DrawModelGroupEditorWidgetTree(a_handle, a_params, data.group);
 
 				break;
 
+			case CustomObjectMode::kLastEquipped:
+
+				DrawLastEquippedPanel(a_handle, a_params);
+
+				[[fallthrough]];
 			default:
 
 				if (m_formPicker.DrawFormPicker(
 						"fp",
-						static_cast<Localization::StringID>(CommonStrings::Item),
+						mode == CustomObjectMode::kLastEquipped ?
+							static_cast<Localization::StringID>(CommonStrings::Default) :
+                            static_cast<Localization::StringID>(CommonStrings::Item),
 						data.form,
-						GetTipText(UITip::CustomForm)))
+						GetTipText(
+							mode == CustomObjectMode::kLastEquipped ?
+								UITip::CustomFormLastEquipped :
+                                UITip::CustomForm)))
 				{
 					OnBaseConfigChange(
 						a_handle,
@@ -959,7 +963,7 @@ namespace IED
 
 					DrawTip(UITip::CustomChance);
 
-					bool cd = data.customFlags.test(Data::CustomFlags::kUseLastEquipped);
+					bool cd = data.customFlags.test(Data::CustomFlags::kLastEquippedMode);
 
 					UICommon::PushDisabled(cd);
 
@@ -992,18 +996,15 @@ namespace IED
 					{
 						ImGui::Indent();
 
-						if (!data.customFlags.test(Data::CustomFlags::kUseLastEquipped))
+						if (auto formInfo = m_formPicker.GetCurrentInfo())
 						{
-							if (auto formInfo = m_formPicker.GetCurrentInfo())
+							if (!IFormCommon::IsInventoryFormType(formInfo->form.type))
 							{
-								if (!IFormCommon::IsInventoryFormType(formInfo->form.type))
-								{
-									ImGui::Spacing();
-									ImGui::TextColored(
-										UICommon::g_colorWarning,
-										"%s",
-										LS(UICustomEditorString::SelectedItemNotInventory));
-								}
+								ImGui::Spacing();
+								ImGui::TextColored(
+									UICommon::g_colorWarning,
+									"%s",
+									LS(UICustomEditorString::SelectedItemNotInventory));
 							}
 						}
 
@@ -1115,7 +1116,7 @@ namespace IED
 
 						ImGui::PushItemWidth(ImGui::GetFontSize() * -13.5f);
 
-						cd = data.customFlags.test(Data::CustomFlags::kUseGroup);
+						cd = data.customFlags.test(Data::CustomFlags::kGroupMode);
 
 						UICommon::PushDisabled(cd);
 
@@ -1295,7 +1296,7 @@ namespace IED
 
 			ImGui::PushID("extra_items");
 
-			bool disabled = data.customFlags.test_any(Data::CustomFlags::kNonSingleMask);
+			bool disabled = data.customFlags.test_any(Data::CustomFlags::kGroupMode);
 
 			UICommon::PushDisabled(disabled);
 

@@ -1427,6 +1427,18 @@
     <ClInclude Include="IED\Controller\ActiveActorAnimation.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigNodeMonitor.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\NodeMonitorEntry.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2251,12 +2263,30 @@
     <ClCompile Include="IED\Controller\CMENodeEntry.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
+    <ClCompile Include="IED\CommonParams.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />
     <None Include="..\.clang-format" />
     <None Include="..\Scripts\IED.psc">
       <Filter>Scripts</Filter>
+    </None>
+    <None Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

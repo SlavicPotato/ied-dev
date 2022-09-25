@@ -132,7 +132,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
@@ -171,7 +171,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Post 629|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SKMP_AE_POST_629;IED_USE_MIMALLOC_COLLECTOR;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SKMP_AE_POST_629;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
@@ -274,10 +274,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigExtraNode.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
+    <ClInclude Include="IED\ConfigNodeMonitor.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
     <ClInclude Include="IED\Controller\ActiveActorAnimation.h" />
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
+    <ClInclude Include="IED\Controller\NodeMonitorEntry.h" />
     <ClInclude Include="IED\Controller\TemporaryActorStateData.h" />
     <ClInclude Include="IED\Controller\AnimationGroupInfo.h" />
     <ClInclude Include="IED\Controller\AnimationWeaponSlot.h" />
@@ -324,6 +326,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h" />
@@ -700,10 +704,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
+    <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
+    <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp" />
     <ClCompile Include="IED\Controller\TemporaryActorStateData.cpp" />
     <ClCompile Include="IED\Controller\CMENodeEntry.cpp" />
     <ClCompile Include="IED\Controller\EffectController.cpp" />
@@ -734,6 +740,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp" />
@@ -782,6 +790,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UISimpleStringSet.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />
@@ -976,6 +985,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <None Include="..\.clang-format" />
     <None Include="..\Scripts\IED.psc" />
     <None Include="exports.def" />
+    <None Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ImmersiveEquipmentDisplays.rc" />

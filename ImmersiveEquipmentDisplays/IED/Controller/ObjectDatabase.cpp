@@ -143,14 +143,14 @@ namespace IED
 			return;
 		}
 
-		stl::vector<container_type::const_iterator> candidates;
-		candidates.reserve(m_data.size());
+		stl::vector<std::pair<stl::fixed_string, long long>> candidates;
+		candidates.reserve(numCandidates);
 
-		for (auto it = m_data.begin(); it != m_data.end(); ++it)
+		for (const auto& [i, e] : m_data)
 		{
-			if (it->second.use_count() <= 1)
+			if (e.use_count() <= 1)
 			{
-				candidates.emplace_back(it);
+				candidates.emplace_back(i, e->accessed);
 			}
 		}
 
@@ -159,8 +159,7 @@ namespace IED
 			candidates.end(),
 			[](const auto& a_lhs,
 		       const auto& a_rhs) {
-				return a_lhs->second->accessed <
-			           a_rhs->second->accessed;
+				return a_lhs.second < a_rhs.second;
 			});
 
 		for (const auto& e : candidates)
@@ -170,15 +169,13 @@ namespace IED
 				break;
 			}
 
-			// spec: only iterator to the erased element is invalidated, this should be safe
-			m_data.erase(e);
+			m_data.erase(e.first);
 		}
 	}
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept
 	{
-		if (m_level != ObjectDatabaseLevel::kDisabled &&
-		    !m_cleanupDeadline)
+		if (m_level != ObjectDatabaseLevel::kDisabled && !m_cleanupDeadline)
 		{
 			m_cleanupDeadline = IPerfCounter::get_tp(CLEANUP_DELAY);
 		}
@@ -187,6 +184,7 @@ namespace IED
 	std::size_t ObjectDatabase::GetODBUnusedObjectCount() const noexcept
 	{
 		std::size_t total = 0;
+
 		for (auto& e : m_data)
 		{
 			if (e.second.use_count() <= 1)
@@ -194,6 +192,7 @@ namespace IED
 				total++;
 			}
 		}
+
 		return total;
 	}
 
@@ -205,12 +204,14 @@ namespace IED
 
 	NiNode* ObjectDatabase::CreateClone(const entry_t& a_entry)
 	{
+		using object_type = decltype(entry_t::object)::element_type;
+
 		NiCloningProcess process(NiObjectNET::CopyType::COPY_EXACT);
 
 		auto result = a_entry.object->CreateClone(process);
 		a_entry.object->ProcessClone(process);
 
-		return static_cast<NiNode*>(result);
+		return static_cast<object_type*>(result);
 	}
 
 }

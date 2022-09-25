@@ -253,6 +253,7 @@ namespace IED
 				}
 
 				NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
+				NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
 
 				for (auto& e : NodeOverrideData::GetExtraMovNodes())
 				{

@@ -209,5 +209,6 @@ namespace IED
 		Model           = 280,
 		Animation       = 281,
 		Idle            = 282,
+		NoData          = 283,
 	};
 }

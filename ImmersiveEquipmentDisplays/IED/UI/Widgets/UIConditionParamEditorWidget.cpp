@@ -19,6 +19,7 @@ namespace IED
 			UIWeatherClassSelectorWidget(a_controller),
 			UIComparisonOperatorSelector(a_controller),
 			UITimeOfDaySelectorWidget(a_controller),
+			UINodeMonitorSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerRace(a_controller, FormInfoFlags::kNone, true)
@@ -97,6 +98,11 @@ namespace IED
 						{
 							f.As1<float>() = 0.0f;
 						}
+
+						if (const auto& f = get(ConditionParamItem::NodeMon); f.p1)
+						{
+							f.As1<std::uint32_t>() = 0;
+						}
 					}
 
 					result = true;
@@ -147,10 +153,15 @@ namespace IED
 				result |= DrawTimeOfDaySelector(e.As1<Data::TimeOfDay>());
 			}
 
+			if (const auto& e = get(ConditionParamItem::NodeMon); e.p1)
+			{
+				result |= DrawNodeMonitorSelector(e.As1<std::uint32_t>());
+			}
+
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
-				
+
 				result |= DrawExtra(e, args, ConditionParamItem::Form);
 
 				if (!args.hide)
@@ -472,6 +483,21 @@ namespace IED
 									"%s [%.2f]",
 									condition_type_to_desc(type),
 									f.As1<float>());
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kNodeMonitor:
+
+							if (const auto& f = get(ConditionParamItem::NodeMon); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%s]",
+									condition_type_to_desc(type),
+									get_nodemon_desc(f.As1<std::uint32_t>()));
 
 								return m_descBuffer;
 							}

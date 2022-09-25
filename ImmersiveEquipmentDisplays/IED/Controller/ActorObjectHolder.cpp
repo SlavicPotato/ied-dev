@@ -139,18 +139,38 @@ namespace IED
 				static_cast<Data::ObjectSlot>(i));
 		}
 
-		if (m_humanoidSkeleton)
+		/*if (m_humanoidSkeleton)
 		{
 			auto sh = BSStringHolder::GetSingleton();
 
 			m_spine2      = ::Util::Node::FindNode(a_npcroot, sh->m_npcSpine2);
 			m_animObjectR = ::Util::Node::FindNode(a_npcroot, sh->m_animObjectR);
 			m_rightHand   = ::Util::Node::FindNode(a_npcroot, sh->m_npcRhand);
-		}
+		}*/
 
-		m_state.hasLute    = HasLuteAnimObject();
-		m_state.hasAxe     = HasAxeAnimObject();
-		m_state.hasPickaxe = HasPickaxeAnimObject();
+		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
+		{
+			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
+			{
+				auto& id = m_skeletonID.get_id();
+
+				auto it = std::find(
+					e.data.targetSkeletons.begin(),
+					e.data.targetSkeletons.end(),
+					id.value());
+
+				if (it == e.data.targetSkeletons.end())
+				{
+					continue;
+				}
+			}
+
+			if (auto parent = ::Util::Node::FindNode(a_npcroot, e.parent))
+			{
+				auto r = m_nodeMonitorEntries.try_emplace(i, parent, e);
+				r.first->second.Update();
+			}
+		}
 
 		/*RE::BSAnimationGraphManagerPtr agm;
 		if (a_actor->GetAnimationGraphManagerImpl(agm))
@@ -391,6 +411,26 @@ namespace IED
 		return value;
 	}
 
+	bool ActorObjectHolder::UpdateNodeMonitorEntries()
+	{
+		bool result = false;
+
+		for (auto& e : m_nodeMonitorEntries)
+		{
+			result |= e.second.Update();
+		}
+
+		return result;
+	}
+
+	bool ActorObjectHolder::GetNodeMonitorResult(std::uint32_t a_uid)
+	{
+		auto it = m_nodeMonitorEntries.find(a_uid);
+		return it != m_nodeMonitorEntries.end() ?
+		           it->second.IsPresent() :
+                   false;
+	}
+
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode*                                   a_npcroot,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)
@@ -487,7 +527,7 @@ namespace IED
 		INode::UpdateDownwardPass(node);
 	}
 
-	void ActorObjectHolder::ApplyNodeTransformOverrides(NiNode* a_root) const
+	void ActorObjectHolder::ApplyXP32NodeTransformOverrides(NiNode* a_root) const
 	{
 		auto& id = m_skeletonID.get_id();
 		if (!id)
@@ -495,8 +535,10 @@ namespace IED
 			return;
 		}
 
-		if (id != 628145516 &&  // female
-		    id != 1361955)      // male
+		// apply only to XPMSSE skeleton
+
+		if (*id != 628145516 &&  // female
+		    *id != 1361955)      // male
 		{
 			return;
 		}
@@ -507,7 +549,7 @@ namespace IED
 			return;
 		}
 
-		if (ver < 3.6f)
+		if (*ver < 3.6f)
 		{
 			return;
 		}
@@ -519,42 +561,6 @@ namespace IED
 				node->m_localTransform.rot = e.rot;
 			}
 		}
-	}
-
-	bool ActorObjectHolder::HasLuteAnimObject()
-	{
-		if (!m_spine2)
-		{
-			return false;
-		}
-
-		auto sh = BSStringHolder::GetSingleton();
-
-		return static_cast<bool>(::Util::Node::FindChildObject(m_spine2, sh->m_animObjectLute));
-	}
-
-	bool ActorObjectHolder::HasAxeAnimObject()
-	{
-		if (!m_animObjectR)
-		{
-			return false;
-		}
-
-		auto sh = BSStringHolder::GetSingleton();
-
-		return static_cast<bool>(::Util::Node::FindChildObject(m_animObjectR, sh->m_animObjectAxe));
-	}
-
-	bool ActorObjectHolder::HasPickaxeAnimObject()
-	{
-		if (!m_rightHand)
-		{
-			return false;
-		}
-
-		auto sh = BSStringHolder::GetSingleton();
-
-		return static_cast<bool>(::Util::Node::FindChildObject(m_rightHand, sh->m_animObjectPickaxe));
 	}
 
 	/*EventResult ActorObjectHolder::ReceiveEvent(

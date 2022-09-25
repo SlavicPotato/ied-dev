@@ -27,6 +27,7 @@ namespace IED
 	Controller::Controller(
 		const std::shared_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(*this),
+		IEquipment(m_rngBase),
 		EffectController(a_config->m_effectShaders),
 		IAnimationManager(m_config.settings),
 		m_iniconf(a_config),
@@ -1161,7 +1162,7 @@ namespace IED
 
 		if (m_applyTransformOverrides)
 		{
-			a_holder.ApplyNodeTransformOverrides(a_holder.m_npcroot);
+			a_holder.ApplyXP32NodeTransformOverrides(a_holder.m_npcroot);
 		}
 
 		if (m_config.settings.data.placementRandomization &&
@@ -2089,7 +2090,7 @@ namespace IED
 		processParams_t&                 a_params,
 		const configBaseValues_t&        a_config,
 		const Data::equipmentOverride_t* a_override,
-		ObjectEntryBase&               a_entry,
+		ObjectEntryBase&                 a_entry,
 		bool                             a_visible)
 	{
 		auto& state = a_entry.state;
@@ -2477,8 +2478,7 @@ namespace IED
 					continue;
 				}
 
-				const auto item = SelectItem(
-					a_params.actor,
+				const auto item = SelectSlotItem(
 					configEntry,
 					candidates,
 					objectEntry.slotState.lastEquipped);
@@ -2709,355 +2709,11 @@ namespace IED
 		}
 	}
 
-	inline static constexpr bool is_non_shield_armor(TESForm* a_form) noexcept
-	{
-		if (auto armor = a_form->As<TESObjectARMO>())
-		{
-			return !armor->IsShield();
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool Controller::CustomEntryValidateInventoryForm(
-		processParams_t&                   a_params,
-		const collectorData_t::itemData_t& a_itemData,
-		const configCustom_t&              a_config,
-		bool&                              a_hasMinCount)
-	{
-		if (a_itemData.count < 1)
-		{
-			return false;
-		}
-
-		if ((a_config.countRange.min && a_itemData.count < a_config.countRange.min) ||
-		    a_config.countRange.max && a_itemData.count > a_config.countRange.max)
-		{
-			return false;
-		}
-
-		if (a_config.customFlags.test(CustomFlags::kCheckFav) &&
-		    a_params.is_player() &&
-		    !a_itemData.favorited)
-		{
-			return false;
-		}
-
-		if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
-		{
-			bool isAmmo = a_itemData.form->IsAmmo();
-
-			if (!isAmmo &&
-			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
-			    !is_non_shield_armor(a_itemData.form) &&
-			    !a_params.is_player())
-			{
-				if (!a_params.test_equipment_flags(
-						ItemData::GetRaceEquipmentFlagFromType(a_itemData.type)))
-				{
-					return false;
-				}
-			}
-
-			if (isAmmo)
-			{
-				a_hasMinCount = !a_itemData.is_equipped();
-			}
-			else
-			{
-				if (a_config.customFlags.test(CustomFlags::kDisableIfEquipped) &&
-				    a_itemData.is_equipped())
-				{
-					a_hasMinCount = false;
-				}
-				else
-				{
-					std::uint32_t delta = 0;
-
-					if (a_itemData.equipped)
-					{
-						delta++;
-					}
-
-					if (a_itemData.equippedLeft)
-					{
-						delta++;
-					}
-
-					a_hasMinCount = a_itemData.sharedCount - delta > 0;
-				}
-			}
-		}
-		else
-		{
-			a_hasMinCount = true;
-		}
-
-		return true;
-	}
-
-	collectorData_t::container_type::iterator Controller::CustomEntrySelectInventoryForm(
-		processParams_t&      a_params,
-		const configCustom_t& a_config,
-		ObjectEntryCustom&  a_objectEntry,
-		bool&                 a_hasMinCount)
-	{
-		auto& formData = a_params.collector.data.forms;
-
-		if (a_config.customFlags.test(CustomFlags::kUseLastEquipped))
-		{
-			const auto& data = a_params.objects.m_lastEquipped->data;
-
-			if (a_config.customFlags.test(CustomFlags::kDisableIfSlotOccupied))
-			{
-				auto it = std::find_if(
-					a_config.bipedSlots.begin(),
-					a_config.bipedSlots.end(),
-					[&](auto& a_v) {
-						return a_v < BIPED_OBJECT::kTotal &&
-					           data[stl::underlying(a_v)].occupied;
-					});
-
-				if (it != a_config.bipedSlots.end())
-				{
-					return formData.end();
-				}
-			}
-
-			if (a_config.customFlags.test(CustomFlags::kPrioritizeRecentSlots) &&
-			    a_config.bipedSlots.size() > 1)
-			{
-				auto& bipedSlots = m_temp.le;
-
-				bipedSlots.clear();
-				bipedSlots.reserve(a_config.bipedSlots.size());
-
-				for (auto& e : a_config.bipedSlots)
-				{
-					if (e >= BIPED_OBJECT::kTotal)
-					{
-						continue;
-					}
-
-					auto& v = data[stl::underlying(e)];
-
-					if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
-					    v.occupied)
-					{
-						continue;
-					}
-
-					bipedSlots.emplace_back(std::addressof(v));
-				}
-
-				std::sort(
-					bipedSlots.begin(),
-					bipedSlots.end(),
-					[](auto& a_lhs, auto& a_rhs) {
-						return a_lhs->seen > a_rhs->seen;
-					});
-
-				for (auto& e : bipedSlots)
-				{
-					for (auto& formid : e->forms)
-					{
-						if (!formid || formid.IsTemporary())
-						{
-							continue;
-						}
-
-						auto it = formData.find(formid);
-
-						if (it == formData.end())
-						{
-							continue;
-						}
-
-						if (!configBase_t::do_match_fp(
-								a_params.collector.data,
-								a_config.bipedFilterConditions,
-								{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-								a_params,
-								true))
-						{
-							continue;
-						}
-
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_hasMinCount))
-						{
-							return it;
-						}
-					}
-				}
-			}
-			else
-			{
-				for (auto& e : a_config.bipedSlots)
-				{
-					if (e >= BIPED_OBJECT::kTotal)
-					{
-						continue;
-					}
-
-					auto& v = data[stl::underlying(e)];
-
-					if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
-					    v.occupied)
-					{
-						continue;
-					}
-
-					for (auto& formid : v.forms)
-					{
-						if (!formid || formid.IsTemporary())
-						{
-							continue;
-						}
-
-						auto it = formData.find(formid);
-
-						if (it == formData.end())
-						{
-							continue;
-						}
-
-						if (!configBase_t::do_match_fp(
-								a_params.collector.data,
-								a_config.bipedFilterConditions,
-								{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-								a_params,
-								true))
-						{
-							continue;
-						}
-
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_hasMinCount))
-						{
-							return it;
-						}
-					}
-				}
-			}
-		}
-		else
-		{
-			if (!a_config.customFlags.test(CustomFlags::kUseGroup) &&
-			    a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
-			    !a_config.extraItems.empty())
-			{
-				if (a_objectEntry.state)
-				{
-					auto fid = a_objectEntry.state->formid;
-
-					if (fid == a_config.form.get_id() ||
-					    std::find(
-							a_config.extraItems.begin(),
-							a_config.extraItems.end(),
-							fid) != a_config.extraItems.end())
-					{
-						if (auto it = formData.find(fid); it != formData.end())
-						{
-							if (CustomEntryValidateInventoryForm(
-									a_params,
-									it->second,
-									a_config,
-									a_hasMinCount))
-							{
-								return it;
-							}
-						}
-					}
-				}
-
-				auto& tmp = m_temp.fl;
-
-				tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
-				tmp.emplace_back(a_config.form.get_id());
-
-				while (tmp.begin() != tmp.end())
-				{
-					using diff_type = configFormList_t::difference_type;
-
-					RandomNumberGenerator3<diff_type> rng(0, std::distance(tmp.begin(), tmp.end()) - 1);
-
-					auto ite = tmp.begin() + rng.Get(m_rngBase);
-
-					if (*ite && !ite->IsTemporary())
-					{
-						if (auto it = formData.find(*ite); it != formData.end())
-						{
-							if (CustomEntryValidateInventoryForm(
-									a_params,
-									it->second,
-									a_config,
-									a_hasMinCount))
-							{
-								return it;
-							}
-						}
-					}
-
-					tmp.erase(ite);
-				}
-			}
-			else
-			{
-				if (a_config.form.get_id() &&
-				    !a_config.form.get_id().IsTemporary())
-				{
-					if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
-					{
-						if (CustomEntryValidateInventoryForm(
-								a_params,
-								it->second,
-								a_config,
-								a_hasMinCount))
-						{
-							return it;
-						}
-					}
-				}
-
-				if (!a_config.customFlags.test(CustomFlags::kUseGroup))
-				{
-					for (auto& e : a_config.extraItems)
-					{
-						if (e && !e.IsTemporary())
-						{
-							if (auto it = formData.find(e); it != formData.end())
-							{
-								if (CustomEntryValidateInventoryForm(
-										a_params,
-										it->second,
-										a_config,
-										a_hasMinCount))
-								{
-									return it;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return formData.end();
-	}
-
+	
 	bool Controller::IsBlockedByChance(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		ObjectEntryCustom&  a_objectEntry)
+		ObjectEntryCustom&    a_objectEntry)
 	{
 		if (a_config.customFlags.test(CustomFlags::kUseChance))
 		{
@@ -3088,7 +2744,7 @@ namespace IED
 	bool Controller::ProcessCustomEntry(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		ObjectEntryCustom&  a_objectEntry)
+		ObjectEntryCustom&    a_objectEntry)
 	{
 		if (a_config.equipmentOverrides.empty() &&
 		    a_config.flags.test(BaseFlags::kDisabled))
@@ -3177,8 +2833,8 @@ namespace IED
 			if (a_objectEntry.state &&
 			    a_objectEntry.state->form == itemData.form)
 			{
-				if (a_config.customFlags.test(CustomFlags::kUseGroup) ==
-				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
+				if (a_config.customFlags.test(CustomFlags::kGroupMode) ==
+				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode))
 				{
 					bool _visible = hasMinCount && visible;
 
@@ -3215,7 +2871,7 @@ namespace IED
 
 			bool result;
 
-			if (a_config.customFlags.test(CustomFlags::kUseGroup))
+			if (a_config.customFlags.test(CustomFlags::kGroupMode))
 			{
 				result = LoadAndAttachGroup(
 					a_params,
@@ -3228,7 +2884,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
 					settings.hkWeaponAnimations);
 
-				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
+				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
 			}
 			else
 			{
@@ -3250,7 +2906,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
 					settings.hkWeaponAnimations);
 
-				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
+				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
 			if (result)
@@ -3330,8 +2986,8 @@ namespace IED
 			if (a_objectEntry.state &&
 			    a_objectEntry.state->form == form)
 			{
-				if (a_config.customFlags.test(CustomFlags::kUseGroup) ==
-				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kUseGroup))
+				if (a_config.customFlags.test(CustomFlags::kGroupMode) ==
+				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode))
 				{
 					if (ProcessItemUpdate(
 							a_params,
@@ -3355,7 +3011,7 @@ namespace IED
 
 			bool result;
 
-			if (a_config.customFlags.test(CustomFlags::kUseGroup))
+			if (a_config.customFlags.test(CustomFlags::kGroupMode))
 			{
 				result = LoadAndAttachGroup(
 					a_params,
@@ -3368,7 +3024,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
 					settings.hkWeaponAnimations);
 
-				a_objectEntry.cflags.set(CustomObjectEntryFlags::kUseGroup);
+				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
 			}
 			else
 			{
@@ -3384,7 +3040,7 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
 					settings.hkWeaponAnimations);
 
-				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kUseGroup);
+				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
 
 			if (result)
@@ -3777,7 +3433,7 @@ namespace IED
 			}
 			else
 			{
-				UpdateIfPaused(a_root);
+				UpdateNodeIfGamePaused(a_root);
 			}
 
 			a_objects.RequestTransformUpdate();
@@ -3855,7 +3511,7 @@ namespace IED
 					a_objects,
 					nullptr))
 			{
-				UpdateIfPaused(info->root);
+				UpdateNodeIfGamePaused(info->root);
 			}
 		}
 	}
@@ -4211,45 +3867,9 @@ namespace IED
 					objectEntry.state->nodes.rootNode,
 					objectEntry.state->nodes.ref);
 
-				UpdateIfPaused(info->root);
+				UpdateNodeIfGamePaused(info->root);
 			}
 		}
-	}
-
-	void Controller::UpdateIfPaused(NiNode* a_root)
-	{
-		bool update = Game::Main::GetSingleton()->freezeTime;
-
-		if (!update)
-		{
-			auto mm = MenuManager::GetSingleton();
-
-			if (mm && mm->InPausedMenu())
-			{
-				auto sh = UIStringHolder::GetSingleton();
-
-				assert(sh);
-
-				update =
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kconsole));
-			}
-		}
-
-		if (update)
-		{
-			EngineExtensions::UpdateRoot(a_root);
-		}
-
-		/*if (Game::IsPaused())
-		{
-			EngineExtensions::UpdateRoot(a_root);
-		}*/
 	}
 
 	auto Controller::MakeTransformUpdateFunc()
@@ -4259,7 +3879,7 @@ namespace IED
 			[this](
 				actorInfo_t&               a_info,
 				const configCustomEntry_t& a_confEntry,
-				ObjectEntryCustom&       a_entry) {
+				ObjectEntryCustom&         a_entry) {
 				if (!a_entry.state)
 				{
 					return false;
@@ -4284,8 +3904,8 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		const actorInfo_t&         a_info,
-		const configCustom_t&      a_config,
+		const actorInfo_t&       a_info,
+		const configCustom_t&    a_config,
 		const ObjectEntryCustom& a_entry)
 	{
 		assert(a_entry.state);
@@ -4317,8 +3937,8 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		const actorInfo_t&       a_info,
-		const configSlot_t&      a_config,
+		const actorInfo_t&     a_info,
+		const configSlot_t&    a_config,
 		const ObjectEntrySlot& a_entry)
 	{
 		assert(a_entry.state);
@@ -4843,7 +4463,7 @@ namespace IED
 		actorInfo_t&             a_info,
 		const configCustom_t&    a_configEntry,
 		const configTransform_t& a_xfrmConfigEntry,
-		ObjectEntryCustom&     a_entry)
+		ObjectEntryCustom&       a_entry)
 	{
 		if (!a_entry.state)
 		{
@@ -4891,36 +4511,7 @@ namespace IED
 				nullptr);
 		}
 
-		UpdateIfPaused(a_info.root);
-	}
-
-	bool Controller::AttachNodeImpl(
-		NiNode*               a_root,
-		const NodeDescriptor& a_node,
-		bool                  a_atmReference,
-		ObjectEntryBase&    a_entry)
-	{
-		if (!a_entry.state)
-		{
-			return false;
-		}
-
-		bool result = AttachObjectToTargetNode(
-			a_node,
-			a_atmReference,
-			a_root,
-			a_entry.state->nodes.rootNode,
-			a_entry.state->nodes.ref);
-
-		if (result)
-		{
-			a_entry.state->nodeDesc     = a_node;
-			a_entry.state->atmReference = a_atmReference;
-
-			a_entry.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
-		}
-
-		return result;
+		UpdateNodeIfGamePaused(a_info.root);
 	}
 
 	auto Controller::LookupCachedActorInfo(
@@ -5415,6 +5006,7 @@ namespace IED
 
 		ClearObjectsImpl();
 		ClearPlayerState();
+		ClearObjectDatabase();
 
 		m_bipedCache.clear();
 		ResetCounter();

@@ -2106,6 +2106,9 @@ namespace IED
 								case Data::ExtraConditionType::kRandomPercent:
 									m_condParamEditor.SetNext<ConditionParamItem::Percent>(e.percent);
 									break;
+								case Data::ExtraConditionType::kNodeMonitor:
+									m_condParamEditor.SetNext<ConditionParamItem::NodeMon>(e.uid);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);

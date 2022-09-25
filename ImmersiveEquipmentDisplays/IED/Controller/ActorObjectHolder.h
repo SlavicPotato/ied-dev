@@ -5,6 +5,7 @@
 #include "BipedSlotData.h"
 #include "EffectShaderData.h"
 #include "INode.h"
+#include "NodeMonitorEntry.h"
 #include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerCommon.h"
@@ -30,6 +31,7 @@ struct BSAnimationUpdateData;
 namespace IED
 {
 	class IObjectManager;
+	class IEquipment;
 	class Controller;
 	class ActorProcessorTask;
 	class INodeOverride;
@@ -71,10 +73,11 @@ namespace IED
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
 
-	class ActorObjectHolder// :
-		//public BSTEventSink<BSAnimationGraphEvent>
+	class ActorObjectHolder  // :
+							 //public BSTEventSink<BSAnimationGraphEvent>
 	{
 		friend class IObjectManager;
+		friend class IEquipment;
 		friend class Controller;
 		friend class ActorProcessorTask;
 		friend class ObjectManagerData;
@@ -411,6 +414,9 @@ namespace IED
 
 		float GetRandomPercent(const luid_tag& a_luid);
 
+		bool UpdateNodeMonitorEntries();
+		bool GetNodeMonitorResult(std::uint32_t a_uid);
+		
 	private:
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
@@ -421,12 +427,8 @@ namespace IED
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
 
-		void ApplyNodeTransformOverrides(
+		void ApplyXP32NodeTransformOverrides(
 			NiNode* a_root) const;
-
-		bool HasLuteAnimObject();
-		bool HasAxeAnimObject();
-		bool HasPickaxeAnimObject();
 
 		/*EventResult ReceiveEvent(
 			const BSAnimationGraphEvent*           a_event,
@@ -457,9 +459,6 @@ namespace IED
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
 		NiPointer<NiNode> m_npcroot;
-		NiPointer<NiNode> m_spine2;
-		NiPointer<NiNode> m_animObjectR;
-		NiPointer<NiNode> m_rightHand;
 
 		Game::FormID m_formid;
 
@@ -475,14 +474,16 @@ namespace IED
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonID                            m_skeletonID;
 
-		TemporaryActorStateData           m_state;
-		mutable ActorAnimationState       m_animState;
+		TemporaryActorStateData     m_state;
+		mutable ActorAnimationState m_animState;
 
 		//AnimationGraphManagerHolderList m_animationUpdateList;
 		//AnimationGraphManagerHolderList m_animEventForwardRegistrations;
 		//const bool                      m_enableAnimEventForwarding{ false };
 
 		BipedSlotDataPtr m_lastEquipped;
+
+		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

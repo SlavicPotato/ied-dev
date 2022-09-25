@@ -97,19 +97,9 @@ namespace IED
 			return a_params.objects.HasHumanoidSkeleton();
 		}
 
-		bool has_anim_object_lute(CommonParams& a_params) noexcept
+		bool check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept
 		{
-			return a_params.objects.GetTempState().hasLute;
-		}
-		
-		bool has_anim_object_axe(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.GetTempState().hasAxe;
-		}
-		
-		bool has_anim_object_pickaxe(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.GetTempState().hasPickaxe;
+			return a_params.objects.GetNodeMonitorResult(a_uid);
 		}
 
 		bool match_random_percent(

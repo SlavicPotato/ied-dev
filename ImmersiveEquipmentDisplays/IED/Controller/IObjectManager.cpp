@@ -246,6 +246,7 @@ namespace IED
 		a_objects.m_movNodes.clear();
 		a_objects.m_weapNodes.clear();
 		a_objects.m_monitorNodes.clear();
+		a_objects.m_nodeMonitorEntries.clear();
 
 		/*assert(a_objects.m_animationUpdateList->Empty());
 		assert(a_objects.m_animEventForwardRegistrations.Empty());*/
@@ -1018,6 +1019,35 @@ namespace IED
 					a_equip);
 			}
 		}
+	}
+
+	bool IObjectManager::AttachNodeImpl(
+		NiNode*                     a_root,
+		const Data::NodeDescriptor& a_node,
+		bool                        a_atmReference,
+		ObjectEntryBase&            a_entry)
+	{
+		if (!a_entry.state)
+		{
+			return false;
+		}
+
+		bool result = AttachObjectToTargetNode(
+			a_node,
+			a_atmReference,
+			a_root,
+			a_entry.state->nodes.rootNode,
+			a_entry.state->nodes.ref);
+
+		if (result)
+		{
+			a_entry.state->nodeDesc     = a_node;
+			a_entry.state->atmReference = a_atmReference;
+
+			a_entry.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+		}
+
+		return result;
 	}
 
 }

@@ -8,15 +8,14 @@
 
 namespace IED
 {
-	class Controller;
-
 	namespace UI
 	{
 		class UIStylePresetSelectorWidget :
 			public virtual UILocalizationInterface
 		{
 		public:
-			UIStylePresetSelectorWidget(Localization::ILocalization& a_localization);
+			UIStylePresetSelectorWidget(
+				Localization::ILocalization& a_localization);
 
 			bool DrawStylePresetSelector(
 				UIStylePreset& a_preset);

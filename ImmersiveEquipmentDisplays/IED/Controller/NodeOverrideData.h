@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigExtraNode.h"
+#include "IED/ConfigNodeMonitor.h"
 #include "IED/ConfigTransform.h"
 #include "IED/I3DIModelID.h"
 
@@ -429,35 +430,47 @@ namespace IED
 		{
 			return m_Instance->m_humanoidSkeletonPaths;
 		}*/
-		
+
 		inline static const auto& GetHumanoidSkeletonIDs() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonIDs;
 		}
+		
+		inline static const auto& GetNodeMonitorEntries() noexcept
+		{
+			return m_Instance->m_nodeMonEntries;
+		}
 
 		static void LoadAndAddExtraNodes(const char* a_path);
+		static void LoadAndAddNodeMonitor(const char* a_path);
 
 		FN_NAMEPROC("NodeOverrideData");
 
 	private:
-		Data::configExtraNodeList_t LoadExtraNodeFile(
+		template <class T>
+		T LoadDataFile(
 			const fs::path& a_path);
 
-		bool LoadExtraNodesImpl(
-			const char*                             a_path,
-			std::list<Data::configExtraNodeList_t>& a_out);
+		template <class T>
+		bool LoadEntryList(
+			const char*   a_path,
+			std::list<T>& a_out);
 
 		void AddExtraNodeData(
 			const std::list<Data::configExtraNodeList_t>& a_data);
 
-		cm_data_type             m_cme;
-		cm_data_type             m_mov;
-		mon_data_type            m_monitor;
-		weapnode_data_type       m_weap;
-		exn_data_type            m_extramov;
-		exn_copy_data_type       m_extraCopy;
-		xfrm_override_data_type  m_transformOverride;
-		rand_placement_data_type m_randPlacement;
+		void AddNodeMonitorData(
+			const std::list<Data::configNodeMonitorEntryList_t>& a_data);
+
+		cm_data_type                                                        m_cme;
+		cm_data_type                                                        m_mov;
+		mon_data_type                                                       m_monitor;
+		weapnode_data_type                                                  m_weap;
+		exn_data_type                                                       m_extramov;
+		exn_copy_data_type                                                  m_extraCopy;
+		xfrm_override_data_type                                             m_transformOverride;
+		rand_placement_data_type                                            m_randPlacement;
+		std::unordered_map<std::uint32_t, Data::configNodeMonitorEntryBS_t> m_nodeMonEntries;
 
 		BSFixedString m_npcNodeName{ "NPC" };
 		BSFixedString m_XPMSE{ "XPMSE" };

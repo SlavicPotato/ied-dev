@@ -460,7 +460,7 @@ namespace IED
 			using func_t = std::function<bool(
 				actorInfo_t&                     a_info,
 				const Data::configCustomEntry_t& a_confEntry,
-				ObjectEntryCustom&             a_entry)>;
+				ObjectEntryCustom&               a_entry)>;
 
 			func_t       func;
 			bool         evalDirty{ false };
@@ -567,19 +567,17 @@ namespace IED
 			ActorObjectHolder& a_record,
 			Data::ObjectSlot   a_slot);
 
-		static void UpdateIfPaused(NiNode* a_root);
-
 		updateActionFunc_t MakeTransformUpdateFunc();
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&          a_info,
 			const Data::configCustom_t& a_config,
-			const ObjectEntryCustom&  a_entry);
+			const ObjectEntryCustom&    a_entry);
 
 		const Data::configBaseValues_t& GetConfigForActor(
 			const actorInfo_t&        a_info,
 			const Data::configSlot_t& a_config,
-			const ObjectEntrySlot&  a_entry);
+			const ObjectEntrySlot&    a_entry);
 
 		void UpdateCustomImpl(
 			Game::FormID             a_actor,
@@ -685,19 +683,13 @@ namespace IED
 			actorInfo_t&                   a_info,
 			const Data::configCustom_t&    a_configEntry,
 			const Data::configTransform_t& a_xfrmConfigEntry,
-			ObjectEntryCustom&           a_entry);
-
-		bool AttachNodeImpl(
-			NiNode*                     a_root,
-			const Data::NodeDescriptor& a_node,
-			bool                        a_atmReference,
-			ObjectEntryBase&          a_cacheEntry);
+			ObjectEntryCustom&             a_entry);
 
 		bool ProcessItemUpdate(
 			processParams_t&                 a_params,
 			const Data::configBaseValues_t&  a_config,
 			const Data::equipmentOverride_t* a_override,
-			ObjectEntryBase&               a_entry,
+			ObjectEntryBase&                 a_entry,
 			bool                             a_visible);
 
 		template <class Ta, class Tb>
@@ -713,27 +705,15 @@ namespace IED
 
 		void ProcessSlots(processParams_t& a_params);
 
-		bool CustomEntryValidateInventoryForm(
-			processParams_t&                         a_params,
-			const Data::collectorData_t::itemData_t& a_itemData,
-			const Data::configCustom_t&              a_config,
-			bool&                                    a_hasMinCount);
-
-		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
-			processParams_t&            a_params,
-			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&        a_objectEntry,
-			bool&                       a_hasMinCount);
-
 		bool IsBlockedByChance(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&        a_objectEntry);
+			ObjectEntryCustom&          a_objectEntry);
 
 		bool ProcessCustomEntry(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&        a_cacheEntry);
+			ObjectEntryCustom&          a_cacheEntry);
 
 		void ProcessCustomEntryMap(
 			processParams_t&                     a_params,
@@ -908,8 +888,6 @@ namespace IED
 
 		struct
 		{
-			stl::vector<const BipedSlotEntry*> le;
-			Data::configFormList_t             fl;
 			SlotResults                        sr;
 		} m_temp;
 

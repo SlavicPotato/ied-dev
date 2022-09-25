@@ -79,6 +79,42 @@ namespace IED
 		}
 	}
 
+	void INode::UpdateNodeIfGamePaused(NiNode* a_root)
+	{
+		bool update = Game::Main::GetSingleton()->freezeTime;
+
+		if (!update)
+		{
+			auto mm = MenuManager::GetSingleton();
+
+			if (mm && mm->InPausedMenu())
+			{
+				auto sh = UIStringHolder::GetSingleton();
+
+				assert(sh);
+
+				update =
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
+					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kconsole));
+			}
+		}
+
+		if (update)
+		{
+			EngineExtensions::UpdateRoot(a_root);
+		}
+
+		/*if (Game::IsPaused())
+		{
+			EngineExtensions::UpdateRoot(a_root);
+		}*/
+	}
+
 	auto INode::FindNodes(
 		const Data::NodeDescriptor& a_node,
 		bool                        a_atmReference,

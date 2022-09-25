@@ -74,6 +74,7 @@ namespace IED
 			CustomLastEquipped                  = 1063,
 			Presence                            = 1064,
 			IdleCondition                       = 1065,
+			CustomFormLastEquipped              = 1066,
 		};
 
 	}

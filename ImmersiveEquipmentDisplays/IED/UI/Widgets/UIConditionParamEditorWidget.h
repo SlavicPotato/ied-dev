@@ -5,6 +5,7 @@
 #include "UICMNodeSelector.h"
 #include "UIComparisonOperatorSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
+#include "UINodeMonitorSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
 #include "UITimeOfDaySelectorWidget.h"
@@ -38,6 +39,7 @@ namespace IED
 		Extra,
 		Race,
 		Percent,
+		NodeMon,
 
 		Total
 	};
@@ -88,6 +90,7 @@ namespace IED
 			public UIWeatherClassSelectorWidget,
 			public UIComparisonOperatorSelector,
 			public UITimeOfDaySelectorWidget,
+			public UINodeMonitorSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto POPUP_ID = "mpr_ed";
@@ -155,7 +158,7 @@ namespace IED
 			const char* GetItemDesc(ConditionParamItem a_item);
 			const char* GetFormKeywordExtraDesc(const char* a_idesc, bool a_race = false) const noexcept;
 
-			inline constexpr auto &GetDescBuffer() noexcept
+			inline constexpr auto& GetDescBuffer() noexcept
 			{
 				return m_descBuffer;
 			}
@@ -307,6 +310,7 @@ namespace IED
 				};
 			}
 			else if constexpr (
+				Ap == ConditionParamItem::NodeMon ||
 				Ap == ConditionParamItem::UInt32)
 			{
 				static_assert(std::is_same_v<T, std::uint32_t>);

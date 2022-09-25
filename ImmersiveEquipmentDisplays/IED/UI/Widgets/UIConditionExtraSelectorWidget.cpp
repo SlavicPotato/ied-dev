@@ -15,9 +15,6 @@ namespace IED
 			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
 			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
 			{ Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential },
-			{ Data::ExtraConditionType::kAnimLute, UIConditionExtraSelectorWidgetStrings::HasAnimLute },
-			{ Data::ExtraConditionType::kAnimAxe, UIConditionExtraSelectorWidgetStrings::HasAnimAxe },
-			{ Data::ExtraConditionType::kAnimPickaxe, UIConditionExtraSelectorWidgetStrings::HasAnimPickaxe },
 			{ Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
@@ -33,6 +30,7 @@ namespace IED
 			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
 			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
+			{ Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor },
 			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
 			{ Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected },
 			{ Data::ExtraConditionType::kRandomPercent, UIConditionExtraSelectorWidgetStrings::RandomPercent },
@@ -169,12 +167,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
 			case Data::ExtraConditionType::kRandomPercent:
 				return LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
-			case Data::ExtraConditionType::kAnimLute:
-				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimLute);
-			case Data::ExtraConditionType::kAnimAxe:
-				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimAxe);
-			case Data::ExtraConditionType::kAnimPickaxe:
-				return LS(UIConditionExtraSelectorWidgetStrings::HasAnimPickaxe);
+			case Data::ExtraConditionType::kNodeMonitor:
+				return LS(UIConditionExtraSelectorWidgetStrings::NodeMonitor);
 			default:
 				return nullptr;
 			}

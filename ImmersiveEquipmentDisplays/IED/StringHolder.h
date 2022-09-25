@@ -114,8 +114,8 @@ namespace IED
 		}*/
 
 		BSFixedString m_npcroot{ NINODE_NPCROOT };
-		BSFixedString m_npcSpine2{ NINODE_NPCRHAND };
-		BSFixedString m_npcRhand{ NINODE_NPCRHAND };
+		//BSFixedString m_npcSpine2{ NINODE_NPCSPINE2 };
+		//BSFixedString m_npcRhand{ NINODE_NPCRHAND };
 		BSFixedString m_scb{ NINODE_SCB };
 		BSFixedString m_scbLeft{ NINODE_SCB_LEFT };
 		BSFixedString m_bsx{ BSX };
@@ -143,10 +143,10 @@ namespace IED
 
 		BSFixedString m_weaponSheathe{ WEAPON_SHEATHE };
 
-		BSFixedString m_animObjectLute{ "AnimObjectLute" };
+		/*BSFixedString m_animObjectLute{ "AnimObjectLute" };
 		BSFixedString m_animObjectR{ "AnimObjectR" };
 		BSFixedString m_animObjectAxe{ "AnimObjectAxe" };
-		BSFixedString m_animObjectPickaxe{ "AnimObjectPickaxe" };
+		BSFixedString m_animObjectPickaxe{ "AnimObjectPickaxe" };*/
 
 		//BSFixedString m_graphDeleting{ GRAPH_DELETING };
 		/*BSFixedString m_animObjectDraw{ "AnimObjDraw" };

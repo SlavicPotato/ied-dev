@@ -60,7 +60,7 @@ namespace IED
 
 				if (result)
 				{
-					m_controller.UpdateIfPaused(info->root);
+					m_controller.UpdateNodeIfGamePaused(info->root);
 					a_record.RequestEvalDefer();
 				}
 			}
@@ -342,7 +342,11 @@ namespace IED
 			auto cell = actor->GetParentCell();
 			if (cell && cell->IsAttached())
 			{
-				e.m_state.cellAttached = true;
+				if (!e.m_state.cellAttached)
+				{
+					e.RequestEvalDefer();
+					e.m_state.cellAttached = true;
+				}
 			}
 			else
 			{
@@ -362,13 +366,14 @@ namespace IED
 			e.state_var_update_defer(e.m_state.beingRidden, actor->IsBeingRidden());
 			e.state_var_update_defer(e.m_state.weaponDrawn, actor->IsWeaponDrawn());
 
-			e.state_var_update_defer(e.m_state.hasLute, e.HasLuteAnimObject());
-			e.state_var_update_defer(e.m_state.hasAxe, e.HasAxeAnimObject());
-			e.state_var_update_defer(e.m_state.hasPickaxe, e.HasPickaxeAnimObject());
-
 			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
 			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
 			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.swimming, actor->IsSwimming());
+
+			if (e.UpdateNodeMonitorEntries())
+			{
+				e.RequestEval();
+			}
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,

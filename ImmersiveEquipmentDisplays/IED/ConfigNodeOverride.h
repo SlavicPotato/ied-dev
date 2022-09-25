@@ -305,6 +305,7 @@ namespace IED
 			{
 				std::uint32_t ui32b{ 0 };
 				TimeOfDay     timeOfDay;
+				std::uint32_t uid;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 			};

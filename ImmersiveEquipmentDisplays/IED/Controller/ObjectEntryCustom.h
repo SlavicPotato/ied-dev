@@ -11,7 +11,7 @@ namespace IED
 
 		kProcessedChance = 1u << 0,
 		kBlockedByChance = 1u << 1,
-		kUseGroup        = 1u << 2,
+		kGroupMode        = 1u << 2,
 
 		kChanceMask = kProcessedChance | kBlockedByChance
 	};

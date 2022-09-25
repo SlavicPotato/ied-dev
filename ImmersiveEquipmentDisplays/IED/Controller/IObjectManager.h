@@ -169,6 +169,12 @@ namespace IED
 			const ObjectEntryBase&          a_objectEntry,
 			bool                            a_equip);
 
+		bool AttachNodeImpl(
+			NiNode*                     a_root,
+			const Data::NodeDescriptor& a_node,
+			bool                        a_atmReference,
+			ObjectEntryBase&            a_entry);
+
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
 

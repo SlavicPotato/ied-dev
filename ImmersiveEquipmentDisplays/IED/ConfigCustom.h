@@ -21,17 +21,17 @@ namespace IED
 			kIgnoreRaceEquipTypes  = 1u << 6,
 			kDisableIfEquipped     = 1u << 7,
 			kDisableHavok          = 1u << 8,
-			kUseGroup              = 1u << 9,
+			kGroupMode             = 1u << 9,
 			kCheckFav              = 1u << 10,
 			kSelectInvRandom       = 1u << 11,
-			kUseLastEquipped       = 1u << 12,
+			kLastEquippedMode      = 1u << 12,
 			kPrioritizeRecentSlots = 1u << 13,
 			kDisableIfSlotOccupied = 1u << 14,
 			kSkipOccupiedSlots     = 1u << 15,
 
-			kNonSingleMask     = kUseGroup | kUseLastEquipped,
+			kNonSingleMask     = kGroupMode | kLastEquippedMode,
 			kEquipmentModeMask = kEquipmentMode,  //| kUseLastEquipped,
-			kIsInInventoryMask = kIsInInventory | kUseLastEquipped,
+			kIsInInventoryMask = kIsInInventory | kLastEquippedMode,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(CustomFlags);
