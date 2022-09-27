@@ -52,6 +52,7 @@ namespace IED
 			stl::flag<InventoryInfoExtraFlags> flags{ InventoryInfoExtraFlags::kNone };
 			std::optional<std::uint16_t>       uid;
 			std::uint32_t                      itemId{ 0 };
+			Game::FormID                       owner;
 			std::optional<std::string>         name;
 			std::optional<Enchantment>         enchantment;
 			float                              health{ 1.0f };

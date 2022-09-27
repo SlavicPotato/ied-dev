@@ -725,7 +725,7 @@ namespace IED
 				ImGui::TableSetupColumn(LS(UIWidgetCommonStrings::Enchantment));
 				ImGui::TableSetupColumn(LS(CommonStrings::Health));
 				ImGui::TableSetupColumn(LS(CommonStrings::UID));
-				ImGui::TableSetupColumn(LS(CommonStrings::IID));
+				ImGui::TableSetupColumn(LS(CommonStrings::Owner));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -821,7 +821,14 @@ namespace IED
 					}
 					
 					ImGui::TableSetColumnIndex(7);
-					ImGui::Text("%.8X", e.itemId);
+					if (e.owner)
+					{
+						ImGui::Text("%.8X", e.owner);
+					}
+					else
+					{
+						ImGui::Text("%s", LS(CommonStrings::None));
+					}
 
 					ImGui::PopID();
 

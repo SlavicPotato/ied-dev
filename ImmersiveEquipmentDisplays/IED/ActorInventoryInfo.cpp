@@ -154,6 +154,14 @@ namespace IED
 
 				x.itemId = HashUtil::CRC32(x.GetName(item).c_str(), form->formID & 0x00FFFFFFui32);
 
+				if (const auto extraOwner = e->Get<ExtraOwnership>())
+				{
+					if (auto owner = extraOwner->owner)
+					{
+						x.owner = owner->formID;
+					}
+				}
+
 				BSReadLocker locker(e->m_lock);
 
 				const auto* presence = e->m_presence;
