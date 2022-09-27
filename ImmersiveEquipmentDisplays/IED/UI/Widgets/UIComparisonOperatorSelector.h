@@ -21,7 +21,6 @@ namespace IED
 			bool DrawComparisonOperatorSelector(
 				Data::ComparisonOperator& a_comp);
 
-		protected:
 			const char* comp_operator_to_desc(
 				Data::ComparisonOperator a_comp) const;
 

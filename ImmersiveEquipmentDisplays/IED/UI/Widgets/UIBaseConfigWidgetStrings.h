@@ -23,6 +23,7 @@ namespace IED
 			EffectShaders           = 4012,
 			AddShaderEntry          = 4013,
 			EffectShaderEntryExists = 4014,
+			InventoryCheck          = 4015,
 		};
 	}
 }

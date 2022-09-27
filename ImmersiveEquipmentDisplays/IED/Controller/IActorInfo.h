@@ -40,11 +40,12 @@ namespace IED
 
 		bool LookupCrosshairRef(NiPointer<TESObjectREFR>& a_out);
 
+		void FillActorInfoEntry(Actor* a_actor, actorInfoEntry_t& a_out, bool a_updateNPC = false);
+		void FillNPCInfoEntry(TESNPC* a_npc, npcInfoEntry_t& a_out);
+
 	private:
 		virtual constexpr const Data::configStore_t& AIGetConfigStore() noexcept = 0;
 
-		void FillActorInfoEntry(Actor* a_actor, actorInfoEntry_t& a_out, bool a_updateNPC = false);
-		void FillNPCInfoEntry(TESNPC* a_npc, npcInfoEntry_t& a_out);
 		void AddExtraActorEntry(Game::FormID a_formid);
 		void AddExtraNPCEntry(Game::FormID a_formid);
 

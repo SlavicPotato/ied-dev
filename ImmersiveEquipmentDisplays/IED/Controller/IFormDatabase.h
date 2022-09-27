@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../FormCommon.h"
+#include "IED/FormCommon.h"
 
 namespace IED
 {

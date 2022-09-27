@@ -27,7 +27,7 @@ namespace IED
 			m_controller(a_controller)
 		{}
 
-		void UISlotEditorActor::Initialize()
+		void UISlotEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -36,7 +36,7 @@ namespace IED
 			SetSex(store.settings.data.ui.slotEditor.actorConfig.sex, false);
 		}
 
-		void UISlotEditorActor::Draw()
+		void UISlotEditorActor::EditorDraw()
 		{
 			if (ImGui::BeginChild("slot_editor_actor", { -1.0f, 0.0f }))
 			{
@@ -338,22 +338,22 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
-		void UISlotEditorActor::OnOpen()
+		void UISlotEditorActor::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UISlotEditorActor::OnClose()
+		void UISlotEditorActor::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UISlotEditorActor::Reset()
+		void UISlotEditorActor::EditorReset()
 		{
 			ListReset();
 		}
 
-		void UISlotEditorActor::QueueUpdateCurrent()
+		void UISlotEditorActor::EditorQueueUpdateCurrent()
 		{
 			QueueListUpdateCurrent();
 		}

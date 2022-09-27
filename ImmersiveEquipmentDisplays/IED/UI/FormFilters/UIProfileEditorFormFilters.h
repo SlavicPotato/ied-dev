@@ -25,6 +25,8 @@ namespace IED
 			UIFormFilterWidget<FFPEFormFilterParams_t>
 		{
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorFormFilters;
+
 			UIProfileEditorFormFilters(Controller& a_controller);
 
 			void Initialize();

@@ -365,6 +365,7 @@ namespace IED
 			e.state_var_update_defer(e.m_state.sleeping, actor->IsSleeping());
 			e.state_var_update_defer(e.m_state.beingRidden, actor->IsBeingRidden());
 			e.state_var_update_defer(e.m_state.weaponDrawn, actor->IsWeaponDrawn());
+			e.state_var_update_defer(e.m_state.arrested, actor->IsArrested());
 
 			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
 			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);

@@ -17,16 +17,18 @@ namespace IED
 	{
 		class UINodeMapEditor :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			public UITableRowInputWidget<stl::fixed_string>,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_nodemap";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeMapEditor;
+
 			UINodeMapEditor(Controller& a_controller);
 
-			void Draw();
+			void Draw() override;
 
 		private:
 			void DrawMenuBar();

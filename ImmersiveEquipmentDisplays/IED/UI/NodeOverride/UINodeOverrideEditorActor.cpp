@@ -21,7 +21,7 @@ namespace IED
 		{
 		}
 
-		void UINodeOverrideEditorActor::Initialize()
+		void UINodeOverrideEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -30,7 +30,7 @@ namespace IED
 			SetSex(store.settings.data.ui.transformEditor.actorConfig.sex, false);
 		}
 
-		void UINodeOverrideEditorActor::Draw()
+		void UINodeOverrideEditorActor::EditorDraw()
 		{
 			if (ImGui::BeginChild("no_editor_actor", { -1.0f, 0.0f }))
 			{
@@ -73,17 +73,17 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UINodeOverrideEditorActor::OnOpen()
+		void UINodeOverrideEditorActor::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UINodeOverrideEditorActor::OnClose()
+		void UINodeOverrideEditorActor::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UINodeOverrideEditorActor::Reset()
+		void UINodeOverrideEditorActor::EditorReset()
 		{
 			ListReset();
 		}

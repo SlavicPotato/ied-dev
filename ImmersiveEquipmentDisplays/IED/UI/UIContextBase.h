@@ -11,7 +11,7 @@ namespace IED
 	namespace UI
 	{
 		class UIContextBase :
-			public UIWindowBase
+			public UIChildWindowBase
 		{
 		public:
 			UIContextBase(Controller& a_controller) :

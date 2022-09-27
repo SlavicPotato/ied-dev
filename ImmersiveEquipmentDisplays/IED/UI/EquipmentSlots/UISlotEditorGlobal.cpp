@@ -22,7 +22,7 @@ namespace IED
 		{
 		}
 
-		void UISlotEditorGlobal::Initialize()
+		void UISlotEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -31,7 +31,7 @@ namespace IED
 			SetSex(store.settings.data.ui.slotEditor.globalSex, false);
 		}
 
-		void UISlotEditorGlobal::Draw()
+		void UISlotEditorGlobal::EditorDraw()
 		{
 			if (ImGui::BeginChild("slot_editor_global", { -1.0f, 0.0f }))
 			{
@@ -290,22 +290,22 @@ namespace IED
 			return m_data;
 		}
 
-		void UISlotEditorGlobal::OnOpen()
+		void UISlotEditorGlobal::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UISlotEditorGlobal::OnClose()
+		void UISlotEditorGlobal::EditorOnClose()
 		{
 			m_data = {};
 		}
 
-		void UISlotEditorGlobal::Reset()
+		void UISlotEditorGlobal::EditorReset()
 		{
 			UpdateData(m_data);
 		}
 
-		void UISlotEditorGlobal::QueueUpdateCurrent()
+		void UISlotEditorGlobal::EditorQueueUpdateCurrent()
 		{
 			UpdateData(m_data);
 		}

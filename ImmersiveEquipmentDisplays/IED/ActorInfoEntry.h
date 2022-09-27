@@ -25,19 +25,25 @@ namespace IED
 
 	struct actorInfoEntry_t
 	{
-		bool         active{ false };
-		bool         attached{ false };
-		std::string  name;
-		std::string  idleName;
-		Game::FormID race;
-		Game::FormID worldspace;
-		Game::FormID cell;
-		Game::FormID skin;
-		Game::FormID idle;
-		Game::FormID package;
-		Game::FormID furniture;
-		float        weight{ 0.0f };
-		long long    ts{ 0 };
+		bool                                  active{ false };
+		bool                                  attached{ false };
+		std::string                           name;
+		std::string                           idleName;
+		std::string                           cellName;
+		Game::FormID                          race;
+		Game::FormID                          worldspace;
+		Game::FormID                          cell;
+		Game::FormID                          skin;
+		Game::FormID                          idle;
+		Game::FormID                          package;
+		Game::FormID                          furniture;
+		std::pair<Game::FormID, Game::FormID> equipped;
+		std::pair<std::string, std::string>   equippedNames;
+		std::pair<std::uint8_t, std::uint8_t> equippedTypes;
+		float                                 weight{ 0.0f };
+		NiPoint3                              pos;
+		NiPoint3                              rot;
+		long long                             ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 

@@ -32,7 +32,7 @@ namespace IED
 				}
 			}
 
-			if (formBrowser.Draw())
+			if (formBrowser.DrawImpl())
 			{
 				auto& e = formBrowser.GetSelectedEntry();
 

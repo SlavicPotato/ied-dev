@@ -25,7 +25,7 @@ namespace IED
 	{
 		class UISettings :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			UICollapsibles,
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,
@@ -43,9 +43,11 @@ namespace IED
 			};
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUISettings;
+
 			UISettings(Controller& a_controller);
 
-			void Draw();
+			void Draw() override;
 
 		private:
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();

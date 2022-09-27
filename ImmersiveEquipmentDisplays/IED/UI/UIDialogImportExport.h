@@ -23,7 +23,7 @@ namespace IED
 	{
 		class UIDialogImportExport :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			public UIFileSelector,
 			public UIImportWidget,
 			public virtual UITipsInterface
@@ -31,10 +31,12 @@ namespace IED
 			static constexpr auto WINDOW_ID = "ied_ie";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUIDialogImportExport;
+
 			UIDialogImportExport(Controller& a_controller);
 
-			void Draw();
-			void OnOpen();
+			void Draw() override;
+			void OnOpen() override;
 
 		private:
 			virtual void OnDataImport(bool a_success) override;

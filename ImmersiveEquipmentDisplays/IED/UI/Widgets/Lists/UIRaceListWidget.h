@@ -41,6 +41,8 @@ namespace IED
 			virtual void ListDrawInfoText(const listValue_t& a_entry) override;
 			virtual void ListDrawOptions() override;
 			virtual void ListDrawOptionsExtra();
+
+			virtual void OnListSetHandleInternal(Game::FormID a_handle) override;
 		};
 
 		template <class Td>
@@ -60,12 +62,12 @@ namespace IED
 
 			m_listData.clear();
 
-			const auto& raceConf = GetRaceSettings();
+			const auto& settings = GetRaceSettings();
 			const auto& rl       = Data::IData::GetRaceList();
 
 			for (auto& [i, e] : rl)
 			{
-				if (raceConf.playableOnly &&
+				if (settings.playableOnly &&
 				    !e.flags.test(TESRace::Flag::kPlayable))
 				{
 					continue;
@@ -75,7 +77,7 @@ namespace IED
 					m_listBuf1,
 					"[%.8X] %s",
 					i.get(),
-					raceConf.showEditorIDs ?
+					settings.showEditorIDs ?
 						e.edid.c_str() :
                         e.fullname.c_str());
 
@@ -124,6 +126,15 @@ namespace IED
 
 			if (!m_listCurrent)
 			{
+				if (settings.lastSelected &&
+				    m_listData.contains(settings.lastSelected))
+				{
+					ListSetCurrentItem(settings.lastSelected);
+				}
+			}
+
+			if (!m_listCurrent)
+			{
 				ListSetCurrentItem(*m_listData.begin());
 			}
 		}
@@ -152,7 +163,7 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%s", itr->second.fullname.c_str());
-				
+
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
@@ -208,6 +219,13 @@ namespace IED
 		template <class Td>
 		void UIRaceList<Td>::ListDrawOptionsExtra()
 		{
+		}
+
+		template <class Td>
+		void UIRaceList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
+		{
+			GetRaceSettings().lastSelected = a_handle;
+			MarkSettingsDirty();
 		}
 
 	}

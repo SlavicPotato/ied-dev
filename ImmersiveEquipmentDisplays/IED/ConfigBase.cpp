@@ -858,7 +858,12 @@ namespace IED
 			if (a_match.bipedSlot == BIPED_OBJECT::kNone)
 			{
 				auto it = a_data.forms.find(a_checkForm.form->formID);
-				return it == a_data.forms.end();
+				if (it == a_data.forms.end())
+				{
+					return false;
+				}
+
+				return it->second.is_equipped();
 			}
 			else
 			{
@@ -916,6 +921,35 @@ namespace IED
 
 				return slot.GetFormIfActive() == a_checkForm.form;
 			}
+		}
+
+		static bool match_presence_count(
+			const collectorData_t&              a_data,
+			const equipmentOverrideCondition_t& a_match,
+			const formSlotPair_t&               a_checkForm)
+		{
+			auto it = a_data.forms.find(a_checkForm.form->formID);
+			if (it == a_data.forms.end())
+			{
+				return false;
+			}
+
+			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
+			{
+				if (!Conditions::compare(a_match.compOperator, it->second.count, a_match.count))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (it->second.count < 1)
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		template <
@@ -1150,6 +1184,11 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Presence:
 				{
+					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
+					{
+						return match_presence_count(a_data, a_match, a_checkForm);
+					}
+
 					std::uint32_t           result = 0;
 					constexpr std::uint32_t min    = 1u;
 

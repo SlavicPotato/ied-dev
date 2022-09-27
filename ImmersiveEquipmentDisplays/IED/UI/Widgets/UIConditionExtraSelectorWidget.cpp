@@ -17,14 +17,17 @@ namespace IED
 			{ Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential },
 			{ Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton },
 			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
+			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
+			{ Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove },
 			//{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
 			{ Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater },
+			{ Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested },
+			{ Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild },
 			{ Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded },
 			{ Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead },
 			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
-			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
 			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
 			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
@@ -169,6 +172,12 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
 			case Data::ExtraConditionType::kNodeMonitor:
 				return LS(UIConditionExtraSelectorWidgetStrings::NodeMonitor);
+			case Data::ExtraConditionType::kArrested:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsArrested);
+			case Data::ExtraConditionType::kIsChild:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsChild);
+			case Data::ExtraConditionType::kInKillmove:
+				return LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
 			default:
 				return nullptr;
 			}

@@ -497,6 +497,8 @@ namespace IED
 			return false;
 		}
 
+		const auto hasModelForm = static_cast<bool>(a_modelForm);
+
 		if (!a_modelForm)
 		{
 			a_modelForm = a_form;
@@ -659,6 +661,11 @@ namespace IED
 		if (ar.test(AttachResultFlags::kScbLeft))
 		{
 			state->flags.set(ObjectEntryFlags::kScbLeft);
+		}
+
+		if (hasModelForm)
+		{
+			state->modelForm = a_modelForm->formID;
 		}
 
 		a_objectEntry.state = std::move(state);

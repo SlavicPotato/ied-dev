@@ -29,3 +29,4 @@
 6600-6699:		es func editor
 6700-6799:		skeleton explorer
 6800-6899:		transform widget
+6900-7000:		actor info

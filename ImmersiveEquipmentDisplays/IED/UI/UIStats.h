@@ -21,7 +21,7 @@ namespace IED
 	{
 		class UIStats :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			UICollapsibles,
 			public virtual UILocalizationInterface,
 			public virtual UITipsInterface
@@ -29,9 +29,11 @@ namespace IED
 			inline static constexpr auto WINDOW_ID = "ied_stats";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUIStats;
+
 			UIStats(Controller& a_controller);
 
-			void Draw();
+			void Draw() override;
 
 		private:
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;

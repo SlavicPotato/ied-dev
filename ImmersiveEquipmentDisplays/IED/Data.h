@@ -274,7 +274,7 @@ namespace IED
 					return ObjectSlotExtra::kNone;
 				}
 			}
-
+			
 			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;

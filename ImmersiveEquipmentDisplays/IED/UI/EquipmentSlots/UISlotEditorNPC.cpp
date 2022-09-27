@@ -27,7 +27,7 @@ namespace IED
 		{
 		}
 
-		void UISlotEditorNPC::Initialize()
+		void UISlotEditorNPC::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -36,7 +36,7 @@ namespace IED
 			SetSex(store.settings.data.ui.slotEditor.npcConfig.sex, false);
 		}
 
-		void UISlotEditorNPC::Draw()
+		void UISlotEditorNPC::EditorDraw()
 		{
 			if (ImGui::BeginChild("slot_editor_npc", { -1.0f, 0.0f }))
 			{
@@ -323,22 +323,22 @@ namespace IED
 			return m_controller.UIGetPopupQueue();
 		}
 
-		void UISlotEditorNPC::OnOpen()
+		void UISlotEditorNPC::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UISlotEditorNPC::OnClose()
+		void UISlotEditorNPC::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UISlotEditorNPC::Reset()
+		void UISlotEditorNPC::EditorReset()
 		{
 			ListReset();
 		}
 
-		void UISlotEditorNPC::QueueUpdateCurrent()
+		void UISlotEditorNPC::EditorQueueUpdateCurrent()
 		{
 			QueueListUpdateCurrent();
 		}

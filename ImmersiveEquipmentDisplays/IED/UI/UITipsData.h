@@ -75,6 +75,7 @@ namespace IED
 			Presence                            = 1064,
 			IdleCondition                       = 1065,
 			CustomFormLastEquipped              = 1066,
+			OverrideModel                       = 1067,
 		};
 
 	}

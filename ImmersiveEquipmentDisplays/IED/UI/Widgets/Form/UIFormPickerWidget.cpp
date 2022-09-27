@@ -303,7 +303,7 @@ namespace IED
 		{
 			auto& formBrowser = m_controller.UIGetFormBrowser();
 
-			auto fb_result = formBrowser.Draw();
+			auto fb_result = formBrowser.DrawImpl();
 
 			if (fb_result.result)
 			{

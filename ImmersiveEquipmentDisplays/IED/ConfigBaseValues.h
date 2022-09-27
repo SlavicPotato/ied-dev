@@ -67,10 +67,11 @@ namespace IED
 				BaseFlags::kPlaySound |
 				BaseFlags::kReferenceMode;
 
-			stl::flag<BaseFlags>   flags{ DEFAULT_FLAGS };
-			NodeDescriptor         targetNode;
-			stl::fixed_string      niControllerSequence;
-			stl::fixed_string      animationEvent;
+			stl::flag<BaseFlags> flags{ DEFAULT_FLAGS };
+			NodeDescriptor       targetNode;
+			stl::fixed_string    niControllerSequence;
+			stl::fixed_string    animationEvent;
+			configCachedForm_t   forceModel;
 
 		protected:
 			template <class Archive>
@@ -87,6 +88,11 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& animationEvent;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& forceModel;
+						}
 					}
 				}
 			}
@@ -97,4 +103,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion3);
+	IED::Data::configBaseValues_t::Serialization::DataVersion4);

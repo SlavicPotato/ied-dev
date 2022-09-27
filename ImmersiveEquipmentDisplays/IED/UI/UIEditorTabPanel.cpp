@@ -25,7 +25,7 @@ namespace IED
 			{
 				if (e.ptr)
 				{
-					e.ptr->Initialize();
+					e.ptr->EditorInitialize();
 				}
 			}
 
@@ -56,7 +56,7 @@ namespace IED
 			{
 				if (e.ptr)
 				{
-					e.ptr->Reset();
+					e.ptr->EditorReset();
 				}
 			}
 		}
@@ -67,7 +67,7 @@ namespace IED
 			{
 				if (e.ptr)
 				{
-					e.ptr->QueueUpdateCurrent();
+					e.ptr->EditorQueueUpdateCurrent();
 				}
 			}
 		}
@@ -118,7 +118,7 @@ namespace IED
 
 						UICommon::PushDisabled(disabled);
 
-						e.ptr->Draw();
+						e.ptr->EditorDraw();
 
 						UICommon::PopDisabled(disabled);
 
@@ -141,7 +141,7 @@ namespace IED
 
 				if (e.ptr)
 				{
-					e.ptr->DrawMenuBarItems();
+					e.ptr->EditorDrawMenuBarItems();
 				}
 
 				ImGui::EndMenu();
@@ -154,7 +154,7 @@ namespace IED
 
 			if (e.ptr)
 			{
-				e.ptr->OnOpen();
+				e.ptr->EditorOnOpen();
 				e.flags = ImGuiTabItemFlags_SetSelected;
 			}
 		}
@@ -165,7 +165,7 @@ namespace IED
 			{
 				if (e.ptr)
 				{
-					e.ptr->OnClose();
+					e.ptr->EditorOnClose();
 				}
 			}
 		}
@@ -210,12 +210,12 @@ namespace IED
 
 			if (iold.ptr)
 			{
-				iold.ptr->OnClose();
+				iold.ptr->EditorOnClose();
 			}
 
 			if (inew.ptr)
 			{
-				inew.ptr->OnOpen();
+				inew.ptr->EditorOnOpen();
 			}
 		}
 	}

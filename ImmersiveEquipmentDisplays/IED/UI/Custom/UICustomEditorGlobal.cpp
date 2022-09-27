@@ -22,7 +22,7 @@ namespace IED
 		{
 		}
 
-		void UICustomEditorGlobal::Initialize()
+		void UICustomEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -31,7 +31,7 @@ namespace IED
 			SetSex(store.settings.data.ui.customEditor.globalSex, false);
 		}
 
-		void UICustomEditorGlobal::Draw()
+		void UICustomEditorGlobal::EditorDraw()
 		{
 			if (ImGui::BeginChild("custom_editor_global", { -1.0f, 0.0f }))
 			{
@@ -41,22 +41,22 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UICustomEditorGlobal::OnOpen()
+		void UICustomEditorGlobal::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorGlobal::OnClose()
+		void UICustomEditorGlobal::EditorOnClose()
 		{
 			m_data = {};
 		}
 
-		void UICustomEditorGlobal::Reset()
+		void UICustomEditorGlobal::EditorReset()
 		{
 			UpdateData();
 		}
 
-		void UICustomEditorGlobal::QueueUpdateCurrent()
+		void UICustomEditorGlobal::EditorQueueUpdateCurrent()
 		{
 			UpdateData();
 		}

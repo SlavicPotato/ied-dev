@@ -28,5 +28,10 @@ namespace IED
 		{
 			return m_controller.EffectControllerEnabled();
 		}
+
+		void UISettingsInterface::MarkSettingsDirty()
+		{
+			m_controller.GetConfigStore().settings.mark_dirty();
+		}
 	}
 }

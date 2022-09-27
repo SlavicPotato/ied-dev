@@ -15,7 +15,7 @@ namespace IED
 		template <class T>
 		class UIProfileEditorBase :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			virtual protected UIAlignment,
 			public UIProfileBase<T>
 		{
@@ -27,7 +27,7 @@ namespace IED
 
 			virtual ~UIProfileEditorBase() noexcept = default;
 
-			void DrawProfileEditor();
+			virtual void Draw() override;
 
 			virtual void DrawProfileEditorMenuBarItems();
 
@@ -77,7 +77,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UIProfileEditorBase<T>::DrawProfileEditor()
+		void UIProfileEditorBase<T>::Draw()
 		{
 			if (!IsWindowOpen())
 			{

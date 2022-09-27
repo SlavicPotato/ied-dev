@@ -26,7 +26,7 @@ namespace IED
 		{
 		}
 
-		void UICustomEditorNPC::Initialize()
+		void UICustomEditorNPC::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -35,7 +35,7 @@ namespace IED
 			SetSex(store.settings.data.ui.customEditor.npcConfig.sex, false);
 		}
 
-		void UICustomEditorNPC::Draw()
+		void UICustomEditorNPC::EditorDraw()
 		{
 			if (ImGui::BeginChild("custom_editor_npc", { -1.0f, 0.0f }))
 			{
@@ -53,22 +53,22 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UICustomEditorNPC::OnOpen()
+		void UICustomEditorNPC::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorNPC::OnClose()
+		void UICustomEditorNPC::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorNPC::Reset()
+		void UICustomEditorNPC::EditorReset()
 		{
 			ListReset();
 		}
 
-		void UICustomEditorNPC::QueueUpdateCurrent()
+		void UICustomEditorNPC::EditorQueueUpdateCurrent()
 		{
 			QueueListUpdateCurrent();
 		}

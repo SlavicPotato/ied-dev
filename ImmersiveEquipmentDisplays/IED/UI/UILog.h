@@ -17,16 +17,18 @@ namespace IED
 	{
 		class UILog :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_log";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUILog;
+
 			UILog(Controller& a_controller);
 
-			void Draw();
-			void Initialize();
+			void Initialize() override;
+			void Draw() override;
 
 		private:
 			void DrawHeader();

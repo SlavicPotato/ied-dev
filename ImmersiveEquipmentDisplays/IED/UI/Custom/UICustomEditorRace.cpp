@@ -26,7 +26,7 @@ namespace IED
 		{
 		}
 
-		void UICustomEditorRace::Initialize()
+		void UICustomEditorRace::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -35,7 +35,7 @@ namespace IED
 			SetSex(store.settings.data.ui.customEditor.raceConfig.sex, false);
 		}
 
-		void UICustomEditorRace::Draw()
+		void UICustomEditorRace::EditorDraw()
 		{
 			if (ImGui::BeginChild("custom_editor_race", { -1.0f, 0.0f }))
 			{
@@ -53,22 +53,22 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UICustomEditorRace::OnOpen()
+		void UICustomEditorRace::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorRace::OnClose()
+		void UICustomEditorRace::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorRace::Reset()
+		void UICustomEditorRace::EditorReset()
 		{
 			ListReset();
 		}
 
-		void UICustomEditorRace::QueueUpdateCurrent()
+		void UICustomEditorRace::EditorQueueUpdateCurrent()
 		{
 			QueueListUpdateCurrent();
 		}

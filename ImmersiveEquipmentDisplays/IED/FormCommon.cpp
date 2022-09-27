@@ -275,6 +275,8 @@ namespace IED
 			return GetFullName<TESFaction>(a_form);
 		case TESClass::kTypeID:
 			return GetFullName<TESClass>(a_form);
+		case TESObjectCELL::kTypeID:
+			return GetFullName<TESObjectCELL>(a_form);
 		case TESGlobal::kTypeID:
 			return static_cast<TESGlobal*>(a_form)->formEditorID.c_str();
 		case TESIdleForm::kTypeID:

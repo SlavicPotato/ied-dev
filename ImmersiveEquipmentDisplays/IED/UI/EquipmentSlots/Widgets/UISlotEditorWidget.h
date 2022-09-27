@@ -109,7 +109,7 @@ namespace IED
 				T                a_handle,
 				entrySlotData_t& a_data);
 
-			virtual void DrawMenuBarItems() override;
+			virtual void EditorDrawMenuBarItems() override;
 
 			virtual const char* GetDisplayName() const;
 
@@ -707,7 +707,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UISlotEditorWidget<T>::DrawMenuBarItems()
+		void UISlotEditorWidget<T>::EditorDrawMenuBarItems()
 		{
 			auto sex = GetSex();
 

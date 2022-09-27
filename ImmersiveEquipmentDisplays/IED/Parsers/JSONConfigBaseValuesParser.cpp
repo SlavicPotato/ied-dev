@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "JSONConfigBaseValuesParser.h"
+
+#include "JSONConfigCachedFormParser.h"
 #include "JSONConfigTransformParser.h"
 #include "JSONNodeMapValueParser.h"
 
@@ -49,6 +51,16 @@ namespace IED
 				a_out.animationEvent = aev.asString();
 			}
 
+			if (auto& fmd = a_in["fmd"])
+			{
+				Parser<Data::configCachedForm_t> fparser(m_state);
+
+				if (!fparser.Parse(fmd, a_out.forceModel))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -81,6 +93,13 @@ namespace IED
 			if (!a_data.animationEvent.empty())
 			{
 				a_out["aev"] = *a_data.animationEvent;
+			}
+
+			if (a_data.forceModel.get_id())
+			{
+				Parser<Data::configCachedForm_t> fparser(m_state);
+
+				fparser.Create(a_data.forceModel, a_out["fmd"]);
 			}
 		}
 

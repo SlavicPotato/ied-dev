@@ -26,13 +26,13 @@ namespace IED
 		public:
 			UICustomEditorActor(Controller& a_controller);
 
-			virtual void Initialize() override;
+			virtual void EditorInitialize() override;
 
-			virtual void Draw() override;
-			virtual void OnOpen() override;
-			virtual void OnClose() override;
-			virtual void Reset() override;
-			virtual void QueueUpdateCurrent() override;
+			virtual void EditorDraw() override;
+			virtual void EditorOnOpen() override;
+			virtual void EditorOnClose() override;
+			virtual void EditorReset() override;
+			virtual void EditorQueueUpdateCurrent() override;
 
 		private:
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;

@@ -103,6 +103,10 @@ namespace IED
 			Mounting                            = 2092,
 			Mounted                             = 2093,
 			CurrentItem                         = 2094,
+			ActorInfo                           = 2095,
+			PreventEquip                        = 2096,
+			Enchantment                         = 2097,
+			OverrideModel                       = 2098,
 		};
 	}
 }

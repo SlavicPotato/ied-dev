@@ -19,6 +19,8 @@ namespace IED
 
 			bool GetEffectControllerEnabled() const noexcept;
 
+			void MarkSettingsDirty();
+
 		private:
 			Controller& m_controller;
 		};

@@ -101,7 +101,7 @@ namespace IED
 				return false;
 			}
 
-			ImGui::PushID("filter_base_main");
+			ImGui::PushID(a_label);
 
 			auto r = ProcessInput(a_label);
 

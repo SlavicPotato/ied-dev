@@ -54,6 +54,8 @@ namespace IED
 
 			virtual void OnActorInfoAdded(Game::FormID a_handle) override;
 
+			virtual void OnListSetHandleInternal(Game::FormID a_handle) override;
+
 			std::uint64_t m_lastCacheUpdateId{ 0 };
 		};
 
@@ -72,14 +74,14 @@ namespace IED
 
 			m_listFirstUpdate = true;
 
-			const auto& actorSettings = GetActorSettings();
-			auto&       actorInfo     = GetActorInfo();
+			const auto& settings  = GetActorSettings();
+			auto&       actorInfo = GetActorInfo();
 
 			m_listData.clear();
 
 			for (auto& e : actorInfo)
 			{
-				if (!actorSettings.showAll && !e.second.active)
+				if (!settings.showAll && !e.second.active)
 				{
 					continue;
 				}
@@ -130,10 +132,10 @@ namespace IED
 
 			if (!m_listCurrent)
 			{
-				if (actorSettings.lastActor &&
-				    m_listData.contains(actorSettings.lastActor))
+				if (settings.lastSelected &&
+				    m_listData.contains(settings.lastSelected))
 				{
-					ListSetCurrentItem(actorSettings.lastActor);
+					ListSetCurrentItem(settings.lastSelected);
 				}
 			}
 
@@ -174,14 +176,14 @@ namespace IED
 			auto it = actorInfo.find(a_entry.handle);
 			if (it != actorInfo.end())
 			{
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Base));
-
-				ImGui::TableSetColumnIndex(1);
 				if (it->second.npc)
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Base));
+
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%.8X [%.8X]",
 						it->second.npc->form.get(),
@@ -199,51 +201,36 @@ namespace IED
 							"%.8X",
 							it->second.npc->templ.get());
 					}
-				}
-				else
-				{
-					ImGui::TextWrapped("%s", "N/A");
-				}
 
-				ImGui::TableNextRow();
+					ImGui::TableNextRow();
 
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Sex));
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Sex));
 
-				ImGui::TableSetColumnIndex(1);
-				if (it->second.npc)
-				{
+					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%s",
 						it->second.npc->female ?
 							LS(CommonStrings::Female) :
                             LS(CommonStrings::Male));
 				}
-				else
-				{
-					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
-				}
-
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Race));
-
-				ImGui::TableSetColumnIndex(1);
 
 				auto race = it->second.GetRace();
 
 				auto itr = raceInfo.find(race);
 				if (itr != raceInfo.end())
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Race));
+
+					ImGui::TableSetColumnIndex(1);
+
 					ImGui::TextWrapped(
 						"%s [%.8X]",
 						itr->second.edid.c_str(),
 						race.get());
-				}
-				else
-				{
-					ImGui::TextWrapped("%s", "N/A");
 				}
 
 				ImGui::TableNextRow();
@@ -410,6 +397,13 @@ namespace IED
 		void UIActorList<Td>::OnActorInfoAdded(Game::FormID a_handle)
 		{
 			QueueListUpdate(a_handle);
+		}
+
+		template <class Td>
+		void UIActorList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
+		{
+			GetActorSettings().lastSelected = a_handle;
+			MarkSettingsDirty();
 		}
 
 	}

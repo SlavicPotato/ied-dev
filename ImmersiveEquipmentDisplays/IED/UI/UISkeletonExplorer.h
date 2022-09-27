@@ -29,7 +29,7 @@ namespace IED
 
 		class UISkeletonExplorer :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			UICollapsibles,
 			UIActorList<ActorSkeletonData>,
 			public virtual UILocalizationInterface
@@ -37,12 +37,14 @@ namespace IED
 			inline static constexpr auto WINDOW_ID = "ied_skexp";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUISkeletonExplorer;
+
 			UISkeletonExplorer(Controller& a_controller);
 
-			void Draw();
-			void OnOpen();
-			void OnClose();
-			void Reset();
+			void Draw() override;
+			void OnOpen() override;
+			void OnClose() override;
+			void Reset() override;
 
 		private:
 			void DrawOptions();

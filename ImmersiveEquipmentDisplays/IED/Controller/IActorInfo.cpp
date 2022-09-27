@@ -35,11 +35,13 @@ namespace IED
 
 		if (auto cell = a_actor->GetParentCell())
 		{
-			a_out.cell = cell->formID;
+			a_out.cell     = cell->formID;
+			a_out.cellName = IFormCommon::GetFormName(cell);
 		}
 		else
 		{
 			a_out.cell = {};
+			a_out.cellName.clear();
 		}
 
 		if (auto skin = a_actor->GetSkin())
@@ -53,7 +55,7 @@ namespace IED
 
 		if (auto idle = a_actor->GetFurnitureIdle())
 		{
-			a_out.idle = idle->formID;
+			a_out.idle     = idle->formID;
 			a_out.idleName = idle->editorId.c_str();
 		}
 		else
@@ -61,7 +63,7 @@ namespace IED
 			a_out.idle = {};
 			a_out.idleName.clear();
 		}
-		
+
 		if (auto package = a_actor->GetCurrentPackage())
 		{
 			a_out.package = package->formID;
@@ -70,7 +72,7 @@ namespace IED
 		{
 			a_out.package = {};
 		}
-		
+
 		if (auto furniture = a_actor->GetOccupiedFurniture())
 		{
 			a_out.furniture = furniture->formID;
@@ -80,8 +82,36 @@ namespace IED
 			a_out.furniture = {};
 		}
 
+		if (auto rightHand = a_actor->GetEquippedObject(false))
+		{
+			a_out.equipped.first      = rightHand->formID;
+			a_out.equippedNames.first = IFormCommon::GetFormName(rightHand);
+			a_out.equippedTypes.first = rightHand->formType;
+		}
+		else
+		{
+			a_out.equipped.first = {};
+			a_out.equippedNames.first.clear();
+			a_out.equippedTypes.first = 0;
+		}
+
+		if (auto leftHand = a_actor->GetEquippedObject(true))
+		{
+			a_out.equipped.second      = leftHand->formID;
+			a_out.equippedNames.second = IFormCommon::GetFormName(leftHand);
+			a_out.equippedTypes.second = leftHand->formType;
+		}
+		else
+		{
+			a_out.equipped.second = {};
+			a_out.equippedNames.second.clear();
+			a_out.equippedTypes.second = 0;
+		}
+
 		a_out.weight   = a_actor->GetWeight();
 		a_out.attached = a_actor->IsParentCellAttached();
+		a_out.pos      = a_actor->pos;
+		a_out.rot      = a_actor->rot;
 
 		a_out.ts = IPerfCounter::Query();
 

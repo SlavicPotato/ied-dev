@@ -43,6 +43,9 @@ namespace IED
 			WeaponDrawn         = 5432,
 			RandomPercent       = 5433,
 			NodeMonitor         = 5434,
+			IsArrested          = 5435,
+			IsChild             = 5436,
+			InKillmove          = 5437,
 		};
 	}
 }

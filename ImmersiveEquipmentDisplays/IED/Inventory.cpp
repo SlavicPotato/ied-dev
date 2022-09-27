@@ -112,13 +112,6 @@ namespace IED
 		{
 			data.typeCount[stl::underlying(extraType)] += a_entry->count;
 		}
-
-		/*if (type < Data::ObjectType::kMax)
-		{
-			slotResults[stl::underlying(type)].reserve++;
-		}*/
-
-		return;
 	}
 
 	void ItemCandidateCollector::Process(InventoryEntryData* a_entryData)
@@ -152,14 +145,9 @@ namespace IED
 			data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
 		}
 
-		/*if (type < Data::ObjectType::kMax)
+		if (const auto extraLists = a_entryData->GetExtraDataLists())
 		{
-			slotResults[stl::underlying(type)].reserve++;
-		}*/
-
-		if (auto extendDataList = a_entryData->GetDataList())
-		{
-			for (auto& e : *extendDataList)
+			for (const auto* e : *extraLists)
 			{
 				if (!e)
 				{
@@ -168,42 +156,30 @@ namespace IED
 
 				BSReadLocker locker(e->m_lock);
 
-				auto presence = e->m_presence;
+				const auto presence = e->m_presence;
 				if (!presence)
 				{
 					continue;
 				}
 
-				if (!entry.equipped)
+				if (presence->HasType(ExtraWorn::EXTRA_DATA))
 				{
-					if (presence->HasType(ExtraWorn::EXTRA_DATA))
-					{
-						entry.equipped = true;
-					}
+					entry.equipped = true;
 				}
 
-				if (!entry.equippedLeft)
+				if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
 				{
-					if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
-					{
-						entry.equippedLeft = true;
-					}
+					entry.equippedLeft = true;
 				}
 
-				if (isPlayer && !entry.favorited)
+				if (presence->HasType(ExtraHotkey::EXTRA_DATA))
 				{
-					if (presence->HasType(ExtraHotkey::EXTRA_DATA))
-					{
-						entry.favorited = true;
-					}
+					entry.favorited = true;
 				}
 
-				if (!entry.cannotWear)
+				if (presence->HasType(ExtraCannotWear::EXTRA_DATA))
 				{
-					if (presence->HasType(ExtraCannotWear::EXTRA_DATA))
-					{
-						entry.cannotWear = true;
-					}
+					entry.cannotWear = true;
 				}
 			}
 		}
@@ -243,11 +219,6 @@ namespace IED
 
 	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
 	{
-		/*for (auto& e : slotResults)
-		{
-			e.items.reserve(e.reserve);
-		}*/
-
 		bool checkFav = isPlayer && a_checkFav;
 
 		for (const auto& [i, e] : data.forms)

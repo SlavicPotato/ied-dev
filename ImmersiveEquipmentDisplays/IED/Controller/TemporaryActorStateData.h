@@ -16,7 +16,8 @@ namespace IED
 		Actor::Flags2::kBribedByPlayer |
 		Actor::Flags2::kAngryWithPlayer |
 		Actor::Flags2::kEssential |
-		Actor::Flags2::kProtected;
+		Actor::Flags2::kProtected |
+		Actor::Flags2::kIsInKillMove;
 
 	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_LF_1 =
 		Actor::Flags1::kInWater;
@@ -43,5 +44,6 @@ namespace IED
 		bool           beingRidden{ false };
 		bool           weaponDrawn{ false };
 		bool           inInterior{ false };
+		bool           arrested{ false };
 	};
 }

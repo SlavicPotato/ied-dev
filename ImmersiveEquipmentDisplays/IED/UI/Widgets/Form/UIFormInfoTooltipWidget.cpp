@@ -3,9 +3,11 @@
 #include "UIFormInfoTooltipWidget.h"
 
 #include "IED/UI/UICommon.h"
+#include "IED/UI/UIFormInfoCache.h"
 
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
+#include "IED/Controller/Controller.h"
 #include "IED/Controller/IForm.h"
 #include "IED/Controller/ObjectManagerData.h"
 
@@ -14,15 +16,16 @@ namespace IED
 	namespace UI
 	{
 		UIFormInfoTooltipWidget::UIFormInfoTooltipWidget(
-			Localization::ILocalization& a_localization) :
-			UIFormTypeSelectorWidget(a_localization),
-			UILocalizationInterface(a_localization)
+			Controller& a_controller) :
+			UIFormTypeSelectorWidget(a_controller),
+			UILocalizationInterface(a_controller),
+			m_controller(a_controller)
 		{
 		}
 
 		void UIFormInfoTooltipWidget::DrawFormInfoTooltip(
-			const formInfoResult_t*  a_info,
-			const ObjectEntryBase& a_entry)
+			const formInfoResult_t* a_info,
+			const ObjectEntryBase&  a_entry)
 		{
 			ImGui::BeginTooltip();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
@@ -66,15 +69,17 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawObjectEntryHeaderInfo(
-			const formInfoResult_t*  a_info,
-			const ObjectEntryBase& a_entry)
+			const formInfoResult_t* a_info,
+			const ObjectEntryBase&  a_entry)
 		{
-			if (!a_entry.state)
+			auto& state = a_entry.state;
+
+			if (!state)
 			{
 				return;
 			}
 
-			if (!a_entry.state->nodes.rootNode->IsVisible())
+			if (!state->nodes.rootNode->IsVisible())
 			{
 				ImGui::TextColored(
 					UICommon::g_colorGreyed,
@@ -111,11 +116,53 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorLightBlue,
 					"%.8X",
-					a_entry.state->formid.get());
+					state->formid.get());
 
 				if (ImGui::IsItemHovered())
 				{
 					DrawFormInfoTooltip(nullptr, a_entry);
+				}
+			}
+
+			if (state->modelForm && state->formid != state->modelForm)
+			{
+				ImGui::SameLine(0.0f, 5.0f);
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+				ImGui::SameLine(0.0f, 8.0f);
+
+				ImGui::Text("%s:", LS(CommonStrings::Model));
+				ImGui::SameLine();
+
+				auto& flc = m_controller.UIGetFormLookupCache();
+
+				if (auto formInfo = flc.LookupForm(state->modelForm))
+				{
+					if (!formInfo->form.name.empty())
+					{
+						ImGui::TextColored(
+							UICommon::g_colorLightBlue,
+							"%s",
+							formInfo->form.name.c_str());
+					}
+					else
+					{
+						ImGui::TextColored(
+							UICommon::g_colorLightBlue,
+							"%.8X",
+							state->modelForm.get());
+					}
+
+					if (ImGui::IsItemHovered())
+					{
+						DrawFormInfoTooltip(formInfo, a_entry);
+					}
+				}
+				else
+				{
+					ImGui::TextColored(
+						UICommon::g_colorWarning,
+						"%s",
+						LS(CommonStrings::Unknown));
 				}
 			}
 		}

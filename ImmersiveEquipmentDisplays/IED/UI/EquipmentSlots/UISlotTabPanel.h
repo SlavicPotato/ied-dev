@@ -19,6 +19,8 @@ namespace IED
 			public UIEditorTabPanel
 		{
 		public:
+			inline static constexpr auto PANEL_ID = UIEditorPanel::Slot; 
+
 			UISlotEditorTabPanel(Controller& a_controller);
 
 			UISlotEditorActor  m_slotEditorActor;

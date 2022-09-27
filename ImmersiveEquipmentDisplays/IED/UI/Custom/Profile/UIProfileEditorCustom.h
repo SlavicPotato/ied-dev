@@ -19,6 +19,8 @@ namespace IED
 			public UICustomEditorWidget<int>
 		{
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorCustom;
+
 			UIProfileEditorCustom(Controller& a_controller);
 
 			virtual void Initialize() override;

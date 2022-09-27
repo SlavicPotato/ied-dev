@@ -246,6 +246,9 @@ namespace IED
 			kWeaponDrawn         = 32,
 			kRandomPercent       = 33,
 			kNodeMonitor         = 34,
+			kArrested            = 35,
+			kIsChild             = 36,
+			kInKillmove          = 37,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

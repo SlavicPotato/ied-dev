@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/UI/PopupQueue/UIPopupQueue.h"
+#include "IED/UI/UIAllowedModelTypes.h"
 #include "IED/UI/UIClipboard.h"
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIEditorInterface.h"
@@ -105,7 +106,7 @@ namespace IED
 			void OnPasteFail(const Data::configCustomNameValue_t* a_data);
 			void DoPaste();
 
-			virtual void DrawMenuBarItems() override;
+			virtual void EditorDrawMenuBarItems() override;
 
 			virtual void DrawMenuBarItemsExtra();
 
@@ -223,32 +224,7 @@ namespace IED
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
 		{
-			m_formPicker.SetAllowedTypes(
-				{ TESObjectWEAP::kTypeID,
-			      TESObjectARMO::kTypeID,
-			      TESAmmo::kTypeID,
-			      TESObjectLIGH::kTypeID,
-			      TESObjectMISC::kTypeID,
-			      IngredientItem::kTypeID,
-			      AlchemyItem::kTypeID,
-			      TESKey::kTypeID,
-			      TESObjectBOOK::kTypeID,
-			      TESSoulGem::kTypeID,
-			      ScrollItem::kTypeID,
-			      TESObjectSTAT::kTypeID,
-			      BGSMovableStatic::kTypeID,
-			      TESObjectTREE::kTypeID,
-			      TESFlora::kTypeID,
-			      TESFurniture::kTypeID,
-			      BGSArtObject::kTypeID,
-			      TESObjectACTI::kTypeID,
-			      BGSTalkingActivator::kTypeID,
-			      TESGrass::kTypeID,
-			      TESObjectANIO::kTypeID,
-			      TESObjectDOOR::kTypeID,
-			      BGSExplosion::kTypeID,
-			      BGSMaterialObject::kTypeID,
-			      IFormDatabase::EXTRA_TYPE_ARMOR });
+			m_formPicker.SetAllowedTypes(g_allowedModelTypes);
 		}
 
 		template <class T>
@@ -581,7 +557,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UICustomEditorWidget<T>::DrawMenuBarItems()
+		void UICustomEditorWidget<T>::EditorDrawMenuBarItems()
 		{
 			bool disabled = !GetCurrentData();
 

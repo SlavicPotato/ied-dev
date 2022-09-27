@@ -131,7 +131,7 @@ namespace IED
 					}
 				}
 
-				if (formBrowser.Draw())
+				if (formBrowser.DrawImpl())
 				{
 					auto& e = formBrowser.GetSelectedEntry();
 
@@ -235,7 +235,7 @@ namespace IED
 				}
 			}
 
-			result = formBrowser.Draw().result;
+			result = formBrowser.DrawImpl().result;
 
 			ImGui::PopID();
 

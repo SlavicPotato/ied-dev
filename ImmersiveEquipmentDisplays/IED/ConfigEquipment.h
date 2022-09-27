@@ -222,7 +222,8 @@ namespace IED
 						flags = EquipmentOverrideConditionFlags::kExtraFlag1;
 						break;
 					case EquipmentOverrideConditionType::Presence:
-						flags = EquipmentOverrideConditionFlags::kMatchCategoryOperOR;
+						flags = EquipmentOverrideConditionFlags::kMatchCategoryOperOR |
+						        EquipmentOverrideConditionFlags::kMatchThisItem;
 						break;
 					}
 

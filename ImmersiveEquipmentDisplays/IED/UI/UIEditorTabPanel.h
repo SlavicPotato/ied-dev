@@ -7,6 +7,8 @@
 
 #include "UILocalizationInterface.h"
 
+#include "UIMainCommon.h"
+
 namespace IED
 {
 	class Controller;
@@ -25,9 +27,12 @@ namespace IED
 			};
 
 		public:
+
 			UIEditorTabPanel(
 				Controller&            a_controller,
 				Localization::StringID a_menuName);
+
+			virtual ~UIEditorTabPanel() noexcept = default;
 
 			void Initialize();
 			void Reset();

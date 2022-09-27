@@ -210,5 +210,16 @@ namespace IED
 		Animation       = 281,
 		Idle            = 282,
 		NoData          = 283,
+		Inventory       = 284,
+		Health          = 285,
+		Yes             = 286,
+		No              = 287,
+		Favorited       = 288,
+		UID             = 289,
+		Playable        = 290,
+		Delta           = 291,
+		Total           = 292,
+		IID             = 293,
+		Other           = 294,
 	};
 }

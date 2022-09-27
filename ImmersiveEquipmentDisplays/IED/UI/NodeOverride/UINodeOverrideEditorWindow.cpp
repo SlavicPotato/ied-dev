@@ -11,7 +11,7 @@ namespace IED
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
 			Controller&   a_controller,
-			UIWindowBase& a_profileEditor) :
+			UIChildWindowBase& a_profileEditor) :
 			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
 			m_profileEditor(a_profileEditor),

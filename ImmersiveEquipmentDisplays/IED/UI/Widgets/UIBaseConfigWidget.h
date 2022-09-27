@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/UI/Controls/UICollapsibles.h"
+#include "IED/UI/UIAllowedModelTypes.h"
 #include "IED/UI/UIClipboard.h"
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormBrowserCommonFilters.h"
@@ -86,7 +87,6 @@ namespace IED
 		class UIBaseConfigWidget :
 			public UINodeSelectorWidget,
 			public UIFormLookupInterface,
-			public UIComparisonOperatorSelector,
 			UIConditionParamExtraInterface,
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
 			public virtual UICollapsibles,
@@ -117,6 +117,33 @@ namespace IED
 				Data::configBase_t*       a_baseConfig);
 
 		protected:
+			void DrawBaseConfigValuesFlags(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				Data::configBase_t*       a_baseConfig,
+				const bool                a_disabled);
+
+			void DrawBaseConfigValuesNode(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				Data::configBase_t*       a_baseConfig,
+				const bool                a_disabled);
+
+			void DrawBaseConfigValuesOther(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				Data::configBase_t*       a_baseConfig,
+				const bool                a_disabled);
+
 			virtual void OnBaseConfigChange(
 				T                a_handle,
 				const void*      a_params,
@@ -233,6 +260,8 @@ namespace IED
 				const void*                a_params,
 				Data::equipmentOverride_t& a_data);
 
+			bool DrawFormCountExtraSegment(Data::equipmentOverrideCondition_t* a_match);
+
 			virtual bool DrawConditionParamExtra(
 				void*       a_p1,
 				const void* a_p2) override;
@@ -288,6 +317,7 @@ namespace IED
 			UIConditionParamEditorWidget                m_condParamEditor;
 			UIFormSelectorWidget                        m_ffFormSelector;
 			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
+			UIFormPickerWidget                          m_formPicker;
 
 			struct
 			{
@@ -302,11 +332,11 @@ namespace IED
 			Controller& a_controller) :
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
-			UIComparisonOperatorSelector(a_controller),
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
 			m_controller(a_controller),
 			m_condParamEditor(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
+			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_formFilter(a_controller, m_ffFormSelector)
 		{
 			m_type_filters.form_common = std::make_unique<
@@ -334,6 +364,8 @@ namespace IED
 					a_params.params,
 					PostChangeAction::Evaluate);
 			});
+
+			m_formPicker.SetAllowedTypes(g_allowedModelTypes);
 		}
 
 		template <class T>
@@ -623,200 +655,314 @@ namespace IED
 			bool                      a_storecc,
 			Data::configBase_t*       a_baseConfig)
 		{
-			auto storecc = BaseConfigStoreCC() && a_storecc;
-
 			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled);
 
+			DrawBaseConfigValuesFlags(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				a_storecc,
+				a_baseConfig,
+				disabled);
+
+			DrawBaseConfigValuesNode(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				a_storecc,
+				a_baseConfig,
+				disabled);
+
+			DrawBaseConfigValuesOther(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				a_storecc,
+				a_baseConfig,
+				disabled);
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigValuesFlags(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			Data::configBase_t*       a_baseConfig,
+			const bool                a_disabled)
+		{
+			auto storecc = BaseConfigStoreCC() && a_storecc;
+
 			ImGui::PushID("bc_flags");
+
+			DrawBaseConfigGeneralFlags(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				storecc,
+				a_disabled,
+				a_baseConfig);
+
+			DrawBaseConfig3DFlags(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				storecc,
+				a_disabled,
+				a_baseConfig);
+
+			DrawBaseConfigAnimationFlags(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				storecc,
+				a_disabled,
+				a_baseConfig);
+
+			ImGui::Spacing();
+
+			if (a_baseConfig)
 			{
-				DrawBaseConfigGeneralFlags(
-					a_handle,
-					a_data,
-					a_params,
-					a_slotName,
-					storecc,
-					disabled,
-					a_baseConfig);
+				ImGui::PushID("f_ex");
 
-				DrawBaseConfig3DFlags(
-					a_handle,
-					a_data,
-					a_params,
-					a_slotName,
-					storecc,
-					disabled,
-					a_baseConfig);
+				UICommon::PushDisabled(a_disabled);
 
-				DrawBaseConfigAnimationFlags(
-					a_handle,
-					a_data,
-					a_params,
-					a_slotName,
-					storecc,
-					disabled,
-					a_baseConfig);
+				DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::PopID();
+
+				ImGui::Spacing();
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigValuesNode(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			Data::configBase_t*       a_baseConfig,
+			const bool                a_disabled)
+		{
+			auto storecc = BaseConfigStoreCC() && a_storecc;
+
+			ImGui::PushID("bc_node");
+
+			bool r;
+
+			if (storecc)
+			{
+				r = TreeEx(
+					"tree",
+					true,
+					"%s",
+					LS(CommonStrings::Node));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Node));
+			}
+
+			if (r)
+			{
+				ImGui::Spacing();
+
+				UICommon::PushDisabled(a_disabled);
+
+				ImGui::AlignTextToFramePadding();
+				ImGui::TextUnformatted(LS(UIBaseConfigString::AttachmentModeColon));
+				ImGui::SameLine();
+
+				bool tmpb;
+
+				if (ImGui::RadioButton(
+						LS(CommonStrings::Reference, "1"),
+						a_data.flags.test(Data::BaseFlags::kReferenceMode)))
+				{
+					a_data.flags.set(Data::BaseFlags::kReferenceMode);
+
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kReferenceMode);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+
+				ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+				tmpb = a_data.targetNode.managed();
+
+				UICommon::PushDisabled(tmpb);
+
+				if (ImGui::RadioButton(
+						LS(CommonStrings::Parent, "2"),
+						!a_data.flags.test(Data::BaseFlags::kReferenceMode)))
+				{
+					a_data.flags.clear(Data::BaseFlags::kReferenceMode);
+
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kReferenceMode);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+
+				UICommon::PopDisabled(tmpb);
+
+				DrawTip(UITip::AttachmentMode);
 
 				ImGui::Spacing();
 
-				if (a_baseConfig)
+				if (DrawNodeSelector(
+						LS(UIWidgetCommonStrings::TargetNode, "ns"),
+						!a_data.flags.test(Data::BaseFlags::kReferenceMode),
+						a_data.targetNode))
 				{
-					ImGui::PushID("f_ex");
+					PropagateMemberToEquipmentOverrides(
+						a_baseConfig,
+						offsetof(Data::configBaseValues_t, targetNode),
+						a_data.targetNode);
 
-					UICommon::PushDisabled(disabled);
-
-					DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
-
-					UICommon::PopDisabled(disabled);
-
-					ImGui::PopID();
-
-					ImGui::Spacing();
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
+				DrawTip(UITip::TargetNode);
+
+				if (!a_data.targetNode)
+				{
+					ImGui::Spacing();
+
+					ImGui::TextColored(
+						UICommon::g_colorWarning,
+						"%s",
+						LS(UIBaseConfigString::EmptyNodeWarning));
+				}
+
+				ImGui::Spacing();
+
+				DrawTransformTree(
+					static_cast<Data::configTransform_t&>(a_data),
+					false,
+					[&](TransformUpdateValue a_v) {
+						switch (a_v)
+						{
+						case TransformUpdateValue::Position:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, position),
+								a_data.position);
+							break;
+						case TransformUpdateValue::Rotation:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, rotation),
+								a_data.rotation);
+							break;
+						case TransformUpdateValue::Scale:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, scale),
+								a_data.scale);
+							break;
+						case TransformUpdateValue::All:
+							PropagateToEquipmentOverrides<
+								Data::configTransform_t>(
+								a_baseConfig);
+							break;
+						}
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::UpdateTransform);
+					},
+					[] {});
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
 			}
+
 			ImGui::PopID();
+		}
 
-			ImGui::PushID("bc_node");
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigValuesOther(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			Data::configBase_t*       a_baseConfig,
+			const bool                a_disabled)
+		{
+			auto storecc = BaseConfigStoreCC() && a_storecc;
+
+			ImGui::PushID("bc_other");
+
+			bool r;
+
+			if (storecc)
 			{
-				bool r;
+				r = TreeEx(
+					"tree",
+					true,
+					"%s",
+					LS(CommonStrings::Other));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Other));
+			}
 
-				if (storecc)
+			if (r)
+			{
+				ImGui::Spacing();
+
+				UICommon::PushDisabled(a_disabled);
+
+				if (m_formPicker.DrawFormPicker(
+						"fp_m",
+						static_cast<Localization::StringID>(UIWidgetCommonStrings::OverrideModel),
+						a_data.forceModel,
+						GetTipText(UITip::OverrideModel)))
 				{
-					r = TreeEx(
-						"tree",
-						true,
-						"%s",
-						LS(CommonStrings::Node));
-				}
-				else
-				{
-					r = ImGui::TreeNodeEx(
-						"tree",
-						ImGuiTreeNodeFlags_DefaultOpen |
-							ImGuiTreeNodeFlags_SpanAvailWidth,
-						"%s",
-						LS(CommonStrings::Node));
+					PropagateMemberToEquipmentOverrides(
+						a_baseConfig,
+						offsetof(Data::configBaseValues_t, forceModel),
+						a_data.forceModel);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 
-				if (r)
-				{
-					ImGui::Spacing();
+				UICommon::PopDisabled(a_disabled);
 
-					UICommon::PushDisabled(disabled);
+				ImGui::Spacing();
 
-					ImGui::AlignTextToFramePadding();
-					ImGui::TextUnformatted(LS(UIBaseConfigString::AttachmentModeColon));
-					ImGui::SameLine();
-
-					bool tmpb;
-
-					if (ImGui::RadioButton(
-							LS(CommonStrings::Reference, "1"),
-							a_data.flags.test(Data::BaseFlags::kReferenceMode)))
-					{
-						a_data.flags.set(Data::BaseFlags::kReferenceMode);
-
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kReferenceMode);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-
-					ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-					tmpb = a_data.targetNode.managed();
-
-					UICommon::PushDisabled(tmpb);
-
-					if (ImGui::RadioButton(
-							LS(CommonStrings::Parent, "2"),
-							!a_data.flags.test(Data::BaseFlags::kReferenceMode)))
-					{
-						a_data.flags.clear(Data::BaseFlags::kReferenceMode);
-
-						PropagateFlagToEquipmentOverrides(
-							a_baseConfig,
-							Data::BaseFlags::kReferenceMode);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
-					}
-
-					UICommon::PopDisabled(tmpb);
-
-					DrawTip(UITip::AttachmentMode);
-
-					ImGui::Spacing();
-
-					if (DrawNodeSelector(
-							LS(UIWidgetCommonStrings::TargetNode, "ns"),
-							!a_data.flags.test(Data::BaseFlags::kReferenceMode),
-							a_data.targetNode))
-					{
-						PropagateMemberToEquipmentOverrides(
-							a_baseConfig,
-							offsetof(Data::configBaseValues_t, targetNode),
-							a_data.targetNode);
-
-						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-					}
-					DrawTip(UITip::TargetNode);
-
-					if (!a_data.targetNode)
-					{
-						ImGui::Spacing();
-
-						ImGui::TextColored(
-							UICommon::g_colorWarning,
-							"%s",
-							LS(UIBaseConfigString::EmptyNodeWarning));
-					}
-
-					ImGui::Spacing();
-
-					DrawTransformTree(
-						static_cast<Data::configTransform_t&>(a_data),
-						false,
-						[&](TransformUpdateValue a_v) {
-							switch (a_v)
-							{
-							case TransformUpdateValue::Position:
-								PropagateMemberToEquipmentOverrides(
-									a_baseConfig,
-									offsetof(Data::configBaseValues_t, position),
-									a_data.position);
-								break;
-							case TransformUpdateValue::Rotation:
-								PropagateMemberToEquipmentOverrides(
-									a_baseConfig,
-									offsetof(Data::configBaseValues_t, rotation),
-									a_data.rotation);
-								break;
-							case TransformUpdateValue::Scale:
-								PropagateMemberToEquipmentOverrides(
-									a_baseConfig,
-									offsetof(Data::configBaseValues_t, scale),
-									a_data.scale);
-								break;
-							case TransformUpdateValue::All:
-								PropagateToEquipmentOverrides<
-									Data::configTransform_t>(
-									a_baseConfig);
-								break;
-							}
-
-							OnBaseConfigChange(
-								a_handle,
-								a_params,
-								PostChangeAction::UpdateTransform);
-						},
-						[] {});
-
-					UICommon::PopDisabled(disabled);
-
-					ImGui::Spacing();
-
-					ImGui::TreePop();
-				}
+				ImGui::TreePop();
 			}
 
 			ImGui::PopID();
@@ -2203,25 +2349,45 @@ namespace IED
 
 									auto& db = m_condParamEditor.GetDescBuffer();
 
-									if (e.flags.test(
-											Data::EquipmentOverrideConditionFlags::kMatchEquipped |
-											Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+									if (e.flags.test(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
 									{
-										stl::snprintf(db, "%s/%s", LS(CommonStrings::Equipped), LS(CommonStrings::Displayed));
+										stl::snprintf(
+											db,
+											"%s/%s",
+											LS(CommonStrings::Equipped),
+											LS(CommonStrings::Displayed));
 									}
 									else if (e.flags.test(
 												 Data::EquipmentOverrideConditionFlags::kMatchEquipped))
 									{
-										stl::snprintf(db, "%s", LS(CommonStrings::Equipped));
+										stl::snprintf(
+											db,
+											"%s",
+											LS(CommonStrings::Equipped));
 									}
 									else if (e.flags.test(
 												 Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 									{
-										stl::snprintf(db, "%s", LS(CommonStrings::Displayed));
+										stl::snprintf(
+											db,
+											"%s",
+											LS(CommonStrings::Displayed));
 									}
 									else
 									{
-										stl::snprintf(db, "%s", LS(CommonStrings::None));
+										if (e.flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+										{
+											stl::snprintf(
+												db,
+												"%s %s %u",
+												LS(CommonStrings::Count),
+												m_condParamEditor.comp_operator_to_desc(e.compOperator),
+												e.count);
+										}
+										else
+										{
+											stl::snprintf(db, "%s", LS(UIBaseConfigString::InventoryCheck));
+										}
 									}
 
 									vdesc = db;
@@ -2807,6 +2973,48 @@ namespace IED
 		}
 
 		template <class T>
+		bool UIBaseConfigWidget<T>::DrawFormCountExtraSegment(Data::equipmentOverrideCondition_t* a_match)
+		{
+			ImGui::PushID("fcnt_extra");
+
+			bool result = false;
+
+			result |= ImGui::CheckboxFlagsT(
+				LS(CommonStrings::Count, "0"),
+				stl::underlying(std::addressof(a_match->flags.value)),
+				stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+			bool disabled = !a_match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
+
+			UICommon::PushDisabled(disabled);
+
+			ImGui::SameLine();
+
+			ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+
+			result |= m_condParamEditor.DrawComparisonOperatorSelector(a_match->compOperator);
+
+			ImGui::PopItemWidth();
+
+			ImGui::SameLine();
+
+			result |= ImGui::InputScalar(
+				"##1",
+				ImGuiDataType_U32,
+				std::addressof(a_match->count),
+				nullptr,
+				nullptr,
+				"%u",
+				ImGuiInputTextFlags_EnterReturnsTrue);
+
+			UICommon::PopDisabled(disabled);
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
 		bool UIBaseConfigWidget<T>::DrawConditionParamExtra(void* a_p1, const void*)
 		{
 			auto match = static_cast<Data::equipmentOverrideCondition_t*>(a_p1);
@@ -2873,35 +3081,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					result |= ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Count, "5"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
-
-					bool disabled = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
-
-					UICommon::PushDisabled(disabled);
-
-					ImGui::SameLine();
-
-					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
-
-					result |= DrawComparisonOperatorSelector(match->compOperator);
-
-					ImGui::PopItemWidth();
-
-					ImGui::SameLine();
-
-					result |= ImGui::InputScalar(
-						"##5",
-						ImGuiDataType_U32,
-						std::addressof(match->count),
-						nullptr,
-						nullptr,
-						"%u",
-						ImGuiInputTextFlags_EnterReturnsTrue);
-
-					UICommon::PopDisabled(disabled);
+					result |= DrawFormCountExtraSegment(match);
 				}
 
 				break;
@@ -3021,10 +3201,15 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Presence:
 				{
-					result |= ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Equipped, "0"),
-						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipped));
+					if (ImGui::CheckboxFlagsT(
+							LS(CommonStrings::Equipped, "0"),
+							stl::underlying(std::addressof(match->flags.value)),
+							stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipped)))
+					{
+						match->ui32a = static_cast<std::uint32_t>(-1);
+						match->ui32b = 0;
+						result       = true;
+					}
 
 					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
@@ -3037,19 +3222,26 @@ namespace IED
 					ImGui::Separator();
 
 					result |= ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Displayed, "6"),
+						LS(CommonStrings::Displayed, "2"),
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots));
 
 					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 					{
 						result |= m_condParamEditor.DrawObjectSlotSelector(
-							LS(CommonStrings::Slot, "7"),
+							LS(CommonStrings::Slot, "3"),
 							match->slot,
 							true);
 					}
 
 					ImGui::Separator();
+
+					if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
+					{
+						result |= DrawFormCountExtraSegment(match);
+
+						ImGui::Separator();
+					}
 
 					ImGui::Spacing();
 					ImGui::Text("%s:", LS(CommonStrings::Info));

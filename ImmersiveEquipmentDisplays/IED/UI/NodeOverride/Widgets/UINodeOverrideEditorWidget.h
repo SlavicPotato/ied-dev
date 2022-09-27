@@ -151,7 +151,7 @@ namespace IED
 
 			virtual constexpr Data::ConfigClass GetConfigClass() const = 0;
 
-			virtual void DrawMenuBarItems() override;
+			virtual void EditorDrawMenuBarItems() override;
 
 		private:
 			void QueueClearAllPopup(const NodeOverrideEditorCurrentData& a_data);
@@ -3544,7 +3544,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawMenuBarItems()
+		void UINodeOverrideEditorWidget<T>::EditorDrawMenuBarItems()
 		{
 			auto current = GetCurrentData();
 

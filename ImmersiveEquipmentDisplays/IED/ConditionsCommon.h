@@ -90,6 +90,12 @@ namespace IED
 				return match_random_percent(a_params, a_match, a_match.percent);
 			case Data::ExtraConditionType::kNodeMonitor:
 				return check_node_monitor_value(a_params, a_match.uid);
+			case Data::ExtraConditionType::kArrested:
+				return a_params.actor->IsArrested();
+			case Data::ExtraConditionType::kIsChild:
+				return a_params.actor->IsChild();
+			case Data::ExtraConditionType::kInKillmove:
+				return a_params.actor->flags2.test(Actor::Flags2::kIsInKillMove);
 			default:
 				return false;
 			}

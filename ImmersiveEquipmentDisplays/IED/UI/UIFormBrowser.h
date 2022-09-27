@@ -21,7 +21,7 @@ namespace IED
 	{
 		class UIFormBrowser :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			public virtual UILocalizationInterface
 		{
 			struct TabItem
@@ -35,6 +35,9 @@ namespace IED
 			inline static constexpr auto POPUP_ID = "form_browser";
 
 		public:
+
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUIFormBrowser;
+
 			using selected_form_list = stl::vectormap<Game::FormID, IFormDatabase::entry_t>;
 
 			struct FormBrowserDrawResult
@@ -53,14 +56,15 @@ namespace IED
 
 			UIFormBrowser(Controller& a_controller);
 
-			FormBrowserDrawResult Draw();
+			FormBrowserDrawResult DrawImpl();
 			bool                  Open(bool a_multisel);
 			bool                  IsBrowserOpen() const;
 			void                  SetTabFilter(const tab_filter_type& a_filter);
 			void                  SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
 			void                  ClearTabFilter();
 
-			void OnClose();
+			void OnClose() override;
+			void Reset() override;
 
 			inline constexpr const auto& GetSelectedEntry() const noexcept
 			{
@@ -81,8 +85,6 @@ namespace IED
 			{
 				m_hlForm = a_form;
 			}
-
-			void Reset();
 
 			bool HasType(std::uint32_t a_type) const;
 
@@ -111,7 +113,7 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;
 
-			std::array<TabItem, 38> m_tabItems;
+			std::array<TabItem, 37> m_tabItems;
 
 			//select_callback_t m_current;
 

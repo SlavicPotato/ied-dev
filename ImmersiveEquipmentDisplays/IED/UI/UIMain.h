@@ -2,28 +2,13 @@
 
 #include "UIAboutModal.h"
 #include "UIContextBase.h"
-#include "UIDialogImportExport.h"
-#include "UIFormBrowser.h"
 #include "UIFormInfoCache.h"
 #include "UILocalizationInterface.h"
-#include "UILog.h"
 #include "UIMainCommon.h"
 #include "UIMainStrings.h"
-#include "UINodeMapEditor.h"
-#include "UISettings.h"
-#include "UISkeletonExplorer.h"
-#include "UIStats.h"
 
-#include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
-#include "EquipmentSlots/UISlotTabPanel.h"
-
-#include "Custom/Profile/UIProfileEditorCustom.h"
 #include "Custom/UICustomTabPanel.h"
-
-#include "NodeOverride/Profile/UIProfileEditorNodeOverride.h"
-#include "NodeOverride/UINodeOverrideEditorWindow.h"
-
-#include "FormFilters/UIProfileEditorFormFilters.h"
+#include "EquipmentSlots/UISlotTabPanel.h"
 
 #include "Window/UIWindow.h"
 
@@ -55,7 +40,7 @@ namespace IED
 		public:
 			UIMain(Controller& a_controller);
 
-			virtual ~UIMain() noexcept = default;
+			virtual ~UIMain() noexcept override = default;
 
 			virtual void Initialize() override;
 			virtual void Reset() override;
@@ -75,7 +60,7 @@ namespace IED
 
 			inline constexpr auto& GetFormBrowser() noexcept
 			{
-				return m_formBrowser;
+				return GetChildWindow<UIFormBrowser>();
 			}
 
 			inline constexpr auto& GetFormLookupCache() noexcept
@@ -99,25 +84,80 @@ namespace IED
 
 			void SetTitle(Localization::StringID a_strid);
 
-			UIFormBrowser               m_formBrowser;
-			UISettings                  m_settings;
-			UIDialogImportExport        m_importExport;
-			UIProfileEditorSlot         m_slotProfileEditor;
-			UIProfileEditorCustom       m_customProfileEditor;
-			UIProfileEditorNodeOverride m_nodeOverrideProfileEditor;
-			UINodeMapEditor             m_nodeMapEditor;
-			UINodeOverrideEditorWindow  m_nodeOverrideEditor;
-			UIProfileEditorFormFilters  m_formFiltersProfileEditor;
-			UILog                       m_log;
-			UIStats                     m_stats;
-			UISkeletonExplorer          m_skeletonExplorer;
+			template <class T>
+			[[nodiscard]] inline constexpr auto& GetChildWindowBase() const noexcept
+			{
+				static_assert(T::CHILD_ID < ChildWindowID::kMax);
+
+				return *m_childWindows[stl::underlying(T::CHILD_ID)];
+			}
+
+			template <class T>
+			[[nodiscard]] inline constexpr T& GetChildWindow() const noexcept
+			{
+				static_assert(T::CHILD_ID < ChildWindowID::kMax);
+
+				auto ptr = m_childWindows[stl::underlying(T::CHILD_ID)].get();
+				assert(ptr);
+
+				auto result = dynamic_cast<T*>(ptr);
+				assert(result);
+
+				return *result;
+			}
+
+			template <class T, class... Args>
+			void CreateChildWindow(Args&&... a_args)  //
+				requires(std::is_base_of_v<UIChildWindowBase, T>)
+			{
+				static_assert(T::CHILD_ID < ChildWindowID::kMax);
+
+				assert(m_childWindows[stl::underlying(T::CHILD_ID)] == nullptr);
+
+				m_childWindows[stl::underlying(T::CHILD_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
+			}
+
+			
+			template <class T>
+			[[nodiscard]] inline constexpr auto& GetEditorPanelBase() const noexcept
+			{
+				static_assert(stl::underlying(T::PANEL_ID) < 2);
+
+				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
+			}
+			
+			[[nodiscard]] inline auto& GetEditorPanelBase(UIEditorPanel a_id) const noexcept
+			{
+				assert(a_id < 2);
+
+				return *m_editorPanels[stl::underlying(a_id)];
+			}
+
+			
+			template <class T, class... Args>
+			void CreateEditorPanel(Args&&... a_args)  //
+				requires(std::is_base_of_v<UIEditorTabPanel, T>)
+			{
+				static_assert(stl::underlying(T::PANEL_ID) < 2);
+
+				assert(m_editorPanels[stl::underlying(T::PANEL_ID)] == nullptr);
+
+				m_editorPanels[stl::underlying(T::PANEL_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
+			}
+
+			std::array<
+				std::unique_ptr<UIChildWindowBase>,
+				stl::underlying(ChildWindowID::kMax)>
+				m_childWindows;
 
 #if defined(IED_ENABLE_I3DI)
 			I3DIMain m_i3di;
 #endif
 
-			UISlotEditorTabPanel   m_slotTabPanel;
-			UICustomEditorTabPanel m_customTabPanel;
+			std::array<
+				std::unique_ptr<UIEditorTabPanel>,
+				2>
+				m_editorPanels;
 
 			UIEditorPanel m_currentEditorPanel{ UIEditorPanel::Slot };
 

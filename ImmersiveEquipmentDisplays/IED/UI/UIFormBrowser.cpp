@@ -54,7 +54,6 @@ namespace IED
 				{ UIFormBrowserStrings::Class, TESClass::kTypeID },
 				{ UIFormBrowserStrings::Weather, RE::TESWeather::kTypeID },
 				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
-				{ UIFormBrowserStrings::Idle, TESIdleForm::kTypeID },
 
 			} }
 
@@ -67,7 +66,7 @@ namespace IED
 				ImGuiInputTextFlags_EnterReturnsTrue);
 		}
 
-		auto UIFormBrowser::Draw()
+		auto UIFormBrowser::DrawImpl()
 			-> FormBrowserDrawResult
 		{
 			FormBrowserDrawResult result{ false, false };
@@ -132,6 +131,11 @@ namespace IED
 					{
 						SetOpenState(false);
 					}
+				}
+
+				if (result)
+				{
+					SetOpenState(false);
 				}
 
 				if (!IsWindowOpen())
@@ -450,7 +454,6 @@ namespace IED
 						{
 							m_selectedEntry = e;
 							result          = true;
-							SetOpenState(false);
 						}
 					}
 

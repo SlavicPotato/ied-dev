@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "JSONActorInfoParser.h"
 #include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsCollapsibleStatesParser.h"
 #include "JSONSettingsEditorPanelParser.h"
@@ -30,6 +31,7 @@ namespace IED
 			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
 			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
 			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
+			Parser<Data::SettingHolder::ActorInfo>        ainfo(m_state);
 			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
 
 			if (!editorPanelParser.Parse(data["slot_editor"], a_out.slotEditor))
@@ -92,6 +94,13 @@ namespace IED
 			if (!skelExp.Parse(
 					data["skel_exp"],
 					a_out.skeletonExplorer))
+			{
+				return false;
+			}
+
+			if (!ainfo.Parse(
+					data["actor_info"],
+					a_out.actorInfo))
 			{
 				return false;
 			}
@@ -180,6 +189,7 @@ namespace IED
 			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
 			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
 			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
+			Parser<Data::SettingHolder::ActorInfo>        ainfo(m_state);
 			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
@@ -205,6 +215,10 @@ namespace IED
 			skelExp.Create(
 				a_data.skeletonExplorer,
 				data["skel_exp"]);
+
+			ainfo.Create(
+				a_data.actorInfo,
+				data["actor_info"]);
 
 			colStatesParser.Create(a_data.settingsColStates, data["settings_col_states"]);
 			colStatesParser.Create(a_data.statsColStates, data["stats_col_states"]);

@@ -19,7 +19,7 @@ namespace IED
 		{
 		}
 
-		void UINodeOverrideEditorGlobal::Initialize()
+		void UINodeOverrideEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -28,7 +28,7 @@ namespace IED
 			SetSex(store.settings.data.ui.transformEditor.globalSex, false);
 		}
 
-		void UINodeOverrideEditorGlobal::Draw()
+		void UINodeOverrideEditorGlobal::EditorDraw()
 		{
 			if (ImGui::BeginChild("no_editor_global", { -1.0f, 0.0f }))
 			{
@@ -63,17 +63,17 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UINodeOverrideEditorGlobal::OnOpen()
+		void UINodeOverrideEditorGlobal::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UINodeOverrideEditorGlobal::OnClose()
+		void UINodeOverrideEditorGlobal::EditorOnClose()
 		{
 			m_data.clear();
 		}
 
-		void UINodeOverrideEditorGlobal::Reset()
+		void UINodeOverrideEditorGlobal::EditorReset()
 		{
 			UpdateData(m_data);
 		}

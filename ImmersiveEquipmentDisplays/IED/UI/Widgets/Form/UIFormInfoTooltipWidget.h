@@ -9,6 +9,8 @@ namespace IED
 	struct formInfoResult_t;
 	struct ObjectEntryBase;
 
+	class Controller;
+
 	namespace UI
 	{
 		class UIFormInfoTooltipWidget :
@@ -16,7 +18,7 @@ namespace IED
 			public virtual UILocalizationInterface
 		{
 		public:
-			UIFormInfoTooltipWidget(Localization::ILocalization& a_localization);
+			UIFormInfoTooltipWidget(Controller &a_controller);
 
 			void DrawFormInfoTooltip(
 				const formInfoResult_t*  a_info,
@@ -25,6 +27,8 @@ namespace IED
 			void DrawObjectEntryHeaderInfo(
 				const formInfoResult_t*  a_info,
 				const ObjectEntryBase& a_entry);
+
+			Controller& m_controller;
 		};
 	}
 }

@@ -22,6 +22,7 @@ namespace IED
 			DefaultConfig              = 4613,
 			EquipmentDisplays          = 4614,
 			CustomDisplays             = 4615,
+			Diagnostics                = 4616,
 		};
 	}
 }

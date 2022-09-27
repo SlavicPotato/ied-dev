@@ -2091,7 +2091,8 @@ namespace IED
 		const configBaseValues_t&        a_config,
 		const Data::equipmentOverride_t* a_override,
 		ObjectEntryBase&                 a_entry,
-		bool                             a_visible)
+		bool                             a_visible,
+		TESForm*                         a_currentModelForm)
 	{
 		auto& state = a_entry.state;
 
@@ -2116,6 +2117,15 @@ namespace IED
 				{
 					return false;
 				}
+			}
+
+			const auto mfid = a_currentModelForm ?
+			                      a_currentModelForm->formID :
+                                  Game::FormID{};
+
+			if (mfid != state->modelForm)
+			{
+				return false;
 			}
 		}
 
@@ -2556,6 +2566,8 @@ namespace IED
 					usedBaseConf.flags,
 					a_params);
 
+				auto modelForm = usedBaseConf.forceModel.get_form();
+
 				if (objectEntry.state &&
 				    objectEntry.state->form == item->item->form)
 				{
@@ -2564,7 +2576,8 @@ namespace IED
 							usedBaseConf,
 							configOverride,
 							objectEntry,
-							visible))
+							visible,
+							modelForm))
 					{
 						if (visible)
 						{
@@ -2591,7 +2604,7 @@ namespace IED
 						configEntry,
 						objectEntry,
 						item->item->form,
-						nullptr,
+						modelForm,
 						ItemData::IsLeftWeaponSlot(f.slot),
 						visible,
 						false,
@@ -2709,7 +2722,6 @@ namespace IED
 		}
 	}
 
-	
 	bool Controller::IsBlockedByChance(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
@@ -2830,6 +2842,11 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
+			auto* modelForm =
+				usedBaseConf.forceModel.get_id() ?
+					usedBaseConf.forceModel.get_form() :
+                    a_config.modelForm.get_form();
+
 			if (a_objectEntry.state &&
 			    a_objectEntry.state->form == itemData.form)
 			{
@@ -2843,7 +2860,8 @@ namespace IED
 							usedBaseConf,
 							configOverride,
 							a_objectEntry,
-							_visible))
+							_visible,
+							modelForm))
 					{
 						if (_visible)
 						{
@@ -2888,12 +2906,6 @@ namespace IED
 			}
 			else
 			{
-				auto modelForm = a_config.modelForm.get_form();
-
-				a_objectEntry.modelForm = modelForm ?
-				                              modelForm->formID :
-                                              Game::FormID{};
-
 				result = LoadAndAttach(
 					a_params,
 					usedBaseConf,
@@ -2983,6 +2995,11 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
+			auto* modelForm =
+				usedBaseConf.forceModel.get_id() ?
+					usedBaseConf.forceModel.get_form() :
+                    a_config.modelForm.get_form();
+
 			if (a_objectEntry.state &&
 			    a_objectEntry.state->form == form)
 			{
@@ -2994,7 +3011,8 @@ namespace IED
 							usedBaseConf,
 							configOverride,
 							a_objectEntry,
-							visible))
+							visible,
+							modelForm))
 					{
 						UpdateObjectEffectShaders(
 							a_params,
@@ -3006,8 +3024,6 @@ namespace IED
 					}
 				}
 			}
-
-			a_objectEntry.modelForm = {};
 
 			bool result;
 
@@ -3034,7 +3050,7 @@ namespace IED
 					a_config,
 					a_objectEntry,
 					form,
-					nullptr,
+					modelForm,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
@@ -3877,7 +3893,7 @@ namespace IED
 	{
 		return {
 			[this](
-				actorInfo_t&               a_info,
+				cachedActorInfo_t&         a_info,
 				const configCustomEntry_t& a_confEntry,
 				ObjectEntryCustom&         a_entry) {
 				if (!a_entry.state)
@@ -3904,7 +3920,7 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		const actorInfo_t&       a_info,
+		const cachedActorInfo_t& a_info,
 		const configCustom_t&    a_config,
 		const ObjectEntryCustom& a_entry)
 	{
@@ -3937,9 +3953,9 @@ namespace IED
 	}
 
 	const configBaseValues_t& Controller::GetConfigForActor(
-		const actorInfo_t&     a_info,
-		const configSlot_t&    a_config,
-		const ObjectEntrySlot& a_entry)
+		const cachedActorInfo_t& a_info,
+		const configSlot_t&      a_config,
+		const ObjectEntrySlot&   a_entry)
 	{
 		assert(a_entry.state);
 
@@ -4345,7 +4361,7 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		actorInfo_t&                          a_info,
+		cachedActorInfo_t&                    a_info,
 		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
 		const stl::fixed_string&              a_pkey,
@@ -4368,7 +4384,7 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomAllImpl(
-		actorInfo_t&                          a_info,
+		cachedActorInfo_t&                    a_info,
 		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
 		const stl::fixed_string&              a_pkey,
@@ -4406,7 +4422,7 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomAllImpl(
-		actorInfo_t&                          a_info,
+		cachedActorInfo_t&                    a_info,
 		const configCustomPluginMap_t&        a_confPluginMap,
 		ActorObjectHolder::customPluginMap_t& a_pluginMap,
 		const updateActionFunc_t&             a_func)
@@ -4438,7 +4454,7 @@ namespace IED
 	}
 
 	void Controller::UpdateCustomImpl(
-		actorInfo_t&                         a_info,
+		cachedActorInfo_t&                   a_info,
 		const configCustomEntryMap_t&        a_confEntryMap,
 		ActorObjectHolder::customEntryMap_t& a_entryMap,
 		const stl::fixed_string&             a_vkey,
@@ -4460,7 +4476,7 @@ namespace IED
 	}
 
 	void Controller::UpdateTransformCustomImpl(
-		actorInfo_t&             a_info,
+		cachedActorInfo_t&       a_info,
 		const configCustom_t&    a_configEntry,
 		const configTransform_t& a_xfrmConfigEntry,
 		ObjectEntryCustom&       a_entry)
@@ -4516,7 +4532,7 @@ namespace IED
 
 	auto Controller::LookupCachedActorInfo(
 		ActorObjectHolder& a_objects)
-		-> std::optional<actorInfo_t>
+		-> std::optional<cachedActorInfo_t>
 	{
 		auto handle = a_objects.GetHandle();
 
@@ -4607,7 +4623,7 @@ namespace IED
 			return {};
 		}
 
-		return std::make_optional<actorInfo_t>(
+		return std::make_optional<cachedActorInfo_t>(
 			actor,
 			handle,
 			npc,
@@ -5168,7 +5184,7 @@ namespace IED
 		});
 	}
 
-	void IED::Controller::QueueUpdateActorInfo(
+	void Controller::QueueUpdateActorInfo(
 		Game::FormID              a_actor,
 		std::function<void(bool)> a_callback)
 	{
@@ -5178,7 +5194,7 @@ namespace IED
 		});
 	}
 
-	void IED::Controller::QueueUpdateNPCInfo(Game::FormID a_npc)
+	void Controller::QueueUpdateNPCInfo(Game::FormID a_npc)
 	{
 		ITaskPool::AddTask([this, a_npc]() {
 			stl::scoped_lock lock(m_lock);

@@ -63,7 +63,7 @@ namespace IED
 				bool      showAll{ true };
 				ConfigSex sex{ Data::ConfigSex::Male };
 
-				Game::FormID lastActor;
+				Game::FormID lastSelected;
 			};
 
 			struct EditorPanelRaceSettings
@@ -71,6 +71,8 @@ namespace IED
 				bool      playableOnly{ false };
 				bool      showEditorIDs{ true };
 				ConfigSex sex{ ConfigSex::Male };
+
+				Game::FormID lastSelected;
 			};
 
 			struct EditorPanel :
@@ -105,6 +107,12 @@ namespace IED
 				bool showLoadedSkeleton{ true };
 			};
 
+			struct ActorInfo
+			{
+				EditorPanelActorSettings        actorSettings;
+				UI::UIData::UICollapsibleStates colStates;
+			};
+
 			struct UserInterface
 			{
 				UserInterface() noexcept
@@ -123,6 +131,7 @@ namespace IED
 				ProfileEditor    transformProfileEditor;
 				ImportExport     importExport;
 				SkeletonExplorer skeletonExplorer;
+				ActorInfo        actorInfo;
 
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;
@@ -139,7 +148,7 @@ namespace IED
 
 				std::uint32_t logLimit{ 500 };
 				bool          logShowTimestamps{ true };
-				bool          logLevels[stl::underlying(LogLevel::Max) + 1];
+				bool          logLevels[stl::underlying(LogLevel::Max) + 1]{false};
 
 				bool closeOnESC{ true };
 				bool showIntroBanner{ true };

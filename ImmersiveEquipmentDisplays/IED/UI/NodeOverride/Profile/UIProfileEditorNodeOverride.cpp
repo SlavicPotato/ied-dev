@@ -290,7 +290,7 @@ namespace IED
 		{
 			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
 			{
-				DrawMenuBarItems();
+				EditorDrawMenuBarItems();
 				ImGui::EndMenu();
 			}
 		}

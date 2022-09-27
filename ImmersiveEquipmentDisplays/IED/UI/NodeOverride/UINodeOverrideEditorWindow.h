@@ -16,21 +16,23 @@ namespace IED
 	{
 		class UINodeOverrideEditorWindow :
 			public UIWindow,
-			public UIWindowBase,
+			public UIChildWindowBase,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_noe";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeOverrideEditorWindow;
+
 			UINodeOverrideEditorWindow(
 				Controller&   a_controller,
-				UIWindowBase& a_profileEditor);
+				UIChildWindowBase& a_profileEditor);
 
-			void Initialize();
-			void Reset();
-			void Draw();
-			void OnOpen();
-			void OnClose();
+			void Initialize() override;
+			void Reset() override;
+			void Draw() override;
+			void OnOpen() override;
+			void OnClose() override;
 
 		private:
 			void DrawMenuBar();
@@ -39,7 +41,7 @@ namespace IED
 
 			UINodeOverrideTabPanel m_tabPanel;
 
-			UIWindowBase& m_profileEditor;
+			UIChildWindowBase& m_profileEditor;
 
 			Controller& m_controller;
 		};

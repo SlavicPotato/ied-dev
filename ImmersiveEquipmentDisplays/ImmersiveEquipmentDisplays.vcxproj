@@ -264,6 +264,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Drivers\UI\Tasks.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="IED\ActorInventoryInfo.h" />
     <ClInclude Include="IED\ActorSkeletonTreeData.h" />
     <ClInclude Include="IED\AnimationUpdateManager.h" />
     <ClInclude Include="IED\ConditionsCommon.h" />
@@ -321,6 +322,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h" />
+    <ClInclude Include="IED\Parsers\JSONActorInfoParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
@@ -369,7 +371,11 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\UIAboutModal.h" />
     <ClInclude Include="IED\UI\UIAboutModalStrings.h" />
+    <ClInclude Include="IED\UI\UIActorInfo.h" />
     <ClInclude Include="IED\UI\UIActorInfoInterface.h" />
+    <ClInclude Include="IED\UI\UIActorInfoStrings.h" />
+    <ClInclude Include="IED\UI\UIAllowedModelTypes.h" />
+    <ClInclude Include="IED\UI\UIChildWindowID.h" />
     <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h" />
     <ClInclude Include="IED\UI\UIIntroBanner.h" />
     <ClInclude Include="IED\UI\UIIntroBannerStrings.h" />
@@ -703,6 +709,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Drivers\UI\InputHandler.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="IED\ActorInventoryInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
     <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
@@ -735,6 +742,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
+    <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
@@ -775,7 +783,9 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\I3DI\I3DIWeaponNode.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIMOVNode.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />
+    <ClCompile Include="IED\UI\UIActorInfo.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
+    <ClCompile Include="IED\UI\UIAllowedModelTypes.cpp" />
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />
     <ClCompile Include="IED\UI\UIIntroBanner.cpp" />
     <ClCompile Include="IED\UI\UISkeletonExplorer.cpp" />
@@ -797,6 +807,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UITextureClampModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Window\UIWindowBase.cpp" />
     <ClCompile Include="IED\Util\PEXReader.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />

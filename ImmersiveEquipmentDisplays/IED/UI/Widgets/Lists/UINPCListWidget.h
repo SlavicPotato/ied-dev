@@ -51,6 +51,8 @@ namespace IED
 
 			virtual void OnNPCInfoAdded(Game::FormID a_npc) override;
 
+			virtual void OnListSetHandleInternal(Game::FormID a_handle) override;
+
 			std::uint64_t m_lastCacheUpdateId{ 0 };
 		};
 
@@ -70,14 +72,14 @@ namespace IED
 
 			m_listFirstUpdate = true;
 
-			const auto& actorSettings = GetActorSettings();
+			const auto& settings = GetActorSettings();
 			auto&       npcInfo       = GetNPCInfo();
 
 			m_listData.clear();
 
 			for (auto& e : npcInfo)
 			{
-				if (!actorSettings.showAll && !e.second->active)
+				if (!settings.showAll && !e.second->active)
 				{
 					continue;
 				}
@@ -137,10 +139,10 @@ namespace IED
 
 			if (!m_listCurrent)
 			{
-				if (actorSettings.lastActor &&
-				    m_listData.contains(actorSettings.lastActor))
+				if (settings.lastSelected &&
+				    m_listData.contains(settings.lastSelected))
 				{
-					ListSetCurrentItem(actorSettings.lastActor);
+					ListSetCurrentItem(settings.lastSelected);
 				}
 			}
 
@@ -330,6 +332,13 @@ namespace IED
 		void UINPCList<Td>::OnNPCInfoAdded(Game::FormID a_npc)
 		{
 			QueueListUpdate(a_npc);
+		}
+
+		template <class Td>
+		void UINPCList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
+		{
+			GetActorSettings().lastSelected = a_handle;
+			MarkSettingsDirty();
 		}
 
 	}

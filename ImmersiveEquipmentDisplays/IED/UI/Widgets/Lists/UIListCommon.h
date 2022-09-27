@@ -90,13 +90,16 @@ namespace IED
 
 			list_type                  m_listData;
 			stl::optional<listValue_t> m_listCurrent;
-			stl::optional<Th>          m_desiredHandle;
+			std::optional<Th>          m_desiredHandle;
 
 			char            m_listBuf1[256]{ 0 };
 			UIGenericFilter m_listFilter;
 			float           m_itemWidthScalar;
 
 			static_assert(std::is_convertible_v<Th, std::uint64_t>);
+
+		private:
+			virtual void OnListSetHandleInternal(Th a_handle) = 0;
 		};
 
 		template <class Td, class Th>
@@ -281,6 +284,7 @@ namespace IED
 				a_value.second,
 				GetData(a_value.first));
 
+			OnListSetHandleInternal(m_listCurrent->handle);
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
 
@@ -333,7 +337,7 @@ namespace IED
 				if (m_desiredHandle)
 				{
 					ListSetCurrentItem(*m_desiredHandle);
-					m_desiredHandle.clear();
+					m_desiredHandle.reset();
 				}
 			}
 		}
@@ -364,7 +368,7 @@ namespace IED
 				if (ImGui::BeginTable(
 						"table",
 						2,
-							ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_NoSavedSettings |
 							ImGuiTableFlags_SizingStretchProp,
 						{ -1.0f, 0.f }))
 				{

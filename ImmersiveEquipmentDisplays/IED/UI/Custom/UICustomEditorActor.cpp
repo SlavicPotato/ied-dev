@@ -28,7 +28,7 @@ namespace IED
 		{
 		}
 
-		void UICustomEditorActor::Initialize()
+		void UICustomEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
@@ -37,7 +37,7 @@ namespace IED
 			SetSex(store.settings.data.ui.customEditor.actorConfig.sex, false);
 		}
 
-		void UICustomEditorActor::Draw()
+		void UICustomEditorActor::EditorDraw()
 		{
 			if (ImGui::BeginChild("custom_editor_actor", { -1.0f, 0.0f }))
 			{
@@ -75,22 +75,22 @@ namespace IED
 			ImGui::EndChild();
 		}
 
-		void UICustomEditorActor::OnOpen()
+		void UICustomEditorActor::EditorOnOpen()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorActor::OnClose()
+		void UICustomEditorActor::EditorOnClose()
 		{
-			Reset();
+			EditorReset();
 		}
 
-		void UICustomEditorActor::Reset()
+		void UICustomEditorActor::EditorReset()
 		{
 			ListReset();
 		}
 
-		void UICustomEditorActor::QueueUpdateCurrent()
+		void UICustomEditorActor::EditorQueueUpdateCurrent()
 		{
 			QueueListUpdateCurrent();
 		}
@@ -463,39 +463,6 @@ namespace IED
 
 			auto& flc = m_controller.UIGetFormLookupCache();
 			DrawObjectEntryHeaderInfo(flc.LookupForm(object->state->formid), *object);
-
-			if (object->modelForm && object->state->formid != object->modelForm)
-			{
-				ImGui::SameLine(0.0f, 5.0f);
-				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-				ImGui::SameLine(0.0f, 8.0f);
-
-				ImGui::TextUnformatted("Model:");
-				ImGui::SameLine();
-
-				if (auto formInfo = flc.LookupForm(object->modelForm))
-				{
-					if (!formInfo->form.name.empty())
-					{
-						ImGui::TextColored(
-							UICommon::g_colorLightBlue,
-							"%s",
-							formInfo->form.name.c_str());
-					}
-					else
-					{
-						ImGui::TextColored(
-							UICommon::g_colorLightBlue,
-							"%.8X",
-							object->modelForm.get());
-					}
-
-					if (ImGui::IsItemHovered())
-					{
-						DrawFormInfoTooltip(formInfo, *object);
-					}
-				}
-			}
 
 			return true;
 		}

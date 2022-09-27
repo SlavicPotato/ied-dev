@@ -1439,6 +1439,24 @@
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIActorInfo.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorInventoryInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONActorInfoParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIActorInfoStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIChildWindowID.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIAllowedModelTypes.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2277,6 +2295,21 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIActorInfo.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorInventoryInfo.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Window\UIWindowBase.cpp">
+      <Filter>Source\IED\UI\Window</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIAllowedModelTypes.cpp">
+      <Filter>Source\IED\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

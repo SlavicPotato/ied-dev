@@ -86,7 +86,7 @@ namespace IED
 			Game::ObjectRefHandle handle;
 		};
 
-		struct actorInfo_t
+		struct cachedActorInfo_t
 		{
 			NiPointer<Actor>      actor;
 			Game::ObjectRefHandle handle;
@@ -458,7 +458,7 @@ namespace IED
 		struct updateActionFunc_t
 		{
 			using func_t = std::function<bool(
-				actorInfo_t&                     a_info,
+				cachedActorInfo_t&               a_info,
 				const Data::configCustomEntry_t& a_confEntry,
 				ObjectEntryCustom&               a_entry)>;
 
@@ -570,12 +570,12 @@ namespace IED
 		updateActionFunc_t MakeTransformUpdateFunc();
 
 		const Data::configBaseValues_t& GetConfigForActor(
-			const actorInfo_t&          a_info,
+			const cachedActorInfo_t&    a_info,
 			const Data::configCustom_t& a_config,
 			const ObjectEntryCustom&    a_entry);
 
 		const Data::configBaseValues_t& GetConfigForActor(
-			const actorInfo_t&        a_info,
+			const cachedActorInfo_t&  a_info,
 			const Data::configSlot_t& a_config,
 			const ObjectEntrySlot&    a_entry);
 
@@ -652,7 +652,7 @@ namespace IED
 			const updateActionFunc_t& a_func);
 
 		void UpdateCustomImpl(
-			actorInfo_t&                          a_info,
+			cachedActorInfo_t&                    a_info,
 			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
 			const stl::fixed_string&              a_pkey,
@@ -660,27 +660,27 @@ namespace IED
 			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomAllImpl(
-			actorInfo_t&                          a_info,
+			cachedActorInfo_t&                    a_info,
 			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
 			const stl::fixed_string&              a_pkey,
 			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomAllImpl(
-			actorInfo_t&                          a_info,
+			cachedActorInfo_t&                    a_info,
 			const Data::configCustomPluginMap_t&  a_confPluginMap,
 			ActorObjectHolder::customPluginMap_t& a_pluginMap,
 			const updateActionFunc_t&             a_func);
 
 		void UpdateCustomImpl(
-			actorInfo_t&                         a_info,
+			cachedActorInfo_t&                   a_info,
 			const Data::configCustomEntryMap_t&  a_confEntryMap,
 			ActorObjectHolder::customEntryMap_t& a_entryMap,
 			const stl::fixed_string&             a_vkey,
 			const updateActionFunc_t&            a_func);
 
 		void UpdateTransformCustomImpl(
-			actorInfo_t&                   a_info,
+			cachedActorInfo_t&             a_info,
 			const Data::configCustom_t&    a_configEntry,
 			const Data::configTransform_t& a_xfrmConfigEntry,
 			ObjectEntryCustom&             a_entry);
@@ -690,7 +690,8 @@ namespace IED
 			const Data::configBaseValues_t&  a_config,
 			const Data::equipmentOverride_t* a_override,
 			ObjectEntryBase&                 a_entry,
-			bool                             a_visible);
+			bool                             a_visible,
+			TESForm*                         a_currentModelForm);
 
 		template <class Ta, class Tb>
 		constexpr void UpdateObjectEffectShaders(
@@ -745,7 +746,7 @@ namespace IED
 			const ActorObjectHolder& a_record,
 			actorLookupResult_t&     a_out);
 
-		std::optional<actorInfo_t> LookupCachedActorInfo(
+		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			ActorObjectHolder& a_record);
 
 		void CollectKnownActors(
@@ -888,7 +889,7 @@ namespace IED
 
 		struct
 		{
-			SlotResults                        sr;
+			SlotResults sr;
 		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };

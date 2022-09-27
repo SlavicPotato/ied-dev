@@ -20,7 +20,8 @@ namespace IED
 		sitting(a_actor->IsSitting()),
 		sleeping(a_actor->IsSleeping()),
 		beingRidden(a_actor->IsBeingRidden()),
-		weaponDrawn(a_actor->IsWeaponDrawn())
+		weaponDrawn(a_actor->IsWeaponDrawn()),
+		arrested(a_actor->IsArrested())
 	{
 	}
 

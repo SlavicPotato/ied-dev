@@ -141,6 +141,7 @@ namespace IED
 
 			TESForm*                                           form{ nullptr };
 			Game::FormID                                       formid;
+			Game::FormID                                       modelForm;
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
 			nodesRef_t                                         nodes;
