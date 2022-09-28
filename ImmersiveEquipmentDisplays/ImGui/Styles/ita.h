@@ -32,7 +32,7 @@ namespace IED
 						break;
 					}
 
-					for (ImGuiCol i = 0; i <= ImGuiCol_COUNT; i++)
+					for (ImGuiCol i = 0; i < ImGuiCol_COUNT; i++)
 					{
 						auto  ei  = static_cast<ImGuiCol_>(i);
 						auto& col = a_style.Colors[i];
