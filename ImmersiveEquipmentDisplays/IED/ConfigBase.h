@@ -132,15 +132,32 @@ namespace IED
 				const collectorData_t& a_data,
 				CommonParams&          a_params) const;
 
+			static const equipmentOverride_t* get_equipment_override(
+				const collectorData_t&         a_data,
+				CommonParams&                  a_params,
+				const equipmentOverrideList_t& a_list);
+
 			const equipmentOverride_t* get_equipment_override_fp(
 				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
 
+			static const equipmentOverride_t* get_equipment_override_fp(
+				const collectorData_t&         a_data,
+				const formSlotPair_t&          a_checkForm,
+				CommonParams&                  a_params,
+				const equipmentOverrideList_t& a_list);
+
 			const equipmentOverride_t* get_equipment_override_sfp(
 				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
 				CommonParams&          a_params) const;
+
+			static const equipmentOverride_t* get_equipment_override_sfp(
+				const collectorData_t&         a_data,
+				const formSlotPair_t&          a_checkForm,
+				CommonParams&                  a_params,
+				const equipmentOverrideList_t& a_list);
 
 			const configEffectShaderHolder_t* get_effect_shader(
 				const collectorData_t& a_data,

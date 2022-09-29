@@ -4,7 +4,7 @@
 
 #include "Drivers/UI.h"
 
-#include "IED/UI/UIContextBase.h"
+#include "IED/UI/UIContext.h"
 
 namespace IED
 {
@@ -28,23 +28,23 @@ namespace IED
 
 		virtual ~IUIRenderTask() noexcept = default;
 
-		template <class T = UI::UIContextBase>
+		template <class T = UI::UIContext>
 		[[nodiscard]] inline constexpr T* GetContext() const noexcept requires
-			std::is_base_of_v<UI::UIContextBase, T>
+			std::is_base_of_v<UI::UIContext, T>
 		{
 			auto result = dynamic_cast<T*>(m_context.get());
 			assert(result);
 			return result;
 		}
 
-		[[nodiscard]] inline UI::UIContextBase* GetContext() const noexcept
+		[[nodiscard]] inline UI::UIContext* GetContext() const noexcept
 		{
 			return m_context.get();
 		}
 
 		template <class T, class... Args>
 		[[nodiscard]] void InitializeContext(Controller& a_controller, Args&&... a_args) requires
-			std::is_base_of_v<UI::UIContextBase, T>
+			std::is_base_of_v<UI::UIContext, T>
 		{
 			m_context = std::make_unique<T>(a_controller, std::forward<Args>(a_args)...);
 			m_context->Initialize();
@@ -68,7 +68,7 @@ namespace IED
 
 		virtual void OnStart();
 
-		std::unique_ptr<UI::UIContextBase> m_context;
+		std::unique_ptr<UI::UIContext> m_context;
 
 		bool m_reset{ false };
 

@@ -245,7 +245,9 @@ namespace IED
 
 			if (store.settings.data.ui.slotEditor.globalSex != a_newSex)
 			{
-				store.settings.set(store.settings.data.ui.slotEditor.globalSex, a_newSex);
+				store.settings.set(
+					store.settings.data.ui.slotEditor.globalSex,
+					a_newSex);
 			}
 		}
 
@@ -292,7 +294,7 @@ namespace IED
 
 		void UISlotEditorGlobal::EditorOnOpen()
 		{
-			EditorReset();
+			UpdateData(m_data);
 		}
 
 		void UISlotEditorGlobal::EditorOnClose()
@@ -302,7 +304,7 @@ namespace IED
 
 		void UISlotEditorGlobal::EditorReset()
 		{
-			UpdateData(m_data);
+			m_data = {};
 		}
 
 		void UISlotEditorGlobal::EditorQueueUpdateCurrent()

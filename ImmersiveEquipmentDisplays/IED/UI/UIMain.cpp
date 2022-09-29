@@ -9,6 +9,7 @@
 #include "NodeOverride/UINodeOverrideEditorWindow.h"
 #include "UIActorInfo.h"
 #include "UIDialogImportExport.h"
+#include "UIDisplayManagement.h"
 #include "UIFormBrowser.h"
 #include "UILog.h"
 #include "UINodeMapEditor.h"
@@ -23,7 +24,6 @@ namespace IED
 	namespace UI
 	{
 		UIMain::UIMain(Controller& a_controller) :
-			UIContextBase(a_controller),
 			UILocalizationInterface(a_controller),
 			UIAboutModal(a_controller),
 			m_controller(a_controller),
@@ -33,40 +33,48 @@ namespace IED
 #endif
 			m_popupQueue(a_controller)
 		{
-			CreateEditorPanel<UISlotEditorTabPanel>(a_controller);
-			CreateEditorPanel<UICustomEditorTabPanel>(a_controller);
+			CreateChild<UIFormBrowser>(a_controller);
+			CreateChild<UISettings>(a_controller);
+			CreateChild<UIDialogImportExport>(a_controller);
+			CreateChild<UINodeMapEditor>(a_controller);
+			CreateChild<UILog>(a_controller);
+			CreateChild<UIStats>(a_controller);
+			CreateChild<UISkeletonExplorer>(a_controller);
+			CreateChild<UIActorInfo>(a_controller);
 
-			CreateChildWindow<UIFormBrowser>(a_controller);
-			CreateChildWindow<UISettings>(a_controller);
-			CreateChildWindow<UIDialogImportExport>(a_controller);
-			CreateChildWindow<UINodeMapEditor>(a_controller);
-			CreateChildWindow<UILog>(a_controller);
-			CreateChildWindow<UIStats>(a_controller);
-			CreateChildWindow<UISkeletonExplorer>(a_controller);
-			CreateChildWindow<UIActorInfo>(a_controller);
+			CreateChild<UIProfileEditorSlot>(a_controller);
+			CreateChild<UIProfileEditorCustom>(a_controller);
+			CreateChild<UIProfileEditorNodeOverride>(a_controller);
+			CreateChild<UIProfileEditorFormFilters>(a_controller);
 
-			CreateChildWindow<UIProfileEditorSlot>(a_controller);
-			CreateChildWindow<UIProfileEditorCustom>(a_controller);
-			CreateChildWindow<UIProfileEditorNodeOverride>(a_controller);
-			CreateChildWindow<UIProfileEditorFormFilters>(a_controller);
-
-			CreateChildWindow<UINodeOverrideEditorWindow>(
+			CreateChild<UIDisplayManagement>(a_controller);
+			CreateChild<UINodeOverrideEditorWindow>(
 				a_controller,
-				GetChildWindow<UIProfileEditorNodeOverride>());
-
-			stl::snprintf(m_currentTitle, "%s###%s", TITLE_NAME, WINDOW_ID);
+				GetChild<UIProfileEditorNodeOverride>());
 		}
 
 		void UIMain::Initialize()
 		{
-			for (auto& e : m_editorPanels)
+			for (const auto& e : m_childWindows)
 			{
 				e->Initialize();
 			}
 
-			for (auto& e : m_childWindows)
+			const auto& settings = m_controller.GetConfigStore().settings;
+
+			using enum_type = std::underlying_type_t<ChildWindowID>;
+
+			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
 			{
-				e->Initialize();
+				if (static_cast<ChildWindowID>(i) == ChildWindowID::kUIFormBrowser)
+				{
+					continue;
+				}
+
+				const auto& window = m_childWindows[i];
+
+				window->Initialize();
+				window->SetOpenState(settings.data.ui.windowOpenStates[i]);
 			}
 
 #if defined(IED_ENABLE_I3DI)
@@ -74,30 +82,11 @@ namespace IED
 			m_i3di.SetOpenState(true);
 			m_i3di.OnOpen();
 #endif
-
-			auto& conf = m_controller.GetConfigStore().settings;
-
-			switch (conf.data.ui.lastPanel)
-			{
-			case UIEditorPanel::Custom:
-				m_currentEditorPanel = UIEditorPanel::Custom;
-				SetTitle(stl::underlying(CommonStrings::Custom));
-				break;
-			default:
-				m_currentEditorPanel = UIEditorPanel::Slot;
-				SetTitle(stl::underlying(CommonStrings::Equipment));
-				break;
-			}
 		}
 
 		void UIMain::Reset()
 		{
-			for (auto& e : m_editorPanels)
-			{
-				e->Reset();
-			}
-
-			for (auto& e : m_childWindows)
+			for (const auto& e : m_childWindows)
 			{
 				e->Reset();
 			}
@@ -111,32 +100,16 @@ namespace IED
 		{
 			//ImGui::ShowDemoWindow();
 
-			SetWindowDimensions(10.0f, 600.0f);
-
-			if (ImGui::Begin(
-					m_currentTitle,
-					GetOpenState(),
-					ImGuiWindowFlags_MenuBar))
-			{
-				DrawMenuBar();
-
-				GetEditorPanelBase(m_currentEditorPanel).Draw();
-			}
-
-			ImGui::End();
-
-			for (auto& e : m_childWindows)
-			{
-				e->DrawWrapper();
-			}
+			DrawMenuBarMain();
+			DrawChildWindows();
 
 #if defined(IED_ENABLE_I3DI)
 			m_i3di.Draw();
 #endif
 
-			if (GetChildWindow<UIProfileEditorFormFilters>().ChangedConfig())
+			if (GetChild<UIProfileEditorFormFilters>().ChangedConfig())
 			{
-				GetEditorPanelBase(m_currentEditorPanel).QueueUpdateCurrent();
+				GetChildContext<UIDisplayManagement>().Notify(1);
 			}
 
 			m_popupQueue.run();
@@ -163,40 +136,57 @@ namespace IED
 			return m_controller.GetConfigStore().settings.data.ui;
 		}
 
-		void UIMain::DrawMenuBar()
+		void UIMain::DrawChildWindows()
 		{
-			if (ImGui::BeginMenuBar())
+			ImGui::PushID("cw");
+
+			for (auto& e : m_childWindows)
 			{
-				if (LCG_BM(CommonStrings::File, "1"))
-				{
-					DrawFileMenu();
+				e->DrawWrapper();
+			}
 
-					ImGui::EndMenu();
-				}
+			ImGui::PopID();
+		}
 
-				if (LCG_BM(CommonStrings::View, "2"))
-				{
-					DrawViewMenu();
-					ImGui::EndMenu();
-				}
+		void UIMain::DrawMenuBarMain()
+		{
+			ImGui::PushID("menu_bar_main");
 
-				if (LCG_BM(CommonStrings::Tools, "3"))
-				{
-					DrawToolsMenu();
-					ImGui::EndMenu();
-				}
+			if (ImGui::BeginMainMenuBar())
+			{
+				DrawMenuBarContents();
 
-				if (LCG_BM(CommonStrings::Help, "4"))
-				{
-					DrawHelpMenu();
-					ImGui::EndMenu();
-				}
+				ImGui::EndMainMenuBar();
+			}
 
-				ImGui::Separator();
+			ImGui::PopID();
+		}
 
-				GetEditorPanelBase(m_currentEditorPanel).DrawMenuBarItems();
+		void UIMain::DrawMenuBarContents()
+		{
+			if (LCG_BM(CommonStrings::File, "1"))
+			{
+				DrawFileMenu();
 
-				ImGui::EndMenuBar();
+				ImGui::EndMenu();
+			}
+
+			if (LCG_BM(CommonStrings::View, "2"))
+			{
+				DrawViewMenu();
+				ImGui::EndMenu();
+			}
+
+			if (LCG_BM(CommonStrings::Tools, "3"))
+			{
+				DrawToolsMenu();
+				ImGui::EndMenu();
+			}
+
+			if (LCG_BM(CommonStrings::Help, "4"))
+			{
+				DrawHelpMenu();
+				ImGui::EndMenu();
 			}
 		}
 
@@ -204,7 +194,7 @@ namespace IED
 		{
 			if (LCG_MI(UIMainStrings::ImportExport, "1"))
 			{
-				GetChildWindowBase<UIDialogImportExport>().ToggleOpenState();
+				GetChildContext<UIDialogImportExport>().ToggleOpenState();
 			}
 
 			ImGui::Separator();
@@ -226,29 +216,19 @@ namespace IED
 		void UIMain::DrawViewMenu()
 		{
 			if (ImGui::MenuItem(
-					LS(UIMainStrings::EquipmentDisplays, "1"),
+					LS(UIMainStrings::DisplayManagement, "1"),
 					nullptr,
-					m_currentEditorPanel == UIEditorPanel::Slot))
+					GetChildContext<UIDisplayManagement>().IsContextOpen()))
 			{
-				OpenEditorPanel(UIEditorPanel::Slot);
+				GetChildContext<UIDisplayManagement>().ToggleOpenState();
 			}
 
 			if (ImGui::MenuItem(
-					LS(UIMainStrings::CustomDisplays, "2"),
+					LS(UIMainStrings::NodeOverride, "2"),
 					nullptr,
-					m_currentEditorPanel == UIEditorPanel::Custom))
+					GetChildContext<UINodeOverrideEditorWindow>().IsContextOpen()))
 			{
-				OpenEditorPanel(UIEditorPanel::Custom);
-			}
-
-			ImGui::Separator();
-
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::NodeOverride, "3"),
-					nullptr,
-					GetChildWindowBase<UINodeOverrideEditorWindow>().IsWindowOpen()))
-			{
-				GetChildWindowBase<UINodeOverrideEditorWindow>().ToggleOpenState();
+				GetChildContext<UINodeOverrideEditorWindow>().ToggleOpenState();
 			}
 		}
 
@@ -259,33 +239,33 @@ namespace IED
 				if (ImGui::MenuItem(
 						LS(CommonStrings::Equipment, "1"),
 						nullptr,
-						GetChildWindowBase<UIProfileEditorSlot>().IsWindowOpen()))
+						GetChildContext<UIProfileEditorSlot>().IsContextOpen()))
 				{
-					GetChildWindowBase<UIProfileEditorSlot>().ToggleOpenState();
+					GetChildContext<UIProfileEditorSlot>().ToggleOpenState();
 				}
 
 				if (ImGui::MenuItem(
 						LS(CommonStrings::Custom, "2"),
 						nullptr,
-						GetChildWindowBase<UIProfileEditorCustom>().IsWindowOpen()))
+						GetChildContext<UIProfileEditorCustom>().IsContextOpen()))
 				{
-					GetChildWindowBase<UIProfileEditorCustom>().ToggleOpenState();
+					GetChildContext<UIProfileEditorCustom>().ToggleOpenState();
 				}
 
 				if (ImGui::MenuItem(
 						LS(UIMainStrings::NodeOverride, "3"),
 						nullptr,
-						GetChildWindowBase<UIProfileEditorNodeOverride>().IsWindowOpen()))
+						GetChildContext<UIProfileEditorNodeOverride>().IsContextOpen()))
 				{
-					GetChildWindowBase<UIProfileEditorNodeOverride>().ToggleOpenState();
+					GetChildContext<UIProfileEditorNodeOverride>().ToggleOpenState();
 				}
 
 				if (ImGui::MenuItem(
 						LS(UIMainStrings::FormFilters, "4"),
 						nullptr,
-						GetChildWindowBase<UIProfileEditorFormFilters>().IsWindowOpen()))
+						GetChildContext<UIProfileEditorFormFilters>().IsContextOpen()))
 				{
-					GetChildWindowBase<UIProfileEditorFormFilters>().ToggleOpenState();
+					GetChildContext<UIProfileEditorFormFilters>().ToggleOpenState();
 				}
 
 				ImGui::EndMenu();
@@ -294,33 +274,33 @@ namespace IED
 			if (ImGui::MenuItem(
 					LS(CommonStrings::Nodes, "2"),
 					nullptr,
-					GetChildWindowBase<UINodeMapEditor>().IsWindowOpen()))
+					GetChildContext<UINodeMapEditor>().IsContextOpen()))
 			{
-				GetChildWindowBase<UINodeMapEditor>().ToggleOpenState();
+				GetChildContext<UINodeMapEditor>().ToggleOpenState();
 			}
 
 			if (ImGui::MenuItem(
 					LS(CommonStrings::Settings, "3"),
 					nullptr,
-					GetChildWindowBase<UISettings>().IsWindowOpen()))
+					GetChildContext<UISettings>().IsContextOpen()))
 			{
-				GetChildWindowBase<UISettings>().ToggleOpenState();
+				GetChildContext<UISettings>().ToggleOpenState();
 			}
 
 			if (ImGui::MenuItem(
 					LS(CommonStrings::Stats, "4"),
 					nullptr,
-					GetChildWindowBase<UIStats>().IsWindowOpen()))
+					GetChildContext<UIStats>().IsContextOpen()))
 			{
-				GetChildWindowBase<UIStats>().ToggleOpenState();
+				GetChildContext<UIStats>().ToggleOpenState();
 			}
 
 			if (ImGui::MenuItem(
 					LS(CommonStrings::Log, "5"),
 					nullptr,
-					GetChildWindowBase<UILog>().IsWindowOpen()))
+					GetChildContext<UILog>().IsContextOpen()))
 			{
-				GetChildWindowBase<UILog>().ToggleOpenState();
+				GetChildContext<UILog>().ToggleOpenState();
 			}
 
 			if (LCG_BM(UIMainStrings::Diagnostics, "6"))
@@ -328,17 +308,17 @@ namespace IED
 				if (ImGui::MenuItem(
 						LS(UIWidgetCommonStrings::ActorInfo, "1"),
 						nullptr,
-						GetChildWindowBase<UIActorInfo>().IsWindowOpen()))
+						GetChildContext<UIActorInfo>().IsContextOpen()))
 				{
-					GetChildWindowBase<UIActorInfo>().ToggleOpenState();
+					GetChildContext<UIActorInfo>().ToggleOpenState();
 				}
 
 				if (ImGui::MenuItem(
 						LS(UIWidgetCommonStrings::SkeletonExplorer, "2"),
 						nullptr,
-						GetChildWindowBase<UISkeletonExplorer>().IsWindowOpen()))
+						GetChildContext<UISkeletonExplorer>().IsContextOpen()))
 				{
-					GetChildWindowBase<UISkeletonExplorer>().ToggleOpenState();
+					GetChildContext<UISkeletonExplorer>().ToggleOpenState();
 				}
 
 				ImGui::EndMenu();
@@ -422,7 +402,15 @@ namespace IED
 
 						ImGui::PopID();
 
-						return true;
+						switch (settings.data.ui.selectedDefaultConfImport)
+						{
+						case Data::DefaultConfigType::kDefault:
+							return c_exists;
+						case Data::DefaultConfigType::kUser:
+							return uc_exists;
+						default:
+							return false;
+						}
 					})
 					.call([this](const auto&) {
 						const auto& settings = m_controller.GetConfigStore().settings;
@@ -430,12 +418,12 @@ namespace IED
 						switch (settings.data.ui.selectedDefaultConfImport)
 						{
 						case Data::DefaultConfigType::kDefault:
-							GetChildWindow<UIDialogImportExport>().QueueImportPopup(
+							GetChild<UIDialogImportExport>().QueueImportPopup(
 								PATHS::DEFAULT_CONFIG,
 								LS(CommonStrings::Default));
 							break;
 						case Data::DefaultConfigType::kUser:
-							GetChildWindow<UIDialogImportExport>().QueueImportPopup(
+							GetChild<UIDialogImportExport>().QueueImportPopup(
 								PATHS::DEFAULT_CONFIG_USER,
 								LS(CommonStrings::User));
 							break;
@@ -476,51 +464,18 @@ namespace IED
 			}
 		}
 
-		void UIMain::OpenEditorPanel(UIEditorPanel a_panel)
-		{
-			if (m_currentEditorPanel == a_panel)
-			{
-				return;
-			}
-
-			auto oldPanel = m_currentEditorPanel;
-
-			m_currentEditorPanel = a_panel;
-
-			GetEditorPanelBase(oldPanel).OnClose();
-			GetEditorPanelBase(a_panel).OnOpen();
-
-			SetTitle(stl::underlying(CommonStrings::Equipment));
-
-			auto& conf = m_controller.GetConfigStore().settings;
-			conf.set(conf.data.ui.lastPanel, a_panel);
-		}
-
-		void UIMain::SetTitle(Localization::StringID a_strid)
-		{
-			stl::snprintf(
-				m_currentTitle,
-				"%s - %s",
-				TITLE_NAME,
-				LS<decltype(a_strid), 3>(
-					a_strid,
-					WINDOW_ID));
-		}
-
 		void UIMain::OnOpen()
 		{
-			GetEditorPanelBase(m_currentEditorPanel).OnOpen();
-
-			for (auto& e : m_childWindows)
+			for (const auto& e : m_childWindows)
 			{
-				if (e->IsWindowOpen())
+				if (e->IsContextOpen())
 				{
 					e->OnOpen();
 				}
 			}
 
 #if defined(IED_ENABLE_I3DI)
-			if (m_i3di.IsWindowOpen())
+			if (m_i3di.IsContextOpen())
 			{
 				m_i3di.OnOpen();
 			}
@@ -529,16 +484,22 @@ namespace IED
 
 		void UIMain::OnClose()
 		{
-			m_controller.GetConfigStore().settings.SaveIfDirty();
-			ImGui::SaveIniSettingsToDisk(PATHS::IMGUI_INI);
+			auto& settings = m_controller.GetConfigStore().settings;
 
-			GetEditorPanelBase(m_currentEditorPanel).OnClose();
-
-			for (auto& e : m_childWindows)
+			using enum_type = std::underlying_type_t<ChildWindowID>;
+			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
 			{
-				if (e->IsWindowOpen())
+				const auto& window    = m_childWindows[i];
+				const auto  openState = window->IsContextOpen();
+
+				if (openState)
 				{
-					e->OnClose();
+					window->OnClose();
+				}
+
+				if (auto& s = settings.data.ui.windowOpenStates[i]; s != openState)
+				{
+					settings.set(s, openState);
 				}
 			}
 
@@ -549,6 +510,9 @@ namespace IED
 			m_formLookupCache.clear();
 
 			m_controller.ClearActorInfo();
+
+			m_controller.QueueSettingsSave(true);
+			Drivers::UI::QueueImGuiSettingsSave();
 		}
 
 		void UIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)

@@ -11,7 +11,7 @@ namespace IED
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
 			Controller&   a_controller,
-			UIChildWindowBase& a_profileEditor) :
+			UIContext& a_profileEditor) :
 			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
 			m_profileEditor(a_profileEditor),
@@ -31,11 +31,6 @@ namespace IED
 
 		void UINodeOverrideEditorWindow::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(100.0f, 550.0f);
 
 			if (ImGui::Begin(
@@ -65,11 +60,6 @@ namespace IED
 				m_tabPanel.Draw();
 
 				UICommon::PopDisabled(disabled);
-
-				if (!IsWindowOpen())
-				{
-					OnClose();
-				}
 			}
 
 			ImGui::End();
@@ -113,7 +103,7 @@ namespace IED
 
 		void UINodeOverrideEditorWindow::DrawFileMenu()
 		{
-			if (ImGui::MenuItem(LS(CommonStrings::Exit, "1")))
+			if (ImGui::MenuItem(LS(CommonStrings::Close, "1")))
 			{
 				SetOpenState(false);
 			}
@@ -124,7 +114,7 @@ namespace IED
 			if (ImGui::MenuItem(
 					LS(UIWidgetCommonStrings::ProfileEditor, "1"),
 					nullptr,
-					m_profileEditor.IsWindowOpen()))
+					m_profileEditor.IsContextOpen()))
 			{
 				m_profileEditor.ToggleOpenState();
 			}

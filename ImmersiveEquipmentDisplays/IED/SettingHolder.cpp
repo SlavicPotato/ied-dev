@@ -28,9 +28,10 @@ namespace IED
 					throw std::exception("parser error");
 				}
 
-				m_loadHasErrors = state.has_errors();
-
 				data = std::move(tmp);
+
+				m_loadHasErrors = state.has_errors();
+				m_dirty         = false;
 
 				return true;
 			}
@@ -53,6 +54,8 @@ namespace IED
 				parser.Create(data, root);
 
 				Serialization::WriteData(m_path, root);
+
+				m_dirty = false;
 
 				return true;
 			}

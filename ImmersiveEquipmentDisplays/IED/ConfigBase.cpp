@@ -16,11 +16,40 @@ namespace IED
 			const collectorData_t& a_data,
 			CommonParams&          a_params) const
 		{
-			for (auto& e : equipmentOverrides)
+			return get_equipment_override(
+				a_data,
+				a_params,
+				equipmentOverrides);
+		}
+
+		const equipmentOverride_t* configBase_t::get_equipment_override(
+			const collectorData_t&         a_data,
+			CommonParams&                  a_params,
+			const equipmentOverrideList_t& a_list)
+		{
+			for (auto& e : a_list)
 			{
 				if (do_match(a_data, e.conditions, a_params, false))
 				{
-					return std::addressof(e);
+					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					{
+						if (auto result = get_equipment_override(
+								a_data,
+								a_params,
+								e.group))
+						{
+							return result;
+						}
+						
+						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						{
+							break;
+						}
+					}
+					else
+					{
+						return std::addressof(e);
+					}
 				}
 			}
 
@@ -32,11 +61,43 @@ namespace IED
 			const formSlotPair_t&  a_checkForm,
 			CommonParams&          a_params) const
 		{
-			for (auto& e : equipmentOverrides)
+			return get_equipment_override_fp(
+				a_data,
+				a_checkForm,
+				a_params,
+				equipmentOverrides);
+		}
+
+		const equipmentOverride_t* configBase_t::get_equipment_override_fp(
+			const collectorData_t&         a_data,
+			const formSlotPair_t&          a_checkForm,
+			CommonParams&                  a_params,
+			const equipmentOverrideList_t& a_list)
+		{
+			for (auto& e : a_list)
 			{
 				if (do_match_fp(a_data, e.conditions, a_checkForm, a_params, false))
 				{
-					return std::addressof(e);
+					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					{
+						if (auto result = get_equipment_override_fp(
+								a_data,
+								a_checkForm,
+								a_params,
+								e.group))
+						{
+							return result;
+						}
+						
+						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						{
+							break;
+						}
+					}
+					else
+					{
+						return std::addressof(e);
+					}
 				}
 			}
 
@@ -48,11 +109,43 @@ namespace IED
 			const formSlotPair_t&  a_checkForm,
 			CommonParams&          a_params) const
 		{
-			for (auto& e : equipmentOverrides)
+			return get_equipment_override_sfp(
+				a_data,
+				a_checkForm,
+				a_params,
+				equipmentOverrides);
+		}
+
+		const equipmentOverride_t* configBase_t::get_equipment_override_sfp(
+			const collectorData_t&         a_data,
+			const formSlotPair_t&          a_checkForm,
+			CommonParams&                  a_params,
+			const equipmentOverrideList_t& a_list)
+		{
+			for (auto& e : a_list)
 			{
 				if (do_match_sfp(a_data, e.conditions, a_checkForm, a_params, false))
 				{
-					return std::addressof(e);
+					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					{
+						if (auto result = get_equipment_override_sfp(
+								a_data,
+								a_checkForm,
+								a_params,
+								e.group))
+						{
+							return result;
+						}
+						
+						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						{
+							break;
+						}
+					}
+					else
+					{
+						return std::addressof(e);
+					}
 				}
 			}
 
@@ -358,8 +451,7 @@ namespace IED
 
 				form = it->second.form;
 
-				if (!it->second.equipped &&
-				    !it->second.equippedLeft)
+				if (!it->second.is_equipped())
 				{
 					return false;
 				}
@@ -505,7 +597,10 @@ namespace IED
 
 				return Conditions::match_extra<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -517,13 +612,19 @@ namespace IED
 
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Package:
 
 				return Conditions::match_package<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Weather:
 
@@ -547,13 +648,19 @@ namespace IED
 
 				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Idle:
 
 				return Conditions::match_idle<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 				break;
 			}
@@ -793,7 +900,10 @@ namespace IED
 
 				return Conditions::match_extra<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -805,13 +915,19 @@ namespace IED
 
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Package:
 
 				return Conditions::match_package<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Weather:
 
@@ -835,13 +951,19 @@ namespace IED
 
 				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Idle:
 
 				return Conditions::match_idle<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 				break;
 			}
@@ -857,6 +979,17 @@ namespace IED
 		{
 			if (a_match.bipedSlot == BIPED_OBJECT::kNone)
 			{
+				if (auto pm = a_params.actor->processManager)
+				{
+					for (auto e : pm->equippedObject)
+					{
+						if (e == a_checkForm.form)
+						{
+							return true;
+						}
+					}
+				}
+
 				auto it = a_data.forms.find(a_checkForm.form->formID);
 				if (it == a_data.forms.end())
 				{
@@ -936,20 +1069,12 @@ namespace IED
 
 			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
 			{
-				if (!Conditions::compare(a_match.compOperator, it->second.count, a_match.count))
-				{
-					return false;
-				}
+				return Conditions::compare(a_match.compOperator, it->second.count, a_match.count);
 			}
 			else
 			{
-				if (it->second.count < 1)
-				{
-					return false;
-				}
+				return it->second.count > 0;
 			}
-
-			return true;
 		}
 
 		template <
@@ -1138,7 +1263,10 @@ namespace IED
 
 				return Conditions::match_extra<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Location:
 
@@ -1150,13 +1278,19 @@ namespace IED
 
 				return Conditions::match_worldspace<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Package:
 
 				return Conditions::match_package<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Weather:
 
@@ -1180,7 +1314,10 @@ namespace IED
 
 				return Conditions::match_mounted_by<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Presence:
 				{
@@ -1215,7 +1352,10 @@ namespace IED
 
 				return Conditions::match_idle<
 					equipmentOverrideCondition_t,
-					EquipmentOverrideConditionFlags>(a_params, a_match);
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 				break;
 			}

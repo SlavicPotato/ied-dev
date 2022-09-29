@@ -24,8 +24,8 @@ namespace IED
 
 		I3DIMain::I3DIMain(
 			Controller& a_controller) :
-			UIContextBase(a_controller),
-			UILocalizationInterface(a_controller)
+			UILocalizationInterface(a_controller),
+			m_controller(a_controller)
 		{
 		}
 
@@ -35,11 +35,6 @@ namespace IED
 
 		void I3DIMain::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			if (!m_data)
 			{
 				if (!CreateCommonData())
@@ -106,7 +101,7 @@ namespace IED
 
 		void I3DIMain::PrepareGameData()
 		{
-			if (!IsWindowOpen())
+			if (!IsContextOpen())
 			{
 				return;
 			}
@@ -154,7 +149,7 @@ namespace IED
 
 		void I3DIMain::Render()
 		{
-			if (!IsWindowOpen())
+			if (!IsContextOpen())
 			{
 				return;
 			}
@@ -207,7 +202,7 @@ namespace IED
 
 		void I3DIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)
 		{
-			if (!IsWindowOpen())
+			if (!IsContextOpen())
 			{
 				return;
 			}

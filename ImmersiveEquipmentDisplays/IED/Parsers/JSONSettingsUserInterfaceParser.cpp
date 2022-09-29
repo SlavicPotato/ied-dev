@@ -11,6 +11,8 @@
 
 #include "Fonts/FontInfo.h"
 
+#include "IED/UI/UIChildWindowID.h"
+
 namespace IED
 {
 	namespace Serialization
@@ -105,15 +107,15 @@ namespace IED
 				return false;
 			}
 
-			auto lastPanel = data.get("last_editor_panel", stl::underlying(UI::UIEditorPanel::Slot)).asUInt();
+			auto lastPanel = data.get("last_editor_panel", stl::underlying(UI::UIDisplayManagementEditorPanel::Slot)).asUInt();
 
 			switch (lastPanel)
 			{
 			case 1:
-				a_out.lastPanel = UI::UIEditorPanel::Custom;
+				a_out.lastPanel = UI::UIDisplayManagementEditorPanel::Custom;
 				break;
 			default:
-				a_out.lastPanel = UI::UIEditorPanel::Slot;
+				a_out.lastPanel = UI::UIDisplayManagementEditorPanel::Slot;
 				break;
 			}
 
@@ -172,6 +174,16 @@ namespace IED
 			if (data.isMember("bg_alpha"))
 			{
 				a_out.bgAlpha = data.get("bg_alpha", 1.0f).asFloat();
+			}
+
+			if (auto& cws = data["child_window_states"])
+			{
+				using enum_type = std::underlying_type_t<UI::ChildWindowID>;
+
+				for (enum_type i = 0; i < stl::underlying(UI::ChildWindowID::kMax); i++)
+				{
+					a_out.windowOpenStates[i] = cws[i].asBool();
+				}
 			}
 
 			return true;
@@ -265,6 +277,17 @@ namespace IED
 			if (a_data.bgAlpha)
 			{
 				data["bg_alpha"] = *a_data.bgAlpha;
+			}
+
+			{
+				auto& cws = (data["child_window_states"] = Json::Value(Json::ValueType::arrayValue));
+
+				using enum_type = std::underlying_type_t<UI::ChildWindowID>;
+
+				for (enum_type i = 0; i < stl::underlying(UI::ChildWindowID::kMax); i++)
+				{
+					cws[i] = a_data.windowOpenStates[i];
+				}
 			}
 
 			a_out["version"] = CURRENT_VERSION;

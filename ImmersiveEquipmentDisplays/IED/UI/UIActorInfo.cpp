@@ -23,11 +23,6 @@ namespace IED
 
 		void UIActorInfo::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(0.0f, 1200.0f, 800.0f, true);
 
 			if (ImGui::Begin(
@@ -119,11 +114,27 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			if (CollapsingHeader(
+			bool result;
+
+			if (!data.data->inventory.items.empty())
+			{
+				result = CollapsingHeader(
+					"inv_tree",
+					false,
+					"%s [%zu base items]",
+					LS(CommonStrings::Inventory),
+					data.data->inventory.items.size());
+			}
+			else
+			{
+				result = CollapsingHeader(
 					"inv_tree",
 					false,
 					"%s",
-					LS(CommonStrings::Inventory)))
+					LS(CommonStrings::Inventory));
+			}
+
+			if (result)
 			{
 				ImGui::Spacing();
 
@@ -133,13 +144,84 @@ namespace IED
 			}
 		}
 
+		template <class T>
+		bool UIActorInfo::DrawActorInfoLineFormStringPair(
+			T                                           a_label,
+			const std::pair<Game::FormID, std::string>& a_data)
+		{
+			if (a_data.first)
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(a_label));
+
+				ImGui::TableSetColumnIndex(1);
+
+				ImGui::TextWrapped("%.8X", a_data.first.get());
+
+				if (!a_data.second.empty())
+				{
+					ImGui::SameLine();
+					ImGui::TextWrapped("[%s]", a_data.second.c_str());
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class T>
+		bool UIActorInfo::DrawActorInfoLineForm(
+			T            a_label,
+			Game::FormID a_data)
+		{
+			if (a_data)
+			{
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(a_label));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%.8X", a_data.get());
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		void UIActorInfo::DrawActorInfoContents(
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
 		{
 			auto& data = a_data.data->entry;
 
-			ImGui::Columns(2, nullptr, true);
+			DrawActorInfoContentsFirst(a_handle, a_data);
+
+			if (data.equipped.first || data.equipped.second)
+			{
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+				DrawActorInfoContentsSecond(a_handle, a_data);
+			}
+
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+			DrawActorInfoContentsThird(a_handle, a_data);
+		}
+
+		void UIActorInfo::DrawActorInfoContentsFirst(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			auto& data = a_data.data->entry;
+
+			ImGui::Columns(2, "col", true);
 
 			if (ImGui::BeginTable(
 					"ltable_1",
@@ -183,9 +265,9 @@ namespace IED
 					if (itm != modList.end())
 					{
 						ImGui::TextWrapped(
-							"%s [%.2X]",
-							itm->second.name.c_str(),
-							itm->second.GetPartialIndex());
+							"[%X] %s",
+							itm->second.GetPartialIndex(),
+							itm->second.name.c_str());
 					}
 					else
 					{
@@ -240,45 +322,23 @@ namespace IED
 					ImGui::TableSetColumnIndex(1);
 
 					ImGui::TextWrapped(
-						"%s [%.8X]",
-						itr->second.edid.c_str(),
-						race.get());
+						"%.8X [%s]",
+						race.get(),
+						itr->second.edid.c_str());
 				}
 
-				if (data.worldspace)
+				DrawActorInfoLineForm(CommonStrings::Worldspace, data.worldspace);
+
+				if (DrawActorInfoLineFormStringPair(CommonStrings::Cell, data.cell))
 				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Worldspace));
-
-					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", data.worldspace.get());
-				}
-
-				if (data.cell)
-				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Cell));
-
-					ImGui::TableSetColumnIndex(1);
-
-					ImGui::TextWrapped("%.8X", data.cell.get());
-
-					if (!data.cellName.empty())
-					{
-						ImGui::SameLine();
-						ImGui::TextWrapped("[%s]", data.cellName.c_str());
-					}
-
 					if (!data.attached)
 					{
 						ImGui::SameLine();
 						ImGui::TextWrapped("%s", "[Detached]");
 					}
 				}
+
+				DrawActorInfoLineFormStringPair(CommonStrings::Location, data.location);
 
 				ImGui::EndTable();
 			}
@@ -318,141 +378,147 @@ namespace IED
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.0f", data.weight);
 
-				if (data.skin)
+				DrawActorInfoLineFormStringPair(CommonStrings::Skin, data.skin);
+				DrawActorInfoLineFormStringPair(CommonStrings::Idle, data.idle);
+				DrawActorInfoLineFormStringPair(CommonStrings::Furniture, data.furniture);
+				DrawActorInfoLineForm(CommonStrings::Package, data.package);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Columns();
+		}
+
+		void UIActorInfo::DrawActorInfoContentsSecond(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			auto& data = a_data.data->entry;
+
+			ImGui::Columns(2, "col", true);
+
+			if (ImGui::BeginTable(
+					"ltable_2",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
+			{
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+
+				if (data.equipped.first)
 				{
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Skin));
-
-					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", data.skin.get());
-				}
-
-				if (data.idle)
-				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Idle));
+					ImGui::Text("%s [R]:", LS(CommonStrings::Equipped));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
-						"%.8X [%s]",
-						data.idle.get(),
-						data.idleName.c_str());
+						"%.8X [%hhu] [%s]",
+						data.equipped.first.get(),
+						data.equippedTypes.first,
+						data.equippedNames.first.c_str());
 				}
 
-				if (data.package)
+				ImGui::EndTable();
+			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::BeginTable(
+					"rtable_2",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
+			{
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+
+				if (data.equipped.second)
 				{
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Package));
+					ImGui::Text("%s [L]:", LS(CommonStrings::Equipped));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", data.package.get());
-				}
-
-				if (data.furniture)
-				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Furniture));
-
-					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", data.furniture.get());
+					ImGui::TextWrapped(
+						"%.8X [%hhu] [%s]",
+						data.equipped.second.get(),
+						data.equippedTypes.second,
+						data.equippedNames.second.c_str());
 				}
 
 				ImGui::EndTable();
 			}
 
 			ImGui::Columns();
+		}
 
-			if (data.equipped.first || data.equipped.second)
+		void UIActorInfo::DrawActorInfoContentsThird(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			auto& data = a_data.data->entry;
+
+			ImGui::Columns(2, "col", true);
+
+			if (ImGui::BeginTable(
+					"ltable_3",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
 			{
-				ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
 
-				ImGui::Columns(2, nullptr, true);
+				ImGui::TableNextRow();
 
-				if (ImGui::BeginTable(
-						"ltable_2",
-						2,
-						ImGuiTableFlags_NoSavedSettings |
-							ImGuiTableFlags_SizingStretchProp,
-						{ -1.0f, 0.0f }))
-				{
-					ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-					ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Position));
 
-					if (data.equipped.first)
-					{
-						ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped(
+					"%f %f %f",
+					data.pos.x,
+					data.pos.y,
+					data.pos.z);
 
-						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s [R]:", LS(CommonStrings::Equipped));
-
-						ImGui::TableSetColumnIndex(1);
-						ImGui::TextWrapped(
-							"%.8X [%hhu] [%s]",
-							data.equipped.first.get(),
-							data.equippedTypes.first,
-							data.equippedNames.first.c_str());
-					}
-
-					ImGui::EndTable();
-				}
-
-				ImGui::NextColumn();
-
-				if (ImGui::BeginTable(
-						"rtable_2",
-						2,
-						ImGuiTableFlags_NoSavedSettings |
-							ImGuiTableFlags_SizingStretchProp,
-						{ -1.0f, 0.0f }))
-				{
-					ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-					ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
-
-					if (data.equipped.second)
-					{
-						ImGui::TableNextRow();
-
-						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s [L]:", LS(CommonStrings::Equipped));
-
-						ImGui::TableSetColumnIndex(1);
-						ImGui::TextWrapped(
-							"%.8X [%hhu] [%s]",
-							data.equipped.second.get(),
-							data.equippedTypes.second,
-							data.equippedNames.second.c_str());
-					}
-
-					ImGui::EndTable();
-				}
-
-				ImGui::Columns();
+				ImGui::EndTable();
 			}
 
-			ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
-			ImGui::Spacing();
+			ImGui::NextColumn();
 
-			ImGui::TextWrapped(
-				"%s: %f %f %f",
-				LS(CommonStrings::Position),
-				data.pos.x,
-				data.pos.y,
-				data.pos.z);
+			if (ImGui::BeginTable(
+					"rtable_3",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
+			{
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
 
-			ImGui::TextWrapped(
-				"%s: %f %f %f",
-				LS(CommonStrings::Rotation),
-				data.rot.x,
-				data.rot.y,
-				data.rot.z);
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Rotation));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped(
+					"%f %f %f",
+					data.rot.x,
+					data.rot.y,
+					data.rot.z);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Columns();
 		}
 
 		void UIActorInfo::DrawInventoryTreeContents(
@@ -462,12 +528,6 @@ namespace IED
 			ImGui::PushID("header");
 
 			DrawInventoryFilterTree();
-
-			ImGui::Spacing();
-			ImGui::Separator();
-			ImGui::Spacing();
-
-			ImGui::Text("%zu base items", a_data.data->inventory.items.size());
 
 			ImGui::Spacing();
 			ImGui::Separator();
@@ -555,7 +615,7 @@ namespace IED
 
 					if (!e.extraList.empty())
 					{
-						DrawInventoryExtraListsTree(a_handle, e);
+						DrawInventoryExtraListsTree(a_handle, a_data, e);
 					}
 
 					ImGui::Spacing();
@@ -682,6 +742,7 @@ namespace IED
 
 		void UIActorInfo::DrawInventoryExtraListsTree(
 			Game::FormID                      a_handle,
+			const ActorInfoAggregate&         a_info,
 			const actorInventoryInfo_t::Base& a_data)
 		{
 			if (ImGui::TreeNodeEx(
@@ -693,7 +754,7 @@ namespace IED
 			{
 				ImGui::Spacing();
 
-				DrawInventoryExtraLists(a_handle, a_data);
+				DrawInventoryExtraLists(a_handle, a_info, a_data);
 
 				ImGui::Spacing();
 
@@ -703,11 +764,12 @@ namespace IED
 
 		void UIActorInfo::DrawInventoryExtraLists(
 			Game::FormID                      a_handle,
+			const ActorInfoAggregate&         a_info,
 			const actorInventoryInfo_t::Base& a_data)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
-				
-			constexpr int NUM_COLUMNS = 8;
+
+			constexpr int NUM_COLUMNS = 9;
 
 			if (ImGui::BeginTable(
 					"table",
@@ -722,6 +784,7 @@ namespace IED
 				ImGui::TableSetupColumn(LS(CommonStrings::Equipped));
 				ImGui::TableSetupColumn(LS(CommonStrings::Favorited));
 				ImGui::TableSetupColumn(LS(UIWidgetCommonStrings::PreventEquip));
+				ImGui::TableSetupColumn(LS(UIWidgetCommonStrings::ForceEquip));
 				ImGui::TableSetupColumn(LS(UIWidgetCommonStrings::Enchantment));
 				ImGui::TableSetupColumn(LS(CommonStrings::Health));
 				ImGui::TableSetupColumn(LS(CommonStrings::UID));
@@ -747,19 +810,31 @@ namespace IED
 					ImGui::TextUnformatted(e.GetName(a_data).c_str());
 
 					ImGui::TableSetColumnIndex(1);
-					if (e.flags.test_any(InventoryInfoExtraFlags::kEquipped))
+
+					if (e.flags.test_any(InventoryInfoExtraFlags::kEquippedMask))
 					{
-						ImGui::Text("%s [R]", LS(CommonStrings::Yes));
-					}
-					else if (e.flags.test_any(InventoryInfoExtraFlags::kEquippedLeft))
-					{
-						ImGui::Text("%s [L]", LS(CommonStrings::Yes));
+						ImGui::Text("%s", LS(CommonStrings::Yes));
+
+						if (
+							e.flags.test(InventoryInfoExtraFlags::kEquipped) &&
+							a_info.entry.equipped.first &&
+							a_data.formid == a_info.entry.equipped.first)
+						{
+							ImGui::SameLine();
+							ImGui::TextUnformatted("[R]");
+						}
+
+						if (e.flags.test(InventoryInfoExtraFlags::kEquippedLeft))
+						{
+							ImGui::SameLine();
+							ImGui::TextUnformatted("[L]");
+						}
 					}
 					else
 					{
 						ImGui::Text("%s", LS(CommonStrings::No));
 					}
-					
+
 					ImGui::TableSetColumnIndex(2);
 					ImGui::Text(
 						"%s",
@@ -775,6 +850,13 @@ namespace IED
                             LS(CommonStrings::No));
 
 					ImGui::TableSetColumnIndex(4);
+					ImGui::Text(
+						"%s",
+						e.flags.test(InventoryInfoExtraFlags::kShouldWear) ?
+							LS(CommonStrings::Yes) :
+                            LS(CommonStrings::No));
+
+					ImGui::TableSetColumnIndex(5);
 					if (auto& enchantment = e.GetEnchantment(a_data))
 					{
 						if (!e.enchantment)
@@ -800,7 +882,7 @@ namespace IED
 						ImGui::Text("%s", LS(CommonStrings::No));
 					}
 
-					ImGui::TableSetColumnIndex(5);
+					ImGui::TableSetColumnIndex(6);
 					if (e.flags.test(InventoryInfoExtraFlags::kHasHealth))
 					{
 						ImGui::Text("%f", e.health);
@@ -810,7 +892,7 @@ namespace IED
 						ImGui::Text("%s", LS(CommonStrings::No));
 					}
 
-					ImGui::TableSetColumnIndex(6);
+					ImGui::TableSetColumnIndex(7);
 					if (e.uid)
 					{
 						ImGui::Text("%hu", *e.uid);
@@ -819,8 +901,8 @@ namespace IED
 					{
 						ImGui::Text("%s", LS(CommonStrings::No));
 					}
-					
-					ImGui::TableSetColumnIndex(7);
+
+					ImGui::TableSetColumnIndex(8);
 					if (e.owner)
 					{
 						ImGui::Text("%.8X", e.owner);
@@ -926,5 +1008,4 @@ namespace IED
 			});
 		}
 	}
-
 }

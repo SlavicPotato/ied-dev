@@ -16,6 +16,8 @@ namespace IED
 		CorpGrey,
 		CorpGreyFlat,
 		ItaClassic,
+		SpectrumDark,
+		EnemyMouse,
 
 		Max
 	};

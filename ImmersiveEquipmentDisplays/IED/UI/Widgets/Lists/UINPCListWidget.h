@@ -261,9 +261,9 @@ namespace IED
 				if (itm != modList.end())
 				{
 					ImGui::TextWrapped(
-						"%s [%.2X]",
-						itm->second.name.c_str(),
-						itm->second.GetPartialIndex());
+						"[%X] %s",
+						itm->second.GetPartialIndex(),
+						itm->second.name.c_str());
 				}
 				else
 				{
@@ -337,8 +337,13 @@ namespace IED
 		template <class Td>
 		void UINPCList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
 		{
-			GetActorSettings().lastSelected = a_handle;
-			MarkSettingsDirty();
+			auto& settings = GetActorSettings();
+
+			if (settings.lastSelected != a_handle)
+			{
+				settings.lastSelected = a_handle;
+				MarkSettingsDirty();
+			}
 		}
 
 	}

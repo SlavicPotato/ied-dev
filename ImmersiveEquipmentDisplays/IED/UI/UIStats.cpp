@@ -26,11 +26,6 @@ namespace IED
 
 		void UIStats::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(0.0f, 600.0f, 400.0f, true);
 
 			if (ImGui::Begin(

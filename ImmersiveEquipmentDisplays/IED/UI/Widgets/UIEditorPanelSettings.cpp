@@ -15,8 +15,11 @@ namespace IED
 			Data::ConfigSex a_sex,
 			bool            a_sendEvent)
 		{
-			m_sex = a_sex;
-			OnSexChanged(a_sex);
+			if (m_sex != a_sex)
+			{
+				m_sex = a_sex;
+				OnSexChanged(a_sex);
+			}
 		}
 
 		void UIEditorPanelSettings::DrawEditorPanelSettings()

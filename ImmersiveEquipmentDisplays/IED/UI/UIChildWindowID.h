@@ -20,6 +20,7 @@ namespace IED
 			kUIStats,
 			kUISkeletonExplorer,
 			kUIActorInfo,
+			kUIDisplayManagement,
 
 			kMax
 		};

@@ -5,7 +5,7 @@
 #include "Widgets/UITableRowInputWidget.h"
 
 #include "IED/UI/Window/UIWindow.h"
-#include "IED/UI/Window/UIWindowBase.h"
+#include "IED/UI/UIContext.h"
 
 #include "UILocalizationInterface.h"
 
@@ -17,7 +17,7 @@ namespace IED
 	{
 		class UINodeMapEditor :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			public UITableRowInputWidget<stl::fixed_string>,
 			public virtual UILocalizationInterface
 		{

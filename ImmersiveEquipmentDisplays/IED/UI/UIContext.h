@@ -2,22 +2,23 @@
 
 #include "IED/UI/UIChildWindowID.h"
 
+#include "Drivers/Input/Handlers.h"
+
 namespace IED
 {
 	namespace UI
 	{
-		class UIChildWindowBase
+		class UIContext
 		{
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kMax;
 
-			UIChildWindowBase()                   = default;
-			virtual ~UIChildWindowBase() noexcept = default;
+			UIContext()                   = default;
+			virtual ~UIContext() noexcept = default;
 
-			UIChildWindowBase(const UIChildWindowBase&) = delete;
-			UIChildWindowBase(UIChildWindowBase&&)      = delete;
-			UIChildWindowBase& operator=(const UIChildWindowBase&) = delete;
-			UIChildWindowBase& operator=(UIChildWindowBase&&) = delete;
+			UIContext(const UIContext&) = delete;
+			UIContext(UIContext&&)      = delete;
+			UIContext& operator=(const UIContext&) = delete;
+			UIContext& operator=(UIContext&&) = delete;
 
 			void SetOpenState(bool a_state, bool a_notify = false);
 			void ToggleOpenState(bool a_notify = false);
@@ -32,7 +33,7 @@ namespace IED
 				return std::addressof(m_openState);
 			}
 
-			[[nodiscard]] inline constexpr auto IsWindowOpen() const noexcept
+			[[nodiscard]] inline constexpr auto IsContextOpen() const noexcept
 			{
 				return m_openState;
 			}
@@ -42,11 +43,17 @@ namespace IED
 			virtual void OnOpen(){};
 			virtual void OnClose(){};
 			virtual void Reset(){};
+			virtual void Notify(std::uint32_t a_code, void* a_params = nullptr){};
+
+			virtual void PrepareGameData(){};
+			virtual void Render(){};
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn){};
+
+			//virtual void OnOpenStateChanged(bool a_newState){};
 
 			void DrawWrapper();
 
 		private:
-
 			bool m_openState{ false };
 			bool m_stateChanged{ false };
 		};

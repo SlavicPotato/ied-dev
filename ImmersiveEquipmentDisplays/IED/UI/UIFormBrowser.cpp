@@ -138,7 +138,7 @@ namespace IED
 					SetOpenState(false);
 				}
 
-				if (!IsWindowOpen())
+				if (!IsContextOpen())
 				{
 					result.closed = true;
 				}
@@ -214,7 +214,7 @@ namespace IED
 
 		void UIFormBrowser::OnClose()
 		{
-			if (!IsWindowOpen())
+			if (!IsContextOpen())
 			{
 				Reset();
 			}

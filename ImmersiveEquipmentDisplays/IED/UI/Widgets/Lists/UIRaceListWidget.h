@@ -185,7 +185,10 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Mod));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%s [%.2X]", itm->second.name.c_str(), itm->second.GetPartialIndex());
+					ImGui::TextWrapped(
+						"[%X] %s",
+						itm->second.GetPartialIndex(),
+						itm->second.name.c_str());
 				}
 			}
 		}
@@ -224,8 +227,13 @@ namespace IED
 		template <class Td>
 		void UIRaceList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
 		{
-			GetRaceSettings().lastSelected = a_handle;
-			MarkSettingsDirty();
+			auto& settings = GetRaceSettings();
+
+			if (settings.lastSelected != a_handle)
+			{
+				settings.lastSelected = a_handle;
+				MarkSettingsDirty();
+			}
 		}
 
 	}

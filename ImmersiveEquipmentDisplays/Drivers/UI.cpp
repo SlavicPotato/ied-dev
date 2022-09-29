@@ -6,6 +6,8 @@
 
 #include "IED/Parsers/JSONFontInfoMapParser.h"
 
+#define SPECTRUM_USE_DARK_THEME
+
 #include "ImGui/Styles/all.h"
 
 namespace IED
@@ -553,6 +555,15 @@ namespace IED
 			m_Instance.MarkFontUpdateDataDirtyImpl();
 		}
 
+		void UI::QueueImGuiSettingsSave()
+		{
+			ITaskPool::AddTask([]() {
+				stl::scoped_lock lock(m_Instance.m_lock);
+
+				ImGui::SaveIniSettingsToDisk(PATHS::IMGUI_INI);
+			});
+		}
+
 		void UI::OnTaskAdd(Tasks::UIRenderTaskBase* a_task)
 		{
 			a_task->m_state.holdsLock       = a_task->m_options.lock;
@@ -775,50 +786,56 @@ namespace IED
 		{
 			using namespace IED::UI;
 
-			ImGuiStyle newStyle;
+			auto newStyle = std::make_unique<ImGuiStyle>();
 
 			switch (m_currentStyle)
 			{
 			case UIStylePreset::Light:
-				ImGui::StyleColorsLight(std::addressof(newStyle));
+				ImGui::StyleColorsLight(newStyle.get());
 				break;
 			case UIStylePreset::Classic:
-				ImGui::StyleColorsClassic(std::addressof(newStyle));
+				ImGui::StyleColorsClassic(newStyle.get());
 				break;
 			case UIStylePreset::ItaDark:
-				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Dark, 1.0f);
+				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Dark, 1.0f);
 				break;
 			case UIStylePreset::ItaLight:
-				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Light, 1.0f);
+				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Light, 1.0f);
 				break;
 			case UIStylePreset::ItaClassic:
-				Styles::ITA::Setup(newStyle, Styles::ITA::Template::Classic, 1.0f);
+				Styles::ITA::Setup(*newStyle, Styles::ITA::Template::Classic, 1.0f);
 				break;
 			case UIStylePreset::SteamClassic:
-				Styles::SteamClassic::Setup(newStyle);
+				Styles::SteamClassic::Setup(*newStyle);
 				break;
 			case UIStylePreset::DeepDark:
-				Styles::DeepDark::Setup(newStyle);
+				Styles::DeepDark::Setup(*newStyle);
 				break;
 			case UIStylePreset::S56:
-				Styles::S56::Setup(newStyle);
+				Styles::S56::Setup(*newStyle);
 				break;
 			case UIStylePreset::CorpGrey:
-				Styles::CorporateGrey::Setup(newStyle, false);
+				Styles::CorporateGrey::Setup(*newStyle, false);
 				break;
 			case UIStylePreset::CorpGreyFlat:
-				Styles::CorporateGrey::Setup(newStyle, true);
+				Styles::CorporateGrey::Setup(*newStyle, true);
 				break;
 			case UIStylePreset::DarkRed:
-				Styles::DarkRed::Setup(newStyle);
+				Styles::DarkRed::Setup(*newStyle);
+				break;
+			case UIStylePreset::SpectrumDark:
+				Styles::SpectrumDark::Setup(*newStyle);
+				break;
+			case UIStylePreset::EnemyMouse:
+				Styles::EnemyMouse::Setup(*newStyle);
 				break;
 			default:
-				ImGui::StyleColorsDark(std::addressof(newStyle));
+				ImGui::StyleColorsDark(newStyle.get());
 				break;
 			}
 
-			ScaleStyle(newStyle, m_fontUpdateData.scale);
-			ImGui::GetStyle() = newStyle;
+			ScaleStyle(*newStyle, m_fontUpdateData.scale);
+			ImGui::GetStyle() = *newStyle;
 
 			UpdateStyleAlpha();
 		}

@@ -33,20 +33,36 @@ namespace IED
 			a_out.worldspace = {};
 		}
 
+		if (auto location = a_actor->GetCurrentLocation())
+		{
+			a_out.location = {
+				location->formID,
+				IFormCommon::GetFormName(location)
+			};
+		}
+		else
+		{
+			a_out.location = {};
+		}
+
 		if (auto cell = a_actor->GetParentCell())
 		{
-			a_out.cell     = cell->formID;
-			a_out.cellName = IFormCommon::GetFormName(cell);
+			a_out.cell = {
+				cell->formID,
+				IFormCommon::GetFormName(cell)
+			};
 		}
 		else
 		{
 			a_out.cell = {};
-			a_out.cellName.clear();
 		}
 
 		if (auto skin = a_actor->GetSkin())
 		{
-			a_out.skin = skin->formID;
+			a_out.skin = {
+				skin->formID,
+				IFormCommon::GetFormName(skin)
+			};
 		}
 		else
 		{
@@ -55,13 +71,14 @@ namespace IED
 
 		if (auto idle = a_actor->GetFurnitureIdle())
 		{
-			a_out.idle     = idle->formID;
-			a_out.idleName = idle->editorId.c_str();
+			a_out.idle = {
+				idle->formID,
+				IFormCommon::GetFormName(idle)
+			};
 		}
 		else
 		{
 			a_out.idle = {};
-			a_out.idleName.clear();
 		}
 
 		if (auto package = a_actor->GetCurrentPackage())
@@ -75,7 +92,10 @@ namespace IED
 
 		if (auto furniture = a_actor->GetOccupiedFurniture())
 		{
-			a_out.furniture = furniture->formID;
+			a_out.furniture = {
+				furniture->formID,
+				IFormCommon::GetFormName(furniture)
+			};
 		}
 		else
 		{

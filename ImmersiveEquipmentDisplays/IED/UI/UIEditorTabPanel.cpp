@@ -155,7 +155,7 @@ namespace IED
 			if (e.ptr)
 			{
 				e.ptr->EditorOnOpen();
-				e.flags = ImGuiTabItemFlags_SetSelected;
+				e.flags |= ImGuiTabItemFlags_SetSelected;
 			}
 		}
 
@@ -168,6 +168,15 @@ namespace IED
 					e.ptr->EditorOnClose();
 				}
 			}
+
+			auto& conf = GetEditorConfig();
+
+			if (m_currentClass != conf.lastConfigClass)
+			{
+				conf.lastConfigClass = m_currentClass;
+				m_controller.GetConfigStore().settings.mark_dirty();
+			}
+
 		}
 
 		void UIEditorTabPanel::SetEditor(
@@ -184,26 +193,21 @@ namespace IED
 		void UIEditorTabPanel::SetTabSelected(
 			Data::ConfigClass a_class)
 		{
-			m_interfaces[stl::underlying(a_class)].flags =
+			m_interfaces[stl::underlying(a_class)].flags |=
 				ImGuiTabItemFlags_SetSelected;
 		}
 
 		void UIEditorTabPanel::EvaluateTabSwitch(
 			Data::ConfigClass a_class)
 		{
-			if (m_currentClass == a_class)
+			auto oldClass = m_currentClass;
+
+			if (oldClass == a_class)
 			{
 				return;
 			}
 
-			auto oldClass = m_currentClass;
-
 			m_currentClass = a_class;
-
-			auto& conf = GetEditorConfig();
-
-			conf.lastConfigClass = a_class;
-			m_controller.GetConfigStore().settings.mark_dirty();
 
 			const auto& inew = m_interfaces[stl::underlying(a_class)];
 			const auto& iold = m_interfaces[stl::underlying(oldClass)];

@@ -2,10 +2,11 @@
 
 #include "CommonParams.h"
 #include "ConfigData.h"
+#include "Data.h"
 #include "FormCommon.h"
 #include "WeatherClassificationFlags.h"
 
-#include "IED/Data.h"
+#include "Controller/CachedActorData.h"
 
 namespace IED
 {
@@ -13,8 +14,9 @@ namespace IED
 	{
 		template <class Tm, class Tf>
 		constexpr bool match_extra(
-			CommonParams& a_params,
-			const Tm&     a_match)
+			CommonParams&          a_params,
+			const Tm&              a_match,
+			const CachedActorData& a_cached)
 		{
 			switch (a_match.extraCondType)
 			{
@@ -23,11 +25,11 @@ namespace IED
 			case Data::ExtraConditionType::kIsDead:
 				return a_params.get_actor_dead();
 			case Data::ExtraConditionType::kInInterior:
-				return a_params.get_in_interior();
+				return a_cached.inInterior;
 			case Data::ExtraConditionType::kIsPlayerTeammate:
-				return a_params.is_player_teammate();
+				return !a_params.is_player() && a_cached.flags1.test(Actor::Flags1::kPlayerTeammate);
 			case Data::ExtraConditionType::kIsGuard:
-				return a_params.actor->IsGuard();
+				return a_cached.flags1.test(Actor::Flags1::kGuard);
 			case Data::ExtraConditionType::kIsMount:
 				return a_params.actor->IsMount();
 			case Data::ExtraConditionType::kShoutEquipped:
@@ -43,7 +45,7 @@ namespace IED
 			case Data::ExtraConditionType::kIsInFirstPerson:
 				return is_in_first_person(a_params);
 			case Data::ExtraConditionType::kInCombat:
-				return a_params.is_in_combat();
+				return a_cached.inCombat;
 			case Data::ExtraConditionType::kIsFemale:
 				return is_female(a_params);
 #if defined(IED_ENABLE_CONDITION_EN)
@@ -51,19 +53,19 @@ namespace IED
 				return enemies_nearby(a_params);
 #endif
 			case Data::ExtraConditionType::kInWater:
-				return a_params.actor->flags1.test(Actor::Flags1::kInWater);
+				return a_cached.flagslf1.test(Actor::Flags1::kInWater);
 			case Data::ExtraConditionType::kUnderwater:
-				return a_params.actor->flags2.test(Actor::Flags2::kUnderwater);
+				return a_cached.flagslf2.test(Actor::Flags2::kUnderwater);
 			case Data::ExtraConditionType::kSwimming:
-				return a_params.actor->IsSwimming();
+				return a_cached.swimming;
 			case Data::ExtraConditionType::kBleedingOut:
-				return a_params.actor->flags2.test(Actor::Flags2::kInBleedoutAnimation);
+				return a_cached.flags2.test(Actor::Flags2::kInBleedoutAnimation);
 			case Data::ExtraConditionType::kTresspassing:
-				return a_params.actor->flags2.test(Actor::Flags2::kIsTrespassing);
+				return a_cached.flags2.test(Actor::Flags2::kIsTrespassing);
 			case Data::ExtraConditionType::kIsCommanded:
-				return a_params.actor->flags2.test(Actor::Flags2::kIsCommandedActor);
+				return a_cached.flags2.test(Actor::Flags2::kIsCommandedActor);
 			case Data::ExtraConditionType::kParalyzed:
-				return a_params.actor->flags1.test(Actor::Flags1::kParalyzed);
+				return a_cached.flags1.test(Actor::Flags1::kParalyzed);
 			case Data::ExtraConditionType::kIsRidingMount:
 				return a_params.is_on_mount();
 			case Data::ExtraConditionType::kHumanoidSkeleton:
@@ -71,31 +73,31 @@ namespace IED
 			case Data::ExtraConditionType::kIsPlayer:
 				return a_params.is_player();
 			case Data::ExtraConditionType::kBribedByPlayer:
-				return !a_params.is_player() && a_params.actor->flags2.test(Actor::Flags2::kBribedByPlayer);
+				return !a_params.is_player() && a_cached.flags2.test(Actor::Flags2::kBribedByPlayer);
 			case Data::ExtraConditionType::kAngryWithPlayer:
-				return !a_params.is_player() && a_params.actor->flags2.test(Actor::Flags2::kAngryWithPlayer);
+				return !a_params.is_player() && a_cached.flags2.test(Actor::Flags2::kAngryWithPlayer);
 			case Data::ExtraConditionType::kEssential:
-				return a_params.actor->flags2.test(Actor::Flags2::kEssential);
+				return a_cached.flags2.test(Actor::Flags2::kEssential);
 			case Data::ExtraConditionType::kProtected:
-				return a_params.actor->flags2.test(Actor::Flags2::kProtected);
+				return a_cached.flags2.test(Actor::Flags2::kProtected);
 			case Data::ExtraConditionType::kSitting:
-				return a_params.actor->IsSitting();
+				return a_cached.sitting;
 			case Data::ExtraConditionType::kSleeping:
-				return a_params.actor->IsSleeping();
+				return a_cached.sleeping;
 			case Data::ExtraConditionType::kBeingRidden:
-				return a_params.is_ridden();
+				return a_cached.beingRidden;
 			case Data::ExtraConditionType::kWeaponDrawn:
-				return a_params.actor->IsWeaponDrawn();
+				return a_cached.weaponDrawn;
 			case Data::ExtraConditionType::kRandomPercent:
 				return match_random_percent(a_params, a_match, a_match.percent);
 			case Data::ExtraConditionType::kNodeMonitor:
 				return check_node_monitor_value(a_params, a_match.uid);
 			case Data::ExtraConditionType::kArrested:
-				return a_params.actor->IsArrested();
+				return a_cached.arrested;
 			case Data::ExtraConditionType::kIsChild:
 				return a_params.actor->IsChild();
 			case Data::ExtraConditionType::kInKillmove:
-				return a_params.actor->flags2.test(Actor::Flags2::kIsInKillMove);
+				return a_cached.flags2.test(Actor::Flags2::kIsInKillMove);
 			default:
 				return false;
 			}
@@ -425,10 +427,11 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_worldspace(
-			CommonParams& a_params,
-			const Tm&     a_match)
+			CommonParams&          a_params,
+			const Tm&              a_match,
+			const CachedActorData& a_cached)
 		{
-			if (auto current = a_params.get_worldspace())
+			if (auto current = a_cached.worldspace)
 			{
 				if (a_match.form.get_id())
 				{
@@ -452,10 +455,11 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_package(
-			CommonParams& a_params,
-			const Tm&     a_match)
+			CommonParams&          a_params,
+			const Tm&              a_match,
+			const CachedActorData& a_cached)
 		{
-			if (auto current = a_params.actor->GetCurrentPackage())
+			if (auto current = a_cached.currentPackage)
 			{
 				if (a_match.form.get_id())
 				{
@@ -704,9 +708,10 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_mounted_by(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&              a_match,
+			const CachedActorData& a_cached)
 		{
-			if (a_params.is_ridden())
+			if (a_cached.beingRidden)
 			{
 				if (a_match.form.get_id())
 				{
@@ -760,10 +765,11 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_idle(
-			CommonParams& a_params,
-			const Tm&     a_match)
+			CommonParams&          a_params,
+			const Tm&              a_match,
+			const CachedActorData& a_cached)
 		{
-			const auto idle = a_params.get_idle();
+			const auto idle = a_cached.currentIdle;
 			const auto cfid = idle ? idle->formID : Game::FormID{};
 
 			return a_match.flags.test(Tf::kNegateMatch2) !=

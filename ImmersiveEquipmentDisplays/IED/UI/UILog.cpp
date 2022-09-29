@@ -20,11 +20,6 @@ namespace IED
 
 		void UILog::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(0.0f, 800.0f, 800.0f, true);
 
 			if (ImGui::Begin(

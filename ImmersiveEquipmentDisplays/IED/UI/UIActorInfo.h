@@ -5,7 +5,7 @@
 #include "Widgets/Lists/UIActorListWidget.h"
 
 #include "Window/UIWindow.h"
-#include "Window/UIWindowBase.h"
+#include "UIContext.h"
 
 #include "UILocalizationInterface.h"
 
@@ -40,7 +40,7 @@ namespace IED
 
 		class UIActorInfo :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			UICollapsibles,
 			UIActorList<ActorInfoData>,
 			public virtual UILocalizationInterface
@@ -60,10 +60,32 @@ namespace IED
 		private:
 			void DrawActorInfo();
 
+			template <class T>
+			bool DrawActorInfoLineFormStringPair(
+				T                                           a_label,
+				const std::pair<Game::FormID, std::string>& a_data);
+
+			template <class T>
+			bool DrawActorInfoLineForm(
+				T            a_label,
+				Game::FormID a_data);
+
 			void DrawActorInfoContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 			
+			void DrawActorInfoContentsFirst(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+			
+			void DrawActorInfoContentsSecond(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+			
+			void DrawActorInfoContentsThird(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
@@ -84,10 +106,12 @@ namespace IED
 
 			void DrawInventoryExtraListsTree(
 				Game::FormID                      a_handle,
+				const ActorInfoAggregate&         a_info,
 				const actorInventoryInfo_t::Base& a_data);
-			
+
 			void DrawInventoryExtraLists(
 				Game::FormID                      a_handle,
+				const ActorInfoAggregate&         a_info,
 				const actorInventoryInfo_t::Base& a_data);
 
 			void UpdateActorInfoData(

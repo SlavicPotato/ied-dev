@@ -554,7 +554,10 @@ namespace IED
 
 			return Conditions::match_extra<
 				Data::configNodeOverrideCondition_t,
-				Data::NodeOverrideConditionFlags>(a_params, a_data);
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 
 		case Data::NodeOverrideConditionType::Location:
 
@@ -566,13 +569,19 @@ namespace IED
 
 			return Conditions::match_worldspace<
 				Data::configNodeOverrideCondition_t,
-				Data::NodeOverrideConditionFlags>(a_params, a_data);
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 
 		case Data::NodeOverrideConditionType::Package:
 
 			return Conditions::match_package<
 				Data::configNodeOverrideCondition_t,
-				Data::NodeOverrideConditionFlags>(a_params, a_data);
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 
 		case Data::NodeOverrideConditionType::Weather:
 
@@ -596,13 +605,19 @@ namespace IED
 
 			return Conditions::match_mounted_by<
 				Data::configNodeOverrideCondition_t,
-				Data::NodeOverrideConditionFlags>(a_params, a_data);
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 
 		case Data::NodeOverrideConditionType::Idle:
 
 			return Conditions::match_idle<
 				Data::configNodeOverrideCondition_t,
-				Data::NodeOverrideConditionFlags>(a_params, a_data);
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 		}
 
 		return false;
@@ -771,7 +786,7 @@ namespace IED
 
 	void INodeOverride::ApplyNodeOverride(
 		const stl::fixed_string&                   a_name,
-		const CMENodeEntry&                      a_entry,
+		const CMENodeEntry&                        a_entry,
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params)
 	{

@@ -29,20 +29,21 @@ namespace IED
 		mutable std::optional<TESObjectARMO*>                        actorSkin;
 		mutable std::optional<bool>                                  canDualWield;
 		mutable std::optional<bool>                                  isDead;
-		mutable std::optional<bool>                                  inInterior;
 		mutable std::optional<BGSLocation*>                          location;
-		mutable std::optional<TESWorldSpace*>                        worldspace;
 		mutable std::optional<TESCombatStyle*>                       combatStyle;
 		mutable std::optional<RE::TESWeather*>                       currentWeather;
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
 		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		mutable std::optional<bool>                                  inCombat;
 		mutable std::optional<bool>                                  enemiesNearby;
 		mutable std::optional<bool>                                  isMounted;
-		mutable std::optional<bool>                                  isRidden;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
+
+		//mutable std::optional<bool>                                  inInterior;
+		//mutable std::optional<TESWorldSpace*>                        worldspace;
+		//mutable std::optional<bool>                                  inCombat;
+		//mutable std::optional<bool>                                  isRidden;
 
 		[[nodiscard]] inline constexpr bool is_player() const noexcept
 		{
@@ -197,7 +198,7 @@ namespace IED
 			return *isDead;
 		}
 
-		[[nodiscard]] inline constexpr bool get_in_interior() const
+		/*[[nodiscard]] inline constexpr bool get_in_interior() const
 		{
 			if (!inInterior)
 			{
@@ -205,7 +206,7 @@ namespace IED
 			}
 
 			return *inInterior;
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr auto get_current_location() const
 		{
@@ -224,7 +225,7 @@ namespace IED
 			return *location;
 		}
 
-		[[nodiscard]] inline constexpr auto get_worldspace() const
+		/*[[nodiscard]] inline constexpr auto get_worldspace() const
 		{
 			if (!worldspace)
 			{
@@ -232,7 +233,7 @@ namespace IED
 			}
 
 			return *worldspace;
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr bool is_player_teammate() const noexcept
 		{
@@ -288,7 +289,7 @@ namespace IED
 			return *timeOfDay;
 		}
 
-		[[nodiscard]] inline constexpr auto is_in_combat() const
+		/*[[nodiscard]] inline constexpr auto is_in_combat() const
 		{
 			if (!inCombat)
 			{
@@ -296,7 +297,7 @@ namespace IED
 			}
 
 			return *inCombat;
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr auto is_on_mount() const
 		{
@@ -308,7 +309,7 @@ namespace IED
 			return *isMounted;
 		}
 
-		[[nodiscard]] inline constexpr auto is_ridden() const
+		/*[[nodiscard]] inline constexpr auto is_ridden() const
 		{
 			if (!isRidden)
 			{
@@ -316,7 +317,7 @@ namespace IED
 			}
 
 			return *isRidden;
-		}
+		}*/
 
 		[[nodiscard]] auto& get_mounted_actor() const
 		{
@@ -353,11 +354,11 @@ namespace IED
 
 			return *mountedByActor;
 		}
-		
-		[[nodiscard]] auto get_idle() const
+
+		/*[[nodiscard]] auto get_idle() const
 		{
 			return actor->GetFurnitureIdle();
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{

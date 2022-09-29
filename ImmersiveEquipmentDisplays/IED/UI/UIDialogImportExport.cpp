@@ -27,11 +27,6 @@ namespace IED
 
 		void UIDialogImportExport::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			auto& io = ImGui::GetIO();
 
 			ImGui::SetNextWindowPos(

@@ -5290,4 +5290,30 @@ namespace IED
 
 		ProcessEffects(m_objects);
 	}
+
+	void Controller::QueueSettingsSave(bool a_dirtyOnly)
+	{
+		ITaskPool::AddTask([this,
+		                    a_dirtyOnly,
+		                    sl = std::source_location::current()]() {
+			stl::scoped_lock lock(m_lock);
+
+			PerfTimer pt;
+			pt.Start();
+
+			auto& settings = GetConfigStore().settings;
+
+			bool result = a_dirtyOnly ?
+			                  settings.SaveIfDirty() :
+                              settings.Save();
+
+			if (result)
+			{
+				Debug(
+					"%s: %fs",
+					sl.function_name(),
+					pt.Stop());
+			}
+		});
+	}
 }

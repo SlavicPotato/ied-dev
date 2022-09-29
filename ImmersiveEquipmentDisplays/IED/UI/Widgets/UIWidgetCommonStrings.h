@@ -107,6 +107,8 @@ namespace IED
 			PreventEquip                        = 2096,
 			Enchantment                         = 2097,
 			OverrideModel                       = 2098,
+			ForceEquip                          = 2099,
+			DisplayManagement                   = 2100
 		};
 	}
 }

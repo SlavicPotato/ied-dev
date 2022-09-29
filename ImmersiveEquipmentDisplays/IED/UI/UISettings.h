@@ -13,7 +13,7 @@
 #include "Controls/UICollapsibles.h"
 
 #include "Window/UIWindow.h"
-#include "Window/UIWindowBase.h"
+#include "UIContext.h"
 
 #include "IED/ConfigCommon.h"
 
@@ -25,7 +25,7 @@ namespace IED
 	{
 		class UISettings :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			UICollapsibles,
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,

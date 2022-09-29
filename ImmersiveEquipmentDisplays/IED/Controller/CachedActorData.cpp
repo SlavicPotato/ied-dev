@@ -1,11 +1,11 @@
 #include "pch.h"
 
-#include "TemporaryActorStateData.h"
+#include "CachedActorData.h"
 
 namespace IED
 {
 
-	TemporaryActorStateData::TemporaryActorStateData(Actor* a_actor) :
+	CachedActorData::CachedActorData(Actor* a_actor) :
 		cellAttached(a_actor->IsParentCellAttached()),
 		inInterior(a_actor->IsInInteriorCell()),
 		worldspace(a_actor->GetParentCellWorldspace()),

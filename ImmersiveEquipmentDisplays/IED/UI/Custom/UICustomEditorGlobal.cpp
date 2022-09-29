@@ -43,7 +43,7 @@ namespace IED
 
 		void UICustomEditorGlobal::EditorOnOpen()
 		{
-			EditorReset();
+			UpdateData();
 		}
 
 		void UICustomEditorGlobal::EditorOnClose()
@@ -53,7 +53,7 @@ namespace IED
 
 		void UICustomEditorGlobal::EditorReset()
 		{
-			UpdateData();
+			m_data = {};
 		}
 
 		void UICustomEditorGlobal::EditorQueueUpdateCurrent()

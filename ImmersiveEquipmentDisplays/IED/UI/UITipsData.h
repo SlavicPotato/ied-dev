@@ -76,6 +76,7 @@ namespace IED
 			IdleCondition                       = 1065,
 			CustomFormLastEquipped              = 1066,
 			OverrideModel                       = 1067,
+			EquipmentOverrideGroupContinue                  = 1068,
 		};
 
 	}

@@ -196,6 +196,8 @@ namespace IED
 				return m_Instance.m_info.hWnd;
 			}
 
+			static void QueueImGuiSettingsSave();
+
 			FN_NAMEPROC("UI");
 
 		private:

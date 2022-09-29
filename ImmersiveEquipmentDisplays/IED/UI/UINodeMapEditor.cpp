@@ -22,11 +22,6 @@ namespace IED
 
 		void UINodeMapEditor::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(0.0f, 800.0f, 600.0f, true);
 
 			if (ImGui::Begin(
@@ -54,7 +49,7 @@ namespace IED
 
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Exit, "2"))
+					if (LCG_MI(CommonStrings::Close, "2"))
 					{
 						SetOpenState(false);
 					}

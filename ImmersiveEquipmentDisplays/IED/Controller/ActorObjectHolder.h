@@ -3,6 +3,7 @@
 #include "ActiveActorAnimation.h"
 #include "ActorAnimationState.h"
 #include "BipedSlotData.h"
+#include "CachedActorData.h"
 #include "EffectShaderData.h"
 #include "INode.h"
 #include "NodeMonitorEntry.h"
@@ -10,7 +11,6 @@
 #include "ObjectDatabase.h"
 #include "ObjectManagerCommon.h"
 #include "SkeletonID.h"
-#include "TemporaryActorStateData.h"
 
 #include "CMENodeEntry.h"
 #include "MOVNodeEntry.h"
@@ -280,9 +280,38 @@ namespace IED
 		}
 
 		template <class Tv>
+		inline constexpr void state_var_update_defer(
+			stl::flag<Tv>& a_var,
+			const Tv&      a_current,
+			std::uint32_t  a_delay = 2) noexcept
+		{
+			if (a_var != a_current)
+			{
+				a_var = a_current;
+				RequestEvalDefer(a_delay);
+			}
+		}
+
+		template <class Tv>
 		inline constexpr bool state_var_update_b(
 			Tv&       a_var,
 			const Tv& a_current) noexcept
+		{
+			if (a_var != a_current)
+			{
+				a_var = a_current;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class Tv>
+		inline constexpr bool state_var_update_b(
+			stl::flag<Tv>& a_var,
+			const Tv&      a_current) noexcept
 		{
 			if (a_var != a_current)
 			{
@@ -405,7 +434,7 @@ namespace IED
 			m_forceNodeCondTrue = a_switch;
 		}
 
-		[[nodiscard]] inline auto& GetTempState() const noexcept
+		[[nodiscard]] inline auto& GetCachedData() const noexcept
 		{
 			return m_state;
 		}
@@ -416,7 +445,7 @@ namespace IED
 
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
-		
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
@@ -474,7 +503,7 @@ namespace IED
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonID                            m_skeletonID;
 
-		TemporaryActorStateData     m_state;
+		CachedActorData             m_state;
 		mutable ActorAnimationState m_animState;
 
 		//AnimationGraphManagerHolderList m_animationUpdateList;

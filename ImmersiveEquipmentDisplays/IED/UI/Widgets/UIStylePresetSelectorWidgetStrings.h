@@ -20,6 +20,8 @@ namespace IED
 			CorpGrey     = 5609,
 			CorpGreyFlat = 5610,
 			ItaClassic   = 5611,
+			SpectrumDark = 5612,
+			EnemyMouse   = 5613,
 		};
 	}
 }

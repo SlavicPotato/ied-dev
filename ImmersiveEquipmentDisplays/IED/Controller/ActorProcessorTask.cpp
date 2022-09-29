@@ -339,37 +339,39 @@ namespace IED
 				continue;
 			}
 
+			auto& state = e.m_state;
+
 			auto cell = actor->GetParentCell();
 			if (cell && cell->IsAttached())
 			{
-				if (!e.m_state.cellAttached)
+				if (!state.cellAttached)
 				{
 					e.RequestEvalDefer();
-					e.m_state.cellAttached = true;
+					state.cellAttached = true;
 				}
 			}
 			else
 			{
-				e.m_state.cellAttached = false;
+				state.cellAttached = false;
 				continue;
 			}
 
-			e.state_var_update_defer(e.m_state.inInterior, cell->IsInterior());
-			e.state_var_update_defer(e.m_state.worldspace, cell->GetWorldSpace());
-			e.state_var_update_defer(e.m_state.currentIdle, actor->GetFurnitureIdle());
-			e.state_var_update_defer(e.m_state.currentPackage, actor->GetCurrentPackage(), 6);
-			e.state_var_update_defer(e.m_state.inCombat, Game::GetActorInCombat(actor));
-			e.state_var_update_defer(e.m_state.flags1, actor->flags1 & ACTOR_CHECK_FLAGS_1, 6);
-			e.state_var_update_defer(e.m_state.flags2, actor->flags2 & ACTOR_CHECK_FLAGS_2, 6);
-			e.state_var_update_defer(e.m_state.sitting, actor->IsSitting());
-			e.state_var_update_defer(e.m_state.sleeping, actor->IsSleeping());
-			e.state_var_update_defer(e.m_state.beingRidden, actor->IsBeingRidden());
-			e.state_var_update_defer(e.m_state.weaponDrawn, actor->IsWeaponDrawn());
-			e.state_var_update_defer(e.m_state.arrested, actor->IsArrested());
+			e.state_var_update_defer(state.inInterior, cell->IsInterior());
+			e.state_var_update_defer(state.worldspace, cell->GetWorldSpace());
+			e.state_var_update_defer(state.currentIdle, actor->GetFurnitureIdle());
+			e.state_var_update_defer(state.currentPackage, actor->GetCurrentPackage());
+			e.state_var_update_defer(state.inCombat, Game::GetActorInCombat(actor));
+			e.state_var_update_defer(state.flags1, actor->flags1 & ACTOR_CHECK_FLAGS_1);
+			e.state_var_update_defer(state.flags2, actor->flags2 & ACTOR_CHECK_FLAGS_2);
+			e.state_var_update_defer(state.sitting, actor->IsSitting());
+			e.state_var_update_defer(state.sleeping, actor->IsSleeping());
+			e.state_var_update_defer(state.beingRidden, actor->IsBeingRidden());
+			e.state_var_update_defer(state.weaponDrawn, actor->IsWeaponDrawn());
+			e.state_var_update_defer(state.arrested, actor->IsArrested());
 
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
-			e.m_wantLFUpdate |= e.state_var_update_b(e.m_state.swimming, actor->IsSwimming());
+			e.m_wantLFUpdate |= e.state_var_update_b(state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
+			e.m_wantLFUpdate |= e.state_var_update_b(state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
+			e.m_wantLFUpdate |= e.state_var_update_b(state.swimming, actor->IsSwimming());
 
 			if (e.UpdateNodeMonitorEntries())
 			{

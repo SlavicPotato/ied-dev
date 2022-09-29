@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UIContextBase.h"
+#include "UIContext.h"
 #include "UILocalizationInterface.h"
 
 #include "Window/UIWindow.h"
@@ -14,7 +14,7 @@ namespace IED
 	namespace UI
 	{
 		class UIIntroBanner :
-			public UIContextBase,
+			public UIContext,
 			public UIWindow,
 			UILocalizationInterface
 		{
@@ -30,6 +30,8 @@ namespace IED
 			float m_voffset;
 
 			UICommon::float_anim_t<float, 0.0f, 1.0f, 1.75f> m_animbg;
+
+			Controller& m_controller;
 		};
 	}
 }

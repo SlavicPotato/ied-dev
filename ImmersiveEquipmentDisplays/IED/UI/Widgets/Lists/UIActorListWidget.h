@@ -252,7 +252,7 @@ namespace IED
 					ImGui::TextWrapped("%.8X", it->second.worldspace.get());
 				}
 
-				if (it->second.cell)
+				if (it->second.cell.first)
 				{
 					ImGui::TableNextRow();
 
@@ -260,10 +260,10 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Cell));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", it->second.cell.get());
+					ImGui::TextWrapped("%.8X", it->second.cell.first.get());
 				}
 
-				if (it->second.skin)
+				if (it->second.skin.first)
 				{
 					ImGui::TableNextRow();
 
@@ -271,10 +271,10 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Skin));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", it->second.skin.get());
+					ImGui::TextWrapped("%.8X", it->second.skin.first.get());
 				}
 
-				if (it->second.idle)
+				if (it->second.idle.first)
 				{
 					ImGui::TableNextRow();
 
@@ -284,8 +284,8 @@ namespace IED
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%.8X [%s]",
-						it->second.idle.get(),
-						it->second.idleName.c_str());
+						it->second.idle.first.get(),
+						it->second.idle.second.c_str());
 				}
 
 				if (it->second.package)
@@ -299,7 +299,7 @@ namespace IED
 					ImGui::TextWrapped("%.8X", it->second.package.get());
 				}
 
-				if (it->second.furniture)
+				if (it->second.furniture.first)
 				{
 					ImGui::TableNextRow();
 
@@ -307,7 +307,10 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Furniture));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%.8X", it->second.furniture.get());
+					ImGui::TextWrapped(
+						"%.8X [%s]",
+						it->second.furniture.first.get(),
+						it->second.furniture.second.c_str());
 				}
 			}
 
@@ -325,9 +328,9 @@ namespace IED
 				if (itm != modList.end())
 				{
 					ImGui::TextWrapped(
-						"%s [%.2X]",
-						itm->second.name.c_str(),
-						itm->second.GetPartialIndex());
+						"[%X] %s",
+						itm->second.GetPartialIndex(),
+						itm->second.name.c_str());
 				}
 				else
 				{
@@ -402,8 +405,13 @@ namespace IED
 		template <class Td>
 		void UIActorList<Td>::OnListSetHandleInternal(Game::FormID a_handle)
 		{
-			GetActorSettings().lastSelected = a_handle;
-			MarkSettingsDirty();
+			auto& settings = GetActorSettings();
+
+			if (settings.lastSelected != a_handle)
+			{
+				settings.lastSelected = a_handle;
+				MarkSettingsDirty();
+			}
 		}
 
 	}

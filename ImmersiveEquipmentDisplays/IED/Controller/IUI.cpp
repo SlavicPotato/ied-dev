@@ -108,7 +108,7 @@ namespace IED
 
 			m_context->Draw();
 
-			return m_context->IsWindowOpen();
+			return m_context->IsContextOpen();
 		}
 		catch (const std::exception& e)
 		{

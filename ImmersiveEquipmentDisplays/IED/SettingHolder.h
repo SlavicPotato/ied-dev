@@ -7,6 +7,8 @@
 #include "Controller/ObjectDatabaseLevel.h"
 
 #include "Fonts/FontInfo.h"
+
+#include "UI/UIChildWindowID.h"
 #include "UI/UIData.h"
 #include "UI/UIMainCommon.h"
 
@@ -20,6 +22,8 @@ namespace IED
 	{
 		enum class DefaultConfigType : std::uint8_t
 		{
+			//kNone = static_cast<std::underlying_type_t<DefaultConfigType>>(-1),
+
 			kDefault = 0,
 			kUser    = 1
 		};
@@ -121,6 +125,8 @@ namespace IED
 					{
 						e = true;
 					}
+
+					windowOpenStates[stl::underlying(UI::ChildWindowID::kUIDisplayManagement)] = true;
 				}
 
 				EditorPanel      slotEditor;
@@ -136,7 +142,7 @@ namespace IED
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;
 
-				UI::UIEditorPanel lastPanel{ UI::UIEditorPanel::Slot };
+				UI::UIDisplayManagementEditorPanel lastPanel{ UI::UIDisplayManagementEditorPanel::Slot };
 
 				stl::optional<ConfigKeyPair> openKeys;
 
@@ -148,7 +154,7 @@ namespace IED
 
 				std::uint32_t logLimit{ 500 };
 				bool          logShowTimestamps{ true };
-				bool          logLevels[stl::underlying(LogLevel::Max) + 1]{false};
+				bool          logLevels[stl::underlying(LogLevel::Max) + 1]{ false };
 
 				bool closeOnESC{ true };
 				bool showIntroBanner{ true };
@@ -167,6 +173,20 @@ namespace IED
 				UIStylePreset        stylePreset{ UIStylePreset::Dark };
 				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
+
+				/*[[nodiscard]] inline constexpr bool GetChildWindowOpen(UI::ChildWindowID a_id) const noexcept
+				{
+					assert(a_id < UI::ChildWindowID::kMax);
+					return windowOpenStates[stl::underlying(a_id)];
+				}
+
+				inline constexpr void SetChildWindowOpen(UI::ChildWindowID a_id, bool a_state) noexcept
+				{
+					assert(a_id < UI::ChildWindowID::kMax);
+					windowOpenStates[stl::underlying(a_id)] = a_state;
+				}*/
+
+				bool windowOpenStates[stl::underlying(UI::ChildWindowID::kMax)]{ false };
 			};
 
 			struct Settings
@@ -208,7 +228,7 @@ namespace IED
 				m_path = std::move(a_path);
 			}
 
-			inline constexpr const auto& GetPath() const noexcept
+			[[nodiscard]] inline constexpr const auto& GetPath() const noexcept
 			{
 				return m_path;
 			}
@@ -242,12 +262,12 @@ namespace IED
 				return a_isTrue;
 			}
 
-			inline constexpr const auto& GetLastException() const noexcept
+			[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}
 
-			inline constexpr auto HasErrors() const noexcept
+			[[nodiscard]] inline constexpr auto HasErrors() const noexcept
 			{
 				return m_loadHasErrors;
 			}

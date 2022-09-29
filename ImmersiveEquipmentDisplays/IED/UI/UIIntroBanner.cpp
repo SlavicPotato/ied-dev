@@ -17,9 +17,9 @@ namespace IED
 		UIIntroBanner::UIIntroBanner(
 			Controller& a_controller,
 			float       a_voffset) :
-			UIContextBase(a_controller),
 			UILocalizationInterface(a_controller),
-			m_voffset(a_voffset)
+			m_voffset(a_voffset),
+			m_controller(a_controller)
 		{
 		}
 

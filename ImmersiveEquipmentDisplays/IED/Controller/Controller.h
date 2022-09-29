@@ -452,6 +452,8 @@ namespace IED
 
 		void ProcessEffectShaders();
 
+		void QueueSettingsSave(bool a_dirtyOnly = false);
+
 	private:
 		FN_NAMEPROC("Controller");
 

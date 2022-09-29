@@ -45,6 +45,7 @@ namespace IED
 			EffectShaders               = 4434,
 			ParallelUpdates             = 4435,
 			ExperimentalFeatureWarn     = 4436,
+			ShowMainMenuBar             = 4437,
 		};
 	}
 }

@@ -39,6 +39,7 @@ namespace IED
 		{
 			None,
 			Insert,
+			InsertGroup,
 			Delete,
 			Swap,
 			Edit,
@@ -156,12 +157,28 @@ namespace IED
 				const Tpv&          a_value);
 
 			template <class Tpv>
+			static void RecursivePropagateMemberToEquipmentOverrides(
+				Data::equipmentOverrideList_t& a_list,
+				std::ptrdiff_t                 a_offset,
+				const Tpv&                     a_srcVal);
+
+			template <class Tpv>
 			void PropagateToEquipmentOverrides(
 				Data::configBase_t* a_data);
+
+			template <class Tpv>
+			void RecursivePropagateToEquipmentOverrides(
+				Data::equipmentOverrideList_t& a_list,
+				const Tpv&                     a_src);
 
 			void PropagateFlagToEquipmentOverrides(
 				Data::configBase_t* a_data,
 				Data::BaseFlags     a_mask);
+
+			void RecursivePropagateFlagToEquipmentOverrides(
+				Data::equipmentOverrideList_t& a_list,
+				Data::BaseFlags                a_mask,
+				Data::BaseFlags                a_flags);
 
 		private:
 			void DrawBaseConfigGeneralFlags(
@@ -192,10 +209,11 @@ namespace IED
 				Data::configBase_t*       a_baseConfig);
 
 			void DrawEquipmentOverrides(
-				T                        a_handle,
-				Data::configBase_t&      a_data,
-				const void*              a_params,
-				const stl::fixed_string& a_slotName);
+				T                              a_handle,
+				Data::configBase_t&            a_baseConfig,
+				Data::equipmentOverrideList_t& a_list,
+				const void*                    a_params,
+				const stl::fixed_string&       a_slotName);
 
 			virtual void DrawExtraFlags(
 				T                         a_handle,
@@ -216,15 +234,17 @@ namespace IED
 			virtual constexpr bool BaseConfigStoreCC() const = 0;
 
 			BaseConfigEditorAction DrawEquipmentOverrideTreeContextMenu(
-				T                   a_handle,
-				Data::configBase_t& a_data,
-				const void*         a_params);
+				T                              a_handle,
+				Data::configBase_t&            a_baseConfig,
+				Data::equipmentOverrideList_t& a_list,
+				const void*                    a_params);
 
 			void DrawEquipmentOverrideList(
-				T                        a_handle,
-				Data::configBase_t&      a_data,
-				const void*              a_params,
-				const stl::fixed_string& a_slotName);
+				T                              a_handle,
+				Data::configBase_t&            a_baseConfig,
+				Data::equipmentOverrideList_t& a_list,
+				const void*                    a_params,
+				const stl::fixed_string&       a_slotName);
 
 		protected:
 			template <class Tu>
@@ -392,6 +412,7 @@ namespace IED
 			DrawEquipmentOverrides(
 				a_handle,
 				a_data,
+				a_data.equipmentOverrides,
 				a_params,
 				a_slotName);
 
@@ -590,13 +611,37 @@ namespace IED
 
 			auto src = static_cast<Data::configBaseValues_t*>(a_data);
 
-			auto srcVal = reinterpret_cast<Tpv*>(std::uintptr_t(src) + a_offset);
+			auto srcVal = reinterpret_cast<Tpv*>(
+				reinterpret_cast<std::uintptr_t>(src) + a_offset);
 
-			for (auto& e : a_data->equipmentOverrides)
+			RecursivePropagateMemberToEquipmentOverrides(
+				a_data->equipmentOverrides,
+				a_offset,
+				*srcVal);
+		}
+
+		template <class T>
+		template <class Tpv>
+		void UIBaseConfigWidget<T>::RecursivePropagateMemberToEquipmentOverrides(
+			Data::equipmentOverrideList_t& a_list,
+			std::ptrdiff_t                 a_offset,
+			const Tpv&                     a_srcVal)
+		{
+			for (auto& e : a_list)
 			{
-				auto dstVal = reinterpret_cast<Tpv*>(std::uintptr_t(std::addressof(static_cast<Data::configBaseValues_t&>(e))) + a_offset);
+				if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+				{
+					RecursivePropagateMemberToEquipmentOverrides(e.group, a_offset, a_srcVal);
+				}
+				else
+				{
+					auto dstVal = reinterpret_cast<Tpv*>(
+						reinterpret_cast<std::uintptr_t>(
+							std::addressof(static_cast<Data::configBaseValues_t&>(e))) +
+						a_offset);
 
-				*dstVal = *srcVal;
+					*dstVal = a_srcVal;
+				}
 			}
 		}
 
@@ -617,11 +662,27 @@ namespace IED
 
 			auto src = static_cast<const Tpv*>(a_data);
 
-			for (auto& e : a_data->equipmentOverrides)
-			{
-				auto& dst = static_cast<Tpv&>(e);
+			RecursivePropagateToEquipmentOverrides(a_data->equipmentOverrides, *src);
+		}
 
-				dst = *src;
+		template <class T>
+		template <class Tpv>
+		void UIBaseConfigWidget<T>::RecursivePropagateToEquipmentOverrides(
+			Data::equipmentOverrideList_t& a_list,
+			const Tpv&                     a_src)
+		{
+			for (auto& e : a_list)
+			{
+				if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+				{
+					RecursivePropagateToEquipmentOverrides(e.group, a_src);
+				}
+				else
+				{
+					auto& dst = static_cast<Tpv&>(e);
+
+					dst = a_src;
+				}
 			}
 		}
 
@@ -640,9 +701,28 @@ namespace IED
 				return;
 			}
 
-			for (auto& e : a_data->equipmentOverrides)
+			RecursivePropagateFlagToEquipmentOverrides(
+				a_data->equipmentOverrides,
+				a_mask,
+				a_data->flags.value & a_mask);
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::RecursivePropagateFlagToEquipmentOverrides(
+			Data::equipmentOverrideList_t& a_list,
+			Data::BaseFlags                a_mask,
+			Data::BaseFlags                a_flags)
+		{
+			for (auto& e : a_list)
 			{
-				e.flags.value = (e.flags.value & ~a_mask) | (a_data->flags.value & a_mask);
+				if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+				{
+					RecursivePropagateFlagToEquipmentOverrides(e.group, a_mask, a_flags);
+				}
+				else
+				{
+					e.flags.value = (e.flags.value & ~a_mask) | a_flags;
+				}
 			}
 		}
 
@@ -732,11 +812,14 @@ namespace IED
 			{
 				ImGui::PushID("f_ex");
 
-				UICommon::PushDisabled(a_disabled);
+				const bool extraDisabled = a_disabled &&
+				                           a_baseConfig->equipmentOverrides.empty();
+
+				UICommon::PushDisabled(extraDisabled);
 
 				DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
 
-				UICommon::PopDisabled(a_disabled);
+				UICommon::PopDisabled(extraDisabled);
 
 				ImGui::PopID();
 
@@ -1417,18 +1500,19 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrides(
-			T                        a_handle,
-			Data::configBase_t&      a_data,
-			const void*              a_params,
-			const stl::fixed_string& a_slotName)
+			T                              a_handle,
+			Data::configBase_t&            a_baseConfig,
+			Data::equipmentOverrideList_t& a_list,
+			const void*                    a_params,
+			const stl::fixed_string&       a_slotName)
 		{
 			auto storecc = BaseConfigStoreCC();
 
 			ImGui::PushID("config_equipment_overrides");
 
-			const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_data, a_params);
+			const auto result = DrawEquipmentOverrideTreeContextMenu(a_handle, a_baseConfig, a_list, a_params);
 
-			const bool empty = a_data.equipmentOverrides.empty();
+			const bool empty = a_list.empty();
 
 			UICommon::PushDisabled(empty);
 
@@ -1468,7 +1552,8 @@ namespace IED
 
 					DrawEquipmentOverrideList(
 						a_handle,
-						a_data,
+						a_baseConfig,
+						a_list,
 						a_params,
 						a_slotName);
 
@@ -1494,9 +1579,10 @@ namespace IED
 
 		template <class T>
 		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawEquipmentOverrideTreeContextMenu(
-			T                   a_handle,
-			Data::configBase_t& a_data,
-			const void*         a_params)
+			T                              a_handle,
+			Data::configBase_t&            a_baseConfig,
+			Data::equipmentOverrideList_t& a_list,
+			const void*                    a_params)
 		{
 			BaseConfigEditorAction result{
 				BaseConfigEditorAction::None
@@ -1519,20 +1605,48 @@ namespace IED
 			{
 				if (LCG_BM(CommonStrings::New, "1"))
 				{
-					if (DrawDescriptionPopup())
+					if (LCG_BM(CommonStrings::Item, "0"))
 					{
-						a_data.equipmentOverrides.emplace_back(
-							a_data,
-							GetDescriptionPopupBuffer());
+						if (DrawDescriptionPopup())
+						{
+							a_list.emplace_back(
+								a_baseConfig,
+								GetDescriptionPopupBuffer());
 
-						OnBaseConfigChange(
-							a_handle,
-							a_params,
-							PostChangeAction::Evaluate);
+							OnBaseConfigChange(
+								a_handle,
+								a_params,
+								PostChangeAction::Evaluate);
 
-						ClearDescriptionPopupBuffer();
+							ClearDescriptionPopupBuffer();
 
-						result = BaseConfigEditorAction::Insert;
+							result = BaseConfigEditorAction::Insert;
+						}
+
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Group, "1"))
+					{
+						if (DrawDescriptionPopup())
+						{
+							auto& e = a_list.emplace_back(
+								a_baseConfig,
+								GetDescriptionPopupBuffer());
+
+							e.eoFlags.set(Data::EquipmentOverrideFlags::kIsGroup);
+
+							OnBaseConfigChange(
+								a_handle,
+								a_params,
+								PostChangeAction::Evaluate);
+
+							ClearDescriptionPopupBuffer();
+
+							result = BaseConfigEditorAction::Insert;
+						}
+
+						ImGui::EndMenu();
 					}
 
 					ImGui::EndMenu();
@@ -1540,7 +1654,7 @@ namespace IED
 
 				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
 				{
-					UIClipboard::Set<Data::equipmentOverrideList_t>(a_data.equipmentOverrides);
+					UIClipboard::Set<Data::equipmentOverrideList_t>(a_list);
 				}
 
 				{
@@ -1554,7 +1668,7 @@ namespace IED
 					{
 						if (clipData)
 						{
-							a_data.equipmentOverrides.emplace_back(*clipData);
+							a_list.emplace_back(*clipData);
 							OnBaseConfigChange(
 								a_handle,
 								a_params,
@@ -1576,7 +1690,7 @@ namespace IED
 					{
 						if (clipData)
 						{
-							a_data.equipmentOverrides = *clipData;
+							a_list = *clipData;
 
 							OnBaseConfigChange(
 								a_handle,
@@ -1598,12 +1712,13 @@ namespace IED
 
 		template <class T>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideList(
-			T                        a_handle,
-			Data::configBase_t&      a_data,
-			const void*              a_params,
-			const stl::fixed_string& a_name)
+			T                              a_handle,
+			Data::configBase_t&            a_baseConfig,
+			Data::equipmentOverrideList_t& a_list,
+			const void*                    a_params,
+			const stl::fixed_string&       a_name)
 		{
-			if (a_data.equipmentOverrides.empty())
+			if (a_list.empty())
 			{
 				return;
 			}
@@ -1612,15 +1727,15 @@ namespace IED
 
 			int i = 0;
 
-			auto it = a_data.equipmentOverrides.begin();
+			auto it = a_list.begin();
 
-			while (it != a_data.equipmentOverrides.end())
+			while (it != a_list.end())
 			{
-				if (SkipEquipmentOverride(*it))
+				/*if (SkipEquipmentOverride(*it))
 				{
 					++it;
 					continue;
-				}
+				}*/
 
 				ImGui::PushID(i);
 
@@ -1629,43 +1744,63 @@ namespace IED
 				switch (result.action)
 				{
 				case BaseConfigEditorAction::Delete:
-					it = a_data.equipmentOverrides.erase(it);
+
+					it = a_list.erase(it);
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+
 					break;
 				case BaseConfigEditorAction::Insert:
-					it = a_data.equipmentOverrides.emplace(it, a_data, result.desc);
+
+					it = a_list.emplace(it, a_baseConfig, result.desc);
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					ImGui::SetNextItemOpen(true);
+
+					break;
+				case BaseConfigEditorAction::InsertGroup:
+
+					it = a_list.emplace(it, a_baseConfig, result.desc);
+					it->eoFlags.set(Data::EquipmentOverrideFlags::kIsGroup);
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					ImGui::SetNextItemOpen(true);
+
 					break;
 				case BaseConfigEditorAction::Swap:
 
-					if (IterSwap(a_data.equipmentOverrides, it, result.dir))
+					if (IterSwap(a_list, it, result.dir))
 					{
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
 
 					break;
 				case BaseConfigEditorAction::Reset:
-					static_cast<Data::configBaseValues_t&>(*it) = a_data;
+
+					static_cast<Data::configBaseValues_t&>(*it) = a_baseConfig;
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+
 					break;
 				case BaseConfigEditorAction::Rename:
+
 					it->description = result.desc;
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+
 					break;
 				case BaseConfigEditorAction::Paste:
+
 					if (auto clipData = UIClipboard::Get<Data::equipmentOverride_t>())
 					{
-						it = a_data.equipmentOverrides.emplace(it, *clipData);
+						it = a_list.emplace(it, *clipData);
 						OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 					}
 					[[fallthrough]];
+
 				case BaseConfigEditorAction::PasteOver:
+
 					ImGui::SetNextItemOpen(true);
+
 					break;
 				}
 
-				if (it != a_data.equipmentOverrides.end())
+				if (it != a_list.end())
 				{
 					auto& e = *it;
 
@@ -1677,7 +1812,7 @@ namespace IED
 					{
 						ImGui::Spacing();
 
-						DrawExtraEquipmentOverrideOptions(a_handle, a_data, a_params, e);
+						DrawExtraEquipmentOverrideOptions(a_handle, a_baseConfig, a_params, e);
 
 						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 							a_handle,
@@ -1732,17 +1867,53 @@ namespace IED
 
 						ImGui::Spacing();
 
-						ImGui::PushID("eo_bc_values");
+						if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+						{
+							ImGui::PushID("eo_group");
+							ImGui::PushID("header");
 
-						DrawBaseConfigValues(
-							a_handle,
-							e,
-							a_params,
-							a_name,
-							false,
-							nullptr);
+							if (ImGui::CheckboxFlagsT(
+									LS(CommonStrings::Continue, "0"),
+									stl::underlying(std::addressof(e.eoFlags.value)),
+									stl::underlying(Data::EquipmentOverrideFlags::kContinue)))
+							{
+								OnBaseConfigChange(
+									a_handle,
+									a_params,
+									PostChangeAction::Evaluate);
+							}
+							DrawTip(UITip::EquipmentOverrideGroupContinue);
 
-						ImGui::PopID();
+							ImGui::PopID();
+
+							ImGui::Spacing();
+
+							ImGui::PushID("item");
+
+							DrawEquipmentOverrides(
+								a_handle,
+								a_baseConfig,
+								e.group,
+								a_params,
+								a_name);
+							ImGui::PopID();
+
+							ImGui::PopID();
+						}
+						else
+						{
+							ImGui::PushID("eo_bc_values");
+
+							DrawBaseConfigValues(
+								a_handle,
+								e,
+								a_params,
+								a_name,
+								false,
+								nullptr);
+
+							ImGui::PopID();
+						}
 
 						ImGui::Spacing();
 
@@ -1845,7 +2016,6 @@ namespace IED
 
 							a_updFunc();
 						}
-						break;
 					}
 				}
 
@@ -1880,6 +2050,25 @@ namespace IED
 			return action;
 		}
 
+		inline static constexpr void GetConditionListDepth(
+			const Data::equipmentOverrideConditionList_t& a_in,
+			std::uint32_t&                                a_result,
+			std::uint32_t&                                a_offset) noexcept
+		{
+			for (auto& e : a_in)
+			{
+				if (e.fbf.type == Data::EquipmentOverrideConditionType::Group)
+				{
+					a_offset++;
+					a_result = std::max(a_result, a_offset);
+
+					GetConditionListDepth(e.group.conditions, a_result, a_offset);
+
+					a_offset--;
+				}
+			}
+		}
+
 		template <class T>
 		template <class Tu>
 		void UIBaseConfigWidget<T>::DrawEquipmentOverrideEntryConditionTable(
@@ -1888,47 +2077,68 @@ namespace IED
 			bool                                    a_isnested,
 			Tu                                      a_updFunc)
 		{
+			constexpr int   NUM_COLUMNS   = 5;
+			constexpr float MIN_TAB_WIDTH = 320.0f;
+
+			float           width;
+			float           height     = 0.0f;
+			float           innerWidth = 0.0f;
+			ImGuiTableFlags flags      = ImGuiTableFlags_None;
+
 			if (a_isnested)
 			{
 				ImGui::PushStyleVar(
 					ImGuiStyleVar_CellPadding,
 					{ 2.f, 2.f });
+
+				width = -1.0f;
 			}
 			else
 			{
 				ImGui::PushStyleVar(
 					ImGuiStyleVar_CellPadding,
 					{ 5.f, 5.f });
-			}
 
-			constexpr int NUM_COLUMNS = 5;
+				std::uint32_t res = 0;
+				std::uint32_t off = 0;
 
-			float width;
+				GetConditionListDepth(a_entry, res, off);
 
-			if (a_isnested)
-			{
-				width = -1.0f;
-			}
-			else
-			{
+				if (res > 1)
+				{
+					const auto avail       = ImGui::GetContentRegionAvail().x;
+					const auto wantedWidth = MIN_TAB_WIDTH + MIN_TAB_WIDTH * static_cast<float>(res);
+
+					if (wantedWidth > avail)
+					{
+						flags = ImGuiTableFlags_ScrollX |
+						        ImGuiTableFlags_ScrollY;
+
+						innerWidth = wantedWidth;
+						height     = 300.0f;
+					}
+				}
+
 				width = -ImGui::GetFontSize();
 			}
 
 			if (ImGui::BeginTable(
 					"eo_entry_match_table",
 					NUM_COLUMNS,
-					ImGuiTableFlags_Borders |
+					flags |
+						ImGuiTableFlags_Borders |
 						ImGuiTableFlags_Resizable |
-						ImGuiTableFlags_NoSavedSettings |
-						ImGuiTableFlags_SizingStretchProp,
-					{ width, 0.f }))
+						ImGuiTableFlags_SizingStretchProp |
+						ImGuiTableFlags_NoSavedSettings,
+					{ width, height },
+					innerWidth))
 			{
 				auto w =
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
 				ImGui::TableSetupColumn(LS(CommonStrings::Type), ImGuiTableColumnFlags_None, 40.0f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Edit), ImGuiTableColumnFlags_None, 200.0f);
+				ImGui::TableSetupColumn(LS(CommonStrings::Edit), ImGuiTableColumnFlags_None, MIN_TAB_WIDTH);
 				ImGui::TableSetupColumn(LS(CommonStrings::And), ImGuiTableColumnFlags_None, 15.0f);
 				ImGui::TableSetupColumn(LS(CommonStrings::Not), ImGuiTableColumnFlags_None, 15.0f);
 
@@ -2872,12 +3082,30 @@ namespace IED
 				{
 					if (LCG_BM(CommonStrings::New, "2"))
 					{
-						if (DrawDescriptionPopup())
+						if (LCG_BM(CommonStrings::Item, "0"))
 						{
-							result.action = BaseConfigEditorAction::Insert;
-							result.desc   = GetDescriptionPopupBuffer();
+							if (DrawDescriptionPopup())
+							{
+								result.action = BaseConfigEditorAction::Insert;
+								result.desc   = GetDescriptionPopupBuffer();
 
-							ClearDescriptionPopupBuffer();
+								ClearDescriptionPopupBuffer();
+							}
+
+							ImGui::EndMenu();
+						}
+
+						if (LCG_BM(CommonStrings::Group, "1"))
+						{
+							if (DrawDescriptionPopup())
+							{
+								result.action = BaseConfigEditorAction::InsertGroup;
+								result.desc   = GetDescriptionPopupBuffer();
+
+								ClearDescriptionPopupBuffer();
+							}
+
+							ImGui::EndMenu();
 						}
 
 						ImGui::EndMenu();

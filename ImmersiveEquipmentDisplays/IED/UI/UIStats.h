@@ -7,7 +7,7 @@
 #include "IED/UI/Controls/UICollapsibles.h"
 
 #include "IED/UI/Window/UIWindow.h"
-#include "IED/UI/Window/UIWindowBase.h"
+#include "IED/UI/UIContext.h"
 
 #include "UILocalizationInterface.h"
 
@@ -21,7 +21,7 @@ namespace IED
 	{
 		class UIStats :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			UICollapsibles,
 			public virtual UILocalizationInterface,
 			public virtual UITipsInterface

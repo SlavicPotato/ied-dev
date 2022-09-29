@@ -20,6 +20,8 @@ namespace IED
 			{ UIStylePreset::S56, UIStylePresetSelectorWidgetStrings::S56 },
 			{ UIStylePreset::CorpGrey, UIStylePresetSelectorWidgetStrings::CorpGrey },
 			{ UIStylePreset::CorpGreyFlat, UIStylePresetSelectorWidgetStrings::CorpGreyFlat },
+			{ UIStylePreset::SpectrumDark, UIStylePresetSelectorWidgetStrings::SpectrumDark},
+			{ UIStylePreset::EnemyMouse, UIStylePresetSelectorWidgetStrings::EnemyMouse },
 
 		} };
 
@@ -96,6 +98,10 @@ namespace IED
 				return LS(UIStylePresetSelectorWidgetStrings::CorpGreyFlat);
 			case UIStylePreset::ItaClassic:
 				return LS(UIStylePresetSelectorWidgetStrings::ItaClassic);
+			case UIStylePreset::SpectrumDark:
+				return LS(UIStylePresetSelectorWidgetStrings::SpectrumDark);
+			case UIStylePreset::EnemyMouse:
+				return LS(UIStylePresetSelectorWidgetStrings::EnemyMouse);
 			default:
 				return nullptr;
 			}

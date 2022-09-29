@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UIAboutModal.h"
-#include "UIContextBase.h"
+#include "UIContext.h"
 #include "UIFormInfoCache.h"
 #include "UILocalizationInterface.h"
 #include "UIMainCommon.h"
@@ -28,14 +28,13 @@ namespace IED
 	namespace UI
 	{
 		class UIMain :
-			public UIContextBase,
+			public UIContext,
 			public UIWindow,
 			UIExportFilterWidget,
 			UIAboutModal,
 			public virtual UILocalizationInterface
 		{
-			inline static constexpr auto TITLE_NAME = PLUGIN_NAME_FULL;
-			inline static constexpr auto WINDOW_ID  = "ied_main";
+			inline static constexpr auto WINDOW_ID = "ied_main";
 
 		public:
 			UIMain(Controller& a_controller);
@@ -60,7 +59,7 @@ namespace IED
 
 			inline constexpr auto& GetFormBrowser() noexcept
 			{
-				return GetChildWindow<UIFormBrowser>();
+				return GetChild<UIFormBrowser>();
 			}
 
 			inline constexpr auto& GetFormLookupCache() noexcept
@@ -71,7 +70,10 @@ namespace IED
 			const Data::SettingHolder::UserInterface& GetUISettings() noexcept;
 
 		private:
-			void DrawMenuBar();
+			void DrawChildWindows();
+
+			void DrawMenuBarMain();
+			void DrawMenuBarContents();
 			void DrawFileMenu();
 			void DrawViewMenu();
 			void DrawToolsMenu();
@@ -80,12 +82,8 @@ namespace IED
 
 			void DrawDefaultConfigSubmenu();
 
-			void OpenEditorPanel(UIEditorPanel a_panel);
-
-			void SetTitle(Localization::StringID a_strid);
-
 			template <class T>
-			[[nodiscard]] inline constexpr auto& GetChildWindowBase() const noexcept
+			[[nodiscard]] inline constexpr auto& GetChildContext() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
@@ -93,7 +91,7 @@ namespace IED
 			}
 
 			template <class T>
-			[[nodiscard]] inline constexpr T& GetChildWindow() const noexcept
+			[[nodiscard]] inline constexpr T& GetChild() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
@@ -107,8 +105,8 @@ namespace IED
 			}
 
 			template <class T, class... Args>
-			void CreateChildWindow(Args&&... a_args)  //
-				requires(std::is_base_of_v<UIChildWindowBase, T>)
+			void CreateChild(Args&&... a_args)  //
+				requires(std::is_base_of_v<UIContext, T>)
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
@@ -117,36 +115,8 @@ namespace IED
 				m_childWindows[stl::underlying(T::CHILD_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
 			}
 
-			
-			template <class T>
-			[[nodiscard]] inline constexpr auto& GetEditorPanelBase() const noexcept
-			{
-				static_assert(stl::underlying(T::PANEL_ID) < 2);
-
-				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
-			}
-			
-			[[nodiscard]] inline auto& GetEditorPanelBase(UIEditorPanel a_id) const noexcept
-			{
-				assert(a_id < 2);
-
-				return *m_editorPanels[stl::underlying(a_id)];
-			}
-
-			
-			template <class T, class... Args>
-			void CreateEditorPanel(Args&&... a_args)  //
-				requires(std::is_base_of_v<UIEditorTabPanel, T>)
-			{
-				static_assert(stl::underlying(T::PANEL_ID) < 2);
-
-				assert(m_editorPanels[stl::underlying(T::PANEL_ID)] == nullptr);
-
-				m_editorPanels[stl::underlying(T::PANEL_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
-			}
-
 			std::array<
-				std::unique_ptr<UIChildWindowBase>,
+				std::unique_ptr<UIContext>,
 				stl::underlying(ChildWindowID::kMax)>
 				m_childWindows;
 
@@ -154,18 +124,9 @@ namespace IED
 			I3DIMain m_i3di;
 #endif
 
-			std::array<
-				std::unique_ptr<UIEditorTabPanel>,
-				2>
-				m_editorPanels;
-
-			UIEditorPanel m_currentEditorPanel{ UIEditorPanel::Slot };
-
 			UIFormInfoCache m_formLookupCache;
 
 			UIPopupQueue m_popupQueue;
-
-			char m_currentTitle[128]{ 0 };
 
 			Controller& m_controller;
 		};

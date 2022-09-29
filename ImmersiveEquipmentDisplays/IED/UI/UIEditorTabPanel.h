@@ -23,7 +23,7 @@ namespace IED
 				UIEditorInterface*     ptr{ nullptr };
 				Localization::StringID label{ 0 };
 
-				ImGuiTabBarFlags flags{ ImGuiTabItemFlags_None };
+				ImGuiTabBarFlags flags{ ImGuiTabItemFlags_NoCloseWithMiddleMouseButton };
 			};
 
 		public:

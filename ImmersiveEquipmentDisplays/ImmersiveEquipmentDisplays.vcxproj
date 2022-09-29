@@ -141,7 +141,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <UseFullPaths>false</UseFullPaths>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
@@ -281,7 +280,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
     <ClInclude Include="IED\Controller\NodeMonitorEntry.h" />
-    <ClInclude Include="IED\Controller\TemporaryActorStateData.h" />
+    <ClInclude Include="IED\Controller\CachedActorData.h" />
     <ClInclude Include="IED\Controller\AnimationGroupInfo.h" />
     <ClInclude Include="IED\Controller\AnimationWeaponSlot.h" />
     <ClInclude Include="IED\Controller\AnimationWeaponType.h" />
@@ -376,11 +375,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIActorInfoStrings.h" />
     <ClInclude Include="IED\UI\UIAllowedModelTypes.h" />
     <ClInclude Include="IED\UI\UIChildWindowID.h" />
+    <ClInclude Include="IED\UI\UIDisplayManagement.h" />
     <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h" />
     <ClInclude Include="IED\UI\UIIntroBanner.h" />
     <ClInclude Include="IED\UI\UIIntroBannerStrings.h" />
     <ClInclude Include="IED\UI\UILogStrings.h" />
-    <ClInclude Include="IED\UI\UIContextBase.h" />
+    <ClInclude Include="IED\UI\UIContext.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorer.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
@@ -417,12 +417,15 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\WeatherClassificationFlags.h" />
     <ClInclude Include="ImGui\imgui_impl_dx11.h" />
     <ClInclude Include="ImGui\imgui_impl_win32.h" />
+    <ClInclude Include="ImGui\Styles\adobe-spectrum\imgui_spectrum.h" />
     <ClInclude Include="ImGui\Styles\all.h" />
     <ClInclude Include="ImGui\Styles\corp-grey.h" />
     <ClInclude Include="ImGui\Styles\dark-red.h" />
     <ClInclude Include="ImGui\Styles\deep-dark.h" />
+    <ClInclude Include="ImGui\Styles\enemymouse.h" />
     <ClInclude Include="ImGui\Styles\ita.h" />
     <ClInclude Include="ImGui\Styles\s56.h" />
+    <ClInclude Include="ImGui\Styles\spectrum-dark.h" />
     <ClInclude Include="ImGui\Styles\steam-classic.h" />
     <ClInclude Include="ImGui\Styles\StylePreset.h" />
     <ClInclude Include="Localization\Common.h" />
@@ -645,7 +648,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UINodeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIProfileSelectorWidget.h" />
     <ClInclude Include="IED\UI\Window\UIWindow.h" />
-    <ClInclude Include="IED\UI\Window\UIWindowBase.h" />
     <ClInclude Include="IED\UI\Window\WindowLayoutData.h" />
     <ClInclude Include="IED\Util\Common.h" />
     <ClInclude Include="IED\Util\Logging.h" />
@@ -717,7 +719,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
     <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp" />
-    <ClCompile Include="IED\Controller\TemporaryActorStateData.cpp" />
+    <ClCompile Include="IED\Controller\CachedActorData.cpp" />
     <ClCompile Include="IED\Controller\CMENodeEntry.cpp" />
     <ClCompile Include="IED\Controller\EffectController.cpp" />
     <ClCompile Include="IED\Controller\EffectShaderData.cpp" />
@@ -786,6 +788,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\UIActorInfo.cpp" />
     <ClCompile Include="IED\UI\UIActorInfoInterface.cpp" />
     <ClCompile Include="IED\UI\UIAllowedModelTypes.cpp" />
+    <ClCompile Include="IED\UI\UIContext.cpp" />
+    <ClCompile Include="IED\UI\UIDisplayManagement.cpp" />
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />
     <ClCompile Include="IED\UI\UIIntroBanner.cpp" />
     <ClCompile Include="IED\UI\UISkeletonExplorer.cpp" />
@@ -807,7 +811,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UITextureClampModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
-    <ClCompile Include="IED\UI\Window\UIWindowBase.cpp" />
     <ClCompile Include="IED\Util\PEXReader.cpp" />
     <ClCompile Include="ImGui\imgui_impl_dx11.cpp" />
     <ClCompile Include="ImGui\imgui_impl_win32.cpp" />

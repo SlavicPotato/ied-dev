@@ -191,9 +191,12 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			store.settings.set(
-				store.settings.data.ui.transformEditor.actorConfig.sex,
-				a_newSex);
+			if (store.settings.data.ui.transformEditor.actorConfig.sex != a_newSex)
+			{
+				store.settings.set(
+					store.settings.data.ui.transformEditor.actorConfig.sex,
+					a_newSex);
+			}
 		}
 
 		void UINodeOverrideEditorActor::ApplyProfile(

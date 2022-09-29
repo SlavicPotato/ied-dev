@@ -380,6 +380,10 @@ namespace IED
 			std::uint32_t unused: 26 { 0 };
 		};*/
 
+		struct configNodeOverrideOffset_t;
+
+		using configNodeOverrideOffsetList_t = stl::boost_vector<configNodeOverrideOffset_t>;
+
 		struct configNodeOverrideOffset_t :
 			public configNodeOverrideValues_t
 		{
@@ -396,7 +400,7 @@ namespace IED
 			NiPoint3                                      adjustScale{ 0.0f, 0.0f, 0.0f };
 			configNodeOverrideConditionList_t             conditions;
 			std::string                                   description;
-			stl::boost_vector<configNodeOverrideOffset_t> group;
+			configNodeOverrideOffsetList_t                group;
 
 			constexpr void clamp()
 			{
@@ -455,8 +459,6 @@ namespace IED
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
-
-		using configNodeOverrideOffsetList_t = stl::boost_vector<configNodeOverrideOffset_t>;
 
 		enum class NodeOverrideFlags : std::uint32_t
 		{

@@ -189,6 +189,16 @@ namespace IED
 				{
 					x.flags.set(InventoryInfoExtraFlags::kCannotWear);
 				}
+
+				if (presence->HasType(ExtraPoison::EXTRA_DATA))
+				{
+					x.flags.set(InventoryInfoExtraFlags::kHasPoison);
+				}
+
+				if (presence->HasType(ExtraShouldWear::EXTRA_DATA))
+				{
+					x.flags.set(InventoryInfoExtraFlags::kShouldWear);
+				}
 			}
 		}
 	}

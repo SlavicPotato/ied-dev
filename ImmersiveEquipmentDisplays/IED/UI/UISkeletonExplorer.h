@@ -5,7 +5,7 @@
 #include "Widgets/Lists/UIActorListWidget.h"
 
 #include "Window/UIWindow.h"
-#include "Window/UIWindowBase.h"
+#include "UIContext.h"
 
 #include "UILocalizationInterface.h"
 
@@ -29,7 +29,7 @@ namespace IED
 
 		class UISkeletonExplorer :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			UICollapsibles,
 			UIActorList<ActorSkeletonData>,
 			public virtual UILocalizationInterface

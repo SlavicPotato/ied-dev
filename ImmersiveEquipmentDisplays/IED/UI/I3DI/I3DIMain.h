@@ -3,7 +3,7 @@
 #include "I3DIActorContext.h"
 #include "I3DICommonData.h"
 
-#include "IED/UI/UIContextBase.h"
+#include "IED/UI/UIContext.h"
 #include "IED/UI/UILocalizationInterface.h"
 
 namespace IED
@@ -13,7 +13,7 @@ namespace IED
 	namespace UI
 	{
 		class I3DIMain :
-			public UIContextBase,
+			public UIContext,
 			public UILocalizationInterface
 		{
 			/*struct Data : I3DICommonData
@@ -54,6 +54,8 @@ namespace IED
 
 			std::unique_ptr<I3DICommonData>   m_data;
 			std::unique_ptr<I3DIActorContext> m_actorContext;
+
+			Controller& m_controller;
 		};
 	}
 }

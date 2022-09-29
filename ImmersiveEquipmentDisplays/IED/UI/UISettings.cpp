@@ -63,11 +63,6 @@ namespace IED
 
 		void UISettings::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(0.0f, 650.f, 825.0f, true);
 
 			if (ImGui::Begin(
@@ -482,11 +477,11 @@ namespace IED
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::ControlLock);
-
+				
 				ImGui::NextColumn();
 
 				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::FreezeTime, "7"),
+						LS(UISettingsStrings::FreezeTime, "M"),
 						std::addressof(ui.enableFreezeTime))))
 				{
 					m_controller.UIGetRenderTask()->SetFreezeTime(ui.enableFreezeTime);
@@ -495,13 +490,13 @@ namespace IED
 				DrawTip(UITip::FreezeTime);
 
 				settings.mark_if(ImGui::Checkbox(
-					LS(UISettingsStrings::SelectCrosshairActor, "8"),
+					LS(UISettingsStrings::SelectCrosshairActor, "N"),
 					std::addressof(ui.selectCrosshairActor)));
 
 				DrawTip(UITip::SelectCrosshairActor);
 
 				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::EnableRestrictions, "5"),
+						LS(UISettingsStrings::EnableRestrictions, "O"),
 						std::addressof(ui.enableRestrictions))))
 				{
 					m_controller.UIGetRenderTask()->EnableRestrictions(ui.enableRestrictions);
@@ -517,7 +512,7 @@ namespace IED
                                ui.scale;
 
 				if (ImGui::SliderFloat(
-						LS(CommonStrings::Scale, "9"),
+						LS(CommonStrings::Scale, "P"),
 						std::addressof(tmp),
 						0.2f,
 						5.0f,
@@ -530,7 +525,7 @@ namespace IED
 
 				if (m_scaleTemp)
 				{
-					if (ImGui::Button(LS(CommonStrings::Apply, "A")))
+					if (ImGui::Button(LS(CommonStrings::Apply, "R")))
 					{
 						Drivers::UI::QueueSetScale(*m_scaleTemp);
 						settings.set(ui.scale, m_scaleTemp.clear_and_get());
@@ -1222,12 +1217,12 @@ namespace IED
 		{
 			if (LCG_MI(CommonStrings::Save, "1"))
 			{
-				m_controller.GetConfigStore().settings.SaveIfDirty();
+				m_controller.QueueSettingsSave();
 			}
 
 			ImGui::Separator();
 
-			if (LCG_MI(CommonStrings::Exit, "2"))
+			if (LCG_MI(CommonStrings::Close, "2"))
 			{
 				SetOpenState(false);
 			}

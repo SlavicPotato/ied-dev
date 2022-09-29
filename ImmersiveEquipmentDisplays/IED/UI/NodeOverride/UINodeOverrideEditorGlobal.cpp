@@ -65,7 +65,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::EditorOnOpen()
 		{
-			EditorReset();
+			UpdateData(m_data);
 		}
 
 		void UINodeOverrideEditorGlobal::EditorOnClose()
@@ -75,7 +75,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::EditorReset()
 		{
-			UpdateData(m_data);
+			m_data.clear();
 		}
 
 		constexpr Data::ConfigClass UINodeOverrideEditorGlobal::GetConfigClass() const
@@ -116,9 +116,12 @@ namespace IED
 		{
 			auto& store = m_controller.GetConfigStore();
 
-			store.settings.set(
-				store.settings.data.ui.transformEditor.globalSex,
-				a_newSex);
+			if (store.settings.data.ui.transformEditor.globalSex != a_newSex)
+			{
+				store.settings.set(
+					store.settings.data.ui.transformEditor.globalSex,
+					a_newSex);
+			}
 		}
 
 		void UINodeOverrideEditorGlobal::ApplyProfile(

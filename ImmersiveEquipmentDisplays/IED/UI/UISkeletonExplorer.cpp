@@ -26,11 +26,6 @@ namespace IED
 
 		void UISkeletonExplorer::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(75.0f, 650.0f);
 
 			if (ImGui::Begin(

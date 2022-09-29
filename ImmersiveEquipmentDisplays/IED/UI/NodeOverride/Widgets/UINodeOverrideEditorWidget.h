@@ -2114,26 +2114,26 @@ namespace IED
 				{
 					if (LCG_BM(CommonStrings::New, "2"))
 					{
-						if (LCG_BM(CommonStrings::Group, "3"))
-						{
-							if (DrawDescriptionPopup())
-							{
-								result.action  = NodeOverrideCommonAction::Insert;
-								result.desc    = GetDescriptionPopupBuffer();
-								result.isGroup = true;
-
-								ClearDescriptionPopupBuffer();
-							}
-							ImGui::EndMenu();
-						}
-
-						if (LCG_BM(CommonStrings::Item, "4"))
+						if (LCG_BM(CommonStrings::Item, "0"))
 						{
 							if (DrawDescriptionPopup())
 							{
 								result.action  = NodeOverrideCommonAction::Insert;
 								result.desc    = GetDescriptionPopupBuffer();
 								result.isGroup = false;
+
+								ClearDescriptionPopupBuffer();
+							}
+							ImGui::EndMenu();
+						}
+
+						if (LCG_BM(CommonStrings::Group, "1"))
+						{
+							if (DrawDescriptionPopup())
+							{
+								result.action  = NodeOverrideCommonAction::Insert;
+								result.desc    = GetDescriptionPopupBuffer();
+								result.isGroup = true;
 
 								ClearDescriptionPopupBuffer();
 							}
@@ -2871,6 +2871,25 @@ namespace IED
 			return result;
 		}
 
+		inline static constexpr void GetConditionListDepth(
+			const Data::configNodeOverrideConditionList_t& a_in,
+			std::uint32_t&                                 a_result,
+			std::uint32_t&                                 a_offset) noexcept
+		{
+			for (auto& e : a_in)
+			{
+				if (e.fbf.type == Data::NodeOverrideConditionType::Group)
+				{
+					a_offset++;
+					a_result = std::max(a_result, a_offset);
+
+					GetConditionListDepth(e.group.conditions, a_result, a_offset);
+
+					a_offset--;
+				}
+			}
+		}
+
 		template <class T>
 		template <class Tp>
 		void UINodeOverrideEditorWidget<T>::DrawOverrideConditionTable(
@@ -2895,17 +2914,41 @@ namespace IED
 					{ 5.f, 5.f });
 			}
 
-			constexpr int NUM_COLUMNS = 5;
+			constexpr int   NUM_COLUMNS   = 5;
+			constexpr float MIN_TAB_WIDTH = 320.0f;
 
-			float width;
+			float           width;
+			float           height     = 0.0f;
+			float           innerWidth = 0.0f;
+			ImGuiTableFlags flags      = ImGuiTableFlags_None;
 
-			if constexpr (std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
+			if (a_isnested)
 			{
 				width = -1.0f;
 			}
 			else
 			{
-				if (a_isnested)
+				std::uint32_t res = 0;
+				std::uint32_t off = 0;
+
+				GetConditionListDepth(a_entry, res, off);
+
+				if (res > 1)
+				{
+					const auto avail       = ImGui::GetContentRegionAvail().x;
+					const auto wantedWidth = MIN_TAB_WIDTH + MIN_TAB_WIDTH * static_cast<float>(res);
+
+					if (wantedWidth > avail)
+					{
+						flags = ImGuiTableFlags_ScrollX |
+						        ImGuiTableFlags_ScrollY;
+
+						innerWidth = wantedWidth;
+						height     = 300.0f;
+					}
+				}
+
+				if constexpr (std::is_same_v<Tp, SingleNodeOverridePlacementUpdateParams>)
 				{
 					width = -1.0f;
 				}
@@ -2920,20 +2963,22 @@ namespace IED
 			if (ImGui::BeginTable(
 					"offset_match_table",
 					NUM_COLUMNS,
-					ImGuiTableFlags_Borders |
+					flags |
+						ImGuiTableFlags_Borders |
 						ImGuiTableFlags_Resizable |
 						ImGuiTableFlags_NoSavedSettings |
 						ImGuiTableFlags_SizingStretchProp,
-					{ width, 0.0f }))
+					{ width, height },
+					innerWidth))
 			{
 				auto w =
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_None, 40.0f);
-				ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_None, 200.0f);
-				ImGui::TableSetupColumn("And", ImGuiTableColumnFlags_None, 17.0f);
-				ImGui::TableSetupColumn("Not", ImGuiTableColumnFlags_None, 17.0f);
+				ImGui::TableSetupColumn(LS(CommonStrings::Type), ImGuiTableColumnFlags_None, 40.0f);
+				ImGui::TableSetupColumn(LS(CommonStrings::Edit), ImGuiTableColumnFlags_None, MIN_TAB_WIDTH);
+				ImGui::TableSetupColumn(LS(CommonStrings::And), ImGuiTableColumnFlags_None, 15.0f);
+				ImGui::TableSetupColumn(LS(CommonStrings::Not), ImGuiTableColumnFlags_None, 15.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 

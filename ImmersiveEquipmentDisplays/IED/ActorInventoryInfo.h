@@ -11,6 +11,8 @@ namespace IED
 		kFavorite     = 1u << 2,
 		kCannotWear   = 1u << 3,
 		kHasHealth    = 1u << 5,
+		kHasPoison    = 1u << 6,
+		kShouldWear   = 1u << 7,
 
 		kEquippedMask = kEquipped | kEquippedLeft
 	};

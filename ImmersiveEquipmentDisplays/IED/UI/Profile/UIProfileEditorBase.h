@@ -6,7 +6,7 @@
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 
 #include "IED/UI/Window/UIWindow.h"
-#include "IED/UI/Window/UIWindowBase.h"
+#include "IED/UI/UIContext.h"
 
 namespace IED
 {
@@ -15,7 +15,7 @@ namespace IED
 		template <class T>
 		class UIProfileEditorBase :
 			public UIWindow,
-			public UIChildWindowBase,
+			public UIContext,
 			virtual protected UIAlignment,
 			public UIProfileBase<T>
 		{
@@ -79,11 +79,6 @@ namespace IED
 		template <class T>
 		void UIProfileEditorBase<T>::Draw()
 		{
-			if (!IsWindowOpen())
-			{
-				return;
-			}
-
 			SetWindowDimensions(GetWindowDimensions());
 
 			if (ImGui::Begin(
@@ -335,7 +330,7 @@ namespace IED
 			{
 				if (ImGui::BeginMenu(LS(CommonStrings::File, "1")))
 				{
-					if (ImGui::MenuItem(LS(CommonStrings::Exit, "1")))
+					if (ImGui::MenuItem(LS(CommonStrings::Close, "1")))
 					{
 						SetOpenState(false);
 					}

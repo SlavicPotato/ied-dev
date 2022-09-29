@@ -15,6 +15,9 @@ namespace IED
 		enum class EquipmentOverrideFlags : std::uint32_t
 		{
 			kNone = 0,
+
+			kIsGroup  = 1u << 0,
+			kContinue = 1u << 1
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(EquipmentOverrideFlags);
@@ -329,6 +332,10 @@ namespace IED
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
+		struct equipmentOverride_t;
+
+		using equipmentOverrideList_t = stl::boost_vector<equipmentOverride_t>;
+
 		struct equipmentOverride_t :
 			public configBaseValues_t
 		{
@@ -337,7 +344,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			equipmentOverride_t() = default;
@@ -357,6 +365,7 @@ namespace IED
 			stl::flag<EquipmentOverrideFlags> eoFlags{ EquipmentOverrideFlags::kNone };
 			equipmentOverrideConditionList_t  conditions;
 			std::string                       description;
+			equipmentOverrideList_t           group;
 
 		protected:
 			template <class Archive>
@@ -366,17 +375,20 @@ namespace IED
 				a_ar& eoFlags.value;
 				a_ar& conditions;
 				a_ar& description;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& group;
+				}
 			}
 		};
-
-		using equipmentOverrideList_t = stl::boost_vector<equipmentOverride_t>;
 
 	}
 }
 
 BOOST_CLASS_VERSION(
 	::IED::Data::equipmentOverride_t,
-	::IED::Data::equipmentOverride_t::Serialization::DataVersion1);
+	::IED::Data::equipmentOverride_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::equipmentOverrideConditionGroup_t,

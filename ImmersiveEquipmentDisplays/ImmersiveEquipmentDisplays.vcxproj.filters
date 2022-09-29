@@ -219,6 +219,9 @@
     <Filter Include="Source\IED\UI\Widgets\EffectShader">
       <UniqueIdentifier>{47b6de0e-0807-40b5-9322-8a8b1b38e14b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ImGui\Styles\adobe-spectrum">
+      <UniqueIdentifier>{58f4fed6-acf2-40a7-b6e4-b20166a2ff02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -812,9 +815,6 @@
     <ClInclude Include="IED\UI\Window\UIWindow.h">
       <Filter>Source\IED\UI\Window</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Window\UIWindowBase.h">
-      <Filter>Source\IED\UI\Window</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Filters\UIFilterBase.h">
       <Filter>Source\IED\UI\Widgets\Filters</Filter>
     </ClInclude>
@@ -1121,7 +1121,7 @@
     <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h">
       <Filter>Source\ext</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\UIContextBase.h">
+    <ClInclude Include="IED\UI\UIContext.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIIntroBanner.h">
@@ -1403,7 +1403,7 @@
     <ClInclude Include="IED\Controller\ActorObjectHolder.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\TemporaryActorStateData.h">
+    <ClInclude Include="IED\Controller\CachedActorData.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\ObjectEntryBase.h">
@@ -1455,6 +1455,18 @@
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIAllowedModelTypes.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\adobe-spectrum\imgui_spectrum.h">
+      <Filter>Source\ImGui\Styles\adobe-spectrum</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\spectrum-dark.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGui\Styles\enemymouse.h">
+      <Filter>Source\ImGui\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIDisplayManagement.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2272,7 +2284,7 @@
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Controller\TemporaryActorStateData.cpp">
+    <ClCompile Include="IED\Controller\CachedActorData.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp">
@@ -2305,10 +2317,13 @@
     <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="IED\UI\Window\UIWindowBase.cpp">
-      <Filter>Source\IED\UI\Window</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\UIAllowedModelTypes.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIDisplayManagement.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIContext.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
   </ItemGroup>
