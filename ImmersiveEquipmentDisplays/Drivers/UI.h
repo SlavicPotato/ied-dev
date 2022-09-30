@@ -250,6 +250,7 @@ namespace IED
 				const stl::fixed_string& a_font);
 
 			bool LoadFontMetadata(fontInfoMap_t& a_out);
+			bool LoadFontMetadata(const fs::path& a_path, fontInfoMap_t& a_out);
 
 			void AddFontRanges(
 				ImFontGlyphRangesBuilder& a_builder,

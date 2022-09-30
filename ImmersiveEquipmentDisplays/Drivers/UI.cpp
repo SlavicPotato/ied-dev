@@ -967,11 +967,77 @@ namespace IED
 
 		bool UI::LoadFontMetadata(fontInfoMap_t& a_out)
 		{
+			if (!LoadFontMetadata(PATHS::FONT_META, a_out))
+			{
+				return false;
+			}
+
+			try
+			{
+				const fs::path allowedExt{ ".json" };
+
+				for (const auto& entry : fs::directory_iterator(PATHS::FONT_META_USER_PATH))
+				{
+					if (!entry.is_regular_file())
+					{
+						continue;
+					}
+
+					auto& path = entry.path();
+
+					if (!path.has_extension() ||
+					    path.extension() != allowedExt)
+					{
+						continue;
+					}
+
+					auto strPath = Serialization::SafeGetPath(path);
+
+					fontInfoMap_t result;
+
+					if (!LoadFontMetadata(entry.path(), result))
+					{
+						continue;
+					}
+
+					Debug(
+						"%s: loaded '%s' [%zu]",
+						__FUNCTION__,
+						strPath.c_str(),
+						result.fonts.size());
+
+					for (auto& e : result.fonts)
+					{
+						auto r = a_out.fonts.emplace(std::move(e));
+
+						if (!r.second)
+						{
+							Warning(
+								"%s: [%s] duplicate entry '%s'",
+								__FUNCTION__,
+								strPath.c_str(),
+								e.first.c_str());
+						}
+					}
+				}
+			}
+			catch (const std::exception& e)
+			{
+				Error("%s: %s", __FUNCTION__, e.what());
+			}
+
+			return true;
+		}
+
+		bool UI::LoadFontMetadata(
+			const fs::path& a_path,
+			fontInfoMap_t&  a_out)
+		{
 			try
 			{
 				Json::Value root;
 
-				Serialization::ReadData(PATHS::FONT_META, root);
+				Serialization::ReadData(a_path, root);
 
 				Serialization::ParserState           state;
 				Serialization::Parser<fontInfoMap_t> parser(state);
