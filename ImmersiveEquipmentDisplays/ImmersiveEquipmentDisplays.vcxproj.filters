@@ -1469,6 +1469,9 @@
     <ClInclude Include="IED\UI\UIDisplayManagement.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIKeyedInputLockReleaseHandler.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2324,6 +2327,9 @@
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UIContext.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIKeyedInputLockReleaseHandler.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
   </ItemGroup>

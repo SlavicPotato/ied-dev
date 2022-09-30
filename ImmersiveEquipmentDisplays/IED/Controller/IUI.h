@@ -43,10 +43,10 @@ namespace IED
 		}
 
 		template <class T, class... Args>
-		[[nodiscard]] void InitializeContext(Controller& a_controller, Args&&... a_args) requires
+		[[nodiscard]] void InitializeContext(Args&&... a_args) requires
 			std::is_base_of_v<UI::UIContext, T>
 		{
-			m_context = std::make_unique<T>(a_controller, std::forward<Args>(a_args)...);
+			m_context = std::make_unique<T>(*this, std::forward<Args>(a_args)...);
 			m_context->Initialize();
 		}
 
@@ -60,6 +60,7 @@ namespace IED
 		virtual void PrepareGameData() override;
 		virtual void Render() override;
 		virtual void OnMouseMove(const Handlers::MouseMoveEvent &a_evn) override;
+		virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn) override;
 
 		virtual void OnTaskStop() override;
 		virtual void OnTaskStart() override;
@@ -80,13 +81,13 @@ namespace IED
 	{
 	public:
 		IUIRenderTaskMain(
-			IUI&        a_interface,
-			Controller& a_controller);
+			IUI&        a_interface);
 
-		UI::UIMain* GetContext() const noexcept;
+		UI::UIMain& GetContext() const noexcept;
 
 	private:
 		virtual void OnTaskStart() override;
+		virtual void OnTaskStop() override;
 		virtual bool ShouldClose() override;
 	};
 
@@ -145,6 +146,7 @@ namespace IED
 	private:
 		virtual constexpr stl::critical_section& UIGetLock() noexcept = 0;
 		virtual void                             OnUIOpen(){};
+		virtual void                             OnUIClose(){};
 
 		UIOpenResult UIOpenImpl();
 

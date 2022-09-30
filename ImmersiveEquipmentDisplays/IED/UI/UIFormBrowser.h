@@ -66,6 +66,11 @@ namespace IED
 			void OnClose() override;
 			void Reset() override;
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 			inline constexpr const auto& GetSelectedEntry() const noexcept
 			{
 				return m_selectedEntry;

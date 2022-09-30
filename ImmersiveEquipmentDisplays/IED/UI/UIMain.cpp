@@ -23,18 +23,22 @@ namespace IED
 {
 	namespace UI
 	{
-		UIMain::UIMain(Controller& a_controller) :
+		UIMain::UIMain(
+			Tasks::UIRenderTaskBase& a_owner,
+			Controller&              a_controller) :
 			UILocalizationInterface(a_controller),
 			UIAboutModal(a_controller),
+			m_owner(a_owner),
 			m_controller(a_controller),
 			m_formLookupCache(a_controller),
+			m_ilrh(a_owner, a_controller),
 #if defined(IED_ENABLE_I3DI)
 			m_i3di(a_controller),
 #endif
 			m_popupQueue(a_controller)
 		{
 			CreateChild<UIFormBrowser>(a_controller);
-			CreateChild<UISettings>(a_controller);
+			CreateChild<UISettings>(a_owner, a_controller);
 			CreateChild<UIDialogImportExport>(a_controller);
 			CreateChild<UINodeMapEditor>(a_controller);
 			CreateChild<UILog>(a_controller);
@@ -58,9 +62,10 @@ namespace IED
 			for (const auto& e : m_childWindows)
 			{
 				e->Initialize();
+				e->AddSink(this);
 			}
 
-			const auto& settings = m_controller.GetConfigStore().settings;
+			const auto& settings = GetUISettings();
 
 			using enum_type = std::underlying_type_t<ChildWindowID>;
 
@@ -74,8 +79,17 @@ namespace IED
 				const auto& window = m_childWindows[i];
 
 				window->Initialize();
-				window->SetOpenState(settings.data.ui.windowOpenStates[i]);
+				window->SetOpenState(settings.windowOpenStates[i]);
 			}
+
+			if (settings.releaseLockKeys)
+			{
+				m_ilrh.SetKeys(
+					settings.releaseLockKeys->key,
+					settings.releaseLockKeys->comboKey);
+			}
+
+			m_ilrh.SetLockedAlpha(settings.releaseLockAlpha);
 
 #if defined(IED_ENABLE_I3DI)
 			m_i3di.Initialize();
@@ -100,6 +114,8 @@ namespace IED
 		{
 			//ImGui::ShowDemoWindow();
 
+			m_ilrh.Begin();
+
 			DrawMenuBarMain();
 			DrawChildWindows();
 
@@ -113,6 +129,8 @@ namespace IED
 			}
 
 			m_popupQueue.run();
+
+			m_ilrh.End();
 
 			m_formLookupCache.RunCleanup();
 		}
@@ -134,6 +152,33 @@ namespace IED
 		const Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
 		{
 			return m_controller.GetConfigStore().settings.data.ui;
+		}
+
+		void UIMain::Receive(const UIContextStateChangeEvent& a_evn)
+		{
+			auto id = static_cast<ChildWindowID>(a_evn.context.GetContextID());
+
+			if (id >= ChildWindowID::kMax)
+			{
+				return;
+			}
+
+			if (!a_evn.newState)
+			{
+				if (
+					GetUISettings().exitOnLastWindowClose &&
+				    m_seenOpenChildThisSession &&
+				    !HasOpenChild())
+				{
+					m_lastClosedChild = id;
+
+					SetOpenState(false);
+				}
+			}
+			else
+			{
+				m_seenOpenChildThisSession = true;
+			}
 		}
 
 		void UIMain::DrawChildWindows()
@@ -446,7 +491,7 @@ namespace IED
 						return true;
 					})
 					.call([this](const auto&) {
-						const auto& conf = m_controller.GetConfigStore().settings.data.ui;
+						const auto& conf = GetUISettings();
 
 						if (!m_controller.SaveCurrentConfigAsDefault(
 								ExportFlags::kNone,
@@ -464,14 +509,41 @@ namespace IED
 			}
 		}
 
-		void UIMain::OnOpen()
+		bool UIMain::HasOpenChild() const
 		{
 			for (const auto& e : m_childWindows)
 			{
 				if (e->IsContextOpen())
 				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void UIMain::OnOpen()
+		{
+			m_seenOpenChildThisSession = false;
+
+			for (const auto& e : m_childWindows)
+			{
+				if (e->IsContextOpen())
+				{
+					m_seenOpenChildThisSession = true;
 					e->OnOpen();
 				}
+			}
+
+			if (m_lastClosedChild)
+			{
+				if (GetUISettings().exitOnLastWindowClose &&
+				    !m_seenOpenChildThisSession)
+				{
+					GetChildContext(*m_lastClosedChild).SetOpenState(true);
+				}
+
+				m_lastClosedChild.reset();
 			}
 
 #if defined(IED_ENABLE_I3DI)
@@ -489,6 +561,7 @@ namespace IED
 			using enum_type = std::underlying_type_t<ChildWindowID>;
 			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
 			{
+				const auto  id        = static_cast<ChildWindowID>(i);
 				const auto& window    = m_childWindows[i];
 				const auto  openState = window->IsContextOpen();
 
@@ -497,9 +570,22 @@ namespace IED
 					window->OnClose();
 				}
 
-				if (auto& s = settings.data.ui.windowOpenStates[i]; s != openState)
+				auto& s = settings.data.ui.windowOpenStates[i];
+
+				if (settings.data.ui.exitOnLastWindowClose &&
+				    m_lastClosedChild == id)
 				{
-					settings.set(s, openState);
+					if (!s)
+					{
+						settings.set(s, true);
+					}
+				}
+				else
+				{
+					if (s != openState)
+					{
+						settings.set(s, openState);
+					}
 				}
 			}
 
@@ -509,7 +595,7 @@ namespace IED
 
 			m_formLookupCache.clear();
 
-			m_controller.ClearActorInfo();
+			m_ilrh.Reset();
 
 			m_controller.QueueSettingsSave(true);
 			Drivers::UI::QueueImGuiSettingsSave();
@@ -520,6 +606,11 @@ namespace IED
 #if defined(IED_ENABLE_I3DI)
 			m_i3di.OnMouseMove(a_evn);
 #endif
+		}
+
+		void UIMain::OnKeyEvent(const Handlers::KeyEvent& a_evn)
+		{
+			m_ilrh.Receive(a_evn);
 		}
 
 	}

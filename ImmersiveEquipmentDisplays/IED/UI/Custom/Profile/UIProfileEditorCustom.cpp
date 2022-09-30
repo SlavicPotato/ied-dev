@@ -8,7 +8,8 @@ namespace IED
 {
 	namespace UI
 	{
-		UIProfileEditorCustom::UIProfileEditorCustom(Controller& a_controller) :
+		UIProfileEditorCustom::UIProfileEditorCustom(
+			Controller& a_controller) :
 			UIProfileEditorBase<CustomProfile>(
 				UIProfileStrings::TitleCustom,
 				"ied_pe_cust",

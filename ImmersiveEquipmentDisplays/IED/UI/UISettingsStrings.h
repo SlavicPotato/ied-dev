@@ -46,6 +46,8 @@ namespace IED
 			ParallelUpdates             = 4435,
 			ExperimentalFeatureWarn     = 4436,
 			ShowMainMenuBar             = 4437,
+			ReleaseControlLockKeys      = 4438,
+			ExitOnLastWindowClose       = 4439,
 		};
 	}
 }

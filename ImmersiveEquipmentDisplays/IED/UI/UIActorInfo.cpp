@@ -97,7 +97,7 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			assert(a_data.data->actor == a_handle);
+			assert(data.data->actor == handle);
 
 			if (CollapsingHeader(
 					"actor_tree",
@@ -565,8 +565,6 @@ namespace IED
 
 				ImGui::TreePop();
 			}
-
-			ImGui::PopID();
 		}
 
 		void UIActorInfo::DrawInventoryEntries(

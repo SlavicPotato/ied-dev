@@ -5134,13 +5134,17 @@ namespace IED
 	void Controller::SaveSettings()
 	{
 		stl::scoped_lock lock(m_lock);
-		m_config.settings.Save();
+		m_config.settings.SaveIfDirty();
 	}
 
 	void Controller::OnUIOpen()
 	{
-		//Drivers::UI::QueueRemoveTask(-0xFFFF);
 		UpdateActorInfo(m_objects);
+	}
+
+	void Controller::OnUIClose()
+	{
+		ClearActorInfo();
 	}
 
 	void Controller::JSOnDataImport()

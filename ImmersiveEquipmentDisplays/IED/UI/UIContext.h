@@ -8,10 +8,18 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIContext
+		class UIContext;
+
+		struct UIContextStateChangeEvent
+		{
+			UIContext& context;
+			bool       newState;
+		};
+
+		class UIContext :
+			public ::Events::EventDispatcher<UIContextStateChangeEvent>
 		{
 		public:
-
 			UIContext()                   = default;
 			virtual ~UIContext() noexcept = default;
 
@@ -48,12 +56,18 @@ namespace IED
 			virtual void PrepareGameData(){};
 			virtual void Render(){};
 			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn){};
+			virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn){};
 
 			//virtual void OnOpenStateChanged(bool a_newState){};
+
+			virtual std::uint32_t GetContextID() = 0;
 
 			void DrawWrapper();
 
 		private:
+
+			void SendOpenStateEvent();
+
 			bool m_openState{ false };
 			bool m_stateChanged{ false };
 		};

@@ -17,7 +17,7 @@ namespace IED
 
 			inline constexpr auto& GetModel(I3DIModelID a_index) const noexcept
 			{
-				assert(a_index < stl::underlying(I3DIModel::kMax));
+				assert(a_index < I3DIModelID::kMax);
 				return m_models[stl::underlying(a_index)];
 			}
 

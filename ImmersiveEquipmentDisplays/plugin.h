@@ -3,7 +3,7 @@
 #define PLUGIN_NAME      "ImmersiveEquipmentDisplays"
 #define PLUGIN_NAME_FULL "Immersive Equipment Displays"
 #define PLUGIN_AUTHOR    "SlavicPotato"
-#define PLUGIN_URL       "www.nexusmods.com/skyrimspecialedition/mods/62001"
+#define PLUGIN_URL       "nexusmods.com/skyrimspecialedition/mods/62001"
 #define PLUGIN_URL_DEV   "github.com/SlavicPotato/ied-dev"
 
 #include "version.h"

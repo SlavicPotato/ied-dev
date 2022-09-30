@@ -76,12 +76,13 @@ namespace IED
 
 			auto& io                             = ImGui::GetIO();
 			io.MouseDrawCursor                   = true;
-			io.WantSetMousePos                   = true;
 			io.ConfigWindowsMoveFromTitleBarOnly = true;
 			io.DisplaySize                       = { m_info.bufferSize.width, m_info.bufferSize.height };
 			io.MousePos                          = { io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f };
 			io.UserData                          = static_cast<void*>(std::addressof(m_ioUserData));
 			io.IniFilename                       = !m_conf.imgui_ini.empty() ? m_conf.imgui_ini.c_str() : nullptr;
+
+			io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
 			ImGui::StyleColorsDark();
 
@@ -303,7 +304,24 @@ namespace IED
 
 		void UI::Receive(const Handlers::KeyEvent& a_evn)
 		{
-			if (!m_Instance.m_suspended.load(std::memory_order_relaxed))
+			if (m_Instance.m_suspended.load(std::memory_order_relaxed))
+			{
+				return;
+			}
+
+			stl::scoped_lock lock(m_lock);
+
+			if (!m_imInitialized)
+			{
+				return;
+			}
+
+			for (auto& e : m_drawTasks)
+			{
+				e.second->OnKeyEvent(a_evn);
+			}
+
+			if (!m_state.blockInputImGuiCounter)
 			{
 				ProcessEvent(a_evn);
 			}
@@ -316,10 +334,10 @@ namespace IED
 				return;
 			}
 
-			if (Game::IsPaused())
+			/*if (Game::IsPaused())
 			{
 				return;
-			}
+			}*/
 
 			stl::scoped_lock lock(m_lock);
 
@@ -392,17 +410,24 @@ namespace IED
 			m_Instance.EvaluateTaskStateImpl();
 		}
 
+		void UI::QueueEvaluateTaskState()
+		{
+			ITaskPool::AddTask([]() {
+				EvaluateTaskState();
+			});
+		}
+
 		void UI::EvaluateTaskStateImpl()
 		{
 			stl::scoped_lock lock(m_lock);
 
 			for (auto& [i, e] : m_drawTasks)
 			{
-				if (e->m_options.lock != e->m_state.holdsLock)
+				if (e->m_options.lockControls != e->m_state.holdsControlLock)
 				{
-					e->m_state.holdsLock = e->m_options.lock;
+					e->m_state.holdsControlLock = e->m_options.lockControls;
 
-					if (e->m_state.holdsLock)
+					if (e->m_state.holdsControlLock)
 					{
 						m_state.lockCounter++;
 					}
@@ -439,6 +464,34 @@ namespace IED
 						m_state.wantCursorCounter--;
 					}
 				}
+
+				if (e->m_options.blockCursor != e->m_state.holdsBlockCursor)
+				{
+					e->m_state.holdsBlockCursor = e->m_options.blockCursor;
+
+					if (e->m_state.holdsBlockCursor)
+					{
+						m_state.blockCursorCounter++;
+					}
+					else
+					{
+						m_state.blockCursorCounter--;
+					}
+				}
+
+				if (e->m_options.blockImGuiInput != e->m_state.holdsBlockImGuiInput)
+				{
+					e->m_state.holdsBlockImGuiInput = e->m_options.blockImGuiInput;
+
+					if (e->m_state.holdsBlockImGuiInput)
+					{
+						m_state.blockInputImGuiCounter++;
+					}
+					else
+					{
+						m_state.blockInputImGuiCounter--;
+					}
+				}
 			}
 
 			if (m_state.controlsLocked)
@@ -471,7 +524,25 @@ namespace IED
 				}
 			}
 
-			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
+			ApplyControlLockChanges();
+		}
+
+		void UI::ApplyControlLockChanges() const
+		{
+			auto& io = ImGui::GetIO();
+
+			io.MouseDrawCursor =
+				m_state.wantCursorCounter &&
+				!m_state.blockCursorCounter;
+
+			if (m_state.blockCursorCounter)
+			{
+				io.ConfigFlags |= ImGuiConfigFlags_NoMouse;
+			}
+			else
+			{
+				io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+			}
 		}
 
 		bool UI::SetCurrentFont(const stl::fixed_string& a_font)
@@ -566,11 +637,13 @@ namespace IED
 
 		void UI::OnTaskAdd(Tasks::UIRenderTaskBase* a_task)
 		{
-			a_task->m_state.holdsLock       = a_task->m_options.lock;
-			a_task->m_state.holdsFreeze     = a_task->m_options.freeze;
-			a_task->m_state.holdsWantCursor = a_task->m_options.wantCursor;
+			a_task->m_state.holdsControlLock     = a_task->m_options.lockControls;
+			a_task->m_state.holdsFreeze          = a_task->m_options.freeze;
+			a_task->m_state.holdsWantCursor      = a_task->m_options.wantCursor;
+			a_task->m_state.holdsBlockCursor     = a_task->m_options.blockCursor;
+			a_task->m_state.holdsBlockImGuiInput = a_task->m_options.blockImGuiInput;
 
-			if (a_task->m_state.holdsLock)
+			if (a_task->m_state.holdsControlLock)
 			{
 				m_state.lockCounter++;
 			}
@@ -583,6 +656,16 @@ namespace IED
 			if (a_task->m_state.holdsWantCursor)
 			{
 				m_state.wantCursorCounter++;
+			}
+
+			if (a_task->m_state.holdsBlockCursor)
+			{
+				m_state.blockCursorCounter++;
+			}
+
+			if (a_task->m_state.holdsBlockImGuiInput)
+			{
+				m_state.blockInputImGuiCounter++;
 			}
 
 			a_task->m_state.running   = true;
@@ -602,7 +685,7 @@ namespace IED
 				FreezeTime(true);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
+			ApplyControlLockChanges();
 
 			if (m_suspended.load(std::memory_order_relaxed))
 			{
@@ -614,7 +697,7 @@ namespace IED
 
 		void UI::OnTaskRemove(UIRenderTaskBase* a_task)
 		{
-			if (a_task->m_state.holdsLock)
+			if (a_task->m_state.holdsControlLock)
 			{
 				m_state.lockCounter--;
 			}
@@ -627,6 +710,16 @@ namespace IED
 			if (a_task->m_state.holdsWantCursor)
 			{
 				m_state.wantCursorCounter--;
+			}
+
+			if (a_task->m_state.holdsBlockCursor)
+			{
+				m_state.blockCursorCounter--;
+			}
+
+			if (a_task->m_state.holdsBlockImGuiInput)
+			{
+				m_state.blockInputImGuiCounter--;
 			}
 
 			a_task->m_state.running = false;
@@ -644,7 +737,7 @@ namespace IED
 				FreezeTime(false);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = static_cast<bool>(m_state.wantCursorCounter);
+			ApplyControlLockChanges();
 		}
 
 		void UI::QueueSetScaleImpl(float a_scale)
@@ -1122,7 +1215,10 @@ namespace IED
 				FreezeTime(false);
 			}
 
-			ImGui::GetIO().MouseDrawCursor = true;
+			auto& io = ImGui::GetIO();
+
+			io.MouseDrawCursor = true;
+			io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 
 			m_suspended.store(true, std::memory_order_relaxed);
 		}

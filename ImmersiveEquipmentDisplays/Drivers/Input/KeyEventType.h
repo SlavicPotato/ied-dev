@@ -2,14 +2,14 @@
 
 namespace IED
 {
-	enum class KeyEventType : std::uint32_t
+	enum class KeyEventType : std::uint8_t
 	{
 		Keyboard = 0,
 		Mouse    = 1,
 		Wheel    = 2
 	};
 
-	enum class KeyEventState : std::uint32_t
+	enum class KeyEventState : std::uint8_t
 	{
 		KeyDown = 0,
 		KeyUp   = 1

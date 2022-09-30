@@ -69,6 +69,12 @@ namespace IED
 			/*void PushLUID(const Data::configLUIDTagMCG_t& a_id);
 			void PopLUID();*/
 
+			void DrawItemUnderline(ImGuiCol a_color);
+
+			void DrawURL(
+				const char* a_label,
+				const char* a_url);
+
 			template <
 				class T,
 				T _Min,

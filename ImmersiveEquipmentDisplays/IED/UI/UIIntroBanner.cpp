@@ -9,17 +9,20 @@
 #include "IED/Controller/Controller.h"
 
 #include "Drivers/UI.h"
+#include "Drivers/UI/Tasks.h"
 
 namespace IED
 {
 	namespace UI
 	{
 		UIIntroBanner::UIIntroBanner(
-			Controller& a_controller,
-			float       a_voffset) :
+			Tasks::UIRenderTaskBase& a_owner,
+			Controller&              a_controller,
+			float                    a_voffset) :
 			UILocalizationInterface(a_controller),
-			m_voffset(a_voffset),
-			m_controller(a_controller)
+			m_owner(a_owner),
+			m_controller(a_controller),
+			m_voffset(a_voffset)
 		{
 		}
 
@@ -100,62 +103,59 @@ namespace IED
 						LS(UIIntroBannerStrings::SDSFoundAppend));
 				}
 
-				if (auto& renderTask = m_controller.UIGetRenderTask())
+				ImGui::Spacing();
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				auto& ih = m_controller.GetInputHandlers();
+
+				if (ih.uiOpen.GetKey())
 				{
-					ImGui::Spacing();
-					ImGui::Separator();
-					ImGui::Spacing();
+					char buf1[12];
 
-					auto& ih = m_controller.GetInputHandlers();
+					auto key = UIData::get_control_key_desc(
+						UIData::g_controlMap,
+						ih.uiOpen.GetKey(),
+						buf1);
 
-					if (ih.uiOpen.GetKey())
+					ImGui::Text("%s", LS(UIIntroBannerStrings::UIOpenKeys));
+					ImGui::SameLine();
+
+					if (ih.uiOpen.GetComboKey())
 					{
-						char buf1[12];
+						char buf2[12];
 
-						auto key = UIData::get_control_key_desc(
-							UIData::g_controlMap,
-							ih.uiOpen.GetKey(),
-							buf1);
+						auto comboKey = UIData::get_control_key_desc(
+							UIData::g_comboControlMap,
+							ih.uiOpen.GetComboKey(),
+							buf2);
 
-						ImGui::Text("%s", LS(UIIntroBannerStrings::UIOpenKeys));
-						ImGui::SameLine();
-
-						if (ih.uiOpen.GetComboKey())
-						{
-							char buf2[12];
-
-							auto comboKey = UIData::get_control_key_desc(
-								UIData::g_comboControlMap,
-								ih.uiOpen.GetComboKey(),
-								buf2);
-
-							ImGui::TextColored(
-								UICommon::g_colorLightOrange,
-								"%s + %s",
-								comboKey,
-								key);
-						}
-						else
-						{
-							ImGui::TextColored(
-								UICommon::g_colorLightOrange,
-								"%s",
-								key);
-						}
-
-						if (!renderTask->GetEnabledInMenu())
-						{
-							ImGui::SameLine();
-							ImGui::Text("%s", LS(UIIntroBannerStrings::KeyInfoAppend));
-						}
+						ImGui::TextColored(
+							UICommon::g_colorLightOrange,
+							"%s + %s",
+							comboKey,
+							key);
 					}
 					else
 					{
 						ImGui::TextColored(
-							UICommon::g_colorWarning,
+							UICommon::g_colorLightOrange,
 							"%s",
-							LS(UIIntroBannerStrings::NoKeyWarning));
+							key);
 					}
+
+					if (!m_owner.GetEnabledInMenu())
+					{
+						ImGui::SameLine();
+						ImGui::Text("%s", LS(UIIntroBannerStrings::KeyInfoAppend));
+					}
+				}
+				else
+				{
+					ImGui::TextColored(
+						UICommon::g_colorWarning,
+						"%s",
+						LS(UIIntroBannerStrings::NoKeyWarning));
 				}
 
 				ImGui::PopStyleColor();

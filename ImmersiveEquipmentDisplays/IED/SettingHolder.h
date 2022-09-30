@@ -145,6 +145,8 @@ namespace IED
 				UI::UIDisplayManagementEditorPanel lastPanel{ UI::UIDisplayManagementEditorPanel::Slot };
 
 				stl::optional<ConfigKeyPair> openKeys;
+				stl::optional<ConfigKeyPair> releaseLockKeys;
+				float                        releaseLockAlpha{ 0.33f };
 
 				bool  enableControlLock{ true };
 				bool  enableFreezeTime{ false };
@@ -157,6 +159,7 @@ namespace IED
 				bool          logLevels[stl::underlying(LogLevel::Max) + 1]{ false };
 
 				bool closeOnESC{ true };
+				bool exitOnLastWindowClose{ true };
 				bool showIntroBanner{ true };
 
 				stl::flag<Data::ConfigStoreSerializationFlags> defaultExportFlags{

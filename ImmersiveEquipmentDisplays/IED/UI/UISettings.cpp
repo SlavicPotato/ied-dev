@@ -12,6 +12,7 @@
 #include "Widgets/UIWidgetCommonStrings.h"
 
 #include "Drivers/UI.h"
+#include "Drivers/UI/Tasks.h"
 
 namespace IED
 {
@@ -49,13 +50,16 @@ namespace IED
 
 		} };
 
-		UISettings::UISettings(Controller& a_controller) :
+		UISettings::UISettings(
+			Tasks::UIRenderTaskBase& a_owner,
+			Controller&              a_controller) :
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UIFormPickerWidget(a_controller, FormInfoFlags::kNone, true),
 			UIFormLookupInterface(a_controller),
 			UIStylePresetSelectorWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
+			m_owner(a_owner),
 			m_controller(a_controller)
 		{
 			SetAllowedTypes({ BGSSoundDescriptorForm::kTypeID });
@@ -473,18 +477,22 @@ namespace IED
 						LS(UISettingsStrings::ControlLock, "6"),
 						std::addressof(ui.enableControlLock))))
 				{
-					m_controller.UIGetRenderTask()->SetControlLock(ui.enableControlLock);
+					m_owner.SetControlLock(ui.enableControlLock);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::ControlLock);
-				
+
+				settings.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::ExitOnLastWindowClose, "7"),
+					std::addressof(ui.exitOnLastWindowClose)));
+
 				ImGui::NextColumn();
 
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::FreezeTime, "M"),
 						std::addressof(ui.enableFreezeTime))))
 				{
-					m_controller.UIGetRenderTask()->SetFreezeTime(ui.enableFreezeTime);
+					m_owner.SetFreezeTime(ui.enableFreezeTime);
 					Drivers::UI::EvaluateTaskState();
 				}
 				DrawTip(UITip::FreezeTime);
@@ -499,7 +507,7 @@ namespace IED
 						LS(UISettingsStrings::EnableRestrictions, "O"),
 						std::addressof(ui.enableRestrictions))))
 				{
-					m_controller.UIGetRenderTask()->EnableRestrictions(ui.enableRestrictions);
+					m_owner.EnableRestrictions(ui.enableRestrictions);
 				}
 				DrawTip(UITip::EnableRestrictions);
 
@@ -608,6 +616,65 @@ namespace IED
 
 					ImGui::Spacing();
 					ImGui::Unindent();
+
+					ImGui::TreePop();
+				}
+
+				if (TreeEx(
+						"rel_keys",
+						false,
+						"%s",
+						LS(UISettingsStrings::ReleaseControlLockKeys)))
+				{
+					if (auto task = m_owner.As<IUIRenderTaskMain>())
+					{
+						ImGui::Indent();
+						ImGui::Spacing();
+
+						auto& handler = task->GetContext().GetKeyedInputLockReleaseHandler();
+
+						auto tmpk = handler.GetComboKey();
+
+						if (settings.mark_if(DrawKeySelector(
+								LS(CommonStrings::ComboKey, "1"),
+								UIData::g_comboControlMap,
+								tmpk,
+								true)))
+						{
+							handler.SetKeys(
+								handler.GetKey(),
+								tmpk);
+
+							ui.releaseLockKeys->comboKey = tmpk;
+							ui.releaseLockKeys.mark(true);
+						}
+
+						tmpk = handler.GetKey();
+
+						if (settings.mark_if(DrawKeySelector(
+								LS(CommonStrings::Key, "2"),
+								UIData::g_controlMap,
+								tmpk)))
+						{
+							handler.SetKeys(tmpk, handler.GetComboKey());
+
+							ui.releaseLockKeys->key = tmpk;
+							ui.releaseLockKeys.mark(true);
+						}
+
+						if (settings.mark_if(ImGui::SliderFloat(
+								LS(UISettingsStrings::Alpha, "3"),
+								std::addressof(ui.releaseLockAlpha),
+								0.0f,
+								1.0f,
+								"%.2f")))
+						{
+							handler.SetLockedAlpha(ui.releaseLockAlpha);
+						}
+
+						ImGui::Spacing();
+						ImGui::Unindent();
+					}
 
 					ImGui::TreePop();
 				}

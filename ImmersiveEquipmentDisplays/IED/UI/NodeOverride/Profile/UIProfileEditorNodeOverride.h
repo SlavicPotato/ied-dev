@@ -44,6 +44,11 @@ namespace IED
 
 			virtual void DrawProfileEditorMenuBarItems() override;
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 		private:
 			virtual void DrawItem(NodeOverrideProfile& a_profile) override;
 

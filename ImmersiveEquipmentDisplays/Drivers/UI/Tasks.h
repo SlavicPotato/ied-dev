@@ -23,7 +23,7 @@ namespace IED
 
 			inline constexpr void SetControlLock(bool a_switch) noexcept
 			{
-				m_options.lock = a_switch;
+				m_options.lockControls = a_switch;
 			}
 
 			inline constexpr void SetFreezeTime(bool a_switch) noexcept
@@ -61,6 +61,26 @@ namespace IED
 				return m_options.enableInMenu;
 			}
 
+			inline constexpr void SetBlockCursor(bool a_switch) noexcept
+			{
+				m_options.blockCursor = a_switch;
+			}
+
+			inline constexpr bool GetBlockCursor() const noexcept
+			{
+				return m_options.blockCursor;
+			}
+
+			inline constexpr void SetBlockImGuiInput(bool a_switch) noexcept
+			{
+				m_options.blockImGuiInput = a_switch;
+			}
+
+			inline constexpr bool GetBlockInput() const noexcept
+			{
+				return m_options.blockImGuiInput;
+			}
+
 			long long GetRunTime() const noexcept;
 
 			inline constexpr bool IsRunning() const noexcept
@@ -70,19 +90,34 @@ namespace IED
 
 			virtual bool RunEnableChecks() const;
 
+			template <class T>
+			[[nodiscard]] inline constexpr const T* As() const
+			{
+				return dynamic_cast<const T*>(this);
+			}
+			
+			template <class T>
+			[[nodiscard]] inline constexpr T* As()
+			{
+				return dynamic_cast<T*>(this);
+			}
+
 		protected:
 			virtual bool Run() = 0;
 			virtual void PrepareGameData(){};
 			virtual void Render(){};
-			virtual void OnMouseMove(const Handlers::MouseMoveEvent &a_evn){};
+			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn){};
+			virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn){};
 
 			struct renderTaskOptions_t
 			{
-				bool lock{ true };
+				bool lockControls{ true };
 				bool freeze{ false };
 				bool enableChecks{ false };
 				bool enableInMenu{ false };
 				bool wantCursor{ true };
+				bool blockCursor{ false };
+				bool blockImGuiInput{ false };
 			};
 
 			struct renderTaskState_t
@@ -90,9 +125,11 @@ namespace IED
 				long long startTime{ 0 };
 
 				bool running{ false };
-				bool holdsLock{ false };
+				bool holdsControlLock{ false };
 				bool holdsFreeze{ false };
 				bool holdsWantCursor{ false };
+				bool holdsBlockCursor{ false };
+				bool holdsBlockImGuiInput{ false };
 			};
 
 			renderTaskOptions_t m_options;

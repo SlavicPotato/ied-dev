@@ -12,14 +12,19 @@
 
 #include "Controls/UICollapsibles.h"
 
-#include "Window/UIWindow.h"
 #include "UIContext.h"
+#include "Window/UIWindow.h"
 
 #include "IED/ConfigCommon.h"
 
 namespace IED
 {
 	class Controller;
+
+	namespace Tasks
+	{
+		class UIRenderTaskBase;
+	};
 
 	namespace UI
 	{
@@ -45,9 +50,16 @@ namespace IED
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUISettings;
 
-			UISettings(Controller& a_controller);
+			UISettings(
+				Tasks::UIRenderTaskBase& a_owner,
+				Controller&              a_controller);
 
 			void Draw() override;
+
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
 
 		private:
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
@@ -95,7 +107,8 @@ namespace IED
 
 			stl::optional<std::uint8_t> m_tmpFormType;
 
-			Controller& m_controller;
+			Tasks::UIRenderTaskBase& m_owner;
+			Controller&              m_controller;
 		};
 
 		template <class Tf, class Tl>

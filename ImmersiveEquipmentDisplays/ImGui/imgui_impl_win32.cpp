@@ -188,25 +188,30 @@ static void ImGui_ImplWin32_UpdateMousePos()
 
 	// Set OS mouse position if requested (rarely used, only when
 	// ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
-	if (io.WantSetMousePos)
+	if ((io.ConfigFlags & ImGuiConfigFlags_NoMouse) ||
+		io.WantSetMousePos)
 	{
-		POINT pos = { (int)io.MousePos.x, (int)io.MousePos.y };
+		POINT pos = { (LONG)io.MousePos.x, (LONG)io.MousePos.y };
 		::ClientToScreen(g_hWnd, &pos);
 		::SetCursorPos(pos.x, pos.y);
 	}
 
 	// Set mouse position
-	io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
-	POINT pos;
-	if (HWND active_window = ::GetForegroundWindow())
-		if (active_window == g_hWnd || ::IsChild(active_window, g_hWnd))
-			if (::GetCursorPos(&pos) && ::ScreenToClient(g_hWnd, &pos))
-			{
-				auto ud     = static_cast<SKMP_ImGuiUserData*>(io.UserData);
-				io.MousePos = ImVec2(
-					(float)pos.x * ud->btsRatio.X,
-					(float)pos.y * ud->btsRatio.Y);
-			}
+
+	if (!(io.ConfigFlags & ImGuiConfigFlags_NoMouse))
+	{
+		io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+		POINT pos;
+		if (HWND active_window = ::GetForegroundWindow())
+			if (active_window == g_hWnd || ::IsChild(active_window, g_hWnd))
+				if (::GetCursorPos(&pos) && ::ScreenToClient(g_hWnd, &pos))
+				{
+					auto ud     = static_cast<SKMP_ImGuiUserData*>(io.UserData);
+					io.MousePos = ImVec2(
+						(float)pos.x * ud->btsRatio.X,
+						(float)pos.y * ud->btsRatio.Y);
+				}
+	}
 }
 
 // Gamepad navigation mapping

@@ -2,8 +2,8 @@
 
 #include "UINodeOverrideTabPanel.h"
 
-#include "IED/UI/Window/UIWindow.h"
 #include "IED/UI/UIContext.h"
+#include "IED/UI/Window/UIWindow.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
@@ -25,14 +25,19 @@ namespace IED
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeOverrideEditorWindow;
 
 			UINodeOverrideEditorWindow(
-				Controller&   a_controller,
-				UIContext& a_profileEditor);
+				Controller& a_controller,
+				UIContext&  a_profileEditor);
 
 			void Initialize() override;
 			void Reset() override;
 			void Draw() override;
 			void OnOpen() override;
 			void OnClose() override;
+
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
 
 		private:
 			void DrawMenuBar();

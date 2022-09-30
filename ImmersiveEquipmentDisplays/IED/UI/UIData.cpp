@@ -113,7 +113,13 @@ namespace IED
 					{ DIK_W, "W" },
 					{ DIK_X, "X" },
 					{ DIK_Y, "Y" },
-					{ DIK_Z, "Z" }
+					{ DIK_Z, "Z" },
+					{ DIK_LSHIFT, "Left shift" },
+					{ DIK_RSHIFT, "Right shift" },
+					{ DIK_LCONTROL, "Left control" },
+					{ DIK_RCONTROL, "Right control" },
+					{ DIK_LALT, "Left alt" },
+					{ DIK_RALT, "Right alt" }
 
 				});
 

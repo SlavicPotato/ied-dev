@@ -30,6 +30,11 @@ namespace IED
 
 			void Draw() override;
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 		private:
 			void DrawMenuBar();
 			void DrawNodeTable();

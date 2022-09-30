@@ -46,6 +46,11 @@ namespace IED
 			void OnClose() override;
 			void Reset() override;
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 		private:
 			void DrawOptions();
 			void DrawFilterTree();

@@ -43,6 +43,11 @@ namespace IED
 				return res;
 			}
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 		private:
 			virtual void DrawItem(FormFilterProfile& a_profile) override;
 

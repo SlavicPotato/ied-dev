@@ -41,6 +41,7 @@ namespace IED
 				if (IsContextOpen())
 				{
 					OnOpen();
+					SendOpenStateEvent();
 				}
 			}
 
@@ -49,7 +50,14 @@ namespace IED
 			if (!IsContextOpen())
 			{
 				OnClose();
+				SendOpenStateEvent();
 			}
+		}
+
+		void UIContext::SendOpenStateEvent()
+		{
+			UIContextStateChangeEvent evn{ *this, m_openState };
+			SendEvent(evn);
 		}
 	}
 }

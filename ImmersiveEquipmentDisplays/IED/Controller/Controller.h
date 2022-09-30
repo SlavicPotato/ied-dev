@@ -174,7 +174,9 @@ namespace IED
 				*this,
 				a_lifetime);
 
-			result->InitializeContext<Tc>(*this, std::forward<Args>(a_args)...);
+			result->InitializeContext<Tc>(
+				*this,
+				std::forward<Args>(a_args)...);
 
 			return result;
 		}
@@ -842,6 +844,7 @@ namespace IED
 		}
 
 		virtual void OnUIOpen() override;
+		virtual void OnUIClose() override;
 
 		// actor info overrides
 

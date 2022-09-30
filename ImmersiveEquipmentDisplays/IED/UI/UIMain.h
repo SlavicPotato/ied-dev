@@ -6,6 +6,7 @@
 #include "UILocalizationInterface.h"
 #include "UIMainCommon.h"
 #include "UIMainStrings.h"
+#include "UIKeyedInputLockReleaseHandler.h"
 
 #include "Custom/UICustomTabPanel.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
@@ -25,6 +26,11 @@ namespace IED
 {
 	class Controller;
 
+	namespace Tasks
+	{
+		class UIRenderTaskBase;
+	};
+
 	namespace UI
 	{
 		class UIMain :
@@ -32,12 +38,15 @@ namespace IED
 			public UIWindow,
 			UIExportFilterWidget,
 			UIAboutModal,
-			public virtual UILocalizationInterface
+			public virtual UILocalizationInterface,
+			::Events::EventSink<UIContextStateChangeEvent>
 		{
 			inline static constexpr auto WINDOW_ID = "ied_main";
 
 		public:
-			UIMain(Controller& a_controller);
+			UIMain(
+				Tasks::UIRenderTaskBase& a_owner,
+				Controller&              a_controller);
 
 			virtual ~UIMain() noexcept override = default;
 
@@ -51,25 +60,49 @@ namespace IED
 			virtual void OnClose() override;
 
 			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
+			virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn) override;
 
-			inline constexpr auto& GetPopupQueue() noexcept
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(-1);
+			}
+
+			[[nodiscard]] inline constexpr auto& GetPopupQueue() noexcept
 			{
 				return m_popupQueue;
 			}
 
-			inline constexpr auto& GetFormBrowser() noexcept
+			[[nodiscard]] inline constexpr auto& GetFormBrowser() noexcept
 			{
 				return GetChild<UIFormBrowser>();
 			}
 
-			inline constexpr auto& GetFormLookupCache() noexcept
+			[[nodiscard]] inline constexpr auto& GetFormLookupCache() noexcept
 			{
 				return m_formLookupCache;
 			}
 
 			const Data::SettingHolder::UserInterface& GetUISettings() noexcept;
 
+			[[nodiscard]] inline constexpr auto& GetOwnerTask() const noexcept
+			{
+				return m_owner;
+			}
+			
+			[[nodiscard]] inline constexpr auto& GetKeyedInputLockReleaseHandler() const noexcept
+			{
+				return m_ilrh;
+			}
+			
+			[[nodiscard]] inline constexpr auto& GetKeyedInputLockReleaseHandler() noexcept
+			{
+				return m_ilrh;
+			}
+
 		private:
+
+			virtual void Receive(const UIContextStateChangeEvent& a_evn) override;
+
 			void DrawChildWindows();
 
 			void DrawMenuBarMain();
@@ -82,12 +115,21 @@ namespace IED
 
 			void DrawDefaultConfigSubmenu();
 
+			bool HasOpenChild() const;
+
 			template <class T>
 			[[nodiscard]] inline constexpr auto& GetChildContext() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
 				return *m_childWindows[stl::underlying(T::CHILD_ID)];
+			}
+			
+			[[nodiscard]] inline auto& GetChildContext(ChildWindowID a_id) const noexcept
+			{
+				assert(a_id < ChildWindowID::kMax);
+
+				return *m_childWindows[stl::underlying(a_id)];
 			}
 
 			template <class T>
@@ -128,7 +170,13 @@ namespace IED
 
 			UIPopupQueue m_popupQueue;
 
-			Controller& m_controller;
+			UIKeyedInputLockReleaseHandler m_ilrh;
+
+			bool m_seenOpenChildThisSession{ false };
+			std::optional<ChildWindowID> m_lastClosedChild;
+
+			Tasks::UIRenderTaskBase& m_owner;
+			Controller&              m_controller;
 		};
 
 	}

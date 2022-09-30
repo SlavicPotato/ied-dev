@@ -284,12 +284,27 @@ namespace IED
 					a_disableFilter = true;
 				}
 
-				if (ImGui::TreeNodeEx(
+				bool result;
+
+				if (a_object.parent)
+				{
+					result = ImGui::TreeNodeEx(
 						"",
 						flags,
 						"%s [%s]",
 						a_object.name.c_str(),
-						(settings.filterShowChildNodes && a_object.parent) ? a_object.parent->name.c_str() : ""))
+						a_object.parent->name.c_str());
+				}
+				else
+				{
+					result = ImGui::TreeNodeEx(
+						"",
+						flags,
+						"%s",
+						a_object.name.c_str());
+				}
+
+				if (result)
 				{
 					DrawObjectInfo(a_object, a_data.isLoadedData);
 					DrawChildNodes(

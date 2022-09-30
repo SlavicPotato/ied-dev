@@ -12,7 +12,11 @@ namespace IED
 {
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		m_task = std::make_unique<IUIRenderTaskMain>(*this, a_controller);
+		auto result = std::make_unique<IUIRenderTaskMain>(*this);
+		
+		result->InitializeContext<UI::UIMain>(a_controller);
+
+		m_task = std::move(result);
 	}
 
 	bool IUI::UIIsInitialized() const noexcept
@@ -22,17 +26,17 @@ namespace IED
 
 	UI::UIPopupQueue& IUI::UIGetPopupQueue() noexcept
 	{
-		return m_task->GetContext()->GetPopupQueue();
+		return m_task->GetContext().GetPopupQueue();
 	}
 
 	UI::UIFormBrowser& IUI::UIGetFormBrowser() noexcept
 	{
-		return m_task->GetContext()->GetFormBrowser();
+		return m_task->GetContext().GetFormBrowser();
 	}
 
 	UI::UIFormInfoCache& IUI::UIGetFormLookupCache() noexcept
 	{
-		return m_task->GetContext()->GetFormLookupCache();
+		return m_task->GetContext().GetFormLookupCache();
 	}
 
 	void IUI::UIReset()
@@ -51,7 +55,7 @@ namespace IED
 
 		if (m_task->IsRunning())
 		{
-			m_task->GetContext()->SetOpenState(false);
+			m_task->GetContext().SetOpenState(false);
 
 			return UIOpenResult::kResultDisabled;
 		}
@@ -159,6 +163,20 @@ namespace IED
 		}
 	}
 
+	void IUIRenderTask::OnKeyEvent(const Handlers::KeyEvent& a_evn)
+	{
+		stl::scoped_lock lock(m_owner.UIGetLock());
+
+		try
+		{
+			m_context->OnKeyEvent(a_evn);
+		}
+		catch (const std::exception& e)
+		{
+			HALT(e.what());
+		}
+	}
+
 	void IUIRenderTask::OnTaskStop()
 	{
 		stl::scoped_lock lock(m_owner.UIGetLock());
@@ -200,16 +218,14 @@ namespace IED
 	}
 
 	IUIRenderTaskMain::IUIRenderTaskMain(
-		IUI&        a_interface,
-		Controller& a_controller) :
+		IUI&        a_interface) :
 		IUIRenderTask(a_interface)
 	{
-		InitializeContext<UI::UIMain>(a_controller);
 	}
 
-	UI::UIMain* IUIRenderTaskMain::GetContext() const noexcept
+	UI::UIMain& IUIRenderTaskMain::GetContext() const noexcept
 	{
-		return static_cast<UI::UIMain*>(m_context.get());
+		return static_cast<UI::UIMain&>(*m_context);
 	}
 
 	void IUIRenderTaskMain::OnTaskStart()
@@ -229,9 +245,25 @@ namespace IED
 		}
 	}
 
+	void IUIRenderTaskMain::OnTaskStop()
+	{
+		stl::scoped_lock lock(m_owner.UIGetLock());
+
+		try
+		{
+			m_context->SetOpenState(false);
+			m_context->OnClose();
+			m_owner.OnUIClose();
+		}
+		catch (const std::exception& e)
+		{
+			HALT(e.what());
+		}
+	}
+
 	bool IUIRenderTaskMain::ShouldClose()
 	{
-		return GetContext()->GetUISettings().closeOnESC &&
+		return GetContext().GetUISettings().closeOnESC &&
 		           ImGui::GetIO().KeysDown[VK_ESCAPE] ||
 		       (!GetEnabledInMenu() && Game::InPausedMenu());
 	}

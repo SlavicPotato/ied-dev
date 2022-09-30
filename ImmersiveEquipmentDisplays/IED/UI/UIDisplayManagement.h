@@ -40,23 +40,30 @@ namespace IED
 			void OnClose() override;
 			void Notify(std::uint32_t a_code, void* a_params) override;
 
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
+
 		private:
 			void DrawMenuBar();
 			void DrawViewMenu();
 			void OpenEditorPanel(UIDisplayManagementEditorPanel a_panel);
 			void SetTitle(Localization::StringID a_strid);
 
+			inline static constexpr std::size_t NUM_PANELS = 2;
+
 			template <class T>
 			[[nodiscard]] inline constexpr auto& GetEditorPanelBase() const noexcept
 			{
-				static_assert(stl::underlying(T::PANEL_ID) < 2);
+				static_assert(stl::underlying(T::PANEL_ID) < NUM_PANELS);
 
 				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
 			}
 
 			[[nodiscard]] inline auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
 			{
-				assert(a_id < 2);
+				assert(stl::underlying(a_id) < NUM_PANELS);
 
 				return *m_editorPanels[stl::underlying(a_id)];
 			}
@@ -65,7 +72,7 @@ namespace IED
 			void CreateEditorPanel(Args&&... a_args)  //
 				requires(std::is_base_of_v<UIEditorTabPanel, T>)
 			{
-				static_assert(stl::underlying(T::PANEL_ID) < 2);
+				static_assert(stl::underlying(T::PANEL_ID) < NUM_PANELS);
 
 				assert(m_editorPanels[stl::underlying(T::PANEL_ID)] == nullptr);
 
@@ -78,7 +85,7 @@ namespace IED
 
 			std::array<
 				std::unique_ptr<UIEditorTabPanel>,
-				2>
+				NUM_PANELS>
 				m_editorPanels;
 
 			UIDisplayManagementEditorPanel m_currentEditorPanel{

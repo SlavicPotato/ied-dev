@@ -97,6 +97,7 @@ namespace IED
 			static void QueueRemoveTask(std::int32_t a_id);
 
 			static void EvaluateTaskState();
+			static void QueueEvaluateTaskState();
 
 			[[nodiscard]] inline static bool HasCallback(std::int32_t a_id)
 			{
@@ -220,6 +221,7 @@ namespace IED
 				LPARAM lParam);
 
 			void EvaluateTaskStateImpl();
+			void ApplyControlLockChanges() const;
 
 			void Suspend();
 
@@ -271,6 +273,8 @@ namespace IED
 				std::uint64_t lockCounter{ 0 };
 				std::uint64_t freezeCounter{ 0 };
 				std::uint64_t wantCursorCounter{ 0 };
+				std::uint64_t blockCursorCounter{ 0 };
+				std::uint64_t blockInputImGuiCounter{ 0 };
 
 				stl::optional<bool> autoVanityAllowState;
 

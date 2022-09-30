@@ -1,12 +1,13 @@
 #pragma once
 
-#include "../../UICommon.h"
+#include "IED/UI/UICommon.h"
 
 #include "IED/GlobalProfileManager.h"
 
-#include "../Widgets/UICustomEditorWidget.h"
+#include "IED/UI/Custom/Widgets/UICustomEditorWidget.h"
 
 #include "IED/UI/Profile/UIProfileEditorBase.h"
+
 
 namespace IED
 {
@@ -21,11 +22,17 @@ namespace IED
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorCustom;
 
-			UIProfileEditorCustom(Controller& a_controller);
+			UIProfileEditorCustom(
+				Controller&              a_controller);
 
 			virtual void Initialize() override;
 
 			virtual void DrawProfileEditorMenuBarItems() override;
+
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
 
 		private:
 			virtual void DrawItem(CustomProfile& a_profile) override;
@@ -94,7 +101,7 @@ namespace IED
 
 			virtual WindowLayoutData GetWindowDimensions() const;
 
-			Controller& m_controller;
+			Controller&              m_controller;
 		};
 	}
 }

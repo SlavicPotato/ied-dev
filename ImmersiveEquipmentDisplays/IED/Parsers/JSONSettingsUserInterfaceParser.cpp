@@ -131,6 +131,20 @@ namespace IED
 				a_out.openKeys.mark(true);
 			}
 
+			if (auto& keys = data["release_keys"])
+			{
+				if (!controlsParser.Parse(
+						keys,
+						*a_out.releaseLockKeys))
+				{
+					return false;
+				}
+
+				a_out.releaseLockKeys.mark(true);
+			}
+
+			a_out.releaseLockAlpha = data.get("release_alpha", 0.33f).asFloat();
+
 			a_out.enableControlLock    = data.get("enable_control_lock", true).asBool();
 			a_out.enableFreezeTime     = data.get("enable_freeze_time", false).asBool();
 			a_out.enableRestrictions   = data.get("enable_restrictions", false).asBool();
@@ -145,8 +159,9 @@ namespace IED
 				a_out.logLevels[i] = levels.get(i, true).asBool();
 			}
 
-			a_out.closeOnESC      = data.get("close_on_esc", true).asBool();
-			a_out.showIntroBanner = data.get("show_intro_banner", true).asBool();
+			a_out.closeOnESC            = data.get("close_on_esc", true).asBool();
+			a_out.exitOnLastWindowClose = data.get("exit_on_last_window_close", true).asBool();
+			a_out.showIntroBanner       = data.get("show_intro_banner", true).asBool();
 
 			a_out.defaultExportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("default_export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
@@ -242,6 +257,13 @@ namespace IED
 				controlsParser.Create(*a_data.openKeys, data["toggle_keys"]);
 			}
 
+			if (a_data.releaseLockKeys)
+			{
+				controlsParser.Create(*a_data.releaseLockKeys, data["release_keys"]);
+			}
+
+			data["release_alpha"] = a_data.releaseLockAlpha;
+
 			data["enable_control_lock"]    = a_data.enableControlLock;
 			data["enable_freeze_time"]     = a_data.enableFreezeTime;
 			data["enable_restrictions"]    = a_data.enableRestrictions;
@@ -256,8 +278,9 @@ namespace IED
 				levels.append(e);
 			}
 
-			data["close_on_esc"]      = a_data.closeOnESC;
-			data["show_intro_banner"] = a_data.showIntroBanner;
+			data["close_on_esc"]              = a_data.closeOnESC;
+			data["exit_on_last_window_close"] = a_data.exitOnLastWindowClose;
+			data["show_intro_banner"]         = a_data.showIntroBanner;
 
 			data["default_export_flags"] = stl::underlying(a_data.defaultExportFlags.value);
 

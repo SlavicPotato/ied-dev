@@ -4,6 +4,8 @@
 
 #include "IED/ConfigLUIDTag.h"
 
+#include <shellapi.h>
+
 namespace IED
 {
 	namespace UI
@@ -75,6 +77,36 @@ namespace IED
 				{
 					ImGui::PopItemFlag();
 					ImGui::PopStyleVar();
+				}
+			}
+
+			void DrawItemUnderline(ImGuiCol a_color)
+			{
+				auto min = ImGui::GetItemRectMin();
+				auto max = ImGui::GetItemRectMax();
+
+				min.y = max.y;
+
+				ImGui::GetWindowDrawList()->AddLine(
+					min,
+					max,
+					ImGui::ColorConvertFloat4ToU32(ImGui::GetStyle().Colors[a_color]),
+					1.0f);
+			}
+
+			void DrawURL(
+				const char* a_label,
+				const char* a_url)
+			{
+				ImGui::TextUnformatted(a_label);
+				if (ImGui::IsItemHovered())
+				{
+					DrawItemUnderline(ImGuiCol_Text);
+
+					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+					{
+						ShellExecuteA(nullptr, "open", a_url, nullptr, nullptr, SW_SHOWNORMAL);
+					}
 				}
 			}
 

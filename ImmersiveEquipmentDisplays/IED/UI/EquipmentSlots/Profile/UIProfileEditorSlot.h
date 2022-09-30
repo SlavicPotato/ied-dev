@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../UICommon.h"
+#include "IED/UI/UICommon.h"
 
 #include "IED/GlobalProfileManager.h"
 
-#include "../UISlotEditorBase.h"
+#include "IED/UI/EquipmentSlots/UISlotEditorBase.h"
 
 #include "IED/UI/Profile/UIProfileEditorBase.h"
 
@@ -43,6 +43,11 @@ namespace IED
 			virtual void Initialize() override;
 
 			virtual void DrawProfileEditorMenuBarItems() override;
+
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
 
 		private:
 			virtual void DrawItem(SlotProfile& a_profile) override;
