@@ -628,6 +628,8 @@ namespace IED
 	{
 		try
 		{
+			const fs::path allowedExt{ ".json" };
+
 			for (const auto& entry : fs::directory_iterator(a_path))
 			{
 				if (!entry.is_regular_file())
@@ -635,8 +637,15 @@ namespace IED
 					continue;
 				}
 
-				auto& path    = entry.path();
-				auto  strPath = Serialization::SafeGetPath(path);
+				auto& path = entry.path();
+
+				if (!path.has_extension() ||
+				    path.extension() != allowedExt)
+				{
+					continue;
+				}
+
+				auto strPath = Serialization::SafeGetPath(path);
 
 				T result;
 
