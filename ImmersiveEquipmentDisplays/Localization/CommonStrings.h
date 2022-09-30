@@ -221,6 +221,7 @@ namespace IED
 		Total           = 292,
 		IID             = 293,
 		Other           = 294,
-		Owner           = 295
+		Owner           = 295,
+		Dependencies    = 296
 	};
 }
