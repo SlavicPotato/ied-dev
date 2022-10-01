@@ -48,6 +48,7 @@ namespace IED
 			ShowMainMenuBar             = 4437,
 			ReleaseControlLockKeys      = 4438,
 			ExitOnLastWindowClose       = 4439,
+			UnfreezeTime                = 4440,
 		};
 	}
 }

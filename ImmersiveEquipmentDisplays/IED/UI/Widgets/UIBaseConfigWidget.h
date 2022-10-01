@@ -806,24 +806,45 @@ namespace IED
 				a_disabled,
 				a_baseConfig);
 
-			ImGui::Spacing();
-
 			if (a_baseConfig)
 			{
-				ImGui::PushID("f_ex");
+				bool result;
 
-				const bool extraDisabled = a_disabled &&
-				                           a_baseConfig->equipmentOverrides.empty();
+				if (storecc)
+				{
+					result = TreeEx(
+						"f_ex",
+						true,
+						"%s",
+						LS(CommonStrings::Extra));
+				}
+				else
+				{
+					result = ImGui::TreeNodeEx(
+						"f_ex",
+						ImGuiTreeNodeFlags_DefaultOpen |
+							ImGuiTreeNodeFlags_SpanAvailWidth,
+						"%s",
+						LS(CommonStrings::Extra));
+				}
 
-				UICommon::PushDisabled(extraDisabled);
+				if (result)
+				{
+					ImGui::Spacing();
 
-				DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
+					const bool extraDisabled = a_disabled &&
+					                           a_baseConfig->equipmentOverrides.empty();
 
-				UICommon::PopDisabled(extraDisabled);
+					UICommon::PushDisabled(extraDisabled);
 
-				ImGui::PopID();
+					DrawExtraFlags(a_handle, a_data, a_baseConfig, a_params);
 
-				ImGui::Spacing();
+					UICommon::PopDisabled(extraDisabled);
+
+					ImGui::Spacing();
+
+					ImGui::TreePop();
+				}
 			}
 
 			ImGui::PopID();

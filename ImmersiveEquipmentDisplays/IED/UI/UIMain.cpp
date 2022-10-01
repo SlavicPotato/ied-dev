@@ -28,10 +28,10 @@ namespace IED
 			Controller&              a_controller) :
 			UILocalizationInterface(a_controller),
 			UIAboutModal(a_controller),
+			UIKeyedInputLockReleaseHandler(a_owner),
 			m_owner(a_owner),
 			m_controller(a_controller),
 			m_formLookupCache(a_controller),
-			m_ilrh(a_owner, a_controller),
 #if defined(IED_ENABLE_I3DI)
 			m_i3di(a_controller),
 #endif
@@ -71,25 +71,25 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
 			{
-				if (static_cast<ChildWindowID>(i) == ChildWindowID::kUIFormBrowser)
-				{
-					continue;
-				}
-
 				const auto& window = m_childWindows[i];
 
 				window->Initialize();
-				window->SetOpenState(settings.windowOpenStates[i]);
+
+				if (static_cast<ChildWindowID>(i) != ChildWindowID::kUIFormBrowser)
+				{
+					window->SetOpenState(settings.windowOpenStates[i]);
+				}
 			}
 
 			if (settings.releaseLockKeys)
 			{
-				m_ilrh.SetKeys(
+				ILRHSetKeys(
 					settings.releaseLockKeys->key,
 					settings.releaseLockKeys->comboKey);
 			}
 
-			m_ilrh.SetLockedAlpha(settings.releaseLockAlpha);
+			ILRHSetLockedAlpha(settings.releaseLockAlpha);
+			ILRHSetUnfreezeTime(settings.releaseLockUnfreezeTime);
 
 #if defined(IED_ENABLE_I3DI)
 			m_i3di.Initialize();
@@ -114,7 +114,7 @@ namespace IED
 		{
 			//ImGui::ShowDemoWindow();
 
-			m_ilrh.Begin();
+			ILRHBegin();
 
 			DrawMenuBarMain();
 			DrawChildWindows();
@@ -130,7 +130,7 @@ namespace IED
 
 			m_popupQueue.run();
 
-			m_ilrh.End();
+			ILRHEnd();
 
 			m_formLookupCache.RunCleanup();
 		}
@@ -149,14 +149,16 @@ namespace IED
 #endif
 		}
 
-		const Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
+		Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
 		{
 			return m_controller.GetConfigStore().settings.data.ui;
 		}
 
 		void UIMain::Receive(const UIContextStateChangeEvent& a_evn)
 		{
-			auto id = static_cast<ChildWindowID>(a_evn.context.GetContextID());
+			const auto id = static_cast<ChildWindowID>(a_evn.context.GetContextID());
+
+			assert(id < ChildWindowID::kMax);
 
 			if (id >= ChildWindowID::kMax)
 			{
@@ -167,8 +169,8 @@ namespace IED
 			{
 				if (
 					GetUISettings().exitOnLastWindowClose &&
-				    m_seenOpenChildThisSession &&
-				    !HasOpenChild())
+					m_seenOpenChildThisSession &&
+					!HasOpenChild())
 				{
 					m_lastClosedChild = id;
 
@@ -522,6 +524,16 @@ namespace IED
 			return false;
 		}
 
+		bool UIMain::ILRHGetCurrentControlLockSetting()
+		{
+			return GetUISettings().enableControlLock;
+		}
+
+		bool UIMain::ILRHGetCurrentFreezeTimeSetting()
+		{
+			return GetUISettings().enableFreezeTime;
+		}
+
 		void UIMain::OnOpen()
 		{
 			m_seenOpenChildThisSession = false;
@@ -595,7 +607,7 @@ namespace IED
 
 			m_formLookupCache.clear();
 
-			m_ilrh.Reset();
+			ILRHReset();
 
 			m_controller.QueueSettingsSave(true);
 			Drivers::UI::QueueImGuiSettingsSave();
@@ -610,7 +622,7 @@ namespace IED
 
 		void UIMain::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 		{
-			m_ilrh.Receive(a_evn);
+			ILRHReceive(a_evn);
 		}
 
 	}

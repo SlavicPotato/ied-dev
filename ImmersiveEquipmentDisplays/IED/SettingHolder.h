@@ -147,6 +147,7 @@ namespace IED
 				stl::optional<ConfigKeyPair> openKeys;
 				stl::optional<ConfigKeyPair> releaseLockKeys;
 				float                        releaseLockAlpha{ 0.33f };
+				bool                         releaseLockUnfreezeTime{ false };
 
 				bool  enableControlLock{ true };
 				bool  enableFreezeTime{ false };

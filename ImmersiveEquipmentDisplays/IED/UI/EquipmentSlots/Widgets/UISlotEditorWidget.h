@@ -327,14 +327,7 @@ namespace IED
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
-			ImGui::Separator();
-
 			auto& data = params->entry.second.get(params->sex);
-
-			const bool disabled = data.flags.test(Data::BaseFlags::kDisabled) &&
-			                      data.equipmentOverrides.empty();
-
-			UICommon::PushDisabled(disabled);
 
 			ImGui::Columns(2, nullptr, false);
 
@@ -359,8 +352,6 @@ namespace IED
 			DrawTip(UITip::CheckCannotWear);
 			
 			ImGui::Columns();
-
-			UICommon::PopDisabled(disabled);
 		}
 
 		template <class T>

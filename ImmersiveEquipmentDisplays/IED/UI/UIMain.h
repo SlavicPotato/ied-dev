@@ -3,10 +3,10 @@
 #include "UIAboutModal.h"
 #include "UIContext.h"
 #include "UIFormInfoCache.h"
+#include "UIKeyedInputLockReleaseHandler.h"
 #include "UILocalizationInterface.h"
 #include "UIMainCommon.h"
 #include "UIMainStrings.h"
-#include "UIKeyedInputLockReleaseHandler.h"
 
 #include "Custom/UICustomTabPanel.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
@@ -38,6 +38,7 @@ namespace IED
 			public UIWindow,
 			UIExportFilterWidget,
 			UIAboutModal,
+			public UIKeyedInputLockReleaseHandler,
 			public virtual UILocalizationInterface,
 			::Events::EventSink<UIContextStateChangeEvent>
 		{
@@ -82,25 +83,14 @@ namespace IED
 				return m_formLookupCache;
 			}
 
-			const Data::SettingHolder::UserInterface& GetUISettings() noexcept;
+			Data::SettingHolder::UserInterface& GetUISettings() noexcept;
 
 			[[nodiscard]] inline constexpr auto& GetOwnerTask() const noexcept
 			{
 				return m_owner;
 			}
-			
-			[[nodiscard]] inline constexpr auto& GetKeyedInputLockReleaseHandler() const noexcept
-			{
-				return m_ilrh;
-			}
-			
-			[[nodiscard]] inline constexpr auto& GetKeyedInputLockReleaseHandler() noexcept
-			{
-				return m_ilrh;
-			}
 
 		private:
-
 			virtual void Receive(const UIContextStateChangeEvent& a_evn) override;
 
 			void DrawChildWindows();
@@ -117,6 +107,9 @@ namespace IED
 
 			bool HasOpenChild() const;
 
+			virtual bool ILRHGetCurrentControlLockSetting() override;
+			virtual bool ILRHGetCurrentFreezeTimeSetting() override;
+
 			template <class T>
 			[[nodiscard]] inline constexpr auto& GetChildContext() const noexcept
 			{
@@ -124,7 +117,7 @@ namespace IED
 
 				return *m_childWindows[stl::underlying(T::CHILD_ID)];
 			}
-			
+
 			[[nodiscard]] inline auto& GetChildContext(ChildWindowID a_id) const noexcept
 			{
 				assert(a_id < ChildWindowID::kMax);
@@ -157,6 +150,11 @@ namespace IED
 				m_childWindows[stl::underlying(T::CHILD_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
 			}
 
+			static_assert(
+				std::is_same_v<
+					std::underlying_type_t<ChildWindowID>,
+					std::uint32_t>);
+
 			std::array<
 				std::unique_ptr<UIContext>,
 				stl::underlying(ChildWindowID::kMax)>
@@ -170,9 +168,7 @@ namespace IED
 
 			UIPopupQueue m_popupQueue;
 
-			UIKeyedInputLockReleaseHandler m_ilrh;
-
-			bool m_seenOpenChildThisSession{ false };
+			bool                         m_seenOpenChildThisSession{ false };
 			std::optional<ChildWindowID> m_lastClosedChild;
 
 			Tasks::UIRenderTaskBase& m_owner;

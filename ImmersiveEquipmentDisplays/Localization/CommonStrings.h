@@ -222,6 +222,7 @@ namespace IED
 		IID             = 293,
 		Other           = 294,
 		Owner           = 295,
-		Dependencies    = 296
+		Dependencies    = 296,
+		Outfit          = 297,
 	};
 }

@@ -645,7 +645,7 @@ namespace IED
 					continue;
 				}
 
-				auto strPath = Serialization::SafeGetPath(path);
+				const auto strPath = Serialization::SafeGetPath(path);
 
 				T result;
 

@@ -12,17 +12,15 @@ namespace IED
 	namespace UI
 	{
 		UIKeyedInputLockReleaseHandler::UIKeyedInputLockReleaseHandler(
-			Tasks::UIRenderTaskBase& a_owner,
-			Controller&              a_controller) :
-			m_owner(a_owner),
-			m_controller(a_controller)
+			Tasks::UIRenderTaskBase& a_owner) :
+			m_owner(a_owner)
 		{
 		}
 
-		void UIKeyedInputLockReleaseHandler::Receive(
+		void UIKeyedInputLockReleaseHandler::ILRHReceive(
 			const Handlers::KeyEvent& a_evn)
 		{
-			if (!Enabled())
+			if (!ILRHEnabled())
 			{
 				return;
 			}
@@ -47,7 +45,7 @@ namespace IED
 			}
 		}
 
-		void UIKeyedInputLockReleaseHandler::SetKeys(
+		void UIKeyedInputLockReleaseHandler::ILRHSetKeys(
 			std::uint32_t a_key,
 			std::uint32_t a_combo)
 		{
@@ -64,28 +62,29 @@ namespace IED
 			}
 		}
 
-		void UIKeyedInputLockReleaseHandler::Reset()
+		void UIKeyedInputLockReleaseHandler::ILRHReset()
 		{
 			m_comboState = KeyEventState::KeyUp;
 			m_state      = KeyEventState::KeyUp;
 			m_held       = false;
 			m_currentAlpha.reset();
 
-			ResetTaskOptions();
+			ILRHResetTaskOptions();
 		}
 
-		void UIKeyedInputLockReleaseHandler::ResetTaskOptions() const
+		void UIKeyedInputLockReleaseHandler::ILRHResetTaskOptions()
 		{
 			m_owner.SetBlockCursor(false);
 			m_owner.SetBlockImGuiInput(false);
-			m_owner.SetControlLock(m_controller.GetConfigStore().settings.data.ui.enableControlLock);
+			m_owner.SetControlLock(ILRHGetCurrentControlLockSetting());
+			m_owner.SetFreezeTime(ILRHGetCurrentFreezeTimeSetting());
 		}
 
-		void UIKeyedInputLockReleaseHandler::Begin()
+		void UIKeyedInputLockReleaseHandler::ILRHBegin()
 		{
 			auto& style = ImGui::GetStyle();
 
-			const auto held = IsHeld();
+			const auto held = ILRHIsHeld();
 
 			if (held)
 			{
@@ -124,7 +123,7 @@ namespace IED
 			}
 		}
 
-		void UIKeyedInputLockReleaseHandler::End()
+		void UIKeyedInputLockReleaseHandler::ILRHEnd()
 		{
 			if (m_originalAlpha)
 			{
@@ -134,17 +133,43 @@ namespace IED
 			}
 		}
 
+		void UIKeyedInputLockReleaseHandler::ILRHSetUnfreezeTime(bool a_switch)
+		{
+			if (a_switch != m_unfreezeTime)
+			{
+				m_unfreezeTime = a_switch;
+
+				if (m_held)
+				{
+					EvaluateCurrentState();
+				}
+			}
+		}
+
+		void UIKeyedInputLockReleaseHandler::SetHeldTaskOptions()
+		{
+			m_owner.SetBlockCursor(true);
+			m_owner.SetBlockImGuiInput(true);
+			m_owner.SetControlLock(false);
+			if (m_unfreezeTime)
+			{
+				m_owner.SetFreezeTime(false);
+			}
+			else
+			{
+				m_owner.SetFreezeTime(ILRHGetCurrentFreezeTimeSetting());
+			}
+		}
+
 		void UIKeyedInputLockReleaseHandler::EvaluateCurrentState()
 		{
 			if (m_held)
 			{
-				m_owner.SetBlockCursor(true);
-				m_owner.SetBlockImGuiInput(true);
-				m_owner.SetControlLock(false);
+				SetHeldTaskOptions();
 			}
 			else
 			{
-				ResetTaskOptions();
+				ILRHResetTaskOptions();
 			}
 
 			Drivers::UI::EvaluateTaskState();

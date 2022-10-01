@@ -1604,8 +1604,6 @@ namespace IED
 			Data::configBase_t*       a_baseConfig,
 			const void*               a_params)
 		{
-			ImGui::Separator();
-
 			ImGui::Columns(2, nullptr, false);
 
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);

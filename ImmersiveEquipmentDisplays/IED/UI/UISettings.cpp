@@ -631,9 +631,9 @@ namespace IED
 						ImGui::Indent();
 						ImGui::Spacing();
 
-						auto& handler = task->GetContext().GetKeyedInputLockReleaseHandler();
+						auto& context = task->GetContext();
 
-						auto tmpk = handler.GetComboKey();
+						auto tmpk = context.ILRHGetComboKey();
 
 						if (settings.mark_if(DrawKeySelector(
 								LS(CommonStrings::ComboKey, "1"),
@@ -641,22 +641,22 @@ namespace IED
 								tmpk,
 								true)))
 						{
-							handler.SetKeys(
-								handler.GetKey(),
+							context.ILRHSetKeys(
+								context.ILRHGetKey(),
 								tmpk);
 
 							ui.releaseLockKeys->comboKey = tmpk;
 							ui.releaseLockKeys.mark(true);
 						}
 
-						tmpk = handler.GetKey();
+						tmpk = context.ILRHGetKey();
 
 						if (settings.mark_if(DrawKeySelector(
 								LS(CommonStrings::Key, "2"),
 								UIData::g_controlMap,
 								tmpk)))
 						{
-							handler.SetKeys(tmpk, handler.GetComboKey());
+							context.ILRHSetKeys(tmpk, context.ILRHGetComboKey());
 
 							ui.releaseLockKeys->key = tmpk;
 							ui.releaseLockKeys.mark(true);
@@ -669,7 +669,14 @@ namespace IED
 								1.0f,
 								"%.2f")))
 						{
-							handler.SetLockedAlpha(ui.releaseLockAlpha);
+							context.ILRHSetLockedAlpha(ui.releaseLockAlpha);
+						}
+
+						if (settings.mark_if(ImGui::Checkbox(
+								LS(UISettingsStrings::UnfreezeTime, "4"),
+								std::addressof(ui.releaseLockUnfreezeTime))))
+						{
+							context.ILRHSetUnfreezeTime(ui.releaseLockUnfreezeTime);
 						}
 
 						ImGui::Spacing();

@@ -143,7 +143,8 @@ namespace IED
 				a_out.releaseLockKeys.mark(true);
 			}
 
-			a_out.releaseLockAlpha = data.get("release_alpha", 0.33f).asFloat();
+			a_out.releaseLockAlpha        = data.get("release_alpha", 0.33f).asFloat();
+			a_out.releaseLockUnfreezeTime = data.get("release_unfreeze_time", false).asBool();
 
 			a_out.enableControlLock    = data.get("enable_control_lock", true).asBool();
 			a_out.enableFreezeTime     = data.get("enable_freeze_time", false).asBool();
@@ -262,7 +263,8 @@ namespace IED
 				controlsParser.Create(*a_data.releaseLockKeys, data["release_keys"]);
 			}
 
-			data["release_alpha"] = a_data.releaseLockAlpha;
+			data["release_alpha"]         = a_data.releaseLockAlpha;
+			data["release_unfreeze_time"] = a_data.releaseLockUnfreezeTime;
 
 			data["enable_control_lock"]    = a_data.enableControlLock;
 			data["enable_freeze_time"]     = a_data.enableFreezeTime;
