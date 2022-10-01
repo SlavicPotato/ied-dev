@@ -379,6 +379,16 @@ namespace IED
 				ImGui::TextWrapped("%.0f", data.weight);
 
 				DrawActorInfoLineFormStringPair(CommonStrings::Skin, data.skin);
+
+				if (DrawActorInfoLineForm(CommonStrings::Outfit, data.outfit.first))
+				{
+					if (data.outfit.second)
+					{
+						ImGui::SameLine();
+						ImGui::TextWrapped("[%s]", LS(CommonStrings::Default));
+					}
+				}
+
 				DrawActorInfoLineFormStringPair(CommonStrings::Idle, data.idle);
 				DrawActorInfoLineFormStringPair(CommonStrings::Furniture, data.furniture);
 				DrawActorInfoLineForm(CommonStrings::Package, data.package);
@@ -677,13 +687,16 @@ namespace IED
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text("%.8X", a_data.formid.get());
 
-				ImGui::TableNextRow();
+				if (!a_data.name.empty())
+				{
+					ImGui::TableNextRow();
 
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Name));
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Name));
 
-				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%s", a_data.name.c_str());
+					ImGui::TableSetColumnIndex(1);
+					ImGui::TextWrapped("%s", a_data.name.c_str());
+				}
 
 				ImGui::TableNextRow();
 
@@ -897,7 +910,7 @@ namespace IED
 					}
 					else
 					{
-						ImGui::Text("%s", LS(CommonStrings::No));
+						ImGui::Text("%s", LS(CommonStrings::None));
 					}
 
 					ImGui::TableSetColumnIndex(8);

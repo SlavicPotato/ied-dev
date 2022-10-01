@@ -39,6 +39,7 @@ namespace IED
 		std::pair<Game::FormID, Game::FormID> equipped;
 		std::pair<std::string, std::string>   equippedNames;
 		std::pair<std::uint8_t, std::uint8_t> equippedTypes;
+		std::pair<Game::FormID, bool>         outfit;
 		float                                 weight{ 0.0f };
 		NiPoint3                              pos;
 		NiPoint3                              rot;

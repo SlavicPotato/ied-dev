@@ -102,6 +102,27 @@ namespace IED
 			a_out.furniture = {};
 		}
 
+		if (auto extraOutfit = a_actor->extraData.Get<ExtraOutfitItem>()) // ??
+		{
+			a_out.outfit.first = extraOutfit->id;
+			a_out.outfit.second = false;
+		}
+		else
+		{
+			a_out.outfit.second = true;
+
+			if (auto npc = a_actor->GetActorBase())
+			{
+				a_out.outfit.first = npc->defaultOutfit ?
+				                   npc->defaultOutfit->formID :
+                                   Game::FormID{};
+			}
+			else
+			{
+				a_out.outfit.first = {};
+			}
+		}
+
 		if (auto rightHand = a_actor->GetEquippedObject(false))
 		{
 			a_out.equipped.first      = rightHand->formID;
@@ -175,6 +196,10 @@ namespace IED
 					}
 				}
 			}
+		}
+		else
+		{
+			a_out.npc.reset();
 		}
 
 		if (a_out.npc)
