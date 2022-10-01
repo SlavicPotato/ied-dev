@@ -128,6 +128,11 @@ namespace IED
 					}
 				}
 			}
+
+			for (auto& e : NodeOverrideData::GetExtraMovNodes())
+			{
+				CreateExtraMovNodes(a_npcroot, e);
+			}
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
@@ -431,6 +436,69 @@ namespace IED
                    false;
 	}
 
+	void ActorObjectHolder::CreateExtraMovNodes2(
+		Actor*      a_actor,
+		NiAVObject* a_root)
+	{
+		if (!a_root)
+		{
+			return;
+		}
+
+		auto sh = BSStringHolder::GetSingleton();
+		if (!sh)
+		{
+			return;
+		}
+
+		auto root = a_root->AsNode();
+		if (!root)
+		{
+			return;
+		}
+
+		auto npcroot = ::Util::Node::FindNode(root, sh->m_npcroot);
+		if (!npcroot)
+		{
+			return;
+		}
+
+		SkeletonID id(root);
+
+		if (!id.get_id())
+		{
+			return;
+		}
+
+		for (auto& v : NodeOverrideData::GetExtraMovNodes())
+		{
+			if (npcroot->GetObjectByName(v.bsname_cme) ||
+			    npcroot->GetObjectByName(v.bsname_mov) ||
+			    npcroot->GetObjectByName(v.bsname_node))
+			{
+				continue;
+			}
+
+			auto target = ::Util::Node::FindNode(npcroot, v.name_parent);
+			if (!target)
+			{
+				continue;
+			}
+
+			for (auto& e : v.skel)
+			{
+				if (!e.ids.contains(*id.get_id()))
+				{
+					continue;
+				}
+
+				AttachExtraNodes(target, *id.get_id(), v, e);
+
+				break;
+			}
+		}
+	}
+
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode*                                   a_npcroot,
 		const NodeOverrideData::extraNodeEntry_t& a_entry)
@@ -461,28 +529,43 @@ namespace IED
 				continue;
 			}
 
-			auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
-			target->AttachChild(cme, true);
+			if (auto result = AttachExtraNodes(target, *id, a_entry, e))
+			{
+				m_cmeNodes.try_emplace(a_entry.name_cme, result.cme, result.cme->m_localTransform);
+				m_movNodes.try_emplace(a_entry.name_mov, result.mov, a_entry.placementID);
 
-			auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
-
-			mov->m_localTransform = e.transform_mov;
-
-			cme->AttachChild(mov, true);
-
-			auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
-
-			node->m_localTransform = e.transform_node;
-
-			mov->AttachChild(node, true);
-
-			INode::UpdateDownwardPass(cme);
-
-			m_cmeNodes.try_emplace(a_entry.name_cme, cme, cme->m_localTransform);
-			m_movNodes.try_emplace(a_entry.name_mov, mov, a_entry.placementID);
+				_DMESSAGE("made %s", result.cme->m_name.c_str());
+			}
 
 			break;
 		}
+	}
+
+	auto ActorObjectHolder::AttachExtraNodes(
+		NiNode*                                       a_target,
+		std::int32_t                                  a_skeletonID,
+		const NodeOverrideData::extraNodeEntry_t&     a_entry,
+		const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry)
+		-> attachExtraNodesResult_t
+	{
+		auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
+		a_target->AttachChild(cme, true);
+
+		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
+
+		mov->m_localTransform = a_skelEntry.transform_mov;
+
+		cme->AttachChild(mov, true);
+
+		auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
+
+		node->m_localTransform = a_skelEntry.transform_node;
+
+		mov->AttachChild(node, true);
+
+		INode::UpdateDownwardPass(cme);
+
+		return { mov, cme };
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(

@@ -446,7 +446,28 @@ namespace IED
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
 
+		static void CreateExtraMovNodes2(
+			Actor*      a_actor,
+			NiAVObject* a_root);
+
 	private:
+		struct attachExtraNodesResult_t
+		{
+			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			{
+				return mov && cme;
+			}
+
+			NiNode* mov{ nullptr };
+			NiNode* cme{ nullptr };
+		};
+
+		static attachExtraNodesResult_t AttachExtraNodes(
+			NiNode*                                       a_target,
+			std::int32_t                                  a_skeletonID,
+			const NodeOverrideData::extraNodeEntry_t&     a_entry,
+			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry);
+
 		void CreateExtraMovNodes(
 			NiNode*                                   a_npcroot,
 			const NodeOverrideData::extraNodeEntry_t& a_entry);

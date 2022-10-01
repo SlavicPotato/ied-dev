@@ -50,8 +50,6 @@ namespace IED
 
 		if (a_config->m_weaponAdjustFix)
 		{
-			m_conf.weaponAdjustFix = a_config->m_weaponAdjustFix;
-
 			Install_SetWeapAdjAnimVar();
 		}
 
@@ -121,7 +119,7 @@ namespace IED
 				m_garbageCollectorReference_o))
 		{
 			Debug(
-				"[%s] Installed @0x%.16llX",
+				"[%s] Installed @0x%llX",
 				__FUNCTION__,
 				m_garbageCollectorREFR_a.get());
 		}
@@ -140,7 +138,7 @@ namespace IED
 				std::addressof(m_characterResurrect_o)))
 		{
 			Debug(
-				"[%s] Detoured Character::Resurrect @0x%.16llX:0xAB",
+				"[%s] Detoured Character::Resurrect @0x%llX:0xAB",
 				__FUNCTION__,
 				m_vtblCharacter_a.get());
 		}
@@ -156,7 +154,7 @@ namespace IED
 				m_ReanimActorStateUpd_o))
 		{
 			Debug(
-				"[%s] Installed reanimate hook @0x%.16llX",
+				"[%s] Installed reanimate hook @0x%llX",
 				__FUNCTION__,
 				m_reanimActorStateUpdate_a.get());
 		}
@@ -175,7 +173,7 @@ namespace IED
 				std::addressof(m_characterRelease3D_o)))
 		{
 			Debug(
-				"[%s] Detoured Character::Release3D @0x%.16llX:0x6B",
+				"[%s] Detoured Character::Release3D @0x%llX:0x6B",
 				__FUNCTION__,
 				m_vtblCharacter_a.get());
 		}
@@ -191,13 +189,77 @@ namespace IED
 				std::addressof(m_actorRelease3D_o)))
 		{
 			Debug(
-				"[%s] Detoured Actor::Release3D @0x%.16llX:0x6B",
+				"[%s] Detoured Actor::Release3D @0x%llX:0x6B",
 				__FUNCTION__,
 				m_vtblActor_a.get());
 		}
 		else
 		{
 			HALT("Failed to install Actor::Release3D vtbl hook");
+		}
+
+		if (VTable::Detour2(
+				m_vtblPlayerCharacter_a.get(),
+				0x6B,
+				PlayerCharacter_Release3D_Hook,
+				std::addressof(m_pcRelease3D_o)))
+		{
+			Debug(
+				"[%s] Detoured PlayerCharacter::Release3D @0x%llX:0x6B",
+				__FUNCTION__,
+				m_vtblPlayerCharacter_a.get());
+		}
+		else
+		{
+			HALT("Failed to install PlayerCharacter::Release3D vtbl hook");
+		}
+
+		if (VTable::Detour2(
+				m_vtblActor_a.get(),
+				0x6A,
+				Actor_Load3D_Hook,
+				std::addressof(m_actorLoad3D_o)))
+		{
+			Debug(
+				"[%s] Detoured Actor::Load3D @0x%llX:0x6A",
+				__FUNCTION__,
+				m_vtblActor_a.get());
+		}
+		else
+		{
+			Error("[%s] Failed to install Actor::Load3D vtbl hook", __FUNCTION__);
+		}
+
+		if (VTable::Detour2(
+				m_vtblCharacter_a.get(),
+				0x6A,
+				Character_Load3D_Hook,
+				std::addressof(m_characterLoad3D_o)))
+		{
+			Debug(
+				"[%s] Detoured Character::Load3D @0x%llX:0x6A",
+				__FUNCTION__,
+				m_vtblCharacter_a.get());
+		}
+		else
+		{
+			Error("[%s] Failed to install Character::Load3D vtbl hook", __FUNCTION__);
+		}
+
+		if (VTable::Detour2(
+				m_vtblPlayerCharacter_a.get(),
+				0x6A,
+				PlayerCharacter_Load3D_Hook,
+				std::addressof(m_pcLoad3D_o)))
+		{
+			Debug(
+				"[%s] Detoured PlayerCharacter::Load3D @0x%llX:0x6A",
+				__FUNCTION__,
+				m_vtblPlayerCharacter_a.get());
+		}
+		else
+		{
+			Error("[%s] Failed to install PlayerCharacter::Load3D vtbl hook", __FUNCTION__);
 		}
 	}
 
@@ -210,7 +272,7 @@ namespace IED
 				m_ArmorChange_o))
 		{
 			Debug(
-				"[%s] Installed @0x%.16llX",
+				"[%s] Installed @0x%llX",
 				__FUNCTION__,
 				m_armorUpdate_a.get());
 		}
@@ -331,7 +393,7 @@ namespace IED
 			m_toggleFavGetExtraList_o);
 
 		Debug(
-			"[%s] %s @0x%.16llX",
+			"[%s] %s @0x%llX",
 			__FUNCTION__,
 			result ? "Installed" :
                      "Failed",
@@ -347,7 +409,7 @@ namespace IED
 			m_processEffectShaders_o);
 
 		Debug(
-			"[%s] %s @0x%.16llX",
+			"[%s] %s @0x%llX",
 			__FUNCTION__,
 			result ? "Installed" :
                      "Failed",
@@ -358,7 +420,7 @@ namespace IED
 	{
 		auto addrRefUpdate      = m_animUpdateRef_a.get() + 0x74;
 		auto addrPlayerUpdate   = m_animUpdatePlayer_a.get() + 0xD0;
-		auto addrAnimUpdatePrep = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
+		auto addrAnimUpdatePre  = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
 		auto addrAnimUpdatePost = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2);
 
 		VALIDATE_MEMORY(
@@ -373,18 +435,18 @@ namespace IED
 
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
-				addrAnimUpdatePrep,
+				addrAnimUpdatePre,
 				std::uintptr_t(PrepareAnimUpdateLists_Hook),
 				m_prepareAnimUpdateLists_o))
 		{
 			Debug(
-				"[%s] Installed anim list prep hook @0x%.16llX",
+				"[%s] Installed pre anim update hook @0x%llX",
 				__FUNCTION__,
-				addrAnimUpdatePrep);
+				addrAnimUpdatePre);
 		}
 		else
 		{
-			HALT("Failed to install anim list prep hook");
+			HALT("Failed to install pre anim update hook");
 		}
 
 		if (hook::call5(
@@ -394,7 +456,7 @@ namespace IED
 				m_clearAnimUpdateLists_o))
 		{
 			Debug(
-				"[%s] Installed post anim update hook @0x%.16llX",
+				"[%s] Installed post anim update hook @0x%llX",
 				__FUNCTION__,
 				addrAnimUpdatePost);
 		}
@@ -411,7 +473,7 @@ namespace IED
 				dummy))
 		{
 			Debug(
-				"[%s] Replaced reference anim update call @0x%.16llX",
+				"[%s] Replaced reference anim update call @0x%llX",
 				__FUNCTION__,
 				addrRefUpdate);
 		}
@@ -495,8 +557,8 @@ namespace IED
 		m_Instance.m_characterResurrect_o(a_actor, a_resetInventory, a_attach3D);
 	}
 
-	void EngineExtensions::Actor_Release3D_Hook(
-		Actor* a_actor)
+	template <class T>
+	void EngineExtensions::RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*))
 	{
 		bool eval = false;
 
@@ -516,7 +578,7 @@ namespace IED
 			}
 		}
 
-		m_Instance.m_actorRelease3D_o(a_actor);
+		a_origCall(a_actor);
 
 		if (eval)
 		{
@@ -526,35 +588,55 @@ namespace IED
 		}
 	}
 
+	void EngineExtensions::PlayerCharacter_Release3D_Hook(
+		PlayerCharacter* a_actor)
+	{
+		RunRelease3DHook(a_actor, m_Instance.m_pcRelease3D_o);
+	}
+
+	void EngineExtensions::Actor_Release3D_Hook(
+		Actor* a_actor)
+	{
+		RunRelease3DHook(a_actor, m_Instance.m_actorRelease3D_o);
+	}
+
 	void EngineExtensions::Character_Release3D_Hook(
 		Character* a_actor)
 	{
-		bool eval = false;
+		RunRelease3DHook(a_actor, m_Instance.m_characterRelease3D_o);
+	}
 
-		if (a_actor->formID)
-		{
-			if (ITaskPool::IsRunningOnCurrentThread())
-			{
-				m_Instance.FailsafeCleanupAndEval(a_actor);
-			}
-			else
-			{
-				m_Instance.m_controller->RemoveActor(
-					a_actor,
-					ControllerUpdateFlags::kNone);
+	NiAVObject* EngineExtensions::PlayerCharacter_Load3D_Hook(
+		PlayerCharacter* a_player,
+		bool             a_backgroundLoading)
+	{
+		auto result = m_Instance.m_pcLoad3D_o(a_player, a_backgroundLoading);
 
-				eval = true;
-			}
-		}
+		ActorObjectHolder::CreateExtraMovNodes2(a_player, result);
+	
+		return result;
+	}
 
-		m_Instance.m_characterRelease3D_o(a_actor);
+	NiAVObject* EngineExtensions::Actor_Load3D_Hook(
+		Actor* a_actor,
+		bool   a_backgroundLoading)
+	{
+		auto result = m_Instance.m_actorLoad3D_o(a_actor, a_backgroundLoading);
 
-		if (eval)
-		{
-			m_Instance.m_controller->QueueEvaluate(
-				a_actor,
-				ControllerUpdateFlags::kImmediateTransformUpdate);
-		}
+		ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
+
+		return result;
+	}
+
+	NiAVObject* EngineExtensions::Character_Load3D_Hook(
+		Character* a_actor,
+		bool       a_backgroundLoading)
+	{
+		auto result = m_Instance.m_characterLoad3D_o(a_actor, a_backgroundLoading);
+
+		ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
+
+		return result;
 	}
 
 	void EngineExtensions::FailsafeCleanupAndEval(
@@ -628,13 +710,10 @@ namespace IED
 		float                a_val,
 		Biped*               a_biped)
 	{
-		if (m_Instance.m_conf.weaponAdjustFix)
+		auto& biped3p = a_refr->GetBiped1(false);
+		if (biped3p && biped3p.get() != a_biped)
 		{
-			auto& biped3p = a_refr->GetBiped1(false);
-			if (!biped3p || biped3p.get() != a_biped)
-			{
-				return false;
-			}
+			return false;
 		}
 
 		return a_refr->SetVariableOnGraphsFloat(a_animVarName, a_val);

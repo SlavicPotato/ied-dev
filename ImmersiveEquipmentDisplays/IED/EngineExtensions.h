@@ -240,8 +240,12 @@ namespace IED
 
 		static void                              RemoveAllBipedParts_Hook(Biped* a_biped);
 		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
+		static void                              PlayerCharacter_Release3D_Hook(PlayerCharacter* a_actor);
 		static void                              Actor_Release3D_Hook(Actor* a_actor);
 		static void                              Character_Release3D_Hook(Character* a_actor);
+		static NiAVObject*                       PlayerCharacter_Load3D_Hook(PlayerCharacter* a_player, bool a_backgroundLoading);
+		static NiAVObject*                       Actor_Load3D_Hook(Actor* a_actor, bool a_backgroundLoading);
+		static NiAVObject*                       Character_Load3D_Hook(Character* a_actor, bool a_backgroundLoading);
 		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
 		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
 		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
@@ -256,8 +260,12 @@ namespace IED
 
 		static void UpdateReferenceAnimations(TESObjectREFR* a_refr, float a_step);
 
+		template <class T>
+		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*));
+
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
+		inline static const auto m_vtblPlayerCharacter_a    = IAL::Address<std::uintptr_t>(261916, 0);
 		inline static const auto m_createWeaponNodes_a      = IAL::Address<std::uintptr_t>(19342, 19769);
 		inline static const auto m_removeAllBipedParts_a    = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
 		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
@@ -276,8 +284,12 @@ namespace IED
 		//inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
 
 		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
+		decltype(&PlayerCharacter_Release3D_Hook) m_pcRelease3D_o{ nullptr };
 		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };
 		decltype(&Actor_Release3D_Hook)           m_actorRelease3D_o{ nullptr };
+		decltype(&PlayerCharacter_Load3D_Hook)    m_pcLoad3D_o{ nullptr };
+		decltype(&Actor_Load3D_Hook)              m_actorLoad3D_o{ nullptr };
+		decltype(&Character_Load3D_Hook)          m_characterLoad3D_o{ nullptr };
 		decltype(&ReanimateActorStateUpdate_Hook) m_ReanimActorStateUpd_o{ nullptr };
 		decltype(&ArmorUpdate_Hook)               m_ArmorChange_o{ nullptr };
 		decltype(&GarbageCollectorReference_Hook) m_garbageCollectorReference_o{ nullptr };
@@ -292,7 +304,6 @@ namespace IED
 		struct
 		{
 			bool weaponAdjustDisable{ false };
-			bool weaponAdjustFix{ false };
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };
@@ -350,5 +361,6 @@ namespace IED
 
 		return true;
 	}
+
 
 }

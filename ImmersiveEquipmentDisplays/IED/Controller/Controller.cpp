@@ -1151,15 +1151,6 @@ namespace IED
 
 	void Controller::OnActorAcquire(ActorObjectHolder& a_holder)
 	{
-		if (!a_holder.m_cmeNodes.empty() &&
-		    !a_holder.m_movNodes.empty())
-		{
-			for (auto& e : NodeOverrideData::GetExtraMovNodes())
-			{
-				a_holder.CreateExtraMovNodes(a_holder.m_npcroot, e);
-			}
-		}
-
 		if (m_applyTransformOverrides)
 		{
 			a_holder.ApplyXP32NodeTransformOverrides(a_holder.m_npcroot);
