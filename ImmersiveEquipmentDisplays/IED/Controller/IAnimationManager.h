@@ -2,8 +2,8 @@
 
 #include "ActorAnimationState.h"
 #include "AnimationGroupInfo.h"
-#include "AnimationWeaponSlot.h"
-#include "AnimationWeaponType.h"
+#include "IED/AnimationWeaponSlot.h"
+#include "IED/AnimationWeaponType.h"
 #include "PluginInterfaceHolder.h"
 
 namespace IED

@@ -21,6 +21,7 @@ namespace IED
 		inline static constexpr auto FONT_META                            = "Data\\SKSE\\Plugins\\IED\\Fonts\\meta.json";
 		inline static constexpr auto FONT_META_USER_PATH                  = "Data\\SKSE\\Plugins\\IED\\Fonts\\user";
 		inline static constexpr auto EXTRA_NODES                          = "Data\\SKSE\\Plugins\\IED\\ExtraGearNodes";
+		inline static constexpr auto CONVERT_NODES                        = "Data\\SKSE\\Plugins\\IED\\ConvertNodes";
 		inline static constexpr auto NODE_MONITOR                         = "Data\\SKSE\\Plugins\\IED\\NodeMonitor";
 	}
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnimationWeaponType.h"
+#include "IED/AnimationWeaponType.h"
 
 namespace IED
 {

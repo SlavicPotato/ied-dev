@@ -7,7 +7,7 @@
 #include "I3DIObjectController.h"
 
 #include "IED/Controller/Controller.h"
-#include "IED/Controller/NodeOverrideData.h"
+#include "IED/NodeOverrideData.h"
 
 #include "Drivers/Input/Handlers.h"
 

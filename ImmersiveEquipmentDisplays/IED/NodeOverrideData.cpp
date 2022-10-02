@@ -5,6 +5,7 @@
 
 #include "IED/Parsers/JSONConfigExtraNodeListParser.h"
 #include "IED/Parsers/JSONConfigNodeMonitorEntryListParser.h"
+#include "IED/Parsers/JSONConvertNodesListParser.h"
 
 #include "Serialization/Serialization.h"
 
@@ -621,6 +622,15 @@ namespace IED
 		}
 	}
 
+	void NodeOverrideData::LoadAndAddConvertNodes(const char* a_path)
+	{
+		std::list<std::list<std::int32_t>> data;
+		if (m_Instance->LoadEntryList(a_path, data))
+		{
+			m_Instance->AddConvertNodesData(data);
+		}
+	}
+
 	template <class T>
 	bool NodeOverrideData::LoadEntryList(
 		const char*   a_path,
@@ -836,6 +846,26 @@ namespace IED
 						f.description.c_str());
 
 					continue;
+				}
+			}
+		}
+	}
+
+	void NodeOverrideData::AddConvertNodesData(
+		const std::list<std::list<std::int32_t>>& a_data)
+	{
+		for (auto& e : a_data)
+		{
+			for (auto& f : e)
+			{
+				auto r = m_convertNodes.emplace(f);
+
+				if (!r.second)
+				{
+					Warning(
+						"%s: %d - duplicate entry",
+						__FUNCTION__,
+						f);
 				}
 			}
 		}

@@ -71,8 +71,6 @@ namespace IED
 
 	void Controller::SinkEventsT0()
 	{
-		stl::scoped_lock lock(m_lock);
-
 		SKSEMessagingHandler::GetSingleton().AddSink(this);
 		ITaskPool::AddTaskFixed(this);
 
@@ -530,6 +528,8 @@ namespace IED
 		}
 
 		SetProcessorTaskRunState(true);
+
+		Debug("Data loaded, entered running state");
 	}
 
 	void Controller::Evaluate(

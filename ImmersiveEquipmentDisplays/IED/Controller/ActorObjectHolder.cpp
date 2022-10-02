@@ -7,12 +7,15 @@
 
 #include "IED/ActorState.h"
 #include "IED/StringHolder.h"
+#include "IED/ExtraNodes.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Node.h>
 
 namespace IED
 {
+	using namespace ExtraNodes;
+
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
@@ -129,10 +132,7 @@ namespace IED
 				}
 			}
 
-			for (auto& e : NodeOverrideData::GetExtraMovNodes())
-			{
-				CreateExtraMovNodes(a_npcroot, e);
-			}
+			CreateExtraMovNodes(a_npcroot);
 		}
 
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
@@ -436,73 +436,9 @@ namespace IED
                    false;
 	}
 
-	void ActorObjectHolder::CreateExtraMovNodes2(
-		NiAVObject* a_root)
-	{
-		if (!a_root)
-		{
-			return;
-		}
-
-		auto sh = BSStringHolder::GetSingleton();
-		if (!sh)
-		{
-			return;
-		}
-
-		auto root = a_root->AsNode();
-		if (!root)
-		{
-			return;
-		}
-
-		auto npcroot = ::Util::Node::FindNode(root, sh->m_npcroot);
-		if (!npcroot)
-		{
-			return;
-		}
-
-		SkeletonID id(root);
-
-		if (!id.get_id())
-		{
-			return;
-		}
-
-		//_DMESSAGE("%X: %u", a_actor->formID, id.get_id());
-
-		for (auto& v : NodeOverrideData::GetExtraMovNodes())
-		{
-			if (npcroot->GetObjectByName(v.bsname_cme) ||
-			    npcroot->GetObjectByName(v.bsname_mov) ||
-			    npcroot->GetObjectByName(v.bsname_node))
-			{
-				continue;
-			}
-
-			auto target = ::Util::Node::FindNode(npcroot, v.name_parent);
-			if (!target)
-			{
-				continue;
-			}
-
-			for (auto& e : v.skel)
-			{
-				if (!e.ids.contains(*id.get_id()))
-				{
-					continue;
-				}
-
-				AttachExtraNodes(target, *id.get_id(), v, e);
-
-				break;
-			}
-		}
-	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(
-		NiNode*                                   a_npcroot,
-		const NodeOverrideData::extraNodeEntry_t& a_entry)
+		NiNode* a_npcroot)
 	{
 		auto& id = m_skeletonID.get_id();
 		if (!id)
@@ -510,60 +446,36 @@ namespace IED
 			return;
 		}
 
-		if (m_cmeNodes.contains(a_entry.name_cme) ||
-		    m_movNodes.contains(a_entry.name_mov) ||
-		    a_npcroot->GetObjectByName(a_entry.bsname_node))
+		for (auto& v : NodeOverrideData::GetExtraMovNodes())
 		{
-			return;
-		}
-
-		auto target = ::Util::Node::FindNode(a_npcroot, a_entry.name_parent);
-		if (!target)
-		{
-			return;
-		}
-
-		for (auto& e : a_entry.skel)
-		{
-			if (!e.ids.contains(*id))
+			if (m_cmeNodes.contains(v.name_cme) ||
+			    m_movNodes.contains(v.name_mov) ||
+			    a_npcroot->GetObjectByName(v.bsname_node))
 			{
-				continue;
+				return;
 			}
 
-			auto result = AttachExtraNodes(target, *id, a_entry, e);
+			auto target = ::Util::Node::FindNode(a_npcroot, v.name_parent);
+			if (!target)
+			{
+				return;
+			}
 
-			m_cmeNodes.try_emplace(a_entry.name_cme, result.cme, result.cme->m_localTransform);
-			m_movNodes.try_emplace(a_entry.name_mov, result.mov, a_entry.placementID);
+			auto it = std::find_if(
+				v.skel.begin(),
+				v.skel.end(),
+				[&](auto& a_v) {
+					return a_v.ids.contains(*id);
+				});
 
-			break;
+			if (it != v.skel.end())
+			{
+				auto result = AttachExtraNodes(target, *id, v, *it);
+
+				m_cmeNodes.try_emplace(v.name_cme, result.cme, result.cme->m_localTransform);
+				m_movNodes.try_emplace(v.name_mov, result.mov, v.placementID);
+			}
 		}
-	}
-
-	auto ActorObjectHolder::AttachExtraNodes(
-		NiNode*                                       a_target,
-		std::int32_t                                  a_skeletonID,
-		const NodeOverrideData::extraNodeEntry_t&     a_entry,
-		const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry)
-		-> attachExtraNodesResult_t
-	{
-		auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
-		a_target->AttachChild(cme, true);
-
-		auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
-
-		mov->m_localTransform = a_skelEntry.transform_mov;
-
-		cme->AttachChild(mov, true);
-
-		auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
-
-		node->m_localTransform = a_skelEntry.transform_node;
-
-		mov->AttachChild(node, true);
-
-		INode::UpdateDownwardPass(cme);
-
-		return { mov, cme };
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(

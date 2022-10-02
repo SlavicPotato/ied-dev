@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../UICommon.h"
+#include "IED/UI/UICommon.h"
 
-#include "IED/Controller/NodeOverrideData.h"
+#include "IED/NodeOverrideData.h"
 
 namespace IED
 {

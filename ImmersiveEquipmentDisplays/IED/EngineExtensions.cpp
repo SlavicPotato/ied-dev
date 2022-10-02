@@ -2,6 +2,8 @@
 
 #include "Controller/Controller.h"
 #include "EngineExtensions.h"
+#include "ExtraNodes.h"
+#include "ConvertNodes.h"
 #include "Util/Logging.h"
 
 #include <ext/GarbageCollector.h>
@@ -41,11 +43,17 @@ namespace IED
 		if (a_config->m_nodeOverrideEnabled)
 		{
 			m_conf.weaponAdjustDisable       = a_config->m_weaponAdjustDisable;
+			m_conf.weaponAdjustDisableForce  = a_config->m_weaponAdjustForceDisable;
 			m_conf.nodeOverridePlayerEnabled = a_config->m_nodeOverridePlayerEnabled;
 			m_conf.disableNPCProcessing      = a_config->m_disableNPCProcessing;
 
 			Hook_Armor_Update();
 			Install_CreateWeaponNodes();
+		}
+
+		if (a_config->m_enableEarlyHooks)
+		{
+			Install_PostLoad3DHooks();
 		}
 
 		if (a_config->m_weaponAdjustFix)
@@ -231,7 +239,10 @@ namespace IED
 			m_pcRelease3D_o,
 			true,
 			"PlayerCharacter::Release3D");
+	}
 
+	void EngineExtensions::Install_PostLoad3DHooks()
+	{
 		ISKSE::GetBranchTrampoline().Write6Call(
 			m_refrLoad3DClone_a.get(),
 			std::uintptr_t(REFR_Load3D_Clone_Hook));
@@ -609,7 +620,8 @@ namespace IED
 
 		if (a_refr->IsActor() && result)
 		{
-			ActorObjectHolder::CreateExtraMovNodes2(result);
+			ConvertNodes::ConvertVanillaSheathsToXP32(result);
+			ExtraNodes::CreateExtraMovNodes(result);
 		}
 
 		return result;
@@ -624,7 +636,8 @@ namespace IED
 
 		if (a_3D)
 		{
-			ActorObjectHolder::CreateExtraMovNodes2(a_3D);
+			ConvertNodes::ConvertVanillaSheathsToXP32(a_3D);
+			ExtraNodes::CreateExtraMovNodes(a_3D);
 		}
 
 		return result;
@@ -726,31 +739,87 @@ namespace IED
 		m_Instance.m_controller->ProcessEffectShaders();
 	}
 
+	bool EngineExtensions::hkaShouldBlockNode(
+		NiAVObject*            a_root,
+		const BSFixedString&   a_name,
+		const RE::hkaSkeleton& a_hkaSkeleton)
+	{
+		if (!a_root)
+		{
+			return false;
+		}
+
+		auto root = a_root->AsNode();
+		if (!root)
+		{
+			return false;
+		}
+
+		auto sh = BSStringHolder::GetSingleton();
+		if (!sh)
+		{
+			return false;
+		}
+
+		if (!a_hkaSkeleton.name ||
+		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) != 0)
+		{
+			return false;
+		}
+
+		if (!sh->IsVanillaSheathNode(a_name))
+		{
+			return false;
+		}
+
+		if (m_Instance.m_conf.weaponAdjustDisableForce)
+		{
+			return true;
+		}
+
+		auto object = root->GetObjectByName(a_name);
+		if (!object)
+		{
+			return false;
+		}
+
+		auto parent1 = object->m_parent;
+		if (!parent1)
+		{
+			return false;
+		}
+
+		if (_strnicmp(parent1->m_name.data(), "MOV ", 4) != 0)
+		{
+			return false;
+		}
+
+		auto parent2 = parent1->m_parent;
+		if (!parent2)
+		{
+			return false;
+		}
+
+		if (_strnicmp(parent2->m_name.data(), "CME ", 4) != 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	bool EngineExtensions::hkaLookupSkeletonNode_Hook(
 		NiNode*                   a_root,
 		const BSFixedString&      a_name,
 		hkaGetSkeletonNodeResult& a_result,
 		const RE::hkaSkeleton&    a_hkaSkeleton)
 	{
-		if (a_hkaSkeleton.name &&
-		    _stricmp(a_hkaSkeleton.name, StringHolder::HK_NPC_ROOT) == 0)
+		if (hkaShouldBlockNode(a_root, a_name, a_hkaSkeleton))
 		{
-			if (auto sh = BSStringHolder::GetSingleton())
-			{
-				if (a_name == sh->m_weaponAxe ||
-				    a_name == sh->m_weaponMace ||
-				    a_name == sh->m_weaponSword ||
-				    a_name == sh->m_weaponDagger ||
-				    a_name == sh->m_weaponBack ||
-				    a_name == sh->m_weaponBow ||
-				    a_name == sh->m_quiver)
-				{
-					a_result.root  = nullptr;
-					a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
+			a_result.root  = nullptr;
+			a_result.unk08 = std::numeric_limits<std::uint32_t>::max();
 
-					return false;
-				}
-			}
+			return false;
 		}
 
 		return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
@@ -760,8 +829,8 @@ namespace IED
 		Game::ProcessLists* a_pl,
 		void*               a_unk)
 	{
-		m_Instance.BeginAnimationUpdate(m_Instance.m_controller);
 		m_Instance.m_prepareAnimUpdateLists_o(a_pl, a_unk);
+		m_Instance.BeginAnimationUpdate(m_Instance.m_controller);
 	}
 
 	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk)

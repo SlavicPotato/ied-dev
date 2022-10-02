@@ -236,6 +236,7 @@ namespace IED
 		void Hook_REFR_GarbageCollector();
 		void Hook_Actor_Resurrect();
 		void Hook_Actor_3DEvents();
+		void Install_PostLoad3DHooks();
 		void Hook_Armor_Update();
 		void Install_SetWeapAdjAnimVar();
 		void Install_CreateWeaponNodes();
@@ -266,6 +267,8 @@ namespace IED
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
 		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data);  // getbiped1
+
+		static bool hkaShouldBlockNode(NiAVObject* a_root, const BSFixedString& a_name, const RE::hkaSkeleton& a_hkaSkeleton);
 
 		static void UpdateReferenceAnimations(TESObjectREFR* a_refr, float a_step);
 
@@ -313,6 +316,7 @@ namespace IED
 		struct
 		{
 			bool weaponAdjustDisable{ false };
+			bool weaponAdjustDisableForce{ false };
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };

@@ -3,7 +3,7 @@
 #include "I3DIDraggable.h"
 #include "I3DIModelObject.h"
 
-#include "IED/Controller/NodeOverrideData.h"
+#include "IED/NodeOverrideData.h"
 
 namespace IED
 {

@@ -7,10 +7,8 @@
 #include "EffectShaderData.h"
 #include "INode.h"
 #include "NodeMonitorEntry.h"
-#include "NodeOverrideData.h"
 #include "ObjectDatabase.h"
 #include "ObjectManagerCommon.h"
-#include "SkeletonID.h"
 
 #include "CMENodeEntry.h"
 #include "MOVNodeEntry.h"
@@ -22,7 +20,9 @@
 #include "IED/ActorState.h"
 #include "IED/ConfigModelGroup.h"
 #include "IED/ConfigStore.h"
+#include "IED/NodeOverrideData.h"
 #include "IED/SkeletonCache.h"
+#include "IED/SkeletonID.h"
 
 #include <ext/WeaponAnimationGraphManagerHolder.h>
 
@@ -446,25 +446,9 @@ namespace IED
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
 
-		static void CreateExtraMovNodes2(
-			NiAVObject* a_root);
-
 	private:
-		struct attachExtraNodesResult_t
-		{
-			NiNode* mov{ nullptr };
-			NiNode* cme{ nullptr };
-		};
-
-		static attachExtraNodesResult_t AttachExtraNodes(
-			NiNode*                                       a_target,
-			std::int32_t                                  a_skeletonID,
-			const NodeOverrideData::extraNodeEntry_t&     a_entry,
-			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry);
-
 		void CreateExtraMovNodes(
-			NiNode*                                   a_npcroot,
-			const NodeOverrideData::extraNodeEntry_t& a_entry);
+			NiNode* a_npcroot);
 
 		void CreateExtraCopyNode(
 			Actor*                                        a_actor,

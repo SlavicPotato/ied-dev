@@ -653,9 +653,6 @@
     <ClInclude Include="IED\Controller\INodeOverride.h">
       <Filter>Source\IED\Controller\NodeOverride</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\NodeOverrideData.h">
-      <Filter>Source\IED\Controller\NodeOverride</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.h">
       <Filter>Source\IED\UI\NodeOverride</Filter>
     </ClInclude>
@@ -1298,9 +1295,6 @@
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Controller\SkeletonID.h">
-      <Filter>Source\IED\Controller\NodeOverride</Filter>
-    </ClInclude>
     <ClInclude Include="Drivers\RTest\RTest.h">
       <Filter>Source\Drivers\RTest</Filter>
     </ClInclude>
@@ -1471,6 +1465,30 @@
     </ClInclude>
     <ClInclude Include="IED\UI\UIKeyedInputLockReleaseHandler.h">
       <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConvertNodesListParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ExtraNodes.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\NodeOverrideData.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\AnimationWeaponSlot.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\AnimationWeaponType.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\SkeletonID.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConvertNodes.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\WeaponPlacementID.h">
+      <Filter>Source\IED</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1823,9 +1841,6 @@
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\INodeOverride.cpp">
-      <Filter>Source\IED\Controller\NodeOverride</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Controller\NodeOverrideData.cpp">
       <Filter>Source\IED\Controller\NodeOverride</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\NodeOverride\UINodeOverrideEditorActor.cpp">
@@ -2197,9 +2212,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Controller\SkeletonID.cpp">
-      <Filter>Source\IED\Controller\NodeOverride</Filter>
-    </ClCompile>
     <ClCompile Include="Drivers\RTest\RTest.cpp">
       <Filter>Source\Drivers\RTest</Filter>
     </ClCompile>
@@ -2331,6 +2343,21 @@
     </ClCompile>
     <ClCompile Include="IED\UI\UIKeyedInputLockReleaseHandler.cpp">
       <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConvertNodesListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ExtraNodes.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\NodeOverrideData.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\SkeletonID.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ConvertNodes.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

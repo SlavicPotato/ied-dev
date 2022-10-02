@@ -38,6 +38,22 @@ namespace IED
 		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
 		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
 
+		static inline constexpr auto NINODE_MOV_DEFAULT_SWORD  = "MOV WeaponSwordDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_AXE    = "MOV WeaponAxeDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_MACE   = "MOV WeaponMaceDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_DAGGER = "MOV WeaponDaggerDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_BOW    = "MOV WeaponBowDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_BACK   = "MOV WeaponBackDefault";
+		static inline constexpr auto NINODE_MOV_DEFAULT_QUIVER = "MOV QUIVERDefault";
+		
+		static inline constexpr auto NINODE_CME_DEFAULT_SWORD  = "CME WeaponSwordDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_AXE    = "CME WeaponAxeDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_MACE   = "CME WeaponMaceDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_DAGGER = "CME WeaponDaggerDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_BOW    = "CME WeaponBowDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_BACK   = "CME WeaponBackDefault";
+		static inline constexpr auto NINODE_CME_DEFAULT_QUIVER = "CME QUIVERDefault";
+
 		// IED-added
 
 		static inline constexpr auto NINODE_IED_OBJECT = "OBJECT ROOT";
@@ -108,10 +124,12 @@ namespace IED
 			return m_Instance.get();
 		}
 
-		/*inline constexpr auto& GetSheathNodes() const noexcept
+		inline constexpr auto& GetSheathNodes() const noexcept
 		{
 			return m_sheathNodes;
-		}*/
+		}
+
+		bool IsVanillaSheathNode(const BSFixedString& a_name) const;
 
 		BSFixedString m_npcroot{ NINODE_NPCROOT };
 		//BSFixedString m_npcSpine2{ NINODE_NPCSPINE2 };
@@ -155,9 +173,16 @@ namespace IED
 		BSFixedString m_animObjectChopWoodLeft{ "AnimObjectChopWoodLeft" };
 		BSFixedString m_animObjectChopWoodRight{ "AnimObjectChopWoodRight" };*/
 
-		stl::unordered_set<BSFixedString> m_animEventFilter;
+		//stl::unordered_set<BSFixedString> m_animEventFilter;
 
-		//stl::set_sa<BSFixedString> m_sheathNodes;
+		struct SheatheNodeEntry
+		{
+			BSFixedString name;
+			BSFixedString mov;
+			BSFixedString cme;
+		};
+
+		stl::list<SheatheNodeEntry> m_sheathNodes;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};

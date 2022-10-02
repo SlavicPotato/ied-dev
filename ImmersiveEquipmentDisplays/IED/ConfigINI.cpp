@@ -57,15 +57,24 @@ namespace IED
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnablePlayer", true);
 		m_weaponAdjustDisable =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "DisableVanillaWeaponAdjust", true);
+		m_weaponAdjustForceDisable =
+			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceDisableVanillaWeaponAdjust", false);
 		m_weaponAdjustFix =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
 		m_forceOrigWeapXFRM =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceOriginalWeaponTransform", true);
+		m_enableEarlyHooks =
+			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnableEarlyHooks", true);
 
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		m_activeWriteCMETransforms =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceCMETransforms", false);
 #endif
+
+		if (m_weaponAdjustForceDisable)
+		{
+			m_weaponAdjustDisable = true;
+		}
 
 		m_disableNPCProcessing =
 			reader.GetBoolValue(SECT_DEBUG, "DisableNPCProcessing", false);

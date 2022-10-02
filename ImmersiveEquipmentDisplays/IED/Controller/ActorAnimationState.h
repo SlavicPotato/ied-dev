@@ -1,8 +1,9 @@
 #pragma once
 
-#include "AnimationWeaponSlot.h"
-#include "AnimationWeaponType.h"
-#include "NodeOverrideData.h"
+#include "IED/AnimationWeaponSlot.h"
+#include "IED/AnimationWeaponType.h"
+
+#include "IED/NodeOverrideData.h"
 
 namespace IED
 {

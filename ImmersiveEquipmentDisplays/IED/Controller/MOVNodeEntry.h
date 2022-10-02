@@ -1,10 +1,9 @@
 #pragma once
 
-#include "NodeOverrideData.h"
+#include "IED/WeaponPlacementID.h"
 
 namespace IED
 {
-
 	struct MOVNodeEntry
 	{
 		NiPointer<NiNode> node;

@@ -18,26 +18,22 @@ namespace IED
 		}
 	}
 
-	/*BSStringHolder::BSStringHolder()
-	{
-		m_sheathNodes.reserve(7);
-		m_sheathNodes.emplace(NINODE_AXE);
-		m_sheathNodes.emplace(NINODE_MACE);
-		m_sheathNodes.emplace(NINODE_SWORD);
-		m_sheathNodes.emplace(NINODE_DAGGER);
-		m_sheathNodes.emplace(NINODE_WEAPON_BACK);
-		m_sheathNodes.emplace(NINODE_BOW);
-		m_sheathNodes.emplace(NINODE_QUIVER);
-	}*/
-
 	std::unique_ptr<BSStringHolder> BSStringHolder::m_Instance;
 
 	BSStringHolder::BSStringHolder()
 	{
-		for (auto& e : ANIM_EVENTS)
+		/*for (auto& e : ANIM_EVENTS)
 		{
 			m_animEventFilter.emplace(e);
-		}
+		}*/
+
+		m_sheathNodes.emplace_back(NINODE_SWORD, NINODE_MOV_DEFAULT_SWORD, NINODE_CME_DEFAULT_SWORD);
+		m_sheathNodes.emplace_back(NINODE_AXE, NINODE_MOV_DEFAULT_AXE, NINODE_CME_DEFAULT_AXE);
+		m_sheathNodes.emplace_back(NINODE_MACE, NINODE_MOV_DEFAULT_MACE, NINODE_CME_DEFAULT_MACE);
+		m_sheathNodes.emplace_back(NINODE_DAGGER, NINODE_MOV_DEFAULT_DAGGER, NINODE_CME_DEFAULT_DAGGER);
+		m_sheathNodes.emplace_back(NINODE_WEAPON_BACK, NINODE_MOV_DEFAULT_BACK, NINODE_CME_DEFAULT_BACK);
+		m_sheathNodes.emplace_back(NINODE_BOW, NINODE_MOV_DEFAULT_BOW, NINODE_CME_DEFAULT_BOW);
+		m_sheathNodes.emplace_back(NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER);
 	}
 
 	void BSStringHolder::Create()
@@ -48,6 +44,17 @@ namespace IED
 
 			m_Instance = std::make_unique<BSStringHolder>();
 		}
+	}
+
+	bool BSStringHolder::IsVanillaSheathNode(
+		const BSFixedString& a_name) const
+	{
+		return std::find_if(
+				   m_sheathNodes.begin(),
+				   m_sheathNodes.end(),
+				   [&](auto& a_v) {
+					   return a_v.name == a_name;
+				   }) != m_sheathNodes.end();
 	}
 
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnimationWeaponSlot.h"
+#include "IED/AnimationWeaponSlot.h"
 
 namespace IED
 {

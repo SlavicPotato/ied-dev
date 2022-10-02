@@ -27,7 +27,7 @@
 #include "IED/GlobalProfileManager.h"
 #include "IED/StringHolder.h"
 
-#include "IED/Controller/NodeOverrideData.h"
+#include "IED/NodeOverrideData.h"
 
 #include "UINodeOverrideEditorWidgetStrings.h"
 

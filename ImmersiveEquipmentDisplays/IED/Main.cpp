@@ -9,13 +9,13 @@
 
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
-#include "Controller/NodeOverrideData.h"
 #include "FormHolder.h"
 #include "GlobalProfileManager.h"
 #include "LocaleData.h"
 #include "Localization/LocalizationDataManager.h"
 #include "Main.h"
 #include "NodeMap.h"
+#include "NodeOverrideData.h"
 #include "PapyrusInterface/Papyrus.h"
 
 #include "UI/UIMain.h"
@@ -213,6 +213,9 @@ namespace IED
 			BSStringHolder::Create();
 			NodeOverrideData::Create();
 
+			NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
+			NodeOverrideData::LoadAndAddConvertNodes(PATHS::CONVERT_NODES);
+
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
 
 			break;
@@ -239,6 +242,8 @@ namespace IED
 						ldm.GetLastException().what());
 				}
 
+				NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
+
 				auto& nodeMap = IED::Data::NodeMap::GetSingleton();
 
 				if (!nodeMap.LoadExtra(PATHS::NODEMAP))
@@ -251,9 +256,6 @@ namespace IED
 							nodeMap.GetLastException().what());
 					}
 				}
-
-				NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
-				NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
 
 				for (auto& e : NodeOverrideData::GetExtraMovNodes())
 				{

@@ -72,7 +72,8 @@ namespace IED
 		bool           m_UIScaling{ true };
 		bool           m_nodeOverrideEnabled{ false };
 		bool           m_nodeOverridePlayerEnabled{ false };
-		bool           m_weaponAdjustDisable{ false };
+		bool           m_weaponAdjustDisable{ true };
+		bool           m_weaponAdjustForceDisable{ false };
 		bool           m_weaponAdjustFix{ true };
 		bool           m_forceDefaultConfig{ false };
 		bool           m_disableNPCProcessing{ false };
@@ -82,6 +83,7 @@ namespace IED
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
+		bool           m_enableEarlyHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
 		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };

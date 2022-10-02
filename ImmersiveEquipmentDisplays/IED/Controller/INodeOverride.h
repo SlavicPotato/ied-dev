@@ -5,7 +5,7 @@
 #include "IED/FormCommon.h"
 #include "IED/FormHolder.h"
 #include "IED/Inventory.h"
-#include "NodeOverrideData.h"
+#include "IED/NodeOverrideData.h"
 
 namespace IED
 {
@@ -175,7 +175,7 @@ namespace IED
 	protected:
 		static void ApplyNodeOverride(
 			const stl::fixed_string&                   a_name,
-			const CMENodeEntry&                      a_entry,
+			const CMENodeEntry&                        a_entry,
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t&                      a_params);
 
