@@ -249,6 +249,7 @@ namespace IED
 			kArrested            = 35,
 			kIsChild             = 36,
 			kInKillmove          = 37,
+			kIsUnconscious       = 38,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

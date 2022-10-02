@@ -224,5 +224,9 @@ namespace IED
 		Owner           = 295,
 		Dependencies    = 296,
 		Outfit          = 297,
+		State           = 298,
+		Dead            = 299,
+		Deleted         = 300,
+		Persistent      = 301,
 	};
 }

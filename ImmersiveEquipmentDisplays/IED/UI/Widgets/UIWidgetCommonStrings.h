@@ -108,7 +108,11 @@ namespace IED
 			Enchantment                         = 2097,
 			OverrideModel                       = 2098,
 			ForceEquip                          = 2099,
-			DisplayManagement                   = 2100
+			DisplayManagement                   = 2100,
+			FullLOD                             = 2101,
+			CollisionDisabled                   = 2102,
+			InitiallyDisabled                   = 2103,
+			Ignored                             = 2104,
 		};
 	}
 }

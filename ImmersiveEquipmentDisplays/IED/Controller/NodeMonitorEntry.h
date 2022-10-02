@@ -7,7 +7,7 @@ namespace IED
 	class NodeMonitorEntry
 	{
 	public:
-		NodeMonitorEntry(
+		inline NodeMonitorEntry(
 			NiNode*                                 a_parent,
 			const Data::configNodeMonitorEntryBS_t& a_config) :
 			m_parent(a_parent),
@@ -23,9 +23,9 @@ namespace IED
 		}
 
 	private:
+		bool m_present{ false };
+
 		NiPointer<NiNode>                       m_parent;
 		const Data::configNodeMonitorEntryBS_t& m_config;
-
-		bool m_present{ false };
 	};
 }

@@ -99,7 +99,7 @@ namespace IED
 			}
 
 			if (object->m_name == a_name &&
-				object->IsVisible())
+			    object->IsVisible())
 			{
 				if (auto node = object->AsNode())
 				{
@@ -198,7 +198,6 @@ namespace IED
 					{
 						return VisitorControl::kSkip;
 					}
-
 
 					return (a_object->m_name == m_config.subject &&
 					        find_visible_geometry(a_object)) ?

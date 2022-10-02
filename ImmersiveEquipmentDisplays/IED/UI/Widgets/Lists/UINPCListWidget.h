@@ -248,31 +248,24 @@ namespace IED
 				ImGui::TextWrapped("%.0f", it->second->weight);
 			}
 
-			ImGui::TableNextRow();
-
-			ImGui::TableSetColumnIndex(0);
-			ImGui::Text("%s:", LS(CommonStrings::Mod));
-
-			ImGui::TableSetColumnIndex(1);
 			std::uint32_t modIndex;
 			if (a_entry.handle.GetPluginPartialIndex(modIndex))
 			{
 				auto itm = modList.find(modIndex);
 				if (itm != modList.end())
 				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::Mod));
+
+					ImGui::TableSetColumnIndex(1);
+
 					ImGui::TextWrapped(
 						"[%X] %s",
 						itm->second.GetPartialIndex(),
 						itm->second.name.c_str());
 				}
-				else
-				{
-					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
-				}
-			}
-			else
-			{
-				ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
 			}
 
 			if (it != npcInfo.end())

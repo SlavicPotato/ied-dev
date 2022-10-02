@@ -244,44 +244,6 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Name));
-
-				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%s", data.name.c_str());
-
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Mod));
-
-				ImGui::TableSetColumnIndex(1);
-
-				std::uint32_t modIndex;
-				if (a_handle.GetPluginPartialIndex(modIndex))
-				{
-					auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
-
-					auto itm = modList.find(modIndex);
-					if (itm != modList.end())
-					{
-						ImGui::TextWrapped(
-							"[%X] %s",
-							itm->second.GetPartialIndex(),
-							itm->second.name.c_str());
-					}
-					else
-					{
-						ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
-					}
-				}
-				else
-				{
-					ImGui::TextWrapped("%s", LS(CommonStrings::Unknown));
-				}
-
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
 				ImGui::Text("%s:", LS(CommonStrings::Base));
 
 				ImGui::TableSetColumnIndex(1);
@@ -305,6 +267,36 @@ namespace IED
 				else
 				{
 					ImGui::TextWrapped("%s", "N/A");
+				}
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Name));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::TextWrapped("%s", data.name.c_str());
+
+				std::uint32_t modIndex;
+				if (a_handle.GetPluginPartialIndex(modIndex))
+				{
+					auto& modList = Data::IData::GetPluginInfo().GetIndexMap();
+
+					auto itm = modList.find(modIndex);
+					if (itm != modList.end())
+					{
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("%s:", LS(CommonStrings::Mod));
+
+						ImGui::TableSetColumnIndex(1);
+
+						ImGui::TextWrapped(
+							"[%X] %s",
+							itm->second.GetPartialIndex(),
+							itm->second.name.c_str());
+					}
 				}
 
 				auto& raceInfo = Data::IData::GetRaceList();
@@ -368,6 +360,57 @@ namespace IED
 						data.npc->female ?
 							LS(CommonStrings::Female) :
                             LS(CommonStrings::Male));
+				}
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", LS(CommonStrings::Flags));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%.8X", data.flags);
+
+				UICommon::ToolTip(100.0f, [&] {
+					if (data.flags & 1u << 4)
+					{
+						ImGui::Text(LS(UIWidgetCommonStrings::CollisionDisabled));
+					}
+
+					if (data.flags & 1u << 5)
+					{
+						ImGui::Text(LS(CommonStrings::Deleted));
+					}
+
+					if (data.flags & 1u << 10)
+					{
+						ImGui::Text(LS(CommonStrings::Persistent));
+					}
+
+					if (data.flags & 1u << 11)
+					{
+						ImGui::Text(LS(UIWidgetCommonStrings::InitiallyDisabled));
+					}
+					
+					if (data.flags & 1u << 12)
+					{
+						ImGui::Text(LS(UIWidgetCommonStrings::Ignored));
+					}
+
+					if (data.flags & 1u << 16)
+					{
+						ImGui::Text(LS(UIWidgetCommonStrings::FullLOD));
+					}
+				});
+
+				if (data.dead)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(CommonStrings::State));
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::TextWrapped("%s", LS(CommonStrings::Dead));
 				}
 
 				ImGui::TableNextRow();

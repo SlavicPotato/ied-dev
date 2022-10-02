@@ -600,45 +600,6 @@ namespace IED
 		return result;
 	}
 
-	/*void EngineExtensions::Actor_Load3D_LoadSkeleton_Hook(TESObjectREFR* a_actor, NiAVObject* a_3d)
-	{
-		
-	}*/
-
-	//NiAVObject* EngineExtensions::Actor_Load3D_LoadSkeleton_Hook(Actor* a_actor, bool a_backgroundLoading)
-	//{
-	//	/*if (auto& bip = a_actor->GetBiped1(false))
-	//	{
-	//		for (auto& e : bip->objects)
-	//		{
-	//			if (e.item && e.object && e.object->m_parent)
-	//			{
-	//				_DMESSAGE("%X: %s", e.item->formID, e.object->m_parent->m_name.c_str());
-	//			}
-	//			else
-	//			{
-	//				_DMESSAGE("nn %X: %s %s ", e.item ? e.item->formID : 0, e.object  ? e.object->m_name.c_str() : 0, e.object && e.object->m_parent ? e.object->m_parent->m_name.c_str() :
-	//                                                                                                                                                                                    0);
-	//			}
-	//		}
-	//	}
-	//	else
-	//	{
-	//		_DMESSAGE("no bip");
-	//	}*/
-
-	//	if (a_actor == *g_thePlayer)
-	//	{
-	//		__debugbreak();
-	//	}
-
-	//	auto result = m_Instance.m_actorLoad3DLoadSkeleton_o(a_actor, a_backgroundLoading);
-
-	//	ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
-
-	//	return result;
-	//}
-
 	void EngineExtensions::FailsafeCleanupAndEval(
 		Actor*                     a_actor,
 		const std::source_location a_loc)

@@ -13,7 +13,9 @@ namespace IED
 		actorInfoEntry_t& a_out,
 		bool              a_updateNPC)
 	{
-		a_out.name = IFormCommon::GetFormName(a_actor);
+		a_out.name  = IFormCommon::GetFormName(a_actor);
+		a_out.dead  = a_actor->IsDead();
+		a_out.flags = a_actor->flags;
 
 		if (auto race = a_actor->GetRace())
 		{
@@ -102,9 +104,9 @@ namespace IED
 			a_out.furniture = {};
 		}
 
-		if (auto extraOutfit = a_actor->extraData.Get<ExtraOutfitItem>()) // ??
+		if (auto extraOutfit = a_actor->extraData.Get<ExtraOutfitItem>())  // ??
 		{
-			a_out.outfit.first = extraOutfit->id;
+			a_out.outfit.first  = extraOutfit->id;
 			a_out.outfit.second = false;
 		}
 		else
@@ -114,8 +116,8 @@ namespace IED
 			if (auto npc = a_actor->GetActorBase())
 			{
 				a_out.outfit.first = npc->defaultOutfit ?
-				                   npc->defaultOutfit->formID :
-                                   Game::FormID{};
+				                         npc->defaultOutfit->formID :
+                                         Game::FormID{};
 			}
 			else
 			{
