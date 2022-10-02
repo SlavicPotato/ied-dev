@@ -33,6 +33,7 @@ namespace IED
 			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
 			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
+			{ Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious },
 			{ Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor },
 			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
 			{ Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected },
@@ -178,6 +179,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsChild);
 			case Data::ExtraConditionType::kInKillmove:
 				return LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
+			case Data::ExtraConditionType::kIsUnconscious:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
 			default:
 				return nullptr;
 			}

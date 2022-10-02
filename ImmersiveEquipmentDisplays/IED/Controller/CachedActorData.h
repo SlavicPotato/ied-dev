@@ -45,5 +45,6 @@ namespace IED
 		bool                     weaponDrawn{ false };
 		bool                     inInterior{ false };
 		bool                     arrested{ false };
+		bool                     unconscious{ false };
 	};
 }

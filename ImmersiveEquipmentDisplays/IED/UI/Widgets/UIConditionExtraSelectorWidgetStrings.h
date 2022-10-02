@@ -46,6 +46,7 @@ namespace IED
 			IsArrested          = 5435,
 			IsChild             = 5436,
 			InKillmove          = 5437,
+			IsUnconscious       = 5438,
 		};
 	}
 }

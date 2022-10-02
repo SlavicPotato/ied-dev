@@ -21,7 +21,8 @@ namespace IED
 		sleeping(a_actor->IsSleeping()),
 		beingRidden(a_actor->IsBeingRidden()),
 		weaponDrawn(a_actor->IsWeaponDrawn()),
-		arrested(a_actor->IsArrested())
+		arrested(a_actor->IsArrested()),
+		unconscious(a_actor->IsUnconscious())
 	{
 	}
 

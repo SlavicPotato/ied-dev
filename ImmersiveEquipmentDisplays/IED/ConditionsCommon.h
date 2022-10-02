@@ -98,6 +98,8 @@ namespace IED
 				return a_params.actor->IsChild();
 			case Data::ExtraConditionType::kInKillmove:
 				return a_cached.flags2.test(Actor::Flags2::kIsInKillMove);
+			case Data::ExtraConditionType::kIsUnconscious:
+				return a_cached.unconscious;
 			default:
 				return false;
 			}
