@@ -453,11 +453,6 @@ namespace IED
 	private:
 		struct attachExtraNodesResult_t
 		{
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
-			{
-				return mov && cme;
-			}
-
 			NiNode* mov{ nullptr };
 			NiNode* cme{ nullptr };
 		};

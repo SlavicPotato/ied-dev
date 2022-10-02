@@ -74,8 +74,8 @@ namespace IED
 		using namespace ::Util::Node;
 
 		if (a_nodeOverrideEnabled &&
-		    (a_actor != *g_thePlayer ||
-		     a_nodeOverrideEnabledPlayer))
+		    (a_nodeOverrideEnabledPlayer ||
+		     a_actor != *g_thePlayer))
 		{
 			for (auto& e : NodeOverrideData::GetMonitorNodeData())
 			{
@@ -470,6 +470,8 @@ namespace IED
 			return;
 		}
 
+		//_DMESSAGE("%X: %u", a_actor->formID, id.get_id());
+
 		for (auto& v : NodeOverrideData::GetExtraMovNodes())
 		{
 			if (npcroot->GetObjectByName(v.bsname_cme) ||
@@ -492,7 +494,7 @@ namespace IED
 					continue;
 				}
 
-				AttachExtraNodes(target, *id.get_id(), v, e);
+				auto result = AttachExtraNodes(target, *id.get_id(), v, e);
 
 				break;
 			}
@@ -529,13 +531,10 @@ namespace IED
 				continue;
 			}
 
-			if (auto result = AttachExtraNodes(target, *id, a_entry, e))
-			{
-				m_cmeNodes.try_emplace(a_entry.name_cme, result.cme, result.cme->m_localTransform);
-				m_movNodes.try_emplace(a_entry.name_mov, result.mov, a_entry.placementID);
+			auto result = AttachExtraNodes(target, *id, a_entry, e);
 
-				_DMESSAGE("made %s", result.cme->m_name.c_str());
-			}
+			m_cmeNodes.try_emplace(a_entry.name_cme, result.cme, result.cme->m_localTransform);
+			m_movNodes.try_emplace(a_entry.name_mov, result.mov, a_entry.placementID);
 
 			break;
 		}

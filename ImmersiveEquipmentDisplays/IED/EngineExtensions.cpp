@@ -74,6 +74,51 @@ namespace IED
 		}
 	}
 
+	template <class T>
+	void EngineExtensions::InstallVtableDetour(
+		const IAL::Address<std::uintptr_t>& a_vtblAddr,
+		std::ptrdiff_t                      a_offset,
+		T*                                  a_hookFunc,
+		T*&                                 a_originalFunc,
+		bool                                a_critical,
+		const char*                         a_desc,
+		std::source_location                a_src)
+	{
+		if (VTable::Detour2(
+				a_vtblAddr.get(),
+				a_offset,
+				a_hookFunc,
+				std::addressof(a_originalFunc)))
+		{
+			Debug(
+				"[%s] Detoured %s @0x%llX:0x%lld",
+				a_src.function_name(),
+				a_desc,
+				a_vtblAddr.get(),
+				a_offset);
+		}
+		else
+		{
+			char buf[128];
+			stl::snprintf(
+				buf,
+				"[%s] Failed to install %s vtbl hook @0x%llX:0x%llX",
+				a_src.function_name(),
+				a_desc,
+				a_vtblAddr.get(),
+				a_offset);
+
+			if (a_critical)
+			{
+				HALT(buf);
+			}
+			else
+			{
+				Error(buf);
+			}
+		}
+	}
+
 	void EngineExtensions::Install_RemoveAllBipedParts()
 	{
 		VALIDATE_MEMORY(
@@ -131,21 +176,13 @@ namespace IED
 
 	void EngineExtensions::Hook_Actor_Resurrect()
 	{
-		if (VTable::Detour2(
-				m_vtblCharacter_a.get(),
-				0xAB,
-				Character_Resurrect_Hook,
-				std::addressof(m_characterResurrect_o)))
-		{
-			Debug(
-				"[%s] Detoured Character::Resurrect @0x%llX:0xAB",
-				__FUNCTION__,
-				m_vtblCharacter_a.get());
-		}
-		else
-		{
-			HALT("Failed to install Character::Resurrect vtbl hook");
-		}
+		InstallVtableDetour(
+			m_vtblCharacter_a,
+			0xAB,
+			Character_Resurrect_Hook,
+			m_characterResurrect_o,
+			true,
+			"Character::Resurrect");
 
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
@@ -166,101 +203,43 @@ namespace IED
 
 	void EngineExtensions::Hook_Actor_3DEvents()
 	{
-		if (VTable::Detour2(
-				m_vtblCharacter_a.get(),
-				0x6B,
-				Character_Release3D_Hook,
-				std::addressof(m_characterRelease3D_o)))
-		{
-			Debug(
-				"[%s] Detoured Character::Release3D @0x%llX:0x6B",
-				__FUNCTION__,
-				m_vtblCharacter_a.get());
-		}
-		else
-		{
-			HALT("Failed to install Character::Release3D vtbl hook");
-		}
+		VALIDATE_MEMORY(
+			m_refrLoad3DClone_a.get(),
+			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }),
+			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }));
 
-		if (VTable::Detour2(
-				m_vtblActor_a.get(),
-				0x6B,
-				Actor_Release3D_Hook,
-				std::addressof(m_actorRelease3D_o)))
-		{
-			Debug(
-				"[%s] Detoured Actor::Release3D @0x%llX:0x6B",
-				__FUNCTION__,
-				m_vtblActor_a.get());
-		}
-		else
-		{
-			HALT("Failed to install Actor::Release3D vtbl hook");
-		}
+		InstallVtableDetour(
+			m_vtblActor_a,
+			0x6B,
+			Actor_Release3D_Hook,
+			m_actorRelease3D_o,
+			true,
+			"Actor::Release3D");
 
-		if (VTable::Detour2(
-				m_vtblPlayerCharacter_a.get(),
-				0x6B,
-				PlayerCharacter_Release3D_Hook,
-				std::addressof(m_pcRelease3D_o)))
-		{
-			Debug(
-				"[%s] Detoured PlayerCharacter::Release3D @0x%llX:0x6B",
-				__FUNCTION__,
-				m_vtblPlayerCharacter_a.get());
-		}
-		else
-		{
-			HALT("Failed to install PlayerCharacter::Release3D vtbl hook");
-		}
+		InstallVtableDetour(
+			m_vtblCharacter_a,
+			0x6B,
+			Character_Release3D_Hook,
+			m_characterRelease3D_o,
+			true,
+			"Character::Release3D");
 
-		if (VTable::Detour2(
-				m_vtblActor_a.get(),
-				0x6A,
-				Actor_Load3D_Hook,
-				std::addressof(m_actorLoad3D_o)))
-		{
-			Debug(
-				"[%s] Detoured Actor::Load3D @0x%llX:0x6A",
-				__FUNCTION__,
-				m_vtblActor_a.get());
-		}
-		else
-		{
-			Error("[%s] Failed to install Actor::Load3D vtbl hook", __FUNCTION__);
-		}
+		InstallVtableDetour(
+			m_vtblPlayerCharacter_a,
+			0x6B,
+			PlayerCharacter_Release3D_Hook,
+			m_pcRelease3D_o,
+			true,
+			"PlayerCharacter::Release3D");
 
-		if (VTable::Detour2(
-				m_vtblCharacter_a.get(),
-				0x6A,
-				Character_Load3D_Hook,
-				std::addressof(m_characterLoad3D_o)))
-		{
-			Debug(
-				"[%s] Detoured Character::Load3D @0x%llX:0x6A",
-				__FUNCTION__,
-				m_vtblCharacter_a.get());
-		}
-		else
-		{
-			Error("[%s] Failed to install Character::Load3D vtbl hook", __FUNCTION__);
-		}
+		ISKSE::GetBranchTrampoline().Write6Call(
+			m_refrLoad3DClone_a.get(),
+			std::uintptr_t(REFR_Load3D_Clone_Hook));
 
-		if (VTable::Detour2(
-				m_vtblPlayerCharacter_a.get(),
-				0x6A,
-				PlayerCharacter_Load3D_Hook,
-				std::addressof(m_pcLoad3D_o)))
-		{
-			Debug(
-				"[%s] Detoured PlayerCharacter::Load3D @0x%llX:0x6A",
-				__FUNCTION__,
-				m_vtblPlayerCharacter_a.get());
-		}
-		else
-		{
-			Error("[%s] Failed to install PlayerCharacter::Load3D vtbl hook", __FUNCTION__);
-		}
+		Debug(
+			"[%s] Installed reference clone 3D hook @0x%llX",
+			__FUNCTION__,
+			m_refrLoad3DClone_a.get());
 	}
 
 	void EngineExtensions::Hook_Armor_Update()
@@ -606,38 +585,59 @@ namespace IED
 		RunRelease3DHook(a_actor, m_Instance.m_characterRelease3D_o);
 	}
 
-	NiAVObject* EngineExtensions::PlayerCharacter_Load3D_Hook(
-		PlayerCharacter* a_player,
-		bool             a_backgroundLoading)
+	NiAVObject* EngineExtensions::REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr)
 	{
-		auto result = m_Instance.m_pcLoad3D_o(a_player, a_backgroundLoading);
+		auto result = a_obj->Clone3D2(a_refr);
 
-		ActorObjectHolder::CreateExtraMovNodes2(a_player, result);
-	
-		return result;
-	}
-
-	NiAVObject* EngineExtensions::Actor_Load3D_Hook(
-		Actor* a_actor,
-		bool   a_backgroundLoading)
-	{
-		auto result = m_Instance.m_actorLoad3D_o(a_actor, a_backgroundLoading);
-
-		ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
+		if (result)
+		{
+			if (auto actor = a_refr->As<Actor>())
+			{
+				ActorObjectHolder::CreateExtraMovNodes2(actor, result);
+			}
+		}
 
 		return result;
 	}
 
-	NiAVObject* EngineExtensions::Character_Load3D_Hook(
-		Character* a_actor,
-		bool       a_backgroundLoading)
+	/*void EngineExtensions::Actor_Load3D_LoadSkeleton_Hook(TESObjectREFR* a_actor, NiAVObject* a_3d)
 	{
-		auto result = m_Instance.m_characterLoad3D_o(a_actor, a_backgroundLoading);
+		
+	}*/
 
-		ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
+	//NiAVObject* EngineExtensions::Actor_Load3D_LoadSkeleton_Hook(Actor* a_actor, bool a_backgroundLoading)
+	//{
+	//	/*if (auto& bip = a_actor->GetBiped1(false))
+	//	{
+	//		for (auto& e : bip->objects)
+	//		{
+	//			if (e.item && e.object && e.object->m_parent)
+	//			{
+	//				_DMESSAGE("%X: %s", e.item->formID, e.object->m_parent->m_name.c_str());
+	//			}
+	//			else
+	//			{
+	//				_DMESSAGE("nn %X: %s %s ", e.item ? e.item->formID : 0, e.object  ? e.object->m_name.c_str() : 0, e.object && e.object->m_parent ? e.object->m_parent->m_name.c_str() :
+	//                                                                                                                                                                                    0);
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		_DMESSAGE("no bip");
+	//	}*/
 
-		return result;
-	}
+	//	if (a_actor == *g_thePlayer)
+	//	{
+	//		__debugbreak();
+	//	}
+
+	//	auto result = m_Instance.m_actorLoad3DLoadSkeleton_o(a_actor, a_backgroundLoading);
+
+	//	ActorObjectHolder::CreateExtraMovNodes2(a_actor, result);
+
+	//	return result;
+	//}
 
 	void EngineExtensions::FailsafeCleanupAndEval(
 		Actor*                     a_actor,
