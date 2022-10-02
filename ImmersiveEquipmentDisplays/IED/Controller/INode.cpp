@@ -160,16 +160,6 @@ namespace IED
 		return tmp;
 	}
 
-	void INode::UpdateDownwardPass(NiAVObject* a_object)
-	{
-		NiAVObject::ControllerUpdateContext ctx{
-			//static_cast<float>(*EngineExtensions::m_unkglob0),
-			0,
-			0
-		};
-		a_object->UpdateDownwardPass(ctx, 0);
-	}
-
 	bool INode::CreateTargetNode(
 		const Data::configBaseValues_t& a_entry,
 		const Data::NodeDescriptor&     a_node,

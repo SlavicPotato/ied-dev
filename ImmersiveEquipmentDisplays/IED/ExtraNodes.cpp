@@ -2,37 +2,40 @@
 
 #include "ExtraNodes.h"
 
-#include "Controller/INode.h"
-
 #include "SkeletonID.h"
 #include "StringHolder.h"
+
+#include <ext/Node.h>
 
 namespace IED
 {
 	namespace ExtraNodes
 	{
+		using namespace ::Util::Node;
+
 		attachExtraNodesResult_t AttachExtraNodes(
 			NiNode*                                       a_target,
 			std::int32_t                                  a_skeletonID,
 			const NodeOverrideData::extraNodeEntry_t&     a_entry,
 			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry)
 		{
-			auto cme = INode::CreateAttachmentNode(a_entry.bsname_cme);
-			a_target->AttachChild(cme, true);
+			auto cme = CreateAttachmentNode(a_entry.bsname_cme);
 
-			auto mov = INode::CreateAttachmentNode(a_entry.bsname_mov);
+			a_target->AttachChild(cme, false);
+
+			auto mov = CreateAttachmentNode(a_entry.bsname_mov);
 
 			mov->m_localTransform = a_skelEntry.transform_mov;
 
 			cme->AttachChild(mov, true);
 
-			auto node = INode::CreateAttachmentNode(a_entry.bsname_node);
+			auto node = CreateAttachmentNode(a_entry.bsname_node);
 
 			node->m_localTransform = a_skelEntry.transform_node;
 
 			mov->AttachChild(node, true);
 
-			INode::UpdateDownwardPass(cme);
+			UpdateDownwardPass(cme);
 
 			return { mov, cme };
 		}

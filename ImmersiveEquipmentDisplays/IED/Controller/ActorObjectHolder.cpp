@@ -15,6 +15,7 @@
 namespace IED
 {
 	using namespace ExtraNodes;
+	using namespace ::Util::Node;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
@@ -73,8 +74,6 @@ namespace IED
 		{
 			CreateExtraCopyNode(a_actor, a_npcroot, e);
 		}
-
-		using namespace ::Util::Node;
 
 		if (a_nodeOverrideEnabled &&
 		    (a_nodeOverrideEnabledPlayer ||
@@ -170,7 +169,7 @@ namespace IED
 				}
 			}
 
-			if (auto parent = ::Util::Node::FindNode(a_npcroot, e.parent))
+			if (auto parent =  FindNode(a_npcroot, e.parent))
 			{
 				auto r = m_nodeMonitorEntries.try_emplace(i, parent, e);
 				r.first->second.Update();
@@ -455,7 +454,7 @@ namespace IED
 				return;
 			}
 
-			auto target = ::Util::Node::FindNode(a_npcroot, v.name_parent);
+			auto target = FindNode(a_npcroot, v.name_parent);
 			if (!target)
 			{
 				return;
@@ -483,7 +482,7 @@ namespace IED
 		NiNode*                                       a_npcroot,
 		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const
 	{
-		auto source = ::Util::Node::FindNode(a_npcroot, a_entry.bssrc);
+		auto source = FindNode(a_npcroot, a_entry.bssrc);
 		if (!source)
 		{
 			return;
@@ -495,12 +494,12 @@ namespace IED
 			return;
 		}
 
-		if (::Util::Node::FindChildObject(parent, a_entry.dst))
+		if (FindChildObject(parent, a_entry.dst))
 		{
 			return;
 		}
 
-		auto node = INode::CreateAttachmentNode(a_entry.dst);
+		auto node = CreateAttachmentNode(a_entry.dst);
 
 		if (auto& cache = GetSkeletonCache())
 		{
@@ -517,7 +516,7 @@ namespace IED
 
 		parent->AttachChild(node, true);
 
-		INode::UpdateDownwardPass(node);
+		UpdateDownwardPass(node);
 	}
 
 	void ActorObjectHolder::ApplyXP32NodeTransformOverrides(NiNode* a_root) const
@@ -549,7 +548,7 @@ namespace IED
 
 		for (auto& e : NodeOverrideData::GetTransformOverrideData())
 		{
-			if (auto node = ::Util::Node::FindNode(a_root, e.name))
+			if (auto node = FindNode(a_root, e.name))
 			{
 				node->m_localTransform.rot = e.rot;
 			}

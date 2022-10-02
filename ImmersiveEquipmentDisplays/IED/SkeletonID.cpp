@@ -4,6 +4,8 @@
 
 #include "IED/NodeOverrideData.h"
 
+#include <ext/Node.h>
+
 namespace IED
 {
 	SkeletonID::SkeletonID(NiNode* a_root)

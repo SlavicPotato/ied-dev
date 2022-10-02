@@ -168,6 +168,7 @@ namespace IED
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
+		inline static const auto ShrinkToSize         = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -205,7 +206,6 @@ namespace IED
 		inline static const auto fUnk5EBD90                = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0                = IAL::Address<unk5C39F0_t>(35947, 36922);
 		inline static const auto AttachAddonNodes          = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto ShrinkToSize              = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);

@@ -9,6 +9,8 @@
 
 namespace IED
 {
+	using namespace ::Util::Node;
+
 	bool IObjectManager::RemoveObject(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,

@@ -45,12 +45,6 @@ namespace IED
 
 	public:
 		inline static constexpr std::size_t NODE_NAME_BUFFER_SIZE = MAX_PATH;
-		inline static constexpr auto        ATTACHMENT_NODE_FLAGS = NiAVObject::kFlag_SelectiveUpdate |
-		                                                     NiAVObject::kFlag_SelectiveUpdateTransforms |
-		                                                     NiAVObject::kFlag_kSelectiveUpdateController |
-		                                                     NiAVObject::kFlag_kNoAnimSyncS;
-
-		static void UpdateDownwardPass(NiAVObject* a_object);
 
 		static bool CreateTargetNode(
 			const Data::configBaseValues_t& a_entry,
@@ -86,18 +80,6 @@ namespace IED
 		static void GetAmmoNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
-
-		template <class Ts>
-		static constexpr NiNode* CreateAttachmentNode(
-			Ts&& a_nodeName)
-		{
-			auto node = NiNode::Create(1);
-
-			node->m_name  = std::forward<Ts>(a_nodeName);
-			node->m_flags = ATTACHMENT_NODE_FLAGS;
-
-			return node;
-		}
 
 		static void UpdateNodeIfGamePaused(NiNode* a_root);
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "Controller.h"
+
 #include "IED/ConditionsCommon.h"
 #include "IED/ConfigNodeOverride.h"
 #include "IED/EngineExtensions.h"
@@ -9,8 +10,12 @@
 #include "INodeOverride.h"
 #include "ObjectManagerData.h"
 
+#include <ext/Node.h>
+
 namespace IED
 {
+	using namespace ::Util::Node;
+
 	static bool match_form_slot(
 		const Data::configNodeOverrideCondition_t& a_data,
 		const INodeOverride::nodeOverrideParams_t& a_params)
@@ -831,8 +836,7 @@ namespace IED
 			a_entry.current = xfrm;
 #endif
 
-			NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-			a_entry.node->UpdateDownwardPass(ctx, 0);
+			UpdateDownwardPass(a_entry.node);
 		}
 	}
 
@@ -980,7 +984,7 @@ namespace IED
 							{
 								target->AttachChild(node, true);
 
-								INode::UpdateDownwardPass(node);
+								UpdateDownwardPass(node);
 							}
 						});
 				}
@@ -988,7 +992,7 @@ namespace IED
 				{
 					a_target->AttachChild(a_entry.node, true);
 
-					INode::UpdateDownwardPass(a_entry.node);
+					UpdateDownwardPass(a_entry.node);
 				}
 			}
 
