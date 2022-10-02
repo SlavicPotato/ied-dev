@@ -2,16 +2,18 @@
 
 #include "ConvertNodes.h"
 
-#include "Controller/INode.h"
-
 #include "NodeOverrideData.h"
 #include "SkeletonID.h"
 #include "StringHolder.h"
+
+#include <ext/Node.h>
 
 namespace IED
 {
 	namespace ConvertNodes
 	{
+		using namespace ::Util::Node;
+
 		void ConvertVanillaSheathsToXP32(NiAVObject* a_root)
 		{
 			if (!a_root)
@@ -60,12 +62,6 @@ namespace IED
 
 			for (auto& e : sh->GetSheathNodes())
 			{
-				if (npcroot->GetObjectByName(e.cme) ||
-				    npcroot->GetObjectByName(e.mov))
-				{
-					continue;
-				}
-
 				auto target = ::Util::Node::FindNode(npcroot, e.name);
 				if (!target)
 				{
@@ -78,17 +74,29 @@ namespace IED
 					continue;
 				}
 
-				auto cme = INode::CreateAttachmentNode(e.cme);
+				if (npcroot->GetObjectByName(e.cme) ||
+				    npcroot->GetObjectByName(e.mov))
+				{
+					continue;
+				}
 
-				parent->AttachChild(cme, true);
+				auto cme = CreateAttachmentNode(e.cme);
 
-				auto mov = INode::CreateAttachmentNode(e.mov);
+				NiPointer<NiAVObject> replacedObject;
+
+				parent->SetAt1(target->parentIndex, cme, replacedObject);
+
+				ASSERT(
+					target == replacedObject &&
+					target->m_parent == nullptr);
+
+				auto mov = CreateAttachmentNode(e.mov);
 
 				cme->AttachChild(mov, true);
 
-				mov->AttachChild(target, true);
+				mov->AttachChild(replacedObject, true);
 
-				INode::UpdateDownwardPass(cme);
+				UpdateDownwardPass(cme);
 			}
 		}
 	}
