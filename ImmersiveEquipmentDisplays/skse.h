@@ -9,7 +9,7 @@ class ISKSE :
 			SKSEInterfaceFlags::kSerialization |
 			SKSEInterfaceFlags::kTrampoline |
 			SKSEInterfaceFlags::kPapyrus,
-		256,
+		304,
 		384>,
 	public ISKSESerialization,
 	::Events::EventSink<LoggerMessageEvent>

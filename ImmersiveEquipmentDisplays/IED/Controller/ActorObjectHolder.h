@@ -447,7 +447,6 @@ namespace IED
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
 
 		static void CreateExtraMovNodes2(
-			Actor*      a_actor,
 			NiAVObject* a_root);
 
 	private:

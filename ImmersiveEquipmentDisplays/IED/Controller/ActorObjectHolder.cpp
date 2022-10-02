@@ -437,7 +437,6 @@ namespace IED
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes2(
-		Actor*      a_actor,
 		NiAVObject* a_root)
 	{
 		if (!a_root)
@@ -494,7 +493,7 @@ namespace IED
 					continue;
 				}
 
-				auto result = AttachExtraNodes(target, *id.get_id(), v, e);
+				AttachExtraNodes(target, *id.get_id(), v, e);
 
 				break;
 			}

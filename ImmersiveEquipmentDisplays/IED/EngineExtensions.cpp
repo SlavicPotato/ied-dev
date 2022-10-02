@@ -240,6 +240,22 @@ namespace IED
 			"[%s] Installed reference clone 3D hook @0x%llX",
 			__FUNCTION__,
 			m_refrLoad3DClone_a.get());
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				m_playerLoad3DSkel_a.get(),
+				std::uintptr_t(PlayerCharacter_Load3D_LoadSkeleton_Hook),
+				m_playerLoad3DSkel_o))
+		{
+			Debug(
+				"[%s] Installed player load 3D hook @0x%llX",
+				__FUNCTION__,
+				m_playerLoad3DSkel_a.get());
+		}
+		else
+		{
+			HALT("Failed to install player load 3D hook");
+		}
 	}
 
 	void EngineExtensions::Hook_Armor_Update()
@@ -585,16 +601,30 @@ namespace IED
 		RunRelease3DHook(a_actor, m_Instance.m_characterRelease3D_o);
 	}
 
-	NiAVObject* EngineExtensions::REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr)
+	NiAVObject* EngineExtensions::REFR_Load3D_Clone_Hook(
+		TESBoundObject* a_obj,
+		TESObjectREFR*  a_refr)
 	{
 		auto result = a_obj->Clone3D2(a_refr);
 
-		if (result)
+		if (a_refr->IsActor() && result)
 		{
-			if (auto actor = a_refr->As<Actor>())
-			{
-				ActorObjectHolder::CreateExtraMovNodes2(actor, result);
-			}
+			ActorObjectHolder::CreateExtraMovNodes2(result);
+		}
+
+		return result;
+	}
+
+	std::uint32_t EngineExtensions::PlayerCharacter_Load3D_LoadSkeleton_Hook(
+		const char*            a_path,
+		NiPointer<NiAVObject>& a_3D,
+		std::uint32_t&         a_unk3)
+	{
+		auto result = m_Instance.m_playerLoad3DSkel_o(a_path, a_3D, a_unk3);
+
+		if (a_3D)
+		{
+			ActorObjectHolder::CreateExtraMovNodes2(a_3D);
 		}
 
 		return result;

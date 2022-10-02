@@ -254,6 +254,7 @@ namespace IED
 		static void                              Actor_Release3D_Hook(Actor* a_actor);
 		static void                              Character_Release3D_Hook(Character* a_actor);
 		static NiAVObject*                       REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr);
+		static std::uint32_t                     PlayerCharacter_Load3D_LoadSkeleton_Hook(const char* a_path, NiPointer<NiAVObject>& a_out3D, std::uint32_t& a_unk3);
 		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
 		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
 		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
@@ -271,41 +272,43 @@ namespace IED
 		template <class T>
 		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*));
 
-		inline static const auto m_vtblCharacter_a           = IAL::Address<std::uintptr_t>(261397, 207886);
-		inline static const auto m_vtblActor_a               = IAL::Address<std::uintptr_t>(260538, 207511);
-		inline static const auto m_vtblPlayerCharacter_a     = IAL::Address<std::uintptr_t>(261916, 208040);
-		inline static const auto m_refrLoad3DClone_a = IAL::Address<std::uintptr_t>(19300, 19727, 0x1D2, 0x1D1);
-		inline static const auto m_createWeaponNodes_a       = IAL::Address<std::uintptr_t>(19342, 19769);
-		inline static const auto m_removeAllBipedParts_a     = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
-		inline static const auto m_reanimActorStateUpdate_a  = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
-		inline static const auto m_armorUpdate_a             = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
-		inline static const auto m_garbageCollectorREFR_a    = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
-		inline static const auto m_weapAdj_a                 = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
-		inline static const auto m_adjustSkip_a              = IAL::Address<std::uintptr_t>(62933, 63856);
-		inline static const auto m_toggleFav1_a              = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
-		inline static const auto m_processEffectShaders_a    = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
-		inline static const auto m_bipedAttachHavok_a        = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
-		inline static const auto m_hkaLookupSkeletonBones_a  = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
-		inline static const auto m_animUpdateDispatcher_a    = IAL::Address<std::uintptr_t>(38098, 39054);
-		inline static const auto m_animUpdateRef_a           = IAL::Address<std::uintptr_t>(40436, 41453);
-		inline static const auto m_animUpdatePlayer_a        = IAL::Address<std::uintptr_t>(39445, 40521);
+		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
+		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
+		inline static const auto m_vtblPlayerCharacter_a    = IAL::Address<std::uintptr_t>(261916, 208040);
+		inline static const auto m_refrLoad3DClone_a        = IAL::Address<std::uintptr_t>(19300, 19727, 0x1D2, 0x1D1);
+		inline static const auto m_playerLoad3DSkel_a       = IAL::Address<std::uintptr_t>(39386, 40458, 0xEE, 0xDD);
+		inline static const auto m_createWeaponNodes_a      = IAL::Address<std::uintptr_t>(19342, 19769);
+		inline static const auto m_removeAllBipedParts_a    = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
+		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
+		inline static const auto m_armorUpdate_a            = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
+		inline static const auto m_garbageCollectorREFR_a   = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
+		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
+		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
+		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
+		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
+		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
+		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
+		inline static const auto m_animUpdateDispatcher_a   = IAL::Address<std::uintptr_t>(38098, 39054);
+		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(40436, 41453);
+		inline static const auto m_animUpdatePlayer_a       = IAL::Address<std::uintptr_t>(39445, 40521);
 
 		//inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
 
-		decltype(&Character_Resurrect_Hook)       m_characterResurrect_o{ nullptr };
-		decltype(&PlayerCharacter_Release3D_Hook) m_pcRelease3D_o{ nullptr };
-		decltype(&Character_Release3D_Hook)       m_characterRelease3D_o{ nullptr };
-		decltype(&Actor_Release3D_Hook)           m_actorRelease3D_o{ nullptr };
-		decltype(&ReanimateActorStateUpdate_Hook) m_ReanimActorStateUpd_o{ nullptr };
-		decltype(&ArmorUpdate_Hook)               m_ArmorChange_o{ nullptr };
-		decltype(&GarbageCollectorReference_Hook) m_garbageCollectorReference_o{ nullptr };
-		decltype(&CreateWeaponNodes_Hook)         m_createWeaponNodes_o{ nullptr };
-		decltype(&RemoveAllBipedParts_Hook)       m_removeAllBipedParts_o{ nullptr };
-		decltype(&ToggleFavGetExtraList_Hook)     m_toggleFavGetExtraList_o{ nullptr };
-		decltype(&ProcessEffectShaders_Hook)      m_processEffectShaders_o{ nullptr };
-		decltype(&PrepareAnimUpdateLists_Hook)    m_prepareAnimUpdateLists_o{ nullptr };
-		decltype(&ClearAnimUpdateLists_Hook)      m_clearAnimUpdateLists_o{ nullptr };
-		hkaLookupSkeletonNode_t                   m_hkaLookupSkeletonNode_o{ nullptr };
+		decltype(&Character_Resurrect_Hook)                 m_characterResurrect_o{ nullptr };
+		decltype(&PlayerCharacter_Release3D_Hook)           m_pcRelease3D_o{ nullptr };
+		decltype(&Character_Release3D_Hook)                 m_characterRelease3D_o{ nullptr };
+		decltype(&Actor_Release3D_Hook)                     m_actorRelease3D_o{ nullptr };
+		decltype(&PlayerCharacter_Load3D_LoadSkeleton_Hook) m_playerLoad3DSkel_o{ nullptr };
+		decltype(&ReanimateActorStateUpdate_Hook)           m_ReanimActorStateUpd_o{ nullptr };
+		decltype(&ArmorUpdate_Hook)                         m_ArmorChange_o{ nullptr };
+		decltype(&GarbageCollectorReference_Hook)           m_garbageCollectorReference_o{ nullptr };
+		decltype(&CreateWeaponNodes_Hook)                   m_createWeaponNodes_o{ nullptr };
+		decltype(&RemoveAllBipedParts_Hook)                 m_removeAllBipedParts_o{ nullptr };
+		decltype(&ToggleFavGetExtraList_Hook)               m_toggleFavGetExtraList_o{ nullptr };
+		decltype(&ProcessEffectShaders_Hook)                m_processEffectShaders_o{ nullptr };
+		decltype(&PrepareAnimUpdateLists_Hook)              m_prepareAnimUpdateLists_o{ nullptr };
+		decltype(&ClearAnimUpdateLists_Hook)                m_clearAnimUpdateLists_o{ nullptr };
+		hkaLookupSkeletonNode_t                             m_hkaLookupSkeletonNode_o{ nullptr };
 
 		struct
 		{
