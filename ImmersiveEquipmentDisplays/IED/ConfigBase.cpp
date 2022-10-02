@@ -40,7 +40,7 @@ namespace IED
 						{
 							return result;
 						}
-						
+
 						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
 						{
 							break;
@@ -88,7 +88,7 @@ namespace IED
 						{
 							return result;
 						}
-						
+
 						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
 						{
 							break;
@@ -136,7 +136,7 @@ namespace IED
 						{
 							return result;
 						}
-						
+
 						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
 						{
 							break;
@@ -662,7 +662,11 @@ namespace IED
 					a_match,
 					a_params.objects.GetCachedData());
 
-				break;
+			case EquipmentOverrideConditionType::Skeleton:
+
+				return Conditions::match_skeleton(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -965,7 +969,11 @@ namespace IED
 					a_match,
 					a_params.objects.GetCachedData());
 
-				break;
+			case EquipmentOverrideConditionType::Skeleton:
+
+				return Conditions::match_skeleton(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1357,7 +1365,11 @@ namespace IED
 					a_match,
 					a_params.objects.GetCachedData());
 
-				break;
+			case EquipmentOverrideConditionType::Skeleton:
+
+				return Conditions::match_skeleton(
+					a_params,
+					a_match);
 			}
 
 			return false;

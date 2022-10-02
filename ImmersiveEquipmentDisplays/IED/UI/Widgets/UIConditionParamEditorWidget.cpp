@@ -304,7 +304,7 @@ namespace IED
 						ImGuiInputTextFlags_EnterReturnsTrue);
 				}
 			}
-
+			
 			if (const auto& e = get(ConditionParamItem::Percent); e.p1)
 			{
 				ConditionParamItemExtraArgs args;

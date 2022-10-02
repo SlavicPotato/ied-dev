@@ -373,6 +373,11 @@ namespace IED
 		{
 			return m_skeletonCache;
 		}
+		
+		[[nodiscard]] inline constexpr auto& GetSkeletonID() const noexcept
+		{
+			return m_skeletonID;
+		}
 
 		[[nodiscard]] inline constexpr auto& GetAnimState() const noexcept
 		{

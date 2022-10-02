@@ -107,7 +107,8 @@ namespace IED
 			Global     = 15,
 			Mounting   = 16,
 			Mounted    = 17,
-			Idle       = 18
+			Idle       = 18,
+			Skeleton   = 19
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -217,6 +218,7 @@ namespace IED
 				case NodeOverrideConditionType::Mounting:
 				case NodeOverrideConditionType::Mounted:
 				case NodeOverrideConditionType::Idle:
+				case NodeOverrideConditionType::Skeleton:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{
@@ -306,6 +308,7 @@ namespace IED
 				std::uint32_t ui32b{ 0 };
 				TimeOfDay     timeOfDay;
 				std::uint32_t uid;
+				std::int32_t  skeletonID;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 			};
@@ -396,11 +399,11 @@ namespace IED
 				DataVersion2 = 2,
 			};
 
-			stl::flag<NodeOverrideOffsetFlags>            offsetFlags{ NodeOverrideOffsetFlags::kContinue };
-			NiPoint3                                      adjustScale{ 0.0f, 0.0f, 0.0f };
-			configNodeOverrideConditionList_t             conditions;
-			std::string                                   description;
-			configNodeOverrideOffsetList_t                group;
+			stl::flag<NodeOverrideOffsetFlags> offsetFlags{ NodeOverrideOffsetFlags::kContinue };
+			NiPoint3                           adjustScale{ 0.0f, 0.0f, 0.0f };
+			configNodeOverrideConditionList_t  conditions;
+			std::string                        description;
+			configNodeOverrideOffsetList_t     group;
 
 			constexpr void clamp()
 			{

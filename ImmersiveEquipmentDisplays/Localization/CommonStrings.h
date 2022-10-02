@@ -228,5 +228,6 @@ namespace IED
 		Dead            = 299,
 		Deleted         = 300,
 		Persistent      = 301,
+		Skeleton        = 302,
 	};
 }

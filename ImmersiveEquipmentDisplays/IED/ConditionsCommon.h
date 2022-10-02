@@ -10,6 +10,8 @@
 
 namespace IED
 {
+	class SkeletonID;
+
 	namespace Conditions
 	{
 		template <class Tm, class Tf>
@@ -709,7 +711,7 @@ namespace IED
 
 		template <class Tm, class Tf>
 		constexpr bool match_mounted_by(
-			CommonParams& a_params,
+			CommonParams&          a_params,
 			const Tm&              a_match,
 			const CachedActorData& a_cached)
 		{
@@ -777,11 +779,20 @@ namespace IED
 			return a_match.flags.test(Tf::kNegateMatch2) !=
 			       (a_match.form.get_id() == cfid);
 		}
+		
+		template <class Tm>
+		constexpr bool match_skeleton(
+			CommonParams&          a_params,
+			const Tm&              a_match) noexcept
+		{
+			return get_skeleton_id(a_params).get_id() == a_match.skeletonID;
+		}
 
-		bool is_in_first_person(CommonParams& a_params) noexcept;
-		bool is_female(CommonParams& a_params) noexcept;
-		bool has_humanoid_skeleton(CommonParams& a_params) noexcept;
-		bool check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
+		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept;
+		bool              is_in_first_person(CommonParams& a_params) noexcept;
+		bool              is_female(CommonParams& a_params) noexcept;
+		bool              has_humanoid_skeleton(CommonParams& a_params) noexcept;
+		bool              check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
 
 		bool match_random_percent(
 			CommonParams&   a_params,

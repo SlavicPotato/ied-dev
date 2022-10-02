@@ -5,6 +5,8 @@
 #include "Controller/Controller.h"
 #include "Controller/ObjectManagerData.h"
 
+#include "SkeletonID.h"
+
 namespace IED
 {
 	namespace Conditions
@@ -79,6 +81,11 @@ namespace IED
 			}
 
 			return false;
+		}
+
+		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept
+		{
+			return a_params.objects.GetSkeletonID();
 		}
 
 		bool is_in_first_person(CommonParams& a_params) noexcept

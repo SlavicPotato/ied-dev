@@ -2777,6 +2777,20 @@ namespace IED
 						result = NodeOverrideCommonAction::Insert;
 					}
 
+					if (ImGui::MenuItem(LS(CommonStrings::Skeleton, "I")))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Skeleton);
+
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -3063,6 +3077,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Package:
 						case Data::NodeOverrideConditionType::Weather:
 						case Data::NodeOverrideConditionType::Idle:
+						case Data::NodeOverrideConditionType::Skeleton:
 
 							it = a_entry.emplace(
 								it,
@@ -3420,6 +3435,20 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Idle);
+
+								break;
+
+							case Data::NodeOverrideConditionType::Skeleton:
+								{
+									m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+										e);
+
+									auto& buffer = m_condParamEditor.GetDescBuffer();
+									stl::snprintf(buffer, "%s: %d", LS(CommonStrings::ID), e.skeletonID);
+
+									vdesc = buffer;
+									tdesc = LS(CommonStrings::Skeleton);
+								}
 
 								break;
 
@@ -4010,6 +4039,12 @@ namespace IED
 						result.matchType = Data::NodeOverrideConditionType::Idle;
 					}
 
+					if (LCG_MI(CommonStrings::Skeleton, "I"))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Skeleton;
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -4272,6 +4307,20 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Info));
 				ImGui::SameLine();
 				DrawTip(UITip::IdleCondition);
+
+				break;
+
+			case Data::NodeOverrideConditionType::Skeleton:
+
+				result |= ImGui::InputScalar(
+					LS(CommonStrings::ID, "1"),
+					ImGuiDataType_S32,
+					std::addressof(match->skeletonID),
+					nullptr,
+					nullptr,
+					"%d",
+					ImGuiInputTextFlags_EnterReturnsTrue |
+						ImGuiInputTextFlags_CharsDecimal);
 
 				break;
 			}

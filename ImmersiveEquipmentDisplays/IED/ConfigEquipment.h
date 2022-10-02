@@ -83,6 +83,7 @@ namespace IED
 			Mounted    = 17,
 			Presence   = 18,
 			Idle       = 19,
+			Skeleton   = 20,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -217,6 +218,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Mounted:
 				case EquipmentOverrideConditionType::Presence:
 				case EquipmentOverrideConditionType::Idle:
+				case EquipmentOverrideConditionType::Skeleton:
 
 					switch (a_matchType)
 					{
@@ -281,6 +283,7 @@ namespace IED
 				std::uint32_t count;
 				TimeOfDay     timeOfDay;
 				std::uint32_t uid;
+				std::int32_t  skeletonID;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 			};

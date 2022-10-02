@@ -2007,6 +2007,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Mounted:
 					case Data::EquipmentOverrideConditionType::Presence:
 					case Data::EquipmentOverrideConditionType::Idle:
+					case Data::EquipmentOverrideConditionType::Skeleton:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -2241,6 +2242,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Mounted:
 						case Data::EquipmentOverrideConditionType::Presence:
 						case Data::EquipmentOverrideConditionType::Idle:
+						case Data::EquipmentOverrideConditionType::Skeleton:
 
 							it = a_entry.emplace(
 								it,
@@ -2637,6 +2639,20 @@ namespace IED
 								tdesc = LS(CommonStrings::Idle);
 
 								break;
+
+							case Data::EquipmentOverrideConditionType::Skeleton:
+								{
+									m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+										e);
+
+									auto& buffer = m_condParamEditor.GetDescBuffer();
+									stl::snprintf(buffer, "%s: %d", LS(CommonStrings::ID), e.skeletonID);
+
+									vdesc = buffer;
+									tdesc = LS(CommonStrings::Skeleton);
+								}
+
+								break;
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2967,6 +2983,12 @@ namespace IED
 					{
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Idle;
+					}
+
+					if (LCG_MI(CommonStrings::Skeleton, "K"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Skeleton;
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -3497,13 +3519,29 @@ namespace IED
 					ImGui::SameLine();
 					DrawTip(UITip::Presence);
 				}
+
 				break;
+
 			case Data::EquipmentOverrideConditionType::Idle:
 
 				ImGui::Spacing();
 				ImGui::Text("%s:", LS(CommonStrings::Info));
 				ImGui::SameLine();
 				DrawTip(UITip::IdleCondition);
+
+				break;
+
+			case Data::EquipmentOverrideConditionType::Skeleton:
+
+				result |= ImGui::InputScalar(
+					LS(CommonStrings::ID, "1"),
+					ImGuiDataType_S32,
+					std::addressof(match->skeletonID),
+					nullptr,
+					nullptr,
+					"%d",
+					ImGuiInputTextFlags_EnterReturnsTrue |
+						ImGuiInputTextFlags_CharsDecimal);
 
 				break;
 			}

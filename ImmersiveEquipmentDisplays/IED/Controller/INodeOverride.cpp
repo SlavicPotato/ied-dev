@@ -623,6 +623,12 @@ namespace IED
 				a_params,
 				a_data,
 				a_params.objects.GetCachedData());
+
+		case Data::NodeOverrideConditionType::Skeleton:
+
+			return Conditions::match_skeleton(
+				a_params,
+				a_data);
 		}
 
 		return false;
