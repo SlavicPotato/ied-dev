@@ -217,7 +217,7 @@ namespace IED
 		{
 			if (auto profile = GetCurrentProfile())
 			{
-				profile->Data().data.erase(a_params.name);
+				profile->Data().transformData.erase(a_params.name);
 			}
 		}
 
@@ -237,7 +237,7 @@ namespace IED
 		{
 			if (auto profile = GetCurrentProfile())
 			{
-				profile->Data().data.clear();
+				profile->Data().transformData.clear();
 			}
 		}
 

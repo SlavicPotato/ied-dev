@@ -386,9 +386,19 @@ namespace IED
 			return m_config;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetConfigStore() const noexcept
+		[[nodiscard]] inline constexpr auto& GetConfigStore() const noexcept
 		{
 			return m_config;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetSettings() noexcept
+		{
+			return m_config.settings;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetSettings() const noexcept
+		{
+			return m_config.settings;
 		}
 
 		[[nodiscard]] inline constexpr auto& GetInputHandlers() noexcept
@@ -396,7 +406,7 @@ namespace IED
 			return m_inputHandlers;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
+		[[nodiscard]] inline constexpr auto& GetLastException() const noexcept
 		{
 			return m_lastException;
 		}
@@ -405,7 +415,7 @@ namespace IED
 			stl::flag<ExportFlags>                         a_exportFlags,
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
-		void SaveSettings();
+		void SaveSettings(bool a_defer, bool a_dirtyOnly, bool a_debug = false);
 
 		[[nodiscard]] inline constexpr const auto& GetObjects() const noexcept
 		{
@@ -453,8 +463,6 @@ namespace IED
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 		void ProcessEffectShaders();
-
-		void QueueSettingsSave(bool a_dirtyOnly = false);
 
 	private:
 		FN_NAMEPROC("Controller");

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ConfigSkeletonMatch.h"
 #include "ConfigTransform.h"
 
 namespace IED
@@ -9,7 +10,7 @@ namespace IED
 
 		struct configExtraNodeEntrySkel_t
 		{
-			stl::vector<std::int32_t> ids;
+			configSkeletonMatch_t     match;
 			configTransform_t         transform_mov;
 			configTransform_t         transform_node;
 		};

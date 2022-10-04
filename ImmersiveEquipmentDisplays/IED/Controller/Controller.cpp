@@ -4730,7 +4730,7 @@ namespace IED
 			break;
 		case SKSEMessagingInterface::kMessage_SaveGame:
 
-			SaveSettings();
+			SaveSettings(false, true);
 
 			break;
 		}
@@ -5122,10 +5122,45 @@ namespace IED
 		}
 	}
 
-	void Controller::SaveSettings()
+	void Controller::SaveSettings(
+		bool a_defer,
+		bool a_dirtyOnly,
+		bool a_debug)
 	{
-		stl::scoped_lock lock(m_lock);
-		m_config.settings.SaveIfDirty();
+		auto func = [this,
+		             a_dirtyOnly,
+		             a_debug,
+		             sl = std::source_location::current()]() {
+			stl::scoped_lock lock(m_lock);
+
+			PerfTimer pt;
+
+			if (a_debug)
+			{
+				pt.Start();
+			}
+
+			bool result = a_dirtyOnly ?
+			                  GetSettings().SaveIfDirty() :
+                              GetSettings().Save();
+
+			if (a_debug && result)
+			{
+				Debug(
+					"%s: %fs",
+					sl.function_name(),
+					pt.Stop());
+			}
+		};
+
+		if (a_defer)
+		{
+			ITaskPool::AddTask(std::move(func));
+		}
+		else
+		{
+			func();
+		}
 	}
 
 	void Controller::OnUIOpen()
@@ -5286,29 +5321,4 @@ namespace IED
 		ProcessEffects(m_objects);
 	}
 
-	void Controller::QueueSettingsSave(bool a_dirtyOnly)
-	{
-		ITaskPool::AddTask([this,
-		                    a_dirtyOnly,
-		                    sl = std::source_location::current()]() {
-			stl::scoped_lock lock(m_lock);
-
-			PerfTimer pt;
-			pt.Start();
-
-			auto& settings = GetConfigStore().settings;
-
-			bool result = a_dirtyOnly ?
-			                  settings.SaveIfDirty() :
-                              settings.Save();
-
-			if (result)
-			{
-				Debug(
-					"%s: %fs",
-					sl.function_name(),
-					pt.Stop());
-			}
-		});
-	}
 }

@@ -236,7 +236,7 @@ namespace IED
 			auto it = data.find(a_handle);
 			if (it != data.end())
 			{
-				it->second.data.clear();
+				it->second.transformData.clear();
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 

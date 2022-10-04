@@ -75,6 +75,18 @@ namespace IED
 				const char* a_label,
 				const char* a_url);
 
+			template <class... Args>
+			void TextCopyable(char* a_fmt, Args... a_args)
+			{
+				ImGui::Text(a_fmt, a_args...);
+				if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				{
+					std::unique_ptr<char[]> buffer(new char[4096]);
+					::_snprintf_s(buffer.get(), 4096, _TRUNCATE, a_fmt, a_args...);
+					ImGui::SetClipboardText(buffer.get());
+				}
+			}
+
 			template <
 				class T,
 				T _Min,

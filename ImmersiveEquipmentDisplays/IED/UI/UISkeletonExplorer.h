@@ -54,7 +54,7 @@ namespace IED
 		private:
 			void DrawOptions();
 			void DrawFilterTree();
-			void DrawSkeletonDataHeader(const ActorSkeletonData& a_data);
+			void DrawSkeletonDataHeader(const SI_Root& a_data);
 			void DrawSkeletonTreePanel();
 			void DrawSkeletonTree(Game::FormID a_handle, const ActorSkeletonData& a_data);
 			void UpdateSkeletonData(Game::FormID a_handle, const ActorSkeletonData& a_data);

@@ -22,6 +22,7 @@ namespace IED
 			ItaClassic   = 5611,
 			SpectrumDark = 5612,
 			EnemyMouse   = 5613,
+			S562         = 5614,
 		};
 	}
 }

@@ -173,9 +173,9 @@ namespace IED
 			auto& conf  = GetOrCreateConfigHolder(a_data.handle);
 			auto& pdata = a_profile.Data();
 
-			for (auto& e : pdata.data)
+			for (auto& e : pdata.transformData)
 			{
-				conf.data.insert_or_assign(e.first, e.second);
+				conf.transformData.insert_or_assign(e.first, e.second);
 			}
 
 			for (auto& e : pdata.placementData)

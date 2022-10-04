@@ -121,7 +121,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_actor(a_actor, c))
 				{
-					if (auto r = holderCache_t::get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
 					{
 						return r;
 					}
@@ -132,7 +132,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_npc(a_npc, c))
 				{
-					if (auto r = holderCache_t::get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
 					{
 						return r;
 					}
@@ -143,7 +143,7 @@ namespace IED
 			{
 				if (auto d = a_hc.get_race(a_race, c))
 				{
-					if (auto r = holderCache_t::get_entry(d->data, a_node))
+					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
 					{
 						return r;
 					}
@@ -155,7 +155,7 @@ namespace IED
 					GlobalConfigType::Player :
                     GlobalConfigType::NPC;
 
-			return holderCache_t::get_entry(GetGlobalData(type).data, a_node);
+			return holderCache_t::get_entry(GetGlobalData(type).transformData, a_node);
 		}
 
 		const configNodeOverrideEntryPlacement_t* configStoreNodeOverride_t::GetActorPlacement(
@@ -240,7 +240,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_rhs.data)
 			{
-				data.emplace(i, e.second);
+				transformData.emplace(i, e.second);
 			}
 
 			for (auto& [i, e] : a_rhs.placementData)
@@ -255,7 +255,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_rhs.data)
 			{
-				data.emplace(i, std::move(e.second));
+				transformData.emplace(i, std::move(e.second));
 			}
 
 			for (auto& [i, e] : a_rhs.placementData)
@@ -270,7 +270,7 @@ namespace IED
 			const configNodeOverrideHolder_t& a_rhs,
 			ConfigClass                       a_initclass)
 		{
-			for (auto& [i, e] : a_rhs.data)
+			for (auto& [i, e] : a_rhs.transformData)
 			{
 				data.try_emplace(i, a_initclass, e);
 			}
@@ -287,7 +287,7 @@ namespace IED
 			configNodeOverrideHolder_t&& a_rhs,
 			ConfigClass                  a_initclass)
 		{
-			for (auto& [i, e] : a_rhs.data)
+			for (auto& [i, e] : a_rhs.transformData)
 			{
 				data.try_emplace(i, a_initclass, std::move(e));
 			}
@@ -309,7 +309,7 @@ namespace IED
 			{
 				if (e.first == a_class)
 				{
-					result.data.emplace(i, e.second);
+					result.transformData.emplace(i, e.second);
 				}
 			}
 
@@ -336,7 +336,7 @@ namespace IED
 			{
 				if (e.first == a_class)
 				{
-					a_dst.data.emplace(i, e.second);
+					a_dst.transformData.emplace(i, e.second);
 				}
 			}
 

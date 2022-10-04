@@ -163,6 +163,7 @@ namespace IED
 				DataVersion1 = 1,
 				DataVersion2 = 2,
 				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -305,12 +306,23 @@ namespace IED
 
 			union
 			{
+				std::int32_t i32a{ 0 };
+				std::int32_t skeletonID;
+			};
+
+			union
+			{
 				std::uint32_t ui32b{ 0 };
 				TimeOfDay     timeOfDay;
 				std::uint32_t uid;
-				std::int32_t  skeletonID;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
+			};
+
+			union
+			{
+				std::uint64_t ui64a{ 0 };
+				std::uint64_t skeletonSignature;
 			};
 
 			configNodeOverrideConditionGroup_t group;
@@ -334,6 +346,12 @@ namespace IED
 					{
 						a_ar& f32a;
 						a_ar& ui32b;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& i32a;
+							a_ar& ui64a;
+						}
 					}
 				}
 			}
@@ -664,19 +682,19 @@ namespace IED
 				configNodeOverrideHolderCopy_t&& a_rhs);
 
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
-			transform_data_type                data;
+			transform_data_type                transformData;
 			placement_data_type                placementData;
 
 			void clear() noexcept
 			{
 				flags = NodeOverrideHolderFlags::kNone;
-				data.clear();
+				transformData.clear();
 				placementData.clear();
 			}
 
 			inline bool empty() const noexcept
 			{
-				return data.empty() &&
+				return transformData.empty() &&
 				       placementData.empty();
 			}
 
@@ -689,7 +707,7 @@ namespace IED
 					transform_data_type,
 					configNodeOverrideEntryTransform_t>
 			{
-				return data;
+				return transformData;
 			}
 
 			template <
@@ -710,7 +728,7 @@ namespace IED
 			serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
-				a_ar& data;
+				a_ar& transformData;
 				a_ar& placementData;
 			}
 
@@ -813,9 +831,9 @@ namespace IED
 				const configNodeOverrideHolder_t& a_src,
 				configNodeOverrideHolder_t&       a_dst)
 			{
-				for (auto& e : a_src.data)
+				for (auto& e : a_src.transformData)
 				{
-					a_dst.data.emplace(e.first, e.second);
+					a_dst.transformData.emplace(e.first, e.second);
 				}
 
 				for (auto& e : a_src.placementData)
@@ -829,7 +847,7 @@ namespace IED
 				configNodeOverrideHolderCopy_t&   a_dst,
 				ConfigClass                       a_class)
 			{
-				for (auto& e : a_src.data)
+				for (auto& e : a_src.transformData)
 				{
 					a_dst.data.try_emplace(e.first, a_class, e.second);
 				}
@@ -887,7 +905,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideCondition_t,
-	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion3);
+	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion4);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideValues_t,

@@ -2,6 +2,8 @@
 
 #include "JSONConfigNodeMonitorEntryParser.h"
 
+#include "JSONConfigSkeletonMatchParser.h"
+
 namespace IED
 {
 	namespace Serialization
@@ -27,9 +29,11 @@ namespace IED
 
 			if (auto& skels = a_in["skeletons"])
 			{
-				for (auto& e : skels)
+				Parser<Data::configSkeletonMatch_t> smparser(m_state);
+
+				if (!smparser.Parse(skels, a_out.targetSkeletons))
 				{
-					a_out.targetSkeletons.emplace_back(e.asInt());
+					throw std::exception("bad skeleton match");
 				}
 			}
 

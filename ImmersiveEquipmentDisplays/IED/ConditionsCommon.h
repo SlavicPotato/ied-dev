@@ -780,12 +780,19 @@ namespace IED
 			       (a_match.form.get_id() == cfid);
 		}
 		
-		template <class Tm>
+		template <class Tm, class Tf>
 		constexpr bool match_skeleton(
 			CommonParams&          a_params,
 			const Tm&              a_match) noexcept
 		{
-			return get_skeleton_id(a_params).get_id() == a_match.skeletonID;
+			if (a_match.flags.test(Tf::kExtraFlag1))
+			{
+				return get_skeleton_id(a_params).signature() == a_match.skeletonSignature;
+			}
+			else
+			{
+				return get_skeleton_id(a_params).id() == a_match.skeletonID;
+			}
 		}
 
 		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept;

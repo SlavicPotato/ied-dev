@@ -6,15 +6,15 @@
 #include "ObjectManagerData.h"
 
 #include "IED/ActorState.h"
-#include "IED/StringHolder.h"
 #include "IED/ExtraNodes.h"
+#include "IED/StringHolder.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Node.h>
 
 namespace IED
 {
-	using namespace ExtraNodes;
+	using namespace SkeletonExtensions;
 	using namespace ::Util::Node;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
@@ -59,11 +59,9 @@ namespace IED
 			m_skeletonCache = r->second;
 		}
 
-		if (auto& id = m_skeletonID.get_id())
-		{
-			auto& ids          = NodeOverrideData::GetHumanoidSkeletonIDs();
-			m_humanoidSkeleton = std::find(ids.begin(), ids.end(), id.value()) != ids.end();
-		}
+		m_humanoidSkeleton =
+			NodeOverrideData::GetHumanoidSkeletonSignatures()
+				.contains(m_skeletonID.signature());
 
 		if (auto npc = a_actor->GetActorBase())
 		{
@@ -156,20 +154,18 @@ namespace IED
 		{
 			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
 			{
-				auto& id = m_skeletonID.get_id();
+				if (e.data.targetSkeletons.empty())
+				{
+					continue;
+				}
 
-				auto it = std::find(
-					e.data.targetSkeletons.begin(),
-					e.data.targetSkeletons.end(),
-					id.value());
-
-				if (it == e.data.targetSkeletons.end())
+				if (!e.data.targetSkeletons.test(m_skeletonID))
 				{
 					continue;
 				}
 			}
 
-			if (auto parent =  FindNode(a_npcroot, e.parent))
+			if (auto parent = FindNode(a_npcroot, e.parent))
 			{
 				auto r = m_nodeMonitorEntries.try_emplace(i, parent, e);
 				r.first->second.Update();
@@ -435,16 +431,9 @@ namespace IED
                    false;
 	}
 
-
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode* a_npcroot)
 	{
-		auto& id = m_skeletonID.get_id();
-		if (!id)
-		{
-			return;
-		}
-
 		for (auto& v : NodeOverrideData::GetExtraMovNodes())
 		{
 			if (m_cmeNodes.contains(v.name_cme) ||
@@ -464,12 +453,12 @@ namespace IED
 				v.skel.begin(),
 				v.skel.end(),
 				[&](auto& a_v) {
-					return a_v.ids.contains(*id);
+					return a_v.match.test(m_skeletonID);
 				});
 
 			if (it != v.skel.end())
 			{
-				auto result = AttachExtraNodes(target, *id, v, *it);
+				auto result = AttachExtraNodes(target, v, *it);
 
 				m_cmeNodes.try_emplace(v.name_cme, result.cme, result.cme->m_localTransform);
 				m_movNodes.try_emplace(v.name_mov, result.mov, v.placementID);
@@ -521,7 +510,7 @@ namespace IED
 
 	void ActorObjectHolder::ApplyXP32NodeTransformOverrides(NiNode* a_root) const
 	{
-		auto& id = m_skeletonID.get_id();
+		auto& id = m_skeletonID.id();
 		if (!id)
 		{
 			return;
@@ -535,7 +524,7 @@ namespace IED
 			return;
 		}
 
-		auto& ver = m_skeletonID.get_version();
+		auto& ver = m_skeletonID.xp_version();
 		if (!ver)
 		{
 			return;

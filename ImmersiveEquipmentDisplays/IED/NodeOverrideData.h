@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/ConfigConvertNodes.h"
 #include "IED/ConfigExtraNode.h"
 #include "IED/ConfigNodeMonitor.h"
 #include "IED/ConfigTransform.h"
@@ -162,9 +163,9 @@ namespace IED
 
 		struct extraNodeEntrySkel_t
 		{
-			stl::set_sa<std::int32_t> ids;
-			NiTransform               transform_mov;
-			NiTransform               transform_node;
+			Data::configSkeletonMatch_t match;
+			NiTransform                 transform_mov;
+			NiTransform                 transform_node;
 		};
 
 		struct exn_ctor_init_t
@@ -357,7 +358,7 @@ namespace IED
 		using xfrm_override_data_type  = vector_init_wrapper<xfrmOverrideNodeEntry_t>;
 		using rand_placement_data_type = vector_init_wrapper<randWeapEntry_t>;
 		using node_mon_data_type       = std::unordered_map<std::uint32_t, Data::configNodeMonitorEntryBS_t>;
-		using convert_nodes_data_type  = stl::set_sa<std::int32_t>;
+		using convert_nodes_data_type  = Data::configSkeletonMatch_t;
 
 		NodeOverrideData();
 
@@ -398,21 +399,6 @@ namespace IED
 			return m_Instance->m_transformOverride;
 		}
 
-		inline static const auto& GetNPCNodeName() noexcept
-		{
-			return m_Instance->m_npcNodeName;
-		}
-
-		inline static const auto& GetXPMSEExtraDataName() noexcept
-		{
-			return m_Instance->m_XPMSE;
-		}
-
-		inline static const auto& GetSkelIDExtraDataName() noexcept
-		{
-			return m_Instance->m_skeletonID;
-		}
-
 		inline static const auto& GetRandPlacementData() noexcept
 		{
 			return m_Instance->m_randPlacement;
@@ -423,9 +409,9 @@ namespace IED
 			return m_Instance->m_humanoidSkeletonPaths;
 		}*/
 
-		inline static const auto& GetHumanoidSkeletonIDs() noexcept
+		inline static const auto& GetHumanoidSkeletonSignatures() noexcept
 		{
-			return m_Instance->m_humanoidSkeletonIDs;
+			return m_Instance->m_humanoidSkeletonSignatures;
 		}
 
 		inline static const auto& GetNodeMonitorEntries() noexcept
@@ -461,7 +447,7 @@ namespace IED
 			const std::list<Data::configNodeMonitorEntryList_t>& a_data);
 
 		void AddConvertNodesData(
-			const std::list<std::list<std::int32_t>>& a_data);
+			const std::list<Data::configConvertNodesList_t>& a_data);
 
 		cm_data_type             m_cme;
 		cm_data_type             m_mov;
@@ -474,12 +460,8 @@ namespace IED
 		node_mon_data_type       m_nodeMonEntries;
 		convert_nodes_data_type  m_convertNodes;
 
-		BSFixedString m_npcNodeName{ "NPC" };
-		BSFixedString m_XPMSE{ "XPMSE" };
-		BSFixedString m_skeletonID{ "SkeletonID" };
-
 		//std::unordered_set<stl::fixed_string> m_humanoidSkeletonPaths;
-		std::vector<std::int32_t> m_humanoidSkeletonIDs;
+		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignatures;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

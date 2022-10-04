@@ -11,5 +11,6 @@
 #define MIN_RUNTIME_VERSION RUNTIME_VERSION_1_5_39
 
 #define PLUGIN_LOG_PATH       "My Games\\Skyrim Special Edition\\SKSE\\" PLUGIN_NAME ".log "
+#define PLUGIN_LOG_PATH_GOG   "My Games\\Skyrim Special Edition GOG\\SKSE\\" PLUGIN_NAME ".log "
 #define PLUGIN_INI_FILE_NOEXT "Data\\SKSE\\Plugins\\" PLUGIN_NAME
 #define PLUGIN_INI_FILE       PLUGIN_INI_FILE_NOEXT ".ini"

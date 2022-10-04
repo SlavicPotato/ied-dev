@@ -2646,7 +2646,15 @@ namespace IED
 										e);
 
 									auto& buffer = m_condParamEditor.GetDescBuffer();
-									stl::snprintf(buffer, "%s: %d", LS(CommonStrings::ID), e.skeletonID);
+
+									if (e.flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+									{
+										stl::snprintf(buffer, "%s: %llX", LS(CommonStrings::Signature), e.skeletonSignature);
+									}
+									else
+									{
+										stl::snprintf(buffer, "%s: %d", LS(CommonStrings::ID), e.skeletonID);
+									}
 
 									vdesc = buffer;
 									tdesc = LS(CommonStrings::Skeleton);
@@ -3533,15 +3541,51 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Skeleton:
 
-				result |= ImGui::InputScalar(
-					LS(CommonStrings::ID, "1"),
-					ImGuiDataType_S32,
-					std::addressof(match->skeletonID),
-					nullptr,
-					nullptr,
-					"%d",
-					ImGuiInputTextFlags_EnterReturnsTrue |
-						ImGuiInputTextFlags_CharsDecimal);
+				if (ImGui::RadioButton(
+						LS(CommonStrings::ID, "1"),
+						!match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1)))
+				{
+					result = true;
+					match->flags.clear(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
+				}
+
+				ImGui::SameLine();
+
+				if (ImGui::RadioButton(
+						LS(CommonStrings::Signature, "2"),
+						match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1)))
+				{
+					result = true;
+					match->flags.set(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
+				}
+
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+				{
+					result |= ImGui::InputScalar(
+						LS(CommonStrings::Signature, "3"),
+						ImGuiDataType_U64,
+						std::addressof(match->skeletonSignature),
+						nullptr,
+						nullptr,
+						"%llX",
+						ImGuiInputTextFlags_EnterReturnsTrue |
+							ImGuiInputTextFlags_CharsHexadecimal);
+				}
+				else
+				{
+					result |= ImGui::InputScalar(
+						LS(CommonStrings::ID, "3"),
+						ImGuiDataType_S32,
+						std::addressof(match->skeletonID),
+						nullptr,
+						nullptr,
+						"%d",
+						ImGuiInputTextFlags_EnterReturnsTrue |
+							ImGuiInputTextFlags_CharsDecimal);
+				}
 
 				break;
 			}

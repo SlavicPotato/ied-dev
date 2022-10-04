@@ -74,7 +74,7 @@ extern "C" {
 		{
 			WinApi::MessageBoxErrorLog(
 				PLUGIN_NAME,
-				"Not supported on versions prior to 1.6.629");
+				"Not supported on game versions prior to 1.6.629");
 			return false;
 		}
 #endif
@@ -84,7 +84,7 @@ extern "C" {
 			auto& iskse = ISKSE::GetSingleton();
 
 			iskse.SetPluginHandle(a_skse->GetPluginHandle());
-			iskse.OpenLog();
+			iskse.OpenLog(a_skse->runtimeVersion);
 		}
 
 		gLog.Message(

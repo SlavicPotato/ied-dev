@@ -10,59 +10,17 @@
 
 namespace IED
 {
-	namespace ConvertNodes
+	namespace SkeletonExtensions
 	{
 		using namespace ::Util::Node;
 
-		void ConvertVanillaSheathsToXP32(NiAVObject* a_root)
+		std::size_t ConvertVanillaSheathsToXP32(NiNode* a_root)
 		{
-			if (!a_root)
+			std::size_t result = 0;
+
+			for (auto& e : BSStringHolder::GetSingleton()->GetSheathNodes())
 			{
-				return;
-			}
-
-			auto& skeletonIDs = NodeOverrideData::GetConvertNodes();
-
-			if (skeletonIDs.empty())
-			{
-				return;
-			}
-
-			auto sh = BSStringHolder::GetSingleton();
-			if (!sh)
-			{
-				return;
-			}
-
-			auto root = a_root->AsNode();
-			if (!root)
-			{
-				return;
-			}
-
-			auto npcroot = ::Util::Node::FindNode(root, sh->m_npcroot);
-			if (!npcroot)
-			{
-				return;
-			}
-
-			SkeletonID id(root);
-
-			if (!id.get_id())
-			{
-				return;
-			}
-
-			//_DMESSAGE("%X: %u", a_actor->formID, id.get_id());
-
-			if (!skeletonIDs.contains(*id.get_id()))
-			{
-				return;
-			}
-
-			for (auto& e : sh->GetSheathNodes())
-			{
-				auto target = ::Util::Node::FindNode(npcroot, e.name);
+				auto target = FindNode(a_root, e.name);
 				if (!target)
 				{
 					continue;
@@ -74,8 +32,13 @@ namespace IED
 					continue;
 				}
 
-				if (npcroot->GetObjectByName(e.cme) ||
-				    npcroot->GetObjectByName(e.mov))
+				if (_strnicmp(parent->m_name.data(), "MOV ", 4) == 0)
+				{
+					continue;
+				}
+
+				if (a_root->GetObjectByName(e.cme) ||
+				    a_root->GetObjectByName(e.mov))
 				{
 					continue;
 				}
@@ -97,7 +60,11 @@ namespace IED
 				mov->AttachChild(replacedObject, true);
 
 				UpdateDownwardPass(cme);
+
+				result++;
 			}
+
+			return result;
 		}
 	}
 }

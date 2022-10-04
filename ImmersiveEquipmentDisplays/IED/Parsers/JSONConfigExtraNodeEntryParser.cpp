@@ -2,6 +2,7 @@
 
 #include "JSONConfigExtraNodeEntryParser.h"
 
+#include "JSONConfigSkeletonMatchParser.h"
 #include "JSONConfigTransformParser.h"
 
 namespace IED
@@ -13,7 +14,8 @@ namespace IED
 			const Json::Value&            a_in,
 			Data::configExtraNodeEntry_t& a_out) const
 		{
-			Parser<Data::configTransform_t> xfrmparser(m_state);
+			Parser<Data::configTransform_t>     xfrmparser(m_state);
+			Parser<Data::configSkeletonMatch_t> smparser(m_state);
 
 			a_out.name   = a_in["name"].asString();
 			a_out.desc   = a_in["desc"].asString();
@@ -23,17 +25,11 @@ namespace IED
 			{
 				for (auto& e : skel)
 				{
-					auto& ids = e["ids"];
-					if (!ids || ids.size() == 0)
-					{
-						continue;
-					}
-
 					auto& v = a_out.skel.emplace_back();
 
-					for (auto& f : ids)
+					if (!smparser.Parse(e["match"], v.match))
 					{
-						v.ids.emplace_back(f.asInt());
+						return false;
 					}
 
 					if (auto& xh = e["xfrm_mov"])

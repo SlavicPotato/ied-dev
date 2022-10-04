@@ -144,18 +144,53 @@ namespace IED
 		}
 
 		void UISkeletonExplorer::DrawSkeletonDataHeader(
-			const ActorSkeletonData& a_data)
+			const SI_Root& a_data)
 		{
-			if (!a_data.data->path.empty())
+			bool r = false;
+
+			ImGui::PushID("header");
+
+			if (!a_data.path.empty())
 			{
 				ImGui::TextWrapped(
 					"%s: %s",
 					LS(CommonStrings::Path),
-					a_data.data->path.c_str());
+					a_data.path.c_str());
 
+				r = true;
+			}
+
+			if (a_data.skeletonID)
+			{
+				if (auto& id = a_data.skeletonID->id())
+				{
+					ImGui::Text("%s:", LS(CommonStrings::ID));
+					ImGui::SameLine();
+
+					UICommon::TextCopyable("%d", *id);
+
+					ImGui::SameLine();
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+					ImGui::SameLine();
+				}
+
+				ImGui::Text("%s:", LS(CommonStrings::Signature));
+				ImGui::SameLine();
+
+				UICommon::TextCopyable(
+					"%zX",
+					a_data.skeletonID->signature());
+
+				r = true;
+			}
+
+			if (r)
+			{
 				ImGui::Separator();
 				ImGui::Spacing();
 			}
+
+			ImGui::PopID();
 		}
 
 		void UISkeletonExplorer::DrawSkeletonTreePanel()
@@ -173,7 +208,9 @@ namespace IED
 
 			stl::scoped_lock lock(data.data->lock);
 
-			DrawSkeletonDataHeader(data);
+			ImGui::PushID("skel_tree_panel");
+
+			DrawSkeletonDataHeader(*data.data);
 
 			if (ImGui::BeginChild(
 					"skel_tree",
@@ -187,6 +224,8 @@ namespace IED
 			}
 
 			ImGui::EndChild();
+
+			ImGui::PopID();
 		}
 
 		void UISkeletonExplorer::DrawSkeletonTree(

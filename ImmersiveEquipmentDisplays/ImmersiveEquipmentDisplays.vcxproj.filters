@@ -222,6 +222,12 @@
     <Filter Include="Source\ImGui\Styles\adobe-spectrum">
       <UniqueIdentifier>{58f4fed6-acf2-40a7-b6e4-b20166a2ff02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\NodeMonitor">
+      <UniqueIdentifier>{9cdedbac-1a41-44d6-9842-0f8ee7deebf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\SkeletonExtensions">
+      <UniqueIdentifier>{f805841a-f47a-4982-8b60-ff238be5c08a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1427,12 +1433,6 @@
     <ClInclude Include="IED\Controller\NodeMonitorEntry.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UIActorInfo.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
@@ -1469,9 +1469,6 @@
     <ClInclude Include="IED\Parsers\JSONConvertNodesListParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ExtraNodes.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\NodeOverrideData.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
@@ -1484,11 +1481,32 @@
     <ClInclude Include="IED\SkeletonID.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ConvertNodes.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\WeaponPlacementID.h">
       <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigSkeletonMatch.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigSkeletonMatchParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigConvertNodes.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\NodeMonitor</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConvertNodes.h">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ExtraNodes.h">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\SkeletonExtensions.h">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2314,12 +2332,6 @@
     <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
@@ -2347,17 +2359,32 @@
     <ClCompile Include="IED\Parsers\JSONConvertNodesListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ExtraNodes.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\NodeOverrideData.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\SkeletonID.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
+    <ClCompile Include="IED\ConfigSkeletonMatch.cpp">
+      <Filter>Source\IED\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigSkeletonMatchParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeMonitor</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\NodeMonitor</Filter>
+    </ClCompile>
     <ClCompile Include="IED\ConvertNodes.cpp">
-      <Filter>Source\IED</Filter>
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ExtraNodes.cpp">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\SkeletonExtensions.cpp">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

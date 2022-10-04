@@ -331,12 +331,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConditionsCommon.h" />
     <ClInclude Include="IED\ConfigBipedObjectList.h" />
     <ClInclude Include="IED\ConfigColor.h" />
+    <ClInclude Include="IED\ConfigConvertNodes.h" />
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
     <ClInclude Include="IED\ConfigExtraNode.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
     <ClInclude Include="IED\ConfigNodeMonitor.h" />
+    <ClInclude Include="IED\ConfigSkeletonMatch.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
     <ClInclude Include="IED\Controller\ActiveActorAnimation.h" />
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
@@ -396,6 +398,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigSkeletonMatchParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
@@ -409,6 +412,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
+    <ClInclude Include="IED\SkeletonExtensions.h" />
     <ClInclude Include="IED\SkeletonID.h" />
     <ClInclude Include="IED\TimeOfDay.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
@@ -792,6 +796,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
+    <ClCompile Include="IED\ConfigSkeletonMatch.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
     <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp" />
     <ClCompile Include="IED\Controller\CachedActorData.cpp" />
@@ -832,6 +837,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigSkeletonMatchParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
@@ -846,6 +852,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />
+    <ClCompile Include="IED\SkeletonExtensions.cpp" />
     <ClCompile Include="IED\SkeletonID.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DICamera.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorContext.cpp" />

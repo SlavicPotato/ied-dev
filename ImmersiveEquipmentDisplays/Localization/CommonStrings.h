@@ -229,5 +229,6 @@ namespace IED
 		Deleted         = 300,
 		Persistent      = 301,
 		Skeleton        = 302,
+		Signature       = 303,
 	};
 }

@@ -664,7 +664,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Skeleton:
 
-				return Conditions::match_skeleton(
+				return Conditions::match_skeleton<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
 			}
@@ -971,7 +973,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Skeleton:
 
-				return Conditions::match_skeleton(
+				return Conditions::match_skeleton<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
 			}
@@ -1367,7 +1371,9 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Skeleton:
 
-				return Conditions::match_skeleton(
+				return Conditions::match_skeleton<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
 			}

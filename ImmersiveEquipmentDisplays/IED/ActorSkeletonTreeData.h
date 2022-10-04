@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SkeletonID.h"
+
 namespace IED
 {
 	struct SI_Transform
@@ -32,14 +34,15 @@ namespace IED
 
 	struct SI_Root
 	{
-		Game::FormID          actor;
-		std::string           path;
-		SI_NiObject           object;
-		bool                  initialized{ false };
-		bool                  succeeded{ false };
-		bool                  isLoadedData{ true };
-		long long             lastUpdate{ 0 };
-		stl::critical_section lock;
+		Game::FormID                actor;
+		std::string                 path;
+		SI_NiObject                 object;
+		std::unique_ptr<SkeletonID> skeletonID;
+		bool                        initialized{ false };
+		bool                        succeeded{ false };
+		bool                        isLoadedData{ true };
+		long long                   lastUpdate{ 0 };
+		stl::critical_section       lock;
 
 		SKMP_REDEFINE_NEW_PREF();
 	};

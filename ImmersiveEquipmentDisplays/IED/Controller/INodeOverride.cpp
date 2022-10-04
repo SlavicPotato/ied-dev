@@ -626,7 +626,9 @@ namespace IED
 
 		case Data::NodeOverrideConditionType::Skeleton:
 
-			return Conditions::match_skeleton(
+			return Conditions::match_skeleton<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
 				a_params,
 				a_data);
 		}

@@ -33,7 +33,7 @@ namespace IED
 
 			for (auto it = vdata.begin(); it != vdata.end(); ++it)
 			{
-				auto& v = a_out.data.try_emplace(it.key().asString()).first->second;
+				auto& v = a_out.transformData.try_emplace(it.key().asString()).first->second;
 
 				parserDesc_t<Data::configNodeOverrideTransform_t> desc[]{
 					{ "m", v(ConfigSex::Male) },
@@ -84,11 +84,11 @@ namespace IED
 
 			data["flags"] = a_data.flags.underlying();
 
-			if (!a_data.data.empty())
+			if (!a_data.transformData.empty())
 			{
 				auto& vdata = (data["data"] = Json::Value(Json::ValueType::objectValue));
 
-				for (auto& [i, e] : a_data.data)
+				for (auto& [i, e] : a_data.transformData)
 				{
 					parserDescConst_t<Data::configNodeOverrideTransform_t> desc[]{
 						{ "m", e(ConfigSex::Male) },

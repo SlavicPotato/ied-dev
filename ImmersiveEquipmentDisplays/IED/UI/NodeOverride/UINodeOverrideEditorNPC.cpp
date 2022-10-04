@@ -296,7 +296,7 @@ namespace IED
 			if (it != data.end())
 			{
 				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
-				it->second.data.clear();
+				it->second.transformData.clear();
 
 				m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 			}

@@ -9,13 +9,12 @@
 
 namespace IED
 {
-	namespace ExtraNodes
+	namespace SkeletonExtensions
 	{
 		using namespace ::Util::Node;
 
 		attachExtraNodesResult_t AttachExtraNodes(
 			NiNode*                                       a_target,
-			std::int32_t                                  a_skeletonID,
 			const NodeOverrideData::extraNodeEntry_t&     a_entry,
 			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry)
 		{
@@ -41,57 +40,21 @@ namespace IED
 		}
 
 		void CreateExtraMovNodes(
-			NiAVObject* a_root)
+			NiNode*           a_root,
+			const SkeletonID& a_id)
 		{
-			if (!a_root)
+			using namespace ::Util::Node;
+
+			for (auto& v : NodeOverrideData::GetExtraMovNodes())
 			{
-				return;
-			}
-
-			auto& movNodes = NodeOverrideData::GetExtraMovNodes();
-
-			if (movNodes.empty())
-			{
-				return;
-			}
-
-			auto sh = BSStringHolder::GetSingleton();
-			if (!sh)
-			{
-				return;
-			}
-
-			auto root = a_root->AsNode();
-			if (!root)
-			{
-				return;
-			}
-
-			auto npcroot = ::Util::Node::FindNode(root, sh->m_npcroot);
-			if (!npcroot)
-			{
-				return;
-			}
-
-			SkeletonID id(root);
-
-			if (!id.get_id())
-			{
-				return;
-			}
-
-			//_DMESSAGE("%X: %u", a_actor->formID, id.get_id());
-
-			for (auto& v : movNodes)
-			{
-				if (npcroot->GetObjectByName(v.bsname_cme) ||
-				    npcroot->GetObjectByName(v.bsname_mov) ||
-				    npcroot->GetObjectByName(v.bsname_node))
+				if (a_root->GetObjectByName(v.bsname_cme) ||
+				    a_root->GetObjectByName(v.bsname_mov) ||
+				    a_root->GetObjectByName(v.bsname_node))
 				{
 					continue;
 				}
 
-				auto target = ::Util::Node::FindNode(npcroot, v.name_parent);
+				auto target = FindNode(a_root, v.name_parent);
 				if (!target)
 				{
 					continue;
@@ -101,12 +64,14 @@ namespace IED
 					v.skel.begin(),
 					v.skel.end(),
 					[&](auto& a_v) {
-						return a_v.ids.contains(*id.get_id());
+						return a_v.match.test(a_id);
 					});
 
 				if (it != v.skel.end())
 				{
-					AttachExtraNodes(target, *id.get_id(), v, *it);
+					//_DMESSAGE("creating %s on %zX", v.name_node.c_str(), a_id.signature());
+
+					AttachExtraNodes(target, v, *it);
 				}
 			}
 		}

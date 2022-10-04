@@ -609,7 +609,7 @@ namespace IED
 
 			ILRHReset();
 
-			m_controller.QueueSettingsSave(true);
+			m_controller.SaveSettings(true, true);
 			Drivers::UI::QueueImGuiSettingsSave();
 		}
 

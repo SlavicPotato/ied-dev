@@ -139,6 +139,7 @@ namespace IED
 				DataVersion2 = 2,
 				DataVersion3 = 3,
 				DataVersion4 = 4,
+				DataVersion5 = 5,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -279,13 +280,24 @@ namespace IED
 
 			union
 			{
+				std::int32_t i32a{ 0 };
+				std::int32_t skeletonID;
+			};
+
+			union
+			{
 				std::uint32_t ui32b{ 0 };
 				std::uint32_t count;
 				TimeOfDay     timeOfDay;
 				std::uint32_t uid;
-				std::int32_t  skeletonID;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
+			};
+
+			union
+			{
+				std::uint64_t ui64a{ 0 };
+				std::uint64_t skeletonSignature;
 			};
 
 			equipmentOverrideConditionGroup_t group;
@@ -303,6 +315,8 @@ namespace IED
 				a_ar&              group;
 				a_ar&              f32a;
 				a_ar&              ui32b;
+				a_ar&              i32a;
+				a_ar&              ui64a;
 			}
 
 			template <class Archive>
@@ -327,6 +341,12 @@ namespace IED
 						{
 							a_ar& f32a;
 							a_ar& ui32b;
+
+							if (a_version >= DataVersion5)
+							{
+								a_ar& i32a;
+								a_ar& ui64a;
+							}
 						}
 					}
 				}
@@ -399,4 +419,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::equipmentOverrideCondition_t,
-	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion4);
+	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion5);

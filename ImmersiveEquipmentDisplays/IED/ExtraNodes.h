@@ -4,7 +4,9 @@
 
 namespace IED
 {
-	namespace ExtraNodes
+	class SkeletonID;
+
+	namespace SkeletonExtensions
 	{
 		struct attachExtraNodesResult_t
 		{
@@ -13,11 +15,11 @@ namespace IED
 		};
 
 		void CreateExtraMovNodes(
-			NiAVObject* a_root);
+			NiNode*           a_root,
+			const SkeletonID& a_id);
 
 		attachExtraNodesResult_t AttachExtraNodes(
 			NiNode*                                       a_target,
-			std::int32_t                                  a_skeletonID,
 			const NodeOverrideData::extraNodeEntry_t&     a_entry,
 			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry);
 

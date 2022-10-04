@@ -458,14 +458,14 @@ namespace IED
 
 					{
 
-						{ 1361955 },
+						{ {}, { 11827777347581811248, 6419035761879502692 } },
 						{ 1.0f, { 8.6871f, 0.8402f, 18.6266f }, { -2.0656f, 0.8240f, 3.0770f } },
 						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
 
 					},
 					{
 
-						{ 628145516 },
+						{ {}, { 11462500511823126705, 2191670159909408727 } },
 						{ 1.0f, { 8.7244f, 2.1135f, 17.6729f }, { -2.0656f, 0.8240f, 3.0770f } },
 						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
 
@@ -489,14 +489,14 @@ namespace IED
 
 					{
 
-						{ 1361955 },
+						{ {}, { 11827777347581811248, 6419035761879502692 } },
 						{ 1.0f, { -8.1261f, 1.9337f, 18.4871f }, { 2.0656f, -0.8239f, 3.0770f } },
 						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
 
 					},
 					{
 
-						{ 628145516 },
+						{ {}, { 11462500511823126705, 2191670159909408727 } },
 						{ 1.0f, { -8.1435f, 3.4921f, 18.5906f }, { 2.0656f, -0.8239f, 3.0770f } },
 						{ 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }
 
@@ -592,7 +592,18 @@ namespace IED
 
 		})*/
 
-		m_humanoidSkeletonIDs({ 628145516, 376140462, 1361955, 207579012 })
+		m_humanoidSkeletonSignatures({
+
+			11462500511823126705,
+			2191670159909408727,
+			11827777347581811248,
+			6419035761879502692,
+			271026958073932624,
+			4625650181268377090,
+			10927971447177431054,
+			17428621824148309550
+
+		})
 	{
 	}
 
@@ -624,7 +635,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddConvertNodes(const char* a_path)
 	{
-		std::list<std::list<std::int32_t>> data;
+		std::list<Data::configConvertNodesList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddConvertNodesData(data);
@@ -798,7 +809,7 @@ namespace IED
 				for (auto& g : f.skel)
 				{
 					rv.skel.emplace_back(
-						g.ids,
+						g.match,
 						g.transform_mov.to_nitransform(),
 						g.transform_node.to_nitransform());
 				}
@@ -852,20 +863,20 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddConvertNodesData(
-		const std::list<std::list<std::int32_t>>& a_data)
+		const std::list<Data::configConvertNodesList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{
 			for (auto& f : e)
 			{
-				auto r = m_convertNodes.emplace(f);
-
-				if (!r.second)
+				for (auto& g : f.match.ids)
 				{
-					Warning(
-						"%s: %d - duplicate entry",
-						__FUNCTION__,
-						f);
+					m_convertNodes.ids.emplace(g);
+				}
+
+				for (auto& g : f.match.signatures)
+				{
+					m_convertNodes.signatures.emplace(g);
 				}
 			}
 		}

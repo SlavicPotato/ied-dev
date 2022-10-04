@@ -1291,7 +1291,7 @@ namespace IED
 		{
 			if (LCG_MI(CommonStrings::Save, "1"))
 			{
-				m_controller.QueueSettingsSave();
+				m_controller.SaveSettings(true, false, true);
 			}
 
 			ImGui::Separator();

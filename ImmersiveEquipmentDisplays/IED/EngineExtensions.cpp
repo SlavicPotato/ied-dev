@@ -1,10 +1,12 @@
 #include "pch.h"
 
-#include "Controller/Controller.h"
 #include "EngineExtensions.h"
-#include "ExtraNodes.h"
-#include "ConvertNodes.h"
+
+#include "Controller/Controller.h"
+
 #include "Util/Logging.h"
+
+#include "SkeletonExtensions.h"
 
 #include <ext/GarbageCollector.h>
 #include <ext/IHook.h>
@@ -99,7 +101,7 @@ namespace IED
 				std::addressof(a_originalFunc)))
 		{
 			Debug(
-				"[%s] Detoured %s @0x%llX:0x%lld",
+				"[%s] Detoured %s @0x%llX:0x%llX",
 				a_src.function_name(),
 				a_desc,
 				a_vtblAddr.get(),
@@ -620,8 +622,7 @@ namespace IED
 
 		if (a_refr->IsActor() && result)
 		{
-			ConvertNodes::ConvertVanillaSheathsToXP32(result);
-			ExtraNodes::CreateExtraMovNodes(result);
+			SkeletonExtensions::PostLoad3D(result);
 		}
 
 		return result;
@@ -636,8 +637,7 @@ namespace IED
 
 		if (a_3D)
 		{
-			ConvertNodes::ConvertVanillaSheathsToXP32(a_3D);
-			ExtraNodes::CreateExtraMovNodes(a_3D);
+			SkeletonExtensions::PostLoad3D(a_3D);
 		}
 
 		return result;

@@ -426,7 +426,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool IsXP32Skeleton() const noexcept
 		{
-			return m_skeletonID.get_version().has_value();
+			return m_skeletonID.xp_version().has_value();
 		}
 
 		[[nodiscard]] inline constexpr bool GetNodeConditionForced() const noexcept

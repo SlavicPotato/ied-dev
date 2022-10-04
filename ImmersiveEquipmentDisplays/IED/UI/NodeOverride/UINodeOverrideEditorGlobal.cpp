@@ -192,7 +192,7 @@ namespace IED
 			auto& data = store.active.transforms.GetGlobalData(
 				store.settings.data.ui.transformEditor.globalType);
 
-			if (data.data.erase(a_params.name) > 0)
+			if (data.transformData.erase(a_params.name) > 0)
 			{
 				m_controller.RequestEvaluateTransformsAll(true);
 			}
@@ -222,7 +222,7 @@ namespace IED
 			auto& data = store.active.transforms.GetGlobalData(
 				store.settings.data.ui.transformEditor.globalType);
 
-			data.data.clear();
+			data.transformData.clear();
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}

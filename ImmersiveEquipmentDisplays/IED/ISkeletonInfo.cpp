@@ -96,6 +96,15 @@ namespace IED
 			return false;
 		}
 
+		if (auto node = root->AsNode())
+		{
+			a_root.skeletonID = std::make_unique<SkeletonID>(node);
+		}
+		else
+		{
+			a_root.skeletonID.reset();
+		}
+
 		a_root.object = {};
 
 		VisitNodeTree(
@@ -120,10 +129,7 @@ namespace IED
 	{
 		if (a_loadSkeleton)
 		{
-			if (!a_root.path.empty())
-			{
-				a_root.path.clear();
-			}
+			a_root.path.clear();
 
 			auto result = a_refr->Get3D1(a_firstPerson);
 			if (result)

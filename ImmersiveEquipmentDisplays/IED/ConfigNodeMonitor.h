@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ConfigSkeletonMatch.h"
+
 namespace IED
 {
 	namespace Data
@@ -27,7 +29,7 @@ namespace IED
 			stl::flag<NodeMonitorFlags> flags{ NodeMonitorFlags::kNone };
 			std::uint32_t               uid{ 0 };
 			NodeMonitorTestType         testType{ NodeMonitorTestType::kObject };
-			stl::vector<std::int32_t>   targetSkeletons;
+			configSkeletonMatch_t       targetSkeletons;
 			stl::fixed_string           description;
 			stl::fixed_string           parent;
 			stl::fixed_string           subject;

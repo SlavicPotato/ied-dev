@@ -49,6 +49,8 @@ namespace IED
 
 			a_out.f32a  = a_in.get("f32a", 0.0f).asFloat();
 			a_out.ui32b = a_in.get("ui32b", 0).asUInt();
+			a_out.i32a  = a_in.get("i32a", 0).asInt();
+			a_out.ui64a = a_in.get("ui64a", 0).asUInt64();
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 
@@ -81,6 +83,8 @@ namespace IED
 			a_out["type"]  = stl::underlying(a_data.typeSlot);
 			a_out["f32a"]  = a_data.f32a;
 			a_out["ui32b"] = a_data.ui32b;
+			a_out["i32a"]  = a_data.i32a;
+			a_out["ui64a"] = a_data.ui64a;
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 

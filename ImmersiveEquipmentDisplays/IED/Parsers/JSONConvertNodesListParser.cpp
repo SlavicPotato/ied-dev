@@ -2,20 +2,26 @@
 
 #include "JSONConvertNodesListParser.h"
 
+#include "JSONConfigSkeletonMatchParser.h"
+
 namespace IED
 {
 	namespace Serialization
 	{
 		template <>
-		bool Parser<std::list<std::int32_t>>::Parse(
-			const Json::Value&       a_in,
-			std::list<std::int32_t>& a_out) const
+		bool Parser<Data::configConvertNodesList_t>::Parse(
+			const Json::Value&              a_in,
+			Data::configConvertNodesList_t& a_out) const
 		{
+			Parser<Data::configSkeletonMatch_t> parser(m_state);
+
 			for (auto& e : a_in)
 			{
-				for (auto& f : e["ids"])
+				auto& v = a_out.emplace_back();
+
+				if (!parser.Parse(e["match"], v.match))
 				{
-					a_out.emplace_back(f.asInt());
+					return false;
 				}
 			}
 
@@ -23,9 +29,9 @@ namespace IED
 		}
 
 		template <>
-		void Parser<std::list<std::int32_t>>::Create(
-			const std::list<std::int32_t>& a_data,
-			Json::Value&                   a_out) const
+		void Parser<Data::configConvertNodesList_t>::Create(
+			const Data::configConvertNodesList_t& a_data,
+			Json::Value&                          a_out) const
 		{
 			throw std::runtime_error("not implemented");
 		}

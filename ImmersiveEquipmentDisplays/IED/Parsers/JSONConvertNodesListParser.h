@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IED/ConfigConvertNodes.h"
+
 #include "Serialization/Serialization.h"
 
 namespace IED
@@ -7,14 +9,14 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<std::list<std::int32_t>>::Parse(
-			const Json::Value&                  a_in,
-			std::list<std::int32_t>& a_outData) const;
+		bool Parser<Data::configConvertNodesList_t>::Parse(
+			const Json::Value&              a_in,
+			Data::configConvertNodesList_t& a_outData) const;
 
 		template <>
-		void Parser<std::list<std::int32_t>>::Create(
-			const std::list<std::int32_t>& a_data,
-			Json::Value&                              a_out) const;
+		void Parser<Data::configConvertNodesList_t>::Create(
+			const Data::configConvertNodesList_t& a_data,
+			Json::Value&                          a_out) const;
 
 	}
 }

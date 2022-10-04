@@ -45,7 +45,7 @@ namespace IED
 		static inline constexpr auto NINODE_MOV_DEFAULT_BOW    = "MOV WeaponBowDefault";
 		static inline constexpr auto NINODE_MOV_DEFAULT_BACK   = "MOV WeaponBackDefault";
 		static inline constexpr auto NINODE_MOV_DEFAULT_QUIVER = "MOV QUIVERDefault";
-		
+
 		static inline constexpr auto NINODE_CME_DEFAULT_SWORD  = "CME WeaponSwordDefault";
 		static inline constexpr auto NINODE_CME_DEFAULT_AXE    = "CME WeaponAxeDefault";
 		static inline constexpr auto NINODE_CME_DEFAULT_MACE   = "CME WeaponMaceDefault";
@@ -174,6 +174,15 @@ namespace IED
 		BSFixedString m_animObjectChopWoodRight{ "AnimObjectChopWoodRight" };*/
 
 		//stl::unordered_set<BSFixedString> m_animEventFilter;
+
+		BSFixedString m_npcNodeName{ "NPC" };
+		BSFixedString m_XPMSE{ "XPMSE" };
+		BSFixedString m_skeletonID{ "SkeletonID" };
+		BSFixedString m_rigPerspective{ "rigPerspective" };
+		BSFixedString m_rigVersion{ "rigVersion" };
+		BSFixedString m_species{ "species" };
+		BSFixedString m_BSBoneLOD{ "BSBoneLOD" };
+		BSFixedString m_BBX{ "BBX" };
 
 		struct SheatheNodeEntry
 		{
