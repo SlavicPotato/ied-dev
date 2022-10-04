@@ -10,14 +10,24 @@ namespace IED
 		{
 			namespace S56
 			{
-				inline void Setup(ImGuiStyle& a_style)
+				inline void Setup(ImGuiStyle& a_style, bool a_alternate = false)
 				{
 					ImGui::StyleColorsDark(std::addressof(a_style));
 
-					a_style.FrameRounding    = 4.0f;
-					a_style.WindowBorderSize = 0.0f;
-					a_style.PopupBorderSize  = 0.0f;
-					a_style.GrabRounding     = 4.0f;
+					if (a_alternate)
+					{
+						a_style.WindowRounding   = 3.0f;
+						a_style.PopupRounding    = 3.0f;
+						a_style.WindowBorderSize = 1.0f;
+					}
+					else
+					{
+						a_style.WindowBorderSize = 0.0f;
+						a_style.PopupBorderSize  = 0.0f;
+					}
+
+					a_style.FrameRounding = 4.0f;
+					a_style.GrabRounding  = 4.0f;
 
 					auto& colors = a_style.Colors;
 
@@ -26,7 +36,7 @@ namespace IED
 					colors[ImGuiCol_WindowBg]              = ImVec4(0.09f, 0.09f, 0.09f, 0.94f);
 					colors[ImGuiCol_ChildBg]               = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 					colors[ImGuiCol_PopupBg]               = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
-					colors[ImGuiCol_Border]                = ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
+					colors[ImGuiCol_Border]                = ImVec4(0.47f, 0.22f, 0.22f, 0.67f);
 					colors[ImGuiCol_BorderShadow]          = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
 					colors[ImGuiCol_FrameBg]               = ImVec4(0.71f, 0.39f, 0.39f, 0.54f);
 					colors[ImGuiCol_FrameBgHovered]        = ImVec4(0.84f, 0.66f, 0.66f, 0.40f);

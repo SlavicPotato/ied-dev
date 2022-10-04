@@ -922,6 +922,9 @@ namespace IED
 			case UIStylePreset::EnemyMouse:
 				Styles::EnemyMouse::Setup(*newStyle);
 				break;
+			case UIStylePreset::S562:
+				Styles::S56::Setup(*newStyle, true);
+				break;
 			default:
 				ImGui::StyleColorsDark(newStyle.get());
 				break;
