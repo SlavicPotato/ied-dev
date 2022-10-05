@@ -93,8 +93,8 @@ Bool Function SetItemAnimationSequenceRace(Race akRace, string asPlugin, string 
 
 ; Disable weapon animation for the item.
 Bool Function SetItemWeaponAnimationDisabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
-Bool Function SetItemWeaponAnimationDisabledNPC(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
-Bool Function SetItemWeaponAnimationDisabledRace(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemWeaponAnimationDisabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemWeaponAnimationDisabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 
 ; Enable sending an animation event after the weapon loads (has no effect if weapon animation is disabled)
 Bool Function SetItemAnimationEventEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
@@ -107,8 +107,8 @@ Bool Function SetItemAnimationEventNPC(ActorBase akActorBase, string asPlugin, s
 Bool Function SetItemAnimationEventRace(Race akRace, string asPlugin, string asName, bool abIsFemale, string asAnimationEvent) native global
 
 Bool Function SetItemDisableHavokActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
-Bool Function SetItemDisableHavokNPC(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
-Bool Function SetItemDisableHavokRace(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemDisableHavokNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemDisableHavokRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
