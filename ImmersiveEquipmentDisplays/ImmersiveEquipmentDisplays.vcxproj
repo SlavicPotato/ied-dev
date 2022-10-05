@@ -792,7 +792,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Fonts\IGlyphData.cpp" />
     <ClCompile Include="IED\ActorInventoryInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
-    <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />

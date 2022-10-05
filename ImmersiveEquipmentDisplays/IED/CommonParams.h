@@ -35,7 +35,7 @@ namespace IED
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
 		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		mutable std::optional<bool>                                  enemiesNearby;
+		//mutable std::optional<bool>                                  enemiesNearby;
 		mutable std::optional<bool>                                  isMounted;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 		mutable std::optional<NiPointer<Actor>>                      mountedByActor;

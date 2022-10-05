@@ -2326,9 +2326,6 @@
     <ClCompile Include="IED\Controller\CMENodeEntry.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
-    <ClCompile Include="IED\CommonParams.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>

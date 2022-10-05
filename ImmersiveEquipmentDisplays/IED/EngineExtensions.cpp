@@ -53,7 +53,7 @@ namespace IED
 			Install_CreateWeaponNodes();
 		}
 
-		if (a_config->m_enableEarlyHooks)
+		if (a_config->m_enableEarlyLoadHooks)
 		{
 			Install_PostLoad3DHooks();
 		}

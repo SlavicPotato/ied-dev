@@ -83,7 +83,7 @@ namespace IED
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
 		bool           m_forceOrigWeapXFRM{ false };
-		bool           m_enableEarlyHooks{ true };
+		bool           m_enableEarlyLoadHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
 		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };

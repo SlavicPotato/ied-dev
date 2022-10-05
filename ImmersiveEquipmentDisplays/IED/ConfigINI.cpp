@@ -63,8 +63,8 @@ namespace IED
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
 		m_forceOrigWeapXFRM =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceOriginalWeaponTransform", true);
-		m_enableEarlyHooks =
-			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnableEarlyHooks", true);
+		m_enableEarlyLoadHooks =
+			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnableEarlyLoadHooks", true);
 
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		m_activeWriteCMETransforms =
@@ -138,7 +138,9 @@ namespace IED
 				r.first->second.second);
 		}
 
-		if (m_agManualMode = reader.GetLongValue(SECT_ANIM, "Mode", 0); m_agManualMode > 0)
+		m_agManualMode = reader.GetLongValue(SECT_ANIM, "Mode", 0); 
+
+		if (m_agManualMode > 0)
 		{
 			m_agInfo.crc = static_cast<std::int32_t>(reader.GetLongValue(SECT_ANIM, "CRC", 0));
 

@@ -296,6 +296,7 @@ namespace IED
 		const ActorObjectMap& a_cache)
 	{
 		m_actorInfo.clear();
+		m_npcInfo.clear();
 		m_crosshairRef.clear();
 
 		for (auto& e : a_cache)
