@@ -53,7 +53,7 @@ namespace IED
 
 		void UICustomEditorGlobal::EditorReset()
 		{
-			m_data = {};
+			UpdateData();
 		}
 
 		void UICustomEditorGlobal::EditorQueueUpdateCurrent()

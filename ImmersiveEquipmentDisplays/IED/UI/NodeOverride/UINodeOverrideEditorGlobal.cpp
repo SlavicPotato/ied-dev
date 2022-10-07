@@ -75,7 +75,7 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::EditorReset()
 		{
-			m_data.clear();
+			UpdateData(m_data);
 		}
 
 		constexpr Data::ConfigClass UINodeOverrideEditorGlobal::GetConfigClass() const

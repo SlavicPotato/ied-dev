@@ -304,7 +304,7 @@ namespace IED
 
 		void UISlotEditorGlobal::EditorReset()
 		{
-			m_data = {};
+			UpdateData(m_data);
 		}
 
 		void UISlotEditorGlobal::EditorQueueUpdateCurrent()
