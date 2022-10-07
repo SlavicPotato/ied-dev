@@ -3,6 +3,7 @@
 
 #include "NodeOverrideData.h"
 
+#include "IED/Parsers/JSONConfigAdditionalCMENodeListParser.h"
 #include "IED/Parsers/JSONConfigExtraNodeListParser.h"
 #include "IED/Parsers/JSONConfigNodeMonitorEntryListParser.h"
 #include "IED/Parsers/JSONConvertNodesListParser.h"
@@ -642,6 +643,15 @@ namespace IED
 		}
 	}
 
+	void NodeOverrideData::LoadAndAddAdditionalCMENodes(const char* a_path)
+	{
+		std::list<Data::configAdditionalCMENodeList_t> data;
+		if (m_Instance->LoadEntryList(a_path, data))
+		{
+			m_Instance->AddAdditionalCMENodeData(data);
+		}
+	}
+
 	template <class T>
 	bool NodeOverrideData::LoadEntryList(
 		const char*   a_path,
@@ -825,6 +835,31 @@ namespace IED
 					rv.name_cme,
 					rv.desc,
 					WeaponPlacementID::None);
+			}
+		}
+	}
+
+	void NodeOverrideData::AddAdditionalCMENodeData(
+		const std::list<Data::configAdditionalCMENodeList_t>& a_data)
+	{
+		for (auto& e : a_data)
+		{
+			for (auto& f : e)
+			{
+				auto r = m_cme.try_emplace(
+					f.node,
+					f.node,
+					f.desc,
+					WeaponPlacementID::None,
+					OverrideNodeEntryFlags::kAdditionalNode);
+
+				if (!r.second)
+				{
+					Warning(
+						"%s: [%s] - node already exists",
+						__FUNCTION__,
+						f.node.c_str());
+				}
 			}
 		}
 	}

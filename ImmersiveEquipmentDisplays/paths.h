@@ -23,5 +23,6 @@ namespace IED
 		inline static constexpr auto EXTRA_NODES                          = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ExtraGearNodes";
 		inline static constexpr auto CONVERT_NODES                        = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ConvertNodes";
 		inline static constexpr auto NODE_MONITOR                         = "Data\\SKSE\\Plugins\\IED\\NodeMonitor";
+		inline static constexpr auto ADDITIONAL_CME_NODES                 = "Data\\SKSE\\Plugins\\IED\\AdditionalCMENodes";
 	}
 }

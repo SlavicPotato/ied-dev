@@ -329,6 +329,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\AnimationWeaponSlot.h" />
     <ClInclude Include="IED\AnimationWeaponType.h" />
     <ClInclude Include="IED\ConditionsCommon.h" />
+    <ClInclude Include="IED\ConfigAdditionalCMENode.h" />
     <ClInclude Include="IED\ConfigBipedObjectList.h" />
     <ClInclude Include="IED\ConfigColor.h" />
     <ClInclude Include="IED\ConfigConvertNodes.h" />
@@ -388,6 +389,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h" />
     <ClInclude Include="IED\Parsers\JSONActorInfoParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
@@ -826,6 +829,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
     <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />

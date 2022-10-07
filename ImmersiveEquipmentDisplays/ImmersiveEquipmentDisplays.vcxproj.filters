@@ -1508,6 +1508,15 @@
     <ClInclude Include="IED\SkeletonExtensions.h">
       <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigAdditionalCMENode.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2382,6 +2391,12 @@
     </ClCompile>
     <ClCompile Include="IED\SkeletonExtensions.cpp">
       <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

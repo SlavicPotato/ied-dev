@@ -13,9 +13,10 @@ namespace IED
 		actorInfoEntry_t& a_out,
 		bool              a_updateNPC)
 	{
-		a_out.name  = IFormCommon::GetFormName(a_actor);
-		a_out.dead  = a_actor->IsDead();
-		a_out.flags = a_actor->flags;
+		a_out.name           = IFormCommon::GetFormName(a_actor);
+		a_out.dead           = a_actor->IsDead();
+		a_out.flags          = a_actor->flags;
+		a_out.hasLoadedState = static_cast<bool>(a_actor->loadedState);
 
 		if (auto race = a_actor->GetRace())
 		{

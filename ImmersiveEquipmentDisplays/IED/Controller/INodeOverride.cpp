@@ -69,7 +69,7 @@ namespace IED
 		return false;
 	}
 
-	static bool match_keyword_equipped(
+	static constexpr bool match_keyword_equipped(
 		BGSKeyword*                          a_keyword,
 		INodeOverride::nodeOverrideParams_t& a_params)
 	{
@@ -338,7 +338,7 @@ namespace IED
 		return true;
 	}
 
-	static bool match(
+	static bool evaluate_condition(
 		const Data::configNodeOverrideCondition_t& a_data,
 		INodeOverride::nodeOverrideParams_t&       a_params,
 		bool                                       a_ignoreNode = false)
@@ -636,7 +636,7 @@ namespace IED
 		return false;
 	}
 
-	static constexpr bool run_matches(
+	static constexpr bool run_conditions(
 		const Data::configNodeOverrideConditionList_t& a_data,
 		INodeOverride::nodeOverrideParams_t&           a_params,
 		bool                                           a_default,
@@ -648,11 +648,11 @@ namespace IED
 		{
 			if (e.fbf.type == Data::NodeOverrideConditionType::Group)
 			{
-				result = run_matches(e.group.conditions, a_params, a_default, a_ignoreNode);
+				result = run_conditions(e.group.conditions, a_params, a_default, a_ignoreNode);
 			}
 			else
 			{
-				result = match(e, a_params, a_ignoreNode);
+				result = evaluate_condition(e, a_params, a_ignoreNode);
 			}
 
 			if (e.flags.test(Data::NodeOverrideConditionFlags::kNot))
@@ -679,21 +679,21 @@ namespace IED
 		return result;
 	}
 
-	static constexpr bool run_matches(
+	static constexpr bool run_conditions(
 		const Data::configNodeOverrideOffset_t& a_data,
 		INodeOverride::nodeOverrideParams_t&    a_params)
 	{
-		return run_matches(
+		return run_conditions(
 			a_data.conditions,
 			a_params,
 			!a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kRequiresConditionList));
 	}
 
-	static constexpr bool run_visibility_matches(
+	static constexpr bool run_visibility_conditions(
 		const Data::configNodeOverrideTransform_t& a_data,
 		INodeOverride::nodeOverrideParams_t&       a_params)
 	{
-		return run_matches(
+		return run_conditions(
 			a_data.visibilityConditionList,
 			a_params,
 			!a_data.overrideFlags.test(Data::NodeOverrideFlags::kVisibilityRequiresConditionList),
@@ -890,7 +890,7 @@ namespace IED
 		{
 			a_params.clear_matched_items();
 
-			if (run_matches(e, a_params))
+			if (run_conditions(e, a_params))
 			{
 				if (e.offsetFlags.test(Data::NodeOverrideOffsetFlags::kIsGroup))
 				{
@@ -962,7 +962,7 @@ namespace IED
 	{
 		bool visible = true;
 
-		if (run_visibility_matches(a_data, a_params))
+		if (run_visibility_conditions(a_data, a_params))
 		{
 			visible = !a_data.overrideFlags.test(Data::NodeOverrideFlags::kInvisible);
 		}
@@ -1061,7 +1061,7 @@ namespace IED
 	{
 		for (auto& e : a_data.overrides)
 		{
-			if (run_matches(
+			if (run_conditions(
 					e.conditions,
 					a_params,
 					false,

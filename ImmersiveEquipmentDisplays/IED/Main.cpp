@@ -243,6 +243,7 @@ namespace IED
 				}
 
 				NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
+				NodeOverrideData::LoadAndAddAdditionalCMENodes(PATHS::ADDITIONAL_CME_NODES);
 
 				auto& nodeMap = IED::Data::NodeMap::GetSingleton();
 

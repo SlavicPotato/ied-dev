@@ -5178,6 +5178,11 @@ namespace IED
 		FillGlobalSlotConfig(m_config.active.slot);
 		CleanConfigStore(m_config.active);
 		QueueResetAll(ControllerUpdateFlags::kNone);
+
+		if (auto& rt = UIGetRenderTask())
+		{
+			rt->QueueReset();
+		}
 	}
 
 	/*auto Controller::ReceiveEvent(

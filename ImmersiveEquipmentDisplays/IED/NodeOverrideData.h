@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/ConfigAdditionalCMENode.h"
 #include "IED/ConfigConvertNodes.h"
 #include "IED/ConfigExtraNode.h"
 #include "IED/ConfigNodeMonitor.h"
@@ -17,6 +18,15 @@ namespace IED
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(NodeOverrideDataEntryFlags);
+
+	enum class OverrideNodeEntryFlags : std::uint32_t
+	{
+		kNone = 0,
+
+		kAdditionalNode = 1u << 0
+	};
+
+	DEFINE_ENUM_CLASS_BITWISE(OverrideNodeEntryFlags);
 
 	namespace concepts
 	{
@@ -141,12 +151,14 @@ namespace IED
 
 			constexpr overrideNodeEntry_t(
 				const stl::fixed_string& a_name,
-				const std::string&       a_desc,
-				WeaponPlacementID        a_pid) :
+				const stl::fixed_string& a_desc,
+				WeaponPlacementID        a_pid,
+				OverrideNodeEntryFlags   a_flags = OverrideNodeEntryFlags::kNone) :
 				desc(a_desc),
 				name(a_name),
 				bsname(a_name.c_str()),
-				placementID(a_pid)
+				placementID(a_pid),
+				flags(a_flags)
 			{
 			}
 
@@ -155,10 +167,11 @@ namespace IED
 			overrideNodeEntry_t(overrideNodeEntry_t&&)                 = delete;
 			overrideNodeEntry_t& operator=(overrideNodeEntry_t&&) = delete;
 
-			stl::fixed_string desc;
-			stl::fixed_string name;
-			BSFixedString     bsname;
-			WeaponPlacementID placementID;
+			stl::fixed_string                 desc;
+			stl::fixed_string                 name;
+			BSFixedString                     bsname;
+			WeaponPlacementID                 placementID;
+			stl::flag<OverrideNodeEntryFlags> flags{ OverrideNodeEntryFlags::kNone };
 		};
 
 		struct extraNodeEntrySkel_t
@@ -368,7 +381,7 @@ namespace IED
 		{
 			return m_Instance->m_cme;
 		}
-
+		
 		inline static const auto& GetMOVNodeData() noexcept
 		{
 			return m_Instance->m_mov;
@@ -427,6 +440,7 @@ namespace IED
 		static void LoadAndAddExtraNodes(const char* a_path);
 		static void LoadAndAddNodeMonitor(const char* a_path);
 		static void LoadAndAddConvertNodes(const char* a_path);
+		static void LoadAndAddAdditionalCMENodes(const char* a_path);
 
 		FN_NAMEPROC("NodeOverrideData");
 
@@ -448,6 +462,9 @@ namespace IED
 
 		void AddConvertNodesData(
 			const std::list<Data::configConvertNodesList_t>& a_data);
+
+		void AddAdditionalCMENodeData(
+			const std::list<Data::configAdditionalCMENodeList_t>& a_data);
 
 		cm_data_type             m_cme;
 		cm_data_type             m_mov;

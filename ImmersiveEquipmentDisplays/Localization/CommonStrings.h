@@ -230,5 +230,6 @@ namespace IED
 		Persistent      = 301,
 		Skeleton        = 302,
 		Signature       = 303,
+		Loaded          = 304,
 	};
 }
