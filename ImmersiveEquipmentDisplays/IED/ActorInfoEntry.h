@@ -28,6 +28,7 @@ namespace IED
 		bool                                  active{ false };
 		bool                                  attached{ false };
 		bool                                  dead{ false };
+		bool                                  hasLoadedState{ false };
 		std::uint32_t                         flags{ false };
 		std::string                           name;
 		Game::FormID                          race;

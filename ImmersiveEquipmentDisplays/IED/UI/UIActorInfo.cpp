@@ -390,7 +390,7 @@ namespace IED
 					{
 						ImGui::Text(LS(UIWidgetCommonStrings::InitiallyDisabled));
 					}
-					
+
 					if (data.flags & 1u << 12)
 					{
 						ImGui::Text(LS(UIWidgetCommonStrings::Ignored));
@@ -402,7 +402,7 @@ namespace IED
 					}
 				});
 
-				if (data.dead)
+				if (data.dead || data.hasLoadedState)
 				{
 					ImGui::TableNextRow();
 
@@ -410,7 +410,23 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::State));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%s", LS(CommonStrings::Dead));
+
+					if (data.hasLoadedState)
+					{
+						ImGui::TextWrapped("%s", LS(CommonStrings::Loaded));
+					}
+
+					if (data.dead)
+					{
+						if (data.hasLoadedState)
+						{
+							ImGui::SameLine();
+							ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+							ImGui::SameLine();
+						}
+
+						ImGui::TextWrapped("%s", LS(CommonStrings::Dead));
+					}
 				}
 
 				ImGui::TableNextRow();
