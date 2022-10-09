@@ -14,7 +14,9 @@ namespace IED
 		{
 			try
 			{
-				stl::fixed_string defaultLang(DEFAULT_LANG);
+				const stl::fixed_string defaultLang(DEFAULT_LANG);
+
+				const fs::path allowedExt{ ".json" };
 
 				for (const auto& entry : fs::directory_iterator(a_path))
 				{
@@ -26,6 +28,12 @@ namespace IED
 						}
 
 						auto& path = entry.path();
+
+						if (!path.has_extension() ||
+						    path.extension() != allowedExt)
+						{
+							continue;
+						}
 
 						auto tmp(std::make_unique<StringTable>());
 						if (!tmp->Load(path))
