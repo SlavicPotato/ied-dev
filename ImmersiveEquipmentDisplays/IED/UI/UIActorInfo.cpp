@@ -79,7 +79,8 @@ namespace IED
 
 			if (!data.data->initialized)
 			{
-				ImGui::TextUnformatted(LS(UIActorInfoStrings::DataUnavailable));
+				ImGui::TextUnformatted(
+					LS(UIActorInfoStrings::DataUnavailable));
 
 				return;
 			}
@@ -107,14 +108,45 @@ namespace IED
 			{
 				ImGui::Spacing();
 				ImGui::Indent();
+				ImGui::PushID("actor");
 
 				DrawActorInfoContents(handle, data);
 
+				ImGui::PopID();
 				ImGui::Unindent();
 				ImGui::Spacing();
 			}
 
 			bool result;
+
+			if (!data.data->factions.data.empty())
+			{
+				result = CollapsingHeader(
+					"faction_tree",
+					false,
+					"%s [%zu]",
+					LS(CommonStrings::Factions),
+					data.data->factions.data.size());
+			}
+			else
+			{
+				result = CollapsingHeader(
+					"faction_tree",
+					false,
+					"%s",
+					LS(CommonStrings::Factions));
+			}
+
+			if (result)
+			{
+				ImGui::Spacing();
+				ImGui::PushID("faction");
+
+				DrawFactionTreeContents(handle, data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+			}
 
 			if (!data.data->inventory.items.empty())
 			{
@@ -137,9 +169,11 @@ namespace IED
 			if (result)
 			{
 				ImGui::Spacing();
+				ImGui::PushID("inv");
 
 				DrawInventoryTreeContents(handle, data);
 
+				ImGui::PopID();
 				ImGui::Spacing();
 			}
 		}
@@ -388,7 +422,7 @@ namespace IED
 
 					if (data.flags & 1u << 11)
 					{
-						ImGui::Text(LS(UIWidgetCommonStrings::InitiallyDisabled));
+						ImGui::Text(LS(CommonStrings::Disabled));
 					}
 
 					if (data.flags & 1u << 12)
@@ -590,6 +624,27 @@ namespace IED
 			ImGui::Columns();
 		}
 
+		void UIActorInfo::DrawFactionTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			const auto offsetY = ImGui::GetContentRegionAvail().y * 0.425f;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, offsetY },
+					false))
+			{
+				DrawFactionEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryTreeContents(
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
@@ -636,6 +691,60 @@ namespace IED
 			}
 		}
 
+		void UIActorInfo::DrawFactionEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& data = a_data.factions;
+
+			constexpr auto NUM_COLUMNS = 3;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -1.0f }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(LS(CommonStrings::FormID));
+				ImGui::TableSetupColumn(LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(LS(CommonStrings::Rank));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				for (auto& e : data.data)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%.8X", e.first.get());
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%s", e.second.name.c_str());
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%hhd", e.second.rank);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryEntries(
 			Game::FormID              a_handle,
 			const ActorInfoAggregate& a_data)
@@ -648,13 +757,27 @@ namespace IED
 			{
 				char buffer[256];
 
-				stl::snprintf(
-					buffer,
-					"[%.8X] [%hhu] [%s] [%lld]",
-					i.get(),
-					e.type,
-					e.name.c_str(),
-					e.count);
+				if (e.IsEquipped())
+				{
+					stl::snprintf(
+						buffer,
+						"[%.8X] [%hhu] [%s] [%lld] [%s]",
+						i.get(),
+						e.type,
+						e.name.c_str(),
+						e.count,
+						LS(CommonStrings::Equipped));
+				}
+				else
+				{
+					stl::snprintf(
+						buffer,
+						"[%.8X] [%hhu] [%s] [%lld]",
+						i.get(),
+						e.type,
+						e.name.c_str(),
+						e.count);
+				}
 
 				if (!m_invFilter.Test(buffer))
 				{
@@ -839,7 +962,7 @@ namespace IED
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
-			constexpr int NUM_COLUMNS = 9;
+			constexpr int NUM_COLUMNS = 10;
 
 			if (ImGui::BeginTable(
 					"table",
@@ -859,6 +982,7 @@ namespace IED
 				ImGui::TableSetupColumn(LS(CommonStrings::Health));
 				ImGui::TableSetupColumn(LS(CommonStrings::UID));
 				ImGui::TableSetupColumn(LS(CommonStrings::Owner));
+				ImGui::TableSetupColumn(LS(UIWidgetCommonStrings::OriginalREFR));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -885,10 +1009,9 @@ namespace IED
 					{
 						ImGui::Text("%s", LS(CommonStrings::Yes));
 
-						if (
-							e.flags.test(InventoryInfoExtraFlags::kEquipped) &&
-							a_info.entry.equipped.first &&
-							a_data.formid == a_info.entry.equipped.first)
+						if (e.flags.test(InventoryInfoExtraFlags::kEquipped) &&
+						    a_info.entry.equipped.first &&
+						    a_data.formid == a_info.entry.equipped.first)
 						{
 							ImGui::SameLine();
 							ImGui::TextUnformatted("[R]");
@@ -982,6 +1105,16 @@ namespace IED
 						ImGui::Text("%s", LS(CommonStrings::None));
 					}
 
+					ImGui::TableSetColumnIndex(9);
+					if (e.originalRefr)
+					{
+						ImGui::Text("%.8X", e.originalRefr);
+					}
+					else
+					{
+						ImGui::Text("%s", LS(CommonStrings::None));
+					}
+
 					ImGui::PopID();
 
 					i++;
@@ -1068,6 +1201,8 @@ namespace IED
 					{
 						data->inventory.items.clear();
 					}
+
+					data->factions.Update(actor);
 
 					data->succeeded = true;
 				}

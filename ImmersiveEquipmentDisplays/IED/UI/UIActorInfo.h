@@ -4,11 +4,12 @@
 
 #include "Widgets/Lists/UIActorListWidget.h"
 
-#include "Window/UIWindow.h"
 #include "UIContext.h"
+#include "Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
 
+#include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
 
 namespace IED
@@ -26,6 +27,7 @@ namespace IED
 			Game::FormID          actor;
 			actorInfoEntry_t      entry;
 			actorInventoryInfo_t  inventory;
+			actorFactionInfo_t    factions;
 		};
 
 		struct ActorInfoData
@@ -78,16 +80,20 @@ namespace IED
 			void DrawActorInfoContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawActorInfoContentsFirst(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawActorInfoContentsSecond(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawActorInfoContentsThird(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawFactionTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
@@ -96,6 +102,10 @@ namespace IED
 				const ActorInfoData& a_data);
 
 			void DrawInventoryFilterTree();
+
+			void DrawFactionEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
 
 			void DrawInventoryEntries(
 				Game::FormID              a_handle,
