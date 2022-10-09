@@ -669,6 +669,15 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
+
+			case EquipmentOverrideConditionType::Faction:
+
+				return Conditions::match_faction<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;
@@ -978,6 +987,15 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
+
+			case EquipmentOverrideConditionType::Faction:
+
+				return Conditions::match_faction<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;
@@ -1376,6 +1394,15 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match);
+
+			case EquipmentOverrideConditionType::Faction:
+
+				return Conditions::match_faction<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;

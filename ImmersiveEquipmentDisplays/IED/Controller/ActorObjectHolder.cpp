@@ -18,7 +18,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
-	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
+	//std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
@@ -46,13 +46,13 @@ namespace IED
 		                     m_lfsc_delta_lf.fetch_add(
 								 IPerfCounter::T(50000),
 								 std::memory_order_relaxed) %
-		                         IPerfCounter::T(1250000);
+		                         IPerfCounter::T(1000000);
 
-		m_lastHFStateCheck = m_created +
+		/*m_lastHFStateCheck = m_created +
 		                     m_lfsc_delta_hf.fetch_add(
 								 IPerfCounter::T(4000),
 								 std::memory_order_relaxed) %
-		                         IPerfCounter::T(100000);
+		                         IPerfCounter::T(100000);*/
 
 		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
 		{

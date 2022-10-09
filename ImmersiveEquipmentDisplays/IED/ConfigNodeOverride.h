@@ -71,7 +71,7 @@ namespace IED
 			// ignore scb (Node)
 			kExtraFlag0 = 1u << 10,
 
-			// laying down (Furniture), is child (Location), match parent (Worldspace), playable (Race), is bolt (Biped)
+			// laying down (Furniture), is child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), rank (Faction)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)
@@ -108,7 +108,8 @@ namespace IED
 			Mounting   = 16,
 			Mounted    = 17,
 			Idle       = 18,
-			Skeleton   = 19
+			Skeleton   = 19,
+			Faction    = 20,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -186,6 +187,7 @@ namespace IED
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Idle:
+				case NodeOverrideConditionType::Faction:
 					form = a_form;
 					break;
 				case NodeOverrideConditionType::Form:
@@ -308,6 +310,7 @@ namespace IED
 			{
 				std::int32_t i32a{ 0 };
 				std::int32_t skeletonID;
+				std::int32_t factionRank;
 			};
 
 			union

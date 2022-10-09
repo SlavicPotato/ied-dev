@@ -631,6 +631,15 @@ namespace IED
 				Data::NodeOverrideConditionFlags>(
 				a_params,
 				a_data);
+
+		case Data::NodeOverrideConditionType::Faction:
+
+			return Conditions::match_faction<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 		}
 
 		return false;
@@ -709,7 +718,7 @@ namespace IED
 
 		if (xfrm.scale)
 		{
-			a_out.scale = std::clamp(stl::zero_nan(a_out.scale * *xfrm.scale), 0.01f, 100.0f);
+			a_out.scale = std::clamp(a_out.scale * *xfrm.scale, 0.01f, 100.0f);
 		}
 
 		if (xfrm.rotationMatrix)
@@ -719,7 +728,7 @@ namespace IED
 
 		if (xfrm.position)
 		{
-			NiPoint3 pos = *xfrm.position;
+			auto pos = *xfrm.position;
 
 			if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kLockToAccum))
 			{
@@ -762,7 +771,7 @@ namespace IED
 			}
 			else
 			{
-				auto apos = a_out.rot._simd_mulpt_scale(pos, a_out.scale);
+				const auto apos = a_out.rot._simd_mulpt_scale(pos, a_out.scale);
 
 				a_out.pos += apos;
 
@@ -780,20 +789,27 @@ namespace IED
 		float                                   a_adjust,
 		NiPoint3&                               a_posAccum)
 	{
-		auto offset = a_data.adjustScale * a_adjust;
-
-		if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
-		{
-			a_posAccum += offset;
-		}
+		const auto offset = a_data.adjustScale * a_adjust;
 
 		if (a_data.flags.test(Data::NodeOverrideValuesFlags::kAbsolutePosition))
 		{
 			a_out.pos += offset;
+
+			if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
+			{
+				a_posAccum += offset;
+			}
 		}
 		else
 		{
-			a_out.pos += a_out.rot._simd_mulpt_scale(offset, a_out.scale);
+			const auto apos = a_out.rot._simd_mulpt_scale(offset, a_out.scale);
+
+			a_out.pos += apos;
+
+			if (a_data.offsetFlags.test(Data::NodeOverrideOffsetFlags::kAccumulatePos))
+			{
+				a_posAccum += apos;
+			}
 		}
 	}
 
@@ -807,7 +823,7 @@ namespace IED
 
 		if (a_data.transform.scale)
 		{
-			xfrm.scale = std::clamp(stl::zero_nan(xfrm.scale * *a_data.transform.scale), 0.01f, 100.0f);
+			xfrm.scale = std::clamp(xfrm.scale * *a_data.transform.scale, 0.01f, 100.0f);
 		}
 
 		if (a_data.transform.rotationMatrix)

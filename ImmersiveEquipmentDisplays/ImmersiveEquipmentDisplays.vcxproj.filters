@@ -1517,6 +1517,9 @@
     <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ActorFactionInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2397,6 +2400,9 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorFactionInfo.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

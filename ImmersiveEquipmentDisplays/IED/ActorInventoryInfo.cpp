@@ -152,13 +152,22 @@ namespace IED
 					x.uid = extraUID->uniqueId;
 				}
 
-				x.itemId = HashUtil::CRC32(x.GetName(item).c_str(), form->formID & 0x00FFFFFFui32);
+				//x.itemId = HashUtil::CRC32(x.GetName(item).c_str(), form->formID & 0x00FFFFFFui32);
 
 				if (const auto extraOwner = e->Get<ExtraOwnership>())
 				{
 					if (auto owner = extraOwner->owner)
 					{
 						x.owner = owner->formID;
+					}
+				}
+
+				if (const auto extraOriginalRefr = e->Get<ExtraOriginalReference>())
+				{
+					NiPointer<TESObjectREFR> ref;
+					if (extraOriginalRefr->handle.Lookup(ref))
+					{
+						x.originalRefr = ref->formID;
 					}
 				}
 
@@ -173,11 +182,13 @@ namespace IED
 				if (presence->HasType(ExtraWorn::EXTRA_DATA))
 				{
 					x.flags.set(InventoryInfoExtraFlags::kEquipped);
+					item.flags.set(InventoryInfoBaseFlags::kEquipped);
 				}
 
 				if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
 				{
 					x.flags.set(InventoryInfoExtraFlags::kEquippedLeft);
+					item.flags.set(InventoryInfoBaseFlags::kEquippedLeft);
 				}
 
 				if (presence->HasType(ExtraHotkey::EXTRA_DATA))

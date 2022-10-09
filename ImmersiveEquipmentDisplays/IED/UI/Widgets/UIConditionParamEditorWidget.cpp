@@ -305,6 +305,25 @@ namespace IED
 				}
 			}
 			
+			if (const auto& e = get(ConditionParamItem::Int32); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::Int32);
+
+				if (!args.hide)
+				{
+					result |= ImGui::InputScalar(
+						"##in_i32",
+						ImGuiDataType_U32,
+						reinterpret_cast<std::uint32_t*>(e.p1),
+						nullptr,
+						nullptr,
+						"%d",
+						ImGuiInputTextFlags_EnterReturnsTrue);
+				}
+			}
+			
 			if (const auto& e = get(ConditionParamItem::Percent); e.p1)
 			{
 				ConditionParamItemExtraArgs args;

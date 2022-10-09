@@ -356,27 +356,16 @@ namespace IED
 				continue;
 			}
 
-			e.state_var_update_defer(state.inInterior, cell->IsInterior());
-			e.state_var_update_defer(state.worldspace, cell->GetWorldSpace());
-			e.state_var_update_defer(state.currentIdle, actor->GetFurnitureIdle());
-			e.state_var_update_defer(state.currentPackage, actor->GetCurrentPackage());
-			e.state_var_update_defer(state.inCombat, Game::GetActorInCombat(actor));
-			e.state_var_update_defer(state.flags1, actor->flags1 & ACTOR_CHECK_FLAGS_1);
-			e.state_var_update_defer(state.flags2, actor->flags2 & ACTOR_CHECK_FLAGS_2);
-			e.state_var_update_defer(state.sitting, actor->IsSitting());
-			e.state_var_update_defer(state.sleeping, actor->IsSleeping());
-			e.state_var_update_defer(state.beingRidden, actor->IsBeingRidden());
-			e.state_var_update_defer(state.weaponDrawn, actor->IsWeaponDrawn());
-			e.state_var_update_defer(state.arrested, actor->IsArrested());
-			e.state_var_update_defer(state.unconscious, actor->IsUnconscious());
+			if (state.UpdateState(actor))
+			{
+				e.RequestEvalDefer();
+			}
 
-			e.m_wantLFUpdate |= e.state_var_update_b(state.flagslf1, actor->flags1 & ACTOR_CHECK_FLAGS_LF_1);
-			e.m_wantLFUpdate |= e.state_var_update_b(state.flagslf2, actor->flags2 & ACTOR_CHECK_FLAGS_LF_2);
-			e.m_wantLFUpdate |= e.state_var_update_b(state.swimming, actor->IsSwimming());
+			e.m_wantLFUpdate |= state.UpdateStateLF(actor);
 
 			if (e.UpdateNodeMonitorEntries())
 			{
-				e.RequestEval();
+				e.RequestEvalDefer();
 			}
 
 			if (IPerfCounter::delta_us(
@@ -384,6 +373,13 @@ namespace IED
 					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_LOW)
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
+
+				/*PerfTimer pt;
+				pt.Start();*/
+
+				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
+
+				//_DMESSAGE("%.8X: %f | %zu", e.m_formid, pt.Stop(), state.GetNumFactions());
 
 				if (e.m_wantLFUpdate)
 				{

@@ -42,7 +42,7 @@ namespace IED
 			kMatchMaskAllEquipmentAndThis = kMatchEquipmentSlots | kMatchThisItem,
 			kMatchMaskAny                 = kMatchEquipped | kMatchMaskAllEquipmentAndThis,
 
-			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form)
+			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form), rank (Faction)
 			kExtraFlag1 = 1u << 11,
 
 			// match skin (Biped), is child (Race)
@@ -84,6 +84,7 @@ namespace IED
 			Presence   = 18,
 			Idle       = 19,
 			Skeleton   = 20,
+			Faction    = 21,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -158,6 +159,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
+				case EquipmentOverrideConditionType::Faction:
 					form = a_form;
 					break;
 				case EquipmentOverrideConditionType::Form:
@@ -282,6 +284,7 @@ namespace IED
 			{
 				std::int32_t i32a{ 0 };
 				std::int32_t skeletonID;
+				std::int32_t factionRank;
 			};
 
 			union

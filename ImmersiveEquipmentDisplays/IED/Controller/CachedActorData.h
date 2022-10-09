@@ -25,9 +25,64 @@ namespace IED
 	inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_LF_2 =
 		Actor::Flags2::kUnderwater;
 
-	struct CachedActorData
+	class CachedFactionData
+	{
+		using container_type =
+			stl::map_sa<
+				Game::FormID,
+				std::int8_t>;
+
+	public:
+		CachedFactionData(Actor* a_actor);
+
+		bool UpdateFactions(Actor* a_actor);
+
+		[[nodiscard]] inline constexpr auto GetNumFactions() const noexcept
+		{
+			return active_container->size();
+		}
+
+		inline constexpr const auto& GetFactionContainer() const noexcept
+		{
+			return *active_container;
+		}
+
+	private:
+		inline constexpr auto& GetWorkingContainer() noexcept
+		{
+			return active_container == std::addressof(b1) ? b2 : b1;
+		}
+
+		inline constexpr void SwapContainers() noexcept
+		{
+			active_container = std::addressof(GetWorkingContainer());
+		}
+
+		inline constexpr bool BuffersEqual() const
+		{
+			auto& r1 = b1.raw();
+			auto& r2 = b2.raw();
+
+			return r1.size() == r2.size() &&
+			       std::equal(
+					   r1.begin(),
+					   r1.end(),
+					   r2.begin());
+		}
+
+		container_type b1;
+		container_type b2;
+
+		container_type* active_container;
+	};
+
+	struct CachedActorData :
+		CachedFactionData
 	{
 		CachedActorData(Actor* a_actor);
+
+		bool UpdateState(Actor* a_actor);
+		bool UpdateStateLF(Actor* a_actor);
 
 		TESWorldSpace*           worldspace{ nullptr };
 		TESPackage*              currentPackage{ nullptr };

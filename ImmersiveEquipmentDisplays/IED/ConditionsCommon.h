@@ -35,7 +35,7 @@ namespace IED
 			case Data::ExtraConditionType::kIsMount:
 				return a_params.actor->IsMount();
 			case Data::ExtraConditionType::kShoutEquipped:
-				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->equippedShout);
+				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->selectedPower);
 			/*case Data::ExtraConditionType::kInMerchantFaction:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);*/
 			case Data::ExtraConditionType::kCombatStyle:
@@ -779,11 +779,11 @@ namespace IED
 			return a_match.flags.test(Tf::kNegateMatch2) !=
 			       (a_match.form.get_id() == cfid);
 		}
-		
+
 		template <class Tm, class Tf>
 		constexpr bool match_skeleton(
-			CommonParams&          a_params,
-			const Tm&              a_match) noexcept
+			CommonParams& a_params,
+			const Tm&     a_match) noexcept
 		{
 			if (a_match.flags.test(Tf::kExtraFlag1))
 			{
@@ -793,6 +793,35 @@ namespace IED
 			{
 				return get_skeleton_id(a_params).id() == a_match.skeletonID;
 			}
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_faction(
+			CommonParams&            a_params,
+			const Tm&                a_match,
+			const CachedFactionData& a_cached)
+		{
+			if (a_match.form.get_id())
+			{
+				auto& data = a_cached.GetFactionContainer();
+
+				auto it = data.find(a_match.form.get_id());
+				if (it == data.end())
+				{
+					return false;
+				}
+
+				if (a_match.flags.test(Tf::kExtraFlag1))
+				{
+					return compare(a_match.compOperator, it->second, a_match.factionRank);
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept;

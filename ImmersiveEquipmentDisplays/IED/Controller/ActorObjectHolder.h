@@ -502,7 +502,7 @@ namespace IED
 
 		bool      m_wantLFUpdate{ false };
 		long long m_lastLFStateCheck;
-		long long m_lastHFStateCheck;
+		//long long m_lastHFStateCheck;
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonID                            m_skeletonID;
@@ -522,7 +522,7 @@ namespace IED
 		IObjectManager& m_owner;
 
 		static std::atomic_ullong m_lfsc_delta_lf;
-		static std::atomic_ullong m_lfsc_delta_hf;
+		//static std::atomic_ullong m_lfsc_delta_hf;
 	};
 
 }

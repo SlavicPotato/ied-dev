@@ -113,6 +113,7 @@ namespace IED
 			CollisionDisabled                   = 2102,
 			InitiallyDisabled                   = 2103,
 			Ignored                             = 2104,
+			OriginalREFR                        = 2105,
 		};
 	}
 }

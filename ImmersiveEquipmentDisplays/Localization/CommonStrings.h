@@ -231,5 +231,8 @@ namespace IED
 		Skeleton        = 302,
 		Signature       = 303,
 		Loaded          = 304,
+		Faction         = 305,
+		Rank            = 306,
+		Factions        = 307,
 	};
 }

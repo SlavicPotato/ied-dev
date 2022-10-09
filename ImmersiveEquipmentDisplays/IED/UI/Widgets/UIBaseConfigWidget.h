@@ -330,7 +330,7 @@ namespace IED
 			Game::FormID                                m_aoNewEntryActorID;
 			Game::FormID                                m_aoNewEntryNPCID;
 			Game::FormID                                m_aoNewEntryGlobID;
-			Game::FormID                                m_aoNewEntryMountID;
+			Game::FormID                                m_aoNewEntryFactionID;
 			BIPED_OBJECT                                m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ExtraConditionType                    m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 			Data::ObjectSlotExtra                       m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
@@ -1985,6 +1985,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Keyword:
 					case Data::EquipmentOverrideConditionType::Quest:
 					case Data::EquipmentOverrideConditionType::Global:
+					case Data::EquipmentOverrideConditionType::Faction:
 						if (result.form)
 						{
 							a_entry.emplace_back(
@@ -2221,6 +2222,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Keyword:
 						case Data::EquipmentOverrideConditionType::Quest:
 						case Data::EquipmentOverrideConditionType::Global:
+						case Data::EquipmentOverrideConditionType::Faction:
 							if (result.form)
 							{
 								it = a_entry.emplace(
@@ -2661,6 +2663,25 @@ namespace IED
 								}
 
 								break;
+
+							case Data::EquipmentOverrideConditionType::Faction:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
+									e.compOperator);
+								m_condParamEditor.SetNext<ConditionParamItem::Int32>(
+									e.factionRank);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = LS(CommonStrings::Faction);
+
+								break;
+
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -2746,16 +2767,16 @@ namespace IED
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
-				m_aoNewEntryID      = {};
-				m_aoNewEntryKWID    = {};
-				m_aoNewEntryRaceID  = {};
-				m_aoNewEntryActorID = {};
-				m_aoNewEntryNPCID   = {};
-				m_aoNewEntryGlobID  = {};
-				m_aoNewEntryMountID = {};
-				m_ooNewBiped        = BIPED_OBJECT::kNone;
-				m_aoNewSlot         = Data::ObjectSlotExtra::kNone;
-				m_ooNewExtraCond    = Data::ExtraConditionType::kNone;
+				m_aoNewEntryID        = {};
+				m_aoNewEntryKWID      = {};
+				m_aoNewEntryRaceID    = {};
+				m_aoNewEntryActorID   = {};
+				m_aoNewEntryNPCID     = {};
+				m_aoNewEntryGlobID    = {};
+				m_aoNewEntryFactionID = {};
+				m_ooNewBiped          = BIPED_OBJECT::kNone;
+				m_aoNewSlot           = Data::ObjectSlotExtra::kNone;
+				m_ooNewExtraCond      = Data::ExtraConditionType::kNone;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
@@ -2997,6 +3018,26 @@ namespace IED
 					{
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Skeleton;
+					}
+
+					if (LCG_BM(CommonStrings::Faction, "L"))
+					{
+						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Faction);
+
+						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
+								m_aoNewEntryFactionID))
+						{
+							if (m_aoNewEntryFactionID)
+							{
+								result.action    = BaseConfigEditorAction::Insert;
+								result.form      = m_aoNewEntryFactionID;
+								result.entryType = Data::EquipmentOverrideConditionType::Faction;
+
+								ImGui::CloseCurrentPopup();
+							}
+						}
+
+						ImGui::EndMenu();
 					}
 
 					if (LCG_BM(CommonStrings::Extra, "Y"))
@@ -3753,6 +3794,31 @@ namespace IED
 				}
 
 				break;
+			case Data::EquipmentOverrideConditionType::Faction:
+
+				switch (a_item)
+				{
+				case ConditionParamItem::CompOper:
+
+					result = ImGui::CheckboxFlagsT(
+						LS(CommonStrings::Rank, "ctl_tog_1"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+					{
+						ImGui::SameLine();
+					}
+
+					[[fallthrough]];
+				case ConditionParamItem::Int32:
+
+					a_args.hide = !match->flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1);
+
+					break;
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -3811,6 +3877,10 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Idle:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Idle));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
+				break;
+			case Data::EquipmentOverrideConditionType::Faction:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Faction));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);

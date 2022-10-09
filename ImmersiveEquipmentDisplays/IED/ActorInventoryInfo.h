@@ -23,7 +23,11 @@ namespace IED
 	{
 		kNone = 0,
 
-		kNonPlayable = 1u << 0,
+		kNonPlayable  = 1u << 0,
+		kEquipped     = 1u << 1,
+		kEquippedLeft = 1u << 2,
+
+		kEquippedMask = kEquipped | kEquippedLeft
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(InventoryInfoBaseFlags)
@@ -53,8 +57,9 @@ namespace IED
 
 			stl::flag<InventoryInfoExtraFlags> flags{ InventoryInfoExtraFlags::kNone };
 			std::optional<std::uint16_t>       uid;
-			std::uint32_t                      itemId{ 0 };
+			//std::uint32_t                      itemId{ 0 };
 			Game::FormID                       owner;
+			Game::FormID                       originalRefr;
 			std::optional<std::string>         name;
 			std::optional<Enchantment>         enchantment;
 			float                              health{ 1.0f };
@@ -62,6 +67,11 @@ namespace IED
 
 		struct Base
 		{
+			[[nodiscard]] inline constexpr auto IsEquipped() const noexcept
+			{
+				return flags.test_any(InventoryInfoBaseFlags::kEquippedMask);
+			}
+
 			Game::FormID                      formid;
 			std::uint8_t                      type;
 			stl::flag<InventoryInfoBaseFlags> flags{ InventoryInfoBaseFlags::kNone };

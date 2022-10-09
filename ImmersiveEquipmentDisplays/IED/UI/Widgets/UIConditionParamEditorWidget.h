@@ -35,6 +35,7 @@ namespace IED
 		CompOper,
 		Float,
 		UInt32,
+		Int32,
 		TimeOfDay,
 		Extra,
 		Race,
@@ -314,6 +315,16 @@ namespace IED
 				Ap == ConditionParamItem::UInt32)
 			{
 				static_assert(std::is_same_v<T, std::uint32_t>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::Int32)
+			{
+				static_assert(std::is_same_v<T, std::int32_t>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),
