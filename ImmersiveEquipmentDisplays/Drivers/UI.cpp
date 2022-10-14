@@ -43,26 +43,26 @@ namespace IED
 
 		void UI::Receive(const D3D11CreateEventPost& a_evn)
 		{
-			ASSERT(a_evn.m_pSwapChainDesc->OutputWindow != nullptr);
+			ASSERT(a_evn.m_pSwapChainDesc.OutputWindow != nullptr);
 
 			stl::scoped_lock lock(m_lock);
 
 			m_info.bufferSize = {
-				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width),
-				static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height)
+				static_cast<float>(a_evn.m_pSwapChainDesc.BufferDesc.Width),
+				static_cast<float>(a_evn.m_pSwapChainDesc.BufferDesc.Height)
 			};
 
-			m_info.hWnd = a_evn.m_pSwapChainDesc->OutputWindow;
+			m_info.hWnd = a_evn.m_pSwapChainDesc.OutputWindow;
 
 			RECT rect{};
 			if (::GetClientRect(
-					a_evn.m_pSwapChainDesc->OutputWindow,
+					a_evn.m_pSwapChainDesc.OutputWindow,
 					std::addressof(rect)) == TRUE)
 			{
 				m_ioUserData.btsRatio = {
-					static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Width) /
+					static_cast<float>(a_evn.m_pSwapChainDesc.BufferDesc.Width) /
 						static_cast<float>(rect.right),
-					static_cast<float>(a_evn.m_pSwapChainDesc->BufferDesc.Height) /
+					static_cast<float>(a_evn.m_pSwapChainDesc.BufferDesc.Height) /
 						static_cast<float>(rect.bottom)
 				};
 			}
@@ -87,7 +87,7 @@ namespace IED
 			ImGui::StyleColorsDark();
 
 			if (!::ImGui_ImplWin32_Init(
-					a_evn.m_pSwapChainDesc->OutputWindow))
+					a_evn.m_pSwapChainDesc.OutputWindow))
 			{
 				Error("ImGui initialization failed (Win32)");
 				return;
@@ -117,7 +117,7 @@ namespace IED
 			Message("ImGui initialized");
 
 			m_pfnWndProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtrA(
-				a_evn.m_pSwapChainDesc->OutputWindow,
+				a_evn.m_pSwapChainDesc.OutputWindow,
 				GWLP_WNDPROC,
 				reinterpret_cast<LONG_PTR>(WndProc_Hook)));
 
@@ -125,7 +125,7 @@ namespace IED
 			{
 				Warning(
 					"[0x%llX] SetWindowLongPtrA failed",
-					a_evn.m_pSwapChainDesc->OutputWindow);
+					a_evn.m_pSwapChainDesc.OutputWindow);
 			}
 		}
 

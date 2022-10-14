@@ -14,10 +14,15 @@ namespace IED
 
 		bool Render::Initialize(bool a_prepHook)
 		{
-			if (!hook::check_dst5<0xE8>(m_Instance.m_createD3D11_a.get()) ||
-			    !hook::check_dst5<0xE8>(m_Instance.m_unkPresent_a.get()))
+			return m_Instance.InitializeImpl(a_prepHook);
+		}
+
+		bool Render::InitializeImpl(bool a_prepHook)
+		{
+			if (!hook::check_dst5<0xE8>(m_createD3D11_a.get()) ||
+			    !hook::check_dst5<0xE8>(m_unkPresent_a.get()))
 			{
-				m_Instance.Error("Unable to hook, one or more invalid targets");
+				Error("Unable to hook, one or more invalid targets");
 				return false;
 			}
 
@@ -25,24 +30,24 @@ namespace IED
 
 			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
-				m_Instance.m_createD3D11_a.get(),
+				m_createD3D11_a.get(),
 				std::uintptr_t(CreateD3D11_Hook),
-				m_Instance.m_createD3D11_o));
+				m_createD3D11_o));
 
 			ASSERT(hook::call5(
 				skse.GetBranchTrampoline(),
-				m_Instance.m_unkPresent_a.get(),
+				m_unkPresent_a.get(),
 				std::uintptr_t(Present_Pre_Hook),
-				m_Instance.m_unkPresent_o));
+				m_unkPresent_o));
 
 #if defined(IED_ENABLE_I3DI)
 			if (a_prepHook)
 			{
 				ASSERT(hook::call5(
 					skse.GetBranchTrampoline(),
-					m_Instance.m_prepData_a.get(),
+					m_prepData_a.get(),
 					std::uintptr_t(PrepareData_Hook),
-					m_Instance.m_prepData_o));
+					m_prepData_o));
 			}
 #endif
 
@@ -57,20 +62,19 @@ namespace IED
 
 		void Render::InitializeD3D()
 		{
-			auto renderManager = BSRenderManager::GetSingleton();
+			const auto renderManager = BSRenderManager::GetSingleton();
 
 			ASSERT(renderManager != nullptr);
 
-			auto swapChain = renderManager->swapChain;
-			auto device    = renderManager->forwarder;
-			auto context   = renderManager->context;
+			const auto swapChain = renderManager->swapChain;
+			const auto device    = renderManager->forwarder;
+			const auto context   = renderManager->context;
 
 			ASSERT(swapChain != nullptr);
 			ASSERT(device != nullptr);
 			ASSERT(context != nullptr);
 
-			DXGI_SWAP_CHAIN_DESC sd{};
-			if (FAILED(swapChain->GetDesc(std::addressof(sd))))
+			if (FAILED(swapChain->GetDesc(std::addressof(m_swapChainDesc))))
 			{
 				constexpr auto error_msg = "IDXGISwapChain::GetDesc failed";
 
@@ -80,19 +84,17 @@ namespace IED
 				return;
 			}
 
-			m_swapChainDesc = sd;
-
 			m_device  = device;
 			m_context = context;
 
-			m_bufferSize.x = static_cast<float>(sd.BufferDesc.Width);
-			m_bufferSize.y = static_cast<float>(sd.BufferDesc.Height);
+			m_bufferSize.x = static_cast<float>(m_swapChainDesc.BufferDesc.Width);
+			m_bufferSize.y = static_cast<float>(m_swapChainDesc.BufferDesc.Height);
 			m_bufferSize.z = m_bufferSize.x / m_bufferSize.y;
 
 			Debug("%s: Sending event", __FUNCTION__);
 
 			Events::D3D11CreateEventPost evd_post{
-				std::addressof(sd),
+				m_swapChainDesc,
 				renderManager->forwarder,
 				renderManager->context,
 				swapChain
@@ -110,6 +112,7 @@ namespace IED
 			m_Instance.GetEventDispatcher<Events::IDXGISwapChainPresent>().SendEvent(evn);
 		}
 
+#if defined(IED_ENABLE_I3DI)
 		void Render::PrepareData_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow)
 		{
 			m_Instance.m_prepData_o(a_pl, a_frameTimerSlow);
@@ -118,5 +121,6 @@ namespace IED
 
 			m_Instance.GetEventDispatcher<Events::PrepareGameDataEvent>().SendEvent(evn);
 		}
+#endif
 	}
 }

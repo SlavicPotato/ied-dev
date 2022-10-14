@@ -29,12 +29,12 @@ namespace IED
 			{
 				return m_swapChainDesc;
 			}
-			
+
 			[[nodiscard]] inline constexpr auto& GetDevice() const noexcept
 			{
 				return m_device;
 			}
-			
+
 			[[nodiscard]] inline constexpr auto& GetContext() const noexcept
 			{
 				return m_context;
@@ -56,15 +56,21 @@ namespace IED
 		private:
 			Render() = default;
 
+			bool InitializeImpl(bool a_prepHook);
+
 			static void Present_Pre_Hook(std::uint32_t a_p1);
-			static void PrepareData_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 			static void CreateD3D11_Hook();
+#if defined(IED_ENABLE_I3DI)
+			static void PrepareData_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
+#endif
 
 			void InitializeD3D();
 
 			decltype(&CreateD3D11_Hook) m_createD3D11_o{ nullptr };
 			decltype(&Present_Pre_Hook) m_unkPresent_o{ nullptr };
+#if defined(IED_ENABLE_I3DI)
 			decltype(&PrepareData_Hook) m_prepData_o{ nullptr };
+#endif
 
 			Microsoft::WRL::ComPtr<ID3D11Device>        m_device;
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context;
@@ -74,8 +80,9 @@ namespace IED
 
 			static inline const auto m_createD3D11_a = IAL::Address<std::uintptr_t>(75595, 77226, 0x9, 0x275);
 			static inline const auto m_unkPresent_a  = IAL::Address<std::uintptr_t>(75461, 77246, 0x9, 0x9);
-			//static inline const auto m_prepData_a    = IAL::Address<std::uintptr_t>(35556, 0, 0x2DC, 0x0);
+#if defined(IED_ENABLE_I3DI)
 			static inline const auto m_prepData_a = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
+#endif
 
 			static Render m_Instance;
 		};
