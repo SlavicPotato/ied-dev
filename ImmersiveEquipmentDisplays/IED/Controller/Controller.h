@@ -521,20 +521,22 @@ namespace IED
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		void EvaluateTransformsImpl(
-			Game::FormID a_actor);
+		/*void EvaluateTransformsImpl(
+			Game::FormID a_actor);*/
 
 		void EvaluateTransformsImpl(
-			ActorObjectHolder& a_objects);
+			ActorObjectHolder&               a_objects,
+			stl::flag<ControllerUpdateFlags> a_flags);
 
 		bool ProcessTransformsImpl(
-			NiNode*                                      a_npcRoot,
-			Actor*                                       a_actor,
-			TESNPC*                                      a_npc,
-			TESRace*                                     a_race,
-			Data::ConfigSex                              a_sex,
-			ActorObjectHolder&                           a_objects,
-			const Data::collectorData_t::container_type* a_equippedForms);
+			NiNode*                          a_root,
+			NiNode*                          a_npcRoot,
+			Actor*                           a_actor,
+			TESNPC*                          a_npc,
+			TESRace*                         a_race,
+			Data::ConfigSex                  a_sex,
+			ActorObjectHolder&               a_objects,
+			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void ActorResetImpl(
 			Actor*                           a_actor,
@@ -705,16 +707,20 @@ namespace IED
 			bool                             a_visible,
 			TESForm*                         a_currentModelForm);
 
-		template <class Ta, class Tb>
-		constexpr void UpdateObjectEffectShaders(
+		void ResetEffectShaderData(
 			processParams_t& a_params,
-			const Ta&        a_config,
-			Tb&              a_objectEntry,
-			bool             a_updateValues = false) requires(  //
-			(std::is_same_v<Ta, Data::configCustom_t>&&
-		         std::is_same_v<Tb, ObjectEntryCustom>) ||
-			(std::is_same_v<Ta, Data::configSlot_t> &&
-		     std::is_same_v<Tb, ObjectEntrySlot>));
+			ObjectEntryBase& a_entry);
+
+		void ResetEffectShaderData(
+			processParams_t& a_params,
+			ObjectEntryBase& a_entry,
+			NiAVObject*      a_object);
+
+		constexpr void UpdateObjectEffectShaders(
+			processParams_t&            a_params,
+			const Data::configCustom_t& a_config,
+			ObjectEntryCustom&          a_objectEntry,
+			bool                        a_updateValues = false);
 
 		void ProcessSlots(processParams_t& a_params);
 

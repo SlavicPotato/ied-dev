@@ -155,6 +155,7 @@ namespace IED
 								 "Sword",
 								 AnimationWeaponSlot::Sword,
 								 I3DIModelID::kOneHandedSword,
+								 GearNodeID::k1HSword,
 								 true,
 								 {
 
@@ -176,6 +177,7 @@ namespace IED
 									 "Sword Left",
 									 AnimationWeaponSlot::SwordLeft,
 									 I3DIModelID::kOneHandedSword,
+									 GearNodeID::k1HSwordLeft,
 									 false,
 									 {
 
@@ -197,6 +199,7 @@ namespace IED
 							   "Axe",
 							   AnimationWeaponSlot::Axe,
 							   I3DIModelID::kOneHandedAxe,
+							   GearNodeID::k1HAxe,
 							   true,
 							   {
 
@@ -215,6 +218,7 @@ namespace IED
 								   "Axe Left",
 								   AnimationWeaponSlot::AxeLeft,
 								   I3DIModelID::kOneHandedAxe,
+								   GearNodeID::k1HAxeLeft,
 								   false,
 								   {
 
@@ -233,6 +237,7 @@ namespace IED
 								  "Dagger",
 								  AnimationWeaponSlot::Dagger,
 								  I3DIModelID::kDagger,
+								  GearNodeID::kDagger,
 								  true,
 								  {
 
@@ -252,6 +257,7 @@ namespace IED
 									  "Dagger Left",
 									  AnimationWeaponSlot::DaggerLeft,
 									  I3DIModelID::kDagger,
+									  GearNodeID::kDaggerLeft,
 									  false,
 									  {
 
@@ -271,6 +277,7 @@ namespace IED
 								"Mace",
 								AnimationWeaponSlot::Mace,
 								I3DIModelID::kMace,
+								GearNodeID::kMace,
 								true,
 								{
 
@@ -287,6 +294,7 @@ namespace IED
 									"Mace Left",
 									AnimationWeaponSlot::MaceLeft,
 									I3DIModelID::kMace,
+									GearNodeID::kMaceLeft,
 									false,
 									{
 
@@ -303,6 +311,7 @@ namespace IED
 								 "Staff",
 								 AnimationWeaponSlot::None,
 								 I3DIModelID::kStaff,
+								 GearNodeID::kStaff,
 								 false,
 								 {
 
@@ -319,6 +328,7 @@ namespace IED
 									 "Staff Left",
 									 AnimationWeaponSlot::None,
 									 I3DIModelID::kStaff,
+									 GearNodeID::kStaffLeft,
 									 false,
 									 {
 
@@ -335,6 +345,7 @@ namespace IED
 								"Two-Handed",
 								AnimationWeaponSlot::TwoHanded,
 								I3DIModelID::kTwoHanded,
+								GearNodeID::kTwoHanded,
 								true,
 								{
 
@@ -356,6 +367,7 @@ namespace IED
 									 "Two-Handed Extra",
 									 AnimationWeaponSlot::None,
 									 I3DIModelID::kTwoHanded,
+									 GearNodeID::kNone,
 									 false,
 									 {
 
@@ -377,6 +389,7 @@ namespace IED
 							   "Bow",
 							   AnimationWeaponSlot::None,
 							   I3DIModelID::kBow,
+							   GearNodeID::kBow,
 							   true,
 							   {
 								   { "MOV WeaponBowDefault", { "Bow" } },
@@ -396,6 +409,7 @@ namespace IED
 									"Bow Extra",
 									AnimationWeaponSlot::None,
 									I3DIModelID::kBow,
+									GearNodeID::kNone,
 									false,
 									{
 										{ "MOV WeaponBowDefault", { "Bow" } },
@@ -415,6 +429,7 @@ namespace IED
 							"Quiver",
 							AnimationWeaponSlot::Quiver,
 							I3DIModelID::kQuiver,
+							GearNodeID::kQuiver,
 							true,
 							{
 								{ "MOV QUIVERDefault", { "Quiver" } },
@@ -436,9 +451,9 @@ namespace IED
 								"Shield",
 								AnimationWeaponSlot::None,
 								I3DIModelID::kShield,
+								GearNodeID::kShield,
 								false,
 								{
-
 									{ "MOV ShieldBackDefault", { "Shield Back" } },
 								}
 

@@ -15,10 +15,34 @@ namespace IED
 
 	struct CommonParams
 	{
+		CommonParams() = default;
+
+		inline CommonParams(
+			Actor* const       a_actor,
+			TESNPC* const      a_npc,
+			TESNPC* const      a_npcOrTemplate,
+			TESRace* const     a_race,
+			NiNode* const      a_root,
+			NiNode* const      a_npcroot,
+			ActorObjectHolder& a_objects,
+			Controller&        a_controller) noexcept :
+			actor(a_actor),
+			npc(a_npc),
+			npcOrTemplate(a_npcOrTemplate),
+			race(a_race),
+			root(a_root),
+			npcRoot(a_npcroot),
+			objects(a_objects),
+			controller(a_controller)
+		{
+		}
+
 		Actor* const       actor;
 		TESNPC* const      npc;
 		TESNPC* const      npcOrTemplate;
 		TESRace* const     race;
+		NiNode* const      root;
+		NiNode* const      npcRoot;
 		ActorObjectHolder& objects;
 		Controller&        controller;
 
@@ -35,11 +59,11 @@ namespace IED
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
 		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		//mutable std::optional<bool>                                  enemiesNearby;
 		mutable std::optional<bool>                                  isMounted;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
 
+		//mutable std::optional<bool>                                  enemiesNearby;
 		//mutable std::optional<bool>                                  inInterior;
 		//mutable std::optional<TESWorldSpace*>                        worldspace;
 		//mutable std::optional<bool>                                  inCombat;

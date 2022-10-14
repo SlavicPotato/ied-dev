@@ -9,6 +9,7 @@
 #include "IED/WeaponPlacementID.h"
 
 #include "AnimationWeaponSlot.h"
+#include "GearNodeID.h"
 
 namespace IED
 {
@@ -97,6 +98,7 @@ namespace IED
 			const char*                                                          desc;
 			AnimationWeaponSlot                                                  animSlot;
 			I3DIModelID                                                          modelID;
+			GearNodeID                                                           nodeID;
 			bool                                                                 vanilla;
 			std::initializer_list<std::pair<const char*, weaponNodeListEntry_t>> movlist;
 		};
@@ -110,6 +112,7 @@ namespace IED
 				desc(a_init.desc),
 				animSlot(a_init.animSlot),
 				modelID(a_init.modelID),
+				nodeID(a_init.nodeID),
 				vanilla(a_init.vanilla),
 				movs(a_init.movlist)
 			{
@@ -125,6 +128,7 @@ namespace IED
 			const char*         desc;
 			AnimationWeaponSlot animSlot;
 			I3DIModelID         modelID;
+			GearNodeID          nodeID;
 			bool                vanilla;
 			nodeList_t          movs;
 		};
@@ -381,7 +385,7 @@ namespace IED
 		{
 			return m_Instance->m_cme;
 		}
-		
+
 		inline static const auto& GetMOVNodeData() noexcept
 		{
 			return m_Instance->m_mov;

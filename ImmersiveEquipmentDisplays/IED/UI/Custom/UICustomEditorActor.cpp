@@ -379,7 +379,7 @@ namespace IED
 			{
 				if (ImGui::MenuItem("Evaluate"))
 				{
-					m_controller.QueueEvaluate(entry->handle, ControllerUpdateFlags::kNone);
+					m_controller.QueueEvaluate(entry->handle, ControllerUpdateFlags::kWantEffectShaderConfigUpdate);
 				}
 
 				if (ImGui::MenuItem("Reset"))

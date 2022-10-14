@@ -29,22 +29,28 @@ namespace IED
 			float        weaponAdjust{ 0.0f };
 		};
 
-		struct nodeOverrideParamsArgs_t
-		{
-			NiNode* npcRoot;
-		};
-
 		struct nodeOverrideParams_t :
-			nodeOverrideParamsArgs_t,
 			CommonParams
 		{
 		public:
+			template <class... Args>
+			inline constexpr nodeOverrideParams_t(Args&&... a_args) noexcept :
+				CommonParams(std::forward<Args>(a_args)...)
+			{
+			}
+
+			inline nodeOverrideParams_t(
+				CommonParams& a_cparams) noexcept :
+				CommonParams(a_cparams)
+			{
+			}
+
 			using item_container_type = stl::unordered_map<Game::FormID, bipedInfoEntry_t>;
 
-			stl::optional<float>                 weaponAdjust;
-			stl::optional<float>                 weightAdjust;
+			std::optional<float>                 weaponAdjust;
+			std::optional<float>                 weightAdjust;
 			std::unique_ptr<item_container_type> itemData;
-			stl::optional<bool>                  bipedHasArmor;
+			std::optional<bool>                  bipedHasArmor;
 			std::uint64_t                        matchedSlotFlags{ 0 };
 
 			auto get_biped_has_armor()
@@ -61,7 +67,7 @@ namespace IED
 
 			float get_weapon_adjust();
 
-			constexpr float get_weight_adjust()
+			inline constexpr float get_weight_adjust()
 			{
 				if (!weightAdjust)
 				{

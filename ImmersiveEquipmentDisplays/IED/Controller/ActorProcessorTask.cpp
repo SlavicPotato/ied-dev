@@ -129,7 +129,9 @@ namespace IED
 		{
 			a_data.m_flags.clear(ActorObjectHolderFlags::kRequestTransformUpdateMask);
 
-			m_controller.EvaluateTransformsImpl(a_data);
+			m_controller.EvaluateTransformsImpl(
+				a_data,
+				ControllerUpdateFlags::kUseCachedParams);
 		}
 	}
 
@@ -150,7 +152,10 @@ namespace IED
 		{
 			a_data.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
 
-			m_controller.EvaluateImpl(a_data, ControllerUpdateFlags::kAll);
+			m_controller.EvaluateImpl(
+				a_data,
+				ControllerUpdateFlags::kPlaySound |
+					ControllerUpdateFlags::kUseCachedParams);
 		}
 	}
 
@@ -403,6 +408,8 @@ namespace IED
 			}
 
 			ProcessTransformUpdateRequest(e);
+
+			e.ClearCurrentParams();
 
 			if (animUpdateData)
 			{

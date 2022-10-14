@@ -274,7 +274,7 @@ namespace IED
 					return ObjectSlotExtra::kNone;
 				}
 			}
-			
+
 			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;
@@ -666,7 +666,9 @@ namespace IED
 				}
 			}
 
-			inline static constexpr BIPED_OBJECT SlotToBipedObject(Actor* a_actor, ObjectSlot a_slot) noexcept
+			inline static constexpr BIPED_OBJECT SlotToBipedObject(
+				Actor*     a_actor,
+				ObjectSlot a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -677,9 +679,6 @@ namespace IED
 				case ObjectSlot::k2HSword:
 				case ObjectSlot::k2HAxe:
 					return BIPED_OBJECT::kTwoHandMelee;
-				case ObjectSlot::k2HSwordLeft:
-				case ObjectSlot::k2HAxeLeft:
-					return BIPED_OBJECT::kNone;
 				case ObjectSlot::kMace:
 					return BIPED_OBJECT::kOneHandMace;
 				case ObjectSlot::kDagger:

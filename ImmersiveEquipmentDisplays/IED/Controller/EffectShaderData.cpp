@@ -5,27 +5,28 @@
 #include "ESF_Pulse.h"
 #include "ESF_UVLinearMotion.h"
 
+#include "ActorObjectHolder.h"
+
 namespace IED
 {
-	void EffectShaderData::clear()
+	EffectShaderData::EffectShaderData(
+		const Data::configEffectShaderHolder_t& a_data)
 	{
-		if (!data.empty())
-		{
-			visit_nodes([](auto& a_entry, auto& a_prop) {
-				if (a_prop.prop->effectData == a_entry.shaderData)
-				{
-					a_prop.prop->ClearEffectShaderData();
-				}
-			});
+		Update(a_data);
+	}
 
-			data.clear();
-		}
-
-		tag.reset();
+	EffectShaderData::EffectShaderData(
+		BIPED_OBJECT                            a_bipedObject,
+		NiNode*                                 a_sheathNode,
+		const Data::configEffectShaderHolder_t& a_data) :
+		bipedObject(a_bipedObject),
+		sheathNode(a_sheathNode)
+	{
+		Update(a_data);
 	}
 
 	bool EffectShaderData::UpdateIfChanged(
-		NiNode*                                 a_object,
+		NiAVObject*                             a_root,
 		const Data::configEffectShaderHolder_t& a_data)
 	{
 		if (tag == a_data)
@@ -34,71 +35,71 @@ namespace IED
 		}
 		else
 		{
-			Update(a_object, a_data);
+			Update(a_root, a_data);
+			return true;
+		}
+	}
+
+	bool EffectShaderData::UpdateIfChanged(
+		const ActorObjectHolder&                a_holder,
+		const Data::configEffectShaderHolder_t& a_data)
+	{
+		if (tag == a_data)
+		{
+			return false;
+		}
+		else
+		{
+			Update(a_holder, a_data);
 			return true;
 		}
 	}
 
 	void EffectShaderData::Update(
-		NiNode*                                 a_object,
+		NiAVObject*                             a_root,
 		const Data::configEffectShaderHolder_t& a_data)
 	{
-		clear();
+		ClearEffectShaderDataFromTree(a_root);
+
+		Update(a_data);
+	}
+
+	void EffectShaderData::Update(
+		const ActorObjectHolder&                a_holder,
+		const Data::configEffectShaderHolder_t& a_data)
+	{
+		ClearEffectShaderDataFromTree(a_holder.Get3D());
+		ClearEffectShaderDataFromTree(a_holder.Get3D1p());
+
+		Update(a_data);
+	}
+
+	void EffectShaderData::Update(
+		const Data::configEffectShaderHolder_t& a_data)
+	{
+		data.clear();
 
 		for (auto& [i, e] : a_data.data)
 		{
-			Entry tmp(i);
+			RE::BSTSmartPointer<BSEffectShaderData> shaderData;
 
-			std::optional<stl::set<BSFixedString>> tset;
-
-			Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
-				if (auto& effect = a_geometry->m_spEffectState)
-				{
-					if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
-					{
-						if (!e.targetNodes.empty())
-						{
-							if (!tset)
-							{
-								tset.emplace();
-
-								for (auto& f : e.targetNodes)
-								{
-									tset->emplace(f.c_str());
-								}
-							}
-
-							if (!tset->contains(a_geometry->m_name))
-							{
-								return Util::Node::VisitorControl::kContinue;
-							}
-						}
-
-						tmp.nodes.emplace_back(shaderProp);
-					}
-				}
-
-				return Util::Node::VisitorControl::kContinue;
-			});
-
-			if (tmp.nodes.empty())
+			if (!e.create_shader_data(shaderData))
 			{
 				continue;
 			}
 
-			if (!e.create_shader_data(tmp.shaderData))
-			{
-				continue;
-			}
-
-			if (e.flags.test(Data::EffectShaderDataFlags::kForce))
-			{
-				tmp.flags.set(EffectShaderData::EntryFlags::kForce);
-			}
-
-			auto& r = data.emplace_back(std::move(tmp));
+			auto& r = data.emplace_back(i, std::move(shaderData));
 
 			r.create_function_list(e.functions);
+
+			r.flags.set(
+				static_cast<EffectShaderData::EntryFlags>(
+					e.flags & Data::EffectShaderDataFlags::EntryMask));
+
+			for (auto& f : e.targetNodes)
+			{
+				r.targetNodes.emplace(f.c_str());
+			}
 		}
 
 		tag = a_data;
@@ -115,20 +116,23 @@ namespace IED
 				return false;
 			}
 
-			e.shaderData->fillColor    = it->second.fillColor;
-			e.shaderData->rimColor     = it->second.rimColor;
-			e.shaderData->uOffset      = it->second.uvo.uOffset;
-			e.shaderData->vOffset      = it->second.uvo.vOffset;
-			e.shaderData->uScale       = it->second.uvp.uScale;
-			e.shaderData->vScale       = it->second.uvp.vScale;
-			e.shaderData->edgeExponent = it->second.edgeExponent;
+			e.shaderData->fillColor     = it->second.fillColor;
+			e.shaderData->rimColor      = it->second.rimColor;
+			e.shaderData->uOffset       = it->second.uvo.uOffset;
+			e.shaderData->vOffset       = it->second.uvo.vOffset;
+			e.shaderData->uScale        = it->second.uvp.uScale;
+			e.shaderData->vScale        = it->second.uvp.vScale;
+			e.shaderData->edgeExponent  = it->second.edgeExponent;
+			e.shaderData->baseFillScale = it->second.baseFillScale;
+			e.shaderData->baseFillAlpha = it->second.baseFillAlpha;
+			e.shaderData->baseRimAlpha  = it->second.baseRimAlpha;
 			//e.shaderData->boundDiameter = it->second.boundDiameter;
 
 			for (const auto& f : e.functions)
 			{
-				auto& d = it->second.functions;
+				const auto& d = it->second.functions;
 
-				auto itf = std::find_if(
+				const auto itf = std::find_if(
 					d.begin(),
 					d.end(),
 					[&](auto& a_v) {
@@ -148,6 +152,36 @@ namespace IED
 		}
 
 		return true;
+	}
+
+	void EffectShaderData::ClearEffectShaderDataFromTree(NiAVObject* a_object)
+	{
+		if (!a_object || data.empty())
+		{
+			return;
+		}
+
+		Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
+			if (auto& effect = a_geometry->m_spEffectState)
+			{
+				if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
+				{
+					auto it = std::find_if(
+						data.begin(),
+						data.end(),
+						[&](auto& a_v) {
+							return shaderProp->effectData == a_v.shaderData;
+						});
+
+					if (it != data.end())
+					{
+						shaderProp->ClearEffectShaderData();
+					}
+				}
+			}
+
+			return Util::Node::VisitorControl::kContinue;
+		});
 	}
 
 	void EffectShaderData::Entry::update_effect_data(float a_step) const

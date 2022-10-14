@@ -1520,6 +1520,9 @@
     <ClInclude Include="IED\ActorFactionInfo.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\GearNodeID.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">

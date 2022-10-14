@@ -34,6 +34,7 @@ namespace IED
 		m_handle(a_handle),
 		m_actor(a_actor),
 		m_root(a_root),
+		m_root1p(a_actor->Get3D1(true)),
 		m_npcroot(a_npcroot),
 		m_formid(a_actor->formID),
 		//m_enableAnimEventForwarding(a_animEventForwarding),
@@ -122,6 +123,7 @@ namespace IED
 							node,
 							defParentNode,
 							e->second.animSlot,
+							e->second.nodeID,
 							e->second.vanilla ?
 								GetCachedTransform(e->first) :
                                 std::optional<NiTransform>{});
@@ -225,11 +227,6 @@ namespace IED
 		bool cleanupdb = false;
 
 		visit([&](auto& a_entry) {
-			if (!a_entry.state)
-			{
-				return;
-			}
-
 			if (!handle)
 			{
 				handle = GetHandle();
@@ -238,12 +235,15 @@ namespace IED
 				(void)handle->LookupZH(ref);
 			}
 
-			if (!a_entry.state->dbEntries.empty())
+			if (a_entry.state)
 			{
-				cleanupdb = true;
+				if (!a_entry.state->dbEntries.empty())
+				{
+					cleanupdb = true;
+				}
 			}
 
-			a_entry.reset(*handle, m_root);
+			a_entry.reset(*handle, m_root, m_root1p);
 		});
 
 		if (cleanupdb)
@@ -429,6 +429,77 @@ namespace IED
 		return it != m_nodeMonitorEntries.end() ?
 		           it->second.IsPresent() :
                    false;
+	}
+
+	NiNode* ActorObjectHolder::GetSheathNode(Data::ObjectSlot a_slot) const
+	{
+		GearNodeID id;
+
+		switch (a_slot)
+		{
+		case Data::ObjectSlot::k1HSword:
+			id = GearNodeID::k1HSword;
+			break;
+		case Data::ObjectSlot::k1HSwordLeft:
+			id = GearNodeID::k1HSwordLeft;
+			break;
+		case Data::ObjectSlot::k1HAxe:
+			id = GearNodeID::k1HAxe;
+			break;
+		case Data::ObjectSlot::k1HAxeLeft:
+			id = GearNodeID::k1HAxeLeft;
+			break;
+		case Data::ObjectSlot::k2HSword:
+		case Data::ObjectSlot::k2HAxe:
+			id = GearNodeID::kTwoHanded;
+			break;
+		case Data::ObjectSlot::kDagger:
+			id = GearNodeID::kDagger;
+			break;
+		case Data::ObjectSlot::kDaggerLeft:
+			id = GearNodeID::kDaggerLeft;
+			break;
+		case Data::ObjectSlot::kMace:
+			id = GearNodeID::kMace;
+			break;
+		case Data::ObjectSlot::kMaceLeft:
+			id = GearNodeID::kMaceLeft;
+			break;
+		case Data::ObjectSlot::kStaff:
+			id = GearNodeID::kStaff;
+			break;
+		case Data::ObjectSlot::kStaffLeft:
+			id = GearNodeID::kStaffLeft;
+			break;
+		case Data::ObjectSlot::kBow:
+		case Data::ObjectSlot::kCrossBow:
+			id = GearNodeID::kBow;
+			break;
+		case Data::ObjectSlot::kShield:
+			id = GearNodeID::kShield;
+			break;
+		case Data::ObjectSlot::kAmmo:
+			id = GearNodeID::kQuiver;
+			break;
+		default:
+			return nullptr;
+		}
+
+		auto it = std::find_if(
+			m_weapNodes.begin(),
+			m_weapNodes.end(),
+			[&](auto& a_v) {
+				return a_v.gearNodeID == id;
+			});
+
+		if (it != m_weapNodes.end())
+		{
+			return it->node.get();
+		}
+		else
+		{
+			return nullptr;
+		}
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(

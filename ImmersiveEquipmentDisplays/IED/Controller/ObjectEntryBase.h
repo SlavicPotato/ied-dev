@@ -33,7 +33,10 @@ namespace IED
 		ObjectEntryBase& operator=(const ObjectEntryBase&) = delete;
 		ObjectEntryBase& operator=(ObjectEntryBase&&) = delete;
 
-		void reset(Game::ObjectRefHandle a_handle, NiPointer<NiNode>& a_root);
+		void reset(
+			Game::ObjectRefHandle  a_handle,
+			NiPointer<NiNode>&     a_root,
+			NiPointer<NiAVObject>& a_root1p);
 
 		inline void SetNodeVisible(bool a_switch)
 		{
@@ -148,14 +151,20 @@ namespace IED
 			Data::cacheTransform_t                             transform;
 			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			EffectShaderData                                   effectShaders;
-			stl::fixed_string                                  currentSequence;
-			long long                                          created{ 0 };
-			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
-			bool                                               atmReference{ true };
+			//EffectShaderData                                   effectShaders;
+			stl::fixed_string          currentSequence;
+			long long                  created{ 0 };
+			stl::flag<Data::BaseFlags> resetTriggerFlags{ Data::BaseFlags::kNone };
+			bool                       atmReference{ true };
 		};
 
-		std::unique_ptr<State> state;
+		/*struct EffectShaderState
+		{
+			EffectShaderData effectShaders;
+		};*/
+
+		std::unique_ptr<State>            state;
+		std::unique_ptr<EffectShaderData> effectShaderData;
 	};
 
 }

@@ -2162,7 +2162,7 @@ namespace IED
 		if (state->nodeDesc.name != a_config.targetNode.name)
 		{
 			AttachNodeImpl(
-				a_params.npcroot,
+				a_params.npcRoot,
 				a_config.targetNode,
 				a_config.flags.test(BaseFlags::kReferenceMode),
 				a_entry);
@@ -2218,16 +2218,41 @@ namespace IED
 		return true;
 	}
 
-	template <class Ta, class Tb>
-	constexpr void Controller::UpdateObjectEffectShaders(
+	void Controller::ResetEffectShaderData(
 		processParams_t& a_params,
-		const Ta&        a_config,
-		Tb&              a_objectEntry,
-		bool             a_updateValues) requires(  //
-		(std::is_same_v<Ta, Data::configCustom_t>&&
-	         std::is_same_v<Tb, ObjectEntryCustom>) ||
-		(std::is_same_v<Ta, Data::configSlot_t> &&
-	     std::is_same_v<Tb, ObjectEntrySlot>))
+		ObjectEntryBase& a_entry)
+	{
+		if (a_entry.effectShaderData)
+		{
+			a_entry.effectShaderData->ClearEffectShaderDataFromTree(a_params.objects.m_root);
+			a_entry.effectShaderData->ClearEffectShaderDataFromTree(a_params.objects.m_root1p);
+
+			a_entry.effectShaderData.reset();
+
+			a_params.state.ResetEffectShaders(a_params.handle);
+		}
+	}
+
+	void Controller::ResetEffectShaderData(
+		processParams_t& a_params,
+		ObjectEntryBase& a_entry,
+		NiAVObject*      a_object)
+	{
+		if (a_entry.effectShaderData)
+		{
+			a_entry.effectShaderData->ClearEffectShaderDataFromTree(a_object);
+
+			a_entry.effectShaderData.reset();
+
+			a_params.state.ResetEffectShaders(a_params.handle);
+		}
+	}
+
+	constexpr void Controller::UpdateObjectEffectShaders(
+		processParams_t&            a_params,
+		const Data::configCustom_t& a_config,
+		ObjectEntryCustom&          a_objectEntry,
+		bool                        a_updateValues)
 	{
 		if (!EffectControllerEnabled() ||
 		    !a_objectEntry.state)
@@ -2235,38 +2260,33 @@ namespace IED
 			return;
 		}
 
-		const configEffectShaderHolder_t* es;
-
-		if constexpr (std::is_same_v<Ta, configCustom_t>)
-		{
-			es = a_config.get_effect_shader_sfp(
-				a_params.collector.data,
-				{ a_objectEntry.state->form, ItemData::GetItemSlotExtraGeneric(a_objectEntry.state->form) },
-				a_params);
-		}
-		else if constexpr (std::is_same_v<Ta, configSlot_t>)
-		{
-			es = a_config.get_effect_shader_fp(
-				a_params.collector.data,
-				{ a_objectEntry.state->form, a_objectEntry.slotidex },
-				a_params);
-		}
+		auto es = a_config.get_effect_shader_sfp(
+			a_params.collector.data,
+			{ a_objectEntry.state->form,
+		      ItemData::GetItemSlotExtraGeneric(a_objectEntry.state->form) },
+			a_params);
 
 		if (es)
 		{
-			if (a_objectEntry.state->effectShaders.UpdateIfChanged(
-					a_objectEntry.state->nodes.rootNode,
-					*es))
+			if (!a_objectEntry.effectShaderData)
 			{
+				a_objectEntry.effectShaderData = std::make_unique<EffectShaderData>(*es);
+
 				a_params.state.ResetEffectShaders(a_params.handle);
 			}
 			else
 			{
-				if (a_updateValues)
+				if (a_objectEntry.effectShaderData->UpdateIfChanged(
+						a_objectEntry.state->nodes.rootNode,
+						*es))
 				{
-					if (!a_objectEntry.state->effectShaders.UpdateConfigValues(*es))
+					a_params.state.ResetEffectShaders(a_params.handle);
+				}
+				else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
+				{
+					if (!a_objectEntry.effectShaderData->UpdateConfigValues(*es))
 					{
-						a_objectEntry.state->effectShaders.Update(
+						a_objectEntry.effectShaderData->Update(
 							a_objectEntry.state->nodes.rootNode,
 							*es);
 
@@ -2277,12 +2297,10 @@ namespace IED
 		}
 		else
 		{
-			if (a_objectEntry.state->effectShaders)
-			{
-				a_objectEntry.state->effectShaders.clear();
-
-				a_params.state.ResetEffectShaders(a_params.handle);
-			}
+			ResetEffectShaderData(
+				a_params,
+				a_objectEntry,
+				a_objectEntry.state->nodes.rootNode);
 		}
 	}
 
@@ -2304,7 +2322,7 @@ namespace IED
 		a_params.collector.GenerateSlotCandidates(
 			!settings.removeFavRestriction);
 
-		auto equippedInfo = CreateEquippedItemInfo(pm);
+		const auto equippedInfo = CreateEquippedItemInfo(pm);
 
 		SaveLastEquippedItems(
 			a_params,
@@ -2336,8 +2354,10 @@ namespace IED
 		{
 			struct slot_entry
 			{
-				ObjectSlot slot;
-				bool       equipped;
+				ObjectSlot                                   slot;
+				bool                                         equipped;
+				TESForm*                                     equippedForm;
+				mutable const configSlotHolder_t::data_type* slotConfig{ nullptr };
 			};
 
 			ObjectType type;
@@ -2394,13 +2414,44 @@ namespace IED
 					continue;
 				}
 
-				const bool isEquipped = slot.slot == equippedInfo.leftSlot ||
-				                        slot.slot == equippedInfo.rightSlot ||
-				                        (slot.slot == ObjectSlot::kAmmo && a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo));
+				if (slot.slot == equippedInfo.leftSlot)
+				{
+					slot.equipped     = true;
+					slot.equippedForm = equippedInfo.left;
+				}
+				else if (slot.slot == equippedInfo.rightSlot)
+				{
+					slot.equipped     = true;
+					slot.equippedForm = equippedInfo.right;
+				}
+				else if (
+					slot.slot == ObjectSlot::kAmmo &&
+					a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo))
+				{
+					if (auto biped = a_params.get_biped())
+					{
+						auto& o = biped->get_object(BIPED_OBJECT::kQuiver);
 
-				slot.equipped = isEquipped;
+						slot.equippedForm = (o.item &&
+						                     o.item != o.addon &&
+						                     o.item->IsAmmo()) ?
+						                        o.item :
+                                                nullptr;
+					}
+					else
+					{
+						slot.equippedForm = nullptr;
+					}
 
-				if (isEquipped && prio && prio->flags.test(SlotPriorityFlags::kAccountForEquipped))
+					slot.equipped = true;
+				}
+				else
+				{
+					slot.equipped     = false;
+					slot.equippedForm = nullptr;
+				}
+
+				if (slot.equipped && prio && prio->flags.test(SlotPriorityFlags::kAccountForEquipped))
 				{
 					e.activeEquipped = true;
 					typeActive       = true;
@@ -2452,6 +2503,8 @@ namespace IED
 					a_params.race->formID,
 					f.slot,
 					hc);
+
+				f.slotConfig = entry;
 
 				if (!entry)
 				{
@@ -2577,11 +2630,11 @@ namespace IED
 
 						item.consume(candidates);
 
-						UpdateObjectEffectShaders(
+						/*UpdateObjectEffectShaders(
 							a_params,
 							configEntry,
 							objectEntry,
-							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));*/
 
 						typeActive |= visible;
 
@@ -2610,11 +2663,11 @@ namespace IED
 
 					item.consume(candidates);
 
-					UpdateObjectEffectShaders(
+					/*UpdateObjectEffectShaders(
 						a_params,
 						configEntry,
 						objectEntry,
-						a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+						a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));*/
 
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
@@ -2627,6 +2680,108 @@ namespace IED
 			if (!e.activeEquipped && typeActive)
 			{
 				activeTypes++;
+			}
+		}
+
+		if (EffectControllerEnabled())
+		{
+			for (const auto& e : types)
+			{
+				for (auto& f : e.slots)
+				{
+					if (f.slot == ObjectSlot::kMax)
+					{
+						continue;
+					}
+
+					auto& objectEntry = a_params.objects.GetSlot(f.slot);
+
+					if (!f.slotConfig)
+					{
+						f.slotConfig = m_config.active.slot.GetActor(
+							a_params.actor->formID,
+							a_params.npcOrTemplate->formID,
+							a_params.race->formID,
+							f.slot,
+							hc);
+
+						if (!f.slotConfig)
+						{
+							ResetEffectShaderData(
+								a_params,
+								objectEntry);
+
+							continue;
+						}
+					}
+
+					auto& configEntry = f.slotConfig->get(a_params.configSex);
+
+					const configEffectShaderHolder_t* es       = nullptr;
+					const bool                        equipped = static_cast<bool>(f.equippedForm);
+
+					if (equipped)
+					{
+						es = configEntry.get_effect_shader_sfp(
+							a_params.collector.data,
+							{ f.equippedForm, ItemData::GetItemSlotExtraGeneric(f.equippedForm) },
+							a_params);
+					}
+					else if (objectEntry.state)
+					{
+						es = configEntry.get_effect_shader_sfp(
+							a_params.collector.data,
+							{ objectEntry.state->form, objectEntry.slotidex },
+							a_params);
+					}
+
+					if (!es)
+					{
+						ResetEffectShaderData(
+							a_params,
+							objectEntry);
+
+						continue;
+					}
+
+					if (!objectEntry.effectShaderData)
+					{
+						const auto bipedObject = ItemData::SlotToBipedObject(a_params.actor, f.slot);
+
+						auto sheathNode =
+							bipedObject != BIPED_OBJECT::kNone ?
+								a_params.objects.GetSheathNode(f.slot) :
+                                nullptr;
+
+						objectEntry.effectShaderData =
+							std::make_unique<EffectShaderData>(
+								bipedObject,
+								sheathNode,
+								*es);
+
+						a_params.state.ResetEffectShaders(a_params.handle);
+					}
+					else
+					{
+						if (objectEntry.effectShaderData->UpdateIfChanged(a_params.objects, *es))
+						{
+							a_params.state.ResetEffectShaders(a_params.handle);
+						}
+						else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
+						{
+							if (!objectEntry.effectShaderData->UpdateConfigValues(*es))
+							{
+								objectEntry.effectShaderData->Update(
+									a_params.objects,
+									*es);
+
+								a_params.state.ResetEffectShaders(a_params.handle);
+							}
+						}
+					}
+
+					objectEntry.effectShaderData->targettingEquipped = equipped;
+				}
 			}
 		}
 	}
@@ -3377,6 +3532,45 @@ namespace IED
 		//_DMESSAGE("%f", pt.Stop());
 	}
 
+	template <class... Args>
+	inline constexpr processParams_t make_process_params(
+		bool                                   a_cached,
+		ActorObjectHolder&                     a_objects,
+		Actor* const                           a_actor,
+		const Game::ObjectRefHandle            a_handle,
+		const stl::flag<ControllerUpdateFlags> a_flags,
+		SlotResults&                           a_sr,
+		Args&&... a_args)
+	{
+		if (a_cached)
+		{
+			return processParams_t{
+				a_actor,
+				a_handle,
+				a_objects.IsFemale() ?
+					ConfigSex::Female :
+                    ConfigSex::Male,
+				a_flags,
+				a_sr,
+				a_objects.GetOrCreateCommonParams(
+					std::forward<Args>(a_args)...)
+			};
+		}
+		else
+		{
+			return processParams_t{
+				a_actor,
+				a_handle,
+				a_objects.IsFemale() ?
+					ConfigSex::Female :
+                    ConfigSex::Male,
+				a_flags,
+				a_sr,
+				std::forward<Args>(a_args)...
+			};
+		}
+	}
+
 	void Controller::DoObjectEvaluation(
 		NiNode*                          a_root,
 		NiNode*                          a_npcroot,
@@ -3391,7 +3585,23 @@ namespace IED
 			return;
 		}
 
-		processParams_t params{
+		auto params = make_process_params(
+			a_flags.test(ControllerUpdateFlags::kUseCachedParams),
+			a_objects,
+			a_actor,
+			a_handle,
+			a_flags,
+			m_temp.sr,
+			a_actor,
+			nrp->npc,
+			nrp->npc->GetFirstNonTemporaryOrThis(),
+			nrp->race,
+			a_root,
+			a_npcroot,
+			a_objects,
+			*this);
+
+		/*processParams_t params{
 			a_root,
 			a_npcroot,
 			a_handle,
@@ -3406,7 +3616,7 @@ namespace IED
 			nrp->race,
 			a_objects,
 			*this
-		};
+		};*/
 
 		auto dataList = GetEntryDataList(a_actor);
 		if (!dataList)
@@ -3480,7 +3690,7 @@ namespace IED
 			return;
 		}
 
-		if (refr != a_objects.m_actor)
+		if (actor != a_objects.m_actor.get())
 		{
 			Warning(
 				"%s [%u]: actor mismatch (%.8X != %.8X)",
@@ -3495,42 +3705,82 @@ namespace IED
 		EvaluateImpl(actor, handle, a_objects, a_flags);
 	}
 
-	void Controller::EvaluateTransformsImpl(Game::FormID a_actor)
+	/*void Controller::EvaluateTransformsImpl(Game::FormID a_actor)
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
 		{
 			EvaluateTransformsImpl(it->second);
 		}
-	}
+	}*/
 
 	void Controller::EvaluateTransformsImpl(
-		ActorObjectHolder& a_objects)
+		ActorObjectHolder&               a_objects,
+		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (auto info = LookupCachedActorInfo(a_objects))
+		if (auto& params = a_objects.GetCommonParams())
 		{
 			if (ProcessTransformsImpl(
-					info->npcRoot,
-					info->actor,
-					info->npc,
-					info->race,
-					info->sex,
+					params->root,
+					params->npcRoot,
+					params->actor,
+					params->npc,
+					params->race,
+					params->npc->GetSex() == 1 ?
+						ConfigSex::Female :
+                        ConfigSex::Male,
 					a_objects,
-					nullptr))
+					a_flags))
 			{
-				UpdateNodeIfGamePaused(info->root);
+				UpdateNodeIfGamePaused(params->root);
+			}
+		}
+		else
+		{
+			if (auto info = LookupCachedActorInfo(a_objects))
+			{
+				if (ProcessTransformsImpl(
+						info->root,
+						info->npcRoot,
+						info->actor,
+						info->npc,
+						info->race,
+						info->sex,
+						a_objects,
+						a_flags))
+				{
+					UpdateNodeIfGamePaused(info->root);
+				}
 			}
 		}
 	}
 
+	template <class... Args>
+	inline constexpr INodeOverride::nodeOverrideParams_t make_node_override_params(
+		ActorObjectHolder& a_objects,
+		Args&&... a_args)
+	{
+		if (auto &params = a_objects.GetCommonParams())
+		{
+			return INodeOverride::nodeOverrideParams_t{
+				*params
+			};
+		}
+		else
+		{
+			return INodeOverride::nodeOverrideParams_t{ std::forward<Args>(a_args)... };
+		}
+	}
+
 	bool Controller::ProcessTransformsImpl(
-		NiNode*                                a_npcRoot,
-		Actor*                                 a_actor,
-		TESNPC*                                a_npc,
-		TESRace*                               a_race,
-		ConfigSex                              a_sex,
-		ActorObjectHolder&                     a_objects,
-		const collectorData_t::container_type* a_equippedForms)
+		NiNode*                          a_root,
+		NiNode*                          a_npcRoot,
+		Actor*                           a_actor,
+		TESNPC*                          a_npc,
+		TESRace*                         a_race,
+		ConfigSex                        a_sex,
+		ActorObjectHolder&               a_objects,
+		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 #if defined(IED_ENABLE_STATS_T)
 		PerfTimer pt;
@@ -3549,15 +3799,16 @@ namespace IED
 			return false;
 		}
 
-		nodeOverrideParams_t params{
-			a_npcRoot,
+		auto params = make_node_override_params(
+			a_objects,
 			a_actor,
 			a_npc,
 			a_npc->GetFirstNonTemporaryOrThis(),
 			a_race,
+			a_root,
+			a_npcRoot,
 			a_objects,
-			*this
-		};
+			*this);
 
 		configStoreNodeOverride_t::holderCache_t hc;
 
@@ -3928,6 +4179,8 @@ namespace IED
 			a_info.npc,
 			a_info.npcOrTemplate,
 			a_info.race,
+			a_info.root,
+			a_info.npcRoot,
 			a_info.objects,
 			*this
 		};
@@ -3961,6 +4214,8 @@ namespace IED
 			a_info.npc,
 			a_info.npcOrTemplate,
 			a_info.race,
+			a_info.root,
+			a_info.npcRoot,
 			a_info.objects,
 			*this
 		};

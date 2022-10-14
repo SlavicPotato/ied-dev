@@ -18,30 +18,28 @@ namespace IED
 		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (!a_objectEntry.state)
+		if (a_objectEntry.state)
 		{
-			return false;
-		}
+			if (
+				m_playSound &&
+				a_flags.test(ControllerUpdateFlags::kPlaySound) &&
+				a_objectEntry.state->flags.test(ObjectEntryFlags::kPlaySound) &&
+				a_actor &&
+				a_actor->loadedState &&
+				(a_actor == *g_thePlayer || m_playSoundNPC) &&
+				a_objectEntry.state->nodes.rootNode->m_parent &&
+				a_objectEntry.state->nodes.rootNode->IsVisible())
+			{
+				SoundPlay(
+					a_objectEntry.state->form->formType,
+					a_objectEntry.state->nodes.rootNode->m_parent,
+					false);
+			}
 
-		if (
-			m_playSound &&
-			a_flags.test(ControllerUpdateFlags::kPlaySound) &&
-			a_objectEntry.state->flags.test(ObjectEntryFlags::kPlaySound) &&
-			a_actor &&
-			a_actor->loadedState &&
-			(a_actor == *g_thePlayer || m_playSoundNPC) &&
-			a_objectEntry.state->nodes.rootNode->m_parent &&
-			a_objectEntry.state->nodes.rootNode->IsVisible())
-		{
-			SoundPlay(
-				a_objectEntry.state->form->formType,
-				a_objectEntry.state->nodes.rootNode->m_parent,
-				false);
-		}
-
-		if (!a_objectEntry.state->dbEntries.empty())
-		{
-			QueueDatabaseCleanup();
+			if (!a_objectEntry.state->dbEntries.empty())
+			{
+				QueueDatabaseCleanup();
+			}
 		}
 
 		/*if (a_objectEntry.state->weapAnimGraphManagerHolder)
@@ -59,7 +57,7 @@ namespace IED
 			}
 		}*/
 
-		a_objectEntry.reset(a_handle, a_data.m_root);
+		a_objectEntry.reset(a_handle, a_data.m_root, a_data.m_root1p);
 
 		return true;
 	}
@@ -531,7 +529,7 @@ namespace IED
 		if (!CreateTargetNode(
 				a_activeConfig,
 				a_activeConfig.targetNode,
-				a_params.npcroot,
+				a_params.npcRoot,
 				targetNodes))
 		{
 			Debug(
@@ -789,7 +787,7 @@ namespace IED
 		if (!CreateTargetNode(
 				a_config,
 				a_config.targetNode,
-				a_params.npcroot,
+				a_params.npcRoot,
 				targetNodes))
 		{
 			Debug(

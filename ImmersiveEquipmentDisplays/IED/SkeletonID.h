@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ext/Hash.h>
-
 namespace IED
 {
 	class SkeletonID

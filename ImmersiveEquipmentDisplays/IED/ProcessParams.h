@@ -33,8 +33,18 @@ namespace IED
 
 	struct processParamsData_t
 	{
-		NiNode* const                          root;
-		NiNode* const                          npcroot;
+		inline processParamsData_t(
+			const Game::ObjectRefHandle            a_handle,
+			const Data::ConfigSex                  a_configSex,
+			const stl::flag<ControllerUpdateFlags> a_flags,
+			SlotResults&                           a_sr,
+			Actor* const                           a_actor) noexcept :
+			handle(a_handle),
+			configSex(a_configSex),
+			flags(a_flags),
+			collector(a_sr, a_actor)
+		{}
+
 		const Game::ObjectRefHandle            handle;
 		const Data::ConfigSex                  configSex;
 		const stl::flag<ControllerUpdateFlags> flags;
@@ -45,6 +55,42 @@ namespace IED
 		processParamsData_t,
 		CommonParams
 	{
+		template <class... Args>
+		inline constexpr processParams_t(
+			Actor* const                           a_actor,
+			const Game::ObjectRefHandle            a_handle,
+			const Data::ConfigSex                  a_configSex,
+			const stl::flag<ControllerUpdateFlags> a_flags,
+			SlotResults&                           a_sr,
+			Args&&... a_args) noexcept :
+			processParamsData_t(
+				a_handle,
+				a_configSex,
+				a_flags,
+				a_sr,
+				a_actor),
+			CommonParams(
+				std::forward<Args>(a_args)...)
+		{
+		}
+
+		inline processParams_t(
+			Actor* const                           a_actor,
+			const Game::ObjectRefHandle            a_handle,
+			const Data::ConfigSex                  a_configSex,
+			const stl::flag<ControllerUpdateFlags> a_flags,
+			SlotResults&                           a_sr,
+			CommonParams&                          a_cparams) noexcept :
+			processParamsData_t(
+				a_handle,
+				a_configSex,
+				a_flags,
+				a_sr,
+				a_actor),
+			CommonParams(a_cparams)
+		{
+		}
+
 		processState_t state;
 	};
 

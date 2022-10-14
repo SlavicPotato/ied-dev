@@ -7,64 +7,118 @@
 namespace IED
 {
 	void ObjectEntryBase::reset(
-		Game::ObjectRefHandle a_handle,
-		NiPointer<NiNode>&    a_root)
+		Game::ObjectRefHandle  a_handle,
+		NiPointer<NiNode>&     a_root,
+		NiPointer<NiAVObject>& a_root1p)
 	{
-		if (!state)
+		if (state)
 		{
-			return;
-		}
-
-		for (auto& e : state->dbEntries)
-		{
-			e->accessed = IPerfCounter::Query();
-		}
-
-		if (EngineExtensions::SceneRendering() ||
-		    !ITaskPool::IsRunningOnCurrentThread())
-		{
-			struct DisposeStateTask :
-				public TaskDelegate
+			for (auto& e : state->dbEntries)
 			{
-			public:
-				DisposeStateTask(
-					std::unique_ptr<State>&& a_state,
-					Game::ObjectRefHandle    a_handle,
-					NiPointer<NiNode>&       a_root) :
-					m_state(std::move(a_state)),
-					m_handle(a_handle),
-					m_root(a_root)
+				e->accessed = IPerfCounter::Query();
+			}
+
+			if (EngineExtensions::SceneRendering() ||
+			    !ITaskPool::IsRunningOnCurrentThread())
+			{
+				struct DisposeStateTask :
+					public TaskDelegate
 				{
-				}
+				public:
+					DisposeStateTask(
+						std::unique_ptr<State>&& a_state,
+						Game::ObjectRefHandle    a_handle,
+						NiPointer<NiNode>&       a_root,
+						NiPointer<NiAVObject>&   a_root1p) :
+						m_state(std::move(a_state)),
+						m_handle(a_handle),
+						m_root(a_root),
+						m_root1p(a_root1p)
+					{
+					}
 
-				virtual void Run() override
-				{
-					m_state->Cleanup(m_handle);
+					virtual void Run() override
+					{
+						m_state->Cleanup(m_handle);
 
-					m_state.reset();
-					m_root.reset();
-				}
+						m_state.reset();
+					}
 
-				virtual void Dispose() override
-				{
-					delete this;
-				}
+					virtual void Dispose() override
+					{
+						delete this;
+					}
 
-			private:
-				std::unique_ptr<State> m_state;
-				Game::ObjectRefHandle  m_handle;
-				NiPointer<NiNode>      m_root;
-			};
+				private:
+					std::unique_ptr<State> m_state;
+					Game::ObjectRefHandle  m_handle;
+					NiPointer<NiNode>      m_root;
+					NiPointer<NiAVObject>  m_root1p;
+				};
 
-			ITaskPool::AddPriorityTask<DisposeStateTask>(
-				std::move(state),
-				a_handle,
-				a_root);
+				ITaskPool::AddPriorityTask<DisposeStateTask>(
+					std::move(state),
+					a_handle,
+					a_root,
+					a_root1p);
+			}
+			else
+			{
+				state->Cleanup(a_handle);
+				state.reset();
+			}
 		}
-		else
+
+		if (effectShaderData)
 		{
-			state->Cleanup(a_handle);
-			state.reset();
+			if (EngineExtensions::SceneRendering() ||
+			    !ITaskPool::IsRunningOnCurrentThread())
+			{
+				struct DisposeEffectDataTask :
+					public TaskDelegate
+				{
+				public:
+					DisposeEffectDataTask(
+						std::unique_ptr<EffectShaderData>&& a_data,
+						NiPointer<NiNode>&                  a_root,
+						NiPointer<NiAVObject>&              a_root1p) :
+						m_data(std::move(a_data)),
+						m_root(a_root),
+						m_root1p(a_root1p)
+					{
+					}
+
+					virtual void Run() override
+					{
+						m_data->ClearEffectShaderDataFromTree(m_root);
+						m_data->ClearEffectShaderDataFromTree(m_root1p);
+
+						m_data.reset();
+					}
+
+					virtual void Dispose() override
+					{
+						delete this;
+					}
+
+				private:
+					std::unique_ptr<EffectShaderData> m_data;
+					NiPointer<NiNode>                 m_root;
+					NiPointer<NiAVObject>             m_root1p;
+				};
+
+				ITaskPool::AddPriorityTask<DisposeEffectDataTask>(
+					std::move(effectShaderData),
+					a_root,
+					a_root1p);
+			}
+			else
+			{
+				effectShaderData->ClearEffectShaderDataFromTree(a_root);
+				effectShaderData->ClearEffectShaderDataFromTree(a_root1p);
+
+				effectShaderData.reset();
+			}
 		}
 	}
 

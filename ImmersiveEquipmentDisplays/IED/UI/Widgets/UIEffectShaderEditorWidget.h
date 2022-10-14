@@ -363,10 +363,24 @@ namespace IED
 				OnEffectShaderUpdate(a_params, false);
 			}
 
+			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
+
 			if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::EdgeExponent, "6"),
+					LS(UIEffectShaderEditorWidgetStrings::BaseFillScale, "6"),
+					std::addressof(a_data.baseFillScale),
+					dragSpeed * 0.2f,
+					0.0f,
+					1.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}
+
+			if (ImGui::DragFloat(
+					LS(UIEffectShaderEditorWidgetStrings::EdgeExponent, "7"),
 					std::addressof(a_data.edgeExponent),
-					0.01f,
+					dragSpeed,
 					0.0f,
 					25.0f,
 					"%.3f",
@@ -374,6 +388,30 @@ namespace IED
 			{
 				OnEffectShaderUpdate(a_params, false);
 			}
+
+			/*if (ImGui::DragFloat(
+					LS(UIEffectShaderEditorWidgetStrings::BaseFillAlpha, "8"),
+					std::addressof(a_data.baseFillAlpha),
+					0.001f,
+					0.0f,
+					1.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}*/
+
+			/*if (ImGui::DragFloat(
+					LS(UIEffectShaderEditorWidgetStrings::BaseRimAlpha, "9"),
+					std::addressof(a_data.baseRimAlpha),
+					0.001f,
+					0.0f,
+					1.0f,
+					"%.3f",
+					ImGuiSliderFlags_AlwaysClamp))
+			{
+				OnEffectShaderUpdate(a_params, false);
+			}*/
 
 			/*if (ImGui::DragFloat(
 					LS(UIEffectShaderEditorWidgetStrings::BoundDiameter, "7"),
@@ -389,10 +427,8 @@ namespace IED
 
 			ImGui::Spacing();
 
-			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
-
 			if (ImGui::DragFloat2(
-					LS(UIEffectShaderEditorWidgetStrings::uvOffset, "8"),
+					LS(UIEffectShaderEditorWidgetStrings::uvOffset, "A"),
 					a_data.uvOffset,
 					dragSpeed,
 					-25.0f,
@@ -406,7 +442,7 @@ namespace IED
 			dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.01f;
 
 			if (ImGui::DragFloat2(
-					LS(UIEffectShaderEditorWidgetStrings::uvScale, "9"),
+					LS(UIEffectShaderEditorWidgetStrings::uvScale, "B"),
 					a_data.uvScale,
 					dragSpeed,
 					0.0f,
@@ -539,12 +575,23 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Force, "1"),
+					LS(CommonStrings::Force, "0"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kForce)))
 			{
 				OnEffectShaderUpdate(a_params);
 			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::CheckboxFlagsT(
+					LS(UIEffectShaderEditorWidgetStrings::TargetRoot, "1"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::EffectShaderDataFlags::kTargetRoot)))
+			{
+				OnEffectShaderUpdate(a_params);
+			}
+			DrawTip(UITip::EffectShadersTargetRoot);
 
 			ImGui::Columns();
 
@@ -553,7 +600,7 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					"kGrayscaleToColor",
+					LS(UIEffectShaderEditorWidgetStrings::GrayscaleToColor, "2"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kGrayscaleToColor)))
 			{
@@ -561,7 +608,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					"kGrayscaleToAlpha",
+					LS(UIEffectShaderEditorWidgetStrings::GrayscaleToAlpha, "3"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kGrayscaleToAlpha)))
 			{
@@ -569,7 +616,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					"kIgnoreTextureAlpha",
+					LS(UIEffectShaderEditorWidgetStrings::IgnoreTextureAlpha, "4"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kIgnoreTextureAlpha)))
 			{
@@ -579,7 +626,7 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					"kBaseTextureProjectedUVs",
+					LS(UIEffectShaderEditorWidgetStrings::BaseTextureProjectedUVs, "5"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kBaseTextureProjectedUVs)))
 			{
@@ -587,7 +634,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					"kIgnoreBaseGeomTexAlpha",
+					LS(UIEffectShaderEditorWidgetStrings::IgnoreBaseGeomTexAlpha, "6"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kIgnoreBaseGeomTexAlpha)))
 			{
@@ -595,7 +642,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					"kLighting",
+					LS(UIEffectShaderEditorWidgetStrings::Lighting, "7"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kLighting)))
 			{
@@ -603,7 +650,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					"kAlpha",
+					LS(UIEffectShaderEditorWidgetStrings::Alpha, "8"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kAlpha)))
 			{

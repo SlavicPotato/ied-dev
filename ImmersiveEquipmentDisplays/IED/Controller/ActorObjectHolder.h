@@ -4,11 +4,7 @@
 #include "ActorAnimationState.h"
 #include "BipedSlotData.h"
 #include "CachedActorData.h"
-#include "EffectShaderData.h"
-#include "INode.h"
 #include "NodeMonitorEntry.h"
-#include "ObjectDatabase.h"
-#include "ObjectManagerCommon.h"
 
 #include "CMENodeEntry.h"
 #include "MOVNodeEntry.h"
@@ -18,13 +14,13 @@
 #include "ObjectEntrySlot.h"
 
 #include "IED/ActorState.h"
-#include "IED/ConfigModelGroup.h"
-#include "IED/ConfigStore.h"
+#include "IED/CommonParams.h"
+#include "IED/GearNodeID.h"
 #include "IED/NodeOverrideData.h"
 #include "IED/SkeletonCache.h"
 #include "IED/SkeletonID.h"
 
-#include <ext/WeaponAnimationGraphManagerHolder.h>
+//#include <ext/WeaponAnimationGraphManagerHolder.h>
 
 struct BSAnimationUpdateData;
 
@@ -137,6 +133,16 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetActor() const noexcept
 		{
 			return m_actor;
+		}
+
+		[[nodiscard]] inline constexpr auto& Get3D() const noexcept
+		{
+			return m_root;
+		}
+
+		[[nodiscard]] inline constexpr auto& Get3D1p() const noexcept
+		{
+			return m_root1p;
 		}
 
 		[[nodiscard]] inline constexpr auto& GetNPCRoot() const noexcept
@@ -364,6 +370,30 @@ namespace IED
 			}
 		}
 
+		template <class Tf>
+		constexpr void visit_custom(Tf a_func) const
+		{
+			for (auto& e : m_entriesCustom)
+			{
+				for (auto& f : e)
+				{
+					for (auto& g : f.second)
+					{
+						a_func(g.second);
+					}
+				}
+			}
+		}
+
+		template <class Tf>
+		constexpr void visit_slot(Tf a_func) const
+		{
+			for (auto& e : m_entriesSlot)
+			{
+				a_func(e);
+			}
+		}
+
 		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
 		{
 			return m_formid;
@@ -373,7 +403,7 @@ namespace IED
 		{
 			return m_skeletonCache;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetSkeletonID() const noexcept
 		{
 			return m_skeletonID;
@@ -444,12 +474,35 @@ namespace IED
 			return m_state;
 		}
 
+		inline constexpr void ClearCurrentParams() noexcept
+		{
+			return m_currentParams.reset();
+		}
+
+		template <class... Args>
+		[[nodiscard]] inline constexpr CommonParams& GetOrCreateCommonParams(Args&&... a_args)
+		{
+			if (!m_currentParams)
+			{
+				m_currentParams.emplace(std::forward<Args>(a_args)...);
+			}
+
+			return *m_currentParams;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCommonParams() const noexcept
+		{
+			return m_currentParams;
+		}
+
 		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
 
 		float GetRandomPercent(const luid_tag& a_luid);
 
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
+
+		NiNode* GetSheathNode(Data::ObjectSlot a_slot) const;
 
 	private:
 		void CreateExtraMovNodes(
@@ -489,9 +542,10 @@ namespace IED
 
 		stl::unordered_map<luid_tag, float> m_rpc;
 
-		NiPointer<Actor>  m_actor;
-		NiPointer<NiNode> m_root;
-		NiPointer<NiNode> m_npcroot;
+		NiPointer<Actor>      m_actor;
+		NiPointer<NiNode>     m_root;
+		NiPointer<NiAVObject> m_root1p;
+		NiPointer<NiNode>     m_npcroot;
 
 		Game::FormID m_formid;
 
@@ -517,6 +571,8 @@ namespace IED
 		BipedSlotDataPtr m_lastEquipped;
 
 		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+
+		std::optional<CommonParams> m_currentParams;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

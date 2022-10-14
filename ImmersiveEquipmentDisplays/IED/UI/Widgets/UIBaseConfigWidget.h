@@ -416,16 +416,16 @@ namespace IED
 				a_params,
 				a_slotName);
 
-			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled) &&
-			                      a_data.equipmentOverrides.empty();
-
-			UICommon::PushDisabled(disabled);
-
 			DrawEffectShaders(
 				a_handle,
 				a_data,
 				a_params,
 				a_slotName);
+
+			const bool disabled = a_data.flags.test(Data::BaseFlags::kDisabled) &&
+			                      a_data.equipmentOverrides.empty();
+
+			UICommon::PushDisabled(disabled);
 
 			DrawFiltersTree(a_handle, a_data, a_params);
 
