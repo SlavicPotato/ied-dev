@@ -30,7 +30,7 @@ namespace IED
 			UIProfileBase(Localization::ILocalization& a_localization);
 			virtual ~UIProfileBase() noexcept;
 
-			void DrawCreateNew();
+			void DrawCreateNew(const typename T::base_type* a_data = nullptr);
 
 			virtual ProfileManager<T>& GetProfileManager() const         = 0;
 			virtual UIPopupQueue&      GetPopupQueue_ProfileBase() const = 0;
@@ -98,7 +98,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UIProfileBase<T>::DrawCreateNew()
+		void UIProfileBase<T>::DrawCreateNew(const typename T::base_type* a_data)
 		{
 			if (TextInputDialog(
 					LS(UIProfileStrings::NewProfile, POPUP_NEW_ID),
@@ -147,7 +147,12 @@ namespace IED
 				return;
 			}
 
-			if (!profile.Save())
+			bool saveRes =
+				a_data ?
+					profile.Save(*a_data, true) :
+                    profile.Save();
+
+			if (!saveRes)
 			{
 				m_state.lastException = profile.GetLastException();
 
@@ -200,29 +205,34 @@ namespace IED
 
 		template <class T>
 		void UIProfileBase<T>::OnItemSelected(const stl::fixed_string& a_item)
-		{}
+		{
+		}
 
 		template <class T>
 		void UIProfileBase<T>::OnProfileAdd(
 			const stl::fixed_string& a_name,
 			T&                       a_profile)
-		{}
+		{
+		}
 
 		template <class T>
 		void UIProfileBase<T>::OnProfileSave(
 			const stl::fixed_string& a_name,
 			T&                       a_profile)
-		{}
+		{
+		}
 
 		template <class T>
 		void UIProfileBase<T>::OnProfileDelete(const stl::fixed_string& a_item)
-		{}
+		{
+		}
 
 		template <class T>
 		void UIProfileBase<T>::OnProfileRename(
 			const stl::fixed_string& a_oldName,
 			const stl::fixed_string& a_newName)
-		{}
+		{
+		}
 
 		template <class T>
 		void UIProfileBase<T>::Receive(const ProfileManagerEvent<T>& a_evn)

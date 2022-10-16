@@ -483,7 +483,7 @@ namespace IED
 
 				auto& cme = a_params.objects.GetCMENodes();
 
-				auto it = cme.find(a_data.node);
+				auto it = cme.find(a_data.s0);
 				if (it == cme.end())
 				{
 					return false;
@@ -640,6 +640,14 @@ namespace IED
 				a_params,
 				a_data,
 				a_params.objects.GetCachedData());
+
+		case Data::NodeOverrideConditionType::Variable:
+
+			return Conditions::match_variable<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data);
 		}
 
 		return false;

@@ -678,12 +678,20 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Variable:
+
+				return Conditions::match_variable<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
 		}
 
-		constexpr bool configBase_t::do_match(
+		bool configBase_t::do_match(
 			const collectorData_t&                  a_data,
 			const equipmentOverrideConditionList_t& a_matches,
 			CommonParams&                           a_params,
@@ -996,6 +1004,14 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Variable:
+
+				return Conditions::match_variable<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1403,6 +1419,14 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Variable:
+
+				return Conditions::match_variable<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1427,7 +1451,7 @@ namespace IED
 				{
 					result = match_equipped_or_form<
 						EquipmentOverrideConditionFlags::kMatchMaskAny,
-						EquipmentOverrideConditionFlags::kMatchMaskAllEquipmentAndThis>(
+						EquipmentOverrideConditionFlags::kMatchMaskAllEquipmentSlotsAndThis>(
 						a_data,
 						f,
 						a_checkForm,
@@ -1647,7 +1671,7 @@ namespace IED
 		}
 
 		bool configBaseFiltersHolder_t::run_filters(
-			const processParams_t& a_params) const
+			const CommonParams& a_params) const
 		{
 			if (filters)
 			{

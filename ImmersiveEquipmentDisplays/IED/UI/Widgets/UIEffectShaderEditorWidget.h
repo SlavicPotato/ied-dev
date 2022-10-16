@@ -1180,7 +1180,7 @@ namespace IED
 
 						auto& luid = e.get_unique_id().get_tag_data();
 
-						ImGui::Text("%llx.%llx", luid.p1, luid.p2);
+						ImGui::Text("%llx.%lld", luid.p1, luid.p2);
 
 						++it;
 						i++;

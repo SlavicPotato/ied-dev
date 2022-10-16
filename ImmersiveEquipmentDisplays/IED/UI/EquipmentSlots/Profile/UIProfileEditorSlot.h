@@ -18,23 +18,6 @@ namespace IED
 			public UIProfileEditorBase<SlotProfile>,
 			public UISlotEditorBase<int>
 		{
-			struct cachedItem_t
-			{
-				cachedItem_t() = default;
-
-				template <class... Args>
-				cachedItem_t(
-					const stl::fixed_string& a_name,
-					Args&&... a_args) :
-					name(a_name),
-					data(std::forward<Args>(a_args)...)
-				{
-				}
-
-				stl::fixed_string name;
-				entrySlotData_t   data;
-			};
-
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorSlot;
 
@@ -128,7 +111,7 @@ namespace IED
 
 			virtual WindowLayoutData GetWindowDimensions() const;
 
-			stl::optional<cachedItem_t> m_cachedItem;
+			std::optional<cachedItem_t<entrySlotData_t>> m_cachedItem;
 
 			Controller& m_controller;
 		};

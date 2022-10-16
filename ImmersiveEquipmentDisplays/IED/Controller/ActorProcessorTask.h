@@ -54,7 +54,7 @@ namespace IED
 		{
 			m_run = a_state;
 		}
-		
+
 		[[nodiscard]] inline constexpr void SetProcessorTaskRunAUState(bool a_state) noexcept
 		{
 			m_runAnimationUpdates = a_state;
@@ -70,22 +70,22 @@ namespace IED
 		{
 			long long lastRun;
 
-			RE::TESWeather* currentWeather{ nullptr };
-			Data::TimeOfDay timeOfDay{ Data::TimeOfDay::kDay };
-			bool            inFirstPerson{ false };
+			RE::TESWeather*   currentWeather{ nullptr };
+			Data::TimeOfDay   timeOfDay{ Data::TimeOfDay::kDay };
+			bool              inFirstPerson{ false };
+			Game::ActorHandle playerLastRidden;
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };
 #endif
 		};
 
-		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 100000;
+		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL = 1000000ll;
 
 		virtual void Run() override;
 
 		SKMP_FORCEINLINE void UpdateNode(
 			ActorObjectHolder& a_record,
-			ObjectEntryBase& a_entry);
+			ObjectEntryBase&   a_entry);
 		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
@@ -94,8 +94,8 @@ namespace IED
 		SKMP_FORCEINLINE void ProcessEvalRequest(
 			ActorObjectHolder& a_data);
 
-		SKMP_FORCEINLINE bool CheckMonitorNodes(
-			ActorObjectHolder& a_data);
+		static constexpr bool CheckMonitorNodes(
+			ActorObjectHolder& a_data) noexcept;
 
 #if defined(IED_ENABLE_1D10T_SAFEGUARDS)
 		void WriteCMETransforms(

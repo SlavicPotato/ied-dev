@@ -27,6 +27,7 @@ namespace IED
 			MergeDataFromProfile      = 4516,
 			SaveCurrentToProfile      = 4517,
 			ProfileParserErrorWarning = 4518,
+			TitleConditionalVariables = 4519,
 		};
 	}
 }

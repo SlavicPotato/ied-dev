@@ -14,9 +14,10 @@
 #include "ObjectEntrySlot.h"
 
 #include "IED/ActorState.h"
-#include "IED/CommonParams.h"
+#include "IED/ConditionalVariableStorage.h"
 #include "IED/GearNodeID.h"
 #include "IED/NodeOverrideData.h"
+#include "IED/ProcessParams.h"
 #include "IED/SkeletonCache.h"
 #include "IED/SkeletonID.h"
 
@@ -40,18 +41,30 @@ namespace IED
 		kImmediateTransformUpdate = 1u << 1,
 		kSkipNextTransformUpdate  = 1u << 2,
 
+		kWantEval      = 1u << 3,
+		kImmediateEval = 1u << 4,
+
+		kEvalCountdownMask =
+			1u << 5 |
+			1u << 6 |
+			1u << 7 |
+			1u << 8 |
+			1u << 9 |
+			1u << 10 |
+			1u << 11 |
+			1u << 12,
+
+		kWantVarUpdate = 1u << 13,
+		kEvalThisFrame = 1u << 14,
+
 		kRequestTransformUpdateDefer     = kWantTransformUpdate | kSkipNextTransformUpdate,
 		kRequestTransformUpdateImmediate = kWantTransformUpdate | kImmediateTransformUpdate,
 		kRequestTransformUpdateMask      = kWantTransformUpdate | kImmediateTransformUpdate | kSkipNextTransformUpdate,
 
-		kWantEval       = 1u << 3,
-		kImmediateEval  = 1u << 4,
-		kEvalCountdown1 = 1u << 5,
-		kEvalCountdown2 = 1u << 6,
-
 		kRequestEval          = kWantEval,
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
-		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdown1 | kEvalCountdown2
+		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdownMask,
+
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
@@ -64,7 +77,8 @@ namespace IED
 		std::uint32_t wantEval                : 1;
 		std::uint32_t immediateEval           : 1;
 		std::uint32_t evalCountdown           : 8;
-		std::uint32_t unused                  : 19;
+		std::uint32_t wantVarUpdate           : 1;
+		std::uint32_t unused                  : 18;
 	};
 
 	static_assert(sizeof(ActorObjectHolderFlagsBitfield) == sizeof(ActorObjectHolderFlags));
@@ -89,12 +103,17 @@ namespace IED
 		};
 
 	public:
+		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 340000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 100000;
+
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
 			Actor*                a_actor,
+			TESNPC*               a_npc,
+			TESRace*              a_race,
 			NiNode*               a_root,
 			NiNode*               a_npcroot,
 			IObjectManager&       a_owner,
@@ -241,7 +260,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr void RequestEvalDefer(std::uint32_t a_delay = 2) const noexcept
+		inline constexpr void RequestEvalDefer(std::uint8_t a_delay = 2) const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEval);
 			if (m_flagsbf.evalCountdown == 0)
@@ -396,7 +415,22 @@ namespace IED
 
 		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
 		{
-			return m_formid;
+			return m_actorid;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetNPCFormID() const noexcept
+		{
+			return m_npcid;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetNPCTemplateFormID() const noexcept
+		{
+			return m_npcTemplateId;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetRaceFormID() const noexcept
+		{
+			return m_raceid;
 		}
 
 		[[nodiscard]] inline constexpr auto& GetSkeletonCache() const noexcept
@@ -474,13 +508,13 @@ namespace IED
 			return m_state;
 		}
 
-		inline constexpr void ClearCurrentParams() noexcept
+		inline constexpr void ClearCurrentProcessParams() noexcept
 		{
 			return m_currentParams.reset();
 		}
 
 		template <class... Args>
-		[[nodiscard]] inline constexpr CommonParams& GetOrCreateCommonParams(Args&&... a_args)
+		[[nodiscard]] inline constexpr auto& GetOrCreateProcessParams(Args&&... a_args)
 		{
 			if (!m_currentParams)
 			{
@@ -490,9 +524,57 @@ namespace IED
 			return *m_currentParams;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCommonParams() const noexcept
+		template <class... Args>
+		[[nodiscard]] inline constexpr auto& CreateProcessParams(Args&&... a_args)
+		{
+			m_currentParams.emplace(std::forward<Args>(a_args)...);
+			return *m_currentParams;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCurrentProcessParams() noexcept
 		{
 			return m_currentParams;
+		}
+
+		/*[[nodiscard]] std::optional<conditionalVariableStorage_t> GetVariable(
+			const stl::fixed_string& a_name) const
+		{
+			auto it = m_variables.find(a_name);
+			if (it != m_variables.end())
+			{
+				return it->second;
+			}
+			else
+			{
+				return {};
+			}
+		}*/
+
+		[[nodiscard]] inline constexpr auto& GetVariables() const noexcept
+		{
+			return m_variables;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetVariables() noexcept
+		{
+			return m_variables;
+		}
+
+		inline void ClearVariables(bool a_requestEval) noexcept
+		{
+			m_variables.clear();
+
+			if (a_requestEval)
+			{
+				m_flags.set(
+					ActorObjectHolderFlags::kWantVarUpdate |
+					ActorObjectHolderFlags::kRequestEval);
+			}
+		}
+
+		inline constexpr void RequestVariableUpdate() const noexcept
+		{
+			m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 		}
 
 		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
@@ -547,7 +629,10 @@ namespace IED
 		NiPointer<NiAVObject> m_root1p;
 		NiPointer<NiNode>     m_npcroot;
 
-		Game::FormID m_formid;
+		Game::FormID m_actorid;
+		Game::FormID m_npcid;
+		Game::FormID m_npcTemplateId;
+		Game::FormID m_raceid;
 
 		bool m_female{ false };
 		bool m_humanoidSkeleton{ false };
@@ -572,7 +657,9 @@ namespace IED
 
 		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 
-		std::optional<CommonParams> m_currentParams;
+		std::optional<processParams_t> m_currentParams;
+
+		conditionalVariableMap_t m_variables;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

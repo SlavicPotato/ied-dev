@@ -205,6 +205,7 @@ namespace IED
 		MergeConfig(std::move(a_in.slot), store.slot);
 		MergeConfig(std::move(a_in.custom), store.custom);
 		MergeConfig(std::move(a_in.transforms), store.transforms);
+		store.condvars = std::move(a_in.condvars);
 
 		JSOnDataImport();
 
@@ -493,6 +494,13 @@ namespace IED
 					result.custom.GetRaceData().try_emplace(e.first).first->second.emplace(*it);
 				}
 			}
+		}
+
+		//
+
+		if (a_flags.test(ConfigStoreSerializationFlags::kConditionalVariables))
+		{
+			result.condvars = a_data.condvars;
 		}
 
 		return result;

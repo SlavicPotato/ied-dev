@@ -23,7 +23,8 @@ namespace IED
 			EquipmentDisplays          = 4614,
 			CustomDisplays             = 4615,
 			Diagnostics                = 4616,
-			DisplayManagement          = 4617
+			DisplayManagement          = 4617,
+			ConditionalVariables       = 4618,
 		};
 	}
 }

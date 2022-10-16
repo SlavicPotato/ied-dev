@@ -22,7 +22,7 @@ namespace IED
 
 			if (auto& node = a_in["node"])
 			{
-				a_out.node = node.asString();
+				a_out.s0 = node.asString();
 			}
 
 			if (auto& v = a_in["form"])
@@ -51,6 +51,7 @@ namespace IED
 			a_out.ui32b = a_in.get("ui32b", 0).asUInt();
 			a_out.i32a  = a_in.get("i32a", 0).asInt();
 			a_out.ui64a = a_in.get("ui64a", 0).asUInt64();
+			a_out.ui32c = a_in.get("ui32c", 0).asUInt();
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 
@@ -71,9 +72,9 @@ namespace IED
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 
-			if (!a_data.node.empty())
+			if (!a_data.s0.empty())
 			{
-				a_out["node"] = *a_data.node;
+				a_out["node"] = *a_data.s0;
 			}
 
 			fparser.Create(a_data.form, a_out["form"]);
@@ -85,6 +86,7 @@ namespace IED
 			a_out["ui32b"] = a_data.ui32b;
 			a_out["i32a"]  = a_data.i32a;
 			a_out["ui64a"] = a_data.ui64a;
+			a_out["ui32c"] = a_data.ui32c;
 
 			Parser<Data::configNodeOverrideConditionGroup_t> gparser(m_state);
 

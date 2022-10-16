@@ -234,5 +234,10 @@ namespace IED
 		Faction         = 305,
 		Rank            = 306,
 		Factions        = 307,
+		Variables       = 308,
+		Variable        = 309,
+		Value           = 310,
+		Target          = 311,
+		NonTemp         = 312,
 	};
 }

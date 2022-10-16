@@ -98,7 +98,7 @@ extern "C" {
 			GET_EXE_VERSION_BUILD(a_skse->runtimeVersion),
 			GET_EXE_VERSION_SUB(a_skse->runtimeVersion));
 
-#if SKMP_CUSTOM_ALLOCATOR == 1
+#if defined(IED_MIMALLOC_IN_USE)
 		gLog.Message(
 			"mimalloc %u.%u, boost %u.%u.%u, JsonCpp %u.%u.%u, ImGui %s (%u)",
 			MI_MALLOC_VERSION / 100,

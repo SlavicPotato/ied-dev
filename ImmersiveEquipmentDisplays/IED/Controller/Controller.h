@@ -16,6 +16,7 @@
 #include "ControllerCommon.h"
 #include "EffectController.h"
 #include "IAnimationManager.h"
+#include "IConditionalVariableProcessor.h"
 #include "IEquipment.h"
 #include "IForm.h"
 #include "IJSONSerialization.h"
@@ -43,6 +44,7 @@ namespace IED
 		public IMaintenance,
 		public IJSONSerialization,
 		public IAnimationManager,
+		public IConditionalVariableProcessor,
 		public Localization::ILocalization,
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
@@ -74,8 +76,9 @@ namespace IED
 			kDataVersion5 = 5,
 			kDataVersion6 = 6,
 			kDataVersion7 = 7,
+			kDataVersion8 = 8,
 
-			kCurrentVersion = kDataVersion7
+			kCurrentVersion = kDataVersion8
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -462,6 +465,8 @@ namespace IED
 
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
+		//void QueueClearVariableStorage(bool a_requestEval);
+
 		void ProcessEffectShaders();
 
 	private:
@@ -498,9 +503,16 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
+			const CommonParams&              a_params,
+			ActorObjectHolder&               a_objects,
+			stl::flag<ControllerUpdateFlags> a_flags);
+
+		void EvaluateImpl(
 			NiNode*                          a_root,
 			NiNode*                          a_npcroot,
 			Actor*                           a_actor,
+			TESNPC*                          a_npc,
+			TESRace*                         a_race,
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_objects,
 			stl::flag<ControllerUpdateFlags> a_flags);

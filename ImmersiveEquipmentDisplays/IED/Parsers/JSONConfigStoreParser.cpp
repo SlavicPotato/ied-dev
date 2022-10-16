@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "JSONConfigConditionalVariablesHolderParser.h"
 #include "JSONConfigStoreCustomParser.h"
 #include "JSONConfigStoreNodeOverrideParser.h"
 #include "JSONConfigStoreParser.h"
@@ -22,23 +23,44 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::configStoreSlot_t>         sparser(m_state);
-			Parser<Data::configStoreCustom_t>       cparser(m_state);
-			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
-
-			if (!sparser.Parse(data["slot"], a_out.slot))
+			if (auto& v = data["slot"])
 			{
-				return false;
+				Parser<Data::configStoreSlot_t> sparser(m_state);
+
+				if (!sparser.Parse(v, a_out.slot))
+				{
+					return false;
+				}
 			}
 
-			if (!cparser.Parse(data["custom"], a_out.custom))
+			if (auto& v = data["custom"])
 			{
-				return false;
+				Parser<Data::configStoreCustom_t> cparser(m_state);
+
+				if (!cparser.Parse(v, a_out.custom))
+				{
+					return false;
+				}
 			}
 
-			if (!eparser.Parse(data["transforms"], a_out.transforms))
+			if (auto& v = data["transforms"])
 			{
-				return false;
+				Parser<Data::configStoreNodeOverride_t> eparser(m_state);
+
+				if (!eparser.Parse(v, a_out.transforms))
+				{
+					return false;
+				}
+			}
+
+			if (auto& v = data["cvar"])
+			{
+				Parser<Data::configConditionalVariablesHolder_t> cvparser(m_state);
+
+				if (!cvparser.Parse(v, a_out.condvars))
+				{
+					return false;
+				}
 			}
 
 			return true;
@@ -51,13 +73,15 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configStoreSlot_t>         sparser(m_state);
-			Parser<Data::configStoreCustom_t>       cparser(m_state);
-			Parser<Data::configStoreNodeOverride_t> eparser(m_state);
+			Parser<Data::configStoreSlot_t>                  sparser(m_state);
+			Parser<Data::configStoreCustom_t>                cparser(m_state);
+			Parser<Data::configStoreNodeOverride_t>          eparser(m_state);
+			Parser<Data::configConditionalVariablesHolder_t> cvparser(m_state);
 
 			sparser.Create(a_data.slot, data["slot"]);
 			cparser.Create(a_data.custom, data["custom"]);
 			eparser.Create(a_data.transforms, data["transforms"]);
+			cvparser.Create(a_data.condvars, data["cvar"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

@@ -21,6 +21,8 @@ namespace IED
 			kUISkeletonExplorer,
 			kUIActorInfo,
 			kUIDisplayManagement,
+			kUIConditionalVariablesEditorWindow,
+			kUIProfileEditorConditionalVariables,
 
 			kMax
 		};

@@ -29,4 +29,7 @@
 6600-6699:		es func editor
 6700-6799:		skeleton explorer
 6800-6899:		transform widget
-6900-7000:		actor info
+6900-6999:		actor info
+7000-7099:		cond var widget
+7100-7199:		var type slector
+7200-7299:		var cond selector

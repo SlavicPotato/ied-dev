@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CollectorData.h"
-#include "CommonParams.h"
 #include "ConfigBaseValues.h"
 #include "ConfigData.h"
 #include "ConfigEffectShader.h"
@@ -19,7 +18,7 @@ namespace IED
 		Data::ObjectSlotExtra slot;
 	};
 
-	struct processParams_t;
+	struct CommonParams;
 
 	namespace Data
 	{
@@ -78,7 +77,7 @@ namespace IED
 
 			configBaseFiltersHolder_t& operator=(configBaseFiltersHolder_t&&) = default;
 
-			bool run_filters(const processParams_t& a_params) const;
+			bool run_filters(const CommonParams& a_params) const;
 
 			std::unique_ptr<configBaseFilters_t> filters;
 
@@ -195,12 +194,6 @@ namespace IED
 				const equipmentOverrideCondition_t& a_match,
 				CommonParams&                       a_params);
 
-			static constexpr bool do_match(
-				const collectorData_t&                  a_data,
-				const equipmentOverrideConditionList_t& a_matches,
-				CommonParams&                           a_params,
-				bool                                    a_default);
-
 			static constexpr bool match_equipped_or_slot(
 				const collectorData_t&              a_cdata,
 				const equipmentOverrideCondition_t& a_match,
@@ -216,6 +209,12 @@ namespace IED
 				CommonParams&                       a_params);
 
 		public:
+			static bool do_match(
+				const collectorData_t&                  a_data,
+				const equipmentOverrideConditionList_t& a_matches,
+				CommonParams&                           a_params,
+				bool                                    a_default);
+
 			static bool do_match_fp(
 				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,

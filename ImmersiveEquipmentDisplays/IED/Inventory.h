@@ -4,10 +4,6 @@
 #include "Controller/ControllerCommon.h"
 #include "Data.h"
 
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-#	include <ext/stl_allocator_mi.h>
-#endif
-
 namespace IED
 {
 	class Controller;

@@ -83,6 +83,11 @@ namespace IED
 			return false;
 		}
 
+		const ActorObjectMap& get_actor_object_map(CommonParams& a_params)
+		{
+			return a_params.controller.GetData();
+		}
+
 		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept
 		{
 			return a_params.objects.GetSkeletonID();
@@ -94,19 +99,16 @@ namespace IED
 			       a_params.controller.IsInFirstPerson();
 		}
 
-		bool is_female(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.IsFemale();
-		}
-
-		bool has_humanoid_skeleton(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.HasHumanoidSkeleton();
-		}
-
 		bool check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept
 		{
 			return a_params.objects.GetNodeMonitorResult(a_uid);
+		}
+
+		bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
+		{
+			const auto handle = (*g_thePlayer)->lastRiddenHorseHandle;
+
+			return handle && handle.IsValid() && a_params.objects.GetHandle() == handle;
 		}
 
 		bool match_random_percent(

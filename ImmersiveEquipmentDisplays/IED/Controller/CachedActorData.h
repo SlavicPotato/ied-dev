@@ -30,7 +30,14 @@ namespace IED
 		using container_type =
 			stl::map_sa<
 				Game::FormID,
-				std::int8_t>;
+				std::int8_t,
+				std::less_equal<Game::FormID>,
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+				stl::mi_allocator<std::pair<Game::FormID, std::int8_t>>
+#else
+				stl::container_allocator<std::pair<Game::FormID, std::int8_t>>
+#endif
+				>;
 
 	public:
 		CachedFactionData(Actor* a_actor);

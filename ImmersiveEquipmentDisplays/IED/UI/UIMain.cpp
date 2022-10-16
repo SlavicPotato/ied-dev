@@ -2,6 +2,8 @@
 
 #include "UIMain.h"
 
+#include "ConditionalVariables/UIConditionalVariablesEditorWindow.h"
+#include "ConditionalVariables/Profile/UIProfileEditorConditionalVariables.h"
 #include "Custom/Profile/UIProfileEditorCustom.h"
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "FormFilters/UIProfileEditorFormFilters.h"
@@ -50,11 +52,13 @@ namespace IED
 			CreateChild<UIProfileEditorCustom>(a_controller);
 			CreateChild<UIProfileEditorNodeOverride>(a_controller);
 			CreateChild<UIProfileEditorFormFilters>(a_controller);
+			CreateChild<UIProfileEditorConditionalVariables>(a_controller);
 
 			CreateChild<UIDisplayManagement>(a_controller);
 			CreateChild<UINodeOverrideEditorWindow>(
 				a_controller,
 				GetChild<UIProfileEditorNodeOverride>());
+			CreateChild<UIConditionalVariablesEditorWindow>(a_controller);
 		}
 
 		void UIMain::Initialize()
@@ -277,43 +281,85 @@ namespace IED
 			{
 				GetChildContext<UINodeOverrideEditorWindow>().ToggleOpenState();
 			}
+
+			ImGui::Separator();
+
+			if (ImGui::MenuItem(
+					LS(UIMainStrings::ConditionalVariables, "3"),
+					nullptr,
+					GetChildContext<UIConditionalVariablesEditorWindow>().IsContextOpen()))
+			{
+				GetChildContext<UIConditionalVariablesEditorWindow>().ToggleOpenState();
+			}
+		}
+
+		void UIMain::DrawProfileEditorsSubmenu()
+		{
+			if (ImGui::MenuItem(
+					LS(CommonStrings::Equipment, "1"),
+					nullptr,
+					GetChildContext<UIProfileEditorSlot>().IsContextOpen()))
+			{
+				GetChildContext<UIProfileEditorSlot>().ToggleOpenState();
+			}
+
+			if (ImGui::MenuItem(
+					LS(CommonStrings::Custom, "2"),
+					nullptr,
+					GetChildContext<UIProfileEditorCustom>().IsContextOpen()))
+			{
+				GetChildContext<UIProfileEditorCustom>().ToggleOpenState();
+			}
+
+			if (ImGui::MenuItem(
+					LS(UIMainStrings::NodeOverride, "3"),
+					nullptr,
+					GetChildContext<UIProfileEditorNodeOverride>().IsContextOpen()))
+			{
+				GetChildContext<UIProfileEditorNodeOverride>().ToggleOpenState();
+			}
+
+			if (ImGui::MenuItem(
+					LS(UIMainStrings::FormFilters, "4"),
+					nullptr,
+					GetChildContext<UIProfileEditorFormFilters>().IsContextOpen()))
+			{
+				GetChildContext<UIProfileEditorFormFilters>().ToggleOpenState();
+			}
+
+			if (ImGui::MenuItem(
+					LS(UIMainStrings::ConditionalVariables, "5"),
+					nullptr,
+					GetChildContext<UIProfileEditorConditionalVariables>().IsContextOpen()))
+			{
+				GetChildContext<UIProfileEditorConditionalVariables>().ToggleOpenState();
+			}
+		}
+
+		void UIMain::DrawDiagnosticsSubmenu()
+		{
+			if (ImGui::MenuItem(
+					LS(UIWidgetCommonStrings::ActorInfo, "1"),
+					nullptr,
+					GetChildContext<UIActorInfo>().IsContextOpen()))
+			{
+				GetChildContext<UIActorInfo>().ToggleOpenState();
+			}
+
+			if (ImGui::MenuItem(
+					LS(UIWidgetCommonStrings::SkeletonExplorer, "2"),
+					nullptr,
+					GetChildContext<UISkeletonExplorer>().IsContextOpen()))
+			{
+				GetChildContext<UISkeletonExplorer>().ToggleOpenState();
+			}
 		}
 
 		void UIMain::DrawToolsMenu()
 		{
 			if (LCG_BM(UIMainStrings::ProfileEditors, "1"))
 			{
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Equipment, "1"),
-						nullptr,
-						GetChildContext<UIProfileEditorSlot>().IsContextOpen()))
-				{
-					GetChildContext<UIProfileEditorSlot>().ToggleOpenState();
-				}
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Custom, "2"),
-						nullptr,
-						GetChildContext<UIProfileEditorCustom>().IsContextOpen()))
-				{
-					GetChildContext<UIProfileEditorCustom>().ToggleOpenState();
-				}
-
-				if (ImGui::MenuItem(
-						LS(UIMainStrings::NodeOverride, "3"),
-						nullptr,
-						GetChildContext<UIProfileEditorNodeOverride>().IsContextOpen()))
-				{
-					GetChildContext<UIProfileEditorNodeOverride>().ToggleOpenState();
-				}
-
-				if (ImGui::MenuItem(
-						LS(UIMainStrings::FormFilters, "4"),
-						nullptr,
-						GetChildContext<UIProfileEditorFormFilters>().IsContextOpen()))
-				{
-					GetChildContext<UIProfileEditorFormFilters>().ToggleOpenState();
-				}
+				DrawProfileEditorsSubmenu();
 
 				ImGui::EndMenu();
 			}
@@ -352,21 +398,7 @@ namespace IED
 
 			if (LCG_BM(UIMainStrings::Diagnostics, "6"))
 			{
-				if (ImGui::MenuItem(
-						LS(UIWidgetCommonStrings::ActorInfo, "1"),
-						nullptr,
-						GetChildContext<UIActorInfo>().IsContextOpen()))
-				{
-					GetChildContext<UIActorInfo>().ToggleOpenState();
-				}
-
-				if (ImGui::MenuItem(
-						LS(UIWidgetCommonStrings::SkeletonExplorer, "2"),
-						nullptr,
-						GetChildContext<UISkeletonExplorer>().IsContextOpen()))
-				{
-					GetChildContext<UISkeletonExplorer>().ToggleOpenState();
-				}
+				DrawDiagnosticsSubmenu();
 
 				ImGui::EndMenu();
 			}

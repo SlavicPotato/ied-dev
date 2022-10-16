@@ -16,7 +16,7 @@ namespace IED
 {
 	ActorProcessorTask::ActorProcessorTask(
 		Controller& a_controller) :
-		m_state{ IPerfCounter::Query() - STATE_CHECK_INTERVAL_LOW },
+		m_state{ IPerfCounter::Query() - COMMON_STATE_CHECK_INTERVAL },
 		m_controller(a_controller)
 	{
 	}
@@ -137,29 +137,27 @@ namespace IED
 
 	void ActorProcessorTask::ProcessEvalRequest(ActorObjectHolder& a_data)
 	{
-		if (!a_data.m_flags.test(ActorObjectHolderFlags::kWantEval))
+		if (a_data.m_flags.consume(ActorObjectHolderFlags::kEvalThisFrame))
 		{
-			return;
-		}
-
-		if (a_data.m_flagsbf.evalCountdown > 0)
-		{
-			a_data.m_flagsbf.evalCountdown--;
-		}
-
-		if (a_data.m_flags.test(ActorObjectHolderFlags::kImmediateEval) ||
-		    a_data.m_flagsbf.evalCountdown == 0)
-		{
-			a_data.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
-
-			m_controller.EvaluateImpl(
-				a_data,
-				ControllerUpdateFlags::kPlaySound |
-					ControllerUpdateFlags::kUseCachedParams);
+			if (auto& params = a_data.GetCurrentProcessParams())
+			{
+				m_controller.EvaluateImpl(
+					*params,
+					a_data,
+					ControllerUpdateFlags::kPlaySound |
+						ControllerUpdateFlags::kUseCachedParams);
+			}
+			else
+			{
+				m_controller.EvaluateImpl(
+					a_data,
+					ControllerUpdateFlags::kPlaySound |
+						ControllerUpdateFlags::kUseCachedParams);
+			}
 		}
 	}
 
-	bool ActorProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data)
+	constexpr bool ActorProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data) noexcept
 	{
 		bool result = false;
 
@@ -204,6 +202,14 @@ namespace IED
 
 	void ActorProcessorTask::UpdateState()
 	{
+		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
+		    lrhandle != m_state.playerLastRidden)
+		{
+			m_state.playerLastRidden = lrhandle;
+
+			m_controller.RequestLFEvaluateAll();
+		}
+
 		if (const auto fpstate = IsInFirstPerson();
 		    fpstate != m_state.inFirstPerson)
 		{
@@ -218,7 +224,7 @@ namespace IED
 
 		if (IPerfCounter::delta_us(
 				m_state.lastRun,
-				m_timer.GetStartTime()) < STATE_CHECK_INTERVAL_LOW)
+				m_timer.GetStartTime()) < COMMON_STATE_CHECK_INTERVAL)
 		{
 			return;
 		}
@@ -271,10 +277,7 @@ namespace IED
 
 		if (changed)
 		{
-			for (auto& e : m_controller.m_objects)
-			{
-				e.second.m_wantLFUpdate = true;
-			}
+			m_controller.RequestLFEvaluateAll();
 		}
 	}
 
@@ -337,7 +340,17 @@ namespace IED
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
-			auto actor = e.m_actor.get();
+			NiPointer<TESObjectREFR> refr;
+			if (!e.GetHandle().Lookup(refr))
+			{
+				continue;
+			}
+
+			auto actor = refr->As<Actor>();
+			if (!actor)
+			{
+				continue;
+			}
 
 			if (!actor->formID)
 			{
@@ -375,16 +388,11 @@ namespace IED
 
 			if (IPerfCounter::delta_us(
 					e.m_lastLFStateCheck,
-					m_timer.GetStartTime()) >= STATE_CHECK_INTERVAL_LOW)
+					m_timer.GetStartTime()) >= ActorObjectHolder::STATE_CHECK_INTERVAL_LOW)
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
 
-				/*PerfTimer pt;
-				pt.Start();*/
-
 				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
-
-				//_DMESSAGE("%.8X: %f | %zu", e.m_formid, pt.Stop(), state.GetNumFactions());
 
 				if (e.m_wantLFUpdate)
 				{
@@ -400,6 +408,69 @@ namespace IED
 #endif
 			}
 
+			if (e.m_flags.test(ActorObjectHolderFlags::kWantEval))
+			{
+				if (e.m_flagsbf.evalCountdown > 0)
+				{
+					e.m_flagsbf.evalCountdown--;
+				}
+
+				if (e.m_flags.test(ActorObjectHolderFlags::kImmediateEval) ||
+				    e.m_flagsbf.evalCountdown == 0)
+				{
+					e.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
+					e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
+				}
+			}
+
+			auto& cvdata = m_controller.m_config.active.condvars;
+
+			if (e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate) ||
+			    e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
+			{
+				if (!cvdata.empty())
+				{
+					if (auto info = m_controller.LookupCachedActorInfo(e))
+					{
+						auto& params = e.CreateProcessParams(
+							info->actor,
+							info->handle,
+							e.IsFemale() ?
+								Data::ConfigSex::Female :
+                                Data::ConfigSex::Male,
+							ControllerUpdateFlags::kPlaySound,
+							m_controller.m_temp.sr,
+							actor,
+							info->npc,
+							info->npc->GetFirstNonTemporaryOrThis(),
+							info->race,
+							info->root,
+							info->npcRoot,
+							e,
+							m_controller);
+
+						if (m_controller.Process(
+								params,
+								m_controller.m_config.active.condvars,
+								e.GetVariables()))
+						{
+							m_controller.RequestLFEvaluateAll(i);
+							e.RequestEval();
+						}
+					}
+				}
+			}
+		}
+
+		for (auto& [i, e] : m_controller.m_objects)
+		{
+			if (!e.m_state.cellAttached ||
+			    !e.GetActor()->formID)
+			{
+				e.ClearCurrentProcessParams();
+				continue;
+			}
+
 			ProcessEvalRequest(e);
 
 			if (CheckMonitorNodes(e))
@@ -409,12 +480,12 @@ namespace IED
 
 			ProcessTransformUpdateRequest(e);
 
-			e.ClearCurrentParams();
+			e.ClearCurrentProcessParams();
 
 			if (animUpdateData)
 			{
 				float step =
-					e.m_formid == Data::IData::GetPlayerRefID() ?
+					e.m_actorid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;
 

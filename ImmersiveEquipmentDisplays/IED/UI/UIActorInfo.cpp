@@ -297,6 +297,20 @@ namespace IED
 							"%.8X",
 							data.npc->templ.get());
 					}
+
+					if (data.npc->nontemp != data.npc->form &&
+					    data.npc->nontemp != data.npc->templ)
+					{
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						ImGui::Text("%s:", LS(CommonStrings::NonTemp));
+
+						ImGui::TableSetColumnIndex(1);
+						ImGui::TextWrapped(
+							"%.8X",
+							data.npc->nontemp.get());
+					}
 				}
 				else
 				{

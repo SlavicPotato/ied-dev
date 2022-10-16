@@ -29,6 +29,10 @@
 #include <ext/stl_set_sa.h>
 #include <ext/str_conv.h>
 
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+#	include <ext/stl_allocator_mi.h>
+#endif
+
 #include <skse64/BipedObject.h>
 #include <skse64/FormTraits.h>
 #include <skse64/GameAudio.h>
@@ -122,5 +126,9 @@ namespace fs = std::filesystem;
 
 //#define IED_ENABLE_RTEST
 //#define IED_ENABLE_I3DI
+
+#if (defined(IED_USE_MIMALLOC_COLLECTOR) || SKMP_CUSTOM_ALLOCATOR == 1)
+#	define IED_MIMALLOC_IN_USE 1
+#endif
 
 #endif  // PCH_H

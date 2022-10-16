@@ -103,20 +103,33 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 
-						ImGui::Text(
+#if defined(IED_MIMALLOC_IN_USE)
+
+						UICommon::DrawURL(
+							"mimalloc %u.%u",
+							DEP_URL_MIMALLOC,
+							MI_MALLOC_VERSION / 100,
+							MI_MALLOC_VERSION % 100);
+
+#endif
+
+						UICommon::DrawURL(
 							"boost %u.%u.%u",
+							DEP_URL_BOOST,
 							BOOST_VERSION / 100000,
 							BOOST_VERSION / 100 % 1000,
 							BOOST_VERSION % 100);
 
-						ImGui::Text(
+						UICommon::DrawURL(
 							"jsoncpp %u.%u.%u",
+							DEP_URL_JSONCPP,
 							JSONCPP_VERSION_MAJOR,
 							JSONCPP_VERSION_MINOR,
 							JSONCPP_VERSION_PATCH);
 
-						ImGui::Text(
+						UICommon::DrawURL(
 							"ImGui %s (%u)",
+							DEP_URL_IMGUI,
 							IMGUI_VERSION,
 							IMGUI_VERSION_NUM);
 

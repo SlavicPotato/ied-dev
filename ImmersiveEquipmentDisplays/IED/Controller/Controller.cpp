@@ -591,6 +591,12 @@ namespace IED
 			return;
 		}
 
+		auto nrp = GetNPCRacePair(a_actor);
+		if (!nrp)
+		{
+			return;
+		}
+
 		if (a_objects.m_root != root)
 		{
 			Warning(
@@ -609,6 +615,8 @@ namespace IED
 				root,
 				npcroot,
 				a_actor,
+				nrp->npc,
+				nrp->race,
 				a_handle,
 				a_objects,
 				a_flags);
@@ -3332,10 +3340,18 @@ namespace IED
 			return;
 		}
 
+		auto nrp = GetNPCRacePair(a_actor);
+		if (!nrp)
+		{
+			return;
+		}
+
 		IncrementCounter();
 
 		auto& objects = GetObjectHolder(
 			a_actor,
+			nrp->npc,
+			nrp->race,
 			a_root,
 			a_npcroot,
 			*this,
@@ -3379,6 +3395,8 @@ namespace IED
 			{
 				auto& objs = GetObjectHolder(
 					a_actor,
+					nrp->npc,
+					nrp->race,
 					a_root,
 					a_npcroot,
 					*this,
@@ -3393,6 +3411,8 @@ namespace IED
 					a_root,
 					a_npcroot,
 					a_actor,
+					nrp->npc,
+					nrp->race,
 					a_handle,
 					objs,
 					a_flags);
@@ -3404,6 +3424,8 @@ namespace IED
 				a_root,
 				a_npcroot,
 				a_actor,
+				nrp->npc,
+				nrp->race,
 				a_handle,
 				objects,
 				a_flags);
@@ -3411,9 +3433,27 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
+		const CommonParams&              a_params,
+		ActorObjectHolder&               a_objects,
+		stl::flag<ControllerUpdateFlags> a_flags)
+	{
+		EvaluateImpl(
+			a_params.root,
+			a_params.npcRoot,
+			a_params.actor,
+			a_params.npc,
+			a_params.race,
+			a_objects.GetHandle(),
+			a_objects,
+			a_flags);
+	}
+
+	void Controller::EvaluateImpl(
 		NiNode*                          a_root,
 		NiNode*                          a_npcroot,
 		Actor*                           a_actor,
+		TESNPC*                          a_npc,
+		TESRace*                         a_race,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
@@ -3533,18 +3573,18 @@ namespace IED
 	}
 
 	template <class... Args>
-	inline constexpr processParams_t make_process_params(
-		bool                                   a_cached,
+	inline constexpr processParams_t& make_process_params(
 		ActorObjectHolder&                     a_objects,
+		std::optional<processParams_t>&        a_paramsOut,
 		Actor* const                           a_actor,
 		const Game::ObjectRefHandle            a_handle,
 		const stl::flag<ControllerUpdateFlags> a_flags,
 		SlotResults&                           a_sr,
 		Args&&... a_args)
 	{
-		if (a_cached)
+		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
 		{
-			return processParams_t{
+			return a_objects.GetOrCreateProcessParams(
 				a_actor,
 				a_handle,
 				a_objects.IsFemale() ?
@@ -3552,13 +3592,11 @@ namespace IED
                     ConfigSex::Male,
 				a_flags,
 				a_sr,
-				a_objects.GetOrCreateCommonParams(
-					std::forward<Args>(a_args)...)
-			};
+				std::forward<Args>(a_args)...);
 		}
 		else
 		{
-			return processParams_t{
+			a_paramsOut.emplace(
 				a_actor,
 				a_handle,
 				a_objects.IsFemale() ?
@@ -3566,8 +3604,9 @@ namespace IED
                     ConfigSex::Male,
 				a_flags,
 				a_sr,
-				std::forward<Args>(a_args)...
-			};
+				std::forward<Args>(a_args)...);
+
+			return *a_paramsOut;
 		}
 	}
 
@@ -3585,9 +3624,11 @@ namespace IED
 			return;
 		}
 
-		auto params = make_process_params(
-			a_flags.test(ControllerUpdateFlags::kUseCachedParams),
+		std::optional<processParams_t> ps;
+
+		auto& params = make_process_params(
 			a_objects,
+			ps,
 			a_actor,
 			a_handle,
 			a_flags,
@@ -3601,38 +3642,20 @@ namespace IED
 			a_objects,
 			*this);
 
-		/*processParams_t params{
-			a_root,
-			a_npcroot,
-			a_handle,
-			a_objects.m_female ?
-				ConfigSex::Female :
-                ConfigSex::Male,
-			a_flags,
-			{ m_temp.sr, a_actor },
-			a_actor,
-			nrp->npc,
-			nrp->npc->GetFirstNonTemporaryOrThis(),
-			nrp->race,
-			a_objects,
-			*this
-		};*/
+		params.flags = a_flags;
 
-		auto dataList = GetEntryDataList(a_actor);
-		if (!dataList)
+		if (a_objects.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate))
 		{
-			Debug(
-				"%s [%u]: %.8X: missing container object list",
-				__FUNCTION__,
-				__LINE__,
-				a_actor->formID.get());
+			if (Process(
+					params,
+					m_config.active.condvars,
+					a_objects.GetVariables()))
+			{
+				RequestLFEvaluateAll(a_objects.GetActorFormID());
+			}
 		}
 
 		UpdateBipedSlotCache(params, a_objects);
-
-		params.collector.Run(
-			*nrp->npc,
-			dataList);
 
 		if (!m_config.settings.data.disableNPCSlots ||
 		    params.is_player())
@@ -3718,7 +3741,7 @@ namespace IED
 		ActorObjectHolder&               a_objects,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (auto& params = a_objects.GetCommonParams())
+		if (auto& params = a_objects.GetCurrentProcessParams())
 		{
 			if (ProcessTransformsImpl(
 					params->root,
@@ -3760,10 +3783,10 @@ namespace IED
 		ActorObjectHolder& a_objects,
 		Args&&... a_args)
 	{
-		if (auto &params = a_objects.GetCommonParams())
+		if (auto& params = a_objects.GetCurrentProcessParams())
 		{
 			return INodeOverride::nodeOverrideParams_t{
-				*params
+				static_cast<const CommonParams&>(*params)
 			};
 		}
 		else
@@ -3880,7 +3903,7 @@ namespace IED
 			}
 		}
 
-		if (m_config.settings.data.enableXP32AA &&
+		if (GetSettings().data.enableXP32AA &&
 		    a_objects.m_animState.flags.test(ActorAnimationState::Flags::kNeedUpdate))
 		{
 			UpdateAA(a_actor, a_objects.m_animState);
@@ -4449,6 +4472,8 @@ namespace IED
 				info->root,
 				info->npcRoot,
 				info->actor,
+				info->npc,
+				info->race,
 				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
@@ -4526,6 +4551,8 @@ namespace IED
 				info->root,
 				info->npcRoot,
 				info->actor,
+				info->npc,
+				info->race,
 				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
@@ -4600,6 +4627,8 @@ namespace IED
 				info->root,
 				info->npcRoot,
 				info->actor,
+				info->npc,
+				info->race,
 				info->handle,
 				a_record,
 				ControllerUpdateFlags::kNone);
@@ -4789,7 +4818,7 @@ namespace IED
 				"%s [%u]: %.8X: could not lookup by handle (%.8X)",
 				__FUNCTION__,
 				__LINE__,
-				a_objects.m_formid,
+				a_objects.m_actorid,
 				handle.get());
 
 			return {};
@@ -5567,12 +5596,31 @@ namespace IED
 
 	void Controller::QueueSetLanguage(const stl::fixed_string& a_lang)
 	{
-		ITaskPool::AddTask([this, a_lang]() {
+		ITaskPool::AddTask([this, a_lang] {
 			stl::scoped_lock lock(m_lock);
 
 			SetLanguageImpl(a_lang);
 		});
 	}
+
+	/*void Controller::QueueClearVariableStorage(bool a_requestEval)
+	{
+		ITaskPool::AddTask([this, a_requestEval] {
+			stl::scoped_lock lock(m_lock);
+
+			ClearConditionalVariables();
+
+			if (a_requestEval)
+			{
+				for (auto& e : m_objects)
+				{
+					e.second.m_flags.set(
+						ActorObjectHolderFlags::kWantVarUpdate |
+						ActorObjectHolderFlags::kRequestEvalImmediate);
+				}
+			}
+		});
+	}*/
 
 	void Controller::ProcessEffectShaders()
 	{

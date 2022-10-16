@@ -81,6 +81,8 @@ namespace IED
 
 		m_objects.erase(it);
 
+		RequestLFEvaluateAll();
+
 		return true;
 	}
 
@@ -103,6 +105,8 @@ namespace IED
 			a_flags);
 
 		m_objects.erase(it);
+
+		RequestLFEvaluateAll();
 
 		return true;
 	}
@@ -129,6 +133,8 @@ namespace IED
 			a_flags);
 
 		m_objects.erase(it);
+
+		RequestLFEvaluateAll();
 
 		return true;
 	}
@@ -215,6 +221,44 @@ namespace IED
 				a_xfrmUpdate,
 				a_xfrmUpdateNoDefer);
 		}
+	}
+
+	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval) 
+	{
+		ITaskPool::AddPriorityTask([this, a_requestEval] {
+			stl::scoped_lock lock(m_lock);
+
+			ClearVariablesOnAll(a_requestEval);
+		});
+	}
+
+	void IObjectManager::QueueClearVariables(
+		Game::FormID a_handle,
+		bool         a_requestEval) 
+	{
+		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
+			stl::scoped_lock lock(m_lock);
+
+			ClearVariables(a_handle, a_requestEval);
+		});
+	}
+
+	void IObjectManager::QueueRequestVariableUpdateOnAll() const
+	{
+		ITaskPool::AddPriorityTask([this] {
+			stl::scoped_lock lock(m_lock);
+
+			RequestVariableUpdateOnAll();
+		});
+	}
+
+	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const
+	{
+		ITaskPool::AddPriorityTask([this, a_handle] {
+			stl::scoped_lock lock(m_lock);
+
+			RequestVariableUpdate(a_handle);
+		});
 	}
 
 	void IObjectManager::CleanupActorObjectsImpl(

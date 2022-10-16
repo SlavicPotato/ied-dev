@@ -228,6 +228,21 @@
     <Filter Include="Source\IED\SkeletonExtensions">
       <UniqueIdentifier>{f805841a-f47a-4982-8b60-ff238be5c08a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\ConditionalVariables">
+      <UniqueIdentifier>{4075d3a2-01da-4ea3-bb95-8d709e30ac6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\ConditionalVariables">
+      <UniqueIdentifier>{7f320efd-db9c-43ff-aa34-d56a57907b02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\ConditionalVariables">
+      <UniqueIdentifier>{becfd677-5845-47e7-920c-121298107783}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\ConditionalVariables\Widgets">
+      <UniqueIdentifier>{57f347c5-da87-4f85-9b94-e453fe29c841}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\ConditionalVariables\Profile">
+      <UniqueIdentifier>{3b5fee4b-df93-435d-ac32-56f052c6ecc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1523,6 +1538,72 @@
     <ClInclude Include="IED\GearNodeID.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ConfigConditionalVars.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConditionalVariableStorage.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IConditionalVariableProcessor.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConditionalVariableStorageParser.h">
+      <Filter>Source\IED\JSONParsers\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableEntryListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\EquipmentOverrideResult.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\ConditionalVariables\Widgets\UIConditionalVariablesEditorWidget.h">
+      <Filter>Source\IED\UI\ConditionalVariables\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\ConditionalVariables\Widgets\UIConditionalVariablesEditorWidgetStrings.h">
+      <Filter>Source\IED\UI\ConditionalVariables\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConditionalVariablesEditor.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditor.h">
+      <Filter>Source\IED\UI\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditorWindow.h">
+      <Filter>Source\IED\UI\ConditionalVariables</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIVariableTypeSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIVariableTypeSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigVariableConditionTarget.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\ConditionalVariables\Profile\UIProfileEditorConditionalVariables.h">
+      <Filter>Source\IED\UI\ConditionalVariables\Profile</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2406,6 +2487,51 @@
     </ClCompile>
     <ClCompile Include="IED\ActorFactionInfo.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IConditionalVariableProcessor.cpp">
+      <Filter>Source\IED\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConditionalVariableStorageParser.cpp">
+      <Filter>Source\IED\JSONParsers\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableEntryListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\ConditionalVariables\Widgets\UIConditionalVariablesEditorWidget.cpp">
+      <Filter>Source\IED\UI\ConditionalVariables\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConditionalVariablesEditor.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditor.cpp">
+      <Filter>Source\IED\UI\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditorWindow.cpp">
+      <Filter>Source\IED\UI\ConditionalVariables</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIVariableTypeSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\ConditionalVariables\Profile\UIProfileEditorConditionalVariables.cpp">
+      <Filter>Source\IED\UI\ConditionalVariables\Profile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

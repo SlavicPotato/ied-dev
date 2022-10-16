@@ -32,6 +32,7 @@ namespace IED
 			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
 			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
 			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
+			{ Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount },
 			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
 			{ Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious },
 			{ Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor },
@@ -181,6 +182,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
 			case Data::ExtraConditionType::kIsUnconscious:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
+			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
 			default:
 				return nullptr;
 			}

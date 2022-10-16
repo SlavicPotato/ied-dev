@@ -114,6 +114,7 @@ namespace IED
 			InitiallyDisabled                   = 2103,
 			Ignored                             = 2104,
 			OriginalREFR                        = 2105,
+			ConditionalVariables                = 2106,
 		};
 	}
 }

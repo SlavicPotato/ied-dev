@@ -60,6 +60,7 @@ namespace IED
 				stl::underlying(ConfigStoreSerializationFlags::kSlotRace));
 
 			ImGui::Unindent();
+			ImGui::Spacing();
 
 			ImGui::TextUnformatted("Custom:");
 
@@ -108,6 +109,7 @@ namespace IED
 				stl::underlying(ConfigStoreSerializationFlags::kCustomRace));
 
 			ImGui::Unindent();
+			ImGui::Spacing();
 
 			ImGui::TextUnformatted("Gear positioning:");
 
@@ -172,7 +174,19 @@ namespace IED
 				stl::underlying(ConfigStoreSerializationFlags::kNodeOverrideRace));
 
 			ImGui::Unindent();
+			ImGui::Spacing();
 
+			ImGui::TextUnformatted("Other:");
+
+			ImGui::Indent();
+			ImGui::Spacing();
+
+			result |= ImGui::CheckboxFlagsT(
+				"Variables##vars",
+				stl::underlying(std::addressof(a_flags.value)),
+				stl::underlying(ConfigStoreSerializationFlags::kConditionalVariables));
+
+			ImGui::Unindent();
 			ImGui::Spacing();
 			ImGui::Separator();
 			ImGui::Spacing();

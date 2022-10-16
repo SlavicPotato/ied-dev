@@ -18,23 +18,6 @@ namespace IED
 			public UIProfileEditorBase<NodeOverrideProfile>,
 			public UINodeOverrideEditorWidget<int>
 		{
-			struct cachedItem_t
-			{
-				cachedItem_t() = default;
-
-				template <class... Args>
-				cachedItem_t(
-					const stl::fixed_string& a_name,
-					Args&&... a_args) :
-					name(a_name),
-					data(std::forward<Args>(a_args)...)
-				{
-				}
-
-				stl::fixed_string       name;
-				entryNodeOverrideData_t data;
-			};
-
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorNodeOverride;
 
@@ -128,7 +111,7 @@ namespace IED
 
 			NodeOverrideProfile* GetCurrentProfile() const;
 
-			stl::optional<cachedItem_t> m_cachedItem;
+			std::optional<cachedItem_t<entryNodeOverrideData_t>> m_cachedItem;
 
 			Controller& m_controller;
 		};

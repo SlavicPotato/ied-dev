@@ -4,6 +4,9 @@
 #include "ConfigCommon.h"
 #include "ConfigData.h"
 #include "ConfigLUIDTag.h"
+#include "ConfigVariableConditionTarget.h"
+
+#include "ConditionalVariableStorage.h"
 
 #include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
@@ -37,10 +40,10 @@ namespace IED
 			kMatchCategoryOperOR = 1u << 9,
 			kMatchThisItem       = 1u << 10,
 
-			kMatchMaskEquippedAndThis     = kMatchEquipped | kMatchThisItem,
-			kMatchMaskEquippedAndSlots    = kMatchEquipped | kMatchEquipmentSlots,
-			kMatchMaskAllEquipmentAndThis = kMatchEquipmentSlots | kMatchThisItem,
-			kMatchMaskAny                 = kMatchEquipped | kMatchMaskAllEquipmentAndThis,
+			kMatchMaskEquippedAndThis          = kMatchEquipped | kMatchThisItem,
+			kMatchMaskEquippedAndSlots         = kMatchEquipped | kMatchEquipmentSlots,
+			kMatchMaskAllEquipmentSlotsAndThis = kMatchEquipmentSlots | kMatchThisItem,
+			kMatchMaskAny                      = kMatchEquipped | kMatchMaskAllEquipmentSlotsAndThis,
 
 			// laying down (Furniture), loc child (Location), match parent (Worldspace), playable (Race), is bolt (Biped), count (Form), rank (Faction)
 			kExtraFlag1 = 1u << 11,
@@ -85,6 +88,7 @@ namespace IED
 			Idle       = 19,
 			Skeleton   = 20,
 			Faction    = 21,
+			Variable   = 22,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -141,6 +145,7 @@ namespace IED
 				DataVersion3 = 3,
 				DataVersion4 = 4,
 				DataVersion5 = 5,
+				DataVersion6 = 6,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -203,6 +208,22 @@ namespace IED
 				extraCondType(a_type)
 			{
 				fbf.type = EquipmentOverrideConditionType::Extra;
+			}
+
+			inline equipmentOverrideCondition_t(
+				EquipmentOverrideConditionType a_matchType,
+				const stl::fixed_string&       a_s)
+			{
+				switch (a_matchType)
+				{
+				case EquipmentOverrideConditionType::Variable:
+					s0 = a_s;
+					break;
+				default:
+					assert(false);
+				}
+
+				fbf.type = a_matchType;
 			}
 
 			inline equipmentOverrideCondition_t(
@@ -289,12 +310,22 @@ namespace IED
 
 			union
 			{
-				std::uint32_t ui32b{ 0 };
-				std::uint32_t count;
-				TimeOfDay     timeOfDay;
-				std::uint32_t uid;
+				std::uint32_t           ui32b{ 0 };
+				std::uint32_t           count;
+				TimeOfDay               timeOfDay;
+				std::uint32_t           uid;
+				ConditionalVariableType condVarType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
+			};
+
+			union
+			{
+				std::uint32_t           ui32c{ 0 };
+				VariableConditionTarget vcTarget;
+
+				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionTarget>, std::uint32_t>);
 			};
 
 			union
@@ -302,6 +333,8 @@ namespace IED
 				std::uint64_t ui64a{ 0 };
 				std::uint64_t skeletonSignature;
 			};
+
+			stl::fixed_string s0;
 
 			equipmentOverrideConditionGroup_t group;
 
@@ -320,6 +353,8 @@ namespace IED
 				a_ar&              ui32b;
 				a_ar&              i32a;
 				a_ar&              ui64a;
+				a_ar&              s0;
+				a_ar&              ui32c;
 			}
 
 			template <class Archive>
@@ -349,6 +384,12 @@ namespace IED
 							{
 								a_ar& i32a;
 								a_ar& ui64a;
+
+								if (a_version >= DataVersion6)
+								{
+									a_ar& s0;
+									a_ar& ui32c;
+								}
 							}
 						}
 					}
@@ -422,4 +463,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::equipmentOverrideCondition_t,
-	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion5);
+	::IED::Data::equipmentOverrideCondition_t::Serialization::DataVersion6);

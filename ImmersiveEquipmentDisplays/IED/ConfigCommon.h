@@ -211,45 +211,46 @@ namespace IED
 		{
 			kNone = static_cast<std::underlying_type_t<ExtraConditionType>>(-1),
 
-			kCanDualWield        = 0,
-			kIsDead              = 1,
-			kInInterior          = 2,
-			kIsPlayerTeammate    = 3,
-			kIsGuard             = 4,
-			kIsMount             = 5,
-			kShoutEquipped       = 6,
-			kInMerchantFaction   = 7,
-			kCombatStyle         = 8,
-			kClass               = 9,
-			kTimeOfDay           = 10,
-			kIsInFirstPerson     = 11,
-			kInCombat            = 12,
-			kIsFemale            = 13,
-			kPlayerEnemiesNearby = 14,
-			kInWater             = 15,
-			kUnderwater          = 16,
-			kSwimming            = 17,
-			kBleedingOut         = 18,
-			kTresspassing        = 19,
-			kIsCommanded         = 20,
-			kParalyzed           = 21,
-			kIsRidingMount       = 22,
-			kHumanoidSkeleton    = 23,
-			kIsPlayer            = 24,
-			kBribedByPlayer      = 25,
-			kAngryWithPlayer     = 26,
-			kEssential           = 27,
-			kProtected           = 28,
-			kSitting             = 29,
-			kSleeping            = 30,
-			kBeingRidden         = 31,
-			kWeaponDrawn         = 32,
-			kRandomPercent       = 33,
-			kNodeMonitor         = 34,
-			kArrested            = 35,
-			kIsChild             = 36,
-			kInKillmove          = 37,
-			kIsUnconscious       = 38,
+			kCanDualWield            = 0,
+			kIsDead                  = 1,
+			kInInterior              = 2,
+			kIsPlayerTeammate        = 3,
+			kIsGuard                 = 4,
+			kIsMount                 = 5,
+			kShoutEquipped           = 6,
+			kInMerchantFaction       = 7,
+			kCombatStyle             = 8,
+			kClass                   = 9,
+			kTimeOfDay               = 10,
+			kIsInFirstPerson         = 11,
+			kInCombat                = 12,
+			kIsFemale                = 13,
+			kPlayerEnemiesNearby     = 14,
+			kInWater                 = 15,
+			kUnderwater              = 16,
+			kSwimming                = 17,
+			kBleedingOut             = 18,
+			kTresspassing            = 19,
+			kIsCommanded             = 20,
+			kParalyzed               = 21,
+			kIsRidingMount           = 22,
+			kHumanoidSkeleton        = 23,
+			kIsPlayer                = 24,
+			kBribedByPlayer          = 25,
+			kAngryWithPlayer         = 26,
+			kEssential               = 27,
+			kProtected               = 28,
+			kSitting                 = 29,
+			kSleeping                = 30,
+			kBeingRidden             = 31,
+			kWeaponDrawn             = 32,
+			kRandomPercent           = 33,
+			kNodeMonitor             = 34,
+			kArrested                = 35,
+			kIsChild                 = 36,
+			kInKillmove              = 37,
+			kIsUnconscious           = 38,
+			kIsPlayerLastRiddenMount = 39,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -387,7 +388,7 @@ namespace IED
 				return data[stl::underlying(ConfigClass::Actor)];
 			}
 
-			inline constexpr const auto& GetActorData() const noexcept
+			inline constexpr auto& GetActorData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::Actor)];
 			}
@@ -397,7 +398,7 @@ namespace IED
 				return data[stl::underlying(ConfigClass::Race)];
 			}
 
-			inline constexpr const auto& GetRaceData() const noexcept
+			inline constexpr auto& GetRaceData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::Race)];
 			}
@@ -407,7 +408,7 @@ namespace IED
 				return data[stl::underlying(ConfigClass::NPC)];
 			}
 
-			inline constexpr const auto& GetNPCData() const noexcept
+			inline constexpr auto& GetNPCData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::NPC)];
 			}
@@ -427,7 +428,7 @@ namespace IED
 				return global;
 			}
 
-			inline constexpr const auto& GetGlobalData() const noexcept
+			inline constexpr auto& GetGlobalData() const noexcept
 			{
 				return global;
 			}
@@ -437,7 +438,7 @@ namespace IED
 				return global[stl::underlying(a_type)];
 			}
 
-			inline constexpr const auto& GetGlobalData(GlobalConfigType a_type) const noexcept
+			inline constexpr auto& GetGlobalData(GlobalConfigType a_type) const noexcept
 			{
 				return global[stl::underlying(a_type)];
 			}

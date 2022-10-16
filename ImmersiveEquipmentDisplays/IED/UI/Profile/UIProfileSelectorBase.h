@@ -131,7 +131,10 @@ namespace IED
 				}
 			}
 
-			DrawCreateNew();
+			{
+				auto tmpd = std::make_unique<typename P::base_type>(GetData(a_data));
+				DrawCreateNew(tmpd.get());
+			}
 
 			if (m_state.selected)
 			{

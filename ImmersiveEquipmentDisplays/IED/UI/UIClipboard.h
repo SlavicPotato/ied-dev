@@ -40,7 +40,10 @@ namespace IED
 				FixedStringSet,
 				EffectShaderFunction,
 				EffectShaderFunctionList,
-				BipedObjectList
+				BipedObjectList,
+				ConditionalVariablesList,
+				ConditionalVariablesEntry,
+				ConditionalVariable,
 			};
 
 			struct entry_t
@@ -290,6 +293,24 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configConditionalVariablesEntry_t>)
+			{
+				return data.type == DataType::ConditionalVariablesEntry ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configConditionalVariablesList_t>)
+			{
+				return data.type == DataType::ConditionalVariablesList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configConditionalVariable_t>)
+			{
+				return data.type == DataType::ConditionalVariable ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				static_assert(false);
@@ -451,6 +472,18 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configBipedObjectList_t>)
 			{
 				data.type = DataType::BipedObjectList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configConditionalVariablesEntry_t>)
+			{
+				data.type = DataType::ConditionalVariablesEntry;
+			}
+			else if constexpr (std::is_same_v<T, Data::configConditionalVariablesList_t>)
+			{
+				data.type = DataType::ConditionalVariablesList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configConditionalVariable_t>)
+			{
+				data.type = DataType::ConditionalVariable;
 			}
 			else
 			{

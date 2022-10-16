@@ -99,13 +99,24 @@ namespace IED
 				const char* a_url)
 			{
 				ImGui::TextUnformatted(a_label);
+				HandleURLInteraction(a_url);
+			}
+
+			void HandleURLInteraction(const char* a_url)
+			{
 				if (ImGui::IsItemHovered())
 				{
 					DrawItemUnderline(ImGuiCol_Text);
 
 					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
 					{
-						ShellExecuteA(nullptr, "open", a_url, nullptr, nullptr, SW_SHOWNORMAL);
+						ShellExecuteA(
+							nullptr,
+							"open",
+							a_url,
+							nullptr,
+							nullptr,
+							SW_SHOWNORMAL);
 					}
 				}
 			}

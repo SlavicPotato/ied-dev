@@ -43,7 +43,7 @@ namespace IED
 			const Data::configExtraNodeList_t& a_data,
 			Json::Value&                       a_out) const
 		{
-			//Parser<Data::configExtraNodeEntry_t> entparser(m_state);
+			throw std::exception("not implemented");
 		}
 	}
 }

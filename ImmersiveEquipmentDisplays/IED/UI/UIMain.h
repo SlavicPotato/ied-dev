@@ -99,6 +99,8 @@ namespace IED
 			void DrawMenuBarContents();
 			void DrawFileMenu();
 			void DrawViewMenu();
+			void DrawProfileEditorsSubmenu();
+			void DrawDiagnosticsSubmenu();
 			void DrawToolsMenu();
 			void DrawActionsMenu();
 			void DrawHelpMenu();

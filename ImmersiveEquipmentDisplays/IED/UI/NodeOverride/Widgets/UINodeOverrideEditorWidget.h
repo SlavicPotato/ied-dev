@@ -377,6 +377,10 @@ namespace IED
 				ConditionParamItem           a_item,
 				ConditionParamItemExtraArgs& a_args) override;
 
+			virtual void OnConditionItemChange(
+				ConditionParamItem                    a_item,
+				const ConditionParamItemOnChangeArgs& a_args) override;
+
 			void UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType a_type);
 
 			virtual UIPopupQueue& GetPopupQueue() = 0;
@@ -2416,6 +2420,8 @@ namespace IED
 				m_ooNewSlot           = Data::ObjectSlotExtra::kNone;
 				m_ooNewBiped          = BIPED_OBJECT::kNone;
 				m_ooNewExtraCond      = Data::ExtraConditionType::kNone;
+
+				ClearDescriptionPopupBuffer();
 			}
 
 			ImGui::PopStyleVar();
@@ -2821,6 +2827,22 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (LCG_BM(CommonStrings::Variable, "K"))
+					{
+						if (DrawDescriptionPopup())
+						{
+							a_entry.emplace_back(
+								Data::NodeOverrideConditionType::Variable,
+								GetDescriptionPopupBuffer());
+
+							result = NodeOverrideCommonAction::Insert;
+
+							ClearDescriptionPopupBuffer();
+						}
+
+						ImGui::EndMenu();
+					}
+
 					if (LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
@@ -3115,6 +3137,14 @@ namespace IED
 								result.matchType);
 
 							break;
+						case Data::NodeOverrideConditionType::Variable:
+
+							it = a_entry.emplace(
+								it,
+								result.matchType,
+								result.desc);
+
+							break;
 						case Data::NodeOverrideConditionType::Extra:
 
 							if (result.excond != Data::ExtraConditionType::kNone)
@@ -3193,7 +3223,32 @@ namespace IED
 						{
 							m_condParamEditor.Reset();
 
-							UpdateMatchParamAllowedTypes(e.fbf.type);
+							if (e.fbf.type == Data::NodeOverrideConditionType::Variable)
+							{
+								switch (e.vcTarget)
+								{
+								case Data::VariableConditionTarget::kActor:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
+									break;
+								case Data::VariableConditionTarget::kNPC:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								case Data::VariableConditionTarget::kRace:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								default:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									break;
+								}
+							}
+							else
+							{
+								UpdateMatchParamAllowedTypes(e.fbf.type);
+							}
 
 							const char* tdesc;
 							const char* vdesc;
@@ -3205,7 +3260,7 @@ namespace IED
 								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kAllowBipedNone);
 
 								m_condParamEditor.SetNext<ConditionParamItem::CMENode>(
-									e.node,
+									e.s0,
 									a_params.name);
 								m_condParamEditor.SetNext<ConditionParamItem::BipedSlot>(
 									e.bipedSlot);
@@ -3506,6 +3561,29 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = LS(CommonStrings::Faction);
+
+								break;
+
+							case Data::NodeOverrideConditionType::Variable:
+
+								m_condParamEditor.SetNext<ConditionParamItem::CondVarType>(
+									e.condVarType,
+									e.s0);
+								m_condParamEditor.SetNext<ConditionParamItem::VarCondTarget>(
+									e.vcTarget);
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
+									e.compOperator);
+								m_condParamEditor.SetNext<ConditionParamItem::Int32>(
+									e.i32a);
+								m_condParamEditor.SetNext<ConditionParamItem::Float>(
+									e.f32a);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondVarType);
+								tdesc = LS(CommonStrings::Variable);
 
 								break;
 
@@ -4102,7 +4180,7 @@ namespace IED
 						result.matchType = Data::NodeOverrideConditionType::Skeleton;
 					}
 
-					if (LCG_BM(CommonStrings::NPC, "J"))
+					if (LCG_BM(CommonStrings::Faction, "J"))
 					{
 						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Faction);
 
@@ -4118,6 +4196,20 @@ namespace IED
 
 							ImGui::CloseCurrentPopup();
 						}
+						ImGui::EndMenu();
+					}
+
+					if (LCG_BM(CommonStrings::Variable, "K"))
+					{
+						if (DrawDescriptionPopup())
+						{
+							result.action    = NodeOverrideCommonAction::Insert;
+							result.desc      = GetDescriptionPopupBuffer();
+							result.matchType = Data::NodeOverrideConditionType::Variable;
+
+							ClearDescriptionPopupBuffer();
+						}
+
 						ImGui::EndMenu();
 					}
 
@@ -4601,7 +4693,6 @@ namespace IED
 
 				break;
 
-				
 			case Data::NodeOverrideConditionType::Faction:
 
 				switch (a_item)
@@ -4627,11 +4718,92 @@ namespace IED
 				}
 
 				break;
+
+			case Data::NodeOverrideConditionType::Variable:
+
+				switch (a_item)
+				{
+				case ConditionParamItem::Int32:
+
+					if (match->condVarType != ConditionalVariableType::kInt32)
+					{
+						a_args.hide = true;
+					}
+
+					break;
+				case ConditionParamItem::Float:
+
+					if (match->condVarType != ConditionalVariableType::kFloat)
+					{
+						a_args.hide = true;
+					}
+
+					break;
+
+				case ConditionParamItem::Form:
+
+					switch (match->vcTarget)
+					{
+					case Data::VariableConditionTarget::kActor:
+					case Data::VariableConditionTarget::kNPC:
+					case Data::VariableConditionTarget::kRace:
+
+						result = ImGui::CheckboxFlagsT(
+							"!##ctl_neg_1",
+							stl::underlying(std::addressof(match->flags.value)),
+							stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+						ImGui::SameLine();
+
+						break;
+					default:
+						a_args.hide = true;
+						break;
+					}
+
+					break;
+
+				case ConditionParamItem::VarCondTarget:
+
+					if (match->vcTarget == Data::VariableConditionTarget::kSelf)
+					{
+						result = ImGui::CheckboxFlagsT(
+							"!##ctl_neg_2",
+							stl::underlying(std::addressof(match->flags.value)),
+							stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
+
+						ImGui::SameLine();
+					}
+
+					break;
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
 
 			return result;
+		}
+
+		template <class T>
+		void UINodeOverrideEditorWidget<T>::OnConditionItemChange(
+			ConditionParamItem                    a_item,
+			const ConditionParamItemOnChangeArgs& a_args)
+		{
+			auto match = static_cast<Data::configNodeOverrideCondition_t*>(a_args.p3);
+
+			switch (match->fbf.type)
+			{
+			case Data::NodeOverrideConditionType::Variable:
+
+				if (a_item == ConditionParamItem::VarCondTarget)
+				{
+					match->form = {};
+				}
+
+				break;
+			}
 		}
 
 		template <class T>

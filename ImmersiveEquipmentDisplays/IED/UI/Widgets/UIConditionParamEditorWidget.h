@@ -9,11 +9,15 @@
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
 #include "UITimeOfDaySelectorWidget.h"
+#include "UIVariableConditionTargetSelectorWidget.h"
+#include "UIVariableTypeSelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
 
 #include "IED/UI/UILocalizationInterface.h"
 
+#include "IED/ConditionalVariableStorage.h"
 #include "IED/ConfigCommon.h"
+#include "IED/ConfigVariableConditionTarget.h"
 
 namespace IED
 {
@@ -41,6 +45,8 @@ namespace IED
 		Race,
 		Percent,
 		NodeMon,
+		CondVarType,
+		VarCondTarget,
 
 		Total
 	};
@@ -52,6 +58,13 @@ namespace IED
 		void*       p3{ nullptr };
 		bool        disable{ false };
 		bool        hide{ false };
+	};
+
+	struct ConditionParamItemOnChangeArgs
+	{
+		void*       p1{ nullptr };
+		const void* p2{ nullptr };
+		void*       p3{ nullptr };
 	};
 
 	namespace UI
@@ -68,6 +81,10 @@ namespace IED
 			virtual bool DrawConditionItemExtra(
 				ConditionParamItem           a_item,
 				ConditionParamItemExtraArgs& a_args);
+
+			virtual void OnConditionItemChange(
+				ConditionParamItem                    a_item,
+				const ConditionParamItemOnChangeArgs& a_args);
 		};
 
 		enum class UIConditionParamEditorTempFlags : std::uint8_t
@@ -92,6 +109,8 @@ namespace IED
 			public UIComparisonOperatorSelector,
 			public UITimeOfDaySelectorWidget,
 			public UINodeMonitorSelectorWidget,
+			public UIVariableTypeSelectorWidget,
+			public UIVariableConditionTargetSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto POPUP_ID = "mpr_ed";
@@ -169,6 +188,10 @@ namespace IED
 				const entry_t&               a_entry,
 				ConditionParamItemExtraArgs& a_args,
 				ConditionParamItem           a_item);
+
+			void OnChange(
+				const entry_t&     a_entry,
+				ConditionParamItem a_item);
 
 			void GetFormDesc(Game::FormID a_form);
 
@@ -342,6 +365,16 @@ namespace IED
 				};
 			}
 			else if constexpr (
+				Ap == ConditionParamItem::VarCondTarget)
+			{
+				static_assert(std::is_same_v<T, Data::VariableConditionTarget>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
 				Ap == ConditionParamItem::Extra)
 			{
 				e = {
@@ -363,6 +396,20 @@ namespace IED
 			auto& e = get(Ap);
 
 			if constexpr (
+				Ap == ConditionParamItem::CondVarType)
+			{
+				static_assert(
+					std::is_same_v<Tp1, ConditionalVariableType> &&
+					std::is_convertible_v<Tp2, stl::fixed_string>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					static_cast<const void*>(std::addressof(static_cast<const stl::fixed_string&>(a_p2)))
+				};
+
+				return;
+			}
+			else if constexpr (
 				Ap == ConditionParamItem::CMENode)
 			{
 				static_assert(

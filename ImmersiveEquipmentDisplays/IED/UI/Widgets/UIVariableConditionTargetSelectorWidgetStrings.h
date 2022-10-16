@@ -1,0 +1,18 @@
+#pragma once
+
+#include "Localization/Common.h"
+
+namespace IED
+{
+	namespace UI
+	{
+		enum class UIVariableConditionTargetSelectorWidgetStrings : Localization::StringID
+		{
+			All   = 7200,
+			Self  = 7201,
+			Actor = 7202,
+			NPC   = 7203,
+			Race  = 7204,
+		};
+	}
+}

@@ -79,7 +79,7 @@ namespace IED
 
 			if (auto it = data.find(a_name); it != data.end())
 			{
-				m_cachedItem.insert(
+				m_cachedItem.emplace(
 					a_name,
 					it->second.Data(),
 					Data::ConfigClass::Global);
@@ -132,7 +132,7 @@ namespace IED
 
 			if (m_cachedItem->name == a_name)
 			{
-				m_cachedItem.insert(
+				m_cachedItem.emplace(
 					a_name,
 					a_profile.Data(),
 					Data::ConfigClass::Global);

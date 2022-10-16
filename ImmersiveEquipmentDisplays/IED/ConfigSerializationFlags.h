@@ -27,6 +27,8 @@ namespace IED
 			kNodeOverrideNPC          = 1u << 14,
 			kNodeOverrideRace         = 1u << 15,
 
+			kConditionalVariables = 1u << 16,
+
 			kAll = static_cast<std::underlying_type_t<ConfigStoreSerializationFlags>>(-1)
 		};
 

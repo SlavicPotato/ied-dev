@@ -89,6 +89,15 @@ namespace IED
 			bool           a_xfrmUpdate,
 			bool           a_xfrmUpdateNoDefer = false) const;
 
+		void QueueClearVariablesOnAll(bool a_requestEval);
+
+		void QueueClearVariables(
+			Game::FormID a_handle,
+			bool         a_requestEval);
+
+		void QueueRequestVariableUpdateOnAll() const;
+		void QueueRequestVariableUpdate(Game::FormID a_handle) const;
+
 	protected:
 		void CleanupActorObjectsImpl(
 			TESObjectREFR*                   a_actor,

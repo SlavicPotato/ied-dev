@@ -74,6 +74,19 @@ namespace IED
 			void DrawURL(
 				const char* a_label,
 				const char* a_url);
+			
+			void HandleURLInteraction(
+				const char* a_url);
+
+			template <class... Args>
+			void DrawURL(
+				const char* a_fmt,
+				const char* a_url,
+				Args... a_args)
+			{
+				ImGui::Text(a_fmt, std::forward<Args>(a_args)...);
+				HandleURLInteraction(a_url);
+			}
 
 			template <class... Args>
 			void TextCopyable(char* a_fmt, Args... a_args)

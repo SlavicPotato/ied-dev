@@ -117,6 +117,11 @@ namespace IED
 				UI::UIData::UICollapsibleStates colStates;
 			};
 
+			struct ConditionalVariablesEditor
+			{
+				UI::UIData::UICollapsibleStates colStates;
+			};
+
 			struct UserInterface
 			{
 				UserInterface() noexcept
@@ -129,15 +134,17 @@ namespace IED
 					windowOpenStates[stl::underlying(UI::ChildWindowID::kUIDisplayManagement)] = true;
 				}
 
-				EditorPanel      slotEditor;
-				EditorPanel      customEditor;
-				EditorPanel      transformEditor;
-				ProfileEditor    slotProfileEditor;
-				ProfileEditor    customProfileEditor;
-				ProfileEditor    transformProfileEditor;
-				ImportExport     importExport;
-				SkeletonExplorer skeletonExplorer;
-				ActorInfo        actorInfo;
+				EditorPanel                slotEditor;
+				EditorPanel                customEditor;
+				EditorPanel                transformEditor;
+				ProfileEditor              slotProfileEditor;
+				ProfileEditor              customProfileEditor;
+				ProfileEditor              transformProfileEditor;
+				ImportExport               importExport;
+				SkeletonExplorer           skeletonExplorer;
+				ActorInfo                  actorInfo;
+				ConditionalVariablesEditor condVarEditor;
+				ConditionalVariablesEditor condVarProfileEditor;
 
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;

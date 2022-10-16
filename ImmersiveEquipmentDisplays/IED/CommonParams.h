@@ -15,8 +15,6 @@ namespace IED
 
 	struct CommonParams
 	{
-		CommonParams() = default;
-
 		inline CommonParams(
 			Actor* const       a_actor,
 			TESNPC* const      a_npc,

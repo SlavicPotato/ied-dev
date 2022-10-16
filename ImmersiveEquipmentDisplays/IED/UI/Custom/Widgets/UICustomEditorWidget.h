@@ -775,7 +775,6 @@ namespace IED
 			ImGui::PushID("leqp");
 
 			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
-				a_handle,
 				data.bipedFilterConditions,
 				[this, a_handle, a_params] {
 					OnBaseConfigChange(
@@ -809,7 +808,6 @@ namespace IED
 					ImGui::Spacing();
 
 					DrawEquipmentOverrideEntryConditionTable(
-						a_handle,
 						data.bipedFilterConditions,
 						false,
 						[this, a_handle, a_params] {
@@ -1472,6 +1470,8 @@ namespace IED
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
+			ImGui::PushID("content");
+
 			if (ImGui::TreeNodeEx(
 					"tree_entry",
 					ImGuiTreeNodeFlags_CollapsingHeader,
@@ -1519,6 +1519,8 @@ namespace IED
 
 				ImGui::Spacing();
 			}
+
+			ImGui::PopID();
 		}
 
 		template <class T>

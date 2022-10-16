@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "JSONActorInfoParser.h"
+#include "JSONConditionalVariablesEditor.h"
 #include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsCollapsibleStatesParser.h"
 #include "JSONSettingsEditorPanelParser.h"
@@ -28,25 +29,32 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			Parser<Data::SettingHolder::EditorPanel>      editorPanelParser(m_state);
-			Parser<Data::SettingHolder::ProfileEditor>    profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
-			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
-			Parser<Data::SettingHolder::ActorInfo>        ainfo(m_state);
-			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>                editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor>              profileEditorParser(m_state);
+			Parser<Data::ConfigKeyPair>                             controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>               ieParser(m_state);
+			Parser<Data::SettingHolder::SkeletonExplorer>           skelExp(m_state);
+			Parser<Data::SettingHolder::ActorInfo>                  ainfo(m_state);
+			Parser<Data::SettingHolder::ConditionalVariablesEditor> cved(m_state);
+			Parser<UI::UIData::UICollapsibleStates>                 colStatesParser(m_state);
 
-			if (!editorPanelParser.Parse(data["slot_editor"], a_out.slotEditor))
+			if (!editorPanelParser.Parse(
+					data["slot_editor"],
+					a_out.slotEditor))
 			{
 				return false;
 			}
 
-			if (!editorPanelParser.Parse(data["custom_editor"], a_out.customEditor))
+			if (!editorPanelParser.Parse(
+					data["custom_editor"],
+					a_out.customEditor))
 			{
 				return false;
 			}
 
-			if (!editorPanelParser.Parse(data["transform_editor"], a_out.transformEditor))
+			if (!editorPanelParser.Parse(
+					data["transform_editor"],
+					a_out.transformEditor))
 			{
 				return false;
 			}
@@ -103,6 +111,20 @@ namespace IED
 			if (!ainfo.Parse(
 					data["actor_info"],
 					a_out.actorInfo))
+			{
+				return false;
+			}
+
+			if (!cved.Parse(
+					data["cv_editor"],
+					a_out.condVarEditor))
+			{
+				return false;
+			}
+
+			if (!cved.Parse(
+					data["cv_profile_editor"],
+					a_out.condVarProfileEditor))
 			{
 				return false;
 			}
@@ -212,13 +234,14 @@ namespace IED
 		{
 			auto& data = a_out["data"];
 
-			Parser<Data::SettingHolder::EditorPanel>      editorPanelParser(m_state);
-			Parser<Data::SettingHolder::ProfileEditor>    profileEditorParser(m_state);
-			Parser<Data::ConfigKeyPair>                   controlsParser(m_state);
-			Parser<Data::SettingHolder::ImportExport>     ieParser(m_state);
-			Parser<Data::SettingHolder::SkeletonExplorer> skelExp(m_state);
-			Parser<Data::SettingHolder::ActorInfo>        ainfo(m_state);
-			Parser<UI::UIData::UICollapsibleStates>       colStatesParser(m_state);
+			Parser<Data::SettingHolder::EditorPanel>                editorPanelParser(m_state);
+			Parser<Data::SettingHolder::ProfileEditor>              profileEditorParser(m_state);
+			Parser<Data::ConfigKeyPair>                             controlsParser(m_state);
+			Parser<Data::SettingHolder::ImportExport>               ieParser(m_state);
+			Parser<Data::SettingHolder::SkeletonExplorer>           skelExp(m_state);
+			Parser<Data::SettingHolder::ActorInfo>                  ainfo(m_state);
+			Parser<Data::SettingHolder::ConditionalVariablesEditor> cved(m_state);
+			Parser<UI::UIData::UICollapsibleStates>                 colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
 			editorPanelParser.Create(a_data.customEditor, data["custom_editor"]);
@@ -247,6 +270,14 @@ namespace IED
 			ainfo.Create(
 				a_data.actorInfo,
 				data["actor_info"]);
+
+			cved.Create(
+				a_data.condVarEditor,
+				data["cv_editor"]);
+
+			cved.Create(
+				a_data.condVarProfileEditor,
+				data["cv_profile_editor"]);
 
 			colStatesParser.Create(a_data.settingsColStates, data["settings_col_states"]);
 			colStatesParser.Create(a_data.statsColStates, data["stats_col_states"]);

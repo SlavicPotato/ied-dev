@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/Parsers/JSONConfigConditionalVariablesHolderParser.h"
 #include "IED/Parsers/JSONConfigCustomHolderParser.h"
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
 #include "IED/Parsers/JSONConfigSlotHolderParser.h"
@@ -15,6 +16,7 @@ namespace IED
 	using CustomProfile       = Profile<Data::configCustomHolder_t>;
 	using NodeOverrideProfile = Profile<Data::configNodeOverrideHolder_t>;
 	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
+	using CondVarProfile      = Profile<Data::configConditionalVariablesHolder_t>;
 
 	class GlobalProfileManager
 	{
@@ -67,6 +69,16 @@ namespace IED
 		private:
 			using ProfileManager<ModelProfile>::ProfileManager;
 		};
+		
+		class ProfileManagerCondVar :
+			public ProfileManager<CondVarProfile>
+		{
+		public:
+			FN_NAMEPROC("ProfileManagerVariables");
+
+		private:
+			using ProfileManager<CondVarProfile>::ProfileManager;
+		};
 
 	public:
 		template <class T>
@@ -92,6 +104,10 @@ namespace IED
 			{
 				return m_modelManager;
 			}
+			else if constexpr (std::is_same_v<T, CondVarProfile>)
+			{
+				return m_condVarManager;
+			}
 			else
 			{
 				static_assert(false, "Unrecognized profile");
@@ -104,6 +120,7 @@ namespace IED
 		static ProfileManagerNodeOverride m_nodeOverrideManager;
 		static ProfileManagerFormFilter   m_formFilterManager;
 		static ProfileManagerModel        m_modelManager;
+		static ProfileManagerCondVar      m_condVarManager;
 	};
 
 }

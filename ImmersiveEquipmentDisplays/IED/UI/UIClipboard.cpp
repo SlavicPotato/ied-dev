@@ -104,6 +104,15 @@ namespace IED
 			case DataType::BipedObjectList:
 				erase<Data::configBipedObjectList_t>();
 				break;
+			case DataType::ConditionalVariablesEntry:
+				erase<Data::configConditionalVariablesEntry_t>();
+				break;
+			case DataType::ConditionalVariablesList:
+				erase<Data::configConditionalVariablesList_t>();
+				break;
+			case DataType::ConditionalVariable:
+				erase<Data::configConditionalVariable_t>();
+				break;
 			}
 		}
 

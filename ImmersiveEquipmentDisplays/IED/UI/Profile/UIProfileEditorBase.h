@@ -5,8 +5,8 @@
 #include "IED/UI/Controls/UIAlignment.h"
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 
-#include "IED/UI/Window/UIWindow.h"
 #include "IED/UI/UIContext.h"
+#include "IED/UI/Window/UIWindow.h"
 
 namespace IED
 {
@@ -19,6 +19,25 @@ namespace IED
 			virtual protected UIAlignment,
 			public UIProfileBase<T>
 		{
+		protected:
+			template <class Tc>
+			struct cachedItem_t
+			{
+				cachedItem_t() = default;
+
+				template <class... Args>
+				cachedItem_t(
+					const stl::fixed_string& a_name,
+					Args&&... a_args) :
+					name(a_name),
+					data(std::forward<Args>(a_args)...)
+				{
+				}
+
+				stl::fixed_string name;
+				Tc                data;
+			};
+
 		public:
 			UIProfileEditorBase(
 				UIProfileStrings             a_title,
@@ -339,6 +358,7 @@ namespace IED
 				}
 
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
 				DrawProfileEditorMenuBarItems();
 
 				ImGui::EndMenuBar();

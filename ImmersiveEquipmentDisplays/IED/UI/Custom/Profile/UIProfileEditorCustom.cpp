@@ -198,10 +198,10 @@ namespace IED
 			return false;
 		}
 
-		WindowLayoutData UIProfileEditorCustom::GetWindowDimensions() const
+		/*WindowLayoutData UIProfileEditorCustom::GetWindowDimensions() const
 		{
 			return { 100.0f, 600.0f, -1.0f, false };
-		}
+		}*/
 
 		void UIProfileEditorCustom::DrawItem(CustomProfile& a_profile)
 		{

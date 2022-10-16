@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IED/ActorState.h"
 #include "ActorObjectHolder.h"
+#include "IED/ActorState.h"
 
 namespace IED
 {
@@ -80,13 +80,16 @@ namespace IED
 	private:
 		mutable stl::critical_section                       m_lock;
 		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
-	};*/ 
+	};*/
 
-	
 	using ActorObjectMap = stl::unordered_map<Game::FormID, ActorObjectHolder>;
+
+	class ActorProcessorTask;
 
 	class ObjectManagerData
 	{
+		friend class ActorProcessorTask;
+
 	public:
 		template <class... Args>
 		[[nodiscard]] inline constexpr auto& GetObjectHolder(
@@ -102,6 +105,7 @@ namespace IED
 			{
 				ApplyActorState(r.first->second);
 				OnActorAcquire(r.first->second);
+				RequestVariableUpdateOnAll();
 			}
 
 			return r.first->second;
@@ -122,6 +126,14 @@ namespace IED
 			m_playerState.reset();
 		}
 
+		void ClearVariablesOnAll(bool a_requestEval) noexcept;
+		void ClearVariables(Game::FormID a_handle, bool a_requestEval) noexcept;
+
+		void RequestVariableUpdateOnAll() const noexcept;
+		void RequestVariableUpdate(Game::FormID a_handle) const noexcept;
+
+		void RequestEvaluateOnAll() const noexcept;
+
 		void StorePlayerState(ActorObjectHolder& a_holder);
 
 	private:
@@ -130,6 +142,10 @@ namespace IED
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
 
 	protected:
+		void RequestEvaluateAll(bool a_defer) const noexcept;
+		void RequestLFEvaluateAll() noexcept;
+		void RequestLFEvaluateAll(Game::FormID a_skip) noexcept;
+
 		ActorObjectMap                           m_objects;
 		std::unique_ptr<Data::actorStateEntry_t> m_playerState;
 		Data::actorStateHolder_t                 m_storedActorStates;

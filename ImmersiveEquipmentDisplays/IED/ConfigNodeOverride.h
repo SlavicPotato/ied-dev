@@ -4,6 +4,9 @@
 #include "ConfigData.h"
 #include "ConfigLUIDTag.h"
 #include "ConfigTransform.h"
+#include "ConfigVariableConditionTarget.h"
+
+#include "ConditionalVariableStorage.h"
 
 #include "TimeOfDay.h"
 #include "WeatherClassificationFlags.h"
@@ -110,6 +113,7 @@ namespace IED
 			Idle       = 18,
 			Skeleton   = 19,
 			Faction    = 20,
+			Variable   = 21,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -165,6 +169,7 @@ namespace IED
 				DataVersion2 = 2,
 				DataVersion3 = 3,
 				DataVersion4 = 4,
+				DataVersion5 = 5,
 			};
 
 			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
@@ -238,14 +243,14 @@ namespace IED
 
 			inline configNodeOverrideCondition_t(
 				const stl::fixed_string& a_node) :
-				node(a_node)
+				s0(a_node)
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			}
 
 			inline configNodeOverrideCondition_t(
 				stl::fixed_string&& a_node) :
-				node(std::move(a_node))
+				s0(std::move(a_node))
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			}
@@ -272,13 +277,29 @@ namespace IED
 				fbf.type = NodeOverrideConditionType::Type;
 			}
 
+			inline configNodeOverrideCondition_t(
+				NodeOverrideConditionType a_matchType,
+				const stl::fixed_string&  a_s)
+			{
+				switch (a_matchType)
+				{
+				case NodeOverrideConditionType::Variable:
+					s0 = a_s;
+					break;
+				default:
+					assert(false);
+				}
+
+				fbf.type = a_matchType;
+			}
+
 			union
 			{
 				stl::flag<NodeOverrideConditionFlags> flags{ NodeOverrideConditionFlags::kNone };
 				NodeOverrideConditionFlagsBitfield    fbf;
 			};
 
-			stl::fixed_string  node;
+			stl::fixed_string  s0;
 			configCachedForm_t form;
 			configCachedForm_t keyword;
 
@@ -315,11 +336,21 @@ namespace IED
 
 			union
 			{
-				std::uint32_t ui32b{ 0 };
-				TimeOfDay     timeOfDay;
-				std::uint32_t uid;
+				std::uint32_t           ui32b{ 0 };
+				TimeOfDay               timeOfDay;
+				std::uint32_t           uid;
+				ConditionalVariableType condVarType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
+			};
+			
+			union
+			{
+				std::uint32_t           ui32c{ 0 };
+				VariableConditionTarget vcTarget;
+
+				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionTarget>, std::uint32_t>);
 			};
 
 			union
@@ -335,7 +366,7 @@ namespace IED
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
-				a_ar& node;
+				a_ar& s0;
 				a_ar& form;
 				a_ar& keyword;
 				a_ar& ui32a;
@@ -354,6 +385,11 @@ namespace IED
 						{
 							a_ar& i32a;
 							a_ar& ui64a;
+
+							if (a_version >= DataVersion5)
+							{
+								a_ar& ui32c;
+							}
 						}
 					}
 				}
@@ -908,7 +944,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideCondition_t,
-	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion4);
+	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion5);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideValues_t,

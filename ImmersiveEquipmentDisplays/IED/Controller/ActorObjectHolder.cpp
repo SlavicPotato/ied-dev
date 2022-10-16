@@ -22,6 +22,8 @@ namespace IED
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
+		TESNPC*               a_npc,
+		TESRace*              a_race,
 		NiNode*               a_root,
 		NiNode*               a_npcroot,
 		IObjectManager&       a_owner,
@@ -36,7 +38,10 @@ namespace IED
 		m_root(a_root),
 		m_root1p(a_actor->Get3D1(true)),
 		m_npcroot(a_npcroot),
-		m_formid(a_actor->formID),
+		m_actorid(a_actor->formID),
+		m_npcid(a_npc->formID),
+		m_npcTemplateId(a_npc->GetFirstNonTemporaryOrThis()->formID),
+		m_raceid(a_race->formID),
 		//m_enableAnimEventForwarding(a_animEventForwarding),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
@@ -45,9 +50,9 @@ namespace IED
 	{
 		m_lastLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
-								 IPerfCounter::T(50000),
+								 IPerfCounter::T(STATE_CHECK_INTERVAL_LOW / 20),
 								 std::memory_order_relaxed) %
-		                         IPerfCounter::T(1000000);
+		                         IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
 
 		/*m_lastHFStateCheck = m_created +
 		                     m_lfsc_delta_hf.fetch_add(
@@ -64,10 +69,7 @@ namespace IED
 			NodeOverrideData::GetHumanoidSkeletonSignatures()
 				.contains(m_skeletonID.signature());
 
-		if (auto npc = a_actor->GetActorBase())
-		{
-			m_female = npc->GetSex() == 1;
-		}
+		m_female = a_npc->GetSex() == 1;
 
 		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 		{
@@ -625,7 +627,7 @@ namespace IED
 
 			if (a_event->tag == sh->m_graphDeleting)
 			{
-				m_owner.QueueReSinkAnimationGraphs(m_formid);
+				m_owner.QueueReSinkAnimationGraphs(m_actorid);
 			}
 			else
 			{
@@ -635,7 +637,7 @@ namespace IED
 					{
 						m_activeAnimation = newAA.value();
 
-						m_owner.QueueRequestEvaluate(m_formid, true, true);
+						m_owner.QueueRequestEvaluate(m_actorid, true, true);
 					}
 				}
 			}

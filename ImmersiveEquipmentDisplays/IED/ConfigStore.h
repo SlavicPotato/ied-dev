@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ConfigConditionalVars.h"
 #include "ConfigCustom.h"
 #include "ConfigNodeOverride.h"
 #include "ConfigSlot.h"
@@ -15,7 +16,8 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			inline void clear()
@@ -23,11 +25,13 @@ namespace IED
 				slot       = {};
 				custom     = {};
 				transforms = {};
+				condvars   = {};
 			}
 
-			configStoreSlot_t         slot;
-			configStoreCustom_t       custom;
-			configStoreNodeOverride_t transforms;
+			configStoreSlot_t                  slot;
+			configStoreCustom_t                custom;
+			configStoreNodeOverride_t          transforms;
+			configConditionalVariablesHolder_t condvars;
 
 		private:
 			template <class Archive>
@@ -36,6 +40,11 @@ namespace IED
 				a_ar& slot;
 				a_ar& custom;
 				a_ar& transforms;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& condvars;
+				}
 			}
 		};
 	}
@@ -43,4 +52,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configStore_t,
-	IED::Data::configStore_t::Serialization::DataVersion1);
+	IED::Data::configStore_t::Serialization::DataVersion2);

@@ -18,7 +18,6 @@ namespace IED
 			UINodeOverrideEditorActor(Controller& a_controller);
 
 			virtual void EditorInitialize() override;
-
 			virtual void EditorDraw() override;
 			virtual void EditorOnOpen() override;
 			virtual void EditorOnClose() override;

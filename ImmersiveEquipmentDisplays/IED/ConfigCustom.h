@@ -157,11 +157,6 @@ namespace IED
 		class configStoreCustom_t :
 			public configStoreBase_t<configCustomPluginMap_t>
 		{
-			struct lookup_result_t
-			{
-				configCustomHolder_t& data;
-			};
-
 		public:
 			template <class Tf>
 			void visit(Tf a_func)

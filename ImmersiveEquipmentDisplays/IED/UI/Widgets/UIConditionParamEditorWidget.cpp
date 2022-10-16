@@ -20,6 +20,8 @@ namespace IED
 			UIComparisonOperatorSelector(a_controller),
 			UITimeOfDaySelectorWidget(a_controller),
 			UINodeMonitorSelectorWidget(a_controller),
+			UIVariableTypeSelectorWidget(a_controller),
+			UIVariableConditionTargetSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerRace(a_controller, FormInfoFlags::kNone, true)
@@ -158,6 +160,23 @@ namespace IED
 				result |= DrawNodeMonitorSelector(e.As1<std::uint32_t>());
 			}
 
+			if (const auto& e = get(ConditionParamItem::VarCondTarget); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::VarCondTarget);
+
+				if (!args.hide)
+				{
+					if (DrawVariableConditionTargetSelectorWidget(
+							e.As1<Data::VariableConditionTarget>()))
+					{
+						result = true;
+						OnChange(e, ConditionParamItem::VarCondTarget);
+					}
+				}
+			}
+
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -248,6 +267,25 @@ namespace IED
 					e.As1<WeatherClassificationFlags>());
 			}
 
+			if (const auto& e = get(ConditionParamItem::CondVarType); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::CondVarType);
+
+				if (!args.hide)
+				{
+					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+
+					result |= DrawVariableTypeSelectorWidget(
+						e.As1<ConditionalVariableType>());
+
+					ImGui::PopItemWidth();
+
+					ImGui::SameLine();
+				}
+			}
+
 			if (const auto& e = get(ConditionParamItem::CompOper); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -304,7 +342,7 @@ namespace IED
 						ImGuiInputTextFlags_EnterReturnsTrue);
 				}
 			}
-			
+
 			if (const auto& e = get(ConditionParamItem::Int32); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -323,7 +361,7 @@ namespace IED
 						ImGuiInputTextFlags_EnterReturnsTrue);
 				}
 			}
-			
+
 			if (const auto& e = get(ConditionParamItem::Percent); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -563,6 +601,47 @@ namespace IED
 					}
 				}
 				break;
+			case ConditionParamItem::CondVarType:
+				{
+					if (const auto& e = get(a_item); e.p1 && e.p2)
+					{
+						const auto& type     = e.As1<ConditionalVariableType>();
+						const auto& compOper = get(ConditionParamItem::CompOper).As1<Data::ComparisonOperator>();
+
+						switch (type)
+						{
+						case ConditionalVariableType::kInt32:
+
+							stl::snprintf(
+								m_descBuffer,
+								"%s %s %d",
+								e.As2<stl::fixed_string>().c_str(),
+								comp_operator_to_desc(compOper),
+								get(ConditionParamItem::Int32).As1<std::int32_t>());
+
+							break;
+
+						case ConditionalVariableType::kFloat:
+
+							stl::snprintf(
+								m_descBuffer,
+								"%s %s %.3f",
+								e.As2<stl::fixed_string>().c_str(),
+								comp_operator_to_desc(compOper),
+								get(ConditionParamItem::Float).As1<float>());
+
+							break;
+
+						default:
+							m_descBuffer[0] = 0x0;
+						}
+					}
+					else
+					{
+						m_descBuffer[0] = 0x0;
+					}
+				}
+				break;
 			default:
 				m_descBuffer[0] = 0x0;
 				break;
@@ -593,6 +672,27 @@ namespace IED
 			}
 
 			return result;
+		}
+
+		void UIConditionParamEditorWidget::OnChange(
+			const entry_t&     a_entry,
+			ConditionParamItem a_item)
+		{
+			if (m_extraInterface)
+			{
+				if (const auto& f = get(ConditionParamItem::Extra); f.p1)
+				{
+					ConditionParamItemOnChangeArgs args{
+						a_entry.p1,
+						a_entry.p2,
+						f.p1
+					};
+
+					m_extraInterface->OnConditionItemChange(
+						a_item,
+						args);
+				}
+			}
 		}
 
 		void UIConditionParamEditorWidget::GetFormDesc(Game::FormID a_form)
@@ -796,6 +896,12 @@ namespace IED
 			ConditionParamItemExtraArgs& a_args)
 		{
 			return false;
+		}
+
+		void UIConditionParamExtraInterface::OnConditionItemChange(
+			ConditionParamItem                    a_item,
+			const ConditionParamItemOnChangeArgs& a_args)
+		{
 		}
 
 	}

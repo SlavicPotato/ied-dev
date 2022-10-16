@@ -1,12 +1,10 @@
 #pragma once
 
 #include "CommonParams.h"
-#include "ConfigStore.h"
-#include "Controller/ControllerCommon.h"
-#include "Controller/ObjectManagerData.h"
-#include "FormCommon.h"
-#include "FormHolder.h"
+#include "ConfigData.h"
 #include "Inventory.h"
+
+#include "Controller/ControllerCommon.h"
 
 namespace IED
 {
@@ -45,10 +43,10 @@ namespace IED
 			collector(a_sr, a_actor)
 		{}
 
-		const Game::ObjectRefHandle            handle;
-		const Data::ConfigSex                  configSex;
-		const stl::flag<ControllerUpdateFlags> flags;
-		ItemCandidateCollector                 collector;
+		const Game::ObjectRefHandle      handle;
+		const Data::ConfigSex            configSex;
+		stl::flag<ControllerUpdateFlags> flags;
+		ItemCandidateCollector           collector;
 	};
 
 	struct processParams_t :
@@ -74,7 +72,7 @@ namespace IED
 		{
 		}
 
-		inline processParams_t(
+		/*inline processParams_t(
 			Actor* const                           a_actor,
 			const Game::ObjectRefHandle            a_handle,
 			const Data::ConfigSex                  a_configSex,
@@ -89,7 +87,7 @@ namespace IED
 				a_actor),
 			CommonParams(a_cparams)
 		{
-		}
+		}*/
 
 		processState_t state;
 	};

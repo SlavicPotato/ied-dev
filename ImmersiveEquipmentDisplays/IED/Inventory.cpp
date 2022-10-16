@@ -28,9 +28,9 @@ namespace IED
 		slotResults(a_slotResults),
 		isPlayer(a_actor == *g_thePlayer)
 	{
-		for (auto& e : a_slotResults)
+		if (auto npc = a_actor->GetActorBase())
 		{
-			e.items.clear();
+			Run(*npc, GetEntryDataList(a_actor));
 		}
 	}
 
@@ -219,6 +219,11 @@ namespace IED
 
 	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
 	{
+		for (auto& e : slotResults)
+		{
+			e.items.clear();
+		}
+
 		bool checkFav = isPlayer && a_checkFav;
 
 		for (const auto& [i, e] : data.forms)

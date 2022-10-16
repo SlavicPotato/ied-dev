@@ -277,6 +277,9 @@ namespace IED
 
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
+				
+				GlobalProfileManager::GetSingleton<CondVarProfile>().Load(
+					PATHS::PROFILE_MANAGER_VARIABLES);
 
 #if defined(IED_ENABLE_I3DI)
 				GlobalProfileManager::GetSingleton<ModelProfile>().Load(

@@ -45,6 +45,12 @@ namespace IED
 			a_out.ui32b = a_in.get("ui32b", 0).asUInt();
 			a_out.i32a  = a_in.get("i32a", 0).asInt();
 			a_out.ui64a = a_in.get("ui64a", 0).asUInt64();
+			a_out.ui32c = a_in.get("ui32c", 0).asUInt();
+
+			if (auto& v = a_in["s0"])
+			{
+				a_out.s0 = v.asString();
+			}
 
 			a_out.flags = static_cast<Data::EquipmentOverrideConditionFlags>(
 				a_in.get("flags", stl::underlying(Data::EquipmentOverrideConditionFlags::kNone)).asUInt());
@@ -82,7 +88,13 @@ namespace IED
 			a_out["f32a"]  = a_data.f32a;
 			a_out["ui32b"] = a_data.ui32b;
 			a_out["i32a"]  = a_data.i32a;
-			a_out["ui64a"]  = a_data.ui64a;
+			a_out["ui64a"] = a_data.ui64a;
+			a_out["ui32c"] = a_data.ui32c;
+
+			if (!a_data.s0.empty())
+			{
+				a_out["s0"] = *a_data.s0;
+			}
 
 			a_out["flags"] = stl::underlying(a_data.flags.value);
 

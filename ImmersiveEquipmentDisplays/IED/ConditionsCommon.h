@@ -1,12 +1,14 @@
 #pragma once
 
 #include "CommonParams.h"
+#include "ConditionalVariableStorage.h"
 #include "ConfigData.h"
 #include "Data.h"
 #include "FormCommon.h"
 #include "WeatherClassificationFlags.h"
 
 #include "Controller/CachedActorData.h"
+#include "Controller/ObjectManagerData.h"
 
 namespace IED
 {
@@ -49,7 +51,7 @@ namespace IED
 			case Data::ExtraConditionType::kInCombat:
 				return a_cached.inCombat;
 			case Data::ExtraConditionType::kIsFemale:
-				return is_female(a_params);
+				return a_params.objects.IsFemale();
 #if defined(IED_ENABLE_CONDITION_EN)
 			case Data::ExtraConditionType::kPlayerEnemiesNearby:
 				return enemies_nearby(a_params);
@@ -71,7 +73,7 @@ namespace IED
 			case Data::ExtraConditionType::kIsRidingMount:
 				return a_params.is_on_mount();
 			case Data::ExtraConditionType::kHumanoidSkeleton:
-				return has_humanoid_skeleton(a_params);
+				return a_params.objects.HasHumanoidSkeleton();
 			case Data::ExtraConditionType::kIsPlayer:
 				return a_params.is_player();
 			case Data::ExtraConditionType::kBribedByPlayer:
@@ -102,6 +104,8 @@ namespace IED
 				return a_cached.flags2.test(Actor::Flags2::kIsInKillMove);
 			case Data::ExtraConditionType::kIsUnconscious:
 				return a_cached.unconscious;
+			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
+				return is_player_last_ridden_mount(a_params);
 			default:
 				return false;
 			}
@@ -594,7 +598,7 @@ namespace IED
 		}
 
 		template <class Tv, class Tm>
-		constexpr bool compare(
+		inline constexpr bool compare(
 			Data::ComparisonOperator a_oper,
 			const Tv&                a_value,
 			const Tm&                a_match) noexcept
@@ -631,7 +635,7 @@ namespace IED
 
 			float matchval = glob->type == TESGlobal::Type::kFloat ?
 			                     a_match.f32a :
-                                 static_cast<float>(static_cast<long>(a_match.f32a));
+                                 static_cast<float>(static_cast<std::int64_t>(a_match.f32a));
 
 			return compare(a_match.compOperator, glob->value, matchval);
 		}
@@ -824,11 +828,213 @@ namespace IED
 			return false;
 		}
 
+		template <class Tm>
+		SKMP_FORCEINLINE constexpr bool do_var_match(
+			const conditionalVariableStorage_t& a_data,
+			const Tm&                           a_match) noexcept
+		{
+			switch (a_data.type)
+			{
+			case ConditionalVariableType::kInt32:
+				switch (a_match.condVarType)
+				{
+				case ConditionalVariableType::kInt32:
+					return compare(a_match.compOperator, a_data.i32, a_match.i32a);
+				case ConditionalVariableType::kFloat:
+					return compare(a_match.compOperator, static_cast<float>(a_data.i32), a_match.f32a);
+				}
+			case ConditionalVariableType::kFloat:
+				switch (a_match.condVarType)
+				{
+				case ConditionalVariableType::kInt32:
+					return compare(a_match.compOperator, static_cast<std::int32_t>(a_data.f32), a_match.i32a);
+				case ConditionalVariableType::kFloat:
+					return compare(a_match.compOperator, a_data.f32, a_match.f32a);
+				}
+			}
+
+			return false;
+		}
+
+		template <class Tm, class Tff>
+		constexpr bool do_var_match_all_filtered(
+			CommonParams& a_params,
+			const Tm&     a_match,
+			Tff           a_filter)
+		{
+			for (auto& e : get_actor_object_map(a_params))
+			{
+				if (!a_filter(e))
+				{
+					continue;
+				}
+
+				auto& vdata = e.second.GetVariables();
+
+				auto it = vdata.find(a_match.s0);
+				if (it == vdata.end())
+				{
+					continue;
+				}
+
+				if (!it->second.second)
+				{
+					continue;
+				}
+
+				if (do_var_match(it->second.first, a_match))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_variable(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			switch (a_match.vcTarget)
+			{
+			case Data::VariableConditionTarget::kAll:
+				{
+					return do_var_match_all_filtered(
+						a_params,
+						a_match,
+						[](auto&) { return true; });
+				}
+				break;
+
+			case Data::VariableConditionTarget::kSelf:
+				{
+					if (a_match.flags.test(Tf::kNegateMatch2))
+					{
+						return do_var_match_all_filtered(
+							a_params,
+							a_match,
+							[fid = a_params.objects.GetActorFormID()](auto& a_e) {
+								return a_e.first != fid;
+							});
+					}
+					else
+					{
+						auto& vdata = a_params.objects.GetVariables();
+
+						auto it = vdata.find(a_match.s0);
+						if (it != vdata.end())
+						{
+							if (it->second.second)
+							{
+								return do_var_match(it->second.first, a_match);
+							}
+						}
+					}
+				}
+				break;
+
+			case Data::VariableConditionTarget::kActor:
+				{
+					if (auto fid = a_match.form.get_id())
+					{
+						if (a_match.flags.test(Tf::kNegateMatch1))
+						{
+							return do_var_match_all_filtered(
+								a_params,
+								a_match,
+								[fid](auto& a_e) {
+									return a_e.first != fid;
+								});
+						}
+						else
+						{
+							auto& data = get_actor_object_map(a_params);
+
+							auto ita = data.find(fid);
+							if (ita != data.end())
+							{
+								auto& vdata = ita->second.GetVariables();
+
+								auto it = vdata.find(a_match.s0);
+								if (it != vdata.end())
+								{
+									if (it->second.second)
+									{
+										return do_var_match(it->second.first, a_match);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				break;
+
+			case Data::VariableConditionTarget::kNPC:
+				{
+					if (auto fid = a_match.form.get_id())
+					{
+						if (a_match.flags.test(Tf::kNegateMatch1))
+						{
+							return do_var_match_all_filtered(
+								a_params,
+								a_match,
+								[fid](auto& a_e) {
+									return a_e.second.GetNPCTemplateFormID() != fid;
+								});
+						}
+						else
+						{
+							return do_var_match_all_filtered(
+								a_params,
+								a_match,
+								[fid](auto& a_e) {
+									return a_e.second.GetNPCTemplateFormID() == fid;
+								});
+						}
+					}
+				}
+
+				break;
+
+			case Data::VariableConditionTarget::kRace:
+				{
+					if (auto fid = a_match.form.get_id())
+					{
+						if (a_match.flags.test(Tf::kNegateMatch1))
+						{
+							return do_var_match_all_filtered(
+								a_params,
+								a_match,
+								[fid](auto& a_e) {
+									return a_e.second.GetRaceFormID() != fid;
+								});
+						}
+						else
+						{
+							return do_var_match_all_filtered(
+								a_params,
+								a_match,
+								[fid](auto& a_e) {
+									return a_e.second.GetRaceFormID() == fid;
+								});
+						}
+					}
+				}
+
+				break;
+			}
+
+			return false;
+		}
+
+		const ActorObjectMap& get_actor_object_map(CommonParams& a_params);
+
 		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept;
 		bool              is_in_first_person(CommonParams& a_params) noexcept;
-		bool              is_female(CommonParams& a_params) noexcept;
-		bool              has_humanoid_skeleton(CommonParams& a_params) noexcept;
 		bool              check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
+		bool              is_player_last_ridden_mount(CommonParams& a_params) noexcept;
 
 		bool match_random_percent(
 			CommonParams&   a_params,
