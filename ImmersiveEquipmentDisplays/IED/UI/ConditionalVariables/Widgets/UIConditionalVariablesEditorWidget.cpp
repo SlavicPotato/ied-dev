@@ -88,8 +88,6 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				DrawNewContextItems(false, false, result);
-
 				if (LCG_BM(CommonStrings::Rename, "1"))
 				{
 					if (DrawDescriptionPopup())
@@ -141,39 +139,33 @@ namespace IED
 			return result;
 		}
 
-		void UIConditionalVariablesEditorWidget::DrawNewContextItems(
+		void UIConditionalVariablesEditorWidget::DrawNewContextItem(
 			bool                a_insert,
-			bool                a_paste,
 			CondVarEntryResult& a_result)
 		{
-			if (LCG_BM(CommonStrings::New, "cv_ctx_new"))
+			if (LCG_BM(a_insert ? CommonStrings::Insert : CommonStrings::Add, "cv_ctx_new"))
 			{
-				if (LCG_BM(a_insert ? CommonStrings::Insert : CommonStrings::Add, "1"))
+				if (LCG_BM(CommonStrings::Item, "1"))
 				{
-					if (LCG_BM(CommonStrings::Item, "1"))
+					if (DrawDescriptionPopup())
 					{
-						if (DrawDescriptionPopup())
-						{
-							a_result.action = CondVarEntryAction::kAdd;
-							a_result.desc   = GetDescriptionPopupBuffer();
+						a_result.action = CondVarEntryAction::kAdd;
+						a_result.desc   = GetDescriptionPopupBuffer();
 
-							ClearDescriptionPopupBuffer();
-						}
-
-						ImGui::EndMenu();
+						ClearDescriptionPopupBuffer();
 					}
 
-					if (LCG_BM(CommonStrings::Group, "2"))
+					ImGui::EndMenu();
+				}
+
+				if (LCG_BM(CommonStrings::Group, "2"))
+				{
+					if (DrawDescriptionPopup())
 					{
-						if (DrawDescriptionPopup())
-						{
-							a_result.action = CondVarEntryAction::kAddGroup;
-							a_result.desc   = GetDescriptionPopupBuffer();
+						a_result.action = CondVarEntryAction::kAddGroup;
+						a_result.desc   = GetDescriptionPopupBuffer();
 
-							ClearDescriptionPopupBuffer();
-						}
-
-						ImGui::EndMenu();
+						ClearDescriptionPopupBuffer();
 					}
 
 					ImGui::EndMenu();
@@ -185,7 +177,7 @@ namespace IED
 						LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
+						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariable_t>())))
 				{
 					a_result.action = CondVarEntryAction::kPaste;
 				}
@@ -404,7 +396,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				DrawNewContextItems(true, true, result);
+				DrawNewContextItem(true, result);
 
 				if (LCG_BM(CommonStrings::Rename, "1"))
 				{
@@ -529,7 +521,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				DrawNewContextItems(false, true, result);
+				DrawNewContextItem(false, result);
 
 				switch (result.action)
 				{
@@ -572,24 +564,6 @@ namespace IED
 				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_data);
-				}
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "B"),
-						nullptr,
-						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariable_t>())))
-				{
-					if (auto data = UIClipboard::Get<Data::configConditionalVariable_t>())
-					{
-						a_data.emplace_back(*data);
-
-						OnCondVarEntryChange(
-							{ a_holder,
-						      CondVarEntryChangeAction::kReset });
-
-						result.action = CondVarEntryAction::kPaste;
-					}
 				}
 
 				if (ImGui::MenuItem(

@@ -78,9 +78,8 @@ namespace IED
 				Data::configConditionalVariablesHolder_t&         a_holder,
 				Data::configConditionalVariablesEntryListValue_t& a_data);
 
-			void DrawNewContextItems(
+			void DrawNewContextItem(
 				bool                a_insert,
-				bool                a_paste,
 				CondVarEntryResult& a_result);
 
 			void DrawEntryList(
