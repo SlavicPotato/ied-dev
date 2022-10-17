@@ -48,6 +48,7 @@ namespace IED
 			InKillmove              = 5437,
 			IsUnconscious           = 5438,
 			IsPlayerLastRiddenMount = 5439,
+			SDSShieldOnBackEnabled  = 5440,
 		};
 	}
 }

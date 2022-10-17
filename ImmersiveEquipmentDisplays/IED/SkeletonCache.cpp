@@ -9,36 +9,14 @@ namespace IED
 {
 	SkeletonCache SkeletonCache::m_Instance;
 
-	/*auto SkeletonCache::GetNode(
-		TESObjectREFR*           a_refr,
-		const stl::fixed_string& a_name)
-		-> const Entry*
-	{
-		auto data = Get(a_refr);
-
-		if (!data)
-		{
-			return nullptr;
-		}
-
-		if (auto it2 = data->find(a_name);
-		    it2 != data->end())
-		{
-			return std::addressof(it2->second);
-		}
-		else
-		{
-			return nullptr;
-		}
-	}*/
-
 	auto SkeletonCache::Get(
-		TESObjectREFR* a_refr)
+		TESObjectREFR* a_refr,
+		bool           a_firstPerson)
 		-> std::optional<data_type::value_type>
 	{
 		stl::scoped_lock lock(m_lock);
 
-		auto key = mk_key(a_refr);
+		auto key = mk_key(a_refr, a_firstPerson);
 		if (key.empty())
 		{
 			return {};
@@ -62,9 +40,10 @@ namespace IED
 	}
 
 	stl::fixed_string SkeletonCache::mk_key(
-		TESObjectREFR* a_refr)
+		TESObjectREFR* a_refr,
+		bool           a_firstPerson)
 	{
-		auto path = ::Util::Model::Get3DPath(a_refr, false);
+		auto path = ::Util::Model::Get3DPath(a_refr, a_firstPerson);
 		if (!path || *path == 0)
 		{
 			return {};

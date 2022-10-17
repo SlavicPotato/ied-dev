@@ -827,7 +827,7 @@ namespace IED
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params)
 	{
-		auto xfrm = a_entry.orig;
+		auto xfrm = a_entry.thirdPerson.orig;
 
 		if (a_data.transform.scale)
 		{
@@ -856,28 +856,28 @@ namespace IED
 		process_offsets(a_data.offsets, xfrm, accumPos, a_params);
 
 		bool update = std::memcmp(
-						  std::addressof(a_entry.node->m_localTransform),
+						  std::addressof(a_entry.thirdPerson.node->m_localTransform),
 						  std::addressof(xfrm),
 						  sizeof(NiTransform)) != 0;
 
 		if (update)
 		{
-			a_entry.node->m_localTransform = xfrm;
+			a_entry.thirdPerson.node->m_localTransform = xfrm;
+			UpdateDownwardPass(a_entry.thirdPerson.node);
 
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-			a_entry.current = xfrm;
-#endif
-
-			UpdateDownwardPass(a_entry.node);
+			if (a_entry.firstPerson)
+			{
+				a_entry.firstPerson.node->m_localTransform = xfrm;
+				UpdateDownwardPass(a_entry.firstPerson.node);
+			}
 		}
 	}
 
 	void INodeOverride::ResetNodeOverrideImpl(
-		NiAVObject*        a_object,
-		const NiTransform& a_orig)
+		const CMENodeEntry::Node& a_node)
 	{
-		a_object->m_localTransform = a_orig;
-		a_object->SetVisible(true);
+		a_node.node->m_localTransform = a_node.orig;
+		a_node.node->SetVisible(true);
 	}
 
 	void INodeOverride::ResetNodeOverride(
@@ -887,18 +887,21 @@ namespace IED
 		    !ITaskPool::IsRunningOnCurrentThread())
 		{
 			ITaskPool::AddPriorityTask(
-				[node = a_entry.node,
-			     orig = a_entry.orig]() {
-					ResetNodeOverrideImpl(
-						node,
-						orig);
+				[entry = a_entry] {
+					ResetNodeOverrideImpl(entry.thirdPerson);
+					if (entry.firstPerson)
+					{
+						ResetNodeOverrideImpl(entry.firstPerson);
+					}
 				});
 		}
 		else
 		{
-			ResetNodeOverrideImpl(
-				a_entry.node,
-				a_entry.orig);
+			ResetNodeOverrideImpl(a_entry.thirdPerson);
+			if (a_entry.firstPerson)
+			{
+				ResetNodeOverrideImpl(a_entry.firstPerson);
+			}
 		}
 	}
 
@@ -980,7 +983,7 @@ namespace IED
 	}
 
 	void INodeOverride::ApplyNodeVisibility(
-		NiNode*                                    a_node,
+		const CMENodeEntry&                        a_entry,
 		const Data::configNodeOverrideTransform_t& a_data,
 		nodeOverrideParams_t&                      a_params)
 	{
@@ -991,7 +994,11 @@ namespace IED
 			visible = !a_data.overrideFlags.test(Data::NodeOverrideFlags::kInvisible);
 		}
 
-		a_node->SetVisible(visible);
+		a_entry.thirdPerson.node->SetVisible(visible);
+		if (a_entry.firstPerson)
+		{
+			a_entry.firstPerson.node->SetVisible(visible);
+		}
 	}
 
 	void INodeOverride::attach_node_to(

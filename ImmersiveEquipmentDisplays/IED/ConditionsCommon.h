@@ -106,6 +106,8 @@ namespace IED
 				return a_cached.unconscious;
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return is_player_last_ridden_mount(a_params);
+			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
+				return is_sds_shield_on_back_enabled(a_params);
 			default:
 				return false;
 			}
@@ -877,12 +879,7 @@ namespace IED
 					continue;
 				}
 
-				if (!it->second.second)
-				{
-					continue;
-				}
-
-				if (do_var_match(it->second.first, a_match))
+				if (do_var_match(it->second, a_match))
 				{
 					return true;
 				}
@@ -925,10 +922,7 @@ namespace IED
 						auto it = vdata.find(a_match.s0);
 						if (it != vdata.end())
 						{
-							if (it->second.second)
-							{
-								return do_var_match(it->second.first, a_match);
-							}
+							return do_var_match(it->second, a_match);
 						}
 					}
 				}
@@ -959,10 +953,7 @@ namespace IED
 								auto it = vdata.find(a_match.s0);
 								if (it != vdata.end())
 								{
-									if (it->second.second)
-									{
-										return do_var_match(it->second.first, a_match);
-									}
+									return do_var_match(it->second, a_match);
 								}
 							}
 						}
@@ -1035,6 +1026,7 @@ namespace IED
 		bool              is_in_first_person(CommonParams& a_params) noexcept;
 		bool              check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
 		bool              is_player_last_ridden_mount(CommonParams& a_params) noexcept;
+		bool              is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
 
 		bool match_random_percent(
 			CommonParams&   a_params,

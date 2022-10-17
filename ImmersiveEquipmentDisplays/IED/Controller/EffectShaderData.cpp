@@ -18,9 +18,11 @@ namespace IED
 	EffectShaderData::EffectShaderData(
 		BIPED_OBJECT                            a_bipedObject,
 		NiNode*                                 a_sheathNode,
+		NiNode*                                 a_sheathNode1p,
 		const Data::configEffectShaderHolder_t& a_data) :
 		bipedObject(a_bipedObject),
-		sheathNode(a_sheathNode)
+		sheathNode(a_sheathNode),
+		sheathNode1p(a_sheathNode1p)
 	{
 		Update(a_data);
 	}

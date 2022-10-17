@@ -30,13 +30,13 @@ namespace IED
 		Game::ObjectRefHandle a_handle,
 		bool                  a_nodeOverrideEnabled,
 		bool                  a_nodeOverrideEnabledPlayer,
+		bool                  a_syncToFirstPersonSkeleton,
 		//bool                    a_animEventForwarding,
 		const BipedSlotDataPtr& a_lastEquipped) :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
 		m_root(a_root),
-		m_root1p(a_actor->Get3D1(true)),
 		m_npcroot(a_npcroot),
 		m_actorid(a_actor->formID),
 		m_npcid(a_npc->formID),
@@ -60,9 +60,22 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(100000);*/
 
+		if (auto root1p = a_actor->Get3D1(true); root1p && root1p != a_root)
+		{
+			m_root1p = root1p->AsNode();
+		}
+
 		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
 		{
 			m_skeletonCache = r->second;
+		}
+
+		if (m_root1p && a_syncToFirstPersonSkeleton)
+		{
+			if (auto r = SkeletonCache::GetSingleton().Get(a_actor, true))
+			{
+				m_skeletonCache1p = r->second;
+			}
 		}
 
 		m_humanoidSkeleton =
@@ -92,14 +105,31 @@ namespace IED
 				}
 			}
 
+			auto sh = BSStringHolder::GetSingleton();
+
+			auto const npcroot1p = m_root1p ?
+			                           FindNode(m_root1p, sh->m_npcroot) :
+                                       nullptr;
+
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
-					m_cmeNodes.try_emplace(
+					auto r = m_cmeNodes.try_emplace(
 						e->first,
 						node,
 						GetCachedOrZeroTransform(e->second.name));
+
+					if (a_syncToFirstPersonSkeleton && npcroot1p)
+					{
+						if (node = FindNode(npcroot1p, e->second.bsname))
+						{
+							r.first->second.firstPerson = {
+								node,
+								GetCachedOrZeroTransform(e->second.name, true)
+							};
+						}
+					}
 				}
 			}
 
@@ -120,10 +150,15 @@ namespace IED
 				{
 					if (auto defParentNode = FindNode(a_npcroot, e->second.bsdefParent))
 					{
+						auto node1p = npcroot1p ?
+						                  FindNode(npcroot1p, e->second.bsname) :
+                                          nullptr;
+
 						m_weapNodes.emplace_back(
 							e->first,
 							node,
 							defParentNode,
+							node1p,
 							e->second.animSlot,
 							e->second.nodeID,
 							e->second.vanilla ?
@@ -352,12 +387,18 @@ namespace IED
 	}
 
 	NiTransform ActorObjectHolder::GetCachedOrZeroTransform(
-		const stl::fixed_string& a_name) const
+		const stl::fixed_string& a_name,
+		bool                     a_firstPerson) const
 	{
-		if (m_skeletonCache)
+		auto& cache =
+			a_firstPerson ?
+				m_skeletonCache1p :
+                m_skeletonCache;
+
+		if (cache)
 		{
-			auto it = m_skeletonCache->find(a_name);
-			if (it != m_skeletonCache->end())
+			auto it = cache->find(a_name);
+			if (it != cache->end())
 			{
 				return it->second.transform;
 			}
@@ -367,12 +408,18 @@ namespace IED
 	}
 
 	std::optional<NiTransform> ActorObjectHolder::GetCachedTransform(
-		const stl::fixed_string& a_name) const
+		const stl::fixed_string& a_name,
+		bool                     a_firstPerson) const
 	{
-		if (m_skeletonCache)
+		auto& cache =
+			a_firstPerson ?
+				m_skeletonCache1p :
+                m_skeletonCache;
+
+		if (cache)
 		{
-			auto it = m_skeletonCache->find(a_name);
-			if (it != m_skeletonCache->end())
+			auto it = cache->find(a_name);
+			if (it != cache->end())
 			{
 				return it->second.transform;
 			}
@@ -433,7 +480,9 @@ namespace IED
                    false;
 	}
 
-	NiNode* ActorObjectHolder::GetSheathNode(Data::ObjectSlot a_slot) const
+	bool ActorObjectHolder::GetSheathNodes(
+		Data::ObjectSlot             a_slot,
+		std::pair<NiNode*, NiNode*>& a_out) const
 	{
 		GearNodeID id;
 
@@ -483,8 +532,8 @@ namespace IED
 		case Data::ObjectSlot::kAmmo:
 			id = GearNodeID::kQuiver;
 			break;
-		default:
-			return nullptr;
+		default:			
+			return false;
 		}
 
 		auto it = std::find_if(
@@ -496,11 +545,16 @@ namespace IED
 
 		if (it != m_weapNodes.end())
 		{
-			return it->node.get();
+			a_out = {
+				it->node.get(),
+				it->node1p.get()
+			};
+
+			return true;
 		}
 		else
 		{
-			return nullptr;
+			return false;
 		}
 	}
 

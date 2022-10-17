@@ -49,6 +49,7 @@ namespace IED
 			ReleaseControlLockKeys      = 4438,
 			ExitOnLastWindowClose       = 4439,
 			UnfreezeTime                = 4440,
+			SyncToFirstPerson         = 4441,
 		};
 	}
 }

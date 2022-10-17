@@ -38,7 +38,7 @@ namespace IED
 	bool CMENodeEntry::has_visible_geometry(
 		const BSStringHolder* a_sh) const noexcept
 	{
-		return find_visible_geometry(node, a_sh);
+		return find_visible_geometry(thirdPerson.node, a_sh);
 	}
 
 	bool CMENodeEntry::has_visible_object(
@@ -54,7 +54,7 @@ namespace IED
 			a_findObject
 		};
 
-		Traverse(node, [&args](NiAVObject* a_object) {
+		Traverse(thirdPerson.node, [&args](NiAVObject* a_object) {
 			if (args.findObject == a_object)
 			{  // object found, verify is has visible geometry
 

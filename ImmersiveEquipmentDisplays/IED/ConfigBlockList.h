@@ -18,7 +18,7 @@ namespace IED
 
 			stl::set_sa<
 				stl::fixed_string,
-				stl::fixed_string_less_equal_p,
+				stl::fixed_string_less_equal_ptr,
 				stl::boost_container_allocator<stl::fixed_string>>
 				keys;
 

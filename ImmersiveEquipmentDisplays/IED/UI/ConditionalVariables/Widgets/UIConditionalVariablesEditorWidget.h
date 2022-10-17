@@ -45,7 +45,6 @@ namespace IED
 			kNone,
 
 			kReset,
-			kEvaluate
 		};
 
 		struct CondVarDataChangeParams
@@ -75,38 +74,36 @@ namespace IED
 		private:
 			void DrawItemFilter();
 
-			CondVarEntryResult DrawEntryHeaderControls(
-				Data::configConditionalVariablesHolder_t& a_holder,
-				Data::configConditionalVariablesEntry_t&  a_data);
+			CondVarEntryResult DrawEntryHeaderContextMenu(
+				Data::configConditionalVariablesHolder_t&         a_holder,
+				Data::configConditionalVariablesEntryListValue_t& a_data);
 
-			void DrawNewItemContextItems(
+			void DrawNewContextItems(
 				bool                a_insert,
+				bool                a_paste,
 				CondVarEntryResult& a_result);
-
-			CondVarEntryResult DrawEntryContextMenu(
-				Data::configConditionalVariablesHolder_t& a_holder,
-				Data::configConditionalVariablesEntry_t&  a_data);
 
 			void DrawEntryList(
 				Data::configConditionalVariablesHolder_t&    a_holder,
-				Data::configConditionalVariablesEntryList_t& a_data,
-				bool                                         a_isNested);
+				Data::configConditionalVariablesEntryList_t& a_data);
 
-			bool DrawVariable(
-				Data::configConditionalVariable_t& a_var);
+			bool DrawVariableValue(
+				ConditionalVariableType     a_type,
+				conditionalVariableValue_t& a_value);
 
 			void DrawVariableTree(
 				Data::configConditionalVariablesHolder_t& a_holder,
-				Data::configConditionalVariablesList_t&   a_data,
+				Data::configConditionalVariablesEntry_t&  a_entry,
 				Data::configConditionalVariable_t&        a_var);
 
-			CondVarEntryResult DrawVariableHeaderContextMenu(
+			CondVarEntryResult DrawVariableHeaderControls(
 				Data::configConditionalVariablesHolder_t& a_holder,
 				Data::configConditionalVariablesList_t&   a_data,
 				Data::configConditionalVariable_t&        a_var);
 
 			void DrawVariableListTree(
 				Data::configConditionalVariablesHolder_t& a_holder,
+				Data::configConditionalVariablesEntry_t&  a_entry,
 				Data::configConditionalVariablesList_t&   a_data);
 
 			CondVarEntryResult DrawVariableListHeaderContextMenu(
@@ -115,23 +112,12 @@ namespace IED
 
 			void DrawVariableList(
 				Data::configConditionalVariablesHolder_t& a_holder,
+				Data::configConditionalVariablesEntry_t&  a_entry,
 				Data::configConditionalVariablesList_t&   a_data);
 
-			CondVarEntryResult DrawGroupHeaderContextMenu();
-
 			void DrawEntryTree(
-				Data::configConditionalVariablesHolder_t& a_holder,
-				Data::configConditionalVariablesEntry_t&  a_data,
-				bool                                      a_isNested);
-
-			void DrawGroupEntryList(
-				Data::configConditionalVariablesHolder_t&    a_holder,
-				Data::configConditionalVariablesEntryList_t& a_data);
-
-			bool CreateNewVariable(
-				const std::string&                                a_name,
-				Data::configConditionalVariablesList_t&           a_list,
-				Data::configConditionalVariablesList_t::iterator& a_where);
+				Data::configConditionalVariablesHolder_t&         a_holder,
+				Data::configConditionalVariablesEntryListValue_t& a_data);
 
 			virtual void DrawMainHeaderControlsExtra(
 				Data::configConditionalVariablesHolder_t& a_data);
@@ -140,6 +126,8 @@ namespace IED
 				const CondVarDataChangeParams& a_params) = 0;
 
 			virtual std::optional<std::reference_wrapper<Data::configConditionalVariablesHolder_t>> GetCurrentData() = 0;
+
+			ConditionalVariableType m_tmpType{ ConditionalVariableType::kInt32 };
 
 			UIGenericFilter m_itemFilter;
 		};

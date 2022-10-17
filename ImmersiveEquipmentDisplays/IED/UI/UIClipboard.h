@@ -293,7 +293,7 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
-			else if constexpr (std::is_same_v<data_type, Data::configConditionalVariablesEntry_t>)
+			else if constexpr (std::is_same_v<data_type, Data::configConditionalVariablesEntryListValue_t>)
 			{
 				return data.type == DataType::ConditionalVariablesEntry ?
 				           static_cast<data_type*>(data.data) :
@@ -473,7 +473,7 @@ namespace IED
 			{
 				data.type = DataType::BipedObjectList;
 			}
-			else if constexpr (std::is_same_v<T, Data::configConditionalVariablesEntry_t>)
+			else if constexpr (std::is_same_v<T, Data::configConditionalVariablesEntryListValue_t>)
 			{
 				data.type = DataType::ConditionalVariablesEntry;
 			}

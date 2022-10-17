@@ -2,7 +2,6 @@
 
 namespace IED
 {
-	// third-person 3d only
 	class SkeletonCache
 	{
 		struct Entry
@@ -25,7 +24,8 @@ namespace IED
 			const stl::fixed_string& a_name);*/
 
 		std::optional<data_type::value_type> Get(
-			TESObjectREFR* a_refr);
+			TESObjectREFR* a_refr,
+			bool           a_firstPerson = false);
 
 		[[nodiscard]] inline auto GetSize() const noexcept
 		{
@@ -38,10 +38,16 @@ namespace IED
 	private:
 		SkeletonCache() = default;
 
-		static stl::fixed_string mk_key(TESObjectREFR* a_refr);
+		static stl::fixed_string mk_key(
+			TESObjectREFR* a_refr,
+			bool           a_firstPerson);
 
-		data_type::const_iterator get_or_create(const stl::fixed_string& a_key);
-		void                      fill(const stl::fixed_string& a_key, data_type::iterator a_it);
+		data_type::const_iterator get_or_create(
+			const stl::fixed_string& a_key);
+
+		void fill(
+			const stl::fixed_string& a_key,
+			data_type::iterator      a_it);
 
 		mutable stl::critical_section m_lock;
 		data_type                     m_data;

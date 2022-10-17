@@ -36,7 +36,7 @@ namespace IED
 		void reset(
 			Game::ObjectRefHandle  a_handle,
 			NiPointer<NiNode>&     a_root,
-			NiPointer<NiAVObject>& a_root1p);
+			NiPointer<NiNode>&    a_root1p);
 
 		inline void SetNodeVisible(bool a_switch)
 		{

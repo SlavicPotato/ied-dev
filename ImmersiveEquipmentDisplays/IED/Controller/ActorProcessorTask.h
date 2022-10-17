@@ -60,11 +60,6 @@ namespace IED
 			m_runAnimationUpdates = a_state;
 		}
 
-	protected:
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-		bool m_activeWriteCMETransforms{ false };
-#endif
-
 	private:
 		struct State
 		{
@@ -96,11 +91,6 @@ namespace IED
 
 		static constexpr bool CheckMonitorNodes(
 			ActorObjectHolder& a_data) noexcept;
-
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-		void WriteCMETransforms(
-			ActorObjectHolder& a_data);
-#endif
 
 		void UpdateState();
 

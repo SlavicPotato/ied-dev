@@ -350,6 +350,15 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::RandPlacement);
+				
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::SyncToFirstPerson, "5"),
+						std::addressof(data.syncTransformsToFirstPersonSkeleton))))
+				{
+					m_controller.QueueResetAll(
+						ControllerUpdateFlags::kNone);
+				}
+				//DrawTip(UITip::SyncToFirstPerson);
 
 				ImGui::Unindent();
 				ImGui::Spacing();

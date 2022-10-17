@@ -29,7 +29,7 @@ namespace IED
 		{
 			for (auto& e : a_list)
 			{
-				if (do_match(a_data, e.conditions, a_params, false))
+				if (do_match(a_data, e.conditions, a_params, true))
 				{
 					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
 					{
@@ -76,7 +76,7 @@ namespace IED
 		{
 			for (auto& e : a_list)
 			{
-				if (do_match_fp(a_data, e.conditions, a_checkForm, a_params, false))
+				if (do_match_fp(a_data, e.conditions, a_checkForm, a_params, true))
 				{
 					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
 					{
@@ -124,7 +124,7 @@ namespace IED
 		{
 			for (auto& e : a_list)
 			{
-				if (do_match_sfp(a_data, e.conditions, a_checkForm, a_params, false))
+				if (do_match_sfp(a_data, e.conditions, a_checkForm, a_params, true))
 				{
 					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
 					{

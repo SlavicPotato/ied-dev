@@ -111,6 +111,21 @@ namespace IED
 			return handle && handle.IsValid() && a_params.objects.GetHandle() == handle;
 		}
 
+		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept
+		{
+			PluginInterfaceSDS* intfc;
+			a_params.controller.GetPluginInterface(intfc);
+
+			if (intfc)
+			{
+				return intfc->GetShieldOnBackEnabled(a_params.actor);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		bool match_random_percent(
 			CommonParams&   a_params,
 			const luid_tag& a_luid,

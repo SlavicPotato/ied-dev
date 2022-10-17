@@ -43,7 +43,7 @@ namespace IED
 					false,
 					ImGuiWindowFlags_HorizontalScrollbar))
 			{
-				DrawEntryList(a_data, a_data.data, false);
+				DrawEntryList(a_data, a_data.data);
 			}
 
 			ImGui::EndChild();
@@ -69,42 +69,69 @@ namespace IED
 			}
 		}
 
-		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawEntryHeaderControls(
-			Data::configConditionalVariablesHolder_t& a_holder,
-			Data::configConditionalVariablesEntry_t&  a_data)
+		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawEntryHeaderContextMenu(
+			Data::configConditionalVariablesHolder_t&         a_holder,
+			Data::configConditionalVariablesEntryListValue_t& a_data)
 		{
 			CondVarEntryResult result;
 
 			ImGui::PushID("header_controls");
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.0f, 1.0f });
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
 
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::ArrowButton("up", ImGuiDir_Up))
-			{
-				result.action = CondVarEntryAction::kSwap;
-				result.dir    = SwapDirection::Up;
-			}
-
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::ArrowButton("down", ImGuiDir_Down))
-			{
-				result.action = CondVarEntryAction::kSwap;
-				result.dir    = SwapDirection::Down;
-			}
-
 			ImGui::PopStyleVar();
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				result = DrawEntryContextMenu(a_holder, a_data);
+				DrawNewContextItems(false, false, result);
+
+				if (LCG_BM(CommonStrings::Rename, "1"))
+				{
+					if (DrawDescriptionPopup())
+					{
+						result.desc   = GetDescriptionPopupBuffer();
+						result.action = CondVarEntryAction::kRename;
+
+						ClearDescriptionPopupBuffer();
+					}
+
+					ImGui::EndMenu();
+				}
+
+				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
+				{
+					result.action = CondVarEntryAction::kDelete;
+				}
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
+				{
+					UIClipboard::Set(a_data);
+				}
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "B"),
+						nullptr,
+						false,
+						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
+				{
+					if (auto data = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())
+					{
+						a_data = *data;
+
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
+
+						result.action = CondVarEntryAction::kPasteOver;
+					}
+				}
 
 				ImGui::EndPopup();
 			}
@@ -114,8 +141,9 @@ namespace IED
 			return result;
 		}
 
-		void UIConditionalVariablesEditorWidget::DrawNewItemContextItems(
+		void UIConditionalVariablesEditorWidget::DrawNewContextItems(
 			bool                a_insert,
+			bool                a_paste,
 			CondVarEntryResult& a_result)
 		{
 			if (LCG_BM(CommonStrings::New, "cv_ctx_new"))
@@ -151,11 +179,13 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
+				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "2"),
+						LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntry_t>())))
+						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
 				{
 					a_result.action = CondVarEntryAction::kPaste;
 				}
@@ -164,74 +194,45 @@ namespace IED
 			}
 		}
 
-		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawEntryContextMenu(
-			Data::configConditionalVariablesHolder_t& a_holder,
-			Data::configConditionalVariablesEntry_t&  a_data)
-		{
-			CondVarEntryResult result;
-
-			DrawNewItemContextItems(true, result);
-
-			if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
-			{
-				result.action = CondVarEntryAction::kDelete;
-			}
-
-			if (LCG_BM(CommonStrings::Rename, "3"))
-			{
-				if (DrawDescriptionPopup())
-				{
-					a_data.desc = GetDescriptionPopupBuffer();
-
-					ClearDescriptionPopupBuffer();
-
-					OnCondVarEntryChange({ a_holder });
-				}
-
-				ImGui::EndMenu();
-			}
-
-			return result;
-		}
-
 		void UIConditionalVariablesEditorWidget::DrawEntryList(
 			Data::configConditionalVariablesHolder_t&    a_holder,
-			Data::configConditionalVariablesEntryList_t& a_data,
-			bool                                         a_isNested)
+			Data::configConditionalVariablesEntryList_t& a_data)
 		{
 			ImGui::PushID("elist");
 
-			std::uint32_t i = 0;
-
 			for (auto it = a_data.begin(); it != a_data.end();)
 			{
-				if (!a_isNested && !m_itemFilter.Test(*it->desc))
+				if (!m_itemFilter.Test(*it->first))
 				{
 					++it;
 					continue;
 				}
 
-				ImGui::PushID(i);
+				ImGui::PushID(it->first.c_str());
 
-				auto result = DrawEntryHeaderControls(a_holder, *it);
+				auto result = DrawEntryHeaderContextMenu(a_holder, *it);
 
 				switch (result.action)
 				{
-				case CondVarEntryAction::kAdd:
-				case CondVarEntryAction::kAddGroup:
+				case CondVarEntryAction::kRename:
 
-					if (!result.desc.empty())
 					{
-						it = a_data.emplace(it, result.desc);
+						stl::fixed_string newName = result.desc;
 
-						if (result.action == CondVarEntryAction::kAddGroup)
+						if (newName != it->first)
 						{
-							it->flags.set(Data::ConditionalVariablesEntryFlags::kIsGroup);
-						}
+							auto r = a_data.emplace(std::move(newName), it->second);
+							if (r.second)
+							{
+								a_data.erase(it);
 
-						OnCondVarEntryChange(
-							{ a_holder,
-						      CondVarEntryChangeAction::kReset });
+								it = r.first;
+
+								OnCondVarEntryChange(
+									{ a_holder,
+								      CondVarEntryChangeAction::kReset });
+							}
+						}
 					}
 
 					break;
@@ -246,30 +247,6 @@ namespace IED
 
 					break;
 
-				case CondVarEntryAction::kSwap:
-
-					if (IterSwap(a_data, it, result.dir))
-					{
-						OnCondVarEntryChange(
-							{ a_holder,
-						      CondVarEntryChangeAction::kReset });
-					}
-
-					break;
-
-				case CondVarEntryAction::kPaste:
-
-					if (auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntry_t>())
-					{
-						it = a_data.emplace(it, *clipData);
-
-						OnCondVarEntryChange(
-							{ a_holder,
-						      CondVarEntryChangeAction::kReset });
-					}
-
-					[[fallthrough]];
-
 				case CondVarEntryAction::kPasteOver:
 
 					ImGui::SetNextItemOpen(true);
@@ -281,10 +258,9 @@ namespace IED
 				{
 					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-					DrawEntryTree(a_holder, *it, a_isNested);
+					DrawEntryTree(a_holder, *it);
 
 					++it;
-					i++;
 				}
 
 				ImGui::PopID();
@@ -293,45 +269,18 @@ namespace IED
 			ImGui::PopID();
 		}
 
-		bool UIConditionalVariablesEditorWidget::DrawVariable(
-			Data::configConditionalVariable_t& a_var)
+		bool UIConditionalVariablesEditorWidget::DrawVariableValue(
+			ConditionalVariableType     a_type,
+			conditionalVariableValue_t& a_value)
 		{
-			bool result = false;
-
-			char buf[64];
-			stl::snprintf(buf, "%s", a_var.name.c_str());
-
-			if (ImGui::InputText(
-					LS(CommonStrings::Name, "1"),
-					buf,
-					sizeof(buf),
-					ImGuiInputTextFlags_EnterReturnsTrue))
-			{
-				if (buf[0] != 0x0)
-				{
-					a_var.name = buf;
-					result |= true;
-				}
-			}
-
-			if (DrawVariableTypeSelectorWidget(a_var.storage.type))
-			{
-				std::memset(
-					a_var.storage.bytes,
-					0x0,
-					sizeof(a_var.storage.bytes));
-
-				result = true;
-			}
-
-			switch (a_var.storage.type)
+			switch (a_type)
 			{
 			case ConditionalVariableType::kInt32:
 
-				result |= ImGui::InputScalar(
+				return ImGui::InputScalar(
 					LS(CommonStrings::Value, "2"),
 					ImGuiDataType_U32,
-					a_var.storage.bytes,
+					a_value.bytes,
 					nullptr,
 					nullptr,
 					"%d",
@@ -342,25 +291,27 @@ namespace IED
 
 			case ConditionalVariableType::kFloat:
 
-				result |= ImGui::InputScalar(
+				return ImGui::InputScalar(
 					LS(CommonStrings::Value, "2"),
 					ImGuiDataType_Float,
-					a_var.storage.bytes,
+					a_value.bytes,
 					nullptr,
 					nullptr,
 					"%f",
 					ImGuiInputTextFlags_CharsDecimal |
-					ImGuiInputTextFlags_EnterReturnsTrue);
+						ImGuiInputTextFlags_EnterReturnsTrue);
 
 				break;
-			}
 
-			return result;
+			default:
+
+				return false;
+			}
 		}
 
 		void UIConditionalVariablesEditorWidget::DrawVariableTree(
 			Data::configConditionalVariablesHolder_t& a_holder,
-			Data::configConditionalVariablesList_t&   a_data,
+			Data::configConditionalVariablesEntry_t&  a_entry,
 			Data::configConditionalVariable_t&        a_var)
 		{
 			if (ImGui::TreeNodeEx(
@@ -368,15 +319,49 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					a_var.name.c_str()))
+					a_var.desc.c_str()))
 			{
 				ImGui::Spacing();
 
-				if (DrawVariable(a_var))
+				DrawEquipmentOverrideConditionTree(
+					a_var.conditions,
+					[&] {
+						OnCondVarEntryChange(
+							{ a_holder,
+					          CondVarEntryChangeAction::kReset });
+					});
+
+				if (a_var.flags.test(Data::ConditionalVariableFlags::kIsGroup))
 				{
-					OnCondVarEntryChange(
-						{ a_holder,
-					      CondVarEntryChangeAction::kReset });
+					ImGui::PushID("group");
+
+					if (ImGui::CheckboxFlagsT(
+							LS(CommonStrings::Continue, "ctl_0"),
+							stl::underlying(std::addressof(a_var.flags.value)),
+							stl::underlying(Data::ConditionalVariableFlags::kContinue)))
+					{
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
+					}
+					DrawTip(UITip::EquipmentOverrideGroupContinue);
+
+					ImGui::Spacing();
+
+					DrawVariableListTree(a_holder, a_entry, a_var.group);
+
+					ImGui::PopID();
+				}
+				else
+				{
+					ImGui::Spacing();
+
+					if (DrawVariableValue(a_entry.defaultValue.type, a_var.value))
+					{
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
+					}
 				}
 
 				ImGui::Spacing();
@@ -385,7 +370,7 @@ namespace IED
 			}
 		}
 
-		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawVariableHeaderContextMenu(
+		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawVariableHeaderControls(
 			Data::configConditionalVariablesHolder_t& a_holder,
 			Data::configConditionalVariablesList_t&   a_data,
 			Data::configConditionalVariable_t&        a_var)
@@ -394,41 +379,44 @@ namespace IED
 
 			ImGui::PushID("context_area");
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.0f, 1.0f });
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
 				ClearDescriptionPopupBuffer();
 			}
 
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("up", ImGuiDir_Up))
+			{
+				result.action = CondVarEntryAction::kSwap;
+				result.dir    = SwapDirection::Up;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("down", ImGuiDir_Down))
+			{
+				result.action = CondVarEntryAction::kSwap;
+				result.dir    = SwapDirection::Down;
+			}
+
 			ImGui::PopStyleVar();
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				DrawNewContextItems(true, true, result);
+
+				if (LCG_BM(CommonStrings::Rename, "1"))
 				{
-					if (LCG_BM(CommonStrings::New, "1"))
+					if (DrawDescriptionPopup())
 					{
-						if (DrawDescriptionPopup())
-						{
-							result.action = CondVarEntryAction::kAdd;
-							result.desc   = GetDescriptionPopupBuffer();
+						a_var.desc = GetDescriptionPopupBuffer();
 
-							ClearDescriptionPopupBuffer();
-						}
+						ClearDescriptionPopupBuffer();
 
-						ImGui::EndMenu();
-					}
-
-					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "2"),
-							nullptr,
-							false,
-							static_cast<bool>(UIClipboard::Get<Data::configConditionalVariable_t>())))
-					{
-						result.action = CondVarEntryAction::kPaste;
-
-						ImGui::CloseCurrentPopup();
+						OnCondVarEntryChange({ a_holder });
 					}
 
 					ImGui::EndMenu();
@@ -474,6 +462,7 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::DrawVariableListTree(
 			Data::configConditionalVariablesHolder_t& a_holder,
+			Data::configConditionalVariablesEntry_t&  a_entry,
 			Data::configConditionalVariablesList_t&   a_data)
 		{
 			ImGui::PushID("varlist_tree");
@@ -483,6 +472,7 @@ namespace IED
 			switch (result.action)
 			{
 			case CondVarEntryAction::kAdd:
+			case CondVarEntryAction::kAddGroup:
 			case CondVarEntryAction::kPaste:
 			case CondVarEntryAction::kPasteOver:
 
@@ -504,14 +494,13 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth |
-						ImGuiTreeNodeFlags_DefaultOpen,
+					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Variables)))
+					LS(CommonStrings::Overrides)))
 			{
 				ImGui::Spacing();
 
-				DrawVariableList(a_holder, a_data);
+				DrawVariableList(a_holder, a_entry, a_data);
 
 				ImGui::Spacing();
 
@@ -531,7 +520,7 @@ namespace IED
 
 			ImGui::PushID("context_area");
 
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.0f, 1.0f });
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
@@ -542,28 +531,42 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::New, "1"))
-				{
-					if (DrawDescriptionPopup())
-					{
-						auto it = a_data.end();
+				DrawNewContextItems(false, true, result);
 
-						if (CreateNewVariable(
-								GetDescriptionPopupBuffer(),
-								a_data,
-								it))
+				switch (result.action)
+				{
+				case CondVarEntryAction::kAdd:
+				case CondVarEntryAction::kAddGroup:
+					{
+						auto& r = a_data.emplace_back(result.desc);
+
+						if (result.action == CondVarEntryAction::kAddGroup)
 						{
-							OnCondVarEntryChange(
-								{ a_holder,
-							      CondVarEntryChangeAction::kReset });
+							r.flags.set(Data::ConditionalVariableFlags::kIsGroup);
 						}
 
-						result.action = CondVarEntryAction::kAdd;
-
-						ClearDescriptionPopupBuffer();
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
 					}
 
-					ImGui::EndMenu();
+					break;
+
+				case CondVarEntryAction::kPaste:
+
+					if (auto clipData = UIClipboard::Get<Data::configConditionalVariable_t>())
+					{
+						if (auto data = GetCurrentData())
+						{
+							a_data.emplace_back(*clipData);
+
+							OnCondVarEntryChange(
+								{ *data,
+							      CondVarEntryChangeAction::kReset });
+						}
+					}
+
+					break;
 				}
 
 				ImGui::Separator();
@@ -636,6 +639,7 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::DrawVariableList(
 			Data::configConditionalVariablesHolder_t& a_holder,
+			Data::configConditionalVariablesEntry_t&  a_entry,
 			Data::configConditionalVariablesList_t&   a_data)
 		{
 			ImGui::PushID("var_list");
@@ -646,23 +650,25 @@ namespace IED
 			{
 				ImGui::PushID(i);
 
-				auto result = DrawVariableHeaderContextMenu(a_holder, a_data, *it);
+				auto result = DrawVariableHeaderControls(a_holder, a_data, *it);
 
 				switch (result.action)
 				{
 				case CondVarEntryAction::kAdd:
+				case CondVarEntryAction::kAddGroup:
 
-					if (CreateNewVariable(
-							result.desc,
-							a_data,
-							it))
+					it = a_data.emplace(it, result.desc);
+
+					if (result.action == CondVarEntryAction::kAddGroup)
 					{
-						OnCondVarEntryChange(
-							{ a_holder,
-						      CondVarEntryChangeAction::kReset });
-
-						ImGui::SetNextItemOpen(true);
+						it->flags.set(Data::ConditionalVariableFlags::kIsGroup);
 					}
+
+					OnCondVarEntryChange(
+						{ a_holder,
+					      CondVarEntryChangeAction::kReset });
+
+					ImGui::SetNextItemOpen(true);
 
 					break;
 
@@ -673,6 +679,17 @@ namespace IED
 					OnCondVarEntryChange(
 						{ a_holder,
 					      CondVarEntryChangeAction::kReset });
+
+					break;
+
+				case CondVarEntryAction::kSwap:
+
+					if (IterSwap(a_data, it, result.dir))
+					{
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
+					}
 
 					break;
 
@@ -700,7 +717,7 @@ namespace IED
 				{
 					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-					DrawVariableTree(a_holder, a_data, *it);
+					DrawVariableTree(a_holder, a_entry, *it);
 
 					i++;
 					++it;
@@ -712,37 +729,9 @@ namespace IED
 			ImGui::PopID();
 		}
 
-		CondVarEntryResult UIConditionalVariablesEditorWidget::DrawGroupHeaderContextMenu()
-		{
-			CondVarEntryResult result;
-
-			ImGui::PushID("header_controls");
-
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
-			{
-				ClearDescriptionPopupBuffer();
-			}
-
-			ImGui::PopStyleVar();
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				DrawNewItemContextItems(false, result);
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
-
-			return result;
-		}
-
 		void UIConditionalVariablesEditorWidget::DrawEntryTree(
-			Data::configConditionalVariablesHolder_t& a_holder,
-			Data::configConditionalVariablesEntry_t&  a_data,
-			bool                                      a_isNested)
+			Data::configConditionalVariablesHolder_t&         a_holder,
+			Data::configConditionalVariablesEntryListValue_t& a_data)
 		{
 			ImGui::PushID("content");
 
@@ -750,26 +739,44 @@ namespace IED
 					"tree_entry",
 					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					a_data.desc.c_str()))
+					a_data.first.c_str()))
 			{
 				ImGui::Spacing();
 
-				DrawEquipmentOverrideConditionTree(
-					a_data.conditions,
-					[&] {
+				if (a_data.second.vars.empty())
+				{
+					if (DrawVariableTypeSelectorWidget(
+							a_data.second.defaultValue.type))
+					{
+						std::memset(
+							a_data.second.defaultValue.bytes,
+							0x0,
+							sizeof(a_data.second.defaultValue.bytes));
+
 						OnCondVarEntryChange(
 							{ a_holder,
-					          CondVarEntryChangeAction::kReset });
-					});
-
-				if (a_data.flags.test(Data::ConditionalVariablesEntryFlags::kIsGroup))
-				{
-					DrawGroupEntryList(a_holder, a_data.group);
+						      CondVarEntryChangeAction::kReset });
+					}
 				}
 				else
 				{
-					DrawVariableListTree(a_holder, a_data.vars);
+					ImGui::Text(
+						"%s: %s",
+						LS(CommonStrings::Type),
+						variable_type_to_desc(
+							a_data.second.defaultValue.type));
 				}
+
+				DrawVariableValue(
+					a_data.second.defaultValue.type,
+					a_data.second.defaultValue);
+
+				ImGui::Spacing();
+
+				DrawVariableListTree(
+					a_holder,
+					a_data.second,
+					a_data.second.vars);
 
 				ImGui::Spacing();
 
@@ -777,110 +784,6 @@ namespace IED
 			}
 
 			ImGui::PopID();
-		}
-
-		void UIConditionalVariablesEditorWidget::DrawGroupEntryList(
-			Data::configConditionalVariablesHolder_t&    a_holder,
-			Data::configConditionalVariablesEntryList_t& a_data)
-		{
-			ImGui::PushID("group");
-
-			auto result = DrawGroupHeaderContextMenu();
-
-			switch (result.action)
-			{
-			case CondVarEntryAction::kAdd:
-			case CondVarEntryAction::kAddGroup:
-				{
-					auto& r = a_data.emplace_back(result.desc);
-
-					if (result.action == CondVarEntryAction::kAddGroup)
-					{
-						r.flags.set(Data::ConditionalVariablesEntryFlags::kIsGroup);
-					}
-
-					OnCondVarEntryChange(
-						{ a_holder,
-					      CondVarEntryChangeAction::kReset });
-
-					ImGui::SetNextItemOpen(true);
-				}
-				break;
-
-			case CondVarEntryAction::kPaste:
-
-				if (auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntry_t>())
-				{
-					a_data.emplace_back(*clipData);
-
-					OnCondVarEntryChange(
-						{ a_holder,
-					      CondVarEntryChangeAction::kReset });
-				}
-
-				ImGui::SetNextItemOpen(true);
-
-				break;
-			}
-
-			const bool disabled = a_data.empty();
-
-			if (disabled)
-			{
-				ImGui::SetNextItemOpen(false);
-			}
-
-			UICommon::PushDisabled(disabled);
-
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::TreeNodeEx(
-					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth,
-					"%s",
-					LS(CommonStrings::Group)))
-			{
-				DrawEntryList(a_holder, a_data, true);
-				ImGui::TreePop();
-			}
-
-			UICommon::PopDisabled(disabled);
-
-			ImGui::PopID();
-		}
-
-		bool UIConditionalVariablesEditorWidget::CreateNewVariable(
-			const std::string&                                a_name,
-			Data::configConditionalVariablesList_t&           a_list,
-			Data::configConditionalVariablesList_t::iterator& a_where)
-		{
-			if (a_name.empty())
-			{
-				return false;
-			}
-
-			stl::fixed_string name = a_name;
-
-			auto itn = std::find_if(
-				a_list.cbegin(),
-				a_list.cend(),
-				[&](auto& a_v) {
-					return a_v.name == name;
-				});
-
-			if (itn == a_list.cend())
-			{
-				a_where = a_list.emplace(
-					a_where,
-					ConditionalVariableType::kInt32,
-					std::move(name));
-
-				return true;
-			}
-			else
-			{
-				return false;
-			}
 		}
 
 		void UIConditionalVariablesEditorWidget::DrawMainHeaderControlsExtra(
@@ -890,48 +793,57 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::EditorDrawMenuBarItems()
 		{
-			CondVarEntryResult result;
-
-			DrawNewItemContextItems(false, result);
-
-			switch (result.action)
+			if (LCG_BM(CommonStrings::Add, "1"))
 			{
-			case CondVarEntryAction::kAdd:
-			case CondVarEntryAction::kAddGroup:
+				DrawVariableTypeSelectorWidget(m_tmpType);
+
+				if (DrawDescriptionPopup())
 				{
 					if (auto data = GetCurrentData())
 					{
-						auto& r = data->get().data.emplace_back(result.desc);
+						auto r = data->get().data.try_emplace(
+							GetDescriptionPopupBuffer(),
+							m_tmpType);
 
-						if (result.action == CondVarEntryAction::kAddGroup)
+						if (r.second)
 						{
-							r.flags.set(Data::ConditionalVariablesEntryFlags::kIsGroup);
+							OnCondVarEntryChange(
+								{ *data,
+							      CondVarEntryChangeAction::kReset });
 						}
-
-						OnCondVarEntryChange(
-							{ *data,
-						      CondVarEntryChangeAction::kReset });
 					}
+
+					ClearDescriptionPopupBuffer();
 				}
 
-				break;
+				ImGui::EndMenu();
+			}
 
-			case CondVarEntryAction::kPaste:
+			ImGui::Separator();
 
-				if (auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntry_t>())
+			if (ImGui::MenuItem(
+					LS(CommonStrings::Paste, "2"),
+					nullptr,
+					false,
+					static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
+
+			{
+				if (auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())
 				{
 					if (auto data = GetCurrentData())
 					{
-						data->get().data.emplace_back(*clipData);
+						auto r = data->get().data.emplace(*clipData);
 
-						OnCondVarEntryChange(
-							{ *data,
-						      CondVarEntryChangeAction::kReset });
+						if (r.second)
+						{
+							OnCondVarEntryChange(
+								{ *data,
+							      CondVarEntryChangeAction::kReset });
+						}
 					}
 				}
-
-				break;
 			}
+
 		}
 	}
 }

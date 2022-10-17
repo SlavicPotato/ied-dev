@@ -43,10 +43,6 @@ namespace IED
 			a_config->m_bipedSlotCacheMaxForms)
 	{
 		InitializeInputHandlers();
-
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-		m_activeWriteCMETransforms = a_config->m_activeWriteCMETransforms;
-#endif
 	}
 
 	void Controller::SinkInputEvents()
@@ -2756,15 +2752,18 @@ namespace IED
 					{
 						const auto bipedObject = ItemData::SlotToBipedObject(a_params.actor, f.slot);
 
-						auto sheathNode =
-							bipedObject != BIPED_OBJECT::kNone ?
-								a_params.objects.GetSheathNode(f.slot) :
-                                nullptr;
+						std::pair<NiNode*, NiNode*> nodes{ nullptr, nullptr };
+
+						if (bipedObject != BIPED_OBJECT::kNone)
+						{
+							a_params.objects.GetSheathNodes(f.slot, nodes);
+						}
 
 						objectEntry.effectShaderData =
 							std::make_unique<EffectShaderData>(
 								bipedObject,
-								sheathNode,
+								nodes.first,
+								nodes.second,
 								*es);
 
 						a_params.state.ResetEffectShaders(a_params.handle);
@@ -3358,6 +3357,7 @@ namespace IED
 			a_handle,
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
+			GetSettings().data.syncTransformsToFirstPersonSkeleton,
 			/*m_config.settings.data.hkWeaponAnimations &&
 				m_config.settings.data.animEventForwarding,*/
 			m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
@@ -3403,6 +3403,7 @@ namespace IED
 					a_handle,
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
+					GetSettings().data.syncTransformsToFirstPersonSkeleton,
 					/*m_config.settings.data.hkWeaponAnimations &&
 						m_config.settings.data.animEventForwarding,*/
 					m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
@@ -3646,7 +3647,7 @@ namespace IED
 
 		if (a_objects.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate))
 		{
-			if (Process(
+			if (UpdateVariableMap(
 					params,
 					m_config.active.condvars,
 					a_objects.GetVariables()))
@@ -3868,7 +3869,7 @@ namespace IED
 			if (r)
 			{
 				ApplyNodeVisibility(
-					e.second.node,
+					e.second,
 					r->get(a_sex),
 					params);
 			}
@@ -3887,7 +3888,11 @@ namespace IED
 			else
 			{
 				// only called from main, no need to run checks
-				ResetNodeOverrideImpl(e.second.node, e.second.orig);
+				ResetNodeOverrideImpl(e.second.thirdPerson);
+				if (e.second.firstPerson)
+				{
+					ResetNodeOverrideImpl(e.second.firstPerson);
+				}
 			}
 		}
 

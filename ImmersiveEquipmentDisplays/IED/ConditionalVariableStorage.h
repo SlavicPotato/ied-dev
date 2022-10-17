@@ -9,7 +9,7 @@ namespace IED
 		kFloat = 1
 	};
 
-	struct conditionalVariableStorage_t
+	struct conditionalVariableValue_t
 	{
 		friend class boost::serialization::access;
 
@@ -18,6 +18,40 @@ namespace IED
 		{
 			DataVersion1 = 1
 		};
+
+		union
+		{
+			std::uint8_t bytes[8]{ 0 };
+			std::int32_t i32;
+			float        f32;
+		};
+
+	private:
+		template <class Archive>
+		void serialize(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& bytes;
+		}
+	};
+
+	struct conditionalVariableStorage_t :
+		conditionalVariableValue_t
+	{
+		friend class boost::serialization::access;
+
+	public:
+		enum Serialization : unsigned int
+		{
+			DataVersion1 = 1
+		};
+
+		conditionalVariableStorage_t() noexcept = default;
+
+		inline constexpr conditionalVariableStorage_t(
+			ConditionalVariableType a_type) noexcept :
+			type(a_type)
+		{
+		}
 
 		[[nodiscard]] inline constexpr bool operator==(
 			const conditionalVariableStorage_t& a_rhs) const noexcept
@@ -70,51 +104,27 @@ namespace IED
 			return result;
 		}
 
-		ConditionalVariableType type;
-
-		union
-		{
-			std::uint8_t bytes[8]{ 0 };
-			std::int32_t i32;
-			float        f32;
-		};
+		ConditionalVariableType type{ ConditionalVariableType::kInt32 };
 
 	private:
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)
 		{
+			a_ar& static_cast<conditionalVariableValue_t&>(*this);
 			a_ar& type;
-			a_ar& bytes;
 		}
 	};
 
 	using conditionalVariableMap_t =
 		stl::unordered_map<
 			stl::fixed_string,
-			std::pair<
-				conditionalVariableStorage_t,
-				bool>,
-			std::hash<stl::fixed_string>,
-			std::equal_to<stl::fixed_string>,
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-			stl::mi_allocator<
-				std::pair<
-					const stl::fixed_string,
-					std::pair<
-						conditionalVariableStorage_t,
-						bool>>>
-#else
-			stl::container_allocator<
-				std::pair<
-					const stl::fixed_string,
-					std::pair<
-						conditionalVariableStorage_t,
-						bool>>>
-#endif
-
-			>;
+			conditionalVariableStorage_t>;
 
 }
+
+BOOST_CLASS_VERSION(
+	::IED::conditionalVariableValue_t,
+	::IED::conditionalVariableValue_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
 	::IED::conditionalVariableStorage_t,

@@ -2,8 +2,8 @@
 
 #include "UIMain.h"
 
-#include "ConditionalVariables/UIConditionalVariablesEditorWindow.h"
 #include "ConditionalVariables/Profile/UIProfileEditorConditionalVariables.h"
+#include "ConditionalVariables/UIConditionalVariablesEditorWindow.h"
 #include "Custom/Profile/UIProfileEditorCustom.h"
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "FormFilters/UIProfileEditorFormFilters.h"
@@ -225,18 +225,30 @@ namespace IED
 			if (LCG_BM(CommonStrings::View, "2"))
 			{
 				DrawViewMenu();
+
 				ImGui::EndMenu();
 			}
 
 			if (LCG_BM(CommonStrings::Tools, "3"))
 			{
 				DrawToolsMenu();
+
 				ImGui::EndMenu();
 			}
 
 			if (LCG_BM(CommonStrings::Help, "4"))
 			{
 				DrawHelpMenu();
+
+				ImGui::EndMenu();
+			}
+
+			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+			if (LCG_BM(CommonStrings::Actions, "X"))
+			{
+				DrawActionsMenu();
+
 				ImGui::EndMenu();
 			}
 		}
@@ -253,12 +265,13 @@ namespace IED
 			if (LCG_BM(UIMainStrings::DefaultConfig, "2"))
 			{
 				DrawDefaultConfigSubmenu();
+
 				ImGui::EndMenu();
 			}
 
 			ImGui::Separator();
 
-			if (LCG_MI(CommonStrings::Exit, "2"))
+			if (LCG_MI(CommonStrings::Exit, "3"))
 			{
 				SetOpenState(false);
 			}
@@ -400,14 +413,6 @@ namespace IED
 			{
 				DrawDiagnosticsSubmenu();
 
-				ImGui::EndMenu();
-			}
-
-			ImGui::Separator();
-
-			if (LCG_BM(CommonStrings::Actions, "X"))
-			{
-				DrawActionsMenu();
 				ImGui::EndMenu();
 			}
 		}

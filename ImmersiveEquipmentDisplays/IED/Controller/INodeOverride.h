@@ -168,8 +168,7 @@ namespace IED
 		};
 
 		static void ResetNodeOverrideImpl(
-			NiAVObject*        a_object,
-			const NiTransform& a_orig);
+			const CMENodeEntry::Node& a_node);
 
 		static void ResetNodeOverride(
 			const CMENodeEntry& a_entry);
@@ -186,7 +185,7 @@ namespace IED
 			nodeOverrideParams_t&                      a_params);
 
 		static void ApplyNodeVisibility(
-			NiNode*                                    a_node,
+			const CMENodeEntry&                        a_entry,
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t&                      a_params);
 

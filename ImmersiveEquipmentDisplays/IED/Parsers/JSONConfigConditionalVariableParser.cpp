@@ -3,6 +3,8 @@
 #include "JSONConfigConditionalVariableParser.h"
 
 #include "JSONConditionalVariableStorageParser.h"
+#include "JSONConfigConditionalVariablesListParser.h"
+#include "JSONEquipmentOverrideConditionListParser.h"
 
 namespace IED
 {
@@ -17,14 +19,34 @@ namespace IED
 		{
 			JSON_PARSE_VERSION();
 
-			Parser<conditionalVariableStorage_t> cvsparser(m_state);
-
 			auto& data = a_in["data"];
 
 			a_out.flags = data.get("flags", stl::underlying(Data::ConditionalVariableFlags::kNone)).asUInt();
-			a_out.name  = data["name"].asString();
+			a_out.desc  = data["desc"].asString();
 
-			if (!cvsparser.Parse(data["stor"], a_out.storage))
+			if (auto& v = data["cond"])
+			{
+				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+				if (!parser.Parse(v, a_out.conditions))
+				{
+					return false;
+				}
+			}
+
+			if (auto& v = data["grp"])
+			{
+				Parser<Data::configConditionalVariablesList_t> parser(m_state);
+
+				if (!parser.Parse(v, a_out.group))
+				{
+					return false;
+				}
+			}
+
+			Parser<conditionalVariableStorage_t> cvsparser(m_state);
+
+			if (!cvsparser.Parse(data["value"], a_out.value))
 			{
 				return false;
 			}
@@ -37,14 +59,28 @@ namespace IED
 			const Data::configConditionalVariable_t& a_data,
 			Json::Value&                             a_out) const
 		{
-			Parser<conditionalVariableStorage_t> cvsparser(m_state);
-
 			auto& data = a_out["data"];
 
 			data["flags"] = a_data.flags.underlying();
-			data["name"]  = *a_data.name;
+			data["desc"]  = *a_data.desc;
 
-			cvsparser.Create(a_data.storage, data["stor"]);
+			if (!a_data.conditions.empty())
+			{
+				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+				parser.Create(a_data.conditions, data["cond"]);
+			}
+
+			if (!a_data.group.empty())
+			{
+				Parser<Data::configConditionalVariablesList_t> parser(m_state);
+
+				parser.Create(a_data.group, data["grp"]);
+			}
+
+			Parser<conditionalVariableStorage_t> cvsparser(m_state);
+
+			cvsparser.Create(a_data.value, data["value"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

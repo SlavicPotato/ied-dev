@@ -66,11 +66,6 @@ namespace IED
 		m_enableEarlyLoadHooks =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnableEarlyLoadHooks", true);
 
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-		m_activeWriteCMETransforms =
-			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceCMETransforms", false);
-#endif
-
 		if (m_weaponAdjustForceDisable)
 		{
 			m_weaponAdjustDisable = true;

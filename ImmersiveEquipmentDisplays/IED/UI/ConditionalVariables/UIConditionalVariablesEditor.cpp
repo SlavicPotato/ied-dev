@@ -52,7 +52,6 @@ namespace IED
 			switch (a_params.action)
 			{
 			case CondVarEntryChangeAction::kReset:
-			case CondVarEntryChangeAction::kEvaluate:
 				m_controller.QueueClearVariablesOnAll(true);
 				break;
 				/*case CondVarEntryChangeAction::kEvaluate:

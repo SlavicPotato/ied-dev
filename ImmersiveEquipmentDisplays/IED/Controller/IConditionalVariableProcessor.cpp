@@ -9,29 +9,42 @@ namespace IED
 {
 	using namespace Data;
 
-	bool IConditionalVariableProcessor::Process(
+	bool IConditionalVariableProcessor::UpdateVariableMap(
 		processParams_t&                          a_params,
 		const configConditionalVariablesHolder_t& a_config,
 		conditionalVariableMap_t&                 a_map)
 	{
-		return Process(a_params, a_config.data, a_map);
-	}
-
-	/*bool IConditionalVariableProcessor::Process(
-		processParams_t&                                a_params,
-		const Data::configConditionalVariablesHolder_t& a_config)
-	{
-		return Process(a_params, a_config.data, m_varStorage);
-	}*/
-
-	constexpr bool IConditionalVariableProcessor::Process(
-		processParams_t&                             a_params,
-		const configConditionalVariablesEntryList_t& a_config,
-		conditionalVariableMap_t&                    a_map)
-	{
 		bool result = false;
 
-		for (auto& e : a_config)
+		for (auto& e : a_config.data)
+		{
+			auto r = a_map.emplace(
+				e.first,
+				e.second.defaultValue);
+
+			result |= r.second;
+
+			auto overrideVar = GetOverrideVariable(
+				a_params,
+				e.second.vars);
+
+			UpdateVariable(
+				e.second.defaultValue.type,
+				overrideVar ?
+					overrideVar->value :
+                    e.second.defaultValue,
+				r.first->second,
+				result);
+		}
+
+		return result;
+	}
+
+	constexpr const Data::configConditionalVariable_t* IConditionalVariableProcessor::GetOverrideVariable(
+		processParams_t&                              a_params,
+		const Data::configConditionalVariablesList_t& a_list)
+	{
+		for (auto& e : a_list)
 		{
 			if (configBase_t::do_match(
 					a_params.collector.data,
@@ -39,78 +52,52 @@ namespace IED
 					a_params,
 					true))
 			{
-				if (e.flags.test(ConditionalVariablesEntryFlags::kIsGroup))
+				if (e.flags.test(Data::ConditionalVariableFlags::kIsGroup))
 				{
-					result |= Process(a_params, e.group, a_map);
+					if (auto result = GetOverrideVariable(a_params, e.group))
+					{
+						return result;
+					}
+
+					if (!e.flags.test(Data::ConditionalVariableFlags::kContinue))
+					{
+						break;
+					}
 				}
 				else
 				{
-					result |= ProcessConditionTrue(e, a_map);
+					return std::addressof(e);
 				}
-			}
-			else
-			{
-				RecursiveEraseVariables(e, a_map);
 			}
 		}
 
-		return result;
+		return nullptr;
 	}
 
-	bool IConditionalVariableProcessor::ProcessConditionTrue(
-		const configConditionalVariablesEntry_t& a_config,
-		conditionalVariableMap_t&                a_map)
+	constexpr void IConditionalVariableProcessor::UpdateVariable(
+		ConditionalVariableType             a_defaultType,
+		const conditionalVariableStorage_t& a_srcvar,
+		conditionalVariableStorage_t&       a_dstval,
+		bool&                               a_modified)
 	{
-		bool result = false;
-
-		for (auto& e : a_config.vars)
+		switch (a_defaultType)
 		{
-			auto r = a_map.try_emplace(e.name, e.storage, true);
-			if (r.second)
+		case ConditionalVariableType::kInt32:
+			if (a_srcvar.i32 == a_dstval.i32)
 			{
-				result = true;
+				return;
 			}
-			else
+			break;
+		case ConditionalVariableType::kFloat:
+			if (a_srcvar.f32 == a_dstval.f32)
 			{
-				if (!r.first->second.second ||
-				    r.first->second.first != e.storage)
-				{
-					r.first->second.first  = e.storage;
-					r.first->second.second = true;
-					result                 = true;
-				}
+				return;
 			}
+			break;
 		}
 
-		return result;
+		a_dstval   = a_srcvar;
+		a_modified = true;
 	}
 
-	bool IConditionalVariableProcessor::RecursiveEraseVariables(
-		const Data::configConditionalVariablesEntry_t& a_config,
-		conditionalVariableMap_t&                      a_map) noexcept
-	{
-		bool result = false;
-
-		if (a_config.flags.test(ConditionalVariablesEntryFlags::kIsGroup))
-		{
-			for (auto& e : a_config.group)
-			{
-				result |= RecursiveEraseVariables(e, a_map);
-			}
-		}
-		else
-		{
-			for (auto& e : a_config.vars)
-			{
-				auto it = a_map.find(e.name);
-				if (it != a_map.end())
-				{
-					it->second.second = false;
-					result            = true;
-				}
-			}
-		}
-
-		return result;
-	}
 }

@@ -9,44 +9,20 @@ namespace IED
 	class IConditionalVariableProcessor
 	{
 	public:
-		static bool Process(
+		static bool UpdateVariableMap(
 			processParams_t&                                a_params,
 			const Data::configConditionalVariablesHolder_t& a_config,
 			conditionalVariableMap_t&                       a_map);
 
-		bool Process(
-			processParams_t&                                a_params,
-			const Data::configConditionalVariablesHolder_t& a_config);
-
-		/*inline void ClearConditionalVariables() noexcept
-		{
-			m_varStorage.clear();
-		}
-
-		[[nodiscard]] inline constexpr auto& GetVariableStorage() const noexcept
-		{
-			return m_varStorage;
-		}
-
-		[[nodiscard]] inline constexpr auto& GetVariableStorage() noexcept
-		{
-			return m_varStorage;
-		}*/
-
 	private:
-		static constexpr bool Process(
-			processParams_t&                                   a_params,
-			const Data::configConditionalVariablesEntryList_t& a_config,
-			conditionalVariableMap_t&                          a_map);
+		static constexpr const Data::configConditionalVariable_t* GetOverrideVariable(
+			processParams_t&                              a_params,
+			const Data::configConditionalVariablesList_t& a_list);
 
-		static bool ProcessConditionTrue(
-			const Data::configConditionalVariablesEntry_t& a_config,
-			conditionalVariableMap_t&                      a_map);
-
-		static bool RecursiveEraseVariables(
-			const Data::configConditionalVariablesEntry_t& a_config,
-			conditionalVariableMap_t&                      a_map) noexcept;
-
-		//conditionalVariableMap_t m_varStorage;
+		static constexpr void UpdateVariable(
+			ConditionalVariableType             a_defaultType,
+			const conditionalVariableStorage_t& a_srcvar,
+			conditionalVariableStorage_t&       a_dstval,
+			bool&                               a_modified);
 	};
 }

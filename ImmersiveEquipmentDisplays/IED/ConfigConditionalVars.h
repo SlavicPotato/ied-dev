@@ -13,9 +13,16 @@ namespace IED
 		enum class ConditionalVariableFlags : std::uint32_t
 		{
 			kNone = 0,
+
+			kIsGroup  = 1u << 0,
+			kContinue = 1u << 1,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConditionalVariableFlags);
+
+		struct configConditionalVariable_t;
+
+		using configConditionalVariablesList_t = stl::boost_vector<configConditionalVariable_t>;
 
 		struct configConditionalVariable_t
 		{
@@ -30,55 +37,41 @@ namespace IED
 			configConditionalVariable_t() noexcept = default;
 
 			inline constexpr configConditionalVariable_t(
-				ConditionalVariableType  a_type,
-				const stl::fixed_string& a_name) :
-				storage{ a_type },
-				name(a_name)
+				const stl::fixed_string& a_desc) noexcept :
+				desc(a_desc)
 			{
 			}
 
 			inline constexpr configConditionalVariable_t(
-				ConditionalVariableType a_type,
-				stl::fixed_string&&     a_name) :
-				storage{ a_type },
-				name(std::move(a_name))
+				stl::fixed_string&& a_desc) noexcept :
+				desc(std::move(a_desc))
 			{
-			}
-
-			[[nodiscard]] inline constexpr bool operator==(
-				const configConditionalVariable_t& a_rhs) const noexcept
-			{
-				return name == a_rhs.name && storage == a_rhs.storage;
 			}
 
 			stl::flag<ConditionalVariableFlags> flags{ ConditionalVariableFlags::kNone };
-			stl::fixed_string                   name;
-			conditionalVariableStorage_t        storage;
+			stl::fixed_string                   desc;
+			conditionalVariableStorage_t        value;
+			equipmentOverrideConditionList_t    conditions;
+			configConditionalVariablesList_t    group;
 
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
-				a_ar& name;
-				a_ar& storage;
+				a_ar& desc;
+				a_ar& value;
+				a_ar& conditions;
+				a_ar& group;
 			}
 		};
 
 		enum class ConditionalVariablesEntryFlags : std::uint32_t
 		{
 			kNone = 0,
-
-			kIsGroup = 1u << 0
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConditionalVariablesEntryFlags);
-
-		struct configConditionalVariablesEntry_t;
-
-		using configConditionalVariablesEntryList_t = stl::boost_vector<configConditionalVariablesEntry_t>;
-
-		using configConditionalVariablesList_t = stl::boost_vector<configConditionalVariable_t>;
 
 		struct configConditionalVariablesEntry_t
 		{
@@ -93,28 +86,36 @@ namespace IED
 			configConditionalVariablesEntry_t() noexcept = default;
 
 			inline constexpr configConditionalVariablesEntry_t(
-				const std::string& a_desc) :
-				desc(a_desc)
+				ConditionalVariableType a_type) noexcept :
+				defaultValue(a_type)
 			{
 			}
 
 			stl::flag<ConditionalVariablesEntryFlags> flags{ ConditionalVariablesEntryFlags::kNone };
-			stl::fixed_string                         desc;
+			conditionalVariableStorage_t              defaultValue;
 			configConditionalVariablesList_t          vars;
-			equipmentOverrideConditionList_t          conditions;
-			configConditionalVariablesEntryList_t     group;
 
 		private:
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
-				a_ar& desc;
+				a_ar& defaultValue;
 				a_ar& vars;
-				a_ar& conditions;
-				a_ar& group;
 			}
 		};
+
+		using configConditionalVariablesEntryList_t =
+			stl::map_sa<
+				stl::fixed_string,
+				configConditionalVariablesEntry_t,
+				stl::fixed_string_less_equal_ptr,
+				stl::boost_container_allocator<
+					std::pair<
+						stl::fixed_string,
+						configConditionalVariablesEntry_t>>>;
+
+		using configConditionalVariablesEntryListValue_t = configConditionalVariablesEntryList_t::value_type;
 
 		enum class ConditionalVariablesHolderFlags : std::uint32_t
 		{

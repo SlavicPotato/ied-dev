@@ -17,6 +17,7 @@ namespace IED
 		EffectShaderData(
 			BIPED_OBJECT                            a_bipedObject,
 			NiNode*                                 a_sheathNode,
+			NiNode*                                 a_sheathNode1p,
 			const Data::configEffectShaderHolder_t& a_data);
 
 		enum class EntryFlags : std::uint32_t
@@ -107,9 +108,15 @@ namespace IED
 			}
 		}
 
+		[[nodiscard]] inline constexpr auto& GetSheathNode(bool a_firstPerson) const noexcept
+		{
+			return a_firstPerson ? sheathNode1p : sheathNode;
+		}
+
 		data_type               data;
 		BIPED_OBJECT            bipedObject{ BIPED_OBJECT::kNone };
 		NiPointer<NiNode>       sheathNode;
+		NiPointer<NiNode>       sheathNode1p;
 		bool                    targettingEquipped{ false };
 		std::optional<luid_tag> tag;
 

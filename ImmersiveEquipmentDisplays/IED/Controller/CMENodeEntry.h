@@ -8,24 +8,37 @@ namespace IED
 
 	struct CMENodeEntry
 	{
-		CMENodeEntry(
-			NiNode*            a_node,
-			const NiTransform& a_originalTransform) :
-			node(a_node),
-			orig(a_originalTransform)
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-			,
-			current(a_originalTransform)
-#endif
+		struct Node
+		{
+			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			{
+				return static_cast<bool>(node.get());
+			}
+
+
+			NiPointer<NiNode> node;
+			NiTransform       orig;  // cached or zero, never read from loaded actor 3D
+		};
+
+		inline CMENodeEntry(
+			NiNode*            a_node3p,
+			const NiTransform& a_originalTransform3p) :
+			thirdPerson{ a_node3p, a_originalTransform3p }
+		{
+		}
+		
+		inline CMENodeEntry(
+			NiNode*            a_node3p,
+			const NiTransform& a_originalTransform3p,
+			NiNode*            a_node1p,
+			const NiTransform& a_originalTransform1p) :
+			thirdPerson{ a_node3p, a_originalTransform3p },
+			firstPerson{ a_node1p, a_originalTransform1p }
 		{
 		}
 
-		NiPointer<NiNode> node;
-		NiTransform       orig;  // cached or zero, never read from loaded actor 3D
-
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-		mutable NiTransform current;
-#endif
+		Node thirdPerson;
+		Node firstPerson;
 
 		static bool find_visible_geometry(
 			NiAVObject*           a_object,

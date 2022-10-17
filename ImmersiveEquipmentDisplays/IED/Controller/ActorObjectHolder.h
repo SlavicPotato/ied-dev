@@ -120,6 +120,7 @@ namespace IED
 			Game::ObjectRefHandle a_handle,
 			bool                  a_nodeOverrideEnabled,
 			bool                  a_nodeOverrideEnabledPlayer,
+			bool                  a_syncToFirstPersonSkeleton,
 			//bool                    a_animEventForwarding,
 			const BipedSlotDataPtr& a_lastEquipped);
 
@@ -417,17 +418,17 @@ namespace IED
 		{
 			return m_actorid;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetNPCFormID() const noexcept
 		{
 			return m_npcid;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetNPCTemplateFormID() const noexcept
 		{
 			return m_npcTemplateId;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetRaceFormID() const noexcept
 		{
 			return m_raceid;
@@ -459,10 +460,12 @@ namespace IED
 		}*/
 
 		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
-			const stl::fixed_string& a_name) const;
+			const stl::fixed_string& a_name,
+			bool                     a_firstPerson = false) const;
 
 		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
-			const stl::fixed_string& a_name) const;
+			const stl::fixed_string& a_name,
+			bool                     a_firstPerson = false) const;
 
 		//void ReSinkAnimationGraphs();
 
@@ -584,7 +587,7 @@ namespace IED
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
 
-		NiNode* GetSheathNode(Data::ObjectSlot a_slot) const;
+		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*> &a_out) const;
 
 	private:
 		void CreateExtraMovNodes(
@@ -624,10 +627,10 @@ namespace IED
 
 		stl::unordered_map<luid_tag, float> m_rpc;
 
-		NiPointer<Actor>      m_actor;
-		NiPointer<NiNode>     m_root;
-		NiPointer<NiAVObject> m_root1p;
-		NiPointer<NiNode>     m_npcroot;
+		NiPointer<Actor>  m_actor;
+		NiPointer<NiNode> m_root;
+		NiPointer<NiNode> m_root1p;
+		NiPointer<NiNode> m_npcroot;
 
 		Game::FormID m_actorid;
 		Game::FormID m_npcid;
@@ -644,6 +647,7 @@ namespace IED
 		//long long m_lastHFStateCheck;
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
+		SkeletonCache::const_actor_entry_type m_skeletonCache1p;
 		SkeletonID                            m_skeletonID;
 
 		CachedActorData             m_state;

@@ -9,7 +9,8 @@ namespace IED
 	namespace UI
 	{
 		bool UIDescriptionPopupWidget::DrawDescriptionPopup(
-			const char* a_label)
+			const char* a_label,
+			bool        a_autoClosePopup)
 		{
 			bool ret = ImGui::InputText(
 				a_label ?
@@ -20,7 +21,7 @@ namespace IED
 
 			bool result = ret && !m_buffer.empty();
 
-			if (result)
+			if (a_autoClosePopup && result)
 			{
 				ImGui::CloseCurrentPopup();
 			}

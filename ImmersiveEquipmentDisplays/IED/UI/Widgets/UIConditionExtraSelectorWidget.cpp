@@ -43,6 +43,7 @@ namespace IED
 			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
 #endif
 			{ Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped },
+			{ Data::ExtraConditionType::kSDSShieldOnBackEnabled, UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled },
 			{ Data::ExtraConditionType::kSitting, UIConditionExtraSelectorWidgetStrings::Sitting },
 			{ Data::ExtraConditionType::kSleeping, UIConditionExtraSelectorWidgetStrings::Sleeping },
 			{ Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming },
@@ -184,6 +185,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
+			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
+				return LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
 			default:
 				return nullptr;
 			}

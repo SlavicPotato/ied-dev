@@ -189,17 +189,6 @@ namespace IED
 		return result;
 	}
 
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-	void ActorProcessorTask::WriteCMETransforms(
-		ActorObjectHolder& a_data)
-	{
-		for (auto& e : a_data.m_cmeNodes)
-		{
-			e.second.node->m_localTransform = e.second.current;
-		}
-	}
-#endif
-
 	void ActorProcessorTask::UpdateState()
 	{
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
@@ -400,12 +389,6 @@ namespace IED
 					e.RequestEval();
 				}
 
-#if defined(IED_ENABLE_1D10T_SAFEGUARDS)
-				if (m_activeWriteCMETransforms)
-				{
-					WriteCMETransforms(e);
-				}
-#endif
 			}
 
 			if (e.m_flags.test(ActorObjectHolderFlags::kWantEval))
@@ -449,7 +432,7 @@ namespace IED
 							e,
 							m_controller);
 
-						if (m_controller.Process(
+						if (m_controller.UpdateVariableMap(
 								params,
 								m_controller.m_config.active.condvars,
 								e.GetVariables()))

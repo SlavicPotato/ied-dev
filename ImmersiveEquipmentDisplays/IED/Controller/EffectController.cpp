@@ -83,13 +83,16 @@ namespace IED
 
 			if (a_state.flags.test(ObjectEntryFlags::kIsGroup))
 			{
-				for (auto& f : a_state.groupObjects)
+				if (e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
 				{
-					auto& object = e.flags.test(EffectShaderData::EntryFlags::kTargetRoot) ?
-					                   f.second.rootNode :
-                                       f.second.object;
-
-					ProcessNiObjectTree(object, e);
+					ProcessNiObjectTree(a_state.nodes.rootNode, e);
+				}
+				else
+				{
+					for (auto& f : a_state.groupObjects)
+					{
+						ProcessNiObjectTree(f.second.object, e);
+					}
 				}
 			}
 			else
@@ -118,39 +121,40 @@ namespace IED
 			e.update_effect_data(a_step);
 		}
 
-		for (std::uint8_t i = 0; i < 2; i++)
+		auto& biped = a_actor->GetCurrentBiped();
+		if (!biped)
 		{
-			auto& biped = a_actor->GetBiped1(static_cast<bool>(i));
-			if (!biped)
-			{
-				continue;
-			}
+			return;
+		}
 
-			auto& object = biped->get_object(a_data.bipedObject).object;
-			if (!object)
-			{
-				continue;
-			}
+		auto& object = biped->get_object(a_data.bipedObject).object;
+		if (!object)
+		{
+			return;
+		}
 
-			for (auto& e : a_data.data)
-			{
-				NiAVObject* target = object.get();
+		bool thirdPerson = a_actor->GetBiped1(false) == biped;
 
-				if (a_data.sheathNode &&
-				    e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
+		auto& sheathNode = a_data.GetSheathNode(!thirdPerson);
+
+		for (auto& e : a_data.data)
+		{
+			NiAVObject* target = object.get();
+
+			if (sheathNode &&
+			    e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
+			{
+				if (object->m_parent == sheathNode)
 				{
-					if (object->m_parent == a_data.sheathNode)
-					{
-						target = object->m_parent;
-					}
-					else
-					{
-						ProcessNiObjectTree(a_data.sheathNode, e);
-					}
+					target = object->m_parent;
 				}
-
-				ProcessNiObjectTree(target, e);
+				else
+				{
+					ProcessNiObjectTree(sheathNode, e);
+				}
 			}
+
+			ProcessNiObjectTree(target, e);
 		}
 	}
 

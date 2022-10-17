@@ -7,9 +7,9 @@
 namespace IED
 {
 	void ObjectEntryBase::reset(
-		Game::ObjectRefHandle  a_handle,
-		NiPointer<NiNode>&     a_root,
-		NiPointer<NiAVObject>& a_root1p)
+		Game::ObjectRefHandle a_handle,
+		NiPointer<NiNode>&    a_root,
+		NiPointer<NiNode>&    a_root1p)
 	{
 		if (state)
 		{
@@ -29,7 +29,7 @@ namespace IED
 						std::unique_ptr<State>&& a_state,
 						Game::ObjectRefHandle    a_handle,
 						NiPointer<NiNode>&       a_root,
-						NiPointer<NiAVObject>&   a_root1p) :
+						NiPointer<NiNode>&       a_root1p) :
 						m_state(std::move(a_state)),
 						m_handle(a_handle),
 						m_root(a_root),
@@ -53,7 +53,7 @@ namespace IED
 					std::unique_ptr<State> m_state;
 					Game::ObjectRefHandle  m_handle;
 					NiPointer<NiNode>      m_root;
-					NiPointer<NiAVObject>  m_root1p;
+					NiPointer<NiNode>      m_root1p;
 				};
 
 				ITaskPool::AddPriorityTask<DisposeStateTask>(
@@ -81,7 +81,7 @@ namespace IED
 					DisposeEffectDataTask(
 						std::unique_ptr<EffectShaderData>&& a_data,
 						NiPointer<NiNode>&                  a_root,
-						NiPointer<NiAVObject>&              a_root1p) :
+						NiPointer<NiNode>&                  a_root1p) :
 						m_data(std::move(a_data)),
 						m_root(a_root),
 						m_root1p(a_root1p)
@@ -104,7 +104,7 @@ namespace IED
 				private:
 					std::unique_ptr<EffectShaderData> m_data;
 					NiPointer<NiNode>                 m_root;
-					NiPointer<NiAVObject>             m_root1p;
+					NiPointer<NiNode>                 m_root1p;
 				};
 
 				ITaskPool::AddPriorityTask<DisposeEffectDataTask>(
