@@ -765,9 +765,14 @@ namespace IED
 							a_data.second.defaultValue.type));
 				}
 
-				DrawVariableValue(
-					a_data.second.defaultValue.type,
-					a_data.second.defaultValue);
+				if (DrawVariableValue(
+						a_data.second.defaultValue.type,
+						a_data.second.defaultValue))
+				{
+					OnCondVarEntryChange(
+						{ a_holder,
+					      CondVarEntryChangeAction::kReset });
+				}
 
 				ImGui::Spacing();
 
