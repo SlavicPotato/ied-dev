@@ -214,29 +214,6 @@ namespace IED
 
 				switch (result.action)
 				{
-				case CondVarEntryAction::kRename:
-
-					{
-						stl::fixed_string newName = result.desc;
-
-						if (newName != it->first)
-						{
-							auto r = a_data.emplace(std::move(newName), it->second);
-							if (r.second)
-							{
-								a_data.erase(it);
-
-								it = r.first;
-
-								OnCondVarEntryChange(
-									{ a_holder,
-								      CondVarEntryChangeAction::kReset });
-							}
-						}
-					}
-
-					break;
-
 				case CondVarEntryAction::kDelete:
 
 					it = a_data.erase(it);
@@ -244,6 +221,27 @@ namespace IED
 					OnCondVarEntryChange(
 						{ a_holder,
 					      CondVarEntryChangeAction::kReset });
+
+					break;
+
+				case CondVarEntryAction::kRename:
+
+					{
+						stl::fixed_string newName = result.desc;
+
+						if (!a_data.contains(newName))
+						{
+							auto tmp = std::move(it->second);
+
+							a_data.erase(it);
+
+							it = a_data.emplace(std::move(newName), std::move(tmp)).first;
+
+							OnCondVarEntryChange(
+								{ a_holder,
+							      CondVarEntryChangeAction::kReset });
+						}
+					}
 
 					break;
 
@@ -843,7 +841,6 @@ namespace IED
 					}
 				}
 			}
-
 		}
 	}
 }
