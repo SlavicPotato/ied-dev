@@ -35,7 +35,7 @@ namespace IED
 			case Data::ExtraConditionType::kIsMount:
 				return a_params.actor->IsMount();
 			case Data::ExtraConditionType::kShoutEquipped:
-				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->equippedShout);
+				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->selectedPower);
 			/*case Data::ExtraConditionType::kInMerchantFaction:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);*/
 			case Data::ExtraConditionType::kCombatStyle:
