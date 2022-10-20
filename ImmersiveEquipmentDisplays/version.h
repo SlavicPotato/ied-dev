@@ -5,10 +5,10 @@
 #include <ext/macro_helpers.h>
 
 #define PLUGIN_VERSION_MAJOR    1
-#define PLUGIN_VERSION_MINOR    6
-#define PLUGIN_VERSION_REVISION 1
+#define PLUGIN_VERSION_MINOR    7
+#define PLUGIN_VERSION_REVISION 0
 
-//#define PLUGIN_VERSION_ALPHA 1
+#define PLUGIN_VERSION_ALPHA 1
 //#define PLUGIN_VERSION_BETA 1
 
 #if defined(PLUGIN_VERSION_ALPHA)

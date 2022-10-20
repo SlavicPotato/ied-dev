@@ -134,7 +134,7 @@ namespace IED
 			{
 				auto v = EvaluateLastEquippedForm(a_params, a_src);
 
-				_DMESSAGE("le: %X", v);
+				//_DMESSAGE("le: %X", v);
 
 				if (v == a_dst.form.get_id())
 				{

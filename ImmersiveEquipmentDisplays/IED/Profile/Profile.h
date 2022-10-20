@@ -35,7 +35,7 @@ namespace IED
 
 		inline void SetDescription(std::string&& a_text) noexcept
 		{
-			m_desc = std::move(a_text);
+			m_desc.emplace(std::move(a_text));
 		}
 
 		inline void ClearDescription() noexcept

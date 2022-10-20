@@ -3719,11 +3719,11 @@ namespace IED
 		{
 			if (a_markAllForLFEval)
 			{
-				RequestLFEvaluateAll();
+				RequestHFEvaluateAll();
 			}
 			else
 			{
-				RequestLFEvaluateAll(a_params.objects.GetActorFormID());
+				RequestHFEvaluateAll(a_params.objects.GetActorFormID());
 			}
 		}
 
