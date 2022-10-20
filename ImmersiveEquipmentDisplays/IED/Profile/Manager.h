@@ -423,7 +423,7 @@ namespace IED
 				throw std::exception("No such profile exists");
 
 			if (!it->second.Save(std::forward<Td>(a_in), true))
-				throw it->second.GetLastException();
+				throw std::exception(it->second.GetLastException().what());
 
 			ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,
@@ -454,7 +454,7 @@ namespace IED
 				throw std::exception("No such profile exists");
 
 			if (!it->second.Save())
-				throw it->second.GetLastException();
+				throw std::exception(it->second.GetLastException().what());
 
 			ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,
