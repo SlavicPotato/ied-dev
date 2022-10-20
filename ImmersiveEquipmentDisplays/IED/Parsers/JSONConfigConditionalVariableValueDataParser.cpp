@@ -42,7 +42,7 @@ namespace IED
 			const Data::configConditionalVariableValueData_t& a_data,
 			Json::Value&                                      a_out) const
 		{
-			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
+			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
 			Parser<conditionalVariableStorage_t> cvsparser(m_state);
 
