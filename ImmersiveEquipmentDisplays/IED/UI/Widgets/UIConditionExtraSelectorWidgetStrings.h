@@ -49,6 +49,9 @@ namespace IED
 			IsUnconscious           = 5438,
 			IsPlayerLastRiddenMount = 5439,
 			SDSShieldOnBackEnabled  = 5440,
+			IsFlying                = 5441,
+			IsLayingDown            = 5442,
+			InPlayerEnemyFaction    = 5443,
 		};
 	}
 }

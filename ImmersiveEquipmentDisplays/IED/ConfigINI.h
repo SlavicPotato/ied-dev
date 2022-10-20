@@ -85,6 +85,7 @@ namespace IED
 		bool           m_forceOrigWeapXFRM{ false };
 		bool           m_enableEarlyLoadHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
+		bool           m_forceFlushSaveData{ false };
 		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };
 		float    m_introBannerVOffset{ 110.0f };

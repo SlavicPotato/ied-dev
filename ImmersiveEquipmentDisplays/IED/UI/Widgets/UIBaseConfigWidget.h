@@ -22,6 +22,7 @@
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
+#include "UISimpleStringList.h"
 #include "UISimpleStringSet.h"
 #include "UITransformSliderWidget.h"
 #include "UIWidgetsCommon.h"
@@ -30,6 +31,8 @@
 #include "IED/StringHolder.h"
 
 #include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidgetStrings.h"
+
+#include "BaseConfigEditorAction.h"
 
 namespace IED
 {
@@ -56,8 +59,8 @@ namespace IED
 		class UIBaseConfigWidget :
 			public UINodeSelectorWidget,
 			public UIFormLookupInterface,
-			public UIEquipmentOverrideConditionsWidget,
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
+			public virtual UIEquipmentOverrideConditionsWidget,
 			public virtual UICollapsibles,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITransformSliderWidget,
@@ -65,7 +68,8 @@ namespace IED
 			public virtual UINotificationInterface,
 			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
-			public virtual UISimpleStringSetWidget
+			public virtual UISimpleStringSetWidget,
+			public virtual UISimpleStringListWidget
 		{
 		public:
 			UIBaseConfigWidget(
@@ -276,7 +280,6 @@ namespace IED
 			Controller& a_controller) :
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
-			UIEquipmentOverrideConditionsWidget(a_controller),
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
 			m_controller(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),

@@ -14,7 +14,7 @@ namespace IED
 		{
 			TESForm* GetSlottedFormImpl(Game::FormID a_actor, Data::ObjectSlot a_slot)
 			{
-				auto controller = Initializer::GetController();
+				const auto* controller = Initializer::GetController();
 
 				stl::scoped_lock lock(controller->GetLock());
 

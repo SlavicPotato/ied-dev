@@ -27,18 +27,18 @@ namespace IED
 		{
 			for (const auto& info : extraFactionChanges->factions)
 			{
-				if (const auto* faction = info.faction)
+				if (auto faction = info.faction)
 				{
-					data.emplace(faction->formID, info.rank);
+					data.emplace(faction, info.rank);
 				}
 			}
 		}
 
 		for (const auto& info : npc->factions)
 		{
-			if (const auto* faction = info.faction)
+			if (auto faction = info.faction)
 			{
-				data.emplace(faction->formID, info.rank);
+				data.emplace(faction, info.rank);
 			}
 		}
 
@@ -70,7 +70,8 @@ namespace IED
 		beingRidden(a_actor->IsBeingRidden()),
 		weaponDrawn(a_actor->IsWeaponDrawn()),
 		arrested(a_actor->IsArrested()),
-		unconscious(a_actor->IsUnconscious())
+		unconscious(a_actor->IsUnconscious()),
+		flying(a_actor->IsFlying())
 	{
 	}
 
@@ -87,14 +88,14 @@ namespace IED
 		}
 	}
 
-	bool CachedActorData::UpdateState(Actor* a_actor)
+	bool CachedActorData::UpdateState(
+		Actor*         a_actor,
+		TESObjectCELL* a_cell)
 	{
 		bool result = false;
 
-		auto cell = a_actor->GetParentCell();
-
-		state_var_update(inInterior, cell->IsInterior(), result);
-		state_var_update(worldspace, cell->GetWorldSpace(), result);
+		state_var_update(inInterior, a_cell->IsInterior(), result);
+		state_var_update(worldspace, a_cell->GetWorldSpace(), result);
 		state_var_update(currentIdle, a_actor->GetFurnitureIdle(), result);
 		state_var_update(currentPackage, a_actor->GetCurrentPackage(), result);
 		state_var_update(inCombat, Game::GetActorInCombat(a_actor), result);
@@ -106,6 +107,7 @@ namespace IED
 		state_var_update(weaponDrawn, a_actor->IsWeaponDrawn(), result);
 		state_var_update(arrested, a_actor->IsArrested(), result);
 		state_var_update(unconscious, a_actor->IsUnconscious(), result);
+		state_var_update(flying, a_actor->IsFlying(), result);
 
 		return result;
 	}

@@ -21,12 +21,12 @@ namespace IED
 		void ProcessAnimationUpdateList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			Controller*                  a_controller);
+			const Controller*            a_controller);
 
 		static void UpdateActorAnimationList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			Controller*                  a_controller);
+			const Controller*             a_controller);
 
 	private:
 		std::atomic<bool> m_running{ false };

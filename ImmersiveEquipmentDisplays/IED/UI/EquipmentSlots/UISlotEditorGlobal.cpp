@@ -18,6 +18,8 @@ namespace IED
 			UIFormTypeSelectorWidget(a_controller),
 			UITransformSliderWidget(a_controller),
 			UISimpleStringSetWidget(a_controller),
+			UISimpleStringListWidget(a_controller),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
 		}

@@ -226,6 +226,9 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -399,12 +402,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
     <ClInclude Include="IED\ConfigExtraNode.h" />
+    <ClInclude Include="IED\ConfigLastEquipped.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
     <ClInclude Include="IED\ConfigNodeMonitor.h" />
     <ClInclude Include="IED\ConfigSkeletonMatch.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
-    <ClInclude Include="IED\ConfigVariableConditionTarget.h" />
+    <ClInclude Include="IED\ConfigVariableConditionSource.h" />
+    <ClInclude Include="IED\ConfigVariableSource.h" />
     <ClInclude Include="IED\Controller\ActiveActorAnimation.h" />
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
@@ -459,6 +464,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConditionalVariableStorageParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigBipedObjectListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBAParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigColorRGBParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableEntryListParser.h" />
@@ -466,9 +472,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigFixedStringListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigLastEquippedParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
@@ -478,6 +487,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigVariableSource.h" />
     <ClInclude Include="IED\Parsers\JSONConvertNodesListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderDataParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderFunctionListParser.h" />
@@ -535,6 +545,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIContext.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorer.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
     <ClInclude Include="IED\UI\Widgets\EquipmentOverrideResult.h" />
     <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
@@ -556,8 +567,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIImportWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UILastEquippedWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UISimpleStringList.h" />
     <ClInclude Include="IED\UI\Widgets\UISimpleStringSet.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidgetStrings.h" />
@@ -565,8 +578,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UITimeOfDaySelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UITransformSliderWidgetStrings.h" />
-    <ClInclude Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidget.h" />
-    <ClInclude Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIVariableConditionSourceSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIVariableConditionSourceSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIVariableSourceSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIVariableSourceSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIVariableTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIVariableTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.h" />
@@ -888,6 +903,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ActorFactionInfo.cpp" />
     <ClCompile Include="IED\ActorInventoryInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
+    <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
@@ -927,6 +943,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConditionalVariableStorageParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigBipedObjectListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBAParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigColorRGBParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableEntryListParser.cpp" />
@@ -934,9 +951,12 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigFixedStringListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigLastEquippedParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
@@ -946,6 +966,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigVariableSource.cpp" />
     <ClCompile Include="IED\Parsers\JSONConvertNodesListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderDataParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderFunctionListParser.cpp" />
@@ -1001,13 +1022,16 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UILastEquippedWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UISimpleStringList.cpp" />
     <ClCompile Include="IED\UI\Widgets\UISimpleStringSet.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UITextureClampModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UITimeOfDaySelectorWidget.cpp" />
-    <ClCompile Include="IED\UI\Widgets\UIVariableConditionTargetSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIVariableConditionSourceSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIVariableSourceSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIVariableTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIWeatherClassSelectorWidget.cpp" />
     <ClCompile Include="IED\Util\PEXReader.cpp" />

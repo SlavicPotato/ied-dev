@@ -79,11 +79,6 @@ namespace IED
 			Data::ObjectSlotExtra    m_aoNewSlot{ Data::ObjectSlotExtra::kNone };
 
 			UIConditionParamEditorWidget m_condParamEditor;
-
-			struct
-			{
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> form_common;
-			} m_type_filters;
 		};
 
 	}

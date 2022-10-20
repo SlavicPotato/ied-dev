@@ -18,21 +18,21 @@ namespace IED
 		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_objectEntry.state)
+		if (auto& state = a_objectEntry.state)
 		{
 			if (
 				m_playSound &&
 				a_flags.test(ControllerUpdateFlags::kPlaySound) &&
-				a_objectEntry.state->flags.test(ObjectEntryFlags::kPlaySound) &&
+				state->flags.test(ObjectEntryFlags::kPlaySound) &&
 				a_actor &&
 				a_actor->loadedState &&
 				(a_actor == *g_thePlayer || m_playSoundNPC) &&
-				a_objectEntry.state->nodes.rootNode->m_parent &&
-				a_objectEntry.state->nodes.rootNode->IsVisible())
+				state->nodes.rootNode->m_parent &&
+				state->nodes.rootNode->IsVisible())
 			{
 				SoundPlay(
-					a_objectEntry.state->form->formType,
-					a_objectEntry.state->nodes.rootNode->m_parent,
+					state->form->formType,
+					state->nodes.rootNode->m_parent,
 					false);
 			}
 
@@ -57,9 +57,10 @@ namespace IED
 			}
 		}*/
 
-		a_objectEntry.reset(a_handle, a_data.m_root, a_data.m_root1p);
-
-		return true;
+		return a_objectEntry.reset(
+			a_handle,
+			a_data.m_root,
+			a_data.m_root1p);
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -79,9 +80,7 @@ namespace IED
 			it->second,
 			a_flags);
 
-		m_objects.erase(it);
-
-		RequestLFEvaluateAll();
+		EraseActor(it);
 
 		return true;
 	}
@@ -104,9 +103,7 @@ namespace IED
 			it->second,
 			a_flags);
 
-		m_objects.erase(it);
-
-		RequestLFEvaluateAll();
+		EraseActor(it);
 
 		return true;
 	}
@@ -132,9 +129,7 @@ namespace IED
 			it->second,
 			a_flags);
 
-		m_objects.erase(it);
-
-		RequestLFEvaluateAll();
+		EraseActor(it);
 
 		return true;
 	}
@@ -223,7 +218,7 @@ namespace IED
 		}
 	}
 
-	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval) 
+	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_requestEval] {
 			stl::scoped_lock lock(m_lock);
@@ -234,7 +229,7 @@ namespace IED
 
 	void IObjectManager::QueueClearVariables(
 		Game::FormID a_handle,
-		bool         a_requestEval) 
+		bool         a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
 			stl::scoped_lock lock(m_lock);
@@ -264,17 +259,17 @@ namespace IED
 	void IObjectManager::CleanupActorObjectsImpl(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (a_objects.m_actor->loadedState)
+		if (a_holder.m_actor->loadedState)
 		{
-			for (auto& e : a_objects.m_cmeNodes)
+			for (auto& e : a_holder.m_cmeNodes)
 			{
 				ResetNodeOverride(e.second);
 			}
 
-			for (auto& e : a_objects.m_weapNodes)
+			for (auto& e : a_holder.m_weapNodes)
 			{
 				ResetNodePlacement(e, nullptr);
 			}
@@ -283,17 +278,17 @@ namespace IED
 		RemoveActorGear(
 			a_actor,
 			a_handle,
-			a_objects,
+			a_holder,
 			a_flags);
 
-		a_objects.m_cmeNodes.clear();
-		a_objects.m_movNodes.clear();
-		a_objects.m_weapNodes.clear();
-		a_objects.m_monitorNodes.clear();
-		a_objects.m_nodeMonitorEntries.clear();
+		a_holder.m_cmeNodes.clear();
+		a_holder.m_movNodes.clear();
+		a_holder.m_weapNodes.clear();
+		a_holder.m_monitorNodes.clear();
+		a_holder.m_nodeMonitorEntries.clear();
 
-		/*assert(a_objects.m_animationUpdateList->Empty());
-		assert(a_objects.m_animEventForwardRegistrations.Empty());*/
+		/*assert(a_holder.m_animationUpdateList->Empty());
+		assert(a_holder.m_animEventForwardRegistrations.Empty());*/
 	}
 
 	void IObjectManager::RemoveActorGear(
@@ -311,63 +306,61 @@ namespace IED
 	void IObjectManager::RemoveActorGear(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		a_objects.visit([&](auto& a_object) {
+		a_holder.visit([&](auto& a_object) {
 			RemoveObject(
 				a_actor,
 				a_handle,
 				a_object,
-				a_objects,
+				a_holder,
 				a_flags);
 		});
 
-		for (auto& e : a_objects.m_entriesCustom)
+		for (auto& e : a_holder.m_entriesCustom)
 		{
 			e.clear();
 		}
 
-		/*assert(a_objects.m_animationUpdateList->Empty());
-		assert(a_objects.m_animEventForwardRegistrations.Empty());*/
+		/*assert(a_holder.m_animationUpdateList->Empty());
+		assert(a_holder.m_animEventForwardRegistrations.Empty());*/
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
-		ActorObjectHolder&    a_objects,
+		ActorObjectHolder&    a_holder,
 		Game::ObjectRefHandle a_handle)
 	{
 		bool result = false;
 
-		for (auto& e : a_objects.m_entriesSlot)
+		for (auto& e : a_holder.m_entriesSlot)
 		{
-			if (e.state &&
-			    !e.state->nodes.rootNode->IsVisible())
+			if (!e.IsNodeVisible())
 			{
 				RemoveObject(
 					nullptr,
 					a_handle,
 					e,
-					a_objects,
+					a_holder,
 					ControllerUpdateFlags::kNone);
 
 				result = true;
 			}
 		}
 
-		for (auto& e : a_objects.m_entriesCustom)
+		for (auto& e : a_holder.m_entriesCustom)
 		{
 			for (auto it1 = e.begin(); it1 != e.end();)
 			{
 				for (auto it2 = it1->second.begin(); it2 != it1->second.end();)
 				{
-					if (it2->second.state &&
-					    !it2->second.state->nodes.rootNode->IsVisible())
+					if (!it2->second.IsNodeVisible())
 					{
 						RemoveObject(
 							nullptr,
 							a_handle,
 							it2->second,
-							a_objects,
+							a_holder,
 							ControllerUpdateFlags::kNone);
 
 						result = true;
@@ -521,14 +514,9 @@ namespace IED
 		bool                            a_disableHavok,
 		bool                            a_bhkAnims)
 	{
-		if (RemoveObject(
-				a_params.actor,
-				a_params.handle,
-				a_objectEntry,
-				a_params.objects,
-				a_params.flags))
+		if (a_objectEntry.state)
 		{
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+			return false;
 		}
 
 		if (!a_activeConfig.targetNode)
@@ -737,12 +725,10 @@ namespace IED
 		bool                            a_disableHavok,
 		bool                            a_bhkAnims)
 	{
-		RemoveObject(
-			a_params.actor,
-			a_params.handle,
-			a_objectEntry,
-			a_params.objects,
-			a_params.flags);
+		if (a_objectEntry.state)
+		{
+			return false;
+		}
 
 		if (!a_config.targetNode)
 		{
@@ -1062,7 +1048,7 @@ namespace IED
 		    a_config.flags.test(Data::BaseFlags::kPlaySound) &&
 		    m_playSound)
 		{
-			if (a_params.is_player() || m_playSoundNPC)
+			if (a_params.objects.IsPlayer() || m_playSoundNPC)
 			{
 				SoundPlay(
 					a_objectEntry.state->form->formType,

@@ -38,6 +38,7 @@ namespace IED
 				EquipmentOverrideList,
 				EffectShaderData,
 				FixedStringSet,
+				FixedStringList,
 				EffectShaderFunction,
 				EffectShaderFunctionList,
 				BipedObjectList,
@@ -275,6 +276,12 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configFixedStringList_t>)
+			{
+				return data.type == DataType::FixedStringList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else if constexpr (std::is_same_v<data_type, Data::configEffectShaderFunction_t>)
 			{
 				return data.type == DataType::EffectShaderFunction ?
@@ -460,6 +467,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configFixedStringSet_t>)
 			{
 				data.type = DataType::FixedStringSet;
+			}
+			else if constexpr (std::is_same_v<T, Data::configFixedStringList_t>)
+			{
+				data.type = DataType::FixedStringList;
 			}
 			else if constexpr (std::is_same_v<T, Data::configEffectShaderFunction_t>)
 			{

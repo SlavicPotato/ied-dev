@@ -143,8 +143,33 @@ namespace IED
 
 	protected:
 		void RequestEvaluateAll(bool a_defer) const noexcept;
+
 		void RequestLFEvaluateAll() noexcept;
 		void RequestLFEvaluateAll(Game::FormID a_skip) noexcept;
+		
+		void RequestHFEvaluateAll() noexcept;
+		void RequestHFEvaluateAll(Game::FormID a_skip) noexcept;
+
+		inline auto EraseActor(ActorObjectMap::const_iterator& a_it)
+		{
+			auto result = m_objects.erase(a_it);
+
+			RequestHFEvaluateAll();
+
+			return result;
+		}
+
+		inline auto EraseActor(const ActorObjectMap::key_type& a_key)
+		{
+			auto result = m_objects.erase(a_key);
+
+			if (result)
+			{
+				RequestHFEvaluateAll();
+			}
+
+			return result;
+		}
 
 		ActorObjectMap                           m_objects;
 		std::unique_ptr<Data::actorStateEntry_t> m_playerState;

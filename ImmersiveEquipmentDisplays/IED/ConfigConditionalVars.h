@@ -2,6 +2,7 @@
 
 #include "ConfigCommon.h"
 #include "ConfigEquipment.h"
+#include "ConfigLastEquipped.h"
 
 #include "ConditionalVariableStorage.h"
 
@@ -9,6 +10,47 @@ namespace IED
 {
 	namespace Data
 	{
+
+		enum class ConditionalVariableValueDataFlags : std::uint32_t
+		{
+			kNone = 0,
+
+			kLastEquipped = 1u << 0,
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(ConditionalVariableValueDataFlags);
+
+		struct configConditionalVariableValueData_t
+		{
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			configConditionalVariableValueData_t() noexcept = default;
+
+			inline constexpr configConditionalVariableValueData_t(
+				ConditionalVariableType a_type) noexcept :
+				value(a_type)
+			{
+			}
+
+			stl::flag<ConditionalVariableValueDataFlags> flags{ ConditionalVariableValueDataFlags::kNone };
+			conditionalVariableStorage_t                 value;
+			Data::configLastEquipped_t                   lastEquipped;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& flags.value;
+				a_ar& value;
+				a_ar& lastEquipped;
+			}
+		};
 
 		enum class ConditionalVariableFlags : std::uint32_t
 		{
@@ -48,11 +90,11 @@ namespace IED
 			{
 			}
 
-			stl::flag<ConditionalVariableFlags> flags{ ConditionalVariableFlags::kNone };
-			stl::fixed_string                   desc;
-			conditionalVariableStorage_t        value;
-			equipmentOverrideConditionList_t    conditions;
-			configConditionalVariablesList_t    group;
+			stl::flag<ConditionalVariableFlags>  flags{ ConditionalVariableFlags::kNone };
+			stl::fixed_string                    desc;
+			configConditionalVariableValueData_t value;
+			equipmentOverrideConditionList_t     conditions;
+			configConditionalVariablesList_t     group;
 
 		private:
 			template <class Archive>
@@ -92,7 +134,7 @@ namespace IED
 			}
 
 			stl::flag<ConditionalVariablesEntryFlags> flags{ ConditionalVariablesEntryFlags::kNone };
-			conditionalVariableStorage_t              defaultValue;
+			configConditionalVariableValueData_t      defaultValue;
 			configConditionalVariablesList_t          vars;
 
 		private:
@@ -168,6 +210,10 @@ namespace IED
 		};
 	}
 }
+
+BOOST_CLASS_VERSION(
+	::IED::Data::configConditionalVariableValueData_t,
+	::IED::Data::configConditionalVariableValueData_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configConditionalVariable_t,

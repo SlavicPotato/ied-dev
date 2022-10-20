@@ -2,9 +2,8 @@
 
 #include "JSONConfigConditionalVariableEntryParser.h"
 
-#include "JSONConditionalVariableStorageParser.h"
+#include "JSONConfigConditionalVariableValueDataParser.h"
 #include "JSONConfigConditionalVariablesListParser.h"
-
 
 namespace IED
 {
@@ -23,9 +22,9 @@ namespace IED
 
 			a_out.flags = data.get("flags", stl::underlying(Data::ConditionalVariablesEntryFlags::kNone)).asUInt();
 
-			Parser<conditionalVariableStorage_t> vsparser(m_state);
+			Parser<Data::configConditionalVariableValueData_t> cvdvparser(m_state);
 
-			if (!vsparser.Parse(data["defval"], a_out.defaultValue))
+			if (!cvdvparser.Parse(data["defval"], a_out.defaultValue))
 			{
 				return false;
 			}
@@ -52,9 +51,9 @@ namespace IED
 
 			data["flags"] = a_data.flags.underlying();
 
-			Parser<conditionalVariableStorage_t> vsparser(m_state);
+			Parser<Data::configConditionalVariableValueData_t> cvdvparser(m_state);
 
-			vsparser.Create(a_data.defaultValue, data["defval"]);
+			cvdvparser.Create(a_data.defaultValue, data["defval"]);
 
 			if (!a_data.vars.empty())
 			{

@@ -8,12 +8,13 @@
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
-#include "IED/UI/Widgets/Lists/UIBipedObjectList.h"
 #include "IED/UI/Widgets/UIBaseConfigWidget.h"
 #include "IED/UI/Widgets/UICurrentData.h"
 #include "IED/UI/Widgets/UIEditorPanelSettingsGear.h"
 #include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
+#include "IED/UI/Widgets/UILastEquippedWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
+#include "IED/UI/Widgets/UIVariableSourceSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/ConfigStore.h"
@@ -75,7 +76,8 @@ namespace IED
 			public UIBaseConfigWidget<T>,
 			public UIEditorInterface,
 			public UIModelGroupEditorWidget<T>,
-			public UIBipedObjectList,
+			public UILastEquippedWidget,
+			public UIVariableSourceSelectorWidget,
 			public virtual UIFormTypeSelectorWidget
 		{
 		public:
@@ -121,7 +123,7 @@ namespace IED
 				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
-			void DrawLastEquippedPanel(
+			void DrawVariableModePanel(
 				T                               a_handle,
 				SingleCustomConfigUpdateParams& a_params);
 
@@ -219,7 +221,8 @@ namespace IED
 			UIEditorPanelSettingsGear(a_controller),
 			UIBaseConfigWidget<T>(a_controller),
 			UIModelGroupEditorWidget<T>(m_formPicker, a_controller),
-			UIBipedObjectList(a_controller),
+			UILastEquippedWidget(a_controller),
+			UIVariableSourceSelectorWidget(a_controller),
 			m_itemFilter(true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
@@ -709,7 +712,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(UIWidgetCommonStrings::BipedSlotData, "3"),
+					LS(UIWidgetCommonStrings::LastEquipped, "3"),
 					mode == CustomObjectMode::kLastEquipped))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
@@ -737,7 +740,12 @@ namespace IED
 
 			case CustomObjectMode::kLastEquipped:
 
-				DrawLastEquippedPanel(a_handle, a_params);
+				DrawLastEquippedPanel(data.lastEquipped, [&] {
+					OnBaseConfigChange(
+						a_handle,
+						std::addressof(a_params),
+						PostChangeAction::Evaluate);
+				});
 
 				[[fallthrough]];
 			default:
@@ -766,97 +774,54 @@ namespace IED
 		}
 
 		template <class T>
-		void UICustomEditorWidget<T>::DrawLastEquippedPanel(
+		void UICustomEditorWidget<T>::DrawVariableModePanel(
 			T                               a_handle,
 			SingleCustomConfigUpdateParams& a_params)
 		{
 			auto& data = a_params.entry(a_params.sex);
 
-			ImGui::PushID("leqp");
+			ImGui::PushID("vm_panel");
 
-			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
-				data.bipedFilterConditions,
-				[this, a_handle, a_params] {
-					OnBaseConfigChange(
-						a_handle,
-						std::addressof(a_params),
-						PostChangeAction::Evaluate);
-				});
-
-			bool empty = data.bipedFilterConditions.empty();
-
-			if (!empty)
+			if (DrawVariableSourceSelectorWidget(data.varSource.source))
 			{
-				if (r == BaseConfigEditorAction::PasteOver ||
-				    r == BaseConfigEditorAction::Insert)
-				{
-					ImGui::SetNextItemOpen(true);
-				}
+				OnBaseConfigChange(
+					a_handle,
+					std::addressof(a_params),
+					PostChangeAction::Evaluate);
 			}
 
-			UICommon::PushDisabled(empty);
-
-			if (ImGui::TreeNodeEx(
-					"flt_tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth |
-						ImGuiTreeNodeFlags_DefaultOpen,
-					"%s",
-					LS(UICustomEditorString::LastEquippedFilterCond)))
+			switch (data.varSource.source)
 			{
-				if (!empty)
+			case Data::VariableSource::kActor:
 				{
-					ImGui::Spacing();
+					auto& fp = m_condParamEditor.GetFormPicker();
 
-					DrawEquipmentOverrideEntryConditionTable(
-						data.bipedFilterConditions,
-						false,
-						[this, a_handle, a_params] {
-							OnBaseConfigChange(
-								a_handle,
-								std::addressof(a_params),
-								PostChangeAction::Evaluate);
-						});
+					fp.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
+					fp.SetFormBrowserEnabled(false);
+
+					if (fp.DrawFormPicker(
+							"ctl_1",
+							static_cast<Localization::StringID>(CommonStrings::Form),
+							data.varSource.form))
+					{
+						OnBaseConfigChange(
+							a_handle,
+							std::addressof(a_params),
+							PostChangeAction::Evaluate);
+					}
 				}
+				break;
+			case Data::VariableSource::kPlayerHorse:
 
-				ImGui::TreePop();
+				break;
 			}
 
-			UICommon::PopDisabled(empty);
+			ImGui::Spacing();
 
-			if (DrawBipedObjectTree(
-					data.bipedSlots,
-					[&] {
-						ImGui::Columns(2, nullptr, false);
-
-						bool result = ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::DisableIfOccupied, "1"),
-							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kDisableIfSlotOccupied));
-
-						result |= ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::PrioritizeRecentSlots, "2"),
-							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kPrioritizeRecentSlots));
-
-						ImGui::NextColumn();
-
-						bool d = data.customFlags.test(Data::CustomFlags::kDisableIfSlotOccupied);
-
-						UICommon::PushDisabled(d);
-
-						result |= ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::SkipOccupiedSlots, "3"),
-							stl::underlying(std::addressof(data.customFlags.value)),
-							stl::underlying(Data::CustomFlags::kSkipOccupiedSlots));
-
-						UICommon::PopDisabled(d);
-
-						ImGui::Columns();
-
-						ImGui::Spacing();
-
-						return result;
-					}))
+			if (DrawStringListTree(
+					"ctl_2",
+					static_cast<Localization::StringID>(CommonStrings::Variables),
+					data.formVars))
 			{
 				OnBaseConfigChange(
 					a_handle,
@@ -890,7 +855,13 @@ namespace IED
 
 				UICommon::PushDisabled(disabled);
 
-				DrawFormSelectors(a_handle, a_params);
+				if (!(!data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask) &&
+				    data.customFlags.test(Data::CustomFlags::kVariableMode)))
+				{
+					DrawFormSelectors(a_handle, a_params);
+				}
+
+				ImGui::Spacing();
 
 				if (ImGui::TreeNodeEx(
 						"cond_tree",
@@ -1139,6 +1110,28 @@ namespace IED
 						ImGui::PopItemWidth();
 
 						ImGui::Unindent();
+					}
+					else
+					{
+						if (ImGui::CheckboxFlagsT(
+								LS(UICustomEditorString::UseFormVariable, "a"),
+								stl::underlying(std::addressof(data.customFlags.value)),
+								stl::underlying(Data::CustomFlags::kVariableMode)))
+						{
+							OnBaseConfigChange(
+								a_handle,
+								std::addressof(a_params),
+								PostChangeAction::Evaluate);
+						}
+
+						if (data.customFlags.test(Data::CustomFlags::kVariableMode))
+						{
+							ImGui::Indent();
+
+							DrawVariableModePanel(a_handle, a_params);
+
+							ImGui::Unindent();
+						}
 					}
 
 					ImGui::TreePop();

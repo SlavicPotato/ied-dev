@@ -95,7 +95,7 @@ namespace IED
 
 		bool is_in_first_person(CommonParams& a_params) noexcept
 		{
-			return a_params.is_player() &&
+			return a_params.objects.IsPlayer() &&
 			       a_params.controller.IsInFirstPerson();
 		}
 
@@ -137,7 +137,7 @@ namespace IED
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{
-			return a_params.is_player() &&
+			return a_params.objects.IsPlayer() &&
 			       a_params.controller.PlayerHasEnemiesNearby();
 		}
 #endif

@@ -15,6 +15,7 @@ namespace IED
 				"ied_pe_cv",
 				a_controller),
 			UIConditionalVariablesEditorWidget(a_controller),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller)

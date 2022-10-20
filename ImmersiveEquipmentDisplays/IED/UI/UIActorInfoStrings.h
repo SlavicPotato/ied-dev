@@ -10,6 +10,8 @@ namespace IED
 		{
 			DataUnavailable = 6900,
 			CouldNotUpdate  = 6901,
+			PlayerEnemy     = 6902,
+			SellBuy         = 6903,
 		};
 	}
 }

@@ -72,21 +72,21 @@ namespace IED
 
 		if (a_flags.test(ImportFlags::kEraseTemporary))
 		{
-			EraseTemporary(data.slot.GetActorData());
-			EraseTemporary(data.slot.GetNPCData());
-			EraseTemporary(data.custom.GetActorData());
-			EraseTemporary(data.custom.GetNPCData());
-			EraseTemporary(data.transforms.GetActorData());
-			EraseTemporary(data.transforms.GetNPCData());
+			EraseTemporary(data->slot.GetActorData());
+			EraseTemporary(data->slot.GetNPCData());
+			EraseTemporary(data->custom.GetActorData());
+			EraseTemporary(data->custom.GetNPCData());
+			EraseTemporary(data->transforms.GetActorData());
+			EraseTemporary(data->transforms.GetNPCData());
 		}
 
 		if (a_flags.test(ImportFlags::kMerge))
 		{
-			return DoImportMerge(std::move(data), a_flags);
+			return DoImportMerge(std::move(*data), a_flags);
 		}
 		else
 		{
-			return DoImportOverwrite(std::move(data), a_flags);
+			return DoImportOverwrite(std::move(*data), a_flags);
 		}
 	}
 
@@ -224,7 +224,7 @@ namespace IED
 			Parser<Data::configStore_t> parser(state);
 			Json::Value                 root;
 
-			Data::configStore_t tmp;
+			std::unique_ptr<Data::configStore_t> tmp;
 
 			{
 				stl::scoped_lock lock(JSGetLock());
@@ -232,7 +232,7 @@ namespace IED
 				tmp = CreateFilteredConfigStore(JSGetConfigStore(), a_exportFlags, a_flags);
 			}
 
-			parser.Create(tmp, root);
+			parser.Create(*tmp, root);
 
 			WriteData(a_path, root);
 
@@ -335,14 +335,14 @@ namespace IED
 		}
 	}
 
-	Data::configStore_t IJSONSerialization::CreateFilteredConfigStore(
+	std::unique_ptr<Data::configStore_t> IJSONSerialization::CreateFilteredConfigStore(
 		const Data::configStore_t&                     a_data,
 		stl::flag<ExportFlags>                         a_exportFlags,
 		stl::flag<Data::ConfigStoreSerializationFlags> a_flags)
 	{
 		using namespace Data;
 
-		configStore_t result;
+		auto result = std::make_unique<Data::configStore_t>();
 
 		for (std::size_t i = 0; i < std::size(a_data.slot.GetGlobalData()); i++)
 		{
@@ -362,22 +362,22 @@ namespace IED
 				}
 			}
 
-			result.slot.GetGlobalData()[i] = a_data.slot.GetGlobalData()[i];
+			result->slot.GetGlobalData()[i] = a_data.slot.GetGlobalData()[i];
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kSlotActor))
 		{
-			result.slot.GetActorData() = a_data.slot.GetActorData();
+			result->slot.GetActorData() = a_data.slot.GetActorData();
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kSlotNPC))
 		{
-			result.slot.GetNPCData() = a_data.slot.GetNPCData();
+			result->slot.GetNPCData() = a_data.slot.GetNPCData();
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kSlotRace))
 		{
-			result.slot.GetRaceData() = a_data.slot.GetRaceData();
+			result->slot.GetRaceData() = a_data.slot.GetRaceData();
 		}
 
 		//
@@ -400,35 +400,35 @@ namespace IED
 				}
 			}
 
-			result.transforms.GetGlobalData()[i] = a_data.transforms.GetGlobalData()[i];
+			result->transforms.GetGlobalData()[i] = a_data.transforms.GetGlobalData()[i];
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideActor))
 		{
-			result.transforms.GetActorData() = a_data.transforms.GetActorData();
+			result->transforms.GetActorData() = a_data.transforms.GetActorData();
 		}
 		else if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverridePlayer))
 		{
 			auto& data = a_data.transforms.GetActorData();
 			if (auto it = data.find(IData::GetPlayerRefID()); it != data.end())
 			{
-				result.transforms.GetActorData().emplace(*it);
+				result->transforms.GetActorData().emplace(*it);
 			}
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideNPC))
 		{
-			result.transforms.GetNPCData() = a_data.transforms.GetNPCData();
+			result->transforms.GetNPCData() = a_data.transforms.GetNPCData();
 		}
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kNodeOverrideRace))
 		{
-			result.transforms.GetRaceData() = a_data.transforms.GetRaceData();
+			result->transforms.GetRaceData() = a_data.transforms.GetRaceData();
 		}
 
 		if (!a_exportFlags.test(ExportFlags::kKeepGenerated))
 		{
-			IMaintenance::ClearConfigStoreRand(result);
+			IMaintenance::ClearConfigStoreRand(*result);
 		}
 
 		//
@@ -440,7 +440,7 @@ namespace IED
 
 			if (auto it = data.find(sh.IED); it != data.end())
 			{
-				result.custom.GetGlobalData()[0].emplace(*it);
+				result->custom.GetGlobalData()[0].emplace(*it);
 			}
 		}
 
@@ -452,7 +452,7 @@ namespace IED
 			{
 				if (auto it = e.second.find(sh.IED); it != e.second.end())
 				{
-					result.custom.GetActorData().try_emplace(e.first).first->second.emplace(*it);
+					result->custom.GetActorData().try_emplace(e.first).first->second.emplace(*it);
 				}
 			}
 		}
@@ -465,7 +465,7 @@ namespace IED
 				auto& sh = StringHolder::GetSingleton();
 				if (auto it2 = it1->second.find(sh.IED); it2 != it1->second.end())
 				{
-					result.custom.GetActorData().try_emplace(IData::GetPlayerRefID()).first->second.emplace(*it2);
+					result->custom.GetActorData().try_emplace(IData::GetPlayerRefID()).first->second.emplace(*it2);
 				}
 			}
 		}
@@ -478,7 +478,7 @@ namespace IED
 			{
 				if (auto it = e.second.find(sh.IED); it != e.second.end())
 				{
-					result.custom.GetNPCData().try_emplace(e.first).first->second.emplace(*it);
+					result->custom.GetNPCData().try_emplace(e.first).first->second.emplace(*it);
 				}
 			}
 		}
@@ -491,7 +491,7 @@ namespace IED
 			{
 				if (auto it = e.second.find(sh.IED); it != e.second.end())
 				{
-					result.custom.GetRaceData().try_emplace(e.first).first->second.emplace(*it);
+					result->custom.GetRaceData().try_emplace(e.first).first->second.emplace(*it);
 				}
 			}
 		}
@@ -500,7 +500,7 @@ namespace IED
 
 		if (a_flags.test(ConfigStoreSerializationFlags::kConditionalVariables))
 		{
-			result.condvars = a_data.condvars;
+			result->condvars = a_data.condvars;
 		}
 
 		return result;

@@ -27,7 +27,7 @@ namespace IED
 	void AnimationUpdateManager::ProcessAnimationUpdateList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		Controller*                  a_controller)
+		const Controller*            a_controller)
 	{
 		ASSERT(m_running.load() == true);
 
@@ -43,7 +43,7 @@ namespace IED
 	void AnimationUpdateManager::UpdateActorAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		Controller*                  a_controller)
+		const Controller*            a_controller)
 	{
 		stl::scoped_lock lock(a_controller->GetLock());
 

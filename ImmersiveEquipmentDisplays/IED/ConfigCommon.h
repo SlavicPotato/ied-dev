@@ -169,6 +169,34 @@ namespace IED
 				return id;
 			}
 
+			[[nodiscard]] inline constexpr friend bool operator==(
+				const configCachedForm_t& a_lhs,
+				const Game::FormID&       a_id) noexcept
+			{
+				return a_lhs.id == a_id;
+			}
+
+			[[nodiscard]] inline constexpr friend bool operator<=(
+				const configCachedForm_t& a_lhs,
+				const Game::FormID&       a_id) noexcept
+			{
+				return a_lhs.id <= a_id;
+			}
+
+			[[nodiscard]] inline constexpr friend bool operator==(
+				const configCachedForm_t& a_lhs,
+				const configCachedForm_t& a_rhs) noexcept
+			{
+				return a_lhs.id == a_rhs.id;
+			}
+
+			[[nodiscard]] inline constexpr friend bool operator<=(
+				const configCachedForm_t& a_lhs,
+				const configCachedForm_t& a_rhs) noexcept
+			{
+				return a_lhs.id <= a_rhs.id;
+			}
+
 			/*inline void reset() const
 			{
 				form = nullptr;
@@ -218,7 +246,7 @@ namespace IED
 			kIsGuard                 = 4,
 			kIsMount                 = 5,
 			kShoutEquipped           = 6,
-			kInMerchantFaction       = 7,
+			kInMerchantFaction       = 7,  // unused
 			kCombatStyle             = 8,
 			kClass                   = 9,
 			kTimeOfDay               = 10,
@@ -252,6 +280,9 @@ namespace IED
 			kIsUnconscious           = 38,
 			kIsPlayerLastRiddenMount = 39,
 			kSDSShieldOnBackEnabled  = 40,
+			kIsFlying                = 41,
+			kIsLayingDown            = 42,
+			kInPlayerEnemyFaction    = 43,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -599,6 +630,8 @@ namespace IED
 			stl::fixed_string_less_equal_ptr,
 			stl::boost_container_allocator<stl::fixed_string>>;
 
+		using configFixedStringList_t = stl::boost_vector<stl::fixed_string>;
+
 	}
 
 	template <class T>
@@ -704,6 +737,16 @@ namespace std
 			::IED::Data::configForm_t const& a_in) const noexcept
 		{
 			return hash<Game::FormID>()(a_in);
+		}
+	};
+
+	template <>
+	struct hash<::IED::Data::configCachedForm_t>
+	{
+		inline constexpr std::size_t operator()(
+			::IED::Data::configCachedForm_t const& a_in) const noexcept
+		{
+			return hash<Game::FormID>()(a_in.get_id());
 		}
 	};
 

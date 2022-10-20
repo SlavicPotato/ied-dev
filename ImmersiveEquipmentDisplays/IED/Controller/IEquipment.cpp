@@ -144,7 +144,7 @@ namespace IED
 		}
 
 		if (a_config.customFlags.test(CustomFlags::kCheckFav) &&
-		    a_params.is_player() &&
+		    a_params.objects.IsPlayer() &&
 		    !a_itemData.favorited)
 		{
 			return false;
@@ -157,7 +157,7 @@ namespace IED
 			if (!isAmmo &&
 			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
 			    !is_non_shield_armor(a_itemData.form) &&
-			    !a_params.is_player())
+			    !a_params.objects.IsPlayer())
 			{
 				if (!a_params.test_equipment_flags(
 						ItemData::GetRaceEquipmentFlagFromType(a_itemData.type)))
@@ -203,170 +203,6 @@ namespace IED
 		return true;
 	}
 
-	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryFormLastEquipped(
-		processParams_t&            a_params,
-		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry,
-		bool&                       a_hasMinCount)
-	{
-		auto& formData = a_params.collector.data.forms;
-
-		const auto& data = a_params.objects.m_lastEquipped->data;
-
-		if (a_config.customFlags.test(CustomFlags::kDisableIfSlotOccupied))
-		{
-			auto it = std::find_if(
-				a_config.bipedSlots.begin(),
-				a_config.bipedSlots.end(),
-				[&](auto& a_v) {
-					return a_v < BIPED_OBJECT::kTotal &&
-				           data[stl::underlying(a_v)].occupied;
-				});
-
-			if (it != a_config.bipedSlots.end())
-			{
-				return formData.end();
-			}
-		}
-
-		if (a_config.customFlags.test(CustomFlags::kPrioritizeRecentSlots) &&
-		    a_config.bipedSlots.size() > 1)
-		{
-			auto& bipedSlots = m_temp.le;
-
-			bipedSlots.clear();
-			bipedSlots.reserve(a_config.bipedSlots.size());
-
-			for (auto& e : a_config.bipedSlots)
-			{
-				if (e >= BIPED_OBJECT::kTotal)
-				{
-					continue;
-				}
-
-				auto& v = data[stl::underlying(e)];
-
-				if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
-				    v.occupied)
-				{
-					continue;
-				}
-
-				bipedSlots.emplace_back(std::addressof(v));
-			}
-
-			std::sort(
-				bipedSlots.begin(),
-				bipedSlots.end(),
-				[](auto& a_lhs, auto& a_rhs) {
-					return a_lhs->seen > a_rhs->seen;
-				});
-
-			for (auto& e : bipedSlots)
-			{
-				for (auto& formid : e->forms)
-				{
-					if (!formid || formid.IsTemporary())
-					{
-						continue;
-					}
-
-					auto it = formData.find(formid);
-
-					if (it == formData.end())
-					{
-						continue;
-					}
-
-					if (!configBase_t::do_match_fp(
-							a_params.collector.data,
-							a_config.bipedFilterConditions,
-							{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-							a_params,
-							true))
-					{
-						continue;
-					}
-
-					if (CustomEntryValidateInventoryForm(
-							a_params,
-							it->second,
-							a_config,
-							a_hasMinCount))
-					{
-						return it;
-					}
-				}
-			}
-		}
-		else
-		{
-			for (auto& e : a_config.bipedSlots)
-			{
-				if (e >= BIPED_OBJECT::kTotal)
-				{
-					continue;
-				}
-
-				auto& v = data[stl::underlying(e)];
-
-				if (a_config.customFlags.test(CustomFlags::kSkipOccupiedSlots) &&
-				    v.occupied)
-				{
-					continue;
-				}
-
-				for (auto& formid : v.forms)
-				{
-					if (!formid || formid.IsTemporary())
-					{
-						continue;
-					}
-
-					auto it = formData.find(formid);
-
-					if (it == formData.end())
-					{
-						continue;
-					}
-
-					if (!configBase_t::do_match_fp(
-							a_params.collector.data,
-							a_config.bipedFilterConditions,
-							{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
-							a_params,
-							true))
-					{
-						continue;
-					}
-
-					if (CustomEntryValidateInventoryForm(
-							a_params,
-							it->second,
-							a_config,
-							a_hasMinCount))
-					{
-						return it;
-					}
-				}
-			}
-		}
-
-		return CustomEntrySelectInventoryFormDefault(
-			a_params,
-			a_config,
-			a_objectEntry,
-			a_hasMinCount,
-			[&](auto& a_item) {
-				return configBase_t::do_match_fp(
-					a_params.collector.data,
-					a_config.bipedFilterConditions,
-					{ a_item.form, ItemData::GetItemSlotExtraGeneric(a_item.form) },
-					a_params,
-					true);
-			});
-	}
-
 	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryFormGroup(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
@@ -394,12 +230,13 @@ namespace IED
 		return formData.end();
 	}
 
+	template <class Tf>
 	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryFormDefault(
-		processParams_t&                                        a_params,
-		const Data::configCustom_t&                             a_config,
-		ObjectEntryCustom&                                      a_objectEntry,
-		bool&                                                   a_hasMinCount,
-		std::function<bool(Data::collectorData_t::itemData_t&)> a_filter)
+		processParams_t&            a_params,
+		const Data::configCustom_t& a_config,
+		ObjectEntryCustom&          a_objectEntry,
+		bool&                       a_hasMinCount,
+		Tf                          a_filter)
 	{
 		auto& formData = a_params.collector.data.forms;
 
@@ -521,11 +358,36 @@ namespace IED
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
-			return CustomEntrySelectInventoryFormLastEquipped(
+			auto it = SelectInventoryFormLastEquipped(
 				a_params,
-				a_config,
-				a_objectEntry,
-				a_hasMinCount);
+				a_config.lastEquipped,
+				[&](auto& a_itemData) {
+					return CustomEntryValidateInventoryForm(
+						a_params,
+						a_itemData,
+						a_config,
+						a_hasMinCount);
+				});
+
+			if (it != a_params.collector.data.forms.end())
+			{
+				return it;
+			}
+			else
+			{
+				return CustomEntrySelectInventoryFormDefault(
+					a_params,
+					a_config,
+					a_objectEntry,
+					a_hasMinCount,
+					[&](auto& a_item) {
+						return configBase_t::do_match_fp(
+							a_config.lastEquipped.filterConditions,
+							{ a_item.form, ItemData::GetItemSlotExtraGeneric(a_item.form) },
+							a_params,
+							true);
+					});
+			}
 		}
 		else if (a_config.customFlags.test(CustomFlags::kGroupMode))
 		{
@@ -541,7 +403,8 @@ namespace IED
 				a_params,
 				a_config,
 				a_objectEntry,
-				a_hasMinCount);
+				a_hasMinCount,
+				[](auto&) { return true; });
 		}
 	}
 

@@ -238,7 +238,7 @@ namespace IED
 
 		void configNodeOverrideHolder_t::__init(const configNodeOverrideHolderCopy_t& a_rhs)
 		{
-			for (auto& [i, e] : a_rhs.data)
+			for (auto& [i, e] : a_rhs.transformData)
 			{
 				transformData.emplace(i, e.second);
 			}
@@ -253,7 +253,7 @@ namespace IED
 
 		void configNodeOverrideHolder_t::__init(configNodeOverrideHolderCopy_t&& a_rhs)
 		{
-			for (auto& [i, e] : a_rhs.data)
+			for (auto& [i, e] : a_rhs.transformData)
 			{
 				transformData.emplace(i, std::move(e.second));
 			}
@@ -272,7 +272,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_rhs.transformData)
 			{
-				data.try_emplace(i, a_initclass, e);
+				transformData.try_emplace(i, a_initclass, e);
 			}
 
 			for (auto& [i, e] : a_rhs.placementData)
@@ -289,7 +289,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_rhs.transformData)
 			{
-				data.try_emplace(i, a_initclass, std::move(e));
+				transformData.try_emplace(i, a_initclass, std::move(e));
 			}
 
 			for (auto& [i, e] : a_rhs.placementData)
@@ -305,7 +305,7 @@ namespace IED
 		{
 			configNodeOverrideHolder_t result;
 
-			for (auto& [i, e] : data)
+			for (auto& [i, e] : transformData)
 			{
 				if (e.first == a_class)
 				{
@@ -332,7 +332,7 @@ namespace IED
 		{
 			a_dst.clear();
 
-			for (auto& [i, e] : data)
+			for (auto& [i, e] : transformData)
 			{
 				if (e.first == a_class)
 				{

@@ -19,6 +19,7 @@ namespace IED
 		kSyncReferenceTransform     = 1u << 6,
 		kPlaySound                  = 1u << 8,
 		kIsGroup                    = 1u << 9,
+		kInvisible                  = 1u << 24,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
@@ -33,32 +34,28 @@ namespace IED
 		ObjectEntryBase& operator=(const ObjectEntryBase&) = delete;
 		ObjectEntryBase& operator=(ObjectEntryBase&&) = delete;
 
-		void reset(
-			Game::ObjectRefHandle  a_handle,
-			NiPointer<NiNode>&     a_root,
-			NiPointer<NiNode>&    a_root1p);
+		bool reset(
+			Game::ObjectRefHandle    a_handle,
+			const NiPointer<NiNode>& a_root,
+			const NiPointer<NiNode>& a_root1p);
 
-		inline void SetNodeVisible(bool a_switch)
+		bool SetNodeVisible(const bool a_switch) const noexcept;
+		bool DeferredHideNode(const std::uint8_t a_delay) const noexcept;
+		void ResetDeferredHide() const noexcept;
+
+		SKMP_FORCEINLINE auto IsNodeVisible() const
 		{
-			if (state)
-			{
-				state->nodes.rootNode->SetVisible(a_switch);
-			}
+			return state && !state->flags.test(ObjectEntryFlags::kInvisible);
 		}
 
 		SKMP_FORCEINLINE auto IsActive() const
 		{
-			return state && state->nodes.rootNode->IsVisible();
+			return IsNodeVisible();
 		}
 
 		SKMP_FORCEINLINE auto GetFormIfActive() const
 		{
 			return IsActive() ? state->form : nullptr;
-		}
-
-		SKMP_FORCEINLINE auto IsNodeVisible() const
-		{
-			return state && state->nodes.rootNode->IsVisible();
 		}
 
 		struct AnimationState
@@ -146,16 +143,16 @@ namespace IED
 			Game::FormID                                       formid;
 			Game::FormID                                       modelForm;
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
+			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
 			nodesRef_t                                         nodes;
 			Data::cacheTransform_t                             transform;
 			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			//EffectShaderData                                   effectShaders;
-			stl::fixed_string          currentSequence;
-			long long                  created{ 0 };
-			stl::flag<Data::BaseFlags> resetTriggerFlags{ Data::BaseFlags::kNone };
-			bool                       atmReference{ true };
+			stl::fixed_string                                  currentSequence;
+			long long                                          created{ 0 };
+			std::uint8_t                                       hideCountdown{ 0 };
+			bool                                               atmReference{ true };
 		};
 
 		/*struct EffectShaderState

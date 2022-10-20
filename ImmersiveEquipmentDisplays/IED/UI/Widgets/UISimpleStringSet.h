@@ -37,7 +37,7 @@ namespace IED
 			SimpleStringSetContextResult DrawContextMenu(
 				Data::configFixedStringSet_t& a_data);
 
-			bool DrawStringSetList(
+			bool DrawStringSetTree(
 				Data::configFixedStringSet_t& a_data);
 		};
 	}

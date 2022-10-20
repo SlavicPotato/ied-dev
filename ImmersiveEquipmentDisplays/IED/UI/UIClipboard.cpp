@@ -95,6 +95,9 @@ namespace IED
 			case DataType::FixedStringSet:
 				erase<Data::configFixedStringSet_t>();
 				break;
+			case DataType::FixedStringList:
+				erase<Data::configFixedStringList_t>();
+				break;
 			case DataType::EffectShaderFunction:
 				erase<Data::configEffectShaderFunction_t>();
 				break;
@@ -113,6 +116,8 @@ namespace IED
 			case DataType::ConditionalVariable:
 				erase<Data::configConditionalVariable_t>();
 				break;
+			default:
+				assert(false);
 			}
 		}
 

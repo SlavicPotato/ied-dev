@@ -3,6 +3,7 @@
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
 #include "IED/UI/Widgets/UIEquipmentOverrideConditionsWidget.h"
+#include "IED/UI/Widgets/UILastEquippedWidget.h"
 #include "IED/UI/Widgets/UIVariableTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
@@ -54,8 +55,8 @@ namespace IED
 		};
 
 		class UIConditionalVariablesEditorWidget :
-			public UIEquipmentOverrideConditionsWidget,
 			public UIEditorInterface,
+			public UILastEquippedWidget,
 			UIVariableTypeSelectorWidget,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UICollapsibles,
@@ -87,8 +88,12 @@ namespace IED
 				Data::configConditionalVariablesEntryList_t& a_data);
 
 			bool DrawVariableValue(
-				ConditionalVariableType     a_type,
-				conditionalVariableValue_t& a_value);
+				ConditionalVariableType                     a_type,
+				Data::configConditionalVariableValueData_t& a_data);
+
+			bool DrawVariableForm(
+				ConditionalVariableType                     a_type,
+				Data::configConditionalVariableValueData_t& a_data);
 
 			void DrawVariableTree(
 				Data::configConditionalVariablesHolder_t& a_holder,

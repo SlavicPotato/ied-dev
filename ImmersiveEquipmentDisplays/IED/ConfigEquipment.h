@@ -4,7 +4,7 @@
 #include "ConfigCommon.h"
 #include "ConfigData.h"
 #include "ConfigLUIDTag.h"
-#include "ConfigVariableConditionTarget.h"
+#include "ConfigVariableConditionSource.h"
 
 #include "ConditionalVariableStorage.h"
 
@@ -323,9 +323,9 @@ namespace IED
 			union
 			{
 				std::uint32_t           ui32c{ 0 };
-				VariableConditionTarget vcTarget;
+				VariableConditionSource vcSource;
 
-				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionTarget>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionSource>, std::uint32_t>);
 			};
 
 			union

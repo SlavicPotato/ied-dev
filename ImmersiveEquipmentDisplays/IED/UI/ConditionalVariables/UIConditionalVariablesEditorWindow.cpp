@@ -11,6 +11,7 @@ namespace IED
 		UIConditionalVariablesEditorWindow::UIConditionalVariablesEditorWindow(
 			Controller& a_controller) :
 			UIConditionalVariablesEditor(a_controller),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			UITipsInterface(a_controller),
 			m_controller(a_controller)

@@ -15,14 +15,15 @@ namespace IED
 
 	struct CommonParams
 	{
-		inline CommonParams(
+	public:
+		inline constexpr CommonParams(
 			Actor* const       a_actor,
 			TESNPC* const      a_npc,
 			TESNPC* const      a_npcOrTemplate,
 			TESRace* const     a_race,
 			NiNode* const      a_root,
 			NiNode* const      a_npcroot,
-			ActorObjectHolder& a_objects,
+			ActorObjectHolder& a_holder,
 			Controller&        a_controller) noexcept :
 			actor(a_actor),
 			npc(a_npc),
@@ -30,7 +31,7 @@ namespace IED
 			race(a_race),
 			root(a_root),
 			npcRoot(a_npcroot),
-			objects(a_objects),
+			objects(a_holder),
 			controller(a_controller)
 		{
 		}
@@ -44,108 +45,21 @@ namespace IED
 		ActorObjectHolder& objects;
 		Controller&        controller;
 
-		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
-		mutable std::optional<TESFurniture*>                         furniture;
-		mutable std::optional<bool>                                  layingDown;
-		mutable std::optional<Biped*>                                biped;
-		mutable std::optional<TESObjectARMO*>                        actorSkin;
-		mutable std::optional<bool>                                  canDualWield;
-		mutable std::optional<bool>                                  isDead;
-		mutable std::optional<BGSLocation*>                          location;
-		mutable std::optional<TESCombatStyle*>                       combatStyle;
-		mutable std::optional<RE::TESWeather*>                       currentWeather;
-		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
-		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
-		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		mutable std::optional<bool>                                  isMounted;
-		mutable std::optional<NiPointer<Actor>>                      mountedActor;
-		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
+		[[nodiscard]] bool is_player() const noexcept;
 
-		//mutable std::optional<bool>                                  enemiesNearby;
-		//mutable std::optional<bool>                                  inInterior;
-		//mutable std::optional<TESWorldSpace*>                        worldspace;
-		//mutable std::optional<bool>                                  inCombat;
-		//mutable std::optional<bool>                                  isRidden;
+		[[nodiscard]] Game::ObjectRefHandle get_current_furniture_handle() const;
 
-		[[nodiscard]] inline constexpr bool is_player() const noexcept
-		{
-			return actor == *g_thePlayer;
-		}
+		[[nodiscard]] bool is_using_furniture() const;
 
-		[[nodiscard]] constexpr bool get_using_furniture() const
-		{
-			if (!furnHandle)
-			{
-				Game::ObjectRefHandle handle;
+		[[nodiscard]] TESFurniture* get_furniture() const;
 
-				if (auto pm = actor->processManager)
-				{
-					if (actor->actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSitting ||
-					    actor->actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSleeping)
-					{
-						handle = pm->GetOccupiedFurniture();
-					}
-				}
-
-				furnHandle = handle;
-			}
-
-			return *furnHandle != Game::ObjectRefHandle{};
-		}
-
-		[[nodiscard]] auto get_furniture() const
-		{
-			if (!furniture)
-			{
-				if (get_using_furniture())
-				{
-					NiPointer<TESObjectREFR> ref;
-					if (furnHandle->IsValid() && furnHandle->Lookup(ref))
-					{
-						if (auto base = ref->baseForm)
-						{
-							furniture = base->As<TESFurniture>();
-							return *furniture;
-						}
-					}
-				}
-
-				furniture = nullptr;
-			}
-
-			return *furniture;
-		}
-
-		[[nodiscard]] bool get_laying_down() const
-		{
-			if (!layingDown)
-			{
-				layingDown = false;
-
-				if (auto furn = get_furniture())
-				{
-					if (auto kw = FormHolder::GetSingleton().layDown)
-					{
-						if (IFormCommon::HasKeyword(furn, kw))
-						{
-							return *(layingDown = true);
-						}
-					}
-
-					layingDown = furn->furnFlags.test(
-						TESFurniture::ActiveMarker::kMustExitToTalk |
-						TESFurniture::ActiveMarker::kUnknown31);
-				}
-			}
-
-			return *layingDown;
-		}
+		[[nodiscard]] bool get_laying_down() const;
 
 		[[nodiscard]] constexpr auto get_biped() const
 		{
 			if (!biped)
 			{
-				biped = actor->GetBiped1(false).get();
+				biped.emplace(actor->GetBiped1(false).get());
 			}
 
 			return *biped;
@@ -155,107 +69,42 @@ namespace IED
 		{
 			if (!actorSkin)
 			{
-				actorSkin = actor->GetSkin();
+				actorSkin.emplace(actor->GetSkin());
 			}
 
 			return *actorSkin;
 		}
 
-		[[nodiscard]] constexpr auto get_combat_style() const
-		{
-			if (!combatStyle)
-			{
-				TESCombatStyle* cs = nullptr;
+		[[nodiscard]] TESCombatStyle* get_combat_style() const;
 
-				if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
-				{
-					cs = extraCombatStyle->combatStyle;
-				}
-
-				if (!cs)
-				{
-					cs = npc->combatStyle;
-				}
-
-				combatStyle = cs;
-			}
-
-			return *combatStyle;
-		}
-
-		[[nodiscard]] constexpr bool can_dual_wield() const
-		{
-			if (!canDualWield)
-			{
-				bool result = false;
-
-				if (is_player())
-				{
-					result = true;
-				}
-				else
-				{
-					if (race->data.raceFlags.test(TESRace::Flag::kCanDualWield))
-					{
-						if (auto cs = get_combat_style())
-						{
-							result = cs->AllowDualWielding();
-						}
-					}
-				}
-
-				canDualWield = result;
-			}
-
-			return *canDualWield;
-		}
+		[[nodiscard]] bool can_dual_wield() const;
 
 		[[nodiscard]] constexpr bool get_actor_dead() const
 		{
 			if (!isDead)
 			{
-				isDead = actor->IsDead();
+				isDead.emplace(actor->IsDead());
 			}
 
 			return *isDead;
 		}
 
-		/*[[nodiscard]] inline constexpr bool get_in_interior() const
-		{
-			if (!inInterior)
-			{
-				inInterior = actor->IsInInteriorCell();
-			}
-
-			return *inInterior;
-		}*/
-
 		[[nodiscard]] inline constexpr auto get_current_location() const
 		{
 			if (!location)
 			{
-				if (actor == *g_thePlayer)
+				if (is_player())
 				{
-					location = (*g_thePlayer)->currentLocation;
+					location.emplace((*g_thePlayer)->currentLocation);
 				}
 				else
 				{
-					location = actor->GetCurrentLocation();
+					location.emplace(actor->GetCurrentLocation());
 				}
 			}
 
 			return *location;
 		}
-
-		/*[[nodiscard]] inline constexpr auto get_worldspace() const
-		{
-			if (!worldspace)
-			{
-				worldspace = actor->GetWorldspace();
-			}
-
-			return *worldspace;
-		}*/
 
 		[[nodiscard]] inline constexpr bool is_player_teammate() const noexcept
 		{
@@ -267,7 +116,7 @@ namespace IED
 		{
 			if (!currentWeather)
 			{
-				currentWeather = RE::Sky::GetCurrentWeather();
+				currentWeather.emplace(RE::Sky::GetCurrentWeather());
 			}
 
 			return *currentWeather;
@@ -280,11 +129,11 @@ namespace IED
 				if (auto w = get_current_weather())
 				{
 					auto f       = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
-					weatherClass = static_cast<WeatherClassificationFlags>(f);
+					weatherClass.emplace(static_cast<WeatherClassificationFlags>(f));
 				}
 				else
 				{
-					weatherClass = WeatherClassificationFlags::kNone;
+					weatherClass.emplace(WeatherClassificationFlags::kNone);
 				}
 			}
 
@@ -295,7 +144,7 @@ namespace IED
 		{
 			if (!shieldSlot)
 			{
-				shieldSlot = actor->GetShieldBipedObject();
+				shieldSlot.emplace(actor->GetShieldBipedObject());
 			}
 
 			return *shieldSlot;
@@ -305,86 +154,54 @@ namespace IED
 		{
 			if (!timeOfDay)
 			{
-				timeOfDay = Data::GetTimeOfDay(RE::Sky::GetSingleton());
+				timeOfDay.emplace(Data::GetTimeOfDay(RE::Sky::GetSingleton()));
 			}
 
 			return *timeOfDay;
 		}
 
-		/*[[nodiscard]] inline constexpr auto is_in_combat() const
-		{
-			if (!inCombat)
-			{
-				inCombat = Game::GetActorInCombat(actor);
-			}
-
-			return *inCombat;
-		}*/
-
 		[[nodiscard]] inline constexpr auto is_on_mount() const
 		{
 			if (!isMounted)
 			{
-				isMounted = actor->IsOnMount();
+				isMounted.emplace(actor->IsOnMount());
 			}
 
 			return *isMounted;
 		}
 
-		/*[[nodiscard]] inline constexpr auto is_ridden() const
-		{
-			if (!isRidden)
-			{
-				isRidden = actor->IsBeingRidden();
-			}
+		[[nodiscard]] NiPointer<Actor>& get_mounted_actor() const;
+		[[nodiscard]] NiPointer<Actor>& get_mounted_by_actor() const;
 
-			return *isRidden;
-		}*/
+		[[nodiscard]] bool is_in_merchant_faction() const;
+		[[nodiscard]] bool is_in_player_enemy_faction() const;
 
-		[[nodiscard]] auto& get_mounted_actor() const
-		{
-			if (!mountedActor)
-			{
-				NiPointer<Actor> tmp;
-				if (actor->GetMountedActor(tmp))
-				{
-					mountedActor.emplace(std::move(tmp));
-				}
-				else
-				{
-					mountedActor = nullptr;
-				}
-			}
-
-			return *mountedActor;
-		}
-
-		[[nodiscard]] auto& get_mounted_by_actor() const
-		{
-			if (!mountedByActor)
-			{
-				NiPointer<Actor> tmp;
-				if (actor->GetMountedByActor(tmp))
-				{
-					mountedByActor.emplace(std::move(tmp));
-				}
-				else
-				{
-					mountedByActor = nullptr;
-				}
-			}
-
-			return *mountedByActor;
-		}
-
-		/*[[nodiscard]] auto get_idle() const
-		{
-			return actor->GetFurnitureIdle();
-		}*/
+		[[nodiscard]] Actor* get_last_ridden_player_horse() const;
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);
 		}
+
+	private:
+		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
+		mutable std::optional<TESFurniture*>                         furniture;
+		mutable std::optional<Biped*>                                biped;
+		mutable std::optional<TESObjectARMO*>                        actorSkin;
+		mutable std::optional<BGSLocation*>                          location;
+		mutable std::optional<TESCombatStyle*>                       combatStyle;
+		mutable std::optional<RE::TESWeather*>                       currentWeather;
+		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
+		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
+		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
+		mutable std::optional<NiPointer<Actor>>                      mountedActor;
+		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
+		mutable std::optional<NiPointer<Actor>>                      lastRiddenPlayerHorse;
+		mutable std::optional<bool>                                  layingDown;
+		mutable std::optional<bool>                                  canDualWield;
+		mutable std::optional<bool>                                  isDead;
+		mutable std::optional<bool>                                  isInMerchantFaction;
+		mutable std::optional<bool>                                  isInPlayerEnemyFaction;
+		mutable std::optional<bool>                                  isMounted;
 	};
 }

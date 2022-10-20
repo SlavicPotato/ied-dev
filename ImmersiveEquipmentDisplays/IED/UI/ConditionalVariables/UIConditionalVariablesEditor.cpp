@@ -11,6 +11,7 @@ namespace IED
 		UIConditionalVariablesEditor::UIConditionalVariablesEditor(
 			Controller& a_controller) :
 			UIConditionalVariablesEditorWidget(a_controller),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			UIProfileSelectorWidget<
 				profileSelectorParamsCondVar_t,
 				CondVarProfile>(

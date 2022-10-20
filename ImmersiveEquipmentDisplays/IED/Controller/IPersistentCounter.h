@@ -7,7 +7,7 @@ namespace IED
 		friend class boost::serialization::access;
 
 	public:
-		enum class PersistentCounterSerialization : unsigned int
+		enum class PersistentCounterSerializationVersion : unsigned int
 		{
 			DataVersion1 = 1,
 		};
@@ -40,4 +40,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::IPersistentCounter,
-	::stl::underlying(::IED::IPersistentCounter::PersistentCounterSerialization::DataVersion1));
+	::stl::underlying(::IED::IPersistentCounter::PersistentCounterSerializationVersion::DataVersion1));

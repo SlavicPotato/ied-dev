@@ -1,13 +1,15 @@
 #pragma once
 
+//#include "IED/ConfigCommon.h"
+
 namespace IED
 {
-	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_1 =
+	inline static constexpr auto ACTOR_CHECK_FLAGS_1 =
 		Actor::Flags1::kPlayerTeammate |
 		Actor::Flags1::kGuard |
 		Actor::Flags1::kParalyzed;
 
-	inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_2 =
+	inline static constexpr auto ACTOR_CHECK_FLAGS_2 =
 		Actor::Flags2::kIsAMount |
 		Actor::Flags2::kGettingOnOffMount |
 		Actor::Flags2::kInBleedoutAnimation |
@@ -19,25 +21,18 @@ namespace IED
 		Actor::Flags2::kProtected |
 		Actor::Flags2::kIsInKillMove;
 
-	inline static constexpr Actor::Flags1 ACTOR_CHECK_FLAGS_LF_1 =
+	inline static constexpr auto ACTOR_CHECK_FLAGS_LF_1 =
 		Actor::Flags1::kInWater;
 
-	inline static constexpr Actor::Flags2 ACTOR_CHECK_FLAGS_LF_2 =
+	inline static constexpr auto ACTOR_CHECK_FLAGS_LF_2 =
 		Actor::Flags2::kUnderwater;
 
 	class CachedFactionData
 	{
 		using container_type =
 			stl::map_sa<
-				Game::FormID,
-				std::int8_t,
-				std::less_equal<Game::FormID>,
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-				stl::mi_allocator<std::pair<Game::FormID, std::int8_t>>
-#else
-				stl::container_allocator<std::pair<Game::FormID, std::int8_t>>
-#endif
-				>;
+				TESFaction*,
+				std::int8_t>;
 
 	public:
 		CachedFactionData(Actor* a_actor);
@@ -88,7 +83,7 @@ namespace IED
 	{
 		CachedActorData(Actor* a_actor);
 
-		bool UpdateState(Actor* a_actor);
+		bool UpdateState(Actor* a_actor, TESObjectCELL* a_cell);
 		bool UpdateStateLF(Actor* a_actor);
 
 		TESWorldSpace*           worldspace{ nullptr };
@@ -108,5 +103,6 @@ namespace IED
 		bool                     inInterior{ false };
 		bool                     arrested{ false };
 		bool                     unconscious{ false };
+		bool                     flying{ false };
 	};
 }

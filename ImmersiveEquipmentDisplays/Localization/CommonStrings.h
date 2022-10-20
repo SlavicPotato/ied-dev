@@ -239,5 +239,8 @@ namespace IED
 		Value           = 310,
 		Target          = 311,
 		NonTemp         = 312,
+		Vendor          = 313,
+		Merchant        = 314,
+		Source         = 315,
 	};
 }

@@ -49,19 +49,17 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_None,
+					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
 					LS(a_title)))
 			{
 				if (!a_data.empty())
 				{
-					ImGui::Indent();
 					ImGui::Spacing();
 
-					result |= DrawStringSetList(a_data);
+					result |= DrawStringSetTree(a_data);
 
 					ImGui::Spacing();
-					ImGui::Unindent();
 				}
 
 				ImGui::TreePop();
@@ -150,7 +148,7 @@ namespace IED
 			return result;
 		}
 
-		bool UISimpleStringSetWidget::DrawStringSetList(
+		bool UISimpleStringSetWidget::DrawStringSetTree(
 			Data::configFixedStringSet_t& a_data)
 		{
 			bool result = false;

@@ -25,7 +25,9 @@ namespace IED
 					data.try_emplace(
 						faction->formID,
 						info.rank,
-						IFormCommon::GetFormName(faction));
+						IFormCommon::GetFormName(faction),
+						faction->data.flags,
+						faction->IsLikelyMerchantFaction());
 				}
 			}
 		}
@@ -37,7 +39,9 @@ namespace IED
 				data.try_emplace(
 					faction->formID,
 					info.rank,
-					IFormCommon::GetFormName(faction));
+					IFormCommon::GetFormName(faction),
+					faction->data.flags,
+					faction->IsLikelyMerchantFaction());
 			}
 		}
 	}

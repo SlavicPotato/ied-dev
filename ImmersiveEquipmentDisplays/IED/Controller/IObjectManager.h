@@ -120,11 +120,11 @@ namespace IED
 		void RemoveActorGear(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		bool RemoveInvisibleObjects(
-			ActorObjectHolder&    a_objects,
+			ActorObjectHolder&    a_holder,
 			Game::ObjectRefHandle a_handle);
 
 		void ClearObjectsImpl();
@@ -140,6 +140,7 @@ namespace IED
 			TESForm*             a_form,
 			const modelParams_t& a_params,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+
 
 		bool LoadAndAttach(
 			processParams_t&                a_params,

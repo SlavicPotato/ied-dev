@@ -21,7 +21,7 @@ namespace IED
 			UITimeOfDaySelectorWidget(a_controller),
 			UINodeMonitorSelectorWidget(a_controller),
 			UIVariableTypeSelectorWidget(a_controller),
-			UIVariableConditionTargetSelectorWidget(a_controller),
+			UIVariableConditionSourceSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerRace(a_controller, FormInfoFlags::kNone, true)
@@ -160,19 +160,19 @@ namespace IED
 				result |= DrawNodeMonitorSelector(e.As1<std::uint32_t>());
 			}
 
-			if (const auto& e = get(ConditionParamItem::VarCondTarget); e.p1)
+			if (const auto& e = get(ConditionParamItem::VarCondSource); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
 
-				result |= DrawExtra(e, args, ConditionParamItem::VarCondTarget);
+				result |= DrawExtra(e, args, ConditionParamItem::VarCondSource);
 
 				if (!args.hide)
 				{
-					if (DrawVariableConditionTargetSelectorWidget(
-							e.As1<Data::VariableConditionTarget>()))
+					if (DrawVariableConditionSourceSelectorWidget(
+							e.As1<Data::VariableConditionSource>()))
 					{
 						result = true;
-						OnChange(e, ConditionParamItem::VarCondTarget);
+						OnChange(e, ConditionParamItem::VarCondSource);
 					}
 				}
 			}

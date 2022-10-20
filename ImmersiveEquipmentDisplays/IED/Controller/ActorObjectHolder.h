@@ -64,7 +64,6 @@ namespace IED
 		kRequestEval          = kWantEval,
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
 		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdownMask,
-
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
@@ -104,7 +103,7 @@ namespace IED
 
 	public:
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 340000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 100000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 66666;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
@@ -351,7 +350,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func)
+		inline constexpr void visit(Tf a_func)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -371,7 +370,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func) const
+		inline constexpr void visit(Tf a_func) const
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -391,7 +390,22 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit_custom(Tf a_func) const
+		inline constexpr void visit_custom(Tf a_func) const
+		{
+			for (auto& e : m_entriesCustom)
+			{
+				for (auto& f : e)
+				{
+					for (auto& g : f.second)
+					{
+						a_func(g.second);
+					}
+				}
+			}
+		}
+		
+		template <class Tf>
+		inline constexpr void visit_custom(Tf a_func)
 		{
 			for (auto& e : m_entriesCustom)
 			{
@@ -406,7 +420,16 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit_slot(Tf a_func) const
+		inline constexpr void visit_slot(Tf a_func) const
+		{
+			for (auto& e : m_entriesSlot)
+			{
+				a_func(e);
+			}
+		}
+		
+		template <class Tf>
+		inline constexpr void visit_slot(Tf a_func)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -434,9 +457,9 @@ namespace IED
 			return m_raceid;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSkeletonCache() const noexcept
+		[[nodiscard]] inline constexpr auto& GetSkeletonCache(bool a_firstPerson = false) const noexcept
 		{
-			return m_skeletonCache;
+			return a_firstPerson ? m_skeletonCache1p : m_skeletonCache;
 		}
 
 		[[nodiscard]] inline constexpr auto& GetSkeletonID() const noexcept
@@ -447,6 +470,11 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetAnimState() const noexcept
 		{
 			return m_animState;
+		}
+
+		[[nodiscard]] inline constexpr bool IsPlayer() const noexcept
+		{
+			return m_player;
 		}
 
 		[[nodiscard]] inline constexpr bool IsFemale() const noexcept
@@ -587,14 +615,13 @@ namespace IED
 		bool UpdateNodeMonitorEntries();
 		bool GetNodeMonitorResult(std::uint32_t a_uid);
 
-		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*> &a_out) const;
+		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const;
 
 	private:
 		void CreateExtraMovNodes(
 			NiNode* a_npcroot);
 
 		void CreateExtraCopyNode(
-			Actor*                                        a_actor,
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
 
@@ -606,6 +633,14 @@ namespace IED
 			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;*/
 
 		//std::optional<ActiveActorAnimation> GetNewActiveAnimation(const BSAnimationGraphEvent* a_event) const;
+
+		bool m_player{ false };
+		bool m_female{ false };
+		bool m_humanoidSkeleton{ false };
+		bool m_forceNodeCondTrue{ false };
+		bool m_wantLFUpdate{ false };
+		bool m_wantHFUpdate{ false };
+		bool m_wantLFVarUpdate{ false };
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
@@ -637,14 +672,8 @@ namespace IED
 		Game::FormID m_npcTemplateId;
 		Game::FormID m_raceid;
 
-		bool m_female{ false };
-		bool m_humanoidSkeleton{ false };
-
-		bool m_forceNodeCondTrue{ false };
-
-		bool      m_wantLFUpdate{ false };
 		long long m_lastLFStateCheck;
-		//long long m_lastHFStateCheck;
+		long long m_lastHFStateCheck;
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonCache::const_actor_entry_type m_skeletonCache1p;
@@ -669,7 +698,7 @@ namespace IED
 		IObjectManager& m_owner;
 
 		static std::atomic_ullong m_lfsc_delta_lf;
-		//static std::atomic_ullong m_lfsc_delta_hf;
+		static std::atomic_ullong m_lfsc_delta_hf;
 	};
 
 }

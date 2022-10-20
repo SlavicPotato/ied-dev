@@ -711,7 +711,7 @@ namespace IED
 		{
 			auto& data = a_data.factions;
 
-			constexpr auto NUM_COLUMNS = 3;
+			constexpr auto NUM_COLUMNS = 5;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -730,6 +730,8 @@ namespace IED
 				ImGui::TableSetupColumn(LS(CommonStrings::FormID));
 				ImGui::TableSetupColumn(LS(CommonStrings::Name));
 				ImGui::TableSetupColumn(LS(CommonStrings::Rank));
+				ImGui::TableSetupColumn(LS(CommonStrings::Merchant));
+				ImGui::TableSetupColumn(LS(UIActorInfoStrings::PlayerEnemy));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -751,6 +753,12 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(2);
 					ImGui::Text("%hhd", e.second.rank);
+
+					ImGui::TableSetColumnIndex(3);
+					ImGui::Text("%s", e.second.isMerchant ? "Yes" : "No");
+
+					ImGui::TableSetColumnIndex(4);
+					ImGui::Text("%s", e.second.flags.test(FACTION_DATA::Flag::kPlayerIsEnemy) ? "Yes" : "No");
 				}
 
 				ImGui::EndTable();

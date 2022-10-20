@@ -5,6 +5,7 @@
 namespace IED
 {
 	struct processParams_t;
+	class IEquipment;
 
 	class IConditionalVariableProcessor
 	{
@@ -19,10 +20,15 @@ namespace IED
 			processParams_t&                              a_params,
 			const Data::configConditionalVariablesList_t& a_list);
 
+		static Game::FormID EvaluateLastEquippedForm(
+			processParams_t&                                  a_params,
+			const Data::configConditionalVariableValueData_t& a_data);
+
 		static constexpr void UpdateVariable(
-			ConditionalVariableType             a_defaultType,
-			const conditionalVariableStorage_t& a_srcvar,
-			conditionalVariableStorage_t&       a_dstval,
-			bool&                               a_modified);
+			processParams_t&                                  a_params,
+			ConditionalVariableType                           a_defaultType,
+			const Data::configConditionalVariableValueData_t& a_src,
+			conditionalVariableStorage_t&                     a_dst,
+			bool&                                             a_modified);
 	};
 }

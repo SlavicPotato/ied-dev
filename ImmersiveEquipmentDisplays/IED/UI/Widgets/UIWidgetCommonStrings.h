@@ -96,7 +96,7 @@ namespace IED
 			SkeletonExplorer                    = 2085,
 			BehaviorGraphFilter                 = 2086,
 			Mount                               = 2087,
-			BipedSlotData                       = 2088,
+			LastEquipped                        = 2088,
 			BipedSlots                          = 2089,
 			GeometryVisible                     = 2090,
 			XP32SkeletonWarning                 = 2091,
@@ -115,6 +115,7 @@ namespace IED
 			Ignored                             = 2104,
 			OriginalREFR                        = 2105,
 			ConditionalVariables                = 2106,
+			TargetVendorFaction                 = 2107,
 		};
 	}
 }

@@ -20,14 +20,17 @@ namespace IED
 			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
 			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
 			{ Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove },
-			//{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
+			{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
+			{ Data::ExtraConditionType::kInPlayerEnemyFaction, UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction },
 			{ Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater },
 			{ Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested },
 			{ Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild },
 			{ Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded },
 			{ Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead },
 			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
+			{ Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying },
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
+			{ Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
 			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
 			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
@@ -117,8 +120,6 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsMount);
 			case Data::ExtraConditionType::kShoutEquipped:
 				return LS(UIConditionExtraSelectorWidgetStrings::ShoutEquipped);
-			/*case Data::ExtraConditionType::kInMerchantFaction:
-				return LS(UIConditionExtraSelectorWidgetStrings::InMerchantFaction);*/
 			case Data::ExtraConditionType::kCombatStyle:
 				return LS(UIConditionExtraSelectorWidgetStrings::CombatStyle);
 			case Data::ExtraConditionType::kClass:
@@ -181,12 +182,20 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsChild);
 			case Data::ExtraConditionType::kInKillmove:
 				return LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
+			case Data::ExtraConditionType::kInMerchantFaction:
+				return LS(UIConditionExtraSelectorWidgetStrings::InMerchantFaction);
 			case Data::ExtraConditionType::kIsUnconscious:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
+			case Data::ExtraConditionType::kIsFlying:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsFlying);
+			case Data::ExtraConditionType::kIsLayingDown:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsLayingDown);
+			case Data::ExtraConditionType::kInPlayerEnemyFaction:
+				return LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
 			default:
 				return nullptr;
 			}

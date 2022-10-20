@@ -9,7 +9,7 @@
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
 #include "UITimeOfDaySelectorWidget.h"
-#include "UIVariableConditionTargetSelectorWidget.h"
+#include "UIVariableConditionSourceSelectorWidget.h"
 #include "UIVariableTypeSelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
 
@@ -17,7 +17,7 @@
 
 #include "IED/ConditionalVariableStorage.h"
 #include "IED/ConfigCommon.h"
-#include "IED/ConfigVariableConditionTarget.h"
+#include "IED/ConfigVariableConditionSource.h"
 
 namespace IED
 {
@@ -46,7 +46,7 @@ namespace IED
 		Percent,
 		NodeMon,
 		CondVarType,
-		VarCondTarget,
+		VarCondSource,
 
 		Total
 	};
@@ -110,7 +110,7 @@ namespace IED
 			public UITimeOfDaySelectorWidget,
 			public UINodeMonitorSelectorWidget,
 			public UIVariableTypeSelectorWidget,
-			public UIVariableConditionTargetSelectorWidget,
+			public UIVariableConditionSourceSelectorWidget,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto POPUP_ID = "mpr_ed";
@@ -365,9 +365,9 @@ namespace IED
 				};
 			}
 			else if constexpr (
-				Ap == ConditionParamItem::VarCondTarget)
+				Ap == ConditionParamItem::VarCondSource)
 			{
-				static_assert(std::is_same_v<T, Data::VariableConditionTarget>);
+				static_assert(std::is_same_v<T, Data::VariableConditionSource>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

@@ -81,12 +81,19 @@ namespace IED
 
 				m_loaded = true;
 
-				if (!m_defaultTable)
+				if (m_data.empty())
 				{
-					Warning("Default language table could not be loaded [%s]", DEFAULT_LANG);
+					Warning("No string tables were loaded");
 				}
+				else
+				{
+					if (!m_defaultTable)
+					{
+						Warning("Default language string table could not be loaded [%s]", DEFAULT_LANG);
+					}
 
-				Debug("%zu string table(s) loaded", m_data.size());
+					Debug("%zu string table(s) loaded", m_data.size());
+				}
 
 				return true;
 			}

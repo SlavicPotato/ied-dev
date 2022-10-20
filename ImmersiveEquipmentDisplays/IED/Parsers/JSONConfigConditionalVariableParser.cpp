@@ -2,7 +2,7 @@
 
 #include "JSONConfigConditionalVariableParser.h"
 
-#include "JSONConditionalVariableStorageParser.h"
+#include "JSONConfigConditionalVariableValueDataParser.h"
 #include "JSONConfigConditionalVariablesListParser.h"
 #include "JSONEquipmentOverrideConditionListParser.h"
 
@@ -44,9 +44,9 @@ namespace IED
 				}
 			}
 
-			Parser<conditionalVariableStorage_t> cvsparser(m_state);
+			Parser<Data::configConditionalVariableValueData_t> cvdvparser(m_state);
 
-			if (!cvsparser.Parse(data["value"], a_out.value))
+			if (!cvdvparser.Parse(data["vdata"], a_out.value))
 			{
 				return false;
 			}
@@ -78,9 +78,9 @@ namespace IED
 				parser.Create(a_data.group, data["grp"]);
 			}
 
-			Parser<conditionalVariableStorage_t> cvsparser(m_state);
+			Parser<Data::configConditionalVariableValueData_t> cvdvparser(m_state);
 
-			cvsparser.Create(a_data.value, data["value"]);
+			cvdvparser.Create(a_data.value, data["vdata"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

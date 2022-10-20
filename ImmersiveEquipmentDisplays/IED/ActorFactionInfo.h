@@ -6,11 +6,13 @@ namespace IED
 	{
 		struct entry_t
 		{
-			std::int8_t rank;
-			std::string name;
+			std::int8_t                   rank;
+			std::string                   name;
+			stl::flag<FACTION_DATA::Flag> flags;
+			bool                          isMerchant;
 		};
 
-		void Update(Actor *a_actor);
+		void Update(Actor* a_actor);
 
 		stl::map<Game::FormID, entry_t> data;
 	};

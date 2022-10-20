@@ -84,6 +84,25 @@ namespace IED
 		}
 	}
 
+	void ObjectManagerData::RequestHFEvaluateAll() noexcept
+	{
+		for (auto& e : m_objects)
+		{
+			e.second.m_wantHFUpdate = true;
+		}
+	}
+
+	void ObjectManagerData::RequestHFEvaluateAll(Game::FormID a_skip) noexcept
+	{
+		for (auto& [i, e] : m_objects)
+		{
+			if (i != a_skip)
+			{
+				e.m_wantHFUpdate = true;
+			}
+		}
+	}
+
 	void ObjectManagerData::StorePlayerState(ActorObjectHolder& a_holder)
 	{
 		if (m_playerState)

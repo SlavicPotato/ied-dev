@@ -2,6 +2,8 @@
 
 #include "JSONConditionalVariableStorageParser.h"
 
+#include "JSONConfigCachedFormParser.h"
+
 namespace IED
 {
 	namespace Serialization
@@ -27,6 +29,15 @@ namespace IED
 			case ConditionalVariableType::kFloat:
 				a_out.f32 = data["v"].asFloat();
 				break;
+			case ConditionalVariableType::kForm:
+				{
+					Parser<Data::configCachedForm_t> parser(m_state);
+
+					if (!parser.Parse(data["v"], a_out.form)) {
+						return false;
+					}
+				}
+				break;
 			default:
 				Error("%s: invalid type %u", __FUNCTION__, a_out.type);
 				return false;
@@ -51,6 +62,13 @@ namespace IED
 				break;
 			case ConditionalVariableType::kFloat:
 				data["v"] = a_data.f32;
+				break;
+			case ConditionalVariableType::kForm:
+				{
+					Parser<Data::configCachedForm_t> parser(m_state);
+	
+					parser.Create(a_data.form, data["v"]);
+				}
 				break;
 			default:
 				throw std::exception("unknown type");

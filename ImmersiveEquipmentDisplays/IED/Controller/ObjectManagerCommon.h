@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IED/ConfigTransform.h"
+
 namespace IED
 {
 	namespace Data
@@ -20,6 +22,7 @@ namespace IED
 				scale.clear();
 				position.clear();
 				rotation.clear();
+
 				tag.reset();
 			}
 

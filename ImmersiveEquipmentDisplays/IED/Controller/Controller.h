@@ -36,7 +36,7 @@ namespace IED
 		virtual private ILog,
 		private ISerializationBase,
 		public IForm,
-		private IEquipment,
+		public IEquipment,
 		public IObjectManager,
 		public EffectController,
 		public ActorProcessorTask,
@@ -89,19 +89,6 @@ namespace IED
 			Game::ObjectRefHandle handle;
 		};
 
-		struct cachedActorInfo_t
-		{
-			NiPointer<Actor>      actor;
-			Game::ObjectRefHandle handle;
-			TESNPC*               npc;
-			TESNPC*               npcOrTemplate;
-			TESRace*              race;
-			NiNode*               root;
-			NiNode*               npcRoot;
-			Data::ConfigSex       sex;
-			ActorObjectHolder&    objects;
-		};
-
 		struct npcRacePair_t
 		{
 			TESNPC*  npc;
@@ -126,6 +113,19 @@ namespace IED
 			kT0 = 1ui8 << 0,
 			kT1 = 1ui8 << 1,
 			kT2 = 1ui8 << 2
+		};
+
+		struct cachedActorInfo_t
+		{
+			NiPointer<Actor>      actor;
+			Game::ObjectRefHandle handle;
+			TESNPC*               npc;
+			TESNPC*               npcOrTemplate;
+			TESRace*              race;
+			NiNode*               root;
+			NiNode*               npcRoot;
+			Data::ConfigSex       sex;
+			ActorObjectHolder&    objects;
 		};
 
 		Controller(const std::shared_ptr<const ConfigINI>& a_config);
@@ -463,11 +463,19 @@ namespace IED
 			return m_bipedCache.max_size();
 		}
 
+		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
+		{
+			return m_temp;
+		}
+
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 		//void QueueClearVariableStorage(bool a_requestEval);
 
 		void ProcessEffectShaders();
+
+		void RunUpdateBipedSlotCache(
+			processParams_t& a_params);
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -492,7 +500,7 @@ namespace IED
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
@@ -504,7 +512,7 @@ namespace IED
 
 		void EvaluateImpl(
 			const CommonParams&              a_params,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
@@ -514,30 +522,34 @@ namespace IED
 			TESNPC*                          a_npc,
 			TESRace*                         a_race,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void UpdateBipedSlotCache(
 			processParams_t&   a_params,
-			ActorObjectHolder& a_objects);
+			ActorObjectHolder& a_holder);
+
+		void RunVariableMapUpdate(
+			processParams_t& a_params,
+			bool             a_markAllForLFEval = false);
 
 		void DoObjectEvaluation(
 			NiNode*                          a_root,
 			NiNode*                          a_npcroot,
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void EvaluateImpl(
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		/*void EvaluateTransformsImpl(
 			Game::FormID a_actor);*/
 
 		void EvaluateTransformsImpl(
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		bool ProcessTransformsImpl(
@@ -545,9 +557,10 @@ namespace IED
 			NiNode*                          a_npcRoot,
 			Actor*                           a_actor,
 			TESNPC*                          a_npc,
+			TESNPC*                          a_npcOrTemplate,
 			TESRace*                         a_race,
 			Data::ConfigSex                  a_sex,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void ActorResetImpl(
@@ -582,7 +595,7 @@ namespace IED
 		void ResetGearImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_objects,
+			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void UpdateTransformSlotImpl(
@@ -712,12 +725,11 @@ namespace IED
 			ObjectEntryCustom&             a_entry);
 
 		bool ProcessItemUpdate(
-			processParams_t&                 a_params,
-			const Data::configBaseValues_t&  a_config,
-			const Data::equipmentOverride_t* a_override,
-			ObjectEntryBase&                 a_entry,
-			bool                             a_visible,
-			TESForm*                         a_currentModelForm);
+			processParams_t&                a_params,
+			const Data::configBaseValues_t& a_config,
+			ObjectEntryBase&                a_entry,
+			bool                            a_visible,
+			TESForm*                        a_currentModelForm);
 
 		void ResetEffectShaderData(
 			processParams_t& a_params,
@@ -734,12 +746,20 @@ namespace IED
 			ObjectEntryCustom&          a_objectEntry,
 			bool                        a_updateValues = false);
 
+		void RemoveSlotObjectEntry(
+			processParams_t& a_params,
+			ObjectEntrySlot& a_entry);
+
 		void ProcessSlots(processParams_t& a_params);
 
 		bool IsBlockedByChance(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry);
+
+		const Data::configCachedForm_t* SelectCustomForm(
+			processParams_t&            a_params,
+			const Data::configCustom_t& a_config);
 
 		bool ProcessCustomEntry(
 			processParams_t&            a_params,
@@ -777,7 +797,11 @@ namespace IED
 			actorLookupResult_t&     a_out);
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
-			ActorObjectHolder& a_record);
+			Actor*             a_actor,
+			ActorObjectHolder& a_holder);
+
+		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
+			ActorObjectHolder& a_holder);
 
 		void CollectKnownActors(
 			actorLookupResultMap_t& a_out);
@@ -931,6 +955,7 @@ namespace IED
 		bool m_applyTransformOverrides{ false };
 		bool m_enableCorpseScatter{ false };
 		bool m_forceOrigWeapXFRM{ false };
+		bool m_forceFlushSaveData{ false };
 
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)

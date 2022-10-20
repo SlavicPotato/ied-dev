@@ -122,7 +122,7 @@ namespace IED
 
 		EngineExtensions::Install(m_controller, config);
 
-		Debug("Done");
+		Debug("Early initialization done");
 
 		if (config->m_closeLogFile)
 		{
@@ -136,35 +136,26 @@ namespace IED
 		return true;
 	}
 
-	bool Initializer::SetLocaleFromLang()
+	const char* Initializer::GetLanguage()
 	{
 		auto e = *g_iniSettingCollection;
 		if (!e)
 		{
-			return false;
+			return nullptr;
 		}
 
 		auto f = e->Get("sLanguage:General");
 		if (!f)
 		{
-			return false;
+			return nullptr;
 		}
 
 		if (f->GetType() != Setting::kType_String)
 		{
-			return false;
+			return nullptr;
 		}
 
-		if (auto s = f->data.s)
-		{
-			LocaleData::GetSingleton()->SetFromLang(s);
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return f->data.s;
 	}
 
 	void Initializer::SetupSKSEEventHandlers(
@@ -223,10 +214,20 @@ namespace IED
 			{
 				LocaleData::CreateSingleton();
 
-				if (!SetLocaleFromLang())
+				auto language = GetLanguage();
+
+				if (language)
 				{
-					LocaleData::GetSingleton()->SetFromLang("english");
+					Debug("Detected language: '%s'", language);
 				}
+				else
+				{
+					Warning("Couldn't automatically detect language, using default locale");
+
+					language = "english";
+				}
+
+				LocaleData::GetSingleton()->SetFromLang(language);
 
 				ASSERT(Data::IData::PopulateRaceList());
 				ASSERT(Data::IData::PopulatePluginInfo());
@@ -277,7 +278,7 @@ namespace IED
 
 				GlobalProfileManager::GetSingleton<FormFilterProfile>().Load(
 					PATHS::PROFILE_MANAGER_FORM_FILTER);
-				
+
 				GlobalProfileManager::GetSingleton<CondVarProfile>().Load(
 					PATHS::PROFILE_MANAGER_VARIABLES);
 

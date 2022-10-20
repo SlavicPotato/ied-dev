@@ -19,6 +19,7 @@ namespace IED
 	};
 
 	struct CommonParams;
+	struct processParams_t;
 
 	namespace Data
 	{
@@ -128,49 +129,40 @@ namespace IED
 			configFixedStringSet_t  hkxFilter;
 
 			const equipmentOverride_t* get_equipment_override(
-				const collectorData_t& a_data,
-				CommonParams&          a_params) const;
+				processParams_t& a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override(
-				const collectorData_t&         a_data,
-				CommonParams&                  a_params,
+				processParams_t&                  a_params,
 				const equipmentOverrideList_t& a_list);
 
 			const equipmentOverride_t* get_equipment_override_fp(
-				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
-				CommonParams&          a_params) const;
+				processParams_t&      a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override_fp(
-				const collectorData_t&         a_data,
 				const formSlotPair_t&          a_checkForm,
-				CommonParams&                  a_params,
+				processParams_t&               a_params,
 				const equipmentOverrideList_t& a_list);
 
 			const equipmentOverride_t* get_equipment_override_sfp(
-				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
-				CommonParams&          a_params) const;
+				processParams_t&      a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override_sfp(
-				const collectorData_t&         a_data,
 				const formSlotPair_t&          a_checkForm,
-				CommonParams&                  a_params,
+				processParams_t&               a_params,
 				const equipmentOverrideList_t& a_list);
 
 			const configEffectShaderHolder_t* get_effect_shader(
-				const collectorData_t& a_data,
-				CommonParams&          a_params) const;
+				processParams_t& a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader_fp(
-				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
-				CommonParams&          a_params) const;
+				processParams_t&      a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
-				const collectorData_t& a_data,
 				const formSlotPair_t&  a_checkForm,
-				CommonParams&          a_params) const;
+				processParams_t&      a_params) const;
 
 		private:
 			static constexpr bool match_equipped_type(
@@ -190,43 +182,42 @@ namespace IED
 				const equipmentOverrideCondition_t& a_match);
 
 			static constexpr bool match_equipped(
-				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
-				CommonParams&                       a_params);
+				processParams_t&                       a_params);
 
 			static constexpr bool match_equipped_or_slot(
-				const collectorData_t&              a_cdata,
 				const equipmentOverrideCondition_t& a_match,
-				CommonParams&                       a_params);
+				processParams_t&                    a_params);
 
 			template <
 				EquipmentOverrideConditionFlags a_maskAll,
 				EquipmentOverrideConditionFlags a_maskSlots>
 			static constexpr bool match_equipped_or_form(
-				const collectorData_t&              a_data,
 				const equipmentOverrideCondition_t& a_match,
 				const formSlotPair_t&               a_checkForm,
-				CommonParams&                       a_params);
+				processParams_t&                    a_params);
 
 		public:
 			static bool do_match(
-				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
-				CommonParams&                           a_params,
+				processParams_t&                           a_params,
 				bool                                    a_default);
 
 			static bool do_match_fp(
-				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t&                   a_checkForm,
-				CommonParams&                           a_params,
+				processParams_t&                        a_params,
 				bool                                    a_default);
 
 			static bool do_match_sfp(
-				const collectorData_t&                  a_data,
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t&                   a_checkForm,
-				CommonParams&                           a_params,
+				processParams_t&                        a_params,
+				bool                                    a_default);
+			
+			static bool do_match_eos(
+				const equipmentOverrideConditionList_t& a_matches,
+				processParams_t&                        a_params,
 				bool                                    a_default);
 
 		private:

@@ -83,10 +83,10 @@ namespace IED
 			ObjectEntryBase&   a_entry);
 		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
-		SKMP_FORCEINLINE void ProcessTransformUpdateRequest(
+		void ProcessTransformUpdateRequest(
 			ActorObjectHolder& a_data);
 
-		SKMP_FORCEINLINE void ProcessEvalRequest(
+		void ProcessEvalRequest(
 			ActorObjectHolder& a_data);
 
 		static constexpr bool CheckMonitorNodes(

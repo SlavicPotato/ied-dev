@@ -4,6 +4,9 @@
 
 #include "IED/Controller/IFormDatabase.h"
 
+#pragma warning(disable: 4073)
+#pragma init_seg(lib)
+
 namespace IED
 {
 	namespace UI

@@ -33,3 +33,4 @@
 7000-7099:		cond var widget
 7100-7199:		var type slector
 7200-7299:		var cond selector
+7300-7399:		var src selector

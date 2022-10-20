@@ -38,6 +38,7 @@ namespace IED
 		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
 		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
 		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
+		m_forceFlushSaveData(a_config->m_forceFlushSaveData),
 		m_bipedCache(
 			a_config->m_bipedSlotCacheMaxSize,
 			a_config->m_bipedSlotCacheMaxForms)
@@ -214,7 +215,7 @@ namespace IED
 		auto pluginVersion = result.intfc->GetPluginVersion();
 
 		Debug(
-			"Found SDS interface [%s %u.%u.%u, interface ver: %.8X]",
+			"Found SDS interface [%s %u.%u.%u, interface ver: %u]",
 			result.intfc->GetPluginName(),
 			GET_PLUGIN_VERSION_MAJOR(pluginVersion),
 			GET_PLUGIN_VERSION_MINOR(pluginVersion),
@@ -561,7 +562,7 @@ namespace IED
 	void Controller::EvaluateImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		if (!IsREFRValid(a_actor))
@@ -593,7 +594,7 @@ namespace IED
 			return;
 		}
 
-		if (a_objects.m_root != root)
+		if (a_holder.m_root != root)
 		{
 			Warning(
 				"%s [%u]: %.8X: skeleton root mismatch",
@@ -614,7 +615,7 @@ namespace IED
 				nrp->npc,
 				nrp->race,
 				a_handle,
-				a_objects,
+				a_holder,
 				a_flags);
 		}
 	}
@@ -2082,12 +2083,11 @@ namespace IED
 	}
 
 	bool Controller::ProcessItemUpdate(
-		processParams_t&                 a_params,
-		const configBaseValues_t&        a_config,
-		const Data::equipmentOverride_t* a_override,
-		ObjectEntryBase&                 a_entry,
-		bool                             a_visible,
-		TESForm*                         a_currentModelForm)
+		processParams_t&          a_params,
+		const configBaseValues_t& a_config,
+		ObjectEntryBase&          a_entry,
+		bool                      a_visible,
+		TESForm*                  a_currentModelForm)
 	{
 		auto& state = a_entry.state;
 
@@ -2124,7 +2124,7 @@ namespace IED
 			}
 		}
 
-		const bool isVisible = state->nodes.rootNode->IsVisible();
+		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);
 
 		if (a_visible)
 		{
@@ -2154,7 +2154,7 @@ namespace IED
 
 		if (isVisible != a_visible)
 		{
-			state->nodes.rootNode->SetVisible(a_visible);
+			a_entry.SetNodeVisible(a_visible);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
@@ -2265,7 +2265,6 @@ namespace IED
 		}
 
 		auto es = a_config.get_effect_shader_sfp(
-			a_params.collector.data,
 			{ a_objectEntry.state->form,
 		      ItemData::GetItemSlotExtraGeneric(a_objectEntry.state->form) },
 			a_params);
@@ -2305,6 +2304,23 @@ namespace IED
 				a_params,
 				a_objectEntry,
 				a_objectEntry.state->nodes.rootNode);
+		}
+	}
+
+	void Controller::RemoveSlotObjectEntry(
+		processParams_t& a_params,
+		ObjectEntrySlot& a_entry)
+	{
+		if (RemoveObject(
+				a_params.actor,
+				a_params.handle,
+				a_entry,
+				a_params.objects,
+				a_params.flags))
+		{
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+
+			a_params.mark_slot_presence_change(a_entry.slotid);
 		}
 	}
 
@@ -2491,12 +2507,9 @@ namespace IED
 
 				if (!e.activeEquipped && activeTypes >= limit)
 				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
+					RemoveSlotObjectEntry(
+						a_params,
+						objectEntry);
 
 					continue;
 				}
@@ -2512,12 +2525,9 @@ namespace IED
 
 				if (!entry)
 				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
+					RemoveSlotObjectEntry(
+						a_params,
+						objectEntry);
 
 					continue;
 				}
@@ -2526,12 +2536,9 @@ namespace IED
 
 				if (!configEntry.run_filters(a_params))
 				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
+					RemoveSlotObjectEntry(
+						a_params,
+						objectEntry);
 
 					continue;
 				}
@@ -2543,10 +2550,8 @@ namespace IED
 
 				auto configOverride =
 					!item ? configEntry.get_equipment_override(
-								a_params.collector.data,
 								a_params) :
                             configEntry.get_equipment_override_fp(
-								a_params.collector.data,
 								{ item->item->form, objectEntry.slotidex },
 								a_params);
 
@@ -2561,12 +2566,9 @@ namespace IED
 				     f.slot != ObjectSlot::kAmmo &&
 				     !a_params.test_equipment_flags(equipmentFlag)))
 				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
+					RemoveSlotObjectEntry(
+						a_params,
+						objectEntry);
 
 					continue;
 				}
@@ -2576,20 +2578,16 @@ namespace IED
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
-						if (!objectEntry.hideCountdown &&
-						    objectEntry.IsNodeVisible())
+						if (objectEntry.DeferredHideNode(2))
 						{
-							objectEntry.hideCountdown = 2;
+							a_params.mark_slot_presence_change(objectEntry.slotid);
 						}
 					}
 					else
 					{
-						RemoveObject(
-							a_params.actor,
-							a_params.handle,
-							objectEntry,
-							a_params.objects,
-							ControllerUpdateFlags::kNone);
+						RemoveSlotObjectEntry(
+							a_params,
+							objectEntry);
 					}
 
 					continue;
@@ -2597,12 +2595,9 @@ namespace IED
 
 				if (!item)
 				{
-					RemoveObject(
-						a_params.actor,
-						a_params.handle,
-						objectEntry,
-						a_params.objects,
-						a_params.flags);
+					RemoveSlotObjectEntry(
+						a_params,
+						objectEntry);
 
 					continue;
 				}
@@ -2619,10 +2614,11 @@ namespace IED
 				if (objectEntry.state &&
 				    objectEntry.state->form == item->item->form)
 				{
+					const bool isVisible = objectEntry.IsNodeVisible();
+
 					if (ProcessItemUpdate(
 							a_params,
 							usedBaseConf,
-							configOverride,
 							objectEntry,
 							visible,
 							modelForm))
@@ -2634,17 +2630,20 @@ namespace IED
 
 						item.consume(candidates);
 
-						/*UpdateObjectEffectShaders(
-							a_params,
-							configEntry,
-							objectEntry,
-							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));*/
-
 						typeActive |= visible;
+
+						if (visible != isVisible)
+						{
+							a_params.mark_slot_presence_change(objectEntry.slotid);
+						}
 
 						continue;
 					}
 				}
+
+				RemoveSlotObjectEntry(
+					a_params,
+					objectEntry);
 
 				if (LoadAndAttach(
 						a_params,
@@ -2658,7 +2657,7 @@ namespace IED
 						false,
 						settings.hkWeaponAnimations))
 				{
-					objectEntry.state->nodes.rootNode->SetVisible(visible);
+					objectEntry.SetNodeVisible(visible);
 
 					if (visible)
 					{
@@ -2667,13 +2666,9 @@ namespace IED
 
 					item.consume(candidates);
 
-					/*UpdateObjectEffectShaders(
-						a_params,
-						configEntry,
-						objectEntry,
-						a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));*/
-
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+
+					a_params.mark_slot_presence_change(objectEntry.slotid);
 
 					typeActive |= visible;
 				}
@@ -2722,19 +2717,17 @@ namespace IED
 					auto& configEntry = f.slotConfig->get(a_params.configSex);
 
 					const configEffectShaderHolder_t* es       = nullptr;
-					const bool                        equipped = static_cast<bool>(f.equippedForm);
+					const auto                        equipped = static_cast<bool>(f.equippedForm);
 
 					if (equipped)
 					{
 						es = configEntry.get_effect_shader_sfp(
-							a_params.collector.data,
 							{ f.equippedForm, ItemData::GetItemSlotExtraGeneric(f.equippedForm) },
 							a_params);
 					}
 					else if (objectEntry.state)
 					{
 						es = configEntry.get_effect_shader_sfp(
-							a_params.collector.data,
 							{ objectEntry.state->form, objectEntry.slotidex },
 							a_params);
 					}
@@ -2811,7 +2804,7 @@ namespace IED
 		}
 
 		if (a_flags.test(BaseFlags::kHideIfUsingFurniture) &&
-		    a_params.get_using_furniture())
+		    a_params.is_using_furniture())
 		{
 			return false;
 		}
@@ -2906,6 +2899,81 @@ namespace IED
 		}
 	}
 
+	const configCachedForm_t* Controller::SelectCustomForm(
+		processParams_t&      a_params,
+		const configCustom_t& a_config)
+	{
+		if (a_config.customFlags.test(CustomFlags::kVariableMode))
+		{
+			Game::FormID id;
+
+			switch (a_config.varSource.source)
+			{
+			case VariableSource::kActor:
+
+				id = a_config.varSource.form;
+
+				break;
+
+			case VariableSource::kPlayerHorse:
+
+				if (auto actor = a_params.get_last_ridden_player_horse())
+				{
+					id = actor->formID;
+				}
+				else
+				{
+					return nullptr;
+				}
+
+				break;
+
+			default:
+
+				return nullptr;
+			}
+
+			const auto& data = GetData();
+
+			auto ita = data.find(id);
+			if (ita != data.end())
+			{
+				auto& vars = ita->second.GetVariables();
+
+				for (auto& e : a_config.formVars)
+				{
+					auto it = vars.find(e);
+					if (it != vars.end())
+					{
+						if (it->second.type == ConditionalVariableType::kForm)
+						{
+							auto& form = it->second.form;
+							if (form.get_id() &&
+							    !form.get_id().IsTemporary())
+							{
+								return std::addressof(form);
+							}
+						}
+					}
+				}
+			}
+
+			return nullptr;
+		}
+		else
+		{
+			auto& result = a_config.form;
+
+			if (!result.get_id() ||
+			    result.get_id().IsTemporary())
+			{
+				return nullptr;
+			}
+
+			return std::addressof(result);
+		}
+	}
+
 	bool Controller::ProcessCustomEntry(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
@@ -2960,7 +3028,6 @@ namespace IED
 
 			auto configOverride =
 				a_config.get_equipment_override_sfp(
-					a_params.collector.data,
 					{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
 					a_params);
 
@@ -2990,7 +3057,7 @@ namespace IED
 				return false;
 			}
 
-			bool visible = GetVisibilitySwitch(
+			const bool visible = GetVisibilitySwitch(
 				a_params.actor,
 				usedBaseConf.flags,
 				a_params);
@@ -3006,12 +3073,11 @@ namespace IED
 				if (a_config.customFlags.test(CustomFlags::kGroupMode) ==
 				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode))
 				{
-					bool _visible = hasMinCount && visible;
+					const bool _visible = hasMinCount && visible;
 
 					if (ProcessItemUpdate(
 							a_params,
 							usedBaseConf,
-							configOverride,
 							a_objectEntry,
 							_visible,
 							modelForm))
@@ -3038,6 +3104,16 @@ namespace IED
 			if (!hasMinCount)
 			{
 				return false;
+			}
+
+			if (RemoveObject(
+					a_params.actor,
+					a_params.handle,
+					a_objectEntry,
+					a_params.objects,
+					a_params.flags))
+			{
+				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
 			bool result;
@@ -3096,22 +3172,23 @@ namespace IED
 		}
 		else
 		{
-			if (!a_config.form.get_id() ||
-			    a_config.form.get_id().IsTemporary())
+			auto cform = SelectCustomForm(a_params, a_config);
+
+			if (!cform)
 			{
 				a_objectEntry.clear_chance_flags();
 
 				return false;
 			}
 
-			auto form = a_config.form.get_form();
+			auto form = cform->get_form();
 			if (!form)
 			{
 				Debug(
 					"%s: [%.8X] couldn't find form %.8X",
 					__FUNCTION__,
 					a_params.actor->formID.get(),
-					a_config.form.get_id().get());
+					cform->get_id().get());
 
 				a_objectEntry.clear_chance_flags();
 
@@ -3120,7 +3197,6 @@ namespace IED
 
 			auto configOverride =
 				a_config.get_equipment_override_sfp(
-					a_params.collector.data,
 					{ form, ItemData::GetItemSlotExtraGeneric(form) },
 					a_params);
 
@@ -3143,7 +3219,7 @@ namespace IED
 				return false;
 			}
 
-			bool visible = GetVisibilitySwitch(
+			const bool visible = GetVisibilitySwitch(
 				a_params.actor,
 				usedBaseConf.flags,
 				a_params);
@@ -3162,7 +3238,6 @@ namespace IED
 					if (ProcessItemUpdate(
 							a_params,
 							usedBaseConf,
-							configOverride,
 							a_objectEntry,
 							visible,
 							modelForm))
@@ -3176,6 +3251,16 @@ namespace IED
 						return true;
 					}
 				}
+			}
+
+			if (RemoveObject(
+					a_params.actor,
+					a_params.handle,
+					a_objectEntry,
+					a_params.objects,
+					a_params.flags))
+			{
+				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
 
 			bool result;
@@ -3243,12 +3328,15 @@ namespace IED
 					f.second(a_params.configSex),
 					it->second))
 			{
-				RemoveObject(
-					a_params.actor,
-					a_params.handle,
-					it->second,
-					a_params.objects,
-					a_params.flags);
+				if (RemoveObject(
+						a_params.actor,
+						a_params.handle,
+						it->second,
+						a_params.objects,
+						a_params.flags))
+				{
+					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+				}
 			}
 		}
 	}
@@ -3435,7 +3523,7 @@ namespace IED
 
 	void Controller::EvaluateImpl(
 		const CommonParams&              a_params,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		EvaluateImpl(
@@ -3444,8 +3532,8 @@ namespace IED
 			a_params.actor,
 			a_params.npc,
 			a_params.race,
-			a_objects.GetHandle(),
-			a_objects,
+			a_holder.GetHandle(),
+			a_holder,
 			a_flags);
 	}
 
@@ -3456,7 +3544,7 @@ namespace IED
 		TESNPC*                          a_npc,
 		TESRace*                         a_race,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 #if defined(IED_ENABLE_STATS_G)
@@ -3473,7 +3561,7 @@ namespace IED
 				a_npcroot,
 				a_actor,
 				a_handle,
-				a_objects,
+				a_holder,
 				a_flags);
 		}
 		else
@@ -3481,22 +3569,22 @@ namespace IED
 			RemoveActorGear(
 				a_actor,
 				a_handle,
-				a_objects,
+				a_holder,
 				a_flags);
 		}
 
 		if (m_config.settings.data.enableXP32AA)
 		{
-			UpdateAA(a_actor, a_objects.m_animState);
+			UpdateAA(a_actor, a_holder.m_animState);
 		}
 
 		if (a_flags.test(ControllerUpdateFlags::kImmediateTransformUpdate))
 		{
-			a_objects.RequestTransformUpdate();
+			a_holder.RequestTransformUpdate();
 		}
 		else
 		{
-			a_objects.RequestTransformUpdateDefer();
+			a_holder.RequestTransformUpdateDefer();
 		}
 
 #if defined(IED_ENABLE_STATS_G)
@@ -3506,12 +3594,12 @@ namespace IED
 
 	void Controller::UpdateBipedSlotCache(
 		processParams_t&   a_params,
-		ActorObjectHolder& a_objects)
+		ActorObjectHolder& a_holder)
 	{
 		/*PerfTimer pt;
 		pt.Start();*/
 
-		auto& data = a_objects.m_lastEquipped->data;
+		auto& data = a_holder.m_lastEquipped->data;
 
 		auto& biped = a_params.actor->GetBiped1(false);
 		if (!biped)
@@ -3575,7 +3663,7 @@ namespace IED
 
 	template <class... Args>
 	inline constexpr processParams_t& make_process_params(
-		ActorObjectHolder&                     a_objects,
+		ActorObjectHolder&                     a_holder,
 		std::optional<processParams_t>&        a_paramsOut,
 		Actor* const                           a_actor,
 		const Game::ObjectRefHandle            a_handle,
@@ -3585,10 +3673,10 @@ namespace IED
 	{
 		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
 		{
-			return a_objects.GetOrCreateProcessParams(
+			return a_holder.GetOrCreateProcessParams(
 				a_actor,
 				a_handle,
-				a_objects.IsFemale() ?
+				a_holder.IsFemale() ?
 					ConfigSex::Female :
                     ConfigSex::Male,
 				a_flags,
@@ -3600,7 +3688,7 @@ namespace IED
 			a_paramsOut.emplace(
 				a_actor,
 				a_handle,
-				a_objects.IsFemale() ?
+				a_holder.IsFemale() ?
 					ConfigSex::Female :
                     ConfigSex::Male,
 				a_flags,
@@ -3611,12 +3699,54 @@ namespace IED
 		}
 	}
 
+	void Controller::RunVariableMapUpdate(
+		processParams_t& a_params,
+		bool             a_markAllForLFEval)
+	{
+		const auto& config = m_config.active.condvars;
+
+		if (config.empty())
+		{
+			return;
+		}
+
+		a_params.flags.set(ControllerUpdateFlags::kFailVariableCondition);
+
+		if (UpdateVariableMap(
+				a_params,
+				config,
+				a_params.objects.GetVariables()))
+		{
+			if (a_markAllForLFEval)
+			{
+				RequestLFEvaluateAll();
+			}
+			else
+			{
+				RequestLFEvaluateAll(a_params.objects.GetActorFormID());
+			}
+		}
+
+		a_params.flags.clear(ControllerUpdateFlags::kFailVariableCondition);
+	}
+
+	void Controller::RunUpdateBipedSlotCache(
+		processParams_t& a_params)
+	{
+		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kBipedDataUpdated))
+		{
+			UpdateBipedSlotCache(a_params, a_params.objects);
+
+			a_params.state.flags.set(ProcessStateUpdateFlags::kBipedDataUpdated);
+		}
+	}
+
 	void Controller::DoObjectEvaluation(
 		NiNode*                          a_root,
 		NiNode*                          a_npcroot,
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto nrp = GetNPCRacePair(a_actor);
@@ -3628,7 +3758,7 @@ namespace IED
 		std::optional<processParams_t> ps;
 
 		auto& params = make_process_params(
-			a_objects,
+			a_holder,
 			ps,
 			a_actor,
 			a_handle,
@@ -3640,28 +3770,41 @@ namespace IED
 			nrp->race,
 			a_root,
 			a_npcroot,
-			a_objects,
+			a_holder,
 			*this);
 
 		params.flags = a_flags;
 
-		if (a_objects.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate))
+		RunUpdateBipedSlotCache(params);
+
+		if (a_holder.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate))
 		{
-			if (UpdateVariableMap(
-					params,
-					m_config.active.condvars,
-					a_objects.GetVariables()))
-			{
-				RequestLFEvaluateAll(a_objects.GetActorFormID());
-			}
+			RunVariableMapUpdate(params);
 		}
 
-		UpdateBipedSlotCache(params, a_objects);
-
 		if (!m_config.settings.data.disableNPCSlots ||
-		    params.is_player())
+		    a_holder.IsPlayer())
 		{
 			ProcessSlots(params);
+
+			if (params.slotPresenceChanges.test_any(ObjectSlotBits::kAll))
+			{
+				/*auto bs = std::bitset<stl::underlying(Data::ObjectSlot::kMax)>(stl::underlying(params.slotPresenceChanges.value));
+
+				Debug(">> %.8X", a_actor->formID);
+
+				for (std::uint32_t i = 0; i < bs.size(); i++)
+				{
+					if (bs.test(i))
+					{
+						Debug("%u: %s", i, Data::GetSlotName(static_cast<Data::ObjectSlot>(i)));
+					}
+				}
+
+				Debug("<< %.8X", a_actor->formID);*/
+
+				RunVariableMapUpdate(params, true);
+			}
 		}
 
 		ProcessCustom(params);
@@ -3677,15 +3820,17 @@ namespace IED
 				UpdateNodeIfGamePaused(a_root);
 			}
 
-			a_objects.RequestTransformUpdate();
+			params.state.flags.clear(ProcessStateUpdateFlags::kUpdateMask);
+
+			a_holder.RequestTransformUpdate();
 		}
 	}
 
 	void Controller::EvaluateImpl(
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		auto handle = a_objects.GetHandle();
+		auto handle = a_holder.GetHandle();
 
 		NiPointer<TESObjectREFR> refr;
 		if (!handle.Lookup(refr))
@@ -3694,7 +3839,7 @@ namespace IED
 				"%s [%u]: %.8X: could not lookup by handle (%.8X)",
 				__FUNCTION__,
 				__LINE__,
-				a_objects.GetActorFormID().get(),
+				a_holder.GetActorFormID().get(),
 				handle.get());
 
 			return;
@@ -3714,19 +3859,19 @@ namespace IED
 			return;
 		}
 
-		if (actor != a_objects.m_actor.get())
+		if (actor != a_holder.m_actor.get())
 		{
 			Warning(
 				"%s [%u]: actor mismatch (%.8X != %.8X)",
 				__FUNCTION__,
 				__LINE__,
 				refr->formID.get(),
-				a_objects.m_actor->formID.get());
+				a_holder.m_actor->formID.get());
 
 			return;
 		}
 
-		EvaluateImpl(actor, handle, a_objects, a_flags);
+		EvaluateImpl(actor, handle, a_holder, a_flags);
 	}
 
 	/*void Controller::EvaluateTransformsImpl(Game::FormID a_actor)
@@ -3739,52 +3884,49 @@ namespace IED
 	}*/
 
 	void Controller::EvaluateTransformsImpl(
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (auto& params = a_objects.GetCurrentProcessParams())
+		if (auto& params = a_holder.GetCurrentProcessParams())
 		{
 			if (ProcessTransformsImpl(
 					params->root,
 					params->npcRoot,
 					params->actor,
 					params->npc,
+					params->npcOrTemplate,
 					params->race,
-					params->npc->GetSex() == 1 ?
-						ConfigSex::Female :
-                        ConfigSex::Male,
-					a_objects,
+					params->configSex,
+					a_holder,
 					a_flags))
 			{
 				UpdateNodeIfGamePaused(params->root);
 			}
 		}
-		else
+		else if (auto info = LookupCachedActorInfo(a_holder))
 		{
-			if (auto info = LookupCachedActorInfo(a_objects))
+			if (ProcessTransformsImpl(
+					info->root,
+					info->npcRoot,
+					info->actor,
+					info->npc,
+					info->npcOrTemplate,
+					info->race,
+					info->sex,
+					a_holder,
+					a_flags))
 			{
-				if (ProcessTransformsImpl(
-						info->root,
-						info->npcRoot,
-						info->actor,
-						info->npc,
-						info->race,
-						info->sex,
-						a_objects,
-						a_flags))
-				{
-					UpdateNodeIfGamePaused(info->root);
-				}
+				UpdateNodeIfGamePaused(info->root);
 			}
 		}
 	}
 
 	template <class... Args>
 	inline constexpr INodeOverride::nodeOverrideParams_t make_node_override_params(
-		ActorObjectHolder& a_objects,
+		ActorObjectHolder& a_holder,
 		Args&&... a_args)
 	{
-		if (auto& params = a_objects.GetCurrentProcessParams())
+		if (auto& params = a_holder.GetCurrentProcessParams())
 		{
 			return INodeOverride::nodeOverrideParams_t{
 				static_cast<const CommonParams&>(*params)
@@ -3801,9 +3943,10 @@ namespace IED
 		NiNode*                          a_npcRoot,
 		Actor*                           a_actor,
 		TESNPC*                          a_npc,
+		TESNPC*                          a_npcOrTemplate,
 		TESRace*                         a_race,
 		ConfigSex                        a_sex,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 #if defined(IED_ENABLE_STATS_T)
@@ -3817,26 +3960,26 @@ namespace IED
 			return false;
 		}
 
-		if (a_objects.m_cmeNodes.empty() &&
-		    a_objects.m_weapNodes.empty())
+		if (a_holder.m_cmeNodes.empty() &&
+		    a_holder.m_weapNodes.empty())
 		{
 			return false;
 		}
 
 		auto params = make_node_override_params(
-			a_objects,
+			a_holder,
 			a_actor,
 			a_npc,
-			a_npc->GetFirstNonTemporaryOrThis(),
+			a_npcOrTemplate,
 			a_race,
 			a_root,
 			a_npcRoot,
-			a_objects,
+			a_holder,
 			*this);
 
 		configStoreNodeOverride_t::holderCache_t hc;
 
-		for (auto& e : a_objects.m_weapNodes)
+		for (auto& e : a_holder.m_weapNodes)
 		{
 			auto r = m_config.active.transforms.GetActorPlacement(
 				a_actor->formID,
@@ -3855,7 +3998,7 @@ namespace IED
 			}
 		}
 
-		for (auto& e : a_objects.m_cmeNodes)
+		for (auto& e : a_holder.m_cmeNodes)
 		{
 			auto r = m_config.active.transforms.GetActorTransform(
 				a_actor->formID,
@@ -3875,7 +4018,7 @@ namespace IED
 			}
 		}
 
-		for (auto& e : a_objects.m_cmeNodes)
+		for (auto& e : a_holder.m_cmeNodes)
 		{
 			if (e.second.cachedConfCME)
 			{
@@ -3899,7 +4042,7 @@ namespace IED
 		if (m_forceOrigWeapXFRM &&
 		    EngineExtensions::IsWeaponAdjustDisabled())
 		{
-			for (auto& e : a_objects.m_weapNodes)
+			for (auto& e : a_holder.m_weapNodes)
 			{
 				if (e.originalTransform)
 				{
@@ -3909,9 +4052,9 @@ namespace IED
 		}
 
 		if (GetSettings().data.enableXP32AA &&
-		    a_objects.m_animState.flags.test(ActorAnimationState::Flags::kNeedUpdate))
+		    a_holder.m_animState.flags.test(ActorAnimationState::Flags::kNeedUpdate))
 		{
-			UpdateAA(a_actor, a_objects.m_animState);
+			UpdateAA(a_actor, a_holder.m_animState);
 		}
 
 #if defined(IED_ENABLE_STATS_T)
@@ -4094,11 +4237,11 @@ namespace IED
 	void Controller::ResetGearImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_objects,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		RemoveActorGear(a_actor, a_handle, a_objects, a_flags);
-		EvaluateImpl(a_actor, a_handle, a_objects, a_flags);
+		RemoveActorGear(a_actor, a_handle, a_holder, a_flags);
+		EvaluateImpl(a_actor, a_handle, a_holder, a_flags);
 	}
 
 	void Controller::UpdateTransformSlotImpl(
@@ -4189,20 +4332,16 @@ namespace IED
 		};
 	}
 
-	const configBaseValues_t& Controller::GetConfigForActor(
-		const cachedActorInfo_t& a_info,
-		const configCustom_t&    a_config,
-		const ObjectEntryCustom& a_entry)
+	inline auto make_process_params(
+		const Controller::cachedActorInfo_t& a_info,
+		Controller&                          a_controller) noexcept
 	{
-		assert(a_entry.state);
-
-		ItemCandidateCollector collector(m_temp.sr, a_info.actor);
-
-		collector.Run(
-			*a_info.npc,
-			GetEntryDataList(a_info.actor));
-
-		CommonParams params{
+		return processParams_t{
+			a_info.actor,
+			a_info.handle,
+			a_info.sex,
+			ControllerUpdateFlags::kNone,
+			a_controller.GetTempData().sr,
 			a_info.actor,
 			a_info.npc,
 			a_info.npcOrTemplate,
@@ -4210,12 +4349,24 @@ namespace IED
 			a_info.root,
 			a_info.npcRoot,
 			a_info.objects,
-			*this
+			a_controller
 		};
+	}
+
+	const configBaseValues_t& Controller::GetConfigForActor(
+		const cachedActorInfo_t& a_info,
+		const configCustom_t&    a_config,
+		const ObjectEntryCustom& a_entry)
+	{
+		assert(a_entry.state);
+
+		auto params = make_process_params(
+			a_info,
+			*this);
 
 		if (auto eo = a_config.get_equipment_override_sfp(
-				collector.data,
-				{ a_entry.state->form, ItemData::GetItemSlotExtraGeneric(a_entry.state->form) },
+				{ a_entry.state->form,
+		          ItemData::GetItemSlotExtraGeneric(a_entry.state->form) },
 				params))
 		{
 			return *eo;
@@ -4231,26 +4382,13 @@ namespace IED
 	{
 		assert(a_entry.state);
 
-		ItemCandidateCollector collector(m_temp.sr, a_info.actor);
-
-		collector.Run(
-			*a_info.npc,
-			GetEntryDataList(a_info.actor));
-
-		CommonParams params{
-			a_info.actor,
-			a_info.npc,
-			a_info.npcOrTemplate,
-			a_info.race,
-			a_info.root,
-			a_info.npcRoot,
-			a_info.objects,
-			*this
-		};
+		auto params = make_process_params(
+			a_info,
+			*this);
 
 		if (auto eo = a_config.get_equipment_override_fp(
-				collector.data,
-				{ a_entry.state->form, a_entry.slotidex },
+				{ a_entry.state->form,
+		          a_entry.slotidex },
 				params))
 		{
 			return *eo;
@@ -4811,10 +4949,85 @@ namespace IED
 	}
 
 	auto Controller::LookupCachedActorInfo(
-		ActorObjectHolder& a_objects)
+		Actor*             a_actor,
+		ActorObjectHolder& a_holder)
 		-> std::optional<cachedActorInfo_t>
 	{
-		auto handle = a_objects.GetHandle();
+		if (a_actor != a_holder.m_actor)
+		{
+			Warning(
+				"%s [%u]: actor mismatch (%.8X != %.8X)",
+				__FUNCTION__,
+				__LINE__,
+				a_actor->formID.get(),
+				a_holder.m_actor->formID.get());
+		}
+
+		auto npc = a_actor->GetActorBase();
+		if (!npc)
+		{
+			return {};
+		}
+
+		auto race = a_actor->race;
+		if (!race)
+		{
+			race = npc->race;
+
+			if (!race)
+			{
+				return {};
+			}
+		}
+
+		auto root = a_actor->GetNiRootNode(false);
+		if (!root)
+		{
+			Warning(
+				"%s: %.8X: actor has no 3D",
+				__FUNCTION__,
+				a_actor->formID.get());
+
+			return {};
+		}
+
+		if (root != a_holder.m_root)
+		{
+			Warning(
+				"%s: %.8X: skeleton root mismatch",
+				__FUNCTION__,
+				a_actor->formID.get());
+
+			QueueReset(a_actor, ControllerUpdateFlags::kNone);
+
+			return {};
+		}
+
+		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		if (!npcroot)
+		{
+			return {};
+		}
+
+		return std::make_optional<cachedActorInfo_t>(
+			a_actor,
+			a_holder.GetHandle(),
+			npc,
+			npc->GetFirstNonTemporaryOrThis(),
+			race,
+			root,
+			npcroot,
+			npc->GetSex() == 1 ?
+				ConfigSex::Female :
+                ConfigSex::Male,
+			a_holder);
+	}
+
+	auto Controller::LookupCachedActorInfo(
+		ActorObjectHolder& a_holder)
+		-> std::optional<cachedActorInfo_t>
+	{
+		auto handle = a_holder.GetHandle();
 
 		NiPointer<TESObjectREFR> refr;
 		if (!handle.Lookup(refr))
@@ -4823,7 +5036,7 @@ namespace IED
 				"%s [%u]: %.8X: could not lookup by handle (%.8X)",
 				__FUNCTION__,
 				__LINE__,
-				a_objects.m_actorid,
+				a_holder.m_actorid,
 				handle.get());
 
 			return {};
@@ -4847,74 +5060,7 @@ namespace IED
 			return {};
 		}
 
-		if (actor != a_objects.m_actor)
-		{
-			Warning(
-				"%s [%u]: actor mismatch (%.8X != %.8X)",
-				__FUNCTION__,
-				__LINE__,
-				actor->formID.get(),
-				a_objects.m_actor->formID.get());
-		}
-
-		auto npc = actor->GetActorBase();
-		if (!npc)
-		{
-			return {};
-		}
-
-		auto race = actor->race;
-		if (!race)
-		{
-			race = npc->race;
-
-			if (!race)
-			{
-				return {};
-			}
-		}
-
-		auto root = actor->GetNiRootNode(false);
-		if (!root)
-		{
-			Warning(
-				"%s: %.8X: actor has no 3D",
-				__FUNCTION__,
-				actor->formID.get());
-
-			return {};
-		}
-
-		if (root != a_objects.m_root)
-		{
-			Warning(
-				"%s: %.8X: skeleton root mismatch",
-				__FUNCTION__,
-				actor->formID.get());
-
-			QueueReset(actor, ControllerUpdateFlags::kNone);
-
-			return {};
-		}
-
-		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
-		if (!npcroot)
-		{
-			return {};
-		}
-
-		return std::make_optional<cachedActorInfo_t>(
-			actor,
-			handle,
-			npc,
-			npc->GetFirstNonTemporaryOrThis(),
-			race,
-			root,
-			npcroot,
-			npc->GetSex() == 1 ?
-				ConfigSex::Female :
-                ConfigSex::Male,
-			a_objects);
+		return LookupCachedActorInfo(actor, a_holder);
 	}
 
 	void Controller::SaveLastEquippedItems(
@@ -5261,15 +5407,15 @@ namespace IED
 			a_exportFlags,
 			a_flags);
 
-		FillGlobalSlotConfig(tmp.slot);
-		CleanConfigStore(tmp);
+		FillGlobalSlotConfig(tmp->slot);
+		CleanConfigStore(*tmp);
 
-		if (!SaveConfigStore(PATHS::DEFAULT_CONFIG_USER, tmp))
+		if (!SaveConfigStore(PATHS::DEFAULT_CONFIG_USER, *tmp))
 		{
 			return false;
 		}
 
-		m_config.initial = std::move(tmp);
+		m_config.initial = std::move(*tmp);
 
 		return true;
 	}
@@ -5340,6 +5486,11 @@ namespace IED
 		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
 		{
 			throw std::exception("unsupported version");
+		}
+
+		if (m_forceFlushSaveData)
+		{
+			throw std::exception("flushing saved data");
 		}
 
 		stl::scoped_lock lock(m_lock);
@@ -5561,7 +5712,7 @@ namespace IED
 			}
 		}
 
-		ClearStoredHandles();
+		m_activeHandles.clear();
 	}
 
 	void Controller::ClearStoredHandles()

@@ -10,6 +10,7 @@ namespace IED
 
 			{ ConditionalVariableType::kInt32, UIVariableTypeSelectorWidgetStrings::i32 },
 			{ ConditionalVariableType::kFloat, UIVariableTypeSelectorWidgetStrings::f32 },
+			{ ConditionalVariableType::kForm, UIVariableTypeSelectorWidgetStrings::Form },
 
 		} };
 
@@ -66,6 +67,8 @@ namespace IED
 				return LS(UIVariableTypeSelectorWidgetStrings::i32);
 			case ConditionalVariableType::kFloat:
 				return LS(UIVariableTypeSelectorWidgetStrings::f32);
+			case ConditionalVariableType::kForm:
+				return LS(UIVariableTypeSelectorWidgetStrings::Form);
 			default:
 				return nullptr;
 			}

@@ -1,9 +1,13 @@
 #include "pch.h"
 
 #include "JSONConfigBaseParser.h"
+#include "JSONConfigBipedObjectListParser.h"
 #include "JSONConfigCachedFormParser.h"
 #include "JSONConfigCustomParser.h"
+#include "JSONConfigFixedStringListParser.h"
+#include "JSONConfigLastEquippedParser.h"
 #include "JSONConfigOverrideModelGroupParser.h"
+#include "JSONConfigVariableSource.h"
 #include "JSONEquipmentOverrideConditionListParser.h"
 #include "JSONFormListParser.h"
 #include "JSONFormParser.h"
@@ -19,10 +23,10 @@ namespace IED
 			Data::configCustom_t& a_out,
 			const std::uint32_t   a_version) const
 		{
-			Parser<Data::configBase_t>                     pbase(m_state);
-			Parser<Data::configRange_t>                    prange(m_state);
-			Parser<Data::configCachedForm_t>               pform(m_state);
-			Parser<Data::configModelGroup_t>               gparser(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
+			Parser<Data::configRange_t>      prange(m_state);
+			Parser<Data::configCachedForm_t> pform(m_state);
+			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			if (!pbase.Parse(a_in, a_out, a_version))
 			{
@@ -47,32 +51,55 @@ namespace IED
 				}
 			}
 
-			if (auto& bsl = a_in["bsl"])
+			if (a_version >= 3)
 			{
-				for (auto& e : bsl)
-				{
-					auto v = e.asUInt();
-					if (v >= stl::underlying(BIPED_OBJECT::kTotal))
-					{
-						Error("%s: bad biped slot index", __FUNCTION__);
-						return false;
-					}
+				Parser<Data::configLastEquipped_t> leparser(m_state);
 
-					a_out.bipedSlots.emplace_back(static_cast<BIPED_OBJECT>(v));
-				}
-			}
-
-			if (auto& bfc = a_in["bfc"])
-			{
-				Parser<Data::equipmentOverrideConditionList_t> cparser(m_state);
-
-				if (!cparser.Parse(bfc, a_out.bipedFilterConditions))
+				if (!leparser.Parse(a_in["leqp"], a_out.lastEquipped))
 				{
 					return false;
 				}
 			}
+			else
+			{
+				if (auto& bsl = a_in["bsl"])
+				{
+					Parser<Data::configBipedObjectList_t> parser(m_state);
+
+					if (!parser.Parse(bsl, a_out.lastEquipped.bipedSlots))
+					{
+						return false;
+					}
+				}
+
+				if (auto& bfc = a_in["bfc"])
+				{
+					Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+					if (!parser.Parse(bfc, a_out.lastEquipped.filterConditions))
+					{
+						return false;
+					}
+				}
+
+				a_out.move_legacy_flags_to_le();
+			}
 
 			if (!gparser.Parse(a_in["mgrp"], a_out.group))
+			{
+				return false;
+			}
+
+			Parser<Data::configVariableSource_t> vsparser(m_state);
+
+			if (!vsparser.Parse(a_in["vsrc"], a_out.varSource))
+			{
+				return false;
+			}
+
+			Parser<Data::configFixedStringList_t> fslparser(m_state);
+
+			if (!fslparser.Parse(a_in["fvars"], a_out.formVars))
 			{
 				return false;
 			}
@@ -90,9 +117,9 @@ namespace IED
 			const Data::configCustom_t& a_in,
 			Json::Value&                a_out) const
 		{
-			Parser<Data::configBase_t>                     pbase(m_state);
-			Parser<Data::configCachedForm_t>               pform(m_state);
-			Parser<Data::configModelGroup_t>               gparser(m_state);
+			Parser<Data::configBase_t>       pbase(m_state);
+			Parser<Data::configCachedForm_t> pform(m_state);
+			Parser<Data::configModelGroup_t> gparser(m_state);
 
 			pbase.Create(a_in, a_out);
 
@@ -120,21 +147,17 @@ namespace IED
 				pformList.Create(a_in.extraItems, a_out["extra"]);
 			}
 
-			if (!a_in.bipedSlots.empty())
-			{
-				auto& out = (a_out["bsl"] = Json::Value(Json::ValueType::arrayValue));
-				for (auto& e : a_in.bipedSlots)
-				{
-					out.append(stl::underlying(e));
-				}
-			}
+			Parser<Data::configLastEquipped_t> leparser(m_state);
 
-			if (!a_in.bipedFilterConditions.empty())
-			{
-				Parser<Data::equipmentOverrideConditionList_t> cparser(m_state);
+			leparser.Create(a_in.lastEquipped, a_out["leqp"]);
 
-				cparser.Create(a_in.bipedFilterConditions, a_out["bfc"]);
-			}
+			Parser<Data::configVariableSource_t> vsparser(m_state);
+
+			vsparser.Create(a_in.varSource, a_out["vsrc"]);
+
+			Parser<Data::configFixedStringList_t> fslparser(m_state);
+
+			fslparser.Create(a_in.formVars, a_out["fvars"]);
 
 			gparser.Create(a_in.group, a_out["mgrp"]);
 

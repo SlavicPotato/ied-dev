@@ -6,11 +6,13 @@
 
 namespace IED
 {
-	void ObjectEntryBase::reset(
-		Game::ObjectRefHandle a_handle,
-		NiPointer<NiNode>&    a_root,
-		NiPointer<NiNode>&    a_root1p)
+	bool ObjectEntryBase::reset(
+		Game::ObjectRefHandle    a_handle,
+		const NiPointer<NiNode>& a_root,
+		const NiPointer<NiNode>& a_root1p)
 	{
+		bool result;
+
 		if (state)
 		{
 			for (auto& e : state->dbEntries)
@@ -18,19 +20,30 @@ namespace IED
 				e->accessed = IPerfCounter::Query();
 			}
 
-			if (EngineExtensions::SceneRendering() ||
-			    !ITaskPool::IsRunningOnCurrentThread())
+			result = true;
+		}
+		else
+		{
+			result = false;
+		}
+
+		if (EngineExtensions::SceneRendering() ||
+		    !ITaskPool::IsRunningOnCurrentThread())
+		{
+			if (state || effectShaderData)
 			{
 				struct DisposeStateTask :
 					public TaskDelegate
 				{
 				public:
 					DisposeStateTask(
-						std::unique_ptr<State>&& a_state,
-						Game::ObjectRefHandle    a_handle,
-						NiPointer<NiNode>&       a_root,
-						NiPointer<NiNode>&       a_root1p) :
+						std::unique_ptr<State>&&            a_state,
+						std::unique_ptr<EffectShaderData>&& a_effectShaderData,
+						const Game::ObjectRefHandle         a_handle,
+						const NiPointer<NiNode>&            a_root,
+						const NiPointer<NiNode>&            a_root1p) :
 						m_state(std::move(a_state)),
+						m_effectShaderData(std::move(a_effectShaderData)),
 						m_handle(a_handle),
 						m_root(a_root),
 						m_root1p(a_root1p)
@@ -39,9 +52,20 @@ namespace IED
 
 					virtual void Run() override
 					{
-						m_state->Cleanup(m_handle);
+						if (m_effectShaderData)
+						{
+							m_effectShaderData->ClearEffectShaderDataFromTree(m_root);
+							m_effectShaderData->ClearEffectShaderDataFromTree(m_root1p);
 
-						m_state.reset();
+							m_effectShaderData.reset();
+						}
+
+						if (m_state)
+						{
+							m_state->Cleanup(m_handle);
+
+							m_state.reset();
+						}
 					}
 
 					virtual void Dispose() override
@@ -50,74 +74,100 @@ namespace IED
 					}
 
 				private:
-					std::unique_ptr<State> m_state;
-					Game::ObjectRefHandle  m_handle;
-					NiPointer<NiNode>      m_root;
-					NiPointer<NiNode>      m_root1p;
-				};
-
-				ITaskPool::AddPriorityTask<DisposeStateTask>(
-					std::move(state),
-					a_handle,
-					a_root,
-					a_root1p);
-			}
-			else
-			{
-				state->Cleanup(a_handle);
-				state.reset();
-			}
-		}
-
-		if (effectShaderData)
-		{
-			if (EngineExtensions::SceneRendering() ||
-			    !ITaskPool::IsRunningOnCurrentThread())
-			{
-				struct DisposeEffectDataTask :
-					public TaskDelegate
-				{
-				public:
-					DisposeEffectDataTask(
-						std::unique_ptr<EffectShaderData>&& a_data,
-						NiPointer<NiNode>&                  a_root,
-						NiPointer<NiNode>&                  a_root1p) :
-						m_data(std::move(a_data)),
-						m_root(a_root),
-						m_root1p(a_root1p)
-					{
-					}
-
-					virtual void Run() override
-					{
-						m_data->ClearEffectShaderDataFromTree(m_root);
-						m_data->ClearEffectShaderDataFromTree(m_root1p);
-
-						m_data.reset();
-					}
-
-					virtual void Dispose() override
-					{
-						delete this;
-					}
-
-				private:
-					std::unique_ptr<EffectShaderData> m_data;
+					std::unique_ptr<State>            m_state;
+					std::unique_ptr<EffectShaderData> m_effectShaderData;
+					const Game::ObjectRefHandle       m_handle;
 					NiPointer<NiNode>                 m_root;
 					NiPointer<NiNode>                 m_root1p;
 				};
 
-				ITaskPool::AddPriorityTask<DisposeEffectDataTask>(
+				ITaskPool::AddPriorityTask<DisposeStateTask>(
+					std::move(state),
 					std::move(effectShaderData),
+					a_handle,
 					a_root,
 					a_root1p);
 			}
-			else
+		}
+		else
+		{
+			if (effectShaderData)
 			{
 				effectShaderData->ClearEffectShaderDataFromTree(a_root);
 				effectShaderData->ClearEffectShaderDataFromTree(a_root1p);
 
 				effectShaderData.reset();
+			}
+
+			if (state)
+			{
+				state->Cleanup(a_handle);
+
+				state.reset();
+			}
+		}
+
+		return result;
+	}
+
+	bool ObjectEntryBase::SetNodeVisible(bool a_switch) const noexcept
+	{
+		if (!state)
+		{
+			return false;
+		}
+
+		a_switch = !a_switch;
+
+		if (!state->hideCountdown &&
+		    a_switch == state->flags.test(ObjectEntryFlags::kInvisible))
+		{
+			return false;
+		}
+
+		state->hideCountdown = 0;
+		state->nodes.rootNode->SetHidden(a_switch);
+
+		state->flags.set(ObjectEntryFlags::kInvisible, a_switch);
+
+		return true;
+	}
+
+	bool ObjectEntryBase::DeferredHideNode(std::uint8_t a_delay) const noexcept
+	{
+		if (!a_delay)
+		{
+			return false;
+		}
+
+		if (!state)
+		{
+			return false;
+		}
+
+		if (state->flags.test(ObjectEntryFlags::kInvisible))
+		{
+			return false;
+		}
+
+		if (state->hideCountdown == 0)
+		{
+			state->hideCountdown = a_delay;
+		}
+
+		state->flags.set(ObjectEntryFlags::kInvisible);
+
+		return true;
+	}
+
+	void ObjectEntryBase::ResetDeferredHide() const noexcept
+	{
+		if (state)
+		{
+			if (state->flags.test(ObjectEntryFlags::kInvisible) && state->hideCountdown != 0)
+			{
+				state->flags.clear(ObjectEntryFlags::kInvisible);
+				state->hideCountdown = 0;
 			}
 		}
 	}

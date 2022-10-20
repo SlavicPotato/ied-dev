@@ -38,8 +38,8 @@ namespace IED
 				return a_params.actor->IsMount();
 			case Data::ExtraConditionType::kShoutEquipped:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->selectedPower);
-			/*case Data::ExtraConditionType::kInMerchantFaction:
-				return match_form_with_id<Tm, Tf>(a_match, a_params.actor->vendorFaction);*/
+			case Data::ExtraConditionType::kInMerchantFaction:
+				return a_params.is_in_merchant_faction();
 			case Data::ExtraConditionType::kCombatStyle:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.get_combat_style());
 			case Data::ExtraConditionType::kClass:
@@ -75,11 +75,11 @@ namespace IED
 			case Data::ExtraConditionType::kHumanoidSkeleton:
 				return a_params.objects.HasHumanoidSkeleton();
 			case Data::ExtraConditionType::kIsPlayer:
-				return a_params.is_player();
+				return a_params.objects.IsPlayer();
 			case Data::ExtraConditionType::kBribedByPlayer:
-				return !a_params.is_player() && a_cached.flags2.test(Actor::Flags2::kBribedByPlayer);
+				return !a_params.objects.IsPlayer() && a_cached.flags2.test(Actor::Flags2::kBribedByPlayer);
 			case Data::ExtraConditionType::kAngryWithPlayer:
-				return !a_params.is_player() && a_cached.flags2.test(Actor::Flags2::kAngryWithPlayer);
+				return !a_params.objects.IsPlayer() && a_cached.flags2.test(Actor::Flags2::kAngryWithPlayer);
 			case Data::ExtraConditionType::kEssential:
 				return a_cached.flags2.test(Actor::Flags2::kEssential);
 			case Data::ExtraConditionType::kProtected:
@@ -108,6 +108,12 @@ namespace IED
 				return is_player_last_ridden_mount(a_params);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
 				return is_sds_shield_on_back_enabled(a_params);
+			case Data::ExtraConditionType::kIsFlying:
+				return a_cached.flying;
+			case Data::ExtraConditionType::kIsLayingDown:
+				return a_params.get_laying_down();
+			case Data::ExtraConditionType::kInPlayerEnemyFaction:
+				return a_params.is_in_player_enemy_faction();
 			default:
 				return false;
 			}
@@ -340,7 +346,7 @@ namespace IED
 			}
 			else
 			{
-				return a_params.get_using_furniture();
+				return a_params.is_using_furniture();
 			}
 		}
 
@@ -807,11 +813,11 @@ namespace IED
 			const Tm&                a_match,
 			const CachedFactionData& a_cached)
 		{
-			if (a_match.form.get_id())
+			if (auto form = a_match.form.get_form<TESFaction>())
 			{
 				auto& data = a_cached.GetFactionContainer();
 
-				auto it = data.find(a_match.form.get_id());
+				auto it = data.find(form);
 				if (it == data.end())
 				{
 					return false;
@@ -819,7 +825,10 @@ namespace IED
 
 				if (a_match.flags.test(Tf::kExtraFlag1))
 				{
-					return compare(a_match.compOperator, it->second, a_match.factionRank);
+					return compare(
+						a_match.compOperator,
+						it->second,
+						a_match.factionRank);
 				}
 				else
 				{
@@ -845,6 +854,7 @@ namespace IED
 				case ConditionalVariableType::kFloat:
 					return compare(a_match.compOperator, static_cast<float>(a_data.i32), a_match.f32a);
 				}
+				break;
 			case ConditionalVariableType::kFloat:
 				switch (a_match.condVarType)
 				{
@@ -853,6 +863,13 @@ namespace IED
 				case ConditionalVariableType::kFloat:
 					return compare(a_match.compOperator, a_data.f32, a_match.f32a);
 				}
+				break;
+				/*case ConditionalVariableType::kForm:
+				if (a_match.condVarType == ConditionalVariableType::kForm)
+				{
+					return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form.get_id().get());
+				}
+				break;*/
 			}
 
 			return false;
@@ -888,130 +905,147 @@ namespace IED
 			return false;
 		}
 
+		template <class Tm>
+		inline constexpr bool do_var_match_id(
+			CommonParams& a_params,
+			Game::FormID  a_id,
+			const Tm&     a_match)
+		{
+			auto& data = get_actor_object_map(a_params);
+
+			auto ita = data.find(a_id);
+			if (ita != data.end())
+			{
+				auto& vdata = ita->second.GetVariables();
+
+				auto it = vdata.find(a_match.s0);
+				if (it != vdata.end())
+				{
+					return do_var_match(it->second, a_match);
+				}
+			}
+
+			return false;
+		}
+
 		template <class Tm, class Tf>
 		constexpr bool match_variable(
 			CommonParams& a_params,
 			const Tm&     a_match)
 		{
-			switch (a_match.vcTarget)
+			switch (a_match.vcSource)
 			{
-			case Data::VariableConditionTarget::kAll:
+			case Data::VariableConditionSource::kAny:
+
+				return do_var_match_all_filtered(
+					a_params,
+					a_match,
+					[](auto&) { return true; });
+
+				break;
+
+			case Data::VariableConditionSource::kSelf:
+
+				if (a_match.flags.test(Tf::kNegateMatch2))
 				{
 					return do_var_match_all_filtered(
 						a_params,
 						a_match,
-						[](auto&) { return true; });
+						[fid = a_params.objects.GetActorFormID()](auto& a_e) [[msvc::forceinline]] {
+							return a_e.first != fid;
+						});
 				}
+				else
+				{
+					auto& vdata = a_params.objects.GetVariables();
+
+					auto it = vdata.find(a_match.s0);
+					if (it != vdata.end())
+					{
+						return do_var_match(it->second, a_match);
+					}
+				}
+
 				break;
 
-			case Data::VariableConditionTarget::kSelf:
+			case Data::VariableConditionSource::kActor:
+
+				if (auto fid = a_match.form.get_id())
 				{
-					if (a_match.flags.test(Tf::kNegateMatch2))
+					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid = a_params.objects.GetActorFormID()](auto& a_e) {
+							[fid](auto& a_e) [[msvc::forceinline]] {
 								return a_e.first != fid;
 							});
 					}
 					else
 					{
-						auto& vdata = a_params.objects.GetVariables();
-
-						auto it = vdata.find(a_match.s0);
-						if (it != vdata.end())
-						{
-							return do_var_match(it->second, a_match);
-						}
-					}
-				}
-				break;
-
-			case Data::VariableConditionTarget::kActor:
-				{
-					if (auto fid = a_match.form.get_id())
-					{
-						if (a_match.flags.test(Tf::kNegateMatch1))
-						{
-							return do_var_match_all_filtered(
-								a_params,
-								a_match,
-								[fid](auto& a_e) {
-									return a_e.first != fid;
-								});
-						}
-						else
-						{
-							auto& data = get_actor_object_map(a_params);
-
-							auto ita = data.find(fid);
-							if (ita != data.end())
-							{
-								auto& vdata = ita->second.GetVariables();
-
-								auto it = vdata.find(a_match.s0);
-								if (it != vdata.end())
-								{
-									return do_var_match(it->second, a_match);
-								}
-							}
-						}
+						return do_var_match_id(a_params, fid, a_match);
 					}
 				}
 
 				break;
 
-			case Data::VariableConditionTarget::kNPC:
+			case Data::VariableConditionSource::kNPC:
+
+				if (auto fid = a_match.form.get_id())
 				{
-					if (auto fid = a_match.form.get_id())
+					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
-						if (a_match.flags.test(Tf::kNegateMatch1))
-						{
-							return do_var_match_all_filtered(
-								a_params,
-								a_match,
-								[fid](auto& a_e) {
-									return a_e.second.GetNPCTemplateFormID() != fid;
-								});
-						}
-						else
-						{
-							return do_var_match_all_filtered(
-								a_params,
-								a_match,
-								[fid](auto& a_e) {
-									return a_e.second.GetNPCTemplateFormID() == fid;
-								});
-						}
+						return do_var_match_all_filtered(
+							a_params,
+							a_match,
+							[fid](auto& a_e) [[msvc::forceinline]] {
+								return a_e.second.GetNPCTemplateFormID() != fid;
+							});
+					}
+					else
+					{
+						return do_var_match_all_filtered(
+							a_params,
+							a_match,
+							[fid](auto& a_e) [[msvc::forceinline]] {
+								return a_e.second.GetNPCTemplateFormID() == fid;
+							});
 					}
 				}
 
 				break;
 
-			case Data::VariableConditionTarget::kRace:
+			case Data::VariableConditionSource::kRace:
+
+				if (auto fid = a_match.form.get_id())
 				{
-					if (auto fid = a_match.form.get_id())
+					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
-						if (a_match.flags.test(Tf::kNegateMatch1))
-						{
-							return do_var_match_all_filtered(
-								a_params,
-								a_match,
-								[fid](auto& a_e) {
-									return a_e.second.GetRaceFormID() != fid;
-								});
-						}
-						else
-						{
-							return do_var_match_all_filtered(
-								a_params,
-								a_match,
-								[fid](auto& a_e) {
-									return a_e.second.GetRaceFormID() == fid;
-								});
-						}
+						return do_var_match_all_filtered(
+							a_params,
+							a_match,
+							[fid](auto& a_e) [[msvc::forceinline]] {
+								return a_e.second.GetRaceFormID() != fid;
+							});
 					}
+					else
+					{
+						return do_var_match_all_filtered(
+							a_params,
+							a_match,
+							[fid](auto& a_e) [[msvc::forceinline]] {
+								return a_e.second.GetRaceFormID() == fid;
+							});
+					}
+				}
+
+				break;
+
+			case Data::VariableConditionSource::kPlayerHorse:
+
+				if (auto actor = a_params.get_last_ridden_player_horse())
+				{
+					return do_var_match_id(a_params, actor->formID, a_match);
 				}
 
 				break;

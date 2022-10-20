@@ -205,8 +205,8 @@ namespace IED
 			}
 
 			PostClear(
-				GetData(a_handle).data,
-				a_params.entry.data,
+				GetData(a_handle).transformData,
+				a_params.entry.transformData,
 				a_params.name);
 		}
 
@@ -240,7 +240,7 @@ namespace IED
 				m_controller.RequestEvaluateTransformsRace(a_handle, true);
 			}
 
-			a_params.entry.data = GetData(a_handle).data;
+			a_params.entry.transformData = GetData(a_handle).transformData;
 		}
 
 		void UINodeOverrideEditorRace::OnClearAllPlacement(

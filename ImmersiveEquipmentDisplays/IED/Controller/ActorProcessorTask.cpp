@@ -8,6 +8,7 @@
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/StringHolder.h"
+#include "IED/Util/Common.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Sky.h>
@@ -27,14 +28,7 @@ namespace IED
 	{
 		auto state = a_entry.state.get();
 
-		if (!state)
-		{
-			return;
-		}
-
 		const auto& nodes = state->nodes;
-
-		const bool visible = nodes.rootNode->IsVisible();
 
 		if (!nodes.ref)
 		{
@@ -78,7 +72,7 @@ namespace IED
 		}
 
 		if (state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    visible)
+		    nodes.rootNode->IsVisible())
 		{
 			if (state->transform.scale)
 			{
@@ -271,16 +265,10 @@ namespace IED
 	}
 
 	static void UpdateActorGearAnimations(
+		TESObjectREFR*           a_actor,
 		const ActorObjectHolder& a_holder,
 		float                    a_step)
 	{
-		NiPointer<TESObjectREFR> refr;
-
-		if (!a_holder.GetHandle().Lookup(refr))
-		{
-			return;
-		}
-
 		struct TLSData
 		{
 			std::uint8_t  unk000[0x768];  // 000
@@ -295,10 +283,10 @@ namespace IED
 		tlsUnk768      = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
-		data.reference    = refr;
-		data.shouldUpdate = refr->GetMustUpdate();
+		data.reference    = a_actor;
+		data.shouldUpdate = a_actor->GetMustUpdate();
 
-		refr->ModifyAnimationUpdateData(data);
+		a_actor->ModifyAnimationUpdateData(data);
 
 		a_holder.UpdateAllAnimationGraphs(data);
 
@@ -322,6 +310,7 @@ namespace IED
 
 		if (!EngineExtensions::ParallelAnimationUpdatesEnabled() &&
 		    m_runAnimationUpdates &&
+		    !m_controller.m_objects.empty() &&
 		    !Game::IsPaused())
 		{
 			animUpdateData.emplace(Game::Unk2f6b948::GetSteps());
@@ -329,24 +318,21 @@ namespace IED
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
+			auto& state = e.m_state;
+
 			NiPointer<TESObjectREFR> refr;
 			if (!e.GetHandle().Lookup(refr))
 			{
+				state.cellAttached = false;
 				continue;
 			}
 
 			auto actor = refr->As<Actor>();
-			if (!actor)
+			if (!Util::Common::IsREFRValid(actor))
 			{
+				state.cellAttached = false;
 				continue;
 			}
-
-			if (!actor->formID)
-			{
-				continue;
-			}
-
-			auto& state = e.m_state;
 
 			auto cell = actor->GetParentCell();
 			if (cell && cell->IsAttached())
@@ -363,7 +349,7 @@ namespace IED
 				continue;
 			}
 
-			if (state.UpdateState(actor))
+			if (state.UpdateState(actor, cell))
 			{
 				e.RequestEvalDefer();
 			}
@@ -381,7 +367,12 @@ namespace IED
 			{
 				e.m_lastLFStateCheck = m_timer.GetStartTime();
 
+				/*PerfTimer pt;
+				pt.Start();*/
+
 				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
+
+				//_DMESSAGE("%.8X: %f [%zu]", actor->formID, pt.Stop(), state.GetNumFactions());
 
 				if (e.m_wantLFUpdate)
 				{
@@ -389,6 +380,34 @@ namespace IED
 					e.RequestEval();
 				}
 
+				if (e.m_wantLFVarUpdate)
+				{
+					e.m_wantLFVarUpdate = false;
+					e.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
+				}
+			}
+
+			if (IPerfCounter::delta_us(
+					e.m_lastHFStateCheck,
+					m_timer.GetStartTime()) >= ActorObjectHolder::STATE_CHECK_INTERVAL_HIGH)
+			{
+				e.m_lastHFStateCheck = m_timer.GetStartTime();
+
+				if (e.m_wantHFUpdate)
+				{
+					e.m_wantHFUpdate = false;
+					e.RequestEval();
+				}
+			}
+
+			if (animUpdateData)
+			{
+				float step =
+					e.m_actorid == Data::IData::GetPlayerRefID() ?
+						animUpdateData->steps.player :
+                        animUpdateData->steps.npc;
+
+				UpdateActorGearAnimations(actor, e, step);
 			}
 
 			if (e.m_flags.test(ActorObjectHolderFlags::kWantEval))
@@ -406,26 +425,25 @@ namespace IED
 				}
 			}
 
-			auto& cvdata = m_controller.m_config.active.condvars;
-
 			if (e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate) ||
 			    e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
 			{
+				auto& cvdata = m_controller.m_config.active.condvars;
+
 				if (!cvdata.empty())
 				{
-					if (auto info = m_controller.LookupCachedActorInfo(e))
+					if (auto info = m_controller.LookupCachedActorInfo(actor, e))
 					{
 						auto& params = e.CreateProcessParams(
-							info->actor,
+							info->actor.get(),
 							info->handle,
-							e.IsFemale() ?
-								Data::ConfigSex::Female :
-                                Data::ConfigSex::Male,
-							ControllerUpdateFlags::kPlaySound,
+							info->sex,
+							ControllerUpdateFlags::kPlaySound |
+								ControllerUpdateFlags::kFailVariableCondition,
 							m_controller.m_temp.sr,
 							actor,
 							info->npc,
-							info->npc->GetFirstNonTemporaryOrThis(),
+							info->npcOrTemplate,
 							info->race,
 							info->root,
 							info->npcRoot,
@@ -434,12 +452,14 @@ namespace IED
 
 						if (m_controller.UpdateVariableMap(
 								params,
-								m_controller.m_config.active.condvars,
+								cvdata,
 								e.GetVariables()))
 						{
-							m_controller.RequestLFEvaluateAll(i);
-							e.RequestEval();
+							m_controller.RequestHFEvaluateAll(i);
+							e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
 						}
+
+						params.flags.clear(ControllerUpdateFlags::kFailVariableCondition);
 					}
 				}
 			}
@@ -447,8 +467,7 @@ namespace IED
 
 		for (auto& [i, e] : m_controller.m_objects)
 		{
-			if (!e.m_state.cellAttached ||
-			    !e.GetActor()->formID)
+			if (!e.m_state.cellAttached)
 			{
 				e.ClearCurrentProcessParams();
 				continue;
@@ -465,52 +484,32 @@ namespace IED
 
 			e.ClearCurrentProcessParams();
 
-			if (animUpdateData)
-			{
-				float step =
-					e.m_actorid == Data::IData::GetPlayerRefID() ?
-						animUpdateData->steps.player :
-                        animUpdateData->steps.npc;
-
-				UpdateActorGearAnimations(e, step);
-			}
-
 			bool update = false;
 
-			for (auto& f : e.m_entriesSlot)
-			{
-				UpdateNode(e, f);
-
-				if (f.hideCountdown)
+			e.visit([&](auto& a_v) [[msvc::forceinline]] {
+				if (!a_v.state)
 				{
-					if (!f.state)
-					{
-						f.hideCountdown = 0;
-					}
-					else
-					{
-						f.hideCountdown--;
+					return;
+				}
 
-						if (f.hideCountdown == 0)
+				UpdateNode(e, a_v);
+
+				if constexpr (
+					std::is_same_v<
+						std::remove_cvref_t<decltype(a_v)>,
+						ObjectEntrySlot>)
+				{
+					if (a_v.state->hideCountdown)
+					{
+						if (--a_v.state->hideCountdown == 1)
 						{
-							update |= f.state->nodes.rootNode->IsVisible();
+							update = true;
 
-							f.state->nodes.rootNode->SetVisible(false);
+							a_v.state->nodes.rootNode->SetVisible(false);
 						}
 					}
 				}
-			}
-
-			for (auto& f : e.m_entriesCustom)
-			{
-				for (auto& g : f)
-				{
-					for (auto& h : g.second)
-					{
-						UpdateNode(e, h.second);
-					}
-				}
-			}
+			});
 
 			if (update)
 			{

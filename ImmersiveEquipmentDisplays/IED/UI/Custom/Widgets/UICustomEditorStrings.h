@@ -20,6 +20,7 @@ namespace IED
 			DisableIfOccupied        = 4209,
 			LastEquippedFilterCond   = 4210,
 			SkipOccupiedSlots        = 4211,
+			UseFormVariable          = 4212,
 		};
 	}
 }

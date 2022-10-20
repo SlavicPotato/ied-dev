@@ -1,12 +1,15 @@
 #pragma once
 
+#include "ConfigCommon.h"
+
 namespace IED
 {
 
 	enum class ConditionalVariableType : std::uint32_t
 	{
 		kInt32 = 0,
-		kFloat = 1
+		kFloat = 1,
+		kForm  = 2
 	};
 
 	struct conditionalVariableValue_t
@@ -19,18 +22,29 @@ namespace IED
 			DataVersion1 = 1
 		};
 
+		conditionalVariableValue_t() noexcept = default;
+
+		inline constexpr conditionalVariableValue_t(
+			Game::FormID a_form) noexcept :
+			form(a_form)
+		{
+		}
+
 		union
 		{
-			std::uint8_t bytes[8]{ 0 };
+			std::uint8_t primitives[8]{ 0 };
 			std::int32_t i32;
 			float        f32;
 		};
+
+		Data::configCachedForm_t form;
 
 	private:
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)
 		{
-			a_ar& bytes;
+			a_ar& primitives;
+			a_ar& form;
 		}
 	};
 
@@ -53,6 +67,13 @@ namespace IED
 		{
 		}
 
+		inline constexpr conditionalVariableStorage_t(
+			Game::FormID a_form) noexcept :
+			conditionalVariableValue_t(a_form),
+			type(ConditionalVariableType::kForm)
+		{
+		}
+
 		[[nodiscard]] inline constexpr bool operator==(
 			const conditionalVariableStorage_t& a_rhs) const noexcept
 		{
@@ -67,12 +88,14 @@ namespace IED
 				return i32 == a_rhs.i32;
 			case ConditionalVariableType::kFloat:
 				return f32 == a_rhs.f32;
+			case ConditionalVariableType::kForm:
+				return form == a_rhs.form;
 			default:
 				return false;
 			}
 		}
 
-		template <class T>
+		/*template <class T>
 		inline constexpr bool set_value(T a_value) noexcept
 		{
 			bool result;
@@ -102,7 +125,7 @@ namespace IED
 			}
 
 			return result;
-		}
+		}*/
 
 		ConditionalVariableType type{ ConditionalVariableType::kInt32 };
 

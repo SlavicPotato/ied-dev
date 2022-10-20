@@ -18,7 +18,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
-	//std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
+	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
@@ -42,23 +42,29 @@ namespace IED
 		m_npcid(a_npc->formID),
 		m_npcTemplateId(a_npc->GetFirstNonTemporaryOrThis()->formID),
 		m_raceid(a_race->formID),
+		m_female(a_npc->GetSex() == 1),
+		m_player(a_actor == *g_thePlayer),
 		//m_enableAnimEventForwarding(a_animEventForwarding),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root),
 		m_state(a_actor)
 	{
+		auto interval = IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
+
 		m_lastLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
-								 IPerfCounter::T(STATE_CHECK_INTERVAL_LOW / 20),
+								 interval / 20,
 								 std::memory_order_relaxed) %
-		                         IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
+		                         interval;
 
-		/*m_lastHFStateCheck = m_created +
+		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_HIGH);
+
+		m_lastHFStateCheck = m_created +
 		                     m_lfsc_delta_hf.fetch_add(
-								 IPerfCounter::T(4000),
+								 IPerfCounter::T(interval / 20),
 								 std::memory_order_relaxed) %
-		                         IPerfCounter::T(100000);*/
+		                         IPerfCounter::T(interval);
 
 		if (auto root1p = a_actor->Get3D1(true); root1p && root1p != a_root)
 		{
@@ -82,11 +88,9 @@ namespace IED
 			NodeOverrideData::GetHumanoidSkeletonSignatures()
 				.contains(m_skeletonID.signature());
 
-		m_female = a_npc->GetSex() == 1;
-
 		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 		{
-			CreateExtraCopyNode(a_actor, a_npcroot, e);
+			CreateExtraCopyNode(a_npcroot, e);
 		}
 
 		if (a_nodeOverrideEnabled &&
@@ -105,10 +109,10 @@ namespace IED
 				}
 			}
 
-			auto sh = BSStringHolder::GetSingleton();
-
 			auto const npcroot1p = m_root1p ?
-			                           FindNode(m_root1p, sh->m_npcroot) :
+			                           FindNode(
+										   m_root1p,
+										   BSStringHolder::GetSingleton()->m_npcroot) :
                                        nullptr;
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
@@ -390,10 +394,7 @@ namespace IED
 		const stl::fixed_string& a_name,
 		bool                     a_firstPerson) const
 	{
-		auto& cache =
-			a_firstPerson ?
-				m_skeletonCache1p :
-                m_skeletonCache;
+		auto& cache = GetSkeletonCache(a_firstPerson);
 
 		if (cache)
 		{
@@ -411,10 +412,7 @@ namespace IED
 		const stl::fixed_string& a_name,
 		bool                     a_firstPerson) const
 	{
-		auto& cache =
-			a_firstPerson ?
-				m_skeletonCache1p :
-                m_skeletonCache;
+		auto& cache = GetSkeletonCache(a_firstPerson);
 
 		if (cache)
 		{
@@ -532,7 +530,7 @@ namespace IED
 		case Data::ObjectSlot::kAmmo:
 			id = GearNodeID::kQuiver;
 			break;
-		default:			
+		default:
 			return false;
 		}
 
@@ -594,10 +592,14 @@ namespace IED
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(
-		Actor*                                        a_actor,
 		NiNode*                                       a_npcroot,
 		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const
 	{
+		if (a_npcroot->GetObjectByName(a_entry.dst))
+		{
+			return;
+		}
+
 		auto source = FindNode(a_npcroot, a_entry.bssrc);
 		if (!source)
 		{
@@ -606,11 +608,6 @@ namespace IED
 
 		auto parent = source->m_parent;
 		if (!parent)
-		{
-			return;
-		}
-
-		if (FindChildObject(parent, a_entry.dst))
 		{
 			return;
 		}

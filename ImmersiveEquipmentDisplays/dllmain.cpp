@@ -81,10 +81,10 @@ extern "C" {
 
 		if (IAL::IsAE())
 		{
-			auto& iskse = ISKSE::GetSingleton();
+			auto& skse = ISKSE::GetSingleton();
 
-			iskse.SetPluginHandle(a_skse->GetPluginHandle());
-			iskse.OpenLog(a_skse->runtimeVersion);
+			skse.SetPluginHandle(a_skse->GetPluginHandle());
+			skse.OpenLog(a_skse->runtimeVersion);
 		}
 
 		gLog.Message(
@@ -167,7 +167,7 @@ extern "C" {
 		SKSEPluginVersionData::kVersionIndependentEx_None,
 		SKSEPluginVersionData::kVersionIndependent_AddressLibraryPostAE
 #if defined(SKMP_AE_POST_629)
-		| SKSEPluginVersionData::kVersionIndependent_StructsPost629
+			| SKSEPluginVersionData::kVersionIndependent_StructsPost629
 #endif
 		,
 		{ RUNTIME_VERSION_1_6_318, RUNTIME_VERSION_1_6_323, 0 },

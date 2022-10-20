@@ -8,8 +8,9 @@ namespace IED
 	{
 		enum class UIVariableTypeSelectorWidgetStrings : Localization::StringID
 		{
-			i32     = 7100,
-			f32     = 7101,
+			i32  = 7100,
+			f32  = 7101,
+			Form = 7102,
 		};
 	}
 }

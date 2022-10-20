@@ -73,6 +73,9 @@ namespace IED
 
 		m_disableNPCProcessing =
 			reader.GetBoolValue(SECT_DEBUG, "DisableNPCProcessing", false);
+		
+		m_forceFlushSaveData =
+			reader.GetBoolValue(SECT_DEBUG, "ForceFlushSaveData", false);
 
 		m_logLevel = ILog::TranslateLogLevel(reader.GetValue(SECT_GENERAL, "LogLevel", "debug"));
 

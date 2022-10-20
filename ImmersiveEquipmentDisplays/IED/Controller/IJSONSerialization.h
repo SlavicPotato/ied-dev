@@ -32,7 +32,7 @@ namespace IED
 			return m_lastException;
 		}
 
-		Data::configStore_t CreateFilteredConfigStore(
+		std::unique_ptr<Data::configStore_t> CreateFilteredConfigStore(
 			const Data::configStore_t&                     a_data,
 			stl::flag<ExportFlags>                         a_exportFlags,
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);

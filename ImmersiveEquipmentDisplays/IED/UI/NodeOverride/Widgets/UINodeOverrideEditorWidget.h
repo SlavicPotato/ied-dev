@@ -398,11 +398,6 @@ namespace IED
 
 			UIConditionParamEditorWidget m_condParamEditor;
 
-			struct
-			{
-				std::shared_ptr<const UIFormBrowser::tab_filter_type> form_common;
-			} m_type_filters;
-
 			char m_buffer1[260]{ 0 };
 
 			UIGenericFilter m_itemFilter;
@@ -416,17 +411,6 @@ namespace IED
 			m_itemFilter(true),
 			m_condParamEditor(a_controller)
 		{
-			m_type_filters.form_common = std::make_unique<
-				UIFormBrowser::tab_filter_type,
-				std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-				{ TESObjectWEAP::kTypeID,
-			      TESObjectARMO::kTypeID,
-			      TESAmmo::kTypeID,
-			      TESObjectLIGH::kTypeID,
-			      SpellItem::kTypeID,
-			      BGSHeadPart::kTypeID,
-			      IFormDatabase::EXTRA_TYPE_ARMOR });
-
 			m_condParamEditor.SetExtraInterface(this);
 		}
 
@@ -618,9 +602,9 @@ namespace IED
 
 				ImGui::PushID(e->first.c_str());
 
-				auto it = a_data.data.find(e->first);
+				auto it = a_data.transformData.find(e->first);
 
-				bool svar = it == a_data.data.end();
+				bool svar = it == a_data.transformData.end();
 
 				if (svar)
 				{
@@ -651,7 +635,7 @@ namespace IED
 
 					ImGui::Indent();
 
-					if (it != a_data.data.end())
+					if (it != a_data.transformData.end())
 					{
 						if (configClass != Data::ConfigClass::Global)
 						{
@@ -800,17 +784,17 @@ namespace IED
 						LS(CommonStrings::Clear, "1"),
 						nullptr,
 						false,
-						a_it != a_data.data.end() &&
+						a_it != a_data.transformData.end() &&
 							a_it->second.first == confClass))
 				{
-					if (a_it != a_data.data.end() &&
+					if (a_it != a_data.transformData.end() &&
 					    a_it->second.first == confClass)
 					{
-						a_data.data.erase(a_it);
+						a_data.transformData.erase(a_it);
 
 						OnClearTransform(a_handle, { a_name, a_data });
 
-						a_it = a_data.data.find(a_name);
+						a_it = a_data.transformData.find(a_name);
 					}
 				}
 
@@ -818,9 +802,9 @@ namespace IED
 						LS(CommonStrings::Reset, "2"),
 						nullptr,
 						false,
-						a_it != a_data.data.end()))
+						a_it != a_data.transformData.end()))
 				{
-					if (a_it != a_data.data.end())
+					if (a_it != a_data.transformData.end())
 					{
 						auto sex = GetSex();
 
@@ -834,7 +818,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				bool has = a_it != a_data.data.end();
+				bool has = a_it != a_data.transformData.end();
 
 				if (ImGui::MenuItem(
 						LS(CommonStrings::Copy, "3"),
@@ -862,7 +846,7 @@ namespace IED
 
 						if (!has)
 						{
-							a_it = a_data.data.try_emplace(a_name).first;
+							a_it = a_data.transformData.try_emplace(a_name).first;
 						}
 
 						a_it->second.second(sex) = *clipData;
@@ -3225,22 +3209,22 @@ namespace IED
 
 							if (e.fbf.type == Data::NodeOverrideConditionType::Variable)
 							{
-								switch (e.vcTarget)
+								switch (e.vcSource)
 								{
-								case Data::VariableConditionTarget::kActor:
+								case Data::VariableConditionSource::kActor:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Actor));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 									break;
-								case Data::VariableConditionTarget::kNPC:
+								case Data::VariableConditionSource::kNPC:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::NPC));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									break;
-								case Data::VariableConditionTarget::kRace:
+								case Data::VariableConditionSource::kRace:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Race));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									break;
 								default:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									break;
 								}
@@ -3392,11 +3376,6 @@ namespace IED
 								{
 								case Data::ExtraConditionType::kShoutEquipped:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Shout));
-									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
-									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
-									break;
-								case Data::ExtraConditionType::kInMerchantFaction:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Faction));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;
@@ -3569,8 +3548,8 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::CondVarType>(
 									e.condVarType,
 									e.s0);
-								m_condParamEditor.SetNext<ConditionParamItem::VarCondTarget>(
-									e.vcTarget);
+								m_condParamEditor.SetNext<ConditionParamItem::VarCondSource>(
+									e.vcSource);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
@@ -3834,7 +3813,7 @@ namespace IED
 					}
 					else
 					{
-						current.data->data.clear();
+						current.data->transformData.clear();
 						OnClearAllTransforms(current.handle, { *current.data });
 					}
 				});
@@ -3900,7 +3879,7 @@ namespace IED
 					{
 						paste_move_entries(
 							std::move(data.data.transformData),
-							current.data->data,
+							current.data->transformData,
 							data.sex,
 							dstSex,
 							GetConfigClass());
@@ -4266,7 +4245,7 @@ namespace IED
 		{
 			if (!a_exists)
 			{
-				auto r = a_data.data.insert_or_assign(a_params.name, a_params.entry);
+				auto r = a_data.transformData.insert_or_assign(a_params.name, a_params.entry);
 
 				OnUpdate(a_handle, { a_params.sex, r.first->first, r.first->second });
 			}
@@ -4625,7 +4604,6 @@ namespace IED
 					switch (match->extraCondType)
 					{
 					case Data::ExtraConditionType::kShoutEquipped:
-					case Data::ExtraConditionType::kInMerchantFaction:
 					case Data::ExtraConditionType::kCombatStyle:
 					case Data::ExtraConditionType::kClass:
 
@@ -4742,13 +4720,13 @@ namespace IED
 
 				case ConditionParamItem::Form:
 
-					switch (match->vcTarget)
+					switch (match->vcSource)
 					{
-					case Data::VariableConditionTarget::kActor:
-					case Data::VariableConditionTarget::kNPC:
-					case Data::VariableConditionTarget::kRace:
+					case Data::VariableConditionSource::kActor:
+					case Data::VariableConditionSource::kNPC:
+					case Data::VariableConditionSource::kRace:
 
-						result = ImGui::CheckboxFlagsT(
+						result |= ImGui::CheckboxFlagsT(
 							"!##ctl_neg_1",
 							stl::underlying(std::addressof(match->flags.value)),
 							stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
@@ -4763,11 +4741,11 @@ namespace IED
 
 					break;
 
-				case ConditionParamItem::VarCondTarget:
+				case ConditionParamItem::VarCondSource:
 
-					if (match->vcTarget == Data::VariableConditionTarget::kSelf)
+					if (match->vcSource == Data::VariableConditionSource::kSelf)
 					{
-						result = ImGui::CheckboxFlagsT(
+						result |= ImGui::CheckboxFlagsT(
 							"!##ctl_neg_2",
 							stl::underlying(std::addressof(match->flags.value)),
 							stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
@@ -4797,7 +4775,7 @@ namespace IED
 			{
 			case Data::NodeOverrideConditionType::Variable:
 
-				if (a_item == ConditionParamItem::VarCondTarget)
+				if (a_item == ConditionParamItem::VarCondSource)
 				{
 					match->form = {};
 				}
@@ -4863,7 +4841,7 @@ namespace IED
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:
-				m_condParamEditor.GetFormPicker().SetAllowedTypes(m_type_filters.form_common);
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			}

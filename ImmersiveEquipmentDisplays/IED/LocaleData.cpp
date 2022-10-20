@@ -13,7 +13,7 @@ namespace IED
 
 	void LocaleData::SetFromLang(const char* a_lang)
 	{
-		if (!_stricmp(a_lang, "english"))
+		if (_stricmp(a_lang, "english") == 0)
 		{
 			try
 			{

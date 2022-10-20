@@ -11,6 +11,7 @@ namespace IED
 		kImmediateTransformUpdate     = 1u << 4,
 		kWantEffectShaderConfigUpdate = 1u << 5,
 		kUseCachedParams              = 1u << 6,
+		kFailVariableCondition        = 1u << 7,
 
 		kAll      = kPlaySound,
 		kSoundAll = kPlaySound | kVisibilitySounds

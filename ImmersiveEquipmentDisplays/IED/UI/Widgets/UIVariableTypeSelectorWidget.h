@@ -28,7 +28,7 @@ namespace IED
 				std::pair<
 					ConditionalVariableType,
 					UIVariableTypeSelectorWidgetStrings>,
-				2>;
+				3>;
 
 			static data_type m_data;
 		};

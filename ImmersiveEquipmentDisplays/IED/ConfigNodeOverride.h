@@ -4,7 +4,7 @@
 #include "ConfigData.h"
 #include "ConfigLUIDTag.h"
 #include "ConfigTransform.h"
-#include "ConfigVariableConditionTarget.h"
+#include "ConfigVariableConditionSource.h"
 
 #include "ConditionalVariableStorage.h"
 
@@ -348,9 +348,9 @@ namespace IED
 			union
 			{
 				std::uint32_t           ui32c{ 0 };
-				VariableConditionTarget vcTarget;
+				VariableConditionSource vcSource;
 
-				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionTarget>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionSource>, std::uint32_t>);
 			};
 
 			union
@@ -804,19 +804,19 @@ namespace IED
 				ConfigClass                  a_initclass);
 
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
-			transform_data_type                data;
+			transform_data_type                transformData;
 			placement_data_type                placementData;
 
 			void clear() noexcept
 			{
 				flags = NodeOverrideHolderFlags::kNone;
-				data.clear();
+				transformData.clear();
 				placementData.clear();
 			}
 
 			inline bool empty() const noexcept
 			{
-				return data.empty() && placementData.empty();
+				return transformData.empty() && placementData.empty();
 			}
 
 			template <
@@ -828,7 +828,7 @@ namespace IED
 						 transform_data_type,
 						 configNodeOverrideEntryTransform_t>)
 			{
-				return data;
+				return transformData;
 			}
 
 			template <
@@ -888,7 +888,7 @@ namespace IED
 			{
 				for (auto& e : a_src.transformData)
 				{
-					a_dst.data.try_emplace(e.first, a_class, e.second);
+					a_dst.transformData.try_emplace(e.first, a_class, e.second);
 				}
 
 				for (auto& e : a_src.placementData)

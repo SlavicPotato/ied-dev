@@ -79,7 +79,7 @@ namespace IED
 				return;
 			}
 
-			if (!state->nodes.rootNode->IsVisible())
+			if (!a_entry.IsNodeVisible())
 			{
 				ImGui::TextColored(
 					UICommon::g_colorGreyed,

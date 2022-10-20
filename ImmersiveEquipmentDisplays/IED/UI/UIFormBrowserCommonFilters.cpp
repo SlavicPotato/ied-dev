@@ -2,6 +2,8 @@
 
 #include "UIFormBrowserCommonFilters.h"
 
+#include "UIAllowedModelTypes.h"
+
 namespace IED
 {
 	namespace UI
@@ -89,7 +91,27 @@ namespace IED
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
-					{ TESIdleForm::kTypeID })
+					{ TESIdleForm::kTypeID }),
+			
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESObjectWEAP::kTypeID,
+			          TESObjectARMO::kTypeID,
+			          TESAmmo::kTypeID,
+			          TESObjectLIGH::kTypeID,
+			          TESObjectMISC::kTypeID,
+			          IngredientItem::kTypeID,
+			          AlchemyItem::kTypeID,
+			          TESKey::kTypeID,
+			          TESObjectBOOK::kTypeID,
+			          TESSoulGem::kTypeID,
+			          ScrollItem::kTypeID,
+			          SpellItem::kTypeID,
+			          IFormDatabase::EXTRA_TYPE_ARMOR }),
+			
+				std::make_unique<
+					UIFormBrowser::tab_filter_type>(g_allowedModelTypes)
 
 			} }
 		{

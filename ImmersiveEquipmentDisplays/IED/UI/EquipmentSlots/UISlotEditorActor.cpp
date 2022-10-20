@@ -24,6 +24,8 @@ namespace IED
 			UITransformSliderWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
 			UISimpleStringSetWidget(a_controller),
+			UISimpleStringListWidget(a_controller),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{}
 
@@ -454,7 +456,7 @@ namespace IED
 					ss << " [ScbLeft]";
 				}
 
-				if (!slot.state->nodes.rootNode->IsVisible())
+				if (!slot.IsNodeVisible())
 				{
 					ss << " ";
 					ss << L(UIWidgetCommonStrings::HiddenBrackets);

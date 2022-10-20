@@ -4,7 +4,9 @@
 
 #include "UIConditionalVariablesEditorWidget.h"
 
+#include "IED/UI/UIAllowedModelTypes.h"
 #include "IED/UI/UIClipboard.h"
+#include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
 #include "UIConditionalVariablesEditorWidgetStrings.h"
@@ -15,7 +17,7 @@ namespace IED
 	{
 		UIConditionalVariablesEditorWidget::UIConditionalVariablesEditorWidget(
 			Controller& a_controller) :
-			UIEquipmentOverrideConditionsWidget(a_controller),
+			UILastEquippedWidget(a_controller),
 			UIVariableTypeSelectorWidget(a_controller),
 			m_itemFilter(true)
 		{
@@ -260,17 +262,21 @@ namespace IED
 		}
 
 		bool UIConditionalVariablesEditorWidget::DrawVariableValue(
-			ConditionalVariableType     a_type,
-			conditionalVariableValue_t& a_value)
+			ConditionalVariableType                     a_type,
+			Data::configConditionalVariableValueData_t& a_data)
 		{
+			bool result;
+
+			ImGui::PushID("value");
+
 			switch (a_type)
 			{
 			case ConditionalVariableType::kInt32:
 
-				return ImGui::InputScalar(
-					LS(CommonStrings::Value, "2"),
+				result = ImGui::InputScalar(
+					LS(CommonStrings::Value, "1"),
 					ImGuiDataType_U32,
-					a_value.bytes,
+					a_data.value.primitives,
 					nullptr,
 					nullptr,
 					"%d",
@@ -281,10 +287,10 @@ namespace IED
 
 			case ConditionalVariableType::kFloat:
 
-				return ImGui::InputScalar(
-					LS(CommonStrings::Value, "2"),
+				result = ImGui::InputScalar(
+					LS(CommonStrings::Value, "1"),
 					ImGuiDataType_Float,
-					a_value.bytes,
+					a_data.value.primitives,
 					nullptr,
 					nullptr,
 					"%f",
@@ -293,10 +299,52 @@ namespace IED
 
 				break;
 
+			case ConditionalVariableType::kForm:
+
+				result = DrawVariableForm(a_type, a_data);
+
+				break;
+
 			default:
 
-				return false;
+				result = false;
+
+				break;
 			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		bool UIConditionalVariablesEditorWidget::DrawVariableForm(
+			ConditionalVariableType                     a_type,
+			Data::configConditionalVariableValueData_t& a_data)
+		{
+			bool result = false;
+
+			result |= ImGui::CheckboxFlagsT(
+				LS(UIWidgetCommonStrings::LastEquipped, "0"),
+				stl::underlying(std::addressof(a_data.flags.value)),
+				stl::underlying(Data::ConditionalVariableValueDataFlags::kLastEquipped));
+
+			if (a_data.flags.test(Data::ConditionalVariableValueDataFlags::kLastEquipped))
+			{
+				DrawLastEquippedPanel(a_data.lastEquipped, [&] {
+					result = true;
+				});
+			}
+			else
+			{
+				auto& fp = m_condParamEditor.GetFormPicker();
+
+				fp.SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::ModelTypes));
+				fp.SetFormBrowserEnabled(true);
+
+				result |= fp.DrawFormPicker("1", static_cast<Localization::StringID>(CommonStrings::Form), a_data.value.form);
+			}
+
+			return result;
 		}
 
 		void UIConditionalVariablesEditorWidget::DrawVariableTree(
@@ -346,7 +394,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					if (DrawVariableValue(a_entry.defaultValue.type, a_var.value))
+					if (DrawVariableValue(a_entry.defaultValue.value.type, a_var.value))
 					{
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -715,15 +763,14 @@ namespace IED
 			{
 				ImGui::Spacing();
 
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -6.0f);
+
 				if (a_data.second.vars.empty())
 				{
 					if (DrawVariableTypeSelectorWidget(
-							a_data.second.defaultValue.type))
+							a_data.second.defaultValue.value.type))
 					{
-						std::memset(
-							a_data.second.defaultValue.bytes,
-							0x0,
-							sizeof(a_data.second.defaultValue.bytes));
+						static_cast<conditionalVariableValue_t&>(a_data.second.defaultValue.value) = {};
 
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -736,17 +783,19 @@ namespace IED
 						"%s: %s",
 						LS(CommonStrings::Type),
 						variable_type_to_desc(
-							a_data.second.defaultValue.type));
+							a_data.second.defaultValue.value.type));
 				}
 
 				if (DrawVariableValue(
-						a_data.second.defaultValue.type,
+						a_data.second.defaultValue.value.type,
 						a_data.second.defaultValue))
 				{
 					OnCondVarEntryChange(
 						{ a_holder,
 					      CondVarEntryChangeAction::kReset });
 				}
+
+				ImGui::PopItemWidth();
 
 				ImGui::Spacing();
 
