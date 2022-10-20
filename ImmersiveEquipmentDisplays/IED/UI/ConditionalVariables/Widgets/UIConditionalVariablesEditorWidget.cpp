@@ -261,6 +261,12 @@ namespace IED
 			ImGui::PopID();
 		}
 
+		void UIConditionalVariablesEditorWidget::DrawCurrentVariableValue(
+			Data::configConditionalVariablesEntryListValue_t& a_data)
+		{
+			
+		}
+
 		bool UIConditionalVariablesEditorWidget::DrawVariableValue(
 			ConditionalVariableType                     a_type,
 			Data::configConditionalVariableValueData_t& a_data)
@@ -858,9 +864,22 @@ namespace IED
 				{
 					if (auto data = GetCurrentData())
 					{
-						auto r = data->get().data.emplace(*clipData);
+						auto& v = data->get().data;
 
-						if (r.second)
+						bool update = false;
+
+						if (v.contains(clipData->first))
+						{
+							stl::fixed_string n(*clipData->first + " (p)");
+
+							update = v.emplace(n, clipData->second).second;
+						}
+						else
+						{
+							update = v.emplace(*clipData).second;
+						}
+
+						if (update)
 						{
 							OnCondVarEntryChange(
 								{ *data,

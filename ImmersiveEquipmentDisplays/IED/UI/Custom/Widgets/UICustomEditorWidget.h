@@ -750,21 +750,48 @@ namespace IED
 				[[fallthrough]];
 			default:
 
-				if (m_formPicker.DrawFormPicker(
-						"fp",
-						mode == CustomObjectMode::kLastEquipped ?
-							static_cast<Localization::StringID>(CommonStrings::Default) :
-                            static_cast<Localization::StringID>(CommonStrings::Item),
-						data.form,
-						GetTipText(
-							mode == CustomObjectMode::kLastEquipped ?
-								UITip::CustomFormLastEquipped :
-                                UITip::CustomForm)))
+				if (!data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask))
 				{
-					OnBaseConfigChange(
-						a_handle,
-						std::addressof(a_params),
-						PostChangeAction::Evaluate);
+					if (ImGui::CheckboxFlagsT(
+							LS(UICustomEditorString::UseFormVariable, "4"),
+							stl::underlying(std::addressof(data.customFlags.value)),
+							stl::underlying(Data::CustomFlags::kVariableMode)))
+					{
+						OnBaseConfigChange(
+							a_handle,
+							std::addressof(a_params),
+							PostChangeAction::Evaluate);
+					}
+
+					if (data.customFlags.test(Data::CustomFlags::kVariableMode))
+					{
+						ImGui::Indent();
+
+						DrawVariableModePanel(a_handle, a_params);
+
+						ImGui::Unindent();
+					}
+				}
+
+				if (!(!data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask) &&
+				      data.customFlags.test(Data::CustomFlags::kVariableMode)))
+				{
+					if (m_formPicker.DrawFormPicker(
+							"fp",
+							mode == CustomObjectMode::kLastEquipped ?
+								static_cast<Localization::StringID>(CommonStrings::Default) :
+                                static_cast<Localization::StringID>(CommonStrings::Item),
+							data.form,
+							GetTipText(
+								mode == CustomObjectMode::kLastEquipped ?
+									UITip::CustomFormLastEquipped :
+                                    UITip::CustomForm)))
+					{
+						OnBaseConfigChange(
+							a_handle,
+							std::addressof(a_params),
+							PostChangeAction::Evaluate);
+					}
 				}
 
 				break;
@@ -855,11 +882,7 @@ namespace IED
 
 				UICommon::PushDisabled(disabled);
 
-				if (!(!data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask) &&
-				    data.customFlags.test(Data::CustomFlags::kVariableMode)))
-				{
-					DrawFormSelectors(a_handle, a_params);
-				}
+				DrawFormSelectors(a_handle, a_params);
 
 				ImGui::Spacing();
 
@@ -1110,28 +1133,6 @@ namespace IED
 						ImGui::PopItemWidth();
 
 						ImGui::Unindent();
-					}
-					else
-					{
-						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::UseFormVariable, "a"),
-								stl::underlying(std::addressof(data.customFlags.value)),
-								stl::underlying(Data::CustomFlags::kVariableMode)))
-						{
-							OnBaseConfigChange(
-								a_handle,
-								std::addressof(a_params),
-								PostChangeAction::Evaluate);
-						}
-
-						if (data.customFlags.test(Data::CustomFlags::kVariableMode))
-						{
-							ImGui::Indent();
-
-							DrawVariableModePanel(a_handle, a_params);
-
-							ImGui::Unindent();
-						}
 					}
 
 					ImGui::TreePop();

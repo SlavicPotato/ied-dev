@@ -87,10 +87,13 @@ namespace IED
 				Data::configConditionalVariablesHolder_t&    a_holder,
 				Data::configConditionalVariablesEntryList_t& a_data);
 
+			void DrawCurrentVariableValue(
+				Data::configConditionalVariablesEntryListValue_t& a_data);
+
 			bool DrawVariableValue(
 				ConditionalVariableType                     a_type,
 				Data::configConditionalVariableValueData_t& a_data);
-
+			
 			bool DrawVariableForm(
 				ConditionalVariableType                     a_type,
 				Data::configConditionalVariableValueData_t& a_data);
