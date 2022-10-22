@@ -358,7 +358,7 @@ namespace IED
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
-			auto it = SelectInventoryFormLastEquipped(
+			auto it = DoLastEquippedSelection(
 				a_params,
 				a_config.lastEquipped,
 				[&](auto& a_itemData) {

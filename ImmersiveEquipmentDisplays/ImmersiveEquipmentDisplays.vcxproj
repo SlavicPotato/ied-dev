@@ -456,6 +456,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\NodeOverrideData.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusMisc.h" />
+    <ClInclude Include="IED\PapyrusInterface\PapyrusMiscImpl.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h" />
@@ -936,6 +938,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\NodeOverrideData.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusMisc.cpp" />
+    <ClCompile Include="IED\PapyrusInterface\PapyrusMiscImpl.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
     <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp" />

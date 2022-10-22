@@ -10,6 +10,8 @@ namespace IED
 
 			{ Data::VariableSource::kActor, UIVariableSourceSelectorWidgetStrings::Actor },
 			{ Data::VariableSource::kPlayerHorse, UIVariableSourceSelectorWidgetStrings::PlayerHorse },
+			{ Data::VariableSource::kMountingActor, UIVariableSourceSelectorWidgetStrings::MountingActor },
+			{ Data::VariableSource::kMountedActor, UIVariableSourceSelectorWidgetStrings::MountedActor },
 
 		} };
 
@@ -66,6 +68,10 @@ namespace IED
 				return LS(UIVariableSourceSelectorWidgetStrings::Actor);
 			case Data::VariableSource::kPlayerHorse:
 				return LS(UIVariableSourceSelectorWidgetStrings::PlayerHorse);
+			case Data::VariableSource::kMountingActor:
+				return LS(UIVariableSourceSelectorWidgetStrings::MountingActor);
+			case Data::VariableSource::kMountedActor:
+				return LS(UIVariableSourceSelectorWidgetStrings::MountedActor);
 			default:
 				return nullptr;
 			}

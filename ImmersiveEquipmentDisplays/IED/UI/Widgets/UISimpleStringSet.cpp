@@ -19,7 +19,8 @@ namespace IED
 		bool UISimpleStringSetWidget::DrawStringSetTree(
 			const char*                   a_id,
 			Localization::StringID        a_title,
-			Data::configFixedStringSet_t& a_data)
+			Data::configFixedStringSet_t& a_data,
+			ImGuiTreeNodeFlags            a_treeFlags)
 		{
 			ImGui::PushID(a_id);
 
@@ -49,7 +50,7 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth,
+					a_treeFlags,
 					"%s",
 					LS(a_title)))
 			{

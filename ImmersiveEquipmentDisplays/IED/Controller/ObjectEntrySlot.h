@@ -14,7 +14,6 @@ namespace IED
 		Data::actorStateSlotEntry_t slotState;
 		Data::ObjectSlot            slotid{ Data::ObjectSlot::kMax };
 		Data::ObjectSlotExtra       slotidex{ Data::ObjectSlotExtra::kNone };
-
 	};
 
 	using ObjectSlotArray = std::array<

@@ -52,6 +52,7 @@ namespace IED
 			IsFlying                = 5441,
 			IsLayingDown            = 5442,
 			InPlayerEnemyFaction    = 5443,
+			IsHorse                 = 5444,
 		};
 	}
 }

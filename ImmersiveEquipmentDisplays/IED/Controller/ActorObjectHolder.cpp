@@ -71,17 +71,11 @@ namespace IED
 			m_root1p = root1p->AsNode();
 		}
 
-		if (auto r = SkeletonCache::GetSingleton().Get(a_actor))
-		{
-			m_skeletonCache = r->second;
-		}
+		m_skeletonCache = SkeletonCache::GetSingleton().Get2(a_actor);
 
 		if (m_root1p && a_syncToFirstPersonSkeleton)
 		{
-			if (auto r = SkeletonCache::GetSingleton().Get(a_actor, true))
-			{
-				m_skeletonCache1p = r->second;
-			}
+			m_skeletonCache1p = SkeletonCache::GetSingleton().Get2(a_actor, true);
 		}
 
 		m_humanoidSkeleton =
@@ -184,15 +178,6 @@ namespace IED
 				static_cast<Data::ObjectSlot>(i));
 		}
 
-		/*if (m_humanoidSkeleton)
-		{
-			auto sh = BSStringHolder::GetSingleton();
-
-			m_spine2      = ::Util::Node::FindNode(a_npcroot, sh->m_npcSpine2);
-			m_animObjectR = ::Util::Node::FindNode(a_npcroot, sh->m_animObjectR);
-			m_rightHand   = ::Util::Node::FindNode(a_npcroot, sh->m_npcRhand);
-		}*/
-
 		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
 		{
 			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
@@ -260,8 +245,7 @@ namespace IED
 			}
 		}
 
-		m_owner.IncrementCounter();
-		m_lastEquipped->accessed = m_owner.GetCounterValue();
+		m_lastEquipped->accessed = m_owner.IncrementCounter();
 
 		std::optional<Game::ObjectRefHandle> handle;
 
@@ -394,9 +378,7 @@ namespace IED
 		const stl::fixed_string& a_name,
 		bool                     a_firstPerson) const
 	{
-		auto& cache = GetSkeletonCache(a_firstPerson);
-
-		if (cache)
+		if (auto& cache = GetSkeletonCache(a_firstPerson))
 		{
 			auto it = cache->find(a_name);
 			if (it != cache->end())
@@ -412,9 +394,7 @@ namespace IED
 		const stl::fixed_string& a_name,
 		bool                     a_firstPerson) const
 	{
-		auto& cache = GetSkeletonCache(a_firstPerson);
-
-		if (cache)
+		if (auto& cache = GetSkeletonCache(a_firstPerson))
 		{
 			auto it = cache->find(a_name);
 			if (it != cache->end())
@@ -429,7 +409,7 @@ namespace IED
 	void ActorObjectHolder::UpdateAllAnimationGraphs(
 		const BSAnimationUpdateData& a_data) const
 	{
-		visit([&](auto& a_e) {
+		visit([&](auto& a_e) [[msvc::forceinline]] {
 			if (auto& state = a_e.state)
 			{
 				state->UpdateAnimationGraphs(a_data);

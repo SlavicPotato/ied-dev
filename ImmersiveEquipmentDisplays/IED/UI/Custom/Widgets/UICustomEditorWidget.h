@@ -848,7 +848,9 @@ namespace IED
 			if (DrawStringListTree(
 					"ctl_2",
 					static_cast<Localization::StringID>(CommonStrings::Variables),
-					data.formVars))
+					data.formVars,
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen))
 			{
 				OnBaseConfigChange(
 					a_handle,
@@ -914,7 +916,7 @@ namespace IED
 
 						if (ImGui::SliderFloat(
 								LS(CommonStrings::Percent, "2"),
-								std::addressof(data.chance),
+								std::addressof(data.probability),
 								0.0f,
 								100.0f,
 								"%.2f",

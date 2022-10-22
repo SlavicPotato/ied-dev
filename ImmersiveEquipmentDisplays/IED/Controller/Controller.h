@@ -420,11 +420,6 @@ namespace IED
 
 		void SaveSettings(bool a_defer, bool a_dirtyOnly, bool a_debug = false);
 
-		[[nodiscard]] inline constexpr const auto& GetObjects() const noexcept
-		{
-			return m_objects;
-		}
-
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);
 		void QueueUpdateNPCInfo(Game::FormID a_npc);
@@ -462,6 +457,11 @@ namespace IED
 		{
 			return m_bipedCache.max_size();
 		}
+		
+		[[nodiscard]] inline constexpr auto &GetBipedDataCache() const noexcept
+		{
+			return m_bipedCache;
+		}
 
 		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
 		{
@@ -476,6 +476,11 @@ namespace IED
 
 		void RunUpdateBipedSlotCache(
 			processParams_t& a_params);
+
+		[[nodiscard]] inline constexpr auto GetEvalCounter() const noexcept
+		{
+			return m_evalCounter;
+		}
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -944,7 +949,8 @@ namespace IED
 
 		struct
 		{
-			SlotResults sr;
+			SlotResults       sr;
+			UseCountContainer uc;
 		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };
@@ -956,6 +962,8 @@ namespace IED
 		bool m_enableCorpseScatter{ false };
 		bool m_forceOrigWeapXFRM{ false };
 		bool m_forceFlushSaveData{ false };
+
+		std::uint64_t m_evalCounter{ 0 };
 
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)

@@ -2,8 +2,6 @@
 
 #include "ObjectEntryBase.h"
 
-#include "IED/EngineExtensions.h"
-
 namespace IED
 {
 	bool ObjectEntryBase::reset(
@@ -169,27 +167,6 @@ namespace IED
 				state->flags.clear(ObjectEntryFlags::kInvisible);
 				state->hideCountdown = 0;
 			}
-		}
-	}
-
-	void ObjectEntryBase::State::UpdateAnimationGraphs(
-		const BSAnimationUpdateData& a_data)
-	{
-		for (auto& e : groupObjects)
-		{
-			if (e.second.weapAnimGraphManagerHolder)
-			{
-				EngineExtensions::UpdateAnimationGraph(
-					e.second.weapAnimGraphManagerHolder.get(),
-					a_data);
-			}
-		}
-
-		if (weapAnimGraphManagerHolder)
-		{
-			EngineExtensions::UpdateAnimationGraph(
-				weapAnimGraphManagerHolder.get(),
-				a_data);
 		}
 	}
 

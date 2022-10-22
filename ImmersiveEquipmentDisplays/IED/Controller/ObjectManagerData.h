@@ -111,12 +111,12 @@ namespace IED
 			return r.first->second;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetData() const noexcept
+		[[nodiscard]] inline constexpr auto& GetObjects() const noexcept
 		{
 			return m_objects;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetData() noexcept
+		[[nodiscard]] inline constexpr auto& GetObjects() noexcept
 		{
 			return m_objects;
 		}

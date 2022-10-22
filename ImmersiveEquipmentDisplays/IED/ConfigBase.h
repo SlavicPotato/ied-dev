@@ -14,8 +14,13 @@ namespace IED
 
 	struct formSlotPair_t
 	{
+		formSlotPair_t(
+			TESForm*              a_form,
+			Data::ObjectSlotExtra a_slot);
+
 		TESForm*              form;
 		Data::ObjectSlotExtra slot;
+		Data::ObjectSlot      slot2;
 	};
 
 	struct CommonParams;
@@ -132,11 +137,11 @@ namespace IED
 				processParams_t& a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override(
-				processParams_t&                  a_params,
+				processParams_t&               a_params,
 				const equipmentOverrideList_t& a_list);
 
 			const equipmentOverride_t* get_equipment_override_fp(
-				const formSlotPair_t&  a_checkForm,
+				const formSlotPair_t& a_checkForm,
 				processParams_t&      a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override_fp(
@@ -145,7 +150,7 @@ namespace IED
 				const equipmentOverrideList_t& a_list);
 
 			const equipmentOverride_t* get_equipment_override_sfp(
-				const formSlotPair_t&  a_checkForm,
+				const formSlotPair_t& a_checkForm,
 				processParams_t&      a_params) const;
 
 			static const equipmentOverride_t* get_equipment_override_sfp(
@@ -157,11 +162,11 @@ namespace IED
 				processParams_t& a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader_fp(
-				const formSlotPair_t&  a_checkForm,
+				const formSlotPair_t& a_checkForm,
 				processParams_t&      a_params) const;
 
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
-				const formSlotPair_t&  a_checkForm,
+				const formSlotPair_t& a_checkForm,
 				processParams_t&      a_params) const;
 
 		private:
@@ -183,7 +188,7 @@ namespace IED
 
 			static constexpr bool match_equipped(
 				const equipmentOverrideCondition_t& a_match,
-				processParams_t&                       a_params);
+				processParams_t&                    a_params);
 
 			static constexpr bool match_equipped_or_slot(
 				const equipmentOverrideCondition_t& a_match,
@@ -200,7 +205,7 @@ namespace IED
 		public:
 			static bool do_match(
 				const equipmentOverrideConditionList_t& a_matches,
-				processParams_t&                           a_params,
+				processParams_t&                        a_params,
 				bool                                    a_default);
 
 			static bool do_match_fp(
@@ -214,7 +219,7 @@ namespace IED
 				const formSlotPair_t&                   a_checkForm,
 				processParams_t&                        a_params,
 				bool                                    a_default);
-			
+
 			static bool do_match_eos(
 				const equipmentOverrideConditionList_t& a_matches,
 				processParams_t&                        a_params,

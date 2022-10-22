@@ -232,6 +232,8 @@ namespace IED
 				switch (a_matchType)
 				{
 				case EquipmentOverrideConditionType::Race:
+				case EquipmentOverrideConditionType::Actor:
+				case EquipmentOverrideConditionType::NPC:
 				case EquipmentOverrideConditionType::Furniture:
 				case EquipmentOverrideConditionType::Group:
 				case EquipmentOverrideConditionType::Location:

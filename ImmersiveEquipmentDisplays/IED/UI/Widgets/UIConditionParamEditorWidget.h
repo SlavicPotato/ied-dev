@@ -99,7 +99,6 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(UIConditionParamEditorTempFlags);
 
 		class UIConditionParamEditorWidget :
-			public UIObjectSlotSelectorWidget,
 			public UIBipedObjectSelectorWidget,
 			public UICMNodeSelectorWidget,
 			public UIFormLookupInterface,

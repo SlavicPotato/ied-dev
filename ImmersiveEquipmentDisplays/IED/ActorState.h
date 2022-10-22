@@ -20,9 +20,11 @@ namespace IED
 			{
 				DataVersion1 = 1,
 				DataVersion2 = 2,
+				DataVersion3 = 3,
 			};
 
 			configFormZeroMissing_t lastEquipped;
+			configFormZeroMissing_t lastSlotted;
 			long long               lastSeenEquipped{ std::numeric_limits<long long>::min() };
 
 		private:
@@ -31,6 +33,7 @@ namespace IED
 			{
 				a_ar& lastEquipped;
 				a_ar& lastSeenEquipped;
+				a_ar& lastSlotted;
 			}
 
 			template <class Archive>
@@ -48,6 +51,11 @@ namespace IED
 				}
 
 				a_ar& lastSeenEquipped;
+
+				if (a_version >= DataVersion3)
+				{
+					a_ar& lastSlotted;
+				}
 
 				if (!lastEquipped)
 				{
@@ -124,7 +132,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::actorStateSlotEntry_t,
-	::IED::Data::actorStateSlotEntry_t::Serialization::DataVersion2);
+	::IED::Data::actorStateSlotEntry_t::Serialization::DataVersion3);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::actorStateEntry_t,

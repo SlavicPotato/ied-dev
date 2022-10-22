@@ -10,6 +10,15 @@
 
 namespace IED
 {
+	formSlotPair_t::formSlotPair_t(
+		TESForm*              a_form,
+		Data::ObjectSlotExtra a_slot) :
+		form(a_form),
+		slot(a_slot),
+		slot2(Data::ItemData::ExtraSlotToSlot(a_slot))
+	{
+	}
+
 	namespace Data
 	{
 		const equipmentOverride_t* configBase_t::get_equipment_override(
@@ -552,11 +561,15 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Actor:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.actor);
+				return Conditions::match_actor<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
+				return Conditions::match_npc<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -879,11 +892,15 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Actor:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.actor);
+				return Conditions::match_actor<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
+				return Conditions::match_npc<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -1058,7 +1075,6 @@ namespace IED
 		}
 
 		static bool match_presence_slots(
-			const collectorData_t&              a_data,
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm,
 			CommonParams&                       a_params)
@@ -1070,7 +1086,7 @@ namespace IED
 				auto it = std::find_if(
 					slots.begin(),
 					slots.end(),
-					[&](auto& a_e) {
+					[&](auto& a_e) [[msvc::forceinline]] {
 						return a_e.GetFormIfActive() == a_checkForm.form;
 					});
 
@@ -1109,6 +1125,58 @@ namespace IED
 			{
 				return it->second.count > 0;
 			}
+		}
+
+		static bool match_presence_available(
+			const processParams_t&              a_params,
+			const equipmentOverrideCondition_t& a_match,
+			const formSlotPair_t&               a_checkForm)
+		{
+			const auto& fdata = a_params.collector.data;
+
+			auto form = a_checkForm.form;
+
+			auto it = fdata.forms.find(form->formID);
+			if (it == fdata.forms.end())
+			{
+				return false;
+			}
+
+			std::int64_t count = it->second.count;
+
+			const auto slot = a_checkForm.slot2;
+
+			if (it->second.equipped)
+			{
+				count--;
+			}
+			else if (slot < ObjectSlot::kMax)
+			{
+				if (a_params.objects.GetSlot(slot).GetFormIfActive() == form)
+				{
+					count--;
+				}
+			}
+
+			if (it->second.equippedLeft)
+			{
+				count--;
+			}
+			else if (auto leftSlot = ItemData::GetLeftSlot(slot); leftSlot < ObjectSlot::kMax)
+			{
+				if (a_params.objects.GetSlot(leftSlot).GetFormIfActive() == form)
+				{
+					count--;
+				}
+			}
+
+			auto itc = a_params.useCount.find(form->formID);
+			if (itc != a_params.useCount.end())
+			{
+				count -= itc->second;
+			}
+
+			return count > 0;
 		}
 
 		template <
@@ -1267,11 +1335,15 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Actor:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.actor);
+				return Conditions::match_actor<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::NPC:
 
-				return Conditions::match_form(a_match.form.get_id(), a_params.npcOrTemplate);
+				return Conditions::match_npc<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(a_params, a_match);
 
 			case EquipmentOverrideConditionType::Furniture:
 
@@ -1354,9 +1426,28 @@ namespace IED
 
 			case EquipmentOverrideConditionType::Presence:
 				{
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag3))
+					{
+						if (!Conditions::is_ammo_bolt(a_checkForm.form))
+						{
+							return false;
+						}
+					}
+
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag2))
+					{
+						return match_presence_available(
+							a_params,
+							a_match,
+							a_checkForm);
+					}
+
 					if (!a_match.flags.test_any(EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
 					{
-						return match_presence_count(a_params.collector.data, a_match, a_checkForm);
+						return match_presence_count(
+							a_params.collector.data,
+							a_match,
+							a_checkForm);
 					}
 
 					std::uint32_t           result = 0;
@@ -1364,7 +1455,11 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += match_presence_equipped(a_params.collector.data, a_match, a_checkForm, a_params);
+						result += match_presence_equipped(
+							a_params.collector.data,
+							a_match,
+							a_checkForm,
+							a_params);
 
 						if (result == min)
 						{
@@ -1374,7 +1469,10 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 					{
-						result += match_presence_slots(a_params.collector.data, a_match, a_checkForm, a_params);
+						result += match_presence_slots(
+							a_match,
+							a_checkForm,
+							a_params);
 					}
 
 					return result == min;

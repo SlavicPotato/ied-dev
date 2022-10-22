@@ -17,13 +17,16 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			for (auto it = data.begin(); it != data.end(); ++it)
+			for (auto &e : data)
 			{
-				auto r = a_out.try_emplace(it.key().asString());
+				auto r = a_out.try_emplace(e["key"].asString());
 
-				if (!parser.Parse((*it), r.first->second))
+				if (r.second)
 				{
-					return false;
+					if (!parser.Parse(e["data"], r.first->second))
+					{
+						return false;
+					}
 				}
 			}
 
@@ -35,13 +38,17 @@ namespace IED
 			const Data::configConditionalVariablesEntryList_t& a_data,
 			Json::Value&                                       a_out) const
 		{
-			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
+			auto& data = (a_out["data"] = Json::Value(Json::ValueType::arrayValue));
 
 			Parser<Data::configConditionalVariablesEntry_t> parser(m_state);
 
-			for (auto& e : a_data)
+			for (auto& e : a_data.getvec())
 			{
-				parser.Create(e.second, data[*e.first]);
+				auto& v = data.append(Json::Value(Json::ValueType::objectValue));
+
+				v["key"] = *e->first;
+				
+				parser.Create(e->second, v["data"]);
 			}
 		}
 

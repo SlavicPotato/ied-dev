@@ -85,7 +85,11 @@ namespace IED
 
 		for (auto& f : a_entry.data->data)
 		{
-			std::erase_if(f.forms, [](auto& a_v) { return !a_v; });
+			std::erase_if(
+				f.forms,
+				[](auto& a_v) [[msvc::forceinline]] {
+					return !a_v || a_v.IsTemporary();
+				});
 
 			while (!f.forms.empty() &&
 			       f.forms.size() > m_maxFormsPerSlot)

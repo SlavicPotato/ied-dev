@@ -18,9 +18,10 @@ namespace IED
 		}
 
 		bool UISimpleStringListWidget::DrawStringListTree(
-			const char*                   a_id,
-			Localization::StringID        a_title,
-			Data::configFixedStringList_t& a_data)
+			const char*                    a_id,
+			Localization::StringID         a_title,
+			Data::configFixedStringList_t& a_data,
+			ImGuiTreeNodeFlags             a_treeFlags)
 		{
 			ImGui::PushID(a_id);
 
@@ -50,7 +51,7 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth,
+						a_treeFlags,
 					"%s",
 					LS(a_title)))
 			{

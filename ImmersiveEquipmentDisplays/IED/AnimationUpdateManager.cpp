@@ -31,7 +31,7 @@ namespace IED
 	{
 		ASSERT(m_running.load() == true);
 
-		auto& data = a_controller->GetData();
+		auto& data = a_controller->GetObjects();
 
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
@@ -47,7 +47,7 @@ namespace IED
 	{
 		stl::scoped_lock lock(a_controller->GetLock());
 
-		auto& data = a_controller->GetData();
+		auto& data = a_controller->GetObjects();
 
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())

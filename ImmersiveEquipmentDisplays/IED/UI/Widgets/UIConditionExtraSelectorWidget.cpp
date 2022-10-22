@@ -30,6 +30,7 @@ namespace IED
 			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
 			{ Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying },
 			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
+			{ Data::ExtraConditionType::kIsHorse, UIConditionExtraSelectorWidgetStrings::IsHorse },
 			{ Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown },
 			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
 			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
@@ -196,6 +197,8 @@ namespace IED
 				return LS(UIConditionExtraSelectorWidgetStrings::IsLayingDown);
 			case Data::ExtraConditionType::kInPlayerEnemyFaction:
 				return LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
+			case Data::ExtraConditionType::kIsHorse:
+				return LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
 			default:
 				return nullptr;
 			}

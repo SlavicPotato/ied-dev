@@ -2,6 +2,8 @@
 
 #include "UILastEquippedWidget.h"
 
+#include "UIObjectTypeSelectorWidget.h"
+
 #include "IED/Controller/Controller.h"
 
 #include "IED/UI/Custom/Widgets/UICustomEditorStrings.h"
@@ -22,7 +24,7 @@ namespace IED
 			Data::configLastEquipped_t& a_data,
 			update_func_t               a_updateFunc)
 		{
-			ImGui::PushID("leqp");
+			ImGui::PushID("leqp_panel");
 
 			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
 				a_data.filterConditions,
@@ -99,6 +101,24 @@ namespace IED
 					}))
 			{
 				a_updateFunc();
+			}
+
+			if (ImGui::CheckboxFlagsT(
+					LS(UICustomEditorString::FallBackToSlotted, "ctl_1"),
+					stl::underlying(std::addressof(a_data.flags.value)),
+					stl::underlying(Data::LastEquippedFlags::kFallBackToSlotted)))
+			{
+				a_updateFunc();
+			}
+
+			if (a_data.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
+			{
+				if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
+					LS(CommonStrings::Slot, "ctl_2"),
+					a_data.slot))
+				{
+					a_updateFunc();
+				}
 			}
 
 			ImGui::PopID();

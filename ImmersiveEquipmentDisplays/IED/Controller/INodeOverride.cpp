@@ -543,11 +543,15 @@ namespace IED
 
 		case Data::NodeOverrideConditionType::Actor:
 
-			return Conditions::match_form(a_data.form.get_id(), a_params.actor);
+			return Conditions::match_actor<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
 		case Data::NodeOverrideConditionType::NPC:
 
-			return Conditions::match_form(a_data.form.get_id(), a_params.npcOrTemplate);
+			return Conditions::match_npc<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(a_params, a_data);
 
 		case Data::NodeOverrideConditionType::Furniture:
 

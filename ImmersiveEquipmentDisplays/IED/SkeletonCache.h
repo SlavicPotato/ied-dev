@@ -26,6 +26,10 @@ namespace IED
 		std::optional<data_type::value_type> Get(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson = false);
+		
+		actor_entry_type Get2(
+			TESObjectREFR* a_refr,
+			bool           a_firstPerson = false);
 
 		[[nodiscard]] inline auto GetSize() const noexcept
 		{

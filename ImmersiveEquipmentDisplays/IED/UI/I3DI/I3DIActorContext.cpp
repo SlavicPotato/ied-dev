@@ -82,7 +82,7 @@ namespace IED
 
 		bool I3DIActorContext::Update()
 		{
-			auto& data = m_controller.GetData();
+			auto& data = m_controller.GetObjects();
 
 			auto it = data.find(m_actor);
 			if (it == data.end())

@@ -142,44 +142,16 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Actor, "6"))
+					if (LCG_MI(CommonStrings::Actor, "6"))
 					{
-						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Actor);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_aoNewEntryActorID))
-						{
-							if (m_aoNewEntryActorID)
-							{
-								result.action    = BaseConfigEditorAction::Insert;
-								result.form      = m_aoNewEntryActorID;
-								result.entryType = Data::EquipmentOverrideConditionType::Actor;
-
-								ImGui::CloseCurrentPopup();
-							}
-						}
-
-						ImGui::EndMenu();
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Actor;
 					}
 
-					if (LCG_BM(CommonStrings::NPC, "7"))
+					if (LCG_MI(CommonStrings::NPC, "7"))
 					{
-						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::NPC);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_aoNewEntryNPCID))
-						{
-							if (m_aoNewEntryNPCID)
-							{
-								result.action    = BaseConfigEditorAction::Insert;
-								result.form      = m_aoNewEntryNPCID;
-								result.entryType = Data::EquipmentOverrideConditionType::NPC;
-
-								ImGui::CloseCurrentPopup();
-							}
-						}
-
-						ImGui::EndMenu();
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::NPC;
 					}
 
 					if (LCG_MI(CommonStrings::Race, "8"))
@@ -620,46 +592,63 @@ namespace IED
 
 			case Data::EquipmentOverrideConditionType::Presence:
 				{
-					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Equipped, "0"),
-							stl::underlying(std::addressof(match->flags.value)),
-							stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipped)))
-					{
-						match->ui32a = static_cast<std::uint32_t>(-1);
-						match->ui32b = 0;
-						result       = true;
-					}
+					result |= ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::IsAvailable, "0"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
-					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipped))
-					{
-						result |= m_condParamEditor.DrawBipedObjectSelector(
-							LS(CommonStrings::Biped, "1"),
-							match->bipedSlot,
-							true);
-					}
-
-					ImGui::Separator();
+					ImGui::SameLine();
 
 					result |= ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Displayed, "2"),
+						LS(UINodeOverrideEditorWidgetStrings::IsBolt, "1"),
 						stl::underlying(std::addressof(match->flags.value)),
-						stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots));
-
-					if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
-					{
-						result |= m_condParamEditor.DrawObjectSlotSelector(
-							LS(CommonStrings::Slot, "3"),
-							match->slot,
-							true);
-					}
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
 
 					ImGui::Separator();
 
-					if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
+					if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
 					{
-						result |= DrawFormCountExtraSegment(match);
+						if (ImGui::CheckboxFlagsT(
+								LS(CommonStrings::Equipped, "A"),
+								stl::underlying(std::addressof(match->flags.value)),
+								stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipped)))
+						{
+							match->ui32a = static_cast<std::uint32_t>(-1);
+							match->ui32b = 0;
+							result       = true;
+						}
+
+						if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipped))
+						{
+							result |= m_condParamEditor.DrawBipedObjectSelector(
+								LS(CommonStrings::Biped, "B"),
+								match->bipedSlot,
+								true);
+						}
 
 						ImGui::Separator();
+
+						result |= ImGui::CheckboxFlagsT(
+							LS(CommonStrings::Displayed, "C"),
+							stl::underlying(std::addressof(match->flags.value)),
+							stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots));
+
+						if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+						{
+							result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
+								LS(CommonStrings::Slot, "D"),
+								match->slot,
+								true);
+						}
+
+						ImGui::Separator();
+
+						if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
+						{
+							result |= DrawFormCountExtraSegment(match);
+
+							ImGui::Separator();
+						}
 					}
 
 					ImGui::Spacing();
@@ -729,6 +718,14 @@ namespace IED
 
 				break;
 
+			case Data::EquipmentOverrideConditionType::Mounting:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::IsMountedActorHorse, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -796,6 +793,8 @@ namespace IED
 				}
 
 				break;
+			case Data::EquipmentOverrideConditionType::Actor:
+			case Data::EquipmentOverrideConditionType::NPC:
 			case Data::EquipmentOverrideConditionType::Race:
 			case Data::EquipmentOverrideConditionType::Idle:
 
@@ -1029,8 +1028,6 @@ namespace IED
 						}
 						break;
 					case Data::EquipmentOverrideConditionType::Form:
-					case Data::EquipmentOverrideConditionType::Actor:
-					case Data::EquipmentOverrideConditionType::NPC:
 					case Data::EquipmentOverrideConditionType::Keyword:
 					case Data::EquipmentOverrideConditionType::Quest:
 					case Data::EquipmentOverrideConditionType::Global:
@@ -1046,6 +1043,8 @@ namespace IED
 							a_updFunc();
 						}
 						break;
+					case Data::EquipmentOverrideConditionType::Actor:
+					case Data::EquipmentOverrideConditionType::NPC:
 					case Data::EquipmentOverrideConditionType::Race:
 					case Data::EquipmentOverrideConditionType::Furniture:
 					case Data::EquipmentOverrideConditionType::Group:
@@ -1320,8 +1319,6 @@ namespace IED
 							}
 							break;
 						case Data::EquipmentOverrideConditionType::Form:
-						case Data::EquipmentOverrideConditionType::Actor:
-						case Data::EquipmentOverrideConditionType::NPC:
 						case Data::EquipmentOverrideConditionType::Keyword:
 						case Data::EquipmentOverrideConditionType::Quest:
 						case Data::EquipmentOverrideConditionType::Global:
@@ -1336,6 +1333,8 @@ namespace IED
 								a_updFunc();
 							}
 							break;
+						case Data::EquipmentOverrideConditionType::Actor:
+						case Data::EquipmentOverrideConditionType::NPC:
 						case Data::EquipmentOverrideConditionType::Race:
 						case Data::EquipmentOverrideConditionType::Furniture:
 						case Data::EquipmentOverrideConditionType::Group:
@@ -1520,28 +1519,28 @@ namespace IED
 								break;
 							case Data::EquipmentOverrideConditionType::Actor:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Actor);
 
 								break;
 							case Data::EquipmentOverrideConditionType::NPC:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
-								tdesc = LS(CommonStrings::NPC);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
+								tdesc = LS(CommonStrings::Actor);
 
 								break;
 							case Data::EquipmentOverrideConditionType::Furniture:
@@ -1712,44 +1711,57 @@ namespace IED
 
 									auto& db = m_condParamEditor.GetDescBuffer();
 
-									if (e.flags.test(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
-									{
-										stl::snprintf(
-											db,
-											"%s/%s",
-											LS(CommonStrings::Equipped),
-											LS(CommonStrings::Displayed));
-									}
-									else if (e.flags.test(
-												 Data::EquipmentOverrideConditionFlags::kMatchEquipped))
+									if (e.flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
 									{
 										stl::snprintf(
 											db,
 											"%s",
-											LS(CommonStrings::Equipped));
-									}
-									else if (e.flags.test(
-												 Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
-									{
-										stl::snprintf(
-											db,
-											"%s",
-											LS(CommonStrings::Displayed));
+											LS(UIWidgetCommonStrings::IsAvailable));
 									}
 									else
 									{
-										if (e.flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+										if (e.flags.test(Data::EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots))
 										{
 											stl::snprintf(
 												db,
-												"%s %s %u",
-												LS(CommonStrings::Count),
-												m_condParamEditor.comp_operator_to_desc(e.compOperator),
-												e.count);
+												"%s/%s",
+												LS(CommonStrings::Equipped),
+												LS(CommonStrings::Displayed));
+										}
+										else if (e.flags.test(
+													 Data::EquipmentOverrideConditionFlags::kMatchEquipped))
+										{
+											stl::snprintf(
+												db,
+												"%s",
+												LS(CommonStrings::Equipped));
+										}
+										else if (e.flags.test(
+													 Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
+										{
+											stl::snprintf(
+												db,
+												"%s",
+												LS(CommonStrings::Displayed));
 										}
 										else
 										{
-											stl::snprintf(db, "%s", LS(UIBaseConfigString::InventoryCheck));
+											if (e.flags.test(Data::EquipmentOverrideConditionFlags::kExtraFlag1))
+											{
+												stl::snprintf(
+													db,
+													"%s %s %u",
+													LS(CommonStrings::Count),
+													m_condParamEditor.comp_operator_to_desc(e.compOperator),
+													e.count);
+											}
+											else
+											{
+												stl::snprintf(
+													db,
+													"%s",
+													LS(UIBaseConfigString::InventoryCheck));
+											}
 										}
 									}
 

@@ -139,6 +139,7 @@ namespace IED
 					*params,
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
+						ControllerUpdateFlags::kFromProcessorTask |
 						ControllerUpdateFlags::kUseCachedParams);
 			}
 			else
@@ -146,6 +147,7 @@ namespace IED
 				m_controller.EvaluateImpl(
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
+						ControllerUpdateFlags::kFromProcessorTask |
 						ControllerUpdateFlags::kUseCachedParams);
 			}
 		}
@@ -380,11 +382,11 @@ namespace IED
 					e.RequestEval();
 				}
 
-				if (e.m_wantLFVarUpdate)
+				/*if (e.m_wantLFVarUpdate)
 				{
 					e.m_wantLFVarUpdate = false;
 					e.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
-				}
+				}*/
 			}
 
 			if (IPerfCounter::delta_us(
@@ -435,12 +437,13 @@ namespace IED
 					if (auto info = m_controller.LookupCachedActorInfo(actor, e))
 					{
 						auto& params = e.CreateProcessParams(
-							info->actor.get(),
-							info->handle,
 							info->sex,
 							ControllerUpdateFlags::kPlaySound |
 								ControllerUpdateFlags::kFailVariableCondition,
+							info->actor.get(),
+							info->handle,
 							m_controller.m_temp.sr,
+							m_controller.m_temp.uc,
 							actor,
 							info->npc,
 							info->npcOrTemplate,

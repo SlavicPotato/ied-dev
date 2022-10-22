@@ -40,7 +40,10 @@ namespace IED
 				}
 			}
 
-			a_out.flags = data.get("flags", stl::underlying(Data::configLastEquipped_t::DEFAULT_FLAGS)).asUInt();
+			a_out.flags = data.get(
+								  "flags",
+								  stl::underlying(Data::configLastEquipped_t::DEFAULT_FLAGS))
+			                  .asUInt();
 
 			return true;
 		}

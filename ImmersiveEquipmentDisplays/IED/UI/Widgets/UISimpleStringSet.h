@@ -31,7 +31,9 @@ namespace IED
 			bool DrawStringSetTree(
 				const char*                   a_id,
 				Localization::StringID        a_title,
-				Data::configFixedStringSet_t& a_data);
+				Data::configFixedStringSet_t& a_data,
+				ImGuiTreeNodeFlags            a_treeFlags = 
+				ImGuiTreeNodeFlags_SpanAvailWidth);
 
 		private:
 			SimpleStringSetContextResult DrawContextMenu(

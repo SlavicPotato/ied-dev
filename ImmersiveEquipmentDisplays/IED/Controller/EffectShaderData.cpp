@@ -186,17 +186,6 @@ namespace IED
 		});
 	}
 
-	void EffectShaderData::Entry::update_effect_data(float a_step) const
-	{
-		auto sdata = shaderData.get();
-		assert(sdata);
-
-		for (auto& e : functions)
-		{
-			e->Run(sdata, a_step);
-		}
-	}
-
 	void EffectShaderData::Entry::create_function_list(
 		const Data::configEffectShaderFunctionList_t& a_data)
 	{

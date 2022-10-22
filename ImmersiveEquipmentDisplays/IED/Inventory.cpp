@@ -290,7 +290,9 @@ namespace IED
 
 				break;
 			default:
+
 				rating = 0;
+
 				break;
 			}
 
@@ -309,7 +311,7 @@ namespace IED
 			std::sort(
 				e.items.begin(),
 				e.items.end(),
-				[](auto& a_lhs, auto& a_rhs) {
+				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
 					return a_lhs.rating > a_rhs.rating;
 				});
 		}

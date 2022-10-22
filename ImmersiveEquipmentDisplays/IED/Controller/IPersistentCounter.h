@@ -12,9 +12,9 @@ namespace IED
 			DataVersion1 = 1,
 		};
 
-		inline constexpr void IncrementCounter() noexcept
+		inline constexpr auto IncrementCounter() noexcept
 		{
-			m_counter++;
+			return m_counter++;
 		}
 
 		[[nodiscard]] inline constexpr auto GetCounterValue() const noexcept

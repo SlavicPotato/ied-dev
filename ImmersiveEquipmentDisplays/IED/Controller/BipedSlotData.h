@@ -45,6 +45,18 @@ namespace IED
 			BipedSlotEntry,
 			stl::underlying(BIPED_OBJECT::kTotal)>;
 
+		[[nodiscard]] inline constexpr auto& get(BIPED_OBJECT a_object) const noexcept
+		{
+			assert(a_object < BIPED_OBJECT::kTotal);
+			return data[stl::underlying(a_object)];
+		}
+		
+		[[nodiscard]] inline constexpr auto& get(BIPED_OBJECT a_object) noexcept
+		{
+			assert(a_object < BIPED_OBJECT::kTotal);
+			return data[stl::underlying(a_object)];
+		}
+
 		std::uint64_t accessed{ 0 };
 		data_type     data;
 

@@ -16,26 +16,28 @@ namespace IED
 		const configConditionalVariablesHolder_t& a_config,
 		conditionalVariableMap_t&                 a_map)
 	{
+		a_params.useCount.clear();
+
 		bool result = false;
 
-		for (auto& e : a_config.data)
+		for (auto& e : a_config.data.getvec())
 		{
 			auto r = a_map.emplace(
-				e.first,
-				e.second.defaultValue.value);
+				e->first,
+				e->second.defaultValue.value);
 
 			result |= r.second;
 
 			auto overrideVar = GetOverrideVariable(
 				a_params,
-				e.second.vars);
+				e->second.vars);
 
 			UpdateVariable(
 				a_params,
-				e.second.defaultValue.value.type,
+				e->second.defaultValue.value.type,
 				overrideVar ?
 					overrideVar->value :
-                    e.second.defaultValue,
+                    e->second.defaultValue,
 				r.first->second,
 				result);
 		}
@@ -84,13 +86,17 @@ namespace IED
 
 		controller.RunUpdateBipedSlotCache(a_params);
 
-		auto it = controller.SelectInventoryFormLastEquipped(
+		auto it = controller.DoLastEquippedSelection(
 			a_params,
 			a_data.lastEquipped,
 			[](auto&) { return true; });
 
 		if (it != a_params.collector.data.forms.end())
 		{
+			auto r = a_params.useCount.emplace(it->first, 0);
+
+			r.first->second++;
+
 			return it->first;
 		}
 		else

@@ -18,7 +18,7 @@ namespace IED
 
 				stl::scoped_lock lock(controller->GetLock());
 
-				auto& objects = controller->GetData();
+				auto& objects = controller->GetObjects();
 
 				auto it = objects.find(a_actor);
 				if (it != objects.end())

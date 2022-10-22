@@ -21,6 +21,7 @@ namespace IED
 			LastEquippedFilterCond   = 4210,
 			SkipOccupiedSlots        = 4211,
 			UseFormVariable          = 4212,
+			FallBackToSlotted        = 4213,
 		};
 	}
 }

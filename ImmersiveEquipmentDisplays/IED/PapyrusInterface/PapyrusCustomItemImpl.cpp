@@ -886,7 +886,7 @@ namespace IED
 
 				e.customFlags.set(CustomFlags::kUseChance, a_enable);
 
-				e.chance = std::clamp(a_chance, 0.0f, 100.0f);
+				e.probability = std::clamp(a_chance, 0.0f, 100.0f);
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{

@@ -45,6 +45,7 @@ namespace IED
 				ImGui::TextUnformatted("FC:");
 				ImGui::TextUnformatted("SC:");
 				ImGui::TextUnformatted("CC:");
+				ImGui::TextUnformatted("EV:");
 				ImGui::TextUnformatted("EC:");
 
 				auto odbLevel = m_controller.GetODBLevel();
@@ -67,10 +68,11 @@ namespace IED
 				auto& sc = SkeletonCache::GetSingleton();
 				ImGui::Text("%zu [%zu]", sc.GetSize(), sc.GetTotalEntries());
 
-				ImGui::Text("%zu", m_controller.GetCounterValue());
+				ImGui::Text("%llu", m_controller.GetCounterValue());
+				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
 				ImGui::Text(
-					"%zu/%zu",
+					"%zu/%u",
 					m_controller.GetEquippedItemCacheSize(),
 					m_controller.GetEquippedItemCacheSizeMax());
 

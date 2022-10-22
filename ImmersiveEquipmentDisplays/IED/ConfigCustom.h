@@ -72,7 +72,7 @@ namespace IED
 			configCachedForm_t      modelForm;
 			configRange_t           countRange;
 			std::uint32_t           priority{ 0 };  // unused
-			float                   chance{ 100.0f };
+			float                   probability{ 100.0f };
 			configFormList_t        extraItems;
 			configModelGroup_t      group;
 			configLastEquipped_t    lastEquipped;
@@ -90,7 +90,7 @@ namespace IED
 				a_ar& countRange.min;
 				a_ar& countRange.max;
 				a_ar& priority;
-				a_ar& chance;
+				a_ar& probability;
 				a_ar& extraItems;
 				a_ar& group;
 				a_ar& lastEquipped;
@@ -108,7 +108,7 @@ namespace IED
 				a_ar& countRange.min;
 				a_ar& countRange.max;
 				a_ar& priority;
-				a_ar& chance;
+				a_ar& probability;
 				a_ar& extraItems;
 
 				if (a_version >= DataVersion2)

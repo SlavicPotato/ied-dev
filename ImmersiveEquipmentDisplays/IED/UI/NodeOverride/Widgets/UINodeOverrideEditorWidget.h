@@ -2559,60 +2559,32 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Actor, "5"))
+					if (LCG_MI(CommonStrings::Actor, "5"))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Actor);
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Actor);
 
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDActor))
-						{
-							if (m_ooNewEntryIDActor)
-							{
-								a_entry.emplace_back(
-									Data::NodeOverrideConditionType::Actor,
-									m_ooNewEntryIDActor);
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
 
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-
-								result = NodeOverrideCommonAction::Insert;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						ImGui::EndMenu();
+						result = NodeOverrideCommonAction::Insert;
 					}
 
-					if (LCG_BM(CommonStrings::NPC, "6"))
+					if (LCG_MI(CommonStrings::NPC, "6"))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::NPC);
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::NPC);
 
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDNPC))
-						{
-							if (m_ooNewEntryIDNPC)
-							{
-								a_entry.emplace_back(
-									Data::NodeOverrideConditionType::NPC,
-									m_ooNewEntryIDNPC);
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
 
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-
-								result = NodeOverrideCommonAction::Insert;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						ImGui::EndMenu();
+						result = NodeOverrideCommonAction::Insert;
 					}
 
 					if (LCG_MI(CommonStrings::Race, "7"))
@@ -3073,8 +3045,6 @@ namespace IED
 							break;
 						case Data::NodeOverrideConditionType::Form:
 						case Data::NodeOverrideConditionType::Keyword:
-						case Data::NodeOverrideConditionType::Actor:
-						case Data::NodeOverrideConditionType::NPC:
 						case Data::NodeOverrideConditionType::Global:
 						case Data::NodeOverrideConditionType::Mounting:
 						case Data::NodeOverrideConditionType::Mounted:
@@ -3106,6 +3076,8 @@ namespace IED
 
 							break;
 
+						case Data::NodeOverrideConditionType::Actor:
+						case Data::NodeOverrideConditionType::NPC:
 						case Data::NodeOverrideConditionType::Race:
 						case Data::NodeOverrideConditionType::Furniture:
 						case Data::NodeOverrideConditionType::Group:
@@ -3328,27 +3300,27 @@ namespace IED
 								break;
 							case Data::NodeOverrideConditionType::Actor:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Actor);
 
 								break;
 							case Data::NodeOverrideConditionType::NPC:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::NPC);
 
 								break;
@@ -4042,42 +4014,16 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Actor, "8"))
+					if (ImGui::MenuItem(LS(CommonStrings::Actor, "8")))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Actor);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDActor))
-						{
-							if (m_ooNewEntryIDActor)
-							{
-								result.action    = NodeOverrideCommonAction::Insert;
-								result.form      = m_ooNewEntryIDActor;
-								result.matchType = Data::NodeOverrideConditionType::Actor;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::EndMenu();
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Actor;
 					}
-
-					if (LCG_BM(CommonStrings::NPC, "9"))
+					
+					if (ImGui::MenuItem(LS(CommonStrings::NPC, "9")))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::NPC);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDNPC))
-						{
-							if (m_ooNewEntryIDNPC)
-							{
-								result.action    = NodeOverrideCommonAction::Insert;
-								result.form      = m_ooNewEntryIDNPC;
-								result.matchType = Data::NodeOverrideConditionType::NPC;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::EndMenu();
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::NPC;
 					}
 
 					if (LCG_MI(CommonStrings::Race, "A"))
@@ -4447,7 +4393,7 @@ namespace IED
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
 
 				break;
-
+				
 			case Data::NodeOverrideConditionType::Idle:
 
 				ImGui::Spacing();
@@ -4504,6 +4450,15 @@ namespace IED
 						ImGuiInputTextFlags_EnterReturnsTrue |
 							ImGuiInputTextFlags_CharsDecimal);
 				}
+
+				break;
+
+			case Data::NodeOverrideConditionType::Mounting:
+
+				result |= ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::IsMountedActorHorse, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
 
 				break;
 			}
@@ -4573,6 +4528,8 @@ namespace IED
 				}
 
 				break;
+			case Data::NodeOverrideConditionType::Actor:
+			case Data::NodeOverrideConditionType::NPC:
 			case Data::NodeOverrideConditionType::Race:
 			case Data::NodeOverrideConditionType::Idle:
 

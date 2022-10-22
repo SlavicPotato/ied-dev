@@ -283,6 +283,7 @@ namespace IED
 			kIsFlying                = 41,
 			kIsLayingDown            = 42,
 			kInPlayerEnemyFaction    = 43,
+			kIsHorse                 = 44,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

@@ -34,6 +34,11 @@ namespace IED
 				return false;
 			}
 
+			a_out.flags = data.get(
+								  "flags",
+								  stl::underlying(Data::ConditionalVariableValueDataFlags::kNone))
+			                  .asUInt();
+
 			return true;
 		}
 
@@ -51,6 +56,8 @@ namespace IED
 			Parser<Data::configLastEquipped_t> leqpparser(m_state);
 
 			leqpparser.Create(a_data.lastEquipped, data["leqp"]);
+
+			data["flags"] = a_data.flags.underlying();
 
 			a_out["version"] = CURRENT_VERSION;
 		}

@@ -1936,7 +1936,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, ev = std::move(a_event)] {
 			stl::scoped_lock lock(m_lock);
 
-			auto& data = GetData();
+			auto& data = GetObjects();
 
 			auto it = data.find(a_actor);
 			if (it == data.end())
@@ -2659,6 +2659,8 @@ namespace IED
 				{
 					objectEntry.SetNodeVisible(visible);
 
+					objectEntry.slotState.lastSlotted = objectEntry.state->formid;
+
 					if (visible)
 					{
 						item->item->sharedCount--;
@@ -2877,13 +2879,13 @@ namespace IED
 		{
 			if (!a_objectEntry.cflags.test(CustomObjectEntryFlags::kProcessedChance))
 			{
-				if (m_rng1.Get(m_rngBase) > a_config.chance)
+				if (a_config.probability >= 100.0f || GetRandomPercent() < a_config.probability)
 				{
-					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
+					a_objectEntry.cflags.clear(CustomObjectEntryFlags::kBlockedByChance);
 				}
 				else
 				{
-					a_objectEntry.cflags.clear(CustomObjectEntryFlags::kBlockedByChance);
+					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
 				}
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kProcessedChance);
@@ -2928,12 +2930,38 @@ namespace IED
 
 				break;
 
+			case VariableSource::kMountingActor:
+
+				if (auto& actor = a_params.get_mounting_actor())
+				{
+					id = actor->formID;
+				}
+				else
+				{
+					return nullptr;
+				}
+
+				break;
+
+			case VariableSource::kMountedActor:
+
+				if (auto& actor = a_params.get_mounted_actor())
+				{
+					id = actor->formID;
+				}
+				else
+				{
+					return nullptr;
+				}
+
+				break;
+
 			default:
 
 				return nullptr;
 			}
 
-			const auto& data = GetData();
+			const auto& data = GetObjects();
 
 			auto ita = data.find(id);
 			if (ita != data.end())
@@ -3552,7 +3580,10 @@ namespace IED
 		pt.Start();
 #endif
 
-		IncrementCounter();
+		if (!a_flags.test(ControllerUpdateFlags::kFromProcessorTask))
+		{
+			a_holder.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
+		}
 
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
@@ -3586,6 +3617,8 @@ namespace IED
 		{
 			a_holder.RequestTransformUpdateDefer();
 		}
+
+		m_evalCounter++;
 
 #if defined(IED_ENABLE_STATS_G)
 		Debug("G: [%.8X]: %f", a_actor->formID.get(), pt.Stop());
@@ -3661,44 +3694,6 @@ namespace IED
 		//_DMESSAGE("%f", pt.Stop());
 	}
 
-	template <class... Args>
-	inline constexpr processParams_t& make_process_params(
-		ActorObjectHolder&                     a_holder,
-		std::optional<processParams_t>&        a_paramsOut,
-		Actor* const                           a_actor,
-		const Game::ObjectRefHandle            a_handle,
-		const stl::flag<ControllerUpdateFlags> a_flags,
-		SlotResults&                           a_sr,
-		Args&&... a_args)
-	{
-		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
-		{
-			return a_holder.GetOrCreateProcessParams(
-				a_actor,
-				a_handle,
-				a_holder.IsFemale() ?
-					ConfigSex::Female :
-                    ConfigSex::Male,
-				a_flags,
-				a_sr,
-				std::forward<Args>(a_args)...);
-		}
-		else
-		{
-			a_paramsOut.emplace(
-				a_actor,
-				a_handle,
-				a_holder.IsFemale() ?
-					ConfigSex::Female :
-                    ConfigSex::Male,
-				a_flags,
-				a_sr,
-				std::forward<Args>(a_args)...);
-
-			return *a_paramsOut;
-		}
-	}
-
 	void Controller::RunVariableMapUpdate(
 		processParams_t& a_params,
 		bool             a_markAllForLFEval)
@@ -3735,9 +3730,40 @@ namespace IED
 	{
 		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kBipedDataUpdated))
 		{
+			IncrementCounter();
+
 			UpdateBipedSlotCache(a_params, a_params.objects);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kBipedDataUpdated);
+		}
+	}
+
+	template <class... Args>
+	inline constexpr processParams_t& make_process_params(
+		ActorObjectHolder&                     a_holder,
+		std::optional<processParams_t>&        a_paramsOut,
+		const stl::flag<ControllerUpdateFlags> a_flags,
+		Args&&... a_args)
+	{
+		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
+		{
+			return a_holder.GetOrCreateProcessParams(
+				a_holder.IsFemale() ?
+					ConfigSex::Female :
+                    ConfigSex::Male,
+				a_flags,
+				std::forward<Args>(a_args)...);
+		}
+		else
+		{
+			a_paramsOut.emplace(
+				a_holder.IsFemale() ?
+					ConfigSex::Female :
+                    ConfigSex::Male,
+				a_flags,
+				std::forward<Args>(a_args)...);
+
+			return *a_paramsOut;
 		}
 	}
 
@@ -3760,10 +3786,11 @@ namespace IED
 		auto& params = make_process_params(
 			a_holder,
 			ps,
+			a_flags,
 			a_actor,
 			a_handle,
-			a_flags,
 			m_temp.sr,
+			m_temp.uc,
 			a_actor,
 			nrp->npc,
 			nrp->npc->GetFirstNonTemporaryOrThis(),
@@ -4337,11 +4364,12 @@ namespace IED
 		Controller&                          a_controller) noexcept
 	{
 		return processParams_t{
-			a_info.actor,
-			a_info.handle,
 			a_info.sex,
 			ControllerUpdateFlags::kNone,
+			a_info.actor,
+			a_info.handle,
 			a_controller.GetTempData().sr,
+			a_controller.GetTempData().uc,
 			a_info.actor,
 			a_info.npc,
 			a_info.npcOrTemplate,

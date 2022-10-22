@@ -147,15 +147,18 @@ namespace IED
 			}
 		};
 
+		using configConditionalVariablesEntryListMapType_t =
+			stl::boost_unordered_map<
+				stl::fixed_string,
+				configConditionalVariablesEntry_t>;
+
 		using configConditionalVariablesEntryList_t =
-			stl::map_sa<
+			stl::vectormap<
 				stl::fixed_string,
 				configConditionalVariablesEntry_t,
-				stl::fixed_string_less_equal_ptr,
-				stl::boost_container_allocator<
-					std::pair<
-						stl::fixed_string,
-						configConditionalVariablesEntry_t>>>;
+				configConditionalVariablesEntryListMapType_t,
+				stl::boost_vector<
+					typename configConditionalVariablesEntryListMapType_t::value_type*>>;
 
 		using configConditionalVariablesEntryListValue_t = configConditionalVariablesEntryList_t::value_type;
 
@@ -178,12 +181,12 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			inline constexpr void clear() noexcept
+			inline void clear() noexcept
 			{
 				data.clear();
 			}
 
-			inline constexpr bool empty() const noexcept
+			inline bool empty() const noexcept
 			{
 				return data.empty();
 			}

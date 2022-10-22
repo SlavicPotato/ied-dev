@@ -66,4 +66,8 @@ namespace IED
 		bool isPlayer;
 	};
 
+	using UseCountContainer = stl::map_sa<
+		Game::FormID,
+		std::uint32_t>;
+
 }

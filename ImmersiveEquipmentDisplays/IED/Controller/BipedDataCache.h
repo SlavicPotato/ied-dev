@@ -70,6 +70,11 @@ namespace IED
 		{
 			return m_maxFormsPerSlot;
 		}
+		
+		[[nodiscard]] inline constexpr auto& data() const noexcept
+		{
+			return m_data;
+		}
 
 		inline void clear()
 		{

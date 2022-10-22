@@ -45,6 +45,10 @@ namespace IED
 			virtual void ApplyProfile(
 				const profileSelectorParamsCondVar_t& a_data,
 				const CondVarProfile&                 a_profile) override;
+			
+			virtual void MergeProfile(
+				const profileSelectorParamsCondVar_t& a_data,
+				const CondVarProfile&                 a_profile) override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 			virtual void                         OnCollapsibleStatesUpdate() override;

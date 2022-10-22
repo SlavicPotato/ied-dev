@@ -217,6 +217,8 @@ namespace IED
 				switch (a_type)
 				{
 				case NodeOverrideConditionType::Race:
+				case NodeOverrideConditionType::Actor:
+				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Furniture:
 				case NodeOverrideConditionType::Group:
 				case NodeOverrideConditionType::Location:

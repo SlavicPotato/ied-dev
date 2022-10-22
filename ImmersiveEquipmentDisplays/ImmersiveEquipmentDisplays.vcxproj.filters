@@ -1643,6 +1643,12 @@
     <ClInclude Include="IED\UI\Widgets\UIVariableSourceSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusMiscImpl.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\PapyrusInterface\PapyrusMisc.h">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2598,6 +2604,12 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIVariableSourceSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusMiscImpl.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\PapyrusInterface\PapyrusMisc.cpp">
+      <Filter>Source\IED\PapyrusInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

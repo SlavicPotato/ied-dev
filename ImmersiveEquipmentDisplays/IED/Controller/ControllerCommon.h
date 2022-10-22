@@ -12,6 +12,7 @@ namespace IED
 		kWantEffectShaderConfigUpdate = 1u << 5,
 		kUseCachedParams              = 1u << 6,
 		kFailVariableCondition        = 1u << 7,
+		kFromProcessorTask            = 1u << 8,
 
 		kAll      = kPlaySound,
 		kSoundAll = kPlaySound | kVisibilitySounds

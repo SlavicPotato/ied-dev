@@ -103,7 +103,7 @@ namespace IED
 
 	public:
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 340000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 66666;
+		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
@@ -403,7 +403,7 @@ namespace IED
 				}
 			}
 		}
-		
+
 		template <class Tf>
 		inline constexpr void visit_custom(Tf a_func)
 		{
@@ -427,7 +427,7 @@ namespace IED
 				a_func(e);
 			}
 		}
-		
+
 		template <class Tf>
 		inline constexpr void visit_slot(Tf a_func)
 		{
@@ -591,6 +591,11 @@ namespace IED
 			return m_variables;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetBipedSlotData() const noexcept
+		{
+			return m_lastEquipped;
+		}
+		
 		inline void ClearVariables(bool a_requestEval) noexcept
 		{
 			m_variables.clear();
@@ -640,14 +645,14 @@ namespace IED
 		bool m_forceNodeCondTrue{ false };
 		bool m_wantLFUpdate{ false };
 		bool m_wantHFUpdate{ false };
-		bool m_wantLFVarUpdate{ false };
+		//bool m_wantLFVarUpdate{ false };
 
 		Game::ObjectRefHandle m_handle;
 		long long             m_created{ 0 };
 
 		union
 		{
-			mutable stl::flag<ActorObjectHolderFlags> m_flags{ ActorObjectHolderFlags::kNone };
+			mutable stl::flag<ActorObjectHolderFlags> m_flags{ ActorObjectHolderFlags::kWantVarUpdate };
 			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 

@@ -16,7 +16,8 @@ namespace IED
 				profileSelectorParamsCondVar_t,
 				CondVarProfile>(
 				a_controller,
-				UIProfileSelectorFlags::kEnableApply),
+				UIProfileSelectorFlags::kEnableApply |
+					UIProfileSelectorFlags::kEnableMerge),
 			UILocalizationInterface(a_controller),
 			UITipsInterface(a_controller),
 			m_controller(a_controller)
@@ -55,9 +56,6 @@ namespace IED
 			case CondVarEntryChangeAction::kReset:
 				m_controller.QueueClearVariablesOnAll(true);
 				break;
-				/*case CondVarEntryChangeAction::kEvaluate:
-				m_controller.QueueRequestVariableUpdateOnAll();
-				break;*/
 			}
 		}
 
@@ -72,6 +70,20 @@ namespace IED
 			const CondVarProfile&                 a_profile)
 		{
 			a_data.data = a_profile.Data();
+
+			m_controller.QueueClearVariablesOnAll(true);
+		}
+
+		void UIConditionalVariablesEditor::MergeProfile(
+			const profileSelectorParamsCondVar_t& a_data,
+			const CondVarProfile&                 a_profile)
+		{
+			auto& data = a_profile.Data();
+
+			for (auto& e : data.data)
+			{
+				a_data.data.data.emplace(e);
+			}
 
 			m_controller.QueueClearVariablesOnAll(true);
 		}

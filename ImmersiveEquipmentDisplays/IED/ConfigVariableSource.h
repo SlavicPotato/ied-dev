@@ -8,8 +8,10 @@ namespace IED
 	{
 		enum class VariableSource : std::uint32_t
 		{
-			kActor       = 0,
-			kPlayerHorse = 1,
+			kActor         = 0,
+			kPlayerHorse   = 1,
+			kMountingActor = 2,
+			kMountedActor  = 3,
 		};
 
 		enum class VariableSourceFlags : std::uint32_t
@@ -31,7 +33,7 @@ namespace IED
 
 			stl::flag<VariableSourceFlags> flags{ VariableSourceFlags::kNone };
 			VariableSource                 source{ VariableSource::kActor };
-			configFormZeroMissing_t        form;
+			configForm_t                   form;
 
 		private:
 			template <class Archive>

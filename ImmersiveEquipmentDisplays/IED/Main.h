@@ -18,7 +18,6 @@ namespace IED
 
 		[[nodiscard]] inline static constexpr auto* GetController() noexcept
 		{
-			assert(m_Instance.m_controller);
 			return m_Instance.m_controller;
 		}
 

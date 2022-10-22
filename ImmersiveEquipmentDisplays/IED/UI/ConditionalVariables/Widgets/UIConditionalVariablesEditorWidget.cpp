@@ -86,6 +86,22 @@ namespace IED
 				ClearDescriptionPopupBuffer();
 			}
 
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("up", ImGuiDir_Up))
+			{
+				result.action = CondVarEntryAction::kSwap;
+				result.dir    = SwapDirection::Up;
+			}
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::ArrowButton("down", ImGuiDir_Down))
+			{
+				result.action = CondVarEntryAction::kSwap;
+				result.dir    = SwapDirection::Down;
+			}
+
 			ImGui::PopStyleVar();
 
 			if (ImGui::BeginPopup("context_menu"))
@@ -115,15 +131,17 @@ namespace IED
 					UIClipboard::Set(a_data);
 				}
 
+				auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>();
+
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "B"),
 						nullptr,
 						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
+						static_cast<bool>(clipData)))
 				{
-					if (auto data = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())
+					if (clipData)
 					{
-						a_data = *data;
+						a_data.second = clipData->second;
 
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -194,17 +212,21 @@ namespace IED
 		{
 			ImGui::PushID("elist");
 
-			for (auto it = a_data.begin(); it != a_data.end();)
+			auto& vec = a_data.getvec();
+
+			for (auto it = vec.begin(); it != vec.end();)
 			{
-				if (!m_itemFilter.Test(*it->first))
+				auto& e = *it;
+
+				if (!m_itemFilter.Test(*e->first))
 				{
 					++it;
 					continue;
 				}
 
-				ImGui::PushID(it->first.c_str());
+				ImGui::PushID(e->first.c_str());
 
-				auto result = DrawEntryHeaderContextMenu(a_holder, *it);
+				const auto result = DrawEntryHeaderContextMenu(a_holder, *e);
 
 				switch (result.action)
 				{
@@ -225,16 +247,29 @@ namespace IED
 
 						if (!a_data.contains(newName))
 						{
-							auto tmp = std::move(it->second);
+							auto tmp = std::make_unique<Data::configConditionalVariablesEntry_t>(std::move(e->second));
 
-							a_data.erase(it);
-
-							it = a_data.emplace(std::move(newName), std::move(tmp)).first;
+							it = a_data.emplace_vec(
+										   a_data.erase(it),
+										   std::move(newName),
+										   std::move(*tmp))
+							         .first;
 
 							OnCondVarEntryChange(
 								{ a_holder,
 							      CondVarEntryChangeAction::kReset });
 						}
+					}
+
+					break;
+
+				case CondVarEntryAction::kSwap:
+
+					if (IterSwap(vec, it, result.dir))
+					{
+						OnCondVarEntryChange(
+							{ a_holder,
+						      CondVarEntryChangeAction::kReset });
 					}
 
 					break;
@@ -246,11 +281,11 @@ namespace IED
 					break;
 				}
 
-				if (it != a_data.end())
+				if (it != vec.end())
 				{
 					ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-					DrawEntryTree(a_holder, *it);
+					DrawEntryTree(a_holder, *(*it));
 
 					++it;
 				}
@@ -264,7 +299,6 @@ namespace IED
 		void UIConditionalVariablesEditorWidget::DrawCurrentVariableValue(
 			Data::configConditionalVariablesEntryListValue_t& a_data)
 		{
-			
 		}
 
 		bool UIConditionalVariablesEditorWidget::DrawVariableValue(
@@ -478,15 +512,17 @@ namespace IED
 					UIClipboard::Set(a_var);
 				}
 
+				auto clipData = UIClipboard::Get<Data::configConditionalVariable_t>();
+
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "B"),
 						nullptr,
 						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariable_t>())))
+						static_cast<bool>(clipData)))
 				{
-					if (auto data = UIClipboard::Get<Data::configConditionalVariable_t>())
+					if (clipData)
 					{
-						a_var = *data;
+						a_var = *clipData;
 
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -538,7 +574,8 @@ namespace IED
 
 			if (ImGui::TreeNodeEx(
 					"tree",
-					ImGuiTreeNodeFlags_SpanAvailWidth,
+					ImGuiTreeNodeFlags_SpanAvailWidth |
+						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
 					LS(CommonStrings::Overrides)))
 			{
@@ -620,15 +657,17 @@ namespace IED
 					UIClipboard::Set(a_data);
 				}
 
+				auto clipData = UIClipboard::Get<Data::configConditionalVariablesList_t>();
+
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "C"),
 						nullptr,
 						false,
-						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesList_t>())))
+						static_cast<bool>(clipData)))
 				{
-					if (auto data = UIClipboard::Get<Data::configConditionalVariablesList_t>())
+					if (clipData)
 					{
-						a_data = *data;
+						a_data = *clipData;
 
 						OnCondVarEntryChange(
 							{ a_holder,
@@ -853,26 +892,29 @@ namespace IED
 
 			ImGui::Separator();
 
+			auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>();
+
 			if (ImGui::MenuItem(
 					LS(CommonStrings::Paste, "2"),
 					nullptr,
 					false,
-					static_cast<bool>(UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())))
+					static_cast<bool>(clipData)))
 
 			{
-				if (auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>())
+				if (clipData)
 				{
 					if (auto data = GetCurrentData())
 					{
 						auto& v = data->get().data;
 
-						bool update = false;
+						bool update;
 
 						if (v.contains(clipData->first))
 						{
-							stl::fixed_string n(*clipData->first + " (p)");
-
-							update = v.emplace(n, clipData->second).second;
+							update = v.emplace(
+										  *clipData->first + " (1)",
+										  clipData->second)
+							             .second;
 						}
 						else
 						{

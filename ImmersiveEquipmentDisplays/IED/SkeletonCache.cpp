@@ -25,6 +25,22 @@ namespace IED
 		return *get_or_create(key);
 	}
 
+	auto SkeletonCache::Get2(
+		TESObjectREFR* a_refr,
+		bool           a_firstPerson)
+		-> actor_entry_type
+	{
+		stl::scoped_lock lock(m_lock);
+
+		auto key = mk_key(a_refr, a_firstPerson);
+		if (key.empty())
+		{
+			return {};
+		}
+
+		return get_or_create(key)->second;
+	}
+
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept
 	{
 		stl::scoped_lock lock(m_lock);

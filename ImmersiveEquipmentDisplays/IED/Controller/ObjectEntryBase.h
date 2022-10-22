@@ -7,6 +7,8 @@
 
 #include "IED/ConfigBaseValues.h"
 
+#include "IED/EngineExtensions.h"
+
 namespace IED
 {
 
@@ -119,7 +121,27 @@ namespace IED
 					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
 
-			void UpdateAnimationGraphs(const BSAnimationUpdateData& a_data);
+			SKMP_FORCEINLINE void UpdateAnimationGraphs(
+				const BSAnimationUpdateData& a_data)
+			{
+				for (auto& e : groupObjects)
+				{
+					if (e.second.weapAnimGraphManagerHolder)
+					{
+						EngineExtensions::UpdateAnimationGraph(
+							e.second.weapAnimGraphManagerHolder.get(),
+							a_data);
+					}
+				}
+
+				if (weapAnimGraphManagerHolder)
+				{
+					EngineExtensions::UpdateAnimationGraph(
+						weapAnimGraphManagerHolder.get(),
+						a_data);
+				}
+			}
+
 
 			/*void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
 			{

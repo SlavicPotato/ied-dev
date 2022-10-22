@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 6
+	return 7
 EndFunction
 
 Int Function GetVersion() native global
@@ -191,3 +191,7 @@ Bool Function ItemEnabledRace(Race akRace, string asPlugin, string asName, bool 
 ; Returns form displayed in aiSlot or None if empty or hidden
 Form Function GetSlottedForm(Actor akActor, int aiSlot) native global
 
+
+;; Misc
+
+Form Function GetLastEquippedForm(Actor akActor, int aiBipedSlot, bool abTrackedActor, bool abIgnoreIfOccupied) native global

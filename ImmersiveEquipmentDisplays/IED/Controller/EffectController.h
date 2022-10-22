@@ -39,12 +39,12 @@ namespace IED
 			const Game::Unk2f6b948::Steps& a_steps,
 			const ActorObjectHolder&       a_holder);
 
-		static void UpdateEffectsOnDisplay(
+		SKMP_FORCEINLINE static void UpdateEffectsOnDisplay(
 			const EffectShaderData&       a_data,
 			const ObjectEntryBase::State& a_state,
 			float                         a_step);
 
-		static void UpdateEffectsOnEquipped(
+		SKMP_FORCEINLINE static void UpdateEffectsOnEquipped(
 			Actor*                  a_actor,
 			const EffectShaderData& a_data,
 			float                   a_step);
@@ -53,12 +53,12 @@ namespace IED
 			NiAVObject*                    a_object,
 			const EffectShaderData::Entry& a_entry);
 
-		static void UpdateObjectEffects(
+		SKMP_FORCEINLINE static void UpdateObjectEffects(
 			Actor*                   a_actor,
 			const ObjectEntryCustom& a_entry,
 			float                    a_step);
 
-		static void UpdateObjectEffects(
+		SKMP_FORCEINLINE static void UpdateObjectEffects(
 			Actor*                 a_actor,
 			const ObjectEntrySlot& a_entry,
 			float                  a_step);

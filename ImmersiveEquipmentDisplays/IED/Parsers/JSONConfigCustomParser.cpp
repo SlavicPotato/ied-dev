@@ -107,7 +107,7 @@ namespace IED
 			a_out.customFlags = a_in.get("cflags", stl::underlying(Data::configCustom_t::DEFAULT_CUSTOM_FLAGS)).asUInt();
 
 			//a_out.priority = a_in.get("prio", 0u).asUInt();
-			a_out.chance = a_in.get("chance", 100.0f).asFloat();
+			a_out.probability = a_in.get("chance", 100.0f).asFloat();
 
 			return true;
 		}
@@ -163,7 +163,7 @@ namespace IED
 
 			a_out["cflags"] = a_in.customFlags.underlying();
 			//a_out["prio"] = a_in.priority;
-			a_out["chance"] = a_in.chance;
+			a_out["chance"] = a_in.probability;
 		}
 
 	}

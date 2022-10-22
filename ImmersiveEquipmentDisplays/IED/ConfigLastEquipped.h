@@ -14,6 +14,7 @@ namespace IED
 			kPrioritizeRecentSlots = 1u << 0,
 			kDisableIfSlotOccupied = 1u << 1,
 			kSkipOccupiedSlots     = 1u << 2,
+			kFallBackToSlotted     = 1u << 3,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(LastEquippedFlags);
@@ -35,6 +36,7 @@ namespace IED
 			stl::flag<LastEquippedFlags>     flags{ DEFAULT_FLAGS };
 			configBipedObjectList_t          bipedSlots;
 			equipmentOverrideConditionList_t filterConditions;
+			Data::ObjectSlot                 slot{ Data::ObjectSlot::kMax };
 
 		private:
 			template <class Archive>
@@ -43,6 +45,7 @@ namespace IED
 				a_ar& flags.value;
 				a_ar& bipedSlots;
 				a_ar& filterConditions;
+				a_ar& slot;
 			}
 		};
 	}

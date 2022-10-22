@@ -85,12 +85,7 @@ namespace IED
 
 		const ActorObjectMap& get_actor_object_map(CommonParams& a_params)
 		{
-			return a_params.controller.GetData();
-		}
-
-		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.GetSkeletonID();
+			return a_params.controller.GetObjects();
 		}
 
 		bool is_in_first_person(CommonParams& a_params) noexcept
@@ -99,17 +94,6 @@ namespace IED
 			       a_params.controller.IsInFirstPerson();
 		}
 
-		bool check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept
-		{
-			return a_params.objects.GetNodeMonitorResult(a_uid);
-		}
-
-		bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
-		{
-			const auto handle = (*g_thePlayer)->lastRiddenHorseHandle;
-
-			return handle && handle.IsValid() && a_params.objects.GetHandle() == handle;
-		}
 
 		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept
 		{
@@ -124,14 +108,6 @@ namespace IED
 			{
 				return false;
 			}
-		}
-
-		bool match_random_percent(
-			CommonParams&   a_params,
-			const luid_tag& a_luid,
-			float           a_percent) noexcept
-		{
-			return a_params.objects.GetRandomPercent(a_luid) <= a_percent;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)

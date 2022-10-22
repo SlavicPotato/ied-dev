@@ -116,6 +116,8 @@ namespace IED
 			OriginalREFR                        = 2105,
 			ConditionalVariables                = 2106,
 			TargetVendorFaction                 = 2107,
+			IsAvailable                         = 2108,
+			IsMountedActorHorse                 = 2109,
 		};
 	}
 }

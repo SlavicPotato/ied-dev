@@ -95,7 +95,7 @@ namespace IED
 			case Data::ExtraConditionType::kRandomPercent:
 				return match_random_percent(a_params, a_match, a_match.percent);
 			case Data::ExtraConditionType::kNodeMonitor:
-				return check_node_monitor_value(a_params, a_match.uid);
+				return a_params.objects.GetNodeMonitorResult(a_match.uid);
 			case Data::ExtraConditionType::kArrested:
 				return a_cached.arrested;
 			case Data::ExtraConditionType::kIsChild:
@@ -114,6 +114,8 @@ namespace IED
 				return a_params.get_laying_down();
 			case Data::ExtraConditionType::kInPlayerEnemyFaction:
 				return a_params.is_in_player_enemy_faction();
+			case Data::ExtraConditionType::kIsHorse:
+				return a_params.is_horse();
 			default:
 				return false;
 			}
@@ -257,6 +259,58 @@ namespace IED
 			}
 
 			a_post(form);
+
+			return true;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_actor(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (a_match.form.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch2) ==
+				    (a_params.actor->formID == a_match.form.get_id()))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.keyword.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch1) ==
+				    IFormCommon::HasKeyword(a_params.npc, a_match.keyword))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_npc(
+			CommonParams& a_params,
+			const Tm&     a_match)
+		{
+			if (a_match.form.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch2) ==
+				    (a_params.npc->formID == a_match.form.get_id()))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.keyword.get_id())
+			{
+				if (a_match.flags.test(Tf::kNegateMatch1) ==
+				    IFormCommon::HasKeyword(a_params.npc, a_match.keyword))
+				{
+					return false;
+				}
+			}
 
 			return true;
 		}
@@ -671,6 +725,14 @@ namespace IED
 		{
 			if (a_params.is_on_mount())
 			{
+				if (a_match.flags.test(Tf::kExtraFlag1))
+				{
+					if (!a_params.is_mounted_actor_horse())
+					{
+						return false;
+					}
+				}
+
 				if (a_match.form.get_id())
 				{
 					auto& mountedActor = a_params.get_mounted_actor();
@@ -731,7 +793,7 @@ namespace IED
 			{
 				if (a_match.form.get_id())
 				{
-					auto& mountedByActor = a_params.get_mounted_by_actor();
+					auto& mountedByActor = a_params.get_mounting_actor();
 					if (!mountedByActor)
 					{
 						return false;
@@ -752,7 +814,7 @@ namespace IED
 
 				if (a_match.keyword.get_id())  // actually race
 				{
-					auto& mountedByActor = a_params.get_mounted_by_actor();
+					auto& mountedByActor = a_params.get_mounting_actor();
 					if (!mountedByActor)
 					{
 						return false;
@@ -799,11 +861,11 @@ namespace IED
 		{
 			if (a_match.flags.test(Tf::kExtraFlag1))
 			{
-				return get_skeleton_id(a_params).signature() == a_match.skeletonSignature;
+				return a_params.objects.GetSkeletonID().signature() == a_match.skeletonSignature;
 			}
 			else
 			{
-				return get_skeleton_id(a_params).id() == a_match.skeletonID;
+				return a_params.objects.GetSkeletonID().id() == a_match.skeletonID;
 			}
 		}
 
@@ -1056,16 +1118,21 @@ namespace IED
 
 		const ActorObjectMap& get_actor_object_map(CommonParams& a_params);
 
-		const SkeletonID& get_skeleton_id(CommonParams& a_params) noexcept;
-		bool              is_in_first_person(CommonParams& a_params) noexcept;
-		bool              check_node_monitor_value(CommonParams& a_params, std::uint32_t a_uid) noexcept;
-		bool              is_player_last_ridden_mount(CommonParams& a_params) noexcept;
-		bool              is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
+		bool is_in_first_person(CommonParams& a_params) noexcept;
+		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
 
-		bool match_random_percent(
+		inline constexpr bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
+		{
+			return a_params.objects.GetHandle() == (*g_thePlayer)->lastRiddenHorseHandle;
+		}
+
+		inline bool match_random_percent(
 			CommonParams&   a_params,
 			const luid_tag& a_luid,
-			float           a_percent) noexcept;
+			float           a_percent) noexcept
+		{
+			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
+		}
 
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept;

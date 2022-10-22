@@ -173,7 +173,7 @@ namespace IED
 		return *mountedActor;
 	}
 
-	NiPointer<Actor>& CommonParams::get_mounted_by_actor() const
+	NiPointer<Actor>& CommonParams::get_mounting_actor() const
 	{
 		if (!mountedByActor)
 		{
@@ -234,5 +234,32 @@ namespace IED
 		}
 
 		return *lastRiddenPlayerHorse;
+	}
+
+	bool CommonParams::is_horse() const
+	{
+		if (!isHorse)
+		{
+			isHorse.emplace(actor->IsHorse());
+		}
+
+		return *isHorse;
+	}
+
+	bool CommonParams::is_mounted_actor_horse() const
+	{
+		if (!isMountHorse)
+		{
+			if (auto& e = get_mounted_actor())
+			{
+				isMountHorse.emplace(e->IsHorse());
+			}
+			else
+			{
+				isMountHorse.emplace(false);
+			}
+		}
+
+		return *isMountHorse;
 	}
 }

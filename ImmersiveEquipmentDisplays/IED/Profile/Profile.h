@@ -167,9 +167,9 @@ namespace IED
 			Serialization::ParserState state;
 			Serialization::Parser<T>   parser(state);
 
-			T tmp;
+			auto tmp = std::make_unique<T>();
 
-			if (!parser.Parse(root, tmp))
+			if (!parser.Parse(root, *tmp))
 			{
 				throw std::exception("parser error");
 			}
@@ -187,7 +187,7 @@ namespace IED
 				m_desc.reset();
 			}
 
-			m_data = std::move(tmp);
+			m_data = std::move(*tmp);
 
 			return true;
 		}

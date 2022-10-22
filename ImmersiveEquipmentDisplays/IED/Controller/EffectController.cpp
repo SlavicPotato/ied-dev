@@ -67,7 +67,7 @@ namespace IED
 		                a_steps.player :
                         a_steps.npc;
 
-		a_holder.visit([&](auto& a_entry) {
+		a_holder.visit([&](auto& a_entry) [[msvc::forceinline]] {
 			UpdateObjectEffects(actor, a_entry, step);
 		});
 	}

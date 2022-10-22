@@ -14,7 +14,7 @@ namespace IED
 		actorStateHolder_t::actorStateHolder_t(
 			const ObjectManagerData& a_data)
 		{
-			for (auto& e : a_data.GetData())
+			for (auto& e : a_data.GetObjects())
 			{
 				data.try_emplace(e.first, e.second);
 			}

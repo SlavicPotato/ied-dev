@@ -29,9 +29,10 @@ namespace IED
 				Localization::ILocalization& a_localization);
 
 			bool DrawStringListTree(
-				const char*                   a_id,
-				Localization::StringID        a_title,
-				Data::configFixedStringList_t& a_data);
+				const char*                    a_id,
+				Localization::StringID         a_title,
+				Data::configFixedStringList_t& a_data,
+				ImGuiTreeNodeFlags             a_treeFlags = ImGuiTreeNodeFlags_SpanAvailWidth);
 
 		private:
 			SimpleStringListContextResult DrawContextMenu(

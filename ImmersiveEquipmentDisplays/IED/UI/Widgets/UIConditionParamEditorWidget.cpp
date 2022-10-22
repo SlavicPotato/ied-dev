@@ -134,7 +134,7 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::EquipmentSlot); e.p1)
 			{
-				result |= DrawObjectSlotSelector(
+				result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 					LS(CommonStrings::Slot, "ss"),
 					e.As1<Data::ObjectSlot>());
 
@@ -143,7 +143,7 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
 			{
-				result |= DrawObjectSlotSelector(
+				result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
 					LS(CommonStrings::Slot, "sse"),
 					e.As1<Data::ObjectSlotExtra>());
 

@@ -29,7 +29,7 @@ namespace IED
 				std::pair<
 					Data::VariableSource,
 					UIVariableSourceSelectorWidgetStrings>,
-				2>;
+				4>;
 
 			static data_type m_data;
 		};

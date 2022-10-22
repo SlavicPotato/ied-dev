@@ -171,7 +171,7 @@ namespace IED
 		}
 
 		[[nodiscard]] NiPointer<Actor>& get_mounted_actor() const;
-		[[nodiscard]] NiPointer<Actor>& get_mounted_by_actor() const;
+		[[nodiscard]] NiPointer<Actor>& get_mounting_actor() const;
 
 		[[nodiscard]] bool is_in_merchant_faction() const;
 		[[nodiscard]] bool is_in_player_enemy_faction() const;
@@ -182,6 +182,9 @@ namespace IED
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);
 		}
+
+		[[nodiscard]] bool is_horse() const;
+		[[nodiscard]] bool is_mounted_actor_horse() const;
 
 	private:
 		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
@@ -203,5 +206,7 @@ namespace IED
 		mutable std::optional<bool>                                  isInMerchantFaction;
 		mutable std::optional<bool>                                  isInPlayerEnemyFaction;
 		mutable std::optional<bool>                                  isMounted;
+		mutable std::optional<bool>                                  isHorse;
+		mutable std::optional<bool>                                  isMountHorse;
 	};
 }
