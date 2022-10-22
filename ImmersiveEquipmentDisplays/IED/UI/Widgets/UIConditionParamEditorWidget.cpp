@@ -726,29 +726,26 @@ namespace IED
 		{
 			Game::FormID a_iform;
 			Game::FormID a_ikw;
+			Game::FormID a_irace;
 
 			if (const auto& e = get(ConditionParamItem::Form); e.p1)
 			{
 				a_iform = e.As1<Game::FormID>();
 			}
 
-			const char*        kwtag;
-			ConditionParamItem kwparam;
+			constexpr char* kwtag = "KW";
+
+			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
+			{
+				a_ikw = e.As1<Game::FormID>();
+			}
 
 			if (a_race)
 			{
-				kwtag   = "R";
-				kwparam = ConditionParamItem::Race;
-			}
-			else
-			{
-				kwtag   = "KW";
-				kwparam = ConditionParamItem::Keyword;
-			}
-
-			if (const auto& e = get(kwparam); e.p1)
-			{
-				a_ikw = e.As1<Game::FormID>();
+				if (const auto& e = get(ConditionParamItem::Race); e.p1)
+				{
+					a_irace = e.As1<Game::FormID>();
+				}
 			}
 
 			if (a_iform && a_ikw)
@@ -876,6 +873,47 @@ namespace IED
 				{
 					m_descBuffer[0] = 0;
 				}
+			}
+
+			if (a_race && a_irace)
+			{
+				auto info = LookupForm(a_irace);
+
+				char tmp[256];
+
+				if (info)
+				{
+					stl::snprintf(
+						tmp,
+						"R: [%.8X] %s",
+						a_irace.get(),
+						info->form.name.c_str());
+				}
+				else
+				{
+					stl::snprintf(
+						tmp,
+						"R: %.8X",
+						a_irace.get());
+				}
+
+				if (m_descBuffer[0] == 0) 
+				{
+					stl::snprintf(
+						m_descBuffer2,
+						"%s",
+						tmp);
+				}
+				else
+				{
+					stl::snprintf(
+						m_descBuffer2,
+						"%s, %s",
+						m_descBuffer,
+						tmp);
+				}
+
+				return m_descBuffer2;
 			}
 
 			return m_descBuffer;

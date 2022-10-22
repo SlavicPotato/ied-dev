@@ -275,6 +275,7 @@ namespace IED
 			};
 
 			configCachedForm_t form;
+			configCachedForm_t form2;
 			configCachedForm_t keyword;
 
 			Data::ObjectSlotExtra slot{ Data::ObjectSlotExtra::kNone };
@@ -344,28 +345,37 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar&              flags.value;
-				const configForm_t tmp = form.get_id();
-				a_ar&              tmp;
-				a_ar&              slot;
-				a_ar&              keyword;
-				a_ar&              ui32a;
-				a_ar&              group;
-				a_ar&              f32a;
-				a_ar&              ui32b;
-				a_ar&              i32a;
-				a_ar&              ui64a;
-				a_ar&              s0;
-				a_ar&              ui32c;
+				a_ar& flags.value;
+				a_ar& form;
+				a_ar& slot;
+				a_ar& keyword;
+				a_ar& ui32a;
+				a_ar& group;
+				a_ar& f32a;
+				a_ar& ui32b;
+				a_ar& i32a;
+				a_ar& ui64a;
+				a_ar& s0;
+				a_ar& ui32c;
+				a_ar& form2;
 			}
 
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar&        flags.value;
-				configForm_t tmp;
-				a_ar&        tmp;
-				form = tmp;
+				a_ar& flags.value;
+
+				if (a_version >= DataVersion6)
+				{
+					a_ar& form;
+				}
+				else
+				{
+					configForm_t tmp;
+					a_ar&        tmp;
+					form = tmp;
+				}
+
 				a_ar& slot;
 				a_ar& keyword;
 
@@ -391,6 +401,7 @@ namespace IED
 								{
 									a_ar& s0;
 									a_ar& ui32c;
+									a_ar& form2;
 								}
 							}
 						}

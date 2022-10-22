@@ -754,6 +754,27 @@ namespace IED
 					}
 				}
 
+				if (a_match.form2.get_id())  // keyword
+				{
+					auto& mountedActor = a_params.get_mounted_actor();
+					if (!mountedActor)
+					{
+						return false;
+					}
+
+					auto base = mountedActor->GetActorBase();
+					if (!base)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch3) ==
+					    IFormCommon::HasKeyword(base, a_match.form2))
+					{
+						return false;
+					}
+				}
+				
 				if (a_match.keyword.get_id())  // actually race
 				{
 					auto& mountedActor = a_params.get_mounted_actor();
@@ -807,6 +828,27 @@ namespace IED
 
 					if (a_match.flags.test(Tf::kNegateMatch1) ==
 					    (a_match.form.get_id() == base->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.form2.get_id())  // keyword
+				{
+					auto& mountedActor = a_params.get_mounting_actor();
+					if (!mountedActor)
+					{
+						return false;
+					}
+
+					auto base = mountedActor->GetActorBase();
+					if (!base)
+					{
+						return false;
+					}
+
+					if (a_match.flags.test(Tf::kNegateMatch3) ==
+					    IFormCommon::HasKeyword(base, a_match.form2))
 					{
 						return false;
 					}

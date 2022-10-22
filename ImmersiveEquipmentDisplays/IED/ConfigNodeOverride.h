@@ -303,6 +303,7 @@ namespace IED
 
 			stl::fixed_string  s0;
 			configCachedForm_t form;
+			configCachedForm_t form2;
 			configCachedForm_t keyword;
 
 			ObjectSlotExtra typeSlot{ Data::ObjectSlotExtra::kNone };
@@ -391,6 +392,7 @@ namespace IED
 							if (a_version >= DataVersion5)
 							{
 								a_ar& ui32c;
+								a_ar& form2;
 							}
 						}
 					}

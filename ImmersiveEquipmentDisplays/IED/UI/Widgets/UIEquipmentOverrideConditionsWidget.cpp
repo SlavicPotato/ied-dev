@@ -871,23 +871,40 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::Mounting:
 			case Data::EquipmentOverrideConditionType::Mounted:
 
-				if (a_item == ConditionParamItem::Form)
+				switch (a_item)
 				{
+				case ConditionParamItem::Form:
+
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
 
 					ImGui::SameLine();
-				}
-				else if (a_item == ConditionParamItem::Race)
-				{
+
+					break;
+
+				case ConditionParamItem::Race:
+
 					result = ImGui::CheckboxFlagsT(
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch2));
 
 					ImGui::SameLine();
+
+					break;
+
+				case ConditionParamItem::Keyword:
+
+					result = ImGui::CheckboxFlagsT(
+						"!##ctl_neg_3",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+
+					ImGui::SameLine();
+
+					break;
 				}
 
 				break;
@@ -1693,6 +1710,8 @@ namespace IED
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.form2.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Race>(
 									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
