@@ -114,7 +114,7 @@ namespace IED
 			const luid_tag& a_luid,
 			float           a_percent) noexcept
 		{
-			return a_params.objects.GetRandomPercent(a_luid) <= a_percent;
+			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)

@@ -2722,13 +2722,13 @@ namespace IED
 		{
 			if (!a_objectEntry.cflags.test(CustomObjectEntryFlags::kProcessedChance))
 			{
-				if (m_rng1.Get(m_rngBase) > a_config.chance)
+				if (a_config.chance >= 100.0f || GetRandomPercent() < a_config.chance)
 				{
-					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
+					a_objectEntry.cflags.clear(CustomObjectEntryFlags::kBlockedByChance);
 				}
 				else
 				{
-					a_objectEntry.cflags.clear(CustomObjectEntryFlags::kBlockedByChance);
+					a_objectEntry.cflags.set(CustomObjectEntryFlags::kBlockedByChance);
 				}
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kProcessedChance);
