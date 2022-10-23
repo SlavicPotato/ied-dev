@@ -460,6 +460,11 @@ namespace IED
 			return m_bipedCache.max_size();
 		}
 
+		[[nodiscard]] inline constexpr auto& GetBipedDataCache() const noexcept
+		{
+			return m_bipedCache;
+		}
+
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 		void ProcessEffectShaders();

@@ -444,6 +444,11 @@ namespace IED
 			return m_state;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetBipedSlotData() const noexcept
+		{
+			return m_lastEquipped;
+		}
+
 		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
 
 		float GetRandomPercent(const luid_tag& a_luid);

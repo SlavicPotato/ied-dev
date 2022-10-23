@@ -84,7 +84,7 @@ extern "C" {
 			auto& iskse = ISKSE::GetSingleton();
 
 			iskse.SetPluginHandle(a_skse->GetPluginHandle());
-			iskse.OpenLog(a_skse->runtimeVersion);
+			iskse.OpenLog();
 		}
 
 		gLog.Message(
