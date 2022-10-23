@@ -14,13 +14,6 @@ void ISKSE::OnLogOpen()
 	gLog.AddSink(this);
 }
 
-const char* ISKSE::GetLogPath(std::uint32_t a_version) const
-{
-	return a_version >= RUNTIME_VERSION_1_6_659 ?
-	           PLUGIN_LOG_PATH_GOG :
-               PLUGIN_LOG_PATH;
-}
-
 const char* ISKSE::GetPluginName() const
 {
 	return PLUGIN_NAME;
