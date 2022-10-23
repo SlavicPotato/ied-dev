@@ -3270,6 +3270,8 @@ namespace IED
 
 		IncrementCounter();
 
+		UpdateBipedSlotCache(a_actor, a_objects);
+
 		if (!IsActorBlockedImpl(a_actor->formID))
 		{
 			DoObjectEvaluation(
@@ -3309,7 +3311,7 @@ namespace IED
 	}
 
 	void Controller::UpdateBipedSlotCache(
-		processParams_t&   a_params,
+		Actor*             a_actor,
 		ActorObjectHolder& a_objects)
 	{
 		/*PerfTimer pt;
@@ -3317,7 +3319,7 @@ namespace IED
 
 		auto& data = a_objects.m_lastEquipped->data;
 
-		auto& biped = a_params.actor->GetBiped1(false);
+		auto& biped = a_actor->GetBiped1(false);
 		if (!biped)
 		{
 			std::for_each(
@@ -3328,7 +3330,7 @@ namespace IED
 			return;
 		}
 
-		auto skin = a_params.get_actor_skin();
+		auto skin = a_actor->GetSkin();
 
 		using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
@@ -3417,8 +3419,6 @@ namespace IED
 				__LINE__,
 				a_actor->formID.get());
 		}
-
-		UpdateBipedSlotCache(params, a_objects);
 
 		params.collector.Run(
 			*nrp->npc,

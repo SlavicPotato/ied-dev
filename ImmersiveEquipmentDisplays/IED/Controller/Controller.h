@@ -511,7 +511,7 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags);
 
 		void UpdateBipedSlotCache(
-			processParams_t&   a_params,
+			Actor*             a_actor,
 			ActorObjectHolder& a_objects);
 
 		void DoObjectEvaluation(
