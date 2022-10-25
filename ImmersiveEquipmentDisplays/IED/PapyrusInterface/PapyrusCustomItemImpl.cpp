@@ -890,11 +890,11 @@ namespace IED
 
 				auto& e = conf->get(a_sex);
 
-				auto old = e.flags;
+				auto old = e.customFlags;
 
-				e.flags.set(BaseFlags::kIgnoreRaceEquipTypes, a_switch);
+				e.customFlags.set(CustomFlags::kIgnoreRaceEquipTypes, a_switch);
 
-				if (e.flags != old && !e.flags.test(BaseFlags::kDisabled))
+				if (e.customFlags != old && !e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueReset(a_target, a_class, a_key, a_name);
 				}
