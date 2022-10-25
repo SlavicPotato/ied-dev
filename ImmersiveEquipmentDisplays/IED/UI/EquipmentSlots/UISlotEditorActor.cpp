@@ -439,7 +439,7 @@ namespace IED
 				auto  slotId = static_cast<Data::ObjectSlot>(j);
 				auto& slot   = it->second.GetSlot(slotId);
 
-				if (!slot.state)
+				if (!slot.data.state)
 				{
 					continue;
 				}
@@ -449,9 +449,9 @@ namespace IED
 				std::stringstream ss;
 
 				ss << std::left << std::setfill(' ') << std::setw(22) << name << " ["
-				   << sshex(8) << slot.state->formid.get() << "] [" << *slot.state->nodeDesc.name << "]";
+				   << sshex(8) << slot.data.state->formid.get() << "] [" << *slot.data.state->nodeDesc.name << "]";
 
-				if (slot.state->flags.test(ObjectEntryFlags::kScbLeft))
+				if (slot.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 				{
 					ss << " [ScbLeft]";
 				}
@@ -486,7 +486,7 @@ namespace IED
 
 			auto& slot = it->second.GetSlot(a_slot);
 
-			if (!slot.state)
+			if (!slot.data.state)
 			{
 				return false;
 			}
@@ -500,7 +500,7 @@ namespace IED
 			ImGui::SameLine();
 
 			DrawObjectEntryHeaderInfo(
-				m_controller.UIGetFormLookupCache().LookupForm(slot.state->formid),
+				m_controller.UIGetFormLookupCache().LookupForm(slot.data.state->formid),
 				slot);
 
 			return true;

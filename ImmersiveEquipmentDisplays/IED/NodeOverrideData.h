@@ -34,13 +34,13 @@ namespace IED
 		template <class T, class I>
 		concept AcceptVectorInit = requires(std::initializer_list<I> a_init)
 		{
-			stl::vector<T>(a_init.begin(), a_init.end());
+			std::vector<T>(a_init.begin(), a_init.end());
 		};
 
 		template <class T, class I>
 		concept AcceptListInit = requires(std::initializer_list<I> a_init)
 		{
-			stl::list<T>(a_init.begin(), a_init.end());
+			std::list<T>(a_init.begin(), a_init.end());
 		};
 	}
 

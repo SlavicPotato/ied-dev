@@ -45,10 +45,15 @@ namespace IED
 			virtual void ApplyProfile(
 				const profileSelectorParamsCondVar_t& a_data,
 				const CondVarProfile&                 a_profile) override;
-			
+
 			virtual void MergeProfile(
 				const profileSelectorParamsCondVar_t& a_data,
 				const CondVarProfile&                 a_profile) override;
+
+			virtual bool DrawProfileImportOptions(
+				const profileSelectorParamsCondVar_t& a_data,
+				const CondVarProfile&                 a_profile,
+				bool                                  a_isMerge) override;
 
 			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 			virtual void                         OnCollapsibleStatesUpdate() override;
@@ -59,6 +64,8 @@ namespace IED
 
 			virtual void DrawMainHeaderControlsExtra(
 				Data::configConditionalVariablesHolder_t& a_data) override;
+
+			bool m_profileMergeOverwrite{ true };
 
 			Controller& m_controller;
 		};

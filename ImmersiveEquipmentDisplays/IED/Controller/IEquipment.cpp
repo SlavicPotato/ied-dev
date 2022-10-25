@@ -243,9 +243,9 @@ namespace IED
 		if (a_config.customFlags.test(CustomFlags::kSelectInvRandom) &&
 		    !a_config.extraItems.empty())
 		{
-			if (a_objectEntry.state)
+			if (a_objectEntry.data.state)
 			{
-				auto fid = a_objectEntry.state->formid;
+				auto fid = a_objectEntry.data.state->formid;
 
 				if (fid == a_config.form.get_id() ||
 				    std::find(

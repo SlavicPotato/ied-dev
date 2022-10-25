@@ -47,6 +47,7 @@ namespace IED
 		NodeMon,
 		CondVarType,
 		VarCondSource,
+		FormAny,
 
 		Total
 	};
@@ -214,6 +215,7 @@ namespace IED
 			UIFormPickerWidget m_formPickerForm;
 			UIFormPickerWidget m_formPickerKeyword;
 			UIFormPickerWidget m_formPickerRace;
+			UIFormPickerWidget m_formPickerAny;
 
 			stl::flag<UIConditionParamEditorTempFlags> m_tempFlags{
 				UIConditionParamEditorTempFlags::kNone
@@ -230,7 +232,8 @@ namespace IED
 			if constexpr (
 				Ap == ConditionParamItem::Form ||
 				Ap == ConditionParamItem::Keyword ||
-				Ap == ConditionParamItem::Race)
+				Ap == ConditionParamItem::Race ||
+				Ap == ConditionParamItem::FormAny)
 			{
 				static_assert(std::is_convertible_v<T, Game::FormID>);
 
@@ -418,6 +421,20 @@ namespace IED
 				e = {
 					static_cast<void*>(std::addressof(static_cast<stl::fixed_string&>(a_p1))),
 					static_cast<const void*>(std::addressof(static_cast<const stl::fixed_string&>(a_p2)))
+				};
+
+				return;
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::Form)
+			{
+				static_assert(
+					std::is_convertible_v<Tp1, Game::FormID> &&
+					std::is_same_v<std::underlying_type_t<Tp2>, Localization::StringID>);
+
+				e = {
+					static_cast<void*>(std::addressof(static_cast<Game::FormID&>(a_p1))),
+					reinterpret_cast<const void*>(a_p2)
 				};
 
 				return;

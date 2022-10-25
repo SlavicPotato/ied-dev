@@ -8,7 +8,17 @@ namespace IED
 {
 	StringHolder StringHolder::m_Instance;
 
-	StringHolder::StringHolder()
+	StringHolder::StringHolder() :
+		papyrusRestrictedPlugins(
+			{
+
+				"Skyrim.esm",
+				"Update.esm",
+				"Dragonborn.esm",
+				"Dawnguard.esm",
+				"HearthFires.esm"
+
+			})
 	{
 		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
 

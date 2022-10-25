@@ -28,12 +28,7 @@ namespace IED
 
 				stl::fixed_string key(a_key.c_str());
 
-				if (key == StringHolder::GetSingleton().IED)
-				{
-					return {};
-				}
-
-				if (!IData::GetPluginInfo().GetLookupRef().contains(key))
+				if (!ValidateKey(key))
 				{
 					return {};
 				}
@@ -267,7 +262,7 @@ namespace IED
 					return {};
 				}
 
-				NiPoint3 result;
+				NiPoint3 result(NiPoint3::noinit_arg_t{});
 
 				for (std::uint32_t i = 0; i < 3; i++)
 				{

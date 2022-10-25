@@ -159,12 +159,9 @@ namespace IED
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
-		inline static const auto GetObjectByName =
-			IAL::Address<fGetObjectByName_t>(74481, 76207);
-
+		inline static const auto GetObjectByName      = IAL::Address<fGetObjectByName_t>(74481, 76207);
 		inline static const auto ApplyTextureSwap     = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0           = IAL::Address<std::int32_t*>(523662, 410201);
-		inline static const auto SceneRendering       = IAL::Address<unk63F810_t>(38079, 39033);
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
@@ -185,6 +182,11 @@ namespace IED
 			return m_Instance.m_conf.parallelAnimationUpdates;
 		}
 
+		[[nodiscard]] inline static constexpr bool ShouldDefer3DTask() noexcept
+		{
+			return ShouldDefer3DTaskImpl() || !ITaskPool::IsRunningOnCurrentThread();
+		}
+
 		FN_NAMEPROC("EngineExtensions");
 
 	private:
@@ -197,7 +199,7 @@ namespace IED
 		inline static const auto m_shadowSceneNode = IAL::Address<ShadowSceneNode**>(513211, 390951);
 		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 
-		inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
+		//inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
 		inline static const auto SetRootOnShaderProperties = IAL::Address<unk1291cc0_t>(98895, 105542);
 		inline static const auto fUnk12ba3e0               = IAL::Address<unkSSN1_t>(99702, 106336);
 		inline static const auto fUnk12b99f0               = IAL::Address<unkSSN1_t>(99696, 106330);
@@ -217,6 +219,8 @@ namespace IED
 		//inline static const auto fLoadAndRegisterWeaponGraph = IAL::Address<loadAndRegisterWeaponGraph_t>(32249, 32984);
 		inline static const auto LoadWeaponAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
 		inline static const auto BindAnimationObject                = IAL::Address<bindAnimationObject_t>(32250, 32985);
+
+		inline static const auto ShouldDefer3DTaskImpl = IAL::Address<unk63F810_t>(38079, 39033);
 
 		//inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 

@@ -33,6 +33,15 @@ namespace IED
 					Error("%s: failed to parse form ID", __FUNCTION__);
 				}
 			}
+			
+			if (auto& v = a_in["form2"])
+			{
+				if (!fparser.Parse(v, a_out.form2))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse form ID (2)", __FUNCTION__);
+				}
+			}
 
 			if (auto& v = a_in["kw"])
 			{
@@ -77,8 +86,20 @@ namespace IED
 				a_out["node"] = *a_data.s0;
 			}
 
-			fparser.Create(a_data.form, a_out["form"]);
-			fparser.Create(a_data.keyword, a_out["kw"]);
+			if (a_data.form.get_id())
+			{
+				fparser.Create(a_data.form, a_out["form"]);
+			}
+			
+			if (a_data.form2.get_id())
+			{
+				fparser.Create(a_data.form2, a_out["form2"]);
+			}
+
+			if (a_data.keyword.get_id())
+			{
+				fparser.Create(a_data.keyword, a_out["kw"]);
+			}
 
 			a_out["bip"]   = a_data.ui32a;
 			a_out["type"]  = stl::underlying(a_data.typeSlot);

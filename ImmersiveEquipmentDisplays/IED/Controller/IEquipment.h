@@ -226,7 +226,7 @@ namespace IED
 
 		if (a_config.slot < Data::ObjectSlot::kMax)
 		{
-			auto& slot = a_params.objects.GetSlot(a_config.slot);
+			const auto& slot = a_params.objects.GetSlot(a_config.slot);
 
 			if (auto form = slot.slotState.lastSlotted)
 			{

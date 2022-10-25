@@ -48,7 +48,17 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
+			{
+				a_ar& flags.value;
+				a_ar& form;
+				a_ar& transform;
+				a_ar& niControllerSequence;
+				a_ar& animationEvent;
+			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
 				a_ar& form;
@@ -63,7 +73,11 @@ namespace IED
 						a_ar& animationEvent;
 					}
 				}
+
+				form.zero_missing_or_deleted();
 			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 		enum class ConfigModelGroupFlags : std::uint32_t

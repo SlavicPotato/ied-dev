@@ -8,6 +8,25 @@ namespace IED
 {
 	namespace Data
 	{
+		inline static bool should_discard_form(TESForm* a_form)
+		{
+			if (!a_form->IsDeleted())
+			{
+				return false;
+			}
+
+			// discard deleted temp references
+			auto refr = ::RTTI<TESObjectREFR>()(a_form);
+			if (refr && refr->formID.IsTemporary())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
 		Game::FormID resolve_form(Game::FormID a_form)
 		{
 			auto intfc = ISKSE::GetSingleton().GetInterface<SKSESerializationInterface>();
@@ -17,9 +36,14 @@ namespace IED
 			{
 				if (auto form = tmp.Lookup())
 				{
-					if (form->IsDeleted())
+					if (should_discard_form(form))
 					{
-						gLog.Warning("%s: form %.8X is deleted", __FUNCTION__, a_form.get());
+						gLog.Warning(
+							"%s: discarding deleted form %.8X [%hhu]",
+							__FUNCTION__,
+							a_form.get(),
+							form->formType);
+
 						return {};
 					}
 				}
@@ -44,7 +68,12 @@ namespace IED
 				{
 					if (form->IsDeleted())
 					{
-						gLog.Warning("%s: form %.8X is deleted", __FUNCTION__, a_form.get());
+						gLog.Warning(
+							"%s: discarding deleted form %.8X [%hhu]",
+							__FUNCTION__,
+							a_form.get(),
+							form->formType);
+
 						return {};
 					}
 				}
@@ -63,8 +92,17 @@ namespace IED
 			}
 		}
 
+		void configCachedForm_t::zero_missing_or_deleted()
+		{
+			auto f = id.Lookup();
+			if (!f || f->IsDeleted())
+			{
+				id = {};
+			}
+		}
+
 		TESForm* configCachedForm_t::lookup_form(
-			Game::FormID a_form) noexcept
+			Game::FormID a_form)
 		{
 			if (!a_form || a_form.IsTemporary())
 			{
@@ -102,6 +140,7 @@ namespace IED
 			case TESAmmo::kTypeID:
 			case TESQuest::kTypeID:
 			case TESRace::kTypeID:
+			case TESNPC::kTypeID:
 			case TESFlora::kTypeID:
 			case TESFurniture::kTypeID:
 			case BGSArtObject::kTypeID:

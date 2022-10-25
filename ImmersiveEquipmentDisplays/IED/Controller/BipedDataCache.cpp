@@ -51,7 +51,6 @@ namespace IED
 				});
 
 			m_data.clear();
-			m_data.reserve(m_sizeTarget);
 
 			for (auto& e : s)
 			{
@@ -88,7 +87,7 @@ namespace IED
 			std::erase_if(
 				f.forms,
 				[](auto& a_v) [[msvc::forceinline]] {
-					return !a_v || a_v.IsTemporary();
+					return !a_v;
 				});
 
 			while (!f.forms.empty() &&

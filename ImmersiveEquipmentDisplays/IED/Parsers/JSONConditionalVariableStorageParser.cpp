@@ -33,7 +33,8 @@ namespace IED
 				{
 					Parser<Data::configCachedForm_t> parser(m_state);
 
-					if (!parser.Parse(data["v"], a_out.form)) {
+					if (!parser.Parse(data["v"], a_out.form))
+					{
 						return false;
 					}
 				}
@@ -66,7 +67,7 @@ namespace IED
 			case ConditionalVariableType::kForm:
 				{
 					Parser<Data::configCachedForm_t> parser(m_state);
-	
+
 					parser.Create(a_data.form, data["v"]);
 				}
 				break;

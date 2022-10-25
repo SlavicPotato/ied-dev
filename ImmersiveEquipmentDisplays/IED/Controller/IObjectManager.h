@@ -117,7 +117,7 @@ namespace IED
 			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		void RemoveActorGear(
+		bool RemoveActorGear(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_holder,
@@ -140,7 +140,6 @@ namespace IED
 			TESForm*             a_form,
 			const modelParams_t& a_params,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
-
 
 		bool LoadAndAttach(
 			processParams_t&                a_params,
@@ -171,7 +170,8 @@ namespace IED
 			NiNode*                                  a_rootNode,
 			const NiPointer<NiNode>&                 a_objectNode,
 			nodesRef_t&                              a_targetNodes,
-			const Data::configBaseValues_t&          a_config);
+			const Data::configBaseValues_t&          a_config,
+			Actor*                                   a_actor);
 
 		void PlayObjectSound(
 			const processParams_t&          a_params,

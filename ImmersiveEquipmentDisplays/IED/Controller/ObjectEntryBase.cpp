@@ -7,102 +7,70 @@ namespace IED
 	bool ObjectEntryBase::reset(
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
-		const NiPointer<NiNode>& a_root1p)
+		const NiPointer<NiNode>& a_root1p,
+		ObjectDatabase&          a_db)
 	{
-		bool result;
-
-		if (state)
+		if (!data)
 		{
-			for (auto& e : state->dbEntries)
-			{
-				e->accessed = IPerfCounter::Query();
-			}
-
-			result = true;
-		}
-		else
-		{
-			result = false;
+			return false;
 		}
 
-		if (EngineExtensions::SceneRendering() ||
-		    !ITaskPool::IsRunningOnCurrentThread())
+		const bool result = static_cast<bool>(data.state);
+
+		if (EngineExtensions::ShouldDefer3DTask())
 		{
-			if (state || effectShaderData)
+			struct DisposeStateTask :
+				public TaskDelegate
 			{
-				struct DisposeStateTask :
-					public TaskDelegate
+			public:
+				DisposeStateTask(
+					ObjectEntryBase::ActiveData&& a_data,
+					Game::ObjectRefHandle         a_handle,
+					const NiPointer<NiNode>&      a_root,
+					const NiPointer<NiNode>&      a_root1p,
+					ObjectDatabase&               a_db) :
+					m_data(std::move(a_data)),
+					m_handle(a_handle),
+					m_root(a_root),
+					m_root1p(a_root1p),
+					m_db(a_db)
 				{
-				public:
-					DisposeStateTask(
-						std::unique_ptr<State>&&            a_state,
-						std::unique_ptr<EffectShaderData>&& a_effectShaderData,
-						const Game::ObjectRefHandle         a_handle,
-						const NiPointer<NiNode>&            a_root,
-						const NiPointer<NiNode>&            a_root1p) :
-						m_state(std::move(a_state)),
-						m_effectShaderData(std::move(a_effectShaderData)),
-						m_handle(a_handle),
-						m_root(a_root),
-						m_root1p(a_root1p)
+				}
+
+				virtual void Run() override
+				{
+					if (m_handle)
 					{
+						NiPointer<TESObjectREFR> ref;
+						(void)m_handle.LookupZH(ref);
 					}
 
-					virtual void Run() override
-					{
-						if (m_effectShaderData)
-						{
-							m_effectShaderData->ClearEffectShaderDataFromTree(m_root);
-							m_effectShaderData->ClearEffectShaderDataFromTree(m_root1p);
+					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
+				}
 
-							m_effectShaderData.reset();
-						}
+				virtual void Dispose() override
+				{
+					delete this;
+				}
 
-						if (m_state)
-						{
-							m_state->Cleanup(m_handle);
+			private:
+				ObjectEntryBase::ActiveData m_data;
+				Game::ObjectRefHandle       m_handle;
+				NiPointer<NiNode>           m_root;
+				NiPointer<NiNode>           m_root1p;
+				ObjectDatabase&             m_db;
+			};
 
-							m_state.reset();
-						}
-					}
-
-					virtual void Dispose() override
-					{
-						delete this;
-					}
-
-				private:
-					std::unique_ptr<State>            m_state;
-					std::unique_ptr<EffectShaderData> m_effectShaderData;
-					const Game::ObjectRefHandle       m_handle;
-					NiPointer<NiNode>                 m_root;
-					NiPointer<NiNode>                 m_root1p;
-				};
-
-				ITaskPool::AddPriorityTask<DisposeStateTask>(
-					std::move(state),
-					std::move(effectShaderData),
-					a_handle,
-					a_root,
-					a_root1p);
-			}
+			ITaskPool::AddPriorityTask<DisposeStateTask>(
+				std::move(data),
+				a_handle,
+				a_root,
+				a_root1p,
+				a_db);
 		}
 		else
 		{
-			if (effectShaderData)
-			{
-				effectShaderData->ClearEffectShaderDataFromTree(a_root);
-				effectShaderData->ClearEffectShaderDataFromTree(a_root1p);
-
-				effectShaderData.reset();
-			}
-
-			if (state)
-			{
-				state->Cleanup(a_handle);
-
-				state.reset();
-			}
+			data.Cleanup(a_handle, a_root, a_root1p, a_db);
 		}
 
 		return result;
@@ -110,23 +78,23 @@ namespace IED
 
 	bool ObjectEntryBase::SetNodeVisible(bool a_switch) const noexcept
 	{
-		if (!state)
+		if (!data.state)
 		{
 			return false;
 		}
 
 		a_switch = !a_switch;
 
-		if (!state->hideCountdown &&
-		    a_switch == state->flags.test(ObjectEntryFlags::kInvisible))
+		if (!data.state->hideCountdown &&
+		    a_switch == data.state->flags.test(ObjectEntryFlags::kInvisible))
 		{
 			return false;
 		}
 
-		state->hideCountdown = 0;
-		state->nodes.rootNode->SetHidden(a_switch);
+		data.state->hideCountdown = 0;
+		data.state->nodes.rootNode->SetHidden(a_switch);
 
-		state->flags.set(ObjectEntryFlags::kInvisible, a_switch);
+		data.state->flags.set(ObjectEntryFlags::kInvisible, a_switch);
 
 		return true;
 	}
@@ -138,34 +106,34 @@ namespace IED
 			return false;
 		}
 
-		if (!state)
+		if (!data.state)
 		{
 			return false;
 		}
 
-		if (state->flags.test(ObjectEntryFlags::kInvisible))
+		if (data.state->flags.test(ObjectEntryFlags::kInvisible))
 		{
 			return false;
 		}
 
-		if (state->hideCountdown == 0)
+		if (data.state->hideCountdown == 0)
 		{
-			state->hideCountdown = a_delay;
+			data.state->hideCountdown = a_delay;
 		}
 
-		state->flags.set(ObjectEntryFlags::kInvisible);
+		data.state->flags.set(ObjectEntryFlags::kInvisible);
 
 		return true;
 	}
 
 	void ObjectEntryBase::ResetDeferredHide() const noexcept
 	{
-		if (state)
+		if (data.state)
 		{
-			if (state->flags.test(ObjectEntryFlags::kInvisible) && state->hideCountdown != 0)
+			if (data.state->flags.test(ObjectEntryFlags::kInvisible) && data.state->hideCountdown != 0)
 			{
-				state->flags.clear(ObjectEntryFlags::kInvisible);
-				state->hideCountdown = 0;
+				data.state->flags.clear(ObjectEntryFlags::kInvisible);
+				data.state->hideCountdown = 0;
 			}
 		}
 	}
@@ -280,6 +248,40 @@ namespace IED
 		{
 			currentAnimationEvent = a_event;
 			weapAnimGraphManagerHolder->NotifyAnimationGraph(a_event.c_str());
+		}
+	}
+
+	void ObjectEntryBase::ActiveData::Cleanup(
+		Game::ObjectRefHandle    a_handle,
+		const NiPointer<NiNode>& a_root,
+		const NiPointer<NiNode>& a_root1p,
+		ObjectDatabase&          a_db)
+	{
+		if (effectShaderData)
+		{
+			effectShaderData->ClearEffectShaderDataFromTree(a_root);
+			effectShaderData->ClearEffectShaderDataFromTree(a_root1p);
+
+			effectShaderData.reset();
+		}
+
+		if (state)
+		{
+			state->Cleanup(a_handle);
+
+			if (!state->dbEntries.empty())
+			{
+				const auto ts = IPerfCounter::Query();
+
+				for (auto& e : state->dbEntries)
+				{
+					e->accessed = ts;
+				}
+
+				a_db.QueueDatabaseCleanup();
+			}
+
+			state.reset();
 		}
 	}
 

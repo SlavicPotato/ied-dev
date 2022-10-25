@@ -27,6 +27,15 @@ namespace IED
 					Error("%s: failed to parse form ID", __FUNCTION__);
 				}
 			}
+			
+			if (auto& v = a_in["form2"])
+			{
+				if (!cachedFormParser.Parse(v, a_out.form2))
+				{
+					SetHasErrors();
+					Error("%s: failed to parse form ID (2)", __FUNCTION__);
+				}
+			}
 
 			if (auto& v = a_in["keyword"])
 			{
@@ -76,6 +85,11 @@ namespace IED
 			if (a_data.form.get_id())
 			{
 				cachedFormParser.Create(a_data.form, a_out["form"]);
+			}
+			
+			if (a_data.form2.get_id())
+			{
+				cachedFormParser.Create(a_data.form2, a_out["form2"]);
 			}
 
 			if (a_data.keyword.get_id())

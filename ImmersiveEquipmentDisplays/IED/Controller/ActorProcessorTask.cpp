@@ -26,7 +26,7 @@ namespace IED
 		ActorObjectHolder& a_record,
 		ObjectEntryBase&   a_entry)
 	{
-		auto state = a_entry.state.get();
+		auto state = a_entry.data.state.get();
 
 		const auto& nodes = state->nodes;
 
@@ -490,7 +490,7 @@ namespace IED
 			bool update = false;
 
 			e.visit([&](auto& a_v) [[msvc::forceinline]] {
-				if (!a_v.state)
+				if (!a_v.data.state)
 				{
 					return;
 				}
@@ -502,13 +502,13 @@ namespace IED
 						std::remove_cvref_t<decltype(a_v)>,
 						ObjectEntrySlot>)
 				{
-					if (a_v.state->hideCountdown)
+					if (a_v.data.state->hideCountdown)
 					{
-						if (--a_v.state->hideCountdown == 1)
+						if (--a_v.data.state->hideCountdown == 0)
 						{
 							update = true;
 
-							a_v.state->nodes.rootNode->SetVisible(false);
+							a_v.data.state->nodes.rootNode->SetVisible(false);
 						}
 					}
 				}

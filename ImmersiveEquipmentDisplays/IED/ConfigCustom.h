@@ -133,6 +133,9 @@ namespace IED
 						}
 					}
 				}
+
+				form.zero_missing_or_deleted();
+				modelForm.zero_missing_or_deleted();
 			}
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();

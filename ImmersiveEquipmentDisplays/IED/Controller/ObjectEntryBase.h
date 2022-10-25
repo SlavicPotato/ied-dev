@@ -39,7 +39,8 @@ namespace IED
 		bool reset(
 			Game::ObjectRefHandle    a_handle,
 			const NiPointer<NiNode>& a_root,
-			const NiPointer<NiNode>& a_root1p);
+			const NiPointer<NiNode>& a_root1p,
+			ObjectDatabase&          a_db);
 
 		bool SetNodeVisible(const bool a_switch) const noexcept;
 		bool DeferredHideNode(const std::uint8_t a_delay) const noexcept;
@@ -47,7 +48,7 @@ namespace IED
 
 		SKMP_FORCEINLINE auto IsNodeVisible() const
 		{
-			return state && !state->flags.test(ObjectEntryFlags::kInvisible);
+			return data.state && !data.state->flags.test(ObjectEntryFlags::kInvisible);
 		}
 
 		SKMP_FORCEINLINE auto IsActive() const
@@ -57,7 +58,7 @@ namespace IED
 
 		SKMP_FORCEINLINE auto GetFormIfActive() const
 		{
-			return IsActive() ? state->form : nullptr;
+			return IsActive() ? data.state->form : nullptr;
 		}
 
 		struct AnimationState
@@ -142,7 +143,6 @@ namespace IED
 				}
 			}
 
-
 			/*void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
 			{
 				for (auto& e : a_group.entries)
@@ -161,29 +161,54 @@ namespace IED
 				Actor*                   a_actor,
 				const stl::fixed_string& a_sequence);
 
-			TESForm*                                           form{ nullptr };
-			Game::FormID                                       formid;
-			Game::FormID                                       modelForm;
-			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
-			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
-			Data::NodeDescriptor                               nodeDesc;
-			nodesRef_t                                         nodes;
-			Data::cacheTransform_t                             transform;
-			stl::list<ObjectDatabase::ObjectDatabaseEntry>     dbEntries;
-			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			stl::fixed_string                                  currentSequence;
-			long long                                          created{ 0 };
-			std::uint8_t                                       hideCountdown{ 0 };
-			bool                                               atmReference{ true };
+			TESForm*                                               form{ nullptr };
+			Game::FormID                                           formid;
+			Game::FormID                                           modelForm;
+			stl::flag<ObjectEntryFlags>                            flags{ ObjectEntryFlags::kNone };
+			stl::flag<Data::BaseFlags>                             resetTriggerFlags{ Data::BaseFlags::kNone };
+			Data::NodeDescriptor                                   nodeDesc;
+			nodesRef_t                                             nodes;
+			Data::cacheTransform_t                                 transform;
+			stl::forward_list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
+			stl::unordered_map<stl::fixed_string, GroupObject>     groupObjects;
+			stl::fixed_string                                      currentSequence;
+			long long                                              created{ 0 };
+			std::uint8_t                                           hideCountdown{ 0 };
+			bool                                                   atmReference{ true };
+			Game::FormID                                           owner;
 		};
 
-		/*struct EffectShaderState
+		struct ActiveData
 		{
-			EffectShaderData effectShaders;
-		};*/
+#if defined(DEBUG)
 
-		std::unique_ptr<State>            state;
-		std::unique_ptr<EffectShaderData> effectShaderData;
+			ActiveData()             = default;
+			ActiveData(ActiveData&&) = default;
+
+			~ActiveData()
+			{
+				assert(!state);
+				assert(!effectShaderData);
+			}
+
+#endif
+
+			void Cleanup(
+				Game::ObjectRefHandle    a_handle,
+				const NiPointer<NiNode>& a_root,
+				const NiPointer<NiNode>& a_root1p,
+				ObjectDatabase&          a_db);
+
+			[[nodiscard]] inline explicit operator bool() const noexcept
+			{
+				return state || effectShaderData;
+			}
+
+			std::unique_ptr<State>            state;
+			std::unique_ptr<EffectShaderData> effectShaderData;
+		};
+
+		ActiveData data;
 	};
 
 }

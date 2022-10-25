@@ -92,7 +92,8 @@ namespace IED
 
 			virtual bool DrawProfileImportOptions(
 				const profileSelectorParamsSlot_t<T>& a_data,
-				const SlotProfile&                    a_profile) override;
+				const SlotProfile&                    a_profile,
+				bool                                  a_isMerge) override;
 
 			virtual void ResetProfileImportOptions() override;
 
@@ -462,7 +463,8 @@ namespace IED
 		template <class T>
 		bool UISlotEditorCommon<T>::DrawProfileImportOptions(
 			const profileSelectorParamsSlot_t<T>& a_data,
-			const SlotProfile&                    a_profile)
+			const SlotProfile&                    a_profile,
+			bool                                  a_isMerge)
 		{
 			ImGui::PushID("import_opts");
 

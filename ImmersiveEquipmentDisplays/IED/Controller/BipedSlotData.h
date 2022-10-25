@@ -18,8 +18,8 @@ namespace IED
 		};
 
 		stl::boost_vector<Data::configFormZeroMissing_t> forms;
-		bool                                             occupied{ false };
 		std::uint64_t                                    seen{ 0 };
+		bool                                             occupied{ false };
 
 	private:
 		template <class Archive>

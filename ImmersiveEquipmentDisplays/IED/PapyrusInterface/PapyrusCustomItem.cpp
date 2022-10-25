@@ -260,7 +260,7 @@ namespace IED
 				BSFixedString  a_key,
 				BSFixedString  a_name,
 				bool           a_female,
-				VMArray<float> a_pos)
+				VMArray<float> a_rot)
 			{
 				if (!a_target)
 				{
@@ -273,7 +273,7 @@ namespace IED
 					return false;
 				}
 
-				auto tmp = GetNiPoint3(a_pos);
+				auto tmp = GetNiPoint3(a_rot);
 				if (!tmp)
 				{
 					return false;

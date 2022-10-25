@@ -718,6 +718,78 @@ namespace IED
 			}
 		}
 
+		template <class Tm, class Tf, class Tg>
+		constexpr bool match_mount_generic(
+			CommonParams& a_params,
+			const Tm&     a_match,
+			Tg            a_getActorFunc)
+		{
+			if (a_match.form.get_id())
+			{
+				auto& actor = a_getActorFunc(a_params);
+				if (!actor)
+				{
+					return false;
+				}
+
+				auto base = actor->GetActorBase();
+				if (!base)
+				{
+					return false;
+				}
+
+				if (a_match.flags.test(Tf::kNegateMatch1) ==
+				    (a_match.form.get_id() == base->formID))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.form2.get_id())  // keyword
+			{
+				auto& actor = a_getActorFunc(a_params);
+				if (!actor)
+				{
+					return false;
+				}
+
+				auto base = actor->GetActorBase();
+				if (!base)
+				{
+					return false;
+				}
+
+				if (a_match.flags.test(Tf::kNegateMatch3) ==
+				    IFormCommon::HasKeyword(base, a_match.form2))
+				{
+					return false;
+				}
+			}
+
+			if (a_match.keyword.get_id())  // actually race
+			{
+				auto& actor = a_getActorFunc(a_params);
+				if (!actor)
+				{
+					return false;
+				}
+
+				auto race = actor->GetRace();
+				if (!race)
+				{
+					return false;
+				}
+
+				if (a_match.flags.test(Tf::kNegateMatch2) ==
+				    (a_match.keyword.get_id() == race->formID))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
 		template <class Tm, class Tf>
 		constexpr bool match_mount(
 			CommonParams& a_params,
@@ -733,70 +805,12 @@ namespace IED
 					}
 				}
 
-				if (a_match.form.get_id())
-				{
-					auto& mountedActor = a_params.get_mounted_actor();
-					if (!mountedActor)
-					{
-						return false;
-					}
-
-					auto base = mountedActor->GetActorBase();
-					if (!base)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch1) ==
-					    (a_match.form.get_id() == base->formID))
-					{
-						return false;
-					}
-				}
-
-				if (a_match.form2.get_id())  // keyword
-				{
-					auto& mountedActor = a_params.get_mounted_actor();
-					if (!mountedActor)
-					{
-						return false;
-					}
-
-					auto base = mountedActor->GetActorBase();
-					if (!base)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch3) ==
-					    IFormCommon::HasKeyword(base, a_match.form2))
-					{
-						return false;
-					}
-				}
-				
-				if (a_match.keyword.get_id())  // actually race
-				{
-					auto& mountedActor = a_params.get_mounted_actor();
-					if (!mountedActor)
-					{
-						return false;
-					}
-
-					auto race = mountedActor->GetRace();
-					if (!race)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch2) ==
-					    (a_match.keyword.get_id() == race->formID))
-					{
-						return false;
-					}
-				}
-
-				return true;
+				return match_mount_generic<Tm, Tf>(
+					a_params,
+					a_match,
+					[](auto& a_params) -> auto& {
+						return a_params.get_mounted_actor();
+					});
 			}
 			else
 			{
@@ -812,70 +826,12 @@ namespace IED
 		{
 			if (a_cached.beingRidden)
 			{
-				if (a_match.form.get_id())
-				{
-					auto& mountedByActor = a_params.get_mounting_actor();
-					if (!mountedByActor)
-					{
-						return false;
-					}
-
-					auto base = mountedByActor->GetActorBase();
-					if (!base)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch1) ==
-					    (a_match.form.get_id() == base->formID))
-					{
-						return false;
-					}
-				}
-
-				if (a_match.form2.get_id())  // keyword
-				{
-					auto& mountedActor = a_params.get_mounting_actor();
-					if (!mountedActor)
-					{
-						return false;
-					}
-
-					auto base = mountedActor->GetActorBase();
-					if (!base)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch3) ==
-					    IFormCommon::HasKeyword(base, a_match.form2))
-					{
-						return false;
-					}
-				}
-
-				if (a_match.keyword.get_id())  // actually race
-				{
-					auto& mountedByActor = a_params.get_mounting_actor();
-					if (!mountedByActor)
-					{
-						return false;
-					}
-
-					auto race = mountedByActor->GetRace();
-					if (!race)
-					{
-						return false;
-					}
-
-					if (a_match.flags.test(Tf::kNegateMatch2) ==
-					    (a_match.keyword.get_id() == race->formID))
-					{
-						return false;
-					}
-				}
-
-				return true;
+				return match_mount_generic<Tm, Tf>(
+					a_params,
+					a_match,
+					[](auto& a_params) -> auto& {
+						return a_params.get_mounting_actor();
+					});
 			}
 			else
 			{
@@ -968,12 +924,12 @@ namespace IED
 					return compare(a_match.compOperator, a_data.f32, a_match.f32a);
 				}
 				break;
-				/*case ConditionalVariableType::kForm:
+			case ConditionalVariableType::kForm:
 				if (a_match.condVarType == ConditionalVariableType::kForm)
 				{
-					return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form.get_id().get());
+					return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form2.get_id().get());
 				}
-				break;*/
+				break;
 			}
 
 			return false;

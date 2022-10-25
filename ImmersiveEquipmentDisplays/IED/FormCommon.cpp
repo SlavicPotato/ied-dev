@@ -278,9 +278,9 @@ namespace IED
 		case TESObjectCELL::kTypeID:
 			return GetFullName<TESObjectCELL>(a_form);
 		case TESGlobal::kTypeID:
-			return static_cast<TESGlobal*>(a_form)->formEditorID.c_str();
+			return GetEditorID(static_cast<TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:
-			return static_cast<TESIdleForm*>(a_form)->editorId.c_str();
+			return GetEditorID(static_cast<TESIdleForm*>(a_form));
 		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
@@ -334,6 +334,8 @@ namespace IED
 			return FormHasKeywordImpl<TESFurniture>(a_form, a_keyword);
 		case BGSLocation::kTypeID:
 			return FormHasKeywordImpl<BGSLocation>(a_form, a_keyword);
+		case TESNPC::kTypeID:
+			return FormHasKeywordImpl<TESNPC>(a_form, a_keyword);
 		default:
 			return false;
 		}
@@ -357,12 +359,9 @@ namespace IED
 		TESForm*                        a_form,
 		const Data::configCachedForm_t& a_keyword)
 	{
-		if (auto form = a_keyword.get_form())
+		if (auto keyword = a_keyword.get_form<BGSKeyword>())
 		{
-			if (auto keyword = form->As<BGSKeyword>())
-			{
-				return HasKeyword(a_form, keyword);
-			}
+			return HasKeyword(a_form, keyword);
 		}
 
 		return false;

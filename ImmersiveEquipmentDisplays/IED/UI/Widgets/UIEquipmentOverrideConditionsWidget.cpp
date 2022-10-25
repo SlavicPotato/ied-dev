@@ -990,6 +990,24 @@ namespace IED
 					}
 
 					break;
+
+				case ConditionParamItem::FormAny:
+
+					if (match->condVarType != ConditionalVariableType::kForm)
+					{
+						a_args.hide = true;
+					}
+
+					break;
+
+				/*case ConditionParamItem::CompOper:
+
+					if (match->condVarType == ConditionalVariableType::kForm)
+					{
+						a_args.hide = true;
+					}
+
+					break;*/
 				}
 
 				break;
@@ -1849,13 +1867,16 @@ namespace IED
 								m_condParamEditor.SetNext<ConditionParamItem::VarCondSource>(
 									e.vcSource);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
-									e.form.get_id());
+									e.form.get_id(),
+									CommonStrings::Source);
 								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
 									e.compOperator);
 								m_condParamEditor.SetNext<ConditionParamItem::Int32>(
 									e.i32a);
 								m_condParamEditor.SetNext<ConditionParamItem::Float>(
 									e.f32a);
+								m_condParamEditor.SetNext<ConditionParamItem::FormAny>(
+									e.form2.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 

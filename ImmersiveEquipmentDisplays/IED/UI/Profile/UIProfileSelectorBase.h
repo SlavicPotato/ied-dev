@@ -52,7 +52,7 @@ namespace IED
 			virtual void DrawProfileSelectorOptions(const T& a_data);
 
 		private:
-			virtual bool DrawProfileImportOptions(const T& a_data, const P& a_profile) { return true; };
+			virtual bool DrawProfileImportOptions(const T& a_data, const P& a_profile, bool a_isMerge) { return true; };
 			virtual void ResetProfileImportOptions() {}
 
 			stl::flag<UIProfileSelectorFlags> m_flags;
@@ -168,7 +168,7 @@ namespace IED
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_APPLY),
 								[&] {
-									return DrawProfileImportOptions(a_data, profile);
+									return DrawProfileImportOptions(a_data, profile, false);
 								},
 								{},
 								"%s [%s]\n\n%s",
@@ -182,7 +182,7 @@ namespace IED
 						if (ConfirmDialog(
 								LS(CommonStrings::Confirm, POPUP_ID_MERGE),
 								[&] {
-									return DrawProfileImportOptions(a_data, profile);
+									return DrawProfileImportOptions(a_data, profile, true);
 								},
 								{},
 								"%s [%s]\n\n%s",

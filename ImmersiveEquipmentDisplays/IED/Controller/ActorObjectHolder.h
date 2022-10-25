@@ -622,6 +622,8 @@ namespace IED
 
 		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const;
 
+		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle);
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode* a_npcroot);
@@ -667,6 +669,10 @@ namespace IED
 
 		stl::unordered_map<luid_tag, float> m_rpc;
 
+		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+
+		conditionalVariableMap_t m_variables;
+
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
 		NiPointer<NiNode> m_root1p;
@@ -693,11 +699,7 @@ namespace IED
 
 		BipedSlotDataPtr m_lastEquipped;
 
-		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
-
 		std::optional<processParams_t> m_currentParams;
-
-		conditionalVariableMap_t m_variables;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

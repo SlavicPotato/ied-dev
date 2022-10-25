@@ -45,6 +45,9 @@ namespace IED
 								  stl::underlying(Data::configLastEquipped_t::DEFAULT_FLAGS))
 			                  .asUInt();
 
+			a_out.slot = static_cast<Data::ObjectSlot>(
+				data.get("es", stl::underlying(Data::ObjectSlot::kMax)).asUInt());
+
 			return true;
 		}
 
@@ -70,6 +73,7 @@ namespace IED
 			}
 
 			data["flags"] = a_in.flags.underlying();
+			data["es"]    = stl::underlying(a_in.slot);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

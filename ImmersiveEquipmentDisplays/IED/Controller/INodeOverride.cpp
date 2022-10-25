@@ -887,8 +887,7 @@ namespace IED
 	void INodeOverride::ResetNodeOverride(
 		const CMENodeEntry& a_entry)
 	{
-		if (EngineExtensions::SceneRendering() ||
-		    !ITaskPool::IsRunningOnCurrentThread())
+		if (EngineExtensions::ShouldDefer3DTask())
 		{
 			ITaskPool::AddPriorityTask(
 				[entry = a_entry] {
@@ -1016,8 +1015,7 @@ namespace IED
 		{
 			if (a_entry.node->m_parent != a_target)
 			{
-				if (EngineExtensions::SceneRendering() ||
-				    !ITaskPool::IsRunningOnCurrentThread())
+				if (EngineExtensions::ShouldDefer3DTask())
 				{
 					ITaskPool::AddPriorityTask(
 						[target = a_target,

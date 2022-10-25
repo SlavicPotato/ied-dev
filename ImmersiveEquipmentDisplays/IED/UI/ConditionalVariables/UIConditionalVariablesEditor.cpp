@@ -82,10 +82,35 @@ namespace IED
 
 			for (auto& e : data.data)
 			{
-				a_data.data.data.emplace(e);
+				auto r = a_data.data.data.emplace(e);
+
+				if (m_profileMergeOverwrite &&
+				    !r.second)
+				{
+					r.first->second = e.second;
+				}
 			}
 
 			m_controller.QueueClearVariablesOnAll(true);
+		}
+
+		bool UIConditionalVariablesEditor::DrawProfileImportOptions(
+			const profileSelectorParamsCondVar_t& a_data,
+			const CondVarProfile&                 a_profile,
+			bool                                  a_isMerge)
+		{
+			if (a_isMerge)
+			{
+				ImGui::PushID("import_opts");
+
+				ImGui::Checkbox(
+					LS(CommonStrings::Overwrite, "1"),
+					std::addressof(m_profileMergeOverwrite));
+
+				ImGui::PopID();
+			}
+
+			return true;
 		}
 
 		UIData::UICollapsibleStates& UIConditionalVariablesEditor::GetCollapsibleStatesData()

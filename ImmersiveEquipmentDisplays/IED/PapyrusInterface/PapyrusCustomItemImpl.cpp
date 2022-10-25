@@ -318,6 +318,8 @@ namespace IED
 
 				e.position = a_position;
 
+				e.update_tag();
+
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
@@ -346,6 +348,9 @@ namespace IED
 
 				e.rotation = a_rotation;
 
+				e.update_rotation_matrix();
+				e.update_tag();
+
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
 					QueueTransformUpdate(a_target, a_class, a_key, a_name);
@@ -373,6 +378,8 @@ namespace IED
 				auto& e = conf->get(a_sex);
 
 				e.scale = a_scale;
+
+				e.update_tag();
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{

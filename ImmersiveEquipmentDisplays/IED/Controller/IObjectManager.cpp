@@ -18,7 +18,7 @@ namespace IED
 		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		if (auto& state = a_objectEntry.state)
+		if (auto& state = a_objectEntry.data.state)
 		{
 			if (
 				m_playSound &&
@@ -34,11 +34,6 @@ namespace IED
 					state->form->formType,
 					state->nodes.rootNode->m_parent,
 					false);
-			}
-
-			if (!a_objectEntry.state->dbEntries.empty())
-			{
-				QueueDatabaseCleanup();
 			}
 		}
 
@@ -60,7 +55,8 @@ namespace IED
 		return a_objectEntry.reset(
 			a_handle,
 			a_data.m_root,
-			a_data.m_root1p);
+			a_data.m_root1p,
+			*this);
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -303,20 +299,32 @@ namespace IED
 		}
 	}
 
-	void IObjectManager::RemoveActorGear(
+	bool IObjectManager::RemoveActorGear(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		a_holder.visit([&](auto& a_object) {
-			RemoveObject(
-				a_actor,
-				a_handle,
-				a_object,
-				a_holder,
-				a_flags);
-		});
+		bool result = false;
+
+		if (EngineExtensions::ShouldDefer3DTask())
+		{
+			result = a_holder.QueueDisposeAllObjectEntries(a_handle);
+		}
+		else
+		{
+			a_holder.visit([&](auto& a_object) {
+				if (RemoveObject(
+						a_actor,
+						a_handle,
+						a_object,
+						a_holder,
+						a_flags))
+				{
+					result = true;
+				}
+			});
+		}
 
 		for (auto& e : a_holder.m_entriesCustom)
 		{
@@ -325,6 +333,8 @@ namespace IED
 
 		/*assert(a_holder.m_animationUpdateList->Empty());
 		assert(a_holder.m_animEventForwardRegistrations.Empty());*/
+
+		return result;
 	}
 
 	bool IObjectManager::RemoveInvisibleObjects(
@@ -514,7 +524,7 @@ namespace IED
 		bool                            a_disableHavok,
 		bool                            a_bhkAnims)
 	{
-		if (a_objectEntry.state)
+		if (a_objectEntry.data.state)
 		{
 			return false;
 		}
@@ -593,7 +603,7 @@ namespace IED
 
 		if (entry)
 		{
-			state->dbEntries.emplace_back(std::move(entry));
+			state->dbEntries.emplace_front(std::move(entry));
 		}
 
 		if (modelParams.swap)
@@ -643,7 +653,8 @@ namespace IED
 			itemRoot,
 			object,
 			targetNodes,
-			a_activeConfig);
+			a_activeConfig,
+			a_params.actor);
 
 		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySequence))
 		{
@@ -700,7 +711,7 @@ namespace IED
 			state->modelForm = a_modelForm->formID;
 		}
 
-		a_objectEntry.state = std::move(state);
+		a_objectEntry.data.state = std::move(state);
 
 		if (a_visible)
 		{
@@ -725,7 +736,7 @@ namespace IED
 		bool                            a_disableHavok,
 		bool                            a_bhkAnims)
 	{
-		if (a_objectEntry.state)
+		if (a_objectEntry.data.state)
 		{
 			return false;
 		}
@@ -760,7 +771,7 @@ namespace IED
 			ObjectEntryBase::State::GroupObject*                   grpObject{ nullptr };
 		};
 
-		stl::list<tmpdata_t> modelParams;
+		stl::forward_list<tmpdata_t> modelParams;
 
 		for (auto& e : a_group.entries)
 		{
@@ -771,11 +782,6 @@ namespace IED
 
 			auto form = e.second.form.get_form();
 			if (!form)
-			{
-				continue;
-			}
-
-			if (form->formID.IsTemporary())
 			{
 				continue;
 			}
@@ -801,7 +807,7 @@ namespace IED
 				continue;
 			}
 
-			modelParams.emplace_back(
+			modelParams.emplace_front(
 				std::addressof(e),
 				form,
 				std::move(params));
@@ -852,7 +858,7 @@ namespace IED
 
 			if (entry)
 			{
-				state->dbEntries.emplace_back(std::move(entry));
+				state->dbEntries.emplace_front(std::move(entry));
 			}
 
 			loaded = true;
@@ -1000,11 +1006,12 @@ namespace IED
 			groupRoot,
 			nullptr,
 			targetNodes,
-			a_config);
+			a_config,
+			a_params.actor);
 
 		state->flags.set(ObjectEntryFlags::kIsGroup);
 
-		a_objectEntry.state = std::move(state);
+		a_objectEntry.data.state = std::move(state);
 
 		if (a_visible)
 		{
@@ -1024,7 +1031,8 @@ namespace IED
 		NiNode*                                  a_rootNode,
 		const NiPointer<NiNode>&                 a_objectNode,
 		nodesRef_t&                              a_targetNodes,
-		const Data::configBaseValues_t&          a_config)
+		const Data::configBaseValues_t&          a_config,
+		Actor*                                   a_actor)
 	{
 		a_state->form           = a_form;
 		a_state->formid         = a_form->formID;
@@ -1035,6 +1043,8 @@ namespace IED
 		a_state->created        = IPerfCounter::Query();
 		a_state->atmReference   = a_config.targetNode.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
+
+		a_state->owner = a_actor->formID;
 	}
 
 	void IObjectManager::PlayObjectSound(
@@ -1043,7 +1053,7 @@ namespace IED
 		const ObjectEntryBase&          a_objectEntry,
 		bool                            a_equip)
 	{
-		if (a_objectEntry.state &&
+		if (a_objectEntry.data.state &&
 		    a_params.flags.test(ControllerUpdateFlags::kPlaySound) &&
 		    a_config.flags.test(Data::BaseFlags::kPlaySound) &&
 		    m_playSound)
@@ -1051,8 +1061,8 @@ namespace IED
 			if (a_params.objects.IsPlayer() || m_playSoundNPC)
 			{
 				SoundPlay(
-					a_objectEntry.state->form->formType,
-					a_objectEntry.state->nodes.rootNode,
+					a_objectEntry.data.state->form->formType,
+					a_objectEntry.data.state->nodes.rootNode,
 					a_equip);
 			}
 		}
@@ -1064,7 +1074,7 @@ namespace IED
 		bool                        a_atmReference,
 		ObjectEntryBase&            a_entry)
 	{
-		if (!a_entry.state)
+		if (!a_entry.data.state)
 		{
 			return false;
 		}
@@ -1073,15 +1083,15 @@ namespace IED
 			a_node,
 			a_atmReference,
 			a_root,
-			a_entry.state->nodes.rootNode,
-			a_entry.state->nodes.ref);
+			a_entry.data.state->nodes.rootNode,
+			a_entry.data.state->nodes.ref);
 
 		if (result)
 		{
-			a_entry.state->nodeDesc     = a_node;
-			a_entry.state->atmReference = a_atmReference;
+			a_entry.data.state->nodeDesc     = a_node;
+			a_entry.data.state->atmReference = a_atmReference;
 
-			a_entry.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+			a_entry.data.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 		}
 
 		return result;

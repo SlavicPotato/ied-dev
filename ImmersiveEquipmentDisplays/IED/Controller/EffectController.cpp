@@ -206,13 +206,13 @@ namespace IED
 		const ObjectEntryCustom& a_entry,
 		float                    a_step)
 	{
-		auto& state = a_entry.state;
+		auto& state = a_entry.data.state;
 		if (!state)
 		{
 			return;
 		}
 
-		auto& efdata = a_entry.effectShaderData;
+		auto& efdata = a_entry.data.effectShaderData;
 		if (!efdata)
 		{
 			return;
@@ -226,7 +226,7 @@ namespace IED
 		const ObjectEntrySlot& a_entry,
 		float                  a_step)
 	{
-		auto& efdata = a_entry.effectShaderData;
+		auto& efdata = a_entry.data.effectShaderData;
 		if (!efdata)
 		{
 			return;
@@ -238,7 +238,7 @@ namespace IED
 		}
 		else
 		{
-			if (auto& state = a_entry.state)
+			if (auto& state = a_entry.data.state)
 			{
 				UpdateEffectsOnDisplay(*efdata, *state, a_step);
 			}

@@ -227,10 +227,12 @@ namespace IED
 			}
 		}*/
 
-		if (m_actor.get() == *g_thePlayer)
+		if (m_player)
 		{
 			m_owner.StorePlayerState(*this);
 		}
+
+		m_lastEquipped->accessed = m_owner.IncrementCounter();
 
 		if (m_actor->loadedState)
 		{
@@ -245,35 +247,29 @@ namespace IED
 			}
 		}
 
-		m_lastEquipped->accessed = m_owner.IncrementCounter();
-
-		std::optional<Game::ObjectRefHandle> handle;
-
-		bool cleanupdb = false;
-
-		visit([&](auto& a_entry) {
-			if (!handle)
-			{
-				handle = GetHandle();
-
-				NiPointer<TESObjectREFR> ref;
-				(void)handle->LookupZH(ref);
-			}
-
-			if (a_entry.state)
-			{
-				if (!a_entry.state->dbEntries.empty())
-				{
-					cleanupdb = true;
-				}
-			}
-
-			a_entry.reset(*handle, m_root, m_root1p);
-		});
-
-		if (cleanupdb)
+		if (EngineExtensions::ShouldDefer3DTask())
 		{
-			m_owner.QueueDatabaseCleanup();
+			QueueDisposeAllObjectEntries(GetHandle());
+		}
+		else
+		{
+			std::optional<Game::ObjectRefHandle> handle;
+			NiPointer<TESObjectREFR>             ref;
+
+			visit([&](auto& a_entry) {
+				if (!a_entry.data)
+				{
+					return;
+				}
+
+				if (!handle)
+				{
+					handle.emplace(GetHandle());
+					(void)handle->LookupZH(ref);
+				}
+
+				a_entry.reset(*handle, m_root, m_root1p, m_owner);
+			});
 		}
 	}
 
@@ -281,7 +277,7 @@ namespace IED
 	{
 		for (auto& e : m_entriesSlot)
 		{
-			if (e.state)
+			if (e.data.state)
 			{
 				return true;
 			}
@@ -296,7 +292,7 @@ namespace IED
 
 		for (auto& e : m_entriesSlot)
 		{
-			if (e.state)
+			if (e.data.state)
 			{
 				result++;
 			}
@@ -315,7 +311,7 @@ namespace IED
 			{
 				for (auto& g : f.second)
 				{
-					if (g.second.state)
+					if (g.second.data.state)
 					{
 						r++;
 					}
@@ -410,7 +406,7 @@ namespace IED
 		const BSAnimationUpdateData& a_data) const
 	{
 		visit([&](auto& a_e) [[msvc::forceinline]] {
-			if (auto& state = a_e.state)
+			if (auto& state = a_e.data.state)
 			{
 				state->UpdateAnimationGraphs(a_data);
 			}
@@ -534,6 +530,80 @@ namespace IED
 		{
 			return false;
 		}
+	}
+
+	bool ActorObjectHolder::QueueDisposeAllObjectEntries(
+		Game::ObjectRefHandle a_handle)
+	{
+		using list_type = stl::forward_list<ObjectEntryBase::ActiveData>;
+
+		list_type list;
+
+		visit([&](auto& a_entry) {
+			if (a_entry.data)
+			{
+				list.emplace_front(std::move(a_entry.data));
+			}
+		});
+
+		if (list.empty())
+		{
+			return false;
+		}
+
+		struct DisposeStatesTask :
+			public TaskDelegate
+		{
+		public:
+			DisposeStatesTask(
+				list_type&&              a_list,
+				Game::ObjectRefHandle    a_handle,
+				const NiPointer<NiNode>& a_root,
+				const NiPointer<NiNode>& a_root1p,
+				ObjectDatabase&          a_db) :
+				m_list(std::move(a_list)),
+				m_handle(a_handle),
+				m_root(a_root),
+				m_root1p(a_root1p),
+				m_db(a_db)
+			{
+			}
+
+			virtual void Run() override
+			{
+				if (m_handle)
+				{
+					NiPointer<TESObjectREFR> ref;
+					(void)m_handle.LookupZH(ref);
+				}
+
+				for (auto& e : m_list)
+				{
+					e.Cleanup(m_handle, m_root, m_root1p, m_db);
+				}
+			}
+
+			virtual void Dispose() override
+			{
+				delete this;
+			}
+
+		private:
+			list_type             m_list;
+			Game::ObjectRefHandle m_handle;
+			NiPointer<NiNode>     m_root;
+			NiPointer<NiNode>     m_root1p;
+			ObjectDatabase&       m_db;
+		};
+
+		ITaskPool::AddPriorityTask<DisposeStatesTask>(
+			std::move(list),
+			a_handle,
+			m_root,
+			m_root1p,
+			m_owner);
+
+		return true;
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(

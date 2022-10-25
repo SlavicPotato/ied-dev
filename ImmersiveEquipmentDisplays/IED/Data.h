@@ -84,9 +84,9 @@ namespace IED
 					return GetObjectSlot(static_cast<TESObjectWEAP*>(a_form));
 				case TESAmmo::kTypeID:
 					return GetObjectSlot(static_cast<TESAmmo*>(a_form));
+				default:
+					return ObjectSlot::kMax;
 				}
-
-				return ObjectSlot::kMax;
 			}
 
 			inline static constexpr ObjectSlot GetObjectSlotLeft(TESForm* a_form) noexcept
@@ -99,9 +99,9 @@ namespace IED
 					return GetObjectSlot(static_cast<TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
 					return GetObjectSlotLeft(static_cast<TESObjectLIGH*>(a_form));
+				default:
+					return ObjectSlot::kMax;
 				}
-
-				return ObjectSlot::kMax;
 			}
 
 			inline static constexpr ObjectType GetItemType(TESObjectARMO* a_form) noexcept
@@ -158,9 +158,9 @@ namespace IED
 					return GetItemType(static_cast<TESObjectLIGH*>(a_form));
 				case TESAmmo::kTypeID:
 					return GetItemType(static_cast<TESAmmo*>(a_form));
+				default:
+					return ObjectType::kMax;
 				}
-
-				return ObjectType::kMax;
 			}
 
 			inline static constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept

@@ -12,6 +12,7 @@ namespace IED
 		}
 
 		stl::fixed_string GetKey(const BSFixedString& a_key);
+		bool              ValidateKey(const stl::fixed_string& a_key);
 
 	}
 }

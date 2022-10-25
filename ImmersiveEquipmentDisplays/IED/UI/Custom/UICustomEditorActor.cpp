@@ -430,7 +430,7 @@ namespace IED
 				return nullptr;
 			}
 
-			if (!it3->second.state)
+			if (!it3->second.data.state)
 			{
 				return nullptr;
 			}
@@ -464,7 +464,7 @@ namespace IED
 			}
 
 			auto& flc = m_controller.UIGetFormLookupCache();
-			DrawObjectEntryHeaderInfo(flc.LookupForm(object->state->formid), *object);
+			DrawObjectEntryHeaderInfo(flc.LookupForm(object->data.state->formid), *object);
 
 			return true;
 		}

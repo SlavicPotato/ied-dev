@@ -539,12 +539,7 @@ namespace IED
 			bool             a_markAllForLFEval = false);
 
 		void DoObjectEvaluation(
-			NiNode*                          a_root,
-			NiNode*                          a_npcroot,
-			Actor*                           a_actor,
-			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			processParams_t&                 a_params);
 
 		void EvaluateImpl(
 			ActorObjectHolder&               a_holder,

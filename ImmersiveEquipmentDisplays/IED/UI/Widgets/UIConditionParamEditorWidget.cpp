@@ -24,7 +24,8 @@ namespace IED
 			UIVariableConditionSourceSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
-			m_formPickerRace(a_controller, FormInfoFlags::kNone, true)
+			m_formPickerRace(a_controller, FormInfoFlags::kNone, true),
+			m_formPickerAny(a_controller, FormInfoFlags::kNone, false)
 		{
 			m_formPickerKeyword.SetAllowedTypes(
 				{ BGSKeyword::kTypeID });
@@ -187,9 +188,14 @@ namespace IED
 				{
 					UICommon::PushDisabled(args.disable);
 
+					auto label =
+						e.p2 ?
+							static_cast<Localization::StringID>(reinterpret_cast<std::uintptr_t>(e.p2)) :
+                            static_cast<Localization::StringID>(CommonStrings::Form);
+
 					result |= m_formPickerForm.DrawFormPicker(
 						"fp_1",
-						static_cast<Localization::StringID>(CommonStrings::Form),
+						label,
 						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
@@ -294,7 +300,7 @@ namespace IED
 
 				if (!args.hide)
 				{
-					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
+					ImGui::PushItemWidth(ImGui::GetFontSize() * 3.5f);
 
 					result |= DrawComparisonOperatorSelector(
 						e.As1<Data::ComparisonOperator>());
@@ -377,6 +383,25 @@ namespace IED
 						100.0f,
 						"%.2f",
 						ImGuiSliderFlags_AlwaysClamp);
+				}
+			}
+
+			if (const auto& e = get(ConditionParamItem::FormAny); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::FormAny);
+
+				if (!args.hide)
+				{
+					UICommon::PushDisabled(args.disable);
+
+					result |= m_formPickerAny.DrawFormPicker(
+						"fp_4",
+						static_cast<Localization::StringID>(CommonStrings::Form),
+						e.As1<Game::FormID>());
+
+					UICommon::PopDisabled(args.disable);
 				}
 			}
 
@@ -629,6 +654,17 @@ namespace IED
 								e.As2<stl::fixed_string>().c_str(),
 								comp_operator_to_desc(compOper),
 								get(ConditionParamItem::Float).As1<float>());
+
+							break;
+							
+						case ConditionalVariableType::kForm:
+
+							stl::snprintf(
+								m_descBuffer,
+								"%s %s %.8X",
+								e.As2<stl::fixed_string>().c_str(),
+								comp_operator_to_desc(compOper),
+								get(ConditionParamItem::FormAny).As1<Game::FormID>().get());
 
 							break;
 
@@ -897,7 +933,7 @@ namespace IED
 						a_irace.get());
 				}
 
-				if (m_descBuffer[0] == 0) 
+				if (m_descBuffer[0] == 0)
 				{
 					stl::snprintf(
 						m_descBuffer2,

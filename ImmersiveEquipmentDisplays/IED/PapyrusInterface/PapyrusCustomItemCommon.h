@@ -29,6 +29,7 @@ namespace IED
 			static inline constexpr auto GetConfigClass() noexcept
 			{
 				ConfigClass cl;
+
 				if constexpr (std::is_same_v<T, Actor>)
 				{
 					cl = ConfigClass::Actor;

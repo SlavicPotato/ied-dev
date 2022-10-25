@@ -75,7 +75,18 @@ namespace IED
 
 		protected:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
+			{
+				a_ar& static_cast<const configTransform_t&>(*this);
+				a_ar& flags.value;
+				a_ar& targetNode;
+				a_ar& niControllerSequence;
+				a_ar& animationEvent;
+				a_ar& forceModel;
+			}
+			
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& static_cast<configTransform_t&>(*this);
 				a_ar& flags.value;
@@ -92,10 +103,14 @@ namespace IED
 						if (a_version >= DataVersion4)
 						{
 							a_ar& forceModel;
+
+							forceModel.zero_missing_or_deleted();
 						}
 					}
 				}
 			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 
 	}

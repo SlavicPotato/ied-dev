@@ -101,8 +101,9 @@ namespace IED
 		}
 
 	private:
-		data_type       m_data;
 		BipedCacheEntry m_playerEntry;
+		data_type       m_data;
+		
 		std::uint32_t   m_maxSizeUpper{ DEFAULT_SIZE_THRESHOLD_UPPER };
 		std::uint32_t   m_sizeTarget{ DEFAULT_SIZE_TARGET };
 		std::uint32_t   m_maxFormsPerSlot{ BipedSlotEntry::DEFAULT_MAX_FORMS };

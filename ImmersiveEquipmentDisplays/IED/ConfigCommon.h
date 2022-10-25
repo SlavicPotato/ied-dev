@@ -112,24 +112,24 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			configCachedForm_t() = default;
+			configCachedForm_t() noexcept = default;
 
 			inline constexpr configCachedForm_t(
 				const Game::FormID& a_id) noexcept :
-				id(a_id),
-				form(nullptr)
+				id(a_id)
 			{
 			}
 
-			inline configCachedForm_t& operator=(
+			inline constexpr configCachedForm_t& operator=(
 				const Game::FormID& a_id) noexcept
 			{
 				id   = a_id;
 				form = nullptr;
+
 				return *this;
 			}
 
-			inline TESForm* get_form() const noexcept
+			inline constexpr TESForm* get_form() const noexcept
 			{
 				if (!id)
 				{
@@ -147,7 +147,7 @@ namespace IED
 			template <
 				class T,
 				class form_type = stl::strip_type<T>>
-			inline form_type* get_form() const noexcept
+			inline constexpr form_type* get_form() const noexcept
 			{
 				if (auto f = get_form())
 				{
@@ -202,12 +202,15 @@ namespace IED
 				form = nullptr;
 			}*/
 
-		private:
-			static TESForm* lookup_form(Game::FormID a_form) noexcept;
+			void zero_missing_or_deleted();
+
+		protected:
+			static TESForm* lookup_form(Game::FormID a_form);
 
 			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
 
+		private:
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
@@ -221,7 +224,7 @@ namespace IED
 
 				if (id)
 				{
-					id = resolve_form_zero_missing(id);
+					id = resolve_form(id);
 				}
 			}
 

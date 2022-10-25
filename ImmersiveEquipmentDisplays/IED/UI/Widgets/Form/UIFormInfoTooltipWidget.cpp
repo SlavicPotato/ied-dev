@@ -52,14 +52,14 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			if (a_entry.state->flags.test(ObjectEntryFlags::kScbLeft))
+			if (a_entry.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 			{
 				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::LeftScbAttached));
 				ImGui::Spacing();
 			}
 
 			auto dt = IPerfCounter::delta_us(
-				a_entry.state->created,
+				a_entry.data.state->created,
 				PerfCounter::Query());
 
 			ImGui::Text("%s: %lld min", LS(CommonStrings::Age), dt / (1000000ll * 60));
@@ -72,7 +72,7 @@ namespace IED
 			const formInfoResult_t* a_info,
 			const ObjectEntryBase&  a_entry)
 		{
-			auto& state = a_entry.state;
+			auto& state = a_entry.data.state;
 
 			if (!state)
 			{

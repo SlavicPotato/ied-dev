@@ -58,7 +58,9 @@ namespace IED
 
 				const auto& v = data->get(a_bipedObject);
 
-				if (a_ignoreIfOccupied && v.occupied)
+				if (a_ignoreIfOccupied  &&
+				    a_trackedActor && 
+					v.occupied)
 				{
 					return nullptr;
 				}

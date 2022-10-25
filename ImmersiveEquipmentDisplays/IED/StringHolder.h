@@ -227,6 +227,8 @@ namespace IED
 
 		std::array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)> slotNames;
 
+		std::unordered_set<stl::fixed_string> papyrusRestrictedPlugins;
+
 	private:
 		StringHolder();
 
