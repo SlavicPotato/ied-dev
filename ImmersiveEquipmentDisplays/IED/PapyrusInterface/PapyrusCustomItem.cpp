@@ -416,6 +416,35 @@ namespace IED
 			}
 
 			template <class T>
+			static bool SetItemRemoveScabbard(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_switch)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemRemoveScabbardImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_switch);
+			}
+
+			template <class T>
 			static bool SetItemUseWorldModel(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1248,6 +1277,27 @@ namespace IED
 						"SetItemLeftWeaponRace",
 						SCRIPT_NAME,
 						SetItemLeftWeapon,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemRemoveScabbardActor",
+						SCRIPT_NAME,
+						SetItemRemoveScabbard,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemRemoveScabbardNPC",
+						SCRIPT_NAME,
+						SetItemRemoveScabbard,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemRemoveScabbardRace",
+						SCRIPT_NAME,
+						SetItemRemoveScabbard,
 						a_registry));
 
 				a_registry->RegisterFunction(
