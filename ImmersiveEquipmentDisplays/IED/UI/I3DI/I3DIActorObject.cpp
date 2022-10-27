@@ -7,8 +7,8 @@
 
 #include "Common/VectorMath.h"
 
-#include "IED/Controller/ObjectManagerData.h"
 #include "IED/Controller/ActorObjectHolder.h"
+#include "IED/Controller/ObjectManagerData.h"
 
 namespace IED
 {
@@ -22,76 +22,86 @@ namespace IED
 		{
 		}
 
-		void I3DIActorObject::DrawObjectExtra(I3DICommonData& a_data)
+		const D3DBoundingOrientedBox* I3DIActorObject::GetBoundingBox() const
 		{
-			if (IsHovered())
-			{
-				if (!a_data.actorContext || a_data.actorContext->GetActorObject().get() != this)
-				{
-					m_bound.DrawBox(a_data.batchDepth, XMVectorReplicate(0.5f));
-
-					constexpr XMVECTOR up = { 0.0f, 0.0f, 1.0f, 0.0f };
-
-					XMVECTOR origin;
-
-					auto pos = m_bound.GetPopupAnchorPoint(
-						a_data.scene,
-						up,
-						15.0f,
-						origin);
-
-					a_data.commonPopup.SetLineWorldOrigin(origin);
-					a_data.commonPopup.SetPosition(pos, { 0.5f, 1.f });
-
-					char b[64];
-					stl::snprintf(b, "###act_%p", this);
-
-					a_data.commonPopup.Draw(b, a_data, [&] {
-						ImGui::Text("%.8X", m_actor);
-					});
-				}
-			}
+			return std::addressof(m_bound);
 		}
 
-		void I3DIActorObject::OnClick(I3DICommonData& a_data)
+		void I3DIActorObject::DrawObjectExtra(I3DICommonData& a_data)
 		{
-			if (a_data.actorContext && a_data.actorContext->GetActorObject().get() == this)
+			if (!IsHovered())
 			{
 				return;
 			}
 
-			a_data.queuedActor = m_actor;
+			if (a_data.IsCurrentActorObject(this))
+			{
+				return;
+			}
+
+			m_bound.DrawBox(a_data.batchDepth, XMVectorReplicate(0.5f));
+
+			XMVECTOR origin;
+
+			const auto pos = m_bound.GetPopupAnchorPoint(
+				a_data.scene,
+				DirectX::g_XMIdentityR2.v, // up
+				15.0f,
+				origin);
+
+			a_data.commonPopup.SetLineWorldOrigin(origin);
+			a_data.commonPopup.SetPosition(pos, { 0.5f, 1.f });
+
+			char b[64];
+			stl::snprintf(b, "###act_%.8X", this);
+
+			a_data.commonPopup.Draw(b, a_data, [&] {
+				ImGui::Text("%.8X", m_actor);
+			});
+		}
+
+		void I3DIActorObject::OnClick(I3DICommonData& a_data)
+		{
+			if (!a_data.IsCurrentActorObject(this))
+			{
+				a_data.queuedActor = m_actor;
+			}
 		}
 
 		bool I3DIActorObject::ObjectIntersects(
 			I3DICommonData& a_data,
+			const I3DIRay&  a_ray,
 			float&          a_dist)
 		{
-			if (a_data.actorContext && a_data.actorContext->GetActorObject().get() == this)
+			if (a_data.IsCurrentActorObject(this))
 			{
 				return false;
 			}
 
-			return m_bound.Intersects(a_data.ray.origin, a_data.ray.dir, a_dist);
+			return m_bound.Intersects(a_ray.origin, a_ray.dir, a_dist);
 		}
 
 		void I3DIActorObject::Update(
 			const ActorObjectHolder& a_holder)
 		{
-			auto& actor = a_holder.GetActor();
+			NiPointer<TESObjectREFR> refr;
+			if (!a_holder.GetHandle().Lookup(refr))
+			{
+				return;
+			}
 
-			const auto min = actor->GetBoundMin().GetMM();
-			const auto max = actor->GetBoundMax().GetMM();
+			const auto min = refr->GetBoundMin().GetMM();
+			const auto max = refr->GetBoundMax().GetMM();
 
-			const auto center = (min + max) * 0.5f;
-			const auto extent = (max - min) * 0.5f;
+			const auto center = (min + max) * DirectX::g_XMOneHalf.v;
+			const auto extent = (max - min) * DirectX::g_XMOneHalf.v;
 
 			XMFLOAT3 m, n;
 
 			XMStoreFloat3(std::addressof(m), center);
 			XMStoreFloat3(std::addressof(n), extent);
 
-			BoundingOrientedBox tmp(m, n, { 0, 0, 0, 1.0f });
+			BoundingOrientedBox tmp(m, n, DirectX::SimpleMath::Quaternion::Identity);
 			tmp.Transform(m_bound, VectorMath::NiTransformToMatrix4x4(a_holder.GetNPCRoot()->m_worldTransform));
 		}
 	}

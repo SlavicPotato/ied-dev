@@ -5,11 +5,14 @@
 
 #include "IED/NodeOverrideData.h"
 
+#include "Common/VectorMath.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		class I3DIActorContext;
+		struct I3DICommonData;
 
 		class I3DIWeaponNode :
 			public I3DIModelObject,
@@ -28,27 +31,39 @@ namespace IED
 
 			virtual ~I3DIWeaponNode() noexcept override = default;
 
-			void UpdateLocalMatrix(const NiTransform& a_transform);
-
-			inline constexpr auto& GetLocalMatrix() const noexcept
+			virtual I3DIWeaponNode* GetAsWeaponNode() override
 			{
-				return m_localMatrix;
-			}
-
-			inline constexpr auto& GetNodeName() const noexcept
-			{
-				return m_nodeName;
-			}
-			
-			inline constexpr auto GetNodeDesc() const noexcept
-			{
-				return m_nodeInfo.desc;
-			}
+				return this;
+			};
 
 			virtual I3DIDraggable* GetAsDraggable() override
 			{
 				return static_cast<I3DIDraggable*>(this);
 			};
+
+			virtual I3DIObject& GetDraggableObject() override
+			{
+				return static_cast<I3DIObject&>(*this);
+			}
+
+			void UpdateLocalMatrix(const NiTransform& a_transform);
+
+			[[nodiscard]] inline constexpr auto XM_CALLCONV GetLocalMatrix() const noexcept
+			{
+				return m_localMatrix;
+			}
+
+			[[nodiscard]] inline constexpr auto& GetNodeName() const noexcept
+			{
+				return m_nodeName;
+			}
+
+			[[nodiscard]] inline constexpr auto GetNodeDesc() const noexcept
+			{
+				return m_nodeInfo.desc;
+			}
+
+			virtual I3DIObject* GetParentObject() const;
 
 		private:
 			virtual bool OnDragBegin() override;
@@ -57,15 +72,18 @@ namespace IED
 
 			virtual bool WantDrawTooltip();
 			virtual bool WantDrawBound();
+			virtual bool WantDrawContents();
 
 			virtual bool IsSelectable() override;
 
-			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const override;
+			virtual void DrawContents(I3DICommonData& a_data) override;
 
-			stl::fixed_string                          m_nodeName;
+			const stl::fixed_string                    m_nodeName;
 			const NodeOverrideData::weaponNodeEntry_t& m_nodeInfo;
 
-			DirectX::XMMATRIX m_localMatrix{ DirectX::SimpleMath::Matrix::Identity };
+			DirectX::XMMATRIX m_localMatrix{ VectorMath::g_identity };
+
+			std::optional<DirectX::XMVECTOR> m_oldDiffuse;
 
 			I3DIActorContext& m_actorContext;
 		};

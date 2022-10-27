@@ -25,6 +25,7 @@ namespace IED
 			Diagnostics                = 4616,
 			DisplayManagement          = 4617,
 			ConditionalVariables       = 4618,
+			I3DI                       = 4619,
 		};
 	}
 }

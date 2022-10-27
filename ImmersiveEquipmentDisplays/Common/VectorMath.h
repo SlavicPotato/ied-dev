@@ -1,25 +1,20 @@
 #pragma once
 
-#include <DirectXMath.h>
-
-struct CD3D11_VIEWPORT;
-
-class NiCamera;
-class NiTransform;
-
 namespace VectorMath
 {
+	extern const DirectX::XMMATRIX g_identity;
+
 	DirectX::XMMATRIX XM_CALLCONV NiTransformToMatrix4x4(
 		const NiTransform& a_in);
 
 	NiTransform XM_CALLCONV Matrix4x4ToNiTransform(
 		DirectX::XMMATRIX a_in);
-	
+
 	NiTransform XM_CALLCONV CreateNiTransformTransposed(
 		DirectX::XMVECTOR a_t,
 		DirectX::XMVECTOR a_q,
 		DirectX::XMVECTOR a_s);
-	
+
 	NiTransform XM_CALLCONV CreateNiTransform(
 		DirectX::XMVECTOR a_t,
 		DirectX::XMVECTOR a_q,
@@ -33,17 +28,17 @@ namespace VectorMath
 
 	DirectX::XMMATRIX XM_CALLCONV NiTransformGetTranslationMatrix(
 		const NiTransform& a_in);
-	
+
 	DirectX::XMVECTOR XM_CALLCONV NiTransformGetPosition(
 		const NiTransform& a_in);
 
-	void XM_CALLCONV GetCameraPV(
+	void GetCameraPV(
 		NiCamera*          a_camera,
 		DirectX::XMMATRIX& a_view,
 		DirectX::XMMATRIX& a_proj,
 		DirectX::XMVECTOR& a_pos);
 
-	void XM_CALLCONV RayCastScreenPt(
+	void RayCastScreenPt(
 		const CD3D11_VIEWPORT& a_viewport,
 		DirectX::CXMMATRIX     a_view,
 		DirectX::CXMMATRIX     a_proj,
@@ -94,7 +89,7 @@ namespace VectorMath
 		DirectX::XMVECTOR a_from,
 		DirectX::XMVECTOR a_to,
 		float             a_factor);
-	
+
 	DirectX::XMVECTOR XM_CALLCONV XMVectorLerpCubic(
 		DirectX::XMVECTOR a_from,
 		DirectX::XMVECTOR a_to,

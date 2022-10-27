@@ -11,20 +11,23 @@ namespace IED
 {
 	namespace UI
 	{
-		std::array<const char*, stl::underlying(I3DIModelID::kMax)> I3DIAssetCache::m_mdbNames{
-			"sphere",
-			"sphere",
+		std::array<
+			const char*,
+			stl::underlying(I3DIModelID::kMax)>
+			I3DIAssetCache::m_mdbNames{
+				"sphere",
+				"movanchor",
 
-			"1hsword",
-			"waraxe",
-			"mace",
-			"dagger",
-			"greatsword",
-			"bow",
-			"staff",
-			"quiver",
-			"shield"
-		};
+				"1hsword",
+				"waraxe",
+				"mace",
+				"dagger",
+				"greatsword",
+				"bow",
+				"staff",
+				"quiver",
+				"shield"
+			};
 
 		I3DIAssetCache::I3DIAssetCache(
 			ID3D11Device*        a_device,

@@ -92,7 +92,7 @@ namespace IED
 				}
 				else
 				{
-					tmp->vertices[i].color = DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f);
+					tmp->vertices[i].color = DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
 				}
 			}
 
@@ -133,7 +133,10 @@ namespace IED
 
 			m_data = std::move(tmp);
 
-			SetDescription(mesh->mName.C_Str());
+			if (auto name = mesh->mName.C_Str())
+			{
+				SetDescription(name);
+			}
 
 			return true;
 		}
@@ -144,11 +147,11 @@ namespace IED
 		}
 	}
 
-	DirectX::BoundingOrientedBox ModelData::CreateBoundingBox() const
+	D3DBoundingOrientedBox ModelData::CreateBoundingBox() const
 	{
-		DirectX::BoundingOrientedBox result;
+		D3DBoundingOrientedBox result;
 
-		DirectX::BoundingOrientedBox::CreateFromPoints(
+		D3DBoundingOrientedBox::CreateFromPoints(
 			result,
 			vertices.size(),
 			std::addressof(vertices.data()->position),

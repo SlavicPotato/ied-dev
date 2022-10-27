@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/AnimationWeaponSlot.h"
+#include "IED/GearNodeID.h"
 
 namespace IED
 {
@@ -27,6 +28,8 @@ namespace IED
 			originalTransform(a_xfrm)
 		{
 		}
+
+		bool has_visible_geometry() const;
 
 		const stl::fixed_string    nodeName;
 		NiPointer<NiNode>          node;

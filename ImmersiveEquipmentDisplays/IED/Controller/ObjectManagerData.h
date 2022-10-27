@@ -150,7 +150,7 @@ namespace IED
 		void RequestHFEvaluateAll() noexcept;
 		void RequestHFEvaluateAll(Game::FormID a_skip) noexcept;
 
-		inline auto EraseActor(ActorObjectMap::const_iterator& a_it)
+		inline auto EraseActor(ActorObjectMap::const_iterator a_it)
 		{
 			auto result = m_objects.erase(a_it);
 

@@ -100,7 +100,7 @@ namespace IED
 
 			auto v = m_velocity.v;
 
-			v -= v * XMVectorMin(stepv * m_fSettings.translateDamping, g_XMOne);
+			v -= v * XMVectorMin(stepv * m_fSettings.translateDamping, g_XMOne.v);
 
 			const auto vdn = XMVector3Rotate(m_velocity.d, m_xfrm.q);
 			v += vdn * stepv * m_fSettings.translateAccel;

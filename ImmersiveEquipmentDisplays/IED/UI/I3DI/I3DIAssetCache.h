@@ -22,9 +22,15 @@ namespace IED
 			}
 
 		private:
-			std::array<std::shared_ptr<D3DModelData>, stl::underlying(I3DIModelID::kMax)> m_models;
+			std::array<
+				std::shared_ptr<D3DModelData>,
+				stl::underlying(I3DIModelID::kMax)>
+				m_models;
 
-			static std::array<const char*, stl::underlying(I3DIModelID::kMax)> m_mdbNames;
+			static std::array<
+				const char*,
+				stl::underlying(I3DIModelID::kMax)>
+				m_mdbNames;
 		};
 	}
 }

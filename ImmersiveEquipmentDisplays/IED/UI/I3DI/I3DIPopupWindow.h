@@ -26,7 +26,7 @@ namespace IED
 				m_pivot = a_pivot;
 			}
 
-			inline constexpr void SetPosition(
+			inline constexpr void XM_CALLCONV SetPosition(
 				DirectX::XMVECTOR a_pos,
 				const ImVec2&     a_pivot = ImVec2()) noexcept
 			{
@@ -49,7 +49,7 @@ namespace IED
 				m_worldOrigin = a_origin;
 			}
 
-			inline constexpr void ClearLineWorldOrigin(
+			inline constexpr void XM_CALLCONV ClearLineWorldOrigin(
 				DirectX::XMVECTOR a_origin) noexcept
 			{
 				m_worldOrigin.reset();

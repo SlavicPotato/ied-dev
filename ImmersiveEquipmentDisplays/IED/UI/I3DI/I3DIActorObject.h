@@ -25,17 +25,20 @@ namespace IED
 				return this;
 			};
 
+			virtual const D3DBoundingOrientedBox* GetBoundingBox() const override;
+
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 
 			virtual void OnClick(I3DICommonData& a_data) override;
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
+				const I3DIRay&  a_ray,
 				float&          a_dist) override;
 
 			void Update(const ActorObjectHolder& a_holder);
 
-			inline constexpr auto& GetActorBound() const noexcept
+			[[nodiscard]] inline constexpr auto& GetActorBound() const noexcept
 			{
 				return m_bound;
 			}
@@ -45,12 +48,12 @@ namespace IED
 				m_lost = true;
 			}
 
-			inline constexpr bool IsActorLost() const noexcept
+			[[nodiscard]] inline constexpr bool IsActorLost() const noexcept
 			{
 				return m_lost;
 			}
 
-			inline constexpr auto& GetActorFormID() const noexcept
+			[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
 			{
 				return m_actor;
 			}

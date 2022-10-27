@@ -9,18 +9,7 @@ namespace IED
 	inline static bool find_visible_geometry(
 		NiAVObject* a_object)
 	{
-		auto result = Traverse(a_object, [](NiAVObject* a_object) {
-			if (a_object->IsHidden())
-			{
-				return VisitorControl::kSkip;
-			}
-
-			return static_cast<bool>(a_object->AsGeometry()) ?
-			           VisitorControl::kStop :
-                       VisitorControl::kContinue;
-		});
-
-		return result == VisitorControl::kStop;
+		return HasVisibleGeometry(a_object);
 	}
 
 	inline static bool HasVisibleChildObject(

@@ -27,12 +27,12 @@ namespace IED
 				I3DICommonData&                         a_data,
 				Controller&                             a_controller,
 				const ActorObjectHolder&                a_holder,
-				const std::shared_ptr<I3DIActorObject>& a_actorObject);
+				const std::shared_ptr<I3DIActorObject>& a_actorObject) noexcept(false);
 
 			void RegisterObjects(I3DIObjectController& a_objectController);
 			void UnregisterObjects(I3DIObjectController& a_objectController);
 
-			bool Update();
+			bool Update(I3DICommonData& a_data);
 			void Draw(I3DICommonData& a_data);
 			void Render(I3DICommonData& a_data);
 			void UpdateCamera(NiCamera* a_camera);
@@ -80,6 +80,7 @@ namespace IED
 			Game::FormID m_actor;
 
 			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
+			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIMOVNode>>    m_movNodes;
 
 			bool m_ranFirstUpdate{ false };
 			bool m_lastUpdateFailed{ false };

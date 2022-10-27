@@ -1,5 +1,7 @@
 #pragma once
 
+#include "D3DBoundingOrientedBox.h"
+
 namespace IED
 {
 	struct ModelData;
@@ -31,7 +33,7 @@ namespace IED
 
 		std::shared_ptr<ModelData> m_modelData;
 
-		DirectX::BoundingOrientedBox m_bound;
+		D3DBoundingOrientedBox m_bound;
 
 		UINT m_indexCount{ 0 };
 	};

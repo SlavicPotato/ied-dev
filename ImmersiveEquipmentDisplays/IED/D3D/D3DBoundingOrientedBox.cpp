@@ -2,8 +2,8 @@
 
 #include "D3DBoundingOrientedBox.h"
 
-#include "D3DPrimitiveBatch.h"
 #include "D3DCommon.h"
+#include "D3DPrimitiveBatch.h"
 
 namespace IED
 {
@@ -46,18 +46,14 @@ namespace IED
 		const auto extents     = XMLoadFloat3(std::addressof(Extents));
 		const auto orientation = XMLoadFloat4(std::addressof(Orientation));
 
-		return XMVectorAdd(
-			XMVector3Rotate(
-				XMVectorMultiply(extents, a_direction),
-				orientation),
-			center);
+		return GetPoint(a_direction, center, extents, orientation);
 	}
 
 	XMVECTOR XM_CALLCONV D3DBoundingOrientedBox::GetPopupAnchorPoint(
-		D3DCommon&        a_scene,
-		DirectX::XMVECTOR a_direction,
-		float             a_offset,
-		XMVECTOR&         a_origin) const
+		D3DCommon& a_scene,
+		XMVECTOR   a_direction,
+		float      a_offset,
+		XMVECTOR&  a_origin) const
 	{
 		const auto center      = XMLoadFloat3(std::addressof(Center));
 		const auto extents     = XMLoadFloat3(std::addressof(Extents));

@@ -38,26 +38,26 @@ namespace IED
 
 			ImGui::End();
 
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
-			ImGui::PopStyleColor();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
+			ImGui::PopStyleVar();
 			/*ImGui::PopStyleColor();
 			ImGui::PopStyleColor();
 			ImGui::PopStyleColor();*/
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
-			ImGui::PopStyleVar();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 		}
 
 		void I3DIPopupWindow::ApplyPosition(I3DICommonData& a_data)
 		{
 			auto window = ImGui::GetCurrentWindow();
 
-			auto outer  = ImGui::GetPopupAllowedExtentRect(window);
-			auto refPos = m_pos - window->Size * m_pivot;
+			const auto outer  = ImGui::GetPopupAllowedExtentRect(window);
+			const auto refPos = m_pos - window->Size * m_pivot;
 
-			auto pos = ImGui::FindBestWindowPosForPopupEx(
+			const auto pos = ImGui::FindBestWindowPosForPopupEx(
 				refPos,
 				window->Size,
 				std::addressof(window->AutoPosLastDirection),
@@ -69,15 +69,15 @@ namespace IED
 
 			if (m_worldOrigin)
 			{
-				auto pt = pos + window->Size * ImVec2{ 0.5f, 1.0f };
+				const auto pt = pos + window->Size * ImVec2{ 0.5f, 1.0f };
 
-				auto wp = VectorMath::ScreenSpaceToWorld(
+				const auto wp = VectorMath::ScreenSpaceToWorld(
 					a_data.scene.GetViewport(),
 					DirectX::XMVectorSet(pt.x, pt.y, 0.0f, 0.0f),
 					a_data.scene.GetViewMatrix(),
 					a_data.scene.GetProjectionMatrix());
 
-				a_data.batchNoDepth.AddLine(*m_worldOrigin, wp, DirectX::XMVectorReplicate(0.5f));
+				a_data.batchNoDepth.AddLine(*m_worldOrigin, wp, DirectX::g_XMOneHalf.v);
 			}
 		}
 

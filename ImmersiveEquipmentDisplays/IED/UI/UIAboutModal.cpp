@@ -52,7 +52,7 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 						ImGui::Text(
-							"%s-%.8x [%s]",
+							"%s [%.8x-%s]",
 							PLUGIN_VERSION_VERSTRING,
 							MK_GIT_COMMIT(GIT_CUR_COMMIT),
 							MK_STRING(GIT_BRANCH));

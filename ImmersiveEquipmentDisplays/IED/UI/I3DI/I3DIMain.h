@@ -31,6 +31,8 @@ namespace IED
 			inline static constexpr auto WINDOW_ID = "ied_i3di";
 
 		public:
+			inline static constexpr auto CHILD_ID = ChildWindowID::kI3DI;
+
 			I3DIMain(Controller& a_controller);
 
 			virtual void Initialize() override;
@@ -42,6 +44,11 @@ namespace IED
 			virtual void OnClose() override;
 
 			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
+
+			virtual std::uint32_t GetContextID() override
+			{
+				return static_cast<std::uint32_t>(CHILD_ID);
+			}
 
 		private:
 			bool CreateCommonData();

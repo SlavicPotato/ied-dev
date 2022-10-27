@@ -15,23 +15,10 @@ namespace IED
 
 		bool I3DIObject::ObjectIntersects(
 			I3DICommonData& a_data,
+			const I3DIRay&  a_ray,
 			float&          a_dist)
 		{
 			return false;
-		}
-
-		void I3DIObject::OnMouseMoveOverInt(I3DICommonData& a_data)
-		{
-			m_objectFlags.set(I3DIObjectFlags::kHovered);
-
-			OnMouseMoveOver(a_data);
-		}
-
-		void I3DIObject::OnMouseMoveOutInt(I3DICommonData& a_data)
-		{
-			m_objectFlags.clear(I3DIObjectFlags::kHovered);
-
-			OnMouseMoveOut(a_data);
 		}
 
 		bool I3DIObject::OnSelectInt(I3DICommonData& a_data)

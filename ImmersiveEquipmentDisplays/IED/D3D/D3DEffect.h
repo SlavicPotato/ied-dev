@@ -97,7 +97,7 @@ namespace IED
 	{
 		DirectX::XMVECTOR diffuseColor;
 		DirectX::XMVECTOR emissiveColor;
-		DirectX::XMVECTOR specularColorAndPower;
+		DirectX::XMVECTOR specularColorAndPower{ 1, 1, 1, 16 };
 
 		DirectX::XMVECTOR lightDirection[3];
 		DirectX::XMVECTOR lightDiffuseColor[3];
@@ -105,8 +105,8 @@ namespace IED
 
 		DirectX::XMVECTOR eyePosition;
 
-		DirectX::XMVECTOR fogColor;
-		DirectX::XMVECTOR fogVector;
+		DirectX::XMVECTOR fogColor{ DirectX::g_XMZero.v };
+		DirectX::XMVECTOR fogVector{ DirectX::g_XMZero.v };
 
 		DirectX::XMMATRIX world;
 		DirectX::XMVECTOR worldInverseTranspose[3];
@@ -144,6 +144,8 @@ namespace IED
 		void             UpdateWorldMatrix(const NiAVObject* a_object);
 		void XM_CALLCONV UpdateWorldMatrix(DirectX::XMMATRIX a_matrix);
 
+		void XM_CALLCONV SetWorldPosition(DirectX::XMVECTOR a_pos);
+
 		void SetMatrices(
 			const DirectX::XMMATRIX& a_view,
 			const DirectX::XMMATRIX& a_projection);
@@ -153,6 +155,12 @@ namespace IED
 		[[nodiscard]] inline constexpr auto XM_CALLCONV GetWorldMatrix() const noexcept
 		{
 			return m_world;
+		}
+
+		[[nodiscard]] inline constexpr auto XM_CALLCONV GetWorldPosition() const noexcept
+		{
+			sizeof(D3DEffect);
+			return m_world.r[3];
 		}
 
 		void XM_CALLCONV SetDiffuseColor(DirectX::XMVECTOR a_color);
@@ -165,33 +173,34 @@ namespace IED
 		void XM_CALLCONV SetAmbientLightColor(DirectX::FXMVECTOR a_color);
 
 		void SetAlpha(float a_alpha);
-	protected:
 
+	protected:
 		void UpdateConstants();
 
-		DirectX::XMMATRIX m_world{ DirectX::SimpleMath::Matrix::Identity };
-		DirectX::XMMATRIX m_view{ DirectX::SimpleMath::Matrix::Identity };
-		DirectX::XMMATRIX m_proj{ DirectX::SimpleMath::Matrix::Identity };
+		D3DEffectConstants m_constants;
+
+		DirectX::XMMATRIX m_world{ VectorMath::g_identity };
+		DirectX::XMMATRIX m_view{ VectorMath::g_identity };
+		DirectX::XMMATRIX m_proj{ VectorMath::g_identity };
+
+		DirectX::XMVECTOR m_emissiveColor{ DirectX::g_XMZero.v };
+		DirectX::XMVECTOR m_ambientLightColor{ 1, 1, 1, 16 };
+
+		DirectX::XMVECTOR m_diffuseColor{ DirectX::g_XMOne.v };
+
+		DirectX::XMVECTOR m_lightDirection[3];
+		DirectX::XMVECTOR m_lightDiffuseColor[3];
+		DirectX::XMVECTOR m_lightSpecularColor[3];
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> m_constantBuffer;
 
-		DirectX::XMVECTOR emissiveColor{};
-		DirectX::XMVECTOR ambientLightColor{};
-
-		DirectX::XMVECTOR diffuseColor{ 1.0f, 1.0f, 1.0f, 1.0f };
-		float             alpha{ 1.0f };
-
-		DirectX::XMVECTOR lightDirection[3]{};
-		DirectX::XMVECTOR lightDiffuseColor[3]{};
-		DirectX::XMVECTOR lightSpecularColor[3]{};
-		bool              lightingEnabled{ false };
+		float m_alpha{ 1.0f };
+		bool  m_lightingEnabled{ false };
 
 		stl::flag<D3DEffectTestDirtyFlags> m_dirtyFlags{ D3DEffectTestDirtyFlags::kAll };
 
 		D3DVertexShaderID m_vertexShader;
 		D3DPixelShaderID  m_pixelShader;
-
-		D3DEffectConstants m_constants{};
 	};
 
 }

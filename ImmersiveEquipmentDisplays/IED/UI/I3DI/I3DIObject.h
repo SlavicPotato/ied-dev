@@ -1,14 +1,9 @@
 #pragma once
 
-#include "I3DIObjectBase.h"
-
-//#include "IED/D3D/D3DObject.h"
-
-#include <ext/ILUID.h>
-
 namespace IED
 {
 	class D3DCommon;
+	class D3DBoundingOrientedBox;
 
 	namespace UI
 	{
@@ -17,7 +12,10 @@ namespace IED
 		class I3DIObjectController;
 		class I3DIModelObject;
 		class I3DIActorObject;
+		class I3DIMOVNode;
+		class I3DIWeaponNode;
 		struct I3DICommonData;
+		struct I3DIRay;
 
 		enum class I3DIObjectFlags : std::uint32_t
 		{
@@ -28,8 +26,8 @@ namespace IED
 
 			kHSMask = kHovered | kSelected,
 
-			kHidden       = 1u << 2,
-			kHasWorldData = 1u << 3
+			kGeometryHidden = 1u << 2,
+			kHasWorldData   = 1u << 3
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(I3DIObjectFlags);
@@ -63,6 +61,21 @@ namespace IED
 				return nullptr;
 			};
 
+			virtual I3DIMOVNode* GetAsMOVNode()
+			{
+				return nullptr;
+			};
+
+			virtual I3DIWeaponNode* GetAsWeaponNode()
+			{
+				return nullptr;
+			};
+
+			virtual const D3DBoundingOrientedBox* GetBoundingBox() const
+			{
+				return nullptr;
+			};
+
 			virtual void RenderObject(D3DCommon& a_data){};
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data){};
@@ -75,7 +88,13 @@ namespace IED
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
+				const I3DIRay&  a_ray,
 				float&          a_dist);
+
+			virtual bool ShouldProcess(I3DICommonData& a_data) { return true; };
+
+			virtual void                 SetLastDistance(const std::optional<float>& a_distance){};
+			virtual std::optional<float> GetLastDistance() const { return {}; };
 
 			[[nodiscard]] inline constexpr bool IsHovered() const noexcept
 			{
@@ -87,9 +106,9 @@ namespace IED
 				return m_objectFlags.test(I3DIObjectFlags::kSelected);
 			}
 
-			[[nodiscard]] inline constexpr bool IsHidden() const noexcept
+			[[nodiscard]] inline constexpr bool IsGeometryHidden() const noexcept
 			{
-				return m_objectFlags.test(I3DIObjectFlags::kHidden);
+				return m_objectFlags.test(I3DIObjectFlags::kGeometryHidden);
 			}
 
 			[[nodiscard]] inline constexpr bool HasWorldData() const noexcept
@@ -102,9 +121,12 @@ namespace IED
 				return m_objectFlags.set(I3DIObjectFlags::kHasWorldData, a_switch);
 			}
 
+			inline constexpr void SetGeometryHidden(bool a_switch) noexcept
+			{
+				m_objectFlags.set(I3DIObjectFlags::kGeometryHidden, a_switch);
+			}
+
 		private:
-			virtual void OnMouseMoveOverInt(I3DICommonData& a_data);
-			virtual void OnMouseMoveOutInt(I3DICommonData& a_data);
 			virtual bool OnSelectInt(I3DICommonData& a_data);
 			virtual void OnUnselectInt(I3DICommonData& a_data);
 

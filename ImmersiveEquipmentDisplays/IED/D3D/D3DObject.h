@@ -82,7 +82,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool IsOpaque() const noexcept
 		{
-			return alpha >= 1.0f;
+			return m_alpha >= 1.0f;
 		}
 
 	private:

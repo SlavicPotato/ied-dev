@@ -512,7 +512,7 @@ namespace IED
 					{
 						auto& wnodes = a_params.objects.GetWeapNodes();
 
-						auto r = ::Util::Node::Traverse(it->second.node.get(), [&](NiAVObject* a_object) {
+						auto r = ::Util::Node::Traverse(it->second.thirdPerson.node.get(), [&](NiAVObject* a_object) {
 							auto it = std::find_if(wnodes.begin(), wnodes.end(), [&](const auto& a_v) {
 								return a_v.node == a_object;
 							});

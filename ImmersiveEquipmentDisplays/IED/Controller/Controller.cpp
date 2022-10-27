@@ -2233,7 +2233,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.state.ResetEffectShaders(a_params.handle);
+			a_params.ResetEffectShaders();
 		}
 	}
 
@@ -2248,7 +2248,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.state.ResetEffectShaders(a_params.handle);
+			a_params.ResetEffectShaders();
 		}
 	}
 
@@ -2275,7 +2275,7 @@ namespace IED
 			{
 				a_objectEntry.data.effectShaderData = std::make_unique<EffectShaderData>(*es);
 
-				a_params.state.ResetEffectShaders(a_params.handle);
+				a_params.ResetEffectShaders();
 			}
 			else
 			{
@@ -2283,7 +2283,7 @@ namespace IED
 						a_objectEntry.data.state->nodes.rootNode,
 						*es))
 				{
-					a_params.state.ResetEffectShaders(a_params.handle);
+					a_params.ResetEffectShaders();
 				}
 				else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 				{
@@ -2293,7 +2293,7 @@ namespace IED
 							a_objectEntry.data.state->nodes.rootNode,
 							*es);
 
-						a_params.state.ResetEffectShaders(a_params.handle);
+						a_params.ResetEffectShaders();
 					}
 				}
 			}
@@ -2668,7 +2668,9 @@ namespace IED
 
 					item.consume(candidates);
 
-					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+					a_params.state.flags.set(
+						ProcessStateUpdateFlags::kMenuUpdate |
+						ProcessStateUpdateFlags::kObjectAttached);
 
 					a_params.mark_slot_presence_change(objectEntry.slotid);
 
@@ -2761,13 +2763,13 @@ namespace IED
 								nodes.second,
 								*es);
 
-						a_params.state.ResetEffectShaders(a_params.handle);
+						a_params.ResetEffectShaders();
 					}
 					else
 					{
 						if (objectEntry.data.effectShaderData->UpdateIfChanged(a_params.objects, *es))
 						{
-							a_params.state.ResetEffectShaders(a_params.handle);
+							a_params.ResetEffectShaders();
 						}
 						else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 						{
@@ -2777,7 +2779,7 @@ namespace IED
 									a_params.objects,
 									*es);
 
-								a_params.state.ResetEffectShaders(a_params.handle);
+								a_params.ResetEffectShaders();
 							}
 						}
 					}
@@ -3193,7 +3195,9 @@ namespace IED
 					a_objectEntry,
 					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
-				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+				a_params.state.flags.set(
+					ProcessStateUpdateFlags::kMenuUpdate |
+					ProcessStateUpdateFlags::kObjectAttached);
 			}
 
 			return result;
@@ -3335,7 +3339,9 @@ namespace IED
 					a_objectEntry,
 					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
 
-				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+				a_params.state.flags.set(
+					ProcessStateUpdateFlags::kMenuUpdate |
+					ProcessStateUpdateFlags::kObjectAttached);
 			}
 
 			return result;

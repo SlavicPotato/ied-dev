@@ -1385,9 +1385,6 @@
     <ClInclude Include="IED\D3D\D3DBoundingOrientedBox.h">
       <Filter>Source\IED\D3D</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\I3DI\I3DIObjectBase.h">
-      <Filter>Source\IED\UI\I3DI</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\I3DI\I3DIObject.h">
       <Filter>Source\IED\UI\I3DI\Object</Filter>
     </ClInclude>
@@ -1648,6 +1645,9 @@
     </ClInclude>
     <ClInclude Include="IED\PapyrusInterface\PapyrusMisc.h">
       <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIRay.h">
+      <Filter>Source\IED\UI\I3DI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2610,6 +2610,12 @@
     </ClCompile>
     <ClCompile Include="IED\PapyrusInterface\PapyrusMisc.cpp">
       <Filter>Source\IED\PapyrusInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\MOVNodeEntry.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

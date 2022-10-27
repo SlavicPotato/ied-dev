@@ -8,6 +8,7 @@
 #include "I3DIAssetCache.h"
 #include "I3DIObjectController.h"
 #include "I3DIPopupWindow.h"
+#include "I3DIRay.h"
 
 namespace IED
 {
@@ -18,18 +19,6 @@ namespace IED
 
 		struct I3DICommonData
 		{
-			struct Ray
-			{
-				Ray() noexcept :
-					origin(DirectX::g_XMZero),
-					dir(DirectX::g_XMZero)
-				{
-				}
-
-				DirectX::XMVECTOR origin;
-				DirectX::XMVECTOR dir;
-			};
-
 			I3DICommonData(
 				ID3D11Device*                      a_device,
 				ID3D11DeviceContext*               a_context,
@@ -46,7 +35,7 @@ namespace IED
 				batchDepth.EnableDepth(true);
 			}
 
-			Ray ray;
+			I3DIRay cursorRay;
 
 			D3DCommon            scene;
 			D3DPrimitiveBatch    batchNoDepth;
@@ -60,7 +49,10 @@ namespace IED
 			stl::unordered_map<Game::FormID, std::shared_ptr<I3DIActorObject>> actors;
 			std::unique_ptr<I3DIActorContext>&                                 actorContext;
 
-			void UpdateRay();
+			void UpdateMouseRay();
+
+			bool IsCurrentActorObject(const I3DIActorObject* a_other) const noexcept;
+			
 		};
 
 	}

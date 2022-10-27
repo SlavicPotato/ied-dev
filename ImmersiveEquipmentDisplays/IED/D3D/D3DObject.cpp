@@ -74,7 +74,7 @@ namespace IED
 		a_scene.SetRasterizerState(m_flagsbf.rasterizerState);
 		a_scene.SetRenderTargets(m_flags.test(D3DObjectFlags::kDepth));
 		a_scene.SetDepthStencilState(
-			alpha >= 1.0f ?
+			m_alpha >= 1.0f ?
 				D3DDepthStencilState::kWrite :
                 D3DDepthStencilState::kNone);
 

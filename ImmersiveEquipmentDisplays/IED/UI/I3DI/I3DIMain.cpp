@@ -44,9 +44,10 @@ namespace IED
 				}
 			}
 
-			auto& io = ImGui::GetIO();
-
-			m_data->UpdateRay();
+			if (I3DI::IsMouseInputValid())
+			{
+				m_data->UpdateMouseRay();
+			}
 
 			ImGui::PushID(WINDOW_ID);
 
@@ -77,26 +78,6 @@ namespace IED
 			m_data->objectController.Run(*m_data);
 
 			ImGui::PopID();
-
-			auto& ui = m_controller.GetConfigStore().settings.data.ui;
-
-			if (io.KeyAlt ? ui.enableControlLock : !ui.enableControlLock)
-			{
-				ui.enableControlLock = !ui.enableControlLock;
-				m_controller.UIGetRenderTask()->SetControlLock(ui.enableControlLock);
-				Drivers::UI::EvaluateTaskState();
-
-				/*if (m_actorContext)
-				{
-					if (auto& camera = m_actorContext->GetActorObject()->GetCamera())
-					{
-						if (auto freeCam = dynamic_cast<I3DIFreeCamera*>(camera.get()))
-						{
-							freeCam->EnableTranslation(ui.enableControlLock);
-						}
-					}
-				}*/
-			}
 		}
 
 		void I3DIMain::PrepareGameData()
@@ -111,11 +92,9 @@ namespace IED
 				return;
 			}
 
-			auto camera = GetCamera();
-
-			if (camera)
+			if (auto camera = GetCamera())
 			{
-				if (auto& context = m_actorContext)
+				/*if (auto& context = m_actorContext)
 				{
 					auto cam = context->GetCamera().get();
 
@@ -130,7 +109,7 @@ namespace IED
 					auto sky = RE::Sky::GetSingleton();
 
 					sky->clouds->GetRoot()->m_worldTransform.pos = camera->m_worldTransform.pos;
-				}
+				}*/
 
 				VectorMath::GetCameraPV(
 					camera,
@@ -143,7 +122,7 @@ namespace IED
 
 			if (auto& context = m_actorContext)
 			{
-				context->Update();
+				context->Update(*m_data);
 			}
 		}
 
@@ -155,6 +134,11 @@ namespace IED
 			}
 
 			if (!m_data)
+			{
+				return;
+			}
+
+			if (Game::InPausedMenu())
 			{
 				return;
 			}
@@ -172,7 +156,7 @@ namespace IED
 				m_data->objectController.RenderObjects(*m_data);
 			});*/
 
-			m_data->objectController.RenderObjects(*m_data);
+			m_data->objectController.DrawObjects(*m_data);
 
 			m_data->batchNoDepth.Draw(m_data->scene);
 			m_data->batchDepth.Draw(m_data->scene);
@@ -352,11 +336,12 @@ namespace IED
 
 				if (it == actors.end())
 				{
-					auto object = std::make_shared<I3DIActorObject>(i);
+					it = actors.try_emplace(
+								   i,
+								   std::make_unique<I3DIActorObject>(i))
+					         .first;
 
-					it = actors.try_emplace(i, object).first;
-
-					m_data->objectController.RegisterObject(object);
+					m_data->objectController.RegisterObject(it->second);
 
 					//_DMESSAGE("acq: %.8X", i);
 				}

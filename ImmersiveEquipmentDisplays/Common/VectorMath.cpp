@@ -2,11 +2,6 @@
 
 #include "VectorMath.h"
 
-#include <d3d11.h>
-
-#include <skse64/NiObjects.h>
-#include <skse64/NiTypes.h>
-
 namespace VectorMath
 {
 	using namespace DirectX;
@@ -49,12 +44,12 @@ namespace VectorMath
 
 		NiTransform result(NiTransform::noinit_arg_t{});
 
-		// w overflows into the next member so writes need to be ordered
-
 		static_assert(offsetof(NiTransform, rot) == 0x0);
 		static_assert(offsetof(NiTransform, pos) == 0x24);
 		static_assert(offsetof(NiTransform, scale) == 0x30);
 		static_assert(sizeof(NiTransform) == 0x34);
+
+		// w overflows into the next member so writes need to be ordered
 
 		_mm_storeu_ps(result.rot.data[0], m.r[0]);
 		_mm_storeu_ps(result.rot.data[1], m.r[1]);
@@ -96,7 +91,7 @@ namespace VectorMath
 			a_in.rot.GetColMM(0),
 			a_in.rot.GetColMM(1),
 			a_in.rot.GetColMM(2),
-			g_XMIdentityR3
+			g_XMIdentityR3.v
 		};
 	}
 
@@ -116,15 +111,18 @@ namespace VectorMath
 		return a_in.pos.GetMM();
 	}
 
-	void XM_CALLCONV GetCameraPV(
+	void GetCameraPV(
 		NiCamera* a_camera,
 		XMMATRIX& a_view,
 		XMMATRIX& a_proj,
 		XMVECTOR& a_pos)
 	{
-		const auto worldDir = a_camera->m_worldTransform.rot.GetColMM(0);
-		const auto worldUp  = a_camera->m_worldTransform.rot.GetColMM(1);
-		const auto worldPos = a_camera->m_worldTransform.pos.GetMM();
+		const auto& transform = a_camera->m_worldTransform;
+		const auto& frustum   = a_camera->m_frustum;
+
+		const auto worldDir = transform.rot.GetColMM(0);
+		const auto worldUp  = transform.rot.GetColMM(1);
+		const auto worldPos = transform.pos.GetMM();
 
 		a_pos = worldPos;
 
@@ -132,8 +130,6 @@ namespace VectorMath
 			worldPos,
 			worldDir,
 			worldUp);
-
-		const auto& frustum = a_camera->m_frustum;
 
 		if (frustum.m_bOrtho)
 		{
@@ -157,14 +153,14 @@ namespace VectorMath
 		}
 	}
 
-	static const XMMATRIX s_identity{
+	const XMMATRIX g_identity{
 		g_XMIdentityR0.v,
 		g_XMIdentityR1.v,
 		g_XMIdentityR2.v,
 		g_XMIdentityR3.v
 	};
 
-	void XM_CALLCONV RayCastScreenPt(
+	void RayCastScreenPt(
 		const CD3D11_VIEWPORT& a_viewport,
 		CXMMATRIX              a_view,
 		CXMMATRIX              a_proj,
@@ -183,7 +179,7 @@ namespace VectorMath
 			a_viewport.MaxDepth,
 			a_proj,
 			a_view,
-			s_identity);
+			g_identity);
 
 		a_rayOrigin = XMVector3Unproject(
 			XMVectorSet(a_x, a_y, 0.0f, 0.0f),
@@ -195,7 +191,7 @@ namespace VectorMath
 			a_viewport.MaxDepth,
 			a_proj,
 			a_view,
-			s_identity);
+			g_identity);
 
 		a_rayDir = XMVector3Normalize(v - a_rayOrigin);
 	}
@@ -216,7 +212,7 @@ namespace VectorMath
 			a_viewport.MaxDepth,
 			a_proj,
 			a_view,
-			s_identity);
+			g_identity);
 	}
 
 	XMVECTOR XM_CALLCONV WorldToScreenSpace(
@@ -226,7 +222,7 @@ namespace VectorMath
 		CXMMATRIX              a_world)
 	{
 		return XMVector3Project(
-			g_XMZero,
+			g_XMZero.v,
 			a_viewport.TopLeftX,
 			a_viewport.TopLeftY,
 			a_viewport.Width,
@@ -274,7 +270,7 @@ namespace VectorMath
 			a_viewport.MaxDepth,
 			a_proj,
 			a_view,
-			s_identity);
+			g_identity);
 	}
 
 	XMFLOAT2 XM_CALLCONV WorldToScreenSpacePt2(
@@ -320,7 +316,10 @@ namespace VectorMath
 		XMVECTOR a_to,
 		float    a_factor)
 	{
-		return XMQuaternionSlerp(a_from, a_to, a_factor * a_factor * (3.0f - 2.0f * a_factor));
+		return XMQuaternionSlerp(
+			a_from,
+			a_to,
+			a_factor * a_factor * (3.0f - 2.0f * a_factor));
 	}
 
 	XMVECTOR XM_CALLCONV XMVectorLerpCubic(
@@ -328,6 +327,9 @@ namespace VectorMath
 		XMVECTOR a_to,
 		float    a_factor)
 	{
-		return XMVectorLerp(a_from, a_to, a_factor * a_factor * (3.0f - 2.0f * a_factor));
+		return XMVectorLerp(
+			a_from,
+			a_to,
+			a_factor * a_factor * (3.0f - 2.0f * a_factor));
 	}
 }

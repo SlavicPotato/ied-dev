@@ -43,55 +43,99 @@ namespace IED
 			{
 				m_hovered.reset();
 			}
+
+			if (a_object == m_dragObject)
+			{
+				if (auto draggable = a_object->GetAsDraggable())
+				{
+					draggable->OnDragEnd(I3DIDragDropResult::kCancelled, nullptr);
+					draggable->SetDragging(false);
+				}
+				m_dragObject.reset();
+			}
 		}
 
 		void I3DIObjectController::Run(I3DICommonData& a_data)
 		{
+			if (auto dragObject = m_dragObject.get())
+			{
+				if (I3DI::IsMouseDown())
+				{
+					UpdateDragObjectPosition(a_data, dragObject);
+				}
+			}
+
 			auto hoveredObject = GetHovered(a_data);
 
 			if (hoveredObject != m_hovered)
 			{
-				if (m_hovered)
+				if (auto current = m_hovered.get())
 				{
-					m_hovered->OnMouseMoveOutInt(a_data);
+					current->m_objectFlags.clear(I3DIObjectFlags::kHovered);
+					current->OnMouseMoveOut(a_data);
 				}
 
 				if (hoveredObject)
 				{
-					hoveredObject->OnMouseMoveOverInt(a_data);
+					hoveredObject->m_objectFlags.set(I3DIObjectFlags::kHovered);
+					hoveredObject->OnMouseMoveOver(a_data);
 				}
 
 				m_hovered = hoveredObject;
 			}
 
-			if (I3DI::IsMouseReleased())
+			if (m_dragObject)
+			{
+				if (!I3DI::IsMouseDown())
+				{
+					auto draggable = m_dragObject->GetAsDraggable();
+
+					const auto result = HandleDragEnd(
+						a_data,
+						draggable,
+						hoveredObject);
+
+					//_DMESSAGE("drag end: %p (%u)", draggable, result.first);
+
+					draggable->OnDragEnd(result.first, result.second);
+					draggable->SetDragging(false);
+
+					m_dragObject.reset();
+					m_lastClickPos = { -FLT_MAX, -FLT_MAX };
+				}
+			}
+			else
 			{
 				if (hoveredObject)
 				{
-					hoveredObject->OnClick(a_data);
-
-					if (hoveredObject->IsSelectable() && hoveredObject != m_selected)
+					if (I3DI::IsMouseClicked())
 					{
-						if (hoveredObject->OnSelectInt(a_data))
-						{
-							if (m_selected)
-							{
-								m_selected->OnUnselectInt(a_data);
-							}
+						m_lastClickPos = ImGui::GetIO().MousePos;
+					}
+					else if (I3DI::IsMouseReleased())
+					{
+						hoveredObject->OnClick(a_data);
 
-							m_selected = hoveredObject;
-						}
+						SelectObject(a_data, hoveredObject);
+					}
+
+					if (I3DI::IsMouseDown())
+					{
+						TryBeginDrag(a_data, hoveredObject);
 					}
 				}
 			}
 
 			for (auto& e : m_data)
 			{
-				e.object->DrawObjectExtra(a_data);
+				if (ShouldProcessObject(a_data, e.object.get()))
+				{
+					e.object->DrawObjectExtra(a_data);
+				}
 			}
 		}
 
-		void I3DIObjectController::RenderObjects(I3DICommonData& a_data)
+		void I3DIObjectController::DrawObjects(I3DICommonData& a_data)
 		{
 			m_drawQueueOpaque.clear();
 			m_drawQueueAlpha.clear();
@@ -101,6 +145,17 @@ namespace IED
 			for (auto& e : m_data)
 			{
 				if (!e.object->HasWorldData())
+				{
+					continue;
+				}
+
+				if (!ShouldProcessObject(a_data, e.object.get()))
+				{
+					continue;
+				}
+
+				if (e.object != m_dragObject &&
+				    e.object->IsGeometryHidden())
 				{
 					continue;
 				}
@@ -129,17 +184,17 @@ namespace IED
 					return a_lhs.first < a_rhs.first;
 				});
 
+			for (auto& e : m_drawQueueOpaque)
+			{
+				e.second->Draw(a_data.scene);
+			}
+
 			std::sort(
 				m_drawQueueAlpha.begin(),
 				m_drawQueueAlpha.end(),
 				[&](auto& a_lhs, auto& a_rhs) {
 					return a_lhs.first > a_rhs.first;
 				});
-
-			for (auto& e : m_drawQueueOpaque)
-			{
-				e.second->Draw(a_data.scene);
-			}
 
 			for (auto& e : m_drawQueueAlpha)
 			{
@@ -162,14 +217,19 @@ namespace IED
 			{
 				float dist;
 
-				if (e.object->ObjectIntersects(a_data, dist))
+				if (e.object->ObjectIntersects(
+						a_data,
+						a_data.cursorRay,
+						dist))
 				{
-					e.dist = dist;
+					e.dist.emplace(dist);
 				}
 				else
 				{
 					e.dist.reset();
 				}
+
+				e.object->SetLastDistance(e.dist);
 			}
 
 			std::sort(
@@ -183,12 +243,162 @@ namespace IED
 				m_data.begin(),
 				m_data.end(),
 				[&](auto& a_v) {
-					return a_v.dist.has_value();
+					return a_v.dist &&
+				           a_v.object != m_dragObject &&
+				           ShouldProcessObject(
+							   a_data,
+							   a_v.object.get());
 				});
 
 			return it != m_data.end() ?
 			           it->object :
                        nullptr;
+		}
+
+		bool I3DIObjectController::ShouldProcessObject(
+			I3DICommonData& a_data,
+			I3DIObject*     a_object)
+		{
+			if (!a_object->ShouldProcess(a_data))
+			{
+				return false;
+			}
+
+			if (m_dragObject)
+			{
+				if (m_dragObject.get() == a_object)
+				{
+					return true;
+				}
+
+				auto dropTarget = a_object->GetAsDropTarget();
+				if (!dropTarget)
+				{
+					return false;
+				}
+
+				if (!dropTarget->AcceptsDraggable(
+						*m_dragObject->GetAsDraggable()))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		void I3DIObjectController::SelectObject(
+			I3DICommonData&                    a_data,
+			const std::shared_ptr<I3DIObject>& a_object)
+		{
+			if (a_object->IsSelectable() && a_object != m_selected)
+			{
+				if (a_object->OnSelectInt(a_data))
+				{
+					if (m_selected)
+					{
+						m_selected->OnUnselectInt(a_data);
+					}
+
+					m_selected = a_object;
+				}
+			}
+		}
+
+		void I3DIObjectController::TryBeginDrag(
+			I3DICommonData&                    a_data,
+			const std::shared_ptr<I3DIObject>& a_object)
+		{
+			auto draggable = a_object->GetAsDraggable();
+			if (!draggable)
+			{
+				return;
+			}
+
+			if (!I3DI::IsMouseInputValid() ||
+			    m_lastClickPos.x == -FLT_MAX ||
+			    m_lastClickPos.y == -FLT_MAX)
+			{
+				return;
+			}
+
+			auto ld = a_object->GetLastDistance();
+			if (!ld)
+			{
+				return;
+			}
+
+			const auto& io = ImGui::GetIO();
+
+			constexpr auto DRAG_MD_THRESHOLD = 4.0f;
+
+			const auto delta = io.MousePos - m_lastClickPos;
+
+			const auto p = delta.x * delta.x + delta.y * delta.y;
+
+			if (p < DRAG_MD_THRESHOLD * DRAG_MD_THRESHOLD)
+			{
+				return;
+			}
+
+			if (draggable->OnDragBegin())
+			{
+				//_DMESSAGE("drag start: %p", draggable);
+
+				m_dragStartDist = XMVectorReplicate(*ld);
+
+				SelectObject(a_data, a_object);
+
+				m_dragObject = a_object;
+
+				draggable->SetDragging(true);
+			}
+		}
+
+		std::pair<I3DIDragDropResult, I3DIDropTarget*> I3DIObjectController::HandleDragEnd(
+			I3DICommonData&                    a_data,
+			I3DIDraggable*                     a_object,
+			const std::shared_ptr<I3DIObject>& a_dropObject)
+		{
+			if (!I3DI::IsMouseReleased() ||
+			    !a_dropObject)
+			{
+				return { I3DIDragDropResult::kCancelled, nullptr };
+			}
+
+			auto dropTarget = a_dropObject->GetAsDropTarget();
+
+			if (!dropTarget)
+			{
+				return { I3DIDragDropResult::kCancelled, nullptr };
+			}
+
+			if (dropTarget->ProcessDropRequest(*a_object))
+			{
+				return { I3DIDragDropResult::kAccepted, dropTarget };
+			}
+			else
+			{
+				return { I3DIDragDropResult::kRejected, dropTarget };
+			}
+		}
+
+		void I3DIObjectController::UpdateDragObjectPosition(
+			I3DICommonData& a_data,
+			I3DIObject*     a_object)
+		{
+			if (auto model = a_object->GetAsModelObject())
+			{
+				const auto pos = XMVectorAdd(
+					a_data.cursorRay.origin,
+					a_data.cursorRay.dir * m_dragStartDist);
+
+				const auto center = XMLoadFloat3(std::addressof(model->GetBound().Center));
+				const auto offset = model->GetWorldPosition() - center;
+
+				model->SetWorldPosition(pos + offset);
+				model->UpdateBound();
+			}
 		}
 	}
 }

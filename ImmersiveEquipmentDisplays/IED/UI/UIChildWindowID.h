@@ -23,6 +23,7 @@ namespace IED
 			kUIDisplayManagement,
 			kUIConditionalVariablesEditorWindow,
 			kUIProfileEditorConditionalVariables,
+			kI3DI,
 
 			kMax
 		};

@@ -531,7 +531,11 @@ namespace IED
 
 		[[nodiscard]] inline constexpr void SetNodeConditionForced(bool a_switch) noexcept
 		{
-			m_forceNodeCondTrue = a_switch;
+			if (m_forceNodeCondTrue != a_switch)
+			{
+				m_forceNodeCondTrue = a_switch;
+				RequestTransformUpdate();
+			}
 		}
 
 		[[nodiscard]] inline auto& GetCachedData() const noexcept

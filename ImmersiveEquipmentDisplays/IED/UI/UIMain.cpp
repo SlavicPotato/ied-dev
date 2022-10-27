@@ -21,6 +21,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "I3DI/I3DIMain.h"
+
 namespace IED
 {
 	namespace UI
@@ -34,9 +36,6 @@ namespace IED
 			m_owner(a_owner),
 			m_controller(a_controller),
 			m_formLookupCache(a_controller),
-#if defined(IED_ENABLE_I3DI)
-			m_i3di(a_controller),
-#endif
 			m_popupQueue(a_controller)
 		{
 			CreateChild<UIFormBrowser>(a_controller);
@@ -59,6 +58,8 @@ namespace IED
 				a_controller,
 				GetChild<UIProfileEditorNodeOverride>());
 			CreateChild<UIConditionalVariablesEditorWindow>(a_controller);
+
+			CreateChild<I3DIMain>(a_controller);
 		}
 
 		void UIMain::Initialize()
@@ -94,12 +95,6 @@ namespace IED
 
 			ILRHSetLockedAlpha(settings.releaseLockAlpha);
 			ILRHSetUnfreezeTime(settings.releaseLockUnfreezeTime);
-
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.Initialize();
-			m_i3di.SetOpenState(true);
-			m_i3di.OnOpen();
-#endif
 		}
 
 		void UIMain::Reset()
@@ -108,10 +103,6 @@ namespace IED
 			{
 				e->Reset();
 			}
-
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.Reset();
-#endif
 		}
 
 		void UIMain::Draw()
@@ -122,10 +113,6 @@ namespace IED
 
 			DrawMenuBarMain();
 			DrawChildWindows();
-
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.Draw();
-#endif
 
 			if (GetChild<UIProfileEditorFormFilters>().ChangedConfig())
 			{
@@ -141,16 +128,18 @@ namespace IED
 
 		void UIMain::PrepareGameData()
 		{
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.PrepareGameData();
-#endif
+			for (auto& e : m_childWindows)
+			{
+				e->PrepareGameData();
+			}
 		}
 
 		void UIMain::Render()
 		{
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.Render();
-#endif
+			for (auto& e : m_childWindows)
+			{
+				e->Render();
+			}
 		}
 
 		Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
@@ -304,6 +293,16 @@ namespace IED
 			{
 				GetChildContext<UIConditionalVariablesEditorWindow>().ToggleOpenState();
 			}
+
+#if defined(IED_ENABLE_I3DI)
+			if (ImGui::MenuItem(
+					LS(UIMainStrings::I3DI, "4"),
+					nullptr,
+					GetChildContext<I3DIMain>().IsContextOpen()))
+			{
+				GetChildContext<I3DIMain>().ToggleOpenState();
+			}
+#endif
 		}
 
 		void UIMain::DrawProfileEditorsSubmenu()
@@ -594,13 +593,6 @@ namespace IED
 
 				m_lastClosedChild.reset();
 			}
-
-#if defined(IED_ENABLE_I3DI)
-			if (m_i3di.IsContextOpen())
-			{
-				m_i3di.OnOpen();
-			}
-#endif
 		}
 
 		void UIMain::OnClose()
@@ -638,10 +630,6 @@ namespace IED
 				}
 			}
 
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.OnClose();
-#endif
-
 			m_formLookupCache.clear();
 
 			ILRHReset();
@@ -652,9 +640,10 @@ namespace IED
 
 		void UIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)
 		{
-#if defined(IED_ENABLE_I3DI)
-			m_i3di.OnMouseMove(a_evn);
-#endif
+			for (auto& e : m_childWindows)
+			{
+				e->OnMouseMove(a_evn);
+			}
 		}
 
 		void UIMain::OnKeyEvent(const Handlers::KeyEvent& a_evn)

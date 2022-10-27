@@ -18,10 +18,6 @@
 #include "IED/ConfigSerializationFlags.h"
 #include "IED/SettingHolder.h"
 
-#if defined(IED_ENABLE_I3DI)
-#	include "I3DI/I3DIMain.h"
-#endif
-
 namespace IED
 {
 	class Controller;
@@ -161,10 +157,6 @@ namespace IED
 				std::unique_ptr<UIContext>,
 				stl::underlying(ChildWindowID::kMax)>
 				m_childWindows;
-
-#if defined(IED_ENABLE_I3DI)
-			I3DIMain m_i3di;
-#endif
 
 			UIFormInfoCache m_formLookupCache;
 

@@ -19,10 +19,19 @@
 #	define PLUGIN_VERSION_APPEND ""
 #endif
 
+#if defined(__AVX2__)
+#	define PLUGIN_VERSION_CPUEXT " [AVX2]"
+#elif defined(__AVX__) 
+#	define PLUGIN_VERSION_CPUEXT " [AVX]"
+#else
+#	define PLUGIN_VERSION_CPUEXT ""
+#endif
+
 #define PLUGIN_VERSION_VERSTRING                                               \
 	MK_STRING(PLUGIN_VERSION_MAJOR)                                            \
 	"." MK_STRING(PLUGIN_VERSION_MINOR) "." MK_STRING(PLUGIN_VERSION_REVISION) \
-		PLUGIN_VERSION_APPEND
+		PLUGIN_VERSION_APPEND PLUGIN_VERSION_CPUEXT
+			
 
 #define MAKE_PLUGIN_VERSION(major, minor, rev) \
 	(((major & 0xFF) << 16) | ((minor & 0xFF) << 8) | (rev & 0xFF))

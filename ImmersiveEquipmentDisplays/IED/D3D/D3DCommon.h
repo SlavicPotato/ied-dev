@@ -4,6 +4,8 @@
 
 #include <ext/D3D11Backup.h>
 
+#include "Common/VectorMath.h"
+
 namespace IED
 {
 	enum class D3DCommonFlags : std::uint32_t
@@ -134,10 +136,10 @@ namespace IED
 			ID3D11View*          a_dest,
 			ID3D11View*          a_source);
 
-		DirectX::XMMATRIX m_view{ DirectX::SimpleMath::Matrix::Identity };
-		DirectX::XMMATRIX m_proj{ DirectX::SimpleMath::Matrix::Identity };
+		DirectX::XMMATRIX m_view{ VectorMath::g_identity };
+		DirectX::XMMATRIX m_proj{ VectorMath::g_identity };
 
-		DirectX::XMMATRIX m_camMatrix{ DirectX::SimpleMath::Matrix::Identity };
+		DirectX::XMMATRIX m_camMatrix{ VectorMath::g_identity };
 		DirectX::XMVECTOR m_camPos{ DirectX::g_XMZero.v };
 
 		std::optional<DirectX::XMMATRIX> m_camSetMatrix;

@@ -32,6 +32,8 @@ namespace IED
 				return this;
 			};
 
+			virtual const D3DBoundingOrientedBox* GetBoundingBox() const override;
+
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 			virtual void RenderObject(D3DCommon& a_data) override;
 
@@ -42,15 +44,24 @@ namespace IED
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
+				const I3DIRay&  a_ray,
 				float&          a_dist) override;
 
-			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const = 0;
+			virtual void                 SetLastDistance(const std::optional<float>& a_distance) override;
+			virtual std::optional<float> GetLastDistance() const override;
+
+			virtual I3DIObject*                   GetParentObject() const;
 
 		protected:
 			virtual bool WantDrawTooltip();
 			virtual bool WantDrawBound();
+			virtual bool WantDrawContents();
 
 			virtual void DrawTooltip(I3DICommonData& a_data){};
+			virtual void DrawContents(I3DICommonData& a_data){};
+
+		private:
+			std::optional<float> m_lastDistance;
 		};
 
 	}

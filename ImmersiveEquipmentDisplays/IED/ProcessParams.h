@@ -12,13 +12,14 @@ namespace IED
 	{
 		kNone = 0,
 
-		kMenuUpdate  = 1ui8 << 0,
-		kForceUpdate = 1ui8 << 1,
+		kMenuUpdate     = 1ui8 << 0,
+		kForceUpdate    = 1ui8 << 1,
+		kObjectAttached = 1ui8 << 2,
 
 		kUpdateMask = kMenuUpdate | kForceUpdate,
 
-		kEffectShadersReset = 1ui8 << 2,
-		kBipedDataUpdated   = 1ui8 << 3
+		kEffectShadersReset = 1ui8 << 4,
+		kBipedDataUpdated   = 1ui8 << 5,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ProcessStateUpdateFlags);
@@ -26,8 +27,6 @@ namespace IED
 	struct processState_t
 	{
 		stl::flag<ProcessStateUpdateFlags> flags{ ProcessStateUpdateFlags::kNone };
-
-		void ResetEffectShaders(Game::ObjectRefHandle a_handle);
 	};
 
 	struct processParamsData_t
@@ -86,6 +85,8 @@ namespace IED
 				std::forward<Args>(a_args)...)
 		{
 		}
+
+		void ResetEffectShaders();
 
 		processState_t state;
 	};

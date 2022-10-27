@@ -17,6 +17,10 @@ namespace IED
 	D3DEffectResources::D3DEffectResources(
 		ID3D11Device* a_device) noexcept(false)
 	{
+#if defined(IED_D3D_MK_SHADER_BYTECODE)
+		MkShaderBytecode();
+#endif
+
 		D3DShaderDataHolder holder;
 		D3DShaderDataIO::Load(DATA_PATH, holder);
 
@@ -58,9 +62,6 @@ namespace IED
 			holder.vertexColor.shaderData.size(),
 			m_iaVertexPositionColorAV.ReleaseAndGetAddressOf()));
 
-#if defined(IED_D3D_MK_SHADER_BYTECODE)
-		MkShaderBytecode();
-#endif
 	}
 
 #if defined(IED_D3D_MK_SHADER_BYTECODE)

@@ -10,6 +10,7 @@ namespace IED
 	{
 		class I3DIDropTarget;
 		class I3DIObjectController;
+		class I3DIObject;
 
 		class I3DIDraggable
 		{
@@ -19,8 +20,7 @@ namespace IED
 			inline static constexpr std::uint32_t DRAGGABLE_TYPE = static_cast<std::uint32_t>(-1);
 
 			I3DIDraggable(
-				std::uint32_t a_type,
-				D3DObject&    a_owner);
+				std::uint32_t a_type);
 
 			virtual ~I3DIDraggable() noexcept = default;
 
@@ -34,16 +34,21 @@ namespace IED
 				return m_type;
 			}
 
+			virtual I3DIObject& GetDraggableObject() = 0;
+
 		private:
 			virtual bool OnDragBegin() = 0;
 
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) = 0;
 
+			inline constexpr void SetDragging(bool a_switch) noexcept
+			{
+				m_dragging = a_switch;
+			}
+
 			std::uint32_t m_type{ DRAGGABLE_TYPE };
 			bool          m_dragging{ false };
 
-			// parent
-			D3DObject& m_owner;
 		};
 	}
 }

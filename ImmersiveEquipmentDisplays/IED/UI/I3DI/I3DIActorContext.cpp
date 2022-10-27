@@ -15,20 +15,47 @@ namespace IED
 {
 	namespace UI
 	{
+		static stl::fixed_string GetProbableCMENameFromMOV(
+			const stl::fixed_string& a_node)
+		{
+			if (a_node.size() < 4)
+			{
+				return {};
+			}
+
+			if (_strnicmp(a_node.c_str(), "MOV ", 4) != 0)
+			{
+				return {};
+			}
+
+			std::string tmp(a_node);
+
+			tmp[0] = 'C';
+			tmp[1] = 'M';
+			tmp[2] = 'E';
+
+			return tmp;
+		}
+
 		I3DIActorContext::I3DIActorContext(
 			I3DICommonData&                         a_data,
 			Controller&                             a_controller,
 			const ActorObjectHolder&                a_holder,
-			const std::shared_ptr<I3DIActorObject>& a_actorObject) :
+			const std::shared_ptr<I3DIActorObject>& a_actorObject) noexcept(false) :
 			m_controller(a_controller),
 			m_actor(a_holder.GetActorFormID()),
 			m_actorObject(a_actorObject)
 		{
-			auto& wn = a_holder.GetWeapNodes();
+			auto& activeWeaponNodes = a_holder.GetWeapNodes();
+			auto& cme               = NodeOverrideData::GetCMENodeData();
+			auto& movAnchorModel    = a_data.assets.GetModel(I3DIModelID::kAnchor);
 
-			auto& nod = NodeOverrideData::GetWeaponNodeData();
+			if (!movAnchorModel)
+			{
+				throw std::exception("anchor model not loaded");
+			}
 
-			for (auto& e : nod)
+			for (auto& e : NodeOverrideData::GetWeaponNodeData())
 			{
 				auto& model = a_data.assets.GetModel(e.second.modelID);
 				if (!model)
@@ -37,13 +64,13 @@ namespace IED
 				}
 
 				auto itwn = std::find_if(
-					wn.begin(),
-					wn.end(),
+					activeWeaponNodes.begin(),
+					activeWeaponNodes.end(),
 					[&](auto& a_v) {
 						return a_v.nodeName == e.first;
 					});
 
-				if (itwn == wn.end())
+				if (itwn == activeWeaponNodes.end())
 				{
 					continue;
 				}
@@ -59,6 +86,33 @@ namespace IED
 						*this));
 
 				r.first->second->EnableDepth(true);
+
+				for (auto& f : e.second.movs)
+				{
+					const NodeOverrideData::overrideNodeEntry_t* cmeNodeEntry = nullptr;
+
+					if (auto name = GetProbableCMENameFromMOV(f.first); !name.empty())
+					{
+						if (auto it = cme.find(name); it != cme.end())
+						{
+							cmeNodeEntry = std::addressof(it->second);
+						}
+					}
+
+					auto s = m_movNodes.emplace(
+						f.first,
+						std::make_unique<I3DIMOVNode>(
+							a_data.scene.GetDevice().Get(),
+							a_data.scene.GetContext().Get(),
+							movAnchorModel,
+							f.first,
+							f.second,
+							cmeNodeEntry,
+							*r.first->second,
+							*this));
+
+					s.first->second->EnableDepth(false);
+				}
 			}
 		}
 
@@ -66,6 +120,11 @@ namespace IED
 			I3DIObjectController& a_objectController)
 		{
 			for (auto& e : m_weaponNodes)
+			{
+				a_objectController.RegisterObject(e.second);
+			}
+
+			for (auto& e : m_movNodes)
 			{
 				a_objectController.RegisterObject(e.second);
 			}
@@ -78,9 +137,14 @@ namespace IED
 			{
 				a_objectController.UnregisterObject(e.second);
 			}
+
+			for (auto& e : m_movNodes)
+			{
+				a_objectController.RegisterObject(e.second);
+			}
 		}
 
-		bool I3DIActorContext::Update()
+		bool I3DIActorContext::Update(I3DICommonData& a_data)
 		{
 			auto& data = m_controller.GetObjects();
 
@@ -91,9 +155,9 @@ namespace IED
 				return false;
 			}
 
-			auto& wn = it->second.GetWeapNodes();
+			auto& weaponNodes = it->second.GetWeapNodes();
 
-			for (auto& e : wn)
+			for (auto& e : weaponNodes)
 			{
 				auto itwn = m_weaponNodes.find(e.nodeName);
 				if (itwn == m_weaponNodes.end())
@@ -105,16 +169,53 @@ namespace IED
 				itwn->second->UpdateWorldMatrix(e.node->m_worldTransform);
 				itwn->second->UpdateBound();
 				itwn->second->SetHasWorldData(true);
+				itwn->second->SetGeometryHidden(false);
+			}
+
+			auto& cmeNodes = it->second.GetCMENodes();
+
+			for (auto& e : it->second.GetMOVNodes())
+			{
+				auto itmn = m_movNodes.find(e.first);
+				if (itmn == m_movNodes.end())
+				{
+					continue;
+				}
+
+				itmn->second->SetAdjustedWorldMatrix(e.second.node->m_worldTransform);
+				itmn->second->UpdateBound();
+				itmn->second->SetHasWorldData(true);
+
+				auto itwn = std::find_if(
+					weaponNodes.begin(),
+					weaponNodes.end(),
+					[&](auto& a_v) {
+						return a_v.node->m_parent == e.second.node;
+					});
+
+				itmn->second->SetWeaponNodeAttached(itwn != weaponNodes.end());
+
+				if (itwn != weaponNodes.end())
+				{
+					auto ita = m_weaponNodes.find(itwn->nodeName);
+					if (ita != m_weaponNodes.end())
+					{
+						if (auto info = itmn->second->GetCMENodeInfo())
+						{
+							auto itb = cmeNodes.find(info->name);
+							if (itb != cmeNodes.end())
+							{
+								ita->second->SetGeometryHidden(itb->second.has_visible_geometry(nullptr));
+							}
+						}
+					}
+				}
 			}
 
 			m_lastUpdateFailed = false;
 			m_ranFirstUpdate   = true;
 
-			if (!it->second.GetNodeConditionForced())
-			{
-				it->second.SetNodeConditionForced(true);
-				it->second.RequestTransformUpdate();
-			}
+			it->second.SetNodeConditionForced(true);
 
 			return true;
 		}
@@ -147,7 +248,7 @@ namespace IED
 
 		void I3DIActorContext::UpdateCamera(NiCamera* a_camera)
 		{
-			if (auto &camera = m_camera)
+			if (auto& camera = m_camera)
 			{
 				camera->CameraUpdate(a_camera);
 			}

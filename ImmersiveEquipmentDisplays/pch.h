@@ -125,7 +125,7 @@ namespace fs = std::filesystem;
 //#define IED_ENABLE_STATS_T
 
 //#define IED_ENABLE_RTEST
-//#define IED_ENABLE_I3DI
+#define IED_ENABLE_I3DI
 
 #if (defined(IED_USE_MIMALLOC_COLLECTOR) || SKMP_CUSTOM_ALLOCATOR == 1)
 #	define IED_MIMALLOC_IN_USE 1

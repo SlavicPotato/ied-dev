@@ -79,10 +79,6 @@ namespace IED
 				m_editorPanels[stl::underlying(T::PANEL_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
 			}
 
-#if defined(IED_ENABLE_I3DI)
-			I3DIMain m_i3di;
-#endif
-
 			std::array<
 				std::unique_ptr<UIEditorTabPanel>,
 				NUM_PANELS>

@@ -615,7 +615,7 @@ namespace IED
 
 		object->m_localTransform = {};
 
-		a_params.state.ResetEffectShaders(a_params.handle);
+		a_params.ResetEffectShaders();
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 
@@ -869,7 +869,7 @@ namespace IED
 			return false;
 		}
 
-		a_params.state.ResetEffectShaders(a_params.handle);
+		a_params.ResetEffectShaders();
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 

@@ -214,7 +214,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;NIMATH_USE_SSE_INTRIN;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;NIMATH_USE_SSE_INTRIN;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
@@ -229,6 +229,8 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -521,13 +523,13 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\I3DI\I3DIInputHelpers.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIModelObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObject.h" />
-    <ClInclude Include="IED\UI\I3DI\I3DIObjectBase.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObjectCamera.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIObjectController.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIActorContext.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIAssetCache.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIMain.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIPopupWindow.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIRay.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIWeaponNode.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIMOVNode.h" />
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideEditorWidgetStrings.h" />
@@ -912,6 +914,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConfigSkeletonMatch.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
     <ClCompile Include="IED\Controller\IConditionalVariableProcessor.cpp" />
+    <ClCompile Include="IED\Controller\MOVNodeEntry.cpp" />
     <ClCompile Include="IED\Controller\NodeMonitorEntry.cpp" />
     <ClCompile Include="IED\Controller\CachedActorData.cpp" />
     <ClCompile Include="IED\Controller\CMENodeEntry.cpp" />
@@ -924,6 +927,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
     <ClCompile Include="IED\Controller\IRNG.cpp" />
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp" />
+    <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp" />
     <ClCompile Include="IED\ConvertNodes.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />
     <ClCompile Include="IED\D3D\D3DBoundingOrientedBox.cpp" />

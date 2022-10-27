@@ -3,6 +3,8 @@
 #include "I3DIDropTarget.h"
 #include "I3DIModelObject.h"
 
+#include "IED/NodeOverrideData.h"
+
 namespace IED
 {
 	namespace UI
@@ -10,20 +12,32 @@ namespace IED
 		class I3DIWeaponNode;
 		class I3DIActorContext;
 
-		class ID3IMOVNode :
+		class I3DIMOVNode :
 			public I3DIModelObject,
 			public I3DIDropTarget
 		{
 		public:
-			ID3IMOVNode(
-				ID3D11Device*                        a_device,
-				ID3D11DeviceContext*                 a_context,
-				const std::shared_ptr<D3DModelData>& a_data,
-				const stl::fixed_string&             a_name,
-				I3DIWeaponNode&                      a_acceptedCandidate,
-				I3DIActorContext&                    a_actorContext);
+			I3DIMOVNode(
+				ID3D11Device*                                  a_device,
+				ID3D11DeviceContext*                           a_context,
+				const std::shared_ptr<D3DModelData>&           a_data,
+				const stl::fixed_string&                       a_name,
+				const NodeOverrideData::weaponNodeListEntry_t& a_nodeInfo,
+				const NodeOverrideData::overrideNodeEntry_t*   a_cmeNodeInfo,
+				I3DIWeaponNode&                                a_acceptedDraggable,
+				I3DIActorContext&                              a_actorContext);
 
-			virtual ~ID3IMOVNode() noexcept override = default;
+			virtual ~I3DIMOVNode() noexcept override = default;
+
+			virtual I3DIMOVNode* GetAsMOVNode() override
+			{
+				return this;
+			};
+
+			virtual I3DIDropTarget* GetAsDropTarget() override
+			{
+				return static_cast<I3DIDropTarget*>(this);
+			};
 
 			void SetAdjustedWorldMatrix(const NiTransform& a_worldTransform);
 
@@ -32,15 +46,46 @@ namespace IED
 				return m_name;
 			}
 
+			inline constexpr void SetWeaponNodeAttached(bool a_switch) noexcept
+			{
+				m_weaponNodeAttached = a_switch;
+			}
+
+			/*inline constexpr void SetHasVisibleGeometry(bool a_switch) noexcept
+			{
+				m_hasVisibleGeometry = a_switch;
+			}
+
+			[[nodiscard]] inline constexpr auto HasVisibleGeometry() const noexcept
+			{
+				return m_hasVisibleGeometry;
+			}*/
+
+			[[nodiscard]] inline constexpr auto GetCMENodeInfo() const noexcept
+			{
+				return m_cmeNodeInfo;
+			}
+
+			virtual I3DIObject* GetParentObject() const;
+
 		private:
+			virtual void DrawTooltip(I3DICommonData& a_data) override;
+
 			virtual bool AcceptsDraggable(I3DIDraggable& a_item) override;
 			virtual bool ProcessDropRequest(I3DIDraggable& a_item) override;
 
-			virtual DirectX::XMVECTOR XM_CALLCONV GetParentCenter() const override;
+			virtual bool ShouldProcess(I3DICommonData& a_data) override;
 
-			stl::fixed_string m_name;
+			virtual bool WantDrawTooltip() override;
 
-			I3DIWeaponNode& m_acceptedCandidate;
+			const stl::fixed_string                        m_name;
+			const NodeOverrideData::weaponNodeListEntry_t& m_nodeInfo;
+			const NodeOverrideData::overrideNodeEntry_t*   m_cmeNodeInfo{ nullptr };
+
+			bool m_weaponNodeAttached{ false };
+			//bool m_hasVisibleGeometry{ false };
+
+			I3DIWeaponNode& m_weaponNode;
 
 			I3DIActorContext& m_actorContext;
 		};

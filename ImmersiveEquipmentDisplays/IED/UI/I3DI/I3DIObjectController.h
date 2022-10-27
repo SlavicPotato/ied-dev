@@ -1,11 +1,17 @@
 #pragma once
 
+#include "I3DIDragDropResult.h"
+
+#include "Common/VectorMath.h"
+
 namespace IED
 {
 	namespace UI
 	{
 		class I3DIObject;
 		class I3DIModelObject;
+		class I3DIDropTarget;
+		class I3DIDraggable;
 		struct I3DICommonData;
 
 		class I3DIObjectController
@@ -27,6 +33,11 @@ namespace IED
 				return m_data;
 			}
 
+			[[nodiscard]] inline constexpr auto& GetDragObject() const noexcept
+			{
+				return m_dragObject;
+			}
+
 			void RegisterObject(const std::shared_ptr<I3DIObject>& a_object);
 			void UnregisterObject(const std::shared_ptr<I3DIObject>& a_object);
 
@@ -38,7 +49,7 @@ namespace IED
 			//}
 
 			void Run(I3DICommonData& a_data);
-			void RenderObjects(I3DICommonData& a_data);
+			void DrawObjects(I3DICommonData& a_data);
 
 		protected:
 			std::shared_ptr<I3DIObject> GetHovered(
@@ -47,9 +58,35 @@ namespace IED
 			std::shared_ptr<I3DIObject> m_hovered;
 			std::shared_ptr<I3DIObject> m_selected;
 
-			stl::vector<Entry>                              m_data;
-			stl::vector<std::pair<float, I3DIModelObject*>> m_drawQueueOpaque;
-			stl::vector<std::pair<float, I3DIModelObject*>> m_drawQueueAlpha;
+			std::shared_ptr<I3DIObject> m_dragObject;
+			ImVec2                      m_lastClickPos{ -FLT_MAX, -FLT_MAX };
+			DirectX::XMVECTOR           m_dragStartDist{ DirectX::g_XMZero.v };
+			stl::vector<Entry>          m_data;
+
+			using draw_queue_container_type = stl::vector<std::pair<float, I3DIModelObject*>>;
+
+			draw_queue_container_type m_drawQueueOpaque;
+			draw_queue_container_type m_drawQueueAlpha;
+
+		private:
+			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object);
+
+			void SelectObject(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_object);
+
+			void TryBeginDrag(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_object);
+
+			std::pair<I3DIDragDropResult, I3DIDropTarget*> HandleDragEnd(
+				I3DICommonData&                    a_data,
+				I3DIDraggable*                     a_object,
+				const std::shared_ptr<I3DIObject>& a_dropObject);
+
+			void UpdateDragObjectPosition(
+				I3DICommonData& a_data,
+				I3DIObject*     a_object);
 		};
 
 	}

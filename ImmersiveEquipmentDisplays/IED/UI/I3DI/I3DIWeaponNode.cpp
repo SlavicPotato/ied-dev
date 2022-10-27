@@ -19,8 +19,11 @@ namespace IED
 			const stl::fixed_string&                   a_nodeName,
 			const NodeOverrideData::weaponNodeEntry_t& a_nodeInfo,
 			I3DIActorContext&                          a_actorContext) :
-			I3DIModelObject(a_device, a_context, a_data),
-			I3DIDraggable(DRAGGABLE_TYPE, *this),
+			I3DIModelObject(
+				a_device,
+				a_context,
+				a_data),
+			I3DIDraggable(DRAGGABLE_TYPE),
 			m_nodeName(a_nodeName),
 			m_nodeInfo(a_nodeInfo),
 			m_actorContext(a_actorContext)
@@ -33,8 +36,16 @@ namespace IED
 			m_localMatrix = VectorMath::NiTransformToMatrix4x4(a_transform);
 		}
 
+		I3DIObject* I3DIWeaponNode::GetParentObject() const
+		{
+			return m_actorContext.GetActorObject().get();
+		}
+
 		bool I3DIWeaponNode::OnDragBegin()
 		{
+			m_oldDiffuse.emplace(m_diffuseColor);
+			SetDiffuseColor({ 1.0f, 0, 0, 1.0f });
+
 			return true;
 		}
 
@@ -42,6 +53,11 @@ namespace IED
 			I3DIDragDropResult a_result,
 			I3DIDropTarget*    a_target)
 		{
+			if (m_oldDiffuse)
+			{
+				SetDiffuseColor(*m_oldDiffuse);
+				m_oldDiffuse.reset();
+			}
 		}
 
 		void I3DIWeaponNode::DrawTooltip(I3DICommonData& a_data)
@@ -59,14 +75,19 @@ namespace IED
 			return m_objectFlags.test_any(I3DIObjectFlags::kHSMask);
 		}
 
+		bool I3DIWeaponNode::WantDrawContents()
+		{
+			return IsSelected();
+		}
+
 		bool I3DIWeaponNode::IsSelectable()
 		{
 			return true;
 		}
 
-		DirectX::XMVECTOR XM_CALLCONV I3DIWeaponNode::GetParentCenter() const
+		void I3DIWeaponNode::DrawContents(I3DICommonData& a_data)
 		{
-			return DirectX::XMLoadFloat3(std::addressof(m_actorContext.GetActorObject()->GetAsActorObject()->GetActorBound().Center));
 		}
+
 	}
 }

@@ -4,16 +4,17 @@
 
 namespace IED
 {
-	void processState_t::ResetEffectShaders(Game::ObjectRefHandle a_handle)
+	void processParams_t::ResetEffectShaders()
 	{
-		if (!flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
+		if (!state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
 		{
 			if (auto pl = Game::ProcessLists::GetSingleton())
 			{
-				pl->ResetEffectShaders(a_handle);
+				pl->ResetEffectShaders(handle);
 			}
 
-			flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
+			state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
 		}
 	}
+
 }

@@ -15,9 +15,6 @@ namespace IED
 		m_vertexShader(a_vertexShader),
 		m_pixelShader(a_pixelShader)
 	{
-		m_constants.fogVector = g_XMZero;
-		m_constants.fogColor  = g_XMZero;
-
 		constexpr XMVECTORF32 defaultDirections[3] = {
 			{ { { -0.5265408f, -0.5735765f, -0.6275069f, 0 } } },
 			{ { { 0.7198464f, 0.3420201f, 0.6040227f, 0 } } },
@@ -36,24 +33,20 @@ namespace IED
 			{ { { 0.3231373f, 0.3607844f, 0.3937255f, 0 } } },
 		};
 
-		ambientLightColor = { 0.05333332f, 0.09882354f, 0.1819608f, 0 };
-
-		m_constants.specularColorAndPower = { 1, 1, 1, 16 };
-
 		for (int i = 0; i < 3; i++)
 		{
-			lightDirection[i]     = defaultDirections[i];
-			lightDiffuseColor[i]  = defaultDiffuse[i];
-			lightSpecularColor[i] = defaultSpecular[i];
+			m_lightDirection[i]     = defaultDirections[i].v;
+			m_lightDiffuseColor[i]  = defaultDiffuse[i].v;
+			m_lightSpecularColor[i] = defaultSpecular[i].v;
+
+			m_constants.lightDirection[i] = g_XMZero.v;
 		}
 
-		D3D11_BUFFER_DESC desc{};
-
-		desc.ByteWidth      = static_cast<UINT>(sizeof(D3DEffectConstants));
-		desc.Usage          = D3D11_USAGE_DEFAULT;
-		desc.BindFlags      = D3D11_BIND_CONSTANT_BUFFER;
-		desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-		desc.Usage          = D3D11_USAGE_DYNAMIC;
+		const CD3D11_BUFFER_DESC desc(
+			static_cast<UINT>(sizeof(D3DEffectConstants)),
+			D3D11_BIND_CONSTANT_BUFFER,
+			D3D11_USAGE_DYNAMIC,
+			D3D11_CPU_ACCESS_WRITE);
 
 		ThrowIfFailed(a_device->CreateBuffer(
 			std::addressof(desc),
@@ -74,6 +67,11 @@ namespace IED
 	void XM_CALLCONV D3DEffect::UpdateWorldMatrix(XMMATRIX a_matrix)
 	{
 		m_world = a_matrix;
+	}
+
+	void XM_CALLCONV D3DEffect::SetWorldPosition(XMVECTOR a_pos)
+	{
+		m_world.r[3] = XMVectorSelect(g_XMIdentityR3.v, a_pos, g_XMSelect1110.v);
 	}
 
 	void D3DEffect::SetMatrices(
@@ -116,19 +114,19 @@ namespace IED
 
 	void XM_CALLCONV D3DEffect::SetDiffuseColor(XMVECTOR a_color)
 	{
-		diffuseColor = a_color;
+		m_diffuseColor = a_color;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kMaterial);
 	}
 
 	void XM_CALLCONV D3DEffect::SetEmissiveColor(XMVECTOR a_color)
 	{
-		emissiveColor = a_color;
+		m_emissiveColor = a_color;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kMaterial);
 	}
 
-	void XM_CALLCONV D3DEffect::SetSpecularColor(DirectX::XMVECTOR a_color)
+	void XM_CALLCONV D3DEffect::SetSpecularColor(XMVECTOR a_color)
 	{
-		m_constants.specularColorAndPower = XMVectorSelect(m_constants.specularColorAndPower, a_color, g_XMSelect1110);
+		m_constants.specularColorAndPower = XMVectorSelect(m_constants.specularColorAndPower, a_color, g_XMSelect1110.v);
 	}
 
 	void D3DEffect::SetSpecularPower(float a_value)
@@ -138,19 +136,19 @@ namespace IED
 
 	void D3DEffect::SetLightingEnabled(bool a_switch)
 	{
-		lightingEnabled = a_switch;
+		m_lightingEnabled = a_switch;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kLight);
 	}
 
-	void XM_CALLCONV D3DEffect::SetAmbientLightColor(DirectX::FXMVECTOR a_color)
+	void XM_CALLCONV D3DEffect::SetAmbientLightColor(FXMVECTOR a_color)
 	{
-		ambientLightColor = a_color;
+		m_ambientLightColor = a_color;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kMaterial);
 	}
 
 	void D3DEffect::SetAlpha(float a_alpha)
 	{
-		alpha = a_alpha;
+		m_alpha = a_alpha;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kMaterial);
 	}
 
@@ -159,57 +157,57 @@ namespace IED
 		m_constants.world         = XMMatrixTranspose(m_world);
 		m_constants.worldViewProj = XMMatrixTranspose(XMMatrixMultiply(XMMatrixMultiply(m_world, m_view), m_proj));
 
-		auto worldInverse = XMMatrixInverse(nullptr, m_world);
+		const auto worldInverse = XMMatrixInverse(nullptr, m_world);
 
-		m_constants.worldInverseTranspose[0] = worldInverse.r[0];
-		m_constants.worldInverseTranspose[1] = worldInverse.r[1];
-		m_constants.worldInverseTranspose[2] = worldInverse.r[2];
+		for (int i = 0; i < 3; i++)
+		{
+			m_constants.worldInverseTranspose[i] = worldInverse.r[i];
+		}
 
-		auto viewInverse = XMMatrixInverse(nullptr, m_view);
+		const auto viewInverse = XMMatrixInverse(nullptr, m_view);
 
 		m_constants.eyePosition = viewInverse.r[3];
 
 		if (m_dirtyFlags.consume(D3DEffectTestDirtyFlags::kMaterial))
 		{
-			auto diffuse     = diffuseColor;
-			auto alphaVector = XMVectorReplicate(alpha);
+			const auto diffuse     = m_diffuseColor;
+			const auto alphaVector = XMVectorReplicate(m_alpha);
 
-			m_constants.emissiveColor = XMVectorMultiply(XMVectorMultiplyAdd(ambientLightColor, diffuse, emissiveColor), alphaVector);
+			m_constants.emissiveColor = XMVectorMultiply(XMVectorMultiplyAdd(m_ambientLightColor, diffuse, m_emissiveColor), alphaVector);
 
 			// xyz = diffuse * alpha, w = alpha.
-			m_constants.diffuseColor = XMVectorSelect(alphaVector, XMVectorMultiply(diffuse, alphaVector), g_XMSelect1110);
+			m_constants.diffuseColor = XMVectorSelect(alphaVector, XMVectorMultiply(diffuse, alphaVector), g_XMSelect1110.v);
 		}
 
 		if (m_dirtyFlags.consume(D3DEffectTestDirtyFlags::kLightColor))
 		{
-			if (lightingEnabled)
+			if (m_lightingEnabled)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					m_constants.lightDiffuseColor[i]  = lightDiffuseColor[i];
-					m_constants.lightSpecularColor[i] = lightSpecularColor[i];
+					m_constants.lightDiffuseColor[i]  = m_lightDiffuseColor[i];
+					m_constants.lightSpecularColor[i] = m_lightSpecularColor[i];
 				}
 			}
 			else
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					m_constants.lightDiffuseColor[i]  = DirectX::g_XMZero;
-					m_constants.lightSpecularColor[i] = DirectX::g_XMZero;
+					m_constants.lightDiffuseColor[i]  = DirectX::g_XMZero.v;
+					m_constants.lightSpecularColor[i] = DirectX::g_XMZero.v;
 				}
 			}
 		}
 
 		if (m_dirtyFlags.consume(D3DEffectTestDirtyFlags::kLightDirection))
 		{
-			if (lightingEnabled)
+			if (m_lightingEnabled)
 			{
 				for (int i = 0; i < 3; i++)
 				{
-					m_constants.lightDirection[i] = lightDirection[i];
+					m_constants.lightDirection[i] = m_lightDirection[i];
 				}
 			}
 		}
 	}
-
 }
