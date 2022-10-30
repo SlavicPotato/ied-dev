@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 7
+	return 8
 EndFunction
 
 Int Function GetVersion() native global
@@ -69,11 +69,14 @@ Bool Function SetItemLeftWeaponActor(Actor akActor, string asPlugin, string asNa
 Bool Function SetItemLeftWeaponNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
 Bool Function SetItemLeftWeaponRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abIsLeftWeapon) native global
 
+Bool Function SetItemRemoveScabbardActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemRemoveScabbardNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemRemoveScabbardRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+
 Bool Function SetItemUseWorldModelActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
 Bool Function SetItemUseWorldModelNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
 Bool Function SetItemUseWorldModelRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abUseWorldModel) native global
 
-; Note that this applies to the base config while SetItemEquipmentMode applies the legacy custom object specific flag (both take effect)
 Bool Function SetIgnoreRaceEquipTypesActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
 Bool Function SetIgnoreRaceEquipTypesNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
 Bool Function SetIgnoreRaceEquipTypesRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abIgnore) native global
@@ -96,7 +99,7 @@ Bool Function SetItemWeaponAnimationDisabledActor(Actor akActor, string asPlugin
 Bool Function SetItemWeaponAnimationDisabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 Bool Function SetItemWeaponAnimationDisabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 
-; Enable sending an animation event after the weapon loads (has no effect if weapon animation is disabled)
+; Define an animation event to be sent to the weapon after it loads (has no effect if weapon animation is disabled)
 Bool Function SetItemAnimationEventEnabledActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
 Bool Function SetItemAnimationEventEnabledNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
 Bool Function SetItemAnimationEventEnabledRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abEnable) native global
