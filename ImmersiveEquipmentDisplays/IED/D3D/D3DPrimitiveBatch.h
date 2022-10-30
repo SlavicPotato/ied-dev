@@ -1,7 +1,7 @@
 #pragma once
 
-#include "D3DEffect.h"
 #include "D3DCommon.h"
+#include "D3DEffect.h"
 #include "D3DVertices.h"
 
 namespace IED
@@ -26,16 +26,11 @@ namespace IED
 		void Draw(
 			D3DCommon& a_scene);
 
-		void XM_CALLCONV AddLine(
-			DirectX::XMVECTOR a_p1,
-			DirectX::XMVECTOR a_c1,
-			DirectX::XMVECTOR a_p2,
-			DirectX::XMVECTOR a_c2);
-
-		void XM_CALLCONV AddLine(
-			DirectX::XMVECTOR a_p1,
-			DirectX::XMVECTOR a_p2,
-			DirectX::XMVECTOR a_c);
+		template <class... Args>
+		inline constexpr void AddLine(Args&&... a_args)
+		{
+			m_lines.emplace_back(std::forward<Args>(a_args)...);
+		}
 
 		inline constexpr void EnableDepth(bool a_switch) noexcept
 		{
@@ -45,7 +40,32 @@ namespace IED
 	private:
 		std::unique_ptr<DirectX::PrimitiveBatch<VertexPositionColorAV>> m_batch;
 
-		stl::vector<std::pair<VertexPositionColorAV, VertexPositionColorAV>> m_lines;
+		struct vertex_pair_type
+		{
+			inline constexpr vertex_pair_type(
+				const DirectX::XMVECTOR& a_p1,
+				const DirectX::XMVECTOR& a_c1,
+				const DirectX::XMVECTOR& a_p2,
+				const DirectX::XMVECTOR& a_c2) noexcept :
+				first(a_p1, a_c1),
+				second(a_p2, a_c2)
+			{
+			}
+
+			inline constexpr vertex_pair_type(
+				const DirectX::XMVECTOR& a_p1,
+				const DirectX::XMVECTOR& a_p2,
+				const DirectX::XMVECTOR& a_c) noexcept :
+				first(a_p1, a_c),
+				second(a_p2, a_c)
+			{
+			}
+
+			VertexPositionColorAV first;
+			VertexPositionColorAV second;
+		};
+
+		stl::vector<vertex_pair_type> m_lines;
 
 		stl::flag<D3DPrimitiveBatchFlags> m_flags{ D3DPrimitiveBatchFlags::kNone };
 	};

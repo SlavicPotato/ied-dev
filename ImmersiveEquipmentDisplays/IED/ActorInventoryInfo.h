@@ -57,7 +57,6 @@ namespace IED
 
 			stl::flag<InventoryInfoExtraFlags> flags{ InventoryInfoExtraFlags::kNone };
 			std::optional<std::uint16_t>       uid;
-			//std::uint32_t                      itemId{ 0 };
 			Game::FormID                       owner;
 			Game::FormID                       originalRefr;
 			std::optional<std::string>         name;
@@ -80,14 +79,62 @@ namespace IED
 			std::uint32_t                     baseCount{ 0 };
 			std::int32_t                      deltaCount{ 0 };
 			std::int64_t                      count{ 0 };
-			stl::vector<ExtraData>            extraList;
+			stl::vector<
+				ExtraData,
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+				stl::mi_allocator
+#else
+				stl::container_allocator
+#endif
+				<ExtraData>>
+				extraList;
 		};
 
 		void Update(
 			TESContainer&                          a_container,
 			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
 
-		stl::map<Game::FormID, Base> items;
+		/*stl::map<
+			Game::FormID,
+			Base,
+			std::less<Game::FormID>,
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+			stl::mi_allocator
+#else
+			stl::container_allocator
+#endif
+			<std::pair<const Game::FormID, Base>>>
+			items;*/
+
+		using map_type =
+			std::unordered_map<
+				Game::FormID,
+				Base,
+				std::hash<Game::FormID>,
+				std::equal_to<Game::FormID>,
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+				stl::mi_allocator
+#else
+				stl::container_allocator
+#endif
+				<std::pair<const Game::FormID, Base>>>;
+
+		using vector_type =
+			std::vector<
+				const typename map_type::value_type*,
+#if defined(IED_USE_MIMALLOC_COLLECTOR)
+				stl::mi_allocator
+#else
+				stl::container_allocator
+#endif
+				<const typename map_type::value_type*>>;
+
+		stl::vectormap<
+			Game::FormID,
+			Base,
+			map_type,
+			vector_type>
+			items;
 
 	private:
 		Base& AddOrGetBaseItem(TESBoundObject* a_item);

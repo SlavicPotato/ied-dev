@@ -43,7 +43,7 @@ namespace IED
 			CreateChild<UIDialogImportExport>(a_controller);
 			CreateChild<UINodeMapEditor>(a_controller);
 			CreateChild<UILog>(a_controller);
-			CreateChild<UIStats>(a_controller);
+			CreateChild<UIStats>(a_owner, a_controller);
 			CreateChild<UISkeletonExplorer>(a_controller);
 			CreateChild<UIActorInfo>(a_controller);
 

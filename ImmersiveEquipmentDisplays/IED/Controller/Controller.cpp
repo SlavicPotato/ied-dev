@@ -5252,6 +5252,8 @@ namespace IED
 			}
 		}
 
+		//m_invChangeConsumerFlags.set(InventoryChangeConsumerFlags::kAll);
+
 		return EventResult::kContinue;
 	}
 
@@ -5285,6 +5287,8 @@ namespace IED
 				}
 			}
 		}
+
+		//m_invChangeConsumerFlags.set(InventoryChangeConsumerFlags::kAll);
 
 		return EventResult::kContinue;
 	}

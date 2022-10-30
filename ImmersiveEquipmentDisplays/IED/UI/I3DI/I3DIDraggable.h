@@ -11,6 +11,7 @@ namespace IED
 		class I3DIDropTarget;
 		class I3DIObjectController;
 		class I3DIObject;
+		struct I3DICommonData;
 
 		class I3DIDraggable
 		{
@@ -38,8 +39,8 @@ namespace IED
 
 		private:
 			virtual bool OnDragBegin() = 0;
-
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) = 0;
+			virtual void OnDragPositionUpdate(I3DICommonData& a_data){};
 
 			inline constexpr void SetDragging(bool a_switch) noexcept
 			{
@@ -48,7 +49,6 @@ namespace IED
 
 			std::uint32_t m_type{ DRAGGABLE_TYPE };
 			bool          m_dragging{ false };
-
 		};
 	}
 }

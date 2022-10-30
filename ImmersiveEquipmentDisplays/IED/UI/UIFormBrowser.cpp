@@ -397,7 +397,7 @@ namespace IED
 
 			bool result = false;
 
-			auto size = static_cast<int>(
+			const auto size = static_cast<int>(
 				std::min(a_data.size(), std::size_t(std::numeric_limits<int>::max() - 1)));
 
 			ImGuiListClipper clipper;

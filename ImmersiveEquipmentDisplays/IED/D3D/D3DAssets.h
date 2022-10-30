@@ -4,6 +4,7 @@
 #include "IED/Profile/Profile.h"
 
 #include "D3DBoundingOrientedBox.h"
+#include "D3DBoundingSphere.h"
 
 #include <DirectXTK/VertexTypes.h>
 
@@ -12,6 +13,7 @@ namespace IED
 	struct ModelData
 	{
 		D3DBoundingOrientedBox CreateBoundingBox() const;
+		D3DBoundingSphere      CreateBoundingSphere() const;
 
 		stl::vector<DirectX::VertexPositionNormalColor> vertices;
 		stl::vector<std::uint16_t>                      indices;

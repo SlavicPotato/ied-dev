@@ -115,6 +115,15 @@ namespace IED
 			kT2 = 1ui8 << 2
 		};
 
+		enum class InventoryChangeConsumerFlags : std::uint8_t
+		{
+			kNone = 0,
+
+			kInventoryInfo = 1u << 0,
+
+			kAll = static_cast<std::underlying_type_t<InventoryChangeConsumerFlags>>(-1)
+		};
+
 		struct cachedActorInfo_t
 		{
 			NiPointer<Actor>      actor;
@@ -457,8 +466,8 @@ namespace IED
 		{
 			return m_bipedCache.max_size();
 		}
-		
-		[[nodiscard]] inline constexpr auto &GetBipedDataCache() const noexcept
+
+		[[nodiscard]] inline constexpr auto& GetBipedDataCache() const noexcept
 		{
 			return m_bipedCache;
 		}
@@ -481,6 +490,12 @@ namespace IED
 		{
 			return m_evalCounter;
 		}
+
+		/*[[nodiscard]] inline constexpr bool ConsumeInventoryChangeFlags(
+			InventoryChangeConsumerFlags a_mask)
+		{
+			return m_invChangeConsumerFlags.consume(a_mask);
+		}*/
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -539,7 +554,7 @@ namespace IED
 			bool             a_markAllForLFEval = false);
 
 		void DoObjectEvaluation(
-			processParams_t&                 a_params);
+			processParams_t& a_params);
 
 		void EvaluateImpl(
 			ActorObjectHolder&               a_holder,
@@ -959,6 +974,8 @@ namespace IED
 		bool m_forceFlushSaveData{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
+
+		//stl::flag<InventoryChangeConsumerFlags> m_invChangeConsumerFlags{ InventoryChangeConsumerFlags::kAll };
 
 		template <class Archive>
 		void serialize(Archive& a_ar, const unsigned int a_version)

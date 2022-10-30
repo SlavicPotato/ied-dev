@@ -16,7 +16,7 @@ namespace IED
 			stl::underlying(I3DIModelID::kMax)>
 			I3DIAssetCache::m_mdbNames{
 				"sphere",
-				"movanchor",
+				"movap",
 
 				"1hsword",
 				"waraxe",

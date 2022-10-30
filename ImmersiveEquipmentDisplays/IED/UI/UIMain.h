@@ -86,28 +86,6 @@ namespace IED
 				return m_owner;
 			}
 
-		private:
-			virtual void Receive(const UIContextStateChangeEvent& a_evn) override;
-
-			void DrawChildWindows();
-
-			void DrawMenuBarMain();
-			void DrawMenuBarContents();
-			void DrawFileMenu();
-			void DrawViewMenu();
-			void DrawProfileEditorsSubmenu();
-			void DrawDiagnosticsSubmenu();
-			void DrawToolsMenu();
-			void DrawActionsMenu();
-			void DrawHelpMenu();
-
-			void DrawDefaultConfigSubmenu();
-
-			bool HasOpenChild() const;
-
-			virtual bool ILRHGetCurrentControlLockSetting() override;
-			virtual bool ILRHGetCurrentFreezeTimeSetting() override;
-
 			template <class T>
 			[[nodiscard]] inline constexpr auto& GetChildContext() const noexcept
 			{
@@ -136,6 +114,28 @@ namespace IED
 
 				return *result;
 			}
+
+		private:
+			virtual void Receive(const UIContextStateChangeEvent& a_evn) override;
+
+			void DrawChildWindows();
+
+			void DrawMenuBarMain();
+			void DrawMenuBarContents();
+			void DrawFileMenu();
+			void DrawViewMenu();
+			void DrawProfileEditorsSubmenu();
+			void DrawDiagnosticsSubmenu();
+			void DrawToolsMenu();
+			void DrawActionsMenu();
+			void DrawHelpMenu();
+
+			void DrawDefaultConfigSubmenu();
+
+			bool HasOpenChild() const;
+
+			virtual bool ILRHGetCurrentControlLockSetting() override;
+			virtual bool ILRHGetCurrentFreezeTimeSetting() override;
 
 			template <class T, class... Args>
 			void CreateChild(Args&&... a_args)  //

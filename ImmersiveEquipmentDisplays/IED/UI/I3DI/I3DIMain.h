@@ -50,17 +50,37 @@ namespace IED
 				return static_cast<std::uint32_t>(CHILD_ID);
 			}
 
+			[[nodiscard]] inline constexpr auto& GetActorContext() const noexcept
+			{
+				return m_actorContext;
+			}
+			
+			[[nodiscard]] inline constexpr auto& GetCommonData() const noexcept
+			{
+				return m_data;
+			}
+
+			[[nodiscard]] inline constexpr auto GetLastPrepTime() const noexcept
+			{
+				return m_lastPrepTime;
+			}
+
 		private:
 			bool CreateCommonData();
 
-			void SwitchToActorContext(Game::FormID a_actor);
-			void UpdateActorObjects();
+			void PrepareGameDataImpl();
+
+			void      SwitchToActorContext(Game::FormID a_actor);
+			void      UpdateActorObjects();
 			NiCamera* GetCamera();
 
-			void SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const ;
+			void SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const;
 
 			std::unique_ptr<I3DICommonData>   m_data;
 			std::unique_ptr<I3DIActorContext> m_actorContext;
+
+			PerfTimerInt m_prepPT;
+			long long    m_lastPrepTime{ 0 };
 
 			Controller& m_controller;
 		};

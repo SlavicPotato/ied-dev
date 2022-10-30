@@ -5,7 +5,7 @@ namespace IED
 	enum class I3DIModelID : std::uint32_t
 	{
 		kSphere,
-		kAnchor,
+		kAttachmentPoint,
 
 		kOneHandedSword,
 		kOneHandedAxe,

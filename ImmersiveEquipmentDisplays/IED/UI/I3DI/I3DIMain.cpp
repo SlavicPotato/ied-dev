@@ -25,7 +25,8 @@ namespace IED
 		I3DIMain::I3DIMain(
 			Controller& a_controller) :
 			UILocalizationInterface(a_controller),
-			m_controller(a_controller)
+			m_controller(a_controller),
+			m_prepPT(1000000)
 		{
 		}
 
@@ -75,55 +76,25 @@ namespace IED
 				}
 			}
 
-			m_data->objectController.Run(*m_data);
+			m_data->objectController.Run(
+				*m_data,
+				[this] {
+					if (auto& context = m_actorContext)
+					{
+						context->AdjustObjects();
+					}
+				});
 
 			ImGui::PopID();
 		}
 
 		void I3DIMain::PrepareGameData()
 		{
-			if (!IsContextOpen())
-			{
-				return;
-			}
+			m_prepPT.Begin();
 
-			if (!m_data)
-			{
-				return;
-			}
+			PrepareGameDataImpl();
 
-			if (auto camera = GetCamera())
-			{
-				/*if (auto& context = m_actorContext)
-				{
-					auto cam = context->GetCamera().get();
-
-					if (!cam)
-					{
-						context->SetCamera(std::make_unique<I3DIFreeCamera>(camera));
-						cam = context->GetCamera().get();
-					}
-
-					cam->CameraUpdate(camera);
-
-					auto sky = RE::Sky::GetSingleton();
-
-					sky->clouds->GetRoot()->m_worldTransform.pos = camera->m_worldTransform.pos;
-				}*/
-
-				VectorMath::GetCameraPV(
-					camera,
-					m_data->scene.GetViewMatrix(),
-					m_data->scene.GetProjectionMatrix(),
-					m_data->scene.GetCameraPosition());
-			}
-
-			UpdateActorObjects();
-
-			if (auto& context = m_actorContext)
-			{
-				context->Update(*m_data);
-			}
+			m_prepPT.End(m_lastPrepTime);
 		}
 
 		void I3DIMain::Render()
@@ -240,6 +211,52 @@ namespace IED
 					__FUNCTION__);
 
 				return false;
+			}
+		}
+
+		void I3DIMain::PrepareGameDataImpl()
+		{
+			if (!IsContextOpen())
+			{
+				return;
+			}
+
+			if (!m_data)
+			{
+				return;
+			}
+
+			if (auto camera = GetCamera())
+			{
+				/*if (auto& context = m_actorContext)
+				{
+					auto cam = context->GetCamera().get();
+
+					if (!cam)
+					{
+						context->SetCamera(std::make_unique<I3DIFreeCamera>(camera));
+						cam = context->GetCamera().get();
+					}
+
+					cam->CameraUpdate(camera);
+
+					auto sky = RE::Sky::GetSingleton();
+
+					sky->clouds->GetRoot()->m_worldTransform.pos = camera->m_worldTransform.pos;
+				}*/
+
+				VectorMath::GetCameraPV(
+					camera,
+					m_data->scene.GetViewMatrix(),
+					m_data->scene.GetProjectionMatrix(),
+					m_data->scene.GetCameraPosition());
+			}
+
+			UpdateActorObjects();
+
+			if (auto& context = m_actorContext)
+			{
+				context->Update(*m_data);
 			}
 		}
 

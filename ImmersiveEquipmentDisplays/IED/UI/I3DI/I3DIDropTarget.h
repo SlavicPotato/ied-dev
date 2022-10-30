@@ -21,9 +21,12 @@ namespace IED
 
 			virtual ~I3DIDropTarget() noexcept = default;
 
+			virtual bool AcceptsDraggable(I3DIDraggable& a_item) const = 0;
+
 		private:
-			virtual bool AcceptsDraggable(I3DIDraggable& a_item)   = 0;
 			virtual bool ProcessDropRequest(I3DIDraggable& a_item) = 0;
+
+			virtual void OnDraggableMovingOver(I3DIDraggable& a_item){};
 
 			// parent
 			D3DObject& m_owner;

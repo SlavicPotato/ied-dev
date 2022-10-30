@@ -444,6 +444,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConvertNodes.h" />
     <ClInclude Include="IED\D3D\D3DAssets.h" />
     <ClInclude Include="IED\D3D\D3DBoundingOrientedBox.h" />
+    <ClInclude Include="IED\D3D\D3DBoundingSphere.h" />
     <ClInclude Include="IED\D3D\D3DEffect.h" />
     <ClInclude Include="IED\D3D\D3DEffectResources.h" />
     <ClInclude Include="IED\D3D\D3DPrimitiveBatch.h" />
@@ -513,6 +514,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidget.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UIModelGroupEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Custom\Widgets\UISingleCustomConfigUpdateParams.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingBase.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingSphere.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundObject.h" />
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingOrientedBox.h" />
     <ClInclude Include="IED\UI\I3DI\I3DICamera.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIActorObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DICommonData.h" />
@@ -931,6 +936,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConvertNodes.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />
     <ClCompile Include="IED\D3D\D3DBoundingOrientedBox.cpp" />
+    <ClCompile Include="IED\D3D\D3DBoundingSphere.cpp" />
     <ClCompile Include="IED\D3D\D3DEffect.cpp" />
     <ClCompile Include="IED\D3D\D3DEffectResources.cpp" />
     <ClCompile Include="IED\D3D\D3DPrimitiveBatch.cpp" />
@@ -992,6 +998,9 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditor.cpp" />
     <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditorWindow.cpp" />
     <ClCompile Include="IED\UI\ConditionalVariables\Widgets\UIConditionalVariablesEditorWidget.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundingOrientedBox.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundingSphere.cpp" />
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DICamera.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorContext.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIActorObject.cpp" />

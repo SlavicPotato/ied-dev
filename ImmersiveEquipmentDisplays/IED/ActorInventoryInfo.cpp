@@ -26,6 +26,10 @@ namespace IED
 				Process(e);
 			}
 		}
+
+		items.sortvec([](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
+			return a_lhs->first < a_rhs->first;
+		});
 	}
 
 	auto actorInventoryInfo_t::AddOrGetBaseItem(TESBoundObject* a_item)
@@ -119,7 +123,9 @@ namespace IED
 
 				auto& x = item.extraList.emplace_back();
 
-				if (const auto extraEnchant = e->Get<ExtraEnchantment>())
+				BSReadLocker locker(e->m_lock);
+
+				if (const auto extraEnchant = e->GetImpl<ExtraEnchantment>())
 				{
 					if (auto enchant = extraEnchant->enchant)
 					{
@@ -133,7 +139,7 @@ namespace IED
 
 				float healthValue = 1.0f;
 
-				if (const auto extraHealth = e->Get<ExtraHealth>())
+				if (const auto extraHealth = e->GetImpl<ExtraHealth>())
 				{
 					x.health = healthValue = extraHealth->health;
 					x.flags.set(InventoryInfoExtraFlags::kHasHealth);
@@ -147,14 +153,14 @@ namespace IED
 					}
 				}
 
-				if (const auto extraUID = e->Get<ExtraUniqueID>())
+				if (const auto extraUID = e->GetImpl<ExtraUniqueID>())
 				{
 					x.uid = extraUID->uniqueId;
 				}
 
 				//x.itemId = HashUtil::CRC32(x.GetName(item).c_str(), form->formID & 0x00FFFFFFui32);
 
-				if (const auto extraOwner = e->Get<ExtraOwnership>())
+				if (const auto extraOwner = e->GetImpl<ExtraOwnership>())
 				{
 					if (auto owner = extraOwner->owner)
 					{
@@ -162,7 +168,7 @@ namespace IED
 					}
 				}
 
-				if (const auto extraOriginalRefr = e->Get<ExtraOriginalReference>())
+				if (const auto extraOriginalRefr = e->GetImpl<ExtraOriginalReference>())
 				{
 					NiPointer<TESObjectREFR> ref;
 					if (extraOriginalRefr->handle.Lookup(ref))
@@ -170,8 +176,6 @@ namespace IED
 						x.originalRefr = ref->formID;
 					}
 				}
-
-				BSReadLocker locker(e->m_lock);
 
 				const auto* presence = e->m_presence;
 				if (!presence)

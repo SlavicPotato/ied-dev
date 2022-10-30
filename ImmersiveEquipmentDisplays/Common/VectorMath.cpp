@@ -2,9 +2,19 @@
 
 #include "VectorMath.h"
 
+#pragma warning(disable: 4073)
+#pragma init_seg(lib)
+
 namespace VectorMath
 {
 	using namespace DirectX;
+
+	const __declspec(selectany) XMMATRIX g_identity{
+		g_XMIdentityR0.v,
+		g_XMIdentityR1.v,
+		g_XMIdentityR2.v,
+		g_XMIdentityR3.v
+	};
 
 	XMMATRIX XM_CALLCONV NiTransformToMatrix4x4(
 		const NiTransform& a_in)
@@ -49,7 +59,7 @@ namespace VectorMath
 		static_assert(offsetof(NiTransform, scale) == 0x30);
 		static_assert(sizeof(NiTransform) == 0x34);
 
-		// w overflows into the next member so writes need to be ordered
+		// w overflows in to the next member so writes need to be ordered
 
 		_mm_storeu_ps(result.rot.data[0], m.r[0]);
 		_mm_storeu_ps(result.rot.data[1], m.r[1]);
@@ -69,12 +79,12 @@ namespace VectorMath
 
 		NiTransform result(NiTransform::noinit_arg_t{});
 
-		// w overflows into the next member so writes need to be ordered
-
 		static_assert(offsetof(NiTransform, rot) == 0x0);
 		static_assert(offsetof(NiTransform, pos) == 0x24);
 		static_assert(offsetof(NiTransform, scale) == 0x30);
 		static_assert(sizeof(NiTransform) == 0x34);
+
+		// w overflows in to the next member so writes need to be ordered
 
 		_mm_storeu_ps(result.rot.data[0], m.r[0]);
 		_mm_storeu_ps(result.rot.data[1], m.r[1]);
@@ -153,13 +163,6 @@ namespace VectorMath
 		}
 	}
 
-	const XMMATRIX g_identity{
-		g_XMIdentityR0.v,
-		g_XMIdentityR1.v,
-		g_XMIdentityR2.v,
-		g_XMIdentityR3.v
-	};
-
 	void RayCastScreenPt(
 		const CD3D11_VIEWPORT& a_viewport,
 		CXMMATRIX              a_view,
@@ -169,7 +172,7 @@ namespace VectorMath
 		XMVECTOR&              a_rayOrigin,
 		XMVECTOR&              a_rayDir)
 	{
-		auto v = XMVector3Unproject(
+		const auto v = XMVector3Unproject(
 			XMVectorSet(a_x, a_y, 1.0f, 0.0f),
 			a_viewport.TopLeftX,
 			a_viewport.TopLeftY,
@@ -279,7 +282,7 @@ namespace VectorMath
 		CXMMATRIX              a_proj,
 		CXMMATRIX              a_world)
 	{
-		auto p = WorldToScreenSpace(
+		const auto p = WorldToScreenSpace(
 			a_viewport,
 			a_view,
 			a_proj,
@@ -298,7 +301,7 @@ namespace VectorMath
 		CXMMATRIX              a_proj,
 		CXMMATRIX              a_world)
 	{
-		auto p = WorldToScreenSpace(
+		const auto p = WorldToScreenSpace(
 			a_viewport,
 			a_pos,
 			a_view,

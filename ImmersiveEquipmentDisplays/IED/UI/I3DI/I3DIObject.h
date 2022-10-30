@@ -11,6 +11,7 @@ namespace IED
 		class I3DIDropTarget;
 		class I3DIObjectController;
 		class I3DIModelObject;
+		class I3DIBoundObject;
 		class I3DIActorObject;
 		class I3DIMOVNode;
 		class I3DIWeaponNode;
@@ -55,6 +56,11 @@ namespace IED
 			{
 				return nullptr;
 			};
+			
+			virtual I3DIBoundObject* GetAsBoundObject()
+			{
+				return nullptr;
+			};
 
 			virtual I3DIActorObject* GetAsActorObject()
 			{
@@ -67,11 +73,6 @@ namespace IED
 			};
 
 			virtual I3DIWeaponNode* GetAsWeaponNode()
-			{
-				return nullptr;
-			};
-
-			virtual const D3DBoundingOrientedBox* GetBoundingBox() const
 			{
 				return nullptr;
 			};

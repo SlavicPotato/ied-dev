@@ -11,11 +11,14 @@ namespace IED
 	{
 		class I3DIWeaponNode;
 		class I3DIActorContext;
+		class I3DIObjectController;
 
 		class I3DIMOVNode :
 			public I3DIModelObject,
 			public I3DIDropTarget
 		{
+			friend class I3DIObjectController;
+
 		public:
 			I3DIMOVNode(
 				ID3D11Device*                                  a_device,
@@ -39,11 +42,14 @@ namespace IED
 				return static_cast<I3DIDropTarget*>(this);
 			};
 
-			void SetAdjustedWorldMatrix(const NiTransform& a_worldTransform);
-
 			[[nodiscard]] inline constexpr auto& GetNodeName() const noexcept
 			{
 				return m_name;
+			}
+
+			[[nodiscard]] inline constexpr auto& GetWeaponNode() const noexcept
+			{
+				return m_weaponNode;
 			}
 
 			inline constexpr void SetWeaponNodeAttached(bool a_switch) noexcept
@@ -66,15 +72,30 @@ namespace IED
 				return m_cmeNodeInfo;
 			}
 
-			virtual I3DIObject* GetParentObject() const;
+			inline constexpr void XM_CALLCONV SetOriginalPos(DirectX::XMVECTOR a_pos) noexcept
+			{
+				m_originalPos = a_pos;
+			}
+
+			inline constexpr auto XM_CALLCONV GetOriginalPos() const noexcept
+			{
+				return m_originalPos;
+			}
+
+			virtual I3DIBoundObject* GetParentObject() const override;
+
+			virtual bool AcceptsDraggable(I3DIDraggable& a_item) const override;
 
 		private:
 			virtual void DrawTooltip(I3DICommonData& a_data) override;
 
-			virtual bool AcceptsDraggable(I3DIDraggable& a_item) override;
 			virtual bool ProcessDropRequest(I3DIDraggable& a_item) override;
+			void         OnDraggableMovingOver(I3DIDraggable& a_item) override;
 
 			virtual bool ShouldProcess(I3DICommonData& a_data) override;
+
+			virtual void OnMouseMoveOver(I3DICommonData& a_data) override;
+			virtual void OnMouseMoveOut(I3DICommonData& a_data) override;
 
 			virtual bool WantDrawTooltip() override;
 
@@ -84,6 +105,8 @@ namespace IED
 
 			bool m_weaponNodeAttached{ false };
 			//bool m_hasVisibleGeometry{ false };
+
+			DirectX::XMVECTOR m_originalPos{ DirectX::g_XMZero.v };
 
 			I3DIWeaponNode& m_weaponNode;
 

@@ -24,6 +24,7 @@
 #include <ext/StrHelpers.h>
 #include <ext/Vector.h>
 #include <ext/stl_boost_serialization_containers.h>
+#include <ext/stl_comparison.h>
 #include <ext/stl_map_sa.h>
 #include <ext/stl_math.h>
 #include <ext/stl_set_sa.h>
@@ -121,7 +122,7 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
-//#define IED_ENABLE_STATS_G
+#define IED_ENABLE_STATS_G
 //#define IED_ENABLE_STATS_T
 
 //#define IED_ENABLE_RTEST

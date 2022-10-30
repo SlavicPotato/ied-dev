@@ -27,41 +27,16 @@ namespace IED
 		SetAlpha(0.5f);
 	}
 
-	void D3DObject::UpdateBound()
-	{
-		m_data->GetBound().Transform(m_bound, m_world);
-	}
-
-	bool XM_CALLCONV D3DObject::Intersects(
-		FXMVECTOR a_origin,
-		FXMVECTOR a_direction,
-		float&    a_distance) const
-	{
-		return m_bound.Intersects(a_origin, a_direction, a_distance);
-	}
-
 	float XM_CALLCONV D3DObject::GetDistance(
-		FXMVECTOR a_origin) const
+		XMVECTOR a_origin) const
 	{
 		return XMVectorGetX(XMVector3Length(m_world.r[3] - a_origin));
 	}
 
 	float XM_CALLCONV D3DObject::GetDistanceSq(
-		FXMVECTOR a_origin) const
+		XMVECTOR a_origin) const
 	{
 		return XMVectorGetX(XMVector3LengthSq(m_world.r[3] - a_origin));
-	}
-
-	float XM_CALLCONV D3DObject::GetCenterDistance(DirectX::FXMVECTOR a_origin) const
-	{
-		auto center = XMLoadFloat3(std::addressof(m_bound.Center));
-		return XMVectorGetX(XMVector3Length(center - a_origin));
-	}
-
-	float XM_CALLCONV D3DObject::GetCenterDistanceSq(DirectX::FXMVECTOR a_origin) const
-	{
-		auto center = XMLoadFloat3(std::addressof(m_bound.Center));
-		return XMVectorGetX(XMVector3LengthSq(center - a_origin));
 	}
 
 	void D3DObject::Draw(

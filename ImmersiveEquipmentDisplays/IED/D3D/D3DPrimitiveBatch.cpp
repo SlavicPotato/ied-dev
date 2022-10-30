@@ -50,24 +50,4 @@ namespace IED
 		m_lines.clear();
 	}
 
-	void XM_CALLCONV D3DPrimitiveBatch::AddLine(
-		XMVECTOR a_p1,
-		XMVECTOR a_c1,
-		XMVECTOR a_p2,
-		XMVECTOR a_c2)
-	{
-		m_lines.emplace_back(
-			VertexPositionColorAV(a_p1, a_c1),
-			VertexPositionColorAV(a_p2, a_c2));
-	}
-
-	void XM_CALLCONV D3DPrimitiveBatch::AddLine(
-		XMVECTOR a_p1,
-		XMVECTOR a_p2,
-		XMVECTOR a_c)
-	{
-		m_lines.emplace_back(
-			VertexPositionColorAV(a_p1, a_c),
-			VertexPositionColorAV(a_p2, a_c));
-	}
 }

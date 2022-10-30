@@ -13,7 +13,8 @@ namespace IED
 		ID3D11Device*                     a_device,
 		const std::shared_ptr<ModelData>& a_data) noexcept(false) :
 		m_modelData(a_data),
-		m_bound(a_data->CreateBoundingBox())
+		m_boundingOrientedBox(a_data->CreateBoundingBox()),
+		m_boundingSphere(a_data->CreateBoundingSphere())
 	{
 		assert(a_device);
 

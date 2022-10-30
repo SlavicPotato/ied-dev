@@ -11,10 +11,14 @@
 
 #include "Drivers/Input/Handlers.h"
 
+#include "I3DIBoundingSphere.h"
+
 namespace IED
 {
 	namespace UI
 	{
+		using namespace DirectX;
+
 		static stl::fixed_string GetProbableCMENameFromMOV(
 			const stl::fixed_string& a_node)
 		{
@@ -48,7 +52,7 @@ namespace IED
 		{
 			auto& activeWeaponNodes = a_holder.GetWeapNodes();
 			auto& cme               = NodeOverrideData::GetCMENodeData();
-			auto& movAnchorModel    = a_data.assets.GetModel(I3DIModelID::kAnchor);
+			auto& movAnchorModel    = a_data.assets.GetModel(I3DIModelID::kAttachmentPoint);
 
 			if (!movAnchorModel)
 			{
@@ -114,6 +118,28 @@ namespace IED
 					s.first->second->EnableDepth(false);
 				}
 			}
+
+			/*m_movPairs.reserve(m_movNodes.size() * (m_movNodes.size() - 1));
+
+			for (auto& e : m_movNodes)
+			{
+				for (auto& f : m_movNodes)
+				{
+					if (f.second != e.second)
+					{
+						m_movPairs.emplace_back(
+							e.second.get(),
+							f.second.get());
+					}
+				}
+			}
+
+			std::sort(m_movPairs.begin(), m_movPairs.end(), stl::unique_pair_less{});
+			m_movPairs.erase(std::unique(m_movPairs.begin(), m_movPairs.end(), stl::unique_pair_equal{}), m_movPairs.end());
+			m_movPairs.shrink_to_fit();*/
+
+			
+			//_DMESSAGE("%zu  %zu", c, m_movPairs.size());
 		}
 
 		void I3DIActorContext::RegisterObjects(
@@ -166,7 +192,12 @@ namespace IED
 				}
 
 				itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
-				itwn->second->UpdateWorldMatrix(e.node->m_worldTransform);
+
+				const auto m = VectorMath::NiTransformToMatrix4x4(e.node->m_worldTransform);
+
+				itwn->second->UpdateWorldMatrix(m);
+				itwn->second->SetOriginalWorldMatrix(m);
+
 				itwn->second->UpdateBound();
 				itwn->second->SetHasWorldData(true);
 				itwn->second->SetGeometryHidden(false);
@@ -182,7 +213,11 @@ namespace IED
 					continue;
 				}
 
-				itmn->second->SetAdjustedWorldMatrix(e.second.node->m_worldTransform);
+				const auto m = VectorMath::NiTransformToMatrix4x4(e.second.node->m_worldTransform);
+
+				itmn->second->UpdateWorldMatrix(m);
+				itmn->second->SetOriginalWorldMatrix(m);
+
 				itmn->second->UpdateBound();
 				itmn->second->SetHasWorldData(true);
 
@@ -205,7 +240,8 @@ namespace IED
 							auto itb = cmeNodes.find(info->name);
 							if (itb != cmeNodes.end())
 							{
-								ita->second->SetGeometryHidden(itb->second.has_visible_geometry(nullptr));
+								ita->second->SetGeometryHidden(
+									itb->second.has_visible_geometry(nullptr));
 							}
 						}
 					}
@@ -233,19 +269,6 @@ namespace IED
 			}
 		}
 
-		void I3DIActorContext::Render(I3DICommonData& a_data)
-		{
-			if (!m_ranFirstUpdate)
-			{
-				return;
-			}
-
-			for (auto& e : m_weaponNodes)
-			{
-				e.second->RenderObject(a_data.scene);
-			}
-		}
-
 		void I3DIActorContext::UpdateCamera(NiCamera* a_camera)
 		{
 			if (auto& camera = m_camera)
@@ -262,6 +285,47 @@ namespace IED
 			{
 				camera->CameraProcessMouseInput(a_evn);
 			}
+		}
+
+		void I3DIActorContext::AdjustObjects()
+		{
+			/*for (auto& e : m_movPairs)
+			{
+				auto& sphereA = e.first->GetBoundingShape<I3DIBoundingSphere>()->GetBound();
+				auto& sphereB = e.second->GetBoundingShape<I3DIBoundingSphere>()->GetBound();
+
+				const auto centerA = XMLoadFloat3(std::addressof(sphereA.Center));
+				const auto radiusA = XMVectorReplicatePtr(std::addressof(sphereA.Radius));
+
+				const auto centerB = XMLoadFloat3(std::addressof(sphereB.Center));
+				const auto radiusB = XMVectorReplicatePtr(std::addressof(sphereB.Radius));
+
+				const auto diff = centerB - centerA;
+				const auto len  = XMVector3Length(diff);
+
+				const auto radSum = radiusA + radiusB;
+
+				if (XMVector3Greater(len, radSum))
+				{
+					continue;
+				}
+
+				const auto penDist = len - radSum;
+
+				const auto normal =
+					XMVector3Greater(len, DirectX::g_XMEpsilon) ?
+						diff / len :
+                        DirectX::g_XMIdentityR0;
+
+				_DMESSAGE(
+					"%s <-> %s | d: %f | n: %f %f %f",
+					e.first->GetNodeName().c_str(),
+					e.second->GetNodeName().c_str(),
+					penDist.m128_f32[0],
+					normal.m128_f32[0],
+					normal.m128_f32[1],
+					normal.m128_f32[2]);
+			}*/
 		}
 	}
 }

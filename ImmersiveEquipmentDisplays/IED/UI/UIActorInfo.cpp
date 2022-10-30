@@ -775,8 +775,11 @@ namespace IED
 
 			ImGui::PushID("list");
 
-			for (auto& [i, e] : data.items)
+			for (auto& d : data.items.getvec())
 			{
+				auto  i = d->first;
+				auto& e = d->second;
+
 				char buffer[256];
 
 				if (e.IsEquipped())

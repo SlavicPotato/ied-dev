@@ -12,7 +12,7 @@ namespace IED
 		VertexPositionColorAV(VertexPositionColorAV&&) = default;
 		VertexPositionColorAV& operator=(VertexPositionColorAV&&) = default;
 
-		VertexPositionColorAV(
+		inline constexpr VertexPositionColorAV(
 			DirectX::XMVECTOR const& a_position,
 			DirectX::XMVECTOR const& a_color) noexcept :
 			position(a_position),

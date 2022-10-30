@@ -6,12 +6,14 @@
 
 #include "IED/UI/Controls/UICollapsibles.h"
 
-#include "IED/UI/Window/UIWindow.h"
 #include "IED/UI/UIContext.h"
+#include "IED/UI/Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
 
 #include "UITips.h"
+
+#include "Drivers/UI/Tasks.h"
 
 namespace IED
 {
@@ -31,7 +33,9 @@ namespace IED
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIStats;
 
-			UIStats(Controller& a_controller);
+			UIStats(
+				Tasks::UIRenderTaskBase& a_owner,
+				Controller&              a_controller);
 
 			void Draw() override;
 
@@ -66,7 +70,8 @@ namespace IED
 
 			void DrawActorTable();
 
-			Controller& m_controller;
+			Tasks::UIRenderTaskBase& m_owner;
+			Controller&              m_controller;
 		};
 
 	}

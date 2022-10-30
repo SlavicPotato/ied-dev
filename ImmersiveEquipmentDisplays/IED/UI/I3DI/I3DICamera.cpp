@@ -12,11 +12,11 @@ namespace IED
 		using namespace VectorMath;
 
 		I3DICamera::TransformData::TransformData(NiCamera* a_camera) :
-			qb(XMQuaternionRotationMatrix(NiTransformGetRotationMatrix(a_camera->m_localTransform))),
 			mb(NiTransformGetRotationMatrix(a_camera->m_localTransform)),
 			t(NiTransformGetPosition(a_camera->m_worldTransform)),
 			s(XMVectorReplicate(a_camera->m_worldTransform.scale))
 		{
+			qb = XMQuaternionRotationMatrix(mb);
 			qs = qt = qb;
 		}
 

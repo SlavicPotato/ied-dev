@@ -8,7 +8,6 @@
 #include "Common/VectorMath.h"
 
 #include "IED/Controller/ActorObjectHolder.h"
-#include "IED/Controller/ObjectManagerData.h"
 
 namespace IED
 {
@@ -18,13 +17,9 @@ namespace IED
 
 		I3DIActorObject::I3DIActorObject(
 			Game::FormID a_actor) :
+			I3DIBoundObject(BoundingShape::kOrientedBox),
 			m_actor(a_actor)
 		{
-		}
-
-		const D3DBoundingOrientedBox* I3DIActorObject::GetBoundingBox() const
-		{
-			return std::addressof(m_bound);
 		}
 
 		void I3DIActorObject::DrawObjectExtra(I3DICommonData& a_data)
@@ -39,13 +34,15 @@ namespace IED
 				return;
 			}
 
-			m_bound.DrawBox(a_data.batchDepth, XMVectorReplicate(0.5f));
+			DrawBoundingShape(a_data.batchDepth, XMVectorReplicate(0.5f));
 
 			XMVECTOR origin;
 
-			const auto pos = m_bound.GetPopupAnchorPoint(
+			const auto& bound = GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound();
+
+			const auto pos = bound.GetPopupAnchorPoint(
 				a_data.scene,
-				DirectX::g_XMIdentityR2.v, // up
+				g_XMIdentityR2.v,  // up
 				15.0f,
 				origin);
 
@@ -78,7 +75,11 @@ namespace IED
 				return false;
 			}
 
-			return m_bound.Intersects(a_ray.origin, a_ray.dir, a_dist);
+			return Intersects(a_ray.origin, a_ray.dir, a_dist);
+		}
+
+		void I3DIActorObject::UpdateBound()
+		{
 		}
 
 		void I3DIActorObject::Update(
@@ -93,16 +94,20 @@ namespace IED
 			const auto min = refr->GetBoundMin().GetMM();
 			const auto max = refr->GetBoundMax().GetMM();
 
-			const auto center = (min + max) * DirectX::g_XMOneHalf.v;
-			const auto extent = (max - min) * DirectX::g_XMOneHalf.v;
+			const auto center = (min + max) * g_XMOneHalf.v;
+			const auto extent = (max - min) * g_XMOneHalf.v;
 
 			XMFLOAT3 m, n;
 
 			XMStoreFloat3(std::addressof(m), center);
 			XMStoreFloat3(std::addressof(n), extent);
 
-			BoundingOrientedBox tmp(m, n, DirectX::SimpleMath::Quaternion::Identity);
-			tmp.Transform(m_bound, VectorMath::NiTransformToMatrix4x4(a_holder.GetNPCRoot()->m_worldTransform));
+			BoundingOrientedBox tmp(m, n, SimpleMath::Quaternion::Identity);
+
+			tmp.Transform(
+				GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound(),
+				VectorMath::NiTransformToMatrix4x4(a_holder.GetNPCRoot()->m_worldTransform));
 		}
+
 	}
 }

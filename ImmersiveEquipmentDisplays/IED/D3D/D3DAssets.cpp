@@ -160,6 +160,19 @@ namespace IED
 		return result;
 	}
 
+	D3DBoundingSphere ModelData::CreateBoundingSphere() const
+	{
+		D3DBoundingSphere result;
+
+		D3DBoundingSphere::CreateFromPoints(
+			result,
+			vertices.size(),
+			std::addressof(vertices.data()->position),
+			sizeof(decltype(vertices)::value_type));
+
+		return result;
+	}
+
 	void D3DShaderDataIO::Load(
 		const char*          a_path,
 		D3DShaderDataHolder& a_out) noexcept(false)

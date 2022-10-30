@@ -28,6 +28,8 @@ namespace IED
 				std::shared_ptr<I3DIObject> object;
 			};
 
+			I3DIObjectController();
+
 			[[nodiscard]] inline constexpr auto& GetData() const noexcept
 			{
 				return m_data;
@@ -48,8 +50,15 @@ namespace IED
 			//	return m_data.emplace_back(std::make_shared<T>(std::forward<Args>(a_args)...)).object;
 			//}
 
-			void Run(I3DICommonData& a_data);
+			using run_func_t = std::function<void()>;
+
+			void Run(I3DICommonData& a_data, run_func_t a_func);
 			void DrawObjects(I3DICommonData& a_data);
+
+			[[nodiscard]] inline constexpr auto GetLastRunTime() const noexcept
+			{
+				return m_lastRunTime;
+			}
 
 		protected:
 			std::shared_ptr<I3DIObject> GetHovered(
@@ -57,16 +66,17 @@ namespace IED
 
 			std::shared_ptr<I3DIObject> m_hovered;
 			std::shared_ptr<I3DIObject> m_selected;
-
 			std::shared_ptr<I3DIObject> m_dragObject;
-			ImVec2                      m_lastClickPos{ -FLT_MAX, -FLT_MAX };
 			DirectX::XMVECTOR           m_dragStartDist{ DirectX::g_XMZero.v };
+			DirectX::XMVECTOR           m_dragObjectPositionOffset{ DirectX::g_XMZero.v };
 			stl::vector<Entry>          m_data;
 
 			using draw_queue_container_type = stl::vector<std::pair<float, I3DIModelObject*>>;
 
 			draw_queue_container_type m_drawQueueOpaque;
 			draw_queue_container_type m_drawQueueAlpha;
+
+			ImVec2 m_lastClickPos{ -FLT_MAX, -FLT_MAX };
 
 		private:
 			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object);
@@ -87,6 +97,9 @@ namespace IED
 			void UpdateDragObjectPosition(
 				I3DICommonData& a_data,
 				I3DIObject*     a_object);
+
+			PerfTimerInt m_runPT;
+			long long    m_lastRunTime{ 0 };
 		};
 
 	}

@@ -15,6 +15,11 @@ namespace IED
 	{
 		using namespace DirectX;
 
+		I3DIObjectController::I3DIObjectController() :
+			m_runPT(1000000)
+		{
+		}
+
 		void I3DIObjectController::RegisterObject(
 			const std::shared_ptr<I3DIObject>& a_object)
 		{
@@ -55,15 +60,18 @@ namespace IED
 			}
 		}
 
-		void I3DIObjectController::Run(I3DICommonData& a_data)
+		void I3DIObjectController::Run(
+			I3DICommonData& a_data,
+			run_func_t      a_func)
 		{
+			m_runPT.Begin();
+
 			if (auto dragObject = m_dragObject.get())
 			{
-				if (I3DI::IsMouseDown())
-				{
-					UpdateDragObjectPosition(a_data, dragObject);
-				}
+				UpdateDragObjectPosition(a_data, dragObject);
 			}
+
+			a_func();
 
 			auto hoveredObject = GetHovered(a_data);
 
@@ -86,6 +94,14 @@ namespace IED
 
 			if (m_dragObject)
 			{
+				if (hoveredObject)
+				{
+					if (auto dropTarget = hoveredObject->GetAsDropTarget())
+					{
+						dropTarget->OnDraggableMovingOver(*m_dragObject->GetAsDraggable());
+					}
+				}
+
 				if (!I3DI::IsMouseDown())
 				{
 					auto draggable = m_dragObject->GetAsDraggable();
@@ -99,6 +115,8 @@ namespace IED
 
 					draggable->OnDragEnd(result.first, result.second);
 					draggable->SetDragging(false);
+
+					_DMESSAGE("res %u %p", result.first, hoveredObject.get());
 
 					m_dragObject.reset();
 					m_lastClickPos = { -FLT_MAX, -FLT_MAX };
@@ -133,6 +151,8 @@ namespace IED
 					e.object->DrawObjectExtra(a_data);
 				}
 			}
+
+			m_runPT.End(m_lastRunTime);
 		}
 
 		void I3DIObjectController::DrawObjects(I3DICommonData& a_data)
@@ -345,7 +365,24 @@ namespace IED
 			{
 				//_DMESSAGE("drag start: %p", draggable);
 
-				m_dragStartDist = XMVectorReplicate(*ld);
+				const auto dist = XMVectorReplicate(*ld);
+
+				m_dragStartDist = dist;
+
+				if (auto model = a_object->GetAsModelObject())
+				{
+					const auto intersectionPt =
+						a_data.cursorRay.origin +
+						a_data.cursorRay.dir * dist;
+
+					m_dragObjectPositionOffset =
+						model->GetWorldPosition() -
+						intersectionPt;
+				}
+				else
+				{
+					m_dragObjectPositionOffset = g_XMZero.v;
+				}
 
 				SelectObject(a_data, a_object);
 
@@ -387,18 +424,48 @@ namespace IED
 			I3DICommonData& a_data,
 			I3DIObject*     a_object)
 		{
-			if (auto model = a_object->GetAsModelObject())
+			auto model = a_object->GetAsModelObject();
+			if (!model)
 			{
-				const auto pos = XMVectorAdd(
-					a_data.cursorRay.origin,
-					a_data.cursorRay.dir * m_dragStartDist);
-
-				const auto center = XMLoadFloat3(std::addressof(model->GetBound().Center));
-				const auto offset = model->GetWorldPosition() - center;
-
-				model->SetWorldPosition(pos + offset);
-				model->UpdateBound();
+				return;
 			}
+
+			if (auto parent = model->GetParentObject())
+			{
+				float dist;
+
+				if (parent->Intersects(
+						a_data.cursorRay.origin,
+						a_data.cursorRay.dir,
+						dist))
+				{
+					m_dragStartDist = XMVectorReplicate(dist);
+				}
+				else
+				{
+					const auto dir = XMVector3Normalize(
+						parent->GetBoundingShapeCenter() -
+						a_data.cursorRay.origin);
+
+					if (parent->Intersects(
+							a_data.cursorRay.origin,
+							dir,
+							dist))
+					{
+						m_dragStartDist = XMVectorReplicate(dist);
+					}
+				}
+			}
+
+			const auto pos =
+				a_data.cursorRay.origin +
+				a_data.cursorRay.dir * m_dragStartDist;
+
+			model->SetWorldPosition(pos + m_dragObjectPositionOffset);
+			model->UpdateBound();
+
+			a_object->GetAsDraggable()->OnDragPositionUpdate(a_data);
 		}
+
 	}
 }

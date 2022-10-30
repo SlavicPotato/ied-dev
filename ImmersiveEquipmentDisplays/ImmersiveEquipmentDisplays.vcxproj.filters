@@ -246,6 +246,9 @@
     <Filter Include="Source\IED\JSONParsers\Config\LastEquipped">
       <UniqueIdentifier>{636a6a54-0ebd-49e8-a7f2-c713d568d7a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\UI\I3DI\Bounding">
+      <UniqueIdentifier>{7d06d975-9a97-47ef-a34b-414b8b5e17b0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1649,6 +1652,21 @@
     <ClInclude Include="IED\UI\I3DI\I3DIRay.h">
       <Filter>Source\IED\UI\I3DI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\D3D\D3DBoundingSphere.h">
+      <Filter>Source\IED\D3D</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundObject.h">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingOrientedBox.h">
+      <Filter>Source\IED\UI\I3DI\Bounding</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingBase.h">
+      <Filter>Source\IED\UI\I3DI\Bounding</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIBoundingSphere.h">
+      <Filter>Source\IED\UI\I3DI\Bounding</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2616,6 +2634,18 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\D3D\D3DBoundingSphere.cpp">
+      <Filter>Source\IED\D3D</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundingOrientedBox.cpp">
+      <Filter>Source\IED\UI\I3DI\Bounding</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundObject.cpp">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIBoundingSphere.cpp">
+      <Filter>Source\IED\UI\I3DI\Bounding</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

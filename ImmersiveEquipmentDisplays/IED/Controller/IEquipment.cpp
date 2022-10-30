@@ -46,48 +46,44 @@ namespace IED
 			return {};
 		}
 
-		bool checkCannotWear = a_config.slotFlags.test(Data::SlotFlags::kCheckCannotWear);
+		bool checkCannotWear =
+			a_config.slotFlags.test(Data::SlotFlags::kCheckCannotWear);
 
-		if (!a_config.preferredItems.empty())
+		for (auto& e : a_config.preferredItems)
 		{
-			for (auto& e : a_config.preferredItems)
-			{
-				auto it = std::find_if(
-					a_candidates.begin(),
-					a_candidates.end(),
-					[&](const auto& a_item) {
-						return (e == a_item.item->form->formID);
-					});
+			auto it = std::find_if(
+				a_candidates.begin(),
+				a_candidates.end(),
+				[&](const auto& a_item) [[msvc::forceinline]] {
+					return e == a_item.item->form->formID;
+				});
 
-				if (it != a_candidates.end())
+			if (it != a_candidates.end())
+			{
+				if (!checkCannotWear ||
+				    !it->item->cannotWear)
 				{
-					if (!checkCannotWear ||
-					    !it->item->cannotWear)
-					{
-						return { it };
-					}
+					return { it };
 				}
 			}
 		}
 
-		if (a_lastEquipped)
+		if (a_lastEquipped &&
+		    a_config.itemFilter.test(a_lastEquipped))
 		{
-			if (a_config.itemFilter.test(a_lastEquipped))
-			{
-				auto it = std::find_if(
-					a_candidates.begin(),
-					a_candidates.end(),
-					[&](const auto& a_item) {
-						return (a_item.item->form->formID == a_lastEquipped);
-					});
+			auto it = std::find_if(
+				a_candidates.begin(),
+				a_candidates.end(),
+				[&](const auto& a_item) [[msvc::forceinline]] {
+					return a_item.item->form->formID == a_lastEquipped;
+				});
 
-				if (it != a_candidates.end())
+			if (it != a_candidates.end())
+			{
+				if (!checkCannotWear ||
+				    !it->item->cannotWear)
 				{
-					if (!checkCannotWear ||
-					    !it->item->cannotWear)
-					{
-						return { it };
-					}
+					return { it };
 				}
 			}
 		}
@@ -95,13 +91,15 @@ namespace IED
 		auto it = std::find_if(
 			a_candidates.begin(),
 			a_candidates.end(),
-			[&](const auto& a_item) {
-				if (checkCannotWear && a_item.item->cannotWear)
+			[&](const auto& a_item) [[msvc::forceinline]] {
+				auto item = a_item.item;
+
+				if (checkCannotWear && item->cannotWear)
 				{
 					return false;
 				}
 
-				return a_config.itemFilter.test(a_item.item->form->formID);
+				return a_config.itemFilter.test(item->form->formID);
 			});
 
 		if (it != a_candidates.end())

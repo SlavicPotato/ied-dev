@@ -11,15 +11,20 @@
 #include "UIStatsStrings.h"
 
 #include "UIFormInfoCache.h"
+#include "UIMain.h"
+
+#include "I3DI/I3DIMain.h"
 
 namespace IED
 {
 	namespace UI
 	{
 		UIStats::UIStats(
-			Controller& a_controller) :
+			Tasks::UIRenderTaskBase& a_owner,
+			Controller&              a_controller) :
 			UILocalizationInterface(a_controller),
 			UITipsInterface(a_controller),
+			m_owner(a_owner),
 			m_controller(a_controller)
 		{
 		}
@@ -34,6 +39,12 @@ namespace IED
 						WINDOW_ID),
 					GetOpenState()))
 			{
+				auto task = m_owner.As<IUIRenderTaskMain>();
+				assert(task);
+
+				auto& i3di           = task->GetContext().GetChild<I3DIMain>();
+				auto& i3diCommonData = i3di.GetCommonData();
+
 				ImGui::Columns(3, nullptr, false);
 
 				ImGui::TextUnformatted("AP:");
@@ -53,6 +64,12 @@ namespace IED
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{
 					ImGui::TextUnformatted("Cache:");
+				}
+
+				if (i3diCommonData)
+				{
+					ImGui::TextUnformatted("I3DI (P):");
+					ImGui::TextUnformatted("I3DI (R):");
 				}
 
 				ImGui::NextColumn();
@@ -85,6 +102,12 @@ namespace IED
 						stl::underlying(odbLevel));
 
 					DrawTip(UITip::CacheInfo);
+				}
+
+				if (i3diCommonData)
+				{
+					ImGui::Text("%lld \xC2\xB5s", i3di.GetLastPrepTime());
+					ImGui::Text("%lld \xC2\xB5s", i3diCommonData->objectController.GetLastRunTime());
 				}
 
 				ImGui::Columns();

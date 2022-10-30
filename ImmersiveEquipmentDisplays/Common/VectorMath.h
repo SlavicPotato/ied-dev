@@ -4,6 +4,13 @@ namespace VectorMath
 {
 	extern const DirectX::XMMATRIX g_identity;
 
+	/*inline extern const __declspec(selectany) DirectX::XMVECTOR g_negFltMax{
+		-FLT_MAX,
+		-FLT_MAX,
+		-FLT_MAX,
+		-FLT_MAX,
+	};*/
+
 	DirectX::XMMATRIX XM_CALLCONV NiTransformToMatrix4x4(
 		const NiTransform& a_in);
 

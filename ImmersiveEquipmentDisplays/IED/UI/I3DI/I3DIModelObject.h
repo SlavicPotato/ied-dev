@@ -1,6 +1,6 @@
 #pragma once
 
-#include "I3DIObject.h"
+#include "I3DIBoundObject.h"
 
 #include "IED/D3D/D3DObject.h"
 
@@ -14,7 +14,7 @@ namespace IED
 		struct I3DICommonData;
 
 		class I3DIModelObject :
-			public I3DIObject,
+			public I3DIBoundObject,
 			public D3DObject
 		{
 			friend class I3DIObjectController;
@@ -23,6 +23,7 @@ namespace IED
 			I3DIModelObject(
 				ID3D11Device*                        a_device,
 				ID3D11DeviceContext*                 a_context,
+				BoundingShape                        a_boundingShape,
 				const std::shared_ptr<D3DModelData>& a_data);
 
 			virtual ~I3DIModelObject() noexcept override = default;
@@ -32,7 +33,7 @@ namespace IED
 				return this;
 			};
 
-			virtual const D3DBoundingOrientedBox* GetBoundingBox() const override;
+			virtual void UpdateBound() override;
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 			virtual void RenderObject(D3DCommon& a_data) override;
@@ -50,7 +51,7 @@ namespace IED
 			virtual void                 SetLastDistance(const std::optional<float>& a_distance) override;
 			virtual std::optional<float> GetLastDistance() const override;
 
-			virtual I3DIObject*                   GetParentObject() const;
+			virtual I3DIBoundObject* GetParentObject() const;
 
 		protected:
 			virtual bool WantDrawTooltip();

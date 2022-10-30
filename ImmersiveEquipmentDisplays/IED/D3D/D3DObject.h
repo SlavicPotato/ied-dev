@@ -33,31 +33,15 @@ namespace IED
 			ID3D11Device*                        a_device,
 			const std::shared_ptr<D3DModelData>& a_data);
 
-		void UpdateBound();
-
-		[[nodiscard]] bool XM_CALLCONV Intersects(
-			DirectX::FXMVECTOR a_origin,
-			DirectX::FXMVECTOR a_direction,
-			float&             a_distance) const;
+		virtual ~D3DObject() noexcept override = default;
 
 		[[nodiscard]] float XM_CALLCONV GetDistance(
-			DirectX::FXMVECTOR a_origin) const;
+			DirectX::XMVECTOR a_origin) const;
 
 		[[nodiscard]] float XM_CALLCONV GetDistanceSq(
-			DirectX::FXMVECTOR a_origin) const;
-
-		[[nodiscard]] float XM_CALLCONV GetCenterDistance(
-			DirectX::FXMVECTOR a_origin) const;
-
-		[[nodiscard]] float XM_CALLCONV GetCenterDistanceSq(
-			DirectX::FXMVECTOR a_origin) const;
+			DirectX::XMVECTOR a_origin) const;
 
 		void Draw(D3DCommon& a_scene);
-
-		[[nodiscard]] inline constexpr auto& GetBound() const noexcept
-		{
-			return m_bound;
-		}
 
 		[[nodiscard]] inline constexpr auto& GetModelData() const noexcept
 		{
@@ -86,8 +70,6 @@ namespace IED
 		}
 
 	private:
-		D3DBoundingOrientedBox m_bound;
-
 		std::shared_ptr<D3DModelData> m_data;
 
 		union

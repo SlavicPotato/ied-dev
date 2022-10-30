@@ -63,11 +63,13 @@ namespace IED
 				return m_nodeInfo.desc;
 			}
 
-			virtual I3DIObject* GetParentObject() const;
+			virtual I3DIBoundObject* GetParentObject() const override;
 
 		private:
 			virtual bool OnDragBegin() override;
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) override;
+			virtual void OnDragPositionUpdate(I3DICommonData& a_data) override;
+
 			virtual void DrawTooltip(I3DICommonData& a_data) override;
 
 			virtual bool WantDrawTooltip();

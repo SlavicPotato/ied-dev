@@ -140,7 +140,7 @@ namespace IED
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kLight);
 	}
 
-	void XM_CALLCONV D3DEffect::SetAmbientLightColor(FXMVECTOR a_color)
+	void XM_CALLCONV D3DEffect::SetAmbientLightColor(XMVECTOR a_color)
 	{
 		m_ambientLightColor = a_color;
 		m_dirtyFlags.set(D3DEffectTestDirtyFlags::kMaterial);

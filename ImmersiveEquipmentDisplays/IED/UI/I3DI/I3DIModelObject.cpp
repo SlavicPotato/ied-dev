@@ -2,9 +2,10 @@
 
 #include "I3DIModelObject.h"
 
-#include "I3DICommonData.h"
-
 #include "I3DIActorObject.h"
+#include "I3DIBoundingOrientedBox.h"
+#include "I3DIBoundingSphere.h"
+#include "I3DICommonData.h"
 
 namespace IED
 {
@@ -15,7 +16,9 @@ namespace IED
 		I3DIModelObject::I3DIModelObject(
 			ID3D11Device*                        a_device,
 			ID3D11DeviceContext*                 a_context,
+			BoundingShape                        a_boundingShape,
 			const std::shared_ptr<D3DModelData>& a_data) :
+			I3DIBoundObject(a_boundingShape),
 			D3DObject(a_device, a_data)
 		{
 		}
@@ -70,7 +73,7 @@ namespace IED
 			return m_lastDistance;
 		}
 
-		I3DIObject* I3DIModelObject::GetParentObject() const
+		I3DIBoundObject* I3DIModelObject::GetParentObject() const
 		{
 			return nullptr;
 		}
@@ -90,16 +93,30 @@ namespace IED
 			return false;
 		}
 
-		const D3DBoundingOrientedBox* I3DIModelObject::GetBoundingBox() const
+		void I3DIModelObject::UpdateBound()
 		{
-			return std::addressof(GetBound());
+			switch (GetBoundingShapeType())
+			{
+			case BoundingShape::kOrientedBox:
+				GetModelData()->GetBoundingOrientedBox().Transform(
+					GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound(),
+					m_world);
+				break;
+			case BoundingShape::kSphere:
+				GetModelData()->GetBoundingSphere().Transform(
+					GetBoundingShape<I3DIBoundingSphere>()->GetBound(),
+					m_world);
+				break;
+			default:
+				throw std::exception(__FUNCTION__ ": bad bounding shape type");
+			}
 		}
 
 		void I3DIModelObject::DrawObjectExtra(I3DICommonData& a_data)
 		{
 			if (WantDrawBound())
 			{
-				GetBound().DrawBox(a_data.batchDepth, XMVectorReplicate(0.5f));
+				DrawBoundingShape(a_data.batchDepth, XMVectorReplicate(0.5f));
 			}
 
 			char b[64];
@@ -108,20 +125,22 @@ namespace IED
 			{
 				if (auto parent = GetParentObject())
 				{
-					if (auto bound = parent->GetBoundingBox())
+					if (auto parentBound = parent->GetBoundingShape<I3DIBoundingOrientedBox>())
 					{
 						constexpr XMVECTOR offset = { 30.0f, 30.0f, 30.0f, 30.0f };
 						constexpr XMVECTOR maxLen = { 50.0f, 50.0f, 50.0f, 50.0f };
 						constexpr XMVECTOR zScale = { 0.2f, 0.2f, 0.2f, 0.2f };
 
-						const auto origin      = XMLoadFloat3(std::addressof(GetBound().Center));
-						const auto center      = XMLoadFloat3(std::addressof(bound->Center));
-						const auto extents     = XMLoadFloat3(std::addressof(bound->Extents));
-						const auto orientation = XMLoadFloat4(std::addressof(bound->Orientation));
+						const auto& pbox = parentBound->GetBound();
 
-						const auto f = bound->GetPoint(DirectX::g_XMIdentityR1.v, center, extents, orientation);
-						const auto r = bound->GetPoint(DirectX::g_XMIdentityR0.v, center, extents, orientation);
-						const auto u = bound->GetPoint(DirectX::g_XMIdentityR2.v, center, extents, orientation);
+						const auto origin      = GetBoundingShapeCenter();
+						const auto center      = XMLoadFloat3(std::addressof(pbox.Center));
+						const auto extents     = XMLoadFloat3(std::addressof(pbox.Extents));
+						const auto orientation = XMLoadFloat4(std::addressof(pbox.Orientation));
+
+						const auto f = D3DBoundingOrientedBox::GetPoint(DirectX::g_XMIdentityR1.v, center, extents, orientation);
+						const auto r = D3DBoundingOrientedBox::GetPoint(DirectX::g_XMIdentityR0.v, center, extents, orientation);
+						const auto u = D3DBoundingOrientedBox::GetPoint(DirectX::g_XMIdentityR2.v, center, extents, orientation);
 
 						const auto nf = XMVector3Normalize(f - center);
 						const auto nr = XMVector3Normalize(r - center);

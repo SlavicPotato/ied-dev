@@ -24,7 +24,7 @@ namespace IED
 	protected:
 		struct selectedItem_t
 		{
-			stl::optional<SlotItemCandidates::storage_type::iterator> item;
+			std::optional<SlotItemCandidates::storage_type::iterator> item;
 
 			void consume(SlotItemCandidates::storage_type& a_candidates) const;
 
@@ -35,7 +35,7 @@ namespace IED
 
 			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 			{
-				return item.has();
+				return item.has_value();
 			}
 		};
 

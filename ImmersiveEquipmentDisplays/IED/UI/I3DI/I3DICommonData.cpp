@@ -11,10 +11,9 @@ namespace IED
 		void I3DICommonData::UpdateMouseRay()
 		{
 			auto& io       = ImGui::GetIO();
-			auto& viewPort = scene.GetViewport();
 
 			VectorMath::RayCastScreenPt(
-				viewPort,
+				scene.GetViewport(),
 				scene.GetViewMatrix(),
 				scene.GetProjectionMatrix(),
 				io.MousePos.x,

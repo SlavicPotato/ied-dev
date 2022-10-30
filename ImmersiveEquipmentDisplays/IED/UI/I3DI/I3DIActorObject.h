@@ -1,8 +1,8 @@
 #pragma once
 
-#include "I3DIObject.h"
+#include "I3DIBoundObject.h"
 
-#include "IED/D3D/D3DBoundingOrientedBox.h"
+#include "I3DIBoundingOrientedBox.h"
 
 namespace IED
 {
@@ -13,7 +13,7 @@ namespace IED
 		struct I3DICommonData;
 
 		class I3DIActorObject :
-			public I3DIObject
+			public I3DIBoundObject
 		{
 		public:
 			I3DIActorObject(Game::FormID a_actor);
@@ -25,8 +25,6 @@ namespace IED
 				return this;
 			};
 
-			virtual const D3DBoundingOrientedBox* GetBoundingBox() const override;
-
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 
 			virtual void OnClick(I3DICommonData& a_data) override;
@@ -36,11 +34,13 @@ namespace IED
 				const I3DIRay&  a_ray,
 				float&          a_dist) override;
 
+			virtual void UpdateBound() override;
+
 			void Update(const ActorObjectHolder& a_holder);
 
 			[[nodiscard]] inline constexpr auto& GetActorBound() const noexcept
 			{
-				return m_bound;
+				return GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound();
 			}
 
 			inline constexpr void SetLost() noexcept
@@ -59,9 +59,8 @@ namespace IED
 			}
 
 		private:
-			Game::FormID m_actor;
 
-			D3DBoundingOrientedBox m_bound;
+			Game::FormID m_actor;
 
 			bool m_lost{ false };
 		};

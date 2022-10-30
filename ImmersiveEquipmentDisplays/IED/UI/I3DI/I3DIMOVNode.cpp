@@ -27,6 +27,7 @@ namespace IED
 			I3DIModelObject(
 				a_device,
 				a_context,
+				BoundingShape::kSphere,
 				a_data),
 			I3DIDropTarget(*this),
 			m_name(a_name),
@@ -35,16 +36,10 @@ namespace IED
 			m_cmeNodeInfo(a_cmeNodeInfo),
 			m_actorContext(a_actorContext)
 		{
+			SetAlpha(0.67f);
 		}
 
-		void I3DIMOVNode::SetAdjustedWorldMatrix(const NiTransform& a_worldTransform)
-		{
-			auto world = VectorMath::NiTransformToMatrix4x4(a_worldTransform);
-
-			UpdateWorldMatrix(m_weaponNode.GetLocalMatrix() * world);
-		}
-
-		I3DIObject* I3DIMOVNode::GetParentObject() const
+		I3DIBoundObject* I3DIMOVNode::GetParentObject() const
 		{
 			return m_actorContext.GetActorObject().get();
 		}
@@ -69,7 +64,7 @@ namespace IED
 			}
 		}
 
-		bool I3DIMOVNode::AcceptsDraggable(I3DIDraggable& a_item)
+		bool I3DIMOVNode::AcceptsDraggable(I3DIDraggable& a_item) const
 		{
 			if (m_weaponNodeAttached)
 			{
@@ -122,6 +117,19 @@ namespace IED
 			return false;
 		}
 
+		void I3DIMOVNode::OnDraggableMovingOver(I3DIDraggable& a_item)
+		{
+			auto& dragObject = a_item.GetDraggableObject();
+
+			if (auto weapon = dragObject.GetAsWeaponNode())
+			{
+				const auto local = weapon->GetLocalMatrix();
+
+				weapon->UpdateWorldMatrix(local * GetOriginalWorldMatrix());
+				weapon->UpdateBound();
+			}
+		}
+
 		bool I3DIMOVNode::ShouldProcess(I3DICommonData& a_data)
 		{
 			if (auto& dragObject = a_data.objectController.GetDragObject())
@@ -130,6 +138,19 @@ namespace IED
 			}
 
 			return false;
+		}
+
+		void I3DIMOVNode::OnMouseMoveOver(I3DICommonData& a_data)
+		{
+			SetAlpha(1.0f);
+		}
+
+		void I3DIMOVNode::OnMouseMoveOut(I3DICommonData& a_data)
+		{
+			if (!m_objectFlags.test_any(I3DIObjectFlags::kHSMask))
+			{
+				SetAlpha(0.67f);
+			}
 		}
 
 		bool I3DIMOVNode::WantDrawTooltip()
