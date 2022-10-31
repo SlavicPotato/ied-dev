@@ -19,7 +19,10 @@ namespace IED
 		}
 		else
 		{
-			if constexpr (std::is_convertible_v<T*, TESModelTextureSwap*>)
+			if constexpr (
+				std::is_convertible_v<
+					T*,
+					TESModelTextureSwap*>)
 			{
 				a_out = {
 					a_type,
@@ -60,7 +63,9 @@ namespace IED
 	static std::optional<ModelData> GetModelData(
 		T*   a_form,
 		bool a_female)  //
-		requires(std::is_base_of_v<TESObjectARMO, T> || std::is_base_of_v<TESObjectARMA, T>)
+		requires(
+			std::is_base_of_v<TESObjectARMO, T> ||
+			std::is_base_of_v<TESObjectARMA, T>)
 	{
 		auto texSwap = std::addressof(a_form->GetBipedModelTextureSwap(a_female));
 		auto path    = texSwap->GetModelName();

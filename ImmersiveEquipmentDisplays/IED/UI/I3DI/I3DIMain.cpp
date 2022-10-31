@@ -54,7 +54,7 @@ namespace IED
 
 			if (auto& queued = m_data->queuedActor)
 			{
-				auto actor = *queued;
+				const auto actor = *queued;
 				queued.reset();
 
 				SwitchToActorContext(actor);
@@ -63,12 +63,8 @@ namespace IED
 			if (auto& context = m_actorContext)
 			{
 				if (context->LastUpdateFailed())
-				//m_actorContext->GetActorObject()->IsActorLost())
 				{
-					SetNodeConditionForced(context->GetActorFormID(), false);
-
-					context->UnregisterObjects(m_data->objectController);
-					context.reset();
+					ReleaseCurrentActorContext();
 				}
 				else
 				{
@@ -76,14 +72,7 @@ namespace IED
 				}
 			}
 
-			m_data->objectController.Run(
-				*m_data,
-				[this] {
-					if (auto& context = m_actorContext)
-					{
-						context->AdjustObjects();
-					}
-				});
+			m_data->objectController.Run(*m_data);
 
 			ImGui::PopID();
 		}
@@ -99,11 +88,6 @@ namespace IED
 
 		void I3DIMain::Render()
 		{
-			if (!IsContextOpen())
-			{
-				return;
-			}
-
 			if (!m_data)
 			{
 				return;
@@ -151,17 +135,18 @@ namespace IED
 				e.second.SetNodeConditionForced(false);
 			}
 
-			m_actorContext.reset();
+			if (m_actorContext)
+			{
+				m_heldActorOnClose.emplace(m_actorContext->GetActorFormID());
+
+				ReleaseCurrentActorContext();
+			}
+
 			m_data.reset();
 		}
 
 		void I3DIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)
 		{
-			if (!IsContextOpen())
-			{
-				return;
-			}
-
 			if (!m_data)
 			{
 				return;
@@ -216,11 +201,6 @@ namespace IED
 
 		void I3DIMain::PrepareGameDataImpl()
 		{
-			if (!IsContextOpen())
-			{
-				return;
-			}
-
 			if (!m_data)
 			{
 				return;
@@ -258,30 +238,42 @@ namespace IED
 			{
 				context->Update(*m_data);
 			}
+
+			if (auto& actor = m_heldActorOnClose)
+			{
+				if (!m_data->queuedActor)
+				{
+					m_data->queuedActor.emplace(*actor);
+				}
+
+				actor.reset();
+			}
 		}
 
-		void I3DIMain::SwitchToActorContext(Game::FormID a_actor)
+		bool I3DIMain::SwitchToActorContext(Game::FormID a_actor)
 		{
-			if (m_actorContext)
-			{
-				SetNodeConditionForced(m_actorContext->GetActorFormID(), false);
-
-				m_actorContext->UnregisterObjects(m_data->objectController);
-				m_actorContext.reset();
-			}
-
 			auto& data = m_controller.GetObjects();
 
 			auto ith = data.find(a_actor);
 			if (ith == data.end())
 			{
-				return;
+				return false;
 			}
 
 			auto ita = m_data->actors.find(a_actor);
 			if (ita == m_data->actors.end())
 			{
-				return;
+				return false;
+			}
+
+			if (m_actorContext)
+			{
+				if (m_actorContext->GetActorFormID() == a_actor)
+				{
+					return true;
+				}
+
+				ReleaseCurrentActorContext();
 			}
 
 			try
@@ -304,7 +296,7 @@ namespace IED
 					__FUNCTION__,
 					e.what());
 
-				return;
+				return false;
 			}
 			catch (...)
 			{
@@ -316,13 +308,27 @@ namespace IED
 					"%s",
 					__FUNCTION__);
 
-				return;
+				return false;
 			}
 
 			m_actorContext->RegisterObjects(m_data->objectController);
 
 			ith->second.RequestTransformUpdate();
 			m_controller.QueueSendAnimationEventToActor(a_actor, "idlestaticposeastart");
+
+			return true;
+		}
+
+		void I3DIMain::ReleaseCurrentActorContext()
+		{
+			SetNodeConditionForced(m_actorContext->GetActorFormID(), false);
+
+			m_controller.QueueSendAnimationEventToActor(
+				m_actorContext->GetActorFormID(),
+				"IdleForceDefaultState");
+
+			m_actorContext->UnregisterObjects(m_data->objectController);
+			m_actorContext.reset();
 		}
 
 		void I3DIMain::UpdateActorObjects()
@@ -335,6 +341,11 @@ namespace IED
 
 				if (!e.IsCellAttached() || !actor->formID)
 				{
+					if (m_actorContext && m_actorContext->GetActorFormID() == i)
+					{
+						ReleaseCurrentActorContext();
+					}
+
 					auto it = actors.find(i);
 					if (it != actors.end())
 					{
@@ -372,6 +383,11 @@ namespace IED
 				{
 					//_DMESSAGE("lost (2): %.8X", it->first);
 
+					if (m_actorContext && m_actorContext->GetActorFormID() == it->first)
+					{
+						ReleaseCurrentActorContext();
+					}
+
 					m_data->objectController.UnregisterObject(it->second);
 
 					it = actors.erase(it);
@@ -407,7 +423,7 @@ namespace IED
 			_DMESSAGE("<< %s\n\n", a_id);
 		}
 
-		NiCamera* I3DIMain::GetCamera()
+		NiPointer<NiCamera> I3DIMain::GetCamera()
 		{
 			auto pc = PlayerCamera::GetSingleton();
 			if (!pc)
@@ -415,13 +431,7 @@ namespace IED
 				return nullptr;
 			}
 
-			auto camera = pc->GetNiCamera();
-			if (!camera)
-			{
-				return nullptr;
-			}
-
-			return camera;
+			return pc->GetNiCamera();
 		}
 
 		void I3DIMain::SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const

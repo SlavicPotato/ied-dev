@@ -54,7 +54,7 @@ namespace IED
 			DataVersion1 = 1,
 		};
 
-		BipedSlotDataPtr GetOrCreate(Game::FormID a_actor, std::uint64_t a_cc);
+		const BipedSlotDataPtr& GetOrCreate(Game::FormID a_actor, std::uint64_t a_cc);
 
 		[[nodiscard]] inline auto size() const noexcept
 		{
@@ -70,7 +70,7 @@ namespace IED
 		{
 			return m_maxFormsPerSlot;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& data() const noexcept
 		{
 			return m_data;
@@ -103,10 +103,10 @@ namespace IED
 	private:
 		BipedCacheEntry m_playerEntry;
 		data_type       m_data;
-		
-		std::uint32_t   m_maxSizeUpper{ DEFAULT_SIZE_THRESHOLD_UPPER };
-		std::uint32_t   m_sizeTarget{ DEFAULT_SIZE_TARGET };
-		std::uint32_t   m_maxFormsPerSlot{ BipedSlotEntry::DEFAULT_MAX_FORMS };
+
+		std::uint32_t m_maxSizeUpper{ DEFAULT_SIZE_THRESHOLD_UPPER };
+		std::uint32_t m_sizeTarget{ DEFAULT_SIZE_TARGET };
+		std::uint32_t m_maxFormsPerSlot{ BipedSlotCacheEntry::DEFAULT_MAX_FORMS };
 
 		template <class Archive>
 		void save(Archive& a_ar, const unsigned int a_version) const

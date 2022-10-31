@@ -130,7 +130,10 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				e->PrepareGameData();
+				if (e->IsContextOpen())
+				{
+					e->PrepareGameData();
+				}
 			}
 		}
 
@@ -138,7 +141,10 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				e->Render();
+				if (e->IsContextOpen())
+				{
+					e->Render();
+				}
 			}
 		}
 
@@ -642,13 +648,24 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				e->OnMouseMove(a_evn);
+				if (e->IsContextOpen())
+				{
+					e->OnMouseMove(a_evn);
+				}
 			}
 		}
 
 		void UIMain::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 		{
 			ILRHReceive(a_evn);
+
+			for (auto& e : m_childWindows)
+			{
+				if (e->IsContextOpen())
+				{
+					e->OnKeyEvent(a_evn);
+				}
+			}
 		}
 
 	}

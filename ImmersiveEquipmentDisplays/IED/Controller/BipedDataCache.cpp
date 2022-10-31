@@ -5,7 +5,7 @@
 
 namespace IED
 {
-	BipedSlotDataPtr BipedDataCache::GetOrCreate(
+	const BipedSlotDataPtr& BipedDataCache::GetOrCreate(
 		Game::FormID  a_actor,
 		std::uint64_t a_cc)
 	{
@@ -82,7 +82,7 @@ namespace IED
 			return;
 		}
 
-		for (auto& f : a_entry.data->data)
+		for (auto& f : a_entry.data->biped)
 		{
 			std::erase_if(
 				f.forms,

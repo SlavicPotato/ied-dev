@@ -16,7 +16,7 @@ namespace IED
 
 	struct ObjectEntryCustom;
 	struct processParams_t;
-	struct BipedSlotEntry;
+	struct BipedSlotCacheEntry;
 	class IRNG;
 
 	class IEquipment
@@ -98,12 +98,12 @@ namespace IED
 		SKMP_FORCEINLINE auto SelectSlotEntryForm(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
-			const BipedSlotEntry&             a_slotEntry,
+			const BipedSlotCacheEntry&             a_slotEntry,
 			Tf                                a_validationFunc);
 
 		struct
 		{
-			stl::vector<const BipedSlotEntry*> le;
+			stl::vector<const BipedSlotCacheEntry*> le;
 			Data::configFormList_t             fl;
 		} m_temp;
 
@@ -118,7 +118,7 @@ namespace IED
 	{
 		auto& formData = a_params.collector.data.forms;
 
-		const auto& data = a_params.objects.m_lastEquipped->data;
+		const auto& data = a_params.objects.m_lastEquipped->biped;
 
 		if (a_config.flags.test(Data::LastEquippedFlags::kDisableIfSlotOccupied))
 		{
@@ -275,7 +275,7 @@ namespace IED
 	auto IEquipment::SelectSlotEntryForm(
 		processParams_t&                  a_params,
 		const Data::configLastEquipped_t& a_config,
-		const BipedSlotEntry&             a_slotEntry,
+		const BipedSlotCacheEntry&             a_slotEntry,
 		Tf                                a_validationFunc)
 	{
 		auto& formData = a_params.collector.data.forms;

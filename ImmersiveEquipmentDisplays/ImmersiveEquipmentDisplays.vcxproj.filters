@@ -2657,6 +2657,7 @@
     <None Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </None>
+    <None Include="mkgitinfo.py" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ImmersiveEquipmentDisplays.rc">

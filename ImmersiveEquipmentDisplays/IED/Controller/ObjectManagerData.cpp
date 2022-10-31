@@ -103,7 +103,7 @@ namespace IED
 		}
 	}
 
-	void ObjectManagerData::StorePlayerState(ActorObjectHolder& a_holder)
+	/*void ObjectManagerData::StorePlayerState(ActorObjectHolder& a_holder)
 	{
 		if (m_playerState)
 		{
@@ -132,7 +132,7 @@ namespace IED
 				m_storedActorStates.data.erase(it);
 			}
 		}
-	}
+	}*/
 
 	/*void AnimationGraphManagerHolderList::Update(const BSAnimationUpdateData& a_data) const
 	{

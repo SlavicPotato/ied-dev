@@ -8,10 +8,9 @@ namespace IED
 {
 	namespace Data
 	{
-		class ItemData
+		namespace ItemData
 		{
-		public:
-			inline static constexpr ObjectSlot GetObjectSlot(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -38,7 +37,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlotLeft(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -61,22 +60,22 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlotLeft(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectSlot::kTorch : ObjectSlot::kMax;
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlot(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlot::kShield : ObjectSlot::kMax;
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlot(TESAmmo* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(TESAmmo* a_form) noexcept
 			{
 				return ObjectSlot::kAmmo;
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlot(TESForm* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -89,7 +88,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot GetObjectSlotLeft(TESForm* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -104,22 +103,22 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectType GetItemType(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectType GetItemType(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectType::kShield : ObjectType::kMax;
 			}
 
-			inline static constexpr ObjectType GetItemType(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectType GetItemType(TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectType::kTorch : ObjectType::kMax;
 			}
 
-			inline static constexpr ObjectType GetItemType(TESAmmo* a_form) noexcept
+			inline constexpr ObjectType GetItemType(TESAmmo* a_form) noexcept
 			{
 				return ObjectType::kAmmo;
 			}
 
-			inline static constexpr ObjectType GetItemType(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectType GetItemType(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -146,7 +145,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectType GetItemType(TESForm* a_form) noexcept
+			inline constexpr ObjectType GetItemType(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -163,17 +162,17 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectTypeExtra::kShield : ObjectTypeExtra::kArmor;
 			}
 
-			inline static constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectTypeExtra::kTorch : ObjectTypeExtra::kNone;
 			}
 
-			inline static constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -200,7 +199,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectTypeExtra GetItemTypeExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -219,12 +218,12 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectARMO* a_form) noexcept
 			{
 				return !a_form->IsShield() ? ObjectSlotExtra::kArmor : ObjectSlotExtra::kNone;
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -251,12 +250,12 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectSlotExtra::kTorch : ObjectSlotExtra::kNone;
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -275,12 +274,12 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -299,7 +298,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -322,7 +321,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
@@ -339,7 +338,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot GetSlotFromType(ObjectType a_type) noexcept
+			inline constexpr ObjectSlot GetSlotFromType(ObjectType a_type) noexcept
 			{
 				switch (a_type)
 				{
@@ -372,7 +371,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetSlotFromTypeExtra(ObjectTypeExtra a_type) noexcept
+			inline constexpr ObjectSlotExtra GetSlotFromTypeExtra(ObjectTypeExtra a_type) noexcept
 			{
 				switch (a_type)
 				{
@@ -409,7 +408,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectTypeExtra GetTypeFromSlotExtra(ObjectSlotExtra a_slot) noexcept
+			inline constexpr ObjectTypeExtra GetTypeFromSlotExtra(ObjectSlotExtra a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -454,7 +453,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot GetLeftSlot(ObjectSlot a_slot) noexcept
+			inline constexpr ObjectSlot GetLeftSlot(ObjectSlot a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -477,7 +476,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra GetLeftSlotExtra(ObjectSlotExtra a_slot) noexcept
+			inline constexpr ObjectSlotExtra GetLeftSlotExtra(ObjectSlotExtra a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -502,7 +501,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlot ExtraSlotToSlot(ObjectSlotExtra a_slot) noexcept
+			inline constexpr ObjectSlot ExtraSlotToSlot(ObjectSlotExtra a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -549,7 +548,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr ObjectSlotExtra SlotToExtraSlot(ObjectSlot a_slot) noexcept
+			inline constexpr ObjectSlotExtra SlotToExtraSlot(ObjectSlot a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -596,7 +595,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr bool IsLeftWeaponSlot(ObjectSlot a_slot) noexcept
+			inline constexpr bool IsLeftWeaponSlot(ObjectSlot a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -613,7 +612,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr bool IsLeftHandExtraSlot(ObjectSlotExtra a_slot) noexcept
+			inline constexpr bool IsLeftHandExtraSlot(ObjectSlotExtra a_slot) noexcept
 			{
 				switch (a_slot)
 				{
@@ -633,9 +632,9 @@ namespace IED
 				}
 			}
 
-			static NodeDescriptor GetDefaultSlotNode(ObjectSlot a_slot);
+			NodeDescriptor GetDefaultSlotNode(ObjectSlot a_slot);
 
-			inline static constexpr TESRace::EquipmentFlag GetRaceEquipmentFlagFromType(ObjectType a_type) noexcept
+			inline constexpr TESRace::EquipmentFlag GetRaceEquipmentFlagFromType(ObjectType a_type) noexcept
 			{
 				switch (a_type)
 				{
@@ -666,7 +665,7 @@ namespace IED
 				}
 			}
 
-			inline static constexpr BIPED_OBJECT SlotToBipedObject(
+			inline constexpr BIPED_OBJECT SlotToBipedObject(
 				Actor*     a_actor,
 				ObjectSlot a_slot) noexcept
 			{
@@ -703,8 +702,6 @@ namespace IED
 					return BIPED_OBJECT::kNone;
 				}
 			}
-
-		private:
 		};
 
 		struct raceCacheEntry_t

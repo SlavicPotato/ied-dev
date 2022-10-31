@@ -369,3 +369,4 @@ FodyWeavers.xsd
 /ImmersiveEquipmentDisplays/Drivers/RTest/RTest.h
 /ImmersiveEquipmentDisplays/Drivers/RTest/RTest.cpp
 /ImmersiveEquipmentDisplays/ImGui/Styles/adobe-spectrum/imgui_spectrum.h
+/ImmersiveEquipmentDisplays/gitinfo.h

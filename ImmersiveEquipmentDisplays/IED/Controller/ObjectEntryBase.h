@@ -72,8 +72,8 @@ namespace IED
 		struct State :
 			AnimationState
 		{
-			State()  = default;
-			~State() = default;
+			State() noexcept = default;
+			~State()         = default;
 
 			State(const State&) = delete;
 			State(State&&)      = delete;

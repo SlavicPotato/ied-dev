@@ -61,8 +61,7 @@ namespace IED
 		}
 
 		void I3DIObjectController::Run(
-			I3DICommonData& a_data,
-			run_func_t      a_func)
+			I3DICommonData& a_data)
 		{
 			m_runPT.Begin();
 
@@ -70,8 +69,6 @@ namespace IED
 			{
 				UpdateDragObjectPosition(a_data, dragObject);
 			}
-
-			a_func();
 
 			auto hoveredObject = GetHovered(a_data);
 

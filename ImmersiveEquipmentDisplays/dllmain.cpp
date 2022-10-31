@@ -3,7 +3,7 @@
 #include "IED/Main.h"
 #include "IED/Util/Logging.h"
 
-#include "gitparams.h"
+#include "gitinfo.h"
 
 static bool Initialize(const SKSEInterface* a_skse)
 {
@@ -92,7 +92,7 @@ extern "C" {
 			PLUGIN_NAME_FULL,
 			PLUGIN_VERSION_VERSTRING,
 			MK_GIT_COMMIT(GIT_CUR_COMMIT),
-			MK_STRING(GIT_BRANCH),
+			GIT_BRANCH,
 			GET_EXE_VERSION_MAJOR(a_skse->runtimeVersion),
 			GET_EXE_VERSION_MINOR(a_skse->runtimeVersion),
 			GET_EXE_VERSION_BUILD(a_skse->runtimeVersion),

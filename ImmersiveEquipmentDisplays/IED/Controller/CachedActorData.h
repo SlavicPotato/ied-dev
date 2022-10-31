@@ -85,6 +85,7 @@ namespace IED
 
 		bool UpdateState(Actor* a_actor, TESObjectCELL* a_cell);
 		bool UpdateStateLF(Actor* a_actor);
+		bool UpdateStateHF(Actor* a_actor);
 
 		TESWorldSpace*           worldspace{ nullptr };
 		TESPackage*              currentPackage{ nullptr };

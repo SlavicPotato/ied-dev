@@ -10,7 +10,7 @@
 
 #include "UIAboutModalStrings.h"
 
-#include "gitparams.h"
+#include "gitinfo.h"
 #include "plugin.h"
 #include "version.h"
 
@@ -55,7 +55,7 @@ namespace IED
 							"%s [%.8x-%s]",
 							PLUGIN_VERSION_VERSTRING,
 							MK_GIT_COMMIT(GIT_CUR_COMMIT),
-							MK_STRING(GIT_BRANCH));
+							GIT_BRANCH);
 
 						ImGui::TableNextRow();
 

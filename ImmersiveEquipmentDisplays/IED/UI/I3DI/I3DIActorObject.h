@@ -59,8 +59,8 @@ namespace IED
 			}
 
 		private:
-
 			Game::FormID m_actor;
+			std::string  m_name;
 
 			bool m_lost{ false };
 		};

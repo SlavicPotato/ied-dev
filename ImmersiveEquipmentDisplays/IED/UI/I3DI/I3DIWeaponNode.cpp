@@ -79,7 +79,7 @@ namespace IED
 
 			for (auto& e : m_actorContext.GetMOVNodes())
 			{
-				auto mov = e.second.get();
+				const auto mov = e.second.get();
 
 				if (!mov->AcceptsDraggable(*this))
 				{
@@ -97,7 +97,7 @@ namespace IED
 
 			for (auto ita = data.cbegin(); ita != data.cend(); ++ita)
 			{
-				auto mova = ita->second.get();
+				const auto mova = ita->second.get();
 
 				if (!mova->AcceptsDraggable(*this))
 				{
@@ -154,7 +154,7 @@ namespace IED
 
 			for (auto& e : m_actorContext.GetMOVNodes())
 			{
-				auto mov = e.second.get();
+				const auto* const mov = e.second.get();
 
 				if (!mov->AcceptsDraggable(*this))
 				{

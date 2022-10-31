@@ -40,8 +40,6 @@ namespace IED
 				I3DICommonData&                 a_data,
 				const Handlers::MouseMoveEvent& a_evn);
 
-			void AdjustObjects();
-
 			[[nodiscard]] inline constexpr auto& GetController() const noexcept
 			{
 				return m_controller;

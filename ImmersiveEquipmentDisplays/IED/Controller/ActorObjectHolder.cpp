@@ -20,6 +20,34 @@ namespace IED
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
+	namespace detail
+	{
+		template <
+			auto I = stl::underlying(Data::ObjectSlot::kMax),
+			class... Args>
+		constexpr auto make_object_slot_array(
+			const BipedSlotDataPtr& a_1,
+			Args&&... a_args)
+		{
+			if constexpr (I == 0)
+			{
+				return ObjectSlotArray{ std::forward<Args>(a_args)... };
+			}
+			else
+			{
+				constexpr auto slotid = static_cast<Data::ObjectSlot>(I - 1);
+
+				return make_object_slot_array<I - 1>(
+					a_1,
+					std::forward_as_tuple(
+						a_1->get(slotid),
+						slotid,
+						Data::ItemData::SlotToExtraSlot(slotid)),
+					std::forward<Args>(a_args)...);
+			}
+		}
+	}
+
 	ActorObjectHolder::ActorObjectHolder(
 		Actor*                a_actor,
 		TESNPC*               a_npc,
@@ -48,7 +76,8 @@ namespace IED
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root),
-		m_state(a_actor)
+		m_state(a_actor),
+		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped) }
 	{
 		auto interval = IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
 
@@ -169,15 +198,6 @@ namespace IED
 			CreateExtraMovNodes(a_npcroot);
 		}
 
-		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-		for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-		{
-			m_entriesSlot[i].slotid   = static_cast<Data::ObjectSlot>(i);
-			m_entriesSlot[i].slotidex = Data::ItemData::SlotToExtraSlot(
-				static_cast<Data::ObjectSlot>(i));
-		}
-
 		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
 		{
 			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
@@ -227,10 +247,10 @@ namespace IED
 			}
 		}*/
 
-		if (m_player)
+		/*if (m_player)
 		{
 			m_owner.StorePlayerState(*this);
-		}
+		}*/
 
 		m_lastEquipped->accessed = m_owner.IncrementCounter();
 
@@ -320,16 +340,6 @@ namespace IED
 		}
 
 		return r;
-	}
-
-	void ActorObjectHolder::ApplyActorState(const Data::actorStateEntry_t& a_data)
-	{
-		using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-		for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
-		{
-			m_entriesSlot[i].slotState = a_data.slots[i];
-		}
 	}
 
 	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const

@@ -77,10 +77,9 @@ namespace IED
 			};
 
 			actorStateEntry_t() = default;
-			actorStateEntry_t(const ActorObjectHolder& a_holder);
+			//actorStateEntry_t(const ActorObjectHolder& a_holder);
 
 			actorStateSlotEntry_t slots[stl::underlying(ObjectSlot::kMax)];
-			ActiveActorAnimation  activeAnimation{ ActiveActorAnimation::kNone };
 
 		private:
 			template <class Archive>
@@ -96,7 +95,7 @@ namespace IED
 
 		public:
 			actorStateHolder_t() = default;
-			actorStateHolder_t(const ObjectManagerData& a_data);
+			//actorStateHolder_t(const ObjectManagerData& a_data);
 
 			enum Serialization : unsigned int
 			{

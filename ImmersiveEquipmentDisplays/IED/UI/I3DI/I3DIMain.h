@@ -54,7 +54,7 @@ namespace IED
 			{
 				return m_actorContext;
 			}
-			
+
 			[[nodiscard]] inline constexpr auto& GetCommonData() const noexcept
 			{
 				return m_data;
@@ -70,9 +70,10 @@ namespace IED
 
 			void PrepareGameDataImpl();
 
-			void      SwitchToActorContext(Game::FormID a_actor);
-			void      UpdateActorObjects();
-			NiCamera* GetCamera();
+			bool                SwitchToActorContext(Game::FormID a_actor);
+			void                ReleaseCurrentActorContext();
+			void                UpdateActorObjects();
+			NiPointer<NiCamera> GetCamera();
 
 			void SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const;
 
@@ -81,6 +82,8 @@ namespace IED
 
 			PerfTimerInt m_prepPT;
 			long long    m_lastPrepTime{ 0 };
+
+			std::optional<Game::FormID> m_heldActorOnClose;
 
 			Controller& m_controller;
 		};

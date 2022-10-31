@@ -138,7 +138,7 @@ namespace IED
 
 			if (a_src.flags.test(Data::ConditionalVariableValueDataFlags::kLastEquipped))
 			{
-				auto v = EvaluateLastEquippedForm(a_params, a_src);
+				const auto v = EvaluateLastEquippedForm(a_params, a_src);
 
 				//_DMESSAGE("le: %X", v);
 
@@ -158,6 +158,7 @@ namespace IED
 
 				a_dst.form = a_src.value.form;
 			}
+
 			break;
 		}
 

@@ -1952,7 +1952,8 @@ namespace IED
 			}
 
 			auto actor = refr->As<Actor>();
-			if (!actor)
+
+			if (!IsREFRValid(actor))
 			{
 				return;
 			}
@@ -3712,7 +3713,7 @@ namespace IED
 		/*PerfTimer pt;
 		pt.Start();*/
 
-		auto& data = a_holder.m_lastEquipped->data;
+		auto& data = a_holder.m_lastEquipped->biped;
 
 		auto& biped = a_params.actor->GetBiped1(false);
 		if (!biped)
@@ -4092,7 +4093,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		bool eraseState = false;
+		/*bool eraseState = false;
 
 		if (a_actor != *g_thePlayer)
 		{
@@ -4101,7 +4102,7 @@ namespace IED
 				m_storedActorStates.data.insert_or_assign(a_actor->formID, it->second);
 				eraseState = true;
 			}
-		}
+		}*/
 
 		RemoveActorImpl(
 			a_actor,
@@ -4113,10 +4114,10 @@ namespace IED
 			a_handle,
 			a_flags | ControllerUpdateFlags::kImmediateTransformUpdate);
 
-		if (eraseState)
+		/*if (eraseState)
 		{
 			m_storedActorStates.data.erase(a_actor->formID);
-		}
+		}*/
 	}
 
 	void Controller::ActorResetImpl(
@@ -5092,14 +5093,14 @@ namespace IED
 		const equippedItemInfo_t& a_info,
 		ActorObjectHolder&        a_objectHolder)
 	{
-		auto ts = IPerfCounter::Query();
+		const auto c = IncrementCounter();
 
 		if (a_info.rightSlot < ObjectSlot::kMax)
 		{
 			auto& slot = a_objectHolder.GetSlot(a_info.rightSlot);
 
 			slot.slotState.lastEquipped     = a_info.right->formID;
-			slot.slotState.lastSeenEquipped = ts;
+			slot.slotState.lastSeenEquipped = c;
 		}
 
 		if (a_info.leftSlot < ObjectSlot::kMax)
@@ -5107,7 +5108,7 @@ namespace IED
 			auto& slot = a_objectHolder.GetSlot(a_info.leftSlot);
 
 			slot.slotState.lastEquipped     = a_info.left->formID;
-			slot.slotState.lastSeenEquipped = ts;
+			slot.slotState.lastSeenEquipped = c;
 		}
 
 		if (auto biped = a_params.get_biped())
@@ -5121,7 +5122,7 @@ namespace IED
 				auto& slot = a_objectHolder.GetSlot(ObjectSlot::kAmmo);
 
 				slot.slotState.lastEquipped     = e.item->formID;
-				slot.slotState.lastSeenEquipped = ts;
+				slot.slotState.lastSeenEquipped = c;
 			}
 		}
 	}
@@ -5462,8 +5463,7 @@ namespace IED
 
 		stl::scoped_lock lock(m_lock);
 
-		m_actorBlockList.clear();
-		m_storedActorStates.clear();
+		//m_storedActorStates.clear();
 
 		if (m_forceDefaultConfig)
 		{
@@ -5474,11 +5474,12 @@ namespace IED
 			m_config.active = m_config.initial;
 		}
 
+		m_actorBlockList.clear();
+		m_bipedCache.clear();
+
 		ClearObjectsImpl();
-		ClearPlayerState();
 		ClearObjectDatabase();
 
-		m_bipedCache.clear();
 		ResetCounter();
 	}
 
@@ -5498,9 +5499,6 @@ namespace IED
 			a_out << m_config.active;
 		}
 
-		actorStateHolder_t actorState(*this);
-
-		a_out << actorState;
 		a_out << *this;
 
 		return 4;
@@ -5523,13 +5521,17 @@ namespace IED
 
 		stl::scoped_lock lock(m_lock);
 
-		actorBlockList_t   blockList;
-		configStore_t      cfgStore;
-		actorStateHolder_t actorState;
+		actorBlockList_t blockList;
+		configStore_t    cfgStore;
 
 		a_in >> blockList;
 		a_in >> cfgStore;
-		a_in >> actorState;
+
+		if (a_version < stl::underlying(SerializationVersion::kDataVersion9))
+		{
+			actorStateHolder_t actorState;
+			a_in >> actorState;
+		}
 
 		FillGlobalSlotConfig(cfgStore.slot);
 		CleanConfigStore(cfgStore);
@@ -5551,7 +5553,7 @@ namespace IED
 			m_config.active = std::move(cfgStore);
 		}
 
-		m_storedActorStates = std::move(actorState);
+		//m_storedActorStates = std::move(actorState);
 
 		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
 		{

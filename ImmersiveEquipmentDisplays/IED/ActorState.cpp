@@ -11,7 +11,7 @@ namespace IED
 {
 	namespace Data
 	{
-		actorStateHolder_t::actorStateHolder_t(
+		/*actorStateHolder_t::actorStateHolder_t(
 			const ObjectManagerData& a_data)
 		{
 			for (auto& e : a_data.GetObjects())
@@ -57,6 +57,6 @@ namespace IED
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

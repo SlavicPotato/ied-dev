@@ -286,46 +286,5 @@ namespace IED
 				camera->CameraProcessMouseInput(a_evn);
 			}
 		}
-
-		void I3DIActorContext::AdjustObjects()
-		{
-			/*for (auto& e : m_movPairs)
-			{
-				auto& sphereA = e.first->GetBoundingShape<I3DIBoundingSphere>()->GetBound();
-				auto& sphereB = e.second->GetBoundingShape<I3DIBoundingSphere>()->GetBound();
-
-				const auto centerA = XMLoadFloat3(std::addressof(sphereA.Center));
-				const auto radiusA = XMVectorReplicatePtr(std::addressof(sphereA.Radius));
-
-				const auto centerB = XMLoadFloat3(std::addressof(sphereB.Center));
-				const auto radiusB = XMVectorReplicatePtr(std::addressof(sphereB.Radius));
-
-				const auto diff = centerB - centerA;
-				const auto len  = XMVector3Length(diff);
-
-				const auto radSum = radiusA + radiusB;
-
-				if (XMVector3Greater(len, radSum))
-				{
-					continue;
-				}
-
-				const auto penDist = len - radSum;
-
-				const auto normal =
-					XMVector3Greater(len, DirectX::g_XMEpsilon) ?
-						diff / len :
-                        DirectX::g_XMIdentityR0;
-
-				_DMESSAGE(
-					"%s <-> %s | d: %f | n: %f %f %f",
-					e.first->GetNodeName().c_str(),
-					e.second->GetNodeName().c_str(),
-					penDist.m128_f32[0],
-					normal.m128_f32[0],
-					normal.m128_f32[1],
-					normal.m128_f32[2]);
-			}*/
-		}
 	}
 }

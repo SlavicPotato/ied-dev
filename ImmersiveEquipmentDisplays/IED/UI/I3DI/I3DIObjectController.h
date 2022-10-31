@@ -52,7 +52,7 @@ namespace IED
 
 			using run_func_t = std::function<void()>;
 
-			void Run(I3DICommonData& a_data, run_func_t a_func);
+			void Run(I3DICommonData& a_data);
 			void DrawObjects(I3DICommonData& a_data);
 
 			[[nodiscard]] inline constexpr auto GetLastRunTime() const noexcept

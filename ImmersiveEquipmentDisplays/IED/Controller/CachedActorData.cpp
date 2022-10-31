@@ -97,7 +97,6 @@ namespace IED
 		state_var_update(inInterior, a_cell->IsInterior(), result);
 		state_var_update(worldspace, a_cell->GetWorldSpace(), result);
 		state_var_update(currentIdle, a_actor->GetFurnitureIdle(), result);
-		state_var_update(currentPackage, a_actor->GetCurrentPackage(), result);
 		state_var_update(inCombat, Game::GetActorInCombat(a_actor), result);
 		state_var_update(flags1.value, a_actor->flags1 & ACTOR_CHECK_FLAGS_1, result);
 		state_var_update(flags2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_2, result);
@@ -119,6 +118,15 @@ namespace IED
 		state_var_update(flagslf1.value, a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1, result);
 		state_var_update(flagslf2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2, result);
 		state_var_update(swimming, a_actor->IsSwimming(), result);
+
+		return result;
+	}
+
+	bool CachedActorData::UpdateStateHF(Actor* a_actor)
+	{
+		bool result = false;
+
+		state_var_update(currentPackage, a_actor->GetCurrentPackage(), result);
 
 		return result;
 	}

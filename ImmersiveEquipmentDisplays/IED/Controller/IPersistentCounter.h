@@ -14,7 +14,7 @@ namespace IED
 
 		inline constexpr auto IncrementCounter() noexcept
 		{
-			return m_counter++;
+			return ++m_counter;
 		}
 
 		[[nodiscard]] inline constexpr auto GetCounterValue() const noexcept

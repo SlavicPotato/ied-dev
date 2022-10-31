@@ -103,7 +103,7 @@ namespace IED
 
 			if (r.second)
 			{
-				ApplyActorState(r.first->second);
+				//ApplyActorState(r.first->second);
 				OnActorAcquire(r.first->second);
 				RequestVariableUpdateOnAll();
 			}
@@ -121,10 +121,10 @@ namespace IED
 			return m_objects;
 		}
 
-		inline void ClearPlayerState() noexcept
+		/*inline void ClearPlayerState() noexcept
 		{
 			m_playerState.reset();
-		}
+		}*/
 
 		void ClearVariablesOnAll(bool a_requestEval) noexcept;
 		void ClearVariables(Game::FormID a_handle, bool a_requestEval) noexcept;
@@ -134,10 +134,10 @@ namespace IED
 
 		void RequestEvaluateOnAll() const noexcept;
 
-		void StorePlayerState(ActorObjectHolder& a_holder);
+		//void StorePlayerState(ActorObjectHolder& a_holder);
 
 	private:
-		void ApplyActorState(ActorObjectHolder& a_holder);
+		//void ApplyActorState(ActorObjectHolder& a_holder);
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
 
@@ -146,7 +146,7 @@ namespace IED
 
 		void RequestLFEvaluateAll() noexcept;
 		void RequestLFEvaluateAll(Game::FormID a_skip) noexcept;
-		
+
 		void RequestHFEvaluateAll() noexcept;
 		void RequestHFEvaluateAll(Game::FormID a_skip) noexcept;
 
@@ -171,9 +171,7 @@ namespace IED
 			return result;
 		}
 
-		ActorObjectMap                           m_objects;
-		std::unique_ptr<Data::actorStateEntry_t> m_playerState;
-		Data::actorStateHolder_t                 m_storedActorStates;
+		ActorObjectMap m_objects;
 	};
 
 }

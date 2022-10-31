@@ -82,25 +82,22 @@ namespace IED
 			}
 
 			auto weaponNode = a_item.GetDraggableObject().GetAsWeaponNode();
-
 			if (!weaponNode)
 			{
 				return false;
 			}
 
 			auto& controller = m_actorContext.GetController();
-			auto& store      = controller.GetConfigStore();
 			auto& actorid    = m_actorContext.GetActorFormID();
+			auto& objects    = controller.GetObjects();
 
-			auto& data = controller.GetObjects();
-
-			auto it = data.find(actorid);
-			if (it == data.end())
+			auto it = objects.find(actorid);
+			if (it == objects.end())
 			{
 				return false;
 			}
 
-			auto r = store.active.transforms.GetActorData().try_emplace(actorid);
+			auto r = controller.GetConfigStore().active.transforms.GetActorData().try_emplace(actorid);
 			auto s = r.first->second.placementData.try_emplace(weaponNode->GetNodeName());
 
 			auto& e = s.first->second.get(
@@ -119,13 +116,19 @@ namespace IED
 
 		void I3DIMOVNode::OnDraggableMovingOver(I3DIDraggable& a_item)
 		{
+			if (!AcceptsDraggable(a_item))
+			{
+				return;
+			}
+
 			auto& dragObject = a_item.GetDraggableObject();
 
 			if (auto weapon = dragObject.GetAsWeaponNode())
 			{
-				const auto local = weapon->GetLocalMatrix();
+				weapon->UpdateWorldMatrix(
+					weapon->GetLocalMatrix() *
+					GetOriginalWorldMatrix());
 
-				weapon->UpdateWorldMatrix(local * GetOriginalWorldMatrix());
 				weapon->UpdateBound();
 			}
 		}

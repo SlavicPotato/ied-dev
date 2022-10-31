@@ -357,6 +357,7 @@ namespace IED
 			}
 
 			e.m_wantLFUpdate |= state.UpdateStateLF(actor);
+			e.m_wantHFUpdate |= state.UpdateStateHF(actor);
 
 			if (e.UpdateNodeMonitorEntries())
 			{
@@ -372,7 +373,7 @@ namespace IED
 				/*PerfTimer pt;
 				pt.Start();*/
 
-				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
+				state.UpdateFactions(e.m_actor.get());
 
 				//_DMESSAGE("%.8X: %f [%zu]", actor->formID, pt.Stop(), state.GetNumFactions());
 
@@ -404,7 +405,7 @@ namespace IED
 
 			if (animUpdateData)
 			{
-				float step =
+				const auto step =
 					e.m_actorid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
                         animUpdateData->steps.npc;

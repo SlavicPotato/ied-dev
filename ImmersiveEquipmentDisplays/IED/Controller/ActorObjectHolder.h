@@ -274,8 +274,6 @@ namespace IED
 			m_flags.set(ActorObjectHolderFlags::kRequestEvalImmediate);
 		}
 
-		void ApplyActorState(const Data::actorStateEntry_t& a_data);
-
 		[[nodiscard]] bool IsActorNPCOrTemplate(Game::FormID a_npc) const;
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
@@ -662,8 +660,8 @@ namespace IED
 			mutable ActorObjectHolderFlagsBitfield    m_flagsbf;
 		};
 
-		ObjectSlotArray   m_entriesSlot{};
-		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX]{};
+		ObjectSlotArray   m_entriesSlot;
+		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX];
 
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<WeaponNodeEntry>    m_weapNodes;

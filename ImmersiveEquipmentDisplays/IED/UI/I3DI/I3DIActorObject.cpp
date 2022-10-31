@@ -53,7 +53,14 @@ namespace IED
 			stl::snprintf(b, "###act_%.8X", this);
 
 			a_data.commonPopup.Draw(b, a_data, [&] {
-				ImGui::Text("%.8X", m_actor);
+				if (!m_name.empty())
+				{
+					ImGui::Text("%s [%.8X]", m_name.c_str(), m_actor.get());
+				}
+				else
+				{
+					ImGui::Text("%.8X", m_actor.get());
+				}
 			});
 		}
 
@@ -89,6 +96,15 @@ namespace IED
 			if (!a_holder.GetHandle().Lookup(refr))
 			{
 				return;
+			}
+
+			if (auto name = refr->GetReferenceName())
+			{
+				m_name = name;
+			}
+			else
+			{
+				m_name.clear();
 			}
 
 			const auto min = refr->GetBoundMin().GetMM();
