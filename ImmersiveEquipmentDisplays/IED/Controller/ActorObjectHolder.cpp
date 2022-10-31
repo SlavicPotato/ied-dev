@@ -23,29 +23,20 @@ namespace IED
 	namespace detail
 	{
 		template <
-			auto I = stl::underlying(Data::ObjectSlot::kMax),
-			class... Args>
-		constexpr auto make_object_slot_array(
-			const BipedSlotDataPtr& a_1,
-			Args&&... a_args)
+			class T       = ObjectEntrySlot,
+			std::size_t N = stl::underlying(Data::ObjectSlot::kMax)>
+		constexpr auto make_object_slot_array(const BipedSlotDataPtr& a_1)
 		{
-			if constexpr (I == 0)
-			{
-				return ObjectSlotArray{ std::forward<Args>(a_args)... };
-			}
-			else
-			{
-				constexpr auto slotid = static_cast<Data::ObjectSlot>(I - 1);
+			return stl::make_array<T, N>([&]<std::size_t I>() {
+				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 
-				return make_object_slot_array<I - 1>(
-					a_1,
-					std::forward_as_tuple(
-						a_1->get(slotid),
-						slotid,
-						Data::ItemData::SlotToExtraSlot(slotid)),
-					std::forward<Args>(a_args)...);
-			}
+				return std::forward_as_tuple(
+					a_1->get(slotid),
+					slotid,
+					Data::ItemData::SlotToExtraSlot(slotid));
+			});
 		}
+
 	}
 
 	ActorObjectHolder::ActorObjectHolder(
