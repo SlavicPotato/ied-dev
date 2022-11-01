@@ -23,8 +23,6 @@ namespace IED
 			AnimationWeaponType a_id,
 			std::int32_t        a_value) const noexcept
 		{
-			assert(a_id < AnimationWeaponType::Max);
-
 			const auto base = get_base(a_id);
 
 			return base > 0 ? base + a_value : 0;
@@ -34,8 +32,6 @@ namespace IED
 			AnimationExtraGroup a_id,
 			std::int32_t        a_value) const noexcept
 		{
-			assert(a_id < AnimationExtraGroup::Max);
-
 			const auto base = get_base_extra(a_id);
 
 			return base > 0 ? base + a_value : 0;
