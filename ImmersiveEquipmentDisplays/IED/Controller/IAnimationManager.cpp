@@ -60,7 +60,7 @@ namespace IED
 			}
 		}
 
-		std::int32_t numMods = std::stol(st[72]);
+		std::int32_t numMods = std::stoi(st[72]);
 
 		if (!numMods)
 		{
@@ -74,7 +74,7 @@ namespace IED
 
 		modIdEnd = modIdBegin + numMods;
 
-		std::int32_t numSets = std::stol(st[73]);
+		std::int32_t numSets = std::stoi(st[73]);
 
 		if (!numSets)
 		{
@@ -93,7 +93,7 @@ namespace IED
 
 		// attempt to extract the info
 
-		result.crc = std::stol(st[74]);
+		result.crc = std::stoi(st[74]);
 
 		std::int32_t modId = -1;
 		std::int32_t i     = 0;
@@ -120,14 +120,15 @@ namespace IED
 		// find ag base values
 		for (auto it = setsBegin; it != setsEnd; ++it)
 		{
-			std::int32_t data = std::stol(*it);
+			const auto data = std::stoi(*it);
 
-			auto prefix = data / 10000;
+			const auto prefix = data / 10000;
+
 			if (prefix == modId)
 			{
-				auto c     = data - prefix * 10000;
-				auto group = c / 100;
-				auto base  = c - group * 100;
+				const auto c     = data - prefix * 10000;
+				const auto group = c / 100;
+				const auto base  = c - group * 100;
 
 				switch (group)
 				{
@@ -509,7 +510,7 @@ namespace IED
 	{
 		auto& entry = a_state.get(a_id);
 
-		auto value = m_groupInfo->get_value(a_id, a_value);
+		const auto value = m_groupInfo->get_value(a_id, a_value);
 
 		if (entry.animVar != value)
 		{

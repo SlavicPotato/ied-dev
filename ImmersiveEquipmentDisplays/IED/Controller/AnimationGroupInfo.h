@@ -25,7 +25,7 @@ namespace IED
 		{
 			assert(a_id < AnimationWeaponType::Max);
 
-			auto base = data[stl::underlying(a_id)].base;
+			const auto base = get_base(a_id);
 
 			return base > 0 ? base + a_value : 0;
 		}
@@ -36,7 +36,7 @@ namespace IED
 		{
 			assert(a_id < AnimationExtraGroup::Max);
 
-			auto base = data[stl::underlying(a_id)].base;
+			const auto base = get_base_extra(a_id);
 
 			return base > 0 ? base + a_value : 0;
 		}
@@ -48,7 +48,14 @@ namespace IED
 			return data[stl::underlying(a_id)].base;
 		}
 
-		[[nodiscard]] inline constexpr void set_base(
+		[[nodiscard]] inline constexpr std::int32_t get_base_extra(
+			AnimationExtraGroup a_id) const noexcept
+		{
+			assert(a_id < AnimationExtraGroup::Max);
+			return extra[stl::underlying(a_id)].base;
+		}
+
+		inline constexpr void set_base(
 			AnimationWeaponType a_id,
 			std::int32_t        a_value) noexcept
 		{
@@ -56,17 +63,17 @@ namespace IED
 			data[stl::underlying(a_id)].base = a_value;
 		}
 
-		[[nodiscard]] inline constexpr void set_base_extra(
+		inline constexpr void set_base_extra(
 			AnimationExtraGroup a_id,
 			std::int32_t        a_value) noexcept
 		{
 			assert(a_id < AnimationExtraGroup::Max);
-			data[stl::underlying(a_id)].base = a_value;
+			extra[stl::underlying(a_id)].base = a_value;
 		}
 
 		std::int32_t                                                 crc{ 0 };
-		std::array<Group, stl::underlying(AnimationWeaponType::Max)> data{};
-		std::array<Group, stl::underlying(AnimationExtraGroup::Max)> extra{};
+		std::array<Group, stl::underlying(AnimationWeaponType::Max)> data;
+		std::array<Group, stl::underlying(AnimationExtraGroup::Max)> extra;
 	};
 
 }
