@@ -184,14 +184,26 @@ namespace IED
 		BSFixedString m_BSBoneLOD{ "BSBoneLOD" };
 		BSFixedString m_BBX{ "BBX" };
 
+		using SheatheNodeEntryInit = std::tuple<
+			const char*,
+			const char*,
+			const char*>;
+
 		struct SheatheNodeEntry
 		{
+			template <class... Args>
+			SheatheNodeEntry(const SheatheNodeEntryInit& a_init) :
+				name(std::get<0>(a_init)),
+				mov(std::get<1>(a_init)),
+				cme(std::get<2>(a_init))
+			{}
+
 			BSFixedString name;
 			BSFixedString mov;
 			BSFixedString cme;
 		};
 
-		stl::list<SheatheNodeEntry> m_sheathNodes;
+		stl::container_init_wrapper<std::list<SheatheNodeEntry>> m_sheathNodes;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};
@@ -201,6 +213,10 @@ namespace IED
 	public:
 		static inline constexpr auto FMT_NINODE_IED_GROUP = "OBJECT GROUP [%.8X]";
 		static inline constexpr auto HK_NPC_ROOT          = "NPC Root [Root]";
+
+		using slot_names_array_t = std::array<
+			stl::fixed_string,
+			stl::underlying(Data::ObjectSlot::kMax)>;
 
 		[[nodiscard]] inline static constexpr const auto& GetSingleton() noexcept
 		{
@@ -218,16 +234,16 @@ namespace IED
 			return slotNames[stl::underlying(a_slot)];
 		}
 
-		stl::fixed_string save{ "Save" };
-		stl::fixed_string snew{ "New" };
-		stl::fixed_string apply{ "Apply" };
-		stl::fixed_string merge{ "Merge" };
-		stl::fixed_string IED{ "IED" };
-		stl::fixed_string weaponSheathe{ "WeaponSheathe" };
+		stl::fixed_string save{ stl::fixed_string::make_tuple("Save") };
+		stl::fixed_string snew{ stl::fixed_string::make_tuple("New") };
+		stl::fixed_string apply{ stl::fixed_string::make_tuple("Apply") };
+		stl::fixed_string merge{ stl::fixed_string::make_tuple("Merge") };
+		stl::fixed_string IED{ stl::fixed_string::make_tuple("IED") };
+		stl::fixed_string weaponSheathe{ stl::fixed_string::make_tuple("WeaponSheathe") };
 
-		std::array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)> slotNames;
+		slot_names_array_t slotNames;
 
-		std::unordered_set<stl::fixed_string> papyrusRestrictedPlugins;
+		stl::container_init_wrapper<std::unordered_set<stl::fixed_string>> papyrusRestrictedPlugins;
 
 	private:
 		StringHolder();
