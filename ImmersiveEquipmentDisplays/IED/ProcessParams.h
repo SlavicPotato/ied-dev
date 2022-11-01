@@ -37,13 +37,14 @@ namespace IED
 			const Data::ConfigSex                  a_configSex,
 			const stl::flag<ControllerUpdateFlags> a_flags,
 			SlotResults&                           a_sr,
-			UseCountContainer&                     a_uc) noexcept :
+			UseCountContainer&                     a_uc) :
 			handle(a_handle),
 			configSex(a_configSex),
 			flags(a_flags),
 			useCount(a_uc),
 			collector(a_sr, a_actor)
 		{
+			a_uc.clear();
 		}
 
 		inline constexpr void mark_slot_presence_change(Data::ObjectSlot a_slot) noexcept
