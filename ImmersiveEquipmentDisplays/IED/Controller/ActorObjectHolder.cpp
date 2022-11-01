@@ -25,13 +25,13 @@ namespace IED
 		template <
 			class T       = ObjectEntrySlot,
 			std::size_t N = stl::underlying(Data::ObjectSlot::kMax)>
-		constexpr auto make_object_slot_array(const BipedSlotDataPtr& a_1)
+		constexpr auto make_object_slot_array(BipedSlotData::display_slot_data_type& a_1)
 		{
 			return stl::make_array<T, N>([&]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 
 				return std::forward_as_tuple(
-					a_1->get(slotid),
+					a_1[I],
 					slotid,
 					Data::ItemData::SlotToExtraSlot(slotid));
 			});
@@ -68,7 +68,7 @@ namespace IED
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root),
 		m_state(a_actor),
-		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped) }
+		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped->displays) }
 	{
 		auto interval = IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
 

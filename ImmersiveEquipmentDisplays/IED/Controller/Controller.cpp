@@ -488,7 +488,7 @@ namespace IED
 		if (auto& info = GetAnimationInfo())
 		{
 			Debug(
-				"XP32 aa: crc:[%d], xpe:[sword:%d, axe: %d, dagger: %d, mace: %d, 2hsword: %d, 2haxe: %d, bow: %d]",
+				"XP32 aa: crc:[%d], xpe:[sword:%d, axe:%d, dagger:%d, mace:%d, 2hsword:%d, 2haxe:%d, bow:%d, bowatk:%d, bowidle:%d]",
 				info->crc,
 				info->get_base(AnimationWeaponType::Sword),
 				info->get_base(AnimationWeaponType::Axe),
@@ -496,7 +496,9 @@ namespace IED
 				info->get_base(AnimationWeaponType::Mace),
 				info->get_base(AnimationWeaponType::TwoHandedSword),
 				info->get_base(AnimationWeaponType::TwoHandedAxe),
-				info->get_base(AnimationWeaponType::Bow));
+				info->get_base(AnimationWeaponType::Bow),
+				info->get_base_extra(AnimationExtraGroup::BowAttack),
+				info->get_base_extra(AnimationExtraGroup::BowIdle));
 		}
 	}
 

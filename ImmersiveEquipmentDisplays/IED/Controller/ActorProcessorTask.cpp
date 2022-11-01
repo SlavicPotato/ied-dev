@@ -373,7 +373,7 @@ namespace IED
 				/*PerfTimer pt;
 				pt.Start();*/
 
-				state.UpdateFactions(e.m_actor.get());
+				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
 
 				//_DMESSAGE("%.8X: %f [%zu]", actor->formID, pt.Stop(), state.GetNumFactions());
 

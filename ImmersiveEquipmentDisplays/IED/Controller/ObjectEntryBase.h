@@ -180,18 +180,18 @@ namespace IED
 
 		struct ActiveData
 		{
-#if defined(DEBUG)
-
-			ActiveData()             = default;
-			ActiveData(ActiveData&&) = default;
-
-			~ActiveData()
-			{
-				assert(!state);
-				assert(!effectShaderData);
-			}
-
-#endif
+			//#if defined(DEBUG)
+			//
+			//			ActiveData()             = default;
+			//			ActiveData(ActiveData&&) = default;
+			//
+			//			~ActiveData()
+			//			{
+			//				assert(!state);
+			//				assert(!effectShaderData);
+			//			}
+			//
+			//#endif
 
 			void Cleanup(
 				Game::ObjectRefHandle    a_handle,

@@ -29,61 +29,10 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(OverrideNodeEntryFlags);
 
-	namespace concepts
-	{
-		template <class T, class I>
-		concept AcceptVectorInit = requires(std::initializer_list<I> a_init)
-		{
-			std::vector<T>(a_init.begin(), a_init.end());
-		};
-
-		template <class T, class I>
-		concept AcceptListInit = requires(std::initializer_list<I> a_init)
-		{
-			std::list<T>(a_init.begin(), a_init.end());
-		};
-	}
-
 	class NodeOverrideData :
 		ILog
 	{
 	public:
-		template <class T>
-		class vector_init_wrapper :
-			public std::vector<T>
-		{
-			using super = std::vector<T>;
-
-		public:
-			//using super::vector;
-
-			vector_init_wrapper() = delete;
-
-			template <class Ti>
-			constexpr vector_init_wrapper(std::initializer_list<Ti> a_rhs) requires
-				concepts::AcceptVectorInit<T, Ti> :
-				super::vector(a_rhs.begin(), a_rhs.end())
-			{
-			}
-		};
-
-		template <class T>
-		class list_init_wrapper :
-			public std::list<T>
-		{
-			using super = std::list<T>;
-
-		public:
-			list_init_wrapper() = delete;
-
-			template <class Ti>
-			constexpr list_init_wrapper(std::initializer_list<Ti> a_rhs) requires
-				concepts::AcceptListInit<T, Ti> :
-				super::list(a_rhs.begin(), a_rhs.end())
-			{
-			}
-		};
-
 		struct weaponNodeListEntry_t
 		{
 			const char* desc;
@@ -187,13 +136,13 @@ namespace IED
 
 		struct exn_ctor_init_t
 		{
-			const char*                       node;
-			const char*                       mov;
-			const char*                       cme;
-			const char*                       parent;
-			std::vector<extraNodeEntrySkel_t> skel;
-			WeaponPlacementID                 placementID;
-			const char*                       desc;
+			const char*                                 node;
+			const char*                                 mov;
+			const char*                                 cme;
+			const char*                                 parent;
+			std::initializer_list<extraNodeEntrySkel_t> skel;
+			WeaponPlacementID                           placementID;
+			const char*                                 desc;
 		};
 
 		using init_list_exn = std::pair<const char*, exn_ctor_init_t>;
@@ -235,8 +184,8 @@ namespace IED
 			}
 
 			extraNodeEntry_t(const extraNodeEntry_t&) = delete;
+			extraNodeEntry_t(extraNodeEntry_t&&)      = delete;
 			extraNodeEntry_t& operator=(const extraNodeEntry_t&) = delete;
-			extraNodeEntry_t(extraNodeEntry_t&&)                 = delete;
 			extraNodeEntry_t& operator=(extraNodeEntry_t&&) = delete;
 
 			stl::fixed_string                 name_node;
@@ -268,8 +217,8 @@ namespace IED
 			}
 
 			extraNodeCopyEntry_t(const extraNodeCopyEntry_t&) = delete;
+			extraNodeCopyEntry_t(extraNodeCopyEntry_t&&)      = delete;
 			extraNodeCopyEntry_t& operator=(const extraNodeCopyEntry_t&) = delete;
-			extraNodeCopyEntry_t(extraNodeCopyEntry_t&&)                 = delete;
 			extraNodeCopyEntry_t& operator=(extraNodeCopyEntry_t&&) = delete;
 
 			stl::fixed_string src;
@@ -296,8 +245,8 @@ namespace IED
 			}
 
 			xfrmOverrideNodeEntry_t(const xfrmOverrideNodeEntry_t&) = delete;
+			xfrmOverrideNodeEntry_t(xfrmOverrideNodeEntry_t&&)      = delete;
 			xfrmOverrideNodeEntry_t& operator=(const xfrmOverrideNodeEntry_t&) = delete;
-			xfrmOverrideNodeEntry_t(xfrmOverrideNodeEntry_t&&)                 = delete;
 			xfrmOverrideNodeEntry_t& operator=(xfrmOverrideNodeEntry_t&&) = delete;
 
 			BSFixedString name;
@@ -360,7 +309,7 @@ namespace IED
 
 			stl::fixed_string                                                node;
 			stl::fixed_string                                                leftNode;
-			vector_init_wrapper<randPlacementEntry_t>                        movs;
+			stl::container_init_wrapper<std::vector<randPlacementEntry_t>>   movs;
 			std::unique_ptr<ThreadSafeRandomNumberGenerator<std::ptrdiff_t>> rng;
 		};
 
@@ -368,12 +317,12 @@ namespace IED
 		using init_list_weap = std::pair<const char*, weap_ctor_init_t>;
 
 		using cm_data_type             = stl::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
-		using mon_data_type            = vector_init_wrapper<BSFixedString>;
+		using mon_data_type            = stl::container_init_wrapper<std::vector<BSFixedString>>;
 		using weapnode_data_type       = stl::vectormap<stl::fixed_string, weaponNodeEntry_t>;
-		using exn_data_type            = list_init_wrapper<extraNodeEntry_t>;
-		using exn_copy_data_type       = vector_init_wrapper<extraNodeCopyEntry_t>;
-		using xfrm_override_data_type  = vector_init_wrapper<xfrmOverrideNodeEntry_t>;
-		using rand_placement_data_type = vector_init_wrapper<randWeapEntry_t>;
+		using exn_data_type            = stl::container_init_wrapper<std::list<extraNodeEntry_t>>;
+		using exn_copy_data_type       = stl::container_init_wrapper<std::vector<extraNodeCopyEntry_t>>;
+		using xfrm_override_data_type  = stl::container_init_wrapper<std::vector<xfrmOverrideNodeEntry_t>>;
+		using rand_placement_data_type = stl::container_init_wrapper<std::vector<randWeapEntry_t>>;
 		using node_mon_data_type       = std::unordered_map<std::uint32_t, Data::configNodeMonitorEntryBS_t>;
 		using convert_nodes_data_type  = Data::configSkeletonMatch_t;
 
@@ -481,7 +430,6 @@ namespace IED
 		node_mon_data_type       m_nodeMonEntries;
 		convert_nodes_data_type  m_convertNodes;
 
-		//std::unordered_set<stl::fixed_string> m_humanoidSkeletonPaths;
 		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignatures;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;

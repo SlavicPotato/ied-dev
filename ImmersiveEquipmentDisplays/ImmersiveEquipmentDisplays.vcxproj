@@ -214,7 +214,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;NIMATH_USE_SSE_INTRIN;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;SKMP_SC_USE_MIMALLOC;NIMATH_USE_SSE_INTRIN;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>

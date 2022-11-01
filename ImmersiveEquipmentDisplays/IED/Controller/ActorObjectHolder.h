@@ -597,7 +597,7 @@ namespace IED
 		{
 			return m_lastEquipped;
 		}
-		
+
 		inline void ClearVariables(bool a_requestEval) noexcept
 		{
 			m_variables.clear();

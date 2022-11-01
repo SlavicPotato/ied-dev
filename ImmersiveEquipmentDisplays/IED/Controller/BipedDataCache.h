@@ -43,7 +43,7 @@ namespace IED
 	public:
 		inline BipedDataCache(
 			std::uint32_t a_maxSize,
-			std::uint32_t a_maxForms)
+			std::uint32_t a_maxForms) noexcept
 		{
 			SetMaxSize(a_maxSize);
 			SetMaxFormsPerSlot(a_maxForms);
