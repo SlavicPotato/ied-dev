@@ -25,14 +25,6 @@ namespace IED
 			const char* depth_mode_to_desc(
 				DepthStencilDepthMode a_data) const;
 
-		private:
-			using data_type = std::array<
-				std::pair<
-					DepthStencilDepthMode,
-					const char*>,
-				7>;
-
-			static data_type m_data;
 		};
 	}
 

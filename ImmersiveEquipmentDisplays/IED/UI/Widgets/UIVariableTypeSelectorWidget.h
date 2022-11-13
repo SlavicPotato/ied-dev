@@ -20,17 +20,8 @@ namespace IED
 			bool DrawVariableTypeSelectorWidget(
 				ConditionalVariableType& a_type);
 
-		protected:
 			const char* variable_type_to_desc(ConditionalVariableType a_type) const;
 
-		private:
-			using data_type = std::array<
-				std::pair<
-					ConditionalVariableType,
-					UIVariableTypeSelectorWidgetStrings>,
-				3>;
-
-			static data_type m_data;
 		};
 	}
 

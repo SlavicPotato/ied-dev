@@ -6,53 +6,56 @@ namespace IED
 {
 	namespace UI
 	{
-		UIFormTypeSelectorWidget::data_type UIFormTypeSelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array<
+			std::pair<
+				std::uint8_t,
+				UIFormTypeSelectorWidgetStrings>>(
 
-			{ TESObjectWEAP::kTypeID, UIFormTypeSelectorWidgetStrings::Weapon },
-			{ TESObjectARMO::kTypeID, UIFormTypeSelectorWidgetStrings::Armor },
-			{ TESNPC::kTypeID, UIFormTypeSelectorWidgetStrings::NPC },
-			{ TESSoulGem::kTypeID, UIFormTypeSelectorWidgetStrings::SoulGem },
-			{ TESKey::kTypeID, UIFormTypeSelectorWidgetStrings::Key },
-			{ TESObjectMISC::kTypeID, UIFormTypeSelectorWidgetStrings::Misc },
-			{ TESObjectLIGH::kTypeID, UIFormTypeSelectorWidgetStrings::Light },
-			{ TESObjectBOOK::kTypeID, UIFormTypeSelectorWidgetStrings::Book },
-			{ AlchemyItem::kTypeID, UIFormTypeSelectorWidgetStrings::PotionFood },
-			{ IngredientItem::kTypeID, UIFormTypeSelectorWidgetStrings::Ingredient },
-			{ ScrollItem::kTypeID, UIFormTypeSelectorWidgetStrings::Scroll },
-			{ TESObjectSTAT::kTypeID, UIFormTypeSelectorWidgetStrings::Static },
-			{ TESObjectTREE::kTypeID, UIFormTypeSelectorWidgetStrings::Tree },
-			{ TESGrass::kTypeID, UIFormTypeSelectorWidgetStrings::Grass },
-			{ BGSHeadPart::kTypeID, UIFormTypeSelectorWidgetStrings::HeadPart },
-			{ TESAmmo::kTypeID, UIFormTypeSelectorWidgetStrings::Ammo },
-			{ BGSKeyword::kTypeID, UIFormTypeSelectorWidgetStrings::Keyword },
-			{ TESFlora::kTypeID, UIFormTypeSelectorWidgetStrings::Flora },
-			{ TESFurniture::kTypeID, UIFormTypeSelectorWidgetStrings::Furniture },
-			{ TESObjectACTI::kTypeID, UIFormTypeSelectorWidgetStrings::Activator },
-			{ BGSTalkingActivator::kTypeID, UIFormTypeSelectorWidgetStrings::TalkingActivator },
-			{ TESObjectREFR::kTypeID, UIFormTypeSelectorWidgetStrings::Reference },
-			{ Actor::kTypeID, UIFormTypeSelectorWidgetStrings::Actor },
-			{ TESQuest::kTypeID, UIFormTypeSelectorWidgetStrings::Quest },
-			{ SpellItem::kTypeID, UIFormTypeSelectorWidgetStrings::Quest },
-			{ TESRace::kTypeID, UIFormTypeSelectorWidgetStrings::Race },
-			{ BGSArtObject::kTypeID, UIFormTypeSelectorWidgetStrings::ArtObject },
-			{ BGSSoundDescriptorForm::kTypeID, UIFormTypeSelectorWidgetStrings::SoundDescriptor },
-			{ TESObjectANIO::kTypeID, UIFormTypeSelectorWidgetStrings::AnimObject },
-			{ TESObjectDOOR::kTypeID, UIFormTypeSelectorWidgetStrings::Door },
-			{ BGSExplosion::kTypeID, UIFormTypeSelectorWidgetStrings::Explosion },
-			{ BGSMaterialObject::kTypeID, UIFormTypeSelectorWidgetStrings::Material },
-			{ BGSLocation::kTypeID, UIFormTypeSelectorWidgetStrings::Location },
-			{ TESWorldSpace::kTypeID, UIFormTypeSelectorWidgetStrings::Worldspace },
-			{ TESPackage::kTypeID, UIFormTypeSelectorWidgetStrings::Package },
-			{ TESShout::kTypeID, UIFormTypeSelectorWidgetStrings::Shout },
-			{ TESFaction::kTypeID, UIFormTypeSelectorWidgetStrings::Faction },
-			{ TESCombatStyle::kTypeID, UIFormTypeSelectorWidgetStrings::CombatStyle },
-			{ TESClass::kTypeID, UIFormTypeSelectorWidgetStrings::Class },
-			{ RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather },
-			{ TESGlobal::kTypeID, UIFormTypeSelectorWidgetStrings::Global },
-			{ TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form },
-			{ TESIdleForm::kTypeID, UIFormTypeSelectorWidgetStrings::Idle},
+			std::make_pair(TESObjectWEAP::kTypeID, UIFormTypeSelectorWidgetStrings::Weapon),
+			std::make_pair(TESObjectARMO::kTypeID, UIFormTypeSelectorWidgetStrings::Armor),
+			std::make_pair(TESNPC::kTypeID, UIFormTypeSelectorWidgetStrings::NPC),
+			std::make_pair(TESSoulGem::kTypeID, UIFormTypeSelectorWidgetStrings::SoulGem),
+			std::make_pair(TESKey::kTypeID, UIFormTypeSelectorWidgetStrings::Key),
+			std::make_pair(TESObjectMISC::kTypeID, UIFormTypeSelectorWidgetStrings::Misc),
+			std::make_pair(TESObjectLIGH::kTypeID, UIFormTypeSelectorWidgetStrings::Light),
+			std::make_pair(TESObjectBOOK::kTypeID, UIFormTypeSelectorWidgetStrings::Book),
+			std::make_pair(AlchemyItem::kTypeID, UIFormTypeSelectorWidgetStrings::PotionFood),
+			std::make_pair(IngredientItem::kTypeID, UIFormTypeSelectorWidgetStrings::Ingredient),
+			std::make_pair(ScrollItem::kTypeID, UIFormTypeSelectorWidgetStrings::Scroll),
+			std::make_pair(TESObjectSTAT::kTypeID, UIFormTypeSelectorWidgetStrings::Static),
+			std::make_pair(TESObjectTREE::kTypeID, UIFormTypeSelectorWidgetStrings::Tree),
+			std::make_pair(TESGrass::kTypeID, UIFormTypeSelectorWidgetStrings::Grass),
+			std::make_pair(BGSHeadPart::kTypeID, UIFormTypeSelectorWidgetStrings::HeadPart),
+			std::make_pair(TESAmmo::kTypeID, UIFormTypeSelectorWidgetStrings::Ammo),
+			std::make_pair(BGSKeyword::kTypeID, UIFormTypeSelectorWidgetStrings::Keyword),
+			std::make_pair(TESFlora::kTypeID, UIFormTypeSelectorWidgetStrings::Flora),
+			std::make_pair(TESFurniture::kTypeID, UIFormTypeSelectorWidgetStrings::Furniture),
+			std::make_pair(TESObjectACTI::kTypeID, UIFormTypeSelectorWidgetStrings::Activator),
+			std::make_pair(BGSTalkingActivator::kTypeID, UIFormTypeSelectorWidgetStrings::TalkingActivator),
+			std::make_pair(TESObjectREFR::kTypeID, UIFormTypeSelectorWidgetStrings::Reference),
+			std::make_pair(Actor::kTypeID, UIFormTypeSelectorWidgetStrings::Actor),
+			std::make_pair(TESQuest::kTypeID, UIFormTypeSelectorWidgetStrings::Quest),
+			std::make_pair(SpellItem::kTypeID, UIFormTypeSelectorWidgetStrings::Quest),
+			std::make_pair(TESRace::kTypeID, UIFormTypeSelectorWidgetStrings::Race),
+			std::make_pair(BGSArtObject::kTypeID, UIFormTypeSelectorWidgetStrings::ArtObject),
+			std::make_pair(BGSSoundDescriptorForm::kTypeID, UIFormTypeSelectorWidgetStrings::SoundDescriptor),
+			std::make_pair(TESObjectANIO::kTypeID, UIFormTypeSelectorWidgetStrings::AnimObject),
+			std::make_pair(TESObjectDOOR::kTypeID, UIFormTypeSelectorWidgetStrings::Door),
+			std::make_pair(BGSExplosion::kTypeID, UIFormTypeSelectorWidgetStrings::Explosion),
+			std::make_pair(BGSMaterialObject::kTypeID, UIFormTypeSelectorWidgetStrings::Material),
+			std::make_pair(BGSLocation::kTypeID, UIFormTypeSelectorWidgetStrings::Location),
+			std::make_pair(TESWorldSpace::kTypeID, UIFormTypeSelectorWidgetStrings::Worldspace),
+			std::make_pair(TESPackage::kTypeID, UIFormTypeSelectorWidgetStrings::Package),
+			std::make_pair(TESShout::kTypeID, UIFormTypeSelectorWidgetStrings::Shout),
+			std::make_pair(TESFaction::kTypeID, UIFormTypeSelectorWidgetStrings::Faction),
+			std::make_pair(TESCombatStyle::kTypeID, UIFormTypeSelectorWidgetStrings::CombatStyle),
+			std::make_pair(TESClass::kTypeID, UIFormTypeSelectorWidgetStrings::Class),
+			std::make_pair(RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather),
+			std::make_pair(TESGlobal::kTypeID, UIFormTypeSelectorWidgetStrings::Global),
+			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form),
+			std::make_pair(TESIdleForm::kTypeID, UIFormTypeSelectorWidgetStrings::Idle)
 
-		} };
+		);
 
 		UIFormTypeSelectorWidget::UIFormTypeSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -75,7 +78,7 @@ namespace IED
 					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					if (a_filter && !a_filter(i))
 					{

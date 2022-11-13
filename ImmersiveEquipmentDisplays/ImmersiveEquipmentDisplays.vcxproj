@@ -176,10 +176,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -214,10 +214,10 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IED_USE_MIMALLOC_COLLECTOR;SKMP_SC_USE_MIMALLOC;NIMATH_USE_SSE_INTRIN;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;IED_USE_MIMALLOC_COLLECTOR;SKMP_SC_USE_MIMALLOC;NIMATH_USE_SSE_INTRIN;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/permissive /Zc:__cplusplus /Ob3 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -230,7 +230,6 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -257,10 +256,10 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Debug|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;DEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;DEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -295,10 +294,10 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Post 629|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SKMP_AE_POST_629;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;SKMP_AE_POST_629;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -333,10 +332,10 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MD|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;SKMP_TIMESTAMP_LOGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;SKMP_TIMESTAMP_LOGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/permissive /Gw /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>ext/ICommon.h</ForcedIncludeFiles>
@@ -374,6 +373,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.h" />
     <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h" />
     <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h" />
+    <ClInclude Include="Common\BulletExtensions.h" />
     <ClInclude Include="Common\VectorMath.h" />
     <ClInclude Include="Drivers\Input.h" />
     <ClInclude Include="Drivers\Input\DeadKey.h" />
@@ -408,6 +408,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
     <ClInclude Include="IED\ConfigNodeMonitor.h" />
+    <ClInclude Include="IED\ConfigNodePhysicsValues.h" />
     <ClInclude Include="IED\ConfigSkeletonMatch.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
     <ClInclude Include="IED\ConfigVariableConditionSource.h" />
@@ -465,6 +466,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemCommon.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItemImpl.h" />
     <ClInclude Include="IED\Parsers\JSONActorInfoParser.h" />
+    <ClInclude Include="IED\Parsers\JSONBulletVector3Parser.h" />
+    <ClInclude Include="IED\Parsers\JSONBulletVector4Parser.h" />
     <ClInclude Include="IED\Parsers\JSONConditionalVariablesEditor.h" />
     <ClInclude Include="IED\Parsers\JSONConditionalVariableStorageParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h" />
@@ -486,6 +489,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePhysicsOverrideListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePhysicsOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodeOverridePhysicsParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigNodePhysicsValuesParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSkeletonMatchParser.h" />
@@ -502,6 +509,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
+    <ClInclude Include="IED\Physics\SimComponent.h" />
     <ClInclude Include="IED\SkeletonCache.h" />
     <ClInclude Include="IED\SkeletonExtensions.h" />
     <ClInclude Include="IED\SkeletonID.h" />
@@ -555,7 +563,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UISkeletonExplorer.h" />
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
-    <ClInclude Include="IED\UI\Widgets\EquipmentOverrideResult.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideResult.h" />
     <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Lists\UIBipedObjectList.h" />
@@ -579,6 +587,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UILastEquippedWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIPhysicsValueEditorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIPhysicsValueEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UISimpleStringList.h" />
     <ClInclude Include="IED\UI\Widgets\UISimpleStringSet.h" />
     <ClInclude Include="IED\UI\Widgets\UIStylePresetSelectorWidget.h" />
@@ -953,6 +963,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItemImpl.cpp" />
     <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONBulletVector3Parser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONBulletVector4Parser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConditionalVariablesEditor.cpp" />
     <ClCompile Include="IED\Parsers\JSONConditionalVariableStorageParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp" />
@@ -974,6 +986,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideConditionGroupParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePhysicsOverrideListParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePhysicsOverrideParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodeOverridePhysicsParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigNodePhysicsValuesParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSkeletonMatchParser.cpp" />
@@ -990,6 +1006,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
+    <ClCompile Include="IED\Physics\SimComponent.cpp" />
     <ClCompile Include="IED\ProcessParams.cpp" />
     <ClCompile Include="IED\SkeletonCache.cpp" />
     <ClCompile Include="IED\SkeletonExtensions.cpp" />
@@ -1042,6 +1059,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UILastEquippedWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIPhysicsValueEditorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UISimpleStringList.cpp" />
     <ClCompile Include="IED\UI\Widgets\UISimpleStringSet.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIStylePresetSelectorWidget.cpp" />

@@ -1059,7 +1059,6 @@ namespace IED
 	{
 		auto& target = get_target_node(
 			a_data,
-			a_entry,
 			a_params);
 
 		if (!target.empty())
@@ -1086,9 +1085,27 @@ namespace IED
 		}
 	}
 
+	const Data::configNodePhysicsValues_t& INodeOverride::GetPhysicsConfig(
+		const Data::configNodeOverridePhysics_t& a_data,
+		nodeOverrideParams_t&                    a_params)
+	{
+		for (auto& e : a_data.overrides)
+		{
+			if (run_conditions(
+					e.conditions,
+					a_params,
+					false,
+					true))
+			{
+				return e;
+			}
+		}
+
+		return a_data;
+	}
+
 	constexpr auto INodeOverride::get_target_node(
 		const Data::configNodeOverridePlacement_t& a_data,
-		const WeaponNodeEntry&                     a_entry,
 		nodeOverrideParams_t&                      a_params)
 		-> const stl::fixed_string&
 	{

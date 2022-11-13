@@ -5,7 +5,7 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
-#include "EquipmentOverrideResult.h"
+#include "UIEquipmentOverrideResult.h"
 
 #include "IED/ConditionalVariableStorage.h"
 #include "IED/ConfigEquipment.h"
@@ -28,7 +28,7 @@ namespace IED
 		protected:
 			using update_func_t = std::function<void()>;
 
-			EquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
+			UIEquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
 				bool a_drawDelete);
 
 			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(

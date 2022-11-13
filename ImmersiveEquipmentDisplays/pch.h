@@ -72,12 +72,16 @@
 #include <DirectXCollision.h>
 #include <DirectXMath.h>
 
-//#include <DirectXTK/CommonStates.h>
-//#include <DirectXTK/DirectXHelpers.h>
-//#include <DirectXTK/Effects.h>
 #include <DirectXTK/PrimitiveBatch.h>
 #include <DirectXTK/SimpleMath.h>
 #include <DirectXTK/VertexTypes.h>
+
+#include <LinearMath/btMatrix3x3.h>
+#include <LinearMath/btQuaternion.h>
+#include <LinearMath/btVector3.h>
+#include <LinearMath/btTransform.h>
+
+#include "Common/BulletExtensions.h"
 
 #include <d3d11.h>
 #include <dxgi1_5.h>

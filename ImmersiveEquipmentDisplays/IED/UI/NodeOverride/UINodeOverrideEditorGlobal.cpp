@@ -173,6 +173,20 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
+			int                                          a_handle,
+			const SingleNodeOverridePhysicsUpdateParams& a_params)
+		{
+			const auto& store = m_controller.GetConfigStore();
+
+			UpdateConfigSingle(
+				a_handle,
+				a_params,
+				store.settings.data.ui.transformEditor.sexSync);
+
+			m_controller.RequestEvaluateTransformsAll(true);
+		}
+
+		void UINodeOverrideEditorGlobal::OnUpdate(
 			int                             a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
@@ -213,6 +227,21 @@ namespace IED
 			}
 		}
 
+		void UINodeOverrideEditorGlobal::OnClearPhysics(
+			int                                  a_handle,
+			const ClearNodeOverrideUpdateParams& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+
+			auto& data = store.active.transforms.GetGlobalData(
+				store.settings.data.ui.transformEditor.globalType);
+
+			if (data.physicsData.erase(a_params.name) > 0)
+			{
+				m_controller.RequestEvaluateTransformsAll(true);
+			}
+		}
+
 		void UINodeOverrideEditorGlobal::OnClearAllTransforms(
 			int,
 			const ClearAllNodeOverrideUpdateParams& a_params)
@@ -237,6 +266,20 @@ namespace IED
 				store.settings.data.ui.transformEditor.globalType);
 
 			data.placementData.clear();
+
+			m_controller.RequestEvaluateTransformsAll(true);
+		}
+
+		void UINodeOverrideEditorGlobal::OnClearAllPhysics(
+			int                                     a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+
+			auto& data = store.active.transforms.GetGlobalData(
+				store.settings.data.ui.transformEditor.globalType);
+
+			data.physicsData.clear();
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}

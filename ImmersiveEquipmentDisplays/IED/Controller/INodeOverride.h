@@ -172,7 +172,7 @@ namespace IED
 
 		static void ResetNodeOverride(
 			const CMENodeEntry& a_entry);
-
+		
 		static void ResetNodePlacement(
 			const WeaponNodeEntry& a_entry,
 			nodeOverrideParams_t*  a_params);
@@ -200,10 +200,13 @@ namespace IED
 			const WeaponNodeEntry&                     a_entry,
 			nodeOverrideParams_t&                      a_params);
 
+		static const Data::configNodePhysicsValues_t& GetPhysicsConfig(
+			const Data::configNodeOverridePhysics_t& a_data,
+			nodeOverrideParams_t&                    a_params);
+
 	private:
 		static constexpr const stl::fixed_string& get_target_node(
 			const Data::configNodeOverridePlacement_t& a_data,
-			const WeaponNodeEntry&                     a_entry,
 			nodeOverrideParams_t&                      a_params);
 
 		static bool INodeOverride::process_offsets(

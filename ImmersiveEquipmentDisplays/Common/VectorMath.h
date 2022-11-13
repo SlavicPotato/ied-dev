@@ -102,4 +102,6 @@ namespace VectorMath
 		DirectX::XMVECTOR a_to,
 		float             a_factor);
 
+	DirectX::XMVECTOR XM_CALLCONV XMVectorConvertToRadians(
+		DirectX::XMVECTOR a_degrees);
 }

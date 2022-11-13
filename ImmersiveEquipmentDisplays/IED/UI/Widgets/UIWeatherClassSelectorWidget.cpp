@@ -8,14 +8,14 @@ namespace IED
 {
 	namespace UI
 	{
-		const UIWeatherClassSelectorWidget::data_type UIWeatherClassSelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ WeatherClassificationFlags::kPleasant, UIWeatherClassSelectorWidgetStrings::Pleasant },
-			{ WeatherClassificationFlags::kCloudy, UIWeatherClassSelectorWidgetStrings::Cloudy },
-			{ WeatherClassificationFlags::kRainy, UIWeatherClassSelectorWidgetStrings::Rainy },
-			{ WeatherClassificationFlags::kSnow, UIWeatherClassSelectorWidgetStrings::Snow },
+			std::make_pair(WeatherClassificationFlags::kPleasant, UIWeatherClassSelectorWidgetStrings::Pleasant),
+			std::make_pair(WeatherClassificationFlags::kCloudy, UIWeatherClassSelectorWidgetStrings::Cloudy),
+			std::make_pair(WeatherClassificationFlags::kRainy, UIWeatherClassSelectorWidgetStrings::Rainy),
+			std::make_pair(WeatherClassificationFlags::kSnow, UIWeatherClassSelectorWidgetStrings::Snow)
 
-		} };
+		);
 
 		UIWeatherClassSelectorWidget::UIWeatherClassSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -48,7 +48,7 @@ namespace IED
 
 				ImGui::PushID("2");
 
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 
@@ -72,7 +72,7 @@ namespace IED
 		}
 
 		const char* UIWeatherClassSelectorWidget::weather_class_to_desc(
-			stl::flag<WeatherClassificationFlags> a_type)
+			stl::flag<WeatherClassificationFlags> a_type) const
 		{
 			if (a_type.test(WeatherClassificationFlags::kAll))
 			{

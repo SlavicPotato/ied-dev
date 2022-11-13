@@ -218,8 +218,10 @@ namespace IED
 				bool hkWeaponAnimations{ false };
 				bool hkWeaponAnimationsWarned{ false };
 				bool animEventForwarding{ false };
-				bool effectShaderParallelUpdates{ false };
 				bool syncTransformsToFirstPersonSkeleton{ false };
+				bool enableEquipmentPhysics{ false };
+				bool enableEffectShaders{ true };
+				bool effectsParallelUpdates{ false };
 
 				stl::optional<LogLevel> logLevel;
 

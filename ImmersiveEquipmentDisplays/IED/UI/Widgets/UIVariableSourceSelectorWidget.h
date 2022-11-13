@@ -20,18 +20,8 @@ namespace IED
 			bool DrawVariableSourceSelectorWidget(
 				Data::VariableSource& a_type);
 
-		protected:
 			const char* variable_source_to_desc(
 				Data::VariableSource a_type) const;
-
-		private:
-			using data_type = std::array<
-				std::pair<
-					Data::VariableSource,
-					UIVariableSourceSelectorWidgetStrings>,
-				4>;
-
-			static data_type m_data;
 		};
 	}
 

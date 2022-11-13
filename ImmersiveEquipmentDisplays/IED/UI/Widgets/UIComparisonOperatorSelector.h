@@ -24,14 +24,6 @@ namespace IED
 			const char* comp_operator_to_desc(
 				Data::ComparisonOperator a_comp) const;
 
-		private:
-			using data_type = std::array<
-				std::pair<
-					Data::ComparisonOperator,
-					UIComparisonOperatorSelectorStrings>,
-				6>;
-
-			static data_type m_data;
 		};
 	}
 

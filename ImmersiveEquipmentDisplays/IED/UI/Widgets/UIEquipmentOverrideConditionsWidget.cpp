@@ -26,9 +26,9 @@ namespace IED
 
 		auto UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideEntryContextMenu(
 			bool a_header)
-			-> EquipmentOverrideResult
+			-> UIEquipmentOverrideResult
 		{
-			EquipmentOverrideResult result;
+			UIEquipmentOverrideResult result;
 
 			ImGui::PushID("eo_entry_context_area");
 
@@ -1000,7 +1000,7 @@ namespace IED
 
 					break;
 
-				/*case ConditionParamItem::CompOper:
+					/*case ConditionParamItem::CompOper:
 
 					if (match->condVarType == ConditionalVariableType::kForm)
 					{
@@ -1575,7 +1575,7 @@ namespace IED
 									e);
 
 								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
-								tdesc = LS(CommonStrings::Actor);
+								tdesc = LS(CommonStrings::NPC);
 
 								break;
 							case Data::EquipmentOverrideConditionType::Furniture:
@@ -1900,7 +1900,7 @@ namespace IED
 
 							ImGui::TableSetColumnIndex(2);
 
-							bool r = ImGui::Selectable(
+							const bool r = ImGui::Selectable(
 								LMKID<3>(vdesc, "sel_ctl"),
 								false,
 								ImGuiSelectableFlags_DontClosePopups);

@@ -6,16 +6,16 @@ namespace IED
 {
 	namespace UI
 	{
-		UIComparisonOperatorSelector::data_type UIComparisonOperatorSelector::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ Data::ComparisonOperator::kEqual, UIComparisonOperatorSelectorStrings::Equal },
-			{ Data::ComparisonOperator::kNotEqual, UIComparisonOperatorSelectorStrings::NotEqual },
-			{ Data::ComparisonOperator::kGreater, UIComparisonOperatorSelectorStrings::Greater },
-			{ Data::ComparisonOperator::kLower, UIComparisonOperatorSelectorStrings::Lower },
-			{ Data::ComparisonOperator::kGreaterOrEqual, UIComparisonOperatorSelectorStrings::GreaterOrEqual },
-			{ Data::ComparisonOperator::kLowerOrEqual, UIComparisonOperatorSelectorStrings::LowerOrEqual },
+			std::make_pair(Data::ComparisonOperator::kEqual, UIComparisonOperatorSelectorStrings::Equal),
+			std::make_pair(Data::ComparisonOperator::kNotEqual, UIComparisonOperatorSelectorStrings::NotEqual),
+			std::make_pair(Data::ComparisonOperator::kGreater, UIComparisonOperatorSelectorStrings::Greater),
+			std::make_pair(Data::ComparisonOperator::kLower, UIComparisonOperatorSelectorStrings::Lower),
+			std::make_pair(Data::ComparisonOperator::kGreaterOrEqual, UIComparisonOperatorSelectorStrings::GreaterOrEqual),
+			std::make_pair(Data::ComparisonOperator::kLowerOrEqual, UIComparisonOperatorSelectorStrings::LowerOrEqual)
 
-		} };
+		);
 
 		UIComparisonOperatorSelector::UIComparisonOperatorSelector(
 			Localization::ILocalization& a_localization) :
@@ -33,7 +33,7 @@ namespace IED
 					comp_operator_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

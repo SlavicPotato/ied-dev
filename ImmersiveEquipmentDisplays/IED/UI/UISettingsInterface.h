@@ -17,7 +17,8 @@ namespace IED
 			Data::SettingHolder& GetSettings() const noexcept;
 			Data::configStore_t& GetConfigStore() const noexcept;
 
-			bool GetEffectControllerEnabled() const noexcept;
+			bool GetShaderProcessingEnabled() const noexcept;
+			bool GetPhysicsProcessingEnabled() const noexcept;
 
 			void MarkSettingsDirty();
 

@@ -181,7 +181,7 @@ namespace IED
 
 		//m_enableCorpseScatter = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);
 
-		m_effectShaders = reader.GetBoolValue(SECT_EFFECTSHADERS, "Enable", false);
+		m_disableEffectHook = reader.GetBoolValue(SECT_DEBUG, "DisableEffectHook", false);
 
 		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
 

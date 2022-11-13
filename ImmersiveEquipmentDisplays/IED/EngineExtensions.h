@@ -246,7 +246,7 @@ namespace IED
 		void Install_CreateWeaponNodes();
 		void Install_WeaponAdjustDisable();
 		void Hook_ToggleFav();
-		void Hook_ProcessEffectShaders();
+		void Hook_ProcessEffects();
 		void Install_ParallelAnimationUpdate();
 
 		void FailsafeCleanupAndEval(
@@ -266,7 +266,7 @@ namespace IED
 		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
-		static void                              ProcessEffectShaders_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
+		static void                              ProcessEffects_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
@@ -312,7 +312,7 @@ namespace IED
 		decltype(&CreateWeaponNodes_Hook)                   m_createWeaponNodes_o{ nullptr };
 		decltype(&RemoveAllBipedParts_Hook)                 m_removeAllBipedParts_o{ nullptr };
 		decltype(&ToggleFavGetExtraList_Hook)               m_toggleFavGetExtraList_o{ nullptr };
-		decltype(&ProcessEffectShaders_Hook)                m_processEffectShaders_o{ nullptr };
+		decltype(&ProcessEffects_Hook)                m_processEffects_o{ nullptr };
 		decltype(&PrepareAnimUpdateLists_Hook)              m_prepareAnimUpdateLists_o{ nullptr };
 		decltype(&ClearAnimUpdateLists_Hook)                m_clearAnimUpdateLists_o{ nullptr };
 		hkaLookupSkeletonNode_t                             m_hkaLookupSkeletonNode_o{ nullptr };

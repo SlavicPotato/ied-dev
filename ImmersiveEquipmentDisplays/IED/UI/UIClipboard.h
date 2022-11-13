@@ -27,7 +27,11 @@ namespace IED
 				NodeOverridePlacementOverride,
 				NodeOverridePlacementOverrideList,
 				NodeOverridePlacementValues,
-				NodeOverrideValues,
+				NodeOverridePhysics,
+				NodeOverridePhysicsOverride,
+				NodeOverridePhysicsOverrideList,
+				NodePhysicsValues,
+				NodeOverrideTransformValues,
 				NodeOverrideOffset,
 				NodeOverrideOffsetList,
 				NodeOverrideOffsetConditionList,
@@ -192,6 +196,24 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePhysics_t>)
+			{
+				return data.type == DataType::NodeOverridePhysics ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePhysicsOverride_t>)
+			{
+				return data.type == DataType::NodeOverridePhysicsOverride ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverridePhysicsOverrideList_t>)
+			{
+				return data.type == DataType::NodeOverridePhysicsOverrideList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideOffset_t>)
 			{
 				return data.type == DataType::NodeOverrideOffset ?
@@ -222,12 +244,12 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
-			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideValues_t>)
+			else if constexpr (std::is_same_v<data_type, Data::configNodeOverrideTransformValues_t>)
 			{
 				switch (data.type)
 				{
 				case DataType::NodeOverrideOffset:
-				case DataType::NodeOverrideValues:
+				case DataType::NodeOverrideTransformValues:
 				case DataType::NodeOverrideTransform:
 					return static_cast<data_type*>(data.data);
 				default:
@@ -241,6 +263,18 @@ namespace IED
 				case DataType::NodeOverridePlacementOverride:
 				case DataType::NodeOverridePlacementValues:
 				case DataType::NodeOverridePlacement:
+					return static_cast<data_type*>(data.data);
+				default:
+					return nullptr;
+				}
+			}
+			else if constexpr (std::is_same_v<data_type, Data::configNodePhysicsValues_t>)
+			{
+				switch (data.type)
+				{
+				case DataType::NodeOverridePhysicsOverride:
+				case DataType::NodePhysicsValues:
+				case DataType::NodeOverridePhysics:
 					return static_cast<data_type*>(data.data);
 				default:
 					return nullptr;
@@ -424,13 +458,29 @@ namespace IED
 			{
 				data.type = DataType::NodeOverridePlacementValues;
 			}
+			else if constexpr (std::is_same_v<T, Data::configNodePhysicsValues_t>)
+			{
+				data.type = DataType::NodePhysicsValues;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePhysicsOverride_t>)
+			{
+				data.type = DataType::NodeOverridePhysicsOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePhysicsOverrideList_t>)
+			{
+				data.type = DataType::NodeOverridePhysicsOverrideList;
+			}
+			else if constexpr (std::is_same_v<T, Data::configNodeOverridePhysics_t>)
+			{
+				data.type = DataType::NodeOverridePhysics;
+			}
 			else if constexpr (std::is_same_v<T, Data::configNodeOverrideOffset_t>)
 			{
 				data.type = DataType::NodeOverrideOffset;
 			}
-			else if constexpr (std::is_same_v<T, Data::configNodeOverrideValues_t>)
+			else if constexpr (std::is_same_v<T, Data::configNodeOverrideTransformValues_t>)
 			{
-				data.type = DataType::NodeOverrideValues;
+				data.type = DataType::NodeOverrideTransformValues;
 			}
 			else if constexpr (std::is_same_v<T, Data::configNodeOverrideOffsetList_t>)
 			{

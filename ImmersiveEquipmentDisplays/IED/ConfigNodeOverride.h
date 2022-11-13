@@ -3,6 +3,7 @@
 #include "ConfigCommon.h"
 #include "ConfigData.h"
 #include "ConfigLUIDTag.h"
+#include "ConfigNodePhysicsValues.h"
 #include "ConfigTransform.h"
 #include "ConfigVariableConditionSource.h"
 
@@ -25,7 +26,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideValuesFlags);
 
-		struct configNodeOverrideValues_t
+		struct configNodeOverrideTransformValues_t
 		{
 			friend class boost::serialization::access;
 
@@ -347,7 +348,7 @@ namespace IED
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
 			};
-			
+
 			union
 			{
 				std::uint32_t           ui32c{ 0 };
@@ -449,7 +450,7 @@ namespace IED
 		using configNodeOverrideOffsetList_t = stl::boost_vector<configNodeOverrideOffset_t>;
 
 		struct configNodeOverrideOffset_t :
-			public configNodeOverrideValues_t
+			public configNodeOverrideTransformValues_t
 		{
 			friend class boost::serialization::access;
 
@@ -495,7 +496,7 @@ namespace IED
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
-				a_ar& static_cast<const configNodeOverrideValues_t&>(*this);
+				a_ar& static_cast<const configNodeOverrideTransformValues_t&>(*this);
 				a_ar& offsetFlags.value;
 				a_ar& conditions;
 				a_ar& description;
@@ -506,7 +507,7 @@ namespace IED
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& static_cast<configNodeOverrideValues_t&>(*this);
+				a_ar& static_cast<configNodeOverrideTransformValues_t&>(*this);
 				a_ar& offsetFlags.value;
 				a_ar& conditions;
 				a_ar& description;
@@ -535,7 +536,7 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideFlags);
 
 		struct configNodeOverrideTransform_t :
-			public configNodeOverrideValues_t
+			public configNodeOverrideTransformValues_t
 		{
 			friend class boost::serialization::access;
 
@@ -551,7 +552,7 @@ namespace IED
 
 			void clear()
 			{
-				configNodeOverrideValues_t::clear();
+				configNodeOverrideTransformValues_t::clear();
 				overrideFlags = NodeOverrideFlags::kNone;
 				offsets.clear();
 				visibilityConditionList.clear();
@@ -561,7 +562,7 @@ namespace IED
 			template <class Archive>
 			void serialize(Archive& a_ar, const unsigned int a_version)
 			{
-				a_ar& static_cast<configNodeOverrideValues_t&>(*this);
+				a_ar& static_cast<configNodeOverrideTransformValues_t&>(*this);
 				a_ar& offsets;
 				a_ar& overrideFlags.value;
 				a_ar& visibilityConditionList;
@@ -653,7 +654,7 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverridePlacementFlags);
 
 		struct configNodeOverridePlacement_t :
-			public configNodeOverridePlacementValues_t
+			configNodeOverridePlacementValues_t
 		{
 			friend class boost::serialization::access;
 
@@ -683,6 +684,86 @@ namespace IED
 			}
 		};
 
+		enum class NodeOverridePhysicsOverrideFlags : std::uint32_t
+		{
+			kNone = 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(NodeOverridePhysicsOverrideFlags);
+
+		struct configNodeOverridePhysicsOverride_t :
+			configNodePhysicsValues_t
+		{
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			void clear()
+			{
+				configNodePhysicsValues_t::clear();
+				overrideFlags = NodeOverridePhysicsOverrideFlags::kNone;
+				description.clear();
+			}
+
+			stl::flag<NodeOverridePhysicsOverrideFlags> overrideFlags{ NodeOverridePhysicsOverrideFlags::kNone };
+			configNodeOverrideConditionList_t           conditions;
+			std::string                                 description;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& static_cast<configNodePhysicsValues_t&>(*this);
+				a_ar& overrideFlags.value;
+				a_ar& conditions;
+				a_ar& description;
+			}
+		};
+
+		using configNodeOverridePhysicsOverrideList_t = stl::boost_vector<configNodeOverridePhysicsOverride_t>;
+
+		enum class NodeOverridePhysicsFlags : std::uint32_t
+		{
+			kNone = 0
+		};
+
+		DEFINE_ENUM_CLASS_BITWISE(NodeOverridePhysicsFlags);
+
+		struct configNodeOverridePhysics_t :
+			configNodePhysicsValues_t
+		{
+			friend class boost::serialization::access;
+
+		public:
+			enum Serialization : unsigned int
+			{
+				DataVersion1 = 1
+			};
+
+			void clear()
+			{
+				configNodePhysicsValues_t::clear();
+				flags = NodeOverridePhysicsFlags::kNone;
+				overrides.clear();
+			}
+
+			stl::flag<NodeOverridePhysicsFlags>     flags{ NodeOverridePhysicsFlags::kNone };
+			configNodeOverridePhysicsOverrideList_t overrides;
+
+		private:
+			template <class Archive>
+			void serialize(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& static_cast<configNodePhysicsValues_t&>(*this);
+				a_ar& flags.value;
+				a_ar& overrides;
+			}
+		};
+
 		enum class NodeOverrideHolderFlags : std::uint32_t
 		{
 			kNone = 0,
@@ -694,6 +775,7 @@ namespace IED
 
 		using configNodeOverrideEntryTransform_t = configSexRoot_t<configNodeOverrideTransform_t>;
 		using configNodeOverrideEntryPlacement_t = configSexRoot_t<configNodeOverridePlacement_t>;
+		using configNodeOverrideEntryPhysics_t   = configSexRoot_t<configNodeOverridePhysics_t>;
 
 		struct configNodeOverrideHolderCopy_t;
 
@@ -704,10 +786,12 @@ namespace IED
 		public:
 			using transform_data_type = stl::boost_unordered_map<stl::fixed_string, configNodeOverrideEntryTransform_t>;
 			using placement_data_type = stl::boost_unordered_map<stl::fixed_string, configNodeOverrideEntryPlacement_t>;
+			using physics_data_type   = stl::boost_unordered_map<stl::fixed_string, configNodeOverrideEntryPhysics_t>;
 
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			configNodeOverrideHolder_t() = default;
@@ -727,18 +811,21 @@ namespace IED
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
 			transform_data_type                transformData;
 			placement_data_type                placementData;
+			physics_data_type                  physicsData;
 
 			void clear() noexcept
 			{
 				flags = NodeOverrideHolderFlags::kNone;
 				transformData.clear();
 				placementData.clear();
+				physicsData.clear();
 			}
 
 			inline bool empty() const noexcept
 			{
 				return transformData.empty() &&
-				       placementData.empty();
+				       placementData.empty() &&
+				       physicsData.empty();
 			}
 
 			template <
@@ -765,6 +852,54 @@ namespace IED
 				return placementData;
 			}
 
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					physics_data_type,
+					configNodeOverrideEntryPhysics_t>
+			{
+				return physicsData;
+			}
+			
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					transform_data_type,
+					configNodeOverrideEntryTransform_t>
+			{
+				return transformData;
+			}
+
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					placement_data_type,
+					configNodeOverrideEntryPlacement_t>
+			{
+				return placementData;
+			}
+
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+				requires stl::is_any_same_v<
+					data_type,
+					physics_data_type,
+					configNodeOverrideEntryPhysics_t>
+			{
+				return physicsData;
+			}
+
 		private :
 			template <class Archive>
 			void
@@ -773,6 +908,11 @@ namespace IED
 				a_ar& flags.value;
 				a_ar& transformData;
 				a_ar& placementData;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& physicsData;
+				}
 			}
 
 			void __init(const configNodeOverrideHolderCopy_t& a_rhs);
@@ -784,6 +924,8 @@ namespace IED
 			template <class Td>
 			struct data_value_pair
 			{
+				using second_type = Td;
+
 				ConfigClass first{ ConfigClass::Global };
 				Td          second;
 			};
@@ -796,6 +938,10 @@ namespace IED
 			using placement_data_type = stl::boost_unordered_map<
 				stl::fixed_string,
 				data_value_pair<configNodeOverrideEntryPlacement_t>>;
+
+			using physics_data_type = stl::boost_unordered_map<
+				stl::fixed_string,
+				data_value_pair<configNodeOverrideEntryPhysics_t>>;
 
 			configNodeOverrideHolderCopy_t() = default;
 
@@ -810,17 +956,21 @@ namespace IED
 			stl::flag<NodeOverrideHolderFlags> flags{ NodeOverrideHolderFlags::kNone };
 			transform_data_type                transformData;
 			placement_data_type                placementData;
+			physics_data_type                  physicsData;
 
 			void clear() noexcept
 			{
 				flags = NodeOverrideHolderFlags::kNone;
 				transformData.clear();
 				placementData.clear();
+				physicsData.clear();
 			}
 
 			inline bool empty() const noexcept
 			{
-				return transformData.empty() && placementData.empty();
+				return transformData.empty() &&
+				       placementData.empty() &&
+				       physicsData.empty();
 			}
 
 			template <
@@ -845,6 +995,18 @@ namespace IED
 						 configNodeOverrideEntryPlacement_t>)
 			{
 				return placementData;
+			}
+
+			template <
+				class Td,
+				class data_type = stl::strip_type<Td>>
+			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+				requires(stl::is_any_same_v<
+						 data_type,
+						 physics_data_type,
+						 configNodeOverrideEntryPhysics_t>)
+			{
+				return physicsData;
 			}
 
 			configNodeOverrideHolder_t copy_cc(
@@ -883,6 +1045,11 @@ namespace IED
 				{
 					a_dst.placementData.emplace(e.first, e.second);
 				}
+
+				for (auto& e : a_src.physicsData)
+				{
+					a_dst.physicsData.emplace(e.first, e.second);
+				}
 			}
 
 			static void CopyEntries(
@@ -898,6 +1065,11 @@ namespace IED
 				for (auto& e : a_src.placementData)
 				{
 					a_dst.placementData.try_emplace(e.first, a_class, e.second);
+				}
+
+				for (auto& e : a_src.physicsData)
+				{
+					a_dst.physicsData.try_emplace(e.first, a_class, e.second);
 				}
 			}
 
@@ -930,7 +1102,72 @@ namespace IED
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
 				holderCache_t&           a_hc) const;
+
+			const configNodeOverrideEntryPhysics_t* GetActorPhysics(
+				Game::FormID             a_actor,
+				Game::FormID             a_npc,
+				Game::FormID             a_race,
+				const stl::fixed_string& a_node,
+				holderCache_t&           a_hc) const;
+
+		private:
+			template <class Tc>
+			const Tc* GetActorConfig(
+				Game::FormID             a_actor,
+				Game::FormID             a_npc,
+				Game::FormID             a_race,
+				const stl::fixed_string& a_node,
+				holderCache_t&           a_hc) const;
 		};
+
+		template <class Tc>
+		inline const Tc* configStoreNodeOverride_t::GetActorConfig(
+			Game::FormID             a_actor,
+			Game::FormID             a_npc,
+			Game::FormID             a_race,
+			const stl::fixed_string& a_node,
+			holderCache_t&           a_hc) const
+		{
+			if (auto& c = GetActorData(); !c.empty())
+			{
+				if (auto d = a_hc.get_actor(a_actor, c))
+				{
+					if (auto r = holderCache_t::get_entry(d->get_data<Tc>(), a_node))
+					{
+						return r;
+					}
+				}
+			}
+
+			if (auto& c = GetNPCData(); !c.empty())
+			{
+				if (auto d = a_hc.get_npc(a_npc, c))
+				{
+					if (auto r = holderCache_t::get_entry(d->get_data<Tc>(), a_node))
+					{
+						return r;
+					}
+				}
+			}
+
+			if (auto& c = GetRaceData(); !c.empty())
+			{
+				if (auto d = a_hc.get_race(a_race, c))
+				{
+					if (auto r = holderCache_t::get_entry(d->get_data<Tc>(), a_node))
+					{
+						return r;
+					}
+				}
+			}
+
+			auto type =
+				a_actor == Data::IData::GetPlayerRefID() ?
+					GlobalConfigType::Player :
+                    GlobalConfigType::NPC;
+
+			return holderCache_t::get_entry(GetGlobalData(type).get_data<Tc>(), a_node);
+		}
 	}
 }
 
@@ -951,8 +1188,8 @@ BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideCondition_t::Serialization::DataVersion5);
 
 BOOST_CLASS_VERSION(
-	::IED::Data::configNodeOverrideValues_t,
-	::IED::Data::configNodeOverrideValues_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideTransformValues_t,
+	::IED::Data::configNodeOverrideTransformValues_t::Serialization::DataVersion1);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverridePlacement_t,
@@ -968,4 +1205,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configNodeOverrideHolder_t,
-	::IED::Data::configNodeOverrideHolder_t::Serialization::DataVersion1);
+	::IED::Data::configNodeOverrideHolder_t::Serialization::DataVersion2);

@@ -14,38 +14,100 @@ namespace IED
 	{
 		m_timer.Begin();
 
-		auto steps = Game::Unk2f6b948::GetSteps();
+		if (m_flags.test_any(EffectControllerFlags::kEnableMask))
+		{
+			ProcessEffectsImpl(a_map);
+		}
 
-		if (m_parallel)
+		m_timer.End(m_currentTime);
+	}
+
+	void EffectController::ProcessEffectsImpl(const ActorObjectMap& a_map)
+	{
+		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
+
+		const auto interval = *Game::g_frameTimerSlow;
+
+		std::optional<PhysUpdateData> physUpdateData;
+
+		if (PhysicsProcessingEnabled())
+		{
+			PreparePhysicsUpdateData(interval, physUpdateData);
+		}
+
+		if (m_flags.test(EffectControllerFlags::kParallelProcessing))
 		{
 			std::for_each(
 				std::execution::par,
 				a_map.begin(),
 				a_map.end(),
 				[&](auto& a_e) {
-					UpdateActor(steps, a_e.second);
+					RunUpdates(interval, stepMuls, physUpdateData, a_e.second);
 				});
 		}
 		else
 		{
 			for (auto& e : a_map)
 			{
-				UpdateActor(steps, e.second);
+				RunUpdates(interval, stepMuls, physUpdateData, e.second);
 			}
 		}
-
-		m_timer.End(m_currentTime);
 	}
 
-	void EffectController::UpdateActor(
-		const Game::Unk2f6b948::Steps& a_steps,
-		const ActorObjectHolder&       a_holder)
+	void EffectController::PreparePhysicsUpdateData(
+		float                          a_interval,
+		std::optional<PhysUpdateData>& a_data)
+	{
+		constexpr auto confTimeTick = 1.0f / 60.0f;
+		constexpr auto maxSubSteps  = 15.0f;
+
+		m_averageInterval = m_averageInterval * 0.875f + a_interval * 0.125f;
+		float timeTick    = std::min(m_averageInterval, confTimeTick);
+
+		m_timeAccum += a_interval;
+
+		if (m_timeAccum > timeTick * 0.25f)
+		{
+			a_data.emplace(
+				timeTick,
+				std::min(m_timeAccum, timeTick * maxSubSteps),
+				timeTick * 1.25f);
+
+			m_timeAccum = 0.0f;
+		}
+	}
+
+	void EffectController::RunUpdates(
+		const float                          a_interval,
+		const Game::Unk2f6b948::Steps&       a_stepMuls,
+		const std::optional<PhysUpdateData>& a_physUpdData,
+		const ActorObjectHolder&             a_holder)
 	{
 		if (!a_holder.IsCellAttached())
 		{
 			return;
 		}
 
+		const auto stepMul =
+			a_holder.GetActorFormID() == Data::IData::GetPlayerRefID() ?
+				a_stepMuls.player :
+                a_stepMuls.npc;
+
+		if (ShaderProcessingEnabled())
+		{
+			UpdateShaders(a_interval * stepMul, a_holder);
+		}
+
+		if (a_physUpdData)
+		{
+			UpdatePhysics(stepMul, *a_physUpdData, a_holder);
+		}
+	}
+
+	void EffectController::UpdateShaders(
+		const float              a_step,
+		const ActorObjectHolder& a_holder)
+	{
 		NiPointer<TESObjectREFR> refr;
 		if (!a_holder.GetHandle().Lookup(refr))
 		{
@@ -63,16 +125,33 @@ namespace IED
 			return;
 		}
 
-		auto step = a_holder.GetActorFormID() == Data::IData::GetPlayerRefID() ?
-		                a_steps.player :
-                        a_steps.npc;
-
 		a_holder.visit([&](auto& a_entry) [[msvc::forceinline]] {
-			UpdateObjectEffects(actor, a_entry, step);
+			UpdateObjectShaders(actor, a_entry, a_step);
 		});
 	}
 
-	void EffectController::UpdateEffectsOnDisplay(
+	void EffectController::UpdatePhysics(
+		const float              a_stepMul,
+		const PhysUpdateData&    a_physUpdData,
+		const ActorObjectHolder& a_holder) noexcept
+	{
+		a_holder.SimReadTransforms();
+
+		auto timeStep = a_physUpdData.timeStep;
+
+		while (timeStep >= a_physUpdData.maxTime)
+		{
+			a_holder.SimUpdate(a_physUpdData.timeTick * a_stepMul);
+
+			timeStep -= a_physUpdData.timeTick;
+		}
+
+		a_holder.SimUpdate(timeStep * a_stepMul);
+
+		a_holder.SimWriteTransforms();
+	}
+
+	void EffectController::UpdateShadersOnDisplay(
 		const EffectShaderData&       a_data,
 		const ObjectEntryBase::State& a_state,
 		float                         a_step)
@@ -106,7 +185,7 @@ namespace IED
 		}
 	}
 
-	void EffectController::UpdateEffectsOnEquipped(
+	void EffectController::UpdateShadersOnEquipped(
 		Actor*                  a_actor,
 		const EffectShaderData& a_data,
 		float                   a_step)
@@ -201,7 +280,7 @@ namespace IED
 		});
 	}
 
-	void EffectController::UpdateObjectEffects(
+	void EffectController::UpdateObjectShaders(
 		[[maybe_unused]] Actor*  a_actor,
 		const ObjectEntryCustom& a_entry,
 		float                    a_step)
@@ -218,10 +297,10 @@ namespace IED
 			return;
 		}
 
-		UpdateEffectsOnDisplay(*efdata, *state, a_step);
+		UpdateShadersOnDisplay(*efdata, *state, a_step);
 	}
 
-	void EffectController::UpdateObjectEffects(
+	void EffectController::UpdateObjectShaders(
 		Actor*                 a_actor,
 		const ObjectEntrySlot& a_entry,
 		float                  a_step)
@@ -234,13 +313,13 @@ namespace IED
 
 		if (efdata->targettingEquipped)
 		{
-			UpdateEffectsOnEquipped(a_actor, *efdata, a_step);
+			UpdateShadersOnEquipped(a_actor, *efdata, a_step);
 		}
 		else
 		{
 			if (auto& state = a_entry.data.state)
 			{
-				UpdateEffectsOnDisplay(*efdata, *state, a_step);
+				UpdateShadersOnDisplay(*efdata, *state, a_step);
 			}
 		}
 	}

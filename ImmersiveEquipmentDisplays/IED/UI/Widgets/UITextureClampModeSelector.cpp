@@ -6,14 +6,14 @@ namespace IED
 {
 	namespace UI
 	{
-		UITextureClampModeSelector::data_type UITextureClampModeSelector::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ TextureAddressMode::kClampSClampT, "ClampSClampT" },
-			{ TextureAddressMode::kClampSWrapT, "ClampSWrapT" },
-			{ TextureAddressMode::kWrapSClampT, "WrapSClampT" },
-			{ TextureAddressMode::kWrapSWrapT, "WrapSWrapT" },
+			std::make_pair(TextureAddressMode::kClampSClampT, "ClampSClampT"),
+			std::make_pair(TextureAddressMode::kClampSWrapT, "ClampSWrapT"),
+			std::make_pair(TextureAddressMode::kWrapSClampT, "WrapSClampT"),
+			std::make_pair(TextureAddressMode::kWrapSWrapT, "WrapSWrapT")
 
-		} };
+		);
 
 		UITextureClampModeSelector::UITextureClampModeSelector(
 			Localization::ILocalization& a_localization) :
@@ -32,7 +32,7 @@ namespace IED
 					texture_clamp_mode_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

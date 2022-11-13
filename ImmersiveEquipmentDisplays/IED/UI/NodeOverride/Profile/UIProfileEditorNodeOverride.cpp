@@ -205,6 +205,13 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
+			int                                          a_handle,
+			const SingleNodeOverridePhysicsUpdateParams& a_params)
+		{
+			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
+		}
+
+		void UIProfileEditorNodeOverride::OnUpdate(
 			int                             a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
@@ -231,6 +238,16 @@ namespace IED
 			}
 		}
 
+		void UIProfileEditorNodeOverride::OnClearPhysics(
+			int                                  a_handle,
+			const ClearNodeOverrideUpdateParams& a_params)
+		{
+			if (auto profile = GetCurrentProfile())
+			{
+				profile->Data().physicsData.erase(a_params.name);
+			}
+		}
+
 		void UIProfileEditorNodeOverride::OnClearAllTransforms(
 			int                                     a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
@@ -248,6 +265,16 @@ namespace IED
 			if (auto profile = GetCurrentProfile())
 			{
 				profile->Data().placementData.clear();
+			}
+		}
+
+		void UIProfileEditorNodeOverride::OnClearAllPhysics(
+			int                                     a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			if (auto profile = GetCurrentProfile())
+			{
+				profile->Data().physicsData.clear();
 			}
 		}
 

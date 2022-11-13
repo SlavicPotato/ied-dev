@@ -6,13 +6,13 @@ namespace IED
 {
 	namespace UI
 	{
-		UIVariableTypeSelectorWidget::data_type UIVariableTypeSelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ ConditionalVariableType::kInt32, UIVariableTypeSelectorWidgetStrings::i32 },
-			{ ConditionalVariableType::kFloat, UIVariableTypeSelectorWidgetStrings::f32 },
-			{ ConditionalVariableType::kForm, UIVariableTypeSelectorWidgetStrings::Form },
+			std::make_pair(ConditionalVariableType::kInt32, UIVariableTypeSelectorWidgetStrings::i32),
+			std::make_pair(ConditionalVariableType::kFloat, UIVariableTypeSelectorWidgetStrings::f32),
+			std::make_pair(ConditionalVariableType::kForm, UIVariableTypeSelectorWidgetStrings::Form)
 
-		} };
+		);
 
 		UIVariableTypeSelectorWidget::UIVariableTypeSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -30,7 +30,7 @@ namespace IED
 					variable_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_data)
+				for (auto& e : s_data)
 				{
 					ImGui::PushID(stl::underlying(e.first));
 
@@ -46,7 +46,7 @@ namespace IED
 							selected))
 					{
 						a_type = e.first;
-						result   = true;
+						result = true;
 					}
 
 					ImGui::PopID();

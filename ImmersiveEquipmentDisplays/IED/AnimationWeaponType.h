@@ -2,7 +2,7 @@
 
 namespace IED
 {
-	enum class AnimationWeaponType : std::uint32_t
+	enum class AnimationWeaponType : std::uint8_t
 	{
 		None = static_cast<std::underlying_type_t<AnimationWeaponType>>(-1),
 

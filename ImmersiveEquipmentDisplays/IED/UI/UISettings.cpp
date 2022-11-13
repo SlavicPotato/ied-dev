@@ -18,37 +18,34 @@ namespace IED
 {
 	namespace UI
 	{
-		static const std::array<std::pair<ObjectDatabaseLevel, CommonStrings>, 10> s_odbmvals{ {
+		static constexpr auto s_odbmvals = stl::make_array(
 
-			{ ObjectDatabaseLevel::kDisabled, CommonStrings::Disabled },
-			{ ObjectDatabaseLevel::kNone, CommonStrings::UsedOnly },
-			{ ObjectDatabaseLevel::kMin, CommonStrings::Minimum },
-			{ ObjectDatabaseLevel::kVeryLow, CommonStrings::VeryLow },
-			{ ObjectDatabaseLevel::kLow, CommonStrings::Low },
-			{ ObjectDatabaseLevel::kMedium, CommonStrings::Medium },
-			{ ObjectDatabaseLevel::kHigh, CommonStrings::High },
-			{ ObjectDatabaseLevel::kVeryHigh, CommonStrings::VeryHigh },
-			{ ObjectDatabaseLevel::kExtreme, CommonStrings::Extreme },
-			{ ObjectDatabaseLevel::kMax, CommonStrings::Maximum }
+			std::make_pair(ObjectDatabaseLevel::kDisabled, CommonStrings::Disabled),
+			std::make_pair(ObjectDatabaseLevel::kNone, CommonStrings::UsedOnly),
+			std::make_pair(ObjectDatabaseLevel::kMin, CommonStrings::Minimum),
+			std::make_pair(ObjectDatabaseLevel::kVeryLow, CommonStrings::VeryLow),
+			std::make_pair(ObjectDatabaseLevel::kLow, CommonStrings::Low),
+			std::make_pair(ObjectDatabaseLevel::kMedium, CommonStrings::Medium),
+			std::make_pair(ObjectDatabaseLevel::kHigh, CommonStrings::High),
+			std::make_pair(ObjectDatabaseLevel::kVeryHigh, CommonStrings::VeryHigh),
+			std::make_pair(ObjectDatabaseLevel::kExtreme, CommonStrings::Extreme),
+			std::make_pair(ObjectDatabaseLevel::kMax, CommonStrings::Maximum)
 
-		} };
+		);
 
-		static const std::array<std::pair<stl::flag<GlyphPresetFlags>, const char*>, 12> s_extraGlyphs{ {
-
-			{ GlyphPresetFlags::kLatinFull, "Latin full" },
-			{ GlyphPresetFlags::kCyrilic, "Cyrilic" },
-			{ GlyphPresetFlags::kJapanese, "Japanese" },
-			{ GlyphPresetFlags::kChineseSimplifiedCommon, "Chinese simplified common" },
-			{ GlyphPresetFlags::kChineseFull, "Chinese full" },
-			{ GlyphPresetFlags::kKorean, "Korean" },
-			{ GlyphPresetFlags::kThai, "Thai" },
-			{ GlyphPresetFlags::kVietnamise, "Vietnamise" },
-			{ GlyphPresetFlags::kGreek, "Greek" },
-			{ GlyphPresetFlags::kArabic, "Arabic" },
-			{ GlyphPresetFlags::kArrows, "Arrows" },
-			{ GlyphPresetFlags::kCommon, "Common" },
-
-		} };
+		static constexpr auto s_extraGlyphs = stl::make_array(
+			std::make_pair(GlyphPresetFlags::kLatinFull, "Latin full"),
+			std::make_pair(GlyphPresetFlags::kCyrilic, "Cyrilic"),
+			std::make_pair(GlyphPresetFlags::kJapanese, "Japanese"),
+			std::make_pair(GlyphPresetFlags::kChineseSimplifiedCommon, "Chinese simplified common"),
+			std::make_pair(GlyphPresetFlags::kChineseFull, "Chinese full"),
+			std::make_pair(GlyphPresetFlags::kKorean, "Korean"),
+			std::make_pair(GlyphPresetFlags::kThai, "Thai"),
+			std::make_pair(GlyphPresetFlags::kVietnamise, "Vietnamise"),
+			std::make_pair(GlyphPresetFlags::kGreek, "Greek"),
+			std::make_pair(GlyphPresetFlags::kArabic, "Arabic"),
+			std::make_pair(GlyphPresetFlags::kArrows, "Arrows"),
+			std::make_pair(GlyphPresetFlags::kCommon, "Common"));
 
 		UISettings::UISettings(
 			Tasks::UIRenderTaskBase& a_owner,
@@ -81,10 +78,7 @@ namespace IED
 				DrawGeneralSection();
 				DrawDisplaysSection();
 				DrawGearPosSection();
-				if (m_controller.EffectControllerEnabled())
-				{
-					DrawEffectShadersSection();
-				}
+				DrawEffectsSection();
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
@@ -350,7 +344,7 @@ namespace IED
 						ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::RandPlacement);
-				
+
 				if (settings.mark_if(ImGui::Checkbox(
 						LS(UISettingsStrings::SyncToFirstPerson, "5"),
 						std::addressof(data.syncTransformsToFirstPersonSkeleton))))
@@ -365,26 +359,69 @@ namespace IED
 			}
 		}
 
-		void UISettings::DrawEffectShadersSection()
+		void UISettings::DrawEffectsSection()
 		{
 			if (CollapsingHeader(
 					"tree_es",
 					false,
 					"%s",
-					LS(UISettingsStrings::EffectShaders)))
+					LS(UISettingsStrings::Effects)))
 			{
-				ImGui::Spacing();
-				ImGui::Indent();
-
 				auto& settings = m_controller.GetConfigStore().settings;
 				auto& data     = settings.data;
 
+				ImGui::Spacing();
+				ImGui::Indent();
+
 				if (settings.mark_if(ImGui::Checkbox(
-						LS(UISettingsStrings::ParallelUpdates, "1"),
-						std::addressof(data.effectShaderParallelUpdates))))
+						LS(UISettingsStrings::EffectShaders, "1"),
+						std::addressof(data.enableEffectShaders))))
+				{
+					m_controller.SetShaderProcessingEnabled(
+						data.enableEffectShaders);
+
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+				}
+
+				const bool disabled = m_controller.GetPhysicsForcedOff();
+
+				if (disabled)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped(
+						"%s",
+						LS(UISettingsStrings::PhysicsForcedOffWarning));
+					ImGui::PopStyleColor();
+				}
+
+				UICommon::PushDisabled(disabled);
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::EquipmentPhysics, "2"),
+						std::addressof(data.enableEquipmentPhysics))))
+				{
+					m_controller.SetPhysicsProcessingEnabled(
+						data.enableEquipmentPhysics);
+
+					if (data.enableEquipmentPhysics)
+					{
+						m_controller.RequestEvaluateTransformsAll(true);
+					}
+					else
+					{
+						m_controller.ClearActorPhysicsData();
+					}
+				}
+				DrawTip(UITip::EquipmentPhysics);
+
+				UICommon::PopDisabled(disabled);
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(UISettingsStrings::ParallelUpdates, "A"),
+						std::addressof(data.effectsParallelUpdates))))
 				{
 					m_controller.SetEffectControllerParallelUpdates(
-						data.effectShaderParallelUpdates);
+						data.effectsParallelUpdates);
 				}
 				DrawTipImportant(UITip::EffectShadersParallelUpdates);
 
@@ -1088,12 +1125,12 @@ namespace IED
 
 				for (auto& e : s_extraGlyphs)
 				{
-					ImGui::PushID(stl::underlying(e.first.value));
+					ImGui::PushID(stl::underlying(e.first));
 
 					if (settings.mark_if(ImGui::CheckboxFlagsT(
 							e.second,
 							stl::underlying(std::addressof(settings.data.ui.extraGlyphs.value)),
-							stl::underlying(e.first.value))))
+							stl::underlying(e.first))))
 					{
 						Drivers::UI::QueueSetExtraGlyphs(settings.data.ui.extraGlyphs);
 					}

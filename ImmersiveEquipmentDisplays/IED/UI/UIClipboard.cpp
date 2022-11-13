@@ -62,8 +62,20 @@ namespace IED
 			case DataType::NodeOverridePlacementValues:
 				erase<Data::configNodeOverridePlacementValues_t>();
 				break;
-			case DataType::NodeOverrideValues:
-				erase<Data::configNodeOverrideValues_t>();
+			case DataType::NodeOverridePhysicsOverride:
+				erase<Data::configNodeOverridePhysicsOverride_t>();
+				break;
+			case DataType::NodeOverridePhysics:
+				erase<Data::configNodeOverridePhysics_t>();
+				break;
+			case DataType::NodeOverridePhysicsOverrideList:
+				erase<Data::configNodeOverridePhysicsOverrideList_t>();
+				break;
+			case DataType::NodePhysicsValues:
+				erase<Data::configNodePhysicsValues_t>();
+				break;
+			case DataType::NodeOverrideTransformValues:
+				erase<Data::configNodeOverrideTransformValues_t>();
 				break;
 			case DataType::NodeOverrideOffset:
 				erase<Data::configNodeOverrideOffset_t>();

@@ -3,7 +3,7 @@
 namespace IED
 {
 
-	enum class WeaponPlacementID : std::uint32_t
+	enum class WeaponPlacementID : std::uint8_t
 	{
 		None,
 		Default,

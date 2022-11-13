@@ -49,7 +49,10 @@ namespace IED
 			ReleaseControlLockKeys      = 4438,
 			ExitOnLastWindowClose       = 4439,
 			UnfreezeTime                = 4440,
-			SyncToFirstPerson         = 4441,
+			SyncToFirstPerson           = 4441,
+			Effects                     = 4442,
+			EquipmentPhysics            = 4443,
+			PhysicsForcedOffWarning     = 4444,
 		};
 	}
 }

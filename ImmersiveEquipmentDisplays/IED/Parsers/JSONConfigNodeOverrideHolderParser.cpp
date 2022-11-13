@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "JSONConfigNodeOverrideHolderParser.h"
+
+#include "JSONConfigNodeOverridePhysicsParser.h"
 #include "JSONConfigNodeOverridePlacementParser.h"
 #include "JSONConfigNodeOverrideTransformParser.h"
 
@@ -23,6 +25,7 @@ namespace IED
 
 			Parser<Data::configNodeOverrideTransform_t> parser(m_state);
 			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
+			Parser<Data::configNodeOverridePhysics_t> phyparser(m_state);
 
 			a_out.flags = static_cast<Data::NodeOverrideHolderFlags>(
 				data.get("flags", stl::underlying(Data::NodeOverrideHolderFlags::kNone)).asUInt());
@@ -68,6 +71,26 @@ namespace IED
 					}
 				}
 			}
+			
+			auto& phydata = data["hdata"];
+
+			for (auto it = phydata.begin(); it != phydata.end(); ++it)
+			{
+				auto& v = a_out.physicsData.try_emplace(it.key().asString()).first->second;
+
+				parserDesc_t<Data::configNodeOverridePhysics_t> desc[]{
+					{ "m", v(ConfigSex::Male) },
+					{ "f", v(ConfigSex::Female) }
+				};
+
+				for (auto& e : desc)
+				{
+					if (!phyparser.Parse((*it)[e.member], e.data, version))
+					{
+						return false;
+					}
+				}
+			}
 
 			return true;
 		}
@@ -79,13 +102,12 @@ namespace IED
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<Data::configNodeOverrideTransform_t> parser(m_state);
-			Parser<Data::configNodeOverridePlacement_t> pparser(m_state);
-
 			data["flags"] = a_data.flags.underlying();
 
 			if (!a_data.transformData.empty())
 			{
+				Parser<Data::configNodeOverrideTransform_t> parser(m_state);
+
 				auto& vdata = (data["data"] = Json::Value(Json::ValueType::objectValue));
 
 				for (auto& [i, e] : a_data.transformData)
@@ -106,6 +128,8 @@ namespace IED
 
 			if (!a_data.placementData.empty())
 			{
+				Parser<Data::configNodeOverridePlacement_t> parser(m_state);
+
 				auto& pdata = (data["pdata"] = Json::Value(Json::ValueType::objectValue));
 
 				for (auto& [i, e] : a_data.placementData)
@@ -119,7 +143,29 @@ namespace IED
 
 					for (auto& f : desc)
 					{
-						pparser.Create(f.data, v[f.member]);
+						parser.Create(f.data, v[f.member]);
+					}
+				}
+			}
+			
+			if (!a_data.physicsData.empty())
+			{
+				Parser<Data::configNodeOverridePhysics_t> parser(m_state);
+
+				auto& pdata = (data["hdata"] = Json::Value(Json::ValueType::objectValue));
+
+				for (auto& [i, e] : a_data.physicsData)
+				{
+					parserDescConst_t<Data::configNodeOverridePhysics_t> desc[]{
+						{ "m", e(ConfigSex::Male) },
+						{ "f", e(ConfigSex::Female) }
+					};
+
+					auto& v = pdata[i];
+
+					for (auto& f : desc)
+					{
+						parser.Create(f.data, v[f.member]);
 					}
 				}
 			}

@@ -6,50 +6,50 @@ namespace IED
 {
 	namespace UI
 	{
-		UIPackageTypeSelectorWidget::data_type UIPackageTypeSelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ PACKAGE_PROCEDURE_TYPE::kNone, static_cast<UIPackageTypeSelectorWidgetStrings>(CommonStrings::None) },
-			{ PACKAGE_PROCEDURE_TYPE::kFind, UIPackageTypeSelectorWidgetStrings::Find },
-			{ PACKAGE_PROCEDURE_TYPE::kFollow, UIPackageTypeSelectorWidgetStrings::Follow },
-			{ PACKAGE_PROCEDURE_TYPE::kEscort, UIPackageTypeSelectorWidgetStrings::Escort },
-			{ PACKAGE_PROCEDURE_TYPE::kEat, UIPackageTypeSelectorWidgetStrings::Eat },
-			{ PACKAGE_PROCEDURE_TYPE::kSleep, UIPackageTypeSelectorWidgetStrings::Sleep },
-			{ PACKAGE_PROCEDURE_TYPE::kWander, UIPackageTypeSelectorWidgetStrings::Wander },
-			{ PACKAGE_PROCEDURE_TYPE::kTravel, UIPackageTypeSelectorWidgetStrings::Travel },
-			{ PACKAGE_PROCEDURE_TYPE::kAccompany, UIPackageTypeSelectorWidgetStrings::Accompany },
-			{ PACKAGE_PROCEDURE_TYPE::kUseItemAt, UIPackageTypeSelectorWidgetStrings::UseItemAt },
-			{ PACKAGE_PROCEDURE_TYPE::kAmbush, UIPackageTypeSelectorWidgetStrings::Ambush },
-			{ PACKAGE_PROCEDURE_TYPE::kFleeNotCombat, UIPackageTypeSelectorWidgetStrings::FleeNotCombat },
-			{ PACKAGE_PROCEDURE_TYPE::kCastMagic, UIPackageTypeSelectorWidgetStrings::CastMagic },
-			{ PACKAGE_PROCEDURE_TYPE::kSandbox, UIPackageTypeSelectorWidgetStrings::Sandbox },
-			{ PACKAGE_PROCEDURE_TYPE::kPatrol, UIPackageTypeSelectorWidgetStrings::Patrol },
-			{ PACKAGE_PROCEDURE_TYPE::kGuard, UIPackageTypeSelectorWidgetStrings::Guard },
-			{ PACKAGE_PROCEDURE_TYPE::kDialogue, UIPackageTypeSelectorWidgetStrings::Dialogue },
-			{ PACKAGE_PROCEDURE_TYPE::kUseWeapon, UIPackageTypeSelectorWidgetStrings::UseWeapon },
-			{ PACKAGE_PROCEDURE_TYPE::kFind2, UIPackageTypeSelectorWidgetStrings::Find2 },
-			{ PACKAGE_PROCEDURE_TYPE::kPackage, UIPackageTypeSelectorWidgetStrings::Package },
-			{ PACKAGE_PROCEDURE_TYPE::kPackageTemplate, UIPackageTypeSelectorWidgetStrings::PackageTemplate },
-			{ PACKAGE_PROCEDURE_TYPE::kActivate, UIPackageTypeSelectorWidgetStrings::Activate },
-			{ PACKAGE_PROCEDURE_TYPE::kAlarm, UIPackageTypeSelectorWidgetStrings::Alarm },
-			{ PACKAGE_PROCEDURE_TYPE::kFlee, UIPackageTypeSelectorWidgetStrings::Flee },
-			{ PACKAGE_PROCEDURE_TYPE::kTrespass, UIPackageTypeSelectorWidgetStrings::Trespass },
-			{ PACKAGE_PROCEDURE_TYPE::kSpectator, UIPackageTypeSelectorWidgetStrings::Spectator },
-			{ PACKAGE_PROCEDURE_TYPE::kReactToDead, UIPackageTypeSelectorWidgetStrings::ReactToDead },
-			{ PACKAGE_PROCEDURE_TYPE::kGetUpFromChairBed, UIPackageTypeSelectorWidgetStrings::GetUpFromChairBed },
-			{ PACKAGE_PROCEDURE_TYPE::kDoNothing, UIPackageTypeSelectorWidgetStrings::DoNothing },
-			{ PACKAGE_PROCEDURE_TYPE::kInGameDialogue, UIPackageTypeSelectorWidgetStrings::InGameDialogue },
-			{ PACKAGE_PROCEDURE_TYPE::kSurface, UIPackageTypeSelectorWidgetStrings::Surface },
-			{ PACKAGE_PROCEDURE_TYPE::kSearchForAttacker, UIPackageTypeSelectorWidgetStrings::SearchForAttacker },
-			{ PACKAGE_PROCEDURE_TYPE::kAvoidPlayer, UIPackageTypeSelectorWidgetStrings::AvoidPlayer },
-			{ PACKAGE_PROCEDURE_TYPE::kReactToDestroyedObject, UIPackageTypeSelectorWidgetStrings::ReactToDestroyedObject },
-			{ PACKAGE_PROCEDURE_TYPE::kReactToGrenadeOrMine, UIPackageTypeSelectorWidgetStrings::ReactToGrenadeOrMine },
-			{ PACKAGE_PROCEDURE_TYPE::kStealWarning, UIPackageTypeSelectorWidgetStrings::StealWarning },
-			{ PACKAGE_PROCEDURE_TYPE::kPickPocketWarning, UIPackageTypeSelectorWidgetStrings::PickPocketWarning },
-			{ PACKAGE_PROCEDURE_TYPE::kMovementBlocked, UIPackageTypeSelectorWidgetStrings::MovementBlocked },
-			{ PACKAGE_PROCEDURE_TYPE::kVampireFeed, UIPackageTypeSelectorWidgetStrings::VampireFeed },
-			{ PACKAGE_PROCEDURE_TYPE::kCannibal, UIPackageTypeSelectorWidgetStrings::Cannibal },
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kNone, static_cast<UIPackageTypeSelectorWidgetStrings>(CommonStrings::None)),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kFind, UIPackageTypeSelectorWidgetStrings::Find),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kFollow, UIPackageTypeSelectorWidgetStrings::Follow),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kEscort, UIPackageTypeSelectorWidgetStrings::Escort),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kEat, UIPackageTypeSelectorWidgetStrings::Eat),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kSleep, UIPackageTypeSelectorWidgetStrings::Sleep),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kWander, UIPackageTypeSelectorWidgetStrings::Wander),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kTravel, UIPackageTypeSelectorWidgetStrings::Travel),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kAccompany, UIPackageTypeSelectorWidgetStrings::Accompany),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kUseItemAt, UIPackageTypeSelectorWidgetStrings::UseItemAt),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kAmbush, UIPackageTypeSelectorWidgetStrings::Ambush),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kFleeNotCombat, UIPackageTypeSelectorWidgetStrings::FleeNotCombat),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kCastMagic, UIPackageTypeSelectorWidgetStrings::CastMagic),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kSandbox, UIPackageTypeSelectorWidgetStrings::Sandbox),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kPatrol, UIPackageTypeSelectorWidgetStrings::Patrol),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kGuard, UIPackageTypeSelectorWidgetStrings::Guard),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kDialogue, UIPackageTypeSelectorWidgetStrings::Dialogue),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kUseWeapon, UIPackageTypeSelectorWidgetStrings::UseWeapon),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kFind2, UIPackageTypeSelectorWidgetStrings::Find2),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kPackage, UIPackageTypeSelectorWidgetStrings::Package),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kPackageTemplate, UIPackageTypeSelectorWidgetStrings::PackageTemplate),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kActivate, UIPackageTypeSelectorWidgetStrings::Activate),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kAlarm, UIPackageTypeSelectorWidgetStrings::Alarm),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kFlee, UIPackageTypeSelectorWidgetStrings::Flee),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kTrespass, UIPackageTypeSelectorWidgetStrings::Trespass),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kSpectator, UIPackageTypeSelectorWidgetStrings::Spectator),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kReactToDead, UIPackageTypeSelectorWidgetStrings::ReactToDead),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kGetUpFromChairBed, UIPackageTypeSelectorWidgetStrings::GetUpFromChairBed),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kDoNothing, UIPackageTypeSelectorWidgetStrings::DoNothing),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kInGameDialogue, UIPackageTypeSelectorWidgetStrings::InGameDialogue),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kSurface, UIPackageTypeSelectorWidgetStrings::Surface),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kSearchForAttacker, UIPackageTypeSelectorWidgetStrings::SearchForAttacker),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kAvoidPlayer, UIPackageTypeSelectorWidgetStrings::AvoidPlayer),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kReactToDestroyedObject, UIPackageTypeSelectorWidgetStrings::ReactToDestroyedObject),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kReactToGrenadeOrMine, UIPackageTypeSelectorWidgetStrings::ReactToGrenadeOrMine),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kStealWarning, UIPackageTypeSelectorWidgetStrings::StealWarning),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kPickPocketWarning, UIPackageTypeSelectorWidgetStrings::PickPocketWarning),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kMovementBlocked, UIPackageTypeSelectorWidgetStrings::MovementBlocked),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kVampireFeed, UIPackageTypeSelectorWidgetStrings::VampireFeed),
+			std::make_pair(PACKAGE_PROCEDURE_TYPE::kCannibal, UIPackageTypeSelectorWidgetStrings::Cannibal)
 
-		} };
+		);
 
 		UIPackageTypeSelectorWidget::UIPackageTypeSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -67,7 +67,7 @@ namespace IED
 					procedure_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

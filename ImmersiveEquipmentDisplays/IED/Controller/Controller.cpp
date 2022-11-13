@@ -28,7 +28,6 @@ namespace IED
 		const std::shared_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(*this),
 		IEquipment(m_rngBase),
-		EffectController(a_config->m_effectShaders),
 		IAnimationManager(m_config.settings),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
@@ -187,13 +186,19 @@ namespace IED
 			InitializeUI();
 		}
 
-		if (EffectControllerEnabled())
-		{
-			SetEffectControllerParallelUpdates(
-				settings.effectShaderParallelUpdates);
-		}
-
 		SetProcessorTaskRunAUState(settings.hkWeaponAnimations);
+		SetShaderProcessingEnabled(settings.enableEffectShaders);
+		SetEffectControllerParallelUpdates(settings.effectsParallelUpdates);
+
+		if (IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE))
+		{
+			SetPhysicsProcessingEnabled(settings.enableEquipmentPhysics);
+		}
+		else
+		{
+			SetPhysicsProcessingEnabled(false);
+			m_physicsForcedOff = true;
+		}
 
 		m_safeToOpenUI = true;
 
@@ -539,6 +544,14 @@ namespace IED
 		stl::scoped_lock lock(m_lock);
 
 		EvaluateImpl(a_actor, a_handle, a_flags);
+	}
+
+	void Controller::ClearActorPhysicsData()
+	{
+		for (auto& e : m_objects)
+		{
+			e.second.ClearAllSimComponents();
+		}
 	}
 
 	void Controller::EvaluateImpl(
@@ -2261,7 +2274,7 @@ namespace IED
 		ObjectEntryCustom&          a_objectEntry,
 		bool                        a_updateValues)
 	{
-		if (!EffectControllerEnabled() ||
+		if (!ShaderProcessingEnabled() ||
 		    !a_objectEntry.data.state)
 		{
 			return;
@@ -2689,7 +2702,7 @@ namespace IED
 			}
 		}
 
-		if (EffectControllerEnabled())
+		if (ShaderProcessingEnabled())
 		{
 			for (const auto& e : types)
 			{
@@ -4044,7 +4057,7 @@ namespace IED
 			}
 		}
 
-		for (auto& e : a_holder.m_cmeNodes)
+		for (const auto& e : a_holder.m_cmeNodes)
 		{
 			if (e.second.cachedConfCME)
 			{
@@ -4065,6 +4078,61 @@ namespace IED
 			}
 		}
 
+		if (PhysicsProcessingEnabled())
+		{
+			for (auto& [i, e] : a_holder.m_movNodes)
+			{
+				auto r = m_config.active.transforms.GetActorPhysics(
+					a_actor->formID,
+					params.npcOrTemplate->formID,
+					a_race->formID,
+					i,
+					hc);
+
+				if (r)
+				{
+					auto& conf = INodeOverride::GetPhysicsConfig(r->get(a_sex), params);
+
+					if (conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) ||
+					    !e.has_visible_geometry())
+					{
+						if (auto& sc = e.simComponent)
+						{
+							a_holder.RemoveFromSimNodeList(sc.get());
+							sc.reset();
+						}
+					}
+					else
+					{
+						if (!e.simComponent)
+						{
+							e.simComponent =
+								std::make_unique<PHYSimComponent>(
+									e.node.get(),
+									e.origTransform,
+									conf);
+
+							a_holder.AddToSimNodeList(e.simComponent.get());
+
+							//Debug("%.8X: adding %s", a_actor->formID, e.first.c_str());
+						}
+						else if (e.simComponent->get_conf() != conf)
+						{
+							e.simComponent->UpdateConfig(conf);
+						}
+					}
+				}
+				else
+				{
+					if (auto& sc = e.simComponent)
+					{
+						a_holder.RemoveFromSimNodeList(sc.get());
+						sc.reset();
+					}
+				}
+			}
+		}
+
 		if (m_forceOrigWeapXFRM &&
 		    EngineExtensions::IsWeaponAdjustDisabled())
 		{
@@ -4078,7 +4146,7 @@ namespace IED
 		}
 
 		if (GetSettings().data.enableXP32AA &&
-		    a_holder.m_animState.flags.test(ActorAnimationState::Flags::kNeedUpdate))
+		    a_holder.m_animState.flags.consume(ActorAnimationState::Flags::kNeedUpdate))
 		{
 			UpdateAA(a_actor, a_holder.m_animState);
 		}
@@ -5511,14 +5579,14 @@ namespace IED
 		std::uint32_t                    a_version,
 		boost::archive::binary_iarchive& a_in)
 	{
-		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
-		{
-			throw std::exception("unsupported version");
-		}
-
 		if (m_forceFlushSaveData)
 		{
 			throw std::exception("flushing saved data");
+		}
+
+		if (a_version > stl::underlying(SerializationVersion::kCurrentVersion))
+		{
+			throw std::exception("unsupported version");
 		}
 
 		stl::scoped_lock lock(m_lock);
@@ -5555,12 +5623,12 @@ namespace IED
 			m_config.active = std::move(cfgStore);
 		}
 
-		//m_storedActorStates = std::move(actorState);
-
 		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
 		{
 			a_in >> *this;
 		}
+
+		//auto& v = r.get(ConfigSex::Female);
 
 		return 4;
 	}
@@ -5810,7 +5878,7 @@ namespace IED
 		});
 	}*/
 
-	void Controller::ProcessEffectShaders()
+	void Controller::DoProcessEffects()
 	{
 		stl::scoped_lock lock(m_lock);
 

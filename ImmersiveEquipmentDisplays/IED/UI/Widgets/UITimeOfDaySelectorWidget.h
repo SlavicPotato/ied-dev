@@ -23,15 +23,7 @@ namespace IED
 			const char* time_of_day_to_desc(stl::flag<Data::TimeOfDay> a_tod) const;
 
 		private:
-			using data_type = std::array<
-				std::pair<
-					Data::TimeOfDay,
-					UITimeOfDaySelectorWidgetStrings>,
-				4>;
-
 			mutable std::string m_buf;
-
-			static data_type m_data;
 		};
 	}
 

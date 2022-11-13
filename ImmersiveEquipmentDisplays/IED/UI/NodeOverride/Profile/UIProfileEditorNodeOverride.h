@@ -77,6 +77,10 @@ namespace IED
 			virtual void OnUpdate(
 				int                                            a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
+			
+			virtual void OnUpdate(
+				int                                            a_handle,
+				const SingleNodeOverridePhysicsUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
 				int                             a_handle,
@@ -89,12 +93,20 @@ namespace IED
 			virtual void OnClearPlacement(
 				int                                  a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
+			
+			virtual void OnClearPhysics(
+				int                                  a_handle,
+				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllTransforms(
 				int                                     a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
+				int                                     a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+			
+			virtual void OnClearAllPhysics(
 				int                                     a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 

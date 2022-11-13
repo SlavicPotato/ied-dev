@@ -11,7 +11,6 @@
 #include "IED/UI/UISettingsInterface.h"
 #include "IED/UI/UITips.h"
 
-#include "EquipmentOverrideResult.h"
 #include "Form/UIFormFilterWidget.h"
 #include "Form/UIFormSelectorWidget.h"
 #include "UIBaseConfigWidgetStrings.h"
@@ -19,6 +18,7 @@
 #include "UIDescriptionPopup.h"
 #include "UIEffectShaderEditorWidget.h"
 #include "UIEquipmentOverrideConditionsWidget.h"
+#include "UIEquipmentOverrideResult.h"
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
@@ -231,7 +231,7 @@ namespace IED
 				const void*                a_params,
 				Data::equipmentOverride_t& a_override);
 
-			EquipmentOverrideResult DrawEquipmentOverrideContextMenu(
+			UIEquipmentOverrideResult DrawEquipmentOverrideContextMenu(
 				T                          a_handle,
 				const void*                a_params,
 				Data::equipmentOverride_t& a_data);
@@ -247,7 +247,7 @@ namespace IED
 				const void*              a_params,
 				const stl::fixed_string& a_slotName);
 
-			EquipmentOverrideResult DrawEffectShaderHolderContextMenu(
+			UIEquipmentOverrideResult DrawEffectShaderHolderContextMenu(
 				T                                 a_handle,
 				const void*                       a_params,
 				Data::effectShaderList_t&         a_list,
@@ -1841,9 +1841,9 @@ namespace IED
 			T                          a_handle,
 			const void*                a_params,
 			Data::equipmentOverride_t& a_data)
-			-> EquipmentOverrideResult
+			-> UIEquipmentOverrideResult
 		{
-			EquipmentOverrideResult result;
+			UIEquipmentOverrideResult result;
 
 			ImGui::PushID("eo_context_area");
 
@@ -2114,7 +2114,7 @@ namespace IED
 			const void*              a_params,
 			const stl::fixed_string& a_slotName)
 		{
-			bool disabled = !GetEffectControllerEnabled();
+			const bool disabled = !GetShaderProcessingEnabled();
 
 			UICommon::PushDisabled(disabled);
 
@@ -2187,13 +2187,13 @@ namespace IED
 		}
 
 		template <class T>
-		EquipmentOverrideResult UIBaseConfigWidget<T>::DrawEffectShaderHolderContextMenu(
+		UIEquipmentOverrideResult UIBaseConfigWidget<T>::DrawEffectShaderHolderContextMenu(
 			T                                 a_handle,
 			const void*                       a_params,
 			Data::effectShaderList_t&         a_list,
 			Data::configEffectShaderHolder_t& a_data)
 		{
-			EquipmentOverrideResult result;
+			UIEquipmentOverrideResult result;
 
 			ImGui::PushID("es_holder_context_area");
 

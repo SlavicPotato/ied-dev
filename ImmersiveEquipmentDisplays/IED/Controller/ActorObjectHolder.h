@@ -101,6 +101,9 @@ namespace IED
 			bool              visible;
 		};
 
+		using cme_node_map_type = stl::unordered_map<stl::fixed_string, CMENodeEntry>;
+		using mov_node_map_type = stl::unordered_map<stl::fixed_string, MOVNodeEntry>;
+
 	public:
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 340000;
 		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
@@ -489,6 +492,11 @@ namespace IED
 			const stl::fixed_string& a_name,
 			bool                     a_firstPerson = false) const;
 
+		[[nodiscard]] NiTransform GetCachedOrCurrentTransform(
+			const stl::fixed_string& a_name,
+			NiAVObject*              a_object,
+			bool                     a_firstPerson = false) const;
+
 		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
 			const stl::fixed_string& a_name,
 			bool                     a_firstPerson = false) const;
@@ -626,6 +634,15 @@ namespace IED
 
 		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle);
 
+		void AddToSimNodeList(PHYSimComponent* a_mov);
+		void RemoveFromSimNodeList(PHYSimComponent* a_mov);
+
+		void SimReadTransforms() const noexcept;
+		void SimWriteTransforms() const noexcept;
+		void SimUpdate(float a_step) const noexcept;
+
+		void ClearAllSimComponents();
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode* a_npcroot);
@@ -666,8 +683,10 @@ namespace IED
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<WeaponNodeEntry>    m_weapNodes;
 
-		stl::unordered_map<stl::fixed_string, CMENodeEntry> m_cmeNodes;
-		stl::unordered_map<stl::fixed_string, MOVNodeEntry> m_movNodes;
+		cme_node_map_type m_cmeNodes;
+		mov_node_map_type m_movNodes;
+
+		stl::vector<PHYSimComponent*> m_simNodeList;
 
 		stl::unordered_map<luid_tag, float> m_rpc;
 

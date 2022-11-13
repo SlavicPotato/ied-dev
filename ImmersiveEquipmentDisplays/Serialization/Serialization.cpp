@@ -12,17 +12,23 @@ namespace IED
 			std::uint32_t      a_size)
 		{
 			if (!a_in.isArray())
+			{
 				return false;
+			}
 
 			if (a_in.size() != a_size)
+			{
 				return false;
+			}
 
 			for (std::uint32_t i = 0; i < a_size; i++)
 			{
 				auto& v = a_in[i];
 
 				if (!v.isNumeric())
+				{
 					return false;
+				}
 
 				a_out[i] = v.asFloat();
 			}

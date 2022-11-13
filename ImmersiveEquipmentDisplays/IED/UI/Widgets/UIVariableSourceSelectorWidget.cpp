@@ -6,14 +6,15 @@ namespace IED
 {
 	namespace UI
 	{
-		UIVariableSourceSelectorWidget::data_type UIVariableSourceSelectorWidget::m_data{ {
 
-			{ Data::VariableSource::kActor, UIVariableSourceSelectorWidgetStrings::Actor },
-			{ Data::VariableSource::kPlayerHorse, UIVariableSourceSelectorWidgetStrings::PlayerHorse },
-			{ Data::VariableSource::kMountingActor, UIVariableSourceSelectorWidgetStrings::MountingActor },
-			{ Data::VariableSource::kMountedActor, UIVariableSourceSelectorWidgetStrings::MountedActor },
+		static constexpr auto s_data = stl::make_array(
 
-		} };
+			std::make_pair(Data::VariableSource::kActor, UIVariableSourceSelectorWidgetStrings::Actor),
+			std::make_pair(Data::VariableSource::kPlayerHorse, UIVariableSourceSelectorWidgetStrings::PlayerHorse),
+			std::make_pair(Data::VariableSource::kMountingActor, UIVariableSourceSelectorWidgetStrings::MountingActor),
+			std::make_pair(Data::VariableSource::kMountedActor, UIVariableSourceSelectorWidgetStrings::MountedActor)
+
+		);
 
 		UIVariableSourceSelectorWidget::UIVariableSourceSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -31,7 +32,7 @@ namespace IED
 					variable_source_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_data)
+				for (auto& e : s_data)
 				{
 					ImGui::PushID(stl::underlying(e.first));
 

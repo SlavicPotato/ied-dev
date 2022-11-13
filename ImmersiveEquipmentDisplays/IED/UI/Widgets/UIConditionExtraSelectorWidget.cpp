@@ -6,57 +6,58 @@ namespace IED
 {
 	namespace UI
 	{
-		const UIConditionExtraSelectorWidget::data_type UIConditionExtraSelectorWidget::m_data{ {
 
-			{ Data::ExtraConditionType::kAngryWithPlayer, UIConditionExtraSelectorWidgetStrings::AngryWithPlayer },
-			{ Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut },
-			{ Data::ExtraConditionType::kBribedByPlayer, UIConditionExtraSelectorWidgetStrings::BribedByPlayer },
-			{ Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield },
-			{ Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class },
-			{ Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle },
-			{ Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential },
-			{ Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton },
-			{ Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat },
-			{ Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson },
-			{ Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior },
-			{ Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove },
-			{ Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction },
-			{ Data::ExtraConditionType::kInPlayerEnemyFaction, UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction },
-			{ Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater },
-			{ Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested },
-			{ Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild },
-			{ Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded },
-			{ Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead },
-			{ Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale },
-			{ Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying },
-			{ Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard },
-			{ Data::ExtraConditionType::kIsHorse, UIConditionExtraSelectorWidgetStrings::IsHorse },
-			{ Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown },
-			{ Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount },
-			{ Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount },
-			{ Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden },
-			{ Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer },
-			{ Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount },
-			{ Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate },
-			{ Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious },
-			{ Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor },
-			{ Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed },
-			{ Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected },
-			{ Data::ExtraConditionType::kRandomPercent, UIConditionExtraSelectorWidgetStrings::RandomPercent },
+		static constexpr auto s_data = stl::make_array(
+
+			std::make_pair(Data::ExtraConditionType::kAngryWithPlayer, UIConditionExtraSelectorWidgetStrings::AngryWithPlayer),
+			std::make_pair(Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut),
+			std::make_pair(Data::ExtraConditionType::kBribedByPlayer, UIConditionExtraSelectorWidgetStrings::BribedByPlayer),
+			std::make_pair(Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield),
+			std::make_pair(Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class),
+			std::make_pair(Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle),
+			std::make_pair(Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential),
+			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
+			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
+			std::make_pair(Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson),
+			std::make_pair(Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior),
+			std::make_pair(Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove),
+			std::make_pair(Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction),
+			std::make_pair(Data::ExtraConditionType::kInPlayerEnemyFaction, UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction),
+			std::make_pair(Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater),
+			std::make_pair(Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested),
+			std::make_pair(Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild),
+			std::make_pair(Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded),
+			std::make_pair(Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead),
+			std::make_pair(Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale),
+			std::make_pair(Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying),
+			std::make_pair(Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard),
+			std::make_pair(Data::ExtraConditionType::kIsHorse, UIConditionExtraSelectorWidgetStrings::IsHorse),
+			std::make_pair(Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown),
+			std::make_pair(Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount),
+			std::make_pair(Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount),
+			std::make_pair(Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden),
+			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
+			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
+			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
+			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
+			std::make_pair(Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor),
+			std::make_pair(Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed),
+			std::make_pair(Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected),
+			std::make_pair(Data::ExtraConditionType::kRandomPercent, UIConditionExtraSelectorWidgetStrings::RandomPercent),
 #if defined(IED_ENABLE_CONDITION_EN)
-			{ Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby },
+			std::make_pair(Data::ExtraConditionType::kPlayerEnemiesNearby, UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby),
 #endif
-			{ Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped },
-			{ Data::ExtraConditionType::kSDSShieldOnBackEnabled, UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled },
-			{ Data::ExtraConditionType::kSitting, UIConditionExtraSelectorWidgetStrings::Sitting },
-			{ Data::ExtraConditionType::kSleeping, UIConditionExtraSelectorWidgetStrings::Sleeping },
-			{ Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming },
-			{ Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay },
-			{ Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing },
-			{ Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater },
-			{ Data::ExtraConditionType::kWeaponDrawn, UIConditionExtraSelectorWidgetStrings::WeaponDrawn },
+			std::make_pair(Data::ExtraConditionType::kShoutEquipped, UIConditionExtraSelectorWidgetStrings::ShoutEquipped),
+			std::make_pair(Data::ExtraConditionType::kSDSShieldOnBackEnabled, UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled),
+			std::make_pair(Data::ExtraConditionType::kSitting, UIConditionExtraSelectorWidgetStrings::Sitting),
+			std::make_pair(Data::ExtraConditionType::kSleeping, UIConditionExtraSelectorWidgetStrings::Sleeping),
+			std::make_pair(Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming),
+			std::make_pair(Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay),
+			std::make_pair(Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing),
+			std::make_pair(Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater),
+			std::make_pair(Data::ExtraConditionType::kWeaponDrawn, UIConditionExtraSelectorWidgetStrings::WeaponDrawn)
 
-		} };
+		);
 
 		UIConditionExtraSelectorWidget::UIConditionExtraSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -74,7 +75,7 @@ namespace IED
 					condition_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

@@ -6,16 +6,17 @@ namespace IED
 {
 	namespace UI
 	{
-		UIVariableConditionSourceSelectorWidget::data_type UIVariableConditionSourceSelectorWidget::m_data{ {
 
-			{ Data::VariableConditionSource::kAny, UIVariableConditionSourceSelectorWidgetStrings::Any },
-			{ Data::VariableConditionSource::kSelf, UIVariableConditionSourceSelectorWidgetStrings::Self },
-			{ Data::VariableConditionSource::kActor, UIVariableConditionSourceSelectorWidgetStrings::Actor },
-			{ Data::VariableConditionSource::kNPC, UIVariableConditionSourceSelectorWidgetStrings::NPC },
-			{ Data::VariableConditionSource::kRace, UIVariableConditionSourceSelectorWidgetStrings::Race },
-			{ Data::VariableConditionSource::kPlayerHorse, UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse },
+		static constexpr auto s_data = stl::make_array(
 
-		} };
+			std::make_pair(Data::VariableConditionSource::kAny, UIVariableConditionSourceSelectorWidgetStrings::Any),
+			std::make_pair(Data::VariableConditionSource::kSelf, UIVariableConditionSourceSelectorWidgetStrings::Self),
+			std::make_pair(Data::VariableConditionSource::kActor, UIVariableConditionSourceSelectorWidgetStrings::Actor),
+			std::make_pair(Data::VariableConditionSource::kNPC, UIVariableConditionSourceSelectorWidgetStrings::NPC),
+			std::make_pair(Data::VariableConditionSource::kRace, UIVariableConditionSourceSelectorWidgetStrings::Race),
+			std::make_pair(Data::VariableConditionSource::kPlayerHorse, UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse)
+
+		);
 
 		UIVariableConditionSourceSelectorWidget::UIVariableConditionSourceSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -33,7 +34,7 @@ namespace IED
 					variable_cond_source_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_data)
+				for (auto& e : s_data)
 				{
 					ImGui::PushID(stl::underlying(e.first));
 

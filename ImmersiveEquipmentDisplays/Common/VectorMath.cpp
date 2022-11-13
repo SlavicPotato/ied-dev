@@ -335,4 +335,11 @@ namespace VectorMath
 			a_to,
 			a_factor * a_factor * (3.0f - 2.0f * a_factor));
 	}
+
+	static const auto s_pidiv180 = DirectX::g_XMPi.v / 180.0f;
+
+	DirectX::XMVECTOR XM_CALLCONV XMVectorConvertToRadians(DirectX::XMVECTOR a_degrees)
+	{
+		return a_degrees * s_pidiv180;
+	}
 }

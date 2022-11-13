@@ -117,45 +117,12 @@ namespace IED
 			const stl::fixed_string& a_node,
 			holderCache_t&           a_hc) const
 		{
-			if (auto& c = GetActorData(); !c.empty())
-			{
-				if (auto d = a_hc.get_actor(a_actor, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
-					{
-						return r;
-					}
-				}
-			}
-
-			if (auto& c = GetNPCData(); !c.empty())
-			{
-				if (auto d = a_hc.get_npc(a_npc, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
-					{
-						return r;
-					}
-				}
-			}
-
-			if (auto& c = GetRaceData(); !c.empty())
-			{
-				if (auto d = a_hc.get_race(a_race, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->transformData, a_node))
-					{
-						return r;
-					}
-				}
-			}
-
-			auto type =
-				a_actor == Data::IData::GetPlayerRefID() ?
-					GlobalConfigType::Player :
-                    GlobalConfigType::NPC;
-
-			return holderCache_t::get_entry(GetGlobalData(type).transformData, a_node);
+			return GetActorConfig<configNodeOverrideEntryTransform_t>(
+				a_actor,
+				a_npc,
+				a_race,
+				a_node,
+				a_hc);
 		}
 
 		const configNodeOverrideEntryPlacement_t* configStoreNodeOverride_t::GetActorPlacement(
@@ -165,45 +132,27 @@ namespace IED
 			const stl::fixed_string& a_node,
 			holderCache_t&           a_hc) const
 		{
-			if (auto& c = GetActorData(); !c.empty())
-			{
-				if (auto d = a_hc.get_actor(a_actor, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
-					{
-						return r;
-					}
-				}
-			}
+			return GetActorConfig<configNodeOverrideEntryPlacement_t>(
+				a_actor,
+				a_npc,
+				a_race,
+				a_node,
+				a_hc);
+		}
 
-			if (auto& c = GetNPCData(); !c.empty())
-			{
-				if (auto d = a_hc.get_npc(a_npc, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
-					{
-						return r;
-					}
-				}
-			}
-
-			if (auto& c = GetRaceData(); !c.empty())
-			{
-				if (auto d = a_hc.get_race(a_race, c))
-				{
-					if (auto r = holderCache_t::get_entry(d->placementData, a_node))
-					{
-						return r;
-					}
-				}
-			}
-
-			auto type =
-				a_actor == Data::IData::GetPlayerRefID() ?
-					GlobalConfigType::Player :
-                    GlobalConfigType::NPC;
-
-			return holderCache_t::get_entry(GetGlobalData(type).placementData, a_node);
+		const configNodeOverrideEntryPhysics_t* configStoreNodeOverride_t::GetActorPhysics(
+			Game::FormID             a_actor,
+			Game::FormID             a_npc,
+			Game::FormID             a_race,
+			const stl::fixed_string& a_node,
+			holderCache_t&           a_hc) const
+		{
+			return GetActorConfig<configNodeOverrideEntryPhysics_t>(
+				a_actor,
+				a_npc,
+				a_race,
+				a_node,
+				a_hc);
 		}
 
 		configNodeOverrideHolder_t::configNodeOverrideHolder_t(
@@ -248,6 +197,11 @@ namespace IED
 				placementData.emplace(i, e.second);
 			}
 
+			for (auto& [i, e] : a_rhs.physicsData)
+			{
+				physicsData.emplace(i, e.second);
+			}
+
 			flags = a_rhs.flags;
 		}
 
@@ -261,6 +215,11 @@ namespace IED
 			for (auto& [i, e] : a_rhs.placementData)
 			{
 				placementData.emplace(i, std::move(e.second));
+			}
+
+			for (auto& [i, e] : a_rhs.physicsData)
+			{
+				physicsData.emplace(i, std::move(e.second));
 			}
 
 			flags = a_rhs.flags;
@@ -280,6 +239,11 @@ namespace IED
 				placementData.try_emplace(i, a_initclass, e);
 			}
 
+			for (auto& [i, e] : a_rhs.physicsData)
+			{
+				physicsData.try_emplace(i, a_initclass, e);
+			}
+
 			flags = a_rhs.flags;
 		}
 
@@ -295,6 +259,11 @@ namespace IED
 			for (auto& [i, e] : a_rhs.placementData)
 			{
 				placementData.try_emplace(i, a_initclass, std::move(e));
+			}
+
+			for (auto& [i, e] : a_rhs.physicsData)
+			{
+				physicsData.try_emplace(i, a_initclass, std::move(e));
 			}
 
 			flags = a_rhs.flags;
@@ -318,6 +287,14 @@ namespace IED
 				if (e.first == a_class)
 				{
 					result.placementData.emplace(i, e.second);
+				}
+			}
+
+			for (auto& [i, e] : physicsData)
+			{
+				if (e.first == a_class)
+				{
+					result.physicsData.emplace(i, e.second);
 				}
 			}
 
@@ -345,6 +322,14 @@ namespace IED
 				if (e.first == a_class)
 				{
 					a_dst.placementData.emplace(i, e.second);
+				}
+			}
+
+			for (auto& [i, e] : physicsData)
+			{
+				if (e.first == a_class)
+				{
+					a_dst.physicsData.emplace(i, e.second);
 				}
 			}
 

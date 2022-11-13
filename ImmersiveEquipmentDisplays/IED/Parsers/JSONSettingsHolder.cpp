@@ -60,7 +60,9 @@ namespace IED
 			a_out.hkWeaponAnimations                  = data.get("hk_weap_anims", false).asBool();
 			a_out.hkWeaponAnimationsWarned            = data.get("hk_weap_anims_warned", false).asBool();
 			a_out.animEventForwarding                 = data.get("anim_event_forwarding", false).asBool();
-			a_out.effectShaderParallelUpdates         = data.get("es_parallel_updates", false).asBool();
+			a_out.enableEffectShaders                 = data.get("effect_shaders", true).asBool();
+			a_out.enableEquipmentPhysics              = data.get("equipment_physics", false).asBool();
+			a_out.effectsParallelUpdates              = data.get("es_parallel_updates", false).asBool();
 			a_out.syncTransformsToFirstPersonSkeleton = data.get("sync_to_1p", false).asBool();
 
 			auto& logLevel = data["log_level"];
@@ -109,7 +111,9 @@ namespace IED
 			data["hk_weap_anims"]           = a_data.hkWeaponAnimations;
 			data["hk_weap_anims_warned"]    = a_data.hkWeaponAnimationsWarned;
 			data["anim_event_forwarding"]   = a_data.animEventForwarding;
-			data["es_parallel_updates"]     = a_data.effectShaderParallelUpdates;
+			data["effect_shaders"]          = a_data.enableEffectShaders;
+			data["equipment_physics"]       = a_data.enableEquipmentPhysics;
+			data["es_parallel_updates"]     = a_data.effectsParallelUpdates;
 			data["sync_to_1p"]              = a_data.syncTransformsToFirstPersonSkeleton;
 
 			if (a_data.logLevel)

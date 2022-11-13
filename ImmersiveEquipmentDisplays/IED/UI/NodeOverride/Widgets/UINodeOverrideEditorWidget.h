@@ -19,6 +19,7 @@
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
 #include "IED/UI/Widgets/UIEditorPanelSettings.h"
 #include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
+#include "IED/UI/Widgets/UIPhysicsValueEditorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UITransformSliderWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
@@ -51,19 +52,19 @@ namespace IED
 			entryNodeOverrideData_t& data;
 		};
 
-		struct SingleNodeOverrideTransformUpdateParams
+		template <class T>
+		struct SingleNodeOverrideUpdateParams
 		{
-			Data::ConfigSex                                            sex;
-			stl::fixed_string                                          name;
-			entryNodeOverrideData_t::transform_data_type::mapped_type& entry;
+			using data_type = typename T;
+
+			Data::ConfigSex         sex;
+			stl::fixed_string       name;
+			data_type::mapped_type& entry;
 		};
 
-		struct SingleNodeOverridePlacementUpdateParams
-		{
-			Data::ConfigSex                                            sex;
-			stl::fixed_string                                          name;
-			entryNodeOverrideData_t::placement_data_type::mapped_type& entry;
-		};
+		using SingleNodeOverrideTransformUpdateParams = SingleNodeOverrideUpdateParams<entryNodeOverrideData_t::transform_data_type>;
+		using SingleNodeOverridePlacementUpdateParams = SingleNodeOverrideUpdateParams<entryNodeOverrideData_t::placement_data_type>;
+		using SingleNodeOverridePhysicsUpdateParams   = SingleNodeOverrideUpdateParams<entryNodeOverrideData_t::physics_data_type>;
 
 		struct ClearNodeOverrideUpdateParams
 		{
@@ -95,7 +96,12 @@ namespace IED
 			kNone = 0,
 
 			kDrawNodePlacement         = 1u << 0,
-			kUnrestrictedNodePlacement = 1u << 1
+			kUnrestrictedNodePlacement = 1u << 1,
+			kDrawPhysics               = 1u << 2,
+
+			kPanelMask =
+				kDrawNodePlacement |
+				kDrawPhysics
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideEditorFlags);
@@ -126,6 +132,39 @@ namespace IED
 			SwapDirection            dir{ SwapDirection::None };
 		};
 
+		namespace detail
+		{
+			template <class T, class Enable = void>
+			struct value_type_selector
+			{
+				using type = void;
+			};
+
+			template <std::same_as<Data::configNodeOverridePlacementOverride_t> T>
+			struct value_type_selector<T>
+			{
+				using type = Data::configNodeOverridePlacementValues_t;
+			};
+
+			template <std::same_as<Data::configNodeOverridePlacement_t> T>
+			struct value_type_selector<T>
+			{
+				using type = Data::configNodeOverridePlacementValues_t;
+			};
+
+			template <std::same_as<Data::configNodeOverridePhysicsOverride_t> T>
+			struct value_type_selector<T>
+			{
+				using type = Data::configNodePhysicsValues_t;
+			};
+
+			template <std::same_as<Data::configNodeOverridePhysics_t> T>
+			struct value_type_selector<T>
+			{
+				using type = Data::configNodePhysicsValues_t;
+			};
+		}
+
 		template <class T>
 		class UINodeOverrideEditorWidget :
 			public UIEditorInterface,
@@ -134,6 +173,7 @@ namespace IED
 			public UIDescriptionPopupWidget,
 			public UIFormLookupInterface,
 			UIConditionParamExtraInterface,
+			UIPhysicsValueEditorWidget,
 			public virtual UISettingsInterface,
 			public virtual UITransformSliderWidget,
 			public virtual UILocalizationInterface
@@ -154,6 +194,15 @@ namespace IED
 			virtual void EditorDrawMenuBarItems() override;
 
 		private:
+			enum class PanelType
+			{
+				Transform,
+				Placement,
+				Physics
+			};
+
+			static PanelType GetPanelTypeFromFlags(stl::flag<NodeOverrideEditorFlags> a_flags);
+
 			void QueueClearAllPopup(const NodeOverrideEditorCurrentData& a_data);
 			void QueuePasteOverPopup(
 				const NodeOverrideEditorCurrentData&                 a_data,
@@ -181,59 +230,67 @@ namespace IED
 				T                        a_handle,
 				entryNodeOverrideData_t& a_data);
 
-			entryNodeOverrideData_t::transform_data_type::iterator DrawTransformEntryContextMenu(
-				T                                                      a_handle,
-				entryNodeOverrideData_t&                               a_data,
-				const stl::fixed_string&                               a_name,
-				entryNodeOverrideData_t::transform_data_type::iterator a_it);
+			template <class Td>
+			void DrawCMNodeListPanel(
+				T                                     a_handle,
+				const NodeOverrideData::cm_data_type& a_cmdata,
+				entryNodeOverrideData_t&              a_data);
 
-			entryNodeOverrideData_t::placement_data_type::iterator DrawPlacementEntryContextMenu(
-				T                                                      a_handle,
-				entryNodeOverrideData_t&                               a_data,
-				const stl::fixed_string&                               a_name,
-				entryNodeOverrideData_t::placement_data_type::iterator a_it);
-
-			void DrawTransformEntry(
+			void DrawEntry(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			void DrawPlacementEntry(
+			void DrawEntry(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			void DrawPlacementValues(
+			void DrawEntry(
+				T                                            a_handle,
+				entryNodeOverrideData_t&                     a_data,
+				const SingleNodeOverridePhysicsUpdateParams& a_params,
+				const bool                                   a_exists);
+
+			void DrawValues(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverridePlacementValues_t&     a_values,
 				const SingleNodeOverridePlacementUpdateParams& a_params,
 				const bool                                     a_exists);
 
+			void DrawValues(
+				T                                            a_handle,
+				entryNodeOverrideData_t&                     a_data,
+				Data::configNodePhysicsValues_t&             a_values,
+				const SingleNodeOverridePhysicsUpdateParams& a_params,
+				const bool                                   a_exists);
+
 			void DrawValueFlags(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
-				Data::configNodeOverrideValues_t&              a_values,
+				Data::configNodeOverrideTransformValues_t&     a_values,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			NodeOverrideCommonAction DrawOverrideOffsetListContextMenu(
+			NodeOverrideCommonAction DrawOffsetListContextMenu(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideOffsetList_t&          a_entry,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			NodeOverrideCommonAction DrawOverridePlacementOverrideListContextMenu(
-				T                                                a_handle,
-				entryNodeOverrideData_t&                         a_data,
-				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverridePlacementUpdateParams&   a_params,
-				const bool                                       a_exists);
+			template <class Ta, class Tb>
+			NodeOverrideCommonAction DrawOverrideListContextMenu(
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				Ta&                      a_entry,
+				const Tb&                a_params,
+				const bool               a_exists);
 
-			void DrawOverrideOffsets(
+			void DrawOffsets(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideOffsetList_t&          a_entry,
@@ -241,29 +298,31 @@ namespace IED
 				const bool                                     a_exists,
 				Data::configNodeOverrideOffset_t*              a_parent);
 
-			void DrawOverridePlacementOverrides(
-				T                                                a_handle,
-				entryNodeOverrideData_t&                         a_data,
-				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverridePlacementUpdateParams&   a_params,
-				const bool                                       a_exists);
+			template <class Ta, class Tb>
+			void DrawOverrides(
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				Ta&                      a_entry,
+				const Tb&                a_params,
+				const bool               a_exists);
 
-			void DrawOverrideOffsetList(
+			void DrawOffsetList(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideOffsetList_t&          a_entry,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			void DrawOverridePlacementOverrideList(
-				T                                                a_handle,
-				entryNodeOverrideData_t&                         a_data,
-				Data::configNodeOverridePlacementOverrideList_t& a_entry,
-				const SingleNodeOverridePlacementUpdateParams&   a_params,
-				const bool                                       a_exists);
+			template <class Ta, class Tb>
+			void DrawOverrideList(
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				Ta&                      a_entry,
+				const Tb&                a_params,
+				const bool               a_exists);
 
 			template <class Tp>
-			void DrawOverrideConditionTree(
+			void DrawConditionTree(
 				T                                        a_handle,
 				entryNodeOverrideData_t&                 a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
@@ -271,22 +330,23 @@ namespace IED
 				const bool                               a_exists,
 				const bool                               a_ignoreNode);
 
-			NodeOverrideCommonResult DrawOverrideOffsetContextMenu(
+			NodeOverrideCommonResult DrawOffsetContextMenu(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideOffset_t&              a_entry,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
 
-			NodeOverridePlacementOverrideResult DrawOverridePlacementOverrideContextMenu(
-				T                                              a_handle,
-				entryNodeOverrideData_t&                       a_data,
-				Data::configNodeOverridePlacementOverride_t&   a_entry,
-				const SingleNodeOverridePlacementUpdateParams& a_params,
-				const bool                                     a_exists);
+			template <class Ta, class Tb>
+			NodeOverridePlacementOverrideResult DrawOverrideContextMenu(
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				Ta&                      a_entry,
+				const Tb&                a_params,
+				const bool               a_exists);
 
 			template <class Tp>
-			NodeOverrideCommonAction DrawOverrideConditionHeaderContextMenu(
+			NodeOverrideCommonAction DrawConditionHeaderContextMenu(
 				T                                        a_handle,
 				entryNodeOverrideData_t&                 a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
@@ -295,7 +355,7 @@ namespace IED
 				const bool                               a_ignoreNode);
 
 			template <class Tp>
-			void DrawOverrideConditionTable(
+			void DrawConditionTable(
 				T                                        a_handle,
 				entryNodeOverrideData_t&                 a_data,
 				Data::configNodeOverrideConditionList_t& a_entry,
@@ -304,12 +364,19 @@ namespace IED
 				bool                                     a_isnested,
 				bool                                     a_ignoreNode);
 
-			void DrawOverrideOffsetAdjust(
+			void DrawOffsetAdjust(
 				T                                              a_handle,
 				entryNodeOverrideData_t&                       a_data,
 				Data::configNodeOverrideOffset_t&              a_entry,
 				const SingleNodeOverrideTransformUpdateParams& a_params,
 				const bool                                     a_exists);
+
+			template <class Td>
+			typename Td::iterator DrawCommonEntryContextMenu(
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				const stl::fixed_string& a_name,
+				typename Td::iterator    a_it);
 
 			/*void DrawOverridePosClamp(
 				T a_handle,
@@ -319,7 +386,7 @@ namespace IED
 				const bool a_exists);*/
 
 			template <class Tp>
-			NodeOverrideCommonResult DrawOverrideConditionContextMenu(
+			NodeOverrideCommonResult DrawConditionContextMenu(
 				T                                    a_handle,
 				entryNodeOverrideData_t&             a_data,
 				Data::configNodeOverrideCondition_t& a_entry,
@@ -336,6 +403,10 @@ namespace IED
 				const SingleNodeOverridePlacementUpdateParams& a_params) = 0;
 
 			virtual void OnUpdate(
+				T                                            a_handle,
+				const SingleNodeOverridePhysicsUpdateParams& a_params) = 0;
+
+			virtual void OnUpdate(
 				T                               a_handle,
 				const NodeOverrideUpdateParams& a_params) = 0;
 
@@ -347,6 +418,10 @@ namespace IED
 				T                                    a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) = 0;
 
+			virtual void OnClearPhysics(
+				T                                    a_handle,
+				const ClearNodeOverrideUpdateParams& a_params) = 0;
+
 			virtual void OnClearAllTransforms(
 				T                                       a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
@@ -355,17 +430,21 @@ namespace IED
 				T                                       a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
 
-			void HandleValueUpdate(
-				T                                              a_handle,
-				entryNodeOverrideData_t&                       a_data,
-				const SingleNodeOverrideTransformUpdateParams& a_params,
-				const bool                                     a_exists);
+			virtual void OnClearAllPhysics(
+				T                                       a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) = 0;
 
+			template <class Td>
 			void HandleValueUpdate(
-				T                                              a_handle,
-				entryNodeOverrideData_t&                       a_data,
-				const SingleNodeOverridePlacementUpdateParams& a_params,
-				const bool                                     a_exists);
+				T                        a_handle,
+				entryNodeOverrideData_t& a_data,
+				const Td&                a_params,
+				const bool               a_exists);
+
+			template <class Td>
+			void DoOnClear(
+				T                                    a_handle,
+				const ClearNodeOverrideUpdateParams& a_params);
 
 			virtual NodeOverrideEditorCurrentData GetCurrentData() = 0;
 
@@ -408,6 +487,7 @@ namespace IED
 			Controller& a_controller) :
 			UIFormLookupInterface(a_controller),
 			UIEditorPanelSettings(a_controller),
+			UIPhysicsValueEditorWidget(a_controller),
 			m_itemFilter(true),
 			m_condParamEditor(a_controller)
 		{
@@ -444,10 +524,44 @@ namespace IED
 
 			ImGui::Spacing();
 
-			auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			const auto flags     = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			const auto panelType = GetPanelTypeFromFlags(flags.value);
 
-			if (flags.test(NodeOverrideEditorFlags::kDrawNodePlacement))
+			switch (panelType)
 			{
+			case PanelType::Physics:
+
+				if (ImGui::BeginChild(
+						"ph_editor_panel",
+						{ -1.0f, 0.0f }))
+				{
+					if (!GetPhysicsProcessingEnabled())
+					{
+						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+						ImGui::TextWrapped("%s", LS(UITip::PhysicsOffWarning));
+						ImGui::PopStyleColor();
+
+						ImGui::Spacing();
+						ImGui::Separator();
+						ImGui::Spacing();
+					}
+
+					ImGui::PushItemWidth(ImGui::GetFontSize() * -11.f);
+
+					DrawCMNodeListPanel<
+						entryNodeOverrideData_t::physics_data_type>(
+						a_handle,
+						NodeOverrideData::GetMOVNodeData(),
+						a_data);
+
+					ImGui::PopItemWidth();
+				}
+
+				ImGui::EndChild();
+
+				break;
+			case PanelType::Placement:
+
 				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 				ImGui::TextWrapped("%s", LS(UITip::AnimSupportWarning));
 				ImGui::PopStyleColor();
@@ -467,9 +581,10 @@ namespace IED
 				}
 
 				ImGui::EndChild();
-			}
-			else
-			{
+
+				break;
+			default:
+
 				if (ImGui::BeginChild(
 						"et_editor_panel",
 						{ -1.0f, 0.0f },
@@ -478,12 +593,18 @@ namespace IED
 				{
 					ImGui::PushItemWidth(ImGui::GetFontSize() * 27.f);
 
-					DrawTransformPanel(a_handle, a_data);
+					DrawCMNodeListPanel<
+						entryNodeOverrideData_t::transform_data_type>(
+						a_handle,
+						NodeOverrideData::GetCMENodeData(),
+						a_data);
 
 					ImGui::PopItemWidth();
 				}
 
 				ImGui::EndChild();
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -511,13 +632,14 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			auto flags = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			auto flags     = GetEditorPanelSettings().get_flags<NodeOverrideEditorFlags>();
+			auto panelType = GetPanelTypeFromFlags(flags.value);
 
 			if (ImGui::RadioButton(
 					LS(CommonStrings::Positions, "1"),
-					!flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)))
+					panelType == PanelType::Transform))
 			{
-				flags.clear(NodeOverrideEditorFlags::kDrawNodePlacement);
+				flags.clear(NodeOverrideEditorFlags::kPanelMask);
 				OnEditorPanelSettingsChange();
 			}
 
@@ -525,25 +647,43 @@ namespace IED
 
 			if (ImGui::RadioButton(
 					LS(CommonStrings::Placement, "2"),
-					flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)))
+					panelType == PanelType::Placement))
 			{
+				flags.clear(NodeOverrideEditorFlags::kPanelMask);
 				flags.set(NodeOverrideEditorFlags::kDrawNodePlacement);
 				OnEditorPanelSettingsChange();
 			}
 
-			if (flags.test(NodeOverrideEditorFlags::kDrawNodePlacement))
+			ImGui::SameLine();
+
+			if (ImGui::RadioButton(
+					LS(CommonStrings::Physics, "3"),
+					panelType == PanelType::Physics))
 			{
+				flags.clear(NodeOverrideEditorFlags::kPanelMask);
+				flags.set(NodeOverrideEditorFlags::kDrawPhysics);
+				OnEditorPanelSettingsChange();
+			}
+
+			panelType = GetPanelTypeFromFlags(flags.value);
+
+			switch (panelType)
+			{
+			case PanelType::Placement:
+
 				ImGui::Spacing();
 				ImGui::Separator();
 				ImGui::Spacing();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UINodeOverrideEditorWidgetStrings::UnrestrictedPlacement, "3"),
+						LS(UINodeOverrideEditorWidgetStrings::UnrestrictedPlacement, "A"),
 						stl::underlying(std::addressof(flags.value)),
 						stl::underlying(NodeOverrideEditorFlags::kUnrestrictedNodePlacement)))
 				{
 					OnEditorPanelSettingsChange();
 				}
+
+				break;
 			}
 		}
 
@@ -587,9 +727,7 @@ namespace IED
 		{
 			auto& data = NodeOverrideData::GetCMENodeData();
 
-			Data::configStoreNodeOverride_t::holderCache_t hc;
-
-			auto configClass = GetConfigClass();
+			const auto configClass = GetConfigClass();
 
 			auto itb = data.getvec().begin();
 
@@ -623,7 +761,12 @@ namespace IED
 					}
 				}
 
-				it = DrawTransformEntryContextMenu(a_handle, a_data, e->first, it);
+				it = DrawCommonEntryContextMenu<
+					entryNodeOverrideData_t::transform_data_type>(
+					a_handle,
+					a_data,
+					e->first,
+					it);
 
 				if (TreeEx(
 						"entry_tree",
@@ -642,13 +785,13 @@ namespace IED
 							DrawConfigClassHeader(it->second.first);
 						}
 
-						DrawTransformEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
 					}
 					else
 					{
 						decltype(it->second) tmp;
 
-						DrawTransformEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
 					}
 
 					ImGui::Unindent();
@@ -676,7 +819,7 @@ namespace IED
 
 			Data::configStoreNodeOverride_t::holderCache_t hc;
 
-			auto configClass = GetConfigClass();
+			const auto configClass = GetConfigClass();
 
 			auto& data = NodeOverrideData::GetWeaponNodeData();
 
@@ -710,7 +853,12 @@ namespace IED
 					}
 				}
 
-				it = DrawPlacementEntryContextMenu(a_handle, a_data, e->first, it);
+				it = DrawCommonEntryContextMenu<
+					entryNodeOverrideData_t::placement_data_type>(
+					a_handle,
+					a_data,
+					e->first,
+					it);
 
 				if (TreeEx(
 						"entry_tree",
@@ -729,13 +877,13 @@ namespace IED
 							DrawConfigClassHeader(it->second.first);
 						}
 
-						DrawPlacementEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
 					}
 					else
 					{
 						stl::strip_type<decltype(it->second)> tmp;
 
-						DrawPlacementEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
 					}
 
 					ImGui::Unindent();
@@ -757,208 +905,7 @@ namespace IED
 		}
 
 		template <class T>
-		auto UINodeOverrideEditorWidget<T>::DrawTransformEntryContextMenu(
-			T                                                      a_handle,
-			entryNodeOverrideData_t&                               a_data,
-			const stl::fixed_string&                               a_name,
-			entryNodeOverrideData_t::transform_data_type::iterator a_it)
-			-> entryNodeOverrideData_t::transform_data_type::iterator
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
-
-			ImGui::PushID("context_area");
-
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
-
-			ImGui::PopStyleVar();
-
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				auto confClass = GetConfigClass();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Clear, "1"),
-						nullptr,
-						false,
-						a_it != a_data.transformData.end() &&
-							a_it->second.first == confClass))
-				{
-					if (a_it != a_data.transformData.end() &&
-					    a_it->second.first == confClass)
-					{
-						a_data.transformData.erase(a_it);
-
-						OnClearTransform(a_handle, { a_name, a_data });
-
-						a_it = a_data.transformData.find(a_name);
-					}
-				}
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Reset, "2"),
-						nullptr,
-						false,
-						a_it != a_data.transformData.end()))
-				{
-					if (a_it != a_data.transformData.end())
-					{
-						auto sex = GetSex();
-
-						auto& data = a_it->second.second(sex);
-
-						data.transform = Data::configTransform_t();
-
-						OnUpdate(a_handle, { sex, a_name, a_it->second });
-					}
-				}
-
-				ImGui::Separator();
-
-				bool has = a_it != a_data.transformData.end();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Copy, "3"),
-						nullptr,
-						false,
-						has))
-				{
-					if (has)
-					{
-						UIClipboard::Set(a_it->second.second(GetSex()));
-					}
-				}
-
-				auto clipData = UIClipboard::Get<Data::configNodeOverrideTransform_t>();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "4"),
-						nullptr,
-						false,
-						clipData != nullptr))
-				{
-					if (clipData)
-					{
-						auto sex = GetSex();
-
-						if (!has)
-						{
-							a_it = a_data.transformData.try_emplace(a_name).first;
-						}
-
-						a_it->second.second(sex) = *clipData;
-						a_it->second.first       = GetConfigClass();
-
-						OnUpdate(a_handle, { sex, a_name, a_it->second });
-					}
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopStyleVar();
-
-			ImGui::PopID();
-
-			return a_it;
-		}
-
-		template <class T>
-		entryNodeOverrideData_t::placement_data_type::iterator UINodeOverrideEditorWidget<T>::DrawPlacementEntryContextMenu(
-			T                                                      a_handle,
-			entryNodeOverrideData_t&                               a_data,
-			const stl::fixed_string&                               a_name,
-			entryNodeOverrideData_t::placement_data_type::iterator a_it)
-		{
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
-
-			ImGui::PushID("context_area");
-
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
-
-			ImGui::PopStyleVar();
-
-			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				auto configClass = GetConfigClass();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Clear, "1"),
-						nullptr,
-						false,
-						a_it != a_data.placementData.end() &&
-							a_it->second.first == configClass))
-				{
-					if (a_it != a_data.placementData.end() &&
-					    a_it->second.first == configClass)
-					{
-						a_data.placementData.erase(a_it);
-
-						OnClearPlacement(a_handle, { a_name, a_data });
-
-						a_it = a_data.placementData.find(a_name);
-					}
-				}
-
-				ImGui::Separator();
-
-				bool has = a_it != a_data.placementData.end();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::Copy, "2"),
-						nullptr,
-						false,
-						has))
-				{
-					if (has)
-					{
-						UIClipboard::Set(a_it->second.second(GetSex()));
-					}
-				}
-
-				auto clipData = UIClipboard::Get<Data::configNodeOverridePlacement_t>();
-
-				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "3"),
-						nullptr,
-						false,
-						clipData != nullptr))
-				{
-					if (clipData)
-					{
-						auto sex = GetSex();
-
-						if (!has)
-						{
-							a_it = a_data.placementData.try_emplace(a_name).first;
-						}
-
-						a_it->second.second(sex) = *clipData;
-						a_it->second.first       = GetConfigClass();
-
-						OnUpdate(a_handle, { sex, a_name, a_it->second });
-					}
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopStyleVar();
-
-			ImGui::PopID();
-
-			return a_it;
-		}
-
-		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawTransformEntry(
+		void UINodeOverrideEditorWidget<T>::DrawEntry(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			const SingleNodeOverrideTransformUpdateParams& a_params,
@@ -1025,7 +972,7 @@ namespace IED
 
 				ImGui::Spacing();
 
-				DrawOverrideConditionTree(
+				DrawConditionTree(
 					a_handle,
 					a_data,
 					data.visibilityConditionList,
@@ -1040,7 +987,7 @@ namespace IED
 				ImGui::TreePop();
 			}
 
-			DrawOverrideOffsets(
+			DrawOffsets(
 				a_handle,
 				a_data,
 				data.offsets,
@@ -1050,7 +997,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawPlacementEntry(
+		void UINodeOverrideEditorWidget<T>::DrawEntry(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			const SingleNodeOverridePlacementUpdateParams& a_params,
@@ -1060,7 +1007,7 @@ namespace IED
 
 			ImGui::PushID("pl_entry");
 
-			DrawPlacementValues(
+			DrawValues(
 				a_handle,
 				a_data,
 				data,
@@ -1069,9 +1016,7 @@ namespace IED
 
 			ImGui::Spacing();
 
-			ImGui::Spacing();
-
-			DrawOverridePlacementOverrides(
+			DrawOverrides(
 				a_handle,
 				a_data,
 				data.overrides,
@@ -1082,7 +1027,37 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawPlacementValues(
+		void UINodeOverrideEditorWidget<T>::DrawEntry(
+			T                                            a_handle,
+			entryNodeOverrideData_t&                     a_data,
+			const SingleNodeOverridePhysicsUpdateParams& a_params,
+			const bool                                   a_exists)
+		{
+			auto& data = a_params.entry.second(a_params.sex);
+
+			ImGui::PushID("phy_entry");
+
+			DrawValues(
+				a_handle,
+				a_data,
+				data,
+				a_params,
+				a_exists);
+
+			ImGui::Spacing();
+
+			DrawOverrides(
+				a_handle,
+				a_data,
+				data.overrides,
+				a_params,
+				a_exists);
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UINodeOverrideEditorWidget<T>::DrawValues(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverridePlacementValues_t&     a_values,
@@ -1161,7 +1136,33 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawOverrideOffsets(
+		void UINodeOverrideEditorWidget<T>::DrawValues(
+			T                                            a_handle,
+			entryNodeOverrideData_t&                     a_data,
+			Data::configNodePhysicsValues_t&             a_values,
+			const SingleNodeOverridePhysicsUpdateParams& a_params,
+			const bool                                   a_exists)
+		{
+			ImGui::PushID("phy_vals");
+
+			ImGui::PushItemWidth(ImGui::GetFontSize() * -14.5f);
+
+			if (DrawPhysicsValues(a_values))
+			{
+				HandleValueUpdate(
+					a_handle,
+					a_data,
+					a_params,
+					a_exists);
+			}
+
+			ImGui::PopItemWidth();
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		void UINodeOverrideEditorWidget<T>::DrawOffsets(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverrideOffsetList_t&          a_entry,
@@ -1169,7 +1170,7 @@ namespace IED
 			const bool                                     a_exists,
 			Data::configNodeOverrideOffset_t*              a_parent)
 		{
-			const auto result = DrawOverrideOffsetListContextMenu(
+			const auto result = DrawOffsetListContextMenu(
 				a_handle,
 				a_data,
 				a_entry,
@@ -1200,7 +1201,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					DrawOverrideOffsetList(
+					DrawOffsetList(
 						a_handle,
 						a_data,
 						a_entry,
@@ -1215,14 +1216,15 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawOverridePlacementOverrides(
-			T                                                a_handle,
-			entryNodeOverrideData_t&                         a_data,
-			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverridePlacementUpdateParams&   a_params,
-			const bool                                       a_exists)
+		template <class Ta, class Tb>
+		void UINodeOverrideEditorWidget<T>::DrawOverrides(
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			Ta&                      a_entry,
+			const Tb&                a_params,
+			const bool               a_exists)
 		{
-			const auto result = DrawOverridePlacementOverrideListContextMenu(
+			const auto result = DrawOverrideListContextMenu(
 				a_handle,
 				a_data,
 				a_entry,
@@ -1252,7 +1254,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					DrawOverridePlacementOverrideList(a_handle, a_data, a_entry, a_params, a_exists);
+					DrawOverrideList(a_handle, a_data, a_entry, a_params, a_exists);
 				}
 
 				ImGui::TreePop();
@@ -1265,7 +1267,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::DrawValueFlags(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
-			Data::configNodeOverrideValues_t&              a_values,
+			Data::configNodeOverrideTransformValues_t&     a_values,
 			const SingleNodeOverrideTransformUpdateParams& a_params,
 			const bool                                     a_exists)
 		{
@@ -1287,7 +1289,7 @@ namespace IED
 		}
 
 		template <class T>
-		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawOverrideOffsetListContextMenu(
+		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawOffsetListContextMenu(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverrideOffsetList_t&          a_entry,
@@ -1418,16 +1420,17 @@ namespace IED
 		}
 
 		template <class T>
-		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawOverridePlacementOverrideListContextMenu(
-			T                                                a_handle,
-			entryNodeOverrideData_t&                         a_data,
-			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverridePlacementUpdateParams&   a_params,
-			const bool                                       a_exists)
+		template <class Ta, class Tb>
+		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawOverrideListContextMenu(
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			Ta&                      a_entry,
+			const Tb&                a_params,
+			const bool               a_exists)
 		{
 			NodeOverrideCommonAction result{ NodeOverrideCommonAction::None };
 
-			ImGui::PushID("op_list_tree_context_area");
+			ImGui::PushID("context_area");
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
@@ -1466,22 +1469,22 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_entry);
 				}
 
-				auto clipDataOffset = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>();
+				auto clipData1 = UIClipboard::Get<typename Ta::value_type>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "3"),
+						LS(CommonStrings::Paste, "B"),
 						nullptr,
 						false,
-						clipDataOffset != nullptr))
+						clipData1 != nullptr))
 				{
-					if (clipDataOffset)
+					if (clipData1)
 					{
-						a_entry.emplace_back(*clipDataOffset);
+						a_entry.emplace_back(*clipData1);
 
 						HandleValueUpdate(
 							a_handle,
@@ -1491,10 +1494,10 @@ namespace IED
 					}
 				}
 
-				auto clipData = UIClipboard::Get<Data::configNodeOverridePlacementOverrideList_t>();
+				auto clipData = UIClipboard::Get<Ta>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "4"),
+						LS(CommonStrings::PasteOver, "C"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1524,7 +1527,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawOverrideOffsetList(
+		void UINodeOverrideEditorWidget<T>::DrawOffsetList(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverrideOffsetList_t&          a_entry,
@@ -1546,7 +1549,7 @@ namespace IED
 			{
 				ImGui::PushID(i);
 
-				const auto result = DrawOverrideOffsetContextMenu(a_handle, a_data, *it, a_params, a_exists);
+				const auto result = DrawOffsetContextMenu(a_handle, a_data, *it, a_params, a_exists);
 
 				switch (result.action)
 				{
@@ -1639,7 +1642,7 @@ namespace IED
 					{
 						ImGui::Spacing();
 
-						DrawOverrideConditionTree(
+						DrawConditionTree(
 							a_handle,
 							a_data,
 							e.conditions,
@@ -1675,7 +1678,7 @@ namespace IED
 						{
 							ImGui::PushID("group");
 
-							DrawOverrideOffsets(
+							DrawOffsets(
 								a_handle,
 								a_data,
 								e.group,
@@ -1795,7 +1798,7 @@ namespace IED
 
 									ImGui::Spacing();
 
-									DrawOverrideOffsetAdjust(
+									DrawOffsetAdjust(
 										a_handle,
 										a_data,
 										e,
@@ -1852,12 +1855,13 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawOverridePlacementOverrideList(
-			T                                                a_handle,
-			entryNodeOverrideData_t&                         a_data,
-			Data::configNodeOverridePlacementOverrideList_t& a_entry,
-			const SingleNodeOverridePlacementUpdateParams&   a_params,
-			const bool                                       a_exists)
+		template <class Ta, class Tb>
+		void UINodeOverrideEditorWidget<T>::DrawOverrideList(
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			Ta&                      a_entry,
+			const Tb&                a_params,
+			const bool               a_exists)
 		{
 			if (a_entry.empty())
 			{
@@ -1874,7 +1878,7 @@ namespace IED
 			{
 				ImGui::PushID(i);
 
-				const auto result = DrawOverridePlacementOverrideContextMenu(
+				const auto result = DrawOverrideContextMenu(
 					a_handle,
 					a_data,
 					*it,
@@ -1925,7 +1929,7 @@ namespace IED
 						a_exists);
 					break;
 				case NodeOverrideCommonAction::Paste:
-					if (auto clipData = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>())
+					if (auto clipData = UIClipboard::Get<typename Ta::value_type>())
 					{
 						it = a_entry.emplace(it, *clipData);
 						HandleValueUpdate(
@@ -1955,7 +1959,7 @@ namespace IED
 					{
 						ImGui::Spacing();
 
-						DrawOverrideConditionTree(
+						DrawConditionTree(
 							a_handle,
 							a_data,
 							e.conditions,
@@ -1965,7 +1969,7 @@ namespace IED
 
 						ImGui::Spacing();
 
-						DrawPlacementValues(
+						DrawValues(
 							a_handle,
 							a_data,
 							e,
@@ -1988,8 +1992,97 @@ namespace IED
 		}
 
 		template <class T>
+		template <class Td>
+		void UINodeOverrideEditorWidget<T>::DrawCMNodeListPanel(
+			T                                     a_handle,
+			const NodeOverrideData::cm_data_type& a_cmdata,
+			entryNodeOverrideData_t&              a_data)
+		{
+			const auto configClass = GetConfigClass();
+
+			auto itb = a_cmdata.getvec().begin();
+
+			for (const auto& e : a_cmdata.getvec())
+			{
+				if (!m_itemFilter.Test(*e->second.desc))
+				{
+					continue;
+				}
+
+				ImGui::PushID(e->first.c_str());
+
+				auto it = a_data.get_data<Td>().find(e->first);
+
+				bool svar = it == a_data.get_data<Td>().end();
+
+				if (svar)
+				{
+					ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+				}
+				else
+				{
+					if (configClass != Data::ConfigClass::Global)
+					{
+						svar = configClass != it->second.first;
+
+						if (svar)
+						{
+							ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.75f);
+						}
+					}
+				}
+
+				it = DrawCommonEntryContextMenu<Td>(
+					a_handle,
+					a_data,
+					e->first,
+					it);
+
+				if (TreeEx(
+						"entry_tree",
+						e->first == (*itb)->first,
+						"%s",
+						e->second.desc.c_str()))
+				{
+					ImGui::Spacing();
+
+					ImGui::Indent();
+
+					if (it != a_data.get_data<Td>().end())
+					{
+						if (configClass != Data::ConfigClass::Global)
+						{
+							DrawConfigClassHeader(it->second.first);
+						}
+
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, it->second }, true);
+					}
+					else
+					{
+						decltype(it->second) tmp;
+
+						DrawEntry(a_handle, a_data, { GetSex(), e->first, tmp }, false);
+					}
+
+					ImGui::Unindent();
+
+					ImGui::TreePop();
+				}
+
+				if (svar)
+				{
+					ImGui::PopStyleVar();
+				}
+
+				ImGui::Spacing();
+
+				ImGui::PopID();
+			}
+		}
+
+		template <class T>
 		template <class Tp>
-		void UINodeOverrideEditorWidget<T>::DrawOverrideConditionTree(
+		void UINodeOverrideEditorWidget<T>::DrawConditionTree(
 			T                                        a_handle,
 			entryNodeOverrideData_t&                 a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
@@ -1999,7 +2092,7 @@ namespace IED
 		{
 			ImGui::PushID("ovr_cond_tree");
 
-			const auto result = DrawOverrideConditionHeaderContextMenu(
+			const auto result = DrawConditionHeaderContextMenu(
 				a_handle,
 				a_data,
 				a_entry,
@@ -2031,7 +2124,7 @@ namespace IED
 				{
 					ImGui::Spacing();
 
-					DrawOverrideConditionTable(
+					DrawConditionTable(
 						a_handle,
 						a_data,
 						a_entry,
@@ -2052,7 +2145,7 @@ namespace IED
 		}
 
 		template <class T>
-		NodeOverrideCommonResult UINodeOverrideEditorWidget<T>::DrawOverrideOffsetContextMenu(
+		NodeOverrideCommonResult UINodeOverrideEditorWidget<T>::DrawOffsetContextMenu(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverrideOffset_t&              a_entry,
@@ -2177,7 +2270,7 @@ namespace IED
 				}
 
 				bool hasClipData = UIClipboard::Get<Data::configNodeOverrideOffset_t>() ||
-				                   UIClipboard::Get<Data::configNodeOverrideValues_t>();
+				                   UIClipboard::Get<Data::configNodeOverrideTransformValues_t>();
 
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "A"),
@@ -2193,9 +2286,9 @@ namespace IED
 
 						update = true;
 					}
-					else if (auto cd2 = UIClipboard::Get<Data::configNodeOverrideValues_t>())
+					else if (auto cd2 = UIClipboard::Get<Data::configNodeOverrideTransformValues_t>())
 					{
-						static_cast<Data::configNodeOverrideValues_t&>(a_entry) = *cd2;
+						static_cast<Data::configNodeOverrideTransformValues_t&>(a_entry) = *cd2;
 
 						update = true;
 					}
@@ -2223,16 +2316,17 @@ namespace IED
 		}
 
 		template <class T>
-		NodeOverridePlacementOverrideResult UINodeOverrideEditorWidget<T>::DrawOverridePlacementOverrideContextMenu(
-			T                                              a_handle,
-			entryNodeOverrideData_t&                       a_data,
-			Data::configNodeOverridePlacementOverride_t&   a_entry,
-			const SingleNodeOverridePlacementUpdateParams& a_params,
-			const bool                                     a_exists)
+		template <class Ta, class Tb>
+		NodeOverridePlacementOverrideResult UINodeOverrideEditorWidget<T>::DrawOverrideContextMenu(
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			Ta&                      a_entry,
+			const Tb&                a_params,
+			const bool               a_exists)
 		{
 			NodeOverridePlacementOverrideResult result;
 
-			ImGui::PushID("oo_context_area");
+			ImGui::PushID("context_area");
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
 
@@ -2285,7 +2379,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					auto clipData = UIClipboard::Get<Data::configNodeOverrideOffset_t>();
+					auto clipData = UIClipboard::Get<Ta>();
 
 					if (ImGui::MenuItem(
 							LS(CommonStrings::Paste, "3"),
@@ -2331,8 +2425,10 @@ namespace IED
 					UIClipboard::Set(a_entry);
 				}
 
-				bool hasClipData = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>() ||
-				                   UIClipboard::Get<Data::configNodeOverridePlacementValues_t>();
+				using secondary_type = typename detail::value_type_selector<Ta>::type;
+
+				bool hasClipData = UIClipboard::Get<Ta>() ||
+				                   UIClipboard::Get<secondary_type>();
 
 				if (ImGui::MenuItem(
 						LS(CommonStrings::PasteOver, "8"),
@@ -2342,15 +2438,15 @@ namespace IED
 				{
 					bool update = false;
 
-					if (auto cd1 = UIClipboard::Get<Data::configNodeOverridePlacementOverride_t>())
+					if (auto cd1 = UIClipboard::Get<Ta>())
 					{
 						a_entry = *cd1;
 
 						update = true;
 					}
-					else if (auto cd2 = UIClipboard::Get<Data::configNodeOverridePlacementValues_t>())
+					else if (auto cd2 = UIClipboard::Get<secondary_type>())
 					{
-						static_cast<Data::configNodeOverridePlacementValues_t&>(a_entry) = *cd2;
+						static_cast<secondary_type&>(a_entry) = *cd2;
 
 						update = true;
 					}
@@ -2379,7 +2475,7 @@ namespace IED
 
 		template <class T>
 		template <class Tp>
-		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawOverrideConditionHeaderContextMenu(
+		NodeOverrideCommonAction UINodeOverrideEditorWidget<T>::DrawConditionHeaderContextMenu(
 			T                                        a_handle,
 			entryNodeOverrideData_t&                 a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
@@ -2914,7 +3010,7 @@ namespace IED
 
 		template <class T>
 		template <class Tp>
-		void UINodeOverrideEditorWidget<T>::DrawOverrideConditionTable(
+		void UINodeOverrideEditorWidget<T>::DrawConditionTable(
 			T                                        a_handle,
 			entryNodeOverrideData_t&                 a_data,
 			Data::configNodeOverrideConditionList_t& a_entry,
@@ -3022,7 +3118,7 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(0);
 
-					const auto result = DrawOverrideConditionContextMenu(
+					const auto result = DrawConditionContextMenu(
 						a_handle,
 						a_data,
 						*it,
@@ -3156,7 +3252,7 @@ namespace IED
 
 							ImGui::PushID("cond_grp");
 
-							DrawOverrideConditionHeaderContextMenu(
+							DrawConditionHeaderContextMenu(
 								a_handle,
 								a_data,
 								e.group.conditions,
@@ -3164,7 +3260,7 @@ namespace IED
 								a_exists,
 								a_ignoreNode);
 
-							DrawOverrideConditionTable(
+							DrawConditionTable(
 								a_handle,
 								a_data,
 								e.group.conditions,
@@ -3626,7 +3722,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawOverrideOffsetAdjust(
+		void UINodeOverrideEditorWidget<T>::DrawOffsetAdjust(
 			T                                              a_handle,
 			entryNodeOverrideData_t&                       a_data,
 			Data::configNodeOverrideOffset_t&              a_entry,
@@ -3709,6 +3805,149 @@ namespace IED
 		}
 
 		template <class T>
+		template <class Td>
+		auto UINodeOverrideEditorWidget<T>::DrawCommonEntryContextMenu(
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			const stl::fixed_string& a_name,
+			typename Td::iterator    a_it)
+			-> typename Td::iterator
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 2.0f, 2.0f });
+
+			ImGui::PushID("context_area");
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 1.0f);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				auto configClass = GetConfigClass();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Clear, "1"),
+						nullptr,
+						false,
+						a_it != a_data.get_data<Td>().end() &&
+							a_it->second.first == configClass))
+				{
+					if (a_it != a_data.get_data<Td>().end() &&
+					    a_it->second.first == configClass)
+					{
+						a_data.get_data<Td>().erase(a_it);
+
+						DoOnClear<Td>(a_handle, { a_name, a_data });
+
+						a_it = a_data.get_data<Td>().find(a_name);
+					}
+				}
+
+				//if constexpr (std::is_same_v<Td, entryNodeOverrideData_t::transform_data_type>)
+				//{
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Reset, "2"),
+						nullptr,
+						false,
+						a_it != a_data.get_data<Td>().end()))
+				{
+					if (a_it != a_data.get_data<Td>().end())
+					{
+						const auto sex = GetSex();
+
+						a_it->second.second(sex).clear();
+
+						OnUpdate(a_handle, { sex, a_name, a_it->second });
+					}
+				}
+				//}
+
+				ImGui::Separator();
+
+				bool has = a_it != a_data.get_data<Td>().end();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Copy, "A"),
+						nullptr,
+						false,
+						has))
+				{
+					if (has)
+					{
+						UIClipboard::Set(a_it->second.second(GetSex()));
+					}
+				}
+
+				using primary_type   = typename Td::mapped_type::second_type::config_type;
+				using secondary_type = typename detail::value_type_selector<primary_type>::type;
+
+				bool hasClipData = static_cast<bool>(UIClipboard::Get<primary_type>());
+
+				if constexpr (!std::is_same_v<secondary_type, void>)
+				{
+					hasClipData |= static_cast<bool>(UIClipboard::Get<secondary_type>());
+				}
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::PasteOver, "B"),
+						nullptr,
+						false,
+						hasClipData))
+				{
+					bool       update = false;
+					const auto sex    = GetSex();
+
+					if (auto cd1 = UIClipboard::Get<primary_type>())
+					{
+						if (!has)
+						{
+							a_it = a_data.get_data<Td>().try_emplace(a_name).first;
+						}
+
+						a_it->second.second(sex) = *cd1;
+						a_it->second.first       = GetConfigClass();
+
+						update = true;
+					}
+					else
+					{
+						if constexpr (!std::is_same_v<secondary_type, void>)
+						{
+							if (auto cd2 = UIClipboard::Get<secondary_type>())
+							{
+								if (!has)
+								{
+									a_it = a_data.get_data<Td>().try_emplace(a_name).first;
+								}
+
+								static_cast<secondary_type&>(a_it->second.second(sex)) = *cd2;
+
+								update = true;
+							}
+						}
+					}
+
+					if (update)
+					{
+						OnUpdate(a_handle, { sex, a_name, a_it->second });
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar();
+
+			ImGui::PopID();
+
+			return a_it;
+		}
+
+		template <class T>
 		void UINodeOverrideEditorWidget<T>::EditorDrawMenuBarItems()
 		{
 			auto current = GetCurrentData();
@@ -3758,6 +3997,24 @@ namespace IED
 		}
 
 		template <class T>
+		auto UINodeOverrideEditorWidget<T>::GetPanelTypeFromFlags(
+			stl::flag<NodeOverrideEditorFlags> a_flags) -> PanelType
+		{
+			if (a_flags.test(NodeOverrideEditorFlags::kDrawPhysics))
+			{
+				return PanelType::Physics;
+			}
+			else if (a_flags.test(NodeOverrideEditorFlags::kDrawNodePlacement))
+			{
+				return PanelType::Placement;
+			}
+			else
+			{
+				return PanelType::Transform;
+			}
+		}
+
+		template <class T>
 		void UINodeOverrideEditorWidget<T>::QueueClearAllPopup(
 			const NodeOverrideEditorCurrentData& a_data)
 		{
@@ -3770,8 +4027,8 @@ namespace IED
 					 "%s",
 					 LS(UINodeOverrideEditorWidgetStrings::ClearAllPrompt))
 				.call([this,
-			           handle       = a_data.handle,
-			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement)](const auto&) {
+			           handle     = a_data.handle,
+			           panel_type = GetPanelTypeFromFlags(flags.value)](const auto&) {
 					auto current = GetCurrentData();
 					if (!current)
 					{
@@ -3783,15 +4040,20 @@ namespace IED
 						return;
 					}
 
-					if (is_placement)
+					switch (panel_type)
 					{
+					case PanelType::Physics:
+						current.data->physicsData.clear();
+						OnClearAllPhysics(current.handle, { *current.data });
+						break;
+					case PanelType::Placement:
 						current.data->placementData.clear();
 						OnClearAllPlacement(current.handle, { *current.data });
-					}
-					else
-					{
+						break;
+					default:
 						current.data->transformData.clear();
 						OnClearAllTransforms(current.handle, { *current.data });
+						break;
 					}
 				});
 		}
@@ -3828,10 +4090,10 @@ namespace IED
 					 "%s",
 					 LS(UINodeOverrideEditorWidgetStrings::PasteOverFullPrompt))
 				.call([this,
-			           handle       = a_data.handle,
-			           dstSex       = GetSex(),
-			           is_placement = flags.test(NodeOverrideEditorFlags::kDrawNodePlacement),
-			           data         = a_clipData](const auto&) mutable {
+			           handle     = a_data.handle,
+			           dstSex     = GetSex(),
+			           panel_type = GetPanelTypeFromFlags(flags.value),
+			           data       = a_clipData](const auto&) mutable {
 					auto current = GetCurrentData();
 					if (!current)
 					{
@@ -3843,23 +4105,32 @@ namespace IED
 						return;
 					}
 
-					if (is_placement)
+					switch (panel_type)
 					{
+					case PanelType::Physics:
+						paste_move_entries(
+							std::move(data.data.physicsData),
+							current.data->physicsData,
+							data.sex,
+							dstSex,
+							GetConfigClass());
+						break;
+					case PanelType::Placement:
 						paste_move_entries(
 							std::move(data.data.placementData),
 							current.data->placementData,
 							data.sex,
 							dstSex,
 							GetConfigClass());
-					}
-					else
-					{
+						break;
+					default:
 						paste_move_entries(
 							std::move(data.data.transformData),
 							current.data->transformData,
 							data.sex,
 							dstSex,
 							GetConfigClass());
+						break;
 					}
 
 					OnUpdate(handle, { *current.data });
@@ -3868,7 +4139,7 @@ namespace IED
 
 		template <class T>
 		template <class Tp>
-		NodeOverrideCommonResult UINodeOverrideEditorWidget<T>::DrawOverrideConditionContextMenu(
+		NodeOverrideCommonResult UINodeOverrideEditorWidget<T>::DrawConditionContextMenu(
 			T                                    a_handle,
 			entryNodeOverrideData_t&             a_data,
 			Data::configNodeOverrideCondition_t& a_entry,
@@ -4188,34 +4459,40 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::HandleValueUpdate(
-			T                                              a_handle,
-			entryNodeOverrideData_t&                       a_data,
-			const SingleNodeOverrideTransformUpdateParams& a_params,
-			const bool                                     a_exists)
+		template <class Td>
+		void UINodeOverrideEditorWidget<T>::DoOnClear(
+			T                                    a_handle,
+			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			if (!a_exists)
+			if constexpr (std::is_same_v<Td, entryNodeOverrideData_t::placement_data_type>)
 			{
-				auto r = a_data.transformData.insert_or_assign(a_params.name, a_params.entry);
-
-				OnUpdate(a_handle, { a_params.sex, r.first->first, r.first->second });
+				OnClearPlacement(a_handle, a_params);
+			}
+			else if constexpr (std::is_same_v<Td, entryNodeOverrideData_t::physics_data_type>)
+			{
+				OnClearPhysics(a_handle, a_params);
+			}
+			else if constexpr (std::is_same_v<Td, entryNodeOverrideData_t::transform_data_type>)
+			{
+				OnClearTransform(a_handle, a_params);
 			}
 			else
 			{
-				OnUpdate(a_handle, a_params);
+				static_assert(false);
 			}
 		}
 
 		template <class T>
+		template <class Td>
 		void UINodeOverrideEditorWidget<T>::HandleValueUpdate(
-			T                                              a_handle,
-			entryNodeOverrideData_t&                       a_data,
-			const SingleNodeOverridePlacementUpdateParams& a_params,
-			const bool                                     a_exists)
+			T                        a_handle,
+			entryNodeOverrideData_t& a_data,
+			const Td&                a_params,
+			const bool               a_exists)
 		{
 			if (!a_exists)
 			{
-				auto r = a_data.placementData.insert_or_assign(a_params.name, a_params.entry);
+				auto r = a_data.get_data<typename Td::data_type>().insert_or_assign(a_params.name, a_params.entry);
 
 				OnUpdate(a_handle, { a_params.sex, r.first->first, r.first->second });
 			}
@@ -4743,7 +5020,7 @@ namespace IED
 
 					break;
 
-				/*case ConditionParamItem::CompOper:
+					/*case ConditionParamItem::CompOper:
 
 					if (match->condVarType == ConditionalVariableType::kForm)
 					{

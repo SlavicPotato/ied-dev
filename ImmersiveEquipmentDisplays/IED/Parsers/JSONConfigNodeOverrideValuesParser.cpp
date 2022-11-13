@@ -8,9 +8,9 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<Data::configNodeOverrideValues_t>::Parse(
+		bool Parser<Data::configNodeOverrideTransformValues_t>::Parse(
 			const Json::Value&                a_in,
-			Data::configNodeOverrideValues_t& a_out,
+			Data::configNodeOverrideTransformValues_t& a_out,
 			const std::uint32_t               a_version) const
 		{
 			Parser<Data::configTransform_t> tfparser(m_state);
@@ -27,8 +27,8 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Data::configNodeOverrideValues_t>::Create(
-			const Data::configNodeOverrideValues_t& a_data,
+		void Parser<Data::configNodeOverrideTransformValues_t>::Create(
+			const Data::configNodeOverrideTransformValues_t& a_data,
 			Json::Value&                            a_out) const
 		{
 			Parser<Data::configTransform_t> tfparser(m_state);

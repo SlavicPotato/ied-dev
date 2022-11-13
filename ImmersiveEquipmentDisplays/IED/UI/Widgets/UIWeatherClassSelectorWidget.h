@@ -22,20 +22,11 @@ namespace IED
 			bool DrawWeatherClassSelector(
 				WeatherClassificationFlags& a_type);
 
-		protected:
 			const char* weather_class_to_desc(
-				stl::flag<WeatherClassificationFlags> a_type);
+				stl::flag<WeatherClassificationFlags> a_type) const;
 
 		private:
-			using data_type = std::array<
-				std::pair<
-					WeatherClassificationFlags,
-					UIWeatherClassSelectorWidgetStrings>,
-				4>;
-
-			std::string m_buf;
-
-			static const data_type m_data;
+			mutable std::string m_buf;
 		};
 	}
 

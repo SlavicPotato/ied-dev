@@ -69,17 +69,18 @@ namespace IED
 
 		enum class SerializationVersion : std::uint32_t
 		{
-			kDataVersion1 = 1,
-			kDataVersion2 = 2,
-			kDataVersion3 = 3,
-			kDataVersion4 = 4,
-			kDataVersion5 = 5,
-			kDataVersion6 = 6,
-			kDataVersion7 = 7,
-			kDataVersion8 = 8,
-			kDataVersion9 = 9,
+			kDataVersion1  = 1,
+			kDataVersion2  = 2,
+			kDataVersion3  = 3,
+			kDataVersion4  = 4,
+			kDataVersion5  = 5,
+			kDataVersion6  = 6,
+			kDataVersion7  = 7,
+			kDataVersion8  = 8,
+			kDataVersion9  = 9,
+			kDataVersion10 = 10,
 
-			kCurrentVersion = kDataVersion9
+			kCurrentVersion = kDataVersion10
 		};
 
 		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -482,7 +483,7 @@ namespace IED
 
 		//void QueueClearVariableStorage(bool a_requestEval);
 
-		void ProcessEffectShaders();
+		void DoProcessEffects();
 
 		void RunUpdateBipedSlotCache(
 			processParams_t& a_params);
@@ -491,12 +492,19 @@ namespace IED
 		{
 			return m_evalCounter;
 		}
+		
+		[[nodiscard]] inline constexpr auto GetPhysicsForcedOff() const noexcept
+		{
+			return m_physicsForcedOff;
+		}
 
 		/*[[nodiscard]] inline constexpr bool ConsumeInventoryChangeFlags(
 			InventoryChangeConsumerFlags a_mask)
 		{
 			return m_invChangeConsumerFlags.consume(a_mask);
 		}*/
+
+		void ClearActorPhysicsData();
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -973,6 +981,7 @@ namespace IED
 		bool m_enableCorpseScatter{ false };
 		bool m_forceOrigWeapXFRM{ false };
 		bool m_forceFlushSaveData{ false };
+		bool m_physicsForcedOff{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
 

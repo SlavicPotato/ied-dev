@@ -66,6 +66,10 @@ namespace IED
 			virtual void OnUpdate(
 				Game::FormID                                   a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
+			
+			virtual void OnUpdate(
+				Game::FormID                                   a_handle,
+				const SingleNodeOverridePhysicsUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
 				Game::FormID                    a_handle,
@@ -79,11 +83,19 @@ namespace IED
 				Game::FormID                         a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
+			virtual void OnClearPhysics(
+				Game::FormID                         a_handle,
+				const ClearNodeOverrideUpdateParams& a_params) override;
+
 			virtual void OnClearAllTransforms(
 				Game::FormID                            a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
+				Game::FormID                            a_handle,
+				const ClearAllNodeOverrideUpdateParams& a_params) override;
+			
+			virtual void OnClearAllPhysics(
 				Game::FormID                            a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 

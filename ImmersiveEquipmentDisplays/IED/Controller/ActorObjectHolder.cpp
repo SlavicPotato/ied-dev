@@ -158,6 +158,7 @@ namespace IED
 					m_movNodes.try_emplace(
 						e->first,
 						node,
+						GetCachedOrCurrentTransform(e->second.name, node),
 						e->second.placementID);
 				}
 			}
@@ -387,6 +388,23 @@ namespace IED
 		return {};
 	}
 
+	NiTransform ActorObjectHolder::GetCachedOrCurrentTransform(
+		const stl::fixed_string& a_name,
+		NiAVObject*              a_object,
+		bool                     a_firstPerson) const
+	{
+		if (auto& cache = GetSkeletonCache(a_firstPerson))
+		{
+			auto it = cache->find(a_name);
+			if (it != cache->end())
+			{
+				return it->second.transform;
+			}
+		}
+
+		return a_object->m_localTransform;
+	}
+
 	std::optional<NiTransform> ActorObjectHolder::GetCachedTransform(
 		const stl::fixed_string& a_name,
 		bool                     a_firstPerson) const
@@ -607,6 +625,53 @@ namespace IED
 		return true;
 	}
 
+	void ActorObjectHolder::AddToSimNodeList(PHYSimComponent* a_mov)
+	{
+		m_simNodeList.emplace_back(a_mov);
+	}
+
+	void ActorObjectHolder::RemoveFromSimNodeList(PHYSimComponent* a_mov)
+	{
+		std::erase(m_simNodeList, a_mov);
+	}
+
+	void ActorObjectHolder::SimReadTransforms() const noexcept
+	{
+		for (auto& e : m_simNodeList)
+		{
+			e->ReadTransforms();
+		}
+	}
+
+	void ActorObjectHolder::SimWriteTransforms() const noexcept
+	{
+		for (auto& e : m_simNodeList)
+		{
+			e->WriteTransforms();
+		}
+	}
+
+	void ActorObjectHolder::SimUpdate(float a_step) const noexcept
+	{
+		const btVector3 step(_mm_set_ps1(a_step));
+
+		for (auto& e : m_simNodeList)
+		{
+			e->UpdateMotion(step);
+		}
+	}
+
+	void ActorObjectHolder::ClearAllSimComponents()
+	{
+		m_simNodeList.clear();
+		m_simNodeList.shrink_to_fit();
+
+		for (auto& e : m_movNodes)
+		{
+			e.second.simComponent.reset();
+		}
+	}
+
 	void ActorObjectHolder::CreateExtraMovNodes(
 		NiNode* a_npcroot)
 	{
@@ -634,10 +699,10 @@ namespace IED
 
 			if (it != v.skel.end())
 			{
-				auto result = AttachExtraNodes(target, v, *it);
+				const auto result = AttachExtraNodes(target, v, *it);
 
 				m_cmeNodes.try_emplace(v.name_cme, result.cme, result.cme->m_localTransform);
-				m_movNodes.try_emplace(v.name_mov, result.mov, v.placementID);
+				m_movNodes.try_emplace(v.name_mov, result.mov, result.mov->m_localTransform, v.placementID);
 			}
 		}
 	}

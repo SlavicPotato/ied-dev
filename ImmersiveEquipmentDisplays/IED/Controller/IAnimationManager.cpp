@@ -233,8 +233,6 @@ namespace IED
 			return;
 		}
 
-		a_state.flags.clear(ActorAnimationState::Flags::kNeedUpdate);
-
 		auto type = GetObjectType(pm->equippedObject[ActorProcessManager::kEquippedHand_Right]);
 
 		std::int32_t animVar;

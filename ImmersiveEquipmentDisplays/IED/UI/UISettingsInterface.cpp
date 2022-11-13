@@ -24,9 +24,14 @@ namespace IED
 			return m_controller.GetConfigStore().active;
 		}
 
-		bool UISettingsInterface::GetEffectControllerEnabled() const noexcept
+		bool UISettingsInterface::GetShaderProcessingEnabled() const noexcept
 		{
-			return m_controller.EffectControllerEnabled();
+			return m_controller.ShaderProcessingEnabled();
+		}
+		
+		bool UISettingsInterface::GetPhysicsProcessingEnabled() const noexcept
+		{
+			return m_controller.PhysicsProcessingEnabled();
 		}
 
 		void UISettingsInterface::MarkSettingsDirty()

@@ -1,7 +1,8 @@
 #include "pch.h"
 
-#include "JSONConfigNodeOverrideConditionListParser.h"
 #include "JSONConfigNodeOverridePlacementOverrideParser.h"
+
+#include "JSONConfigNodeOverrideConditionListParser.h"
 #include "JSONConfigNodeOverridePlacementValuesParser.h"
 
 namespace IED

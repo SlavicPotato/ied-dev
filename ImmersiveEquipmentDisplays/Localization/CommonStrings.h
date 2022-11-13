@@ -241,6 +241,7 @@ namespace IED
 		NonTemp         = 312,
 		Vendor          = 313,
 		Merchant        = 314,
-		Source         = 315,
+		Source          = 315,
+		Physics         = 316,
 	};
 }

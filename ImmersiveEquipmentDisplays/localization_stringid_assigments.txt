@@ -34,3 +34,4 @@
 7100-7199:		var type slector
 7200-7299:		var cond selector
 7300-7399:		var src selector
+7400-7499:		phys val widget

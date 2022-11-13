@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	enum class AnimationExtraGroup : std::uint32_t
+	enum class AnimationExtraGroup : std::uint8_t
 	{
 		BowIdle = 0,
 		BowAttack,

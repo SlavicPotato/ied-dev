@@ -11,7 +11,7 @@ namespace IED
 	namespace UI
 	{
 
-		struct EquipmentOverrideResult
+		struct UIEquipmentOverrideResult
 		{
 			BaseConfigEditorAction               action{ BaseConfigEditorAction::None };
 			Game::FormID                         form;

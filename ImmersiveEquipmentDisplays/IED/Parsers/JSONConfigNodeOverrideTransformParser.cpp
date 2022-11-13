@@ -15,7 +15,7 @@ namespace IED
 			Data::configNodeOverrideTransform_t& a_out,
 			const std::uint32_t                  a_version) const
 		{
-			Parser<Data::configNodeOverrideValues_t>        vparser(m_state);
+			Parser<Data::configNodeOverrideTransformValues_t>        vparser(m_state);
 			Parser<Data::configNodeOverrideOffsetList_t>    lparser(m_state);
 			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 
@@ -45,7 +45,7 @@ namespace IED
 			const Data::configNodeOverrideTransform_t& a_data,
 			Json::Value&                               a_out) const
 		{
-			Parser<Data::configNodeOverrideValues_t>        vparser(m_state);
+			Parser<Data::configNodeOverrideTransformValues_t>        vparser(m_state);
 			Parser<Data::configNodeOverrideOffsetList_t>    lparser(m_state);
 			Parser<Data::configNodeOverrideConditionList_t> mlparser(m_state);
 

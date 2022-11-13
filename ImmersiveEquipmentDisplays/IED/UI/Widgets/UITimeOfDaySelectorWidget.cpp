@@ -6,14 +6,14 @@ namespace IED
 {
 	namespace UI
 	{
-		UITimeOfDaySelectorWidget::data_type UITimeOfDaySelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ Data::TimeOfDay::kSunrise, UITimeOfDaySelectorWidgetStrings::Sunrise },
-			{ Data::TimeOfDay::kDay, UITimeOfDaySelectorWidgetStrings::Day },
-			{ Data::TimeOfDay::kSunset, UITimeOfDaySelectorWidgetStrings::Sunset },
-			{ Data::TimeOfDay::kNight, UITimeOfDaySelectorWidgetStrings::Night }
+			std::make_pair(Data::TimeOfDay::kSunrise, UITimeOfDaySelectorWidgetStrings::Sunrise),
+			std::make_pair(Data::TimeOfDay::kDay, UITimeOfDaySelectorWidgetStrings::Day),
+			std::make_pair(Data::TimeOfDay::kSunset, UITimeOfDaySelectorWidgetStrings::Sunset),
+			std::make_pair(Data::TimeOfDay::kNight, UITimeOfDaySelectorWidgetStrings::Night)
 
-		} };
+		);
 
 		UITimeOfDaySelectorWidget::UITimeOfDaySelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -47,7 +47,7 @@ namespace IED
 
 				ImGui::PushID("2");
 
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

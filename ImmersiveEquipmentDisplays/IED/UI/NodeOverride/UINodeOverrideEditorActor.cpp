@@ -244,6 +244,17 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorActor::OnUpdate(
+			Game::FormID                                 a_handle,
+			const SingleNodeOverridePhysicsUpdateParams& a_params)
+		{
+			auto& store = m_controller.GetConfigStore();
+
+			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+
+			m_controller.RequestEvaluateTransformsActor(a_handle, true);
+		}
+
+		void UINodeOverrideEditorActor::OnUpdate(
 			Game::FormID                    a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
@@ -300,6 +311,29 @@ namespace IED
 				a_params.name);
 		}
 
+		void UINodeOverrideEditorActor::OnClearPhysics(
+			Game::FormID                         a_handle,
+			const ClearNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller
+			                 .GetConfigStore()
+			                 .active.transforms.GetActorData();
+
+			if (EraseConfig<
+					Data::configNodeOverrideEntryPhysics_t>(
+					a_handle,
+					data,
+					a_params.name))
+			{
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
+			}
+
+			PostClear(
+				GetData(a_handle).physicsData,
+				a_params.entry.physicsData,
+				a_params.name);
+		}
+
 		void UINodeOverrideEditorActor::OnClearAllTransforms(
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
@@ -334,6 +368,23 @@ namespace IED
 			}
 
 			a_params.entry.placementData = GetData(a_handle).placementData;
+		}
+
+		void UINodeOverrideEditorActor::OnClearAllPhysics(
+			Game::FormID a_handle, const ClearAllNodeOverrideUpdateParams& a_params)
+		{
+			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+
+			auto it = data.find(a_handle);
+			if (it != data.end())
+			{
+				it->second.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
+				it->second.physicsData.clear();
+
+				m_controller.RequestEvaluateTransformsActor(a_handle, true);
+			}
+
+			a_params.entry.physicsData = GetData(a_handle).physicsData;
 		}
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorActor::GetOrCreateConfigHolder(

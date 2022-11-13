@@ -6,25 +6,25 @@ namespace IED
 {
 	namespace UI
 	{
-		UIStylePresetSelectorWidget::data_type UIStylePresetSelectorWidget::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ UIStylePreset::Dark, UIStylePresetSelectorWidgetStrings::Dark },
-			{ UIStylePreset::Light, UIStylePresetSelectorWidgetStrings::Light },
-			{ UIStylePreset::Classic, UIStylePresetSelectorWidgetStrings::Classic },
-			{ UIStylePreset::DeepDark, UIStylePresetSelectorWidgetStrings::DeepDark },
-			{ UIStylePreset::DarkRed, UIStylePresetSelectorWidgetStrings::DarkRed },
-			{ UIStylePreset::SteamClassic, UIStylePresetSelectorWidgetStrings::SteamClassic },
-			{ UIStylePreset::ItaDark, UIStylePresetSelectorWidgetStrings::ItaDark },
-			{ UIStylePreset::ItaLight, UIStylePresetSelectorWidgetStrings::ItaLight },
-			{ UIStylePreset::ItaClassic, UIStylePresetSelectorWidgetStrings::ItaClassic },
-			{ UIStylePreset::S56, UIStylePresetSelectorWidgetStrings::S56 },
-			{ UIStylePreset::S562, UIStylePresetSelectorWidgetStrings::S562 },
-			{ UIStylePreset::CorpGrey, UIStylePresetSelectorWidgetStrings::CorpGrey },
-			{ UIStylePreset::CorpGreyFlat, UIStylePresetSelectorWidgetStrings::CorpGreyFlat },
-			{ UIStylePreset::SpectrumDark, UIStylePresetSelectorWidgetStrings::SpectrumDark},
-			{ UIStylePreset::EnemyMouse, UIStylePresetSelectorWidgetStrings::EnemyMouse },
+			std::make_pair(UIStylePreset::Dark, UIStylePresetSelectorWidgetStrings::Dark),
+			std::make_pair(UIStylePreset::Light, UIStylePresetSelectorWidgetStrings::Light),
+			std::make_pair(UIStylePreset::Classic, UIStylePresetSelectorWidgetStrings::Classic),
+			std::make_pair(UIStylePreset::DeepDark, UIStylePresetSelectorWidgetStrings::DeepDark),
+			std::make_pair(UIStylePreset::DarkRed, UIStylePresetSelectorWidgetStrings::DarkRed),
+			std::make_pair(UIStylePreset::SteamClassic, UIStylePresetSelectorWidgetStrings::SteamClassic),
+			std::make_pair(UIStylePreset::ItaDark, UIStylePresetSelectorWidgetStrings::ItaDark),
+			std::make_pair(UIStylePreset::ItaLight, UIStylePresetSelectorWidgetStrings::ItaLight),
+			std::make_pair(UIStylePreset::ItaClassic, UIStylePresetSelectorWidgetStrings::ItaClassic),
+			std::make_pair(UIStylePreset::S56, UIStylePresetSelectorWidgetStrings::S56),
+			std::make_pair(UIStylePreset::S562, UIStylePresetSelectorWidgetStrings::S562),
+			std::make_pair(UIStylePreset::CorpGrey, UIStylePresetSelectorWidgetStrings::CorpGrey),
+			std::make_pair(UIStylePreset::CorpGreyFlat, UIStylePresetSelectorWidgetStrings::CorpGreyFlat),
+			std::make_pair(UIStylePreset::SpectrumDark, UIStylePresetSelectorWidgetStrings::SpectrumDark),
+			std::make_pair(UIStylePreset::EnemyMouse, UIStylePresetSelectorWidgetStrings::EnemyMouse)
 
-		} };
+		);
 
 		UIStylePresetSelectorWidget::UIStylePresetSelectorWidget(
 			Localization::ILocalization& a_localization) :
@@ -42,7 +42,7 @@ namespace IED
 					preset_to_desc(a_preset),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& e : m_data)
+				for (auto& e : s_data)
 				{
 					ImGui::PushID(stl::underlying(e.first));
 

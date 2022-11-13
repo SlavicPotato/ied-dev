@@ -7,6 +7,9 @@
 #include "I3DICommonData.h"
 #include "I3DIWeaponNode.h"
 
+#include "IED/UI/NodeOverride/UINodeOverrideEditorWindow.h"
+#include "IED/UI/UIMain.h"
+
 #include "Common/VectorMath.h"
 
 #include "IED/Controller/Controller.h"
@@ -81,7 +84,7 @@ namespace IED
 				return false;
 			}
 
-			auto weaponNode = a_item.GetDraggableObject().GetAsWeaponNode();
+			const auto weaponNode = a_item.GetDraggableObject().GetAsWeaponNode();
 			if (!weaponNode)
 			{
 				return false;
@@ -97,19 +100,29 @@ namespace IED
 				return false;
 			}
 
-			auto r = controller.GetConfigStore().active.transforms.GetActorData().try_emplace(actorid);
-			auto s = r.first->second.placementData.try_emplace(weaponNode->GetNodeName());
-
-			auto& e = s.first->second.get(
-				it->second.IsFemale() ?
-					Data::ConfigSex::Female :
-                    Data::ConfigSex::Male);
+			auto& e =
+				controller.GetConfigStore()
+					.active.transforms.GetActorData()
+					.try_emplace(actorid)
+					.first->second.placementData.try_emplace(weaponNode->GetNodeName())
+					.first->second
+					.get(
+						it->second.IsFemale() ?
+							Data::ConfigSex::Female :
+                            Data::ConfigSex::Male);
 
 			e.targetNode = m_name;
 
 			it->second.RequestTransformUpdate();
 
-			_DMESSAGE("drop: %s %s", weaponNode->GetNodeName().c_str(), m_name.c_str());
+			//_DMESSAGE("drop: %s %s", weaponNode->GetNodeName().c_str(), m_name.c_str());
+
+			if (auto& rt = m_actorContext.GetController().UIGetRenderTask())
+			{
+				const auto& context = rt->GetContext();
+
+				context.GetChildContext<UINodeOverrideEditorWindow>().Reset();
+			}
 
 			return false;
 		}

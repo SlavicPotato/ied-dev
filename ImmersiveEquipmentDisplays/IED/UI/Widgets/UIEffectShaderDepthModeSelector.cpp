@@ -6,17 +6,17 @@ namespace IED
 {
 	namespace UI
 	{
-		UIEffectShaderDepthModeSelector::data_type UIEffectShaderDepthModeSelector::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ DepthStencilDepthMode::kDisabled, "Disabled" },
-			{ DepthStencilDepthMode::kTest, "Test" },
-			{ DepthStencilDepthMode::kWrite, "Write" },
-			{ DepthStencilDepthMode::kTestWrite, "TestWrite" },
-			{ DepthStencilDepthMode::kTestEqual, "TestEqual" },
-			{ DepthStencilDepthMode::kTestGreaterEqual, "TestGreaterEqual" },
-			{ DepthStencilDepthMode::kTestGreater, "TestGreater" },
+			std::make_pair(DepthStencilDepthMode::kDisabled, "Disabled"),
+			std::make_pair(DepthStencilDepthMode::kTest, "Test"),
+			std::make_pair(DepthStencilDepthMode::kWrite, "Write"),
+			std::make_pair(DepthStencilDepthMode::kTestWrite, "TestWrite"),
+			std::make_pair(DepthStencilDepthMode::kTestEqual, "TestEqual"),
+			std::make_pair(DepthStencilDepthMode::kTestGreaterEqual, "TestGreaterEqual"),
+			std::make_pair(DepthStencilDepthMode::kTestGreater, "TestGreater")
 
-		} };
+		);
 
 		UIEffectShaderDepthModeSelector::UIEffectShaderDepthModeSelector(
 			Localization::ILocalization& a_localization) :
@@ -35,7 +35,7 @@ namespace IED
 					depth_mode_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

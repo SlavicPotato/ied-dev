@@ -48,7 +48,7 @@ namespace IED
 				ImGui::Columns(3, nullptr, false);
 
 				ImGui::TextUnformatted("AP:");
-				if (m_controller.EffectControllerEnabled())
+				if (m_controller.ShaderProcessingEnabled())
 				{
 					ImGui::TextUnformatted("EP:");
 				}
@@ -75,7 +75,7 @@ namespace IED
 				ImGui::NextColumn();
 
 				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
-				if (m_controller.EffectControllerEnabled())
+				if (m_controller.ShaderProcessingEnabled())
 				{
 					ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
 				}

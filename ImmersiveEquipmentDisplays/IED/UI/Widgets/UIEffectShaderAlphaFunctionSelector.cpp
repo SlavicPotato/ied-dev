@@ -6,21 +6,21 @@ namespace IED
 {
 	namespace UI
 	{
-		UIEffectShaderAlphaFunctionSelector::data_type UIEffectShaderAlphaFunctionSelector::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ NiProperty::AlphaFunction::kOne, "One" },
-			{ NiProperty::AlphaFunction::kZero, "Zero" },
-			{ NiProperty::AlphaFunction::kSrcColor, "SrcColor" },
-			{ NiProperty::AlphaFunction::kInvSrcColor, "InvSrcColor" },
-			{ NiProperty::AlphaFunction::kDestColor, "DestColor" },
-			{ NiProperty::AlphaFunction::kInvDestColor, "InvDestColor" },
-			{ NiProperty::AlphaFunction::kSrcAlpha, "SrcAlpha" },
-			{ NiProperty::AlphaFunction::kInvSrcAlpha, "InvSrcAlpha" },
-			{ NiProperty::AlphaFunction::kDestAlpha, "DestAlpha" },
-			{ NiProperty::AlphaFunction::kInvDestAlpha, "InvDestAlpha" },
-			{ NiProperty::AlphaFunction::kSrcAlphaSat, "SrcAlphaSat" },
+			std::make_pair(NiProperty::AlphaFunction::kOne, "One"),
+			std::make_pair(NiProperty::AlphaFunction::kZero, "Zero"),
+			std::make_pair(NiProperty::AlphaFunction::kSrcColor, "SrcColor"),
+			std::make_pair(NiProperty::AlphaFunction::kInvSrcColor, "InvSrcColor"),
+			std::make_pair(NiProperty::AlphaFunction::kDestColor, "DestColor"),
+			std::make_pair(NiProperty::AlphaFunction::kInvDestColor, "InvDestColor"),
+			std::make_pair(NiProperty::AlphaFunction::kSrcAlpha, "SrcAlpha"),
+			std::make_pair(NiProperty::AlphaFunction::kInvSrcAlpha, "InvSrcAlpha"),
+			std::make_pair(NiProperty::AlphaFunction::kDestAlpha, "DestAlpha"),
+			std::make_pair(NiProperty::AlphaFunction::kInvDestAlpha, "InvDestAlpha"),
+			std::make_pair(NiProperty::AlphaFunction::kSrcAlphaSat, "SrcAlphaSat")
 
-		} };
+		);
 
 		UIEffectShaderAlphaFunctionSelector::UIEffectShaderAlphaFunctionSelector(
 			Localization::ILocalization& a_localization) :
@@ -39,7 +39,7 @@ namespace IED
 					alpha_func_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 

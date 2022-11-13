@@ -25,14 +25,6 @@ namespace IED
 			const char* alpha_func_to_desc(
 				NiProperty::AlphaFunction a_data) const;
 
-		private:
-			using data_type = std::array<
-				std::pair<
-					NiProperty::AlphaFunction,
-					const char*>,
-				11>;
-
-			static data_type m_data;
 		};
 	}
 

@@ -6,12 +6,12 @@ namespace IED
 {
 	namespace UI
 	{
-		UIEffectShaderFunctionSelector::data_type UIEffectShaderFunctionSelector::m_data{ {
+		static constexpr auto s_data = stl::make_array(
 
-			{ Data::EffectShaderFunctionType::UVLinearMotion, UIEffectShaderFunctionSelectorStrings::UVLinearMotion },
-			{ Data::EffectShaderFunctionType::Pulse, UIEffectShaderFunctionSelectorStrings::Pulse },
+			std::make_pair(Data::EffectShaderFunctionType::UVLinearMotion, UIEffectShaderFunctionSelectorStrings::UVLinearMotion),
+			std::make_pair(Data::EffectShaderFunctionType::Pulse, UIEffectShaderFunctionSelectorStrings::Pulse)
 
-		} };
+		);
 
 		UIEffectShaderFunctionSelector::UIEffectShaderFunctionSelector(
 			Localization::ILocalization& a_localization) :
@@ -29,7 +29,7 @@ namespace IED
 					esf_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
-				for (auto& [i, e] : m_data)
+				for (auto& [i, e] : s_data)
 				{
 					ImGui::PushID(stl::underlying(i));
 
