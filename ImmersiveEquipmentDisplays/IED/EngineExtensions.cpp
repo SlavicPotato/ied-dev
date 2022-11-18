@@ -73,11 +73,6 @@ namespace IED
 			Hook_ToggleFav();
 		}
 
-		if (!a_config->m_disableEffectHook)
-		{
-			Hook_ProcessEffects();
-		}
-
 		if (a_config->m_parallelAnimationUpdates)
 		{
 			Install_ParallelAnimationUpdate();
@@ -408,22 +403,6 @@ namespace IED
 			m_toggleFav1_a.get());
 	}
 
-	void EngineExtensions::Hook_ProcessEffects()
-	{
-		bool result = hook::call5(
-			ISKSE::GetBranchTrampoline(),
-			m_processEffectShaders_a.get(),
-			std::uintptr_t(ProcessEffects_Hook),
-			m_processEffects_o);
-
-		Debug(
-			"[%s] %s @0x%llX",
-			__FUNCTION__,
-			result ? "Installed" :
-                     "Failed",
-			m_processEffectShaders_a.get());
-	}
-
 	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
 		auto addrRefUpdate      = m_animUpdateRef_a.get() + 0x74;
@@ -728,15 +707,6 @@ namespace IED
 		m_Instance.m_controller->QueueRequestEvaluate(a_actor->formID, true, false);
 
 		return m_Instance.m_toggleFavGetExtraList_o(a_actor);
-	}
-
-	void EngineExtensions::ProcessEffects_Hook(
-		Game::ProcessLists* a_pl,
-		float               a_frameTimerSlow)
-	{
-		m_Instance.m_processEffects_o(a_pl, a_frameTimerSlow);
-
-		m_Instance.m_controller->DoProcessEffects();
 	}
 
 	bool EngineExtensions::hkaShouldBlockNode(

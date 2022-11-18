@@ -8,7 +8,8 @@ namespace IED
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
-		ObjectDatabase&          a_db)
+		ObjectDatabase&          a_db,
+		bool                     a_defer)
 	{
 		if (!data)
 		{
@@ -17,7 +18,7 @@ namespace IED
 
 		const bool result = static_cast<bool>(data.state);
 
-		if (EngineExtensions::ShouldDefer3DTask())
+		if (a_defer)
 		{
 			struct DisposeStateTask :
 				public TaskDelegate
@@ -70,6 +71,8 @@ namespace IED
 		}
 		else
 		{
+			assert(!EngineExtensions::ShouldDefer3DTask());
+
 			data.Cleanup(a_handle, a_root, a_root1p, a_db);
 		}
 
@@ -141,6 +144,9 @@ namespace IED
 	void ObjectEntryBase::State::Cleanup(
 		Game::ObjectRefHandle a_handle)
 	{
+		nodes.physics.reset();
+		nodes.object.reset();
+
 		for (auto& e : groupObjects)
 		{
 			EngineExtensions::CleanupObjectImpl(

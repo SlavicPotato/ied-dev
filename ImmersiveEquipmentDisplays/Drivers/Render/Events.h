@@ -18,7 +18,7 @@ namespace IED
 			{
 			};
 
-			struct PrepareGameDataEvent
+			struct Prepare3DGameDataEvent
 			{
 			};
 		}

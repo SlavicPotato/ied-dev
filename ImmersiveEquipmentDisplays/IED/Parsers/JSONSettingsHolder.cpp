@@ -65,6 +65,8 @@ namespace IED
 			a_out.effectsParallelUpdates              = data.get("es_parallel_updates", false).asBool();
 			a_out.syncTransformsToFirstPersonSkeleton = data.get("sync_to_1p", false).asBool();
 
+			a_out.physics.maxDiff = data.get("phy_maxdiff", 1024.0f).asFloat();
+
 			auto& logLevel = data["log_level"];
 
 			if (!logLevel.empty())
@@ -115,6 +117,8 @@ namespace IED
 			data["equipment_physics"]       = a_data.enableEquipmentPhysics;
 			data["es_parallel_updates"]     = a_data.effectsParallelUpdates;
 			data["sync_to_1p"]              = a_data.syncTransformsToFirstPersonSkeleton;
+
+			data["phy_maxdiff"] = a_data.physics.maxDiff;
 
 			if (a_data.logLevel)
 			{

@@ -22,13 +22,12 @@ namespace IED
 		public:
 			I3DIModelObject(
 				ID3D11Device*                        a_device,
-				ID3D11DeviceContext*                 a_context,
 				BoundingShape                        a_boundingShape,
 				const std::shared_ptr<D3DModelData>& a_data);
 
 			virtual ~I3DIModelObject() noexcept override = default;
 
-			virtual I3DIModelObject* GetAsModelObject() override
+			virtual I3DIModelObject* AsModelObject() override
 			{
 				return this;
 			};
@@ -42,11 +41,6 @@ namespace IED
 			virtual void OnMouseMoveOut(I3DICommonData& a_data) override;
 			virtual bool OnSelect(I3DICommonData& a_data) override;
 			virtual void OnUnselect(I3DICommonData& a_data) override;
-
-			virtual bool ObjectIntersects(
-				I3DICommonData& a_data,
-				const I3DIRay&  a_ray,
-				float&          a_dist) override;
 
 			virtual void                 SetLastDistance(const std::optional<float>& a_distance) override;
 			virtual std::optional<float> GetLastDistance() const override;

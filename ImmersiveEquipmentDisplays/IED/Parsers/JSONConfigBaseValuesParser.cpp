@@ -3,6 +3,7 @@
 #include "JSONConfigBaseValuesParser.h"
 
 #include "JSONConfigCachedFormParser.h"
+#include "JSONConfigNodePhysicsValuesParser.h"
 #include "JSONConfigTransformParser.h"
 #include "JSONNodeMapValueParser.h"
 
@@ -19,21 +20,21 @@ namespace IED
 			a_out.flags = static_cast<Data::BaseFlags>(
 				a_in.get("flags", stl::underlying(Data::configBaseValues_t::DEFAULT_FLAGS)).asUInt());
 
-			if (auto& xfrm = a_in["xfrm"])
+			if (auto& data = a_in["xfrm"])
 			{
-				Parser<Data::configTransform_t> tfParser(m_state);
+				Parser<Data::configTransform_t> parser(m_state);
 
-				if (!tfParser.Parse(xfrm, a_out, a_version))
+				if (!parser.Parse(data, a_out, a_version))
 				{
 					return false;
 				}
 			}
 
-			if (auto& node = a_in["node"])
+			if (auto& data = a_in["node"])
 			{
-				Parser<Data::NodeDescriptor> nvParser(m_state);
+				Parser<Data::NodeDescriptor> parser(m_state);
 
-				if (!nvParser.Parse(node, a_out.targetNode, a_version))
+				if (!parser.Parse(data, a_out.targetNode, a_version))
 				{
 					return false;
 				}
@@ -41,21 +42,34 @@ namespace IED
 
 			a_out.targetNode.lookup_flags();
 
-			if (auto& nics = a_in["nics"])
+			if (auto& data = a_in["nics"])
 			{
-				a_out.niControllerSequence = nics.asString();
+				a_out.niControllerSequence = data.asString();
 			}
 
-			if (auto& aev = a_in["aev"])
+			if (auto& data = a_in["aev"])
 			{
-				a_out.animationEvent = aev.asString();
+				a_out.animationEvent = data.asString();
 			}
 
-			if (auto& fmd = a_in["fmd"])
+			if (auto& data = a_in["fmd"])
 			{
-				Parser<Data::configCachedForm_t> fparser(m_state);
+				Parser<Data::configCachedForm_t> parser(m_state);
 
-				if (!fparser.Parse(fmd, a_out.forceModel))
+				if (!parser.Parse(data, a_out.forceModel))
+				{
+					return false;
+				}
+			}
+
+			if (auto& data = a_in["phy"])
+			{
+				Parser<Data::configNodePhysicsValues_t> parser(m_state);
+
+				a_out.physicsValues.data =
+					std::make_unique<Data::configNodePhysicsValues_t>();
+
+				if (!parser.Parse(data, *a_out.physicsValues.data))
 				{
 					return false;
 				}
@@ -73,16 +87,16 @@ namespace IED
 
 			if (!a_data.empty())
 			{
-				Parser<Data::configTransform_t> tfParser(m_state);
+				Parser<Data::configTransform_t> parser(m_state);
 
-				tfParser.Create(a_data, a_out["xfrm"]);
+				parser.Create(a_data, a_out["xfrm"]);
 			}
 
 			if (a_data.targetNode)
 			{
-				Parser<Data::NodeDescriptor> nvParser(m_state);
+				Parser<Data::NodeDescriptor> parser(m_state);
 
-				nvParser.Create(a_data.targetNode, a_out["node"]);
+				parser.Create(a_data.targetNode, a_out["node"]);
 			}
 
 			if (!a_data.niControllerSequence.empty())
@@ -97,9 +111,16 @@ namespace IED
 
 			if (a_data.forceModel.get_id())
 			{
-				Parser<Data::configCachedForm_t> fparser(m_state);
+				Parser<Data::configCachedForm_t> parser(m_state);
 
-				fparser.Create(a_data.forceModel, a_out["fmd"]);
+				parser.Create(a_data.forceModel, a_out["fmd"]);
+			}
+
+			if (auto& data = a_data.physicsValues.data)
+			{
+				Parser<Data::configNodePhysicsValues_t> parser(m_state);
+
+				parser.Create(*data, a_out["phy"]);
 			}
 		}
 

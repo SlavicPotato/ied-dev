@@ -132,7 +132,8 @@ namespace IED
 		{
 			bool result = false;
 
-			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.02f;
+			auto dragSpeed    = ImGui::GetIO().KeyShift ? 0.0001f : 0.04f;
+			auto dragSpeedDeg = ImGui::GetIO().KeyShift ? 0.0005f : 0.25f;
 
 			ImGui::PushID("go");
 
@@ -197,7 +198,7 @@ namespace IED
 				a_data.linear,
 				dragSpeed,
 				0,
-				1);
+				10);
 			DrawTip(UITip::PVLinearScale);
 
 			result |= ImGui::DragFloat3(
@@ -211,7 +212,7 @@ namespace IED
 			result |= ImGui::DragFloat3(
 				LS(UIPhysicsValueEditorWidgetStrings::RotationAdjust, "A"),
 				a_data.rotAdjust,
-				dragSpeed,
+				dragSpeedDeg,
 				-360,
 				360);
 			DrawTip(UITip::PVRotationAdjust);
@@ -265,7 +266,7 @@ namespace IED
 		{
 			bool result = false;
 
-			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.02f;
+			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.04f;
 
 			ImGui::PushID("sco");
 
@@ -298,7 +299,7 @@ namespace IED
 		{
 			bool result = false;
 
-			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.02f;
+			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.04f;
 
 			ImGui::PushID("bco");
 
@@ -331,7 +332,7 @@ namespace IED
 		{
 			bool result = false;
 
-			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.02f;
+			auto dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.04f;
 
 			ImGui::PushID("opar");
 

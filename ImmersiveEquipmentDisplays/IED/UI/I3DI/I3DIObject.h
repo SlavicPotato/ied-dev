@@ -42,37 +42,37 @@ namespace IED
 
 			virtual ~I3DIObject() noexcept = default;
 
-			virtual I3DIDraggable* GetAsDraggable()
+			virtual I3DIDraggable* AsDraggable()
 			{
 				return nullptr;
 			};
 
-			virtual I3DIDropTarget* GetAsDropTarget()
+			virtual I3DIDropTarget* AsDropTarget()
 			{
 				return nullptr;
 			};
 
-			virtual I3DIModelObject* GetAsModelObject()
+			virtual I3DIModelObject* AsModelObject()
 			{
 				return nullptr;
 			};
 			
-			virtual I3DIBoundObject* GetAsBoundObject()
+			virtual I3DIBoundObject* AsBoundObject()
 			{
 				return nullptr;
 			};
 
-			virtual I3DIActorObject* GetAsActorObject()
+			virtual I3DIActorObject* AsActorObject()
 			{
 				return nullptr;
 			};
 
-			virtual I3DIMOVNode* GetAsMOVNode()
+			virtual I3DIMOVNode* AsMOVNode()
 			{
 				return nullptr;
 			};
 
-			virtual I3DIWeaponNode* GetAsWeaponNode()
+			virtual I3DIWeaponNode* AsWeaponNode()
 			{
 				return nullptr;
 			};
@@ -91,6 +91,9 @@ namespace IED
 				I3DICommonData& a_data,
 				const I3DIRay&  a_ray,
 				float&          a_dist);
+
+			virtual void OnObjectRegistered(I3DIObjectController& a_data){};
+			virtual void OnObjectUnregistered(I3DIObjectController& a_data){};
 
 			virtual bool ShouldProcess(I3DICommonData& a_data) { return true; };
 

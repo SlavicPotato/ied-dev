@@ -20,7 +20,7 @@ namespace IED
 
 			virtual ~I3DIActorObject() noexcept override = default;
 
-			virtual I3DIActorObject* GetAsActorObject() override
+			virtual I3DIActorObject* AsActorObject() override
 			{
 				return this;
 			};

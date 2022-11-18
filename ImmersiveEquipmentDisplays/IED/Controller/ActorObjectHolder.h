@@ -190,6 +190,11 @@ namespace IED
 		{
 			return m_handle;
 		}
+		
+		inline constexpr void SetHandle(Game::ObjectRefHandle a_handle) noexcept
+		{
+			m_handle = a_handle;
+		}
 
 		[[nodiscard]] inline auto& GetCustom(Data::ConfigClass a_class) noexcept
 		{
@@ -632,16 +637,33 @@ namespace IED
 
 		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const;
 
+		void QueueDisposeMOVSimComponents();
 		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle);
-
-		void AddToSimNodeList(PHYSimComponent* a_mov);
-		void RemoveFromSimNodeList(PHYSimComponent* a_mov);
 
 		void SimReadTransforms() const noexcept;
 		void SimWriteTransforms() const noexcept;
 		void SimUpdate(float a_step) const noexcept;
 
-		void ClearAllSimComponents();
+		void SimComponentListClear();
+		void ClearAllPhysicsData();
+
+		std::size_t GetSimComponentListSize() const noexcept;
+
+		template <class... Args>
+		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args)
+		{
+			return m_simNodeList.emplace_back(
+				std::make_unique<PHYSimComponent>(
+					std::forward<Args>(a_args)...));
+		}
+
+		void RemoveSimComponent(const std::shared_ptr<PHYSimComponent>& a_sc);
+		void RemoveAndDestroySimComponent(std::shared_ptr<PHYSimComponent>& a_sc);
+
+		[[nodiscard]] inline constexpr auto& GetSimComponentList() const noexcept
+		{
+			return m_simNodeList;
+		}
 
 	private:
 		void CreateExtraMovNodes(
@@ -686,7 +708,15 @@ namespace IED
 		cme_node_map_type m_cmeNodes;
 		mov_node_map_type m_movNodes;
 
-		stl::vector<PHYSimComponent*> m_simNodeList;
+		stl::vector<
+			std::shared_ptr<PHYSimComponent>
+#if defined(IED_USE_MIMALLOC_SIMCOMPONENT)
+			,
+			stl::mi_allocator<std::shared_ptr<PHYSimComponent>>
+#else
+#endif
+			>
+			m_simNodeList;
 
 		stl::unordered_map<luid_tag, float> m_rpc;
 

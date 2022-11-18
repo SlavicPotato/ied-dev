@@ -12,6 +12,8 @@
 
 namespace IED
 {
+	class Controller;
+
 	namespace UI
 	{
 		class I3DIActorObject;
@@ -23,12 +25,14 @@ namespace IED
 				ID3D11Device*                      a_device,
 				ID3D11DeviceContext*               a_context,
 				const DXGI_SWAP_CHAIN_DESC&        a_desc,
-				std::unique_ptr<I3DIActorContext>& a_actorContext) noexcept(false) :
+				std::unique_ptr<I3DIActorContext>& a_actorContext,
+				Controller&                        a_controller) noexcept(false) :
 				scene(a_device, a_context, a_desc),
 				batchNoDepth(a_device, a_context),
 				batchDepth(a_device, a_context),
 				assets(a_device, a_context),
-				actorContext(a_actorContext)
+				actorContext(a_actorContext),
+				controller(a_controller)
 			//oit(a_device, a_desc)
 			{
 				batchNoDepth.EnableDepth(false);
@@ -37,12 +41,13 @@ namespace IED
 
 			I3DIRay cursorRay;
 
-			D3DCommon            scene;
-			D3DPrimitiveBatch    batchNoDepth;
-			D3DPrimitiveBatch    batchDepth;
-			I3DIAssetCache       assets;
-			I3DIPopupWindow      commonPopup;
-			I3DIObjectController objectController;
+			D3DCommon                       scene;
+			D3DPrimitiveBatch               batchNoDepth;
+			D3DPrimitiveBatch               batchDepth;
+			I3DIAssetCache                  assets;
+			I3DIPopupWindow                 commonPopup;
+			I3DIObjectController            objectController;
+			Controller&                     controller;
 			//D3DOIT               oit;
 
 			std::optional<Game::FormID>                                        queuedActor;
@@ -52,7 +57,6 @@ namespace IED
 			void UpdateMouseRay();
 
 			bool IsCurrentActorObject(const I3DIActorObject* a_other) const noexcept;
-			
 		};
 
 	}

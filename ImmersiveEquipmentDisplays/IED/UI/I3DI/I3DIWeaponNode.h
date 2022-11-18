@@ -23,7 +23,6 @@ namespace IED
 
 			I3DIWeaponNode(
 				ID3D11Device*                              a_device,
-				ID3D11DeviceContext*                       a_context,
 				const std::shared_ptr<D3DModelData>&       a_data,
 				const stl::fixed_string&                   a_nodeName,
 				const NodeOverrideData::weaponNodeEntry_t& a_nodeInfo,
@@ -31,12 +30,12 @@ namespace IED
 
 			virtual ~I3DIWeaponNode() noexcept override = default;
 
-			virtual I3DIWeaponNode* GetAsWeaponNode() override
+			virtual I3DIWeaponNode* AsWeaponNode() override
 			{
 				return this;
 			};
 
-			virtual I3DIDraggable* GetAsDraggable() override
+			virtual I3DIDraggable* AsDraggable() override
 			{
 				return static_cast<I3DIDraggable*>(this);
 			};
@@ -79,6 +78,8 @@ namespace IED
 			virtual bool IsSelectable() override;
 
 			virtual void DrawContents(I3DICommonData& a_data) override;
+
+			virtual bool ShouldProcess(I3DICommonData& a_data) override;
 
 			const stl::fixed_string                    m_nodeName;
 			const NodeOverrideData::weaponNodeEntry_t& m_nodeInfo;

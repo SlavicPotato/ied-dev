@@ -65,17 +65,35 @@ namespace IED
 
 		private:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void serialize_btVector3(Archive& a_ar, const btVector3& a_member) const
+			{
+				a_ar& a_member.mVec128.m128_f32[0];
+				a_ar& a_member.mVec128.m128_f32[1];
+				a_ar& a_member.mVec128.m128_f32[2];
+			}
+
+			template <class Archive>
+			void deserialize_btVector3(Archive& a_ar, btVector3& a_member)
+			{
+				a_ar& a_member.mVec128.m128_f32[0];
+				a_ar& a_member.mVec128.m128_f32[1];
+				a_ar& a_member.mVec128.m128_f32[2];
+				a_member.mVec128.m128_f32[3] = 0.0f;
+			}
+			
+			template <class Archive>
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
 				a_ar& valueFlags.value;
 
-				a_ar& maxOffsetSphereOffset.mVec128.m128_f32;
-				a_ar& maxOffsetN.mVec128.m128_f32;
-				a_ar& maxOffsetP.mVec128.m128_f32;
-				a_ar& cogOffset.mVec128.m128_f32;
-				a_ar& linear.mVec128.m128_f32;
-				a_ar& rotational.mVec128.m128_f32;
-				a_ar& rotAdjust.mVec128.m128_f32;
+				serialize_btVector3(a_ar, maxOffsetSphereOffset);
+				serialize_btVector3(a_ar, maxOffsetN);
+				serialize_btVector3(a_ar, maxOffsetP);
+				serialize_btVector3(a_ar, cogOffset);
+				serialize_btVector3(a_ar, linear);
+				serialize_btVector3(a_ar, rotational);
+				serialize_btVector3(a_ar, rotAdjust);
+
 				a_ar& maxOffsetParamsSphere.mVec128.m128_f32;
 				a_ar& maxOffsetParamsBox.mVec128.m128_f32;
 
@@ -92,6 +110,38 @@ namespace IED
 				a_ar& mass;
 				a_ar& maxVelocity;
 			}
+			
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& valueFlags.value;
+
+				deserialize_btVector3(a_ar, maxOffsetSphereOffset);
+				deserialize_btVector3(a_ar, maxOffsetN);
+				deserialize_btVector3(a_ar, maxOffsetP);
+				deserialize_btVector3(a_ar, cogOffset);
+				deserialize_btVector3(a_ar, linear);
+				deserialize_btVector3(a_ar, rotational);
+				deserialize_btVector3(a_ar, rotAdjust);
+
+				a_ar& maxOffsetParamsSphere.mVec128.m128_f32;
+				a_ar& maxOffsetParamsBox.mVec128.m128_f32;
+
+				a_ar& stiffness;
+				a_ar& stiffness2;
+				a_ar& springSlackOffset;
+				a_ar& springSlackMag;
+				a_ar& damping;
+				a_ar& maxOffsetSphereRadius;
+				a_ar& gravityBias;
+				a_ar& gravityCorrection;
+				a_ar& rotGravityCorrection;
+				a_ar& resistance;
+				a_ar& mass;
+				a_ar& maxVelocity;
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 	}
 }

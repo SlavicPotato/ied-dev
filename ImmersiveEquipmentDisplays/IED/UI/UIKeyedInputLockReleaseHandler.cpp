@@ -17,6 +17,45 @@ namespace IED
 		{
 		}
 
+		inline static bool should_force_key_up(std::uint32_t a_key) noexcept
+		{
+			if (!a_key)
+			{
+				return true;
+			}
+
+			if (a_key < InputMap::kMacro_MouseButtonOffset)
+			{
+				return ImGui::GetIO().WantCaptureKeyboard;
+			}
+			else if (a_key < InputMap::kMacro_MouseButtonOffset + InputMap::kMacro_NumMouseButtons)
+			{
+				return ImGui::GetIO().WantCaptureMouse;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		inline static void update_key_state(
+			const Handlers::KeyEvent& a_evn,
+			std::uint32_t             a_key,
+			KeyEventState&            a_out) noexcept
+		{
+			if (!should_force_key_up(a_key))
+			{
+				if (a_key == a_evn.key)
+				{
+					a_out = a_evn.state;
+				}
+			}
+			else
+			{
+				a_out = KeyEventState::KeyUp;
+			}
+		}
+
 		void UIKeyedInputLockReleaseHandler::ILRHReceive(
 			const Handlers::KeyEvent& a_evn)
 		{
@@ -25,18 +64,12 @@ namespace IED
 				return;
 			}
 
-			if (m_comboKey && m_comboKey == a_evn.key)
-			{
-				m_comboState = a_evn.state;
-			}
+			update_key_state(a_evn, m_comboKey, m_comboState);
+			update_key_state(a_evn, m_key, m_state);
 
-			if (m_key && m_key == a_evn.key)
-			{
-				m_state = a_evn.state;
-			}
-
-			auto held = (!m_comboKey || m_comboState == KeyEventState::KeyDown) &&
-			            m_state == KeyEventState::KeyDown;
+			const auto held =
+				(!m_comboKey || m_comboState == KeyEventState::KeyDown) &&
+				m_state == KeyEventState::KeyDown;
 
 			if (held != m_held)
 			{

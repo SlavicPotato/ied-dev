@@ -11,8 +11,8 @@ namespace IED
 
 	enum class KeyEventState : std::uint8_t
 	{
-		KeyDown = 0,
-		KeyUp   = 1
+		KeyUp = 0,
+		KeyDown = 1
 	};
 
 }

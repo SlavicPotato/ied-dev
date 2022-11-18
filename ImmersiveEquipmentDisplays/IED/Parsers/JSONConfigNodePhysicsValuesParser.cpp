@@ -12,8 +12,7 @@ namespace IED
 		template <>
 		bool Parser<Data::configNodePhysicsValues_t>::Parse(
 			const Json::Value&               a_in,
-			Data::configNodePhysicsValues_t& a_out,
-			const std::uint32_t              a_version) const
+			Data::configNodePhysicsValues_t& a_out) const
 		{
 			Parser<btVector3> v3parser(m_state);
 			Parser<btVector4> v4parser(m_state);

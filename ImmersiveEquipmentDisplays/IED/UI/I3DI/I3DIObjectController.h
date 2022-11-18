@@ -55,6 +55,10 @@ namespace IED
 			void Run(I3DICommonData& a_data);
 			void DrawObjects(I3DICommonData& a_data);
 
+			void ObjectControlInputHandler(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_object);
+
 			[[nodiscard]] inline constexpr auto GetLastRunTime() const noexcept
 			{
 				return m_lastRunTime;
@@ -76,7 +80,8 @@ namespace IED
 			draw_queue_container_type m_drawQueueOpaque;
 			draw_queue_container_type m_drawQueueAlpha;
 
-			ImVec2 m_lastClickPos{ -FLT_MAX, -FLT_MAX };
+			std::shared_ptr<I3DIObject> m_lastClickedObject;
+			ImVec2                      m_lastClickPos{ -FLT_MAX, -FLT_MAX };
 
 		private:
 			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object);

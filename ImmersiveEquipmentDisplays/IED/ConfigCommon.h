@@ -730,6 +730,42 @@ namespace IED
 		mutable std::optional<const mapped_type*> race;
 	};
 
+	template <class T>
+	struct configCopyableUniquePtr_t
+	{
+	public:
+		configCopyableUniquePtr_t() noexcept = default;
+
+		configCopyableUniquePtr_t(const configCopyableUniquePtr_t& a_rhs)
+		{
+			if (a_rhs.data)
+			{
+				data = std::make_unique<T>(*a_rhs.data);
+			}
+		}
+
+		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t a_rhs)
+		{
+			std::swap(data, a_rhs.data);
+			return *this;
+		}
+
+		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&) noexcept = default;
+		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t&&) noexcept = default;
+
+		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		{
+			return static_cast<bool>(data.get());
+		}
+		
+		[[nodiscard]] inline constexpr auto operator->() const noexcept
+		{
+			return data.get();
+		}
+
+		std::unique_ptr<T> data;
+	};
+
 }
 
 namespace std

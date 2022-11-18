@@ -96,7 +96,6 @@ namespace IED
 						}
 					}
 					break;
-#if defined(IED_ENABLE_I3DI)
 				case INPUT_EVENT_TYPE::kMouseMove:
 					{
 						auto mouseMoveEvent = static_cast<const MouseMoveEvent*>(it);
@@ -104,7 +103,6 @@ namespace IED
 						DispatchPriorityKeyEvent(mouseMoveEvent);
 					}
 					break;
-#endif
 				}
 			}
 		}

@@ -57,6 +57,7 @@ namespace IED
 		// IED-added
 
 		static inline constexpr auto NINODE_IED_OBJECT = "OBJECT ROOT";
+		static inline constexpr auto NINODE_IED_PHYSICS = "OBJECT PHY";
 
 		// non-vanilla
 
@@ -140,6 +141,7 @@ namespace IED
 		BSFixedString m_bged{ BGED };
 		BSFixedString m_torchFire{ NINODE_TORCH_FIRE };
 		BSFixedString m_object{ NINODE_IED_OBJECT };
+		BSFixedString m_objectPhy{ NINODE_IED_PHYSICS };
 		BSFixedString m_attachLight{ NINODE_ATTACH_LIGHT };
 		BSFixedString m_glowAddMesh{ NINODE_GLOW_ADD_MESH };
 

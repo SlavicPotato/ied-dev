@@ -62,6 +62,18 @@ namespace Bullet
 			return *this;
 		}
 
+		SIMD_FORCE_INLINE btTransformEx operator*(
+			const btTransformEx& a_rhs) const
+		{
+			btTransformEx result;
+
+			result.m_scale       = m_scale * a_rhs.m_scale;
+			result.getRotation() = getRotation() * a_rhs.getRotation();
+			result.getBasis()    = getBasis() * a_rhs.getBasis();
+
+			return result;
+		}
+
 		SIMD_FORCE_INLINE btVector3 operator*(
 			const btVector3& a_pt) const
 		{

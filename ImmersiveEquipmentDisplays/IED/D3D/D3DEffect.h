@@ -54,7 +54,7 @@ namespace IED
 			D3DVertexShaderID a_vertexShader,
 			D3DPixelShaderID  a_pixelShader) noexcept(false);
 
-		virtual ~D3DEffect() noexcept = default;
+		virtual ~D3DEffect() = default;
 
 		void             UpdateWorldMatrix(const NiTransform& a_transform);
 		void             UpdateWorldMatrix(const NiAVObject* a_object);

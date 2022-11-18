@@ -62,15 +62,34 @@ namespace IED
 			return false;
 		}
 
+		Debug("Installing task hooks..");
+
 		ITaskPool::Install(
 			ISKSE::GetBranchTrampoline(),
-			ISKSE::GetLocalTrampoline());
+			ISKSE::GetLocalTrampoline(),
+			true);
 
 		//RTest::GetSingleton().Initialize();
 
+		Debug("Creating controller..");
+
+		m_controller = new Controller(config);
+
+		SetupSKSEEventHandlers(a_skse);
+
+		SKSEMessagingHandler::GetSingleton().AddSink(this);
+
+		Debug("Sinking controller events..");
+
+		m_controller->SinkEventsT0();
+
+		Debug("Installing engine extensions..");
+
+		EngineExtensions::Install(m_controller, config);
+
 		if (config->m_enableUI)
 		{
-			Debug("Initializing render interface..");
+			Debug("Initializing render driver..");
 
 			if (Drivers::Render::Initialize(true))
 			{
@@ -101,28 +120,16 @@ namespace IED
 			}
 		}
 
+		Debug("Initializing controller input handlers..");
+
+		m_controller->InitializeInputHandlers();
+
+		Debug("Early initialization done");
+
 		if (!config->m_enableUI)
 		{
 			ISKSE::CloseBacklog();
 		}
-
-		Debug("Creating controller..");
-
-		m_controller = new Controller(config);
-
-		SetupSKSEEventHandlers(a_skse);
-
-		SKSEMessagingHandler::GetSingleton().AddSink(this);
-
-		Debug("Sinking controller events..");
-
-		m_controller->SinkEventsT0();
-
-		Debug("Installing engine extensions..");
-
-		EngineExtensions::Install(m_controller, config);
-
-		Debug("Early initialization done");
 
 		if (config->m_closeLogFile)
 		{

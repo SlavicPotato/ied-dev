@@ -164,7 +164,7 @@ namespace IED
 		const Data::configBaseValues_t& a_entry,
 		const Data::NodeDescriptor&     a_node,
 		NiNode*                         a_root,
-		nodesRef_t&                     a_out)
+		nodesTarget_t&                  a_out)
 	{
 		if (!a_node)
 		{

@@ -13,8 +13,8 @@
 
 #include "IED/Controller/Controller.h"
 
-#include <ext/Clouds.h>
-#include <ext/Sky.h>
+//#include <ext/Clouds.h>
+//#include <ext/Sky.h>
 
 namespace IED
 {
@@ -93,10 +93,10 @@ namespace IED
 				return;
 			}
 
-			if (Game::InPausedMenu())
+			/*if (Game::InPausedMenu())
 			{
 				return;
-			}
+			}*/
 
 			const auto& rd = Drivers::Render::GetSingleton();
 
@@ -168,7 +168,8 @@ namespace IED
 					rd.GetDevice().Get(),
 					rd.GetContext().Get(),
 					rd.GetSwapChainInfo(),
-					m_actorContext);
+					m_actorContext,
+					m_controller);
 
 				return true;
 			}

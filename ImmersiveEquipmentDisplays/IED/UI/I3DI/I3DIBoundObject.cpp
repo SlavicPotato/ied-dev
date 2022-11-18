@@ -4,6 +4,7 @@
 
 #include "I3DIBoundingOrientedBox.h"
 #include "I3DIBoundingSphere.h"
+#include "I3DIRay.h"
 
 namespace IED
 {
@@ -23,13 +24,21 @@ namespace IED
 				m_bound = std::make_unique<I3DIBoundingSphere>();
 				break;
 			default:
-				throw std::exception(__FUNCTION__": invalid bounding shape");
+				throw std::exception(__FUNCTION__ ": invalid bounding shape");
 			}
+		}
+
+		bool I3DIBoundObject::ObjectIntersects(
+			I3DICommonData& a_data,
+			const I3DIRay&  a_ray,
+			float&          a_dist)
+		{
+			return Intersects(a_ray.origin, a_ray.dir, a_dist);
 		}
 
 		void XM_CALLCONV I3DIBoundObject::DrawBoundingShape(
 			D3DPrimitiveBatch& a_batch,
-			DirectX::XMVECTOR  a_color) const
+			XMVECTOR           a_color) const
 		{
 			m_bound->Draw(a_batch, a_color);
 		}
@@ -54,7 +63,7 @@ namespace IED
 			return m_bound->GetCenterDistanceSq(a_origin);
 		}
 
-		DirectX::XMVECTOR XM_CALLCONV I3DIBoundObject::GetBoundingShapeCenter() const
+		XMVECTOR XM_CALLCONV I3DIBoundObject::GetBoundingShapeCenter() const
 		{
 			return m_bound->GetBoundingShapeCenter();
 		}

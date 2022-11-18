@@ -15,7 +15,6 @@ namespace IED
 
 		I3DIModelObject::I3DIModelObject(
 			ID3D11Device*                        a_device,
-			ID3D11DeviceContext*                 a_context,
 			BoundingShape                        a_boundingShape,
 			const std::shared_ptr<D3DModelData>& a_data) :
 			I3DIBoundObject(a_boundingShape),
@@ -53,14 +52,6 @@ namespace IED
 			{
 				SetAlpha(0.5f);
 			}
-		}
-
-		bool I3DIModelObject::ObjectIntersects(
-			I3DICommonData& a_data,
-			const I3DIRay&  a_ray,
-			float&          a_dist)
-		{
-			return Intersects(a_ray.origin, a_ray.dir, a_dist);
 		}
 
 		void I3DIModelObject::SetLastDistance(const std::optional<float>& a_distance)

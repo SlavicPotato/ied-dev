@@ -2,6 +2,7 @@
 
 #include "I3DICamera.h"
 #include "I3DIMOVNode.h"
+#include "I3DIPhysicsObject.h"
 #include "I3DIWeaponNode.h"
 
 namespace IED
@@ -64,7 +65,7 @@ namespace IED
 			{
 				return m_movNodes;
 			}
-			
+
 			/*[[nodiscard]] inline constexpr auto& GetMOVPairs() const noexcept
 			{
 				return m_movPairs;
@@ -95,6 +96,7 @@ namespace IED
 
 			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
 			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIMOVNode>>    m_movNodes;
+			stl::unordered_map<luid_tag, std::shared_ptr<I3DIPhysicsObject>>       m_physicsObjects;
 
 			/*struct objpair_t
 			{

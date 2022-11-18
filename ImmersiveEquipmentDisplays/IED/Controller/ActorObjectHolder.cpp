@@ -246,21 +246,26 @@ namespace IED
 
 		m_lastEquipped->accessed = m_owner.IncrementCounter();
 
+		const bool defer = EngineExtensions::ShouldDefer3DTask();
+
 		if (m_actor->loadedState)
 		{
 			for (const auto& e : m_cmeNodes)
 			{
-				INodeOverride::ResetNodeOverride(e.second);
+				INodeOverride::ResetNodeOverride(e.second, defer);
 			}
 
 			for (const auto& e : m_weapNodes)
 			{
-				INodeOverride::ResetNodePlacement(e, nullptr);
+				INodeOverride::ResetNodePlacement(e, nullptr, defer);
 			}
 		}
 
-		if (EngineExtensions::ShouldDefer3DTask())
+		m_simNodeList.clear();
+
+		if (defer)
 		{
+			QueueDisposeMOVSimComponents();
 			QueueDisposeAllObjectEntries(GetHandle());
 		}
 		else
@@ -280,7 +285,12 @@ namespace IED
 					(void)handle->LookupZH(ref);
 				}
 
-				a_entry.reset(*handle, m_root, m_root1p, m_owner);
+				a_entry.reset(
+					*handle,
+					m_root,
+					m_root1p,
+					m_owner,
+					false);
 			});
 		}
 	}
@@ -551,6 +561,38 @@ namespace IED
 		}
 	}
 
+	void ActorObjectHolder::QueueDisposeMOVSimComponents()
+	{
+		/*using list_type = stl::forward_list<std::shared_ptr<PHYSimComponent>>;
+
+		list_type list;
+
+		for (auto& e : m_movNodes)
+		{
+			if (auto& sc = e.second.simComponent)
+			{
+				list.emplace_front(std::move(sc));
+			}
+		}
+
+		if (!list.empty())
+		{
+			ITaskPool::AddPriorityTask<
+				ITaskPool::SimpleDisposeTask<list_type>>(std::move(list));
+		}*/
+
+		for (auto& e : m_movNodes)
+		{
+			if (auto& sc = e.second.simComponent)
+			{
+				ITaskPool::AddPriorityTask<
+					ITaskPool::SimpleDisposeTask<
+						std::remove_cvref_t<
+							decltype(sc)>>>(std::move(sc));
+			}
+		}
+	}
+
 	bool ActorObjectHolder::QueueDisposeAllObjectEntries(
 		Game::ObjectRefHandle a_handle)
 	{
@@ -561,6 +603,14 @@ namespace IED
 		visit([&](auto& a_entry) {
 			if (a_entry.data)
 			{
+				if (auto& state = a_entry.data.state)
+				{
+					if (auto& sc = state->simComponent)
+					{
+						RemoveSimComponent(sc);
+					}
+				}
+
 				list.emplace_front(std::move(a_entry.data));
 			}
 		});
@@ -625,16 +675,6 @@ namespace IED
 		return true;
 	}
 
-	void ActorObjectHolder::AddToSimNodeList(PHYSimComponent* a_mov)
-	{
-		m_simNodeList.emplace_back(a_mov);
-	}
-
-	void ActorObjectHolder::RemoveFromSimNodeList(PHYSimComponent* a_mov)
-	{
-		std::erase(m_simNodeList, a_mov);
-	}
-
 	void ActorObjectHolder::SimReadTransforms() const noexcept
 	{
 		for (auto& e : m_simNodeList)
@@ -657,19 +697,50 @@ namespace IED
 
 		for (auto& e : m_simNodeList)
 		{
+			assert(e.use_count() > 1);
+
 			e->UpdateMotion(step);
 		}
 	}
 
-	void ActorObjectHolder::ClearAllSimComponents()
+	void ActorObjectHolder::SimComponentListClear()
 	{
 		m_simNodeList.clear();
-		m_simNodeList.shrink_to_fit();
+	}
+
+	void ActorObjectHolder::ClearAllPhysicsData()
+	{
+		m_simNodeList.clear();
 
 		for (auto& e : m_movNodes)
 		{
 			e.second.simComponent.reset();
 		}
+
+		visit([](auto& a_e) {
+			if (auto& state = a_e.data.state)
+			{
+				state->simComponent.reset();
+			}
+		});
+	}
+
+	std::size_t ActorObjectHolder::GetSimComponentListSize() const noexcept
+	{
+		return m_simNodeList.size();
+	}
+
+	void ActorObjectHolder::RemoveSimComponent(
+		const std::shared_ptr<PHYSimComponent>& a_sc)
+	{
+		std::erase(m_simNodeList, a_sc);
+	}
+
+	void ActorObjectHolder::RemoveAndDestroySimComponent(
+		std::shared_ptr<PHYSimComponent>& a_sc)
+	{
+		std::erase(m_simNodeList, a_sc);
+		a_sc.reset();
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(

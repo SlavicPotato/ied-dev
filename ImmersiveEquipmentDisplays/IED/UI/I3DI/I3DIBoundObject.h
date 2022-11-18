@@ -8,6 +8,8 @@ namespace IED
 {
 	namespace UI
 	{
+		struct I3DICommonData;
+
 		class I3DIBoundObject :
 			public I3DIObject
 		{
@@ -17,12 +19,17 @@ namespace IED
 
 			virtual ~I3DIBoundObject() noexcept = default;
 
-			virtual I3DIBoundObject* GetAsBoundObject() override
+			virtual I3DIBoundObject* AsBoundObject() override
 			{
 				return this;
 			};
 
 			virtual void UpdateBound() = 0;
+
+			virtual bool ObjectIntersects(
+				I3DICommonData& a_data,
+				const I3DIRay&  a_ray,
+				float&          a_dist) override;
 
 			void XM_CALLCONV DrawBoundingShape(
 				D3DPrimitiveBatch& a_batch,

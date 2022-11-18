@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigCommon.h"
+#include "ConfigNodePhysicsValues.h"
 #include "ConfigTransform.h"
 #include "NodeDescriptor.h"
 
@@ -59,6 +60,7 @@ namespace IED
 				DataVersion2 = 2,
 				DataVersion3 = 3,
 				DataVersion4 = 4,
+				DataVersion5 = 5,
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
@@ -67,11 +69,12 @@ namespace IED
 				BaseFlags::kPlaySound |
 				BaseFlags::kReferenceMode;
 
-			stl::flag<BaseFlags> flags{ DEFAULT_FLAGS };
-			NodeDescriptor       targetNode;
-			stl::fixed_string    niControllerSequence;
-			stl::fixed_string    animationEvent;
-			configCachedForm_t   forceModel;
+			stl::flag<BaseFlags>                                 flags{ DEFAULT_FLAGS };
+			NodeDescriptor                                       targetNode;
+			stl::fixed_string                                    niControllerSequence;
+			stl::fixed_string                                    animationEvent;
+			configCachedForm_t                                   forceModel;
+			configCopyableUniquePtr_t<configNodePhysicsValues_t> physicsValues;
 
 		protected:
 			template <class Archive>
@@ -83,8 +86,9 @@ namespace IED
 				a_ar& niControllerSequence;
 				a_ar& animationEvent;
 				a_ar& forceModel;
+				a_ar& physicsValues.data;
 			}
-			
+
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
@@ -105,6 +109,11 @@ namespace IED
 							a_ar& forceModel;
 
 							forceModel.zero_missing_or_deleted();
+
+							if (a_version >= DataVersion5)
+							{
+								a_ar& physicsValues.data;
+							}
 						}
 					}
 				}
@@ -118,4 +127,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion4);
+	IED::Data::configBaseValues_t::Serialization::DataVersion5);

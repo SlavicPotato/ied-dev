@@ -20,7 +20,6 @@ namespace IED
 	{
 		I3DIMOVNode::I3DIMOVNode(
 			ID3D11Device*                                  a_device,
-			ID3D11DeviceContext*                           a_context,
 			const std::shared_ptr<D3DModelData>&           a_data,
 			const stl::fixed_string&                       a_name,
 			const NodeOverrideData::weaponNodeListEntry_t& a_nodeInfo,
@@ -29,7 +28,6 @@ namespace IED
 			I3DIActorContext&                              a_actorContext) :
 			I3DIModelObject(
 				a_device,
-				a_context,
 				BoundingShape::kSphere,
 				a_data),
 			I3DIDropTarget(*this),
@@ -53,7 +51,7 @@ namespace IED
 
 			if (auto& dragObject = a_data.objectController.GetDragObject())
 			{
-				if (auto weaponNode = dragObject->GetAsWeaponNode())
+				if (auto weaponNode = dragObject->AsWeaponNode())
 				{
 					ImGui::Spacing();
 					ImGui::Separator();
@@ -84,7 +82,7 @@ namespace IED
 				return false;
 			}
 
-			const auto weaponNode = a_item.GetDraggableObject().GetAsWeaponNode();
+			const auto weaponNode = a_item.GetDraggableObject().AsWeaponNode();
 			if (!weaponNode)
 			{
 				return false;
@@ -136,7 +134,7 @@ namespace IED
 
 			auto& dragObject = a_item.GetDraggableObject();
 
-			if (auto weapon = dragObject.GetAsWeaponNode())
+			if (auto weapon = dragObject.AsWeaponNode())
 			{
 				weapon->UpdateWorldMatrix(
 					weapon->GetLocalMatrix() *
@@ -150,7 +148,7 @@ namespace IED
 		{
 			if (auto& dragObject = a_data.objectController.GetDragObject())
 			{
-				return static_cast<bool>(dragObject->GetAsWeaponNode());
+				return static_cast<bool>(dragObject->AsWeaponNode());
 			}
 
 			return false;

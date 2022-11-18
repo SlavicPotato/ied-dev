@@ -27,7 +27,7 @@ namespace IED
 			::Events::EventSink<Handlers::MouseMoveEvent>,
 			::Events::EventSink<Events::D3D11CreateEventPost>,
 			::Events::EventSink<Events::IDXGISwapChainPresent>,
-			::Events::EventSink<Events::PrepareGameDataEvent>,
+			ITaskPool::TaskDelegateFixedPL,
 			TaskDelegateFixed
 		{
 			struct UIFontUpdateData
@@ -197,6 +197,11 @@ namespace IED
 				return m_Instance.m_info.hWnd;
 			}
 
+			[[nodiscard]] static inline constexpr bool IsImInputBlocked() noexcept
+			{
+				return static_cast<bool>(m_Instance.m_state.blockInputImGuiCounter);
+			}
+
 			static void QueueImGuiSettingsSave();
 
 			FN_NAMEPROC("UI");
@@ -210,9 +215,11 @@ namespace IED
 			virtual void Receive(const Handlers::MouseMoveEvent& a_evn) override;
 			virtual void Receive(const Events::D3D11CreateEventPost& a_evn) override;
 			virtual void Receive(const Events::IDXGISwapChainPresent& a_evn) override;
-			virtual void Receive(const Events::PrepareGameDataEvent& a_evn) override;
 
+			virtual void RunPL() override;
 			virtual void Run() override;
+
+			void RunPreps(bool a_paused);
 
 			static LRESULT CALLBACK WndProc_Hook(
 				HWND   hWnd,

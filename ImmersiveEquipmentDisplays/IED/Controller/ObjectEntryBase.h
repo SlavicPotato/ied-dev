@@ -6,8 +6,8 @@
 #include "ObjectManagerCommon.h"
 
 #include "IED/ConfigBaseValues.h"
-
 #include "IED/EngineExtensions.h"
+#include "IED/Physics/SimComponent.h"
 
 namespace IED
 {
@@ -40,7 +40,8 @@ namespace IED
 			Game::ObjectRefHandle    a_handle,
 			const NiPointer<NiNode>& a_root,
 			const NiPointer<NiNode>& a_root1p,
-			ObjectDatabase&          a_db);
+			ObjectDatabase&          a_db,
+			bool                     a_defer);
 
 		bool SetNodeVisible(const bool a_switch) const noexcept;
 		bool DeferredHideNode(const std::uint8_t a_delay) const noexcept;
@@ -171,11 +172,12 @@ namespace IED
 			Data::cacheTransform_t                                 transform;
 			stl::forward_list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
 			stl::unordered_map<stl::fixed_string, GroupObject>     groupObjects;
+			std::shared_ptr<PHYSimComponent>                       simComponent;
 			stl::fixed_string                                      currentSequence;
 			long long                                              created{ 0 };
+			Game::FormID                                           owner;
 			std::uint8_t                                           hideCountdown{ 0 };
 			bool                                                   atmReference{ true };
-			Game::FormID                                           owner;
 		};
 
 		struct ActiveData

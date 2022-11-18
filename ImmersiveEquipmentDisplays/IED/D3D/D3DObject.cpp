@@ -15,13 +15,18 @@ namespace IED
 
 	D3DObject::D3DObject(
 		ID3D11Device*                        a_device,
-		const std::shared_ptr<D3DModelData>& a_data) :
+		const std::shared_ptr<D3DModelData>& a_data) noexcept(false) :
 		D3DEffect(
 			a_device,
 			D3DVertexShaderID::kLightingColorVertexShader,
 			D3DPixelShaderID::kLightingPixelShader),
 		m_data(a_data)
 	{
+		if (!a_data)
+		{
+			throw std::exception(__FUNCTION__ ": no model data");
+		}
+
 		SetLightingEnabled(true);
 		SetDiffuseColor({ 0.0f, 1.0f, 1.0f, 0.5f });
 		SetAlpha(0.5f);

@@ -40,17 +40,6 @@ namespace IED
 				std::uintptr_t(Present_Pre_Hook),
 				m_unkPresent_o));
 
-#if defined(IED_ENABLE_I3DI)
-			if (a_prepHook)
-			{
-				ASSERT(hook::call5(
-					skse.GetBranchTrampoline(),
-					m_prepData_a.get(),
-					std::uintptr_t(PrepareData_Hook),
-					m_prepData_o));
-			}
-#endif
-
 			return true;
 		}
 
@@ -111,16 +100,5 @@ namespace IED
 
 			m_Instance.GetEventDispatcher<Events::IDXGISwapChainPresent>().SendEvent(evn);
 		}
-
-#if defined(IED_ENABLE_I3DI)
-		void Render::PrepareData_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow)
-		{
-			m_Instance.m_prepData_o(a_pl, a_frameTimerSlow);
-
-			Events::PrepareGameDataEvent evn;
-
-			m_Instance.GetEventDispatcher<Events::PrepareGameDataEvent>().SendEvent(evn);
-		}
-#endif
 	}
 }

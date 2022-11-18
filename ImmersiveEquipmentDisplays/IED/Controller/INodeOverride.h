@@ -171,11 +171,13 @@ namespace IED
 			const CMENodeEntry::Node& a_node);
 
 		static void ResetNodeOverride(
-			const CMENodeEntry& a_entry);
-		
+			const CMENodeEntry& a_entry,
+			bool                a_defer);
+
 		static void ResetNodePlacement(
 			const WeaponNodeEntry& a_entry,
-			nodeOverrideParams_t*  a_params);
+			nodeOverrideParams_t*  a_params,
+			bool                   a_defer);
 
 	protected:
 		static void ApplyNodeOverride(
@@ -193,7 +195,8 @@ namespace IED
 			const WeaponNodeEntry&   a_entry,
 			const NiPointer<NiNode>& a_target,
 			nodeOverrideParams_t*    a_params,
-			WeaponPlacementID        a_placementID);
+			WeaponPlacementID        a_placementID,
+			bool                     a_defer);
 
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,

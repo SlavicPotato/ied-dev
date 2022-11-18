@@ -16,14 +16,17 @@ namespace IED
 				*this = {};
 			}
 
-			btVector3 m_axis{ m_baseRotAxis };
+			btVector3 m_axis{ DirectX::g_XMIdentityR0.v };
 			btScalar  m_angle{ 0.0f };
-			//btScalar m_axisLength;
-		private:
-			static inline const auto m_baseRotAxis = btVector3(1.0f, 0.0f, 0.0f);
 		};
 
 	public:
+#if defined(IED_USE_MIMALLOC_SIMCOMPONENT)
+
+		SKMP_ALIGNED_REDEFINE_NEW_MI(16);
+
+#endif
+
 		PHYSimComponent(
 			NiAVObject*                            a_object,
 			const NiTransform&                     a_initialTransform,
@@ -40,30 +43,73 @@ namespace IED
 		void UpdateMotion(const btVector3& a_step) noexcept;
 		void UpdateConfig(const Data::configNodePhysicsValues_t& a_conf) noexcept;
 
-		[[nodiscard]] inline constexpr auto& get_conf() const noexcept
-		{
-			return m_conf;
-		}
-
 		[[nodiscard]] inline constexpr bool operator==(const PHYSimComponent& a_rhs) const noexcept
 		{
 			return m_conf == a_rhs.m_conf;
+		}
+		
+		[[nodiscard]] inline constexpr bool operator==(const luid_tag& a_rhs) const noexcept
+		{
+			return m_conf == a_rhs;
+		}
+
+		inline static constexpr void SetMaxDiff(float a_value) noexcept
+		{
+			a_value    = std::clamp(a_value, 128.0f, 32768.0f);
+			m_maxDiff2 = a_value * a_value;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetObjectLocalTransform() const noexcept
+		{
+			return m_objectLocalTransform;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetObjectInitialTransform() const noexcept
+		{
+			return m_initialTransform;
+		}
+
+		[[nodiscard]] inline constexpr auto& GetCachedParentWorldTransform() const noexcept
+		{
+			return m_parentWorldTransform;
+		}
+		
+		[[nodiscard]] Bullet::btTransformEx GetCurrentParentWorldTransform() const noexcept;
+		
+		[[nodiscard]] inline constexpr auto& GetVirtualPos() const noexcept
+		{
+			return m_virtld;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetRotationAxis() const noexcept
+		{
+			return m_rotParams.m_axis;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetConfig() const noexcept
+		{
+			return m_conf;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetObject() const noexcept
+		{
+			return m_object;
 		}
 
 	private:
 		void ProcessConfig() noexcept;
 
-		SKMP_FORCEINLINE btVector3 CalculateTarget();
+		SKMP_FORCEINLINE btVector3 CalculateTarget() noexcept;
 
-		SKMP_FORCEINLINE void LimitVelocity() noexcept;
+		void LimitVelocity() noexcept;
 
-		SKMP_FORCEINLINE void ConstrainMotionBox(
+		void ConstrainMotionBox(
 			const btMatrix3x3& a_parentRot,
 			const btMatrix3x3& a_invRot,
 			const btVector3&   a_target,
 			const btVector3&   a_timeStep) noexcept;
 
-		SKMP_FORCEINLINE void ConstrainMotionSphere(
+		void ConstrainMotionSphere(
 			const btMatrix3x3& a_parentRot,
 			const btMatrix3x3& a_invRot,
 			const btVector3&   a_target,
@@ -103,5 +149,10 @@ namespace IED
 		bool m_resistanceOn{ false };
 		bool m_hasSpringSlack{ false };
 		bool m_hasFriction{ false };
+		bool m_initialIdentity{ false };
+
+		// global settings
+
+		static float m_maxDiff2;
 	};
 }

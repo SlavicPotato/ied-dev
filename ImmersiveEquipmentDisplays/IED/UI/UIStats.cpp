@@ -45,26 +45,29 @@ namespace IED
 				auto& i3di           = task->GetContext().GetChild<I3DIMain>();
 				auto& i3diCommonData = i3di.GetCommonData();
 
-				ImGui::Columns(3, nullptr, false);
+				ImGui::Columns(2, nullptr, false);
 
-				ImGui::TextUnformatted("AP:");
-				if (m_controller.ShaderProcessingEnabled())
-				{
-					ImGui::TextUnformatted("EP:");
-				}
+				ImGui::TextUnformatted("Actor processor:");
+				ImGui::TextUnformatted("Effect processor:");
 				ImGui::TextUnformatted("UI:");
-				ImGui::TextUnformatted("FC:");
-				ImGui::TextUnformatted("SC:");
-				ImGui::TextUnformatted("CC:");
-				ImGui::TextUnformatted("EV:");
-				ImGui::TextUnformatted("EC:");
+				//ImGui::TextUnformatted("FC:");
+				ImGui::TextUnformatted("Skeleton cache:");
+				ImGui::TextUnformatted("Biped cache:");
 
-				auto odbLevel = m_controller.GetODBLevel();
+				const auto odbLevel = m_controller.GetODBLevel();
 
 				if (odbLevel != ObjectDatabaseLevel::kDisabled)
 				{
-					ImGui::TextUnformatted("Cache:");
+					ImGui::TextUnformatted("Model cache:");
 				}
+
+				if (m_controller.PhysicsProcessingEnabled())
+				{
+					ImGui::TextUnformatted("Physics objects:");
+				}
+
+				ImGui::TextUnformatted("CC:");
+				ImGui::TextUnformatted("EV:");
 
 				if (i3diCommonData)
 				{
@@ -75,18 +78,12 @@ namespace IED
 				ImGui::NextColumn();
 
 				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
-				if (m_controller.ShaderProcessingEnabled())
-				{
-					ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
-				}
+				ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
-				ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
+				//ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
 
-				auto& sc = SkeletonCache::GetSingleton();
+				const auto& sc = SkeletonCache::GetSingleton();
 				ImGui::Text("%zu [%zu]", sc.GetSize(), sc.GetTotalEntries());
-
-				ImGui::Text("%llu", m_controller.GetCounterValue());
-				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
 				ImGui::Text(
 					"%zu/%u",
@@ -103,6 +100,14 @@ namespace IED
 
 					DrawTip(UITip::CacheInfo);
 				}
+
+				if (m_controller.PhysicsProcessingEnabled())
+				{
+					ImGui::Text("%zu", m_controller.GetNumSimComponents());
+				}
+
+				ImGui::Text("%llu", m_controller.GetCounterValue());
+				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
 				if (i3diCommonData)
 				{

@@ -21,6 +21,7 @@
 #include "UIEquipmentOverrideResult.h"
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
+#include "UIPhysicsValueEditorWidget.h"
 #include "UIPopupToggleButtonWidget.h"
 #include "UISimpleStringList.h"
 #include "UISimpleStringSet.h"
@@ -60,6 +61,7 @@ namespace IED
 			public UINodeSelectorWidget,
 			public UIFormLookupInterface,
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
+			UIPhysicsValueEditorWidget,
 			public virtual UIEquipmentOverrideConditionsWidget,
 			public virtual UICollapsibles,
 			public virtual UIDescriptionPopupWidget,
@@ -109,6 +111,20 @@ namespace IED
 				const bool                a_disabled);
 
 			void DrawBaseConfigValuesOther(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				Data::configBase_t*       a_baseConfig,
+				const bool                a_disabled);
+
+			BaseConfigEditorAction DrawPhysicsValuesContextMenu(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params);
+
+			void DrawBaseConfigValuesPhysics(
 				T                         a_handle,
 				Data::configBaseValues_t& a_data,
 				const void*               a_params,
@@ -281,6 +297,7 @@ namespace IED
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
+			UIPhysicsValueEditorWidget(a_controller),
 			m_controller(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
@@ -671,6 +688,15 @@ namespace IED
 				a_storecc,
 				a_baseConfig,
 				disabled);
+
+			DrawBaseConfigValuesPhysics(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				a_storecc,
+				a_baseConfig,
+				disabled);
 		}
 
 		template <class T>
@@ -968,6 +994,199 @@ namespace IED
 						a_data.forceModel);
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
+
+			ImGui::PopID();
+		}
+
+		template <class T>
+		BaseConfigEditorAction UIBaseConfigWidget<T>::DrawPhysicsValuesContextMenu(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params)
+		{
+			BaseConfigEditorAction result{
+				BaseConfigEditorAction::None
+			};
+
+			ImGui::PushID("context_area");
+
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.0f, 1.0f });
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				bool hasValue = static_cast<bool>(a_data.physicsValues);
+
+				if (hasValue)
+				{
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Clear, "0")))
+					{
+						a_data.physicsValues.data.reset();
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+
+						result = BaseConfigEditorAction::Reset;
+					}
+				}
+				else
+				{
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Create, "1")))
+					{
+						a_data.physicsValues.data =
+							std::make_unique<Data::configNodePhysicsValues_t>();
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+
+						result = BaseConfigEditorAction::Create;
+					}
+				}
+
+				hasValue = static_cast<bool>(a_data.physicsValues);
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Copy, "2"),
+						nullptr,
+						false,
+						hasValue))
+				{
+					if (hasValue)
+					{
+						UIClipboard::Set<Data::configNodePhysicsValues_t>(
+							*a_data.physicsValues.data);
+					}
+				}
+
+				auto clipData = UIClipboard::Get<Data::configNodePhysicsValues_t>();
+
+				if (ImGui::MenuItem(
+						LS(CommonStrings::Paste, "3"),
+						nullptr,
+						false,
+						clipData != nullptr))
+				{
+					if (clipData)
+					{
+						a_data.physicsValues.data =
+							std::make_unique<Data::configNodePhysicsValues_t>(*clipData);
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+
+						result = BaseConfigEditorAction::Paste;
+					}
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+
+			return result;
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigValuesPhysics(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			Data::configBase_t*       a_baseConfig,
+			const bool                a_disabled)
+		{
+			const auto storecc = BaseConfigStoreCC() && a_storecc;
+
+			ImGui::PushID("bc_phys");
+
+			UICommon::PushDisabled(a_disabled);
+
+			const auto cmresult = DrawPhysicsValuesContextMenu(
+				a_handle,
+				a_data,
+				a_params);
+
+			UICommon::PopDisabled(a_disabled);
+
+			switch (cmresult)
+			{
+			case BaseConfigEditorAction::Create:
+			case BaseConfigEditorAction::Paste:
+				ImGui::SetNextItemOpen(true);
+				break;
+			}
+
+			bool r;
+
+			if (storecc)
+			{
+				r = TreeEx(
+					"tree",
+					false,
+					"%s",
+					LS(CommonStrings::Physics));
+			}
+			else
+			{
+				r = ImGui::TreeNodeEx(
+					"tree",
+					ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					LS(CommonStrings::Physics));
+			}
+
+			if (r)
+			{
+				ImGui::Spacing();
+
+				UICommon::PushDisabled(a_disabled);
+
+				if (a_data.physicsValues)
+				{
+					ImGui::PushItemWidth(ImGui::GetFontSize() * -14.5f);
+
+					if (DrawPhysicsValues(
+							*a_data.physicsValues.data))
+					{
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+					}
+
+					ImGui::PopItemWidth();
+				}
+				else
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped(
+						"%s",
+						LS(UIBaseConfigString::CreatePhysicsDataInfo));
+					ImGui::PopStyleColor();
 				}
 
 				UICommon::PopDisabled(a_disabled);

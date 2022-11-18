@@ -119,7 +119,15 @@ namespace IED
 					{ DIK_LCONTROL, "Left control" },
 					{ DIK_RCONTROL, "Right control" },
 					{ DIK_LALT, "Left alt" },
-					{ DIK_RALT, "Right alt" }
+					{ DIK_RALT, "Right alt" },
+					{ InputMap::kMacro_MouseButtonOffset + 0, "Mouse left" },
+					{ InputMap::kMacro_MouseButtonOffset + 1, "Mouse right" },
+					{ InputMap::kMacro_MouseButtonOffset + 2, "Mouse middle" },
+					{ InputMap::kMacro_MouseButtonOffset + 3, "Mouse 4" },
+					{ InputMap::kMacro_MouseButtonOffset + 4, "Mouse 5" },
+					{ InputMap::kMacro_MouseButtonOffset + 5, "Mouse 6" },
+					{ InputMap::kMacro_MouseButtonOffset + 6, "Mouse 7" },
+					{ InputMap::kMacro_MouseButtonOffset + 7, "Mouse 8" },
 
 				});
 

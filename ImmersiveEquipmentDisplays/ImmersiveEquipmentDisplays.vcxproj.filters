@@ -1703,6 +1703,15 @@
     <ClInclude Include="IED\Parsers\JSONBulletVector4Parser.h">
       <Filter>Source\IED\JSONParsers</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DIPhysicsObject.h">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONSettingsI3DIParser.h">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\I3DI\I3DISphereObject.h">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2706,6 +2715,18 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONBulletVector4Parser.cpp">
       <Filter>Source\IED\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIPhysicsObject.cpp">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONSettingsI3DIParser.cpp">
+      <Filter>Source\IED\JSONParsers\Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DISphereObject.cpp">
+      <Filter>Source\IED\UI\I3DI\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\I3DI\I3DIInputHelpers.cpp">
+      <Filter>Source\IED\UI\I3DI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

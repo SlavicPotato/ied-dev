@@ -32,6 +32,12 @@ namespace IED
 			m_lines.emplace_back(std::forward<Args>(a_args)...);
 		}
 
+		template <class... Args>
+		inline constexpr void AddTriangle(Args&&... a_args)
+		{
+			m_tris.emplace_back(std::forward<Args>(a_args)...);
+		}
+
 		inline constexpr void EnableDepth(bool a_switch) noexcept
 		{
 			m_flags.set(D3DPrimitiveBatchFlags::kDepth, a_switch);
@@ -65,7 +71,27 @@ namespace IED
 			VertexPositionColorAV second;
 		};
 
+		struct triangle_type
+		{
+			inline constexpr triangle_type(
+				const DirectX::XMVECTOR& a_p1,
+				const DirectX::XMVECTOR& a_p2,
+				const DirectX::XMVECTOR& a_p3,
+				const DirectX::XMVECTOR& a_c) noexcept :
+				first(a_p1, a_c),
+				second(a_p2, a_c),
+				third(a_p3, a_c)
+			{
+			}
+
+			VertexPositionColorAV first;
+			VertexPositionColorAV second;
+			VertexPositionColorAV third;
+		};
+
 		stl::vector<vertex_pair_type> m_lines;
+
+		stl::vector<triangle_type> m_tris;
 
 		stl::flag<D3DPrimitiveBatchFlags> m_flags{ D3DPrimitiveBatchFlags::kNone };
 	};

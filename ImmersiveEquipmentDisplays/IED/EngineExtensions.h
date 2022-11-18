@@ -182,9 +182,9 @@ namespace IED
 			return m_Instance.m_conf.parallelAnimationUpdates;
 		}
 
-		[[nodiscard]] inline static constexpr bool ShouldDefer3DTask() noexcept
+		[[nodiscard]] inline static bool ShouldDefer3DTask() noexcept
 		{
-			return ShouldDefer3DTaskImpl() || !ITaskPool::IsRunningOnCurrentThread();
+			return !ITaskPool::IsRunningOnCurrentThread() || ShouldDefer3DTaskImpl();
 		}
 
 		FN_NAMEPROC("EngineExtensions");
@@ -246,7 +246,6 @@ namespace IED
 		void Install_CreateWeaponNodes();
 		void Install_WeaponAdjustDisable();
 		void Hook_ToggleFav();
-		void Hook_ProcessEffects();
 		void Install_ParallelAnimationUpdate();
 
 		void FailsafeCleanupAndEval(
@@ -266,7 +265,6 @@ namespace IED
 		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
 		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
 		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
-		static void                              ProcessEffects_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
 		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
@@ -292,7 +290,6 @@ namespace IED
 		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
 		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
 		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
-		inline static const auto m_processEffectShaders_a   = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
 		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
 		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
 		inline static const auto m_animUpdateDispatcher_a   = IAL::Address<std::uintptr_t>(38098, 39054);
@@ -312,7 +309,6 @@ namespace IED
 		decltype(&CreateWeaponNodes_Hook)                   m_createWeaponNodes_o{ nullptr };
 		decltype(&RemoveAllBipedParts_Hook)                 m_removeAllBipedParts_o{ nullptr };
 		decltype(&ToggleFavGetExtraList_Hook)               m_toggleFavGetExtraList_o{ nullptr };
-		decltype(&ProcessEffects_Hook)                m_processEffects_o{ nullptr };
 		decltype(&PrepareAnimUpdateLists_Hook)              m_prepareAnimUpdateLists_o{ nullptr };
 		decltype(&ClearAnimUpdateLists_Hook)                m_clearAnimUpdateLists_o{ nullptr };
 		hkaLookupSkeletonNode_t                             m_hkaLookupSkeletonNode_o{ nullptr };

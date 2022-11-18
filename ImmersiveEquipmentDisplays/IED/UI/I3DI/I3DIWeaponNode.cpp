@@ -21,14 +21,12 @@ namespace IED
 
 		I3DIWeaponNode::I3DIWeaponNode(
 			ID3D11Device*                              a_device,
-			ID3D11DeviceContext*                       a_context,
 			const std::shared_ptr<D3DModelData>&       a_data,
 			const stl::fixed_string&                   a_nodeName,
 			const NodeOverrideData::weaponNodeEntry_t& a_nodeInfo,
 			I3DIActorContext&                          a_actorContext) :
 			I3DIModelObject(
 				a_device,
-				a_context,
 				BoundingShape::kOrientedBox,
 				a_data),
 			I3DIDraggable(DRAGGABLE_TYPE),
@@ -203,6 +201,11 @@ namespace IED
 
 		void I3DIWeaponNode::DrawContents(I3DICommonData& a_data)
 		{
+		}
+
+		bool I3DIWeaponNode::ShouldProcess(I3DICommonData& a_data)
+		{
+			return a_data.controller.GetSettings().data.ui.i3di.enableWeapons;
 		}
 
 	}

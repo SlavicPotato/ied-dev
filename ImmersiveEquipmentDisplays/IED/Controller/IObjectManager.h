@@ -99,18 +99,13 @@ namespace IED
 		void QueueRequestVariableUpdate(Game::FormID a_handle) const;
 
 	protected:
-		void CleanupActorObjectsImpl(
-			TESObjectREFR*                   a_actor,
-			Game::ObjectRefHandle            a_handle,
-			ActorObjectHolder&               a_data,
-			stl::flag<ControllerUpdateFlags> a_flags);
-
 		bool RemoveObject(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
 			ObjectEntryBase&                 a_objectEntry,
 			ActorObjectHolder&               a_data,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags,
+			bool                             a_defer);
 
 		void RemoveActorGear(
 			TESObjectREFR*                   a_actor,
@@ -148,28 +143,31 @@ namespace IED
 			ObjectEntryBase&                a_objectEntry,
 			TESForm*                        a_form,
 			TESForm*                        a_modelForm,
-			bool                            a_leftWeapon,
-			bool                            a_visible,
-			bool                            a_disableHavok,
-			bool                            a_bhkAnims);
+			const bool                      a_leftWeapon,
+			const bool                      a_visible,
+			const bool                      a_disableHavok,
+			const bool                      a_bhkAnims,
+			const bool                      a_physics);
 
 		bool LoadAndAttachGroup(
 			processParams_t&                a_params,
-			const Data::configBaseValues_t& a_configEntry,
+			const Data::configBaseValues_t& a_activeConfig,
+			const Data::configBase_t&       a_baseConfig,
 			const Data::configModelGroup_t& a_group,
 			ObjectEntryBase&                a_objectEntry,
 			TESForm*                        a_form,
-			bool                            a_leftWeapon,
-			bool                            a_visible,
-			bool                            a_disableHavok,
-			bool                            a_bgedAnims);
+			const bool                      a_leftWeapon,
+			const bool                      a_visible,
+			const bool                      a_disableHavok,
+			const bool                      a_bgedAnims,
+			const bool                      a_physics);
 
 		void FinalizeObjectState(
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
 			TESForm*                                 a_form,
 			NiNode*                                  a_rootNode,
 			const NiPointer<NiNode>&                 a_objectNode,
-			nodesRef_t&                              a_targetNodes,
+			nodesTarget_t&                           a_targetNodes,
 			const Data::configBaseValues_t&          a_config,
 			Actor*                                   a_actor);
 

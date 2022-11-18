@@ -42,7 +42,6 @@ namespace IED
 			a_config->m_bipedSlotCacheMaxSize,
 			a_config->m_bipedSlotCacheMaxForms)
 	{
-		InitializeInputHandlers();
 	}
 
 	void Controller::SinkInputEvents()
@@ -68,7 +67,9 @@ namespace IED
 	void Controller::SinkEventsT0()
 	{
 		SKSEMessagingHandler::GetSingleton().AddSink(this);
+
 		ITaskPool::AddTaskFixed(this);
+		ITaskPool::AddTaskFixedPL(this);
 
 		SinkInputEvents();
 		SinkSerializationEvents();
@@ -193,6 +194,7 @@ namespace IED
 		if (IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE))
 		{
 			SetPhysicsProcessingEnabled(settings.enableEquipmentPhysics);
+			PHYSimComponent::SetMaxDiff(settings.physics.maxDiff);
 		}
 		else
 		{
@@ -546,12 +548,33 @@ namespace IED
 		EvaluateImpl(a_actor, a_handle, a_flags);
 	}
 
-	void Controller::ClearActorPhysicsData()
+	void Controller::ClearActorPhysicsDataImpl()
 	{
 		for (auto& e : m_objects)
 		{
-			e.second.ClearAllSimComponents();
+			e.second.ClearAllPhysicsData();
 		}
+	}
+
+	void Controller::QueueClearActorPhysicsData()
+	{
+		ITaskPool::AddPriorityTask([this]() {
+			stl::scoped_lock lock(m_lock);
+
+			ClearActorPhysicsDataImpl();
+		});
+	}
+
+	std::size_t Controller::GetNumSimComponents() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_objects)
+		{
+			result += e.second.GetSimComponentListSize();
+		}
+
+		return result;
 	}
 
 	void Controller::EvaluateImpl(
@@ -1811,63 +1834,6 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueEvaluateNearbyActors(bool a_removeFirst)
-	{
-		ITaskPool::AddTask([this, a_removeFirst] {
-			stl::scoped_lock lock(m_lock);
-
-			auto player = *g_thePlayer;
-			if (player)
-			{
-				auto handle = player->GetHandle();
-				if (handle.IsValid())
-				{
-					if (a_removeFirst)
-					{
-						RemoveActorImpl(
-							player,
-							static_cast<Game::ObjectRefHandle>(handle),
-							ControllerUpdateFlags::kNone);
-					}
-
-					EvaluateImpl(
-						player,
-						static_cast<Game::ObjectRefHandle>(handle),
-						ControllerUpdateFlags::kNone);
-				}
-			}
-
-			auto pl = Game::ProcessLists::GetSingleton();
-			if (!pl)
-			{
-				return;
-			}
-
-			for (auto& handle : pl->highActorHandles)
-			{
-				NiPointer<Actor> actor;
-
-				if (!handle.Lookup(actor))
-				{
-					continue;
-				}
-
-				if (a_removeFirst)
-				{
-					RemoveActorImpl(
-						actor,
-						static_cast<Game::ObjectRefHandle>(handle),
-						ControllerUpdateFlags::kNone);
-				}
-
-				EvaluateImpl(
-					actor,
-					static_cast<Game::ObjectRefHandle>(handle),
-					ControllerUpdateFlags::kNone);
-			}
-		});
-	}
-
 	void Controller::QueueLookupFormInfo(
 		Game::FormID              a_formId,
 		form_lookup_result_func_t a_func)
@@ -2098,7 +2064,7 @@ namespace IED
 		       it->second.IsXP32Skeleton();
 	}
 
-	bool Controller::ProcessItemUpdate(
+	bool Controller::DoItemUpdate(
 		processParams_t&          a_params,
 		const configBaseValues_t& a_config,
 		ObjectEntryBase&          a_entry,
@@ -2235,6 +2201,35 @@ namespace IED
 			}
 		}
 
+		if (state->nodes.HasPhysicsNode())
+		{
+			auto& simComponent = state->simComponent;
+
+			if (a_visible &&
+			    a_config.physicsValues &&
+			    !a_config.physicsValues->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
+			{
+				const auto& pvdata = *a_config.physicsValues.data;
+
+				if (!simComponent)
+				{
+					simComponent = a_params.objects.CreateAndAddSimComponent(
+						state->nodes.physics.get(),
+						state->nodes.physics->m_localTransform,
+						pvdata);
+				}
+				else if (simComponent->GetConfig() != pvdata)
+				{
+					simComponent->UpdateConfig(pvdata);
+				}
+			}
+			else if (simComponent)
+			{
+				a_params.objects.RemoveAndDestroySimComponent(
+					state->simComponent);
+			}
+		}
+
 		return true;
 	}
 
@@ -2332,7 +2327,8 @@ namespace IED
 				a_params.handle,
 				a_entry,
 				a_params.objects,
-				a_params.flags))
+				a_params.flags,
+				false))
 		{
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 
@@ -2632,7 +2628,7 @@ namespace IED
 				{
 					const bool isVisible = objectEntry.IsNodeVisible();
 
-					if (ProcessItemUpdate(
+					if (DoItemUpdate(
 							a_params,
 							usedBaseConf,
 							objectEntry,
@@ -2671,7 +2667,8 @@ namespace IED
 						ItemData::IsLeftWeaponSlot(f.slot),
 						visible,
 						false,
-						settings.hkWeaponAnimations))
+						settings.hkWeaponAnimations,
+						PhysicsProcessingEnabled()))
 				{
 					objectEntry.SetNodeVisible(visible);
 
@@ -3121,7 +3118,7 @@ namespace IED
 				{
 					const bool _visible = hasMinCount && visible;
 
-					if (ProcessItemUpdate(
+					if (DoItemUpdate(
 							a_params,
 							usedBaseConf,
 							a_objectEntry,
@@ -3157,7 +3154,8 @@ namespace IED
 					a_params.handle,
 					a_objectEntry,
 					a_params.objects,
-					a_params.flags))
+					a_params.flags,
+					false))
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -3169,13 +3167,15 @@ namespace IED
 				result = LoadAndAttachGroup(
 					a_params,
 					usedBaseConf,
+					a_config,
 					a_config.group,
 					a_objectEntry,
 					itemData.form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations);
+					settings.hkWeaponAnimations,
+					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
 			}
@@ -3191,7 +3191,8 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations);
+					settings.hkWeaponAnimations,
+					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
@@ -3283,7 +3284,7 @@ namespace IED
 				if (a_config.customFlags.test(CustomFlags::kGroupMode) ==
 				    a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode))
 				{
-					if (ProcessItemUpdate(
+					if (DoItemUpdate(
 							a_params,
 							usedBaseConf,
 							a_objectEntry,
@@ -3306,7 +3307,8 @@ namespace IED
 					a_params.handle,
 					a_objectEntry,
 					a_params.objects,
-					a_params.flags))
+					a_params.flags,
+					false))
 			{
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}
@@ -3318,13 +3320,15 @@ namespace IED
 				result = LoadAndAttachGroup(
 					a_params,
 					usedBaseConf,
+					a_config,
 					a_config.group,
 					a_objectEntry,
 					form,
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations);
+					settings.hkWeaponAnimations,
+					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
 			}
@@ -3340,7 +3344,8 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations);
+					settings.hkWeaponAnimations,
+					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
 			}
@@ -3383,7 +3388,8 @@ namespace IED
 						a_params.handle,
 						it->second,
 						a_params.objects,
-						a_params.flags))
+						a_params.flags,
+						false))
 				{
 					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 				}
@@ -4033,7 +4039,7 @@ namespace IED
 			}
 			else
 			{
-				ResetNodePlacement(e, std::addressof(params));
+				ResetNodePlacement(e, std::addressof(params), false);
 			}
 		}
 
@@ -4069,7 +4075,6 @@ namespace IED
 			}
 			else
 			{
-				// only called from main, no need to run checks
 				ResetNodeOverrideImpl(e.second.thirdPerson);
 				if (e.second.firstPerson)
 				{
@@ -4089,46 +4094,40 @@ namespace IED
 					i,
 					hc);
 
+				auto& simComponent = e.simComponent;
+
 				if (r)
 				{
 					auto& conf = INodeOverride::GetPhysicsConfig(r->get(a_sex), params);
 
-					if (conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) ||
-					    !e.has_visible_geometry())
+					if (!conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
+					    e.parent_has_visible_geometry())
 					{
-						if (auto& sc = e.simComponent)
+						if (!simComponent)
 						{
-							a_holder.RemoveFromSimNodeList(sc.get());
-							sc.reset();
+							simComponent = a_holder.CreateAndAddSimComponent(
+								e.node.get(),
+								e.origTransform,
+								conf);
+
+							//Debug("%.8X: adding %s", a_actor->formID, e.first.c_str());
+						}
+						else if (*simComponent != conf)
+						{
+							simComponent->UpdateConfig(conf);
 						}
 					}
 					else
 					{
-						if (!e.simComponent)
+						if (simComponent)
 						{
-							e.simComponent =
-								std::make_unique<PHYSimComponent>(
-									e.node.get(),
-									e.origTransform,
-									conf);
-
-							a_holder.AddToSimNodeList(e.simComponent.get());
-
-							//Debug("%.8X: adding %s", a_actor->formID, e.first.c_str());
-						}
-						else if (e.simComponent->get_conf() != conf)
-						{
-							e.simComponent->UpdateConfig(conf);
+							a_holder.RemoveAndDestroySimComponent(simComponent);
 						}
 					}
 				}
-				else
+				else if (simComponent)
 				{
-					if (auto& sc = e.simComponent)
-					{
-						a_holder.RemoveFromSimNodeList(sc.get());
-						sc.reset();
-					}
+					a_holder.RemoveAndDestroySimComponent(simComponent);
 				}
 			}
 		}
@@ -4212,7 +4211,8 @@ namespace IED
 			a_handle,
 			it->second.GetSlot(a_slot),
 			it->second,
-			a_flags);
+			a_flags,
+			false);
 
 		EvaluateImpl(
 			a_actor,
@@ -4244,7 +4244,8 @@ namespace IED
 						a_handle,
 						ite->second,
 						it->second,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kNone,
+						false);
 
 					itp->second.erase(ite);
 
@@ -4283,7 +4284,8 @@ namespace IED
 						a_handle,
 						e.second,
 						it->second,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kNone,
+						false);
 				}
 
 				data.erase(itp);
@@ -4315,7 +4317,8 @@ namespace IED
 						a_handle,
 						f.second,
 						it->second,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kNone,
+						false);
 				}
 			}
 
@@ -5725,6 +5728,13 @@ namespace IED
 		}
 	}
 
+	void Controller::RunPL()
+	{
+		stl::scoped_lock lock(m_lock);
+
+		ProcessEffects(m_objects);
+	}
+
 	/*auto Controller::ReceiveEvent(
 		const SKSENiNodeUpdateEvent* a_evn,
 		BSTEventSource<SKSENiNodeUpdateEvent>* a_dispatcher)
@@ -5877,12 +5887,5 @@ namespace IED
 			}
 		});
 	}*/
-
-	void Controller::DoProcessEffects()
-	{
-		stl::scoped_lock lock(m_lock);
-
-		ProcessEffects(m_objects);
-	}
 
 }

@@ -46,6 +46,7 @@ namespace IED
 		public IAnimationManager,
 		public IConditionalVariableProcessor,
 		public Localization::ILocalization,
+		public ITaskPool::TaskDelegateFixedPL,
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
 		public ::Events::EventSink<SKSEMessagingEvent>,
@@ -146,13 +147,13 @@ namespace IED
 		Controller& operator=(const Controller&) = delete;
 		Controller& operator=(Controller&&) = delete;
 
+		void InitializeInputHandlers();
 		void SinkEventsT0();
 		bool DispatchIntroBanner();
 
 	private:
 		void InitializeSound();
 		void UpdateSoundForms();
-		void InitializeInputHandlers();
 		void InitializeUI();
 		void InitializeConfig();
 		void InitializeLocalization();
@@ -366,8 +367,6 @@ namespace IED
 		void QueueUpdateTransformCustomAll(
 			Data::ConfigClass a_class);
 
-		void QueueEvaluateNearbyActors(bool a_removeFirst = false);
-
 		void QueueLookupFormInfo(Game::FormID a_formId, form_lookup_result_func_t a_func);
 		void QueueLookupFormInfoCrosshairRef(form_lookup_result_func_t a_func);
 		void QueueGetFormDatabase(form_db_get_func_t a_func);
@@ -483,8 +482,6 @@ namespace IED
 
 		//void QueueClearVariableStorage(bool a_requestEval);
 
-		void DoProcessEffects();
-
 		void RunUpdateBipedSlotCache(
 			processParams_t& a_params);
 
@@ -492,7 +489,7 @@ namespace IED
 		{
 			return m_evalCounter;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto GetPhysicsForcedOff() const noexcept
 		{
 			return m_physicsForcedOff;
@@ -504,7 +501,9 @@ namespace IED
 			return m_invChangeConsumerFlags.consume(a_mask);
 		}*/
 
-		void ClearActorPhysicsData();
+		void QueueClearActorPhysicsData();
+
+		std::size_t GetNumSimComponents() const noexcept;
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -748,7 +747,7 @@ namespace IED
 			const Data::configTransform_t& a_xfrmConfigEntry,
 			ObjectEntryCustom&             a_entry);
 
-		bool ProcessItemUpdate(
+		bool DoItemUpdate(
 			processParams_t&                a_params,
 			const Data::configBaseValues_t& a_config,
 			ObjectEntryBase&                a_entry,
@@ -835,6 +834,8 @@ namespace IED
 		void GenerateRandomPlacementEntries(const ActorObjectHolder& a_holder);
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
+
+		void ClearActorPhysicsDataImpl();
 
 		// internal events
 
@@ -940,6 +941,9 @@ namespace IED
 		}
 
 		virtual void JSOnDataImport() override;
+
+		// process effects
+		void RunPL() override;
 
 		// members
 

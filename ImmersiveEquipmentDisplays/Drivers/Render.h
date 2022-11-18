@@ -9,8 +9,7 @@ namespace IED
 		class Render :
 			ILog,
 			public ::Events::EventDispatcher<Events::D3D11CreateEventPost>,
-			public ::Events::EventDispatcher<Events::IDXGISwapChainPresent>,
-			public ::Events::EventDispatcher<Events::PrepareGameDataEvent>
+			public ::Events::EventDispatcher<Events::IDXGISwapChainPresent>
 		{
 		public:
 			static bool Initialize(bool a_prepHook);
@@ -60,17 +59,11 @@ namespace IED
 
 			static void Present_Pre_Hook(std::uint32_t a_p1);
 			static void CreateD3D11_Hook();
-#if defined(IED_ENABLE_I3DI)
-			static void PrepareData_Hook(Game::ProcessLists* a_pl, float a_frameTimerSlow);
-#endif
 
 			void InitializeD3D();
 
 			decltype(&CreateD3D11_Hook) m_createD3D11_o{ nullptr };
 			decltype(&Present_Pre_Hook) m_unkPresent_o{ nullptr };
-#if defined(IED_ENABLE_I3DI)
-			decltype(&PrepareData_Hook) m_prepData_o{ nullptr };
-#endif
 
 			Microsoft::WRL::ComPtr<ID3D11Device>        m_device;
 			Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_context;
@@ -80,9 +73,6 @@ namespace IED
 
 			static inline const auto m_createD3D11_a = IAL::Address<std::uintptr_t>(75595, 77226, 0x9, 0x275);
 			static inline const auto m_unkPresent_a  = IAL::Address<std::uintptr_t>(75461, 77246, 0x9, 0x9);
-#if defined(IED_ENABLE_I3DI)
-			static inline const auto m_prepData_a = IAL::Address<std::uintptr_t>(35565, 36564, 0x53C, 0x8E6);
-#endif
 
 			static Render m_Instance;
 		};

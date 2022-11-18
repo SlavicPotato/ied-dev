@@ -83,7 +83,6 @@ namespace IED
 					e.first,
 					std::make_unique<I3DIWeaponNode>(
 						a_data.scene.GetDevice().Get(),
-						a_data.scene.GetContext().Get(),
 						model,
 						e.first,
 						e.second,
@@ -107,7 +106,6 @@ namespace IED
 						f.first,
 						std::make_unique<I3DIMOVNode>(
 							a_data.scene.GetDevice().Get(),
-							a_data.scene.GetContext().Get(),
 							movAnchorModel,
 							f.first,
 							f.second,
@@ -118,28 +116,6 @@ namespace IED
 					s.first->second->EnableDepth(false);
 				}
 			}
-
-			/*m_movPairs.reserve(m_movNodes.size() * (m_movNodes.size() - 1));
-
-			for (auto& e : m_movNodes)
-			{
-				for (auto& f : m_movNodes)
-				{
-					if (f.second != e.second)
-					{
-						m_movPairs.emplace_back(
-							e.second.get(),
-							f.second.get());
-					}
-				}
-			}
-
-			std::sort(m_movPairs.begin(), m_movPairs.end(), stl::unique_pair_less{});
-			m_movPairs.erase(std::unique(m_movPairs.begin(), m_movPairs.end(), stl::unique_pair_equal{}), m_movPairs.end());
-			m_movPairs.shrink_to_fit();*/
-
-			
-			//_DMESSAGE("%zu  %zu", c, m_movPairs.size());
 		}
 
 		void I3DIActorContext::RegisterObjects(
@@ -166,7 +142,12 @@ namespace IED
 
 			for (auto& e : m_movNodes)
 			{
-				a_objectController.RegisterObject(e.second);
+				a_objectController.UnregisterObject(e.second);
+			}
+
+			for (auto& e : m_physicsObjects)
+			{
+				a_objectController.UnregisterObject(e.second);
 			}
 		}
 
@@ -181,69 +162,117 @@ namespace IED
 				return false;
 			}
 
-			auto& weaponNodes = it->second.GetWeapNodes();
+			const bool weaponsEnabled = a_data.controller.GetSettings().data.ui.i3di.enableWeapons;
 
-			for (auto& e : weaponNodes)
+			if (weaponsEnabled)
 			{
-				auto itwn = m_weaponNodes.find(e.nodeName);
-				if (itwn == m_weaponNodes.end())
+				auto& weaponNodes = it->second.GetWeapNodes();
+
+				for (auto& e : weaponNodes)
 				{
-					continue;
-				}
-
-				itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
-
-				const auto m = VectorMath::NiTransformToMatrix4x4(e.node->m_worldTransform);
-
-				itwn->second->UpdateWorldMatrix(m);
-				itwn->second->SetOriginalWorldMatrix(m);
-
-				itwn->second->UpdateBound();
-				itwn->second->SetHasWorldData(true);
-				itwn->second->SetGeometryHidden(false);
-			}
-
-			auto& cmeNodes = it->second.GetCMENodes();
-
-			for (auto& e : it->second.GetMOVNodes())
-			{
-				auto itmn = m_movNodes.find(e.first);
-				if (itmn == m_movNodes.end())
-				{
-					continue;
-				}
-
-				const auto m = VectorMath::NiTransformToMatrix4x4(e.second.node->m_worldTransform);
-
-				itmn->second->UpdateWorldMatrix(m);
-				itmn->second->SetOriginalWorldMatrix(m);
-
-				itmn->second->UpdateBound();
-				itmn->second->SetHasWorldData(true);
-
-				auto itwn = std::find_if(
-					weaponNodes.begin(),
-					weaponNodes.end(),
-					[&](auto& a_v) {
-						return a_v.node->m_parent == e.second.node;
-					});
-
-				itmn->second->SetWeaponNodeAttached(itwn != weaponNodes.end());
-
-				if (itwn != weaponNodes.end())
-				{
-					auto ita = m_weaponNodes.find(itwn->nodeName);
-					if (ita != m_weaponNodes.end())
+					auto itwn = m_weaponNodes.find(e.nodeName);
+					if (itwn == m_weaponNodes.end())
 					{
-						if (auto info = itmn->second->GetCMENodeInfo())
+						continue;
+					}
+
+					itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
+
+					const auto m = VectorMath::NiTransformToMatrix4x4(e.node->m_worldTransform);
+
+					itwn->second->UpdateWorldMatrix(m);
+					itwn->second->SetOriginalWorldMatrix(m);
+
+					itwn->second->UpdateBound();
+					itwn->second->SetHasWorldData(true);
+					itwn->second->SetGeometryHidden(false);
+				}
+
+				auto& cmeNodes = it->second.GetCMENodes();
+
+				for (auto& e : it->second.GetMOVNodes())
+				{
+					auto itmn = m_movNodes.find(e.first);
+					if (itmn == m_movNodes.end())
+					{
+						continue;
+					}
+
+					const auto m = VectorMath::NiTransformToMatrix4x4(e.second.node->m_worldTransform);
+
+					itmn->second->UpdateWorldMatrix(m);
+					itmn->second->SetOriginalWorldMatrix(m);
+
+					itmn->second->UpdateBound();
+					itmn->second->SetHasWorldData(true);
+
+					auto itwn = std::find_if(
+						weaponNodes.begin(),
+						weaponNodes.end(),
+						[&](auto& a_v) {
+							return a_v.node->m_parent == e.second.node;
+						});
+
+					itmn->second->SetWeaponNodeAttached(itwn != weaponNodes.end());
+
+					if (itwn != weaponNodes.end())
+					{
+						auto ita = m_weaponNodes.find(itwn->nodeName);
+						if (ita != m_weaponNodes.end())
 						{
-							auto itb = cmeNodes.find(info->name);
-							if (itb != cmeNodes.end())
+							if (auto info = itmn->second->GetCMENodeInfo())
 							{
-								ita->second->SetGeometryHidden(
-									itb->second.has_visible_geometry(nullptr));
+								auto itb = cmeNodes.find(info->name);
+								if (itb != cmeNodes.end())
+								{
+									ita->second->SetGeometryHidden(
+										itb->second.has_visible_geometry(nullptr));
+								}
 							}
 						}
+					}
+				}
+			}
+
+			auto& sclist = it->second.GetSimComponentList();
+
+			for (auto& e : sclist)
+			{
+				auto itp = m_physicsObjects.find(e->GetConfig());
+				if (itp == m_physicsObjects.end())
+				{
+					auto r = m_physicsObjects.emplace(
+						e->GetConfig(),
+						std::make_unique<I3DIPhysicsObject>(a_data, *this, *e));
+
+					a_data.objectController.RegisterObject(r.first->second);
+				}
+				else
+				{
+					itp->second->UpdateData(*e);
+				}
+			}
+
+			if (m_physicsObjects.size() > sclist.size())
+			{
+				stl::unordered_set<luid_tag> tmp;
+
+				for (auto& e : sclist)
+				{
+					tmp.emplace(e->GetConfig());
+				}
+
+				for (auto itp = m_physicsObjects.begin(); itp != m_physicsObjects.end();)
+				{
+					if (!tmp.contains(itp->second->GetTag()))
+					{
+						a_data.objectController.UnregisterObject(itp->second);
+
+						itp = m_physicsObjects.erase(itp);
+					}
+					else
+					{
+						++itp;
 					}
 				}
 			}
@@ -251,7 +280,7 @@ namespace IED
 			m_lastUpdateFailed = false;
 			m_ranFirstUpdate   = true;
 
-			it->second.SetNodeConditionForced(true);
+			it->second.SetNodeConditionForced(weaponsEnabled);
 
 			return true;
 		}

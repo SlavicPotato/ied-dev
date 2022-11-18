@@ -82,6 +82,7 @@ namespace IED
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
+				DrawI3DISection();
 				DrawSoundSection();
 
 				ImGui::PopItemWidth();
@@ -403,16 +404,28 @@ namespace IED
 					m_controller.SetPhysicsProcessingEnabled(
 						data.enableEquipmentPhysics);
 
-					if (data.enableEquipmentPhysics)
-					{
-						m_controller.RequestEvaluateTransformsAll(true);
-					}
-					else
-					{
-						m_controller.ClearActorPhysicsData();
-					}
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::EquipmentPhysics);
+
+				if (data.enableEquipmentPhysics)
+				{
+					ImGui::Indent();
+
+					if (settings.mark_if(ImGui::DragFloat(
+							LS(UISettingsStrings::MaxDiff, "3"),
+							std::addressof(data.physics.maxDiff),
+							ImGui::GetIO().KeyShift ? 0.0005f : 0.25f,
+							128,
+							8192,
+							"%.2f",
+							ImGuiSliderFlags_AlwaysClamp)))
+					{
+						PHYSimComponent::SetMaxDiff(data.physics.maxDiff);
+					}
+
+					ImGui::Unindent();
+				}
 
 				UICommon::PopDisabled(disabled);
 
@@ -461,14 +474,14 @@ namespace IED
 
 				DrawCommonResetContextMenu(
 					"ctx_rst_bg",
-					CommonStrings::Reset,
+					static_cast<Localization::StringID>(CommonStrings::Reset),
 					ui.bgAlpha.has(),
 					[&] {
 						ui.bgAlpha.clear();
 						Drivers::UI::SetBGAlpha(ui.bgAlpha);
 					});
 
-				bool hasAlpha = ui.bgAlpha.has();
+				const bool hasAlpha = ui.bgAlpha.has();
 
 				float tmpbga = hasAlpha ?
 				                   *ui.bgAlpha :
@@ -1008,6 +1021,29 @@ namespace IED
 			}
 		}
 
+		void UISettings::DrawI3DISection()
+		{
+			if (CollapsingHeader(
+					"tree_i3di",
+					false,
+					"%s",
+					LS(UISettingsStrings::I3DI)))
+			{
+				ImGui::Indent();
+				ImGui::Spacing();
+
+				auto& settings = m_controller.GetConfigStore().settings;
+				auto& data     = settings.data.ui.i3di;
+
+				settings.mark_if(ImGui::Checkbox(
+					LS(UISettingsStrings::EnableWeapons, "1"),
+					std::addressof(data.enableWeapons)));
+
+				ImGui::Spacing();
+				ImGui::Unindent();
+			}
+		}
+
 		void UISettings::DrawFontSelector()
 		{
 			ImGui::PushID("font_selector");
@@ -1018,7 +1054,7 @@ namespace IED
 
 			DrawCommonResetContextMenu(
 				"ctx_font_rld",
-				CommonStrings::Reload,
+				static_cast<Localization::StringID>(CommonStrings::Reload),
 				true,
 				[&] {
 					Drivers::UI::MarkFontUpdateDataDirty();
@@ -1056,7 +1092,7 @@ namespace IED
 
 			DrawCommonResetContextMenu(
 				"ctx_clr_fsz",
-				CommonStrings::Clear,
+				static_cast<Localization::StringID>(CommonStrings::Clear),
 				settings.data.ui.fontSize.has(),
 				[&] {
 					settings.data.ui.fontSize.clear();
@@ -1385,9 +1421,46 @@ namespace IED
 				settings.data.ui.slotProfileEditor.colStates.clear();
 				settings.data.ui.customProfileEditor.colStates.clear();
 				settings.data.ui.transformProfileEditor.colStates.clear();
+				settings.data.ui.skeletonExplorer.colStates.clear();
+				settings.data.ui.actorInfo.colStates.clear();
+				settings.data.ui.condVarEditor.colStates.clear();
+				settings.data.ui.condVarProfileEditor.colStates.clear();
 
 				settings.mark_dirty();
 			}
+		}
+
+		void UISettings::DrawCommonResetContextMenu(
+			const char*            a_imid,
+			Localization::StringID a_strid,
+			bool                   a_enabled,
+			std::function<void()>  a_func)
+		{
+			ImGui::PushID(a_imid);
+
+			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
+
+			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
+
+			//ImGui::PopStyleVar();
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+			if (ImGui::BeginPopup("context_menu"))
+			{
+				if (ImGui::MenuItem(
+						LS(a_strid, "1"),
+						nullptr,
+						false,
+						a_enabled))
+				{
+					a_func();
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
 		}
 
 	}

@@ -31,9 +31,9 @@ namespace IED
 	public:
 		D3DObject(
 			ID3D11Device*                        a_device,
-			const std::shared_ptr<D3DModelData>& a_data);
+			const std::shared_ptr<D3DModelData>& a_data) noexcept(false);
 
-		virtual ~D3DObject() noexcept override = default;
+		virtual ~D3DObject() override = default;
 
 		[[nodiscard]] float XM_CALLCONV GetDistance(
 			DirectX::XMVECTOR a_origin) const;

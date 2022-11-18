@@ -16,11 +16,18 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		ObjectEntryBase&                 a_objectEntry,
 		ActorObjectHolder&               a_data,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags,
+		bool                             a_defer)
 	{
 		if (auto& state = a_objectEntry.data.state)
 		{
+			if (auto& sc = state->simComponent)
+			{
+				a_data.RemoveSimComponent(sc);
+			}
+
 			if (
+				!a_defer &&
 				m_playSound &&
 				a_flags.test(ControllerUpdateFlags::kPlaySound) &&
 				state->flags.test(ObjectEntryFlags::kPlaySound) &&
@@ -56,7 +63,8 @@ namespace IED
 			a_handle,
 			a_data.m_root,
 			a_data.m_root1p,
-			*this);
+			*this,
+			a_defer);
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -65,20 +73,18 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor->formID);
-		if (it == m_objects.end())
+		if (it != m_objects.end())
+		{
+			it->second.SetHandle(a_handle);
+
+			EraseActor(it);
+
+			return true;
+		}
+		else
 		{
 			return false;
 		}
-
-		CleanupActorObjectsImpl(
-			a_actor,
-			a_handle,
-			it->second,
-			a_flags);
-
-		EraseActor(it);
-
-		return true;
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -86,22 +92,18 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor->formID);
-		if (it == m_objects.end())
+		if (it != m_objects.end())
+		{
+			it->second.SetHandle(a_actor->GetHandle());
+
+			EraseActor(it);
+
+			return true;
+		}
+		else
 		{
 			return false;
 		}
-
-		auto handle = a_actor->GetHandle();
-
-		CleanupActorObjectsImpl(
-			a_actor,
-			handle,
-			it->second,
-			a_flags);
-
-		EraseActor(it);
-
-		return true;
 	}
 
 	bool IObjectManager::RemoveActorImpl(
@@ -109,25 +111,16 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		auto it = m_objects.find(a_actor);
-		if (it == m_objects.end())
+		if (it != m_objects.end())
+		{
+			EraseActor(it);
+
+			return true;
+		}
+		else
 		{
 			return false;
 		}
-
-		auto handle = it->second.GetHandle();
-
-		NiPointer<TESObjectREFR> ref;
-		(void)handle.LookupZH(ref);
-
-		CleanupActorObjectsImpl(
-			nullptr,
-			handle,
-			it->second,
-			a_flags);
-
-		EraseActor(it);
-
-		return true;
 	}
 
 	/*void IObjectManager::QueueReSinkAnimationGraphs(
@@ -252,41 +245,6 @@ namespace IED
 		});
 	}
 
-	void IObjectManager::CleanupActorObjectsImpl(
-		TESObjectREFR*                   a_actor,
-		Game::ObjectRefHandle            a_handle,
-		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
-	{
-		if (a_holder.m_actor->loadedState)
-		{
-			for (auto& e : a_holder.m_cmeNodes)
-			{
-				ResetNodeOverride(e.second);
-			}
-
-			for (auto& e : a_holder.m_weapNodes)
-			{
-				ResetNodePlacement(e, nullptr);
-			}
-		}
-
-		RemoveActorGear(
-			a_actor,
-			a_handle,
-			a_holder,
-			a_flags);
-
-		a_holder.m_cmeNodes.clear();
-		a_holder.m_movNodes.clear();
-		a_holder.m_weapNodes.clear();
-		a_holder.m_monitorNodes.clear();
-		a_holder.m_nodeMonitorEntries.clear();
-
-		/*assert(a_holder.m_animationUpdateList->Empty());
-		assert(a_holder.m_animEventForwardRegistrations.Empty());*/
-	}
-
 	void IObjectManager::RemoveActorGear(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
@@ -314,15 +272,13 @@ namespace IED
 		else
 		{
 			a_holder.visit([&](auto& a_object) {
-				if (RemoveObject(
-						a_actor,
-						a_handle,
-						a_object,
-						a_holder,
-						a_flags))
-				{
-					result = true;
-				}
+				result |= RemoveObject(
+					a_actor,
+					a_handle,
+					a_object,
+					a_holder,
+					a_flags,
+					false);
 			});
 		}
 
@@ -341,6 +297,8 @@ namespace IED
 		ActorObjectHolder&    a_holder,
 		Game::ObjectRefHandle a_handle)
 	{
+		const bool defer = EngineExtensions::ShouldDefer3DTask();
+
 		bool result = false;
 
 		for (auto& e : a_holder.m_entriesSlot)
@@ -352,7 +310,8 @@ namespace IED
 					a_handle,
 					e,
 					a_holder,
-					ControllerUpdateFlags::kNone);
+					ControllerUpdateFlags::kNone,
+					defer);
 
 				result = true;
 			}
@@ -371,7 +330,8 @@ namespace IED
 							a_handle,
 							it2->second,
 							a_holder,
-							ControllerUpdateFlags::kNone);
+							ControllerUpdateFlags::kNone,
+							defer);
 
 						result = true;
 
@@ -399,20 +359,6 @@ namespace IED
 
 	void IObjectManager::ClearObjectsImpl()
 	{
-		for (auto& e : m_objects)
-		{
-			auto handle = e.second.GetHandle();
-
-			NiPointer<TESObjectREFR> ref;
-			(void)handle.LookupZH(ref);
-
-			CleanupActorObjectsImpl(
-				nullptr,
-				handle,
-				e.second,
-				ControllerUpdateFlags::kNone);
-		}
-
 		m_objects.clear();
 	}
 
@@ -515,14 +461,15 @@ namespace IED
 	bool IObjectManager::LoadAndAttach(
 		processParams_t&                a_params,
 		const Data::configBaseValues_t& a_activeConfig,
-		const Data::configBase_t&       a_config,
+		const Data::configBase_t&       a_baseConfig,
 		ObjectEntryBase&                a_objectEntry,
 		TESForm*                        a_form,
 		TESForm*                        a_modelForm,
-		bool                            a_leftWeapon,
-		bool                            a_visible,
-		bool                            a_disableHavok,
-		bool                            a_bhkAnims)
+		const bool                      a_leftWeapon,
+		const bool                      a_visible,
+		const bool                      a_disableHavok,
+		const bool                      a_bhkAnims,
+		const bool                      a_physics)
 	{
 		if (a_objectEntry.data.state)
 		{
@@ -566,7 +513,7 @@ namespace IED
 			return false;
 		}
 
-		nodesRef_t targetNodes;
+		nodesTarget_t targetNodes;
 
 		if (!CreateTargetNode(
 				a_activeConfig,
@@ -629,13 +576,29 @@ namespace IED
 			itemRoot,
 			targetNodes.ref);
 
+		NiNode* objectAttachmentNode;
+
+		if (a_physics)
+		{
+			objectAttachmentNode = CreateAttachmentNode(BSStringHolder::GetSingleton()->m_objectPhy);
+
+			itemRoot->AttachChild(objectAttachmentNode, true);
+
+			state->nodes.physics = objectAttachmentNode;
+		}
+		else
+		{
+			objectAttachmentNode = itemRoot;
+		}
+
 		targetNodes.rootNode->AttachChild(itemRoot, true);
+
 		UpdateDownwardPass(itemRoot);
 
-		auto ar = EngineExtensions::AttachObject(
+		const auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
 			a_params.root,
-			itemRoot,
+			objectAttachmentNode,
 			object,
 			modelParams.type,
 			a_leftWeapon,
@@ -646,6 +609,18 @@ namespace IED
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok));
 
 		UpdateDownwardPass(itemRoot);
+
+		if (a_visible && state->nodes.HasPhysicsNode())
+		{
+			if (auto& pv = a_activeConfig.physicsValues.data;
+			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
+			{
+				state->simComponent = a_params.objects.CreateAndAddSimComponent(
+					state->nodes.physics.get(),
+					state->nodes.physics->m_localTransform,
+					*pv);
+			}
+		}
 
 		FinalizeObjectState(
 			state,
@@ -671,14 +646,9 @@ namespace IED
 					object,
 					state->weapAnimGraphManagerHolder,
 					[&](const char* a_path) {
-						if (a_config.hkxFilter.empty())
-						{
-							return true;
-						}
-						else
-						{
-							return !a_config.hkxFilter.contains(a_path);
-						}
+						return a_baseConfig.hkxFilter.empty() ?
+				                   true :
+                                   !a_baseConfig.hkxFilter.contains(a_path);
 					}))
 			{
 				if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
@@ -727,21 +697,23 @@ namespace IED
 
 	bool IObjectManager::LoadAndAttachGroup(
 		processParams_t&                a_params,
-		const Data::configBaseValues_t& a_config,
+		const Data::configBaseValues_t& a_activeConfig,
+		const Data::configBase_t&       a_baseConfig,
 		const Data::configModelGroup_t& a_group,
 		ObjectEntryBase&                a_objectEntry,
 		TESForm*                        a_form,
-		bool                            a_leftWeapon,
-		bool                            a_visible,
-		bool                            a_disableHavok,
-		bool                            a_bhkAnims)
+		const bool                      a_leftWeapon,
+		const bool                      a_visible,
+		const bool                      a_disableHavok,
+		const bool                      a_bhkAnims,
+		const bool                      a_physics)
 	{
 		if (a_objectEntry.data.state)
 		{
 			return false;
 		}
 
-		if (!a_config.targetNode)
+		if (!a_activeConfig.targetNode)
 		{
 			return false;
 		}
@@ -781,7 +753,7 @@ namespace IED
 			}
 
 			auto form = e.second.form.get_form();
-			if (!form)
+			if (!form || form->IsDeleted())
 			{
 				continue;
 			}
@@ -794,7 +766,7 @@ namespace IED
 					a_params.race,
 					a_params.configSex == Data::ConfigSex::Female,
 					e.second.flags.test(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel),
-					a_config.flags.test(Data::BaseFlags::kUseWorldModel) ||
+					a_activeConfig.flags.test(Data::BaseFlags::kUseWorldModel) ||
 						e.second.flags.test(Data::ConfigModelGroupEntryFlags::kUseWorldModel),
 					params))
 			{
@@ -818,11 +790,11 @@ namespace IED
 			return false;
 		}
 
-		nodesRef_t targetNodes;
+		nodesTarget_t targetNodes;
 
 		if (!CreateTargetNode(
-				a_config,
-				a_config.targetNode,
+				a_activeConfig,
+				a_activeConfig.targetNode,
 				a_params.npcRoot,
 				targetNodes))
 		{
@@ -831,7 +803,7 @@ namespace IED
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),
 				a_form->formID.get(),
-				a_config.targetNode.name.c_str());
+				a_activeConfig.targetNode.name.c_str());
 
 			return false;
 		}
@@ -880,13 +852,29 @@ namespace IED
 
 		auto groupRoot = CreateAttachmentNode(buffer);
 
-		state->UpdateData(a_config);
+		state->UpdateData(a_activeConfig);
 		UpdateObjectTransform(
 			state->transform,
 			groupRoot,
 			targetNodes.ref);
 
+		NiNode* objectAttachmentNode;
+
+		if (a_physics)
+		{
+			objectAttachmentNode = CreateAttachmentNode(BSStringHolder::GetSingleton()->m_objectPhy);
+
+			groupRoot->AttachChild(objectAttachmentNode, true);
+
+			state->nodes.physics = objectAttachmentNode;
+		}
+		else
+		{
+			objectAttachmentNode = groupRoot;
+		}
+
 		targetNodes.rootNode->AttachChild(groupRoot, true);
+
 		UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
@@ -922,7 +910,7 @@ namespace IED
 				n.rootNode,
 				nullptr);
 
-			groupRoot->AttachChild(itemRoot, true);
+			objectAttachmentNode->AttachChild(itemRoot, true);
 			UpdateDownwardPass(itemRoot);
 
 			EngineExtensions::AttachObject(
@@ -934,14 +922,14 @@ namespace IED
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
 				e.params.isShield,
-				a_config.flags.test(Data::BaseFlags::kDropOnDeath) ||
+				a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
-				a_config.flags.test(Data::BaseFlags::kRemoveScabbard) ||
+				a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
-				a_config.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
+				a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				a_disableHavok ||
-					a_config.flags.test(Data::BaseFlags::kDisableHavok) ||
+					a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
 
 			e.grpObject = std::addressof(n);
@@ -966,28 +954,28 @@ namespace IED
 			else if (
 				a_bhkAnims &&
 				e.params.type == ModelType::kWeapon &&
-				!a_config.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
+				!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims))
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,
 						e.grpObject->weapAnimGraphManagerHolder,
-						[](const char*) { return true; }))
+						[&](const char* a_path) {
+							return a_baseConfig.hkxFilter.empty() ?
+					                   true :
+                                       !a_baseConfig.hkxFilter.contains(a_path);
+						}))
 				{
 					if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 					{
 						e.grpObject->UpdateAndSendAnimationEvent(
 							e.entry->second.animationEvent);
 					}
-					/*else if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
-					{
-						e.grpObject->UpdateAndSendAnimationEvent(
-							a_activeConfig.animationEvent);
-					}*/
 					else
 					{
 						e.grpObject->currentAnimationEvent =
 							StringHolder::GetSingleton().weaponSheathe;
+
 						e.grpObject->weapAnimGraphManagerHolder->NotifyAnimationGraph(
 							BSStringHolder::GetSingleton()->m_weaponSheathe);
 					}
@@ -1000,13 +988,25 @@ namespace IED
 			}
 		}
 
+		if (a_visible && state->nodes.HasPhysicsNode())
+		{
+			if (auto& pv = a_activeConfig.physicsValues.data;
+			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
+			{
+				state->simComponent = a_params.objects.CreateAndAddSimComponent(
+					state->nodes.physics.get(),
+					state->nodes.physics->m_localTransform,
+					*pv);
+			}
+		}
+
 		FinalizeObjectState(
 			state,
 			a_form,
 			groupRoot,
 			nullptr,
 			targetNodes,
-			a_config,
+			a_activeConfig,
 			a_params.actor);
 
 		state->flags.set(ObjectEntryFlags::kIsGroup);
@@ -1017,7 +1017,7 @@ namespace IED
 		{
 			PlayObjectSound(
 				a_params,
-				a_config,
+				a_activeConfig,
 				a_objectEntry,
 				true);
 		}
@@ -1030,7 +1030,7 @@ namespace IED
 		TESForm*                                 a_form,
 		NiNode*                                  a_rootNode,
 		const NiPointer<NiNode>&                 a_objectNode,
-		nodesRef_t&                              a_targetNodes,
+		nodesTarget_t&                           a_targetNodes,
 		const Data::configBaseValues_t&          a_config,
 		Actor*                                   a_actor)
 	{

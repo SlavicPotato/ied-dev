@@ -4,6 +4,8 @@
 
 #include "Common/VectorMath.h"
 
+#include "IED/EngineExtensions.h"
+
 namespace IED
 {
 	using namespace DirectX;
@@ -29,22 +31,14 @@ namespace IED
 
 	PHYSimComponent::~PHYSimComponent() noexcept
 	{
+		assert(!EngineExtensions::ShouldDefer3DTask());
+
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 	}
 
 	void PHYSimComponent::ReadTransforms() noexcept
 	{
-		//m_objectWorldPos = _mm_and_ps(_mm_loadu_ps(m_object->m_worldTransform.pos), btvFFF0fMask);
-
-		if (auto parent = m_object->m_parent)
-		{
-			m_parentWorldTransform = parent->m_worldTransform;
-		}
-		else
-		{
-			// should never happen
-			m_parentWorldTransform = m_object->m_worldTransform;
-		}
+		m_parentWorldTransform = GetCurrentParentWorldTransform();
 	}
 
 	void PHYSimComponent::WriteTransforms() noexcept
@@ -57,8 +51,8 @@ namespace IED
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 		m_objectLocalTransform = m_initialTransform;
 
-		NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-		m_object->UpdateWorldData(std::addressof(ctx));
+		/*NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
+		m_object->UpdateWorldData(std::addressof(ctx));*/
 
 		ReadTransforms();
 		m_oldWorldPos = CalculateTarget();
@@ -68,23 +62,11 @@ namespace IED
 		m_rotParams.Zero();
 	}
 
-	SKMP_FORCEINLINE static btQuaternion mkQuat(
+	inline static auto mkQuat(
 		const btVector3& a_axis,
-		btScalar         a_axisLength,
 		btScalar         a_angle) noexcept
 	{
-		btScalar s;
-		btScalar c;
-
-		XMScalarSinCos(&s, &c, a_angle * 0.5f);
-
-		s /= a_axisLength;
-
-		auto r = a_axis * s;
-
-		r.setW(c);
-
-		return btQuaternion(r.get128());
+		return btQuaternion(XMQuaternionRotationNormal(a_axis.get128(), a_angle));
 	}
 
 	void PHYSimComponent::UpdateMotion(float a_step) noexcept
@@ -98,9 +80,7 @@ namespace IED
 
 		auto diff = target - m_oldWorldPos;
 
-		constexpr auto maxDiff{ 8192.0f };
-
-		if (diff.length2() > maxDiff * maxDiff)
+		if (diff.length2() > m_maxDiff2)
 		{
 			Reset();
 			return;
@@ -178,8 +158,7 @@ namespace IED
 				m_rotParams.m_axis =
 					(m_rotParams.m_axis * m_rotAdjustParamsX) +
 					(m_conf.rotAdjust.cross(m_rotParams.m_axis) * m_rotAdjustParamsY) +
-					(m_conf.rotAdjust * m_conf.rotAdjust.dotv(m_rotParams.m_axis)) *
-						m_rotAdjustParamsZ;
+					(m_conf.rotAdjust * m_conf.rotAdjust.dotv(m_rotParams.m_axis)) * m_rotAdjustParamsZ;
 			}
 
 			m_rotParams.m_angle = XMVectorGetX(l) * std::numbers::pi_v<btScalar> / 180.0f;
@@ -191,7 +170,7 @@ namespace IED
 
 		m_objectLocalTransform.getBasis() =
 			m_initialTransform.getBasis() *
-			btMatrix3x3(mkQuat(m_rotParams.m_axis, 1.0f, m_rotParams.m_angle));
+			btMatrix3x3(mkQuat(m_rotParams.m_axis, m_rotParams.m_angle));
 	}
 
 	void PHYSimComponent::UpdateConfig(
@@ -199,6 +178,19 @@ namespace IED
 	{
 		m_conf = a_conf;
 		ProcessConfig();
+	}
+
+	Bullet::btTransformEx PHYSimComponent::GetCurrentParentWorldTransform() const noexcept
+	{
+		if (auto parent = m_object->m_parent)
+		{
+			return parent->m_worldTransform;
+		}
+		else
+		{
+			// should never happen
+			return m_object->m_worldTransform;
+		}
 	}
 
 	void PHYSimComponent::ProcessConfig() noexcept
@@ -209,32 +201,27 @@ namespace IED
 		{
 			const auto tmp = VectorMath::XMVectorConvertToRadians(m_conf.rotAdjust.get128());
 
-			const auto len = XMVectorGetX(XMVector3Length(tmp));
+			XMVECTOR x, y;
 
-			float x, y;
-
-			XMScalarSinCos(
+			XMVectorSinCos(
 				std::addressof(y),
 				std::addressof(x),
-				len);
+				XMVector3Length(tmp));
 
-			m_rotAdjustParamsX = _mm_set_ps1(x);
-			m_rotAdjustParamsY = _mm_set_ps1(y);
-			m_rotAdjustParamsZ = _mm_set_ps1(1.f - x);
+			m_rotAdjustParamsX = x;
+			m_rotAdjustParamsY = y;
+			m_rotAdjustParamsZ = g_XMOne.v - x;
 
 			m_conf.rotAdjust = XMVector3Normalize(tmp);
 		};
 
 		m_gravityCorrection.setZ(m_conf.gravityCorrection);
 
-		if (m_conf.resistance > 0.0f)
+		m_resistanceOn = m_conf.resistance > 0.0f;
+
+		if (m_resistanceOn)
 		{
-			m_resistanceOn    = true;
 			m_conf.resistance = std::min(m_conf.resistance, 250.0f);
-		}
-		else
-		{
-			m_resistanceOn = false;
 		}
 
 		m_conf.linear     = XMVectorClamp(m_conf.linear.get128(), g_XMZero.v, s_vec10);
@@ -243,11 +230,9 @@ namespace IED
 		m_conf.mass = std::clamp(m_conf.mass, 0.001f, 10000.0f);
 		m_mass      = _mm_set_ps1(m_conf.mass);
 
-		m_conf.maxVelocity = std::clamp(m_conf.maxVelocity, 4.0f, 20000.0f);
-
-		m_maxVelocity = _mm_set_ps1(m_conf.maxVelocity);
-
-		m_maxVelocity2 = m_conf.maxVelocity * m_conf.maxVelocity;
+		m_conf.maxVelocity = std::clamp(m_conf.maxVelocity, 1.0f, 20000.0f);
+		m_maxVelocity      = _mm_set_ps1(m_conf.maxVelocity);
+		m_maxVelocity2     = m_conf.maxVelocity * m_conf.maxVelocity;
 
 		m_conf.maxOffsetParamsBox[0] = std::clamp(m_conf.maxOffsetParamsBox[0], 0.0f, 1.0f);
 		m_conf.maxOffsetParamsBox[1] = std::clamp(m_conf.maxOffsetParamsBox[1], 0.0f, 20000.0f);
@@ -277,22 +262,22 @@ namespace IED
 		m_conf.stiffness2 = std::clamp(m_conf.stiffness2, 0.0f, 20000.0f);
 	}
 
-	btVector3 PHYSimComponent::CalculateTarget()
+	btVector3 PHYSimComponent::CalculateTarget() noexcept
 	{
 		return m_parentWorldTransform * m_conf.cogOffset;
 	}
 
 	void PHYSimComponent::LimitVelocity() noexcept
 	{
-		XMVECTOR v = m_velocity.get128();
+		const XMVECTOR v = m_velocity.get128();
 
 		const auto l2 = XMVector3LengthSq(v);
 
 		if (XMVectorGetX(l2) > m_maxVelocity2)
 		{
-			v = XMVectorDivide(v, XMVectorSqrt(l2));
-
-			m_velocity = XMVectorMultiply(v, m_maxVelocity);
+			m_velocity = XMVectorMultiply(
+				XMVectorDivide(v, XMVectorSqrt(l2)),
+				m_maxVelocity);
 		}
 	}
 
@@ -402,4 +387,8 @@ namespace IED
 
 		m_virtld = a_invRot * ((m_oldWorldPos + (m_velocity * a_timeStep)) -= a_target);
 	}
+
+	float PHYSimComponent::m_maxDiff2{
+		1024.0f * 1024.0f
+	};
 }

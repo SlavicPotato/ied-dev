@@ -12,6 +12,7 @@ namespace IED
 		NiPointer<NiNode> rootNode;
 		NiPointer<NiNode> ref;
 		NiPointer<NiNode> object;
+		NiPointer<NiNode> physics;
 
 		SKMP_FORCEINLINE constexpr bool IsReferenceMovedOrOphaned() const noexcept
 		{
@@ -32,6 +33,17 @@ namespace IED
 
 			return false;
 		}
+
+		[[nodiscard]] inline constexpr bool HasPhysicsNode() const noexcept
+		{
+			return static_cast<bool>(physics.get());
+		}
+	};
+
+	struct nodesTarget_t
+	{
+		NiPointer<NiNode> rootNode;
+		NiPointer<NiNode> ref;
 	};
 
 	class INode
@@ -50,7 +62,7 @@ namespace IED
 			const Data::configBaseValues_t& a_entry,
 			const Data::NodeDescriptor&     a_node,
 			NiNode*                         a_root,
-			nodesRef_t&                     a_out);
+			nodesTarget_t&                  a_out);
 
 		static bool AttachObjectToTargetNode(
 			const Data::NodeDescriptor& a_node,

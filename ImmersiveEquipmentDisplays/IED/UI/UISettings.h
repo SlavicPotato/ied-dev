@@ -80,6 +80,7 @@ namespace IED
 			void              DrawLogLevelSelector();
 			void              DrawObjectDatabaseSection();
 			void              DrawLocalizationSection();
+			void              DrawI3DISection();
 
 			void DrawFontSelector();
 			void DrawExtraGlyphs();
@@ -93,14 +94,11 @@ namespace IED
 				std::uint8_t                                  a_formType,
 				Data::ConfigSound<Game::FormID>::soundPair_t& a_soundPair);
 
-			template <
-				class Tf,
-				class Tl>
 			void DrawCommonResetContextMenu(
-				const char* a_imid,
-				Tl          a_strid,
-				bool        a_enabled,
-				Tf          a_func);
+				const char*            a_imid,
+				Localization::StringID a_strid,
+				bool                   a_enabled,
+				std::function<void()>  a_func);
 
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
@@ -110,40 +108,6 @@ namespace IED
 			Tasks::UIRenderTaskBase& m_owner;
 			Controller&              m_controller;
 		};
-
-		template <class Tf, class Tl>
-		void UISettings::DrawCommonResetContextMenu(
-			const char* a_imid,
-			Tl          a_strid,
-			bool        a_enabled,
-			Tf          a_func)
-		{
-			ImGui::PushID(a_imid);
-
-			//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 4.f, 1.0f });
-
-			UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu");
-
-			//ImGui::PopStyleVar();
-
-			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
-			if (ImGui::BeginPopup("context_menu"))
-			{
-				if (ImGui::MenuItem(
-						LS(a_strid, "1"),
-						nullptr,
-						false,
-						a_enabled))
-				{
-					a_func();
-				}
-
-				ImGui::EndPopup();
-			}
-
-			ImGui::PopID();
-		}
 
 	}
 }

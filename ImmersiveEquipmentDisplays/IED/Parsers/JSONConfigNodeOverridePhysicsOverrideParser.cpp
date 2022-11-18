@@ -17,7 +17,7 @@ namespace IED
 		{
 			Parser<Data::configNodePhysicsValues_t> vparser(m_state);
 
-			if (!vparser.Parse(a_in["vals"], a_out, a_version))
+			if (!vparser.Parse(a_in["vals"], a_out))
 			{
 				return false;
 			}

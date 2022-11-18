@@ -22,7 +22,8 @@ namespace IED
 	void D3DPrimitiveBatch::Draw(
 		D3DCommon& a_scene)
 	{
-		if (m_lines.empty())
+		if (m_lines.empty() &&
+			m_tris.empty())
 		{
 			return;
 		}
@@ -45,9 +46,15 @@ namespace IED
 			m_batch->DrawLine(e.first, e.second);
 		}
 
+		for (auto& e : m_tris)
+		{
+			m_batch->DrawTriangle(e.first, e.second, e.third);
+		}
+
 		m_batch->End();
 
 		m_lines.clear();
+		m_tris.clear();
 	}
 
 }

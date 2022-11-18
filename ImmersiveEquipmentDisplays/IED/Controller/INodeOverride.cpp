@@ -885,9 +885,10 @@ namespace IED
 	}
 
 	void INodeOverride::ResetNodeOverride(
-		const CMENodeEntry& a_entry)
+		const CMENodeEntry& a_entry,
+		bool                a_defer)
 	{
-		if (EngineExtensions::ShouldDefer3DTask())
+		if (a_defer)
 		{
 			ITaskPool::AddPriorityTask(
 				[entry = a_entry] {
@@ -900,6 +901,8 @@ namespace IED
 		}
 		else
 		{
+			assert(!EngineExtensions::ShouldDefer3DTask());
+
 			ResetNodeOverrideImpl(a_entry.thirdPerson);
 			if (a_entry.firstPerson)
 			{
@@ -1008,14 +1011,15 @@ namespace IED
 		const WeaponNodeEntry&   a_entry,
 		const NiPointer<NiNode>& a_target,
 		nodeOverrideParams_t*    a_params,
-		WeaponPlacementID        a_placementID)
+		WeaponPlacementID        a_placementID,
+		bool                     a_defer)
 	{
 		if (a_target &&
 		    a_entry.node->m_parent)
 		{
 			if (a_entry.node->m_parent != a_target)
 			{
-				if (EngineExtensions::ShouldDefer3DTask())
+				if (a_defer)
 				{
 					ITaskPool::AddPriorityTask(
 						[target = a_target,
@@ -1031,6 +1035,8 @@ namespace IED
 				}
 				else
 				{
+					assert(!EngineExtensions::ShouldDefer3DTask());
+
 					a_target->AttachChild(a_entry.node, true);
 
 					UpdateDownwardPass(a_entry.node);
@@ -1076,12 +1082,13 @@ namespace IED
 					a_entry,
 					a_entry.target,
 					std::addressof(a_params),
-					it->second.placementID);
+					it->second.placementID,
+					false);
 			}
 		}
 		else
 		{
-			ResetNodePlacement(a_entry, std::addressof(a_params));
+			ResetNodePlacement(a_entry, std::addressof(a_params), false);
 		}
 	}
 
@@ -1126,7 +1133,8 @@ namespace IED
 
 	void INodeOverride::ResetNodePlacement(
 		const WeaponNodeEntry& a_entry,
-		nodeOverrideParams_t*  a_params)
+		nodeOverrideParams_t*  a_params,
+		bool                   a_defer)
 	{
 		if (a_entry.target != nullptr)
 		{
@@ -1136,7 +1144,8 @@ namespace IED
 				a_entry,
 				a_entry.defaultNode,
 				a_params,
-				WeaponPlacementID::Default);
+				WeaponPlacementID::Default,
+				a_defer);
 		}
 	}
 

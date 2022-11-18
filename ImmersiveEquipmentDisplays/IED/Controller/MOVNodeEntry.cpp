@@ -8,4 +8,9 @@ namespace IED
 	{
 		return ::Util::Node::HasVisibleGeometry(node);
 	}
+
+	bool MOVNodeEntry::parent_has_visible_geometry() const
+	{
+		return ::Util::Node::HasVisibleGeometry(node->m_parent);
+	}
 }

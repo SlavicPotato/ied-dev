@@ -10,14 +10,13 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configNodePhysicsValues_t>::Parse(
-			const Json::Value&                         a_in,
-			Data::configNodePhysicsValues_t& a_outData,
-			const std::uint32_t                        a_version) const;
+			const Json::Value&               a_in,
+			Data::configNodePhysicsValues_t& a_outData) const;
 
 		template <>
 		void Parser<Data::configNodePhysicsValues_t>::Create(
 			const Data::configNodePhysicsValues_t& a_data,
-			Json::Value&                                     a_out) const;
+			Json::Value&                           a_out) const;
 
 	}
 }

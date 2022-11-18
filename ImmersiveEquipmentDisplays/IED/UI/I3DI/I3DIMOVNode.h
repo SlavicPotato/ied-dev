@@ -22,7 +22,6 @@ namespace IED
 		public:
 			I3DIMOVNode(
 				ID3D11Device*                                  a_device,
-				ID3D11DeviceContext*                           a_context,
 				const std::shared_ptr<D3DModelData>&           a_data,
 				const stl::fixed_string&                       a_name,
 				const NodeOverrideData::weaponNodeListEntry_t& a_nodeInfo,
@@ -32,12 +31,12 @@ namespace IED
 
 			virtual ~I3DIMOVNode() noexcept override = default;
 
-			virtual I3DIMOVNode* GetAsMOVNode() override
+			virtual I3DIMOVNode* AsMOVNode() override
 			{
 				return this;
 			};
 
-			virtual I3DIDropTarget* GetAsDropTarget() override
+			virtual I3DIDropTarget* AsDropTarget() override
 			{
 				return static_cast<I3DIDropTarget*>(this);
 			};

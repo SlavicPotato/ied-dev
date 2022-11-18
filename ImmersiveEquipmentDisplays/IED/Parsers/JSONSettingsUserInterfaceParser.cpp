@@ -5,6 +5,7 @@
 #include "JSONConfigKeyPairParser.h"
 #include "JSONSettingsCollapsibleStatesParser.h"
 #include "JSONSettingsEditorPanelParser.h"
+#include "JSONSettingsI3DIParser.h"
 #include "JSONSettingsImportExport.h"
 #include "JSONSettingsProfileEditorParser.h"
 #include "JSONSettingsUserInterfaceParser.h"
@@ -36,6 +37,7 @@ namespace IED
 			Parser<Data::SettingHolder::SkeletonExplorer>           skelExp(m_state);
 			Parser<Data::SettingHolder::ActorInfo>                  ainfo(m_state);
 			Parser<Data::SettingHolder::ConditionalVariablesEditor> cved(m_state);
+			Parser<Data::SettingHolder::I3DI>                       i3di(m_state);
 			Parser<UI::UIData::UICollapsibleStates>                 colStatesParser(m_state);
 
 			if (!editorPanelParser.Parse(
@@ -125,6 +127,13 @@ namespace IED
 			if (!cved.Parse(
 					data["cv_profile_editor"],
 					a_out.condVarProfileEditor))
+			{
+				return false;
+			}
+			
+			if (!i3di.Parse(
+					data["i3di"],
+					a_out.i3di))
 			{
 				return false;
 			}
@@ -241,6 +250,7 @@ namespace IED
 			Parser<Data::SettingHolder::SkeletonExplorer>           skelExp(m_state);
 			Parser<Data::SettingHolder::ActorInfo>                  ainfo(m_state);
 			Parser<Data::SettingHolder::ConditionalVariablesEditor> cved(m_state);
+			Parser<Data::SettingHolder::I3DI>                       i3di(m_state);
 			Parser<UI::UIData::UICollapsibleStates>                 colStatesParser(m_state);
 
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
@@ -278,6 +288,10 @@ namespace IED
 			cved.Create(
 				a_data.condVarProfileEditor,
 				data["cv_profile_editor"]);
+
+			i3di.Create(
+				a_data.i3di,
+				data["i3di"]);
 
 			colStatesParser.Create(a_data.settingsColStates, data["settings_col_states"]);
 			colStatesParser.Create(a_data.statsColStates, data["stats_col_states"]);

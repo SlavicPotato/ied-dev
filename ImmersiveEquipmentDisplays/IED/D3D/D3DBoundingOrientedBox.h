@@ -17,7 +17,7 @@ namespace IED
 
 		[[nodiscard]] DirectX::XMVECTOR XM_CALLCONV GetPoint(DirectX::XMVECTOR a_direction) const;
 
-		[[nodiscard]] SKMP_FORCEINLINE static DirectX::XMVECTOR XM_CALLCONV D3DBoundingOrientedBox::GetPoint(
+		[[nodiscard]] SKMP_FORCEINLINE static DirectX::XMVECTOR XM_CALLCONV GetPoint(
 			DirectX::XMVECTOR a_direction,
 			DirectX::XMVECTOR a_center,
 			DirectX::XMVECTOR a_extents,

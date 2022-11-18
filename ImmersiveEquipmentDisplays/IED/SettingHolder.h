@@ -122,6 +122,11 @@ namespace IED
 				UI::UIData::UICollapsibleStates colStates;
 			};
 
+			struct I3DI
+			{
+				bool enableWeapons{ true };
+			};
+
 			struct UserInterface
 			{
 				UserInterface() noexcept
@@ -145,6 +150,7 @@ namespace IED
 				ActorInfo                  actorInfo;
 				ConditionalVariablesEditor condVarEditor;
 				ConditionalVariablesEditor condVarProfileEditor;
+				I3DI                       i3di;
 
 				UI::UIData::UICollapsibleStates settingsColStates;
 				UI::UIData::UICollapsibleStates statsColStates;
@@ -200,6 +206,11 @@ namespace IED
 				bool windowOpenStates[stl::underlying(UI::ChildWindowID::kMax)]{ false };
 			};
 
+			struct Physics
+			{
+				float maxDiff{ 1024.0f };
+			};
+
 			struct Settings
 			{
 				UserInterface ui;
@@ -226,6 +237,8 @@ namespace IED
 				stl::optional<LogLevel> logLevel;
 
 				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kNone };
+
+				Physics physics;
 
 				stl::fixed_string language;
 			};

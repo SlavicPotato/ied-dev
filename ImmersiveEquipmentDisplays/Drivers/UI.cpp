@@ -28,6 +28,7 @@ namespace IED
 		void UI::InitializeImpl()
 		{
 			Input::RegisterForPriorityKeyEvents(this);
+
 #if defined(IED_ENABLE_I3DI)
 			Input::RegisterForPriorityMouseMoveEvents(this);
 #endif
@@ -36,8 +37,10 @@ namespace IED
 
 			r.GetEventDispatcher<Events::D3D11CreateEventPost>().AddSink(this);
 			r.GetEventDispatcher<Events::IDXGISwapChainPresent>().AddSink(this);
+
 #if defined(IED_ENABLE_I3DI)
-			r.GetEventDispatcher<Events::PrepareGameDataEvent>().AddSink(this);
+			ITaskPool::AddTaskFixed(this);
+			ITaskPool::AddTaskFixedPL(this);
 #endif
 		}
 
@@ -74,7 +77,8 @@ namespace IED
 			ASSERT(IMGUI_CHECKVERSION());
 			ImGui::CreateContext();
 
-			auto& io                             = ImGui::GetIO();
+			auto& io = ImGui::GetIO();
+
 			io.MouseDrawCursor                   = true;
 			io.ConfigWindowsMoveFromTitleBarOnly = true;
 			io.DisplaySize                       = { m_info.bufferSize.width, m_info.bufferSize.height };
@@ -229,41 +233,25 @@ namespace IED
 			m_uiRenderPerf.timer.End(m_uiRenderPerf.current);
 		}
 
-		void UI::Receive(const Events::PrepareGameDataEvent&)
+		void UI::RunPL()
 		{
-			if (m_suspended.load(std::memory_order_relaxed))
-			{
-				return;
-			}
-
-			// *should* never be true
-			if (Game::IsPaused())
-			{
-				return;
-			}
-
-			stl::scoped_lock lock(m_lock);
-
-			if (!m_imInitialized)
-			{
-				return;
-			}
-
-			for (auto& e : m_drawTasks)
-			{
-				e.second->PrepareGameData();
-			}
+			RunPreps(true);
 		}
 
-		// invokes preps when paused
+		// runs preps when paused
 		void UI::Run()
+		{
+			RunPreps(false);
+		}
+
+		void UI::RunPreps(bool a_paused)
 		{
 			if (m_suspended.load(std::memory_order_relaxed))
 			{
 				return;
 			}
 
-			if (!Game::IsPaused())
+			if (Game::IsPaused() == a_paused)
 			{
 				return;
 			}
