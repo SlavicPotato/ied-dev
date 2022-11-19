@@ -52,6 +52,7 @@ namespace IED
 			Global           = 6341,
 			Material         = 6342,
 			Idle             = 6343,
+			Projectile       = 6344,
 		};
 	}
 }

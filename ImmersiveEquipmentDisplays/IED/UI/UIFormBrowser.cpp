@@ -43,6 +43,7 @@ namespace IED
 				{ UIFormBrowserStrings::Grass, TESGrass::kTypeID },
 				{ UIFormBrowserStrings::Activators, TESObjectACTI::kTypeID },
 				{ UIFormBrowserStrings::TalkingActivators, BGSTalkingActivator::kTypeID },
+				{ UIFormBrowserStrings::Projectiles, BGSProjectile::kTypeID },
 				{ UIFormBrowserStrings::Sounds, BGSSoundDescriptorForm::kTypeID },
 				{ UIFormBrowserStrings::Quests, TESQuest::kTypeID },
 				{ UIFormBrowserStrings::Locations, BGSLocation::kTypeID },

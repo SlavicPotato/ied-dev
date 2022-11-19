@@ -153,6 +153,7 @@ namespace IED
 			case BGSHeadPart::kTypeID:
 			case BGSExplosion::kTypeID:
 			case BGSMaterialObject::kTypeID:
+			case BGSProjectile::kTypeID:
 			case BGSLocation::kTypeID:
 			case TESWorldSpace::kTypeID:
 			case TESPackage::kTypeID:

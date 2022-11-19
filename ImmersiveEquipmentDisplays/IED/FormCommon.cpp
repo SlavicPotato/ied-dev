@@ -38,6 +38,7 @@ namespace IED
 		case BGSStaticCollection::kTypeID:
 		case BGSExplosion::kTypeID:
 		case BGSMaterialObject::kTypeID:
+		case BGSProjectile::kTypeID:
 		case TESObjectARMO::kTypeID:
 			return true;
 		case TESObjectLIGH::kTypeID:
@@ -74,6 +75,7 @@ namespace IED
 		case BGSStaticCollection::kTypeID:
 		case BGSExplosion::kTypeID:
 		case BGSMaterialObject::kTypeID:
+		case BGSProjectile::kTypeID:
 		case TESObjectARMO::kTypeID:
 		case TESObjectLIGH::kTypeID:
 			return true;
@@ -265,6 +267,8 @@ namespace IED
 			return GetFullName<TESObjectDOOR>(a_form);
 		case BGSExplosion::kTypeID:
 			return GetFullName<BGSExplosion>(a_form);
+		case BGSProjectile::kTypeID:
+			return GetFullName<BGSProjectile>(a_form);
 		case BGSLocation::kTypeID:
 			return GetFullName<BGSLocation>(a_form);
 		case TESWorldSpace::kTypeID:

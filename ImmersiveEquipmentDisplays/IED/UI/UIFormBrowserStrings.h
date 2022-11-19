@@ -44,5 +44,6 @@ namespace IED
 		Weather           = 5235,
 		Global            = 5236,
 		Idle              = 5237,
+		Projectiles       = 5238,
 	};
 }
