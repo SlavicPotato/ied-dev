@@ -31,18 +31,19 @@ namespace IED
 			v4parser.Parse(a_in["ps"], a_out.maxOffsetParamsSphere);
 			v4parser.Parse(a_in["pb"], a_out.maxOffsetParamsBox);
 
-			a_out.stiffness             = a_in["s"].asFloat();
-			a_out.stiffness2            = a_in["q"].asFloat();
-			a_out.springSlackOffset     = a_in["sl"].asFloat();
-			a_out.springSlackMag        = a_in["sm"].asFloat();
-			a_out.damping               = a_in["d"].asFloat();
-			a_out.maxOffsetSphereRadius = a_in["sr"].asFloat();
-			a_out.gravityBias           = a_in["b"].asFloat();
-			a_out.gravityCorrection     = a_in["c"].asFloat();
-			a_out.rotGravityCorrection  = a_in["rc"].asFloat();
-			a_out.resistance            = a_in["g"].asFloat();
-			a_out.mass                  = a_in["m"].asFloat();
-			a_out.maxVelocity           = a_in["v"].asFloat();
+			a_out.stiffness               = a_in["s"].asFloat();
+			a_out.stiffness2              = a_in["q"].asFloat();
+			a_out.springSlackOffset       = a_in["sl"].asFloat();
+			a_out.springSlackMag          = a_in["sm"].asFloat();
+			a_out.damping                 = a_in["d"].asFloat();
+			a_out.maxOffsetSphereRadius   = a_in["sr"].asFloat();
+			a_out.maxOffsetSphereFriction = a_in["sf"].asFloat();
+			a_out.gravityBias             = a_in["b"].asFloat();
+			a_out.gravityCorrection       = a_in["c"].asFloat();
+			a_out.rotGravityCorrection    = a_in["rc"].asFloat();
+			a_out.resistance              = a_in["g"].asFloat();
+			a_out.mass                    = a_in["m"].asFloat();
+			a_out.maxVelocity             = a_in["v"].asFloat();
 
 			return true;
 		}
@@ -74,6 +75,7 @@ namespace IED
 			a_out["sm"] = a_data.springSlackMag;
 			a_out["d"]  = a_data.damping;
 			a_out["sr"] = a_data.maxOffsetSphereRadius;
+			a_out["sf"] = a_data.maxOffsetSphereFriction;
 			a_out["b"]  = a_data.gravityBias;
 			a_out["c"]  = a_data.gravityCorrection;
 			a_out["rc"] = a_data.rotGravityCorrection;

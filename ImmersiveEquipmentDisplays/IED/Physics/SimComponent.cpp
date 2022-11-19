@@ -246,7 +246,9 @@ namespace IED
 
 		m_conf.maxOffsetN.setMin(g_XMNegativeZero.v);
 		m_conf.maxOffsetP.setMax(g_XMZero.v);
-		m_conf.maxOffsetSphereRadius = std::max(m_conf.maxOffsetSphereRadius, 0.0f);
+
+		m_conf.maxOffsetSphereRadius   = std::max(m_conf.maxOffsetSphereRadius, 0.0f);
+		m_conf.maxOffsetSphereFriction = std::clamp(m_conf.maxOffsetSphereFriction, 0.0f, 1.0f);
 
 		m_conf.gravityBias = std::clamp(m_conf.gravityBias, 0.0f, 20000.0f);
 		m_gravForce.setZ(m_conf.gravityBias * m_conf.mass);
@@ -340,10 +342,17 @@ namespace IED
 		auto       impulse = XMVectorGetX(XMVector3Dot(m_velocity.get128(), n));
 		const auto mag     = XMVectorGetX(XMVector3Length(depth.get128()));
 
-		if (mag > 0.01f)
+		const auto maglimit = a_timeStep.x() * 60.0f;
+
+		if (mag > maglimit)
 		{
 			impulse += (a_timeStep.x() * m_conf.maxOffsetParamsBox[3]) *
-			           std::clamp(mag - 0.01f, 0.0f, m_conf.maxOffsetParamsBox[1]);
+			           std::clamp(mag - maglimit, 0.0f, m_conf.maxOffsetParamsBox[1]);
+		}
+
+		if (impulse <= 0.0f)
+		{
+			return;
 		}
 
 		const auto J = (1.0f + m_conf.maxOffsetParamsBox[2]) * impulse;
@@ -372,14 +381,26 @@ namespace IED
 
 		const auto n = XMVector3Normalize((a_parentRot * diff).get128());
 
-		auto       impulse = XMVectorGetX(XMVector3Dot(m_velocity.get128(), n));
+		const XMVECTOR v     = m_velocity.get128();
+		const auto     vdotn = XMVector3Dot(v, n);
+
+		auto       impulse = XMVectorGetX(vdotn);
 		const auto mag     = difflen - radius;
 
-		if (mag > 0.01f)
+		const auto maglimit = a_timeStep.x() * 60.0f;
+
+		if (mag > maglimit)
 		{
-			impulse += (a_timeStep.x() * m_conf.maxOffsetParamsSphere[3]) *
-			           std::clamp(mag - 0.01f, 0.0f, m_conf.maxOffsetParamsSphere[1]);
+			impulse += a_timeStep.x() * m_conf.maxOffsetParamsSphere[3] *
+			           std::clamp(mag - maglimit, 0.0f, m_conf.maxOffsetParamsSphere[1]);
 		}
+
+		if (impulse <= 0.0f)
+		{
+			return;
+		}
+
+		m_velocity -= (v - n * vdotn) * m_conf.maxOffsetSphereFriction;
 
 		const auto J = (1.0f + m_conf.maxOffsetParamsSphere[2]) * impulse;
 

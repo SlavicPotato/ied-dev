@@ -33,6 +33,7 @@ namespace IED
 			BoxMax                 = 7422,
 			SphereConstraint       = 7423,
 			BoxConstraint          = 7424,
+			SphereFriction         = 7425,
 
 		};
 	}

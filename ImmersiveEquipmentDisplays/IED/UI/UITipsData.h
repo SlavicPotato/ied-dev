@@ -103,6 +103,7 @@ namespace IED
 			PVStiffness                         = 1094,
 			EquipmentPhysics                    = 1095,
 			PhysicsOffWarning                   = 1096,
+			PVSphereFriction                    = 1097,
 		};
 
 	}

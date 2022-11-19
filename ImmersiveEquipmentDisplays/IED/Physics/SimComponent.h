@@ -95,6 +95,11 @@ namespace IED
 		{
 			return m_object;
 		}
+		
+		[[nodiscard]] inline constexpr auto& GetVelocity() const noexcept
+		{
+			return m_velocity;
+		}
 
 	private:
 		void ProcessConfig() noexcept;
