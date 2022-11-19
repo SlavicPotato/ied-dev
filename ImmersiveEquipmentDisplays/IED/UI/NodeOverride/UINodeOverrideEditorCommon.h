@@ -182,8 +182,13 @@ namespace IED
 			{
 				conf.placementData.insert_or_assign(e.first, e.second);
 			}
+			
+			for (auto& e : pdata.physicsData)
+			{
+				conf.physicsData.insert_or_assign(e.first, e.second);
+			}
 
-			conf.flags = pdata.flags;
+			conf.flags.set(pdata.flags);
 			conf.flags.clear(Data::NodeOverrideHolderFlags::RandomGenerated);
 		}
 
