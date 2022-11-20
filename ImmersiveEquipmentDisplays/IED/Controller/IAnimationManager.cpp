@@ -327,7 +327,7 @@ namespace IED
 					      a_state.get_placement(AnimationWeaponSlot::DaggerLeft) == WeaponPlacementID::OnBack)) ||
 					    (leftID == AnimationWeaponType::Axe &&
 					     a_state.get_placement(AnimationWeaponSlot::AxeLeft) == WeaponPlacementID::OnBack) ||
-					    is_shield(objLeft))
+					    (is_shield(objLeft) && shield_on_back_enabled(a_actor, this)))
 					{
 						animVar = 2;
 					}
@@ -398,7 +398,7 @@ namespace IED
 					{
 						animVar = 0;
 					}
-					else if (is_shield(objLeft))
+					else if (is_shield(objLeft) && shield_on_back_enabled(a_actor, this))
 					{
 						animVar = 3;
 					}
@@ -429,7 +429,7 @@ namespace IED
 				{
 					animVar = 0;
 				}
-				else if (is_shield(objLeft))
+				else if (is_shield(objLeft) && shield_on_back_enabled(a_actor, this))
 				{
 					animVar = 1;
 				}
