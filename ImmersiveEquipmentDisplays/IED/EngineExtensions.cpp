@@ -526,21 +526,9 @@ namespace IED
 			{
 				if (auto actor = ref->As<Actor>())
 				{
-					if (ITaskPool::IsRunningOnCurrentThread())
-					{
-						m_Instance.FailsafeCleanupAndEval(actor);
-					}
-					else
-					{
-						m_Instance.m_controller->RemoveActor(
-							actor,
-							a_biped->handle,
-							ControllerUpdateFlags::kNone);
-
-						m_Instance.m_controller->QueueEvaluate(
-							actor,
-							ControllerUpdateFlags::kImmediateTransformUpdate);
-					}
+					m_Instance.m_controller->QueueReset(
+						actor->formID,
+						ControllerUpdateFlags::kImmediateTransformUpdate);
 				}
 			}
 		}
@@ -579,7 +567,7 @@ namespace IED
 			else
 			{
 				m_Instance.m_controller->RemoveActor(
-					a_actor,
+					a_actor->formID,
 					ControllerUpdateFlags::kNone);
 
 				eval = true;
@@ -686,9 +674,9 @@ namespace IED
 		Game::InventoryChanges* a_ic,
 		Game::InitWornVisitor&  a_visitor)
 	{
-		auto formid = a_visitor.actor ?
-		                  a_visitor.actor->formID :
-                          0;
+		const auto formid = a_visitor.actor ?
+		                        a_visitor.actor->formID :
+                                Game::FormID{};
 
 		m_Instance.m_ArmorChange_o(a_ic, a_visitor);
 
@@ -702,7 +690,7 @@ namespace IED
 	{
 		if (auto actor = a_refr->As<Actor>())
 		{
-			m_Instance.m_controller->RemoveActor(actor, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->RemoveActor(actor->formID, ControllerUpdateFlags::kNone);
 		}
 
 		return m_Instance.m_garbageCollectorReference_o(a_refr);
@@ -917,42 +905,9 @@ namespace IED
 			AttachResultFlags::kNone
 		};
 
-		if (a_disableHavok)
-		{
-			::Util::Node::Traverse(
-				a_object,
-				[&](NiAVObject* a_object) {
-					a_object->collisionObject.reset();
-					return ::Util::Node::VisitorControl::kContinue;
-				});
-
-			a_dropOnDeath = false;
-		}
-
 		if (auto bsxFlags = GetBSXFlags(a_object))
 		{
-			stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
-
-			if (a_disableHavok &&
-			    flags.test(BSXFlags::kHavok))
-			{
-				// recreate since this isn't cloned
-
-				NiPointer newbsx = BSXFlags::Create(
-					flags.value & ~BSXFlags::Flag::kHavok);
-
-				if (auto index = a_object->GetIndexOf(newbsx->m_pcName); index >= 0)
-				{
-					if (auto& entry = a_object->m_extraData[index]; entry == bsxFlags)
-					{
-						newbsx->IncRef();
-						entry->DecRef();
-						entry = newbsx;
-
-						flags = newbsx->m_data;
-					}
-				}
-			}
+			const stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
 			if (flags.test(BSXFlags::Flag::kAddon))
 			{
@@ -961,6 +916,11 @@ namespace IED
 		}
 
 		AttachAddonNodes(a_object);
+
+		if (auto fadeNode = a_object->AsFadeNode())
+		{
+			fadeNode->unk153 = (fadeNode->unk153 & 0xF0) | 0x7;
+		}
 
 		SetRootOnShaderProperties(a_object, a_root);
 
@@ -1095,6 +1055,11 @@ namespace IED
 			}
 		}
 
+		if (a_disableHavok)  // maybe just force this for ammo
+		{
+			StripCollision(a_object, true, true);
+		}
+
 		fUnk1CD130(a_object, collisionFilterInfo);
 
 		QueueAttachHavok(
@@ -1123,6 +1088,61 @@ namespace IED
 		a_actor->UpdateAlpha();
 
 		return result;
+	}
+
+	bool EngineExtensions::CreateWeaponBehaviorGraph(
+		NiAVObject*                               a_object,
+		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+		std::function<bool(const char*)>          a_filter)
+	{
+		auto sh = BSStringHolder::GetSingleton();
+
+		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
+		if (!bged)
+		{
+			return false;
+		}
+
+		if (bged->controlsBaseSkeleton)
+		{
+			return false;
+		}
+
+		if (bged->behaviorGraphFile.empty())
+		{
+			return false;
+		}
+
+		if (!a_filter(bged->behaviorGraphFile.c_str()))
+		{
+			return false;
+		}
+
+		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
+
+		if (!LoadWeaponAnimationBehahaviorGraph(
+				*result,
+				bged->behaviorGraphFile.c_str()))
+		{
+			return false;
+		}
+
+		if (!BindAnimationObject(*result, a_object))
+		{
+			gLog.Warning(
+				"%s: binding animation object failed [%p | %s]",
+				__FUNCTION__,
+				a_object,
+				a_object->m_name.c_str());
+
+			CleanupWeaponBehaviorGraph(result);
+
+			return false;
+		}
+
+		a_out = std::move(result);
+
+		return true;
 	}
 
 	void EngineExtensions::CleanupWeaponBehaviorGraph(

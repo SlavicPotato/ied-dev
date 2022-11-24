@@ -117,6 +117,11 @@ namespace IED
 			RE::IAnimationGraphManagerHolder* a_holder,
 			const BSAnimationUpdateData&      a_data);
 
+		typedef bool (*stripCollision_t)(
+			NiAVObject* a_object,
+			bool        a_recursive,
+			bool        a_ignoreHavokFlag);
+
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -146,11 +151,10 @@ namespace IED
 			bool      a_keepTorchFlame,
 			bool      a_disableHavok);
 
-		template <class Tf>
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
 			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
-			Tf                                        a_filter);
+			std::function<bool(const char*)>          a_filter);
 
 		static void CleanupWeaponBehaviorGraph(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
@@ -209,6 +213,7 @@ namespace IED
 		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
+		inline static const auto StripCollision            = IAL::Address<stripCollision_t>(76037, 77870);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
@@ -326,53 +331,5 @@ namespace IED
 
 		static EngineExtensions m_Instance;
 	};
-
-	template <class Tf>
-	bool EngineExtensions::CreateWeaponBehaviorGraph(
-		NiAVObject*                               a_object,
-		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
-		Tf                                        a_filter)
-	{
-		auto sh = BSStringHolder::GetSingleton();
-
-		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
-		if (!bged)
-		{
-			return false;
-		}
-
-		if (bged->controlsBaseSkeleton)
-		{
-			return false;
-		}
-
-		if (bged->behaviorGraphFile.empty())
-		{
-			return false;
-		}
-
-		if (!a_filter(bged->behaviorGraphFile.c_str()))
-		{
-			return false;
-		}
-
-		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
-
-		if (!LoadWeaponAnimationBehahaviorGraph(
-				*result,
-				bged->behaviorGraphFile.c_str()))
-		{
-			return false;
-		}
-
-		a_out = std::move(result);
-
-		if (!BindAnimationObject(*a_out, a_object))
-		{
-			return false;
-		}
-
-		return true;
-	}
 
 }
