@@ -30,14 +30,14 @@ namespace IED
 	public:
 		void Add(RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_data.emplace_back(a_ptr);
 		}
 
 		void Remove(RE::WeaponAnimationGraphManagerHolderPtr& a_ptr)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			auto it = std::find(m_data.begin(), m_data.end(), a_ptr);
 			if (it != m_data.end())
@@ -48,7 +48,7 @@ namespace IED
 
 		void Notify(const BSFixedString& a_event) const
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			for (auto& e : m_data)
 			{
@@ -62,7 +62,7 @@ namespace IED
 
 		void Clear() noexcept
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_data.clear();
 		}
@@ -78,7 +78,7 @@ namespace IED
 		}
 
 	private:
-		mutable stl::critical_section                       m_lock;
+		mutable std::recursive_mutex                       m_lock;
 		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
 	};*/
 

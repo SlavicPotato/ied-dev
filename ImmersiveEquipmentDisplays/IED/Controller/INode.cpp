@@ -42,6 +42,38 @@ namespace IED
 	}
 
 	static void UpdateNodeDataImpl(
+		NiAVObject*                    a_node,
+		const Data::configTransform_t& a_trnsf)
+	{
+		if (a_trnsf.scale)
+		{
+			a_node->m_localTransform.scale = *a_trnsf.scale;
+		}
+		else
+		{
+			a_node->m_localTransform.scale = 1.0f;
+		}
+
+		if (a_trnsf.position)
+		{
+			a_node->m_localTransform.pos = *a_trnsf.position;
+		}
+		else
+		{
+			a_node->m_localTransform.pos = {};
+		}
+
+		if (a_trnsf.rotationMatrix)
+		{
+			a_node->m_localTransform.rot = *a_trnsf.rotationMatrix;
+		}
+		else
+		{
+			a_node->m_localTransform.rot.Identity();
+		}
+	}
+
+	static void UpdateNodeDataImpl(
 		NiAVObject*                   a_node,
 		NiNode*                       a_refNode,
 		const Data::cacheTransform_t& a_trnsf)
@@ -164,7 +196,7 @@ namespace IED
 		const Data::configBaseValues_t& a_entry,
 		const Data::NodeDescriptor&     a_node,
 		NiNode*                         a_root,
-		nodesTarget_t&                  a_out)
+		targetNodes_t&                  a_out)
 	{
 		if (!a_node)
 		{
@@ -183,11 +215,11 @@ namespace IED
 			return false;
 		}
 
-		auto targetNodeName(GetTargetNodeName(
+		auto targetNodeName = GetTargetNodeName(
 			a_node,
-			atmReference));
+			atmReference);
 
-		auto node = FindChildNode(nodes.parent, targetNodeName);
+		auto node = FindChildNode(nodes.parent.get(), targetNodeName);
 		if (!node)
 		{
 			node = CreateAttachmentNode(std::move(targetNodeName));
@@ -196,7 +228,7 @@ namespace IED
 		}
 
 		a_out.rootNode = node;
-		a_out.ref      = nodes.ref;
+		a_out.ref      = std::move(nodes.ref);
 
 		return true;
 	}
@@ -223,7 +255,7 @@ namespace IED
 			return false;
 		}
 
-		auto targetNodeName(GetTargetNodeName(a_node, a_atmReference));
+		auto targetNodeName = GetTargetNodeName(a_node, a_atmReference);
 
 		auto targetNode = FindChildNode(nodes.parent, targetNodeName);
 		if (!targetNode)
@@ -239,7 +271,7 @@ namespace IED
 		    a_object->m_parent != targetNode)
 		{
 			targetNode->AttachChild(a_object, true);
-			UpdateDownwardPass(a_object);
+			//UpdateDownwardPass(a_object);
 		}
 
 		return true;
@@ -260,6 +292,16 @@ namespace IED
 			UpdateNodeDataImpl(a_object, a_refNode, a_trnsf);
 		}
 		else
+		{
+			UpdateNodeDataImpl(a_object, a_trnsf);
+		}
+	}
+
+	void INode::UpdateObjectTransform(
+		const Data::configTransform_t& a_trnsf,
+		NiAVObject*                    a_object)
+	{
+		if (a_object)
 		{
 			UpdateNodeDataImpl(a_object, a_trnsf);
 		}
@@ -294,6 +336,13 @@ namespace IED
 		stl::snprintf(a_out, "OBJECT WEAPON [%.8X]", a_weapon.get());
 	}
 
+	void INode::GetLightNodeName(
+		Game::FormID a_formid,
+		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+	{
+		stl::snprintf(a_out, "OBJECT LIGHT [%.8X]", a_formid.get());
+	}
+	
 	void INode::GetMiscNodeName(
 		Game::FormID a_formid,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])

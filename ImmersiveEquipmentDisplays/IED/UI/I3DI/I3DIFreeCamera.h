@@ -22,10 +22,10 @@ namespace IED
 
 			struct FreeCamSettings
 			{
-				DirectX::XMVECTOR translateDamping{ _mm_set_ps1(8.0f) };
-				DirectX::XMVECTOR translateAccel{ _mm_set_ps1(0.01f) };
-				DirectX::XMVECTOR translateMaxVelocity{ _mm_set_ps1(0.2f) };
-				DirectX::XMVECTOR translateSpeed{ _mm_set_ps1(100000.0f) };
+				DirectX::XMVECTOR translateDamping{ 8.0f, 8.0f, 8.0f, 8.0f };
+				DirectX::XMVECTOR translateAccel{ 0.01f, 0.01f, 0.01f, 0.01f };
+				DirectX::XMVECTOR translateMaxVelocity{ 0.2f, 0.2f, 0.2f, 0.2f };
+				DirectX::XMVECTOR translateSpeed{ 100000.0f, 100000.0f, 100000.0f, 100000.0f };
 
 				float lookSpeed{ 0.0025f };
 				bool  enableTranslation{ true };

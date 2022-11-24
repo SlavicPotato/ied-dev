@@ -49,9 +49,9 @@ namespace IED
 		{
 			ImGui::Text("Target: %s [%s]", m_nodeInfo.desc, m_name.c_str());
 
-			if (auto& dragObject = a_data.objectController.GetDragObject())
+			if (auto& dragContext = a_data.objectController.GetDragContext())
 			{
-				if (auto weaponNode = dragObject->AsWeaponNode())
+				if (auto weaponNode = dragContext->object->AsWeaponNode())
 				{
 					ImGui::Spacing();
 					ImGui::Separator();
@@ -146,9 +146,9 @@ namespace IED
 
 		bool I3DIMOVNode::ShouldProcess(I3DICommonData& a_data)
 		{
-			if (auto& dragObject = a_data.objectController.GetDragObject())
+			if (auto& dragContext = a_data.objectController.GetDragContext())
 			{
-				return static_cast<bool>(dragObject->AsWeaponNode());
+				return static_cast<bool>(dragContext->object->AsWeaponNode());
 			}
 
 			return false;

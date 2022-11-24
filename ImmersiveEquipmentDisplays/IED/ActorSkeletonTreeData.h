@@ -42,7 +42,7 @@ namespace IED
 		bool                        succeeded{ false };
 		bool                        isLoadedData{ true };
 		long long                   lastUpdate{ 0 };
-		stl::critical_section       lock;
+		std::recursive_mutex        lock;
 
 		SKMP_REDEFINE_NEW_PREF();
 	};

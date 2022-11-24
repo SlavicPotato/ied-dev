@@ -205,7 +205,7 @@ namespace IED
 			BSFixedString cme;
 		};
 
-		stl::container_init_wrapper<std::list<SheatheNodeEntry>> m_sheathNodes;
+		stl::container_init_wrapper<std::forward_list<SheatheNodeEntry>> m_sheathNodes;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};

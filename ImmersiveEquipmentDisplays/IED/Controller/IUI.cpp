@@ -46,7 +46,7 @@ namespace IED
 
 	auto IUI::UIToggle() -> UIOpenResult
 	{
-		stl::scoped_lock lock(UIGetLock());
+		const std::lock_guard lock(UIGetLock());
 
 		if (!m_task || !m_safeToOpenUI)
 		{
@@ -67,7 +67,7 @@ namespace IED
 
 	auto IUI::UIOpen() -> UIOpenResult
 	{
-		stl::scoped_lock lock(UIGetLock());
+		const std::lock_guard lock(UIGetLock());
 
 		return UIOpenImpl();
 	}
@@ -95,7 +95,7 @@ namespace IED
 
 	bool IUIRenderTask::Run()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -122,7 +122,7 @@ namespace IED
 
 	void IUIRenderTask::PrepareGameData()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -136,7 +136,7 @@ namespace IED
 
 	void IUIRenderTask::Render()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -151,7 +151,7 @@ namespace IED
 	void IUIRenderTask::OnMouseMove(
 		const Handlers::MouseMoveEvent& a_evn)
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -165,7 +165,7 @@ namespace IED
 
 	void IUIRenderTask::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -179,7 +179,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStop()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -194,7 +194,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStart()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -230,7 +230,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStart()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -247,7 +247,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStop()
 	{
-		stl::scoped_lock lock(m_owner.UIGetLock());
+		const std::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{

@@ -19,7 +19,6 @@ namespace IED
 			public I3DIDraggable
 		{
 		public:
-			inline static constexpr std::uint32_t DRAGGABLE_TYPE = 1;
 
 			I3DIWeaponNode(
 				ID3D11Device*                              a_device,
@@ -65,9 +64,9 @@ namespace IED
 			virtual I3DIBoundObject* GetParentObject() const override;
 
 		private:
-			virtual bool OnDragBegin() override;
+			virtual bool OnDragBegin(I3DICommonData& a_data, ImGuiMouseButton a_button) override;
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) override;
-			virtual void OnDragPositionUpdate(I3DICommonData& a_data) override;
+			virtual void OnDragUpdate(I3DICommonData& a_data) override;
 
 			virtual void DrawTooltip(I3DICommonData& a_data) override;
 

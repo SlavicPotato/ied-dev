@@ -18,12 +18,15 @@ namespace IED
 		const NiTransform&                     a_initialTransform,
 		const Data::configNodePhysicsValues_t& a_conf) noexcept :
 		m_conf(a_conf),
+		m_tag(ILUID{}()),
 		m_initialTransform(Bullet::btTransformEx(a_initialTransform)),
 		m_object(a_object)
 	{
 		m_objectLocalTransform = m_initialTransform;
 
-		ReadTransforms();
+		m_parentWorldTransform = GetCurrentParentWorldTransform();
+		m_oldParentPos         = m_parentWorldTransform.getOrigin();
+
 		m_oldWorldPos = CalculateTarget();
 
 		ProcessConfig();
@@ -36,9 +39,14 @@ namespace IED
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 	}
 
-	void PHYSimComponent::ReadTransforms() noexcept
+	void PHYSimComponent::ReadTransforms(float a_step) noexcept
 	{
 		m_parentWorldTransform = GetCurrentParentWorldTransform();
+
+		const auto pos = m_parentWorldTransform.getOrigin();
+
+		m_parentVelocity = (pos - m_oldParentPos) /= a_step;
+		m_oldParentPos   = pos;
 	}
 
 	void PHYSimComponent::WriteTransforms() noexcept
@@ -46,7 +54,7 @@ namespace IED
 		m_objectLocalTransform.writeNiTransform(m_object->m_localTransform);
 	}
 
-	void PHYSimComponent::Reset() noexcept
+	SKMP_NOINLINE void PHYSimComponent::Reset() noexcept
 	{
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 		m_objectLocalTransform = m_initialTransform;
@@ -54,11 +62,14 @@ namespace IED
 		/*NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
 		m_object->UpdateWorldData(std::addressof(ctx));*/
 
-		ReadTransforms();
+		m_parentWorldTransform = GetCurrentParentWorldTransform();
+		m_oldParentPos         = m_parentWorldTransform.getOrigin();
+
 		m_oldWorldPos = CalculateTarget();
 
 		m_virtld.setZero();
 		m_velocity.setZero();
+		m_parentVelocity.setZero();
 		m_rotParams.Zero();
 	}
 
@@ -101,26 +112,36 @@ namespace IED
 
 		force -= m_gravForce;
 
+		const auto& parentRot = m_parentWorldTransform.getBasis();
+
 		const auto res = m_resistanceOn ? (1.0f - 1.0f / (m_velocity.length() * 0.0075f + 1.0f)) * m_conf.resistance + 1.0f : 1.0f;
 
 		m_velocity -= (m_velocity * a_step) *= (m_conf.damping * res);
 		m_velocity += (force / m_mass) *= a_step;
 
-		LimitVelocity();
+		if (m_applyForce)
+		{
+			const auto d = m_applyForce->first - m_oldWorldPos.get128();
 
-		const auto& parentRot = m_parentWorldTransform.getBasis();
+			m_velocity -= (m_velocity * a_step) *= std::max(20.0f - m_conf.damping * res, 0.0f);
+			m_velocity += (d * a_step.get128()) * m_applyForce->second;
+
+			m_applyForce.reset();
+		}
+
+		LimitVelocity();
 
 		const auto invRot = parentRot.transpose();
 		m_virtld          = invRot * ((m_oldWorldPos + (m_velocity * a_step)) -= target);
 
 		if ((m_conf.valueFlags & Data::ConfigNodePhysicsFlags::kEnableSphereConstraint) == Data::ConfigNodePhysicsFlags::kEnableSphereConstraint)
 		{
-			ConstrainMotionSphere(parentRot, invRot, target, a_step);
+			ConstrainMotionSphere(parentRot, invRot, target.get128(), a_step.get128());
 		}
 
 		if ((m_conf.valueFlags & Data::ConfigNodePhysicsFlags::kEnableBoxConstraint) == Data::ConfigNodePhysicsFlags::kEnableBoxConstraint)
 		{
-			ConstrainMotionBox(parentRot, invRot, target, a_step);
+			ConstrainMotionBox(parentRot, invRot, target.get128(), a_step.get128());
 		}
 
 		m_oldWorldPos = (parentRot * m_virtld) += target;
@@ -131,6 +152,8 @@ namespace IED
 
 		locOrigin = m_initialTransform.getOrigin() + ld;
 
+#if !defined(IED_PERF_BUILD)
+
 		// paranoia
 		if (XMVector3IsInfinite(locOrigin.get128()) ||
 		    XMVector3IsNaN(locOrigin.get128()))
@@ -138,6 +161,8 @@ namespace IED
 			Reset();
 			return;
 		}
+
+#endif
 
 		m_rotParams.m_axis.setX((m_virtld.z() + m_conf.rotGravityCorrection) * m_conf.rotational[2]);
 		m_rotParams.m_axis.setY(m_virtld.x() * m_conf.rotational[0]);
@@ -177,6 +202,7 @@ namespace IED
 		const Data::configNodePhysicsValues_t& a_conf) noexcept
 	{
 		m_conf = a_conf;
+		m_tag  = a_conf;
 		ProcessConfig();
 	}
 
@@ -246,6 +272,7 @@ namespace IED
 
 		m_conf.maxOffsetN.setMin(g_XMNegativeZero.v);
 		m_conf.maxOffsetP.setMax(g_XMZero.v);
+		m_conf.maxOffsetBoxFriction = std::clamp(m_conf.maxOffsetBoxFriction, 0.0f, 1.0f);
 
 		m_conf.maxOffsetSphereRadius   = std::max(m_conf.maxOffsetSphereRadius, 0.0f);
 		m_conf.maxOffsetSphereFriction = std::clamp(m_conf.maxOffsetSphereFriction, 0.0f, 1.0f);
@@ -286,8 +313,8 @@ namespace IED
 	void PHYSimComponent::ConstrainMotionBox(
 		const btMatrix3x3& a_parentRot,
 		const btMatrix3x3& a_invRot,
-		const btVector3&   a_target,
-		const btVector3&   a_timeStep) noexcept
+		const XMVECTOR     a_target,
+		const XMVECTOR     a_step) noexcept
 	{
 		btVector3 depth{ g_XMZero.v };
 
@@ -339,15 +366,18 @@ namespace IED
 
 		const auto n = XMVector3Normalize((a_parentRot * depth).get128());
 
-		auto       impulse = XMVectorGetX(XMVector3Dot(m_velocity.get128(), n));
+		const XMVECTOR deltav = (m_velocity - m_parentVelocity).get128();
+		const auto     vdotn  = XMVector3Dot(deltav, n);
+
+		auto       impulse = XMVectorGetX(vdotn);
 		const auto mag     = XMVectorGetX(XMVector3Length(depth.get128()));
 
-		const auto maglimit = a_timeStep.x() * 60.0f;
+		const auto magThreshold = XMVectorGetX(a_step) * 60.0f;
 
-		if (mag > maglimit)
+		if (mag > magThreshold)
 		{
-			impulse += (a_timeStep.x() * m_conf.maxOffsetParamsBox[3]) *
-			           std::clamp(mag - maglimit, 0.0f, m_conf.maxOffsetParamsBox[1]);
+			impulse += (XMVectorGetX(a_step) * m_conf.maxOffsetParamsBox[3]) *
+			           std::clamp(mag - magThreshold, 0.0f, m_conf.maxOffsetParamsBox[1]);
 		}
 
 		if (impulse <= 0.0f)
@@ -355,18 +385,20 @@ namespace IED
 			return;
 		}
 
+		m_velocity -= (deltav - n * vdotn) * m_conf.maxOffsetBoxFriction;
+
 		const auto J = (1.0f + m_conf.maxOffsetParamsBox[2]) * impulse;
 
 		m_velocity -= n * (J * m_conf.maxOffsetParamsBox[0]);
 
-		m_virtld = a_invRot * ((m_oldWorldPos + (m_velocity * a_timeStep)) -= a_target);
+		m_virtld = a_invRot * ((m_oldWorldPos + (m_velocity.get128() * a_step)) -= a_target);
 	}
 
 	void PHYSimComponent::ConstrainMotionSphere(
 		const btMatrix3x3& a_parentRot,
 		const btMatrix3x3& a_invRot,
-		const btVector3&   a_target,
-		const btVector3&   a_timeStep) noexcept
+		const XMVECTOR     a_target,
+		const XMVECTOR     a_step) noexcept
 	{
 		const auto diff = m_virtld - m_conf.maxOffsetSphereOffset;
 
@@ -381,18 +413,18 @@ namespace IED
 
 		const auto n = XMVector3Normalize((a_parentRot * diff).get128());
 
-		const XMVECTOR v     = m_velocity.get128();
-		const auto     vdotn = XMVector3Dot(v, n);
+		const XMVECTOR deltav = (m_velocity - m_parentVelocity).get128();
+		const auto     vdotn  = XMVector3Dot(deltav, n);
 
 		auto       impulse = XMVectorGetX(vdotn);
 		const auto mag     = difflen - radius;
 
-		const auto maglimit = a_timeStep.x() * 60.0f;
+		const auto magThreshold = XMVectorGetX(a_step) * 60.0f;
 
-		if (mag > maglimit)
+		if (mag > magThreshold)
 		{
-			impulse += a_timeStep.x() * m_conf.maxOffsetParamsSphere[3] *
-			           std::clamp(mag - maglimit, 0.0f, m_conf.maxOffsetParamsSphere[1]);
+			impulse += XMVectorGetX(a_step) * m_conf.maxOffsetParamsSphere[3] *
+			           std::clamp(mag - magThreshold, 0.0f, m_conf.maxOffsetParamsSphere[1]);
 		}
 
 		if (impulse <= 0.0f)
@@ -400,13 +432,13 @@ namespace IED
 			return;
 		}
 
-		m_velocity -= (v - n * vdotn) * m_conf.maxOffsetSphereFriction;
+		m_velocity -= (deltav - n * vdotn) * m_conf.maxOffsetSphereFriction;
 
 		const auto J = (1.0f + m_conf.maxOffsetParamsSphere[2]) * impulse;
 
 		m_velocity -= n * (J * m_conf.maxOffsetParamsSphere[0]);
 
-		m_virtld = a_invRot * ((m_oldWorldPos + (m_velocity * a_timeStep)) -= a_target);
+		m_virtld = a_invRot * ((m_oldWorldPos + (m_velocity.get128() * a_step)) -= a_target);
 	}
 
 	float PHYSimComponent::m_maxDiff2{

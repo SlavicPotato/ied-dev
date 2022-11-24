@@ -57,6 +57,7 @@ namespace IED
 			float damping{ 0.95f };
 			float maxOffsetSphereRadius{ 20.0f };
 			float maxOffsetSphereFriction{ 0.025f };
+			float maxOffsetBoxFriction{ 0.025f };
 			float gravityBias{ 1200.0f };
 			float gravityCorrection{ 0.0f };
 			float rotGravityCorrection{ 0.0f };
@@ -105,6 +106,7 @@ namespace IED
 				a_ar& damping;
 				a_ar& maxOffsetSphereRadius;
 				a_ar& maxOffsetSphereFriction;
+				a_ar& maxOffsetBoxFriction;
 				a_ar& gravityBias;
 				a_ar& gravityCorrection;
 				a_ar& rotGravityCorrection;
@@ -136,6 +138,7 @@ namespace IED
 				a_ar& damping;
 				a_ar& maxOffsetSphereRadius;
 				a_ar& maxOffsetSphereFriction;
+				a_ar& maxOffsetBoxFriction;
 				a_ar& gravityBias;
 				a_ar& gravityCorrection;
 				a_ar& rotGravityCorrection;

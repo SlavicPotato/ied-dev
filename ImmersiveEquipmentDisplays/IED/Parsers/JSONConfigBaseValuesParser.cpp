@@ -20,11 +20,19 @@ namespace IED
 			a_out.flags = static_cast<Data::BaseFlags>(
 				a_in.get("flags", stl::underlying(Data::configBaseValues_t::DEFAULT_FLAGS)).asUInt());
 
+			Parser<Data::configTransform_t> xparser(m_state);
+
 			if (auto& data = a_in["xfrm"])
 			{
-				Parser<Data::configTransform_t> parser(m_state);
-
-				if (!parser.Parse(data, a_out, a_version))
+				if (!xparser.Parse(data, a_out, a_version))
+				{
+					return false;
+				}
+			}
+			
+			if (auto& data = a_in["gxfrm"])
+			{
+				if (!xparser.Parse(data, a_out.geometryTransform, a_version))
 				{
 					return false;
 				}
@@ -85,11 +93,16 @@ namespace IED
 		{
 			a_out["flags"] = a_data.flags.underlying();
 
+			Parser<Data::configTransform_t> xparser(m_state);
+
 			if (!a_data.empty())
 			{
-				Parser<Data::configTransform_t> parser(m_state);
-
-				parser.Create(a_data, a_out["xfrm"]);
+				xparser.Create(a_data, a_out["xfrm"]);
+			}
+			
+			if (!a_data.geometryTransform.empty())
+			{
+				xparser.Create(a_data.geometryTransform, a_out["gxfrm"]);
 			}
 
 			if (a_data.targetNode)

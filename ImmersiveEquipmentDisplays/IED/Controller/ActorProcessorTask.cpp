@@ -297,7 +297,7 @@ namespace IED
 
 	void ActorProcessorTask::Run()
 	{
-		stl::scoped_lock lock(m_controller.m_lock);
+		const std::lock_guard lock(m_controller.m_lock);
 
 		if (!m_run)
 		{

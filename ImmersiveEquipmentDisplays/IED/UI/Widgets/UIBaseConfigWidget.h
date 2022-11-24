@@ -1469,6 +1469,53 @@ namespace IED
 
 				ImGui::Spacing();
 
+				UICommon::PushDisabled(a_disabled);
+
+				DrawTransformTree(
+					a_data.geometryTransform,
+					false,
+					[&](TransformUpdateValue a_v) {
+						switch (a_v)
+						{
+						case TransformUpdateValue::Position:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.position),
+								a_data.geometryTransform.position);
+							break;
+						case TransformUpdateValue::Rotation:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.rotation),
+								a_data.geometryTransform.rotation);
+							break;
+						case TransformUpdateValue::Scale:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.scale),
+								a_data.geometryTransform.scale);
+							break;
+						case TransformUpdateValue::All:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform),
+								a_data.geometryTransform);
+							break;
+						}
+
+						OnBaseConfigChange(
+							a_handle,
+							a_params,
+							PostChangeAction::Evaluate);
+					},
+					[] {},
+					static_cast<Localization::StringID>(UIBaseConfigString::GeometryTransform),
+					ImGuiTreeNodeFlags_None);
+
+				UICommon::PopDisabled(a_disabled);
+
+				ImGui::Spacing();
+
 				ImGui::TreePop();
 			}
 		}

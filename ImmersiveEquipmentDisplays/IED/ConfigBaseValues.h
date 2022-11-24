@@ -61,6 +61,7 @@ namespace IED
 				DataVersion3 = 3,
 				DataVersion4 = 4,
 				DataVersion5 = 5,
+				DataVersion6 = 6,
 			};
 
 			inline static constexpr auto DEFAULT_FLAGS =
@@ -75,6 +76,7 @@ namespace IED
 			stl::fixed_string                                    animationEvent;
 			configCachedForm_t                                   forceModel;
 			configCopyableUniquePtr_t<configNodePhysicsValues_t> physicsValues;
+			configTransform_t                                    geometryTransform;
 
 		protected:
 			template <class Archive>
@@ -87,6 +89,7 @@ namespace IED
 				a_ar& animationEvent;
 				a_ar& forceModel;
 				a_ar& physicsValues.data;
+				a_ar& geometryTransform;
 			}
 
 			template <class Archive>
@@ -113,6 +116,11 @@ namespace IED
 							if (a_version >= DataVersion5)
 							{
 								a_ar& physicsValues.data;
+
+								if (a_version >= DataVersion6)
+								{
+									a_ar& geometryTransform;
+								}
 							}
 						}
 					}
@@ -127,4 +135,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion5);
+	IED::Data::configBaseValues_t::Serialization::DataVersion6);

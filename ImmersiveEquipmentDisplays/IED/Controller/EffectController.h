@@ -18,6 +18,7 @@ namespace IED
 			float timeTick;
 			float timeStep;
 			float maxTime;
+			float timeAccum;
 		};
 
 	public:

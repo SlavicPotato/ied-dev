@@ -29,7 +29,7 @@ namespace IED
 				a_device,
 				BoundingShape::kOrientedBox,
 				a_data),
-			I3DIDraggable(DRAGGABLE_TYPE),
+			I3DIDraggable(I3DIDraggableType::Dynamic),
 			m_nodeName(a_nodeName),
 			m_nodeInfo(a_nodeInfo),
 			m_actorContext(a_actorContext)
@@ -47,14 +47,21 @@ namespace IED
 			return m_actorContext.GetActorObject().get();
 		}
 
-		bool I3DIWeaponNode::OnDragBegin()
+		bool I3DIWeaponNode::OnDragBegin(I3DICommonData& a_data, ImGuiMouseButton a_button)
 		{
-			m_oldDiffuse.emplace(m_diffuseColor);
-			SetDiffuseColor({ 1.0f, 0, 0, 1.0f });
+			if (a_button == ImGuiMouseButton_Left)
+			{
+				m_oldDiffuse.emplace(m_diffuseColor);
+				SetDiffuseColor({ 1.0f, 0, 0, 1.0f });
 
-			EnableDepth(false);
+				EnableDepth(false);
 
-			return true;
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		void I3DIWeaponNode::OnDragEnd(
@@ -70,7 +77,7 @@ namespace IED
 			EnableDepth(true);
 		}
 
-		void I3DIWeaponNode::OnDragPositionUpdate(I3DICommonData& a_data)
+		void I3DIWeaponNode::OnDragUpdate(I3DICommonData& a_data)
 		{
 			/*PerfTimer pt;
 			pt.Start();*/

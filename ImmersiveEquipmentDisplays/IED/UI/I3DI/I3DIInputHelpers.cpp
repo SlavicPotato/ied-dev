@@ -18,28 +18,28 @@ namespace IED
 				       ImGui::GetIO().WantCaptureMouse;
 			}
 
-			bool IsMouseClicked() noexcept
+			bool IsMouseClicked(ImGuiMouseButton a_button) noexcept
 			{
 				const auto& io = ImGui::GetIO();
 				return !io.WantCaptureMouse &&
-				       io.MouseClicked[ImGuiMouseButton_Left] &&
-				       !io.MouseDownOwned[ImGuiMouseButton_Left];
+				       io.MouseClicked[a_button] &&
+				       !io.MouseDownOwned[a_button];
 			}
 
-			bool IsMouseReleased() noexcept
+			bool IsMouseReleased(ImGuiMouseButton a_button) noexcept
 			{
 				const auto& io = ImGui::GetIO();
 				return !io.WantCaptureMouse &&
-				       io.MouseReleased[ImGuiMouseButton_Left] &&
-				       !io.MouseDownOwned[ImGuiMouseButton_Left];
+				       io.MouseReleased[a_button] &&
+				       !io.MouseDownOwned[a_button];
 			}
 
-			bool IsMouseDown() noexcept
+			bool IsMouseDown(ImGuiMouseButton a_button) noexcept
 			{
 				const auto& io = ImGui::GetIO();
 				return !io.WantCaptureMouse &&
-				       io.MouseDown[ImGuiMouseButton_Left] &&
-				       !io.MouseDownOwned[ImGuiMouseButton_Left];
+				       io.MouseDown[a_button] &&
+				       !io.MouseDownOwned[a_button];
 			}
 
 			bool IsMouseInputValid() noexcept

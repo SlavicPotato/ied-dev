@@ -167,7 +167,7 @@ namespace IED
 			TESForm*                                 a_form,
 			NiNode*                                  a_rootNode,
 			const NiPointer<NiNode>&                 a_objectNode,
-			nodesTarget_t&                           a_targetNodes,
+			targetNodes_t&                           a_targetNodes,
 			const Data::configBaseValues_t&          a_config,
 			Actor*                                   a_actor);
 
@@ -186,7 +186,7 @@ namespace IED
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
 
-		mutable stl::critical_section m_lock;
+		mutable std::recursive_mutex m_lock;
 	};
 
 }

@@ -13,15 +13,19 @@ namespace IED
 		class I3DIObject;
 		struct I3DICommonData;
 
+		enum class I3DIDraggableType
+		{
+			Dynamic,
+			Static
+		};
+
 		class I3DIDraggable
 		{
 			friend class I3DIObjectController;
 
 		public:
-			inline static constexpr std::uint32_t DRAGGABLE_TYPE = static_cast<std::uint32_t>(-1);
-
 			I3DIDraggable(
-				std::uint32_t a_type);
+				I3DIDraggableType a_type);
 
 			virtual ~I3DIDraggable() noexcept = default;
 
@@ -30,7 +34,7 @@ namespace IED
 				return m_dragging;
 			}
 
-			[[nodiscard]] inline constexpr std::uint32_t GetDraggableType() const noexcept
+			[[nodiscard]] inline constexpr I3DIDraggableType GetDraggableType() const noexcept
 			{
 				return m_type;
 			}
@@ -38,17 +42,17 @@ namespace IED
 			virtual I3DIObject& GetDraggableObject() = 0;
 
 		private:
-			virtual bool OnDragBegin() = 0;
+			virtual bool OnDragBegin(I3DICommonData& a_data, ImGuiMouseButton a_button)   = 0;
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) = 0;
-			virtual void OnDragPositionUpdate(I3DICommonData& a_data){};
+			virtual void OnDragUpdate(I3DICommonData& a_data){};
 
 			inline constexpr void SetDragging(bool a_switch) noexcept
 			{
 				m_dragging = a_switch;
 			}
 
-			std::uint32_t m_type{ DRAGGABLE_TYPE };
-			bool          m_dragging{ false };
+			I3DIDraggableType m_type{ I3DIDraggableType::Dynamic };
+			bool              m_dragging{ false };
 		};
 	}
 }

@@ -136,7 +136,7 @@ namespace IED
 
 	/*void AnimationGraphManagerHolderList::Update(const BSAnimationUpdateData& a_data) const
 	{
-		stl::scoped_lock lock(m_lock);
+		const std::lock_guard lock(m_lock);
 
 		UpdateNoLock(a_data);
 	}

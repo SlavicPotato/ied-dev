@@ -34,7 +34,7 @@ namespace IED
 
 		~PHYSimComponent() noexcept;
 
-		void ReadTransforms() noexcept;
+		void ReadTransforms(float a_step) noexcept;
 		void WriteTransforms() noexcept;
 
 		void Reset() noexcept;
@@ -45,12 +45,12 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool operator==(const PHYSimComponent& a_rhs) const noexcept
 		{
-			return m_conf == a_rhs.m_conf;
+			return m_tag == a_rhs.m_tag;
 		}
-		
+
 		[[nodiscard]] inline constexpr bool operator==(const luid_tag& a_rhs) const noexcept
 		{
-			return m_conf == a_rhs;
+			return m_tag == a_rhs;
 		}
 
 		inline static constexpr void SetMaxDiff(float a_value) noexcept
@@ -63,7 +63,7 @@ namespace IED
 		{
 			return m_objectLocalTransform;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetObjectInitialTransform() const noexcept
 		{
 			return m_initialTransform;
@@ -73,32 +73,42 @@ namespace IED
 		{
 			return m_parentWorldTransform;
 		}
-		
+
 		[[nodiscard]] Bullet::btTransformEx GetCurrentParentWorldTransform() const noexcept;
-		
+
 		[[nodiscard]] inline constexpr auto& GetVirtualPos() const noexcept
 		{
 			return m_virtld;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetRotationAxis() const noexcept
 		{
 			return m_rotParams.m_axis;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetConfig() const noexcept
 		{
 			return m_conf;
 		}
 		
+		[[nodiscard]] inline constexpr auto& GetLUID() const noexcept
+		{
+			return m_tag;
+		}
+
 		[[nodiscard]] inline constexpr auto& GetObject() const noexcept
 		{
 			return m_object;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetVelocity() const noexcept
 		{
 			return m_velocity;
+		}
+
+		inline constexpr void XM_CALLCONV ApplyForce(DirectX::XMVECTOR a_target, float a_mag) const noexcept
+		{
+			m_applyForce.emplace(a_target, a_mag);
 		}
 
 	private:
@@ -108,19 +118,20 @@ namespace IED
 
 		void LimitVelocity() noexcept;
 
-		void ConstrainMotionBox(
-			const btMatrix3x3& a_parentRot,
-			const btMatrix3x3& a_invRot,
-			const btVector3&   a_target,
-			const btVector3&   a_timeStep) noexcept;
+		void XM_CALLCONV ConstrainMotionBox(
+			const btMatrix3x3&      a_parentRot,
+			const btMatrix3x3&      a_invRot,
+			const DirectX::XMVECTOR a_target,
+			const DirectX::XMVECTOR a_step) noexcept;
 
-		void ConstrainMotionSphere(
-			const btMatrix3x3& a_parentRot,
-			const btMatrix3x3& a_invRot,
-			const btVector3&   a_target,
-			const btVector3&   a_timeStep) noexcept;
+		void XM_CALLCONV ConstrainMotionSphere(
+			const btMatrix3x3&      a_parentRot,
+			const btMatrix3x3&      a_invRot,
+			const DirectX::XMVECTOR a_target,
+			const DirectX::XMVECTOR a_step) noexcept;
 
 		Data::configNodePhysicsValues_t m_conf;
+		luid_tag                        m_tag;
 
 		btVector3 m_oldWorldPos;
 		btVector3 m_virtld{ DirectX::g_XMZero.v };
@@ -145,6 +156,11 @@ namespace IED
 		//btVector3             m_objectWorldPos{ DirectX::g_XMZero.v };
 		Bullet::btTransformEx m_objectLocalTransform;
 		Bullet::btTransformEx m_parentWorldTransform;
+
+		btVector3 m_oldParentPos;
+		btVector3 m_parentVelocity{ DirectX::g_XMZero.v };
+
+		mutable std::optional<std::pair<DirectX::XMVECTOR, float>> m_applyForce;
 
 		NiPointer<NiAVObject> m_object;
 

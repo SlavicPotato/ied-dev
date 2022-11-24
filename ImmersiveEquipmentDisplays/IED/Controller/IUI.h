@@ -144,7 +144,7 @@ namespace IED
 		bool m_safeToOpenUI{ false };
 
 	private:
-		virtual constexpr stl::critical_section& UIGetLock() noexcept = 0;
+		virtual constexpr std::recursive_mutex& UIGetLock() noexcept = 0;
 		virtual void                             OnUIOpen(){};
 		virtual void                             OnUIClose(){};
 

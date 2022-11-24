@@ -54,7 +54,7 @@ namespace IED
 
 		struct weaponNodeEntry_t
 		{
-			constexpr weaponNodeEntry_t(
+			weaponNodeEntry_t(
 				const weap_ctor_init_t& a_init) :
 				bsname(a_init.node),
 				bsdefParent(a_init.def),
@@ -93,7 +93,7 @@ namespace IED
 		{
 			overrideNodeEntry_t() = delete;
 
-			constexpr overrideNodeEntry_t(
+			overrideNodeEntry_t(
 				const ovr_node_ctor_init_t& a_init) :
 				desc(a_init.p1),
 				name(a_init.p2),
@@ -102,7 +102,7 @@ namespace IED
 			{
 			}
 
-			constexpr overrideNodeEntry_t(
+			overrideNodeEntry_t(
 				const stl::fixed_string& a_name,
 				const stl::fixed_string& a_desc,
 				WeaponPlacementID        a_pid,
@@ -149,7 +149,7 @@ namespace IED
 
 		struct extraNodeEntry_t
 		{
-			constexpr extraNodeEntry_t(
+			extraNodeEntry_t(
 				const exn_ctor_init_t& a_init) :
 				name_node(a_init.node),
 				bsname_node(a_init.node),
@@ -164,7 +164,7 @@ namespace IED
 			{
 			}
 
-			constexpr extraNodeEntry_t(
+			extraNodeEntry_t(
 				const stl::fixed_string& a_name,
 				const stl::fixed_string& a_mov,
 				const stl::fixed_string& a_cme,
@@ -208,7 +208,7 @@ namespace IED
 
 		struct extraNodeCopyEntry_t
 		{
-			constexpr extraNodeCopyEntry_t(
+			extraNodeCopyEntry_t(
 				const exn_copy_ctor_init_t& a_init) :
 				src(a_init.src),
 				bssrc(a_init.src),

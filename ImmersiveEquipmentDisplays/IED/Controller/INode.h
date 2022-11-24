@@ -40,7 +40,7 @@ namespace IED
 		}
 	};
 
-	struct nodesTarget_t
+	struct targetNodes_t
 	{
 		NiPointer<NiNode> rootNode;
 		NiPointer<NiNode> ref;
@@ -51,8 +51,8 @@ namespace IED
 	private:
 		struct findResult_t
 		{
-			NiNode* parent{ nullptr };
-			NiNode* ref{ nullptr };
+			NiPointer<NiNode> parent;
+			NiPointer<NiNode> ref;
 		};
 
 	public:
@@ -62,7 +62,7 @@ namespace IED
 			const Data::configBaseValues_t& a_entry,
 			const Data::NodeDescriptor&     a_node,
 			NiNode*                         a_root,
-			nodesTarget_t&                  a_out);
+			targetNodes_t&                  a_out);
 
 		static bool AttachObjectToTargetNode(
 			const Data::NodeDescriptor& a_node,
@@ -76,6 +76,10 @@ namespace IED
 			NiAVObject*                   a_node,
 			NiNode*                       a_refNode);
 
+		static void UpdateObjectTransform(
+			const Data::configTransform_t& a_trnsf,
+			NiAVObject*                    a_object);
+
 		static void GetArmorNodeName(
 			Game::FormID a_formid,
 			Game::FormID a_arma,
@@ -85,6 +89,10 @@ namespace IED
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
 
+		static void GetLightNodeName(
+			Game::FormID a_formid,
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+		
 		static void GetMiscNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]);

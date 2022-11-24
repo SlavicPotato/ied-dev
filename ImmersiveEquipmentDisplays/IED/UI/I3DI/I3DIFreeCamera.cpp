@@ -2,6 +2,8 @@
 
 #include "I3DIFreeCamera.h"
 
+#include "I3DIInputHelpers.h"
+
 #include "Common/VectorMath.h"
 
 #include "Drivers/Input/Handlers.h"
@@ -26,54 +28,52 @@ namespace IED
 		{
 			if (!m_fSettings.enableTranslation)
 			{
-				m_velocity.d = g_XMZero;
+				m_velocity.d = g_XMZero.v;
 				return;
 			}
 
-			auto& io = ImGui::GetIO();
+			const auto& io = ImGui::GetIO();
 
-			float fwd, lr, ud;
+			auto d = g_XMZero.v;
 
 			if (io.KeysDown[0x0057])
 			{
-				fwd = 1;
+				d += g_XMIdentityR0.v;
 			}
-			else if (io.KeysDown[0x0053])
+
+			if (io.KeysDown[0x0053])
 			{
-				fwd = -1;
-			}
-			else
-			{
-				fwd = 0;
+				d -= g_XMIdentityR0.v;
 			}
 
 			if (io.KeysDown[0x0044])
 			{
-				lr = 1;
-			}
-			else if (io.KeysDown[0x0041])
-			{
-				lr = -1;
-			}
-			else
-			{
-				lr = 0;
+				d += g_XMIdentityR2.v;
 			}
 
-			if (io.MouseDown[0])
+			if (io.KeysDown[0x0041])
 			{
-				ud = 1;
-			}
-			else if (io.MouseDown[1])
-			{
-				ud = -1;
-			}
-			else
-			{
-				ud = 0;
+				d -= g_XMIdentityR2.v;
 			}
 
-			m_velocity.d = XMVectorSet(fwd, ud, lr, 0);
+			if (io.MouseDown[ImGuiMouseButton_Left])
+			{
+				d += g_XMIdentityR1.v;
+			}
+
+			if (io.MouseDown[ImGuiMouseButton_Right])
+			{
+				d -= g_XMIdentityR1.v;
+			}
+
+			m_velocity.d = XMVector3Normalize(d);
+
+			if (io.KeyShift)
+			{
+				constexpr XMVECTOR sbm = { 4, 4, 4, 0 };
+
+				m_velocity.d *= sbm;
+			}
 		}
 
 		void I3DIFreeCamera::CameraProcessMouseInput(const Handlers::MouseMoveEvent& a_evn)
@@ -83,10 +83,8 @@ namespace IED
 			const float x = static_cast<float>(-a_evn.inputX) * speed;
 			const float y = static_cast<float>(-a_evn.inputY) * speed;
 
-			auto target = m_xfrm.qt;
-
-			target    = XMQuaternionMultiply(target, XMQuaternionRotationNormal(g_XMIdentityR1.v, x));
-			m_xfrm.qt = XMQuaternionMultiply(XMQuaternionRotationNormal(g_XMIdentityR2.v, y), target);
+			const auto target = XMQuaternionMultiply(m_xfrm.qt, XMQuaternionRotationNormal(g_XMIdentityR1.v, x));
+			m_xfrm.qt         = XMQuaternionMultiply(XMQuaternionRotationNormal(g_XMIdentityR2.v, y), target);
 		}
 
 		void I3DIFreeCamera::CameraUpdate(NiCamera* a_camera)

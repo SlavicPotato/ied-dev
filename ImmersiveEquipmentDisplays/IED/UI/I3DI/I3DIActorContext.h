@@ -81,6 +81,22 @@ namespace IED
 				m_camera = std::move(a_camera);
 			}
 
+			template <class T, class... Args>
+			inline constexpr void CreateCamera(Args&&... a_args) noexcept
+			{
+				m_camera = std::make_unique<T>(std::forward<Args>(a_args)...);
+			}
+
+			inline constexpr void SetAnimEventSent() noexcept
+			{
+				m_animEventSent = true;
+			}
+
+			[[nodiscard]] inline constexpr auto GetAnimEventSent() noexcept
+			{
+				return m_animEventSent;
+			}
+
 			[[nodiscard]] inline constexpr auto& GetCamera() const noexcept
 			{
 				return m_camera;
@@ -118,6 +134,7 @@ namespace IED
 
 			bool m_ranFirstUpdate{ false };
 			bool m_lastUpdateFailed{ false };
+			bool m_animEventSent{ false };
 
 			std::shared_ptr<I3DIActorObject> m_actorObject;
 			std::unique_ptr<I3DICamera>      m_camera;

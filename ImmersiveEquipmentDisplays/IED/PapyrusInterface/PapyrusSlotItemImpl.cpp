@@ -16,7 +16,7 @@ namespace IED
 			{
 				const auto* controller = Initializer::GetController();
 
-				stl::scoped_lock lock(controller->GetLock());
+				const std::lock_guard lock(controller->GetLock());
 
 				auto& objects = controller->GetObjects();
 

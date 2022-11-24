@@ -48,7 +48,7 @@ namespace IED
 		{
 			ASSERT(a_evn.m_pSwapChainDesc.OutputWindow != nullptr);
 
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_info.bufferSize = {
 				static_cast<float>(a_evn.m_pSwapChainDesc.BufferDesc.Width),
@@ -140,7 +140,7 @@ namespace IED
 				return;
 			}
 
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			if (!m_imInitialized)
 			{
@@ -256,7 +256,7 @@ namespace IED
 				return;
 			}
 
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			if (!m_imInitialized)
 			{
@@ -297,7 +297,7 @@ namespace IED
 				return;
 			}
 
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			if (!m_imInitialized)
 			{
@@ -327,7 +327,7 @@ namespace IED
 				return;
 			}*/
 
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			if (!m_imInitialized)
 			{
@@ -346,7 +346,7 @@ namespace IED
 			Input::SetInputBlocked(a_switch);
 
 			ITaskPool::AddTask([this, a_switch]() {
-				stl::scoped_lock lock(m_lock);
+				const std::lock_guard lock(m_lock);
 
 				if (a_switch)
 				{
@@ -384,7 +384,7 @@ namespace IED
 
 		void UI::QueueRemoveTask(std::int32_t a_id)
 		{
-			stl::scoped_lock lock(m_Instance.m_lock);
+			const std::lock_guard lock(m_Instance.m_lock);
 
 			auto it = m_Instance.m_drawTasks.find(a_id);
 			if (it != m_Instance.m_drawTasks.end())
@@ -407,7 +407,7 @@ namespace IED
 
 		void UI::EvaluateTaskStateImpl()
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			for (auto& [i, e] : m_drawTasks)
 			{
@@ -604,7 +604,7 @@ namespace IED
 			fontInfoMap_t info;
 			m_Instance.LoadFontMetadata(info);
 
-			stl::scoped_lock lock(m_Instance.m_lock);
+			const std::lock_guard lock(m_Instance.m_lock);
 
 			m_Instance.UpdateAvailableFontsImpl(info);
 		}
@@ -617,7 +617,7 @@ namespace IED
 		void UI::QueueImGuiSettingsSave()
 		{
 			ITaskPool::AddTask([]() {
-				stl::scoped_lock lock(m_Instance.m_lock);
+				const std::lock_guard lock(m_Instance.m_lock);
 
 				ImGui::SaveIniSettingsToDisk(PATHS::IMGUI_INI);
 			});
@@ -730,7 +730,7 @@ namespace IED
 
 		void UI::QueueSetScaleImpl(float a_scale)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.scale = std::clamp(a_scale, 0.2f, 8.0f);
 			m_fontUpdateData.dirty = true;
@@ -738,7 +738,7 @@ namespace IED
 
 		void UI::QueueSetExtraGlyphsImpl(GlyphPresetFlags a_flags)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.extraGlyphPresets = a_flags;
 			m_fontUpdateData.dirty             = true;
@@ -747,7 +747,7 @@ namespace IED
 		void UI::QueueSetLanguageGlyphDataImpl(
 			const std::shared_ptr<fontGlyphData_t>& a_data)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.langGlyphData = a_data;
 			m_fontUpdateData.dirty         = true;
@@ -755,7 +755,7 @@ namespace IED
 
 		void UI::QueueFontChangeImpl(const stl::fixed_string& a_font)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.font  = a_font;
 			m_fontUpdateData.dirty = true;
@@ -763,7 +763,7 @@ namespace IED
 
 		void UI::QueueSetFontSizeImpl(float a_size)
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.fontsize = a_size;
 			m_fontUpdateData.dirty    = true;
@@ -771,7 +771,7 @@ namespace IED
 
 		void UI::QueueResetFontSizeImpl()
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.fontsize.clear();
 			m_fontUpdateData.dirty = true;
@@ -779,7 +779,7 @@ namespace IED
 
 		void UI::MarkFontUpdateDataDirtyImpl()
 		{
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			m_fontUpdateData.dirty = true;
 		}

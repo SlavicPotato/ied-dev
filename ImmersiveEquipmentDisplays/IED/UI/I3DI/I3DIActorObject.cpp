@@ -8,6 +8,7 @@
 #include "Common/VectorMath.h"
 
 #include "IED/Controller/ActorObjectHolder.h"
+#include "IED/Controller/Controller.h"
 
 namespace IED
 {
@@ -64,11 +65,16 @@ namespace IED
 			});
 		}
 
-		void I3DIActorObject::OnClick(I3DICommonData& a_data)
+		void I3DIActorObject::OnMouseUp(I3DICommonData& a_data, ImGuiMouseButton a_button)
 		{
-			if (!a_data.IsCurrentActorObject(this))
+			switch (a_button)
 			{
-				a_data.queuedActor = m_actor;
+			case ImGuiMouseButton_Left:
+				if (!a_data.IsCurrentActorObject(this))
+				{
+					a_data.queuedActor = m_actor;
+				}
+				break;
 			}
 		}
 
@@ -118,7 +124,7 @@ namespace IED
 			XMStoreFloat3(std::addressof(m), center);
 			XMStoreFloat3(std::addressof(n), extent);
 
-			BoundingOrientedBox tmp(m, n, SimpleMath::Quaternion::Identity);
+			const BoundingOrientedBox tmp(m, n, SimpleMath::Quaternion::Identity);
 
 			tmp.Transform(
 				GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound(),

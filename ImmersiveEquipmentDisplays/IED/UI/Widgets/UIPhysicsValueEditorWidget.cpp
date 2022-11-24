@@ -287,12 +287,12 @@ namespace IED
 			DrawTip(UITip::PVSphereRadius);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::SphereFriction, "3"),
+				LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
 				std::addressof(a_data.maxOffsetSphereFriction),
 				dragSpeed,
 				0,
 				1);
-			DrawTip(UITip::PVSphereFriction);
+			DrawTip(UITip::PVConstraintFriction);
 
 			ImGui::Spacing();
 
@@ -326,6 +326,14 @@ namespace IED
 				0,
 				128);
 			DrawTip(UITip::PVBoxMax);
+
+			result |= ImGui::DragFloat(
+				LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
+				std::addressof(a_data.maxOffsetBoxFriction),
+				dragSpeed,
+				0,
+				1);
+			DrawTip(UITip::PVConstraintFriction);
 
 			ImGui::Spacing();
 

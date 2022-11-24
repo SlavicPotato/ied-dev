@@ -2728,6 +2728,9 @@
     <ClCompile Include="IED\UI\I3DI\I3DIInputHelpers.cpp">
       <Filter>Source\IED\UI\I3DI</Filter>
     </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UITransformSliderWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

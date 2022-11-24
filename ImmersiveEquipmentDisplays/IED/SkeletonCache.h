@@ -33,7 +33,7 @@ namespace IED
 
 		[[nodiscard]] inline auto GetSize() const noexcept
 		{
-			stl::scoped_lock lock(m_lock);
+			std::lock_guard lock(m_lock);
 			return m_data.size();
 		}
 
@@ -53,7 +53,7 @@ namespace IED
 			const stl::fixed_string& a_key,
 			data_type::iterator      a_it);
 
-		mutable stl::critical_section m_lock;
+		mutable std::recursive_mutex m_lock;
 		data_type                     m_data;
 
 		static SkeletonCache m_Instance;

@@ -640,7 +640,7 @@ namespace IED
 		void QueueDisposeMOVSimComponents();
 		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle);
 
-		void SimReadTransforms() const noexcept;
+		void SimReadTransforms(float a_step) const noexcept;
 		void SimWriteTransforms() const noexcept;
 		void SimUpdate(float a_step) const noexcept;
 

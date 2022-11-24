@@ -20,14 +20,14 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			stl::critical_section lock;
-			long long             lastUpdate{ 0 };
-			bool                  initialized{ false };
-			bool                  succeeded{ false };
-			Game::FormID          actor;
-			actorInfoEntry_t      entry;
-			actorInventoryInfo_t  inventory;
-			actorFactionInfo_t    factions;
+			std::recursive_mutex lock;
+			long long            lastUpdate{ 0 };
+			bool                 initialized{ false };
+			bool                 succeeded{ false };
+			Game::FormID         actor;
+			actorInfoEntry_t     entry;
+			actorInventoryInfo_t inventory;
+			actorFactionInfo_t   factions;
 		};
 
 		struct ActorInfoData

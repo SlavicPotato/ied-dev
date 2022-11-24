@@ -175,6 +175,7 @@ namespace IED
 			std::shared_ptr<PHYSimComponent>                       simComponent;
 			stl::fixed_string                                      currentSequence;
 			long long                                              created{ 0 };
+			std::optional<luid_tag>                                currentGeomTransformTag;
 			Game::FormID                                           owner;
 			std::uint8_t                                           hideCountdown{ 0 };
 			bool                                                   atmReference{ true };

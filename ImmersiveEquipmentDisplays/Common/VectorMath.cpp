@@ -50,9 +50,9 @@ namespace VectorMath
 		XMVECTOR a_q,
 		XMVECTOR a_s)
 	{
-		const auto m = XMMatrixTranspose(XMMatrixRotationQuaternion(a_q));
-
 		NiTransform result(NiTransform::noinit_arg_t{});
+
+		const auto m = XMMatrixTranspose(XMMatrixRotationQuaternion(a_q));
 
 		static_assert(offsetof(NiTransform, rot) == 0x0);
 		static_assert(offsetof(NiTransform, pos) == 0x24);
@@ -336,10 +336,8 @@ namespace VectorMath
 			a_factor * a_factor * (3.0f - 2.0f * a_factor));
 	}
 
-	static const auto s_pidiv180 = DirectX::g_XMPi.v / 180.0f;
-
-	DirectX::XMVECTOR XM_CALLCONV XMVectorConvertToRadians(DirectX::XMVECTOR a_degrees)
+	XMVECTOR XM_CALLCONV XMVectorConvertToRadians(XMVECTOR a_degrees)
 	{
-		return a_degrees * s_pidiv180;
+		return a_degrees * g_pidiv180;
 	}
 }

@@ -4,6 +4,7 @@
 #include "I3DICommonData.h"
 #include "I3DIPhysicsObject.h"
 #include "I3DISphereObject.h"
+#include "I3DIInputHelpers.h"
 
 #include "IED/Physics/SimComponent.h"
 
@@ -26,17 +27,21 @@ namespace IED
 				a_data.scene.GetDevice().Get(),
 				BoundingShape::kSphere,
 				a_data.assets.GetModel(I3DIModelID::kSphere)),
+			I3DIDraggable(I3DIDraggableType::Static),
 			m_actorContext(a_actorContext),
-			m_tag(a_sc.GetConfig()),
+			m_tag(a_sc.GetLUID()),
 			m_flags(a_sc.GetConfig().valueFlags),
 			m_name(a_sc.GetObject()->m_name.c_str()),
-			m_virtSphere(std::make_unique<I3DISphereObject>(a_data)),
-			m_constraintSphere(std::make_unique<I3DISphereObject>(a_data))
+			m_virtSphere(std::make_unique<I3DISphereObject>(a_data, this)),
+			m_constraintSphere(std::make_unique<I3DISphereObject>(a_data, this)),
+			m_cogSphere(std::make_unique<I3DISphereObject>(a_data, this))
 		{
+			m_objectFlags.set(I3DIObjectFlags::kHideOtherWhenSelected);
+
 			SetDiffuseColor(diffuseColor1);
 			SetAlpha(1);
 			EnableDepth(false);
-			//SetLightingEnabled(false);
+			SetLightingEnabled(true);
 			//SetRasterizerState(D3DObjectRasterizerState::kWireframe);
 
 			m_virtSphere->EnableDepth(false);
@@ -44,11 +49,17 @@ namespace IED
 			m_virtSphere->SetDiffuseColor({ 0, 1, 0, 1 });
 			m_virtSphere->SetLightingEnabled(true);
 
+			m_cogSphere->EnableDepth(false);
+			m_cogSphere->SetAlpha(1);
+			m_cogSphere->SetDiffuseColor({ 0.9882f, 0.4666f, 0.0117f, 1 });
+			m_cogSphere->SetLightingEnabled(true);
+
 			m_constraintSphere->EnableDepth(false);
-			m_constraintSphere->SetAlpha(0.65f);
+			m_constraintSphere->SetAlpha(0.6f);
 			m_constraintSphere->SetDiffuseColor({ 1, 1, 1, 1 });
-			m_constraintSphere->SetLightingEnabled(true);
+			m_constraintSphere->SetLightingEnabled(false);
 			m_constraintSphere->SetRasterizerState(D3DObjectRasterizerState::kWireframe);
+			m_constraintSphere->SetGeometryHidden(!m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint));
 
 			UpdateData(a_sc);
 		}
@@ -62,28 +73,28 @@ namespace IED
 
 			m_axis = m_parentTransform.getBasis() * (initialTransform.getBasis() * a_sc.GetRotationAxis());
 
-			//m_sphereRadius = a_sc.GetConfig().maxOffsetSphereRadius * m_parentTransform.getScale();
-			//m_sphereOrigin = m_parentTransform * (initialTransform.getOrigin() + a_sc.GetConfig().maxOffsetSphereOffset);
-
 			m_bbMin = initialTransform.getOrigin() + a_sc.GetConfig().maxOffsetN;
 			m_bbMax = initialTransform.getOrigin() + a_sc.GetConfig().maxOffsetP;
 
 			UpdateWorldMatrix(VectorMath::NiTransformToMatrix4x4(a_sc.GetObject()->m_worldTransform));
-			//SetOriginalWorldMatrix(m);
 			SetHasWorldData(true);
 			UpdateBound();
 
-			//auto mr = XMMatrixIdentity();
 			auto ms = XMMatrixScalingFromVector(XMVectorReplicate(0.6f * m_objectTransform.getScale()));
-			auto mt = XMMatrixTranslationFromVector((m_parentTransform * a_sc.GetVirtualPos()).get128());
+			auto mt = XMMatrixTranslationFromVector((m_parentTransform * (initialTransform.getOrigin() + a_sc.GetVirtualPos())).get128());
 
 			m_virtSphere->UpdateWorldMatrix(ms * mt);
 			m_virtSphere->SetHasWorldData(true);
 			m_virtSphere->UpdateBound();
 
+			mt = XMMatrixTranslationFromVector((m_parentTransform * a_sc.GetConfig().cogOffset).get128());
+
+			m_cogSphere->UpdateWorldMatrix(ms * mt);
+			m_cogSphere->SetHasWorldData(true);
+			m_cogSphere->UpdateBound();
+
 			if (m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint))
 			{
-				//mr = XMMatrixIdentity();
 				ms = XMMatrixScalingFromVector(XMVectorReplicate(a_sc.GetConfig().maxOffsetSphereRadius * m_parentTransform.getScale()));
 				mt = XMMatrixTranslationFromVector((m_parentTransform * (initialTransform.getOrigin() + a_sc.GetConfig().maxOffsetSphereOffset)).get128());
 
@@ -91,6 +102,15 @@ namespace IED
 				m_constraintSphere->SetHasWorldData(true);
 				m_constraintSphere->UpdateBound();
 			}
+
+			if (m_afd)
+			{
+				a_sc.ApplyForce(m_afd->second, 120.0f);
+			}
+
+			/*m_virtld           = a_sc.GetVirtualPos();
+			m_velocity         = a_sc.GetVelocity();
+			m_initialTransform = initialTransform;*/
 		}
 
 		/*void I3DIPhysicsObject::UpdateBound()
@@ -105,12 +125,44 @@ namespace IED
 		{
 			a_data.RegisterObject(m_virtSphere);
 			a_data.RegisterObject(m_constraintSphere);
+			a_data.RegisterObject(m_cogSphere);
 		}
 
 		void I3DIPhysicsObject::OnObjectUnregistered(I3DIObjectController& a_data)
 		{
-			a_data.UnregisterObject(m_virtSphere);
+			a_data.UnregisterObject(m_cogSphere);
 			a_data.UnregisterObject(m_constraintSphere);
+			a_data.UnregisterObject(m_virtSphere);
+		}
+
+		bool I3DIPhysicsObject::OnDragBegin(I3DICommonData& a_data, ImGuiMouseButton a_button)
+		{
+			if (a_button == ImGuiMouseButton_Left)
+			{
+				if (auto dist = GetLastDistance())
+				{
+					m_afd.emplace(*dist, a_data.cursorRay.origin + a_data.cursorRay.dir * *dist);
+
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		void I3DIPhysicsObject::OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target)
+		{
+			m_afd.reset();
+		}
+
+		void I3DIPhysicsObject::OnDragUpdate(I3DICommonData& a_data)
+		{
+			if (m_afd)
+			{
+				m_afd->second =
+					a_data.cursorRay.origin +
+					a_data.cursorRay.dir * m_afd->first;
+			}
 		}
 
 		void I3DIPhysicsObject::OnMouseMoveOver(I3DICommonData& a_data)
@@ -150,39 +202,44 @@ namespace IED
 			}
 		}
 
+		bool I3DIPhysicsObject::IsSelectable()
+		{
+			return true;
+		}
+
 		void XM_CALLCONV I3DIPhysicsObject::DrawImpl(
 			D3DPrimitiveBatch& a_batch,
 			XMVECTOR           a_color)
 		{
-			/*constexpr XMVECTOR cols1n = { 1, 0, 0, 1 };
-			constexpr XMVECTOR cols1h = { 1, 0.5f, 0.5f, 1 };
-			constexpr XMVECTOR cols2 = { 0, 1, 0, 1 };*/
-
-			/*DrawSphere(
-				a_batch,
-				m_objectTransform.getOrigin().get128(),
-				0.75f * m_objectTransform.getScale(),
-				m_objectFlags.test(I3DIObjectFlags::kHovered) ? cols1h : cols1n);*/
-
-			/*DrawSphere(
-				a_batch,
-				m_virtualPos.get128(),
-				0.6f * m_objectTransform.getScale(),
-				cols2);*/
-
 			if (m_flags.test(Data::ConfigNodePhysicsFlags::kEnableBoxConstraint))
 			{
 				DrawBoxConstraint(a_batch, XMVectorSetW(a_color, 0.6f));
 			}
 
-			/*if (m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint))
-			{
-				DrawSphereConstraint(a_batch, XMVectorSetW(a_color, 0.2f));
-			}*/
-
-			m_constraintSphere->SetGeometryHidden(!m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint));
-
 			DrawOrientation(a_batch);
+
+			/*auto p1 = (m_parentTransform * m_initialTransform.getOrigin());
+			auto p2 = (m_parentTransform * (m_initialTransform.getOrigin() + m_virtld));
+
+			const auto n = XMVector3Normalize((p2 - p1).get128());
+
+			auto nx = XMVector3Normalize((m_velocity - n * XMVector3Dot(m_velocity.get128(), n)).get128());
+
+			const XMVECTOR pos = m_objectTransform.getOrigin().get128();
+
+			constexpr XMVECTOR col1 = { 1, 0, 0, 1 };
+			constexpr XMVECTOR col2 = { 0, 1, 0, 1 };
+			constexpr XMVECTOR col3 = { 0, 0, 1, 1 };
+
+			constexpr XMVECTOR lb = { 20, 20, 20, 0 };
+
+			const auto l = lb * m_objectTransform.getScale();
+
+			const auto pf = pos + n * l;
+			const auto px = pos + nx * l;
+
+			a_batch.AddLine(pos, pf, col1);
+			a_batch.AddLine(pos, px, col2);*/
 		}
 
 		void XM_CALLCONV I3DIPhysicsObject::DrawBoxConstraint(

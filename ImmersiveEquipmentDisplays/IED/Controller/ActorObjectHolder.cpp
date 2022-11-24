@@ -675,11 +675,11 @@ namespace IED
 		return true;
 	}
 
-	void ActorObjectHolder::SimReadTransforms() const noexcept
+	void ActorObjectHolder::SimReadTransforms(float a_step) const noexcept
 	{
 		for (auto& e : m_simNodeList)
 		{
-			e->ReadTransforms();
+			e->ReadTransforms(a_step);
 		}
 	}
 

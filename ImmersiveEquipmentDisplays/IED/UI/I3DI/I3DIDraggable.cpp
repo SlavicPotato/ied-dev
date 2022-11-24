@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		I3DIDraggable::I3DIDraggable(
-			std::uint32_t a_type) :
+			I3DIDraggableType a_type) :
 			m_type(a_type)
 		{
 		}

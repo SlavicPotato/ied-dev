@@ -201,9 +201,9 @@ namespace IED
 			Game::ObjectRefHandle            a_handle,
 			stl::flag<ControllerUpdateFlags> a_flags);
 
-		bool RemoveActor(
+		/*bool RemoveActor(
 			TESObjectREFR*                   a_actor,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags);*/
 
 		bool RemoveActor(
 			Game::FormID                     a_actor,
@@ -913,7 +913,7 @@ namespace IED
 
 		// ui overrides
 
-		virtual constexpr stl::critical_section& UIGetLock() noexcept override
+		virtual constexpr std::recursive_mutex& UIGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -930,7 +930,7 @@ namespace IED
 
 		// json serialization
 
-		virtual constexpr stl::critical_section& JSGetLock() noexcept override
+		virtual constexpr std::recursive_mutex& JSGetLock() noexcept override
 		{
 			return m_lock;
 		}

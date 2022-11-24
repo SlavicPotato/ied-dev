@@ -22,13 +22,16 @@ namespace IED
 		{
 			kNone = 0,
 
-			kHovered  = 1u << 0,
-			kSelected = 1u << 1,
+			kHovered               = 1u << 0,
+			kSelected              = 1u << 1,
+			kHideOtherWhenSelected = 1u << 2,
+			kDisabled              = 1u << 3,
 
 			kHSMask = kHovered | kSelected,
 
-			kGeometryHidden = 1u << 2,
-			kHasWorldData   = 1u << 3
+			kGeometryHidden = 1u << 10,
+			kHasWorldData   = 1u << 11,
+
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(I3DIObjectFlags);
@@ -56,7 +59,7 @@ namespace IED
 			{
 				return nullptr;
 			};
-			
+
 			virtual I3DIBoundObject* AsBoundObject()
 			{
 				return nullptr;
@@ -85,7 +88,10 @@ namespace IED
 			virtual void OnMouseMoveOut(I3DICommonData& a_data){};
 			virtual bool OnSelect(I3DICommonData& a_data) { return false; };
 			virtual void OnUnselect(I3DICommonData& a_data){};
-			virtual void OnClick(I3DICommonData& a_data){};
+			virtual void OnMouseUp(I3DICommonData& a_data, ImGuiMouseButton a_button){};
+			virtual void OnMouseDown(I3DICommonData& a_data, ImGuiMouseButton a_button){};
+			//virtual void OnMouseHeld(I3DICommonData& a_data, ImGuiMouseButton a_button){};
+			//virtual void OnMousePressLost(I3DICommonData& a_data, ImGuiMouseButton a_button, bool a_released){};
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,
@@ -109,6 +115,16 @@ namespace IED
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kSelected);
 			}
+			
+			[[nodiscard]] inline constexpr bool IsDisabled() const noexcept
+			{
+				return m_objectFlags.test(I3DIObjectFlags::kDisabled);
+			}
+
+			[[nodiscard]] inline constexpr bool HideOtherWhenSelected() const noexcept
+			{
+				return m_objectFlags.test(I3DIObjectFlags::kHideOtherWhenSelected);
+			}
 
 			[[nodiscard]] inline constexpr bool IsGeometryHidden() const noexcept
 			{
@@ -123,6 +139,11 @@ namespace IED
 			[[nodiscard]] inline constexpr void SetHasWorldData(bool a_switch) noexcept
 			{
 				return m_objectFlags.set(I3DIObjectFlags::kHasWorldData, a_switch);
+			}
+			
+			[[nodiscard]] inline constexpr void SetDisabled(bool a_switch) noexcept
+			{
+				return m_objectFlags.set(I3DIObjectFlags::kDisabled, a_switch);
 			}
 
 			inline constexpr void SetGeometryHidden(bool a_switch) noexcept

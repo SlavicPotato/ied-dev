@@ -73,7 +73,7 @@ namespace IED
 				return;
 			}
 
-			stl::scoped_lock lock(data.data->lock);
+			const std::lock_guard lock(data.data->lock);
 
 			auto handle = m_listCurrent->handle;
 
@@ -1208,7 +1208,7 @@ namespace IED
 			}
 
 			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data] {
-				stl::scoped_lock lock(m_controller.GetLock());
+				const std::lock_guard lock(m_controller.GetLock());
 
 				data->lastUpdate  = IPerfCounter::Query();
 				data->actor       = handle;

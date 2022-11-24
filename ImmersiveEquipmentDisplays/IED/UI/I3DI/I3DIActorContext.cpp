@@ -238,11 +238,11 @@ namespace IED
 
 			for (auto& e : sclist)
 			{
-				auto itp = m_physicsObjects.find(e->GetConfig());
+				auto itp = m_physicsObjects.find(e->GetLUID());
 				if (itp == m_physicsObjects.end())
 				{
 					auto r = m_physicsObjects.emplace(
-						e->GetConfig(),
+						e->GetLUID(),
 						std::make_unique<I3DIPhysicsObject>(a_data, *this, *e));
 
 					a_data.objectController.RegisterObject(r.first->second);
@@ -259,12 +259,12 @@ namespace IED
 
 				for (auto& e : sclist)
 				{
-					tmp.emplace(e->GetConfig());
+					tmp.emplace(e->GetLUID());
 				}
 
 				for (auto itp = m_physicsObjects.begin(); itp != m_physicsObjects.end();)
 				{
-					if (!tmp.contains(itp->second->GetTag()))
+					if (!tmp.contains(itp->second->GetLUID()))
 					{
 						a_data.objectController.UnregisterObject(itp->second);
 

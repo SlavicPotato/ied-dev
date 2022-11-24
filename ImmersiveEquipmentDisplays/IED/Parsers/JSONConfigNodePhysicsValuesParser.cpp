@@ -38,6 +38,7 @@ namespace IED
 			a_out.damping                 = a_in["d"].asFloat();
 			a_out.maxOffsetSphereRadius   = a_in["sr"].asFloat();
 			a_out.maxOffsetSphereFriction = a_in["sf"].asFloat();
+			a_out.maxOffsetBoxFriction    = a_in["bf"].asFloat();
 			a_out.gravityBias             = a_in["b"].asFloat();
 			a_out.gravityCorrection       = a_in["c"].asFloat();
 			a_out.rotGravityCorrection    = a_in["rc"].asFloat();
@@ -76,6 +77,7 @@ namespace IED
 			a_out["d"]  = a_data.damping;
 			a_out["sr"] = a_data.maxOffsetSphereRadius;
 			a_out["sf"] = a_data.maxOffsetSphereFriction;
+			a_out["bf"] = a_data.maxOffsetBoxFriction;
 			a_out["b"]  = a_data.gravityBias;
 			a_out["c"]  = a_data.gravityCorrection;
 			a_out["rc"] = a_data.rotGravityCorrection;

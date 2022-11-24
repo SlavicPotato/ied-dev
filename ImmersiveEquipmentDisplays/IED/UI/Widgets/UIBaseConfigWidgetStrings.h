@@ -25,6 +25,7 @@ namespace IED
 			EffectShaderEntryExists = 4014,
 			InventoryCheck          = 4015,
 			CreatePhysicsDataInfo   = 4016,
+			GeometryTransform       = 4017,
 		};
 	}
 }

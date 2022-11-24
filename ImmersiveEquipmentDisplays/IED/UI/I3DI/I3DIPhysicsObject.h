@@ -3,6 +3,7 @@
 #include "IED/ConfigNodePhysicsValues.h"
 
 //#include "I3DIBoundObject.h"
+#include "I3DIDraggable.h"
 #include "I3DIModelObject.h"
 
 namespace IED
@@ -17,7 +18,8 @@ namespace IED
 		class I3DISphereObject;
 
 		class I3DIPhysicsObject :
-			public I3DIModelObject
+			public I3DIModelObject,
+			public I3DIDraggable
 		{
 			static inline constexpr std::uint32_t NB_SPHERE_DETAIL_FACTOR = 2;
 
@@ -30,11 +32,21 @@ namespace IED
 				I3DIActorContext&      a_actorContext,
 				const PHYSimComponent& a_sc) noexcept(false);
 
+			virtual I3DIDraggable* AsDraggable() override
+			{
+				return static_cast<I3DIDraggable*>(this);
+			};
+
+			virtual I3DIObject& GetDraggableObject() override
+			{
+				return static_cast<I3DIObject&>(*this);
+			}
+
 			void UpdateData(const PHYSimComponent& a_sc);
 
 			//virtual void UpdateBound() override;
 
-			[[nodiscard]] inline constexpr auto& GetTag() const noexcept
+			[[nodiscard]] inline constexpr auto& GetLUID() const noexcept
 			{
 				return m_tag;
 			}
@@ -43,10 +55,17 @@ namespace IED
 			virtual void OnObjectUnregistered(I3DIObjectController& a_data) override;
 
 		private:
+			virtual bool OnDragBegin(I3DICommonData& a_data, ImGuiMouseButton a_button) override;
+			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) override;
+			virtual void OnDragUpdate(I3DICommonData& a_data) override;
+
 			virtual void OnMouseMoveOver(I3DICommonData& a_data) override;
 			virtual void OnMouseMoveOut(I3DICommonData& a_data) override;
+			//virtual void OnMouseDown(I3DICommonData& a_data, ImGuiMouseButton a_button) override;
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
+
+			virtual bool IsSelectable() override;
 
 			void XM_CALLCONV DrawImpl(
 				D3DPrimitiveBatch& a_batch,
@@ -85,6 +104,13 @@ namespace IED
 
 			std::shared_ptr<I3DISphereObject> m_virtSphere;
 			std::shared_ptr<I3DISphereObject> m_constraintSphere;
+			std::shared_ptr<I3DISphereObject> m_cogSphere;
+
+			std::optional<std::pair<float, DirectX::XMVECTOR>> m_afd;
+
+			/*btVector3             m_virtld;
+			btVector3             m_velocity;
+			Bullet::btTransformEx m_initialTransform;*/
 		};
 	}
 }

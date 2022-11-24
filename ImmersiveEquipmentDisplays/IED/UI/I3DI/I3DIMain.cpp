@@ -57,7 +57,14 @@ namespace IED
 				const auto actor = *queued;
 				queued.reset();
 
-				SwitchToActorContext(actor);
+				if (actor == Game::FormID{})
+				{
+					ReleaseCurrentActorContext();
+				}
+				else
+				{
+					SwitchToActorContext(actor);
+				}
 			}
 
 			if (auto& context = m_actorContext)
@@ -137,7 +144,7 @@ namespace IED
 
 			if (m_actorContext)
 			{
-				m_heldActorOnClose.emplace(m_actorContext->GetActorFormID());
+				//m_heldActorOnClose.emplace(m_actorContext->GetActorFormID());
 
 				ReleaseCurrentActorContext();
 			}
@@ -215,7 +222,7 @@ namespace IED
 
 					if (!cam)
 					{
-						context->SetCamera(std::make_unique<I3DIFreeCamera>(camera));
+						context->CreateCamera<I3DIFreeCamera>(camera);
 						cam = context->GetCamera().get();
 					}
 
@@ -315,21 +322,32 @@ namespace IED
 			m_actorContext->RegisterObjects(m_data->objectController);
 
 			ith->second.RequestTransformUpdate();
-			m_controller.QueueSendAnimationEventToActor(a_actor, "idlestaticposeastart");
+
+			if (ImGui::GetIO().KeyShift)
+			{
+				m_controller.QueueSendAnimationEventToActor(a_actor, "IdleStaticPoseAStart");
+				m_actorContext->SetAnimEventSent();
+			}
 
 			return true;
 		}
 
 		void I3DIMain::ReleaseCurrentActorContext()
 		{
-			SetNodeConditionForced(m_actorContext->GetActorFormID(), false);
+			if (m_actorContext)
+			{
+				SetNodeConditionForced(m_actorContext->GetActorFormID(), false);
 
-			m_controller.QueueSendAnimationEventToActor(
-				m_actorContext->GetActorFormID(),
-				"IdleForceDefaultState");
+				if (m_actorContext->GetAnimEventSent())
+				{
+					m_controller.QueueSendAnimationEventToActor(
+						m_actorContext->GetActorFormID(),
+						"IdleForceDefaultState");
+				}
 
-			m_actorContext->UnregisterObjects(m_data->objectController);
-			m_actorContext.reset();
+				m_actorContext->UnregisterObjects(m_data->objectController);
+				m_actorContext.reset();
+			}
 		}
 
 		void I3DIMain::UpdateActorObjects()
@@ -395,6 +413,11 @@ namespace IED
 				}
 				else
 				{
+					if (it->first == Data::IData::GetPlayerRefID())
+					{
+						it->second->SetDisabled(m_data->controller.IsInFirstPerson());
+					}
+
 					++it;
 				}
 			}

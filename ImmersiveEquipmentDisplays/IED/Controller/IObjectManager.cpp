@@ -127,7 +127,7 @@ namespace IED
 		Game::FormID a_actor)
 	{
 		ITaskPool::AddPriorityTask([this, a_actor]() {
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			auto it = m_objects.find(a_actor);
 			if (it != m_objects.end())
@@ -143,7 +143,7 @@ namespace IED
 		bool         a_xfrmUpdate,
 		bool         a_xfrmUpdateNoDefer) const
 	{
-		stl::scoped_lock lock(m_lock);
+		const std::lock_guard lock(m_lock);
 
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -210,7 +210,7 @@ namespace IED
 	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_requestEval] {
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			ClearVariablesOnAll(a_requestEval);
 		});
@@ -221,7 +221,7 @@ namespace IED
 		bool         a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			ClearVariables(a_handle, a_requestEval);
 		});
@@ -230,7 +230,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdateOnAll() const
 	{
 		ITaskPool::AddPriorityTask([this] {
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			RequestVariableUpdateOnAll();
 		});
@@ -239,7 +239,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const
 	{
 		ITaskPool::AddPriorityTask([this, a_handle] {
-			stl::scoped_lock lock(m_lock);
+			const std::lock_guard lock(m_lock);
 
 			RequestVariableUpdate(a_handle);
 		});
@@ -413,7 +413,7 @@ namespace IED
 
 			object->m_name = buffer;
 
-			EngineExtensions::ApplyTextureSwap(texSwap, object);
+			EngineExtensions::ApplyTextureSwap(texSwap, object.get());
 
 			a_out->AttachChild(object, true);
 
@@ -446,8 +446,10 @@ namespace IED
                     Game::FormID{},
 				a_out);
 			break;
-		case ModelType::kMisc:
 		case ModelType::kLight:
+			GetLightNodeName(a_form->formID, a_out);
+			break;
+		case ModelType::kMisc:
 			GetMiscNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kAmmo:
@@ -513,7 +515,7 @@ namespace IED
 			return false;
 		}
 
-		nodesTarget_t targetNodes;
+		targetNodes_t targetNodes;
 
 		if (!CreateTargetNode(
 				a_activeConfig,
@@ -553,16 +555,22 @@ namespace IED
 			state->dbEntries.emplace_front(std::move(entry));
 		}
 
+		a_params.ResetEffectShaders();
+
 		if (modelParams.swap)
 		{
 			EngineExtensions::ApplyTextureSwap(
 				modelParams.swap,
-				object);
+				object.get());
 		}
 
-		object->m_localTransform = {};
+		//object->m_localTransform = {};
 
-		a_params.ResetEffectShaders();
+		UpdateObjectTransform(
+			a_activeConfig.geometryTransform,
+			object.get());
+
+		state->currentGeomTransformTag = a_activeConfig.geometryTransform;
 
 		char buffer[NODE_NAME_BUFFER_SIZE];
 
@@ -580,7 +588,8 @@ namespace IED
 
 		if (a_physics)
 		{
-			objectAttachmentNode = CreateAttachmentNode(BSStringHolder::GetSingleton()->m_objectPhy);
+			objectAttachmentNode = CreateAttachmentNode(
+				BSStringHolder::GetSingleton()->m_objectPhy);
 
 			itemRoot->AttachChild(objectAttachmentNode, true);
 
@@ -608,7 +617,7 @@ namespace IED
 			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok));
 
-		UpdateDownwardPass(itemRoot);
+		//UpdateDownwardPass(itemRoot);
 
 		if (a_visible && state->nodes.HasPhysicsNode())
 		{
@@ -651,19 +660,11 @@ namespace IED
                                    !a_baseConfig.hkxFilter.contains(a_path);
 					}))
 			{
-				if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
-				{
-					state->UpdateAndSendAnimationEvent(
-						a_activeConfig.animationEvent);
-				}
-				else
-				{
-					state->currentAnimationEvent =
-						StringHolder::GetSingleton().weaponSheathe;
+				const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
+				                            a_activeConfig.animationEvent :
+                                            StringHolder::GetSingleton().weaponSheathe;
 
-					state->weapAnimGraphManagerHolder->NotifyAnimationGraph(
-						BSStringHolder::GetSingleton()->m_weaponSheathe);
-				}
+				state->UpdateAndSendAnimationEvent(eventName);
 
 				/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
 					state->weapAnimGraphManagerHolder,
@@ -723,7 +724,9 @@ namespace IED
 			return false;
 		}
 
-		auto it = a_group.entries.find({});
+		const stl::fixed_string emptyString;
+
+		auto it = a_group.entries.find(emptyString);
 		if (it == a_group.entries.end())
 		{
 			return false;
@@ -790,7 +793,7 @@ namespace IED
 			return false;
 		}
 
-		nodesTarget_t targetNodes;
+		targetNodes_t targetNodes;
 
 		if (!CreateTargetNode(
 				a_activeConfig,
@@ -935,7 +938,7 @@ namespace IED
 			e.grpObject = std::addressof(n);
 		}
 
-		UpdateDownwardPass(groupRoot);
+		//UpdateDownwardPass(groupRoot);
 
 		for (auto& e : modelParams)
 		{
@@ -966,19 +969,12 @@ namespace IED
                                        !a_baseConfig.hkxFilter.contains(a_path);
 						}))
 				{
-					if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
-					{
-						e.grpObject->UpdateAndSendAnimationEvent(
-							e.entry->second.animationEvent);
-					}
-					else
-					{
-						e.grpObject->currentAnimationEvent =
-							StringHolder::GetSingleton().weaponSheathe;
+					const auto& eventName =
+						e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent) ?
+							e.entry->second.animationEvent :
+                            StringHolder::GetSingleton().weaponSheathe;
 
-						e.grpObject->weapAnimGraphManagerHolder->NotifyAnimationGraph(
-							BSStringHolder::GetSingleton()->m_weaponSheathe);
-					}
+					e.grpObject->UpdateAndSendAnimationEvent(eventName);
 
 					/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
 						e.grpObject->weapAnimGraphManagerHolder,
@@ -1030,7 +1026,7 @@ namespace IED
 		TESForm*                                 a_form,
 		NiNode*                                  a_rootNode,
 		const NiPointer<NiNode>&                 a_objectNode,
-		nodesTarget_t&                           a_targetNodes,
+		targetNodes_t&                           a_targetNodes,
 		const Data::configBaseValues_t&          a_config,
 		Actor*                                   a_actor)
 	{
@@ -1074,24 +1070,26 @@ namespace IED
 		bool                        a_atmReference,
 		ObjectEntryBase&            a_entry)
 	{
-		if (!a_entry.data.state)
+		auto& state = a_entry.data.state;
+
+		if (!state)
 		{
 			return false;
 		}
 
-		bool result = AttachObjectToTargetNode(
+		const bool result = AttachObjectToTargetNode(
 			a_node,
 			a_atmReference,
 			a_root,
-			a_entry.data.state->nodes.rootNode,
-			a_entry.data.state->nodes.ref);
+			state->nodes.rootNode,
+			state->nodes.ref);
 
 		if (result)
 		{
-			a_entry.data.state->nodeDesc     = a_node;
-			a_entry.data.state->atmReference = a_atmReference;
+			state->nodeDesc     = a_node;
+			state->atmReference = a_atmReference;
 
-			a_entry.data.state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+			state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 		}
 
 		return result;

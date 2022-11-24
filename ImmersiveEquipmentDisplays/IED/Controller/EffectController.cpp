@@ -58,7 +58,7 @@ namespace IED
 		float                          a_interval,
 		std::optional<PhysUpdateData>& a_data)
 	{
-		constexpr auto confTimeTick = 1.0f / 60.0f;
+		constexpr auto confTimeTick = 1.0f / 30.0f;
 		constexpr auto maxSubSteps  = 15.0f;
 
 		m_averageInterval = m_averageInterval * 0.875f + a_interval * 0.125f;
@@ -71,7 +71,8 @@ namespace IED
 			a_data.emplace(
 				timeTick,
 				std::min(m_timeAccum, timeTick * maxSubSteps),
-				timeTick * 1.25f);
+				timeTick * 1.25f,
+				m_timeAccum);
 
 			m_timeAccum = 0.0f;
 		}
@@ -135,7 +136,7 @@ namespace IED
 		const PhysUpdateData&    a_physUpdData,
 		const ActorObjectHolder& a_holder) noexcept
 	{
-		a_holder.SimReadTransforms();
+		a_holder.SimReadTransforms(a_physUpdData.timeAccum * a_stepMul);
 
 		auto timeStep = a_physUpdData.timeStep;
 

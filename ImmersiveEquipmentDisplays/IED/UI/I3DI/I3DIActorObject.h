@@ -27,7 +27,7 @@ namespace IED
 
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 
-			virtual void OnClick(I3DICommonData& a_data) override;
+			virtual void OnMouseUp(I3DICommonData& a_data, ImGuiMouseButton a_button) override;
 
 			virtual bool ObjectIntersects(
 				I3DICommonData& a_data,

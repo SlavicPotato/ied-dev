@@ -7,9 +7,9 @@ namespace IED
 		namespace I3DI
 		{
 			bool ShouldBlockInput() noexcept;
-			bool IsMouseClicked() noexcept;
-			bool IsMouseReleased() noexcept;
-			bool IsMouseDown() noexcept;
+			bool IsMouseClicked(ImGuiMouseButton a_button = ImGuiMouseButton_Left) noexcept;
+			bool IsMouseReleased(ImGuiMouseButton a_button = ImGuiMouseButton_Left) noexcept;
+			bool IsMouseDown(ImGuiMouseButton a_button = ImGuiMouseButton_Left) noexcept;
 			bool IsMouseInputValid() noexcept;
 		}
 	}

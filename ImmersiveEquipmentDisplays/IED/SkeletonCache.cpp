@@ -14,7 +14,7 @@ namespace IED
 		bool           a_firstPerson)
 		-> std::optional<data_type::value_type>
 	{
-		stl::scoped_lock lock(m_lock);
+		const std::lock_guard lock(m_lock);
 
 		auto key = mk_key(a_refr, a_firstPerson);
 		if (key.empty())
@@ -30,7 +30,7 @@ namespace IED
 		bool           a_firstPerson)
 		-> actor_entry_type
 	{
-		stl::scoped_lock lock(m_lock);
+		const std::lock_guard lock(m_lock);
 
 		auto key = mk_key(a_refr, a_firstPerson);
 		if (key.empty())
@@ -43,7 +43,7 @@ namespace IED
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept
 	{
-		stl::scoped_lock lock(m_lock);
+		const std::lock_guard lock(m_lock);
 
 		std::size_t result = 0;
 

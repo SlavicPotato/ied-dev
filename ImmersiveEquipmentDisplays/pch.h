@@ -61,6 +61,7 @@
 #include <functional>
 #include <list>
 #include <memory>
+#include <mutex>
 #include <numbers>
 #include <regex>
 #include <source_location>
@@ -78,8 +79,8 @@
 
 #include <LinearMath/btMatrix3x3.h>
 #include <LinearMath/btQuaternion.h>
-#include <LinearMath/btVector3.h>
 #include <LinearMath/btTransform.h>
+#include <LinearMath/btVector3.h>
 
 #include "Common/BulletExtensions.h"
 
@@ -132,7 +133,7 @@ namespace fs = std::filesystem;
 //#define IED_ENABLE_RTEST
 #define IED_ENABLE_I3DI
 
-#if (defined(IED_USE_MIMALLOC_COLLECTOR) || SKMP_CUSTOM_ALLOCATOR == 1)
+#if (defined(IED_USE_MIMALLOC_COLLECTOR) || defined(SKMP_SC_USE_MIMALLOC) || SKMP_CUSTOM_ALLOCATOR == 1)
 #	define IED_MIMALLOC_IN_USE 1
 #endif
 

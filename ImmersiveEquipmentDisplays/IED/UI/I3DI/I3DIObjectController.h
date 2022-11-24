@@ -35,9 +35,9 @@ namespace IED
 				return m_data;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetDragObject() const noexcept
+			[[nodiscard]] inline constexpr auto& GetDragContext() const noexcept
 			{
-				return m_dragObject;
+				return m_dragContext;
 			}
 
 			void RegisterObject(const std::shared_ptr<I3DIObject>& a_object);
@@ -55,53 +55,83 @@ namespace IED
 			void Run(I3DICommonData& a_data);
 			void DrawObjects(I3DICommonData& a_data);
 
-			void ObjectControlInputHandler(
-				I3DICommonData&                    a_data,
-				const std::shared_ptr<I3DIObject>& a_object);
-
 			[[nodiscard]] inline constexpr auto GetLastRunTime() const noexcept
 			{
 				return m_lastRunTime;
 			}
 
-		protected:
+		private:
+			struct mouse_state_t
+			{
+				std::shared_ptr<I3DIObject> lastClickedObject;
+				ImVec2                      lastClickPos{ -FLT_MAX, -FLT_MAX };
+			};
+
+			void ObjectControlInputHandler(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_hoveredObject,
+				ImGuiMouseButton                   a_button);
+
 			std::shared_ptr<I3DIObject> GetHovered(
 				I3DICommonData& a_data);
 
+			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object, bool a_allowParent);
+
+			void SelectObject(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_object);
+			
+			void UnSelectObject(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_object);
+
+			bool TryBeginDrag(
+				I3DICommonData&                    a_data,
+				ImGuiMouseButton                   a_button);
+
+			std::pair<I3DIDragDropResult, I3DIDropTarget*> HandleDragEnd(
+				I3DICommonData&                    a_data,
+				const std::shared_ptr<I3DIObject>& a_dropObject);
+
+			void UpdateDragObjectPosition(
+				I3DICommonData& a_data,
+				I3DIObject*     a_object);
+
 			std::shared_ptr<I3DIObject> m_hovered;
 			std::shared_ptr<I3DIObject> m_selected;
-			std::shared_ptr<I3DIObject> m_dragObject;
-			DirectX::XMVECTOR           m_dragStartDist{ DirectX::g_XMZero.v };
-			DirectX::XMVECTOR           m_dragObjectPositionOffset{ DirectX::g_XMZero.v };
-			stl::vector<Entry>          m_data;
+
+			struct drag_context_t
+			{
+				inline drag_context_t(
+					ImGuiMouseButton                   a_button,
+					const std::shared_ptr<I3DIObject>& a_object) :
+					button(a_button),
+					object(a_object)
+				{
+				}
+
+				[[nodiscard]] inline bool operator==(
+					const std::shared_ptr<I3DIObject>& a_rhs) const noexcept
+				{
+					return object == a_rhs;
+				}
+
+				ImGuiMouseButton            button;
+				std::shared_ptr<I3DIObject> object;
+				DirectX::XMVECTOR           objectPositionOffset{ DirectX::g_XMZero.v };
+				float                       startDist{ 0.0f };
+			};
+
+			std::optional<drag_context_t> m_dragContext;
+
+			stl::vector<Entry> m_data;
 
 			using draw_queue_container_type = stl::vector<std::pair<float, I3DIModelObject*>>;
 
 			draw_queue_container_type m_drawQueueOpaque;
 			draw_queue_container_type m_drawQueueAlpha;
 
-			std::shared_ptr<I3DIObject> m_lastClickedObject;
-			ImVec2                      m_lastClickPos{ -FLT_MAX, -FLT_MAX };
-
-		private:
-			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object);
-
-			void SelectObject(
-				I3DICommonData&                    a_data,
-				const std::shared_ptr<I3DIObject>& a_object);
-
-			void TryBeginDrag(
-				I3DICommonData&                    a_data,
-				const std::shared_ptr<I3DIObject>& a_object);
-
-			std::pair<I3DIDragDropResult, I3DIDropTarget*> HandleDragEnd(
-				I3DICommonData&                    a_data,
-				I3DIDraggable*                     a_object,
-				const std::shared_ptr<I3DIObject>& a_dropObject);
-
-			void UpdateDragObjectPosition(
-				I3DICommonData& a_data,
-				I3DIObject*     a_object);
+			std::array<mouse_state_t, 3> m_mouseState;
 
 			PerfTimerInt m_runPT;
 			long long    m_lastRunTime{ 0 };

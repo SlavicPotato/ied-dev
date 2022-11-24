@@ -1029,7 +1029,7 @@ namespace IED
 							{
 								target->AttachChild(node, true);
 
-								UpdateDownwardPass(node);
+								//UpdateDownwardPass(node);
 							}
 						});
 				}
@@ -1039,7 +1039,7 @@ namespace IED
 
 					a_target->AttachChild(a_entry.node, true);
 
-					UpdateDownwardPass(a_entry.node);
+					//UpdateDownwardPass(a_entry.node);
 				}
 			}
 

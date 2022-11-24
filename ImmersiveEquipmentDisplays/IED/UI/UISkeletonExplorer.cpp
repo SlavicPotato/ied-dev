@@ -206,7 +206,7 @@ namespace IED
 				return;
 			}
 
-			stl::scoped_lock lock(data.data->lock);
+			const std::lock_guard lock(data.data->lock);
 
 			ImGui::PushID("skel_tree_panel");
 

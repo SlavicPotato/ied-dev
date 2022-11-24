@@ -4050,7 +4050,7 @@ namespace IED
 						current.data->placementData.clear();
 						OnClearAllPlacement(current.handle, { *current.data });
 						break;
-					default:
+					case PanelType::Transform:
 						current.data->transformData.clear();
 						OnClearAllTransforms(current.handle, { *current.data });
 						break;
@@ -4123,7 +4123,7 @@ namespace IED
 							dstSex,
 							GetConfigClass());
 						break;
-					default:
+					case PanelType::Transform:
 						paste_move_entries(
 							std::move(data.data.transformData),
 							current.data->transformData,

@@ -4,6 +4,13 @@ namespace VectorMath
 {
 	extern const DirectX::XMMATRIX g_identity;
 
+	inline constexpr DirectX::XMVECTOR g_pidiv180{
+		0.017453292f,
+		0.017453292f,
+		0.017453292f,
+		0.017453292f
+	};
+
 	/*inline extern const __declspec(selectany) DirectX::XMVECTOR g_negFltMax{
 		-FLT_MAX,
 		-FLT_MAX,
