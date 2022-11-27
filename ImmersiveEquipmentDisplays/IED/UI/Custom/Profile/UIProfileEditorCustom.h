@@ -99,6 +99,8 @@ namespace IED
 
 			virtual constexpr bool BaseConfigStoreCC() const override;
 
+			virtual constexpr bool IsProfileEditor() const override;
+
 			//virtual WindowLayoutData GetWindowDimensions() const;
 
 			Controller&              m_controller;

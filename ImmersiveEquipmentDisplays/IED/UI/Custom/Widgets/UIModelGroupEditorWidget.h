@@ -501,6 +501,18 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			DrawTip(UITip::DisableHavok);
+			
+			/*if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::AttachLight, "H"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kAttachLight)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::AttachLight);*/
 
 			UICommon::PopDisabled(disabled);
 

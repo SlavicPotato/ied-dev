@@ -26,6 +26,17 @@ namespace IED
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
 
+	enum class GroupObjectEntryFlags : std::uint32_t
+	{
+		kNone = 0,
+
+		kHasLight = 1u << 1,
+	};
+
+	DEFINE_ENUM_CLASS_BITWISE(GroupObjectEntryFlags);
+
+	class IObjectManager;
+
 	struct ObjectEntryBase
 	{
 		ObjectEntryBase()  = default;
@@ -40,11 +51,11 @@ namespace IED
 			Game::ObjectRefHandle    a_handle,
 			const NiPointer<NiNode>& a_root,
 			const NiPointer<NiNode>& a_root1p,
-			ObjectDatabase&          a_db,
+			IObjectManager&          a_db,
 			bool                     a_defer);
 
-		bool SetNodeVisible(const bool a_switch) const noexcept;
-		bool DeferredHideNode(const std::uint8_t a_delay) const noexcept;
+		bool SetObjectVisible(const bool a_switch) const noexcept;
+		bool DeferredHideObject(const std::uint8_t a_delay) const noexcept;
 		void ResetDeferredHide() const noexcept;
 
 		SKMP_FORCEINLINE auto IsNodeVisible() const
@@ -92,9 +103,11 @@ namespace IED
 				{
 				}
 
-				NiPointer<NiNode>      rootNode;
-				NiPointer<NiNode>      object;
-				Data::cacheTransform_t transform;
+				NiPointer<NiNode>                   rootNode;
+				NiPointer<NiNode>                   object;
+				Data::cacheTransform_t              transform;
+				ObjectDatabase::ObjectDatabaseEntry dbEntry;
+				//NiPointer<NiPointLight>             light;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
 			};
@@ -162,23 +175,43 @@ namespace IED
 				Actor*                   a_actor,
 				const stl::fixed_string& a_sequence);
 
-			TESForm*                                               form{ nullptr };
-			Game::FormID                                           formid;
-			Game::FormID                                           modelForm;
-			stl::flag<ObjectEntryFlags>                            flags{ ObjectEntryFlags::kNone };
-			stl::flag<Data::BaseFlags>                             resetTriggerFlags{ Data::BaseFlags::kNone };
-			Data::NodeDescriptor                                   nodeDesc;
-			nodesRef_t                                             nodes;
-			Data::cacheTransform_t                                 transform;
-			stl::forward_list<ObjectDatabase::ObjectDatabaseEntry> dbEntries;
-			stl::unordered_map<stl::fixed_string, GroupObject>     groupObjects;
-			std::shared_ptr<PHYSimComponent>                       simComponent;
-			stl::fixed_string                                      currentSequence;
-			long long                                              created{ 0 };
-			std::optional<luid_tag>                                currentGeomTransformTag;
-			Game::FormID                                           owner;
-			std::uint8_t                                           hideCountdown{ 0 };
-			bool                                                   atmReference{ true };
+			void SetVisible(bool a_switch);
+
+			template <class Tf>
+			void visit_db_entries(Tf a_func)
+			{
+				if (auto& d = dbEntry)
+				{
+					a_func(d);
+				}
+
+				for (auto& e : groupObjects)
+				{
+					if (auto& d = e.second.dbEntry)
+					{
+						a_func(d);
+					}
+				}
+			}
+
+			TESForm*                                           form{ nullptr };
+			Game::FormID                                       formid;
+			Game::FormID                                       modelForm;
+			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
+			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
+			Data::NodeDescriptor                               nodeDesc;
+			nodesRef_t                                         nodes;
+			Data::cacheTransform_t                             transform;
+			ObjectDatabase::ObjectDatabaseEntry                dbEntry;
+			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
+			std::shared_ptr<PHYSimComponent>                   simComponent;
+			stl::fixed_string                                  currentSequence;
+			long long                                          created{ 0 };
+			std::optional<luid_tag>                            currentGeomTransformTag;
+			//NiPointer<NiPointLight>                            light;
+			Game::FormID                                       owner;
+			std::uint8_t                                       hideCountdown{ 0 };
+			bool                                               atmReference{ true };
 		};
 
 		struct ActiveData

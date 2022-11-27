@@ -118,6 +118,8 @@ namespace IED
 			TargetVendorFaction                 = 2107,
 			IsAvailable                         = 2108,
 			IsMountedActorHorse                 = 2109,
+			AttachLight                         = 2110,
+			HideLight                           = 2111,
 		};
 	}
 }

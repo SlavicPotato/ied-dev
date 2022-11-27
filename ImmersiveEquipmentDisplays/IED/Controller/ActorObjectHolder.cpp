@@ -91,11 +91,11 @@ namespace IED
 			m_root1p = root1p->AsNode();
 		}
 
-		m_skeletonCache = SkeletonCache::GetSingleton().Get2(a_actor);
+		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
 
 		if (m_root1p && a_syncToFirstPersonSkeleton)
 		{
-			m_skeletonCache1p = SkeletonCache::GetSingleton().Get2(a_actor, true);
+			m_skeletonCache1p = SkeletonCache::GetSingleton().Get(a_actor, true);
 		}
 
 		m_humanoidSkeleton =
@@ -629,7 +629,7 @@ namespace IED
 				Game::ObjectRefHandle    a_handle,
 				const NiPointer<NiNode>& a_root,
 				const NiPointer<NiNode>& a_root1p,
-				ObjectDatabase&          a_db) :
+				IObjectManager&          a_db) :
 				m_list(std::move(a_list)),
 				m_handle(a_handle),
 				m_root(a_root),
@@ -645,6 +645,8 @@ namespace IED
 					NiPointer<TESObjectREFR> ref;
 					(void)m_handle.LookupZH(ref);
 				}
+
+				std::lock_guard lock(m_db.GetLock());
 
 				for (auto& e : m_list)
 				{
@@ -662,7 +664,7 @@ namespace IED
 			Game::ObjectRefHandle m_handle;
 			NiPointer<NiNode>     m_root;
 			NiPointer<NiNode>     m_root1p;
-			ObjectDatabase&       m_db;
+			IObjectManager&       m_db;
 		};
 
 		ITaskPool::AddPriorityTask<DisposeStatesTask>(

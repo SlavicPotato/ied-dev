@@ -23,20 +23,11 @@ namespace IED
 			TESObjectREFR*           a_refr,
 			const stl::fixed_string& a_name);*/
 
-		std::optional<data_type::value_type> Get(
-			TESObjectREFR* a_refr,
-			bool           a_firstPerson = false);
-		
-		actor_entry_type Get2(
+		const const_actor_entry_type Get(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson = false);
 
-		[[nodiscard]] inline auto GetSize() const noexcept
-		{
-			std::lock_guard lock(m_lock);
-			return m_data.size();
-		}
-
+		[[nodiscard]] std::size_t GetSize() const noexcept;
 		[[nodiscard]] std::size_t GetTotalEntries() const noexcept;
 
 	private:
@@ -46,15 +37,15 @@ namespace IED
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson);
 
-		data_type::const_iterator get_or_create(
+		const const_actor_entry_type get_or_create(
 			const stl::fixed_string& a_key);
 
-		void fill(
-			const stl::fixed_string& a_key,
-			data_type::iterator      a_it);
+		static void fill(
+			const stl::fixed_string&        a_key,
+			actor_entry_type::element_type& a_entry);
 
 		mutable std::recursive_mutex m_lock;
-		data_type                     m_data;
+		data_type                    m_data;
 
 		static SkeletonCache m_Instance;
 	};

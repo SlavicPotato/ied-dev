@@ -34,6 +34,8 @@ namespace IED
 			kDisableAnimEventForwarding = 1u << 18,
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
+			/*kAttachLight                = 1u << 21,
+			kHideLight                  = 1u << 22,*/
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -43,6 +45,7 @@ namespace IED
 			                     kUseWorldModel |
 			                     kDisableWeaponAnims |
 			                     kDisableHavok
+			                     // | kAttachLight
 
 		};
 

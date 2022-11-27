@@ -200,6 +200,11 @@ namespace IED
 			return false;
 		}
 
+		constexpr bool UIProfileEditorCustom::IsProfileEditor() const
+		{
+			return true;
+		}
+
 		/*WindowLayoutData UIProfileEditorCustom::GetWindowDimensions() const
 		{
 			return { 100.0f, 600.0f, -1.0f, false };

@@ -2122,7 +2122,8 @@ namespace IED
 			}
 		}
 
-		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);
+		const bool isVisible     = !state->flags.test(ObjectEntryFlags::kInvisible);
+		//const bool isLightHidden = state->flags.test(ObjectEntryFlags::kHideLight);
 
 		if (a_visible)
 		{
@@ -2133,10 +2134,11 @@ namespace IED
 					PlayObjectSound(a_params, a_config, a_entry, true);
 				}
 
-				for (auto& e : state->dbEntries)
-				{
-					e->accessed = IPerfCounter::Query();
-				}
+				const auto ts = IPerfCounter::Query();
+
+				state->visit_db_entries([&](auto& a_entry) {
+					a_entry->accessed = ts;
+				});
 			}
 		}
 		else
@@ -2150,14 +2152,31 @@ namespace IED
 			}
 		}
 
-		if (isVisible != a_visible)
-		{
-			a_entry.SetNodeVisible(a_visible);
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
-		}
-
 		state->UpdateFlags(a_config);
+
+		if (isVisible != a_visible)
+		    //isLightHidden != a_config.flags.test(BaseFlags::kHideLight))
+		{
+			a_entry.SetObjectVisible(a_visible);
+
+			/*const bool lightVisible = a_visible &&
+			                          !state->flags.test(ObjectEntryFlags::kHideLight);
+
+			for (auto& e : state->groupObjects)
+			{
+				if (e.second.light)
+				{
+					e.second.light->SetVisible(lightVisible);
+				}
+			}
+
+			if (state->light)
+			{
+				state->light->SetVisible(lightVisible);
+			}
+
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);*/
+		}
 
 		bool updateTransform = false;
 
@@ -2170,8 +2189,6 @@ namespace IED
 				a_entry);
 
 			updateTransform = true;
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		if (state->transform != static_cast<const configTransform_t&>(a_config))
@@ -2179,8 +2196,6 @@ namespace IED
 			state->transform.Update(a_config);
 
 			updateTransform = true;
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		if (updateTransform)
@@ -2189,6 +2204,8 @@ namespace IED
 				state->transform,
 				state->nodes.rootNode,
 				state->nodes.ref);
+
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
@@ -2617,7 +2634,7 @@ namespace IED
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
-						if (objectEntry.DeferredHideNode(2))
+						if (objectEntry.DeferredHideObject(2))
 						{
 							a_params.mark_slot_presence_change(objectEntry.slotid);
 						}
@@ -2697,7 +2714,7 @@ namespace IED
 						settings.hkWeaponAnimations,
 						PhysicsProcessingEnabled()))
 				{
-					objectEntry.SetNodeVisible(visible);
+					objectEntry.SetObjectVisible(visible);
 
 					objectEntry.slotState.lastSlotted = objectEntry.data.state->formid;
 
@@ -3226,7 +3243,7 @@ namespace IED
 
 			if (result)
 			{
-				a_objectEntry.SetNodeVisible(visible);
+				a_objectEntry.SetObjectVisible(visible);
 
 				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
 				{
@@ -3379,7 +3396,7 @@ namespace IED
 
 			if (result)
 			{
-				a_objectEntry.SetNodeVisible(visible);
+				a_objectEntry.SetObjectVisible(visible);
 
 				UpdateObjectEffectShaders(
 					a_params,

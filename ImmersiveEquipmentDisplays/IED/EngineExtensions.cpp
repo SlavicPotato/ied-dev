@@ -36,6 +36,7 @@ namespace IED
 	{
 		m_controller                    = a_controller;
 		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
+		//m_conf.enableLights             = a_config->m_enableLights;
 
 		Install_RemoveAllBipedParts();
 		Hook_REFR_GarbageCollector();
@@ -77,6 +78,11 @@ namespace IED
 		{
 			Install_ParallelAnimationUpdate();
 		}
+
+		/*if (a_config->m_enableLights)
+		{
+			Install_AttachLight();
+		}*/
 	}
 
 	template <class T>
@@ -496,6 +502,52 @@ namespace IED
 		LogPatchEnd();
 	}
 
+	/*void EngineExtensions::Install_AttachLight()
+	{
+		const auto addr = TESObjectLIGH::_AttachLight_addr.As<std::uintptr_t>() + (IAL::IsAE() ? 0x2B9 : 0x2A4);
+
+		VALIDATE_MEMORY(
+			addr,
+			({ 0x44, 0x0F, 0xB6, 0xA5, 0x18, 0x01, 0x00, 0x00 }),
+			({ 0x44, 0x0F, 0xB6, 0xA5, 0x08, 0x01, 0x00, 0x00 }));
+
+		LogPatchBegin();
+		{
+			struct Assembly : JITASM::JITASM
+			{
+				Assembly(std::uintptr_t a_targetAddr) :
+					JITASM(ISKSE::GetLocalTrampoline())
+				{
+					Xbyak::Label retnCont;
+					Xbyak::Label retnSkip;
+					Xbyak::Label skip;
+
+					movzx(r12d, byte[rbp + (IAL::IsAE() ? 0x108 : 0x118)]);
+					cmp(r12d, 4);
+					je(skip);
+					jmp(ptr[rip + retnCont]);
+
+					L(skip);
+					xor_(r12d, r12d);
+					jmp(ptr[rip + retnSkip]);
+
+					L(retnCont);
+					dq(a_targetAddr + 0x8);
+
+					L(retnSkip);
+					dq(a_targetAddr + 0x1D);
+				}
+			};
+
+			Assembly code(addr);
+
+			ISKSE::GetBranchTrampoline().Write6Branch(
+				addr,
+				code.get());
+		}
+		LogPatchEnd();
+	}*/
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
 	{
 		{
@@ -587,7 +639,7 @@ namespace IED
 	{
 		auto result = a_obj->Clone3D2(a_refr);
 
-		if (a_refr->IsActor() && result)
+		if (result && a_refr->IsActor())
 		{
 			SkeletonExtensions::PostLoad3D(result);
 		}
@@ -858,17 +910,20 @@ namespace IED
 	}
 
 	auto EngineExtensions::AttachObject(
-		Actor*    a_actor,
-		NiNode*   a_root,
-		NiNode*   a_targetNode,
-		NiNode*   a_object,
-		ModelType a_modelType,
-		bool      a_leftWeapon,
-		bool      a_shield,
-		bool      a_dropOnDeath,
-		bool      a_removeScabbards,
-		bool      a_keepTorchFlame,
-		bool      a_disableHavok)
+		Actor*                   a_actor,
+		TESForm*                 a_modelForm,
+		NiNode*                  a_root,
+		NiNode*                  a_targetNode,
+		NiNode*                  a_object,
+		ModelType                a_modelType,
+		bool                     a_leftWeapon,
+		bool                     a_shield,
+		bool                     a_dropOnDeath,
+		bool                     a_removeScabbards,
+		bool                     a_keepTorchFlame,
+		bool                     a_disableHavok)
+		//bool                     a_attachLight,
+		//NiPointer<NiPointLight>& a_attachedLight)
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
@@ -877,6 +932,16 @@ namespace IED
 
 		if (auto bsxFlags = GetBSXFlags(a_object))
 		{
+			/*if (m_Instance.m_conf.enableLights &&
+			    a_attachLight &&
+			    a_modelType == ModelType::kLight)
+			{
+				if (auto light = a_modelForm->As<TESObjectLIGH>())
+				{
+					a_attachedLight = AttachLight(light, a_actor, a_object);
+				}
+			}*/
+
 			const stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
 			if (flags.test(BSXFlags::Flag::kAddon))
@@ -1126,6 +1191,19 @@ namespace IED
 			gc->QueueBehaviorGraph(manager);
 		}
 	}
+
+	/*NiPointer<NiPointLight> EngineExtensions::AttachLight(
+		TESObjectLIGH* a_light,
+		TESObjectREFR* a_refr,
+		NiAVObject*    a_object)
+	{
+		return a_light->AttachLight(a_refr, a_object, true, true, 4ui8);
+	}
+
+	void EngineExtensions::CleanupLights(NiNode* a_node)
+	{
+		SSNCleanupLights(*m_shadowSceneNode, a_node, true, true);
+	}*/
 
 	void EngineExtensions::UpdateRoot(NiNode* a_root)
 	{

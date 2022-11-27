@@ -48,6 +48,7 @@
 #include <skse64/NiControllers.h>
 #include <skse64/NiExtraData.h>
 #include <skse64/NiGeometry.h>
+#include <skse64/NiLight.h>
 #include <skse64/NiNodes.h>
 #include <skse64/NiSerialization.h>
 #include <skse64/PapyrusNativeFunctions.h>

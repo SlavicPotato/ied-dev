@@ -111,6 +111,8 @@ namespace IED
 
 			virtual WindowLayoutData GetWindowDimensions() const;
 
+			virtual constexpr bool IsProfileEditor() const override;
+
 			std::optional<cachedItem_t<entrySlotData_t>> m_cachedItem;
 
 			Controller& m_controller;

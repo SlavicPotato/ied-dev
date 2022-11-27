@@ -85,10 +85,11 @@ namespace IED
 		bool           m_enableEarlyLoadHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
 		bool           m_forceFlushSaveData{ false };
+		//bool           m_enableLights{ false };
 		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };
-		float    m_introBannerVOffset{ 110.0f };
-		LogLevel m_logLevel{ LogLevel::Message };
+		float          m_introBannerVOffset{ 110.0f };
+		LogLevel       m_logLevel{ LogLevel::Message };
 
 		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;

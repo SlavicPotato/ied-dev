@@ -122,6 +122,12 @@ namespace IED
 			bool        a_recursive,
 			bool        a_ignoreHavokFlag);
 
+		typedef bool (*shadowSceneNodeCleanupLights_t)(
+			ShadowSceneNode* a_ssn,
+			NiNode*          a_node,
+			bool             a_unk2,
+			bool             a_unk3);
+
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -140,6 +146,7 @@ namespace IED
 
 		static stl::flag<AttachResultFlags> AttachObject(
 			Actor*    a_actor,
+			TESForm*  a_modelForm,
 			NiNode*   a_root,
 			NiNode*   a_targetNode,
 			NiNode*   a_object,
@@ -150,6 +157,8 @@ namespace IED
 			bool      a_removeScabbards,
 			bool      a_keepTorchFlame,
 			bool      a_disableHavok);
+			//bool      a_attachLight,
+			//NiPointer<NiPointLight>& a_attachedLight);
 
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
@@ -158,6 +167,9 @@ namespace IED
 
 		static void CleanupWeaponBehaviorGraph(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
+
+		/*static NiPointer<NiPointLight> AttachLight(TESObjectLIGH* a_light, TESObjectREFR* a_refr, NiAVObject* a_object);
+		static void                    CleanupLights(NiNode* a_node);*/
 
 		static void UpdateRoot(NiNode* a_root);
 
@@ -180,6 +192,11 @@ namespace IED
 		{
 			return m_Instance.m_conf.weaponAdjustDisable;
 		}
+		
+		/*[[nodiscard]] inline static constexpr bool GetLightsEnabled() noexcept
+		{
+			return m_Instance.m_conf.enableLights;
+		}*/
 
 		[[nodiscard]] inline static constexpr bool ParallelAnimationUpdatesEnabled() noexcept
 		{
@@ -216,6 +233,7 @@ namespace IED
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
 		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
 		inline static const auto StripCollision            = IAL::Address<stripCollision_t>(76037, 77870);
+		//inline static const auto SSNCleanupLights          = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
@@ -252,6 +270,7 @@ namespace IED
 		void Install_WeaponAdjustDisable();
 		void Hook_ToggleFav();
 		void Install_ParallelAnimationUpdate();
+		//void Install_AttachLight();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
@@ -325,6 +344,7 @@ namespace IED
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };
+			//bool enableLights{ false };
 		} m_conf;
 
 		Controller* m_controller{ nullptr };

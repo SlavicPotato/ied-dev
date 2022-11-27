@@ -468,6 +468,11 @@ namespace IED
 			return { 150.0f, 600.0f, -1.0f, false };
 		}
 
+		constexpr bool UIProfileEditorSlot::IsProfileEditor() const
+		{
+			return true;
+		}
+
 		void UIProfileEditorSlot::DrawItem(SlotProfile& a_profile)
 		{
 			if (m_cachedItem)

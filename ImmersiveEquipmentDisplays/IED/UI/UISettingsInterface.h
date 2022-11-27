@@ -19,6 +19,7 @@ namespace IED
 
 			bool GetShaderProcessingEnabled() const noexcept;
 			bool GetPhysicsProcessingEnabled() const noexcept;
+			//bool GetLightsEnabled() const noexcept;
 
 			void MarkSettingsDirty();
 

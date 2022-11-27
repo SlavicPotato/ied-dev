@@ -509,7 +509,7 @@ namespace IED
 						{
 							update = true;
 
-							a_v.data.state->nodes.rootNode->SetVisible(false);
+							a_v.data.state->SetVisible(false);
 						}
 					}
 				}

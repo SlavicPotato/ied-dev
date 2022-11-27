@@ -52,7 +52,7 @@ namespace IED
 					return false;
 				}
 
-				it = m_data.emplace(std::move(spath), std::move(entry)).first;
+				it = m_data.emplace(spath, std::move(entry)).first;
 
 				QueueDatabaseCleanup();
 			}

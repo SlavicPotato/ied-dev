@@ -536,9 +536,9 @@ namespace IED
 		auto state = std::make_unique<ObjectEntryBase::State>();
 
 		NiPointer<NiNode>   object;
-		ObjectDatabaseEntry entry;
+		ObjectDatabaseEntry dbentry;
 
-		if (!GetUniqueObject(modelParams.path, entry, object))
+		if (!GetUniqueObject(modelParams.path, dbentry, object))
 		{
 			Warning(
 				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -550,9 +550,9 @@ namespace IED
 			return false;
 		}
 
-		if (entry)
+		if (dbentry)
 		{
-			state->dbEntries.emplace_front(std::move(entry));
+			state->dbEntry = std::move(dbentry);
 		}
 
 		a_params.ResetEffectShaders();
@@ -606,6 +606,7 @@ namespace IED
 
 		const auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
+			a_modelForm,
 			a_params.root,
 			objectAttachmentNode,
 			object,
@@ -616,6 +617,8 @@ namespace IED
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok));
+			/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
+			state->light);*/
 
 		//UpdateDownwardPass(itemRoot);
 
@@ -744,6 +747,7 @@ namespace IED
 			modelParams_t                                          params;
 			NiPointer<NiNode>                                      object;
 			ObjectEntryBase::State::GroupObject*                   grpObject{ nullptr };
+			ObjectDatabaseEntry                                    dbEntry;
 		};
 
 		stl::forward_list<tmpdata_t> modelParams;
@@ -817,9 +821,7 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
-			ObjectDatabaseEntry entry;
-
-			if (!GetUniqueObject(e.params.path, entry, e.object))
+			if (!GetUniqueObject(e.params.path, e.dbEntry, e.object))
 			{
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -829,11 +831,6 @@ namespace IED
 					e.params.path);
 
 				continue;
-			}
-
-			if (entry)
-			{
-				state->dbEntries.emplace_front(std::move(entry));
 			}
 
 			loaded = true;
@@ -906,6 +903,11 @@ namespace IED
 											 e.object)
 			              .first->second;
 
+			if (e.dbEntry)
+			{
+				n.dbEntry = std::move(e.dbEntry);
+			}
+
 			n.transform.Update(e.entry->second.transform);
 
 			UpdateObjectTransform(
@@ -918,6 +920,7 @@ namespace IED
 
 			EngineExtensions::AttachObject(
 				a_params.actor,
+				e.form,
 				a_params.root,
 				itemRoot,
 				e.object,
@@ -934,6 +937,9 @@ namespace IED
 				a_disableHavok ||
 					a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
+				/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight),
+				n.light);*/
 
 			e.grpObject = std::addressof(n);
 		}

@@ -284,6 +284,8 @@ namespace IED
 				const baseEffectShaderEditorParams_t<T>& a_params,
 				bool                                     a_updateTag) override;
 
+			virtual constexpr bool IsProfileEditor() const;
+
 			UIFormSelectorWidget                        m_ffFormSelector;
 			UIFormFilterWidget<bcFormFilterParams_t<T>> m_formFilter;
 			UIFormPickerWidget                          m_formPicker;
@@ -1437,8 +1439,40 @@ namespace IED
 				}
 				DrawTip(UITip::KeepTorchFlame);
 
+				/*const bool disable = !GetLightsEnabled() && !IsProfileEditor();
+
+				UICommon::PushDisabled(disable);
+
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::DisableHavok, "5"),
+						LS(UIWidgetCommonStrings::AttachLight, "5"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kAttachLight)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kAttachLight);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::AttachLight);
+				
+				if (ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::HideLight, "6"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kHideLight)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kHideLight);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				DrawTip(UITip::HideLight);
+
+				UICommon::PopDisabled(disable);*/
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIWidgetCommonStrings::DisableHavok, "7"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisableHavok)))
 				{
@@ -1451,7 +1485,7 @@ namespace IED
 				DrawTip(UITip::DisableHavok);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::DropOnDeath, "6"),
+						LS(UIBaseConfigString::DropOnDeath, "8"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDropOnDeath)))
 				{
@@ -2817,6 +2851,12 @@ namespace IED
 					a_params.params,
 					PostChangeAction::Evaluate);
 			}
+		}
+
+		template <class T>
+		constexpr bool UIBaseConfigWidget<T>::IsProfileEditor() const
+		{
+			return false;
 		}
 
 	}

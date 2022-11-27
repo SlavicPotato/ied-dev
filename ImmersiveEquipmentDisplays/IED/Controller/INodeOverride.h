@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CMENodeEntry.h"
 #include "IED/CommonParams.h"
 #include "IED/ConfigCommon.h"
 #include "IED/FormCommon.h"
@@ -17,7 +18,6 @@ namespace IED
 	class ActorObjectHolder;
 	class Controller;
 	struct WeaponNodeEntry;
-	struct CMENodeEntry;
 
 	class INodeOverride
 	{

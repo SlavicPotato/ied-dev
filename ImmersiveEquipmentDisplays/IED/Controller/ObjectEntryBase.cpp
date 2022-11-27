@@ -2,13 +2,15 @@
 
 #include "ObjectEntryBase.h"
 
+#include "IObjectManager.h"
+
 namespace IED
 {
 	bool ObjectEntryBase::reset(
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
-		ObjectDatabase&          a_db,
+		IObjectManager&          a_db,
 		bool                     a_defer)
 	{
 		if (!data)
@@ -29,7 +31,7 @@ namespace IED
 					Game::ObjectRefHandle         a_handle,
 					const NiPointer<NiNode>&      a_root,
 					const NiPointer<NiNode>&      a_root1p,
-					ObjectDatabase&               a_db) :
+					IObjectManager&               a_db) :
 					m_data(std::move(a_data)),
 					m_handle(a_handle),
 					m_root(a_root),
@@ -46,6 +48,8 @@ namespace IED
 						(void)m_handle.LookupZH(ref);
 					}
 
+					std::lock_guard lock(m_db.GetLock());
+
 					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
 				}
 
@@ -59,7 +63,7 @@ namespace IED
 				Game::ObjectRefHandle       m_handle;
 				NiPointer<NiNode>           m_root;
 				NiPointer<NiNode>           m_root1p;
-				ObjectDatabase&             m_db;
+				IObjectManager&             m_db;
 			};
 
 			ITaskPool::AddPriorityTask<DisposeStateTask>(
@@ -79,52 +83,56 @@ namespace IED
 		return result;
 	}
 
-	bool ObjectEntryBase::SetNodeVisible(bool a_switch) const noexcept
+	bool ObjectEntryBase::SetObjectVisible(bool a_switch) const noexcept
 	{
-		if (!data.state)
+		auto& state = data.state;
+
+		if (!state)
 		{
 			return false;
 		}
 
 		a_switch = !a_switch;
 
-		if (!data.state->hideCountdown &&
-		    a_switch == data.state->flags.test(ObjectEntryFlags::kInvisible))
+		if (!state->hideCountdown &&
+		    a_switch == state->flags.test(ObjectEntryFlags::kInvisible))
 		{
 			return false;
 		}
 
-		data.state->hideCountdown = 0;
-		data.state->nodes.rootNode->SetHidden(a_switch);
+		state->hideCountdown = 0;
+		state->SetVisible(!a_switch);
 
-		data.state->flags.set(ObjectEntryFlags::kInvisible, a_switch);
+		state->flags.set(ObjectEntryFlags::kInvisible, a_switch);
 
 		return true;
 	}
 
-	bool ObjectEntryBase::DeferredHideNode(std::uint8_t a_delay) const noexcept
+	bool ObjectEntryBase::DeferredHideObject(std::uint8_t a_delay) const noexcept
 	{
 		if (!a_delay)
 		{
 			return false;
 		}
 
-		if (!data.state)
+		auto& state = data.state;
+
+		if (!state)
 		{
 			return false;
 		}
 
-		if (data.state->flags.test(ObjectEntryFlags::kInvisible))
+		if (state->flags.test(ObjectEntryFlags::kInvisible))
 		{
 			return false;
 		}
 
-		if (data.state->hideCountdown == 0)
+		if (state->hideCountdown == 0)
 		{
-			data.state->hideCountdown = a_delay;
+			state->hideCountdown = a_delay;
 		}
 
-		data.state->flags.set(ObjectEntryFlags::kInvisible);
+		state->flags.set(ObjectEntryFlags::kInvisible);
 
 		return true;
 	}
@@ -145,29 +153,52 @@ namespace IED
 		Game::ObjectRefHandle a_handle)
 	{
 		nodes.physics.reset();
-		nodes.object.reset();
+
+		const auto ts = IPerfCounter::Query();
 
 		for (auto& e : groupObjects)
 		{
+			/*if (e.second.light)
+			{
+				EngineExtensions::CleanupLights(e.second.object.get());
+				e.second.light.reset();
+			}*/
+
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
 				e.second.rootNode);
 
-			if (e.second.weapAnimGraphManagerHolder)
+			if (auto& d = e.second.weapAnimGraphManagerHolder)
 			{
-				EngineExtensions::CleanupWeaponBehaviorGraph(
-					e.second.weapAnimGraphManagerHolder);
+				EngineExtensions::CleanupWeaponBehaviorGraph(d);
+			}
+
+			if (auto& d = e.second.dbEntry)
+			{
+				d->accessed = ts;
 			}
 		}
+
+		nodes.object.reset();
+
+		/*if (light)
+		{
+			EngineExtensions::CleanupLights(nodes.object.get());
+			light.reset();
+		}*/
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,
 			nodes.rootNode);
 
-		if (weapAnimGraphManagerHolder)
+		if (auto& d = weapAnimGraphManagerHolder)
 		{
-			EngineExtensions::CleanupWeaponBehaviorGraph(
-				weapAnimGraphManagerHolder);
+			EngineExtensions::CleanupWeaponBehaviorGraph(d);
+		}
+
+		if (auto& d = dbEntry)
+		{
+			d->accessed = ts;
 		}
 	}
 
@@ -240,6 +271,24 @@ namespace IED
 		}
 	}
 
+	void ObjectEntryBase::State::SetVisible(bool a_switch)
+	{
+		/*for (auto& e : groupObjects)
+		{
+			if (e.second.light)
+			{
+				e.second.light->SetVisible(a_switch && !flags.test(ObjectEntryFlags::kHideLight));
+			}
+		}
+
+		if (light)
+		{
+			light->SetVisible(a_switch && !flags.test(ObjectEntryFlags::kHideLight));
+		}*/
+
+		nodes.rootNode->SetVisible(a_switch);
+	}
+
 	void ObjectEntryBase::AnimationState::UpdateAndSendAnimationEvent(
 		const stl::fixed_string& a_event)
 	{
@@ -274,20 +323,9 @@ namespace IED
 		if (state)
 		{
 			state->Cleanup(a_handle);
-
-			if (!state->dbEntries.empty())
-			{
-				const auto ts = IPerfCounter::Query();
-
-				for (auto& e : state->dbEntries)
-				{
-					e->accessed = ts;
-				}
-
-				a_db.QueueDatabaseCleanup();
-			}
-
 			state.reset();
+
+			a_db.QueueDatabaseCleanup();
 		}
 	}
 

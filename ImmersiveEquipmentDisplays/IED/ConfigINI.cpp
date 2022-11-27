@@ -73,7 +73,7 @@ namespace IED
 
 		m_disableNPCProcessing =
 			reader.GetBoolValue(SECT_DEBUG, "DisableNPCProcessing", false);
-		
+
 		m_forceFlushSaveData =
 			reader.GetBoolValue(SECT_DEBUG, "ForceFlushSaveData", false);
 
@@ -136,7 +136,7 @@ namespace IED
 				r.first->second.second);
 		}
 
-		m_agManualMode = reader.GetLongValue(SECT_ANIM, "Mode", 0); 
+		m_agManualMode = reader.GetLongValue(SECT_ANIM, "Mode", 0);
 
 		if (m_agManualMode > 0)
 		{
@@ -184,6 +184,7 @@ namespace IED
 		m_disableEffectHook = reader.GetBoolValue(SECT_DEBUG, "DisableEffectHook", false);
 
 		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
+		//m_enableLights             = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
 
 		m_loaded = reader.is_loaded();
 

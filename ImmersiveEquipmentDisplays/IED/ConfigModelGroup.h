@@ -23,7 +23,8 @@ namespace IED
 			kPlaySequence               = 1u << 9,
 			kDisableWeaponAnims         = 1u << 10,
 			kDisableAnimEventForwarding = 1u << 11,
-			kAnimationEvent             = 1u << 12
+			kAnimationEvent             = 1u << 12,
+			//kAttachLight                = 1u << 13,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);

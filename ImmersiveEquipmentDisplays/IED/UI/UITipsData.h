@@ -104,6 +104,8 @@ namespace IED
 			EquipmentPhysics                    = 1095,
 			PhysicsOffWarning                   = 1096,
 			PVConstraintFriction                = 1097,
+			AttachLight                         = 1098,
+			HideLight                           = 1099,
 		};
 
 	}

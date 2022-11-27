@@ -34,6 +34,11 @@ namespace IED
 			return m_controller.PhysicsProcessingEnabled();
 		}
 
+		/*bool UISettingsInterface::GetLightsEnabled() const noexcept
+		{
+			return EngineExtensions::GetLightsEnabled();
+		}*/
+
 		void UISettingsInterface::MarkSettingsDirty()
 		{
 			m_controller.GetConfigStore().settings.mark_dirty();

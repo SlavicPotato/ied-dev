@@ -12,33 +12,24 @@ namespace IED
 	auto SkeletonCache::Get(
 		TESObjectREFR* a_refr,
 		bool           a_firstPerson)
-		-> std::optional<data_type::value_type>
+		-> const const_actor_entry_type
 	{
-		const std::lock_guard lock(m_lock);
-
-		auto key = mk_key(a_refr, a_firstPerson);
-		if (key.empty())
+		const auto key = mk_key(a_refr, a_firstPerson);
+		if (!key.empty())
+		{
+			return get_or_create(key);
+		}
+		else
 		{
 			return {};
 		}
-
-		return *get_or_create(key);
 	}
 
-	auto SkeletonCache::Get2(
-		TESObjectREFR* a_refr,
-		bool           a_firstPerson)
-		-> actor_entry_type
+	std::size_t SkeletonCache::GetSize() const noexcept
 	{
 		const std::lock_guard lock(m_lock);
 
-		auto key = mk_key(a_refr, a_firstPerson);
-		if (key.empty())
-		{
-			return {};
-		}
-
-		return get_or_create(key)->second;
+		return m_data.size();
 	}
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept
@@ -80,23 +71,25 @@ namespace IED
 
 	auto SkeletonCache::get_or_create(
 		const stl::fixed_string& a_key)
-		-> data_type::const_iterator
+		-> const const_actor_entry_type
 	{
-		auto r = m_data.try_emplace(a_key);
+		const std::lock_guard lock(m_lock);
 
-		if (!r.first->second)
+		const auto r = m_data.try_emplace(a_key);
+
+		if (r.second)
 		{
 			r.first->second = std::make_unique<actor_entry_type::element_type>();
 
-			fill(a_key, r.first);
+			fill(a_key, *r.first->second);
 		}
 
-		return r.first;
+		return r.first->second;
 	}
 
 	void SkeletonCache::fill(
-		const stl::fixed_string& a_key,
-		data_type::iterator      a_it)
+		const stl::fixed_string&        a_key,
+		actor_entry_type::element_type& a_entry)
 	{
 		BSResourceNiBinaryStream binaryStream(a_key.c_str());
 		if (!binaryStream.IsValid())
@@ -123,22 +116,23 @@ namespace IED
 				continue;
 			}
 
-			auto object = NRTTI<NiAVObject>()(e);
-			if (!object)
+			if (auto object = NRTTI<NiAVObject>()(e))
 			{
-				continue;
+				::Util::Node::Traverse(
+					object,
+					[&](NiAVObject * a_object) [[msvc::forceinline]] {
+						const auto& name = a_object->m_name;
+
+						if (!name.empty())
+						{
+							a_entry.try_emplace(name.data(), a_object->m_localTransform);
+						}
+
+						return ::Util::Node::VisitorControl::kContinue;
+					});
 			}
 
-			::Util::Node::Traverse(object, [&](NiAVObject* a_object) {
-				auto& name = a_object->m_name;
-
-				if (!name.empty())
-				{
-					a_it->second->try_emplace(name.data(), a_object->m_localTransform);
-				}
-
-				return ::Util::Node::VisitorControl::kContinue;
-			});
+			break;
 		}
 	}
 }
