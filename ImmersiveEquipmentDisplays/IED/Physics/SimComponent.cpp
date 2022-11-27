@@ -202,7 +202,7 @@ namespace IED
 		const Data::configNodePhysicsValues_t& a_conf) noexcept
 	{
 		m_conf = a_conf;
-		m_tag  = a_conf;
+
 		ProcessConfig();
 	}
 
@@ -241,7 +241,7 @@ namespace IED
 			m_conf.rotAdjust = XMVector3Normalize(tmp);
 		};
 
-		m_gravityCorrection.setZ(m_conf.gravityCorrection);
+		m_gravityCorrection.setZ(std::clamp(m_conf.gravityCorrection, -8192.f, 8192.f));
 
 		m_resistanceOn = m_conf.resistance > 0.0f;
 
