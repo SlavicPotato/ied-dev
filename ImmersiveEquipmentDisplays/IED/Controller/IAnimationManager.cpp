@@ -273,7 +273,7 @@ namespace IED
 					{
 						animVar = 0;
 					}
-					else if (is_shield(objLeft))
+					else if (is_shield(objLeft) && shield_on_back_enabled(a_actor, this))
 					{
 						animVar = 3;
 					}
