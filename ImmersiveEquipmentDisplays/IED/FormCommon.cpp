@@ -342,6 +342,8 @@ namespace IED
 			return FormHasKeywordImpl<BGSLocation>(a_form, a_keyword);
 		case TESNPC::kTypeID:
 			return FormHasKeywordImpl<TESNPC>(a_form, a_keyword);
+		case EffectSetting::kTypeID:
+			return FormHasKeywordImpl<EffectSetting>(a_form, a_keyword);
 		default:
 			return false;
 		}

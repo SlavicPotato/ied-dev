@@ -195,7 +195,6 @@ namespace IED
 				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Idle:
 				case NodeOverrideConditionType::Faction:
-				case NodeOverrideConditionType::Effect:
 					form = a_form;
 					break;
 				case NodeOverrideConditionType::Form:
@@ -232,6 +231,7 @@ namespace IED
 				case NodeOverrideConditionType::Mounted:
 				case NodeOverrideConditionType::Idle:
 				case NodeOverrideConditionType::Skeleton:
+				case NodeOverrideConditionType::Effect:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{

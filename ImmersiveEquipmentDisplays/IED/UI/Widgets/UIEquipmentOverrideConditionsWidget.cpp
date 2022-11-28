@@ -283,24 +283,10 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Effect, "M"))
+					if (LCG_MI(CommonStrings::Effect, "M"))
 					{
-						UpdateMatchParamAllowedTypes(Data::EquipmentOverrideConditionType::Effect);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_aoNewEntryEffectID))
-						{
-							if (m_aoNewEntryEffectID)
-							{
-								result.action    = BaseConfigEditorAction::Insert;
-								result.form      = m_aoNewEntryEffectID;
-								result.entryType = Data::EquipmentOverrideConditionType::Effect;
-
-								ImGui::CloseCurrentPopup();
-							}
-						}
-
-						ImGui::EndMenu();
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Effect;
 					}
 
 					if (LCG_BM(CommonStrings::Variable, "N"))
@@ -818,6 +804,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::NPC:
 			case Data::EquipmentOverrideConditionType::Race:
 			case Data::EquipmentOverrideConditionType::Idle:
+			case Data::EquipmentOverrideConditionType::Effect:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -1088,7 +1075,6 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Quest:
 					case Data::EquipmentOverrideConditionType::Global:
 					case Data::EquipmentOverrideConditionType::Faction:
-					case Data::EquipmentOverrideConditionType::Effect:
 						if (result.form)
 						{
 							a_entry.emplace_back(
@@ -1114,6 +1100,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Presence:
 					case Data::EquipmentOverrideConditionType::Idle:
 					case Data::EquipmentOverrideConditionType::Skeleton:
+					case Data::EquipmentOverrideConditionType::Effect:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1380,7 +1367,6 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Quest:
 						case Data::EquipmentOverrideConditionType::Global:
 						case Data::EquipmentOverrideConditionType::Faction:
-						case Data::EquipmentOverrideConditionType::Effect:
 							if (result.form)
 							{
 								it = a_entry.emplace(
@@ -1405,6 +1391,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Presence:
 						case Data::EquipmentOverrideConditionType::Idle:
 						case Data::EquipmentOverrideConditionType::Skeleton:
+						case Data::EquipmentOverrideConditionType::Effect:
 
 							it = a_entry.emplace(
 								it,
@@ -1884,14 +1871,14 @@ namespace IED
 
 							case Data::EquipmentOverrideConditionType::Effect:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Effect);
 
 								break;

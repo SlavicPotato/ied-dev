@@ -917,15 +917,45 @@ namespace IED
 			const Tm&                     a_match,
 			const CachedActiveEffectData& a_cached)
 		{
-			if (auto fid = a_match.form.get_id())
-			{
-				auto& data = a_cached.GetEffectContainer();
+			auto& data = a_cached.GetEffectContainer();
 
-				auto it = data.find(fid);
-				if (it != data.end())
+			if (!data.empty())
+			{
+				if (auto form = a_match.form.get_form<EffectSetting>())
 				{
-					return a_match.flags.test(Tf::kNegateMatch2) != (fid == *it);
+					auto it = data.find(form);
+
+					const auto rv = a_match.flags.test(Tf::kNegateMatch2);
+
+					if (it == data.end())
+					{
+						return rv;
+					}
+
+					if (a_match.keyword.get_id())
+					{
+						if (a_match.flags.test(Tf::kNegateMatch1) ==
+						    IFormCommon::HasKeyword(form, a_match.keyword))
+						{
+							return false;
+						}
+					}
+
+					return !rv;
 				}
+				else
+				{
+					if (auto keyword = a_match.keyword.get_form<BGSKeyword>())
+					{
+						if (a_match.flags.test(Tf::kNegateMatch1) ==
+						    a_cached.HasEffectWithKeyword(keyword))
+						{
+							return false;
+						}
+					}
+				}
+
+				return true;
 			}
 
 			return false;

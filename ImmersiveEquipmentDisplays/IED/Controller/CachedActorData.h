@@ -92,7 +92,7 @@ namespace IED
 	class CachedActiveEffectData
 	{
 		using container_type =
-			stl::set_sa<Game::FormID>;
+			stl::set_sa<EffectSetting*>;
 
 	public:
 		CachedActiveEffectData(Actor* a_actor);
@@ -103,6 +103,8 @@ namespace IED
 		{
 			return data;
 		}
+
+		bool HasEffectWithKeyword(const BGSKeyword* a_keyword) const;
 
 	private:
 		template <class Tf>

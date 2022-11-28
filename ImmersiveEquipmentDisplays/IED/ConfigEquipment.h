@@ -166,7 +166,6 @@ namespace IED
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
 				case EquipmentOverrideConditionType::Faction:
-				case EquipmentOverrideConditionType::Effect:
 					form = a_form;
 					break;
 				case EquipmentOverrideConditionType::Form:
@@ -247,6 +246,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Presence:
 				case EquipmentOverrideConditionType::Idle:
 				case EquipmentOverrideConditionType::Skeleton:
+				case EquipmentOverrideConditionType::Effect:
 
 					switch (a_matchType)
 					{

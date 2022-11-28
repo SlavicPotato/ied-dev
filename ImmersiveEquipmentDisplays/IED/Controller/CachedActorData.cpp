@@ -81,10 +81,23 @@ namespace IED
 		visit_effects(
 			list,
 			[&](auto* a_mgef) {
-				data.emplace(a_mgef->formID);
+				data.emplace(a_mgef);
 			});
 
 		return true;
+	}
+
+	bool CachedActiveEffectData::HasEffectWithKeyword(const BGSKeyword* a_keyword) const
+	{
+		for (auto& e : data)
+		{
+			if (e->HasKeyword(a_keyword))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	std::size_t CachedActiveEffectData::GetSignature(

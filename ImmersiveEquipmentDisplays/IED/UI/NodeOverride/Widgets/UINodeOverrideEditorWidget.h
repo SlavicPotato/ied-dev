@@ -2881,32 +2881,18 @@ namespace IED
 						ImGui::EndMenu();
 					}
 					
-					if (LCG_BM(CommonStrings::Effect, "K"))
+					if (LCG_MI(CommonStrings::Effect, "K"))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Effect);
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Effect);
 
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDEffect))
-						{
-							if (m_ooNewEntryIDEffect)
-							{
-								a_entry.emplace_back(
-									Data::NodeOverrideConditionType::Effect,
-									m_ooNewEntryIDEffect);
+						HandleValueUpdate(
+							a_handle,
+							a_data,
+							a_params,
+							a_exists);
 
-								HandleValueUpdate(
-									a_handle,
-									a_data,
-									a_params,
-									a_exists);
-
-								result = NodeOverrideCommonAction::Insert;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-
-						ImGui::EndMenu();
+						result = NodeOverrideCommonAction::Insert;
 					}
 
 					if (LCG_BM(CommonStrings::Variable, "L"))
@@ -3175,7 +3161,6 @@ namespace IED
 						case Data::NodeOverrideConditionType::Mounting:
 						case Data::NodeOverrideConditionType::Mounted:
 						case Data::NodeOverrideConditionType::Faction:
-						case Data::NodeOverrideConditionType::Effect:
 
 							it = a_entry.emplace(
 								it,
@@ -3214,6 +3199,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Weather:
 						case Data::NodeOverrideConditionType::Idle:
 						case Data::NodeOverrideConditionType::Skeleton:
+						case Data::NodeOverrideConditionType::Effect:
 
 							it = a_entry.emplace(
 								it,
@@ -3646,14 +3632,14 @@ namespace IED
 								
 							case Data::NodeOverrideConditionType::Effect:
 
-								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
-
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Keyword>(
+									e.keyword.get_id());
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
-								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								vdesc = m_condParamEditor.GetFormKeywordExtraDesc(nullptr);
 								tdesc = LS(CommonStrings::Effect);
 
 								break;
@@ -4445,23 +4431,10 @@ namespace IED
 						ImGui::EndMenu();
 					}
 					
-					if (LCG_BM(CommonStrings::Faction, "K"))
+					if (ImGui::MenuItem(LS(CommonStrings::Effect, "K")))
 					{
-						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Effect);
-
-						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
-								m_ooNewEntryIDEffect))
-						{
-							if (m_ooNewEntryIDEffect)
-							{
-								result.action    = NodeOverrideCommonAction::Insert;
-								result.form      = m_ooNewEntryIDEffect;
-								result.matchType = Data::NodeOverrideConditionType::Effect;
-							}
-
-							ImGui::CloseCurrentPopup();
-						}
-						ImGui::EndMenu();
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Effect;
 					}
 
 					if (LCG_BM(CommonStrings::Variable, "L"))
@@ -4878,6 +4851,7 @@ namespace IED
 			case Data::NodeOverrideConditionType::NPC:
 			case Data::NodeOverrideConditionType::Race:
 			case Data::NodeOverrideConditionType::Idle:
+			case Data::NodeOverrideConditionType::Effect:
 
 				if (a_item == ConditionParamItem::Form)
 				{
