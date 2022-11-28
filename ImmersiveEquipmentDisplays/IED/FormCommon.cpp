@@ -279,6 +279,9 @@ namespace IED
 			return GetFullName<TESFaction>(a_form);
 		case EffectSetting::kTypeID:
 			return GetFullName<EffectSetting>(a_form);
+		case EnchantmentItem::kTypeID:
+		case MagicItem::kTypeID:
+			return GetFullName<MagicItem>(a_form);
 		case TESClass::kTypeID:
 			return GetFullName<TESClass>(a_form);
 		case TESObjectCELL::kTypeID:
@@ -344,6 +347,9 @@ namespace IED
 			return FormHasKeywordImpl<TESNPC>(a_form, a_keyword);
 		case EffectSetting::kTypeID:
 			return FormHasKeywordImpl<EffectSetting>(a_form, a_keyword);
+		case EnchantmentItem::kTypeID:
+		case MagicItem::kTypeID:
+			return FormHasKeywordImpl<MagicItem>(a_form, a_keyword);
 		default:
 			return false;
 		}

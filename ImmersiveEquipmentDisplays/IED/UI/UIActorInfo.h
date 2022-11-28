@@ -9,6 +9,7 @@
 
 #include "UILocalizationInterface.h"
 
+#include "IED/ActorActiveEffectInfo.h"
 #include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
 
@@ -20,14 +21,15 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			std::recursive_mutex lock;
-			long long            lastUpdate{ 0 };
-			bool                 initialized{ false };
-			bool                 succeeded{ false };
-			Game::FormID         actor;
-			actorInfoEntry_t     entry;
-			actorInventoryInfo_t inventory;
-			actorFactionInfo_t   factions;
+			std::recursive_mutex    lock;
+			long long               lastUpdate{ 0 };
+			bool                    initialized{ false };
+			bool                    succeeded{ false };
+			Game::FormID            actor;
+			actorInfoEntry_t        entry;
+			actorInventoryInfo_t    inventory;
+			actorFactionInfo_t      factions;
+			actorActiveEffectInfo_t effects;
 		};
 
 		struct ActorInfoData
@@ -104,6 +106,10 @@ namespace IED
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
+			
+			void DrawEffectTreeContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
 
 			void DrawInventoryFilterTree();
 
@@ -112,6 +118,10 @@ namespace IED
 				const ActorInfoAggregate& a_data);
 
 			void DrawInventoryEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
+
+			void DrawEffectEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
 

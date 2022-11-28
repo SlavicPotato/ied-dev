@@ -244,5 +244,6 @@ namespace IED
 		Source          = 315,
 		Physics         = 316,
 		Effect          = 317,
+		Spell           = 318,
 	};
 }

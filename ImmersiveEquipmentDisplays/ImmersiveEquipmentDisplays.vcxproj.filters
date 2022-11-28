@@ -1715,6 +1715,9 @@
     <ClInclude Include="IED\TransformOverrides.h">
       <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ActorActiveEffectInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2736,6 +2739,9 @@
     </ClCompile>
     <ClCompile Include="IED\TransformOverrides.cpp">
       <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorActiveEffectInfo.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

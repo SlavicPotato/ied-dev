@@ -386,6 +386,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="Drivers\UI\Tasks.h" />
     <ClInclude Include="Fonts\FontInfo.h" />
     <ClInclude Include="Fonts\IGlyphData.h" />
+    <ClInclude Include="IED\ActorActiveEffectInfo.h" />
     <ClInclude Include="IED\ActorFactionInfo.h" />
     <ClInclude Include="IED\ActorInventoryInfo.h" />
     <ClInclude Include="IED\ActorSkeletonTreeData.h" />
@@ -921,6 +922,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="Drivers\UI\InputHandler.cpp" />
     <ClCompile Include="Drivers\UI\Tasks.cpp" />
     <ClCompile Include="Fonts\IGlyphData.cpp" />
+    <ClCompile Include="IED\ActorActiveEffectInfo.cpp" />
     <ClCompile Include="IED\ActorFactionInfo.cpp" />
     <ClCompile Include="IED\ActorInventoryInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />

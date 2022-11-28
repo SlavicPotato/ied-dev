@@ -133,7 +133,7 @@ namespace IED
 				if (ImGui::BeginTabItem(LS(CommonStrings::Inventory, "1")))
 				{
 					ImGui::Spacing();
-					ImGui::PushID("inv");
+					ImGui::PushID("1");
 
 					DrawInventoryTreeContents(a_handle, a_data);
 
@@ -142,11 +142,11 @@ namespace IED
 
 					ImGui::EndTabItem();
 				}
-				
+
 				if (ImGui::BeginTabItem(LS(CommonStrings::Factions, "2")))
 				{
 					ImGui::Spacing();
-					ImGui::PushID("fac");
+					ImGui::PushID("2");
 
 					DrawFactionTreeContents(a_handle, a_data);
 
@@ -155,7 +155,20 @@ namespace IED
 
 					ImGui::EndTabItem();
 				}
-				
+
+				if (ImGui::BeginTabItem(LS(UIActorInfoStrings::ActiveEffects, "3")))
+				{
+					ImGui::Spacing();
+					ImGui::PushID("3");
+
+					DrawEffectTreeContents(a_handle, a_data);
+
+					ImGui::PopID();
+					ImGui::Spacing();
+
+					ImGui::EndTabItem();
+				}
+
 				ImGui::EndTabBar();
 			}
 		}
@@ -673,6 +686,27 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+		void UIActorInfo::DrawEffectTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawEffectEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryFilterTree()
 		{
 			if (TreeEx(
@@ -703,7 +737,6 @@ namespace IED
 					ImGuiTableFlags_Borders |
 						ImGuiTableFlags_ScrollY |
 						ImGuiTableFlags_Resizable |
-						ImGuiTableFlags_NoSavedSettings |
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, -1.0f }))
 			{
@@ -829,6 +862,75 @@ namespace IED
 			}
 
 			ImGui::PopID();
+		}
+
+		static void draw_effect_form_cell(
+			const actorActiveEffectInfo_t::formEntry_t& a_entry)
+		{
+			if (a_entry.id)
+			{
+				if (!a_entry.name.empty())
+				{
+					ImGui::Text("%.8X [%hhu] [%s]", a_entry.id.get(), a_entry.type, a_entry.name.c_str());
+				}
+				else
+				{
+					ImGui::Text("%.8X [%hhu]", a_entry.id.get(), a_entry.type);
+				}
+			}
+		}
+
+		void UIActorInfo::DrawEffectEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& data = a_data.effects;
+
+			constexpr auto NUM_COLUMNS = 3;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -1.0f }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(LS(CommonStrings::Effect));
+				ImGui::TableSetupColumn(LS(UIActorInfoStrings::SpellOrEnchantment));
+				ImGui::TableSetupColumn(LS(CommonStrings::Source));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				for (auto& e : data.data)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					draw_effect_form_cell(e.effect);
+					
+					ImGui::TableSetColumnIndex(1);
+					draw_effect_form_cell(e.spell);
+
+					ImGui::TableSetColumnIndex(2);
+					draw_effect_form_cell(e.source);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
 		}
 
 		void UIActorInfo::DrawInventoryBaseTree(
@@ -976,7 +1078,6 @@ namespace IED
 					NUM_COLUMNS,
 					ImGuiTableFlags_Borders |
 						ImGuiTableFlags_Resizable |
-						ImGuiTableFlags_NoSavedSettings |
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
@@ -1210,6 +1311,7 @@ namespace IED
 					}
 
 					data->factions.Update(actor);
+					data->effects.Update(actor);
 
 					data->succeeded = true;
 				}

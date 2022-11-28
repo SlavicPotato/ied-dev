@@ -107,7 +107,7 @@ namespace IED
 
 		visit_effects(
 			a_list,
-			[&](auto& a_mgef) [[msvc::forceinline]] {
+			[&](auto* a_mgef) [[msvc::forceinline]] {
 				result = hash::fnv1::_append_hash_fnv1a(result, a_mgef->formID);
 			});
 

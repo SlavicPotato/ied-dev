@@ -8,10 +8,12 @@ namespace IED
 	{
 		enum class UIActorInfoStrings : Localization::StringID
 		{
-			DataUnavailable = 6900,
-			CouldNotUpdate  = 6901,
-			PlayerEnemy     = 6902,
-			SellBuy         = 6903,
+			DataUnavailable    = 6900,
+			CouldNotUpdate     = 6901,
+			PlayerEnemy        = 6902,
+			SellBuy            = 6903,
+			ActiveEffects      = 6904,
+			SpellOrEnchantment = 6905,
 		};
 	}
 }
