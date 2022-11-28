@@ -67,6 +67,10 @@ namespace IED
 		private:
 			void DrawActorInfo();
 
+			void DrawTabBar(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
 			template <class T>
 			bool DrawActorInfoLineFormStringPair(
 				T                                           a_label,

@@ -117,64 +117,46 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			bool result;
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
 
-			if (!data.data->factions.data.empty())
+			DrawTabBar(handle, data);
+		}
+
+		void UIActorInfo::DrawTabBar(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			if (ImGui::BeginTabBar("tab"))
 			{
-				result = CollapsingHeader(
-					"faction_tree",
-					false,
-					"%s [%zu]",
-					LS(CommonStrings::Factions),
-					data.data->factions.data.size());
-			}
-			else
-			{
-				result = CollapsingHeader(
-					"faction_tree",
-					false,
-					"%s",
-					LS(CommonStrings::Factions));
-			}
+				if (ImGui::BeginTabItem(LS(CommonStrings::Inventory, "1")))
+				{
+					ImGui::Spacing();
+					ImGui::PushID("inv");
 
-			if (result)
-			{
-				ImGui::Spacing();
-				ImGui::PushID("faction");
+					DrawInventoryTreeContents(a_handle, a_data);
 
-				DrawFactionTreeContents(handle, data);
+					ImGui::PopID();
+					ImGui::Spacing();
 
-				ImGui::PopID();
-				ImGui::Spacing();
-			}
+					ImGui::EndTabItem();
+				}
+				
+				if (ImGui::BeginTabItem(LS(CommonStrings::Factions, "2")))
+				{
+					ImGui::Spacing();
+					ImGui::PushID("fac");
 
-			if (!data.data->inventory.items.empty())
-			{
-				result = CollapsingHeader(
-					"inv_tree",
-					false,
-					"%s [%zu base items]",
-					LS(CommonStrings::Inventory),
-					data.data->inventory.items.size());
-			}
-			else
-			{
-				result = CollapsingHeader(
-					"inv_tree",
-					false,
-					"%s",
-					LS(CommonStrings::Inventory));
-			}
+					DrawFactionTreeContents(a_handle, a_data);
 
-			if (result)
-			{
-				ImGui::Spacing();
-				ImGui::PushID("inv");
+					ImGui::PopID();
+					ImGui::Spacing();
 
-				DrawInventoryTreeContents(handle, data);
-
-				ImGui::PopID();
-				ImGui::Spacing();
+					ImGui::EndTabItem();
+				}
+				
+				ImGui::EndTabBar();
 			}
 		}
 
@@ -642,13 +624,13 @@ namespace IED
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
 		{
-			const auto offsetY = ImGui::GetContentRegionAvail().y * 0.425f;
-
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
 
 			if (ImGui::BeginChild(
 					"child",
-					{ -1.0f, offsetY },
+					{ -1.0f, -offsetY },
 					false))
 			{
 				DrawFactionEntries(a_handle, *a_data.data);
@@ -673,13 +655,13 @@ namespace IED
 
 			ImGui::PopID();
 
-			const auto offsetY = -ImGui::GetStyle().WindowPadding.y;
-
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
 
 			if (ImGui::BeginChild(
 					"child",
-					{ -1.0f, offsetY },
+					{ -1.0f, -offsetY },
 					false,
 					ImGuiWindowFlags_HorizontalScrollbar))
 			{
