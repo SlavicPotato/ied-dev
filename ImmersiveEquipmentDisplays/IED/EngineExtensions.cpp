@@ -36,6 +36,7 @@ namespace IED
 	{
 		m_controller                    = a_controller;
 		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
+		m_conf.applyTransformOverrides  = a_config->m_applyTransformOverrides;
 		//m_conf.enableLights             = a_config->m_enableLights;
 
 		Install_RemoveAllBipedParts();
@@ -641,7 +642,7 @@ namespace IED
 
 		if (result && a_refr->IsActor())
 		{
-			SkeletonExtensions::PostLoad3D(result);
+			SkeletonExtensions::PostLoad3D(result, GetTransformOverridesEnabled());
 		}
 
 		return result;
@@ -656,7 +657,7 @@ namespace IED
 
 		if (a_3D)
 		{
-			SkeletonExtensions::PostLoad3D(a_3D);
+			SkeletonExtensions::PostLoad3D(a_3D, GetTransformOverridesEnabled());
 		}
 
 		return result;
@@ -910,18 +911,18 @@ namespace IED
 	}
 
 	auto EngineExtensions::AttachObject(
-		Actor*                   a_actor,
-		TESForm*                 a_modelForm,
-		NiNode*                  a_root,
-		NiNode*                  a_targetNode,
-		NiNode*                  a_object,
-		ModelType                a_modelType,
-		bool                     a_leftWeapon,
-		bool                     a_shield,
-		bool                     a_dropOnDeath,
-		bool                     a_removeScabbards,
-		bool                     a_keepTorchFlame,
-		bool                     a_disableHavok)
+		Actor*    a_actor,
+		TESForm*  a_modelForm,
+		NiNode*   a_root,
+		NiNode*   a_targetNode,
+		NiNode*   a_object,
+		ModelType a_modelType,
+		bool      a_leftWeapon,
+		bool      a_shield,
+		bool      a_dropOnDeath,
+		bool      a_removeScabbards,
+		bool      a_keepTorchFlame,
+		bool      a_disableHavok)
 		//bool                     a_attachLight,
 		//NiPointer<NiPointLight>& a_attachedLight)
 		-> stl::flag<AttachResultFlags>

@@ -4,7 +4,9 @@
 
 #include "ConvertNodes.h"
 #include "ExtraNodes.h"
+#include "TransformOverrides.h"
 
+#include "NodeOverrideData.h"
 #include "SkeletonID.h"
 #include "StringHolder.h"
 
@@ -14,7 +16,9 @@ namespace IED
 {
 	namespace SkeletonExtensions
 	{
-		void PostLoad3D(NiAVObject* a_root)
+		using namespace ::Util::Node;
+
+		void PostLoad3D(NiAVObject* a_root, bool a_applyTransformOverrides)
 		{
 			using namespace ::Util::Node;
 
@@ -46,6 +50,11 @@ namespace IED
 			}
 
 			CreateExtraMovNodes(npcroot, id);
+
+			if (a_applyTransformOverrides)
+			{
+				ApplyXP32NodeTransformOverrides(npcroot, id);
+			}
 		}
 	}
 }

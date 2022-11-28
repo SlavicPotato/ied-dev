@@ -379,6 +379,11 @@ namespace IED
 		{
 			return m_Instance->m_humanoidSkeletonSignatures;
 		}
+		
+		inline static const auto& GetHumanoidSkeletonSignaturesXp32() noexcept
+		{
+			return m_Instance->m_humanoidSkeletonSignaturesXp32;
+		}
 
 		inline static const auto& GetNodeMonitorEntries() noexcept
 		{
@@ -431,6 +436,7 @@ namespace IED
 		convert_nodes_data_type  m_convertNodes;
 
 		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignatures;
+		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignaturesXp32;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

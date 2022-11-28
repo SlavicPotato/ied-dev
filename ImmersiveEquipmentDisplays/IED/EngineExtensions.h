@@ -197,6 +197,11 @@ namespace IED
 		{
 			return m_Instance.m_conf.enableLights;
 		}*/
+		
+		[[nodiscard]] inline static constexpr bool GetTransformOverridesEnabled() noexcept
+		{
+			return m_Instance.m_conf.applyTransformOverrides;
+		}
 
 		[[nodiscard]] inline static constexpr bool ParallelAnimationUpdatesEnabled() noexcept
 		{
@@ -344,6 +349,7 @@ namespace IED
 			bool nodeOverridePlayerEnabled{ false };
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };
+			bool applyTransformOverrides{ false };
 			//bool enableLights{ false };
 		} m_conf;
 

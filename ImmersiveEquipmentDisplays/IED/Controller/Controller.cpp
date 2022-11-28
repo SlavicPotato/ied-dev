@@ -5,6 +5,7 @@
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/NodeMap.h"
+#include "IED/TransformOverrides.h"
 #include "IED/UI/UIMain.h"
 #include "IED/Util/Common.h"
 
@@ -34,7 +35,6 @@ namespace IED
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
-		m_applyTransformOverrides(a_config->m_applyTransformOverrides),
 		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
 		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
 		m_forceFlushSaveData(a_config->m_forceFlushSaveData),
@@ -1210,9 +1210,11 @@ namespace IED
 
 	void Controller::OnActorAcquire(ActorObjectHolder& a_holder)
 	{
-		if (m_applyTransformOverrides)
+		if (EngineExtensions::GetTransformOverridesEnabled())
 		{
-			a_holder.ApplyXP32NodeTransformOverrides(a_holder.m_npcroot);
+			SkeletonExtensions::ApplyXP32NodeTransformOverrides(
+				a_holder.m_npcroot,
+				a_holder.GetSkeletonID());
 		}
 
 		if (m_config.settings.data.placementRandomization &&
@@ -2122,7 +2124,7 @@ namespace IED
 			}
 		}
 
-		const bool isVisible     = !state->flags.test(ObjectEntryFlags::kInvisible);
+		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);
 		//const bool isLightHidden = state->flags.test(ObjectEntryFlags::kHideLight);
 
 		if (a_visible)
@@ -2155,7 +2157,7 @@ namespace IED
 		state->UpdateFlags(a_config);
 
 		if (isVisible != a_visible)
-		    //isLightHidden != a_config.flags.test(BaseFlags::kHideLight))
+		//isLightHidden != a_config.flags.test(BaseFlags::kHideLight))
 		{
 			a_entry.SetObjectVisible(a_visible);
 

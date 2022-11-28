@@ -981,7 +981,6 @@ namespace IED
 		bool m_forceDefaultConfig{ false };
 		bool m_npcProcessingDisabled{ false };
 		bool m_iniKeysForced{ false };
-		bool m_applyTransformOverrides{ false };
 		bool m_enableCorpseScatter{ false };
 		bool m_forceOrigWeapXFRM{ false };
 		bool m_forceFlushSaveData{ false };
