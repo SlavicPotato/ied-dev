@@ -1712,6 +1712,9 @@
     <ClInclude Include="IED\UI\I3DI\I3DISphereObject.h">
       <Filter>Source\IED\UI\I3DI\Object</Filter>
     </ClInclude>
+    <ClInclude Include="IED\TransformOverrides.h">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2730,6 +2733,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UITransformSliderWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\TransformOverrides.cpp">
+      <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

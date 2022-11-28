@@ -89,6 +89,7 @@ namespace IED
 			Skeleton   = 20,
 			Faction    = 21,
 			Variable   = 22,
+			Effect     = 23,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -165,6 +166,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
 				case EquipmentOverrideConditionType::Faction:
+				case EquipmentOverrideConditionType::Effect:
 					form = a_form;
 					break;
 				case EquipmentOverrideConditionType::Form:

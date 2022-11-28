@@ -96,6 +96,11 @@ namespace IED
 				std::make_unique<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ EffectSetting::kTypeID }),
+			
+				std::make_unique<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ TESObjectWEAP::kTypeID,
 			          TESObjectARMO::kTypeID,
 			          TESAmmo::kTypeID,

@@ -41,45 +41,121 @@ namespace IED
 
 		[[nodiscard]] inline constexpr auto GetNumFactions() const noexcept
 		{
-			return active_container->size();
+			return data.size();
 		}
 
 		inline constexpr const auto& GetFactionContainer() const noexcept
 		{
-			return *active_container;
+			return data;
 		}
 
 	private:
-		inline constexpr auto& GetWorkingContainer() noexcept
-		{
-			return active_container == std::addressof(b1) ? b2 : b1;
-		}
+		template <class Tf>
+		void visit_factions(
+			const ExtraFactionChanges* a_factionChanges,
+			TESNPC*                    a_npc,
+			Tf                         a_func);
 
-		inline constexpr void SwapContainers() noexcept
-		{
-			active_container = std::addressof(GetWorkingContainer());
-		}
+		std::size_t GetSignature(const ExtraFactionChanges* a_factionChanges, TESNPC* a_npc);
 
-		inline constexpr bool BuffersEqual() const
-		{
-			auto& r1 = b1.raw();
-			auto& r2 = b2.raw();
+		container_type data;
 
-			return r1.size() == r2.size() &&
-			       std::equal(
-					   r1.begin(),
-					   r1.end(),
-					   r2.begin());
-		}
-
-		container_type b1;
-		container_type b2;
-
-		container_type* active_container;
+		std::size_t currentSignature{ hash::fnv1::fnv_offset_basis };
 	};
 
+	template <class Tf>
+	void CachedFactionData::visit_factions(
+		const ExtraFactionChanges* a_factionChanges,
+		TESNPC*                    a_npc,
+		Tf                         a_func)
+	{
+		if (a_factionChanges)
+		{
+			for (const auto& info : a_factionChanges->factions)
+			{
+				if (info.faction)
+				{
+					a_func(info);
+				}
+			}
+		}
+
+		for (const auto& info : a_npc->factions)
+		{
+			if (info.faction)
+			{
+				a_func(info);
+			}
+		}
+	}
+
+	class CachedActiveEffectData
+	{
+		using container_type =
+			stl::set_sa<Game::FormID>;
+
+	public:
+		CachedActiveEffectData(Actor* a_actor);
+
+		bool UpdateEffects(Actor* a_actor);
+
+		inline constexpr const auto& GetEffectContainer() const noexcept
+		{
+			return data;
+		}
+
+	private:
+		template <class Tf>
+		void visit_effects(
+			RE::BSSimpleList<ActiveEffect*>* a_list,
+			Tf                               a_func);
+
+		std::size_t GetSignature(RE::BSSimpleList<ActiveEffect*>* a_list);
+
+		container_type data;
+
+		std::size_t currentSignature{ hash::fnv1::fnv_offset_basis };
+	};
+
+	template <class Tf>
+	void CachedActiveEffectData::visit_effects(
+		RE::BSSimpleList<ActiveEffect*>* a_list,
+		Tf                               a_func)
+	{
+		if (!a_list)
+		{
+			return;
+		}
+
+		for (auto e : *a_list)
+		{
+			if (!e)
+			{
+				continue;
+			}
+
+			auto effect = e->effect;
+			if (!effect)
+			{
+				continue;
+			}
+
+			auto mgef = effect->mgef;
+			if (!mgef)
+			{
+				continue;
+			}
+
+			if (!mgef->formID.IsTemporary())
+			{
+				a_func(mgef);
+			}
+		}
+	}
+
 	struct CachedActorData :
-		CachedFactionData
+		CachedFactionData,
+		CachedActiveEffectData
 	{
 		CachedActorData(Actor* a_actor);
 

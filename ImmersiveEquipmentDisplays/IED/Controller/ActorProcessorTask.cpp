@@ -364,18 +364,18 @@ namespace IED
 				e.RequestEvalDefer();
 			}
 
-			if (IPerfCounter::delta_us(
-					e.m_lastLFStateCheck,
-					m_timer.GetStartTime()) >= ActorObjectHolder::STATE_CHECK_INTERVAL_LOW)
+			if (m_timer.GetStartTime() >= e.m_nextLFStateCheck)
 			{
-				e.m_lastLFStateCheck = m_timer.GetStartTime();
+				e.m_nextLFStateCheck =
+					m_timer.GetStartTime() +
+					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_LOW);
 
 				/*PerfTimer pt;
 				pt.Start();*/
 
-				e.m_wantLFUpdate |= state.UpdateFactions(e.m_actor.get());
+				e.m_wantLFUpdate |= state.UpdateFactions(actor);
 
-				//_DMESSAGE("%.8X: %f [%zu]", actor->formID, pt.Stop(), state.GetNumFactions());
+				//_DMESSAGE("%.8X: %f  %d", actor->formID, pt.Stop(), r);
 
 				if (e.m_wantLFUpdate)
 				{
@@ -389,12 +389,24 @@ namespace IED
 					e.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 				}*/
 			}
-
-			if (IPerfCounter::delta_us(
-					e.m_lastHFStateCheck,
-					m_timer.GetStartTime()) >= ActorObjectHolder::STATE_CHECK_INTERVAL_HIGH)
+			
+			if (m_timer.GetStartTime() >= e.m_nextMFStateCheck)
 			{
-				e.m_lastHFStateCheck = m_timer.GetStartTime();
+				e.m_nextMFStateCheck =
+					m_timer.GetStartTime() +
+					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_MED);
+
+				if (state.UpdateEffects(actor))
+				{
+					e.RequestEval();
+				}
+			}
+
+			if (m_timer.GetStartTime() >= e.m_nextHFStateCheck)
+			{
+				e.m_nextHFStateCheck =
+					m_timer.GetStartTime() +
+					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_HIGH);
 
 				if (e.m_wantHFUpdate)
 				{

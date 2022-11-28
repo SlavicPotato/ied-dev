@@ -277,6 +277,8 @@ namespace IED
 			return GetFullName<TESShout>(a_form);
 		case TESFaction::kTypeID:
 			return GetFullName<TESFaction>(a_form);
+		case EffectSetting::kTypeID:
+			return GetFullName<EffectSetting>(a_form);
 		case TESClass::kTypeID:
 			return GetFullName<TESClass>(a_form);
 		case TESObjectCELL::kTypeID:

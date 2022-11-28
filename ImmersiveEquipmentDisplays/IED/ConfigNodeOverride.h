@@ -115,6 +115,7 @@ namespace IED
 			Skeleton   = 19,
 			Faction    = 20,
 			Variable   = 21,
+			Effect     = 22,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -194,6 +195,7 @@ namespace IED
 				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Idle:
 				case NodeOverrideConditionType::Faction:
+				case NodeOverrideConditionType::Effect:
 					form = a_form;
 					break;
 				case NodeOverrideConditionType::Form:
@@ -863,7 +865,7 @@ namespace IED
 			{
 				return physicsData;
 			}
-			
+
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>

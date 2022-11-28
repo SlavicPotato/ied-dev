@@ -644,6 +644,15 @@ namespace IED
 				a_params,
 				a_data,
 				a_params.objects.GetCachedData());
+			
+		case Data::NodeOverrideConditionType::Effect:
+
+			return Conditions::match_effect<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 
 		case Data::NodeOverrideConditionType::Variable:
 

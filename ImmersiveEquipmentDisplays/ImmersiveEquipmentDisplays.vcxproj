@@ -513,6 +513,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\SkeletonExtensions.h" />
     <ClInclude Include="IED\SkeletonID.h" />
     <ClInclude Include="IED\TimeOfDay.h" />
+    <ClInclude Include="IED\TransformOverrides.h" />
     <ClInclude Include="IED\UI\ConditionalVariables\Profile\UIProfileEditorConditionalVariables.h" />
     <ClInclude Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditor.h" />
     <ClInclude Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditorWindow.h" />
@@ -1013,6 +1014,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\SkeletonCache.cpp" />
     <ClCompile Include="IED\SkeletonExtensions.cpp" />
     <ClCompile Include="IED\SkeletonID.cpp" />
+    <ClCompile Include="IED\TransformOverrides.cpp" />
     <ClCompile Include="IED\UI\ConditionalVariables\Profile\UIProfileEditorConditionalVariables.cpp" />
     <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditor.cpp" />
     <ClCompile Include="IED\UI\ConditionalVariables\UIConditionalVariablesEditorWindow.cpp" />

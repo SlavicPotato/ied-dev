@@ -8,6 +8,7 @@
 #include "IED/ActorState.h"
 #include "IED/ExtraNodes.h"
 #include "IED/StringHolder.h"
+#include "IED/TransformOverrides.h"
 
 #include <ext/BSAnimationUpdateData.h>
 #include <ext/Node.h>
@@ -18,6 +19,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_lf{ 0ull };
+	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_mf{ 0ull };
 	std::atomic_ullong ActorObjectHolder::m_lfsc_delta_hf{ 0ull };
 
 	namespace detail
@@ -72,15 +74,23 @@ namespace IED
 	{
 		auto interval = IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
 
-		m_lastLFStateCheck = m_created +
+		m_nextLFStateCheck = m_created +
 		                     m_lfsc_delta_lf.fetch_add(
 								 interval / 20,
 								 std::memory_order_relaxed) %
 		                         interval;
 
+		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_MED);
+
+		m_nextMFStateCheck = m_created +
+		                     m_lfsc_delta_mf.fetch_add(
+								 IPerfCounter::T(interval / 20),
+								 std::memory_order_relaxed) %
+		                         IPerfCounter::T(interval);
+		
 		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_HIGH);
 
-		m_lastHFStateCheck = m_created +
+		m_nextHFStateCheck = m_created +
 		                     m_lfsc_delta_hf.fetch_add(
 								 IPerfCounter::T(interval / 20),
 								 std::memory_order_relaxed) %
@@ -823,38 +833,7 @@ namespace IED
 
 	void ActorObjectHolder::ApplyXP32NodeTransformOverrides(NiNode* a_root) const
 	{
-		auto& id = m_skeletonID.id();
-		if (!id)
-		{
-			return;
-		}
-
-		// apply only to XPMSSE skeleton
-
-		if (*id != 628145516 &&  // female
-		    *id != 1361955)      // male
-		{
-			return;
-		}
-
-		auto& ver = m_skeletonID.xp_version();
-		if (!ver)
-		{
-			return;
-		}
-
-		if (*ver < 3.6f)
-		{
-			return;
-		}
-
-		for (auto& e : NodeOverrideData::GetTransformOverrideData())
-		{
-			if (auto node = FindNode(a_root, e.name))
-			{
-				node->m_localTransform.rot = e.rot;
-			}
-		}
+		SkeletonExtensions::ApplyXP32NodeTransformOverrides(a_root, m_skeletonID);
 	}
 
 	/*EventResult ActorObjectHolder::ReceiveEvent(

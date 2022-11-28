@@ -105,7 +105,8 @@ namespace IED
 		using mov_node_map_type = stl::unordered_map<stl::fixed_string, MOVNodeEntry>;
 
 	public:
-		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 340000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_MED  = 333333;
 		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
@@ -190,7 +191,7 @@ namespace IED
 		{
 			return m_handle;
 		}
-		
+
 		inline constexpr void SetHandle(Game::ObjectRefHandle a_handle) noexcept
 		{
 			m_handle = a_handle;
@@ -734,8 +735,9 @@ namespace IED
 		Game::FormID m_npcTemplateId;
 		Game::FormID m_raceid;
 
-		long long m_lastLFStateCheck;
-		long long m_lastHFStateCheck;
+		long long m_nextLFStateCheck;
+		long long m_nextMFStateCheck;
+		long long m_nextHFStateCheck;
 
 		SkeletonCache::const_actor_entry_type m_skeletonCache;
 		SkeletonCache::const_actor_entry_type m_skeletonCache1p;
@@ -756,6 +758,7 @@ namespace IED
 		IObjectManager& m_owner;
 
 		static std::atomic_ullong m_lfsc_delta_lf;
+		static std::atomic_ullong m_lfsc_delta_mf;
 		static std::atomic_ullong m_lfsc_delta_hf;
 	};
 

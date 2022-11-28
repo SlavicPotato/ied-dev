@@ -845,11 +845,23 @@ namespace IED
 			const Tm&              a_match,
 			const CachedActorData& a_cached)
 		{
-			const auto idle = a_cached.currentIdle;
-			const auto cfid = idle ? idle->formID : Game::FormID{};
+			if (const auto idle = a_cached.currentIdle)
+			{
+				if (const auto fid = a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch2) ==
+					    (fid == idle->formID))
+					{
+						return false;
+					}
+				}
 
-			return a_match.flags.test(Tf::kNegateMatch2) !=
-			       (a_match.form.get_id() == cfid);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		template <class Tm, class Tf>
@@ -893,6 +905,26 @@ namespace IED
 				else
 				{
 					return true;
+				}
+			}
+
+			return false;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_effect(
+			CommonParams&                 a_params,
+			const Tm&                     a_match,
+			const CachedActiveEffectData& a_cached)
+		{
+			if (auto fid = a_match.form.get_id())
+			{
+				auto& data = a_cached.GetEffectContainer();
+
+				auto it = data.find(fid);
+				if (it != data.end())
+				{
+					return a_match.flags.test(Tf::kNegateMatch2) != (fid == *it);
 				}
 			}
 

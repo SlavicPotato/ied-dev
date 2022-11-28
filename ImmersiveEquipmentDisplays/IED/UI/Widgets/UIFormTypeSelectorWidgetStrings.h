@@ -53,6 +53,7 @@ namespace IED
 			Material         = 6342,
 			Idle             = 6343,
 			Projectile       = 6344,
+			Effect           = 6345,
 		};
 	}
 }

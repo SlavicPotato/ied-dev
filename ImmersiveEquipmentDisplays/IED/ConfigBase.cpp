@@ -675,6 +675,15 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+				
+			case EquipmentOverrideConditionType::Effect:
+
+				return Conditions::match_effect<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 
 			case EquipmentOverrideConditionType::Variable:
 
@@ -1001,6 +1010,15 @@ namespace IED
 			case EquipmentOverrideConditionType::Faction:
 
 				return Conditions::match_faction<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Effect:
+
+				return Conditions::match_effect<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,
@@ -1499,6 +1517,15 @@ namespace IED
 			case EquipmentOverrideConditionType::Faction:
 
 				return Conditions::match_faction<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Effect:
+
+				return Conditions::match_effect<
 					equipmentOverrideCondition_t,
 					EquipmentOverrideConditionFlags>(
 					a_params,

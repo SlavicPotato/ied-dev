@@ -49,6 +49,7 @@ namespace IED
 			std::make_pair(TESPackage::kTypeID, UIFormTypeSelectorWidgetStrings::Package),
 			std::make_pair(TESShout::kTypeID, UIFormTypeSelectorWidgetStrings::Shout),
 			std::make_pair(TESFaction::kTypeID, UIFormTypeSelectorWidgetStrings::Faction),
+			std::make_pair(EffectSetting::kTypeID, UIFormTypeSelectorWidgetStrings::Effect),
 			std::make_pair(TESCombatStyle::kTypeID, UIFormTypeSelectorWidgetStrings::CombatStyle),
 			std::make_pair(TESClass::kTypeID, UIFormTypeSelectorWidgetStrings::Class),
 			std::make_pair(RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather),
@@ -195,6 +196,8 @@ namespace IED
 				return LS(UIFormTypeSelectorWidgetStrings::Shout);
 			case TESFaction::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Faction);
+			case EffectSetting::kTypeID:
+				return LS(UIFormTypeSelectorWidgetStrings::Effect);
 			case TESCombatStyle::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::CombatStyle);
 			case TESClass::kTypeID:

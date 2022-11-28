@@ -159,6 +159,7 @@ namespace IED
 			case TESPackage::kTypeID:
 			case TESShout::kTypeID:
 			case TESFaction::kTypeID:
+			case EffectSetting::kTypeID:
 			case TESCombatStyle::kTypeID:
 			case TESClass::kTypeID:
 			case RE::TESWeather::kTypeID:

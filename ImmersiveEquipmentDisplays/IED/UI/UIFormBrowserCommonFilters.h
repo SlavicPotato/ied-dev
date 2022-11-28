@@ -24,8 +24,9 @@ namespace IED
 			Weather,
 			Global,
 			Idle,
+			Effect,
 			Common,
-			ModelTypes
+			ModelTypes,
 		};
 
 		class UIFormBrowserCommonFilters
@@ -39,7 +40,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 18> m_filters;
+			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 19> m_filters;
 
 			static UIFormBrowserCommonFilters m_Instance;
 		};

@@ -243,5 +243,6 @@ namespace IED
 		Merchant        = 314,
 		Source          = 315,
 		Physics         = 316,
+		Effect          = 317,
 	};
 }

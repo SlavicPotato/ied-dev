@@ -5,8 +5,7 @@
 namespace IED
 {
 
-	CachedFactionData::CachedFactionData(Actor* a_actor) :
-		active_container(std::addressof(b1))
+	CachedFactionData::CachedFactionData(Actor* a_actor)
 	{
 		UpdateFactions(a_actor);
 	}
@@ -19,41 +18,92 @@ namespace IED
 			return false;
 		}
 
-		auto& data = GetWorkingContainer();
+		const auto* extraFactionChanges = a_actor->extraData.Get<ExtraFactionChanges>();
+
+		const auto sig = GetSignature(extraFactionChanges, npc);
+
+		if (sig == currentSignature)
+		{
+			return false;
+		}
+
+		currentSignature = sig;
 
 		data.clear();
 
-		if (const auto* extraFactionChanges = a_actor->extraData.Get<ExtraFactionChanges>())
+		visit_factions(
+			extraFactionChanges,
+			npc,
+			[&](auto& a_info) {
+				data.emplace(a_info.faction, a_info.rank);
+			});
+
+		return true;
+	}
+
+	std::size_t CachedFactionData::GetSignature(
+		const ExtraFactionChanges* a_factionChanges,
+		TESNPC*                    a_npc)
+	{
+		auto result = hash::fnv1::fnv_offset_basis;
+
+		visit_factions(
+			a_factionChanges,
+			a_npc,
+			[&](const auto& a_info) [[msvc::forceinline]] {
+				result = hash::fnv1::_append_hash_fnv1a(result, a_info.faction->formID);
+				result = hash::fnv1::_append_hash_fnv1a(result, a_info.rank);
+			});
+
+		return result;
+	}
+
+	CachedActiveEffectData::CachedActiveEffectData(Actor* a_actor)
+	{
+		UpdateEffects(a_actor);
+	}
+
+	bool CachedActiveEffectData::UpdateEffects(Actor* a_actor)
+	{
+		auto list = a_actor->GetActiveEffectList();
+
+		const auto sig = GetSignature(list);
+
+		if (sig == currentSignature)
 		{
-			for (const auto& info : extraFactionChanges->factions)
-			{
-				if (auto faction = info.faction)
-				{
-					data.emplace(faction, info.rank);
-				}
-			}
+			return false;
 		}
 
-		for (const auto& info : npc->factions)
-		{
-			if (auto faction = info.faction)
-			{
-				data.emplace(faction, info.rank);
-			}
-		}
+		currentSignature = sig;
 
-		const bool result = !BuffersEqual();
+		data.clear();
 
-		if (result)
-		{
-			SwapContainers();
-		}
+		visit_effects(
+			list,
+			[&](auto* a_mgef) {
+				data.emplace(a_mgef->formID);
+			});
+
+		return true;
+	}
+
+	std::size_t CachedActiveEffectData::GetSignature(
+		RE::BSSimpleList<ActiveEffect*>* a_list)
+	{
+		auto result = hash::fnv1::fnv_offset_basis;
+
+		visit_effects(
+			a_list,
+			[&](auto& a_mgef) [[msvc::forceinline]] {
+				result = hash::fnv1::_append_hash_fnv1a(result, a_mgef->formID);
+			});
 
 		return result;
 	}
 
 	CachedActorData::CachedActorData(Actor* a_actor) :
 		CachedFactionData(a_actor),
+		CachedActiveEffectData(a_actor),
 		cellAttached(a_actor->IsParentCellAttached()),
 		inInterior(a_actor->IsInInteriorCell()),
 		worldspace(a_actor->GetParentCellWorldspace()),

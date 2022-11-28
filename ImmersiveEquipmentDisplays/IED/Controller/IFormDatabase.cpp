@@ -170,6 +170,7 @@ namespace IED
 			Populate(*result, dh->arrWTHR);
 			Populate(*result, dh->arrGLOB);
 			Populate(*result, dh->arrPROJ);
+			Populate(*result, dh->arrEffectSettings);
 			//Populate(*result, dh->arrIDLE);
 			Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 

@@ -45,5 +45,6 @@ namespace IED
 		Global            = 5236,
 		Idle              = 5237,
 		Projectiles       = 5238,
+		Effect            = 5239,
 	};
 }
