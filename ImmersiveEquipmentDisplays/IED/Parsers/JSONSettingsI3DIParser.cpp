@@ -17,7 +17,7 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			a_out.enableWeapons = data.get("enable_weapons", true).asBool();
+			a_out.enableWeapons = data.get("enable_weapons", false).asBool();
 
 			return true;
 		}

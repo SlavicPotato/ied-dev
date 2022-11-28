@@ -124,7 +124,7 @@ namespace IED
 
 			struct I3DI
 			{
-				bool enableWeapons{ true };
+				bool enableWeapons{ false };
 			};
 
 			struct UserInterface
