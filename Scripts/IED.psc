@@ -113,6 +113,10 @@ Bool Function SetItemDisableHavokActor(Actor akActor, string asPlugin, string as
 Bool Function SetItemDisableHavokNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 Bool Function SetItemDisableHavokRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
 
+Bool Function SetItemRemoveTracersActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemRemoveTracersNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+Bool Function SetItemRemoveTracersRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abDisable) native global
+
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeRace(Race akRace, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
