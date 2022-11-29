@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 8
+	return 9
 EndFunction
 
 Int Function GetVersion() native global
