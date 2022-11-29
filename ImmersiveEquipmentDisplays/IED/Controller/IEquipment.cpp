@@ -67,7 +67,7 @@ namespace IED
 				}
 			}
 		}
-
+		
 		if (a_lastEquipped &&
 		    a_config.itemFilter.test(a_lastEquipped))
 		{

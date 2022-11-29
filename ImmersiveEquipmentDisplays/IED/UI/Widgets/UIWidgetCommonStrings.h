@@ -120,6 +120,7 @@ namespace IED
 			IsMountedActorHorse                 = 2109,
 			AttachLight                         = 2110,
 			HideLight                           = 2111,
+			RemoveProjectileTracers             = 2112,
 		};
 	}
 }

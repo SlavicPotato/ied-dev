@@ -449,6 +449,7 @@ namespace IED
 		case ModelType::kLight:
 			GetLightNodeName(a_form->formID, a_out);
 			break;
+		case ModelType::kProjectile:
 		case ModelType::kMisc:
 			GetMiscNodeName(a_form->formID, a_out);
 			break;
@@ -616,8 +617,9 @@ namespace IED
 			a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath),
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
-			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok));
-			/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
+			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok),
+			a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers));
+		/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
 			state->light);*/
 
 		//UpdateDownwardPass(itemRoot);
@@ -936,8 +938,10 @@ namespace IED
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				a_disableHavok ||
 					a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok) ||
-					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok));
-				/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok),
+				a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers));
+			/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight),
 				n.light);*/
 

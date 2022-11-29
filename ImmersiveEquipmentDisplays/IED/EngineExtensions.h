@@ -156,9 +156,10 @@ namespace IED
 			bool      a_dropOnDeath,
 			bool      a_removeScabbards,
 			bool      a_keepTorchFlame,
-			bool      a_disableHavok);
-			//bool      a_attachLight,
-			//NiPointer<NiPointLight>& a_attachedLight);
+			bool      a_disableHavok,
+			bool      a_removeTracers);
+		//bool      a_attachLight,
+		//NiPointer<NiPointLight>& a_attachedLight);
 
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
@@ -192,12 +193,12 @@ namespace IED
 		{
 			return m_Instance.m_conf.weaponAdjustDisable;
 		}
-		
+
 		/*[[nodiscard]] inline static constexpr bool GetLightsEnabled() noexcept
 		{
 			return m_Instance.m_conf.enableLights;
 		}*/
-		
+
 		[[nodiscard]] inline static constexpr bool GetTransformOverridesEnabled() noexcept
 		{
 			return m_Instance.m_conf.applyTransformOverrides;

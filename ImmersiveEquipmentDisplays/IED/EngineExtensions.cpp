@@ -922,7 +922,8 @@ namespace IED
 		bool      a_dropOnDeath,
 		bool      a_removeScabbards,
 		bool      a_keepTorchFlame,
-		bool      a_disableHavok)
+		bool      a_disableHavok,
+		bool      a_removeTracers)
 		//bool                     a_attachLight,
 		//NiPointer<NiPointLight>& a_attachedLight)
 		-> stl::flag<AttachResultFlags>
@@ -982,113 +983,144 @@ namespace IED
 
 		std::uint32_t collisionFilterInfo = 0;
 
-		if (a_modelType == ModelType::kWeapon)
+		switch (a_modelType)
 		{
-			auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
-			auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
-
-			if (a_removeScabbards)
+		case ModelType::kWeapon:
 			{
-				if (scbNode || scbLeftNode)
+				auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
+				auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
+
+				if (a_removeScabbards)
 				{
-					if (scbNode)
+					if (scbNode || scbLeftNode)
 					{
-						scbNode->m_parent->DetachChild2(scbNode);
+						if (scbNode)
+						{
+							scbNode->m_parent->DetachChild2(scbNode);
+						}
+
+						if (scbLeftNode)
+						{
+							scbLeftNode->m_parent->DetachChild2(scbLeftNode);
+						}
+
+						ShrinkToSize(a_object);
 					}
-
-					if (scbLeftNode)
-					{
-						scbLeftNode->m_parent->DetachChild2(scbLeftNode);
-					}
-
-					ShrinkToSize(a_object);
-				}
-			}
-			else
-			{
-				NiAVObject* scbAttach;
-				NiAVObject* scbRemove;
-
-				if (a_leftWeapon && scbLeftNode)
-				{
-					scbAttach = scbLeftNode;
-					scbRemove = scbNode;
-
-					scbLeftNode->ClearHidden();
-
-					result.set(AttachResultFlags::kScbLeft);
 				}
 				else
 				{
-					scbAttach = scbNode;
-					scbRemove = scbLeftNode;
-				}
+					NiAVObject* scbAttach;
+					NiAVObject* scbRemove;
 
-				if (scbAttach || scbRemove)
-				{
-					if (scbAttach)
+					if (a_leftWeapon && scbLeftNode)
 					{
-						a_targetNode->AttachChild(scbAttach, true);
+						scbAttach = scbLeftNode;
+						scbRemove = scbNode;
 
-						fUnkDC6140(a_targetNode, true);
+						scbLeftNode->ClearHidden();
+
+						result.set(AttachResultFlags::kScbLeft);
+					}
+					else
+					{
+						scbAttach = scbNode;
+						scbRemove = scbLeftNode;
 					}
 
-					if (scbRemove)
+					if (scbAttach || scbRemove)
 					{
-						scbRemove->m_parent->DetachChild2(scbRemove);
-					}
+						if (scbAttach)
+						{
+							a_targetNode->AttachChild(scbAttach, true);
 
-					ShrinkToSize(a_object);
+							fUnkDC6140(a_targetNode, true);
+						}
+
+						if (scbRemove)
+						{
+							scbRemove->m_parent->DetachChild2(scbRemove);
+						}
+
+						ShrinkToSize(a_object);
+					}
 				}
+
+				collisionFilterInfo = a_leftWeapon ? 0x12 : 0x14;
 			}
 
-			collisionFilterInfo = a_leftWeapon ? 0x12 : 0x14;
-		}
-		else if (a_modelType == ModelType::kLight)
-		{
-			if (!a_keepTorchFlame)
+			break;
+
+		case ModelType::kLight:
 			{
-				bool shrink = false;
-
-				if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
+				if (!a_keepTorchFlame)
 				{
-					node->m_parent->DetachChild2(node);
-					shrink = true;
+					bool shrink = false;
 
-					result.set(AttachResultFlags::kTorchFlameRemoved);
+					if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
+					{
+						if (auto parent = node->m_parent)
+						{
+							node->m_parent->DetachChild2(node);
+							shrink = true;
+
+							result.set(AttachResultFlags::kTorchFlameRemoved);
+						}
+
+					}
+
+					bool custRemoved = false;
+
+					custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
+					custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
+
+					if (custRemoved)
+					{
+						result.set(AttachResultFlags::kTorchCustomRemoved);
+					}
+
+					shrink |= custRemoved;
+
+					if (shrink)
+					{
+						ShrinkToSize(a_object);
+					}
 				}
 
-				bool custRemoved = false;
-
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
-
-				if (custRemoved)
-				{
-					result.set(AttachResultFlags::kTorchCustomRemoved);
-				}
-
-				shrink |= custRemoved;
-
-				if (shrink)
-				{
-					ShrinkToSize(a_object);
-				}
+				collisionFilterInfo = 0x12;
 			}
 
-			collisionFilterInfo = 0x12;
-		}
-		else if (a_modelType == ModelType::kArmor)
-		{
+			break;
+
+		case ModelType::kArmor:
+
 			if (a_shield)
 			{
 				collisionFilterInfo = 0x12;
 			}
+
+			break;
+
+		case ModelType::kProjectile:
+
+			if (a_removeTracers)
+			{
+				if (auto node = GetObjectByName(a_object, sh->m_tracerRoot, true))
+				{
+					if (auto parent = node->m_parent)
+					{
+						parent->DetachChild2(node);
+
+						ShrinkToSize(a_object);
+					}
+				}
+			}
+
+			break;
 		}
 
 		if (a_disableHavok)  // maybe just force this for ammo

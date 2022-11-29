@@ -502,6 +502,18 @@ namespace IED
 			}
 			DrawTip(UITip::DisableHavok);
 			
+			if (ImGui::CheckboxFlagsT(
+					LS(UIWidgetCommonStrings::RemoveProjectileTracers, "H"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			DrawTip(UITip::RemoveProjectileTracers);
+			
 			/*if (ImGui::CheckboxFlagsT(
 					LS(UIWidgetCommonStrings::AttachLight, "H"),
 					stl::underlying(std::addressof(entry.flags.value)),

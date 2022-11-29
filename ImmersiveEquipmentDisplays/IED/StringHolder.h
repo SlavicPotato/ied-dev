@@ -37,6 +37,7 @@ namespace IED
 		static inline constexpr auto NINODE_TORCH_FIRE    = "TorchFire";
 		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
 		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
+		static inline constexpr auto NINODE_TRACER_ROOT   = "TracerRoot";
 
 		static inline constexpr auto NINODE_MOV_DEFAULT_SWORD  = "MOV WeaponSwordDefault";
 		static inline constexpr auto NINODE_MOV_DEFAULT_AXE    = "MOV WeaponAxeDefault";
@@ -56,7 +57,7 @@ namespace IED
 
 		// IED-added
 
-		static inline constexpr auto NINODE_IED_OBJECT = "OBJECT ROOT";
+		static inline constexpr auto NINODE_IED_OBJECT  = "OBJECT ROOT";
 		static inline constexpr auto NINODE_IED_PHYSICS = "OBJECT PHY";
 
 		// non-vanilla
@@ -144,6 +145,7 @@ namespace IED
 		BSFixedString m_objectPhy{ NINODE_IED_PHYSICS };
 		BSFixedString m_attachLight{ NINODE_ATTACH_LIGHT };
 		BSFixedString m_glowAddMesh{ NINODE_GLOW_ADD_MESH };
+		BSFixedString m_tracerRoot{ NINODE_TRACER_ROOT };
 
 		BSFixedString m_weaponAxe{ NINODE_AXE };
 		BSFixedString m_weaponMace{ NINODE_MACE };

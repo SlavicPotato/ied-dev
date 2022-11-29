@@ -106,6 +106,7 @@ namespace IED
 			PVConstraintFriction                = 1097,
 			AttachLight                         = 1098,
 			HideLight                           = 1099,
+			RemoveProjectileTracers             = 1100,
 		};
 
 	}

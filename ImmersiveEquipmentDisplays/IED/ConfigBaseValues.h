@@ -34,6 +34,8 @@ namespace IED
 			kDisableAnimEventForwarding = 1u << 18,
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
+			kRemoveProjectileTracers    = 1u << 21,
+
 			/*kAttachLight                = 1u << 21,
 			kHideLight                  = 1u << 22,*/
 
@@ -44,8 +46,9 @@ namespace IED
 			                     kLoad1pWeaponModel |
 			                     kUseWorldModel |
 			                     kDisableWeaponAnims |
-			                     kDisableHavok
-			                     // | kAttachLight
+			                     kDisableHavok |
+			                     kRemoveProjectileTracers
+			// | kAttachLight
 
 		};
 

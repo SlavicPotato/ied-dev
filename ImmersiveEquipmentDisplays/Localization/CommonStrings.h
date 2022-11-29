@@ -247,6 +247,6 @@ namespace IED
 		Spell           = 318,
 		Duration        = 319,
 		Magnitude       = 320,
-		Elapsed        = 321,
+		Elapsed         = 321,
 	};
 }

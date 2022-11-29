@@ -8,7 +8,8 @@ namespace IED
 		kWeapon,
 		kMisc,
 		kLight,
-		kAmmo
+		kAmmo,
+		kProjectile
 	};
 
 }

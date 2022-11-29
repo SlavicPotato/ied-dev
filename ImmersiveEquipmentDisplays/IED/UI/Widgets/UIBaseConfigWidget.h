@@ -1399,7 +1399,20 @@ namespace IED
 				DrawTip(UITip::RemoveScabbard);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::Use1pWeaponModels, "2"),
+						LS(UIWidgetCommonStrings::RemoveProjectileTracers, "2"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kRemoveProjectileTracers)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kRemoveProjectileTracers);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				DrawTip(UITip::RemoveProjectileTracers);
+
+				if (ImGui::CheckboxFlagsT(
+						LS(UIBaseConfigString::Use1pWeaponModels, "3"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
 				{
@@ -1412,7 +1425,7 @@ namespace IED
 				DrawTip(UITip::Load1pWeaponModel);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::UseWorldModel, "3"),
+						LS(UIBaseConfigString::UseWorldModel, "4"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kUseWorldModel)))
 				{
@@ -1427,7 +1440,7 @@ namespace IED
 				ImGui::NextColumn();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::KeepTorchFlame, "4"),
+						LS(UIBaseConfigString::KeepTorchFlame, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
 				{
@@ -1472,7 +1485,7 @@ namespace IED
 				UICommon::PopDisabled(disable);*/
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::DisableHavok, "7"),
+						LS(UIWidgetCommonStrings::DisableHavok, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisableHavok)))
 				{
@@ -1485,7 +1498,7 @@ namespace IED
 				DrawTip(UITip::DisableHavok);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::DropOnDeath, "8"),
+						LS(UIBaseConfigString::DropOnDeath, "7"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDropOnDeath)))
 				{
