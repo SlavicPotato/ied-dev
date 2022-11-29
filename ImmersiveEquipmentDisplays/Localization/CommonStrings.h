@@ -245,5 +245,8 @@ namespace IED
 		Physics         = 316,
 		Effect          = 317,
 		Spell           = 318,
+		Duration        = 319,
+		Magnitude       = 320,
+		Elapsed        = 321,
 	};
 }

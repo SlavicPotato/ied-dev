@@ -130,7 +130,7 @@ namespace IED
 		{
 			if (ImGui::BeginTabBar("tab"))
 			{
-				if (ImGui::BeginTabItem(LS(CommonStrings::Inventory, "1")))
+				if (ImGui::BeginTabItem(LS<CommonStrings, 3>(CommonStrings::Inventory, "1")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("1");
@@ -143,7 +143,7 @@ namespace IED
 					ImGui::EndTabItem();
 				}
 
-				if (ImGui::BeginTabItem(LS(CommonStrings::Factions, "2")))
+				if (ImGui::BeginTabItem(LS<CommonStrings, 3>(CommonStrings::Factions, "2")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("2");
@@ -156,7 +156,14 @@ namespace IED
 					ImGui::EndTabItem();
 				}
 
-				if (ImGui::BeginTabItem(LS(UIActorInfoStrings::ActiveEffects, "3")))
+				char buf[64];
+				stl::snprintf(
+					buf,
+					"%s (%zu)",
+					LS(UIActorInfoStrings::ActiveEffects),
+					a_data.data->effects.data.size());
+
+				if (ImGui::BeginTabItem(LMKID<3>(buf, "3")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("3");
@@ -865,17 +872,44 @@ namespace IED
 		}
 
 		static void draw_effect_form_cell(
-			const actorActiveEffectInfo_t::formEntry_t& a_entry)
+			const actorActiveEffectInfo_t::formEntry_t& a_entry,
+			bool                                        a_type)
 		{
 			if (a_entry.id)
 			{
 				if (!a_entry.name.empty())
 				{
-					ImGui::Text("%.8X [%hhu] [%s]", a_entry.id.get(), a_entry.type, a_entry.name.c_str());
+					if (a_type)
+					{
+						ImGui::TextWrapped(
+							"%.8X [%hhu] [%s]",
+							a_entry.id.get(),
+							a_entry.type,
+							a_entry.name.c_str());
+					}
+					else
+					{
+						ImGui::TextWrapped(
+							"%.8X [%s]",
+							a_entry.id.get(),
+							a_entry.name.c_str());
+					}
 				}
 				else
 				{
-					ImGui::Text("%.8X [%hhu]", a_entry.id.get(), a_entry.type);
+					if (a_type)
+					{
+						ImGui::TextWrapped(
+							"%.8X [%hhu]",
+							a_entry.id.get(),
+							a_entry.type);
+					}
+					else
+					{
+						ImGui::TextWrapped(
+							"%.8X",
+							a_entry.id.get());
+					}
 				}
 			}
 		}
@@ -886,7 +920,7 @@ namespace IED
 		{
 			auto& data = a_data.effects;
 
-			constexpr auto NUM_COLUMNS = 3;
+			constexpr auto NUM_COLUMNS = 6;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -904,6 +938,9 @@ namespace IED
 				ImGui::TableSetupColumn(LS(CommonStrings::Effect));
 				ImGui::TableSetupColumn(LS(UIActorInfoStrings::SpellOrEnchantment));
 				ImGui::TableSetupColumn(LS(CommonStrings::Source));
+				ImGui::TableSetupColumn(LS(CommonStrings::Elapsed));
+				ImGui::TableSetupColumn(LS(CommonStrings::Duration));
+				ImGui::TableSetupColumn(LS(CommonStrings::Magnitude));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -918,13 +955,25 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					draw_effect_form_cell(e.effect);
-					
+					draw_effect_form_cell(e.effect, false);
+
 					ImGui::TableSetColumnIndex(1);
-					draw_effect_form_cell(e.spell);
+					draw_effect_form_cell(e.spell, true);
 
 					ImGui::TableSetColumnIndex(2);
-					draw_effect_form_cell(e.source);
+					draw_effect_form_cell(e.source, false);
+
+					ImGui::TableSetColumnIndex(3);
+					ImGui::Text("%.1f", e.elapsed);
+					
+					if (e.duration != 0.0f)
+					{
+						ImGui::TableSetColumnIndex(4);
+						ImGui::Text("%.1f", e.duration);
+					}
+
+					ImGui::TableSetColumnIndex(5);
+					ImGui::Text("%.1f", e.magnitude);
 				}
 
 				ImGui::EndTable();

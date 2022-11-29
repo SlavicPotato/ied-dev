@@ -896,7 +896,7 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const TESActorLocationChangeEvent*           a_evn,
 			BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher) override;
-
+		
 		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
 		//void FillInitialConfig(Data::configStore_t& a_data) const;
 

@@ -32,6 +32,10 @@ namespace IED
 
 	actorActiveEffectInfo_t::entry_t::entry_t(ActiveEffect* a_effect)
 	{
+		duration  = a_effect->duration;
+		elapsed   = a_effect->elapsedSeconds;
+		magnitude = a_effect->magnitude;
+
 		if (auto v = a_effect->effect)
 		{
 			if (auto mgef = v->mgef)
@@ -44,7 +48,7 @@ namespace IED
 		{
 			spell = make_entry(v);
 		}
-		
+
 		if (auto v = a_effect->source)
 		{
 			source = make_entry(v);

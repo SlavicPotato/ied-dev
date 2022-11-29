@@ -226,23 +226,13 @@ namespace IED
 		case TESNPC::kTypeID:
 			return GetFullName<TESNPC>(a_form);
 		case TESSoulGem::kTypeID:
-			return GetFullName<TESSoulGem>(a_form);
 		case TESKey::kTypeID:
-			return GetFullName<TESKey>(a_form);
 		case TESObjectMISC::kTypeID:
 			return GetFullName<TESObjectMISC>(a_form);
 		case TESObjectLIGH::kTypeID:
 			return GetFullName<TESObjectLIGH>(a_form);
 		case TESObjectBOOK::kTypeID:
 			return GetFullName<TESObjectBOOK>(a_form);
-		case AlchemyItem::kTypeID:
-			return GetFullName<AlchemyItem>(a_form);
-		case IngredientItem::kTypeID:
-			return GetFullName<IngredientItem>(a_form);
-		case SpellItem::kTypeID:
-			return GetFullName<SpellItem>(a_form);
-		case ScrollItem::kTypeID:
-			return GetFullName<ScrollItem>(a_form);
 		case TESAmmo::kTypeID:
 			return GetFullName<TESAmmo>(a_form);
 		case TESObjectACTI::kTypeID:
@@ -280,6 +270,10 @@ namespace IED
 		case EffectSetting::kTypeID:
 			return GetFullName<EffectSetting>(a_form);
 		case EnchantmentItem::kTypeID:
+		case SpellItem::kTypeID:
+		case ScrollItem::kTypeID:
+		case AlchemyItem::kTypeID:
+		case IngredientItem::kTypeID:
 		case MagicItem::kTypeID:
 			return GetFullName<MagicItem>(a_form);
 		case TESClass::kTypeID:
@@ -314,23 +308,13 @@ namespace IED
 		case TESObjectARMO::kTypeID:
 			return FormHasKeywordImpl<TESObjectARMO>(a_form, a_keyword);
 		case TESSoulGem::kTypeID:
-			return FormHasKeywordImpl<TESSoulGem>(a_form, a_keyword);
 		case TESKey::kTypeID:
-			return FormHasKeywordImpl<TESKey>(a_form, a_keyword);
 		case TESObjectMISC::kTypeID:
 			return FormHasKeywordImpl<TESObjectMISC>(a_form, a_keyword);
 		case TESObjectBOOK::kTypeID:
 			return FormHasKeywordImpl<TESObjectBOOK>(a_form, a_keyword);
-		case AlchemyItem::kTypeID:
-			return FormHasKeywordImpl<AlchemyItem>(a_form, a_keyword);
-		case IngredientItem::kTypeID:
-			return FormHasKeywordImpl<IngredientItem>(a_form, a_keyword);
-		case ScrollItem::kTypeID:
-			return FormHasKeywordImpl<ScrollItem>(a_form, a_keyword);
 		case TESAmmo::kTypeID:
 			return FormHasKeywordImpl<TESAmmo>(a_form, a_keyword);
-		case SpellItem::kTypeID:
-			return FormHasKeywordImpl<SpellItem>(a_form, a_keyword);
 		case TESRace::kTypeID:
 			return FormHasKeywordImpl<TESRace>(a_form, a_keyword);
 		case TESObjectACTI::kTypeID:
@@ -348,6 +332,10 @@ namespace IED
 		case EffectSetting::kTypeID:
 			return FormHasKeywordImpl<EffectSetting>(a_form, a_keyword);
 		case EnchantmentItem::kTypeID:
+		case SpellItem::kTypeID:
+		case ScrollItem::kTypeID:
+		case AlchemyItem::kTypeID:
+		case IngredientItem::kTypeID:
 		case MagicItem::kTypeID:
 			return FormHasKeywordImpl<MagicItem>(a_form, a_keyword);
 		default:
@@ -377,8 +365,10 @@ namespace IED
 		{
 			return HasKeyword(a_form, keyword);
 		}
-
-		return false;
+		else
+		{
+			return false;
+		}
 	}
 
 }

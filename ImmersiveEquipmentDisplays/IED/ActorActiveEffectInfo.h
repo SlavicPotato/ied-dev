@@ -13,16 +13,18 @@ namespace IED
 
 		struct entry_t
 		{
-			entry_t(ActiveEffect *a_effect);
+			entry_t(ActiveEffect* a_effect);
 
-			formEntry_t effect;
-			formEntry_t spell;
-			formEntry_t source;
+			formEntry_t   effect;
+			formEntry_t   spell;
+			formEntry_t   source;
+			float         duration{ 0 };
+			float         elapsed{ 0 };
+			float         magnitude{ 0 };
 		};
 
 		void Update(Actor* a_actor);
 
 		stl::vector<entry_t> data;
-
 	};
 }
