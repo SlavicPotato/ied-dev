@@ -26,7 +26,7 @@ namespace IED
 		{
 			ImGui::PushID("leqp_panel");
 
-			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+			const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
 				a_data.filterConditions,
 				a_updateFunc);
 

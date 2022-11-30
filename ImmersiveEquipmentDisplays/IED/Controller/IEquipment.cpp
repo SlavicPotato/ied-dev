@@ -36,9 +36,10 @@ namespace IED
 	}
 
 	auto IEquipment::SelectSlotItem(
+		processParams_t&                  a_params,
 		const Data::configSlot_t&         a_config,
 		SlotItemCandidates::storage_type& a_candidates,
-		Game::FormID                      a_lastEquipped)
+		const ObjectEntrySlot&            a_slot)
 		-> selectedItem_t
 	{
 		if (a_candidates.empty())
@@ -67,21 +68,27 @@ namespace IED
 				}
 			}
 		}
-		
-		if (a_lastEquipped &&
-		    a_config.itemFilter.test(a_lastEquipped))
+
+		const auto lastEquipped = a_slot.slotState.lastEquipped;
+
+		if (lastEquipped &&
+		    a_config.itemFilter.test(lastEquipped))
 		{
 			auto it = std::find_if(
 				a_candidates.begin(),
 				a_candidates.end(),
 				[&](const auto& a_item) [[msvc::forceinline]] {
-					return a_item.item->form->formID == a_lastEquipped;
+					return a_item.item->form->formID == lastEquipped;
 				});
 
 			if (it != a_candidates.end())
 			{
-				if (!checkCannotWear ||
-				    !it->item->cannotWear)
+				if ((!checkCannotWear || !it->item->cannotWear) &&
+				    configBase_t::do_match_fp(
+						a_config.itemFilterCondition,
+						{ it->item->form, a_slot.slotidex, a_slot.slotid },
+						a_params,
+						true))
 				{
 					return { it };
 				}
@@ -99,7 +106,16 @@ namespace IED
 					return false;
 				}
 
-				return a_config.itemFilter.test(item->form->formID);
+				if (!a_config.itemFilter.test(item->form->formID))
+				{
+					return false;
+				}
+
+				return configBase_t::do_match_fp(
+					a_config.itemFilterCondition,
+					{ item->form, a_slot.slotidex, a_slot.slotid },
+					a_params,
+					true);
 			});
 
 		if (it != a_candidates.end())
@@ -381,7 +397,7 @@ namespace IED
 					[&](auto& a_item) {
 						return configBase_t::do_match_fp(
 							a_config.lastEquipped.filterConditions,
-							{ a_item.form, ItemData::GetItemSlotExtraGeneric(a_item.form) },
+							{ a_item.form },
 							a_params,
 							true);
 					});

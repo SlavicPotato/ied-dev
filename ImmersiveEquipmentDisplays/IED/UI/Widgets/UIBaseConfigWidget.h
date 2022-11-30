@@ -2753,7 +2753,7 @@ namespace IED
 
 						ImGui::Spacing();
 
-						const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+						const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
 							e.conditions,
 							[this, a_handle, a_params, &a_data, &e] {
 								TriggerEffectShaderUpdate(

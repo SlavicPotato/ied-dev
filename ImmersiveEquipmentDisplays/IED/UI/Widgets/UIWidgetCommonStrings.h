@@ -121,6 +121,7 @@ namespace IED
 			AttachLight                         = 2110,
 			HideLight                           = 2111,
 			RemoveProjectileTracers             = 2112,
+			ItemFilterCond                      = 2113,
 		};
 	}
 }

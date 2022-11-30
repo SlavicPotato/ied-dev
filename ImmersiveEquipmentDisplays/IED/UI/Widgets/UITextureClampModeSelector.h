@@ -2,8 +2,6 @@
 
 #include "IED/UI/UILocalizationInterface.h"
 
-#include <skse64/NiProperties.h>
-
 namespace IED
 {
 	class Controller;

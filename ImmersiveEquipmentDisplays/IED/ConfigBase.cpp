@@ -11,6 +11,16 @@
 namespace IED
 {
 	formSlotPair_t::formSlotPair_t(
+		TESForm* a_form) :
+		form(a_form)
+	{
+		const auto exslot = Data::ItemData::GetItemSlotExtraGeneric(a_form);
+
+		slot  = exslot;
+		slot2 = Data::ItemData::ExtraSlotToSlot(exslot);
+	}
+
+	formSlotPair_t::formSlotPair_t(
 		TESForm*              a_form,
 		Data::ObjectSlotExtra a_slot) :
 		form(a_form),
@@ -675,7 +685,7 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
-				
+
 			case EquipmentOverrideConditionType::Effect:
 
 				return Conditions::match_effect<

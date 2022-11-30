@@ -35,6 +35,9 @@ namespace IED
 			case DataType::EquipmentOverride:
 				erase<Data::equipmentOverride_t>();
 				break;
+			case DataType::EquipmentOverrideCondition:
+				erase<Data::equipmentOverrideCondition_t>();
+				break;
 			case DataType::EquipmentOverrideConditionList:
 				erase<Data::equipmentOverrideConditionList_t>();
 				break;

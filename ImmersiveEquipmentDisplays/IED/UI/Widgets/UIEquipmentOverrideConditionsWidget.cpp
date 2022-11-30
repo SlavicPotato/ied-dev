@@ -24,7 +24,7 @@ namespace IED
 			m_condParamEditor.SetExtraInterface(this);
 		}
 
-		auto UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideEntryContextMenu(
+		auto UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionContextMenu(
 			bool a_header)
 			-> UIEquipmentOverrideResult
 		{
@@ -304,7 +304,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Extra, "Y"))
+					if (LCG_BM(CommonStrings::Extra, "X"))
 					{
 						if (m_condParamEditor.DrawExtraConditionSelector(
 								m_ooNewExtraCond))
@@ -319,12 +319,25 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_MI(CommonStrings::Group, "Z"))
+					if (LCG_MI(CommonStrings::Group, "Y"))
 					{
 						result.action    = BaseConfigEditorAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
 
 						ImGui::CloseCurrentPopup();
+					}
+
+					ImGui::Separator();
+
+					auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::Paste, "Z"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						result.action = BaseConfigEditorAction::Paste;
 					}
 
 					ImGui::EndMenu();
@@ -335,17 +348,10 @@ namespace IED
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
-				if (!a_header)
-				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearKeyword, "3"))
-					{
-						result.action = BaseConfigEditorAction::ClearKeyword;
-					}
-				}
-				else
-				{
-					ImGui::Separator();
+				ImGui::Separator();
 
+				if (a_header)
+				{
 					if (LCG_MI(CommonStrings::Copy, "3"))
 					{
 						result.action = BaseConfigEditorAction::Copy;
@@ -355,6 +361,24 @@ namespace IED
 
 					if (ImGui::MenuItem(
 							LS(CommonStrings::PasteOver, "4"),
+							nullptr,
+							false,
+							clipData != nullptr))
+					{
+						result.action = BaseConfigEditorAction::PasteOver;
+					}
+				}
+				else
+				{
+					if (LCG_MI(CommonStrings::Copy, "3"))
+					{
+						result.action = BaseConfigEditorAction::Copy;
+					}
+
+					auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>();
+
+					if (ImGui::MenuItem(
+							LS(CommonStrings::PasteOver, "5"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -1045,13 +1069,13 @@ namespace IED
 			}
 		}
 
-		BaseConfigEditorAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+		BaseConfigEditorAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionHeaderContextMenu(
 			Data::equipmentOverrideConditionList_t& a_entry,
 			update_func_t                           a_updFunc)
 		{
 			BaseConfigEditorAction action{ BaseConfigEditorAction ::None };
 
-			const auto result = DrawEquipmentOverrideEntryContextMenu(true);
+			const auto result = DrawEquipmentOverrideConditionContextMenu(true);
 
 			switch (result.action)
 			{
@@ -1151,6 +1175,16 @@ namespace IED
 				UIClipboard::Set(a_entry);
 				break;
 
+			case BaseConfigEditorAction::Paste:
+				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
+				{
+					a_entry.emplace_back(*clipData);
+
+					a_updFunc();
+
+					action = result.action;
+				}
+				break;
 			case BaseConfigEditorAction::PasteOver:
 				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>())
 				{
@@ -1158,13 +1192,13 @@ namespace IED
 
 					a_updFunc();
 
-					action = BaseConfigEditorAction::PasteOver;
+					action = result.action;
 				}
 				break;
 			case BaseConfigEditorAction::Delete:
 				a_entry.clear();
 
-				action = BaseConfigEditorAction::Delete;
+				action = result.action;
 
 				a_updFunc();
 
@@ -1176,11 +1210,12 @@ namespace IED
 
 		void UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionTree(
 			Data::equipmentOverrideConditionList_t& a_entry,
-			update_func_t                           a_updFunc)
+			update_func_t                           a_updFunc,
+			Localization::StringID                  a_title)
 		{
 			ImGui::PushID("cond_tree_area");
 
-			const auto r = DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+			const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
 				a_entry,
 				a_updFunc);
 
@@ -1188,10 +1223,13 @@ namespace IED
 
 			if (!empty)
 			{
-				if (r == BaseConfigEditorAction::PasteOver ||
-				    r == BaseConfigEditorAction::Insert)
+				switch (r)
 				{
+				case BaseConfigEditorAction::Paste:
+				case BaseConfigEditorAction::PasteOver:
+				case BaseConfigEditorAction::Insert:
 					ImGui::SetNextItemOpen(true);
+					break;
 				}
 			}
 
@@ -1202,7 +1240,7 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					LS(CommonStrings::Conditions)))
+					LS(a_title)))
 			{
 				if (!empty)
 				{
@@ -1333,20 +1371,13 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(0);
 
-					const auto result = DrawEquipmentOverrideEntryContextMenu(false);
+					const auto result = DrawEquipmentOverrideConditionContextMenu(false);
 
 					switch (result.action)
 					{
 					case BaseConfigEditorAction::Delete:
 						it = a_entry.erase(it);
 						a_updFunc();
-						break;
-					case BaseConfigEditorAction::ClearKeyword:
-						if (it->keyword.get_id())
-						{
-							it->keyword = 0;
-							a_updFunc();
-						}
 						break;
 					case BaseConfigEditorAction::Insert:
 
@@ -1443,6 +1474,36 @@ namespace IED
 						}
 
 						break;
+
+					case BaseConfigEditorAction::Copy:
+
+						UIClipboard::Set(*it);
+
+						break;
+
+					case BaseConfigEditorAction::Paste:
+
+						if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
+						{
+							it = a_entry.emplace(
+								it,
+								*clipData);
+
+							a_updFunc();
+						}
+
+						break;
+
+					case BaseConfigEditorAction::PasteOver:
+
+						if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
+						{
+							*it = *clipData;
+
+							a_updFunc();
+						}
+
+						break;
 					}
 
 					if (it != a_entry.end())
@@ -1459,7 +1520,7 @@ namespace IED
 
 							ImGui::PushID("cond_grp");
 
-							DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+							DrawEquipmentOverrideConditionHeaderContextMenu(
 								e.group.conditions,
 								a_updFunc);
 

@@ -18,6 +18,7 @@ namespace IED
 				ConfigSlotPriority,
 				ConfigCustom,
 				EquipmentOverride,
+				EquipmentOverrideCondition,
 				EquipmentOverrideConditionList,
 				FormSet,
 				FormList,
@@ -145,6 +146,12 @@ namespace IED
 			else if constexpr (std::is_same_v<data_type, Data::equipmentOverride_t>)
 			{
 				return data.type == DataType::EquipmentOverride ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::equipmentOverrideCondition_t>)
+			{
+				return data.type == DataType::EquipmentOverrideCondition ?
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
@@ -421,6 +428,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::equipmentOverride_t>)
 			{
 				data.type = DataType::EquipmentOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::equipmentOverrideCondition_t>)
+			{
+				data.type = DataType::EquipmentOverrideCondition;
 			}
 			else if constexpr (std::is_same_v<T, Data::equipmentOverrideConditionList_t>)
 			{

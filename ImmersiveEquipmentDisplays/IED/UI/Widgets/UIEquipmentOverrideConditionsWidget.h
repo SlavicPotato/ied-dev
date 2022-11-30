@@ -28,16 +28,17 @@ namespace IED
 		protected:
 			using update_func_t = std::function<void()>;
 
-			UIEquipmentOverrideResult DrawEquipmentOverrideEntryContextMenu(
+			UIEquipmentOverrideResult DrawEquipmentOverrideConditionContextMenu(
 				bool a_drawDelete);
 
-			BaseConfigEditorAction DrawEquipmentOverrideEntryConditionHeaderContextMenu(
+			BaseConfigEditorAction DrawEquipmentOverrideConditionHeaderContextMenu(
 				Data::equipmentOverrideConditionList_t& a_entry,
 				update_func_t                           a_updFunc);
 
 			void DrawEquipmentOverrideConditionTree(
 				Data::equipmentOverrideConditionList_t& a_entry,
-				update_func_t                           a_updFunc);
+				update_func_t                           a_updFunc,
+				Localization::StringID                  a_title = static_cast<Localization::StringID>(CommonStrings::Conditions));
 
 			void DrawEquipmentOverrideEntryConditionTable(
 				Data::equipmentOverrideConditionList_t& a_entry,

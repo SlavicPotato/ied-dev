@@ -24,14 +24,16 @@ namespace IED
 		public:
 			enum Serialization : unsigned int
 			{
-				DataVersion1 = 1
+				DataVersion1 = 1,
+				DataVersion2 = 2
 			};
 
 			static inline constexpr auto DEFAULT_SLOT_FLAGS = SlotFlags::kNone;
 
-			stl::flag<SlotFlags> slotFlags{ DEFAULT_SLOT_FLAGS };
-			configFormList_t     preferredItems;
-			configFormFilter_t   itemFilter;
+			stl::flag<SlotFlags>             slotFlags{ DEFAULT_SLOT_FLAGS };
+			configFormList_t                 preferredItems;
+			configFormFilter_t               itemFilter;
+			equipmentOverrideConditionList_t itemFilterCondition;
 
 		private:
 			template <class Archive>
@@ -41,6 +43,11 @@ namespace IED
 				a_ar& slotFlags.value;
 				a_ar& preferredItems;
 				a_ar& itemFilter;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& itemFilterCondition;
+				}
 			}
 		};
 
@@ -386,7 +393,7 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configSlot_t,
-	::IED::Data::configSlot_t::Serialization::DataVersion1);
+	::IED::Data::configSlot_t::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configSlotHolder_t,

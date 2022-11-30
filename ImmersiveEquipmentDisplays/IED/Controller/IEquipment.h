@@ -45,9 +45,10 @@ namespace IED
 		static equippedItemInfo_t CreateEquippedItemInfo(ActorProcessManager* a_pm);
 
 		static selectedItem_t SelectSlotItem(
+			processParams_t&                  a_params,
 			const Data::configSlot_t&         a_config,
 			SlotItemCandidates::storage_type& a_candidates,
-			Game::FormID                      a_lastEquipped);
+			const ObjectEntrySlot&            a_slot);
 
 		bool CustomEntryValidateInventoryForm(
 			processParams_t&                         a_params,
@@ -98,13 +99,13 @@ namespace IED
 		SKMP_FORCEINLINE auto SelectSlotEntryForm(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
-			const BipedSlotCacheEntry&             a_slotEntry,
+			const BipedSlotCacheEntry&        a_slotEntry,
 			Tf                                a_validationFunc);
 
 		struct
 		{
 			stl::vector<const BipedSlotCacheEntry*> le;
-			Data::configFormList_t             fl;
+			Data::configFormList_t                  fl;
 		} m_temp;
 
 		RandomNumberGeneratorBase& m_rng;
@@ -235,7 +236,7 @@ namespace IED
 				{
 					if (Data::configBase_t::do_match_fp(
 							a_config.filterConditions,
-							{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
+							{ it->second.form },
 							a_params,
 							true))
 					{
@@ -275,7 +276,7 @@ namespace IED
 	auto IEquipment::SelectSlotEntryForm(
 		processParams_t&                  a_params,
 		const Data::configLastEquipped_t& a_config,
-		const BipedSlotCacheEntry&             a_slotEntry,
+		const BipedSlotCacheEntry&        a_slotEntry,
 		Tf                                a_validationFunc)
 	{
 		auto& formData = a_params.collector.data.forms;
@@ -295,7 +296,7 @@ namespace IED
 
 			if (!Data::configBase_t::do_match_fp(
 					a_config.filterConditions,
-					{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
+					{ it->second.form },
 					a_params,
 					true))
 			{

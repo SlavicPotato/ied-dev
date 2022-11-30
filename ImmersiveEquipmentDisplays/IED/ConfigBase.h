@@ -15,8 +15,21 @@ namespace IED
 	struct formSlotPair_t
 	{
 		formSlotPair_t(
+			TESForm* a_form);
+
+		formSlotPair_t(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot);
+
+		inline constexpr formSlotPair_t(
+			TESForm*              a_form,
+			Data::ObjectSlotExtra a_slotex,
+			Data::ObjectSlot      a_slot) :
+			form(a_form),
+			slot(a_slotex),
+			slot2(a_slot)
+		{
+		}
 
 		TESForm*              form;
 		Data::ObjectSlotExtra slot;

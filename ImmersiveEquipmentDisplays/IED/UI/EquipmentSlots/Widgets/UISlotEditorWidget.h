@@ -350,7 +350,7 @@ namespace IED
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
 			DrawTip(UITip::CheckCannotWear);
-			
+
 			ImGui::Columns();
 		}
 
@@ -1136,7 +1136,9 @@ namespace IED
 			UICommon::PushDisabled(disabled);
 
 			ImGui::PushID("pref_items_tree");
+
 			DrawPreferredItemsTree(a_handle, a_params, data);
+
 			ImGui::PopID();
 
 			ImGui::PushID("form_filters_tree");
@@ -1150,6 +1152,20 @@ namespace IED
 				LS(UIWidgetCommonStrings::ItemFilters),
 				ffparams,
 				data.itemFilter);
+
+			ImGui::PopID();
+
+			ImGui::PushID("fcond_tree");
+
+			DrawEquipmentOverrideConditionTree(
+				data.itemFilterCondition,
+				[&] {
+					OnBaseConfigChange(
+						a_handle,
+						std::addressof(a_params),
+						PostChangeAction::Evaluate);
+				},
+				static_cast<Localization::StringID>(UIWidgetCommonStrings::ItemFilterCond));
 
 			ImGui::PopID();
 

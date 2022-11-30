@@ -2322,8 +2322,7 @@ namespace IED
 		}
 
 		auto es = a_config.get_effect_shader_sfp(
-			{ a_objectEntry.data.state->form,
-		      ItemData::GetItemSlotExtraGeneric(a_objectEntry.data.state->form) },
+			{ a_objectEntry.data.state->form },
 			a_params);
 
 		if (es)
@@ -2602,15 +2601,16 @@ namespace IED
 				}
 
 				const auto item = SelectSlotItem(
+					a_params,
 					configEntry,
 					candidates,
-					objectEntry.slotState.lastEquipped);
+					objectEntry);
 
 				auto configOverride =
 					!item ? configEntry.get_equipment_override(
 								a_params) :
                             configEntry.get_equipment_override_fp(
-								{ item->item->form, objectEntry.slotidex },
+								{ item->item->form, objectEntry.slotidex, objectEntry.slotid },
 								a_params);
 
 				const auto& usedBaseConf =
@@ -2785,7 +2785,7 @@ namespace IED
 					if (equipped)
 					{
 						es = configEntry.get_effect_shader_sfp(
-							{ f.equippedForm, ItemData::GetItemSlotExtraGeneric(f.equippedForm) },
+							{ f.equippedForm },
 							a_params);
 					}
 					else if (objectEntry.data.state)
@@ -3117,7 +3117,7 @@ namespace IED
 
 			auto configOverride =
 				a_config.get_equipment_override_sfp(
-					{ it->second.form, ItemData::GetItemSlotExtraGeneric(it->second.form) },
+					{ it->second.form },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -3292,7 +3292,7 @@ namespace IED
 
 			auto configOverride =
 				a_config.get_equipment_override_sfp(
-					{ form, ItemData::GetItemSlotExtraGeneric(form) },
+					{ form },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -4509,8 +4509,7 @@ namespace IED
 			*this);
 
 		if (auto eo = a_config.get_equipment_override_sfp(
-				{ a_entry.data.state->form,
-		          ItemData::GetItemSlotExtraGeneric(a_entry.data.state->form) },
+				{ a_entry.data.state->form },
 				params))
 		{
 			return *eo;
