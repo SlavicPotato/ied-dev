@@ -1051,48 +1051,46 @@ namespace IED
 			break;
 
 		case ModelType::kLight:
+
+			if (!a_keepTorchFlame)
 			{
-				if (!a_keepTorchFlame)
+				bool shrink = false;
+
+				if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
 				{
-					bool shrink = false;
-
-					if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
+					if (auto parent = node->m_parent)
 					{
-						if (auto parent = node->m_parent)
-						{
-							node->m_parent->DetachChild2(node);
-							shrink = true;
+						node->m_parent->DetachChild2(node);
+						shrink = true;
 
-							result.set(AttachResultFlags::kTorchFlameRemoved);
-						}
-
-					}
-
-					bool custRemoved = false;
-
-					custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
-					custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
-
-					if (custRemoved)
-					{
-						result.set(AttachResultFlags::kTorchCustomRemoved);
-					}
-
-					shrink |= custRemoved;
-
-					if (shrink)
-					{
-						ShrinkToSize(a_object);
+						result.set(AttachResultFlags::kTorchFlameRemoved);
 					}
 				}
 
-				collisionFilterInfo = 0x12;
+				bool custRemoved = false;
+
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
+				custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
+
+				if (custRemoved)
+				{
+					result.set(AttachResultFlags::kTorchCustomRemoved);
+				}
+
+				shrink |= custRemoved;
+
+				if (shrink)
+				{
+					ShrinkToSize(a_object);
+				}
 			}
+
+			collisionFilterInfo = 0x12;
 
 			break;
 

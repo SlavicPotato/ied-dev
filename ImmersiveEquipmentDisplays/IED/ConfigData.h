@@ -162,7 +162,7 @@ namespace IED
                        Data::ConfigSex::Female;
 		}
 
-		using ConfigForm = IPluginInfo::formPair_t;
+		using ConfigForm = IPluginInfoA::formPair_t;
 
 		template <
 			class T,

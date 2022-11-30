@@ -4,8 +4,6 @@
 
 #include "IED/LocaleData.h"
 
-#include <skse64/HashUtil.h>
-
 namespace IED
 {
 	void actorInventoryInfo_t::Update(

@@ -740,14 +740,14 @@ namespace IED
 
 		private:
 			stl::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
-			IPluginInfo                                        m_pluginInfo;
+			IPluginInfoA                                       m_pluginInfo;
 
 			Game::FormID m_playerRefID{ 0x14 };
 			Game::FormID m_playerBaseID{ 0x7 };
 
 			static IData m_Instance;
 		};
-				
+
 		inline constexpr const char* GetSlotName(ObjectSlot a_slot)
 		{
 			switch (a_slot)
@@ -934,7 +934,6 @@ namespace IED
 				return nullptr;
 			}
 		}
-
 
 		std::unique_ptr<configSlotHolder_t::data_type>
 			CreateDefaultSlotConfig(ObjectSlot a_slot);

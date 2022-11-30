@@ -2,8 +2,6 @@
 
 #include "Render.h"
 
-#include <skse64/NiRenderer.h>
-
 namespace IED
 {
 	namespace Drivers

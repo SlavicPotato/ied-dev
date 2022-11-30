@@ -7,6 +7,7 @@
 
 #include <ext/GameHandlesExtra.h>
 
+#include <ext/BSAnimationGraphManager.h>
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
 #include <ext/Hash.h>
@@ -22,7 +23,10 @@
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
 #include <ext/StrHelpers.h>
+#include <ext/StringCache.h>
 #include <ext/Vector.h>
+#include <ext/WeaponAnimationGraphManagerHolder.h>
+#include <ext/hkaSkeleton.h>
 #include <ext/stl_boost_serialization_containers.h>
 #include <ext/stl_comparison.h>
 #include <ext/stl_map_sa.h>
@@ -50,6 +54,8 @@
 #include <skse64/NiGeometry.h>
 #include <skse64/NiLight.h>
 #include <skse64/NiNodes.h>
+#include <skse64/NiProperties.h>
+#include <skse64/NiRenderer.h>
 #include <skse64/NiSerialization.h>
 #include <skse64/PapyrusNativeFunctions.h>
 #include <skse64/PluginAPI.h>
@@ -131,11 +137,12 @@ namespace fs = std::filesystem;
 //#define IED_ENABLE_STATS_G
 //#define IED_ENABLE_STATS_T
 
-//#define IED_ENABLE_RTEST
 #define IED_ENABLE_I3DI
 
 #if (defined(IED_USE_MIMALLOC_COLLECTOR) || defined(SKMP_SC_USE_MIMALLOC) || SKMP_CUSTOM_ALLOCATOR == 1)
 #	define IED_MIMALLOC_IN_USE 1
 #endif
+
+using IPluginInfoA = IPluginInfo<stl::fixed_string>;
 
 #endif  // PCH_H

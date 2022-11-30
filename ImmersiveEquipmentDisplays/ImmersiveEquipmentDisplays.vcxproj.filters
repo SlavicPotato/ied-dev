@@ -180,9 +180,6 @@
     <Filter Include="Source\IED\Config">
       <UniqueIdentifier>{8c617e1f-8238-4167-b6d4-2727481ac84d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\ext">
-      <UniqueIdentifier>{62ec8304-a334-4130-88a3-d0be36261136}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\IED\Controller\Animation">
       <UniqueIdentifier>{bfc7455f-88ee-4d3e-8785-a6575bea8116}</UniqueIdentifier>
     </Filter>
@@ -1127,26 +1124,8 @@
     <ClInclude Include="IED\ConfigLUIDTag.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\SKSEMessagingHandler.h">
-      <Filter>Source\ext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.h">
-      <Filter>Source\ext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\ILUID.h">
-      <Filter>Source\ext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\StringCache.h">
-      <Filter>Source\ext</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\IPluginInfo.h">
-      <Filter>Source\ext</Filter>
-    </ClInclude>
     <ClInclude Include="IED\FormHolder.h">
       <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\sse-build-resources\ext\str_conv.h">
-      <Filter>Source\ext</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIContext.h">
       <Filter>Source\IED\UI</Filter>
@@ -1717,6 +1696,12 @@
     </ClInclude>
     <ClInclude Include="IED\ActorActiveEffectInfo.h">
       <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.h">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideWidgetCommon.h">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2323,26 +2308,8 @@
     <ClCompile Include="IED\ConfigSlot.cpp">
       <Filter>Source\IED\Config</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\SKSEMessagingHandler.cpp">
-      <Filter>Source\ext</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\SKSESerializationEventHandler.cpp">
-      <Filter>Source\ext</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\ILUID.cpp">
-      <Filter>Source\ext</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\StringCache.cpp">
-      <Filter>Source\ext</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\IPluginInfo.cpp">
-      <Filter>Source\ext</Filter>
-    </ClCompile>
     <ClCompile Include="IED\FormHolder.cpp">
       <Filter>Source\IED</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\sse-build-resources\ext\str_conv.cpp">
-      <Filter>Source\ext</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UIIntroBanner.cpp">
       <Filter>Source\IED\UI</Filter>
@@ -2742,6 +2709,9 @@
     </ClCompile>
     <ClCompile Include="IED\ActorActiveEffectInfo.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.cpp">
+      <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

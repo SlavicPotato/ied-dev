@@ -36,11 +36,11 @@ namespace IED
 		static BGSSoundDescriptorForm* GetSoundForm(Game::FormID a_formid);
 
 		static BGSSoundDescriptorForm* GetSoundForm(
-			const IPluginInfo&                     a_pinfo,
+			const IPluginInfoA&                    a_pinfo,
 			const stl::optional<Data::ConfigForm>& a_form);
 
 		static ISound::SoundRefHolder::soundPair_t MakeSoundPair(
-			const IPluginInfo&                                      a_pinfo,
+			const IPluginInfoA&                                     a_pinfo,
 			const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_in);
 
 		static ISound::SoundRefHolder::soundPair_t MakeSoundPair(

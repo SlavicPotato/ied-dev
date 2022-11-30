@@ -4,15 +4,6 @@
 #include "ConfigINI.h"
 #include "Controller/ModelType.h"
 
-#include <ext/GameCommon.h>
-#include <ext/ITasks.h>
-
-#include <ext/BSAnimationGraphManager.h>
-#include <ext/WeaponAnimationGraphManagerHolder.h>
-#include <ext/hkaSkeleton.h>
-
-#include <skse64/NiExtraData.h>
-
 namespace IED
 {
 	class Controller;
