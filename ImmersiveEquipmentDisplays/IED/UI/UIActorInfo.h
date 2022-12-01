@@ -162,6 +162,8 @@ namespace IED
 
 			UIGenericFilter m_invFilter;
 
+			char m_buffer[256];
+
 			Controller& m_controller;
 		};
 	}

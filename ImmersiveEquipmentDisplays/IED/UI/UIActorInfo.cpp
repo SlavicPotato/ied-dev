@@ -130,7 +130,13 @@ namespace IED
 		{
 			if (ImGui::BeginTabBar("tab"))
 			{
-				if (ImGui::BeginTabItem(LS<CommonStrings, 3>(CommonStrings::Inventory, "1")))
+				stl::snprintf(
+					m_buffer,
+					"%s (%zu)",
+					LS(CommonStrings::Inventory),
+					a_data.data->inventory.items.size());
+
+				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "1")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("1");
@@ -143,7 +149,13 @@ namespace IED
 					ImGui::EndTabItem();
 				}
 
-				if (ImGui::BeginTabItem(LS<CommonStrings, 3>(CommonStrings::Factions, "2")))
+				stl::snprintf(
+					m_buffer,
+					"%s (%zu)",
+					LS(CommonStrings::Factions),
+					a_data.data->factions.data.size());
+
+				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "2")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("2");
@@ -156,14 +168,13 @@ namespace IED
 					ImGui::EndTabItem();
 				}
 
-				char buf[64];
 				stl::snprintf(
-					buf,
+					m_buffer,
 					"%s (%zu)",
 					LS(UIActorInfoStrings::ActiveEffects),
 					a_data.data->effects.data.size());
 
-				if (ImGui::BeginTabItem(LMKID<3>(buf, "3")))
+				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "3")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("3");
