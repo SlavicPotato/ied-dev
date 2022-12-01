@@ -2,9 +2,9 @@
 
 #include "I3DIBoundingSphere.h"
 #include "I3DICommonData.h"
+#include "I3DIInputHelpers.h"
 #include "I3DIPhysicsObject.h"
 #include "I3DISphereObject.h"
-#include "I3DIInputHelpers.h"
 
 #include "IED/Physics/SimComponent.h"
 
@@ -32,9 +32,9 @@ namespace IED
 			m_tag(a_sc.GetLUID()),
 			m_flags(a_sc.GetConfig().valueFlags),
 			m_name(a_sc.GetObject()->m_name.c_str()),
-			m_virtSphere(std::make_unique<I3DISphereObject>(a_data, this)),
-			m_constraintSphere(std::make_unique<I3DISphereObject>(a_data, this)),
-			m_cogSphere(std::make_unique<I3DISphereObject>(a_data, this))
+			m_virtSphere(std::make_shared<I3DISphereObject>(a_data, this)),
+			m_constraintSphere(std::make_shared<I3DISphereObject>(a_data, this)),
+			m_cogSphere(std::make_shared<I3DISphereObject>(a_data, this))
 		{
 			m_objectFlags.set(I3DIObjectFlags::kHideOtherWhenSelected);
 
@@ -59,7 +59,6 @@ namespace IED
 			m_constraintSphere->SetDiffuseColor({ 1, 1, 1, 1 });
 			m_constraintSphere->SetLightingEnabled(false);
 			m_constraintSphere->SetRasterizerState(D3DObjectRasterizerState::kWireframe);
-			m_constraintSphere->SetGeometryHidden(!m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint));
 
 			UpdateData(a_sc);
 		}
@@ -93,6 +92,8 @@ namespace IED
 			m_cogSphere->SetHasWorldData(true);
 			m_cogSphere->UpdateBound();
 
+			m_flags = a_sc.GetConfig().valueFlags;
+
 			if (m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint))
 			{
 				ms = XMMatrixScalingFromVector(XMVectorReplicate(a_sc.GetConfig().maxOffsetSphereRadius * m_parentTransform.getScale()));
@@ -102,6 +103,8 @@ namespace IED
 				m_constraintSphere->SetHasWorldData(true);
 				m_constraintSphere->UpdateBound();
 			}
+
+			m_constraintSphere->SetGeometryHidden(!m_flags.test(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint));
 
 			if (m_afd)
 			{
