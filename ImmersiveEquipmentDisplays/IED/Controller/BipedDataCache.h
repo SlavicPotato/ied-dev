@@ -11,7 +11,7 @@ namespace IED
 
 	public:
 		BipedCacheEntry() :
-			data(std::make_unique<BipedSlotData>())
+			data(std::make_shared<BipedSlotData>())
 		{
 		}
 

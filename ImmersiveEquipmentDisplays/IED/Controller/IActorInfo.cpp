@@ -164,7 +164,7 @@ namespace IED
 			if (auto it = m_npcInfo.find(npc->formID);
 			    it == m_npcInfo.end())
 			{
-				a_out.npc = std::make_unique<npcInfoEntry_t>();
+				a_out.npc = std::make_shared<npcInfoEntry_t>();
 
 				FillNPCInfoEntry(npc, *a_out.npc);
 
@@ -185,7 +185,7 @@ namespace IED
 				if (auto it = m_npcInfo.find(templ->formID);
 				    it == m_npcInfo.end())
 				{
-					auto t = std::make_unique<npcInfoEntry_t>();
+					auto t = std::make_shared<npcInfoEntry_t>();
 
 					FillNPCInfoEntry(templ, *t);
 
@@ -264,7 +264,7 @@ namespace IED
 			return;
 		}
 
-		auto e = m_npcInfo.emplace(npc->formID, std::make_unique<npcInfoEntry_t>());
+		auto e = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
 
 		e.first->second->active = false;
 
@@ -413,7 +413,7 @@ namespace IED
 			return false;
 		}
 
-		auto e = m_npcInfo.emplace(npc->formID, std::make_unique<npcInfoEntry_t>());
+		auto e = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
 
 		FillNPCInfoEntry(npc, *e.first->second);
 

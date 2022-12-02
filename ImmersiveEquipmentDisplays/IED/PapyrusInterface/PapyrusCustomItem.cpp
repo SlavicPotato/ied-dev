@@ -19,7 +19,13 @@ namespace IED
 		{
 			using namespace Data;
 
-			template <class T>
+			namespace detail
+			{
+				template <class T>
+				concept valid_target = stl::is_any_same_v<T, Actor, TESNPC, TESRace>;
+			}
+
+			template <detail::valid_target T>
 			static bool CreateItem(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -63,7 +69,7 @@ namespace IED
 					a_node);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool DeleteItem(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -88,7 +94,7 @@ namespace IED
 					keys.name);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool DeleteAll(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -124,7 +130,7 @@ namespace IED
 				return DeleteAllImpl(key);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemAttachmentMode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -155,7 +161,7 @@ namespace IED
 					a_syncReference);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -184,7 +190,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemNode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -213,7 +219,7 @@ namespace IED
 					a_node);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemPosition(
 				StaticFunctionTag*,
 				T*             a_target,
@@ -253,7 +259,7 @@ namespace IED
 					*tmp);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemRotation(
 				StaticFunctionTag*,
 				T*             a_target,
@@ -295,7 +301,7 @@ namespace IED
 					*tmp);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemScale(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -324,7 +330,7 @@ namespace IED
 					std::clamp(stl::zero_nan(a_scale), 0.01f, 100.0f));
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemInventory(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -353,7 +359,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemEquipmentMode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -386,7 +392,7 @@ namespace IED
 					a_disableIfEquipped);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemLeftWeapon(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -415,7 +421,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemRemoveScabbard(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -444,7 +450,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemUseWorldModel(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -473,7 +479,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetIgnoreRaceEquipTypes(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -502,7 +508,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemLoadChance(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -533,7 +539,7 @@ namespace IED
 					a_chance);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemAnimationEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -562,7 +568,7 @@ namespace IED
 					a_enable);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemAnimationSequence(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -598,7 +604,7 @@ namespace IED
 					seq);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemWeaponAnimationDisabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -627,7 +633,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemAnimationEventEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -656,7 +662,7 @@ namespace IED
 					a_enable);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemAnimationEvent(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -692,7 +698,7 @@ namespace IED
 					ev);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemDisableHavok(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -721,7 +727,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemRemoveTracers(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -750,7 +756,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool DoClearTransform(
 				T*                   a_target,
 				const BSFixedString& a_key,
@@ -778,7 +784,7 @@ namespace IED
 					a_flags);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ClearItemPosition(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -794,7 +800,7 @@ namespace IED
 					TransformClearFlags::Position);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ClearItemRotation(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -810,7 +816,7 @@ namespace IED
 					TransformClearFlags::Rotation);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ClearItemScale(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -826,7 +832,7 @@ namespace IED
 					TransformClearFlags::Scale);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -855,7 +861,7 @@ namespace IED
 					a_form);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool AddItemExtraForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -886,7 +892,7 @@ namespace IED
 					a_index);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool RemoveItemExtraForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -915,7 +921,7 @@ namespace IED
 					a_form);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool RemovetemExtraFormByIndex(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -944,7 +950,7 @@ namespace IED
 					a_index);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static std::int32_t GetNumExtraForms(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -971,7 +977,7 @@ namespace IED
 					GetSex(a_female));
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemModelSwapForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1000,7 +1006,7 @@ namespace IED
 					a_form);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ClearItemModelSwapForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1027,7 +1033,7 @@ namespace IED
 					GetSex(a_female));
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool SetItemCountRange(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1058,7 +1064,7 @@ namespace IED
 					a_max);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ItemExists(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1083,7 +1089,7 @@ namespace IED
 					keys.name);
 			}
 
-			template <class T>
+			template <detail::valid_target T>
 			static bool ItemEnabled(
 				StaticFunctionTag*,
 				T*            a_target,

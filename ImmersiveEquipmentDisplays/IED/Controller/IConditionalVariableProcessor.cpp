@@ -89,7 +89,9 @@ namespace IED
 		auto it = controller.DoLastEquippedSelection(
 			a_params,
 			a_data.lastEquipped,
-			[](auto&) { return true; });
+			[](const auto& a_itemEntry) [[msvc::forceinline]] {
+				return !a_itemEntry.first.IsTemporary();
+			});
 
 		if (it != a_params.collector.data.forms.end())
 		{

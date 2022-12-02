@@ -61,7 +61,7 @@ namespace IED
 				throw std::exception("too many vertices (max. 2^16)");
 			}
 
-			auto tmp = std::make_unique<ModelData>();
+			auto tmp = std::make_shared<ModelData>();
 
 			tmp->vertices.resize(numVertices);
 

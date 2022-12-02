@@ -654,7 +654,7 @@ namespace IED
 		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args)
 		{
 			return m_simNodeList.emplace_back(
-				std::make_unique<PHYSimComponent>(
+				std::make_shared<PHYSimComponent>(
 					std::forward<Args>(a_args)...));
 		}
 

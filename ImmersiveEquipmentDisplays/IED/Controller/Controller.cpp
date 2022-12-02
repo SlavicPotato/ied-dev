@@ -3046,21 +3046,19 @@ namespace IED
 					}
 				}
 			}
-
-			return nullptr;
 		}
 		else
 		{
 			auto& result = a_config.form;
 
-			if (!result.get_id() ||
-			    result.get_id().IsTemporary())
+			if (result.get_id() &&
+			    !result.get_id().IsTemporary())
 			{
-				return nullptr;
+				return std::addressof(result);
 			}
-
-			return std::addressof(result);
 		}
+
+		return nullptr;
 	}
 
 	bool Controller::ProcessCustomEntry(
@@ -3908,7 +3906,7 @@ namespace IED
 			}
 			else
 			{
-				UpdateNodeIfGamePaused(a_params.root);
+				UpdateRootIfGamePaused(a_params.root);
 			}
 
 			a_params.state.flags.clear(ProcessStateUpdateFlags::kUpdateMask);
@@ -3991,7 +3989,7 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				UpdateNodeIfGamePaused(params->root);
+				UpdateRootIfGamePaused(params->root);
 			}
 		}
 		else if (auto info = LookupCachedActorInfo(a_holder))
@@ -4007,7 +4005,7 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				UpdateNodeIfGamePaused(info->root);
+				UpdateRootIfGamePaused(info->root);
 			}
 		}
 	}
@@ -4439,7 +4437,7 @@ namespace IED
 					objectEntry.data.state->nodes.rootNode,
 					objectEntry.data.state->nodes.ref);
 
-				UpdateNodeIfGamePaused(info->root);
+				UpdateRootIfGamePaused(info->root);
 			}
 		}
 	}
@@ -5088,7 +5086,7 @@ namespace IED
 				nullptr);
 		}
 
-		UpdateNodeIfGamePaused(a_info.root);
+		UpdateRootIfGamePaused(a_info.root);
 	}
 
 	auto Controller::LookupCachedActorInfo(
@@ -5359,15 +5357,22 @@ namespace IED
 	{
 		if (a_evn && a_evn->actor)
 		{
-			if (a_evn->actor->IsActor())
+			if (a_evn->actor->IsActor() && a_evn->baseObject)
 			{
-				if (auto form = a_evn->baseObject.Lookup())
+				/*if (auto form = a_evn->baseObject.Lookup())
 				{
 					if (IFormCommon::IsEquippableForm(form))
 					{
 						QueueRequestEvaluate(a_evn->actor->formID, false, true);
 					}
-				}
+				}*/
+
+				/*if (auto form = a_evn->baseObject.Lookup())
+				{
+					_DMESSAGE("%.8X | %hhu | %s", form->formID, form->formType, IFormCommon::GetFormName(form).c_str());
+				}*/
+
+				QueueRequestEvaluate(a_evn->actor->formID, false, true);
 			}
 		}
 
@@ -5383,27 +5388,27 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			if (auto form = a_evn->baseObj.Lookup())
+			if (a_evn->baseObj)
 			{
-				if (IsInventoryForm(form))
+				//if (IsInventoryForm(form))
+				//{
+				if (a_evn->oldContainer)
 				{
-					if (a_evn->oldContainer)
+					if (a_evn->oldContainer.As<Actor>())
 					{
-						if (auto oldContainer = a_evn->oldContainer.As<Actor>())
-						{
-							QueueRequestEvaluate(oldContainer->formID, true, false);
-						}
-					}
-
-					if (a_evn->newContainer &&
-					    a_evn->oldContainer != a_evn->newContainer)  // ?
-					{
-						if (auto newContainer = a_evn->newContainer.As<Actor>())
-						{
-							QueueRequestEvaluate(newContainer->formID, true, false);
-						}
+						QueueRequestEvaluate(a_evn->oldContainer, true, false);
 					}
 				}
+
+				if (a_evn->newContainer &&
+				    a_evn->oldContainer != a_evn->newContainer)  // ?
+				{
+					if (a_evn->newContainer.As<Actor>())
+					{
+						QueueRequestEvaluate(a_evn->newContainer, true, false);
+					}
+				}
+				//}
 			}
 		}
 

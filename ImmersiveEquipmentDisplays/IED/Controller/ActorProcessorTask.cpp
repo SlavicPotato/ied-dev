@@ -54,7 +54,7 @@ namespace IED
 
 				if (result)
 				{
-					m_controller.UpdateNodeIfGamePaused(info->root);
+					m_controller.UpdateRootIfGamePaused(info->root);
 					a_record.RequestEvalDefer();
 				}
 			}

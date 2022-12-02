@@ -35,7 +35,7 @@ namespace IED
 							continue;
 						}
 
-						auto tmp(std::make_unique<StringTable>());
+						auto tmp = std::make_shared<StringTable>();
 						if (!tmp->Load(path))
 						{
 							Error(

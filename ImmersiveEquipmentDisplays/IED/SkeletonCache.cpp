@@ -79,7 +79,7 @@ namespace IED
 
 		if (r.second)
 		{
-			r.first->second = std::make_unique<actor_entry_type::element_type>();
+			r.first->second = std::make_shared<actor_entry_type::element_type>();
 
 			fill(a_key, *r.first->second);
 		}

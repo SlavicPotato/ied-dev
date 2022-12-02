@@ -111,7 +111,7 @@ namespace IED
 		}
 	}
 
-	void INode::UpdateNodeIfGamePaused(NiNode* a_root)
+	void INode::UpdateRootIfGamePaused(NiNode* a_root)
 	{
 		bool update = Game::Main::GetSingleton()->freezeTime;
 

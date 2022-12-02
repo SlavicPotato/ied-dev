@@ -78,7 +78,7 @@ namespace IED
 		// probably can't happen but just in case
 		if (!a_entry.data)
 		{
-			a_entry.data = std::make_unique<BipedSlotData>();
+			a_entry.data = std::make_shared<BipedSlotData>();
 			return;
 		}
 

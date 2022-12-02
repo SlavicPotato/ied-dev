@@ -132,7 +132,7 @@ namespace IED
 			}
 
 			{
-				auto tmpd = std::make_unique<typename P::base_type>(GetData(a_data));
+				const auto tmpd = std::make_unique<typename P::base_type>(GetData(a_data));
 				DrawCreateNew(tmpd.get());
 			}
 

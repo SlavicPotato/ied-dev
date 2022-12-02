@@ -74,7 +74,7 @@ namespace IED
 			return false;
 		}
 
-		if (a_form->formID.IsTemporary())  // ?
+		if (a_form->formID.IsTemporary()) // should be ok to remove this now
 		{
 			return false;
 		}
@@ -96,8 +96,8 @@ namespace IED
 			return;
 		}
 
-		auto type      = ItemData::GetItemType(form);
-		auto extraType = ItemData::GetItemTypeExtra(form);
+		const auto type      = ItemData::GetItemType(form);
+		const auto extraType = ItemData::GetItemTypeExtra(form);
 
 		auto& entry = data.forms.try_emplace(
 									form->formID,
@@ -128,8 +128,8 @@ namespace IED
 			return;
 		}
 
-		auto type      = ItemData::GetItemType(form);
-		auto extraType = ItemData::GetItemTypeExtra(form);
+		const auto type      = ItemData::GetItemType(form);
+		const auto extraType = ItemData::GetItemTypeExtra(form);
 
 		auto& entry = data.forms.try_emplace(
 									form->formID,
@@ -154,9 +154,9 @@ namespace IED
 					continue;
 				}
 
-				BSReadLocker locker(e->m_lock);
+				const BSReadLocker locker(e->m_lock);
 
-				const auto presence = e->m_presence;
+				const auto* const presence = e->m_presence;
 				if (!presence)
 				{
 					continue;
@@ -189,7 +189,7 @@ namespace IED
 		{
 			entry.extraEquipped.type = extraType;
 
-			auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
+			const auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
 
 			if (entry.equipped)
 			{
@@ -203,7 +203,7 @@ namespace IED
 
 			if (entry.equippedLeft)
 			{
-				auto slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
+				const auto slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
 
 				entry.extraEquipped.slotLeft = slotLeft;
 
@@ -224,10 +224,15 @@ namespace IED
 			e.items.clear();
 		}
 
-		bool checkFav = isPlayer && a_checkFav;
+		const bool checkFav = isPlayer && a_checkFav;
 
 		for (const auto& [i, e] : data.forms)
 		{
+			if (i.IsTemporary())
+			{
+				continue;
+			}
+
 			if (e.type >= ObjectType::kMax)
 			{
 				continue;
@@ -255,7 +260,7 @@ namespace IED
 				continue;
 			}
 
-			auto form = e.form;
+			const auto* form = e.form;
 
 			if (isPlayer && !form->GetPlayable())
 			{
@@ -268,7 +273,7 @@ namespace IED
 			{
 			case TESObjectWEAP::kTypeID:
 				{
-					auto weap = static_cast<TESObjectWEAP*>(form);
+					auto weap = static_cast<const TESObjectWEAP*>(form);
 
 					if (weap->IsBound())
 					{
@@ -281,12 +286,12 @@ namespace IED
 			case TESAmmo::kTypeID:
 
 				rating = stl::clamped_num_cast<std::uint32_t>(
-					static_cast<TESAmmo*>(form)->settings.damage);
+					static_cast<const TESAmmo*>(form)->settings.damage);
 
 				break;
 			case TESObjectARMO::kTypeID:
 
-				rating = static_cast<TESObjectARMO*>(form)->armorRating;
+				rating = static_cast<const TESObjectARMO*>(form)->armorRating;
 
 				break;
 			default:

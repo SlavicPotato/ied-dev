@@ -96,7 +96,7 @@ namespace IED
 
 	private:
 		template <class Tf>
-		SKMP_FORCEINLINE auto SelectSlotEntryForm(
+		inline auto SelectSlotEntryForm(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const BipedSlotCacheEntry&        a_slotEntry,
@@ -143,7 +143,6 @@ namespace IED
 			auto& bipedSlots = m_temp.le;
 
 			bipedSlots.clear();
-			//bipedSlots.reserve(a_config.bipedSlots.size());
 
 			for (auto& e : a_config.bipedSlots)
 			{
@@ -229,7 +228,7 @@ namespace IED
 		{
 			const auto& slot = a_params.objects.GetSlot(a_config.slot);
 
-			if (auto form = slot.slotState.lastSlotted)
+			if (const auto& form = slot.slotState.lastSlotted)
 			{
 				auto it = formData.find(form);
 				if (it != formData.end())
@@ -240,7 +239,10 @@ namespace IED
 							a_params,
 							true))
 					{
-						return it;
+						if (a_validationFunc(*it))
+						{
+							return it;
+						}
 					}
 				}
 			}
@@ -283,11 +285,6 @@ namespace IED
 
 		for (auto& formid : a_slotEntry.forms)
 		{
-			/*if (!formid || formid.IsTemporary())
-			{
-				continue;
-			}*/
-
 			auto it = formData.find(formid);
 			if (it == formData.end())
 			{
@@ -303,7 +300,7 @@ namespace IED
 				continue;
 			}
 
-			if (a_validationFunc(it->second))
+			if (a_validationFunc(*it))
 			{
 				return it;
 			}

@@ -146,6 +146,13 @@ namespace IED
 		const configCustom_t&              a_config,
 		bool&                              a_hasMinCount)
 	{
+		const auto form = a_itemData.form;
+
+		if (form->formID.IsTemporary())
+		{
+			return false;
+		}
+
 		if (a_itemData.count < 1)
 		{
 			return false;
@@ -166,11 +173,11 @@ namespace IED
 
 		if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
 		{
-			bool isAmmo = a_itemData.form->IsAmmo();
+			const bool isAmmo = form->IsAmmo();
 
 			if (!isAmmo &&
 			    !a_config.customFlags.test(CustomFlags::kIgnoreRaceEquipTypes) &&
-			    !is_non_shield_armor(a_itemData.form) &&
+			    !is_non_shield_armor(form) &&
 			    !a_params.objects.IsPlayer())
 			{
 				if (!a_params.test_equipment_flags(
@@ -225,10 +232,9 @@ namespace IED
 	{
 		auto& formData = a_params.collector.data.forms;
 
-		if (a_config.form.get_id() &&
-		    !a_config.form.get_id().IsTemporary())
+		if (const auto& fid = a_config.form.get_id())
 		{
-			if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
+			if (auto it = formData.find(fid); it != formData.end())
 			{
 				if (CustomEntryValidateInventoryForm(
 						a_params,
@@ -259,7 +265,7 @@ namespace IED
 		{
 			if (a_objectEntry.data.state)
 			{
-				auto fid = a_objectEntry.data.state->formid;
+				const auto fid = a_objectEntry.data.state->formid;
 
 				if (fid == a_config.form.get_id() ||
 				    std::find(
@@ -297,9 +303,9 @@ namespace IED
 
 				auto ite = tmp.begin() + rng.Get(m_rng);
 
-				if (*ite && !ite->IsTemporary())
+				if (const auto& fid = *ite)
 				{
-					if (auto it = formData.find(*ite); it != formData.end())
+					if (auto it = formData.find(fid); it != formData.end())
 					{
 						if (a_filter(it->second))
 						{
@@ -320,10 +326,9 @@ namespace IED
 		}
 		else
 		{
-			if (a_config.form.get_id() &&
-			    !a_config.form.get_id().IsTemporary())
+			if (const auto& fid = a_config.form.get_id())
 			{
-				if (auto it = formData.find(a_config.form.get_id()); it != formData.end())
+				if (auto it = formData.find(fid); it != formData.end())
 				{
 					if (a_filter(it->second))
 					{
@@ -341,22 +346,29 @@ namespace IED
 
 			for (auto& e : a_config.extraItems)
 			{
-				if (e && !e.IsTemporary())
+				if (!e)
 				{
-					if (auto it = formData.find(e); it != formData.end())
-					{
-						if (a_filter(it->second))
-						{
-							if (CustomEntryValidateInventoryForm(
-									a_params,
-									it->second,
-									a_config,
-									a_hasMinCount))
-							{
-								return it;
-							}
-						}
-					}
+					continue;
+				}
+
+				auto it = formData.find(e);
+				if (it == formData.end())
+				{
+					continue;
+				}
+
+				if (!a_filter(it->second))
+				{
+					continue;
+				}
+
+				if (CustomEntryValidateInventoryForm(
+						a_params,
+						it->second,
+						a_config,
+						a_hasMinCount))
+				{
+					return it;
 				}
 			}
 		}
@@ -375,10 +387,10 @@ namespace IED
 			auto it = DoLastEquippedSelection(
 				a_params,
 				a_config.lastEquipped,
-				[&](auto& a_itemData) {
+				[&](auto& a_itemEntry) {
 					return CustomEntryValidateInventoryForm(
 						a_params,
-						a_itemData,
+						a_itemEntry.second,
 						a_config,
 						a_hasMinCount);
 				});

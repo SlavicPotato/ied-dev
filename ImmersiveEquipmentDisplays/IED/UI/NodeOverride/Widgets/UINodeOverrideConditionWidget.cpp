@@ -834,23 +834,23 @@ namespace IED
 
 					if (wantedWidth > avail)
 					{
-						flags = ImGuiTableFlags_ScrollX |
-						        ImGuiTableFlags_ScrollY;
+						flags |= ImGuiTableFlags_ScrollX |
+						         ImGuiTableFlags_ScrollY;
 
 						innerWidth = wantedWidth;
 						height     = 300.0f;
 					}
 				}
 
-				if (a_type == NodeOverrideDataType::kPlacement)
-				{
-					width = -1.0f;
-				}
-				else
+				if (a_type == NodeOverrideDataType::kTransform)
 				{
 					width = std::max(
 						ImGui::GetFontSize() * 30.0f,
 						ImGui::GetContentRegionAvail().x - ImGui::GetFontSize());
+				}
+				else
+				{
+					width = -1.0f;
 				}
 			}
 
@@ -865,7 +865,7 @@ namespace IED
 					{ width, height },
 					innerWidth))
 			{
-				auto w =
+				const auto w =
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
@@ -913,7 +913,7 @@ namespace IED
 
 							it = a_entry.emplace(
 								it,
-								std::move(result.str));
+								result.str);
 
 							break;
 						case Data::NodeOverrideConditionType::Form:

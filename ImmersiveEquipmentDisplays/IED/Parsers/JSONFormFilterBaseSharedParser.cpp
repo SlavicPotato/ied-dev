@@ -12,9 +12,9 @@ namespace IED
 			const Json::Value&                             a_in,
 			std::shared_ptr<Data::configFormFilterBase_t>& a_out) const
 		{
-			a_out = std::make_unique<Data::configFormFilterBase_t>();
-
 			Parser<Data::configFormFilterBase_t> parser(m_state);
+
+			a_out = std::make_shared<Data::configFormFilterBase_t>();
 
 			return parser.Parse(a_in, *a_out);
 		}

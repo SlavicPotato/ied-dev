@@ -81,7 +81,7 @@ namespace IED
 
 				auto r = m_weaponNodes.emplace(
 					e.first,
-					std::make_unique<I3DIWeaponNode>(
+					std::make_shared<I3DIWeaponNode>(
 						a_data.scene.GetDevice().Get(),
 						model,
 						e.first,
@@ -104,7 +104,7 @@ namespace IED
 
 					auto s = m_movNodes.emplace(
 						f.first,
-						std::make_unique<I3DIMOVNode>(
+						std::make_shared<I3DIMOVNode>(
 							a_data.scene.GetDevice().Get(),
 							movAnchorModel,
 							f.first,
@@ -243,7 +243,7 @@ namespace IED
 				{
 					auto r = m_physicsObjects.emplace(
 						e->GetLUID(),
-						std::make_unique<I3DIPhysicsObject>(a_data, *this, *e));
+						std::make_shared<I3DIPhysicsObject>(a_data, *this, *e));
 
 					a_data.objectController.RegisterObject(r.first->second);
 				}

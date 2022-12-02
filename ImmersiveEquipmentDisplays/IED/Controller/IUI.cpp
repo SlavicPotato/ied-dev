@@ -12,7 +12,7 @@ namespace IED
 {
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		auto result = std::make_unique<IUIRenderTaskMain>(*this);
+		auto result = std::make_shared<IUIRenderTaskMain>(*this);
 		
 		result->InitializeContext<UI::UIMain>(a_controller);
 

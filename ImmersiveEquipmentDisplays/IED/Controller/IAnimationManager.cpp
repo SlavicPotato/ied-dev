@@ -17,7 +17,7 @@ namespace IED
 	{
 		if (!m_strings)
 		{
-			m_strings = std::make_unique<AnimStringHolder>();
+			m_strings = std::make_unique<const AnimStringHolder>();
 		}
 	}
 

@@ -130,7 +130,7 @@ namespace IED
 	auto IFormDatabase::Create()
 		-> result_type
 	{
-		auto result = std::make_unique<data_type>();
+		auto result = std::make_shared<data_type>();
 
 		if (auto dh = DataHandler::GetSingleton())
 		{

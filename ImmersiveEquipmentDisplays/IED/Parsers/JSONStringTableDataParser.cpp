@@ -63,7 +63,7 @@ namespace IED
 			{
 				Parser<fontGlyphData_t> gparser(m_state);
 
-				auto tmp = std::make_unique<fontGlyphData_t>();
+				auto tmp = std::make_shared<fontGlyphData_t>();
 
 				if (!gparser.Parse(
 						a_in["glyphs"],

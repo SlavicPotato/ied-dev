@@ -385,7 +385,7 @@ namespace IED
 				{
 					it = actors.try_emplace(
 								   i,
-								   std::make_unique<I3DIActorObject>(i))
+								   std::make_shared<I3DIActorObject>(i))
 					         .first;
 
 					m_data->objectController.RegisterObject(it->second);

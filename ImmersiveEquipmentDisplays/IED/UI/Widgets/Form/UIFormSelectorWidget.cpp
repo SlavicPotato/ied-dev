@@ -260,7 +260,7 @@ namespace IED
 		void UIFormSelectorWidget::SetAllowedTypes(
 			std::initializer_list<UIFormBrowser::tab_filter_type::value_type> a_types)
 		{
-			m_types = std::make_unique<const UIFormBrowser::tab_filter_type>(a_types);
+			m_types = std::make_shared<const UIFormBrowser::tab_filter_type>(a_types);
 		}
 
 		void UIFormSelectorWidget::SetAllowedTypes(
