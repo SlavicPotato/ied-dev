@@ -9,6 +9,7 @@
 
 #include "IED/Controller/ActorObjectHolder.h"
 #include "IED/Controller/Controller.h"
+#include "IED/LocaleData.h"
 
 namespace IED
 {
@@ -106,7 +107,7 @@ namespace IED
 
 			if (auto name = refr->GetReferenceName())
 			{
-				m_name = name;
+				m_name = LocaleData::ToUTF8(name);
 			}
 			else
 			{
