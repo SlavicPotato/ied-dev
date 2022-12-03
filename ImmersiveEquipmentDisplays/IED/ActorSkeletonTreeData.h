@@ -24,6 +24,7 @@ namespace IED
 
 	struct SI_NiObject
 	{
+		stl::string              type;
 		stl::string              name;
 		SI_Transform             local;
 		SI_Transform             world;

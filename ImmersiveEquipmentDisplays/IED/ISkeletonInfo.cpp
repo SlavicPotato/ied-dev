@@ -212,7 +212,14 @@ namespace IED
 		SI_NiObject& a_data,
 		SI_NiObject* a_parent) noexcept
 	{
-		a_data.name   = a_object->m_name.c_str();
+		auto rtti = a_object->GetRTTI();
+
+		if (auto type = rtti ? rtti->name : nullptr)
+		{
+			a_data.type = type;
+		}
+
+		a_data.name = a_object->m_name.c_str();
 		a_data.local  = a_object->m_localTransform;
 		a_data.world  = a_object->m_worldTransform;
 		a_data.flags  = a_object->m_flags;

@@ -330,17 +330,21 @@ namespace IED
 					result = ImGui::TreeNodeEx(
 						"",
 						flags,
-						"%s [%s]",
+						"%s [%s] [%s] [%.8X]",
 						a_object.name.c_str(),
-						a_object.parent->name.c_str());
+						a_object.parent->name.c_str(),
+						a_object.type.c_str(),
+						a_object.flags);
 				}
 				else
 				{
 					result = ImGui::TreeNodeEx(
 						"",
 						flags,
-						"%s",
-						a_object.name.c_str());
+						"%s [%s] [%.8X]",
+						a_object.name.c_str(),
+						a_object.type.c_str(),
+						a_object.flags);
 				}
 
 				if (result)
