@@ -179,7 +179,6 @@ namespace IED
 			nodeOverrideParams_t*  a_params,
 			bool                   a_defer);
 
-	protected:
 		static void ApplyNodeOverride(
 			const stl::fixed_string&                   a_name,
 			const CMENodeEntry&                        a_entry,

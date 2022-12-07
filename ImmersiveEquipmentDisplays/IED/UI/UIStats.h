@@ -7,6 +7,7 @@
 #include "IED/UI/Controls/UICollapsibles.h"
 
 #include "IED/UI/UIContext.h"
+#include "IED/UI/UIMiscTextInterface.h"
 #include "IED/UI/Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
@@ -22,8 +23,9 @@ namespace IED
 	namespace UI
 	{
 		class UIStats :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
+			UIMiscTextInterface,
 			UICollapsibles,
 			public virtual UILocalizationInterface,
 			public virtual UITipsInterface
@@ -51,13 +53,11 @@ namespace IED
 			struct sorted_list_entry_t
 			{
 				const ActorObjectMap::value_type& obj;
-				stl::fixed_string                 name;
 				std::size_t                       nslot;
 				std::size_t                       ncust;
 				long long                         age;
+				stl::fixed_string                 name;
 				Game::FormID                      race;
-
-				SKMP_REDEFINE_NEW_PREF();
 			};
 
 			using sort_comp_func_t = std::function<

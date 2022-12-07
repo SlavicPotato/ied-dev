@@ -107,6 +107,7 @@ namespace IED
 			AttachLight                         = 1098,
 			HideLight                           = 1099,
 			RemoveProjectileTracers             = 1100,
+			CopiedToClipboard                   = 1101,
 		};
 
 	}

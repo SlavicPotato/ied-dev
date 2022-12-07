@@ -9,7 +9,7 @@ namespace IED
 	namespace UI
 	{
 		UINodeOverrideEditorGlobal::UINodeOverrideEditorGlobal(Controller& a_controller) :
-			UINodeOverrideEditorCommon<int>(a_controller),
+			UINodeOverrideEditorCommon<UIGlobalEditorDummyHandle>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
@@ -125,8 +125,8 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::ApplyProfile(
-			const profileSelectorParamsNodeOverride_t<int>& a_data,
-			const NodeOverrideProfile&                      a_profile)
+			const profileSelectorParamsNodeOverride_t<UIGlobalEditorDummyHandle>& a_data,
+			const NodeOverrideProfile&                                            a_profile)
 		{
 			GetOrCreateConfigHolder(a_data.handle) = a_profile.Data();
 			UpdateData(a_data.data);
@@ -135,8 +135,8 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::MergeProfile(
-			const profileSelectorParamsNodeOverride_t<int>& a_data,
-			const NodeOverrideProfile&                      a_profile)
+			const profileSelectorParamsNodeOverride_t<UIGlobalEditorDummyHandle>& a_data,
+			const NodeOverrideProfile&                                            a_profile)
 		{
 			MergeProfileData(a_data, a_profile);
 			UpdateData(a_data.data);
@@ -145,7 +145,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int                                            a_handle,
+			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			const auto& store = m_controller.GetConfigStore();
@@ -159,7 +159,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int                                            a_handle,
+			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			const auto& store = m_controller.GetConfigStore();
@@ -173,7 +173,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int                                          a_handle,
+			UIGlobalEditorDummyHandle                    a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
 			const auto& store = m_controller.GetConfigStore();
@@ -187,7 +187,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnUpdate(
-			int                             a_handle,
+			UIGlobalEditorDummyHandle       a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params);
@@ -198,7 +198,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearTransform(
-			int,
+			UIGlobalEditorDummyHandle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -213,7 +213,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearPlacement(
-			int,
+			UIGlobalEditorDummyHandle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -228,7 +228,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearPhysics(
-			int                                  a_handle,
+			UIGlobalEditorDummyHandle            a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -243,7 +243,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearAllTransforms(
-			int,
+			UIGlobalEditorDummyHandle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -257,7 +257,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearAllPlacement(
-			int,
+			UIGlobalEditorDummyHandle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -271,7 +271,7 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorGlobal::OnClearAllPhysics(
-			int                                     a_handle,
+			UIGlobalEditorDummyHandle               a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			auto& store = m_controller.GetConfigStore();
@@ -284,7 +284,7 @@ namespace IED
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
 
-		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(int) const
+		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(UIGlobalEditorDummyHandle) const
 		{
 			auto& store = m_controller.GetConfigStore();
 
@@ -292,7 +292,7 @@ namespace IED
 				store.settings.data.ui.transformEditor.globalType);
 		}
 
-		Data::configNodeOverrideHolder_t* UINodeOverrideEditorGlobal::GetConfigHolder(int) const
+		Data::configNodeOverrideHolder_t* UINodeOverrideEditorGlobal::GetConfigHolder(UIGlobalEditorDummyHandle) const
 		{
 			auto& store = m_controller.GetConfigStore();
 

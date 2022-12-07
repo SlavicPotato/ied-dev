@@ -67,11 +67,13 @@ namespace IED
 
 			a_out.physics.maxDiff = data.get("phy_maxdiff", 1024.0f).asFloat();
 
-			auto& logLevel = data["log_level"];
-
-			if (!logLevel.empty())
+			if (auto& logLevel = data["log_level"])
 			{
-				a_out.logLevel = static_cast<LogLevel>(logLevel.asUInt());
+				a_out.logLevel = static_cast<LogLevel>(
+					std::clamp(
+						logLevel.asUInt(),
+						static_cast<std::uint32_t>(LogLevel::Min),
+						static_cast<std::uint32_t>(LogLevel::Max)));
 			}
 
 			a_out.odbLevel = static_cast<ObjectDatabaseLevel>(

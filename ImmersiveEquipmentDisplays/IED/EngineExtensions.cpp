@@ -406,7 +406,7 @@ namespace IED
 			"[%s] %s @0x%llX",
 			__FUNCTION__,
 			result ? "Installed" :
-                     "Failed",
+					 "Failed",
 			m_toggleFav1_a.get());
 	}
 
@@ -708,7 +708,7 @@ namespace IED
 	{
 		const auto formid = a_visitor.actor ?
 		                        a_visitor.actor->formID :
-                                Game::FormID{};
+		                        Game::FormID{};
 
 		m_Instance.m_ArmorChange_o(a_ic, a_visitor);
 
@@ -893,7 +893,6 @@ namespace IED
 	{
 		bool result = false;
 
-		// some massive paranoia
 		std::uint32_t maxiter = 1000;
 
 		while (auto object = GetObjectByName(a_object, a_name, true))
@@ -918,7 +917,6 @@ namespace IED
 		NiNode*   a_object,
 		ModelType a_modelType,
 		bool      a_leftWeapon,
-		bool      a_shield,
 		bool      a_dropOnDeath,
 		bool      a_removeScabbards,
 		bool      a_keepTorchFlame,
@@ -1094,12 +1092,9 @@ namespace IED
 
 			break;
 
-		case ModelType::kArmor:
+		case ModelType::kShield:
 
-			if (a_shield)
-			{
-				collisionFilterInfo = 0x12;
-			}
+			collisionFilterInfo = 0x12;
 
 			break;
 
@@ -1140,7 +1135,7 @@ namespace IED
 			{
 				NiPointer<Actor> mountedActor;
 
-				bool isMounted = a_actor->GetMountedActor(mountedActor);
+				const bool isMounted = a_actor->GetMountedActor(mountedActor);
 
 				unks_01 tmp;
 
@@ -1195,13 +1190,13 @@ namespace IED
 
 		if (!BindAnimationObject(*result, a_object))
 		{
+			CleanupWeaponBehaviorGraph(result);
+
 			gLog.Warning(
-				"%s: binding animation object failed [%p | %s]",
+				"%s: binding animation object failed [0x%p | %s]",
 				__FUNCTION__,
 				a_object,
 				a_object->m_name.c_str());
-
-			CleanupWeaponBehaviorGraph(result);
 
 			return false;
 		}
@@ -1258,7 +1253,7 @@ namespace IED
 			return true;
 		}
 
-		if (auto door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
+		if (const auto* door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
 		{
 			return door->doorFlags.test(TESObjectDOOR::Flag::kAutomatic);
 		}
@@ -1278,7 +1273,7 @@ namespace IED
 
 		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
 
-		auto& tlsUnk768 = tlsData[*tlsIndex]->unk768;
+		auto& tlsUnk768 = tlsData[*g_TlsIndexPtr]->unk768;
 
 		auto oldUnk768 = tlsUnk768;
 		tlsUnk768      = 0x3A;
@@ -1294,9 +1289,9 @@ namespace IED
 		{
 			for (auto& e : bip->objects)
 			{
-				if (e.weaponAnimationGraphManagerHolder)
+				if (auto &h = e.weaponAnimationGraphManagerHolder)
 				{
-					UpdateAnimationGraph(e.weaponAnimationGraphManagerHolder.get(), data);
+					UpdateAnimationGraph(h.get(), data);
 				}
 			}
 

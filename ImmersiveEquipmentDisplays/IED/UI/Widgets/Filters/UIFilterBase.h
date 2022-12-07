@@ -103,7 +103,7 @@ namespace IED
 
 			ImGui::PushID(a_label);
 
-			auto r = ProcessInput(a_label);
+			const auto r = ProcessInput(a_label);
 
 			ImGui::PopID();
 

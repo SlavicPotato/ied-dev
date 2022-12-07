@@ -6,8 +6,8 @@ namespace IED
 	{
 		enum class UIDisplayManagementEditorPanel : std::uint32_t
 		{
-			Slot,
-			Custom
+			Slot   = 0,
+			Custom = 1
 		};
 
 	}

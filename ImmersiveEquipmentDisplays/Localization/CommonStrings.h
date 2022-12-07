@@ -248,5 +248,7 @@ namespace IED
 		Duration        = 319,
 		Magnitude       = 320,
 		Elapsed         = 321,
+		Notifications   = 322,
+		Threshold       = 323,
 	};
 }

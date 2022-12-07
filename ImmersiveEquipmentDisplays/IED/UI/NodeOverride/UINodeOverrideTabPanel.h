@@ -21,15 +21,8 @@ namespace IED
 		public:
 			UINodeOverrideTabPanel(Controller& a_controller);
 
-			UINodeOverrideEditorGlobal m_editorGlobal;
-			UINodeOverrideEditorActor  m_editorActor;
-			UINodeOverrideEditorNPC    m_editorNPC;
-			UINodeOverrideEditorRace   m_editorRace;
-
 		private:
 			virtual Data::SettingHolder::EditorPanel& GetEditorConfig() override;
-
-			Controller& m_controller;
 		};
 
 	}

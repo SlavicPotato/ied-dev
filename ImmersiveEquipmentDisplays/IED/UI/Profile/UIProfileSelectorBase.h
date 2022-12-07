@@ -29,9 +29,9 @@ namespace IED
 
 		template <class T, class P>
 		class UIProfileSelectorBase :
-			virtual protected UIAlignment,
+			public UIProfileBase<P>,
 			UIDataBase<T, typename P::base_type>,
-			public UIProfileBase<P>
+			virtual protected UIAlignment
 		{
 		protected:
 			inline static constexpr auto POPUP_ID_APPLY = "popup_apply";

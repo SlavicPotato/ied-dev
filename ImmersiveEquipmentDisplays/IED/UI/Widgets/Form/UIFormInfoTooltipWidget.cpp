@@ -17,6 +17,7 @@ namespace IED
 	{
 		UIFormInfoTooltipWidget::UIFormInfoTooltipWidget(
 			Controller& a_controller) :
+			UIMiscTextInterface(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
@@ -32,11 +33,11 @@ namespace IED
 
 			if (a_info)
 			{
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::FormIDColon));
+				ImGui::Text("%s:", LS(CommonStrings::FormID));
 				ImGui::SameLine();
 				ImGui::Text("%.8X", a_info->form.id.get());
 
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::TypeColon));
+				ImGui::Text("%s:", LS(CommonStrings::Type));
 
 				if (auto typeDesc = form_type_to_desc(a_info->form.type))
 				{
@@ -165,6 +166,114 @@ namespace IED
 						LS(CommonStrings::Unknown));
 				}
 			}
+		}
+
+		void UIFormInfoTooltipWidget::DrawFormWithInfo(Game::FormID a_form)
+		{
+			if (ImGui::GetCurrentWindow()->SkipItems)
+			{
+				return;
+			}
+
+			const auto result = TextCopyable("%.8X", a_form.get());
+
+			if (result >= TextCopyableResult::kHovered)
+			{
+				DrawGeneralFormInfoTooltip(a_form);
+			}
+		}
+
+		void UIFormInfoTooltipWidget::DrawFormWithInfoWrapped(Game::FormID a_form)
+		{
+			if (ImGui::GetCurrentWindow()->SkipItems)
+			{
+				return;
+			}
+
+			const auto result = TextWrappedCopyable("%.8X", a_form.get());
+
+			if (result >= TextCopyableResult::kHovered)
+			{
+				DrawGeneralFormInfoTooltip(a_form);
+			}
+		}
+
+		void UIFormInfoTooltipWidget::DrawGeneralFormInfoTooltip(Game::FormID a_form)
+		{
+			auto& flc = m_controller.UIGetFormLookupCache();
+			DrawGeneralFormInfoTooltip(flc.LookupForm(a_form));
+		}
+
+		void UIFormInfoTooltipWidget::DrawGeneralFormInfoTooltip(
+			const formInfoResult_t* a_info)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 8 });
+
+			ImGui::BeginTooltip();
+			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
+
+			if (a_info)
+			{
+				DrawFormInfo(a_info->form);
+
+				if (auto& base = a_info->base)
+				{
+					ImGui::Spacing();
+					ImGui::Spacing();
+
+					ImGui::Text("%s:", LS(CommonStrings::Base));
+					ImGui::Spacing();
+
+					ImGui::Indent();
+
+					DrawFormInfo(*base);
+
+					ImGui::Unindent();
+				}
+			}
+			else
+			{
+				ImGui::TextColored(
+					UICommon::g_colorWarning,
+					"%s",
+					LS(CommonStrings::Unknown));
+			}
+
+			ImGui::PopTextWrapPos();
+			ImGui::EndTooltip();
+
+			ImGui::PopStyleVar();
+		}
+
+		void UIFormInfoTooltipWidget::DrawFormInfo(const formInfo_t& a_info)
+		{
+			ImGui::Text("%s:", LS(CommonStrings::FormID));
+			ImGui::SameLine();
+			ImGui::Text("%.8X", a_info.id.get());
+
+			ImGui::Text("%s:", LS(CommonStrings::Type));
+
+			if (auto typeDesc = form_type_to_desc(a_info.type))
+			{
+				ImGui::SameLine();
+				ImGui::Text("%s [%hhu]", typeDesc, a_info.type);
+			}
+			else
+			{
+				ImGui::SameLine();
+				ImGui::Text("%hhu", a_info.type);
+			}
+
+			if (!a_info.name.empty())
+			{
+				ImGui::Text("%s:", LS(CommonStrings::Name));
+				ImGui::SameLine();
+				ImGui::Text("%s", a_info.name.c_str());
+			}
+
+			ImGui::Text("%s:", LS(CommonStrings::Flags));
+			ImGui::SameLine();
+			ImGui::Text("%.8X", a_info.formFlags);
 		}
 	}
 }

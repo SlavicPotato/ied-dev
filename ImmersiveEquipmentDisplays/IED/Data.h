@@ -330,7 +330,7 @@ namespace IED
 				case TESObjectARMO::kTypeID:
 					return static_cast<TESObjectARMO*>(a_form)->IsShield() ?
 					           ObjectSlotExtra::kShield :
-                               ObjectSlotExtra::kNone;
+					           ObjectSlotExtra::kNone;
 				case SpellItem::kTypeID:
 					return ObjectSlotExtra::kSpellLeft;
 				default:
@@ -935,11 +935,12 @@ namespace IED
 			}
 		}
 
-		std::unique_ptr<configSlotHolder_t::data_type>
-			CreateDefaultSlotConfig(ObjectSlot a_slot);
+		std::unique_ptr<configSlotHolder_t::data_type> CreateDefaultSlotConfig(
+			ObjectSlot a_slot);
 
-		std::unique_ptr<configSlotHolderCopy_t::data_type>
-			CreateDefaultSlotConfig(ObjectSlot a_slot, ConfigClass a_class);
+		std::unique_ptr<configSlotHolderCopy_t::data_type> CreateDefaultSlotConfig(
+			ObjectSlot a_slot,
+			ConfigClass a_class);
 
 	}
 }

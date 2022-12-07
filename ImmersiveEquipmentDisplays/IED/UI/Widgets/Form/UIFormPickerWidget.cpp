@@ -23,7 +23,7 @@ namespace IED
 				a_restrictTypes,
 				true,
 				a_forceBase),
-			UINotificationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UITipsInterface(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),

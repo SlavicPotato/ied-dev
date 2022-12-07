@@ -7,7 +7,7 @@
 #include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/UIFormLookupInterface.h"
 #include "IED/UI/UILocalizationInterface.h"
-#include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UIPopupInterface.h"
 #include "IED/UI/UISettingsInterface.h"
 #include "IED/UI/UITips.h"
 
@@ -58,16 +58,16 @@ namespace IED
 
 		template <class T>
 		class UIBaseConfigWidget :
-			public UINodeSelectorWidget,
-			public UIFormLookupInterface,
 			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>,
 			UIPhysicsValueEditorWidget,
+			public UINodeSelectorWidget,
+			public UIFormLookupInterface,
 			public virtual UIEquipmentOverrideConditionsWidget,
 			public virtual UICollapsibles,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITransformSliderWidget,
 			public virtual UITipsInterface,
-			public virtual UINotificationInterface,
+			public virtual UIPopupInterface,
 			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
 			public virtual UISimpleStringSetWidget,

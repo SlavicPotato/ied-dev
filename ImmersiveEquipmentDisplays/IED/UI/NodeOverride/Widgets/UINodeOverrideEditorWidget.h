@@ -97,14 +97,14 @@ namespace IED
 
 		template <class T>
 		class UINodeOverrideEditorWidget :
-			public UIEditorInterface,
-			public UIEditorPanelSettings,
-			public UICollapsibles,
-			public UIFormLookupInterface,
 			UINodeOverrideConditionWidget,
 			UIPhysicsValueEditorWidget,
+			public UICollapsibles,
+			public UIFormLookupInterface,
+			public UIEditorPanelSettings,
 			public virtual UISettingsInterface,
-			public virtual UITransformSliderWidget
+			public virtual UITransformSliderWidget,
+			public UIEditorInterface
 		{
 		public:
 			UINodeOverrideEditorWidget(

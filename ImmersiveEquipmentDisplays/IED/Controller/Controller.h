@@ -16,15 +16,11 @@
 #include "ControllerCommon.h"
 #include "EffectController.h"
 #include "IAnimationManager.h"
-#include "IConditionalVariableProcessor.h"
 #include "IEquipment.h"
 #include "IForm.h"
 #include "IJSONSerialization.h"
-#include "IMaintenance.h"
 #include "IObjectManager.h"
-#include "IUI.h"
-
-#include "Localization/ILocalization.h"
+#include "IUINotification.h"
 
 #include "Drivers/Input/Handlers.h"
 
@@ -33,20 +29,16 @@
 namespace IED
 {
 	class Controller :
-		virtual private ILog,
-		private ISerializationBase,
-		public IForm,
-		public IEquipment,
 		public IObjectManager,
+		public IEquipment,
 		public EffectController,
-		public ActorProcessorTask,
-		public IUI,
-		public IMaintenance,
-		public IJSONSerialization,
 		public IAnimationManager,
-		public IConditionalVariableProcessor,
-		public Localization::ILocalization,
+		public IForm,
+		public ActorProcessorTask,
 		public ITaskPool::TaskDelegateFixedPL,
+		private ISerializationBase,
+		public IJSONSerialization,
+		public IUINotification,
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
 		public ::Events::EventSink<SKSEMessagingEvent>,
@@ -64,7 +56,8 @@ namespace IED
 		//public BSTEventSink<SKSENiNodeUpdateEvent>,
 		//public BSTEventSink<TESQuestStartStopEvent>,
 		//public BSTEventSink<TESPackageEvent>,
-		public BSTEventSink<TESActorLocationChangeEvent>
+		public BSTEventSink<TESActorLocationChangeEvent>,
+		virtual private ILog
 	{
 		friend class boost::serialization::access;
 
@@ -142,10 +135,10 @@ namespace IED
 
 		Controller(const std::shared_ptr<const ConfigINI>& a_config);
 
-		Controller(const Controller&) = delete;
-		Controller(Controller&&)      = delete;
+		Controller(const Controller&)            = delete;
+		Controller(Controller&&)                 = delete;
 		Controller& operator=(const Controller&) = delete;
-		Controller& operator=(Controller&&) = delete;
+		Controller& operator=(Controller&&)      = delete;
 
 		void InitializeInputHandlers();
 		void SinkEventsT0();
@@ -490,9 +483,9 @@ namespace IED
 			return m_evalCounter;
 		}
 
-		[[nodiscard]] inline constexpr auto GetPhysicsForcedOff() const noexcept
+		[[nodiscard]] inline constexpr auto CPUHasSSE41() const noexcept
 		{
-			return m_physicsForcedOff;
+			return m_cpuHasSSE41;
 		}
 
 		/*[[nodiscard]] inline constexpr bool ConsumeInventoryChangeFlags(
@@ -763,11 +756,10 @@ namespace IED
 			ObjectEntryBase& a_entry,
 			NiAVObject*      a_object);
 
-		constexpr void UpdateObjectEffectShaders(
+		void UpdateObjectEffectShaders(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry,
-			bool                        a_updateValues = false);
+			ObjectEntryCustom&          a_objectEntry);
 
 		void RemoveSlotObjectEntry(
 			processParams_t& a_params,
@@ -833,9 +825,14 @@ namespace IED
 
 		void GenerateRandomPlacementEntries(const ActorObjectHolder& a_holder);
 
-		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
-
 		void ClearActorPhysicsDataImpl();
+
+		static void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data);
+		//void FillInitialConfig(Data::configStore_t& a_data) const;
+
+		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
+
+		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
 
 		// internal events
 
@@ -896,11 +893,6 @@ namespace IED
 		virtual EventResult ReceiveEvent(
 			const TESActorLocationChangeEvent*           a_evn,
 			BSTEventSource<TESActorLocationChangeEvent>* a_dispatcher) override;
-		
-		void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data) const;
-		//void FillInitialConfig(Data::configStore_t& a_data) const;
-
-		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
 
 		// serialization
 
@@ -984,7 +976,7 @@ namespace IED
 		bool m_enableCorpseScatter{ false };
 		bool m_forceOrigWeapXFRM{ false };
 		bool m_forceFlushSaveData{ false };
-		bool m_physicsForcedOff{ false };
+		bool m_cpuHasSSE41{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
 

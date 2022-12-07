@@ -3,6 +3,7 @@
 #include "UINodeOverrideEditorCommon.h"
 
 #include "IED/UI/Widgets/UIGlobalConfigTypeSelectorWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 namespace IED
 {
@@ -11,8 +12,8 @@ namespace IED
 	namespace UI
 	{
 		class UINodeOverrideEditorGlobal :
-			UIGlobalConfigTypeSelectorWidget,
-			public UINodeOverrideEditorCommon<int>
+			public UINodeOverrideEditorCommon<UIGlobalEditorDummyHandle>,
+			UIGlobalConfigTypeSelectorWidget
 		{
 		public:
 			UINodeOverrideEditorGlobal(Controller& a_controller);
@@ -38,58 +39,58 @@ namespace IED
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
-				const profileSelectorParamsNodeOverride_t<int>& a_data,
+				const profileSelectorParamsNodeOverride_t<UIGlobalEditorDummyHandle>& a_data,
 				const NodeOverrideProfile&                      a_profile) override;
 
 			virtual void MergeProfile(
-				const profileSelectorParamsNodeOverride_t<int>& a_data,
+				const profileSelectorParamsNodeOverride_t<UIGlobalEditorDummyHandle>& a_data,
 				const NodeOverrideProfile&                      a_profile) override;
 
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                      a_handle,
 				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                      a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
-			
+
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                    a_handle,
 				const SingleNodeOverridePhysicsUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int                             a_handle,
+				UIGlobalEditorDummyHandle       a_handle,
 				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearPlacement(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearPhysics(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllTransforms(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearAllPhysics(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual Data::configNodeOverrideHolder_t& GetOrCreateConfigHolder(
-				int) const override;
+				UIGlobalEditorDummyHandle) const override;
 
 			virtual Data::configNodeOverrideHolder_t*
-				GetConfigHolder(int) const override;
+				GetConfigHolder(UIGlobalEditorDummyHandle) const override;
 
 			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
 

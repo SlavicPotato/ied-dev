@@ -16,8 +16,8 @@ namespace IED
 	namespace UI
 	{
 		class UILog :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_log";

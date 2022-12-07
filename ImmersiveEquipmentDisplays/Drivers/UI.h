@@ -19,9 +19,17 @@ namespace IED
 			float height{ 0.0f };
 		};
 
+		namespace detail
+		{
+			template <class T>
+			concept is_render_task =
+				std::is_convertible_v<
+					T,
+					std::shared_ptr<Tasks::UIRenderTaskBase>>;
+		}
+
 		class UI :
 			ILog,
-			IGlyphData,
 			UIInputHandler,
 			::Events::EventSink<Handlers::KeyEvent>,
 			::Events::EventSink<Handlers::MouseMoveEvent>,
@@ -87,12 +95,7 @@ namespace IED
 				return !m_Instance.m_drawTasks.empty();
 			}
 
-			template <class Tp>
-
-			[[nodiscard]] static bool AddTask(
-				std::int32_t a_id,
-				Tp&&         a_task) requires
-				std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>;
+			[[nodiscard]] static std::shared_ptr<Tasks::UIRenderTaskBase> GetTask(std::int32_t a_id);
 
 			static void QueueRemoveTask(std::int32_t a_id);
 
@@ -187,9 +190,9 @@ namespace IED
 			static void QueueSetScale(float a_scale);
 			static void MarkFontUpdateDataDirty();
 
-			[[nodiscard]] static inline constexpr auto IsImInitialized() noexcept
+			[[nodiscard]] static inline auto IsImInitialized() noexcept
 			{
-				return m_Instance.m_imInitialized;
+				return m_Instance.m_imInitialized.load(std::memory_order_relaxed);
 			}
 
 			[[nodiscard]] static inline constexpr auto GetWindowHandle() noexcept
@@ -203,6 +206,10 @@ namespace IED
 			}
 
 			static void QueueImGuiSettingsSave();
+
+			static bool AddTask(
+				std::int32_t                                    a_id,
+				const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task);
 
 			FN_NAMEPROC("UI");
 
@@ -231,6 +238,10 @@ namespace IED
 			void ApplyControlLockChanges() const;
 
 			void Suspend();
+
+			bool AddTaskImpl(
+				std::int32_t a_id,
+				const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task);
 
 			void LockControls(bool a_switch);
 			void FreezeTime(bool a_switch);
@@ -311,9 +322,19 @@ namespace IED
 				long long    current{ 0L };
 			} m_uiRenderPerf;
 
-			stl::map<std::int32_t, std::shared_ptr<Tasks::UIRenderTaskBase>> m_drawTasks;
+			using map_type = stl::map<
+				std::int32_t,
+				std::shared_ptr<Tasks::UIRenderTaskBase>>;
 
-			bool              m_imInitialized{ false };
+			map_type m_drawTasks;
+
+			stl::unordered_map<
+				map_type::key_type,
+				map_type::mapped_type>
+				m_addQueue;
+
+			std::atomic<bool> m_imInitialized{ false };
+			bool              m_drawing{ false };
 			std::atomic<bool> m_suspended{ true };
 
 			SKMP_ImGuiUserData m_ioUserData;
@@ -331,37 +352,12 @@ namespace IED
 
 			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
 
-			std::recursive_mutex m_lock;
+			mutable std::recursive_mutex m_lock;
 
 			static UI m_Instance;
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(UI::UpdateFlags);
-
-		template <class Tp>
-		bool UI::AddTask(std::int32_t a_id, Tp&& a_task) requires
-			std::is_convertible_v<Tp, std::shared_ptr<Tasks::UIRenderTaskBase>>
-		{
-			assert(a_task);
-
-			const std::lock_guard lock(m_Instance.m_lock);
-
-			if (!m_Instance.m_imInitialized)
-			{
-				return false;
-			}
-
-			auto r = m_Instance.m_drawTasks.emplace(a_id, std::forward<Tp>(a_task));
-
-			if (!r.second)
-			{
-				return false;
-			}
-
-			m_Instance.OnTaskAdd(r.first->second.get());
-
-			return true;
-		}
 
 	}
 }

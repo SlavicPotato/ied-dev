@@ -120,12 +120,12 @@ namespace IED
 			{
 				::Util::Node::Traverse(
 					object,
-					[&](NiAVObject * a_object) [[msvc::forceinline]] {
+					[&](const NiAVObject* a_object) [[msvc::forceinline]] {
 						const auto& name = a_object->m_name;
 
 						if (!name.empty())
 						{
-							a_entry.try_emplace(name.data(), a_object->m_localTransform);
+							a_entry.emplace(name.data(), a_object->m_localTransform);
 						}
 
 						return ::Util::Node::VisitorControl::kContinue;

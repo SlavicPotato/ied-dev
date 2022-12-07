@@ -1,8 +1,10 @@
 #include "pch.h"
 
 #include "Controller.h"
-#include "IED/EngineExtensions.h"
+#include "INodeOverride.h"
 #include "IObjectManager.h"
+
+#include "IED/EngineExtensions.h"
 
 #include <ext/Model.h>
 #include <ext/Node.h>
@@ -362,7 +364,7 @@ namespace IED
 		m_objects.clear();
 	}
 
-	bool IObjectManager::ConstructArmorNode(
+	/*bool IObjectManager::ConstructArmorNode(
 		TESForm*                                          a_form,
 		const stl::vector<TESObjectARMA*>&                a_in,
 		bool                                              a_isFemale,
@@ -403,7 +405,7 @@ namespace IED
 				                 NiAVObject::kFlag_kSelectiveUpdateController;
 			}
 
-			char buffer[NODE_NAME_BUFFER_SIZE];
+			char buffer[INode::NODE_NAME_BUFFER_SIZE];
 
 			stl::snprintf(
 				buffer,
@@ -426,35 +428,36 @@ namespace IED
 		}
 
 		return result;
-	}
+	}*/
 
 	void IObjectManager::GetNodeName(
-		TESForm*             a_form,
-		const modelParams_t& a_params,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		TESForm*                     a_form,
+		const IModel::modelParams_t& a_params,
+		char (&a_out)[INode::NODE_NAME_BUFFER_SIZE])
 	{
 		switch (a_params.type)
 		{
 		case ModelType::kWeapon:
-			GetWeaponNodeName(a_form->formID, a_out);
+			INode::GetWeaponNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kArmor:
-			GetArmorNodeName(
+		case ModelType::kShield:
+			INode::GetArmorNodeName(
 				a_form->formID,
 				a_params.arma ?
 					a_params.arma->formID :
-                    Game::FormID{},
+					Game::FormID{},
 				a_out);
 			break;
 		case ModelType::kLight:
-			GetLightNodeName(a_form->formID, a_out);
+			INode::GetLightNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kProjectile:
 		case ModelType::kMisc:
-			GetMiscNodeName(a_form->formID, a_out);
+			INode::GetMiscNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kAmmo:
-			GetAmmoNodeName(a_form->formID, a_out);
+			INode::GetAmmoNodeName(a_form->formID, a_out);
 			break;
 		default:
 			HALT("FIXME");
@@ -491,14 +494,14 @@ namespace IED
 
 		const auto hasModelForm = static_cast<bool>(a_modelForm);
 
-		if (!a_modelForm)
+		if (!hasModelForm)
 		{
 			a_modelForm = a_form;
 		}
 
-		modelParams_t modelParams;
+		IModel::modelParams_t modelParams;
 
-		if (!GetModelParams(
+		if (!IModel::GetModelParams(
 				a_params.actor,
 				a_modelForm,
 				a_params.race,
@@ -518,7 +521,7 @@ namespace IED
 
 		targetNodes_t targetNodes;
 
-		if (!CreateTargetNode(
+		if (!INode::CreateTargetNode(
 				a_activeConfig,
 				a_activeConfig.targetNode,
 				a_params.npcRoot,
@@ -567,20 +570,20 @@ namespace IED
 
 		//object->m_localTransform = {};
 
-		UpdateObjectTransform(
+		INode::UpdateObjectTransform(
 			a_activeConfig.geometryTransform,
 			object.get());
 
 		state->currentGeomTransformTag = a_activeConfig.geometryTransform;
 
-		char buffer[NODE_NAME_BUFFER_SIZE];
+		char buffer[INode::NODE_NAME_BUFFER_SIZE];
 
 		GetNodeName(a_modelForm, modelParams, buffer);
 
 		auto itemRoot = CreateAttachmentNode(buffer);
 
 		state->UpdateData(a_activeConfig);
-		UpdateObjectTransform(
+		INode::UpdateObjectTransform(
 			state->transform,
 			itemRoot,
 			targetNodes.ref);
@@ -613,7 +616,6 @@ namespace IED
 			object,
 			modelParams.type,
 			a_leftWeapon,
-			modelParams.isShield,
 			a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath),
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
@@ -662,12 +664,12 @@ namespace IED
 					[&](const char* a_path) {
 						return a_baseConfig.hkxFilter.empty() ?
 				                   true :
-                                   !a_baseConfig.hkxFilter.contains(a_path);
+				                   !a_baseConfig.hkxFilter.contains(a_path);
 					}))
 			{
 				const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
 				                            a_activeConfig.animationEvent :
-                                            StringHolder::GetSingleton().weaponSheathe;
+				                            StringHolder::GetSingleton().weaponSheathe;
 
 				state->UpdateAndSendAnimationEvent(eventName);
 
@@ -746,7 +748,7 @@ namespace IED
 		{
 			const Data::configModelGroup_t::data_type::value_type* entry{ nullptr };
 			TESForm*                                               form{ nullptr };
-			modelParams_t                                          params;
+			IModel::modelParams_t                                  params;
 			NiPointer<NiNode>                                      object;
 			ObjectEntryBase::State::GroupObject*                   grpObject{ nullptr };
 			ObjectDatabaseEntry                                    dbEntry;
@@ -767,9 +769,9 @@ namespace IED
 				continue;
 			}
 
-			modelParams_t params;
+			IModel::modelParams_t params;
 
-			if (!GetModelParams(
+			if (!IModel::GetModelParams(
 					a_params.actor,
 					form,
 					a_params.race,
@@ -801,7 +803,7 @@ namespace IED
 
 		targetNodes_t targetNodes;
 
-		if (!CreateTargetNode(
+		if (!INode::CreateTargetNode(
 				a_activeConfig,
 				a_activeConfig.targetNode,
 				a_params.npcRoot,
@@ -845,7 +847,7 @@ namespace IED
 
 		a_params.ResetEffectShaders();
 
-		char buffer[NODE_NAME_BUFFER_SIZE];
+		char buffer[INode::NODE_NAME_BUFFER_SIZE];
 
 		stl::snprintf(
 			buffer,
@@ -855,7 +857,7 @@ namespace IED
 		auto groupRoot = CreateAttachmentNode(buffer);
 
 		state->UpdateData(a_activeConfig);
-		UpdateObjectTransform(
+		INode::UpdateObjectTransform(
 			state->transform,
 			groupRoot,
 			targetNodes.ref);
@@ -912,7 +914,7 @@ namespace IED
 
 			n.transform.Update(e.entry->second.transform);
 
-			UpdateObjectTransform(
+			INode::UpdateObjectTransform(
 				n.transform,
 				n.rootNode,
 				nullptr);
@@ -929,7 +931,6 @@ namespace IED
 				e.params.type,
 				a_leftWeapon ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kLeftWeapon),
-				e.params.isShield,
 				a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
 				a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard) ||
@@ -976,13 +977,13 @@ namespace IED
 						[&](const char* a_path) {
 							return a_baseConfig.hkxFilter.empty() ?
 					                   true :
-                                       !a_baseConfig.hkxFilter.contains(a_path);
+					                   !a_baseConfig.hkxFilter.contains(a_path);
 						}))
 				{
 					const auto& eventName =
 						e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent) ?
 							e.entry->second.animationEvent :
-                            StringHolder::GetSingleton().weaponSheathe;
+							StringHolder::GetSingleton().weaponSheathe;
 
 					e.grpObject->UpdateAndSendAnimationEvent(eventName);
 
@@ -1087,7 +1088,7 @@ namespace IED
 			return false;
 		}
 
-		const bool result = AttachObjectToTargetNode(
+		const bool result = INode::AttachObjectToTargetNode(
 			a_node,
 			a_atmReference,
 			a_root,

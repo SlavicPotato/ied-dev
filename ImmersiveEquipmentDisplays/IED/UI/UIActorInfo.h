@@ -2,9 +2,11 @@
 
 #include "Controls/UICollapsibles.h"
 
+#include "Widgets/Form/UIFormInfoTooltipWidget.h"
 #include "Widgets/Lists/UIActorListWidget.h"
 
 #include "UIContext.h"
+#include "UIMiscTextInterface.h"
 #include "Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
@@ -21,7 +23,7 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			std::recursive_mutex    lock;
+			std::mutex              lock;
 			long long               lastUpdate{ 0 };
 			bool                    initialized{ false };
 			bool                    succeeded{ false };
@@ -43,10 +45,11 @@ namespace IED
 		};
 
 		class UIActorInfo :
-			public UIWindow,
 			public UIContext,
-			UICollapsibles,
+			public UIWindow,
 			UIActorList<ActorInfoData>,
+			UIFormInfoTooltipWidget,
+			UICollapsibles,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_ainfo";
@@ -106,7 +109,7 @@ namespace IED
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawEffectTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
@@ -120,6 +123,10 @@ namespace IED
 			void DrawInventoryEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
+
+			void DrawEffectFormCell(
+				const actorActiveEffectInfo_t::formEntry_t& a_entry,
+				bool                                        a_type);
 
 			void DrawEffectEntries(
 				Game::FormID              a_handle,
@@ -162,7 +169,7 @@ namespace IED
 
 			UIGenericFilter m_invFilter;
 
-			char m_buffer[256];
+			char m_buffer[256]{ 0 };
 
 			Controller& m_controller;
 		};

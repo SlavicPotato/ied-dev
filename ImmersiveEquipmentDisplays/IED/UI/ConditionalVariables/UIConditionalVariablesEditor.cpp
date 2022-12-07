@@ -11,13 +11,13 @@ namespace IED
 		UIConditionalVariablesEditor::UIConditionalVariablesEditor(
 			Controller& a_controller) :
 			UIConditionalVariablesEditorWidget(a_controller),
-			UIEquipmentOverrideConditionsWidget(a_controller),
 			UIProfileSelectorWidget<
 				profileSelectorParamsCondVar_t,
 				CondVarProfile>(
 				a_controller,
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge),
+			UIEquipmentOverrideConditionsWidget(a_controller),
 			UILocalizationInterface(a_controller),
 			UITipsInterface(a_controller),
 			m_controller(a_controller)

@@ -18,7 +18,7 @@ namespace IED
 			public:
 				KeyEventTaskPress() = delete;
 
-				inline explicit KeyEventTaskPress(
+				inline constexpr explicit KeyEventTaskPress(
 					UINT  a_key,
 					WCHAR a_char) :
 					m_keys{ a_key, a_char },
@@ -26,7 +26,7 @@ namespace IED
 				{
 				}
 
-				inline explicit KeyEventTaskPress(
+				inline constexpr explicit KeyEventTaskPress(
 					KeyEventType a_type,
 					UINT         a_key) :
 					m_keys{ a_key, 0 },
@@ -34,7 +34,7 @@ namespace IED
 				{
 				}
 
-				inline explicit KeyEventTaskPress(
+				inline constexpr explicit KeyEventTaskPress(
 					float a_delta) :
 					m_wheel{ a_delta },
 					m_type(KeyEventType::Wheel)

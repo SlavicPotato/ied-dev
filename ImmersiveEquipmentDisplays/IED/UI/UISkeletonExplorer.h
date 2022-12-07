@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Controls/UICollapsibles.h"
+#include "UIMiscTextInterface.h"
 #include "Widgets/Filters/UIGenericFilter.h"
 #include "Widgets/Lists/UIActorListWidget.h"
 
-#include "Window/UIWindow.h"
 #include "UIContext.h"
+#include "Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
 
@@ -28,10 +29,11 @@ namespace IED
 		};
 
 		class UISkeletonExplorer :
-			public UIWindow,
 			public UIContext,
-			UICollapsibles,
+			public UIWindow,
 			UIActorList<ActorSkeletonData>,
+			UICollapsibles,
+			UIMiscTextInterface,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_skexp";

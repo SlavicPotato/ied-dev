@@ -33,9 +33,9 @@ namespace IED
 
 			virtual void DrawProfileEditorMenuBarItems() override;
 
-			inline bool ChangedConfig() const
+			[[nodiscard]] inline constexpr bool ChangedConfig() const
 			{
-				bool res = m_changedConfig;
+				const bool res = m_changedConfig;
 				if (res)
 				{
 					m_changedConfig = false;

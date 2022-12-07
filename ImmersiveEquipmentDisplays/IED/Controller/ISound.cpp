@@ -89,7 +89,7 @@ namespace IED
 
 	BGSSoundDescriptorForm* ISound::GetSoundForm(
 		const IPluginInfoA&                    a_pinfo,
-		const stl::optional<Data::ConfigForm>& a_form)
+		const std::optional<Data::ConfigForm>& a_form)
 	{
 		if (!a_form)
 		{
@@ -106,7 +106,7 @@ namespace IED
 		return GetSoundForm(formid);
 	}
 
-	[[nodiscard]] ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
+	ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
 		const IPluginInfoA&                                     a_pinfo,
 		const Data::ConfigSound<Data::ConfigForm>::soundPair_t& a_in)
 	{
@@ -116,7 +116,7 @@ namespace IED
 		};
 	}
 
-	[[nodiscard]] ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
+	ISound::SoundRefHolder::soundPair_t ISound::MakeSoundPair(
 		const Data::ConfigSound<Game::FormID>::soundPair_t& a_in)
 	{
 		return {

@@ -37,7 +37,7 @@ namespace IED
 				e->second.defaultValue.value.type,
 				overrideVar ?
 					overrideVar->value :
-                    e->second.defaultValue,
+					e->second.defaultValue,
 				r.first->second,
 				result);
 		}
@@ -78,7 +78,7 @@ namespace IED
 		return nullptr;
 	}
 
-	Game::FormID IConditionalVariableProcessor::EvaluateLastEquippedForm(
+	Game::FormID IConditionalVariableProcessor::GetLastEquippedForm(
 		processParams_t&                                  a_params,
 		const Data::configConditionalVariableValueData_t& a_data)
 	{
@@ -95,7 +95,7 @@ namespace IED
 
 		if (it != a_params.collector.data.forms.end())
 		{
-			auto r = a_params.useCount.emplace(it->first, 0);
+			const auto r = a_params.useCount.emplace(it->first, 0);
 
 			r.first->second++;
 
@@ -140,7 +140,7 @@ namespace IED
 
 			if (a_src.flags.test(Data::ConditionalVariableValueDataFlags::kLastEquipped))
 			{
-				const auto v = EvaluateLastEquippedForm(a_params, a_src);
+				const auto v = GetLastEquippedForm(a_params, a_src);
 
 				//_DMESSAGE("le: %X", v);
 

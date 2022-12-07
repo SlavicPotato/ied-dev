@@ -12,8 +12,8 @@ namespace IED
 	namespace UI
 	{
 		class UIConditionalVariablesEditorWindow :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public UIConditionalVariablesEditor,
 			public virtual UILocalizationInterface
 		{

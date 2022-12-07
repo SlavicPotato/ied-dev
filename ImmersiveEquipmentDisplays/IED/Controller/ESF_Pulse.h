@@ -29,9 +29,6 @@ namespace IED
 			Data::EffectShaderPulseFlags flags;
 			float                        ftp;
 			float                        exponent;
-			bool                         inverse;
-			bool                         exponential;
-			bool                         nonstdrange{ false };
 			float                        pos{ 0.0f };
 			float                        maxexpr{ 1.0f };
 			float                        ummd;
@@ -40,6 +37,8 @@ namespace IED
 			float                        vmin;
 			float                        rmmd;
 			float                        rmin;
+			bool                         inverse;
+			bool                         exponential;
 		};
 	}
 }

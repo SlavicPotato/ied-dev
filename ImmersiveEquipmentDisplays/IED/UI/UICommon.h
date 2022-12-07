@@ -29,39 +29,8 @@ namespace IED
 			void HelpMarkerImportant(const char* a_desc);
 
 			void ToolTip(const char* a_text, float a_width = 100.0f);
-
-			template <class... Args>
-			void ToolTip(float a_width, const char* a_fmt, Args... a_args)
-			{
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
-					ImGui::Text(a_fmt, a_args...);
-					ImGui::PopTextWrapPos();
-					ImGui::EndTooltip();
-				}
-			}
-
-			template <class Tf>
-			void ToolTip(float a_width, Tf a_func)
-			{
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
-					a_func();
-					ImGui::PopTextWrapPos();
-					ImGui::EndTooltip();
-				}
-			}
-
-			template <class... Args>
-			void HelpMarkerFormatted(const char* a_desc, Args... a_args)
-			{
-				ImGui::TextDisabled("[?]");
-				ToolTip(100.0f, a_desc, std::forward<Args>(a_args)...);
-			}
+			void ToolTip(float a_width, const char* a_fmt, ...);
+			void ToolTip(float a_width, std::function<void()> a_func);
 
 			void PushDisabled(bool a_switch);
 			void PopDisabled(bool a_switch);
@@ -71,41 +40,52 @@ namespace IED
 
 			void DrawItemUnderline(ImGuiCol a_color);
 
-			void DrawURL(
-				const char* a_label,
-				const char* a_url);
-			
-			void HandleURLInteraction(
-				const char* a_url);
+			void DrawURL(const char* a_fmt, const char* a_url, ...);
 
-			template <class... Args>
-			void DrawURL(
-				const char* a_fmt,
-				const char* a_url,
-				Args... a_args)
+			/*template <class... Args>
+			bool TextCopyable(const char* a_fmt, Args... a_args)
 			{
-				ImGui::Text(a_fmt, std::forward<Args>(a_args)...);
-				HandleURLInteraction(a_url);
-			}
-
-			template <class... Args>
-			void TextCopyable(char* a_fmt, Args... a_args)
-			{
-				ImGui::Text(a_fmt, a_args...);
-				if (ImGui::IsItemHovered() && ImGui::IsItemClicked(ImGuiMouseButton_Left))
+				if (ImGui::GetCurrentWindow()->SkipItems)
 				{
-					std::unique_ptr<char[]> buffer(new char[4096]);
-					::_snprintf_s(buffer.get(), 4096, _TRUNCATE, a_fmt, a_args...);
-					ImGui::SetClipboardText(buffer.get());
+					return false;
 				}
+
+				ImGui::Text(a_fmt, a_args...);
+
+				if (!ImGui::IsItemHovered())
+				{
+					return false;
+				}
+
+				UICommon::DrawItemUnderline(ImGuiCol_Text);
+
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					auto buffer = std::make_unique<char[]>(4096);
+
+					::_snprintf_s(buffer.get(), 4096, _TRUNCATE, a_fmt, a_args...);
+
+					ImGui::SetClipboardText(buffer.get());
+
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}*/
+
+			namespace detail
+			{
+				template <class T>
+				concept accept_float_anim_t = std::is_floating_point_v<T>;
 			}
 
 			template <
-				class T,
-				T _Min,
-				T _Max,
-				T _Speed>
-			requires std::is_floating_point_v<T>
+				detail::accept_float_anim_t T,
+				T                           _Min,
+				T                           _Max,
+				T                           _Speed>
 			struct float_anim_t
 			{
 			public:
@@ -114,6 +94,18 @@ namespace IED
 					auto result = current;
 					current     = std::clamp(current + static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed, _Min, _Max);
 					return result;
+				}
+				
+				constexpr T step_lerp()
+				{
+					auto result = current;
+					current     = std::lerp(current, _Max, static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed);
+					return result;
+				}
+
+				inline constexpr void reset() noexcept
+				{
+					current = _Min;
 				}
 
 			private:

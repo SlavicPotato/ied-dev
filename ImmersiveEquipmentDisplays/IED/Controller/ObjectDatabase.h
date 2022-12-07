@@ -22,6 +22,10 @@ namespace IED
 	public:
 		using ObjectDatabaseEntry = std::shared_ptr<entry_t>;
 
+	private:
+		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
+
+	public:
 		static inline constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kDisabled;
 
 		[[nodiscard]] bool GetUniqueObject(
@@ -52,7 +56,7 @@ namespace IED
 		FN_NAMEPROC("ObjectDatabase");
 
 	protected:
-		inline void SetODBLevel(ObjectDatabaseLevel a_level) noexcept
+		inline constexpr void SetODBLevel(ObjectDatabaseLevel a_level) noexcept
 		{
 			m_level =
 				a_level != ObjectDatabaseLevel::kDisabled ?
@@ -60,18 +64,14 @@ namespace IED
 						a_level,
 						ObjectDatabaseLevel::kNone,
 						ObjectDatabaseLevel::kMax) :
-                    a_level;
+					a_level;
 		}
 
 	private:
-		NiNode* CreateClone(const entry_t& a_entry);
+		static NiNode* CreateClone(const entry_t& a_entry);
 
-		ObjectDatabaseLevel m_level{ DEFAULT_LEVEL };
-
+		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;
-
-		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
-
-		container_type m_data;
+		container_type           m_data;
 	};
 }

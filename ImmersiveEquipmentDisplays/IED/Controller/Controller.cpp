@@ -2,6 +2,10 @@
 
 #include "Controller.h"
 
+#include "IConditionalVariableProcessor.h"
+#include "IMaintenance.h"
+#include "INodeOverride.h"
+
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/NodeMap.h"
@@ -182,16 +186,13 @@ namespace IED
 		InitializeConfig();
 		LoadAnimationData();
 
-		if (Drivers::UI::IsImInitialized())
-		{
-			InitializeUI();
-		}
-
 		SetProcessorTaskRunAUState(settings.hkWeaponAnimations);
 		SetShaderProcessingEnabled(settings.enableEffectShaders);
 		SetEffectControllerParallelUpdates(settings.effectsParallelUpdates);
 
-		if (IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE))
+		m_cpuHasSSE41 = IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE);
+
+		if (m_cpuHasSSE41)
 		{
 			SetPhysicsProcessingEnabled(settings.enableEquipmentPhysics);
 			PHYSimComponent::SetMaxDiff(settings.physics.maxDiff);
@@ -199,12 +200,7 @@ namespace IED
 		else
 		{
 			SetPhysicsProcessingEnabled(false);
-			m_physicsForcedOff = true;
 		}
-
-		m_safeToOpenUI = true;
-
-		m_iniconf.reset();
 	}
 
 	void Controller::GetSDSInterface()
@@ -233,8 +229,8 @@ namespace IED
 	}
 
 	static void UpdateSoundPairFromINI(
-		const stl::optional<ConfigForm>& a_src,
-		stl::optional<Game::FormID>&     a_dst)
+		const std::optional<ConfigForm>& a_src,
+		std::optional<Game::FormID>&     a_dst)
 	{
 		if (a_src && !a_dst)
 		{
@@ -242,7 +238,7 @@ namespace IED
 
 			if (IData::GetPluginInfo().ResolveFormID(*a_src, tmp))
 			{
-				a_dst = tmp;
+				a_dst.emplace(tmp);
 			}
 		}
 	}
@@ -389,11 +385,13 @@ namespace IED
 		if (config.ui.showIntroBanner &&
 		    !m_iniconf->m_disableIntroBanner)
 		{
-			if (!DispatchIntroBanner())
-			{
-				Warning("Couldn't dispatch intro banner render task");
-			}
+			DispatchIntroBanner();
 		}
+
+		UIEnableNotifications(config.ui.enableNotifications);
+		UISetLogNotificationThreshold(config.ui.notificationThreshold);
+
+		m_safeToOpenUI = true;
 	}
 
 	bool Controller::DispatchIntroBanner()
@@ -406,7 +404,7 @@ namespace IED
 		task->SetEnabledInMenu(true);
 		task->EnableRestrictions(false);
 
-		return Drivers::UI::AddTask(-0xFFFF, std::move(task));
+		return Drivers::UI::AddTask(-0xFFFF, task);
 	}
 
 	void Controller::InitializeConfig()
@@ -433,7 +431,7 @@ namespace IED
 		}
 
 		FillGlobalSlotConfig(m_config.initial.slot);
-		CleanConfigStore(m_config.initial);
+		IMaintenance::CleanConfigStore(m_config.initial);
 
 		m_config.active = m_config.initial;
 
@@ -525,6 +523,11 @@ namespace IED
 		InitializeFPStateData();
 		InitializeData();
 
+		if (Drivers::UI::IsImInitialized())
+		{
+			InitializeUI();
+		}
+
 		ASSERT(SinkEventsT1());
 		ASSERT(SinkEventsT2());
 
@@ -534,6 +537,8 @@ namespace IED
 		}
 
 		SetProcessorTaskRunState(true);
+
+		m_iniconf.reset();
 
 		Debug("Data loaded, entered running state");
 	}
@@ -1212,9 +1217,7 @@ namespace IED
 	{
 		if (EngineExtensions::GetTransformOverridesEnabled())
 		{
-			SkeletonExtensions::ApplyXP32NodeTransformOverrides(
-				a_holder.m_npcroot,
-				a_holder.GetSkeletonID());
+			a_holder.ApplyXP32NodeTransformOverrides();
 		}
 
 		if (m_config.settings.data.placementRandomization &&
@@ -1924,7 +1927,7 @@ namespace IED
 	{
 		ITaskPool::AddTask([this] {
 			const std::lock_guard lock(m_lock);
-			ClearConfigStoreRand(m_config.active);
+			IMaintenance::ClearConfigStoreRand(m_config.active);
 		});
 	}
 
@@ -2116,7 +2119,7 @@ namespace IED
 
 			const auto mfid = a_currentModelForm ?
 			                      a_currentModelForm->formID :
-                                  Game::FormID{};
+			                      Game::FormID{};
 
 			if (mfid != state->modelForm)
 			{
@@ -2202,7 +2205,7 @@ namespace IED
 
 		if (updateTransform)
 		{
-			UpdateObjectTransform(
+			INode::UpdateObjectTransform(
 				state->transform,
 				state->nodes.rootNode,
 				state->nodes.ref);
@@ -2214,7 +2217,7 @@ namespace IED
 		{
 			if (state->currentGeomTransformTag != a_config.geometryTransform)
 			{
-				UpdateObjectTransform(
+				INode::UpdateObjectTransform(
 					a_config.geometryTransform,
 					state->nodes.object);
 
@@ -2309,11 +2312,10 @@ namespace IED
 		}
 	}
 
-	constexpr void Controller::UpdateObjectEffectShaders(
+	void Controller::UpdateObjectEffectShaders(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry,
-		bool                        a_updateValues)
+		ObjectEntryCustom&          a_objectEntry)
 	{
 		if (!ShaderProcessingEnabled() ||
 		    !a_objectEntry.data.state)
@@ -2450,7 +2452,7 @@ namespace IED
 
 			const auto type = prio ?
 			                      prio->translate_type_safe(i) :
-                                  static_cast<ObjectType>(i);
+			                      static_cast<ObjectType>(i);
 
 			e.type           = type;
 			e.activeEquipped = false;
@@ -2513,7 +2515,7 @@ namespace IED
 						                     o.item != o.addon &&
 						                     o.item->IsAmmo()) ?
 						                        o.item :
-                                                nullptr;
+						                        nullptr;
 					}
 					else
 					{
@@ -2543,7 +2545,7 @@ namespace IED
 
 		auto limit = prio ?
 		                 prio->limit :
-                         stl::underlying(ObjectType::kMax);
+		                 stl::underlying(ObjectType::kMax);
 
 		for (const auto& e : types)
 		{
@@ -2609,14 +2611,14 @@ namespace IED
 				auto configOverride =
 					!item ? configEntry.get_equipment_override(
 								a_params) :
-                            configEntry.get_equipment_override_fp(
+							configEntry.get_equipment_override_fp(
 								{ item->item->form, objectEntry.slotidex, objectEntry.slotid },
 								a_params);
 
 				const auto& usedBaseConf =
 					configOverride ?
 						static_cast<const configBaseValues_t&>(*configOverride) :
-                        configEntry;
+						configEntry;
 
 				if (usedBaseConf.flags.test(BaseFlags::kDisabled) ||
 				    (!a_params.is_player() &&
@@ -3121,7 +3123,7 @@ namespace IED
 			const auto& usedBaseConf =
 				configOverride ?
 					static_cast<const configBaseValues_t&>(*configOverride) :
-                    a_config;
+					a_config;
 
 			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
 			{
@@ -3152,7 +3154,7 @@ namespace IED
 			auto* modelForm =
 				usedBaseConf.forceModel.get_id() ?
 					usedBaseConf.forceModel.get_form() :
-                    a_config.modelForm.get_form();
+					a_config.modelForm.get_form();
 
 			if (a_objectEntry.data.state &&
 			    a_objectEntry.data.state->form == itemData.form)
@@ -3180,8 +3182,7 @@ namespace IED
 						UpdateObjectEffectShaders(
 							a_params,
 							a_config,
-							a_objectEntry,
-							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+							a_objectEntry);
 
 						return true;
 					}
@@ -3253,8 +3254,7 @@ namespace IED
 				UpdateObjectEffectShaders(
 					a_params,
 					a_config,
-					a_objectEntry,
-					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+					a_objectEntry);
 
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
@@ -3296,7 +3296,7 @@ namespace IED
 			const auto& usedBaseConf =
 				configOverride ?
 					static_cast<const configBaseValues_t&>(*configOverride) :
-                    a_config;
+					a_config;
 
 			if (usedBaseConf.flags.test(BaseFlags::kDisabled))
 			{
@@ -3317,10 +3317,10 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
-			auto* modelForm =
+			const auto modelForm =
 				usedBaseConf.forceModel.get_id() ?
 					usedBaseConf.forceModel.get_form() :
-                    a_config.modelForm.get_form();
+					a_config.modelForm.get_form();
 
 			if (a_objectEntry.data.state &&
 			    a_objectEntry.data.state->form == form)
@@ -3338,8 +3338,7 @@ namespace IED
 						UpdateObjectEffectShaders(
 							a_params,
 							a_config,
-							a_objectEntry,
-							a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+							a_objectEntry);
 
 						return true;
 					}
@@ -3401,8 +3400,7 @@ namespace IED
 				UpdateObjectEffectShaders(
 					a_params,
 					a_config,
-					a_objectEntry,
-					a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate));
+					a_objectEntry);
 
 				a_params.state.flags.set(
 					ProcessStateUpdateFlags::kMenuUpdate |
@@ -3649,7 +3647,7 @@ namespace IED
 			return a_holder.GetOrCreateProcessParams(
 				a_holder.IsFemale() ?
 					ConfigSex::Female :
-                    ConfigSex::Male,
+					ConfigSex::Male,
 				a_flags,
 				std::forward<Args>(a_args)...);
 		}
@@ -3658,7 +3656,7 @@ namespace IED
 			a_paramsOut.emplace(
 				a_holder.IsFemale() ?
 					ConfigSex::Female :
-                    ConfigSex::Male,
+					ConfigSex::Male,
 				a_flags,
 				std::forward<Args>(a_args)...);
 
@@ -3856,7 +3854,7 @@ namespace IED
 
 		a_params.flags.set(ControllerUpdateFlags::kFailVariableCondition);
 
-		if (UpdateVariableMap(
+		if (IConditionalVariableProcessor::UpdateVariableMap(
 				a_params,
 				config,
 				a_params.objects.GetVariables()))
@@ -3906,7 +3904,7 @@ namespace IED
 			}
 			else
 			{
-				UpdateRootIfGamePaused(a_params.root);
+				INode::UpdateRootIfGamePaused(a_params.root);
 			}
 
 			a_params.state.flags.clear(ProcessStateUpdateFlags::kUpdateMask);
@@ -3989,7 +3987,7 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				UpdateRootIfGamePaused(params->root);
+				INode::UpdateRootIfGamePaused(params->root);
 			}
 		}
 		else if (auto info = LookupCachedActorInfo(a_holder))
@@ -4005,7 +4003,7 @@ namespace IED
 					a_holder,
 					a_flags))
 			{
-				UpdateRootIfGamePaused(info->root);
+				INode::UpdateRootIfGamePaused(info->root);
 			}
 		}
 	}
@@ -4079,11 +4077,11 @@ namespace IED
 
 			if (r)
 			{
-				ApplyNodePlacement(r->get(a_sex), e, params);
+				INodeOverride::ApplyNodePlacement(r->get(a_sex), e, params);
 			}
 			else
 			{
-				ResetNodePlacement(e, std::addressof(params), false);
+				INodeOverride::ResetNodePlacement(e, std::addressof(params), false);
 			}
 		}
 
@@ -4100,7 +4098,7 @@ namespace IED
 
 			if (r)
 			{
-				ApplyNodeVisibility(
+				INodeOverride::ApplyNodeVisibility(
 					e.second,
 					r->get(a_sex),
 					params);
@@ -4111,7 +4109,7 @@ namespace IED
 		{
 			if (e.second.cachedConfCME)
 			{
-				ApplyNodeOverride(
+				INodeOverride::ApplyNodeOverride(
 					e.first,
 					e.second,
 					e.second.cachedConfCME->get(a_sex),
@@ -4119,10 +4117,10 @@ namespace IED
 			}
 			else
 			{
-				ResetNodeOverrideImpl(e.second.thirdPerson);
+				INodeOverride::ResetNodeOverrideImpl(e.second.thirdPerson);
 				if (e.second.firstPerson)
 				{
-					ResetNodeOverrideImpl(e.second.firstPerson);
+					INodeOverride::ResetNodeOverrideImpl(e.second.firstPerson);
 				}
 			}
 		}
@@ -4432,12 +4430,12 @@ namespace IED
 
 				objectEntry.data.state->transform.Update(conf);
 
-				UpdateObjectTransform(
+				INode::UpdateObjectTransform(
 					objectEntry.data.state->transform,
 					objectEntry.data.state->nodes.rootNode,
 					objectEntry.data.state->nodes.ref);
 
-				UpdateRootIfGamePaused(info->root);
+				INode::UpdateRootIfGamePaused(info->root);
 			}
 		}
 	}
@@ -5047,7 +5045,7 @@ namespace IED
 
 		a_entry.data.state->transform.Update(a_xfrmConfigEntry);
 
-		UpdateObjectTransform(
+		INode::UpdateObjectTransform(
 			a_entry.data.state->transform,
 			a_entry.data.state->nodes.rootNode,
 			a_entry.data.state->nodes.ref);
@@ -5080,13 +5078,13 @@ namespace IED
 
 		for (auto& e : a_entry.data.state->groupObjects)
 		{
-			UpdateObjectTransform(
+			INode::UpdateObjectTransform(
 				e.second.transform,
 				e.second.rootNode,
 				nullptr);
 		}
 
-		UpdateRootIfGamePaused(a_info.root);
+		INode::UpdateRootIfGamePaused(a_info.root);
 	}
 
 	auto Controller::LookupCachedActorInfo(
@@ -5160,7 +5158,7 @@ namespace IED
 			npcroot,
 			npc->GetSex() == 1 ?
 				ConfigSex::Female :
-                ConfigSex::Male,
+				ConfigSex::Male,
 			a_holder);
 	}
 
@@ -5560,7 +5558,7 @@ namespace IED
 			a_flags);
 
 		FillGlobalSlotConfig(tmp->slot);
-		CleanConfigStore(*tmp);
+		IMaintenance::CleanConfigStore(*tmp);
 
 		if (!SaveConfigStore(PATHS::DEFAULT_CONFIG_USER, *tmp))
 		{
@@ -5657,12 +5655,12 @@ namespace IED
 		}
 
 		FillGlobalSlotConfig(cfgStore.slot);
-		CleanConfigStore(cfgStore);
-		CleanBlockList(blockList);
+		IMaintenance::CleanConfigStore(cfgStore);
+		IMaintenance::CleanBlockList(blockList);
 
 		if (!m_config.settings.data.placementRandomization)
 		{
-			ClearConfigStoreRand(cfgStore);
+			IMaintenance::ClearConfigStoreRand(cfgStore);
 		}
 
 		m_actorBlockList = std::move(blockList);
@@ -5687,7 +5685,7 @@ namespace IED
 	}
 
 	void Controller::FillGlobalSlotConfig(
-		configStoreSlot_t& a_data) const
+		configStoreSlot_t& a_data)
 	{
 		auto& global = a_data.GetGlobalData();
 
@@ -5735,7 +5733,7 @@ namespace IED
 
 			bool result = a_dirtyOnly ?
 			                  GetSettings().SaveIfDirty() :
-                              GetSettings().Save();
+			                  GetSettings().Save();
 
 			if (a_debug && result)
 			{
@@ -5769,7 +5767,7 @@ namespace IED
 	void Controller::JSOnDataImport()
 	{
 		FillGlobalSlotConfig(m_config.active.slot);
-		CleanConfigStore(m_config.active);
+		IMaintenance::CleanConfigStore(m_config.active);
 		QueueResetAll(ControllerUpdateFlags::kNone);
 
 		if (auto& rt = UIGetRenderTask())

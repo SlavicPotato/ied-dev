@@ -77,7 +77,6 @@ namespace IED
 		bool           m_forceDefaultConfig{ false };
 		bool           m_disableNPCProcessing{ false };
 		bool           m_immediateFavUpdate{ false };
-		bool           m_disableEffectHook{ false };
 		bool           m_disableIntroBanner{ false };
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };

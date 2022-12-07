@@ -123,11 +123,13 @@ namespace IED
 
 			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
+				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 
 			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
+				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 
@@ -223,11 +225,13 @@ namespace IED
 
 			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
+				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 
 			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
+				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 

@@ -74,7 +74,7 @@ namespace IED
 			return m_parentWorldTransform;
 		}
 
-		[[nodiscard]] Bullet::btTransformEx GetCurrentParentWorldTransform() const noexcept;
+		[[nodiscard]] const NiTransform& GetCurrentParentWorldTransform() const noexcept;
 
 		[[nodiscard]] inline constexpr auto& GetVirtualPos() const noexcept
 		{

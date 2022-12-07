@@ -8,7 +8,7 @@ namespace IED
 {
 	std::uint32_t IForm::GetFormExtraType(TESForm* a_form)
 	{
-		if (auto armor = RTTI<TESObjectARMO>()(a_form))
+		if (auto armor = ::RTTI<TESObjectARMO>()(a_form))
 		{
 			if (!armor->IsShield())
 			{
@@ -29,21 +29,13 @@ namespace IED
 			return nullptr;
 		}
 
-		if (form->IsDeleted())
+		/*if (form->IsDeleted())
 		{
 			return nullptr;
-		}
+		}*/
 
-		TESForm* base;
-
-		if (auto ref = RTTI<TESObjectREFR>()(form))
-		{
-			base = ref->baseForm;
-		}
-		else
-		{
-			base = nullptr;
-		}
+		auto ref  = ::RTTI<TESObjectREFR>()(form);
+		auto base = ref ? ref->baseForm : nullptr;
 
 		return std::make_unique<formInfoResult_t>(
 			form,
@@ -55,6 +47,7 @@ namespace IED
 	formInfo_t::formInfo_t(TESForm* a_form) :
 		id(a_form->formID),
 		type(a_form->formType),
+		formFlags(a_form->flags),
 		flags(IFormCommon::GetFormFlags(a_form)),
 		name(IFormCommon::GetFormName(a_form)),
 		extraType(IForm::GetFormExtraType(a_form))

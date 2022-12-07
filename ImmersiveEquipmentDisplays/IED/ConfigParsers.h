@@ -27,7 +27,7 @@ namespace IED
 
 				ss >> out;
 
-				a_out.insert(e[0], out);
+				a_out.emplace(e[0], out);
 
 				return true;
 			}

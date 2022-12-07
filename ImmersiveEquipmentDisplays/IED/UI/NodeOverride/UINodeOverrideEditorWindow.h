@@ -15,8 +15,8 @@ namespace IED
 	namespace UI
 	{
 		class UINodeOverrideEditorWindow :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public virtual UILocalizationInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_noe";
@@ -25,8 +25,7 @@ namespace IED
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeOverrideEditorWindow;
 
 			UINodeOverrideEditorWindow(
-				Controller& a_controller,
-				UIContext&  a_profileEditor);
+				Controller& a_controller);
 
 			void Initialize() override;
 			void Reset() override;
@@ -45,8 +44,6 @@ namespace IED
 			void DrawToolsMenu();
 
 			UINodeOverrideTabPanel m_tabPanel;
-
-			UIContext& m_profileEditor;
 
 			Controller& m_controller;
 		};

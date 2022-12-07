@@ -4,13 +4,13 @@ ISKSE ISKSE::m_Instance;
 
 void ISKSE::CloseBacklog()
 {
-	gLog.RemoveSink(std::addressof(m_Instance));
-	m_Instance.m_backlog.Clear();
+	gLog.RemoveSink(this);
+	m_backlog.Clear();
 }
 
 void ISKSE::OnLogOpen()
 {
-	m_backlog.SetLimit(200);
+	m_backlog.SetLimit(2000);
 	gLog.AddSink(this);
 }
 

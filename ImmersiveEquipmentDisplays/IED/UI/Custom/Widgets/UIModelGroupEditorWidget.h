@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IED/UI/UILocalizationInterface.h"
-#include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UIPopupInterface.h"
 #include "IED/UI/UITips.h"
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidgetStrings.h"
@@ -33,7 +33,7 @@ namespace IED
 			virtual public UIDescriptionPopupWidget,
 			virtual public UITipsInterface,
 			virtual public UITransformSliderWidget,
-			virtual public UINotificationInterface,
+			virtual public UIPopupInterface,
 			virtual public UILocalizationInterface
 		{
 		public:

@@ -11,9 +11,9 @@ namespace IED
 			if (auto pl = Game::ProcessLists::GetSingleton())
 			{
 				pl->ResetEffectShaders(handle);
-			}
 
-			state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
+				state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
+			}
 		}
 	}
 

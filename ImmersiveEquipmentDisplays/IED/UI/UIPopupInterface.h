@@ -10,10 +10,10 @@ namespace IED
 
 	namespace UI
 	{
-		class UINotificationInterface
+		class UIPopupInterface
 		{
 		public:
-			UINotificationInterface(Controller& a_controller);
+			UIPopupInterface(Controller& a_controller);
 
 			template <class... Args>
 			void QueueNotification(
@@ -28,7 +28,7 @@ namespace IED
 		};
 
 		template <class... Args>
-		void UINotificationInterface::QueueNotification(
+		void UIPopupInterface::QueueNotification(
 			const char* a_title,
 			const char* a_message,
 			Args&&... a_v) const

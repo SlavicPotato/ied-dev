@@ -29,6 +29,7 @@
 #include <ext/hkaSkeleton.h>
 #include <ext/stl_boost_serialization_containers.h>
 #include <ext/stl_comparison.h>
+#include <ext/stl_error.h>
 #include <ext/stl_map_sa.h>
 #include <ext/stl_math.h>
 #include <ext/stl_set_sa.h>

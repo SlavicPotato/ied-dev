@@ -54,9 +54,10 @@ namespace IED
 			std::make_pair(TESClass::kTypeID, UIFormTypeSelectorWidgetStrings::Class),
 			std::make_pair(RE::TESWeather::kTypeID, UIFormTypeSelectorWidgetStrings::Weather),
 			std::make_pair(TESGlobal::kTypeID, UIFormTypeSelectorWidgetStrings::Global),
-			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form),
-			std::make_pair(TESIdleForm::kTypeID, UIFormTypeSelectorWidgetStrings::Idle)
-
+			std::make_pair(TESIdleForm::kTypeID, UIFormTypeSelectorWidgetStrings::Idle),
+			std::make_pair(BGSOutfit::kTypeID, UIFormTypeSelectorWidgetStrings::Outfit),
+			std::make_pair(EnchantmentItem::kTypeID, UIFormTypeSelectorWidgetStrings::Enchantment),
+			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form)
 		);
 
 		UIFormTypeSelectorWidget::UIFormTypeSelectorWidget(
@@ -208,6 +209,10 @@ namespace IED
 				return LS(UIFormTypeSelectorWidgetStrings::Global);
 			case TESIdleForm::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Idle);
+			case BGSOutfit::kTypeID:
+				return LS(UIFormTypeSelectorWidgetStrings::Outfit);
+			case EnchantmentItem::kTypeID:
+				return LS(UIFormTypeSelectorWidgetStrings::Enchantment);
 			case TESForm::kTypeID:
 				return LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:

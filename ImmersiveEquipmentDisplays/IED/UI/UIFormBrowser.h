@@ -20,8 +20,8 @@ namespace IED
 	namespace UI
 	{
 		class UIFormBrowser :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public virtual UILocalizationInterface
 		{
 			struct TabItem

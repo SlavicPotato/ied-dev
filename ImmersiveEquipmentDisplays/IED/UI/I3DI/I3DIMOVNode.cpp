@@ -119,7 +119,10 @@ namespace IED
 			{
 				const auto& context = rt->GetContext();
 
-				context.GetChildContext<UINodeOverrideEditorWindow>().Reset();
+				if (auto child = context.GetChildContext<UINodeOverrideEditorWindow>())
+				{
+					child->Reset();
+				}
 			}
 
 			return false;

@@ -121,7 +121,7 @@ namespace IED
 
 				auto& x = item.extraList.emplace_back();
 
-				BSReadLocker locker(e->m_lock);
+				const BSReadLocker locker(e->m_lock);
 
 				if (const auto extraEnchant = e->GetImpl<ExtraEnchantment>())
 				{

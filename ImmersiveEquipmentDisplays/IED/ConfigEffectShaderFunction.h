@@ -18,13 +18,13 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(EffectShaderFunctionFlags);
 
-		enum class EffectShaderWaveform
+		enum class EffectShaderWaveform : std::uint32_t
 		{
-			Sine,
-			Cosine,
-			Square,
-			Triangle,
-			Sawtooth
+			Sine     = 0,
+			Cosine   = 1,
+			Square   = 2,
+			Triangle = 3,
+			Sawtooth = 4
 		};
 
 		struct EffectShaderFunctionFlagsBitfield

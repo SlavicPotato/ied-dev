@@ -26,6 +26,9 @@ namespace IED
 		FN_NAMEPROC("Init");
 
 	private:
+
+		void RunChecks();
+
 		static const char* GetLanguage();
 
 		void SetupSKSEEventHandlers(const SKSEInterface* a_skse);

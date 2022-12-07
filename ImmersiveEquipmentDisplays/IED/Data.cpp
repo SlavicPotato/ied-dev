@@ -133,7 +133,7 @@ namespace IED
 			auto it        = nodeMapData.find(targetNode.name);
 			auto nodeFlags = it != nodeMapData.end() ?
 			                     it->second.flags.value :
-                                 NodeDescriptorFlags::kNone;
+			                     NodeDescriptorFlags::kNone;
 
 			for (auto& e : a_data())
 			{
@@ -142,8 +142,8 @@ namespace IED
 			}
 		}
 
-		std::unique_ptr<configSlotHolder_t::data_type>
-			CreateDefaultSlotConfig(ObjectSlot a_slot)
+		std::unique_ptr<configSlotHolder_t::data_type> CreateDefaultSlotConfig(
+			ObjectSlot a_slot)
 		{
 			auto r = std::make_unique<configSlotHolder_t::data_type>();
 

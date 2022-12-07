@@ -1,29 +1,25 @@
 #include "pch.h"
 
-#include "Drivers/Input.h"
-#include "Drivers/Render.h"
-#include "Drivers/UI.h"
+#include "Main.h"
 
 #include "ConfigINI.h"
-#include "EngineExtensions.h"
-
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
+#include "EngineExtensions.h"
 #include "FormHolder.h"
 #include "GlobalProfileManager.h"
 #include "LocaleData.h"
 #include "Localization/LocalizationDataManager.h"
-#include "Main.h"
 #include "NodeMap.h"
 #include "NodeOverrideData.h"
 #include "PapyrusInterface/Papyrus.h"
 
-#include "UI/UIMain.h"
+#include "Drivers/Input.h"
+#include "Drivers/Render.h"
+#include "Drivers/UI.h"
 
 #include <ext/SKSEMessagingHandler.h>
 #include <ext/SKSESerializationEventHandler.h>
-
-#include "Drivers/RTest/RTest.h"
 
 namespace IED
 {
@@ -35,6 +31,8 @@ namespace IED
 		{
 			return false;
 		}
+
+		RunChecks();
 
 		Debug("Loading INI..");
 
@@ -68,8 +66,6 @@ namespace IED
 			ISKSE::GetBranchTrampoline(),
 			ISKSE::GetLocalTrampoline(),
 			true);
-
-		//RTest::GetSingleton().Initialize();
 
 		Debug("Creating controller..");
 
@@ -128,7 +124,7 @@ namespace IED
 
 		if (!config->m_enableUI)
 		{
-			ISKSE::CloseBacklog();
+			ISKSE::GetSingleton().CloseBacklog();
 		}
 
 		if (config->m_closeLogFile)
@@ -141,6 +137,18 @@ namespace IED
 		m_done = true;
 
 		return true;
+	}
+
+	void Initializer::RunChecks()
+	{
+#if defined(_XM_AVX2_INTRINSICS_) || defined(BT_USE_AVX)
+		if (!IsProcessorFeaturePresent(PF_AVX2_INSTRUCTIONS_AVAILABLE))
+		{
+			stl::report_and_fail(
+				PLUGIN_NAME_FULL,
+				"Plugin uses AVX2 instrinsics but the processor lacks support for this instruction set");
+		}
+#endif
 	}
 
 	const char* Initializer::GetLanguage()

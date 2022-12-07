@@ -64,5 +64,24 @@ namespace IED
 			return (p != end);
 		}
 
+		bool UIGenericFilter::Test(const std::string& a_haystack) const
+		{
+			if (!m_filter)
+			{
+				return true;
+			}
+
+			auto it = std::search(
+				a_haystack.begin(),
+				a_haystack.end(),
+				m_filter->begin(),
+				m_filter->end(),
+				[](char a_lhs, char a_rhs) {
+					return ::hash::toupper(a_lhs) == ::hash::toupper(a_rhs);
+				});
+
+			return (it != a_haystack.end());
+		}
+
 	}
 }

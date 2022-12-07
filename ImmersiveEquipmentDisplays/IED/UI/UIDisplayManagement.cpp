@@ -13,11 +13,12 @@ namespace IED
 		UIDisplayManagement::UIDisplayManagement(
 			Controller& a_controller) :
 			UILocalizationInterface(a_controller),
+			m_editorPanels{
+				std::make_unique<UISlotEditorTabPanel>(a_controller),
+				std::make_unique<UICustomEditorTabPanel>(a_controller)
+			},
 			m_controller(a_controller)
 		{
-			CreateEditorPanel<UISlotEditorTabPanel>(a_controller);
-			CreateEditorPanel<UICustomEditorTabPanel>(a_controller);
-
 			stl::snprintf(m_currentTitle, "###%s", WINDOW_ID);
 		}
 
@@ -140,19 +141,27 @@ namespace IED
 
 		void UIDisplayManagement::OpenEditorPanel(UIDisplayManagementEditorPanel a_panel)
 		{
-			if (m_currentEditorPanel == a_panel)
+			const auto oldPanel = m_currentEditorPanel;
+
+			if (oldPanel == a_panel)
 			{
 				return;
 			}
-
-			auto oldPanel = m_currentEditorPanel;
 
 			m_currentEditorPanel = a_panel;
 
 			GetEditorPanelBase(oldPanel).OnClose();
 			GetEditorPanelBase(a_panel).OnOpen();
 
-			SetTitle(stl::underlying(CommonStrings::Equipment));
+			switch (a_panel)
+			{
+			case UIDisplayManagementEditorPanel::Custom:
+				SetTitle(stl::underlying(CommonStrings::Custom));
+				break;
+			default:
+				SetTitle(stl::underlying(CommonStrings::Equipment));
+				break;
+			}
 
 			auto& conf = m_controller.GetConfigStore().settings;
 			conf.set(conf.data.ui.lastPanel, a_panel);
@@ -160,13 +169,22 @@ namespace IED
 
 		void UIDisplayManagement::SetTitle(Localization::StringID a_strid)
 		{
-			stl::snprintf(
-				m_currentTitle,
+			constexpr std::size_t BUFFER_SIZE = 64;
+
+			const auto buf = std::make_unique_for_overwrite<char[]>(BUFFER_SIZE);
+
+			::_snprintf_s(
+				buf.get(),
+				BUFFER_SIZE,
+				_TRUNCATE,
 				"%s - %s",
 				LS(UIWidgetCommonStrings::DisplayManagement),
-				LS<decltype(a_strid), 3>(
-					a_strid,
-					WINDOW_ID));
+				LS(a_strid));
+
+			stl::snprintf(
+				m_currentTitle,
+				"%s",
+				LMKID<3>(buf.get(), WINDOW_ID));
 		}
 
 	}

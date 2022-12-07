@@ -36,7 +36,7 @@ namespace IED
 		{
 			UICommon::PushDisabled(a_disabled);
 
-			bool res = ImGui::Button(a_text.c_str());
+			const bool res = ImGui::Button(a_text.c_str());
 
 			UICommon::PopDisabled(a_disabled);
 

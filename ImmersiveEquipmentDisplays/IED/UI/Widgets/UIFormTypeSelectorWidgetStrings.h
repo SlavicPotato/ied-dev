@@ -54,6 +54,8 @@ namespace IED
 			Idle             = 6343,
 			Projectile       = 6344,
 			Effect           = 6345,
+			Outfit           = 6346,
+			Enchantment      = 6347,
 		};
 	}
 }

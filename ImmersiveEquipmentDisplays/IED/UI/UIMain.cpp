@@ -33,41 +33,60 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UIAboutModal(a_controller),
 			UIKeyedInputLockReleaseHandler(a_owner),
+			m_childWindows
+		{
+			std::make_unique<UIFormBrowser>(a_controller),
+				std::make_unique<UISettings>(a_owner, a_controller),
+				std::make_unique<UIDialogImportExport>(a_controller),
+				std::make_unique<UIProfileEditorSlot>(a_controller),
+				std::make_unique<UIProfileEditorCustom>(a_controller),
+				std::make_unique<UIProfileEditorNodeOverride>(a_controller),
+				std::make_unique<UINodeMapEditor>(a_controller),
+				std::make_unique<UINodeOverrideEditorWindow>(a_controller),
+				std::make_unique<UIProfileEditorFormFilters>(a_controller),
+				std::make_unique<UILog>(a_controller),
+				std::make_unique<UIStats>(a_owner, a_controller),
+				std::make_unique<UISkeletonExplorer>(a_controller),
+				std::make_unique<UIActorInfo>(a_controller),
+				std::make_unique<UIDisplayManagement>(a_controller),
+				std::make_unique<UIConditionalVariablesEditorWindow>(a_controller),
+				std::make_unique<UIProfileEditorConditionalVariables>(a_controller),
+#if defined(IED_ENABLE_I3DI)
+				a_controller.CPUHasSSE41() ?
+					std::make_unique<I3DIMain>(a_controller) :
+					nullptr
+#else
+				nullptr
+#endif
+		}
+		,
 			m_owner(a_owner),
 			m_controller(a_controller),
 			m_formLookupCache(a_controller),
 			m_popupQueue(a_controller)
 		{
-			CreateChild<UIFormBrowser>(a_controller);
-			CreateChild<UISettings>(a_owner, a_controller);
-			CreateChild<UIDialogImportExport>(a_controller);
-			CreateChild<UINodeMapEditor>(a_controller);
-			CreateChild<UILog>(a_controller);
-			CreateChild<UIStats>(a_owner, a_controller);
-			CreateChild<UISkeletonExplorer>(a_controller);
-			CreateChild<UIActorInfo>(a_controller);
+#if defined(DEBUG)
+			using enum_type = std::underlying_type_t<ChildWindowID>;
 
-			CreateChild<UIProfileEditorSlot>(a_controller);
-			CreateChild<UIProfileEditorCustom>(a_controller);
-			CreateChild<UIProfileEditorNodeOverride>(a_controller);
-			CreateChild<UIProfileEditorFormFilters>(a_controller);
-			CreateChild<UIProfileEditorConditionalVariables>(a_controller);
-
-			CreateChild<UIDisplayManagement>(a_controller);
-			CreateChild<UINodeOverrideEditorWindow>(
-				a_controller,
-				GetChild<UIProfileEditorNodeOverride>());
-			CreateChild<UIConditionalVariablesEditorWindow>(a_controller);
-
-			CreateChild<I3DIMain>(a_controller);
+			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
+			{
+				if (const auto& window = m_childWindows[i])
+				{
+					assert(window->GetContextID() == i);
+				}
+			}
+#endif
 		}
 
 		void UIMain::Initialize()
 		{
 			for (const auto& e : m_childWindows)
 			{
-				e->Initialize();
-				e->AddSink(this);
+				if (e)
+				{
+					e->Initialize();
+					e->AddSink(this);
+				}
 			}
 
 			const auto& settings = GetUISettings();
@@ -78,7 +97,10 @@ namespace IED
 			{
 				const auto& window = m_childWindows[i];
 
-				window->Initialize();
+				if (!window)
+				{
+					continue;
+				}
 
 				if (static_cast<ChildWindowID>(i) != ChildWindowID::kUIFormBrowser)
 				{
@@ -101,7 +123,10 @@ namespace IED
 		{
 			for (const auto& e : m_childWindows)
 			{
-				e->Reset();
+				if (e)
+				{
+					e->Reset();
+				}
 			}
 		}
 
@@ -114,9 +139,15 @@ namespace IED
 			DrawMenuBarMain();
 			DrawChildWindows();
 
-			if (GetChild<UIProfileEditorFormFilters>().ChangedConfig())
+			if (auto window = GetChild<UIProfileEditorFormFilters>())
 			{
-				GetChildContext<UIDisplayManagement>().Notify(1);
+				if (window->ChangedConfig())
+				{
+					if (auto dm = GetChildContext<UIDisplayManagement>())
+					{
+						dm->Notify(1);
+					}
+				}
 			}
 
 			m_popupQueue.run();
@@ -130,7 +161,7 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					e->PrepareGameData();
 				}
@@ -141,7 +172,7 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					e->Render();
 				}
@@ -188,7 +219,10 @@ namespace IED
 
 			for (auto& e : m_childWindows)
 			{
-				e->DrawWrapper();
+				if (e)
+				{
+					e->DrawWrapper();
+				}
 			}
 
 			ImGui::PopID();
@@ -250,9 +284,12 @@ namespace IED
 
 		void UIMain::DrawFileMenu()
 		{
-			if (LCG_MI(UIMainStrings::ImportExport, "1"))
+			if (auto context = GetChildContext<UIDialogImportExport>())
 			{
-				GetChildContext<UIDialogImportExport>().ToggleOpenState();
+				if (LCG_MI(UIMainStrings::ImportExport, "1"))
+				{
+					context->ToggleOpenState();
+				}
 			}
 
 			ImGui::Separator();
@@ -274,103 +311,28 @@ namespace IED
 
 		void UIMain::DrawViewMenu()
 		{
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::DisplayManagement, "1"),
-					nullptr,
-					GetChildContext<UIDisplayManagement>().IsContextOpen()))
-			{
-				GetChildContext<UIDisplayManagement>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::NodeOverride, "2"),
-					nullptr,
-					GetChildContext<UINodeOverrideEditorWindow>().IsContextOpen()))
-			{
-				GetChildContext<UINodeOverrideEditorWindow>().ToggleOpenState();
-			}
+			DrawContextMenuItem<UIDisplayManagement>(UIMainStrings::DisplayManagement, "1");
+			DrawContextMenuItem<UINodeOverrideEditorWindow>(UIMainStrings::NodeOverride, "2");
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::ConditionalVariables, "3"),
-					nullptr,
-					GetChildContext<UIConditionalVariablesEditorWindow>().IsContextOpen()))
-			{
-				GetChildContext<UIConditionalVariablesEditorWindow>().ToggleOpenState();
-			}
-
-#if defined(IED_ENABLE_I3DI)
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::I3DI, "4"),
-					nullptr,
-					GetChildContext<I3DIMain>().IsContextOpen()))
-			{
-				GetChildContext<I3DIMain>().ToggleOpenState();
-			}
-#endif
+			DrawContextMenuItem<UIConditionalVariablesEditorWindow>(UIMainStrings::ConditionalVariables, "3");
+			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "4");
 		}
 
 		void UIMain::DrawProfileEditorsSubmenu()
 		{
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Equipment, "1"),
-					nullptr,
-					GetChildContext<UIProfileEditorSlot>().IsContextOpen()))
-			{
-				GetChildContext<UIProfileEditorSlot>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Custom, "2"),
-					nullptr,
-					GetChildContext<UIProfileEditorCustom>().IsContextOpen()))
-			{
-				GetChildContext<UIProfileEditorCustom>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::NodeOverride, "3"),
-					nullptr,
-					GetChildContext<UIProfileEditorNodeOverride>().IsContextOpen()))
-			{
-				GetChildContext<UIProfileEditorNodeOverride>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::FormFilters, "4"),
-					nullptr,
-					GetChildContext<UIProfileEditorFormFilters>().IsContextOpen()))
-			{
-				GetChildContext<UIProfileEditorFormFilters>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(UIMainStrings::ConditionalVariables, "5"),
-					nullptr,
-					GetChildContext<UIProfileEditorConditionalVariables>().IsContextOpen()))
-			{
-				GetChildContext<UIProfileEditorConditionalVariables>().ToggleOpenState();
-			}
+			DrawContextMenuItem<UIProfileEditorSlot>(CommonStrings::Equipment, "1");
+			DrawContextMenuItem<UIProfileEditorCustom>(CommonStrings::Custom, "2");
+			DrawContextMenuItem<UIProfileEditorNodeOverride>(UIMainStrings::NodeOverride, "3");
+			DrawContextMenuItem<UIProfileEditorFormFilters>(UIMainStrings::FormFilters, "4");
+			DrawContextMenuItem<UIProfileEditorConditionalVariables>(UIMainStrings::ConditionalVariables, "5");
 		}
 
 		void UIMain::DrawDiagnosticsSubmenu()
 		{
-			if (ImGui::MenuItem(
-					LS(UIWidgetCommonStrings::ActorInfo, "1"),
-					nullptr,
-					GetChildContext<UIActorInfo>().IsContextOpen()))
-			{
-				GetChildContext<UIActorInfo>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(UIWidgetCommonStrings::SkeletonExplorer, "2"),
-					nullptr,
-					GetChildContext<UISkeletonExplorer>().IsContextOpen()))
-			{
-				GetChildContext<UISkeletonExplorer>().ToggleOpenState();
-			}
+			DrawContextMenuItem<UIActorInfo>(UIWidgetCommonStrings::ActorInfo, "1");
+			DrawContextMenuItem<UISkeletonExplorer>(UIWidgetCommonStrings::SkeletonExplorer, "2");
 		}
 
 		void UIMain::DrawToolsMenu()
@@ -382,37 +344,10 @@ namespace IED
 				ImGui::EndMenu();
 			}
 
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Nodes, "2"),
-					nullptr,
-					GetChildContext<UINodeMapEditor>().IsContextOpen()))
-			{
-				GetChildContext<UINodeMapEditor>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Settings, "3"),
-					nullptr,
-					GetChildContext<UISettings>().IsContextOpen()))
-			{
-				GetChildContext<UISettings>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Stats, "4"),
-					nullptr,
-					GetChildContext<UIStats>().IsContextOpen()))
-			{
-				GetChildContext<UIStats>().ToggleOpenState();
-			}
-
-			if (ImGui::MenuItem(
-					LS(CommonStrings::Log, "5"),
-					nullptr,
-					GetChildContext<UILog>().IsContextOpen()))
-			{
-				GetChildContext<UILog>().ToggleOpenState();
-			}
+			DrawContextMenuItem<UINodeMapEditor>(CommonStrings::Nodes, "2");
+			DrawContextMenuItem<UISettings>(CommonStrings::Settings, "3");
+			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "4");
+			DrawContextMenuItem<UILog>(CommonStrings::Log, "5");
 
 			if (LCG_BM(UIMainStrings::Diagnostics, "6"))
 			{
@@ -507,14 +442,20 @@ namespace IED
 						switch (settings.data.ui.selectedDefaultConfImport)
 						{
 						case Data::DefaultConfigType::kDefault:
-							GetChild<UIDialogImportExport>().QueueImportPopup(
-								PATHS::DEFAULT_CONFIG,
-								LS(CommonStrings::Default));
+							if (auto window = GetChild<UIDialogImportExport>())
+							{
+								window->QueueImportPopup(
+									PATHS::DEFAULT_CONFIG,
+									LS(CommonStrings::Default));
+							}
 							break;
 						case Data::DefaultConfigType::kUser:
-							GetChild<UIDialogImportExport>().QueueImportPopup(
-								PATHS::DEFAULT_CONFIG_USER,
-								LS(CommonStrings::User));
+							if (auto window = GetChild<UIDialogImportExport>())
+							{
+								window->QueueImportPopup(
+									PATHS::DEFAULT_CONFIG_USER,
+									LS(CommonStrings::User));
+							}
 							break;
 						}
 					});
@@ -557,7 +498,7 @@ namespace IED
 		{
 			for (const auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					return true;
 				}
@@ -582,7 +523,7 @@ namespace IED
 
 			for (const auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					m_seenOpenChildThisSession = true;
 					e->OnOpen();
@@ -594,7 +535,10 @@ namespace IED
 				if (GetUISettings().exitOnLastWindowClose &&
 				    !m_seenOpenChildThisSession)
 				{
-					GetChildContext(*m_lastClosedChild).SetOpenState(true);
+					if (auto context = GetChildContext(*m_lastClosedChild))
+					{
+						context->SetOpenState(true);
+					}
 				}
 
 				m_lastClosedChild.reset();
@@ -608,9 +552,15 @@ namespace IED
 			using enum_type = std::underlying_type_t<ChildWindowID>;
 			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)
 			{
-				const auto  id        = static_cast<ChildWindowID>(i);
-				const auto& window    = m_childWindows[i];
-				const auto  openState = window->IsContextOpen();
+				const auto& window = m_childWindows[i];
+
+				if (!window)
+				{
+					continue;
+				}
+
+				const auto id        = static_cast<ChildWindowID>(i);
+				const auto openState = window->IsContextOpen();
 
 				if (openState)
 				{
@@ -648,7 +598,7 @@ namespace IED
 		{
 			for (auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					e->OnMouseMove(a_evn);
 				}
@@ -661,7 +611,7 @@ namespace IED
 
 			for (auto& e : m_childWindows)
 			{
-				if (e->IsContextOpen())
+				if (e && e->IsContextOpen())
 				{
 					e->OnKeyEvent(a_evn);
 				}

@@ -15,7 +15,7 @@ namespace IED
 
 	inline static bool is_in_first_person_state() noexcept
 	{
-		if (auto playerCamera = PlayerCamera::GetSingleton())
+		if (const auto* playerCamera = PlayerCamera::GetSingleton())
 		{
 			return playerCamera->cameraState ==
 			       playerCamera->GetCameraState(PlayerCamera::CameraState::kFirstPerson);
@@ -28,13 +28,15 @@ namespace IED
 
 	bool IFirstPersonState::IsInFirstPerson() const noexcept
 	{
+		const bool in_fp_state = is_in_first_person_state();
+
 		if (m_ifpvState)
 		{
-			return is_in_first_person_state() || m_ifpvState->value != 0.f;
+			return in_fp_state || m_ifpvState->value != 0.f;
 		}
 		else
 		{
-			return is_in_first_person_state();
+			return in_fp_state;
 		}
 	}
 }

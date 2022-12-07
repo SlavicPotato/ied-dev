@@ -206,7 +206,7 @@ namespace IED
 		ProcessConfig();
 	}
 
-	Bullet::btTransformEx PHYSimComponent::GetCurrentParentWorldTransform() const noexcept
+	const NiTransform& PHYSimComponent::GetCurrentParentWorldTransform() const noexcept
 	{
 		if (auto parent = m_object->m_parent)
 		{

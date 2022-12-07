@@ -5,23 +5,108 @@
 #include "IED/UI/UIFormBrowser.h"
 #include "IED/UI/UIFormInfoCache.h"
 #include "IED/UI/UIMain.h"
+#include "IED/UI/UIToast.h"
 
 #include "Drivers/UI.h"
 
 namespace IED
 {
+	void IUI::QueueToast(
+		const std::string&           a_message,
+		const std::optional<ImVec4>& a_color)
+	{
+		if (a_message.empty())
+		{
+			return;
+		}
+
+		if (!Drivers::UI::IsImInitialized())
+		{
+			return;
+		}
+
+		QueueToastImpl(a_message, a_color);
+	}
+
+	void IUI::QueueToastAsync(
+		const std::string&           a_message,
+		const std::optional<ImVec4>& a_color)
+	{
+		if (a_message.empty())
+		{
+			return;
+		}
+
+		if (!Drivers::UI::IsImInitialized())
+		{
+			return;
+		}
+
+		ITaskPool::AddTask(
+			[this,
+		     msg = a_message,
+		     col = a_color]() mutable {
+				QueueToastImpl(std::move(msg), col);
+			});
+	}
+
+	void IUI::QueueToastImpl(
+		const std::string&           a_message,
+		const std::optional<ImVec4>& a_color)
+	{
+		auto& task = GetOrCreateToastTask();
+
+		auto context = task->GetContext<UI::UIToast>();
+		assert(context);
+
+		context->QueueMessage(a_message, a_color);
+
+		Drivers::UI::AddTask(0xF000, task);
+	}
+
+	void IUI::QueueToastImpl(
+		std::string&&                a_message,
+		const std::optional<ImVec4>& a_color)
+	{
+		auto& task = GetOrCreateToastTask();
+
+		auto context = task->GetContext<UI::UIToast>();
+		assert(context);
+
+		context->QueueMessage(std::move(a_message), a_color);
+
+		Drivers::UI::AddTask(0xF000, task);
+	}
+
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		auto result = std::make_shared<IUIRenderTaskMain>(*this);
-		
-		result->InitializeContext<UI::UIMain>(a_controller);
-
-		m_task = std::move(result);
+		m_task = std::make_shared<IUIRenderTaskMain>(*this);
+		m_task->InitializeContext<UI::UIMain>(a_controller);
 	}
 
 	bool IUI::UIIsInitialized() const noexcept
 	{
 		return m_task.get() != nullptr;
+	}
+
+	const std::shared_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
+	{
+		const std::lock_guard lock(UIGetLock());
+
+		auto& task = m_toastTask;
+
+		if (!task)
+		{
+			task = make_render_task<UI::UIToast>(*this);
+
+			task->SetControlLock(false);
+			task->SetFreezeTime(false);
+			task->SetWantCursor(false);
+			task->SetEnabledInMenu(true);
+			task->EnableRestrictions(false);
+		}
+
+		return task;
 	}
 
 	UI::UIPopupQueue& IUI::UIGetPopupQueue() noexcept
@@ -218,7 +303,7 @@ namespace IED
 	}
 
 	IUIRenderTaskMain::IUIRenderTaskMain(
-		IUI&        a_interface) :
+		IUI& a_interface) :
 		IUIRenderTask(a_interface)
 	{
 	}

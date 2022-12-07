@@ -42,6 +42,7 @@ namespace IED
 
 			virtual void OnOpen() override;
 			virtual void OnClose() override;
+			virtual bool OnWantOpenStateChange(bool a_newState) override;
 
 			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
 

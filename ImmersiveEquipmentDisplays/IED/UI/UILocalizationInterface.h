@@ -9,8 +9,8 @@ namespace IED
 		class UILocalizationInterface
 		{
 		protected:
-			UILocalizationInterface(
-				Localization::ILocalization& a_localization) :
+			inline constexpr UILocalizationInterface(
+				Localization::ILocalization& a_localization) noexcept :
 				m_localization(a_localization)
 			{
 			}

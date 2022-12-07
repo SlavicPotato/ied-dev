@@ -2,6 +2,8 @@
 
 #include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidget.h"
 
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
+
 #include "IED/UI/Profile/UIProfileEditorBase.h"
 
 #include "IED/UI/UICommon.h"
@@ -16,7 +18,7 @@ namespace IED
 	{
 		class UIProfileEditorNodeOverride :
 			public UIProfileEditorBase<NodeOverrideProfile>,
-			public UINodeOverrideEditorWidget<int>
+			public UINodeOverrideEditorWidget<UIGlobalEditorDummyHandle>
 		{
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorNodeOverride;
@@ -71,43 +73,43 @@ namespace IED
 			virtual void OnCollapsibleStatesUpdate();
 
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                      a_handle,
 				const SingleNodeOverrideTransformUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                      a_handle,
 				const SingleNodeOverridePlacementUpdateParams& a_params) override;
-			
+
 			virtual void OnUpdate(
-				int                                            a_handle,
+				UIGlobalEditorDummyHandle                    a_handle,
 				const SingleNodeOverridePhysicsUpdateParams& a_params) override;
 
 			virtual void OnUpdate(
-				int                             a_handle,
+				UIGlobalEditorDummyHandle       a_handle,
 				const NodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearTransform(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearPlacement(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearPhysics(
-				int                                  a_handle,
+				UIGlobalEditorDummyHandle            a_handle,
 				const ClearNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllTransforms(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual void OnClearAllPlacement(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
-			
+
 			virtual void OnClearAllPhysics(
-				int                                     a_handle,
+				UIGlobalEditorDummyHandle               a_handle,
 				const ClearAllNodeOverrideUpdateParams& a_params) override;
 
 			virtual WindowLayoutData GetWindowDimensions() const;

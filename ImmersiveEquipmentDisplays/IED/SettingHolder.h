@@ -175,6 +175,9 @@ namespace IED
 				bool closeOnESC{ true };
 				bool exitOnLastWindowClose{ true };
 				bool showIntroBanner{ true };
+				bool enableNotifications{ false };
+
+				LogLevel notificationThreshold{ LogLevel::Message };
 
 				stl::flag<Data::ConfigStoreSerializationFlags> defaultExportFlags{
 					Data::ConfigStoreSerializationFlags::kAll
@@ -269,7 +272,7 @@ namespace IED
 				class Tv>
 			inline constexpr void set(Tm& a_member, Tv&& a_value)  //
 				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>)  //
-				requires(std::is_assignable_v<Tm&, Tv&&>)
+				requires(std::is_assignable_v<Tm&, Tv &&>)
 			{
 				a_member = std::forward<Tv>(a_value);
 				m_dirty  = true;

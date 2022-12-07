@@ -7,6 +7,9 @@ namespace IED
 		class UIEditorInterface
 		{
 		public:
+
+			virtual ~UIEditorInterface() noexcept = default;
+
 			virtual void EditorInitialize(){};
 			virtual void EditorDraw(){};
 			virtual void EditorReset(){};

@@ -52,7 +52,6 @@ namespace IED
 			SyncToFirstPerson           = 4441,
 			Effects                     = 4442,
 			EquipmentPhysics            = 4443,
-			PhysicsForcedOffWarning     = 4444,
 			MaxDiff                     = 4445,
 			I3DI                        = 4446,
 			EnableWeapons               = 4447,

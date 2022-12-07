@@ -7,7 +7,6 @@
 #include "IED/ProcessParams.h"
 #include "IModel.h"
 #include "INode.h"
-#include "INodeOverride.h"
 #include "IPersistentCounter.h"
 #include "IRNG.h"
 #include "ISound.h"
@@ -26,14 +25,11 @@ namespace IED
 	}
 
 	class IObjectManager :
-		public INode,
-		public IModel,
-		public ISound,
-		public INodeOverride,
 		public ObjectManagerData,
 		public ObjectDatabase,
 		public IPersistentCounter,
 		public IRNG,
+		public ISound,
 		virtual public ILog
 	{
 	public:
@@ -124,17 +120,17 @@ namespace IED
 
 		void ClearObjectsImpl();
 
-		bool ConstructArmorNode(
+		/*bool ConstructArmorNode(
 			TESForm*                                          a_form,
 			const stl::vector<TESObjectARMA*>&                a_in,
 			bool                                              a_isFemale,
 			stl::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
-			NiPointer<NiNode>&                                a_out);
+			NiPointer<NiNode>&                                a_out);*/
 
-		void GetNodeName(
-			TESForm*             a_form,
-			const modelParams_t& a_params,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+		static void GetNodeName(
+			TESForm*                     a_form,
+			const IModel::modelParams_t& a_params,
+			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]);
 
 		bool LoadAndAttach(
 			processParams_t&                a_params,
@@ -162,7 +158,7 @@ namespace IED
 			const bool                      a_bgedAnims,
 			const bool                      a_physics);
 
-		void FinalizeObjectState(
+		static void FinalizeObjectState(
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
 			TESForm*                                 a_form,
 			NiNode*                                  a_rootNode,
@@ -177,7 +173,7 @@ namespace IED
 			const ObjectEntryBase&          a_objectEntry,
 			bool                            a_equip);
 
-		bool AttachNodeImpl(
+		static bool AttachNodeImpl(
 			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,

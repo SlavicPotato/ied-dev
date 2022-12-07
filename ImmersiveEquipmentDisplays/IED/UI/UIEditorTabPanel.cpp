@@ -15,17 +15,19 @@ namespace IED
 		UIEditorTabPanel::UIEditorTabPanel(
 			Controller&            a_controller,
 			Localization::StringID a_menuName) :
+			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_menuName(a_menuName)
-		{}
+		{
+		}
 
 		void UIEditorTabPanel::Initialize()
 		{
 			for (auto& e : m_interfaces)
 			{
-				if (e.ptr)
+				if (e)
 				{
-					e.ptr->EditorInitialize();
+					e->EditorInitialize();
 				}
 			}
 
@@ -35,14 +37,17 @@ namespace IED
 			{
 				m_currentClass = conf.lastConfigClass;
 			}
+			else
+			{
+				m_currentClass = Data::ConfigClass::Global;
+			}
 
-			if (!m_interfaces[stl::underlying(m_currentClass)].ptr)
+			if (!GetInterface(m_currentClass))
 			{
 				using enum_type = std::underlying_type_t<Data::ConfigClass>;
 				for (enum_type i = 0; i < Data::CONFIG_CLASS_MAX; i++)
 				{
-					auto& e = m_interfaces[i];
-					if (e.ptr)
+					if (auto& e = m_interfaces[i])
 					{
 						m_currentClass = static_cast<Data::ConfigClass>(i);
 					}
@@ -54,9 +59,9 @@ namespace IED
 		{
 			for (auto& e : m_interfaces)
 			{
-				if (e.ptr)
+				if (e)
 				{
-					e.ptr->EditorReset();
+					e->EditorReset();
 				}
 			}
 		}
@@ -65,16 +70,19 @@ namespace IED
 		{
 			for (auto& e : m_interfaces)
 			{
-				if (e.ptr)
+				if (e)
 				{
-					e.ptr->EditorQueueUpdateCurrent();
+					e->EditorQueueUpdateCurrent();
 				}
 			}
 		}
 
 		void UIEditorTabPanel::Draw()
 		{
-			if (ImGui::BeginTabBar("gen_editor_panel"))
+			if (ImGui::BeginTabBar(
+					"gen_editor_panel",
+					ImGuiTabBarFlags_NoTooltip |
+						ImGuiTabBarFlags_NoCloseWithMiddleMouseButton))
 			{
 				auto i = Data::CONFIG_CLASS_MAX;
 
@@ -84,7 +92,7 @@ namespace IED
 
 					auto& e = m_interfaces[i];
 
-					if (!e.ptr)
+					if (!e)
 					{
 						continue;
 					}
@@ -103,7 +111,7 @@ namespace IED
 
 						ImGui::Spacing();
 
-						bool disabled = m_controller.IsDefaultConfigForced();
+						const bool disabled = m_controller.IsDefaultConfigForced();
 
 						if (disabled)
 						{
@@ -118,7 +126,7 @@ namespace IED
 
 						UICommon::PushDisabled(disabled);
 
-						e.ptr->EditorDraw();
+						e->EditorDraw();
 
 						UICommon::PopDisabled(disabled);
 
@@ -136,12 +144,9 @@ namespace IED
 		{
 			if (LCG_BM(CommonStrings::Actions, "et_mb"))
 			{
-				auto  i = stl::underlying(m_currentClass);
-				auto& e = m_interfaces[i];
-
-				if (e.ptr)
+				if (auto& e = GetInterface(m_currentClass))
 				{
-					e.ptr->EditorDrawMenuBarItems();
+					e->EditorDrawMenuBarItems();
 				}
 
 				ImGui::EndMenu();
@@ -150,11 +155,9 @@ namespace IED
 
 		void UIEditorTabPanel::OnOpen()
 		{
-			auto& e = m_interfaces[stl::underlying(m_currentClass)];
-
-			if (e.ptr)
+			if (auto& e = GetInterface(m_currentClass))
 			{
-				e.ptr->EditorOnOpen();
+				e->EditorOnOpen();
 				e.flags |= ImGuiTabItemFlags_SetSelected;
 			}
 		}
@@ -163,9 +166,9 @@ namespace IED
 		{
 			for (auto& e : m_interfaces)
 			{
-				if (e.ptr)
+				if (e)
 				{
-					e.ptr->EditorOnClose();
+					e->EditorOnClose();
 				}
 			}
 
@@ -176,31 +179,19 @@ namespace IED
 				conf.lastConfigClass = m_currentClass;
 				m_controller.GetConfigStore().settings.mark_dirty();
 			}
-
-		}
-
-		void UIEditorTabPanel::SetEditor(
-			Data::ConfigClass      a_class,
-			UIEditorInterface&     a_interface,
-			Localization::StringID a_label)
-		{
-			m_interfaces[stl::underlying(a_class)] = {
-				std::addressof(a_interface),
-				a_label
-			};
 		}
 
 		void UIEditorTabPanel::SetTabSelected(
 			Data::ConfigClass a_class)
 		{
-			m_interfaces[stl::underlying(a_class)].flags |=
+			GetInterface(a_class).flags |=
 				ImGuiTabItemFlags_SetSelected;
 		}
 
 		void UIEditorTabPanel::EvaluateTabSwitch(
 			Data::ConfigClass a_class)
 		{
-			auto oldClass = m_currentClass;
+			const auto oldClass = m_currentClass;
 
 			if (oldClass == a_class)
 			{
@@ -209,17 +200,17 @@ namespace IED
 
 			m_currentClass = a_class;
 
-			const auto& inew = m_interfaces[stl::underlying(a_class)];
-			const auto& iold = m_interfaces[stl::underlying(oldClass)];
+			const auto& inew = GetInterface(a_class);
+			const auto& iold = GetInterface(oldClass);
 
-			if (iold.ptr)
+			if (iold)
 			{
-				iold.ptr->EditorOnClose();
+				iold->EditorOnClose();
 			}
 
-			if (inew.ptr)
+			if (inew)
 			{
-				inew.ptr->EditorOnOpen();
+				inew->EditorOnOpen();
 			}
 		}
 	}

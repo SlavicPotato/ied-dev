@@ -25,28 +25,29 @@ namespace IED
 
 	struct actorInfoEntry_t
 	{
-		bool                                  active{ false };
-		bool                                  attached{ false };
-		bool                                  dead{ false };
-		bool                                  hasLoadedState{ false };
-		std::uint32_t                         flags{ false };
-		std::string                           name;
-		Game::FormID                          race;
-		Game::FormID                          worldspace;
-		std::pair<Game::FormID, std::string>  cell;
-		std::pair<Game::FormID, std::string>  location;
-		std::pair<Game::FormID, std::string>  skin;
-		std::pair<Game::FormID, std::string>  idle;
-		Game::FormID                          package;
-		std::pair<Game::FormID, std::string>  furniture;
-		std::pair<Game::FormID, Game::FormID> equipped;
-		std::pair<std::string, std::string>   equippedNames;
-		std::pair<std::uint8_t, std::uint8_t> equippedTypes;
-		std::pair<Game::FormID, bool>         outfit;
-		float                                 weight{ 0.0f };
-		NiPoint3                              pos;
-		NiPoint3                              rot;
-		long long                             ts{ 0 };
+		bool                                   active{ false };
+		bool                                   attached{ false };
+		bool                                   dead{ false };
+		bool                                   hasLoadedState{ false };
+		std::uint32_t                          flags{ false };
+		std::string                            name;
+		Game::FormID                           race;
+		Game::FormID                           worldspace;
+		std::pair<Game::FormID, std::string>   cell;
+		std::pair<Game::FormID, std::string>   location;
+		std::pair<Game::FormID, std::string>   skin;
+		std::pair<Game::FormID, std::string>   idle;
+		Game::FormID                           package;
+		std::pair<Game::FormID, std::string>   furniture;
+		std::pair<Game::FormID, Game::FormID>  equipped;
+		std::pair<std::string, std::string>    equippedNames;
+		std::pair<std::uint8_t, std::uint8_t>  equippedTypes;
+		std::pair<Game::FormID, bool>          outfit;
+		float                                  weight{ 0.0f };
+		std::optional<std::pair<float, float>> inventoryWeight;
+		NiPoint3                               pos;
+		NiPoint3                               rot;
+		long long                              ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 

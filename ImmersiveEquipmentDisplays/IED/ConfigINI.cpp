@@ -47,7 +47,7 @@ namespace IED
 			reader.GetBoolValue(SECT_GENERAL, "XP32LeftHandRotationFix", true);
 
 		m_bipedSlotCacheMaxSize =
-			std::max(reader.GetLongValue(SECT_BIPCACHE, "MaxSize", 2000l), 0l);
+			std::max(reader.GetLongValue(SECT_BIPCACHE, "MaxSize", 0l), 0l);
 		m_bipedSlotCacheMaxForms =
 			std::max(reader.GetLongValue(SECT_BIPCACHE, "MaxFormsPerSlot", 16l), 0l);
 
@@ -77,7 +77,7 @@ namespace IED
 		m_forceFlushSaveData =
 			reader.GetBoolValue(SECT_DEBUG, "ForceFlushSaveData", false);
 
-		m_logLevel = ILog::TranslateLogLevel(reader.GetValue(SECT_GENERAL, "LogLevel", "debug"));
+		m_logLevel = ILog::LookupLogLevel(reader.GetValue(SECT_GENERAL, "LogLevel", "message"));
 
 		m_taskPoolBudget = reader.GetLongValue(SECT_GENERAL, "TaskPoolBudget", 0);
 
@@ -92,49 +92,41 @@ namespace IED
 
 		m_UIOpenKeys.Parse(reader.GetValue(SECT_GUI, "ToggleKeys", "0x0E"));
 
-		{
-			auto r = m_sound.data.try_emplace(TESObjectWEAP::kTypeID);
+		auto r = m_sound.data.try_emplace(TESObjectWEAP::kTypeID);
 
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "WeaponEquipSD", ""),
-				r.first->second.first);
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "WeaponUnequipSD", ""),
-				r.first->second.second);
-		}
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "WeaponEquipSD", ""),
+			r.first->second.first);
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "WeaponUnequipSD", ""),
+			r.first->second.second);
 
-		{
-			auto r = m_sound.data.try_emplace(TESForm::kTypeID);
+		r = m_sound.data.try_emplace(TESForm::kTypeID);
 
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "GenericEquipSD", ""),
-				r.first->second.first);
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "GenericUnequipSD", ""),
-				r.first->second.second);
-		}
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "GenericEquipSD", ""),
+			r.first->second.first);
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "GenericUnequipSD", ""),
+			r.first->second.second);
 
-		{
-			auto r = m_sound.data.try_emplace(TESObjectARMO::kTypeID);
+		r = m_sound.data.try_emplace(TESObjectARMO::kTypeID);
 
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "ArmorEquipSD", ""),
-				r.first->second.first);
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "ArmorUnequipSD", ""),
-				r.first->second.second);
-		}
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "ArmorEquipSD", ""),
+			r.first->second.first);
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "ArmorUnequipSD", ""),
+			r.first->second.second);
 
-		{
-			auto r = m_sound.data.try_emplace(TESAmmo::kTypeID);
+		r = m_sound.data.try_emplace(TESAmmo::kTypeID);
 
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "ArrowEquipSD", ""),
-				r.first->second.first);
-			ParseForm(
-				reader.GetValue(SECT_SOUND, "ArrowUnequipSD", ""),
-				r.first->second.second);
-		}
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "ArrowEquipSD", ""),
+			r.first->second.first);
+		ParseForm(
+			reader.GetValue(SECT_SOUND, "ArrowUnequipSD", ""),
+			r.first->second.second);
 
 		m_agManualMode = reader.GetLongValue(SECT_ANIM, "Mode", 0);
 
@@ -181,8 +173,6 @@ namespace IED
 
 		//m_enableCorpseScatter = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);
 
-		m_disableEffectHook = reader.GetBoolValue(SECT_DEBUG, "DisableEffectHook", false);
-
 		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
 		//m_enableLights             = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
 
@@ -190,5 +180,4 @@ namespace IED
 
 		return m_loaded;
 	}
-
 }

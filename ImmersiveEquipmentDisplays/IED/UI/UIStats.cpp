@@ -22,6 +22,7 @@ namespace IED
 		UIStats::UIStats(
 			Tasks::UIRenderTaskBase& a_owner,
 			Controller&              a_controller) :
+			UIMiscTextInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UITipsInterface(a_controller),
 			m_owner(a_owner),
@@ -42,8 +43,7 @@ namespace IED
 				auto task = m_owner.As<IUIRenderTaskMain>();
 				assert(task);
 
-				auto& i3di           = task->GetContext().GetChild<I3DIMain>();
-				auto& i3diCommonData = i3di.GetCommonData();
+				auto i3di = task->GetContext().GetChild<I3DIMain>();
 
 				ImGui::Columns(2, nullptr, false);
 
@@ -69,10 +69,13 @@ namespace IED
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
-				if (i3diCommonData)
+				if (i3di)
 				{
-					ImGui::TextUnformatted("I3DI (P):");
-					ImGui::TextUnformatted("I3DI (R):");
+					if (i3di->GetCommonData())
+					{
+						ImGui::TextUnformatted("I3DI (P):");
+						ImGui::TextUnformatted("I3DI (R):");
+					}
 				}
 
 				ImGui::NextColumn();
@@ -109,10 +112,13 @@ namespace IED
 				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());
 
-				if (i3diCommonData)
+				if (i3di)
 				{
-					ImGui::Text("%lld \xC2\xB5s", i3di.GetLastPrepTime());
-					ImGui::Text("%lld \xC2\xB5s", i3diCommonData->objectController.GetLastRunTime());
+					if (auto& i3diCommonData = i3di->GetCommonData())
+					{
+						ImGui::Text("%lld \xC2\xB5s", i3di->GetLastPrepTime());
+						ImGui::Text("%lld \xC2\xB5s", i3diCommonData->objectController.GetLastRunTime());
+					}
 				}
 
 				ImGui::Columns();
@@ -147,7 +153,7 @@ namespace IED
 
 		void UIStats::DrawActorTable()
 		{
-			constexpr int NUM_COLUMNS = 8;
+			constexpr int NUM_COLUMNS = 9;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 5, 5 });
 
@@ -161,12 +167,13 @@ namespace IED
 						ImGuiTableFlags_Hideable |
 						ImGuiTableFlags_Sortable |
 						ImGuiTableFlags_SizingStretchProp,
-					{ -1.0f, 0 }))
+					{ -1.0f, 0.0f }))
 			{
 				ImGui::TableSetupScrollFreeze(0, 1);
 				ImGui::TableSetupColumn(LS(CommonStrings::ID), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Handle), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Name), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(LS(CommonStrings::Base), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Race), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Equipment), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(LS(CommonStrings::Custom), ImGuiTableColumnFlags_None);
@@ -181,28 +188,25 @@ namespace IED
 					ImGui::TableHeader(ImGui::TableGetColumnName(column));
 				}
 
-				auto& objects = m_controller.GetObjects();
-				auto& ai      = m_controller.GetActorInfo();
+				const auto& objects = m_controller.GetObjects();
+				const auto& ai      = m_controller.GetActorInfo();
 
-				sort_comp_func_t scl;
+				const auto ss = ImGui::TableGetSortSpecs();
 
-				if (auto ss = ImGui::TableGetSortSpecs())
-				{
-					scl = get_sort_comp_lambda(ss);
-				}
-				else
-				{
-					scl = get_sort_comp_lambda_default();
-				}
+				const auto scl = ss ? get_sort_comp_lambda(ss) : get_sort_comp_lambda_default();
 
 				stl::vector<std::unique_ptr<sorted_list_entry_t>> list;
 				list.reserve(objects.size());
 
 				for (auto& e : objects)
 				{
-					auto v = std::make_unique<sorted_list_entry_t>(e);
+					auto v = std::make_unique<sorted_list_entry_t>(
+						e,
+						e.second.GetNumOccupiedSlots(),
+						e.second.GetNumOccupiedCustom(),
+						e.second.GetAge() / 60000000);
 
-					if (auto it = ai.find(e.first); it != ai.cend())
+					if (auto it = ai.find(e.first); it != ai.end())
 					{
 						v->name = it->second.name;
 						v->race = it->second.race;
@@ -212,70 +216,52 @@ namespace IED
 						m_controller.QueueUpdateActorInfo(e.first);
 					}
 
-					v->nslot = e.second.GetNumOccupiedSlots();
-					v->ncust = e.second.GetNumOccupiedCustom();
-					v->age   = e.second.GetAge() / 60000000;
-
-					/*auto it = list.begin();
-					while (it != list.end())
-					{
-						if (scl(v, *it))
-						{
-							break;
-						}
-
-						++it;
-					}*/
-
 					auto it = std::upper_bound(list.begin(), list.end(), v, scl);
 
 					list.emplace(it, std::move(v));
 				}
 
-				for (auto& e : list)
+				for (const auto& e : list)
 				{
 					ImGui::TableNextRow();
 
 					ImGui::PushID(e->obj.first.get());
 
 					ImGui::TableSetColumnIndex(0);
-
-					ImGui::Text("%.8X", e->obj.first.get());
+					TextCopyable("%.8X", e->obj.first.get());
 
 					ImGui::TableSetColumnIndex(1);
-
-					ImGui::Text("%.8X", e->obj.second.GetHandle().get());
+					TextCopyable("%.8X", e->obj.second.GetHandle().get());
 
 					if (!e->name.empty())
 					{
 						ImGui::TableSetColumnIndex(2);
-						ImGui::TextUnformatted(e->name.c_str());
+						TextCopyable("%s", e->name.c_str());
 					}
+
+					ImGui::TableSetColumnIndex(3);
+					TextCopyable("%.8X", e->obj.second.GetNPCFormID().get());
 
 					if (e->race)
 					{
-						ImGui::TableSetColumnIndex(3);
-						ImGui::Text("%.8X", e->race.get());
+						ImGui::TableSetColumnIndex(4);
+						TextCopyable("%.8X", e->race.get());
 					}
 
-					ImGui::TableSetColumnIndex(4);
-
+					ImGui::TableSetColumnIndex(5);
 					ImGui::Text("%zu", e->nslot);
 
-					ImGui::TableSetColumnIndex(5);
-
+					ImGui::TableSetColumnIndex(6);
 					ImGui::Text("%zu", e->ncust);
 
-					ImGui::TableSetColumnIndex(6);
-
+					ImGui::TableSetColumnIndex(7);
 					ImGui::Text("%lld", e->age);
 
-					ImGui::TableSetColumnIndex(7);
-
+					ImGui::TableSetColumnIndex(8);
 					ImGui::TextUnformatted(
 						e->obj.second.IsCellAttached() ?
 							"true" :
-                            "false");
+							"false");
 
 					ImGui::PopID();
 				}
@@ -344,6 +330,19 @@ namespace IED
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
+							return a_rhs->obj.second.GetNPCFormID() < a_lhs->obj.second.GetNPCFormID();
+						};
+					}
+					else
+					{
+						return [](auto& a_rhs, auto& a_lhs) {
+							return a_rhs->obj.second.GetNPCFormID() > a_lhs->obj.second.GetNPCFormID();
+						};
+					}
+				case 4:
+					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
+					{
+						return [](auto& a_rhs, auto& a_lhs) {
 							return a_rhs->race < a_lhs->race;
 						};
 					}
@@ -353,7 +352,7 @@ namespace IED
 							return a_rhs->race > a_lhs->race;
 						};
 					}
-				case 4:
+				case 5:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
@@ -366,7 +365,7 @@ namespace IED
 							return a_rhs->nslot > a_lhs->nslot;
 						};
 					}
-				case 5:
+				case 6:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
@@ -379,7 +378,7 @@ namespace IED
 							return a_rhs->ncust > a_lhs->ncust;
 						};
 					}
-				case 6:
+				case 7:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
@@ -392,7 +391,7 @@ namespace IED
 							return a_rhs->age > a_lhs->age;
 						};
 					}
-				case 7:
+				case 8:
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {

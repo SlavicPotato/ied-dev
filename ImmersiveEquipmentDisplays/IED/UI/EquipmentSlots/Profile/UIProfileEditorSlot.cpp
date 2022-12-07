@@ -13,10 +13,10 @@ namespace IED
 				UIProfileStrings::TitleSlot,
 				"ied_pe_slot",
 				a_controller),
-			UISlotEditorBase<int>(a_controller),
+			UISlotEditorBase<UIGlobalEditorDummyHandle>(a_controller),
 			UITipsInterface(a_controller),
-			UINotificationInterface(a_controller),
 			UILocalizationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UITransformSliderWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
@@ -151,7 +151,8 @@ namespace IED
 
 			if (m_cachedItem->name == a_profile.Name())
 			{
-				m_cachedItem->data = entrySlotData_t(
+				m_cachedItem.emplace(
+					a_profile.Name(),
 					a_profile.Data(),
 					Data::ConfigClass::Global);
 			}
@@ -194,7 +195,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnBaseConfigChange(
-			int,
+			UIGlobalEditorDummyHandle,
 			const void*      a_params,
 			PostChangeAction a_action)
 		{
@@ -235,7 +236,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnFullConfigChange(
-			int,
+			UIGlobalEditorDummyHandle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
@@ -248,7 +249,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnPriorityConfigChange(
-			int,
+			UIGlobalEditorDummyHandle,
 			const SlotPriorityConfigUpdateParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
@@ -286,7 +287,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnPriorityConfigClear(
-			int                           a_handle,
+			UIGlobalEditorDummyHandle  a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
@@ -301,7 +302,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnSingleSlotClear(
-			int,
+			UIGlobalEditorDummyHandle,
 			const SingleSlotConfigClearParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
@@ -314,7 +315,7 @@ namespace IED
 		}
 
 		void UIProfileEditorSlot::OnFullConfigClear(
-			int                              a_handle,
+			UIGlobalEditorDummyHandle     a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
 			auto& data = GetProfileManager().Data();
@@ -358,12 +359,14 @@ namespace IED
 
 		bool UIProfileEditorSlot::CreateSlot(Data::ObjectSlot a_slot)
 		{
-			if (!m_cachedItem)
+			auto& cachedItem = m_cachedItem;
+
+			if (!cachedItem)
 			{
 				return false;
 			}
 
-			auto& cachedData = m_cachedItem->data.get(a_slot);
+			auto& cachedData = cachedItem->data.get(a_slot);
 
 			if (cachedData)
 			{
@@ -372,7 +375,7 @@ namespace IED
 
 			auto& data = GetProfileManager().Data();
 
-			auto it = data.find(m_cachedItem->name);
+			auto it = data.find(cachedItem->name);
 			if (it == data.end())
 			{
 				return false;
@@ -388,7 +391,8 @@ namespace IED
 			}
 			else
 			{
-				profileData = std::make_unique<Data::configSlotHolder_t::data_type>(
+				profileData = std::make_unique<
+					Data::configSlotHolder_t::data_type>(
 					cachedData->second);
 			}
 
@@ -397,15 +401,18 @@ namespace IED
 
 		void UIProfileEditorSlot::CreateAllSlots()
 		{
-			using enum_type = std::underlying_type_t<Data::ObjectSlot>;
-
-			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
+			if (const auto& cached = m_cachedItem)
 			{
-				auto& d = m_cachedItem->data.data[i];
+				using enum_type = std::underlying_type_t<Data::ObjectSlot>;
 
-				if (!d)
+				for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 				{
-					CreateSlot(static_cast<Data::ObjectSlot>(i));
+					const auto slot = static_cast<Data::ObjectSlot>(i);
+
+					if (!cached->data.get(slot))
+					{
+						CreateSlot(slot);
+					}
 				}
 			}
 		}
@@ -416,27 +423,28 @@ namespace IED
 
 			bool full = true;
 
-			for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
+			if (const auto& cached = m_cachedItem)
 			{
-				auto& d = m_cachedItem->data.data[i];
-
-				if (d)
+				for (enum_type i = 0; i < stl::underlying(Data::ObjectSlot::kMax); i++)
 				{
-					continue;
-				}
+					const auto slot = static_cast<Data::ObjectSlot>(i);
 
-				full = false;
+					if (cached->data.get(slot))
+					{
+						continue;
+					}
 
-				auto slot = static_cast<Data::ObjectSlot>(i);
+					full = false;
 
-				char buf[std::numeric_limits<enum_type>::digits10 + 3];
-				stl::snprintf(buf, "%u", i);
+					char buf[std::numeric_limits<enum_type>::digits10 + 3];
+					stl::snprintf(buf, "%u", i);
 
-				auto& name = StringHolder::GetSingleton().GetSlotName(slot);
+					auto& name = StringHolder::GetSingleton().GetSlotName(slot);
 
-				if (ImGui::MenuItem(LMKID<2>(name.c_str(), buf)))
-				{
-					CreateSlot(slot);
+					if (ImGui::MenuItem(LMKID<2>(name.c_str(), buf)))
+					{
+						CreateSlot(slot);
+					}
 				}
 			}
 

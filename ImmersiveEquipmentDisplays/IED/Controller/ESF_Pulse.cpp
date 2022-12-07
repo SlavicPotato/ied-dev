@@ -33,15 +33,16 @@ namespace IED
 			if ((flags & Data::EffectShaderPulseFlags::uScale) == Data::EffectShaderPulseFlags::uScale)
 			{
 				const float min = std::clamp(a_data.uMinMax[0], 0.0f, 1000.0f);
-				const float  max = std::clamp(a_data.uMinMax[1], 0.0f, 1000.0f);
+				const float max = std::clamp(a_data.uMinMax[1], 0.0f, 1000.0f);
 
-				ummd = max - min;
-				if (ummd <= 0.0f)
+				const float d = max - min;
+				if (d <= 0.0f)
 				{
 					flags &= ~Data::EffectShaderPulseFlags::uScale;
 				}
 				else
 				{
+					ummd = d;
 					umin = min;
 				}
 			}
@@ -49,27 +50,33 @@ namespace IED
 			if ((flags & Data::EffectShaderPulseFlags::vScale) == Data::EffectShaderPulseFlags::vScale)
 			{
 				const float min = std::clamp(a_data.vMinMax[0], 0.0f, 1000.0f);
-				const float  max = std::clamp(a_data.vMinMax[1], 0.0f, 1000.0f);
+				const float max = std::clamp(a_data.vMinMax[1], 0.0f, 1000.0f);
 
-				vmmd = max - min;
-				if (vmmd <= 0.0f)
+				const float d = max - min;
+				if (d <= 0.0f)
 				{
 					flags &= ~Data::EffectShaderPulseFlags::vScale;
 				}
 				else
 				{
+					vmmd = d;
 					vmin = min;
 				}
 			}
 
 			const float min = std::clamp(a_data.range[0], 0.0f, 1.0f);
-			const float  max = std::clamp(a_data.range[1], 0.0f, 1.0f);
+			const float max = std::clamp(a_data.range[1], 0.0f, 1.0f);
 
-			rmmd = max - min;
-			if (rmmd >= 0.0f && rmmd < 1.0f)
+			const auto d = max - min;
+			if (d >= 0.0f && d < 1.0f)
 			{
-				nonstdrange = true;
-				rmin        = min;
+				rmmd = d;
+				rmin = min;
+			}
+			else
+			{
+				rmmd = 1.0f;
+				rmin = 0.0f;
 			}
 		}
 
@@ -83,26 +90,24 @@ namespace IED
 			BSEffectShaderData* a_data,
 			float               a_step)
 		{
-			float v;
-
-			pos = stl::fmod(pos + a_step * ftp, PI2);
+			float v = pos = stl::fmod(pos + a_step * ftp, PI2);
 
 			switch (function)
 			{
 			case Data::EffectShaderWaveform::Sine:
-				v = (std::sinf(pos) + 1.0f) * 0.5f;
+				v = (std::sinf(v) + 1.0f) * 0.5f;
 				break;
 			case Data::EffectShaderWaveform::Cosine:
-				v = (std::cosf(pos) + 1.0f) * 0.5f;
+				v = (std::cosf(v) + 1.0f) * 0.5f;
 				break;
 			case Data::EffectShaderWaveform::Square:
-				v = pos < PI ? 1.0f : 0.0f;
+				v = v < PI ? 1.0f : 0.0f;
 				break;
 			case Data::EffectShaderWaveform::Triangle:
-				v = std::fabsf(pos - PI) / PI;
+				v = std::fabsf(v - PI) / PI;
 				break;
 			case Data::EffectShaderWaveform::Sawtooth:
-				v = pos / PI2;
+				v = v / PI2;
 				break;
 			default:
 				v = pos = 0.0f;
@@ -131,10 +136,7 @@ namespace IED
 				a_data->vScale = vmin + v * vmmd;
 			}
 
-			if (nonstdrange)
-			{
-				v = rmin + v * rmmd;
-			}
+			v = rmin + v * rmmd;
 
 			if ((f & Data::EffectShaderPulseFlags::kFillR) == Data::EffectShaderPulseFlags::kFillR)
 			{

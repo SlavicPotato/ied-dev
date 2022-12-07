@@ -13,7 +13,7 @@ namespace IED
 				UIProfileStrings::TitleNodeOverride,
 				"ied_pe_no",
 				a_controller),
-			UINodeOverrideEditorWidget<int>(a_controller),
+			UINodeOverrideEditorWidget<UIGlobalEditorDummyHandle>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
@@ -191,35 +191,35 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int                                            a_handle,
+			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
 			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int                                            a_handle,
+			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
 			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int                                          a_handle,
+			UIGlobalEditorDummyHandle                    a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
 			UpdateConfigSingle(a_params, GetEditorPanelSettings().sexSync);
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(
-			int                             a_handle,
+			UIGlobalEditorDummyHandle       a_handle,
 			const NodeOverrideUpdateParams& a_params)
 		{
 			UpdateConfig(a_params);
 		}
 
 		void UIProfileEditorNodeOverride::OnClearTransform(
-			int                                  a_handle,
+			UIGlobalEditorDummyHandle            a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -229,7 +229,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearPlacement(
-			int                                  a_handle,
+			UIGlobalEditorDummyHandle            a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -239,7 +239,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearPhysics(
-			int                                  a_handle,
+			UIGlobalEditorDummyHandle            a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -249,7 +249,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearAllTransforms(
-			int                                     a_handle,
+			UIGlobalEditorDummyHandle               a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -259,7 +259,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearAllPlacement(
-			int                                     a_handle,
+			UIGlobalEditorDummyHandle               a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())
@@ -269,7 +269,7 @@ namespace IED
 		}
 
 		void UIProfileEditorNodeOverride::OnClearAllPhysics(
-			int                                     a_handle,
+			UIGlobalEditorDummyHandle               a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
 			if (auto profile = GetCurrentProfile())

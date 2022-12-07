@@ -6,6 +6,8 @@
 
 #include "IED/UI/UIContext.h"
 
+#include "Localization/ILocalization.h"
+
 namespace IED
 {
 	namespace UI
@@ -26,15 +28,13 @@ namespace IED
 		IUIRenderTask(
 			IUI& a_interface);
 
-		virtual ~IUIRenderTask() noexcept = default;
+		virtual ~IUIRenderTask() noexcept override = default;
 
 		template <class T = UI::UIContext>
-		[[nodiscard]] inline constexpr T* GetContext() const noexcept requires
-			std::is_base_of_v<UI::UIContext, T>
+		[[nodiscard]] inline constexpr T* GetContext() const noexcept
+			requires std::is_base_of_v<UI::UIContext, T>
 		{
-			auto result = dynamic_cast<T*>(m_context.get());
-			assert(result);
-			return result;
+			return static_cast<T*>(m_context.get());
 		}
 
 		[[nodiscard]] inline UI::UIContext* GetContext() const noexcept
@@ -43,8 +43,8 @@ namespace IED
 		}
 
 		template <class T, class... Args>
-		[[nodiscard]] void InitializeContext(Args&&... a_args) requires
-			std::is_base_of_v<UI::UIContext, T>
+		[[nodiscard]] void InitializeContext(Args&&... a_args)
+			requires std::is_base_of_v<UI::UIContext, T>
 		{
 			m_context = std::make_unique<T>(*this, std::forward<Args>(a_args)...);
 			m_context->Initialize();
@@ -59,7 +59,7 @@ namespace IED
 		virtual bool Run() override;
 		virtual void PrepareGameData() override;
 		virtual void Render() override;
-		virtual void OnMouseMove(const Handlers::MouseMoveEvent &a_evn) override;
+		virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn) override;
 		virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn) override;
 
 		virtual void OnTaskStop() override;
@@ -81,7 +81,7 @@ namespace IED
 	{
 	public:
 		IUIRenderTaskMain(
-			IUI&        a_interface);
+			IUI& a_interface);
 
 		UI::UIMain& GetContext() const noexcept;
 
@@ -108,6 +108,7 @@ namespace IED
 	};
 
 	class IUI :
+		public Localization::ILocalization,
 		public IActorInfo
 	{
 		friend class IUIRenderTaskMain;
@@ -121,6 +122,19 @@ namespace IED
 		};
 
 	public:
+		template <class Tc, class... Args>
+		inline auto make_render_task(
+			Args&&... a_args)
+		{
+			auto result = std::make_shared<IUIRenderTask>(
+				*this);
+
+			result->InitializeContext<Tc>(
+				std::forward<Args>(a_args)...);
+
+			return result;
+		}
+
 		IUI()                   = default;
 		virtual ~IUI() noexcept = default;
 
@@ -134,7 +148,23 @@ namespace IED
 			return m_task;
 		}
 
+		void QueueToast(
+			const std::string&           a_message,
+			const std::optional<ImVec4>& a_color = {});
+
+		void QueueToastAsync(
+			const std::string&           a_message,
+			const std::optional<ImVec4>& a_color = {});
+
 	protected:
+		void QueueToastImpl(
+			const std::string&           a_message,
+			const std::optional<ImVec4>& a_color);
+
+		void QueueToastImpl(
+			std::string&&                a_message,
+			const std::optional<ImVec4>& a_color);
+
 		void         UIInitialize(Controller& a_controller);
 		UIOpenResult UIToggle();
 		UIOpenResult UIOpen();
@@ -144,13 +174,16 @@ namespace IED
 		bool m_safeToOpenUI{ false };
 
 	private:
+		const std::shared_ptr<IUIRenderTask>& GetOrCreateToastTask();
+
 		virtual constexpr std::recursive_mutex& UIGetLock() noexcept = 0;
-		virtual void                             OnUIOpen(){};
-		virtual void                             OnUIClose(){};
+		virtual void                            OnUIOpen(){};
+		virtual void                            OnUIClose(){};
 
 		UIOpenResult UIOpenImpl();
 
 		std::shared_ptr<IUIRenderTaskMain> m_task;
+		std::shared_ptr<IUIRenderTask>     m_toastTask;
 	};
 
 }

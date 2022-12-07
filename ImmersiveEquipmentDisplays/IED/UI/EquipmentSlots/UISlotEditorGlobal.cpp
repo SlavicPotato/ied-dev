@@ -9,9 +9,9 @@ namespace IED
 	namespace UI
 	{
 		UISlotEditorGlobal::UISlotEditorGlobal(Controller& a_controller) :
-			UISlotEditorCommon<int>(a_controller, true),
+			UISlotEditorCommon<UIGlobalEditorDummyHandle>(a_controller, true),
 			UITipsInterface(a_controller),
-			UINotificationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIGlobalConfigTypeSelectorWidget(a_controller),
@@ -128,7 +128,7 @@ namespace IED
 			m_controller.GetConfigStore().settings.mark_dirty();
 		}
 
-		Data::configSlotHolder_t& UISlotEditorGlobal::GetOrCreateConfigSlotHolder(int) const
+		Data::configSlotHolder_t& UISlotEditorGlobal::GetOrCreateConfigSlotHolder(UIGlobalEditorDummyHandle) const
 		{
 			auto& store = m_controller.GetConfigStore().active;
 
@@ -138,8 +138,8 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::MergeProfile(
-			const profileSelectorParamsSlot_t<int>& a_data,
-			const SlotProfile&                      a_profile)
+			const profileSelectorParamsSlot_t<UIGlobalEditorDummyHandle>& a_data,
+			const SlotProfile&                                            a_profile)
 		{
 			DoMerge(a_data.handle, a_profile.Data());
 
@@ -166,9 +166,9 @@ namespace IED
 		}*/
 
 		void UISlotEditorGlobal::OnBaseConfigChange(
-			int              a_handle,
-			const void*      a_params,
-			PostChangeAction a_action)
+			UIGlobalEditorDummyHandle a_handle,
+			const void*               a_params,
+			PostChangeAction          a_action)
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
@@ -191,7 +191,7 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::OnFullConfigChange(
-			int                           a_handle,
+			UIGlobalEditorDummyHandle     a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(a_handle, a_params.data);
@@ -201,7 +201,7 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::OnPriorityConfigChange(
-			int                                   a_handle,
+			UIGlobalEditorDummyHandle             a_handle,
 			const SlotPriorityConfigUpdateParams& a_params)
 		{
 			UpdateConfigSingle(
@@ -215,7 +215,7 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::OnPriorityConfigClear(
-			int                           a_handle,
+			UIGlobalEditorDummyHandle     a_handle,
 			const SlotConfigUpdateParams& a_params)
 		{
 			UpdateConfig(
@@ -230,13 +230,13 @@ namespace IED
 		}
 
 		void UISlotEditorGlobal::OnSingleSlotClear(
-			int,
+			UIGlobalEditorDummyHandle,
 			const SingleSlotConfigClearParams&)
 		{
 		}
 
 		void UISlotEditorGlobal::OnFullConfigClear(
-			int,
+			UIGlobalEditorDummyHandle,
 			const FullSlotConfigClearParams&)
 		{
 		}
@@ -289,7 +289,7 @@ namespace IED
 			};
 		}
 
-		entrySlotData_t UISlotEditorGlobal::GetCurrentData(int)
+		entrySlotData_t UISlotEditorGlobal::GetCurrentData(UIGlobalEditorDummyHandle)
 		{
 			return m_data;
 		}

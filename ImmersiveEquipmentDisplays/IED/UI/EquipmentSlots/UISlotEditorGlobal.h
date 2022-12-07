@@ -6,6 +6,8 @@
 #include "IED/Data.h"
 
 #include "IED/UI/Widgets/UIGlobalConfigTypeSelectorWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
+
 #include "Widgets/UISlotEditorWidget.h"
 
 namespace IED
@@ -15,8 +17,8 @@ namespace IED
 	namespace UI
 	{
 		class UISlotEditorGlobal :
-			UIGlobalConfigTypeSelectorWidget,
-			public UISlotEditorCommon<int>
+			public UISlotEditorCommon<UIGlobalEditorDummyHandle>,
+			UIGlobalConfigTypeSelectorWidget
 		{
 		public:
 			UISlotEditorGlobal(Controller& a_controller);
@@ -29,7 +31,7 @@ namespace IED
 			virtual void EditorQueueUpdateCurrent() override;
 
 		private:
-			Data::configSlotHolder_t& GetOrCreateConfigSlotHolder(int) const override;
+			Data::configSlotHolder_t& GetOrCreateConfigSlotHolder(UIGlobalEditorDummyHandle) const override;
 
 			virtual bool ShowConfigClassIndicator() const override;
 			virtual bool PermitDeletion() const override;
@@ -43,37 +45,37 @@ namespace IED
 			virtual void OnEditorPanelSettingsChange() override;
 
 			virtual void MergeProfile(
-				const profileSelectorParamsSlot_t<int>& a_data,
-				const SlotProfile&                      a_profile) override;
+				const profileSelectorParamsSlot_t<UIGlobalEditorDummyHandle>& a_data,
+				const SlotProfile&                                            a_profile) override;
 
 			/*virtual void ApplyProfile(
 				const profileSelectorParamsSlot_t<int>& a_data,
 				const SlotProfile& a_profile) override;*/
 
 			virtual void OnBaseConfigChange(
-				int              a_handle,
-				const void*      a_params,
-				PostChangeAction a_action) override;
+				UIGlobalEditorDummyHandle a_handle,
+				const void*               a_params,
+				PostChangeAction          a_action) override;
 
 			virtual void
 				OnFullConfigChange(
-					int                           a_handle,
+					UIGlobalEditorDummyHandle     a_handle,
 					const SlotConfigUpdateParams& a_params) override;
 
 			virtual void OnPriorityConfigChange(
-				int                                   a_handle,
+				UIGlobalEditorDummyHandle             a_handle,
 				const SlotPriorityConfigUpdateParams& a_params) override;
 
 			virtual void OnPriorityConfigClear(
-				int                           a_handle,
+				UIGlobalEditorDummyHandle     a_handle,
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void OnSingleSlotClear(
-				int                                a_handle,
+				UIGlobalEditorDummyHandle          a_handle,
 				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int                              a_handle,
+				UIGlobalEditorDummyHandle        a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnSexChanged(
@@ -88,7 +90,7 @@ namespace IED
 			void UpdateData(entrySlotData_t& a_data);
 
 			virtual entrySlotData_t GetCurrentData(
-				int a_handle) override;
+				UIGlobalEditorDummyHandle a_handle) override;
 
 			entrySlotData_t m_data;
 

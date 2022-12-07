@@ -1,12 +1,11 @@
 #pragma once
 
+#include "IED/UI/EquipmentSlots/UISlotEditorBase.h"
+#include "IED/UI/Profile/UIProfileEditorBase.h"
 #include "IED/UI/UICommon.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "IED/GlobalProfileManager.h"
-
-#include "IED/UI/EquipmentSlots/UISlotEditorBase.h"
-
-#include "IED/UI/Profile/UIProfileEditorBase.h"
 
 namespace IED
 {
@@ -16,7 +15,7 @@ namespace IED
 	{
 		class UIProfileEditorSlot :
 			public UIProfileEditorBase<SlotProfile>,
-			public UISlotEditorBase<int>
+			public UISlotEditorBase<UIGlobalEditorDummyHandle>
 		{
 		public:
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorSlot;
@@ -77,29 +76,29 @@ namespace IED
 			virtual void OnCollapsibleStatesUpdate();
 
 			virtual void OnBaseConfigChange(
-				int,
+				UIGlobalEditorDummyHandle,
 				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void
 				OnFullConfigChange(
-					int,
+					UIGlobalEditorDummyHandle,
 					const SlotConfigUpdateParams& a_params) override;
 
 			virtual void OnPriorityConfigChange(
-				int                                   a_handle,
+				UIGlobalEditorDummyHandle          a_handle,
 				const SlotPriorityConfigUpdateParams& a_params) override;
 
 			virtual void OnPriorityConfigClear(
-				int                           a_handle,
+				UIGlobalEditorDummyHandle  a_handle,
 				const SlotConfigUpdateParams& a_params) override;
 
 			virtual void OnSingleSlotClear(
-				int,
+				UIGlobalEditorDummyHandle,
 				const SingleSlotConfigClearParams& a_params) override;
 
 			virtual void OnFullConfigClear(
-				int                              a_handle,
+				UIGlobalEditorDummyHandle     a_handle,
 				const FullSlotConfigClearParams& a_params) override;
 
 			bool CreateSlot(Data::ObjectSlot a_slot);

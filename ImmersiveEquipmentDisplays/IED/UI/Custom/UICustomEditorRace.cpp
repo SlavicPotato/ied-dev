@@ -18,7 +18,7 @@ namespace IED
 			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UINotificationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UITransformSliderWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
 			UISimpleStringSetWidget(a_controller),

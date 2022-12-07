@@ -17,7 +17,7 @@ namespace IED
 			UICustomEditorWidget<int>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
-			UINotificationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UITransformSliderWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),

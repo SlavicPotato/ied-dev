@@ -192,9 +192,6 @@
     <Filter Include="Source\IED\JSONParsers\Config\ExtraNode">
       <UniqueIdentifier>{62c4bf7a-82fa-426d-9018-69d8bf63e510}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Drivers\RTest">
-      <UniqueIdentifier>{ba3226e3-0478-4fc1-8a21-8185956e8dbf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Drivers\UI">
       <UniqueIdentifier>{d751ccdf-0775-4344-a968-5d1d351edae7}</UniqueIdentifier>
     </Filter>
@@ -248,6 +245,12 @@
     </Filter>
     <Filter Include="Source\IED\Physics">
       <UniqueIdentifier>{57b24525-691a-46ed-9380-4499f43da175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\Controller\UI">
+      <UniqueIdentifier>{836ffc83-a556-4def-93de-230d12e9d1fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\DisplayManagement">
+      <UniqueIdentifier>{a59111bc-e01d-4174-aa29-21eed3335f50}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -405,9 +408,6 @@
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\ISound.h">
-      <Filter>Source\IED\Controller</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Controller\IUI.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\Controller.h">
@@ -572,7 +572,7 @@
     <ClInclude Include="IED\Parsers\JSONSettingsImportExport.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\UINotificationInterface.h">
+    <ClInclude Include="IED\UI\UIPopupInterface.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIEditorPanelSettings.h">
@@ -1304,9 +1304,6 @@
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClInclude>
-    <ClInclude Include="Drivers\RTest\RTest.h">
-      <Filter>Source\Drivers\RTest</Filter>
-    </ClInclude>
     <ClInclude Include="IED\D3D\D3DAssets.h">
       <Filter>Source\IED\D3D</Filter>
     </ClInclude>
@@ -1459,9 +1456,6 @@
     </ClInclude>
     <ClInclude Include="ImGui\Styles\enemymouse.h">
       <Filter>Source\ImGui\Styles</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\UI\UIDisplayManagement.h">
-      <Filter>Source\IED\UI</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UIKeyedInputLockReleaseHandler.h">
       <Filter>Source\IED\UI</Filter>
@@ -1703,6 +1697,21 @@
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideWidgetCommon.h">
       <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIToast.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIMiscTextInterface.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IUI.h">
+      <Filter>Source\IED\Controller\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\IUINotification.h">
+      <Filter>Source\IED\Controller\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIDisplayManagement.h">
+      <Filter>Source\IED\UI\DisplayManagement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -1721,9 +1730,6 @@
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\ISound.cpp">
-      <Filter>Source\IED\Controller</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Controller\IUI.cpp">
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigMapSlotParser.cpp">
@@ -1954,7 +1960,7 @@
     <ClCompile Include="IED\Parsers\JSONSettingsImportExport.cpp">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
-    <ClCompile Include="IED\UI\UINotificationInterface.cpp">
+    <ClCompile Include="IED\UI\UIPopupInterface.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIEditorPanelSettings.cpp">
@@ -2407,9 +2413,6 @@
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\ExtraNode</Filter>
     </ClCompile>
-    <ClCompile Include="Drivers\RTest\RTest.cpp">
-      <Filter>Source\Drivers\RTest</Filter>
-    </ClCompile>
     <ClCompile Include="IED\D3D\D3DAssets.cpp">
       <Filter>Source\IED\D3D</Filter>
     </ClCompile>
@@ -2519,9 +2522,6 @@
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UIAllowedModelTypes.cpp">
-      <Filter>Source\IED\UI</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\UI\UIDisplayManagement.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UIContext.cpp">
@@ -2712,6 +2712,21 @@
     </ClCompile>
     <ClCompile Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.cpp">
       <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIToast.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIMiscTextInterface.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IUI.cpp">
+      <Filter>Source\IED\Controller\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\IUINotification.cpp">
+      <Filter>Source\IED\Controller\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIDisplayManagement.cpp">
+      <Filter>Source\IED\UI\DisplayManagement</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

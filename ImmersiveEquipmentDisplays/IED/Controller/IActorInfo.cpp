@@ -118,7 +118,7 @@ namespace IED
 			{
 				a_out.outfit.first = npc->defaultOutfit ?
 				                         npc->defaultOutfit->formID :
-                                         Game::FormID{};
+				                         Game::FormID{};
 			}
 			else
 			{
@@ -152,7 +152,21 @@ namespace IED
 			a_out.equippedTypes.second = 0;
 		}
 
-		a_out.weight   = a_actor->GetWeight();
+		a_out.weight = a_actor->GetWeight();
+
+		auto containerChanges = a_actor->extraData.Get<ExtraContainerChanges>();
+
+		if (containerChanges && containerChanges->data)
+		{
+			a_out.inventoryWeight.emplace(
+				containerChanges->data->totalWeight,
+				containerChanges->data->armorWeight);
+		}
+		else
+		{
+			a_out.inventoryWeight.reset();
+		}
+
 		a_out.attached = a_actor->IsParentCellAttached();
 		a_out.pos      = a_actor->pos;
 		a_out.rot      = a_actor->rot;
@@ -225,7 +239,7 @@ namespace IED
 		a_out.female  = a_npc->GetSex() == 1;
 		a_out.race    = a_npc->race ?
 		                    a_npc->race->formID :
-                            0;
+		                    0;
 		a_out.weight  = a_npc->GetWeight();
 
 		a_out.ts = IPerfCounter::Query();
@@ -373,7 +387,7 @@ namespace IED
 	void IActorInfo::UpdateActorInfo(
 		const ActorObjectHolder& a_objectHolder)
 	{
-		auto handle = a_objectHolder.GetHandle();
+		const auto handle = a_objectHolder.GetHandle();
 
 		NiPointer<TESObjectREFR> ref;
 		if (!handle.Lookup(ref))
@@ -387,7 +401,7 @@ namespace IED
 			return;
 		}
 
-		auto r = m_actorInfo.try_emplace(actor->formID);
+		const auto r = m_actorInfo.try_emplace(actor->formID);
 
 		r.first->second.active = true;
 
@@ -413,9 +427,9 @@ namespace IED
 			return false;
 		}
 
-		auto e = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
+		const auto r = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
 
-		FillNPCInfoEntry(npc, *e.first->second);
+		FillNPCInfoEntry(npc, *r.first->second);
 
 		return true;
 	}
@@ -428,7 +442,7 @@ namespace IED
 			return false;
 		}
 
-		auto r = m_actorInfo.try_emplace(actor->formID);
+		const auto r = m_actorInfo.try_emplace(actor->formID);
 
 		FillActorInfoEntry(actor, r.first->second, true);
 

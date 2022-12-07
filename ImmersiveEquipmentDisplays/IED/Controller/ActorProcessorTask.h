@@ -25,8 +25,8 @@ namespace IED
 	struct ObjectEntryBase;
 
 	class ActorProcessorTask :
-		public TaskDelegateFixed,
-		public IFirstPersonState
+		public IFirstPersonState,
+		public TaskDelegateFixed
 	{
 		struct animUpdateData_t
 		{

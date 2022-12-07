@@ -24,12 +24,12 @@ namespace IED
 
 			if (formParser.Parse(data["equip"], tmp))
 			{
-				a_out.first = tmp;
+				a_out.first.emplace(tmp);
 			}
 
 			if (formParser.Parse(data["unequip"], tmp))
 			{
-				a_out.second = tmp;
+				a_out.second.emplace(tmp);
 			}
 
 			return true;

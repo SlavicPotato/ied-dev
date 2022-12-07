@@ -116,10 +116,6 @@ namespace IED
 				return;
 			}
 
-			m_imInitialized = true;
-
-			Message("ImGui initialized");
-
 			m_pfnWndProc = reinterpret_cast<WNDPROC>(::SetWindowLongPtrA(
 				a_evn.m_pSwapChainDesc.OutputWindow,
 				GWLP_WNDPROC,
@@ -131,6 +127,10 @@ namespace IED
 					"[0x%llX] SetWindowLongPtrA failed",
 					a_evn.m_pSwapChainDesc.OutputWindow);
 			}
+
+			m_imInitialized.store(true, std::memory_order_relaxed);
+
+			Message("ImGui initialized");
 		}
 
 		void UI::Receive(const IDXGISwapChainPresent& a_evn)
@@ -142,10 +142,12 @@ namespace IED
 
 			const std::lock_guard lock(m_lock);
 
-			if (!m_imInitialized)
+			if (!m_imInitialized.load(std::memory_order_relaxed))
 			{
 				return;
 			}
+
+			m_drawing = true;
 
 			m_uiRenderPerf.timer.Begin();
 
@@ -230,6 +232,22 @@ namespace IED
 				ProcessReleaseQueue();
 			}
 
+			m_drawing = false;
+
+			if (!m_addQueue.empty())
+			{
+				for (auto& e : m_addQueue)
+				{
+					auto r = m_Instance.m_drawTasks.emplace(e.first, std::move(e.second));
+					if (r.second)
+					{
+						m_Instance.OnTaskAdd(r.first->second.get());
+					}
+				}
+
+				m_addQueue.clear();
+			}
+
 			m_uiRenderPerf.timer.End(m_uiRenderPerf.current);
 		}
 
@@ -258,7 +276,7 @@ namespace IED
 
 			const std::lock_guard lock(m_lock);
 
-			if (!m_imInitialized)
+			if (!m_imInitialized.load(std::memory_order_relaxed))
 			{
 				return;
 			}
@@ -299,7 +317,7 @@ namespace IED
 
 			const std::lock_guard lock(m_lock);
 
-			if (!m_imInitialized)
+			if (!m_imInitialized.load(std::memory_order_relaxed))
 			{
 				return;
 			}
@@ -329,7 +347,7 @@ namespace IED
 
 			const std::lock_guard lock(m_lock);
 
-			if (!m_imInitialized)
+			if (!m_imInitialized.load(std::memory_order_relaxed))
 			{
 				return;
 			}
@@ -382,6 +400,26 @@ namespace IED
 			});
 		}
 
+		std::shared_ptr<Tasks::UIRenderTaskBase> UI::GetTask(std::int32_t a_id)
+		{
+			const std::lock_guard lock(m_Instance.m_lock);
+
+			if (!m_Instance.m_imInitialized.load(std::memory_order_relaxed))
+			{
+				return {};
+			}
+
+			auto it = m_Instance.m_drawTasks.find(a_id);
+			if (it != m_Instance.m_drawTasks.end())
+			{
+				return it->second;
+			}
+			else
+			{
+				return {};
+			}
+		}
+
 		void UI::QueueRemoveTask(std::int32_t a_id)
 		{
 			const std::lock_guard lock(m_Instance.m_lock);
@@ -391,6 +429,8 @@ namespace IED
 			{
 				it->second->m_stopMe = true;
 			}
+
+			m_Instance.m_addQueue.erase(a_id);
 		}
 
 		void UI::EvaluateTaskState()
@@ -621,6 +661,13 @@ namespace IED
 
 				ImGui::SaveIniSettingsToDisk(PATHS::IMGUI_INI);
 			});
+		}
+
+		bool UI::AddTask(
+			std::int32_t                                    a_id,
+			const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task)
+		{
+			return m_Instance.AddTaskImpl(a_id, a_task);
 		}
 
 		void UI::OnTaskAdd(Tasks::UIRenderTaskBase* a_task)
@@ -1077,7 +1124,7 @@ namespace IED
 			    langFlags.test(GlyphPresetFlags::kCyrilic) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kCyrilic))
 			{
-				a_builder.AddRanges(get_glyph_ranges_cyrilic());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_cyrilic());
 			}
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kJapanese) ||
@@ -1112,35 +1159,35 @@ namespace IED
 			    langFlags.test(GlyphPresetFlags::kLatinFull) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kLatinFull))
 			{
-				a_builder.AddRanges(get_glyph_ranges_latin_full());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_latin_full());
 			}
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kGreek) ||
 			    langFlags.test(GlyphPresetFlags::kGreek) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kGreek))
 			{
-				a_builder.AddRanges(get_glyph_ranges_greek());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_greek());
 			}
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kArabic) ||
 			    langFlags.test(GlyphPresetFlags::kArabic) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kArabic))
 			{
-				a_builder.AddRanges(get_glyph_ranges_arabic());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_arabic());
 			}
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kArrows) ||
 			    langFlags.test(GlyphPresetFlags::kArrows) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kArrows))
 			{
-				a_builder.AddRanges(get_glyph_ranges_arrows());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_arrows());
 			}
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kCommon) ||
 			    langFlags.test(GlyphPresetFlags::kCommon) ||
 			    m_fontUpdateData.extraGlyphPresets.test(GlyphPresetFlags::kCommon))
 			{
-				a_builder.AddRanges(get_glyph_ranges_common());
+				a_builder.AddRanges(IGlyphData::get_glyph_ranges_common());
 			}
 
 			AddFontRanges(a_builder, a_data.glyph_ranges);
@@ -1278,6 +1325,49 @@ namespace IED
 			io.ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
 
 			m_suspended.store(true, std::memory_order_relaxed);
+		}
+
+		bool UI::AddTaskImpl(
+			std::int32_t                                    a_id,
+			const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task)
+		{
+			assert(a_task);
+
+			const std::lock_guard lock(m_lock);
+
+			if (!m_imInitialized.load(std::memory_order_relaxed))
+			{
+				return false;
+			}
+
+			if (m_drawing)
+			{
+				if (m_drawTasks.contains(a_id))
+				{
+					return false;
+				}
+				else
+				{
+					m_addQueue.insert_or_assign(
+						a_id,
+						a_task);
+
+					return true;
+				}
+			}
+
+			const auto r = m_drawTasks.emplace(
+				a_id,
+				a_task);
+
+			if (!r.second)
+			{
+				return false;
+			}
+
+			OnTaskAdd(r.first->second.get());
+
+			return true;
 		}
 
 	}

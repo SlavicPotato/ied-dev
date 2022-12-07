@@ -13,6 +13,8 @@
 
 #include "IED/Controller/Controller.h"
 
+#include "IED/UI/Widgets/UIWidgetCommonStrings.h"
+
 //#include <ext/Clouds.h>
 //#include <ext/Sky.h>
 
@@ -51,7 +53,7 @@ namespace IED
 			}
 
 			ImGui::PushID(WINDOW_ID);
-
+			
 			if (auto& queued = m_data->queuedActor)
 			{
 				const auto actor = *queued;
@@ -150,6 +152,11 @@ namespace IED
 			}
 
 			m_data.reset();
+		}
+
+		bool I3DIMain::OnWantOpenStateChange(bool a_newState)
+		{
+			return m_controller.CPUHasSSE41();
 		}
 
 		void I3DIMain::OnMouseMove(const Handlers::MouseMoveEvent& a_evn)

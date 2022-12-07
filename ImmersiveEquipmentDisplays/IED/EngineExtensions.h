@@ -143,7 +143,6 @@ namespace IED
 			NiNode*   a_object,
 			ModelType a_modelType,
 			bool      a_leftWeapon,
-			bool      a_shield,
 			bool      a_dropOnDeath,
 			bool      a_removeScabbards,
 			bool      a_keepTorchFlame,
@@ -172,7 +171,7 @@ namespace IED
 		inline static const auto m_unkglob0           = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
-		inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
+		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShrinkToSize         = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 
 		// BSDismemberSkinInstance

@@ -19,8 +19,8 @@ namespace IED
 	namespace UI
 	{
 		class UIDisplayManagement :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			UIExportFilterWidget,
 			public virtual UILocalizationInterface
 		{
@@ -61,7 +61,7 @@ namespace IED
 				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
 			}
 
-			[[nodiscard]] inline auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
+			[[nodiscard]] inline constexpr auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
 			{
 				assert(stl::underlying(a_id) < NUM_PANELS);
 
@@ -69,7 +69,7 @@ namespace IED
 			}
 
 			template <class T, class... Args>
-			void CreateEditorPanel(Args&&... a_args)  //
+			constexpr void CreateEditorPanel(Args&&... a_args)  //
 				requires(std::is_base_of_v<UIEditorTabPanel, T>)
 			{
 				static_assert(stl::underlying(T::PANEL_ID) < NUM_PANELS);
@@ -88,7 +88,7 @@ namespace IED
 				UIDisplayManagementEditorPanel::Slot
 			};
 
-			char m_currentTitle[128]{ 0 };
+			char m_currentTitle[96];
 
 			Controller& m_controller;
 		};

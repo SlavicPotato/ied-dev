@@ -11,6 +11,8 @@ namespace IED
 {
 	namespace UI
 	{
+		using UIGlobalEditorDummyHandle = Game::FormID;
+
 		enum class PostChangeAction
 		{
 			None,
@@ -61,6 +63,7 @@ namespace IED
 		}
 
 		void DrawConfigClassInUse(Data::ConfigClass a_class);
+
 
 	}
 }

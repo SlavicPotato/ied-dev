@@ -5,6 +5,7 @@ namespace IED
 	enum class ModelType
 	{
 		kArmor,
+		kShield,
 		kWeapon,
 		kMisc,
 		kLight,

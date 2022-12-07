@@ -20,7 +20,7 @@ namespace IED
 			processParams_t&                              a_params,
 			const Data::configConditionalVariablesList_t& a_list);
 
-		static Game::FormID EvaluateLastEquippedForm(
+		static Game::FormID GetLastEquippedForm(
 			processParams_t&                                  a_params,
 			const Data::configConditionalVariableValueData_t& a_data);
 

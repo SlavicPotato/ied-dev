@@ -8,7 +8,6 @@
 
 #include "IED/UI/Profile/UIProfileEditorBase.h"
 
-
 namespace IED
 {
 	class Controller;
@@ -23,7 +22,7 @@ namespace IED
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorCustom;
 
 			UIProfileEditorCustom(
-				Controller&              a_controller);
+				Controller& a_controller);
 
 			virtual void Initialize() override;
 
@@ -103,7 +102,7 @@ namespace IED
 
 			//virtual WindowLayoutData GetWindowDimensions() const;
 
-			Controller&              m_controller;
+			Controller& m_controller;
 		};
 	}
 }

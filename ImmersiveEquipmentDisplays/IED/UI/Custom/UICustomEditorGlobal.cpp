@@ -10,10 +10,10 @@ namespace IED
 	{
 		UICustomEditorGlobal::UICustomEditorGlobal(
 			Controller& a_controller) :
-			UICustomEditorCommon<int>(a_controller),
+			UICustomEditorCommon<UIGlobalEditorDummyHandle>(a_controller),
 			UITipsInterface(a_controller),
 			UILocalizationInterface(a_controller),
-			UINotificationInterface(a_controller),
+			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UITransformSliderWidget(a_controller),
 			UIFormTypeSelectorWidget(a_controller),
@@ -69,7 +69,7 @@ namespace IED
 		}
 
 		Data::configCustomHolder_t& UICustomEditorGlobal::GetOrCreateConfigSlotHolder(
-			int a_handle) const
+			UIGlobalEditorDummyHandle a_handle) const
 		{
 			auto& data = m_controller.GetConfigStore().active.custom.GetGlobalData()[0];
 			auto& sh   = StringHolder::GetSingleton();
@@ -129,8 +129,8 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::ApplyProfile(
-			const profileSelectorParamsCustom_t<int>& a_data,
-			const CustomProfile&                      a_profile)
+			const profileSelectorParamsCustom_t<UIGlobalEditorDummyHandle>& a_data,
+			const CustomProfile&                                                a_profile)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_data.handle);
 
@@ -145,8 +145,8 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::MergeProfile(
-			const profileSelectorParamsCustom_t<int>& a_data,
-			const CustomProfile&                      a_profile)
+			const profileSelectorParamsCustom_t<UIGlobalEditorDummyHandle>& a_data,
+			const CustomProfile&                                                a_profile)
 		{
 			auto& profileData = a_profile.Data();
 
@@ -165,9 +165,9 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::OnBaseConfigChange(
-			int              a_handle,
-			const void*      a_params,
-			PostChangeAction a_action)
+			UIGlobalEditorDummyHandle a_handle,
+			const void*                   a_params,
+			PostChangeAction              a_action)
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
 
@@ -198,7 +198,7 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::OnFullConfigChange(
-			int                             a_handle,
+			UIGlobalEditorDummyHandle   a_handle,
 			const CustomConfigUpdateParams& a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
@@ -211,8 +211,8 @@ namespace IED
 		}
 
 		bool UICustomEditorGlobal::OnCreateNew(
-			int                          a_handle,
-			const CustomConfigNewParams& a_params)
+			UIGlobalEditorDummyHandle a_handle,
+			const CustomConfigNewParams&  a_params)
 		{
 			auto& conf = GetOrCreateConfigSlotHolder(a_handle);
 
@@ -227,7 +227,7 @@ namespace IED
 		}
 
 		void UICustomEditorGlobal::OnErase(
-			int                            a_handle,
+			UIGlobalEditorDummyHandle  a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
 			auto& data = m_controller.GetConfigStore().active.custom.GetGlobalData()[0];
@@ -242,7 +242,7 @@ namespace IED
 		}
 
 		bool UICustomEditorGlobal::OnRename(
-			int                             a_handle,
+			UIGlobalEditorDummyHandle   a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			if (!DoConfigRename(a_handle, a_params))

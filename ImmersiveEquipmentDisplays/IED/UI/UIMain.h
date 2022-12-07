@@ -71,7 +71,9 @@ namespace IED
 
 			[[nodiscard]] inline constexpr auto& GetFormBrowser() noexcept
 			{
-				return GetChild<UIFormBrowser>();
+				auto result = GetChild<UIFormBrowser>();
+				assert(result);
+				return *result;
 			}
 
 			[[nodiscard]] inline constexpr auto& GetFormLookupCache() noexcept
@@ -87,32 +89,28 @@ namespace IED
 			}
 
 			template <class T>
-			[[nodiscard]] inline constexpr auto& GetChildContext() const noexcept
+			[[nodiscard]] inline constexpr auto GetChildContext() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
-				return *m_childWindows[stl::underlying(T::CHILD_ID)];
+				return m_childWindows[stl::underlying(T::CHILD_ID)].get();
 			}
 
-			[[nodiscard]] inline auto& GetChildContext(ChildWindowID a_id) const noexcept
+			[[nodiscard]] inline auto* GetChildContext(ChildWindowID a_id) const noexcept
 			{
 				assert(a_id < ChildWindowID::kMax);
 
-				return *m_childWindows[stl::underlying(a_id)];
+				return m_childWindows[stl::underlying(a_id)].get();
 			}
 
 			template <class T>
-			[[nodiscard]] inline constexpr T& GetChild() const noexcept
+			[[nodiscard]] inline constexpr T* GetChild() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
 				auto ptr = m_childWindows[stl::underlying(T::CHILD_ID)].get();
-				assert(ptr);
 
-				auto result = dynamic_cast<T*>(ptr);
-				assert(result);
-
-				return *result;
+				return static_cast<T*>(ptr);
 			}
 
 		private:
@@ -134,16 +132,19 @@ namespace IED
 
 			bool HasOpenChild() const;
 
+			template <class T, class Te>
+			void DrawContextMenuItem(Te a_title, const char* a_id);
+
 			virtual bool ILRHGetCurrentControlLockSetting() override;
 			virtual bool ILRHGetCurrentFreezeTimeSetting() override;
 
 			template <class T, class... Args>
-			void CreateChild(Args&&... a_args)  //
+			constexpr void CreateChild(Args&&... a_args)  //
 				requires(std::is_base_of_v<UIContext, T>)
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
-				assert(m_childWindows[stl::underlying(T::CHILD_ID)] == nullptr);
+				assert(!m_childWindows[stl::underlying(T::CHILD_ID)]);
 
 				m_childWindows[stl::underlying(T::CHILD_ID)] = std::make_unique<T>(std::forward<Args>(a_args)...);
 			}
@@ -153,21 +154,38 @@ namespace IED
 					std::underlying_type_t<ChildWindowID>,
 					std::uint32_t>);
 
-			std::array<
+			using child_window_container_type = std::array<
 				std::unique_ptr<UIContext>,
-				stl::underlying(ChildWindowID::kMax)>
-				m_childWindows;
+				stl::underlying(ChildWindowID::kMax)>;
 
-			UIFormInfoCache m_formLookupCache;
+			child_window_container_type m_childWindows;
 
-			UIPopupQueue m_popupQueue;
-
-			bool                         m_seenOpenChildThisSession{ false };
+			UIFormInfoCache              m_formLookupCache;
+			UIPopupQueue                 m_popupQueue;
 			std::optional<ChildWindowID> m_lastClosedChild;
+			bool                         m_seenOpenChildThisSession{ false };
 
 			Tasks::UIRenderTaskBase& m_owner;
 			Controller&              m_controller;
 		};
+
+		template <class T, class Te>
+		void UIMain::DrawContextMenuItem(Te a_title, const char* a_id)
+		{
+			auto context = GetChildContext<T>();
+
+			if (ImGui::MenuItem(
+					LS(a_title, a_id),
+					nullptr,
+					context && context->IsContextOpen(),
+					static_cast<bool>(context)))
+			{
+				if (context)
+				{
+					context->ToggleOpenState();
+				}
+			}
+		}
 
 	}
 }

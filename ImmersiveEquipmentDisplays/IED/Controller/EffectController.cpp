@@ -61,8 +61,8 @@ namespace IED
 		constexpr auto confTimeTick = 1.0f / 30.0f;
 		constexpr auto maxSubSteps  = 15.0f;
 
-		m_averageInterval = m_averageInterval * 0.875f + a_interval * 0.125f;
-		float timeTick    = std::min(m_averageInterval, confTimeTick);
+		m_averageInterval    = m_averageInterval * 0.875f + a_interval * 0.125f;
+		const float timeTick = std::min(m_averageInterval, confTimeTick);
 
 		m_timeAccum += a_interval;
 
@@ -92,7 +92,7 @@ namespace IED
 		const auto stepMul =
 			a_holder.GetActorFormID() == Data::IData::GetPlayerRefID() ?
 				a_stepMuls.player :
-                a_stepMuls.npc;
+				a_stepMuls.npc;
 
 		if (ShaderProcessingEnabled())
 		{
@@ -136,6 +136,15 @@ namespace IED
 		const PhysUpdateData&    a_physUpdData,
 		const ActorObjectHolder& a_holder) noexcept
 	{
+		constexpr unsigned int ftz_daz_mask = _MM_FLUSH_ZERO_MASK | _MM_DENORMALS_ZERO_MASK;
+		constexpr unsigned int ftz_daz_on   = _MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON;
+
+		const auto current_csr = _mm_getcsr();
+
+		const auto ftz_daz_bk = current_csr & ftz_daz_mask;
+
+		_mm_setcsr((current_csr & ~ftz_daz_mask) | ftz_daz_on);
+
 		a_holder.SimReadTransforms(a_physUpdData.timeAccum * a_stepMul);
 
 		auto timeStep = a_physUpdData.timeStep;
@@ -150,6 +159,8 @@ namespace IED
 		a_holder.SimUpdate(timeStep * a_stepMul);
 
 		a_holder.SimWriteTransforms();
+
+		_mm_setcsr((_mm_getcsr() & ~ftz_daz_mask) | ftz_daz_bk);
 	}
 
 	void EffectController::UpdateShadersOnDisplay(
@@ -179,7 +190,7 @@ namespace IED
 			{
 				auto& object = e.flags.test(EffectShaderData::EntryFlags::kTargetRoot) ?
 				                   a_state.nodes.rootNode :
-                                   a_state.nodes.object;
+				                   a_state.nodes.object;
 
 				ProcessNiObjectTree(object, e);
 			}
@@ -207,15 +218,15 @@ namespace IED
 			return;
 		}
 
-		auto& object = biped->get_object(a_data.bipedObject).object;
+		const auto& object = biped->get_object(a_data.bipedObject).object;
 		if (!object)
 		{
 			return;
 		}
 
-		bool thirdPerson = a_actor->GetBiped1(false) == biped;
+		const bool thirdPerson = a_actor->GetBiped1(false) == biped;
 
-		auto& sheathNode = a_data.GetSheathNode(!thirdPerson);
+		const auto& sheathNode = a_data.GetSheathNode(!thirdPerson);
 
 		for (auto& e : a_data.data)
 		{
@@ -224,7 +235,7 @@ namespace IED
 			if (sheathNode &&
 			    e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
 			{
-				if (object->m_parent == sheathNode)
+				if (object->m_parent == sheathNode.get())
 				{
 					target = object->m_parent;
 				}
@@ -245,7 +256,7 @@ namespace IED
 		Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
 			if (auto& effect = a_geometry->m_spEffectState)
 			{
-				if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
+				if (auto shaderProp = ::NRTTI<BSShaderProperty>()(effect.get()))
 				{
 					if (!a_entry.targetNodes.empty())
 					{
@@ -257,7 +268,7 @@ namespace IED
 
 					const bool trySet = a_entry.flags.test(EffectShaderData::EntryFlags::kForce) ?
 					                        shaderProp->effectData != a_entry.shaderData :
-                                            !shaderProp->effectData;
+					                        !shaderProp->effectData;
 
 					if (trySet)
 					{

@@ -2,6 +2,7 @@
 
 #include "ActorObjectHolder.h"
 
+#include "INodeOverride.h"
 #include "IObjectManager.h"
 #include "ObjectManagerData.h"
 
@@ -87,7 +88,7 @@ namespace IED
 								 IPerfCounter::T(interval / 20),
 								 std::memory_order_relaxed) %
 		                         IPerfCounter::T(interval);
-		
+
 		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_HIGH);
 
 		m_nextHFStateCheck = m_created +
@@ -137,20 +138,21 @@ namespace IED
 			                           FindNode(
 										   m_root1p,
 										   BSStringHolder::GetSingleton()->m_npcroot) :
-                                       nullptr;
+			                           nullptr;
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
-					auto r = m_cmeNodes.try_emplace(
+					const auto r = m_cmeNodes.try_emplace(
 						e->first,
 						node,
 						GetCachedOrZeroTransform(e->second.name));
 
 					if (a_syncToFirstPersonSkeleton && npcroot1p)
 					{
-						if (node = FindNode(npcroot1p, e->second.bsname))
+						node = FindNode(npcroot1p, e->second.bsname);
+						if (node)
 						{
 							r.first->second.firstPerson = {
 								node,
@@ -181,7 +183,7 @@ namespace IED
 					{
 						auto node1p = npcroot1p ?
 						                  FindNode(npcroot1p, e->second.bsname) :
-                                          nullptr;
+						                  nullptr;
 
 						m_weapNodes.emplace_back(
 							e->first,
@@ -192,7 +194,7 @@ namespace IED
 							e->second.nodeID,
 							e->second.vanilla ?
 								GetCachedTransform(e->first) :
-                                std::optional<NiTransform>{});
+								std::optional<NiTransform>{});
 					}
 				}
 			}
@@ -401,7 +403,7 @@ namespace IED
 			auto it = cache->find(a_name);
 			if (it != cache->end())
 			{
-				return it->second.transform;
+				return it->second;
 			}
 		}
 
@@ -418,7 +420,7 @@ namespace IED
 			auto it = cache->find(a_name);
 			if (it != cache->end())
 			{
-				return it->second.transform;
+				return it->second;
 			}
 		}
 
@@ -434,7 +436,7 @@ namespace IED
 			auto it = cache->find(a_name);
 			if (it != cache->end())
 			{
-				return it->second.transform;
+				return it->second;
 			}
 		}
 
@@ -466,7 +468,7 @@ namespace IED
 			return r.first->second;
 		}
 
-		float value = m_owner.GetRandomPercent();
+		const auto value = m_owner.GetRandomPercent();
 
 		r.first->second = value;
 
@@ -490,7 +492,7 @@ namespace IED
 		auto it = m_nodeMonitorEntries.find(a_uid);
 		return it != m_nodeMonitorEntries.end() ?
 		           it->second.IsPresent() :
-                   false;
+		           false;
 	}
 
 	bool ActorObjectHolder::GetSheathNodes(
@@ -818,8 +820,8 @@ namespace IED
 			auto it = cache->find(a_entry.src);
 
 			node->m_localTransform = it != cache->end() ?
-			                             it->second.transform :
-                                         source->m_localTransform;
+			                             it->second :
+			                             source->m_localTransform;
 		}
 		else
 		{
@@ -831,9 +833,9 @@ namespace IED
 		UpdateDownwardPass(node);
 	}
 
-	void ActorObjectHolder::ApplyXP32NodeTransformOverrides(NiNode* a_root) const
+	void ActorObjectHolder::ApplyXP32NodeTransformOverrides() const
 	{
-		SkeletonExtensions::ApplyXP32NodeTransformOverrides(a_root, m_skeletonID);
+		SkeletonExtensions::ApplyXP32NodeTransformOverrides(m_npcroot.get(), m_skeletonID);
 	}
 
 	/*EventResult ActorObjectHolder::ReceiveEvent(

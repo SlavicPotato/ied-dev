@@ -15,9 +15,9 @@ namespace IED
 	{
 		template <class T>
 		class UIProfileBase :
-			Events::EventSink<ProfileManagerEvent<T>>,
 			protected UICommonModals,
-			public virtual UILocalizationInterface
+			public virtual UILocalizationInterface,
+			Events::EventSink<ProfileManagerEvent<T>>
 		{
 		public:
 			void InitializeProfileBase();

@@ -40,10 +40,10 @@ namespace IED
 
 			~Entry() = default;
 
-			Entry(const Entry&)     = delete;
-			Entry(Entry&&) noexcept = default;
+			Entry(const Entry&)            = delete;
+			Entry(Entry&&) noexcept        = default;
 			Entry& operator=(const Entry&) = delete;
-			Entry& operator=(Entry&&) = default;
+			Entry& operator=(Entry&&)      = default;
 
 			/*struct node_t
 			{

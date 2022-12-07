@@ -3,6 +3,9 @@
 #include "UINodeOverrideEditorWindow.h"
 #include "UINodeOverrideEditorWindowStrings.h"
 
+#include "IED/UI/NodeOverride/Profile/UIProfileEditorNodeOverride.h"
+#include "IED/UI/UIMain.h"
+
 #include "IED/Controller/Controller.h"
 
 namespace IED
@@ -10,11 +13,9 @@ namespace IED
 	namespace UI
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
-			Controller&   a_controller,
-			UIContext& a_profileEditor) :
+			Controller& a_controller) :
 			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
-			m_profileEditor(a_profileEditor),
 			m_controller(a_controller)
 		{
 		}
@@ -111,12 +112,20 @@ namespace IED
 
 		void UINodeOverrideEditorWindow::DrawToolsMenu()
 		{
+			auto& rt = m_controller.UIGetRenderTask();
+
+			auto context = rt ? rt->GetContext().GetChildContext<UIProfileEditorNodeOverride>() : nullptr;
+
 			if (ImGui::MenuItem(
 					LS(UIWidgetCommonStrings::ProfileEditor, "1"),
 					nullptr,
-					m_profileEditor.IsContextOpen()))
+					context && context->IsContextOpen(),
+					static_cast<bool>(context)))
 			{
-				m_profileEditor.ToggleOpenState();
+				if (context)
+				{
+					context->ToggleOpenState();
+				}
 			}
 		}
 	}

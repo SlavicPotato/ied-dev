@@ -3,6 +3,7 @@
 #include "UICommon.h"
 
 #include "IED/ConfigLUIDTag.h"
+#include "IED/Controller/IUI.h"
 
 #include <shellapi.h>
 
@@ -27,34 +28,75 @@ namespace IED
 
 			void HelpMarker(const char* a_desc)
 			{
-				/*ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0, 0 });
-				ImGui::PushStyleColor(ImGuiCol_Button, { 0, 0, 0, 0 });
-				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_TextDisabled]);
-				ImGui::Button("[?]##tool_tip");
-				ImGui::PopStyleColor();
-				ImGui::PopStyleColor();
-				ImGui::PopStyleVar();
-				ImGui::PopItemFlag();*/
-				ImGui::TextDisabled("[?]");
-				ToolTip(a_desc, 50.0f);
+				if (!ImGui::GetCurrentWindow()->SkipItems)
+				{
+					ImGui::TextDisabled("[?]");
+					ToolTip(a_desc, 50.0f);
+				}
 			}
 
 			void HelpMarkerImportant(const char* a_desc)
 			{
-				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorLightOrange);
-				ImGui::TextUnformatted("[!]");
-				ImGui::PopStyleColor();
-				ToolTip(a_desc, 50.0f);
+				if (!ImGui::GetCurrentWindow()->SkipItems)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorLightOrange);
+					ImGui::TextUnformatted("[!]");
+					ImGui::PopStyleColor();
+					ToolTip(a_desc, 50.0f);
+				}
 			}
 
 			void ToolTip(const char* a_text, float a_width)
 			{
+				if (ImGui::GetCurrentWindow()->SkipItems)
+				{
+					return;
+				}
+
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
 					ImGui::TextUnformatted(a_text);
+					ImGui::PopTextWrapPos();
+					ImGui::EndTooltip();
+				}
+			}
+
+			void ToolTip(float a_width, const char* a_fmt, ...)
+			{
+				if (ImGui::GetCurrentWindow()->SkipItems)
+				{
+					return;
+				}
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
+
+					va_list args;
+					va_start(args, a_fmt);
+					ImGui::TextV(a_fmt, args);
+					va_end(args);
+
+					ImGui::PopTextWrapPos();
+					ImGui::EndTooltip();
+				}
+			}
+
+			void ToolTip(float a_width, std::function<void()> a_func)
+			{
+				if (ImGui::GetCurrentWindow()->SkipItems)
+				{
+					return;
+				}
+
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
+					a_func();
 					ImGui::PopTextWrapPos();
 					ImGui::EndTooltip();
 				}
@@ -94,21 +136,23 @@ namespace IED
 					1.0f);
 			}
 
-			void DrawURL(
-				const char* a_label,
-				const char* a_url)
+			void DrawURL(const char* a_fmt, const char* a_url, ...)
 			{
-				ImGui::TextUnformatted(a_label);
-				HandleURLInteraction(a_url);
-			}
+				if (ImGui::GetCurrentWindow()->SkipItems)
+				{
+					return;
+				}
 
-			void HandleURLInteraction(const char* a_url)
-			{
+				va_list args;
+				va_start(args, a_url);
+				ImGui::TextV(a_fmt, args);
+				va_end(args);
+
 				if (ImGui::IsItemHovered())
 				{
 					DrawItemUnderline(ImGuiCol_Text);
 
-					if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
+					if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 					{
 						ShellExecuteA(
 							nullptr,
@@ -120,6 +164,46 @@ namespace IED
 					}
 				}
 			}
+
+			/*bool TextCopyable(const char* a_fmt, ...)
+			{
+				if (ImGui::GetCurrentWindow()->SkipItems)
+				{
+					return false;
+				}
+
+				{
+					va_list args;
+					va_start(args, a_fmt);
+					ImGui::TextV(a_fmt, args);
+					va_end(args);
+				}
+
+				if (!ImGui::IsItemHovered())
+				{
+					return false;
+				}
+
+				DrawItemUnderline(ImGuiCol_Text);
+
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+				{
+					auto buffer = std::make_unique<char[]>(4096);
+
+					va_list args;
+					va_start(args, a_fmt);
+					::_vsnprintf_s(buffer.get(), 4096, _TRUNCATE, a_fmt, args);
+					va_end(args);
+
+					ImGui::SetClipboardText(buffer.get());
+
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}*/
 
 			/*void PushLUID(const Data::configLUIDTagMCG_t& a_id)
 			{

@@ -12,6 +12,9 @@ namespace IED
 	namespace UI
 	{
 		UIActorInfo::UIActorInfo(Controller& a_controller) :
+			UIFormInfoTooltipWidget(a_controller),
+			UIFormTypeSelectorWidget(a_controller),
+			UIMiscTextInterface(a_controller),
 			UIActorList<ActorInfoData>(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
@@ -75,7 +78,7 @@ namespace IED
 
 			const std::lock_guard lock(data.data->lock);
 
-			auto handle = m_listCurrent->handle;
+			const auto handle = m_listCurrent->handle;
 
 			if (!data.data->initialized)
 			{
@@ -128,7 +131,9 @@ namespace IED
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
 		{
-			if (ImGui::BeginTabBar("tab"))
+			if (ImGui::BeginTabBar(
+					"tab_bar",
+					ImGuiTabBarFlags_NoCloseWithMiddleMouseButton))
 			{
 				stl::snprintf(
 					m_buffer,
@@ -136,7 +141,8 @@ namespace IED
 					LS(CommonStrings::Inventory),
 					a_data.data->inventory.items.size());
 
-				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "1")))
+				if (ImGui::BeginTabItem(
+						LMKID<3>(m_buffer, "1")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("1");
@@ -155,7 +161,8 @@ namespace IED
 					LS(CommonStrings::Factions),
 					a_data.data->factions.data.size());
 
-				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "2")))
+				if (ImGui::BeginTabItem(
+						LMKID<3>(m_buffer, "2")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("2");
@@ -174,7 +181,8 @@ namespace IED
 					LS(UIActorInfoStrings::ActiveEffects),
 					a_data.data->effects.data.size());
 
-				if (ImGui::BeginTabItem(LMKID<3>(m_buffer, "3")))
+				if (ImGui::BeginTabItem(
+						LMKID<3>(m_buffer, "3")))
 				{
 					ImGui::Spacing();
 					ImGui::PushID("3");
@@ -205,12 +213,12 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 
-				ImGui::TextWrapped("%.8X", a_data.first.get());
+				DrawFormWithInfoWrapped(a_data.first);
 
 				if (!a_data.second.empty())
 				{
 					ImGui::SameLine();
-					ImGui::TextWrapped("[%s]", a_data.second.c_str());
+					TextWrappedCopyable("[%s]", a_data.second.c_str());
 				}
 
 				return true;
@@ -234,7 +242,7 @@ namespace IED
 				ImGui::Text("%s:", LS(a_label));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%.8X", a_data.get());
+				DrawFormWithInfoWrapped(a_data);
 
 				return true;
 			}
@@ -286,7 +294,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Form));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%.8X", a_data.data->actor.get());
+				DrawFormWithInfoWrapped(a_data.data->actor);
 
 				ImGui::TableNextRow();
 
@@ -296,7 +304,7 @@ namespace IED
 				ImGui::TableSetColumnIndex(1);
 				if (data.npc)
 				{
-					ImGui::TextWrapped("%.8X", data.npc->form.get());
+					DrawFormWithInfoWrapped(data.npc->form);
 
 					if (data.npc->templ)
 					{
@@ -306,9 +314,7 @@ namespace IED
 						ImGui::Text("%s:", LS(CommonStrings::Template));
 
 						ImGui::TableSetColumnIndex(1);
-						ImGui::TextWrapped(
-							"%.8X",
-							data.npc->templ.get());
+						DrawFormWithInfoWrapped(data.npc->templ);
 					}
 
 					if (data.npc->nontemp != data.npc->form &&
@@ -320,14 +326,12 @@ namespace IED
 						ImGui::Text("%s:", LS(CommonStrings::NonTemp));
 
 						ImGui::TableSetColumnIndex(1);
-						ImGui::TextWrapped(
-							"%.8X",
-							data.npc->nontemp.get());
+						DrawFormWithInfoWrapped(data.npc->nontemp);
 					}
 				}
 				else
 				{
-					ImGui::TextWrapped("%s", "N/A");
+					ImGui::Text("%s", "N/A");
 				}
 
 				ImGui::TableNextRow();
@@ -336,7 +340,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Name));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%s", data.name.c_str());
+				TextWrappedCopyable("%s", data.name.c_str());
 
 				std::uint32_t modIndex;
 				if (a_handle.GetPluginPartialIndex(modIndex))
@@ -353,7 +357,7 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(1);
 
-						ImGui::TextWrapped(
+						TextWrappedCopyable(
 							"[%X] %s",
 							itm->second.GetPartialIndex(),
 							itm->second.name.c_str());
@@ -362,7 +366,7 @@ namespace IED
 
 				auto& raceInfo = Data::IData::GetRaceList();
 
-				auto race = data.GetRace();
+				const auto race = data.GetRace();
 
 				auto itr = raceInfo.find(race);
 				if (itr != raceInfo.end())
@@ -374,10 +378,9 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(1);
 
-					ImGui::TextWrapped(
-						"%.8X [%s]",
-						race.get(),
-						itr->second.edid.c_str());
+					DrawFormWithInfoWrapped(race);
+					ImGui::SameLine();
+					TextWrappedCopyable("[%s]", itr->second.edid.c_str());
 				}
 
 				DrawActorInfoLineForm(CommonStrings::Worldspace, data.worldspace);
@@ -420,7 +423,7 @@ namespace IED
 						"%s",
 						data.npc->female ?
 							LS(CommonStrings::Female) :
-                            LS(CommonStrings::Male));
+							LS(CommonStrings::Male));
 				}
 
 				ImGui::TableNextRow();
@@ -429,7 +432,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Flags));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%.8X", data.flags);
+				TextCopyable("%.8X", data.flags);
 
 				UICommon::ToolTip(100.0f, [&] {
 					if (data.flags & 1u << 4)
@@ -496,7 +499,22 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Weight));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped("%.0f", data.weight);
+				ImGui::Text("%.0f", data.weight);
+
+				if (data.inventoryWeight)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", LS(UIActorInfoStrings::InventoryWeight));
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%.0f", data.inventoryWeight->first);
+					ImGui::SameLine();
+					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+					ImGui::SameLine();
+					ImGui::Text("%.0f", data.inventoryWeight->second);
+				}
 
 				DrawActorInfoLineFormStringPair(CommonStrings::Skin, data.skin);
 
@@ -545,11 +563,25 @@ namespace IED
 					ImGui::Text("%s [R]:", LS(CommonStrings::Equipped));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped(
-						"%.8X [%hhu] [%s]",
-						data.equipped.first.get(),
-						data.equippedTypes.first,
-						data.equippedNames.first.c_str());
+
+					DrawFormWithInfoWrapped(data.equipped.first);
+					ImGui::SameLine();
+
+					if (auto typeDest = form_type_to_desc(data.equippedTypes.first))
+					{
+						ImGui::TextWrapped(
+							"[%s|%hhu] [%s]",
+							typeDest,
+							data.equippedTypes.first,
+							data.equippedNames.first.c_str());
+					}
+					else
+					{
+						ImGui::TextWrapped(
+							"[%hhu] [%s]",
+							data.equippedTypes.first,
+							data.equippedNames.first.c_str());
+					}
 				}
 
 				ImGui::EndTable();
@@ -575,11 +607,25 @@ namespace IED
 					ImGui::Text("%s [L]:", LS(CommonStrings::Equipped));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped(
-						"%.8X [%hhu] [%s]",
-						data.equipped.second.get(),
-						data.equippedTypes.second,
-						data.equippedNames.second.c_str());
+
+					DrawFormWithInfoWrapped(data.equipped.second);
+					ImGui::SameLine();
+
+					if (auto typeDest = form_type_to_desc(data.equippedTypes.second))
+					{
+						ImGui::TextWrapped(
+							"[%s|%hhu] [%s]",
+							typeDest,
+							data.equippedTypes.second,
+							data.equippedNames.second.c_str());
+					}
+					else
+					{
+						ImGui::TextWrapped(
+							"[%hhu] [%s]",
+							data.equippedTypes.second,
+							data.equippedNames.second.c_str());
+					}
 				}
 
 				ImGui::EndTable();
@@ -612,7 +658,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Position));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped(
+				TextWrappedCopyable(
 					"%f %f %f",
 					data.pos.x,
 					data.pos.y,
@@ -639,7 +685,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Rotation));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::TextWrapped(
+				TextWrappedCopyable(
 					"%f %f %f",
 					data.rot.x,
 					data.rot.y,
@@ -779,10 +825,10 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%.8X", e.first.get());
+					DrawFormWithInfo(e.first);
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::Text("%s", e.second.name.c_str());
+					TextCopyable("%s", e.second.name.c_str());
 
 					ImGui::TableSetColumnIndex(2);
 					ImGui::Text("%hhd", e.second.rank);
@@ -810,15 +856,13 @@ namespace IED
 
 			for (auto& d : data.items.getvec())
 			{
-				auto  i = d->first;
-				auto& e = d->second;
-
-				char buffer[256];
+				const auto i = d->first;
+				auto&      e = d->second;
 
 				if (e.IsEquipped())
 				{
 					stl::snprintf(
-						buffer,
+						m_buffer,
 						"[%.8X] [%hhu] [%s] [%lld] [%s]",
 						i.get(),
 						e.type,
@@ -829,7 +873,7 @@ namespace IED
 				else
 				{
 					stl::snprintf(
-						buffer,
+						m_buffer,
 						"[%.8X] [%hhu] [%s] [%lld]",
 						i.get(),
 						e.type,
@@ -837,7 +881,7 @@ namespace IED
 						e.count);
 				}
 
-				if (!m_invFilter.Test(buffer))
+				if (!m_invFilter.Test(m_buffer))
 				{
 					continue;
 				}
@@ -855,7 +899,7 @@ namespace IED
 						"",
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 						"%s",
-						buffer))
+						m_buffer))
 				{
 					ImGui::Spacing();
 
@@ -882,45 +926,65 @@ namespace IED
 			ImGui::PopID();
 		}
 
-		static void draw_effect_form_cell(
+		void UIActorInfo::DrawEffectFormCell(
 			const actorActiveEffectInfo_t::formEntry_t& a_entry,
 			bool                                        a_type)
 		{
-			if (a_entry.id)
+			if (!a_entry.id)
 			{
-				if (!a_entry.name.empty())
+				return;
+			}
+
+			if (!a_entry.name.empty())
+			{
+				if (a_type)
 				{
-					if (a_type)
+					DrawFormWithInfo(a_entry.id);
+					ImGui::SameLine();
+
+					if (auto typeDesc = form_type_to_desc(a_entry.type))
 					{
 						ImGui::TextWrapped(
-							"%.8X [%hhu] [%s]",
-							a_entry.id.get(),
-							a_entry.type,
+							"[%s] [%s]",
+							typeDesc,
 							a_entry.name.c_str());
 					}
 					else
 					{
 						ImGui::TextWrapped(
-							"%.8X [%s]",
-							a_entry.id.get(),
+							"[%hhu] [%s]",
+							a_entry.type,
 							a_entry.name.c_str());
 					}
 				}
 				else
 				{
-					if (a_type)
+					DrawFormWithInfo(a_entry.id);
+					ImGui::SameLine();
+					ImGui::TextWrapped(
+						"[%s]",
+						a_entry.name.c_str());
+				}
+			}
+			else
+			{
+				if (a_type)
+				{
+					DrawFormWithInfo(a_entry.id);
+					ImGui::SameLine();
+
+					if (auto typeDesc = form_type_to_desc(a_entry.type))
 					{
-						ImGui::TextWrapped(
-							"%.8X [%hhu]",
-							a_entry.id.get(),
-							a_entry.type);
+						ImGui::TextWrapped("[%s]", typeDesc);
 					}
 					else
 					{
-						ImGui::TextWrapped(
-							"%.8X",
-							a_entry.id.get());
+						ImGui::TextWrapped("[%hhu]", a_entry.type);
 					}
+				}
+				else
+				{
+					DrawFormWithInfo(a_entry.id);
 				}
 			}
 		}
@@ -966,17 +1030,17 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					draw_effect_form_cell(e.effect, false);
+					DrawEffectFormCell(e.effect, false);
 
 					ImGui::TableSetColumnIndex(1);
-					draw_effect_form_cell(e.spell, true);
+					DrawEffectFormCell(e.spell, true);
 
 					ImGui::TableSetColumnIndex(2);
-					draw_effect_form_cell(e.source, false);
+					DrawEffectFormCell(e.source, false);
 
 					ImGui::TableSetColumnIndex(3);
 					ImGui::Text("%.1f", e.elapsed);
-					
+
 					if (e.duration != 0.0f)
 					{
 						ImGui::TableSetColumnIndex(4);
@@ -1036,7 +1100,7 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Form));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%.8X", a_data.formid.get());
+				DrawFormWithInfoWrapped(a_data.formid);
 
 				if (!a_data.name.empty())
 				{
@@ -1046,7 +1110,7 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::Name));
 
 					ImGui::TableSetColumnIndex(1);
-					ImGui::TextWrapped("%s", a_data.name.c_str());
+					TextWrappedCopyable("%s", a_data.name.c_str());
 				}
 
 				ImGui::TableNextRow();
@@ -1059,7 +1123,7 @@ namespace IED
 					"%s",
 					a_data.flags.test(InventoryInfoBaseFlags::kNonPlayable) ?
 						LS(CommonStrings::No) :
-                        LS(CommonStrings::Yes));
+						LS(CommonStrings::Yes));
 
 				ImGui::TableNextRow();
 
@@ -1085,16 +1149,14 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(1);
 
+					DrawFormWithInfoWrapped(a_data.enchantment->formid);
+
 					if (a_data.enchantment->name)
 					{
-						ImGui::TextWrapped(
-							"%.8X [%s]",
-							a_data.enchantment->formid,
+						ImGui::SameLine();
+						TextWrappedCopyable(
+							"[%s]",
 							a_data.enchantment->name->c_str());
-					}
-					else
-					{
-						ImGui::TextWrapped("%.8X", a_data.enchantment->formid);
 					}
 				}
 
@@ -1169,7 +1231,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::TextUnformatted(e.GetName(a_data).c_str());
+					TextCopyable("%s", e.GetName(a_data).c_str());
 
 					ImGui::TableSetColumnIndex(1);
 
@@ -1201,21 +1263,21 @@ namespace IED
 						"%s",
 						e.flags.test(InventoryInfoExtraFlags::kFavorite) ?
 							LS(CommonStrings::Yes) :
-                            LS(CommonStrings::No));
+							LS(CommonStrings::No));
 
 					ImGui::TableSetColumnIndex(3);
 					ImGui::Text(
 						"%s",
 						e.flags.test(InventoryInfoExtraFlags::kCannotWear) ?
 							LS(CommonStrings::Yes) :
-                            LS(CommonStrings::No));
+							LS(CommonStrings::No));
 
 					ImGui::TableSetColumnIndex(4);
 					ImGui::Text(
 						"%s",
 						e.flags.test(InventoryInfoExtraFlags::kShouldWear) ?
 							LS(CommonStrings::Yes) :
-                            LS(CommonStrings::No));
+							LS(CommonStrings::No));
 
 					ImGui::TableSetColumnIndex(5);
 					if (auto& enchantment = e.GetEnchantment(a_data))
@@ -1226,16 +1288,14 @@ namespace IED
 							ImGui::SameLine();
 						}
 
+						DrawFormWithInfoWrapped(enchantment->formid);
+
 						if (enchantment->name)
 						{
+							ImGui::SameLine();
 							ImGui::Text(
-								"%.8X [%s]",
-								enchantment->formid,
+								"[%s]",
 								enchantment->name->c_str());
-						}
-						else
-						{
-							ImGui::Text("%.8X", enchantment->formid);
 						}
 					}
 					else
@@ -1256,7 +1316,7 @@ namespace IED
 					ImGui::TableSetColumnIndex(7);
 					if (e.uid)
 					{
-						ImGui::Text("%hu", *e.uid);
+						TextCopyable("%hu", *e.uid);
 					}
 					else
 					{
@@ -1266,7 +1326,7 @@ namespace IED
 					ImGui::TableSetColumnIndex(8);
 					if (e.owner)
 					{
-						ImGui::Text("%.8X", e.owner);
+						DrawFormWithInfoWrapped(e.owner);
 					}
 					else
 					{
@@ -1276,7 +1336,7 @@ namespace IED
 					ImGui::TableSetColumnIndex(9);
 					if (e.originalRefr)
 					{
-						ImGui::Text("%.8X", e.originalRefr);
+						DrawFormWithInfoWrapped(e.originalRefr);
 					}
 					else
 					{
@@ -1352,6 +1412,7 @@ namespace IED
 
 			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data] {
 				const std::lock_guard lock(m_controller.GetLock());
+				const std::lock_guard datalock(data->lock);
 
 				data->lastUpdate  = IPerfCounter::Query();
 				data->actor       = handle;

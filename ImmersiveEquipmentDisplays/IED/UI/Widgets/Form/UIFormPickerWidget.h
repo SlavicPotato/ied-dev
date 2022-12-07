@@ -3,7 +3,7 @@
 #include "IED/UI/Widgets/UIFormTypeSelectorWidget.h"
 
 #include "IED/UI/UIFormLookupInterface.h"
-#include "IED/UI/UINotificationInterface.h"
+#include "IED/UI/UIPopupInterface.h"
 #include "IED/UI/UITips.h"
 #include "UIFormSelectorWidget.h"
 
@@ -15,7 +15,7 @@ namespace IED
 	{
 		class UIFormPickerWidget :
 			public UIFormSelectorWidget,
-			UINotificationInterface,
+			UIPopupInterface,
 			public virtual UIFormTypeSelectorWidget,
 			public virtual UIFormLookupInterface
 		{

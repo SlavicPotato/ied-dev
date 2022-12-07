@@ -23,15 +23,8 @@ namespace IED
 
 			UICustomEditorTabPanel(Controller& a_controller);
 
-			UICustomEditorActor  m_editorActor;
-			UICustomEditorRace   m_editorRace;
-			UICustomEditorGlobal m_editorGlobal;
-			UICustomEditorNPC    m_editorNPC;
-
 		private:
 			virtual Data::SettingHolder::EditorPanel& GetEditorConfig() override;
-
-			Controller& m_controller;
 		};
 
 	}

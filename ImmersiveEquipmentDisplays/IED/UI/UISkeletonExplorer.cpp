@@ -15,6 +15,7 @@ namespace IED
 	{
 		UISkeletonExplorer::UISkeletonExplorer(
 			Controller& a_controller) :
+			UIMiscTextInterface(a_controller),
 			UIActorList<ActorSkeletonData>(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
@@ -152,9 +153,14 @@ namespace IED
 
 			if (!a_data.path.empty())
 			{
-				ImGui::TextWrapped(
-					"%s: %s",
-					LS(CommonStrings::Path),
+				ImGui::Text(
+					"%s:",
+					LS(CommonStrings::Path));
+
+				ImGui::SameLine();
+
+				TextWrappedCopyable(
+					"%s",
 					a_data.path.c_str());
 
 				r = true;
@@ -167,7 +173,7 @@ namespace IED
 					ImGui::Text("%s:", LS(CommonStrings::ID));
 					ImGui::SameLine();
 
-					UICommon::TextCopyable("%d", *id);
+					TextCopyable("%d", *id);
 
 					ImGui::SameLine();
 					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -177,8 +183,8 @@ namespace IED
 				ImGui::Text("%s:", LS(CommonStrings::Signature));
 				ImGui::SameLine();
 
-				UICommon::TextCopyable(
-					"%zX",
+				TextCopyable(
+					"%llu",
 					a_data.skeletonID->signature());
 
 				r = true;
@@ -349,7 +355,10 @@ namespace IED
 
 				if (result)
 				{
-					DrawObjectInfo(a_object, a_data.isLoadedData);
+					DrawObjectInfo(
+						a_object,
+						a_data.isLoadedData);
+
 					DrawChildNodes(
 						a_data,
 						a_object,
@@ -394,7 +403,7 @@ namespace IED
 				ImGuiCol_Text,
 				UICommon::g_colorGreyed);
 
-			ImGui::Text(
+			TextCopyable(
 				"Local: P:[%f %f %f] R:[%f %f %f] S:[%f]",
 				a_data.local.pos.x,
 				a_data.local.pos.y,
@@ -406,7 +415,7 @@ namespace IED
 
 			if (a_drawWorld)
 			{
-				ImGui::Text(
+				TextCopyable(
 					"World: P:[%f %f %f] R:[%f %f %f] S:[%f]",
 					a_data.world.pos.x,
 					a_data.world.pos.y,

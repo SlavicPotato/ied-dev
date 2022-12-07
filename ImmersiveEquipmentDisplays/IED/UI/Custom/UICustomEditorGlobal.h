@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../UICommon.h"
-#include "../Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/UICommon.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
+#include "IED/UI/Widgets/UIWidgetsCommon.h"
 
 #include "UICustomEditorCommon.h"
 
@@ -14,7 +15,7 @@ namespace IED
 	namespace UI
 	{
 		class UICustomEditorGlobal :
-			public UICustomEditorCommon<int>
+			public UICustomEditorCommon<UIGlobalEditorDummyHandle>
 		{
 		public:
 			UICustomEditorGlobal(Controller& a_controller);
@@ -31,7 +32,7 @@ namespace IED
 			virtual constexpr Data::ConfigClass GetConfigClass() const override;
 
 			virtual Data::configCustomHolder_t& GetOrCreateConfigSlotHolder(
-				int) const override;
+				UIGlobalEditorDummyHandle) const override;
 
 			virtual CustomEditorCurrentData GetCurrentData() override;
 
@@ -47,32 +48,32 @@ namespace IED
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 
 			virtual void ApplyProfile(
-				const profileSelectorParamsCustom_t<int>& a_data,
-				const CustomProfile&                      a_profile) override;
+				const profileSelectorParamsCustom_t<UIGlobalEditorDummyHandle>& a_data,
+				const CustomProfile&                                                a_profile) override;
 
 			virtual void MergeProfile(
-				const profileSelectorParamsCustom_t<int>& a_data,
-				const CustomProfile&                      a_profile) override;
+				const profileSelectorParamsCustom_t<UIGlobalEditorDummyHandle>& a_data,
+				const CustomProfile&                                                a_profile) override;
 
 			virtual void OnBaseConfigChange(
-				int              a_handle,
-				const void*      a_params,
-				PostChangeAction a_action) override;
+				UIGlobalEditorDummyHandle a_handle,
+				const void*                   a_params,
+				PostChangeAction              a_action) override;
 
 			virtual void OnFullConfigChange(
-				int                             a_handle,
+				UIGlobalEditorDummyHandle   a_handle,
 				const CustomConfigUpdateParams& a_params) override;
 
 			virtual bool OnCreateNew(
-				int                          a_handle,
-				const CustomConfigNewParams& a_params) override;
+				UIGlobalEditorDummyHandle a_handle,
+				const CustomConfigNewParams&  a_params) override;
 
 			virtual void OnErase(
-				int                            a_handle,
+				UIGlobalEditorDummyHandle  a_handle,
 				const CustomConfigEraseParams& a_params) override;
 
 			virtual bool OnRename(
-				int                             a_handle,
+				UIGlobalEditorDummyHandle   a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
 			void UpdateData();

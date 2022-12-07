@@ -674,8 +674,7 @@ namespace IED
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
 
-		void ApplyXP32NodeTransformOverrides(
-			NiNode* a_root) const;
+		void ApplyXP32NodeTransformOverrides() const;
 
 		/*EventResult ReceiveEvent(
 			const BSAnimationGraphEvent*           a_event,

@@ -20,10 +20,7 @@ namespace IED
 			CopyAllFromOppositeSexPrompt        = 2009,
 			CopyFromOppositeSex                 = 2010,
 			PropagateMemberToEquipmentOverrides = 2011,
-			ItemColon                           = 2012,
 			HiddenBrackets                      = 2013,
-			FormIDColon                         = 2014,
-			TypeColon                           = 2015,
 			LeftScbAttached                     = 2016,
 			OccupiedSlots                       = 2017,
 			NiNodeUpdate                        = 2018,
@@ -122,6 +119,7 @@ namespace IED
 			HideLight                           = 2111,
 			RemoveProjectileTracers             = 2112,
 			ItemFilterCond                      = 2113,
+			NoSSE41SupportWarning               = 2114,
 		};
 	}
 }

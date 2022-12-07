@@ -14,6 +14,7 @@ namespace IED
 			SellBuy            = 6903,
 			ActiveEffects      = 6904,
 			SpellOrEnchantment = 6905,
+			InventoryWeight    = 6906,
 		};
 	}
 }

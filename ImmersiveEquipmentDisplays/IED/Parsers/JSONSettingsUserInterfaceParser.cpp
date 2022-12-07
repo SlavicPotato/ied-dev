@@ -130,7 +130,7 @@ namespace IED
 			{
 				return false;
 			}
-			
+
 			if (!i3di.Parse(
 					data["i3di"],
 					a_out.i3di))
@@ -194,6 +194,17 @@ namespace IED
 			a_out.closeOnESC            = data.get("close_on_esc", true).asBool();
 			a_out.exitOnLastWindowClose = data.get("exit_on_last_window_close", true).asBool();
 			a_out.showIntroBanner       = data.get("show_intro_banner", true).asBool();
+			a_out.enableNotifications   = data.get("enable_notifications", false).asBool();
+
+			const auto notificationThreshold = std::clamp(
+				data.get(
+						"notification_threshold",
+						stl::underlying(LogLevel::Message))
+					.asUInt(),
+				static_cast<std::uint32_t>(LogLevel::Min),
+				static_cast<std::uint32_t>(LogLevel::Max));
+
+			a_out.notificationThreshold = static_cast<LogLevel>(notificationThreshold);
 
 			a_out.defaultExportFlags = static_cast<Data::ConfigStoreSerializationFlags>(
 				data.get("default_export_flags", stl::underlying(Data::ConfigStoreSerializationFlags::kAll)).asUInt());
@@ -328,6 +339,8 @@ namespace IED
 			data["close_on_esc"]              = a_data.closeOnESC;
 			data["exit_on_last_window_close"] = a_data.exitOnLastWindowClose;
 			data["show_intro_banner"]         = a_data.showIntroBanner;
+			data["enable_notifications"]      = a_data.enableNotifications;
+			data["notification_threshold"]        = stl::underlying(a_data.notificationThreshold);
 
 			data["default_export_flags"] = stl::underlying(a_data.defaultExportFlags.value);
 

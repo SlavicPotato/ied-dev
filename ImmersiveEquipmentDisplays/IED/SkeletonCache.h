@@ -4,14 +4,9 @@ namespace IED
 {
 	class SkeletonCache
 	{
-		struct Entry
-		{
-			NiTransform transform;
-		};
-
 	public:
-		using actor_entry_type       = std::shared_ptr<stl::unordered_map<stl::fixed_string, Entry>>;
-		using const_actor_entry_type = std::shared_ptr<const stl::unordered_map<stl::fixed_string, Entry>>;
+		using actor_entry_type       = std::shared_ptr<stl::unordered_map<stl::fixed_string, NiTransform>>;
+		using const_actor_entry_type = std::shared_ptr<const stl::unordered_map<stl::fixed_string, NiTransform>>;
 		using data_type              = stl::unordered_map<stl::fixed_string, actor_entry_type>;
 
 		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept

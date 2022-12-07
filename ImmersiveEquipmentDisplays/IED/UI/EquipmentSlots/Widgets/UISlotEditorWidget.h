@@ -95,11 +95,11 @@ namespace IED
 
 		template <class T>
 		class UISlotEditorWidget :
-			public UIEditorInterface,
-			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
+			public UIEditorPanelSettingsGear,
 			public virtual UISettingsInterface,
-			public virtual UIFormTypeSelectorWidget
+			public virtual UIFormTypeSelectorWidget,
+			public UIEditorInterface
 		{
 		public:
 			UISlotEditorWidget(
@@ -1044,6 +1044,8 @@ namespace IED
 					"%s",
 					slotName.c_str()))
 			{
+				ImGui::PushID("body");
+
 				ImGui::Spacing();
 
 				ImGui::Indent();
@@ -1104,6 +1106,8 @@ namespace IED
 				ImGui::Unindent();
 
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 

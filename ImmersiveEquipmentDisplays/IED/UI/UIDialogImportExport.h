@@ -22,8 +22,8 @@ namespace IED
 	namespace UI
 	{
 		class UIDialogImportExport :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public UIFileSelector,
 			public UIImportWidget,
 			public virtual UITipsInterface

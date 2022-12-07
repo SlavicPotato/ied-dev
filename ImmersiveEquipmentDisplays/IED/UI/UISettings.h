@@ -29,8 +29,8 @@ namespace IED
 	namespace UI
 	{
 		class UISettings :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			UICollapsibles,
 			UIControlKeySelectorWidget,
 			UIFormPickerWidget,
@@ -77,7 +77,7 @@ namespace IED
 			void              DrawUISection();
 			ContextMenuAction DrawSoundContextMenu(Data::ConfigSound<Game::FormID>& a_data);
 			void              DrawSoundSection();
-			void              DrawLogLevelSelector();
+			bool              DrawLogLevelSelector(const char *a_id, Localization::StringID a_title, LogLevel& a_value);
 			void              DrawObjectDatabaseSection();
 			void              DrawLocalizationSection();
 			void              DrawI3DISection();

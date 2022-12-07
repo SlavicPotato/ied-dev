@@ -12,24 +12,30 @@ namespace IED
 {
 	namespace UI
 	{
+		namespace detail
+		{
+			template <class T>
+			concept accept_cached_item_string = std::is_convertible_v<T, stl::fixed_string>;
+		}
+
 		template <class T>
 		class UIProfileEditorBase :
-			public UIWindow,
 			public UIContext,
-			virtual protected UIAlignment,
-			public UIProfileBase<T>
+			public UIWindow,
+			public UIProfileBase<T>,
+			virtual protected UIAlignment
 		{
 		protected:
 			template <class Tc>
 			struct cachedItem_t
 			{
-				cachedItem_t() = default;
+				cachedItem_t() = delete;
 
-				template <class... Args>
-				cachedItem_t(
-					const stl::fixed_string& a_name,
+				template <detail::accept_cached_item_string Ts, class... Args>
+				inline constexpr cachedItem_t(
+					Ts&& a_name,
 					Args&&... a_args) :
-					name(a_name),
+					name(std::forward<Ts>(a_name)),
 					data(std::forward<Args>(a_args)...)
 				{
 				}
@@ -140,7 +146,7 @@ namespace IED
 						LS(CommonStrings::Profile, "combo"),
 						m_state.selected ?
 							m_state.selected->c_str() :
-                            nullptr,
+							nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{
 					const ProfileManager<T>::storage_type::value_type* newItem = nullptr;

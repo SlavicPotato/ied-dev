@@ -10,8 +10,11 @@ namespace IED
 		{
 			if (m_openState != a_state)
 			{
-				m_openState    = a_state;
-				m_stateChanged = true;
+				if (OnWantOpenStateChange(a_state))
+				{
+					m_openState    = a_state;
+					m_stateChanged = true;
+				}
 
 				//OnOpenStateChanged(a_state);
 			}
@@ -19,8 +22,13 @@ namespace IED
 
 		void UIContext::ToggleOpenState(bool a_notify)
 		{
-			m_openState    = !m_openState;
-			m_stateChanged = true;
+			const bool newState = !m_openState;
+
+			if (OnWantOpenStateChange(newState))
+			{
+				m_openState    = newState;
+				m_stateChanged = true;
+			}
 
 			//OnOpenStateChanged(m_openState);
 		}

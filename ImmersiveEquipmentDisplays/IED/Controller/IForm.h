@@ -11,6 +11,7 @@ namespace IED
 
 		Game::FormID             id;
 		std::uint8_t             type;
+		std::uint32_t            formFlags;
 		stl::flag<FormInfoFlags> flags;
 		std::string              name;
 		std::uint32_t            extraType;

@@ -141,19 +141,15 @@ namespace IED
 			{
 				for (auto& e : groupObjects)
 				{
-					if (e.second.weapAnimGraphManagerHolder)
+					if (auto& h = e.second.weapAnimGraphManagerHolder)
 					{
-						EngineExtensions::UpdateAnimationGraph(
-							e.second.weapAnimGraphManagerHolder.get(),
-							a_data);
+						EngineExtensions::UpdateAnimationGraph(h.get(), a_data);
 					}
 				}
 
-				if (weapAnimGraphManagerHolder)
+				if (auto& h = weapAnimGraphManagerHolder)
 				{
-					EngineExtensions::UpdateAnimationGraph(
-						weapAnimGraphManagerHolder.get(),
-						a_data);
+					EngineExtensions::UpdateAnimationGraph(h.get(), a_data);
 				}
 			}
 
@@ -209,9 +205,9 @@ namespace IED
 			long long                                          created{ 0 };
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			//NiPointer<NiPointLight>                            light;
-			Game::FormID                                       owner;
-			std::uint8_t                                       hideCountdown{ 0 };
-			bool                                               atmReference{ true };
+			Game::FormID owner;
+			std::uint8_t hideCountdown{ 0 };
+			bool         atmReference{ true };
 		};
 
 		struct ActiveData

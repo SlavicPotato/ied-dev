@@ -82,7 +82,9 @@ namespace IED
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
+#if defined(IED_ENABLE_I3DI)
 				DrawI3DISection();
+#endif
 				DrawSoundSection();
 
 				ImGui::PopItemWidth();
@@ -99,13 +101,58 @@ namespace IED
 					"%s",
 					LS(CommonStrings::General)))
 			{
+				ImGui::PushID("1");
+
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				DrawLogLevelSelector();
+				auto& settings = m_controller.GetSettings();
+
+				auto currentLogLevel = gLog.GetLogLevel();
+
+				if (DrawLogLevelSelector(
+						"1",
+						static_cast<Localization::StringID>(UISettingsStrings::LogLevel),
+						currentLogLevel))
+				{
+					settings.set(settings.data.logLevel, currentLogLevel);
+					gLog.SetLogLevel(currentLogLevel);
+				}
+
+				if (settings.mark_if(ImGui::Checkbox(
+						LS(CommonStrings::Notifications, "2"),
+						std::addressof(settings.data.ui.enableNotifications))))
+				{
+					m_controller.UIEnableNotifications(settings.data.ui.enableNotifications);
+				}
+
+				if (settings.data.ui.enableNotifications)
+				{
+					ImGui::Indent();
+
+					if (DrawLogLevelSelector(
+							"3",
+							static_cast<Localization::StringID>(CommonStrings::Threshold),
+							settings.data.ui.notificationThreshold))
+					{
+						if (settings.data.ui.notificationThreshold > currentLogLevel)
+						{
+							settings.data.ui.notificationThreshold = currentLogLevel;
+						}
+
+						settings.mark_dirty();
+
+						m_controller.UISetLogNotificationThreshold(
+							settings.data.ui.notificationThreshold);
+					}
+
+					ImGui::Unindent();
+				}
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -117,6 +164,8 @@ namespace IED
 					"%s",
 					LS(CommonStrings::Displays)))
 			{
+				ImGui::PushID("2");
+
 				ImGui::Spacing();
 				ImGui::Indent();
 
@@ -255,6 +304,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -266,6 +317,8 @@ namespace IED
 					"%s",
 					LS(UISettingsStrings::GearPositioning)))
 			{
+				ImGui::PushID("3");
+
 				ImGui::Spacing();
 				ImGui::Indent();
 
@@ -357,6 +410,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -368,6 +423,8 @@ namespace IED
 					"%s",
 					LS(UISettingsStrings::Effects)))
 			{
+				ImGui::PushID("4");
+
 				auto& settings = m_controller.GetConfigStore().settings;
 				auto& data     = settings.data;
 
@@ -384,16 +441,7 @@ namespace IED
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 
-				const bool disabled = m_controller.GetPhysicsForcedOff();
-
-				if (disabled)
-				{
-					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-					ImGui::TextWrapped(
-						"%s",
-						LS(UISettingsStrings::PhysicsForcedOffWarning));
-					ImGui::PopStyleColor();
-				}
+				const bool disabled = !m_controller.CPUHasSSE41();
 
 				UICommon::PushDisabled(disabled);
 
@@ -407,6 +455,15 @@ namespace IED
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 				DrawTip(UITip::EquipmentPhysics);
+
+				if (disabled)
+				{
+					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
+					ImGui::TextWrapped(
+						"%s",
+						LS(UIWidgetCommonStrings::NoSSE41SupportWarning));
+					ImGui::PopStyleColor();
+				}
 
 				if (data.enableEquipmentPhysics)
 				{
@@ -440,6 +497,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -451,6 +510,8 @@ namespace IED
 					"%s",
 					LS(CommonStrings::UI)))
 			{
+				ImGui::PushID("5");
+
 				ImGui::Spacing();
 				ImGui::Indent();
 
@@ -485,7 +546,7 @@ namespace IED
 
 				float tmpbga = hasAlpha ?
 				                   *ui.bgAlpha :
-                                   ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
+				                   ImGui::GetStyle().Colors[ImGuiCol_WindowBg].w;
 
 				if (!hasAlpha)
 				{
@@ -576,7 +637,7 @@ namespace IED
 
 				auto tmp = m_scaleTemp ?
 				               *m_scaleTemp :
-                               ui.scale;
+				               ui.scale;
 
 				if (ImGui::SliderFloat(
 						LS(CommonStrings::Scale, "P"),
@@ -747,6 +808,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -817,6 +880,8 @@ namespace IED
 					"%s",
 					LS(CommonStrings::Sound)))
 			{
+				ImGui::PushID("6");
+
 				ImGui::Spacing();
 				ImGui::Indent();
 
@@ -851,25 +916,29 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 
 			ImGui::PopID();
 		}
 
-		void UISettings::DrawLogLevelSelector()
+		bool UISettings::DrawLogLevelSelector(
+			const char*            a_id,
+			Localization::StringID a_title,
+			LogLevel&              a_value)
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			bool result = false;
 
-			auto current = gLog.GetLogLevel();
-			auto desc    = ILog::GetLogLevelString(current);
+			auto desc = ILog::GetLogLevelString(a_value);
 
 			if (ImGui::BeginCombo(
-					LS(UISettingsStrings::LogLevel, "ll_sel"),
+					LS(a_title, a_id),
 					desc))
 			{
 				for (auto& [i, e] : ILog::GetLogLevels())
 				{
-					bool selected = e == current;
+					const bool selected = e == a_value;
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
@@ -878,14 +947,15 @@ namespace IED
 
 					if (ImGui::Selectable(i.c_str(), selected))
 					{
-						settings.data.logLevel = e;
-						settings.mark_dirty();
-						gLog.SetLogLevel(e);
+						a_value = e;
+						result  = true;
 					}
 				}
 
 				ImGui::EndCombo();
 			}
+
+			return result;
 		}
 
 		void UISettings::DrawObjectDatabaseSection()
@@ -919,6 +989,8 @@ namespace IED
 					stl::snprintf(buf, "%u", stl::underlying(current));
 					preview = buf;
 				}
+
+				ImGui::PushID("7");
 
 				ImGui::Spacing();
 				ImGui::Indent();
@@ -966,6 +1038,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -977,6 +1051,8 @@ namespace IED
 					"%s",
 					LS(CommonStrings::Localization)))
 			{
+				ImGui::PushID("8");
+
 				ImGui::Indent();
 				ImGui::Spacing();
 
@@ -988,7 +1064,7 @@ namespace IED
 						LS(CommonStrings::Language, "1"),
 						current ?
 							current->GetLang().c_str() :
-                            nullptr,
+							nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{
 					for (auto& e : ldm.GetData())
@@ -1018,6 +1094,8 @@ namespace IED
 
 				ImGui::Spacing();
 				ImGui::Unindent();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -1029,6 +1107,8 @@ namespace IED
 					"%s",
 					LS(UISettingsStrings::I3DI)))
 			{
+				ImGui::PushID("9");
+
 				ImGui::Indent();
 				ImGui::Spacing();
 
@@ -1041,6 +1121,8 @@ namespace IED
 
 				ImGui::Spacing();
 				ImGui::Unindent();
+
+				ImGui::PopID();
 			}
 		}
 
@@ -1212,7 +1294,7 @@ namespace IED
 
 		bool UISettings::DrawSoundPairs()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			bool result = false;
 
@@ -1307,22 +1389,46 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
+				auto tmp = a_soundPair.first ?
+				               *a_soundPair.first :
+				               Game::FormID{};
+
 				if (DrawFormPicker(
 						"1",
 						static_cast<Localization::StringID>(CommonStrings::Equip),
-						*a_soundPair.first))
+						tmp))
 				{
 					result = true;
-					a_soundPair.first.mark(*a_soundPair.first != 0);
+
+					if (tmp)
+					{
+						a_soundPair.first.emplace(tmp);
+					}
+					else
+					{
+						a_soundPair.first.reset();
+					}
 				}
+
+				tmp = a_soundPair.second ?
+				          *a_soundPair.second :
+				          Game::FormID{};
 
 				if (DrawFormPicker(
 						"2",
 						static_cast<Localization::StringID>(CommonStrings::Unequip),
-						*a_soundPair.second))
+						tmp))
 				{
 					result = true;
-					a_soundPair.second.mark(*a_soundPair.second != 0);
+
+					if (tmp)
+					{
+						a_soundPair.second.emplace(tmp);
+					}
+					else
+					{
+						a_soundPair.second.reset();
+					}
 				}
 
 				ImGui::Spacing();

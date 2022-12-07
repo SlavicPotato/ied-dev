@@ -3,7 +3,6 @@
 #include "UIIntroBanner.h"
 #include "UIIntroBannerStrings.h"
 
-#include "UICommon.h"
 #include "UIData.h"
 
 #include "IED/Controller/Controller.h"

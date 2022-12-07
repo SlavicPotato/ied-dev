@@ -30,8 +30,9 @@ namespace IED
 					auto& pluginInfo = IData::GetPluginInfo().GetLookupRef();
 					if (!pluginInfo.contains(it->first))
 					{
-						Warning(
-							"%.8X: erasing %zu custom item(s) from missing plugin '%s'",
+						gLog.Warning(
+							"%s: %.8X: erasing %zu custom item(s) from missing plugin '%s'",
+							__FUNCTION__,
 							a_handle.get(),
 							it->second.data.size(),
 							it->first.c_str());
@@ -73,7 +74,7 @@ namespace IED
 			{
 				if (!e.validate())
 				{
-					Warning("%.8X: bad priority data, resetting", a_handle.get());
+					gLog.Warning("%s: %.8X: bad priority data, resetting", __FUNCTION__, a_handle.get());
 
 					e.clear();
 				}
@@ -120,8 +121,9 @@ namespace IED
 					auto& pluginInfo = IData::GetPluginInfo().GetLookupRef();
 					if (!pluginInfo.contains(*it2))
 					{
-						Warning(
-							"Erasing actor block from missing plugin '%s'",
+						gLog.Warning(
+							"%s: erasing actor block from missing plugin '%s'",
+							__FUNCTION__,
 							it2->c_str());
 
 						it2 = it->second.keys.erase(it2);

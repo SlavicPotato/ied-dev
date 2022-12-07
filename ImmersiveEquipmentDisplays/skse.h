@@ -35,7 +35,7 @@ public:
 		return m_Instance.m_backlog;
 	}
 
-	static void CloseBacklog();
+	void CloseBacklog();
 
 private:
 	ISKSE() = default;
@@ -46,10 +46,6 @@ private:
 	virtual bool          CheckRuntimeVersion(std::uint32_t a_version) const override;
 
 	virtual void Receive(const LoggerMessageEvent& a_evn) override;
-
-	// virtual bool CheckInterfaceVersion(std::uint32_t a_interfaceID,
-	// std::uint32_t a_interfaceVersion, std::uint32_t a_compiledInterfaceVersion)
-	// const override;
 
 	BackLog m_backlog;
 

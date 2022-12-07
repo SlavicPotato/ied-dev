@@ -16,8 +16,8 @@ namespace IED
 	namespace UI
 	{
 		class UINodeMapEditor :
-			public UIWindow,
 			public UIContext,
+			public UIWindow,
 			public UITableRowInputWidget<stl::fixed_string>,
 			public virtual UILocalizationInterface
 		{

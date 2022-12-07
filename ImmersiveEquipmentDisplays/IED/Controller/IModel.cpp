@@ -34,8 +34,7 @@ namespace IED
 			{
 				a_out = {
 					a_type,
-					path,
-					nullptr
+					path
 				};
 			}
 
@@ -112,7 +111,7 @@ namespace IED
 				a_out,
 				static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
 					ModelType::kLight :
-                    ModelType::kMisc);
+					ModelType::kMisc);
 
 		case BGSArtObject::kTypeID:
 			return ExtractFormModelParams<BGSArtObject>(a_form, a_out);
@@ -175,7 +174,9 @@ namespace IED
 			{
 				auto armor = static_cast<TESObjectARMO*>(a_form);
 
-				if (!a_useWorld && armor->IsShield())
+				const bool isShield = armor->IsShield();
+
+				if (!a_useWorld && isShield)
 				{
 					for (auto& arma : armor->armorAddons)
 					{
@@ -189,14 +190,12 @@ namespace IED
 							continue;
 						}
 
-						auto modelData = GetModelData(arma, a_isFemale);
-						if (modelData)
+						if (const auto modelData = GetModelData(arma, a_isFemale))
 						{
 							a_out = {
-								ModelType::kArmor,
+								ModelType::kShield,
 								modelData->path,
 								modelData->swap,
-								true,
 								arma
 							};
 
@@ -210,16 +209,14 @@ namespace IED
 				}
 				else
 				{
-					auto modelData = GetModelData(armor, a_isFemale);
-
-					if (modelData)
+					if (const auto modelData = GetModelData(armor, a_isFemale))
 					{
 						a_out = {
-							ModelType::kArmor,
+							isShield ?
+								ModelType::kShield :
+								ModelType::kArmor,
 							modelData->path,
-							modelData->swap,
-							false,
-							nullptr
+							modelData->swap
 						};
 
 						return true;

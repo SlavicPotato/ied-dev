@@ -72,13 +72,13 @@ namespace IED
 
 		template <class T>
 		class UICustomEditorWidget :
-			public UIEditorPanelSettingsGear,
 			public UIBaseConfigWidget<T>,
-			public UIEditorInterface,
 			public UIModelGroupEditorWidget<T>,
 			public UILastEquippedWidget,
 			public UIVariableSourceSelectorWidget,
-			public virtual UIFormTypeSelectorWidget
+			public UIEditorPanelSettingsGear,
+			public virtual UIFormTypeSelectorWidget,
+			public UIEditorInterface
 		{
 		public:
 			UICustomEditorWidget(
@@ -1474,6 +1474,8 @@ namespace IED
 					"%s",
 					a_name.c_str()))
 			{
+				ImGui::PushID("body");
+
 				ImGui::Spacing();
 
 				ImGui::Indent();
@@ -1514,6 +1516,8 @@ namespace IED
 				ImGui::Unindent();
 
 				ImGui::Spacing();
+
+				ImGui::PopID();
 			}
 
 			ImGui::PopID();

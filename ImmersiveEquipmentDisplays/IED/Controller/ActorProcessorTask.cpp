@@ -3,6 +3,7 @@
 #include "ActorProcessorTask.h"
 
 #include "Controller.h"
+#include "IConditionalVariableProcessor.h"
 #include "IObjectManager.h"
 
 #include "IED/EngineExtensions.h"
@@ -54,7 +55,7 @@ namespace IED
 
 				if (result)
 				{
-					m_controller.UpdateRootIfGamePaused(info->root);
+					INode::UpdateRootIfGamePaused(info->root);
 					a_record.RequestEvalDefer();
 				}
 			}
@@ -279,10 +280,10 @@ namespace IED
 
 		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
 
-		auto& tlsUnk768 = tlsData[*EngineExtensions::tlsIndex]->unk768;
+		auto& tlsUnk768 = tlsData[*g_TlsIndexPtr]->unk768;
 
-		auto oldUnk768 = tlsUnk768;
-		tlsUnk768      = 0x3A;
+		const auto oldUnk768 = tlsUnk768;
+		tlsUnk768            = 0x3A;
 
 		BSAnimationUpdateData data{ a_step };
 		data.reference    = a_actor;
@@ -329,14 +330,14 @@ namespace IED
 				continue;
 			}
 
-			auto actor = refr->As<Actor>();
+			const auto actor = refr->As<Actor>();
 			if (!Util::Common::IsREFRValid(actor))
 			{
 				state.cellAttached = false;
 				continue;
 			}
 
-			auto cell = actor->GetParentCell();
+			const auto cell = actor->GetParentCell();
 			if (cell && cell->IsAttached())
 			{
 				if (!state.cellAttached)
@@ -389,7 +390,7 @@ namespace IED
 					e.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 				}*/
 			}
-			
+
 			if (m_timer.GetStartTime() >= e.m_nextMFStateCheck)
 			{
 				e.m_nextMFStateCheck =
@@ -420,7 +421,7 @@ namespace IED
 				const auto step =
 					e.m_actorid == Data::IData::GetPlayerRefID() ?
 						animUpdateData->steps.player :
-                        animUpdateData->steps.npc;
+						animUpdateData->steps.npc;
 
 				UpdateActorGearAnimations(actor, e, step);
 			}
@@ -466,7 +467,7 @@ namespace IED
 							e,
 							m_controller);
 
-						if (m_controller.UpdateVariableMap(
+						if (IConditionalVariableProcessor::UpdateVariableMap(
 								params,
 								cvdata,
 								e.GetVariables()))
