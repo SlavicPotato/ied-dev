@@ -233,13 +233,13 @@ namespace IED
 
 		a_out.name    = IFormCommon::GetFormName(a_npc);
 		a_out.form    = a_npc->formID;
-		a_out.templ   = templ ? templ->formID : 0;
+		a_out.templ   = templ ? templ->formID : Game::FormID{};
 		a_out.nontemp = a_npc->GetFirstNonTemporaryOrThis()->formID;
 		a_out.flags   = a_npc->flags;
 		a_out.female  = a_npc->GetSex() == 1;
 		a_out.race    = a_npc->race ?
 		                    a_npc->race->formID :
-		                    0;
+		                    Game::FormID{};
 		a_out.weight  = a_npc->GetWeight();
 
 		a_out.ts = IPerfCounter::Query();

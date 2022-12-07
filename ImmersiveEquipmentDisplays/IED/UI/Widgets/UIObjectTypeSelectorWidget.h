@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigData.h"
+#include "IED/Data.h"
 
 namespace IED
 {

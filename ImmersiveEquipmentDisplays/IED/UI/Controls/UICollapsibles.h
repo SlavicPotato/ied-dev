@@ -1,14 +1,11 @@
 #pragma once
 
+#include "IED/UI/UIData.h"
+
 namespace IED
 {
 	namespace UI
 	{
-		namespace UIData
-		{
-			class UICollapsibleStates;
-		}
-
 		class UICollapsibles
 		{
 		protected:

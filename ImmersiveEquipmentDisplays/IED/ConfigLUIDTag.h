@@ -1,7 +1,5 @@
 #pragma once
 
-#include <ext/ILUID.h>
-
 namespace IED
 {
 	namespace Data

@@ -386,7 +386,7 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				HALT("fixme");
 			}
 		}
 
@@ -449,7 +449,7 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				HALT("fixme");
 			}
 		}
 	}

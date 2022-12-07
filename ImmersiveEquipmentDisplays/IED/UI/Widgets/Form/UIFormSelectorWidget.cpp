@@ -319,12 +319,12 @@ namespace IED
 						ImGuiCol_Text,
 						isValid ?
 							UICommon::g_colorOK :
-                            UICommon::g_colorError);
+							UICommon::g_colorError);
 
 					ImGui::TextUnformatted(
 						isValid ?
 							LS(CommonStrings::OK) :
-                            LS(CommonStrings::Invalid));
+							LS(CommonStrings::Invalid));
 
 					ImGui::SameLine();
 					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -334,7 +334,7 @@ namespace IED
 				auto& base = m_state->m_currentInfo->get_base();
 				auto& info = !m_forceBase ?
 				                 m_state->m_currentInfo->form :
-                                 base;
+				                 base;
 
 				if (m_state->m_currentInfo->is_ref())
 				{
@@ -437,7 +437,7 @@ namespace IED
 
 			auto v = str_conv::ston<unsigned long>(tmp, 0);
 
-			return v ? *v : Game::FormID{};
+			return v ? Game::FormID{ *v } : Game::FormID{};
 		}
 
 		void UIFormSelectorWidget::SetInputFormID(

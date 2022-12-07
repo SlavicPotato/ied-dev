@@ -98,31 +98,31 @@ namespace IED
 
 			auto& g = a_out.GetFormMaps();
 
-			if (!pmap.Parse(data["actor"], g[stl::underlying(ConfigClass::Actor)]))
+			if (!pmap.Parse(data["actor"], g[stl::underlying(Data::ConfigClass::Actor)]))
 			{
 				return false;
 			}
 
-			if (!pmap.Parse(data["npc"], g[stl::underlying(ConfigClass::NPC)]))
+			if (!pmap.Parse(data["npc"], g[stl::underlying(Data::ConfigClass::NPC)]))
 			{
 				return false;
 			}
 
-			if (!pmap.Parse(data["race"], g[stl::underlying(ConfigClass::Race)]))
+			if (!pmap.Parse(data["race"], g[stl::underlying(Data::ConfigClass::Race)]))
 			{
 				return false;
 			}
 
 			if (!pholder.Parse(
 					data["default_player"],
-					a_out.GetGlobalData(GlobalConfigType::Player)))
+					a_out.GetGlobalData(Data::GlobalConfigType::Player)))
 			{
 				return false;
 			}
 
 			if (!pholder.Parse(
 					data["default_npc"],
-					a_out.GetGlobalData(GlobalConfigType::NPC)))
+					a_out.GetGlobalData(Data::GlobalConfigType::NPC)))
 			{
 				return false;
 			}
@@ -144,16 +144,16 @@ namespace IED
 
 			auto& g = a_data.GetFormMaps();
 
-			pmap.Create(g[stl::underlying(ConfigClass::Actor)], data["actor"]);
-			pmap.Create(g[stl::underlying(ConfigClass::NPC)], data["npc"]);
-			pmap.Create(g[stl::underlying(ConfigClass::Race)], data["race"]);
+			pmap.Create(g[stl::underlying(Data::ConfigClass::Actor)], data["actor"]);
+			pmap.Create(g[stl::underlying(Data::ConfigClass::NPC)], data["npc"]);
+			pmap.Create(g[stl::underlying(Data::ConfigClass::Race)], data["race"]);
 
 			pholder.Create(
-				a_data.GetGlobalData(GlobalConfigType::Player),
+				a_data.GetGlobalData(Data::GlobalConfigType::Player),
 				data["default_player"]);
 
 			pholder.Create(
-				a_data.GetGlobalData(GlobalConfigType::NPC),
+				a_data.GetGlobalData(Data::GlobalConfigType::NPC),
 				data["default_npc"]);
 
 			a_out["version"] = a_version;

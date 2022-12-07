@@ -191,7 +191,7 @@ namespace IED
 					auto label =
 						e.p2 ?
 							static_cast<Localization::StringID>(reinterpret_cast<std::uintptr_t>(e.p2)) :
-                            static_cast<Localization::StringID>(CommonStrings::Form);
+							static_cast<Localization::StringID>(CommonStrings::Form);
 
 					result |= m_formPickerForm.DrawFormPicker(
 						"fp_1",
@@ -511,7 +511,7 @@ namespace IED
 								"LD: %s",
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
 									LS(CommonStrings::True) :
-                                    LS(CommonStrings::False));
+									LS(CommonStrings::False));
 						}
 						else
 						{
@@ -521,7 +521,7 @@ namespace IED
 								r,
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
 									LS(CommonStrings::True) :
-                                    LS(CommonStrings::False));
+									LS(CommonStrings::False));
 						}
 
 						return m_descBuffer2;
@@ -604,7 +604,7 @@ namespace IED
 						return GetFormKeywordExtraDesc(
 							type != PACKAGE_PROCEDURE_TYPE::kNone ?
 								procedure_type_to_desc(type) :
-                                nullptr);
+								nullptr);
 					}
 					else
 					{
@@ -656,7 +656,7 @@ namespace IED
 								get(ConditionParamItem::Float).As1<float>());
 
 							break;
-							
+
 						case ConditionalVariableType::kForm:
 
 							stl::snprintf(
@@ -769,7 +769,7 @@ namespace IED
 				a_iform = e.As1<Game::FormID>();
 			}
 
-			constexpr char* kwtag = "KW";
+			constexpr const char* kwtag = "KW";
 
 			if (const auto& e = get(ConditionParamItem::Keyword); e.p1)
 			{

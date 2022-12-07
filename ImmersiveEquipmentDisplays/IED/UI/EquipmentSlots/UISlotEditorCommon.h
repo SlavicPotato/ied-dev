@@ -179,7 +179,8 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				//static_assert(false);
+				HALT("fixme");
 			}
 		}
 
@@ -198,7 +199,7 @@ namespace IED
 				a_params.entry.second.get(Data::GetOppositeSex(a_params.sex)) = src;
 			}
 
-			a_params.entry.first = GetConfigClass();
+			a_params.entry.first = this->GetConfigClass();
 
 			if (!dst)
 			{
@@ -414,7 +415,7 @@ namespace IED
 			const entrySlotData_t& a_data)
 		{
 			a_data.copy_cc(
-				GetConfigClass(),
+				this->GetConfigClass(),
 				GetOrCreateConfigSlotHolder(a_handle));
 		}
 
@@ -425,11 +426,11 @@ namespace IED
 		{
 			ImGui::Separator();
 
-			if (TreeEx(
+			if (this->TreeEx(
 					"tree_prof",
 					false,
 					"%s",
-					LS(CommonStrings::Profile)))
+					this->LS(CommonStrings::Profile)))
 			{
 				ImGui::Spacing();
 
@@ -437,7 +438,7 @@ namespace IED
 
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -15.5f);
 
-				DrawProfileSelector(psParams);
+				this->DrawProfileSelector(psParams);
 
 				ImGui::PopItemWidth();
 
@@ -451,7 +452,7 @@ namespace IED
 		SlotProfile::base_type UISlotEditorCommon<T>::GetData(
 			const profileSelectorParamsSlot_t<T>& a_data)
 		{
-			return a_data.data.copy_cc(GetConfigClass());
+			return a_data.data.copy_cc(this->GetConfigClass());
 		}
 
 		template <class T>
@@ -469,7 +470,7 @@ namespace IED
 			ImGui::PushID("import_opts");
 
 			ImGui::CheckboxFlagsT(
-				LS(CommonStrings::All, "1"),
+				this->LS(CommonStrings::All, "1"),
 				stl::underlying(std::addressof(m_importFlags.value)),
 				stl::underlying(UISlotImportFlags::kEverything));
 
@@ -478,7 +479,7 @@ namespace IED
 			UICommon::PushDisabled(disabled);
 
 			ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Overrides, "2"),
+				this->LS(CommonStrings::Overrides, "2"),
 				stl::underlying(std::addressof(m_importFlags.value)),
 				stl::underlying(UISlotImportFlags::kOverrides));
 

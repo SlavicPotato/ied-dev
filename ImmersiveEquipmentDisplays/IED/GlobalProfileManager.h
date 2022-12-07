@@ -110,7 +110,7 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false, "Unrecognized profile");
+				//static_assert(false, "Unrecognized profile");
 			}
 		}
 

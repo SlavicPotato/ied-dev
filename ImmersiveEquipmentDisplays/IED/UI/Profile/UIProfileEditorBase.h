@@ -95,7 +95,7 @@ namespace IED
 			{
 				if (m_filter.Test(*e->first))
 				{
-					SetSelected(e->first);
+					this->SetSelected(e->first);
 					break;
 				}
 			}
@@ -107,7 +107,7 @@ namespace IED
 			SetWindowDimensions(GetWindowDimensions());
 
 			if (ImGui::Begin(
-					LS<UIProfileStrings, 3>(
+					this->LS<UIProfileStrings, 3>(
 						m_title,
 						m_strid),
 					GetOpenState(),
@@ -119,23 +119,23 @@ namespace IED
 
 				auto& data = GetProfileManager().Data();
 
-				if (m_state.selected)
+				if (this->m_state.selected)
 				{
-					if (!data.contains(*m_state.selected))
+					if (!data.contains(*this->m_state.selected))
 					{
-						m_state.selected.reset();
+						this->m_state.selected.reset();
 					}
 				}
 
-				if (!m_state.selected)
+				if (!this->m_state.selected)
 				{
 					SelectFirstPassed();
 				}
 				else
 				{
-					if (!m_filter.Test(*(*m_state.selected)))
+					if (!m_filter.Test(*(*this->m_state.selected)))
 					{
-						m_state.selected.reset();
+						this->m_state.selected.reset();
 						SelectFirstPassed();
 					}
 				}
@@ -143,9 +143,9 @@ namespace IED
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -9.0f);
 
 				if (ImGui::BeginCombo(
-						LS(CommonStrings::Profile, "combo"),
-						m_state.selected ?
-							m_state.selected->c_str() :
+						this->LS(CommonStrings::Profile, "combo"),
+						this->m_state.selected ?
+							this->m_state.selected->c_str() :
 							nullptr,
 						ImGuiComboFlags_HeightLarge))
 				{
@@ -160,14 +160,14 @@ namespace IED
 
 						ImGui::PushID(e);
 
-						bool selected = m_state.selected == e->first;
+						bool selected = this->m_state.selected == e->first;
 						if (selected)
 						{
 							if (ImGui::IsWindowAppearing())
 								ImGui::SetScrollHereY();
 						}
 
-						if (ImGui::Selectable(LMKID<3>(e->second.Name().c_str(), "1"), selected))
+						if (ImGui::Selectable(this->LMKID<3>(e->second.Name().c_str(), "1"), selected))
 						{
 							newItem = e;
 						}
@@ -177,7 +177,7 @@ namespace IED
 
 					if (newItem)
 					{
-						SetSelected(newItem->first);
+						this->SetSelected(newItem->first);
 					}
 
 					ImGui::EndCombo();
@@ -192,41 +192,41 @@ namespace IED
 					ImGui::GetWindowContentRegionMax().x -
 					GetNextTextOffset(sh.snew, true));
 
-				if (ButtonRight(sh.snew, !AllowCreateNew()))
+				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
-					ImGui::OpenPopup(LS(UIProfileStrings::NewProfile, POPUP_NEW_ID));
-					m_state.new_input[0] = 0;
+					ImGui::OpenPopup(this->LS(UIProfileStrings::NewProfile, UIProfileBase<T>::POPUP_NEW_ID));
+					this->m_state.new_input[0] = 0;
 				}
 
 				m_filter.Draw();
 
 				ImGui::PopItemWidth();
 
-				DrawCreateNew();
+				this->DrawCreateNew();
 
-				if (m_state.selected)
+				if (this->m_state.selected)
 				{
-					if (auto it = data.find(*m_state.selected); it != data.end())
+					if (auto it = data.find(*this->m_state.selected); it != data.end())
 					{
 						ImGui::PushID("ctls");
 
 						auto& profile = it->second;
 
-						if (AllowSave())
+						if (this->AllowSave())
 						{
-							if (ImGui::Button(LS(CommonStrings::Save, "1")))
+							if (ImGui::Button(this->LS(CommonStrings::Save, "1")))
 							{
 								auto& pm = GetProfileManager();
 
 								if (!pm.SaveProfile(profile.Name()))
 								{
-									auto& queue = GetPopupQueue_ProfileBase();
+									auto& queue = this->GetPopupQueue_ProfileBase();
 
 									queue.push(
 										UIPopupType::Message,
-										LS(CommonStrings::Error),
+										this->LS(CommonStrings::Error),
 										"%s [%s]\n\n%s",
-										LS(UIProfileStrings::SaveError),
+										this->LS(UIProfileStrings::SaveError),
 										profile.Name().c_str(),
 										pm.GetLastException().what());
 								}
@@ -235,45 +235,45 @@ namespace IED
 							ImGui::SameLine();
 						}
 
-						if (ImGui::Button(LS(CommonStrings::Delete, "2")))
+						if (ImGui::Button(this->LS(CommonStrings::Delete, "2")))
 						{
-							auto& queue = GetPopupQueue_ProfileBase();
+							auto& queue = this->GetPopupQueue_ProfileBase();
 
 							queue.push(
 									 UIPopupType::Confirm,
-									 LS(UIProfileStrings::ConfirmDelete),
+									 this->LS(UIProfileStrings::ConfirmDelete),
 									 "%s [%s]",
-									 LS(UIProfileStrings::DeletePrompt),
+									 this->LS(UIProfileStrings::DeletePrompt),
 									 profile.Name().c_str())
-								.call([this, item = *m_state.selected](const auto&) {
+								.call([this, item = *this->m_state.selected](const auto&) {
 									auto& pm = GetProfileManager();
 
 									if (!pm.DeleteProfile(item))
 									{
-										auto& queue = GetPopupQueue_ProfileBase();
+										auto& queue = this->GetPopupQueue_ProfileBase();
 
 										queue.push(
 											UIPopupType::Message,
-											LS(CommonStrings::Error),
+											this->LS(CommonStrings::Error),
 											"%s:\n\n%s",
-											LS(UIProfileStrings::DeleteError),
+											this->LS(UIProfileStrings::DeleteError),
 											pm.GetLastException().what());
 									}
 								});
 						}
 
 						ImGui::SameLine();
-						if (ImGui::Button(LS(CommonStrings::Rename, "3")))
+						if (ImGui::Button(this->LS(CommonStrings::Rename, "3")))
 						{
-							auto& queue = GetPopupQueue_ProfileBase();
+							auto& queue = this->GetPopupQueue_ProfileBase();
 
 							queue.push(
 									 UIPopupType::Input,
-									 LS(CommonStrings::Rename),
+									 this->LS(CommonStrings::Rename),
 									 "%s:",
-									 LS(UIProfileStrings::ProfileNamePrompt))
+									 this->LS(UIProfileStrings::ProfileNamePrompt))
 								.fmt_input("%s", profile.Name().c_str())
-								.call([this, item = *m_state.selected](const auto& a_p) {
+								.call([this, item = *this->m_state.selected](const auto& a_p) {
 									std::string newName(a_p.GetInput());
 
 									if (newName.empty())
@@ -284,30 +284,30 @@ namespace IED
 									auto& pm = GetProfileManager();
 									if (!pm.RenameProfile(item, newName))
 									{
-										auto& queue = GetPopupQueue_ProfileBase();
+										auto& queue = this->GetPopupQueue_ProfileBase();
 
 										queue.push(
 											UIPopupType::Message,
-											LS(CommonStrings::Error),
+											this->LS(CommonStrings::Error),
 											"%s\n\n%s",
-											LS(UIProfileStrings::RenameError),
+											this->LS(UIProfileStrings::RenameError),
 											pm.GetLastException().what());
 									}
 								});
 						}
 
 						ImGui::SameLine();
-						if (ImGui::Button(LS(CommonStrings::Reload, "4")))
+						if (ImGui::Button(this->LS(CommonStrings::Reload, "4")))
 						{
 							if (!profile.Load())
 							{
-								auto& queue = GetPopupQueue_ProfileBase();
+								auto& queue = this->GetPopupQueue_ProfileBase();
 
 								queue.push(
 									UIPopupType::Message,
-									LS(CommonStrings::Error),
+									this->LS(CommonStrings::Error),
 									"%s [%s]\n\n%s",
-									LS(UIProfileStrings::ReloadError),
+									this->LS(UIProfileStrings::ReloadError),
 									profile.Name().c_str(),
 									profile.GetLastException().what());
 							}
@@ -330,7 +330,7 @@ namespace IED
 							ImGui::Spacing();
 
 							ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-							ImGui::TextWrapped("%s", LS(UIProfileStrings::ProfileParserErrorWarning));
+							ImGui::TextWrapped("%s", this->LS(UIProfileStrings::ProfileParserErrorWarning));
 							ImGui::PopStyleColor();
 
 							ImGui::Separator();
@@ -353,9 +353,9 @@ namespace IED
 		{
 			if (ImGui::BeginMenuBar())
 			{
-				if (ImGui::BeginMenu(LS(CommonStrings::File, "1")))
+				if (ImGui::BeginMenu(this->LS(CommonStrings::File, "1")))
 				{
-					if (ImGui::MenuItem(LS(CommonStrings::Close, "1")))
+					if (ImGui::MenuItem(this->LS(CommonStrings::Close, "1")))
 					{
 						SetOpenState(false);
 					}

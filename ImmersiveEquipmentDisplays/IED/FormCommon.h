@@ -1,12 +1,9 @@
 #pragma once
 
+#include "ConfigCommon.h"
+
 namespace IED
 {
-	namespace Data
-	{
-		struct configCachedForm_t;
-	}
-
 	enum class FormInfoFlags : std::uint8_t
 	{
 		kNone = 0,

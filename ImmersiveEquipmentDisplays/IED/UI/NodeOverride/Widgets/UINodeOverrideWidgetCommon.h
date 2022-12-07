@@ -105,7 +105,7 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				HALT("fixme");
 			}
 		}
 	}

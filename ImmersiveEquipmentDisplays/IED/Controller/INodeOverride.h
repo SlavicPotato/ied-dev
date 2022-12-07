@@ -211,7 +211,7 @@ namespace IED
 			const Data::configNodeOverridePlacement_t& a_data,
 			nodeOverrideParams_t&                      a_params);
 
-		static bool INodeOverride::process_offsets(
+		static bool process_offsets(
 			const Data::configNodeOverrideOffsetList_t& a_data,
 			NiTransform&                                a_out,
 			NiPoint3&                                   a_posAccum,

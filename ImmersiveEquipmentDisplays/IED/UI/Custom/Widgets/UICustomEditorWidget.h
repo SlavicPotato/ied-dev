@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IED/UI/PopupQueue/UIPopupAction.h"
 #include "IED/UI/PopupQueue/UIPopupQueue.h"
 #include "IED/UI/UIAllowedModelTypes.h"
 #include "IED/UI/UIClipboard.h"
@@ -363,7 +364,7 @@ namespace IED
 			           name   = a_data.name,
 			           tsex   = a_data.sex,
 			           ssex   = GetOppositeSex(a_data.sex)](
-						  const auto&) {
+						  const UIPopupAction&) {
 					auto current = GetCurrentData();
 					if (!current)
 					{
@@ -389,7 +390,7 @@ namespace IED
 						it->second
 					};
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						handle,
 						std::addressof(params),
 						PostChangeAction::Reset);
@@ -638,7 +639,7 @@ namespace IED
 				{
 					a_params.entry(a_params.sex) = clipData->data(a_params.sex);
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Reset);
@@ -686,7 +687,7 @@ namespace IED
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
 
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Reset);
@@ -701,9 +702,9 @@ namespace IED
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
 				data.customFlags.set(Data::CustomFlags::kGroupMode);
 
-				CreatePrimaryModelGroup(a_handle, a_params, data.group);
+				this->CreatePrimaryModelGroup(a_handle, a_params, data.group);
 
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Reset);
@@ -718,7 +719,7 @@ namespace IED
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
 				data.customFlags.set(Data::CustomFlags::kLastEquippedMode);
 
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Reset);
@@ -734,14 +735,14 @@ namespace IED
 			{
 			case CustomObjectMode::kGroup:
 
-				DrawModelGroupEditorWidgetTree(a_handle, a_params, data.group);
+				this->DrawModelGroupEditorWidgetTree(a_handle, a_params, data.group);
 
 				break;
 
 			case CustomObjectMode::kLastEquipped:
 
 				DrawLastEquippedPanel(data.lastEquipped, [&] {
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
@@ -757,7 +758,7 @@ namespace IED
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kVariableMode)))
 					{
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -780,14 +781,14 @@ namespace IED
 							"fp",
 							mode == CustomObjectMode::kLastEquipped ?
 								static_cast<Localization::StringID>(CommonStrings::Default) :
-                                static_cast<Localization::StringID>(CommonStrings::Item),
+								static_cast<Localization::StringID>(CommonStrings::Item),
 							data.form,
 							GetTipText(
 								mode == CustomObjectMode::kLastEquipped ?
 									UITip::CustomFormLastEquipped :
-                                    UITip::CustomForm)))
+									UITip::CustomForm)))
 					{
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -811,7 +812,7 @@ namespace IED
 
 			if (DrawVariableSourceSelectorWidget(data.varSource.source))
 			{
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Evaluate);
@@ -831,7 +832,7 @@ namespace IED
 							static_cast<Localization::StringID>(CommonStrings::Form),
 							data.varSource.form))
 					{
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -845,14 +846,14 @@ namespace IED
 
 			ImGui::Spacing();
 
-			if (DrawStringListTree(
+			if (this->DrawStringListTree(
 					"ctl_2",
 					static_cast<Localization::StringID>(CommonStrings::Variables),
 					data.formVars,
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen))
 			{
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Evaluate);
@@ -904,7 +905,7 @@ namespace IED
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kUseChance)))
 					{
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -922,7 +923,7 @@ namespace IED
 								"%.2f",
 								ImGuiSliderFlags_AlwaysClamp))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -951,7 +952,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIsInInventory)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1004,7 +1005,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kEquipmentMode)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1024,7 +1025,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kAlwaysUnload)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1039,7 +1040,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kCheckFav)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1057,7 +1058,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIgnoreRaceEquipTypes)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1070,7 +1071,7 @@ namespace IED
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1096,7 +1097,7 @@ namespace IED
 								data.modelForm,
 								GetTipText(UITip::CustomFormModelSwap)))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Reset);
@@ -1123,7 +1124,7 @@ namespace IED
 								"%u",
 								ImGuiSliderFlags_AlwaysClamp))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1183,7 +1184,7 @@ namespace IED
 						{
 							data.extraItems.emplace_back(m_fsNew);
 
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1223,7 +1224,7 @@ namespace IED
 
 						if (added)
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1243,7 +1244,7 @@ namespace IED
 
 					data.extraItems.clear();
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
@@ -1300,7 +1301,7 @@ namespace IED
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kSelectInvRandom)))
 					{
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Reset);
@@ -1381,7 +1382,7 @@ namespace IED
 					{
 						it = data.extraItems.erase(it);
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1395,7 +1396,7 @@ namespace IED
 						{
 							if (IterSwap(data.extraItems, it, SwapDirection::Up))
 							{
-								OnBaseConfigChange(
+								this->OnBaseConfigChange(
 									a_handle,
 									std::addressof(a_params),
 									PostChangeAction::Evaluate);
@@ -1411,7 +1412,7 @@ namespace IED
 						{
 							if (IterSwap(data.extraItems, it, SwapDirection::Down))
 							{
-								OnBaseConfigChange(
+								this->OnBaseConfigChange(
 									a_handle,
 									std::addressof(a_params),
 									PostChangeAction::Evaluate);
@@ -1429,7 +1430,7 @@ namespace IED
 
 						ImGui::TableSetColumnIndex(2);
 
-						if (auto formInfo = LookupForm(*it))
+						if (auto formInfo = this->LookupForm(*it))
 						{
 							if (auto typeDesc = form_type_to_desc(formInfo->form.type))
 							{
@@ -1505,7 +1506,7 @@ namespace IED
 
 				ImGui::PushID("base_config");
 
-				DrawBaseConfig(
+				this->DrawBaseConfig(
 					a_handle,
 					data,
 					std::addressof(params),
@@ -1564,7 +1565,7 @@ namespace IED
 				{
 					a_params.entry(a_params.sex).countRange = {};
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
@@ -1581,7 +1582,7 @@ namespace IED
 		{
 			ImGui::PushID("item_filter");
 
-			if (Tree(LS(CommonStrings::Filter), false))
+			if (this->Tree(LS(CommonStrings::Filter), false))
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
@@ -1617,7 +1618,7 @@ namespace IED
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kIgnorePlayer)))
 			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
 
 			ImGui::NextColumn();
@@ -1627,7 +1628,7 @@ namespace IED
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kLeftWeapon)))
 			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
 			DrawTip(UITip::LeftWeapon);
 
@@ -1636,7 +1637,7 @@ namespace IED
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kDisableHavok)))
 			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
 			DrawTip(UITip::DisableHavok);
 
@@ -1688,7 +1689,7 @@ namespace IED
 			case ModelGroupEditorOnChangeEventType::Form:
 			case ModelGroupEditorOnChangeEventType::Flags:
 
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::Reset);
@@ -1696,7 +1697,7 @@ namespace IED
 				break;
 			case ModelGroupEditorOnChangeEventType::Transform:
 
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_handle,
 					std::addressof(a_params),
 					PostChangeAction::UpdateTransform);

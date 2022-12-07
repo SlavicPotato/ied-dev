@@ -2727,7 +2727,8 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				//static_assert(false);
+				HALT("fixme");
 			}
 		}
 

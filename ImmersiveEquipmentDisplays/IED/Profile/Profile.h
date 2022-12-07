@@ -145,20 +145,20 @@ namespace IED
 	{
 		try
 		{
-			if (m_path.empty())
+			if (this->m_path.empty())
 			{
 				throw std::exception("bad path");
 			}
 
 			std::ifstream fs;
-			fs.open(m_path, std::ifstream::in | std::ifstream::binary);
+			fs.open(this->m_path, std::ifstream::in | std::ifstream::binary);
 
 			if (!fs || !fs.is_open())
 			{
 				throw std::system_error(
 					errno,
 					std::system_category(),
-					Serialization::SafeGetPath(m_path));
+					Serialization::SafeGetPath(this->m_path));
 			}
 
 			Json::Value root;
@@ -176,24 +176,24 @@ namespace IED
 
 			m_hasParserErrors = parser.HasErrors();
 
-			m_id = root.get("id", 0).asUInt64();
+			this->m_id = root.get("id", 0).asUInt64();
 
 			if (auto& desc = root["desc"])
 			{
-				m_desc = desc.asString();
+				this->m_desc = desc.asString();
 			}
 			else
 			{
-				m_desc.reset();
+				this->m_desc.reset();
 			}
 
-			m_data = std::move(*tmp);
+			this->m_data = std::move(*tmp);
 
 			return true;
 		}
 		catch (const std::exception& e)
 		{
-			m_lastExcept = e;
+			this->m_lastExcept = e;
 			return false;
 		}
 	}
@@ -206,7 +206,7 @@ namespace IED
 	{
 		try
 		{
-			if (m_path.empty())
+			if (this->m_path.empty())
 			{
 				throw std::exception("bad path");
 			}
@@ -218,24 +218,24 @@ namespace IED
 
 			parser.Create(a_data, root);
 
-			root["id"] = m_id;
-			if (m_desc)
+			root["id"] = this->m_id;
+			if (this->m_desc)
 			{
-				root["desc"] = *m_desc;
+				root["desc"] = *this->m_desc;
 			}
 
-			Serialization::WriteData(m_path, root);
+			Serialization::WriteData(this->m_path, root);
 
 			if (a_store)
 			{
-				m_data = std::forward<Td>(a_data);
+				this->m_data = std::forward<Td>(a_data);
 			}
 
 			return true;
 		}
 		catch (const std::exception& e)
 		{
-			m_lastExcept = e;
+			this->m_lastExcept = e;
 			return false;
 		}
 	}

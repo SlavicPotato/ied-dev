@@ -28,23 +28,24 @@ namespace IED
 			template <class T>
 			static inline constexpr auto GetConfigClass() noexcept
 			{
-				ConfigClass cl;
+				Data::ConfigClass cl;
 
 				if constexpr (std::is_same_v<T, Actor>)
 				{
-					cl = ConfigClass::Actor;
+					cl = Data::ConfigClass::Actor;
 				}
 				else if constexpr (std::is_same_v<T, TESNPC>)
 				{
-					cl = ConfigClass::NPC;
+					cl = Data::ConfigClass::NPC;
 				}
 				else if constexpr (std::is_same_v<T, TESRace>)
 				{
-					cl = ConfigClass::Race;
+					cl = Data::ConfigClass::Race;
 				}
 				else
 				{
-					static_assert(false, "fixme");
+					//static_assert(false);
+					HALT("fixme");
 				}
 
 				return cl;

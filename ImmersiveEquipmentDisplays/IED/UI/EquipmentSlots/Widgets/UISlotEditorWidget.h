@@ -280,7 +280,7 @@ namespace IED
 			      TESAmmo::kTypeID });
 
 			m_formFilter.SetOnChangeFunc([this](slotFormFilterParams_t<T>& a_params) {
-				OnBaseConfigChange(
+				this->OnBaseConfigChange(
 					a_params.handle,
 					std::addressof(a_params.params),
 					PostChangeAction::Evaluate);
@@ -336,7 +336,7 @@ namespace IED
 					stl::underlying(std::addressof(data.slotFlags.value)),
 					stl::underlying(Data::SlotFlags::kAlwaysUnload)))
 			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
 			DrawTip(UITip::AlwaysUnloadSlot);
 
@@ -347,7 +347,7 @@ namespace IED
 					stl::underlying(std::addressof(data.slotFlags.value)),
 					stl::underlying(Data::SlotFlags::kCheckCannotWear)))
 			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
 			DrawTip(UITip::CheckCannotWear);
 
@@ -547,7 +547,7 @@ namespace IED
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
-			if (TreeEx(
+			if (this->TreeEx(
 					"tree",
 					false,
 					"%s",
@@ -815,7 +815,7 @@ namespace IED
 			           slot   = a_slot,
 			           tsex   = a_tsex,
 			           ssex   = GetOppositeSex(a_tsex)](
-						  const auto&) {
+						  const UIPopupAction&) {
 					auto current = GetCurrentData();
 					if (!current)
 					{
@@ -837,7 +837,7 @@ namespace IED
 
 					SingleSlotConfigUpdateParams params{ slot, tsex, *slotData };
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						handle,
 						std::addressof(params),
 						PostChangeAction::Reset);
@@ -901,9 +901,9 @@ namespace IED
 					 "%s",
 					 a_switch ?
 						 LS(UISlotEditorWidgetStrings::EnableAllSlotsPrompt) :
-                         LS(UISlotEditorWidgetStrings::DisableAllSlotsPrompt))
+						 LS(UISlotEditorWidgetStrings::DisableAllSlotsPrompt))
 				.call([this, a_handle, a_sex, a_switch](
-						  const auto&) {
+						  const UIPopupAction&) {
 					auto current = GetCurrentData();
 					if (!current)
 					{
@@ -947,7 +947,7 @@ namespace IED
 
 						SingleSlotConfigUpdateParams params{ slot, a_sex, *slotData };
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(params),
 							PostChangeAction::Evaluate);
@@ -998,7 +998,7 @@ namespace IED
 				{
 					a_params.entry.second.get(a_params.sex) = *clipData;
 
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Reset);
@@ -1038,7 +1038,7 @@ namespace IED
 
 			auto& slotName = StringHolder::GetSingleton().GetSlotName(a_slot);
 
-			if (CollapsingHeader(
+			if (this->CollapsingHeader(
 					"tree_slot",
 					stl::underlying(a_slot) == 0,
 					"%s",
@@ -1089,7 +1089,7 @@ namespace IED
 
 				ImGui::PushID("base_config");
 
-				DrawBaseConfig(
+				this->DrawBaseConfig(
 					a_handle,
 					data,
 					std::addressof(params),
@@ -1161,10 +1161,10 @@ namespace IED
 
 			ImGui::PushID("fcond_tree");
 
-			DrawEquipmentOverrideConditionTree(
+			this->DrawEquipmentOverrideConditionTree(
 				data.itemFilterCondition,
 				[&] {
-					OnBaseConfigChange(
+					this->OnBaseConfigChange(
 						a_handle,
 						std::addressof(a_params),
 						PostChangeAction::Evaluate);
@@ -1187,7 +1187,7 @@ namespace IED
 				a_params,
 				a_data.preferredItems);
 
-			bool empty = a_data.preferredItems.empty();
+			const bool empty = a_data.preferredItems.empty();
 
 			UICommon::PushDisabled(empty);
 
@@ -1200,7 +1200,7 @@ namespace IED
 				}
 			}
 
-			if (TreeEx(
+			if (this->TreeEx(
 					"pi_tree",
 					false,
 					"%s",
@@ -1271,7 +1271,7 @@ namespace IED
 					case SlotContextAction::Add:
 						it = a_data.emplace(it, result.form);
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1282,7 +1282,7 @@ namespace IED
 					case SlotContextAction::Delete:
 						it = a_data.erase(it);
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1291,7 +1291,7 @@ namespace IED
 					case SlotContextAction::Swap:
 						if (IterSwap(a_data, it, result.dir))
 						{
-							OnBaseConfigChange(
+							this->OnBaseConfigChange(
 								a_handle,
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
@@ -1348,7 +1348,7 @@ namespace IED
 					if (m_piEditEntryID)
 					{
 						a_out = m_piEditEntryID;
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1364,7 +1364,7 @@ namespace IED
 		template <class T>
 		void UISlotEditorWidget<T>::DrawFormInfoText(Game::FormID a_form)
 		{
-			if (auto formInfo = LookupForm(a_form))
+			if (auto formInfo = this->LookupForm(a_form))
 			{
 				if (auto typeDesc = form_type_to_desc(formInfo->form.type))
 				{
@@ -1479,7 +1479,7 @@ namespace IED
 					{
 						a_data.emplace_back(m_piNewEntryID);
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1509,7 +1509,7 @@ namespace IED
 					{
 						a_data = *clipData;
 
-						OnBaseConfigChange(
+						this->OnBaseConfigChange(
 							a_handle,
 							std::addressof(a_params),
 							PostChangeAction::Evaluate);
@@ -1529,7 +1529,7 @@ namespace IED
 		template <class T>
 		void UISlotEditorWidget<T>::DrawSlotFilter()
 		{
-			if (TreeEx(
+			if (this->TreeEx(
 					"slot_filter",
 					false,
 					"%s",

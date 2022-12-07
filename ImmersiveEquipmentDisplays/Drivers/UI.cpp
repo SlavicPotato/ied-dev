@@ -887,7 +887,7 @@ namespace IED
 			auto requestedfont(
 				m_fontUpdateData.font.empty() ?
 					m_currentFont->first :
-                    m_fontUpdateData.font);
+					m_fontUpdateData.font);
 
 			auto& io = ImGui::GetIO();
 
@@ -1118,7 +1118,7 @@ namespace IED
 
 			auto langFlags = m_fontUpdateData.langGlyphData ?
 			                     m_fontUpdateData.langGlyphData->glyph_preset_flags :
-                                 GlyphPresetFlags::kNone;
+			                     stl::flag<GlyphPresetFlags>(GlyphPresetFlags::kNone);
 
 			if (a_data.glyph_preset_flags.test(GlyphPresetFlags::kCyrilic) ||
 			    langFlags.test(GlyphPresetFlags::kCyrilic) ||
@@ -1225,7 +1225,7 @@ namespace IED
 
 				const auto& fontsize = m_fontUpdateData.fontsize ?
 				                           *m_fontUpdateData.fontsize :
-                                           a_info.default_font_size;
+				                           a_info.default_font_size;
 
 				auto r = a_out.try_emplace(
 					m_sDefaultFont,
@@ -1252,7 +1252,7 @@ namespace IED
 
 					const auto& fontsize = m_fontUpdateData.fontsize ?
 					                           *m_fontUpdateData.fontsize :
-                                               it->second.size;
+					                           it->second.size;
 
 					auto r = a_out.try_emplace(it->first, nullptr, fontsize);
 

@@ -902,10 +902,10 @@ namespace IED
 				return physicsData;
 			}
 
-		private :
+		private:
 			template <class Archive>
 			void
-			serialize(Archive& a_ar, const unsigned int a_version)
+				serialize(Archive& a_ar, const unsigned int a_version)
 			{
 				a_ar& flags.value;
 				a_ar& transformData;
@@ -1164,9 +1164,9 @@ namespace IED
 			}
 
 			auto type =
-				a_actor == Data::IData::GetPlayerRefID() ?
+				a_actor == 0x14 ?
 					GlobalConfigType::Player :
-                    GlobalConfigType::NPC;
+					GlobalConfigType::NPC;
 
 			return holderCache_t::get_entry(GetGlobalData(type).get_data<Tc>(), a_node);
 		}

@@ -250,5 +250,8 @@ namespace IED
 		Elapsed         = 321,
 		Notifications   = 322,
 		Threshold       = 323,
+		Inactive        = 324,
+		Dispelled       = 325,
+		Recovers        = 326,
 	};
 }

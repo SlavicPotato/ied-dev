@@ -2812,7 +2812,7 @@ namespace IED
 							e
 						};
 
-						DrawEffectShaderEditor(params, e);
+						this->DrawEffectShaderEditor(params, e);
 
 						ImGui::PopID();
 

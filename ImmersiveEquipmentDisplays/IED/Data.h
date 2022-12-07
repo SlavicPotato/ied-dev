@@ -2,6 +2,7 @@
 
 #include "ConfigData.h"
 #include "ConfigINI.h"
+#include "ConfigSlot.h"
 #include "ConfigStore.h"
 
 namespace IED
@@ -939,7 +940,7 @@ namespace IED
 			ObjectSlot a_slot);
 
 		std::unique_ptr<configSlotHolderCopy_t::data_type> CreateDefaultSlotConfig(
-			ObjectSlot a_slot,
+			ObjectSlot  a_slot,
 			ConfigClass a_class);
 
 	}

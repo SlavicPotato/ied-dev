@@ -8,7 +8,7 @@ namespace IED
 {
 	class Controller;
 
-	RE::BSSimpleList<InventoryEntryData*>* GetEntryDataList(Actor* a_actor);
+	EntryDataList* GetEntryDataList(Actor* a_actor);
 
 	struct SlotItemCandidates
 	{
@@ -44,7 +44,7 @@ namespace IED
 
 		void Run(
 			TESContainer&                          a_container,
-			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
+			EntryDataList* a_dataList);
 
 		SKMP_FORCEINLINE void Process(TESContainer::Entry* entry);
 		SKMP_FORCEINLINE void Process(InventoryEntryData* a_entryData);

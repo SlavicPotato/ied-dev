@@ -291,7 +291,7 @@ namespace IED
 					std::addressof(r.first->first),
 					std::addressof(r.first->second)
 				};
-				SendEvent(evn);
+				this->SendEvent(evn);
 			}
 			else
 			{
@@ -339,7 +339,7 @@ namespace IED
 				std::addressof(it->first),
 				std::addressof(it->second)
 			};
-			SendEvent(evn);
+			this->SendEvent(evn);
 
 			m_storage.erase(it);
 
@@ -398,7 +398,7 @@ namespace IED
 				std::addressof(r.first->first),
 				std::addressof(r.first->second)
 			};
-			SendEvent(evn);
+			this->SendEvent(evn);
 
 			return true;
 		}
@@ -431,7 +431,7 @@ namespace IED
 				std::addressof(it->first),
 				std::addressof(it->second)
 			};
-			SendEvent(evn);
+			this->SendEvent(evn);
 
 			return true;
 		}
@@ -462,7 +462,7 @@ namespace IED
 				std::addressof(it->first),
 				std::addressof(it->second)
 			};
-			SendEvent(evn);
+			this->SendEvent(evn);
 
 			return true;
 		}

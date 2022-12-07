@@ -7,13 +7,13 @@ namespace IED
 {
 	using namespace Data;
 
-	RE::BSSimpleList<InventoryEntryData*>* GetEntryDataList(Actor* a_actor)
+	EntryDataList* GetEntryDataList(Actor* a_actor)
 	{
 		if (auto containerChanges = a_actor->extraData.Get<ExtraContainerChanges>())
 		{
 			return containerChanges->data ?
-			           containerChanges->data->GetObjList() :
-                       nullptr;
+			           containerChanges->data->objList :
+			           nullptr;
 		}
 		else
 		{
@@ -35,8 +35,8 @@ namespace IED
 	}
 
 	void ItemCandidateCollector::Run(
-		TESContainer&                          a_container,
-		RE::BSSimpleList<InventoryEntryData*>* a_dataList)
+		TESContainer&  a_container,
+		EntryDataList* a_dataList)
 	{
 		if (isPlayer)
 		{
@@ -74,7 +74,7 @@ namespace IED
 			return false;
 		}
 
-		if (a_form->formID.IsTemporary()) // should be ok to remove this now
+		if (a_form->formID.IsTemporary())  // should be ok to remove this now
 		{
 			return false;
 		}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigStore.h"
+#include "IED/ConfigCustom.h"
 
 namespace IED
 {
@@ -117,7 +118,10 @@ namespace IED
 				switch (data.type)
 				{
 				case DataType::ConfigCustom:
-					return static_cast<data_type*>(std::addressof(static_cast<Data::configCustomNameValue_t*>(data.data)->second));
+					{
+						auto v = static_cast<Data::configCustomNameValue_t*>(data.data);
+						return static_cast<data_type*>(std::addressof(v->data(v->sex)));
+					}
 				case DataType::ConfigSlot:
 				case DataType::ConfigBase:
 					return static_cast<data_type*>(data.data);
@@ -361,7 +365,8 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				//static_assert(false);
+				HALT("fixme");
 			}
 		}
 
@@ -559,7 +564,8 @@ namespace IED
 			}
 			else
 			{
-				static_assert(false);
+				//static_assert(false);
+				HALT("fixme");
 			}
 		}
 	}

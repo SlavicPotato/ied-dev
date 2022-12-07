@@ -76,8 +76,6 @@
 #include <string>
 #include <vector>
 
-#include <wrl/client.h>
-
 #include <DirectXCollision.h>
 #include <DirectXMath.h>
 
@@ -94,6 +92,7 @@
 
 #include <d3d11.h>
 #include <dxgi1_5.h>
+#include <wrl/client.h>
 
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h>

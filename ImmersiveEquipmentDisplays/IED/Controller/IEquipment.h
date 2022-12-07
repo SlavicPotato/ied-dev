@@ -3,6 +3,9 @@
 #include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/Inventory.h"
+#include "IED/ProcessParams.h"
+
+#include "IED/Controller/ActorObjectHolder.h"
 
 namespace IED
 {
@@ -15,7 +18,6 @@ namespace IED
 	};
 
 	struct ObjectEntryCustom;
-	struct processParams_t;
 	struct BipedSlotCacheEntry;
 	class IRNG;
 

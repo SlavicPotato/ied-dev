@@ -4,6 +4,8 @@
 
 #include "IED/UI/Controls/UIAlignment.h"
 
+#include "IED/UI/Widgets/UIWidgetCommonStrings.h"
+
 namespace IED
 {
 	namespace UI
@@ -71,7 +73,7 @@ namespace IED
 		void UIProfileSelectorBase<T, P>::DrawProfileSelector(
 			const T& a_data)
 		{
-			auto& pm   = GetProfileManager();
+			auto& pm   = this->GetProfileManager();
 			auto& data = pm.Data();
 
 			ImGui::PushID("profile_selector_base");
@@ -79,20 +81,20 @@ namespace IED
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -18.5f);
 
 			const char* preview = nullptr;
-			if (m_state.selected)
+			if (this->m_state.selected)
 			{
-				if (data.find(*m_state.selected) != data.end())
+				if (data.find(*this->m_state.selected) != data.end())
 				{
-					preview = m_state.selected->c_str();
+					preview = this->m_state.selected->c_str();
 				}
 				else
 				{
-					m_state.selected.clear();
+					this->m_state.selected.clear();
 				}
 			}
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Profile, "sel_combo"),
+					this->LS(CommonStrings::Profile, "sel_combo"),
 					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -100,16 +102,16 @@ namespace IED
 				{
 					ImGui::PushID(e);
 
-					bool selected = m_state.selected == e->first;
+					bool selected = this->m_state.selected == e->first;
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
 							ImGui::SetScrollHereY();
 					}
 
-					if (ImGui::Selectable(LMKID<3>(e->second.Name().c_str(), "1"), selected))
+					if (ImGui::Selectable(this->LMKID<3>(e->second.Name().c_str(), "1"), selected))
 					{
-						m_state.selected = e->first;
+						this->m_state.selected = e->first;
 					}
 
 					ImGui::PopID();
@@ -124,21 +126,21 @@ namespace IED
 			if (!m_flags.test(UIProfileSelectorFlags::kDisableControls))
 			{
 				ImGui::SameLine(wcm.x - GetNextTextOffset(sh.snew, true));
-				if (ButtonRight(sh.snew, !AllowCreateNew()))
+				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
-					ImGui::OpenPopup(LS(UIProfileStrings::NewProfile, POPUP_NEW_ID));
-					m_state.new_input[0] = 0;
+					ImGui::OpenPopup(this->LS(UIProfileStrings::NewProfile, UIProfileBase<P>::POPUP_NEW_ID));
+					this->m_state.new_input[0] = 0;
 				}
 			}
 
 			{
-				const auto tmpd = std::make_unique<typename P::base_type>(GetData(a_data));
-				DrawCreateNew(tmpd.get());
+				const auto tmpd(std::make_unique<typename P::base_type>(this->GetData(a_data)));
+				this->DrawCreateNew(tmpd.get());
 			}
 
-			if (m_state.selected)
+			if (this->m_state.selected)
 			{
-				auto it = data.find(*m_state.selected);
+				auto it = data.find(*this->m_state.selected);
 				if (it != data.end())
 				{
 					auto& profile = it->second;
@@ -151,7 +153,7 @@ namespace IED
 							if (ButtonRight(sh.apply))
 							{
 								ResetProfileImportOptions();
-								ImGui::OpenPopup(LS(CommonStrings::Confirm, POPUP_ID_APPLY));
+								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_APPLY));
 							}
 						}
 
@@ -161,64 +163,64 @@ namespace IED
 							if (ButtonRight(sh.merge))
 							{
 								ResetProfileImportOptions();
-								ImGui::OpenPopup(LS(CommonStrings::Confirm, POPUP_ID_MERGE));
+								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_MERGE));
 							}
 						}
 
-						if (ConfirmDialog(
-								LS(CommonStrings::Confirm, POPUP_ID_APPLY),
+						if (this->ConfirmDialog(
+								this->LS(CommonStrings::Confirm, POPUP_ID_APPLY),
 								[&] {
 									return DrawProfileImportOptions(a_data, profile, false);
 								},
 								{},
 								"%s [%s]\n\n%s",
-								LS(UIProfileStrings::LoadDataFromProfile),
+								this->LS(UIProfileStrings::LoadDataFromProfile),
 								profile.Name().c_str(),
-								LS(UIWidgetCommonStrings::CurrentValuesLost)) == ModalStatus::kAccept)
+								this->LS(UIWidgetCommonStrings::CurrentValuesLost)) == UICommonModals::ModalStatus::kAccept)
 						{
 							ApplyProfile(a_data, profile);
 						}
 
-						if (ConfirmDialog(
-								LS(CommonStrings::Confirm, POPUP_ID_MERGE),
+						if (this->ConfirmDialog(
+								this->LS(CommonStrings::Confirm, POPUP_ID_MERGE),
 								[&] {
 									return DrawProfileImportOptions(a_data, profile, true);
 								},
 								{},
 								"%s [%s]\n\n%s",
-								LS(UIProfileStrings::MergeDataFromProfile),
+								this->LS(UIProfileStrings::MergeDataFromProfile),
 								profile.Name().c_str(),
-								LS(UIWidgetCommonStrings::CurrentValuesOverwritten)) == ModalStatus::kAccept)
+								this->LS(UIWidgetCommonStrings::CurrentValuesOverwritten)) == UICommonModals::ModalStatus::kAccept)
 						{
 							MergeProfile(a_data, profile);
 						}
 
-						if (AllowSave())
+						if (this->AllowSave())
 						{
 							ImGui::SameLine(wcm.x - GetNextTextOffset(sh.save));
 							if (ButtonRight(sh.save))
 							{
-								ImGui::OpenPopup(LS(CommonStrings::Confirm, POPUP_ID_SAVE));
+								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_SAVE));
 							}
 						}
 
-						if (ConfirmDialog(
-								LS(CommonStrings::Confirm, POPUP_ID_SAVE),
+						if (this->ConfirmDialog(
+								this->LS(CommonStrings::Confirm, POPUP_ID_SAVE),
 								{},
 								{},
 								"%s [%s]",
-								LS(UIProfileStrings::SaveCurrentToProfile),
-								profile.Name().c_str()) == ModalStatus::kAccept)
+								this->LS(UIProfileStrings::SaveCurrentToProfile),
+								profile.Name().c_str()) == UICommonModals::ModalStatus::kAccept)
 						{
-							if (!pm.SaveProfile(profile.Name(), GetData(a_data)))
+							if (!pm.SaveProfile(profile.Name(), this->GetData(a_data)))
 							{
-								m_state.lastException = pm.GetLastException();
+								this->m_state.lastException = pm.GetLastException();
 
-								GetPopupQueue_ProfileBase().push(
+								this->GetPopupQueue_ProfileBase().push(
 									UIPopupType::Message,
-									LS(CommonStrings::Error),
+									this->LS(CommonStrings::Error),
 									"%s [%s]\n\n%s",
-									LS(UIProfileStrings::SaveError),
+									this->LS(UIProfileStrings::SaveError),
 									profile.Name().c_str(),
 									pm.GetLastException().what());
 							}
@@ -230,7 +232,7 @@ namespace IED
 						ImGui::Spacing();
 
 						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextWrapped("%s", LS(UIProfileStrings::ProfileParserErrorWarning));
+						ImGui::TextWrapped("%s", this->LS(UIProfileStrings::ProfileParserErrorWarning));
 						ImGui::PopStyleColor();
 					}
 

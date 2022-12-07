@@ -2,6 +2,8 @@
 
 #include "IED/UI/Profile/UIProfileSelectorBase.h"
 
+#include "IED/GlobalProfileManager.h"
+
 namespace IED
 {
 	namespace UI

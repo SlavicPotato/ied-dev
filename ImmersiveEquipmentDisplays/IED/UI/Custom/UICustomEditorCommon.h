@@ -181,11 +181,11 @@ namespace IED
 		{
 			ImGui::Separator();
 
-			if (TreeEx(
+			if (this->TreeEx(
 					"tree_prof",
 					false,
 					"%s",
-					LS(CommonStrings::Profile)))
+					this->LS(CommonStrings::Profile)))
 			{
 				ImGui::Spacing();
 
@@ -193,7 +193,7 @@ namespace IED
 
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -15.5f);
 
-				DrawProfileSelector(params);
+				this->DrawProfileSelector(params);
 
 				ImGui::PopItemWidth();
 

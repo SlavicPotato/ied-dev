@@ -33,7 +33,7 @@ namespace IED
 			return stl::make_array<T, N>([&]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 
-				return std::forward_as_tuple(
+				return ObjectEntrySlot::tuple_init_type(
 					a_1[I],
 					slotid,
 					Data::ItemData::SlotToExtraSlot(slotid));

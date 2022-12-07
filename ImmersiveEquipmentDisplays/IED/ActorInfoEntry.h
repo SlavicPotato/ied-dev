@@ -59,18 +59,18 @@ namespace IED
 			}
 			else
 			{
-				return npc ? npc->race : 0;
+				return npc ? npc->race : Game::FormID{};
 			}
 		}
 
 		inline Game::FormID GetBase() const noexcept
 		{
-			return npc ? npc->form : 0;
+			return npc ? npc->form : Game::FormID{};
 		}
 
 		inline Game::FormID GetBaseOrTemplate() const noexcept
 		{
-			return npc ? npc->get_npc_or_template() : 0;
+			return npc ? npc->get_npc_or_template() : Game::FormID{};
 		}
 
 		inline constexpr auto GetSex() const noexcept

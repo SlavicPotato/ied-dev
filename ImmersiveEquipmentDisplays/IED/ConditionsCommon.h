@@ -16,6 +16,25 @@ namespace IED
 
 	namespace Conditions
 	{
+
+		const ActorObjectMap& get_actor_object_map(CommonParams& a_params);
+
+		bool is_in_first_person(CommonParams& a_params) noexcept;
+		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
+
+		inline constexpr bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
+		{
+			return a_params.objects.GetHandle() == (*g_thePlayer)->lastRiddenHorseHandle;
+		}
+
+		inline bool match_random_percent(
+			CommonParams&   a_params,
+			const luid_tag& a_luid,
+			float           a_percent) noexcept
+		{
+			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
+		}
+
 		template <class Tm, class Tf>
 		constexpr bool match_extra(
 			CommonParams&          a_params,
@@ -141,7 +160,7 @@ namespace IED
 		{
 			return a_left ?
 			           Data::ItemData::GetItemSlotLeftExtra(a_form) == a_slot :
-                       Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
+			           Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
 		inline constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
@@ -446,7 +465,7 @@ namespace IED
 						if (a_match.flags.test(Tf::kNegateMatch2) ==
 						    (location ?
 						         is_in_location(current, keyword, location) :
-                                 is_in_location(current, keyword)))
+						         is_in_location(current, keyword)))
 						{
 							return false;
 						}
@@ -697,7 +716,7 @@ namespace IED
 
 			float matchval = glob->type == TESGlobal::Type::kFloat ?
 			                     a_match.f32a :
-                                 static_cast<float>(static_cast<std::int64_t>(a_match.f32a));
+			                     static_cast<float>(static_cast<std::int64_t>(a_match.f32a));
 
 			return compare(a_match.compOperator, glob->value, matchval);
 		}
@@ -1174,24 +1193,6 @@ namespace IED
 			}
 
 			return false;
-		}
-
-		const ActorObjectMap& get_actor_object_map(CommonParams& a_params);
-
-		bool is_in_first_person(CommonParams& a_params) noexcept;
-		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
-
-		inline constexpr bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
-		{
-			return a_params.objects.GetHandle() == (*g_thePlayer)->lastRiddenHorseHandle;
-		}
-
-		inline bool match_random_percent(
-			CommonParams&   a_params,
-			const luid_tag& a_luid,
-			float           a_percent) noexcept
-		{
-			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)

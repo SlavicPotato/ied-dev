@@ -56,11 +56,11 @@ namespace IED
 		template <class Td>
 		void UIRaceList<Td>::ListUpdate()
 		{
-			bool isFirstUpdate = m_listFirstUpdate;
+			const bool isFirstUpdate = this->m_listFirstUpdate;
 
-			m_listFirstUpdate = true;
+			this->m_listFirstUpdate = true;
 
-			m_listData.clear();
+			this->m_listData.clear();
 
 			const auto& settings = GetRaceSettings();
 			const auto& rl       = Data::IData::GetRaceList();
@@ -74,24 +74,24 @@ namespace IED
 				}
 
 				stl::snprintf(
-					m_listBuf1,
+					this->m_listBuf1,
 					"[%.8X] %s",
 					i.get(),
 					settings.showEditorIDs ?
 						e.edid.c_str() :
                         e.fullname.c_str());
 
-				m_listData.try_emplace(i, m_listBuf1);
+				this->m_listData.try_emplace(i, this->m_listBuf1);
 			}
 
-			if (m_listData.empty())
+			if (this->m_listData.empty())
 			{
-				m_listBuf1[0] = 0;
-				ListClearCurrentItem();
+				this->m_listBuf1[0] = 0;
+				this->ListClearCurrentItem();
 				return;
 			}
 
-			stl::snprintf(m_listBuf1, "%zu", m_listData.size());
+			stl::snprintf(this->m_listBuf1, "%zu", this->m_listData.size());
 
 			if (!isFirstUpdate && GetSettings().data.ui.selectCrosshairActor)
 			{
@@ -101,9 +101,9 @@ namespace IED
 					auto  it         = actorCache.find(*crosshairRef);
 					if (it != actorCache.end())
 					{
-						if (m_listData.contains(it->second.race))
+						if (this->m_listData.contains(it->second.race))
 						{
-							if (ListSetCurrentItem(it->second.race))
+							if (this->ListSetCurrentItem(it->second.race))
 							{
 								return;
 							}
@@ -112,30 +112,30 @@ namespace IED
 				}
 			}
 
-			if (m_listCurrent)
+			if (this->m_listCurrent)
 			{
-				if (!m_listData.contains(m_listCurrent->handle))
+				if (!this->m_listData.contains(this->m_listCurrent->handle))
 				{
-					ListClearCurrentItem();
+					this->ListClearCurrentItem();
 				}
 				else
 				{
-					ListSetCurrentItem(m_listCurrent->handle);
+					this->ListSetCurrentItem(this->m_listCurrent->handle);
 				}
 			}
 
-			if (!m_listCurrent)
+			if (!this->m_listCurrent)
 			{
 				if (settings.lastSelected &&
-				    m_listData.contains(settings.lastSelected))
+				    this->m_listData.contains(settings.lastSelected))
 				{
-					ListSetCurrentItem(settings.lastSelected);
+					this->ListSetCurrentItem(settings.lastSelected);
 				}
 			}
 
-			if (!m_listCurrent)
+			if (!this->m_listCurrent)
 			{
-				ListSetCurrentItem(*m_listData.begin());
+				this->ListSetCurrentItem(*this->m_listData.begin());
 			}
 		}
 
@@ -159,7 +159,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Name));
+				ImGui::Text("%s:", this->LS(CommonStrings::Name));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%s", itr->second.fullname.c_str());
@@ -167,7 +167,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Flags));
+				ImGui::Text("%s:", this->LS(CommonStrings::Flags));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.8X", itr->second.flags.underlying());
@@ -182,7 +182,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Mod));
+					ImGui::Text("%s:", this->LS(CommonStrings::Mod));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -199,21 +199,21 @@ namespace IED
 			auto& config = GetRaceSettings();
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::PlayableOnly, "1"),
+					this->LS(UIWidgetCommonStrings::PlayableOnly, "1"),
 					std::addressof(config.playableOnly)))
 			{
 				OnListOptionsChange();
-				QueueListUpdate();
+				this->QueueListUpdate();
 			}
 
 			ImGui::SameLine(0.0f, 10.0f);
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::ShowEditorIDs, "2"),
+					this->LS(UIWidgetCommonStrings::ShowEditorIDs, "2"),
 					std::addressof(config.showEditorIDs)))
 			{
 				OnListOptionsChange();
-				QueueListUpdate();
+				this->QueueListUpdate();
 			}
 
 			ListDrawOptionsExtra();

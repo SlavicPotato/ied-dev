@@ -70,14 +70,14 @@ namespace IED
 		template <class Td>
 		void UIActorList<Td>::ListUpdate()
 		{
-			bool isFirstUpdate = m_listFirstUpdate;
+			const bool isFirstUpdate = this->m_listFirstUpdate;
 
-			m_listFirstUpdate = true;
+			this->m_listFirstUpdate = true;
 
 			const auto& settings  = GetActorSettings();
 			auto&       actorInfo = GetActorInfo();
 
-			m_listData.clear();
+			this->m_listData.clear();
 
 			for (auto& e : actorInfo)
 			{
@@ -87,30 +87,30 @@ namespace IED
 				}
 
 				stl::snprintf(
-					m_listBuf1,
+					this->m_listBuf1,
 					"[%.8X] %s",
 					e.first.get(),
 					e.second.name.c_str());
 
-				m_listData.try_emplace(e.first, m_listBuf1);
+				this->m_listData.try_emplace(e.first, this->m_listBuf1);
 			}
 
-			if (m_listData.empty())
+			if (this->m_listData.empty())
 			{
-				m_listBuf1[0] = 0;
-				ListClearCurrentItem();
+				this->m_listBuf1[0] = 0;
+				this->ListClearCurrentItem();
 				return;
 			}
 
-			stl::snprintf(m_listBuf1, "%zu", m_listData.size());
+			stl::snprintf(this->m_listBuf1, "%zu", this->m_listData.size());
 
 			if (!isFirstUpdate && GetSettings().data.ui.selectCrosshairActor)
 			{
 				if (auto& crosshairRef = GetCrosshairRef())
 				{
-					if (m_listData.contains(*crosshairRef))
+					if (this->m_listData.contains(*crosshairRef))
 					{
-						if (ListSetCurrentItem(*crosshairRef))
+						if (this->ListSetCurrentItem(*crosshairRef))
 						{
 							return;
 						}
@@ -118,30 +118,30 @@ namespace IED
 				}
 			}
 
-			if (m_listCurrent)
+			if (this->m_listCurrent)
 			{
-				if (!m_listData.contains(m_listCurrent->handle))
+				if (!this->m_listData.contains(this->m_listCurrent->handle))
 				{
-					ListClearCurrentItem();
+					this->ListClearCurrentItem();
 				}
 				else
 				{
-					ListSetCurrentItem(m_listCurrent->handle);
+					this->ListSetCurrentItem(this->m_listCurrent->handle);
 				}
 			}
 
-			if (!m_listCurrent)
+			if (!this->m_listCurrent)
 			{
 				if (settings.lastSelected &&
-				    m_listData.contains(settings.lastSelected))
+				    this->m_listData.contains(settings.lastSelected))
 				{
-					ListSetCurrentItem(settings.lastSelected);
+					this->ListSetCurrentItem(settings.lastSelected);
 				}
 			}
 
-			if (!m_listCurrent)
+			if (!this->m_listCurrent)
 			{
-				ListSetCurrentItem(*m_listData.begin());
+				this->ListSetCurrentItem(*this->m_listData.begin());
 			}
 		}
 
@@ -152,8 +152,8 @@ namespace IED
 
 			if (cacheUpdateId != m_lastCacheUpdateId)
 			{
-				m_lastCacheUpdateId = cacheUpdateId;
-				m_listNextUpdate    = true;
+				this->m_lastCacheUpdateId = cacheUpdateId;
+				this->m_listNextUpdate = true;
 			}
 
 			UIListBase<Td, Game::FormID>::ListTick();
@@ -163,7 +163,7 @@ namespace IED
 		void UIActorList<Td>::ListReset()
 		{
 			UIListBase<Td, Game::FormID>::ListReset();
-			m_lastCacheUpdateId = GetActorInfoUpdateID() - 1;
+			this->m_lastCacheUpdateId = GetActorInfoUpdateID() - 1;
 		}
 
 		template <class Td>
@@ -212,7 +212,7 @@ namespace IED
 						"%s",
 						it->second.npc->female ?
 							LS(CommonStrings::Female) :
-                            LS(CommonStrings::Male));
+							LS(CommonStrings::Male));
 				}
 
 				auto race = it->second.GetRace();
@@ -361,7 +361,7 @@ namespace IED
 					std::addressof(config.autoSelectSex)))
 			{
 				OnListOptionsChange();
-				QueueListUpdate();
+				this->QueueListUpdate();
 			}
 
 			ImGui::SameLine(0.0f, 10.0f);
@@ -371,7 +371,7 @@ namespace IED
 					std::addressof(config.showAll)))
 			{
 				OnListOptionsChange();
-				QueueListUpdate();
+				this->QueueListUpdate();
 			}
 
 			ListDrawOptionsExtra();
@@ -391,7 +391,7 @@ namespace IED
 		template <class Td>
 		void UIActorList<Td>::OnActorInfoAdded(Game::FormID a_handle)
 		{
-			QueueListUpdate(a_handle);
+			this->QueueListUpdate(a_handle);
 		}
 
 		template <class Td>

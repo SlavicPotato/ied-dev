@@ -1,10 +1,11 @@
 #pragma once
 
+//#define PARSER_NOT_IMPL_STR "Not implemented"
+
 namespace IED
 {
 	namespace Serialization
 	{
-		inline static constexpr auto PARSER_NOT_IMPL_STR = "Not implemented";
 
 		enum class ParserStateFlags : std::uint32_t
 		{
@@ -80,13 +81,13 @@ namespace IED
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		void Parser<T>::Create(const T& a_in, Json::Value& a_out, bool a_arg) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -95,13 +96,13 @@ namespace IED
 			Json::Value&  a_out,
 			std::uint32_t a_arg) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
 		bool Parser<T>::Parse(const Json::Value& a_in, T& a_out) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -110,7 +111,7 @@ namespace IED
 			T&                  a_out,
 			const std::uint32_t a_version) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -120,7 +121,7 @@ namespace IED
 			const std::uint32_t a_version,
 			bool                a_arg) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -129,7 +130,7 @@ namespace IED
 			T&                 a_out,
 			bool               a_arg) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR);
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <class T>
@@ -138,7 +139,7 @@ namespace IED
 			T&                 a_out,
 			float              a_arg) const
 		{
-			static_assert(false, PARSER_NOT_IMPL_STR)
+			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
 		template <std::size_t _Size>
