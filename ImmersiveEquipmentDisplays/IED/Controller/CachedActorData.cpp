@@ -80,8 +80,13 @@ namespace IED
 
 		visit_effects(
 			list,
-			[&](auto* a_mgef) {
-				data.emplace(a_mgef);
+			[&](auto* a_effect, auto* a_mgef) [[msvc::forceinline]] {
+				if (!a_effect->flags.test_any(
+						ActiveEffect::Flag::kDispelled |
+						ActiveEffect::Flag::kInactive))
+				{
+					data.emplace(a_mgef);
+				}
 			});
 
 		return true;
@@ -105,10 +110,15 @@ namespace IED
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
 
+		constexpr auto hashflags =
+			ActiveEffect::Flag::kDispelled |
+			ActiveEffect::Flag::kInactive;
+
 		visit_effects(
 			a_list,
-			[&](auto* a_mgef) [[msvc::forceinline]] {
+			[&](auto* a_effect, auto* a_mgef) [[msvc::forceinline]] {
 				result = hash::fnv1::_append_hash_fnv1a(result, a_mgef->formID);
+				result = hash::fnv1::_append_hash_fnv1a(result, a_effect->flags & hashflags);
 			});
 
 		return result;

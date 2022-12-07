@@ -150,7 +150,7 @@ namespace IED
 
 			if (!mgef->formID.IsTemporary())
 			{
-				a_func(mgef);
+				a_func(e, mgef);
 			}
 		}
 	}
