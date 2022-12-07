@@ -55,11 +55,13 @@ namespace IED
 
 				if (ImGui::IsItemHovered())
 				{
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 8 });
 					ImGui::BeginTooltip();
 					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
 					ImGui::TextUnformatted(a_text);
 					ImGui::PopTextWrapPos();
 					ImGui::EndTooltip();
+					ImGui::PopStyleVar();
 				}
 			}
 
@@ -72,6 +74,7 @@ namespace IED
 
 				if (ImGui::IsItemHovered())
 				{
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 8 });
 					ImGui::BeginTooltip();
 					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
 
@@ -82,6 +85,7 @@ namespace IED
 
 					ImGui::PopTextWrapPos();
 					ImGui::EndTooltip();
+					ImGui::PopStyleVar();
 				}
 			}
 
@@ -94,11 +98,13 @@ namespace IED
 
 				if (ImGui::IsItemHovered())
 				{
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 8 });
 					ImGui::BeginTooltip();
 					ImGui::PushTextWrapPos(ImGui::GetFontSize() * a_width);
 					a_func();
 					ImGui::PopTextWrapPos();
 					ImGui::EndTooltip();
+					ImGui::PopStyleVar();
 				}
 			}
 

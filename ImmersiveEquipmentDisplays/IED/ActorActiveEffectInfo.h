@@ -15,12 +15,13 @@ namespace IED
 		{
 			entry_t(ActiveEffect* a_effect);
 
-			formEntry_t   effect;
-			formEntry_t   spell;
-			formEntry_t   source;
-			float         duration{ 0 };
-			float         elapsed{ 0 };
-			float         magnitude{ 0 };
+			formEntry_t                   effect;
+			formEntry_t                   spell;
+			formEntry_t                   source;
+			float                         duration{ 0 };
+			float                         elapsed{ 0 };
+			float                         magnitude{ 0 };
+			stl::flag<ActiveEffect::Flag> flags{ ActiveEffect::Flag::kNone };
 		};
 
 		void Update(Actor* a_actor);

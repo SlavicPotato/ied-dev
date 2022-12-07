@@ -995,7 +995,7 @@ namespace IED
 		{
 			auto& data = a_data.effects;
 
-			constexpr auto NUM_COLUMNS = 6;
+			constexpr auto NUM_COLUMNS = 7;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -1011,6 +1011,7 @@ namespace IED
 				ImGui::TableSetupScrollFreeze(0, 1);
 
 				ImGui::TableSetupColumn(LS(CommonStrings::Effect));
+				ImGui::TableSetupColumn(LS(CommonStrings::Flags));
 				ImGui::TableSetupColumn(LS(UIActorInfoStrings::SpellOrEnchantment));
 				ImGui::TableSetupColumn(LS(CommonStrings::Source));
 				ImGui::TableSetupColumn(LS(CommonStrings::Elapsed));
@@ -1030,24 +1031,66 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
+
+					const bool inactive = e.flags.test_any(
+						ActiveEffect::Flag::kInactive | 
+						ActiveEffect::Flag::kDispelled);
+
+					if (inactive)
+					{
+						ImGui::PushStyleVar(
+							ImGuiStyleVar_Alpha,
+							ImGui::GetStyle().Alpha * 0.5f);
+					}
+
 					DrawEffectFormCell(e.effect, false);
 
+					if (inactive)
+					{
+						ImGui::PopStyleVar();
+					}
+
 					ImGui::TableSetColumnIndex(1);
-					DrawEffectFormCell(e.spell, true);
+					TextCopyable("%.8X", e.flags.value);
+
+					UICommon::ToolTip(100.0f, [&] {
+						if (e.flags.test(ActiveEffect::Flag::kInactive))
+						{
+							ImGui::Text(LS(CommonStrings::Inactive));
+						}
+
+						if (e.flags.test(ActiveEffect::Flag::kDispelled))
+						{
+							ImGui::Text(LS(CommonStrings::Dispelled));
+						}
+
+						if (e.flags.test(ActiveEffect::Flag::kRecovers))
+						{
+							ImGui::Text(LS(CommonStrings::Recovers));
+						}
+
+						if (e.flags.test(ActiveEffect::Flag::kHasConditions))
+						{
+							ImGui::Text(LS(CommonStrings::Conditions));
+						}
+					});
 
 					ImGui::TableSetColumnIndex(2);
-					DrawEffectFormCell(e.source, false);
+					DrawEffectFormCell(e.spell, true);
 
 					ImGui::TableSetColumnIndex(3);
+					DrawEffectFormCell(e.source, false);
+
+					ImGui::TableSetColumnIndex(4);
 					ImGui::Text("%.1f", e.elapsed);
 
 					if (e.duration != 0.0f)
 					{
-						ImGui::TableSetColumnIndex(4);
+						ImGui::TableSetColumnIndex(5);
 						ImGui::Text("%.1f", e.duration);
 					}
 
-					ImGui::TableSetColumnIndex(5);
+					ImGui::TableSetColumnIndex(6);
 					ImGui::Text("%.1f", e.magnitude);
 				}
 

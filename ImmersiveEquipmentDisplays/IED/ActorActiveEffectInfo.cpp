@@ -35,6 +35,7 @@ namespace IED
 		duration  = a_effect->duration;
 		elapsed   = a_effect->elapsedSeconds;
 		magnitude = a_effect->magnitude;
+		flags     = a_effect->flags;
 
 		if (auto v = a_effect->effect)
 		{
