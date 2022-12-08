@@ -938,46 +938,53 @@ namespace IED
 		{
 			auto& data = a_cached.GetEffectContainer();
 
-			if (!data.empty())
+			if (a_match.form.get_id())
 			{
-				if (auto form = a_match.form.get_form<EffectSetting>())
+				const auto rv = a_match.flags.test(Tf::kNegateMatch2);
+
+				if (data.empty())
 				{
-					auto it = data.find(form);
-
-					const auto rv = a_match.flags.test(Tf::kNegateMatch2);
-
-					if (it == data.end())
-					{
-						return rv;
-					}
-
-					if (a_match.keyword.get_id())
-					{
-						if (a_match.flags.test(Tf::kNegateMatch1) ==
-						    IFormCommon::HasKeyword(form, a_match.keyword))
-						{
-							return false;
-						}
-					}
-
-					return !rv;
+					return rv;
 				}
-				else
+
+				const auto form = a_match.form.get_form<EffectSetting>();
+				if (!form)
 				{
-					if (auto keyword = a_match.keyword.get_form<BGSKeyword>())
+					return rv;
+				}
+
+				if (data.find(form) == data.end())
+				{
+					return rv;
+				}
+
+				if (a_match.keyword.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    IFormCommon::HasKeyword(form, a_match.keyword))
 					{
-						if (a_match.flags.test(Tf::kNegateMatch1) ==
-						    a_cached.HasEffectWithKeyword(keyword))
-						{
-							return false;
-						}
+						return false;
 					}
 				}
 
-				return true;
+				return !rv;
 			}
 
-			return false;
+			if (a_match.keyword.get_id())
+			{
+				const auto rv = a_match.flags.test(Tf::kNegateMatch1);
+
+				if (data.empty())
+				{
+					return rv;
+				}
+
+				const auto* const keyword = a_match.keyword.get_form<BGSKeyword>();
+
+				return rv != a_cached.HasEffectWithKeyword(keyword);
+			}
+
+			return !data.empty();
 		}
 
 		template <class Tm>
