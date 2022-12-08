@@ -14,7 +14,7 @@ namespace IED
 			using queue_type = stl::queue<UIPopupAction>;
 
 		public:
-			UIPopupQueue(Localization::ILocalization& a_localization);
+			UIPopupQueue() = default;
 
 			UIPopupQueue(const UIPopupQueue&) = delete;
 			UIPopupQueue(UIPopupQueue&&)      = delete;

@@ -24,7 +24,7 @@ namespace IED
 		{
 			ImGui::PushID("actor_info_add");
 
-			if (ImGui::Button(LS(CommonStrings::Add, "ctl")))
+			if (ImGui::Button(UIL::LS(CommonStrings::Add, "ctl")))
 			{
 				ImGui::OpenPopup("popup");
 			}
@@ -45,9 +45,9 @@ namespace IED
 								auto& queue = m_controller.UIGetPopupQueue();
 								queue.push(
 									UIPopupType::Message,
-									LS(CommonStrings::Error),
+									UIL::LS(CommonStrings::Error),
 									"%s [%.8X]",
-									LS(UIWidgetCommonStrings::ActorNotFound),
+									UIL::LS(UIWidgetCommonStrings::ActorNotFound),
 									form.get());
 							}
 						});

@@ -26,19 +26,13 @@ namespace IED
 
 		);
 
-		UIStylePresetSelectorWidget::UIStylePresetSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIStylePresetSelectorWidget::DrawStylePresetSelector(
 			UIStylePreset& a_preset)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Style, "ex_style_sel"),
+					UIL::LS(CommonStrings::Style, "ex_style_sel"),
 					preset_to_desc(a_preset),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -54,7 +48,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIStylePresetSelectorWidgetStrings, 3>(e.second, "1"),
+							UIL::LS<UIStylePresetSelectorWidgetStrings, 3>(e.second, "1"),
 							selected))
 					{
 						a_preset = e.first;
@@ -71,40 +65,40 @@ namespace IED
 		}
 
 		const char* UIStylePresetSelectorWidget::preset_to_desc(
-			UIStylePreset a_preset) const
+			UIStylePreset a_preset)
 		{
 			switch (a_preset)
 			{
 			case UIStylePreset::Dark:
-				return LS(UIStylePresetSelectorWidgetStrings::Dark);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::Dark);
 			case UIStylePreset::Light:
-				return LS(UIStylePresetSelectorWidgetStrings::Light);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::Light);
 			case UIStylePreset::Classic:
-				return LS(UIStylePresetSelectorWidgetStrings::Classic);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::Classic);
 			case UIStylePreset::DeepDark:
-				return LS(UIStylePresetSelectorWidgetStrings::DeepDark);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::DeepDark);
 			case UIStylePreset::DarkRed:
-				return LS(UIStylePresetSelectorWidgetStrings::DarkRed);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::DarkRed);
 			case UIStylePreset::SteamClassic:
-				return LS(UIStylePresetSelectorWidgetStrings::SteamClassic);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::SteamClassic);
 			case UIStylePreset::ItaDark:
-				return LS(UIStylePresetSelectorWidgetStrings::ItaDark);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::ItaDark);
 			case UIStylePreset::ItaLight:
-				return LS(UIStylePresetSelectorWidgetStrings::ItaLight);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::ItaLight);
 			case UIStylePreset::S56:
-				return LS(UIStylePresetSelectorWidgetStrings::S56);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::S56);
 			case UIStylePreset::CorpGrey:
-				return LS(UIStylePresetSelectorWidgetStrings::CorpGrey);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::CorpGrey);
 			case UIStylePreset::CorpGreyFlat:
-				return LS(UIStylePresetSelectorWidgetStrings::CorpGreyFlat);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::CorpGreyFlat);
 			case UIStylePreset::ItaClassic:
-				return LS(UIStylePresetSelectorWidgetStrings::ItaClassic);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::ItaClassic);
 			case UIStylePreset::SpectrumDark:
-				return LS(UIStylePresetSelectorWidgetStrings::SpectrumDark);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::SpectrumDark);
 			case UIStylePreset::EnemyMouse:
-				return LS(UIStylePresetSelectorWidgetStrings::EnemyMouse);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::EnemyMouse);
 			case UIStylePreset::S562:
-				return LS(UIStylePresetSelectorWidgetStrings::S562);
+				return UIL::LS(UIStylePresetSelectorWidgetStrings::S562);
 			default:
 				return nullptr;
 			}

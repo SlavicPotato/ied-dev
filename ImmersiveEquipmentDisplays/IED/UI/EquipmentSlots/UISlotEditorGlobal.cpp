@@ -10,25 +10,23 @@ namespace IED
 	{
 		UISlotEditorGlobal::UISlotEditorGlobal(Controller& a_controller) :
 			UISlotEditorCommon<UIGlobalEditorDummyHandle>(a_controller, true),
-			UITipsInterface(a_controller),
 			UIPopupInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UIGlobalConfigTypeSelectorWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UITransformSliderWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UISlotEditorGlobal::~UISlotEditorGlobal() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UISlotEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.slotEditor.globalSex, false);
 		}
@@ -57,7 +55,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::ActorBlocked));
+							UIL::LS(UIWidgetCommonStrings::ActorBlocked));
 
 						ImGui::Spacing();
 
@@ -69,7 +67,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+							UIL::LS(UIWidgetCommonStrings::XP32SkeletonWarning));
 
 						ImGui::Spacing();
 

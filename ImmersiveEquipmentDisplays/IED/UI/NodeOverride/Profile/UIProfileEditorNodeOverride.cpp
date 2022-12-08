@@ -11,15 +11,16 @@ namespace IED
 		UIProfileEditorNodeOverride::UIProfileEditorNodeOverride(Controller& a_controller) :
 			UIProfileEditorBase<NodeOverrideProfile>(
 				UIProfileStrings::TitleNodeOverride,
-				"ied_pe_no",
-				a_controller),
+				"ied_pe_no"),
 			UINodeOverrideEditorWidget<UIGlobalEditorDummyHandle>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UIProfileEditorNodeOverride::~UIProfileEditorNodeOverride() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIProfileEditorNodeOverride::Initialize()
@@ -315,7 +316,7 @@ namespace IED
 
 		void UIProfileEditorNodeOverride::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
 			{
 				EditorDrawMenuBarItems();
 				ImGui::EndMenu();

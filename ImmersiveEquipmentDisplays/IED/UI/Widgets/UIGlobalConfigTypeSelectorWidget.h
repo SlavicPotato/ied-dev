@@ -8,14 +8,10 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIGlobalConfigTypeSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIGlobalConfigTypeSelectorWidget 
 		{
 		public:
-			UIGlobalConfigTypeSelectorWidget(
-				Localization::ILocalization& a_localization);
-
-			bool DrawTypeSelectorRadio(Data::GlobalConfigType& a_value);
+			static bool DrawTypeSelectorRadio(Data::GlobalConfigType& a_value);
 		};
 	}
 }

@@ -49,8 +49,7 @@ namespace IED
 			public UIWindow,
 			UIActorList<ActorInfoData>,
 			UIFormInfoTooltipWidget,
-			UICollapsibles,
-			public virtual UILocalizationInterface
+			UICollapsibles
 		{
 			inline static constexpr auto WINDOW_ID = "ied_ainfo";
 

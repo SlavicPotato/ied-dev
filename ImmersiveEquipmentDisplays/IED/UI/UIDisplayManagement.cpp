@@ -12,7 +12,6 @@ namespace IED
 	{
 		UIDisplayManagement::UIDisplayManagement(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_editorPanels{
 				std::make_unique<UISlotEditorTabPanel>(a_controller),
 				std::make_unique<UICustomEditorTabPanel>(a_controller)
@@ -93,9 +92,9 @@ namespace IED
 
 			if (ImGui::BeginMenuBar())
 			{
-				if (LCG_BM(CommonStrings::File, "1"))
+				if (UIL::LCG_BM(CommonStrings::File, "1"))
 				{
-					if (LCG_MI(CommonStrings::Close, "1"))
+					if (UIL::LCG_MI(CommonStrings::Close, "1"))
 					{
 						SetOpenState(false);
 					}
@@ -103,7 +102,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_BM(CommonStrings::View, "2"))
+				if (UIL::LCG_BM(CommonStrings::View, "2"))
 				{
 					DrawViewMenu();
 
@@ -123,7 +122,7 @@ namespace IED
 		void UIDisplayManagement::DrawViewMenu()
 		{
 			if (ImGui::MenuItem(
-					LS(UIMainStrings::EquipmentDisplays, "1"),
+					UIL::LS(UIMainStrings::EquipmentDisplays, "1"),
 					nullptr,
 					m_currentEditorPanel == UIDisplayManagementEditorPanel::Slot))
 			{
@@ -131,7 +130,7 @@ namespace IED
 			}
 
 			if (ImGui::MenuItem(
-					LS(UIMainStrings::CustomDisplays, "2"),
+					UIL::LS(UIMainStrings::CustomDisplays, "2"),
 					nullptr,
 					m_currentEditorPanel == UIDisplayManagementEditorPanel::Custom))
 			{
@@ -178,13 +177,13 @@ namespace IED
 				BUFFER_SIZE,
 				_TRUNCATE,
 				"%s - %s",
-				LS(UIWidgetCommonStrings::DisplayManagement),
-				LS(a_strid));
+				UIL::LS(UIWidgetCommonStrings::DisplayManagement),
+				UIL::LS(a_strid));
 
 			stl::snprintf(
 				m_currentTitle,
 				"%s",
-				LMKID<3>(buf.get(), WINDOW_ID));
+				UIL::LMKID<3>(buf.get(), WINDOW_ID));
 		}
 
 	}

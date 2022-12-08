@@ -69,7 +69,7 @@ namespace IED
 		private:
 			using ProfileManager<ModelProfile>::ProfileManager;
 		};
-		
+
 		class ProfileManagerCondVar :
 			public ProfileManager<CondVarProfile>
 		{
@@ -110,7 +110,7 @@ namespace IED
 			}
 			else
 			{
-				//static_assert(false, "Unrecognized profile");
+				HALT("Unrecognized profile");
 			}
 		}
 

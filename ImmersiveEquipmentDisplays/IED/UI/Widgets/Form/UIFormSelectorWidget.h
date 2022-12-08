@@ -14,10 +14,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UIFormSelectorWidget :
-			public virtual UITipsInterface,
-			public virtual UIFormTypeSelectorWidget,
-			public virtual UILocalizationInterface
+		class UIFormSelectorWidget
 		{
 			using on_open_func_t = std::function<void(UIFormSelectorWidget&, UIFormBrowser&)>;
 
@@ -40,6 +37,7 @@ namespace IED
 			void SetOnFormBrowserOpenFunc(on_open_func_t a_func);
 			void SetAllowedTypes(std::initializer_list<UIFormBrowser::tab_filter_type::value_type> a_types);
 			void SetAllowedTypes(const std::shared_ptr<const UIFormBrowser::tab_filter_type>& a_types);
+			void ClearAllowedTypes();
 
 			inline constexpr void SetFormBrowserEnabled(bool a_switch) noexcept
 			{

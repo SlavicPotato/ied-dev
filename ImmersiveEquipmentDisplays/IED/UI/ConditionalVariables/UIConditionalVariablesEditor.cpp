@@ -14,14 +14,16 @@ namespace IED
 			UIProfileSelectorWidget<
 				profileSelectorParamsCondVar_t,
 				CondVarProfile>(
-				a_controller,
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge),
 			UIEquipmentOverrideConditionsWidget(a_controller),
-			UILocalizationInterface(a_controller),
-			UITipsInterface(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UIConditionalVariablesEditor::~UIConditionalVariablesEditor() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIConditionalVariablesEditor::EditorInitialize()
@@ -104,7 +106,7 @@ namespace IED
 				ImGui::PushID("import_opts");
 
 				ImGui::Checkbox(
-					LS(CommonStrings::Overwrite, "1"),
+					UIL::LS(CommonStrings::Overwrite, "1"),
 					std::addressof(m_profileMergeOverwrite));
 
 				ImGui::PopID();
@@ -140,7 +142,7 @@ namespace IED
 					"tree_prof",
 					false,
 					"%s",
-					LS(CommonStrings::Profile)))
+					UIL::LS(CommonStrings::Profile)))
 			{
 				ImGui::Spacing();
 

@@ -12,17 +12,14 @@ namespace IED
 
 	namespace UI
 	{
-		class UIComparisonOperatorSelector :
-			public virtual UILocalizationInterface
+		class UIComparisonOperatorSelector
 		{
 		public:
-			UIComparisonOperatorSelector(Localization::ILocalization& a_localization);
-
-			bool DrawComparisonOperatorSelector(
+			static bool DrawComparisonOperatorSelector(
 				Data::ComparisonOperator& a_comp);
 
-			const char* comp_operator_to_desc(
-				Data::ComparisonOperator a_comp) const;
+			static const char* comp_operator_to_desc(
+				Data::ComparisonOperator a_comp);
 
 		};
 	}

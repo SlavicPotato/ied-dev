@@ -18,7 +18,6 @@ namespace IED
 			Tasks::UIRenderTaskBase& a_owner,
 			Controller&              a_controller,
 			float                    a_voffset) :
-			UILocalizationInterface(a_controller),
 			m_owner(a_owner),
 			m_controller(a_controller),
 			m_voffset(a_voffset)
@@ -56,7 +55,7 @@ namespace IED
 					"%s %s %s",
 					PLUGIN_NAME_FULL,
 					PLUGIN_VERSION_VERSTRING,
-					LS(UIIntroBannerStrings::HeaderAppend));
+					UIL::LS(UIIntroBannerStrings::HeaderAppend));
 
 				ImGui::Spacing();
 				ImGui::Separator();
@@ -71,16 +70,16 @@ namespace IED
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 
-					ImGui::Text("%s:", LS(UIIntroBannerStrings::SDSNotFound));
+					ImGui::Text("%s:", UIL::LS(UIIntroBannerStrings::SDSNotFound));
 					ImGui::SameLine();
 
 					switch (intfcErrorState)
 					{
 					case PluginInterfaceQueryErrorState::kDllNotLoaded:
-						ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSNotLoaded));
+						ImGui::TextUnformatted(UIL::LS(UIIntroBannerStrings::SDSNotLoaded));
 						break;
 					case PluginInterfaceQueryErrorState::kEntryPointNotFound:
-						ImGui::TextUnformatted(LS(UIIntroBannerStrings::SDSOutOfDate));
+						ImGui::TextUnformatted(UIL::LS(UIIntroBannerStrings::SDSOutOfDate));
 						break;
 					default:
 						ImGui::TextUnformatted(PluginInterfaceBase::get_error_string(intfcErrorState));
@@ -99,7 +98,7 @@ namespace IED
 						GET_PLUGIN_VERSION_MAJOR(pluginVersion),
 						GET_PLUGIN_VERSION_MINOR(pluginVersion),
 						GET_PLUGIN_VERSION_REV(pluginVersion),
-						LS(UIIntroBannerStrings::SDSFoundAppend));
+						UIL::LS(UIIntroBannerStrings::SDSFoundAppend));
 				}
 
 				ImGui::Spacing();
@@ -117,7 +116,7 @@ namespace IED
 						ih.uiOpen.GetKey(),
 						buf1);
 
-					ImGui::Text("%s", LS(UIIntroBannerStrings::UIOpenKeys));
+					ImGui::Text("%s", UIL::LS(UIIntroBannerStrings::UIOpenKeys));
 					ImGui::SameLine();
 
 					if (ih.uiOpen.GetComboKey())
@@ -146,7 +145,7 @@ namespace IED
 					if (!m_owner.GetEnabledInMenu())
 					{
 						ImGui::SameLine();
-						ImGui::Text("%s", LS(UIIntroBannerStrings::KeyInfoAppend));
+						ImGui::Text("%s", UIL::LS(UIIntroBannerStrings::KeyInfoAppend));
 					}
 				}
 				else
@@ -154,7 +153,7 @@ namespace IED
 					ImGui::TextColored(
 						UICommon::g_colorWarning,
 						"%s",
-						LS(UIIntroBannerStrings::NoKeyWarning));
+						UIL::LS(UIIntroBannerStrings::NoKeyWarning));
 				}
 
 				ImGui::PopStyleColor();

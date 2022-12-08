@@ -12,12 +12,10 @@ namespace IED
 
 	namespace UI
 	{
-		class UIWeatherClassSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIWeatherClassSelectorWidget
 		{
 		public:
-			UIWeatherClassSelectorWidget(
-				Localization::ILocalization& a_localization);
+			UIWeatherClassSelectorWidget() = default;
 
 			bool DrawWeatherClassSelector(
 				WeatherClassificationFlags& a_type);

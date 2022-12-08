@@ -48,12 +48,14 @@ namespace IED
 				return L(stl::underlying(a_id)).c_str();
 			}
 
+		private:
+			LocalizationDataManager::shared_string_table m_currentTable;
+
+		public:
 			char m_scBuffer1[2048]{ 0 };
 
 		private:
 			[[nodiscard]] const std::string& get_default_str(StringID a_id) const;
-
-			LocalizationDataManager::shared_string_table m_currentTable;
 		};
 	}
 }

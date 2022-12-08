@@ -7,13 +7,12 @@ namespace IED
 	namespace UI
 	{
 		template <class T>
-		class UITableRowInputWidget :
-			public virtual UILocalizationInterface
+		class UITableRowInputWidget
 		{
 			struct state_t
 			{
-				int  index{ -1 };
 				T    key;
+				int  index{ -1 };
 				bool grabFocus{ true };
 				bool focusObtained{ false };
 
@@ -24,8 +23,7 @@ namespace IED
 
 		public:
 			UITableRowInputWidget(
-				Localization::ILocalization& a_localization,
-				ImGuiInputTextFlags          a_inputFlags = ImGuiInputTextFlags_None);
+				ImGuiInputTextFlags a_inputFlags = ImGuiInputTextFlags_None);
 
 			bool DrawColumn(
 				int         a_index,
@@ -37,14 +35,12 @@ namespace IED
 		private:
 			ImGuiInputTextFlags m_inputFlags;
 
-			stl::optional<state_t> m_current;
+			std::unique_ptr<state_t> m_current;
 		};
 
 		template <class T>
 		inline UITableRowInputWidget<T>::UITableRowInputWidget(
-			Localization::ILocalization& a_localization,
-			ImGuiInputTextFlags          a_inputFlags) :
-			UILocalizationInterface(a_localization),
+			ImGuiInputTextFlags a_inputFlags) :
 			m_inputFlags(a_inputFlags)
 		{
 		}
@@ -83,18 +79,15 @@ namespace IED
 				}
 				else
 				{
-					auto hasFocus = ImGui::IsItemActive();
+					const auto hasFocus = ImGui::IsItemActive();
 
 					if (!m_current->focusObtained)
 					{
 						m_current->focusObtained = hasFocus;
 					}
-					else
+					else if (!hasFocus)
 					{
-						if (!hasFocus)
-						{
-							m_current.reset();
-						}
+						m_current.reset();
 					}
 				}
 
@@ -104,14 +97,13 @@ namespace IED
 			else
 			{
 				if (ImGui::Selectable(
-						LMKID<3>(a_text, "sel_ctl"),
+						UIL::LMKID<3>(a_text, "sel_ctl"),
 						false,
 						ImGuiSelectableFlags_DontClosePopups))
 				{
-					m_current = {
-						a_index,
-						a_key
-					};
+					m_current = std::make_unique<state_t>(
+						a_key,
+						a_index);
 
 					stl::snprintf(m_current->buffer, "%s", a_text);
 				}

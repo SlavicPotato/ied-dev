@@ -60,12 +60,6 @@ namespace IED
 			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form)
 		);
 
-		UIFormTypeSelectorWidget::UIFormTypeSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIFormTypeSelectorWidget::DrawFormTypeSelector(
 			stl::optional<std::uint8_t>& a_type,
 			filter_func_t                a_filter)
@@ -98,7 +92,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIFormTypeSelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UIFormTypeSelectorWidgetStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -120,101 +114,101 @@ namespace IED
 			switch (a_type)
 			{
 			case TESObjectWEAP::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Weapon);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Weapon);
 			case TESObjectARMO::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Armor);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Armor);
 			case TESNPC::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::NPC);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::NPC);
 			case TESSoulGem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::SoulGem);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::SoulGem);
 			case TESKey::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Key);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Key);
 			case TESObjectMISC::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Misc);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Misc);
 			case TESObjectLIGH::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Light);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Light);
 			case TESObjectBOOK::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Book);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Book);
 			case AlchemyItem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::PotionFood);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::PotionFood);
 			case IngredientItem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Ingredient);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Ingredient);
 			case ScrollItem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Scroll);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Scroll);
 			case TESObjectSTAT::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Static);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Static);
 			case BGSMovableStatic::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::MovableStatic);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::MovableStatic);
 			case TESObjectTREE::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Tree);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Tree);
 			case TESGrass::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Grass);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Grass);
 			case BGSHeadPart::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::HeadPart);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::HeadPart);
 			case TESAmmo::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Ammo);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Ammo);
 			case BGSKeyword::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Keyword);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Keyword);
 			case TESFlora::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Flora);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Flora);
 			case TESFurniture::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Furniture);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Furniture);
 			case TESObjectACTI::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Activator);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Activator);
 			case BGSTalkingActivator::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::TalkingActivator);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::TalkingActivator);
 			case TESObjectREFR::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Reference);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Reference);
 			case Actor::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Actor);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Actor);
 			case TESQuest::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Quest);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Quest);
 			case SpellItem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Spell);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Spell);
 			case TESRace::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Race);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Race);
 			case BGSArtObject::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::ArtObject);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::ArtObject);
 			case BGSSoundDescriptorForm::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::SoundDescriptor);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::SoundDescriptor);
 			case TESObjectANIO::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::AnimObject);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::AnimObject);
 			case TESObjectDOOR::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Door);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Door);
 			case BGSExplosion::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Explosion);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Explosion);
 			case BGSProjectile::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Projectile);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Projectile);
 			case BGSMaterialObject::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Material);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Material);
 			case BGSLocation::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Location);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Location);
 			case TESWorldSpace::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Worldspace);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Worldspace);
 			case TESPackage::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Package);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Package);
 			case TESShout::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Shout);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Shout);
 			case TESFaction::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Faction);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Faction);
 			case EffectSetting::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Effect);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Effect);
 			case TESCombatStyle::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::CombatStyle);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::CombatStyle);
 			case TESClass::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Class);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Class);
 			case RE::TESWeather::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Weather);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Weather);
 			case TESGlobal::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Global);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Global);
 			case TESIdleForm::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Idle);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Idle);
 			case BGSOutfit::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Outfit);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Outfit);
 			case EnchantmentItem::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Enchantment);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Enchantment);
 			case TESForm::kTypeID:
-				return LS(UIFormTypeSelectorWidgetStrings::Form);
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:
 				return nullptr;
 			}

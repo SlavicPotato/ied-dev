@@ -17,9 +17,7 @@ namespace IED
 
 		UIDialogImportExport::UIDialogImportExport(
 			Controller& a_controller) :
-			UIFileSelector(a_controller, PATHS::EXPORTS, ".json"),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
+			UIFileSelector(PATHS::EXPORTS, ".json"),
 			UIImportWidget(a_controller),
 			m_controller(a_controller)
 		{
@@ -35,7 +33,7 @@ namespace IED
 				{ 0.5f, 0.5f });
 
 			if (ImGui::Begin(
-					LS<UIDialogImportExportStrings, 3>(
+					UIL::LS<UIDialogImportExportStrings, 3>(
 						UIDialogImportExportStrings::ImportExport,
 						WINDOW_ID),
 					GetOpenState(),
@@ -49,15 +47,15 @@ namespace IED
 
 				if (selected)
 				{
-					if (ImGui::Button(LS(CommonStrings::Delete, "1")))
+					if (ImGui::Button(UIL::LS(CommonStrings::Delete, "1")))
 					{
 						auto& queue = m_controller.UIGetPopupQueue();
 
 						queue.push(
 								 UIPopupType::Confirm,
-								 LS(CommonStrings::Confirm),
+								 UIL::LS(CommonStrings::Confirm),
 								 "%s [%s]",
-								 LS(UIDialogImportExportStrings::DeleteConfirm),
+								 UIL::LS(UIDialogImportExportStrings::DeleteConfirm),
 								 selected->m_key.c_str())
 							.call([this, item = *selected](const auto&) {
 								if (!DeleteItem(item))
@@ -66,24 +64,24 @@ namespace IED
 
 									queue.push(
 										UIPopupType::Message,
-										LS(CommonStrings::Error),
+										UIL::LS(CommonStrings::Error),
 										"%s\n\n%s",
-										LS(UIDialogImportExportStrings::DeleteError),
+										UIL::LS(UIDialogImportExportStrings::DeleteError),
 										GetLastException().what());
 								}
 							});
 					}
 
 					ImGui::SameLine();
-					if (ImGui::Button(LS(CommonStrings::Rename, "2")))
+					if (ImGui::Button(UIL::LS(CommonStrings::Rename, "2")))
 					{
 						auto& queue = m_controller.UIGetPopupQueue();
 
 						queue.push(
 								 UIPopupType::Input,
-								 LS(CommonStrings::Rename),
+								 UIL::LS(CommonStrings::Rename),
 								 "%s",
-								 LS(UIDialogImportExportStrings::RenamePrompt))
+								 UIL::LS(UIDialogImportExportStrings::RenamePrompt))
 							.fmt_input("%s", selected->m_key.c_str())
 							.call([this, item = *selected](const auto& a_p) {
 								std::string file(a_p.GetInput());
@@ -104,9 +102,9 @@ namespace IED
 
 										queue.push(
 											UIPopupType::Message,
-											LS(CommonStrings::Error),
+											UIL::LS(CommonStrings::Error),
 											"%s\n\n%s",
-											LS(UIDialogImportExportStrings::RenameError),
+											UIL::LS(UIDialogImportExportStrings::RenameError),
 											GetLastException().what());
 									}
 								}
@@ -116,7 +114,7 @@ namespace IED
 
 									queue.push(
 										UIPopupType::Message,
-										LS(CommonStrings::Error),
+										UIL::LS(CommonStrings::Error),
 										"%s: %s",
 										__FUNCTION__,
 										e.what());
@@ -125,7 +123,7 @@ namespace IED
 					}
 
 					ImGui::SameLine();
-					if (ImGui::Button(LS(CommonStrings::Refresh, "3")))
+					if (ImGui::Button(UIL::LS(CommonStrings::Refresh, "3")))
 					{
 						UpdateFileList();
 					}
@@ -138,7 +136,7 @@ namespace IED
 
 				if (selected)
 				{
-					if (ImGui::Button(LS(CommonStrings::Import, "4"), { 120.f, 0.f }))
+					if (ImGui::Button(UIL::LS(CommonStrings::Import, "4"), { 120.f, 0.f }))
 					{
 						QueueImportPopup(selected->m_fullpath, selected->m_key);
 					}
@@ -146,7 +144,7 @@ namespace IED
 					ImGui::SameLine();
 				}
 
-				if (ImGui::Button(LS(CommonStrings::Export, "5"), { 120.f, 0.f }))
+				if (ImGui::Button(UIL::LS(CommonStrings::Export, "5"), { 120.f, 0.f }))
 				{
 					ImGui::OpenPopup("__export_ctx");
 				}
@@ -154,7 +152,7 @@ namespace IED
 				DrawExportContextMenu();
 
 				ImGui::SameLine();
-				if (ImGui::Button(LS(CommonStrings::Close, "6"), { 120.f, 0.f }))
+				if (ImGui::Button(UIL::LS(CommonStrings::Close, "6"), { 120.f, 0.f }))
 				{
 					SetOpenState(false);
 				}
@@ -175,9 +173,9 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
-					LS(UIDialogImportExportStrings::ImportError),
+					UIL::LS(UIDialogImportExportStrings::ImportError),
 					m_controller.JSGetLastException().what());
 			}
 		}
@@ -186,15 +184,15 @@ namespace IED
 		{
 			if (ImGui::BeginPopup("__export_ctx"))
 			{
-				if (ImGui::MenuItem(LS(CommonStrings::New, "1")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::New, "1")))
 				{
 					auto& queue = m_controller.UIGetPopupQueue();
 
 					queue.push(
 							 UIPopupType::Input,
-							 LS(UIDialogImportExportStrings::ExportToFile),
+							 UIL::LS(UIDialogImportExportStrings::ExportToFile),
 							 "%s",
-							 LS(UIDialogImportExportStrings::ExportConfirm))
+							 UIL::LS(UIDialogImportExportStrings::ExportConfirm))
 						.draw([this] {
 							auto& conf = m_controller.GetConfigStore().settings;
 
@@ -229,7 +227,7 @@ namespace IED
 
 								queue.push(
 									UIPopupType::Message,
-									LS(CommonStrings::Error),
+									UIL::LS(CommonStrings::Error),
 									"%s: %s",
 									__FUNCTION__,
 									e.what());
@@ -243,15 +241,15 @@ namespace IED
 				{
 					ImGui::Separator();
 
-					if (ImGui::MenuItem(LS(UIDialogImportExportStrings::OverwriteSelected, "2")))
+					if (ImGui::MenuItem(UIL::LS(UIDialogImportExportStrings::OverwriteSelected, "2")))
 					{
 						auto& queue = m_controller.UIGetPopupQueue();
 
 						queue.push(
 								 UIPopupType::Confirm,
-								 LS(UIDialogImportExportStrings::ExportToFile),
+								 UIL::LS(UIDialogImportExportStrings::ExportToFile),
 								 "%s [%s]",
-								 LS(UIDialogImportExportStrings::OverwriteConfirm),
+								 UIL::LS(UIDialogImportExportStrings::OverwriteConfirm),
 								 selected->m_key.c_str())
 							.draw([this] {
 								auto& conf = m_controller.GetConfigStore().settings;
@@ -286,9 +284,9 @@ namespace IED
 
 					queue.push(
 						UIPopupType::Message,
-						LS(CommonStrings::Error),
+						UIL::LS(CommonStrings::Error),
 						"%s\n\n%s",
-						LS(UIDialogImportExportStrings::ExportError),
+						UIL::LS(UIDialogImportExportStrings::ExportError),
 						m_controller.JSGetLastException().what());
 				}
 				else
@@ -305,7 +303,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s: %s",
 					__FUNCTION__,
 					e.what());
@@ -324,9 +322,9 @@ namespace IED
 				auto& queue = m_controller.UIGetPopupQueue();
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
-					LS(UIDialogImportExportStrings::FileListError),
+					UIL::LS(UIDialogImportExportStrings::FileListError),
 					GetLastException().what());
 
 				return false;

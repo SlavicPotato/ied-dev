@@ -63,7 +63,7 @@ namespace IED
 	private:
 		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);
 
-		bool isPlayer;
+		const bool isPlayer;
 	};
 
 	using UseCountContainer = stl::map_sa<

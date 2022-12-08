@@ -15,22 +15,19 @@ namespace IED
 
 	namespace UI
 	{
-		class UIPhysicsValueEditorWidget :
-			public virtual UITipsInterface
+		class UIPhysicsValueEditorWidget
 		{
 		public:
-			UIPhysicsValueEditorWidget(Localization::ILocalization& a_localization);
-
-			bool DrawPhysicsValues(Data::configNodePhysicsValues_t& a_data);
+			static bool DrawPhysicsValues(Data::configNodePhysicsValues_t& a_data);
 
 		private:
-			bool DrawPhysicsValuesImpl(Data::configNodePhysicsValues_t& a_data);
+			static bool DrawPhysicsValuesImpl(Data::configNodePhysicsValues_t& a_data);
 
-			bool DrawGeneralOpts(Data::configNodePhysicsValues_t& a_data);
-			bool DrawSphereConstraintOpts(Data::configNodePhysicsValues_t& a_data);
-			bool DrawBoxConstraintOpts(Data::configNodePhysicsValues_t& a_data);
+			static bool DrawGeneralOpts(Data::configNodePhysicsValues_t& a_data);
+			static bool DrawSphereConstraintOpts(Data::configNodePhysicsValues_t& a_data);
+			static bool DrawBoxConstraintOpts(Data::configNodePhysicsValues_t& a_data);
 
-			bool DrawOffsetParams(btVector4& a_params);
+			static bool DrawOffsetParams(btVector4& a_params);
 		};
 	}
 

@@ -1,21 +1,17 @@
 #pragma once
 
+#include "PopupQueue/UIPopupQueue.h"
 #include "UIAboutModal.h"
 #include "UIContext.h"
+#include "UIFormBrowser.h"
 #include "UIFormInfoCache.h"
 #include "UIKeyedInputLockReleaseHandler.h"
 #include "UILocalizationInterface.h"
 #include "UIMainCommon.h"
 #include "UIMainStrings.h"
 
-#include "Custom/UICustomTabPanel.h"
-#include "EquipmentSlots/UISlotTabPanel.h"
-
 #include "Window/UIWindow.h"
 
-#include "Widgets/UIExportFilterWidget.h"
-
-#include "IED/ConfigSerializationFlags.h"
 #include "IED/SettingHolder.h"
 
 namespace IED
@@ -32,10 +28,8 @@ namespace IED
 		class UIMain :
 			public UIContext,
 			public UIWindow,
-			UIExportFilterWidget,
-			UIAboutModal,
 			public UIKeyedInputLockReleaseHandler,
-			public virtual UILocalizationInterface,
+			UIAboutModal,
 			::Events::EventSink<UIContextStateChangeEvent>
 		{
 			inline static constexpr auto WINDOW_ID = "ied_main";
@@ -67,13 +61,6 @@ namespace IED
 			[[nodiscard]] inline constexpr auto& GetPopupQueue() noexcept
 			{
 				return m_popupQueue;
-			}
-
-			[[nodiscard]] inline constexpr auto& GetFormBrowser() noexcept
-			{
-				auto result = GetChild<UIFormBrowser>();
-				assert(result);
-				return *result;
 			}
 
 			[[nodiscard]] inline constexpr auto& GetFormLookupCache() noexcept
@@ -111,6 +98,13 @@ namespace IED
 				auto ptr = m_childWindows[stl::underlying(T::CHILD_ID)].get();
 
 				return static_cast<T*>(ptr);
+			}
+
+			[[nodiscard]] inline constexpr auto& GetFormBrowser() noexcept
+			{
+				auto result = GetChild<UIFormBrowser>();
+				assert(result);
+				return *result;
 			}
 
 		private:
@@ -175,7 +169,7 @@ namespace IED
 			auto context = GetChildContext<T>();
 
 			if (ImGui::MenuItem(
-					LS(a_title, a_id),
+					UIL::LS(a_title, a_id),
 					nullptr,
 					context && context->IsContextOpen(),
 					static_cast<bool>(context)))

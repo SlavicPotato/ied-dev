@@ -18,8 +18,6 @@ namespace IED
 		UIFormInfoTooltipWidget::UIFormInfoTooltipWidget(
 			Controller& a_controller) :
 			UIMiscTextInterface(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -33,13 +31,13 @@ namespace IED
 
 			if (a_info)
 			{
-				ImGui::Text("%s:", LS(CommonStrings::FormID));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::FormID));
 				ImGui::SameLine();
 				ImGui::Text("%.8X", a_info->form.id.get());
 
-				ImGui::Text("%s:", LS(CommonStrings::Type));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Type));
 
-				if (auto typeDesc = form_type_to_desc(a_info->form.type))
+				if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(a_info->form.type))
 				{
 					ImGui::SameLine();
 					ImGui::TextUnformatted(typeDesc);
@@ -55,7 +53,7 @@ namespace IED
 
 			if (a_entry.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 			{
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::LeftScbAttached));
+				ImGui::TextUnformatted(UIL::LS(UIWidgetCommonStrings::LeftScbAttached));
 				ImGui::Spacing();
 			}
 
@@ -63,7 +61,7 @@ namespace IED
 				a_entry.data.state->created,
 				PerfCounter::Query());
 
-			ImGui::Text("%s: %lld min", LS(CommonStrings::Age), dt / (1000000ll * 60));
+			ImGui::Text("%s: %lld min", UIL::LS(CommonStrings::Age), dt / (1000000ll * 60));
 
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
@@ -85,7 +83,7 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorGreyed,
 					"[%s]",
-					LS(CommonStrings::Hidden));
+					UIL::LS(CommonStrings::Hidden));
 
 				ImGui::SameLine();
 			}
@@ -131,7 +129,7 @@ namespace IED
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 				ImGui::SameLine(0.0f, 8.0f);
 
-				ImGui::Text("%s:", LS(CommonStrings::Model));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Model));
 				ImGui::SameLine();
 
 				auto& flc = m_controller.UIGetFormLookupCache();
@@ -163,7 +161,7 @@ namespace IED
 					ImGui::TextColored(
 						UICommon::g_colorWarning,
 						"%s",
-						LS(CommonStrings::Unknown));
+						UIL::LS(CommonStrings::Unknown));
 				}
 			}
 		}
@@ -221,7 +219,7 @@ namespace IED
 					ImGui::Spacing();
 					ImGui::Spacing();
 
-					ImGui::Text("%s:", LS(CommonStrings::Base));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
 					ImGui::Spacing();
 
 					ImGui::Indent();
@@ -236,7 +234,7 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorWarning,
 					"%s",
-					LS(CommonStrings::Unknown));
+					UIL::LS(CommonStrings::Unknown));
 			}
 
 			ImGui::PopTextWrapPos();
@@ -247,13 +245,13 @@ namespace IED
 
 		void UIFormInfoTooltipWidget::DrawFormInfo(const formInfo_t& a_info)
 		{
-			ImGui::Text("%s:", LS(CommonStrings::FormID));
+			ImGui::Text("%s:", UIL::LS(CommonStrings::FormID));
 			ImGui::SameLine();
 			ImGui::Text("%.8X", a_info.id.get());
 
-			ImGui::Text("%s:", LS(CommonStrings::Type));
+			ImGui::Text("%s:", UIL::LS(CommonStrings::Type));
 
-			if (auto typeDesc = form_type_to_desc(a_info.type))
+			if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(a_info.type))
 			{
 				ImGui::SameLine();
 				ImGui::Text("%s [%hhu]", typeDesc, a_info.type);
@@ -266,12 +264,12 @@ namespace IED
 
 			if (!a_info.name.empty())
 			{
-				ImGui::Text("%s:", LS(CommonStrings::Name));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Name));
 				ImGui::SameLine();
 				ImGui::Text("%s", a_info.name.c_str());
 			}
 
-			ImGui::Text("%s:", LS(CommonStrings::Flags));
+			ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
 			ImGui::SameLine();
 			ImGui::Text("%.8X", a_info.formFlags);
 		}

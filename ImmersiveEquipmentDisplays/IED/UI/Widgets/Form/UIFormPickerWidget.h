@@ -16,7 +16,6 @@ namespace IED
 		class UIFormPickerWidget :
 			public UIFormSelectorWidget,
 			UIPopupInterface,
-			public virtual UIFormTypeSelectorWidget,
 			public virtual UIFormLookupInterface
 		{
 		public:

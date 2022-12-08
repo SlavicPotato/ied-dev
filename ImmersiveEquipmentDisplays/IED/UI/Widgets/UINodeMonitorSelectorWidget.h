@@ -8,12 +8,10 @@ namespace IED
 {
 	namespace UI
 	{
-		class UINodeMonitorSelectorWidget :
-			public virtual UILocalizationInterface
+		class UINodeMonitorSelectorWidget 
 		{
 		public:
-			UINodeMonitorSelectorWidget(
-				Localization::ILocalization& a_localization);
+			UINodeMonitorSelectorWidget() = default;
 
 			bool DrawNodeMonitorSelector(std::uint32_t& a_uid) const;
 

@@ -66,9 +66,7 @@ namespace IED
 			public virtual UICollapsibles,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UITransformSliderWidget,
-			public virtual UITipsInterface,
 			public virtual UIPopupInterface,
-			public virtual UILocalizationInterface,
 			public virtual UISettingsInterface,
 			public virtual UISimpleStringSetWidget,
 			public virtual UISimpleStringListWidget
@@ -298,8 +296,6 @@ namespace IED
 			Controller& a_controller) :
 			UINodeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
-			UIEffectShaderEditorWidget<baseEffectShaderEditorParams_t<T>>(a_controller),
-			UIPhysicsValueEditorWidget(a_controller),
 			m_controller(a_controller),
 			m_ffFormSelector(a_controller, FormInfoFlags::kNone, true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
@@ -396,7 +392,7 @@ namespace IED
 			{
 				if (a_data.filters)
 				{
-					if (LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
+					if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
 					{
 						a_data.filters.reset();
 
@@ -410,7 +406,7 @@ namespace IED
 				}
 				else
 				{
-					if (LCG_MI(CommonStrings::Create, "2"))
+					if (UIL::LCG_MI(CommonStrings::Create, "2"))
 					{
 						a_data.filters = std::make_unique<Data::configBaseFilters_t>();
 
@@ -458,7 +454,7 @@ namespace IED
 					"tree",
 					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Filters)))
+					UIL::LS(CommonStrings::Filters)))
 			{
 				if (a_data.filters)
 				{
@@ -472,7 +468,7 @@ namespace IED
 					ImGui::PushID("1");
 
 					m_formFilter.DrawFormFiltersTree(
-						LS(UIWidgetCommonStrings::ActorFilters),
+						UIL::LS(UIWidgetCommonStrings::ActorFilters),
 						ffparams,
 						a_data.filters->actorFilter,
 						[&] {
@@ -485,7 +481,7 @@ namespace IED
 					ImGui::PushID("2");
 
 					m_formFilter.DrawFormFiltersTree(
-						LS(UIWidgetCommonStrings::NPCFilters),
+						UIL::LS(UIWidgetCommonStrings::NPCFilters),
 						ffparams,
 						a_data.filters->npcFilter,
 						[&] {
@@ -498,7 +494,7 @@ namespace IED
 					ImGui::PushID("3");
 
 					m_formFilter.DrawFormFiltersTree(
-						LS(UIWidgetCommonStrings::RaceFilters),
+						UIL::LS(UIWidgetCommonStrings::RaceFilters),
 						ffparams,
 						a_data.filters->raceFilter,
 						[&] {
@@ -752,7 +748,7 @@ namespace IED
 						"f_ex",
 						true,
 						"%s",
-						LS(CommonStrings::Extra));
+						UIL::LS(CommonStrings::Extra));
 				}
 				else
 				{
@@ -761,7 +757,7 @@ namespace IED
 						ImGuiTreeNodeFlags_DefaultOpen |
 							ImGuiTreeNodeFlags_SpanAvailWidth,
 						"%s",
-						LS(CommonStrings::Extra));
+						UIL::LS(CommonStrings::Extra));
 				}
 
 				if (result)
@@ -808,7 +804,7 @@ namespace IED
 					"tree",
 					true,
 					"%s",
-					LS(CommonStrings::Node));
+					UIL::LS(CommonStrings::Node));
 			}
 			else
 			{
@@ -817,7 +813,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Node));
+					UIL::LS(CommonStrings::Node));
 			}
 
 			if (r)
@@ -827,13 +823,13 @@ namespace IED
 				UICommon::PushDisabled(a_disabled);
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::TextUnformatted(LS(UIBaseConfigString::AttachmentModeColon));
+				ImGui::TextUnformatted(UIL::LS(UIBaseConfigString::AttachmentModeColon));
 				ImGui::SameLine();
 
 				bool tmpb;
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Reference, "1"),
+						UIL::LS(CommonStrings::Reference, "1"),
 						a_data.flags.test(Data::BaseFlags::kReferenceMode)))
 				{
 					a_data.flags.set(Data::BaseFlags::kReferenceMode);
@@ -852,7 +848,7 @@ namespace IED
 				UICommon::PushDisabled(tmpb);
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Parent, "2"),
+						UIL::LS(CommonStrings::Parent, "2"),
 						!a_data.flags.test(Data::BaseFlags::kReferenceMode)))
 				{
 					a_data.flags.clear(Data::BaseFlags::kReferenceMode);
@@ -866,12 +862,12 @@ namespace IED
 
 				UICommon::PopDisabled(tmpb);
 
-				DrawTip(UITip::AttachmentMode);
+				UITipsInterface::DrawTip(UITip::AttachmentMode);
 
 				ImGui::Spacing();
 
 				if (DrawNodeSelector(
-						LS(UIWidgetCommonStrings::TargetNode, "ns"),
+						UIL::LS(UIWidgetCommonStrings::TargetNode, "ns"),
 						!a_data.flags.test(Data::BaseFlags::kReferenceMode),
 						a_data.targetNode))
 				{
@@ -882,7 +878,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::TargetNode);
+				UITipsInterface::DrawTip(UITip::TargetNode);
 
 				if (!a_data.targetNode)
 				{
@@ -891,7 +887,7 @@ namespace IED
 					ImGui::TextColored(
 						UICommon::g_colorWarning,
 						"%s",
-						LS(UIBaseConfigString::EmptyNodeWarning));
+						UIL::LS(UIBaseConfigString::EmptyNodeWarning));
 				}
 
 				ImGui::Spacing();
@@ -966,7 +962,7 @@ namespace IED
 					"tree",
 					true,
 					"%s",
-					LS(CommonStrings::Other));
+					UIL::LS(CommonStrings::Other));
 			}
 			else
 			{
@@ -975,7 +971,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Other));
+					UIL::LS(CommonStrings::Other));
 			}
 
 			if (r)
@@ -988,7 +984,7 @@ namespace IED
 						"fp_m",
 						static_cast<Localization::StringID>(UIWidgetCommonStrings::OverrideModel),
 						a_data.forceModel,
-						GetTipText(UITip::OverrideModel)))
+						UITipsInterface::GetTipText(UITip::OverrideModel)))
 				{
 					PropagateMemberToEquipmentOverrides(
 						a_baseConfig,
@@ -1035,7 +1031,7 @@ namespace IED
 				if (hasValue)
 				{
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Clear, "0")))
+							UIL::LS(CommonStrings::Clear, "0")))
 					{
 						a_data.physicsValues.data.reset();
 
@@ -1050,7 +1046,7 @@ namespace IED
 				else
 				{
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Create, "1")))
+							UIL::LS(CommonStrings::Create, "1")))
 					{
 						a_data.physicsValues.data =
 							std::make_unique<Data::configNodePhysicsValues_t>();
@@ -1069,7 +1065,7 @@ namespace IED
 				ImGui::Separator();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Copy, "2"),
+						UIL::LS(CommonStrings::Copy, "2"),
 						nullptr,
 						false,
 						hasValue))
@@ -1084,7 +1080,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodePhysicsValues_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "3"),
+						UIL::LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1150,7 +1146,7 @@ namespace IED
 					"tree",
 					false,
 					"%s",
-					LS(CommonStrings::Physics));
+					UIL::LS(CommonStrings::Physics));
 			}
 			else
 			{
@@ -1158,7 +1154,7 @@ namespace IED
 					"tree",
 					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Physics));
+					UIL::LS(CommonStrings::Physics));
 			}
 
 			if (r)
@@ -1187,7 +1183,7 @@ namespace IED
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 					ImGui::TextWrapped(
 						"%s",
-						LS(UIBaseConfigString::CreatePhysicsDataInfo));
+						UIL::LS(UIBaseConfigString::CreatePhysicsDataInfo));
 					ImGui::PopStyleColor();
 				}
 
@@ -1219,7 +1215,7 @@ namespace IED
 					"f_gn",
 					true,
 					"%s",
-					LS(CommonStrings::General));
+					UIL::LS(CommonStrings::General));
 			}
 			else
 			{
@@ -1228,7 +1224,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::General));
+					UIL::LS(CommonStrings::General));
 			}
 
 			if (tresult)
@@ -1238,7 +1234,7 @@ namespace IED
 				ImGui::Columns(2, nullptr, false);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Disabled, "0"),
+						UIL::LS(CommonStrings::Disabled, "0"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisabled)))
 				{
@@ -1252,7 +1248,7 @@ namespace IED
 				UICommon::PushDisabled(a_disabled);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Invisible, "1"),
+						UIL::LS(CommonStrings::Invisible, "1"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kInvisible)))
 				{
@@ -1262,10 +1258,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::Invisible);
+				UITipsInterface::DrawTip(UITip::Invisible);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::HideInFurniture, "2"),
+						UIL::LS(UIBaseConfigString::HideInFurniture, "2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kHideIfUsingFurniture)))
 				{
@@ -1275,10 +1271,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::HideInFurniture);
+				UITipsInterface::DrawTip(UITip::HideInFurniture);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::HideLayingDown, "3"),
+						UIL::LS(UIBaseConfigString::HideLayingDown, "3"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kHideLayingDown)))
 				{
@@ -1288,12 +1284,12 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::HideLayingDown);
+				UITipsInterface::DrawTip(UITip::HideLayingDown);
 
 				ImGui::NextColumn();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::kPlaySound, "4"),
+						UIL::LS(CommonStrings::kPlaySound, "4"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kPlaySound)))
 				{
@@ -1305,7 +1301,7 @@ namespace IED
 				}
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::IgnoreRaceEquipTypes, "5"),
+						UIL::LS(UIBaseConfigString::IgnoreRaceEquipTypes, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kIgnoreRaceEquipTypes)))
 				{
@@ -1315,14 +1311,14 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::IgnoreRaceEquipTypesSlot);
+				UITipsInterface::DrawTip(UITip::IgnoreRaceEquipTypesSlot);
 
 				const bool atmReference = a_data.flags.test(Data::BaseFlags::kReferenceMode);
 
 				UICommon::PushDisabled(!atmReference);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::SyncReference, "6"),
+						UIL::LS(UIBaseConfigString::SyncReference, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kSyncReferenceTransform)))
 				{
@@ -1335,7 +1331,7 @@ namespace IED
 
 				UICommon::PopDisabled(!atmReference);
 
-				DrawTip(UITip::SyncReferenceNode);
+				UITipsInterface::DrawTip(UITip::SyncReferenceNode);
 
 				UICommon::PopDisabled(a_disabled);
 
@@ -1365,7 +1361,7 @@ namespace IED
 					"f_3d",
 					true,
 					"%s",
-					LS(CommonStrings::Model));
+					UIL::LS(CommonStrings::Model));
 			}
 			else
 			{
@@ -1374,7 +1370,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Model));
+					UIL::LS(CommonStrings::Model));
 			}
 
 			if (tresult)
@@ -1386,7 +1382,7 @@ namespace IED
 				UICommon::PushDisabled(a_disabled);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::RemoveScabbard, "1"),
+						UIL::LS(UIBaseConfigString::RemoveScabbard, "1"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kRemoveScabbard)))
 				{
@@ -1396,10 +1392,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::RemoveScabbard);
+				UITipsInterface::DrawTip(UITip::RemoveScabbard);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::RemoveProjectileTracers, "2"),
+						UIL::LS(UIWidgetCommonStrings::RemoveProjectileTracers, "2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kRemoveProjectileTracers)))
 				{
@@ -1409,10 +1405,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::RemoveProjectileTracers);
+				UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::Use1pWeaponModels, "3"),
+						UIL::LS(UIBaseConfigString::Use1pWeaponModels, "3"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
 				{
@@ -1422,10 +1418,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::Load1pWeaponModel);
+				UITipsInterface::DrawTip(UITip::Load1pWeaponModel);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::UseWorldModel, "4"),
+						UIL::LS(UIBaseConfigString::UseWorldModel, "4"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kUseWorldModel)))
 				{
@@ -1435,12 +1431,12 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::UseWorldModel);
+				UITipsInterface::DrawTip(UITip::UseWorldModel);
 
 				ImGui::NextColumn();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::KeepTorchFlame, "5"),
+						UIL::LS(UIBaseConfigString::KeepTorchFlame, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
 				{
@@ -1450,14 +1446,14 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::KeepTorchFlame);
+				UITipsInterface::DrawTip(UITip::KeepTorchFlame);
 
 				/*const bool disable = !GetLightsEnabled() && !IsProfileEditor();
 
 				UICommon::PushDisabled(disable);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::AttachLight, "5"),
+						UILI::LS(UIWidgetCommonStrings::AttachLight, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kAttachLight)))
 				{
@@ -1467,10 +1463,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::AttachLight);
+				UITipsInterface::DrawTip(UITip::AttachLight);
 				
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::HideLight, "6"),
+						UILI::LS(UIWidgetCommonStrings::HideLight, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kHideLight)))
 				{
@@ -1480,12 +1476,12 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				DrawTip(UITip::HideLight);
+				UITipsInterface::DrawTip(UITip::HideLight);
 
 				UICommon::PopDisabled(disable);*/
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::DisableHavok, "6"),
+						UIL::LS(UIWidgetCommonStrings::DisableHavok, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisableHavok)))
 				{
@@ -1495,10 +1491,10 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::DisableHavok);
+				UITipsInterface::DrawTip(UITip::DisableHavok);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIBaseConfigString::DropOnDeath, "7"),
+						UIL::LS(UIBaseConfigString::DropOnDeath, "7"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDropOnDeath)))
 				{
@@ -1508,7 +1504,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::DropOnDeath);
+				UITipsInterface::DrawTip(UITip::DropOnDeath);
 
 				UICommon::PopDisabled(a_disabled);
 
@@ -1585,7 +1581,7 @@ namespace IED
 					"f_an",
 					true,
 					"%s",
-					LS(CommonStrings::Animation));
+					UIL::LS(CommonStrings::Animation));
 			}
 			else
 			{
@@ -1594,7 +1590,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Animation));
+					UIL::LS(CommonStrings::Animation));
 			}
 
 			if (tresult)
@@ -1606,7 +1602,7 @@ namespace IED
 				UICommon::PushDisabled(a_disabled);
 
 				bool paChanged = ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::PlayAnimation, "1"),
+					UIL::LS(UIWidgetCommonStrings::PlayAnimation, "1"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::BaseFlags::kPlaySequence));
 
@@ -1618,7 +1614,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::PlayAnimation);
+				UITipsInterface::DrawTip(UITip::PlayAnimation);
 
 				if (a_data.flags.test(Data::BaseFlags::kPlaySequence))
 				{
@@ -1637,7 +1633,7 @@ namespace IED
 
 					if (ImGui::BeginPopup("7ctx"))
 					{
-						if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
+						if (DrawDescriptionPopup(UIL::LS(CommonStrings::Sequence, "1")))
 						{
 							a_data.niControllerSequence = GetDescriptionPopupBuffer();
 
@@ -1654,7 +1650,7 @@ namespace IED
 				}
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::DisableWeaponAnims, "2"),
+						UIL::LS(UIWidgetCommonStrings::DisableWeaponAnims, "2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
 				{
@@ -1664,12 +1660,12 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::DisableWeaponAnims);
+				UITipsInterface::DrawTip(UITip::DisableWeaponAnims);
 
 				ImGui::NextColumn();
 
 				paChanged = ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::AnimationEvent, "3"),
+					UIL::LS(UIWidgetCommonStrings::AnimationEvent, "3"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::BaseFlags::kAnimationEvent));
 
@@ -1682,7 +1678,7 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
 
-				DrawTip(UITip::AnimationEvent);
+				UITipsInterface::DrawTip(UITip::AnimationEvent);
 
 				if (a_data.flags.test(Data::BaseFlags::kAnimationEvent))
 				{
@@ -1701,7 +1697,7 @@ namespace IED
 
 					if (ImGui::BeginPopup("Hctx"))
 					{
-						if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
+						if (DrawDescriptionPopup(UIL::LS(CommonStrings::Event, "1")))
 						{
 							a_data.animationEvent = GetDescriptionPopupBuffer();
 
@@ -1718,7 +1714,7 @@ namespace IED
 				}
 
 				/*if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "4"),
+					UILI::LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "4"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::BaseFlags::kDisableAnimEventForwarding)))
 				{
@@ -1728,7 +1724,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				DrawTip(UITip::DisableAnimEventForwarding);*/
+				UITipsInterface::DrawTip(UITip::DisableAnimEventForwarding);*/
 
 				UICommon::PopDisabled(a_disabled);
 
@@ -1774,7 +1770,7 @@ namespace IED
 					"tree",
 					true,
 					"%s",
-					LS(UIBaseConfigString::EquipmentOverrides));
+					UIL::LS(UIBaseConfigString::EquipmentOverrides));
 			}
 			else
 			{
@@ -1783,7 +1779,7 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					LS(UIBaseConfigString::EquipmentOverrides));
+					UIL::LS(UIBaseConfigString::EquipmentOverrides));
 			}
 
 			if (r)
@@ -1845,9 +1841,9 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::New, "1"))
+				if (UIL::LCG_BM(CommonStrings::New, "1"))
 				{
-					if (LCG_BM(CommonStrings::Item, "0"))
+					if (UIL::LCG_BM(CommonStrings::Item, "0"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -1868,7 +1864,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Group, "1"))
+					if (UIL::LCG_BM(CommonStrings::Group, "1"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -1894,7 +1890,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set<Data::equipmentOverrideList_t>(a_list);
 				}
@@ -1903,7 +1899,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverride_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "3"),
+							UIL::LS(CommonStrings::Paste, "3"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -1925,7 +1921,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "4"),
+							UIL::LS(CommonStrings::PasteOver, "4"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2075,7 +2071,7 @@ namespace IED
 							ImGui::PushID("header");
 
 							if (ImGui::CheckboxFlagsT(
-									LS(CommonStrings::Continue, "0"),
+									UIL::LS(CommonStrings::Continue, "0"),
 									stl::underlying(std::addressof(e.eoFlags.value)),
 									stl::underlying(Data::EquipmentOverrideFlags::kContinue)))
 							{
@@ -2084,7 +2080,7 @@ namespace IED
 									a_params,
 									PostChangeAction::Evaluate);
 							}
-							DrawTip(UITip::EquipmentOverrideGroupContinue);
+							UITipsInterface::DrawTip(UITip::EquipmentOverrideGroupContinue);
 
 							ImGui::PopID();
 
@@ -2194,11 +2190,11 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (LCG_BM(CommonStrings::New, "2"))
+					if (UIL::LCG_BM(CommonStrings::New, "2"))
 					{
-						if (LCG_BM(CommonStrings::Item, "0"))
+						if (UIL::LCG_BM(CommonStrings::Item, "0"))
 						{
 							if (DrawDescriptionPopup())
 							{
@@ -2211,7 +2207,7 @@ namespace IED
 							ImGui::EndMenu();
 						}
 
-						if (LCG_BM(CommonStrings::Group, "1"))
+						if (UIL::LCG_BM(CommonStrings::Group, "1"))
 						{
 							if (DrawDescriptionPopup())
 							{
@@ -2230,7 +2226,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::equipmentOverride_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "3"),
+							UIL::LS(CommonStrings::Paste, "3"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2243,12 +2239,12 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "4")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "4")))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
-				if (LCG_BM(CommonStrings::Rename, "5"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "5"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2261,14 +2257,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Reset, "6")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Reset, "6")))
 				{
 					result.action = BaseConfigEditorAction::Reset;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "7")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "7")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -2277,7 +2273,7 @@ namespace IED
 				                   UIClipboard::Get<Data::configBaseValues_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "8"),
+						UIL::LS(CommonStrings::PasteOver, "8"),
 						nullptr,
 						false,
 						hasClipData))
@@ -2341,7 +2337,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::New, "1"))
+				if (UIL::LCG_BM(CommonStrings::New, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2361,7 +2357,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set<Data::effectShaderList_t>(a_data.effectShaders);
 				}
@@ -2370,7 +2366,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "3"),
+							UIL::LS(CommonStrings::Paste, "3"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2393,7 +2389,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::effectShaderList_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::PasteOver, "4"),
+							UIL::LS(CommonStrings::PasteOver, "4"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2462,7 +2458,7 @@ namespace IED
 					"tree",
 					true,
 					"%s",
-					LS(UIBaseConfigString::EffectShaders));
+					UIL::LS(UIBaseConfigString::EffectShaders));
 			}
 			else
 			{
@@ -2471,7 +2467,7 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					LS(UIBaseConfigString::EffectShaders));
+					UIL::LS(UIBaseConfigString::EffectShaders));
 			}
 
 			if (r)
@@ -2539,9 +2535,9 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (LCG_BM(CommonStrings::New, "2"))
+					if (UIL::LCG_BM(CommonStrings::New, "2"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -2557,7 +2553,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "3"),
+							UIL::LS(CommonStrings::Paste, "3"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2570,7 +2566,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_BM(UIBaseConfigString::AddShaderEntry, "2"))
+				if (UIL::LCG_BM(UIBaseConfigString::AddShaderEntry, "2"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2583,12 +2579,12 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "4")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "4")))
 				{
 					result.action = BaseConfigEditorAction::Delete;
 				}
 
-				if (LCG_BM(CommonStrings::Rename, "5"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "5"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2603,7 +2599,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "7")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "7")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -2611,7 +2607,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configEffectShaderHolder_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "8"),
+						UIL::LS(CommonStrings::PasteOver, "8"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -2698,9 +2694,9 @@ namespace IED
 					else
 					{
 						QueueNotification(
-							LS(CommonStrings::Error),
+							UIL::LS(CommonStrings::Error),
 							"%s",
-							LS(UIBaseConfigString::EffectShaderEntryExists));
+							UIL::LS(UIBaseConfigString::EffectShaderEntryExists));
 					}
 
 					break;
@@ -2780,7 +2776,7 @@ namespace IED
 								ImGuiTreeNodeFlags_SpanAvailWidth |
 									ImGuiTreeNodeFlags_DefaultOpen,
 								"%s",
-								LS(CommonStrings::Conditions)))
+								UIL::LS(CommonStrings::Conditions)))
 						{
 							if (!empty)
 							{

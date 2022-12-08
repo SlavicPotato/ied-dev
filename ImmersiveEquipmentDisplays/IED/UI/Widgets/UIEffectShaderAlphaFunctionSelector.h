@@ -9,20 +9,17 @@ namespace IED
 
 	namespace UI
 	{
-		class UIEffectShaderAlphaFunctionSelector :
-			public virtual UILocalizationInterface
+		class UIEffectShaderAlphaFunctionSelector
 		{
 		public:
-			UIEffectShaderAlphaFunctionSelector(
-				Localization::ILocalization& a_localization);
 
-			bool DrawAlphaFuncSelector(
+			static bool DrawAlphaFuncSelector(
 				Localization::StringID     a_label,
 				NiProperty::AlphaFunction& a_data);
 
 		protected:
-			const char* alpha_func_to_desc(
-				NiProperty::AlphaFunction a_data) const;
+			static const char* alpha_func_to_desc(
+				NiProperty::AlphaFunction a_data);
 
 		};
 	}

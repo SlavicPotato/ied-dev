@@ -8,13 +8,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UIPopupQueue::UIPopupQueue(
-			Localization::ILocalization& a_localization) :
-			UICommonModals(a_localization),
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		void UIPopupQueue::run()
 		{
 			if (m_queue.empty())

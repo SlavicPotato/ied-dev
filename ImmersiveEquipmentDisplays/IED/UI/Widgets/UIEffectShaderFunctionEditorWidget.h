@@ -34,14 +34,12 @@ namespace IED
 		};
 
 		class UIEffectShaderFunctionEditorWidget :
-			public UIEffectShaderFunctionSelector,
-			public virtual UILocalizationInterface
+			public UIEffectShaderFunctionSelector
 		{
 			inline static constexpr auto POPUP_ID = "esf_ed";
 
 		public:
-			UIEffectShaderFunctionEditorWidget(
-				Localization::ILocalization& a_localization);
+			UIEffectShaderFunctionEditorWidget() = default;
 
 			void OpenEffectShaderFunctionEditor();
 

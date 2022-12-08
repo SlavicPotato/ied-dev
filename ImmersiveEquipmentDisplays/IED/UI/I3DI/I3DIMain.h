@@ -13,8 +13,7 @@ namespace IED
 	namespace UI
 	{
 		class I3DIMain :
-			public UIContext,
-			public UILocalizationInterface
+			public UIContext
 		{
 			/*struct Data : I3DICommonData
 			{

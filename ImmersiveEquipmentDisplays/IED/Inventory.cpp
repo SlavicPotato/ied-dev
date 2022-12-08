@@ -40,12 +40,7 @@ namespace IED
 	{
 		if (isPlayer)
 		{
-			data.forms.reserve(1000);
 			data.equippedForms.reserve(20);
-		}
-		else
-		{
-			data.forms.reserve(100);
 		}
 
 		for (auto& e : a_container)
@@ -89,7 +84,7 @@ namespace IED
 			return;
 		}
 
-		auto form = a_entry->form;
+		const auto form = a_entry->form;
 
 		if (!CheckForm(form))
 		{
@@ -121,7 +116,7 @@ namespace IED
 			return;
 		}
 
-		auto form = a_entryData->type;
+		const auto form = a_entryData->type;
 
 		if (!CheckForm(form))
 		{

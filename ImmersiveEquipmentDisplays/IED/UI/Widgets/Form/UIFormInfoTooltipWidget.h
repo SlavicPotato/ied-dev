@@ -17,9 +17,7 @@ namespace IED
 	namespace UI
 	{
 		class UIFormInfoTooltipWidget :
-			public virtual UIMiscTextInterface,
-			public virtual UIFormTypeSelectorWidget,
-			public virtual UILocalizationInterface
+			public virtual UIMiscTextInterface
 		{
 		public:
 			UIFormInfoTooltipWidget(Controller& a_controller);

@@ -21,8 +21,7 @@ namespace IED
 	{
 		class UIFormBrowser :
 			public UIContext,
-			public UIWindow,
-			public virtual UILocalizationInterface
+			public UIWindow
 		{
 			struct TabItem
 			{

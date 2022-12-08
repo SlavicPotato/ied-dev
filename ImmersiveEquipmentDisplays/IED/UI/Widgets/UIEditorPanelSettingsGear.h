@@ -10,11 +10,10 @@ namespace IED
 	namespace UI
 	{
 		class UIEditorPanelSettingsGear :
-			public UIEditorPanelSettings,
-			public virtual UILocalizationInterface
+			public UIEditorPanelSettings
 		{
 		public:
-			UIEditorPanelSettingsGear(Controller& a_controller);
+			UIEditorPanelSettingsGear() = default;
 
 		protected:
 			virtual void DrawExtraEditorPanelSettings() override;

@@ -28,6 +28,7 @@ namespace IED
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorFormFilters;
 
 			UIProfileEditorFormFilters(Controller& a_controller);
+			~UIProfileEditorFormFilters() noexcept override;
 
 			void Initialize();
 

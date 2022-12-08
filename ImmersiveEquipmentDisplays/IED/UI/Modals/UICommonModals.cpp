@@ -6,12 +6,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UICommonModals::UICommonModals(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		auto UICommonModals::TextInputDialog(
 			const char*                 a_name,
 			const char*                 a_text,

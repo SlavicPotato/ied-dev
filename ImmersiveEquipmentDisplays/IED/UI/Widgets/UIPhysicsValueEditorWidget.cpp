@@ -10,13 +10,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UIPhysicsValueEditorWidget::UIPhysicsValueEditorWidget(
-			Localization::ILocalization& a_localization) :
-			UITipsInterface(a_localization),
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIPhysicsValueEditorWidget::DrawPhysicsValues(
 			Data::configNodePhysicsValues_t& a_data)
 		{
@@ -38,7 +31,7 @@ namespace IED
 			ImGui::PushID("pv");
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Disable, "0"),
+				UIL::LS(CommonStrings::Disable, "0"),
 				stl::underlying(std::addressof(a_data.valueFlags.value)),
 				stl::underlying(Data::ConfigNodePhysicsFlags::kDisabled));
 
@@ -53,7 +46,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::General)))
+					UIL::LS(CommonStrings::General)))
 			{
 				ImGui::Spacing();
 
@@ -67,14 +60,14 @@ namespace IED
 			ImGui::Spacing();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(UIPhysicsValueEditorWidgetStrings::SphereConstraint, "1"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::SphereConstraint, "1"),
 				stl::underlying(std::addressof(a_data.valueFlags.value)),
 				stl::underlying(Data::ConfigNodePhysicsFlags::kEnableSphereConstraint));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(UIPhysicsValueEditorWidgetStrings::BoxConstraint, "2"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::BoxConstraint, "2"),
 				stl::underlying(std::addressof(a_data.valueFlags.value)),
 				stl::underlying(Data::ConfigNodePhysicsFlags::kEnableBoxConstraint));
 
@@ -89,7 +82,7 @@ namespace IED
 							ImGuiTreeNodeFlags_DefaultOpen |
 								ImGuiTreeNodeFlags_SpanAvailWidth,
 							"%s",
-							LS(UIPhysicsValueEditorWidgetStrings::SphereConstraint)))
+							UIL::LS(UIPhysicsValueEditorWidgetStrings::SphereConstraint)))
 					{
 						ImGui::Spacing();
 
@@ -108,7 +101,7 @@ namespace IED
 							ImGuiTreeNodeFlags_DefaultOpen |
 								ImGuiTreeNodeFlags_SpanAvailWidth,
 							"%s",
-							LS(UIPhysicsValueEditorWidgetStrings::BoxConstraint)))
+							UIL::LS(UIPhysicsValueEditorWidgetStrings::BoxConstraint)))
 					{
 						ImGui::Spacing();
 
@@ -138,124 +131,124 @@ namespace IED
 			ImGui::PushID("go");
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Stiffness, "1"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Stiffness, "1"),
 				std::addressof(a_data.stiffness),
 				dragSpeed,
 				0,
 				500);
-			DrawTip(UITip::PVStiffness);
+			UITipsInterface::DrawTip(UITip::PVStiffness);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Stiffness2, "2"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Stiffness2, "2"),
 				std::addressof(a_data.stiffness2),
 				dragSpeed,
 				0,
 				500);
-			DrawTip(UITip::PVStiffness2);
+			UITipsInterface::DrawTip(UITip::PVStiffness2);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::SpringSlackOffset, "3"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::SpringSlackOffset, "3"),
 				std::addressof(a_data.springSlackOffset),
 				dragSpeed,
 				0,
 				5000);
-			DrawTip(UITip::PVSpringSlackOffset);
+			UITipsInterface::DrawTip(UITip::PVSpringSlackOffset);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::SpringSlackMag, "4"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::SpringSlackMag, "4"),
 				std::addressof(a_data.springSlackMag),
 				dragSpeed,
 				0,
 				500);
-			DrawTip(UITip::PVSpringSlackMag);
+			UITipsInterface::DrawTip(UITip::PVSpringSlackMag);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Damping, "5"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Damping, "5"),
 				std::addressof(a_data.damping),
 				dragSpeed,
 				0,
 				500);
-			DrawTip(UITip::PVDamping);
+			UITipsInterface::DrawTip(UITip::PVDamping);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Resistance, "6"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Resistance, "6"),
 				std::addressof(a_data.resistance),
 				dragSpeed,
 				0,
 				20);
-			DrawTip(UITip::PVResistance);
+			UITipsInterface::DrawTip(UITip::PVResistance);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::MaxVelocity, "7"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::MaxVelocity, "7"),
 				std::addressof(a_data.maxVelocity),
 				dragSpeed,
 				10,
 				50000);
-			DrawTip(UITip::PVMaxVelocity);
+			UITipsInterface::DrawTip(UITip::PVMaxVelocity);
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::LinearScale, "8"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::LinearScale, "8"),
 				a_data.linear,
 				dragSpeed,
 				0,
 				10);
-			DrawTip(UITip::PVLinearScale);
+			UITipsInterface::DrawTip(UITip::PVLinearScale);
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::RotationScale, "9"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::RotationScale, "9"),
 				a_data.rotational,
 				dragSpeed,
 				-10,
 				10);
-			DrawTip(UITip::PVRotationScale);
+			UITipsInterface::DrawTip(UITip::PVRotationScale);
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::RotationAdjust, "A"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::RotationAdjust, "A"),
 				a_data.rotAdjust,
 				dragSpeedDeg,
 				-360,
 				360);
-			DrawTip(UITip::PVRotationAdjust);
+			UITipsInterface::DrawTip(UITip::PVRotationAdjust);
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::CogOffset, "B"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::CogOffset, "B"),
 				a_data.cogOffset,
 				dragSpeed,
 				-100,
 				100);
-			DrawTip(UITip::PVCogOffset);
+			UITipsInterface::DrawTip(UITip::PVCogOffset);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Mass, "C"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Mass, "C"),
 				std::addressof(a_data.mass),
 				dragSpeed,
 				0.001f,
 				1000.0f);
-			DrawTip(UITip::PVMass);
+			UITipsInterface::DrawTip(UITip::PVMass);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::GravityBias, "D"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::GravityBias, "D"),
 				std::addressof(a_data.gravityBias),
 				dragSpeed,
 				0,
 				8000);
-			DrawTip(UITip::PVGravityBias);
+			UITipsInterface::DrawTip(UITip::PVGravityBias);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::GravityCorrection, "E"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::GravityCorrection, "E"),
 				std::addressof(a_data.gravityCorrection),
 				dragSpeed,
 				-500,
 				500);
-			DrawTip(UITip::PVGravityCorrection);
+			UITipsInterface::DrawTip(UITip::PVGravityCorrection);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::RotGravityCorrection, "F"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::RotGravityCorrection, "F"),
 				std::addressof(a_data.rotGravityCorrection),
 				dragSpeed,
 				-5000,
 				5000);
-			DrawTip(UITip::PVRotGravityCorrection);
+			UITipsInterface::DrawTip(UITip::PVRotGravityCorrection);
 
 			ImGui::PopID();
 
@@ -271,28 +264,28 @@ namespace IED
 			ImGui::PushID("sco");
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::SphereOffset, "1"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::SphereOffset, "1"),
 				a_data.maxOffsetSphereOffset,
 				dragSpeed,
 				-50,
 				50);
-			DrawTip(UITip::PVSphereOffset);
+			UITipsInterface::DrawTip(UITip::PVSphereOffset);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::SphereRadius, "2"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::SphereRadius, "2"),
 				std::addressof(a_data.maxOffsetSphereRadius),
 				dragSpeed,
 				0,
 				500);
-			DrawTip(UITip::PVSphereRadius);
+			UITipsInterface::DrawTip(UITip::PVSphereRadius);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
 				std::addressof(a_data.maxOffsetSphereFriction),
 				dragSpeed,
 				0,
 				1);
-			DrawTip(UITip::PVConstraintFriction);
+			UITipsInterface::DrawTip(UITip::PVConstraintFriction);
 
 			ImGui::Spacing();
 
@@ -312,28 +305,28 @@ namespace IED
 			ImGui::PushID("bco");
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::BoxMin, "1"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::BoxMin, "1"),
 				a_data.maxOffsetN,
 				dragSpeed,
 				-128,
 				0);
-			DrawTip(UITip::PVBoxMin);
+			UITipsInterface::DrawTip(UITip::PVBoxMin);
 
 			result |= ImGui::DragFloat3(
-				LS(UIPhysicsValueEditorWidgetStrings::BoxMax, "2"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::BoxMax, "2"),
 				a_data.maxOffsetP,
 				dragSpeed,
 				0,
 				128);
-			DrawTip(UITip::PVBoxMax);
+			UITipsInterface::DrawTip(UITip::PVBoxMax);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::Friction, "3"),
 				std::addressof(a_data.maxOffsetBoxFriction),
 				dragSpeed,
 				0,
 				1);
-			DrawTip(UITip::PVConstraintFriction);
+			UITipsInterface::DrawTip(UITip::PVConstraintFriction);
 
 			ImGui::Spacing();
 
@@ -353,36 +346,36 @@ namespace IED
 			ImGui::PushID("opar");
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::VelocityResponseScale, "1"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::VelocityResponseScale, "1"),
 				std::addressof(a_params[0]),
 				dragSpeed,
 				0,
 				1);
-			DrawTip(UITip::PVVelocityResponseScale);
+			UITipsInterface::DrawTip(UITip::PVVelocityResponseScale);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::PenBiasFactor, "2"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::PenBiasFactor, "2"),
 				std::addressof(a_params[3]),
 				dragSpeed,
 				0,
 				20);
-			DrawTip(UITip::PVPenBiasFactor);
+			UITipsInterface::DrawTip(UITip::PVPenBiasFactor);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::PenBiasDepthLimit, "3"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::PenBiasDepthLimit, "3"),
 				std::addressof(a_params[1]),
 				dragSpeed,
 				0.5f,
 				50000.0f);
-			DrawTip(UITip::PVPenBiasDepthLimit);
+			UITipsInterface::DrawTip(UITip::PVPenBiasDepthLimit);
 
 			result |= ImGui::DragFloat(
-				LS(UIPhysicsValueEditorWidgetStrings::RestitutionCoefficient, "4"),
+				UIL::LS(UIPhysicsValueEditorWidgetStrings::RestitutionCoefficient, "4"),
 				std::addressof(a_params[2]),
 				dragSpeed,
 				0,
 				1);
-			DrawTip(UITip::PVRestitutionCoefficient);
+			UITipsInterface::DrawTip(UITip::PVRestitutionCoefficient);
 
 			ImGui::PopID();
 

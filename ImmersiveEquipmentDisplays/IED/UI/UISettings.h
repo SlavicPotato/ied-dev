@@ -32,11 +32,8 @@ namespace IED
 			public UIContext,
 			public UIWindow,
 			UICollapsibles,
-			UIControlKeySelectorWidget,
 			UIFormPickerWidget,
-			UIStylePresetSelectorWidget,
-			public virtual UIFormTypeSelectorWidget,
-			public virtual UITipsInterface
+			public virtual UIFormTypeSelectorWidget
 		{
 			inline static constexpr auto WINDOW_ID = "ied_settings";
 

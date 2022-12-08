@@ -41,8 +41,7 @@ namespace IED
 			inline static constexpr auto POPUP_ID_SAVE  = "popup_save";
 
 			UIProfileSelectorBase(
-				Localization::ILocalization& a_localization,
-				UIProfileSelectorFlags       a_flags = UIProfileSelectorFlags::kEnableApply);
+				UIProfileSelectorFlags a_flags = UIProfileSelectorFlags::kEnableApply);
 
 			virtual ~UIProfileSelectorBase() noexcept = default;
 
@@ -62,9 +61,8 @@ namespace IED
 
 		template <class T, class P>
 		UIProfileSelectorBase<T, P>::UIProfileSelectorBase(
-			Localization::ILocalization& a_localization,
-			UIProfileSelectorFlags       a_flags) :
-			UIProfileBase<P>(a_localization),
+			UIProfileSelectorFlags a_flags) :
+			UIProfileBase<P>(),
 			m_flags(a_flags)
 		{
 		}
@@ -94,7 +92,7 @@ namespace IED
 			}
 
 			if (ImGui::BeginCombo(
-					this->LS(CommonStrings::Profile, "sel_combo"),
+					UIL::LS(CommonStrings::Profile, "sel_combo"),
 					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -109,7 +107,7 @@ namespace IED
 							ImGui::SetScrollHereY();
 					}
 
-					if (ImGui::Selectable(this->LMKID<3>(e->second.Name().c_str(), "1"), selected))
+					if (ImGui::Selectable(UIL::LMKID<3>(e->second.Name().c_str(), "1"), selected))
 					{
 						this->m_state.selected = e->first;
 					}
@@ -128,7 +126,7 @@ namespace IED
 				ImGui::SameLine(wcm.x - GetNextTextOffset(sh.snew, true));
 				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
-					ImGui::OpenPopup(this->LS(UIProfileStrings::NewProfile, UIProfileBase<P>::POPUP_NEW_ID));
+					ImGui::OpenPopup(UIL::LS(UIProfileStrings::NewProfile, UIProfileBase<P>::POPUP_NEW_ID));
 					this->m_state.new_input[0] = 0;
 				}
 			}
@@ -153,7 +151,7 @@ namespace IED
 							if (ButtonRight(sh.apply))
 							{
 								ResetProfileImportOptions();
-								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_APPLY));
+								ImGui::OpenPopup(UIL::LS(CommonStrings::Confirm, POPUP_ID_APPLY));
 							}
 						}
 
@@ -163,34 +161,34 @@ namespace IED
 							if (ButtonRight(sh.merge))
 							{
 								ResetProfileImportOptions();
-								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_MERGE));
+								ImGui::OpenPopup(UIL::LS(CommonStrings::Confirm, POPUP_ID_MERGE));
 							}
 						}
 
 						if (this->ConfirmDialog(
-								this->LS(CommonStrings::Confirm, POPUP_ID_APPLY),
+								UIL::LS(CommonStrings::Confirm, POPUP_ID_APPLY),
 								[&] {
 									return DrawProfileImportOptions(a_data, profile, false);
 								},
 								{},
 								"%s [%s]\n\n%s",
-								this->LS(UIProfileStrings::LoadDataFromProfile),
+								UIL::LS(UIProfileStrings::LoadDataFromProfile),
 								profile.Name().c_str(),
-								this->LS(UIWidgetCommonStrings::CurrentValuesLost)) == UICommonModals::ModalStatus::kAccept)
+								UIL::LS(UIWidgetCommonStrings::CurrentValuesLost)) == UICommonModals::ModalStatus::kAccept)
 						{
 							ApplyProfile(a_data, profile);
 						}
 
 						if (this->ConfirmDialog(
-								this->LS(CommonStrings::Confirm, POPUP_ID_MERGE),
+								UIL::LS(CommonStrings::Confirm, POPUP_ID_MERGE),
 								[&] {
 									return DrawProfileImportOptions(a_data, profile, true);
 								},
 								{},
 								"%s [%s]\n\n%s",
-								this->LS(UIProfileStrings::MergeDataFromProfile),
+								UIL::LS(UIProfileStrings::MergeDataFromProfile),
 								profile.Name().c_str(),
-								this->LS(UIWidgetCommonStrings::CurrentValuesOverwritten)) == UICommonModals::ModalStatus::kAccept)
+								UIL::LS(UIWidgetCommonStrings::CurrentValuesOverwritten)) == UICommonModals::ModalStatus::kAccept)
 						{
 							MergeProfile(a_data, profile);
 						}
@@ -200,16 +198,16 @@ namespace IED
 							ImGui::SameLine(wcm.x - GetNextTextOffset(sh.save));
 							if (ButtonRight(sh.save))
 							{
-								ImGui::OpenPopup(this->LS(CommonStrings::Confirm, POPUP_ID_SAVE));
+								ImGui::OpenPopup(UIL::LS(CommonStrings::Confirm, POPUP_ID_SAVE));
 							}
 						}
 
 						if (this->ConfirmDialog(
-								this->LS(CommonStrings::Confirm, POPUP_ID_SAVE),
+								UIL::LS(CommonStrings::Confirm, POPUP_ID_SAVE),
 								{},
 								{},
 								"%s [%s]",
-								this->LS(UIProfileStrings::SaveCurrentToProfile),
+								UIL::LS(UIProfileStrings::SaveCurrentToProfile),
 								profile.Name().c_str()) == UICommonModals::ModalStatus::kAccept)
 						{
 							if (!pm.SaveProfile(profile.Name(), this->GetData(a_data)))
@@ -218,9 +216,9 @@ namespace IED
 
 								this->GetPopupQueue_ProfileBase().push(
 									UIPopupType::Message,
-									this->LS(CommonStrings::Error),
+									UIL::LS(CommonStrings::Error),
 									"%s [%s]\n\n%s",
-									this->LS(UIProfileStrings::SaveError),
+									UIL::LS(UIProfileStrings::SaveError),
 									profile.Name().c_str(),
 									pm.GetLastException().what());
 							}
@@ -232,7 +230,7 @@ namespace IED
 						ImGui::Spacing();
 
 						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextWrapped("%s", this->LS(UIProfileStrings::ProfileParserErrorWarning));
+						ImGui::TextWrapped("%s", UIL::LS(UIProfileStrings::ProfileParserErrorWarning));
 						ImGui::PopStyleColor();
 					}
 

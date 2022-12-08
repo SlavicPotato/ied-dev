@@ -13,7 +13,6 @@ namespace IED
 	namespace UI
 	{
 		UIMiscTextInterface::UIMiscTextInterface(IUI& a_iui) :
-			UILocalizationInterface(a_iui),
 			m_iui(a_iui)
 		{
 		}
@@ -58,7 +57,7 @@ namespace IED
 
 				ImGui::SetClipboardText(buffer.get());
 
-				m_iui.QueueToast(L(UITip::CopiedToClipboard));
+				m_iui.QueueToast(UIL::L(UITip::CopiedToClipboard));
 
 				return TextCopyableResult::kCopied;
 			}
@@ -103,7 +102,7 @@ namespace IED
 
 				ImGui::SetClipboardText(buffer.get());
 
-				m_iui.QueueToast(L(UITip::CopiedToClipboard));
+				m_iui.QueueToast(UIL::L(UITip::CopiedToClipboard));
 
 				return TextCopyableResult::kCopied;
 			}

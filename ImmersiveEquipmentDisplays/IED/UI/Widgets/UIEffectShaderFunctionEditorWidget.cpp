@@ -13,13 +13,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UIEffectShaderFunctionEditorWidget::UIEffectShaderFunctionEditorWidget(
-			Localization::ILocalization& a_localization) :
-			UIEffectShaderFunctionSelector(a_localization),
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		void UIEffectShaderFunctionEditorWidget::OpenEffectShaderFunctionEditor()
 		{
 			ImGui::OpenPopup(POPUP_ID);
@@ -77,7 +70,7 @@ namespace IED
 			float angle = a_data.angle * (180.0f / pi);
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Angle, "1"),
+					UIL::LS(CommonStrings::Angle, "1"),
 					std::addressof(angle),
 					dragSpeed1,
 					-degmax,
@@ -90,7 +83,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Speed, "2"),
+					UIL::LS(CommonStrings::Speed, "2"),
 					std::addressof(a_data.speed),
 					dragSpeed2,
 					0.01f,
@@ -111,13 +104,13 @@ namespace IED
 
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.0005f : 0.05f;
 
-			ImGui::Text("%s:", LS(CommonStrings::Waveform));
+			ImGui::Text("%s:", UIL::LS(CommonStrings::Waveform));
 			ImGui::Spacing();
 
 			ImGui::Columns(3, nullptr, false);
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Sine, "0"),
+					UIL::LS(CommonStrings::Sine, "0"),
 					a_data.fbf.type == Data::EffectShaderWaveform::Sine))
 			{
 				a_data.fbf.type = Data::EffectShaderWaveform::Sine;
@@ -125,7 +118,7 @@ namespace IED
 			}
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Cosine, "1"),
+					UIL::LS(CommonStrings::Cosine, "1"),
 					a_data.fbf.type == Data::EffectShaderWaveform::Cosine))
 			{
 				a_data.fbf.type = Data::EffectShaderWaveform::Cosine;
@@ -135,7 +128,7 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Triangle, "2"),
+					UIL::LS(CommonStrings::Triangle, "2"),
 					a_data.fbf.type == Data::EffectShaderWaveform::Triangle))
 			{
 				a_data.fbf.type = Data::EffectShaderWaveform::Triangle;
@@ -143,7 +136,7 @@ namespace IED
 			}
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Sawtooth, "3"),
+					UIL::LS(CommonStrings::Sawtooth, "3"),
 					a_data.fbf.type == Data::EffectShaderWaveform::Sawtooth))
 			{
 				a_data.fbf.type = Data::EffectShaderWaveform::Sawtooth;
@@ -153,7 +146,7 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Square, "4"),
+					UIL::LS(CommonStrings::Square, "4"),
 					a_data.fbf.type == Data::EffectShaderWaveform::Square))
 			{
 				a_data.fbf.type = Data::EffectShaderWaveform::Square;
@@ -165,7 +158,7 @@ namespace IED
 			ImGui::Spacing();
 
 			result |= ImGui::DragFloatRange2(
-				LS(UIEffectShaderFunctionEditorWidgetStrings::Range, "R"),
+				UIL::LS(UIEffectShaderFunctionEditorWidgetStrings::Range, "R"),
 				std::addressof(a_data.range[0]),
 				std::addressof(a_data.range[1]),
 				0.0005f,
@@ -180,7 +173,7 @@ namespace IED
 			ImGui::Spacing();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Exponential, "5"),
+				UIL::LS(CommonStrings::Exponential, "5"),
 				stl::underlying(std::addressof(a_data.flags.value)),
 				stl::underlying(Data::EffectShaderFunctionFlags::kExponential));
 
@@ -199,7 +192,7 @@ namespace IED
 				}
 
 				result |= ImGui::SliderFloat(
-					LS(CommonStrings::Exponent, "6"),
+					UIL::LS(CommonStrings::Exponent, "6"),
 					std::addressof(a_data.exponent),
 					-20.0f,
 					20.0f,
@@ -216,14 +209,14 @@ namespace IED
 			}
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::AdditiveInverse, "7"),
+				UIL::LS(CommonStrings::AdditiveInverse, "7"),
 				stl::underlying(std::addressof(a_data.flags.value)),
 				stl::underlying(Data::EffectShaderFunctionFlags::kAdditiveInverse));
 
 			ImGui::Spacing();
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Frequency, "8"),
+					UIL::LS(CommonStrings::Frequency, "8"),
 					std::addressof(a_data.speed),
 					dragSpeed,
 					0.01f,
@@ -235,7 +228,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Offset, "9"),
+					UIL::LS(CommonStrings::Offset, "9"),
 					std::addressof(a_data.initpos),
 					0.0005f,
 					0.0f,
@@ -251,33 +244,33 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			ImGui::Text("%s:", LS(UIEffectShaderEditorWidgetStrings::FillColor));
+			ImGui::Text("%s:", UIL::LS(UIEffectShaderEditorWidgetStrings::FillColor));
 
 			ImGui::Indent();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Red, "A"),
+				UIL::LS(CommonStrings::Red, "A"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kFillR));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Green, "B"),
+				UIL::LS(CommonStrings::Green, "B"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kFillG));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Blue, "C"),
+				UIL::LS(CommonStrings::Blue, "C"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kFillB));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Alpha, "D"),
+				UIL::LS(CommonStrings::Alpha, "D"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kFillA));
 
@@ -287,33 +280,33 @@ namespace IED
 			ImGui::Separator();
 			ImGui::Spacing();
 
-			ImGui::Text("%s:", LS(UIEffectShaderEditorWidgetStrings::RimColor));
+			ImGui::Text("%s:", UIL::LS(UIEffectShaderEditorWidgetStrings::RimColor));
 
 			ImGui::Indent();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Red, "E"),
+				UIL::LS(CommonStrings::Red, "E"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kRimR));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Green, "F"),
+				UIL::LS(CommonStrings::Green, "F"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kRimG));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Blue, "G"),
+				UIL::LS(CommonStrings::Blue, "G"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kRimB));
 
 			ImGui::SameLine();
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(CommonStrings::Alpha, "H"),
+				UIL::LS(CommonStrings::Alpha, "H"),
 				stl::underlying(std::addressof(a_data.pulseFlags)),
 				stl::underlying(Data::EffectShaderPulseFlags::kRimA));
 
@@ -325,7 +318,7 @@ namespace IED
 
 			ImGui::Text(
 				"%s:",
-				LS(UIEffectShaderFunctionEditorWidgetStrings::uvScale));
+				UIL::LS(UIEffectShaderFunctionEditorWidgetStrings::uvScale));
 
 			ImGui::Indent();
 
@@ -341,7 +334,7 @@ namespace IED
 			ImGui::SameLine();
 
 			result |= ImGui::DragFloatRange2(
-				LS(UIEffectShaderFunctionEditorWidgetStrings::uMinMax, "K"),
+				UIL::LS(UIEffectShaderFunctionEditorWidgetStrings::uMinMax, "K"),
 				std::addressof(a_data.uMinMax[0]),
 				std::addressof(a_data.uMinMax[1]),
 				dragSpeed,
@@ -365,7 +358,7 @@ namespace IED
 			ImGui::SameLine();
 
 			result |= ImGui::DragFloatRange2(
-				LS(UIEffectShaderFunctionEditorWidgetStrings::vMinMax, "M"),
+				UIL::LS(UIEffectShaderFunctionEditorWidgetStrings::vMinMax, "M"),
 				std::addressof(a_data.vMinMax[0]),
 				std::addressof(a_data.vMinMax[1]),
 				dragSpeed,

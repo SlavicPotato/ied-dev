@@ -18,7 +18,6 @@ namespace IED
 		UIConditionalVariablesEditorWidget::UIConditionalVariablesEditorWidget(
 			Controller& a_controller) :
 			UILastEquippedWidget(a_controller),
-			UIVariableTypeSelectorWidget(a_controller),
 			m_itemFilter(true)
 		{
 		}
@@ -55,7 +54,7 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::DrawItemFilter()
 		{
-			if (Tree(LS(CommonStrings::Filter, "item_filter"), false))
+			if (Tree(UIL::LS(CommonStrings::Filter, "item_filter"), false))
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
@@ -106,7 +105,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Rename, "1"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -119,14 +118,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "2")))
 				{
 					result.action = CondVarEntryAction::kDelete;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -134,7 +133,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "B"),
+						UIL::LS(CommonStrings::PasteOver, "B"),
 						nullptr,
 						false,
 						static_cast<bool>(clipData)))
@@ -163,9 +162,9 @@ namespace IED
 			bool                a_insert,
 			CondVarEntryResult& a_result)
 		{
-			if (LCG_BM(a_insert ? CommonStrings::Insert : CommonStrings::Add, "cv_ctx_new"))
+			if (UIL::LCG_BM(a_insert ? CommonStrings::Insert : CommonStrings::Add, "cv_ctx_new"))
 			{
-				if (LCG_BM(CommonStrings::Item, "1"))
+				if (UIL::LCG_BM(CommonStrings::Item, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -178,7 +177,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_BM(CommonStrings::Group, "2"))
+				if (UIL::LCG_BM(CommonStrings::Group, "2"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -194,7 +193,7 @@ namespace IED
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "3"),
+						UIL::LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
 						static_cast<bool>(UIClipboard::Get<Data::configConditionalVariable_t>())))
@@ -314,7 +313,7 @@ namespace IED
 			case ConditionalVariableType::kInt32:
 
 				result = ImGui::InputScalar(
-					LS(CommonStrings::Value, "1"),
+					UIL::LS(CommonStrings::Value, "1"),
 					ImGuiDataType_U32,
 					a_data.value.primitives,
 					nullptr,
@@ -328,7 +327,7 @@ namespace IED
 			case ConditionalVariableType::kFloat:
 
 				result = ImGui::InputScalar(
-					LS(CommonStrings::Value, "1"),
+					UIL::LS(CommonStrings::Value, "1"),
 					ImGuiDataType_Float,
 					a_data.value.primitives,
 					nullptr,
@@ -364,7 +363,7 @@ namespace IED
 			bool result = false;
 
 			result |= ImGui::CheckboxFlagsT(
-				LS(UIWidgetCommonStrings::LastEquipped, "0"),
+				UIL::LS(UIWidgetCommonStrings::LastEquipped, "0"),
 				stl::underlying(std::addressof(a_data.flags.value)),
 				stl::underlying(Data::ConditionalVariableValueDataFlags::kLastEquipped));
 
@@ -414,7 +413,7 @@ namespace IED
 					ImGui::PushID("group");
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Continue, "ctl_0"),
+							UIL::LS(CommonStrings::Continue, "ctl_0"),
 							stl::underlying(std::addressof(a_var.flags.value)),
 							stl::underlying(Data::ConditionalVariableFlags::kContinue)))
 					{
@@ -422,7 +421,7 @@ namespace IED
 							{ a_holder,
 						      CondVarEntryChangeAction::kReset });
 					}
-					DrawTip(UITip::EquipmentOverrideGroupContinue);
+					UITipsInterface::DrawTip(UITip::EquipmentOverrideGroupContinue);
 
 					ImGui::Spacing();
 
@@ -486,7 +485,7 @@ namespace IED
 			{
 				DrawNewContextItem(true, result);
 
-				if (LCG_BM(CommonStrings::Rename, "1"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -500,14 +499,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "2")))
 				{
 					result.action = CondVarEntryAction::kDelete;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_var);
 				}
@@ -515,7 +514,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configConditionalVariable_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "B"),
+						UIL::LS(CommonStrings::PasteOver, "B"),
 						nullptr,
 						false,
 						static_cast<bool>(clipData)))
@@ -577,7 +576,7 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					LS(CommonStrings::Overrides)))
+					UIL::LS(CommonStrings::Overrides)))
 			{
 				ImGui::Spacing();
 
@@ -652,7 +651,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -660,7 +659,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configConditionalVariablesList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "C"),
+						UIL::LS(CommonStrings::PasteOver, "C"),
 						nullptr,
 						false,
 						static_cast<bool>(clipData)))
@@ -680,7 +679,7 @@ namespace IED
 				ImGui::Separator();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Clear, "D"),
+						UIL::LS(CommonStrings::Clear, "D"),
 						nullptr,
 						false,
 						!a_data.empty()))
@@ -812,7 +811,7 @@ namespace IED
 
 				if (a_data.second.vars.empty())
 				{
-					if (DrawVariableTypeSelectorWidget(
+					if (UIVariableTypeSelectorWidget::DrawVariableTypeSelectorWidget(
 							a_data.second.defaultValue.value.type))
 					{
 						static_cast<conditionalVariableValue_t&>(a_data.second.defaultValue.value) = {};
@@ -826,8 +825,8 @@ namespace IED
 				{
 					ImGui::Text(
 						"%s: %s",
-						LS(CommonStrings::Type),
-						variable_type_to_desc(
+						UIL::LS(CommonStrings::Type),
+						UIVariableTypeSelectorWidget::variable_type_to_desc(
 							a_data.second.defaultValue.value.type));
 				}
 
@@ -864,9 +863,9 @@ namespace IED
 
 		void UIConditionalVariablesEditorWidget::EditorDrawMenuBarItems()
 		{
-			if (LCG_BM(CommonStrings::Add, "1"))
+			if (UIL::LCG_BM(CommonStrings::Add, "1"))
 			{
-				DrawVariableTypeSelectorWidget(m_tmpType);
+				UIVariableTypeSelectorWidget::DrawVariableTypeSelectorWidget(m_tmpType);
 
 				if (DrawDescriptionPopup())
 				{
@@ -892,10 +891,10 @@ namespace IED
 
 			ImGui::Separator();
 
-			auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>();
+			const auto clipData = UIClipboard::Get<Data::configConditionalVariablesEntryListValue_t>();
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::Paste, "2"),
+					UIL::LS(CommonStrings::Paste, "2"),
 					nullptr,
 					false,
 					static_cast<bool>(clipData)))

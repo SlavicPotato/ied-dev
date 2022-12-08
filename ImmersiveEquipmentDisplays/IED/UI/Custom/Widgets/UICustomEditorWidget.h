@@ -76,7 +76,6 @@ namespace IED
 			public UIBaseConfigWidget<T>,
 			public UIModelGroupEditorWidget<T>,
 			public UILastEquippedWidget,
-			public UIVariableSourceSelectorWidget,
 			public UIEditorPanelSettingsGear,
 			public virtual UIFormTypeSelectorWidget,
 			public UIEditorInterface
@@ -219,11 +218,9 @@ namespace IED
 		template <class T>
 		UICustomEditorWidget<T>::UICustomEditorWidget(
 			Controller& a_controller) :
-			UIEditorPanelSettingsGear(a_controller),
 			UIBaseConfigWidget<T>(a_controller),
 			UIModelGroupEditorWidget<T>(m_formPicker, a_controller),
 			UILastEquippedWidget(a_controller),
-			UIVariableSourceSelectorWidget(a_controller),
 			m_itemFilter(true),
 			m_formPicker(a_controller, FormInfoFlags::kValidCustom, true, true),
 			m_controller(a_controller)
@@ -305,9 +302,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Input,
-					 LS(UIWidgetCommonStrings::NewItem),
+					 UIL::LS(UIWidgetCommonStrings::NewItem),
 					 "%s",
-					 LS(UIWidgetCommonStrings::NewItemPrompt))
+					 UIL::LS(UIWidgetCommonStrings::NewItemPrompt))
 				.call([this](const auto& a_p) {
 					std::string name(a_p.GetInput());
 
@@ -341,9 +338,9 @@ namespace IED
 
 					GetPopupQueue().push(
 						UIPopupType::Message,
-						LS(CommonStrings::Error),
+						UIL::LS(CommonStrings::Error),
 						"%s",
-						LS(UIWidgetCommonStrings::ItemAlreadyExists));
+						UIL::LS(UIWidgetCommonStrings::ItemAlreadyExists));
 				});
 		}
 
@@ -356,9 +353,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UIWidgetCommonStrings::CopyFromOppositeSexPrompt))
+					 UIL::LS(UIWidgetCommonStrings::CopyFromOppositeSexPrompt))
 				.call([this,
 			           handle = a_handle,
 			           name   = a_data.name,
@@ -406,9 +403,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UIWidgetCommonStrings::DeleteItemPrompt))
+					 UIL::LS(UIWidgetCommonStrings::DeleteItemPrompt))
 				.call([this,
 			           handle = a_handle,
 			           name   = a_data.name](
@@ -439,9 +436,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Input,
-					 LS(UIWidgetCommonStrings::NewItem),
+					 UIL::LS(UIWidgetCommonStrings::NewItem),
 					 "%s",
-					 LS(UIWidgetCommonStrings::RenamePrompt))
+					 UIL::LS(UIWidgetCommonStrings::RenamePrompt))
 				.fmt_input("%s", a_data.name.c_str())
 				.call([this, oldName = a_data.name](const auto& a_p) {
 					auto& in = a_p.GetInput();
@@ -486,9 +483,9 @@ namespace IED
 
 					GetPopupQueue().push(
 						UIPopupType::Message,
-						LS(CommonStrings::Error),
+						UIL::LS(CommonStrings::Error),
 						"%s",
-						LS(UIWidgetCommonStrings::ItemAlreadyExists));
+						UIL::LS(UIWidgetCommonStrings::ItemAlreadyExists));
 				});
 		}
 
@@ -499,9 +496,9 @@ namespace IED
 			auto& queue = GetPopupQueue();
 			queue.push(
 				UIPopupType::Message,
-				LS(CommonStrings::Error),
+				UIL::LS(CommonStrings::Error),
 				"%s",
-				LS(UIWidgetCommonStrings::ItemAlreadyExists));
+				UIL::LS(UIWidgetCommonStrings::ItemAlreadyExists));
 		}
 
 		template <class T>
@@ -567,7 +564,7 @@ namespace IED
 
 			UICommon::PushDisabled(disabled);
 
-			if (ImGui::MenuItem(LS(CommonStrings::New, "1")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::New, "1")))
 			{
 				QueueAddItemPopup();
 			}
@@ -575,7 +572,7 @@ namespace IED
 			auto clipData = UIClipboard::Get<Data::configCustomNameValue_t>();
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::Paste, "2"),
+					UIL::LS(CommonStrings::Paste, "2"),
 					nullptr,
 					false,
 					clipData != nullptr))
@@ -598,19 +595,19 @@ namespace IED
 			T                                     a_handle,
 			const SingleCustomConfigUpdateParams& a_params)
 		{
-			if (ImGui::MenuItem(LS(CommonStrings::Delete, "1")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "1")))
 			{
 				QueueErasePopup(a_handle, a_params);
 			}
 
-			if (ImGui::MenuItem(LS(CommonStrings::Rename, "2")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Rename, "2")))
 			{
 				QueueRenamePopup(a_handle, a_params);
 			}
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(LS(UIWidgetCommonStrings::CopyFromOppositeSex, "3")))
+			if (ImGui::MenuItem(UIL::LS(UIWidgetCommonStrings::CopyFromOppositeSex, "3")))
 			{
 				QueueCopySlotSexPopup(
 					a_handle,
@@ -619,7 +616,7 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(LS(CommonStrings::Copy, "4")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "4")))
 			{
 				UIClipboard::Set<Data::configCustomNameValue_t>(
 					a_params.name,
@@ -630,7 +627,7 @@ namespace IED
 			auto clipData = UIClipboard::Get<Data::configCustomNameValue_t>();
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::PasteOver, "5"),
+					UIL::LS(CommonStrings::PasteOver, "5"),
 					nullptr,
 					false,
 					clipData != nullptr))
@@ -682,7 +679,7 @@ namespace IED
 			auto mode = GetMode(data.customFlags);
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Single, "1"),
+					UIL::LS(CommonStrings::Single, "1"),
 					mode == CustomObjectMode::kSingle))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
@@ -696,7 +693,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Group, "2"),
+					UIL::LS(CommonStrings::Group, "2"),
 					mode == CustomObjectMode::kGroup))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
@@ -713,7 +710,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(UIWidgetCommonStrings::LastEquipped, "3"),
+					UIL::LS(UIWidgetCommonStrings::LastEquipped, "3"),
 					mode == CustomObjectMode::kLastEquipped))
 			{
 				data.customFlags.clear(Data::CustomFlags::kNonSingleMask);
@@ -727,7 +724,7 @@ namespace IED
 
 			ImGui::SameLine();
 
-			DrawTip(UITip::CustomLastEquipped);
+			UITipsInterface::DrawTip(UITip::CustomLastEquipped);
 
 			ImGui::PopID();
 
@@ -754,7 +751,7 @@ namespace IED
 				if (!data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask))
 				{
 					if (ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::UseFormVariable, "4"),
+							UIL::LS(UICustomEditorString::UseFormVariable, "4"),
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kVariableMode)))
 					{
@@ -783,7 +780,7 @@ namespace IED
 								static_cast<Localization::StringID>(CommonStrings::Default) :
 								static_cast<Localization::StringID>(CommonStrings::Item),
 							data.form,
-							GetTipText(
+							UITipsInterface::GetTipText(
 								mode == CustomObjectMode::kLastEquipped ?
 									UITip::CustomFormLastEquipped :
 									UITip::CustomForm)))
@@ -810,7 +807,7 @@ namespace IED
 
 			ImGui::PushID("vm_panel");
 
-			if (DrawVariableSourceSelectorWidget(data.varSource.source))
+			if (UIVariableSourceSelectorWidget::DrawVariableSourceSelectorWidget(data.varSource.source))
 			{
 				this->OnBaseConfigChange(
 					a_handle,
@@ -876,7 +873,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Item)))
+					UIL::LS(CommonStrings::Item)))
 			{
 				ImGui::Spacing();
 
@@ -894,14 +891,14 @@ namespace IED
 						ImGuiTreeNodeFlags_DefaultOpen |
 							ImGuiTreeNodeFlags_SpanAvailWidth,
 						"%s",
-						LS(CommonStrings::Conditions)))
+						UIL::LS(CommonStrings::Conditions)))
 				{
 					ImGui::Spacing();
 
 					ImGui::BeginGroup();
 
 					if (ImGui::CheckboxFlagsT(
-							LS(CommonStrings::Chance, "1"),
+							UIL::LS(CommonStrings::Chance, "1"),
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kUseChance)))
 					{
@@ -916,7 +913,7 @@ namespace IED
 						ImGui::SameLine();
 
 						if (ImGui::SliderFloat(
-								LS(CommonStrings::Percent, "2"),
+								UIL::LS(CommonStrings::Percent, "2"),
 								std::addressof(data.probability),
 								0.0f,
 								100.0f,
@@ -932,7 +929,7 @@ namespace IED
 
 					ImGui::EndGroup();
 
-					DrawTip(UITip::CustomChance);
+					UITipsInterface::DrawTip(UITip::CustomChance);
 
 					bool cd = data.customFlags.test(Data::CustomFlags::kLastEquippedMode);
 
@@ -942,13 +939,13 @@ namespace IED
 					{
 						bool dummy = true;
 						ImGui::Checkbox(
-							LS(UICustomEditorString::IsInventoryItem, "3"),
+							UIL::LS(UICustomEditorString::IsInventoryItem, "3"),
 							std::addressof(dummy));
 					}
 					else
 					{
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::IsInventoryItem, "3"),
+								UIL::LS(UICustomEditorString::IsInventoryItem, "3"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIsInInventory)))
 						{
@@ -961,7 +958,7 @@ namespace IED
 
 					UICommon::PopDisabled(cd);
 
-					DrawTip(UITip::CustomInventoryItem);
+					UITipsInterface::DrawTip(UITip::CustomInventoryItem);
 
 					if (data.customFlags.test_any(Data::CustomFlags::kIsInInventoryMask))
 					{
@@ -975,7 +972,7 @@ namespace IED
 								ImGui::TextColored(
 									UICommon::g_colorWarning,
 									"%s",
-									LS(UICustomEditorString::SelectedItemNotInventory));
+									UIL::LS(UICustomEditorString::SelectedItemNotInventory));
 							}
 						}
 
@@ -995,13 +992,13 @@ namespace IED
 						{
 							bool dummy = true;
 							ImGui::Checkbox(
-								LS(UICustomEditorString::EquipmentMode, "4"),
+								UILI::LS(UICustomEditorString::EquipmentMode, "4"),
 								std::addressof(dummy));
 						}
 						else
 						{*/
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::EquipmentMode, "4"),
+								UIL::LS(UICustomEditorString::EquipmentMode, "4"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kEquipmentMode)))
 						{
@@ -1014,14 +1011,14 @@ namespace IED
 
 						UICommon::PopDisabled(cd);*/
 
-						DrawTip(UITip::CustomEquipmentMode);
+						UITipsInterface::DrawTip(UITip::CustomEquipmentMode);
 
 						cd = !data.customFlags.test(Data::CustomFlags::kEquipmentMode);
 
 						UICommon::PushDisabled(cd);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UIWidgetCommonStrings::AlwaysUnload, "5"),
+								UIL::LS(UIWidgetCommonStrings::AlwaysUnload, "5"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kAlwaysUnload)))
 						{
@@ -1033,10 +1030,10 @@ namespace IED
 
 						UICommon::PopDisabled(cd);
 
-						DrawTip(UITip::AlwaysUnloadCustom);
+						UITipsInterface::DrawTip(UITip::AlwaysUnloadCustom);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UIWidgetCommonStrings::IsFavorited, "6"),
+								UIL::LS(UIWidgetCommonStrings::IsFavorited, "6"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kCheckFav)))
 						{
@@ -1045,7 +1042,7 @@ namespace IED
 								std::addressof(a_params),
 								PostChangeAction::Evaluate);
 						}
-						DrawTip(UITip::IsFavorited);
+						UITipsInterface::DrawTip(UITip::IsFavorited);
 
 						ImGui::NextColumn();
 
@@ -1054,7 +1051,7 @@ namespace IED
 						UICommon::PushDisabled(cd);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::IgnoreRaceEquipTypes, "8"),
+								UIL::LS(UICustomEditorString::IgnoreRaceEquipTypes, "8"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kIgnoreRaceEquipTypes)))
 						{
@@ -1064,10 +1061,10 @@ namespace IED
 								PostChangeAction::Evaluate);
 						}
 
-						DrawTip(UITip::IgnoreRaceEquipTypes);
+						UITipsInterface::DrawTip(UITip::IgnoreRaceEquipTypes);
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UICustomEditorString::DisableIfEquipped, "9"),
+								UIL::LS(UICustomEditorString::DisableIfEquipped, "9"),
 								stl::underlying(std::addressof(data.customFlags.value)),
 								stl::underlying(Data::CustomFlags::kDisableIfEquipped)))
 						{
@@ -1077,7 +1074,7 @@ namespace IED
 								PostChangeAction::Evaluate);
 						}
 
-						DrawTip(UITip::DisableIfEquipped);
+						UITipsInterface::DrawTip(UITip::DisableIfEquipped);
 
 						UICommon::PopDisabled(cd);
 
@@ -1095,7 +1092,7 @@ namespace IED
 								"fp_m",
 								static_cast<Localization::StringID>(UICustomEditorString::ModelSwap),
 								data.modelForm,
-								GetTipText(UITip::CustomFormModelSwap)))
+								UITipsInterface::GetTipText(UITip::CustomFormModelSwap)))
 						{
 							this->OnBaseConfigChange(
 								a_handle,
@@ -1114,7 +1111,7 @@ namespace IED
 						};
 
 						if (ImGui::DragScalarN(
-								LS(CommonStrings::Limits, "A"),
+								UIL::LS(CommonStrings::Limits, "A"),
 								ImGuiDataType_U32,
 								std::addressof(data.countRange),
 								2,
@@ -1131,7 +1128,7 @@ namespace IED
 						}
 						ImGui::EndGroup();
 
-						DrawTip(UITip::CustomCountRange);
+						UITipsInterface::DrawTip(UITip::CustomCountRange);
 
 						ImGui::PopItemWidth();
 
@@ -1171,7 +1168,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
+				if (UIL::LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
 					if (m_formPicker.DrawFormSelector(m_fsNew))
 					{
@@ -1200,7 +1197,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
+				if (UIL::LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
 				{
 					if (m_formPicker.DrawFormSelectorMulti())
 					{
@@ -1238,7 +1235,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(UIWidgetCommonStrings::ClearAll, "3"))
+				if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "3"))
 				{
 					auto& data = a_params.entry(a_params.sex);
 
@@ -1290,14 +1287,14 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(UIWidgetCommonStrings::AdditionalItems)))
+					UIL::LS(UIWidgetCommonStrings::AdditionalItems)))
 			{
 				if (!treeDisabled)
 				{
 					ImGui::Spacing();
 
 					if (ImGui::CheckboxFlagsT(
-							LS(UIWidgetCommonStrings::SelectRandomForm, "hctl_1"),
+							UIL::LS(UIWidgetCommonStrings::SelectRandomForm, "hctl_1"),
 							stl::underlying(std::addressof(data.customFlags.value)),
 							stl::underlying(Data::CustomFlags::kSelectInvRandom)))
 					{
@@ -1354,8 +1351,8 @@ namespace IED
 					ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f + 2.0f);
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -1561,7 +1558,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::MenuItem(LS(UIWidgetCommonStrings::ResetToZero, "1")))
+				if (ImGui::MenuItem(UIL::LS(UIWidgetCommonStrings::ResetToZero, "1")))
 				{
 					a_params.entry(a_params.sex).countRange = {};
 
@@ -1582,7 +1579,7 @@ namespace IED
 		{
 			ImGui::PushID("item_filter");
 
-			if (this->Tree(LS(CommonStrings::Filter), false))
+			if (this->Tree(UIL::LS(CommonStrings::Filter), false))
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
@@ -1614,7 +1611,7 @@ namespace IED
 			auto& data = params->entry(params->sex);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::IgnorePlayer, "1"),
+					UIL::LS(UIWidgetCommonStrings::IgnorePlayer, "1"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kIgnorePlayer)))
 			{
@@ -1624,31 +1621,31 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::LeftWeapon, "3"),
+					UIL::LS(UIWidgetCommonStrings::LeftWeapon, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kLeftWeapon)))
 			{
 				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTip(UITip::LeftWeapon);
+			UITipsInterface::DrawTip(UITip::LeftWeapon);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "4"),
+					UIL::LS(UIWidgetCommonStrings::DisableHavok, "4"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kDisableHavok)))
 			{
 				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTip(UITip::DisableHavok);
+			UITipsInterface::DrawTip(UITip::DisableHavok);
 
 			/*if (ImGui::CheckboxFlagsT(
-					LS(UICustomEditorString::LoadARMA, "3"),
+					UILI::LS(UICustomEditorString::LoadARMA, "3"),
 					stl::underlying(std::addressof(data.customFlags.value)),
 					stl::underlying(Data::CustomFlags::kLoadARMA)))
 			{
 				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 			}
-			DrawTip(UITip::LoadARMA);*/
+			UITipsInterface::DrawTip(UITip::LoadARMA);*/
 
 			ImGui::Columns();
 		}

@@ -8,19 +8,13 @@ namespace IED
 {
 	namespace UI
 	{
-		UINodeMonitorSelectorWidget::UINodeMonitorSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UINodeMonitorSelectorWidget::DrawNodeMonitorSelector(
 			std::uint32_t& a_uid) const
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::ID, "nmon_sel"),
+					UIL::LS(CommonStrings::ID, "nmon_sel"),
 					get_nodemon_desc(a_uid),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -36,7 +30,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LMKID<3>(get_nodemon_desc(e.second), "0"),
+							UIL::LMKID<3>(get_nodemon_desc(e.second), "0"),
 							selected))
 					{
 						a_uid  = e.first;
@@ -59,7 +53,7 @@ namespace IED
 
 			if (data.empty())
 			{
-				return LS(CommonStrings::NoData);
+				return UIL::LS(CommonStrings::NoData);
 			}
 
 			auto it = data.find(a_uid);
@@ -72,7 +66,7 @@ namespace IED
 				stl::snprintf(
 					m_buf,
 					"(%s) [%.8X]",
-					LS(CommonStrings::Unknown),
+					UIL::LS(CommonStrings::Unknown),
 					a_uid);
 
 				return m_buf;

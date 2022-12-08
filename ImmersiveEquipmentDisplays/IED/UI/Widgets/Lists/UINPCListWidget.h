@@ -60,7 +60,7 @@ namespace IED
 		UINPCList<Td>::UINPCList(
 			Controller& a_controller,
 			float       a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
+			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
 			UINPCInfoAddInterface(a_controller)
 		{
 		}
@@ -68,7 +68,7 @@ namespace IED
 		template <class Td>
 		void UINPCList<Td>::ListUpdate()
 		{
-			bool isFirstUpdate = this->m_listFirstUpdate;
+			const bool isFirstUpdate = this->m_listFirstUpdate;
 
 			this->m_listFirstUpdate = true;
 
@@ -188,7 +188,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Template));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Template));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -199,7 +199,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Flags));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
@@ -209,19 +209,19 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Sex));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Sex));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
 					"%s",
 					it->second->female ?
-						LS(CommonStrings::Female) :
-                        LS(CommonStrings::Male));
+						UIL::LS(CommonStrings::Female) :
+                        UIL::LS(CommonStrings::Male));
 
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Race));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Race));
 
 				ImGui::TableSetColumnIndex(1);
 
@@ -242,7 +242,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Weight));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Weight));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.0f", it->second->weight);
@@ -257,7 +257,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Mod));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Mod));
 
 					ImGui::TableSetColumnIndex(1);
 
@@ -289,7 +289,7 @@ namespace IED
 			auto& config = GetActorSettings();
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::AutoSelectSex, "1"),
+					UIL::LS(UIWidgetCommonStrings::AutoSelectSex, "1"),
 					std::addressof(config.autoSelectSex)))
 			{
 				OnListOptionsChange();
@@ -299,7 +299,7 @@ namespace IED
 			ImGui::SameLine(0.0f, 10.0f);
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::ShowAll, "2"),
+					UIL::LS(UIWidgetCommonStrings::ShowAll, "2"),
 					std::addressof(config.showAll)))
 			{
 				OnListOptionsChange();

@@ -8,6 +8,8 @@ namespace IED
 		class UIFilterBase
 		{
 		public:
+			inline static constexpr std::size_t FILTER_BUF_SIZE = 256;
+
 			bool Draw(const char* a_label = "##fil_input");
 			void DrawButton();
 			void clear();
@@ -45,7 +47,7 @@ namespace IED
 
 			[[nodiscard]] inline constexpr const char* GetBuffer() const noexcept
 			{
-				return m_filterBuf;
+				return m_filterBuf.get();
 			}
 
 			inline constexpr void SetFlags(ImGuiInputTextFlags a_flags) noexcept
@@ -60,7 +62,7 @@ namespace IED
 			virtual bool        ProcessInput(const char* a_label) = 0;
 			virtual const char* GetHelpText() { return nullptr; };
 
-			char m_filterBuf[128]{ 0 };
+			std::unique_ptr<char[]> m_filterBuf;
 
 			std::optional<T> m_filter;
 			bool             m_searchOpen{ false };
@@ -70,12 +72,14 @@ namespace IED
 		};
 
 		template <class T>
-		UIFilterBase<T>::UIFilterBase()
+		UIFilterBase<T>::UIFilterBase() :
+			m_filterBuf(std::make_unique<char[]>(FILTER_BUF_SIZE))
 		{
 		}
 
 		template <class T>
 		UIFilterBase<T>::UIFilterBase(bool a_isOpen) :
+			m_filterBuf(std::make_unique<char[]>(FILTER_BUF_SIZE)),
 			m_searchOpen(a_isOpen)
 		{
 		}

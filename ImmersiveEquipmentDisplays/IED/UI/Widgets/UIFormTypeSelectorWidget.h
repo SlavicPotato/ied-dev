@@ -10,19 +10,16 @@ namespace IED
 
 	namespace UI
 	{
-		class UIFormTypeSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIFormTypeSelectorWidget
 		{
 			using filter_func_t = std::function<bool(std::uint8_t)>;
 
 		public:
-			UIFormTypeSelectorWidget(Localization::ILocalization& a_localization);
-
-			bool DrawFormTypeSelector(
+			static bool DrawFormTypeSelector(
 				stl::optional<std::uint8_t>& a_type,
 				filter_func_t                a_filter);
 
-			const char* form_type_to_desc(std::uint8_t a_type);
+			static const char* form_type_to_desc(std::uint8_t a_type);
 		};
 
 	}

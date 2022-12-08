@@ -18,8 +18,7 @@ namespace IED
 	{
 		class UINodeOverrideConditionWidget :
 			UIConditionParamExtraInterface,
-			public UIDescriptionPopupWidget,
-			public virtual UITipsInterface
+			public UIDescriptionPopupWidget
 		{
 			using update_func_t = std::function<void()>;
 

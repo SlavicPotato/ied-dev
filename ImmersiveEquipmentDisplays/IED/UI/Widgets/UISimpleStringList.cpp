@@ -11,12 +11,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UISimpleStringListWidget::UISimpleStringListWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UISimpleStringListWidget::DrawStringListTree(
 			const char*                    a_id,
 			Localization::StringID         a_title,
@@ -53,7 +47,7 @@ namespace IED
 					"tree",
 						a_treeFlags,
 					"%s",
-					LS(a_title)))
+					UIL::LS(a_title)))
 			{
 				if (!a_data.empty())
 				{
@@ -92,7 +86,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -107,7 +101,7 @@ namespace IED
 				}
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Clear, "2"),
+						UIL::LS(CommonStrings::Clear, "2"),
 						nullptr,
 						false,
 						!a_data.empty()))
@@ -119,7 +113,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "3")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -127,7 +121,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFixedStringList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "4"),
+						UIL::LS(CommonStrings::Paste, "4"),
 						nullptr,
 						false,
 						clipData != nullptr))

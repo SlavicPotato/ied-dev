@@ -10,17 +10,14 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIStylePresetSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIStylePresetSelectorWidget
 		{
 		public:
-			UIStylePresetSelectorWidget(
-				Localization::ILocalization& a_localization);
 
-			bool DrawStylePresetSelector(
+			static bool DrawStylePresetSelector(
 				UIStylePreset& a_preset);
 
-			const char* preset_to_desc(UIStylePreset a_preset) const;
+			static const char* preset_to_desc(UIStylePreset a_preset);
 		};
 	}
 

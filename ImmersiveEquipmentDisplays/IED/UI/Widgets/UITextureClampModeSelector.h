@@ -8,19 +8,16 @@ namespace IED
 
 	namespace UI
 	{
-		class UITextureClampModeSelector :
-			public virtual UILocalizationInterface
+		class UITextureClampModeSelector
 		{
 		public:
-			UITextureClampModeSelector(
-				Localization::ILocalization& a_localization);
 
-			bool DrawTextureClampModeSelector(
+			static bool DrawTextureClampModeSelector(
 				Localization::StringID a_label,
 				TextureAddressMode&    a_data);
 
-			const char* texture_clamp_mode_to_desc(
-				TextureAddressMode a_data) const;
+			static const char* texture_clamp_mode_to_desc(
+				TextureAddressMode a_data) ;
 		};
 	}
 

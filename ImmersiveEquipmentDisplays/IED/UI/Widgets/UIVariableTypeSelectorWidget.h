@@ -10,17 +10,14 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIVariableTypeSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIVariableTypeSelectorWidget 
 		{
 		public:
-			UIVariableTypeSelectorWidget(
-				Localization::ILocalization& a_localization);
 
-			bool DrawVariableTypeSelectorWidget(
+			static bool DrawVariableTypeSelectorWidget(
 				ConditionalVariableType& a_type);
 
-			const char* variable_type_to_desc(ConditionalVariableType a_type) const;
+			static const char* variable_type_to_desc(ConditionalVariableType a_type) ;
 
 		};
 	}

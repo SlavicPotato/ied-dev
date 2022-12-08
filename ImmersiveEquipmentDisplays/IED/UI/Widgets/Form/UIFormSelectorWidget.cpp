@@ -19,9 +19,6 @@ namespace IED
 			bool          a_restrictTypes,
 			bool          a_enableFormBrowser,
 			bool          a_forceBase) :
-			UITipsInterface(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_requiredFlags(a_requiredFlags),
 			m_restrictTypes(a_restrictTypes),
@@ -97,13 +94,13 @@ namespace IED
 			{
 				if (m_enableFormBrowser)
 				{
-					if (LCG_MI(CommonStrings::Browse, "1"))
+					if (UIL::LCG_MI(CommonStrings::Browse, "1"))
 					{
 						open_browser = true;
 					}
 				}
 
-				if (LCG_MI(UIWidgetCommonStrings::CrosshairRef, "2"))
+				if (UIL::LCG_MI(UIWidgetCommonStrings::CrosshairRef, "2"))
 				{
 					QueueGetCrosshairRef();
 				}
@@ -149,7 +146,7 @@ namespace IED
 
 			UICommon::PushDisabled(!valid);
 
-			select |= ImGui::Button(LS(CommonStrings::Select, "ctl_s"));
+			select |= ImGui::Button(UIL::LS(CommonStrings::Select, "ctl_s"));
 
 			UICommon::PopDisabled(!valid);
 
@@ -162,7 +159,7 @@ namespace IED
 			}
 
 			select |= ImGui::InputText(
-				LS(CommonStrings::Form, "fs_input"),
+				UIL::LS(CommonStrings::Form, "fs_input"),
 				m_state->m_inputBuffer,
 				sizeof(m_state->m_inputBuffer),
 				ImGuiInputTextFlags_CharsHexadecimal |
@@ -177,7 +174,7 @@ namespace IED
 
 					if (current != m_state->m_currentInfo->form.id)
 					{
-						ErrorMessage(LS(UIWidgetCommonStrings::FormNotFoundOrPending));
+						ErrorMessage(UIL::LS(UIWidgetCommonStrings::FormNotFoundOrPending));
 					}
 					else
 					{
@@ -196,7 +193,7 @@ namespace IED
 
 			if (a_tipText)
 			{
-				DrawTip(a_tipText);
+				UITipsInterface::DrawTip(a_tipText);
 			}
 
 			if (m_state->m_inputBuffer[0] != 0)
@@ -222,7 +219,7 @@ namespace IED
 
 			auto& formBrowser = m_controller.UIGetFormBrowser();
 
-			if (ImGui::Button(LS(CommonStrings::Browse, "1")))
+			if (ImGui::Button(UIL::LS(CommonStrings::Browse, "1")))
 			{
 				if (formBrowser.Open(true))
 				{
@@ -269,6 +266,11 @@ namespace IED
 			m_types = a_types;
 		}
 
+		void UIFormSelectorWidget::ClearAllowedTypes()
+		{
+			m_types.reset();
+		}
+		
 		const UIFormBrowser::selected_form_list& UIFormSelectorWidget::GetSelectedEntries() const noexcept
 		{
 			return m_controller.UIGetFormBrowser().GetSelectedEntries();
@@ -323,8 +325,8 @@ namespace IED
 
 					ImGui::TextUnformatted(
 						isValid ?
-							LS(CommonStrings::OK) :
-							LS(CommonStrings::Invalid));
+							UIL::LS(CommonStrings::OK) :
+							UIL::LS(CommonStrings::Invalid));
 
 					ImGui::SameLine();
 					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -338,7 +340,7 @@ namespace IED
 
 				if (m_state->m_currentInfo->is_ref())
 				{
-					ImGui::Text("%s:", LS(CommonStrings::Base));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
 					ImGui::SameLine();
 
 					char buf[16];
@@ -365,9 +367,9 @@ namespace IED
 					ImGui::SameLine();
 				}
 
-				ImGui::Text("%s: %hhu", LS(CommonStrings::Type), info.type);
+				ImGui::Text("%s: %hhu", UIL::LS(CommonStrings::Type), info.type);
 
-				if (auto typeDesc = form_type_to_desc(info.type))
+				if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(info.type))
 				{
 					ImGui::SameLine();
 					ImGui::Text("(%s)", typeDesc);
@@ -378,7 +380,7 @@ namespace IED
 					ImGui::SameLine();
 					ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 					ImGui::SameLine();
-					ImGui::Text("%s: %s", LS(CommonStrings::Name), info.name.c_str());
+					ImGui::Text("%s: %s", UIL::LS(CommonStrings::Name), info.name.c_str());
 				}
 
 				if (indicateState)
@@ -389,7 +391,7 @@ namespace IED
 			else
 			{
 				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorError);
-				ImGui::TextUnformatted(LS(UIWidgetCommonStrings::FormNotFound));
+				ImGui::TextUnformatted(UIL::LS(UIWidgetCommonStrings::FormNotFound));
 				ImGui::PopStyleColor();
 			}
 
@@ -473,7 +475,7 @@ namespace IED
 
 			queue.push(
 				UIPopupType::Message,
-				LS(CommonStrings::Error),
+				UIL::LS(CommonStrings::Error),
 				"%s",
 				a_text);
 		}

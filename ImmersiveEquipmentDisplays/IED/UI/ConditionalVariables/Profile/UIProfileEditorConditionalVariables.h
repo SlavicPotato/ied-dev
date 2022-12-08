@@ -23,6 +23,8 @@ namespace IED
 
 			UIProfileEditorConditionalVariables(Controller& a_controller);
 
+			~UIProfileEditorConditionalVariables() noexcept override;
+
 			virtual void Initialize() override;
 
 			virtual void DrawProfileEditorMenuBarItems() override;

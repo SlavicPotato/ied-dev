@@ -45,15 +45,10 @@ namespace IED
 		template <class T>
 		class UIEffectShaderEditorWidget :
 			UIEffectShaderFunctionEditorWidget,
-			UITextureClampModeSelector,
-			UIEffectShaderDepthModeSelector,
-			UIEffectShaderAlphaFunctionSelector,
-			public virtual UIDescriptionPopupWidget,
-			public virtual UITipsInterface,
-			public virtual UILocalizationInterface
+			public virtual UIDescriptionPopupWidget
 		{
 		public:
-			UIEffectShaderEditorWidget(Controller& a_controller);
+			UIEffectShaderEditorWidget() = default;
 
 			void DrawEffectShaderEditor(
 				const T&                          a_params,
@@ -119,16 +114,6 @@ namespace IED
 		};
 
 		template <class T>
-		UIEffectShaderEditorWidget<T>::UIEffectShaderEditorWidget(
-			Controller& a_controller) :
-			UITextureClampModeSelector(a_controller),
-			UIEffectShaderDepthModeSelector(a_controller),
-			UIEffectShaderAlphaFunctionSelector(a_controller),
-			UIEffectShaderFunctionEditorWidget(a_controller)
-		{
-		}
-
-		template <class T>
 		void UIEffectShaderEditorWidget<T>::DrawEffectShaderEditor(
 			const T&                          a_params,
 			Data::configEffectShaderHolder_t& a_data)
@@ -138,7 +123,7 @@ namespace IED
 			ImGui::PushID("header");
 
 			if (ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Enabled, "1"),
+					UIL::LS(CommonStrings::Enabled, "1"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderHolderFlags::kEnabled)))
 			{
@@ -179,14 +164,14 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "1")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "1")))
 				{
 					result = EffectShaderContextAction::Delete;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -194,7 +179,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configEffectShaderData_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "3"),
+						UIL::LS(CommonStrings::PasteOver, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -288,28 +273,28 @@ namespace IED
 		{
 			DrawTextureTree(
 				"1",
-				LS(UIEffectShaderEditorWidgetStrings::BaseTexture),
+				UIL::LS(UIEffectShaderEditorWidgetStrings::BaseTexture),
 				a_params,
 				a_data.baseTexture,
 				true);
 
 			DrawTextureTree(
 				"2",
-				LS(UIEffectShaderEditorWidgetStrings::PalleteTexture),
+				UIL::LS(UIEffectShaderEditorWidgetStrings::PalleteTexture),
 				a_params,
 				a_data.paletteTexture,
 				false);
 
 			DrawTextureTree(
 				"3",
-				LS(UIEffectShaderEditorWidgetStrings::BlockOutTexture),
+				UIL::LS(UIEffectShaderEditorWidgetStrings::BlockOutTexture),
 				a_params,
 				a_data.blockOutTexture,
 				false);
 
 			ImGui::Spacing();
 
-			if (DrawTextureClampModeSelector(
+			if (UITextureClampModeSelector::DrawTextureClampModeSelector(
 					static_cast<Localization::StringID>(
 						UIEffectShaderEditorWidgetStrings::TextureClampMode),
 					a_data.textureClampMode))
@@ -317,7 +302,7 @@ namespace IED
 				OnEffectShaderUpdate(a_params);
 			}
 
-			if (DrawAlphaFuncSelector(
+			if (UIEffectShaderAlphaFunctionSelector::DrawAlphaFuncSelector(
 					static_cast<Localization::StringID>(
 						UIEffectShaderEditorWidgetStrings::SrcBlend),
 					a_data.srcBlend))
@@ -325,7 +310,7 @@ namespace IED
 				OnEffectShaderUpdate(a_params);
 			}
 
-			if (DrawAlphaFuncSelector(
+			if (UIEffectShaderAlphaFunctionSelector::DrawAlphaFuncSelector(
 					static_cast<Localization::StringID>(
 						UIEffectShaderEditorWidgetStrings::DstBlend),
 					a_data.destBlend))
@@ -333,7 +318,7 @@ namespace IED
 				OnEffectShaderUpdate(a_params);
 			}
 
-			if (DrawDepthModeSelector(
+			if (UIEffectShaderDepthModeSelector::DrawDepthModeSelector(
 					static_cast<Localization::StringID>(
 						UIEffectShaderEditorWidgetStrings::zTestFunc),
 					a_data.zTestFunc))
@@ -344,7 +329,7 @@ namespace IED
 			ImGui::Spacing();
 
 			if (ImGui::ColorEdit4(
-					LS(UIEffectShaderEditorWidgetStrings::FillColor, "4"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::FillColor, "4"),
 					a_data.fillColor,
 					ImGuiColorEditFlags_AlphaBar))
 			{
@@ -354,7 +339,7 @@ namespace IED
 			}
 
 			if (ImGui::ColorEdit4(
-					LS(UIEffectShaderEditorWidgetStrings::RimColor, "5"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::RimColor, "5"),
 					a_data.rimColor,
 					ImGuiColorEditFlags_AlphaBar))
 			{
@@ -366,7 +351,7 @@ namespace IED
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
 
 			if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::BaseFillScale, "6"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::BaseFillScale, "6"),
 					std::addressof(a_data.baseFillScale),
 					dragSpeed * 0.2f,
 					0.0f,
@@ -378,7 +363,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::EdgeExponent, "7"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::EdgeExponent, "7"),
 					std::addressof(a_data.edgeExponent),
 					dragSpeed,
 					0.0f,
@@ -390,7 +375,7 @@ namespace IED
 			}
 
 			/*if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::BaseFillAlpha, "8"),
+					UILI::LS(UIEffectShaderEditorWidgetStrings::BaseFillAlpha, "8"),
 					std::addressof(a_data.baseFillAlpha),
 					0.001f,
 					0.0f,
@@ -402,7 +387,7 @@ namespace IED
 			}*/
 
 			/*if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::BaseRimAlpha, "9"),
+					UILI::LS(UIEffectShaderEditorWidgetStrings::BaseRimAlpha, "9"),
 					std::addressof(a_data.baseRimAlpha),
 					0.001f,
 					0.0f,
@@ -414,7 +399,7 @@ namespace IED
 			}*/
 
 			/*if (ImGui::DragFloat(
-					LS(UIEffectShaderEditorWidgetStrings::BoundDiameter, "7"),
+					UILI::LS(UIEffectShaderEditorWidgetStrings::BoundDiameter, "7"),
 					std::addressof(a_data.boundDiameter),
 					0.01f,
 					0.0f,
@@ -428,7 +413,7 @@ namespace IED
 			ImGui::Spacing();
 
 			if (ImGui::DragFloat2(
-					LS(UIEffectShaderEditorWidgetStrings::uvOffset, "A"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::uvOffset, "A"),
 					a_data.uvOffset,
 					dragSpeed,
 					-25.0f,
@@ -442,7 +427,7 @@ namespace IED
 			dragSpeed = ImGui::GetIO().KeyShift ? 0.0001f : 0.01f;
 
 			if (ImGui::DragFloat2(
-					LS(UIEffectShaderEditorWidgetStrings::uvScale, "B"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::uvScale, "B"),
 					a_data.uvScale,
 					dragSpeed,
 					0.0f,
@@ -483,13 +468,13 @@ namespace IED
 				ImGui::Spacing();
 
 				ImGui::AlignTextToFramePadding();
-				ImGui::Text("%s:", LS(CommonStrings::Texture));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Texture));
 				ImGui::SameLine();
 
 				UICommon::PushDisabled(a_mustBeSet);
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::None, "0"),
+						UIL::LS(CommonStrings::None, "0"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::None))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::None;
@@ -501,7 +486,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Black, "1"),
+						UIL::LS(CommonStrings::Black, "1"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Black))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Black;
@@ -511,7 +496,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::White, "2"),
+						UIL::LS(CommonStrings::White, "2"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::White))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::White;
@@ -521,7 +506,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Grey, "3"),
+						UIL::LS(CommonStrings::Grey, "3"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Grey))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Grey;
@@ -531,7 +516,7 @@ namespace IED
 				ImGui::SameLine();
 
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Custom, "4"),
+						UIL::LS(CommonStrings::Custom, "4"),
 						a_data.fbf.selected == Data::EffectShaderSelectedTexture::Custom))
 				{
 					a_data.fbf.selected = Data::EffectShaderSelectedTexture::Custom;
@@ -549,7 +534,7 @@ namespace IED
 					m_inputBuffer1[l] = 0;
 
 					if (ImGui::InputText(
-							LS(CommonStrings::Texture, "5"),
+							UIL::LS(CommonStrings::Texture, "5"),
 							m_inputBuffer1,
 							sizeof(m_inputBuffer1),
 							ImGuiInputTextFlags_EnterReturnsTrue))
@@ -575,7 +560,7 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Force, "0"),
+					UIL::LS(CommonStrings::Force, "0"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kForce)))
 			{
@@ -585,13 +570,13 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::TargetRoot, "1"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::TargetRoot, "1"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kTargetRoot)))
 			{
 				OnEffectShaderUpdate(a_params);
 			}
-			DrawTip(UITip::EffectShadersTargetRoot);
+			UITipsInterface::DrawTip(UITip::EffectShadersTargetRoot);
 
 			ImGui::Columns();
 
@@ -600,7 +585,7 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::GrayscaleToColor, "2"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::GrayscaleToColor, "2"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kGrayscaleToColor)))
 			{
@@ -608,7 +593,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::GrayscaleToAlpha, "3"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::GrayscaleToAlpha, "3"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kGrayscaleToAlpha)))
 			{
@@ -616,7 +601,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::IgnoreTextureAlpha, "4"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::IgnoreTextureAlpha, "4"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kIgnoreTextureAlpha)))
 			{
@@ -626,7 +611,7 @@ namespace IED
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::BaseTextureProjectedUVs, "5"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::BaseTextureProjectedUVs, "5"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kBaseTextureProjectedUVs)))
 			{
@@ -634,7 +619,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::IgnoreBaseGeomTexAlpha, "6"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::IgnoreBaseGeomTexAlpha, "6"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kIgnoreBaseGeomTexAlpha)))
 			{
@@ -642,7 +627,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::Lighting, "7"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::Lighting, "7"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kLighting)))
 			{
@@ -650,7 +635,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIEffectShaderEditorWidgetStrings::Alpha, "8"),
+					UIL::LS(UIEffectShaderEditorWidgetStrings::Alpha, "8"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::EffectShaderDataFlags::kAlpha)))
 			{
@@ -684,7 +669,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::BeginMenu(LS(CommonStrings::Add, "1")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::Add, "1")))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -700,7 +685,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -708,7 +693,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFixedStringSet_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "3"),
+						UIL::LS(CommonStrings::PasteOver, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -758,7 +743,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(UIEffectShaderEditorWidgetStrings::TargetNodes)))
+					UIL::LS(UIEffectShaderEditorWidgetStrings::TargetNodes)))
 			{
 				if (!a_data.empty())
 				{
@@ -800,7 +785,7 @@ namespace IED
 					ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed,
 					ImGui::CalcTextSize("X", nullptr, true).x + (4.0f * 2.0f));
 
-				ImGui::TableSetupColumn(LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 75.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 75.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -873,7 +858,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::BeginMenu(LS(CommonStrings::Add, "1")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::Add, "1")))
 				{
 					if (DrawEffectShaderFunctionSelector(m_newType))
 					{
@@ -891,14 +876,14 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Sync, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Sync, "2")))
 				{
 					OnEffectShaderUpdate(a_params);
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "3")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -906,7 +891,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configEffectShaderFunctionList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "4"),
+						UIL::LS(CommonStrings::PasteOver, "4"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -956,7 +941,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Functions)))
+					UIL::LS(CommonStrings::Functions)))
 			{
 				if (!a_data.empty())
 				{
@@ -1011,9 +996,9 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::BeginMenu(LS(CommonStrings::Insert, "1")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::Insert, "1")))
 				{
-					if (ImGui::BeginMenu(LS(CommonStrings::New, "1")))
+					if (ImGui::BeginMenu(UIL::LS(CommonStrings::New, "1")))
 					{
 						if (DrawEffectShaderFunctionSelector(m_newType))
 						{
@@ -1030,7 +1015,7 @@ namespace IED
 					}
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "2"),
+							UIL::LS(CommonStrings::Paste, "2"),
 							nullptr,
 							false,
 							UIClipboard::Get<Data::configEffectShaderFunction_t>() != nullptr))
@@ -1041,14 +1026,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "2")))
 				{
 					result.action = EffectShaderContextAction::Delete;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "X")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "X")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -1056,7 +1041,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configEffectShaderFunction_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "Y"),
+						UIL::LS(CommonStrings::PasteOver, "Y"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1103,7 +1088,7 @@ namespace IED
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(LS(CommonStrings::Name), ImGuiTableColumnFlags_None, 200.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name), ImGuiTableColumnFlags_None, 200.0f);
 				ImGui::TableSetupColumn("LUID", ImGuiTableColumnFlags_None, 200.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
@@ -1163,7 +1148,7 @@ namespace IED
 						ImGui::TableSetColumnIndex(1);
 
 						if (ImGui::Selectable(
-								LMKID<3>(esf_to_desc(e.type), "sel_ctl"),
+								UIL::LMKID<3>(esf_to_desc(e.type), "sel_ctl"),
 								false,
 								ImGuiSelectableFlags_DontClosePopups))
 						{

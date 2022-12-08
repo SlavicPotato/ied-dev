@@ -16,6 +16,7 @@ namespace IED
 		{
 		public:
 			UINodeOverrideEditorRace(Controller& a_controller);
+			~UINodeOverrideEditorRace() noexcept override;
 
 			virtual void EditorInitialize() override;
 

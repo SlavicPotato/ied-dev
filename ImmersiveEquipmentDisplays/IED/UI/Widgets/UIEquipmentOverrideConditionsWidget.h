@@ -18,9 +18,7 @@ namespace IED
 	{
 		class UIEquipmentOverrideConditionsWidget :
 			UIConditionParamExtraInterface,
-			public virtual UIDescriptionPopupWidget,
-			public virtual UITipsInterface,
-			public virtual UILocalizationInterface
+			public virtual UIDescriptionPopupWidget
 		{
 		public:
 			UIEquipmentOverrideConditionsWidget(Controller& a_controller);

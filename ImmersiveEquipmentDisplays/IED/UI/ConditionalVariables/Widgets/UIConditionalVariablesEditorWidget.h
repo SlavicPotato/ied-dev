@@ -56,11 +56,8 @@ namespace IED
 
 		class UIConditionalVariablesEditorWidget :
 			public UILastEquippedWidget,
-			UIVariableTypeSelectorWidget,
 			public virtual UIDescriptionPopupWidget,
 			public virtual UICollapsibles,
-			public virtual UITipsInterface,
-			public virtual UILocalizationInterface,
 			public UIEditorInterface
 		{
 		public:

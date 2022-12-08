@@ -7,7 +7,7 @@ namespace IED
 {
 	template <class T>
 	class ProfileManager :
-		public ::Events::EventDispatcher<ProfileManagerEvent<T>>,
+		public ::Events::ThreadSafeEventDispatcher<ProfileManagerEvent<T>>,
 		ILog
 	{
 	public:
@@ -166,7 +166,8 @@ namespace IED
 				catch (const std::exception& e)
 				{
 					Warning(
-						"Exception occured while processing profile '%s': %s",
+						"%s: exception occured while processing profile '%s': %s",
+						__FUNCTION__,
 						Serialization::SafeGetPath(entry.path()).c_str(),
 						e.what());
 
@@ -240,8 +241,6 @@ namespace IED
 
 			path /= fn;
 			path += m_ext;
-
-			auto filename = path.filename().wstring();
 
 			if (fs::exists(path))
 				throw std::exception("Profile already exists");

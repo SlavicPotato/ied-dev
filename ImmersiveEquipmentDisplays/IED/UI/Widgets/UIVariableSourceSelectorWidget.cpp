@@ -16,19 +16,13 @@ namespace IED
 
 		);
 
-		UIVariableSourceSelectorWidget::UIVariableSourceSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIVariableSourceSelectorWidget::DrawVariableSourceSelectorWidget(
 			Data::VariableSource& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Source, "ex_vs_sel"),
+					UIL::LS(CommonStrings::Source, "ex_vs_sel"),
 					variable_source_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -44,7 +38,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIVariableSourceSelectorWidgetStrings, 3>(e.second, "1"),
+							UIL::LS<UIVariableSourceSelectorWidgetStrings, 3>(e.second, "1"),
 							selected))
 					{
 						a_type = e.first;
@@ -61,18 +55,18 @@ namespace IED
 		}
 
 		const char* UIVariableSourceSelectorWidget::variable_source_to_desc(
-			Data::VariableSource a_type) const
+			Data::VariableSource a_type)
 		{
 			switch (a_type)
 			{
 			case Data::VariableSource::kActor:
-				return LS(UIVariableSourceSelectorWidgetStrings::Actor);
+				return UIL::LS(UIVariableSourceSelectorWidgetStrings::Actor);
 			case Data::VariableSource::kPlayerHorse:
-				return LS(UIVariableSourceSelectorWidgetStrings::PlayerHorse);
+				return UIL::LS(UIVariableSourceSelectorWidgetStrings::PlayerHorse);
 			case Data::VariableSource::kMountingActor:
-				return LS(UIVariableSourceSelectorWidgetStrings::MountingActor);
+				return UIL::LS(UIVariableSourceSelectorWidgetStrings::MountingActor);
 			case Data::VariableSource::kMountedActor:
-				return LS(UIVariableSourceSelectorWidgetStrings::MountedActor);
+				return UIL::LS(UIVariableSourceSelectorWidgetStrings::MountedActor);
 			default:
 				return nullptr;
 			}

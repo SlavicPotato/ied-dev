@@ -9,7 +9,7 @@ namespace IED
 		class UIControlKeySelectorWidget
 		{
 		public:
-			bool DrawKeySelector(
+			static bool DrawKeySelector(
 				const char*                      a_label,
 				const UIData::controlDescData_t& a_data,
 				std::uint32_t&                   a_key,

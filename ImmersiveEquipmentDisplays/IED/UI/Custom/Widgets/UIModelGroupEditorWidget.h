@@ -31,10 +31,8 @@ namespace IED
 		template <class T>
 		class UIModelGroupEditorWidget :
 			virtual public UIDescriptionPopupWidget,
-			virtual public UITipsInterface,
 			virtual public UITransformSliderWidget,
-			virtual public UIPopupInterface,
-			virtual public UILocalizationInterface
+			virtual public UIPopupInterface
 		{
 		public:
 			UIModelGroupEditorWidget(
@@ -126,7 +124,7 @@ namespace IED
 							"e_tree",
 							TREE_FLAGS,
 							"%s [%.8X]",
-							LS(CommonStrings::Primary),
+							UIL::LS(CommonStrings::Primary),
 							it->second.form.get_id().get());
 
 						ImGui::PopStyleColor();
@@ -175,7 +173,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(UICustomEditorString::ModelGroup)))
+					UIL::LS(UICustomEditorString::ModelGroup)))
 			{
 				ImGui::Spacing();
 				ImGui::Indent();
@@ -243,7 +241,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Flags)))
+					UIL::LS(CommonStrings::Flags)))
 			{
 				ImGui::Spacing();
 				ImGui::Indent();
@@ -288,7 +286,7 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(CommonStrings::Disable, "0"),
+					UIL::LS(CommonStrings::Disable, "0"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisabled)))
 			{
@@ -303,7 +301,7 @@ namespace IED
 			UICommon::PushDisabled(disabled);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::DropOnDeath, "1"),
+					UIL::LS(UIBaseConfigString::DropOnDeath, "1"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDropOnDeath)))
 			{
@@ -312,10 +310,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::DropOnDeath);
+			UITipsInterface::DrawTip(UITip::DropOnDeath);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::KeepTorchFlame, "2"),
+					UIL::LS(UIBaseConfigString::KeepTorchFlame, "2"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame)))
 			{
@@ -324,10 +322,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::KeepTorchFlame);
+			UITipsInterface::DrawTip(UITip::KeepTorchFlame);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::LeftWeapon, "3"),
+					UIL::LS(UIWidgetCommonStrings::LeftWeapon, "3"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kLeftWeapon)))
 			{
@@ -336,10 +334,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::LeftWeapon);
+			UITipsInterface::DrawTip(UITip::LeftWeapon);
 
 			bool paChanged = ImGui::CheckboxFlagsT(
-				LS(UIWidgetCommonStrings::PlayAnimation, "4"),
+				UIL::LS(UIWidgetCommonStrings::PlayAnimation, "4"),
 				stl::underlying(std::addressof(entry.flags.value)),
 				stl::underlying(Data::ConfigModelGroupEntryFlags::kPlaySequence));
 
@@ -350,7 +348,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::PlayAnimation);
+			UITipsInterface::DrawTip(UITip::PlayAnimation);
 
 			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kPlaySequence))
 			{
@@ -369,7 +367,7 @@ namespace IED
 
 				if (ImGui::BeginPopup("4ctx"))
 				{
-					if (DrawDescriptionPopup(LS(CommonStrings::Sequence, "1")))
+					if (DrawDescriptionPopup(UIL::LS(CommonStrings::Sequence, "1")))
 					{
 						entry.niControllerSequence = GetDescriptionPopupBuffer();
 
@@ -384,7 +382,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::Use1pWeaponModels, "A"),
+					UIL::LS(UIBaseConfigString::Use1pWeaponModels, "A"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel)))
 			{
@@ -393,12 +391,12 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::Load1pWeaponModel);
+			UITipsInterface::DrawTip(UITip::Load1pWeaponModel);
 
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::UseWorldModel, "B"),
+					UIL::LS(UIBaseConfigString::UseWorldModel, "B"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kUseWorldModel)))
 			{
@@ -407,10 +405,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::UseWorldModel);
+			UITipsInterface::DrawTip(UITip::UseWorldModel);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIBaseConfigString::RemoveScabbard, "C"),
+					UIL::LS(UIBaseConfigString::RemoveScabbard, "C"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveScabbard)))
 			{
@@ -419,10 +417,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::RemoveScabbard);
+			UITipsInterface::DrawTip(UITip::RemoveScabbard);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableWeaponAnims, "D"),
+					UIL::LS(UIWidgetCommonStrings::DisableWeaponAnims, "D"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims)))
 			{
@@ -431,10 +429,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::DisableWeaponAnims);
+			UITipsInterface::DrawTip(UITip::DisableWeaponAnims);
 
 			/*if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "E"),
+					UILI::LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "E"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding)))
 			{
@@ -443,10 +441,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::DisableAnimEventForwarding);*/
+			UITipsInterface::DrawTip(UITip::DisableAnimEventForwarding);*/
 
 			paChanged = ImGui::CheckboxFlagsT(
-				LS(UIWidgetCommonStrings::AnimationEvent, "F"),
+				UIL::LS(UIWidgetCommonStrings::AnimationEvent, "F"),
 				stl::underlying(std::addressof(entry.flags.value)),
 				stl::underlying(Data::ConfigModelGroupEntryFlags::kAnimationEvent));
 
@@ -457,7 +455,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Transform);
 			}
-			DrawTip(UITip::AnimationEvent);
+			UITipsInterface::DrawTip(UITip::AnimationEvent);
 
 			if (entry.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 			{
@@ -476,7 +474,7 @@ namespace IED
 
 				if (ImGui::BeginPopup("Fctx"))
 				{
-					if (DrawDescriptionPopup(LS(CommonStrings::Event, "1")))
+					if (DrawDescriptionPopup(UIL::LS(CommonStrings::Event, "1")))
 					{
 						entry.animationEvent = GetDescriptionPopupBuffer();
 
@@ -491,7 +489,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DisableHavok, "G"),
+					UIL::LS(UIWidgetCommonStrings::DisableHavok, "G"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableHavok)))
 			{
@@ -500,10 +498,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::DisableHavok);
+			UITipsInterface::DrawTip(UITip::DisableHavok);
 			
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::RemoveProjectileTracers, "H"),
+					UIL::LS(UIWidgetCommonStrings::RemoveProjectileTracers, "H"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers)))
 			{
@@ -512,10 +510,10 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::RemoveProjectileTracers);
+			UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
 			
 			/*if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::AttachLight, "H"),
+					UILI::LS(UIWidgetCommonStrings::AttachLight, "H"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kAttachLight)))
 			{
@@ -524,7 +522,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			DrawTip(UITip::AttachLight);*/
+			UITipsInterface::DrawTip(UITip::AttachLight);*/
 
 			UICommon::PopDisabled(disabled);
 
@@ -554,7 +552,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::New, "1"))
+				if (UIL::LCG_BM(CommonStrings::New, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -562,9 +560,9 @@ namespace IED
 						if (!r.second)
 						{
 							QueueNotification(
-								LS(CommonStrings::Error),
+								UIL::LS(CommonStrings::Error),
 								"%s",
-								LS(UIModelGroupEditorWidgetStrings::EntryExistsError));
+								UIL::LS(UIModelGroupEditorWidgetStrings::EntryExistsError));
 						}
 
 						ClearDescriptionPopupBuffer();
@@ -598,7 +596,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_MI(CommonStrings::Reset, "1"))
+				if (UIL::LCG_MI(CommonStrings::Reset, "1"))
 				{
 					a_it->second = {};
 
@@ -610,7 +608,7 @@ namespace IED
 
 				if (!a_it->first.empty())
 				{
-					if (LCG_MI(CommonStrings::Delete, "2"))
+					if (UIL::LCG_MI(CommonStrings::Delete, "2"))
 					{
 						a_it = a_data.entries.erase(a_it);
 

@@ -16,19 +16,19 @@ namespace IED
 		template <class T>
 		class UIProfileBase :
 			protected UICommonModals,
-			public virtual UILocalizationInterface,
-			Events::EventSink<ProfileManagerEvent<T>>
+			protected Events::EventSink<ProfileManagerEvent<T>>
 		{
 		public:
 			void InitializeProfileBase();
 
 			const T* GetCurrentProfile() const;
 
+			virtual ~UIProfileBase() noexcept = default;
+
 		protected:
 			inline static constexpr auto POPUP_NEW_ID = "popup_new";
 
-			UIProfileBase(Localization::ILocalization& a_localization);
-			virtual ~UIProfileBase() noexcept;
+			UIProfileBase() = default;
 
 			void DrawCreateNew(const typename T::base_type* a_data = nullptr);
 
@@ -60,19 +60,6 @@ namespace IED
 		};
 
 		template <class T>
-		inline UIProfileBase<T>::UIProfileBase(
-			Localization::ILocalization& a_localization) :
-			UICommonModals(a_localization)
-		{
-		}
-
-		template <class T>
-		UIProfileBase<T>::~UIProfileBase() noexcept
-		{
-			// GetProfileManager().RemoveSink(this);
-		}
-
-		template <class T>
 		void UIProfileBase<T>::InitializeProfileBase()
 		{
 			GetProfileManager().AddSink(this);
@@ -101,14 +88,14 @@ namespace IED
 		void UIProfileBase<T>::DrawCreateNew(const typename T::base_type* a_data)
 		{
 			if (TextInputDialog(
-					LS(UIProfileStrings::NewProfile, POPUP_NEW_ID),
+					UIL::LS(UIProfileStrings::NewProfile, POPUP_NEW_ID),
 					"%s",
 					ImGuiInputTextFlags_EnterReturnsTrue,
 					{},
 					{},
 					m_state.new_input,
 					sizeof(m_state.new_input),
-					LS(UIProfileStrings::ProfileNamePrompt)) != ModalStatus::kAccept)
+					UIL::LS(UIProfileStrings::ProfileNamePrompt)) != ModalStatus::kAccept)
 			{
 				return;
 			}
@@ -128,9 +115,9 @@ namespace IED
 
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
-					LS(UIProfileStrings::CreateError),
+					UIL::LS(UIProfileStrings::CreateError),
 					pm.GetLastException().what());
 
 				return;
@@ -140,9 +127,9 @@ namespace IED
 			{
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s",
-					LS(UIProfileStrings::InitError));
+					UIL::LS(UIProfileStrings::InitError));
 
 				return;
 			}
@@ -150,7 +137,7 @@ namespace IED
 			bool saveRes =
 				a_data ?
 					profile.Save(*a_data, true) :
-                    profile.Save();
+					profile.Save();
 
 			if (!saveRes)
 			{
@@ -158,9 +145,9 @@ namespace IED
 
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
-					LS(UIProfileStrings::SaveError),
+					UIL::LS(UIProfileStrings::SaveError),
 					pm.GetLastException().what());
 
 				return;
@@ -178,9 +165,9 @@ namespace IED
 
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
-					LS(UIProfileStrings::AddError),
+					UIL::LS(UIProfileStrings::AddError),
 					pm.GetLastException().what());
 			}
 		}

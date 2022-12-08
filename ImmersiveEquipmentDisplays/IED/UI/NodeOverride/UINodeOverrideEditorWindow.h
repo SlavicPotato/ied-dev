@@ -16,8 +16,7 @@ namespace IED
 	{
 		class UINodeOverrideEditorWindow :
 			public UIContext,
-			public UIWindow,
-			public virtual UILocalizationInterface
+			public UIWindow
 		{
 			inline static constexpr auto WINDOW_ID = "ied_noe";
 

@@ -14,8 +14,6 @@ namespace IED
 	namespace UI
 	{
 		UINodeMapEditor::UINodeMapEditor(Controller& a_controller) :
-			UITableRowInputWidget(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -25,7 +23,7 @@ namespace IED
 			SetWindowDimensions(0.0f, 800.0f, 600.0f, true);
 
 			if (ImGui::Begin(
-					LS<CommonStrings, 3>(CommonStrings::Nodes, WINDOW_ID),
+					UIL::LS<CommonStrings, 3>(CommonStrings::Nodes, WINDOW_ID),
 					GetOpenState(),
 					ImGuiWindowFlags_MenuBar))
 			{
@@ -40,16 +38,16 @@ namespace IED
 		{
 			if (ImGui::BeginMenuBar())
 			{
-				if (LCG_BM(CommonStrings::File, "1"))
+				if (UIL::LCG_BM(CommonStrings::File, "1"))
 				{
-					if (LCG_MI(CommonStrings::New, "1"))
+					if (UIL::LCG_MI(CommonStrings::New, "1"))
 					{
 						QueueNewNodePopup();
 					}
 
 					ImGui::Separator();
 
-					if (LCG_MI(CommonStrings::Close, "2"))
+					if (UIL::LCG_MI(CommonStrings::Close, "2"))
 					{
 						SetOpenState(false);
 					}
@@ -81,9 +79,9 @@ namespace IED
 					{ -1.0f, 0 }))
 			{
 				ImGui::TableSetupScrollFreeze(0, 1);
-				ImGui::TableSetupColumn(LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Description), ImGuiTableColumnFlags_None, 0.65f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Actions), ImGuiTableColumnFlags_None, 0.1f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Node), ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Description), ImGuiTableColumnFlags_None, 0.65f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Actions), ImGuiTableColumnFlags_None, 0.1f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 				for (int column = 0; column < NUM_COLUMNS; column++)
@@ -123,7 +121,7 @@ namespace IED
 
 					ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
 
-					if (ImGui::Selectable(LS(CommonStrings::Delete, "ctl_1")))
+					if (ImGui::Selectable(UIL::LS(CommonStrings::Delete, "ctl_1")))
 					{
 						QueueDeleteNodePopup(e->first);
 					}
@@ -145,9 +143,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Input,
-					 LS(CommonStrings::New),
+					 UIL::LS(CommonStrings::New),
 					 "%s",
-					 LS(UIWidgetCommonStrings::NewNodePrompt))
+					 UIL::LS(UIWidgetCommonStrings::NewNodePrompt))
 				.call([this](const auto& a_p) {
 					std::string name(a_p.GetInput());
 
@@ -155,9 +153,9 @@ namespace IED
 					{
 						m_controller.UIGetPopupQueue().push(
 							UIPopupType::Message,
-							LS(CommonStrings::Error),
+							UIL::LS(CommonStrings::Error),
 							"%s",
-							LS(UIWidgetCommonStrings::InvalidNode));
+							UIL::LS(UIWidgetCommonStrings::InvalidNode));
 
 						return;
 					}
@@ -173,9 +171,9 @@ namespace IED
 					{
 						m_controller.UIGetPopupQueue().push(
 							UIPopupType::Message,
-							LS(CommonStrings::Error),
+							UIL::LS(CommonStrings::Error),
 							"%s [%s]",
-							LS(UIWidgetCommonStrings::NodeExistsError),
+							UIL::LS(UIWidgetCommonStrings::NodeExistsError),
 							name.c_str());
 					}
 					else
@@ -192,9 +190,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s [%s]",
-					 LS(UIWidgetCommonStrings::DeleteNodePrompt),
+					 UIL::LS(UIWidgetCommonStrings::DeleteNodePrompt),
 					 a_node.c_str())
 				.call([this, a_node](const auto&) {
 					auto& map = Data::NodeMap::GetSingleton();
@@ -205,9 +203,9 @@ namespace IED
 
 						queue.push(
 							UIPopupType::Message,
-							LS(CommonStrings::Error),
+							UIL::LS(CommonStrings::Error),
 							"%s [%s]",
-							LS(UIWidgetCommonStrings::NodeEraseError),
+							UIL::LS(UIWidgetCommonStrings::NodeEraseError),
 							a_node.c_str());
 					}
 					else
@@ -227,9 +225,9 @@ namespace IED
 				auto& queue = m_controller.UIGetPopupQueue();
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s [%s]\n\n%s",
-					LS(UIWidgetCommonStrings::DataSaveError),
+					UIL::LS(UIWidgetCommonStrings::DataSaveError),
 					PATHS::NODEMAP,
 					map.GetLastException().what());
 			}

@@ -91,15 +91,14 @@ namespace IED
 
 	class CachedActiveEffectData
 	{
-		using container_type =
-			stl::set_sa<EffectSetting*>;
+		using container_type = stl::set_sa<EffectSetting*>;
 
 	public:
 		CachedActiveEffectData(Actor* a_actor);
 
 		bool UpdateEffects(Actor* a_actor);
 
-		inline constexpr const auto& GetEffectContainer() const noexcept
+		inline constexpr auto& GetEffectContainer() const noexcept
 		{
 			return data;
 		}

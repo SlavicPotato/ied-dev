@@ -14,19 +14,13 @@ namespace IED
 
 		);
 
-		UIVariableTypeSelectorWidget::UIVariableTypeSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIVariableTypeSelectorWidget::DrawVariableTypeSelectorWidget(
 			ConditionalVariableType& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Type, "ex_cvt_sel"),
+					UIL::LS(CommonStrings::Type, "ex_cvt_sel"),
 					variable_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -42,7 +36,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIVariableTypeSelectorWidgetStrings, 3>(e.second, "1"),
+							UIL::LS<UIVariableTypeSelectorWidgetStrings, 3>(e.second, "1"),
 							selected))
 					{
 						a_type = e.first;
@@ -59,16 +53,16 @@ namespace IED
 		}
 
 		const char* UIVariableTypeSelectorWidget::variable_type_to_desc(
-			ConditionalVariableType a_type) const
+			ConditionalVariableType a_type)
 		{
 			switch (a_type)
 			{
 			case ConditionalVariableType::kInt32:
-				return LS(UIVariableTypeSelectorWidgetStrings::i32);
+				return UIL::LS(UIVariableTypeSelectorWidgetStrings::i32);
 			case ConditionalVariableType::kFloat:
-				return LS(UIVariableTypeSelectorWidgetStrings::f32);
+				return UIL::LS(UIVariableTypeSelectorWidgetStrings::f32);
 			case ConditionalVariableType::kForm:
-				return LS(UIVariableTypeSelectorWidgetStrings::Form);
+				return UIL::LS(UIVariableTypeSelectorWidgetStrings::Form);
 			default:
 				return nullptr;
 			}

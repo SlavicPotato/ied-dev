@@ -21,12 +21,10 @@ namespace IED
 		};
 
 		class UISimpleStringSetWidget :
-			public virtual UIDescriptionPopupWidget,
-			public virtual UILocalizationInterface
+			public virtual UIDescriptionPopupWidget
 		{
 		public:
-			UISimpleStringSetWidget(
-				Localization::ILocalization& a_localization);
+			UISimpleStringSetWidget() = default;
 
 			bool DrawStringSetTree(
 				const char*                   a_id,

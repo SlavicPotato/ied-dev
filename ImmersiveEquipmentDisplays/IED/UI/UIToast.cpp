@@ -13,9 +13,7 @@ namespace IED
 	namespace UI
 	{
 		UIToast::UIToast(
-			Tasks::UIRenderTaskBase&     a_owner,
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization),
+			Tasks::UIRenderTaskBase& a_owner) :
 			m_owner(a_owner)
 		{
 		}

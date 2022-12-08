@@ -10,20 +10,21 @@ namespace IED
 	{
 		UINodeOverrideEditorGlobal::UINodeOverrideEditorGlobal(Controller& a_controller) :
 			UINodeOverrideEditorCommon<UIGlobalEditorDummyHandle>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UIGlobalConfigTypeSelectorWidget(a_controller),
-			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UINodeOverrideEditorGlobal::~UINodeOverrideEditorGlobal() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UINodeOverrideEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.transformEditor.globalSex, false);
 		}
@@ -50,7 +51,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+							UIL::LS(UIWidgetCommonStrings::XP32SkeletonWarning));
 
 						ImGui::Spacing();
 						ImGui::Separator();

@@ -13,10 +13,8 @@ namespace IED
 	namespace UI
 	{
 		UILastEquippedWidget::UILastEquippedWidget(Controller& a_controller) :
-			UIBipedObjectList(a_controller),
-			UIEquipmentOverrideConditionsWidget(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller)
+			UIBipedObjectList(),
+			UIEquipmentOverrideConditionsWidget(a_controller)
 		{
 		}
 
@@ -24,7 +22,7 @@ namespace IED
 			Data::configLastEquipped_t& a_data,
 			update_func_t               a_updateFunc)
 		{
-			ImGui::PushID("leqp_panel");
+			ImGui::PushID("leq_panel");
 
 			const auto r = DrawEquipmentOverrideConditionHeaderContextMenu(
 				a_data.filterConditions,
@@ -48,7 +46,7 @@ namespace IED
 					ImGuiTreeNodeFlags_SpanAvailWidth |
 						ImGuiTreeNodeFlags_DefaultOpen,
 					"%s",
-					LS(UICustomEditorString::LastEquippedFilterCond)))
+					UIL::LS(UICustomEditorString::LastEquippedFilterCond)))
 			{
 				if (!empty)
 				{
@@ -71,12 +69,12 @@ namespace IED
 						ImGui::Columns(2, nullptr, false);
 
 						bool result = ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::DisableIfOccupied, "1"),
+							UIL::LS(UICustomEditorString::DisableIfOccupied, "1"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::LastEquippedFlags::kDisableIfSlotOccupied));
 
 						result |= ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::PrioritizeRecentSlots, "2"),
+							UIL::LS(UICustomEditorString::PrioritizeRecentSlots, "2"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::LastEquippedFlags::kPrioritizeRecentSlots));
 
@@ -87,7 +85,7 @@ namespace IED
 						UICommon::PushDisabled(d);
 
 						result |= ImGui::CheckboxFlagsT(
-							LS(UICustomEditorString::SkipOccupiedSlots, "3"),
+							UIL::LS(UICustomEditorString::SkipOccupiedSlots, "3"),
 							stl::underlying(std::addressof(a_data.flags.value)),
 							stl::underlying(Data::LastEquippedFlags::kSkipOccupiedSlots));
 
@@ -104,7 +102,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UICustomEditorString::FallBackToSlotted, "ctl_1"),
+					UIL::LS(UICustomEditorString::FallBackToSlotted, "ctl_1"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::LastEquippedFlags::kFallBackToSlotted)))
 			{
@@ -114,7 +112,7 @@ namespace IED
 			if (a_data.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
 			{
 				if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-					LS(CommonStrings::Slot, "ctl_2"),
+					UIL::LS(CommonStrings::Slot, "ctl_2"),
 					a_data.slot))
 				{
 					a_updateFunc();

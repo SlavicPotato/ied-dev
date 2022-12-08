@@ -18,8 +18,7 @@ namespace IED
 		class UINodeMapEditor :
 			public UIContext,
 			public UIWindow,
-			public UITableRowInputWidget<stl::fixed_string>,
-			public virtual UILocalizationInterface
+			public UITableRowInputWidget<stl::fixed_string>
 		{
 			inline static constexpr auto WINDOW_ID = "ied_nodemap";
 

@@ -12,11 +12,10 @@ namespace IED
 
 	namespace UI
 	{
-		class UITimeOfDaySelectorWidget :
-			public virtual UILocalizationInterface
+		class UITimeOfDaySelectorWidget
 		{
 		public:
-			UITimeOfDaySelectorWidget(Localization::ILocalization& a_localization);
+			UITimeOfDaySelectorWidget() = default;
 
 			bool DrawTimeOfDaySelector(Data::TimeOfDay& a_tod);
 

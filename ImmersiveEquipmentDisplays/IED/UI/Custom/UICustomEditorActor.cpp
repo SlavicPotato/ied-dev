@@ -15,27 +15,26 @@ namespace IED
 			Controller& a_controller) :
 			UICustomEditorCommon<Game::FormID>(a_controller),
 			UIActorList<entryCustomData_t>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UIFormInfoTooltipWidget(a_controller),
 			UIMiscTextInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
 			UIPopupInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UICustomEditorActor::~UICustomEditorActor() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UICustomEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.customEditor.actorConfig.sex, false);
 		}
@@ -56,7 +55,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::ActorBlocked));
+							UIL::LS(UIWidgetCommonStrings::ActorBlocked));
 
 						ImGui::Spacing();
 					}
@@ -66,7 +65,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+							UIL::LS(UIWidgetCommonStrings::XP32SkeletonWarning));
 
 						ImGui::Spacing();
 					}

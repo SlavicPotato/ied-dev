@@ -22,12 +22,6 @@ namespace IED
 
 		);
 
-		UIEffectShaderAlphaFunctionSelector::UIEffectShaderAlphaFunctionSelector(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIEffectShaderAlphaFunctionSelector::DrawAlphaFuncSelector(
 			Localization::StringID     a_label,
 			NiProperty::AlphaFunction& a_data)
@@ -35,7 +29,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(a_label, "afn_sel"),
+					UIL::LS(a_label, "afn_sel"),
 					alpha_func_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -68,7 +62,7 @@ namespace IED
 		}
 
 		const char* UIEffectShaderAlphaFunctionSelector::alpha_func_to_desc(
-			NiProperty::AlphaFunction a_data) const
+			NiProperty::AlphaFunction a_data)
 		{
 			switch (a_data)
 			{

@@ -19,8 +19,7 @@ namespace IED
 			PasteOver
 		};
 
-		class UITransformSliderWidget :
-			public virtual UITipsInterface
+		class UITransformSliderWidget
 		{
 		public:
 			enum class TransformUpdateValue
@@ -42,12 +41,7 @@ namespace IED
 			};
 
 		public:
-			UITransformSliderWidget(
-				Localization::ILocalization& a_localization) :
-				UITipsInterface(a_localization),
-				UILocalizationInterface(a_localization)
-			{
-			}
+			UITransformSliderWidget() = default;
 
 			TransformSliderContextAction DrawTransformHeaderContextMenu(
 				Data::configTransform_t& a_data,

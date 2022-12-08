@@ -15,8 +15,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UINodeSelectorWidget :
-			public virtual UILocalizationInterface
+		class UINodeSelectorWidget
 		{
 		public:
 			UINodeSelectorWidget(

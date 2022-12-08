@@ -12,11 +12,10 @@ namespace IED
 
 	namespace UI
 	{
-		class UIEditorPanelSettings :
-			virtual public UITipsInterface
+		class UIEditorPanelSettings
 		{
 		public:
-			UIEditorPanelSettings(Controller& a_controller);
+			UIEditorPanelSettings() = default;
 
 			void DrawEditorPanelSettings();
 

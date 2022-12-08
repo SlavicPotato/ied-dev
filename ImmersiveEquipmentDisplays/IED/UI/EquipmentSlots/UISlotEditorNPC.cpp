@@ -15,25 +15,24 @@ namespace IED
 		UISlotEditorNPC::UISlotEditorNPC(Controller& a_controller) :
 			UISlotEditorCommon<Game::FormID>(a_controller),
 			UINPCList<entrySlotData_t>(a_controller),
-			UITipsInterface(a_controller),
 			UIPopupInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UISlotEditorNPC::~UISlotEditorNPC() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UISlotEditorNPC::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.slotEditor.npcConfig.sex, false);
 		}

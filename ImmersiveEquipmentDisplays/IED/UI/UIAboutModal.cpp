@@ -22,7 +22,6 @@ namespace IED
 	{
 		UIAboutModal::UIAboutModal(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -48,7 +47,7 @@ namespace IED
 						ImGui::TableNextRow();
 
 						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s:", LS(CommonStrings::Version));
+						ImGui::Text("%s:", UIL::LS(CommonStrings::Version));
 
 						ImGui::TableSetColumnIndex(1);
 						ImGui::Text(
@@ -60,7 +59,7 @@ namespace IED
 						ImGui::TableNextRow();
 
 						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s:", LS(CommonStrings::Author));
+						ImGui::Text("%s:", UIL::LS(CommonStrings::Author));
 
 						ImGui::TableSetColumnIndex(1);
 						ImGui::Text("%s", PLUGIN_AUTHOR);
@@ -99,7 +98,7 @@ namespace IED
 						ImGui::TableNextRow();
 
 						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s:", LS(CommonStrings::Dependencies));
+						ImGui::Text("%s:", UIL::LS(CommonStrings::Dependencies));
 
 						ImGui::TableSetColumnIndex(1);
 
@@ -152,7 +151,7 @@ namespace IED
 					ImGui::Spacing();
 
 					return ImGui::Button(
-						LS(CommonStrings::Close, "C"),
+						UIL::LS(CommonStrings::Close, "C"),
 						{ -1.0f, 0.0f });
 				});
 		}

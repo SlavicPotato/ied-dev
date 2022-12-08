@@ -30,9 +30,7 @@ namespace IED
 
 		template <class T>
 		class UIFormFilterWidget :
-			UIFormLookupInterface,
-			public virtual UIFormTypeSelectorWidget,
-			public virtual UILocalizationInterface
+			UIFormLookupInterface
 		{
 			using callback_func_t = std::function<void(T&)>;
 
@@ -95,8 +93,6 @@ namespace IED
 			Controller&           a_controller,
 			UIFormSelectorWidget& a_formSelector) :
 			UIFormLookupInterface(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UILocalizationInterface(a_controller),
 			m_formSelector(a_formSelector)
 		{
 		}
@@ -152,7 +148,7 @@ namespace IED
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -14.0f);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::UseProfile, "ctl"),
+					UIL::LS(UIWidgetCommonStrings::UseProfile, "ctl"),
 					stl::underlying(std::addressof(a_data.filterFlags.value)),
 					stl::underlying(Data::FormFilterFlags::kUseProfile)))
 			{
@@ -185,7 +181,7 @@ namespace IED
 			ImGui::PushID("ff_base_area");
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::DenyAll, "ctl"),
+					UIL::LS(UIWidgetCommonStrings::DenyAll, "ctl"),
 					stl::underlying(std::addressof(a_data.flags.value)),
 					stl::underlying(Data::FormFilterBaseFlags::kDenyAll)))
 			{
@@ -218,7 +214,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Allow)))
+					UIL::LS(CommonStrings::Allow)))
 			{
 				if (!empty)
 				{
@@ -262,7 +258,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Deny)))
+					UIL::LS(CommonStrings::Deny)))
 			{
 				if (!empty)
 				{
@@ -302,7 +298,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_MI(CommonStrings::Copy, "1"))
+				if (UIL::LCG_MI(CommonStrings::Copy, "1"))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -310,7 +306,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFormFilter_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "2"),
+						UIL::LS(CommonStrings::Paste, "2"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -356,7 +352,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
+				if (UIL::LCG_BM(UIWidgetCommonStrings::AddOne, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
 							m_ffNewEntryID))
@@ -373,7 +369,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
+				if (UIL::LCG_BM(UIWidgetCommonStrings::AddMultiple, "2"))
 				{
 					if (m_formSelector.DrawFormSelectorMulti())
 					{
@@ -399,7 +395,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Clear, "3"))
+				if (UIL::LCG_MI(CommonStrings::Clear, "3"))
 				{
 					a_data.clear();
 
@@ -408,7 +404,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (LCG_MI(CommonStrings::Copy, "4"))
+				if (UIL::LCG_MI(CommonStrings::Copy, "4"))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -416,7 +412,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFormSet_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "5"),
+						UIL::LS(CommonStrings::Paste, "5"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -458,8 +454,8 @@ namespace IED
 					{ -1.0f, 0 }))
 			{
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, ImGui::GetFontSize() + 2.0f);
-				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -501,7 +497,7 @@ namespace IED
 
 						if (auto formInfo = LookupForm(form))
 						{
-							if (auto typeDesc = form_type_to_desc(formInfo->form.type))
+							if (auto typeDesc = UIFormTypeSelectorWidget::form_type_to_desc(formInfo->form.type))
 							{
 								ImGui::Text(
 									"[%s] %s",
@@ -546,7 +542,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_MI(CommonStrings::Delete, "1"))
+				if (UIL::LCG_MI(CommonStrings::Delete, "1"))
 				{
 					result = FormFilterAction::Delete;
 				}
@@ -567,7 +563,7 @@ namespace IED
 			auto& data = GlobalProfileManager::GetSingleton<FormFilterProfile>().Data();
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Profile, "selector_combo"),
+					UIL::LS(CommonStrings::Profile, "selector_combo"),
 					a_data.profile.name.c_str(),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -587,7 +583,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LMKID<3>(e->second.Name().c_str(), "1"),
+							UIL::LMKID<3>(e->second.Name().c_str(), "1"),
 							selected))
 					{
 						a_data.profile.name = e->first;

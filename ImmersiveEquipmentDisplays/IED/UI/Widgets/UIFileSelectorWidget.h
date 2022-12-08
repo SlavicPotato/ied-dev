@@ -6,8 +6,7 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIFileSelector :
-			public virtual UILocalizationInterface
+		class UIFileSelector
 		{
 			using storage_type = stl::map<stl::fixed_string, fs::path>;
 
@@ -32,7 +31,6 @@ namespace IED
 
 		protected:
 			UIFileSelector(
-				Localization::ILocalization& a_loc,
 				const fs::path&              a_root,
 				const fs::path&              a_ext);
 

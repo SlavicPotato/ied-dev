@@ -21,8 +21,7 @@ namespace IED
 			kCopied  = 2
 		};
 
-		class UIMiscTextInterface :
-			public virtual UILocalizationInterface
+		class UIMiscTextInterface
 		{
 		public:
 			UIMiscTextInterface(IUI& a_iui);

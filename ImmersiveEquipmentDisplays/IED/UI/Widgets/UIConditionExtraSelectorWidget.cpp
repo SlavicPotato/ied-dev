@@ -59,19 +59,13 @@ namespace IED
 
 		);
 
-		UIConditionExtraSelectorWidget::UIConditionExtraSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
 			Data::ExtraConditionType& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Type, "ex_cond_sel"),
+					UIL::LS(CommonStrings::Type, "ex_cond_sel"),
 					condition_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -87,7 +81,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIConditionExtraSelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UIConditionExtraSelectorWidgetStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -104,102 +98,102 @@ namespace IED
 		}
 
 		const char* UIConditionExtraSelectorWidget::condition_type_to_desc(
-			Data::ExtraConditionType a_type) const
+			Data::ExtraConditionType a_type)
 		{
 			switch (a_type)
 			{
 			case Data::ExtraConditionType::kCanDualWield:
-				return LS(UIConditionExtraSelectorWidgetStrings::CanDualWield);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::CanDualWield);
 			case Data::ExtraConditionType::kIsDead:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsDead);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsDead);
 			case Data::ExtraConditionType::kInInterior:
-				return LS(UIConditionExtraSelectorWidgetStrings::InInterior);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InInterior);
 			case Data::ExtraConditionType::kIsPlayerTeammate:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate);
 			case Data::ExtraConditionType::kIsGuard:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsGuard);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsGuard);
 			case Data::ExtraConditionType::kIsMount:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsMount);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsMount);
 			case Data::ExtraConditionType::kShoutEquipped:
-				return LS(UIConditionExtraSelectorWidgetStrings::ShoutEquipped);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::ShoutEquipped);
 			case Data::ExtraConditionType::kCombatStyle:
-				return LS(UIConditionExtraSelectorWidgetStrings::CombatStyle);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::CombatStyle);
 			case Data::ExtraConditionType::kClass:
-				return LS(UIConditionExtraSelectorWidgetStrings::Class);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Class);
 			case Data::ExtraConditionType::kTimeOfDay:
-				return LS(UIConditionExtraSelectorWidgetStrings::TimeOfDay);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::TimeOfDay);
 			case Data::ExtraConditionType::kIsInFirstPerson:
-				return LS(UIConditionExtraSelectorWidgetStrings::InFirstPerson);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InFirstPerson);
 			case Data::ExtraConditionType::kInCombat:
-				return LS(UIConditionExtraSelectorWidgetStrings::InCombat);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InCombat);
 			case Data::ExtraConditionType::kIsFemale:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsFemale);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsFemale);
 #if defined(IED_ENABLE_CONDITION_EN)
 			case Data::ExtraConditionType::kPlayerEnemiesNearby:
-				return LS(UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby);
+				return UILI::LS(UIConditionExtraSelectorWidgetStrings::PlayerEnemiesNearby);
 #endif
 			case Data::ExtraConditionType::kInWater:
-				return LS(UIConditionExtraSelectorWidgetStrings::InWater);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InWater);
 			case Data::ExtraConditionType::kUnderwater:
-				return LS(UIConditionExtraSelectorWidgetStrings::Underwater);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Underwater);
 			case Data::ExtraConditionType::kSwimming:
-				return LS(UIConditionExtraSelectorWidgetStrings::Swimming);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Swimming);
 			case Data::ExtraConditionType::kBleedingOut:
-				return LS(UIConditionExtraSelectorWidgetStrings::BleedingOut);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::BleedingOut);
 			case Data::ExtraConditionType::kTresspassing:
-				return LS(UIConditionExtraSelectorWidgetStrings::Tresspassing);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Tresspassing);
 			case Data::ExtraConditionType::kIsCommanded:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsCommanded);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsCommanded);
 			case Data::ExtraConditionType::kParalyzed:
-				return LS(UIConditionExtraSelectorWidgetStrings::Paralyzed);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Paralyzed);
 			case Data::ExtraConditionType::kIsRidingMount:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsRidingMount);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsRidingMount);
 			case Data::ExtraConditionType::kHumanoidSkeleton:
-				return LS(UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton);
 			case Data::ExtraConditionType::kIsPlayer:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayer);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayer);
 			case Data::ExtraConditionType::kBribedByPlayer:
-				return LS(UIConditionExtraSelectorWidgetStrings::BribedByPlayer);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::BribedByPlayer);
 			case Data::ExtraConditionType::kAngryWithPlayer:
-				return LS(UIConditionExtraSelectorWidgetStrings::AngryWithPlayer);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::AngryWithPlayer);
 			case Data::ExtraConditionType::kEssential:
-				return LS(UIConditionExtraSelectorWidgetStrings::Essential);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Essential);
 			case Data::ExtraConditionType::kProtected:
-				return LS(UIConditionExtraSelectorWidgetStrings::Protected);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Protected);
 			case Data::ExtraConditionType::kSitting:
-				return LS(UIConditionExtraSelectorWidgetStrings::Sitting);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Sitting);
 			case Data::ExtraConditionType::kSleeping:
-				return LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
 			case Data::ExtraConditionType::kBeingRidden:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsBeingRidden);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsBeingRidden);
 			case Data::ExtraConditionType::kWeaponDrawn:
-				return LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
 			case Data::ExtraConditionType::kRandomPercent:
-				return LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::RandomPercent);
 			case Data::ExtraConditionType::kNodeMonitor:
-				return LS(UIConditionExtraSelectorWidgetStrings::NodeMonitor);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::NodeMonitor);
 			case Data::ExtraConditionType::kArrested:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsArrested);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsArrested);
 			case Data::ExtraConditionType::kIsChild:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsChild);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsChild);
 			case Data::ExtraConditionType::kInKillmove:
-				return LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InKillmove);
 			case Data::ExtraConditionType::kInMerchantFaction:
-				return LS(UIConditionExtraSelectorWidgetStrings::InMerchantFaction);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InMerchantFaction);
 			case Data::ExtraConditionType::kIsUnconscious:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsUnconscious);
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
-				return LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled);
 			case Data::ExtraConditionType::kIsFlying:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsFlying);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsFlying);
 			case Data::ExtraConditionType::kIsLayingDown:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsLayingDown);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsLayingDown);
 			case Data::ExtraConditionType::kInPlayerEnemyFaction:
-				return LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
 			case Data::ExtraConditionType::kIsHorse:
-				return LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
 			default:
 				return nullptr;
 			}

@@ -12,20 +12,22 @@ namespace IED
 		UINodeOverrideEditorActor::UINodeOverrideEditorActor(Controller& a_controller) :
 			UINodeOverrideEditorCommon<Game::FormID>(a_controller),
 			UIActorList<entryNodeOverrideData_t>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UINodeOverrideEditorActor::~UINodeOverrideEditorActor() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UINodeOverrideEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.transformEditor.actorConfig.sex, false);
 		}
@@ -55,7 +57,7 @@ namespace IED
 							ImGui::TextColored(
 								UICommon::g_colorWarning,
 								"%s",
-								LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+								UIL::LS(UIWidgetCommonStrings::XP32SkeletonWarning));
 
 							ImGui::Spacing();
 							ImGui::Separator();

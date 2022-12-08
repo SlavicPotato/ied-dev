@@ -21,6 +21,7 @@ namespace IED
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorSlot;
 
 			UIProfileEditorSlot(Controller& a_controller);
+			~UIProfileEditorSlot() noexcept override;
 
 			virtual void Initialize() override;
 

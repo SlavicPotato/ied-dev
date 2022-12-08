@@ -8,8 +8,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UINPCInfoAddInterface :
-			public virtual UILocalizationInterface
+		class UINPCInfoAddInterface
 		{
 		public:
 			UINPCInfoAddInterface(Controller& a_controller);

@@ -47,8 +47,7 @@ namespace IED
 		public:
 			UIProfileEditorBase(
 				UIProfileStrings             a_title,
-				const char*                  a_strid,
-				Localization::ILocalization& a_localization);
+				const char*                  a_strid);
 
 			virtual ~UIProfileEditorBase() noexcept = default;
 
@@ -79,9 +78,8 @@ namespace IED
 		template <class T>
 		UIProfileEditorBase<T>::UIProfileEditorBase(
 			UIProfileStrings             a_title,
-			const char*                  a_strid,
-			Localization::ILocalization& a_localization) :
-			UIProfileBase<T>(a_localization),
+			const char*                  a_strid) :
+			UIProfileBase<T>(),
 			m_title(a_title),
 			m_strid(a_strid)
 		{}
@@ -107,7 +105,7 @@ namespace IED
 			SetWindowDimensions(GetWindowDimensions());
 
 			if (ImGui::Begin(
-					this->LS<UIProfileStrings, 3>(
+					UIL::LS<UIProfileStrings, 3>(
 						m_title,
 						m_strid),
 					GetOpenState(),
@@ -143,7 +141,7 @@ namespace IED
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -9.0f);
 
 				if (ImGui::BeginCombo(
-						this->LS(CommonStrings::Profile, "combo"),
+						UIL::LS(CommonStrings::Profile, "combo"),
 						this->m_state.selected ?
 							this->m_state.selected->c_str() :
 							nullptr,
@@ -167,7 +165,7 @@ namespace IED
 								ImGui::SetScrollHereY();
 						}
 
-						if (ImGui::Selectable(this->LMKID<3>(e->second.Name().c_str(), "1"), selected))
+						if (ImGui::Selectable(UIL::LMKID<3>(e->second.Name().c_str(), "1"), selected))
 						{
 							newItem = e;
 						}
@@ -194,7 +192,7 @@ namespace IED
 
 				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
-					ImGui::OpenPopup(this->LS(UIProfileStrings::NewProfile, UIProfileBase<T>::POPUP_NEW_ID));
+					ImGui::OpenPopup(UIL::LS(UIProfileStrings::NewProfile, UIProfileBase<T>::POPUP_NEW_ID));
 					this->m_state.new_input[0] = 0;
 				}
 
@@ -214,7 +212,7 @@ namespace IED
 
 						if (this->AllowSave())
 						{
-							if (ImGui::Button(this->LS(CommonStrings::Save, "1")))
+							if (ImGui::Button(UIL::LS(CommonStrings::Save, "1")))
 							{
 								auto& pm = GetProfileManager();
 
@@ -224,9 +222,9 @@ namespace IED
 
 									queue.push(
 										UIPopupType::Message,
-										this->LS(CommonStrings::Error),
+										UIL::LS(CommonStrings::Error),
 										"%s [%s]\n\n%s",
-										this->LS(UIProfileStrings::SaveError),
+										UIL::LS(UIProfileStrings::SaveError),
 										profile.Name().c_str(),
 										pm.GetLastException().what());
 								}
@@ -235,15 +233,15 @@ namespace IED
 							ImGui::SameLine();
 						}
 
-						if (ImGui::Button(this->LS(CommonStrings::Delete, "2")))
+						if (ImGui::Button(UIL::LS(CommonStrings::Delete, "2")))
 						{
 							auto& queue = this->GetPopupQueue_ProfileBase();
 
 							queue.push(
 									 UIPopupType::Confirm,
-									 this->LS(UIProfileStrings::ConfirmDelete),
+									 UIL::LS(UIProfileStrings::ConfirmDelete),
 									 "%s [%s]",
-									 this->LS(UIProfileStrings::DeletePrompt),
+									 UIL::LS(UIProfileStrings::DeletePrompt),
 									 profile.Name().c_str())
 								.call([this, item = *this->m_state.selected](const auto&) {
 									auto& pm = GetProfileManager();
@@ -254,24 +252,24 @@ namespace IED
 
 										queue.push(
 											UIPopupType::Message,
-											this->LS(CommonStrings::Error),
+											UIL::LS(CommonStrings::Error),
 											"%s:\n\n%s",
-											this->LS(UIProfileStrings::DeleteError),
+											UIL::LS(UIProfileStrings::DeleteError),
 											pm.GetLastException().what());
 									}
 								});
 						}
 
 						ImGui::SameLine();
-						if (ImGui::Button(this->LS(CommonStrings::Rename, "3")))
+						if (ImGui::Button(UIL::LS(CommonStrings::Rename, "3")))
 						{
 							auto& queue = this->GetPopupQueue_ProfileBase();
 
 							queue.push(
 									 UIPopupType::Input,
-									 this->LS(CommonStrings::Rename),
+									 UIL::LS(CommonStrings::Rename),
 									 "%s:",
-									 this->LS(UIProfileStrings::ProfileNamePrompt))
+									 UIL::LS(UIProfileStrings::ProfileNamePrompt))
 								.fmt_input("%s", profile.Name().c_str())
 								.call([this, item = *this->m_state.selected](const auto& a_p) {
 									std::string newName(a_p.GetInput());
@@ -288,16 +286,16 @@ namespace IED
 
 										queue.push(
 											UIPopupType::Message,
-											this->LS(CommonStrings::Error),
+											UIL::LS(CommonStrings::Error),
 											"%s\n\n%s",
-											this->LS(UIProfileStrings::RenameError),
+											UIL::LS(UIProfileStrings::RenameError),
 											pm.GetLastException().what());
 									}
 								});
 						}
 
 						ImGui::SameLine();
-						if (ImGui::Button(this->LS(CommonStrings::Reload, "4")))
+						if (ImGui::Button(UIL::LS(CommonStrings::Reload, "4")))
 						{
 							if (!profile.Load())
 							{
@@ -305,9 +303,9 @@ namespace IED
 
 								queue.push(
 									UIPopupType::Message,
-									this->LS(CommonStrings::Error),
+									UIL::LS(CommonStrings::Error),
 									"%s [%s]\n\n%s",
-									this->LS(UIProfileStrings::ReloadError),
+									UIL::LS(UIProfileStrings::ReloadError),
 									profile.Name().c_str(),
 									profile.GetLastException().what());
 							}
@@ -330,7 +328,7 @@ namespace IED
 							ImGui::Spacing();
 
 							ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-							ImGui::TextWrapped("%s", this->LS(UIProfileStrings::ProfileParserErrorWarning));
+							ImGui::TextWrapped("%s", UIL::LS(UIProfileStrings::ProfileParserErrorWarning));
 							ImGui::PopStyleColor();
 
 							ImGui::Separator();
@@ -353,9 +351,9 @@ namespace IED
 		{
 			if (ImGui::BeginMenuBar())
 			{
-				if (ImGui::BeginMenu(this->LS(CommonStrings::File, "1")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::File, "1")))
 				{
-					if (ImGui::MenuItem(this->LS(CommonStrings::Close, "1")))
+					if (ImGui::MenuItem(UIL::LS(CommonStrings::Close, "1")))
 					{
 						SetOpenState(false);
 					}

@@ -11,7 +11,7 @@ namespace IED
 	{
 		namespace ItemData
 		{
-			inline constexpr ObjectSlot GetObjectSlot(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -38,7 +38,7 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlot GetObjectSlotLeft(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -61,65 +61,65 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlot GetObjectSlotLeft(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(const TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectSlot::kTorch : ObjectSlot::kMax;
 			}
 
-			inline constexpr ObjectSlot GetObjectSlot(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(const TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlot::kShield : ObjectSlot::kMax;
 			}
 
-			inline constexpr ObjectSlot GetObjectSlot(TESAmmo* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(const TESAmmo* a_form) noexcept
 			{
 				return ObjectSlot::kAmmo;
 			}
 
-			inline constexpr ObjectSlot GetObjectSlot(TESForm* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlot(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetObjectSlot(static_cast<TESObjectWEAP*>(a_form));
+					return GetObjectSlot(static_cast<const TESObjectWEAP*>(a_form));
 				case TESAmmo::kTypeID:
-					return GetObjectSlot(static_cast<TESAmmo*>(a_form));
+					return GetObjectSlot(static_cast<const TESAmmo*>(a_form));
 				default:
 					return ObjectSlot::kMax;
 				}
 			}
 
-			inline constexpr ObjectSlot GetObjectSlotLeft(TESForm* a_form) noexcept
+			inline constexpr ObjectSlot GetObjectSlotLeft(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetObjectSlotLeft(static_cast<TESObjectWEAP*>(a_form));
+					return GetObjectSlotLeft(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return GetObjectSlot(static_cast<TESObjectARMO*>(a_form));
+					return GetObjectSlot(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
-					return GetObjectSlotLeft(static_cast<TESObjectLIGH*>(a_form));
+					return GetObjectSlotLeft(static_cast<const TESObjectLIGH*>(a_form));
 				default:
 					return ObjectSlot::kMax;
 				}
 			}
 
-			inline constexpr ObjectType GetItemType(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectType GetItemType(const TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectType::kShield : ObjectType::kMax;
 			}
 
-			inline constexpr ObjectType GetItemType(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectType GetItemType(const TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectType::kTorch : ObjectType::kMax;
 			}
 
-			inline constexpr ObjectType GetItemType(TESAmmo* a_form) noexcept
+			inline constexpr ObjectType GetItemType(const TESAmmo* a_form) noexcept
 			{
 				return ObjectType::kAmmo;
 			}
 
-			inline constexpr ObjectType GetItemType(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectType GetItemType(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -146,34 +146,34 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectType GetItemType(TESForm* a_form) noexcept
+			inline constexpr ObjectType GetItemType(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetItemType(static_cast<TESObjectWEAP*>(a_form));
+					return GetItemType(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return GetItemType(static_cast<TESObjectARMO*>(a_form));
+					return GetItemType(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
-					return GetItemType(static_cast<TESObjectLIGH*>(a_form));
+					return GetItemType(static_cast<const TESObjectLIGH*>(a_form));
 				case TESAmmo::kTypeID:
-					return GetItemType(static_cast<TESAmmo*>(a_form));
+					return GetItemType(static_cast<const TESAmmo*>(a_form));
 				default:
 					return ObjectType::kMax;
 				}
 			}
 
-			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(const TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectTypeExtra::kShield : ObjectTypeExtra::kArmor;
 			}
 
-			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(const TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectTypeExtra::kTorch : ObjectTypeExtra::kNone;
 			}
 
-			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -200,16 +200,16 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectTypeExtra GetItemTypeExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectTypeExtra GetItemTypeExtra(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetItemTypeExtra(static_cast<TESObjectWEAP*>(a_form));
+					return GetItemTypeExtra(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return GetItemTypeExtra(static_cast<TESObjectARMO*>(a_form));
+					return GetItemTypeExtra(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
-					return GetItemTypeExtra(static_cast<TESObjectLIGH*>(a_form));
+					return GetItemTypeExtra(static_cast<const TESObjectLIGH*>(a_form));
 				case TESAmmo::kTypeID:
 					return ObjectTypeExtra::kAmmo;
 				case SpellItem::kTypeID:
@@ -219,12 +219,12 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(const TESObjectARMO* a_form) noexcept
 			{
 				return !a_form->IsShield() ? ObjectSlotExtra::kArmor : ObjectSlotExtra::kNone;
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -251,21 +251,21 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESObjectLIGH* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(const TESObjectLIGH* a_form) noexcept
 			{
 				return a_form->CanCarry() ? ObjectSlotExtra::kTorch : ObjectSlotExtra::kNone;
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtra(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetItemSlotExtra(static_cast<TESObjectWEAP*>(a_form));
+					return GetItemSlotExtra(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return GetItemSlotExtra(static_cast<TESObjectARMO*>(a_form));
+					return GetItemSlotExtra(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
-					return GetItemSlotExtra(static_cast<TESObjectLIGH*>(a_form));
+					return GetItemSlotExtra(static_cast<const TESObjectLIGH*>(a_form));
 				case TESAmmo::kTypeID:
 					return ObjectSlotExtra::kAmmo;
 				case SpellItem::kTypeID:
@@ -275,21 +275,21 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESObjectARMO* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(const TESObjectARMO* a_form) noexcept
 			{
 				return a_form->IsShield() ? ObjectSlotExtra::kShield : ObjectSlotExtra::kArmor;
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotExtraGeneric(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetItemSlotExtra(static_cast<TESObjectWEAP*>(a_form));
+					return GetItemSlotExtra(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return GetItemSlotExtraGeneric(static_cast<TESObjectARMO*>(a_form));
+					return GetItemSlotExtraGeneric(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:
-					return GetItemSlotExtra(static_cast<TESObjectLIGH*>(a_form));
+					return GetItemSlotExtra(static_cast<const TESObjectLIGH*>(a_form));
 				case TESAmmo::kTypeID:
 					return ObjectSlotExtra::kAmmo;
 				case SpellItem::kTypeID:
@@ -299,7 +299,7 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESObjectWEAP* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(const TESObjectWEAP* a_form) noexcept
 			{
 				switch (a_form->type())
 				{
@@ -322,14 +322,14 @@ namespace IED
 				}
 			}
 
-			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(TESForm* a_form) noexcept
+			inline constexpr ObjectSlotExtra GetItemSlotLeftExtra(const TESForm* a_form) noexcept
 			{
 				switch (a_form->formType)
 				{
 				case TESObjectWEAP::kTypeID:
-					return GetItemSlotLeftExtra(static_cast<TESObjectWEAP*>(a_form));
+					return GetItemSlotLeftExtra(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
-					return static_cast<TESObjectARMO*>(a_form)->IsShield() ?
+					return static_cast<const TESObjectARMO*>(a_form)->IsShield() ?
 					           ObjectSlotExtra::kShield :
 					           ObjectSlotExtra::kNone;
 				case SpellItem::kTypeID:

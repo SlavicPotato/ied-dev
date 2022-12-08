@@ -15,12 +15,6 @@ namespace IED
 
 		);
 
-		UITimeOfDaySelectorWidget::UITimeOfDaySelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UITimeOfDaySelectorWidget::DrawTimeOfDaySelector(
 			Data::TimeOfDay& a_tod)
 		{
@@ -34,7 +28,7 @@ namespace IED
 				ImGui::PushID("1");
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::All, "1"),
+						UIL::LS(CommonStrings::All, "1"),
 						stl::underlying(std::addressof(a_tod)),
 						stl::underlying(Data::TimeOfDay::kAll)))
 				{
@@ -52,7 +46,7 @@ namespace IED
 					ImGui::PushID(stl::underlying(i));
 
 					if (ImGui::CheckboxFlagsT(
-							LS<UITimeOfDaySelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UITimeOfDaySelectorWidgetStrings, 3>(e, "1"),
 							stl::underlying(std::addressof(a_tod)),
 							stl::underlying(i)))
 					{
@@ -75,11 +69,11 @@ namespace IED
 		{
 			if (a_type.test(Data::TimeOfDay::kAll))
 			{
-				return LS(CommonStrings::Any);
+				return UIL::LS(CommonStrings::Any);
 			}
 			else if (!a_type.test_any(Data::TimeOfDay::kAll))
 			{
-				return LS(CommonStrings::None);
+				return UIL::LS(CommonStrings::None);
 			}
 			else
 			{
@@ -87,7 +81,7 @@ namespace IED
 
 				if (a_type.test(Data::TimeOfDay::kSunrise))
 				{
-					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Sunrise);
+					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Sunrise);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kDay))
@@ -96,7 +90,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Day);
+					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Day);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kSunset))
@@ -105,7 +99,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Sunset);
+					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Sunset);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kNight))
@@ -114,7 +108,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UITimeOfDaySelectorWidgetStrings::Night);
+					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Night);
 				}
 
 				return m_buf.c_str();

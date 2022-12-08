@@ -15,12 +15,6 @@ namespace IED
 
 		);
 
-		UITextureClampModeSelector::UITextureClampModeSelector(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UITextureClampModeSelector::DrawTextureClampModeSelector(
 			Localization::StringID a_label,
 			TextureAddressMode&    a_data)
@@ -28,7 +22,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(a_label, "tcm_sel"),
+					UIL::LS(a_label, "tcm_sel"),
 					texture_clamp_mode_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -61,7 +55,7 @@ namespace IED
 		}
 
 		const char* UITextureClampModeSelector::texture_clamp_mode_to_desc(
-			TextureAddressMode a_data) const
+			TextureAddressMode a_data)
 		{
 			switch (a_data)
 			{

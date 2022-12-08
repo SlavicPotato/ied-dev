@@ -13,6 +13,7 @@
 #include "UIVariableTypeSelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
 
+#include "IED/UI/UIFormBrowserCommonFilters.h"
 #include "IED/UI/UILocalizationInterface.h"
 
 #include "IED/ConditionalVariableStorage.h"
@@ -23,53 +24,54 @@ namespace IED
 {
 	class Controller;
 
-	enum class ConditionParamItem : std::uint8_t
-	{
-		Form,
-		Keyword,
-		CMENode,
-		BipedSlot,
-		EquipmentSlot,
-		EquipmentSlotExtra,
-		Furniture,
-		QuestCondType,
-		CondExtra,
-		PackageType,
-		WeatherClass,
-		CompOper,
-		Float,
-		UInt32,
-		Int32,
-		TimeOfDay,
-		Extra,
-		Race,
-		Percent,
-		NodeMon,
-		CondVarType,
-		VarCondSource,
-		FormAny,
-
-		Total
-	};
-
-	struct ConditionParamItemExtraArgs
-	{
-		void*       p1{ nullptr };
-		const void* p2{ nullptr };
-		void*       p3{ nullptr };
-		bool        disable{ false };
-		bool        hide{ false };
-	};
-
-	struct ConditionParamItemOnChangeArgs
-	{
-		void*       p1{ nullptr };
-		const void* p2{ nullptr };
-		void*       p3{ nullptr };
-	};
-
 	namespace UI
 	{
+		enum class ConditionParamItem : std::uint8_t
+		{
+			Form,
+			Keyword,
+			CMENode,
+			BipedSlot,
+			EquipmentSlot,
+			EquipmentSlotExtra,
+			Furniture,
+			QuestCondType,
+			CondExtra,
+			PackageType,
+			WeatherClass,
+			CompOper,
+			Float,
+			UInt32,
+			Int32,
+			TimeOfDay,
+			Extra,
+			Race,
+			Percent,
+			NodeMon,
+			CondVarType,
+			VarCondSource,
+			FormAny,
+
+			Total
+		};
+
+		struct ConditionParamItemExtraArgs
+		{
+			void*                              p1{ nullptr };
+			const void*                        p2{ nullptr };
+			void*                              p3{ nullptr };
+			std::optional<UIFormBrowserFilter> formFilter;
+			bool                               disable{ false };
+			bool                               hide{ false };
+		};
+
+		struct ConditionParamItemOnChangeArgs
+		{
+			void*       p1{ nullptr };
+			const void* p2{ nullptr };
+			void*       p3{ nullptr };
+		};
+
 		inline static constexpr std::size_t COND_PE_DESC_BUFFER_SIZE = 256;
 
 		class UIConditionParamExtraInterface
@@ -100,18 +102,10 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(UIConditionParamEditorTempFlags);
 
 		class UIConditionParamEditorWidget :
-			public UIBipedObjectSelectorWidget,
-			public UICMNodeSelectorWidget,
 			public UIFormLookupInterface,
-			public UIConditionExtraSelectorWidget,
-			public UIPackageTypeSelectorWidget,
 			public UIWeatherClassSelectorWidget,
-			public UIComparisonOperatorSelector,
 			public UITimeOfDaySelectorWidget,
-			public UINodeMonitorSelectorWidget,
-			public UIVariableTypeSelectorWidget,
-			public UIVariableConditionSourceSelectorWidget,
-			public virtual UILocalizationInterface
+			public UINodeMonitorSelectorWidget
 		{
 			inline static constexpr auto POPUP_ID = "mpr_ed";
 
@@ -195,8 +189,6 @@ namespace IED
 
 			void GetFormDesc(Game::FormID a_form);
 
-			entry_t m_entries[stl::underlying(ConditionParamItem::Total)];
-
 			inline constexpr auto& get(ConditionParamItem a_item) noexcept
 			{
 				return m_entries[stl::underlying(a_item)];
@@ -207,8 +199,7 @@ namespace IED
 				return m_entries[stl::underlying(a_item)];
 			}
 
-			mutable char m_descBuffer[COND_PE_DESC_BUFFER_SIZE]{ 0 };
-			mutable char m_descBuffer2[COND_PE_DESC_BUFFER_SIZE]{ 0 };
+			entry_t m_entries[stl::underlying(ConditionParamItem::Total)];
 
 			UIConditionParamExtraInterface* m_extraInterface{ nullptr };
 
@@ -216,6 +207,9 @@ namespace IED
 			UIFormPickerWidget m_formPickerKeyword;
 			UIFormPickerWidget m_formPickerRace;
 			UIFormPickerWidget m_formPickerAny;
+
+			mutable char m_descBuffer[COND_PE_DESC_BUFFER_SIZE]{ 0 };
+			mutable char m_descBuffer2[COND_PE_DESC_BUFFER_SIZE]{ 0 };
 
 			stl::flag<UIConditionParamEditorTempFlags> m_tempFlags{
 				UIConditionParamEditorTempFlags::kNone
@@ -408,8 +402,6 @@ namespace IED
 					static_cast<void*>(std::addressof(a_p1)),
 					static_cast<const void*>(std::addressof(static_cast<const stl::fixed_string&>(a_p2)))
 				};
-
-				return;
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::CMENode)
@@ -422,11 +414,10 @@ namespace IED
 					static_cast<void*>(std::addressof(static_cast<stl::fixed_string&>(a_p1))),
 					static_cast<const void*>(std::addressof(static_cast<const stl::fixed_string&>(a_p2)))
 				};
-
-				return;
 			}
 			else if constexpr (
-				Ap == ConditionParamItem::Form)
+				Ap == ConditionParamItem::Form ||
+				Ap == ConditionParamItem::FormAny)
 			{
 				static_assert(
 					std::is_convertible_v<Tp1, Game::FormID> &&
@@ -436,8 +427,6 @@ namespace IED
 					static_cast<void*>(std::addressof(static_cast<Game::FormID&>(a_p1))),
 					reinterpret_cast<const void*>(a_p2)
 				};
-
-				return;
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::Extra)

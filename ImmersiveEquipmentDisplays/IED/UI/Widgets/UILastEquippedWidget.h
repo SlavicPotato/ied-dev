@@ -16,8 +16,7 @@ namespace IED
 	{
 		class UILastEquippedWidget :
 			public UIBipedObjectList,
-			public virtual UIEquipmentOverrideConditionsWidget,
-			public virtual UILocalizationInterface
+			public virtual UIEquipmentOverrideConditionsWidget
 		{
 		public:
 			UILastEquippedWidget(Controller& a_controller);

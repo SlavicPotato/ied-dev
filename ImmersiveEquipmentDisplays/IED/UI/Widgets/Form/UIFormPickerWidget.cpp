@@ -24,10 +24,7 @@ namespace IED
 				true,
 				a_forceBase),
 			UIPopupInterface(a_controller),
-			UITipsInterface(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
 			UIFormLookupInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
 		}
@@ -95,7 +92,7 @@ namespace IED
 				}
 				else
 				{
-					label = LS(CommonStrings::Select, "formsel");
+					label = UIL::LS(CommonStrings::Select, "formsel");
 				}
 
 				ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, { 0.5f, 0.5f });
@@ -150,7 +147,7 @@ namespace IED
 					{
 						ImGui::TableSetColumnIndex(1);
 
-						auto desc = form_type_to_desc(m_currentInfo->form.type);
+						auto desc = UIFormTypeSelectorWidget::form_type_to_desc(m_currentInfo->form.type);
 
 						if (!m_currentInfo->form.name.empty())
 						{
@@ -228,11 +225,11 @@ namespace IED
 
 			ImGui::SameLine();
 			ImGui::AlignTextToFramePadding();
-			ImGui::TextUnformatted(LS(a_label));
+			ImGui::TextUnformatted(UIL::LS(a_label));
 
 			if (a_tipText)
 			{
-				DrawTip(a_tipText);
+				UITipsInterface::DrawTip(a_tipText);
 			}
 
 			ImGui::PopID();
@@ -255,7 +252,7 @@ namespace IED
 
 					ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
 
-					if (LCG_MI(CommonStrings::Browse, "1"))
+					if (UIL::LCG_MI(CommonStrings::Browse, "1"))
 					{
 						if (formBrowser.Open(false))
 						{
@@ -286,7 +283,7 @@ namespace IED
 
 				if (m_allowClear && a_form != 0)
 				{
-					if (LCG_MI(CommonStrings::Clear, "2"))
+					if (UIL::LCG_MI(CommonStrings::Clear, "2"))
 					{
 						a_form = 0;
 						result = true;

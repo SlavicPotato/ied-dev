@@ -23,8 +23,6 @@ namespace IED
 			Tasks::UIRenderTaskBase& a_owner,
 			Controller&              a_controller) :
 			UIMiscTextInterface(a_controller),
-			UILocalizationInterface(a_controller),
-			UITipsInterface(a_controller),
 			m_owner(a_owner),
 			m_controller(a_controller)
 		{
@@ -35,7 +33,7 @@ namespace IED
 			SetWindowDimensions(0.0f, 600.0f, 400.0f, true);
 
 			if (ImGui::Begin(
-					LS<CommonStrings, 3>(
+					UIL::LS<CommonStrings, 3>(
 						CommonStrings::Stats,
 						WINDOW_ID),
 					GetOpenState()))
@@ -101,7 +99,7 @@ namespace IED
 						m_controller.GetODBObjectCount(),
 						stl::underlying(odbLevel));
 
-					DrawTip(UITip::CacheInfo);
+					UITipsInterface::DrawTip(UITip::CacheInfo);
 				}
 
 				if (m_controller.PhysicsProcessingEnabled())
@@ -129,7 +127,7 @@ namespace IED
 						"actor_tree",
 						true,
 						"%s [%zu]",
-						LS(CommonStrings::Actors),
+						UIL::LS(CommonStrings::Actors),
 						m_controller.GetObjects().size()))
 				{
 					DrawActorTable();
@@ -170,15 +168,15 @@ namespace IED
 					{ -1.0f, 0.0f }))
 			{
 				ImGui::TableSetupScrollFreeze(0, 1);
-				ImGui::TableSetupColumn(LS(CommonStrings::ID), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Handle), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Name), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Base), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Race), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Equipment), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Custom), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(CommonStrings::Age), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(LS(UIStatsStrings::CellAttached), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::ID), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Handle), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Base), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Race), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Equipment), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Custom), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Age), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(UIStatsStrings::CellAttached), ImGuiTableColumnFlags_None);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 

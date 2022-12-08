@@ -26,9 +26,7 @@ namespace IED
 			public UIContext,
 			public UIWindow,
 			UIMiscTextInterface,
-			UICollapsibles,
-			public virtual UILocalizationInterface,
-			public virtual UITipsInterface
+			UICollapsibles
 		{
 			inline static constexpr auto WINDOW_ID = "ied_stats";
 

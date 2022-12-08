@@ -19,6 +19,7 @@ namespace IED
 		{
 		public:
 			UICustomEditorNPC(Controller& a_controller);
+			~UICustomEditorNPC() noexcept override;
 
 			virtual void EditorInitialize() override;
 

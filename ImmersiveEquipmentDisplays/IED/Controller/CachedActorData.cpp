@@ -94,11 +94,14 @@ namespace IED
 
 	bool CachedActiveEffectData::HasEffectWithKeyword(const BGSKeyword* a_keyword) const
 	{
-		for (auto& e : data)
+		if (a_keyword)
 		{
-			if (e->HasKeyword(a_keyword))
+			for (auto& e : data)
 			{
-				return true;
+				if (e->HasKeyword(a_keyword))
+				{
+					return true;
+				}
 			}
 		}
 

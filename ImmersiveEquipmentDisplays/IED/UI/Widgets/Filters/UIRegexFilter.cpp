@@ -28,8 +28,8 @@ namespace IED
 
 			bool result = ImGui::InputText(
 				a_label,
-				m_filterBuf,
-				sizeof(m_filterBuf),
+				m_filterBuf.get(),
+				FILTER_BUF_SIZE,
 				m_inputTextFlags);
 
 			if (result)
@@ -39,7 +39,7 @@ namespace IED
 					try
 					{
 						m_filter = std::regex(
-							m_filterBuf,
+							m_filterBuf.get(),
 							std::regex_constants::ECMAScript |
 								std::regex_constants::optimize |
 								std::regex_constants::icase);

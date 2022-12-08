@@ -11,24 +11,23 @@ namespace IED
 		UICustomEditorGlobal::UICustomEditorGlobal(
 			Controller& a_controller) :
 			UICustomEditorCommon<UIGlobalEditorDummyHandle>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UICustomEditorGlobal::~UICustomEditorGlobal() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UICustomEditorGlobal::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.customEditor.globalSex, false);
 		}

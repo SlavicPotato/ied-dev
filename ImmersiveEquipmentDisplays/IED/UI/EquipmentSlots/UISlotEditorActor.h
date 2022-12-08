@@ -21,6 +21,7 @@ namespace IED
 		{
 		public:
 			UISlotEditorActor(Controller& a_controller);
+			~UISlotEditorActor() noexcept override;
 
 			virtual void EditorInitialize() override;
 			virtual void EditorDraw() override;

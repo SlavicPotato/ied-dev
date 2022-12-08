@@ -26,7 +26,6 @@ namespace IED
 
 		I3DIMain::I3DIMain(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_prepPT(1000000)
 		{
@@ -193,7 +192,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
 					__FUNCTION__,
 					e.what());
@@ -206,7 +205,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s",
 					__FUNCTION__);
 
@@ -306,7 +305,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s\n\n%s",
 					__FUNCTION__,
 					e.what());
@@ -319,7 +318,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s",
 					__FUNCTION__);
 

@@ -8,7 +8,7 @@ namespace IED
 	{
 		class UIExportFilterWidget
 		{
-		protected:
+		public:
 			static bool DrawExportFilters(
 				stl::flag<Data::ConfigStoreSerializationFlags>& a_flags);
 		};

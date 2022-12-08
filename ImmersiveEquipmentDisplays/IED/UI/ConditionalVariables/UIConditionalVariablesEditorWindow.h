@@ -14,8 +14,7 @@ namespace IED
 		class UIConditionalVariablesEditorWindow :
 			public UIContext,
 			public UIWindow,
-			public UIConditionalVariablesEditor,
-			public virtual UILocalizationInterface
+			public UIConditionalVariablesEditor
 		{
 			inline static constexpr auto WINDOW_ID = "ied_cve";
 

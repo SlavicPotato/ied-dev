@@ -12,7 +12,6 @@ namespace IED
 	namespace UI
 	{
 		UILog::UILog(Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_filter(true)
 		{
@@ -23,7 +22,7 @@ namespace IED
 			SetWindowDimensions(0.0f, 800.0f, 800.0f, true);
 
 			if (ImGui::Begin(
-					LS<CommonStrings, 3>(
+					UIL::LS<CommonStrings, 3>(
 						CommonStrings::Log,
 						WINDOW_ID),
 					GetOpenState()))
@@ -67,7 +66,7 @@ namespace IED
 			auto limit = static_cast<std::uint32_t>(data.GetLimit());
 
 			if (ImGui::InputScalar(
-					LS(CommonStrings::Limit, "1"),
+					UIL::LS(CommonStrings::Limit, "1"),
 					ImGuiDataType_U32,
 					std::addressof(limit),
 					std::addressof(step),
@@ -87,15 +86,15 @@ namespace IED
 
 			ImGui::Spacing();
 
-			DrawLevelCheckbox(LS(CommonStrings::Fatal, "2"), LogLevel::FatalError);
+			DrawLevelCheckbox(UIL::LS(CommonStrings::Fatal, "2"), LogLevel::FatalError);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Error, "3"), LogLevel::Error);
+			DrawLevelCheckbox(UIL::LS(CommonStrings::Error, "3"), LogLevel::Error);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Warning, "4"), LogLevel::Warning);
+			DrawLevelCheckbox(UIL::LS(CommonStrings::Warning, "4"), LogLevel::Warning);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Message, "5"), LogLevel::Message);
+			DrawLevelCheckbox(UIL::LS(CommonStrings::Message, "5"), LogLevel::Message);
 			ImGui::SameLine();
-			DrawLevelCheckbox(LS(CommonStrings::Debug, "6"), LogLevel::Debug);
+			DrawLevelCheckbox(UIL::LS(CommonStrings::Debug, "6"), LogLevel::Debug);
 			ImGui::SameLine();
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 			ImGui::SameLine();
@@ -103,7 +102,7 @@ namespace IED
 #if defined(SKMP_TIMESTAMP_LOGS)
 
 			settings.mark_if(ImGui::Checkbox(
-				LS(UILogStrings::ShowTimestamps, "7"),
+				UILI::LS(UILogStrings::ShowTimestamps, "7"),
 				std::addressof(settings.data.ui.logShowTimestamps)));
 #endif
 

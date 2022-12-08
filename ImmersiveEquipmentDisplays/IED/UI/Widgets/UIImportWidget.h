@@ -21,8 +21,7 @@ namespace IED
 	namespace UI
 	{
 		class UIImportWidget :
-			public UIExportFilterWidget,
-			public virtual UITipsInterface
+			public UIExportFilterWidget
 		{
 		public:
 			UIImportWidget(Controller& a_controller);

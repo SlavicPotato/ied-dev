@@ -13,12 +13,6 @@ namespace IED
 
 		);
 
-		UIEffectShaderFunctionSelector::UIEffectShaderFunctionSelector(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIEffectShaderFunctionSelector::DrawEffectShaderFunctionSelector(
 			Data::EffectShaderFunctionType& a_type)
 		{
@@ -41,7 +35,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIEffectShaderFunctionSelectorStrings, 3>(e, "1"),
+							UIL::LS<UIEffectShaderFunctionSelectorStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -58,14 +52,14 @@ namespace IED
 		}
 
 		const char* UIEffectShaderFunctionSelector::esf_to_desc(
-			Data::EffectShaderFunctionType a_type) const
+			Data::EffectShaderFunctionType a_type) 
 		{
 			switch (a_type)
 			{
 			case Data::EffectShaderFunctionType::UVLinearMotion:
-				return LS(UIEffectShaderFunctionSelectorStrings::UVLinearMotion);
+				return UIL::LS(UIEffectShaderFunctionSelectorStrings::UVLinearMotion);
 			case Data::EffectShaderFunctionType::Pulse:
-				return LS(UIEffectShaderFunctionSelectorStrings::Pulse);
+				return UIL::LS(UIEffectShaderFunctionSelectorStrings::Pulse);
 			default:
 				return nullptr;
 			}

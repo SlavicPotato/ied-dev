@@ -10,8 +10,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UIActorInfoAddInterface :
-			public virtual UILocalizationInterface
+		class UIActorInfoAddInterface 
 		{
 		public:
 			UIActorInfoAddInterface(Controller& a_controller);

@@ -33,8 +33,7 @@ namespace IED
 			public UIWindow,
 			UIActorList<ActorSkeletonData>,
 			UICollapsibles,
-			UIMiscTextInterface,
-			public virtual UILocalizationInterface
+			UIMiscTextInterface
 		{
 			inline static constexpr auto WINDOW_ID = "ied_skexp";
 

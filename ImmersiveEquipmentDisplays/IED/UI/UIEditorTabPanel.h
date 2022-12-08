@@ -23,8 +23,7 @@ namespace IED
 			     std::is_same_v<T, Localization::StringID>);
 		}
 
-		class UIEditorTabPanel :
-			public UILocalizationInterface
+		class UIEditorTabPanel
 		{
 		protected:
 			struct Interface
@@ -65,7 +64,6 @@ namespace IED
 				Controller& a_controller,
 				Ts          a_menuName,
 				Args&&... a_args) :
-				UILocalizationInterface(a_controller),
 				m_controller(a_controller),
 				m_menuName(static_cast<Localization::StringID>(a_menuName)),
 				m_interfaces{ stl::make_array(std::forward<Args>(a_args)...) }

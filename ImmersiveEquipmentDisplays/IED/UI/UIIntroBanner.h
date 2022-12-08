@@ -20,8 +20,7 @@ namespace IED
 	{
 		class UIIntroBanner :
 			public UIContext,
-			public UIWindow,
-			UILocalizationInterface
+			public UIWindow
 		{
 			inline static constexpr auto WINDOW_ID = "ied_intro";
 

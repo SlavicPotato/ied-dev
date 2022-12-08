@@ -18,12 +18,6 @@ namespace IED
 
 		);
 
-		UIEffectShaderDepthModeSelector::UIEffectShaderDepthModeSelector(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIEffectShaderDepthModeSelector::DrawDepthModeSelector(
 			Localization::StringID a_label,
 			DepthStencilDepthMode& a_data)
@@ -31,7 +25,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(a_label, "dsm_sel"),
+					UIL::LS(a_label, "dsm_sel"),
 					depth_mode_to_desc(a_data),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -64,7 +58,7 @@ namespace IED
 		}
 
 		const char* UIEffectShaderDepthModeSelector::depth_mode_to_desc(
-			DepthStencilDepthMode a_data) const
+			DepthStencilDepthMode a_data)
 		{
 			switch (a_data)
 			{

@@ -8,8 +8,7 @@ namespace IED
 {
 	namespace UI
 	{
-		class UICommonModals :
-			public virtual UILocalizationInterface
+		class UICommonModals
 		{
 		public:
 			using cm_func_t = std::function<bool()>;
@@ -21,7 +20,7 @@ namespace IED
 				kAccept
 			};
 
-			UICommonModals(Localization::ILocalization& a_localization);
+			UICommonModals() = default;
 
 			ModalStatus TextInputDialog(
 				const char*                 a_name,
@@ -143,7 +142,7 @@ namespace IED
 				UICommon::PushDisabled(disabled);
 
 				if (ImGui::Button(
-						LS(CommonStrings::OK, "ctl_1"),
+						UIL::LS(CommonStrings::OK, "ctl_1"),
 						{ 120.f, 0.f }))
 				{
 					ImGui::CloseCurrentPopup();
@@ -156,7 +155,7 @@ namespace IED
 
 				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button(
-						LS(CommonStrings::Cancel, "ctl_2"),
+						UIL::LS(CommonStrings::Cancel, "ctl_2"),
 						{ 120.f, 0.f }))
 				{
 					ImGui::CloseCurrentPopup();
@@ -209,7 +208,7 @@ namespace IED
 
 				ImGui::SetItemDefaultFocus();
 				if (ImGui::Button(
-						LS(CommonStrings::OK, "ctl_1"),
+						UIL::LS(CommonStrings::OK, "ctl_1"),
 						{ 120.0f, 0.0f }))
 				{
 					ImGui::CloseCurrentPopup();
@@ -265,7 +264,7 @@ namespace IED
 				UICommon::PushDisabled(disabled);
 
 				bool r = ImGui::Button(
-					LS(CommonStrings::OK, "ctl_1"),
+					UIL::LS(CommonStrings::OK, "ctl_1"),
 					{ 120.0f, 0.0f });
 
 				UICommon::PopDisabled(disabled);
@@ -279,7 +278,7 @@ namespace IED
 				ImGui::SetItemDefaultFocus();
 				ImGui::SameLine();
 				if (ImGui::Button(
-						LS(CommonStrings::Cancel, "ctl_2"),
+						UIL::LS(CommonStrings::Cancel, "ctl_2"),
 						{ 120.0f, 0.0f }))
 				{
 					ImGui::CloseCurrentPopup();

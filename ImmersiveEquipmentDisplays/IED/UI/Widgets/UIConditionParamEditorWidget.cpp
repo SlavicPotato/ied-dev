@@ -13,15 +13,6 @@ namespace IED
 	{
 		UIConditionParamEditorWidget::UIConditionParamEditorWidget(Controller& a_controller) :
 			UIFormLookupInterface(a_controller),
-			UILocalizationInterface(a_controller),
-			UIConditionExtraSelectorWidget(a_controller),
-			UIPackageTypeSelectorWidget(a_controller),
-			UIWeatherClassSelectorWidget(a_controller),
-			UIComparisonOperatorSelector(a_controller),
-			UITimeOfDaySelectorWidget(a_controller),
-			UINodeMonitorSelectorWidget(a_controller),
-			UIVariableTypeSelectorWidget(a_controller),
-			UIVariableConditionSourceSelectorWidget(a_controller),
 			m_formPickerForm(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerKeyword(a_controller, FormInfoFlags::kNone, true),
 			m_formPickerRace(a_controller, FormInfoFlags::kNone, true),
@@ -82,7 +73,7 @@ namespace IED
 			{
 				auto c = e.As1<Data::ExtraConditionType>();
 
-				if (DrawExtraConditionSelector(
+				if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
 						e.As1<Data::ExtraConditionType>()))
 				{
 					if (c != e.As1<Data::ExtraConditionType>())
@@ -114,8 +105,8 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::CMENode); e.p1 && e.p2)
 			{
-				result |= DrawCMNodeSelector(
-					LS(CommonStrings::Node, "ns"),
+				result |= UICMNodeSelectorWidget::DrawCMNodeSelector(
+					UIL::LS(CommonStrings::Node, "ns"),
 					e.As1<stl::fixed_string>(),
 					NodeOverrideData::GetCMENodeData(),
 					static_cast<const stl::fixed_string*>(e.p2));
@@ -125,8 +116,8 @@ namespace IED
 
 			if (const auto& e = get(ConditionParamItem::BipedSlot); e.p1)
 			{
-				result |= DrawBipedObjectSelector(
-					LS(CommonStrings::Biped, "bp"),
+				result |= UIBipedObjectSelectorWidget::DrawBipedObjectSelector(
+					UIL::LS(CommonStrings::Biped, "bp"),
 					e.As1<BIPED_OBJECT>(),
 					m_tempFlags.test(UIConditionParamEditorTempFlags::kAllowBipedNone));
 
@@ -136,7 +127,7 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::EquipmentSlot); e.p1)
 			{
 				result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-					LS(CommonStrings::Slot, "ss"),
+					UIL::LS(CommonStrings::Slot, "ss"),
 					e.As1<Data::ObjectSlot>());
 
 				ImGui::Spacing();
@@ -145,7 +136,7 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::EquipmentSlotExtra); e.p1)
 			{
 				result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-					LS(CommonStrings::Slot, "sse"),
+					UIL::LS(CommonStrings::Slot, "sse"),
 					e.As1<Data::ObjectSlotExtra>());
 
 				ImGui::Spacing();
@@ -169,7 +160,7 @@ namespace IED
 
 				if (!args.hide)
 				{
-					if (DrawVariableConditionSourceSelectorWidget(
+					if (UIVariableConditionSourceSelectorWidget::DrawVariableConditionSourceSelectorWidget(
 							e.As1<Data::VariableConditionSource>()))
 					{
 						result = true;
@@ -243,7 +234,7 @@ namespace IED
 			if (const auto& e = get(ConditionParamItem::QuestCondType); e.p1)
 			{
 				if (ImGui::RadioButton(
-						LS(CommonStrings::Complete, "qts"),
+						UIL::LS(CommonStrings::Complete, "qts"),
 						e.As1<Data::QuestConditionType>() == Data::QuestConditionType::kComplete))
 				{
 					e.As1<Data::QuestConditionType>() = Data::QuestConditionType::kComplete;
@@ -259,7 +250,7 @@ namespace IED
 
 				result |= DrawExtra(e, args, ConditionParamItem::PackageType);
 
-				result |= DrawPackageTypeSelector(
+				result |= UIPackageTypeSelectorWidget::DrawPackageTypeSelector(
 					e.As1<PACKAGE_PROCEDURE_TYPE>());
 			}
 
@@ -283,7 +274,7 @@ namespace IED
 				{
 					ImGui::PushItemWidth(ImGui::GetFontSize() * 6.5f);
 
-					result |= DrawVariableTypeSelectorWidget(
+					result |= UIVariableTypeSelectorWidget::DrawVariableTypeSelectorWidget(
 						e.As1<ConditionalVariableType>());
 
 					ImGui::PopItemWidth();
@@ -302,7 +293,7 @@ namespace IED
 				{
 					ImGui::PushItemWidth(ImGui::GetFontSize() * 3.5f);
 
-					result |= DrawComparisonOperatorSelector(
+					result |= UIComparisonOperatorSelector::DrawComparisonOperatorSelector(
 						e.As1<Data::ComparisonOperator>());
 
 					ImGui::PopItemWidth();
@@ -377,7 +368,7 @@ namespace IED
 				if (!args.hide)
 				{
 					result |= ImGui::SliderFloat(
-						LS(CommonStrings::Percent, "in_prcnt"),
+						UIL::LS(CommonStrings::Percent, "in_prcnt"),
 						reinterpret_cast<float*>(e.p1),
 						0.0f,
 						100.0f,
@@ -394,11 +385,25 @@ namespace IED
 
 				if (!args.hide)
 				{
+					if (args.formFilter)
+					{
+						m_formPickerAny.SetAllowedTypes(UIFormBrowserCommonFilters::Get(*args.formFilter));
+					}
+					else
+					{
+						m_formPickerAny.ClearAllowedTypes();
+					}
+
+					const auto label =
+						e.p2 ?
+							static_cast<Localization::StringID>(reinterpret_cast<std::uintptr_t>(e.p2)) :
+							static_cast<Localization::StringID>(CommonStrings::Form);
+
 					UICommon::PushDisabled(args.disable);
 
 					result |= m_formPickerAny.DrawFormPicker(
 						"fp_4",
-						static_cast<Localization::StringID>(CommonStrings::Form),
+						label,
 						e.As1<Game::FormID>());
 
 					UICommon::PopDisabled(args.disable);
@@ -460,7 +465,7 @@ namespace IED
 				{
 					if (const auto& e = get(a_item); e.p1)
 					{
-						return GetFormKeywordExtraDesc(GetBipedSlotDesc(
+						return GetFormKeywordExtraDesc(UIBipedObjectSelectorWidget::GetBipedSlotDesc(
 							e.As1<BIPED_OBJECT>()));
 					}
 					else
@@ -510,8 +515,8 @@ namespace IED
 								m_descBuffer2,
 								"LD: %s",
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
-									LS(CommonStrings::True) :
-									LS(CommonStrings::False));
+									UIL::LS(CommonStrings::True) :
+									UIL::LS(CommonStrings::False));
 						}
 						else
 						{
@@ -520,8 +525,8 @@ namespace IED
 								"%s, LD: %s",
 								r,
 								match.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1) ?
-									LS(CommonStrings::True) :
-									LS(CommonStrings::False));
+									UIL::LS(CommonStrings::True) :
+									UIL::LS(CommonStrings::False));
 						}
 
 						return m_descBuffer2;
@@ -548,7 +553,7 @@ namespace IED
 								stl::snprintf(
 									m_descBuffer,
 									"%s [%s]",
-									condition_type_to_desc(type),
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									time_of_day_to_desc(f.As1<Data::TimeOfDay>()));
 
 								return m_descBuffer;
@@ -563,7 +568,7 @@ namespace IED
 								stl::snprintf(
 									m_descBuffer,
 									"%s [%.2f]",
-									condition_type_to_desc(type),
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									f.As1<float>());
 
 								return m_descBuffer;
@@ -578,7 +583,7 @@ namespace IED
 								stl::snprintf(
 									m_descBuffer,
 									"%s [%s]",
-									condition_type_to_desc(type),
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									get_nodemon_desc(f.As1<std::uint32_t>()));
 
 								return m_descBuffer;
@@ -587,7 +592,7 @@ namespace IED
 							break;
 						}
 
-						if (auto r = condition_type_to_desc(type))
+						if (auto r = UIConditionExtraSelectorWidget::condition_type_to_desc(type))
 						{
 							return r;
 						}
@@ -603,7 +608,7 @@ namespace IED
 
 						return GetFormKeywordExtraDesc(
 							type != PACKAGE_PROCEDURE_TYPE::kNone ?
-								procedure_type_to_desc(type) :
+								UIPackageTypeSelectorWidget::procedure_type_to_desc(type) :
 								nullptr);
 					}
 					else
@@ -641,7 +646,7 @@ namespace IED
 								m_descBuffer,
 								"%s %s %d",
 								e.As2<stl::fixed_string>().c_str(),
-								comp_operator_to_desc(compOper),
+								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::Int32).As1<std::int32_t>());
 
 							break;
@@ -652,7 +657,7 @@ namespace IED
 								m_descBuffer,
 								"%s %s %.3f",
 								e.As2<stl::fixed_string>().c_str(),
-								comp_operator_to_desc(compOper),
+								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::Float).As1<float>());
 
 							break;
@@ -663,7 +668,7 @@ namespace IED
 								m_descBuffer,
 								"%s %s %.8X",
 								e.As2<stl::fixed_string>().c_str(),
-								comp_operator_to_desc(compOper),
+								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::FormAny).As1<Game::FormID>().get());
 
 							break;

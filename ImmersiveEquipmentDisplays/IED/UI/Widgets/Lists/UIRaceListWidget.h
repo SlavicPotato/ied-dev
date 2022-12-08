@@ -49,7 +49,7 @@ namespace IED
 		UIRaceList<Td>::UIRaceList(
 			Controller& a_controller,
 			float       a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar)
+			UIListBase<Td, Game::FormID>(a_itemWidthScalar)
 		{
 		}
 
@@ -159,7 +159,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", this->LS(CommonStrings::Name));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Name));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%s", itr->second.fullname.c_str());
@@ -167,7 +167,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", this->LS(CommonStrings::Flags));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.8X", itr->second.flags.underlying());
@@ -182,7 +182,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", this->LS(CommonStrings::Mod));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Mod));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -199,7 +199,7 @@ namespace IED
 			auto& config = GetRaceSettings();
 
 			if (ImGui::Checkbox(
-					this->LS(UIWidgetCommonStrings::PlayableOnly, "1"),
+					UIL::LS(UIWidgetCommonStrings::PlayableOnly, "1"),
 					std::addressof(config.playableOnly)))
 			{
 				OnListOptionsChange();
@@ -209,7 +209,7 @@ namespace IED
 			ImGui::SameLine(0.0f, 10.0f);
 
 			if (ImGui::Checkbox(
-					this->LS(UIWidgetCommonStrings::ShowEditorIDs, "2"),
+					UIL::LS(UIWidgetCommonStrings::ShowEditorIDs, "2"),
 					std::addressof(config.showEditorIDs)))
 			{
 				OnListOptionsChange();

@@ -10,17 +10,15 @@ namespace IED
 
 	namespace UI
 	{
-		class UIPackageTypeSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIPackageTypeSelectorWidget
 		{
 		public:
-			UIPackageTypeSelectorWidget(Localization::ILocalization& a_localization);
 
-			bool DrawPackageTypeSelector(
+			static bool DrawPackageTypeSelector(
 				PACKAGE_PROCEDURE_TYPE& a_type);
 
-			const char* procedure_type_to_desc(
-				PACKAGE_PROCEDURE_TYPE a_type) const;
+			static const char* procedure_type_to_desc(
+				PACKAGE_PROCEDURE_TYPE a_type) ;
 
 		};
 	}

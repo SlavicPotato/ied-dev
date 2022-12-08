@@ -119,12 +119,45 @@ namespace IED
 				id(a_id)
 			{
 			}
+			
+			inline constexpr configCachedForm_t(
+				const configCachedForm_t& a_rhs) noexcept :
+				id(a_rhs.id)
+			{
+			}
+			
+			inline constexpr configCachedForm_t(
+				configCachedForm_t&& a_rhs) noexcept :
+				id(a_rhs.id)
+			{
+				a_rhs.form = nullptr;
+			}
 
 			inline constexpr configCachedForm_t& operator=(
 				const Game::FormID& a_id) noexcept
 			{
 				id   = a_id;
 				form = nullptr;
+
+				return *this;
+			}
+
+			inline constexpr configCachedForm_t& operator=(
+				const configCachedForm_t& a_rhs) noexcept
+			{
+				id   = a_rhs.id;
+				form = nullptr;
+
+				return *this;
+			}
+
+			inline constexpr configCachedForm_t& operator=(
+				configCachedForm_t&& a_rhs) noexcept
+			{
+				id   = a_rhs.id;
+				form = nullptr;
+
+				a_rhs.form = nullptr;
 
 				return *this;
 			}
@@ -171,16 +204,16 @@ namespace IED
 
 			[[nodiscard]] inline constexpr friend bool operator==(
 				const configCachedForm_t& a_lhs,
-				const Game::FormID&       a_id) noexcept
+				const Game::FormID&       a_rhs) noexcept
 			{
-				return a_lhs.id == a_id;
+				return a_lhs.id == a_rhs;
 			}
 
 			[[nodiscard]] inline constexpr friend bool operator<=(
 				const configCachedForm_t& a_lhs,
-				const Game::FormID&       a_id) noexcept
+				const Game::FormID&       a_rhs) noexcept
 			{
-				return a_lhs.id <= a_id;
+				return a_lhs.id <= a_rhs;
 			}
 
 			[[nodiscard]] inline constexpr friend bool operator==(
@@ -204,13 +237,12 @@ namespace IED
 
 			void zero_missing_or_deleted();
 
-		protected:
+		private:
 			static TESForm* lookup_form(Game::FormID a_form);
 
 			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
 
-		private:
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
@@ -300,10 +332,9 @@ namespace IED
 		};
 
 		template <class T>
-		concept AcceptDataClear = requires(T a_data)
-		{
-			a_data.clear();
-		};
+		concept AcceptDataClear = requires(T a_data) {
+									  a_data.clear();
+								  };
 
 		template <AcceptDataClear T>
 		class configSexRoot_t
@@ -639,12 +670,11 @@ namespace IED
 	}
 
 	template <class T>
-	concept AcceptHolderCacheData = requires(T a_data)
-	{
-		{
-			std::addressof(a_data.find(typename T::key_type())->second)
-			} -> std::convertible_to<const typename T::mapped_type*>;
-	};
+	concept AcceptHolderCacheData = requires(T a_data) {
+										{
+											std::addressof(a_data.find(typename T::key_type())->second)
+											} -> std::convertible_to<const typename T::mapped_type*>;
+									};
 
 	template <class T>
 	struct configHolderCache_t
@@ -668,7 +698,7 @@ namespace IED
 
 				actor = it != a_data.end() ?
 				            std::addressof(it->second) :
-                            nullptr;
+				            nullptr;
 			}
 
 			return *actor;
@@ -684,7 +714,7 @@ namespace IED
 
 				npc = it != a_data.end() ?
 				          std::addressof(it->second) :
-                          nullptr;
+				          nullptr;
 			}
 
 			return *npc;
@@ -700,7 +730,7 @@ namespace IED
 
 				race = it != a_data.end() ?
 				           std::addressof(it->second) :
-                           nullptr;
+				           nullptr;
 			}
 
 			return *race;
@@ -720,7 +750,7 @@ namespace IED
 				auto it = a_data.find(a_key);
 				return it != a_data.end() ?
 				           std::addressof(it->second) :
-                           nullptr;
+				           nullptr;
 			}
 		}
 
@@ -750,14 +780,14 @@ namespace IED
 			return *this;
 		}
 
-		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&) noexcept = default;
+		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&) noexcept            = default;
 		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t&&) noexcept = default;
 
 		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 		{
 			return static_cast<bool>(data.get());
 		}
-		
+
 		[[nodiscard]] inline constexpr auto operator->() const noexcept
 		{
 			return data.get();

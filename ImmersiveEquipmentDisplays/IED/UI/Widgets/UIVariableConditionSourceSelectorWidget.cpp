@@ -18,19 +18,13 @@ namespace IED
 
 		);
 
-		UIVariableConditionSourceSelectorWidget::UIVariableConditionSourceSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIVariableConditionSourceSelectorWidget::DrawVariableConditionSourceSelectorWidget(
 			Data::VariableConditionSource& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Source, "ex_vcs_sel"),
+					UIL::LS(CommonStrings::Source, "ex_vcs_sel"),
 					variable_cond_source_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -46,7 +40,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIVariableConditionSourceSelectorWidgetStrings, 3>(e.second, "1"),
+							UIL::LS<UIVariableConditionSourceSelectorWidgetStrings, 3>(e.second, "1"),
 							selected))
 					{
 						a_type = e.first;
@@ -63,22 +57,22 @@ namespace IED
 		}
 
 		const char* UIVariableConditionSourceSelectorWidget::variable_cond_source_to_desc(
-			Data::VariableConditionSource a_type) const
+			Data::VariableConditionSource a_type)
 		{
 			switch (a_type)
 			{
 			case Data::VariableConditionSource::kAny:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::Any);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Any);
 			case Data::VariableConditionSource::kSelf:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::Self);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Self);
 			case Data::VariableConditionSource::kActor:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::Actor);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Actor);
 			case Data::VariableConditionSource::kNPC:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::NPC);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::NPC);
 			case Data::VariableConditionSource::kRace:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::Race);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Race);
 			case Data::VariableConditionSource::kPlayerHorse:
-				return LS(UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse);
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse);
 			default:
 				return nullptr;
 			}

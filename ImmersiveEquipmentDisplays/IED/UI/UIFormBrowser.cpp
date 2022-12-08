@@ -11,7 +11,6 @@ namespace IED
 	namespace UI
 	{
 		UIFormBrowser::UIFormBrowser(Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_formIDFilter(true),
 			m_formNameFilter(true),
@@ -76,7 +75,7 @@ namespace IED
 			SetWindowDimensions(0.f, 1200.f, 700.f, true);
 
 			if (ImGui::BeginPopupModal(
-					LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID),
+					UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID),
 					GetOpenState(),
 					ImGuiWindowFlags_NoScrollbar |
 						ImGuiWindowFlags_NoScrollWithMouse))
@@ -97,7 +96,7 @@ namespace IED
 					{
 						QueueGetDatabase();
 
-						auto text = LS(UIWidgetCommonStrings::QueryingDatabase);
+						auto text = UIL::LS(UIWidgetCommonStrings::QueryingDatabase);
 
 						const auto w = ImGui::GetWindowSize().x -
 						               ImGui::CalcTextSize(text).x;
@@ -118,7 +117,7 @@ namespace IED
 				if (m_multiSelectMode)
 				{
 					if (ImGui::Button(
-							LS(CommonStrings::OK, "ctl_1"),
+							UIL::LS(CommonStrings::OK, "ctl_1"),
 							{ -1.f, 0.f }))
 					{
 						result.result = !m_selectedEntries.empty();
@@ -128,7 +127,7 @@ namespace IED
 				else
 				{
 					if (ImGui::Button(
-							LS(CommonStrings::Close, "ctl_1"),
+							UIL::LS(CommonStrings::Close, "ctl_1"),
 							{ -1.f, 0.f }))
 					{
 						SetOpenState(false);
@@ -161,14 +160,14 @@ namespace IED
 
 			SetOpenState(true);
 
-			ImGui::OpenPopup(LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
+			ImGui::OpenPopup(UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 
 			return true;
 		}
 
 		bool UIFormBrowser::IsBrowserOpen() const
 		{
-			return ImGui::IsPopupOpen(LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
+			return ImGui::IsPopupOpen(UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 		}
 
 		void UIFormBrowser::SetTabFilter(
@@ -244,7 +243,7 @@ namespace IED
 
 					ImGui::PushID(i);
 
-					if (ImGui::BeginTabItem(LS(e.label, "_")))
+					if (ImGui::BeginTabItem(UIL::LS(e.label, "_")))
 					{
 						result |= DrawTabPanel(e.type);
 						ImGui::EndTabItem();
@@ -293,8 +292,8 @@ namespace IED
 					{ -1.0f, -1.0f }))
 			{
 				ImGui::TableSetupScrollFreeze(0, 1);
-				ImGui::TableSetupColumn(LS(CommonStrings::FormID));
-				ImGui::TableSetupColumn(LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 				for (int column = 0; column < COLUMNS_COUNT; column++)
@@ -503,7 +502,7 @@ namespace IED
 			if (ImGui::BeginPopup("context_menu"))
 			{
 				if (ImGui::MenuItem(
-						LS(UIWidgetCommonStrings::ClearSelection, "1"),
+						UIL::LS(UIWidgetCommonStrings::ClearSelection, "1"),
 						nullptr,
 						false,
 						!m_selectedEntries.empty()))

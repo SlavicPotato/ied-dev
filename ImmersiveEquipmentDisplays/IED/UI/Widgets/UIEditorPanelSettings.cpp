@@ -6,11 +6,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UIEditorPanelSettings::UIEditorPanelSettings(
-			Controller& a_controller)
-		{
-		}
-
 		void UIEditorPanelSettings::SetSex(
 			Data::ConfigSex a_sex,
 			bool            a_sendEvent)
@@ -27,7 +22,7 @@ namespace IED
 			ImGui::PushID("sex_selector");
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Male, "1"),
+					UIL::LS(CommonStrings::Male, "1"),
 					m_sex == Data::ConfigSex::Male))
 			{
 				SetSex(Data::ConfigSex::Male, true);
@@ -36,7 +31,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Female, "2"),
+					UIL::LS(CommonStrings::Female, "2"),
 					m_sex == Data::ConfigSex::Female))
 			{
 				SetSex(Data::ConfigSex::Female, true);
@@ -46,12 +41,12 @@ namespace IED
 
 			auto& data = GetEditorPanelSettings();
 			if (ImGui::Checkbox(
-					LS(CommonStrings::Sync, "3"),
+					UIL::LS(CommonStrings::Sync, "3"),
 					std::addressof(data.sexSync)))
 			{
 				OnEditorPanelSettingsChange();
 			}
-			DrawTip(UITip::SyncSexes);
+			UITipsInterface::DrawTip(UITip::SyncSexes);
 
 			ImGui::PopID();
 

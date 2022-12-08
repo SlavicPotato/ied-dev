@@ -63,7 +63,7 @@ namespace IED
 		UIActorList<Td>::UIActorList(
 			Controller& a_controller,
 			float       a_itemWidthScalar) :
-			UIListBase<Td, Game::FormID>(a_controller, a_itemWidthScalar),
+			UIListBase<Td, Game::FormID>(a_itemWidthScalar),
 			UIActorInfoAddInterface(a_controller)
 		{}
 
@@ -181,7 +181,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Base));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -194,7 +194,7 @@ namespace IED
 						ImGui::TableNextRow();
 
 						ImGui::TableSetColumnIndex(0);
-						ImGui::Text("%s:", LS(CommonStrings::Template));
+						ImGui::Text("%s:", UIL::LS(CommonStrings::Template));
 
 						ImGui::TableSetColumnIndex(1);
 						ImGui::TextWrapped(
@@ -205,14 +205,14 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Sex));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Sex));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
 						"%s",
 						it->second.npc->female ?
-							LS(CommonStrings::Female) :
-							LS(CommonStrings::Male));
+							UIL::LS(CommonStrings::Female) :
+							UIL::LS(CommonStrings::Male));
 				}
 
 				auto race = it->second.GetRace();
@@ -223,7 +223,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Race));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Race));
 
 					ImGui::TableSetColumnIndex(1);
 
@@ -236,7 +236,7 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", LS(CommonStrings::Weight));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Weight));
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped("%.0f", it->second.weight);
@@ -246,7 +246,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Worldspace));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Worldspace));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.worldspace.get());
@@ -257,7 +257,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Cell));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Cell));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.cell.first.get());
@@ -268,7 +268,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Skin));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Skin));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.skin.first.get());
@@ -279,7 +279,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Idle));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Idle));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -293,7 +293,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Package));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Package));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped("%.8X", it->second.package.get());
@@ -304,7 +304,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Furniture));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Furniture));
 
 					ImGui::TableSetColumnIndex(1);
 					ImGui::TextWrapped(
@@ -323,7 +323,7 @@ namespace IED
 					ImGui::TableNextRow();
 
 					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", LS(CommonStrings::Mod));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Mod));
 
 					ImGui::TableSetColumnIndex(1);
 
@@ -357,7 +357,7 @@ namespace IED
 			auto& config = GetActorSettings();
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::AutoSelectSex, "1"),
+					UIL::LS(UIWidgetCommonStrings::AutoSelectSex, "1"),
 					std::addressof(config.autoSelectSex)))
 			{
 				OnListOptionsChange();
@@ -367,7 +367,7 @@ namespace IED
 			ImGui::SameLine(0.0f, 10.0f);
 
 			if (ImGui::Checkbox(
-					LS(UIWidgetCommonStrings::ShowAll, "2"),
+					UIL::LS(UIWidgetCommonStrings::ShowAll, "2"),
 					std::addressof(config.showAll)))
 			{
 				OnListOptionsChange();

@@ -15,7 +15,6 @@ namespace IED
 		UIEditorTabPanel::UIEditorTabPanel(
 			Controller&            a_controller,
 			Localization::StringID a_menuName) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_menuName(a_menuName)
 		{
@@ -99,7 +98,7 @@ namespace IED
 
 					ImGui::PushID(i);
 
-					if (ImGui::BeginTabItem(LS(e.label, "_"), nullptr, e.flags))
+					if (ImGui::BeginTabItem(UIL::LS(e.label, "_"), nullptr, e.flags))
 					{
 						if ((e.flags & ImGuiTabItemFlags_SetSelected) ==
 						    ImGuiTabItemFlags_SetSelected)
@@ -117,7 +116,7 @@ namespace IED
 						{
 							ImGui::TextColored(
 								UICommon::g_colorWarning,
-								LS(UIWidgetCommonStrings::DefaultConfForced));
+								UIL::LS(UIWidgetCommonStrings::DefaultConfForced));
 
 							ImGui::Spacing();
 							ImGui::Separator();
@@ -142,7 +141,7 @@ namespace IED
 
 		void UIEditorTabPanel::DrawMenuBarItems()
 		{
-			if (LCG_BM(CommonStrings::Actions, "et_mb"))
+			if (UIL::LCG_BM(CommonStrings::Actions, "et_mb"))
 			{
 				if (auto& e = GetInterface(m_currentClass))
 				{

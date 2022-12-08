@@ -26,8 +26,7 @@ namespace IED
 
 		class UIToast :
 			public UIContext,
-			public UIWindow,
-			UILocalizationInterface
+			public UIWindow
 		{
 			inline static constexpr auto WINDOW_ID = "ied_toast";
 
@@ -43,9 +42,7 @@ namespace IED
 			};
 
 		public:
-			UIToast(
-				Tasks::UIRenderTaskBase&     a_owner,
-				Localization::ILocalization& a_localization);
+			UIToast(Tasks::UIRenderTaskBase& a_owner);
 
 			virtual ~UIToast() noexcept override = default;
 

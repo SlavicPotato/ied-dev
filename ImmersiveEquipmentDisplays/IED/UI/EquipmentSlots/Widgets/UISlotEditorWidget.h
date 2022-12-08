@@ -263,7 +263,6 @@ namespace IED
 		UISlotEditorWidget<T>::UISlotEditorWidget(
 			Controller& a_controller) :
 			UIBaseConfigWidget<T>(a_controller),
-			UIEditorPanelSettingsGear(a_controller),
 			m_formSelector(
 				a_controller,
 				FormInfoFlags::kValidSlot,
@@ -291,7 +290,7 @@ namespace IED
 		void UISlotEditorWidget<T>::DrawSlotEditorNPCWarningHeader()
 		{
 			ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-			ImGui::TextWrapped("%s", LS(UISlotEditorWidgetStrings::NPCDisabledWarning));
+			ImGui::TextWrapped("%s", UIL::LS(UISlotEditorWidgetStrings::NPCDisabledWarning));
 			ImGui::PopStyleColor();
 			ImGui::Spacing();
 		}
@@ -332,24 +331,24 @@ namespace IED
 			ImGui::Columns(2, nullptr, false);
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::AlwaysUnload, "1"),
+					UIL::LS(UIWidgetCommonStrings::AlwaysUnload, "1"),
 					stl::underlying(std::addressof(data.slotFlags.value)),
 					stl::underlying(Data::SlotFlags::kAlwaysUnload)))
 			{
 				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
-			DrawTip(UITip::AlwaysUnloadSlot);
+			UITipsInterface::DrawTip(UITip::AlwaysUnloadSlot);
 
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::CheckCannotWear, "2"),
+					UIL::LS(UIWidgetCommonStrings::CheckCannotWear, "2"),
 					stl::underlying(std::addressof(data.slotFlags.value)),
 					stl::underlying(Data::SlotFlags::kCheckCannotWear)))
 			{
 				this->OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 			}
-			DrawTip(UITip::CheckCannotWear);
+			UITipsInterface::DrawTip(UITip::CheckCannotWear);
 
 			ImGui::Columns();
 		}
@@ -457,7 +456,7 @@ namespace IED
 				if (a_data.priority)
 				{
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Clear, "1"),
+							UIL::LS(CommonStrings::Clear, "1"),
 							nullptr,
 							false,
 							a_data.priority->first == GetConfigClass()))
@@ -471,7 +470,7 @@ namespace IED
 				}
 				else
 				{
-					if (ImGui::MenuItem(LS(CommonStrings::Create, "1")))
+					if (ImGui::MenuItem(UIL::LS(CommonStrings::Create, "1")))
 					{
 						a_data.priority = std::make_unique<Data::configSlotHolderCopy_t::prio_data_type>();
 
@@ -484,7 +483,7 @@ namespace IED
 				ImGui::Separator();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Copy, "2"),
+						UIL::LS(CommonStrings::Copy, "2"),
 						nullptr,
 						false,
 						a_data.priority.get() != nullptr))
@@ -498,7 +497,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configSlotPriority_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "3"),
+						UIL::LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -551,7 +550,7 @@ namespace IED
 					"tree",
 					false,
 					"%s",
-					LS(CommonStrings::Priority)))
+					UIL::LS(CommonStrings::Priority)))
 			{
 				ImGui::Spacing();
 
@@ -566,7 +565,7 @@ namespace IED
 
 					if (ShowConfigClassIndicator())
 					{
-						ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
+						ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::ConfigInUse));
 						ImGui::SameLine();
 						DrawConfigClassInUse(pdata->first);
 
@@ -584,7 +583,7 @@ namespace IED
 				else
 				{
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorGreyed);
-					ImGui::TextWrapped("%s", LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
+					ImGui::TextWrapped("%s", UIL::LS(UISlotEditorWidgetStrings::EmptyPrioMsg));
 					ImGui::PopStyleColor();
 				}
 
@@ -669,7 +668,7 @@ namespace IED
 			ImGui::Spacing();
 
 			changed |= ImGui::CheckboxFlagsT(
-				LS(UISlotEditorWidgetStrings::AccountForEquipped, "1"),
+				UIL::LS(UISlotEditorWidgetStrings::AccountForEquipped, "1"),
 				stl::underlying(std::addressof(data.flags.value)),
 				stl::underlying(Data::SlotPriorityFlags::kAccountForEquipped));
 
@@ -681,7 +680,7 @@ namespace IED
 			std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
 
 			changed |= ImGui::SliderScalar(
-				LS(UISlotEditorWidgetStrings::MaxActiveTypes, "2"),
+				UIL::LS(UISlotEditorWidgetStrings::MaxActiveTypes, "2"),
 				ImGuiDataType_U32,
 				std::addressof(data.limit),
 				std::addressof(lmin),
@@ -708,15 +707,15 @@ namespace IED
 
 			UICommon::PushDisabled(disabled);
 
-			if (LCG_MI(UIWidgetCommonStrings::CopyAllFromOppositeSex, "1"))
+			if (UIL::LCG_MI(UIWidgetCommonStrings::CopyAllFromOppositeSex, "1"))
 			{
 				auto& queue = GetPopupQueue();
 
 				queue.push(
 						 UIPopupType::Confirm,
-						 LS(CommonStrings::Confirm),
+						 UIL::LS(CommonStrings::Confirm),
 						 "%s",
-						 LS(UIWidgetCommonStrings::CopyAllFromOppositeSexPrompt))
+						 UIL::LS(UIWidgetCommonStrings::CopyAllFromOppositeSexPrompt))
 					.call([this,
 				           ssex = GetOppositeSex(sex),
 				           tsex = sex](
@@ -752,15 +751,15 @@ namespace IED
 
 			if (PermitDeletion())
 			{
-				if (LCG_MI(UISlotEditorWidgetStrings::ClearAllSlots, "2"))
+				if (UIL::LCG_MI(UISlotEditorWidgetStrings::ClearAllSlots, "2"))
 				{
 					auto& queue = GetPopupQueue();
 
 					queue.push(
 							 UIPopupType::Confirm,
-							 LS(CommonStrings::Confirm),
+							 UIL::LS(CommonStrings::Confirm),
 							 "%s",
-							 LS(UISlotEditorWidgetStrings::ClearAllSlotsPrompt))
+							 UIL::LS(UISlotEditorWidgetStrings::ClearAllSlotsPrompt))
 						.call([this](const auto&) {
 							if (auto current = GetCurrentData())
 							{
@@ -777,14 +776,14 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (LCG_BM(UISlotEditorWidgetStrings::AllSlots, "3"))
+			if (UIL::LCG_BM(UISlotEditorWidgetStrings::AllSlots, "3"))
 			{
-				if (LCG_MI(CommonStrings::Enable, "1"))
+				if (UIL::LCG_MI(CommonStrings::Enable, "1"))
 				{
 					QueueSetAllSlotsEnabled(current.handle, sex, true);
 				}
 
-				if (LCG_MI(CommonStrings::Disable, "2"))
+				if (UIL::LCG_MI(CommonStrings::Disable, "2"))
 				{
 					QueueSetAllSlotsEnabled(current.handle, sex, false);
 				}
@@ -807,9 +806,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UISlotEditorWidgetStrings::CopyOppositeSexSlotPrompt))
+					 UIL::LS(UISlotEditorWidgetStrings::CopyOppositeSexSlotPrompt))
 				.call([this,
 			           handle = a_handle,
 			           slot   = a_slot,
@@ -854,9 +853,9 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UISlotEditorWidgetStrings::ClearSlotPrompt))
+					 UIL::LS(UISlotEditorWidgetStrings::ClearSlotPrompt))
 				.call([this, a_handle, a_sex, a_slot](
 						  const auto&) {
 					auto current = GetCurrentData();
@@ -897,11 +896,11 @@ namespace IED
 
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
 					 a_switch ?
-						 LS(UISlotEditorWidgetStrings::EnableAllSlotsPrompt) :
-						 LS(UISlotEditorWidgetStrings::DisableAllSlotsPrompt))
+						 UIL::LS(UISlotEditorWidgetStrings::EnableAllSlotsPrompt) :
+						 UIL::LS(UISlotEditorWidgetStrings::DisableAllSlotsPrompt))
 				.call([this, a_handle, a_sex, a_switch](
 						  const UIPopupAction&) {
 					auto current = GetCurrentData();
@@ -960,7 +959,7 @@ namespace IED
 			T                                   a_handle,
 			const SingleSlotConfigUpdateParams& a_params)
 		{
-			if (ImGui::MenuItem(LS(UIWidgetCommonStrings::CopyFromOppositeSex, "1")))
+			if (ImGui::MenuItem(UIL::LS(UIWidgetCommonStrings::CopyFromOppositeSex, "1")))
 			{
 				QueueCopySlotSexPopup(
 					a_handle,
@@ -972,7 +971,7 @@ namespace IED
 			{
 				if (PermitDeletion())
 				{
-					if (ImGui::MenuItem(LS(UISlotEditorWidgetStrings::ClearSlot, "2")))
+					if (ImGui::MenuItem(UIL::LS(UISlotEditorWidgetStrings::ClearSlot, "2")))
 					{
 						QueueClearSlot(a_handle, a_params.sex, a_params.slot);
 					}
@@ -981,7 +980,7 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "3")))
 			{
 				UIClipboard::Set(a_params.entry.second.get(a_params.sex));
 			}
@@ -989,7 +988,7 @@ namespace IED
 			auto clipData = UIClipboard::Get<Data::configSlot_t>();
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::Paste, "4"),
+					UIL::LS(CommonStrings::Paste, "4"),
 					nullptr,
 					false,
 					clipData != nullptr))
@@ -1054,7 +1053,7 @@ namespace IED
 
 				if (infoDrawn)
 				{
-					ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
+					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::ConfigInUse));
 					ImGui::SameLine();
 					DrawConfigClassInUse(a_entry.first);
 				}
@@ -1077,7 +1076,7 @@ namespace IED
 					ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
 					ImGui::TextWrapped(
 						"%s",
-						LS(UISlotEditorWidgetStrings::Left2HSlotWarning));
+						UIL::LS(UISlotEditorWidgetStrings::Left2HSlotWarning));
 					ImGui::PopStyleColor();
 
 					ImGui::Separator();
@@ -1153,7 +1152,7 @@ namespace IED
 			};
 
 			m_formFilter.DrawFormFiltersTree(
-				LS(UIWidgetCommonStrings::ItemFilters),
+				UIL::LS(UIWidgetCommonStrings::ItemFilters),
 				ffparams,
 				data.itemFilter);
 
@@ -1204,7 +1203,7 @@ namespace IED
 					"pi_tree",
 					false,
 					"%s",
-					LS(UIWidgetCommonStrings::PreferredItems)))
+					UIL::LS(UIWidgetCommonStrings::PreferredItems)))
 			{
 				if (!empty)
 				{
@@ -1244,8 +1243,8 @@ namespace IED
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
-				ImGui::TableSetupColumn(LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID), ImGuiTableColumnFlags_None, 75.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Info), ImGuiTableColumnFlags_None, 250.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -1419,7 +1418,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
 							m_piNewEntryID))
@@ -1436,7 +1435,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "2"))
+				if (UIL::LCG_MI(CommonStrings::Delete, "2"))
 				{
 					result.action = SlotContextAction::Delete;
 				}
@@ -1472,7 +1471,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
 					if (m_formSelector.DrawFormSelector(
 							m_piNewEntryID))
@@ -1492,7 +1491,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -1500,7 +1499,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configFormList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "3"),
+						UIL::LS(CommonStrings::Paste, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1533,7 +1532,7 @@ namespace IED
 					"slot_filter",
 					false,
 					"%s",
-					LS(CommonStrings::Filter)))
+					UIL::LS(CommonStrings::Filter)))
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 

@@ -17,25 +17,19 @@ namespace IED
 
 		);
 
-		UIWeatherClassSelectorWidget::UIWeatherClassSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIWeatherClassSelectorWidget::DrawWeatherClassSelector(WeatherClassificationFlags& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(UIWidgetCommonStrings::WeatherClass, "wc_type_sel"),
+					UIL::LS(UIWidgetCommonStrings::WeatherClass, "wc_type_sel"),
 					weather_class_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
 				ImGui::PushID("1");
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::All, "1"),
+						UIL::LS(CommonStrings::All, "1"),
 						stl::underlying(std::addressof(a_type)),
 						stl::underlying(WeatherClassificationFlags::kAll)))
 				{
@@ -53,7 +47,7 @@ namespace IED
 					ImGui::PushID(stl::underlying(i));
 
 					if (ImGui::CheckboxFlagsT(
-							LS<UIWeatherClassSelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UIWeatherClassSelectorWidgetStrings, 3>(e, "1"),
 							stl::underlying(std::addressof(a_type)),
 							stl::underlying(i)))
 					{
@@ -76,11 +70,11 @@ namespace IED
 		{
 			if (a_type.test(WeatherClassificationFlags::kAll))
 			{
-				return LS(CommonStrings::Any);
+				return UIL::LS(CommonStrings::Any);
 			}
 			else if (!a_type.test_any(WeatherClassificationFlags::kAll))
 			{
-				return LS(CommonStrings::None);
+				return UIL::LS(CommonStrings::None);
 			}
 			else
 			{
@@ -88,7 +82,7 @@ namespace IED
 
 				if (a_type.test(WeatherClassificationFlags::kPleasant))
 				{
-					m_buf += LS(UIWeatherClassSelectorWidgetStrings::Pleasant);
+					m_buf += UIL::LS(UIWeatherClassSelectorWidgetStrings::Pleasant);
 				}
 
 				if (a_type.test(WeatherClassificationFlags::kCloudy))
@@ -97,7 +91,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UIWeatherClassSelectorWidgetStrings::Cloudy);
+					m_buf += UIL::LS(UIWeatherClassSelectorWidgetStrings::Cloudy);
 				}
 
 				if (a_type.test(WeatherClassificationFlags::kRainy))
@@ -106,7 +100,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UIWeatherClassSelectorWidgetStrings::Rainy);
+					m_buf += UIL::LS(UIWeatherClassSelectorWidgetStrings::Rainy);
 				}
 
 				if (a_type.test(WeatherClassificationFlags::kSnow))
@@ -115,7 +109,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += LS(UIWeatherClassSelectorWidgetStrings::Snow);
+					m_buf += UIL::LS(UIWeatherClassSelectorWidgetStrings::Snow);
 				}
 
 				return m_buf.c_str();

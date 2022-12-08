@@ -12,14 +12,16 @@ namespace IED
 			Controller& a_controller) :
 			UIProfileEditorBase<CondVarProfile>(
 				UIProfileStrings::TitleConditionalVariables,
-				"ied_pe_cv",
-				a_controller),
+				"ied_pe_cv"),
 			UIConditionalVariablesEditorWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UIProfileEditorConditionalVariables::~UIProfileEditorConditionalVariables() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIProfileEditorConditionalVariables::Initialize()
@@ -29,7 +31,7 @@ namespace IED
 
 		void UIProfileEditorConditionalVariables::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
 			{
 				EditorDrawMenuBarItems();
 

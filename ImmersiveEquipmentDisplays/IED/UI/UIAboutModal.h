@@ -8,8 +8,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UIAboutModal :
-			virtual UILocalizationInterface
+		class UIAboutModal
 		{
 		public:
 			UIAboutModal(Controller& a_controller);

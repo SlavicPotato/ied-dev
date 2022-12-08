@@ -12,12 +12,6 @@ namespace IED
 {
 	namespace UI
 	{
-		UIBipedObjectList::UIBipedObjectList(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIBipedObjectList::DrawBipedObjectTree(
 			Data::configBipedObjectList_t& a_data,
 			const std::function<bool()>&   a_extra)
@@ -51,7 +45,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(UIWidgetCommonStrings::BipedSlots)))
+					UIL::LS(UIWidgetCommonStrings::BipedSlots)))
 			{
 				if (!treeDisabled)
 				{
@@ -104,7 +98,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
 					if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector("##0", m_newObject))
 					{
@@ -125,7 +119,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(UIWidgetCommonStrings::ClearAll, "2"))
+				if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "2"))
 				{
 					a_data.clear();
 					result = UIBipedObjectListContextAction::Clear;
@@ -133,7 +127,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "3")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "3")))
 				{
 					UIClipboard::Set<Data::configBipedObjectList_t>(a_data);
 				}
@@ -141,7 +135,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configBipedObjectList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "4"),
+						UIL::LS(CommonStrings::PasteOver, "4"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -196,7 +190,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
 					if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector("##0", m_newObject))
 					{
@@ -209,7 +203,7 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (LCG_MI(CommonStrings::Delete, "2"))
+				if (UIL::LCG_MI(CommonStrings::Delete, "2"))
 				{
 					result.action = UIBipedObjectListContextAction::Clear;
 				}
@@ -249,7 +243,7 @@ namespace IED
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(LS(CommonStrings::Biped), ImGuiTableColumnFlags_None, 250.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Biped), ImGuiTableColumnFlags_None, 250.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 

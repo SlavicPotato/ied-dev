@@ -25,11 +25,10 @@ namespace IED
 			SwapDirection                  dir;
 		};
 
-		class UIBipedObjectList :
-			public virtual UILocalizationInterface
+		class UIBipedObjectList
 		{
 		public:
-			UIBipedObjectList(Localization::ILocalization& a_localization);
+			UIBipedObjectList() = default;
 
 			bool DrawBipedObjectTree(
 				Data::configBipedObjectList_t& a_data,

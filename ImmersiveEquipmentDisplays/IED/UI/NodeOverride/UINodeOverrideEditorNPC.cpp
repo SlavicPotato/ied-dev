@@ -12,20 +12,22 @@ namespace IED
 		UINodeOverrideEditorNPC::UINodeOverrideEditorNPC(Controller& a_controller) :
 			UINodeOverrideEditorCommon<Game::FormID>(a_controller),
 			UINPCList<entryNodeOverrideData_t>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UITransformSliderWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UINodeOverrideEditorNPC::~UINodeOverrideEditorNPC() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UINodeOverrideEditorNPC::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.transformEditor.npcConfig.sex, false);
 		}

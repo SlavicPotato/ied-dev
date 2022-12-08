@@ -348,9 +348,7 @@ namespace IED
 		UINodeOverrideEditorWidget<T>::UINodeOverrideEditorWidget(
 			Controller& a_controller) :
 			UIFormLookupInterface(a_controller),
-			UIEditorPanelSettings(a_controller),
 			UINodeOverrideConditionWidget(a_controller),
-			UIPhysicsValueEditorWidget(a_controller),
 			m_itemFilter(true)
 		{
 		}
@@ -399,7 +397,7 @@ namespace IED
 					if (!GetPhysicsProcessingEnabled())
 					{
 						ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-						ImGui::TextWrapped("%s", LS(UITip::PhysicsOffWarning));
+						ImGui::TextWrapped("%s", UIL::LS(UITip::PhysicsOffWarning));
 						ImGui::PopStyleColor();
 
 						ImGui::Spacing();
@@ -424,7 +422,7 @@ namespace IED
 			case PanelType::Placement:
 
 				ImGui::PushStyleColor(ImGuiCol_Text, UICommon::g_colorWarning);
-				ImGui::TextWrapped("%s", LS(UITip::AnimSupportWarning));
+				ImGui::TextWrapped("%s", UIL::LS(UITip::AnimSupportWarning));
 				ImGui::PopStyleColor();
 
 				ImGui::Separator();
@@ -497,7 +495,7 @@ namespace IED
 			auto panelType = GetPanelTypeFromFlags(flags.value);
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Positions, "1"),
+					UIL::LS(CommonStrings::Positions, "1"),
 					panelType == PanelType::Transform))
 			{
 				flags.clear(NodeOverrideEditorFlags::kPanelMask);
@@ -507,7 +505,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Placement, "2"),
+					UIL::LS(CommonStrings::Placement, "2"),
 					panelType == PanelType::Placement))
 			{
 				flags.clear(NodeOverrideEditorFlags::kPanelMask);
@@ -518,7 +516,7 @@ namespace IED
 			ImGui::SameLine();
 
 			if (ImGui::RadioButton(
-					LS(CommonStrings::Physics, "3"),
+					UIL::LS(CommonStrings::Physics, "3"),
 					panelType == PanelType::Physics))
 			{
 				flags.clear(NodeOverrideEditorFlags::kPanelMask);
@@ -537,7 +535,7 @@ namespace IED
 				ImGui::Spacing();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UINodeOverrideEditorWidgetStrings::UnrestrictedPlacement, "A"),
+						UIL::LS(UINodeOverrideEditorWidgetStrings::UnrestrictedPlacement, "A"),
 						stl::underlying(std::addressof(flags.value)),
 						stl::underlying(NodeOverrideEditorFlags::kUnrestrictedNodePlacement)))
 				{
@@ -555,7 +553,7 @@ namespace IED
 					"item_filter",
 					false,
 					"%s",
-					LS(CommonStrings::Filter)))
+					UIL::LS(CommonStrings::Filter)))
 			{
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
@@ -575,7 +573,7 @@ namespace IED
 		void UINodeOverrideEditorWidget<T>::DrawConfigClassHeader(
 			Data::ConfigClass a_class)
 		{
-			ImGui::Text("%s:", LS(UIWidgetCommonStrings::ConfigInUse));
+			ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::ConfigInUse));
 			ImGui::SameLine();
 			DrawConfigClassInUse(a_class);
 			ImGui::Spacing();
@@ -799,12 +797,12 @@ namespace IED
 					"tree2",
 					true,
 					"%s",
-					LS(CommonStrings::Visibility)))
+					UIL::LS(CommonStrings::Visibility)))
 			{
 				ImGui::Spacing();
 
 				if (ImGui::CheckboxFlagsT(
-						LS(CommonStrings::Invisible, "ctl_1"),
+						UIL::LS(CommonStrings::Invisible, "ctl_1"),
 						stl::underlying(std::addressof(data.overrideFlags.value)),
 						stl::underlying(Data::NodeOverrideFlags::kInvisible)))
 				{
@@ -820,7 +818,7 @@ namespace IED
 				UICommon::PushDisabled(disabled);
 
 				if (ImGui::CheckboxFlagsT(
-						LS(UIWidgetCommonStrings::RequiresMatchList, "ctl_2"),
+						UIL::LS(UIWidgetCommonStrings::RequiresMatchList, "ctl_2"),
 						stl::underlying(std::addressof(data.overrideFlags.value)),
 						stl::underlying(Data::NodeOverrideFlags::kVisibilityRequiresConditionList)))
 				{
@@ -957,7 +955,7 @@ namespace IED
 
 			ImGui::BeginGroup();
 
-			if (ImGui::Button(LS(CommonStrings::Clear, "ctl_1")))
+			if (ImGui::Button(UIL::LS(CommonStrings::Clear, "ctl_1")))
 			{
 				a_values.targetNode.clear();
 
@@ -975,7 +973,7 @@ namespace IED
 			if (entry)
 			{
 				result = UICMNodeSelectorWidget::DrawCMNodeSelector(
-					LS(UIWidgetCommonStrings::TargetNode, "node_sel"),
+					UIL::LS(UIWidgetCommonStrings::TargetNode, "node_sel"),
 					a_values.targetNode,
 					entry->movs,
 					nullptr,
@@ -984,7 +982,7 @@ namespace IED
 			else
 			{
 				result = UICMNodeSelectorWidget::DrawCMNodeSelector(
-					LS(UIWidgetCommonStrings::TargetNode, "node_sel"),
+					UIL::LS(UIWidgetCommonStrings::TargetNode, "node_sel"),
 					a_values.targetNode,
 					NodeOverrideData::GetMOVNodeData());
 			}
@@ -1063,7 +1061,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(CommonStrings::Offsets)))
+					UIL::LS(CommonStrings::Offsets)))
 			{
 				if (!empty)
 				{
@@ -1116,7 +1114,7 @@ namespace IED
 					"tree_ovr",
 					true,
 					"%s",
-					LS(CommonStrings::Overrides)))
+					UIL::LS(CommonStrings::Overrides)))
 			{
 				if (!empty)
 				{
@@ -1142,7 +1140,7 @@ namespace IED
 			ImGui::PushID("value_flags");
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UINodeOverrideEditorWidgetStrings::AbsolutePosition, "1"),
+					UIL::LS(UINodeOverrideEditorWidgetStrings::AbsolutePosition, "1"),
 					stl::underlying(std::addressof(a_values.flags.value)),
 					stl::underlying(Data::NodeOverrideValuesFlags::kAbsolutePosition)))
 			{
@@ -1183,9 +1181,9 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
-					if (LCG_BM(CommonStrings::Item, "2"))
+					if (UIL::LCG_BM(CommonStrings::Item, "2"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -1204,7 +1202,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (LCG_BM(CommonStrings::Group, "3"))
+					if (UIL::LCG_BM(CommonStrings::Group, "3"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -1230,7 +1228,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "4")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "4")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -1238,7 +1236,7 @@ namespace IED
 				auto clipDataOffset = UIClipboard::Get<Data::configNodeOverrideOffset_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "5"),
+						UIL::LS(CommonStrings::Paste, "5"),
 						nullptr,
 						false,
 						clipDataOffset != nullptr))
@@ -1258,7 +1256,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configNodeOverrideOffsetList_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "6"),
+						UIL::LS(CommonStrings::PasteOver, "6"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1315,7 +1313,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Add, "1"))
+				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -1337,7 +1335,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "A")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "A")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -1345,7 +1343,7 @@ namespace IED
 				auto clipData1 = UIClipboard::Get<typename Ta::value_type>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Paste, "B"),
+						UIL::LS(CommonStrings::Paste, "B"),
 						nullptr,
 						false,
 						clipData1 != nullptr))
@@ -1365,7 +1363,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Ta>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "C"),
+						UIL::LS(CommonStrings::PasteOver, "C"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -1526,7 +1524,7 @@ namespace IED
 							});
 
 						if (ImGui::CheckboxFlagsT(
-								LS(CommonStrings::Continue, "hctl_1"),
+								UIL::LS(CommonStrings::Continue, "hctl_1"),
 								stl::underlying(std::addressof(e.offsetFlags.value)),
 								stl::underlying(Data::NodeOverrideOffsetFlags::kContinue)))
 						{
@@ -1538,7 +1536,7 @@ namespace IED
 						}
 
 						if (ImGui::CheckboxFlagsT(
-								LS(UIWidgetCommonStrings::RequiresMatchList, "hctl_2"),
+								UIL::LS(UIWidgetCommonStrings::RequiresMatchList, "hctl_2"),
 								stl::underlying(std::addressof(e.offsetFlags.value)),
 								stl::underlying(Data::NodeOverrideOffsetFlags::kRequiresConditionList)))
 						{
@@ -1568,7 +1566,7 @@ namespace IED
 							ImGui::PushID("override");
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorWidgetStrings::WeaponAdjust, "3"),
+									UIL::LS(UINodeOverrideEditorWidgetStrings::WeaponAdjust, "3"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kWeaponAdjust)))
 							{
@@ -1582,7 +1580,7 @@ namespace IED
 							ImGui::SameLine(0.0f, 10.0f);
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorWidgetStrings::WeightAdjust, "4"),
+									UIL::LS(UINodeOverrideEditorWidgetStrings::WeightAdjust, "4"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kWeightAdjust)))
 							{
@@ -1598,7 +1596,7 @@ namespace IED
 								ImGui::Indent();
 
 								if (ImGui::CheckboxFlagsT(
-										LS(UINodeOverrideEditorWidgetStrings::UseAdjustsFromMatched, "5"),
+										UIL::LS(UINodeOverrideEditorWidgetStrings::UseAdjustsFromMatched, "5"),
 										stl::underlying(std::addressof(e.offsetFlags.value)),
 										stl::underlying(Data::NodeOverrideOffsetFlags::kWeaponAdjustMatchedOnly)))
 								{
@@ -1613,7 +1611,7 @@ namespace IED
 							}
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorWidgetStrings::AccumulatePosition, "6"),
+									UIL::LS(UINodeOverrideEditorWidgetStrings::AccumulatePosition, "6"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kAccumulatePos)))
 							{
@@ -1629,7 +1627,7 @@ namespace IED
 							UICommon::PushDisabled(disabled);
 
 							if (ImGui::CheckboxFlagsT(
-									LS(UINodeOverrideEditorWidgetStrings::LockToAccum, "7"),
+									UIL::LS(UINodeOverrideEditorWidgetStrings::LockToAccum, "7"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kLockToAccum)))
 							{
@@ -1645,7 +1643,7 @@ namespace IED
 							ImGui::SameLine(0.0f, 10.0f);
 
 							if (ImGui::CheckboxFlagsT(
-									LS(CommonStrings::Reset, "8"),
+									UIL::LS(CommonStrings::Reset, "8"),
 									stl::underlying(std::addressof(e.offsetFlags.value)),
 									stl::underlying(Data::NodeOverrideOffsetFlags::kResetAccum)))
 							{
@@ -1665,7 +1663,7 @@ namespace IED
 										ImGuiTreeNodeFlags_SpanAvailWidth |
 											ImGuiTreeNodeFlags_DefaultOpen,
 										"%s",
-										LS(CommonStrings::Adjust)))
+										UIL::LS(CommonStrings::Adjust)))
 								{
 									ImGui::Spacing();
 
@@ -2010,11 +2008,11 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (LCG_BM(CommonStrings::New, "2"))
+					if (UIL::LCG_BM(CommonStrings::New, "2"))
 					{
-						if (LCG_BM(CommonStrings::Item, "0"))
+						if (UIL::LCG_BM(CommonStrings::Item, "0"))
 						{
 							if (DrawDescriptionPopup())
 							{
@@ -2027,7 +2025,7 @@ namespace IED
 							ImGui::EndMenu();
 						}
 
-						if (LCG_BM(CommonStrings::Group, "1"))
+						if (UIL::LCG_BM(CommonStrings::Group, "1"))
 						{
 							if (DrawDescriptionPopup())
 							{
@@ -2046,7 +2044,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Data::configNodeOverrideOffset_t>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "5"),
+							UIL::LS(CommonStrings::Paste, "5"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2057,12 +2055,12 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "6")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "6")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}
 
-				if (LCG_BM(CommonStrings::Rename, "7"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "7"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2075,14 +2073,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Reset, "8")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Reset, "8")))
 				{
 					result.action = NodeOverrideCommonAction::Reset;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "9")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "9")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2091,7 +2089,7 @@ namespace IED
 				                   UIClipboard::Get<Data::configNodeOverrideTransformValues_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "A"),
+						UIL::LS(CommonStrings::PasteOver, "A"),
 						nullptr,
 						false,
 						hasClipData))
@@ -2182,9 +2180,9 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (LCG_BM(CommonStrings::Insert, "1"))
+				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (LCG_BM(CommonStrings::New, "2"))
+					if (UIL::LCG_BM(CommonStrings::New, "2"))
 					{
 						if (DrawDescriptionPopup())
 						{
@@ -2200,7 +2198,7 @@ namespace IED
 					auto clipData = UIClipboard::Get<Ta>();
 
 					if (ImGui::MenuItem(
-							LS(CommonStrings::Paste, "3"),
+							UIL::LS(CommonStrings::Paste, "3"),
 							nullptr,
 							false,
 							clipData != nullptr))
@@ -2213,12 +2211,12 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Delete, "4")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Delete, "4")))
 				{
 					result.action = NodeOverrideCommonAction::Delete;
 				}
 
-				if (LCG_BM(CommonStrings::Rename, "5"))
+				if (UIL::LCG_BM(CommonStrings::Rename, "5"))
 				{
 					if (DrawDescriptionPopup())
 					{
@@ -2231,14 +2229,14 @@ namespace IED
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Reset, "6")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Reset, "6")))
 				{
 					result.action = NodeOverrideCommonAction::Reset;
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "7")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "7")))
 				{
 					UIClipboard::Set(a_entry);
 				}
@@ -2249,7 +2247,7 @@ namespace IED
 				                   UIClipboard::Get<secondary_type>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "8"),
+						UIL::LS(CommonStrings::PasteOver, "8"),
 						nullptr,
 						false,
 						hasClipData))
@@ -2346,7 +2344,7 @@ namespace IED
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.00005f : 0.005f;
 
 			if (ImGui::DragFloat3(
-					LS(CommonStrings::Scale, "ctl_1"),
+					UIL::LS(CommonStrings::Scale, "ctl_1"),
 					a_entry.adjustScale,
 					dragSpeed,
 					-20.0f,
@@ -2362,7 +2360,7 @@ namespace IED
 			}
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UIWidgetCommonStrings::IgnoreDead, "ctl_2"),
+					UIL::LS(UIWidgetCommonStrings::IgnoreDead, "ctl_2"),
 					stl::underlying(std::addressof(a_entry.offsetFlags.value)),
 					stl::underlying(Data::NodeOverrideOffsetFlags::kAdjustIgnoreDead)))
 			{
@@ -2400,7 +2398,7 @@ namespace IED
 				auto configClass = GetConfigClass();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Clear, "1"),
+						UIL::LS(CommonStrings::Clear, "1"),
 						nullptr,
 						false,
 						a_it != a_data.get_data<Td>().end() &&
@@ -2420,7 +2418,7 @@ namespace IED
 				//if constexpr (std::is_same_v<Td, entryNodeOverrideData_t::transform_data_type>)
 				//{
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Reset, "2"),
+						UIL::LS(CommonStrings::Reset, "2"),
 						nullptr,
 						false,
 						a_it != a_data.get_data<Td>().end()))
@@ -2441,7 +2439,7 @@ namespace IED
 				bool has = a_it != a_data.get_data<Td>().end();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::Copy, "A"),
+						UIL::LS(CommonStrings::Copy, "A"),
 						nullptr,
 						false,
 						has))
@@ -2463,7 +2461,7 @@ namespace IED
 				}
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "B"),
+						UIL::LS(CommonStrings::PasteOver, "B"),
 						nullptr,
 						false,
 						hasClipData))
@@ -2526,7 +2524,7 @@ namespace IED
 
 			UICommon::PushDisabled(disabled);
 
-			if (LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
+			if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "1"))
 			{
 				if (current.data)
 				{
@@ -2536,7 +2534,7 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (LCG_MI(CommonStrings::Copy, "3"))
+			if (UIL::LCG_MI(CommonStrings::Copy, "3"))
 			{
 				if (current.data)
 				{
@@ -2552,7 +2550,7 @@ namespace IED
 			auto clipData = UIClipboard::Get<Data::configNodeOverrideHolderClipboardData_t>();
 
 			if (ImGui::MenuItem(
-					LS(CommonStrings::PasteOver, "4"),
+					UIL::LS(CommonStrings::PasteOver, "4"),
 					nullptr,
 					false,
 					clipData != nullptr))
@@ -2593,9 +2591,9 @@ namespace IED
 			auto& queue = GetPopupQueue();
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UINodeOverrideEditorWidgetStrings::ClearAllPrompt))
+					 UIL::LS(UINodeOverrideEditorWidgetStrings::ClearAllPrompt))
 				.call([this,
 			           handle     = a_data.handle,
 			           panel_type = GetPanelTypeFromFlags(flags.value)](const auto&) {
@@ -2656,9 +2654,9 @@ namespace IED
 			auto& queue = GetPopupQueue();
 			queue.push(
 					 UIPopupType::Confirm,
-					 LS(CommonStrings::Confirm),
+					 UIL::LS(CommonStrings::Confirm),
 					 "%s",
-					 LS(UINodeOverrideEditorWidgetStrings::PasteOverFullPrompt))
+					 UIL::LS(UINodeOverrideEditorWidgetStrings::PasteOverFullPrompt))
 				.call([this,
 			           handle     = a_data.handle,
 			           dstSex     = GetSex(),

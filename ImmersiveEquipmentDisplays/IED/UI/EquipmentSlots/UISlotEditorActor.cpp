@@ -15,26 +15,26 @@ namespace IED
 		UISlotEditorActor::UISlotEditorActor(Controller& a_controller) :
 			UISlotEditorCommon<Game::FormID>(a_controller),
 			UIActorList<entrySlotData_t>(a_controller),
-			UITipsInterface(a_controller),
 			UIPopupInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UIFormInfoTooltipWidget(a_controller),
 			UIMiscTextInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
-		{}
+		{
+		}
+
+		UISlotEditorActor::~UISlotEditorActor() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
+		}
 
 		void UISlotEditorActor::EditorInitialize()
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetConfigStore();
 
 			SetSex(store.settings.data.ui.slotEditor.actorConfig.sex, false);
 		}
@@ -57,7 +57,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::ActorBlocked));
+							UIL::LS(UIWidgetCommonStrings::ActorBlocked));
 
 						ImGui::Spacing();
 
@@ -69,7 +69,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorWarning,
 							"%s",
-							LS(UIWidgetCommonStrings::XP32SkeletonWarning));
+							UIL::LS(UIWidgetCommonStrings::XP32SkeletonWarning));
 
 						ImGui::Spacing();
 
@@ -388,19 +388,19 @@ namespace IED
 
 			if (ImGui::BeginMenu(entry->desc.c_str()))
 			{
-				if (ImGui::MenuItem(LS(CommonStrings::Evaluate, "1")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Evaluate, "1")))
 				{
 					m_controller.QueueEvaluate(entry->handle, ControllerUpdateFlags::kNone);
 				}
 
-				if (ImGui::MenuItem(LS(CommonStrings::Reset, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Reset, "2")))
 				{
 					m_controller.QueueReset(entry->handle, ControllerUpdateFlags::kNone);
 				}
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(UIWidgetCommonStrings::NiNodeUpdate, "3")))
+				if (ImGui::MenuItem(UIL::LS(UIWidgetCommonStrings::NiNodeUpdate, "3")))
 				{
 					m_controller.QueueNiNodeUpdate(entry->handle);
 				}
@@ -428,7 +428,7 @@ namespace IED
 			}
 
 			ImGui::Spacing();
-			ImGui::Text("%s:", LS(UIWidgetCommonStrings::OccupiedSlots));
+			ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::OccupiedSlots));
 			ImGui::Spacing();
 
 			ImGui::Indent();
@@ -460,7 +460,7 @@ namespace IED
 				if (!slot.IsNodeVisible())
 				{
 					ss << " ";
-					ss << L(UIWidgetCommonStrings::HiddenBrackets);
+					ss << UIL::L(UIWidgetCommonStrings::HiddenBrackets);
 				}
 
 				ss << std::endl;
@@ -497,7 +497,7 @@ namespace IED
 				ImGui::SameLine(0.0f, 25.0f);
 			}
 
-			ImGui::Text("%s:", LS(CommonStrings::Item));
+			ImGui::Text("%s:", UIL::LS(CommonStrings::Item));
 			ImGui::SameLine();
 
 			DrawObjectEntryHeaderInfo(

@@ -13,8 +13,7 @@ namespace IED
 		template <
 			class Td,
 			class Th>
-		class UIListBase :
-			public virtual UILocalizationInterface
+		class UIListBase
 		{
 			using list_type = stl::map<Th, stl::fixed_string>;
 
@@ -46,8 +45,7 @@ namespace IED
 			void ListDrawInfo(const listValue_t& a_entry);
 
 			UIListBase(
-				Localization::ILocalization& a_localization,
-				float                        a_itemWidthScalar = -12.0f) noexcept;
+				float a_itemWidthScalar = -12.0f) noexcept;
 
 			virtual ~UIListBase() noexcept = default;
 
@@ -104,8 +102,7 @@ namespace IED
 
 		template <class Td, class Th>
 		UIListBase<Td, Th>::UIListBase(
-			Localization::ILocalization& a_localization,
-			float                        a_itemWidthScalar) noexcept :
+			float a_itemWidthScalar) noexcept :
 			m_itemWidthScalar(a_itemWidthScalar)
 		{
 		}
@@ -135,7 +132,7 @@ namespace IED
 					m_listBuf1,
 					m_listCurrent ?
 						m_listCurrent->desc.c_str() :
-                        nullptr,
+						nullptr,
 					ImGuiComboFlags_HeightLarge))
 			{
 				const typename list_type::value_type* newItem = nullptr;
@@ -165,7 +162,7 @@ namespace IED
 						ImGui::PushStyleColor(ImGuiCol_Text, *highlight);
 					}
 
-					if (ImGui::Selectable(LMKID<3>(e.second.c_str(), "1"), selected))
+					if (ImGui::Selectable(UIL::LMKID<3>(e.second.c_str(), "1"), selected))
 					{
 						newItem = std::addressof(e);
 					}

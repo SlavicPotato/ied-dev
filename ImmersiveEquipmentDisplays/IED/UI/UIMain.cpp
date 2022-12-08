@@ -19,6 +19,11 @@
 #include "UISkeletonExplorer.h"
 #include "UIStats.h"
 
+#include "Custom/UICustomTabPanel.h"
+#include "EquipmentSlots/UISlotTabPanel.h"
+
+#include "Widgets/UIExportFilterWidget.h"
+
 #include "IED/Controller/Controller.h"
 
 #include "I3DI/I3DIMain.h"
@@ -30,9 +35,8 @@ namespace IED
 		UIMain::UIMain(
 			Tasks::UIRenderTaskBase& a_owner,
 			Controller&              a_controller) :
-			UILocalizationInterface(a_controller),
-			UIAboutModal(a_controller),
 			UIKeyedInputLockReleaseHandler(a_owner),
+			UIAboutModal(a_controller),
 			m_childWindows
 		{
 			std::make_unique<UIFormBrowser>(a_controller),
@@ -60,10 +64,9 @@ namespace IED
 #endif
 		}
 		,
-			m_owner(a_owner),
-			m_controller(a_controller),
 			m_formLookupCache(a_controller),
-			m_popupQueue(a_controller)
+			m_owner(a_owner),
+			m_controller(a_controller)
 		{
 #if defined(DEBUG)
 			using enum_type = std::underlying_type_t<ChildWindowID>;
@@ -244,28 +247,28 @@ namespace IED
 
 		void UIMain::DrawMenuBarContents()
 		{
-			if (LCG_BM(CommonStrings::File, "1"))
+			if (UIL::LCG_BM(CommonStrings::File, "1"))
 			{
 				DrawFileMenu();
 
 				ImGui::EndMenu();
 			}
 
-			if (LCG_BM(CommonStrings::View, "2"))
+			if (UIL::LCG_BM(CommonStrings::View, "2"))
 			{
 				DrawViewMenu();
 
 				ImGui::EndMenu();
 			}
 
-			if (LCG_BM(CommonStrings::Tools, "3"))
+			if (UIL::LCG_BM(CommonStrings::Tools, "3"))
 			{
 				DrawToolsMenu();
 
 				ImGui::EndMenu();
 			}
 
-			if (LCG_BM(CommonStrings::Help, "4"))
+			if (UIL::LCG_BM(CommonStrings::Help, "4"))
 			{
 				DrawHelpMenu();
 
@@ -274,7 +277,7 @@ namespace IED
 
 			ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
-			if (LCG_BM(CommonStrings::Actions, "X"))
+			if (UIL::LCG_BM(CommonStrings::Actions, "X"))
 			{
 				DrawActionsMenu();
 
@@ -286,7 +289,7 @@ namespace IED
 		{
 			if (auto context = GetChildContext<UIDialogImportExport>())
 			{
-				if (LCG_MI(UIMainStrings::ImportExport, "1"))
+				if (UIL::LCG_MI(UIMainStrings::ImportExport, "1"))
 				{
 					context->ToggleOpenState();
 				}
@@ -294,7 +297,7 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (LCG_BM(UIMainStrings::DefaultConfig, "2"))
+			if (UIL::LCG_BM(UIMainStrings::DefaultConfig, "2"))
 			{
 				DrawDefaultConfigSubmenu();
 
@@ -303,7 +306,7 @@ namespace IED
 
 			ImGui::Separator();
 
-			if (LCG_MI(CommonStrings::Exit, "3"))
+			if (UIL::LCG_MI(CommonStrings::Exit, "3"))
 			{
 				SetOpenState(false);
 			}
@@ -337,7 +340,7 @@ namespace IED
 
 		void UIMain::DrawToolsMenu()
 		{
-			if (LCG_BM(UIMainStrings::ProfileEditors, "1"))
+			if (UIL::LCG_BM(UIMainStrings::ProfileEditors, "1"))
 			{
 				DrawProfileEditorsSubmenu();
 
@@ -349,7 +352,7 @@ namespace IED
 			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "4");
 			DrawContextMenuItem<UILog>(CommonStrings::Log, "5");
 
-			if (LCG_BM(UIMainStrings::Diagnostics, "6"))
+			if (UIL::LCG_BM(UIMainStrings::Diagnostics, "6"))
 			{
 				DrawDiagnosticsSubmenu();
 
@@ -359,12 +362,12 @@ namespace IED
 
 		void UIMain::DrawActionsMenu()
 		{
-			if (LCG_MI(UIMainStrings::EvaluateAll, "1"))
+			if (UIL::LCG_MI(UIMainStrings::EvaluateAll, "1"))
 			{
 				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 			}
 
-			if (LCG_MI(UIMainStrings::ResetAll, "2"))
+			if (UIL::LCG_MI(UIMainStrings::ResetAll, "2"))
 			{
 				m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 			}
@@ -372,7 +375,7 @@ namespace IED
 
 		void UIMain::DrawHelpMenu()
 		{
-			if (LCG_MI(CommonStrings::About, "1"))
+			if (UIL::LCG_MI(CommonStrings::About, "1"))
 			{
 				QueueAboutPopup();
 			}
@@ -380,13 +383,13 @@ namespace IED
 
 		void UIMain::DrawDefaultConfigSubmenu()
 		{
-			if (LCG_MI(UIMainStrings::LoadDefaultAsCurrent, "1"))
+			if (UIL::LCG_MI(UIMainStrings::LoadDefaultAsCurrent, "1"))
 			{
 				m_popupQueue.push(
 								UIPopupType::Confirm,
-								LS(CommonStrings::Confirm),
+								UIL::LS(CommonStrings::Confirm),
 								"%s",
-								LS(UIMainStrings::LoadDefaultAsCurrentPrompt))
+								UIL::LS(UIMainStrings::LoadDefaultAsCurrentPrompt))
 					.draw([this,
 				           c_exists  = Serialization::FileExists(PATHS::DEFAULT_CONFIG),
 				           uc_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER)] {
@@ -397,7 +400,7 @@ namespace IED
 						UICommon::PushDisabled(!c_exists);
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::Default, "1"),
+								UIL::LS(CommonStrings::Default, "1"),
 								settings.data.ui.selectedDefaultConfImport ==
 									Data::DefaultConfigType::kDefault))
 						{
@@ -413,7 +416,7 @@ namespace IED
 						UICommon::PushDisabled(!uc_exists);
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::User, "2"),
+								UIL::LS(CommonStrings::User, "2"),
 								settings.data.ui.selectedDefaultConfImport ==
 									Data::DefaultConfigType::kUser))
 						{
@@ -446,7 +449,7 @@ namespace IED
 							{
 								window->QueueImportPopup(
 									PATHS::DEFAULT_CONFIG,
-									LS(CommonStrings::Default));
+									UIL::LS(CommonStrings::Default));
 							}
 							break;
 						case Data::DefaultConfigType::kUser:
@@ -454,24 +457,24 @@ namespace IED
 							{
 								window->QueueImportPopup(
 									PATHS::DEFAULT_CONFIG_USER,
-									LS(CommonStrings::User));
+									UIL::LS(CommonStrings::User));
 							}
 							break;
 						}
 					});
 			}
 
-			if (LCG_MI(UIMainStrings::SaveCurrentAsDefault, "2"))
+			if (UIL::LCG_MI(UIMainStrings::SaveCurrentAsDefault, "2"))
 			{
 				m_popupQueue.push(
 								UIPopupType::Confirm,
-								LS(CommonStrings::Confirm),
+								UIL::LS(CommonStrings::Confirm),
 								"%s",
-								LS(UIMainStrings::SaveCurrentAsDefaultPrompt))
+								UIL::LS(UIMainStrings::SaveCurrentAsDefaultPrompt))
 					.draw([this] {
 						auto& conf = m_controller.GetConfigStore().settings;
 
-						conf.mark_if(DrawExportFilters(conf.data.ui.defaultExportFlags));
+						conf.mark_if(UIExportFilterWidget::DrawExportFilters(conf.data.ui.defaultExportFlags));
 
 						return true;
 					})
@@ -484,9 +487,9 @@ namespace IED
 						{
 							m_popupQueue.push(
 								UIPopupType::Message,
-								LS(CommonStrings::Confirm),
+								UIL::LS(CommonStrings::Confirm),
 								"%s\n\n%s",
-								LS(UIMainStrings::SaveCurrentAsDefaultError),
+								UIL::LS(UIMainStrings::SaveCurrentAsDefaultError),
 								m_controller.JSGetLastException().what());
 						}
 					})

@@ -23,7 +23,7 @@ namespace IED
 
 			auto& formBrowser = m_controller.UIGetFormBrowser();
 
-			if (ImGui::Button(LS(CommonStrings::Find, "ctl")))
+			if (ImGui::Button(UIL::LS(CommonStrings::Find, "ctl")))
 			{
 				if (formBrowser.Open(false))
 				{
@@ -48,9 +48,9 @@ namespace IED
 							auto& queue = m_controller.UIGetPopupQueue();
 							queue.push(
 								UIPopupType::Message,
-								LS(CommonStrings::Error),
+								UIL::LS(CommonStrings::Error),
 								"%s [%.8X]",
-								LS(UIWidgetCommonStrings::NPCNotFound),
+								UIL::LS(UIWidgetCommonStrings::NPCNotFound),
 								form.get());
 						}
 					});

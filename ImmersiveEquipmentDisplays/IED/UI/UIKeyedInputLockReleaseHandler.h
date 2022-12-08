@@ -73,13 +73,13 @@ namespace IED
 			std::uint32_t m_key{ 0 };
 			std::uint32_t m_comboKey{ 0 };
 
+			float m_lockedAlpha{ 0.33f };
+
 			bool m_held{ false };
 			bool m_unfreezeTime{ false };
 
 			KeyEventState m_comboState{ KeyEventState::KeyUp };
 			KeyEventState m_state{ KeyEventState::KeyUp };
-
-			float m_lockedAlpha{ 0.33f };
 
 			std::optional<float> m_currentAlpha;
 			std::optional<float> m_originalAlpha;

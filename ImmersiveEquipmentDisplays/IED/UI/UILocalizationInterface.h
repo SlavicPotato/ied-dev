@@ -8,55 +8,50 @@ namespace IED
 	{
 		class UILocalizationInterface
 		{
-		protected:
-			inline constexpr UILocalizationInterface(
-				Localization::ILocalization& a_localization) noexcept :
-				m_localization(a_localization)
+		public:
+
+			template <class Te>
+			static inline constexpr auto& L(Te a_id)
 			{
+				return GetLocalizationInterface().L(a_id);
 			}
 
 			template <class Te>
-			inline constexpr auto& L(Te a_id) const
+			static inline constexpr auto LS(Te a_id)
 			{
-				return m_localization.L(a_id);
-			}
-
-			template <class Te>
-			inline constexpr auto LS(Te a_id) const
-			{
-				return m_localization.L(a_id).c_str();
+				return GetLocalizationInterface().L(a_id).c_str();
 			}
 
 			template <class Te, std::uint32_t _NumHash = 2>
-			inline constexpr const char* LS(
+			static inline constexpr const char* LS(
 				Te          a_id,
-				const char* a_im_id) const noexcept
+				const char* a_im_id) noexcept
 			{
 				return LMKID<_NumHash>(LS(a_id), a_im_id);
 			}
 
 			template <class Te>
-			inline constexpr bool LCG_BM(
+			static inline constexpr bool LCG_BM(
 				Te          a_id,
-				const char* a_im_id) const
+				const char* a_im_id)
 			{
 				return ImGui::BeginMenu(LMKID<2>(LS(a_id), a_im_id));
 			}
 
 			template <class Te>
-			inline constexpr bool LCG_MI(
+			static inline constexpr bool LCG_MI(
 				Te          a_id,
-				const char* a_im_id) const
+				const char* a_im_id)
 			{
 				return ImGui::MenuItem(LMKID<2>(LS(a_id), a_im_id));
 			}
 
 			template <std::uint32_t _NumHash>
-			const char* LMKID(
+			static const char* LMKID(
 				const char* a_str,
-				const char* a_im_id) const noexcept
+				const char* a_im_id) noexcept
 			{
-				auto& buffer = m_localization.m_scBuffer1;
+				auto& buffer = GetLocalizationInterface().m_scBuffer1;
 
 				static_assert(sizeof(buffer) > _NumHash);
 
@@ -101,8 +96,10 @@ namespace IED
 				return buffer;
 			}
 
-		private:
-			Localization::ILocalization& m_localization;
+			static Localization::ILocalization& GetLocalizationInterface() noexcept;
+
 		};
+
+		using UIL = UILocalizationInterface;
 	}
 }

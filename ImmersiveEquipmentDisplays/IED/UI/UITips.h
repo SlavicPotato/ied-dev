@@ -9,21 +9,17 @@ namespace IED
 
 	namespace UI
 	{
-		class UITipsInterface :
-			public virtual UILocalizationInterface
+		class UITipsInterface
 		{
 		public:
-			UITipsInterface(Localization::ILocalization& a_controller);
-
-		protected:
-			void        DrawTip(UITip a_id, bool a_sameLine = true) const;
-			void        DrawTipImportant(UITip a_id, bool a_sameLine = true) const;
-			void        DrawTip(const char* a_text, bool a_sameLine = true) const;
-			const char* GetTipText(UITip a_id) const;
+			static void        DrawTip(UITip a_id, bool a_sameLine = true);
+			static void        DrawTipImportant(UITip a_id, bool a_sameLine = true);
+			static void        DrawTip(const char* a_text, bool a_sameLine = true);
+			static const char* GetTipText(UITip a_id);
 
 		private:
-			void DrawTipText(const char* a_text, bool a_sameLine) const;
-			void DrawTipTextImportant(const char* a_text, bool a_sameLine) const;
+			static void DrawTipText(const char* a_text, bool a_sameLine);
+			static void DrawTipTextImportant(const char* a_text, bool a_sameLine);
 		};
 
 	}

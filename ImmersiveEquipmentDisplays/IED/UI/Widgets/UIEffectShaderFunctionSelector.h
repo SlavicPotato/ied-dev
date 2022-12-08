@@ -12,16 +12,14 @@ namespace IED
 
 	namespace UI
 	{
-		class UIEffectShaderFunctionSelector :
-			public virtual UILocalizationInterface
+		class UIEffectShaderFunctionSelector
 		{
 		public:
-			UIEffectShaderFunctionSelector(Localization::ILocalization& a_localization);
 
-			bool DrawEffectShaderFunctionSelector(
+			static bool DrawEffectShaderFunctionSelector(
 				Data::EffectShaderFunctionType& a_type);
 
-			const char* esf_to_desc(Data::EffectShaderFunctionType a_type) const;
+			static const char* esf_to_desc(Data::EffectShaderFunctionType a_type);
 		};
 	}
 

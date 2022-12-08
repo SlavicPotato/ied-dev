@@ -51,19 +51,13 @@ namespace IED
 
 		);
 
-		UIPackageTypeSelectorWidget::UIPackageTypeSelectorWidget(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIPackageTypeSelectorWidget::DrawPackageTypeSelector(
 			PACKAGE_PROCEDURE_TYPE& a_type)
 		{
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Type, "pc_type_sel"),
+					UIL::LS(CommonStrings::Type, "pc_type_sel"),
 					procedure_type_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -79,7 +73,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIPackageTypeSelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UIPackageTypeSelectorWidgetStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -96,88 +90,88 @@ namespace IED
 		}
 
 		const char* UIPackageTypeSelectorWidget::procedure_type_to_desc(
-			PACKAGE_PROCEDURE_TYPE a_type) const
+			PACKAGE_PROCEDURE_TYPE a_type)
 		{
 			switch (a_type)
 			{
 			case PACKAGE_PROCEDURE_TYPE::kFind:
-				return LS(UIPackageTypeSelectorWidgetStrings::Find);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Find);
 			case PACKAGE_PROCEDURE_TYPE::kFollow:
-				return LS(UIPackageTypeSelectorWidgetStrings::Follow);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Follow);
 			case PACKAGE_PROCEDURE_TYPE::kEscort:
-				return LS(UIPackageTypeSelectorWidgetStrings::Escort);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Escort);
 			case PACKAGE_PROCEDURE_TYPE::kEat:
-				return LS(UIPackageTypeSelectorWidgetStrings::Eat);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Eat);
 			case PACKAGE_PROCEDURE_TYPE::kSleep:
-				return LS(UIPackageTypeSelectorWidgetStrings::Sleep);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Sleep);
 			case PACKAGE_PROCEDURE_TYPE::kWander:
-				return LS(UIPackageTypeSelectorWidgetStrings::Wander);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Wander);
 			case PACKAGE_PROCEDURE_TYPE::kTravel:
-				return LS(UIPackageTypeSelectorWidgetStrings::Travel);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Travel);
 			case PACKAGE_PROCEDURE_TYPE::kAccompany:
-				return LS(UIPackageTypeSelectorWidgetStrings::Accompany);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Accompany);
 			case PACKAGE_PROCEDURE_TYPE::kUseItemAt:
-				return LS(UIPackageTypeSelectorWidgetStrings::UseItemAt);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::UseItemAt);
 			case PACKAGE_PROCEDURE_TYPE::kAmbush:
-				return LS(UIPackageTypeSelectorWidgetStrings::Ambush);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Ambush);
 			case PACKAGE_PROCEDURE_TYPE::kFleeNotCombat:
-				return LS(UIPackageTypeSelectorWidgetStrings::FleeNotCombat);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::FleeNotCombat);
 			case PACKAGE_PROCEDURE_TYPE::kCastMagic:
-				return LS(UIPackageTypeSelectorWidgetStrings::CastMagic);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::CastMagic);
 			case PACKAGE_PROCEDURE_TYPE::kSandbox:
-				return LS(UIPackageTypeSelectorWidgetStrings::Sandbox);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Sandbox);
 			case PACKAGE_PROCEDURE_TYPE::kGuard:
-				return LS(UIPackageTypeSelectorWidgetStrings::Guard);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Guard);
 			case PACKAGE_PROCEDURE_TYPE::kDialogue:
-				return LS(UIPackageTypeSelectorWidgetStrings::Dialogue);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Dialogue);
 			case PACKAGE_PROCEDURE_TYPE::kUseWeapon:
-				return LS(UIPackageTypeSelectorWidgetStrings::UseWeapon);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::UseWeapon);
 			case PACKAGE_PROCEDURE_TYPE::kFind2:
-				return LS(UIPackageTypeSelectorWidgetStrings::Find2);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Find2);
 			case PACKAGE_PROCEDURE_TYPE::kPackage:
-				return LS(UIPackageTypeSelectorWidgetStrings::Package);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Package);
 			case PACKAGE_PROCEDURE_TYPE::kPackageTemplate:
-				return LS(UIPackageTypeSelectorWidgetStrings::PackageTemplate);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::PackageTemplate);
 			case PACKAGE_PROCEDURE_TYPE::kActivate:
-				return LS(UIPackageTypeSelectorWidgetStrings::Activate);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Activate);
 			case PACKAGE_PROCEDURE_TYPE::kAlarm:
-				return LS(UIPackageTypeSelectorWidgetStrings::Alarm);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Alarm);
 			case PACKAGE_PROCEDURE_TYPE::kFlee:
-				return LS(UIPackageTypeSelectorWidgetStrings::Flee);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Flee);
 			case PACKAGE_PROCEDURE_TYPE::kTrespass:
-				return LS(UIPackageTypeSelectorWidgetStrings::Trespass);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Trespass);
 			case PACKAGE_PROCEDURE_TYPE::kSpectator:
-				return LS(UIPackageTypeSelectorWidgetStrings::Spectator);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Spectator);
 			case PACKAGE_PROCEDURE_TYPE::kReactToDead:
-				return LS(UIPackageTypeSelectorWidgetStrings::ReactToDead);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::ReactToDead);
 			case PACKAGE_PROCEDURE_TYPE::kGetUpFromChairBed:
-				return LS(UIPackageTypeSelectorWidgetStrings::GetUpFromChairBed);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::GetUpFromChairBed);
 			case PACKAGE_PROCEDURE_TYPE::kDoNothing:
-				return LS(UIPackageTypeSelectorWidgetStrings::DoNothing);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::DoNothing);
 			case PACKAGE_PROCEDURE_TYPE::kInGameDialogue:
-				return LS(UIPackageTypeSelectorWidgetStrings::InGameDialogue);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::InGameDialogue);
 			case PACKAGE_PROCEDURE_TYPE::kSurface:
-				return LS(UIPackageTypeSelectorWidgetStrings::Surface);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Surface);
 			case PACKAGE_PROCEDURE_TYPE::kSearchForAttacker:
-				return LS(UIPackageTypeSelectorWidgetStrings::SearchForAttacker);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::SearchForAttacker);
 			case PACKAGE_PROCEDURE_TYPE::kAvoidPlayer:
-				return LS(UIPackageTypeSelectorWidgetStrings::AvoidPlayer);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::AvoidPlayer);
 			case PACKAGE_PROCEDURE_TYPE::kReactToDestroyedObject:
-				return LS(UIPackageTypeSelectorWidgetStrings::ReactToDestroyedObject);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::ReactToDestroyedObject);
 			case PACKAGE_PROCEDURE_TYPE::kReactToGrenadeOrMine:
-				return LS(UIPackageTypeSelectorWidgetStrings::ReactToGrenadeOrMine);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::ReactToGrenadeOrMine);
 			case PACKAGE_PROCEDURE_TYPE::kStealWarning:
-				return LS(UIPackageTypeSelectorWidgetStrings::StealWarning);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::StealWarning);
 			case PACKAGE_PROCEDURE_TYPE::kPickPocketWarning:
-				return LS(UIPackageTypeSelectorWidgetStrings::PickPocketWarning);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::PickPocketWarning);
 			case PACKAGE_PROCEDURE_TYPE::kMovementBlocked:
-				return LS(UIPackageTypeSelectorWidgetStrings::MovementBlocked);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::MovementBlocked);
 			case PACKAGE_PROCEDURE_TYPE::kVampireFeed:
-				return LS(UIPackageTypeSelectorWidgetStrings::VampireFeed);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::VampireFeed);
 			case PACKAGE_PROCEDURE_TYPE::kCannibal:
-				return LS(UIPackageTypeSelectorWidgetStrings::Cannibal);
+				return UIL::LS(UIPackageTypeSelectorWidgetStrings::Cannibal);
 			case PACKAGE_PROCEDURE_TYPE::kNone:
-				return LS(CommonStrings::None);
+				return UIL::LS(CommonStrings::None);
 			default:
 				return nullptr;
 			}

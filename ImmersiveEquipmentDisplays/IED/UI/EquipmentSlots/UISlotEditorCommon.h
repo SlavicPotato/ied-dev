@@ -119,7 +119,6 @@ namespace IED
 			UIProfileSelectorWidget<
 				profileSelectorParamsSlot_t<T>,
 				SlotProfile>(
-				a_controller,
 				UIProfileSelectorFlags::kEnableMerge |
 					(!a_disableApply ?
 		                 UIProfileSelectorFlags::kEnableApply :
@@ -430,7 +429,7 @@ namespace IED
 					"tree_prof",
 					false,
 					"%s",
-					this->LS(CommonStrings::Profile)))
+					UIL::LS(CommonStrings::Profile)))
 			{
 				ImGui::Spacing();
 
@@ -470,7 +469,7 @@ namespace IED
 			ImGui::PushID("import_opts");
 
 			ImGui::CheckboxFlagsT(
-				this->LS(CommonStrings::All, "1"),
+				UIL::LS(CommonStrings::All, "1"),
 				stl::underlying(std::addressof(m_importFlags.value)),
 				stl::underlying(UISlotImportFlags::kEverything));
 
@@ -479,7 +478,7 @@ namespace IED
 			UICommon::PushDisabled(disabled);
 
 			ImGui::CheckboxFlagsT(
-				this->LS(CommonStrings::Overrides, "2"),
+				UIL::LS(CommonStrings::Overrides, "2"),
 				stl::underlying(std::addressof(m_importFlags.value)),
 				stl::underlying(UISlotImportFlags::kOverrides));
 

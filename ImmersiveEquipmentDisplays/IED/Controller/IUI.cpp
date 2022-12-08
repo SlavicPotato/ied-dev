@@ -97,7 +97,7 @@ namespace IED
 
 		if (!task)
 		{
-			task = make_render_task<UI::UIToast>(*this);
+			task = make_render_task<UI::UIToast>();
 
 			task->SetControlLock(false);
 			task->SetFreezeTime(false);

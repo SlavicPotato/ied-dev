@@ -23,11 +23,11 @@ namespace IED
 			public UIConditionalVariablesEditorWidget,
 			public UIProfileSelectorWidget<
 				profileSelectorParamsCondVar_t,
-				CondVarProfile>,
-			public virtual UILocalizationInterface
+				CondVarProfile>
 		{
 		public:
 			UIConditionalVariablesEditor(Controller& a_controller);
+			~UIConditionalVariablesEditor() noexcept override;
 
 			virtual void EditorInitialize() override;
 			virtual void EditorDraw() override;

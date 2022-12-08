@@ -10,18 +10,15 @@ namespace IED
 {
 	namespace UI
 	{
-		class UIVariableSourceSelectorWidget :
-			public virtual UILocalizationInterface
+		class UIVariableSourceSelectorWidget
 		{
 		public:
-			UIVariableSourceSelectorWidget(
-				Localization::ILocalization& a_localization);
 
-			bool DrawVariableSourceSelectorWidget(
+			static bool DrawVariableSourceSelectorWidget(
 				Data::VariableSource& a_type);
 
-			const char* variable_source_to_desc(
-				Data::VariableSource a_type) const;
+			static const char* variable_source_to_desc(
+				Data::VariableSource a_type) ;
 		};
 	}
 

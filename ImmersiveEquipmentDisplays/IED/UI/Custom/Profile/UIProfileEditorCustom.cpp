@@ -12,20 +12,18 @@ namespace IED
 			Controller& a_controller) :
 			UIProfileEditorBase<CustomProfile>(
 				UIProfileStrings::TitleCustom,
-				"ied_pe_cust",
-				a_controller),
+				"ied_pe_cust"),
 			UICustomEditorWidget<int>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UIProfileEditorCustom::~UIProfileEditorCustom() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIProfileEditorCustom::Initialize()
@@ -176,7 +174,7 @@ namespace IED
 
 		void UIProfileEditorCustom::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
 			{
 				EditorDrawMenuBarItems();
 

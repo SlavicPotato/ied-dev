@@ -12,17 +12,19 @@ namespace IED
 			Controller& a_controller) :
 			UIProfileEditorBase<FormFilterProfile>(
 				UIProfileStrings::TitleFormFilters,
-				"ied_pe_ff",
-				a_controller),
+				"ied_pe_ff"),
 			UIFormFilterWidget<FFPEFormFilterParams_t>(a_controller, m_formSelector),
-			UIFormTypeSelectorWidget(a_controller),
-			UILocalizationInterface(a_controller),
 			m_formSelector(a_controller, FormInfoFlags::kNone, false),
 			m_controller(a_controller)
 		{
 			SetOnChangeFunc([this](auto&) {
 				m_controller.QueueEvaluateAll(ControllerUpdateFlags::kNone);
 			});
+		}
+
+		UIProfileEditorFormFilters::~UIProfileEditorFormFilters() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIProfileEditorFormFilters::Initialize()
@@ -32,7 +34,7 @@ namespace IED
 
 		void UIProfileEditorFormFilters::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
 			{
 				DrawMenuBarItems();
 				ImGui::EndMenu();

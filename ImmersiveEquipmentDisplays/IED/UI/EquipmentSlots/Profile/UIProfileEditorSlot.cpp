@@ -11,20 +11,18 @@ namespace IED
 		UIProfileEditorSlot::UIProfileEditorSlot(Controller& a_controller) :
 			UIProfileEditorBase<SlotProfile>(
 				UIProfileStrings::TitleSlot,
-				"ied_pe_slot",
-				a_controller),
+				"ied_pe_slot"),
 			UISlotEditorBase<UIGlobalEditorDummyHandle>(a_controller),
-			UITipsInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
-			UITransformSliderWidget(a_controller),
-			UIFormTypeSelectorWidget(a_controller),
-			UISimpleStringSetWidget(a_controller),
-			UISimpleStringListWidget(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
 			m_controller(a_controller)
 		{
+		}
+
+		UIProfileEditorSlot::~UIProfileEditorSlot() noexcept
+		{
+			GetProfileManager().RemoveSink(this);
 		}
 
 		void UIProfileEditorSlot::Initialize()
@@ -329,7 +327,7 @@ namespace IED
 
 		void UIProfileEditorSlot::DrawProfileEditorMenuBarItems()
 		{
-			if (ImGui::BeginMenu(LS(CommonStrings::Actions, "peb_1")))
+			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Actions, "peb_1")))
 			{
 				EditorDrawMenuBarItems();
 
@@ -344,7 +342,7 @@ namespace IED
 				return;
 			}
 
-			if (ImGui::BeginMenu(LS(UIWidgetCommonStrings::AddSlot, "1")))
+			if (ImGui::BeginMenu(UIL::LS(UIWidgetCommonStrings::AddSlot, "1")))
 			{
 				DrawAddSlotMenu();
 
@@ -441,7 +439,7 @@ namespace IED
 
 					auto& name = StringHolder::GetSingleton().GetSlotName(slot);
 
-					if (ImGui::MenuItem(LMKID<2>(name.c_str(), buf)))
+					if (ImGui::MenuItem(UIL::LMKID<2>(name.c_str(), buf)))
 					{
 						CreateSlot(slot);
 					}
@@ -451,7 +449,7 @@ namespace IED
 			if (full)
 			{
 				ImGui::MenuItem(
-					LS(UIWidgetCommonStrings::NothingToAdd, "ctl_1"),
+					UIL::LS(UIWidgetCommonStrings::NothingToAdd, "ctl_1"),
 					nullptr,
 					false,
 					false);
@@ -459,7 +457,7 @@ namespace IED
 			else
 			{
 				ImGui::Separator();
-				if (ImGui::MenuItem(LS(CommonStrings::All, "ctl_1")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::All, "ctl_1")))
 				{
 					CreateAllSlots();
 				}

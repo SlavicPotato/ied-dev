@@ -14,7 +14,6 @@ namespace IED
 	{
 		UINodeOverrideEditorWindow::UINodeOverrideEditorWindow(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_tabPanel(a_controller),
 			m_controller(a_controller)
 		{
@@ -35,7 +34,7 @@ namespace IED
 			SetWindowDimensions(100.0f, 550.0f);
 
 			if (ImGui::Begin(
-					LS<UIWidgetCommonStrings, 3>(
+					UIL::LS<UIWidgetCommonStrings, 3>(
 						UIWidgetCommonStrings::GearPositioning,
 						WINDOW_ID),
 					GetOpenState(),
@@ -49,7 +48,7 @@ namespace IED
 				{
 					ImGui::TextColored(
 						UICommon::g_colorWarning,
-						LS(UINodeOverrideEditorWindowStrings::DisabledInINI));
+						UIL::LS(UINodeOverrideEditorWindowStrings::DisabledInINI));
 
 					ImGui::Spacing();
 					ImGui::Separator();
@@ -80,14 +79,14 @@ namespace IED
 		{
 			if (ImGui::BeginMenuBar())
 			{
-				if (ImGui::BeginMenu(LS(CommonStrings::File, "1")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::File, "1")))
 				{
 					DrawFileMenu();
 
 					ImGui::EndMenu();
 				}
 
-				if (ImGui::BeginMenu(LS(CommonStrings::Tools, "2")))
+				if (ImGui::BeginMenu(UIL::LS(CommonStrings::Tools, "2")))
 				{
 					DrawToolsMenu();
 
@@ -104,7 +103,7 @@ namespace IED
 
 		void UINodeOverrideEditorWindow::DrawFileMenu()
 		{
-			if (ImGui::MenuItem(LS(CommonStrings::Close, "1")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Close, "1")))
 			{
 				SetOpenState(false);
 			}
@@ -117,7 +116,7 @@ namespace IED
 			auto context = rt ? rt->GetContext().GetChildContext<UIProfileEditorNodeOverride>() : nullptr;
 
 			if (ImGui::MenuItem(
-					LS(UIWidgetCommonStrings::ProfileEditor, "1"),
+					UIL::LS(UIWidgetCommonStrings::ProfileEditor, "1"),
 					nullptr,
 					context && context->IsContextOpen(),
 					static_cast<bool>(context)))

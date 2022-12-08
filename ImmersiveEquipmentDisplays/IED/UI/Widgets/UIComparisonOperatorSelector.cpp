@@ -17,12 +17,6 @@ namespace IED
 
 		);
 
-		UIComparisonOperatorSelector::UIComparisonOperatorSelector(
-			Localization::ILocalization& a_localization) :
-			UILocalizationInterface(a_localization)
-		{
-		}
-
 		bool UIComparisonOperatorSelector::DrawComparisonOperatorSelector(
 			Data::ComparisonOperator& a_type)
 		{
@@ -45,7 +39,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							LS<UIComparisonOperatorSelectorStrings, 3>(e, "1"),
+							UIL::LS<UIComparisonOperatorSelectorStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -62,22 +56,22 @@ namespace IED
 		}
 
 		const char* UIComparisonOperatorSelector::comp_operator_to_desc(
-			Data::ComparisonOperator a_comp) const
+			Data::ComparisonOperator a_comp)
 		{
 			switch (a_comp)
 			{
 			case Data::ComparisonOperator::kEqual:
-				return LS(UIComparisonOperatorSelectorStrings::Equal);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::Equal);
 			case Data::ComparisonOperator::kNotEqual:
-				return LS(UIComparisonOperatorSelectorStrings::NotEqual);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::NotEqual);
 			case Data::ComparisonOperator::kGreater:
-				return LS(UIComparisonOperatorSelectorStrings::Greater);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::Greater);
 			case Data::ComparisonOperator::kLower:
-				return LS(UIComparisonOperatorSelectorStrings::Lower);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::Lower);
 			case Data::ComparisonOperator::kGreaterOrEqual:
-				return LS(UIComparisonOperatorSelectorStrings::GreaterOrEqual);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::GreaterOrEqual);
 			case Data::ComparisonOperator::kLowerOrEqual:
-				return LS(UIComparisonOperatorSelectorStrings::LowerOrEqual);
+				return UIL::LS(UIComparisonOperatorSelectorStrings::LowerOrEqual);
 			default:
 				return nullptr;
 			}

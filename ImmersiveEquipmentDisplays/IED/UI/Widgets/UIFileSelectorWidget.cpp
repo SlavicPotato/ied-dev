@@ -22,10 +22,8 @@ namespace IED
 		}
 
 		UIFileSelector::UIFileSelector(
-			Localization::ILocalization& a_loc,
-			const fs::path&              a_root,
-			const fs::path&              a_ext) :
-			UILocalizationInterface(a_loc),
+			const fs::path& a_root,
+			const fs::path& a_ext) :
 			m_root(a_root),
 			m_ext(a_ext)
 		{
@@ -35,12 +33,12 @@ namespace IED
 		{
 			const char* preview = m_selected ?
 			                          m_selected->m_key.c_str() :
-                                      nullptr;
+			                          nullptr;
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
 
 			if (ImGui::BeginCombo(
-					LS(CommonStrings::Files, "file_sel"),
+					UIL::LS(CommonStrings::Files, "file_sel"),
 					preview,
 					ImGuiComboFlags_HeightLarge))
 			{
@@ -57,7 +55,7 @@ namespace IED
 						}
 					}
 
-					if (ImGui::Selectable(LMKID<3>(e.first.c_str(), "1"), selected))
+					if (ImGui::Selectable(UIL::LMKID<3>(e.first.c_str(), "1"), selected))
 					{
 						m_selected.insert(m_root, e);
 						m_selected->UpdateInfo();
@@ -156,12 +154,12 @@ namespace IED
 			{
 				if (!fs::exists(a_file) || !fs::is_regular_file(a_file))
 				{
-					throw std::exception(LS(UIFileSelectorWidgetStrings::ErrorInvalidPath));
+					throw std::exception(UIL::LS(UIFileSelectorWidgetStrings::ErrorInvalidPath));
 				}
 
 				if (!fs::remove(a_file))
 				{
-					throw std::exception(LS(UIFileSelectorWidgetStrings::ErrorFileDelFailed));
+					throw std::exception(UIL::LS(UIFileSelectorWidgetStrings::ErrorFileDelFailed));
 				}
 
 				return true;

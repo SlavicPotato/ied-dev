@@ -30,7 +30,7 @@ namespace IED
 
 				queue.push(
 					UIPopupType::Message,
-					LS(CommonStrings::Error),
+					UIL::LS(CommonStrings::Error),
 					"%s",
 					m_controller.JSGetLastException().what());
 			}
@@ -40,9 +40,9 @@ namespace IED
 
 				queue.push(
 						 UIPopupType::Confirm,
-						 LS(CommonStrings::Confirm),
+						 UIL::LS(CommonStrings::Confirm),
 						 "%s [%s]",
-						 LS(UIDialogImportExportStrings::ImportConfirm),
+						 UIL::LS(UIDialogImportExportStrings::ImportConfirm),
 						 a_key.c_str())
 					.draw([this, state = std::move(state)] {
 						if (state.has_errors())
@@ -51,7 +51,7 @@ namespace IED
 							ImGui::TextColored(
 								UICommon::g_colorWarning,
 								"%s",
-								LS(UIDialogImportExportStrings::ImportHasErrorsWarning));
+								UIL::LS(UIDialogImportExportStrings::ImportHasErrorsWarning));
 							ImGui::PopTextWrapPos();
 
 							ImGui::Separator();
@@ -65,11 +65,11 @@ namespace IED
 						ImGui::Spacing();
 
 						conf.mark_if(ImGui::CheckboxFlagsT(
-							LS(UIDialogImportExportStrings::SkipTempRefs, "1"),
+							UIL::LS(UIDialogImportExportStrings::SkipTempRefs, "1"),
 							stl::underlying(std::addressof(conf.data.ui.importExport.importFlags.value)),
 							stl::underlying(ImportFlags::kEraseTemporary)));
 
-						DrawTip(UITip::SkipTempRefs);
+						UITipsInterface::DrawTip(UITip::SkipTempRefs);
 
 						ImGui::Spacing();
 						ImGui::Separator();
@@ -78,7 +78,7 @@ namespace IED
 						ImGui::PushID("mode_sel");
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::Overwrite, "2"),
+								UIL::LS(CommonStrings::Overwrite, "2"),
 								!conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 						{
 							conf.data.ui.importExport.importFlags.clear(ImportFlags::kMerge);
@@ -88,14 +88,14 @@ namespace IED
 						ImGui::SameLine();
 
 						if (ImGui::RadioButton(
-								LS(CommonStrings::Merge, "3"),
+								UIL::LS(CommonStrings::Merge, "3"),
 								conf.data.ui.importExport.importFlags.test(ImportFlags::kMerge)))
 						{
 							conf.data.ui.importExport.importFlags.set(ImportFlags::kMerge);
 							conf.mark_dirty();
 						}
 
-						DrawTip(UITip::ImportMode);
+						UITipsInterface::DrawTip(UITip::ImportMode);
 
 						ImGui::PopID();
 

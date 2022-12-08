@@ -21,8 +21,7 @@ namespace IED
 		class UIDisplayManagement :
 			public UIContext,
 			public UIWindow,
-			UIExportFilterWidget,
-			public virtual UILocalizationInterface
+			UIExportFilterWidget
 		{
 			inline static constexpr auto WINDOW_ID  = "ied_displmgmt";
 

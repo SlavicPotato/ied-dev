@@ -26,7 +26,7 @@ namespace IED
 
 			if (ImGui::BeginPopup("context_menu"))
 			{
-				if (ImGui::MenuItem(LS(CommonStrings::Clear, "1")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Clear, "1")))
 				{
 					a_data.clear();
 					a_updateop(TransformUpdateValue::All);
@@ -34,7 +34,7 @@ namespace IED
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem(LS(CommonStrings::Copy, "2")))
+				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "2")))
 				{
 					UIClipboard::Set(a_data);
 				}
@@ -42,7 +42,7 @@ namespace IED
 				auto clipData = UIClipboard::Get<Data::configTransform_t>();
 
 				if (ImGui::MenuItem(
-						LS(CommonStrings::PasteOver, "3"),
+						UIL::LS(CommonStrings::PasteOver, "3"),
 						nullptr,
 						false,
 						clipData != nullptr))
@@ -89,7 +89,7 @@ namespace IED
 					a_flags |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					LS(a_label)))
+					UIL::LS(a_label)))
 			{
 				a_extra();
 
@@ -124,7 +124,7 @@ namespace IED
 			ImGui::PushID("flags");
 
 			if (ImGui::CheckboxFlagsT(
-					LS(UITransformSliderWidgetStrings::FixedFrameRotation, "0"),
+					UIL::LS(UITransformSliderWidgetStrings::FixedFrameRotation, "0"),
 					stl::underlying(std::addressof(a_data.xfrmFlags.value)),
 					stl::underlying(Data::ConfigTransformFlags::kExtrinsicRotation)))
 			{
@@ -166,7 +166,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat3(
-					LS(CommonStrings::Position, "1"),
+					UIL::LS(CommonStrings::Position, "1"),
 					*a_data.position,
 					dragSpeed,
 					-5000.0f,
@@ -223,7 +223,7 @@ namespace IED
 			constexpr auto degmax = (pi * 2.0f) * (180.0f / pi);
 
 			if (ImGui::DragFloat3(
-					LS(CommonStrings::Rotation, "2"),
+					UIL::LS(CommonStrings::Rotation, "2"),
 					v,
 					dragSpeed,
 					-degmax,
@@ -239,7 +239,7 @@ namespace IED
 
 				a_updateop(TransformUpdateValue::Rotation);
 			}
-			DrawTip(UITip::Rotation);
+			UITipsInterface::DrawTip(UITip::Rotation);
 
 			if (!tmpb)
 			{
@@ -273,7 +273,7 @@ namespace IED
 			}
 
 			if (ImGui::DragFloat(
-					LS(CommonStrings::Scale, "3"),
+					UIL::LS(CommonStrings::Scale, "3"),
 					std::addressof(*a_data.scale),
 					dragSpeed * 0.01f,
 					0.01f,

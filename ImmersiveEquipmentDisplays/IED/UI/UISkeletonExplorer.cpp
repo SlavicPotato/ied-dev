@@ -19,7 +19,6 @@ namespace IED
 			UIActorList<ActorSkeletonData>(a_controller),
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
-			UILocalizationInterface(a_controller),
 			m_nodeFilter(true),
 			m_controller(a_controller)
 		{
@@ -30,7 +29,7 @@ namespace IED
 			SetWindowDimensions(75.0f, 650.0f);
 
 			if (ImGui::Begin(
-					LS<UIWidgetCommonStrings, 3>(
+					UIL::LS<UIWidgetCommonStrings, 3>(
 						UIWidgetCommonStrings::SkeletonExplorer,
 						WINDOW_ID),
 					GetOpenState()))
@@ -84,7 +83,7 @@ namespace IED
 
 			if (settings.mark_if(
 					ImGui::Checkbox(
-						LS(UISkeletonExplorerStrings::LoadedSkeleton),
+						UIL::LS(UISkeletonExplorerStrings::LoadedSkeleton),
 						std::addressof(settings.data.ui.skeletonExplorer.showLoadedSkeleton))))
 			{
 				if (m_listCurrent)
@@ -97,7 +96,7 @@ namespace IED
 
 			if (settings.mark_if(
 					ImGui::Checkbox(
-						LS(UISkeletonExplorerStrings::FirstPersonSkeleton),
+						UIL::LS(UISkeletonExplorerStrings::FirstPersonSkeleton),
 						std::addressof(settings.data.ui.skeletonExplorer.firstPerson))))
 			{
 				if (m_listCurrent)
@@ -117,7 +116,7 @@ namespace IED
 					"flt_tree",
 					false,
 					"%s",
-					LS(CommonStrings::Filter)))
+					UIL::LS(CommonStrings::Filter)))
 			{
 				auto& settings = m_controller
 				                     .GetConfigStore()
@@ -133,7 +132,7 @@ namespace IED
 
 				settings.mark_if(
 					ImGui::Checkbox(
-						LS(UISkeletonExplorerStrings::FilterShowChildNodes),
+						UIL::LS(UISkeletonExplorerStrings::FilterShowChildNodes),
 						std::addressof(settings.data.ui.skeletonExplorer.filterShowChildNodes)));
 
 				ImGui::Spacing();
@@ -155,7 +154,7 @@ namespace IED
 			{
 				ImGui::Text(
 					"%s:",
-					LS(CommonStrings::Path));
+					UIL::LS(CommonStrings::Path));
 
 				ImGui::SameLine();
 
@@ -170,7 +169,7 @@ namespace IED
 			{
 				if (auto& id = a_data.skeletonID->id())
 				{
-					ImGui::Text("%s:", LS(CommonStrings::ID));
+					ImGui::Text("%s:", UIL::LS(CommonStrings::ID));
 					ImGui::SameLine();
 
 					TextCopyable("%d", *id);
@@ -180,7 +179,7 @@ namespace IED
 					ImGui::SameLine();
 				}
 
-				ImGui::Text("%s:", LS(CommonStrings::Signature));
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Signature));
 				ImGui::SameLine();
 
 				TextCopyable(
@@ -240,7 +239,7 @@ namespace IED
 		{
 			if (!a_data.data->initialized)
 			{
-				ImGui::TextUnformatted(LS(UISkeletonExplorerStrings::CouldNotUpdate));
+				ImGui::TextUnformatted(UIL::LS(UISkeletonExplorerStrings::CouldNotUpdate));
 				ImGui::Spacing();
 
 				return;
@@ -253,7 +252,7 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorWarning,
 					"%s",
-					LS(UISkeletonExplorerStrings::DataUnavailable));
+					UIL::LS(UISkeletonExplorerStrings::DataUnavailable));
 
 				ImGui::Separator();
 				ImGui::Spacing();

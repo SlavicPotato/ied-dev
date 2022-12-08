@@ -12,7 +12,6 @@ namespace IED
 	{
 		UINodeSelectorWidget::UINodeSelectorWidget(
 			Controller& a_controller) :
-			UILocalizationInterface(a_controller),
 			m_controller(a_controller),
 			m_filter(true)
 		{
@@ -86,7 +85,7 @@ namespace IED
 						                 ImGuiSelectableFlags_Disabled :
                                          ImGuiSelectableFlags_None;
 
-						if (ImGui::Selectable(LMKID<3>(desc, "1"), selected, flags))
+						if (ImGui::Selectable(UIL::LMKID<3>(desc, "1"), selected, flags))
 						{
 							a_data.name  = e->first;
 							a_data.flags = e->second.flags;

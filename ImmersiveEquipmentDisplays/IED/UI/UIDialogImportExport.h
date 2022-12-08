@@ -25,8 +25,7 @@ namespace IED
 			public UIContext,
 			public UIWindow,
 			public UIFileSelector,
-			public UIImportWidget,
-			public virtual UITipsInterface
+			public UIImportWidget
 		{
 			static constexpr auto WINDOW_ID = "ied_ie";
 

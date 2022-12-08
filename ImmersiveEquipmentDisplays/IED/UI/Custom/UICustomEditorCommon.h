@@ -70,7 +70,6 @@ namespace IED
 			UIProfileSelectorWidget<
 				profileSelectorParamsCustom_t<T>,
 				CustomProfile>(
-				a_controller,
 				UIProfileSelectorFlags::kEnableApply |
 					UIProfileSelectorFlags::kEnableMerge)
 		{
@@ -185,7 +184,7 @@ namespace IED
 					"tree_prof",
 					false,
 					"%s",
-					this->LS(CommonStrings::Profile)))
+					UIL::LS(CommonStrings::Profile)))
 			{
 				ImGui::Spacing();
 

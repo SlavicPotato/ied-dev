@@ -24,15 +24,15 @@ namespace IED
 
 			bool result = ImGui::InputText(
 				a_label,
-				m_filterBuf,
-				sizeof(m_filterBuf),
+				m_filterBuf.get(),
+				FILTER_BUF_SIZE,
 				m_inputTextFlags);
 
 			if (result)
 			{
 				if (m_filterBuf[0] != 0)
 				{
-					m_filter = m_filterBuf;
+					m_filter = m_filterBuf.get();
 				}
 				else
 				{
