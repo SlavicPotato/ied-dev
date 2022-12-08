@@ -106,7 +106,7 @@ namespace IED
 
 	public:
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_MED  = 333333;
+		inline static constexpr long long STATE_CHECK_INTERVAL_MED  = 200000;
 		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
