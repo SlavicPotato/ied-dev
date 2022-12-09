@@ -14,6 +14,7 @@
 #include "IED/ActorActiveEffectInfo.h"
 #include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
+#include "IED/ConditionalVariableStorage.h"
 
 namespace IED
 {
@@ -23,7 +24,7 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			boost::mutex              lock;
+			boost::mutex            lock;
 			long long               lastUpdate{ 0 };
 			bool                    initialized{ false };
 			bool                    succeeded{ false };
@@ -75,6 +76,21 @@ namespace IED
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
+			void DrawInventoryTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawFactionsTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawEffectsTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawVariablesTabItem(
+				Game::FormID a_handle);
+
 			template <class T>
 			bool DrawActorInfoLineFormStringPair(
 				T                                           a_label,
@@ -113,6 +129,10 @@ namespace IED
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
+			void DrawVariableTreeContents(
+				Game::FormID                    a_handle,
+				const conditionalVariableMap_t& a_data);
+
 			void DrawInventoryFilterTree();
 
 			void DrawFactionEntries(
@@ -130,6 +150,10 @@ namespace IED
 			void DrawEffectEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
+
+			void DrawVariableEntries(
+				Game::FormID                    a_handle,
+				const conditionalVariableMap_t& a_data);
 
 			void DrawInventoryBaseTree(
 				Game::FormID                      a_handle,

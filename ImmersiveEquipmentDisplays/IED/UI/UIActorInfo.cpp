@@ -4,6 +4,8 @@
 
 #include "UIActorInfoStrings.h"
 
+#include "IED/UI/Widgets/UIVariableTypeSelectorWidget.h"
+
 #include "IED/Controller/Controller.h"
 
 namespace IED
@@ -133,67 +135,119 @@ namespace IED
 					"tab_bar",
 					ImGuiTabBarFlags_NoCloseWithMiddleMouseButton))
 			{
-				stl::snprintf(
-					m_buffer,
-					"%s (%zu)",
-					UIL::LS(CommonStrings::Inventory),
-					a_data.data->inventory.items.size());
-
-				if (ImGui::BeginTabItem(
-						UIL::LMKID<3>(m_buffer, "1")))
-				{
-					ImGui::Spacing();
-					ImGui::PushID("1");
-
-					DrawInventoryTreeContents(a_handle, a_data);
-
-					ImGui::PopID();
-					ImGui::Spacing();
-
-					ImGui::EndTabItem();
-				}
-
-				stl::snprintf(
-					m_buffer,
-					"%s (%zu)",
-					UIL::LS(CommonStrings::Factions),
-					a_data.data->factions.data.size());
-
-				if (ImGui::BeginTabItem(
-						UIL::LMKID<3>(m_buffer, "2")))
-				{
-					ImGui::Spacing();
-					ImGui::PushID("2");
-
-					DrawFactionTreeContents(a_handle, a_data);
-
-					ImGui::PopID();
-					ImGui::Spacing();
-
-					ImGui::EndTabItem();
-				}
-
-				stl::snprintf(
-					m_buffer,
-					"%s (%zu)",
-					UIL::LS(UIActorInfoStrings::ActiveEffects),
-					a_data.data->effects.data.size());
-
-				if (ImGui::BeginTabItem(
-						UIL::LMKID<3>(m_buffer, "3")))
-				{
-					ImGui::Spacing();
-					ImGui::PushID("3");
-
-					DrawEffectTreeContents(a_handle, a_data);
-
-					ImGui::PopID();
-					ImGui::Spacing();
-
-					ImGui::EndTabItem();
-				}
+				DrawInventoryTabItem(a_handle, a_data);
+				DrawFactionsTabItem(a_handle, a_data);
+				DrawEffectsTabItem(a_handle, a_data);
+				DrawVariablesTabItem(a_handle);
 
 				ImGui::EndTabBar();
+			}
+		}
+
+		void UIActorInfo::DrawInventoryTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			stl::snprintf(
+				m_buffer,
+				"%s (%zu)",
+				UIL::LS(CommonStrings::Inventory),
+				a_data.data->inventory.items.size());
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, "1")))
+			{
+				ImGui::Spacing();
+				ImGui::PushID("1");
+
+				DrawInventoryTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawFactionsTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			stl::snprintf(
+				m_buffer,
+				"%s (%zu)",
+				UIL::LS(CommonStrings::Factions),
+				a_data.data->factions.data.size());
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, "2")))
+			{
+				ImGui::Spacing();
+				ImGui::PushID("2");
+
+				DrawFactionTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawEffectsTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			stl::snprintf(
+				m_buffer,
+				"%s (%zu)",
+				UIL::LS(UIActorInfoStrings::ActiveEffects),
+				a_data.data->effects.data.size());
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, "3")))
+			{
+				ImGui::Spacing();
+				ImGui::PushID("3");
+
+				DrawEffectTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawVariablesTabItem(
+			Game::FormID a_handle)
+		{
+			const auto& objects = m_controller.GetObjects();
+
+			auto it = objects.find(a_handle);
+			if (it != objects.end())
+			{
+				const auto& data = it->second.GetVariables();
+
+				stl::snprintf(
+					m_buffer,
+					"%s (%zu)",
+					UIL::LS(CommonStrings::Variables),
+					data.size());
+
+				if (ImGui::BeginTabItem(
+						UIL::LMKID<3>(m_buffer, "4")))
+				{
+					ImGui::Spacing();
+					ImGui::PushID("4");
+
+					DrawVariableTreeContents(a_handle, data);
+
+					ImGui::PopID();
+					ImGui::Spacing();
+
+					ImGui::EndTabItem();
+				}
 			}
 		}
 
@@ -769,6 +823,27 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+		void UIActorInfo::DrawVariableTreeContents(
+			Game::FormID                    a_handle,
+			const conditionalVariableMap_t& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawVariableEntries(a_handle, a_data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryFilterTree()
 		{
 			if (TreeEx(
@@ -789,7 +864,7 @@ namespace IED
 		{
 			auto& data = a_data.factions;
 
-			constexpr auto NUM_COLUMNS = 5;
+			constexpr int NUM_COLUMNS = 5;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -993,7 +1068,7 @@ namespace IED
 		{
 			auto& data = a_data.effects;
 
-			constexpr auto NUM_COLUMNS = 7;
+			constexpr int NUM_COLUMNS = 7;
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
 
@@ -1031,7 +1106,7 @@ namespace IED
 					ImGui::TableSetColumnIndex(0);
 
 					const bool inactive = e.flags.test_any(
-						ActiveEffect::Flag::kInactive | 
+						ActiveEffect::Flag::kInactive |
 						ActiveEffect::Flag::kDispelled);
 
 					if (inactive)
@@ -1090,6 +1165,78 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(6);
 					ImGui::Text("%.1f", e.magnitude);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
+		void UIActorInfo::DrawVariableEntries(
+			Game::FormID                    a_handle,
+			const conditionalVariableMap_t& a_data)
+		{
+			constexpr int NUM_COLUMNS = 3;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -1.0f }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Type));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Value));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				for (auto& [i, e] : a_data)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					TextWrappedCopyable("%s", i.c_str());
+
+					ImGui::TableSetColumnIndex(1);
+
+					if (const auto typeDesc =
+					        UIVariableTypeSelectorWidget::variable_type_to_desc(e.type))
+					{
+						ImGui::TextWrapped("%s", typeDesc);
+					}
+					else
+					{
+						ImGui::TextWrapped("%u", e.type);
+					}
+
+					ImGui::TableSetColumnIndex(2);
+
+					switch (e.type)
+					{
+					case ConditionalVariableType::kInt32:
+						TextCopyable("%d", e.i32);
+						break;
+					case ConditionalVariableType::kFloat:
+						TextCopyable("%.3f", e.f32);
+						break;
+					case ConditionalVariableType::kForm:
+						DrawFormWithInfo(e.form.get_id());
+						break;
+					}
 				}
 
 				ImGui::EndTable();
