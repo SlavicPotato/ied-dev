@@ -358,7 +358,7 @@ namespace IED
 			}
 
 			e.m_wantLFUpdate |= state.UpdateStateLF(actor);
-			e.m_wantHFUpdate |= state.UpdateStateHF(actor);
+			//e.m_wantHFUpdate |= state.UpdateStateHF(actor);
 
 			if (e.UpdateNodeMonitorEntries())
 			{

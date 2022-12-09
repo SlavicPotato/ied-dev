@@ -191,6 +191,7 @@ namespace IED
 	{
 		bool result = false;
 
+		state_var_update(currentPackage, a_actor->GetCurrentPackage(), result);
 		state_var_update(flagslf1.value, a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1, result);
 		state_var_update(flagslf2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2, result);
 		state_var_update(swimming, a_actor->IsSwimming(), result);
@@ -202,7 +203,7 @@ namespace IED
 	{
 		bool result = false;
 
-		state_var_update(currentPackage, a_actor->GetCurrentPackage(), result);
+		// none for now
 
 		return result;
 	}
