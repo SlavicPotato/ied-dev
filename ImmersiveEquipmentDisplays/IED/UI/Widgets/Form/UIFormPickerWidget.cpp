@@ -117,7 +117,14 @@ namespace IED
 								m_onOpenFunc(*this, formBrowser);
 							}
 
-							formBrowser.SetTabFilter(*GetAllowedTypes());
+							if (auto& allowed = GetAllowedTypes())
+							{
+								formBrowser.SetTabFilter(*allowed);
+							}
+							else
+							{
+								formBrowser.ClearTabFilter();
+							}
 							formBrowser.SetHighlightForm(a_form);
 						}
 					}
@@ -261,7 +268,15 @@ namespace IED
 								m_onOpenFunc(*this, formBrowser);
 							}
 
-							formBrowser.SetTabFilter(*GetAllowedTypes());
+							if (auto& allowed = GetAllowedTypes())
+							{
+								formBrowser.SetTabFilter(*allowed);
+							}
+							else
+							{
+								formBrowser.ClearTabFilter();
+							}
+
 							formBrowser.SetHighlightForm(a_form);
 						}
 					}
