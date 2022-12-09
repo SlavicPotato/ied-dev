@@ -102,20 +102,15 @@ namespace IED
 		}
 
 		TESForm* configCachedForm_t::lookup_form(
-			Game::FormID a_form)
+			const Game::FormID a_form)
 		{
-			if (!a_form || a_form.IsTemporary())
+			if (a_form.IsTemporary())
 			{
 				return nullptr;
 			}
 
-			auto form = a_form.Lookup();
+			const auto form = a_form.Lookup();
 			if (!form)
-			{
-				return nullptr;
-			}
-
-			if (form->IsDeleted())
 			{
 				return nullptr;
 			}

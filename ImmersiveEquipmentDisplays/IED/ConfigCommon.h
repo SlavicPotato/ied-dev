@@ -173,16 +173,21 @@ namespace IED
 				{
 					form = lookup_form(id);
 				}
+				
+				if (form && form->IsDeleted())
+				{
+					return nullptr;
+				}
 
 				return form;
 			}
-
+			
 			template <
 				class T,
 				class form_type = stl::strip_type<T>>
 			inline constexpr form_type* get_form() const noexcept
 			{
-				if (auto f = get_form())
+				if (const auto f = get_form())
 				{
 					return f->As<form_type>();
 				}
@@ -191,8 +196,8 @@ namespace IED
 					return nullptr;
 				}
 			}
-
-			inline constexpr const auto& get_id() const noexcept
+			
+			inline constexpr auto& get_id() const noexcept
 			{
 				return id;
 			}
@@ -238,7 +243,7 @@ namespace IED
 			void zero_missing_or_deleted();
 
 		private:
-			static TESForm* lookup_form(Game::FormID a_form);
+			static TESForm* lookup_form(const Game::FormID a_form);
 
 			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
