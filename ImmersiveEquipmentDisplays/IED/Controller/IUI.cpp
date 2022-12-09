@@ -91,7 +91,7 @@ namespace IED
 
 	const std::shared_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
 	{
-		const std::lock_guard lock(UIGetLock());
+		const boost::lock_guard lock(UIGetLock());
 
 		auto& task = m_toastTask;
 
@@ -131,7 +131,7 @@ namespace IED
 
 	auto IUI::UIToggle() -> UIOpenResult
 	{
-		const std::lock_guard lock(UIGetLock());
+		const boost::lock_guard lock(UIGetLock());
 
 		if (!m_task || !m_safeToOpenUI)
 		{
@@ -152,7 +152,7 @@ namespace IED
 
 	auto IUI::UIOpen() -> UIOpenResult
 	{
-		const std::lock_guard lock(UIGetLock());
+		const boost::lock_guard lock(UIGetLock());
 
 		return UIOpenImpl();
 	}
@@ -180,7 +180,7 @@ namespace IED
 
 	bool IUIRenderTask::Run()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -207,7 +207,7 @@ namespace IED
 
 	void IUIRenderTask::PrepareGameData()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -221,7 +221,7 @@ namespace IED
 
 	void IUIRenderTask::Render()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -236,7 +236,7 @@ namespace IED
 	void IUIRenderTask::OnMouseMove(
 		const Handlers::MouseMoveEvent& a_evn)
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -250,7 +250,7 @@ namespace IED
 
 	void IUIRenderTask::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -264,7 +264,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStop()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -279,7 +279,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStart()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -315,7 +315,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStart()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{
@@ -332,7 +332,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStop()
 	{
-		const std::lock_guard lock(m_owner.UIGetLock());
+		const boost::lock_guard lock(m_owner.UIGetLock());
 
 		try
 		{

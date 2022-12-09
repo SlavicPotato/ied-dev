@@ -188,7 +188,7 @@ namespace IED
 
 			try
 			{
-				std::lock_guard lock(m_rwLock);
+				boost::lock_guard lock(m_rwLock);
 
 				ParserState      state;
 				Parser<map_type> parser(state);
@@ -213,7 +213,7 @@ namespace IED
 
 			try
 			{
-				std::lock_guard lock(m_rwLock);
+				boost::lock_guard lock(m_rwLock);
 
 				Json::Value root;
 

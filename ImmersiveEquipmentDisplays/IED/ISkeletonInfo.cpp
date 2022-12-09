@@ -32,7 +32,7 @@ namespace IED
 		bool                            a_loadSkeleton,
 		const SkeletonInfoLookupResult& a_result)
 	{
-		const std::lock_guard lock(a_result->lock);
+		const boost::lock_guard lock(a_result->lock);
 
 		a_result->actor      = a_actor;
 		a_result->lastUpdate = IPerfCounter::Query();

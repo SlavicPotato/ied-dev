@@ -511,14 +511,14 @@ namespace IED
 	{
 		ASSERT(StringCache::IsInitialized());
 
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		InitializeAnimationStrings();
 	}
 
 	void Controller::OnDataLoaded()
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		InitializeFPStateData();
 		InitializeData();
@@ -548,7 +548,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		EvaluateImpl(a_actor, a_handle, a_flags);
 	}
@@ -564,7 +564,7 @@ namespace IED
 	void Controller::QueueClearActorPhysicsData()
 	{
 		ITaskPool::AddPriorityTask([this]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearActorPhysicsDataImpl();
 		});
@@ -668,7 +668,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		return RemoveActorImpl(a_actor, a_handle, a_flags);
 	}
@@ -677,7 +677,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		return RemoveActorImpl(a_actor->formID, a_flags);
 	}*/
@@ -686,7 +686,7 @@ namespace IED
 		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		return RemoveActorImpl(a_actor, a_flags);
 	}
@@ -696,7 +696,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor] {
 			NiPointer<TESObjectREFR> refr;
 			{
-				const std::lock_guard lock(m_lock);
+				const boost::lock_guard lock(m_lock);
 
 				auto it = m_objects.find(a_actor);
 				if (it == m_objects.end())
@@ -757,7 +757,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -772,7 +772,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -789,7 +789,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -805,7 +805,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -827,7 +827,7 @@ namespace IED
 		Game::FormID a_actor,
 		bool         a_noDefer) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -852,7 +852,7 @@ namespace IED
 		Game::FormID a_npc,
 		bool         a_noDefer) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -879,7 +879,7 @@ namespace IED
 		Game::FormID a_race,
 		bool         a_noDefer) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -905,7 +905,7 @@ namespace IED
 	void Controller::RequestEvaluateTransformsAll(
 		bool a_noDefer) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		if (!m_nodeOverrideEnabled)
 		{
@@ -948,7 +948,7 @@ namespace IED
 			[this, a_flags](
 				Actor*            a_actor,
 				Game::ActorHandle a_handle) {
-				const std::lock_guard lock(m_lock);
+				const boost::lock_guard lock(m_lock);
 
 				ActorResetImpl(
 					a_actor,
@@ -962,7 +962,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -977,7 +977,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1003,7 +1003,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1030,7 +1030,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1050,7 +1050,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_flags, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1078,7 +1078,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_flags, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t actors;
 			CollectKnownActors(actors);
@@ -1231,7 +1231,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1248,7 +1248,7 @@ namespace IED
 		ObjectSlot                       a_slot)
 	{
 		ITaskPool::AddTask([this, a_flags, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1264,7 +1264,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
 		ITaskPool::AddTask([this, a_flags]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1287,7 +1287,7 @@ namespace IED
 	void Controller::QueueClearObjects()
 	{
 		ITaskPool::AddTask([this] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearObjectsImpl();
 		});
@@ -1298,7 +1298,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_actor, a_slot] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateTransformSlotImpl(a_actor, a_slot);
 		});
@@ -1309,7 +1309,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_npc, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1326,7 +1326,7 @@ namespace IED
 		ObjectSlot   a_slot)
 	{
 		ITaskPool::AddTask([this, a_race, a_slot]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1341,7 +1341,7 @@ namespace IED
 	void Controller::QueueUpdateTransformSlotAll(ObjectSlot a_slot)
 	{
 		ITaskPool::AddTask([this, a_slot] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1353,7 +1353,7 @@ namespace IED
 	void Controller::QueueResetAAAll()
 	{
 		ITaskPool::AddTask([this] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1373,7 +1373,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1395,7 +1395,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1425,7 +1425,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1454,7 +1454,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1474,7 +1474,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1502,7 +1502,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1529,7 +1529,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResult_t result;
 			if (LookupTrackedActor(a_actor, result))
@@ -1547,7 +1547,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1573,7 +1573,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1600,7 +1600,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1622,7 +1622,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1642,7 +1642,7 @@ namespace IED
 		ConfigClass a_class)
 	{
 		ITaskPool::AddTask([this, a_class]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
 			CollectKnownActors(result);
@@ -1664,7 +1664,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1682,7 +1682,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1700,7 +1700,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1717,7 +1717,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1733,7 +1733,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1749,7 +1749,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1764,7 +1764,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_actor, a_class] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomImpl(
 				a_actor,
@@ -1778,7 +1778,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_npc, a_class] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomNPCImpl(
 				a_npc,
@@ -1792,7 +1792,7 @@ namespace IED
 		ConfigClass  a_class)
 	{
 		ITaskPool::AddTask([this, a_race, a_class] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			UpdateCustomRaceImpl(
 				a_race,
@@ -1807,7 +1807,7 @@ namespace IED
 		const stl::fixed_string& a_vkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1826,7 +1826,7 @@ namespace IED
 		const stl::fixed_string& a_pkey)
 	{
 		ITaskPool::AddTask([this, a_class, a_pkey] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1843,7 +1843,7 @@ namespace IED
 		ConfigClass a_class)
 	{
 		ITaskPool::AddTask([this, a_class] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
 			{
@@ -1862,7 +1862,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_formId, func = std::move(a_func)] {
 			auto result = LookupFormInfo(a_formId);
 
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			func(std::move(result));
 		});
@@ -1882,7 +1882,7 @@ namespace IED
 				}
 			}
 
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			func(std::move(result));
 		});
@@ -1891,7 +1891,7 @@ namespace IED
 	void Controller::QueueGetFormDatabase(form_db_get_func_t a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			func(GetFormDatabase());
 		});
@@ -1910,7 +1910,7 @@ namespace IED
 				}
 			}
 
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			func(result);
 		});
 	}
@@ -1918,7 +1918,7 @@ namespace IED
 	void Controller::QueueUpdateSoundForms()
 	{
 		ITaskPool::AddTask([this] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			UpdateSoundForms();
 		});
 	}
@@ -1926,7 +1926,7 @@ namespace IED
 	void Controller::QueueClearRand()
 	{
 		ITaskPool::AddTask([this] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			IMaintenance::ClearConfigStoreRand(m_config.active);
 		});
 	}
@@ -1936,7 +1936,7 @@ namespace IED
 		std::string  a_event)
 	{
 		ITaskPool::AddTask([this, a_actor, ev = std::move(a_event)] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			auto& data = GetObjects();
 
@@ -1968,7 +1968,7 @@ namespace IED
 		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		auto r = m_actorBlockList.data.try_emplace(a_actor);
 		r.first->second.keys.emplace(a_key);
@@ -1987,7 +1987,7 @@ namespace IED
 		Game::FormID             a_actor,
 		const stl::fixed_string& a_key)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		auto it = m_actorBlockList.data.find(a_actor);
 
@@ -2016,7 +2016,7 @@ namespace IED
 			return;
 		}
 
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		m_actorBlockList.playerToggle = !m_actorBlockList.playerToggle;
 
@@ -2050,7 +2050,7 @@ namespace IED
 
 	bool Controller::IsActorBlocked(Game::FormID a_actor) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		return IsActorBlockedImpl(a_actor);
 	}
@@ -2664,12 +2664,12 @@ namespace IED
 
 				objectEntry.ResetDeferredHide();
 
-				bool visible = GetVisibilitySwitch(
+				const bool visible = GetVisibilitySwitch(
 					a_params.actor,
 					usedBaseConf.flags,
 					a_params);
 
-				auto modelForm = usedBaseConf.forceModel.get_form();
+				const auto modelForm = usedBaseConf.forceModel.get_form();
 
 				if (objectEntry.data.state &&
 				    objectEntry.data.state->form == item->item->form)
@@ -3151,7 +3151,7 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
-			auto* modelForm =
+			const auto modelForm =
 				usedBaseConf.forceModel.get_id() ?
 					usedBaseConf.forceModel.get_form() :
 					a_config.modelForm.get_form();
@@ -3265,7 +3265,7 @@ namespace IED
 		}
 		else
 		{
-			auto cform = SelectCustomForm(a_params, a_config);
+			const auto cform = SelectCustomForm(a_params, a_config);
 
 			if (!cform)
 			{
@@ -3274,7 +3274,7 @@ namespace IED
 				return false;
 			}
 
-			auto form = cform->get_form();
+			const auto form = cform->get_form();
 			if (!form)
 			{
 				Debug(
@@ -5438,7 +5438,7 @@ namespace IED
 			ITaskPool::QueueLoadedActorTask(
 				a_evn->source,
 				[this](Actor* a_actor, Game::ActorHandle a_handle) {
-					const std::lock_guard lock(m_lock);
+					const boost::lock_guard lock(m_lock);
 
 					auto it = m_objects.find(a_actor->formID);
 					if (it != m_objects.end())
@@ -5582,7 +5582,7 @@ namespace IED
 	{
 		Debug("Reverting..");
 
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		//m_storedActorStates.clear();
 
@@ -5607,7 +5607,7 @@ namespace IED
 	std::size_t Controller::Store(
 		boost::archive::binary_oarchive& a_out)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		a_out << m_actorBlockList;
 
@@ -5640,7 +5640,7 @@ namespace IED
 			throw std::exception("unsupported version");
 		}
 
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		actorBlockList_t blockList;
 		configStore_t    cfgStore;
@@ -5722,7 +5722,7 @@ namespace IED
 		             a_dirtyOnly,
 		             a_debug,
 		             sl = std::source_location::current()]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			PerfTimer pt;
 
@@ -5778,7 +5778,7 @@ namespace IED
 
 	void Controller::RunPL()
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		ProcessEffects(m_objects);
 	}
@@ -5793,7 +5793,7 @@ namespace IED
 			if (auto actor = a_evn->reference->As<Actor>())
 			{
 				{
-					const std::lock_guard lock(m_lock);
+					const boost::lock_guard lock(m_lock);
 
 					auto it = m_objects.find(actor->formID);
 					if (it != m_objects.end())
@@ -5812,7 +5812,7 @@ namespace IED
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)
 	{
 		ITaskPool::AddTask([this, a_actor]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			UpdateActorInfo(a_actor);
 		});
 	}
@@ -5822,7 +5822,7 @@ namespace IED
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_actor, callback = std::move(a_callback)]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			callback(UpdateActorInfo(a_actor));
 		});
 	}
@@ -5830,7 +5830,7 @@ namespace IED
 	void Controller::QueueUpdateNPCInfo(Game::FormID a_npc)
 	{
 		ITaskPool::AddTask([this, a_npc]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			UpdateNPCInfo(a_npc);
 		});
 	}
@@ -5840,14 +5840,14 @@ namespace IED
 		std::function<void(bool)> a_callback)
 	{
 		ITaskPool::AddTask([this, a_npc, callback = std::move(a_callback)]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 			callback(UpdateNPCInfo(a_npc));
 		});
 	}
 
 	void Controller::StoreActiveHandles()
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		m_activeHandles.clear();
 
@@ -5859,7 +5859,7 @@ namespace IED
 
 	void Controller::EvaluateStoredHandles(ControllerUpdateFlags a_flags)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		for (auto& e : m_activeHandles)
 		{
@@ -5875,7 +5875,7 @@ namespace IED
 
 	void Controller::ClearStoredHandles()
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		m_activeHandles.clear();
 	}
@@ -5883,7 +5883,7 @@ namespace IED
 	void Controller::QueueObjectDatabaseClear()
 	{
 		ITaskPool::AddTask([this]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearObjectDatabase();
 		});
@@ -5891,7 +5891,7 @@ namespace IED
 
 	void Controller::SetObjectDatabaseLevel(ObjectDatabaseLevel a_level)
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		if (a_level != GetODBLevel())
 		{
@@ -5911,7 +5911,7 @@ namespace IED
 	void Controller::QueueSetLanguage(const stl::fixed_string& a_lang)
 	{
 		ITaskPool::AddTask([this, a_lang] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			SetLanguageImpl(a_lang);
 		});
@@ -5920,7 +5920,7 @@ namespace IED
 	/*void Controller::QueueClearVariableStorage(bool a_requestEval)
 	{
 		ITaskPool::AddTask([this, a_requestEval] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearConditionalVariables();
 

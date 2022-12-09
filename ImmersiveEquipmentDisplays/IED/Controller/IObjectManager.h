@@ -182,7 +182,7 @@ namespace IED
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
 
-		mutable std::recursive_mutex m_lock;
+		mutable boost::recursive_mutex m_lock;
 	};
 
 }

@@ -48,7 +48,7 @@ namespace IED
 			Data::configStore_t&&                   a_in,
 			[[maybe_unused]] stl::flag<ImportFlags> a_flags);
 
-		virtual constexpr std::recursive_mutex& JSGetLock() noexcept        = 0;
+		virtual constexpr boost::recursive_mutex& JSGetLock() noexcept        = 0;
 		virtual constexpr Data::configStore_t&  JSGetConfigStore() noexcept = 0;
 		virtual void                            JSOnDataImport()            = 0;
 

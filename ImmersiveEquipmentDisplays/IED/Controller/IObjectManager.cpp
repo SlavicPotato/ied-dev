@@ -129,7 +129,7 @@ namespace IED
 		Game::FormID a_actor)
 	{
 		ITaskPool::AddPriorityTask([this, a_actor]() {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			auto it = m_objects.find(a_actor);
 			if (it != m_objects.end())
@@ -145,7 +145,7 @@ namespace IED
 		bool         a_xfrmUpdate,
 		bool         a_xfrmUpdateNoDefer) const
 	{
-		const std::lock_guard lock(m_lock);
+		const boost::lock_guard lock(m_lock);
 
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -212,7 +212,7 @@ namespace IED
 	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_requestEval] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearVariablesOnAll(a_requestEval);
 		});
@@ -223,7 +223,7 @@ namespace IED
 		bool         a_requestEval)
 	{
 		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			ClearVariables(a_handle, a_requestEval);
 		});
@@ -232,7 +232,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdateOnAll() const
 	{
 		ITaskPool::AddPriorityTask([this] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			RequestVariableUpdateOnAll();
 		});
@@ -241,7 +241,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const
 	{
 		ITaskPool::AddPriorityTask([this, a_handle] {
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			RequestVariableUpdate(a_handle);
 		});
@@ -763,8 +763,8 @@ namespace IED
 				continue;
 			}
 
-			auto form = e.second.form.get_form();
-			if (!form || form->IsDeleted())
+			const auto form = e.second.form.get_form();
+			if (!form)
 			{
 				continue;
 			}

@@ -20,7 +20,7 @@ namespace IED
 
 		void UIToast::Draw()
 		{
-			const std::lock_guard lock(m_lock);
+			const boost::lock_guard lock(m_lock);
 
 			const auto& io = ImGui::GetIO();
 
@@ -28,7 +28,10 @@ namespace IED
 			{
 				auto& front = m_queue.front();
 
-				const float m = static_cast<float>(std::min(m_queue.size(), decltype(m_queue)::size_type(4)));
+				const auto m = static_cast<float>(
+					std::min(
+						m_queue.size(),
+						decltype(m_queue)::size_type(4)));
 
 				front.lifetime -= io.DeltaTime * m;
 
@@ -60,7 +63,7 @@ namespace IED
 				m_animbg.reset();
 			}
 
-			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_animbg.step_lerp());
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, m_animbg.lerp());
 
 			constexpr auto VERTICAL_OFFSET = 40.f;
 

@@ -48,7 +48,7 @@ namespace IED
 			{
 				const auto* controller = Initializer::GetController();
 
-				const std::lock_guard lock(controller->GetLock());
+				const boost::lock_guard lock(controller->GetLock());
 
 				auto data = GetBipedSlotData(controller, a_actor, a_trackedActor);
 				if (!data)

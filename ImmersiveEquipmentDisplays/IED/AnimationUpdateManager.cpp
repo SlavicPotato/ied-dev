@@ -45,7 +45,7 @@ namespace IED
 		const BSAnimationUpdateData& a_data,
 		const Controller*            a_controller)
 	{
-		const std::lock_guard lock(a_controller->GetLock());
+		const boost::lock_guard lock(a_controller->GetLock());
 
 		auto& data = a_controller->GetObjects();
 

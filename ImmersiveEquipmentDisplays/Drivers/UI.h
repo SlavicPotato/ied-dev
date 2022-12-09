@@ -114,7 +114,7 @@ namespace IED
 
 			static void QueueResetInput() noexcept
 			{
-				const std::lock_guard lock(m_Instance.m_lock);
+				const boost::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_updateFlags.set(UpdateFlags::kResetInput);
 			}
 
@@ -155,26 +155,26 @@ namespace IED
 
 			static void SetStyle(UIStylePreset a_style) noexcept
 			{
-				const std::lock_guard lock(m_Instance.m_lock);
+				const boost::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.style = a_style;
 			}
 
 			static void SetReleaseFontData(bool a_switch) noexcept
 			{
-				const std::lock_guard lock(m_Instance.m_lock);
+				const boost::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.releaseFontData = a_switch;
 			}
 
 			static void SetAlpha(float a_value) noexcept
 			{
-				const std::lock_guard lock(m_Instance.m_lock);
+				const boost::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.alpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyleAlpha);
 			}
 
 			static void SetBGAlpha(const stl::optional<float>& a_value) noexcept
 			{
-				const std::lock_guard lock(m_Instance.m_lock);
+				const boost::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.bgAlpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyle);
 			}
@@ -352,7 +352,7 @@ namespace IED
 
 			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
 
-			mutable std::recursive_mutex m_lock;
+			mutable boost::recursive_mutex m_lock;
 
 			static UI m_Instance;
 		};

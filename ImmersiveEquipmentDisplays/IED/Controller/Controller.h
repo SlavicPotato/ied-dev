@@ -905,7 +905,7 @@ namespace IED
 
 		// ui overrides
 
-		virtual constexpr std::recursive_mutex& UIGetLock() noexcept override
+		virtual constexpr boost::recursive_mutex& UIGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -922,7 +922,7 @@ namespace IED
 
 		// json serialization
 
-		virtual constexpr std::recursive_mutex& JSGetLock() noexcept override
+		virtual constexpr boost::recursive_mutex& JSGetLock() noexcept override
 		{
 			return m_lock;
 		}

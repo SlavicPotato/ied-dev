@@ -69,7 +69,6 @@
 #include <functional>
 #include <list>
 #include <memory>
-#include <mutex>
 #include <numbers>
 #include <regex>
 #include <source_location>
@@ -118,6 +117,9 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
+#include <boost/thread/lock_guard.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/recursive_mutex.hpp>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 

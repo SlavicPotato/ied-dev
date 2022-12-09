@@ -96,7 +96,7 @@ namespace IED
 					return result;
 				}
 				
-				constexpr T step_lerp()
+				constexpr T lerp()
 				{
 					auto result = current;
 					current     = std::lerp(current, _Max, static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed);

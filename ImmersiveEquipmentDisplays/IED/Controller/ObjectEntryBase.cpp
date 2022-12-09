@@ -48,7 +48,7 @@ namespace IED
 						(void)m_handle.LookupZH(ref);
 					}
 
-					std::lock_guard lock(m_db.GetLock());
+					boost::lock_guard lock(m_db.GetLock());
 
 					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
 				}
