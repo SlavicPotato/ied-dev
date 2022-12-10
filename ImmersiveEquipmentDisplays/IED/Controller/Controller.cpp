@@ -2258,24 +2258,23 @@ namespace IED
 			    a_config.physicsValues &&
 			    !a_config.physicsValues->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
-				const auto& pvdata = *a_config.physicsValues.data;
+				const auto& conf = *a_config.physicsValues.data;
 
 				if (!simComponent)
 				{
 					simComponent = a_params.objects.CreateAndAddSimComponent(
 						state->nodes.physics.get(),
 						state->nodes.physics->m_localTransform,
-						pvdata);
+						conf);
 				}
-				else if (*simComponent != pvdata)
+				else if (simComponent->GetConfig() != conf)
 				{
-					simComponent->UpdateConfig(pvdata);
+					simComponent->UpdateConfig(conf);
 				}
 			}
 			else if (simComponent)
 			{
-				a_params.objects.RemoveAndDestroySimComponent(
-					state->simComponent);
+				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
 		}
 
@@ -4166,7 +4165,7 @@ namespace IED
 
 							//Debug("%.8X: adding %s", a_actor->formID, e.first.c_str());
 						}
-						else if (*simComponent != conf)
+						else if (simComponent->GetConfig() != conf)
 						{
 							simComponent->UpdateConfig(conf);
 						}
