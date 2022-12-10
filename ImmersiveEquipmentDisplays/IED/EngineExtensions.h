@@ -202,7 +202,7 @@ namespace IED
 		{
 			return
 #if !defined(IED_ALLOW_3D_TASKS_OFF_MAIN)
-				ITaskPool::IsRunningOnCurrentThread() ||
+				!ITaskPool::IsRunningOnCurrentThread() ||
 #endif
 				ShouldDefer3DTaskImpl();
 		}
