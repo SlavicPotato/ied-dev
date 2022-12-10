@@ -17,11 +17,11 @@ namespace IED
 		NiAVObject*                            a_object,
 		const NiTransform&                     a_initialTransform,
 		const Data::configNodePhysicsValues_t& a_conf) noexcept :
-		m_conf(a_conf),
 		m_tag(ILUID{}()),
 		m_initialTransform(Bullet::btTransformEx(a_initialTransform)),
 		m_object(a_object)
 	{
+		m_conf                 = a_conf;
 		m_objectLocalTransform = m_initialTransform;
 
 		m_parentWorldTransform = GetCurrentParentWorldTransform();
