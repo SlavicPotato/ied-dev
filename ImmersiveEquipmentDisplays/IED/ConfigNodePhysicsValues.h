@@ -23,7 +23,7 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(ConfigNodePhysicsFlags);
 
 		struct configNodePhysicsValues_t :
-			configLUIDTagAG_t
+			configLUIDTagAC_t
 		{
 			friend class boost::serialization::access;
 
@@ -33,7 +33,8 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			inline void clear() noexcept
+			void clear()  //
+				noexcept(std::is_nothrow_move_assignable_v<configNodePhysicsValues_t>)
 			{
 				*this = {};
 			}
@@ -82,7 +83,7 @@ namespace IED
 				a_ar& a_member.mVec128.m128_f32[2];
 				a_member.mVec128.m128_f32[3] = 0.0f;
 			}
-			
+
 			template <class Archive>
 			void save(Archive& a_ar, const unsigned int a_version) const
 			{
@@ -114,7 +115,7 @@ namespace IED
 				a_ar& mass;
 				a_ar& maxVelocity;
 			}
-			
+
 			template <class Archive>
 			void load(Archive& a_ar, const unsigned int a_version)
 			{
