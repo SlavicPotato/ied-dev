@@ -268,8 +268,8 @@ namespace IED
 		}
 
 		void UISlotEditorNPC::OnListChangeCurrentItem(
-			const stl::optional<UINPCList<entrySlotData_t>::listValue_t>& a_oldHandle,
-			const stl::optional<UINPCList<entrySlotData_t>::listValue_t>& a_newHandle)
+			const std::optional<UINPCList<entrySlotData_t>::listValue_t>& a_oldHandle,
+			const std::optional<UINPCList<entrySlotData_t>::listValue_t>& a_newHandle)
 		{
 			if (!a_newHandle)
 			{

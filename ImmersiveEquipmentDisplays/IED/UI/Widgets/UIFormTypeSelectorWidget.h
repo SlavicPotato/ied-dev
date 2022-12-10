@@ -16,7 +16,7 @@ namespace IED
 
 		public:
 			static bool DrawFormTypeSelector(
-				stl::optional<std::uint8_t>& a_type,
+				std::optional<std::uint8_t>& a_type,
 				filter_func_t                a_filter);
 
 			static const char* form_type_to_desc(std::uint8_t a_type);

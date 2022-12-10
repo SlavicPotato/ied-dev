@@ -73,7 +73,7 @@ namespace IED
 			this->m_listFirstUpdate = true;
 
 			const auto& settings = GetActorSettings();
-			auto&       npcInfo       = GetNPCInfo();
+			auto&       npcInfo  = GetNPCInfo();
 
 			this->m_listData.clear();
 
@@ -92,7 +92,7 @@ namespace IED
 					id.get(),
 					e.second->name.c_str());
 
-				this->m_listData.try_emplace(id.get(), this->m_listBuf1);
+				this->m_listData.emplace(id.get(), this->m_listBuf1);
 			}
 
 			if (this->m_listData.empty())
@@ -159,7 +159,7 @@ namespace IED
 
 			if (cacheUpdateId != m_lastCacheUpdateId)
 			{
-				m_lastCacheUpdateId = cacheUpdateId;
+				m_lastCacheUpdateId    = cacheUpdateId;
 				this->m_listNextUpdate = true;
 			}
 
@@ -216,7 +216,7 @@ namespace IED
 					"%s",
 					it->second->female ?
 						UIL::LS(CommonStrings::Female) :
-                        UIL::LS(CommonStrings::Male));
+						UIL::LS(CommonStrings::Male));
 
 				ImGui::TableNextRow();
 

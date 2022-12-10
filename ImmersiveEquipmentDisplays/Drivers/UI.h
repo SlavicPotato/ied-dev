@@ -42,7 +42,7 @@ namespace IED
 			{
 				float                            scale{ 1.0f };
 				stl::fixed_string                font;
-				stl::optional<float>             fontsize;
+				std::optional<float>             fontsize;
 				stl::flag<GlyphPresetFlags>      extraGlyphPresets{ GlyphPresetFlags::kNone };
 				std::shared_ptr<fontGlyphData_t> langGlyphData;
 
@@ -295,7 +295,7 @@ namespace IED
 				std::uint64_t blockCursorCounter{ 0 };
 				std::uint64_t blockInputImGuiCounter{ 0 };
 
-				stl::optional<bool> autoVanityAllowState;
+				std::optional<bool> autoVanityAllowState;
 
 				bool controlsLocked{ false };
 				bool timeFrozen{ false };

@@ -85,8 +85,8 @@ namespace IED
 				const FullSlotConfigClearParams& a_params) override;
 
 			virtual void OnListChangeCurrentItem(
-				const stl::optional<UIActorList<entrySlotData_t>::listValue_t>& a_oldHandle,
-				const stl::optional<UIActorList<entrySlotData_t>::listValue_t>& a_newHandle) override;
+				const std::optional<UIActorList<entrySlotData_t>::listValue_t>& a_oldHandle,
+				const std::optional<UIActorList<entrySlotData_t>::listValue_t>& a_newHandle) override;
 
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 

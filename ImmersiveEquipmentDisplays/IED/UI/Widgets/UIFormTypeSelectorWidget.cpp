@@ -61,7 +61,7 @@ namespace IED
 		);
 
 		bool UIFormTypeSelectorWidget::DrawFormTypeSelector(
-			stl::optional<std::uint8_t>& a_type,
+			std::optional<std::uint8_t>& a_type,
 			filter_func_t                a_filter)
 		{
 			bool result = false;
@@ -95,7 +95,7 @@ namespace IED
 							UIL::LS<UIFormTypeSelectorWidgetStrings, 3>(e, "1"),
 							selected))
 					{
-						a_type = i;
+						a_type.emplace(i);
 						result = true;
 					}
 

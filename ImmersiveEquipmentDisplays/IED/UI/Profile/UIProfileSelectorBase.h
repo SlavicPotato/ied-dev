@@ -87,7 +87,7 @@ namespace IED
 				}
 				else
 				{
-					this->m_state.selected.clear();
+					this->m_state.selected.reset();
 				}
 			}
 
@@ -100,7 +100,7 @@ namespace IED
 				{
 					ImGui::PushID(e);
 
-					bool selected = this->m_state.selected == e->first;
+					const bool selected = this->m_state.selected == e->first;
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())

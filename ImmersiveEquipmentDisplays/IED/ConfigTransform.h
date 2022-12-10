@@ -46,7 +46,7 @@ namespace IED
 			stl::optional<float>            scale;
 			stl::optional<NiPoint3>         position;
 			stl::optional<NiPoint3>         rotation;
-			stl::optional<NiMatrix33>       rotationMatrix;
+			std::optional<NiMatrix33>       rotationMatrix;
 
 			void clamp()
 			{
@@ -80,26 +80,25 @@ namespace IED
 				update_tag();
 			}
 
-			void update_rotation_matrix()
+			void update_rotation_matrix() noexcept
 			{
 				if (rotation)
 				{
 					if (xfrmFlags.test(ConfigTransformFlags::kExtrinsicRotation))
 					{
-						rotationMatrix->SetEulerAnglesExtrinsic(
+						rotationMatrix.emplace(
+							NiMatrix33::init_angle_extrinsic{},
 							rotation->x,
 							rotation->y,
 							rotation->z);
 					}
 					else
 					{
-						rotationMatrix->SetEulerAnglesIntrinsic(
+						rotationMatrix.emplace(
 							rotation->x,
 							rotation->y,
 							rotation->z);
 					}
-
-					rotationMatrix.mark(true);
 				}
 				else
 				{

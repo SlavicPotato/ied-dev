@@ -372,8 +372,8 @@ namespace IED
 					{
 						if (auto pc = PlayerCamera::GetSingleton())
 						{
-							m_state.autoVanityAllowState = pc->allowAutoVanityMode;
-							pc->allowAutoVanityMode      = false;
+							m_state.autoVanityAllowState.emplace(pc->allowAutoVanityMode);
+							pc->allowAutoVanityMode = false;
 						}
 					}
 				}
@@ -385,7 +385,7 @@ namespace IED
 						{
 							pc->allowAutoVanityMode = *m_state.autoVanityAllowState;
 						}
-						m_state.autoVanityAllowState.clear();
+						m_state.autoVanityAllowState.reset();
 					}
 				}
 			});
@@ -812,15 +812,15 @@ namespace IED
 		{
 			const boost::lock_guard lock(m_lock);
 
-			m_fontUpdateData.fontsize = a_size;
-			m_fontUpdateData.dirty    = true;
+			m_fontUpdateData.fontsize.emplace(a_size);
+			m_fontUpdateData.dirty = true;
 		}
 
 		void UI::QueueResetFontSizeImpl()
 		{
 			const boost::lock_guard lock(m_lock);
 
-			m_fontUpdateData.fontsize.clear();
+			m_fontUpdateData.fontsize.reset();
 			m_fontUpdateData.dirty = true;
 		}
 

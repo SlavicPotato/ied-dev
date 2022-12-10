@@ -35,7 +35,6 @@ namespace IED
 			std::uint32_t unk08;  // 08 - index?
 			std::uint32_t pad1C;  // 1C
 		};
-
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
 
 		class ShadowSceneNode;
@@ -122,10 +121,10 @@ namespace IED
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
-		EngineExtensions(const EngineExtensions&) = delete;
-		EngineExtensions(EngineExtensions&&)      = delete;
+		EngineExtensions(const EngineExtensions&)            = delete;
+		EngineExtensions(EngineExtensions&&)                 = delete;
 		EngineExtensions& operator=(const EngineExtensions&) = delete;
-		EngineExtensions& operator=(EngineExtensions&&) = delete;
+		EngineExtensions& operator=(EngineExtensions&&)      = delete;
 
 		static void Install(
 			Controller*                       a_controller,
@@ -172,7 +171,7 @@ namespace IED
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
-		inline static const auto ShrinkToSize         = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
+		inline static const auto ShrinkToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -201,7 +200,11 @@ namespace IED
 
 		[[nodiscard]] inline static bool ShouldDefer3DTask() noexcept
 		{
-			return !ITaskPool::IsRunningOnCurrentThread() || ShouldDefer3DTaskImpl();
+			return
+#if !defined(IED_ALLOW_3D_TASKS_OFF_MAIN)
+				ITaskPool::IsRunningOnCurrentThread() ||
+#endif
+				ShouldDefer3DTaskImpl();
 		}
 
 		FN_NAMEPROC("EngineExtensions");

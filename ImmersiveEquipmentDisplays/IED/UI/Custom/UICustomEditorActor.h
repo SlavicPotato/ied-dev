@@ -63,8 +63,8 @@ namespace IED
 				Game::FormID a_handle) override;
 
 			virtual void OnListChangeCurrentItem(
-				const stl::optional<UIActorList<entryCustomData_t>::listValue_t>& a_oldHandle,
-				const stl::optional<UIActorList<entryCustomData_t>::listValue_t>& a_newHandle) override;
+				const std::optional<UIActorList<entryCustomData_t>::listValue_t>& a_oldHandle,
+				const std::optional<UIActorList<entryCustomData_t>::listValue_t>& a_newHandle) override;
 
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) override;
 

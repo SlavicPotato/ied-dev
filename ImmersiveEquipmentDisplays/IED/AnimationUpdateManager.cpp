@@ -9,8 +9,7 @@ namespace IED
 	void AnimationUpdateManager::BeginAnimationUpdate(
 		Controller* a_controller)
 	{
-		auto prev = m_running.exchange(true);
-		ASSERT(prev == false);
+		assert(m_running.exchange(true) == false);
 
 		a_controller->GetLock().lock();
 	}
@@ -18,8 +17,7 @@ namespace IED
 	void AnimationUpdateManager::EndAnimationUpdate(
 		Controller* a_controller)
 	{
-		auto prev = m_running.exchange(false);
-		ASSERT(prev == true);
+		assert(m_running.exchange(false) == true);
 
 		a_controller->GetLock().unlock();
 	}
@@ -27,11 +25,11 @@ namespace IED
 	void AnimationUpdateManager::ProcessAnimationUpdateList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		const Controller*            a_controller)
+		const Controller&            a_controller)
 	{
-		ASSERT(m_running.load() == true);
+		assert(m_running.load() == true);
 
-		auto& data = a_controller->GetObjects();
+		const auto& data = a_controller.GetObjects();
 
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())
@@ -43,11 +41,11 @@ namespace IED
 	void AnimationUpdateManager::UpdateActorAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		const Controller*            a_controller)
+		const Controller&            a_controller)
 	{
-		const boost::lock_guard lock(a_controller->GetLock());
+		const boost::lock_guard lock(a_controller.GetLock());
 
-		auto& data = a_controller->GetObjects();
+		auto& data = a_controller.GetObjects();
 
 		auto it = data.find(a_actor->formID);
 		if (it != data.end())

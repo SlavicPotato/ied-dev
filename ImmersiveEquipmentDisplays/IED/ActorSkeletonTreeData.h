@@ -6,15 +6,15 @@ namespace IED
 {
 	struct SI_Transform
 	{
-		SI_Transform() = default;
-		SI_Transform(const NiTransform& a_in) :
+		SI_Transform() noexcept = default;
+		SI_Transform(const NiTransform& a_in) noexcept :
 			pos(a_in.pos),
 			scale(a_in.scale)
 		{
 			a_in.rot.GetEulerAngles(
-				std::addressof(rot.x),
-				std::addressof(rot.y),
-				std::addressof(rot.z));
+				rot.x,
+				rot.y,
+				rot.z);
 		}
 
 		NiPoint3 pos;
@@ -43,7 +43,7 @@ namespace IED
 		bool                        succeeded{ false };
 		bool                        isLoadedData{ true };
 		long long                   lastUpdate{ 0 };
-		boost::recursive_mutex        lock;
+		boost::mutex                lock;
 
 		SKMP_REDEFINE_NEW_PREF();
 	};

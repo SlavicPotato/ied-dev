@@ -14,7 +14,7 @@ namespace IED
 			[[nodiscard]] const ActorInfoHolder&             GetActorInfo() const noexcept;
 			[[nodiscard]] const NPCInfoHolder&               GetNPCInfo() const noexcept;
 			[[nodiscard]] std::uint64_t                      GetActorInfoUpdateID() const noexcept;
-			[[nodiscard]] const stl::optional<Game::FormID>& GetCrosshairRef() const noexcept;
+			[[nodiscard]] const std::optional<Game::FormID>& GetCrosshairRef() const noexcept;
 
 		private:
 			Controller& m_controller;

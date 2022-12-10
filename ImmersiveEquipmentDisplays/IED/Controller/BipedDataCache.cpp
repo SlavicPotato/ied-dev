@@ -35,7 +35,7 @@ namespace IED
 			std::for_each(
 				a_input.begin(),
 				a_input.end(),
-				[&](auto& a_v) {
+				[&](auto& a_v) [[msvc::forceinline]] {
 					if (a_v.second.data)
 					{
 						s.emplace_back(std::addressof(a_v));
@@ -45,7 +45,7 @@ namespace IED
 			std::sort(
 				s.begin(),
 				s.end(),
-				[](const auto& a_lhs, const auto& a_rhs) {
+				[](const auto& a_lhs, const auto& a_rhs) [[msvc::forceinline]] {
 					return a_lhs->second.data->accessed >
 				           a_rhs->second.data->accessed;
 				});

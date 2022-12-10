@@ -592,6 +592,8 @@ namespace IED
 
 		if (a_actor->formID)
 		{
+			//m_Instance.Debug("%s: release 3D: %X", __FUNCTION__, a_actor->formID);
+
 			if (ITaskPool::IsRunningOnCurrentThread())
 			{
 				m_Instance.FailsafeCleanupAndEval(a_actor);
@@ -722,6 +724,8 @@ namespace IED
 	{
 		if (auto actor = a_refr->As<Actor>())
 		{
+			//m_Instance.Debug("%s: GC: %X", __FUNCTION__, a_refr->formID);
+
 			m_Instance.m_controller->RemoveActor(actor->formID, ControllerUpdateFlags::kNone);
 		}
 
@@ -863,7 +867,7 @@ namespace IED
 				UpdateActorAnimationList(
 					actor,
 					a_data,
-					m_Instance.m_controller);
+					*m_Instance.m_controller);
 			}
 		}
 
@@ -985,8 +989,8 @@ namespace IED
 		{
 		case ModelType::kWeapon:
 			{
-				auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
-				auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
+				const auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
+				const auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
 
 				if (a_removeScabbards)
 				{
@@ -1129,9 +1133,9 @@ namespace IED
 			a_dropOnDeath ? 4 : 0,
 			true);
 
-		if (auto cell = a_actor->GetParentCell())
+		if (const auto cell = a_actor->GetParentCell())
 		{
-			if (auto world = cell->GetHavokWorld())
+			if (const auto world = cell->GetHavokWorld())
 			{
 				NiPointer<Actor> mountedActor;
 
@@ -1156,7 +1160,7 @@ namespace IED
 		RE::WeaponAnimationGraphManagerHolderPtr& a_out,
 		std::function<bool(const char*)>          a_filter)
 	{
-		auto sh = BSStringHolder::GetSingleton();
+		const auto sh = BSStringHolder::GetSingleton();
 
 		auto bged = a_object->GetExtraData<BSBehaviorGraphExtraData>(sh->m_bged);
 		if (!bged)
@@ -1289,7 +1293,7 @@ namespace IED
 		{
 			for (auto& e : bip->objects)
 			{
-				if (auto &h = e.weaponAnimationGraphManagerHolder)
+				if (auto& h = e.weaponAnimationGraphManagerHolder)
 				{
 					UpdateAnimationGraph(h.get(), data);
 				}
@@ -1297,7 +1301,7 @@ namespace IED
 
 			if (auto actor = a_refr->As<Actor>())
 			{
-				m_Instance.ProcessAnimationUpdateList(actor, data, m_Instance.m_controller);
+				m_Instance.ProcessAnimationUpdateList(actor, data, *m_Instance.m_controller);
 			}
 		}
 

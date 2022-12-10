@@ -21,7 +21,7 @@ namespace IED
 			{
 				scale.clear();
 				position.clear();
-				rotation.clear();
+				rotation.reset();
 
 				tag.reset();
 			}
@@ -33,7 +33,7 @@ namespace IED
 			}
 
 			stl::optional<NiPoint3>   position;
-			stl::optional<NiMatrix33> rotation;
+			std::optional<NiMatrix33> rotation;
 			stl::optional<float>      scale;
 			std::optional<luid_tag>   tag;
 		};

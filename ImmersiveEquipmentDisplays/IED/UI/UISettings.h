@@ -100,7 +100,7 @@ namespace IED
 			stl::optional<float> m_scaleTemp;
 			stl::optional<float> m_fontSizeTemp;
 
-			stl::optional<std::uint8_t> m_tmpFormType;
+			std::optional<std::uint8_t> m_tmpFormType;
 
 			Tasks::UIRenderTaskBase& m_owner;
 			Controller&              m_controller;

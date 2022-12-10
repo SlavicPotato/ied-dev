@@ -260,6 +260,15 @@ namespace IED
 
 		const bool defer = EngineExtensions::ShouldDefer3DTask();
 
+		/*if (!defer)
+		{
+			gLog.Debug("%s: immediate cleanup: %X", __FUNCTION__, m_actorid.get());
+		}
+		else
+		{
+			gLog.Debug("%s: DEFERRED cleanup: %X", __FUNCTION__, m_actorid.get());
+		}*/
+
 		if (m_actor->loadedState)
 		{
 			for (const auto& e : m_cmeNodes)
@@ -449,7 +458,10 @@ namespace IED
 		visit([&](auto& a_e) [[msvc::forceinline]] {
 			if (auto& state = a_e.data.state)
 			{
+				//if (!state->flags.test(ObjectEntryFlags::kInvisible))
+				//{
 				state->UpdateAnimationGraphs(a_data);
+				//}
 			}
 		});
 	}

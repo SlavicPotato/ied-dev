@@ -68,7 +68,7 @@ namespace IED
 
 			static std::string get_key(const fs::path& a_filename);
 
-			stl::optional<SelectedFile> m_selected;
+			std::optional<SelectedFile> m_selected;
 			storage_type                m_files;
 			fs::path                    m_root;
 			fs::path                    m_ext;

@@ -528,14 +528,14 @@ namespace IED
 								state->SetVisible(false);
 
 								if (state->nodes.HasPhysicsNode())
-					{
+								{
 									if (auto& simComponent = state->simComponent)
-						{
+									{
 										e.RemoveAndDestroySimComponent(simComponent);
 									}
 								}
 
-							update = true;
+								update = true;
 							}
 						}
 					}

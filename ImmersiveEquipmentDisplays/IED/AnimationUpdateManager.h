@@ -7,10 +7,6 @@ namespace IED
 
 	class AnimationUpdateManager
 	{
-		using entry_type = std::pair<
-			Game::FormID::held_type,
-			std::shared_ptr<AnimationGraphManagerHolderList>>;
-
 	public:
 		void BeginAnimationUpdate(
 			Controller* a_controller);
@@ -21,14 +17,16 @@ namespace IED
 		void ProcessAnimationUpdateList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			const Controller*            a_controller);
+			const Controller&            a_controller);
 
 		static void UpdateActorAnimationList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			const Controller*             a_controller);
+			const Controller&            a_controller);
 
 	private:
+#if defined(DEBUG)
 		std::atomic<bool> m_running{ false };
+#endif
 	};
 }

@@ -278,14 +278,16 @@ namespace IED
 			return;
 		}
 
-		auto e = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
+		auto e = m_npcInfo.emplace(
+			npc->formID,
+			std::make_shared<npcInfoEntry_t>());
 
 		e.first->second->active = false;
 
 		FillNPCInfoEntry(npc, *e.first->second);
 	}
 
-	stl::optional<Game::ObjectRefHandle> IActorInfo::GetTargetActortHandle()
+	std::optional<Game::ObjectRefHandle> IActorInfo::GetTargetActortHandle()
 	{
 		if (auto refHolder = CrosshairRefHandleHolder::GetSingleton())
 		{
@@ -312,7 +314,7 @@ namespace IED
 	{
 		m_actorInfo.clear();
 		m_npcInfo.clear();
-		m_crosshairRef.clear();
+		m_crosshairRef.reset();
 
 		for (auto& e : a_cache)
 		{
@@ -365,7 +367,7 @@ namespace IED
 		{
 			if (auto actor = ref->As<Actor>())
 			{
-				m_crosshairRef = actor->formID;
+				m_crosshairRef.emplace(actor->formID);
 			}
 		}
 
@@ -395,7 +397,7 @@ namespace IED
 			return;
 		}
 
-		auto actor = ref->As<Actor>();
+		const auto actor = ref->As<Actor>();
 		if (!actor)
 		{
 			return;
@@ -427,7 +429,9 @@ namespace IED
 			return false;
 		}
 
-		const auto r = m_npcInfo.emplace(npc->formID, std::make_shared<npcInfoEntry_t>());
+		const auto r = m_npcInfo.emplace(
+			npc->formID,
+			std::make_shared<npcInfoEntry_t>());
 
 		FillNPCInfoEntry(npc, *r.first->second);
 

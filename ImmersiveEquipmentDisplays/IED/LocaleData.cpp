@@ -18,7 +18,7 @@ namespace IED
 			try
 			{
 				boost::locale::generator gen;
-				m_current = gen.generate(CODEPAGE_ENGLISH);
+				m_current.emplace(gen.generate(CODEPAGE_ENGLISH));
 			}
 			catch (...)
 			{

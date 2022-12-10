@@ -92,7 +92,7 @@ namespace IED
 					e.first.get(),
 					e.second.name.c_str());
 
-				this->m_listData.try_emplace(e.first, this->m_listBuf1);
+				this->m_listData.emplace(e.first, this->m_listBuf1);
 			}
 
 			if (this->m_listData.empty())
@@ -102,7 +102,10 @@ namespace IED
 				return;
 			}
 
-			stl::snprintf(this->m_listBuf1, "%zu", this->m_listData.size());
+			stl::snprintf(
+				this->m_listBuf1,
+				"%zu",
+				this->m_listData.size());
 
 			if (!isFirstUpdate && GetSettings().data.ui.selectCrosshairActor)
 			{
@@ -153,7 +156,7 @@ namespace IED
 			if (cacheUpdateId != m_lastCacheUpdateId)
 			{
 				this->m_lastCacheUpdateId = cacheUpdateId;
-				this->m_listNextUpdate = true;
+				this->m_listNextUpdate    = true;
 			}
 
 			UIListBase<Td, Game::FormID>::ListTick();

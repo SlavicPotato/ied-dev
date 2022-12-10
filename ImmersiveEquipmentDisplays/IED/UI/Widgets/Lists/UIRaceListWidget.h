@@ -81,7 +81,7 @@ namespace IED
 						e.edid.c_str() :
                         e.fullname.c_str());
 
-				this->m_listData.try_emplace(i, this->m_listBuf1);
+				this->m_listData.emplace(i, this->m_listBuf1);
 			}
 
 			if (this->m_listData.empty())

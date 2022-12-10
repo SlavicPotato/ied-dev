@@ -173,11 +173,18 @@ namespace IED
 				return;
 			}
 
-			const auto result = TextCopyable("%.8X", a_form.get());
-
-			if (result >= TextCopyableResult::kHovered)
+			if (a_form)
 			{
-				DrawGeneralFormInfoTooltip(a_form);
+				const auto result = TextCopyable("%.8X", a_form.get());
+
+				if (result >= TextCopyableResult::kHovered)
+				{
+					DrawGeneralFormInfoTooltip(a_form);
+				}
+			}
+			else
+			{
+				ImGui::TextUnformatted(UIL::LS(CommonStrings::None));
 			}
 		}
 
@@ -188,11 +195,18 @@ namespace IED
 				return;
 			}
 
-			const auto result = TextWrappedCopyable("%.8X", a_form.get());
-
-			if (result >= TextCopyableResult::kHovered)
+			if (a_form)
 			{
-				DrawGeneralFormInfoTooltip(a_form);
+				const auto result = TextWrappedCopyable("%.8X", a_form.get());
+
+				if (result >= TextCopyableResult::kHovered)
+				{
+					DrawGeneralFormInfoTooltip(a_form);
+				}
+			}
+			else
+			{
+				ImGui::TextWrapped("%s", UIL::LS(CommonStrings::None));
 			}
 		}
 

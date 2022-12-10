@@ -196,8 +196,8 @@ namespace IED
 		}
 
 		void UICustomEditorActor::OnListChangeCurrentItem(
-			const stl::optional<UIActorList<entryCustomData_t>::listValue_t>& a_oldHandle,
-			const stl::optional<UIActorList<entryCustomData_t>::listValue_t>& a_newHandle)
+			const std::optional<UIActorList<entryCustomData_t>::listValue_t>& a_oldHandle,
+			const std::optional<UIActorList<entryCustomData_t>::listValue_t>& a_newHandle)
 		{
 			if (!a_newHandle)
 			{

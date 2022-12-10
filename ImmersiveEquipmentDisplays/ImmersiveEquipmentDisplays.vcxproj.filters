@@ -2104,9 +2104,6 @@
     <ClCompile Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.cpp">
       <Filter>Source\IED\UI\Widgets\Lists</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ActorState.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIConditionParamEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>

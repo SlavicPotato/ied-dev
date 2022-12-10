@@ -46,7 +46,7 @@ namespace IED
 				{
 					ImGui::PushID(std::addressof(e));
 
-					bool selected = m_selected->m_key == e.first;
+					const bool selected = m_selected->m_key == e.first;
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
@@ -57,7 +57,7 @@ namespace IED
 
 					if (ImGui::Selectable(UIL::LMKID<3>(e.first.c_str(), "1"), selected))
 					{
-						m_selected.insert(m_root, e);
+						m_selected.emplace(m_root, e);
 						m_selected->UpdateInfo();
 					}
 
@@ -121,14 +121,14 @@ namespace IED
 
 				if (m_files.empty())
 				{
-					m_selected.clear();
+					m_selected.reset();
 				}
 				else
 				{
 					if (!m_selected ||
 					    !m_files.contains(m_selected->m_key))
 					{
-						m_selected.insert(
+						m_selected.emplace(
 							m_root,
 							*m_files.begin());
 					}
@@ -202,7 +202,7 @@ namespace IED
 			{
 				if (m_selected && m_selected->m_key == tmp_key)
 				{
-					m_selected.insert(m_root, *m_files.begin());
+					m_selected.emplace(m_root, *m_files.begin());
 					m_selected->UpdateInfo();
 				}
 			}
@@ -246,7 +246,7 @@ namespace IED
 			auto it = m_files.find(a_itemDesc);
 			if (it != m_files.end())
 			{
-				m_selected.insert(m_root, *it);
+				m_selected.emplace(m_root, *it);
 				m_selected->UpdateInfo();
 			}
 		}

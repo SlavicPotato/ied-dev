@@ -28,7 +28,7 @@ namespace IED
 			return m_controller.GetActorInfoUpdateID();
 		}
 
-		const stl::optional<Game::FormID>& UIActorInfoInterface::GetCrosshairRef() const noexcept
+		const std::optional<Game::FormID>& UIActorInfoInterface::GetCrosshairRef() const noexcept
 		{
 			return m_controller.GetCrosshairRef();
 		}

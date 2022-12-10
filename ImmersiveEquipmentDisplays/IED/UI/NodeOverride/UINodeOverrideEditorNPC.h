@@ -44,8 +44,8 @@ namespace IED
 				Game::FormID a_handle) override;
 
 			virtual void OnListChangeCurrentItem(
-				const stl::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
-				const stl::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_newHandle) override;
+				const std::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
+				const std::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_newHandle) override;
 
 			virtual entryNodeOverrideData_t GetData(
 				Game::FormID a_formid) override;

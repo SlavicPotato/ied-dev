@@ -250,15 +250,15 @@ namespace IED
 			return;
 		}
 
-		if (auto controller = nodes.object->GetControllers())
+		if (const auto controller = nodes.object->GetControllers())
 		{
-			if (auto manager = controller->AsNiControllerManager())
+			if (const auto manager = controller->AsNiControllerManager())
 			{
-				if (auto nseq = manager->GetSequenceByName(a_sequence.c_str()))
+				if (const auto nseq = manager->GetSequenceByName(a_sequence.c_str()))
 				{
-					auto cseq = !currentSequence.empty() ?
-					                manager->GetSequenceByName(currentSequence.c_str()) :
-                                    nullptr;
+					const auto cseq = !currentSequence.empty() ?
+					                      manager->GetSequenceByName(currentSequence.c_str()) :
+					                      nullptr;
 
 					a_actor->PlayAnimation(
 						manager,

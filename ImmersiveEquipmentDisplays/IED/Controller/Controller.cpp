@@ -1225,12 +1225,14 @@ namespace IED
 		{
 			GenerateRandomPlacementEntries(a_holder);
 		}
+
+		//Debug("%s: acquired: %X", __FUNCTION__, a_holder.GetActorFormID());
 	}
 
 	void Controller::QueueResetAll(
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::AddTask([this, a_flags]() {
+		ITaskPool::AddTask([this, a_flags] {
 			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
@@ -1247,7 +1249,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> a_flags,
 		ObjectSlot                       a_slot)
 	{
-		ITaskPool::AddTask([this, a_flags, a_slot]() {
+		ITaskPool::AddTask([this, a_flags, a_slot] {
 			const boost::lock_guard lock(m_lock);
 
 			actorLookupResultMap_t result;
@@ -1263,7 +1265,7 @@ namespace IED
 	void Controller::QueueResetGearAll(
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		ITaskPool::AddTask([this, a_flags]() {
+		ITaskPool::AddTask([this, a_flags] {
 			const boost::lock_guard lock(m_lock);
 
 			for (auto& e : m_objects)
@@ -2542,9 +2544,9 @@ namespace IED
 			}
 		}
 
-		auto limit = prio ?
-		                 prio->limit :
-		                 stl::underlying(ObjectType::kMax);
+		const auto limit = prio ?
+		                       prio->limit :
+		                       stl::underlying(ObjectType::kMax);
 
 		for (const auto& e : types)
 		{
@@ -2641,7 +2643,7 @@ namespace IED
 						{
 							a_params.mark_slot_presence_change(objectEntry.slotid);
 						}
-								}
+					}
 					else
 					{
 						RemoveSlotObjectEntry(
@@ -3114,9 +3116,13 @@ namespace IED
 				return false;
 			}
 
-			auto configOverride =
+			const auto& itemData = it->second;
+
+			assert(itemData.form);
+
+			const auto configOverride =
 				a_config.get_equipment_override_sfp(
-					{ it->second.form },
+					{ itemData.form },
 					a_params);
 
 			const auto& usedBaseConf =
@@ -3134,13 +3140,6 @@ namespace IED
 					a_params,
 					a_config,
 					a_objectEntry))
-			{
-				return false;
-			}
-
-			auto& itemData = it->second;
-
-			if (!itemData.form)
 			{
 				return false;
 			}

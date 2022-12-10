@@ -9,8 +9,6 @@ static bool Initialize(const SKSEInterface* a_skse)
 {
 	auto& skse = ISKSE::GetSingleton();
 
-	bool result = false;
-
 	try
 	{
 		gLog.Debug("Querying SKSE interfaces..");
@@ -21,7 +19,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 			return false;
 		}
 
-		result = IED::Initializer::GetSingleton().Run(a_skse);
+		const auto result = IED::Initializer::GetSingleton().Run(a_skse);
 
 		if (result)
 		{
@@ -39,6 +37,8 @@ static bool Initialize(const SKSEInterface* a_skse)
 					IAL::GetLoadEnd()) /
 					1000ll);
 		}
+
+		return result;
 	}
 	catch (const std::exception& e)
 	{
@@ -47,7 +47,7 @@ static bool Initialize(const SKSEInterface* a_skse)
 			"An exception occured during initialization:\n\n%s",
 			e.what());
 
-		result = false;
+		return false;
 	}
 	catch (...)
 	{
@@ -55,13 +55,12 @@ static bool Initialize(const SKSEInterface* a_skse)
 			PLUGIN_NAME,
 			"An exception occured during initialization");
 
-		result = false;
+		return false;
 	}
-
-	return result;
 }
 
-extern "C" {
+extern "C"
+{
 	bool SKSEPlugin_Query(const SKSEInterface* a_skse, PluginInfo* a_info)
 	{
 		return ISKSE::GetSingleton().Query(a_skse, a_info);

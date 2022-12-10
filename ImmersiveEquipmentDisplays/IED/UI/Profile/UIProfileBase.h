@@ -54,7 +54,7 @@ namespace IED
 			struct
 			{
 				char                             new_input[260]{ 0 };
-				stl::optional<stl::fixed_string> selected;
+				std::optional<stl::fixed_string> selected;
 				except::descriptor               lastException;
 			} m_state;
 		};
@@ -233,7 +233,7 @@ namespace IED
 				OnProfileDelete(*a_evn.m_profile);
 				if (m_state.selected == *a_evn.m_profile)
 				{
-					m_state.selected.clear();
+					m_state.selected.reset();
 				}
 				break;
 			case ProfileManagerEvent<T>::EventType::kProfileSave:

@@ -43,8 +43,8 @@ namespace IED
 
 				if (m_listCurrent)
 				{
-					auto disabled = m_listCurrent->handle == Data::IData::GetPlayerBaseID() &&
-					                !m_controller.GetNodeOverridePlayerEnabled();
+					const auto disabled = m_listCurrent->handle == Data::IData::GetPlayerBaseID() &&
+					                      !m_controller.GetNodeOverridePlayerEnabled();
 
 					if (disabled)
 					{
@@ -133,8 +133,8 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorNPC::OnListChangeCurrentItem(
-			const stl::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
-			const stl::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_newHandle)
+			const std::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_oldHandle,
+			const std::optional<UINPCList<entryNodeOverrideData_t>::listValue_t>& a_newHandle)
 		{
 			if (!a_newHandle)
 			{
@@ -155,7 +155,7 @@ namespace IED
 			{
 				auto sex = it->second->female ?
 				               Data::ConfigSex::Female :
-                               Data::ConfigSex::Male;
+				               Data::ConfigSex::Male;
 
 				SetSex(sex, false);
 			}
