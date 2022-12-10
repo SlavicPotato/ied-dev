@@ -2641,19 +2641,7 @@ namespace IED
 						{
 							a_params.mark_slot_presence_change(objectEntry.slotid);
 						}
-
-						if (auto& state = objectEntry.data.state)
-						{
-							if (state->nodes.HasPhysicsNode())
-							{
-								if (auto& simComponent = state->simComponent)
-								{
-									a_params.objects.RemoveAndDestroySimComponent(
-										state->simComponent);
 								}
-							}
-						}
-					}
 					else
 					{
 						RemoveSlotObjectEntry(

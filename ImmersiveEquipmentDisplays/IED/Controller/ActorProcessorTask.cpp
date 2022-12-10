@@ -504,7 +504,10 @@ namespace IED
 			bool update = false;
 
 			e.visit([&](auto& a_v) [[msvc::forceinline]] {
-				if (!a_v.data.state)
+
+				auto& state = a_v.data.state;
+
+				if (!state)
 				{
 					return;
 				}
@@ -516,13 +519,24 @@ namespace IED
 						std::remove_cvref_t<decltype(a_v)>,
 						ObjectEntrySlot>)
 				{
-					if (a_v.data.state->hideCountdown)
+					if (state->hideCountdown)
 					{
-						if (--a_v.data.state->hideCountdown == 0)
+						if (--state->hideCountdown == 0)
 						{
-							update = true;
+							if (state->flags.test(ObjectEntryFlags::kInvisible))
+							{
+								state->SetVisible(false);
 
-							a_v.data.state->SetVisible(false);
+								if (state->nodes.HasPhysicsNode())
+					{
+									if (auto& simComponent = state->simComponent)
+						{
+										e.RemoveAndDestroySimComponent(simComponent);
+									}
+								}
+
+							update = true;
+							}
 						}
 					}
 				}
