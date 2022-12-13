@@ -88,7 +88,7 @@ namespace IED
 		auto& item = AddOrGetBaseItem(form);
 
 		item.count += a_entry->count;
-		item.baseCount = a_entry->count;
+		item.baseCount += a_entry->count;
 	}
 
 	void actorInventoryInfo_t::Process(InventoryEntryData* a_entryData)
