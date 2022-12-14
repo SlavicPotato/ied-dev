@@ -30,7 +30,7 @@ namespace IED
 	class CachedFactionData
 	{
 		using container_type =
-			stl::map_sa<
+			stl::flat_map<
 				TESFaction*,
 				std::int8_t>;
 
@@ -91,7 +91,7 @@ namespace IED
 
 	class CachedActiveEffectData
 	{
-		using container_type = stl::set_sa<EffectSetting*>;
+		using container_type = stl::flat_set<EffectSetting*>;
 
 	public:
 		CachedActiveEffectData(Actor* a_actor);

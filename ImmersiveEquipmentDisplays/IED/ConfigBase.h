@@ -183,34 +183,34 @@ namespace IED
 				processParams_t&      a_params) const;
 
 		private:
-			static constexpr bool match_equipped_type(
-				const collectorData_t&              a_data,
+			static bool match_equipped_type(
+				processParams_t&                    a_params,
 				const equipmentOverrideCondition_t& a_match);
 
 			static bool match_carried_type(
-				const collectorData_t&              a_data,
+				const CollectorData&                a_data,
 				const equipmentOverrideCondition_t& a_match);
 
 			static bool match_equipped_form(
-				const collectorData_t&              a_data,
+				processParams_t&                    a_params,
 				const equipmentOverrideCondition_t& a_match);
 
 			static bool match_carried_form(
-				const collectorData_t&              a_data,
+				const CollectorData&                a_data,
 				const equipmentOverrideCondition_t& a_match);
 
-			static constexpr bool match_equipped(
+			static bool match_equipped(
 				const equipmentOverrideCondition_t& a_match,
 				processParams_t&                    a_params);
 
-			static constexpr bool match_equipped_or_slot(
+			static bool match_equipped_or_slot(
 				const equipmentOverrideCondition_t& a_match,
 				processParams_t&                    a_params);
 
 			template <
 				EquipmentOverrideConditionFlags a_maskAll,
 				EquipmentOverrideConditionFlags a_maskSlots>
-			static constexpr bool match_equipped_or_form(
+			static bool match_equipped_or_form(
 				const equipmentOverrideCondition_t& a_match,
 				const formSlotPair_t&               a_checkForm,
 				processParams_t&                    a_params);
@@ -241,29 +241,25 @@ namespace IED
 		private:
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
-				const collectorData_t&    a_data);
+				processParams_t&          a_params);
 
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
-				const collectorData_t&    a_data);
+				const CollectorData&      a_data);
 
 			static bool has_keyword_slot(
 				const configCachedForm_t& a_keyword,
 				CommonParams&             a_params);
 
-			static bool has_keyword(
-				const configCachedForm_t& a_keyword,
-				TESForm*                  a_form);
-
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
 				ObjectSlotExtra           a_type,
-				const collectorData_t&    a_data);
+				const CollectorData&      a_data);
 
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
 				ObjectTypeExtra           a_type,
-				const collectorData_t&    a_data);
+				const CollectorData&      a_data);
 
 		protected:
 			template <class Archive>
@@ -284,7 +280,6 @@ namespace IED
 				}
 			}
 		};
-
 	}
 }
 

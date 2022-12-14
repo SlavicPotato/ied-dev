@@ -15,8 +15,8 @@ namespace IED
 				return ids.empty() && signatures.empty();
 			}
 
-			stl::set_sa<std::int32_t>  ids;
-			stl::set_sa<std::uint64_t> signatures;
+			stl::flat_set<std::int32_t>  ids;
+			stl::flat_set<std::uint64_t> signatures;
 		};
 	}
 }

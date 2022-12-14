@@ -35,23 +35,20 @@ namespace IED
 			return {};
 		}
 
-		if (m_Instance)
+		try
 		{
-			try
+			if (const auto& locale = m_Instance->m_current)
 			{
-				if (m_Instance->m_current)
-				{
-					using namespace boost::locale;
+				using namespace boost::locale;
 
-					return conv::to_utf<char>(
-						a_in,
-						*m_Instance->m_current,
-						conv::skip);
-				}
+				return conv::to_utf<char>(
+					a_in,
+					*locale,
+					conv::skip);
 			}
-			catch (...)
-			{
-			}
+		}
+		catch (...)
+		{
 		}
 
 		return a_in;

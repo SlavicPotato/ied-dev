@@ -26,9 +26,10 @@ namespace IED
 	protected:
 		struct selectedItem_t
 		{
-			std::optional<SlotItemCandidates::storage_type::iterator> item;
+			std::optional<SlotItemCandidates::iterator> item;
 
-			void consume(SlotItemCandidates::storage_type& a_candidates) const;
+			void consume(SlotItemCandidates& a_candidates) const  //
+				noexcept(std::is_nothrow_move_assignable_v<SlotItemCandidates::value_type>);
 
 			[[nodiscard]] inline constexpr auto* operator->() const noexcept
 			{
@@ -44,19 +45,20 @@ namespace IED
 	public:
 		IEquipment(RandomNumberGeneratorBase& a_rng);
 
-		static equippedItemInfo_t CreateEquippedItemInfo(ActorProcessManager* a_pm);
+		static equippedItemInfo_t CreateEquippedItemInfo(
+			const ActorProcessManager* const a_pm) noexcept;
 
 		static selectedItem_t SelectSlotItem(
-			processParams_t&                  a_params,
-			const Data::configSlot_t&         a_config,
-			SlotItemCandidates::storage_type& a_candidates,
-			const ObjectEntrySlot&            a_slot);
+			processParams_t&          a_params,
+			const Data::configSlot_t& a_config,
+			SlotItemCandidates&       a_candidates,
+			const ObjectEntrySlot&    a_slot);
 
-		bool CustomEntryValidateInventoryForm(
-			processParams_t&                         a_params,
-			const Data::collectorData_t::itemData_t& a_itemData,
-			const Data::configCustom_t&              a_config,
-			bool&                                    a_hasMinCount);
+		static bool CustomEntryValidateInventoryForm(
+			processParams_t&                     a_params,
+			const Data::CollectorData::ItemData& a_itemData,
+			const Data::configCustom_t&          a_config,
+			bool&                                a_hasMinCount) noexcept;
 
 		template <class Tf>
 		auto SelectInventoryFormLastEquipped(
@@ -65,7 +67,7 @@ namespace IED
 			Tf                                a_validationFunc);
 
 		template <class Tf>
-		auto SelectInventoryFormLastSlotted(
+		static auto SelectInventoryFormLastSlotted(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			Tf                                a_validationFunc);
@@ -76,21 +78,21 @@ namespace IED
 			const Data::configLastEquipped_t& a_config,
 			Tf                                a_validationFunc);
 
-		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryFormGroup(
+		static Data::CollectorData::container_type::iterator CustomEntrySelectInventoryFormGroup(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
-			bool&                       a_hasMinCount);
+			bool&                       a_hasMinCount) noexcept;
 
 		template <class Tf>
-		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryFormDefault(
+		Data::CollectorData::container_type::iterator CustomEntrySelectInventoryFormDefault(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
 			bool&                       a_hasMinCount,
 			Tf                          a_filter);
 
-		Data::collectorData_t::container_type::iterator CustomEntrySelectInventoryForm(
+		Data::CollectorData::container_type::iterator CustomEntrySelectInventoryForm(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry,
@@ -98,7 +100,7 @@ namespace IED
 
 	private:
 		template <class Tf>
-		inline auto SelectSlotEntryForm(
+		static inline auto SelectSlotEntryForm(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const BipedSlotCacheEntry&        a_slotEntry,

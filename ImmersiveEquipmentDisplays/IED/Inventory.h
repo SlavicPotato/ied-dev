@@ -8,65 +8,57 @@ namespace IED
 {
 	class Controller;
 
-	EntryDataList* GetEntryDataList(Actor* a_actor);
+	EntryDataList* GetEntryDataList(const Actor* const a_actor) noexcept;
 
-	struct SlotItemCandidates
+	struct SlotCandidate
 	{
-		struct item_t
-		{
-			const Data::collectorData_t::itemData_t* item;
-			std::uint32_t                            extra;
-			std::uint32_t                            rating;
-		};
-
-		using storage_type =
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-			std::vector<
-				item_t,
-				stl::mi_allocator<item_t>>
-#else
-			stl::vector<item_t>
-#endif
-			;
-
-		storage_type items;
-		//std::size_t  reserve{ 0 };
+		const Data::CollectorData::ItemData* item;
+		std::uint32_t                        extra;
+		std::uint32_t                        rating;
 	};
+
+	using SlotItemCandidates = std::vector<SlotCandidate>;
 
 	using SlotResults = std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)>;
 
-	struct ItemCandidateCollector
+	struct InventoryInfoCollector
 	{
 	public:
-		ItemCandidateCollector(
-			SlotResults& a_slotResults,
-			Actor*       a_actor);
+		InventoryInfoCollector(
+			SlotResults&                            a_slotResults,
+			Data::CollectorData::container_type&    a_idt,
+			Data::CollectorData::eq_container_type& a_eqt,
+			const Actor* const                      a_actor) noexcept;
 
+	private:
 		void Run(
-			TESContainer&                          a_container,
-			EntryDataList* a_dataList);
+			const TESContainer&  a_container,
+			EntryDataList* const a_dataList) noexcept;
 
-		SKMP_FORCEINLINE void Process(TESContainer::Entry* entry);
-		SKMP_FORCEINLINE void Process(InventoryEntryData* a_entryData);
+		void ProcessList(const TESContainer& a_container) noexcept;
+		void ProcessList(EntryDataList* const a_dataList) noexcept;
+		void PostProcess() noexcept;
 
-		void GenerateSlotCandidates(bool a_checkFav);
+		SKMP_FORCEINLINE void Process(const TESContainer::Entry* entry) noexcept;
+		SKMP_FORCEINLINE void Process(const InventoryEntryData* a_entryData) noexcept;
+
+	public:
+		void GenerateSlotCandidates(bool a_checkFav) noexcept;
 
 		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
 		{
 			assert(a_type < Data::ObjectType::kMax);
-			return slotResults[stl::underlying(a_type)].items;
+			return slotResults[stl::underlying(a_type)];
 		}
 
-		Data::collectorData_t data;
-		SlotResults&          slotResults;
+		Data::CollectorData data;
+		SlotResults&        slotResults;
 
 	private:
-		SKMP_FORCEINLINE bool CheckForm(TESForm* a_form);
-
 		const bool isPlayer;
 	};
 
-	using UseCountContainer = stl::map_sa<
+	using UseCountContainer = stl::flat_map<
 		Game::FormID,
 		std::uint32_t>;
 

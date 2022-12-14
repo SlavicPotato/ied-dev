@@ -17,7 +17,8 @@ namespace IED
 	{
 	}
 
-	auto IEquipment::CreateEquippedItemInfo(ActorProcessManager* a_pm)
+	auto IEquipment::CreateEquippedItemInfo(
+		const ActorProcessManager* const a_pm) noexcept
 		-> equippedItemInfo_t
 	{
 		auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
@@ -28,18 +29,18 @@ namespace IED
 			formRight,
 			formLeft ?
 				ItemData::GetObjectSlotLeft(formLeft) :
-                ObjectSlot::kMax,
+				ObjectSlot::kMax,
 			formRight ?
 				ItemData::GetObjectSlot(formRight) :
-                ObjectSlot::kMax
+				ObjectSlot::kMax
 		};
 	}
 
 	auto IEquipment::SelectSlotItem(
-		processParams_t&                  a_params,
-		const Data::configSlot_t&         a_config,
-		SlotItemCandidates::storage_type& a_candidates,
-		const ObjectEntrySlot&            a_slot)
+		processParams_t&          a_params,
+		const Data::configSlot_t& a_config,
+		SlotItemCandidates&       a_candidates,
+		const ObjectEntrySlot&    a_slot)
 		-> selectedItem_t
 	{
 		if (a_candidates.empty())
@@ -62,7 +63,7 @@ namespace IED
 			if (it != a_candidates.end())
 			{
 				if (!checkCannotWear ||
-				    !it->item->cannotWear)
+				    !it->item->cannot_wear())
 				{
 					return { it };
 				}
@@ -83,7 +84,7 @@ namespace IED
 
 			if (it != a_candidates.end())
 			{
-				if ((!checkCannotWear || !it->item->cannotWear) &&
+				if ((!checkCannotWear || !it->item->cannot_wear()) &&
 				    configBase_t::do_match_fp(
 						a_config.itemFilterCondition,
 						{ it->item->form, a_slot.slotidex, a_slot.slotid },
@@ -101,7 +102,7 @@ namespace IED
 			[&](const auto& a_item) [[msvc::forceinline]] {
 				auto item = a_item.item;
 
-				if (checkCannotWear && item->cannotWear)
+				if (checkCannotWear && item->cannot_wear())
 				{
 					return false;
 				}
@@ -141,10 +142,10 @@ namespace IED
 	}
 
 	bool IEquipment::CustomEntryValidateInventoryForm(
-		processParams_t&                   a_params,
-		const collectorData_t::itemData_t& a_itemData,
-		const configCustom_t&              a_config,
-		bool&                              a_hasMinCount)
+		processParams_t&               a_params,
+		const CollectorData::ItemData& a_itemData,
+		const configCustom_t&          a_config,
+		bool&                          a_hasMinCount) noexcept
 	{
 		const auto form = a_itemData.form;
 
@@ -153,20 +154,20 @@ namespace IED
 			return false;
 		}
 
-		if (a_itemData.count < 1)
+		if (a_itemData.itemCount <= 0)
 		{
 			return false;
 		}
 
-		if ((a_config.countRange.min && a_itemData.count < a_config.countRange.min) ||
-		    a_config.countRange.max && a_itemData.count > a_config.countRange.max)
+		if ((a_config.countRange.min && a_itemData.itemCount < a_config.countRange.min) ||
+		    a_config.countRange.max && a_itemData.itemCount > a_config.countRange.max)
 		{
 			return false;
 		}
 
 		if (a_config.customFlags.test(CustomFlags::kCheckFav) &&
 		    a_params.objects.IsPlayer() &&
-		    !a_itemData.favorited)
+		    !a_itemData.is_favorited())
 		{
 			return false;
 		}
@@ -181,7 +182,7 @@ namespace IED
 			    !a_params.objects.IsPlayer())
 			{
 				if (!a_params.test_equipment_flags(
-						ItemData::GetRaceEquipmentFlagFromType(a_itemData.type)))
+						ItemData::GetRaceEquipmentFlagFromType(a_itemData.extra.type)))
 				{
 					return false;
 				}
@@ -200,19 +201,9 @@ namespace IED
 				}
 				else
 				{
-					std::uint32_t delta = 0;
+					const std::int64_t sharedCount = a_itemData.sharedCount;
 
-					if (a_itemData.equipped)
-					{
-						delta++;
-					}
-
-					if (a_itemData.equippedLeft)
-					{
-						delta++;
-					}
-
-					a_hasMinCount = a_itemData.sharedCount - delta > 0;
+					a_hasMinCount = (sharedCount - a_itemData.get_equip_count()) > 0;
 				}
 			}
 		}
@@ -224,11 +215,11 @@ namespace IED
 		return true;
 	}
 
-	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryFormGroup(
+	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryFormGroup(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
-		bool&                       a_hasMinCount)
+		bool&                       a_hasMinCount) noexcept
 	{
 		auto& formData = a_params.collector.data.forms;
 
@@ -251,7 +242,7 @@ namespace IED
 	}
 
 	template <class Tf>
-	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryFormDefault(
+	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryFormDefault(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
@@ -376,7 +367,7 @@ namespace IED
 		return formData.end();
 	}
 
-	collectorData_t::container_type::iterator IEquipment::CustomEntrySelectInventoryForm(
+	CollectorData::container_type::iterator IEquipment::CustomEntrySelectInventoryForm(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry,
@@ -435,7 +426,8 @@ namespace IED
 	}
 
 	void IEquipment::selectedItem_t::consume(
-		SlotItemCandidates::storage_type& a_candidates) const
+		SlotItemCandidates& a_candidates) const  //
+		noexcept(std::is_nothrow_move_assignable_v<SlotItemCandidates::value_type>)
 	{
 		auto& it = *item;
 

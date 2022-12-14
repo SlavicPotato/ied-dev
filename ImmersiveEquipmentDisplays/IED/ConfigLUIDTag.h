@@ -57,8 +57,8 @@ namespace IED
 
 			configLUIDTagAC_t(configLUIDTagAC_t&&) noexcept = default;
 
-			configLUIDTagAC_t& operator=(const configLUIDTagAC_t&) = default;
-			configLUIDTagAC_t& operator=(configLUIDTagAC_t&&) = default;
+			configLUIDTagAC_t& operator=(const configLUIDTagAC_t&) noexcept = default;
+			configLUIDTagAC_t& operator=(configLUIDTagAC_t&&) noexcept      = default;
 
 			inline void update_tag() noexcept
 			{
@@ -92,6 +92,21 @@ namespace IED
 			configLUIDTagMCG_t(const luid_tag& a_rhs) noexcept :
 				luid_tag(a_rhs)
 			{
+			}
+		};
+
+		// never generate on copy/move
+		struct configLUIDTagGI_t :
+			luid_tag
+		{
+			inline configLUIDTagGI_t() noexcept :
+				luid_tag(ILUID()())
+			{
+			}
+
+			inline void update_tag() noexcept
+			{
+				static_cast<luid_tag&>(*this) = ILUID()();
 			}
 		};
 	}

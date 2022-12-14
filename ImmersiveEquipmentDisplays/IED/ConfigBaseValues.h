@@ -135,7 +135,6 @@ namespace IED
 
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
-
 	}
 }
 

@@ -126,9 +126,9 @@ namespace IED
 		{
 			if (!weatherClass)
 			{
-				if (auto w = get_current_weather())
+				if (const auto w = get_current_weather())
 				{
-					auto f       = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
+					auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
 					weatherClass.emplace(static_cast<WeatherClassificationFlags>(f));
 				}
 				else

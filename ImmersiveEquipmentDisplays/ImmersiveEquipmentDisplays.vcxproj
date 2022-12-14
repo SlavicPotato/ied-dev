@@ -239,7 +239,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalOptions>/permissive /Gw /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>ext/ICommon.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ObjectFileName>$(IntDir)\%(RelativeDir)\%(Filename).obj</ObjectFileName>
@@ -267,7 +267,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -306,7 +306,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -345,7 +345,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus /Ob3 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /Ob3 %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -427,7 +427,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -466,7 +466,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -505,7 +505,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -544,7 +544,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -583,7 +583,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalOptions>/permissive /Gw /Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>ext/ICommon.h</ForcedIncludeFiles>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <UseFullPaths>false</UseFullPaths>
@@ -702,6 +702,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\NodeOverrideData.h" />
+    <ClInclude Include="IED\NodeOverrideParams.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusMisc.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusMiscImpl.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
@@ -1171,6 +1172,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\NodeOverrideData.cpp" />
+    <ClCompile Include="IED\NodeOverrideParams.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusMisc.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusMiscImpl.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />

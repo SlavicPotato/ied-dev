@@ -34,7 +34,8 @@ namespace IED
 			};
 
 			void clear()  //
-				noexcept(std::is_nothrow_move_assignable_v<configNodePhysicsValues_t>)
+				noexcept(std::is_nothrow_move_assignable_v<configNodePhysicsValues_t>&&
+			                 std::is_nothrow_default_constructible_v<configNodePhysicsValues_t>)
 			{
 				*this = {};
 			}

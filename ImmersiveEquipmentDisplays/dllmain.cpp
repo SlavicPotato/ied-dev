@@ -23,8 +23,8 @@ static bool Initialize(const SKSEInterface* a_skse)
 
 		if (result)
 		{
-			auto usageBranch = skse.GetTrampolineUsage(TrampolineID::kBranch);
-			auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
+			const auto usageBranch = skse.GetTrampolineUsage(TrampolineID::kBranch);
+			const auto usageLocal  = skse.GetTrampolineUsage(TrampolineID::kLocal);
 
 			gLog.Message(
 				"Loaded, trampolines: branch:[%zu/%zu] codegen:[%zu/%zu] IAL:[%lld ms]",
@@ -140,7 +140,7 @@ extern "C"
 			return false;
 		}
 
-		bool ret = Initialize(a_skse);
+		const bool ret = Initialize(a_skse);
 
 		if (!ret)
 		{

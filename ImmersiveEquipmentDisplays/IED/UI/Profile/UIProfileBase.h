@@ -134,7 +134,7 @@ namespace IED
 				return;
 			}
 
-			bool saveRes =
+			const bool saveRes =
 				a_data ?
 					profile.Save(*a_data, true) :
 					profile.Save();
@@ -153,7 +153,7 @@ namespace IED
 				return;
 			}
 
-			auto name(profile.Name());
+			const auto name(profile.Name());
 
 			if (pm.AddProfile(std::move(profile)))
 			{

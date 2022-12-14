@@ -182,8 +182,10 @@ namespace IED
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			if (m_reset)
 			{
 				m_reset = false;
@@ -198,39 +200,50 @@ namespace IED
 			m_context->Draw();
 
 			return m_context->IsContextOpen();
+
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::PrepareGameData()
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->PrepareGameData();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::Render()
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->Render();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::OnMouseMove(
@@ -238,59 +251,75 @@ namespace IED
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->OnMouseMove(a_evn);
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->OnKeyEvent(a_evn);
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::OnTaskStop()
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->SetOpenState(false);
 			m_context->OnClose();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTask::OnTaskStart()
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->SetOpenState(true);
 			m_context->OnOpen();
 			OnStart();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	bool IUIRenderTask::ShouldClose()
@@ -317,33 +346,41 @@ namespace IED
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->SetOpenState(true);
 			m_owner.OnUIOpen();
 			m_context->OnOpen();
 			OnStart();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	void IUIRenderTaskMain::OnTaskStop()
 	{
 		const boost::lock_guard lock(m_owner.UIGetLock());
 
+#if defined(DEBUG)
 		try
 		{
+#endif
 			m_context->SetOpenState(false);
 			m_context->OnClose();
 			m_owner.OnUIClose();
+#if defined(DEBUG)
 		}
 		catch (const std::exception& e)
 		{
 			HALT(e.what());
 		}
+#endif
 	}
 
 	bool IUIRenderTaskMain::ShouldClose()
@@ -370,5 +407,4 @@ namespace IED
 	{
 		return IPerfCounter::Query() >= m_deadline;
 	}
-
 }

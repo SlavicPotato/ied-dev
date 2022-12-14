@@ -274,8 +274,8 @@ namespace IED
 			return nullptr;
 		}
 
-		constexpr bool configBase_t::match_equipped_type(
-			const collectorData_t&              a_data,
+		bool configBase_t::match_equipped_type(
+			processParams_t&                    a_params,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto slot = stl::underlying(a_match.slot);
@@ -286,7 +286,7 @@ namespace IED
 
 			if (Conditions::is_hand_slot(a_match.slot))
 			{
-				auto pm = a_data.actor->processManager;
+				auto pm = a_params.actor->processManager;
 				if (!pm)
 				{
 					return false;
@@ -328,24 +328,25 @@ namespace IED
 			}
 			else
 			{
-				if (a_data.equippedTypeFlags[slot] == InventoryPresenceFlags::kNone)
+				const auto& data = a_params.collector.data;
+
+				if (!data.IsSlotEquipped(slot))
 				{
 					return false;
 				}
 
-				if (a_match.form.get_id())
+				if (const auto fid = a_match.form.get_id())
 				{
-					auto it = a_data.forms.find(a_match.form.get_id());
+					const auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1);
 
-					auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1);
-
-					if (it == a_data.forms.end())
+					auto it = data.forms.find(fid);
+					if (it == data.forms.end())
 					{
 						return rv;
 					}
 
-					if (it->second.extraEquipped.slot != a_match.slot &&
-					    it->second.extraEquipped.slotLeft != a_match.slot)
+					if (it->second.extra.equipped.slot != a_match.slot &&
+					    it->second.extra.equipped.slotLeft != a_match.slot)
 					{
 						return rv;
 					}
@@ -366,7 +367,7 @@ namespace IED
 					if (a_match.keyword.get_id())
 					{
 						if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-						    has_keyword_equipped(a_match.keyword, a_match.slot, a_data))
+						    has_keyword_equipped(a_match.keyword, a_match.slot, data))
 						{
 							return false;
 						}
@@ -375,39 +376,36 @@ namespace IED
 					return true;
 				}
 			}
-
-			return false;
 		}
 
 		bool configBase_t::match_carried_type(
-			const collectorData_t&              a_data,
+			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
-			auto type = Data::ItemData::GetTypeFromSlotExtra(a_match.slot);
+			const auto type = Data::ItemData::GetTypeFromSlotExtra(a_match.slot);
 
 			if (type >= ObjectTypeExtra::kMax)
 			{
 				return false;
 			}
 
-			if (a_data.typeCount[stl::underlying(type)] < 1)
+			if (!a_data.IsTypePresent(type))
 			{
 				return false;
 			}
 
-			if (a_match.form.get_id())
+			if (const auto fid = a_match.form.get_id())
 			{
-				auto it = a_data.forms.find(a_match.form.get_id());
-
 				auto rv = a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1);
 
+				auto it = a_data.forms.find(fid);
 				if (it == a_data.forms.end())
 				{
 					return rv;
 				}
 
-				if (it->second.count < 1 ||
-				    it->second.typeExtra != type)
+				if (it->second.itemCount <= 0 ||
+				    it->second.extra.typeExtra != type)
 				{
 					return rv;
 				}
@@ -436,19 +434,19 @@ namespace IED
 
 				return true;
 			}
-
-			return false;
 		}
 
 		bool configBase_t::match_equipped_form(
-			const collectorData_t&              a_data,
+			processParams_t&                    a_params,
 			const equipmentOverrideCondition_t& a_match)
 		{
-			auto form = match_pm_equipped(a_data.actor, a_match.form.get_id());
+			const auto fid = a_match.form.get_id();
+
+			const auto* form = match_pm_equipped(a_params.actor, fid);
 			if (!form)
 			{
-				auto it = a_data.forms.find(a_match.form.get_id());
-				if (it == a_data.forms.end())
+				auto it = a_params.collector.data.forms.find(fid);
+				if (it == a_params.collector.data.forms.end())
 				{
 					return false;
 				}
@@ -464,7 +462,7 @@ namespace IED
 			if (a_match.keyword.get_id())
 			{
 				return a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) !=
-				       has_keyword(a_match.keyword, form);
+				       IFormCommon::HasKeyword(form, a_match.keyword);
 			}
 			else
 			{
@@ -473,7 +471,7 @@ namespace IED
 		}
 
 		bool configBase_t::match_carried_form(
-			const collectorData_t&              a_data,
+			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match)
 		{
 			auto it = a_data.forms.find(a_match.form.get_id());
@@ -484,14 +482,14 @@ namespace IED
 
 			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
 			{
-				if (!Conditions::compare(a_match.compOperator, it->second.count, a_match.count))
+				if (!Conditions::compare(a_match.compOperator, static_cast<std::int64_t>(it->second.itemCount), a_match.count))
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (it->second.count < 1)
+				if (it->second.itemCount <= 0)
 				{
 					return false;
 				}
@@ -500,7 +498,7 @@ namespace IED
 			if (a_match.keyword.get_id())
 			{
 				return a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) !=
-				       has_keyword(a_match.keyword, it->second.form);
+				       IFormCommon::HasKeyword(it->second.form, a_match.keyword);
 			}
 			else
 			{
@@ -508,7 +506,7 @@ namespace IED
 			}
 		}
 
-		constexpr bool configBase_t::match_equipped(
+		bool configBase_t::match_equipped(
 			const equipmentOverrideCondition_t& a_match,
 			processParams_t&                    a_params)
 		{
@@ -522,7 +520,7 @@ namespace IED
 				}
 				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 				{
-					return match_equipped_type(a_params.collector.data, a_match);
+					return match_equipped_type(a_params, a_match);
 				}
 
 				break;
@@ -540,7 +538,7 @@ namespace IED
 				}
 				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 				{
-					return has_keyword_equipped(a_match.keyword, a_params.collector.data);
+					return has_keyword_equipped(a_match.keyword, a_params);
 				}
 
 				break;
@@ -558,7 +556,7 @@ namespace IED
 				}
 				else if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 				{
-					return match_equipped_form(a_params.collector.data, a_match);
+					return match_equipped_form(a_params, a_match);
 				}
 
 				break;
@@ -752,7 +750,7 @@ namespace IED
 			return result;
 		}
 
-		constexpr bool configBase_t::match_equipped_or_slot(
+		bool configBase_t::match_equipped_or_slot(
 			const equipmentOverrideCondition_t& a_match,
 			processParams_t&                    a_params)
 		{
@@ -769,11 +767,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += match_equipped_type(a_params.collector.data, a_match);
+						result += match_equipped_type(a_params, a_match);
 
 						if (result == min)
 						{
@@ -834,11 +832,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += has_keyword_equipped(a_match.keyword, a_params.collector.data);
+						result += has_keyword_equipped(a_match.keyword, a_params);
 
 						if (result == min)
 						{
@@ -869,11 +867,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(EquipmentOverrideConditionFlags::kMatchMaskEquippedAndSlots) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += match_equipped_form(a_params.collector.data, a_match);
+						result += match_equipped_form(a_params, a_match);
 
 						if (result == min)
 						{
@@ -1051,7 +1049,7 @@ namespace IED
 		}
 
 		static bool match_presence_equipped(
-			const collectorData_t&              a_data,
+			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm,
 			CommonParams&                       a_params)
@@ -1135,7 +1133,7 @@ namespace IED
 		}
 
 		static bool match_presence_count(
-			const collectorData_t&              a_data,
+			const CollectorData&                a_data,
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm)
 		{
@@ -1147,11 +1145,11 @@ namespace IED
 
 			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
 			{
-				return Conditions::compare(a_match.compOperator, it->second.count, a_match.count);
+				return Conditions::compare(a_match.compOperator, static_cast<std::int64_t>(it->second.itemCount), a_match.count);
 			}
 			else
 			{
-				return it->second.count > 0;
+				return it->second.itemCount > 0;
 			}
 		}
 
@@ -1170,11 +1168,11 @@ namespace IED
 				return false;
 			}
 
-			std::int64_t count = it->second.count;
+			std::int64_t count = it->second.itemCount;
 
 			const auto slot = a_checkForm.slot2;
 
-			if (it->second.equipped)
+			if (it->second.is_equipped_right())
 			{
 				count--;
 			}
@@ -1186,11 +1184,11 @@ namespace IED
 				}
 			}
 
-			if (it->second.equippedLeft)
+			if (it->second.is_equipped_left())
 			{
 				count--;
 			}
-			else if (auto leftSlot = ItemData::GetLeftSlot(slot); leftSlot < ObjectSlot::kMax)
+			else if (const auto leftSlot = ItemData::GetLeftSlot(slot); leftSlot < ObjectSlot::kMax)
 			{
 				if (a_params.objects.GetSlot(leftSlot).GetFormIfActive() == form)
 				{
@@ -1210,7 +1208,7 @@ namespace IED
 		template <
 			EquipmentOverrideConditionFlags a_maskAll,
 			EquipmentOverrideConditionFlags a_maskSlots>
-		constexpr bool configBase_t::match_equipped_or_form(
+		bool configBase_t::match_equipped_or_form(
 			const equipmentOverrideCondition_t& a_match,
 			const formSlotPair_t&               a_checkForm,
 			processParams_t&                    a_params)
@@ -1228,11 +1226,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(a_maskAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += match_equipped_type(a_params.collector.data, a_match);
+						result += match_equipped_type(a_params, a_match);
 
 						if (result == min)
 						{
@@ -1259,7 +1257,7 @@ namespace IED
 						if (a_match.keyword.get_id())
 						{
 							if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch2) ==
-							    has_keyword(a_match.keyword, a_checkForm.form))
+							    IFormCommon::HasKeyword(a_checkForm.form, a_match.keyword))
 							{
 								return false;
 							}
@@ -1287,11 +1285,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(a_maskAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += has_keyword_equipped(a_match.keyword, a_params.collector.data);
+						result += has_keyword_equipped(a_match.keyword, a_params);
 
 						if (result == min)
 						{
@@ -1301,7 +1299,7 @@ namespace IED
 
 					if (a_match.flags.test_any(a_maskSlots))
 					{
-						result += has_keyword(a_match.keyword, a_checkForm.form);
+						result += IFormCommon::HasKeyword(a_checkForm.form, a_match.keyword);
 					}
 
 					return result == min;
@@ -1322,11 +1320,11 @@ namespace IED
 					std::uint32_t min    = a_match.flags.test(a_maskAll) &&
                                                 !a_match.flags.test(EquipmentOverrideConditionFlags::kMatchCategoryOperOR) ?
 					                           2u :
-                                               1u;
+					                           1u;
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kMatchEquipped))
 					{
-						result += match_equipped_form(a_params.collector.data, a_match);
+						result += match_equipped_form(a_params, a_match);
 
 						if (result == min)
 						{
@@ -1344,7 +1342,7 @@ namespace IED
 						if (a_match.keyword.get_id())
 						{
 							if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) ==
-							    has_keyword(a_match.keyword, a_checkForm.form))
+							    IFormCommon::HasKeyword(a_checkForm.form, a_match.keyword))
 							{
 								return false;
 							}
@@ -1457,6 +1455,14 @@ namespace IED
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag3))
 					{
 						if (!Conditions::is_ammo_bolt(a_checkForm.form))
+						{
+							return false;
+						}
+					}
+
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag4))
+					{
+						if (!a_checkForm.form->GetPlayable())
 						{
 							return false;
 						}
@@ -1704,11 +1710,11 @@ namespace IED
 
 		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
-			const collectorData_t&    a_data)
+			processParams_t&          a_params)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				if (auto pm = a_data.actor->processManager)
+				if (auto pm = a_params.actor->processManager)
 				{
 					for (auto e : pm->equippedObject)
 					{
@@ -1719,9 +1725,9 @@ namespace IED
 					}
 				}
 
-				for (auto& e : a_data.equippedForms)
+				for (auto& e : a_params.collector.data.equippedForms)
 				{
-					if (IFormCommon::HasKeyword(e->form, keyword))
+					if (IFormCommon::HasKeyword(e.form, keyword))
 					{
 						return true;
 					}
@@ -1733,13 +1739,13 @@ namespace IED
 
 		bool configBase_t::has_keyword_carried(
 			const configCachedForm_t& a_keyword,
-			const collectorData_t&    a_data)
+			const CollectorData&      a_data)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
 				for (auto& e : a_data.forms)
 				{
-					if (e.second.count > 0)
+					if (e.second.itemCount > 0)
 					{
 						if (IFormCommon::HasKeyword(e.second.form, keyword))
 						{
@@ -1773,31 +1779,16 @@ namespace IED
 			return false;
 		}
 
-		bool configBase_t::has_keyword(
-			const configCachedForm_t& a_keyword,
-			TESForm*                  a_form)
-		{
-			if (auto keyword = a_keyword.get_form<BGSKeyword>())
-			{
-				if (IFormCommon::HasKeyword(a_form, keyword))
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-
 		bool configBase_t::has_keyword_carried(
 			const configCachedForm_t& a_keyword,
 			ObjectTypeExtra           a_type,
-			const collectorData_t&    a_data)
+			const CollectorData&      a_data)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
 				for (auto& e : a_data.forms)
 				{
-					if (e.second.count > 0 && e.second.typeExtra == a_type)
+					if (e.second.itemCount > 0 && e.second.extra.typeExtra == a_type)
 					{
 						if (IFormCommon::HasKeyword(e.second.form, keyword))
 						{
@@ -1813,16 +1804,16 @@ namespace IED
 		bool configBase_t::has_keyword_equipped(
 			const configCachedForm_t& a_keyword,
 			ObjectSlotExtra           a_slot,
-			const collectorData_t&    a_data)
+			const CollectorData&      a_data)
 		{
 			if (auto keyword = a_keyword.get_form<BGSKeyword>())
 			{
 				for (auto& e : a_data.equippedForms)
 				{
-					if (e->extraEquipped.slot == a_slot ||
-					    e->extraEquipped.slotLeft == a_slot)
+					if (e.extraEquipped.slot == a_slot ||
+					    e.extraEquipped.slotLeft == a_slot)
 					{
-						if (IFormCommon::HasKeyword(e->form, keyword))
+						if (IFormCommon::HasKeyword(e.form, keyword))
 						{
 							return true;
 						}

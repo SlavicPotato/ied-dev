@@ -12,7 +12,7 @@ namespace IED
 			try
 			{
 				stl::vector<std::string> e;
-				StrHelpers::SplitString(a_in, '|', e);
+				stl::split_string(a_in, '|', e);
 
 				if (e.size() < 2)
 				{

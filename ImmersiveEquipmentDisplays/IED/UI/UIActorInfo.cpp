@@ -936,7 +936,7 @@ namespace IED
 				{
 					stl::snprintf(
 						m_buffer,
-						"[%.8X] [%hhu] [%s] [%lld] [%s]",
+						"[%.8X] [%hhu] [%s] [%d] [%s]",
 						i.get(),
 						e.type,
 						e.name.c_str(),
@@ -947,7 +947,7 @@ namespace IED
 				{
 					stl::snprintf(
 						m_buffer,
-						"[%.8X] [%hhu] [%s] [%lld]",
+						"[%.8X] [%hhu] [%s] [%d]",
 						i.get(),
 						e.type,
 						e.name.c_str(),
@@ -959,7 +959,7 @@ namespace IED
 					continue;
 				}
 
-				bool disabled = e.count <= 0;
+				const bool disabled = e.count <= 0;
 
 				if (disabled)
 				{
@@ -1320,11 +1320,11 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::TextWrapped(
-					"%s: %u, %s: %d, %s: %lld",
+					"%s: %u, %s: %d, %s: %d",
 					UIL::LS(CommonStrings::Base),
 					a_data.baseCount,
 					UIL::LS(CommonStrings::Delta),
-					a_data.deltaCount,
+					a_data.countDelta,
 					UIL::LS(CommonStrings::Total),
 					a_data.count);
 

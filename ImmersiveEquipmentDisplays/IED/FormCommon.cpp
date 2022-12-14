@@ -193,19 +193,19 @@ namespace IED
 	}
 
 	template <class T>
-	inline static constexpr const char* GetFullName(TESForm* a_form)  //
+	inline static constexpr const char* GetFullName(const TESForm* a_form)  //
 		requires(std::is_convertible_v<T*, TESFullName*>)
 	{
-		return static_cast<T*>(a_form)->GetFullName();
+		return static_cast<const T*>(a_form)->GetFullName();
 	}
 
-	inline static constexpr const char* GetKeywordString(BGSKeyword* a_form)
+	inline static constexpr const char* GetKeywordString(const BGSKeyword* a_form)
 	{
 		return a_form->keyword.c_str();
 	}
 
 	template <class T>
-	inline static constexpr const char* GetEditorID(T* a_form)
+	inline static constexpr const char* GetEditorID(const T* a_form)
 	{
 		return a_form->editorId.c_str();
 	}
@@ -246,13 +246,13 @@ namespace IED
 		case BGSHeadPart::kTypeID:
 			return GetFullName<BGSHeadPart>(a_form);
 		case BGSKeyword::kTypeID:
-			return GetKeywordString(static_cast<BGSKeyword*>(a_form));
+			return GetKeywordString(static_cast<const BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
-			return GetEditorID(static_cast<TESRace*>(a_form));
+			return GetEditorID(static_cast<const TESRace*>(a_form));
 		case TESQuest::kTypeID:
-			return GetEditorID(static_cast<TESQuest*>(a_form));
+			return GetEditorID(static_cast<const TESQuest*>(a_form));
 		case TESObjectANIO::kTypeID:
-			return GetEditorID(static_cast<TESObjectANIO*>(a_form));
+			return GetEditorID(static_cast<const TESObjectANIO*>(a_form));
 		case TESObjectDOOR::kTypeID:
 			return GetFullName<TESObjectDOOR>(a_form);
 		case BGSExplosion::kTypeID:
@@ -284,8 +284,8 @@ namespace IED
 			return GetEditorID(static_cast<TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:
 			return GetEditorID(static_cast<TESIdleForm*>(a_form));
-		case TESObjectREFR::kTypeID:
 		case Actor::kTypeID:
+		case TESObjectREFR::kTypeID:
 			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
 		default:
 			return nullptr;
@@ -298,8 +298,8 @@ namespace IED
 	}
 
 	bool IFormCommon::HasKeyword(
-		TESForm*    a_form,
-		BGSKeyword* a_keyword)
+		const TESForm*    a_form,
+		const BGSKeyword* a_keyword)
 	{
 		switch (a_form->formType)
 		{
@@ -344,8 +344,8 @@ namespace IED
 	}
 
 	bool IFormCommon::HasKeyword(
-		TESForm*     a_form,
-		Game::FormID a_keyword)
+		const TESForm* a_form,
+		Game::FormID   a_keyword)
 	{
 		if (auto keyword = a_keyword.As<BGSKeyword>())
 		{
@@ -358,10 +358,10 @@ namespace IED
 	}
 
 	bool IFormCommon::HasKeyword(
-		TESForm*                        a_form,
+		const TESForm*                  a_form,
 		const Data::configCachedForm_t& a_keyword)
 	{
-		if (auto keyword = a_keyword.get_form<BGSKeyword>())
+		if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
 		{
 			return HasKeyword(a_form, keyword);
 		}

@@ -457,6 +457,8 @@ namespace IED
 							info->actor.get(),
 							info->handle,
 							m_controller.m_temp.sr,
+							e.m_temp.idt,
+							e.m_temp.eqt,
 							m_controller.m_temp.uc,
 							actor,
 							info->npc,

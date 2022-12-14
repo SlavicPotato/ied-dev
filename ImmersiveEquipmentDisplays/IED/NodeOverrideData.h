@@ -435,8 +435,8 @@ namespace IED
 		node_mon_data_type       m_nodeMonEntries;
 		convert_nodes_data_type  m_convertNodes;
 
-		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignatures;
-		stl::set_sa<std::uint64_t> m_humanoidSkeletonSignaturesXp32;
+		stl::flat_set<std::uint64_t> m_humanoidSkeletonSignatures;
+		stl::flat_set<std::uint64_t> m_humanoidSkeletonSignaturesXp32;
 
 		static std::unique_ptr<NodeOverrideData> m_Instance;
 	};

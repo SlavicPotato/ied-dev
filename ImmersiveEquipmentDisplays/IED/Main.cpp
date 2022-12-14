@@ -217,8 +217,8 @@ namespace IED
 			ASSERT(StringCache::IsInitialized());
 
 			BSStringHolder::Create();
-			NodeOverrideData::Create();
 
+			NodeOverrideData::Create();
 			NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
 			NodeOverrideData::LoadAndAddConvertNodes(PATHS::CONVERT_NODES);
 

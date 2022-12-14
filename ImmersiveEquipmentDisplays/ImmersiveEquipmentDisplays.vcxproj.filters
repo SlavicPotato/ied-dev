@@ -1712,6 +1712,9 @@
     <ClInclude Include="IED\UI\UIDisplayManagement.h">
       <Filter>Source\IED\UI\DisplayManagement</Filter>
     </ClInclude>
+    <ClInclude Include="IED\NodeOverrideParams.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2724,6 +2727,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\UIDisplayManagement.cpp">
       <Filter>Source\IED\UI\DisplayManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\NodeOverrideParams.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

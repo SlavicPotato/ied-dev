@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CMENodeEntry.h"
-#include "IED/CommonParams.h"
 #include "IED/ConfigCommon.h"
 #include "IED/FormCommon.h"
 #include "IED/FormHolder.h"
 #include "IED/Inventory.h"
 #include "IED/NodeOverrideData.h"
+#include "IED/NodeOverrideParams.h"
 
 namespace IED
 {
@@ -22,151 +22,6 @@ namespace IED
 	class INodeOverride
 	{
 	public:
-		struct bipedInfoEntry_t
-		{
-			TESForm*     item;
-			BIPED_OBJECT bip{ BIPED_OBJECT::kNone };
-			float        weaponAdjust{ 0.0f };
-		};
-
-		struct nodeOverrideParams_t :
-			CommonParams
-		{
-		public:
-			template <class... Args>
-			inline constexpr nodeOverrideParams_t(Args&&... a_args) noexcept :
-				CommonParams(std::forward<Args>(a_args)...)
-			{
-			}
-
-			inline nodeOverrideParams_t(
-				CommonParams& a_cparams) noexcept :
-				CommonParams(a_cparams)
-			{
-			}
-
-			using item_container_type = stl::unordered_map<Game::FormID, bipedInfoEntry_t>;
-
-			std::optional<float>                 weaponAdjust;
-			std::optional<float>                 weightAdjust;
-			std::unique_ptr<item_container_type> itemData;
-			std::optional<bool>                  bipedHasArmor;
-			std::uint64_t                        matchedSlotFlags{ 0 };
-
-			auto get_biped_has_armor()
-			{
-				if (!bipedHasArmor)
-				{
-					bipedHasArmor = equipped_armor_visitor([](auto*) { return true; });
-				}
-
-				return *bipedHasArmor;
-			}
-
-			item_container_type& get_item_data();
-
-			float get_weapon_adjust();
-
-			inline constexpr float get_weight_adjust()
-			{
-				if (!weightAdjust)
-				{
-					weightAdjust = (actor->GetWeight() * 0.01f) * 0.5f;
-				}
-
-				return *weightAdjust;
-			}
-
-			inline constexpr void clear_matched_items() noexcept
-			{
-				matchedSlotFlags = 0;
-			}
-
-			inline constexpr void set_matched_item(BIPED_OBJECT a_object) noexcept
-			{
-				matchedSlotFlags |= 1ui64 << stl::underlying(a_object);
-			}
-
-			float get_matched_weapon_adjust() const noexcept
-			{
-				float result = 0.0f;
-
-				if (itemData)
-				{
-					for (auto& e : *itemData)
-					{
-						if (matchedSlotFlags & (1ui64 << stl::underlying(e.second.bip)))
-						{
-							result += e.second.weaponAdjust;
-						}
-					}
-				}
-
-				return result;
-			}
-
-			template <class Tf>
-			constexpr bool equipped_armor_visitor(
-				Tf a_func)
-			{
-				auto bip = get_biped();
-				if (!bip)
-				{
-					return false;
-				}
-
-				auto skin = get_actor_skin();
-
-				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
-
-				for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kEditorTotal); i++)
-				{
-					if (is_av_ignored_slot(static_cast<BIPED_OBJECT>(i)))
-					{
-						continue;
-					}
-
-					auto& e = bip->objects[i];
-
-					if (e.item &&
-					    e.item != e.addon &&
-					    e.item != skin)
-					{
-						if (auto armor = e.item->As<TESObjectARMO>())
-						{
-							if (a_func(armor) == true)
-							{
-								return true;
-							}
-						}
-					}
-				}
-
-				return false;
-			}
-
-		private:
-			inline constexpr bool is_av_ignored_slot(
-				BIPED_OBJECT a_slot) noexcept
-			{
-				if (a_slot == get_shield_slot())
-				{
-					return true;
-				}
-
-				switch (a_slot)
-				{
-					// ??
-				case BIPED_OBJECT::kDecapitateHead:
-				case BIPED_OBJECT::kDecapitate:
-				case BIPED_OBJECT::kFX01:
-					return true;
-				default:
-					return false;
-				}
-			}
-		};
-
 		static void ResetNodeOverrideImpl(
 			const CMENodeEntry::Node& a_node);
 

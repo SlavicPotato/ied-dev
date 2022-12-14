@@ -9,7 +9,7 @@ namespace IED
 	void ConfigKeyCombo::Parse(const std::string& a_input)
 	{
 		stl::vector<std::uint32_t> e;
-		StrHelpers::SplitString(a_input, '+', e, true, true);
+		stl::split_string(a_input, '+', e, true, true);
 
 		*this = {};
 

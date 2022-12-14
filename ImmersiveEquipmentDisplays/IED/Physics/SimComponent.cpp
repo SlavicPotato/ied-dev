@@ -18,7 +18,7 @@ namespace IED
 		const NiTransform&                     a_initialTransform,
 		const Data::configNodePhysicsValues_t& a_conf) noexcept :
 		m_tag(ILUID{}()),
-		m_initialTransform(Bullet::btTransformEx(a_initialTransform)),
+		m_initialTransform(a_initialTransform),
 		m_object(a_object)
 	{
 		m_conf                 = a_conf;
@@ -54,7 +54,7 @@ namespace IED
 		m_objectLocalTransform.writeNiTransform(m_object->m_localTransform);
 	}
 
-	SKMP_NOINLINE void PHYSimComponent::Reset() noexcept
+	void PHYSimComponent::Reset() noexcept
 	{
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 		m_objectLocalTransform = m_initialTransform;

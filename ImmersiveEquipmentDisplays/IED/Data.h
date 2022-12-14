@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CollectorData.h"
 #include "ConfigData.h"
 #include "ConfigINI.h"
 #include "ConfigSlot.h"
@@ -219,6 +220,51 @@ namespace IED
 				}
 			}
 
+			SKMP_FORCEINLINE constexpr CollectorData::ItemExtraData GetItemTypePair(const TESForm* a_form) noexcept
+			{
+				switch (a_form->formType)
+				{
+				case SpellItem::kTypeID:
+					return CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kSpell);
+				case TESObjectARMO::kTypeID:
+					return static_cast<const TESObjectARMO*>(a_form)->IsShield() ?
+					           CollectorData::ItemExtraData(ObjectType::kShield, ObjectTypeExtra::kShield) :
+					           CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kArmor);
+				case TESObjectLIGH::kTypeID:
+					return static_cast<const TESObjectLIGH*>(a_form)->CanCarry() ?
+					           CollectorData::ItemExtraData(ObjectType::kTorch, ObjectTypeExtra::kTorch) :
+					           CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kNone);
+				case TESObjectWEAP::kTypeID:
+					switch (static_cast<const TESObjectWEAP*>(a_form)->type())
+					{
+					case WEAPON_TYPE::kOneHandSword:
+						return CollectorData::ItemExtraData(ObjectType::k1HSword, ObjectTypeExtra::k1HSword);
+					case WEAPON_TYPE::kOneHandDagger:
+						return CollectorData::ItemExtraData(ObjectType::kDagger, ObjectTypeExtra::kDagger);
+					case WEAPON_TYPE::kOneHandAxe:
+						return CollectorData::ItemExtraData(ObjectType::k1HAxe, ObjectTypeExtra::k1HAxe);
+					case WEAPON_TYPE::kOneHandMace:
+						return CollectorData::ItemExtraData(ObjectType::kMace, ObjectTypeExtra::kMace);
+					case WEAPON_TYPE::kTwoHandSword:
+						return CollectorData::ItemExtraData(ObjectType::k2HSword, ObjectTypeExtra::k2HSword);
+					case WEAPON_TYPE::kTwoHandAxe:
+						return CollectorData::ItemExtraData(ObjectType::k2HAxe, ObjectTypeExtra::k2HAxe);
+					case WEAPON_TYPE::kBow:
+						return CollectorData::ItemExtraData(ObjectType::kBow, ObjectTypeExtra::kBow);
+					case WEAPON_TYPE::kStaff:
+						return CollectorData::ItemExtraData(ObjectType::kStaff, ObjectTypeExtra::kStaff);
+					case WEAPON_TYPE::kCrossbow:
+						return CollectorData::ItemExtraData(ObjectType::kCrossBow, ObjectTypeExtra::kCrossBow);
+					default:
+						return CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kNone);
+					}
+				case TESAmmo::kTypeID:
+					return CollectorData::ItemExtraData(ObjectType::kAmmo, ObjectTypeExtra::kAmmo);
+				default:
+					return CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kNone);
+				}
+			}
+
 			inline constexpr ObjectSlotExtra GetItemSlotExtra(const TESObjectARMO* a_form) noexcept
 			{
 				return !a_form->IsShield() ? ObjectSlotExtra::kArmor : ObjectSlotExtra::kNone;
@@ -368,7 +414,7 @@ namespace IED
 				case ObjectType::kAmmo:
 					return ObjectSlot::kAmmo;
 				default:
-					HALT("FIXME");
+					return ObjectSlot::kMax;
 				}
 			}
 
@@ -405,7 +451,7 @@ namespace IED
 				case ObjectTypeExtra::kSpell:
 					return ObjectSlotExtra::kSpell;
 				default:
-					HALT("FIXME");
+					return ObjectSlotExtra::kNone;
 				}
 			}
 

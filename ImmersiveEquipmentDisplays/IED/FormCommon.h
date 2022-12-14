@@ -33,8 +33,8 @@ namespace IED
 
 		template <class T>
 		inline static constexpr bool HasKeywordImpl(
-			T*          a_form,
-			BGSKeyword* a_keyword)  //
+			const T*          a_form,
+			const BGSKeyword* a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return a_form->HasKeyword(a_keyword);
@@ -42,21 +42,21 @@ namespace IED
 
 		template <class T>
 		inline static constexpr bool FormHasKeywordImpl(
-			TESForm*    a_form,
-			BGSKeyword* a_keyword)  //
+			const TESForm*    a_form,
+			const BGSKeyword* a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
-			return HasKeywordImpl(static_cast<T*>(a_form), a_keyword);
+			return HasKeywordImpl(static_cast<const T*>(a_form), a_keyword);
 		}
 
-		static bool HasKeyword(TESForm* a_form, BGSKeyword* a_keyword);
-		static bool HasKeyword(TESForm* a_form, Game::FormID a_keyword);
-		static bool HasKeyword(TESForm* a_form, const Data::configCachedForm_t& a_keyword);
+		static bool HasKeyword(const TESForm* a_form, const BGSKeyword* a_keyword);
+		static bool HasKeyword(const TESForm* a_form, Game::FormID a_keyword);
+		static bool HasKeyword(const TESForm* a_form, const Data::configCachedForm_t& a_keyword);
 
 		template <class T>
 		inline static constexpr bool HasKeyword(
-			T*          a_form,
-			BGSKeyword* a_keyword)  //
+			const T*          a_form,
+			const BGSKeyword* a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return HasKeywordImpl(a_form, a_keyword);
@@ -64,11 +64,11 @@ namespace IED
 
 		template <class T>
 		inline static constexpr bool HasKeyword(
-			T*           a_form,
+			const T*     a_form,
 			Game::FormID a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
-			if (auto keyword = a_keyword.As<BGSKeyword>())
+			if (const auto* const keyword = a_keyword.As<BGSKeyword>())
 			{
 				return HasKeywordImpl(a_form, keyword);
 			}
@@ -80,11 +80,11 @@ namespace IED
 
 		template <class T>
 		inline static constexpr bool HasKeyword(
-			T*                              a_form,
+			const T*                        a_form,
 			const Data::configCachedForm_t& a_keyword)  //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
-			if (auto keyword = a_keyword.get_form<BGSKeyword>())
+			if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
 			{
 				return HasKeywordImpl(a_form, keyword);
 			}

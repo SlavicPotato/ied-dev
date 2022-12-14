@@ -1229,6 +1229,11 @@ namespace IED
 		//Debug("%s: acquired: %X", __FUNCTION__, a_holder.GetActorFormID());
 	}
 
+	bool Controller::WantGlobalVariableUpdateOnAddRemove() const
+	{
+		return !m_config.active.condvars.empty();
+	}
+
 	void Controller::QueueResetAll(
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
@@ -2670,10 +2675,11 @@ namespace IED
 					usedBaseConf.flags,
 					a_params);
 
+				const auto itemData  = item->item;
 				const auto modelForm = usedBaseConf.forceModel.get_form();
 
 				if (objectEntry.data.state &&
-				    objectEntry.data.state->form == item->item->form)
+				    objectEntry.data.state->form == itemData->form)
 				{
 					const bool isVisible = objectEntry.IsNodeVisible();
 
@@ -2686,7 +2692,7 @@ namespace IED
 					{
 						if (visible)
 						{
-							item->item->sharedCount--;
+							itemData->dec_shared();
 						}
 
 						item.consume(candidates);
@@ -2711,7 +2717,7 @@ namespace IED
 						usedBaseConf,
 						configEntry,
 						objectEntry,
-						item->item->form,
+						itemData->form,
 						modelForm,
 						ItemData::IsLeftWeaponSlot(f.slot),
 						visible,
@@ -2725,7 +2731,7 @@ namespace IED
 
 					if (visible)
 					{
-						item->item->sharedCount--;
+						itemData->dec_shared();
 					}
 
 					item.consume(candidates);
@@ -3173,7 +3179,7 @@ namespace IED
 						{
 							if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
 							{
-								itemData.sharedCount--;
+								itemData.dec_shared();
 							}
 						}
 
@@ -3246,7 +3252,7 @@ namespace IED
 
 				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
 				{
-					itemData.sharedCount--;
+					itemData.dec_shared();
 				}
 
 				UpdateObjectEffectShaders(
@@ -3691,6 +3697,8 @@ namespace IED
 			a_actor,
 			a_handle,
 			m_temp.sr,
+			a_holder.GetTempData().idt,
+			a_holder.GetTempData().eqt,
 			m_temp.uc,
 			a_actor,
 			a_npc,
@@ -4007,19 +4015,23 @@ namespace IED
 	}
 
 	template <class... Args>
-	inline constexpr INodeOverride::nodeOverrideParams_t make_node_override_params(
+	inline constexpr nodeOverrideParams_t make_node_override_params(
 		ActorObjectHolder& a_holder,
 		Args&&... a_args)
 	{
 		if (auto& params = a_holder.GetCurrentProcessParams())
 		{
-			return INodeOverride::nodeOverrideParams_t{
+			return nodeOverrideParams_t{
+				a_holder.GetTempData().nc,
 				static_cast<const CommonParams&>(*params)
 			};
 		}
 		else
 		{
-			return INodeOverride::nodeOverrideParams_t{ std::forward<Args>(a_args)... };
+			return nodeOverrideParams_t{
+				a_holder.GetTempData().nc,
+				std::forward<Args>(a_args)...
+			};
 		}
 	}
 
@@ -4479,6 +4491,8 @@ namespace IED
 			a_info.actor,
 			a_info.handle,
 			a_controller.GetTempData().sr,
+			a_info.objects.GetTempData().idt,
+			a_info.objects.GetTempData().eqt,
 			a_controller.GetTempData().uc,
 			a_info.actor,
 			a_info.npc,
@@ -5712,9 +5726,9 @@ namespace IED
 	}
 
 	void Controller::SaveSettings(
-		bool a_defer,
-		bool a_dirtyOnly,
-		bool a_debug)
+		bool       a_defer,
+		bool       a_dirtyOnly,
+		const bool a_debug)
 	{
 		auto func = [this,
 		             a_dirtyOnly,
@@ -5729,9 +5743,9 @@ namespace IED
 				pt.Start();
 			}
 
-			bool result = a_dirtyOnly ?
-			                  GetSettings().SaveIfDirty() :
-			                  GetSettings().Save();
+			const bool result = a_dirtyOnly ?
+			                        GetSettings().SaveIfDirty() :
+			                        GetSettings().Save();
 
 			if (a_debug && result)
 			{

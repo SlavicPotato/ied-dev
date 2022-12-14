@@ -18,7 +18,7 @@ namespace IED
 
 	static bool match_form_slot(
 		const Data::configNodeOverrideCondition_t& a_data,
-		const INodeOverride::nodeOverrideParams_t& a_params)
+		const nodeOverrideParams_t&                a_params)
 	{
 		TESForm* foundForm = nullptr;
 
@@ -52,8 +52,8 @@ namespace IED
 	}
 
 	static constexpr bool match_keyword_slot(
-		BGSKeyword*                                a_keyword,
-		const INodeOverride::nodeOverrideParams_t& a_params)
+		BGSKeyword*                 a_keyword,
+		const nodeOverrideParams_t& a_params)
 	{
 		for (auto& e : a_params.objects.GetSlots())
 		{
@@ -70,8 +70,8 @@ namespace IED
 	}
 
 	static constexpr bool match_keyword_equipped(
-		BGSKeyword*                          a_keyword,
-		INodeOverride::nodeOverrideParams_t& a_params)
+		BGSKeyword*           a_keyword,
+		nodeOverrideParams_t& a_params)
 	{
 		if (auto pm = a_params.actor->processManager)
 		{
@@ -103,8 +103,8 @@ namespace IED
 	}
 
 	static TESForm* find_equipped_form_pm(
-		Game::FormID                               a_formid,
-		const INodeOverride::nodeOverrideParams_t& a_params)
+		Game::FormID                a_formid,
+		const nodeOverrideParams_t& a_params)
 	{
 		if (auto pm = a_params.actor->processManager)
 		{
@@ -121,9 +121,9 @@ namespace IED
 	}
 
 	static auto find_equipped_form(
-		Game::FormID                         a_form,
-		INodeOverride::nodeOverrideParams_t& a_params)
-		-> std::pair<TESForm*, INodeOverride::nodeOverrideParams_t::item_container_type::value_type*>
+		Game::FormID          a_form,
+		nodeOverrideParams_t& a_params)
+		-> std::pair<TESForm*, nodeOverrideParams_t::item_container_type::value_type*>
 	{
 		if (auto form = find_equipped_form_pm(a_form, a_params))
 		{
@@ -143,7 +143,7 @@ namespace IED
 
 	static bool match_form_equipped(
 		const Data::configNodeOverrideCondition_t& a_data,
-		INodeOverride::nodeOverrideParams_t&       a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		auto r = find_equipped_form(a_data.form.get_id(), a_params);
 
@@ -171,7 +171,7 @@ namespace IED
 
 	constexpr bool match_slotted_type(
 		const Data::configNodeOverrideCondition_t& a_match,
-		INodeOverride::nodeOverrideParams_t&       a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		auto slot = stl::underlying(Data::ItemData::ExtraSlotToSlot(a_match.typeSlot));
 		if (slot >= stl::underlying(Data::ObjectSlot::kMax))
@@ -210,7 +210,7 @@ namespace IED
 
 	bool match_equipped_type(
 		const Data::configNodeOverrideCondition_t& a_match,
-		INodeOverride::nodeOverrideParams_t&       a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		TESForm* form;
 
@@ -245,11 +245,11 @@ namespace IED
 					return false;
 				}
 
-				if (a_match.form.get_id())
+				if (const auto fid = a_match.form.get_id())
 				{
 					auto& data = a_params.get_item_data();
 
-					auto it = data.find(a_match.form.get_id());
+					auto it = data.find(fid);
 
 					auto rv = a_match.flags.test(Data::NodeOverrideConditionFlags::kNegateMatch1);
 
@@ -340,7 +340,7 @@ namespace IED
 
 	static bool evaluate_condition(
 		const Data::configNodeOverrideCondition_t& a_data,
-		INodeOverride::nodeOverrideParams_t&       a_params,
+		nodeOverrideParams_t&                      a_params,
 		bool                                       a_ignoreNode = false)
 	{
 		switch (a_data.fbf.type)
@@ -361,7 +361,7 @@ namespace IED
 				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
                                             !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
 				                           2u :
-                                           1u;
+				                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -398,7 +398,7 @@ namespace IED
 				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
                                             !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
 				                           2u :
-                                           1u;
+				                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -434,7 +434,7 @@ namespace IED
 				std::uint32_t min    = a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchAll) &&
                                             !a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchCategoryOperOR) ?
 				                           2u :
-                                           1u;
+				                           1u;
 
 				if (a_data.flags.test(Data::NodeOverrideConditionFlags::kMatchSlots))
 				{
@@ -519,7 +519,7 @@ namespace IED
 
 							return it != wnodes.end() ?
 							           Util::Node::VisitorControl::kStop :
-                                       Util::Node::VisitorControl::kContinue;
+							           Util::Node::VisitorControl::kContinue;
 						});
 
 						return r == Util::Node::VisitorControl::kStop;
@@ -528,7 +528,7 @@ namespace IED
 
 					auto sh = a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0) ?
 					              BSStringHolder::GetSingleton() :
-                                  nullptr;
+					              nullptr;
 
 					return it->second.has_visible_geometry(sh);
 				}
@@ -644,7 +644,7 @@ namespace IED
 				a_params,
 				a_data,
 				a_params.objects.GetCachedData());
-			
+
 		case Data::NodeOverrideConditionType::Effect:
 
 			return Conditions::match_effect<
@@ -668,7 +668,7 @@ namespace IED
 
 	static constexpr bool run_conditions(
 		const Data::configNodeOverrideConditionList_t& a_data,
-		INodeOverride::nodeOverrideParams_t&           a_params,
+		nodeOverrideParams_t&                          a_params,
 		bool                                           a_default,
 		bool                                           a_ignoreNode = false)
 	{
@@ -711,7 +711,7 @@ namespace IED
 
 	static constexpr bool run_conditions(
 		const Data::configNodeOverrideOffset_t& a_data,
-		INodeOverride::nodeOverrideParams_t&    a_params)
+		nodeOverrideParams_t&                   a_params)
 	{
 		return run_conditions(
 			a_data.conditions,
@@ -721,7 +721,7 @@ namespace IED
 
 	static constexpr bool run_visibility_conditions(
 		const Data::configNodeOverrideTransform_t& a_data,
-		INodeOverride::nodeOverrideParams_t&       a_params)
+		nodeOverrideParams_t&                      a_params)
 	{
 		return run_conditions(
 			a_data.visibilityConditionList,
@@ -1158,78 +1158,4 @@ namespace IED
 		}
 	}
 
-	auto INodeOverride::nodeOverrideParams_t::get_item_data()
-		-> item_container_type&
-	{
-		if (!itemData)
-		{
-			itemData = std::make_unique<decltype(itemData)::element_type>();
-
-			if (auto data = get_biped())
-			{
-				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
-
-				for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kTotal); i++)
-				{
-					auto item = data->objects[i].item;
-					if (!item)
-					{
-						continue;
-					}
-
-					auto addon = data->objects[i].addon;
-					if (addon == item)
-					{
-						continue;
-					}
-
-					auto r = itemData->try_emplace(
-						item->formID,
-						item,
-						static_cast<BIPED_OBJECT>(i));
-
-					if (addon)
-					{
-						if (auto armor = item->As<TESObjectARMO>())
-						{
-							if (auto arma = addon->As<TESObjectARMA>())
-							{
-								r.first->second.weaponAdjust = std::max(
-									stl::zero_nan(arma->data.weaponAdjust),
-									r.first->second.weaponAdjust);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		return *itemData;
-	}
-
-	float INodeOverride::nodeOverrideParams_t::get_weapon_adjust()
-	{
-		if (!weaponAdjust)
-		{
-			weaponAdjust = 0.0f;
-
-			if (auto data = get_biped())
-			{
-				for (auto& e : data->objects)
-				{
-					if (e.addon && e.addon != e.item)
-					{
-						if (auto arma = e.addon->As<TESObjectARMA>())
-						{
-							*weaponAdjust = std::max(
-								stl::zero_nan(arma->data.weaponAdjust),
-								*weaponAdjust);
-						}
-					}
-				}
-			}
-		}
-
-		return *weaponAdjust;
-	}
 }

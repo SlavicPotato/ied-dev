@@ -12,17 +12,17 @@ namespace IED
 	{
 		items.clear();
 
-		for (auto& e : a_container)
-		{
-			Process(e);
-		}
-
 		if (a_dataList)
 		{
 			for (auto& e : *a_dataList)
 			{
 				Process(e);
 			}
+		}
+
+		for (auto& e : a_container)
+		{
+			Process(e);
 		}
 
 		items.sortvec([](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
@@ -57,7 +57,7 @@ namespace IED
 					e.enchantment.emplace(enchant->formID);
 					if (auto name = enchant->GetFullName())
 					{
-						e.enchantment->name = LocaleData::ToUTF8(name);
+						e.enchantment->name.emplace(LocaleData::ToUTF8(name));
 					}
 				}
 			}
@@ -108,7 +108,7 @@ namespace IED
 		auto& item = AddOrGetBaseItem(form);
 
 		item.count += a_entryData->countDelta;
-		item.deltaCount = a_entryData->countDelta;
+		item.countDelta = a_entryData->countDelta;
 
 		if (const auto extraLists = a_entryData->GetExtraDataLists())
 		{
@@ -130,7 +130,7 @@ namespace IED
 						x.enchantment.emplace(enchant->formID);
 						if (auto name = enchant->GetFullName())
 						{
-							x.enchantment->name = LocaleData::ToUTF8(name);
+							x.enchantment->name.emplace(LocaleData::ToUTF8(name));
 						}
 					}
 				}
@@ -147,7 +147,7 @@ namespace IED
 				{
 					if (auto name = xText->GenerateName(form, healthValue))
 					{
-						x.name = LocaleData::ToUTF8(name);
+						x.name.emplace(LocaleData::ToUTF8(name));
 					}
 				}
 

@@ -32,17 +32,19 @@ namespace IED
 	struct processParamsData_t
 	{
 		inline processParamsData_t(
-			Actor* const                           a_actor,
-			const Game::ObjectRefHandle            a_handle,
-			const Data::ConfigSex                  a_configSex,
-			const stl::flag<ControllerUpdateFlags> a_flags,
-			SlotResults&                           a_sr,
-			UseCountContainer&                     a_uc) :
+			Actor* const                            a_actor,
+			const Game::ObjectRefHandle             a_handle,
+			const Data::ConfigSex                   a_configSex,
+			const stl::flag<ControllerUpdateFlags>  a_flags,
+			SlotResults&                            a_sr,
+			Data::CollectorData::container_type&    a_idt,
+			Data::CollectorData::eq_container_type& a_eqt,
+			UseCountContainer&                      a_uc) :
 			handle(a_handle),
 			configSex(a_configSex),
 			flags(a_flags),
 			useCount(a_uc),
-			collector(a_sr, a_actor)
+			collector(a_sr, a_idt, a_eqt, a_actor)
 		{
 			a_uc.clear();
 		}
@@ -59,7 +61,7 @@ namespace IED
 		stl::flag<ControllerUpdateFlags> flags;
 		stl::flag<Data::ObjectSlotBits>  slotPresenceChanges{ Data::ObjectSlotBits::kNone };
 		UseCountContainer&               useCount;
-		ItemCandidateCollector           collector;
+		InventoryInfoCollector           collector;
 	};
 
 	struct processParams_t :
@@ -68,19 +70,23 @@ namespace IED
 	{
 		template <class... Args>
 		inline constexpr processParams_t(
-			const Data::ConfigSex                  a_configSex,
-			const stl::flag<ControllerUpdateFlags> a_flags,
-			Actor* const                           a_actor,
-			const Game::ObjectRefHandle            a_handle,
-			SlotResults&                           a_sr,
-			UseCountContainer&                     a_uc,
-			Args&&... a_args) noexcept :
+			const Data::ConfigSex                   a_configSex,
+			const stl::flag<ControllerUpdateFlags>  a_flags,
+			Actor* const                            a_actor,
+			const Game::ObjectRefHandle             a_handle,
+			SlotResults&                            a_sr,
+			Data::CollectorData::container_type&    a_idt,
+			Data::CollectorData::eq_container_type& a_eqt,
+			UseCountContainer&                      a_uc,
+			Args&&... a_args) :
 			processParamsData_t(
 				a_actor,
 				a_handle,
 				a_configSex,
 				a_flags,
 				a_sr,
+				a_idt,
+				a_eqt,
 				a_uc),
 			CommonParams(
 				std::forward<Args>(a_args)...)

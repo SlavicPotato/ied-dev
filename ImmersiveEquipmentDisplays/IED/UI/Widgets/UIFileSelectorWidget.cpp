@@ -154,12 +154,12 @@ namespace IED
 			{
 				if (!fs::exists(a_file) || !fs::is_regular_file(a_file))
 				{
-					throw std::exception(UIL::LS(UIFileSelectorWidgetStrings::ErrorInvalidPath));
+					throw std::exception("invalid path");
 				}
 
 				if (!fs::remove(a_file))
 				{
-					throw std::exception(UIL::LS(UIFileSelectorWidgetStrings::ErrorFileDelFailed));
+					throw std::exception("file remove failed");
 				}
 
 				return true;

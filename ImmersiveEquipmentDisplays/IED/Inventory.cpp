@@ -7,9 +7,9 @@ namespace IED
 {
 	using namespace Data;
 
-	EntryDataList* GetEntryDataList(Actor* a_actor)
+	EntryDataList* GetEntryDataList(const Actor* const a_actor) noexcept
 	{
-		if (auto containerChanges = a_actor->extraData.Get<ExtraContainerChanges>())
+		if (const auto* const containerChanges = a_actor->extraData.Get<ExtraContainerChanges>())
 		{
 			return containerChanges->data ?
 			           containerChanges->data->objList :
@@ -21,43 +21,76 @@ namespace IED
 		}
 	}
 
-	ItemCandidateCollector::ItemCandidateCollector(
-		SlotResults& a_slotResults,
-		Actor*       a_actor) :
-		data(a_actor),
+	InventoryInfoCollector::InventoryInfoCollector(
+		SlotResults&                            a_slotResults,
+		Data::CollectorData::container_type&    a_idt,
+		Data::CollectorData::eq_container_type& a_eqt,
+		const Actor* const                      a_actor) noexcept :
+		data(a_idt, a_eqt),
 		slotResults(a_slotResults),
 		isPlayer(a_actor == *g_thePlayer)
 	{
-		if (auto npc = a_actor->GetActorBase())
+		if (const auto* const npc = a_actor->GetActorBase())
 		{
 			Run(*npc, GetEntryDataList(a_actor));
 		}
 	}
 
-	void ItemCandidateCollector::Run(
-		TESContainer&  a_container,
-		EntryDataList* a_dataList)
+	void InventoryInfoCollector::Run(
+		const TESContainer&  a_container,
+		EntryDataList* const a_dataList) noexcept
 	{
-		if (isPlayer)
-		{
-			data.equippedForms.reserve(20);
-		}
-
-		for (auto& e : a_container)
-		{
-			Process(e);
-		}
-
 		if (a_dataList)
 		{
-			for (auto& e : *a_dataList)
+			ProcessList(a_dataList);
+		}
+
+		ProcessList(a_container);
+		PostProcess();
+	}
+
+	void InventoryInfoCollector::ProcessList(
+		const TESContainer& a_container) noexcept
+	{
+		for (const auto* const e : a_container)
+		{
+			if (e)
 			{
 				Process(e);
 			}
 		}
 	}
 
-	bool ItemCandidateCollector::CheckForm(TESForm* a_form)
+	void InventoryInfoCollector::ProcessList(
+		EntryDataList* const a_dataList) noexcept
+	{
+		for (const auto* const e : *a_dataList)
+		{
+			if (e)
+			{
+				Process(e);
+			}
+		}
+
+		data.forms.sort_data();
+	}
+
+	void InventoryInfoCollector::PostProcess() noexcept
+	{
+		for (auto& e : data.forms)
+		{
+			const auto typeExtra = e.second.extra.typeExtra;
+
+			if (typeExtra < Data::ObjectTypeExtra::kMax &&
+			    e.second.itemCount > 0 &&
+			    !data.IsTypePresent(typeExtra))
+			{
+				data.SetTypePresent(typeExtra);
+			}
+		}
+	}
+
+	SKMP_FORCEINLINE static constexpr bool check_form(const TESForm* a_form) noexcept
 	{
 		if (!a_form)
 		{
@@ -77,72 +110,52 @@ namespace IED
 		return true;
 	}
 
-	void ItemCandidateCollector::Process(TESContainer::Entry* a_entry)
+	void InventoryInfoCollector::Process(
+		const TESContainer::Entry* a_entry) noexcept
 	{
-		if (!a_entry)
-		{
-			return;
-		}
-
 		const auto form = a_entry->form;
 
-		if (!CheckForm(form))
+		if (!check_form(form))
 		{
 			return;
 		}
 
-		const auto type      = ItemData::GetItemType(form);
-		const auto extraType = ItemData::GetItemTypeExtra(form);
-
 		auto& entry = data.forms.try_emplace(
 									form->formID,
 									form,
-									type,
-									extraType)
+									[f = form]() [[msvc::forceinline]] {
+										return ItemData::GetItemTypePair(f);
+									})
 		                  .first->second;
 
-		entry.sharedCount = (entry.count += a_entry->count);
-
-		if (extraType < Data::ObjectTypeExtra::kMax)
-		{
-			data.typeCount[stl::underlying(extraType)] += a_entry->count;
-		}
+		entry.sharedCount = (entry.itemCount += a_entry->count);
 	}
 
-	void ItemCandidateCollector::Process(InventoryEntryData* a_entryData)
+	void InventoryInfoCollector::Process(
+		const InventoryEntryData* a_entryData) noexcept
 	{
-		if (!a_entryData)
-		{
-			return;
-		}
-
 		const auto form = a_entryData->type;
 
-		if (!CheckForm(form))
+		if (!check_form(form))
 		{
 			return;
 		}
 
-		const auto type      = ItemData::GetItemType(form);
-		const auto extraType = ItemData::GetItemTypeExtra(form);
+		const auto typePair   = ItemData::GetItemTypePair(form);
+		const auto countDelta = a_entryData->countDelta;
 
-		auto& entry = data.forms.try_emplace(
-									form->formID,
-									form,
-									type,
-									extraType)
-		                  .first->second;
-
-		entry.sharedCount = (entry.count += a_entryData->countDelta);
-
-		if (extraType < Data::ObjectTypeExtra::kMax)
-		{
-			data.typeCount[stl::underlying(extraType)] += a_entryData->countDelta;
-		}
+		auto& entry = data.forms.raw().emplace_back(
+										  std::piecewise_construct,
+										  std::forward_as_tuple(form->formID),
+										  std::forward_as_tuple(
+											  form,
+											  typePair,
+											  countDelta))
+		                  .second;
 
 		if (const auto extraLists = a_entryData->GetExtraDataLists())
 		{
-			for (const auto* e : *extraLists)
+			for (const auto* const e : *extraLists)
 			{
 				if (!e)
 				{
@@ -159,103 +172,91 @@ namespace IED
 
 				if (presence->HasType(ExtraWorn::EXTRA_DATA))
 				{
-					entry.equipped = true;
+					entry.extra.flags.set(CollectorData::ItemFlags::kEquipped);
 				}
 
 				if (presence->HasType(ExtraWornLeft::EXTRA_DATA))
 				{
-					entry.equippedLeft = true;
+					entry.extra.flags.set(CollectorData::ItemFlags::kEquippedLeft);
 				}
 
 				if (presence->HasType(ExtraHotkey::EXTRA_DATA))
 				{
-					entry.favorited = true;
+					entry.extra.flags.set(CollectorData::ItemFlags::kFavorite);
 				}
 
 				if (presence->HasType(ExtraCannotWear::EXTRA_DATA))
 				{
-					entry.cannotWear = true;
+					entry.extra.flags.set(CollectorData::ItemFlags::kCannotWear);
 				}
 			}
 		}
 
-		if (extraType != Data::ObjectTypeExtra::kNone &&
-		    (entry.equipped || entry.equippedLeft))
+		if (typePair.typeExtra < Data::ObjectTypeExtra::kMax &&
+		    entry.is_equipped())
 		{
-			entry.extraEquipped.type = extraType;
+			const auto slot = ItemData::GetSlotFromTypeExtra(typePair.typeExtra);
 
-			const auto slot = Data::ItemData::GetSlotFromTypeExtra(extraType);
-
-			if (entry.equipped)
+			if (entry.is_equipped_right())
 			{
-				entry.extraEquipped.slot = slot;
+				entry.extra.equipped.slot = slot;
 
 				if (slot < Data::ObjectSlotExtra::kMax)
 				{
-					data.equippedTypeFlags[stl::underlying(slot)] |= Data::InventoryPresenceFlags::kSet;
+					data.SetSlotEquipped(slot);
 				}
 			}
 
-			if (entry.equippedLeft)
+			if (entry.is_equipped_left())
 			{
-				const auto slotLeft = Data::ItemData::GetLeftSlotExtra(slot);
+				const auto slotLeft = ItemData::GetLeftSlotExtra(slot);
 
-				entry.extraEquipped.slotLeft = slotLeft;
+				entry.extra.equipped.slotLeft = slotLeft;
 
 				if (slotLeft < Data::ObjectSlotExtra::kMax)
 				{
-					data.equippedTypeFlags[stl::underlying(slotLeft)] |= Data::InventoryPresenceFlags::kSet;
+					data.SetSlotEquipped(slotLeft);
 				}
 			}
 
-			data.equippedForms.emplace_back(std::addressof(entry));
+			data.equippedForms.emplace_back(entry);
 		}
 	}
 
-	void ItemCandidateCollector::GenerateSlotCandidates(bool a_checkFav)
+	void InventoryInfoCollector::GenerateSlotCandidates(bool a_checkFav) noexcept
 	{
 		for (auto& e : slotResults)
 		{
-			e.items.clear();
+			e.clear();
 		}
 
 		const bool checkFav = isPlayer && a_checkFav;
 
 		for (const auto& [i, e] : data.forms)
 		{
+			if (e.extra.type >= ObjectType::kMax)
+			{
+				continue;
+			}
+
 			if (i.IsTemporary())
 			{
 				continue;
 			}
 
-			if (e.type >= ObjectType::kMax)
+			if (checkFav && !e.is_favorited())
 			{
 				continue;
 			}
 
-			if (checkFav && !e.favorited)
-			{
-				continue;
-			}
-
-			std::int64_t extra = e.count - 1;
-
-			if (e.equipped)
-			{
-				extra--;
-			}
-
-			if (e.equippedLeft)
-			{
-				extra--;
-			}
+			const auto extra = (static_cast<std::int64_t>(e.itemCount) - e.get_equip_count()) - 1;
 
 			if (extra < 0)
 			{
 				continue;
 			}
 
-			const auto* form = e.form;
+			const auto* const form = e.form;
 
 			if (isPlayer && !form->GetPlayable())
 			{
@@ -268,7 +269,7 @@ namespace IED
 			{
 			case TESObjectWEAP::kTypeID:
 				{
-					auto weap = static_cast<const TESObjectWEAP*>(form);
+					const auto weap = static_cast<const TESObjectWEAP*>(form);
 
 					if (weap->IsBound())
 					{
@@ -296,9 +297,9 @@ namespace IED
 				break;
 			}
 
-			auto& entry = slotResults[stl::underlying(e.type)];
+			auto& entry = slotResults[stl::underlying(e.extra.type)];
 
-			entry.items.emplace_back(
+			entry.emplace_back(
 				std::addressof(e),
 				static_cast<std::uint32_t>(extra),
 				rating);
@@ -306,11 +307,9 @@ namespace IED
 
 		for (auto& e : slotResults)
 		{
-			// apparently this is generally faster than inserting into a vector with upper_bound when there's lots of entries
-
 			std::sort(
-				e.items.begin(),
-				e.items.end(),
+				e.begin(),
+				e.end(),
 				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
 					return a_lhs.rating > a_rhs.rating;
 				});

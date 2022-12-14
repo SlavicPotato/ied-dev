@@ -119,13 +119,13 @@ namespace IED
 				id(a_id)
 			{
 			}
-			
+
 			inline constexpr configCachedForm_t(
 				const configCachedForm_t& a_rhs) noexcept :
 				id(a_rhs.id)
 			{
 			}
-			
+
 			inline constexpr configCachedForm_t(
 				configCachedForm_t&& a_rhs) noexcept :
 				id(a_rhs.id)
@@ -162,7 +162,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr TESForm* get_form() const noexcept
+			inline constexpr TESForm* get_form() const
 			{
 				if (!id)
 				{
@@ -173,7 +173,7 @@ namespace IED
 				{
 					form = lookup_form(id);
 				}
-				
+
 				if (form && form->IsDeleted())
 				{
 					return nullptr;
@@ -181,11 +181,11 @@ namespace IED
 
 				return form;
 			}
-			
+
 			template <
 				class T,
 				class form_type = stl::strip_type<T>>
-			inline constexpr form_type* get_form() const noexcept
+			inline constexpr form_type* get_form() const
 			{
 				if (const auto f = get_form())
 				{
@@ -196,7 +196,7 @@ namespace IED
 					return nullptr;
 				}
 			}
-			
+
 			inline constexpr auto& get_id() const noexcept
 			{
 				return id;
@@ -553,14 +553,14 @@ namespace IED
 		};
 
 		class configFormSet_t :
-			public stl::set_sa<
+			public stl::flat_set<
 				configForm_t,
 				std::less_equal<configForm_t>,
 				stl::boost_container_allocator<configForm_t>>
 		{
 			friend class boost::serialization::access;
 
-			using super = stl::set_sa<
+			using super = stl::flat_set<
 				configForm_t,
 				std::less_equal<configForm_t>,
 				stl::boost_container_allocator<configForm_t>>;
@@ -665,7 +665,7 @@ namespace IED
 		};
 
 		using configFormList_t       = stl::boost_vector<configForm_t>;
-		using configFixedStringSet_t = stl::set_sa<
+		using configFixedStringSet_t = stl::flat_set<
 			stl::fixed_string,
 			stl::fixed_string_less_equal_ptr,
 			stl::boost_container_allocator<stl::fixed_string>>;
@@ -769,7 +769,7 @@ namespace IED
 	struct configCopyableUniquePtr_t
 	{
 	public:
-		configCopyableUniquePtr_t() noexcept = default;
+		configCopyableUniquePtr_t() = default;
 
 		configCopyableUniquePtr_t(const configCopyableUniquePtr_t& a_rhs)
 		{
@@ -785,8 +785,8 @@ namespace IED
 			return *this;
 		}
 
-		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&) noexcept            = default;
-		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t&&) noexcept = default;
+		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&)            = default;
+		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t&&) = default;
 
 		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 		{

@@ -421,7 +421,7 @@ namespace IED
 			stl::flag<ExportFlags>                         a_exportFlags,
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
-		void SaveSettings(bool a_defer, bool a_dirtyOnly, bool a_debug = false);
+		void SaveSettings(bool a_defer, bool a_dirtyOnly, const bool a_debug = false);
 
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);
@@ -833,6 +833,7 @@ namespace IED
 		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
+		virtual bool WantGlobalVariableUpdateOnAddRemove() const override;
 
 		// internal events
 
@@ -964,8 +965,8 @@ namespace IED
 
 		struct
 		{
-			SlotResults       sr;
-			UseCountContainer uc;
+			SlotResults                                              sr;
+			UseCountContainer                                        uc;
 		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };

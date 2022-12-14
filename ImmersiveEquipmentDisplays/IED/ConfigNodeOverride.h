@@ -178,14 +178,14 @@ namespace IED
 				NodeOverrideConditionFlags::kMatchEquipped |
 				NodeOverrideConditionFlags::kMatchCategoryOperOR;
 
-			inline configNodeOverrideCondition_t()
+			inline configNodeOverrideCondition_t() noexcept
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			};
 
 			inline configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_type,
-				Game::FormID              a_form)
+				Game::FormID              a_form) noexcept
 			{
 				switch (a_type)
 				{
@@ -214,7 +214,7 @@ namespace IED
 			}
 
 			inline configNodeOverrideCondition_t(
-				NodeOverrideConditionType a_type)
+				NodeOverrideConditionType a_type) noexcept
 			{
 				switch (a_type)
 				{
@@ -247,35 +247,35 @@ namespace IED
 			}
 
 			inline configNodeOverrideCondition_t(
-				const stl::fixed_string& a_node) :
+				const stl::fixed_string& a_node) noexcept :
 				s0(a_node)
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			}
 
 			inline configNodeOverrideCondition_t(
-				stl::fixed_string&& a_node) :
+				stl::fixed_string&& a_node) noexcept :
 				s0(std::move(a_node))
 			{
 				fbf.type = NodeOverrideConditionType::Node;
 			}
 
 			inline configNodeOverrideCondition_t(
-				BIPED_OBJECT a_biped) :
+				BIPED_OBJECT a_biped) noexcept :
 				bipedSlot(a_biped)
 			{
 				fbf.type = NodeOverrideConditionType::BipedSlot;
 			}
 
 			inline configNodeOverrideCondition_t(
-				ExtraConditionType a_type) :
+				ExtraConditionType a_type) noexcept :
 				extraCondType(a_type)
 			{
 				fbf.type = NodeOverrideConditionType::Extra;
 			}
 
 			inline configNodeOverrideCondition_t(
-				ObjectSlotExtra a_slot) :
+				ObjectSlotExtra a_slot) noexcept :
 				typeSlot(a_slot),
 				flags(DEFAULT_MATCH_CATEGORY_FLAGS)
 			{
@@ -284,7 +284,7 @@ namespace IED
 
 			inline configNodeOverrideCondition_t(
 				NodeOverrideConditionType a_matchType,
-				const stl::fixed_string&  a_s)
+				const stl::fixed_string&  a_s) noexcept
 			{
 				switch (a_matchType)
 				{
@@ -704,11 +704,10 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			void clear()
+			void clear()  //
+				noexcept(std::is_nothrow_move_assignable_v<configNodeOverridePhysicsOverride_t>)
 			{
-				configNodePhysicsValues_t::clear();
-				overrideFlags = NodeOverridePhysicsOverrideFlags::kNone;
-				description.clear();
+				*this = {};
 			}
 
 			stl::flag<NodeOverridePhysicsOverrideFlags> overrideFlags{ NodeOverridePhysicsOverrideFlags::kNone };

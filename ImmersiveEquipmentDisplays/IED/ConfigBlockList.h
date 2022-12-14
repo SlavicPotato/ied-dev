@@ -16,7 +16,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			stl::set_sa<
+			stl::flat_set<
 				stl::fixed_string,
 				stl::fixed_string_less_equal_ptr,
 				stl::boost_container_allocator<stl::fixed_string>>

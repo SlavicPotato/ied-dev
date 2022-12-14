@@ -105,7 +105,11 @@ namespace IED
 			{
 				//ApplyActorState(r.first->second);
 				OnActorAcquire(r.first->second);
-				RequestVariableUpdateOnAll();
+
+				if (WantGlobalVariableUpdateOnAddRemove())
+				{
+					RequestVariableUpdateOnAll();
+				}
 			}
 
 			return r.first->second;
@@ -140,6 +144,7 @@ namespace IED
 		//void ApplyActorState(ActorObjectHolder& a_holder);
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
+		virtual bool WantGlobalVariableUpdateOnAddRemove() const = 0;
 
 	protected:
 		void RequestEvaluateAll(bool a_defer) const noexcept;
@@ -154,7 +159,10 @@ namespace IED
 		{
 			auto result = m_objects.erase(a_it);
 
-			RequestHFEvaluateAll();
+			if (WantGlobalVariableUpdateOnAddRemove())
+			{
+				RequestHFEvaluateAll();
+			}
 
 			return result;
 		}
@@ -165,7 +173,10 @@ namespace IED
 
 			if (result)
 			{
-				RequestHFEvaluateAll();
+				if (WantGlobalVariableUpdateOnAddRemove())
+				{
+					RequestHFEvaluateAll();
+				}
 			}
 
 			return result;

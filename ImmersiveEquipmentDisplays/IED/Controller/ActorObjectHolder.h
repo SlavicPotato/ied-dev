@@ -14,9 +14,11 @@
 #include "ObjectEntrySlot.h"
 
 #include "IED/ActorState.h"
+#include "IED/CollectorData.h"
 #include "IED/ConditionalVariableStorage.h"
 #include "IED/GearNodeID.h"
 #include "IED/NodeOverrideData.h"
+#include "IED/NodeOverrideParams.h"
 #include "IED/ProcessParams.h"
 #include "IED/SkeletonCache.h"
 #include "IED/SkeletonID.h"
@@ -129,10 +131,10 @@ namespace IED
 
 		~ActorObjectHolder();
 
-		ActorObjectHolder(const ActorObjectHolder&) = delete;
-		ActorObjectHolder(ActorObjectHolder&&)      = delete;
+		ActorObjectHolder(const ActorObjectHolder&)            = delete;
+		ActorObjectHolder(ActorObjectHolder&&)                 = delete;
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
-		ActorObjectHolder& operator=(ActorObjectHolder&&) = delete;
+		ActorObjectHolder& operator=(ActorObjectHolder&&)      = delete;
 
 		[[nodiscard]] inline constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
@@ -666,6 +668,11 @@ namespace IED
 			return m_simNodeList;
 		}
 
+		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
+		{
+			return m_temp;
+		}
+
 	private:
 		void CreateExtraMovNodes(
 			NiNode* a_npcroot);
@@ -681,6 +688,8 @@ namespace IED
 			BSTEventSource<BSAnimationGraphEvent>* a_eventSource) override;*/
 
 		//std::optional<ActiveActorAnimation> GetNewActiveAnimation(const BSAnimationGraphEvent* a_event) const;
+
+		CachedActorData m_state;
 
 		bool m_player{ false };
 		bool m_female{ false };
@@ -705,8 +714,13 @@ namespace IED
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<WeaponNodeEntry>    m_weapNodes;
 
-		cme_node_map_type m_cmeNodes;
-		mov_node_map_type m_movNodes;
+		cme_node_map_type                                   m_cmeNodes;
+		mov_node_map_type                                   m_movNodes;
+		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+
+		std::optional<processParams_t> m_currentParams;
+
+		stl::unordered_map<luid_tag, float> m_rpc;
 
 		stl::vector<
 			std::shared_ptr<PHYSimComponent>
@@ -717,10 +731,6 @@ namespace IED
 #endif
 			>
 			m_simNodeList;
-
-		stl::unordered_map<luid_tag, float> m_rpc;
-
-		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 
 		conditionalVariableMap_t m_variables;
 
@@ -742,7 +752,6 @@ namespace IED
 		SkeletonCache::const_actor_entry_type m_skeletonCache1p;
 		SkeletonID                            m_skeletonID;
 
-		CachedActorData             m_state;
 		mutable ActorAnimationState m_animState;
 
 		//AnimationGraphManagerHolderList m_animationUpdateList;
@@ -751,7 +760,12 @@ namespace IED
 
 		BipedSlotDataPtr m_lastEquipped;
 
-		std::optional<processParams_t> m_currentParams;
+		struct
+		{
+			Data::CollectorData::container_type       idt;
+			Data::CollectorData::eq_container_type    eqt;
+			nodeOverrideParams_t::item_container_type nc;
+		} m_temp;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

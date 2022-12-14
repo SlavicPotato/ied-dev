@@ -77,8 +77,8 @@ namespace IED
 			std::string                       name;
 			std::optional<Enchantment>        enchantment;
 			std::uint32_t                     baseCount{ 0 };
-			std::int32_t                      deltaCount{ 0 };
-			std::int64_t                      count{ 0 };
+			std::int32_t                      countDelta{ 0 };
+			std::int32_t                      count{ 0 };
 			stl::vector<
 				ExtraData,
 #if defined(IED_USE_MIMALLOC_COLLECTOR)
@@ -93,18 +93,6 @@ namespace IED
 		void Update(
 			TESContainer&                          a_container,
 			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
-
-		/*stl::map<
-			Game::FormID,
-			Base,
-			std::less<Game::FormID>,
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-			stl::mi_allocator
-#else
-			stl::container_allocator
-#endif
-			<std::pair<const Game::FormID, Base>>>
-			items;*/
 
 		using map_type =
 			std::unordered_map<

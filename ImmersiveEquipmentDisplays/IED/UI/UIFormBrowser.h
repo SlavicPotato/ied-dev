@@ -50,7 +50,7 @@ namespace IED
 				}
 			};
 
-			using tab_filter_type   = stl::set_sa<std::uint32_t>;
+			using tab_filter_type   = stl::flat_set<std::uint32_t>;
 			using select_callback_t = std::function<void(const IFormDatabase::entry_t&)>;
 
 			UIFormBrowser(Controller& a_controller);

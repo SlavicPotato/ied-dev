@@ -22,17 +22,18 @@
 #include <ext/PluginInterfaceSDS.h>
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
-#include <ext/StrHelpers.h>
 #include <ext/StringCache.h>
 #include <ext/Vector.h>
 #include <ext/WeaponAnimationGraphManagerHolder.h>
 #include <ext/hkaSkeleton.h>
+
 #include <ext/stl_boost_serialization_containers.h>
 #include <ext/stl_comparison.h>
 #include <ext/stl_error.h>
-#include <ext/stl_map_sa.h>
+#include <ext/stl_flat_map.h>
+#include <ext/stl_flat_set.h>
 #include <ext/stl_math.h>
-#include <ext/stl_set_sa.h>
+#include <ext/stl_str_helpers.h>
 #include <ext/str_conv.h>
 
 #if defined(IED_USE_MIMALLOC_COLLECTOR)
@@ -63,7 +64,6 @@
 
 #include <algorithm>
 #include <bitset>
-#include <chrono>
 #include <execution>
 #include <filesystem>
 #include <functional>
@@ -136,7 +136,7 @@ namespace fs = std::filesystem;
 #include "plugin.h"
 #include "skse.h"
 
-//#define IED_ENABLE_STATS_G
+#define IED_ENABLE_STATS_G
 //#define IED_ENABLE_STATS_T
 
 #define IED_ENABLE_I3DI
