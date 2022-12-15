@@ -21,18 +21,18 @@ namespace IED
 		const ActorProcessManager* const a_pm) noexcept
 		-> equippedItemInfo_t
 	{
-		auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
-		auto formRight = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right];
+		const auto formLeft  = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Left];
+		const auto formRight = a_pm->equippedObject[ActorProcessManager::kEquippedHand_Right];
 
 		return equippedItemInfo_t{
-			formLeft,
 			formRight,
-			formLeft ?
-				ItemData::GetObjectSlotLeft(formLeft) :
-				ObjectSlot::kMax,
+			formLeft,
 			formRight ?
-				ItemData::GetObjectSlot(formRight) :
-				ObjectSlot::kMax
+				ItemData::GetObjectSlotNoBound(formRight) :
+			ObjectSlot::kMax,
+			formLeft ?
+				ItemData::GetObjectSlotLeftNoBound(formLeft) :
+				ObjectSlot::kMax,
 		};
 	}
 

@@ -38,6 +38,18 @@ namespace IED
 					return ObjectSlot::kMax;
 				}
 			}
+			
+			inline constexpr ObjectSlot GetObjectSlotNoBound(const TESObjectWEAP* a_form) noexcept
+			{
+				if (a_form->IsBound())
+				{
+					return ObjectSlot::kMax;
+				}
+				else
+				{
+					return GetObjectSlot(a_form);
+				}
+			}
 
 			inline constexpr ObjectSlot GetObjectSlotLeft(const TESObjectWEAP* a_form) noexcept
 			{
@@ -59,6 +71,18 @@ namespace IED
 					return ObjectSlot::kStaffLeft;
 				default:
 					return ObjectSlot::kMax;
+				}
+			}
+			
+			inline constexpr ObjectSlot GetObjectSlotLeftNoBound(const TESObjectWEAP* a_form) noexcept
+			{
+				if (a_form->IsBound())
+				{
+					return ObjectSlot::kMax;
+				}
+				else
+				{
+					return GetObjectSlotLeft(a_form);
 				}
 			}
 
@@ -89,6 +113,19 @@ namespace IED
 					return ObjectSlot::kMax;
 				}
 			}
+			
+			inline constexpr ObjectSlot GetObjectSlotNoBound(const TESForm* a_form) noexcept
+			{
+				switch (a_form->formType)
+				{
+				case TESObjectWEAP::kTypeID:
+					return GetObjectSlotNoBound(static_cast<const TESObjectWEAP*>(a_form));
+				case TESAmmo::kTypeID:
+					return GetObjectSlot(static_cast<const TESAmmo*>(a_form));
+				default:
+					return ObjectSlot::kMax;
+				}
+			}
 
 			inline constexpr ObjectSlot GetObjectSlotLeft(const TESForm* a_form) noexcept
 			{
@@ -96,6 +133,21 @@ namespace IED
 				{
 				case TESObjectWEAP::kTypeID:
 					return GetObjectSlotLeft(static_cast<const TESObjectWEAP*>(a_form));
+				case TESObjectARMO::kTypeID:
+					return GetObjectSlot(static_cast<const TESObjectARMO*>(a_form));
+				case TESObjectLIGH::kTypeID:
+					return GetObjectSlotLeft(static_cast<const TESObjectLIGH*>(a_form));
+				default:
+					return ObjectSlot::kMax;
+				}
+			}
+			
+			inline constexpr ObjectSlot GetObjectSlotLeftNoBound(const TESForm* a_form) noexcept
+			{
+				switch (a_form->formType)
+				{
+				case TESObjectWEAP::kTypeID:
+					return GetObjectSlotLeftNoBound(static_cast<const TESObjectWEAP*>(a_form));
 				case TESObjectARMO::kTypeID:
 					return GetObjectSlot(static_cast<const TESObjectARMO*>(a_form));
 				case TESObjectLIGH::kTypeID:

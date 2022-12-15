@@ -11,10 +11,10 @@ namespace IED
 {
 	struct equippedItemInfo_t
 	{
-		TESForm*         left;
 		TESForm*         right;
-		Data::ObjectSlot leftSlot;
+		TESForm*         left;
 		Data::ObjectSlot rightSlot;
+		Data::ObjectSlot leftSlot;
 	};
 
 	struct ObjectEntryCustom;
