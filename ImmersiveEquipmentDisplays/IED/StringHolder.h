@@ -174,18 +174,6 @@ namespace IED
 
 		BSFixedString m_weaponSheathe{ WEAPON_SHEATHE };
 
-		/*BSFixedString m_animObjectLute{ "AnimObjectLute" };
-		BSFixedString m_animObjectR{ "AnimObjectR" };
-		BSFixedString m_animObjectAxe{ "AnimObjectAxe" };
-		BSFixedString m_animObjectPickaxe{ "AnimObjectPickaxe" };*/
-
-		//BSFixedString m_graphDeleting{ GRAPH_DELETING };
-		/*BSFixedString m_animObjectDraw{ "AnimObjDraw" };
-		BSFixedString m_animObjectUnequip{ "AnimObjectUnequip" };
-		BSFixedString m_animObjectAxe{ "AnimObjectAxe" };
-		BSFixedString m_animObjectChopWoodLeft{ "AnimObjectChopWoodLeft" };
-		BSFixedString m_animObjectChopWoodRight{ "AnimObjectChopWoodRight" };*/
-
 		//stl::unordered_set<BSFixedString> m_animEventFilter;
 
 		BSFixedString m_npcNodeName{ "NPC" };
@@ -197,30 +185,15 @@ namespace IED
 		BSFixedString m_BSBoneLOD{ "BSBoneLOD" };
 		BSFixedString m_BBX{ "BBX" };
 
-		using SheatheNodeEntryInit = std::tuple<
-			const char*,
-			const char*,
-			const char*>;
-
-		struct SheatheNodeEntry
+		struct SheathNodeEntry
 		{
-			template <class... Args>
-			SheatheNodeEntry(const SheatheNodeEntryInit& a_init) :
-				name(std::get<0>(a_init)),
-				mov(std::get<1>(a_init)),
-				cme(std::get<2>(a_init))
-			{}
-
 			BSFixedString name;
 			BSFixedString mov;
 			BSFixedString cme;
 		};
 
-		stl::container_init_wrapper<std::forward_list<SheatheNodeEntry>> m_sheathNodes;
-
-		using arrow_container_type = std::array<BSFixedString, 5>;
-
-		arrow_container_type m_arrows{ NINODE_ARROW_1 };
+		std::array<SheathNodeEntry, 7> m_sheathNodes;
+		std::array<BSFixedString, 5>   m_arrows;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};

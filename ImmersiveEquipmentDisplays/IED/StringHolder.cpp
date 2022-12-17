@@ -10,12 +10,9 @@ namespace IED
 
 	namespace detail
 	{
-		template <
-			class T       = stl::fixed_string,
-			std::size_t N = stl::underlying(Data::ObjectSlot::kMax)>
-		constexpr auto make_slot_names()
+		inline auto make_slot_names()
 		{
-			return stl::make_array<T, N>([&]<std::size_t I>() {
+			return stl::make_array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 				return stl::fixed_string::make_tuple(Data::GetSlotName(slotid));
 			});
@@ -43,17 +40,17 @@ namespace IED
 	std::unique_ptr<BSStringHolder> BSStringHolder::m_Instance;
 
 	BSStringHolder::BSStringHolder() :
-		m_sheathNodes(std::initializer_list<SheatheNodeEntryInit>{
+		m_sheathNodes{
 
-			{ NINODE_SWORD, NINODE_MOV_DEFAULT_SWORD, NINODE_CME_DEFAULT_SWORD },
-			{ NINODE_AXE, NINODE_MOV_DEFAULT_AXE, NINODE_CME_DEFAULT_AXE },
-			{ NINODE_MACE, NINODE_MOV_DEFAULT_MACE, NINODE_CME_DEFAULT_MACE },
-			{ NINODE_DAGGER, NINODE_MOV_DEFAULT_DAGGER, NINODE_CME_DEFAULT_DAGGER },
-			{ NINODE_WEAPON_BACK, NINODE_MOV_DEFAULT_BACK, NINODE_CME_DEFAULT_BACK },
-			{ NINODE_BOW, NINODE_MOV_DEFAULT_BOW, NINODE_CME_DEFAULT_BOW },
-			{ NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER }
+			SheathNodeEntry{ NINODE_SWORD, NINODE_MOV_DEFAULT_SWORD, NINODE_CME_DEFAULT_SWORD },
+			SheathNodeEntry{ NINODE_AXE, NINODE_MOV_DEFAULT_AXE, NINODE_CME_DEFAULT_AXE },
+			SheathNodeEntry{ NINODE_MACE, NINODE_MOV_DEFAULT_MACE, NINODE_CME_DEFAULT_MACE },
+			SheathNodeEntry{ NINODE_DAGGER, NINODE_MOV_DEFAULT_DAGGER, NINODE_CME_DEFAULT_DAGGER },
+			SheathNodeEntry{ NINODE_WEAPON_BACK, NINODE_MOV_DEFAULT_BACK, NINODE_CME_DEFAULT_BACK },
+			SheathNodeEntry{ NINODE_BOW, NINODE_MOV_DEFAULT_BOW, NINODE_CME_DEFAULT_BOW },
+			SheathNodeEntry{ NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER }
 
-		}),
+		},
 		m_arrows{
 			NINODE_ARROW_1,
 			NINODE_ARROW_2,
