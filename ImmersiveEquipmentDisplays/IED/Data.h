@@ -432,6 +432,10 @@ namespace IED
 					           ObjectSlotExtra::kNone;
 				case SpellItem::kTypeID:
 					return ObjectSlotExtra::kSpellLeft;
+				case TESObjectLIGH::kTypeID:
+					return static_cast<const TESObjectLIGH*>(a_form)->CanCarry() ?
+					           ObjectSlotExtra::kTorch :
+					           ObjectSlotExtra::kNone;
 				default:
 					return ObjectSlotExtra::kNone;
 				}
