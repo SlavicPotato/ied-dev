@@ -15,6 +15,18 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(SlotPriorityFlags);
 
+		namespace detail
+		{
+			inline constexpr auto make_type_index_array() noexcept
+			{
+				return stl::make_array<
+					ObjectType,
+					stl::underlying(Data::ObjectType::kMax)>([&]<std::size_t I>() {
+					return static_cast<Data::ObjectType>(I);
+				});
+			}
+		}
+
 		struct configSlotPriority_t
 		{
 			friend class boost::serialization::access;
@@ -29,14 +41,9 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			constexpr configSlotPriority_t() noexcept
+			constexpr configSlotPriority_t() noexcept :
+				order{ detail::make_type_index_array() }
 			{
-				using enum_type = std::underlying_type_t<ObjectType>;
-
-				for (enum_type i = 0; i < stl::underlying(ObjectType::kMax); i++)
-				{
-					order[i] = static_cast<Data::ObjectType>(i);
-				}
 			}
 
 			inline constexpr ObjectType translate_type_safe(
@@ -51,8 +58,16 @@ namespace IED
 				}
 				return result;
 			}
+			
+			inline constexpr ObjectType translate_type_safe(
+				ObjectType a_in) const noexcept
+			{
+				return translate_type_safe(a_in);
+			}
 
-			inline constexpr void clear() noexcept
+			inline constexpr void clear()  //
+				noexcept(std::is_nothrow_move_assignable_v<configSlotPriority_t>&&
+			                 std::is_nothrow_default_constructible_v<configSlotPriority_t>)
 			{
 				*this = {};
 			}
@@ -60,8 +75,6 @@ namespace IED
 			constexpr bool validate() const
 			{
 				auto tmp = order;
-
-				assert(!tmp.empty());
 
 				std::sort(tmp.begin(), tmp.end());
 
@@ -94,8 +107,6 @@ namespace IED
 			stl::flag<SlotPriorityFlags> flags{ DEFAULT_FLAGS };
 			std::uint32_t                limit{ stl::underlying(ObjectType::kMax) };
 			order_data_type              order;
-
-			SKMP_REDEFINE_NEW_PREF();
 
 		private:
 			template <class Archive>

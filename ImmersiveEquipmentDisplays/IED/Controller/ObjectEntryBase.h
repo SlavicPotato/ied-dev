@@ -42,10 +42,10 @@ namespace IED
 		ObjectEntryBase()  = default;
 		~ObjectEntryBase() = default;
 
-		ObjectEntryBase(const ObjectEntryBase&) = delete;
-		ObjectEntryBase(ObjectEntryBase&&)      = delete;
+		ObjectEntryBase(const ObjectEntryBase&)            = delete;
+		ObjectEntryBase(ObjectEntryBase&&)                 = delete;
 		ObjectEntryBase& operator=(const ObjectEntryBase&) = delete;
-		ObjectEntryBase& operator=(ObjectEntryBase&&) = delete;
+		ObjectEntryBase& operator=(ObjectEntryBase&&)      = delete;
 
 		bool reset(
 			Game::ObjectRefHandle    a_handle,
@@ -73,6 +73,16 @@ namespace IED
 			return IsActive() ? data.state->form : nullptr;
 		}
 
+		struct QuiverArrowState
+		{
+			QuiverArrowState(NiNode* a_arrowQuiver);
+
+			void Update(std::int32_t a_count) noexcept;
+
+			std::array<NiPointer<NiAVObject>, 5> arrows;
+			std::int32_t                         inventoryCount{ 0 };
+		};
+
 		struct AnimationState
 		{
 			RE::WeaponAnimationGraphManagerHolderPtr weapAnimGraphManagerHolder;
@@ -87,10 +97,10 @@ namespace IED
 			State() noexcept = default;
 			~State()         = default;
 
-			State(const State&) = delete;
-			State(State&&)      = delete;
+			State(const State&)            = delete;
+			State(State&&)                 = delete;
 			State& operator=(const State&) = delete;
-			State& operator=(State&&) = delete;
+			State& operator=(State&&)      = delete;
 
 			struct GroupObject :
 				AnimationState
@@ -153,6 +163,8 @@ namespace IED
 				}
 			}
 
+			void UpdateArrows(std::int32_t a_count) noexcept;
+
 			/*void UpdateGroupTransforms(const Data::configModelGroup_t& a_group)
 			{
 				for (auto& e : a_group.entries)
@@ -205,9 +217,10 @@ namespace IED
 			long long                                          created{ 0 };
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			//NiPointer<NiPointLight>                            light;
-			Game::FormID owner;
-			std::uint8_t hideCountdown{ 0 };
-			bool         atmReference{ true };
+			std::unique_ptr<QuiverArrowState> arrowState;
+			Game::FormID                      owner;
+			std::uint8_t                      hideCountdown{ 0 };
+			bool                              atmReference{ true };
 		};
 
 		struct ActiveData

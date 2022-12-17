@@ -14,12 +14,12 @@ namespace IED
 
 		using tuple_init_type = std::tuple<
 			DisplaySlotCacheEntry&,
-			Data::ObjectSlot,
-			Data::ObjectSlotExtra>;
+			const Data::ObjectSlot,
+			const Data::ObjectSlotExtra>;
 
 		inline constexpr ObjectEntrySlot(
-			const tuple_init_type& a_init) noexcept :
-			ObjectEntryBase(),
+			const tuple_init_type& a_init)  //
+			noexcept(std::is_nothrow_default_constructible_v<ObjectEntryBase>) :
 			slotState(std::get<0>(a_init)),
 			slotid(std::get<1>(a_init)),
 			slotidex(std::get<2>(a_init))

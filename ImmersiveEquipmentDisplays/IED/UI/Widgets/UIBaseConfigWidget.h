@@ -1406,9 +1406,22 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 				UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
+				
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::DynamicArrows, "3"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kDynamicArrows)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kDynamicArrows);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+				UITipsInterface::DrawTip(UITip::DynamicArrows);
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIBaseConfigString::Use1pWeaponModels, "3"),
+						UIL::LS(UIBaseConfigString::Use1pWeaponModels, "4"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kLoad1pWeaponModel)))
 				{
@@ -1420,8 +1433,10 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::Load1pWeaponModel);
 
+				ImGui::NextColumn();
+
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIBaseConfigString::UseWorldModel, "4"),
+						UIL::LS(UIBaseConfigString::UseWorldModel, "5"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kUseWorldModel)))
 				{
@@ -1433,10 +1448,8 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::UseWorldModel);
 
-				ImGui::NextColumn();
-
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIBaseConfigString::KeepTorchFlame, "5"),
+						UIL::LS(UIBaseConfigString::KeepTorchFlame, "6"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kKeepTorchFlame)))
 				{
@@ -1481,7 +1494,7 @@ namespace IED
 				UICommon::PopDisabled(disable);*/
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIWidgetCommonStrings::DisableHavok, "6"),
+						UIL::LS(UIWidgetCommonStrings::DisableHavok, "7"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDisableHavok)))
 				{
@@ -1494,7 +1507,7 @@ namespace IED
 				UITipsInterface::DrawTip(UITip::DisableHavok);
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(UIBaseConfigString::DropOnDeath, "7"),
+						UIL::LS(UIBaseConfigString::DropOnDeath, "8"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kDropOnDeath)))
 				{

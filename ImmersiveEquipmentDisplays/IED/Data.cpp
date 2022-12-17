@@ -94,34 +94,6 @@ namespace IED
 			return m_Instance.m_pluginInfo.Populate();
 		}
 
-		bool IData::PopulateMiscInfo()
-		{
-			auto player = *g_thePlayer;
-			if (!player)
-			{
-				return false;
-			}
-
-			m_Instance.m_playerRefID = player->formID;
-
-			auto base = player->baseForm;
-			if (!base)
-			{
-				return false;
-			}
-
-			if (auto npc = base->As<TESNPC>())
-			{
-				m_Instance.m_playerBaseID = npc->formID;
-
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
 		static void FillDefaultBaseConfig(
 			ObjectSlot                     a_slot,
 			configSlotHolder_t::data_type& a_data)

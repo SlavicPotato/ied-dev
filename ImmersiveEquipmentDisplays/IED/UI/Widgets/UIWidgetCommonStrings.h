@@ -120,6 +120,7 @@ namespace IED
 			RemoveProjectileTracers             = 2112,
 			ItemFilterCond                      = 2113,
 			NoSSE41SupportWarning               = 2114,
+			DynamicArrows                       = 2115,
 		};
 	}
 }

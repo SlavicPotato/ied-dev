@@ -30,6 +30,13 @@ namespace IED
 		static inline constexpr auto NINODE_NPCSPINE2        = "NPC Spine2 [Spn2]";
 		static inline constexpr auto NINODE_NPCRHAND         = "NPC R Hand [RHnd]";
 
+		static inline constexpr auto NINODE_ARROW_QUIVER = "ArrowQuiver";
+		static inline constexpr auto NINODE_ARROW_1      = "Arrow1";
+		static inline constexpr auto NINODE_ARROW_2      = "Arrow2";
+		static inline constexpr auto NINODE_ARROW_3      = "Arrow3";
+		static inline constexpr auto NINODE_ARROW_4      = "Arrow4";
+		static inline constexpr auto NINODE_ARROW_5      = "Arrow5";
+
 		static inline constexpr auto NINODE_SCB           = "Scb";
 		static inline constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
 		static inline constexpr auto BSX                  = "BSX";
@@ -114,14 +121,14 @@ namespace IED
 
 		BSStringHolder();
 
-		BSStringHolder(const BSStringHolder&) = delete;
-		BSStringHolder(BSStringHolder&&)      = delete;
+		BSStringHolder(const BSStringHolder&)            = delete;
+		BSStringHolder(BSStringHolder&&)                 = delete;
 		BSStringHolder& operator=(const BSStringHolder&) = delete;
-		BSStringHolder& operator=(BSStringHolder&&) = delete;
+		BSStringHolder& operator=(BSStringHolder&&)      = delete;
 
 		static void Create();
 
-		inline static const auto* GetSingleton() noexcept
+		inline static constexpr const auto* GetSingleton() noexcept
 		{
 			return m_Instance.get();
 		}
@@ -154,6 +161,8 @@ namespace IED
 		BSFixedString m_weaponBack{ NINODE_WEAPON_BACK };
 		BSFixedString m_weaponBow{ NINODE_BOW };
 		BSFixedString m_quiver{ NINODE_QUIVER };
+
+		BSFixedString m_arrowQuiver{ NINODE_ARROW_QUIVER };
 
 		BSFixedString m_mxTorchSmoke{ NINODE_MX_TORCH_SMOKE };
 		BSFixedString m_mxTorchSparks{ NINODE_MX_TORCH_SPARKS };
@@ -209,6 +218,10 @@ namespace IED
 
 		stl::container_init_wrapper<std::forward_list<SheatheNodeEntry>> m_sheathNodes;
 
+		using arrow_container_type = std::array<BSFixedString, 5>;
+
+		arrow_container_type m_arrows{ NINODE_ARROW_1 };
+
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};
 
@@ -227,10 +240,10 @@ namespace IED
 			return m_Instance;
 		}
 
-		StringHolder(const StringHolder&) = delete;
-		StringHolder(StringHolder&&)      = delete;
+		StringHolder(const StringHolder&)            = delete;
+		StringHolder(StringHolder&&)                 = delete;
 		StringHolder& operator=(const StringHolder&) = delete;
-		StringHolder& operator=(StringHolder&&) = delete;
+		StringHolder& operator=(StringHolder&&)      = delete;
 
 		[[nodiscard]] inline constexpr const auto& GetSlotName(Data::ObjectSlot a_slot) const noexcept
 		{

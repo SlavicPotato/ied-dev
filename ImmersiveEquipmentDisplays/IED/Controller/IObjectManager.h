@@ -167,6 +167,10 @@ namespace IED
 			const Data::configBaseValues_t&          a_config,
 			Actor*                                   a_actor);
 
+		static void TryMakeArrowState(
+			std::unique_ptr<ObjectEntryBase::State>& a_state,
+			NiNode*                                  a_object);
+
 		void PlayObjectSound(
 			const processParams_t&          a_params,
 			const Data::configBaseValues_t& a_config,

@@ -4,6 +4,8 @@
 
 #include "IObjectManager.h"
 
+#include "IED/StringHolder.h"
+
 namespace IED
 {
 	bool ObjectEntryBase::reset(
@@ -149,6 +151,14 @@ namespace IED
 		}
 	}
 
+	void ObjectEntryBase::State::UpdateArrows(std::int32_t a_count) noexcept
+	{
+		if (arrowState)
+		{
+			arrowState->Update(a_count);
+		}
+	}
+
 	void ObjectEntryBase::State::Cleanup(
 		Game::ObjectRefHandle a_handle)
 	{
@@ -179,6 +189,7 @@ namespace IED
 			}
 		}
 
+		arrowState.reset();
 		nodes.object.reset();
 
 		/*if (light)
@@ -326,6 +337,47 @@ namespace IED
 			state.reset();
 
 			a_db.QueueDatabaseCleanup();
+		}
+	}
+
+	namespace detail
+	{
+		inline auto make_arrow_array(NiNode* a_root) noexcept
+		{
+			const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;
+
+			return stl::make_array<
+				NiPointer<NiAVObject>,
+				5>([&]<std::size_t I>() {
+				return Util::Node::FindChildObject(a_root, arrowStrings[I]);
+			});
+		}
+	}
+
+	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) :
+		arrows{ detail::make_arrow_array(a_arrowQuiver) }
+	{
+	}
+
+	void ObjectEntryBase::QuiverArrowState::Update(std::int32_t a_count) noexcept
+	{
+		a_count = std::min(a_count, 6);
+
+		if (inventoryCount == a_count)
+		{
+			return;
+		}
+
+		inventoryCount = a_count;
+
+		auto c = static_cast<std::int64_t>(a_count) - 1;
+
+		for (auto& e : arrows)
+		{
+			if (e)
+			{
+				e->SetVisible(--c >= 0);
+			}
 		}
 	}
 

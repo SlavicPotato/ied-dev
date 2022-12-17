@@ -868,10 +868,10 @@ namespace IED
 
 		process_offsets(a_data.offsets, xfrm, accumPos, a_params);
 
-		bool update = std::memcmp(
-						  std::addressof(a_entry.thirdPerson.node->m_localTransform),
-						  std::addressof(xfrm),
-						  sizeof(NiTransform)) != 0;
+		const bool update = std::memcmp(
+								std::addressof(a_entry.thirdPerson.node->m_localTransform),
+								std::addressof(xfrm),
+								sizeof(NiTransform)) != 0;
 
 		if (update)
 		{
@@ -1048,7 +1048,7 @@ namespace IED
 
 					a_target->AttachChild(a_entry.node, true);
 
-					//UpdateDownwardPass(a_entry.node);
+					UpdateDownwardPass(a_entry.node);
 				}
 			}
 
@@ -1057,7 +1057,7 @@ namespace IED
 			{
 				auto& state = a_params->objects.GetAnimState();
 
-				auto index = stl::underlying(a_entry.animSlot);
+				const auto index = stl::underlying(a_entry.animSlot);
 				if (state.placement[index] != a_placementID)
 				{
 					state.placement[index] = a_placementID;

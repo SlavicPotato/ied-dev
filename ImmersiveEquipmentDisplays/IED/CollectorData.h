@@ -6,15 +6,6 @@ namespace IED
 {
 	namespace Data
 	{
-		enum class InventoryPresenceFlags : std::uint8_t
-		{
-			kNone = 0,
-
-			kEquipped = 1ui8 << 0,
-		};
-
-		DEFINE_ENUM_CLASS_BITWISE(InventoryPresenceFlags);
-
 		struct CollectorData
 		{
 			enum class ItemFlags : std::uint8_t
@@ -103,10 +94,20 @@ namespace IED
 					return extra.flags.test(ItemFlags::kCannotWear);
 				}
 
-				[[nodiscard]] inline constexpr void dec_shared(const std::uint32_t a_v = 1u) const noexcept
+				inline constexpr void consume_one() const noexcept
 				{
-					//sharedCount = std::max(sharedCount, a_v) - a_v;
-					sharedCount -= a_v;
+					if (extra.type == Data::ObjectType::kAmmo)
+					{
+						sharedCount = std::min(sharedCount, 0);
+					}
+					else
+					{
+						const auto tmp = std::max(
+							sharedCount,
+							std::numeric_limits<std::int32_t>::min() + 1);
+
+						sharedCount = tmp - 1;
+					}
 				}
 
 				TESForm*             form;
@@ -148,7 +149,7 @@ namespace IED
 				assert(a_slot < ObjectTypeExtra::kMax);
 				presentTypes |= (1ui32 << stl::underlying(a_type));
 			}
-			
+
 			using container_type = stl::flat_map<
 				Game::FormID,
 				ItemData,

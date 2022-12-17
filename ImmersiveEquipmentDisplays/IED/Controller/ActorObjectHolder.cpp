@@ -25,12 +25,12 @@ namespace IED
 
 	namespace detail
 	{
-		template <
-			class T       = ObjectEntrySlot,
-			std::size_t N = stl::underlying(Data::ObjectSlot::kMax)>
-		constexpr auto make_object_slot_array(BipedSlotData::display_slot_data_type& a_1)
+		inline auto make_object_slot_array(
+			BipedSlotData::display_slot_data_type& a_1) noexcept
 		{
-			return stl::make_array<T, N>([&]<std::size_t I>() {
+			return stl::make_array<
+				ObjectEntrySlot,
+				stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 
 				return ObjectEntrySlot::tuple_init_type(
@@ -39,7 +39,6 @@ namespace IED
 					Data::ItemData::SlotToExtraSlot(slotid));
 			});
 		}
-
 	}
 
 	ActorObjectHolder::ActorObjectHolder(

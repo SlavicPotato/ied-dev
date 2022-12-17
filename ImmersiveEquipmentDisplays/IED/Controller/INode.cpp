@@ -185,7 +185,7 @@ namespace IED
 	{
 		char tmp[MAX_PATH];
 
-		auto fmt = (a_node.managed() || a_atmReference) ? "OBJECT R %s" : "OBJECT P %s";
+		const auto fmt = (a_node.managed() || a_atmReference) ? "OBJECT R %s" : "OBJECT P %s";
 
 		stl::snprintf(tmp, fmt, a_node.name.c_str());
 
@@ -271,7 +271,7 @@ namespace IED
 		    a_object->m_parent != targetNode)
 		{
 			targetNode->AttachChild(a_object, true);
-			//UpdateDownwardPass(a_object);
+			UpdateDownwardPass(a_object);
 		}
 
 		return true;
@@ -342,7 +342,7 @@ namespace IED
 	{
 		stl::snprintf(a_out, "OBJECT LIGHT [%.8X]", a_formid.get());
 	}
-	
+
 	void INode::GetMiscNodeName(
 		Game::FormID a_formid,
 		char (&a_out)[NODE_NAME_BUFFER_SIZE])

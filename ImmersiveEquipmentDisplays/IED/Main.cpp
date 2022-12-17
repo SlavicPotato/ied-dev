@@ -246,7 +246,6 @@ namespace IED
 
 				ASSERT(Data::IData::PopulateRaceList());
 				ASSERT(Data::IData::PopulatePluginInfo());
-				ASSERT(Data::IData::PopulateMiscInfo());
 
 				FormHolder::Populate();
 

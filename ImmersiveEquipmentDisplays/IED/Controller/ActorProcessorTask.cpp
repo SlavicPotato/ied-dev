@@ -296,6 +296,11 @@ namespace IED
 		tlsUnk768 = oldUnk768;
 	}
 
+	void ActorProcessorTask::SetProcessorTaskRunAUState(bool a_state) noexcept
+	{
+		m_runAnimationUpdates = !EngineExtensions::ParallelAnimationUpdatesEnabled() && a_state;
+	}
+
 	void ActorProcessorTask::Run()
 	{
 		const boost::lock_guard lock(m_controller.m_lock);
@@ -311,8 +316,7 @@ namespace IED
 
 		std::optional<animUpdateData_t> animUpdateData;
 
-		if (!EngineExtensions::ParallelAnimationUpdatesEnabled() &&
-		    m_runAnimationUpdates &&
+		if (m_runAnimationUpdates &&
 		    !m_controller.m_objects.empty() &&
 		    !Game::IsPaused())
 		{

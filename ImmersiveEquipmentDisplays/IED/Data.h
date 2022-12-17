@@ -815,7 +815,6 @@ namespace IED
 		public:
 			[[nodiscard]] static bool PopulateRaceList();
 			[[nodiscard]] static bool PopulatePluginInfo();
-			[[nodiscard]] static bool PopulateMiscInfo();
 
 			[[nodiscard]] inline constexpr static const auto& GetRaceList() noexcept
 			{
@@ -827,22 +826,19 @@ namespace IED
 				return m_Instance.m_pluginInfo;
 			}
 
-			[[nodiscard]] inline constexpr static const auto& GetPlayerRefID() noexcept
+			[[nodiscard]] inline constexpr static Game::FormID GetPlayerRefID() noexcept
 			{
-				return m_Instance.m_playerRefID;
+				return 0x14;
 			}
 
-			[[nodiscard]] inline constexpr static const auto& GetPlayerBaseID() noexcept
+			[[nodiscard]] inline constexpr static Game::FormID GetPlayerBaseID() noexcept
 			{
-				return m_Instance.m_playerBaseID;
+				return 0x7;
 			}
 
 		private:
 			stl::unordered_map<Game::FormID, raceCacheEntry_t> m_raceList;
 			IPluginInfoA                                       m_pluginInfo;
-
-			Game::FormID m_playerRefID{ 0x14 };
-			Game::FormID m_playerBaseID{ 0x7 };
 
 			static IData m_Instance;
 		};

@@ -35,6 +35,7 @@ namespace IED
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
 			kRemoveProjectileTracers    = 1u << 21,
+			kDynamicArrows              = 1u << 22,
 
 			/*kAttachLight                = 1u << 21,
 			kHideLight                  = 1u << 22,*/
@@ -74,7 +75,8 @@ namespace IED
 				BaseFlags::kDropOnDeath |
 				BaseFlags::kSyncReferenceTransform |
 				BaseFlags::kPlaySound |
-				BaseFlags::kReferenceMode;
+				BaseFlags::kReferenceMode |
+				BaseFlags::kDynamicArrows;
 
 			stl::flag<BaseFlags>                                 flags{ DEFAULT_FLAGS };
 			NodeDescriptor                                       targetNode;

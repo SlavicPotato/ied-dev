@@ -190,7 +190,7 @@ namespace IED
 
 			if (isAmmo)
 			{
-				a_hasMinCount = !a_itemData.is_equipped();
+				a_hasMinCount = !a_itemData.is_equipped() && a_itemData.sharedCount > 0;
 			}
 			else
 			{

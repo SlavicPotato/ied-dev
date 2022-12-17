@@ -35,7 +35,7 @@ namespace IED
 				stl::fixed_string::make_tuple("Dawnguard.esm"),
 				stl::fixed_string::make_tuple("HearthFires.esm"))
 
-		),
+				),
 		slotNames{ detail::make_slot_names() }
 	{
 	}
@@ -53,7 +53,14 @@ namespace IED
 			{ NINODE_BOW, NINODE_MOV_DEFAULT_BOW, NINODE_CME_DEFAULT_BOW },
 			{ NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER }
 
-		})
+		}),
+		m_arrows{
+			NINODE_ARROW_1,
+			NINODE_ARROW_2,
+			NINODE_ARROW_3,
+			NINODE_ARROW_4,
+			NINODE_ARROW_5
+		}
 	{
 	}
 

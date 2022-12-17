@@ -144,13 +144,14 @@ namespace IED
 		const auto typePair   = ItemData::GetItemTypePair(form);
 		const auto countDelta = a_entryData->countDelta;
 
-		auto& entry = data.forms.raw().emplace_back(
-										  std::piecewise_construct,
-										  std::forward_as_tuple(form->formID),
-										  std::forward_as_tuple(
-											  form,
-											  typePair,
-											  countDelta))
+		auto& entry = data.forms.raw()
+		                  .emplace_back(
+							  std::piecewise_construct,
+							  std::forward_as_tuple(form->formID),
+							  std::forward_as_tuple(
+								  form,
+								  typePair,
+								  countDelta))
 		                  .second;
 
 		if (const auto extraLists = a_entryData->GetExtraDataLists())
@@ -192,30 +193,32 @@ namespace IED
 			}
 		}
 
-		if (typePair.typeExtra < Data::ObjectTypeExtra::kMax &&
-		    entry.is_equipped())
+		if (entry.is_equipped())
 		{
-			const auto slot = ItemData::GetSlotFromTypeExtra(typePair.typeExtra);
-
-			if (entry.is_equipped_right())
+			if (typePair.typeExtra < Data::ObjectTypeExtra::kMax)
 			{
-				entry.extra.equipped.slot = slot;
+				const auto slot = ItemData::GetSlotFromTypeExtra(typePair.typeExtra);
 
 				if (slot < Data::ObjectSlotExtra::kMax)
 				{
-					data.SetSlotEquipped(slot);
-				}
-			}
+					if (entry.is_equipped_right())
+					{
+						entry.extra.equipped.slot = slot;
 
-			if (entry.is_equipped_left())
-			{
-				const auto slotLeft = ItemData::GetLeftSlotExtra(slot);
+						data.SetSlotEquipped(slot);
+					}
 
-				entry.extra.equipped.slotLeft = slotLeft;
+					if (entry.is_equipped_left())
+					{
+						const auto slotLeft = ItemData::GetLeftSlotExtra(slot);
 
-				if (slotLeft < Data::ObjectSlotExtra::kMax)
-				{
-					data.SetSlotEquipped(slotLeft);
+						if (slotLeft < Data::ObjectSlotExtra::kMax)
+						{
+							entry.extra.equipped.slotLeft = slotLeft;
+
+							data.SetSlotEquipped(slotLeft);
+						}
+					}
 				}
 			}
 
@@ -239,10 +242,10 @@ namespace IED
 				continue;
 			}
 
-			if (i.IsTemporary())
+			/*if (i.IsTemporary())
 			{
 				continue;
-			}
+			}*/
 
 			if (checkFav && !e.is_favorited())
 			{
@@ -258,11 +261,6 @@ namespace IED
 
 			const auto* const form = e.form;
 
-			if (isPlayer && !form->GetPlayable())
-			{
-				continue;
-			}
-
 			std::uint32_t rating;
 
 			switch (form->formType)
@@ -276,25 +274,52 @@ namespace IED
 						continue;
 					}
 
+					if (isPlayer && weap->weaponData.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable))
+					{
+						continue;
+					}
+
 					rating = weap->attackDamage;
 				}
 				break;
 			case TESAmmo::kTypeID:
+				{
+					const auto ammo = static_cast<const TESAmmo*>(form);
 
-				rating = stl::clamped_num_cast<std::uint32_t>(
-					static_cast<const TESAmmo*>(form)->settings.damage);
+					if (isPlayer && ammo->settings.flags.test(AMMO_DATA::Flag::kNonPlayable))
+					{
+						continue;
+					}
 
+					rating = stl::clamped_num_cast<std::uint32_t>(ammo->settings.damage);
+				}
 				break;
 			case TESObjectARMO::kTypeID:
+				{
+					const auto armor = static_cast<const TESObjectARMO*>(form);
 
-				rating = static_cast<const TESObjectARMO*>(form)->armorRating;
+					if (isPlayer && !armor->_IsPlayable())
+					{
+						continue;
+					}
 
+					rating = armor->armorRating;
+				}
+				break;
+			case TESObjectLIGH::kTypeID:
+				{
+					const auto light = static_cast<const TESObjectLIGH*>(form);
+
+					if (isPlayer && !light->_IsPlayable())
+					{
+						continue;
+					}
+
+					rating = 0;
+				}
 				break;
 			default:
-
-				rating = 0;
-
-				break;
+				continue;
 			}
 
 			auto& entry = slotResults[stl::underlying(e.extra.type)];

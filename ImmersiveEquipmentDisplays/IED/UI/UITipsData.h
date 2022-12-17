@@ -108,6 +108,7 @@ namespace IED
 			HideLight                           = 1099,
 			RemoveProjectileTracers             = 1100,
 			CopiedToClipboard                   = 1101,
+			DynamicArrows                       = 1102,
 		};
 
 	}

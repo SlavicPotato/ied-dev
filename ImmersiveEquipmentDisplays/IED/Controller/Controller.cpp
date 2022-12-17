@@ -2442,7 +2442,7 @@ namespace IED
 				ObjectSlot                                   slot;
 				bool                                         equipped;
 				TESForm*                                     equippedForm;
-				mutable const configSlotHolder_t::data_type* slotConfig{ nullptr };
+				mutable const configSlotHolder_t::data_type* slotConfig;
 			};
 
 			ObjectType type;
@@ -2499,6 +2499,8 @@ namespace IED
 					continue;
 				}
 
+				slot.slotConfig = nullptr;
+
 				if (slot.slot == equippedInfo.leftSlot)
 				{
 					slot.equipped     = true;
@@ -2513,7 +2515,7 @@ namespace IED
 					slot.slot == ObjectSlot::kAmmo &&
 					a_params.collector.data.IsSlotEquipped(ObjectSlotExtra::kAmmo))
 				{
-					if (auto biped = a_params.get_biped())
+					if (const auto* const biped = a_params.get_biped())
 					{
 						auto& o = biped->get_object(BIPED_OBJECT::kQuiver);
 
@@ -2690,9 +2692,14 @@ namespace IED
 							visible,
 							modelForm))
 					{
+						objectEntry.data.state->UpdateArrows(
+							usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
+								itemData->itemCount :
+								6);
+
 						if (visible)
 						{
-							itemData->dec_shared();
+							itemData->consume_one();
 						}
 
 						item.consume(candidates);
@@ -2727,11 +2734,16 @@ namespace IED
 				{
 					objectEntry.SetObjectVisible(visible);
 
+					objectEntry.data.state->UpdateArrows(
+						usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
+							itemData->itemCount :
+							6);
+
 					objectEntry.slotState.lastSlotted = objectEntry.data.state->formid;
 
 					if (visible)
 					{
-						itemData->dec_shared();
+						itemData->consume_one();
 					}
 
 					item.consume(candidates);
@@ -3175,11 +3187,16 @@ namespace IED
 							_visible,
 							modelForm))
 					{
+						a_objectEntry.data.state->UpdateArrows(
+							usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
+								itemData.itemCount :
+								6);
+
 						if (_visible)
 						{
 							if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask))
 							{
-								itemData.dec_shared();
+								itemData.consume_one();
 							}
 						}
 
@@ -3248,11 +3265,16 @@ namespace IED
 
 			if (result)
 			{
+				a_objectEntry.data.state->UpdateArrows(
+					usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
+						itemData.itemCount :
+						6);
+
 				a_objectEntry.SetObjectVisible(visible);
 
 				if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) && visible)
 				{
-					itemData.dec_shared();
+					itemData.consume_one();
 				}
 
 				UpdateObjectEffectShaders(

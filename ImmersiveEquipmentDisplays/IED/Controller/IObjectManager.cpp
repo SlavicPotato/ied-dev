@@ -638,6 +638,11 @@ namespace IED
 			}
 		}
 
+		if (modelParams.type == ModelType::kAmmo)
+		{
+			TryMakeArrowState(state, object);
+		}
+
 		FinalizeObjectState(
 			state,
 			a_form,
@@ -1052,6 +1057,19 @@ namespace IED
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 
 		a_state->owner = a_actor->formID;
+	}
+
+	void IObjectManager::TryMakeArrowState(
+		std::unique_ptr<ObjectEntryBase::State>& a_state,
+		NiNode*                                  a_object)
+	{
+		const auto sh = BSStringHolder::GetSingleton();
+
+		if (const auto arrowQuiver = FindChildNode(a_object, sh->m_arrowQuiver))
+		{
+			a_state->arrowState =
+				std::make_unique<ObjectEntryBase::QuiverArrowState>(arrowQuiver);
+		}
 	}
 
 	void IObjectManager::PlayObjectSound(

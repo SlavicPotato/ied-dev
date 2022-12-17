@@ -35,7 +35,7 @@ namespace IED
 			extraFactionChanges,
 			npc,
 			[&](auto& a_info) {
-				data.emplace(a_info.faction, a_info.rank);
+				data.try_emplace(a_info.faction, a_info.rank);
 			});
 
 		return true;
