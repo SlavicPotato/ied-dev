@@ -84,6 +84,38 @@ namespace IED
 
 			a_out["version"] = CURRENT_VERSION;
 		}
+		
+		template <>
+		void Parser<Data::configConditionalVariable_t>::Create(
+			const Data::configConditionalVariable_t& a_data,
+			Json::Value&                             a_out,
+			std::uint32_t                            a_type) const
+		{
+			auto& data = a_out["data"];
+
+			data["flags"] = a_data.flags.underlying();
+			data["desc"]  = *a_data.desc;
+
+			if (!a_data.conditions.empty())
+			{
+				Parser<Data::equipmentOverrideConditionList_t> parser(m_state);
+
+				parser.Create(a_data.conditions, data["cond"]);
+			}
+
+			if (!a_data.group.empty())
+			{
+				Parser<Data::configConditionalVariablesList_t> parser(m_state);
+
+				parser.Create(a_data.group, data["grp"], a_type);
+			}
+
+			Parser<Data::configConditionalVariableValueData_t> cvdvparser(m_state);
+
+			cvdvparser.Create(a_data.value, data["vdata"], a_type);
+
+			a_out["version"] = CURRENT_VERSION;
+		}
 
 	}
 }

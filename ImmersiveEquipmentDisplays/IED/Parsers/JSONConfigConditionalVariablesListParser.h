@@ -10,13 +10,19 @@ namespace IED
 	{
 		template <>
 		bool Parser<Data::configConditionalVariablesList_t>::Parse(
-			const Json::Value&                 a_in,
+			const Json::Value&                      a_in,
 			Data::configConditionalVariablesList_t& a_outData) const;
 
 		template <>
 		void Parser<Data::configConditionalVariablesList_t>::Create(
 			const Data::configConditionalVariablesList_t& a_data,
-			Json::Value&                             a_out) const;
+			Json::Value&                                  a_out) const;
+
+		template <>
+		void Parser<Data::configConditionalVariablesList_t>::Create(
+			const Data::configConditionalVariablesList_t& a_data,
+			Json::Value&                                  a_out,
+			std::uint32_t                                 a_type) const;
 
 	}
 }

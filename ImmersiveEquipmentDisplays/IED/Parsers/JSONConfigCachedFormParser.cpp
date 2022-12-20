@@ -17,7 +17,7 @@ namespace IED
 
 			Game::FormID tmp;
 
-			bool result = formParser.Parse(a_in, tmp);
+			const bool result = formParser.Parse(a_in, tmp);
 
 			a_out = tmp;
 

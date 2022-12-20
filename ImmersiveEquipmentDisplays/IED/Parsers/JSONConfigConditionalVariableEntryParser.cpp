@@ -59,7 +59,7 @@ namespace IED
 			{
 				Parser<Data::configConditionalVariablesList_t> parser(m_state);
 
-				parser.Create(a_data.vars, data["vars"]);
+				parser.Create(a_data.vars, data["vars"], static_cast<std::uint32_t>(a_data.defaultValue.value.type));
 			}
 
 			a_out["version"] = CURRENT_VERSION;

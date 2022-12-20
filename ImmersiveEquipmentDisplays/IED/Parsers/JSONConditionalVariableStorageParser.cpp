@@ -46,17 +46,26 @@ namespace IED
 
 			return true;
 		}
-
+		
 		template <>
 		void Parser<conditionalVariableStorage_t>::Create(
 			const conditionalVariableStorage_t& a_data,
 			Json::Value&                        a_out) const
 		{
-			auto& data = a_out["data"];
+			Create(a_data, a_out, static_cast<std::uint32_t>(a_data.type));
+		}
 
-			data["t"] = static_cast<std::uint32_t>(a_data.type);
+		template <>
+		void Parser<conditionalVariableStorage_t>::Create(
+			const conditionalVariableStorage_t& a_data,
+			Json::Value&                        a_out,
+			std::uint32_t                       a_type) const
+		{
+			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
-			switch (a_data.type)
+			data["t"] = a_type;
+
+			switch (static_cast<ConditionalVariableType>(a_type))
 			{
 			case ConditionalVariableType::kInt32:
 				data["v"] = a_data.i32;

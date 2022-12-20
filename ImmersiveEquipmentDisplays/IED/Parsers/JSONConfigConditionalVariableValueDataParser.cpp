@@ -47,11 +47,20 @@ namespace IED
 			const Data::configConditionalVariableValueData_t& a_data,
 			Json::Value&                                      a_out) const
 		{
+			Create(a_data, a_out, static_cast<std::uint32_t>(a_data.value.type));
+		}
+		
+		template <>
+		void Parser<Data::configConditionalVariableValueData_t>::Create(
+			const Data::configConditionalVariableValueData_t& a_data,
+			Json::Value&                                      a_out,
+			std::uint32_t                                     a_type) const
+		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
 			Parser<conditionalVariableStorage_t> cvsparser(m_state);
 
-			cvsparser.Create(a_data.value, data["value"]);
+			cvsparser.Create(a_data.value, data["value"], a_type);
 
 			Parser<Data::configLastEquipped_t> leqpparser(m_state);
 
