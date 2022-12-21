@@ -2194,11 +2194,14 @@ namespace IED
 
 		if (state->nodeDesc.name != a_config.targetNode.name)
 		{
-			AttachNodeImpl(
+			if (!AttachNodeImpl(
 				a_params.npcRoot,
 				a_config.targetNode,
 				a_config.flags.test(BaseFlags::kReferenceMode),
-				a_entry);
+					a_entry))
+			{
+				return false;
+			}
 
 			updateTransform = true;
 		}
