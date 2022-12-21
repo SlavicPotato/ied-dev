@@ -102,6 +102,7 @@ namespace IED
 		template <class T>
 		bool Parser<T>::Parse(const Json::Value& a_in, T& a_out) const
 		{
+			return false;
 			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
@@ -121,6 +122,7 @@ namespace IED
 			const std::uint32_t a_version,
 			bool                a_arg) const
 		{
+			return false;
 			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
@@ -130,6 +132,7 @@ namespace IED
 			T&                 a_out,
 			bool               a_arg) const
 		{
+			return false;
 			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 
@@ -139,6 +142,7 @@ namespace IED
 			T&                 a_out,
 			float              a_arg) const
 		{
+			return false;
 			//static_assert(false, PARSER_NOT_IMPL_STR);
 		}
 

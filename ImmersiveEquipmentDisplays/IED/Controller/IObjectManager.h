@@ -53,15 +53,15 @@ namespace IED
 		bool RemoveActorImpl(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool RemoveActorImpl(
 			TESObjectREFR*                   a_actor,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool RemoveActorImpl(
 			Game::FormID                     a_actor,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		/*void QueueReSinkAnimationGraphs(
 			Game::FormID a_actor);*/
@@ -70,29 +70,29 @@ namespace IED
 			Game::FormID a_actor,
 			bool         a_defer,
 			bool         a_xfrmUpdate,
-			bool         a_xfrmUpdateNoDefer) const;
+			bool         a_xfrmUpdateNoDefer) const noexcept;
 
 		// use when acquiring global lock may be detrimental to performance
 		void QueueRequestEvaluate(
 			Game::FormID a_actor,
 			bool         a_defer,
 			bool         a_xfrmUpdate,
-			bool         a_xfrmUpdateNoDefer = false) const;
+			bool         a_xfrmUpdateNoDefer = false) const noexcept;
 
 		void QueueRequestEvaluate(
 			TESObjectREFR* a_actor,
 			bool           a_defer,
 			bool           a_xfrmUpdate,
-			bool           a_xfrmUpdateNoDefer = false) const;
+			bool           a_xfrmUpdateNoDefer = false) const noexcept;
 
-		void QueueClearVariablesOnAll(bool a_requestEval);
+		void QueueClearVariablesOnAll(bool a_requestEval) noexcept;
 
 		void QueueClearVariables(
 			Game::FormID a_handle,
-			bool         a_requestEval);
+			bool         a_requestEval) noexcept;
 
-		void QueueRequestVariableUpdateOnAll() const;
-		void QueueRequestVariableUpdate(Game::FormID a_handle) const;
+		void QueueRequestVariableUpdateOnAll() const noexcept;
+		void QueueRequestVariableUpdate(Game::FormID a_handle) const noexcept;
 
 	protected:
 		bool RemoveObject(
@@ -101,24 +101,24 @@ namespace IED
 			ObjectEntryBase&                 a_objectEntry,
 			ActorObjectHolder&               a_data,
 			stl::flag<ControllerUpdateFlags> a_flags,
-			bool                             a_defer);
+			bool                             a_defer) noexcept;
 
 		void RemoveActorGear(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool RemoveActorGear(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool RemoveInvisibleObjects(
 			ActorObjectHolder&    a_holder,
-			Game::ObjectRefHandle a_handle);
+			Game::ObjectRefHandle a_handle) noexcept;
 
-		void ClearObjectsImpl();
+		void ClearObjectsImpl() noexcept;
 
 		/*bool ConstructArmorNode(
 			TESForm*                                          a_form,
@@ -130,7 +130,7 @@ namespace IED
 		static void GetNodeName(
 			TESForm*                     a_form,
 			const IModel::modelParams_t& a_params,
-			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept;
 
 		bool LoadAndAttach(
 			processParams_t&                a_params,
@@ -143,7 +143,7 @@ namespace IED
 			const bool                      a_visible,
 			const bool                      a_disableHavok,
 			const bool                      a_bhkAnims,
-			const bool                      a_physics);
+			const bool                      a_physics) noexcept;
 
 		bool LoadAndAttachGroup(
 			processParams_t&                a_params,
@@ -156,7 +156,7 @@ namespace IED
 			const bool                      a_visible,
 			const bool                      a_disableHavok,
 			const bool                      a_bgedAnims,
-			const bool                      a_physics);
+			const bool                      a_physics) noexcept;
 
 		static void FinalizeObjectState(
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
@@ -165,23 +165,23 @@ namespace IED
 			const NiPointer<NiNode>&                 a_objectNode,
 			targetNodes_t&                           a_targetNodes,
 			const Data::configBaseValues_t&          a_config,
-			Actor*                                   a_actor);
+			Actor*                                   a_actor) noexcept;
 
 		static void TryMakeArrowState(
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
-			NiNode*                                  a_object);
+			NiNode*                                  a_object) noexcept;
 
 		void PlayObjectSound(
 			const processParams_t&          a_params,
 			const Data::configBaseValues_t& a_config,
 			const ObjectEntryBase&          a_objectEntry,
-			bool                            a_equip);
+			bool                            a_equip) noexcept;
 
 		static bool AttachNodeImpl(
 			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,
-			ObjectEntryBase&            a_entry);
+			ObjectEntryBase&            a_entry) noexcept;
 
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };

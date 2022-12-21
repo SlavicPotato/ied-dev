@@ -12,13 +12,13 @@ namespace IED
 	struct EffectShaderData
 	{
 		EffectShaderData(
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		EffectShaderData(
 			BIPED_OBJECT                            a_bipedObject,
 			NiNode*                                 a_sheathNode,
 			NiNode*                                 a_sheathNode1p,
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		enum class EntryFlags : std::uint32_t
 		{
@@ -54,11 +54,11 @@ namespace IED
 			stl::flag<EntryFlags>                                  flags{ EntryFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>                shaderData;
 			stl::vector<std::unique_ptr<EffectShaderFunctionBase>> functions;
-			stl::set<BSFixedString>                                targetNodes;
+			stl::flat_set<BSFixedString>                           targetNodes;
 
 			//stl::vector<node_t>                                    nodes;
 
-			SKMP_FORCEINLINE void update_effect_data(float a_step) const
+			SKMP_FORCEINLINE void update_effect_data(float a_step) const noexcept
 			{
 				auto sdata = shaderData.get();
 				assert(sdata);
@@ -69,13 +69,13 @@ namespace IED
 				}
 			}
 
-			void create_function_list(const Data::configEffectShaderFunctionList_t& a_data);
+			void create_function_list(const Data::configEffectShaderFunctionList_t& a_data) noexcept;
 		};
 
 		using data_type = stl::vector<Entry>;
 
 		[[nodiscard]] inline constexpr bool operator==(
-			const Data::configEffectShaderHolder_t& a_rhs) const
+			const Data::configEffectShaderHolder_t& a_rhs) const noexcept
 		{
 			return tag == a_rhs;
 		}
@@ -87,27 +87,29 @@ namespace IED
 
 		bool UpdateIfChanged(
 			NiAVObject*                             a_root,
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		bool UpdateIfChanged(
 			const ActorObjectHolder&                a_holder,
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		void Update(
 			NiAVObject*                             a_root,
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		void Update(
 			const ActorObjectHolder&                a_holder,
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
 		bool UpdateConfigValues(
-			const Data::configEffectShaderHolder_t& a_data);
+			const Data::configEffectShaderHolder_t& a_data) noexcept;
 
-		void ClearEffectShaderDataFromTree(NiAVObject* a_object);
+		void ClearEffectShaderDataFromTree(NiAVObject* a_object) noexcept;
 
-		template <class Tf>
-		constexpr void visit_nodes(Tf a_func)
+		/*template <class Tf>
+		constexpr void visit_nodes(Tf a_func)                       //
+			noexcept(std::is_nothrow_invocable_v<Tf, node_t&>)  //
+			requires(std::invocable<Tf, node_t&>)
 		{
 			for (auto& e : data)
 			{
@@ -116,7 +118,7 @@ namespace IED
 					a_func(e, f);
 				}
 			}
-		}
+		}*/
 
 		[[nodiscard]] inline constexpr auto& GetSheathNode(bool a_firstPerson) const noexcept
 		{
@@ -131,8 +133,7 @@ namespace IED
 		std::optional<luid_tag> tag;
 
 	private:
-		void Update(
-			const Data::configEffectShaderHolder_t& a_data);
+		void Update(const Data::configEffectShaderHolder_t& a_data) noexcept;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(EffectShaderData::EntryFlags);

@@ -7,7 +7,7 @@ namespace IED
 	using namespace ::Util::Node;
 
 	inline static bool find_visible_geometry(
-		NiAVObject* a_object)
+		NiAVObject* a_object) noexcept
 	{
 		return HasVisibleGeometry(a_object);
 	}
@@ -114,7 +114,9 @@ namespace IED
 	template <class Tp>
 	inline static constexpr bool TraverseChildren(
 		NiNode* a_node,
-		Tp      a_func)
+		Tp      a_func)                                              //
+		noexcept(std::is_nothrow_invocable_v<Tp, NiAVObject*>)  //
+		requires(std::invocable<Tp, NiAVObject*>)
 	{
 		for (auto& object : a_node->m_children)
 		{
@@ -127,7 +129,7 @@ namespace IED
 		return false;
 	}
 
-	bool NodeMonitorEntry::Update()
+	bool NodeMonitorEntry::Update() noexcept
 	{
 		bool n;
 
@@ -137,7 +139,7 @@ namespace IED
 
 			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
-				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) {
+				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
 					{
 						return VisitorControl::kSkip;
@@ -145,7 +147,7 @@ namespace IED
 
 					return a_object->m_name == m_config.subject ?
 					           VisitorControl::kStop :
-                               VisitorControl::kContinue;
+					           VisitorControl::kContinue;
 				});
 			}
 			else
@@ -168,7 +170,7 @@ namespace IED
 					return (a_object->m_name == m_config.subject &&
 					        static_cast<bool>(a_object->AsNode())) ?
 					           VisitorControl::kStop :
-                               VisitorControl::kContinue;
+					           VisitorControl::kContinue;
 				});
 			}
 			else
@@ -191,7 +193,7 @@ namespace IED
 					return (a_object->m_name == m_config.subject &&
 					        find_visible_geometry(a_object)) ?
 					           VisitorControl::kStop :
-                               VisitorControl::kContinue;
+					           VisitorControl::kContinue;
 				});
 			}
 			else

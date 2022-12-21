@@ -1095,21 +1095,21 @@ namespace IED
 				Game::FormID             a_npc,
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t&           a_hc) const;
+				holderCache_t&           a_hc) const noexcept;
 
 			const configNodeOverrideEntryPlacement_t* GetActorPlacement(
 				Game::FormID             a_actor,
 				Game::FormID             a_npc,
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t&           a_hc) const;
+				holderCache_t&           a_hc) const noexcept;
 
 			const configNodeOverrideEntryPhysics_t* GetActorPhysics(
 				Game::FormID             a_actor,
 				Game::FormID             a_npc,
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t&           a_hc) const;
+				holderCache_t&           a_hc) const noexcept;
 
 		private:
 			template <class Tc>
@@ -1118,7 +1118,7 @@ namespace IED
 				Game::FormID             a_npc,
 				Game::FormID             a_race,
 				const stl::fixed_string& a_node,
-				holderCache_t&           a_hc) const;
+				holderCache_t&           a_hc) const noexcept;
 		};
 
 		template <class Tc>
@@ -1127,7 +1127,7 @@ namespace IED
 			Game::FormID             a_npc,
 			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t&           a_hc) const
+			holderCache_t&           a_hc) const noexcept
 		{
 			if (auto& c = GetActorData(); !c.empty())
 			{

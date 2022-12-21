@@ -115,7 +115,7 @@ namespace IED
 			Game::FormID             a_npc,
 			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t&           a_hc) const
+			holderCache_t&           a_hc) const noexcept
 		{
 			return GetActorConfig<configNodeOverrideEntryTransform_t>(
 				a_actor,
@@ -130,7 +130,7 @@ namespace IED
 			Game::FormID             a_npc,
 			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t&           a_hc) const
+			holderCache_t&           a_hc) const noexcept
 		{
 			return GetActorConfig<configNodeOverrideEntryPlacement_t>(
 				a_actor,
@@ -145,7 +145,7 @@ namespace IED
 			Game::FormID             a_npc,
 			Game::FormID             a_race,
 			const stl::fixed_string& a_node,
-			holderCache_t&           a_hc) const
+			holderCache_t&           a_hc) const noexcept
 		{
 			return GetActorConfig<configNodeOverrideEntryPhysics_t>(
 				a_actor,

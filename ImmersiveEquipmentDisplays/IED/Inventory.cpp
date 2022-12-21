@@ -25,10 +25,9 @@ namespace IED
 		SlotResults&                            a_slotResults,
 		Data::CollectorData::container_type&    a_idt,
 		Data::CollectorData::eq_container_type& a_eqt,
-		const Actor* const                      a_actor) noexcept :
+		[[maybe_unused]] const Actor* const     a_actor) noexcept :
 		data(a_idt, a_eqt),
-		slotResults(a_slotResults),
-		isPlayer(a_actor == *g_thePlayer)
+		slotResults(a_slotResults)
 	{
 		if (const auto* const npc = a_actor->GetActorBase())
 		{
@@ -123,7 +122,7 @@ namespace IED
 		auto& entry = data.forms.try_emplace(
 									form->formID,
 									form,
-									[f = form]() [[msvc::forceinline]] {
+									[f = form]() noexcept [[msvc::forceinline]] {
 										return ItemData::GetItemTypePair(f);
 									})
 		                  .first->second;
@@ -226,14 +225,14 @@ namespace IED
 		}
 	}
 
-	void InventoryInfoCollector::GenerateSlotCandidates(bool a_checkFav) noexcept
+	void InventoryInfoCollector::GenerateSlotCandidates(
+		const bool a_isPlayer,
+		const bool a_checkFav) noexcept
 	{
 		for (auto& e : slotResults)
 		{
 			e.clear();
 		}
-
-		const bool checkFav = isPlayer && a_checkFav;
 
 		for (const auto& [i, e] : data.forms)
 		{
@@ -247,7 +246,7 @@ namespace IED
 				continue;
 			}*/
 
-			if (checkFav && !e.is_favorited())
+			if (a_checkFav && !e.is_favorited())
 			{
 				continue;
 			}
@@ -274,7 +273,7 @@ namespace IED
 						continue;
 					}
 
-					if (isPlayer && weap->weaponData.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable))
+					if (a_isPlayer && weap->weaponData.flags.test(TESObjectWEAP::Data::Flag::kNonPlayable))
 					{
 						continue;
 					}
@@ -286,7 +285,7 @@ namespace IED
 				{
 					const auto ammo = static_cast<const TESAmmo*>(form);
 
-					if (isPlayer && ammo->settings.flags.test(AMMO_DATA::Flag::kNonPlayable))
+					if (a_isPlayer && ammo->settings.flags.test(AMMO_DATA::Flag::kNonPlayable))
 					{
 						continue;
 					}
@@ -298,7 +297,7 @@ namespace IED
 				{
 					const auto armor = static_cast<const TESObjectARMO*>(form);
 
-					if (isPlayer && !armor->_IsPlayable())
+					if (a_isPlayer && !armor->_IsPlayable())
 					{
 						continue;
 					}
@@ -310,7 +309,7 @@ namespace IED
 				{
 					const auto light = static_cast<const TESObjectLIGH*>(form);
 
-					if (isPlayer && !light->_IsPlayable())
+					if (a_isPlayer && !light->_IsPlayable())
 					{
 						continue;
 					}
@@ -335,7 +334,7 @@ namespace IED
 			std::sort(
 				e.begin(),
 				e.end(),
-				[](auto& a_lhs, auto& a_rhs) [[msvc::forceinline]] {
+				[](auto& a_lhs, auto& a_rhs) noexcept [[msvc::forceinline]] {
 					return a_lhs.rating > a_rhs.rating;
 				});
 		}

@@ -5,12 +5,12 @@
 namespace IED
 {
 
-	CachedFactionData::CachedFactionData(Actor* a_actor)
+	CachedFactionData::CachedFactionData(Actor* a_actor) noexcept
 	{
 		UpdateFactions(a_actor);
 	}
 
-	bool CachedFactionData::UpdateFactions(Actor* a_actor)
+	bool CachedFactionData::UpdateFactions(Actor* a_actor) noexcept
 	{
 		auto npc = a_actor->GetActorBase();
 		if (!npc)
@@ -34,7 +34,7 @@ namespace IED
 		visit_factions(
 			extraFactionChanges,
 			npc,
-			[&](auto& a_info) {
+			[&](const auto& a_info) noexcept {
 				data.try_emplace(a_info.faction, a_info.rank);
 			});
 
@@ -43,14 +43,14 @@ namespace IED
 
 	std::size_t CachedFactionData::GetSignature(
 		const ExtraFactionChanges* a_factionChanges,
-		TESNPC*                    a_npc)
+		TESNPC*                    a_npc) noexcept
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
 
 		visit_factions(
 			a_factionChanges,
 			a_npc,
-			[&](const auto& a_info) [[msvc::forceinline]] {
+			[&](const auto& a_info) noexcept [[msvc::forceinline]] {
 				result = hash::fnv1::_append_hash_fnv1a(result, a_info.faction->formID);
 				result = hash::fnv1::_append_hash_fnv1a(result, a_info.rank);
 			});
@@ -58,12 +58,12 @@ namespace IED
 		return result;
 	}
 
-	CachedActiveEffectData::CachedActiveEffectData(Actor* a_actor)
+	CachedActiveEffectData::CachedActiveEffectData(Actor* a_actor) noexcept
 	{
 		UpdateEffects(a_actor);
 	}
 
-	bool CachedActiveEffectData::UpdateEffects(Actor* a_actor)
+	bool CachedActiveEffectData::UpdateEffects(Actor* a_actor) noexcept
 	{
 		auto list = a_actor->GetActiveEffectList();
 
@@ -80,7 +80,7 @@ namespace IED
 
 		visit_effects(
 			list,
-			[&](auto* a_effect, auto* a_mgef) [[msvc::forceinline]] {
+			[&](const auto* a_effect, auto* a_mgef) noexcept [[msvc::forceinline]] {
 				if (!a_effect->flags.test_any(
 						ActiveEffect::Flag::kDispelled |
 						ActiveEffect::Flag::kInactive))
@@ -92,11 +92,11 @@ namespace IED
 		return true;
 	}
 
-	bool CachedActiveEffectData::HasEffectWithKeyword(const BGSKeyword* a_keyword) const
+	bool CachedActiveEffectData::HasEffectWithKeyword(const BGSKeyword* a_keyword) const noexcept
 	{
 		if (a_keyword)
 		{
-			for (auto& e : data)
+			for (const auto* const& e : data)
 			{
 				if (e->HasKeyword(a_keyword))
 				{
@@ -109,7 +109,7 @@ namespace IED
 	}
 
 	std::size_t CachedActiveEffectData::GetSignature(
-		RE::BSSimpleList<ActiveEffect*>* a_list)
+		RE::BSSimpleList<ActiveEffect*>* a_list) noexcept
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
 
@@ -119,7 +119,7 @@ namespace IED
 
 		visit_effects(
 			a_list,
-			[&](auto* a_effect, auto* a_mgef) [[msvc::forceinline]] {
+			[&](const auto* a_effect, const auto* a_mgef) noexcept [[msvc::forceinline]] {
 				result = hash::fnv1::_append_hash_fnv1a(result, a_mgef->formID);
 				result = hash::fnv1::_append_hash_fnv1a(result, a_effect->flags & hashflags);
 			});
@@ -127,7 +127,7 @@ namespace IED
 		return result;
 	}
 
-	CachedActorData::CachedActorData(Actor* a_actor) :
+	CachedActorData::CachedActorData(Actor* a_actor) noexcept :
 		CachedFactionData(a_actor),
 		CachedActiveEffectData(a_actor),
 		cellAttached(a_actor->IsParentCellAttached()),
@@ -166,7 +166,7 @@ namespace IED
 
 	bool CachedActorData::UpdateState(
 		Actor*         a_actor,
-		TESObjectCELL* a_cell)
+		TESObjectCELL* a_cell) noexcept
 	{
 		bool result = false;
 
@@ -187,7 +187,7 @@ namespace IED
 		return result;
 	}
 
-	bool CachedActorData::UpdateStateLF(Actor* a_actor)
+	bool CachedActorData::UpdateStateLF(Actor* a_actor) noexcept
 	{
 		bool result = false;
 
@@ -199,7 +199,7 @@ namespace IED
 		return result;
 	}
 
-	bool CachedActorData::UpdateStateHF(Actor* a_actor)
+	bool CachedActorData::UpdateStateHF(Actor* a_actor) noexcept
 	{
 		bool result = false;
 

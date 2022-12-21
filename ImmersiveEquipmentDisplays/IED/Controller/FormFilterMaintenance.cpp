@@ -16,15 +16,18 @@ namespace IED
 			break;
 		}
 	}
+
 	void FormFilterMaintenance::OnProfileRename(
 		const stl::fixed_string& a_oldName,
 		const stl::fixed_string& a_newName)
 	{
 	}
+
 	void FormFilterMaintenance::OnProfileDelete(
 		const stl::fixed_string& a_name)
 	{
 	}
+
 	void FormFilterMaintenance::OnProfileReload(
 		const FormFilterProfile& a_profile)
 	{

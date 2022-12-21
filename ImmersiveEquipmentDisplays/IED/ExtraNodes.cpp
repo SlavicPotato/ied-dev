@@ -5,8 +5,6 @@
 #include "SkeletonID.h"
 #include "StringHolder.h"
 
-#include <ext/Node.h>
-
 namespace IED
 {
 	namespace SkeletonExtensions
@@ -16,7 +14,7 @@ namespace IED
 		attachExtraNodesResult_t AttachExtraNodes(
 			NiNode*                                       a_target,
 			const NodeOverrideData::extraNodeEntry_t&     a_entry,
-			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry)
+			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry) noexcept
 		{
 			auto cme = CreateAttachmentNode(a_entry.bsname_cme);
 
@@ -41,7 +39,7 @@ namespace IED
 
 		void CreateExtraMovNodes(
 			NiNode*           a_root,
-			const SkeletonID& a_id)
+			const SkeletonID& a_id) noexcept
 		{
 			using namespace ::Util::Node;
 
@@ -63,7 +61,7 @@ namespace IED
 				auto it = std::find_if(
 					v.skel.begin(),
 					v.skel.end(),
-					[&](auto& a_v) {
+					[&](auto& a_v) noexcept {
 						return a_v.match.test(a_id);
 					});
 

@@ -35,9 +35,9 @@ namespace IED
 				std::int8_t>;
 
 	public:
-		CachedFactionData(Actor* a_actor);
+		CachedFactionData(Actor* a_actor) noexcept;
 
-		bool UpdateFactions(Actor* a_actor);
+		bool UpdateFactions(Actor* a_actor) noexcept;
 
 		[[nodiscard]] inline constexpr auto GetNumFactions() const noexcept
 		{
@@ -51,12 +51,14 @@ namespace IED
 
 	private:
 		template <class Tf>
-		void visit_factions(
+		static void visit_factions(
 			const ExtraFactionChanges* a_factionChanges,
 			TESNPC*                    a_npc,
-			Tf                         a_func);
+			Tf                         a_func)                                                          //
+			noexcept(std::is_nothrow_invocable_v<Tf, const RE::FACTION_RANK&>)  //
+			requires(std::invocable<Tf, const RE::FACTION_RANK&>);
 
-		std::size_t GetSignature(const ExtraFactionChanges* a_factionChanges, TESNPC* a_npc);
+		static std::size_t GetSignature(const ExtraFactionChanges* a_factionChanges, TESNPC* a_npc) noexcept;
 
 		container_type data;
 
@@ -67,7 +69,9 @@ namespace IED
 	void CachedFactionData::visit_factions(
 		const ExtraFactionChanges* a_factionChanges,
 		TESNPC*                    a_npc,
-		Tf                         a_func)
+		Tf                         a_func)                                                          //
+		noexcept(std::is_nothrow_invocable_v<Tf, const RE::FACTION_RANK&>)  //
+		requires(std::invocable<Tf, const RE::FACTION_RANK&>)
 	{
 		if (a_factionChanges)
 		{
@@ -94,24 +98,26 @@ namespace IED
 		using container_type = stl::flat_set<EffectSetting*>;
 
 	public:
-		CachedActiveEffectData(Actor* a_actor);
+		CachedActiveEffectData(Actor* a_actor) noexcept;
 
-		bool UpdateEffects(Actor* a_actor);
+		bool UpdateEffects(Actor* a_actor) noexcept;
 
 		inline constexpr auto& GetEffectContainer() const noexcept
 		{
 			return data;
 		}
 
-		bool HasEffectWithKeyword(const BGSKeyword* a_keyword) const;
+		bool HasEffectWithKeyword(const BGSKeyword* a_keyword) const noexcept;
 
 	private:
 		template <class Tf>
-		void visit_effects(
+		static void visit_effects(
 			RE::BSSimpleList<ActiveEffect*>* a_list,
-			Tf                               a_func);
+			Tf                               a_func)                                                                //
+			noexcept(std::is_nothrow_invocable_v<Tf, ActiveEffect*, EffectSetting*>)  //
+			requires(std::invocable<Tf, ActiveEffect*, EffectSetting*>);
 
-		std::size_t GetSignature(RE::BSSimpleList<ActiveEffect*>* a_list);
+		static std::size_t GetSignature(RE::BSSimpleList<ActiveEffect*>* a_list) noexcept;
 
 		container_type data;
 
@@ -121,7 +127,9 @@ namespace IED
 	template <class Tf>
 	void CachedActiveEffectData::visit_effects(
 		RE::BSSimpleList<ActiveEffect*>* a_list,
-		Tf                               a_func)
+		Tf                               a_func)                                                                //
+		noexcept(std::is_nothrow_invocable_v<Tf, ActiveEffect*, EffectSetting*>)  //
+		requires(std::invocable<Tf, ActiveEffect*, EffectSetting*>)
 	{
 		if (!a_list)
 		{
@@ -158,11 +166,11 @@ namespace IED
 		CachedFactionData,
 		CachedActiveEffectData
 	{
-		CachedActorData(Actor* a_actor);
+		CachedActorData(Actor* a_actor) noexcept;
 
-		bool UpdateState(Actor* a_actor, TESObjectCELL* a_cell);
-		bool UpdateStateLF(Actor* a_actor);
-		bool UpdateStateHF(Actor* a_actor);
+		bool UpdateState(Actor* a_actor, TESObjectCELL* a_cell) noexcept;
+		bool UpdateStateLF(Actor* a_actor) noexcept;
+		bool UpdateStateHF(Actor* a_actor) noexcept;
 
 		TESWorldSpace*           worldspace{ nullptr };
 		TESPackage*              currentPackage{ nullptr };

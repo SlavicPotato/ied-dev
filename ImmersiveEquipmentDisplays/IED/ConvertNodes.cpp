@@ -6,15 +6,13 @@
 #include "SkeletonID.h"
 #include "StringHolder.h"
 
-#include <ext/Node.h>
-
 namespace IED
 {
 	namespace SkeletonExtensions
 	{
 		using namespace ::Util::Node;
 
-		std::size_t ConvertVanillaSheathsToXP32(NiNode* a_root)
+		std::size_t ConvertVanillaSheathsToXP32(NiNode* a_root) noexcept
 		{
 			std::size_t result = 0;
 

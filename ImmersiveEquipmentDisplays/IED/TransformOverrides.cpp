@@ -5,15 +5,13 @@
 #include "NodeOverrideData.h"
 #include "SkeletonID.h"
 
-#include <ext/Node.h>
-
 namespace IED
 {
 	namespace SkeletonExtensions
 	{
 		using namespace ::Util::Node;
 
-		void ApplyXP32NodeTransformOverrides(NiNode* a_root, const SkeletonID& a_skeletonId)
+		void ApplyXP32NodeTransformOverrides(NiNode* a_root, const SkeletonID& a_skeletonId) noexcept
 		{
 			auto& sig = a_skeletonId.signature();
 

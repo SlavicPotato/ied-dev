@@ -15,16 +15,16 @@ namespace IED
 	struct formSlotPair_t
 	{
 		formSlotPair_t(
-			TESForm* a_form);
+			TESForm* a_form) noexcept;
 
 		formSlotPair_t(
 			TESForm*              a_form,
-			Data::ObjectSlotExtra a_slot);
+			Data::ObjectSlotExtra a_slot) noexcept;
 
 		inline constexpr formSlotPair_t(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slotex,
-			Data::ObjectSlot      a_slot) :
+			Data::ObjectSlot      a_slot) noexcept :
 			form(a_form),
 			slot(a_slotex),
 			slot2(a_slot)
@@ -96,7 +96,7 @@ namespace IED
 
 			configBaseFiltersHolder_t& operator=(configBaseFiltersHolder_t&&) = default;
 
-			bool run_filters(const CommonParams& a_params) const;
+			bool run_filters(const CommonParams& a_params) const noexcept;
 
 			std::unique_ptr<configBaseFilters_t> filters;
 
@@ -147,65 +147,65 @@ namespace IED
 			configFixedStringSet_t  hkxFilter;
 
 			const equipmentOverride_t* get_equipment_override(
-				processParams_t& a_params) const;
+				processParams_t& a_params) const noexcept;
 
 			static const equipmentOverride_t* get_equipment_override(
 				processParams_t&               a_params,
-				const equipmentOverrideList_t& a_list);
+				const equipmentOverrideList_t& a_list) noexcept;
 
 			const equipmentOverride_t* get_equipment_override_fp(
 				const formSlotPair_t& a_checkForm,
-				processParams_t&      a_params) const;
+				processParams_t&      a_params) const noexcept;
 
 			static const equipmentOverride_t* get_equipment_override_fp(
 				const formSlotPair_t&          a_checkForm,
 				processParams_t&               a_params,
-				const equipmentOverrideList_t& a_list);
+				const equipmentOverrideList_t& a_list) noexcept;
 
 			const equipmentOverride_t* get_equipment_override_sfp(
 				const formSlotPair_t& a_checkForm,
-				processParams_t&      a_params) const;
+				processParams_t&      a_params) const noexcept;
 
 			static const equipmentOverride_t* get_equipment_override_sfp(
 				const formSlotPair_t&          a_checkForm,
 				processParams_t&               a_params,
-				const equipmentOverrideList_t& a_list);
+				const equipmentOverrideList_t& a_list) noexcept;
 
 			const configEffectShaderHolder_t* get_effect_shader(
-				processParams_t& a_params) const;
+				processParams_t& a_params) const noexcept;
 
 			const configEffectShaderHolder_t* get_effect_shader_fp(
 				const formSlotPair_t& a_checkForm,
-				processParams_t&      a_params) const;
+				processParams_t&      a_params) const noexcept;
 
 			const configEffectShaderHolder_t* get_effect_shader_sfp(
 				const formSlotPair_t& a_checkForm,
-				processParams_t&      a_params) const;
+				processParams_t&      a_params) const noexcept;
 
 		private:
 			static bool match_equipped_type(
 				processParams_t&                    a_params,
-				const equipmentOverrideCondition_t& a_match);
+				const equipmentOverrideCondition_t& a_match) noexcept;
 
 			static bool match_carried_type(
 				const CollectorData&                a_data,
-				const equipmentOverrideCondition_t& a_match);
+				const equipmentOverrideCondition_t& a_match) noexcept;
 
 			static bool match_equipped_form(
 				processParams_t&                    a_params,
-				const equipmentOverrideCondition_t& a_match);
+				const equipmentOverrideCondition_t& a_match) noexcept;
 
 			static bool match_carried_form(
 				const CollectorData&                a_data,
-				const equipmentOverrideCondition_t& a_match);
+				const equipmentOverrideCondition_t& a_match) noexcept;
 
 			static bool match_equipped(
 				const equipmentOverrideCondition_t& a_match,
-				processParams_t&                    a_params);
+				processParams_t&                    a_params) noexcept;
 
 			static bool match_equipped_or_slot(
 				const equipmentOverrideCondition_t& a_match,
-				processParams_t&                    a_params);
+				processParams_t&                    a_params) noexcept;
 
 			template <
 				EquipmentOverrideConditionFlags a_maskAll,
@@ -213,53 +213,53 @@ namespace IED
 			static bool match_equipped_or_form(
 				const equipmentOverrideCondition_t& a_match,
 				const formSlotPair_t&               a_checkForm,
-				processParams_t&                    a_params);
+				processParams_t&                    a_params) noexcept;
 
 		public:
 			static bool do_match(
 				const equipmentOverrideConditionList_t& a_matches,
 				processParams_t&                        a_params,
-				bool                                    a_default);
+				bool                                    a_default) noexcept;
 
 			static bool do_match_fp(
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t&                   a_checkForm,
 				processParams_t&                        a_params,
-				bool                                    a_default);
+				bool                                    a_default) noexcept;
 
 			static bool do_match_sfp(
 				const equipmentOverrideConditionList_t& a_matches,
 				const formSlotPair_t&                   a_checkForm,
 				processParams_t&                        a_params,
-				bool                                    a_default);
+				bool                                    a_default) noexcept;
 
 			static bool do_match_eos(
 				const equipmentOverrideConditionList_t& a_matches,
 				processParams_t&                        a_params,
-				bool                                    a_default);
+				bool                                    a_default) noexcept;
 
 		private:
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
-				processParams_t&          a_params);
+				processParams_t&          a_params) noexcept;
 
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
-				const CollectorData&      a_data);
+				const CollectorData&      a_data) noexcept;
 
 			static bool has_keyword_slot(
 				const configCachedForm_t& a_keyword,
-				CommonParams&             a_params);
+				CommonParams&             a_params) noexcept;
 
 			static bool has_keyword_equipped(
 				const configCachedForm_t& a_keyword,
 				ObjectSlotExtra           a_type,
-				const CollectorData&      a_data);
+				const CollectorData&      a_data) noexcept;
 
 			static bool has_keyword_carried(
 				const configCachedForm_t& a_keyword,
 				ObjectTypeExtra           a_type,
-				const CollectorData&      a_data);
+				const CollectorData&      a_data) noexcept;
 
 		protected:
 			template <class Archive>

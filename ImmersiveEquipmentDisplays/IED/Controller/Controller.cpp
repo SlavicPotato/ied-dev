@@ -585,7 +585,7 @@ namespace IED
 	void Controller::EvaluateImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto root = a_actor->GetNiRootNode(false);
 		if (!root)
@@ -606,7 +606,7 @@ namespace IED
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		if (!IsREFRValid(a_actor))
 		{
@@ -666,7 +666,7 @@ namespace IED
 	bool Controller::RemoveActor(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		const boost::lock_guard lock(m_lock);
 
@@ -684,7 +684,7 @@ namespace IED
 
 	bool Controller::RemoveActor(
 		Game::FormID                     a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		const boost::lock_guard lock(m_lock);
 
@@ -816,7 +816,7 @@ namespace IED
 
 	void Controller::QueueRequestEvaluateTransformsActor(
 		Game::FormID a_actor,
-		bool         a_noDefer) const
+		bool         a_noDefer) const noexcept
 	{
 		ITaskPool::AddTask([this, a_actor, a_noDefer]() {
 			RequestEvaluateTransformsActor(a_actor, a_noDefer);
@@ -825,7 +825,7 @@ namespace IED
 
 	void Controller::RequestEvaluateTransformsActor(
 		Game::FormID a_actor,
-		bool         a_noDefer) const
+		bool         a_noDefer) const noexcept
 	{
 		const boost::lock_guard lock(m_lock);
 
@@ -927,7 +927,7 @@ namespace IED
 
 	void Controller::QueueActorRemove(
 		TESObjectREFR*                   a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		ITaskPool::QueueLoadedActorTask(
 			a_actor,
@@ -941,7 +941,7 @@ namespace IED
 
 	void Controller::QueueReset(
 		TESObjectREFR*                   a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		ITaskPool::QueueLoadedActorTask(
 			a_actor,
@@ -959,7 +959,7 @@ namespace IED
 
 	void Controller::QueueReset(
 		Game::FormID                     a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
 			const boost::lock_guard lock(m_lock);
@@ -1213,7 +1213,7 @@ namespace IED
 			.emplace(npc->formID, std::move(tmp));
 	}
 
-	void Controller::OnActorAcquire(ActorObjectHolder& a_holder)
+	void Controller::OnActorAcquire(ActorObjectHolder& a_holder) noexcept
 	{
 		if (EngineExtensions::GetTransformOverridesEnabled())
 		{
@@ -1229,7 +1229,7 @@ namespace IED
 		//Debug("%s: acquired: %X", __FUNCTION__, a_holder.GetActorFormID());
 	}
 
-	bool Controller::WantGlobalVariableUpdateOnAddRemove() const
+	bool Controller::WantGlobalVariableUpdateOnAddRemove() const noexcept
 	{
 		return !m_config.active.condvars.empty();
 	}
@@ -2097,7 +2097,7 @@ namespace IED
 		const configBaseValues_t& a_config,
 		ObjectEntryBase&          a_entry,
 		bool                      a_visible,
-		TESForm*                  a_currentModelForm)
+		TESForm*                  a_currentModelForm) noexcept
 	{
 		auto& state = a_entry.data.state;
 
@@ -2148,7 +2148,7 @@ namespace IED
 
 				const auto ts = IPerfCounter::Query();
 
-				state->visit_db_entries([&](auto& a_entry) {
+				state->visit_db_entries([&](auto& a_entry) noexcept {
 					a_entry->accessed = ts;
 				});
 			}
@@ -2195,9 +2195,9 @@ namespace IED
 		if (state->nodeDesc.name != a_config.targetNode.name)
 		{
 			if (!AttachNodeImpl(
-				a_params.npcRoot,
-				a_config.targetNode,
-				a_config.flags.test(BaseFlags::kReferenceMode),
+					a_params.npcRoot,
+					a_config.targetNode,
+					a_config.flags.test(BaseFlags::kReferenceMode),
 					a_entry))
 			{
 				return false;
@@ -2293,7 +2293,7 @@ namespace IED
 
 	void Controller::ResetEffectShaderData(
 		processParams_t& a_params,
-		ObjectEntryBase& a_entry)
+		ObjectEntryBase& a_entry) noexcept
 	{
 		if (auto& data = a_entry.data.effectShaderData)
 		{
@@ -2309,7 +2309,7 @@ namespace IED
 	void Controller::ResetEffectShaderData(
 		processParams_t& a_params,
 		ObjectEntryBase& a_entry,
-		NiAVObject*      a_object)
+		NiAVObject*      a_object) noexcept
 	{
 		if (auto& data = a_entry.data.effectShaderData)
 		{
@@ -2324,7 +2324,7 @@ namespace IED
 	void Controller::UpdateObjectEffectShaders(
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config,
-		ObjectEntryCustom&          a_objectEntry)
+		ObjectEntryCustom&          a_objectEntry) noexcept
 	{
 		if (!ShaderProcessingEnabled() ||
 		    !a_objectEntry.data.state)
@@ -2376,7 +2376,7 @@ namespace IED
 
 	void Controller::RemoveSlotObjectEntry(
 		processParams_t& a_params,
-		ObjectEntrySlot& a_entry)
+		ObjectEntrySlot& a_entry) noexcept
 	{
 		if (RemoveObject(
 				a_params.actor,
@@ -2392,7 +2392,7 @@ namespace IED
 		}
 	}
 
-	void Controller::ProcessSlots(processParams_t& a_params)
+	void Controller::ProcessSlots(processParams_t& a_params) noexcept
 	{
 		auto pm = a_params.actor->processManager;
 		if (!pm)
@@ -2408,7 +2408,9 @@ namespace IED
 		const auto& settings = m_config.settings.data;
 
 		a_params.collector.GenerateSlotCandidates(
-			!settings.removeFavRestriction);
+			a_params.objects.IsPlayer(),
+			a_params.objects.IsPlayer() &&
+				!settings.removeFavRestriction);
 
 		const auto equippedInfo = CreateEquippedItemInfo(pm);
 
@@ -2876,7 +2878,7 @@ namespace IED
 	bool Controller::GetVisibilitySwitch(
 		Actor*               a_actor,
 		stl::flag<BaseFlags> a_flags,
-		processParams_t&     a_params)
+		processParams_t&     a_params) noexcept
 	{
 		if (a_flags.test(BaseFlags::kInvisible))
 		{
@@ -2921,7 +2923,7 @@ namespace IED
 
 	bool Controller::LookupTrackedActor(
 		Game::FormID         a_actor,
-		actorLookupResult_t& a_out)
+		actorLookupResult_t& a_out) noexcept
 	{
 		auto it = m_objects.find(a_actor);
 		if (it == m_objects.end())
@@ -2934,7 +2936,7 @@ namespace IED
 
 	bool Controller::LookupTrackedActor(
 		const ActorObjectHolder& a_record,
-		actorLookupResult_t&     a_out)
+		actorLookupResult_t&     a_out) noexcept
 	{
 		auto handle = a_record.GetHandle();
 
@@ -2958,7 +2960,7 @@ namespace IED
 	bool Controller::IsBlockedByChance(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		ObjectEntryCustom&    a_objectEntry)
+		ObjectEntryCustom&    a_objectEntry) noexcept
 	{
 		if (a_config.customFlags.test(CustomFlags::kUseChance))
 		{
@@ -3014,57 +3016,43 @@ namespace IED
 		processParams_t&            a_params,
 		const Data::configCustom_t& a_config) noexcept
 	{
-			switch (a_config.varSource.source)
-			{
-			case VariableSource::kActor:
+		switch (a_config.varSource.source)
+		{
+		case VariableSource::kActor:
 
 			return SelectCustomFormVariableSourceHolder(a_config.varSource.form, a_params);
 
-				break;
-
-			case VariableSource::kPlayerHorse:
+		case VariableSource::kPlayerHorse:
 
 			if (const auto& actor = a_params.get_last_ridden_player_horse())
-				{
-					id = actor->formID;
-				}
-				else
-				{
+			{
 				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
-				}
+			}
 
-				break;
+			break;
 
-			case VariableSource::kMountingActor:
+		case VariableSource::kMountingActor:
 
 			if (const auto& actor = a_params.get_mounting_actor())
-				{
-					id = actor->formID;
-				}
-				else
-				{
+			{
 				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
-				}
+			}
 
-				break;
+			break;
 
-			case VariableSource::kMountedActor:
+		case VariableSource::kMountedActor:
 
 			if (const auto& actor = a_params.get_mounted_actor())
-				{
+			{
 				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
-				}
-				else
-				{
-					return nullptr;
-				}
+			}
 
-				break;
+			break;
 
 		case VariableSource::kSelf:
 
 			return SelectCustomFormVariableSourceHolder(a_params.objects.GetActorFormID(), a_params);
-			}
+		}
 
 		return {};
 	}
@@ -3072,7 +3060,7 @@ namespace IED
 	const configCachedForm_t* Controller::SelectCustomForm(
 		processParams_t&      a_params,
 		const configCustom_t& a_config) noexcept
-			{
+	{
 		if (a_config.customFlags.test(CustomFlags::kVariableMode))
 		{
 			const auto holder = SelectCustomFormVariableSource(a_params, a_config);
@@ -3083,23 +3071,23 @@ namespace IED
 
 			auto& vars = holder->GetVariables();
 
-				for (auto& e : a_config.formVars)
+			for (auto& e : a_config.formVars)
+			{
+				auto it = vars.find(e);
+				if (it != vars.end())
 				{
-					auto it = vars.find(e);
-					if (it != vars.end())
+					if (it->second.type == ConditionalVariableType::kForm)
 					{
-						if (it->second.type == ConditionalVariableType::kForm)
+						auto& form = it->second.form;
+						if (form.get_id() &&
+						    !form.get_id().IsTemporary())
 						{
-							auto& form = it->second.form;
-							if (form.get_id() &&
-							    !form.get_id().IsTemporary())
-							{
-								return std::addressof(form);
-							}
+							return std::addressof(form);
 						}
 					}
 				}
 			}
+		}
 		else
 		{
 			auto& result = a_config.form;
@@ -3117,7 +3105,7 @@ namespace IED
 	bool Controller::ProcessCustomEntry(
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
-		ObjectEntryCustom&    a_objectEntry)
+		ObjectEntryCustom&    a_objectEntry) noexcept
 	{
 		if (a_config.equipmentOverrides.empty() &&
 		    a_config.flags.test(BaseFlags::kDisabled))
@@ -3472,7 +3460,7 @@ namespace IED
 	void Controller::ProcessCustomEntryMap(
 		processParams_t&                     a_params,
 		const configCustomHolder_t&          a_confData,
-		ActorObjectHolder::customEntryMap_t& a_entryMap)
+		ActorObjectHolder::customEntryMap_t& a_entryMap) noexcept
 	{
 		for (auto& f : a_confData.data)
 		{
@@ -3500,7 +3488,7 @@ namespace IED
 	void Controller::ProcessCustomMap(
 		processParams_t&               a_params,
 		const configCustomPluginMap_t& a_confPluginMap,
-		ConfigClass                    a_class)
+		ConfigClass                    a_class) noexcept
 	{
 		auto& pluginMap = a_params.objects.GetCustom(a_class);
 
@@ -3517,7 +3505,7 @@ namespace IED
 		}
 	}
 
-	void Controller::ProcessCustom(processParams_t& a_params)
+	void Controller::ProcessCustom(processParams_t& a_params) noexcept
 	{
 		const auto& cstore = m_config.active.custom;
 
@@ -3565,7 +3553,7 @@ namespace IED
 		NiNode*                          a_npcroot,
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		if (!IsREFRValid(a_actor))
 		{
@@ -3680,7 +3668,7 @@ namespace IED
 	void Controller::EvaluateImpl(
 		const CommonParams&              a_params,
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		EvaluateImpl(
 			a_params.root,
@@ -3698,7 +3686,7 @@ namespace IED
 		ActorObjectHolder&                     a_holder,
 		std::optional<processParams_t>&        a_paramsOut,
 		const stl::flag<ControllerUpdateFlags> a_flags,
-		Args&&... a_args)
+		Args&&... a_args) noexcept
 	{
 		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
 		{
@@ -3730,7 +3718,7 @@ namespace IED
 		TESRace*                         a_race,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 #if defined(IED_ENABLE_STATS_G)
 		PerfTimer pt;
@@ -3831,7 +3819,7 @@ namespace IED
 
 	void Controller::UpdateBipedSlotCache(
 		processParams_t&   a_params,
-		ActorObjectHolder& a_holder)
+		ActorObjectHolder& a_holder) noexcept
 	{
 		/*PerfTimer pt;
 		pt.Start();*/
@@ -3844,7 +3832,7 @@ namespace IED
 			std::for_each(
 				data.begin(),
 				data.end(),
-				[](auto& a_v) [[msvc::forceinline]] {
+				[](auto& a_v) noexcept [[msvc::forceinline]] {
 					a_v.occupied = false;
 				});
 
@@ -3903,7 +3891,7 @@ namespace IED
 
 	void Controller::RunVariableMapUpdate(
 		processParams_t& a_params,
-		bool             a_markAllForLFEval)
+		bool             a_markAllForLFEval) noexcept
 	{
 		const auto& config = m_config.active.condvars;
 
@@ -3933,7 +3921,7 @@ namespace IED
 	}
 
 	void Controller::RunUpdateBipedSlotCache(
-		processParams_t& a_params)
+		processParams_t& a_params) noexcept
 	{
 		if (!a_params.state.flags.test(ProcessStateUpdateFlags::kBipedDataUpdated))
 		{
@@ -3946,7 +3934,7 @@ namespace IED
 	}
 
 	void Controller::DoObjectEvaluation(
-		processParams_t& a_params)
+		processParams_t& a_params) noexcept
 	{
 		if (!m_config.settings.data.disableNPCSlots ||
 		    a_params.objects.IsPlayer())
@@ -3975,7 +3963,7 @@ namespace IED
 
 	void Controller::EvaluateImpl(
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto handle = a_holder.GetHandle();
 
@@ -4032,7 +4020,7 @@ namespace IED
 
 	void Controller::EvaluateTransformsImpl(
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		if (auto& params = a_holder.GetCurrentProcessParams())
 		{
@@ -4071,7 +4059,7 @@ namespace IED
 	template <class... Args>
 	inline constexpr nodeOverrideParams_t make_node_override_params(
 		ActorObjectHolder& a_holder,
-		Args&&... a_args)
+		Args&&... a_args) noexcept
 	{
 		if (auto& params = a_holder.GetCurrentProcessParams())
 		{
@@ -4098,7 +4086,7 @@ namespace IED
 		TESRace*                         a_race,
 		ConfigSex                        a_sex,
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 #if defined(IED_ENABLE_STATS_T)
 		PerfTimer pt;
@@ -5155,7 +5143,7 @@ namespace IED
 
 	auto Controller::LookupCachedActorInfo(
 		Actor*             a_actor,
-		ActorObjectHolder& a_holder)
+		ActorObjectHolder& a_holder) noexcept
 		-> std::optional<cachedActorInfo_t>
 	{
 		if (a_actor != a_holder.m_actor)
@@ -5229,7 +5217,7 @@ namespace IED
 	}
 
 	auto Controller::LookupCachedActorInfo(
-		ActorObjectHolder& a_holder)
+		ActorObjectHolder& a_holder) noexcept
 		-> std::optional<cachedActorInfo_t>
 	{
 		auto handle = a_holder.GetHandle();
@@ -5271,7 +5259,7 @@ namespace IED
 	void Controller::SaveLastEquippedItems(
 		processParams_t&          a_params,
 		const equippedItemInfo_t& a_info,
-		ActorObjectHolder&        a_objectHolder)
+		ActorObjectHolder&        a_objectHolder) noexcept
 	{
 		const auto c = IncrementCounter();
 
@@ -5842,7 +5830,7 @@ namespace IED
 		}
 	}
 
-	void Controller::RunPL()
+	void Controller::RunPL() noexcept
 	{
 		const boost::lock_guard lock(m_lock);
 

@@ -13,7 +13,7 @@ namespace IED
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
 		IObjectManager&          a_db,
-		bool                     a_defer)
+		bool                     a_defer) noexcept
 	{
 		if (!data)
 		{
@@ -33,7 +33,7 @@ namespace IED
 					Game::ObjectRefHandle         a_handle,
 					const NiPointer<NiNode>&      a_root,
 					const NiPointer<NiNode>&      a_root1p,
-					IObjectManager&               a_db) :
+					IObjectManager&               a_db) noexcept :
 					m_data(std::move(a_data)),
 					m_handle(a_handle),
 					m_root(a_root),
@@ -42,7 +42,7 @@ namespace IED
 				{
 				}
 
-				virtual void Run() override
+				virtual void Run() noexcept override
 				{
 					if (m_handle)
 					{
@@ -55,7 +55,7 @@ namespace IED
 					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
 				}
 
-				virtual void Dispose() override
+				virtual void Dispose() noexcept override
 				{
 					delete this;
 				}
@@ -160,10 +160,8 @@ namespace IED
 	}
 
 	void ObjectEntryBase::State::Cleanup(
-		Game::ObjectRefHandle a_handle)
+		Game::ObjectRefHandle a_handle) noexcept
 	{
-		nodes.physics.reset();
-
 		const auto ts = IPerfCounter::Query();
 
 		for (auto& e : groupObjects)
@@ -176,7 +174,7 @@ namespace IED
 
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
-				e.second.rootNode);
+				e.second.rootNode.get());
 
 			if (auto& d = e.second.weapAnimGraphManagerHolder)
 			{
@@ -189,9 +187,6 @@ namespace IED
 			}
 		}
 
-		arrowState.reset();
-		nodes.object.reset();
-
 		/*if (light)
 		{
 			EngineExtensions::CleanupLights(nodes.object.get());
@@ -200,7 +195,7 @@ namespace IED
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,
-			nodes.rootNode);
+			nodes.rootNode.get());
 
 		if (auto& d = weapAnimGraphManagerHolder)
 		{
@@ -215,7 +210,7 @@ namespace IED
 
 	void ObjectEntryBase::State::GroupObject::PlayAnimation(
 		Actor*                   a_actor,
-		const stl::fixed_string& a_sequence)
+		const stl::fixed_string& a_sequence) noexcept
 	{
 		if (a_sequence.empty())
 		{
@@ -244,7 +239,7 @@ namespace IED
 
 	void ObjectEntryBase::State::UpdateAndPlayAnimation(
 		Actor*                   a_actor,
-		const stl::fixed_string& a_sequence)
+		const stl::fixed_string& a_sequence) noexcept
 	{
 		if (a_sequence.empty())
 		{
@@ -282,7 +277,7 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::State::SetVisible(bool a_switch)
+	void ObjectEntryBase::State::SetVisible(bool a_switch) noexcept
 	{
 		/*for (auto& e : groupObjects)
 		{
@@ -301,7 +296,7 @@ namespace IED
 	}
 
 	void ObjectEntryBase::AnimationState::UpdateAndSendAnimationEvent(
-		const stl::fixed_string& a_event)
+		const stl::fixed_string& a_event) noexcept
 	{
 		assert(weapAnimGraphManagerHolder != nullptr);
 
@@ -321,7 +316,7 @@ namespace IED
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
-		ObjectDatabase&          a_db)
+		ObjectDatabase&          a_db) noexcept
 	{
 		if (effectShaderData)
 		{
@@ -348,13 +343,13 @@ namespace IED
 
 			return stl::make_array<
 				NiPointer<NiAVObject>,
-				5>([&]<std::size_t I>() {
+				5>([&]<std::size_t I>() noexcept {
 				return Util::Node::FindChildObject(a_root, arrowStrings[I]);
 			});
 		}
 	}
 
-	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) :
+	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) noexcept :
 		arrows{ detail::make_arrow_array(a_arrowQuiver) }
 	{
 	}

@@ -6,6 +6,6 @@ namespace IED
 
 	namespace SkeletonExtensions
 	{
-		void ApplyXP32NodeTransformOverrides(NiNode* a_root, const SkeletonID& a_skeletonId);
+		void ApplyXP32NodeTransformOverrides(NiNode* a_root, const SkeletonID& a_skeletonId) noexcept;
 	}
 }

@@ -13,6 +13,7 @@ namespace IED
 		kUseCachedParams              = 1u << 6,
 		kFailVariableCondition        = 1u << 7,
 		kFromProcessorTask            = 1u << 8,
+		kDestroyed                    = 1u << 9,
 
 		kAll      = kPlaySound,
 		kSoundAll = kPlaySound | kVisibilitySounds

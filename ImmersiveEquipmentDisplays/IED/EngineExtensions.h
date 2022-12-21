@@ -39,84 +39,84 @@ namespace IED
 
 		class ShadowSceneNode;
 
-		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object);
-		typedef NiNode* (*unk1291cc0_t)(NiAVObject* a_object, NiNode* a_node);
-		typedef NiNode* (*unkSSN1_t)(ShadowSceneNode* a_node, NiAVObject* a_object);
-		typedef void (*unkDC6140_t)(NiNode* a_node, bool a_unk2);
-		typedef void (*unk1CDB30_t)(NiAVObject* a_node);
-		typedef void (*unk1CD130_t)(NiAVObject* a_object, std::uint32_t a_collisionFilterInfo);
+		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object) noexcept;
+		typedef NiNode* (*unk1291cc0_t)(NiAVObject* a_object, NiNode* a_node) noexcept;
+		typedef NiNode* (*unkSSN1_t)(ShadowSceneNode* a_node, NiAVObject* a_object) noexcept;
+		typedef void (*unkDC6140_t)(NiNode* a_node, bool a_unk2) noexcept;
+		typedef void (*unk1CDB30_t)(NiAVObject* a_node) noexcept;
+		typedef void (*unk1CD130_t)(NiAVObject* a_object, std::uint32_t a_collisionFilterInfo) noexcept;
 		typedef void (*unk5C3C40_t)(
 			BSTaskPool*   a_taskpool,
 			NiAVObject*   a_object,
 			std::uint32_t a_unk3,
-			bool          a_unk4);
-		typedef unks_01& (*unk5EBD90_t)(TESObjectREFR* a_ref, unks_01& a_out);
+			bool          a_unk4) noexcept;
+		typedef unks_01& (*unk5EBD90_t)(TESObjectREFR* a_ref, unks_01& a_out) noexcept;
 		typedef void (*unk5C39F0_t)(
 			BSTaskPool*   a_taskpool,
 			NiAVObject*   a_object,
 			RE::bhkWorld* a_world,
-			std::uint32_t a_unk4);
-		typedef void (*attachAddonNodes_t)(NiAVObject* a_object);
-		typedef bool (*unk63F810_t)(void);
-		typedef void (*cleanupNodeGeometry_t)(
+			std::uint32_t a_unk4) noexcept;
+		typedef void (*attachAddonNodes_t)(NiAVObject* a_object) noexcept;
+		typedef bool (*unk63F810_t)(void) noexcept;
+		typedef void (*cleanupObject_t)(
 			const Game::ObjectRefHandle& a_handle,
-			NiAVObject*                  a_object);
+			NiAVObject*                  a_object) noexcept;
 
 		typedef NiAVObject* (*fGetObjectByName_t)(
 			NiNode*              a_root,
 			const BSFixedString& a_name,
-			bool                 a_unk);
-		typedef NiAVObject* (*fUnk1401CDB30_t)(NiNode*);
-		typedef NiAVObject* (*fUnk140DC6140_t)(NiAVObject*, bool);
+			bool                 a_unk) noexcept;
+		typedef NiAVObject* (*fUnk1401CDB30_t)(NiNode*) noexcept;
+		typedef NiAVObject* (*fUnk140DC6140_t)(NiAVObject*, bool) noexcept;
 		typedef NiAVObject* (*fUnk1412BAFB0_t)(
 			ShadowSceneNode* a_shadowSceneNode,
 			NiAVObject*      a_object,
-			bool);
+			bool) noexcept;
 		typedef NiAVObject* (*fUnk1412BAFB0_t)(
 			ShadowSceneNode* a_shadowSceneNode,
 			NiAVObject*      a_object,
-			bool);
+			bool) noexcept;
 		typedef NiExtraData* (*fFindNiExtraData_t)(
 			NiObjectNET*         a_object,
-			const BSFixedString& a_name);
-		typedef bool (*unk14028BAD0_t)(NiNode* a_node);
-		typedef void (*fUnkC6B900_t)(NiAVObject* a_object, const char* a_str);
-		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor* a_actor, NiAVObject* a_object);
+			const BSFixedString& a_name) noexcept;
+		typedef bool (*unk14028BAD0_t)(NiNode* a_node) noexcept;
+		typedef void (*fUnkC6B900_t)(NiAVObject* a_object, const char* a_str) noexcept;
+		typedef void (*fUnk362E90_t)(TESNPC* a_npc, Actor* a_actor, NiAVObject* a_object) noexcept;
 
-		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object);
+		typedef void (*applyTextureSwap_t)(TESModelTextureSwap* a_swap, NiAVObject* a_object) noexcept;
 
 		typedef bool (*hkaLookupSkeletonNode_t)(
 			NiNode*                   a_root,
 			const BSFixedString&      a_name,
-			hkaGetSkeletonNodeResult& a_result);
+			hkaGetSkeletonNodeResult& a_result) noexcept;
 
 		typedef bool (*loadAndRegisterWeaponGraph_t)(
 			RE::WeaponAnimationGraphManagerHolder& a_weapHolder,
 			const char*                            a_hkxPath,
-			RE::IAnimationGraphManagerHolder&      a_characterHolder);
+			RE::IAnimationGraphManagerHolder&      a_characterHolder) noexcept;
 
 		typedef bool (*loadWeaponGraph_t)(
 			RE::WeaponAnimationGraphManagerHolder& a_weapHolder,
-			const char*                            a_hkxPath);
+			const char*                            a_hkxPath) noexcept;
 
 		typedef bool (*bindAnimationObject_t)(
 			RE::IAnimationGraphManagerHolder& a_holder,
-			NiAVObject*                       a_object);
+			NiAVObject*                       a_object) noexcept;
 
 		typedef bool (*updateAnimationGraph_t)(
 			RE::IAnimationGraphManagerHolder* a_holder,
-			const BSAnimationUpdateData&      a_data);
+			const BSAnimationUpdateData&      a_data) noexcept;
 
 		typedef bool (*stripCollision_t)(
 			NiAVObject* a_object,
 			bool        a_recursive,
-			bool        a_ignoreHavokFlag);
+			bool        a_ignoreHavokFlag) noexcept;
 
 		typedef bool (*shadowSceneNodeCleanupLights_t)(
 			ShadowSceneNode* a_ssn,
 			NiNode*          a_node,
 			bool             a_unk2,
-			bool             a_unk3);
+			bool             a_unk3) noexcept;
 
 		// typedef void (*playSound_t)(const char* a_editorID);
 
@@ -132,7 +132,7 @@ namespace IED
 
 		static bool RemoveAllChildren(
 			NiNode*              a_object,
-			const BSFixedString& a_name);
+			const BSFixedString& a_name) noexcept;
 
 		static stl::flag<AttachResultFlags> AttachObject(
 			Actor*    a_actor,
@@ -146,7 +146,7 @@ namespace IED
 			bool      a_removeScabbards,
 			bool      a_keepTorchFlame,
 			bool      a_disableHavok,
-			bool      a_removeTracers);
+			bool      a_removeTracers) noexcept;
 		//bool      a_attachLight,
 		//NiPointer<NiPointLight>& a_attachedLight);
 
@@ -156,19 +156,19 @@ namespace IED
 			std::function<bool(const char*)>          a_filter);
 
 		static void CleanupWeaponBehaviorGraph(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_graph);
+			RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
 
 		/*static NiPointer<NiPointLight> AttachLight(TESObjectLIGH* a_light, TESObjectREFR* a_refr, NiAVObject* a_object);
 		static void                    CleanupLights(NiNode* a_node);*/
 
-		static void UpdateRoot(NiNode* a_root);
+		static void UpdateRoot(NiNode* a_root) noexcept;
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
 		inline static const auto GetObjectByName      = IAL::Address<fGetObjectByName_t>(74481, 76207);
 		inline static const auto ApplyTextureSwap     = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_unkglob0           = IAL::Address<std::int32_t*>(523662, 410201);
-		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupNodeGeometry_t>(15495, 15660);
+		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupObject_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShrinkToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
@@ -246,7 +246,7 @@ namespace IED
 
 		//inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 
-		static BSXFlags* GetBSXFlags(NiObjectNET* a_object);
+		static BSXFlags* GetBSXFlags(NiObjectNET* a_object) noexcept;
 
 		template <class T>
 		void InstallVtableDetour(
@@ -273,32 +273,32 @@ namespace IED
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
-			const std::source_location a_loc = std::source_location::current());
+			const std::source_location a_loc = std::source_location::current()) noexcept;
 
-		static void                              RemoveAllBipedParts_Hook(Biped* a_biped);
-		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
-		static void                              PlayerCharacter_Release3D_Hook(PlayerCharacter* a_actor);
-		static void                              Actor_Release3D_Hook(Actor* a_actor);
-		static void                              Character_Release3D_Hook(Character* a_actor);
-		static NiAVObject*                       REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr);
-		static std::uint32_t                     PlayerCharacter_Load3D_LoadSkeleton_Hook(const char* a_path, NiPointer<NiAVObject>& a_out3D, std::uint32_t& a_unk3);
-		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
-		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
-		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
-		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
-		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
-		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
-		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
-		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk);
-		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk);
-		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data);  // getbiped1
+		static void                              RemoveAllBipedParts_Hook(Biped* a_biped) noexcept;
+		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D) noexcept;
+		static void                              PlayerCharacter_Release3D_Hook(PlayerCharacter* a_actor) noexcept;
+		static void                              Actor_Release3D_Hook(Actor* a_actor) noexcept;
+		static void                              Character_Release3D_Hook(Character* a_actor) noexcept;
+		static NiAVObject*                       REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr) noexcept;
+		static std::uint32_t                     PlayerCharacter_Load3D_LoadSkeleton_Hook(const char* a_path, NiPointer<NiAVObject>& a_out3D, std::uint32_t& a_unk3) noexcept;
+		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1) noexcept;
+		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left) noexcept;
+		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor) noexcept;
+		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr) noexcept;
+		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped) noexcept;
+		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor) noexcept;  // always player
+		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
+		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk) noexcept;
+		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept;
+		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data) noexcept;  // getbiped1
 
-		static bool hkaShouldBlockNode(NiAVObject* a_root, const BSFixedString& a_name, const RE::hkaSkeleton& a_hkaSkeleton);
+		static bool hkaShouldBlockNode(NiAVObject* a_root, const BSFixedString& a_name, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
 
-		static void UpdateReferenceAnimations(TESObjectREFR* a_refr, float a_step);
+		static void UpdateReferenceAnimations(TESObjectREFR* a_refr, float a_step) noexcept;
 
 		template <class T>
-		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*));
+		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*) noexcept) noexcept;
 
 		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
 		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);

@@ -10,7 +10,7 @@ namespace IED
 
 	namespace detail
 	{
-		inline auto make_slot_names()
+		inline auto make_slot_names() noexcept
 		{
 			return stl::make_array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
@@ -21,18 +21,14 @@ namespace IED
 	}
 
 	StringHolder::StringHolder() :
-		papyrusRestrictedPlugins(
+		papyrusRestrictedPlugins{
+			stl::fixed_string::make_tuple("Skyrim.esm"),
+			stl::fixed_string::make_tuple("Update.esm"),
+			stl::fixed_string::make_tuple("Dragonborn.esm"),
+			stl::fixed_string::make_tuple("Dawnguard.esm"),
+			stl::fixed_string::make_tuple("HearthFires.esm")
 
-			// can't call consteval funcs directly inside an initializer list due to a msvc bug, this is a workaround
-
-			stl::make_array(
-				stl::fixed_string::make_tuple("Skyrim.esm"),
-				stl::fixed_string::make_tuple("Update.esm"),
-				stl::fixed_string::make_tuple("Dragonborn.esm"),
-				stl::fixed_string::make_tuple("Dawnguard.esm"),
-				stl::fixed_string::make_tuple("HearthFires.esm"))
-
-				),
+		},
 		slotNames{ detail::make_slot_names() }
 	{
 	}
@@ -41,7 +37,6 @@ namespace IED
 
 	BSStringHolder::BSStringHolder() :
 		m_sheathNodes{
-
 			SheathNodeEntry{ NINODE_SWORD, NINODE_MOV_DEFAULT_SWORD, NINODE_CME_DEFAULT_SWORD },
 			SheathNodeEntry{ NINODE_AXE, NINODE_MOV_DEFAULT_AXE, NINODE_CME_DEFAULT_AXE },
 			SheathNodeEntry{ NINODE_MACE, NINODE_MOV_DEFAULT_MACE, NINODE_CME_DEFAULT_MACE },
@@ -49,7 +44,6 @@ namespace IED
 			SheathNodeEntry{ NINODE_WEAPON_BACK, NINODE_MOV_DEFAULT_BACK, NINODE_CME_DEFAULT_BACK },
 			SheathNodeEntry{ NINODE_BOW, NINODE_MOV_DEFAULT_BOW, NINODE_CME_DEFAULT_BOW },
 			SheathNodeEntry{ NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER }
-
 		},
 		m_arrows{
 			NINODE_ARROW_1,
@@ -72,12 +66,12 @@ namespace IED
 	}
 
 	bool BSStringHolder::IsVanillaSheathNode(
-		const BSFixedString& a_name) const
+		const BSFixedString& a_name) const noexcept
 	{
 		return std::find_if(
 				   m_sheathNodes.begin(),
 				   m_sheathNodes.end(),
-				   [&](auto& a_v) {
+				   [&](auto& a_v) noexcept {
 					   return a_v.name == a_name;
 				   }) != m_sheathNodes.end();
 	}

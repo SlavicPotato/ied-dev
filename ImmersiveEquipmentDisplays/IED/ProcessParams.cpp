@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	void processParams_t::ResetEffectShaders()
+	void processParams_t::ResetEffectShaders() noexcept
 	{
 		if (!state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
 		{

@@ -13,7 +13,7 @@ namespace IED
 	{
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSLocation* a_loc)
+			BGSLocation* a_loc) noexcept
 		{
 			for (auto it = a_current; it; it = it->parentLoc)
 			{
@@ -29,7 +29,7 @@ namespace IED
 		bool is_in_location(
 			BGSLocation* a_current,
 			BGSKeyword*  a_keyword,
-			BGSLocation* a_matched)
+			BGSLocation* a_matched) noexcept
 		{
 			for (auto it = a_current; it; it = it->parentLoc)
 			{
@@ -49,7 +49,7 @@ namespace IED
 
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSKeyword*  a_keyword)
+			BGSKeyword*  a_keyword) noexcept
 		{
 			for (auto it = a_current; it; it = it->parentLoc)
 			{
@@ -65,7 +65,7 @@ namespace IED
 		bool match_worldspace(
 			TESWorldSpace* a_current,
 			Game::FormID   a_wsId,
-			bool           a_matchParent)
+			bool           a_matchParent) noexcept
 		{
 			if (a_current->formID == a_wsId)
 			{
@@ -83,7 +83,7 @@ namespace IED
 			return false;
 		}
 
-		const ActorObjectMap& get_actor_object_map(CommonParams& a_params)
+		const ActorObjectMap& get_actor_object_map(CommonParams& a_params) noexcept
 		{
 			return a_params.controller.GetObjects();
 		}

@@ -92,17 +92,17 @@ namespace IED
 			return m_groupInfo;
 		}
 
-		void UpdateAA(Actor* a_actor, ActorAnimationState& a_state);
-		void ResetAA(Actor* a_actor, ActorAnimationState& a_state);
+		void UpdateAA(Actor* a_actor, ActorAnimationState& a_state) noexcept;
+		void ResetAA(Actor* a_actor, ActorAnimationState& a_state) noexcept;
 
 	private:
 		void SetAnimationVar(
 			Actor*               a_actor,
 			ActorAnimationState& a_state,
 			AnimationWeaponType  a_id,
-			std::int32_t         a_value);
+			std::int32_t         a_value) noexcept;
 
-		AnimationWeaponType GetObjectType(TESForm* a_object);
+		AnimationWeaponType GetObjectType(TESForm* a_object) noexcept;
 
 		bool should_select_back_left_anim(
 			AnimationWeaponType  a_leftID,

@@ -18,7 +18,7 @@ namespace IED
 
 		virtual ~EffectShaderFunctionBase() noexcept = default;
 
-		[[nodiscard]] bool UpdateConfig(const Data::configEffectShaderFunction_t& a_data)
+		[[nodiscard]] bool UpdateConfig(const Data::configEffectShaderFunction_t& a_data) noexcept
 		{
 			if (a_data.get_unique_id() != *this ||
 			    a_data.type != type)

@@ -138,7 +138,7 @@ namespace IED
 			return m_sheathNodes;
 		}
 
-		bool IsVanillaSheathNode(const BSFixedString& a_name) const;
+		bool IsVanillaSheathNode(const BSFixedString& a_name) const noexcept;
 
 		BSFixedString m_npcroot{ NINODE_NPCROOT };
 		//BSFixedString m_npcSpine2{ NINODE_NPCSPINE2 };
@@ -233,7 +233,7 @@ namespace IED
 
 		slot_names_array_t slotNames;
 
-		stl::container_init_wrapper<std::unordered_set<stl::fixed_string>> papyrusRestrictedPlugins;
+		std::array<stl::fixed_string, 5> papyrusRestrictedPlugins;
 
 	private:
 		StringHolder();

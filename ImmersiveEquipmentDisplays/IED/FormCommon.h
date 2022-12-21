@@ -20,14 +20,14 @@ namespace IED
 	class IFormCommon
 	{
 	public:
-		static bool IsValidCustomForm(TESForm* a_form);
-		static bool IsValidCustomFormType(std::uint8_t a_type);
-		static bool IsInventoryForm(TESForm* a_form);
-		static bool IsInventoryFormType(std::uint8_t a_type);
-		static bool IsValidSlotForm(TESForm* a_form);
-		static bool IsEquippableForm(TESForm* a_form);
+		static bool IsValidCustomForm(TESForm* a_form) noexcept;
+		static bool IsValidCustomFormType(std::uint8_t a_type) noexcept;
+		static bool IsInventoryForm(TESForm* a_form) noexcept;
+		static bool IsInventoryFormType(std::uint8_t a_type) noexcept;
+		static bool IsValidSlotForm(TESForm* a_form) noexcept;
+		static bool IsEquippableForm(TESForm* a_form) noexcept;
 
-		static stl::flag<FormInfoFlags> GetFormFlags(TESForm* a_form);
+		static stl::flag<FormInfoFlags> GetFormFlags(TESForm* a_form) noexcept;
 
 		static std::string GetFormName(TESForm* a_form);
 
@@ -35,6 +35,7 @@ namespace IED
 		inline static constexpr bool HasKeywordImpl(
 			const T*          a_form,
 			const BGSKeyword* a_keyword)  //
+			noexcept                      //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return a_form->HasKeyword(a_keyword);
@@ -44,19 +45,21 @@ namespace IED
 		inline static constexpr bool FormHasKeywordImpl(
 			const TESForm*    a_form,
 			const BGSKeyword* a_keyword)  //
+			noexcept                      //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return HasKeywordImpl(static_cast<const T*>(a_form), a_keyword);
 		}
 
-		static bool HasKeyword(const TESForm* a_form, const BGSKeyword* a_keyword);
-		static bool HasKeyword(const TESForm* a_form, Game::FormID a_keyword);
-		static bool HasKeyword(const TESForm* a_form, const Data::configCachedForm_t& a_keyword);
+		static bool HasKeyword(const TESForm* a_form, const BGSKeyword* a_keyword) noexcept;
+		static bool HasKeyword(const TESForm* a_form, Game::FormID a_keyword) noexcept;
+		static bool HasKeyword(const TESForm* a_form, const Data::configCachedForm_t& a_keyword) noexcept;
 
 		template <class T>
 		inline static constexpr bool HasKeyword(
 			const T*          a_form,
 			const BGSKeyword* a_keyword)  //
+			noexcept                      //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			return HasKeywordImpl(a_form, a_keyword);
@@ -66,6 +69,7 @@ namespace IED
 		inline static constexpr bool HasKeyword(
 			const T*     a_form,
 			Game::FormID a_keyword)  //
+			noexcept                 //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			if (const auto* const keyword = a_keyword.As<BGSKeyword>())
@@ -82,6 +86,7 @@ namespace IED
 		inline static constexpr bool HasKeyword(
 			const T*                        a_form,
 			const Data::configCachedForm_t& a_keyword)  //
+			noexcept                                    //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
 			if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())

@@ -10,7 +10,7 @@
 namespace IED
 {
 	EffectShaderData::EffectShaderData(
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		Update(a_data);
 	}
@@ -19,7 +19,7 @@ namespace IED
 		BIPED_OBJECT                            a_bipedObject,
 		NiNode*                                 a_sheathNode,
 		NiNode*                                 a_sheathNode1p,
-		const Data::configEffectShaderHolder_t& a_data) :
+		const Data::configEffectShaderHolder_t& a_data) noexcept :
 		bipedObject(a_bipedObject),
 		sheathNode(a_sheathNode),
 		sheathNode1p(a_sheathNode1p)
@@ -29,7 +29,7 @@ namespace IED
 
 	bool EffectShaderData::UpdateIfChanged(
 		NiAVObject*                             a_root,
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		if (tag == a_data)
 		{
@@ -44,7 +44,7 @@ namespace IED
 
 	bool EffectShaderData::UpdateIfChanged(
 		const ActorObjectHolder&                a_holder,
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		if (tag == a_data)
 		{
@@ -59,7 +59,7 @@ namespace IED
 
 	void EffectShaderData::Update(
 		NiAVObject*                             a_root,
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		ClearEffectShaderDataFromTree(a_root);
 
@@ -68,7 +68,7 @@ namespace IED
 
 	void EffectShaderData::Update(
 		const ActorObjectHolder&                a_holder,
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		ClearEffectShaderDataFromTree(a_holder.Get3D());
 		ClearEffectShaderDataFromTree(a_holder.Get3D1p());
@@ -77,7 +77,7 @@ namespace IED
 	}
 
 	void EffectShaderData::Update(
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		data.clear();
 
@@ -108,7 +108,7 @@ namespace IED
 	}
 
 	bool EffectShaderData::UpdateConfigValues(
-		const Data::configEffectShaderHolder_t& a_data)
+		const Data::configEffectShaderHolder_t& a_data) noexcept
 	{
 		for (auto& e : data)
 		{
@@ -156,22 +156,22 @@ namespace IED
 		return true;
 	}
 
-	void EffectShaderData::ClearEffectShaderDataFromTree(NiAVObject* a_object)
+	void EffectShaderData::ClearEffectShaderDataFromTree(NiAVObject* a_object) noexcept
 	{
 		if (!a_object || data.empty())
 		{
 			return;
 		}
 
-		Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
+		Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) noexcept {
 			if (auto& effect = a_geometry->m_spEffectState)
 			{
-				if (auto shaderProp = NRTTI<BSShaderProperty>()(effect.get()))
+				if (auto shaderProp = ::NRTTI<BSShaderProperty>()(effect.get()))
 				{
 					auto it = std::find_if(
 						data.begin(),
 						data.end(),
-						[&](auto& a_v) {
+						[&](auto& a_v) noexcept {
 							return shaderProp->effectData == a_v.shaderData;
 						});
 
@@ -187,7 +187,7 @@ namespace IED
 	}
 
 	void EffectShaderData::Entry::create_function_list(
-		const Data::configEffectShaderFunctionList_t& a_data)
+		const Data::configEffectShaderFunctionList_t& a_data) noexcept
 	{
 		functions.clear();
 

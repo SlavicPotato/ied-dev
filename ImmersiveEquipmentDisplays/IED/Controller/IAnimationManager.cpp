@@ -220,7 +220,7 @@ namespace IED
 
 	void IAnimationManager::UpdateAA(
 		Actor*               a_actor,
-		ActorAnimationState& a_state)
+		ActorAnimationState& a_state) noexcept
 	{
 		if (!m_groupInfo)
 		{
@@ -482,7 +482,7 @@ namespace IED
 
 	void IAnimationManager::ResetAA(
 		Actor*               a_actor,
-		ActorAnimationState& a_state)
+		ActorAnimationState& a_state) noexcept
 	{
 		if (!m_groupInfo)
 		{
@@ -504,7 +504,7 @@ namespace IED
 		Actor*               a_actor,
 		ActorAnimationState& a_state,
 		AnimationWeaponType  a_id,
-		std::int32_t         a_value)
+		std::int32_t         a_value) noexcept
 	{
 		auto& entry = a_state.get(a_id);
 
@@ -540,7 +540,7 @@ namespace IED
 		}
 	}
 
-	AnimationWeaponType IAnimationManager::GetObjectType(TESForm* a_object)
+	AnimationWeaponType IAnimationManager::GetObjectType(TESForm* a_object) noexcept
 	{
 		if (!a_object)
 		{

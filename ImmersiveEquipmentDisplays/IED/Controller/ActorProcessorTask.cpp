@@ -25,7 +25,7 @@ namespace IED
 
 	void ActorProcessorTask::UpdateNode(
 		ActorObjectHolder& a_record,
-		ObjectEntryBase&   a_entry)
+		ObjectEntryBase&   a_entry) noexcept
 	{
 		auto state = a_entry.data.state.get();
 
@@ -108,7 +108,7 @@ namespace IED
 	}
 
 	void ActorProcessorTask::ProcessTransformUpdateRequest(
-		ActorObjectHolder& a_data)
+		ActorObjectHolder& a_data) noexcept
 	{
 		if (!a_data.m_flags.test(ActorObjectHolderFlags::kWantTransformUpdate))
 		{
@@ -130,7 +130,7 @@ namespace IED
 		}
 	}
 
-	void ActorProcessorTask::ProcessEvalRequest(ActorObjectHolder& a_data)
+	void ActorProcessorTask::ProcessEvalRequest(ActorObjectHolder& a_data) noexcept
 	{
 		if (a_data.m_flags.consume(ActorObjectHolderFlags::kEvalThisFrame))
 		{
@@ -186,7 +186,7 @@ namespace IED
 		return result;
 	}
 
-	void ActorProcessorTask::UpdateState()
+	void ActorProcessorTask::UpdateState() noexcept
 	{
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
 		    lrhandle != m_state.playerLastRidden)
@@ -270,7 +270,7 @@ namespace IED
 	static void UpdateActorGearAnimations(
 		TESObjectREFR*           a_actor,
 		const ActorObjectHolder& a_holder,
-		float                    a_step)
+		float                    a_step) noexcept
 	{
 		struct TLSData
 		{
@@ -301,7 +301,7 @@ namespace IED
 		m_runAnimationUpdates = !EngineExtensions::ParallelAnimationUpdatesEnabled() && a_state;
 	}
 
-	void ActorProcessorTask::Run()
+	void ActorProcessorTask::Run() noexcept
 	{
 		const boost::lock_guard lock(m_controller.m_lock);
 
@@ -509,7 +509,7 @@ namespace IED
 
 			bool update = false;
 
-			e.visit([&](auto& a_v) [[msvc::forceinline]] {
+			e.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
 
 				auto& state = a_v.data.state;
 

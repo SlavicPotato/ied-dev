@@ -18,7 +18,7 @@ namespace IED
 			NiNode*                           a_node1p,
 			AnimationWeaponSlot               a_animID,
 			GearNodeID                        a_gearNodeID,
-			const std::optional<NiTransform>& a_xfrm) :
+			const std::optional<NiTransform>& a_xfrm) noexcept :
 			nodeName(a_nodeName),
 			node(a_node),
 			defaultNode(a_defaultNode),
@@ -29,7 +29,7 @@ namespace IED
 		{
 		}
 
-		bool has_visible_geometry() const;
+		bool has_visible_geometry() const noexcept;
 
 		const stl::fixed_string    nodeName;
 		NiPointer<NiNode>          node;

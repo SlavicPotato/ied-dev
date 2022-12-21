@@ -9,7 +9,7 @@ namespace IED
 	namespace Data
 	{
 		bool configSkeletonMatch_t::test(
-			const SkeletonID& a_id) const
+			const SkeletonID& a_id) const noexcept
 		{
 			if (!ids.empty())
 			{

@@ -17,7 +17,7 @@ namespace IED
 	namespace Conditions
 	{
 
-		const ActorObjectMap& get_actor_object_map(CommonParams& a_params);
+		const ActorObjectMap& get_actor_object_map(CommonParams& a_params) noexcept;
 
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
@@ -39,7 +39,7 @@ namespace IED
 		constexpr bool match_extra(
 			CommonParams&          a_params,
 			const Tm&              a_match,
-			const CachedActorData& a_cached)
+			const CachedActorData& a_cached) noexcept
 		{
 			switch (a_match.extraCondType)
 			{
@@ -182,27 +182,27 @@ namespace IED
 
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSLocation* a_loc);
+			BGSLocation* a_loc) noexcept;
 
 		bool is_in_location(
 			BGSLocation* a_current,
 			BGSKeyword*  a_keyword,
-			BGSLocation* a_matched);
+			BGSLocation* a_matched) noexcept;
 
 		bool is_in_location(
 			BGSLocation* a_current,
-			BGSKeyword*  a_keyword);
+			BGSKeyword*  a_keyword) noexcept;
 
 		bool match_worldspace(
 			TESWorldSpace* a_current,
 			Game::FormID   a_wsId,
-			bool           a_matchParent);
+			bool           a_matchParent) noexcept;
 
 		template <class Tm, class Tf, class Tp>
 		constexpr bool match_biped(
 			CommonParams& a_params,
 			const Tm&     a_match,
-			Tp            a_post)
+			Tp            a_post) noexcept
 		{
 			if (a_match.bipedSlot >= BIPED_OBJECT::kTotal)
 			{
@@ -285,7 +285,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_actor(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (a_match.form.get_id())
 			{
@@ -311,7 +311,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_npc(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (a_match.form.get_id())
 			{
@@ -337,7 +337,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_race(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (a_match.form.get_id())
 			{
@@ -381,7 +381,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_furniture(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (a_match.form.get_id())
 			{
@@ -426,9 +426,9 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_location(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
-			if (auto current = a_params.get_current_location())
+			if (const auto current = a_params.get_current_location())
 			{
 				if (a_match.flags.test(Tf::kExtraFlag1))
 				{
@@ -518,7 +518,7 @@ namespace IED
 		constexpr bool match_worldspace(
 			CommonParams&          a_params,
 			const Tm&              a_match,
-			const CachedActorData& a_cached)
+			const CachedActorData& a_cached) noexcept
 		{
 			if (auto current = a_cached.worldspace)
 			{
@@ -546,7 +546,7 @@ namespace IED
 		constexpr bool match_package(
 			CommonParams&          a_params,
 			const Tm&              a_match,
-			const CachedActorData& a_cached)
+			const CachedActorData& a_cached) noexcept
 		{
 			if (auto current = a_cached.currentPackage)
 			{
@@ -579,7 +579,7 @@ namespace IED
 		template <class Tm, class Tf>
 		bool match_form_with_id(
 			const Tm& a_match,
-			TESForm*  a_form)
+			TESForm*  a_form) noexcept
 		{
 			if (a_form)
 			{
@@ -651,7 +651,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_weather(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (auto current = a_params.get_current_weather())
 			{
@@ -706,7 +706,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_global(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			auto glob = a_match.form.get_form<TESGlobal>();
 			if (!glob)
@@ -724,7 +724,7 @@ namespace IED
 		template <class Tm>
 		constexpr bool match_time_of_day(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (auto tod = a_params.get_time_of_day();
 			    tod != Data::TimeOfDay::kNone)
@@ -741,7 +741,7 @@ namespace IED
 		constexpr bool match_mount_generic(
 			CommonParams& a_params,
 			const Tm&     a_match,
-			Tg            a_getActorFunc)
+			Tg            a_getActorFunc) noexcept
 		{
 			if (a_match.form.get_id())
 			{
@@ -812,7 +812,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_mount(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			if (a_params.is_on_mount())
 			{
@@ -841,7 +841,7 @@ namespace IED
 		constexpr bool match_mounted_by(
 			CommonParams&          a_params,
 			const Tm&              a_match,
-			const CachedActorData& a_cached)
+			const CachedActorData& a_cached) noexcept
 		{
 			if (a_cached.beingRidden)
 			{
@@ -862,7 +862,7 @@ namespace IED
 		constexpr bool match_idle(
 			CommonParams&          a_params,
 			const Tm&              a_match,
-			const CachedActorData& a_cached)
+			const CachedActorData& a_cached) noexcept
 		{
 			if (const auto idle = a_cached.currentIdle)
 			{
@@ -902,7 +902,7 @@ namespace IED
 		constexpr bool match_faction(
 			CommonParams&            a_params,
 			const Tm&                a_match,
-			const CachedFactionData& a_cached)
+			const CachedFactionData& a_cached) noexcept
 		{
 			if (auto form = a_match.form.get_form<TESFaction>())
 			{
@@ -934,7 +934,7 @@ namespace IED
 		constexpr bool match_effect(
 			CommonParams&                 a_params,
 			const Tm&                     a_match,
-			const CachedActiveEffectData& a_cached)
+			const CachedActiveEffectData& a_cached) noexcept
 		{
 			auto& data = a_cached.GetEffectContainer();
 
@@ -1027,7 +1027,7 @@ namespace IED
 		constexpr bool do_var_match_all_filtered(
 			CommonParams& a_params,
 			const Tm&     a_match,
-			Tff           a_filter)
+			Tff           a_filter) noexcept
 		{
 			for (auto& e : get_actor_object_map(a_params))
 			{
@@ -1057,7 +1057,7 @@ namespace IED
 		inline constexpr bool do_var_match_id(
 			CommonParams& a_params,
 			Game::FormID  a_id,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			auto& data = get_actor_object_map(a_params);
 
@@ -1079,7 +1079,7 @@ namespace IED
 		template <class Tm, class Tf>
 		constexpr bool match_variable(
 			CommonParams& a_params,
-			const Tm&     a_match)
+			const Tm&     a_match) noexcept
 		{
 			switch (a_match.vcSource)
 			{
@@ -1099,7 +1099,7 @@ namespace IED
 					return do_var_match_all_filtered(
 						a_params,
 						a_match,
-						[fid = a_params.objects.GetActorFormID()](auto& a_e) [[msvc::forceinline]] {
+						[fid = a_params.objects.GetActorFormID()](auto& a_e) noexcept [[msvc::forceinline]] {
 							return a_e.first != fid;
 						});
 				}
@@ -1118,14 +1118,14 @@ namespace IED
 
 			case Data::VariableConditionSource::kActor:
 
-				if (auto fid = a_match.form.get_id())
+				if (const auto fid = a_match.form.get_id())
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid](auto& a_e) [[msvc::forceinline]] {
+							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.first != fid;
 							});
 					}
@@ -1139,14 +1139,14 @@ namespace IED
 
 			case Data::VariableConditionSource::kNPC:
 
-				if (auto fid = a_match.form.get_id())
+				if (const auto fid = a_match.form.get_id())
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid](auto& a_e) [[msvc::forceinline]] {
+							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetNPCTemplateFormID() != fid;
 							});
 					}
@@ -1155,7 +1155,7 @@ namespace IED
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid](auto& a_e) [[msvc::forceinline]] {
+							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetNPCTemplateFormID() == fid;
 							});
 					}
@@ -1165,14 +1165,14 @@ namespace IED
 
 			case Data::VariableConditionSource::kRace:
 
-				if (auto fid = a_match.form.get_id())
+				if (const auto fid = a_match.form.get_id())
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid](auto& a_e) [[msvc::forceinline]] {
+							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetRaceFormID() != fid;
 							});
 					}
@@ -1181,7 +1181,7 @@ namespace IED
 						return do_var_match_all_filtered(
 							a_params,
 							a_match,
-							[fid](auto& a_e) [[msvc::forceinline]] {
+							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
 								return a_e.second.GetRaceFormID() == fid;
 							});
 					}
@@ -1218,6 +1218,24 @@ namespace IED
 			}
 
 			return false;
+		}
+
+		inline static constexpr TESForm* match_pm_equipped(
+			Actor*       a_actor,
+			Game::FormID a_form) noexcept
+		{
+			if (auto pm = a_actor->processManager)
+			{
+				for (auto e : pm->equippedObject)
+				{
+					if (e && e->formID == a_form)
+					{
+						return e;
+					}
+				}
+			}
+
+			return nullptr;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)

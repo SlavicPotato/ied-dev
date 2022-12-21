@@ -47,15 +47,15 @@ namespace IED
 
 		[[nodiscard]] bool is_player() const noexcept;
 
-		[[nodiscard]] Game::ObjectRefHandle get_current_furniture_handle() const;
+		[[nodiscard]] Game::ObjectRefHandle get_current_furniture_handle() const noexcept;
 
-		[[nodiscard]] bool is_using_furniture() const;
+		[[nodiscard]] bool is_using_furniture() const noexcept;
 
-		[[nodiscard]] TESFurniture* get_furniture() const;
+		[[nodiscard]] TESFurniture* get_furniture() const noexcept;
 
-		[[nodiscard]] bool get_laying_down() const;
+		[[nodiscard]] bool get_laying_down() const noexcept;
 
-		[[nodiscard]] constexpr auto get_biped() const
+		[[nodiscard]] constexpr auto get_biped() const noexcept
 		{
 			if (!biped)
 			{
@@ -65,7 +65,7 @@ namespace IED
 			return *biped;
 		}
 
-		[[nodiscard]] constexpr auto get_actor_skin() const
+		[[nodiscard]] constexpr auto get_actor_skin() const noexcept
 		{
 			if (!actorSkin)
 			{
@@ -75,11 +75,11 @@ namespace IED
 			return *actorSkin;
 		}
 
-		[[nodiscard]] TESCombatStyle* get_combat_style() const;
+		[[nodiscard]] TESCombatStyle* get_combat_style() const noexcept;
 
-		[[nodiscard]] bool can_dual_wield() const;
+		[[nodiscard]] bool can_dual_wield() const noexcept;
 
-		[[nodiscard]] constexpr bool get_actor_dead() const
+		[[nodiscard]] constexpr bool get_actor_dead() const noexcept
 		{
 			if (!isDead)
 			{
@@ -89,7 +89,7 @@ namespace IED
 			return *isDead;
 		}
 
-		[[nodiscard]] inline constexpr auto get_current_location() const
+		[[nodiscard]] inline constexpr auto get_current_location() const noexcept
 		{
 			if (!location)
 			{
@@ -112,7 +112,7 @@ namespace IED
 			       actor->IsPlayerTeammate();
 		}
 
-		[[nodiscard]] constexpr auto get_current_weather() const
+		[[nodiscard]] constexpr auto get_current_weather() const noexcept
 		{
 			if (!currentWeather)
 			{
@@ -122,13 +122,13 @@ namespace IED
 			return *currentWeather;
 		}
 
-		[[nodiscard]] inline constexpr auto get_weather_class() const
+		[[nodiscard]] inline constexpr auto get_weather_class() const noexcept
 		{
 			if (!weatherClass)
 			{
 				if (const auto w = get_current_weather())
 				{
-					auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
+					const auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
 					weatherClass.emplace(static_cast<WeatherClassificationFlags>(f));
 				}
 				else
@@ -140,7 +140,7 @@ namespace IED
 			return *weatherClass;
 		}
 
-		[[nodiscard]] inline constexpr auto get_shield_slot() const
+		[[nodiscard]] inline constexpr auto get_shield_slot() const noexcept
 		{
 			if (!shieldSlot)
 			{
@@ -150,7 +150,7 @@ namespace IED
 			return *shieldSlot;
 		}
 
-		[[nodiscard]] inline constexpr auto get_time_of_day() const
+		[[nodiscard]] inline constexpr auto get_time_of_day() const noexcept
 		{
 			if (!timeOfDay)
 			{
@@ -160,7 +160,7 @@ namespace IED
 			return *timeOfDay;
 		}
 
-		[[nodiscard]] inline constexpr auto is_on_mount() const
+		[[nodiscard]] inline constexpr auto is_on_mount() const noexcept
 		{
 			if (!isMounted)
 			{
@@ -170,21 +170,21 @@ namespace IED
 			return *isMounted;
 		}
 
-		[[nodiscard]] NiPointer<Actor>& get_mounted_actor() const;
-		[[nodiscard]] NiPointer<Actor>& get_mounting_actor() const;
+		[[nodiscard]] NiPointer<Actor>& get_mounted_actor() const noexcept;
+		[[nodiscard]] NiPointer<Actor>& get_mounting_actor() const noexcept;
 
-		[[nodiscard]] bool is_in_merchant_faction() const;
-		[[nodiscard]] bool is_in_player_enemy_faction() const;
+		[[nodiscard]] bool is_in_merchant_faction() const noexcept;
+		[[nodiscard]] bool is_in_player_enemy_faction() const noexcept;
 
-		[[nodiscard]] Actor* get_last_ridden_player_horse() const;
+		[[nodiscard]] NiPointer<Actor>& get_last_ridden_player_horse() const noexcept;
 
 		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);
 		}
 
-		[[nodiscard]] bool is_horse() const;
-		[[nodiscard]] bool is_mounted_actor_horse() const;
+		[[nodiscard]] bool is_horse() const noexcept;
+		[[nodiscard]] bool is_mounted_actor_horse() const noexcept;
 
 	private:
 		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;

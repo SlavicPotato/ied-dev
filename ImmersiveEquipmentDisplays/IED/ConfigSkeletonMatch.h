@@ -8,7 +8,7 @@ namespace IED
 	{
 		struct configSkeletonMatch_t
 		{
-			[[nodiscard]] bool test(const SkeletonID& a_id) const;
+			[[nodiscard]] bool test(const SkeletonID& a_id) const noexcept;
 
 			[[nodiscard]] inline constexpr bool empty() const noexcept
 			{

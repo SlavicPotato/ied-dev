@@ -9,20 +9,20 @@ namespace IED
 	{
 	public:
 		void BeginAnimationUpdate(
-			Controller* a_controller);
+			Controller* a_controller) noexcept;
 
 		void EndAnimationUpdate(
-			Controller* a_controller);
+			Controller* a_controller) noexcept;
 
 		void ProcessAnimationUpdateList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			const Controller&            a_controller);
+			const Controller&            a_controller) noexcept;
 
 		static void UpdateActorAnimationList(
 			Actor*                       a_actor,
 			const BSAnimationUpdateData& a_data,
-			const Controller&            a_controller);
+			const Controller&            a_controller) noexcept;
 
 	private:
 #if defined(DEBUG)

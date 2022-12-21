@@ -1,9 +1,8 @@
 #include "pch.h"
 
 #include "IED/EngineExtensions.h"
-#include "INode.h"
 
-#include <ext/Node.h>
+#include "INode.h"
 
 namespace IED
 {
@@ -11,7 +10,7 @@ namespace IED
 
 	static void UpdateNodeDataImpl(
 		NiAVObject*                   a_node,
-		const Data::cacheTransform_t& a_trnsf)
+		const Data::cacheTransform_t& a_trnsf) noexcept
 	{
 		if (a_trnsf.scale)
 		{
@@ -43,7 +42,7 @@ namespace IED
 
 	static void UpdateNodeDataImpl(
 		NiAVObject*                    a_node,
-		const Data::configTransform_t& a_trnsf)
+		const Data::configTransform_t& a_trnsf) noexcept
 	{
 		if (a_trnsf.scale)
 		{
@@ -76,7 +75,7 @@ namespace IED
 	static void UpdateNodeDataImpl(
 		NiAVObject*                   a_node,
 		NiNode*                       a_refNode,
-		const Data::cacheTransform_t& a_trnsf)
+		const Data::cacheTransform_t& a_trnsf) noexcept
 	{
 		if (a_trnsf.scale)
 		{
@@ -111,7 +110,7 @@ namespace IED
 		}
 	}
 
-	void INode::UpdateRootIfGamePaused(NiNode* a_root)
+	void INode::UpdateRootIfGamePaused(NiNode* a_root) noexcept
 	{
 		bool update = Game::Main::GetSingleton()->freezeTime;
 
@@ -150,7 +149,7 @@ namespace IED
 	auto INode::FindNodes(
 		const Data::NodeDescriptor& a_node,
 		bool                        a_atmReference,
-		NiNode*                     a_root)
+		NiNode*                     a_root) noexcept
 		-> findResult_t
 	{
 		BSFixedString nodeName(a_node.name.c_str());
@@ -181,7 +180,7 @@ namespace IED
 
 	BSFixedString INode::GetTargetNodeName(
 		const Data::NodeDescriptor& a_node,
-		bool                        a_atmReference)
+		bool                        a_atmReference) noexcept
 	{
 		char tmp[MAX_PATH];
 
@@ -196,7 +195,7 @@ namespace IED
 		const Data::configBaseValues_t& a_entry,
 		const Data::NodeDescriptor&     a_node,
 		NiNode*                         a_root,
-		targetNodes_t&                  a_out)
+		targetNodes_t&                  a_out) noexcept
 	{
 		if (!a_node)
 		{
@@ -238,7 +237,7 @@ namespace IED
 		bool                        a_atmReference,
 		NiNode*                     a_root,
 		NiAVObject*                 a_object,
-		NiPointer<NiNode>&          a_newRef)
+		NiPointer<NiNode>&          a_newRef) noexcept
 	{
 		if (!a_node || !a_object)
 		{
@@ -280,7 +279,7 @@ namespace IED
 	void INode::UpdateObjectTransform(
 		const Data::cacheTransform_t& a_trnsf,
 		NiAVObject*                   a_object,
-		NiNode*                       a_refNode)
+		NiNode*                       a_refNode) noexcept
 	{
 		if (!a_object)
 		{
@@ -299,7 +298,7 @@ namespace IED
 
 	void INode::UpdateObjectTransform(
 		const Data::configTransform_t& a_trnsf,
-		NiAVObject*                    a_object)
+		NiAVObject*                    a_object) noexcept
 	{
 		if (a_object)
 		{
@@ -310,7 +309,7 @@ namespace IED
 	void INode::GetArmorNodeName(
 		Game::FormID a_armor,
 		Game::FormID a_arma,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		if (a_arma)
 		{
@@ -331,28 +330,28 @@ namespace IED
 
 	void INode::GetWeaponNodeName(
 		Game::FormID a_weapon,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		stl::snprintf(a_out, "OBJECT WEAPON [%.8X]", a_weapon.get());
 	}
 
 	void INode::GetLightNodeName(
 		Game::FormID a_formid,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		stl::snprintf(a_out, "OBJECT LIGHT [%.8X]", a_formid.get());
 	}
 
 	void INode::GetMiscNodeName(
 		Game::FormID a_formid,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		stl::snprintf(a_out, "OBJECT MISC [%.8X]", a_formid.get());
 	}
 
 	void INode::GetAmmoNodeName(
 		Game::FormID a_formid,
-		char (&a_out)[NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		stl::snprintf(a_out, "OBJECT AMMO [%.8X]", a_formid.get());
 	}

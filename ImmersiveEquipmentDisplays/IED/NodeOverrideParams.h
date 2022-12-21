@@ -22,20 +22,13 @@ namespace IED
 		template <class... Args>
 		inline constexpr nodeOverrideParams_t(
 			item_container_type& a_container,
-			Args&&... a_args) :
+			Args&&... a_args) noexcept :
 			itemData(a_container),
 			CommonParams(std::forward<Args>(a_args)...)
 		{
 		}
 
-		/*inline constexpr nodeOverrideParams_t(
-			CommonParams& a_cparams,
-			) :
-			CommonParams(a_cparams)
-		{
-		}*/
-
-		constexpr auto get_biped_has_armor()
+		constexpr auto get_biped_has_armor() noexcept
 		{
 			if (!bipedHasArmor)
 			{
@@ -45,7 +38,7 @@ namespace IED
 			return *bipedHasArmor;
 		}
 
-		SKMP_FORCEINLINE constexpr auto& get_item_data()
+		SKMP_FORCEINLINE constexpr auto& get_item_data() noexcept
 		{
 			if (!hasItemData)
 			{
@@ -56,13 +49,13 @@ namespace IED
 			return itemData;
 		}
 
-		float get_weapon_adjust();
+		float get_weapon_adjust() noexcept;
 
-		inline constexpr float get_weight_adjust()
+		inline constexpr float get_weight_adjust() noexcept
 		{
 			if (!weightAdjust)
 			{
-				weightAdjust = (actor->GetWeight() * 0.01f) * 0.5f;
+				weightAdjust.emplace((actor->GetWeight() * 0.01f) * 0.5f);
 			}
 
 			return *weightAdjust;
@@ -98,7 +91,9 @@ namespace IED
 
 		template <class Tf>
 		constexpr bool equipped_armor_visitor(
-			Tf a_func)
+			Tf a_func)                                                 //
+			noexcept(std::is_nothrow_invocable_r_v<bool, Tf, TESObjectARMO*>)  //
+			requires(std::is_invocable_r_v<bool, Tf, TESObjectARMO*>)
 		{
 			const auto bip = get_biped();
 			if (!bip)
@@ -137,10 +132,10 @@ namespace IED
 		}
 
 	private:
-		void make_item_data();
+		void make_item_data() noexcept;
 
 		inline constexpr bool is_av_ignored_slot(
-			BIPED_OBJECT a_slot) const
+			BIPED_OBJECT a_slot) const noexcept
 		{
 			if (a_slot == get_shield_slot())
 			{

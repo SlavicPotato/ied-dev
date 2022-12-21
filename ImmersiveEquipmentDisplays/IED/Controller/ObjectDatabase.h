@@ -31,12 +31,12 @@ namespace IED
 		[[nodiscard]] bool GetUniqueObject(
 			const char*          a_path,
 			ObjectDatabaseEntry& a_entry,
-			NiPointer<NiNode>&   a_object);
+			NiPointer<NiNode>&   a_object) noexcept;
 
-		bool        ValidateObject(const char* a_path, NiAVObject* a_object);
-		static bool HasBSDismemberSkinInstance(NiAVObject* a_object);
+		bool        ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
+		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
 
-		void RunObjectCleanup();
+		void RunObjectCleanup() noexcept;
 		void QueueDatabaseCleanup() noexcept;
 
 		[[nodiscard]] inline constexpr auto GetODBLevel() const noexcept
@@ -68,7 +68,7 @@ namespace IED
 		}
 
 	private:
-		static NiNode* CreateClone(const entry_t& a_entry);
+		static NiNode* CreateClone(const entry_t& a_entry) noexcept;
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;

@@ -39,8 +39,8 @@ namespace IED
 
 	struct ObjectEntryBase
 	{
-		ObjectEntryBase()  = default;
-		~ObjectEntryBase() = default;
+		ObjectEntryBase() noexcept  = default;
+		~ObjectEntryBase() noexcept = default;
 
 		ObjectEntryBase(const ObjectEntryBase&)            = delete;
 		ObjectEntryBase(ObjectEntryBase&&)                 = delete;
@@ -52,30 +52,30 @@ namespace IED
 			const NiPointer<NiNode>& a_root,
 			const NiPointer<NiNode>& a_root1p,
 			IObjectManager&          a_db,
-			bool                     a_defer);
+			bool                     a_defer) noexcept;
 
 		bool SetObjectVisible(const bool a_switch) const noexcept;
 		bool DeferredHideObject(const std::uint8_t a_delay) const noexcept;
 		void ResetDeferredHide() const noexcept;
 
-		SKMP_FORCEINLINE auto IsNodeVisible() const
+		SKMP_FORCEINLINE auto IsNodeVisible() const noexcept
 		{
 			return data.state && !data.state->flags.test(ObjectEntryFlags::kInvisible);
 		}
 
-		SKMP_FORCEINLINE auto IsActive() const
+		SKMP_FORCEINLINE auto IsActive() const noexcept
 		{
 			return IsNodeVisible();
 		}
 
-		SKMP_FORCEINLINE auto GetFormIfActive() const
+		SKMP_FORCEINLINE auto GetFormIfActive() const noexcept
 		{
 			return IsActive() ? data.state->form : nullptr;
 		}
 
 		struct QuiverArrowState
 		{
-			QuiverArrowState(NiNode* a_arrowQuiver);
+			QuiverArrowState(NiNode* a_arrowQuiver) noexcept;
 
 			void Update(std::int32_t a_count) noexcept;
 
@@ -88,14 +88,14 @@ namespace IED
 			RE::WeaponAnimationGraphManagerHolderPtr weapAnimGraphManagerHolder;
 			stl::fixed_string                        currentAnimationEvent;
 
-			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event);
+			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
 		};
 
 		struct State :
 			AnimationState
 		{
-			State() noexcept = default;
-			~State()         = default;
+			State() noexcept  = default;
+			~State() noexcept = default;
 
 			State(const State&)            = delete;
 			State(State&&)                 = delete;
@@ -107,7 +107,7 @@ namespace IED
 			{
 				GroupObject(
 					NiNode*            a_rootNode,
-					NiPointer<NiNode>& a_object) :
+					NiPointer<NiNode>& a_object) noexcept :
 					rootNode(a_rootNode),
 					object(a_object)
 				{
@@ -119,11 +119,10 @@ namespace IED
 				ObjectDatabase::ObjectDatabaseEntry dbEntry;
 				//NiPointer<NiPointLight>             light;
 
-				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence);
+				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence) noexcept;
 			};
 
-			void UpdateData(
-				const Data::configBaseValues_t& a_in)
+			void UpdateData(const Data::configBaseValues_t& a_in) noexcept
 			{
 				UpdateFlags(a_in);
 				transform.Update(a_in);
@@ -147,7 +146,7 @@ namespace IED
 			}
 
 			SKMP_FORCEINLINE void UpdateAnimationGraphs(
-				const BSAnimationUpdateData& a_data)
+				const BSAnimationUpdateData& a_data) noexcept
 			{
 				for (auto& e : groupObjects)
 				{
@@ -177,16 +176,18 @@ namespace IED
 				}
 			}*/
 
-			void Cleanup(Game::ObjectRefHandle a_handle);
+			void Cleanup(Game::ObjectRefHandle a_handle) noexcept;
 
 			void UpdateAndPlayAnimation(
 				Actor*                   a_actor,
-				const stl::fixed_string& a_sequence);
+				const stl::fixed_string& a_sequence) noexcept;
 
-			void SetVisible(bool a_switch);
+			void SetVisible(bool a_switch) noexcept;
 
 			template <class Tf>
-			void visit_db_entries(Tf a_func)
+			void visit_db_entries(Tf a_func)  //
+				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabase::ObjectDatabaseEntry&>)
+				requires(std::invocable<Tf, ObjectDatabase::ObjectDatabaseEntry&>)  //
 			{
 				if (auto& d = dbEntry)
 				{
@@ -242,7 +243,7 @@ namespace IED
 				Game::ObjectRefHandle    a_handle,
 				const NiPointer<NiNode>& a_root,
 				const NiPointer<NiNode>& a_root1p,
-				ObjectDatabase&          a_db);
+				ObjectDatabase&          a_db) noexcept;
 
 			[[nodiscard]] inline explicit operator bool() const noexcept
 			{

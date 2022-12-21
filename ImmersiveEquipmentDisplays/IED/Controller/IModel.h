@@ -22,7 +22,7 @@ namespace IED
 			bool           a_isFemale,
 			bool           a_1pWeap,
 			bool           a_useWorld,
-			modelParams_t& a_out);
+			modelParams_t& a_out) noexcept;
 	};
 
 }

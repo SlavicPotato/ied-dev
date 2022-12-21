@@ -9,6 +9,7 @@ namespace IED
 		T*                     a_ptr,
 		IModel::modelParams_t& a_out,
 		ModelType              a_type = ModelType::kMisc)  //
+		noexcept                              //
 		requires(std::is_convertible_v<T*, TESModel*>)
 	{
 		const char* path = a_ptr->GetModelName();
@@ -47,6 +48,7 @@ namespace IED
 		TESForm*               a_form,
 		IModel::modelParams_t& a_out,
 		ModelType              a_type = ModelType::kMisc)  //
+		noexcept                              //
 		requires(std::is_convertible_v<T*, TESModel*>)
 	{
 		return ExtractModelParams(static_cast<T*>(a_form), a_out, a_type);
@@ -62,6 +64,7 @@ namespace IED
 	static std::optional<ModelData> GetModelData(
 		T*   a_form,
 		bool a_female)  //
+		noexcept //
 		requires(
 			std::is_base_of_v<TESObjectARMO, T> ||
 			std::is_base_of_v<TESObjectARMA, T>)
@@ -92,7 +95,7 @@ namespace IED
 		bool           a_isFemale,
 		bool           a_1pWeap,
 		bool           a_useWorld,
-		modelParams_t& a_out)
+		modelParams_t& a_out) noexcept
 	{
 		switch (a_form->formType)
 		{

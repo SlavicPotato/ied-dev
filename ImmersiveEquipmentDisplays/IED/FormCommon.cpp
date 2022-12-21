@@ -6,7 +6,7 @@
 
 namespace IED
 {
-	bool IFormCommon::IsValidCustomForm(TESForm* a_form)
+	bool IFormCommon::IsValidCustomForm(TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
@@ -48,7 +48,7 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsValidCustomFormType(std::uint8_t a_type)
+	bool IFormCommon::IsValidCustomFormType(std::uint8_t a_type) noexcept
 	{
 		switch (a_type)
 		{
@@ -84,7 +84,7 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsInventoryForm(TESForm* a_form)
+	bool IFormCommon::IsInventoryForm(TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
@@ -111,7 +111,7 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsInventoryFormType(std::uint8_t a_type)
+	bool IFormCommon::IsInventoryFormType(std::uint8_t a_type) noexcept
 	{
 		switch (a_type)
 		{
@@ -132,7 +132,7 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsValidSlotForm(TESForm* a_form)
+	bool IFormCommon::IsValidSlotForm(TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
@@ -153,7 +153,7 @@ namespace IED
 		return false;
 	}
 
-	bool IFormCommon::IsEquippableForm(TESForm* a_form)
+	bool IFormCommon::IsEquippableForm(TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
 		{
@@ -170,7 +170,7 @@ namespace IED
 		}
 	}
 
-	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(TESForm* a_form)
+	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(TESForm* a_form) noexcept
 	{
 		FormInfoFlags flags{ FormInfoFlags::kNone };
 
@@ -194,28 +194,29 @@ namespace IED
 
 	template <class T>
 	inline static constexpr const char* GetFullName(const TESForm* a_form)  //
+		noexcept                                                            //
 		requires(std::is_convertible_v<T*, TESFullName*>)
 	{
 		return static_cast<const T*>(a_form)->GetFullName();
 	}
 
-	inline static constexpr const char* GetKeywordString(const BGSKeyword* a_form)
+	inline static constexpr const char* GetKeywordString(const BGSKeyword* a_form) noexcept
 	{
 		return a_form->keyword.c_str();
 	}
 
 	template <class T>
-	inline static constexpr const char* GetEditorID(const T* a_form)
+	inline static constexpr const char* GetEditorID(const T* a_form) noexcept
 	{
 		return a_form->editorId.c_str();
 	}
 
-	inline static constexpr const char* GetReferenceName(TESObjectREFR* a_form)
+	inline static constexpr const char* GetReferenceName(TESObjectREFR* a_form) noexcept
 	{
 		return a_form->GetReferenceName();
 	}
 
-	inline static constexpr const char* GetFormNamePtr(TESForm* a_form)
+	inline static constexpr const char* GetFormNamePtr(TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
 		{
@@ -299,7 +300,7 @@ namespace IED
 
 	bool IFormCommon::HasKeyword(
 		const TESForm*    a_form,
-		const BGSKeyword* a_keyword)
+		const BGSKeyword* a_keyword) noexcept
 	{
 		switch (a_form->formType)
 		{
@@ -345,9 +346,9 @@ namespace IED
 
 	bool IFormCommon::HasKeyword(
 		const TESForm* a_form,
-		Game::FormID   a_keyword)
+		Game::FormID   a_keyword) noexcept
 	{
-		if (auto keyword = a_keyword.As<BGSKeyword>())
+		if (const auto* const keyword = a_keyword.As<BGSKeyword>())
 		{
 			return HasKeyword(a_form, keyword);
 		}
@@ -359,7 +360,7 @@ namespace IED
 
 	bool IFormCommon::HasKeyword(
 		const TESForm*                  a_form,
-		const Data::configCachedForm_t& a_keyword)
+		const Data::configCachedForm_t& a_keyword) noexcept
 	{
 		if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
 		{

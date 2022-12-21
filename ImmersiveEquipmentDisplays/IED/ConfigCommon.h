@@ -162,7 +162,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr TESForm* get_form() const
+			inline constexpr TESForm* get_form() const noexcept
 			{
 				if (!id)
 				{
@@ -185,7 +185,7 @@ namespace IED
 			template <
 				class T,
 				class form_type = stl::strip_type<T>>
-			inline constexpr form_type* get_form() const
+			inline constexpr form_type* get_form() const noexcept
 			{
 				if (const auto f = get_form())
 				{
@@ -243,7 +243,7 @@ namespace IED
 			void zero_missing_or_deleted();
 
 		private:
-			static TESForm* lookup_form(const Game::FormID a_form);
+			static TESForm* lookup_form(const Game::FormID a_form) noexcept;
 
 			Game::FormID     id;
 			mutable TESForm* form{ nullptr };
@@ -603,7 +603,7 @@ namespace IED
 			configFormSet_t                deny;
 
 			inline constexpr bool test(
-				Game::FormID a_form) const
+				Game::FormID a_form) const noexcept
 			{
 				if (allow.contains(a_form))
 				{
@@ -652,7 +652,7 @@ namespace IED
 			stl::flag<FormFilterFlags> filterFlags{ FormFilterFlags::kNone };
 			configFormFilterProfile_t  profile;
 
-			bool test(Game::FormID a_form) const;
+			bool test(Game::FormID a_form) const noexcept;
 
 		private:
 			template <class Archive>
@@ -675,11 +675,12 @@ namespace IED
 	}
 
 	template <class T>
-	concept AcceptHolderCacheData = requires(T a_data) {
-										{
-											std::addressof(a_data.find(typename T::key_type())->second)
-											} -> std::convertible_to<const typename T::mapped_type*>;
-									};
+	concept AcceptHolderCacheData =
+		requires(T a_data) {
+			{
+				std::addressof(a_data.find(typename T::key_type())->second)
+				} -> std::convertible_to<const typename T::mapped_type*>;
+		};
 
 	template <class T>
 	struct configHolderCache_t
@@ -695,15 +696,13 @@ namespace IED
 
 		constexpr const mapped_type* get_actor(
 			const key_type& a_key,
-			const T&        a_data) const
+			const T&        a_data) const noexcept
 		{
 			if (!actor)
 			{
 				auto it = a_data.find(a_key);
 
-				actor = it != a_data.end() ?
-				            std::addressof(it->second) :
-				            nullptr;
+				actor.emplace(it != a_data.end() ? std::addressof(it->second) : nullptr);
 			}
 
 			return *actor;
@@ -711,15 +710,13 @@ namespace IED
 
 		constexpr const mapped_type* get_npc(
 			const key_type& a_key,
-			const T&        a_data) const
+			const T&        a_data) const noexcept
 		{
 			if (!npc)
 			{
 				auto it = a_data.find(a_key);
 
-				npc = it != a_data.end() ?
-				          std::addressof(it->second) :
-				          nullptr;
+				npc.emplace(it != a_data.end() ? std::addressof(it->second) : nullptr);
 			}
 
 			return *npc;
@@ -727,15 +724,13 @@ namespace IED
 
 		constexpr const mapped_type* get_race(
 			const key_type& a_key,
-			const T&        a_data) const
+			const T&        a_data) const noexcept
 		{
 			if (!race)
 			{
 				auto it = a_data.find(a_key);
 
-				race = it != a_data.end() ?
-				           std::addressof(it->second) :
-				           nullptr;
+				race.emplace(it != a_data.end() ? std::addressof(it->second) : nullptr);
 			}
 
 			return *race;
@@ -744,7 +739,7 @@ namespace IED
 		template <AcceptHolderCacheData Td>
 		SKMP_FORCEINLINE static constexpr const typename Td::mapped_type* get_entry(
 			const Td&                    a_data,
-			const typename Td::key_type& a_key)
+			const typename Td::key_type& a_key) noexcept
 		{
 			if (a_data.empty())
 			{

@@ -17,12 +17,12 @@ namespace IED
 
 			BGSSoundDescriptorForm* Get(
 				std::uint8_t a_formType,
-				bool         a_equip) const;
+				bool         a_equip) const noexcept;
 
 			stl::unordered_map<std::uint8_t, soundPair_t> data;
 		};
 
-		void SoundPlay(std::uint8_t a_formType, NiAVObject* a_object, bool a_equip) const;
+		void SoundPlay(std::uint8_t a_formType, NiAVObject* a_object, bool a_equip) const noexcept;
 
 	protected:
 		template <class Tr>

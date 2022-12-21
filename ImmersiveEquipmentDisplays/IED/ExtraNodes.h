@@ -16,12 +16,12 @@ namespace IED
 
 		void CreateExtraMovNodes(
 			NiNode*           a_root,
-			const SkeletonID& a_id);
+			const SkeletonID& a_id) noexcept;
 
 		attachExtraNodesResult_t AttachExtraNodes(
 			NiNode*                                       a_target,
 			const NodeOverrideData::extraNodeEntry_t&     a_entry,
-			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry);
+			const NodeOverrideData::extraNodeEntrySkel_t& a_skelEntry) noexcept;
 
 	}
 }

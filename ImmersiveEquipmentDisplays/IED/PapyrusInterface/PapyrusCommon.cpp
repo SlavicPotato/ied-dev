@@ -37,7 +37,12 @@ namespace IED
 				return false;
 			}
 
-			if (sh.papyrusRestrictedPlugins.contains(a_key))
+			auto it = std::find(
+				sh.papyrusRestrictedPlugins.begin(),
+				sh.papyrusRestrictedPlugins.end(),
+				a_key);
+
+			if (it != sh.papyrusRestrictedPlugins.end())
 			{
 				return false;
 			}

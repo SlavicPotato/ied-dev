@@ -7,7 +7,7 @@ namespace IED
 	bool ObjectDatabase::GetUniqueObject(
 		const char*          a_path,
 		ObjectDatabaseEntry& a_entry,
-		NiPointer<NiNode>&   a_object)
+		NiPointer<NiNode>&   a_object) noexcept
 	{
 		using namespace ::Util::Model;
 
@@ -68,24 +68,24 @@ namespace IED
 
 	bool ObjectDatabase::ValidateObject(
 		const char* a_path,
-		NiAVObject* a_object)
+		NiAVObject* a_object) noexcept
 	{
 		bool result = HasBSDismemberSkinInstance(a_object);
 
 		if (result)
 		{
-			Debug("[%s] objects with BSDismemberSkinInstance are not supported", a_path);
+			Debug("[%s] meshes with BSDismemberSkinInstance objects are not supported", a_path);
 		}
 
 		return !result;
 	}
 
-	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object)
+	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept
 	{
-		auto r = Util::Node::TraverseGeometry(a_object, [](BSGeometry* a_geometry) {
+		auto r = Util::Node::TraverseGeometry(a_object, [](BSGeometry* a_geometry) noexcept {
 			if (auto skin = a_geometry->m_spSkinInstance.get())
 			{
-				if (ni_is_type(skin->GetRTTI(), BSDismemberSkinInstance))
+				if (INiRTTI::IsType(skin->GetRTTI(), TNiRTTI::BSDismemberSkinInstance))
 				{
 					return Util::Node::VisitorControl::kStop;
 				}
@@ -97,7 +97,7 @@ namespace IED
 		return r == Util::Node::VisitorControl::kStop;
 	}
 
-	void ObjectDatabase::RunObjectCleanup()
+	void ObjectDatabase::RunObjectCleanup() noexcept
 	{
 		if (!m_cleanupDeadline)
 		{
@@ -202,7 +202,7 @@ namespace IED
 		m_cleanupDeadline.reset();
 	}
 
-	NiNode* ObjectDatabase::CreateClone(const entry_t& a_entry)
+	NiNode* ObjectDatabase::CreateClone(const entry_t& a_entry) noexcept
 	{
 		using object_type = decltype(entry_t::object)::element_type;
 

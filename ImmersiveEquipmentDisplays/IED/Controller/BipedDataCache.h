@@ -54,7 +54,7 @@ namespace IED
 			DataVersion1 = 1,
 		};
 
-		const BipedSlotDataPtr& GetOrCreate(Game::FormID a_actor, std::uint64_t a_cc);
+		const BipedSlotDataPtr& GetOrCreate(Game::FormID a_actor, std::uint64_t a_cc) noexcept;
 
 		[[nodiscard]] inline auto size() const noexcept
 		{

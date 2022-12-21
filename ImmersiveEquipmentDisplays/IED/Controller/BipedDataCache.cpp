@@ -7,7 +7,7 @@ namespace IED
 {
 	const BipedSlotDataPtr& BipedDataCache::GetOrCreate(
 		Game::FormID  a_actor,
-		std::uint64_t a_cc)
+		std::uint64_t a_cc) noexcept
 	{
 		if (a_actor == 0x14)
 		{

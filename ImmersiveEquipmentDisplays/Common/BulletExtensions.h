@@ -11,21 +11,21 @@ namespace Bullet
 		btVector3Ex() = default;
 
 		SIMD_FORCE_INLINE btVector3Ex(
-			const NiPoint3& a_pos)
+			const NiPoint3& a_pos) noexcept
 		{
 			setValue(a_pos.x, a_pos.y, a_pos.z);
 		}
 
 		SIMD_FORCE_INLINE btVector3Ex(
-			const NiTransform& a_tf)
+			const NiTransform& a_tf) noexcept
 		{
 			mVec128 = _mm_and_ps(_mm_loadu_ps(a_tf.pos), btvFFF0fMask);
 		}
 
-		SIMD_FORCE_INLINE operator NiPoint3&() { return reinterpret_cast<NiPoint3&>(mVec128); }
-		SIMD_FORCE_INLINE operator const NiPoint3&() const { return reinterpret_cast<const NiPoint3&>(mVec128); }
-		SIMD_FORCE_INLINE operator NiPoint3*() { return reinterpret_cast<NiPoint3*>(mVec128.m128_f32); }
-		SIMD_FORCE_INLINE operator const NiPoint3*() const { return reinterpret_cast<const NiPoint3*>(mVec128.m128_f32); }
+		SIMD_FORCE_INLINE operator NiPoint3&() noexcept { return reinterpret_cast<NiPoint3&>(mVec128); }
+		SIMD_FORCE_INLINE operator const NiPoint3&() const noexcept { return reinterpret_cast<const NiPoint3&>(mVec128); }
+		SIMD_FORCE_INLINE operator NiPoint3*() noexcept { return reinterpret_cast<NiPoint3*>(mVec128.m128_f32); }
+		SIMD_FORCE_INLINE operator const NiPoint3*() const noexcept { return reinterpret_cast<const NiPoint3*>(mVec128.m128_f32); }
 	};
 
 	class btTransformEx : public btTransform
@@ -37,33 +37,33 @@ namespace Bullet
 		using btTransform::operator=;
 
 		SIMD_FORCE_INLINE btTransformEx(
-			const NiTransform& a_tf)
+			const NiTransform& a_tf) noexcept
 		{
 			_copy_from_nitransform(a_tf);
 		}
 
 		SIMD_FORCE_INLINE btTransformEx(
-			NiTransform&& a_tf)
+			NiTransform&& a_tf) noexcept
 		{
 			_copy_from_nitransform(a_tf);
 		}
 
 		SIMD_FORCE_INLINE btTransformEx& operator=(
-			const NiTransform& a_tf)
+			const NiTransform& a_tf) noexcept
 		{
 			_copy_from_nitransform(a_tf);
 			return *this;
 		}
 
 		SIMD_FORCE_INLINE btTransformEx& operator=(
-			NiTransform&& a_tf)
+			NiTransform&& a_tf) noexcept
 		{
 			_copy_from_nitransform(a_tf);
 			return *this;
 		}
 
 		SIMD_FORCE_INLINE btTransformEx operator*(
-			const btTransformEx& a_rhs) const
+			const btTransformEx& a_rhs) const noexcept
 		{
 			btTransformEx result;
 
@@ -75,22 +75,22 @@ namespace Bullet
 		}
 
 		SIMD_FORCE_INLINE btVector3 operator*(
-			const btVector3& a_pt) const
+			const btVector3& a_pt) const noexcept
 		{
 			return ((getBasis() * a_pt) *= m_scale) += getOrigin();
 		}
 
-		SIMD_FORCE_INLINE btScalar getScale() const
+		SIMD_FORCE_INLINE btScalar getScale() const noexcept
 		{
 			return m_scale;
 		}
 
-		SIMD_FORCE_INLINE void setScale(btScalar a_scale)
+		SIMD_FORCE_INLINE void setScale(btScalar a_scale) noexcept
 		{
 			m_scale = a_scale;
 		}
 
-		SIMD_FORCE_INLINE NiTransform getNiTransform() const
+		SIMD_FORCE_INLINE NiTransform getNiTransform() const noexcept
 		{
 			NiTransform result(NiTransform::noinit_arg_t{});
 
@@ -99,14 +99,14 @@ namespace Bullet
 			return result;
 		}
 
-		SIMD_FORCE_INLINE void writeNiTransform(NiTransform& a_tf) const
+		SIMD_FORCE_INLINE void writeNiTransform(NiTransform& a_tf) const noexcept
 		{
 			_write_to_nitransform(a_tf);
 		}
 
 	private:
 		SIMD_FORCE_INLINE void _copy_from_nitransform(
-			const NiTransform& a_tf)
+			const NiTransform& a_tf) noexcept
 		{
 			auto& b = getBasis();
 
@@ -120,7 +120,7 @@ namespace Bullet
 		}
 
 		SIMD_FORCE_INLINE void _write_to_nitransform(
-			NiTransform& a_tf) const
+			NiTransform& a_tf) const noexcept
 		{
 			static_assert(offsetof(NiTransform, rot) == 0x0);
 			static_assert(offsetof(NiTransform, pos) == 0x24);

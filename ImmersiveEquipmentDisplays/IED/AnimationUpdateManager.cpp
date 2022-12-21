@@ -7,7 +7,7 @@
 namespace IED
 {
 	void AnimationUpdateManager::BeginAnimationUpdate(
-		Controller* a_controller)
+		Controller* a_controller) noexcept
 	{
 		assert(m_running.exchange(true) == false);
 
@@ -15,7 +15,7 @@ namespace IED
 	}
 
 	void AnimationUpdateManager::EndAnimationUpdate(
-		Controller* a_controller)
+		Controller* a_controller) noexcept
 	{
 		assert(m_running.exchange(false) == true);
 
@@ -25,7 +25,7 @@ namespace IED
 	void AnimationUpdateManager::ProcessAnimationUpdateList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		const Controller&            a_controller)
+		const Controller&            a_controller) noexcept
 	{
 		assert(m_running.load() == true);
 
@@ -41,7 +41,7 @@ namespace IED
 	void AnimationUpdateManager::UpdateActorAnimationList(
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data,
-		const Controller&            a_controller)
+		const Controller&            a_controller) noexcept
 	{
 		const boost::lock_guard lock(a_controller.GetLock());
 

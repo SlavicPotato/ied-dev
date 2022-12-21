@@ -94,7 +94,7 @@ namespace IED
 		template <class... Args>
 		[[nodiscard]] inline constexpr auto& GetObjectHolder(
 			Actor* a_actor,
-			Args&&... a_args)
+			Args&&... a_args) noexcept
 		{
 			auto r = m_objects.try_emplace(
 				a_actor->formID,
@@ -143,8 +143,8 @@ namespace IED
 	private:
 		//void ApplyActorState(ActorObjectHolder& a_holder);
 
-		virtual void OnActorAcquire(ActorObjectHolder& a_holder) = 0;
-		virtual bool WantGlobalVariableUpdateOnAddRemove() const = 0;
+		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;
+		virtual bool WantGlobalVariableUpdateOnAddRemove() const noexcept = 0;
 
 	protected:
 		void RequestEvaluateAll(bool a_defer) const noexcept;
@@ -155,7 +155,7 @@ namespace IED
 		void RequestHFEvaluateAll() noexcept;
 		void RequestHFEvaluateAll(Game::FormID a_skip) noexcept;
 
-		inline auto EraseActor(ActorObjectMap::const_iterator a_it)
+		inline auto EraseActor(ActorObjectMap::const_iterator a_it) noexcept
 		{
 			auto result = m_objects.erase(a_it);
 
@@ -167,7 +167,7 @@ namespace IED
 			return result;
 		}
 
-		inline auto EraseActor(const ActorObjectMap::key_type& a_key)
+		inline auto EraseActor(const ActorObjectMap::key_type& a_key) noexcept
 		{
 			auto result = m_objects.erase(a_key);
 

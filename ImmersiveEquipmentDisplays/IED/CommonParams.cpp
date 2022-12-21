@@ -26,7 +26,7 @@ namespace IED
 		return objects.IsPlayer();
 	}
 
-	Game::ObjectRefHandle CommonParams::get_current_furniture_handle() const
+	Game::ObjectRefHandle CommonParams::get_current_furniture_handle() const noexcept
 	{
 		if (!furnHandle)
 		{
@@ -47,13 +47,13 @@ namespace IED
 		return *furnHandle;
 	}
 
-	bool CommonParams::is_using_furniture() const
+	bool CommonParams::is_using_furniture() const noexcept
 	{
 		const auto handle = get_current_furniture_handle();
 		return handle && handle.IsValid();
 	}
 
-	TESFurniture* CommonParams::get_furniture() const
+	TESFurniture* CommonParams::get_furniture() const noexcept
 	{
 		if (!furniture)
 		{
@@ -78,7 +78,7 @@ namespace IED
 		return *furniture;
 	}
 
-	bool CommonParams::get_laying_down() const
+	bool CommonParams::get_laying_down() const noexcept
 	{
 		if (!layingDown)
 		{
@@ -106,7 +106,7 @@ namespace IED
 		return *layingDown;
 	}
 
-	TESCombatStyle* CommonParams::get_combat_style() const
+	TESCombatStyle* CommonParams::get_combat_style() const noexcept
 	{
 		if (!combatStyle)
 		{
@@ -128,7 +128,7 @@ namespace IED
 		return *combatStyle;
 	}
 
-	bool CommonParams::can_dual_wield() const
+	bool CommonParams::can_dual_wield() const noexcept
 	{
 		if (!canDualWield)
 		{
@@ -155,7 +155,7 @@ namespace IED
 		return *canDualWield;
 	}
 
-	NiPointer<Actor>& CommonParams::get_mounted_actor() const
+	NiPointer<Actor>& CommonParams::get_mounted_actor() const noexcept
 	{
 		if (!mountedActor)
 		{
@@ -173,7 +173,7 @@ namespace IED
 		return *mountedActor;
 	}
 
-	NiPointer<Actor>& CommonParams::get_mounting_actor() const
+	NiPointer<Actor>& CommonParams::get_mounting_actor() const noexcept
 	{
 		if (!mountedByActor)
 		{
@@ -191,7 +191,7 @@ namespace IED
 		return *mountedByActor;
 	}
 
-	bool CommonParams::is_in_merchant_faction() const
+	bool CommonParams::is_in_merchant_faction() const noexcept
 	{
 		if (!isInMerchantFaction)
 		{
@@ -205,7 +205,7 @@ namespace IED
 		return *isInMerchantFaction;
 	}
 
-	bool CommonParams::is_in_player_enemy_faction() const
+	bool CommonParams::is_in_player_enemy_faction() const noexcept
 	{
 		if (!isInPlayerEnemyFaction)
 		{
@@ -219,7 +219,7 @@ namespace IED
 		return *isInPlayerEnemyFaction;
 	}
 
-	Actor* CommonParams::get_last_ridden_player_horse() const
+	NiPointer<Actor>& CommonParams::get_last_ridden_player_horse() const noexcept
 	{
 		if (!lastRiddenPlayerHorse)
 		{
@@ -236,7 +236,7 @@ namespace IED
 		return *lastRiddenPlayerHorse;
 	}
 
-	bool CommonParams::is_horse() const
+	bool CommonParams::is_horse() const noexcept
 	{
 		if (!isHorse)
 		{
@@ -246,7 +246,7 @@ namespace IED
 		return *isHorse;
 	}
 
-	bool CommonParams::is_mounted_actor_horse() const
+	bool CommonParams::is_mounted_actor_horse() const noexcept
 	{
 		if (!isMountHorse)
 		{

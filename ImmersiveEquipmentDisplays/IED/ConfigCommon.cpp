@@ -102,7 +102,7 @@ namespace IED
 		}
 
 		TESForm* configCachedForm_t::lookup_form(
-			const Game::FormID a_form)
+			const Game::FormID a_form) noexcept
 		{
 			if (a_form.IsTemporary())
 			{
@@ -165,7 +165,7 @@ namespace IED
 			}
 		}
 
-		bool configFormFilter_t::test(Game::FormID a_form) const
+		bool configFormFilter_t::test(Game::FormID a_form) const noexcept
 		{
 			if (filterFlags.test(FormFilterFlags::kUseProfile))
 			{

@@ -19,7 +19,7 @@ namespace IED
 		ObjectEntryBase&                 a_objectEntry,
 		ActorObjectHolder&               a_data,
 		stl::flag<ControllerUpdateFlags> a_flags,
-		bool                             a_defer)
+		bool                             a_defer) noexcept
 	{
 		if (auto& state = a_objectEntry.data.state)
 		{
@@ -72,12 +72,17 @@ namespace IED
 	bool IObjectManager::RemoveActorImpl(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
 		{
 			it->second.SetHandle(a_handle);
+
+			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
+			{
+				it->second.MarkDestroyed();
+			}
 
 			EraseActor(it);
 
@@ -91,12 +96,17 @@ namespace IED
 
 	bool IObjectManager::RemoveActorImpl(
 		TESObjectREFR*                   a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
 		{
 			it->second.SetHandle(a_actor->GetHandle());
+
+			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
+			{
+				it->second.MarkDestroyed();
+			}
 
 			EraseActor(it);
 
@@ -110,11 +120,16 @@ namespace IED
 
 	bool IObjectManager::RemoveActorImpl(
 		Game::FormID                     a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
 		{
+			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
+			{
+				it->second.MarkDestroyed();
+			}
+
 			EraseActor(it);
 
 			return true;
@@ -143,7 +158,7 @@ namespace IED
 		Game::FormID a_actor,
 		bool         a_defer,
 		bool         a_xfrmUpdate,
-		bool         a_xfrmUpdateNoDefer) const
+		bool         a_xfrmUpdateNoDefer) const noexcept
 	{
 		const boost::lock_guard lock(m_lock);
 
@@ -177,7 +192,7 @@ namespace IED
 		Game::FormID a_actor,
 		bool         a_defer,
 		bool         a_xfrmUpdate,
-		bool         a_xfrmUpdateNoDefer) const
+		bool         a_xfrmUpdateNoDefer) const noexcept
 	{
 		ITaskPool::AddTask(
 			[this,
@@ -197,7 +212,7 @@ namespace IED
 		TESObjectREFR* a_actor,
 		bool           a_defer,
 		bool           a_xfrmUpdate,
-		bool           a_xfrmUpdateNoDefer) const
+		bool           a_xfrmUpdateNoDefer) const noexcept
 	{
 		if (IsActorValid(a_actor))
 		{
@@ -209,7 +224,7 @@ namespace IED
 		}
 	}
 
-	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval)
+	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval) noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_requestEval] {
 			const boost::lock_guard lock(m_lock);
@@ -220,7 +235,7 @@ namespace IED
 
 	void IObjectManager::QueueClearVariables(
 		Game::FormID a_handle,
-		bool         a_requestEval)
+		bool         a_requestEval) noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
 			const boost::lock_guard lock(m_lock);
@@ -229,7 +244,7 @@ namespace IED
 		});
 	}
 
-	void IObjectManager::QueueRequestVariableUpdateOnAll() const
+	void IObjectManager::QueueRequestVariableUpdateOnAll() const noexcept
 	{
 		ITaskPool::AddPriorityTask([this] {
 			const boost::lock_guard lock(m_lock);
@@ -238,7 +253,7 @@ namespace IED
 		});
 	}
 
-	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const
+	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_handle] {
 			const boost::lock_guard lock(m_lock);
@@ -250,7 +265,7 @@ namespace IED
 	void IObjectManager::RemoveActorGear(
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		auto it = m_objects.find(a_actor->formID);
 		if (it != m_objects.end())
@@ -263,7 +278,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
 		ActorObjectHolder&               a_holder,
-		stl::flag<ControllerUpdateFlags> a_flags)
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
 		bool result = false;
 
@@ -297,7 +312,7 @@ namespace IED
 
 	bool IObjectManager::RemoveInvisibleObjects(
 		ActorObjectHolder&    a_holder,
-		Game::ObjectRefHandle a_handle)
+		Game::ObjectRefHandle a_handle) noexcept
 	{
 		const bool defer = EngineExtensions::ShouldDefer3DTask();
 
@@ -359,7 +374,7 @@ namespace IED
 		return result;
 	}
 
-	void IObjectManager::ClearObjectsImpl()
+	void IObjectManager::ClearObjectsImpl() noexcept
 	{
 		m_objects.clear();
 	}
@@ -433,7 +448,7 @@ namespace IED
 	void IObjectManager::GetNodeName(
 		TESForm*                     a_form,
 		const IModel::modelParams_t& a_params,
-		char (&a_out)[INode::NODE_NAME_BUFFER_SIZE])
+		char (&a_out)[INode::NODE_NAME_BUFFER_SIZE]) noexcept
 	{
 		switch (a_params.type)
 		{
@@ -475,7 +490,7 @@ namespace IED
 		const bool                      a_visible,
 		const bool                      a_disableHavok,
 		const bool                      a_bhkAnims,
-		const bool                      a_physics)
+		const bool                      a_physics) noexcept
 	{
 		if (a_objectEntry.data.state)
 		{
@@ -666,7 +681,7 @@ namespace IED
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
 					state->weapAnimGraphManagerHolder,
-					[&](const char* a_path) {
+					[&](const char* a_path) noexcept {
 						return a_baseConfig.hkxFilter.empty() ?
 				                   true :
 				                   !a_baseConfig.hkxFilter.contains(a_path);
@@ -719,7 +734,7 @@ namespace IED
 		const bool                      a_visible,
 		const bool                      a_disableHavok,
 		const bool                      a_bhkAnims,
-		const bool                      a_physics)
+		const bool                      a_physics) noexcept
 	{
 		if (a_objectEntry.data.state)
 		{
@@ -979,7 +994,7 @@ namespace IED
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,
 						e.grpObject->weapAnimGraphManagerHolder,
-						[&](const char* a_path) {
+						[&](const char* a_path) noexcept {
 							return a_baseConfig.hkxFilter.empty() ?
 					                   true :
 					                   !a_baseConfig.hkxFilter.contains(a_path);
@@ -1044,7 +1059,7 @@ namespace IED
 		const NiPointer<NiNode>&                 a_objectNode,
 		targetNodes_t&                           a_targetNodes,
 		const Data::configBaseValues_t&          a_config,
-		Actor*                                   a_actor)
+		Actor*                                   a_actor) noexcept
 	{
 		a_state->form           = a_form;
 		a_state->formid         = a_form->formID;
@@ -1061,7 +1076,7 @@ namespace IED
 
 	void IObjectManager::TryMakeArrowState(
 		std::unique_ptr<ObjectEntryBase::State>& a_state,
-		NiNode*                                  a_object)
+		NiNode*                                  a_object) noexcept
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
@@ -1076,7 +1091,7 @@ namespace IED
 		const processParams_t&          a_params,
 		const Data::configBaseValues_t& a_config,
 		const ObjectEntryBase&          a_objectEntry,
-		bool                            a_equip)
+		bool                            a_equip) noexcept
 	{
 		if (a_objectEntry.data.state &&
 		    a_params.flags.test(ControllerUpdateFlags::kPlaySound) &&
@@ -1097,7 +1112,7 @@ namespace IED
 		NiNode*                     a_root,
 		const Data::NodeDescriptor& a_node,
 		bool                        a_atmReference,
-		ObjectEntryBase&            a_entry)
+		ObjectEntryBase&            a_entry) noexcept
 	{
 		auto& state = a_entry.data.state;
 

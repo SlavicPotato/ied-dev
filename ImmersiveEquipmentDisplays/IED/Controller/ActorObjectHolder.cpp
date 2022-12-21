@@ -30,7 +30,7 @@ namespace IED
 		{
 			return stl::make_array<
 				ObjectEntrySlot,
-				stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() {
+				stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() noexcept {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 
 				return ObjectEntrySlot::tuple_init_type(
@@ -53,7 +53,7 @@ namespace IED
 		bool                  a_nodeOverrideEnabledPlayer,
 		bool                  a_syncToFirstPersonSkeleton,
 		//bool                    a_animEventForwarding,
-		const BipedSlotDataPtr& a_lastEquipped) :
+		const BipedSlotDataPtr& a_lastEquipped) noexcept :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
@@ -236,7 +236,7 @@ namespace IED
 		}*/
 	}
 
-	ActorObjectHolder::~ActorObjectHolder()
+	ActorObjectHolder::~ActorObjectHolder() noexcept
 	{
 		/*RE::BSAnimationGraphManagerPtr agm;
 		if (m_actor->GetAnimationGraphManagerImpl(agm))
@@ -261,14 +261,14 @@ namespace IED
 
 		/*if (!defer)
 		{
-			gLog.Debug("%s: immediate cleanup: %X", __FUNCTION__, m_actorid.get());
+			gLog.Debug("%s: immediate cleanup: %X ||| %p | %d", __FUNCTION__, m_actorid.get(), m_actor->loadedState, m_flags.test(ActorObjectHolderFlags::kDestroyed));
 		}
 		else
 		{
-			gLog.Debug("%s: DEFERRED cleanup: %X", __FUNCTION__, m_actorid.get());
+			gLog.Debug("%s: DEFERRED cleanup: %X ||| %p | %d", __FUNCTION__, m_actorid.get(), m_actor->loadedState, m_flags.test(ActorObjectHolderFlags::kDestroyed));
 		}*/
 
-		if (m_actor->loadedState)
+		if (m_actor->loadedState && !m_flags.test(ActorObjectHolderFlags::kDestroyed))
 		{
 			for (const auto& e : m_cmeNodes)
 			{
@@ -452,9 +452,9 @@ namespace IED
 	}
 
 	void ActorObjectHolder::UpdateAllAnimationGraphs(
-		const BSAnimationUpdateData& a_data) const
+		const BSAnimationUpdateData& a_data) const noexcept
 	{
-		visit([&](auto& a_e) [[msvc::forceinline]] {
+		visit([&](auto& a_e) noexcept [[msvc::forceinline]] {
 			if (auto& state = a_e.data.state)
 			{
 				//if (!state->flags.test(ObjectEntryFlags::kInvisible))
@@ -465,7 +465,7 @@ namespace IED
 		});
 	}
 
-	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid)
+	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid) noexcept
 	{
 		if (m_rpc.size() > MAX_RPC_SIZE)
 		{
@@ -486,7 +486,7 @@ namespace IED
 		return value;
 	}
 
-	bool ActorObjectHolder::UpdateNodeMonitorEntries()
+	bool ActorObjectHolder::UpdateNodeMonitorEntries() noexcept
 	{
 		bool result = false;
 
@@ -498,7 +498,7 @@ namespace IED
 		return result;
 	}
 
-	bool ActorObjectHolder::GetNodeMonitorResult(std::uint32_t a_uid)
+	bool ActorObjectHolder::GetNodeMonitorResult(std::uint32_t a_uid) noexcept
 	{
 		auto it = m_nodeMonitorEntries.find(a_uid);
 		return it != m_nodeMonitorEntries.end() ?
@@ -508,7 +508,7 @@ namespace IED
 
 	bool ActorObjectHolder::GetSheathNodes(
 		Data::ObjectSlot             a_slot,
-		std::pair<NiNode*, NiNode*>& a_out) const
+		std::pair<NiNode*, NiNode*>& a_out) const noexcept
 	{
 		GearNodeID id;
 
@@ -584,7 +584,7 @@ namespace IED
 		}
 	}
 
-	void ActorObjectHolder::QueueDisposeMOVSimComponents()
+	void ActorObjectHolder::QueueDisposeMOVSimComponents() noexcept
 	{
 		/*using list_type = stl::forward_list<std::shared_ptr<PHYSimComponent>>;
 
@@ -617,7 +617,7 @@ namespace IED
 	}
 
 	bool ActorObjectHolder::QueueDisposeAllObjectEntries(
-		Game::ObjectRefHandle a_handle)
+		Game::ObjectRefHandle a_handle) noexcept
 	{
 		using list_type = stl::forward_list<ObjectEntryBase::ActiveData>;
 
@@ -661,7 +661,7 @@ namespace IED
 			{
 			}
 
-			virtual void Run() override
+			virtual void Run() noexcept override
 			{
 				if (m_handle)
 				{
@@ -677,7 +677,7 @@ namespace IED
 				}
 			}
 
-			virtual void Dispose() override
+			virtual void Dispose() noexcept override
 			{
 				delete this;
 			}
@@ -756,20 +756,20 @@ namespace IED
 	}
 
 	void ActorObjectHolder::RemoveSimComponent(
-		const std::shared_ptr<PHYSimComponent>& a_sc)
+		const std::shared_ptr<PHYSimComponent>& a_sc) noexcept
 	{
 		std::erase(m_simNodeList, a_sc);
 	}
 
 	void ActorObjectHolder::RemoveAndDestroySimComponent(
-		std::shared_ptr<PHYSimComponent>& a_sc)
+		std::shared_ptr<PHYSimComponent>& a_sc) noexcept
 	{
 		std::erase(m_simNodeList, a_sc);
 		a_sc.reset();
 	}
 
 	void ActorObjectHolder::CreateExtraMovNodes(
-		NiNode* a_npcroot)
+		NiNode* a_npcroot) noexcept
 	{
 		for (auto& v : NodeOverrideData::GetExtraMovNodes())
 		{
@@ -805,7 +805,7 @@ namespace IED
 
 	void ActorObjectHolder::CreateExtraCopyNode(
 		NiNode*                                       a_npcroot,
-		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const
+		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const noexcept
 	{
 		if (a_npcroot->GetObjectByName(a_entry.dst))
 		{
@@ -844,7 +844,7 @@ namespace IED
 		UpdateDownwardPass(node);
 	}
 
-	void ActorObjectHolder::ApplyXP32NodeTransformOverrides() const
+	void ActorObjectHolder::ApplyXP32NodeTransformOverrides() const noexcept
 	{
 		SkeletonExtensions::ApplyXP32NodeTransformOverrides(m_npcroot.get(), m_skeletonID);
 	}

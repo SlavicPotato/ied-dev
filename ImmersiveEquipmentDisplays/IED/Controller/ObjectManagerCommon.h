@@ -8,7 +8,7 @@ namespace IED
 	{
 		struct cacheTransform_t
 		{
-			constexpr void Update(const Data::configTransform_t& a_in)
+			constexpr void Update(const Data::configTransform_t& a_in) noexcept
 			{
 				scale    = a_in.scale;
 				position = a_in.position;
@@ -27,7 +27,7 @@ namespace IED
 			}
 
 			[[nodiscard]] inline constexpr bool operator==(
-				const Data::configTransform_t& a_rhs) const
+				const Data::configTransform_t& a_rhs) const noexcept
 			{
 				return tag == a_rhs;
 			}

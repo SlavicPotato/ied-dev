@@ -62,56 +62,56 @@ namespace IED
 			const Data::configBaseValues_t& a_entry,
 			const Data::NodeDescriptor&     a_node,
 			NiNode*                         a_root,
-			targetNodes_t&                  a_out);
+			targetNodes_t&                  a_out) noexcept;
 
 		static bool AttachObjectToTargetNode(
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,
 			NiNode*                     a_root,
 			NiAVObject*                 a_object,
-			NiPointer<NiNode>&          a_newRef);
+			NiPointer<NiNode>&          a_newRef) noexcept;
 
 		static void UpdateObjectTransform(
 			const Data::cacheTransform_t& a_trnsf,
 			NiAVObject*                   a_node,
-			NiNode*                       a_refNode);
+			NiNode*                       a_refNode) noexcept;
 
 		static void UpdateObjectTransform(
 			const Data::configTransform_t& a_trnsf,
-			NiAVObject*                    a_object);
+			NiAVObject*                    a_object) noexcept;
 
 		static void GetArmorNodeName(
 			Game::FormID a_formid,
 			Game::FormID a_arma,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
 		static void GetWeaponNodeName(
 			Game::FormID a_formid,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
 		static void GetLightNodeName(
 			Game::FormID a_formid,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 		
 		static void GetMiscNodeName(
 			Game::FormID a_formid,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
 		static void GetAmmoNodeName(
 			Game::FormID a_formid,
-			char (&a_out)[NODE_NAME_BUFFER_SIZE]);
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
-		static void UpdateRootIfGamePaused(NiNode* a_root);
+		static void UpdateRootIfGamePaused(NiNode* a_root) noexcept;
 
 	protected:
 	private:
 		static findResult_t FindNodes(
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,
-			NiNode*                     a_root);
+			NiNode*                     a_root) noexcept;
 
 		static BSFixedString GetTargetNodeName(
 			const Data::NodeDescriptor& a_node,
-			bool                        a_atmReference);
+			bool                        a_atmReference) noexcept;
 	};
 }

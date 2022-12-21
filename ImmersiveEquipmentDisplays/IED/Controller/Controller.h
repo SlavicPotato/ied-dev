@@ -192,7 +192,7 @@ namespace IED
 		bool RemoveActor(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		/*bool RemoveActor(
 			TESObjectREFR*                   a_actor,
@@ -200,7 +200,7 @@ namespace IED
 
 		bool RemoveActor(
 			Game::FormID                     a_actor,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		/*void RemoveActorByHandle(
 			Game::ObjectRefHandle a_mhandle,
@@ -219,16 +219,16 @@ namespace IED
 		void QueueEvaluateAll(stl::flag<ControllerUpdateFlags> a_flags);
 
 		// use when acquiring global lock may be detrimental to performance
-		void QueueRequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const;
+		void QueueRequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const noexcept;
 
-		void RequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const;
+		void RequestEvaluateTransformsActor(Game::FormID a_actor, bool a_noDefer) const noexcept;
 		void RequestEvaluateTransformsNPC(Game::FormID a_npc, bool a_noDefer) const;
 		void RequestEvaluateTransformsRace(Game::FormID a_race, bool a_noDefer) const;
 		void RequestEvaluateTransformsAll(bool a_noDefer) const;
 
-		void QueueActorRemove(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags);
-		void QueueReset(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags);
-		void QueueReset(Game::FormID a_actor, stl::flag<ControllerUpdateFlags> a_flags);
+		void QueueActorRemove(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags) noexcept;
+		void QueueReset(TESObjectREFR* a_actor, stl::flag<ControllerUpdateFlags> a_flags) noexcept;
+		void QueueReset(Game::FormID a_actor, stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 		void QueueResetNPC(Game::FormID a_npc, stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueResetRace(Game::FormID a_race, stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueReset(Game::FormID a_actor, stl::flag<ControllerUpdateFlags> a_flags, Data::ObjectSlot a_slot);
@@ -475,8 +475,7 @@ namespace IED
 
 		//void QueueClearVariableStorage(bool a_requestEval);
 
-		void RunUpdateBipedSlotCache(
-			processParams_t& a_params);
+		void RunUpdateBipedSlotCache(processParams_t& a_params) noexcept;
 
 		[[nodiscard]] inline constexpr auto GetEvalCounter() const noexcept
 		{
@@ -516,25 +515,25 @@ namespace IED
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
 			NiNode*                          a_root,
 			NiNode*                          a_npcroot,
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
 			const CommonParams&              a_params,
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
 			NiNode*                          a_root,
@@ -544,29 +543,29 @@ namespace IED
 			TESRace*                         a_race,
 			Game::ObjectRefHandle            a_handle,
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void UpdateBipedSlotCache(
 			processParams_t&   a_params,
-			ActorObjectHolder& a_holder);
+			ActorObjectHolder& a_holder) noexcept;
 
 		void RunVariableMapUpdate(
 			processParams_t& a_params,
-			bool             a_markAllForLFEval = false);
+			bool             a_markAllForLFEval = false) noexcept;
 
 		void DoObjectEvaluation(
-			processParams_t& a_params);
+			processParams_t& a_params) noexcept;
 
 		void EvaluateImpl(
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		/*void EvaluateTransformsImpl(
 			Game::FormID a_actor);*/
 
 		void EvaluateTransformsImpl(
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool ProcessTransformsImpl(
 			NiNode*                          a_root,
@@ -577,7 +576,7 @@ namespace IED
 			TESRace*                         a_race,
 			Data::ConfigSex                  a_sex,
 			ActorObjectHolder&               a_holder,
-			stl::flag<ControllerUpdateFlags> a_flags);
+			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void ActorResetImpl(
 			Actor*                           a_actor,
@@ -745,78 +744,86 @@ namespace IED
 			const Data::configBaseValues_t& a_config,
 			ObjectEntryBase&                a_entry,
 			bool                            a_visible,
-			TESForm*                        a_currentModelForm);
+			TESForm*                        a_currentModelForm) noexcept;
 
 		void ResetEffectShaderData(
 			processParams_t& a_params,
-			ObjectEntryBase& a_entry);
+			ObjectEntryBase& a_entry) noexcept;
 
 		void ResetEffectShaderData(
 			processParams_t& a_params,
 			ObjectEntryBase& a_entry,
-			NiAVObject*      a_object);
+			NiAVObject*      a_object) noexcept;
 
 		void UpdateObjectEffectShaders(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry);
+			ObjectEntryCustom&          a_objectEntry) noexcept;
 
 		void RemoveSlotObjectEntry(
 			processParams_t& a_params,
-			ObjectEntrySlot& a_entry);
+			ObjectEntrySlot& a_entry) noexcept;
 
-		void ProcessSlots(processParams_t& a_params);
+		void ProcessSlots(processParams_t& a_params) noexcept;
 
 		bool IsBlockedByChance(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_objectEntry);
+			ObjectEntryCustom&          a_objectEntry) noexcept;
+
+		ActorObjectHolder* SelectCustomFormVariableSourceHolder(
+			Game::FormID     a_id,
+			processParams_t& a_params) noexcept;
+
+		ActorObjectHolder* SelectCustomFormVariableSource(
+			processParams_t&            a_params,
+			const Data::configCustom_t& a_config) noexcept;
 
 		const Data::configCachedForm_t* SelectCustomForm(
 			processParams_t&            a_params,
-			const Data::configCustom_t& a_config);
+			const Data::configCustom_t& a_config) noexcept;
 
 		bool ProcessCustomEntry(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
-			ObjectEntryCustom&          a_cacheEntry);
+			ObjectEntryCustom&          a_cacheEntry) noexcept;
 
 		void ProcessCustomEntryMap(
 			processParams_t&                     a_params,
 			const Data::configCustomHolder_t&    a_confData,
-			ActorObjectHolder::customEntryMap_t& a_entryMap);
+			ActorObjectHolder::customEntryMap_t& a_entryMap) noexcept;
 
 		void ProcessCustomMap(
 			processParams_t&                     a_params,
 			const Data::configCustomPluginMap_t& a_confPluginMap,
-			Data::ConfigClass                    a_class);
+			Data::ConfigClass                    a_class) noexcept;
 
-		void ProcessCustom(processParams_t& a_params);
+		void ProcessCustom(processParams_t& a_params) noexcept;
 
 		void SaveLastEquippedItems(
 			processParams_t&          a_params,
 			const equippedItemInfo_t& a_info,
-			ActorObjectHolder&        a_objectHolder);
+			ActorObjectHolder&        a_objectHolder) noexcept;
 
 		bool GetVisibilitySwitch(
 			Actor*                     a_actor,
 			stl::flag<Data::BaseFlags> a_flags,
-			processParams_t&           a_params);
+			processParams_t&           a_params) noexcept;
 
 		bool LookupTrackedActor(
 			Game::FormID         a_actor,
-			actorLookupResult_t& a_out);
+			actorLookupResult_t& a_out) noexcept;
 
 		bool LookupTrackedActor(
 			const ActorObjectHolder& a_record,
-			actorLookupResult_t&     a_out);
+			actorLookupResult_t&     a_out) noexcept;
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			Actor*             a_actor,
-			ActorObjectHolder& a_holder);
+			ActorObjectHolder& a_holder) noexcept;
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
-			ActorObjectHolder& a_holder);
+			ActorObjectHolder& a_holder) noexcept;
 
 		void CollectKnownActors(
 			actorLookupResultMap_t& a_out);
@@ -832,8 +839,8 @@ namespace IED
 
 		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
 
-		virtual void OnActorAcquire(ActorObjectHolder& a_holder) override;
-		virtual bool WantGlobalVariableUpdateOnAddRemove() const override;
+		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept override;
+		virtual bool WantGlobalVariableUpdateOnAddRemove() const noexcept override;
 
 		// internal events
 
@@ -936,7 +943,7 @@ namespace IED
 		virtual void JSOnDataImport() override;
 
 		// process effects
-		void RunPL() override;
+		void RunPL() noexcept override;
 
 		// members
 
@@ -965,8 +972,8 @@ namespace IED
 
 		struct
 		{
-			SlotResults                                              sr;
-			UseCountContainer                                        uc;
+			SlotResults       sr;
+			UseCountContainer uc;
 		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };

@@ -36,7 +36,7 @@ namespace IED
 				kEnablePhysics
 		};
 
-		void ProcessEffects(const ActorObjectMap& a_map);
+		void ProcessEffects(const ActorObjectMap& a_map) noexcept;
 
 		[[nodiscard]] inline constexpr auto EffectControllerGetTime() const noexcept
 		{
@@ -69,21 +69,21 @@ namespace IED
 		}
 
 	private:
-		void ProcessEffectsImpl(const ActorObjectMap& a_map);
+		void ProcessEffectsImpl(const ActorObjectMap& a_map) noexcept;
 
 		void PreparePhysicsUpdateData(
 			float                          a_interval,
-			std::optional<PhysUpdateData>& a_data);
+			std::optional<PhysUpdateData>& a_data) noexcept;
 
 		void RunUpdates(
 			const float                          a_interval,
 			const Game::Unk2f6b948::Steps&       a_stepMuls,
 			const std::optional<PhysUpdateData>& a_physUpdData,
-			const ActorObjectHolder&             a_holder);
+			const ActorObjectHolder&             a_holder) noexcept;
 
 		static void UpdateShaders(
 			const float              a_step,
-			const ActorObjectHolder& a_holder);
+			const ActorObjectHolder& a_holder) noexcept;
 
 		static void UpdatePhysics(
 			const float              a_stepMul,
@@ -93,26 +93,26 @@ namespace IED
 		SKMP_FORCEINLINE static void UpdateShadersOnDisplay(
 			const EffectShaderData&       a_data,
 			const ObjectEntryBase::State& a_state,
-			float                         a_step);
+			float                         a_step) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateShadersOnEquipped(
 			Actor*                  a_actor,
 			const EffectShaderData& a_data,
-			float                   a_step);
+			float                   a_step) noexcept;
 
 		static void ProcessNiObjectTree(
 			NiAVObject*                    a_object,
-			const EffectShaderData::Entry& a_entry);
+			const EffectShaderData::Entry& a_entry) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateObjectShaders(
 			Actor*                   a_actor,
 			const ObjectEntryCustom& a_entry,
-			float                    a_step);
+			float                    a_step) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateObjectShaders(
 			Actor*                 a_actor,
 			const ObjectEntrySlot& a_entry,
-			float                  a_step);
+			float                  a_step) noexcept;
 
 		mutable PerfTimerInt m_timer{ 1000000LL };
 		mutable long long    m_currentTime{ 0LL };

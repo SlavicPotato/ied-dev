@@ -73,23 +73,23 @@ namespace IED
 
 		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL = 1000000ll;
 
-		virtual void Run() override;
+		virtual void Run() noexcept override;
 
 		SKMP_FORCEINLINE void UpdateNode(
 			ActorObjectHolder& a_record,
-			ObjectEntryBase&   a_entry);
+			ObjectEntryBase&   a_entry) noexcept;
 		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		void ProcessTransformUpdateRequest(
-			ActorObjectHolder& a_data);
+			ActorObjectHolder& a_data) noexcept;
 
 		void ProcessEvalRequest(
-			ActorObjectHolder& a_data);
+			ActorObjectHolder& a_data) noexcept;
 
 		static constexpr bool CheckMonitorNodes(
 			ActorObjectHolder& a_data) noexcept;
 
-		void UpdateState();
+		void UpdateState() noexcept;
 
 		State m_state;
 

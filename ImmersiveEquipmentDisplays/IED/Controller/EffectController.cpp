@@ -10,7 +10,7 @@
 
 namespace IED
 {
-	void EffectController::ProcessEffects(const ActorObjectMap& a_map)
+	void EffectController::ProcessEffects(const ActorObjectMap& a_map) noexcept
 	{
 		m_timer.Begin();
 
@@ -22,7 +22,7 @@ namespace IED
 		m_timer.End(m_currentTime);
 	}
 
-	void EffectController::ProcessEffectsImpl(const ActorObjectMap& a_map)
+	void EffectController::ProcessEffectsImpl(const ActorObjectMap& a_map) noexcept
 	{
 		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
 
@@ -41,7 +41,7 @@ namespace IED
 				std::execution::par,
 				a_map.begin(),
 				a_map.end(),
-				[&](auto& a_e) {
+				[&](auto& a_e) noexcept {
 					RunUpdates(interval, stepMuls, physUpdateData, a_e.second);
 				});
 		}
@@ -56,7 +56,7 @@ namespace IED
 
 	void EffectController::PreparePhysicsUpdateData(
 		float                          a_interval,
-		std::optional<PhysUpdateData>& a_data)
+		std::optional<PhysUpdateData>& a_data) noexcept
 	{
 		constexpr auto confTimeTick = 1.0f / 30.0f;
 		constexpr auto maxSubSteps  = 15.0f;
@@ -82,7 +82,7 @@ namespace IED
 		const float                          a_interval,
 		const Game::Unk2f6b948::Steps&       a_stepMuls,
 		const std::optional<PhysUpdateData>& a_physUpdData,
-		const ActorObjectHolder&             a_holder)
+		const ActorObjectHolder&             a_holder) noexcept
 	{
 		if (!a_holder.IsCellAttached())
 		{
@@ -107,7 +107,7 @@ namespace IED
 
 	void EffectController::UpdateShaders(
 		const float              a_step,
-		const ActorObjectHolder& a_holder)
+		const ActorObjectHolder& a_holder) noexcept
 	{
 		NiPointer<TESObjectREFR> refr;
 		if (!a_holder.GetHandle().Lookup(refr))
@@ -126,7 +126,7 @@ namespace IED
 			return;
 		}
 
-		a_holder.visit([&](auto& a_entry) [[msvc::forceinline]] {
+		a_holder.visit([&](auto& a_entry) noexcept [[msvc::forceinline]] {
 			UpdateObjectShaders(actor, a_entry, a_step);
 		});
 	}
@@ -166,7 +166,7 @@ namespace IED
 	void EffectController::UpdateShadersOnDisplay(
 		const EffectShaderData&       a_data,
 		const ObjectEntryBase::State& a_state,
-		float                         a_step)
+		float                         a_step) noexcept
 	{
 		for (const auto& e : a_data.data)
 		{
@@ -200,9 +200,9 @@ namespace IED
 	void EffectController::UpdateShadersOnEquipped(
 		Actor*                  a_actor,
 		const EffectShaderData& a_data,
-		float                   a_step)
+		float                   a_step) noexcept
 	{
-		if (a_data.bipedObject == BIPED_OBJECT::kNone)
+		if (a_data.bipedObject >= BIPED_OBJECT::kNone)
 		{
 			return;
 		}
@@ -251,9 +251,11 @@ namespace IED
 
 	void EffectController::ProcessNiObjectTree(
 		NiAVObject*                    a_object,
-		const EffectShaderData::Entry& a_entry)
+		const EffectShaderData::Entry& a_entry) noexcept
 	{
-		Util::Node::TraverseGeometry(a_object, [&](BSGeometry* a_geometry) {
+		using namespace Util::Node;
+
+		TraverseGeometry(a_object, [&](BSGeometry* a_geometry) noexcept {
 			if (auto& effect = a_geometry->m_spEffectState)
 			{
 				if (auto shaderProp = ::NRTTI<BSShaderProperty>()(effect.get()))
@@ -262,7 +264,7 @@ namespace IED
 					{
 						if (!a_entry.targetNodes.contains(a_geometry->m_name))
 						{
-							return Util::Node::VisitorControl::kContinue;
+							return VisitorControl::kContinue;
 						}
 					}
 
@@ -288,14 +290,14 @@ namespace IED
 				}
 			}
 
-			return Util::Node::VisitorControl::kContinue;
+			return VisitorControl::kContinue;
 		});
 	}
 
 	void EffectController::UpdateObjectShaders(
 		[[maybe_unused]] Actor*  a_actor,
 		const ObjectEntryCustom& a_entry,
-		float                    a_step)
+		float                    a_step) noexcept
 	{
 		auto& state = a_entry.data.state;
 		if (!state)
@@ -315,7 +317,7 @@ namespace IED
 	void EffectController::UpdateObjectShaders(
 		Actor*                 a_actor,
 		const ObjectEntrySlot& a_entry,
-		float                  a_step)
+		float                  a_step) noexcept
 	{
 		auto& efdata = a_entry.data.effectShaderData;
 		if (!efdata)

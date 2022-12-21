@@ -14,7 +14,7 @@ namespace IED
 	bool IConditionalVariableProcessor::UpdateVariableMap(
 		processParams_t&                          a_params,
 		const configConditionalVariablesHolder_t& a_config,
-		conditionalVariableMap_t&                 a_map)
+		conditionalVariableMap_t&                 a_map) noexcept
 	{
 		a_params.useCount.clear();
 
@@ -47,7 +47,7 @@ namespace IED
 
 	constexpr const Data::configConditionalVariable_t* IConditionalVariableProcessor::GetOverrideVariable(
 		processParams_t&                              a_params,
-		const Data::configConditionalVariablesList_t& a_list)
+		const Data::configConditionalVariablesList_t& a_list) noexcept
 	{
 		for (auto& e : a_list)
 		{
@@ -80,7 +80,7 @@ namespace IED
 
 	Game::FormID IConditionalVariableProcessor::GetLastEquippedForm(
 		processParams_t&                                  a_params,
-		const Data::configConditionalVariableValueData_t& a_data)
+		const Data::configConditionalVariableValueData_t& a_data) noexcept
 	{
 		auto& controller = a_params.controller;
 
@@ -89,7 +89,7 @@ namespace IED
 		auto it = controller.DoLastEquippedSelection(
 			a_params,
 			a_data.lastEquipped,
-			[](const auto& a_itemEntry) [[msvc::forceinline]] {
+			[](const auto& a_itemEntry) noexcept [[msvc::forceinline]] {
 				return !a_itemEntry.first.IsTemporary();
 			});
 
@@ -112,7 +112,7 @@ namespace IED
 		ConditionalVariableType                           a_defaultType,
 		const Data::configConditionalVariableValueData_t& a_src,
 		conditionalVariableStorage_t&                     a_dst,
-		bool&                                             a_modified)
+		bool&                                             a_modified) noexcept
 	{
 		switch (a_defaultType)
 		{

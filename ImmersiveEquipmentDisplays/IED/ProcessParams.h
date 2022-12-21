@@ -93,7 +93,7 @@ namespace IED
 		{
 		}
 
-		void ResetEffectShaders();
+		void ResetEffectShaders() noexcept;
 
 		processState_t state;
 	};

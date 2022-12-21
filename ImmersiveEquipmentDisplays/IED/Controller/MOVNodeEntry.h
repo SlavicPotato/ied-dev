@@ -8,13 +8,12 @@ namespace IED
 
 	struct MOVNodeEntry
 	{
-		bool has_visible_geometry() const;
-		bool parent_has_visible_geometry() const;
+		bool has_visible_geometry() const noexcept;
+		bool parent_has_visible_geometry() const noexcept;
 
 		NiPointer<NiNode>                node;
 		NiTransform                      origTransform;  // cached or read from loaded actor 3D
 		WeaponPlacementID                placementID;
-		bool                             simSuspended{ false };
 		std::shared_ptr<PHYSimComponent> simComponent;
 	};
 }

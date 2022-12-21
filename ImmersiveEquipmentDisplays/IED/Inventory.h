@@ -43,7 +43,7 @@ namespace IED
 		SKMP_FORCEINLINE void Process(const InventoryEntryData* a_entryData) noexcept;
 
 	public:
-		void GenerateSlotCandidates(bool a_checkFav) noexcept;
+		void GenerateSlotCandidates(const bool a_isPlayer, const bool a_checkFav) noexcept;
 
 		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
 		{
@@ -53,9 +53,6 @@ namespace IED
 
 		Data::CollectorData data;
 		SlotResults&        slotResults;
-
-	private:
-		const bool isPlayer;
 	};
 
 	using UseCountContainer = stl::flat_map<

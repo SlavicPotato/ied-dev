@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	float nodeOverrideParams_t::get_weapon_adjust()
+	float nodeOverrideParams_t::get_weapon_adjust() noexcept
 	{
 		if (!weaponAdjust)
 		{
@@ -30,7 +30,7 @@ namespace IED
 		return *weaponAdjust;
 	}
 
-	void nodeOverrideParams_t::make_item_data()
+	void nodeOverrideParams_t::make_item_data() noexcept
 	{
 		auto& idata = itemData;
 		idata.clear();

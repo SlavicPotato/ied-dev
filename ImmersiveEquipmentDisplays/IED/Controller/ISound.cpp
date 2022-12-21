@@ -7,7 +7,7 @@ namespace IED
 	void ISound::SoundPlay(
 		std::uint8_t a_formType,
 		NiAVObject*  a_object,
-		bool         a_equip) const
+		bool         a_equip) const noexcept
 	{
 		if (!a_object)
 		{
@@ -40,7 +40,7 @@ namespace IED
 	BGSSoundDescriptorForm*
 		ISound::SoundRefHolder::Get(
 			std::uint8_t a_formType,
-			bool         a_equip) const
+			bool         a_equip) const noexcept
 	{
 		auto it = data.find(a_formType);
 		if (it == data.end())

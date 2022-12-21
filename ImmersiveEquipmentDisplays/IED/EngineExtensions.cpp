@@ -549,7 +549,7 @@ namespace IED
 		LogPatchEnd();
 	}*/
 
-	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped)
+	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept
 	{
 		{
 			NiPointer<TESObjectREFR> ref;
@@ -571,7 +571,7 @@ namespace IED
 	void EngineExtensions::Character_Resurrect_Hook(
 		Character* a_actor,
 		bool       a_resetInventory,
-		bool       a_attach3D)
+		bool       a_attach3D) noexcept
 	{
 		if (a_attach3D)
 		{
@@ -586,7 +586,7 @@ namespace IED
 	}
 
 	template <class T>
-	void EngineExtensions::RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*))
+	void EngineExtensions::RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*) noexcept) noexcept
 	{
 		bool eval = false;
 
@@ -602,7 +602,7 @@ namespace IED
 			{
 				m_Instance.m_controller->RemoveActor(
 					a_actor->formID,
-					ControllerUpdateFlags::kNone);
+					ControllerUpdateFlags::kDestroyed);
 
 				eval = true;
 			}
@@ -619,26 +619,26 @@ namespace IED
 	}
 
 	void EngineExtensions::PlayerCharacter_Release3D_Hook(
-		PlayerCharacter* a_actor)
+		PlayerCharacter* a_actor) noexcept
 	{
 		RunRelease3DHook(a_actor, m_Instance.m_pcRelease3D_o);
 	}
 
 	void EngineExtensions::Actor_Release3D_Hook(
-		Actor* a_actor)
+		Actor* a_actor) noexcept
 	{
 		RunRelease3DHook(a_actor, m_Instance.m_actorRelease3D_o);
 	}
 
 	void EngineExtensions::Character_Release3D_Hook(
-		Character* a_actor)
+		Character* a_actor) noexcept
 	{
 		RunRelease3DHook(a_actor, m_Instance.m_characterRelease3D_o);
 	}
 
 	NiAVObject* EngineExtensions::REFR_Load3D_Clone_Hook(
 		TESBoundObject* a_obj,
-		TESObjectREFR*  a_refr)
+		TESObjectREFR*  a_refr) noexcept
 	{
 		auto result = a_obj->Clone3D2(a_refr);
 
@@ -653,7 +653,7 @@ namespace IED
 	std::uint32_t EngineExtensions::PlayerCharacter_Load3D_LoadSkeleton_Hook(
 		const char*            a_path,
 		NiPointer<NiAVObject>& a_3D,
-		std::uint32_t&         a_unk3)
+		std::uint32_t&         a_unk3) noexcept
 	{
 		auto result = m_Instance.m_playerLoad3DSkel_o(a_path, a_3D, a_unk3);
 
@@ -667,7 +667,7 @@ namespace IED
 
 	void EngineExtensions::FailsafeCleanupAndEval(
 		Actor*                     a_actor,
-		const std::source_location a_loc)
+		const std::source_location a_loc) noexcept
 	{
 		ITaskPool::AddTask([this,
 		                    fid    = a_actor->formID,
@@ -689,7 +689,7 @@ namespace IED
 
 	void EngineExtensions::ReanimateActorStateUpdate_Hook(
 		Actor* a_actor,
-		bool   a_unk1)
+		bool   a_unk1) noexcept
 	{
 		m_Instance.m_ReanimActorStateUpd_o(a_actor, a_unk1);
 
@@ -706,7 +706,7 @@ namespace IED
 
 	void EngineExtensions::ArmorUpdate_Hook(
 		Game::InventoryChanges* a_ic,
-		Game::InitWornVisitor&  a_visitor)
+		Game::InitWornVisitor&  a_visitor) noexcept
 	{
 		const auto formid = a_visitor.actor ?
 		                        a_visitor.actor->formID :
@@ -720,13 +720,15 @@ namespace IED
 		}
 	}
 
-	bool EngineExtensions::GarbageCollectorReference_Hook(TESObjectREFR* a_refr)
+	bool EngineExtensions::GarbageCollectorReference_Hook(TESObjectREFR* a_refr) noexcept
 	{
 		if (auto actor = a_refr->As<Actor>())
 		{
 			//m_Instance.Debug("%s: GC: %X", __FUNCTION__, a_refr->formID);
 
-			m_Instance.m_controller->RemoveActor(actor->formID, ControllerUpdateFlags::kNone);
+			m_Instance.m_controller->RemoveActor(
+				actor->formID,
+				ControllerUpdateFlags::kDestroyed);
 		}
 
 		return m_Instance.m_garbageCollectorReference_o(a_refr);
@@ -736,7 +738,7 @@ namespace IED
 		TESObjectREFR*       a_refr,
 		const BSFixedString& a_animVarName,
 		float                a_val,
-		Biped*               a_biped)
+		Biped*               a_biped) noexcept
 	{
 		auto& biped3p = a_refr->GetBiped1(false);
 		if (biped3p && biped3p.get() != a_biped)
@@ -747,7 +749,7 @@ namespace IED
 		return a_refr->SetVariableOnGraphsFloat(a_animVarName, a_val);
 	}
 
-	BaseExtraList* EngineExtensions::ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor)
+	BaseExtraList* EngineExtensions::ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor) noexcept
 	{
 		m_Instance.m_controller->QueueRequestEvaluate(a_actor->formID, true, false);
 
@@ -757,7 +759,7 @@ namespace IED
 	bool EngineExtensions::hkaShouldBlockNode(
 		NiAVObject*            a_root,
 		const BSFixedString&   a_name,
-		const RE::hkaSkeleton& a_hkaSkeleton)
+		const RE::hkaSkeleton& a_hkaSkeleton) noexcept
 	{
 		if (!a_root)
 		{
@@ -827,7 +829,7 @@ namespace IED
 		NiNode*                   a_root,
 		const BSFixedString&      a_name,
 		hkaGetSkeletonNodeResult& a_result,
-		const RE::hkaSkeleton&    a_hkaSkeleton)
+		const RE::hkaSkeleton&    a_hkaSkeleton) noexcept
 	{
 		if (hkaShouldBlockNode(a_root, a_name, a_hkaSkeleton))
 		{
@@ -842,13 +844,13 @@ namespace IED
 
 	void EngineExtensions::PrepareAnimUpdateLists_Hook(
 		Game::ProcessLists* a_pl,
-		void*               a_unk)
+		void*               a_unk) noexcept
 	{
 		m_Instance.m_prepareAnimUpdateLists_o(a_pl, a_unk);
 		m_Instance.BeginAnimationUpdate(m_Instance.m_controller);
 	}
 
-	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk)
+	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept
 	{
 		m_Instance.EndAnimationUpdate(m_Instance.m_controller);
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
@@ -856,7 +858,7 @@ namespace IED
 
 	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
 		TESObjectREFR*               a_player,
-		const BSAnimationUpdateData& a_data)
+		const BSAnimationUpdateData& a_data) noexcept
 	{
 		auto& bip = a_player->GetBiped1(false);
 
@@ -877,7 +879,7 @@ namespace IED
 	void EngineExtensions::CreateWeaponNodes_Hook(
 		TESObjectREFR* a_actor,
 		TESForm*       a_object,
-		bool           a_left)
+		bool           a_left) noexcept
 	{
 		m_Instance.m_createWeaponNodes_o(a_actor, a_object, a_left);
 
@@ -893,7 +895,7 @@ namespace IED
 
 	bool EngineExtensions::RemoveAllChildren(
 		NiNode*              a_object,
-		const BSFixedString& a_name)
+		const BSFixedString& a_name) noexcept
 	{
 		bool result = false;
 
@@ -925,7 +927,7 @@ namespace IED
 		bool      a_removeScabbards,
 		bool      a_keepTorchFlame,
 		bool      a_disableHavok,
-		bool      a_removeTracers)
+		bool      a_removeTracers) noexcept
 		//bool                     a_attachLight,
 		//NiPointer<NiPointLight>& a_attachedLight)
 		-> stl::flag<AttachResultFlags>
@@ -1211,7 +1213,7 @@ namespace IED
 	}
 
 	void EngineExtensions::CleanupWeaponBehaviorGraph(
-		RE::WeaponAnimationGraphManagerHolderPtr& a_graph)
+		RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept
 	{
 		RE::BSAnimationGraphManagerPtr manager;
 		if (a_graph->GetAnimationGraphManagerImpl(manager))
@@ -1235,7 +1237,7 @@ namespace IED
 		SSNCleanupLights(*m_shadowSceneNode, a_node, true, true);
 	}*/
 
-	void EngineExtensions::UpdateRoot(NiNode* a_root)
+	void EngineExtensions::UpdateRoot(NiNode* a_root) noexcept
 	{
 		a_root->UpdateWorldBound();
 
@@ -1245,7 +1247,7 @@ namespace IED
 		fUnk12BAFB0(*m_shadowSceneNode, a_root, false);
 	}
 
-	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object)
+	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object) noexcept
 	{
 		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
 	}
@@ -1267,7 +1269,7 @@ namespace IED
 
 	void EngineExtensions::UpdateReferenceAnimations(
 		TESObjectREFR* a_refr,
-		float          a_step)
+		float          a_step) noexcept
 	{
 		struct TLSData
 		{

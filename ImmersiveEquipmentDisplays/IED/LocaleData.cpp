@@ -28,7 +28,7 @@ namespace IED
 		// in SE all other language strings are UTF-8 encoded, assume no conversion is necessary
 	}
 
-	std::string LocaleData::ToUTF8(const char* a_in)
+	std::string LocaleData::ToUTF8(const char* a_in) noexcept
 	{
 		if (!a_in)
 		{

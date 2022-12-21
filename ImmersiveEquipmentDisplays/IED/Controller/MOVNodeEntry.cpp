@@ -4,12 +4,12 @@
 
 namespace IED
 {
-	bool MOVNodeEntry::has_visible_geometry() const
+	bool MOVNodeEntry::has_visible_geometry() const noexcept
 	{
 		return ::Util::Node::HasVisibleGeometry(node);
 	}
 
-	bool MOVNodeEntry::parent_has_visible_geometry() const
+	bool MOVNodeEntry::parent_has_visible_geometry() const noexcept
 	{
 		return ::Util::Node::HasVisibleGeometry(node->m_parent);
 	}

@@ -9,13 +9,13 @@ namespace IED
 	public:
 		inline NodeMonitorEntry(
 			NiNode*                                 a_parent,
-			const Data::configNodeMonitorEntryBS_t& a_config) :
+			const Data::configNodeMonitorEntryBS_t& a_config) noexcept :
 			m_parent(a_parent),
 			m_config(a_config)
 		{
 		}
 
-		bool Update();
+		bool Update() noexcept;
 
 		[[nodiscard]] inline constexpr bool IsPresent() const noexcept
 		{

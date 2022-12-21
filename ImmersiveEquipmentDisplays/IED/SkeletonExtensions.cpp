@@ -10,15 +10,13 @@
 #include "SkeletonID.h"
 #include "StringHolder.h"
 
-#include <ext/Node.h>
-
 namespace IED
 {
 	namespace SkeletonExtensions
 	{
 		using namespace ::Util::Node;
 
-		void PostLoad3D(NiAVObject* a_root, bool a_applyTransformOverrides)
+		void PostLoad3D(NiAVObject* a_root, bool a_applyTransformOverrides) noexcept
 		{
 			using namespace ::Util::Node;
 

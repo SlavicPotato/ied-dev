@@ -847,7 +847,7 @@ namespace IED
 			static IData m_Instance;
 		};
 
-		inline constexpr const char* GetSlotName(ObjectSlot a_slot)
+		inline constexpr const char* GetSlotName(ObjectSlot a_slot) noexcept
 		{
 			switch (a_slot)
 			{
@@ -894,7 +894,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr const char* GetSlotName(ObjectSlotExtra a_slot)
+		inline constexpr const char* GetSlotName(ObjectSlotExtra a_slot) noexcept
 		{
 			switch (a_slot)
 			{
@@ -947,7 +947,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr const char* GetObjectTypeName(ObjectType a_type)
+		inline constexpr const char* GetObjectTypeName(ObjectType a_type) noexcept
 		{
 			switch (a_type)
 			{
@@ -980,7 +980,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr const char* GetObjectTypeName(ObjectTypeExtra a_type)
+		inline constexpr const char* GetObjectTypeName(ObjectTypeExtra a_type) noexcept
 		{
 			switch (a_type)
 			{
@@ -1017,7 +1017,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr const char* GetConfigClassName(ConfigClass a_class)
+		inline constexpr const char* GetConfigClassName(ConfigClass a_class) noexcept
 		{
 			switch (a_class)
 			{

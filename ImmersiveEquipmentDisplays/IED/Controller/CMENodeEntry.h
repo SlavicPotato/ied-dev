@@ -22,7 +22,7 @@ namespace IED
 
 		inline CMENodeEntry(
 			NiNode*            a_node3p,
-			const NiTransform& a_originalTransform3p) :
+			const NiTransform& a_originalTransform3p) noexcept :
 			thirdPerson{ a_node3p, a_originalTransform3p }
 		{
 		}
@@ -31,7 +31,7 @@ namespace IED
 			NiNode*            a_node3p,
 			const NiTransform& a_originalTransform3p,
 			NiNode*            a_node1p,
-			const NiTransform& a_originalTransform1p) :
+			const NiTransform& a_originalTransform1p) noexcept :
 			thirdPerson{ a_node3p, a_originalTransform3p },
 			firstPerson{ a_node1p, a_originalTransform1p }
 		{

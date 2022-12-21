@@ -66,6 +66,8 @@ namespace IED
 		kRequestEval          = kWantEval,
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
 		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdownMask,
+
+		kDestroyed = 1u << 15
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
@@ -127,9 +129,9 @@ namespace IED
 			bool                  a_nodeOverrideEnabledPlayer,
 			bool                  a_syncToFirstPersonSkeleton,
 			//bool                    a_animEventForwarding,
-			const BipedSlotDataPtr& a_lastEquipped);
+			const BipedSlotDataPtr& a_lastEquipped) noexcept;
 
-		~ActorObjectHolder();
+		~ActorObjectHolder() noexcept;
 
 		ActorObjectHolder(const ActorObjectHolder&)            = delete;
 		ActorObjectHolder(ActorObjectHolder&&)                 = delete;
@@ -399,7 +401,9 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_custom(Tf a_func) const
+		inline constexpr void visit_custom(Tf a_func) const                      //
+			noexcept(std::is_nothrow_invocable_v<Tf, const ObjectEntryCustom&>)  //
+			requires(std::invocable<Tf, const ObjectEntryCustom&>)
 		{
 			for (auto& e : m_entriesCustom)
 			{
@@ -414,7 +418,9 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_custom(Tf a_func)
+		inline constexpr void visit_custom(Tf a_func)                      //
+			noexcept(std::is_nothrow_invocable_v<Tf, ObjectEntryCustom&>)  //
+			requires(std::invocable<Tf, ObjectEntryCustom&>)
 		{
 			for (auto& e : m_entriesCustom)
 			{
@@ -429,7 +435,9 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_slot(Tf a_func) const
+		inline constexpr void visit_slot(Tf a_func) const                      //
+			noexcept(std::is_nothrow_invocable_v<Tf, const ObjectEntrySlot&>)  //
+			requires(std::invocable<Tf, const ObjectEntrySlot&>)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -438,7 +446,9 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_slot(Tf a_func)
+		inline constexpr void visit_slot(Tf a_func)                      //
+			noexcept(std::is_nothrow_invocable_v<Tf, ObjectEntrySlot&>)  //
+			requires(std::invocable<Tf, ObjectEntrySlot&>)
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -563,7 +573,7 @@ namespace IED
 		}
 
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& GetOrCreateProcessParams(Args&&... a_args)
+		[[nodiscard]] inline constexpr auto& GetOrCreateProcessParams(Args&&... a_args) noexcept
 		{
 			if (!m_currentParams)
 			{
@@ -574,7 +584,7 @@ namespace IED
 		}
 
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& CreateProcessParams(Args&&... a_args)
+		[[nodiscard]] inline constexpr auto& CreateProcessParams(Args&&... a_args) noexcept
 		{
 			m_currentParams.emplace(std::forward<Args>(a_args)...);
 			return *m_currentParams;
@@ -630,18 +640,23 @@ namespace IED
 		{
 			m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 		}
+		
+		inline constexpr void MarkDestroyed() noexcept
+		{
+			m_flags.set(ActorObjectHolderFlags::kDestroyed);
+		}
 
-		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const;
+		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const noexcept;
 
-		float GetRandomPercent(const luid_tag& a_luid);
+		float GetRandomPercent(const luid_tag& a_luid) noexcept;
 
-		bool UpdateNodeMonitorEntries();
-		bool GetNodeMonitorResult(std::uint32_t a_uid);
+		bool UpdateNodeMonitorEntries() noexcept;
+		bool GetNodeMonitorResult(std::uint32_t a_uid) noexcept;
 
-		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const;
+		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const noexcept;
 
-		void QueueDisposeMOVSimComponents();
-		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle);
+		void QueueDisposeMOVSimComponents() noexcept;
+		bool QueueDisposeAllObjectEntries(Game::ObjectRefHandle a_handle) noexcept;
 
 		void SimReadTransforms(float a_step) const noexcept;
 		void SimWriteTransforms() const noexcept;
@@ -653,15 +668,15 @@ namespace IED
 		std::size_t GetSimComponentListSize() const noexcept;
 
 		template <class... Args>
-		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args)
+		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args) noexcept
 		{
 			return m_simNodeList.emplace_back(
 				std::make_shared<PHYSimComponent>(
 					std::forward<Args>(a_args)...));
 		}
 
-		void RemoveSimComponent(const std::shared_ptr<PHYSimComponent>& a_sc);
-		void RemoveAndDestroySimComponent(std::shared_ptr<PHYSimComponent>& a_sc);
+		void RemoveSimComponent(const std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
+		void RemoveAndDestroySimComponent(std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
 
 		[[nodiscard]] inline constexpr auto& GetSimComponentList() const noexcept
 		{
@@ -674,14 +689,13 @@ namespace IED
 		}
 
 	private:
-		void CreateExtraMovNodes(
-			NiNode* a_npcroot);
+		void CreateExtraMovNodes(NiNode* a_npcroot) noexcept;
 
 		void CreateExtraCopyNode(
 			NiNode*                                       a_npcroot,
-			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const;
+			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const noexcept;
 
-		void ApplyXP32NodeTransformOverrides() const;
+		void ApplyXP32NodeTransformOverrides() const noexcept;
 
 		/*EventResult ReceiveEvent(
 			const BSAnimationGraphEvent*           a_event,

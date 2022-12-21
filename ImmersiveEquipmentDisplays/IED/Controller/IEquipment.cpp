@@ -12,7 +12,7 @@ namespace IED
 {
 	using namespace Data;
 
-	IEquipment::IEquipment(RandomNumberGeneratorBase& a_rng) :
+	IEquipment::IEquipment(RandomNumberGeneratorBase& a_rng) noexcept :
 		m_rng(a_rng)
 	{
 	}
@@ -40,7 +40,7 @@ namespace IED
 		processParams_t&          a_params,
 		const Data::configSlot_t& a_config,
 		SlotItemCandidates&       a_candidates,
-		const ObjectEntrySlot&    a_slot)
+		const ObjectEntrySlot&    a_slot) noexcept
 		-> selectedItem_t
 	{
 		if (a_candidates.empty())
@@ -247,7 +247,7 @@ namespace IED
 		const Data::configCustom_t& a_config,
 		ObjectEntryCustom&          a_objectEntry,
 		bool&                       a_hasMinCount,
-		Tf                          a_filter)
+		Tf                          a_filter) noexcept
 	{
 		auto& formData = a_params.collector.data.forms;
 
@@ -371,14 +371,14 @@ namespace IED
 		processParams_t&      a_params,
 		const configCustom_t& a_config,
 		ObjectEntryCustom&    a_objectEntry,
-		bool&                 a_hasMinCount)
+		bool&                 a_hasMinCount) noexcept
 	{
 		if (a_config.customFlags.test(CustomFlags::kLastEquippedMode))
 		{
 			auto it = DoLastEquippedSelection(
 				a_params,
 				a_config.lastEquipped,
-				[&](auto& a_itemEntry) {
+				[&](auto& a_itemEntry) noexcept {
 					return CustomEntryValidateInventoryForm(
 						a_params,
 						a_itemEntry.second,
@@ -397,7 +397,7 @@ namespace IED
 					a_config,
 					a_objectEntry,
 					a_hasMinCount,
-					[&](auto& a_item) {
+					[&](auto& a_item) noexcept {
 						return configBase_t::do_match_fp(
 							a_config.lastEquipped.filterConditions,
 							{ a_item.form },
@@ -421,7 +421,7 @@ namespace IED
 				a_config,
 				a_objectEntry,
 				a_hasMinCount,
-				[](auto&) { return true; });
+				[](auto&) noexcept { return true; });
 		}
 	}
 
