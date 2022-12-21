@@ -1191,7 +1191,25 @@ namespace IED
 
 			case Data::VariableConditionSource::kPlayerHorse:
 
-				if (auto actor = a_params.get_last_ridden_player_horse())
+				if (auto& actor = a_params.get_last_ridden_player_horse())
+				{
+					return do_var_match_id(a_params, actor->formID, a_match);
+				}
+
+				break;
+
+			case Data::VariableConditionSource::kMountedActor:
+
+				if (const auto& actor = a_params.get_mounted_actor())
+				{
+					return do_var_match_id(a_params, actor->formID, a_match);
+				}
+
+				break;
+
+			case Data::VariableConditionSource::kMountingActor:
+
+				if (const auto& actor = a_params.get_mounting_actor())
 				{
 					return do_var_match_id(a_params, actor->formID, a_match);
 				}

@@ -6,12 +6,14 @@ namespace IED
 	{
 		enum class VariableConditionSource : std::uint32_t
 		{
-			kAny         = 0,
-			kSelf        = 1,
-			kActor       = 2,
-			kNPC         = 3,
-			kRace        = 4,
-			kPlayerHorse = 5,
+			kAny           = 0,
+			kSelf          = 1,
+			kActor         = 2,
+			kNPC           = 3,
+			kRace          = 4,
+			kPlayerHorse   = 5,
+			kMountedActor  = 6,
+			kMountingActor = 7,
 		};
 	}
 }

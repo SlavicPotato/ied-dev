@@ -14,7 +14,9 @@ namespace IED
 			std::make_pair(Data::VariableConditionSource::kActor, UIVariableConditionSourceSelectorWidgetStrings::Actor),
 			std::make_pair(Data::VariableConditionSource::kNPC, UIVariableConditionSourceSelectorWidgetStrings::NPC),
 			std::make_pair(Data::VariableConditionSource::kRace, UIVariableConditionSourceSelectorWidgetStrings::Race),
-			std::make_pair(Data::VariableConditionSource::kPlayerHorse, UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse)
+			std::make_pair(Data::VariableConditionSource::kPlayerHorse, UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse),
+			std::make_pair(Data::VariableConditionSource::kMountedActor, UIVariableConditionSourceSelectorWidgetStrings::MountedActor),
+			std::make_pair(Data::VariableConditionSource::kMountingActor, UIVariableConditionSourceSelectorWidgetStrings::MountingActor)
 
 		);
 
@@ -73,6 +75,10 @@ namespace IED
 				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::Race);
 			case Data::VariableConditionSource::kPlayerHorse:
 				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::PlayerHorse);
+			case Data::VariableConditionSource::kMountedActor:
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::MountedActor);
+			case Data::VariableConditionSource::kMountingActor:
+				return UIL::LS(UIVariableConditionSourceSelectorWidgetStrings::MountingActor);
 			default:
 				return nullptr;
 			}
