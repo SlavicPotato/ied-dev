@@ -12,6 +12,7 @@ namespace IED
 			kPlayerHorse   = 1,
 			kMountingActor = 2,
 			kMountedActor  = 3,
+			kSelf          = 4,
 		};
 
 		enum class VariableSourceFlags : std::uint32_t

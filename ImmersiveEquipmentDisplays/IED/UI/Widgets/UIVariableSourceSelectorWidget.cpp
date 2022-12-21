@@ -12,7 +12,8 @@ namespace IED
 			std::make_pair(Data::VariableSource::kActor, UIVariableSourceSelectorWidgetStrings::Actor),
 			std::make_pair(Data::VariableSource::kPlayerHorse, UIVariableSourceSelectorWidgetStrings::PlayerHorse),
 			std::make_pair(Data::VariableSource::kMountingActor, UIVariableSourceSelectorWidgetStrings::MountingActor),
-			std::make_pair(Data::VariableSource::kMountedActor, UIVariableSourceSelectorWidgetStrings::MountedActor)
+			std::make_pair(Data::VariableSource::kMountedActor, UIVariableSourceSelectorWidgetStrings::MountedActor),
+			std::make_pair(Data::VariableSource::kSelf, UIVariableSourceSelectorWidgetStrings::Self)
 
 		);
 
@@ -67,6 +68,8 @@ namespace IED
 				return UIL::LS(UIVariableSourceSelectorWidgetStrings::MountingActor);
 			case Data::VariableSource::kMountedActor:
 				return UIL::LS(UIVariableSourceSelectorWidgetStrings::MountedActor);
+			case Data::VariableSource::kSelf:
+				return UIL::LS(UIVariableSourceSelectorWidgetStrings::Self);
 			default:
 				return nullptr;
 			}

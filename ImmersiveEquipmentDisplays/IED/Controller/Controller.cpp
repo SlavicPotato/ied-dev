@@ -2983,53 +2983,73 @@ namespace IED
 		}
 	}
 
-	const configCachedForm_t* Controller::SelectCustomForm(
-		processParams_t&      a_params,
-		const configCustom_t& a_config)
+	ActorObjectHolder* Controller::SelectCustomFormVariableSourceHolder(
+		Game::FormID     a_id,
+		processParams_t& a_params) noexcept
 	{
-		if (a_config.customFlags.test(CustomFlags::kVariableMode))
+		if (a_id == a_params.objects.GetActorFormID())
 		{
-			Game::FormID id;
+			return std::addressof(a_params.objects);
+		}
+		else
+		{
+			auto& data = GetObjects();
 
+			auto it = data.find(a_id);
+			if (it != data.end())
+			{
+				return std::addressof(it->second);
+			}
+			else
+			{
+				return nullptr;
+			}
+		}
+	}
+
+	ActorObjectHolder* Controller::SelectCustomFormVariableSource(
+		processParams_t&            a_params,
+		const Data::configCustom_t& a_config) noexcept
+	{
 			switch (a_config.varSource.source)
 			{
 			case VariableSource::kActor:
 
-				id = a_config.varSource.form;
+			return SelectCustomFormVariableSourceHolder(a_config.varSource.form, a_params);
 
 				break;
 
 			case VariableSource::kPlayerHorse:
 
-				if (auto actor = a_params.get_last_ridden_player_horse())
+			if (const auto& actor = a_params.get_last_ridden_player_horse())
 				{
 					id = actor->formID;
 				}
 				else
 				{
-					return nullptr;
+				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
 				}
 
 				break;
 
 			case VariableSource::kMountingActor:
 
-				if (auto& actor = a_params.get_mounting_actor())
+			if (const auto& actor = a_params.get_mounting_actor())
 				{
 					id = actor->formID;
 				}
 				else
 				{
-					return nullptr;
+				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
 				}
 
 				break;
 
 			case VariableSource::kMountedActor:
 
-				if (auto& actor = a_params.get_mounted_actor())
+			if (const auto& actor = a_params.get_mounted_actor())
 				{
-					id = actor->formID;
+				return SelectCustomFormVariableSourceHolder(actor->formID, a_params);
 				}
 				else
 				{
@@ -3038,17 +3058,27 @@ namespace IED
 
 				break;
 
-			default:
+		case VariableSource::kSelf:
 
+			return SelectCustomFormVariableSourceHolder(a_params.objects.GetActorFormID(), a_params);
+			}
+
+		return {};
+	}
+
+	const configCachedForm_t* Controller::SelectCustomForm(
+		processParams_t&      a_params,
+		const configCustom_t& a_config) noexcept
+			{
+		if (a_config.customFlags.test(CustomFlags::kVariableMode))
+		{
+			const auto holder = SelectCustomFormVariableSource(a_params, a_config);
+			if (!holder)
+			{
 				return nullptr;
 			}
 
-			const auto& data = GetObjects();
-
-			auto ita = data.find(id);
-			if (ita != data.end())
-			{
-				auto& vars = ita->second.GetVariables();
+			auto& vars = holder->GetVariables();
 
 				for (auto& e : a_config.formVars)
 				{
@@ -3067,7 +3097,6 @@ namespace IED
 					}
 				}
 			}
-		}
 		else
 		{
 			auto& result = a_config.form;

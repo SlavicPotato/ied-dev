@@ -12,6 +12,7 @@ namespace IED
 			PlayerHorse   = 7301,
 			MountingActor = 7302,
 			MountedActor  = 7303,
+			Self          = 7304,
 		};
 	}
 }
