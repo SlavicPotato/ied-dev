@@ -147,7 +147,8 @@ namespace IED
 		weaponDrawn(a_actor->IsWeaponDrawn()),
 		arrested(a_actor->IsArrested()),
 		unconscious(a_actor->IsUnconscious()),
-		flying(a_actor->IsFlying())
+		flying(a_actor->IsFlying()),
+		restrained(a_actor->IsRestrained())
 	{
 	}
 
@@ -183,6 +184,7 @@ namespace IED
 		state_var_update(arrested, a_actor->IsArrested(), result);
 		state_var_update(unconscious, a_actor->IsUnconscious(), result);
 		state_var_update(flying, a_actor->IsFlying(), result);
+		state_var_update(restrained, a_actor->IsRestrained(), result);
 
 		return result;
 	}

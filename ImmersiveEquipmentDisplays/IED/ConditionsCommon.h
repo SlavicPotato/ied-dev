@@ -135,6 +135,8 @@ namespace IED
 				return a_params.is_in_player_enemy_faction();
 			case Data::ExtraConditionType::kIsHorse:
 				return a_params.is_horse();
+			case Data::ExtraConditionType::kIsRestrained:
+				return a_cached.restrained;
 			default:
 				return false;
 			}

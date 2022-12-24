@@ -53,6 +53,7 @@ namespace IED
 			IsLayingDown            = 5442,
 			InPlayerEnemyFaction    = 5443,
 			IsHorse                 = 5444,
+			IsRestrained            = 5445,
 		};
 	}
 }

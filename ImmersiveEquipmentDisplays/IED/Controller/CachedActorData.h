@@ -190,5 +190,6 @@ namespace IED
 		bool                     arrested{ false };
 		bool                     unconscious{ false };
 		bool                     flying{ false };
+		bool                     restrained{ false };
 	};
 }

@@ -39,6 +39,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
+			std::make_pair(Data::ExtraConditionType::kIsRestrained, UIConditionExtraSelectorWidgetStrings::IsRestrained),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor),
 			std::make_pair(Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed),
@@ -194,6 +195,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
 			case Data::ExtraConditionType::kIsHorse:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
+			case Data::ExtraConditionType::kIsRestrained:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsRestrained);
 			default:
 				return nullptr;
 			}
