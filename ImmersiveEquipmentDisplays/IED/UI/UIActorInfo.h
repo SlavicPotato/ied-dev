@@ -91,6 +91,10 @@ namespace IED
 			void DrawVariablesTabItem(
 				Game::FormID a_handle);
 
+			void DrawActorStateTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
 			template <class T>
 			bool DrawActorInfoLineFormStringPair(
 				T                                           a_label,
@@ -132,6 +136,10 @@ namespace IED
 			void DrawVariableTreeContents(
 				Game::FormID                    a_handle,
 				const conditionalVariableMap_t& a_data);
+
+			void DrawActorStateContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
 
 			void DrawInventoryFilterTree();
 

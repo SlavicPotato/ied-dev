@@ -139,6 +139,7 @@ namespace IED
 				DrawFactionsTabItem(a_handle, a_data);
 				DrawEffectsTabItem(a_handle, a_data);
 				DrawVariablesTabItem(a_handle);
+				DrawActorStateTabItem(a_handle, a_data);
 
 				ImGui::EndTabBar();
 			}
@@ -248,6 +249,25 @@ namespace IED
 
 					ImGui::EndTabItem();
 				}
+			}
+		}
+
+		void UIActorInfo::DrawActorStateTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			if (ImGui::BeginTabItem(
+					UIL::LS(UIActorInfoStrings::ActorState, "5")))
+			{
+				ImGui::Spacing();
+				ImGui::PushID("5");
+
+				DrawActorStateContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
 			}
 		}
 
@@ -842,6 +862,281 @@ namespace IED
 			ImGui::EndChild();
 
 			ImGui::PopStyleVar();
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::SIT_SLEEP_STATE a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::SIT_SLEEP_STATE::kNormal:
+				return UIL::LS(UIActorInfoStrings::Normal);
+			case ActorState::SIT_SLEEP_STATE::kWantToSit:
+				return UIL::LS(UIActorInfoStrings::WantToSit);
+			case ActorState::SIT_SLEEP_STATE::kWaitingForSitAnim:
+				return UIL::LS(UIActorInfoStrings::WaitingForSitAnim);
+			case ActorState::SIT_SLEEP_STATE::kIsSitting:
+				return UIL::LS(UIActorInfoStrings::IsSitting);
+			case ActorState::SIT_SLEEP_STATE::kWantToStand:
+				return UIL::LS(UIActorInfoStrings::WantToStand);
+			case ActorState::SIT_SLEEP_STATE::kWantToSleep:
+				return UIL::LS(UIActorInfoStrings::WantToSleep);
+			case ActorState::SIT_SLEEP_STATE::kWaitingForSleepAnim:
+				return UIL::LS(UIActorInfoStrings::WaitingForSleepAnim);
+			case ActorState::SIT_SLEEP_STATE::kIsSleeping:
+				return UIL::LS(UIActorInfoStrings::IsSleeping);
+			case ActorState::SIT_SLEEP_STATE::kWantToWake:
+				return UIL::LS(UIActorInfoStrings::WantToWake);
+			default:
+				return nullptr;
+			}
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::FLY_STATE a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::FLY_STATE::kNone:
+				return UIL::LS(CommonStrings::None);
+			case ActorState::FLY_STATE::kTakeOff:
+				return UIL::LS(UIActorInfoStrings::TakeOff);
+			case ActorState::FLY_STATE::kCruising:
+				return UIL::LS(UIActorInfoStrings::Cruising);
+			case ActorState::FLY_STATE::kHovering:
+				return UIL::LS(UIActorInfoStrings::Hovering);
+			case ActorState::FLY_STATE::kLanding:
+				return UIL::LS(UIActorInfoStrings::Landing);
+			case ActorState::FLY_STATE::kPerching:
+				return UIL::LS(UIActorInfoStrings::Perching);
+			case ActorState::FLY_STATE::kAction:
+				return UIL::LS(UIActorInfoStrings::Action);
+			default:
+				return nullptr;
+			}
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::ACTOR_LIFE_STATE a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::ACTOR_LIFE_STATE::kAlive:
+				return UIL::LS(UIActorInfoStrings::Alive);
+			case ActorState::ACTOR_LIFE_STATE::kDying:
+				return UIL::LS(UIActorInfoStrings::Dying);
+			case ActorState::ACTOR_LIFE_STATE::kDead:
+				return UIL::LS(CommonStrings::Dead);
+			case ActorState::ACTOR_LIFE_STATE::kUnconcious:
+				return UIL::LS(UIActorInfoStrings::Unconcious);
+			case ActorState::ACTOR_LIFE_STATE::kReanimate:
+				return UIL::LS(UIActorInfoStrings::Reanimate);
+			case ActorState::ACTOR_LIFE_STATE::kRecycle:
+				return UIL::LS(UIActorInfoStrings::Recycle);
+			case ActorState::ACTOR_LIFE_STATE::kRestrained:
+				return UIL::LS(UIActorInfoStrings::Restrained);
+			case ActorState::ACTOR_LIFE_STATE::kEssentialDown:
+				return UIL::LS(UIActorInfoStrings::EssentialDown);
+			case ActorState::ACTOR_LIFE_STATE::kBleedout:
+				return UIL::LS(UIActorInfoStrings::Bleedout);
+			default:
+				return nullptr;
+			}
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::KNOCK_STATE_ENUM a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::KNOCK_STATE_ENUM::kNormal:
+				return UIL::LS(UIActorInfoStrings::Normal);
+			case ActorState::KNOCK_STATE_ENUM::kExplode:
+				return UIL::LS(UIActorInfoStrings::Explode);
+			case ActorState::KNOCK_STATE_ENUM::kExplodeLeadIn:
+				return UIL::LS(UIActorInfoStrings::ExplodeLeadIn);
+			case ActorState::KNOCK_STATE_ENUM::kOut:
+				return UIL::LS(UIActorInfoStrings::Out);
+			case ActorState::KNOCK_STATE_ENUM::kOutLeadIn:
+				return UIL::LS(UIActorInfoStrings::OutLeadIn);
+			case ActorState::KNOCK_STATE_ENUM::kQueued:
+				return UIL::LS(UIActorInfoStrings::Queued);
+			case ActorState::KNOCK_STATE_ENUM::kGetUp:
+				return UIL::LS(UIActorInfoStrings::GetUp);
+			case ActorState::KNOCK_STATE_ENUM::kDown:
+				return UIL::LS(UIActorInfoStrings::Down);
+			case ActorState::KNOCK_STATE_ENUM::kWaitForTaskQueue:
+				return UIL::LS(UIActorInfoStrings::WaitForTaskQueue);
+			default:
+				return nullptr;
+			}
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::ATTACK_STATE_ENUM a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::ATTACK_STATE_ENUM::kNone:
+				return UIL::LS(CommonStrings::None);
+			case ActorState::ATTACK_STATE_ENUM::kDraw:
+				return UIL::LS(UIActorInfoStrings::Draw);
+			case ActorState::ATTACK_STATE_ENUM::kSwing:
+				return UIL::LS(UIActorInfoStrings::Swing);
+			case ActorState::ATTACK_STATE_ENUM::kHit:
+				return UIL::LS(UIActorInfoStrings::Hit);
+			case ActorState::ATTACK_STATE_ENUM::kNextAttack:
+				return UIL::LS(UIActorInfoStrings::NextAttack);
+			case ActorState::ATTACK_STATE_ENUM::kFollowThrough:
+				return UIL::LS(UIActorInfoStrings::FollowThrough);
+			case ActorState::ATTACK_STATE_ENUM::kBash:
+				return UIL::LS(UIActorInfoStrings::Bash);
+			case ActorState::ATTACK_STATE_ENUM::kBowDraw:
+				return UIL::LS(UIActorInfoStrings::BowDraw);
+			case ActorState::ATTACK_STATE_ENUM::kBowAttached:
+				return UIL::LS(UIActorInfoStrings::BowAttached);
+			case ActorState::ATTACK_STATE_ENUM::kBowDrawn:
+				return UIL::LS(UIActorInfoStrings::BowDrawn);
+			case ActorState::ATTACK_STATE_ENUM::kBowReleasing:
+				return UIL::LS(UIActorInfoStrings::BowReleasing);
+			case ActorState::ATTACK_STATE_ENUM::kBowReleased:
+				return UIL::LS(UIActorInfoStrings::BowReleased);
+			case ActorState::ATTACK_STATE_ENUM::kBowNextAttack:
+				return UIL::LS(UIActorInfoStrings::BowNextAttack);
+			case ActorState::ATTACK_STATE_ENUM::kBowFollowThrough:
+				return UIL::LS(UIActorInfoStrings::BowFollowThrough);
+			case ActorState::ATTACK_STATE_ENUM::kFire:
+				return UIL::LS(UIActorInfoStrings::Fire);
+			case ActorState::ATTACK_STATE_ENUM::kFiring:
+				return UIL::LS(UIActorInfoStrings::Firing);
+			case ActorState::ATTACK_STATE_ENUM::kFired:
+				return UIL::LS(UIActorInfoStrings::Fired);
+			default:
+				return nullptr;
+			}
+		}
+
+		static constexpr const char* state_val_to_str(ActorState::WEAPON_STATE a_val)
+		{
+			switch (a_val)
+			{
+			case ActorState::WEAPON_STATE::kSheathed:
+				return UIL::LS(UIActorInfoStrings::Sheathed);
+			case ActorState::WEAPON_STATE::kWantToDraw:
+				return UIL::LS(UIActorInfoStrings::WantToDraw);
+			case ActorState::WEAPON_STATE::kDrawing:
+				return UIL::LS(UIActorInfoStrings::Drawing);
+			case ActorState::WEAPON_STATE::kDrawn:
+				return UIL::LS(UIActorInfoStrings::Drawn);
+			case ActorState::WEAPON_STATE::kWantToSheathe:
+				return UIL::LS(UIActorInfoStrings::WantToSheathe);
+			case ActorState::WEAPON_STATE::kSheathing:
+				return UIL::LS(UIActorInfoStrings::Sheathing);
+			default:
+				return nullptr;
+			}
+		}
+
+		static void draw_state_column(
+			UIActorInfoStrings a_string,
+			std::uint32_t      a_value,
+			const char*        a_valstr)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextWrapped("%s", UIL::LS(a_string));
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextWrapped("%u [%s]", a_value, a_valstr);
+		}
+
+		static void draw_state_column(
+			UIActorInfoStrings a_string,
+			std::uint32_t      a_value)
+		{
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
+			ImGui::TextWrapped("%s", UIL::LS(a_string));
+			ImGui::TableSetColumnIndex(1);
+			ImGui::TextWrapped("%u", a_value);
+		}
+
+		template <class T>
+		static void draw_state_column(UIActorInfoStrings a_string, T a_value)  //
+			requires(std::is_enum_v<T>)
+		{
+			draw_state_column(
+				a_string,
+				static_cast<std::uint32_t>(a_value),
+				state_val_to_str(a_value));
+		}
+
+		void UIActorInfo::DrawActorStateContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			const auto& state1 = a_data.data->entry.state1;
+			const auto& state2 = a_data.data->entry.state2;
+
+			ImGui::Columns(2, "col", true);
+
+			if (ImGui::BeginTable(
+					"lt",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
+			{
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::TextWrapped("%s", UIL::LS(UIActorInfoStrings::MovementState));
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text(
+					"F:%u B:%u R:%u L:%u",
+					state1.movingForward,
+					state1.movingBack,
+					state1.movingRight,
+					state1.movingLeft);
+
+				draw_state_column(UIActorInfoStrings::WalkingState, state1.walking);
+				draw_state_column(UIActorInfoStrings::RunningState, state1.running);
+				draw_state_column(UIActorInfoStrings::SprintingState, state1.sprinting);
+				draw_state_column(UIActorInfoStrings::SneakingState, state1.sneaking);
+				draw_state_column(UIActorInfoStrings::SwimmingState, state1.swimming);
+				draw_state_column(UIActorInfoStrings::SitSleepState, state1.sitSleepState);
+				draw_state_column(UIActorInfoStrings::FlyState, state1.flyState);
+				draw_state_column(UIActorInfoStrings::LifeState, state1.lifeState);
+				draw_state_column(UIActorInfoStrings::KnockState, state1.knockState);
+				draw_state_column(UIActorInfoStrings::AttackState, state1.meleeAttackState);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::NextColumn();
+
+			if (ImGui::BeginTable(
+					"rt",
+					2,
+					ImGuiTableFlags_NoSavedSettings |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, 0.0f }))
+			{
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.35f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.65f);
+
+				draw_state_column(UIActorInfoStrings::TalkingToPlayerState, state2.talkingToPlayer);
+				draw_state_column(UIActorInfoStrings::ForceRunState, state2.forceRun);
+				draw_state_column(UIActorInfoStrings::ForceSneakState, state2.forceSneak);
+				draw_state_column(UIActorInfoStrings::HeadTrackingState, state2.headTracking);
+				draw_state_column(UIActorInfoStrings::ReanimatingState, state2.reanimating);
+				draw_state_column(UIActorInfoStrings::WeaponState, state2.weaponState);
+				draw_state_column(UIActorInfoStrings::WantBlockingState, state2.wantBlocking);
+				draw_state_column(UIActorInfoStrings::FlightBlockedState, state2.flightBlocked);
+				draw_state_column(UIActorInfoStrings::RecoilState, state2.recoil);
+				draw_state_column(UIActorInfoStrings::AllowFlyingState, state2.allowFlying);
+				draw_state_column(UIActorInfoStrings::StaggeredState, state2.staggered);
+
+				ImGui::EndTable();
+			}
+
+			ImGui::Columns();
 		}
 
 		void UIActorInfo::DrawInventoryFilterTree()

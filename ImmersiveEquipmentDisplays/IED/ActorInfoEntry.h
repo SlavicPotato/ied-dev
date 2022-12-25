@@ -47,6 +47,8 @@ namespace IED
 		std::optional<std::pair<float, float>> inventoryWeight;
 		NiPoint3                               pos;
 		NiPoint3                               rot;
+		ActorState::ActorState1                state1;
+		ActorState::ActorState2                state2;
 		long long                              ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
@@ -77,7 +79,7 @@ namespace IED
 		{
 			return npc && npc->female ?
 			           Data::ConfigSex::Female :
-                       Data::ConfigSex::Male;
+			           Data::ConfigSex::Male;
 		}
 	};
 

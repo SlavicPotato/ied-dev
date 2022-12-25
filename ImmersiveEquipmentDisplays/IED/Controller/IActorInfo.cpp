@@ -170,6 +170,8 @@ namespace IED
 		a_out.attached = a_actor->IsParentCellAttached();
 		a_out.pos      = a_actor->pos;
 		a_out.rot      = a_actor->rot;
+		a_out.state1   = a_actor->actorState1;
+		a_out.state2   = a_actor->actorState2;
 
 		a_out.ts = IPerfCounter::Query();
 
