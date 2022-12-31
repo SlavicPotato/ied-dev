@@ -19,7 +19,7 @@ namespace IED
 			RE::LIGHT_CREATE_PARAMS params;
 
 			params.portalStrict = a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kPortalStrict);
-			params.affectLand   = true;  // EngineFixes patch (always true for chars), default is (a_actor->flags & kTESObjectREFRFlag_DoesntLightWater) == 0
+			params.affectLand   = true;  // EngineFixes patch (always true for chars), default is (a_actor->flags & kTESObjectREFRFlag_DoesntLightLandscape) == 0
 			params.lightsWater  = (a_actor->flags & TESObjectREFR::kFlag_DoesnLightWater) == 0;
 			params.neverFades   = true;  // !a_refr->IsHeadingMarker();
 			params.unk00        = true;  // arg4 in the original func
