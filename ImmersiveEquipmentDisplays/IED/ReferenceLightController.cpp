@@ -58,6 +58,42 @@ namespace IED
 
 			return params;
 		}
+
+		static NiColor make_diffuse(
+			const TESObjectLIGH* a_lightForm) noexcept
+		{
+			constexpr auto mul = 1.0f / 255.0f;
+
+			if (a_lightForm->data.flags.test(TES_LIGHT_FLAGS::kNegative))
+			{
+				return {
+					static_cast<float>(a_lightForm->data.color.red) * mul,
+					static_cast<float>(a_lightForm->data.color.green) * mul,
+					static_cast<float>(a_lightForm->data.color.blue) * mul
+				};
+			}
+			else
+			{
+				return {
+					-(static_cast<float>(a_lightForm->data.color.red) * mul),
+					-(static_cast<float>(a_lightForm->data.color.green) * mul),
+					-(static_cast<float>(a_lightForm->data.color.blue) * mul)
+				};
+			}
+		}
+
+		static NiPoint3 make_radius(
+			const TESObjectLIGH* a_lightForm) noexcept
+		{
+			auto radius = static_cast<float>(a_lightForm->data.radius);
+
+			if (radius <= 0.0f)
+			{
+				radius = 0.1f;
+			}
+
+			return { radius, radius, radius };
+		}
 	}
 
 	static REFR_LIGHT* GetExtraLight(Actor* a_actor) noexcept
@@ -320,21 +356,6 @@ namespace IED
 		Actor*               a_actor,
 		NiNode*              a_object) noexcept
 	{
-		constexpr auto mul = 1.0f / 255.0f;
-
-		NiColor diffuse{
-			static_cast<float>(a_lightForm->data.color.red) * mul,
-			static_cast<float>(a_lightForm->data.color.green) * mul,
-			static_cast<float>(a_lightForm->data.color.blue) * mul
-		};
-
-		if (a_lightForm->data.flags.test(TES_LIGHT_FLAGS::kNegative))
-		{
-			diffuse.r = -diffuse.r;
-			diffuse.g = -diffuse.g;
-			diffuse.b = -diffuse.b;
-		}
-
 		const auto sh = BSStringHolder::GetSingleton();
 
 		auto attachmentNode = ::Util::Node::FindNode(a_object, sh->m_attachLight);
@@ -354,16 +375,8 @@ namespace IED
 		attachmentNode->AttachChild(pointLight, true);
 
 		pointLight->ambient = {};
-
-		auto radius = static_cast<float>(a_lightForm->data.radius);
-
-		if (radius <= 0.0f)
-		{
-			radius = 0.1f;
-		}
-
-		pointLight->radius  = { radius, radius, radius };
-		pointLight->diffuse = diffuse;
+		pointLight->radius  = detail::make_radius(a_lightForm);
+		pointLight->diffuse = detail::make_diffuse(a_lightForm);
 
 		// at this point, beth sets a flag on the base form if a transform controller is found on a_object
 
@@ -380,7 +393,7 @@ namespace IED
 			bsLight        = ssn->AddLight(pointLight, params);
 		}
 
-		NiPointLightSetAttenuation(pointLight, static_cast<std::int32_t>(radius));
+		NiPointLightSetAttenuation(pointLight, static_cast<std::int32_t>(pointLight->radius.x));
 
 		/*
 			original code:
