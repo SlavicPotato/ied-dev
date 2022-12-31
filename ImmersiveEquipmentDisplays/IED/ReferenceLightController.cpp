@@ -64,7 +64,7 @@ namespace IED
 		{
 			constexpr auto mul = 1.0f / 255.0f;
 
-			if (a_lightForm->data.flags.test(TES_LIGHT_FLAGS::kNegative))
+			if (!a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kNegative))
 			{
 				return {
 					static_cast<float>(a_lightForm->data.color.red) * mul,
