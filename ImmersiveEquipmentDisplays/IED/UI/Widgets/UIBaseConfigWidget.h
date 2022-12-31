@@ -1461,12 +1461,12 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::KeepTorchFlame);
 
-				/*const bool disable = !GetLightsEnabled() && !IsProfileEditor();
+				const bool disable = !GetLightsEnabled() && !IsProfileEditor();
 
 				UICommon::PushDisabled(disable);
 
 				if (ImGui::CheckboxFlagsT(
-						UILI::LS(UIWidgetCommonStrings::AttachLight, "5"),
+						UIL::LS(UIWidgetCommonStrings::AttachLight, "_1"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kAttachLight)))
 				{
@@ -1478,8 +1478,8 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::AttachLight);
 				
-				if (ImGui::CheckboxFlagsT(
-						UILI::LS(UIWidgetCommonStrings::HideLight, "6"),
+				/*if (ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::HideLight, "_2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kHideLight)))
 				{
@@ -1489,9 +1489,9 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				UITipsInterface::DrawTip(UITip::HideLight);
+				UITipsInterface::DrawTip(UITip::HideLight);*/
 
-				UICommon::PopDisabled(disable);*/
+				UICommon::PopDisabled(disable);
 
 				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::DisableHavok, "7"),

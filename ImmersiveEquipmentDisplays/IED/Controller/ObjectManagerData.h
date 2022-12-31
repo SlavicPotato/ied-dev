@@ -92,7 +92,7 @@ namespace IED
 
 	public:
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& GetObjectHolder(
+		[[nodiscard]] inline constexpr auto& GetOrCreateObjectHolder(
 			Actor* a_actor,
 			Args&&... a_args) noexcept
 		{

@@ -36,9 +36,8 @@ namespace IED
 			kDisableHavok               = 1u << 20,
 			kRemoveProjectileTracers    = 1u << 21,
 			kDynamicArrows              = 1u << 22,
-
-			/*kAttachLight                = 1u << 21,
-			kHideLight                  = 1u << 22,*/
+			kAttachLight                = 1u << 23,
+			kHideLight                  = 1u << 24,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -48,8 +47,8 @@ namespace IED
 			                     kUseWorldModel |
 			                     kDisableWeaponAnims |
 			                     kDisableHavok |
-			                     kRemoveProjectileTracers
-			// | kAttachLight
+			                     kRemoveProjectileTracers |
+			                     kAttachLight
 
 		};
 

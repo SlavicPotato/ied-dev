@@ -3,6 +3,7 @@
 #include "UISettingsInterface.h"
 
 #include "IED/Controller/Controller.h"
+#include "IED/ReferenceLightController.h"
 
 namespace IED
 {
@@ -28,16 +29,16 @@ namespace IED
 		{
 			return m_controller.ShaderProcessingEnabled();
 		}
-		
+
 		bool UISettingsInterface::GetPhysicsProcessingEnabled() const noexcept
 		{
 			return m_controller.PhysicsProcessingEnabled();
 		}
 
-		/*bool UISettingsInterface::GetLightsEnabled() const noexcept
+		bool UISettingsInterface::GetLightsEnabled() const noexcept
 		{
-			return EngineExtensions::GetLightsEnabled();
-		}*/
+			return ReferenceLightController::GetSingleton().GetEnabled();
+		}
 
 		void UISettingsInterface::MarkSettingsDirty()
 		{

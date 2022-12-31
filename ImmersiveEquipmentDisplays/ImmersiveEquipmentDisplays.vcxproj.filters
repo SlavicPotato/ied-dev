@@ -1715,6 +1715,12 @@
     <ClInclude Include="IED\NodeOverrideParams.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectLight.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ReferenceLightController.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2729,6 +2735,9 @@
       <Filter>Source\IED\UI\DisplayManagement</Filter>
     </ClCompile>
     <ClCompile Include="IED\NodeOverrideParams.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ReferenceLightController.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>

@@ -6,6 +6,7 @@
 
 #include "Util/Logging.h"
 
+#include "ReferenceLightController.h"
 #include "SkeletonExtensions.h"
 
 #include <ext/GarbageCollector.h>
@@ -80,10 +81,10 @@ namespace IED
 			Install_ParallelAnimationUpdate();
 		}
 
-		/*if (a_config->m_enableLights)
+		if (a_config->m_enableLights)
 		{
-			Install_AttachLight();
-		}*/
+			Install_Lighting();
+		}
 	}
 
 	template <class T>
@@ -182,7 +183,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install garbage collector hook");
+			HALT(__FUNCTION__ ": failed to install garbage collector hook");
 		}
 	}
 
@@ -209,7 +210,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install state update hook");
+			HALT(__FUNCTION__ ": failed to install state update hook");
 		}
 	}
 
@@ -269,7 +270,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install player load 3D hook");
+			HALT(__FUNCTION__ ": failed to install player load 3D hook");
 		}
 	}
 
@@ -288,7 +289,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install armor update hook");
+			HALT(__FUNCTION__ ": failed to install armor update hook");
 		}
 	}
 
@@ -365,7 +366,7 @@ namespace IED
 				m_hkaLookupSkeletonBones_a.get(),
 				m_hkaLookupSkeletonNode_o))
 		{
-			HALT("Couldn't get hkaLookupSkeletonBones call address");
+			HALT(__FUNCTION__ ": couldn't get hkaLookupSkeletonBones call address");
 		}
 
 		struct Assembly : JITASM::JITASM
@@ -440,7 +441,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install pre anim update hook");
+			HALT(__FUNCTION__ ": failed to install pre anim update hook");
 		}
 
 		if (hook::call5(
@@ -456,7 +457,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to install post anim update hook");
+			HALT(__FUNCTION__ ": failed to install post anim update hook");
 		}
 
 		std::uintptr_t dummy;
@@ -473,7 +474,7 @@ namespace IED
 		}
 		else
 		{
-			HALT("Failed to replace reference anim update call");
+			HALT(__FUNCTION__ ": failed to replace reference anim update call");
 		}
 
 		LogPatchBegin();
@@ -503,51 +504,112 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	/*void EngineExtensions::Install_AttachLight()
+	void EngineExtensions::Install_Lighting()
 	{
-		const auto addr = TESObjectLIGH::_AttachLight_addr.As<std::uintptr_t>() + (IAL::IsAE() ? 0x2B9 : 0x2A4);
+		auto addr = m_TESObjectCELL_unk_178_a.get() + 0x149;
 
-		VALIDATE_MEMORY(
-			addr,
-			({ 0x44, 0x0F, 0xB6, 0xA5, 0x18, 0x01, 0x00, 0x00 }),
-			({ 0x44, 0x0F, 0xB6, 0xA5, 0x08, 0x01, 0x00, 0x00 }));
-
-		LogPatchBegin();
-		{
-			struct Assembly : JITASM::JITASM
-			{
-				Assembly(std::uintptr_t a_targetAddr) :
-					JITASM(ISKSE::GetLocalTrampoline())
-				{
-					Xbyak::Label retnCont;
-					Xbyak::Label retnSkip;
-					Xbyak::Label skip;
-
-					movzx(r12d, byte[rbp + (IAL::IsAE() ? 0x108 : 0x118)]);
-					cmp(r12d, 4);
-					je(skip);
-					jmp(ptr[rip + retnCont]);
-
-					L(skip);
-					xor_(r12d, r12d);
-					jmp(ptr[rip + retnSkip]);
-
-					L(retnCont);
-					dq(a_targetAddr + 0x8);
-
-					L(retnSkip);
-					dq(a_targetAddr + 0x1D);
-				}
-			};
-
-			Assembly code(addr);
-
-			ISKSE::GetBranchTrampoline().Write6Branch(
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
 				addr,
-				code.get());
+				std::uintptr_t(TESObjectCELL_unk_178_Actor_GetExtraLight_Hook),
+				m_TESObjectCELL_unk_178_Actor_GetExtraLight_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX [TESObjectCELL_unk_178]",
+				__FUNCTION__,
+				addr);
 		}
-		LogPatchEnd();
-	}*/
+		else
+		{
+			HALT(__FUNCTION__ ": failed to install TESObjectCELL_unk_178 hook");
+		}
+
+		addr = m_PlayerCharacter_unk_205_a.get() + 0x6F5;
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				addr,
+				std::uintptr_t(PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook),
+				m_PlayerCharacter_unk_205_RefreshMagicCasterLights_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX [PlayerCharacter_unk_205]",
+				__FUNCTION__,
+				addr);
+		}
+		else
+		{
+			HALT(__FUNCTION__ ": failed to install PlayerCharacter_unk_205 hook");
+		}
+
+		addr = m_PlayerCharacter_RefreshLights_a.get() + 0x4C;
+
+		if (hook::jmp5(
+				ISKSE::GetBranchTrampoline(),
+				addr,
+				std::uintptr_t(PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook),
+				m_PlayerCharacter_RefreshLights_RefreshMagicCasterLights_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX [PlayerCharacter_RefreshLights]",
+				__FUNCTION__,
+				addr);
+		}
+		else
+		{
+			HALT(__FUNCTION__ ": failed to install PlayerCharacter_RefreshLights hook");
+		}
+
+		addr = m_Actor_Update_Actor_GetExtraLight_a.get() + 0x66B;
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				addr,
+				std::uintptr_t(Actor_Update_Actor_GetExtraLight_Hook),
+				m_Actor_Update_Actor_GetExtraLight_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX [Actor_Update]",
+				__FUNCTION__,
+				addr);
+		}
+		else
+		{
+			HALT(__FUNCTION__ ": failed to install Actor_Update hook");
+		}
+
+		/*InstallVtableDetour(
+			m_vtblTESObjectREFR_a,
+			0x55,
+			TESObjectREFR_UpdateRefLight_Hook,
+			m_pcUpdateRefLightREFR_o,
+			true,
+			"TESObjectREFR::UpdateRefLight");
+
+		InstallVtableDetour(
+			m_vtblActor_a,
+			0x55,
+			Actor_UpdateRefLight_Hook,
+			m_pcUpdateRefLightActor_o,
+			true,
+			"Actor::UpdateRefLight");
+
+		InstallVtableDetour(
+			m_vtblCharacter_a,
+			0x55,
+			Character_UpdateRefLight_Hook,
+			m_pcUpdateRefLightCharacter_o,
+			true,
+			"Character::UpdateRefLight");*/
+
+		InstallVtableDetour(
+			m_vtblPlayerCharacter_a,
+			0x55,
+			PlayerCharacter_UpdateRefLight_Hook,
+			m_pcUpdateRefLightPlayerCharacter_o,
+			true,
+			"PlayerCharacter::UpdateRefLight");
+	}
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept
 	{
@@ -575,8 +637,8 @@ namespace IED
 	{
 		if (a_attach3D)
 		{
-			m_Instance.m_controller->QueueReset(
-				a_actor,
+			m_Instance.m_controller->QueueResetGear(
+				a_actor->formID,
 				ControllerUpdateFlags::kImmediateTransformUpdate);
 
 			//_DMESSAGE("resurrect %X", a_actor->formID.get());
@@ -696,8 +758,8 @@ namespace IED
 		if (a_actor->actorState1.lifeState ==
 		    ActorState::ACTOR_LIFE_STATE::kReanimate)
 		{
-			m_Instance.m_controller->QueueReset(
-				a_actor,
+			m_Instance.m_controller->QueueResetGear(
+				a_actor->formID,
 				ControllerUpdateFlags::kImmediateTransformUpdate);
 
 			//_DMESSAGE("reanimate %X", a_actor->formID.get());
@@ -876,6 +938,55 @@ namespace IED
 		return bip;
 	}
 
+	/*void EngineExtensions::TESObjectREFR_UpdateRefLight_Hook(TESObjectREFR* a_actor) noexcept
+	{
+		m_Instance.m_pcUpdateRefLightREFR_o(a_actor);
+		if (auto actor = a_actor->As<Actor>())
+			ReferenceLightController::GetSingleton().OnUpdate(actor);
+	}
+
+	void EngineExtensions::Actor_UpdateRefLight_Hook(Actor* a_actor) noexcept
+	{
+		m_Instance.m_pcUpdateRefLightActor_o(a_actor);
+		ReferenceLightController::GetSingleton().OnUpdate(a_actor);
+	}
+
+	void EngineExtensions::Character_UpdateRefLight_Hook(Character* a_character) noexcept
+	{
+		m_Instance.m_pcUpdateRefLightCharacter_o(a_character);
+		ReferenceLightController::GetSingleton().OnUpdate(a_character);
+	}*/
+
+	void EngineExtensions::PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player) noexcept
+	{
+		m_Instance.m_pcUpdateRefLightPlayerCharacter_o(a_player);
+		ReferenceLightController::GetSingleton().OnUpdate(a_player);
+	}
+
+	REFR_LIGHT* EngineExtensions::TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept
+	{
+		ReferenceLightController::GetSingleton().OnActorCrossCellBoundary(a_actor);
+		return m_Instance.m_TESObjectCELL_unk_178_Actor_GetExtraLight_o(a_actor);
+	}
+
+	void EngineExtensions::PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept
+	{
+		m_Instance.m_PlayerCharacter_unk_205_RefreshMagicCasterLights_o(a_actor, a_ssn);
+		ReferenceLightController::GetSingleton().OnRefreshLightOnSceneMove(a_actor);
+	}
+
+	void EngineExtensions::PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept
+	{
+		m_Instance.m_PlayerCharacter_RefreshLights_RefreshMagicCasterLights_o(a_actor, a_ssn);
+		ReferenceLightController::GetSingleton().OnRefreshLightOnSceneMove(a_actor);
+	}
+
+	REFR_LIGHT* EngineExtensions::Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept
+	{
+		ReferenceLightController::GetSingleton().OnUnkQueueBSLight(a_actor);
+		return m_Instance.m_Actor_Update_Actor_GetExtraLight_o(a_actor);
+	}
+
 	void EngineExtensions::CreateWeaponNodes_Hook(
 		TESObjectREFR* a_actor,
 		TESForm*       a_object,
@@ -901,7 +1012,7 @@ namespace IED
 
 		std::uint32_t maxiter = 1000;
 
-		while (auto object = GetObjectByName(a_object, a_name, true))
+		while (NiPointer object = GetObjectByName(a_object, a_name, true))
 		{
 			object->m_parent->DetachChild2(object);
 			result = true;
@@ -910,53 +1021,55 @@ namespace IED
 			{
 				break;
 			}
+
+			ShrinkToSize(a_object);
 		}
 
 		return result;
 	}
 
 	auto EngineExtensions::AttachObject(
-		Actor*    a_actor,
-		TESForm*  a_modelForm,
-		NiNode*   a_root,
-		NiNode*   a_targetNode,
-		NiNode*   a_object,
-		ModelType a_modelType,
-		bool      a_leftWeapon,
-		bool      a_dropOnDeath,
-		bool      a_removeScabbards,
-		bool      a_keepTorchFlame,
-		bool      a_disableHavok,
-		bool      a_removeTracers) noexcept
-		//bool                     a_attachLight,
-		//NiPointer<NiPointLight>& a_attachedLight)
+		Actor*       a_actor,
+		TESForm*     a_modelForm,
+		NiNode*      a_root,
+		NiNode*      a_targetNode,
+		NiNode*      a_object,
+		ModelType    a_modelType,
+		bool         a_leftWeapon,
+		bool         a_dropOnDeath,
+		bool         a_removeScabbards,
+		bool         a_keepTorchFlame,
+		bool         a_disableHavok,
+		bool         a_removeTracers,
+		bool         a_attachLight,
+		ObjectLight& a_attachedLight) noexcept
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
 			AttachResultFlags::kNone
 		};
 
-		if (auto bsxFlags = GetBSXFlags(a_object))
+		if (const auto* const bsxFlags = GetBSXFlags(a_object))
 		{
-			/*if (m_Instance.m_conf.enableLights &&
+			if (ReferenceLightController::GetSingleton().GetEnabled() &&
 			    a_attachLight &&
 			    a_modelType == ModelType::kLight)
 			{
-				if (auto light = a_modelForm->As<TESObjectLIGH>())
+				if (const auto* const light = a_modelForm->As<TESObjectLIGH>())
 				{
-					a_attachedLight = AttachLight(light, a_actor, a_object);
+					a_attachedLight = ReferenceLightController::AttachLight(light, a_actor, a_object);
 				}
-			}*/
+			}
 
 			const stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
 
 			if (flags.test(BSXFlags::Flag::kAddon))
 			{
-				fUnk28BAD0(a_object);
+				AttachAddonNodes(a_object);
 			}
 		}
 
-		AttachAddonNodes(a_object);
+		AttachAddonParticles(a_object);
 
 		if (auto fadeNode = a_object->AsFadeNode())
 		{
@@ -968,7 +1081,7 @@ namespace IED
 		a_targetNode->AttachChild(a_object, true);
 
 		NiAVObject::ControllerUpdateContext ctx{
-			static_cast<float>(*m_unkglob0),
+			static_cast<float>(*m_gameRuntimeMS),
 			0
 		};
 
@@ -981,7 +1094,7 @@ namespace IED
 
 		a_object->DecRef();
 
-		auto sh = BSStringHolder::GetSingleton();
+		const auto sh = BSStringHolder::GetSingleton();
 
 		a_object->m_name = sh->m_object;
 
@@ -991,8 +1104,8 @@ namespace IED
 		{
 		case ModelType::kWeapon:
 			{
-				const auto scbNode     = GetObjectByName(a_object, sh->m_scb, true);
-				const auto scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
+				const NiPointer scbNode     = GetObjectByName(a_object, sh->m_scb, true);
+				const NiPointer scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
 
 				if (a_removeScabbards)
 				{
@@ -1049,7 +1162,7 @@ namespace IED
 					}
 				}
 
-				collisionFilterInfo = a_leftWeapon ? 0x12 : 0x14;
+				collisionFilterInfo = 0x14;
 			}
 
 			break;
@@ -1058,49 +1171,37 @@ namespace IED
 
 			if (!a_keepTorchFlame)
 			{
-				bool shrink = false;
-
-				if (auto node = GetObjectByName(a_object, sh->m_torchFire, true))
+				if (NiPointer torchFireObj = GetObjectByName(a_object, sh->m_torchFire, true))
 				{
-					if (auto parent = node->m_parent)
+					if (auto parent = torchFireObj->m_parent)
 					{
-						node->m_parent->DetachChild2(node);
-						shrink = true;
+						parent->DetachChild2(torchFireObj);
 
 						result.set(AttachResultFlags::kTorchFlameRemoved);
+
+						ShrinkToSize(a_object);
 					}
 				}
 
-				bool custRemoved = false;
+#if !defined(IED_DISABLE_ENB_LIGHT_STRIPPING)
 
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSmoke);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxTorchSparks);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSmoke);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_mxAttachSparks);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_attachENBLight);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_enbFireLightEmitter);
-				custRemoved |= RemoveAllChildren(a_object, sh->m_enbTorchLightEmitter);
-
-				if (custRemoved)
+				for (auto& e : sh->m_enbLightAttachNodes)
 				{
-					result.set(AttachResultFlags::kTorchCustomRemoved);
+					if (RemoveAllChildren(a_object, e))
+					{
+						result.set(AttachResultFlags::kTorchCustomRemoved);
+					}
 				}
-
-				shrink |= custRemoved;
-
-				if (shrink)
-				{
-					ShrinkToSize(a_object);
-				}
+#endif
 			}
 
-			collisionFilterInfo = 0x12;
+			collisionFilterInfo = 0x14;
 
 			break;
 
 		case ModelType::kShield:
 
-			collisionFilterInfo = 0x12;
+			collisionFilterInfo = 0x14;
 
 			break;
 
@@ -1108,11 +1209,11 @@ namespace IED
 
 			if (a_removeTracers)
 			{
-				if (auto node = GetObjectByName(a_object, sh->m_tracerRoot, true))
+				if (NiPointer object = GetObjectByName(a_object, sh->m_tracerRoot, true))
 				{
-					if (auto parent = node->m_parent)
+					if (auto parent = object->m_parent)
 					{
-						parent->DetachChild2(node);
+						parent->DetachChild2(object);
 
 						ShrinkToSize(a_object);
 					}
@@ -1224,19 +1325,6 @@ namespace IED
 		}
 	}
 
-	/*NiPointer<NiPointLight> EngineExtensions::AttachLight(
-		TESObjectLIGH* a_light,
-		TESObjectREFR* a_refr,
-		NiAVObject*    a_object)
-	{
-		return a_light->AttachLight(a_refr, a_object, true, true, 4ui8);
-	}
-
-	void EngineExtensions::CleanupLights(NiNode* a_node)
-	{
-		SSNCleanupLights(*m_shadowSceneNode, a_node, true, true);
-	}*/
-
 	void EngineExtensions::UpdateRoot(NiNode* a_root) noexcept
 	{
 		a_root->UpdateWorldBound();
@@ -1252,14 +1340,14 @@ namespace IED
 		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
 	}
 
-	static inline bool should_update(TESObjectREFR* a_refr)
+	static inline constexpr bool should_update(TESObjectREFR* a_refr) noexcept
 	{
 		if (a_refr->GetMustUpdate())
 		{
 			return true;
 		}
 
-		if (const auto* door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
+		if (const auto* const door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
 		{
 			return door->doorFlags.test(TESObjectDOOR::Flag::kAutomatic);
 		}

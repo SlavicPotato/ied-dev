@@ -174,7 +174,7 @@ namespace IED
 		//m_enableCorpseScatter = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);
 
 		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
-		//m_enableLights             = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
+		m_enableLights             = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
 
 		m_loaded = reader.is_loaded();
 

@@ -26,7 +26,7 @@ namespace IED
 
 		static constexpr void UpdateVariable(
 			processParams_t&                                  a_params,
-			ConditionalVariableType                           a_defaultType,
+			ConditionalVariableType                           a_type,
 			const Data::configConditionalVariableValueData_t& a_src,
 			conditionalVariableStorage_t&                     a_dst,
 			bool&                                             a_modified) noexcept;

@@ -236,6 +236,7 @@ namespace IED
 		void QueueResetRace(Game::FormID a_race, stl::flag<ControllerUpdateFlags> a_flags, Data::ObjectSlot a_slot);
 		void QueueResetAll(stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueResetAll(stl::flag<ControllerUpdateFlags> a_flags, Data::ObjectSlot a_slot);
+		void QueueResetGear(Game::FormID a_actor, stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 		void QueueResetGearAll(stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueClearObjects();
 
@@ -503,9 +504,15 @@ namespace IED
 		struct updateActionFunc_t
 		{
 			using func_t = std::function<bool(
-				cachedActorInfo_t&               a_info,
-				const Data::configCustomEntry_t& a_confEntry,
-				ObjectEntryCustom&               a_entry)>;
+				cachedActorInfo_t&,
+				const Data::configCustomEntry_t&,
+				ObjectEntryCustom&)>;
+
+			template <class... Args>
+			inline constexpr bool operator()(Args&&... a_args) const
+			{
+				return func(std::forward<Args>(a_args)...);
+			}
 
 			func_t       func;
 			bool         evalDirty{ false };
@@ -551,7 +558,7 @@ namespace IED
 
 		void RunVariableMapUpdate(
 			processParams_t& a_params,
-			bool             a_markAllForLFEval = false) noexcept;
+			bool             a_markAllForEval = false) noexcept;
 
 		void DoObjectEvaluation(
 			processParams_t& a_params) noexcept;

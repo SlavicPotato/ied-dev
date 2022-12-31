@@ -38,6 +38,7 @@ namespace IED
 		Controller* m_controller{ nullptr };
 
 		bool m_done{ false };
+		bool m_initRefrLightController{ false };
 
 		static Initializer m_Instance;
 	};

@@ -651,7 +651,7 @@ namespace IED
 		float GetRandomPercent(const luid_tag& a_luid) noexcept;
 
 		bool UpdateNodeMonitorEntries() noexcept;
-		bool GetNodeMonitorResult(std::uint32_t a_uid) noexcept;
+		bool GetNodeMonitorResult(std::uint32_t a_uid) const noexcept;
 
 		bool GetSheathNodes(Data::ObjectSlot a_slot, std::pair<NiNode*, NiNode*>& a_out) const noexcept;
 

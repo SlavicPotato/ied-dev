@@ -8,6 +8,7 @@
 
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
+#include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 #include "IED/Util/Common.h"
 
@@ -456,8 +457,7 @@ namespace IED
 					{
 						auto& params = e.CreateProcessParams(
 							info->sex,
-							ControllerUpdateFlags::kPlaySound |
-								ControllerUpdateFlags::kFailVariableCondition,
+							ControllerUpdateFlags::kPlaySound,
 							info->actor.get(),
 							info->handle,
 							m_controller.m_temp.sr,
@@ -481,8 +481,6 @@ namespace IED
 							m_controller.RequestHFEvaluateAll(i);
 							e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
 						}
-
-						params.flags.clear(ControllerUpdateFlags::kFailVariableCondition);
 					}
 				}
 			}
@@ -510,7 +508,6 @@ namespace IED
 			bool update = false;
 
 			e.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
-
 				auto& state = a_v.data.state;
 
 				if (!state)

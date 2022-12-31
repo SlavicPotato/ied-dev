@@ -9,21 +9,20 @@ namespace IED
 		class UILocalizationInterface
 		{
 		public:
-
 			template <class Te>
-			static inline constexpr auto& L(Te a_id)
+			static SKMP_NOINLINE constexpr auto& L(Te a_id)
 			{
 				return GetLocalizationInterface().L(a_id);
 			}
 
 			template <class Te>
-			static inline constexpr auto LS(Te a_id)
+			static SKMP_NOINLINE constexpr auto LS(Te a_id)
 			{
 				return GetLocalizationInterface().L(a_id).c_str();
 			}
 
 			template <class Te, std::uint32_t _NumHash = 2>
-			static inline constexpr const char* LS(
+			static SKMP_NOINLINE constexpr const char* LS(
 				Te          a_id,
 				const char* a_im_id) noexcept
 			{
@@ -31,7 +30,7 @@ namespace IED
 			}
 
 			template <class Te>
-			static inline constexpr bool LCG_BM(
+			static SKMP_NOINLINE constexpr bool LCG_BM(
 				Te          a_id,
 				const char* a_im_id)
 			{
@@ -39,7 +38,7 @@ namespace IED
 			}
 
 			template <class Te>
-			static inline constexpr bool LCG_MI(
+			static SKMP_NOINLINE constexpr bool LCG_MI(
 				Te          a_id,
 				const char* a_im_id)
 			{
@@ -47,7 +46,7 @@ namespace IED
 			}
 
 			template <std::uint32_t _NumHash>
-			static const char* LMKID(
+			static inline const char* LMKID(
 				const char* a_str,
 				const char* a_im_id) noexcept
 			{
@@ -57,7 +56,7 @@ namespace IED
 
 				constexpr auto d = sizeof(buffer) - _NumHash - 1;
 
-				auto mslen = d - std::min(std::strlen(a_im_id), d);
+				const auto mslen = d - std::min(std::strlen(a_im_id), d);
 
 				std::uint32_t i = 0;
 
@@ -79,7 +78,7 @@ namespace IED
 
 				for (auto p = a_im_id; i < sizeof(buffer) - 1; p++, i++)
 				{
-					if (auto c = *p)
+					if (const auto c = *p)
 					{
 						buffer[i] = c;
 					}
@@ -97,7 +96,6 @@ namespace IED
 			}
 
 			static Localization::ILocalization& GetLocalizationInterface() noexcept;
-
 		};
 
 		using UIL = UILocalizationInterface;

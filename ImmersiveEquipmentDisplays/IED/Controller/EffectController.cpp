@@ -7,6 +7,7 @@
 #include "INode.h"
 
 #include "IED/Data.h"
+#include "IED/ReferenceLightController.h"
 
 namespace IED
 {
@@ -14,7 +15,8 @@ namespace IED
 	{
 		m_timer.Begin();
 
-		if (m_flags.test_any(EffectControllerFlags::kEnableMask))
+		if (m_flags.test_any(EffectControllerFlags::kEnableMask) ||
+		    ReferenceLightController::GetSingleton().GetEnabled())
 		{
 			ProcessEffectsImpl(a_map);
 		}
@@ -94,21 +96,19 @@ namespace IED
 				a_stepMuls.player :
 				a_stepMuls.npc;
 
-		if (ShaderProcessingEnabled())
-		{
-			UpdateShaders(a_interval * stepMul, a_holder);
-		}
-
 		if (a_physUpdData)
 		{
 			UpdatePhysics(stepMul, *a_physUpdData, a_holder);
 		}
-	}
 
-	void EffectController::UpdateShaders(
-		const float              a_step,
-		const ActorObjectHolder& a_holder) noexcept
-	{
+		const bool wantLightUpdate =
+			ReferenceLightController::GetSingleton().GetEnabled() && !a_holder.IsPlayer();
+
+		if (!ShaderProcessingEnabled() && !wantLightUpdate)
+		{
+			return;
+		}
+
 		NiPointer<TESObjectREFR> refr;
 		if (!a_holder.GetHandle().Lookup(refr))
 		{
@@ -126,8 +126,24 @@ namespace IED
 			return;
 		}
 
+		if (ShaderProcessingEnabled())
+		{
+			UpdateShaders(actor, a_interval * stepMul, a_holder);
+		}
+
+		if (wantLightUpdate)
+		{
+			ReferenceLightController::GetSingleton().OnUpdate(actor);
+		}
+	}
+
+	void EffectController::UpdateShaders(
+		Actor*                   a_actor,
+		const float              a_step,
+		const ActorObjectHolder& a_holder) noexcept
+	{
 		a_holder.visit([&](auto& a_entry) noexcept [[msvc::forceinline]] {
-			UpdateObjectShaders(actor, a_entry, a_step);
+			UpdateObjectShaders(a_actor, a_entry, a_step);
 		});
 	}
 

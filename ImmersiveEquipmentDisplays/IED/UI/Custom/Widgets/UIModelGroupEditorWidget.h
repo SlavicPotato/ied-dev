@@ -512,8 +512,8 @@ namespace IED
 			}
 			UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
 			
-			/*if (ImGui::CheckboxFlagsT(
-					UILI::LS(UIWidgetCommonStrings::AttachLight, "H"),
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::AttachLight, "I"),
 					stl::underlying(std::addressof(entry.flags.value)),
 					stl::underlying(Data::ConfigModelGroupEntryFlags::kAttachLight)))
 			{
@@ -522,7 +522,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			UITipsInterface::DrawTip(UITip::AttachLight);*/
+			UITipsInterface::DrawTip(UITip::AttachLight);
 
 			UICommon::PopDisabled(disabled);
 

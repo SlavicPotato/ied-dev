@@ -164,13 +164,15 @@ namespace IED
 
 		BSFixedString m_arrowQuiver{ NINODE_ARROW_QUIVER };
 
-		BSFixedString m_mxTorchSmoke{ NINODE_MX_TORCH_SMOKE };
-		BSFixedString m_mxTorchSparks{ NINODE_MX_TORCH_SPARKS };
-		BSFixedString m_mxAttachSmoke{ NINODE_MX_ATTACH_SMOKE };
-		BSFixedString m_mxAttachSparks{ NINODE_MX_ATTACH_SPARKS };
-		BSFixedString m_attachENBLight{ BSVALUENODE_ATTACH_ENB_LIGHT };
-		BSFixedString m_enbFireLightEmitter{ NINODE_ENB_FIRE_LIGHT_EMITTER };
-		BSFixedString m_enbTorchLightEmitter{ NINODE_ENB_TORCH_LIGHT_EMITTER };
+		std::array<BSFixedString, 7> m_enbLightAttachNodes{
+			NINODE_MX_TORCH_SMOKE,
+			NINODE_MX_TORCH_SPARKS,
+			NINODE_MX_ATTACH_SMOKE,
+			NINODE_MX_ATTACH_SPARKS,
+			BSVALUENODE_ATTACH_ENB_LIGHT,
+			NINODE_ENB_FIRE_LIGHT_EMITTER,
+			NINODE_ENB_TORCH_LIGHT_EMITTER,
+		};
 
 		BSFixedString m_weaponSheathe{ WEAPON_SHEATHE };
 

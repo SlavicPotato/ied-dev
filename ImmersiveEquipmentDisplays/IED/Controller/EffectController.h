@@ -82,6 +82,7 @@ namespace IED
 			const ActorObjectHolder&             a_holder) noexcept;
 
 		static void UpdateShaders(
+			Actor*                   a_actor,
 			const float              a_step,
 			const ActorObjectHolder& a_holder) noexcept;
 

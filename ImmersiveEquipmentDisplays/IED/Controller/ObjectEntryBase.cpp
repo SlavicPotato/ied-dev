@@ -5,6 +5,7 @@
 #include "IObjectManager.h"
 
 #include "IED/StringHolder.h"
+#include "IED/ReferenceLightController.h"
 
 namespace IED
 {
@@ -166,11 +167,10 @@ namespace IED
 
 		for (auto& e : groupObjects)
 		{
-			/*if (e.second.light)
+			if (e.second.light.niObject)
 			{
-				EngineExtensions::CleanupLights(e.second.object.get());
-				e.second.light.reset();
-			}*/
+				ReferenceLightController::CleanupLights(e.second.object.get());
+			}
 
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
@@ -187,11 +187,10 @@ namespace IED
 			}
 		}
 
-		/*if (light)
+		if (light.niObject)
 		{
-			EngineExtensions::CleanupLights(nodes.object.get());
-			light.reset();
-		}*/
+			ReferenceLightController::CleanupLights(nodes.object.get());
+		}
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,
@@ -279,18 +278,18 @@ namespace IED
 
 	void ObjectEntryBase::State::SetVisible(bool a_switch) noexcept
 	{
-		/*for (auto& e : groupObjects)
+		for (auto& e : groupObjects)
 		{
-			if (e.second.light)
+			if (e.second.light.niObject)
 			{
-				e.second.light->SetVisible(a_switch && !flags.test(ObjectEntryFlags::kHideLight));
+				e.second.light.niObject->SetVisible(a_switch);// && !flags.test(ObjectEntryFlags::kHideLight));
 			}
 		}
 
-		if (light)
+		if (light.niObject)
 		{
-			light->SetVisible(a_switch && !flags.test(ObjectEntryFlags::kHideLight));
-		}*/
+			light.niObject->SetVisible(a_switch);// && !flags.test(ObjectEntryFlags::kHideLight));
+		}
 
 		nodes.rootNode->SetVisible(a_switch);
 	}

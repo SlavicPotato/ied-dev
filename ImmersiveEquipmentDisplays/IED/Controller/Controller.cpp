@@ -587,7 +587,7 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
-		auto root = a_actor->GetNiRootNode(false);
+		auto root = a_actor->GetNiRootFadeNode(false);
 		if (!root)
 		{
 			return;
@@ -1263,6 +1263,36 @@ namespace IED
 			for (auto& e : result)
 			{
 				ActorResetImpl(e.second, e.first, a_flags, a_slot);
+			}
+		});
+	}
+
+	void Controller::QueueResetGear(
+		Game::FormID                     a_actor,
+		stl::flag<ControllerUpdateFlags> a_flags) noexcept
+	{
+		ITaskPool::AddTask([this, a_actor, a_flags] {
+			const boost::lock_guard lock(m_lock);
+
+			auto& objects = GetObjects();
+			auto  it      = objects.find(a_actor);
+
+			if (it == objects.end())
+			{
+				return;
+			}
+
+			NiPointer<TESObjectREFR> ref;
+			auto                     handle = it->second.GetHandle();
+
+			if (!handle.Lookup(ref))
+			{
+				return;
+			}
+
+			if (auto actor = ref->As<Actor>())
+			{
+				ResetGearImpl(actor, handle, it->second, a_flags);
 			}
 		});
 	}
@@ -3579,7 +3609,7 @@ namespace IED
 
 		IncrementCounter();
 
-		auto& objects = GetObjectHolder(
+		auto& objects = GetOrCreateObjectHolder(
 			a_actor,
 			nrp->npc,
 			nrp->race,
@@ -3625,7 +3655,7 @@ namespace IED
 					a_handle,
 					ControllerUpdateFlags::kNone))
 			{
-				auto& objs = GetObjectHolder(
+				auto& objs = GetOrCreateObjectHolder(
 					a_actor,
 					nrp->npc,
 					nrp->race,
@@ -3891,7 +3921,7 @@ namespace IED
 
 	void Controller::RunVariableMapUpdate(
 		processParams_t& a_params,
-		bool             a_markAllForLFEval) noexcept
+		bool             a_markAllForEval) noexcept
 	{
 		const auto& config = m_config.active.condvars;
 
@@ -3900,14 +3930,12 @@ namespace IED
 			return;
 		}
 
-		a_params.flags.set(ControllerUpdateFlags::kFailVariableCondition);
-
 		if (IConditionalVariableProcessor::UpdateVariableMap(
 				a_params,
 				config,
 				a_params.objects.GetVariables()))
 		{
-			if (a_markAllForLFEval)
+			if (a_markAllForEval)
 			{
 				RequestHFEvaluateAll();
 			}
@@ -3916,8 +3944,6 @@ namespace IED
 				RequestHFEvaluateAll(a_params.objects.GetActorFormID());
 			}
 		}
-
-		a_params.flags.clear(ControllerUpdateFlags::kFailVariableCondition);
 	}
 
 	void Controller::RunUpdateBipedSlotCache(
@@ -5022,7 +5048,7 @@ namespace IED
 			if (itce != itc->second.data.end())
 			{
 				ran = true;
-				if (!a_func.func(a_info, itce->second, e.second))
+				if (!a_func(a_info, itce->second, e.second))
 				{
 					failed = true;
 				}
@@ -5052,7 +5078,7 @@ namespace IED
 					if (itc2 != itc->second.data.end())
 					{
 						ran = true;
-						if (!a_func.func(a_info, itc2->second, f.second))
+						if (!a_func(a_info, itc2->second, f.second))
 						{
 							failed = true;
 						}
@@ -5083,7 +5109,7 @@ namespace IED
 			return;
 		}
 
-		a_func.clean = a_func.func(a_info, itc->second, itd->second);
+		a_func.clean = a_func(a_info, itc->second, itd->second);
 	}
 
 	void Controller::UpdateTransformCustomImpl(
@@ -5378,7 +5404,7 @@ namespace IED
 		{
 			if (auto actor = a_evn->formId.As<Actor>())
 			{
-				QueueReset(
+				QueueEvaluate(
 					actor,
 					ControllerUpdateFlags::kImmediateTransformUpdate);
 			}
@@ -5392,9 +5418,9 @@ namespace IED
 		BSTEventSource<TESInitScriptEvent>*)
 		-> EventResult
 	{
-		if (a_evn)
+		if (a_evn && a_evn->reference->IsActor())
 		{
-			QueueReset(
+			QueueEvaluate(
 				a_evn->reference,
 				ControllerUpdateFlags::kImmediateTransformUpdate);
 		}
@@ -5438,33 +5464,25 @@ namespace IED
 		BSTEventSource<TESContainerChangedEvent>*)
 		-> EventResult
 	{
-		if (a_evn)
+		if (a_evn && a_evn->baseObj)
 		{
-			if (a_evn->baseObj)
+			if (a_evn->oldContainer)
 			{
-				//if (IsInventoryForm(form))
-				//{
-				if (a_evn->oldContainer)
+				if (a_evn->oldContainer.As<Actor>())
 				{
-					if (a_evn->oldContainer.As<Actor>())
-					{
-						QueueRequestEvaluate(a_evn->oldContainer, true, false);
-					}
+					QueueRequestEvaluate(a_evn->oldContainer, true, false);
 				}
+			}
 
-				if (a_evn->newContainer &&
-				    a_evn->oldContainer != a_evn->newContainer)  // ?
+			if (a_evn->newContainer &&
+			    a_evn->oldContainer != a_evn->newContainer)  // ?
+			{
+				if (a_evn->newContainer.As<Actor>())
 				{
-					if (a_evn->newContainer.As<Actor>())
-					{
-						QueueRequestEvaluate(a_evn->newContainer, true, false);
-					}
+					QueueRequestEvaluate(a_evn->newContainer, true, false);
 				}
-				//}
 			}
 		}
-
-		//m_invChangeConsumerFlags.set(InventoryChangeConsumerFlags::kAll);
 
 		return EventResult::kContinue;
 	}
@@ -5989,5 +6007,4 @@ namespace IED
 			}
 		});
 	}*/
-
 }

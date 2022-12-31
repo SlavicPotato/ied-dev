@@ -5,6 +5,7 @@
 #include "IObjectManager.h"
 
 #include "IED/EngineExtensions.h"
+#include "IED/ReferenceLightController.h"
 
 #include <ext/Model.h>
 #include <ext/Node.h>
@@ -26,6 +27,11 @@ namespace IED
 			if (auto& sc = state->simComponent)
 			{
 				a_data.RemoveSimComponent(sc);
+			}
+
+			if (auto& pl = state->light.niObject)
+			{
+				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl);
 			}
 
 			if (
@@ -635,9 +641,17 @@ namespace IED
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
 			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok),
-			a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers));
-		/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
-			state->light);*/
+			a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers),
+			a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
+			state->light);
+
+		if (state->light.niObject.get())
+		{
+			ReferenceLightController::GetSingleton().AddLight(
+				a_params.actor->formID,
+				a_modelForm->As<TESObjectLIGH>(),
+				state->light);
+		}
 
 		//UpdateDownwardPass(itemRoot);
 
@@ -961,10 +975,18 @@ namespace IED
 					a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok),
 				a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers) ||
-					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers));
-			/*a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers),
+				a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight),
-				n.light);*/
+				n.light);
+
+			if (state->light.niObject.get())
+			{
+				ReferenceLightController::GetSingleton().AddLight(
+					a_params.actor->formID,
+					e.form->As<TESObjectLIGH>(),
+					state->light);
+			}
 
 			e.grpObject = std::addressof(n);
 		}

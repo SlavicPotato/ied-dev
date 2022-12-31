@@ -1,8 +1,10 @@
 #pragma once
 
-#include "AnimationUpdateManager.h"
 #include "ConfigINI.h"
 #include "Controller/ModelType.h"
+#include "Controller/ObjectLight.h"
+
+#include "AnimationUpdateManager.h"
 
 namespace IED
 {
@@ -37,11 +39,9 @@ namespace IED
 		};
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
 
-		class ShadowSceneNode;
-
 		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object) noexcept;
 		typedef NiNode* (*unk1291cc0_t)(NiAVObject* a_object, NiNode* a_node) noexcept;
-		typedef NiNode* (*unkSSN1_t)(ShadowSceneNode* a_node, NiAVObject* a_object) noexcept;
+		typedef NiNode* (*unkSSN1_t)(RE::ShadowSceneNode* a_node, NiAVObject* a_object) noexcept;
 		typedef void (*unkDC6140_t)(NiNode* a_node, bool a_unk2) noexcept;
 		typedef void (*unk1CDB30_t)(NiAVObject* a_node) noexcept;
 		typedef void (*unk1CD130_t)(NiAVObject* a_object, std::uint32_t a_collisionFilterInfo) noexcept;
@@ -69,12 +69,12 @@ namespace IED
 		typedef NiAVObject* (*fUnk1401CDB30_t)(NiNode*) noexcept;
 		typedef NiAVObject* (*fUnk140DC6140_t)(NiAVObject*, bool) noexcept;
 		typedef NiAVObject* (*fUnk1412BAFB0_t)(
-			ShadowSceneNode* a_shadowSceneNode,
-			NiAVObject*      a_object,
+			RE::ShadowSceneNode* a_shadowSceneNode,
+			NiAVObject*          a_object,
 			bool) noexcept;
 		typedef NiAVObject* (*fUnk1412BAFB0_t)(
-			ShadowSceneNode* a_shadowSceneNode,
-			NiAVObject*      a_object,
+			RE::ShadowSceneNode* a_shadowSceneNode,
+			NiAVObject*          a_object,
 			bool) noexcept;
 		typedef NiExtraData* (*fFindNiExtraData_t)(
 			NiObjectNET*         a_object,
@@ -112,12 +112,6 @@ namespace IED
 			bool        a_recursive,
 			bool        a_ignoreHavokFlag) noexcept;
 
-		typedef bool (*shadowSceneNodeCleanupLights_t)(
-			ShadowSceneNode* a_ssn,
-			NiNode*          a_node,
-			bool             a_unk2,
-			bool             a_unk3) noexcept;
-
 		// typedef void (*playSound_t)(const char* a_editorID);
 
 	public:
@@ -135,20 +129,20 @@ namespace IED
 			const BSFixedString& a_name) noexcept;
 
 		static stl::flag<AttachResultFlags> AttachObject(
-			Actor*    a_actor,
-			TESForm*  a_modelForm,
-			NiNode*   a_root,
-			NiNode*   a_targetNode,
-			NiNode*   a_object,
-			ModelType a_modelType,
-			bool      a_leftWeapon,
-			bool      a_dropOnDeath,
-			bool      a_removeScabbards,
-			bool      a_keepTorchFlame,
-			bool      a_disableHavok,
-			bool      a_removeTracers) noexcept;
-		//bool      a_attachLight,
-		//NiPointer<NiPointLight>& a_attachedLight);
+			Actor*       a_actor,
+			TESForm*     a_modelForm,
+			NiNode*      a_root,
+			NiNode*      a_targetNode,
+			NiNode*      a_object,
+			ModelType    a_modelType,
+			bool         a_leftWeapon,
+			bool         a_dropOnDeath,
+			bool         a_removeScabbards,
+			bool         a_keepTorchFlame,
+			bool         a_disableHavok,
+			bool         a_removeTracers,
+			bool         a_attachLight,
+			ObjectLight& a_attachedLight) noexcept;
 
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
@@ -158,20 +152,19 @@ namespace IED
 		static void CleanupWeaponBehaviorGraph(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
 
-		/*static NiPointer<NiPointLight> AttachLight(TESObjectLIGH* a_light, TESObjectREFR* a_refr, NiAVObject* a_object);
-		static void                    CleanupLights(NiNode* a_node);*/
-
 		static void UpdateRoot(NiNode* a_root) noexcept;
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
 		inline static const auto GetObjectByName      = IAL::Address<fGetObjectByName_t>(74481, 76207);
 		inline static const auto ApplyTextureSwap     = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
-		inline static const auto m_unkglob0           = IAL::Address<std::int32_t*>(523662, 410201);
+		inline static const auto m_gameRuntimeMS      = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupObject_t>(15495, 15660);
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShrinkToSize = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
+
+		inline static const auto m_shadowSceneNode = IAL::Address<RE::ShadowSceneNode**>(513211, 390951);
 
 		// BSDismemberSkinInstance
 		//inline static const auto SetEditorVisible = IAL::Address<fUnkC6B900_t>(69401, 0);
@@ -182,11 +175,6 @@ namespace IED
 		{
 			return m_Instance.m_conf.weaponAdjustDisable;
 		}
-
-		/*[[nodiscard]] inline static constexpr bool GetLightsEnabled() noexcept
-		{
-			return m_Instance.m_conf.enableLights;
-		}*/
 
 		[[nodiscard]] inline static constexpr bool GetTransformOverridesEnabled() noexcept
 		{
@@ -216,7 +204,6 @@ namespace IED
 			Controller*                       a_controller,
 			const std::shared_ptr<ConfigINI>& a_config);
 
-		inline static const auto m_shadowSceneNode = IAL::Address<ShadowSceneNode**>(513211, 390951);
 		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 
 		//inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
@@ -227,12 +214,11 @@ namespace IED
 		inline static const auto QueueAttachHavok          = IAL::Address<unk5C3C40_t>(35950, 36925);
 		inline static const auto fUnk5EBD90                = IAL::Address<unk5EBD90_t>(36559, 37560);
 		inline static const auto fUnk5C39F0                = IAL::Address<unk5C39F0_t>(35947, 36922);
-		inline static const auto AttachAddonNodes          = IAL::Address<attachAddonNodes_t>(19207, 19633);
+		inline static const auto AttachAddonParticles          = IAL::Address<attachAddonNodes_t>(19207, 19633);
 		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
 		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
-		inline static const auto fUnk28BAD0                = IAL::Address<unk14028BAD0_t>(19206, 19632);
+		inline static const auto AttachAddonNodes                = IAL::Address<unk14028BAD0_t>(19206, 19632);
 		inline static const auto StripCollision            = IAL::Address<stripCollision_t>(76037, 77870);
-		//inline static const auto SSNCleanupLights          = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
@@ -269,7 +255,7 @@ namespace IED
 		void Install_WeaponAdjustDisable();
 		void Hook_ToggleFav();
 		void Install_ParallelAnimationUpdate();
-		//void Install_AttachLight();
+		void Install_Lighting();
 
 		void FailsafeCleanupAndEval(
 			Actor*                     a_actor,
@@ -292,6 +278,14 @@ namespace IED
 		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk) noexcept;
 		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept;
 		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data) noexcept;  // getbiped1
+		/*static void                              TESObjectREFR_UpdateRefLight_Hook(TESObjectREFR* a_actor) noexcept;
+		static void                              Actor_UpdateRefLight_Hook(Actor* a_actor) noexcept;
+		static void                              Character_UpdateRefLight_Hook(Character* a_character) noexcept;*/
+		static void                              PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player) noexcept;
+		static REFR_LIGHT*                       TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
+		static void                              PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept;
+		static void                              PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept;
+		static REFR_LIGHT*                       Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
 
 		static bool hkaShouldBlockNode(NiAVObject* a_root, const BSFixedString& a_name, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
 
@@ -300,41 +294,54 @@ namespace IED
 		template <class T>
 		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*) noexcept) noexcept;
 
-		inline static const auto m_vtblCharacter_a          = IAL::Address<std::uintptr_t>(261397, 207886);
-		inline static const auto m_vtblActor_a              = IAL::Address<std::uintptr_t>(260538, 207511);
-		inline static const auto m_vtblPlayerCharacter_a    = IAL::Address<std::uintptr_t>(261916, 208040);
-		inline static const auto m_refrLoad3DClone_a        = IAL::Address<std::uintptr_t>(19300, 19727, 0x1D2, 0x1D1);
-		inline static const auto m_playerLoad3DSkel_a       = IAL::Address<std::uintptr_t>(39386, 40458, 0xEE, 0xDD);
-		inline static const auto m_createWeaponNodes_a      = IAL::Address<std::uintptr_t>(19342, 19769);
-		inline static const auto m_removeAllBipedParts_a    = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
-		inline static const auto m_reanimActorStateUpdate_a = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
-		inline static const auto m_armorUpdate_a            = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
-		inline static const auto m_garbageCollectorREFR_a   = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
-		inline static const auto m_weapAdj_a                = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
-		inline static const auto m_adjustSkip_a             = IAL::Address<std::uintptr_t>(62933, 63856);
-		inline static const auto m_toggleFav1_a             = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
-		inline static const auto m_bipedAttachHavok_a       = IAL::Address<std::uintptr_t>(15569, 15746, 0x556, 0x56B);
-		inline static const auto m_hkaLookupSkeletonBones_a = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
-		inline static const auto m_animUpdateDispatcher_a   = IAL::Address<std::uintptr_t>(38098, 39054);
-		inline static const auto m_animUpdateRef_a          = IAL::Address<std::uintptr_t>(40436, 41453);
-		inline static const auto m_animUpdatePlayer_a       = IAL::Address<std::uintptr_t>(39445, 40521);
+		inline static const auto m_vtblCharacter_a                    = IAL::Address<std::uintptr_t>(261397, 207886);
+		inline static const auto m_vtblActor_a                        = IAL::Address<std::uintptr_t>(260538, 207511);
+		inline static const auto m_vtblPlayerCharacter_a              = IAL::Address<std::uintptr_t>(261916, 208040);
+		inline static const auto m_vtblTESObjectREFR_a                = IAL::Address<std::uintptr_t>(235511, 190259);
+		inline static const auto m_refrLoad3DClone_a                  = IAL::Address<std::uintptr_t>(19300, 19727, 0x1D2, 0x1D1);
+		inline static const auto m_playerLoad3DSkel_a                 = IAL::Address<std::uintptr_t>(39386, 40458, 0xEE, 0xDD);
+		inline static const auto m_createWeaponNodes_a                = IAL::Address<std::uintptr_t>(19342, 19769);
+		inline static const auto m_removeAllBipedParts_a              = IAL::Address<std::uintptr_t>(15494, 15659);  //, 0x30, 0xA8);
+		inline static const auto m_reanimActorStateUpdate_a           = IAL::Address<std::uintptr_t>(37865, 38820, 0x3F, 0x3F);
+		inline static const auto m_armorUpdate_a                      = IAL::Address<std::uintptr_t>(24231, 24725, 0x81, 0x1EF);
+		inline static const auto m_garbageCollectorREFR_a             = IAL::Address<std::uintptr_t>(35492, 36459, 0x75, 0x7A);
+		inline static const auto m_weapAdj_a                          = IAL::Address<std::uintptr_t>(15501, 15678, 0xEF9, IAL::ver() >= VER_1_6_629 ? 0x424 : 0x427);
+		inline static const auto m_adjustSkip_a                       = IAL::Address<std::uintptr_t>(62933, 63856);
+		inline static const auto m_toggleFav1_a                       = IAL::Address<std::uintptr_t>(50990, 51848, 0x4E, 0x71B);
+		inline static const auto m_hkaLookupSkeletonBones_a           = IAL::Address<std::uintptr_t>(62931, 63854, 0x89, 0x108);
+		inline static const auto m_animUpdateDispatcher_a             = IAL::Address<std::uintptr_t>(38098, 39054);
+		inline static const auto m_animUpdateRef_a                    = IAL::Address<std::uintptr_t>(40436, 41453);
+		inline static const auto m_animUpdatePlayer_a                 = IAL::Address<std::uintptr_t>(39445, 40521);
+		inline static const auto m_TESObjectCELL_unk_178_a            = IAL::Address<std::uintptr_t>(19003, 0);
+		inline static const auto m_PlayerCharacter_unk_205_a          = IAL::Address<std::uintptr_t>(39657, 0);
+		inline static const auto m_PlayerCharacter_RefreshLights_a    = IAL::Address<std::uintptr_t>(39493, 0);
+		inline static const auto m_Actor_Update_Actor_GetExtraLight_a = IAL::Address<std::uintptr_t>(36357, 0);
+		//inline static const auto m_pcUpdateRefrLights_a     = IAL::Address<std::uintptr_t>(39491, 0);
 
 		//inline static const auto m_updateRefAnim_func = IAL::Address<std::uintptr_t>(19729, 20123);
 
-		decltype(&Character_Resurrect_Hook)                 m_characterResurrect_o{ nullptr };
-		decltype(&PlayerCharacter_Release3D_Hook)           m_pcRelease3D_o{ nullptr };
-		decltype(&Character_Release3D_Hook)                 m_characterRelease3D_o{ nullptr };
-		decltype(&Actor_Release3D_Hook)                     m_actorRelease3D_o{ nullptr };
-		decltype(&PlayerCharacter_Load3D_LoadSkeleton_Hook) m_playerLoad3DSkel_o{ nullptr };
-		decltype(&ReanimateActorStateUpdate_Hook)           m_ReanimActorStateUpd_o{ nullptr };
-		decltype(&ArmorUpdate_Hook)                         m_ArmorChange_o{ nullptr };
-		decltype(&GarbageCollectorReference_Hook)           m_garbageCollectorReference_o{ nullptr };
-		decltype(&CreateWeaponNodes_Hook)                   m_createWeaponNodes_o{ nullptr };
-		decltype(&RemoveAllBipedParts_Hook)                 m_removeAllBipedParts_o{ nullptr };
-		decltype(&ToggleFavGetExtraList_Hook)               m_toggleFavGetExtraList_o{ nullptr };
-		decltype(&PrepareAnimUpdateLists_Hook)              m_prepareAnimUpdateLists_o{ nullptr };
-		decltype(&ClearAnimUpdateLists_Hook)                m_clearAnimUpdateLists_o{ nullptr };
-		hkaLookupSkeletonNode_t                             m_hkaLookupSkeletonNode_o{ nullptr };
+		decltype(&Character_Resurrect_Hook)                                    m_characterResurrect_o{ nullptr };
+		decltype(&PlayerCharacter_Release3D_Hook)                              m_pcRelease3D_o{ nullptr };
+		decltype(&Character_Release3D_Hook)                                    m_characterRelease3D_o{ nullptr };
+		decltype(&Actor_Release3D_Hook)                                        m_actorRelease3D_o{ nullptr };
+		decltype(&PlayerCharacter_Load3D_LoadSkeleton_Hook)                    m_playerLoad3DSkel_o{ nullptr };
+		decltype(&ReanimateActorStateUpdate_Hook)                              m_ReanimActorStateUpd_o{ nullptr };
+		decltype(&ArmorUpdate_Hook)                                            m_ArmorChange_o{ nullptr };
+		decltype(&GarbageCollectorReference_Hook)                              m_garbageCollectorReference_o{ nullptr };
+		decltype(&CreateWeaponNodes_Hook)                                      m_createWeaponNodes_o{ nullptr };
+		decltype(&RemoveAllBipedParts_Hook)                                    m_removeAllBipedParts_o{ nullptr };
+		decltype(&ToggleFavGetExtraList_Hook)                                  m_toggleFavGetExtraList_o{ nullptr };
+		decltype(&PrepareAnimUpdateLists_Hook)                                 m_prepareAnimUpdateLists_o{ nullptr };
+		decltype(&ClearAnimUpdateLists_Hook)                                   m_clearAnimUpdateLists_o{ nullptr };
+		hkaLookupSkeletonNode_t                                                m_hkaLookupSkeletonNode_o{ nullptr };
+		//decltype(&TESObjectREFR_UpdateRefLight_Hook)                           m_pcUpdateRefLightREFR_o{ nullptr };
+		//decltype(&Actor_UpdateRefLight_Hook)                                   m_pcUpdateRefLightActor_o{ nullptr };
+		//decltype(&Character_UpdateRefLight_Hook)                               m_pcUpdateRefLightCharacter_o{ nullptr };
+		decltype(&PlayerCharacter_UpdateRefLight_Hook)                         m_pcUpdateRefLightPlayerCharacter_o{ nullptr };
+		decltype(&TESObjectCELL_unk_178_Actor_GetExtraLight_Hook)              m_TESObjectCELL_unk_178_Actor_GetExtraLight_o{ nullptr };
+		decltype(&PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook)       m_PlayerCharacter_unk_205_RefreshMagicCasterLights_o{ nullptr };
+		decltype(&PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook) m_PlayerCharacter_RefreshLights_RefreshMagicCasterLights_o{ nullptr };
+		decltype(&Actor_Update_Actor_GetExtraLight_Hook)                       m_Actor_Update_Actor_GetExtraLight_o{ nullptr };
 
 		struct
 		{
@@ -344,7 +351,6 @@ namespace IED
 			bool disableNPCProcessing{ false };
 			bool parallelAnimationUpdates{ false };
 			bool applyTransformOverrides{ false };
-			//bool enableLights{ false };
 		} m_conf;
 
 		Controller* m_controller{ nullptr };

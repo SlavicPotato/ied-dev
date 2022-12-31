@@ -8,6 +8,7 @@
 
 #include "IED/ActorState.h"
 #include "IED/ExtraNodes.h"
+#include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 #include "IED/TransformOverrides.h"
 
@@ -283,6 +284,8 @@ namespace IED
 
 		m_simNodeList.clear();
 
+		ReferenceLightController::GetSingleton().RemoveActor(m_actorid);
+
 		if (defer)
 		{
 			QueueDisposeMOVSimComponents();
@@ -498,7 +501,7 @@ namespace IED
 		return result;
 	}
 
-	bool ActorObjectHolder::GetNodeMonitorResult(std::uint32_t a_uid) noexcept
+	bool ActorObjectHolder::GetNodeMonitorResult(std::uint32_t a_uid) const noexcept
 	{
 		auto it = m_nodeMonitorEntries.find(a_uid);
 		return it != m_nodeMonitorEntries.end() ?
@@ -565,7 +568,7 @@ namespace IED
 		auto it = std::find_if(
 			m_weapNodes.begin(),
 			m_weapNodes.end(),
-			[&](auto& a_v) {
+			[&](auto& a_v) [[msvc::forceinline]] {
 				return a_v.gearNodeID == id;
 			});
 

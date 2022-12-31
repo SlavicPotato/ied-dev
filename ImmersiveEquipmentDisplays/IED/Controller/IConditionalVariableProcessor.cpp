@@ -18,17 +18,19 @@ namespace IED
 	{
 		a_params.useCount.clear();
 
+		a_params.flags.set(ControllerUpdateFlags::kFailVariableCondition);
+
 		bool result = false;
 
-		for (auto& e : a_config.data.getvec())
+		for (const auto* const e : a_config.data.getvec())
 		{
-			auto r = a_map.emplace(
+			const auto r = a_map.emplace(
 				e->first,
 				e->second.defaultValue.value);
 
 			result |= r.second;
 
-			auto overrideVar = GetOverrideVariable(
+			const auto overrideVar = GetOverrideVariable(
 				a_params,
 				e->second.vars);
 
@@ -41,6 +43,8 @@ namespace IED
 				r.first->second,
 				result);
 		}
+
+		a_params.flags.clear(ControllerUpdateFlags::kFailVariableCondition);
 
 		return result;
 	}
@@ -109,12 +113,12 @@ namespace IED
 
 	constexpr void IConditionalVariableProcessor::UpdateVariable(
 		processParams_t&                                  a_params,
-		ConditionalVariableType                           a_defaultType,
+		ConditionalVariableType                           a_type,
 		const Data::configConditionalVariableValueData_t& a_src,
 		conditionalVariableStorage_t&                     a_dst,
 		bool&                                             a_modified) noexcept
 	{
-		switch (a_defaultType)
+		switch (a_type)
 		{
 		case ConditionalVariableType::kInt32:
 

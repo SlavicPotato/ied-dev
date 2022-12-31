@@ -12,6 +12,7 @@
 #include "Localization/LocalizationDataManager.h"
 #include "NodeMap.h"
 #include "NodeOverrideData.h"
+#include "ReferenceLightController.h"
 #include "PapyrusInterface/Papyrus.h"
 
 #include "Drivers/Input.h"
@@ -134,6 +135,13 @@ namespace IED
 			gLog.Close();
 		}
 
+		m_initRefrLightController = config->m_enableLights;
+		if (config->m_enableLights)
+		{
+			ReferenceLightController::GetSingleton().SetCellAttachFixEnabled(true);
+			ReferenceLightController::GetSingleton().SetNPCLightUpdateFixEnabled(true);
+		}
+
 		m_done = true;
 
 		return true;
@@ -223,6 +231,11 @@ namespace IED
 			NodeOverrideData::LoadAndAddConvertNodes(PATHS::CONVERT_NODES);
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
+
+			if (m_initRefrLightController)
+			{
+				ReferenceLightController::GetSingleton().Initialize();
+			}
 
 			break;
 		case SKSEMessagingInterface::kMessage_DataLoaded:

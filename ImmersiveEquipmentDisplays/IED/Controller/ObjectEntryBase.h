@@ -3,6 +3,7 @@
 #include "EffectShaderData.h"
 #include "INode.h"
 #include "ObjectDatabase.h"
+#include "ObjectLight.h"
 #include "ObjectManagerCommon.h"
 
 #include "IED/ConfigBaseValues.h"
@@ -117,7 +118,7 @@ namespace IED
 				NiPointer<NiNode>                   object;
 				Data::cacheTransform_t              transform;
 				ObjectDatabase::ObjectDatabaseEntry dbEntry;
-				//NiPointer<NiPointLight>             light;
+				ObjectLight                         light;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence) noexcept;
 			};
@@ -217,11 +218,11 @@ namespace IED
 			stl::fixed_string                                  currentSequence;
 			long long                                          created{ 0 };
 			std::optional<luid_tag>                            currentGeomTransformTag;
-			//NiPointer<NiPointLight>                            light;
-			std::unique_ptr<QuiverArrowState> arrowState;
-			Game::FormID                      owner;
-			std::uint8_t                      hideCountdown{ 0 };
-			bool                              atmReference{ true };
+			ObjectLight                                        light;
+			std::unique_ptr<QuiverArrowState>                  arrowState;
+			Game::FormID                                       owner;
+			std::uint8_t                                       hideCountdown{ 0 };
+			bool                                               atmReference{ true };
 		};
 
 		struct ActiveData

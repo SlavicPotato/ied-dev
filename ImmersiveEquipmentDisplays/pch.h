@@ -7,7 +7,9 @@
 
 #include <ext/GameHandlesExtra.h>
 
+#include <ext/BGSLensFlare.h>
 #include <ext/BSAnimationGraphManager.h>
+#include <ext/BSLight.h>
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
 #include <ext/Hash.h>
@@ -17,11 +19,13 @@
 #include <ext/IPluginInfo.h>
 #include <ext/ISerializationBase.h>
 #include <ext/ITaskPool.h>
+#include <ext/LightCreateParams.h>
 #include <ext/Model.h>
 #include <ext/Node.h>
 #include <ext/PluginInterfaceSDS.h>
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
+#include <ext/ShadowSceneNode.h>
 #include <ext/StringCache.h>
 #include <ext/Vector.h>
 #include <ext/WeaponAnimationGraphManagerHolder.h>
@@ -120,6 +124,7 @@
 #include <boost/thread/lock_guard.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/shared_mutex.hpp>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
