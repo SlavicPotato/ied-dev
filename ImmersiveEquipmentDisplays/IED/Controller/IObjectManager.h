@@ -186,7 +186,7 @@ namespace IED
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
 
-		mutable boost::recursive_mutex m_lock;
+		mutable stl::recursive_mutex m_lock;
 	};
 
 }

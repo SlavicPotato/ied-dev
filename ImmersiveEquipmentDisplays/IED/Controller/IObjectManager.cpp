@@ -150,7 +150,7 @@ namespace IED
 		Game::FormID a_actor)
 	{
 		ITaskPool::AddPriorityTask([this, a_actor]() {
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			auto it = m_objects.find(a_actor);
 			if (it != m_objects.end())
@@ -166,7 +166,7 @@ namespace IED
 		bool         a_xfrmUpdate,
 		bool         a_xfrmUpdateNoDefer) const noexcept
 	{
-		const boost::lock_guard lock(m_lock);
+		const stl::lock_guard lock(m_lock);
 
 		auto it = m_objects.find(a_actor);
 		if (it != m_objects.end())
@@ -233,7 +233,7 @@ namespace IED
 	void IObjectManager::QueueClearVariablesOnAll(bool a_requestEval) noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_requestEval] {
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			ClearVariablesOnAll(a_requestEval);
 		});
@@ -244,7 +244,7 @@ namespace IED
 		bool         a_requestEval) noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_handle, a_requestEval] {
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			ClearVariables(a_handle, a_requestEval);
 		});
@@ -253,7 +253,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdateOnAll() const noexcept
 	{
 		ITaskPool::AddPriorityTask([this] {
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			RequestVariableUpdateOnAll();
 		});
@@ -262,7 +262,7 @@ namespace IED
 	void IObjectManager::QueueRequestVariableUpdate(Game::FormID a_handle) const noexcept
 	{
 		ITaskPool::AddPriorityTask([this, a_handle] {
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			RequestVariableUpdate(a_handle);
 		});
@@ -643,6 +643,7 @@ namespace IED
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok),
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers),
 			a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
+			a_activeConfig.flags.test(Data::BaseFlags::kRemoveEditorMarker),
 			state->light);
 
 		if (state->light.niObject.get())
@@ -722,6 +723,22 @@ namespace IED
 		{
 			state->modelForm = a_modelForm->formID;
 		}
+
+		/*if (auto audioManager = BSAudioManager::GetSingleton())
+		{
+			auto sf = Game::FormID(0x0003C8EF).Lookup<BGSSoundDescriptorForm>();
+			ASSERT(sf);
+
+			state->soundHandle = std::make_unique<BSSoundHandle>();
+
+			if (audioManager->BuildSoundDataFromDescriptor(
+					*state->soundHandle,
+					sf))
+			{
+				state->soundHandle->SetObjectToFollow(object.get());
+				state->soundHandle->Play();
+			}
+		}*/
 
 		a_objectEntry.data.state = std::move(state);
 
@@ -978,9 +995,11 @@ namespace IED
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers),
 				a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight),
+				a_activeConfig.flags.test(Data::BaseFlags::kRemoveEditorMarker) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveEditorMarker),
 				n.light);
 
-			if (state->light.niObject.get())
+			if (n.light.niObject.get())
 			{
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,

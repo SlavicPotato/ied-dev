@@ -93,7 +93,7 @@ namespace IED
 
 			bool m_dirty{ false };
 
-			mutable boost::recursive_mutex m_rwLock;
+			mutable stl::recursive_mutex m_rwLock;
 			mutable except::descriptor    m_lastException;
 
 			static NodeMap m_Instance;

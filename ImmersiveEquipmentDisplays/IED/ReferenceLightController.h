@@ -53,6 +53,10 @@ namespace IED
 			NiPointer<RE::BSLight> bsLight;
 		};
 
+		using lock_type   = std::shared_mutex;
+		using shared_lock = std::shared_lock<lock_type>;
+		using unique_lock = std::unique_lock<lock_type>;
+
 	public:
 		[[nodiscard]] static inline constexpr auto& GetSingleton() noexcept
 		{
@@ -61,13 +65,11 @@ namespace IED
 
 		void Initialize();
 
-		void OnUpdate(Actor* a_actor) const noexcept;
+		void OnUpdatePlayerLight(PlayerCharacter* a_actor) const noexcept;
 		void OnActorCrossCellBoundary(Actor* a_actor) const noexcept;
 		void OnActorCellAttached(Actor* a_actor) const noexcept;
 		void OnRefreshLightOnSceneMove(Actor* a_actor) const noexcept;
-		void OnUnkQueueBSLight(Actor* a_actor) const noexcept;
-
-		static void ReAddActorExtraLight(Actor* a_actor) noexcept;
+		void OnActorUpdate(Actor* a_actor, REFR_LIGHT* a_extraLight) const noexcept;
 
 		void AddLight(
 			Game::FormID       a_actor,
@@ -80,45 +82,71 @@ namespace IED
 
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
-		[[nodiscard]] static ObjectLight AttachLight(
+		[[nodiscard]] static ObjectLight CreateAndAttachPointLight(
 			const TESObjectLIGH* a_lightForm,
 			Actor*               a_actor,
 			NiNode*              a_object) noexcept;
 
 		static void CleanupLights(NiNode* a_node) noexcept;
 
+		std::size_t GetNumLights() const noexcept;
+
 		[[nodiscard]] inline constexpr bool GetEnabled() const noexcept
 		{
 			return m_initialized;
 		}
 
-		inline constexpr void SetCellAttachFixEnabled(bool a_switch) noexcept
+		inline void SetNPCLightCellAttachFixEnabled(bool a_switch) noexcept
 		{
-			m_fixVanillaLightOnCellAttach = a_switch;
+			m_fixVanillaLightOnCellAttach.store(a_switch, std::memory_order_relaxed);
+		}
+
+		inline void SetNPCLightUpdateFixEnabled(bool a_switch) noexcept
+		{
+			m_fixVanillaNPCLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
 		
-		inline constexpr void SetNPCLightUpdateFixEnabled(bool a_switch) noexcept
+		inline void SetNPCLightUpdatesEnabled(bool a_switch) noexcept
 		{
-			m_fixVanillaNPCLightUpdates = a_switch;
+			m_npcLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
 
 	private:
+
+		template <class Tf>
+		constexpr void visit_lights(Actor* a_actor, Tf a_func) const noexcept
+		{
+			auto it = m_data.find(a_actor->formID);
+			if (it != m_data.end())
+			{
+				for (auto& e : it->second)
+				{
+					a_func(e);
+				}
+			}
+		}
+
+		static void ReAddActorExtraLight(Actor* a_actor) noexcept;
+		//void        UpdateRegisteredLights(Actor* a_actor) const noexcept;
+		static void UpdateEquippedLight(Actor* a_actor) noexcept;
+
 		virtual EventResult ReceiveEvent(
 			const TESCellAttachDetachEvent*           a_evn,
 			BSTEventSource<TESCellAttachDetachEvent>* a_dispatcher) override;
 
-		inline static const auto UpdateRefrLight            = IAL::Address<updateRefrLight_t>(17212, 0);
-		inline static const auto NiPointLightSetAttenuation = IAL::Address<setNiPointLightAttenuation_t>(17224, 0);
-		inline static const auto CleanupLightsImpl          = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
-		inline static const auto RefreshLightOnSceneMove    = IAL::Address<refreshLightOnSceneMove_t>(99693, 0);
-		inline static const auto SSN_UnkQueueBSLight        = IAL::Address<shadowSceneNode_UnkQueueBSLight_t>(99706, 0);
+		inline static const auto UpdateRefrLight            = IAL::Address<updateRefrLight_t>(17212, 17614);
+		inline static const auto NiPointLightSetAttenuation = IAL::Address<setNiPointLightAttenuation_t>(17224, 17626);
+		inline static const auto QueueRemoveAllLights       = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
+		inline static const auto QueueAddLight              = IAL::Address<refreshLightOnSceneMove_t>(99693, 106327);
+		inline static const auto UnkQueueBSLight            = IAL::Address<shadowSceneNode_UnkQueueBSLight_t>(99706, 106340);
 
-		mutable boost::shared_mutex                                m_lock;
+		mutable lock_type                                          m_lock;
 		stl::unordered_map<Game::FormID, std::forward_list<Entry>> m_data;
 
-		bool m_initialized{ false };
-		bool m_fixVanillaLightOnCellAttach{ false };
-		bool m_fixVanillaNPCLightUpdates{ false };
+		bool             m_initialized{ false };
+		std::atomic_bool m_fixVanillaLightOnCellAttach{ false };
+		std::atomic_bool m_fixVanillaNPCLightUpdates{ false };
+		std::atomic_bool m_npcLightUpdates{ false };
 
 		static ReferenceLightController m_Instance;
 	};

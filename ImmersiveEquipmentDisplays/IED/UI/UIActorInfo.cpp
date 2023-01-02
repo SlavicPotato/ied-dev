@@ -76,7 +76,7 @@ namespace IED
 				return;
 			}
 
-			const boost::lock_guard lock(data.data->lock);
+			const stl::lock_guard lock(data.data->lock);
 
 			const auto handle = m_listCurrent->handle;
 
@@ -1894,8 +1894,8 @@ namespace IED
 			}
 
 			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data] {
-				const boost::lock_guard lock(m_controller.GetLock());
-				const boost::lock_guard datalock(data->lock);
+				const stl::lock_guard lock(m_controller.GetLock());
+				const stl::lock_guard datalock(data->lock);
 
 				data->lastUpdate  = IPerfCounter::Query();
 				data->actor       = handle;

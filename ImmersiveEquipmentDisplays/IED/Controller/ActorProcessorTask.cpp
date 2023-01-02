@@ -17,19 +17,84 @@
 
 namespace IED
 {
-	ActorProcessorTask::ActorProcessorTask(
-		Controller& a_controller) :
-		m_state{ IPerfCounter::Query() - COMMON_STATE_CHECK_INTERVAL },
-		m_controller(a_controller)
+	ActorProcessorTask::ActorProcessorTask() :
+		m_state{ IPerfCounter::Query() - COMMON_STATE_CHECK_INTERVAL }
 	{
 	}
 
-	void ActorProcessorTask::UpdateNode(
+	SKMP_FORCEINLINE static constexpr void sync_ref_transform(
+		ObjectEntryBase::State* a_state,
+		const nodesRef_t&       a_nodes) noexcept
+	{
+		if (a_state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
+		    a_nodes.rootNode->IsVisible())
+		{
+			if (a_state->transform.scale)
+			{
+				a_nodes.rootNode->m_localTransform.scale =
+					a_nodes.ref->m_localTransform.scale * *a_state->transform.scale;
+			}
+			else
+			{
+				a_nodes.rootNode->m_localTransform.scale = a_nodes.ref->m_localTransform.scale;
+			}
+
+			if (a_state->transform.rotation)
+			{
+				a_nodes.rootNode->m_localTransform.rot =
+					a_nodes.ref->m_localTransform.rot * *a_state->transform.rotation;
+			}
+			else
+			{
+				a_nodes.rootNode->m_localTransform.rot = a_nodes.ref->m_localTransform.rot;
+			}
+
+			if (a_state->transform.position)
+			{
+				a_nodes.rootNode->m_localTransform.pos =
+					a_nodes.ref->m_localTransform * *a_state->transform.position;
+			}
+			else
+			{
+				a_nodes.rootNode->m_localTransform.pos = a_nodes.ref->m_localTransform.pos;
+			}
+		}
+	}
+
+	bool ActorProcessorTask::SyncRefParentNode(
 		ActorObjectHolder& a_record,
 		ObjectEntryBase&   a_entry) noexcept
 	{
-		auto state = a_entry.data.state.get();
+		bool result;
 
+		auto& controller = GetController();
+
+		if (const auto info = controller.LookupCachedActorInfo(a_record))
+		{
+			result = controller.AttachNodeImpl(
+				info->npcRoot,
+				a_entry.data.state->nodeDesc,
+				a_entry.data.state->atmReference,
+				a_entry);
+
+			if (result)
+			{
+				INode::UpdateRootIfGamePaused(info->root);
+			}
+		}
+		else
+		{
+			result = false;
+		}
+
+		return result;
+	}
+
+	void ActorProcessorTask::DoObjectRefSync(
+		ActorObjectHolder& a_record,
+		ObjectEntryBase&   a_entry) noexcept
+	{
+		const auto  state = a_entry.data.state.get();
 		const auto& nodes = state->nodes;
 
 		if (!nodes.ref)
@@ -44,24 +109,12 @@ namespace IED
 				return;
 			}
 
-			bool result = false;
-
-			if (auto info = m_controller.LookupCachedActorInfo(a_record))
+			const bool result = SyncRefParentNode(a_record, a_entry);
+			if (result)
 			{
-				result = m_controller.AttachNodeImpl(
-					info->npcRoot,
-					state->nodeDesc,
-					state->atmReference,
-					a_entry);
-
-				if (result)
-				{
-					INode::UpdateRootIfGamePaused(info->root);
-					a_record.RequestEvalDefer();
-				}
+				a_record.RequestEvalDefer();
 			}
-
-			if (!result)
+			else
 			{
 				state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 				return;
@@ -73,38 +126,35 @@ namespace IED
 			}
 		}
 
-		if (state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    nodes.rootNode->IsVisible())
+		sync_ref_transform(state, nodes);
+	}
+
+	void ActorProcessorTask::DoObjectRefSyncMTSafe(
+		ActorObjectHolder& a_record,
+		ObjectEntryBase&   a_entry) noexcept
+	{
+		const auto  state = a_entry.data.state.get();
+		const auto& nodes = state->nodes;
+
+		if (!nodes.ref)
 		{
-			if (state->transform.scale)
-			{
-				nodes.rootNode->m_localTransform.scale =
-					nodes.ref->m_localTransform.scale * *state->transform.scale;
-			}
-			else
-			{
-				nodes.rootNode->m_localTransform.scale = nodes.ref->m_localTransform.scale;
-			}
+			return;
+		}
 
-			if (state->transform.rotation)
+		if (nodes.IsReferenceMovedOrOphaned())
+		{
+			if (!state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
 			{
-				nodes.rootNode->m_localTransform.rot =
-					nodes.ref->m_localTransform.rot * *state->transform.rotation;
-			}
-			else
-			{
-				nodes.rootNode->m_localTransform.rot = nodes.ref->m_localTransform.rot;
-			}
+				stl::lock_guard lock(m_syncRefParentQueueWRLock);
 
-			if (state->transform.position)
-			{
-				nodes.rootNode->m_localTransform.pos =
-					nodes.ref->m_localTransform * *state->transform.position;
+				m_syncRefParentQueue.emplace_back(
+					std::addressof(a_record),
+					std::addressof(a_entry));
 			}
-			else
-			{
-				nodes.rootNode->m_localTransform.pos = nodes.ref->m_localTransform.pos;
-			}
+		}
+		else
+		{
+			sync_ref_transform(state, nodes);
 		}
 	}
 
@@ -125,7 +175,7 @@ namespace IED
 		{
 			a_data.m_flags.clear(ActorObjectHolderFlags::kRequestTransformUpdateMask);
 
-			m_controller.EvaluateTransformsImpl(
+			GetController().EvaluateTransformsImpl(
 				a_data,
 				ControllerUpdateFlags::kUseCachedParams);
 		}
@@ -135,9 +185,11 @@ namespace IED
 	{
 		if (a_data.m_flags.consume(ActorObjectHolderFlags::kEvalThisFrame))
 		{
+			auto& controller = GetController();
+
 			if (auto& params = a_data.GetCurrentProcessParams())
 			{
-				m_controller.EvaluateImpl(
+				controller.EvaluateImpl(
 					*params,
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
@@ -146,7 +198,7 @@ namespace IED
 			}
 			else
 			{
-				m_controller.EvaluateImpl(
+				controller.EvaluateImpl(
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
 						ControllerUpdateFlags::kFromProcessorTask |
@@ -189,12 +241,14 @@ namespace IED
 
 	void ActorProcessorTask::UpdateState() noexcept
 	{
+		auto& controller = GetController();
+
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
 		    lrhandle != m_state.playerLastRidden)
 		{
 			m_state.playerLastRidden = lrhandle;
 
-			m_controller.RequestLFEvaluateAll();
+			controller.RequestLFEvaluateAll();
 		}
 
 		if (const auto fpstate = IsInFirstPerson();
@@ -202,8 +256,8 @@ namespace IED
 		{
 			m_state.inFirstPerson = fpstate;
 
-			if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
-			    it != m_controller.m_objects.end())
+			if (auto it = controller.m_objects.find(Data::IData::GetPlayerRefID());
+			    it != controller.m_objects.end())
 			{
 				it->second.RequestEval();
 			}
@@ -264,7 +318,137 @@ namespace IED
 
 		if (changed)
 		{
-			m_controller.RequestLFEvaluateAll();
+			controller.RequestLFEvaluateAll();
+		}
+	}
+
+	template <bool _Mt>
+	void ActorProcessorTask::UpdateHolder(
+		const float                          a_interval,
+		const Game::Unk2f6b948::Steps&       a_stepMuls,
+		const std::optional<PhysUpdateData>& a_physUpdData,
+		ActorObjectHolder&                   a_holder,
+		bool                                 a_updateEffects) noexcept
+	{
+		bool update = false;
+
+		a_holder.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
+			auto& state = a_v.data.state;
+
+			if (!state)
+			{
+				return;
+			}
+
+			if constexpr (_Mt)
+			{
+				DoObjectRefSyncMTSafe(a_holder, a_v);
+			}
+			else
+			{
+				DoObjectRefSync(a_holder, a_v);
+			}
+
+			if constexpr (
+				std::is_same_v<
+					std::remove_cvref_t<decltype(a_v)>,
+					ObjectEntrySlot>)
+			{
+				if (state->hideCountdown)
+				{
+					if (--state->hideCountdown == 0)
+					{
+						if (state->flags.test(ObjectEntryFlags::kInvisible))
+						{
+							state->SetVisible(false);
+
+							if (state->nodes.HasPhysicsNode())
+							{
+								if (auto& simComponent = state->simComponent)
+								{
+									a_holder.RemoveAndDestroySimComponent(simComponent);
+								}
+							}
+
+							update = true;
+						}
+					}
+				}
+			}
+		});
+
+		if (update)
+		{
+			a_holder.RequestTransformUpdateDeferNoSkip();
+		}
+
+		if (a_updateEffects)
+		{
+			RunEffectUpdates(a_interval, a_stepMuls, a_physUpdData, a_holder);
+		}
+	}
+
+	void ActorProcessorTask::RunPostUpdates() noexcept
+	{
+		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
+		const auto interval = *Game::g_frameTimerSlow;
+
+		std::optional<PhysUpdateData> physUpdateData;
+
+		if (PhysicsProcessingEnabled())
+		{
+			PreparePhysicsUpdateData(interval, physUpdateData);
+		}
+
+		auto& data = GetController().GetObjects();
+
+		const auto paused = Game::IsPaused();
+
+		if (ParallelProcessingEnabled())
+		{
+			std::for_each(
+				std::execution::par,
+				data.begin(),
+				data.end(),
+				[&](auto& a_e) noexcept {
+					UpdateHolder<true>(
+						interval,
+						stepMuls,
+						physUpdateData,
+						a_e.second,
+						!paused);
+				});
+
+			if (!m_syncRefParentQueue.empty())
+			{
+				for (auto& e : m_syncRefParentQueue)
+				{
+					const bool result = SyncRefParentNode(*e.first, *e.second);
+
+					if (result)
+					{
+						e.first->RequestEvalDefer();
+					}
+					else
+					{
+						e.second->data.state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+					}
+				}
+
+				m_syncRefParentQueue.clear();
+			}
+		}
+		else
+		{
+			for (auto& e : data)
+			{
+				UpdateHolder<false>(
+					interval,
+					stepMuls,
+					physUpdateData,
+					e.second,
+					!paused);
+			}
 		}
 	}
 
@@ -304,7 +488,9 @@ namespace IED
 
 	void ActorProcessorTask::Run() noexcept
 	{
-		const boost::lock_guard lock(m_controller.m_lock);
+		auto& controller = GetController();
+
+		const stl::lock_guard lock(controller.m_lock);
 
 		if (!m_run)
 		{
@@ -318,15 +504,17 @@ namespace IED
 		std::optional<animUpdateData_t> animUpdateData;
 
 		if (m_runAnimationUpdates &&
-		    !m_controller.m_objects.empty() &&
+		    !controller.m_objects.empty() &&
 		    !Game::IsPaused())
 		{
 			animUpdateData.emplace(Game::Unk2f6b948::GetSteps());
 		}
 
-		for (auto& [i, e] : m_controller.m_objects)
+		for (auto& [i, e] : controller.m_objects)
 		{
 			auto& state = e.m_state;
+
+			//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
 
 			NiPointer<TESObjectREFR> refr;
 			if (!e.GetHandle().Lookup(refr))
@@ -449,21 +637,21 @@ namespace IED
 			if (e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate) ||
 			    e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
 			{
-				auto& cvdata = m_controller.m_config.active.condvars;
+				auto& cvdata = controller.m_config.active.condvars;
 
 				if (!cvdata.empty())
 				{
-					if (auto info = m_controller.LookupCachedActorInfo(actor, e))
+					if (auto info = controller.LookupCachedActorInfo(actor, e))
 					{
 						auto& params = e.CreateProcessParams(
 							info->sex,
 							ControllerUpdateFlags::kPlaySound,
 							info->actor.get(),
 							info->handle,
-							m_controller.m_temp.sr,
+							controller.m_temp.sr,
 							e.m_temp.idt,
 							e.m_temp.eqt,
-							m_controller.m_temp.uc,
+							controller.m_temp.uc,
 							actor,
 							info->npc,
 							info->npcOrTemplate,
@@ -471,14 +659,14 @@ namespace IED
 							info->root,
 							info->npcRoot,
 							e,
-							m_controller);
+							controller);
 
 						if (IConditionalVariableProcessor::UpdateVariableMap(
 								params,
 								cvdata,
 								e.GetVariables()))
 						{
-							m_controller.RequestHFEvaluateAll(i);
+							controller.RequestHFEvaluateAll(i);
 							e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
 						}
 					}
@@ -486,8 +674,10 @@ namespace IED
 			}
 		}
 
-		for (auto& [i, e] : m_controller.m_objects)
+		for ([[maybe_unused]] auto& [i, e] : controller.m_objects)
 		{
+			//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
+
 			if (!e.m_state.cellAttached)
 			{
 				e.ClearCurrentProcessParams();
@@ -504,56 +694,18 @@ namespace IED
 			ProcessTransformUpdateRequest(e);
 
 			e.ClearCurrentProcessParams();
-
-			bool update = false;
-
-			e.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
-				auto& state = a_v.data.state;
-
-				if (!state)
-				{
-					return;
-				}
-
-				UpdateNode(e, a_v);
-
-				if constexpr (
-					std::is_same_v<
-						std::remove_cvref_t<decltype(a_v)>,
-						ObjectEntrySlot>)
-				{
-					if (state->hideCountdown)
-					{
-						if (--state->hideCountdown == 0)
-						{
-							if (state->flags.test(ObjectEntryFlags::kInvisible))
-							{
-								state->SetVisible(false);
-
-								if (state->nodes.HasPhysicsNode())
-								{
-									if (auto& simComponent = state->simComponent)
-									{
-										e.RemoveAndDestroySimComponent(simComponent);
-									}
-								}
-
-								update = true;
-							}
-						}
-					}
-				}
-			});
-
-			if (update)
-			{
-				e.RequestTransformUpdateDeferNoSkip();
-			}
 		}
 
-		m_controller.RunObjectCleanup();
+		RunPostUpdates();
+
+		controller.RunObjectCleanup();
 
 		m_timer.End(m_currentTime);
+	}
+
+	Controller& ActorProcessorTask::GetController() noexcept
+	{
+		return static_cast<Controller&>(*this);
 	}
 
 }

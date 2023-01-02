@@ -176,7 +176,7 @@ namespace IED
 	private:
 		const std::shared_ptr<IUIRenderTask>& GetOrCreateToastTask();
 
-		virtual constexpr boost::recursive_mutex& UIGetLock() noexcept = 0;
+		virtual constexpr stl::recursive_mutex& UIGetLock() noexcept = 0;
 		virtual void                            OnUIOpen(){};
 		virtual void                            OnUIClose(){};
 

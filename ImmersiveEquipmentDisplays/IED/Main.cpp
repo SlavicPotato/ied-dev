@@ -12,8 +12,8 @@
 #include "Localization/LocalizationDataManager.h"
 #include "NodeMap.h"
 #include "NodeOverrideData.h"
-#include "ReferenceLightController.h"
 #include "PapyrusInterface/Papyrus.h"
+#include "ReferenceLightController.h"
 
 #include "Drivers/Input.h"
 #include "Drivers/Render.h"
@@ -65,8 +65,7 @@ namespace IED
 
 		ITaskPool::Install(
 			ISKSE::GetBranchTrampoline(),
-			ISKSE::GetLocalTrampoline(),
-			true);
+			ISKSE::GetLocalTrampoline());
 
 		Debug("Creating controller..");
 
@@ -138,8 +137,9 @@ namespace IED
 		m_initRefrLightController = config->m_enableLights;
 		if (config->m_enableLights)
 		{
-			ReferenceLightController::GetSingleton().SetCellAttachFixEnabled(true);
-			ReferenceLightController::GetSingleton().SetNPCLightUpdateFixEnabled(true);
+			auto& rlc = ReferenceLightController::GetSingleton();
+			rlc.SetNPCLightCellAttachFixEnabled(true);
+			rlc.SetNPCLightUpdateFixEnabled(true);
 		}
 
 		m_done = true;
@@ -220,6 +220,46 @@ namespace IED
 	{
 		switch (a_evn.message->type)
 		{
+		/*case SKSEMessagingInterface::kMessage_PostPostLoad:
+
+			{
+				constexpr auto a = stl::make_array(1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6);
+
+				std::mutex m;
+
+				for (int j = 0; j <= 5; ++j)
+				{
+					PerfTimer pt;
+					pt.Start();
+
+					std::for_each(
+						std::execution::par,
+						a.begin(),
+						a.end(),
+						[&](auto& a_e) noexcept {
+							std::unordered_set<std::string> d1;
+
+							std::size_t r = hash::fnv1::fnv_offset_basis;
+
+							for (int i = 0; i < 100000; i++)
+							{
+								std::lock_guard lock(m);
+
+								for (int k = 0; k < 1500; k++)
+									r = hash::fnv1::_append_hash_fnv1a(r, k);
+							}
+
+
+							d1.emplace(std::to_string(r));
+						});
+
+					_DMESSAGE("%d: %f", j, pt.Stop());
+				}
+
+				std::_Exit(1);
+			}
+			break;*/
+
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
 			ASSERT(StringCache::IsInitialized());

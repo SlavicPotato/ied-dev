@@ -122,7 +122,7 @@ namespace IED
 			if (ImGui::BeginChild("log_text", { -1.0f, 0.0f }))
 			{
 				{
-					const boost::lock_guard lock(data.GetLock());
+					const stl::lock_guard lock(data.GetLock());
 
 					if (auto curSize = data.Size(); curSize != m_lastSize)
 					{

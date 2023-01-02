@@ -4,8 +4,8 @@
 
 #include "IObjectManager.h"
 
-#include "IED/StringHolder.h"
 #include "IED/ReferenceLightController.h"
+#include "IED/StringHolder.h"
 
 namespace IED
 {
@@ -51,7 +51,7 @@ namespace IED
 						(void)m_handle.LookupZH(ref);
 					}
 
-					boost::lock_guard lock(m_db.GetLock());
+					stl::lock_guard lock(m_db.GetLock());
 
 					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
 				}
@@ -163,23 +163,27 @@ namespace IED
 	void ObjectEntryBase::State::Cleanup(
 		Game::ObjectRefHandle a_handle) noexcept
 	{
+		/*if (soundHandle)
+		{
+			soundHandle->FadeOutAndRelease(0ui16);
+		}*/
+
 		const auto ts = IPerfCounter::Query();
 
 		for (auto& e : groupObjects)
 		{
-			if (e.second.light.niObject)
+			if (e.second.light)
 			{
-				ReferenceLightController::CleanupLights(e.second.object.get());
+				ReferenceLightController::CleanupLights(
+					e.second.object.get());
 			}
 
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
 				e.second.rootNode.get());
 
-			if (auto& d = e.second.weapAnimGraphManagerHolder)
-			{
-				EngineExtensions::CleanupWeaponBehaviorGraph(d);
-			}
+			EngineExtensions::CleanupWeaponBehaviorGraph(
+				e.second.weapAnimGraphManagerHolder);
 
 			if (auto& d = e.second.dbEntry)
 			{
@@ -187,19 +191,18 @@ namespace IED
 			}
 		}
 
-		if (light.niObject)
+		if (light)
 		{
-			ReferenceLightController::CleanupLights(nodes.object.get());
+			ReferenceLightController::CleanupLights(
+				nodes.object.get());
 		}
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,
 			nodes.rootNode.get());
 
-		if (auto& d = weapAnimGraphManagerHolder)
-		{
-			EngineExtensions::CleanupWeaponBehaviorGraph(d);
-		}
+		EngineExtensions::CleanupWeaponBehaviorGraph(
+			weapAnimGraphManagerHolder);
 
 		if (auto& d = dbEntry)
 		{
@@ -280,15 +283,15 @@ namespace IED
 	{
 		for (auto& e : groupObjects)
 		{
-			if (e.second.light.niObject)
+			if (e.second.light)
 			{
-				e.second.light.niObject->SetVisible(a_switch);// && !flags.test(ObjectEntryFlags::kHideLight));
+				e.second.light->SetVisible(a_switch);  // && !flags.test(ObjectEntryFlags::kHideLight));
 			}
 		}
 
-		if (light.niObject)
+		if (light)
 		{
-			light.niObject->SetVisible(a_switch);// && !flags.test(ObjectEntryFlags::kHideLight));
+			light->SetVisible(a_switch);  // && !flags.test(ObjectEntryFlags::kHideLight));
 		}
 
 		nodes.rootNode->SetVisible(a_switch);

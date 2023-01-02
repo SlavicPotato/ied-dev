@@ -39,7 +39,7 @@ namespace IED
 			const stl::fixed_string&        a_key,
 			actor_entry_type::element_type& a_entry);
 
-		mutable boost::mutex m_lock;
+		mutable stl::mutex m_lock;
 		data_type            m_data;
 
 		static SkeletonCache m_Instance;

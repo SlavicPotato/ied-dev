@@ -55,6 +55,9 @@ namespace IED
 			MaxDiff                     = 4445,
 			I3DI                        = 4446,
 			EnableWeapons               = 4447,
+			NPCLightCellAttachFix       = 4448,
+			NPCLightUpdateFix           = 4449,
+			NPCLightUpdates             = 4450,
 		};
 	}
 }

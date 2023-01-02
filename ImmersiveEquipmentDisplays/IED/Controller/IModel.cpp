@@ -112,9 +112,7 @@ namespace IED
 			return ExtractFormModelParams<TESObjectLIGH>(
 				a_form,
 				a_out,
-				static_cast<TESObjectLIGH*>(a_form)->CanCarry() ?
-					ModelType::kLight :
-					ModelType::kMisc);
+				ModelType::kLight);
 
 		case BGSArtObject::kTypeID:
 			return ExtractFormModelParams<BGSArtObject>(a_form, a_out);

@@ -91,7 +91,7 @@ namespace IED
 
 	const std::shared_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
 	{
-		const boost::lock_guard lock(UIGetLock());
+		const stl::lock_guard lock(UIGetLock());
 
 		auto& task = m_toastTask;
 
@@ -131,7 +131,7 @@ namespace IED
 
 	auto IUI::UIToggle() -> UIOpenResult
 	{
-		const boost::lock_guard lock(UIGetLock());
+		const stl::lock_guard lock(UIGetLock());
 
 		if (!m_task || !m_safeToOpenUI)
 		{
@@ -152,7 +152,7 @@ namespace IED
 
 	auto IUI::UIOpen() -> UIOpenResult
 	{
-		const boost::lock_guard lock(UIGetLock());
+		const stl::lock_guard lock(UIGetLock());
 
 		return UIOpenImpl();
 	}
@@ -180,7 +180,7 @@ namespace IED
 
 	bool IUIRenderTask::Run()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -212,7 +212,7 @@ namespace IED
 
 	void IUIRenderTask::PrepareGameData()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -230,7 +230,7 @@ namespace IED
 
 	void IUIRenderTask::Render()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -249,7 +249,7 @@ namespace IED
 	void IUIRenderTask::OnMouseMove(
 		const Handlers::MouseMoveEvent& a_evn)
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -267,7 +267,7 @@ namespace IED
 
 	void IUIRenderTask::OnKeyEvent(const Handlers::KeyEvent& a_evn)
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -285,7 +285,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStop()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -304,7 +304,7 @@ namespace IED
 
 	void IUIRenderTask::OnTaskStart()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -344,7 +344,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStart()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try
@@ -365,7 +365,7 @@ namespace IED
 
 	void IUIRenderTaskMain::OnTaskStop()
 	{
-		const boost::lock_guard lock(m_owner.UIGetLock());
+		const stl::lock_guard lock(m_owner.UIGetLock());
 
 #if defined(DEBUG)
 		try

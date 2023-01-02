@@ -94,7 +94,7 @@ namespace IED
 		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
-		const boost::lock_guard lock(JSGetLock());
+		const stl::lock_guard lock(JSGetLock());
 
 		auto& store = JSGetConfigStore();
 
@@ -198,7 +198,7 @@ namespace IED
 		Data::configStore_t&&  a_in,
 		stl::flag<ImportFlags> a_flags)
 	{
-		const boost::lock_guard lock(JSGetLock());
+		const stl::lock_guard lock(JSGetLock());
 
 		auto& store = JSGetConfigStore();
 
@@ -227,7 +227,7 @@ namespace IED
 			std::unique_ptr<Data::configStore_t> tmp;
 
 			{
-				const boost::lock_guard lock(JSGetLock());
+				const stl::lock_guard lock(JSGetLock());
 
 				tmp = CreateFilteredConfigStore(JSGetConfigStore(), a_exportFlags, a_flags);
 			}

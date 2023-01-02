@@ -253,5 +253,6 @@ namespace IED
 		Inactive        = 324,
 		Dispelled       = 325,
 		Recovers        = 326,
+		Lights          = 327,
 	};
 }

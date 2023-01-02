@@ -27,14 +27,14 @@ namespace IED
 
 	std::size_t SkeletonCache::GetSize() const noexcept
 	{
-		const boost::lock_guard lock(m_lock);
+		const stl::lock_guard lock(m_lock);
 
 		return m_data.size();
 	}
 
 	std::size_t SkeletonCache::GetTotalEntries() const noexcept
 	{
-		const boost::lock_guard lock(m_lock);
+		const stl::lock_guard lock(m_lock);
 
 		std::size_t result = 0;
 
@@ -73,7 +73,7 @@ namespace IED
 		const stl::fixed_string& a_key)
 		-> const const_actor_entry_type
 	{
-		const boost::lock_guard lock(m_lock);
+		const stl::lock_guard lock(m_lock);
 
 		const auto r = m_data.try_emplace(a_key);
 

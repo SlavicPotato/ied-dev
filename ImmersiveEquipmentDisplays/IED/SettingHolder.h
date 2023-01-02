@@ -234,7 +234,10 @@ namespace IED
 				bool animEventForwarding{ false };
 				bool syncTransformsToFirstPersonSkeleton{ false };
 				bool enableEquipmentPhysics{ false };
-				bool enableEffectShaders{ true };
+				bool enableEffectShaders{ false };
+				bool lightEnableNPCUpdates{ false };
+				bool lightNPCUpdateFix{ false };
+				bool lightNPCCellAttachFix{ false };
 				bool effectsParallelUpdates{ false };
 
 				stl::optional<LogLevel> logLevel;

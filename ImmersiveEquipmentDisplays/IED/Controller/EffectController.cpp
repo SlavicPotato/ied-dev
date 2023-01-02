@@ -11,51 +11,6 @@
 
 namespace IED
 {
-	void EffectController::ProcessEffects(const ActorObjectMap& a_map) noexcept
-	{
-		m_timer.Begin();
-
-		if (m_flags.test_any(EffectControllerFlags::kEnableMask) ||
-		    ReferenceLightController::GetSingleton().GetEnabled())
-		{
-			ProcessEffectsImpl(a_map);
-		}
-
-		m_timer.End(m_currentTime);
-	}
-
-	void EffectController::ProcessEffectsImpl(const ActorObjectMap& a_map) noexcept
-	{
-		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
-
-		const auto interval = *Game::g_frameTimerSlow;
-
-		std::optional<PhysUpdateData> physUpdateData;
-
-		if (PhysicsProcessingEnabled())
-		{
-			PreparePhysicsUpdateData(interval, physUpdateData);
-		}
-
-		if (m_flags.test(EffectControllerFlags::kParallelProcessing))
-		{
-			std::for_each(
-				std::execution::par,
-				a_map.begin(),
-				a_map.end(),
-				[&](auto& a_e) noexcept {
-					RunUpdates(interval, stepMuls, physUpdateData, a_e.second);
-				});
-		}
-		else
-		{
-			for (auto& e : a_map)
-			{
-				RunUpdates(interval, stepMuls, physUpdateData, e.second);
-			}
-		}
-	}
-
 	void EffectController::PreparePhysicsUpdateData(
 		float                          a_interval,
 		std::optional<PhysUpdateData>& a_data) noexcept
@@ -80,19 +35,21 @@ namespace IED
 		}
 	}
 
-	void EffectController::RunUpdates(
+	void EffectController::RunEffectUpdates(
 		const float                          a_interval,
 		const Game::Unk2f6b948::Steps&       a_stepMuls,
 		const std::optional<PhysUpdateData>& a_physUpdData,
 		const ActorObjectHolder&             a_holder) noexcept
 	{
+		//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
+
 		if (!a_holder.IsCellAttached())
 		{
 			return;
 		}
 
 		const auto stepMul =
-			a_holder.GetActorFormID() == Data::IData::GetPlayerRefID() ?
+			a_holder.IsPlayer() ?
 				a_stepMuls.player :
 				a_stepMuls.npc;
 
@@ -101,7 +58,7 @@ namespace IED
 			UpdatePhysics(stepMul, *a_physUpdData, a_holder);
 		}
 
-		const bool wantLightUpdate =
+		/*const bool wantLightUpdate =
 			ReferenceLightController::GetSingleton().GetEnabled() && !a_holder.IsPlayer();
 
 		if (!ShaderProcessingEnabled() && !wantLightUpdate)
@@ -115,26 +72,29 @@ namespace IED
 			return;
 		}
 
-		if (!refr->formID)
-		{
-			return;
-		}
-
 		auto actor = refr->As<Actor>();
 		if (!actor)
 		{
 			return;
 		}
+		*/
 
 		if (ShaderProcessingEnabled())
 		{
-			UpdateShaders(actor, a_interval * stepMul, a_holder);
+			NiPointer<TESObjectREFR> refr;
+			if (a_holder.GetHandle().Lookup(refr))
+			{
+				if (auto actor = refr->As<Actor>())
+				{
+					UpdateShaders(actor, a_interval * stepMul, a_holder);
+				}
+			}
 		}
 
-		if (wantLightUpdate)
+		/*if (wantLightUpdate)
 		{
 			ReferenceLightController::GetSingleton().OnUpdate(actor);
-		}
+		}*/
 	}
 
 	void EffectController::UpdateShaders(
@@ -223,6 +183,11 @@ namespace IED
 			return;
 		}
 
+		if (a_data.data.empty())
+		{
+			return;
+		}
+
 		for (auto& e : a_data.data)
 		{
 			e.update_effect_data(a_step);
@@ -239,10 +204,8 @@ namespace IED
 		{
 			return;
 		}
-
-		const bool thirdPerson = a_actor->GetBiped1(false) == biped;
-
-		const auto& sheathNode = a_data.GetSheathNode(!thirdPerson);
+		const bool  thirdPerson = a_actor->GetBiped1(false) == biped;
+		const auto& sheathNode  = a_data.GetSheathNode(!thirdPerson);
 
 		for (auto& e : a_data.data)
 		{

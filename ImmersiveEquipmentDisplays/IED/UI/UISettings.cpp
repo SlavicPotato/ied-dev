@@ -7,6 +7,7 @@
 #include "IED/Controller/Controller.h"
 #include "IED/Controller/ObjectDatabaseLevel.h"
 #include "IED/EngineExtensions.h"
+#include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 
 #include "Widgets/UIWidgetCommonStrings.h"
@@ -438,7 +439,7 @@ namespace IED
 					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
 
-				const bool disabled = !m_controller.CPUHasSSE41();
+				bool disabled = !m_controller.CPUHasSSE41();
 
 				UICommon::PushDisabled(disabled);
 
@@ -482,6 +483,49 @@ namespace IED
 				}
 
 				UICommon::PopDisabled(disabled);
+
+				auto& rlc = ReferenceLightController::GetSingleton();
+
+				if (rlc.GetEnabled())
+				{
+					if (TreeEx(
+							"ltre",
+							true,
+							"%s",
+							UIL::LS(CommonStrings::Lights)))
+					{
+						ImGui::Indent();
+						ImGui::Spacing();
+
+						if (settings.mark_if(ImGui::Checkbox(
+								UIL::LS(UISettingsStrings::NPCLightCellAttachFix, "4"),
+								std::addressof(data.lightNPCCellAttachFix))))
+						{
+							rlc.SetNPCLightCellAttachFixEnabled(data.lightNPCCellAttachFix);
+						}
+						UITipsInterface::DrawTip(UITip::NPCLightCellAttachFix);
+
+						if (settings.mark_if(ImGui::Checkbox(
+								UIL::LS(UISettingsStrings::NPCLightUpdates, "5"),
+								std::addressof(data.lightEnableNPCUpdates))))
+						{
+							rlc.SetNPCLightUpdatesEnabled(data.lightEnableNPCUpdates);
+						}
+
+						if (settings.mark_if(ImGui::Checkbox(
+								UIL::LS(UISettingsStrings::NPCLightUpdateFix, "6"),
+								std::addressof(data.lightNPCUpdateFix))))
+						{
+							rlc.SetNPCLightUpdateFixEnabled(data.lightNPCUpdateFix);
+						}
+						UITipsInterface::DrawTip(UITip::NPCLightUpdateFix);
+
+						ImGui::Spacing();
+						ImGui::Unindent();
+
+						ImGui::TreePop();
+					}
+				}
 
 				if (settings.mark_if(ImGui::Checkbox(
 						UIL::LS(UISettingsStrings::ParallelUpdates, "A"),

@@ -60,7 +60,10 @@ namespace IED
 			a_out.hkWeaponAnimations                  = data.get("hk_weap_anims", false).asBool();
 			a_out.hkWeaponAnimationsWarned            = data.get("hk_weap_anims_warned", false).asBool();
 			a_out.animEventForwarding                 = data.get("anim_event_forwarding", false).asBool();
-			a_out.enableEffectShaders                 = data.get("effect_shaders", true).asBool();
+			a_out.enableEffectShaders                 = data.get("effect_shaders", false).asBool();
+			a_out.lightEnableNPCUpdates               = data.get("light_npc_updates", false).asBool();
+			a_out.lightNPCUpdateFix                   = data.get("light_npc_update_fix", false).asBool();
+			a_out.lightNPCCellAttachFix               = data.get("light_cell_attach_fix", false).asBool();
 			a_out.enableEquipmentPhysics              = data.get("equipment_physics", false).asBool();
 			a_out.effectsParallelUpdates              = data.get("es_parallel_updates", false).asBool();
 			a_out.syncTransformsToFirstPersonSkeleton = data.get("sync_to_1p", false).asBool();
@@ -116,6 +119,9 @@ namespace IED
 			data["hk_weap_anims_warned"]    = a_data.hkWeaponAnimationsWarned;
 			data["anim_event_forwarding"]   = a_data.animEventForwarding;
 			data["effect_shaders"]          = a_data.enableEffectShaders;
+			data["light_npc_updates"]       = a_data.lightEnableNPCUpdates;
+			data["light_npc_update_fix"]    = a_data.lightNPCUpdateFix;
+			data["light_cell_attach_fix"]   = a_data.lightNPCCellAttachFix;
 			data["equipment_physics"]       = a_data.enableEquipmentPhysics;
 			data["es_parallel_updates"]     = a_data.effectsParallelUpdates;
 			data["sync_to_1p"]              = a_data.syncTransformsToFirstPersonSkeleton;

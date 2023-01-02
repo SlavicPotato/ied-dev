@@ -393,6 +393,17 @@ namespace IED
 			}
 			UITipsInterface::DrawTip(UITip::Load1pWeaponModel);
 
+			if (ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::RemoveEditorMarker, "_1"),
+					stl::underlying(std::addressof(entry.flags.value)),
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kRemoveEditorMarker)))
+			{
+				OnModelGroupEditorChange(
+					a_handle,
+					a_params,
+					ModelGroupEditorOnChangeEventType::Flags);
+			}
+			
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(

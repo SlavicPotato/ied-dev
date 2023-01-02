@@ -3,6 +3,7 @@
 #include "IED/ConfigCommon.h"
 #include "IED/TimeOfDay.h"
 
+#include "EffectController.h"
 #include "IFirstPersonState.h"
 
 namespace RE
@@ -25,6 +26,7 @@ namespace IED
 	struct ObjectEntryBase;
 
 	class ActorProcessorTask :
+		public EffectController,
 		public IFirstPersonState,
 		public TaskDelegateFixed
 	{
@@ -35,8 +37,7 @@ namespace IED
 		};
 
 	public:
-		ActorProcessorTask(
-			Controller& a_controller);
+		ActorProcessorTask();
 
 		[[nodiscard]] inline constexpr auto NodeProcessorGetTime() const noexcept
 		{
@@ -75,9 +76,20 @@ namespace IED
 
 		virtual void Run() noexcept override;
 
-		SKMP_FORCEINLINE void UpdateNode(
+		SKMP_FORCEINLINE Controller& GetController() noexcept;
+
+		bool SyncRefParentNode(
 			ActorObjectHolder& a_record,
 			ObjectEntryBase&   a_entry) noexcept;
+
+		SKMP_FORCEINLINE void DoObjectRefSync(
+			ActorObjectHolder& a_record,
+			ObjectEntryBase&   a_entry) noexcept;
+
+		SKMP_FORCEINLINE void DoObjectRefSyncMTSafe(
+			ActorObjectHolder& a_record,
+			ObjectEntryBase&   a_entry) noexcept;
+
 		//const std::optional<animUpdateData_t>& a_animUpdateData);
 
 		void ProcessTransformUpdateRequest(
@@ -91,6 +103,16 @@ namespace IED
 
 		void UpdateState() noexcept;
 
+		template <bool _Mt>
+		void UpdateHolder(
+			const float                          a_interval,
+			const Game::Unk2f6b948::Steps&       a_stepMuls,
+			const std::optional<PhysUpdateData>& a_physUpdData,
+			ActorObjectHolder&                   a_holder,
+			bool                                 a_updateEffects) noexcept;
+
+		void RunPostUpdates() noexcept;
+
 		State m_state;
 
 		PerfTimerInt m_timer{ 1000000LL };
@@ -98,7 +120,8 @@ namespace IED
 		bool         m_run{ false };
 		bool         m_runAnimationUpdates{ false };
 
-		Controller& m_controller;
+		stl::fast_spin_lock                                          m_syncRefParentQueueWRLock;
+		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
 	};
 
 }

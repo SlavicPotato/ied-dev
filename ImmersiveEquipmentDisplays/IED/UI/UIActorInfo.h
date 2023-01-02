@@ -24,7 +24,7 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			boost::mutex            lock;
+			stl::mutex            lock;
 			long long               lastUpdate{ 0 };
 			bool                    initialized{ false };
 			bool                    succeeded{ false };

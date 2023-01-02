@@ -37,6 +37,7 @@
 #include <ext/stl_flat_map.h>
 #include <ext/stl_flat_set.h>
 #include <ext/stl_math.h>
+#include <ext/stl_mutex.h>
 #include <ext/stl_str_helpers.h>
 #include <ext/str_conv.h>
 
@@ -75,8 +76,10 @@
 #include <memory>
 #include <numbers>
 #include <regex>
+#include <shared_mutex>
 #include <source_location>
 #include <string>
+
 #include <vector>
 
 #include <DirectXCollision.h>
@@ -121,10 +124,6 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/version.hpp>
-#include <boost/thread/lock_guard.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread/shared_mutex.hpp>
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 

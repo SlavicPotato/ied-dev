@@ -14,7 +14,6 @@
 #include "ActorProcessorTask.h"
 #include "BipedDataCache.h"
 #include "ControllerCommon.h"
-#include "EffectController.h"
 #include "IAnimationManager.h"
 #include "IEquipment.h"
 #include "IForm.h"
@@ -31,11 +30,9 @@ namespace IED
 	class Controller :
 		public IObjectManager,
 		public IEquipment,
-		public EffectController,
 		public IAnimationManager,
 		public IForm,
 		public ActorProcessorTask,
-		public ITaskPool::TaskDelegateFixedPL,
 		private ISerializationBase,
 		public IJSONSerialization,
 		public IUINotification,
@@ -920,7 +917,7 @@ namespace IED
 
 		// ui overrides
 
-		virtual constexpr boost::recursive_mutex& UIGetLock() noexcept override
+		virtual constexpr stl::recursive_mutex& UIGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -937,7 +934,7 @@ namespace IED
 
 		// json serialization
 
-		virtual constexpr boost::recursive_mutex& JSGetLock() noexcept override
+		virtual constexpr stl::recursive_mutex& JSGetLock() noexcept override
 		{
 			return m_lock;
 		}
@@ -948,9 +945,6 @@ namespace IED
 		}
 
 		virtual void JSOnDataImport() override;
-
-		// process effects
-		void RunPL() noexcept override;
 
 		// members
 

@@ -43,7 +43,7 @@ namespace IED
 		bool                        succeeded{ false };
 		bool                        isLoadedData{ true };
 		long long                   lastUpdate{ 0 };
-		boost::mutex                lock;
+		stl::mutex                lock;
 
 		SKMP_REDEFINE_NEW_PREF();
 	};

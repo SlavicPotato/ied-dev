@@ -31,6 +31,25 @@ namespace IED
 		m_Instance.InstallImpl(a_controller, a_config);
 	}
 
+	bool EngineExtensions::RemoveObjectByName(
+		NiNode*              a_object,
+		const BSFixedString& a_name) noexcept
+	{
+		if (NiPointer object = GetObjectByName(a_object, a_name, true))
+		{
+			if (auto parent = object->m_parent)
+			{
+				parent->DetachChild2(object);
+
+				ShrinkToSize(a_object);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void EngineExtensions::InstallImpl(
 		Controller*                       a_controller,
 		const std::shared_ptr<ConfigINI>& a_config)
@@ -578,30 +597,6 @@ namespace IED
 			HALT(__FUNCTION__ ": failed to install Actor_Update hook");
 		}
 
-		/*InstallVtableDetour(
-			m_vtblTESObjectREFR_a,
-			0x55,
-			TESObjectREFR_UpdateRefLight_Hook,
-			m_pcUpdateRefLightREFR_o,
-			true,
-			"TESObjectREFR::UpdateRefLight");
-
-		InstallVtableDetour(
-			m_vtblActor_a,
-			0x55,
-			Actor_UpdateRefLight_Hook,
-			m_pcUpdateRefLightActor_o,
-			true,
-			"Actor::UpdateRefLight");
-
-		InstallVtableDetour(
-			m_vtblCharacter_a,
-			0x55,
-			Character_UpdateRefLight_Hook,
-			m_pcUpdateRefLightCharacter_o,
-			true,
-			"Character::UpdateRefLight");*/
-
 		InstallVtableDetour(
 			m_vtblPlayerCharacter_a,
 			0x55,
@@ -609,6 +604,14 @@ namespace IED
 			m_pcUpdateRefLightPlayerCharacter_o,
 			true,
 			"PlayerCharacter::UpdateRefLight");
+
+		/*InstallVtableDetour(
+			m_vtblCharacter_a,
+			0x55,
+			Character_UpdateRefLight_Hook,
+			m_updateRefLightPlayerCharacter_o,
+			true,
+			"Character::UpdateRefLight");		*/
 	}
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept
@@ -938,29 +941,10 @@ namespace IED
 		return bip;
 	}
 
-	/*void EngineExtensions::TESObjectREFR_UpdateRefLight_Hook(TESObjectREFR* a_actor) noexcept
-	{
-		m_Instance.m_pcUpdateRefLightREFR_o(a_actor);
-		if (auto actor = a_actor->As<Actor>())
-			ReferenceLightController::GetSingleton().OnUpdate(actor);
-	}
-
-	void EngineExtensions::Actor_UpdateRefLight_Hook(Actor* a_actor) noexcept
-	{
-		m_Instance.m_pcUpdateRefLightActor_o(a_actor);
-		ReferenceLightController::GetSingleton().OnUpdate(a_actor);
-	}
-
-	void EngineExtensions::Character_UpdateRefLight_Hook(Character* a_character) noexcept
-	{
-		m_Instance.m_pcUpdateRefLightCharacter_o(a_character);
-		ReferenceLightController::GetSingleton().OnUpdate(a_character);
-	}*/
-
 	void EngineExtensions::PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player) noexcept
 	{
 		m_Instance.m_pcUpdateRefLightPlayerCharacter_o(a_player);
-		ReferenceLightController::GetSingleton().OnUpdate(a_player);
+		ReferenceLightController::GetSingleton().OnUpdatePlayerLight(a_player);
 	}
 
 	REFR_LIGHT* EngineExtensions::TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept
@@ -983,9 +967,19 @@ namespace IED
 
 	REFR_LIGHT* EngineExtensions::Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept
 	{
-		ReferenceLightController::GetSingleton().OnUnkQueueBSLight(a_actor);
-		return m_Instance.m_Actor_Update_Actor_GetExtraLight_o(a_actor);
+		const auto result = m_Instance.m_Actor_Update_Actor_GetExtraLight_o(a_actor);
+
+		ReferenceLightController::GetSingleton().OnActorUpdate(a_actor, result);
+
+		return result;
 	}
+
+	/*void EngineExtensions::Character_UpdateRefLight_Hook(Character* a_character) noexcept
+	{
+		_DMESSAGE(".8X", a_character->formID);
+
+		m_Instance.m_updateRefLightPlayerCharacter_o(a_character);
+	}*/
 
 	void EngineExtensions::CreateWeaponNodes_Hook(
 		TESObjectREFR* a_actor,
@@ -1042,6 +1036,7 @@ namespace IED
 		bool         a_disableHavok,
 		bool         a_removeTracers,
 		bool         a_attachLight,
+		bool         a_removeEditorMarker,
 		ObjectLight& a_attachedLight) noexcept
 		-> stl::flag<AttachResultFlags>
 	{
@@ -1057,7 +1052,8 @@ namespace IED
 			{
 				if (const auto* const light = a_modelForm->As<TESObjectLIGH>())
 				{
-					a_attachedLight = ReferenceLightController::AttachLight(light, a_actor, a_object);
+					a_attachedLight  = ReferenceLightController::CreateAndAttachPointLight(light, a_actor, a_object);
+					a_keepTorchFlame = true;
 				}
 			}
 
@@ -1169,30 +1165,28 @@ namespace IED
 
 		case ModelType::kLight:
 
-			if (!a_keepTorchFlame)
+			if (!a_keepTorchFlame && a_modelForm->IsTorch())
 			{
-				if (NiPointer torchFireObj = GetObjectByName(a_object, sh->m_torchFire, true))
+				if (RemoveObjectByName(a_object, sh->m_torchFire))
 				{
-					if (auto parent = torchFireObj->m_parent)
-					{
-						parent->DetachChild2(torchFireObj);
-
-						result.set(AttachResultFlags::kTorchFlameRemoved);
-
-						ShrinkToSize(a_object);
-					}
+					result.set(AttachResultFlags::kTorchFlameRemoved);
 				}
+			}
 
 #if !defined(IED_DISABLE_ENB_LIGHT_STRIPPING)
 
-				for (auto& e : sh->m_enbLightAttachNodes)
+			for (auto& e : sh->m_enbLightAttachNodes)
+			{
+				if (RemoveAllChildren(a_object, e))
 				{
-					if (RemoveAllChildren(a_object, e))
-					{
-						result.set(AttachResultFlags::kTorchCustomRemoved);
-					}
+					result.set(AttachResultFlags::kTorchCustomRemoved);
 				}
+			}
 #endif
+
+			if (a_removeEditorMarker)
+			{
+				RemoveObjectByName(a_object, sh->m_editorMarker);
 			}
 
 			collisionFilterInfo = 0x14;
@@ -1209,15 +1203,16 @@ namespace IED
 
 			if (a_removeTracers)
 			{
-				if (NiPointer object = GetObjectByName(a_object, sh->m_tracerRoot, true))
-				{
-					if (auto parent = object->m_parent)
-					{
-						parent->DetachChild2(object);
+				RemoveObjectByName(a_object, sh->m_tracerRoot);
+			}
 
-						ShrinkToSize(a_object);
-					}
-				}
+			break;
+
+		default:
+
+			if (a_removeEditorMarker)
+			{
+				RemoveObjectByName(a_object, sh->m_editorMarker);
 			}
 
 			break;
@@ -1316,12 +1311,15 @@ namespace IED
 	void EngineExtensions::CleanupWeaponBehaviorGraph(
 		RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept
 	{
-		RE::BSAnimationGraphManagerPtr manager;
-		if (a_graph->GetAnimationGraphManagerImpl(manager))
+		if (a_graph)
 		{
-			auto gc = RE::GarbageCollector::GetSingleton();
-			assert(gc);
-			gc->QueueBehaviorGraph(manager);
+			RE::BSAnimationGraphManagerPtr manager;
+			if (a_graph->GetAnimationGraphManagerImpl(manager))
+			{
+				auto gc = RE::GarbageCollector::GetSingleton();
+				assert(gc);
+				gc->QueueBehaviorGraph(manager);
+			}
 		}
 	}
 

@@ -109,6 +109,8 @@ namespace IED
 			RemoveProjectileTracers             = 1100,
 			CopiedToClipboard                   = 1101,
 			DynamicArrows                       = 1102,
+			NPCLightCellAttachFix               = 1103,
+			NPCLightUpdateFix                   = 1104,
 		};
 
 	}

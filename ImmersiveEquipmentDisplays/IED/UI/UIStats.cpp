@@ -3,7 +3,7 @@
 #include "UIStats.h"
 
 #include "IED/Controller/Controller.h"
-
+#include "IED/ReferenceLightController.h"
 #include "IED/SkeletonCache.h"
 
 #include "Drivers/UI.h"
@@ -46,7 +46,7 @@ namespace IED
 				ImGui::Columns(2, nullptr, false);
 
 				ImGui::TextUnformatted("Actor processor:");
-				ImGui::TextUnformatted("Effect processor:");
+				//ImGui::TextUnformatted("Effect processor:");
 				ImGui::TextUnformatted("UI:");
 				//ImGui::TextUnformatted("FC:");
 				ImGui::TextUnformatted("Skeleton cache:");
@@ -64,6 +64,11 @@ namespace IED
 					ImGui::TextUnformatted("Physics objects:");
 				}
 
+				if (ReferenceLightController::GetSingleton().GetEnabled())
+				{
+					ImGui::TextUnformatted("Lights:");
+				}
+
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
@@ -79,7 +84,7 @@ namespace IED
 				ImGui::NextColumn();
 
 				ImGui::Text("%lld \xC2\xB5s", m_controller.NodeProcessorGetTime());
-				ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
+				//ImGui::Text("%lld \xC2\xB5s", m_controller.EffectControllerGetTime());
 				ImGui::Text("%lld \xC2\xB5s", Drivers::UI::GetPerf());
 				//ImGui::Text("%zu", m_controller.UIGetFormLookupCache().size());
 
@@ -105,6 +110,11 @@ namespace IED
 				if (m_controller.PhysicsProcessingEnabled())
 				{
 					ImGui::Text("%zu", m_controller.GetNumSimComponents());
+				}
+
+				if (ReferenceLightController::GetSingleton().GetEnabled())
+				{
+					ImGui::Text("%zu", ReferenceLightController::GetSingleton().GetNumLights());
 				}
 
 				ImGui::Text("%llu", m_controller.GetCounterValue());

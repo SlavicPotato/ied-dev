@@ -58,7 +58,7 @@ namespace IED
 				Tm&& a_message,
 				Args&&... a_args)
 			{
-				const boost::lock_guard lock(m_lock);
+				const stl::lock_guard lock(m_lock);
 
 				if (!m_queue.empty())
 				{
@@ -88,7 +88,7 @@ namespace IED
 			stl::queue<ToastMessage>                        m_queue;
 			std::optional<luid_tag>                         m_currentTag;
 			UICommon::float_anim_t<float, 0.0f, 1.0f, 8.0f> m_animbg;
-			boost::mutex                                      m_lock;
+			stl::mutex                                      m_lock;
 
 			Tasks::UIRenderTaskBase& m_owner;
 		};

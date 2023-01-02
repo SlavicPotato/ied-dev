@@ -35,7 +35,6 @@ namespace IED
 			::Events::EventSink<Handlers::MouseMoveEvent>,
 			::Events::EventSink<Events::D3D11CreateEventPost>,
 			::Events::EventSink<Events::IDXGISwapChainPresent>,
-			ITaskPool::TaskDelegateFixedPL,
 			TaskDelegateFixed
 		{
 			struct UIFontUpdateData
@@ -114,7 +113,7 @@ namespace IED
 
 			static void QueueResetInput() noexcept
 			{
-				const boost::lock_guard lock(m_Instance.m_lock);
+				const stl::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_updateFlags.set(UpdateFlags::kResetInput);
 			}
 
@@ -155,26 +154,26 @@ namespace IED
 
 			static void SetStyle(UIStylePreset a_style) noexcept
 			{
-				const boost::lock_guard lock(m_Instance.m_lock);
+				const stl::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.style = a_style;
 			}
 
 			static void SetReleaseFontData(bool a_switch) noexcept
 			{
-				const boost::lock_guard lock(m_Instance.m_lock);
+				const stl::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.releaseFontData = a_switch;
 			}
 
 			static void SetAlpha(float a_value) noexcept
 			{
-				const boost::lock_guard lock(m_Instance.m_lock);
+				const stl::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.alpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyleAlpha);
 			}
 
 			static void SetBGAlpha(const stl::optional<float>& a_value) noexcept
 			{
-				const boost::lock_guard lock(m_Instance.m_lock);
+				const stl::lock_guard lock(m_Instance.m_lock);
 				m_Instance.m_conf.bgAlpha = a_value;
 				m_Instance.m_updateFlags.set(UpdateFlags::kStyle);
 			}
@@ -223,10 +222,9 @@ namespace IED
 			virtual void Receive(const Events::D3D11CreateEventPost& a_evn) override;
 			virtual void Receive(const Events::IDXGISwapChainPresent& a_evn) override;
 
-			virtual void RunPL() override;
 			virtual void Run() override;
 
-			void RunPreps(bool a_paused);
+			void RunPreps();
 
 			static LRESULT CALLBACK WndProc_Hook(
 				HWND   hWnd,
@@ -352,7 +350,7 @@ namespace IED
 
 			stl::flag<UpdateFlags> m_updateFlags{ UpdateFlags::kNone };
 
-			mutable boost::recursive_mutex m_lock;
+			mutable stl::recursive_mutex m_lock;
 
 			static UI m_Instance;
 		};

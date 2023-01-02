@@ -121,6 +121,7 @@ namespace IED
 			ItemFilterCond                      = 2113,
 			NoSSE41SupportWarning               = 2114,
 			DynamicArrows                       = 2115,
+			RemoveEditorMarker                  = 2116,
 		};
 	}
 }

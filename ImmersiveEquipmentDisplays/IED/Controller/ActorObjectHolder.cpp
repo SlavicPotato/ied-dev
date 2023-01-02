@@ -672,7 +672,7 @@ namespace IED
 					(void)m_handle.LookupZH(ref);
 				}
 
-				boost::lock_guard lock(m_db.GetLock());
+				stl::lock_guard lock(m_db.GetLock());
 
 				for (auto& e : m_list)
 				{

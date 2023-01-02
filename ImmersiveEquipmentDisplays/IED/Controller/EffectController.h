@@ -13,6 +13,7 @@ namespace IED
 
 	class EffectController
 	{
+	protected:
 		struct PhysUpdateData
 		{
 			float timeTick;
@@ -35,13 +36,6 @@ namespace IED
 				kEnableShaders |
 				kEnablePhysics
 		};
-
-		void ProcessEffects(const ActorObjectMap& a_map) noexcept;
-
-		[[nodiscard]] inline constexpr auto EffectControllerGetTime() const noexcept
-		{
-			return m_currentTime;
-		}
 
 		[[nodiscard]] inline constexpr bool ShaderProcessingEnabled() const noexcept
 		{
@@ -68,14 +62,24 @@ namespace IED
 			m_flags.set(EffectControllerFlags::kEnableShaders, a_switch);
 		}
 
-	private:
+	protected:
+		[[nodiscard]] inline constexpr bool AnyProcessingEnabled() const noexcept
+		{
+			return m_flags.test_any(EffectControllerFlags::kEnableMask);
+		}
+
+		[[nodiscard]] inline constexpr bool ParallelProcessingEnabled() const noexcept
+		{
+			return m_flags.test_any(EffectControllerFlags::kParallelProcessing);
+		}
+
 		void ProcessEffectsImpl(const ActorObjectMap& a_map) noexcept;
 
 		void PreparePhysicsUpdateData(
 			float                          a_interval,
 			std::optional<PhysUpdateData>& a_data) noexcept;
 
-		void RunUpdates(
+		void RunEffectUpdates(
 			const float                          a_interval,
 			const Game::Unk2f6b948::Steps&       a_stepMuls,
 			const std::optional<PhysUpdateData>& a_physUpdData,
@@ -115,9 +119,7 @@ namespace IED
 			const ObjectEntrySlot& a_entry,
 			float                  a_step) noexcept;
 
-		mutable PerfTimerInt m_timer{ 1000000LL };
-		mutable long long    m_currentTime{ 0LL };
-
+	private:
 		float m_timeAccum{ 0.0f };
 		float m_averageInterval{ 1.0f / 60.0f };
 

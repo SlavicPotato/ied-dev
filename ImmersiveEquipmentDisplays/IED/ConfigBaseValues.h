@@ -38,6 +38,7 @@ namespace IED
 			kDynamicArrows              = 1u << 22,
 			kAttachLight                = 1u << 23,
 			kHideLight                  = 1u << 24,
+			kRemoveEditorMarker         = 1u << 25,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -48,7 +49,8 @@ namespace IED
 			                     kDisableWeaponAnims |
 			                     kDisableHavok |
 			                     kRemoveProjectileTracers |
-			                     kAttachLight
+			                     kAttachLight |
+			                     kRemoveEditorMarker
 
 		};
 

@@ -1348,7 +1348,7 @@ namespace IED
 
 									if (e.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag1))
 									{
-										stl::snprintf(buffer, "%s: %llX", UIL::LS(CommonStrings::Signature), e.skeletonSignature);
+										stl::snprintf(buffer, "%s: %llu", UIL::LS(CommonStrings::Signature), e.skeletonSignature);
 									}
 									else
 									{
@@ -1772,9 +1772,9 @@ namespace IED
 						std::addressof(match->skeletonSignature),
 						nullptr,
 						nullptr,
-						"%llX",
+						"%llu",
 						ImGuiInputTextFlags_EnterReturnsTrue |
-							ImGuiInputTextFlags_CharsHexadecimal);
+							ImGuiInputTextFlags_CharsDecimal);
 				}
 				else
 				{

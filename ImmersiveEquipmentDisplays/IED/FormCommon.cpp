@@ -40,9 +40,8 @@ namespace IED
 		case BGSMaterialObject::kTypeID:
 		case BGSProjectile::kTypeID:
 		case TESObjectARMO::kTypeID:
-			return true;
 		case TESObjectLIGH::kTypeID:
-			return static_cast<TESObjectLIGH*>(a_form)->CanCarry();
+			return true;
 		default:
 			return false;
 		}

@@ -20,7 +20,7 @@ namespace IED
 
 		void UIToast::Draw()
 		{
-			const boost::lock_guard lock(m_lock);
+			const stl::lock_guard lock(m_lock);
 
 			const auto& io = ImGui::GetIO();
 

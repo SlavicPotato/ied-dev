@@ -1406,6 +1406,18 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 				UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
+
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::RemoveEditorMarker, "_2"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kRemoveEditorMarker)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kRemoveEditorMarker);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
 				
 				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::DynamicArrows, "3"),
