@@ -4,6 +4,7 @@
 #include "INodeOverride.h"
 #include "IObjectManager.h"
 
+#include "IED/AnimationUpdateManager.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ReferenceLightController.h"
 
@@ -29,9 +30,14 @@ namespace IED
 				a_data.RemoveSimComponent(sc);
 			}
 
-			if (auto& pl = state->light.niObject)
+			if (auto& pl = state->light)
 			{
-				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl);
+				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
+			}
+
+			if (auto& ah = state->weapAnimGraphManagerHolder)
+			{
+				AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
 			}
 
 			if (
@@ -708,9 +714,9 @@ namespace IED
 
 				state->UpdateAndSendAnimationEvent(eventName);
 
-				/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
-					state->weapAnimGraphManagerHolder,
-					!a_activeConfig.flags.test(Data::BaseFlags::kDisableAnimEventForwarding));*/
+				AnimationUpdateController::GetSingleton().AddObject(
+					a_params.actor->formID,
+					state->weapAnimGraphManagerHolder);
 			}
 		}
 
@@ -1048,10 +1054,9 @@ namespace IED
 
 					e.grpObject->UpdateAndSendAnimationEvent(eventName);
 
-					/*a_params.objects.RegisterWeaponAnimationGraphManagerHolder(
-						e.grpObject->weapAnimGraphManagerHolder,
-						!a_activeConfig.flags.test(Data::BaseFlags::kDisableAnimEventForwarding) &&
-							!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableAnimEventForwarding));*/
+					AnimationUpdateController::GetSingleton().AddObject(
+						a_params.actor->formID,
+						e.grpObject->weapAnimGraphManagerHolder);
 				}
 			}
 		}

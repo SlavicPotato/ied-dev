@@ -58,10 +58,15 @@ namespace IED
 
 		[[nodiscard]] void SetProcessorTaskRunAUState(bool a_state) noexcept;
 
-	private:
-		struct State
+		inline constexpr void SetProcessorTaskParallelUpdates(bool a_switch) noexcept
 		{
-			long long lastRun;
+			m_parallelProcessing = a_switch;
+		}
+
+	private:
+		struct GlobalState
+		{
+			long long nextRun;
 
 			RE::TESWeather*   currentWeather{ nullptr };
 			Data::TimeOfDay   timeOfDay{ Data::TimeOfDay::kDay };
@@ -73,6 +78,11 @@ namespace IED
 		};
 
 		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL = 1000000ll;
+
+		[[nodiscard]] inline constexpr bool ParallelProcessingEnabled() const noexcept
+		{
+			return m_parallelProcessing;
+		}
 
 		virtual void Run() noexcept override;
 
@@ -98,30 +108,31 @@ namespace IED
 		void ProcessEvalRequest(
 			ActorObjectHolder& a_data) noexcept;
 
-		static constexpr bool CheckMonitorNodes(
-			ActorObjectHolder& a_data) noexcept;
-
-		void UpdateState() noexcept;
+		void UpdateGlobalState() noexcept;
 
 		template <bool _Mt>
-		void UpdateHolder(
+		void UpdateHolderMTSafe(
 			const float                          a_interval,
 			const Game::Unk2f6b948::Steps&       a_stepMuls,
-			const std::optional<PhysUpdateData>& a_physUpdData,
+			const std::optional<PhysicsUpdateData>& a_physUpdData,
 			ActorObjectHolder&                   a_holder,
 			bool                                 a_updateEffects) noexcept;
 
-		void RunPostUpdates() noexcept;
+		void RunPreUpdates(
+			const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
 
-		State m_state;
+		GlobalState m_globalState;
 
 		PerfTimerInt m_timer{ 1000000LL };
 		long long    m_currentTime{ 0LL };
 		bool         m_run{ false };
 		bool         m_runAnimationUpdates{ false };
+		bool         m_parallelProcessing{ false };
 
 		stl::fast_spin_lock                                          m_syncRefParentQueueWRLock;
 		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
+		/*stl::fast_spin_lock                                          m_unloadQueueWRLock;
+		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_unloadQueue;*/
 	};
 
 }

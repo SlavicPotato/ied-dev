@@ -4,6 +4,7 @@
 
 #include "IObjectManager.h"
 
+#include "IED/EngineExtensions.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 
@@ -111,12 +112,10 @@ namespace IED
 		return true;
 	}
 
-	bool ObjectEntryBase::DeferredHideObject(std::uint8_t a_delay) const noexcept
+	bool ObjectEntryBase::DeferredHideObject(
+		std::uint8_t a_delay) const noexcept
 	{
-		if (!a_delay)
-		{
-			return false;
-		}
+		assert(!a_delay);
 
 		auto& state = data.state;
 
@@ -137,17 +136,22 @@ namespace IED
 
 		state->flags.set(ObjectEntryFlags::kInvisible);
 
+		/*if (a_unloadAfterHide)
+		{
+			state->flags.set(ObjectEntryFlags::kWantUnloadAfterHide);
+		}*/
+
 		return true;
 	}
 
 	void ObjectEntryBase::ResetDeferredHide() const noexcept
 	{
-		if (data.state)
+		if (auto &state = data.state)
 		{
-			if (data.state->flags.test(ObjectEntryFlags::kInvisible) && data.state->hideCountdown != 0)
+			if (state->flags.test(ObjectEntryFlags::kInvisible) && state->hideCountdown != 0)
 			{
-				data.state->flags.clear(ObjectEntryFlags::kInvisible);
-				data.state->hideCountdown = 0;
+				state->flags.clear(ObjectEntryFlags::kInvisible);
+				state->hideCountdown = 0;
 			}
 		}
 	}

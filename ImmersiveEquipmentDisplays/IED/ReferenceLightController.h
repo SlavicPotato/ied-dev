@@ -127,8 +127,6 @@ namespace IED
 		}
 
 		static void ReAddActorExtraLight(Actor* a_actor) noexcept;
-		//void        UpdateRegisteredLights(Actor* a_actor) const noexcept;
-		static void UpdateEquippedLight(Actor* a_actor) noexcept;
 
 		virtual EventResult ReceiveEvent(
 			const TESCellAttachDetachEvent*           a_evn,

@@ -3,6 +3,7 @@
 namespace IED
 {
 	class Controller;
+	class ConfigINI;
 
 	class Initializer :
 		ILog,
@@ -38,7 +39,8 @@ namespace IED
 		Controller* m_controller{ nullptr };
 
 		bool m_done{ false };
-		bool m_initRefrLightController{ false };
+
+		std::shared_ptr<ConfigINI> m_config;
 
 		static Initializer m_Instance;
 	};

@@ -6,8 +6,8 @@
 #include "ObjectLight.h"
 #include "ObjectManagerCommon.h"
 
+#include "IED/AnimationUpdateManager.h"
 #include "IED/ConfigBaseValues.h"
-#include "IED/EngineExtensions.h"
 #include "IED/Physics/SimComponent.h"
 
 namespace IED
@@ -22,7 +22,11 @@ namespace IED
 		kSyncReferenceTransform     = 1u << 6,
 		kPlaySound                  = 1u << 8,
 		kIsGroup                    = 1u << 9,
+		kWantUnloadAfterHide        = 1u << 10,
 		kInvisible                  = 1u << 24,
+
+
+		//kInvisibilityFlags = kInvisible | kWantUnloadAfterHide,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ObjectEntryFlags);
@@ -153,13 +157,13 @@ namespace IED
 				{
 					if (auto& h = e.second.weapAnimGraphManagerHolder)
 					{
-						EngineExtensions::UpdateAnimationGraph(h.get(), a_data);
+						AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
 					}
 				}
 
 				if (auto& h = weapAnimGraphManagerHolder)
 				{
-					EngineExtensions::UpdateAnimationGraph(h.get(), a_data);
+					AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
 				}
 			}
 

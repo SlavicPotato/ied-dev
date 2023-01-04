@@ -66,9 +66,9 @@ namespace IED
 		ConfigKeyCombo m_UIOpenKeys;
 		bool           m_forceUIOpenKeys{ false };
 		bool           m_enableUIRestrictions{ false };
-		long long      m_taskPoolBudget{ 0 };
+		//long long      m_taskPoolBudget{ 0 };
 		bool           m_closeLogFile{ false };
-		bool           m_UIScaling{ true };
+		//bool           m_UIScaling{ true };
 		bool           m_nodeOverrideEnabled{ false };
 		bool           m_nodeOverridePlayerEnabled{ false };
 		bool           m_weaponAdjustDisable{ true };
@@ -80,7 +80,7 @@ namespace IED
 		bool           m_disableIntroBanner{ false };
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
-		bool           m_forceOrigWeapXFRM{ false };
+		//bool           m_forceOrigWeapXFRM{ false };
 		bool           m_enableEarlyLoadHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
 		bool           m_forceFlushSaveData{ false };

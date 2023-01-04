@@ -7,6 +7,8 @@
 #include "ObjectManagerData.h"
 
 #include "IED/ActorState.h"
+#include "IED/AnimationUpdateManager.h"
+#include "IED/EngineExtensions.h"
 #include "IED/ExtraNodes.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
@@ -285,6 +287,7 @@ namespace IED
 		m_simNodeList.clear();
 
 		ReferenceLightController::GetSingleton().RemoveActor(m_actorid);
+		AnimationUpdateController::GetSingleton().RemoveActor(m_actorid);
 
 		if (defer)
 		{
@@ -756,6 +759,31 @@ namespace IED
 	std::size_t ActorObjectHolder::GetSimComponentListSize() const noexcept
 	{
 		return m_simNodeList.size();
+	}
+
+	std::size_t ActorObjectHolder::GetNumAnimObjects() const noexcept
+	{
+		std::size_t i = 0;
+
+		visit([&](auto& a_e) {
+			if (auto& state = a_e.data.state)
+			{
+				for (auto& e : state->groupObjects)
+				{
+					if (e.second.weapAnimGraphManagerHolder)
+					{
+						i++;
+					}
+				}
+
+				if (state->weapAnimGraphManagerHolder)
+				{
+					i++;
+				}
+			}
+		});
+
+		return i;
 	}
 
 	void ActorObjectHolder::RemoveSimComponent(

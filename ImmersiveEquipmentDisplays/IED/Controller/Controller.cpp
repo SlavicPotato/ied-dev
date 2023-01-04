@@ -41,7 +41,7 @@ namespace IED
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
 		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
-		m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
+		//m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
 		m_forceFlushSaveData(a_config->m_forceFlushSaveData),
 		m_bipedCache(
 			a_config->m_bipedSlotCacheMaxSize,
@@ -188,9 +188,9 @@ namespace IED
 
 		SetProcessorTaskRunAUState(settings.hkWeaponAnimations);
 		SetShaderProcessingEnabled(settings.enableEffectShaders);
-		SetEffectControllerParallelUpdates(settings.effectsParallelUpdates);
+		SetProcessorTaskParallelUpdates(settings.apParallelUpdates);
 
-		m_cpuHasSSE41 = IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE);
+		m_cpuHasSSE41 = ::IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE);
 
 		if (m_cpuHasSSE41)
 		{
@@ -583,6 +583,18 @@ namespace IED
 		for (auto& e : m_objects)
 		{
 			result += e.second.GetSimComponentListSize();
+		}
+
+		return result;
+	}
+
+	std::size_t Controller::GetNumAnimObjects() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_objects)
+		{
+			result += e.second.GetNumAnimObjects();
 		}
 
 		return result;
@@ -2684,6 +2696,14 @@ namespace IED
 
 				if (f.equipped)
 				{
+					/*if (objectEntry.DeferredHideObject(
+							2,
+							!settings.hideEquipped ||
+								configEntry.slotFlags.test(SlotFlags::kAlwaysUnload)))
+					{
+						a_params.mark_slot_presence_change(objectEntry.slotid);
+					}*/
+
 					if (settings.hideEquipped &&
 					    !configEntry.slotFlags.test(SlotFlags::kAlwaysUnload))
 					{
@@ -3989,7 +4009,15 @@ namespace IED
 
 			a_params.state.flags.clear(ProcessStateUpdateFlags::kUpdateMask);
 
-			a_params.objects.RequestTransformUpdate();
+			/*if (a_params.state.flags.test_any(ProcessStateUpdateFlags::kWantDeferredTransformUpdate) && 
+				!a_params.flags.test(ControllerUpdateFlags::kImmediateTransformUpdate))
+			{
+				a_params.objects.RequestTransformUpdateDefer();
+			}
+			else
+			{
+				a_params.objects.RequestTransformUpdate();
+			}*/
 		}
 	}
 
@@ -4125,13 +4153,14 @@ namespace IED
 		pt.Start();
 #endif
 
-		if (a_actor == *g_thePlayer &&
+		if (a_holder.IsPlayer() &&
 		    !m_nodeOverridePlayerEnabled)
 		{
 			return false;
 		}
 
 		if (a_holder.m_cmeNodes.empty() &&
+		    a_holder.m_movNodes.empty() &&
 		    a_holder.m_weapNodes.empty())
 		{
 			return false;
@@ -4152,7 +4181,7 @@ namespace IED
 
 		for (auto& e : a_holder.m_weapNodes)
 		{
-			auto r = m_config.active.transforms.GetActorPlacement(
+			const auto r = m_config.active.transforms.GetActorPlacement(
 				a_actor->formID,
 				params.npcOrTemplate->formID,
 				a_race->formID,
@@ -4169,42 +4198,42 @@ namespace IED
 			}
 		}
 
-		for (auto& e : a_holder.m_cmeNodes)
+		for (auto& [i, e] : a_holder.m_cmeNodes)
 		{
-			auto r = m_config.active.transforms.GetActorTransform(
+			const auto r = m_config.active.transforms.GetActorTransform(
 				a_actor->formID,
 				params.npcOrTemplate->formID,
 				a_race->formID,
-				e.first,
+				i,
 				hc);
 
-			e.second.cachedConfCME = r;
+			e.cachedConfCME = r;
 
 			if (r)
 			{
 				INodeOverride::ApplyNodeVisibility(
-					e.second,
+					e,
 					r->get(a_sex),
 					params);
 			}
 		}
 
-		for (const auto& e : a_holder.m_cmeNodes)
+		for (const auto& [i, e] : a_holder.m_cmeNodes)
 		{
-			if (e.second.cachedConfCME)
+			if (const auto conf = e.cachedConfCME)
 			{
 				INodeOverride::ApplyNodeOverride(
-					e.first,
-					e.second,
-					e.second.cachedConfCME->get(a_sex),
+					i,
+					e,
+					conf->get(a_sex),
 					params);
 			}
 			else
 			{
-				INodeOverride::ResetNodeOverrideImpl(e.second.thirdPerson);
-				if (e.second.firstPerson)
+				INodeOverride::ResetNodeOverrideImpl(e.thirdPerson);
+				if (e.firstPerson)
 				{
-					INodeOverride::ResetNodeOverrideImpl(e.second.firstPerson);
+					INodeOverride::ResetNodeOverrideImpl(e.firstPerson);
 				}
 			}
 		}
@@ -4213,7 +4242,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_holder.m_movNodes)
 			{
-				auto r = m_config.active.transforms.GetActorPhysics(
+				const auto r = m_config.active.transforms.GetActorPhysics(
 					a_actor->formID,
 					params.npcOrTemplate->formID,
 					a_race->formID,
@@ -4258,7 +4287,7 @@ namespace IED
 			}
 		}
 
-		if (m_forceOrigWeapXFRM &&
+		/*if (m_forceOrigWeapXFRM &&
 		    EngineExtensions::IsWeaponAdjustDisabled())
 		{
 			for (auto& e : a_holder.m_weapNodes)
@@ -4268,7 +4297,7 @@ namespace IED
 					e.node->m_localTransform = *e.originalTransform;
 				}
 			}
-		}
+		}*/
 
 		if (GetSettings().data.enableXP32AA &&
 		    a_holder.m_animState.flags.consume(ActorAnimationState::Flags::kNeedUpdate))

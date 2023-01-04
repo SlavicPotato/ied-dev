@@ -14,7 +14,7 @@ namespace IED
 	class EffectController
 	{
 	protected:
-		struct PhysUpdateData
+		struct PhysicsUpdateData
 		{
 			float timeTick;
 			float timeStep;
@@ -23,7 +23,7 @@ namespace IED
 		};
 
 	public:
-		enum class EffectControllerFlags : std::uint8_t
+		enum class Flags : std::uint8_t
 		{
 			kNone = 0,
 
@@ -39,50 +39,38 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool ShaderProcessingEnabled() const noexcept
 		{
-			return m_flags.test(EffectControllerFlags::kEnableShaders);
+			return m_flags.test(Flags::kEnableShaders);
 		}
 
 		[[nodiscard]] inline constexpr bool PhysicsProcessingEnabled() const noexcept
 		{
-			return m_flags.test(EffectControllerFlags::kEnablePhysics);
-		}
-
-		inline constexpr void SetEffectControllerParallelUpdates(bool a_switch) noexcept
-		{
-			m_flags.set(EffectControllerFlags::kParallelProcessing, a_switch);
+			return m_flags.test(Flags::kEnablePhysics);
 		}
 
 		inline constexpr void SetPhysicsProcessingEnabled(bool a_switch) noexcept
 		{
-			m_flags.set(EffectControllerFlags::kEnablePhysics, a_switch);
+			m_flags.set(Flags::kEnablePhysics, a_switch);
 		}
 
 		inline constexpr void SetShaderProcessingEnabled(bool a_switch) noexcept
 		{
-			m_flags.set(EffectControllerFlags::kEnableShaders, a_switch);
+			m_flags.set(Flags::kEnableShaders, a_switch);
 		}
 
 	protected:
 		[[nodiscard]] inline constexpr bool AnyProcessingEnabled() const noexcept
 		{
-			return m_flags.test_any(EffectControllerFlags::kEnableMask);
+			return m_flags.test_any(Flags::kEnableMask);
 		}
-
-		[[nodiscard]] inline constexpr bool ParallelProcessingEnabled() const noexcept
-		{
-			return m_flags.test_any(EffectControllerFlags::kParallelProcessing);
-		}
-
-		void ProcessEffectsImpl(const ActorObjectMap& a_map) noexcept;
 
 		void PreparePhysicsUpdateData(
 			float                          a_interval,
-			std::optional<PhysUpdateData>& a_data) noexcept;
+			std::optional<PhysicsUpdateData>& a_data) noexcept;
 
 		void RunEffectUpdates(
 			const float                          a_interval,
 			const Game::Unk2f6b948::Steps&       a_stepMuls,
-			const std::optional<PhysUpdateData>& a_physUpdData,
+			const std::optional<PhysicsUpdateData>& a_physUpdData,
 			const ActorObjectHolder&             a_holder) noexcept;
 
 		static void UpdateShaders(
@@ -92,7 +80,7 @@ namespace IED
 
 		static void UpdatePhysics(
 			const float              a_stepMul,
-			const PhysUpdateData&    a_physUpdData,
+			const PhysicsUpdateData&    a_physUpdData,
 			const ActorObjectHolder& a_holder) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateShadersOnDisplay(
@@ -123,9 +111,9 @@ namespace IED
 		float m_timeAccum{ 0.0f };
 		float m_averageInterval{ 1.0f / 60.0f };
 
-		stl::flag<EffectControllerFlags> m_flags{ EffectControllerFlags::kNone };
+		stl::flag<Flags> m_flags{ Flags::kNone };
 	};
 
-	DEFINE_ENUM_CLASS_BITWISE(EffectController::EffectControllerFlags);
+	DEFINE_ENUM_CLASS_BITWISE(EffectController::Flags);
 
 }

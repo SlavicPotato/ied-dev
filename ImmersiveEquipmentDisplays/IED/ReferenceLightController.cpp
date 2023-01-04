@@ -430,27 +430,11 @@ namespace IED
 		}
 	}
 
-	void ReferenceLightController::UpdateEquippedLight(Actor* a_actor) noexcept
-	{
-		const auto* const refrLight = GetExtraLight(a_actor);
-
-		if (!refrLight ||
-		    !refrLight->light)
-		{
-			return;
-		}
-
-		if (const auto torch = GetEquippedLHLight(a_actor))
-		{
-			UpdateRefrLight(torch, *refrLight, a_actor, -1.0f);
-		}
-	}
-
 	EventResult ReferenceLightController::ReceiveEvent(
 		const TESCellAttachDetachEvent*           a_evn,
 		BSTEventSource<TESCellAttachDetachEvent>* a_dispatcher)
 	{
-		if (a_evn && a_evn->reference && a_evn->attached)
+		if (a_evn && a_evn->attached && a_evn->reference)
 		{
 			if (auto actor = a_evn->reference->As<Actor>())
 			{

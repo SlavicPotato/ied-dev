@@ -65,7 +65,7 @@ namespace IED
 			a_out.lightNPCUpdateFix                   = data.get("light_npc_update_fix", false).asBool();
 			a_out.lightNPCCellAttachFix               = data.get("light_cell_attach_fix", false).asBool();
 			a_out.enableEquipmentPhysics              = data.get("equipment_physics", false).asBool();
-			a_out.effectsParallelUpdates              = data.get("es_parallel_updates", false).asBool();
+			a_out.apParallelUpdates                   = data.get("ap_parallel_updates", true).asBool();
 			a_out.syncTransformsToFirstPersonSkeleton = data.get("sync_to_1p", false).asBool();
 
 			a_out.physics.maxDiff = data.get("phy_maxdiff", 1024.0f).asFloat();
@@ -123,7 +123,7 @@ namespace IED
 			data["light_npc_update_fix"]    = a_data.lightNPCUpdateFix;
 			data["light_cell_attach_fix"]   = a_data.lightNPCCellAttachFix;
 			data["equipment_physics"]       = a_data.enableEquipmentPhysics;
-			data["es_parallel_updates"]     = a_data.effectsParallelUpdates;
+			data["ap_parallel_updates"]     = a_data.apParallelUpdates;
 			data["sync_to_1p"]              = a_data.syncTransformsToFirstPersonSkeleton;
 
 			data["phy_maxdiff"] = a_data.physics.maxDiff;

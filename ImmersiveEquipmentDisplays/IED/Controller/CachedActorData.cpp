@@ -12,13 +12,14 @@ namespace IED
 
 	bool CachedFactionData::UpdateFactions(Actor* a_actor) noexcept
 	{
-		auto npc = a_actor->GetActorBase();
+		const auto npc = a_actor->GetActorBase();
 		if (!npc)
 		{
 			return false;
 		}
 
-		const auto* extraFactionChanges = a_actor->extraData.Get<ExtraFactionChanges>();
+		const auto* const extraFactionChanges =
+			a_actor->extraData.Get<ExtraFactionChanges>();
 
 		const auto sig = GetSignature(extraFactionChanges, npc);
 
@@ -41,7 +42,7 @@ namespace IED
 		return true;
 	}
 
-	std::size_t CachedFactionData::GetSignature(
+	constexpr std::size_t CachedFactionData::GetSignature(
 		const ExtraFactionChanges* a_factionChanges,
 		TESNPC*                    a_npc) noexcept
 	{
@@ -65,7 +66,7 @@ namespace IED
 
 	bool CachedActiveEffectData::UpdateEffects(Actor* a_actor) noexcept
 	{
-		auto list = a_actor->GetActiveEffectList();
+		const auto list = a_actor->GetActiveEffectList();
 
 		const auto sig = GetSignature(list);
 
@@ -108,7 +109,7 @@ namespace IED
 		return false;
 	}
 
-	std::size_t CachedActiveEffectData::GetSignature(
+	constexpr std::size_t CachedActiveEffectData::GetSignature(
 		RE::BSSimpleList<ActiveEffect*>* a_list) noexcept
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
@@ -166,8 +167,8 @@ namespace IED
 	}
 
 	bool CachedActorData::UpdateState(
-		Actor*         a_actor,
-		TESObjectCELL* a_cell) noexcept
+		const Actor*         a_actor,
+		const TESObjectCELL* a_cell) noexcept
 	{
 		bool result = false;
 
@@ -189,7 +190,8 @@ namespace IED
 		return result;
 	}
 
-	bool CachedActorData::UpdateStateLF(Actor* a_actor) noexcept
+	bool CachedActorData::UpdateStateLF(
+		const Actor* a_actor) noexcept
 	{
 		bool result = false;
 
@@ -201,7 +203,8 @@ namespace IED
 		return result;
 	}
 
-	bool CachedActorData::UpdateStateHF(Actor* a_actor) noexcept
+	bool CachedActorData::UpdateStateHF(
+		const Actor* a_actor) noexcept
 	{
 		bool result = false;
 

@@ -2,6 +2,7 @@
 
 #include "UIStats.h"
 
+#include "IED/AnimationUpdateManager.h"
 #include "IED/Controller/Controller.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/SkeletonCache.h"
@@ -69,6 +70,8 @@ namespace IED
 					ImGui::TextUnformatted("Lights:");
 				}
 
+				ImGui::TextUnformatted("Anim objects:");
+
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
@@ -116,6 +119,12 @@ namespace IED
 				{
 					ImGui::Text("%zu", ReferenceLightController::GetSingleton().GetNumLights());
 				}
+
+				ImGui::Text(
+					"%zu",
+					AnimationUpdateController::GetSingleton().GetEnabled() ?
+						AnimationUpdateController::GetSingleton().GetNumObjects() :
+						m_controller.GetNumAnimObjects());
 
 				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());

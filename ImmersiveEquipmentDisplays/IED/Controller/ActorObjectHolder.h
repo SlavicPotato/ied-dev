@@ -666,6 +666,7 @@ namespace IED
 		void ClearAllPhysicsData();
 
 		std::size_t GetSimComponentListSize() const noexcept;
+		std::size_t GetNumAnimObjects() const noexcept;
 
 		template <class... Args>
 		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args) noexcept
@@ -686,6 +687,11 @@ namespace IED
 		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
 		{
 			return m_temp;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetMonitorNodes() noexcept
+		{
+			return m_monitorNodes;
 		}
 
 	private:

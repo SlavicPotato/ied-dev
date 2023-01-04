@@ -22,7 +22,7 @@ namespace IED
 	DEFINE_ENUM_CLASS_BITWISE(AttachResultFlags);
 
 	class EngineExtensions :
-		AnimationUpdateManager,
+		AnimationUpdateController,
 		ILog
 	{
 		struct unks_01
@@ -103,10 +103,6 @@ namespace IED
 			RE::IAnimationGraphManagerHolder& a_holder,
 			NiAVObject*                       a_object) noexcept;
 
-		typedef bool (*updateAnimationGraph_t)(
-			RE::IAnimationGraphManagerHolder* a_holder,
-			const BSAnimationUpdateData&      a_data) noexcept;
-
 		typedef bool (*stripCollision_t)(
 			NiAVObject* a_object,
 			bool        a_recursive,
@@ -161,7 +157,6 @@ namespace IED
 		inline static const auto ApplyTextureSwap     = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
 		inline static const auto m_gameRuntimeMS      = IAL::Address<std::int32_t*>(523662, 410201);
 		inline static const auto CleanupObjectImpl    = IAL::Address<cleanupObject_t>(15495, 15660);
-		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShrinkToSize          = IAL::Address<fUnk1401CDB30_t>(15571, 15748);
 		inline static const auto ShouldDefer3DTaskImpl = IAL::Address<unk63F810_t>(38079, 39033);
@@ -278,8 +273,8 @@ namespace IED
 		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped) noexcept;
 		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor) noexcept;  // always player
 		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
-		static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk) noexcept;
-		static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept;
+		//static void                              PrepareAnimUpdateLists_Hook(Game::ProcessLists* a_pl, void* a_unk) noexcept;
+		//static void                              ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept;
 		static const RE::BSTSmartPointer<Biped>& UpdatePlayerAnim_Hook(TESObjectREFR* a_player, const BSAnimationUpdateData& a_data) noexcept;  // getbiped1
 		static void                              PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player) noexcept;
 		static REFR_LIGHT*                       TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
@@ -331,8 +326,8 @@ namespace IED
 		decltype(&CreateWeaponNodes_Hook)                                      m_createWeaponNodes_o{ nullptr };
 		decltype(&RemoveAllBipedParts_Hook)                                    m_removeAllBipedParts_o{ nullptr };
 		decltype(&ToggleFavGetExtraList_Hook)                                  m_toggleFavGetExtraList_o{ nullptr };
-		decltype(&PrepareAnimUpdateLists_Hook)                                 m_prepareAnimUpdateLists_o{ nullptr };
-		decltype(&ClearAnimUpdateLists_Hook)                                   m_clearAnimUpdateLists_o{ nullptr };
+		/*decltype(&PrepareAnimUpdateLists_Hook)                                 m_prepareAnimUpdateLists_o{ nullptr };
+		decltype(&ClearAnimUpdateLists_Hook)                                   m_clearAnimUpdateLists_o{ nullptr };*/
 		hkaLookupSkeletonNode_t                                                m_hkaLookupSkeletonNode_o{ nullptr };
 		decltype(&PlayerCharacter_UpdateRefLight_Hook)                         m_pcUpdateRefLightPlayerCharacter_o{ nullptr };
 		decltype(&TESObjectCELL_unk_178_Actor_GetExtraLight_Hook)              m_TESObjectCELL_unk_178_Actor_GetExtraLight_o{ nullptr };

@@ -494,6 +494,7 @@ namespace IED
 		void QueueClearActorPhysicsData();
 
 		std::size_t GetNumSimComponents() const noexcept;
+		std::size_t GetNumAnimObjects() const noexcept;
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -983,7 +984,7 @@ namespace IED
 		bool m_npcProcessingDisabled{ false };
 		bool m_iniKeysForced{ false };
 		bool m_enableCorpseScatter{ false };
-		bool m_forceOrigWeapXFRM{ false };
+		//bool m_forceOrigWeapXFRM{ false };
 		bool m_forceFlushSaveData{ false };
 		bool m_cpuHasSSE41{ false };
 

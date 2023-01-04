@@ -13,7 +13,7 @@ namespace IED
 {
 	void EffectController::PreparePhysicsUpdateData(
 		float                          a_interval,
-		std::optional<PhysUpdateData>& a_data) noexcept
+		std::optional<PhysicsUpdateData>& a_data) noexcept
 	{
 		constexpr auto confTimeTick = 1.0f / 30.0f;
 		constexpr auto maxSubSteps  = 15.0f;
@@ -38,15 +38,10 @@ namespace IED
 	void EffectController::RunEffectUpdates(
 		const float                          a_interval,
 		const Game::Unk2f6b948::Steps&       a_stepMuls,
-		const std::optional<PhysUpdateData>& a_physUpdData,
+		const std::optional<PhysicsUpdateData>& a_physUpdData,
 		const ActorObjectHolder&             a_holder) noexcept
 	{
 		//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
-
-		if (!a_holder.IsCellAttached())
-		{
-			return;
-		}
 
 		const auto stepMul =
 			a_holder.IsPlayer() ?
@@ -109,7 +104,7 @@ namespace IED
 
 	void EffectController::UpdatePhysics(
 		const float              a_stepMul,
-		const PhysUpdateData&    a_physUpdData,
+		const PhysicsUpdateData&    a_physUpdData,
 		const ActorObjectHolder& a_holder) noexcept
 	{
 		constexpr unsigned int ftz_daz_mask = _MM_FLUSH_ZERO_MASK | _MM_DENORMALS_ZERO_MASK;

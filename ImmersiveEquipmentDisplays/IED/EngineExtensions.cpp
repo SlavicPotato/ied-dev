@@ -6,6 +6,7 @@
 
 #include "Util/Logging.h"
 
+#include "AnimationUpdateManager.h"
 #include "ReferenceLightController.h"
 #include "SkeletonExtensions.h"
 
@@ -432,10 +433,10 @@ namespace IED
 
 	void EngineExtensions::Install_ParallelAnimationUpdate()
 	{
-		auto addrRefUpdate      = m_animUpdateRef_a.get() + 0x74;
-		auto addrPlayerUpdate   = m_animUpdatePlayer_a.get() + 0xD0;
-		auto addrAnimUpdatePre  = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
-		auto addrAnimUpdatePost = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2);
+		const auto addrRefUpdate    = m_animUpdateRef_a.get() + 0x74;
+		const auto addrPlayerUpdate = m_animUpdatePlayer_a.get() + 0xD0;
+		//auto addrAnimUpdatePre  = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
+		//auto addrAnimUpdatePost = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2);
 
 		VALIDATE_MEMORY(
 			addrRefUpdate,
@@ -447,7 +448,7 @@ namespace IED
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }),
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }));
 
-		if (hook::call5(
+		/*if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
 				addrAnimUpdatePre,
 				std::uintptr_t(PrepareAnimUpdateLists_Hook),
@@ -477,7 +478,7 @@ namespace IED
 		else
 		{
 			HALT(__FUNCTION__ ": failed to install post anim update hook");
-		}
+		}*/
 
 		std::uintptr_t dummy;
 		if (hook::call(
@@ -907,7 +908,7 @@ namespace IED
 		return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
 	}
 
-	void EngineExtensions::PrepareAnimUpdateLists_Hook(
+	/*void EngineExtensions::PrepareAnimUpdateLists_Hook(
 		Game::ProcessLists* a_pl,
 		void*               a_unk) noexcept
 	{
@@ -919,7 +920,7 @@ namespace IED
 	{
 		m_Instance.EndAnimationUpdate(m_Instance.m_controller);
 		m_Instance.m_clearAnimUpdateLists_o(a_unk);
-	}
+	}*/
 
 	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
 		TESObjectREFR*               a_player,
@@ -931,10 +932,9 @@ namespace IED
 		{
 			if (auto actor = a_player->As<Actor>())
 			{
-				UpdateActorAnimationList(
+				AnimationUpdateController::GetSingleton().OnUpdate(
 					actor,
-					a_data,
-					*m_Instance.m_controller);
+					a_data);
 			}
 		}
 
@@ -1389,7 +1389,9 @@ namespace IED
 
 			if (auto actor = a_refr->As<Actor>())
 			{
-				m_Instance.ProcessAnimationUpdateList(actor, data, *m_Instance.m_controller);
+				AnimationUpdateController::GetSingleton().OnUpdate(
+					actor,
+					data);
 			}
 		}
 

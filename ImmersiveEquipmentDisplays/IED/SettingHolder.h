@@ -238,7 +238,7 @@ namespace IED
 				bool lightEnableNPCUpdates{ false };
 				bool lightNPCUpdateFix{ false };
 				bool lightNPCCellAttachFix{ false };
-				bool effectsParallelUpdates{ false };
+				bool apParallelUpdates{ true };
 
 				stl::optional<LogLevel> logLevel;
 

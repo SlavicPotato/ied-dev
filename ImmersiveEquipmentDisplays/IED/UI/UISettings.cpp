@@ -146,6 +146,15 @@ namespace IED
 					ImGui::Unindent();
 				}
 
+				if (settings.mark_if(ImGui::Checkbox(
+						UIL::LS(UISettingsStrings::ParallelUpdates, "4"),
+						std::addressof(settings.data.apParallelUpdates))))
+				{
+					m_controller.SetProcessorTaskParallelUpdates(
+						settings.data.apParallelUpdates);
+				}
+				UITipsInterface::DrawTipImportant(UITip::EffectShadersParallelUpdates);
+
 				ImGui::Unindent();
 				ImGui::Spacing();
 
@@ -526,15 +535,6 @@ namespace IED
 						ImGui::TreePop();
 					}
 				}
-
-				if (settings.mark_if(ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::ParallelUpdates, "A"),
-						std::addressof(data.effectsParallelUpdates))))
-				{
-					m_controller.SetEffectControllerParallelUpdates(
-						data.effectsParallelUpdates);
-				}
-				UITipsInterface::DrawTipImportant(UITip::EffectShadersParallelUpdates);
 
 				ImGui::Unindent();
 				ImGui::Spacing();

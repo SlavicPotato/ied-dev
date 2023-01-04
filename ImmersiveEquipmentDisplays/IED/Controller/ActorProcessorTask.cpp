@@ -6,6 +6,7 @@
 #include "IConditionalVariableProcessor.h"
 #include "IObjectManager.h"
 
+#include "IED/AnimationUpdateManager.h"
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/ReferenceLightController.h"
@@ -18,7 +19,7 @@
 namespace IED
 {
 	ActorProcessorTask::ActorProcessorTask() :
-		m_state{ IPerfCounter::Query() - COMMON_STATE_CHECK_INTERVAL }
+		m_globalState{ IPerfCounter::Query() }
 	{
 	}
 
@@ -112,7 +113,7 @@ namespace IED
 			const bool result = SyncRefParentNode(a_record, a_entry);
 			if (result)
 			{
-				a_record.RequestEvalDefer();
+				a_record.RequestEval();
 			}
 			else
 			{
@@ -185,11 +186,9 @@ namespace IED
 	{
 		if (a_data.m_flags.consume(ActorObjectHolderFlags::kEvalThisFrame))
 		{
-			auto& controller = GetController();
-
 			if (auto& params = a_data.GetCurrentProcessParams())
 			{
-				controller.EvaluateImpl(
+				GetController().EvaluateImpl(
 					*params,
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
@@ -198,7 +197,7 @@ namespace IED
 			}
 			else
 			{
-				controller.EvaluateImpl(
+				GetController().EvaluateImpl(
 					a_data,
 					ControllerUpdateFlags::kPlaySound |
 						ControllerUpdateFlags::kFromProcessorTask |
@@ -207,11 +206,12 @@ namespace IED
 		}
 	}
 
-	constexpr bool ActorProcessorTask::CheckMonitorNodes(ActorObjectHolder& a_data) noexcept
+	static constexpr bool CheckMonitorNodes(
+		ActorObjectHolder& a_data) noexcept
 	{
 		bool result = false;
 
-		for (auto& f : a_data.m_monitorNodes)
+		for (auto& f : a_data.GetMonitorNodes())
 		{
 			if (f.parent != f.node->m_parent)
 			{
@@ -220,14 +220,15 @@ namespace IED
 				result = true;
 			}
 
-			if (f.size != f.node->m_children.m_size)
+			if (const auto size = f.node->m_children.m_size;
+			    f.size != size)
 			{
-				f.size = f.node->m_children.m_size;
+				f.size = size;
 
 				result = true;
 			}
 
-			if (bool visible = f.node->IsVisible();
+			if (const bool visible = f.node->IsVisible();
 			    visible != f.visible)
 			{
 				f.visible = visible;
@@ -239,22 +240,22 @@ namespace IED
 		return result;
 	}
 
-	void ActorProcessorTask::UpdateState() noexcept
+	void ActorProcessorTask::UpdateGlobalState() noexcept
 	{
 		auto& controller = GetController();
 
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
-		    lrhandle != m_state.playerLastRidden)
+		    lrhandle != m_globalState.playerLastRidden)
 		{
-			m_state.playerLastRidden = lrhandle;
+			m_globalState.playerLastRidden = lrhandle;
 
 			controller.RequestLFEvaluateAll();
 		}
 
 		if (const auto fpstate = IsInFirstPerson();
-		    fpstate != m_state.inFirstPerson)
+		    fpstate != m_globalState.inFirstPerson)
 		{
-			m_state.inFirstPerson = fpstate;
+			m_globalState.inFirstPerson = fpstate;
 
 			if (auto it = controller.m_objects.find(Data::IData::GetPlayerRefID());
 			    it != controller.m_objects.end())
@@ -263,14 +264,14 @@ namespace IED
 			}
 		}
 
-		if (IPerfCounter::delta_us(
-				m_state.lastRun,
-				m_timer.GetStartTime()) < COMMON_STATE_CHECK_INTERVAL)
+		if (m_timer.GetStartTime() < m_globalState.nextRun)
 		{
 			return;
 		}
 
-		m_state.lastRun = m_timer.GetStartTime();
+		m_globalState.nextRun =
+			m_timer.GetStartTime() +
+			IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL);
 
 		bool changed = false;
 
@@ -278,17 +279,17 @@ namespace IED
 		assert(sky);
 
 		if (const auto current = (sky ? sky->currentWeather : nullptr);
-		    current != m_state.currentWeather)
+		    current != m_globalState.currentWeather)
 		{
-			m_state.currentWeather = current;
-			changed                = true;
+			m_globalState.currentWeather = current;
+			changed                      = true;
 		}
 
 		if (const auto tod = Data::GetTimeOfDay(sky);
-		    tod != m_state.timeOfDay)
+		    tod != m_globalState.timeOfDay)
 		{
-			m_state.timeOfDay = tod;
-			changed           = true;
+			m_globalState.timeOfDay = tod;
+			changed                 = true;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)
@@ -323,13 +324,121 @@ namespace IED
 	}
 
 	template <bool _Mt>
-	void ActorProcessorTask::UpdateHolder(
-		const float                          a_interval,
-		const Game::Unk2f6b948::Steps&       a_stepMuls,
-		const std::optional<PhysUpdateData>& a_physUpdData,
-		ActorObjectHolder&                   a_holder,
-		bool                                 a_updateEffects) noexcept
+	void ActorProcessorTask::UpdateHolderMTSafe(
+		const float                             a_interval,
+		const Game::Unk2f6b948::Steps&          a_stepMuls,
+		const std::optional<PhysicsUpdateData>& a_physUpdData,
+		ActorObjectHolder&                      a_holder,
+		bool                                    a_updateEffects) noexcept
 	{
+		auto& state = a_holder.m_state;
+
+		NiPointer<TESObjectREFR> refr;
+		if (!a_holder.GetHandle().Lookup(refr))
+		{
+			state.cellAttached = false;
+			return;
+		}
+
+		const auto actor = refr->As<Actor>();
+		if (!Util::Common::IsREFRValid(actor))
+		{
+			state.cellAttached = false;
+			return;
+		}
+
+		const auto* const cell = actor->GetParentCell();
+		if (cell && cell->IsAttached())
+		{
+			if (!state.cellAttached)
+			{
+				a_holder.RequestEvalDefer();
+				state.cellAttached = true;
+			}
+		}
+		else
+		{
+			state.cellAttached = false;
+			return;
+		}
+
+		if (actor != a_holder.m_actor)  // ??
+		{
+			a_holder.m_actor = actor;
+		}
+
+		if (state.UpdateState(actor, cell))
+		{
+			a_holder.RequestEvalDefer();
+		}
+
+		a_holder.m_wantLFUpdate |= state.UpdateStateLF(actor);
+
+		if (m_timer.GetStartTime() >= a_holder.m_nextLFStateCheck)
+		{
+			a_holder.m_nextLFStateCheck =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_LOW);
+
+			a_holder.m_wantLFUpdate |= state.UpdateFactions(actor);
+
+			if (a_holder.m_wantLFUpdate)
+			{
+				a_holder.m_wantLFUpdate = false;
+				a_holder.RequestEval();
+			}
+		}
+
+		if (m_timer.GetStartTime() >= a_holder.m_nextMFStateCheck)
+		{
+			a_holder.m_nextMFStateCheck =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_MED);
+
+			if (state.UpdateEffects(actor))
+			{
+				a_holder.RequestEval();
+			}
+		}
+
+		if (m_timer.GetStartTime() >= a_holder.m_nextHFStateCheck)
+		{
+			a_holder.m_nextHFStateCheck =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_HIGH);
+
+			if (a_holder.m_wantHFUpdate)
+			{
+				a_holder.m_wantHFUpdate = false;
+				a_holder.RequestEval();
+			}
+		}
+
+		if (a_holder.m_flags.test(ActorObjectHolderFlags::kWantEval))
+		{
+			if (a_holder.m_flagsbf.evalCountdown > 0)
+			{
+				a_holder.m_flagsbf.evalCountdown--;
+			}
+
+			if (a_holder.m_flags.test(ActorObjectHolderFlags::kImmediateEval) ||
+			    a_holder.m_flagsbf.evalCountdown == 0)
+			{
+				a_holder.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
+				a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
+			}
+		}
+
+		if (a_holder.UpdateNodeMonitorEntries())
+		{
+			a_holder.RequestEval();
+		}
+
+		if (CheckMonitorNodes(a_holder))
+		{
+			a_holder.RequestTransformUpdate();
+		}
+
 		bool update = false;
 
 		a_holder.visit([&](auto& a_v) noexcept [[msvc::forceinline]] {
@@ -360,6 +469,46 @@ namespace IED
 					{
 						if (state->flags.test(ObjectEntryFlags::kInvisible))
 						{
+							/*if (state->flags.test(ObjectEntryFlags::kWantUnloadAfterHide))
+							{
+								if constexpr (_Mt)
+								{
+									{
+										stl::lock_guard lock(m_syncRefParentQueueWRLock);
+										std::erase_if(
+											m_syncRefParentQueue,
+											[&](auto& a_e) {
+												return a_e.second == std::addressof(a_v);
+											});
+									}
+
+									stl::lock_guard lock(m_unloadQueueWRLock);
+									m_unloadQueue.emplace_back(std::addressof(a_holder), std::addressof(a_v));
+								}
+								else
+								{
+									GetController().RemoveObject(
+										nullptr,
+										a_holder.GetHandle(),
+										a_v,
+										a_holder,
+										ControllerUpdateFlags::kNone,
+										false);
+								}
+							}
+							else
+							{
+								state->SetVisible(false);
+
+								if (state->nodes.HasPhysicsNode())
+								{
+									if (auto& simComponent = state->simComponent)
+									{
+										a_holder.RemoveAndDestroySimComponent(simComponent);
+									}
+								}
+							}*/
+
 							state->SetVisible(false);
 
 							if (state->nodes.HasPhysicsNode())
@@ -379,7 +528,7 @@ namespace IED
 
 		if (update)
 		{
-			a_holder.RequestTransformUpdateDeferNoSkip();
+			a_holder.RequestTransformUpdateDefer();
 		}
 
 		if (a_updateEffects)
@@ -388,21 +537,21 @@ namespace IED
 		}
 	}
 
-	void ActorProcessorTask::RunPostUpdates() noexcept
+	void ActorProcessorTask::RunPreUpdates(
+		const Game::Unk2f6b948::Steps& a_stepMuls) noexcept
 	{
-		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
 		const auto interval = *Game::g_frameTimerSlow;
 
-		std::optional<PhysUpdateData> physUpdateData;
+		std::optional<PhysicsUpdateData> physUpdateData;
 
 		if (PhysicsProcessingEnabled())
 		{
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
 
-		auto& data = GetController().GetObjects();
-
 		const auto paused = Game::IsPaused();
+
+		auto& data = GetController().GetObjects();
 
 		if (ParallelProcessingEnabled())
 		{
@@ -411,9 +560,9 @@ namespace IED
 				data.begin(),
 				data.end(),
 				[&](auto& a_e) noexcept {
-					UpdateHolder<true>(
+					UpdateHolderMTSafe<true>(
 						interval,
-						stepMuls,
+						a_stepMuls,
 						physUpdateData,
 						a_e.second,
 						!paused);
@@ -421,13 +570,13 @@ namespace IED
 
 			if (!m_syncRefParentQueue.empty())
 			{
-				for (auto& e : m_syncRefParentQueue)
+				for (const auto& e : m_syncRefParentQueue)
 				{
 					const bool result = SyncRefParentNode(*e.first, *e.second);
 
 					if (result)
 					{
-						e.first->RequestEvalDefer();
+						e.first->RequestEval();
 					}
 					else
 					{
@@ -437,14 +586,30 @@ namespace IED
 
 				m_syncRefParentQueue.clear();
 			}
+
+			/*if (!m_unloadQueue.empty())
+			{
+				for (const auto& e : m_unloadQueue)
+				{
+					GetController().RemoveObject(
+						nullptr,
+						e.first->GetHandle(),
+						*e.second,
+						*e.first,
+						ControllerUpdateFlags::kNone,
+						false);
+				}
+
+				m_unloadQueue.clear();
+			}*/
 		}
 		else
 		{
 			for (auto& e : data)
 			{
-				UpdateHolder<false>(
+				UpdateHolderMTSafe<false>(
 					interval,
-					stepMuls,
+					a_stepMuls,
 					physUpdateData,
 					e.second,
 					!paused);
@@ -483,7 +648,7 @@ namespace IED
 
 	void ActorProcessorTask::SetProcessorTaskRunAUState(bool a_state) noexcept
 	{
-		m_runAnimationUpdates = !EngineExtensions::ParallelAnimationUpdatesEnabled() && a_state;
+		m_runAnimationUpdates = !AnimationUpdateController::GetSingleton().GetEnabled() && a_state;
 	}
 
 	void ActorProcessorTask::Run() noexcept
@@ -499,149 +664,48 @@ namespace IED
 
 		m_timer.Begin();
 
-		UpdateState();
+		UpdateGlobalState();
+
+		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
 
 		std::optional<animUpdateData_t> animUpdateData;
 
 		if (m_runAnimationUpdates &&
-		    !controller.m_objects.empty() &&
 		    !Game::IsPaused())
 		{
-			animUpdateData.emplace(Game::Unk2f6b948::GetSteps());
+			animUpdateData.emplace(stepMuls * *Game::g_frameTimerSlow);
 		}
 
-		for (auto& [i, e] : controller.m_objects)
+		RunPreUpdates(stepMuls);
+
+		const auto& cvdata = controller.m_config.active.condvars;
+
+		if (!cvdata.empty() || animUpdateData)
 		{
-			auto& state = e.m_state;
-
-			//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
-
-			NiPointer<TESObjectREFR> refr;
-			if (!e.GetHandle().Lookup(refr))
+			for (auto& [i, e] : controller.m_objects)
 			{
-				state.cellAttached = false;
-				continue;
-			}
-
-			const auto actor = refr->As<Actor>();
-			if (!Util::Common::IsREFRValid(actor))
-			{
-				state.cellAttached = false;
-				continue;
-			}
-
-			const auto cell = actor->GetParentCell();
-			if (cell && cell->IsAttached())
-			{
-				if (!state.cellAttached)
+				if (!e.IsCellAttached())
 				{
-					e.RequestEvalDefer();
-					state.cellAttached = true;
-				}
-			}
-			else
-			{
-				state.cellAttached = false;
-				continue;
-			}
-
-			if (state.UpdateState(actor, cell))
-			{
-				e.RequestEvalDefer();
-			}
-
-			e.m_wantLFUpdate |= state.UpdateStateLF(actor);
-			//e.m_wantHFUpdate |= state.UpdateStateHF(actor);
-
-			if (e.UpdateNodeMonitorEntries())
-			{
-				e.RequestEvalDefer();
-			}
-
-			if (m_timer.GetStartTime() >= e.m_nextLFStateCheck)
-			{
-				e.m_nextLFStateCheck =
-					m_timer.GetStartTime() +
-					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_LOW);
-
-				/*PerfTimer pt;
-				pt.Start();*/
-
-				e.m_wantLFUpdate |= state.UpdateFactions(actor);
-
-				//_DMESSAGE("%.8X: %f  %d", actor->formID, pt.Stop(), r);
-
-				if (e.m_wantLFUpdate)
-				{
-					e.m_wantLFUpdate = false;
-					e.RequestEval();
+					continue;
 				}
 
-				/*if (e.m_wantLFVarUpdate)
+				if (animUpdateData)
 				{
-					e.m_wantLFVarUpdate = false;
-					e.m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
-				}*/
-			}
+					const auto step =
+						e.IsPlayer() ?
+							animUpdateData->steps.player :
+							animUpdateData->steps.npc;
 
-			if (m_timer.GetStartTime() >= e.m_nextMFStateCheck)
-			{
-				e.m_nextMFStateCheck =
-					m_timer.GetStartTime() +
-					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_MED);
-
-				if (state.UpdateEffects(actor))
-				{
-					e.RequestEval();
-				}
-			}
-
-			if (m_timer.GetStartTime() >= e.m_nextHFStateCheck)
-			{
-				e.m_nextHFStateCheck =
-					m_timer.GetStartTime() +
-					IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_HIGH);
-
-				if (e.m_wantHFUpdate)
-				{
-					e.m_wantHFUpdate = false;
-					e.RequestEval();
-				}
-			}
-
-			if (animUpdateData)
-			{
-				const auto step =
-					e.m_actorid == Data::IData::GetPlayerRefID() ?
-						animUpdateData->steps.player :
-						animUpdateData->steps.npc;
-
-				UpdateActorGearAnimations(actor, e, step);
-			}
-
-			if (e.m_flags.test(ActorObjectHolderFlags::kWantEval))
-			{
-				if (e.m_flagsbf.evalCountdown > 0)
-				{
-					e.m_flagsbf.evalCountdown--;
+					UpdateActorGearAnimations(e.m_actor, e, step);
 				}
 
-				if (e.m_flags.test(ActorObjectHolderFlags::kImmediateEval) ||
-				    e.m_flagsbf.evalCountdown == 0)
-				{
-					e.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
-					e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
-				}
-			}
+				const bool wantVarUpdate = e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate);
 
-			if (e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate) ||
-			    e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
-			{
-				auto& cvdata = controller.m_config.active.condvars;
-
-				if (!cvdata.empty())
+				if ((wantVarUpdate ||
+				     e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame)) &&
+				    !cvdata.empty())
 				{
-					if (auto info = controller.LookupCachedActorInfo(actor, e))
+					if (auto info = controller.LookupCachedActorInfo(e.m_actor, e))
 					{
 						auto& params = e.CreateProcessParams(
 							info->sex,
@@ -652,7 +716,7 @@ namespace IED
 							e.m_temp.idt,
 							e.m_temp.eqt,
 							controller.m_temp.uc,
-							actor,
+							e.m_actor,
 							info->npc,
 							info->npcOrTemplate,
 							info->race,
@@ -674,29 +738,16 @@ namespace IED
 			}
 		}
 
-		for ([[maybe_unused]] auto& [i, e] : controller.m_objects)
+		for (auto& e : controller.m_objects)
 		{
-			//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
-
-			if (!e.m_state.cellAttached)
+			if (e.second.IsCellAttached())
 			{
-				e.ClearCurrentProcessParams();
-				continue;
+				ProcessEvalRequest(e.second);
+				ProcessTransformUpdateRequest(e.second);
+
+				e.second.ClearCurrentProcessParams();
 			}
-
-			ProcessEvalRequest(e);
-
-			if (CheckMonitorNodes(e))
-			{
-				e.RequestTransformUpdate();
-			}
-
-			ProcessTransformUpdateRequest(e);
-
-			e.ClearCurrentProcessParams();
 		}
-
-		RunPostUpdates();
 
 		controller.RunObjectCleanup();
 
