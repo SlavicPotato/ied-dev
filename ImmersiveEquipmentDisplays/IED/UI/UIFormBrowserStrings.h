@@ -46,5 +46,6 @@ namespace IED
 		Idle              = 5237,
 		Projectiles       = 5238,
 		Effect            = 5239,
+		Light             = 5240,
 	};
 }

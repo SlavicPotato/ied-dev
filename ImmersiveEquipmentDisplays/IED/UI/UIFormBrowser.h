@@ -4,8 +4,8 @@
 #include "Widgets/Form/UIFormBrowserOwner.h"
 #include "Widgets/UIWidgetsCommon.h"
 
-#include "Window/UIWindow.h"
 #include "UIContext.h"
+#include "Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"
 
@@ -34,7 +34,6 @@ namespace IED
 			inline static constexpr auto POPUP_ID = "form_browser";
 
 		public:
-
 			inline static constexpr auto CHILD_ID = ChildWindowID::kUIFormBrowser;
 
 			using selected_form_list = stl::vectormap<Game::FormID, IFormDatabase::entry_t>;
@@ -62,7 +61,7 @@ namespace IED
 			void                  SetTabFilter(std::initializer_list<tab_filter_type::value_type> a_init);
 			void                  ClearTabFilter();
 
-			void OnClose() override;
+			void OnMainClose() override;
 			void Reset() override;
 
 			virtual std::uint32_t GetContextID() override
@@ -107,7 +106,13 @@ namespace IED
 			//bool m_openPopup{ false };
 			bool m_nextDoFilterUpdate{ false };
 
-			IFormDatabase::result_type m_data;
+			struct db_container
+			{
+				bool                       queryInProgress{ false };
+				IFormDatabase::result_type data;
+			};
+
+			const std::shared_ptr<db_container> m_db;
 
 			UIGenericFilter m_formIDFilter;
 			UIGenericFilter m_formNameFilter;
@@ -117,14 +122,13 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;
 
-			std::array<TabItem, 39> m_tabItems;
+			std::array<TabItem, 40> m_tabItems;
 
 			//select_callback_t m_current;
 
 			stl::optional<IFormDatabase::entry_t> m_selectedEntry;
 			selected_form_list                    m_selectedEntries;
 
-			bool m_dbQueryInProgress{ false };
 			bool m_multiSelectMode{ false };
 
 			Controller& m_controller;

@@ -37,7 +37,8 @@ namespace IED
 			BGSExplosion::kTypeID,
 			BGSMaterialObject::kTypeID,
 			BGSProjectile::kTypeID,
-			IFormDatabase::EXTRA_TYPE_ARMOR
+			IFormDatabase::EXTRA_TYPE_ARMOR,
+			IFormDatabase::EXTRA_TYPE_LIGHT,
 		};
 
 	}

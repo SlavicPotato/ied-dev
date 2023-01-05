@@ -570,6 +570,8 @@ namespace IED
 					window->OnClose();
 				}
 
+				window->OnMainClose();
+
 				auto& s = settings.data.ui.windowOpenStates[i];
 
 				if (settings.data.ui.exitOnLastWindowClose &&

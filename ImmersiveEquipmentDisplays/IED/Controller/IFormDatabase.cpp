@@ -23,8 +23,8 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate(
-		data_type&             a_data,
-		const RE::BSTArray<T>& a_fromData)
+		container_type&        a_data,
+		const RE::BSTArray<T>& a_formData)
 	{
 		using form_type = stl::strip_type<Tf>;
 
@@ -33,10 +33,10 @@ namespace IED
 
 		if (r.second)
 		{
-			holder.reserve(a_fromData.size());
+			holder.reserve(a_formData.size());
 		}
 
-		for (auto& e : a_fromData)
+		for (auto& e : a_formData)
 		{
 			auto form = static_cast<form_type*>(e);
 
@@ -81,8 +81,8 @@ namespace IED
 
 	template <class T, class Tf>
 	constexpr void IFormDatabase::Populate2(
-		data_type&             a_data,
-		const RE::BSTArray<T>& a_fromData,
+		container_type&        a_data,
+		const RE::BSTArray<T>& a_formData,
 		std::uint32_t          a_type,
 		Tf                     a_func)
 	{
@@ -93,10 +93,10 @@ namespace IED
 
 		if (r.second)
 		{
-			holder.reserve(a_fromData.size());
+			holder.reserve(a_formData.size());
 		}
 
-		for (auto& e : a_fromData)
+		for (auto& e : a_formData)
 		{
 			if (!e)
 			{
@@ -130,7 +130,7 @@ namespace IED
 	auto IFormDatabase::Create()
 		-> result_type
 	{
-		auto result = std::make_shared<data_type>();
+		auto result = std::make_shared<container_type>();
 
 		if (auto dh = DataHandler::GetSingleton())
 		{
@@ -180,6 +180,14 @@ namespace IED
 				EXTRA_TYPE_ARMOR,
 				[](const auto& a_armor) {
 					return !a_armor->IsShield();
+				});
+
+			Populate2(
+				*result,
+				dh->arrLIGH,
+				EXTRA_TYPE_LIGHT,
+				[](const auto& a_light) {
+					return !a_light->CanCarry();
 				});
 		}
 

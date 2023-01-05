@@ -14,6 +14,7 @@ namespace IED
 			m_controller(a_controller),
 			m_formIDFilter(true),
 			m_formNameFilter(true),
+			m_db(std::make_shared<db_container>()),
 			m_tabItems{ {
 
 				{ UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
@@ -55,6 +56,7 @@ namespace IED
 				{ UIFormBrowserStrings::Weather, RE::TESWeather::kTypeID },
 				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
 				{ UIFormBrowserStrings::Effect, EffectSetting::kTypeID },
+				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
 
 			} }
 
@@ -71,7 +73,7 @@ namespace IED
 			-> FormBrowserDrawResult
 		{
 			FormBrowserDrawResult result{ false, false };
-
+			
 			SetWindowDimensions(0.f, 1200.f, 700.f, true);
 
 			if (ImGui::BeginPopupModal(
@@ -92,7 +94,7 @@ namespace IED
 						ImGuiWindowFlags_NoScrollbar |
 							ImGuiWindowFlags_NoScrollWithMouse))
 				{
-					if (!m_data)
+					if (!m_db->data)
 					{
 						QueueGetDatabase();
 
@@ -213,7 +215,7 @@ namespace IED
 			}
 		}
 
-		void UIFormBrowser::OnClose()
+		void UIFormBrowser::OnMainClose()
 		{
 			if (!IsContextOpen())
 			{
@@ -230,7 +232,9 @@ namespace IED
 
 			bool result = false;
 
-			if (ImGui::BeginTabBar("form_browser_tab_bar"))
+			if (ImGui::BeginTabBar(
+					"fb_tbar",
+					ImGuiTabBarFlags_NoCloseWithMiddleMouseButton))
 			{
 				for (std::uint32_t i = 0; i < std::size(m_tabItems); i++)
 				{
@@ -260,8 +264,8 @@ namespace IED
 
 		bool UIFormBrowser::DrawTabPanel(std::uint32_t a_type)
 		{
-			auto it = m_data->find(a_type);
-			if (it == m_data->end())
+			auto it = m_db->data->find(a_type);
+			if (it == m_db->data->end())
 			{
 				return false;
 			}
@@ -286,7 +290,7 @@ namespace IED
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 2, 2 });
 
 			if (ImGui::BeginTable(
-					"form_browser_table",
+					"fb_table",
 					COLUMNS_COUNT,
 					TABLE_FLAGS,
 					{ -1.0f, -1.0f }))
@@ -469,10 +473,10 @@ namespace IED
 
 		void UIFormBrowser::Reset()
 		{
-			m_data.reset();
+			m_db->data.reset();
 			m_filteredData.reset();
-			m_nextDoFilterUpdate = true;
-			m_dbQueryInProgress  = false;
+			m_nextDoFilterUpdate  = true;
+			m_db->queryInProgress = false;
 		}
 
 		bool UIFormBrowser::HasType(std::uint32_t a_type) const
@@ -520,18 +524,19 @@ namespace IED
 
 		void UIFormBrowser::QueueGetDatabase()
 		{
-			if (m_dbQueryInProgress)
+			if (m_db->queryInProgress)
 			{
 				return;
 			}
 
-			m_dbQueryInProgress = true;
+			m_db->queryInProgress = true;
+
 			m_controller.QueueGetFormDatabase(
-				[this](IFormDatabase::result_type a_result) {
-					if (m_dbQueryInProgress)
+				[db = m_db](IFormDatabase::result_type a_result) {
+					if (db->queryInProgress)
 					{
-						m_data              = a_result;
-						m_dbQueryInProgress = false;
+						db->data            = std::move(a_result);
+						db->queryInProgress = false;
 					}
 				});
 		}

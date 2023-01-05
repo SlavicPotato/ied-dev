@@ -50,6 +50,7 @@ namespace IED
 			virtual void Draw(){};
 			virtual void OnOpen(){};
 			virtual void OnClose(){};
+			virtual void OnMainClose(){};
 			virtual bool OnWantOpenStateChange(bool a_newState) { return true; };
 			virtual void Reset(){};
 			virtual void Notify(std::uint32_t a_code, void* a_params = nullptr){};

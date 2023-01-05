@@ -8,6 +8,7 @@ namespace IED
 	{
 	public:
 		inline static constexpr std::uint32_t EXTRA_TYPE_ARMOR = 0xFFFF;
+		inline static constexpr std::uint32_t EXTRA_TYPE_LIGHT = 0xFFFE;
 
 		struct entry_t
 		{
@@ -32,9 +33,9 @@ namespace IED
 
 		using entry_holder_type = stl::vector<entry_t>;
 
-		using data_type   = stl::unordered_map<std::uint32_t, entry_holder_type>;
-		using value_type  = typename data_type::value_type;
-		using result_type = std::shared_ptr<data_type>;
+		using container_type = stl::unordered_map<std::uint32_t, entry_holder_type>;
+		using value_type     = typename container_type::value_type;
+		using result_type    = std::shared_ptr<container_type>;
 
 	protected:
 		using form_db_get_func_t = std::function<void(result_type)>;
@@ -44,18 +45,18 @@ namespace IED
 	private:
 		template <class T, class Tf = T>
 		constexpr static void Populate(
-			data_type&             a_data,
+			container_type&        a_data,
 			const RE::BSTArray<T>& a_fromData);
 
 		template <class T, class Tf>
 		constexpr static void Populate2(
-			data_type&             a_data,
+			container_type&        a_data,
 			const RE::BSTArray<T>& a_fromData,
 			std::uint32_t          a_type,
 			Tf                     a_func);
 
 		static result_type Create();
 
-		std::weak_ptr<data_type> m_data;
+		std::weak_ptr<container_type> m_data;
 	};
 }

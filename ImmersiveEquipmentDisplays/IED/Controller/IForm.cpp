@@ -15,6 +15,13 @@ namespace IED
 				return IFormDatabase::EXTRA_TYPE_ARMOR;
 			}
 		}
+		else if (auto light = ::RTTI<TESObjectLIGH>()(a_form))
+		{
+			if (!light->CanCarry())
+			{
+				return IFormDatabase::EXTRA_TYPE_LIGHT;
+			}
+		}
 
 		return 0;
 	}
@@ -41,7 +48,7 @@ namespace IED
 			form,
 			base ?
 				std::make_unique<formInfo_t>(base) :
-                nullptr);
+				nullptr);
 	}
 
 	formInfo_t::formInfo_t(TESForm* a_form) :
