@@ -24,7 +24,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(TimeOfDay);
 
-		inline static constexpr TimeOfDay GetTimeOfDay(RE::Sky* a_sky) noexcept
+		inline static constexpr TimeOfDay GetTimeOfDay(const RE::Sky* a_sky) noexcept
 		{
 			if (!a_sky)
 			{

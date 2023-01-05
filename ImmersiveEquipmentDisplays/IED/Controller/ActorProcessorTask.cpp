@@ -275,10 +275,10 @@ namespace IED
 
 		bool changed = false;
 
-		auto sky = RE::Sky::GetSingleton();
+		const auto* const sky = RE::Sky::GetSingleton();
 		assert(sky);
 
-		if (const auto current = (sky ? sky->currentWeather : nullptr);
+		if (const auto current = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
 		    current != m_globalState.currentWeather)
 		{
 			m_globalState.currentWeather = current;

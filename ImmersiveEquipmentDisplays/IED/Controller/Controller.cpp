@@ -2435,7 +2435,7 @@ namespace IED
 				false))
 		{
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
-
+	
 			a_params.mark_slot_presence_change(a_entry.slotid);
 		}
 	}

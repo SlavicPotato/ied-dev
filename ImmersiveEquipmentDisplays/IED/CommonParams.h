@@ -116,7 +116,10 @@ namespace IED
 		{
 			if (!currentWeather)
 			{
-				currentWeather.emplace(RE::Sky::GetCurrentWeather());
+				const auto* const sky = RE::Sky::GetSingleton();
+				const auto        cw  = sky ? sky->GetCurrentWeatherHalfPct() : nullptr;
+
+				currentWeather.emplace(cw);
 			}
 
 			return *currentWeather;
