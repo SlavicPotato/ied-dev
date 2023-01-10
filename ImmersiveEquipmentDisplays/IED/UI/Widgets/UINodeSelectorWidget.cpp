@@ -42,6 +42,11 @@ namespace IED
 				}
 			}
 
+			if (!currentName)
+			{
+				currentName = a_data.name.c_str();
+			}
+
 			bool result = false;
 
 			ImGui::PushID("node_selector");
