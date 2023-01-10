@@ -140,6 +140,7 @@ namespace IED
 				DrawEffectsTabItem(a_handle, a_data);
 				DrawVariablesTabItem(a_handle);
 				DrawActorStateTabItem(a_handle, a_data);
+				DrawPerkTabItem(a_handle, a_data);
 
 				ImGui::EndTabBar();
 			}
@@ -181,12 +182,36 @@ namespace IED
 				a_data.data->factions.data.size());
 
 			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, "6")))
+			{
+				ImGui::Spacing();
+				ImGui::PushID("6");
+
+				DrawFactionTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawPerkTabItem(
+			Game::FormID a_handle, const ActorInfoData& a_data)
+		{
+			stl::snprintf(
+				m_buffer,
+				"%s (%zu)",
+				UIL::LS(CommonStrings::Perks),
+				a_data.data->perks.data.size());
+
+			if (ImGui::BeginTabItem(
 					UIL::LMKID<3>(m_buffer, "2")))
 			{
 				ImGui::Spacing();
 				ImGui::PushID("2");
 
-				DrawFactionTreeContents(a_handle, a_data);
+				DrawPerkTreeContents(a_handle, a_data);
 
 				ImGui::PopID();
 				ImGui::Spacing();
@@ -603,6 +628,14 @@ namespace IED
 				DrawActorInfoLineFormStringPair(CommonStrings::Furniture, data.furniture);
 				DrawActorInfoLineForm(CommonStrings::Package, data.package);
 
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Level));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text(data.pcLevelMult ? "%hu [PCM]" : "%hu", data.level);
+
 				ImGui::EndTable();
 			}
 
@@ -783,6 +816,27 @@ namespace IED
 					false))
 			{
 				DrawFactionEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
+		void UIActorInfo::DrawPerkTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawPerkEntries(a_handle, *a_data.data);
 			}
 
 			ImGui::EndChild();
@@ -1206,6 +1260,59 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(4);
 					ImGui::Text("%s", e.second.flags.test(FACTION_DATA::Flag::kPlayerIsEnemy) ? "Yes" : "No");
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
+		void UIActorInfo::DrawPerkEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& data = a_data.perks;
+
+			constexpr int NUM_COLUMNS = 3;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -1.0f }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::FormID));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Rank));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				for (auto& e : data.data)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					DrawFormWithInfo(e.first);
+
+					ImGui::TableSetColumnIndex(1);
+					TextCopyable("%s", e.second.name.c_str());
+
+					ImGui::TableSetColumnIndex(2);
+					ImGui::Text("%hhd", e.second.rank);
 				}
 
 				ImGui::EndTable();
@@ -1916,6 +2023,7 @@ namespace IED
 
 					data->factions.Update(actor);
 					data->effects.Update(actor);
+					data->perks.Update(actor);
 
 					data->succeeded = true;
 				}

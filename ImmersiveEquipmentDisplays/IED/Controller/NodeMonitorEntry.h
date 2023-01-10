@@ -9,7 +9,7 @@ namespace IED
 	public:
 		inline NodeMonitorEntry(
 			NiNode*                                 a_parent,
-			const Data::configNodeMonitorEntryBS_t& a_config) noexcept :
+			const Data::configNodeMonitorEntryBS_t* a_config) noexcept :
 			m_parent(a_parent),
 			m_config(a_config)
 		{
@@ -26,6 +26,6 @@ namespace IED
 		bool m_present{ false };
 
 		NiPointer<NiNode>                       m_parent;
-		const Data::configNodeMonitorEntryBS_t& m_config;
+		const Data::configNodeMonitorEntryBS_t* m_config;
 	};
 }

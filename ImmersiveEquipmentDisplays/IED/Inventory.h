@@ -1,8 +1,9 @@
 #pragma once
 
 #include "CollectorData.h"
-#include "Controller/ControllerCommon.h"
 #include "Data.h"
+
+#include "Controller/ControllerCommon.h"
 
 namespace IED
 {

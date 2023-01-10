@@ -1721,6 +1721,18 @@
     <ClInclude Include="IED\ReferenceLightController.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
+    <ClInclude Include="IED\ActorPerkInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ActorTempData.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2739,6 +2751,12 @@
     </ClCompile>
     <ClCompile Include="IED\ReferenceLightController.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorPerkInfo.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

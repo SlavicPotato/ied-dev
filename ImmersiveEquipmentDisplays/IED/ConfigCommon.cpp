@@ -159,6 +159,7 @@ namespace IED
 			case TESClass::kTypeID:
 			case RE::TESWeather::kTypeID:
 			case TESGlobal::kTypeID:
+			case BGSPerk::kTypeID:
 				return form;
 			default:
 				return nullptr;

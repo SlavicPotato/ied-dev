@@ -195,7 +195,7 @@ namespace IED
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Equipment), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Custom), ImGuiTableColumnFlags_None);
 				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Age), ImGuiTableColumnFlags_None);
-				ImGui::TableSetupColumn(UIL::LS(UIStatsStrings::CellAttached), ImGuiTableColumnFlags_None);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Active), ImGuiTableColumnFlags_None);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -276,7 +276,7 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(8);
 					ImGui::TextUnformatted(
-						e->obj.second.IsCellAttached() ?
+						e->obj.second.IsActive() ?
 							"true" :
 							"false");
 
@@ -412,15 +412,15 @@ namespace IED
 					if (sort_spec.SortDirection == ImGuiSortDirection_Ascending)
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.IsCellAttached() <
-							       a_lhs->obj.second.IsCellAttached();
+							return a_rhs->obj.second.IsActive() <
+							       a_lhs->obj.second.IsActive();
 						};
 					}
 					else
 					{
 						return [](auto& a_rhs, auto& a_lhs) {
-							return a_rhs->obj.second.IsCellAttached() >
-							       a_lhs->obj.second.IsCellAttached();
+							return a_rhs->obj.second.IsActive() >
+							       a_lhs->obj.second.IsActive();
 						};
 					}
 				default:

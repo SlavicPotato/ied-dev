@@ -234,8 +234,10 @@ namespace IED
 			e.clear();
 		}
 
-		for (const auto& [i, e] : data.forms)
+		for (const auto& _ : data.forms)
 		{
+			auto& e = _.second;
+
 			if (e.extra.type >= ObjectType::kMax)
 			{
 				continue;
@@ -334,7 +336,7 @@ namespace IED
 			std::sort(
 				e.begin(),
 				e.end(),
-				[](auto& a_lhs, auto& a_rhs) noexcept [[msvc::forceinline]] {
+				[](const auto& a_lhs, const auto& a_rhs) noexcept [[msvc::forceinline]] {
 					return a_lhs.rating > a_rhs.rating;
 				});
 		}

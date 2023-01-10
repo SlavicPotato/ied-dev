@@ -66,7 +66,8 @@ namespace IED
 
 		ITaskPool::Install(
 			ISKSE::GetBranchTrampoline(),
-			ISKSE::GetLocalTrampoline());
+			ISKSE::GetLocalTrampoline(),
+			config->m_effectShaderFlickerFix);
 
 		Debug("Creating controller..");
 
@@ -225,48 +226,6 @@ namespace IED
 	{
 		switch (a_evn.message->type)
 		{
-			/*case SKSEMessagingInterface::kMessage_PostPostLoad:
-
-			{
-				constexpr auto a = stl::make_array(2, 8, 1, 9, 7, 4, 2, 3, 1, 6, 7, 3, 1, 4, 1, 2, 3, 9, 4, 6, 1, 5, 4, 5, 8, 9, 5, 1, 7, 5, 6, 3, 4, 5, 1, 3);
-
-				static_assert(a.size() % 6 == 0);
-
-				BSReadWriteLock m;
-
-				for (int j = 0; j <= 5; ++j)
-				{
-					PerfTimer pt;
-					pt.Start();
-
-					std::for_each(
-						std::execution::par,
-						a.begin(),
-						a.end(),
-						[&](auto& a_e) noexcept {
-							std::unordered_set<std::string> d1;
-
-							std::size_t r = hash::fnv1::fnv_offset_basis;
-
-							for (int i = 0; i < 10000 * a_e; i++)
-							{
-								BSWriteLocker lock(m);
-
-								for (int k = 0; k < 1500; k++)
-									r = hash::fnv1::_append_hash_fnv1a(r, k);
-							}
-
-							BSWriteLocker lock(m);
-							d1.emplace(std::to_string(r));
-						});
-
-					_DMESSAGE("%d: %f", j, pt.Stop());
-				}
-
-				std::_Exit(1);
-			}
-			break;*/
-
 		case SKSEMessagingInterface::kMessage_InputLoaded:
 
 			ASSERT(StringCache::IsInitialized());

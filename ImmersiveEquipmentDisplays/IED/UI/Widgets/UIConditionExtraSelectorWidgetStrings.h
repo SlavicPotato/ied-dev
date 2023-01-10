@@ -54,6 +54,11 @@ namespace IED
 			InPlayerEnemyFaction    = 5443,
 			IsHorse                 = 5444,
 			IsRestrained            = 5445,
+			IsUnique                = 5446,
+			IsSummonable            = 5447,
+			IsInvulnerable          = 5448,
+			Level                   = 5449,
+			DayOfWeek               = 5450,
 		};
 	}
 }

@@ -4,6 +4,7 @@
 #include "ConfigData.h"
 #include "Inventory.h"
 
+#include "Controller/ActorTempData.h"
 #include "Controller/ControllerCommon.h"
 
 namespace IED
@@ -18,7 +19,7 @@ namespace IED
 
 		kUpdateMask = kMenuUpdate | kForceUpdate,
 
-		kEffectShadersReset = 1ui8 << 4,
+		kEffectShadersSuspended = 1ui8 << 4,
 		kBipedDataUpdated   = 1ui8 << 5,
 	};
 
@@ -32,21 +33,18 @@ namespace IED
 	struct processParamsData_t
 	{
 		inline processParamsData_t(
-			Actor* const                            a_actor,
-			const Game::ObjectRefHandle             a_handle,
-			const Data::ConfigSex                   a_configSex,
-			const stl::flag<ControllerUpdateFlags>  a_flags,
-			SlotResults&                            a_sr,
-			Data::CollectorData::container_type&    a_idt,
-			Data::CollectorData::eq_container_type& a_eqt,
-			UseCountContainer&                      a_uc) :
+			Actor* const                           a_actor,
+			const Game::ObjectRefHandle            a_handle,
+			const Data::ConfigSex                  a_configSex,
+			const stl::flag<ControllerUpdateFlags> a_flags,
+			ActorTempData&                         a_tmp) :
 			handle(a_handle),
 			configSex(a_configSex),
 			flags(a_flags),
-			useCount(a_uc),
-			collector(a_sr, a_idt, a_eqt, a_actor)
+			useCount(a_tmp.uc),
+			collector(a_tmp.sr, a_tmp.idt, a_tmp.eqt, a_actor)
 		{
-			a_uc.clear();
+			a_tmp.uc.clear();
 		}
 
 		inline constexpr void mark_slot_presence_change(Data::ObjectSlot a_slot) noexcept
@@ -70,30 +68,24 @@ namespace IED
 	{
 		template <class... Args>
 		inline constexpr processParams_t(
-			const Data::ConfigSex                   a_configSex,
-			const stl::flag<ControllerUpdateFlags>  a_flags,
-			Actor* const                            a_actor,
-			const Game::ObjectRefHandle             a_handle,
-			SlotResults&                            a_sr,
-			Data::CollectorData::container_type&    a_idt,
-			Data::CollectorData::eq_container_type& a_eqt,
-			UseCountContainer&                      a_uc,
+			const Data::ConfigSex                  a_configSex,
+			const stl::flag<ControllerUpdateFlags> a_flags,
+			Actor* const                           a_actor,
+			const Game::ObjectRefHandle            a_handle,
+			ActorTempData&                         a_tmp,
 			Args&&... a_args) :
 			processParamsData_t(
 				a_actor,
 				a_handle,
 				a_configSex,
 				a_flags,
-				a_sr,
-				a_idt,
-				a_eqt,
-				a_uc),
+				a_tmp),
 			CommonParams(
 				std::forward<Args>(a_args)...)
 		{
 		}
 
-		void ResetEffectShaders() noexcept;
+		void SuspendEffectShaders() noexcept;
 
 		processState_t state;
 	};

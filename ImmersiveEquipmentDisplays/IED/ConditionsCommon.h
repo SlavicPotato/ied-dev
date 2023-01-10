@@ -35,6 +35,31 @@ namespace IED
 			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
 		}
 
+		template <class Tv, class Tm>
+		inline constexpr bool compare(
+			Data::ComparisonOperator a_oper,
+			const Tv&                a_value,
+			const Tm&                a_match) noexcept
+		{
+			switch (a_oper)
+			{
+			case Data::ComparisonOperator::kEqual:
+				return a_value == a_match;
+			case Data::ComparisonOperator::kNotEqual:
+				return a_value != a_match;
+			case Data::ComparisonOperator::kGreater:
+				return a_value > a_match;
+			case Data::ComparisonOperator::kLower:
+				return a_value < a_match;
+			case Data::ComparisonOperator::kGreaterOrEqual:
+				return a_value >= a_match;
+			case Data::ComparisonOperator::kLowerOrEqual:
+				return a_value <= a_match;
+			default:
+				return false;
+			}
+		}
+
 		template <class Tm, class Tf>
 		constexpr bool match_extra(
 			CommonParams&          a_params,
@@ -50,7 +75,7 @@ namespace IED
 			case Data::ExtraConditionType::kInInterior:
 				return a_cached.inInterior;
 			case Data::ExtraConditionType::kIsPlayerTeammate:
-				return !a_params.is_player() && a_cached.flags1.test(Actor::Flags1::kPlayerTeammate);
+				return !a_params.objects.IsPlayer() && a_cached.flags1.test(Actor::Flags1::kPlayerTeammate);
 			case Data::ExtraConditionType::kIsGuard:
 				return a_cached.flags1.test(Actor::Flags1::kGuard);
 			case Data::ExtraConditionType::kIsMount:
@@ -137,6 +162,16 @@ namespace IED
 				return a_params.is_horse();
 			case Data::ExtraConditionType::kIsRestrained:
 				return a_cached.restrained;
+			case Data::ExtraConditionType::kIsUnique:
+				return a_cached.baseFlags.test(ACTOR_BASE_DATA::Flag::kUnique);
+			case Data::ExtraConditionType::kIsSummonable:
+				return a_cached.baseFlags.test(ACTOR_BASE_DATA::Flag::kSummonable);
+			case Data::ExtraConditionType::kIsInvulnerable:
+				return a_cached.baseFlags.test(ACTOR_BASE_DATA::Flag::kInvulnerable);
+			case Data::ExtraConditionType::kLevel:
+				return compare(a_match.compOperator2, a_cached.level, a_match.level);
+			case Data::ExtraConditionType::kDayOfWeek:
+				return RE::Calendar::GetSingleton()->GetDayOfWeek() == a_match.dayOfWeek;
 			default:
 				return false;
 			}
@@ -680,31 +715,6 @@ namespace IED
 			}
 		}
 
-		template <class Tv, class Tm>
-		inline constexpr bool compare(
-			Data::ComparisonOperator a_oper,
-			const Tv&                a_value,
-			const Tm&                a_match) noexcept
-		{
-			switch (a_oper)
-			{
-			case Data::ComparisonOperator::kEqual:
-				return a_value == a_match;
-			case Data::ComparisonOperator::kNotEqual:
-				return a_value != a_match;
-			case Data::ComparisonOperator::kGreater:
-				return a_value > a_match;
-			case Data::ComparisonOperator::kLower:
-				return a_value < a_match;
-			case Data::ComparisonOperator::kGreaterOrEqual:
-				return a_value >= a_match;
-			case Data::ComparisonOperator::kLowerOrEqual:
-				return a_value <= a_match;
-			default:
-				return false;
-			}
-		}
-
 		template <class Tm, class Tf>
 		constexpr bool match_global(
 			CommonParams& a_params,
@@ -922,6 +932,38 @@ namespace IED
 						a_match.compOperator,
 						it->second,
 						a_match.factionRank);
+				}
+				else
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_perk(
+			CommonParams&         a_params,
+			const Tm&             a_match,
+			const CachedPerkData& a_cached) noexcept
+		{
+			if (const auto formid = a_match.form.get_id())
+			{
+				auto& data = a_cached.GetPerkContainer();
+
+				auto it = data.find(formid);
+				if (it == data.end())
+				{
+					return false;
+				}
+
+				if (a_match.flags.test(Tf::kExtraFlag1))
+				{
+					return compare(
+						a_match.compOperator,
+						it->second,
+						a_match.perkRank);
 				}
 				else
 				{

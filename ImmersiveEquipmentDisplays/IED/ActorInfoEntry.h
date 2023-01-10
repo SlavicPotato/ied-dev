@@ -49,6 +49,8 @@ namespace IED
 		NiPoint3                               rot;
 		ActorState::ActorState1                state1;
 		ActorState::ActorState2                state2;
+		std::uint16_t                          level{ 0 };
+		bool                                   pcLevelMult{ false };
 		long long                              ts{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;

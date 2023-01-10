@@ -68,7 +68,7 @@ namespace IED
 		}
 
 	private:
-		static NiNode* CreateClone(const entry_t& a_entry) noexcept;
+		static NiNode* CreateClone(NiNode* a_object) noexcept;
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;

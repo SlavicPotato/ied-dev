@@ -47,5 +47,6 @@ namespace IED
 		Projectiles       = 5238,
 		Effect            = 5239,
 		Light             = 5240,
+		Perk              = 5241,
 	};
 }

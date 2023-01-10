@@ -56,6 +56,7 @@ namespace IED
 			Effect           = 6345,
 			Outfit           = 6346,
 			Enchantment      = 6347,
+			Perk             = 6348,
 		};
 	}
 }

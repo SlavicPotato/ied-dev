@@ -21,7 +21,7 @@ namespace IED
 			params.neverFades   = true;  // !a_refr->IsHeadingMarker();
 			params.unk00        = true;  // arg4 in the original func
 
-			params.data3D.lensFlareRenderData = a_lightForm->lensFlare ? a_lightForm->lensFlare : nullptr;
+			params.data3D.lensFlareRenderData = static_cast<RE::BSLensFlareRenderData*>(a_lightForm->lensFlare);
 
 			if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kShadowFlags))
 			{

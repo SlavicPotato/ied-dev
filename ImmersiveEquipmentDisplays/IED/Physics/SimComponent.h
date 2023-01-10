@@ -22,9 +22,7 @@ namespace IED
 
 	public:
 #if defined(IED_USE_MIMALLOC_SIMCOMPONENT)
-
 		SKMP_ALIGNED_REDEFINE_NEW_MI(16);
-
 #endif
 
 		PHYSimComponent(
@@ -90,7 +88,7 @@ namespace IED
 		{
 			return m_conf;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetLUID() const noexcept
 		{
 			return m_tag;
@@ -131,7 +129,10 @@ namespace IED
 			const DirectX::XMVECTOR a_step) noexcept;
 
 		Data::configNodePhysicsValues_t m_conf;
-		luid_tag                        m_tag;
+
+		Bullet::btTransformEx m_initialTransform;
+		Bullet::btTransformEx m_objectLocalTransform;
+		Bullet::btTransformEx m_parentWorldTransform;
 
 		btVector3 m_oldWorldPos;
 		btVector3 m_virtld{ DirectX::g_XMZero.v };
@@ -141,6 +142,7 @@ namespace IED
 		btVector3 m_gravForce{ DirectX::g_XMZero.v };
 
 		DirectX::XMVECTOR m_maxVelocity{ DirectX::g_XMZero.v };
+		btScalar          m_maxVelocity2{ 0.0f };
 
 		btVector3 m_rotAdjustParamsX;
 		btVector3 m_rotAdjustParamsY;
@@ -150,13 +152,6 @@ namespace IED
 
 		rotationParams_t m_rotParams;
 
-		Bullet::btTransformEx m_initialTransform;
-
-		//Bullet::btTransformEx m_objectWorldTransform;
-		//btVector3             m_objectWorldPos{ DirectX::g_XMZero.v };
-		Bullet::btTransformEx m_objectLocalTransform;
-		Bullet::btTransformEx m_parentWorldTransform;
-
 		btVector3 m_oldParentPos;
 		btVector3 m_parentVelocity{ DirectX::g_XMZero.v };
 
@@ -164,13 +159,13 @@ namespace IED
 
 		NiPointer<NiAVObject> m_object;
 
-		btScalar m_maxVelocity2{ 0.0f };
-
 		bool m_hasRotAdjust{ false };
 		bool m_resistanceOn{ false };
 		bool m_hasSpringSlack{ false };
 		bool m_hasFriction{ false };
 		bool m_initialIdentity{ false };
+
+		luid_tag m_tag;
 
 		// global settings
 

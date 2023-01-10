@@ -4,15 +4,15 @@
 
 namespace IED
 {
-	void processParams_t::ResetEffectShaders() noexcept
+	void processParams_t::SuspendEffectShaders() noexcept
 	{
-		if (!state.flags.test(ProcessStateUpdateFlags::kEffectShadersReset))
+		if (!state.flags.test(ProcessStateUpdateFlags::kEffectShadersSuspended))
 		{
 			if (auto pl = Game::ProcessLists::GetSingleton())
 			{
-				pl->ResetEffectShaders(handle);
+				pl->SuspendReferenceEffectShaders(handle);
 
-				state.flags.set(ProcessStateUpdateFlags::kEffectShadersReset);
+				state.flags.set(ProcessStateUpdateFlags::kEffectShadersSuspended);
 			}
 		}
 	}

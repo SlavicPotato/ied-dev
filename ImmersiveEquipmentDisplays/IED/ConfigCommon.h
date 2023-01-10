@@ -286,7 +286,7 @@ namespace IED
 			kIsGuard                 = 4,
 			kIsMount                 = 5,
 			kShoutEquipped           = 6,
-			kInMerchantFaction       = 7,  // unused
+			kInMerchantFaction       = 7,
 			kCombatStyle             = 8,
 			kClass                   = 9,
 			kTimeOfDay               = 10,
@@ -325,6 +325,11 @@ namespace IED
 			kInPlayerEnemyFaction    = 43,
 			kIsHorse                 = 44,
 			kIsRestrained            = 45,
+			kIsUnique                = 46,
+			kIsSummonable            = 47,
+			kIsInvulnerable          = 48,
+			kLevel                   = 49,
+			kDayOfWeek               = 50,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

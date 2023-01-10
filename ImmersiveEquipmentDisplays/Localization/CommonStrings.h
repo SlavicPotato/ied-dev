@@ -254,5 +254,9 @@ namespace IED
 		Dispelled       = 325,
 		Recovers        = 326,
 		Lights          = 327,
+		Level           = 328,
+		Perk            = 329,
+		Perks           = 330,
+		Active          = 331,
 	};
 }

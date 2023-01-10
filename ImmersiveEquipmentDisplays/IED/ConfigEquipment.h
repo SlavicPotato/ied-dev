@@ -90,6 +90,7 @@ namespace IED
 			Faction    = 21,
 			Variable   = 22,
 			Effect     = 23,
+			Perk       = 24,
 		};
 
 		struct EquipmentOverrideConditionFlagsBitfield
@@ -165,6 +166,9 @@ namespace IED
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
+				case EquipmentOverrideConditionType::Perk:
+					perkRank = 1;
+					[[fallthrough]];
 				case EquipmentOverrideConditionType::Faction:
 					form = a_form;
 					break;
@@ -308,9 +312,13 @@ namespace IED
 
 			union
 			{
-				std::int32_t i32a{ 0 };
-				std::int32_t skeletonID;
-				std::int32_t factionRank;
+				std::int32_t      i32a{ 0 };
+				std::int32_t      skeletonID;
+				std::int32_t      factionRank;
+				std::int32_t      perkRank;
+				RE::Calendar::Day dayOfWeek;
+
+				static_assert(std::is_same_v<std::underlying_type_t<RE::Calendar::Day>, std::int32_t>);
 			};
 
 			union
@@ -319,6 +327,7 @@ namespace IED
 				std::uint32_t           count;
 				TimeOfDay               timeOfDay;
 				std::uint32_t           uid;
+				std::uint32_t           level;
 				ConditionalVariableType condVarType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
@@ -329,6 +338,7 @@ namespace IED
 			{
 				std::uint32_t           ui32c{ 0 };
 				VariableConditionSource vcSource;
+				ComparisonOperator      compOperator2;
 
 				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionSource>, std::uint32_t>);
 			};
@@ -437,8 +447,9 @@ namespace IED
 				Td&& a_config,
 				Ts&& a_desc)  //
 				requires(
-					std::is_constructible_v<configBaseValues_t, Td&&>&&
-						std::is_constructible_v<std::string, Ts&&>) :
+							std::is_constructible_v<configBaseValues_t, Td &&> &&
+							std::is_constructible_v<std::string, Ts &&>)
+				:
 				configBaseValues_t(std::forward<Td>(a_config)),
 				description(std::forward<Ts>(a_desc))
 			{

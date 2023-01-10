@@ -19,7 +19,7 @@
 namespace IED
 {
 	ActorProcessorTask::ActorProcessorTask() :
-		m_globalState{ IPerfCounter::Query() }
+		m_globalState(IPerfCounter::Query())
 	{
 	}
 
@@ -70,7 +70,9 @@ namespace IED
 
 		auto& controller = GetController();
 
-		if (const auto info = controller.LookupCachedActorInfo(a_record))
+		if (const auto info = controller.LookupCachedActorInfo2(
+				a_record.m_actor,
+				a_record))
 		{
 			result = controller.AttachNodeImpl(
 				info->npcRoot,
@@ -146,9 +148,7 @@ namespace IED
 		{
 			if (!state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
 			{
-				stl::lock_guard lock(m_syncRefParentQueueWRLock);
-
-				m_syncRefParentQueue.emplace_back(
+				m_syncRefParentQueue.emplace(
 					std::addressof(a_record),
 					std::addressof(a_entry));
 			}
@@ -242,20 +242,20 @@ namespace IED
 
 	void ActorProcessorTask::UpdateGlobalState() noexcept
 	{
-		auto& controller = GetController();
-
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
 		    lrhandle != m_globalState.playerLastRidden)
 		{
 			m_globalState.playerLastRidden = lrhandle;
 
-			controller.RequestLFEvaluateAll();
+			GetController().RequestLFEvaluateAll();
 		}
 
 		if (const auto fpstate = IsInFirstPerson();
 		    fpstate != m_globalState.inFirstPerson)
 		{
 			m_globalState.inFirstPerson = fpstate;
+
+			auto& controller = GetController();
 
 			if (auto it = controller.m_objects.find(Data::IData::GetPlayerRefID());
 			    it != controller.m_objects.end())
@@ -264,67 +264,82 @@ namespace IED
 			}
 		}
 
-		if (m_timer.GetStartTime() < m_globalState.nextRun)
-		{
-			return;
-		}
-
-		m_globalState.nextRun =
-			m_timer.GetStartTime() +
-			IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL);
-
 		bool changed = false;
 
-		const auto* const sky = RE::Sky::GetSingleton();
-		assert(sky);
-
-		if (const auto current = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
-		    current != m_globalState.currentWeather)
+		if (m_timer.GetStartTime() >= m_globalState.nextRun)
 		{
-			m_globalState.currentWeather = current;
-			changed                      = true;
-		}
+			m_globalState.nextRun =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL);
 
-		if (const auto tod = Data::GetTimeOfDay(sky);
-		    tod != m_globalState.timeOfDay)
-		{
-			m_globalState.timeOfDay = tod;
-			changed                 = true;
-		}
+			const auto* const sky = RE::Sky::GetSingleton();
+			assert(sky);
+
+			if (const auto current = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
+			    current != m_globalState.currentWeather)
+			{
+				m_globalState.currentWeather = current;
+				changed                      = true;
+			}
+
+			if (const auto tod = Data::GetTimeOfDay(sky);
+			    tod != m_globalState.timeOfDay)
+			{
+				m_globalState.timeOfDay = tod;
+				changed                 = true;
+			}
 
 #if defined(IED_ENABLE_CONDITION_EN)
 
-		auto player = *g_thePlayer;
-		assert(player);
+			auto player = *g_thePlayer;
+			assert(player);
 
-		if (player->loadedState)
-		{
-			auto pl = Game::ProcessLists::GetSingleton();
-			assert(pl);
-
-			if (bool n = pl->PlayerHasEnemiesNearby(0);
-			    n != m_state.playerEnemiesNearby)
+			if (player->loadedState)
 			{
-				m_state.playerEnemiesNearby = n;
+				auto pl = Game::ProcessLists::GetSingleton();
+				assert(pl);
 
-				if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
-				    it != m_controller.m_objects.end())
+				if (bool n = pl->PlayerHasEnemiesNearby(0);
+				    n != m_state.playerEnemiesNearby)
 				{
-					it->second.RequestEval();
+					m_state.playerEnemiesNearby = n;
+
+					if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
+					    it != m_controller.m_objects.end())
+					{
+						it->second.RequestEval();
+					}
 				}
+			}
+
+#endif
+		}
+
+		if (m_timer.GetStartTime() >= m_globalState.nextRunLF)
+		{
+			m_globalState.nextRunLF =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL_LF);
+
+			const auto calendar = RE::Calendar::GetSingleton();
+			assert(calendar);
+
+			if (const auto cd = calendar->GetDayOfWeek();
+			    cd != m_globalState.dayOfWeek)
+			{
+				m_globalState.dayOfWeek = cd;
+				changed                 = true;
 			}
 		}
 
-#endif
-
 		if (changed)
 		{
-			controller.RequestLFEvaluateAll();
+			GetController().RequestLFEvaluateAll();
 		}
 	}
 
-	template <bool _Mt>
-	void ActorProcessorTask::UpdateHolderMTSafe(
+	template <bool _Par>
+	void ActorProcessorTask::DoActorUpdate(
 		const float                             a_interval,
 		const Game::Unk2f6b948::Steps&          a_stepMuls,
 		const std::optional<PhysicsUpdateData>& a_physUpdData,
@@ -336,29 +351,29 @@ namespace IED
 		NiPointer<TESObjectREFR> refr;
 		if (!a_holder.GetHandle().Lookup(refr))
 		{
-			state.cellAttached = false;
+			state.active = false;
 			return;
 		}
 
 		const auto actor = refr->As<Actor>();
 		if (!Util::Common::IsREFRValid(actor))
 		{
-			state.cellAttached = false;
+			state.active = false;
 			return;
 		}
 
 		const auto* const cell = actor->GetParentCell();
 		if (cell && cell->IsAttached())
 		{
-			if (!state.cellAttached)
+			if (!state.active)
 			{
 				a_holder.RequestEvalDefer();
-				state.cellAttached = true;
+				state.active = true;
 			}
 		}
 		else
 		{
-			state.cellAttached = false;
+			state.active = false;
 			return;
 		}
 
@@ -372,7 +387,10 @@ namespace IED
 			a_holder.RequestEvalDefer();
 		}
 
-		a_holder.m_wantLFUpdate |= state.UpdateStateLF(actor);
+		if (state.UpdateStateLF(actor))
+		{
+			a_holder.m_wantLFUpdate = true;
+		}
 
 		if (m_timer.GetStartTime() >= a_holder.m_nextLFStateCheck)
 		{
@@ -380,9 +398,11 @@ namespace IED
 				m_timer.GetStartTime() +
 				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_LOW);
 
-			a_holder.m_wantLFUpdate |= state.UpdateFactions(actor);
+			bool wantEval = state.DoLFUpdates(actor);
 
-			if (a_holder.m_wantLFUpdate)
+			wantEval |= a_holder.m_wantLFUpdate;
+
+			if (wantEval)
 			{
 				a_holder.m_wantLFUpdate = false;
 				a_holder.RequestEval();
@@ -393,7 +413,7 @@ namespace IED
 		{
 			a_holder.m_nextMFStateCheck =
 				m_timer.GetStartTime() +
-				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_MED);
+				IPerfCounter::T(ActorObjectHolder::STATE_CHECK_INTERVAL_MH);
 
 			if (state.UpdateEffects(actor))
 			{
@@ -414,6 +434,11 @@ namespace IED
 			}
 		}
 
+		if (a_holder.UpdateNodeMonitorEntries())
+		{
+			a_holder.RequestEval();
+		}
+
 		if (a_holder.m_flags.test(ActorObjectHolderFlags::kWantEval))
 		{
 			if (a_holder.m_flagsbf.evalCountdown > 0)
@@ -427,11 +452,6 @@ namespace IED
 				a_holder.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
 				a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
 			}
-		}
-
-		if (a_holder.UpdateNodeMonitorEntries())
-		{
-			a_holder.RequestEval();
 		}
 
 		if (CheckMonitorNodes(a_holder))
@@ -449,7 +469,7 @@ namespace IED
 				return;
 			}
 
-			if constexpr (_Mt)
+			if constexpr (_Par)
 			{
 				DoObjectRefSyncMTSafe(a_holder, a_v);
 			}
@@ -471,7 +491,7 @@ namespace IED
 						{
 							/*if (state->flags.test(ObjectEntryFlags::kWantUnloadAfterHide))
 							{
-								if constexpr (_Mt)
+								if constexpr (_Par)
 								{
 									{
 										stl::lock_guard lock(m_syncRefParentQueueWRLock);
@@ -531,6 +551,31 @@ namespace IED
 			a_holder.RequestTransformUpdateDefer();
 		}
 
+		auto& controller = GetController();
+
+		if (a_holder.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame) ||
+		    (!controller.m_config.active.condvars.empty() &&
+		     a_holder.m_flags.test(ActorObjectHolderFlags::kWantVarUpdate)))
+		{
+			if (const auto info = controller.LookupCachedActorInfo2(a_holder.m_actor, a_holder))
+			{
+				a_holder.CreateProcessParams(
+					a_holder.GetSex(),
+					ControllerUpdateFlags::kPlaySound,
+					a_holder.m_actor.get(),
+					a_holder.GetHandle(),
+					a_holder.GetTempData(),
+					a_holder.m_actor.get(),
+					info->npc,
+					info->npcOrTemplate,
+					info->race,
+					info->root,
+					info->npcRoot,
+					a_holder,
+					controller);
+			}
+		}
+
 		if (a_updateEffects)
 		{
 			RunEffectUpdates(a_interval, a_stepMuls, a_physUpdData, a_holder);
@@ -549,9 +594,9 @@ namespace IED
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
 
-		const auto paused = Game::IsPaused();
+		const auto runEffectUpdates = !Game::IsPaused();
 
-		auto& data = GetController().GetObjects();
+		auto& data = GetController().GetObjects().getvec();
 
 		if (ParallelProcessingEnabled())
 		{
@@ -560,32 +605,27 @@ namespace IED
 				data.begin(),
 				data.end(),
 				[&](auto& a_e) noexcept {
-					UpdateHolderMTSafe<true>(
+					DoActorUpdate<true>(
 						interval,
 						a_stepMuls,
 						physUpdateData,
-						a_e.second,
-						!paused);
+						a_e->second,
+						runEffectUpdates);
 				});
 
-			if (!m_syncRefParentQueue.empty())
-			{
-				for (const auto& e : m_syncRefParentQueue)
+			m_syncRefParentQueue.process([this](const auto& a_e) {
+				const bool result = SyncRefParentNode(*a_e.first, *a_e.second);
+
+				if (result)
 				{
-					const bool result = SyncRefParentNode(*e.first, *e.second);
-
-					if (result)
-					{
-						e.first->RequestEval();
-					}
-					else
-					{
-						e.second->data.state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
-					}
+					a_e.first->RequestEval();
 				}
-
-				m_syncRefParentQueue.clear();
-			}
+				else
+				{
+					a_e.second->data.state->flags.set(
+						ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+				}
+			});
 
 			/*if (!m_unloadQueue.empty())
 			{
@@ -607,12 +647,12 @@ namespace IED
 		{
 			for (auto& e : data)
 			{
-				UpdateHolderMTSafe<false>(
+				DoActorUpdate<false>(
 					interval,
 					a_stepMuls,
 					physUpdateData,
-					e.second,
-					!paused);
+					e->second,
+					runEffectUpdates);
 			}
 		}
 	}
@@ -646,6 +686,27 @@ namespace IED
 		tlsUnk768 = oldUnk768;
 	}
 
+	void ActorProcessorTask::RunSequentialAnimUpdates(
+		const Game::Unk2f6b948::Steps& a_stepMuls) noexcept
+	{
+		const animUpdateData_t updateData{
+			a_stepMuls * *Game::g_frameTimerSlow
+		};
+
+		for (auto& e : GetController().m_objects)
+		{
+			if (e.second.IsActive())
+			{
+				const auto step =
+					e.second.IsPlayer() ?
+						updateData.steps.player :
+						updateData.steps.npc;
+
+				UpdateActorGearAnimations(e.second.m_actor, e.second, step);
+			}
+		}
+	}
+
 	void ActorProcessorTask::SetProcessorTaskRunAUState(bool a_state) noexcept
 	{
 		m_runAnimationUpdates = !AnimationUpdateController::GetSingleton().GetEnabled() && a_state;
@@ -668,55 +729,51 @@ namespace IED
 
 		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
 
-		std::optional<animUpdateData_t> animUpdateData;
-
-		if (m_runAnimationUpdates &&
-		    !Game::IsPaused())
-		{
-			animUpdateData.emplace(stepMuls * *Game::g_frameTimerSlow);
-		}
-
 		RunPreUpdates(stepMuls);
 
 		const auto& cvdata = controller.m_config.active.condvars;
 
-		if (!cvdata.empty() || animUpdateData)
+		if (!cvdata.empty())
 		{
-			for (auto& [i, e] : controller.m_objects)
+			for (auto& e : controller.GetObjects().getvec())
 			{
-				if (!e.IsCellAttached())
+				auto& holder = e->second;
+
+				if (!holder.IsActive())
 				{
 					continue;
 				}
 
-				if (animUpdateData)
-				{
-					const auto step =
-						e.IsPlayer() ?
-							animUpdateData->steps.player :
-							animUpdateData->steps.npc;
+				const bool wantVarUpdate = holder.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate);
 
-					UpdateActorGearAnimations(e.m_actor, e, step);
+				if (wantVarUpdate || holder.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
+				{
+					if (auto& params = holder.GetCurrentProcessParams())
+					{
+						if (IConditionalVariableProcessor::UpdateVariableMap(
+								*params,
+								cvdata,
+								holder.GetVariables()))
+						{
+							controller.RequestHFEvaluateAll(e->first);
+							holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
+						}
+					}
 				}
 
-				const bool wantVarUpdate = e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate);
+				/*const bool wantVarUpdate = e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate);
 
-				if ((wantVarUpdate ||
-				     e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame)) &&
-				    !cvdata.empty())
+				if (wantVarUpdate || e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
 				{
-					if (auto info = controller.LookupCachedActorInfo(e.m_actor, e))
+					if (const auto info = controller.LookupCachedActorInfo2(e.m_actor, e))
 					{
 						auto& params = e.CreateProcessParams(
-							info->sex,
+							e.GetSex(),
 							ControllerUpdateFlags::kPlaySound,
-							info->actor.get(),
-							info->handle,
-							controller.m_temp.sr,
-							e.m_temp.idt,
-							e.m_temp.eqt,
-							controller.m_temp.uc,
-							e.m_actor,
+							e.m_actor.get(),
+							e.GetHandle(),
+							e.GetTempData(),
+							e.m_actor.get(),
 							info->npc,
 							info->npcOrTemplate,
 							info->race,
@@ -734,19 +791,27 @@ namespace IED
 							e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
 						}
 					}
-				}
+				}*/
 			}
 		}
 
-		for (auto& e : controller.m_objects)
+		for (auto& e : controller.GetObjects().getvec())
 		{
-			if (e.second.IsCellAttached())
-			{
-				ProcessEvalRequest(e.second);
-				ProcessTransformUpdateRequest(e.second);
+			auto& holder = e->second;
 
-				e.second.ClearCurrentProcessParams();
+			if (holder.IsActive())
+			{
+				ProcessEvalRequest(holder);
+				ProcessTransformUpdateRequest(holder);
+
+				holder.ClearCurrentProcessParams();
 			}
+		}
+
+		if (m_runAnimationUpdates &&
+		    !Game::IsPaused())
+		{
+			RunSequentialAnimUpdates(stepMuls);
 		}
 
 		controller.RunObjectCleanup();

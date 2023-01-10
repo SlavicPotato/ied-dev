@@ -2,7 +2,10 @@
 
 #include "UINodeOverrideConditionWidget.h"
 
+#include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
 #include "IED/UI/Widgets/UICMNodeSelector.h"
+#include "IED/UI/Widgets/UIConditionExtraSelectorWidget.h"
+#include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
@@ -293,6 +296,25 @@ namespace IED
 							ClearDescriptionPopupBuffer();
 						}
 
+						ImGui::EndMenu();
+					}
+
+					if (UIL::LCG_BM(CommonStrings::Perk, "M"))
+					{
+						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Perk);
+
+						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
+								m_ooNewEntryIDPerk))
+						{
+							if (m_ooNewEntryIDPerk)
+							{
+								result.action    = NodeOverrideCommonAction::Insert;
+								result.form      = m_ooNewEntryIDPerk;
+								result.matchType = Data::NodeOverrideConditionType::Perk;
+							}
+
+							ImGui::CloseCurrentPopup();
+						}
 						ImGui::EndMenu();
 					}
 
@@ -686,6 +708,30 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (UIL::LCG_BM(CommonStrings::Perk, "M"))
+					{
+						UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType::Perk);
+
+						if (m_condParamEditor.GetFormPicker().DrawFormSelector(
+								m_ooNewEntryIDPerk))
+						{
+							if (m_ooNewEntryIDPerk)
+							{
+								a_entry.emplace_back(
+									Data::NodeOverrideConditionType::Perk,
+									m_ooNewEntryIDPerk);
+
+								a_updateFunc();
+
+								result = NodeOverrideCommonAction::Insert;
+							}
+
+							ImGui::CloseCurrentPopup();
+						}
+
+						ImGui::EndMenu();
+					}
+
 					if (UIL::LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
@@ -920,6 +966,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Mounting:
 						case Data::NodeOverrideConditionType::Mounted:
 						case Data::NodeOverrideConditionType::Faction:
+						case Data::NodeOverrideConditionType::Perk:
 
 							it = a_entry.emplace(
 								it,
@@ -1232,6 +1279,13 @@ namespace IED
 								case Data::ExtraConditionType::kNodeMonitor:
 									m_condParamEditor.SetNext<ConditionParamItem::NodeMon>(e.uid);
 									break;
+								case Data::ExtraConditionType::kLevel:
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::UInt32>(e.level);
+									break;
+								case Data::ExtraConditionType::kDayOfWeek:
+									m_condParamEditor.SetNext<ConditionParamItem::DayOfWeek>(e.dayOfWeek);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
@@ -1419,6 +1473,24 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondVarType);
 								tdesc = UIL::LS(CommonStrings::Variable);
+
+								break;
+
+							case Data::NodeOverrideConditionType::Perk:
+
+								m_condParamEditor.SetTempFlags(UIConditionParamEditorTempFlags::kNoClearForm);
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
+									e.compOperator);
+								m_condParamEditor.SetNext<ConditionParamItem::Int32>(
+									e.perkRank);
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = UIL::LS(CommonStrings::Perk);
 
 								break;
 
@@ -1999,6 +2071,7 @@ namespace IED
 				break;
 
 			case Data::NodeOverrideConditionType::Faction:
+			case Data::NodeOverrideConditionType::Perk:
 
 				switch (a_item)
 				{
@@ -2185,6 +2258,10 @@ namespace IED
 				break;
 			case Data::NodeOverrideConditionType::Effect:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Effect));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Perk:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Perk));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 				break;
 			default:

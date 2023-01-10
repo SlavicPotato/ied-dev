@@ -14,6 +14,7 @@
 #include "IED/ActorActiveEffectInfo.h"
 #include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
+#include "IED/ActorPerkInfo.h"
 #include "IED/ConditionalVariableStorage.h"
 
 namespace IED
@@ -24,7 +25,7 @@ namespace IED
 	{
 		struct ActorInfoAggregate
 		{
-			stl::mutex            lock;
+			stl::mutex              lock;
 			long long               lastUpdate{ 0 };
 			bool                    initialized{ false };
 			bool                    succeeded{ false };
@@ -33,6 +34,7 @@ namespace IED
 			actorInventoryInfo_t    inventory;
 			actorFactionInfo_t      factions;
 			actorActiveEffectInfo_t effects;
+			actorPerkInfo_t         perks;
 		};
 
 		struct ActorInfoData
@@ -83,6 +85,10 @@ namespace IED
 			void DrawFactionsTabItem(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
+			
+			void DrawPerkTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
 
 			void DrawEffectsTabItem(
 				Game::FormID         a_handle,
@@ -124,6 +130,10 @@ namespace IED
 			void DrawFactionTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
+			
+			void DrawPerkTreeContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
 
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
@@ -144,6 +154,10 @@ namespace IED
 			void DrawInventoryFilterTree();
 
 			void DrawFactionEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
+			
+			void DrawPerkEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
 

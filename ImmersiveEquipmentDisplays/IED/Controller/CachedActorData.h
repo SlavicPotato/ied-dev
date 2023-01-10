@@ -27,6 +27,41 @@ namespace IED
 	inline static constexpr auto ACTOR_CHECK_FLAGS_LF_2 =
 		Actor::Flags2::kUnderwater;
 
+	inline static constexpr auto NPC_BASE_CHECK_FLAGS =
+		ACTOR_BASE_DATA::Flag::kInvulnerable |
+		ACTOR_BASE_DATA::Flag::kSummonable |
+		ACTOR_BASE_DATA::Flag::kUnique;
+
+	class CachedPerkData
+	{
+		using container_type =
+			stl::flat_map<
+				Game::FormID,
+				std::int8_t>;
+
+	public:
+		CachedPerkData(Actor* a_actor) noexcept;
+
+		bool UpdatePerks(Actor* a_actor, TESNPC* a_npc) noexcept;
+
+		[[nodiscard]] inline constexpr auto GetNumPerks() const noexcept
+		{
+			return data.size();
+		}
+
+		inline constexpr const auto& GetPerkContainer() const noexcept
+		{
+			return data;
+		}
+
+	private:
+		static constexpr std::size_t GetSignature(Actor* a_actor) noexcept;
+
+		container_type data;
+
+		std::size_t currentSignature{ 0 };
+	};
+
 	class CachedFactionData
 	{
 		using container_type =
@@ -37,7 +72,7 @@ namespace IED
 	public:
 		CachedFactionData(Actor* a_actor) noexcept;
 
-		bool UpdateFactions(Actor* a_actor) noexcept;
+		bool UpdateFactions(Actor* a_actor, TESNPC* a_npc) noexcept;
 
 		[[nodiscard]] inline constexpr auto GetNumFactions() const noexcept
 		{
@@ -59,12 +94,11 @@ namespace IED
 			requires(std::invocable<Tf, const RE::FACTION_RANK&>);
 
 		static constexpr std::size_t GetSignature(
-			const ExtraFactionChanges* a_factionChanges,
-			TESNPC*                    a_npc) noexcept;
+			const ExtraFactionChanges* a_factionChanges) noexcept;
 
 		container_type data;
 
-		std::size_t currentSignature{ hash::fnv1::fnv_offset_basis };
+		std::size_t currentSignature{ 0 };
 	};
 
 	template <class Tf>
@@ -167,32 +201,36 @@ namespace IED
 
 	struct CachedActorData :
 		CachedFactionData,
-		CachedActiveEffectData
+		CachedActiveEffectData,
+		CachedPerkData
 	{
 		CachedActorData(Actor* a_actor) noexcept;
 
 		bool UpdateState(const Actor* a_actor, const TESObjectCELL* a_cell) noexcept;
 		bool UpdateStateLF(const Actor* a_actor) noexcept;
 		bool UpdateStateHF(const Actor* a_actor) noexcept;
+		bool DoLFUpdates(Actor* a_actor) noexcept;
 
-		TESWorldSpace*           worldspace{ nullptr };
-		TESPackage*              currentPackage{ nullptr };
-		TESIdleForm*             currentIdle{ nullptr };
-		stl::flag<Actor::Flags1> flags1{ Actor::Flags1::kNone };
-		stl::flag<Actor::Flags2> flags2{ Actor::Flags2::kNone };
-		stl::flag<Actor::Flags1> flagslf1{ Actor::Flags1::kNone };
-		stl::flag<Actor::Flags2> flagslf2{ Actor::Flags2::kNone };
-		bool                     cellAttached{ false };
-		bool                     inCombat{ false };
-		bool                     swimming{ false };
-		bool                     sitting{ false };
-		bool                     sleeping{ false };
-		bool                     beingRidden{ false };
-		bool                     weaponDrawn{ false };
-		bool                     inInterior{ false };
-		bool                     arrested{ false };
-		bool                     unconscious{ false };
-		bool                     flying{ false };
-		bool                     restrained{ false };
+		TESWorldSpace*                   worldspace;
+		TESPackage*                      currentPackage;
+		TESIdleForm*                     currentIdle;
+		stl::flag<Actor::Flags1>         flags1;
+		stl::flag<Actor::Flags2>         flags2;
+		stl::flag<Actor::Flags1>         flagslf1;
+		stl::flag<Actor::Flags2>         flagslf2;
+		stl::flag<ACTOR_BASE_DATA::Flag> baseFlags;
+		std::uint16_t                    level;
+		bool                             active;
+		bool                             inCombat;
+		bool                             swimming;
+		bool                             sitting;
+		bool                             sleeping;
+		bool                             beingRidden;
+		bool                             weaponDrawn;
+		bool                             inInterior;
+		bool                             arrested;
+		bool                             unconscious;
+		bool                             flying;
+		bool                             restrained;
 	};
 }

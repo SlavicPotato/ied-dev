@@ -12,7 +12,7 @@
 namespace IED
 {
 	void EffectController::PreparePhysicsUpdateData(
-		float                          a_interval,
+		float                             a_interval,
 		std::optional<PhysicsUpdateData>& a_data) noexcept
 	{
 		constexpr auto confTimeTick = 1.0f / 30.0f;
@@ -36,13 +36,11 @@ namespace IED
 	}
 
 	void EffectController::RunEffectUpdates(
-		const float                          a_interval,
-		const Game::Unk2f6b948::Steps&       a_stepMuls,
+		const float                             a_interval,
+		const Game::Unk2f6b948::Steps&          a_stepMuls,
 		const std::optional<PhysicsUpdateData>& a_physUpdData,
-		const ActorObjectHolder&             a_holder) noexcept
+		const ActorObjectHolder&                a_holder) noexcept
 	{
-		//ASSERT(!EngineExtensions::ShouldDefer3DTaskImpl());
-
 		const auto stepMul =
 			a_holder.IsPlayer() ?
 				a_stepMuls.player :
@@ -53,43 +51,10 @@ namespace IED
 			UpdatePhysics(stepMul, *a_physUpdData, a_holder);
 		}
 
-		/*const bool wantLightUpdate =
-			ReferenceLightController::GetSingleton().GetEnabled() && !a_holder.IsPlayer();
-
-		if (!ShaderProcessingEnabled() && !wantLightUpdate)
-		{
-			return;
-		}
-
-		NiPointer<TESObjectREFR> refr;
-		if (!a_holder.GetHandle().Lookup(refr))
-		{
-			return;
-		}
-
-		auto actor = refr->As<Actor>();
-		if (!actor)
-		{
-			return;
-		}
-		*/
-
 		if (ShaderProcessingEnabled())
 		{
-			NiPointer<TESObjectREFR> refr;
-			if (a_holder.GetHandle().Lookup(refr))
-			{
-				if (auto actor = refr->As<Actor>())
-				{
-					UpdateShaders(actor, a_interval * stepMul, a_holder);
-				}
-			}
+			UpdateShaders(a_holder.GetActor(), a_interval * stepMul, a_holder);
 		}
-
-		/*if (wantLightUpdate)
-		{
-			ReferenceLightController::GetSingleton().OnUpdate(actor);
-		}*/
 	}
 
 	void EffectController::UpdateShaders(
@@ -104,7 +69,7 @@ namespace IED
 
 	void EffectController::UpdatePhysics(
 		const float              a_stepMul,
-		const PhysicsUpdateData&    a_physUpdData,
+		const PhysicsUpdateData& a_physUpdData,
 		const ActorObjectHolder& a_holder) noexcept
 	{
 		constexpr unsigned int ftz_daz_mask = _MM_FLUSH_ZERO_MASK | _MM_DENORMALS_ZERO_MASK;
@@ -223,6 +188,12 @@ namespace IED
 		}
 	}
 
+	inline static constexpr bool may_set_shader_data(BSShaderProperty* a_prop) noexcept
+	{
+		return !a_prop->flags.test(BSShaderProperty::Flag::kDecal) &&
+		       a_prop->AcceptsEffectData();
+	}
+
 	void EffectController::ProcessNiObjectTree(
 		NiAVObject*                    a_object,
 		const EffectShaderData::Entry& a_entry) noexcept
@@ -248,7 +219,7 @@ namespace IED
 
 					if (trySet)
 					{
-						if (shaderProp->AcceptsEffectData())
+						if (may_set_shader_data(shaderProp))
 						{
 							shaderProp->SetEffectShaderData(a_entry.shaderData);
 						}
@@ -256,7 +227,7 @@ namespace IED
 					else
 					{
 						if (shaderProp->effectData == a_entry.shaderData &&
-						    !shaderProp->AcceptsEffectData())
+						    !may_set_shader_data(shaderProp))
 						{
 							shaderProp->ClearEffectShaderData();
 						}

@@ -85,9 +85,9 @@ namespace IED
 		m_forceUIOpenKeys      = reader.GetBoolValue(SECT_GUI, "OverrideToggleKeys", false);
 		m_enableUIRestrictions = reader.GetBoolValue(SECT_GUI, "EnableRestrictions", false);
 		//m_UIScaling            = reader.GetBoolValue(SECT_GUI, "EnableScaling", true);
-		m_enableInMenus        = reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
-		m_disableIntroBanner   = reader.GetBoolValue(SECT_GUI, "DisableIntroBanner", false);
-		m_introBannerVOffset   = static_cast<float>(reader.GetDoubleValue(SECT_GUI, "IntroBannerVerticalOffset", 110.0f));
+		m_enableInMenus      = reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
+		m_disableIntroBanner = reader.GetBoolValue(SECT_GUI, "DisableIntroBanner", false);
+		m_introBannerVOffset = static_cast<float>(reader.GetDoubleValue(SECT_GUI, "IntroBannerVerticalOffset", 110.0f));
 
 		m_UIOpenKeys.Parse(reader.GetValue(SECT_GUI, "ToggleKeys", "0x0E"));
 
@@ -174,6 +174,8 @@ namespace IED
 
 		m_parallelAnimationUpdates = reader.GetBoolValue(SECT_EXPERIMENTAL, "ParallelAnimationUpdates", false);
 		m_enableLights             = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
+
+		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
 
 		m_loaded = reader.is_loaded();
 

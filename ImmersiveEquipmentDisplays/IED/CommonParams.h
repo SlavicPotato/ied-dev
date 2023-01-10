@@ -16,7 +16,7 @@ namespace IED
 	struct CommonParams
 	{
 	public:
-		inline constexpr CommonParams(
+		inline CommonParams(
 			Actor* const       a_actor,
 			TESNPC* const      a_npc,
 			TESNPC* const      a_npcOrTemplate,
@@ -36,14 +36,14 @@ namespace IED
 		{
 		}
 
-		Actor* const       actor;
-		TESNPC* const      npc;
-		TESNPC* const      npcOrTemplate;
-		TESRace* const     race;
-		NiNode* const      root;
-		NiNode* const      npcRoot;
-		ActorObjectHolder& objects;
-		Controller&        controller;
+		Actor* const            actor;
+		TESNPC* const           npc;
+		TESNPC* const           npcOrTemplate;
+		TESRace* const          race;
+		const NiPointer<NiNode> root;
+		const NiPointer<NiNode> npcRoot;
+		ActorObjectHolder&      objects;
+		Controller&             controller;
 
 		[[nodiscard]] bool is_player() const noexcept;
 

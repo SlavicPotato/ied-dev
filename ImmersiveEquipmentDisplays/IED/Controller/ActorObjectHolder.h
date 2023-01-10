@@ -16,12 +16,16 @@
 #include "IED/ActorState.h"
 #include "IED/CollectorData.h"
 #include "IED/ConditionalVariableStorage.h"
+#include "IED/ConfigData.h"
 #include "IED/GearNodeID.h"
+#include "IED/Inventory.h"
 #include "IED/NodeOverrideData.h"
 #include "IED/NodeOverrideParams.h"
 #include "IED/ProcessParams.h"
 #include "IED/SkeletonCache.h"
 #include "IED/SkeletonID.h"
+
+#include "ActorTempData.h"
 
 //#include <ext/WeaponAnimationGraphManagerHolder.h>
 
@@ -67,7 +71,11 @@ namespace IED
 		kRequestEvalImmediate = kWantEval | kImmediateEval,
 		kRequestEvalMask      = kWantEval | kImmediateEval | kEvalCountdownMask,
 
-		kDestroyed = 1u << 15
+		kDestroyed         = 1u << 15,
+		kIsPlayer          = 1u << 16,
+		kIsFemale          = 1u << 17,
+		kHumanoidSkeleton  = 1u << 18,
+		kForceNodeCondTrue = 1u << 19,
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(ActorObjectHolderFlags);
@@ -105,12 +113,19 @@ namespace IED
 			bool              visible;
 		};
 
-		using cme_node_map_type = stl::unordered_map<stl::fixed_string, CMENodeEntry>;
-		using mov_node_map_type = stl::unordered_map<stl::fixed_string, MOVNodeEntry>;
+		using cme_node_map_type = stl::flat_map<
+			stl::fixed_string,
+			CMENodeEntry,
+			stl::fixed_string_less_equal_ptr>;
+
+		using mov_node_map_type = stl::flat_map<
+			stl::fixed_string,
+			MOVNodeEntry,
+			stl::fixed_string_less_equal_ptr>;
 
 	public:
 		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_MED  = 200000;
+		inline static constexpr long long STATE_CHECK_INTERVAL_MH   = 66666;
 		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
@@ -231,20 +246,15 @@ namespace IED
 			return m_weapNodes;
 		}
 
-		[[nodiscard]] inline constexpr bool IsCellAttached() const noexcept
+		[[nodiscard]] inline constexpr bool IsActive() const noexcept
 		{
-			return m_state.cellAttached;
+			return m_state.active;
 		}
 
 		/*[[nodiscard]] inline constexpr bool GetEnemiesNearby() const noexcept
 		{
 			return m_enemiesNearby;
 		}*/
-
-		inline constexpr void UpdateCellAttached() noexcept
-		{
-			m_state.cellAttached = m_actor->IsParentCellAttached();
-		}
 
 		inline void RequestTransformUpdateDefer() const noexcept
 		{
@@ -493,12 +503,17 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool IsPlayer() const noexcept
 		{
-			return m_player;
+			return m_flags.test(ActorObjectHolderFlags::kIsPlayer);
 		}
 
 		[[nodiscard]] inline constexpr bool IsFemale() const noexcept
 		{
-			return m_female;
+			return m_flags.test(ActorObjectHolderFlags::kIsFemale);
+		}
+
+		[[nodiscard]] inline constexpr auto GetSex() const noexcept
+		{
+			return IsFemale() ? Data::ConfigSex::Female : Data::ConfigSex::Male;
 		}
 
 		/*[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
@@ -540,7 +555,7 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool HasHumanoidSkeleton() const noexcept
 		{
-			return m_humanoidSkeleton;
+			return m_flags.test(ActorObjectHolderFlags::kHumanoidSkeleton);
 		}
 
 		[[nodiscard]] inline constexpr bool IsXP32Skeleton() const noexcept
@@ -550,14 +565,14 @@ namespace IED
 
 		[[nodiscard]] inline constexpr bool GetNodeConditionForced() const noexcept
 		{
-			return m_forceNodeCondTrue;
+			return m_flags.test(ActorObjectHolderFlags::kForceNodeCondTrue);
 		}
 
 		[[nodiscard]] inline constexpr void SetNodeConditionForced(bool a_switch) noexcept
 		{
-			if (m_forceNodeCondTrue != a_switch)
+			if (m_flags.test(ActorObjectHolderFlags::kForceNodeCondTrue) != a_switch)
 			{
-				m_forceNodeCondTrue = a_switch;
+				m_flags.set(ActorObjectHolderFlags::kForceNodeCondTrue, a_switch);
 				RequestTransformUpdate();
 			}
 		}
@@ -584,7 +599,7 @@ namespace IED
 		}
 
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& CreateProcessParams(Args&&... a_args) noexcept
+		inline constexpr auto& CreateProcessParams(Args&&... a_args) noexcept
 		{
 			m_currentParams.emplace(std::forward<Args>(a_args)...);
 			return *m_currentParams;
@@ -640,7 +655,7 @@ namespace IED
 		{
 			m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 		}
-		
+
 		inline constexpr void MarkDestroyed() noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kDestroyed);
@@ -686,9 +701,9 @@ namespace IED
 
 		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
 		{
-			return m_temp;
+			return *m_temp;
 		}
-		
+
 		[[nodiscard]] inline constexpr auto& GetMonitorNodes() noexcept
 		{
 			return m_monitorNodes;
@@ -711,10 +726,6 @@ namespace IED
 
 		CachedActorData m_state;
 
-		bool m_player{ false };
-		bool m_female{ false };
-		bool m_humanoidSkeleton{ false };
-		bool m_forceNodeCondTrue{ false };
 		bool m_wantLFUpdate{ false };
 		bool m_wantHFUpdate{ false };
 		//bool m_wantLFVarUpdate{ false };
@@ -734,9 +745,9 @@ namespace IED
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<WeaponNodeEntry>    m_weapNodes;
 
-		cme_node_map_type                                   m_cmeNodes;
-		mov_node_map_type                                   m_movNodes;
-		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+		cme_node_map_type                              m_cmeNodes;
+		mov_node_map_type                              m_movNodes;
+		stl::flat_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 
 		std::optional<processParams_t> m_currentParams;
 
@@ -780,12 +791,7 @@ namespace IED
 
 		BipedSlotDataPtr m_lastEquipped;
 
-		struct
-		{
-			Data::CollectorData::container_type       idt;
-			Data::CollectorData::eq_container_type    eqt;
-			nodeOverrideParams_t::item_container_type nc;
-		} m_temp;
+		std::unique_ptr<ActorTempData> m_temp;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

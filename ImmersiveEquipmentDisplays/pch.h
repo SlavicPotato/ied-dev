@@ -10,6 +10,7 @@
 #include <ext/BGSLensFlare.h>
 #include <ext/BSAnimationGraphManager.h>
 #include <ext/BSLight.h>
+#include <ext/Calendar.h>
 #include <ext/Events.h>
 #include <ext/GameCommon.h>
 #include <ext/Hash.h>
@@ -25,6 +26,7 @@
 #include <ext/PluginInterfaceSDS.h>
 #include <ext/SKSEMessagingEvents.h>
 #include <ext/SKSESerializationEvents.h>
+#include <ext/ShaderReferenceEffect.h>
 #include <ext/ShadowSceneNode.h>
 #include <ext/StringCache.h>
 #include <ext/Vector.h>
@@ -41,7 +43,7 @@
 #include <ext/stl_str_helpers.h>
 #include <ext/str_conv.h>
 
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
+#if defined(IED_USE_MIMALLOC_COLLECTOR) || defined(IED_USE_MIMALLOC_SIMCOMPONENT)
 #	include <ext/stl_allocator_mi.h>
 #endif
 
@@ -145,7 +147,7 @@ namespace fs = std::filesystem;
 
 #define IED_ENABLE_I3DI
 
-#if (defined(IED_USE_MIMALLOC_COLLECTOR) || defined(SKMP_SC_USE_MIMALLOC) || SKMP_CUSTOM_ALLOCATOR == 1)
+#if (defined(IED_USE_MIMALLOC_COLLECTOR) || defined(IED_USE_MIMALLOC_SIMCOMPONENT) || defined(SKMP_SC_USE_MIMALLOC) || SKMP_CUSTOM_ALLOCATOR == 1)
 #	define IED_MIMALLOC_IN_USE 1
 #endif
 

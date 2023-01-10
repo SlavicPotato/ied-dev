@@ -11,7 +11,7 @@ namespace IED
 				return a_refr &&
 				       a_refr->formID != 0 &&
 				       a_refr->loadedState &&
-				       !a_refr->IsDeleted();
+				       (a_refr->flags & (TESObjectREFR::kFlag_Disabled | TESObjectREFR::kFlagTESObjectREFR_Deleted)) == 0;
 			}
 		}
 	}

@@ -66,9 +66,17 @@ namespace IED
 	private:
 		struct GlobalState
 		{
+			constexpr GlobalState(long long a_ct) noexcept :
+				nextRun(a_ct),
+				nextRunLF(a_ct)
+			{
+			}
+
 			long long nextRun;
+			long long nextRunLF;
 
 			RE::TESWeather*   currentWeather{ nullptr };
+			RE::Calendar::Day dayOfWeek{ RE::Calendar::Day::kSundas };
 			Data::TimeOfDay   timeOfDay{ Data::TimeOfDay::kDay };
 			bool              inFirstPerson{ false };
 			Game::ActorHandle playerLastRidden;
@@ -77,7 +85,8 @@ namespace IED
 #endif
 		};
 
-		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL = 1000000ll;
+		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL    = 1000000ll;
+		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15000000ll;
 
 		[[nodiscard]] inline constexpr bool ParallelProcessingEnabled() const noexcept
 		{
@@ -110,16 +119,16 @@ namespace IED
 
 		void UpdateGlobalState() noexcept;
 
-		template <bool _Mt>
-		void UpdateHolderMTSafe(
-			const float                          a_interval,
-			const Game::Unk2f6b948::Steps&       a_stepMuls,
+		template <bool _Par>
+		void DoActorUpdate(
+			const float                             a_interval,
+			const Game::Unk2f6b948::Steps&          a_stepMuls,
 			const std::optional<PhysicsUpdateData>& a_physUpdData,
-			ActorObjectHolder&                   a_holder,
-			bool                                 a_updateEffects) noexcept;
+			ActorObjectHolder&                      a_holder,
+			bool                                    a_updateEffects) noexcept;
 
-		void RunPreUpdates(
-			const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
+		void RunPreUpdates(const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
+		void RunSequentialAnimUpdates(const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
 
 		GlobalState m_globalState;
 
@@ -129,8 +138,40 @@ namespace IED
 		bool         m_runAnimationUpdates{ false };
 		bool         m_parallelProcessing{ false };
 
-		stl::fast_spin_lock                                          m_syncRefParentQueueWRLock;
-		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
+		template <class T>
+		class PostMTUpdateQueue
+		{
+		public:
+			template <class... Args>
+			constexpr decltype(auto) emplace(Args&&... a_args)
+			{
+				stl::lock_guard lock(m_lock);
+				return m_queue.emplace_back(std::forward<Args>(a_args)...);
+			}
+
+			template <class Tf>
+			constexpr void process(Tf a_func) noexcept
+			{
+				if (m_queue.empty())
+				{
+					return;
+				}
+
+				for (const auto& e : m_queue)
+				{
+					a_func(e);
+				}
+
+				m_queue.clear();
+			}
+
+		private:
+			stl::vector<T>      m_queue;
+			stl::fast_spin_lock m_lock;
+		};
+
+		PostMTUpdateQueue<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
+
 		/*stl::fast_spin_lock                                          m_unloadQueueWRLock;
 		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_unloadQueue;*/
 	};

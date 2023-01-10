@@ -64,14 +64,14 @@ namespace IED
 		}
 
 		void PreparePhysicsUpdateData(
-			float                          a_interval,
+			float                             a_interval,
 			std::optional<PhysicsUpdateData>& a_data) noexcept;
 
 		void RunEffectUpdates(
-			const float                          a_interval,
-			const Game::Unk2f6b948::Steps&       a_stepMuls,
+			const float                             a_interval,
+			const Game::Unk2f6b948::Steps&          a_stepMuls,
 			const std::optional<PhysicsUpdateData>& a_physUpdData,
-			const ActorObjectHolder&             a_holder) noexcept;
+			const ActorObjectHolder&                a_holder) noexcept;
 
 		static void UpdateShaders(
 			Actor*                   a_actor,
@@ -80,7 +80,7 @@ namespace IED
 
 		static void UpdatePhysics(
 			const float              a_stepMul,
-			const PhysicsUpdateData&    a_physUpdData,
+			const PhysicsUpdateData& a_physUpdData,
 			const ActorObjectHolder& a_holder) noexcept;
 
 		SKMP_FORCEINLINE static void UpdateShadersOnDisplay(

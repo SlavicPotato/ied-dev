@@ -394,8 +394,8 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <DisableSpecificWarnings>4324;4100</DisableSpecificWarnings>
       <BufferSecurityCheck>false</BufferSecurityCheck>
-      <FloatingPointModel>Fast</FloatingPointModel>
       <ConformanceMode>true</ConformanceMode>
+      <FloatingPointModel>Fast</FloatingPointModel>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -631,6 +631,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ActorActiveEffectInfo.h" />
     <ClInclude Include="IED\ActorFactionInfo.h" />
     <ClInclude Include="IED\ActorInventoryInfo.h" />
+    <ClInclude Include="IED\ActorPerkInfo.h" />
     <ClInclude Include="IED\ActorSkeletonTreeData.h" />
     <ClInclude Include="IED\AnimationUpdateManager.h" />
     <ClInclude Include="IED\AnimationWeaponSlot.h" />
@@ -657,6 +658,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ActiveActorAnimation.h" />
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
+    <ClInclude Include="IED\Controller\ActorTempData.h" />
     <ClInclude Include="IED\Controller\IConditionalVariableProcessor.h" />
     <ClInclude Include="IED\Controller\IUINotification.h" />
     <ClInclude Include="IED\Controller\NodeMonitorEntry.h" />
@@ -816,6 +818,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\UIToast.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
+    <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideResult.h" />
     <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.h" />
@@ -1136,6 +1140,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ActorActiveEffectInfo.cpp" />
     <ClCompile Include="IED\ActorFactionInfo.cpp" />
     <ClCompile Include="IED\ActorInventoryInfo.cpp" />
+    <ClCompile Include="IED\ActorPerkInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
     <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
@@ -1270,6 +1275,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\UIMiscTextInterface.cpp" />
     <ClCompile Include="IED\UI\UISkeletonExplorer.cpp" />
     <ClCompile Include="IED\UI\UIToast.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\Form\UIFormInfoTooltipWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\Lists\UIBipedObjectList.cpp" />

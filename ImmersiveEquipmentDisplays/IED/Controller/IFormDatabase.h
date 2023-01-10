@@ -13,7 +13,7 @@ namespace IED
 		struct entry_t
 		{
 			Game::FormID             formid;
-			stl::flag<FormInfoFlags> flags{ FormInfoFlags::kNone };
+			stl::flag<FormInfoFlags> flags;
 			std::string              name;
 
 			inline friend constexpr bool operator<(

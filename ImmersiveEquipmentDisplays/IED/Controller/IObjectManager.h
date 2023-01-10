@@ -171,6 +171,13 @@ namespace IED
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
 			NiNode*                                  a_object) noexcept;
 
+		static void TryCreatePointLight(
+			Actor*                          a_actor,
+			NiNode*                         a_object,
+			TESForm*                        a_modelForm,
+			const Data::configBaseValues_t& a_activeConfig,
+			ObjectLight&                    a_out) noexcept;
+
 		void PlayObjectSound(
 			const processParams_t&          a_params,
 			const Data::configBaseValues_t& a_config,

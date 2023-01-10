@@ -280,6 +280,8 @@ namespace IED
 			return GetFullName<TESClass>(a_form);
 		case TESObjectCELL::kTypeID:
 			return GetFullName<TESObjectCELL>(a_form);
+		case BGSPerk::kTypeID:
+			return GetFullName<BGSPerk>(a_form);
 		case TESGlobal::kTypeID:
 			return GetEditorID(static_cast<TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:

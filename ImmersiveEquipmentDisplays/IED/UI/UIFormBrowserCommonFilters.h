@@ -26,6 +26,7 @@ namespace IED
 			Idle,
 			Effect,
 			EffectSource,
+			Perk,
 			Common,
 			ModelTypes,
 		};
@@ -41,7 +42,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 20> m_filters;
+			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 21> m_filters;
 
 			static UIFormBrowserCommonFilters m_Instance;
 		};

@@ -40,6 +40,19 @@ namespace IED
 				AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
 			}
 
+			for (auto& e : state->groupObjects)
+			{
+				if (auto& pl = e.second.light)
+				{
+					ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
+				}
+
+				if (auto& ah = e.second.weapAnimGraphManagerHolder)
+				{
+					AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
+				}
+			}
+
 			if (
 				!a_defer &&
 				m_playSound &&
@@ -586,7 +599,7 @@ namespace IED
 			state->dbEntry = std::move(dbentry);
 		}
 
-		a_params.ResetEffectShaders();
+		a_params.SuspendEffectShaders();
 
 		if (modelParams.swap)
 		{
@@ -635,6 +648,17 @@ namespace IED
 
 		UpdateDownwardPass(itemRoot);
 
+		if (modelParams.type == ModelType::kLight &&
+		    a_activeConfig.flags.test(Data::BaseFlags::kAttachLight))
+		{
+			TryCreatePointLight(
+				a_params.actor,
+				object,
+				a_modelForm,
+				a_activeConfig,
+				state->light);
+		}
+
 		const auto ar = EngineExtensions::AttachObject(
 			a_params.actor,
 			a_modelForm,
@@ -645,14 +669,12 @@ namespace IED
 			a_leftWeapon,
 			a_activeConfig.flags.test(Data::BaseFlags::kDropOnDeath),
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard),
-			a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
+			state->light || a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame),
 			a_disableHavok || a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok),
 			a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers),
-			a_activeConfig.flags.test(Data::BaseFlags::kAttachLight),
-			a_activeConfig.flags.test(Data::BaseFlags::kRemoveEditorMarker),
-			state->light);
+			a_activeConfig.flags.test(Data::BaseFlags::kRemoveEditorMarker));
 
-		if (state->light.niObject.get())
+		if (state->light)
 		{
 			ReferenceLightController::GetSingleton().AddLight(
 				a_params.actor->formID,
@@ -902,7 +924,7 @@ namespace IED
 			return false;
 		}
 
-		a_params.ResetEffectShaders();
+		a_params.SuspendEffectShaders();
 
 		char buffer[INode::NODE_NAME_BUFFER_SIZE];
 
@@ -979,6 +1001,18 @@ namespace IED
 			objectAttachmentNode->AttachChild(itemRoot, true);
 			UpdateDownwardPass(itemRoot);
 
+			if (e.params.type == ModelType::kLight &&
+			    (a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
+			     e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight)))
+			{
+				TryCreatePointLight(
+					a_params.actor,
+					e.object,
+					e.form,
+					a_activeConfig,
+					n.light);
+			}
+
 			EngineExtensions::AttachObject(
 				a_params.actor,
 				e.form,
@@ -992,20 +1026,18 @@ namespace IED
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDropOnDeath),
 				a_activeConfig.flags.test(Data::BaseFlags::kRemoveScabbard) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveScabbard),
-				a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
+				n.light ||
+					a_activeConfig.flags.test(Data::BaseFlags::kKeepTorchFlame) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kKeepTorchFlame),
 				a_disableHavok ||
 					a_activeConfig.flags.test(Data::BaseFlags::kDisableHavok) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableHavok),
 				a_activeConfig.flags.test(Data::BaseFlags::kRemoveProjectileTracers) ||
 					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveProjectileTracers),
-				a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
-					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight),
 				a_activeConfig.flags.test(Data::BaseFlags::kRemoveEditorMarker) ||
-					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveEditorMarker),
-				n.light);
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kRemoveEditorMarker));
 
-			if (n.light.niObject.get())
+			if (n.light)
 			{
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,
@@ -1130,6 +1162,24 @@ namespace IED
 		{
 			a_state->arrowState =
 				std::make_unique<ObjectEntryBase::QuiverArrowState>(arrowQuiver);
+		}
+	}
+
+	void IObjectManager::TryCreatePointLight(
+		Actor*                          a_actor,
+		NiNode*                         a_object,
+		TESForm*                        a_modelForm,
+		const Data::configBaseValues_t& a_activeConfig,
+		ObjectLight&                    a_out) noexcept
+	{
+		if (ReferenceLightController::GetSingleton().GetEnabled())
+		{
+			return;
+		}
+
+		if (const auto* const light = a_modelForm->As<TESObjectLIGH>())
+		{
+			a_out = ReferenceLightController::CreateAndAttachPointLight(light, a_actor, a_object);
 		}
 	}
 

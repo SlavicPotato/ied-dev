@@ -1,9 +1,19 @@
 #include "pch.h"
 
-#include "IED/Data.h"
 #include "UIConditionParamEditorWidget.h"
 
+#include "UIBipedObjectSelectorWidget.h"
+#include "UICMNodeSelector.h"
+#include "UIComparisonOperatorSelector.h"
+#include "UIConditionExtraSelectorWidget.h"
+#include "UIDayOfWeekSelectorWidget.h"
+#include "UIObjectTypeSelectorWidget.h"
+#include "UIPackageTypeSelectorWidget.h"
+#include "UIVariableConditionSourceSelectorWidget.h"
+#include "UIVariableTypeSelectorWidget.h"
+
 #include "IED/Controller/Controller.h"
+#include "IED/Data.h"
 
 #include "IED/UI/UICommon.h"
 
@@ -96,6 +106,11 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::NodeMon); f.p1)
 						{
 							f.As1<std::uint32_t>() = 0;
+						}
+
+						if (const auto& f = get(ConditionParamItem::DayOfWeek); f.p1)
+						{
+							f.As1<RE::Calendar::Day>() = RE::Calendar::Day::kSundas;
 						}
 					}
 
@@ -262,6 +277,16 @@ namespace IED
 
 				result |= DrawWeatherClassSelector(
 					e.As1<WeatherClassificationFlags>());
+			}
+
+			if (const auto& e = get(ConditionParamItem::DayOfWeek); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::DayOfWeek);
+
+				result |= UIDayOfWeekSelectorWidget::DrawDayOfWeekSelectorWidget(
+					e.As1<RE::Calendar::Day>());
 			}
 
 			if (const auto& e = get(ConditionParamItem::CondVarType); e.p1)
@@ -585,6 +610,21 @@ namespace IED
 									"%s [%s]",
 									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									get_nodemon_desc(f.As1<std::uint32_t>()));
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kDayOfWeek:
+
+							if (const auto& f = get(ConditionParamItem::DayOfWeek); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%s]",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									UIDayOfWeekSelectorWidget::day_of_week_to_desc(f.As1<RE::Calendar::Day>()));
 
 								return m_descBuffer;
 							}

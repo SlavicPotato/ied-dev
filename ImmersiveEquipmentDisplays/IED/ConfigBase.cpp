@@ -685,6 +685,17 @@ namespace IED
 						a_params,
 						a_match);
 				}
+
+				break;
+
+			case EquipmentOverrideConditionType::Perk:
+
+				return Conditions::match_perk<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;
@@ -1025,6 +1036,17 @@ namespace IED
 						a_params,
 						a_match);
 				}
+
+				break;
+
+			case EquipmentOverrideConditionType::Perk:
+
+				return Conditions::match_perk<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;
@@ -1540,6 +1562,17 @@ namespace IED
 						a_params,
 						a_match);
 				}
+
+				break;
+
+			case EquipmentOverrideConditionType::Perk:
+
+				return Conditions::match_perk<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match,
+					a_params.objects.GetCachedData());
 			}
 
 			return false;

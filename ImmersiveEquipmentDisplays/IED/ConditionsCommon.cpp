@@ -94,7 +94,6 @@ namespace IED
 			       a_params.controller.IsInFirstPerson();
 		}
 
-
 		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept
 		{
 			PluginInterfaceSDS* intfc;

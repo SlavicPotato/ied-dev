@@ -66,15 +66,17 @@ namespace IED
 		m_npcid(a_npc->formID),
 		m_npcTemplateId(a_npc->GetFirstNonTemporaryOrThis()->formID),
 		m_raceid(a_race->formID),
-		m_female(a_npc->GetSex() == 1),
-		m_player(a_actor == *g_thePlayer),
 		//m_enableAnimEventForwarding(a_animEventForwarding),
 		m_created(IPerfCounter::Query()),
 		m_lastEquipped(a_lastEquipped),
 		m_skeletonID(a_root),
 		m_state(a_actor),
-		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped->displays) }
+		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped->displays) },
+		m_temp(std::make_unique<ActorTempData>())
 	{
+		m_flags.set(ActorObjectHolderFlags::kIsFemale, a_npc->GetSex() == 1);
+		m_flags.set(ActorObjectHolderFlags::kIsPlayer, a_actor == *g_thePlayer);
+
 		auto interval = IPerfCounter::T(STATE_CHECK_INTERVAL_LOW);
 
 		m_nextLFStateCheck = m_created +
@@ -83,7 +85,7 @@ namespace IED
 								 std::memory_order_relaxed) %
 		                         interval;
 
-		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_MED);
+		interval = IPerfCounter::T(STATE_CHECK_INTERVAL_MH);
 
 		m_nextMFStateCheck = m_created +
 		                     m_lfsc_delta_mf.fetch_add(
@@ -111,9 +113,11 @@ namespace IED
 			m_skeletonCache1p = SkeletonCache::GetSingleton().Get(a_actor, true);
 		}
 
-		m_humanoidSkeleton =
-			NodeOverrideData::GetHumanoidSkeletonSignatures()
-				.contains(m_skeletonID.signature());
+		if (NodeOverrideData::GetHumanoidSkeletonSignatures()
+		        .contains(m_skeletonID.signature()))
+		{
+			m_flags.set(ActorObjectHolderFlags::kHumanoidSkeleton);
+		}
 
 		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 		{
@@ -142,21 +146,23 @@ namespace IED
 										   BSStringHolder::GetSingleton()->m_npcroot) :
 			                           nullptr;
 
+			m_cmeNodes.reserve(NodeOverrideData::GetCMENodeData().size());
+
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
-					const auto r = m_cmeNodes.try_emplace(
-						e->first,
-						node,
-						GetCachedOrZeroTransform(e->second.name));
+					auto& r = m_cmeNodes.raw().emplace_back(
+						std::piecewise_construct,
+						std::forward_as_tuple(e->first),
+						std::forward_as_tuple(node, GetCachedOrZeroTransform(e->second.name)));
 
 					if (a_syncToFirstPersonSkeleton && npcroot1p)
 					{
 						node = FindNode(npcroot1p, e->second.bsname);
 						if (node)
 						{
-							r.first->second.firstPerson = {
+							r.second.firstPerson = {
 								node,
 								GetCachedOrZeroTransform(e->second.name, true)
 							};
@@ -165,17 +171,27 @@ namespace IED
 				}
 			}
 
+			m_cmeNodes.sort_data();
+			m_cmeNodes.shrink_to_fit();
+
+			m_cmeNodes.reserve(NodeOverrideData::GetMOVNodeData().size());
+
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
 				if (auto node = FindNode(a_npcroot, e->second.bsname))
 				{
-					m_movNodes.try_emplace(
-						e->first,
-						node,
-						GetCachedOrCurrentTransform(e->second.name, node),
-						e->second.placementID);
+					m_movNodes.raw().emplace_back(
+						std::piecewise_construct,
+						std::forward_as_tuple(e->first),
+						std::forward_as_tuple(
+							node,
+							GetCachedOrCurrentTransform(e->second.name, node),
+							e->second.placementID));
 				}
 			}
+
+			m_movNodes.sort_data();
+			m_movNodes.shrink_to_fit();
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
@@ -204,6 +220,8 @@ namespace IED
 			CreateExtraMovNodes(a_npcroot);
 		}
 
+		m_nodeMonitorEntries.reserve(NodeOverrideData::GetNodeMonitorEntries().size());
+
 		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
 		{
 			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
@@ -221,10 +239,17 @@ namespace IED
 
 			if (auto parent = FindNode(a_npcroot, e.parent))
 			{
-				auto r = m_nodeMonitorEntries.try_emplace(i, parent, e);
-				r.first->second.Update();
+				auto& r = m_nodeMonitorEntries.raw().emplace_back(
+					std::piecewise_construct,
+					std::forward_as_tuple(i),
+					std::forward_as_tuple(parent, std::addressof(e)));
+
+				r.second.Update();
 			}
 		}
+
+		m_nodeMonitorEntries.sort_data();
+		m_nodeMonitorEntries.shrink_to_fit();
 
 		/*RE::BSAnimationGraphManagerPtr agm;
 		if (a_actor->GetAnimationGraphManagerImpl(agm))

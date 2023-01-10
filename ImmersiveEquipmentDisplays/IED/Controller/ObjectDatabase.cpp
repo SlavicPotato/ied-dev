@@ -9,6 +9,28 @@ namespace IED
 		ObjectDatabaseEntry& a_entry,
 		NiPointer<NiNode>&   a_object) noexcept
 	{
+		/*bool result = false;
+
+		RE::BSResource::ModelRequestParams     params;
+		RE::BSResource::BSModelResourceResult* mr = nullptr;
+
+		if (!RE::BSResource::RequestModel(a_path, mr, params))
+		{
+			if (auto node = mr->object->AsNode())
+			{
+				a_object = CreateClone(node);
+
+				result = true;
+			}
+		}
+
+		if (mr)
+		{
+			RE::BSResource::BSResourceEntryDB::ReleaseObject(mr);
+		}
+
+		return result;*/
+
 		using namespace ::Util::Model;
 
 		char        path_buffer[MAX_PATH];
@@ -60,7 +82,7 @@ namespace IED
 			it->second->accessed = IPerfCounter::Query();
 
 			a_entry  = it->second;
-			a_object = CreateClone(*it->second);
+			a_object = CreateClone(it->second->object.get());
 		}
 
 		return true;
@@ -202,16 +224,14 @@ namespace IED
 		m_cleanupDeadline.reset();
 	}
 
-	NiNode* ObjectDatabase::CreateClone(const entry_t& a_entry) noexcept
+	NiNode* ObjectDatabase::CreateClone(NiNode* a_object) noexcept
 	{
-		using object_type = decltype(entry_t::object)::element_type;
-
 		NiCloningProcess process(NiObjectNET::CopyType::COPY_EXACT);
 
-		auto result = a_entry.object->CreateClone(process);
-		a_entry.object->ProcessClone(process);
+		auto result = a_object->CreateClone(process);
+		a_object->ProcessClone(process);
 
-		return static_cast<object_type*>(result);
+		return static_cast<NiNode*>(result);
 	}
 
 }

@@ -362,9 +362,7 @@ namespace IED
 
 			for (auto& [i, e] : m_controller.GetObjects())
 			{
-				auto& actor = e.GetActor();
-
-				if (!e.IsCellAttached() || !actor->formID)
+				if (!e.IsActive())
 				{
 					if (m_actorContext && m_actorContext->GetActorFormID() == i)
 					{

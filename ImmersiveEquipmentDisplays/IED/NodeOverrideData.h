@@ -330,67 +330,67 @@ namespace IED
 
 		static void Create();
 
-		inline static const auto& GetCMENodeData() noexcept
+		inline static constexpr const auto& GetCMENodeData() noexcept
 		{
 			return m_Instance->m_cme;
 		}
 
-		inline static const auto& GetMOVNodeData() noexcept
+		inline static constexpr const auto& GetMOVNodeData() noexcept
 		{
 			return m_Instance->m_mov;
 		}
 
-		inline static const auto& GetMonitorNodeData() noexcept
+		inline static constexpr const auto& GetMonitorNodeData() noexcept
 		{
 			return m_Instance->m_monitor;
 		}
 
-		inline static const auto& GetWeaponNodeData() noexcept
+		inline static constexpr const auto& GetWeaponNodeData() noexcept
 		{
 			return m_Instance->m_weap;
 		}
 
-		inline static const auto& GetExtraMovNodes() noexcept
+		inline static constexpr const auto& GetExtraMovNodes() noexcept
 		{
 			return m_Instance->m_extramov;
 		}
 
-		inline static const auto& GetExtraCopyNodes() noexcept
+		inline static constexpr const auto& GetExtraCopyNodes() noexcept
 		{
 			return m_Instance->m_extraCopy;
 		}
 
-		inline static const auto& GetTransformOverrideData() noexcept
+		inline static constexpr const auto& GetTransformOverrideData() noexcept
 		{
 			return m_Instance->m_transformOverride;
 		}
 
-		inline static const auto& GetRandPlacementData() noexcept
+		inline static constexpr const auto& GetRandPlacementData() noexcept
 		{
 			return m_Instance->m_randPlacement;
 		}
 
-		/*inline static const auto& GetHumanoidSkeletons() noexcept
+		/*inline static constexpr const auto& GetHumanoidSkeletons() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonPaths;
 		}*/
 
-		inline static const auto& GetHumanoidSkeletonSignatures() noexcept
+		inline static constexpr const auto& GetHumanoidSkeletonSignatures() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonSignatures;
 		}
 		
-		inline static const auto& GetHumanoidSkeletonSignaturesXp32() noexcept
+		inline static constexpr const auto& GetHumanoidSkeletonSignaturesXp32() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonSignaturesXp32;
 		}
 
-		inline static const auto& GetNodeMonitorEntries() noexcept
+		inline static constexpr const auto& GetNodeMonitorEntries() noexcept
 		{
 			return m_Instance->m_nodeMonEntries;
 		}
 
-		inline static const auto& GetConvertNodes() noexcept
+		inline static constexpr const auto& GetConvertNodes() noexcept
 		{
 			return m_Instance->m_convertNodes;
 		}

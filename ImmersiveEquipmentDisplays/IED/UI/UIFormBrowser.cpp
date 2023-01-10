@@ -57,6 +57,7 @@ namespace IED
 				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
 				{ UIFormBrowserStrings::Effect, EffectSetting::kTypeID },
 				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
+				{ UIFormBrowserStrings::Perk, BGSPerk::kTypeID },
 
 			} }
 
@@ -72,8 +73,8 @@ namespace IED
 		auto UIFormBrowser::DrawImpl()
 			-> FormBrowserDrawResult
 		{
-			FormBrowserDrawResult result{ false, false };
-			
+			FormBrowserDrawResult result;
+
 			SetWindowDimensions(0.f, 1200.f, 700.f, true);
 
 			if (ImGui::BeginPopupModal(
@@ -159,6 +160,7 @@ namespace IED
 			m_hlForm          = {};
 			m_multiSelectMode = a_multisel;
 			m_selectedEntries.clear();
+			m_selectedEntry.reset();
 
 			SetOpenState(true);
 
@@ -457,8 +459,8 @@ namespace IED
 						}
 						else
 						{
-							m_selectedEntry = e;
-							result          = true;
+							m_selectedEntry.emplace(e);
+							result = true;
 						}
 					}
 
@@ -475,6 +477,8 @@ namespace IED
 		{
 			m_db->data.reset();
 			m_filteredData.reset();
+			m_selectedEntry.reset();
+			m_selectedEntries.clear();
 			m_nextDoFilterUpdate  = true;
 			m_db->queryInProgress = false;
 		}

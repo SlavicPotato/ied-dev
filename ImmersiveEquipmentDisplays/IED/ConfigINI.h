@@ -39,14 +39,15 @@ namespace IED
 
 	class ConfigINI
 	{
-		inline static constexpr auto SECT_GENERAL       = "General";
-		inline static constexpr auto SECT_DEBUG         = "Debug";
-		inline static constexpr auto SECT_GUI           = "GUI";
-		inline static constexpr auto SECT_NODE_OVERRIDE = "NodeOverride";
-		inline static constexpr auto SECT_SOUND         = "Sound";
-		inline static constexpr auto SECT_ANIM          = "Animation";
-		inline static constexpr auto SECT_EXPERIMENTAL  = "Experimental";
-		inline static constexpr auto SECT_BIPCACHE      = "BipedSlotCache";
+		inline static constexpr auto SECT_GENERAL        = "General";
+		inline static constexpr auto SECT_DEBUG          = "Debug";
+		inline static constexpr auto SECT_GUI            = "GUI";
+		inline static constexpr auto SECT_NODE_OVERRIDE  = "NodeOverride";
+		inline static constexpr auto SECT_SOUND          = "Sound";
+		inline static constexpr auto SECT_ANIM           = "Animation";
+		inline static constexpr auto SECT_EXPERIMENTAL   = "Experimental";
+		inline static constexpr auto SECT_BIPCACHE       = "BipedSlotCache";
+		inline static constexpr auto SECT_EFFECT_SHADERS = "EffectShaders";
 
 	public:
 		ConfigINI() = default;
@@ -66,9 +67,7 @@ namespace IED
 		ConfigKeyCombo m_UIOpenKeys;
 		bool           m_forceUIOpenKeys{ false };
 		bool           m_enableUIRestrictions{ false };
-		//long long      m_taskPoolBudget{ 0 };
 		bool           m_closeLogFile{ false };
-		//bool           m_UIScaling{ true };
 		bool           m_nodeOverrideEnabled{ false };
 		bool           m_nodeOverridePlayerEnabled{ false };
 		bool           m_weaponAdjustDisable{ true };
@@ -80,11 +79,11 @@ namespace IED
 		bool           m_disableIntroBanner{ false };
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
-		//bool           m_forceOrigWeapXFRM{ false };
 		bool           m_enableEarlyLoadHooks{ true };
 		bool           m_parallelAnimationUpdates{ false };
 		bool           m_forceFlushSaveData{ false };
 		bool           m_enableLights{ false };
+		bool           m_effectShaderFlickerFix{ false };
 		std::uint32_t  m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t  m_bipedSlotCacheMaxForms{ 16 };
 		float          m_introBannerVOffset{ 110.0f };

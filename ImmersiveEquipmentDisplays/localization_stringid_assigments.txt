@@ -35,3 +35,4 @@
 7200-7299:		var cond selector
 7300-7399:		var src selector
 7400-7499:		phys val widget
+7500-7599:		day of the week sel widget

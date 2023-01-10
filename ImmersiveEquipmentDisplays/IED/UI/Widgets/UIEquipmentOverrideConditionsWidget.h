@@ -74,6 +74,7 @@ namespace IED
 			Game::FormID             m_aoNewEntryGlobID;
 			Game::FormID             m_aoNewEntryFactionID;
 			Game::FormID             m_aoNewEntryEffectID;
+			Game::FormID             m_aoNewEntryPerkID;
 			BIPED_OBJECT             m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ExtraConditionType m_ooNewExtraCond{ Data::ExtraConditionType::kNone };
 			Data::ObjectSlotExtra    m_aoNewSlot{ Data::ObjectSlotExtra::kNone };

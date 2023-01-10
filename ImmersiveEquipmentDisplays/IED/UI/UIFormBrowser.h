@@ -40,8 +40,8 @@ namespace IED
 
 			struct FormBrowserDrawResult
 			{
-				bool result;
-				bool closed;
+				bool result{ false };
+				bool closed{ false };
 
 				inline explicit operator bool() const noexcept
 				{
@@ -69,12 +69,12 @@ namespace IED
 				return static_cast<std::uint32_t>(CHILD_ID);
 			}
 
-			inline constexpr const auto& GetSelectedEntry() const noexcept
+			inline constexpr auto& GetSelectedEntry() const noexcept
 			{
 				return m_selectedEntry;
 			}
 
-			inline constexpr const auto& GetSelectedEntries() const noexcept
+			inline constexpr auto& GetSelectedEntries() const noexcept
 			{
 				return m_selectedEntries;
 			}
@@ -122,11 +122,11 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;
 
-			std::array<TabItem, 40> m_tabItems;
+			std::array<TabItem, 41> m_tabItems;
 
 			//select_callback_t m_current;
 
-			stl::optional<IFormDatabase::entry_t> m_selectedEntry;
+			std::optional<IFormDatabase::entry_t> m_selectedEntry;
 			selected_form_list                    m_selectedEntries;
 
 			bool m_multiSelectMode{ false };

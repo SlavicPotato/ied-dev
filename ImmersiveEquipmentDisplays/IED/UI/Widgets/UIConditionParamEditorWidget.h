@@ -1,16 +1,8 @@
 #pragma once
 
 #include "Form/UIFormPickerWidget.h"
-#include "UIBipedObjectSelectorWidget.h"
-#include "UICMNodeSelector.h"
-#include "UIComparisonOperatorSelector.h"
-#include "UIConditionExtraSelectorWidget.h"
 #include "UINodeMonitorSelectorWidget.h"
-#include "UIObjectTypeSelectorWidget.h"
-#include "UIPackageTypeSelectorWidget.h"
 #include "UITimeOfDaySelectorWidget.h"
-#include "UIVariableConditionSourceSelectorWidget.h"
-#include "UIVariableTypeSelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
 
 #include "IED/UI/UIFormBrowserCommonFilters.h"
@@ -51,6 +43,7 @@ namespace IED
 			CondVarType,
 			VarCondSource,
 			FormAny,
+			DayOfWeek,
 
 			Total
 		};
@@ -364,6 +357,16 @@ namespace IED
 				Ap == ConditionParamItem::VarCondSource)
 			{
 				static_assert(std::is_same_v<T, Data::VariableConditionSource>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::DayOfWeek)
+			{
+				static_assert(std::is_same_v<T, RE::Calendar::Day>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

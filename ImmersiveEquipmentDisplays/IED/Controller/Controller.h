@@ -130,6 +130,15 @@ namespace IED
 			ActorObjectHolder&    objects;
 		};
 
+		struct cachedActorInfo2_t
+		{
+			TESNPC*  npc;
+			TESNPC*  npcOrTemplate;
+			TESRace* race;
+			NiNode*  root;
+			NiNode*  npcRoot;
+		};
+
 		Controller(const std::shared_ptr<const ConfigINI>& a_config);
 
 		Controller(const Controller&)            = delete;
@@ -464,11 +473,6 @@ namespace IED
 			return m_bipedCache;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
-		{
-			return m_temp;
-		}
-
 		void QueueSetLanguage(const stl::fixed_string& a_lang);
 
 		//void QueueClearVariableStorage(bool a_requestEval);
@@ -495,6 +499,8 @@ namespace IED
 
 		std::size_t GetNumSimComponents() const noexcept;
 		std::size_t GetNumAnimObjects() const noexcept;
+
+		void QueueSetEffectShaders(Actor* a_actor) noexcept;
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -827,6 +833,10 @@ namespace IED
 			Actor*             a_actor,
 			ActorObjectHolder& a_holder) noexcept;
 
+		std::optional<cachedActorInfo2_t> LookupCachedActorInfo2(
+			Actor*             a_actor,
+			ActorObjectHolder& a_holder) noexcept;
+
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			ActorObjectHolder& a_holder) noexcept;
 
@@ -971,12 +981,6 @@ namespace IED
 		except::descriptor                    m_lastException;
 
 		BipedDataCache m_bipedCache;
-
-		struct
-		{
-			SlotResults       sr;
-			UseCountContainer uc;
-		} m_temp;
 
 		bool m_nodeOverrideEnabled{ false };
 		bool m_nodeOverridePlayerEnabled{ false };

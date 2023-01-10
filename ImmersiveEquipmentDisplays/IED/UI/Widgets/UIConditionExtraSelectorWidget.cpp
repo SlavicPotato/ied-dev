@@ -15,6 +15,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kCanDualWield, UIConditionExtraSelectorWidgetStrings::CanDualWield),
 			std::make_pair(Data::ExtraConditionType::kClass, UIConditionExtraSelectorWidgetStrings::Class),
 			std::make_pair(Data::ExtraConditionType::kCombatStyle, UIConditionExtraSelectorWidgetStrings::CombatStyle),
+			std::make_pair(Data::ExtraConditionType::kDayOfWeek, UIConditionExtraSelectorWidgetStrings::DayOfWeek),
 			std::make_pair(Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential),
 			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
 			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
@@ -32,6 +33,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying),
 			std::make_pair(Data::ExtraConditionType::kIsGuard, UIConditionExtraSelectorWidgetStrings::IsGuard),
 			std::make_pair(Data::ExtraConditionType::kIsHorse, UIConditionExtraSelectorWidgetStrings::IsHorse),
+			std::make_pair(Data::ExtraConditionType::kIsInvulnerable, UIConditionExtraSelectorWidgetStrings::IsInvulnerable),
 			std::make_pair(Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown),
 			std::make_pair(Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount),
 			std::make_pair(Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount),
@@ -40,7 +42,10 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsRestrained, UIConditionExtraSelectorWidgetStrings::IsRestrained),
+			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
+			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
+			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
 			std::make_pair(Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor),
 			std::make_pair(Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed),
 			std::make_pair(Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected),
@@ -197,6 +202,16 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
 			case Data::ExtraConditionType::kIsRestrained:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsRestrained);
+			case Data::ExtraConditionType::kIsUnique:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsUnique);
+			case Data::ExtraConditionType::kIsSummonable:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSummonable);
+			case Data::ExtraConditionType::kIsInvulnerable:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsInvulnerable);
+			case Data::ExtraConditionType::kLevel:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Level);
+			case Data::ExtraConditionType::kDayOfWeek:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::DayOfWeek);
 			default:
 				return nullptr;
 			}

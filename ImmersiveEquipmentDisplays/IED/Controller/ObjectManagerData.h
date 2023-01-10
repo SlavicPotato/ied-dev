@@ -82,7 +82,7 @@ namespace IED
 		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
 	};*/
 
-	using ActorObjectMap = stl::unordered_map<Game::FormID, ActorObjectHolder>;
+	using ActorObjectMap = stl::vectormap<Game::FormID, ActorObjectHolder>;
 
 	class ActorProcessorTask;
 
@@ -103,7 +103,12 @@ namespace IED
 
 			if (r.second)
 			{
-				//ApplyActorState(r.first->second);
+				m_objects.sortvec(
+					[](const auto& a_lhs,
+				       const auto& a_rhs) {
+						return a_lhs->first < a_rhs->first;
+					});
+
 				OnActorAcquire(r.first->second);
 
 				if (WantGlobalVariableUpdateOnAddRemove())

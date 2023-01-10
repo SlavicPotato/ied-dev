@@ -600,6 +600,26 @@ namespace IED
 		return result;
 	}
 
+	void Controller::QueueSetEffectShaders(Actor* a_actor) noexcept
+	{
+		ITaskPool::QueuePLLoadedActorTask(
+			a_actor,
+			[this](
+				Actor*            a_actor,
+				Game::ActorHandle a_handle) noexcept {
+				stl::lock_guard lock(m_lock);
+
+				if (ShaderProcessingEnabled())
+				{
+					auto it = m_objects.find(a_actor->formID);
+					if (it != m_objects.end())
+					{
+						UpdateShaders(a_actor, 0.0f, it->second);
+					}
+				}
+			});
+	}
+
 	void Controller::EvaluateImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
@@ -2350,7 +2370,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.ResetEffectShaders();
+			a_params.SuspendEffectShaders();
 		}
 	}
 
@@ -2365,7 +2385,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.ResetEffectShaders();
+			a_params.SuspendEffectShaders();
 		}
 	}
 
@@ -2390,7 +2410,7 @@ namespace IED
 			{
 				a_objectEntry.data.effectShaderData = std::make_unique<EffectShaderData>(*es);
 
-				a_params.ResetEffectShaders();
+				a_params.SuspendEffectShaders();
 			}
 			else
 			{
@@ -2398,7 +2418,7 @@ namespace IED
 						a_objectEntry.data.state->nodes.rootNode,
 						*es))
 				{
-					a_params.ResetEffectShaders();
+					a_params.SuspendEffectShaders();
 				}
 				else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 				{
@@ -2408,7 +2428,7 @@ namespace IED
 							a_objectEntry.data.state->nodes.rootNode,
 							*es);
 
-						a_params.ResetEffectShaders();
+						a_params.SuspendEffectShaders();
 					}
 				}
 			}
@@ -2435,7 +2455,7 @@ namespace IED
 				false))
 		{
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
-	
+
 			a_params.mark_slot_presence_change(a_entry.slotid);
 		}
 	}
@@ -2904,13 +2924,13 @@ namespace IED
 								nodes.second,
 								*es);
 
-						a_params.ResetEffectShaders();
+						a_params.SuspendEffectShaders();
 					}
 					else
 					{
 						if (objectEntry.data.effectShaderData->UpdateIfChanged(a_params.objects, *es))
 						{
-							a_params.ResetEffectShaders();
+							a_params.SuspendEffectShaders();
 						}
 						else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 						{
@@ -2920,7 +2940,7 @@ namespace IED
 									a_params.objects,
 									*es);
 
-								a_params.ResetEffectShaders();
+								a_params.SuspendEffectShaders();
 							}
 						}
 					}
@@ -3747,18 +3767,14 @@ namespace IED
 		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
 		{
 			return a_holder.GetOrCreateProcessParams(
-				a_holder.IsFemale() ?
-					ConfigSex::Female :
-					ConfigSex::Male,
+				a_holder.GetSex(),
 				a_flags,
 				std::forward<Args>(a_args)...);
 		}
 		else
 		{
 			a_paramsOut.emplace(
-				a_holder.IsFemale() ?
-					ConfigSex::Female :
-					ConfigSex::Male,
+				a_holder.GetSex(),
 				a_flags,
 				std::forward<Args>(a_args)...);
 
@@ -3794,10 +3810,7 @@ namespace IED
 			a_flags,
 			a_actor,
 			a_handle,
-			m_temp.sr,
-			a_holder.GetTempData().idt,
-			a_holder.GetTempData().eqt,
-			m_temp.uc,
+			a_holder.GetTempData(),
 			a_actor,
 			a_npc,
 			a_npc->GetFirstNonTemporaryOrThis(),
@@ -3835,20 +3848,6 @@ namespace IED
 
 		if (refreshVariableMap)
 		{
-			/*auto bs = std::bitset<stl::underlying(Data::ObjectSlot::kMax)>(stl::underlying(params.slotPresenceChanges.value));
-
-				Debug(">> %.8X", a_actor->formID);
-
-				for (std::uint32_t i = 0; i < bs.size(); i++)
-				{
-					if (bs.test(i))
-					{
-						Debug("%u: %s", i, Data::GetSlotName(static_cast<Data::ObjectSlot>(i)));
-					}
-				}
-
-				Debug("<< %.8X", a_actor->formID);*/
-
 			RunVariableMapUpdate(params, true);
 		}
 
@@ -4593,10 +4592,7 @@ namespace IED
 			ControllerUpdateFlags::kNone,
 			a_info.actor,
 			a_info.handle,
-			a_controller.GetTempData().sr,
-			a_info.objects.GetTempData().idt,
-			a_info.objects.GetTempData().eqt,
-			a_controller.GetTempData().uc,
+			a_info.objects.GetTempData(),
 			a_info.actor,
 			a_info.npc,
 			a_info.npcOrTemplate,
@@ -5207,16 +5203,6 @@ namespace IED
 		ActorObjectHolder& a_holder) noexcept
 		-> std::optional<cachedActorInfo_t>
 	{
-		if (a_actor != a_holder.m_actor)
-		{
-			Warning(
-				"%s [%u]: actor mismatch (%.8X != %.8X)",
-				__FUNCTION__,
-				__LINE__,
-				a_actor->formID.get(),
-				a_holder.m_actor->formID.get());
-		}
-
 		auto npc = a_actor->GetActorBase();
 		if (!npc)
 		{
@@ -5271,10 +5257,67 @@ namespace IED
 			race,
 			root,
 			npcroot,
-			npc->GetSex() == 1 ?
-				ConfigSex::Female :
-				ConfigSex::Male,
+			a_holder.GetSex(),
 			a_holder);
+	}
+
+	auto Controller::LookupCachedActorInfo2(
+		Actor*             a_actor,
+		ActorObjectHolder& a_holder) noexcept
+		-> std::optional<cachedActorInfo2_t>
+	{
+		auto npc = a_actor->GetActorBase();
+		if (!npc)
+		{
+			return {};
+		}
+
+		auto race = a_actor->race;
+		if (!race)
+		{
+			race = npc->race;
+
+			if (!race)
+			{
+				return {};
+			}
+		}
+
+		auto root = a_actor->GetNiRootFadeNode(false);
+		if (!root)
+		{
+			Warning(
+				"%s: %.8X: actor has no 3D",
+				__FUNCTION__,
+				a_actor->formID.get());
+
+			return {};
+		}
+
+		if (root != a_holder.m_root)
+		{
+			Warning(
+				"%s: %.8X: skeleton root mismatch",
+				__FUNCTION__,
+				a_actor->formID.get());
+
+			QueueReset(a_actor, ControllerUpdateFlags::kNone);
+
+			return {};
+		}
+
+		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		if (!npcroot)
+		{
+			return {};
+		}
+
+		return std::make_optional<cachedActorInfo2_t>(
+			npc,
+			npc->GetFirstNonTemporaryOrThis(),
+			race,
+			root,
+			npcroot);
 	}
 
 	auto Controller::LookupCachedActorInfo(
@@ -5340,17 +5383,19 @@ namespace IED
 			slot.slotState.lastSeenEquipped = c;
 		}
 
-		if (auto biped = a_params.get_biped())
+		if (const auto* const biped = a_params.get_biped())
 		{
 			auto& e = biped->get_object(BIPED_OBJECT::kQuiver);
 
-			if (e.item &&
-			    e.item != e.addon &&
-			    e.item->IsAmmo())
+			const auto* const item = e.item;
+
+			if (item &&
+			    item != e.addon &&
+			    item->IsAmmo())
 			{
 				auto& slot = a_objectHolder.GetSlot(ObjectSlot::kAmmo);
 
-				slot.slotState.lastEquipped     = e.item->formID;
+				slot.slotState.lastEquipped     = item->formID;
 				slot.slotState.lastSeenEquipped = c;
 			}
 		}
@@ -5709,6 +5754,7 @@ namespace IED
 		ClearObjectDatabase();
 
 		ResetCounter();
+		m_evalCounter = 0;
 	}
 
 	std::size_t Controller::Store(

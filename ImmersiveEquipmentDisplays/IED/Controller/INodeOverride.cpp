@@ -641,6 +641,15 @@ namespace IED
 				Data::NodeOverrideConditionFlags>(
 				a_params,
 				a_data);
+
+		case Data::NodeOverrideConditionType::Perk:
+
+			return Conditions::match_perk<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data,
+				a_params.objects.GetCachedData());
 		}
 
 		return false;

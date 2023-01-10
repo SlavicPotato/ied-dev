@@ -177,6 +177,9 @@ namespace IED
 
 		if (auto npc = a_actor->GetActorBase())
 		{
+			a_out.pcLevelMult = npc->HasPCLevelMult();
+			a_out.level       = npc->GetLevel();
+
 			if (auto it = m_npcInfo.find(npc->formID);
 			    it == m_npcInfo.end())
 			{

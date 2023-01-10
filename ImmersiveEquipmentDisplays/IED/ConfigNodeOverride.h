@@ -116,6 +116,7 @@ namespace IED
 			Faction    = 20,
 			Variable   = 21,
 			Effect     = 22,
+			Perk       = 23,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -194,6 +195,9 @@ namespace IED
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Idle:
+				case NodeOverrideConditionType::Perk:
+					perkRank = 1;
+					[[fallthrough]];
 				case NodeOverrideConditionType::Faction:
 					form = a_form;
 					break;
@@ -335,9 +339,13 @@ namespace IED
 
 			union
 			{
-				std::int32_t i32a{ 0 };
-				std::int32_t skeletonID;
-				std::int32_t factionRank;
+				std::int32_t      i32a{ 0 };
+				std::int32_t      skeletonID;
+				std::int32_t      factionRank;
+				std::int32_t      perkRank;
+				RE::Calendar::Day dayOfWeek;
+
+				static_assert(std::is_same_v<std::underlying_type_t<RE::Calendar::Day>, std::int32_t>);
 			};
 
 			union
@@ -345,6 +353,7 @@ namespace IED
 				std::uint32_t           ui32b{ 0 };
 				TimeOfDay               timeOfDay;
 				std::uint32_t           uid;
+				std::uint32_t           level;
 				ConditionalVariableType condVarType;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
@@ -355,8 +364,10 @@ namespace IED
 			{
 				std::uint32_t           ui32c{ 0 };
 				VariableConditionSource vcSource;
+				ComparisonOperator      compOperator2;
 
 				static_assert(std::is_same_v<std::underlying_type_t<VariableConditionSource>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ComparisonOperator>, std::uint32_t>);
 			};
 
 			union

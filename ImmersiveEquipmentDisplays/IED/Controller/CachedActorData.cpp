@@ -5,23 +5,96 @@
 namespace IED
 {
 
-	CachedFactionData::CachedFactionData(Actor* a_actor) noexcept
+	CachedPerkData::CachedPerkData(Actor* a_actor) noexcept
 	{
-		UpdateFactions(a_actor);
+		if (auto npc = a_actor->GetActorBase())
+		{
+			UpdatePerks(a_actor, npc);
+		}
 	}
 
-	bool CachedFactionData::UpdateFactions(Actor* a_actor) noexcept
+	bool CachedPerkData::UpdatePerks(Actor* a_actor, TESNPC* a_npc) noexcept
 	{
-		const auto npc = a_actor->GetActorBase();
-		if (!npc)
+		const auto sig = GetSignature(a_actor);
+
+		if (sig == currentSignature)
 		{
 			return false;
 		}
 
+		currentSignature = sig;
+
+		data.clear();
+
+		if (a_actor->processManager &&
+		    a_actor->processManager->middleProcess)
+		{
+			if (a_actor == *g_thePlayer)
+			{
+				for (const auto* const e : static_cast<const PlayerCharacter*>(a_actor)->addedPerks)
+				{
+					if (e)
+					{
+						if (const auto* const perk = e->perk)
+						{
+							data.try_emplace(perk->formID, e->currentRank);
+						}
+					}
+				}
+			}
+
+			for (std::uint32_t i = 0; i < a_npc->perkCount; i++)
+			{
+				const auto& e = a_npc->perks[i];
+
+				if (const auto* const perk = e.perk)
+				{
+					data.try_emplace(perk->formID, e.currentRank);
+				}
+			}
+		}
+
+		return true;
+	}
+
+	constexpr std::size_t CachedPerkData::GetSignature(Actor* a_actor) noexcept
+	{
+		auto result = hash::fnv1::fnv_offset_basis;
+
+		if (a_actor == *g_thePlayer &&
+		    a_actor->processManager &&
+		    a_actor->processManager->middleProcess)
+		{
+			for (const auto* const e : static_cast<const PlayerCharacter*>(a_actor)->addedPerks)
+			{
+				if (e)
+				{
+					if (const auto* const perk = e->perk)
+					{
+						result = hash::fnv1::_append_hash_fnv1a(result, perk->formID);
+						result = hash::fnv1::_append_hash_fnv1a(result, e->currentRank);
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	CachedFactionData::CachedFactionData(Actor* a_actor) noexcept
+	{
+		if (auto npc = a_actor->GetActorBase())
+		{
+			UpdateFactions(a_actor, npc);
+		}
+	}
+
+	bool CachedFactionData::UpdateFactions(Actor* a_actor, TESNPC* a_npc) noexcept
+	{
 		const auto* const extraFactionChanges =
 			a_actor->extraData.Get<ExtraFactionChanges>();
 
-		const auto sig = GetSignature(extraFactionChanges, npc);
+		const auto sig = GetSignature(extraFactionChanges);
 
 		if (sig == currentSignature)
 		{
@@ -34,7 +107,7 @@ namespace IED
 
 		visit_factions(
 			extraFactionChanges,
-			npc,
+			a_npc,
 			[&](const auto& a_info) noexcept {
 				data.try_emplace(a_info.faction, a_info.rank);
 			});
@@ -43,18 +116,21 @@ namespace IED
 	}
 
 	constexpr std::size_t CachedFactionData::GetSignature(
-		const ExtraFactionChanges* a_factionChanges,
-		TESNPC*                    a_npc) noexcept
+		const ExtraFactionChanges* a_factionChanges) noexcept
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
 
-		visit_factions(
-			a_factionChanges,
-			a_npc,
-			[&](const auto& a_info) noexcept [[msvc::forceinline]] {
-				result = hash::fnv1::_append_hash_fnv1a(result, a_info.faction->formID);
-				result = hash::fnv1::_append_hash_fnv1a(result, a_info.rank);
-			});
+		if (a_factionChanges)
+		{
+			for (const auto& info : a_factionChanges->factions)
+			{
+				if (const auto* const faction = info.faction)
+				{
+					result = hash::fnv1::_append_hash_fnv1a(result, faction->formID);
+					result = hash::fnv1::_append_hash_fnv1a(result, info.rank);
+				}
+			}
+		}
 
 		return result;
 	}
@@ -131,7 +207,8 @@ namespace IED
 	CachedActorData::CachedActorData(Actor* a_actor) noexcept :
 		CachedFactionData(a_actor),
 		CachedActiveEffectData(a_actor),
-		cellAttached(a_actor->IsParentCellAttached()),
+		CachedPerkData(a_actor),
+		active(a_actor->IsParentCellAttached()),
 		inInterior(a_actor->IsInInteriorCell()),
 		worldspace(a_actor->GetParentCellWorldspace()),
 		currentPackage(a_actor->GetCurrentPackage()),
@@ -141,6 +218,8 @@ namespace IED
 		flags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
 		flagslf1(a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1),
 		flagslf2(a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2),
+		baseFlags(a_actor->GetActorBase()->actorData.actorBaseFlags & NPC_BASE_CHECK_FLAGS),
+		level(a_actor->GetLevel()),
 		swimming(a_actor->IsSwimming()),
 		sitting(a_actor->IsSitting()),
 		sleeping(a_actor->IsSleeping()),
@@ -187,6 +266,14 @@ namespace IED
 		state_var_update(flying, a_actor->IsFlying(), result);
 		state_var_update(restrained, a_actor->IsRestrained(), result);
 
+		if (auto npc = a_actor->GetActorBase())
+		{
+			state_var_update(
+				baseFlags.value,
+				npc->actorData.actorBaseFlags & NPC_BASE_CHECK_FLAGS,
+				result);
+		}
+
 		return result;
 	}
 
@@ -209,6 +296,21 @@ namespace IED
 		bool result = false;
 
 		// none for now
+
+		return result;
+	}
+
+	bool CachedActorData::DoLFUpdates(Actor* a_actor) noexcept
+	{
+		bool result = false;
+
+		if (auto npc = a_actor->GetActorBase())
+		{
+			result |= UpdateFactions(a_actor, npc);
+			result |= UpdatePerks(a_actor, npc);
+		}
+
+		state_var_update(level, a_actor->GetLevel(), result);
 
 		return result;
 	}
