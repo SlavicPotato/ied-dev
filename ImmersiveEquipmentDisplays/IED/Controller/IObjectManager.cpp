@@ -1042,7 +1042,7 @@ namespace IED
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,
 					e.form->As<TESObjectLIGH>(),
-					state->light);
+					n.light);
 			}
 
 			e.grpObject = std::addressof(n);
