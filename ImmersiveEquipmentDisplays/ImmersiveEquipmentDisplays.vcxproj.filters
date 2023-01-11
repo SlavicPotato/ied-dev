@@ -2758,6 +2758,9 @@
     <ClCompile Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
+    <ClCompile Include="IED\Controller\ObjectLight.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

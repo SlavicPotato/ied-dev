@@ -176,11 +176,7 @@ namespace IED
 
 		for (auto& e : groupObjects)
 		{
-			if (e.second.light)
-			{
-				ReferenceLightController::CleanupLights(
-					e.second.object.get());
-			}
+			e.second.light.Cleanup(e.second.object.get());
 
 			EngineExtensions::CleanupObjectImpl(
 				a_handle,
@@ -195,11 +191,7 @@ namespace IED
 			}
 		}
 
-		if (light)
-		{
-			ReferenceLightController::CleanupLights(
-				nodes.object.get());
-		}
+		light.Cleanup(nodes.object.get());
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,

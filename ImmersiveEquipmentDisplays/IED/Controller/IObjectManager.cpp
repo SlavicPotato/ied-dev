@@ -676,6 +676,11 @@ namespace IED
 
 		if (state->light)
 		{
+			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+			{
+				TryInitializeAndPlayLightSound(a_modelForm, state->light);
+			}
+
 			ReferenceLightController::GetSingleton().AddLight(
 				a_params.actor->formID,
 				a_modelForm->As<TESObjectLIGH>(),
@@ -704,6 +709,7 @@ namespace IED
 		FinalizeObjectState(
 			state,
 			a_form,
+			a_modelForm,
 			itemRoot,
 			object,
 			targetNodes,
@@ -749,7 +755,7 @@ namespace IED
 
 		if (hasModelForm)
 		{
-			state->modelForm = a_modelForm->formID;
+			state->modelFormID = a_modelForm->formID;
 		}
 
 		/*if (auto audioManager = BSAudioManager::GetSingleton())
@@ -982,6 +988,7 @@ namespace IED
 
 			auto& n = state->groupObjects.try_emplace(
 											 e.entry->first,
+											 e.form,
 											 itemRoot,
 											 e.object)
 			              .first->second;
@@ -1039,6 +1046,11 @@ namespace IED
 
 			if (n.light)
 			{
+				if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+				{
+					TryInitializeAndPlayLightSound(e.form, n.light);
+				}
+
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,
 					e.form->As<TESObjectLIGH>(),
@@ -1108,6 +1120,7 @@ namespace IED
 		FinalizeObjectState(
 			state,
 			a_form,
+			nullptr,
 			groupRoot,
 			nullptr,
 			targetNodes,
@@ -1133,6 +1146,7 @@ namespace IED
 	void IObjectManager::FinalizeObjectState(
 		std::unique_ptr<ObjectEntryBase::State>& a_state,
 		TESForm*                                 a_form,
+		TESForm*                                 a_modelForm,
 		NiNode*                                  a_rootNode,
 		const NiPointer<NiNode>&                 a_objectNode,
 		targetNodes_t&                           a_targetNodes,
@@ -1140,6 +1154,7 @@ namespace IED
 		Actor*                                   a_actor) noexcept
 	{
 		a_state->form           = a_form;
+		a_state->modelForm      = a_modelForm;
 		a_state->formid         = a_form->formID;
 		a_state->nodes.rootNode = a_rootNode;
 		a_state->nodes.ref      = std::move(a_targetNodes.ref);
@@ -1180,6 +1195,44 @@ namespace IED
 		if (const auto* const light = a_modelForm->As<TESObjectLIGH>())
 		{
 			a_out = ReferenceLightController::CreateAndAttachPointLight(light, a_actor, a_object);
+		}
+	}
+
+	void IObjectManager::TryInitializeAndPlayLightSound(
+		TESForm*     a_modelForm,
+		ObjectLight& a_light) noexcept
+	{
+		const auto* const lightForm = a_modelForm->As<TESObjectLIGH>();
+		if (!lightForm)
+		{
+			return;
+		}
+
+		const auto soundForm = lightForm->sound;
+		if (!soundForm)
+		{
+			return;
+		}
+
+		const auto audioManager = BSAudioManager::GetSingleton();
+		if (!audioManager)
+		{
+			return;
+		}
+
+		auto& handle = a_light.sound;
+
+		if (handle.IsValid())
+		{
+			handle.FadeOutAndRelease(0ui16);
+		}
+
+		if (audioManager->BuildSoundDataFromDescriptor(
+				handle,
+				soundForm))
+		{
+			handle.SetObjectToFollow(a_light.niObject);
+			handle.Play();
 		}
 	}
 

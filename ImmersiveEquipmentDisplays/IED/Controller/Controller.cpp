@@ -2196,7 +2196,7 @@ namespace IED
 			                      a_currentModelForm->formID :
 			                      Game::FormID{};
 
-			if (mfid != state->modelForm)
+			if (mfid != state->modelFormID)
 			{
 				return false;
 			}
@@ -2324,6 +2324,67 @@ namespace IED
 				{
 					state->UpdateAndSendAnimationEvent(
 						StringHolder::GetSingleton().weaponSheathe);
+				}
+			}
+
+			if (state->light)
+			{
+				if (!a_config.flags.test(BaseFlags::kPlaySound))
+				{
+					if (state->light.sound.IsValid())
+					{
+						state->light.sound.FadeOutAndRelease(100ui16);
+					}
+				}
+				else
+				{
+					if (!state->light.sound.IsValid())
+					{
+						if (auto modelForm = state->modelForm)
+						{
+							TryInitializeAndPlayLightSound(modelForm, state->light);
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			if (!a_config.flags.test(BaseFlags::kPlaySound))
+			{
+				for (auto& e : state->groupObjects)
+				{
+					auto& light = e.second.light;
+
+					if (!light)
+					{
+						continue;
+					}
+
+					if (light.sound.IsValid())
+					{
+						light.sound.FadeOutAndRelease(100ui16);
+					}
+				}
+			}
+			else
+			{
+				for (auto& e : state->groupObjects)
+				{
+					auto& light = e.second.light;
+
+					if (!light)
+					{
+						continue;
+					}
+
+					if (!light.sound.IsValid())
+					{
+						if (auto modelForm = e.second.modelForm)
+						{
+							TryInitializeAndPlayLightSound(modelForm, light);
+						}
+					}
 				}
 			}
 		}

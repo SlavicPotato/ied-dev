@@ -25,7 +25,6 @@ namespace IED
 		kWantUnloadAfterHide        = 1u << 10,
 		kInvisible                  = 1u << 24,
 
-
 		//kInvisibilityFlags = kInvisible | kWantUnloadAfterHide,
 	};
 
@@ -111,13 +110,16 @@ namespace IED
 				AnimationState
 			{
 				GroupObject(
+					TESForm*           a_modelForm,
 					NiNode*            a_rootNode,
 					NiPointer<NiNode>& a_object) noexcept :
+					modelForm(a_modelForm),
 					rootNode(a_rootNode),
 					object(a_object)
 				{
 				}
 
+				TESForm*                            modelForm;
 				NiPointer<NiNode>                   rootNode;
 				NiPointer<NiNode>                   object;
 				Data::cacheTransform_t              transform;
@@ -209,8 +211,9 @@ namespace IED
 			}
 
 			TESForm*                                           form{ nullptr };
+			TESForm*                                           modelForm{ nullptr };
 			Game::FormID                                       formid;
-			Game::FormID                                       modelForm;
+			Game::FormID                                       modelFormID;
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;

@@ -1163,6 +1163,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp" />
     <ClCompile Include="IED\Controller\IRNG.cpp" />
     <ClCompile Include="IED\Controller\ObjectEntryBase.cpp" />
+    <ClCompile Include="IED\Controller\ObjectLight.cpp" />
     <ClCompile Include="IED\Controller\WeaponNodeEntry.cpp" />
     <ClCompile Include="IED\ConvertNodes.cpp" />
     <ClCompile Include="IED\D3D\D3DAssets.cpp" />

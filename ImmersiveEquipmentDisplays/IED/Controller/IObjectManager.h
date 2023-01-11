@@ -161,6 +161,7 @@ namespace IED
 		static void FinalizeObjectState(
 			std::unique_ptr<ObjectEntryBase::State>& a_state,
 			TESForm*                                 a_form,
+			TESForm*                                 a_modelForm,
 			NiNode*                                  a_rootNode,
 			const NiPointer<NiNode>&                 a_objectNode,
 			targetNodes_t&                           a_targetNodes,
@@ -177,6 +178,10 @@ namespace IED
 			TESForm*                        a_modelForm,
 			const Data::configBaseValues_t& a_activeConfig,
 			ObjectLight&                    a_out) noexcept;
+		
+		static void TryInitializeAndPlayLightSound(
+			TESForm*                        a_modelForm,
+			ObjectLight&                    a_light) noexcept;
 
 		void PlayObjectSound(
 			const processParams_t&          a_params,
