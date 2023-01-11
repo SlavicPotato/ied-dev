@@ -1172,7 +1172,7 @@ namespace IED
 		const Data::configBaseValues_t& a_activeConfig,
 		ObjectLight&                    a_out) noexcept
 	{
-		if (ReferenceLightController::GetSingleton().GetEnabled())
+		if (!ReferenceLightController::GetSingleton().GetEnabled())
 		{
 			return;
 		}
