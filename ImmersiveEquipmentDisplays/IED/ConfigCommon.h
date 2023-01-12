@@ -330,6 +330,8 @@ namespace IED
 			kIsInvulnerable          = 48,
 			kLevel                   = 49,
 			kDayOfWeek               = 50,
+			kIsSneaking              = 51,
+			kInDialogue              = 52,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

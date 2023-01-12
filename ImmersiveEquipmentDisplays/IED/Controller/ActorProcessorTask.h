@@ -51,7 +51,7 @@ namespace IED
 		}
 #endif
 
-		[[nodiscard]] inline constexpr void SetProcessorTaskRunState(bool a_state) noexcept
+		inline constexpr void SetProcessorTaskRunState(bool a_state) noexcept
 		{
 			m_run = a_state;
 		}
@@ -61,6 +61,11 @@ namespace IED
 		inline constexpr void SetProcessorTaskParallelUpdates(bool a_switch) noexcept
 		{
 			m_parallelProcessing = a_switch;
+		}
+		
+		[[nodiscard]] inline constexpr auto& GetGlobalState() const noexcept
+		{
+			return m_globalState;
 		}
 
 	private:
@@ -78,8 +83,9 @@ namespace IED
 			RE::TESWeather*   currentWeather{ nullptr };
 			RE::Calendar::Day dayOfWeek{ RE::Calendar::Day::kSundas };
 			Data::TimeOfDay   timeOfDay{ Data::TimeOfDay::kDay };
-			bool              inFirstPerson{ false };
 			Game::ActorHandle playerLastRidden;
+			bool              inFirstPerson{ false };
+			bool              inDialogue{ false };
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };
 #endif

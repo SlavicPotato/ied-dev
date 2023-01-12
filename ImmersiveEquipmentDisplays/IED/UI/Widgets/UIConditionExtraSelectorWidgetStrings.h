@@ -59,6 +59,8 @@ namespace IED
 			IsInvulnerable          = 5448,
 			Level                   = 5449,
 			DayOfWeek               = 5450,
+			IsSneaking              = 5451,
+			InDialogue              = 5452,
 		};
 	}
 }

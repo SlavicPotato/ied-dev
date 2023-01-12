@@ -109,6 +109,12 @@ namespace IED
 			}
 		}
 
+		bool is_in_dialogue(CommonParams& a_params) noexcept
+		{
+			return a_params.objects.IsPlayer() &&
+			       MenuTopicManager::GetSingleton()->HasDialogueTarget();
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{

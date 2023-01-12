@@ -35,6 +35,8 @@ namespace IED
 			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
 		}
 
+		bool is_in_dialogue(CommonParams& a_params) noexcept;
+
 		template <class Tv, class Tm>
 		inline constexpr bool compare(
 			Data::ComparisonOperator a_oper,
@@ -172,6 +174,10 @@ namespace IED
 				return compare(a_match.compOperator2, a_cached.level, a_match.level);
 			case Data::ExtraConditionType::kDayOfWeek:
 				return RE::Calendar::GetSingleton()->GetDayOfWeek() == a_match.dayOfWeek;
+			case Data::ExtraConditionType::kIsSneaking:
+				return a_cached.sneaking;
+			case Data::ExtraConditionType::kInDialogue:
+				return is_in_dialogue(a_params);
 			default:
 				return false;
 			}

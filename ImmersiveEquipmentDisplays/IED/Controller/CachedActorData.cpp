@@ -259,12 +259,13 @@ namespace IED
 		state_var_update(flags2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_2, result);
 		state_var_update(sitting, a_actor->IsSitting(), result);
 		state_var_update(sleeping, a_actor->IsSleeping(), result);
-		state_var_update(beingRidden, a_actor->IsBeingRidden(), result);
+		state_var_update(sneaking, a_actor->IsSneaking(), result);
 		state_var_update(weaponDrawn, a_actor->IsWeaponDrawn(), result);
-		state_var_update(arrested, a_actor->IsArrested(), result);
 		state_var_update(unconscious, a_actor->IsUnconscious(), result);
 		state_var_update(flying, a_actor->IsFlying(), result);
 		state_var_update(restrained, a_actor->IsRestrained(), result);
+		state_var_update(arrested, a_actor->IsArrested(), result);
+		state_var_update(beingRidden, a_actor->IsBeingRidden(), result);
 
 		if (auto npc = a_actor->GetActorBase())
 		{

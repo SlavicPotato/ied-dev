@@ -19,6 +19,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential),
 			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
 			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
+			std::make_pair(Data::ExtraConditionType::kInDialogue, UIConditionExtraSelectorWidgetStrings::InDialogue),
 			std::make_pair(Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson),
 			std::make_pair(Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior),
 			std::make_pair(Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove),
@@ -42,6 +43,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsRestrained, UIConditionExtraSelectorWidgetStrings::IsRestrained),
+			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
@@ -79,7 +81,7 @@ namespace IED
 				{
 					ImGui::PushID(stl::underlying(i));
 
-					bool selected = (i == a_type);
+					const bool selected = (i == a_type);
 					if (selected)
 					{
 						if (ImGui::IsWindowAppearing())
@@ -212,6 +214,10 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Level);
 			case Data::ExtraConditionType::kDayOfWeek:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::DayOfWeek);
+			case Data::ExtraConditionType::kIsSneaking:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSneaking);
+			case Data::ExtraConditionType::kInDialogue:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InDialogue);
 			default:
 				return nullptr;
 			}

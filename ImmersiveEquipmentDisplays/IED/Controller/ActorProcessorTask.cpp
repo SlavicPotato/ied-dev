@@ -242,6 +242,8 @@ namespace IED
 
 	void ActorProcessorTask::UpdateGlobalState() noexcept
 	{
+		bool changed = false;
+
 		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
 		    lrhandle != m_globalState.playerLastRidden)
 		{
@@ -254,7 +256,18 @@ namespace IED
 		    fpstate != m_globalState.inFirstPerson)
 		{
 			m_globalState.inFirstPerson = fpstate;
+			changed                     = true;
+		}
 
+		if (const bool cv = MenuTopicManager::GetSingleton()->HasDialogueTarget();
+		    cv != m_globalState.inDialogue)
+		{
+			m_globalState.inDialogue = cv;
+			changed                  = true;
+		}
+
+		if (changed)
+		{
 			auto& controller = GetController();
 
 			if (auto it = controller.m_objects.find(Data::IData::GetPlayerRefID());
@@ -262,9 +275,9 @@ namespace IED
 			{
 				it->second.RequestEval();
 			}
-		}
 
-		bool changed = false;
+			changed = false;
+		}
 
 		if (m_timer.GetStartTime() >= m_globalState.nextRun)
 		{

@@ -232,5 +232,6 @@ namespace IED
 		bool                             unconscious;
 		bool                             flying;
 		bool                             restrained;
+		bool                             sneaking;
 	};
 }
