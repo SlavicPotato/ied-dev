@@ -1576,7 +1576,20 @@ namespace IED
 							a_params,
 							PostChangeAction::Evaluate);
 					},
-					[] {},
+					[&] {
+						if (ImGui::CheckboxFlagsT(
+								UIL::LS(UIBaseConfigString::ScaleCollider, "1"),
+								stl::underlying(std::addressof(a_data.flags.value)),
+								stl::underlying(Data::BaseFlags::kGeometryScaleCollider)))
+						{
+							PropagateFlagToEquipmentOverrides(
+								a_baseConfig,
+								Data::BaseFlags::kGeometryScaleCollider);
+
+							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+						}
+					
+					},
 					static_cast<Localization::StringID>(UIBaseConfigString::GeometryTransform),
 					ImGuiTreeNodeFlags_None);
 

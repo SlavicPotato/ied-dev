@@ -450,7 +450,7 @@ namespace IED
 				std::stringstream ss;
 
 				ss << std::left << std::setfill(' ') << std::setw(22) << name << " ["
-				   << sshex(8) << slot.data.state->formid.get() << "] [" << *slot.data.state->nodeDesc.name << "]";
+				   << sshex(8) << slot.data.state->form->formID.get() << "] [" << *slot.data.state->nodeDesc.name << "]";
 
 				if (slot.data.state->flags.test(ObjectEntryFlags::kScbLeft))
 				{
@@ -501,7 +501,7 @@ namespace IED
 			ImGui::SameLine();
 
 			DrawObjectEntryHeaderInfo(
-				m_controller.UIGetFormLookupCache().LookupForm(slot.data.state->formid),
+				m_controller.UIGetFormLookupCache().LookupForm(slot.data.state->form->formID),
 				slot);
 
 			return true;

@@ -115,7 +115,7 @@ namespace IED
 				ImGui::TextColored(
 					UICommon::g_colorLightBlue,
 					"%.8X",
-					state->formid.get());
+					state->form->formID.get());
 
 				if (ImGui::IsItemHovered())
 				{
@@ -123,7 +123,7 @@ namespace IED
 				}
 			}
 
-			if (state->modelFormID && state->formid != state->modelFormID)
+			if (state->modelForm && state->form != state->modelForm)
 			{
 				ImGui::SameLine(0.0f, 5.0f);
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -134,7 +134,7 @@ namespace IED
 
 				auto& flc = m_controller.UIGetFormLookupCache();
 
-				if (auto formInfo = flc.LookupForm(state->modelFormID))
+				if (auto formInfo = flc.LookupForm(state->modelForm->formID))
 				{
 					if (!formInfo->form.name.empty())
 					{
@@ -148,7 +148,7 @@ namespace IED
 						ImGui::TextColored(
 							UICommon::g_colorLightBlue,
 							"%.8X",
-							state->modelFormID.get());
+							state->modelForm->formID.get());
 					}
 
 					if (ImGui::IsItemHovered())

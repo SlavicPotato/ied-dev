@@ -30,8 +30,9 @@ namespace IED
 
 		[[nodiscard]] bool GetUniqueObject(
 			const char*          a_path,
-			ObjectDatabaseEntry& a_entry,
-			NiPointer<NiNode>&   a_object) noexcept;
+			ObjectDatabaseEntry& a_outEntry,
+			NiPointer<NiNode>&   a_outObject,
+			float                a_colliderScale = 1.0f) noexcept;
 
 		bool        ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
@@ -68,7 +69,7 @@ namespace IED
 		}
 
 	private:
-		static NiNode* CreateClone(NiNode* a_object) noexcept;
+		static NiNode* CreateClone(NiNode* a_object, float a_colliderScale) noexcept;
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;

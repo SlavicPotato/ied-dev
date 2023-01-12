@@ -5,6 +5,7 @@
 #include "ObjectDatabase.h"
 #include "ObjectLight.h"
 #include "ObjectManagerCommon.h"
+#include "ObjectSound.h"
 
 #include "IED/AnimationUpdateManager.h"
 #include "IED/ConfigBaseValues.h"
@@ -87,16 +88,15 @@ namespace IED
 			std::int32_t                         inventoryCount{ 0 };
 		};
 
-		struct AnimationState
+		struct ObjectAnim
 		{
-			RE::WeaponAnimationGraphManagerHolderPtr weapAnimGraphManagerHolder;
-			stl::fixed_string                        currentAnimationEvent;
+			RE::WeaponAnimationGraphManagerHolderPtr holder;
+			stl::fixed_string                        currentEvent;
 
 			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
 		};
 
-		struct State :
-			AnimationState
+		struct State
 		{
 			State() noexcept  = default;
 			~State() noexcept = default;
@@ -106,8 +106,7 @@ namespace IED
 			State& operator=(const State&) = delete;
 			State& operator=(State&&)      = delete;
 
-			struct GroupObject :
-				AnimationState
+			struct GroupObject
 			{
 				GroupObject(
 					TESForm*           a_modelForm,
@@ -125,6 +124,8 @@ namespace IED
 				Data::cacheTransform_t              transform;
 				ObjectDatabase::ObjectDatabaseEntry dbEntry;
 				ObjectLight                         light;
+				ObjectSound                         sound;
+				ObjectAnim                          anim;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence) noexcept;
 			};
@@ -152,22 +153,8 @@ namespace IED
 					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
 
-			SKMP_FORCEINLINE void UpdateAnimationGraphs(
-				const BSAnimationUpdateData& a_data) noexcept
-			{
-				for (auto& e : groupObjects)
-				{
-					if (auto& h = e.second.weapAnimGraphManagerHolder)
-					{
-						AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
-					}
-				}
-
-				if (auto& h = weapAnimGraphManagerHolder)
-				{
-					AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
-				}
-			}
+			void UpdateAnimationGraphs(
+				const BSAnimationUpdateData& a_data) const noexcept;
 
 			void UpdateArrows(std::int32_t a_count) noexcept;
 
@@ -212,8 +199,6 @@ namespace IED
 
 			TESForm*                                           form{ nullptr };
 			TESForm*                                           modelForm{ nullptr };
-			Game::FormID                                       formid;
-			Game::FormID                                       modelFormID;
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
@@ -226,7 +211,10 @@ namespace IED
 			long long                                          created{ 0 };
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			ObjectLight                                        light;
+			ObjectSound                                        sound;
+			ObjectAnim                                         anim;
 			std::unique_ptr<QuiverArrowState>                  arrowState;
+			stl::optional<float>                               colliderScale;
 			Game::FormID                                       owner;
 			std::uint8_t                                       hideCountdown{ 0 };
 			bool                                               atmReference{ true };

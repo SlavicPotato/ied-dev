@@ -8,16 +8,9 @@ namespace IED
 {
 	void ObjectLight::Cleanup(NiNode* a_object) noexcept
 	{
-		if (!niObject)
+		if (niObject)
 		{
-			return;
+			ReferenceLightController::CleanupLights(a_object);
 		}
-
-		if (sound.IsValid())
-		{
-			sound.FadeOutAndRelease(100ui16);
-		}
-
-		ReferenceLightController::CleanupLights(a_object);
 	}
 }

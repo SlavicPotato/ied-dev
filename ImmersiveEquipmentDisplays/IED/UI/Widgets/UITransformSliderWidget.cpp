@@ -91,7 +91,9 @@ namespace IED
 					"%s",
 					UIL::LS(a_label)))
 			{
+				ImGui::PushID("extra");
 				a_extra();
+				ImGui::PopID();
 
 				ImGui::Spacing();
 
@@ -141,7 +143,7 @@ namespace IED
 			Data::configTransform_t& a_data,
 			func_upd_t               a_updateop)
 		{
-			ImGui::PushID("transform_sliders");
+			ImGui::PushID("sliders");
 
 			float dragSpeed = ImGui::GetIO().KeyShift ? 0.005f : 0.5f;
 

@@ -56,6 +56,7 @@ namespace IED
 				{ UIFormBrowserStrings::Weather, RE::TESWeather::kTypeID },
 				{ UIFormBrowserStrings::Global, TESGlobal::kTypeID },
 				{ UIFormBrowserStrings::Effect, EffectSetting::kTypeID },
+				{ UIFormBrowserStrings::Hazard, BGSHazard::kTypeID },
 				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
 				{ UIFormBrowserStrings::Perk, BGSPerk::kTypeID },
 

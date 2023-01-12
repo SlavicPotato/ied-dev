@@ -26,6 +26,7 @@ namespace IED
 			InventoryCheck          = 4015,
 			CreatePhysicsDataInfo   = 4016,
 			GeometryTransform       = 4017,
+			ScaleCollider           = 4018,
 		};
 	}
 }

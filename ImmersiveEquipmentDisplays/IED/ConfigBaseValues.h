@@ -39,6 +39,7 @@ namespace IED
 			kAttachLight                = 1u << 23,
 			kHideLight                  = 1u << 24,
 			kRemoveEditorMarker         = 1u << 25,
+			kGeometryScaleCollider      = 1u << 26,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -50,7 +51,8 @@ namespace IED
 			                     kDisableHavok |
 			                     kRemoveProjectileTracers |
 			                     kAttachLight |
-			                     kRemoveEditorMarker
+			                     kRemoveEditorMarker |
+			                     kGeometryScaleCollider
 
 		};
 

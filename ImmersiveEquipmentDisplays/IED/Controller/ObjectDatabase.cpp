@@ -6,31 +6,10 @@ namespace IED
 {
 	bool ObjectDatabase::GetUniqueObject(
 		const char*          a_path,
-		ObjectDatabaseEntry& a_entry,
-		NiPointer<NiNode>&   a_object) noexcept
+		ObjectDatabaseEntry& a_outEntry,
+		NiPointer<NiNode>&   a_outObject,
+		float                a_colliderScale) noexcept
 	{
-		/*bool result = false;
-
-		RE::BSResource::ModelRequestParams     params;
-		RE::BSResource::BSModelResourceResult* mr = nullptr;
-
-		if (!RE::BSResource::RequestModel(a_path, mr, params))
-		{
-			if (auto node = mr->object->AsNode())
-			{
-				a_object = CreateClone(node);
-
-				result = true;
-			}
-		}
-
-		if (mr)
-		{
-			RE::BSResource::BSResourceEntryDB::ReleaseObject(mr);
-		}
-
-		return result;*/
-
 		using namespace ::Util::Model;
 
 		char        path_buffer[MAX_PATH];
@@ -44,12 +23,12 @@ namespace IED
 		if (m_level == ObjectDatabaseLevel::kDisabled)
 		{
 			ModelLoader loader;
-			if (!loader.LoadObject(path, a_object))
+			if (!loader.LoadObject(path, a_outObject))
 			{
 				return false;
 			}
 
-			if (!ValidateObject(path, a_object))
+			if (!ValidateObject(path, a_outObject))
 			{
 				return false;
 			}
@@ -81,8 +60,8 @@ namespace IED
 
 			it->second->accessed = IPerfCounter::Query();
 
-			a_entry  = it->second;
-			a_object = CreateClone(it->second->object.get());
+			a_outEntry  = it->second;
+			a_outObject = CreateClone(it->second->object.get(), a_colliderScale);
 		}
 
 		return true;
@@ -224,9 +203,11 @@ namespace IED
 		m_cleanupDeadline.reset();
 	}
 
-	NiNode* ObjectDatabase::CreateClone(NiNode* a_object) noexcept
+	NiNode* ObjectDatabase::CreateClone(NiNode* a_object, float a_colliderScale) noexcept
 	{
 		NiCloningProcess process(NiObjectNET::CopyType::COPY_EXACT);
+
+		process.SetColliderScaleUniform(a_colliderScale);
 
 		auto result = a_object->CreateClone(process);
 		a_object->ProcessClone(process);

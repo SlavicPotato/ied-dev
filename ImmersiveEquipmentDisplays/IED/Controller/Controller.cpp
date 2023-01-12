@@ -2179,7 +2179,7 @@ namespace IED
 		{
 			if (a_config.flags.test(BaseFlags::kPlaySequence))
 			{
-				if (state->weapAnimGraphManagerHolder)
+				if (state->anim.holder)
 				{
 					return false;
 				}
@@ -2192,11 +2192,7 @@ namespace IED
 				}
 			}
 
-			const auto mfid = a_currentModelForm ?
-			                      a_currentModelForm->formID :
-			                      Game::FormID{};
-
-			if (mfid != state->modelFormID)
+			if (a_currentModelForm != state->modelForm)
 			{
 				return false;
 			}
@@ -2295,6 +2291,12 @@ namespace IED
 		{
 			if (state->currentGeomTransformTag != a_config.geometryTransform)
 			{
+				if (a_config.geometryTransform.scale != state->colliderScale)
+				{
+					_DMESSAGE("rr");
+					return false;
+				}
+
 				INode::UpdateObjectTransform(
 					a_config.geometryTransform,
 					state->nodes.object);
@@ -2313,37 +2315,37 @@ namespace IED
 						a_config.niControllerSequence);
 				}
 			}
-			else if (state->weapAnimGraphManagerHolder)
+			else if (state->anim.holder)
 			{
 				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
 				{
-					state->UpdateAndSendAnimationEvent(
+					state->anim.UpdateAndSendAnimationEvent(
 						a_config.animationEvent);
 				}
 				else
 				{
-					state->UpdateAndSendAnimationEvent(
+					state->anim.UpdateAndSendAnimationEvent(
 						StringHolder::GetSingleton().weaponSheathe);
 				}
 			}
 
-			if (state->light)
+			if (state->sound.desc)
 			{
 				if (!a_config.flags.test(BaseFlags::kPlaySound))
 				{
-					if (state->light.sound.IsValid())
+					if (state->sound.handle.IsValid())
 					{
-						state->light.sound.FadeOutAndRelease(100ui16);
+						state->sound.handle.FadeOutAndRelease(0ui16);
 					}
 				}
 				else
 				{
-					if (!state->light.sound.IsValid())
+					if (!state->sound.handle.IsValid())
 					{
-						if (auto modelForm = state->modelForm)
-						{
-							TryInitializeAndPlayLightSound(modelForm, state->light);
-						}
+						TryInitializeAndPlaySound(
+							state->sound,
+							state->light,
+							state->nodes.object.get());
 					}
 				}
 			}
@@ -2354,16 +2356,16 @@ namespace IED
 			{
 				for (auto& e : state->groupObjects)
 				{
-					auto& light = e.second.light;
+					auto& object = e.second;
 
-					if (!light)
+					if (!object.sound.desc)
 					{
 						continue;
 					}
 
-					if (light.sound.IsValid())
+					if (object.sound.handle.IsValid())
 					{
-						light.sound.FadeOutAndRelease(100ui16);
+						object.sound.handle.FadeOutAndRelease(0ui16);
 					}
 				}
 			}
@@ -2371,19 +2373,19 @@ namespace IED
 			{
 				for (auto& e : state->groupObjects)
 				{
-					auto& light = e.second.light;
+					auto& object = e.second;
 
-					if (!light)
+					if (!object.sound.desc)
 					{
 						continue;
 					}
 
-					if (!light.sound.IsValid())
+					if (!object.sound.handle.IsValid())
 					{
-						if (auto modelForm = e.second.modelForm)
-						{
-							TryInitializeAndPlayLightSound(modelForm, light);
-						}
+						TryInitializeAndPlaySound(
+							object.sound,
+							object.light,
+							object.object.get());
 					}
 				}
 			}
@@ -2881,7 +2883,7 @@ namespace IED
 							itemData->itemCount :
 							6);
 
-					objectEntry.slotState.lastSlotted = objectEntry.data.state->formid;
+					objectEntry.slotState.lastSlotted = objectEntry.data.state->form->formID;
 
 					if (visible)
 					{
@@ -5231,17 +5233,17 @@ namespace IED
 			{
 				it->second.transform.Update(e.second.transform);
 
-				if (it->second.weapAnimGraphManagerHolder)
+				if (it->second.anim.holder)
 				{
 					if (e.second.flags.test(
 							Data::ConfigModelGroupEntryFlags::kAnimationEvent))
 					{
-						it->second.UpdateAndSendAnimationEvent(
+						it->second.anim.UpdateAndSendAnimationEvent(
 							e.second.animationEvent);
 					}
 					else
 					{
-						it->second.UpdateAndSendAnimationEvent(
+						it->second.anim.UpdateAndSendAnimationEvent(
 							StringHolder::GetSingleton().weaponSheathe);
 					}
 				}

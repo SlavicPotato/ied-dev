@@ -96,12 +96,12 @@ namespace IED
 			RE::IAnimationGraphManagerHolder&      a_characterHolder) noexcept;
 
 		typedef bool (*loadWeaponGraph_t)(
-			RE::WeaponAnimationGraphManagerHolder& a_weapHolder,
-			const char*                            a_hkxPath) noexcept;
+			RE::IAnimationGraphManagerHolder& a_weapHolder,
+			const char*                       a_hkxPath) noexcept;
 
 		typedef bool (*bindAnimationObject_t)(
-			RE::IAnimationGraphManagerHolder& a_holder,
-			NiAVObject*                       a_object) noexcept;
+			RE::WeaponAnimationGraphManagerHolder& a_holder,
+			NiAVObject*                            a_object) noexcept;
 
 		typedef bool (*stripCollision_t)(
 			NiAVObject* a_object,
@@ -222,8 +222,8 @@ namespace IED
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
 		//inline static const auto fLoadAndRegisterWeaponGraph = IAL::Address<loadAndRegisterWeaponGraph_t>(32249, 32984);
-		inline static const auto LoadWeaponAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
-		inline static const auto BindAnimationObject                = IAL::Address<bindAnimationObject_t>(32250, 32985);
+		inline static const auto LoadAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
+		inline static const auto BindAnimationObject          = IAL::Address<bindAnimationObject_t>(32250, 32985);
 
 		//inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 

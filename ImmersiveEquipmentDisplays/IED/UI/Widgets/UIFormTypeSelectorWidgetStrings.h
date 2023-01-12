@@ -57,6 +57,7 @@ namespace IED
 			Outfit           = 6346,
 			Enchantment      = 6347,
 			Perk             = 6348,
+			Hazard           = 6349,
 		};
 	}
 }

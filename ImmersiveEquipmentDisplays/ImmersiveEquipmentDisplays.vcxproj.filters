@@ -1733,6 +1733,12 @@
     <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\Controller\SoundDescriptor.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\ObjectSound.h">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">

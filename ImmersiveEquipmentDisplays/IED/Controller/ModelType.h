@@ -10,7 +10,8 @@ namespace IED
 		kMisc,
 		kLight,
 		kAmmo,
-		kProjectile
+		kProjectile,
+		kHazard
 	};
 
 }

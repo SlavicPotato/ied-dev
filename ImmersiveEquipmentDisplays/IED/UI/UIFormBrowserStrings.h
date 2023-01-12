@@ -48,5 +48,6 @@ namespace IED
 		Effect            = 5239,
 		Light             = 5240,
 		Perk              = 5241,
+		Hazard            = 5242,
 	};
 }

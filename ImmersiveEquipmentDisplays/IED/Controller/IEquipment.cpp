@@ -256,7 +256,7 @@ namespace IED
 		{
 			if (a_objectEntry.data.state)
 			{
-				const auto fid = a_objectEntry.data.state->formid;
+				const auto fid = a_objectEntry.data.state->form->formID;
 
 				if (fid == a_config.form.get_id() ||
 				    std::find(

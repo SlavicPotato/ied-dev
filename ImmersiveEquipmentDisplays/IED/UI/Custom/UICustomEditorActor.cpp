@@ -464,7 +464,7 @@ namespace IED
 			}
 
 			auto& flc = m_controller.UIGetFormLookupCache();
-			DrawObjectEntryHeaderInfo(flc.LookupForm(object->data.state->formid), *object);
+			DrawObjectEntryHeaderInfo(flc.LookupForm(object->data.state->form->formID), *object);
 
 			return true;
 		}

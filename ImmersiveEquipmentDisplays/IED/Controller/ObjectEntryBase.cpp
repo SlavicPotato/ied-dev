@@ -146,13 +146,30 @@ namespace IED
 
 	void ObjectEntryBase::ResetDeferredHide() const noexcept
 	{
-		if (auto &state = data.state)
+		if (auto& state = data.state)
 		{
 			if (state->flags.test(ObjectEntryFlags::kInvisible) && state->hideCountdown != 0)
 			{
 				state->flags.clear(ObjectEntryFlags::kInvisible);
 				state->hideCountdown = 0;
 			}
+		}
+	}
+
+	void ObjectEntryBase::State::UpdateAnimationGraphs(
+		const BSAnimationUpdateData& a_data) const noexcept
+	{
+		for (auto& e : groupObjects)
+		{
+			if (auto& h = e.second.anim.holder)
+			{
+				AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
+			}
+		}
+
+		if (auto& h = anim.holder)
+		{
+			AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
 		}
 	}
 
@@ -167,15 +184,15 @@ namespace IED
 	void ObjectEntryBase::State::Cleanup(
 		Game::ObjectRefHandle a_handle) noexcept
 	{
-		/*if (soundHandle)
-		{
-			soundHandle->FadeOutAndRelease(0ui16);
-		}*/
-
 		const auto ts = IPerfCounter::Query();
 
 		for (auto& e : groupObjects)
 		{
+			if (e.second.sound.handle.IsValid())
+			{
+				sound.handle.FadeOutAndRelease(0ui16);
+			}
+
 			e.second.light.Cleanup(e.second.object.get());
 
 			EngineExtensions::CleanupObjectImpl(
@@ -183,12 +200,17 @@ namespace IED
 				e.second.rootNode.get());
 
 			EngineExtensions::CleanupWeaponBehaviorGraph(
-				e.second.weapAnimGraphManagerHolder);
+				e.second.anim.holder);
 
 			if (auto& d = e.second.dbEntry)
 			{
 				d->accessed = ts;
 			}
+		}
+
+		if (sound.handle.IsValid())
+		{
+			sound.handle.FadeOutAndRelease(0ui16);
 		}
 
 		light.Cleanup(nodes.object.get());
@@ -198,7 +220,7 @@ namespace IED
 			nodes.rootNode.get());
 
 		EngineExtensions::CleanupWeaponBehaviorGraph(
-			weapAnimGraphManagerHolder);
+			anim.holder);
 
 		if (auto& d = dbEntry)
 		{
@@ -293,20 +315,20 @@ namespace IED
 		nodes.rootNode->SetVisible(a_switch);
 	}
 
-	void ObjectEntryBase::AnimationState::UpdateAndSendAnimationEvent(
+	void ObjectEntryBase::ObjectAnim::UpdateAndSendAnimationEvent(
 		const stl::fixed_string& a_event) noexcept
 	{
-		assert(weapAnimGraphManagerHolder != nullptr);
+		assert(holder != nullptr);
 
 		if (a_event.empty())
 		{
 			return;
 		}
 
-		if (a_event != currentAnimationEvent)
+		if (a_event != currentEvent)
 		{
-			currentAnimationEvent = a_event;
-			weapAnimGraphManagerHolder->NotifyAnimationGraph(a_event.c_str());
+			currentEvent = a_event;
+			holder->NotifyAnimationGraph(a_event.c_str());
 		}
 	}
 

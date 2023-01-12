@@ -35,7 +35,7 @@ namespace IED
 				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
 			}
 
-			if (auto& ah = state->weapAnimGraphManagerHolder)
+			if (auto& ah = state->anim.holder)
 			{
 				AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
 			}
@@ -47,7 +47,7 @@ namespace IED
 					ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
 				}
 
-				if (auto& ah = e.second.weapAnimGraphManagerHolder)
+				if (auto& ah = e.second.anim.holder)
 				{
 					AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
 				}
@@ -493,6 +493,7 @@ namespace IED
 			INode::GetLightNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kProjectile:
+		case ModelType::kHazard:
 		case ModelType::kMisc:
 			INode::GetMiscNodeName(a_form->formID, a_out);
 			break;
@@ -582,7 +583,18 @@ namespace IED
 		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry dbentry;
 
-		if (!GetUniqueObject(modelParams.path, dbentry, object))
+		if (a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider))
+		{
+			state->colliderScale = a_activeConfig.geometryTransform.scale;
+		}
+
+		if (!GetUniqueObject(
+				modelParams.path,
+				dbentry,
+				object,
+				state->colliderScale ?
+					*state->colliderScale :
+					1.0f))
 		{
 			Warning(
 				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
@@ -648,14 +660,15 @@ namespace IED
 
 		UpdateDownwardPass(itemRoot);
 
-		if (modelParams.type == ModelType::kLight &&
-		    a_activeConfig.flags.test(Data::BaseFlags::kAttachLight))
+		TESObjectLIGH* lightForm = nullptr;
+
+		if (a_activeConfig.flags.test(Data::BaseFlags::kAttachLight))
 		{
+			lightForm = GetLightFormForAttach(a_modelForm);
 			TryCreatePointLight(
 				a_params.actor,
 				object,
-				a_modelForm,
-				a_activeConfig,
+				lightForm,
 				state->light);
 		}
 
@@ -676,15 +689,20 @@ namespace IED
 
 		if (state->light)
 		{
-			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
-			{
-				TryInitializeAndPlayLightSound(a_modelForm, state->light);
-			}
-
 			ReferenceLightController::GetSingleton().AddLight(
 				a_params.actor->formID,
-				a_modelForm->As<TESObjectLIGH>(),
+				lightForm,
 				state->light);
+		}
+
+		state->sound.desc = GetSoundDescriptor(a_modelForm);
+
+		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+		{
+			TryInitializeAndPlaySound(
+				state->sound,
+				state->light,
+				object);
 		}
 
 		//UpdateDownwardPass(itemRoot);
@@ -709,7 +727,6 @@ namespace IED
 		FinalizeObjectState(
 			state,
 			a_form,
-			a_modelForm,
 			itemRoot,
 			object,
 			targetNodes,
@@ -729,7 +746,7 @@ namespace IED
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
-					state->weapAnimGraphManagerHolder,
+					state->anim.holder,
 					[&](const char* a_path) noexcept {
 						return a_baseConfig.hkxFilter.empty() ?
 				                   true :
@@ -740,11 +757,11 @@ namespace IED
 				                            a_activeConfig.animationEvent :
 				                            StringHolder::GetSingleton().weaponSheathe;
 
-				state->UpdateAndSendAnimationEvent(eventName);
+				state->anim.UpdateAndSendAnimationEvent(eventName);
 
 				AnimationUpdateController::GetSingleton().AddObject(
 					a_params.actor->formID,
-					state->weapAnimGraphManagerHolder);
+					state->anim.holder);
 			}
 		}
 
@@ -755,24 +772,8 @@ namespace IED
 
 		if (hasModelForm)
 		{
-			state->modelFormID = a_modelForm->formID;
+			state->modelForm = a_modelForm;
 		}
-
-		/*if (auto audioManager = BSAudioManager::GetSingleton())
-		{
-			auto sf = Game::FormID(0x0003C8EF).Lookup<BGSSoundDescriptorForm>();
-			ASSERT(sf);
-
-			state->soundHandle = std::make_unique<BSSoundHandle>();
-
-			if (audioManager->BuildSoundDataFromDescriptor(
-					*state->soundHandle,
-					sf))
-			{
-				state->soundHandle->SetObjectToFollow(object.get());
-				state->soundHandle->Play();
-			}
-		}*/
 
 		a_objectEntry.data.state = std::move(state);
 
@@ -1008,15 +1009,16 @@ namespace IED
 			objectAttachmentNode->AttachChild(itemRoot, true);
 			UpdateDownwardPass(itemRoot);
 
-			if (e.params.type == ModelType::kLight &&
-			    (a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
-			     e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight)))
+			TESObjectLIGH* lightForm = nullptr;
+
+			if (a_activeConfig.flags.test(Data::BaseFlags::kAttachLight) ||
+			    e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight))
 			{
+				lightForm = GetLightFormForAttach(e.form);
 				TryCreatePointLight(
 					a_params.actor,
 					e.object,
-					e.form,
-					a_activeConfig,
+					lightForm,
 					n.light);
 			}
 
@@ -1046,15 +1048,20 @@ namespace IED
 
 			if (n.light)
 			{
-				if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
-				{
-					TryInitializeAndPlayLightSound(e.form, n.light);
-				}
-
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,
-					e.form->As<TESObjectLIGH>(),
+					lightForm,
 					n.light);
+			}
+
+			n.sound.desc = GetSoundDescriptor(e.form);
+
+			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+			{
+				TryInitializeAndPlaySound(
+					n.sound,
+					n.light,
+					n.object);
 			}
 
 			e.grpObject = std::addressof(n);
@@ -1084,7 +1091,7 @@ namespace IED
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,
-						e.grpObject->weapAnimGraphManagerHolder,
+						e.grpObject->anim.holder,
 						[&](const char* a_path) noexcept {
 							return a_baseConfig.hkxFilter.empty() ?
 					                   true :
@@ -1096,11 +1103,11 @@ namespace IED
 							e.entry->second.animationEvent :
 							StringHolder::GetSingleton().weaponSheathe;
 
-					e.grpObject->UpdateAndSendAnimationEvent(eventName);
+					e.grpObject->anim.UpdateAndSendAnimationEvent(eventName);
 
 					AnimationUpdateController::GetSingleton().AddObject(
 						a_params.actor->formID,
-						e.grpObject->weapAnimGraphManagerHolder);
+						e.grpObject->anim.holder);
 				}
 			}
 		}
@@ -1120,7 +1127,6 @@ namespace IED
 		FinalizeObjectState(
 			state,
 			a_form,
-			nullptr,
 			groupRoot,
 			nullptr,
 			targetNodes,
@@ -1146,7 +1152,6 @@ namespace IED
 	void IObjectManager::FinalizeObjectState(
 		std::unique_ptr<ObjectEntryBase::State>& a_state,
 		TESForm*                                 a_form,
-		TESForm*                                 a_modelForm,
 		NiNode*                                  a_rootNode,
 		const NiPointer<NiNode>&                 a_objectNode,
 		targetNodes_t&                           a_targetNodes,
@@ -1154,8 +1159,6 @@ namespace IED
 		Actor*                                   a_actor) noexcept
 	{
 		a_state->form           = a_form;
-		a_state->modelForm      = a_modelForm;
-		a_state->formid         = a_form->formID;
 		a_state->nodes.rootNode = a_rootNode;
 		a_state->nodes.ref      = std::move(a_targetNodes.ref);
 		a_state->nodes.object   = a_objectNode;
@@ -1181,37 +1184,58 @@ namespace IED
 	}
 
 	void IObjectManager::TryCreatePointLight(
-		Actor*                          a_actor,
-		NiNode*                         a_object,
-		TESForm*                        a_modelForm,
-		const Data::configBaseValues_t& a_activeConfig,
-		ObjectLight&                    a_out) noexcept
+		Actor*         a_actor,
+		NiNode*        a_object,
+		TESObjectLIGH* a_lightForm,
+		ObjectLight&   a_out) noexcept
 	{
-		if (!ReferenceLightController::GetSingleton().GetEnabled())
+		if (a_lightForm)
 		{
-			return;
-		}
-
-		if (const auto* const light = a_modelForm->As<TESObjectLIGH>())
-		{
-			a_out = ReferenceLightController::CreateAndAttachPointLight(light, a_actor, a_object);
+			a_out = ReferenceLightController::CreateAndAttachPointLight(a_lightForm, a_actor, a_object);
 		}
 	}
 
-	void IObjectManager::TryInitializeAndPlayLightSound(
-		TESForm*     a_modelForm,
-		ObjectLight& a_light) noexcept
+	TESObjectLIGH* IObjectManager::GetLightFormForAttach(TESForm* a_modelForm) noexcept
 	{
-		const auto* const lightForm = a_modelForm->As<TESObjectLIGH>();
-		if (!lightForm)
+		if (!ReferenceLightController::GetSingleton().GetEnabled())
+		{
+			return nullptr;
+		}
+
+		switch (a_modelForm->formType)
+		{
+		case TESObjectLIGH::kTypeID:
+
+			return static_cast<TESObjectLIGH*>(a_modelForm);
+
+		case BGSHazard::kTypeID:
+
+			return static_cast<BGSHazard*>(a_modelForm)->data.light;
+
+		default:
+
+			return nullptr;
+		}
+	}
+
+	void IObjectManager::TryInitializeAndPlaySound(
+		ObjectSound&       a_sound,
+		const ObjectLight& a_light,
+		NiAVObject*        a_object) noexcept
+	{
+		if (!a_sound.desc)
 		{
 			return;
 		}
 
-		const auto soundForm = lightForm->sound;
-		if (!soundForm)
+		auto followObject =
+			a_sound.desc.attachToLight ?
+				a_light.niObject.get() :
+				a_object;
+
+		if (!followObject)
 		{
-			return;
+			followObject = a_object;
 		}
 
 		const auto audioManager = BSAudioManager::GetSingleton();
@@ -1220,7 +1244,7 @@ namespace IED
 			return;
 		}
 
-		auto& handle = a_light.sound;
+		auto& handle = a_sound.handle;
 
 		if (handle.IsValid())
 		{
@@ -1229,11 +1253,42 @@ namespace IED
 
 		if (audioManager->BuildSoundDataFromDescriptor(
 				handle,
-				soundForm))
+				a_sound.desc.form))
 		{
-			handle.SetObjectToFollow(a_light.niObject);
+			handle.SetObjectToFollow(followObject);
 			handle.Play();
 		}
+	}
+
+	auto IObjectManager::GetSoundDescriptor(const TESForm* a_modelForm) noexcept
+		-> SoundDescriptor
+	{
+		switch (a_modelForm->formType)
+		{
+		case TESObjectLIGH::kTypeID:
+
+			return { static_cast<const TESObjectLIGH*>(a_modelForm)->sound, true };
+
+		case BGSHazard::kTypeID:
+			{
+				const auto hazard = static_cast<const BGSHazard*>(a_modelForm);
+
+				if (const auto soundForm = hazard->data.sound)
+				{
+					return { soundForm, false };
+				}
+				else
+				{
+					if (const auto light = hazard->data.light)
+					{
+						return { light->sound, true };
+					}
+				}
+			}
+			break;
+		}
+
+		return { nullptr, false };
 	}
 
 	void IObjectManager::PlayObjectSound(

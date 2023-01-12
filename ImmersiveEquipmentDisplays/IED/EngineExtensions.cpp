@@ -1117,6 +1117,11 @@ namespace IED
 			{
 				AttachAddonNodes(a_object);
 			}
+
+			if (!flags.test(BSXFlags::Flag::kEditorMarker))
+			{
+				a_removeEditorMarker = false;
+			}
 		}
 
 		AttachAddonParticles(a_object);
@@ -1219,31 +1224,29 @@ namespace IED
 
 		case ModelType::kLight:
 
-			if (!a_keepTorchFlame && a_modelForm->IsTorch())
+			if (a_modelForm->IsTorch())
 			{
-				if (RemoveObjectByName(a_object, sh->m_torchFire))
+				if (!a_keepTorchFlame)
 				{
-					result.set(AttachResultFlags::kTorchFlameRemoved);
+					if (RemoveObjectByName(a_object, sh->m_torchFire))
+					{
+						result.set(AttachResultFlags::kTorchFlameRemoved);
+					}
 				}
-			}
 
 #if !defined(IED_DISABLE_ENB_LIGHT_STRIPPING)
 
-			for (auto& e : sh->m_enbLightAttachNodes)
-			{
-				if (RemoveAllChildren(a_object, e))
+				for (auto& e : sh->m_enbLightAttachNodes)
 				{
-					result.set(AttachResultFlags::kTorchCustomRemoved);
+					if (RemoveAllChildren(a_object, e))
+					{
+						result.set(AttachResultFlags::kTorchCustomRemoved);
+					}
 				}
-			}
 #endif
 
-			if (a_removeEditorMarker)
-			{
-				RemoveObjectByName(a_object, sh->m_editorMarker);
+				collisionFilterInfo = 0x14;
 			}
-
-			collisionFilterInfo = 0x14;
 
 			break;
 
@@ -1261,15 +1264,11 @@ namespace IED
 			}
 
 			break;
+		}
 
-		default:
-
-			if (a_removeEditorMarker)
-			{
-				RemoveObjectByName(a_object, sh->m_editorMarker);
-			}
-
-			break;
+		if (a_removeEditorMarker)
+		{
+			RemoveObjectByName(a_object, sh->m_editorMarker);
 		}
 
 		if (a_disableHavok)  // maybe just force this for ammo
@@ -1337,7 +1336,7 @@ namespace IED
 
 		auto result = RE::WeaponAnimationGraphManagerHolder::Create();
 
-		if (!LoadWeaponAnimationBehahaviorGraph(
+		if (!LoadAnimationBehahaviorGraph(
 				*result,
 				bged->behaviorGraphFile.c_str()))
 		{

@@ -795,13 +795,13 @@ namespace IED
 			{
 				for (auto& e : state->groupObjects)
 				{
-					if (e.second.weapAnimGraphManagerHolder)
+					if (e.second.anim.holder)
 					{
 						i++;
 					}
 				}
 
-				if (state->weapAnimGraphManagerHolder)
+				if (state->anim.holder)
 				{
 					i++;
 				}

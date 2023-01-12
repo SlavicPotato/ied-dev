@@ -685,7 +685,9 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ObjectEntryCustom.h" />
     <ClInclude Include="IED\Controller\ObjectEntrySlot.h" />
     <ClInclude Include="IED\Controller\ObjectLight.h" />
+    <ClInclude Include="IED\Controller\ObjectSound.h" />
     <ClInclude Include="IED\Controller\PluginInterfaceHolder.h" />
+    <ClInclude Include="IED\Controller\SoundDescriptor.h" />
     <ClInclude Include="IED\Controller\WeaponNodeEntry.h" />
     <ClInclude Include="IED\ConvertNodes.h" />
     <ClInclude Include="IED\D3D\D3DAssets.h" />

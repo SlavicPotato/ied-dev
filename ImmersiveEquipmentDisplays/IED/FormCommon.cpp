@@ -41,6 +41,7 @@ namespace IED
 		case BGSProjectile::kTypeID:
 		case TESObjectARMO::kTypeID:
 		case TESObjectLIGH::kTypeID:
+		case BGSHazard::kTypeID:
 			return true;
 		default:
 			return false;
@@ -77,6 +78,7 @@ namespace IED
 		case BGSProjectile::kTypeID:
 		case TESObjectARMO::kTypeID:
 		case TESObjectLIGH::kTypeID:
+		case BGSHazard::kTypeID:
 			return true;
 		default:
 			return false;
@@ -282,6 +284,8 @@ namespace IED
 			return GetFullName<TESObjectCELL>(a_form);
 		case BGSPerk::kTypeID:
 			return GetFullName<BGSPerk>(a_form);
+		case BGSHazard::kTypeID:
+			return GetFullName<BGSHazard>(a_form);
 		case TESGlobal::kTypeID:
 			return GetEditorID(static_cast<TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:

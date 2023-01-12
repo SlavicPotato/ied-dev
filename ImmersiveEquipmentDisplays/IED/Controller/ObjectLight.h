@@ -18,6 +18,5 @@ namespace IED
 
 		NiPointer<NiPointLight> niObject;
 		NiPointer<RE::BSLight>  bsObject;
-		BSSoundHandle           sound;
 	};
 }
