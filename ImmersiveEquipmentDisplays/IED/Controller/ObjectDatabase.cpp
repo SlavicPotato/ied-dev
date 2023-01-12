@@ -22,16 +22,20 @@ namespace IED
 
 		if (m_level == ObjectDatabaseLevel::kDisabled)
 		{
+			NiPointer<NiNode> tmp;
+
 			ModelLoader loader;
-			if (!loader.LoadObject(path, a_outObject))
+			if (!loader.LoadObject(path, tmp))
 			{
 				return false;
 			}
 
-			if (!ValidateObject(path, a_outObject))
+			if (!ValidateObject(path, tmp))
 			{
 				return false;
 			}
+
+			a_outObject = std::move(tmp);
 		}
 		else
 		{
@@ -40,18 +44,22 @@ namespace IED
 			auto it = m_data.find(spath);
 			if (it == m_data.end())
 			{
-				auto entry = std::make_shared<entry_t>();
+				NiPointer<NiNode> tmp;
 
 				ModelLoader loader;
-				if (!loader.LoadObject(path, entry->object))
+				if (!loader.LoadObject(path, tmp))
 				{
 					return false;
 				}
 
-				if (!ValidateObject(path, entry->object))
+				if (!ValidateObject(path, tmp))
 				{
 					return false;
 				}
+
+				auto entry = std::make_shared<entry_t>();
+
+				entry->object = std::move(tmp);
 
 				it = m_data.emplace(spath, std::move(entry)).first;
 
@@ -71,7 +79,7 @@ namespace IED
 		const char* a_path,
 		NiAVObject* a_object) noexcept
 	{
-		bool result = HasBSDismemberSkinInstance(a_object);
+		const bool result = HasBSDismemberSkinInstance(a_object);
 
 		if (result)
 		{
@@ -83,19 +91,21 @@ namespace IED
 
 	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept
 	{
-		auto r = Util::Node::TraverseGeometry(a_object, [](BSGeometry* a_geometry) noexcept {
-			if (auto skin = a_geometry->m_spSkinInstance.get())
+		using namespace Util::Node;
+
+		const auto r = TraverseGeometry(a_object, [](BSGeometry* a_geometry) noexcept {
+			if (const auto* const skin = a_geometry->m_spSkinInstance.get())
 			{
-				if (INiRTTI::IsType(skin->GetRTTI(), TNiRTTI::BSDismemberSkinInstance))
+				if (::NRTTI<BSDismemberSkinInstance>::IsType(skin->GetRTTI()))
 				{
-					return Util::Node::VisitorControl::kStop;
+					return VisitorControl::kStop;
 				}
 			}
 
-			return Util::Node::VisitorControl::kContinue;
+			return VisitorControl::kContinue;
 		});
 
-		return r == Util::Node::VisitorControl::kStop;
+		return r == VisitorControl::kStop;
 	}
 
 	void ObjectDatabase::RunObjectCleanup() noexcept
@@ -122,7 +132,7 @@ namespace IED
 			return;
 		}
 
-		auto level = stl::underlying(m_level);
+		const auto level = stl::underlying(m_level);
 
 		if (m_data.size() <= level)
 		{
@@ -159,7 +169,7 @@ namespace IED
 			candidates.begin(),
 			candidates.end(),
 			[](const auto& a_lhs,
-		       const auto& a_rhs) {
+		       const auto& a_rhs) noexcept [[msvc::forceinline]] {
 				return a_lhs.second < a_rhs.second;
 			});
 

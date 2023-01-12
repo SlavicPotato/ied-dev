@@ -24,6 +24,7 @@ namespace IED
 		kPlaySound                  = 1u << 8,
 		kIsGroup                    = 1u << 9,
 		kWantUnloadAfterHide        = 1u << 10,
+		kHasCollisionObjectScale    = 1u << 11,
 		kInvisible                  = 1u << 24,
 
 		//kInvisibilityFlags = kInvisible | kWantUnloadAfterHide,
@@ -172,7 +173,7 @@ namespace IED
 
 			void Cleanup(Game::ObjectRefHandle a_handle) noexcept;
 
-			void UpdateAndPlayAnimation(
+			void UpdateAndPlayAnimationSequence(
 				Actor*                   a_actor,
 				const stl::fixed_string& a_sequence) noexcept;
 
@@ -220,21 +221,8 @@ namespace IED
 			bool                                               atmReference{ true };
 		};
 
-		struct ActiveData
+		struct ObjectEntryData
 		{
-			//#if defined(DEBUG)
-			//
-			//			ActiveData()             = default;
-			//			ActiveData(ActiveData&&) = default;
-			//
-			//			~ActiveData()
-			//			{
-			//				assert(!state);
-			//				assert(!effectShaderData);
-			//			}
-			//
-			//#endif
-
 			void Cleanup(
 				Game::ObjectRefHandle    a_handle,
 				const NiPointer<NiNode>& a_root,
@@ -250,7 +238,7 @@ namespace IED
 			std::unique_ptr<EffectShaderData> effectShaderData;
 		};
 
-		ActiveData data;
+		ObjectEntryData data;
 	};
 
 }

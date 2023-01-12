@@ -586,6 +586,7 @@ namespace IED
 		if (a_activeConfig.flags.test(Data::BaseFlags::kGeometryScaleCollider))
 		{
 			state->colliderScale = a_activeConfig.geometryTransform.scale;
+			state->flags.set(ObjectEntryFlags::kHasCollisionObjectScale);
 		}
 
 		if (!GetUniqueObject(
@@ -735,7 +736,7 @@ namespace IED
 
 		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySequence))
 		{
-			state->UpdateAndPlayAnimation(
+			state->UpdateAndPlayAnimationSequence(
 				a_params.actor,
 				a_activeConfig.niControllerSequence);
 		}
@@ -1248,7 +1249,7 @@ namespace IED
 
 		if (handle.IsValid())
 		{
-			handle.FadeOutAndRelease(0ui16);
+			handle.Release();
 		}
 
 		if (audioManager->BuildSoundDataFromDescriptor(
@@ -1316,7 +1317,7 @@ namespace IED
 		NiNode*                     a_root,
 		const Data::NodeDescriptor& a_node,
 		bool                        a_atmReference,
-		ObjectEntryBase&            a_entry) noexcept
+		const ObjectEntryBase&      a_entry) noexcept
 	{
 		auto& state = a_entry.data.state;
 

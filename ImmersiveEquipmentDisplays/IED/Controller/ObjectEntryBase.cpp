@@ -5,7 +5,6 @@
 #include "IObjectManager.h"
 
 #include "IED/EngineExtensions.h"
-#include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 
 namespace IED
@@ -31,11 +30,11 @@ namespace IED
 			{
 			public:
 				DisposeStateTask(
-					ObjectEntryBase::ActiveData&& a_data,
-					Game::ObjectRefHandle         a_handle,
-					const NiPointer<NiNode>&      a_root,
-					const NiPointer<NiNode>&      a_root1p,
-					IObjectManager&               a_db) noexcept :
+					ObjectEntryBase::ObjectEntryData&& a_data,
+					Game::ObjectRefHandle              a_handle,
+					const NiPointer<NiNode>&           a_root,
+					const NiPointer<NiNode>&           a_root1p,
+					IObjectManager&                    a_db) noexcept :
 					m_data(std::move(a_data)),
 					m_handle(a_handle),
 					m_root(a_root),
@@ -63,11 +62,11 @@ namespace IED
 				}
 
 			private:
-				ObjectEntryBase::ActiveData m_data;
-				Game::ObjectRefHandle       m_handle;
-				NiPointer<NiNode>           m_root;
-				NiPointer<NiNode>           m_root1p;
-				IObjectManager&             m_db;
+				ObjectEntryBase::ObjectEntryData m_data;
+				Game::ObjectRefHandle            m_handle;
+				NiPointer<NiNode>                m_root;
+				NiPointer<NiNode>                m_root1p;
+				IObjectManager&                  m_db;
 			};
 
 			ITaskPool::AddPriorityTask<DisposeStateTask>(
@@ -190,7 +189,7 @@ namespace IED
 		{
 			if (e.second.sound.handle.IsValid())
 			{
-				sound.handle.FadeOutAndRelease(0ui16);
+				sound.handle.Release();
 			}
 
 			e.second.light.Cleanup(e.second.object.get());
@@ -210,7 +209,7 @@ namespace IED
 
 		if (sound.handle.IsValid())
 		{
-			sound.handle.FadeOutAndRelease(0ui16);
+			sound.handle.Release();
 		}
 
 		light.Cleanup(nodes.object.get());
@@ -257,7 +256,7 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::State::UpdateAndPlayAnimation(
+	void ObjectEntryBase::State::UpdateAndPlayAnimationSequence(
 		Actor*                   a_actor,
 		const stl::fixed_string& a_sequence) noexcept
 	{
@@ -332,7 +331,7 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::ActiveData::Cleanup(
+	void ObjectEntryBase::ObjectEntryData::Cleanup(
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
 		const NiPointer<NiNode>& a_root1p,
@@ -387,7 +386,7 @@ namespace IED
 
 		auto c = static_cast<std::int64_t>(a_count) - 1;
 
-		for (auto& e : arrows)
+		for (const auto& e : arrows)
 		{
 			if (e)
 			{

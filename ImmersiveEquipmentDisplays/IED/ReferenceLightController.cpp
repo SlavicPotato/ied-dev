@@ -10,7 +10,7 @@ namespace IED
 
 	namespace detail
 	{
-		static RE::LIGHT_CREATE_PARAMS make_params(
+		static constexpr RE::LIGHT_CREATE_PARAMS make_params(
 			const TESObjectLIGH* a_lightForm) noexcept
 		{
 			RE::LIGHT_CREATE_PARAMS params;
@@ -28,22 +28,19 @@ namespace IED
 				params.shadow          = true;
 				params.falloffExponent = a_lightForm->data.fallofExponent;
 
-				float angle;
-
 				if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kSpotShadow))
 				{
-					angle = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
+					params.shadowAngle = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
 				}
 				else if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kHemiShadow))
 				{
-					angle = std::numbers::pi_v<float>;
+					params.shadowAngle = std::numbers::pi_v<float>;
 				}
 				else
 				{
-					angle = std::numbers::pi_v<float> * 2.0f;
+					params.shadowAngle = std::numbers::pi_v<float> * 2.0f;
 				}
 
-				params.shadowAngle     = angle;
 				params.nearDistance    = a_lightForm->data.nearDistance;
 				params.shadowDepthBias = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
 
@@ -57,7 +54,25 @@ namespace IED
 			return params;
 		}
 
-		static NiColor make_diffuse(
+		static constexpr RE::LIGHT_CREATE_PARAMS make_params() noexcept
+		{
+			return {
+				true,
+				false,
+				false,
+				true,
+				true,
+				true,
+				1.0f,
+				1.0f,
+				5.0f,
+				0.0f,
+				0,
+				{ nullptr, nullptr }
+			};
+		}
+
+		static constexpr NiColor make_diffuse(
 			const TESObjectLIGH* a_lightForm) noexcept
 		{
 			constexpr auto mul = 1.0f / 255.0f;
@@ -80,7 +95,7 @@ namespace IED
 			}
 		}
 
-		static NiPoint3 make_radius(
+		static constexpr NiPoint3 make_radius(
 			const TESObjectLIGH* a_lightForm) noexcept
 		{
 			auto radius = static_cast<float>(a_lightForm->data.radius);
@@ -152,9 +167,11 @@ namespace IED
 	{
 		const shared_lock lock(m_lock);
 
-		visit_lights(a_actor, [&](auto& a_entry) [[msvc::forceinline]] {
-			UpdateRefrLight(a_entry.form, a_entry.data, a_actor, -1.0f);
-		});
+		visit_lights(
+			a_actor,
+			[&](auto& a_entry) noexcept [[msvc::forceinline]] {
+				UpdateRefrLight(a_entry.form, a_entry.data, a_actor, -1.0f);
+			});
 	}
 
 	void ReferenceLightController::OnActorCrossCellBoundary(
@@ -196,14 +213,16 @@ namespace IED
 	{
 		const shared_lock lock(m_lock);
 
-		visit_lights(a_actor, [](auto& a_entry) [[msvc::forceinline]] {
-			if (auto& bsl = a_entry.bsLight)
-			{
-				QueueAddLight(
-					*EngineExtensions::m_shadowSceneNode,
-					bsl.get());
-			}
-		});
+		visit_lights(
+			a_actor,
+			[](auto& a_entry) noexcept [[msvc::forceinline]] {
+				if (auto& bsl = a_entry.bsLight)
+				{
+					QueueAddLight(
+						*EngineExtensions::m_shadowSceneNode,
+						bsl.get());
+				}
+			});
 	}
 
 	void ReferenceLightController::OnActorUpdate(
@@ -214,11 +233,13 @@ namespace IED
 		{
 			const shared_lock lock(m_lock);
 
-			visit_lights(a_actor, [](auto& a_entry) [[msvc::forceinline]] {
-				UnkQueueBSLight(
-					*EngineExtensions::m_shadowSceneNode,
-					a_entry.data.light.get());
-			});
+			visit_lights(
+				a_actor,
+				[](auto& a_entry) noexcept [[msvc::forceinline]] {
+					UnkQueueBSLight(
+						*EngineExtensions::m_shadowSceneNode,
+						a_entry.data.light.get());
+				});
 		}
 		else
 		{
@@ -238,27 +259,31 @@ namespace IED
 			{
 				const shared_lock lock(m_lock);
 
-				visit_lights(a_actor, [&](auto& a_entry) [[msvc::forceinline]] {
-					UpdateRefrLight(
-						a_entry.form,
-						a_entry.data,
-						a_actor,
-						-1.0f);
+				visit_lights(
+					a_actor,
+					[&](auto& a_entry) noexcept [[msvc::forceinline]] {
+						UpdateRefrLight(
+							a_entry.form,
+							a_entry.data,
+							a_actor,
+							-1.0f);
 
-					UnkQueueBSLight(
-						*EngineExtensions::m_shadowSceneNode,
-						a_entry.data.light.get());
-				});
+						UnkQueueBSLight(
+							*EngineExtensions::m_shadowSceneNode,
+							a_entry.data.light.get());
+					});
 			}
 			else
 			{
 				const shared_lock lock(m_lock);
 
-				visit_lights(a_actor, [](auto& a_entry) [[msvc::forceinline]] {
-					UnkQueueBSLight(
-						*EngineExtensions::m_shadowSceneNode,
-						a_entry.data.light.get());
-				});
+				visit_lights(
+					a_actor,
+					[](auto& a_entry) noexcept [[msvc::forceinline]] {
+						UnkQueueBSLight(
+							*EngineExtensions::m_shadowSceneNode,
+							a_entry.data.light.get());
+					});
 			}
 		}
 	}
@@ -337,9 +362,9 @@ namespace IED
 
 		// at this point, beth sets a flag on the base form if a transform controller is found on a_object
 
-		const auto* const extraLitWaterRefs = a_actor->extraData.Get<ExtraLitWaterRefs>();
-
 		RE::BSLight* bsLight = nullptr;
+
+		const auto* const extraLitWaterRefs = a_actor->extraData.Get<ExtraLitWaterRefs>();
 
 		if (!extraLitWaterRefs ||
 		    extraLitWaterRefs->refs.empty())  // ?
@@ -378,10 +403,10 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			std::for_each(
-				e.second.begin(),
-				e.second.end(),
-				[&](auto&) { i++; });
+			for ([[maybe_unused]] auto& f : e.second)
+			{
+				i++;
+			}
 		}
 
 		return i;
@@ -389,45 +414,27 @@ namespace IED
 
 	void ReferenceLightController::ReAddActorExtraLight(Actor* a_actor) noexcept
 	{
-		auto refrLight = GetExtraLight(a_actor);
+		const auto* const refrLight = GetExtraLight(a_actor);
 		if (!refrLight)
 		{
 			return;
 		}
 
-		auto& light = refrLight->light;
+		const auto& light = refrLight->light;
 		if (!light)
 		{
 			return;
 		}
 
-		if (const auto torch = GetEquippedLHLight(a_actor))
-		{
-			const auto params = detail::make_params(torch);
+		const auto* const torch = GetEquippedLHLight(a_actor);
 
-			const auto ssn = *EngineExtensions::m_shadowSceneNode;
-			ssn->CreateAndAddLight(light.get(), params);
-		}
-		else
-		{
-			RE::LIGHT_CREATE_PARAMS params{
-				true,
-				false,
-				false,
-				true,
-				true,
-				true,
-				1.0f,
-				1.0f,
-				5.0f,
-				0.0f,
-				0,
-				{ nullptr, nullptr }
-			};
+		const auto params =
+			torch ?
+				detail::make_params(torch) :
+				detail::make_params();
 
-			const auto ssn = *EngineExtensions::m_shadowSceneNode;
-			ssn->CreateAndAddLight(light.get(), params);
-		}
+		const auto ssn = *EngineExtensions::m_shadowSceneNode;
+		ssn->CreateAndAddLight(light.get(), params);
 	}
 
 	EventResult ReferenceLightController::ReceiveEvent(

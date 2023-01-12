@@ -196,7 +196,7 @@ namespace IED
 			NiNode*                     a_root,
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference,
-			ObjectEntryBase&            a_entry) noexcept;
+			const ObjectEntryBase&      a_entry) noexcept;
 
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };

@@ -2196,6 +2196,15 @@ namespace IED
 			{
 				return false;
 			}
+
+			if (state->flags.test(ObjectEntryFlags::kHasCollisionObjectScale))
+			{
+				if (state->currentGeomTransformTag != a_config.geometryTransform &&
+				    a_config.geometryTransform.scale != state->colliderScale)
+				{
+					return false;
+				}
+			}
 		}
 
 		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);
@@ -2291,12 +2300,6 @@ namespace IED
 		{
 			if (state->currentGeomTransformTag != a_config.geometryTransform)
 			{
-				if (a_config.geometryTransform.scale != state->colliderScale)
-				{
-					_DMESSAGE("rr");
-					return false;
-				}
-
 				INode::UpdateObjectTransform(
 					a_config.geometryTransform,
 					state->nodes.object);
@@ -2310,7 +2313,7 @@ namespace IED
 			{
 				if (a_config.niControllerSequence != state->currentSequence)
 				{
-					state->UpdateAndPlayAnimation(
+					state->UpdateAndPlayAnimationSequence(
 						a_params.actor,
 						a_config.niControllerSequence);
 				}
@@ -2335,7 +2338,7 @@ namespace IED
 				{
 					if (state->sound.handle.IsValid())
 					{
-						state->sound.handle.FadeOutAndRelease(0ui16);
+						state->sound.handle.Release();
 					}
 				}
 				else
@@ -2365,7 +2368,7 @@ namespace IED
 
 					if (object.sound.handle.IsValid())
 					{
-						object.sound.handle.FadeOutAndRelease(0ui16);
+						object.sound.handle.Release();
 					}
 				}
 			}

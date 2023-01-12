@@ -2,8 +2,6 @@
 
 #include "AnimationUpdateManager.h"
 
-//#include "EngineExtensions.h"
-
 namespace IED
 {
 	AnimationUpdateController AnimationUpdateController::m_Instance;
@@ -21,10 +19,10 @@ namespace IED
 
 		for (auto& e : m_data)
 		{
-			std::for_each(
-				e.second.begin(),
-				e.second.end(),
-				[&](auto&) { i++; });
+			for ([[maybe_unused]] auto& f : e.second)
+			{
+				i++;
+			}
 		}
 
 		return i;

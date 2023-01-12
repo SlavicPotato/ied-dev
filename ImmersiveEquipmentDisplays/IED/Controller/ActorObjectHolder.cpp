@@ -650,7 +650,7 @@ namespace IED
 	bool ActorObjectHolder::QueueDisposeAllObjectEntries(
 		Game::ObjectRefHandle a_handle) noexcept
 	{
-		using list_type = stl::forward_list<ObjectEntryBase::ActiveData>;
+		using list_type = stl::forward_list<ObjectEntryBase::ObjectEntryData>;
 
 		list_type list;
 
