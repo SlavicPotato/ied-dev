@@ -180,6 +180,7 @@ namespace IED
 		static TESObjectLIGH* GetLightFormForAttach(TESForm* a_modelForm) noexcept;
 
 		static void TryInitializeAndPlaySound(
+			Actor*             a_actor,
 			ObjectSound&       a_sound,
 			const ObjectLight& a_light,
 			NiAVObject*        a_object) noexcept;

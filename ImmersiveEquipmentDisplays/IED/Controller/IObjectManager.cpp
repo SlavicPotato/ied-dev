@@ -701,6 +701,7 @@ namespace IED
 		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 		{
 			TryInitializeAndPlaySound(
+				a_params.actor,
 				state->sound,
 				state->light,
 				object);
@@ -1060,6 +1061,7 @@ namespace IED
 			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 			{
 				TryInitializeAndPlaySound(
+					a_params.actor,
 					n.sound,
 					n.light,
 					n.object);
@@ -1220,6 +1222,7 @@ namespace IED
 	}
 
 	void IObjectManager::TryInitializeAndPlaySound(
+		Actor*             a_actor,
 		ObjectSound&       a_sound,
 		const ObjectLight& a_light,
 		NiAVObject*        a_object) noexcept
@@ -1249,13 +1252,15 @@ namespace IED
 
 		if (handle.IsValid())
 		{
-			handle.Release();
+			handle.StopAndReleaseNow();
 		}
 
 		if (audioManager->BuildSoundDataFromDescriptor(
 				handle,
-				a_sound.desc.form))
+				a_sound.desc.form,
+				0x1A))
 		{
+			handle.SetPosition(a_actor->pos.x, a_actor->pos.y, a_actor->pos.z);
 			handle.SetObjectToFollow(followObject);
 			handle.Play();
 		}

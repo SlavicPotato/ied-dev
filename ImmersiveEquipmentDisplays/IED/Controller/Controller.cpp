@@ -2338,7 +2338,7 @@ namespace IED
 				{
 					if (state->sound.handle.IsValid())
 					{
-						state->sound.handle.Release();
+						state->sound.handle.StopAndReleaseNow();
 					}
 				}
 				else
@@ -2346,6 +2346,7 @@ namespace IED
 					if (!state->sound.handle.IsValid())
 					{
 						TryInitializeAndPlaySound(
+							a_params.actor,
 							state->sound,
 							state->light,
 							state->nodes.object.get());
@@ -2368,7 +2369,7 @@ namespace IED
 
 					if (object.sound.handle.IsValid())
 					{
-						object.sound.handle.Release();
+						object.sound.handle.StopAndReleaseNow();
 					}
 				}
 			}
@@ -2386,6 +2387,7 @@ namespace IED
 					if (!object.sound.handle.IsValid())
 					{
 						TryInitializeAndPlaySound(
+							a_params.actor,
 							object.sound,
 							object.light,
 							object.object.get());

@@ -189,7 +189,7 @@ namespace IED
 		{
 			if (e.second.sound.handle.IsValid())
 			{
-				sound.handle.Release();
+				sound.handle.StopAndReleaseNow();
 			}
 
 			e.second.light.Cleanup(e.second.object.get());
@@ -209,7 +209,7 @@ namespace IED
 
 		if (sound.handle.IsValid())
 		{
-			sound.handle.Release();
+			sound.handle.StopAndReleaseNow();
 		}
 
 		light.Cleanup(nodes.object.get());
