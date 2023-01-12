@@ -185,7 +185,9 @@ namespace IED
 			const ObjectLight& a_light,
 			NiAVObject*        a_object) noexcept;
 
-		static SoundDescriptor GetSoundDescriptor(const TESForm* a_modelForm) noexcept;
+		static SoundDescriptor GetSoundDescriptor(
+			const TESForm*     a_modelForm,
+			const ObjectLight& a_light) noexcept;
 
 		void PlayObjectSound(
 			const processParams_t&          a_params,

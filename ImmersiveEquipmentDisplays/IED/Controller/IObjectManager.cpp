@@ -696,7 +696,7 @@ namespace IED
 				state->light);
 		}
 
-		state->sound.desc = GetSoundDescriptor(a_modelForm);
+		state->sound.desc = GetSoundDescriptor(a_modelForm, state->light);
 
 		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 		{
@@ -1056,7 +1056,7 @@ namespace IED
 					n.light);
 			}
 
-			n.sound.desc = GetSoundDescriptor(e.form);
+			n.sound.desc = GetSoundDescriptor(e.form, n.light);
 
 			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 			{
@@ -1266,14 +1266,21 @@ namespace IED
 		}
 	}
 
-	auto IObjectManager::GetSoundDescriptor(const TESForm* a_modelForm) noexcept
+	auto IObjectManager::GetSoundDescriptor(
+		const TESForm*     a_modelForm,
+		const ObjectLight& a_light) noexcept
 		-> SoundDescriptor
 	{
 		switch (a_modelForm->formType)
 		{
 		case TESObjectLIGH::kTypeID:
 
-			return { static_cast<const TESObjectLIGH*>(a_modelForm)->sound, true };
+			if (a_light)
+			{
+				return { static_cast<const TESObjectLIGH*>(a_modelForm)->sound, true };
+			}
+
+			break;
 
 		case BGSHazard::kTypeID:
 			{
@@ -1283,7 +1290,7 @@ namespace IED
 				{
 					return { soundForm, false };
 				}
-				else
+				else if (a_light)
 				{
 					if (const auto light = hazard->data.light)
 					{
