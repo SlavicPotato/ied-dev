@@ -77,7 +77,6 @@ namespace IED
 			inline static constexpr auto DEFAULT_FLAGS =
 				BaseFlags::kDropOnDeath |
 				BaseFlags::kSyncReferenceTransform |
-				BaseFlags::kPlaySound |
 				BaseFlags::kReferenceMode |
 				BaseFlags::kDynamicArrows;
 
