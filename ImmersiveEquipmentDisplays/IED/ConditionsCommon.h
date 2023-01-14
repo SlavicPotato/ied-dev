@@ -22,7 +22,7 @@ namespace IED
 		bool is_in_first_person(CommonParams& a_params) noexcept;
 		bool is_sds_shield_on_back_enabled(CommonParams& a_params) noexcept;
 
-		inline constexpr bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
+		constexpr bool is_player_last_ridden_mount(CommonParams& a_params) noexcept
 		{
 			return a_params.objects.GetHandle() == (*g_thePlayer)->lastRiddenHorseHandle;
 		}
@@ -38,7 +38,7 @@ namespace IED
 		bool is_in_dialogue(CommonParams& a_params) noexcept;
 
 		template <class Tv, class Tm>
-		inline constexpr bool compare(
+		constexpr bool compare(
 			Data::ComparisonOperator a_oper,
 			const Tv&                a_value,
 			const Tm&                a_match) noexcept
@@ -149,7 +149,7 @@ namespace IED
 			case Data::ExtraConditionType::kInKillmove:
 				return a_cached.flags2.test(Actor::Flags2::kIsInKillMove);
 			case Data::ExtraConditionType::kIsUnconscious:
-				return a_cached.unconscious;
+				return a_cached.lifeState == ActorState::ACTOR_LIFE_STATE::kUnconcious;
 			case Data::ExtraConditionType::kIsPlayerLastRiddenMount:
 				return is_player_last_ridden_mount(a_params);
 			case Data::ExtraConditionType::kSDSShieldOnBackEnabled:
@@ -162,8 +162,6 @@ namespace IED
 				return a_params.is_in_player_enemy_faction();
 			case Data::ExtraConditionType::kIsHorse:
 				return a_params.is_horse();
-			case Data::ExtraConditionType::kIsRestrained:
-				return a_cached.restrained;
 			case Data::ExtraConditionType::kIsUnique:
 				return a_cached.baseFlags.test(ACTOR_BASE_DATA::Flag::kUnique);
 			case Data::ExtraConditionType::kIsSummonable:
@@ -178,25 +176,27 @@ namespace IED
 				return a_cached.sneaking;
 			case Data::ExtraConditionType::kInDialogue:
 				return is_in_dialogue(a_params);
+			case Data::ExtraConditionType::kLifeState:
+				return a_cached.lifeState == a_match.lifeState;				
 			default:
 				return false;
 			}
 		}
 
-		inline constexpr bool match_form(
+		constexpr bool match_form(
 			Game::FormID a_formid,
 			TESForm*     a_form) noexcept
 		{
 			return a_formid && a_form->formID == a_formid;
 		}
 
-		inline constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot) noexcept
+		constexpr bool is_hand_slot(Data::ObjectSlotExtra a_slot) noexcept
 		{
 			return a_slot != Data::ObjectSlotExtra::kArmor &&
 			       a_slot != Data::ObjectSlotExtra::kAmmo;
 		}
 
-		inline constexpr bool is_valid_form_for_slot(
+		constexpr bool is_valid_form_for_slot(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot,
 			bool                  a_left) noexcept
@@ -206,7 +206,7 @@ namespace IED
 			           Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
-		inline constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
+		constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
 		{
 			if (auto ammo = a_form->As<TESAmmo>())
 			{
@@ -218,7 +218,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr bool is_object_visible(NiPointer<NiAVObject>& a_object) noexcept
+		constexpr bool is_object_visible(NiPointer<NiAVObject>& a_object) noexcept
 		{
 			return a_object && a_object->IsVisible();
 		}
@@ -1104,7 +1104,7 @@ namespace IED
 		}
 
 		template <class Tm>
-		inline constexpr bool do_var_match_id(
+		constexpr bool do_var_match_id(
 			CommonParams& a_params,
 			Game::FormID  a_id,
 			const Tm&     a_match) noexcept
@@ -1270,7 +1270,7 @@ namespace IED
 			return false;
 		}
 
-		inline static constexpr TESForm* match_pm_equipped(
+		constexpr TESForm* match_pm_equipped(
 			Actor*       a_actor,
 			Game::FormID a_form) noexcept
 		{

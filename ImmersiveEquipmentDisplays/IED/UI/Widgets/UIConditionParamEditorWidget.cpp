@@ -7,6 +7,7 @@
 #include "UIComparisonOperatorSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIDayOfWeekSelectorWidget.h"
+#include "UILifeStateSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
 #include "UIVariableConditionSourceSelectorWidget.h"
@@ -111,6 +112,11 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::DayOfWeek); f.p1)
 						{
 							f.As1<RE::Calendar::Day>() = RE::Calendar::Day::kSundas;
+						}
+
+						if (const auto& f = get(ConditionParamItem::LifeState); f.p1)
+						{
+							f.As1<ActorState::ACTOR_LIFE_STATE>() = ActorState::ACTOR_LIFE_STATE::kAlive;
 						}
 					}
 
@@ -287,6 +293,16 @@ namespace IED
 
 				result |= UIDayOfWeekSelectorWidget::DrawDayOfWeekSelectorWidget(
 					e.As1<RE::Calendar::Day>());
+			}
+			
+			if (const auto& e = get(ConditionParamItem::LifeState); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::LifeState);
+
+				result |= UILifeStateSelectorWidget::DrawLifeStateSelector(
+					e.As1<ActorState::ACTOR_LIFE_STATE>());
 			}
 
 			if (const auto& e = get(ConditionParamItem::CondVarType); e.p1)
@@ -625,6 +641,21 @@ namespace IED
 									"%s [%s]",
 									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									UIDayOfWeekSelectorWidget::day_of_week_to_desc(f.As1<RE::Calendar::Day>()));
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kLifeState:
+
+							if (const auto& f = get(ConditionParamItem::LifeState); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%s]",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									UILifeStateSelectorWidget::life_state_to_desc(f.As1<ActorState::ACTOR_LIFE_STATE>()));
 
 								return m_descBuffer;
 							}

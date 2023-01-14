@@ -44,6 +44,7 @@ namespace IED
 			VarCondSource,
 			FormAny,
 			DayOfWeek,
+			LifeState,
 
 			Total
 		};
@@ -65,7 +66,7 @@ namespace IED
 			void*       p3{ nullptr };
 		};
 
-		inline static constexpr std::size_t COND_PE_DESC_BUFFER_SIZE = 256;
+		static constexpr std::size_t COND_PE_DESC_BUFFER_SIZE = 256;
 
 		class UIConditionParamExtraInterface
 		{
@@ -100,18 +101,18 @@ namespace IED
 			public UITimeOfDaySelectorWidget,
 			public UINodeMonitorSelectorWidget
 		{
-			inline static constexpr auto POPUP_ID = "mpr_ed";
+			static constexpr auto POPUP_ID = "mpr_ed";
 
 			struct entry_t
 			{
 				template <class T>
-				inline constexpr T& As1() const noexcept
+				constexpr T& As1() const noexcept
 				{
 					return *static_cast<T*>(p1);
 				}
 
 				template <class T>
-				inline constexpr const T& As2() const noexcept
+				constexpr const T& As2() const noexcept
 				{
 					return *static_cast<const T*>(p2);
 				}
@@ -127,28 +128,28 @@ namespace IED
 			bool DrawConditionParamEditorPopup();
 			bool DrawConditionParamEditorPanel();
 
-			inline constexpr auto& GetFormPicker() noexcept
+			constexpr auto& GetFormPicker() noexcept
 			{
 				return m_formPickerForm;
 			}
 
-			inline constexpr auto& GetKeywordPicker() noexcept
+			constexpr auto& GetKeywordPicker() noexcept
 			{
 				return m_formPickerKeyword;
 			}
 
-			inline constexpr auto& GetRacePicker() noexcept
+			constexpr auto& GetRacePicker() noexcept
 			{
 				return m_formPickerRace;
 			}
 
-			inline constexpr void SetTempFlags(
+			constexpr void SetTempFlags(
 				UIConditionParamEditorTempFlags a_mask) noexcept
 			{
 				m_tempFlags.set(a_mask);
 			}
 
-			inline constexpr void SetExtraInterface(
+			constexpr void SetExtraInterface(
 				UIConditionParamExtraInterface* a_if) noexcept
 			{
 				m_extraInterface = a_if;
@@ -165,7 +166,7 @@ namespace IED
 			const char* GetItemDesc(ConditionParamItem a_item);
 			const char* GetFormKeywordExtraDesc(const char* a_idesc, bool a_race = false) const noexcept;
 
-			inline constexpr auto& GetDescBuffer() noexcept
+			constexpr auto& GetDescBuffer() noexcept
 			{
 				return m_descBuffer;
 			}
@@ -182,12 +183,12 @@ namespace IED
 
 			void GetFormDesc(Game::FormID a_form);
 
-			inline constexpr auto& get(ConditionParamItem a_item) noexcept
+			constexpr auto& get(ConditionParamItem a_item) noexcept
 			{
 				return m_entries[stl::underlying(a_item)];
 			}
 
-			inline constexpr const auto& get(ConditionParamItem a_item) const noexcept
+			constexpr const auto& get(ConditionParamItem a_item) const noexcept
 			{
 				return m_entries[stl::underlying(a_item)];
 			}
@@ -367,6 +368,16 @@ namespace IED
 				Ap == ConditionParamItem::DayOfWeek)
 			{
 				static_assert(std::is_same_v<T, RE::Calendar::Day>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::LifeState)
+			{
+				static_assert(std::is_same_v<T, ActorState::ACTOR_LIFE_STATE>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

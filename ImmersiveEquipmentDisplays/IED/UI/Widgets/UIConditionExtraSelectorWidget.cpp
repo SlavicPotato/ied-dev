@@ -42,12 +42,12 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
-			std::make_pair(Data::ExtraConditionType::kIsRestrained, UIConditionExtraSelectorWidgetStrings::IsRestrained),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
 			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
+			std::make_pair(Data::ExtraConditionType::kLifeState, UIConditionExtraSelectorWidgetStrings::LifeState),
 			std::make_pair(Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor),
 			std::make_pair(Data::ExtraConditionType::kParalyzed, UIConditionExtraSelectorWidgetStrings::Paralyzed),
 			std::make_pair(Data::ExtraConditionType::kProtected, UIConditionExtraSelectorWidgetStrings::Protected),
@@ -202,8 +202,6 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction);
 			case Data::ExtraConditionType::kIsHorse:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsHorse);
-			case Data::ExtraConditionType::kIsRestrained:
-				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsRestrained);
 			case Data::ExtraConditionType::kIsUnique:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsUnique);
 			case Data::ExtraConditionType::kIsSummonable:
@@ -218,6 +216,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSneaking);
 			case Data::ExtraConditionType::kInDialogue:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InDialogue);
+			case Data::ExtraConditionType::kLifeState:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LifeState);
 			default:
 				return nullptr;
 			}

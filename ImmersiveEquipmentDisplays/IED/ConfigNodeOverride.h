@@ -36,7 +36,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			inline static constexpr auto DEFAULT_FLAGS = NodeOverrideValuesFlags::kAbsolutePosition;
+			static constexpr auto DEFAULT_FLAGS = NodeOverrideValuesFlags::kAbsolutePosition;
 
 			stl::flag<NodeOverrideValuesFlags> flags{ DEFAULT_FLAGS };
 			configTransform_t                  transform;
@@ -175,7 +175,7 @@ namespace IED
 				DataVersion5 = 5,
 			};
 
-			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
+			static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
 				NodeOverrideConditionFlags::kMatchEquipped |
 				NodeOverrideConditionFlags::kMatchCategoryOperOR;
 
@@ -350,14 +350,16 @@ namespace IED
 
 			union
 			{
-				std::uint32_t           ui32b{ 0 };
-				TimeOfDay               timeOfDay;
-				std::uint32_t           uid;
-				std::uint32_t           level;
-				ConditionalVariableType condVarType;
+				std::uint32_t                ui32b{ 0 };
+				TimeOfDay                    timeOfDay;
+				std::uint32_t                uid;
+				std::uint32_t                level;
+				ConditionalVariableType      condVarType;
+				ActorState::ACTOR_LIFE_STATE lifeState;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ActorState::ACTOR_LIFE_STATE>, std::uint32_t>);
 			};
 
 			union
@@ -843,7 +845,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept
+			[[nodiscard]] constexpr auto& get_data() noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					transform_data_type,
@@ -855,7 +857,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept
+			[[nodiscard]] constexpr auto& get_data() noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					placement_data_type,
@@ -867,7 +869,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept
+			[[nodiscard]] constexpr auto& get_data() noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					physics_data_type,
@@ -879,7 +881,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+			[[nodiscard]] constexpr auto& get_data() const noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					transform_data_type,
@@ -891,7 +893,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+			[[nodiscard]] constexpr auto& get_data() const noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					placement_data_type,
@@ -903,7 +905,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() const noexcept
+			[[nodiscard]] constexpr auto& get_data() const noexcept
 				requires stl::is_any_same_v<
 					data_type,
 					physics_data_type,
@@ -988,7 +990,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+			[[nodiscard]] constexpr auto& get_data() noexcept  //
 				requires(stl::is_any_same_v<
 						 data_type,
 						 transform_data_type,
@@ -1000,7 +1002,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+			[[nodiscard]] constexpr auto& get_data() noexcept  //
 				requires(stl::is_any_same_v<
 						 data_type,
 						 placement_data_type,
@@ -1012,7 +1014,7 @@ namespace IED
 			template <
 				class Td,
 				class data_type = stl::strip_type<Td>>
-			[[nodiscard]] inline constexpr auto& get_data() noexcept  //
+			[[nodiscard]] constexpr auto& get_data() noexcept  //
 				requires(stl::is_any_same_v<
 						 data_type,
 						 physics_data_type,

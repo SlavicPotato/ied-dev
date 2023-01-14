@@ -150,7 +150,7 @@ namespace IED
 				DataVersion6 = 6,
 			};
 
-			inline static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
+			static constexpr auto DEFAULT_MATCH_CATEGORY_FLAGS =
 				EquipmentOverrideConditionFlags::kMatchEquipped |
 				EquipmentOverrideConditionFlags::kMatchCategoryOperOR;
 
@@ -323,15 +323,17 @@ namespace IED
 
 			union
 			{
-				std::uint32_t           ui32b{ 0 };
-				std::uint32_t           count;
-				TimeOfDay               timeOfDay;
-				std::uint32_t           uid;
-				std::uint32_t           level;
-				ConditionalVariableType condVarType;
+				std::uint32_t                ui32b{ 0 };
+				std::uint32_t                count;
+				TimeOfDay                    timeOfDay;
+				std::uint32_t                uid;
+				std::uint32_t                level;
+				ConditionalVariableType      condVarType;
+				ActorState::ACTOR_LIFE_STATE lifeState;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<ActorState::ACTOR_LIFE_STATE>, std::uint32_t>);
 			};
 
 			union
