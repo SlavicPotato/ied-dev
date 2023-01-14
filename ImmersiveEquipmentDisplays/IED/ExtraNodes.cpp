@@ -52,7 +52,7 @@ namespace IED
 					continue;
 				}
 
-				auto target = FindNode(a_root, v.name_parent);
+				auto target = GetNodeByName(a_root, v.name_parent);
 				if (!target)
 				{
 					continue;

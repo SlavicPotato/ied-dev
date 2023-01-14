@@ -7,7 +7,7 @@
 namespace IED
 {
 	template <class Tf>
-	inline static constexpr bool match_faction(
+	static constexpr bool match_faction(
 		const CachedFactionData& a_data,
 		Tf                       a_match) noexcept
 	{

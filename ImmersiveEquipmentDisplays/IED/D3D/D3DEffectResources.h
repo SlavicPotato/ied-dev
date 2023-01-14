@@ -23,26 +23,26 @@ namespace IED
 	class D3DEffectResources
 	{
 	public:
-		inline static constexpr auto DATA_PATH = "Data\\SKSE\\Plugins\\IED\\Assets\\Shaders\\blob.bin";
+		static constexpr auto DATA_PATH = "Data\\SKSE\\Plugins\\IED\\Assets\\Shaders\\blob.bin";
 
 		D3DEffectResources(ID3D11Device* a_device) noexcept(false);
 
-		[[nodiscard]] inline constexpr auto& GetVertexShader(D3DVertexShaderID a_id) const noexcept
+		[[nodiscard]] constexpr auto& GetVertexShader(D3DVertexShaderID a_id) const noexcept
 		{
 			return m_vertexShaders[stl::underlying(a_id)];
 		}
 
-		[[nodiscard]] inline constexpr auto& GetPixelShader(D3DPixelShaderID a_id) const noexcept
+		[[nodiscard]] constexpr auto& GetPixelShader(D3DPixelShaderID a_id) const noexcept
 		{
 			return m_pixelShaders[stl::underlying(a_id)];
 		}
 
-		[[nodiscard]] inline constexpr auto& GetILVertexPositionNormalColor() const noexcept
+		[[nodiscard]] constexpr auto& GetILVertexPositionNormalColor() const noexcept
 		{
 			return m_iaVertexPositionNormalColor;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetILVertexPositionColorAV() const noexcept
+		[[nodiscard]] constexpr auto& GetILVertexPositionColorAV() const noexcept
 		{
 			return m_iaVertexPositionColorAV;
 		}
@@ -52,12 +52,12 @@ namespace IED
 		static void MkShaderBytecode() noexcept(false);
 #endif
 
-		[[nodiscard]] inline constexpr auto& GetVertexShader(D3DVertexShaderID a_id) noexcept
+		[[nodiscard]] constexpr auto& GetVertexShader(D3DVertexShaderID a_id) noexcept
 		{
 			return m_vertexShaders[stl::underlying(a_id)];
 		}
 
-		[[nodiscard]] inline constexpr auto& GetPixelShader(D3DPixelShaderID a_id) noexcept
+		[[nodiscard]] constexpr auto& GetPixelShader(D3DPixelShaderID a_id) noexcept
 		{
 			return m_pixelShaders[stl::underlying(a_id)];
 		}

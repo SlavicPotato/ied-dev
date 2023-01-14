@@ -48,12 +48,12 @@ namespace IED
 			void SelectItem(
 				const stl::fixed_string& a_itemDesc);
 
-			inline constexpr const auto& GetSelected() const noexcept
+			constexpr const auto& GetSelected() const noexcept
 			{
 				return m_selected;
 			}
 
-			inline constexpr const auto& GetLastException() const noexcept
+			constexpr const auto& GetLastException() const noexcept
 			{
 				return m_lastExcept;
 			}

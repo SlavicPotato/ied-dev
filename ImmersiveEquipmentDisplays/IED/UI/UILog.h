@@ -19,10 +19,10 @@ namespace IED
 			public UIContext,
 			public UIWindow
 		{
-			inline static constexpr auto WINDOW_ID = "ied_log";
+			static constexpr auto WINDOW_ID = "ied_log";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUILog;
+			static constexpr auto CHILD_ID = ChildWindowID::kUILog;
 
 			UILog(Controller& a_controller);
 

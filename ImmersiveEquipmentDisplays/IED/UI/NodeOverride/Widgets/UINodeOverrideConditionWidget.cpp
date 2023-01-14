@@ -810,7 +810,7 @@ namespace IED
 			return result;
 		}
 
-		inline static constexpr void GetConditionListDepth(
+		static constexpr void GetConditionListDepth(
 			const Data::configNodeOverrideConditionList_t& a_in,
 			std::uint32_t&                                 a_result,
 			std::uint32_t&                                 a_offset) noexcept
@@ -1285,6 +1285,9 @@ namespace IED
 									break;
 								case Data::ExtraConditionType::kDayOfWeek:
 									m_condParamEditor.SetNext<ConditionParamItem::DayOfWeek>(e.dayOfWeek);
+									break;
+								case Data::ExtraConditionType::kLifeState:
+									m_condParamEditor.SetNext<ConditionParamItem::LifeState>(e.lifeState);
 									break;
 								}
 

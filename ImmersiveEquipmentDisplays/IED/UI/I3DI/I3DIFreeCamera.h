@@ -39,7 +39,7 @@ namespace IED
 			virtual void CameraProcessMouseInput(const Handlers::MouseMoveEvent& a_evn) override;
 			virtual void CameraUpdate(NiCamera* a_camera) override;
 
-			inline constexpr void EnableTranslation(bool a_switch) noexcept
+			constexpr void EnableTranslation(bool a_switch) noexcept
 			{
 				m_fSettings.enableTranslation = a_switch;
 			}

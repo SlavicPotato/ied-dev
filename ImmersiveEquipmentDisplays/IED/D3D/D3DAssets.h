@@ -63,7 +63,7 @@ namespace IED
 			return SaveImpl(a_data, a_store);
 		}
 
-		inline constexpr bool HasParserErrors() const noexcept
+		constexpr bool HasParserErrors() const noexcept
 		{
 			return false;
 		}

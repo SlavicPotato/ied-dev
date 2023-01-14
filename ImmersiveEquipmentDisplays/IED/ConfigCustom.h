@@ -57,10 +57,10 @@ namespace IED
 				DataVersion5 = 5,
 			};
 
-			static inline constexpr auto DEFAULT_CUSTOM_FLAGS =
+			static constexpr auto DEFAULT_CUSTOM_FLAGS =
 				CustomFlags::kAlwaysUnload;
 
-			inline constexpr void move_legacy_flags_to_le() noexcept
+			constexpr void move_legacy_flags_to_le() noexcept
 			{
 				lastEquipped.flags.set(LastEquippedFlags::kPrioritizeRecentSlots, customFlags.consume(CustomFlags::kUnused1));
 				lastEquipped.flags.set(LastEquippedFlags::kDisableIfSlotOccupied, customFlags.consume(CustomFlags::kUnused2));

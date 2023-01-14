@@ -39,31 +39,31 @@ namespace IED
 	public:
 		ActorProcessorTask();
 
-		[[nodiscard]] inline constexpr auto NodeProcessorGetTime() const noexcept
+		[[nodiscard]] constexpr auto NodeProcessorGetTime() const noexcept
 		{
 			return m_currentTime;
 		}
 
 #if defined(IED_ENABLE_CONDITION_EN)
-		[[nodiscard]] inline constexpr auto PlayerHasEnemiesNearby() const noexcept
+		[[nodiscard]] constexpr auto PlayerHasEnemiesNearby() const noexcept
 		{
 			return m_state.playerEnemiesNearby;
 		}
 #endif
 
-		inline constexpr void SetProcessorTaskRunState(bool a_state) noexcept
+		constexpr void SetProcessorTaskRunState(bool a_state) noexcept
 		{
 			m_run = a_state;
 		}
 
 		[[nodiscard]] void SetProcessorTaskRunAUState(bool a_state) noexcept;
 
-		inline constexpr void SetProcessorTaskParallelUpdates(bool a_switch) noexcept
+		constexpr void SetProcessorTaskParallelUpdates(bool a_switch) noexcept
 		{
 			m_parallelProcessing = a_switch;
 		}
-		
-		[[nodiscard]] inline constexpr auto& GetGlobalState() const noexcept
+
+		[[nodiscard]] constexpr auto& GetGlobalState() const noexcept
 		{
 			return m_globalState;
 		}
@@ -91,10 +91,10 @@ namespace IED
 #endif
 		};
 
-		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL    = 1000000ll;
-		inline static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15000000ll;
+		static constexpr auto COMMON_STATE_CHECK_INTERVAL    = 1000000ll;
+		static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15000000ll;
 
-		[[nodiscard]] inline constexpr bool ParallelProcessingEnabled() const noexcept
+		[[nodiscard]] constexpr bool ParallelProcessingEnabled() const noexcept
 		{
 			return m_parallelProcessing;
 		}
@@ -145,7 +145,7 @@ namespace IED
 		bool         m_parallelProcessing{ false };
 
 		template <class T>
-		class PostMTUpdateQueue
+		class PostMTTaskQueue
 		{
 		public:
 			template <class... Args>
@@ -156,7 +156,8 @@ namespace IED
 			}
 
 			template <class Tf>
-			constexpr void process(Tf a_func) noexcept
+			constexpr void process(Tf a_func)  //
+				noexcept(std::is_nothrow_invocable_v<Tf, const T&>)
 			{
 				if (m_queue.empty())
 				{
@@ -176,7 +177,7 @@ namespace IED
 			stl::fast_spin_lock m_lock;
 		};
 
-		PostMTUpdateQueue<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
+		PostMTTaskQueue<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
 
 		/*stl::fast_spin_lock                                          m_unloadQueueWRLock;
 		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_unloadQueue;*/

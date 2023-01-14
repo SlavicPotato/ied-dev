@@ -31,7 +31,7 @@ namespace IED
 				return;
 			}
 
-			auto npcroot = FindNode(
+			auto npcroot = GetNodeByName(
 				root,
 				BSStringHolder::GetSingleton()->m_npcroot);
 

@@ -19,7 +19,7 @@ namespace IED
 			public UIEditorTabPanel
 		{
 		public:
-			inline static constexpr auto PANEL_ID = UIDisplayManagementEditorPanel::Slot;
+			static constexpr auto PANEL_ID = UIDisplayManagementEditorPanel::Slot;
 
 			UISlotEditorTabPanel(Controller& a_controller);
 

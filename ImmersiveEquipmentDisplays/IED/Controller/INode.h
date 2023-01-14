@@ -34,7 +34,7 @@ namespace IED
 			return false;
 		}
 
-		[[nodiscard]] inline constexpr bool HasPhysicsNode() const noexcept
+		[[nodiscard]] constexpr bool HasPhysicsNode() const noexcept
 		{
 			return static_cast<bool>(physics.get());
 		}
@@ -56,7 +56,7 @@ namespace IED
 		};
 
 	public:
-		inline static constexpr std::size_t NODE_NAME_BUFFER_SIZE = MAX_PATH;
+		static constexpr std::size_t NODE_NAME_BUFFER_SIZE = MAX_PATH;
 
 		static bool CreateTargetNode(
 			const Data::configBaseValues_t& a_entry,

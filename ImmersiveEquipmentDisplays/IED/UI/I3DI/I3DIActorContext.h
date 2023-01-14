@@ -41,37 +41,37 @@ namespace IED
 				I3DICommonData&                 a_data,
 				const Handlers::MouseMoveEvent& a_evn);
 
-			[[nodiscard]] inline constexpr auto& GetController() const noexcept
+			[[nodiscard]] constexpr auto& GetController() const noexcept
 			{
 				return m_controller;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
+			[[nodiscard]] constexpr auto& GetActorFormID() const noexcept
 			{
 				return m_actor;
 			}
 
-			[[nodiscard]] inline constexpr bool LastUpdateFailed() const noexcept
+			[[nodiscard]] constexpr bool LastUpdateFailed() const noexcept
 			{
 				return m_lastUpdateFailed;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetActorObject() const noexcept
+			[[nodiscard]] constexpr auto& GetActorObject() const noexcept
 			{
 				return m_actorObject;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetMOVNodes() const noexcept
+			[[nodiscard]] constexpr auto& GetMOVNodes() const noexcept
 			{
 				return m_movNodes;
 			}
 
-			/*[[nodiscard]] inline constexpr auto& GetMOVPairs() const noexcept
+			/*[[nodiscard]] constexpr auto& GetMOVPairs() const noexcept
 			{
 				return m_movPairs;
 			}*/
 
-			[[nodiscard]] inline constexpr auto& GetWeaponNodes() const noexcept
+			[[nodiscard]] constexpr auto& GetWeaponNodes() const noexcept
 			{
 				return m_weaponNodes;
 			}
@@ -82,22 +82,22 @@ namespace IED
 			}
 
 			template <class T, class... Args>
-			inline constexpr void CreateCamera(Args&&... a_args) noexcept
+			constexpr void CreateCamera(Args&&... a_args) noexcept
 			{
 				m_camera = std::make_unique<T>(std::forward<Args>(a_args)...);
 			}
 
-			inline constexpr void SetAnimEventSent() noexcept
+			constexpr void SetAnimEventSent() noexcept
 			{
 				m_animEventSent = true;
 			}
 
-			[[nodiscard]] inline constexpr auto GetAnimEventSent() noexcept
+			[[nodiscard]] constexpr auto GetAnimEventSent() noexcept
 			{
 				return m_animEventSent;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetCamera() const noexcept
+			[[nodiscard]] constexpr auto& GetCamera() const noexcept
 			{
 				return m_camera;
 			}

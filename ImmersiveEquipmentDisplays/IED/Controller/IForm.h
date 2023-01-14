@@ -22,7 +22,7 @@ namespace IED
 		formInfo_t                  form;
 		std::unique_ptr<formInfo_t> base;
 
-		[[nodiscard]] inline constexpr const auto& get_base() const noexcept
+		[[nodiscard]] constexpr const auto& get_base() const noexcept
 		{
 			return base ? *base : form;
 		}

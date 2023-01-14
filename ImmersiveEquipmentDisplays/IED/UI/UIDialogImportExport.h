@@ -30,7 +30,7 @@ namespace IED
 			static constexpr auto WINDOW_ID = "ied_ie";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIDialogImportExport;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIDialogImportExport;
 
 			UIDialogImportExport(Controller& a_controller);
 

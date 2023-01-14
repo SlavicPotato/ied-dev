@@ -7,8 +7,8 @@ namespace IED
 	class IFormDatabase : public IFormCommon
 	{
 	public:
-		inline static constexpr std::uint32_t EXTRA_TYPE_ARMOR = 0xFFFF;
-		inline static constexpr std::uint32_t EXTRA_TYPE_LIGHT = 0xFFFE;
+		static constexpr std::uint32_t EXTRA_TYPE_ARMOR = 0xFFFF;
+		static constexpr std::uint32_t EXTRA_TYPE_LIGHT = 0xFFFE;
 
 		struct entry_t
 		{

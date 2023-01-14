@@ -74,7 +74,7 @@ namespace IED
 				DataVersion6 = 6,
 			};
 
-			inline static constexpr auto DEFAULT_FLAGS =
+			static constexpr auto DEFAULT_FLAGS =
 				BaseFlags::kDropOnDeath |
 				BaseFlags::kSyncReferenceTransform |
 				BaseFlags::kReferenceMode |

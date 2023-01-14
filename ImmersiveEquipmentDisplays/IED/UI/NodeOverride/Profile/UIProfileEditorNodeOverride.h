@@ -21,7 +21,7 @@ namespace IED
 			public UINodeOverrideEditorWidget<UIGlobalEditorDummyHandle>
 		{
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorNodeOverride;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorNodeOverride;
 
 			UIProfileEditorNodeOverride(Controller& a_controller);
 			~UIProfileEditorNodeOverride() noexcept override;

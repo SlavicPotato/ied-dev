@@ -14,7 +14,7 @@ namespace IED
 {
 	using namespace ::Util::Node;
 
-	inline static constexpr bool match_form_slot(
+	static constexpr bool match_form_slot(
 		const Data::configNodeOverrideCondition_t& a_data,
 		const nodeOverrideParams_t&                a_params) noexcept
 	{

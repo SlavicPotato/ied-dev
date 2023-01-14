@@ -10,11 +10,10 @@ namespace IED
 	{
 		struct Node
 		{
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return static_cast<bool>(node.get());
 			}
-
 
 			NiPointer<NiNode> node;
 			NiTransform       orig;  // cached or zero, never read from loaded actor 3D
@@ -26,7 +25,7 @@ namespace IED
 			thirdPerson{ a_node3p, a_originalTransform3p }
 		{
 		}
-		
+
 		inline CMENodeEntry(
 			NiNode*            a_node3p,
 			const NiTransform& a_originalTransform3p,

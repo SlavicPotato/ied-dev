@@ -22,7 +22,7 @@ namespace IED
 			stl::unordered_map<std::uint8_t, soundPair_t> data;
 		};
 
-		void SoundPlay(std::uint8_t a_formType, NiAVObject* a_object, bool a_equip) const noexcept;
+		void SoundPlay(std::uint8_t a_formType, TESObjectREFR* a_actor, bool a_equip) const noexcept;
 
 	protected:
 		template <class Tr>

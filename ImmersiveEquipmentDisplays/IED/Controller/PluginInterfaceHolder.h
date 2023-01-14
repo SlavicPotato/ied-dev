@@ -8,7 +8,7 @@ namespace IED
 		static_assert(std::is_base_of_v<PluginInterfaceBase, T>);
 
 	public:
-		inline constexpr void SetPluginInterface(
+		constexpr void SetPluginInterface(
 			T*                             a_interface,
 			PluginInterfaceQueryErrorState a_error) noexcept
 		{
@@ -16,7 +16,7 @@ namespace IED
 			m_queryError = a_error;
 		}
 
-		inline constexpr void GetPluginInterface(
+		constexpr void GetPluginInterface(
 			T*&                             a_interfaceOut,
 			PluginInterfaceQueryErrorState& a_errorOut) const noexcept
 		{
@@ -24,7 +24,7 @@ namespace IED
 			a_errorOut     = m_queryError;
 		}
 
-		inline constexpr void GetPluginInterface(T*& a_interfaceOut) const noexcept
+		constexpr void GetPluginInterface(T*& a_interfaceOut) const noexcept
 		{
 			a_interfaceOut = m_interface;
 		}

@@ -15,15 +15,6 @@
 
 namespace IED
 {
-	inline static constexpr bool IsActorValid(TESObjectREFR* a_refr) noexcept
-	{
-		return a_refr &&
-		       a_refr->formID != 0 &&
-		       a_refr->loadedState &&
-		       !a_refr->IsDeleted() &&
-		       a_refr->IsActor();
-	}
-
 	class IObjectManager :
 		public ObjectManagerData,
 		public ObjectDatabase,
@@ -35,17 +26,17 @@ namespace IED
 	public:
 		FN_NAMEPROC("IObjectManager");
 
-		inline constexpr void SetPlaySound(bool a_switch) noexcept
+		constexpr void SetPlaySound(bool a_switch) noexcept
 		{
 			m_playSound = a_switch;
 		}
 
-		inline constexpr void SetPlaySoundNPC(bool a_switch) noexcept
+		constexpr void SetPlaySoundNPC(bool a_switch) noexcept
 		{
 			m_playSoundNPC = a_switch;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetLock() const noexcept
+		[[nodiscard]] constexpr auto& GetLock() const noexcept
 		{
 			return m_lock;
 		}
@@ -181,11 +172,9 @@ namespace IED
 
 		static void TryInitializeAndPlaySound(
 			Actor*             a_actor,
-			ObjectSound&       a_sound,
-			const ObjectLight& a_light,
-			NiAVObject*        a_object) noexcept;
+			ObjectSound&       a_sound) noexcept;
 
-		static SoundDescriptor GetSoundDescriptor(
+		static BGSSoundDescriptorForm* GetSoundDescriptor(
 			const TESForm*     a_modelForm,
 			const ObjectLight& a_light) noexcept;
 

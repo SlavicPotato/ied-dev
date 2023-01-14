@@ -4,12 +4,12 @@
 
 namespace IED
 {
-	inline static constexpr auto ACTOR_CHECK_FLAGS_1 =
+	static constexpr auto ACTOR_CHECK_FLAGS_1 =
 		Actor::Flags1::kPlayerTeammate |
 		Actor::Flags1::kGuard |
 		Actor::Flags1::kParalyzed;
 
-	inline static constexpr auto ACTOR_CHECK_FLAGS_2 =
+	static constexpr auto ACTOR_CHECK_FLAGS_2 =
 		Actor::Flags2::kIsAMount |
 		Actor::Flags2::kGettingOnOffMount |
 		Actor::Flags2::kInBleedoutAnimation |
@@ -21,13 +21,13 @@ namespace IED
 		Actor::Flags2::kProtected |
 		Actor::Flags2::kIsInKillMove;
 
-	inline static constexpr auto ACTOR_CHECK_FLAGS_LF_1 =
+	static constexpr auto ACTOR_CHECK_FLAGS_LF_1 =
 		Actor::Flags1::kInWater;
 
-	inline static constexpr auto ACTOR_CHECK_FLAGS_LF_2 =
+	static constexpr auto ACTOR_CHECK_FLAGS_LF_2 =
 		Actor::Flags2::kUnderwater;
 
-	inline static constexpr auto NPC_BASE_CHECK_FLAGS =
+	static constexpr auto NPC_BASE_CHECK_FLAGS =
 		ACTOR_BASE_DATA::Flag::kInvulnerable |
 		ACTOR_BASE_DATA::Flag::kSummonable |
 		ACTOR_BASE_DATA::Flag::kUnique;
@@ -44,18 +44,18 @@ namespace IED
 
 		bool UpdatePerks(Actor* a_actor, TESNPC* a_npc) noexcept;
 
-		[[nodiscard]] inline constexpr auto GetNumPerks() const noexcept
+		[[nodiscard]] constexpr auto GetNumPerks() const noexcept
 		{
 			return data.size();
 		}
 
-		inline constexpr const auto& GetPerkContainer() const noexcept
+		[[nodiscard]] constexpr const auto& GetPerkContainer() const noexcept
 		{
 			return data;
 		}
 
 	private:
-		static constexpr std::size_t GetSignature(Actor* a_actor) noexcept;
+		[[nodiscard]] static constexpr std::size_t GetSignature(Actor* a_actor) noexcept;
 
 		container_type data;
 
@@ -74,12 +74,12 @@ namespace IED
 
 		bool UpdateFactions(Actor* a_actor, TESNPC* a_npc) noexcept;
 
-		[[nodiscard]] inline constexpr auto GetNumFactions() const noexcept
+		[[nodiscard]] constexpr auto GetNumFactions() const noexcept
 		{
 			return data.size();
 		}
 
-		inline constexpr const auto& GetFactionContainer() const noexcept
+		[[nodiscard]] constexpr const auto& GetFactionContainer() const noexcept
 		{
 			return data;
 		}
@@ -93,7 +93,7 @@ namespace IED
 			noexcept(std::is_nothrow_invocable_v<Tf, const RE::FACTION_RANK&>)  //
 			requires(std::invocable<Tf, const RE::FACTION_RANK&>);
 
-		static constexpr std::size_t GetSignature(
+		[[nodiscard]] static constexpr std::size_t GetSignature(
 			const ExtraFactionChanges* a_factionChanges) noexcept;
 
 		container_type data;
@@ -138,7 +138,7 @@ namespace IED
 
 		bool UpdateEffects(Actor* a_actor) noexcept;
 
-		inline constexpr auto& GetEffectContainer() const noexcept
+		constexpr auto& GetEffectContainer() const noexcept
 		{
 			return data;
 		}
@@ -219,6 +219,7 @@ namespace IED
 		stl::flag<Actor::Flags1>         flagslf1;
 		stl::flag<Actor::Flags2>         flagslf2;
 		stl::flag<ACTOR_BASE_DATA::Flag> baseFlags;
+		ActorState::ACTOR_LIFE_STATE     lifeState;
 		std::uint16_t                    level;
 		bool                             active;
 		bool                             inCombat;
@@ -229,9 +230,7 @@ namespace IED
 		bool                             weaponDrawn;
 		bool                             inInterior;
 		bool                             arrested;
-		bool                             unconscious;
 		bool                             flying;
-		bool                             restrained;
 		bool                             sneaking;
 	};
 }

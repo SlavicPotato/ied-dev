@@ -39,12 +39,12 @@ namespace IED
 			void SetAllowedTypes(const std::shared_ptr<const UIFormBrowser::tab_filter_type>& a_types);
 			void ClearAllowedTypes();
 
-			inline constexpr void SetFormBrowserEnabled(bool a_switch) noexcept
+			constexpr void SetFormBrowserEnabled(bool a_switch) noexcept
 			{
 				m_enableFormBrowser = a_switch;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetAllowedTypes() const noexcept
+			[[nodiscard]] constexpr const auto& GetAllowedTypes() const noexcept
 			{
 				return m_types;
 			}
@@ -64,7 +64,7 @@ namespace IED
 
 			[[nodiscard]] bool IsCurrentValid() const noexcept;
 
-			[[nodiscard]] inline constexpr bool IsFormBrowserEnabled() const noexcept
+			[[nodiscard]] constexpr bool IsFormBrowserEnabled() const noexcept
 			{
 				return m_enableFormBrowser;
 			}
@@ -77,7 +77,7 @@ namespace IED
 			bool         GetInputBufferChanged();
 			void         ErrorMessage(const char* a_text);
 
-			inline constexpr auto& GetCurrentFormInfo() const noexcept
+			constexpr auto& GetCurrentFormInfo() const noexcept
 			{
 				return !m_forceBase ?
 				           m_state->m_currentInfo->form :

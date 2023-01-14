@@ -21,7 +21,7 @@ namespace IED
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slot) noexcept;
 
-		inline constexpr formSlotPair_t(
+		constexpr formSlotPair_t(
 			TESForm*              a_form,
 			Data::ObjectSlotExtra a_slotex,
 			Data::ObjectSlot      a_slot) noexcept :

@@ -30,12 +30,12 @@ namespace IED
 
 			I3DIObjectController();
 
-			[[nodiscard]] inline constexpr auto& GetData() const noexcept
+			[[nodiscard]] constexpr auto& GetData() const noexcept
 			{
 				return m_data;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetDragContext() const noexcept
+			[[nodiscard]] constexpr auto& GetDragContext() const noexcept
 			{
 				return m_dragContext;
 			}
@@ -55,7 +55,7 @@ namespace IED
 			void Run(I3DICommonData& a_data);
 			void DrawObjects(I3DICommonData& a_data);
 
-			[[nodiscard]] inline constexpr auto GetLastRunTime() const noexcept
+			[[nodiscard]] constexpr auto GetLastRunTime() const noexcept
 			{
 				return m_lastRunTime;
 			}

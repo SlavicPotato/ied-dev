@@ -37,12 +37,12 @@ namespace IED
 				Game::FormID&          a_form,
 				const char*            a_tipText = nullptr);
 
-			inline constexpr const auto GetCurrentInfo() const noexcept
+			constexpr const auto GetCurrentInfo() const noexcept
 			{
 				return m_currentInfo;
 			}
 
-			inline constexpr void SetAllowClear(bool a_allowClear) noexcept
+			constexpr void SetAllowClear(bool a_allowClear) noexcept
 			{
 				m_allowClear = a_allowClear;
 			}

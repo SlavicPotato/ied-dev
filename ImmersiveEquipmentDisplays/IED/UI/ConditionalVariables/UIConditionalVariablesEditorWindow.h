@@ -16,10 +16,10 @@ namespace IED
 			public UIWindow,
 			public UIConditionalVariablesEditor
 		{
-			inline static constexpr auto WINDOW_ID = "ied_cve";
+			static constexpr auto WINDOW_ID = "ied_cve";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIConditionalVariablesEditorWindow;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIConditionalVariablesEditorWindow;
 
 			UIConditionalVariablesEditorWindow(Controller& a_controller);
 

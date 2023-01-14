@@ -10,7 +10,7 @@ namespace IED
 		friend class boost::serialization::access;
 
 	public:
-		inline static constexpr std::size_t DEFAULT_MAX_FORMS = 16;
+		static constexpr std::size_t DEFAULT_MAX_FORMS = 16;
 
 		enum Serialization : unsigned int
 		{
@@ -75,25 +75,25 @@ namespace IED
 			DisplaySlotCacheEntry,
 			stl::underlying(Data::ObjectSlot::kMax)>;
 
-		[[nodiscard]] inline constexpr auto& get(BIPED_OBJECT a_object) noexcept
+		[[nodiscard]] constexpr auto& get(BIPED_OBJECT a_object) noexcept
 		{
 			assert(a_object < BIPED_OBJECT::kTotal);
 			return biped[stl::underlying(a_object)];
 		}
 
-		[[nodiscard]] inline constexpr auto& get(BIPED_OBJECT a_object) const noexcept
+		[[nodiscard]] constexpr auto& get(BIPED_OBJECT a_object) const noexcept
 		{
 			assert(a_object < BIPED_OBJECT::kTotal);
 			return biped[stl::underlying(a_object)];
 		}
 
-		[[nodiscard]] inline constexpr auto& get(Data::ObjectSlot a_slot) noexcept
+		[[nodiscard]] constexpr auto& get(Data::ObjectSlot a_slot) noexcept
 		{
 			assert(a_slot < Data::ObjectSlot::kMax);
 			return displays[stl::underlying(a_slot)];
 		}
 
-		[[nodiscard]] inline constexpr auto& get(Data::ObjectSlot a_slot) const noexcept
+		[[nodiscard]] constexpr auto& get(Data::ObjectSlot a_slot) const noexcept
 		{
 			assert(a_slot < Data::ObjectSlot::kMax);
 			return displays[stl::underlying(a_slot)];

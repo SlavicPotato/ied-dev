@@ -43,7 +43,7 @@ namespace IED
 
 				void clear() noexcept;
 
-				[[nodiscard]] inline constexpr const auto& data() const noexcept
+				[[nodiscard]] constexpr const auto& data() const noexcept
 				{
 					return m_data;
 				}

@@ -26,7 +26,7 @@ namespace IED
 			virtual ~UIProfileBase() noexcept = default;
 
 		protected:
-			inline static constexpr auto POPUP_NEW_ID = "popup_new";
+			static constexpr auto POPUP_NEW_ID = "popup_new";
 
 			UIProfileBase() = default;
 

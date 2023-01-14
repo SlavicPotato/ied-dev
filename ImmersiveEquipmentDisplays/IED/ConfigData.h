@@ -140,7 +140,7 @@ namespace IED
 			Global = 3
 		};
 
-		static inline constexpr std::underlying_type_t<ConfigClass> CONFIG_CLASS_MAX = 4;
+		static constexpr std::underlying_type_t<ConfigClass> CONFIG_CLASS_MAX = 4;
 
 		enum class GlobalConfigType : std::uint32_t
 		{
@@ -155,7 +155,7 @@ namespace IED
 			kRandom       = 2
 		};
 
-		inline static constexpr auto GetOppositeSex(Data::ConfigSex a_sex) noexcept
+		constexpr auto GetOppositeSex(Data::ConfigSex a_sex) noexcept
 		{
 			return a_sex == Data::ConfigSex::Female ?
 			           Data::ConfigSex::Male :
@@ -185,12 +185,12 @@ namespace IED
 
 		struct ConfigKeyPair
 		{
-			[[nodiscard]] inline constexpr bool Has() const noexcept
+			[[nodiscard]] constexpr bool Has() const noexcept
 			{
 				return static_cast<bool>(key);
 			}
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return static_cast<bool>(key);
 			}

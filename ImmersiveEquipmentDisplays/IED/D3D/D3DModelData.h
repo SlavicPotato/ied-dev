@@ -16,17 +16,17 @@ namespace IED
 
 		void Draw(ID3D11DeviceContext* a_context);
 
-		[[nodiscard]] inline constexpr auto& GetModelData() const noexcept
+		[[nodiscard]] constexpr auto& GetModelData() const noexcept
 		{
 			return m_modelData;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetBoundingOrientedBox() const noexcept
+		[[nodiscard]] constexpr auto& GetBoundingOrientedBox() const noexcept
 		{
 			return m_boundingOrientedBox;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetBoundingSphere() const noexcept
+		[[nodiscard]] constexpr auto& GetBoundingSphere() const noexcept
 		{
 			return m_boundingSphere;
 		}

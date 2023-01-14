@@ -19,7 +19,7 @@ namespace IED
 			std::int32_t base{ 0 };
 		};
 
-		[[nodiscard]] inline constexpr std::int32_t get_value(
+		[[nodiscard]] constexpr std::int32_t get_value(
 			AnimationWeaponType a_id,
 			std::int32_t        a_value) const noexcept
 		{
@@ -28,7 +28,7 @@ namespace IED
 			return base > 0 ? base + a_value : 0;
 		}
 
-		[[nodiscard]] inline constexpr std::int32_t get_value_extra(
+		[[nodiscard]] constexpr std::int32_t get_value_extra(
 			AnimationExtraGroup a_id,
 			std::int32_t        a_value) const noexcept
 		{
@@ -37,21 +37,21 @@ namespace IED
 			return base > 0 ? base + a_value : 0;
 		}
 
-		[[nodiscard]] inline constexpr std::int32_t get_base(
+		[[nodiscard]] constexpr std::int32_t get_base(
 			AnimationWeaponType a_id) const noexcept
 		{
 			assert(a_id < AnimationWeaponType::Max);
 			return data[stl::underlying(a_id)].base;
 		}
 
-		[[nodiscard]] inline constexpr std::int32_t get_base_extra(
+		[[nodiscard]] constexpr std::int32_t get_base_extra(
 			AnimationExtraGroup a_id) const noexcept
 		{
 			assert(a_id < AnimationExtraGroup::Max);
 			return extra[stl::underlying(a_id)].base;
 		}
 
-		inline constexpr void set_base(
+		constexpr void set_base(
 			AnimationWeaponType a_id,
 			std::int32_t        a_value) noexcept
 		{
@@ -59,7 +59,7 @@ namespace IED
 			data[stl::underlying(a_id)].base = a_value;
 		}
 
-		inline constexpr void set_base_extra(
+		constexpr void set_base_extra(
 			AnimationExtraGroup a_id,
 			std::int32_t        a_value) noexcept
 		{

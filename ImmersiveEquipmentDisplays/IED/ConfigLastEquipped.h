@@ -24,7 +24,7 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-			static inline constexpr auto DEFAULT_FLAGS =
+			static constexpr auto DEFAULT_FLAGS =
 				LastEquippedFlags::kPrioritizeRecentSlots |
 				LastEquippedFlags::kDisableIfSlotOccupied;
 

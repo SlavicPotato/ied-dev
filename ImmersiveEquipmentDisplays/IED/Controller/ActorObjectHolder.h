@@ -103,7 +103,7 @@ namespace IED
 		friend class ActorProcessorTask;
 		friend class ObjectManagerData;
 
-		inline static constexpr std::size_t MAX_RPC_SIZE = 1024 * 1024;
+		static constexpr std::size_t MAX_RPC_SIZE = 1024 * 1024;
 
 		struct monitorNodeEntry_t
 		{
@@ -124,9 +124,9 @@ namespace IED
 			stl::fixed_string_less_equal_ptr>;
 
 	public:
-		inline static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
-		inline static constexpr long long STATE_CHECK_INTERVAL_MH   = 66666;
-		inline static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
+		static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
+		static constexpr long long STATE_CHECK_INTERVAL_MH   = 66666;
+		static constexpr long long STATE_CHECK_INTERVAL_HIGH = 33333;
 
 		using customEntryMap_t  = stl::unordered_map<stl::fixed_string, ObjectEntryCustom>;
 		using customPluginMap_t = stl::unordered_map<stl::fixed_string, customEntryMap_t>;
@@ -153,46 +153,46 @@ namespace IED
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
 		ActorObjectHolder& operator=(ActorObjectHolder&&)      = delete;
 
-		[[nodiscard]] inline constexpr auto& GetSlot(
+		[[nodiscard]] constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
 		{
 			assert(a_slot < Data::ObjectSlot::kMax);
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetSlot(
+		[[nodiscard]] constexpr const auto& GetSlot(
 			Data::ObjectSlot a_slot) const noexcept
 		{
 			assert(a_slot < Data::ObjectSlot::kMax);
 			return m_entriesSlot[stl::underlying(a_slot)];
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSlots() const noexcept
+		[[nodiscard]] constexpr auto& GetSlots() const noexcept
 		{
 			return m_entriesSlot;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetActor() const noexcept
+		[[nodiscard]] constexpr auto& GetActor() const noexcept
 		{
 			return m_actor;
 		}
 
-		[[nodiscard]] inline constexpr auto& Get3D() const noexcept
+		[[nodiscard]] constexpr auto& Get3D() const noexcept
 		{
 			return m_root;
 		}
 
-		[[nodiscard]] inline constexpr auto& Get3D1p() const noexcept
+		[[nodiscard]] constexpr auto& Get3D1p() const noexcept
 		{
 			return m_root1p;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetNPCRoot() const noexcept
+		[[nodiscard]] constexpr auto& GetNPCRoot() const noexcept
 		{
 			return m_npcroot;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetRoot() const noexcept
+		[[nodiscard]] constexpr auto& GetRoot() const noexcept
 		{
 			return m_root;
 		}
@@ -206,12 +206,12 @@ namespace IED
 			return IPerfCounter::delta_us(m_created, IPerfCounter::Query());
 		}
 
-		[[nodiscard]] inline constexpr auto& GetHandle() const noexcept
+		[[nodiscard]] constexpr auto& GetHandle() const noexcept
 		{
 			return m_handle;
 		}
 
-		inline constexpr void SetHandle(Game::ObjectRefHandle a_handle) noexcept
+		constexpr void SetHandle(Game::ObjectRefHandle a_handle) noexcept
 		{
 			m_handle = a_handle;
 		}
@@ -226,32 +226,32 @@ namespace IED
 			return m_entriesCustom[stl::underlying(a_class)];
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCustom() const noexcept
+		[[nodiscard]] constexpr auto& GetCustom() const noexcept
 		{
 			return m_entriesCustom;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCMENodes() const noexcept
+		[[nodiscard]] constexpr auto& GetCMENodes() const noexcept
 		{
 			return m_cmeNodes;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetMOVNodes() const noexcept
+		[[nodiscard]] constexpr auto& GetMOVNodes() const noexcept
 		{
 			return m_movNodes;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetWeapNodes() const noexcept
+		[[nodiscard]] constexpr auto& GetWeapNodes() const noexcept
 		{
 			return m_weapNodes;
 		}
 
-		[[nodiscard]] inline constexpr bool IsActive() const noexcept
+		[[nodiscard]] constexpr bool IsActive() const noexcept
 		{
 			return m_state.active;
 		}
 
-		/*[[nodiscard]] inline constexpr bool GetEnemiesNearby() const noexcept
+		/*[[nodiscard]] constexpr bool GetEnemiesNearby() const noexcept
 		{
 			return m_enemiesNearby;
 		}*/
@@ -283,7 +283,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr void RequestEvalDefer(std::uint8_t a_delay = 2) const noexcept
+		constexpr void RequestEvalDefer(std::uint8_t a_delay = 2) const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEval);
 			if (m_flagsbf.evalCountdown == 0)
@@ -292,7 +292,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr void RequestEval() const noexcept
+		constexpr void RequestEval() const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kRequestEvalImmediate);
 		}
@@ -301,7 +301,7 @@ namespace IED
 		[[nodiscard]] bool IsActorRace(Game::FormID a_race) const;
 
 		template <class Tv>
-		inline constexpr void state_var_update(
+		constexpr void state_var_update(
 			Tv&       a_var,
 			const Tv& a_current) noexcept
 		{
@@ -313,7 +313,7 @@ namespace IED
 		}
 
 		template <class Tv>
-		inline constexpr void state_var_update_defer(
+		constexpr void state_var_update_defer(
 			Tv&           a_var,
 			const Tv&     a_current,
 			std::uint32_t a_delay = 2) noexcept
@@ -326,7 +326,7 @@ namespace IED
 		}
 
 		template <class Tv>
-		inline constexpr void state_var_update_defer(
+		constexpr void state_var_update_defer(
 			stl::flag<Tv>& a_var,
 			const Tv&      a_current,
 			std::uint32_t  a_delay = 2) noexcept
@@ -339,7 +339,7 @@ namespace IED
 		}
 
 		template <class Tv>
-		inline constexpr bool state_var_update_b(
+		constexpr bool state_var_update_b(
 			Tv&       a_var,
 			const Tv& a_current) noexcept
 		{
@@ -355,7 +355,7 @@ namespace IED
 		}
 
 		template <class Tv>
-		inline constexpr bool state_var_update_b(
+		constexpr bool state_var_update_b(
 			stl::flag<Tv>& a_var,
 			const Tv&      a_current) noexcept
 		{
@@ -371,7 +371,10 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit(Tf a_func)
+		constexpr void visit(Tf a_func)  //
+			/*noexcept(
+				std::is_nothrow_invocable_v<Tf, ObjectEntrySlot&>&&
+					std::is_nothrow_invocable_v<Tf, ObjectEntryCustom&>)*/
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -391,7 +394,10 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit(Tf a_func) const
+		constexpr void visit(Tf a_func) const   //
+			/* noexcept(
+				std::is_nothrow_invocable_v<Tf, const ObjectEntrySlot&>&&
+					std::is_nothrow_invocable_v<Tf, const ObjectEntryCustom&>)*/
 		{
 			for (auto& e : m_entriesSlot)
 			{
@@ -411,7 +417,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_custom(Tf a_func) const                      //
+		constexpr void visit_custom(Tf a_func) const                             //
 			noexcept(std::is_nothrow_invocable_v<Tf, const ObjectEntryCustom&>)  //
 			requires(std::invocable<Tf, const ObjectEntryCustom&>)
 		{
@@ -428,7 +434,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_custom(Tf a_func)                      //
+		constexpr void visit_custom(Tf a_func)                             //
 			noexcept(std::is_nothrow_invocable_v<Tf, ObjectEntryCustom&>)  //
 			requires(std::invocable<Tf, ObjectEntryCustom&>)
 		{
@@ -445,7 +451,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_slot(Tf a_func) const                      //
+		constexpr void visit_slot(Tf a_func) const                             //
 			noexcept(std::is_nothrow_invocable_v<Tf, const ObjectEntrySlot&>)  //
 			requires(std::invocable<Tf, const ObjectEntrySlot&>)
 		{
@@ -456,7 +462,7 @@ namespace IED
 		}
 
 		template <class Tf>
-		inline constexpr void visit_slot(Tf a_func)                      //
+		constexpr void visit_slot(Tf a_func)                             //
 			noexcept(std::is_nothrow_invocable_v<Tf, ObjectEntrySlot&>)  //
 			requires(std::invocable<Tf, ObjectEntrySlot&>)
 		{
@@ -466,57 +472,57 @@ namespace IED
 			}
 		}
 
-		[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
+		[[nodiscard]] constexpr auto& GetActorFormID() const noexcept
 		{
 			return m_actorid;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetNPCFormID() const noexcept
+		[[nodiscard]] constexpr auto& GetNPCFormID() const noexcept
 		{
 			return m_npcid;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetNPCTemplateFormID() const noexcept
+		[[nodiscard]] constexpr auto& GetNPCTemplateFormID() const noexcept
 		{
 			return m_npcTemplateId;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetRaceFormID() const noexcept
+		[[nodiscard]] constexpr auto& GetRaceFormID() const noexcept
 		{
 			return m_raceid;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSkeletonCache(bool a_firstPerson = false) const noexcept
+		[[nodiscard]] constexpr auto& GetSkeletonCache(bool a_firstPerson = false) const noexcept
 		{
 			return a_firstPerson ? m_skeletonCache1p : m_skeletonCache;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSkeletonID() const noexcept
+		[[nodiscard]] constexpr auto& GetSkeletonID() const noexcept
 		{
 			return m_skeletonID;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetAnimState() const noexcept
+		[[nodiscard]] constexpr auto& GetAnimState() const noexcept
 		{
 			return m_animState;
 		}
 
-		[[nodiscard]] inline constexpr bool IsPlayer() const noexcept
+		[[nodiscard]] constexpr bool IsPlayer() const noexcept
 		{
 			return m_flags.test(ActorObjectHolderFlags::kIsPlayer);
 		}
 
-		[[nodiscard]] inline constexpr bool IsFemale() const noexcept
+		[[nodiscard]] constexpr bool IsFemale() const noexcept
 		{
 			return m_flags.test(ActorObjectHolderFlags::kIsFemale);
 		}
 
-		[[nodiscard]] inline constexpr auto GetSex() const noexcept
+		[[nodiscard]] constexpr auto GetSex() const noexcept
 		{
 			return IsFemale() ? Data::ConfigSex::Female : Data::ConfigSex::Male;
 		}
 
-		/*[[nodiscard]] inline constexpr bool IsAnimEventForwardingEnabled() const noexcept
+		/*[[nodiscard]] constexpr bool IsAnimEventForwardingEnabled() const noexcept
 		{
 			return m_enableAnimEventForwarding;
 		}*/
@@ -543,32 +549,32 @@ namespace IED
 		void UnregisterWeaponAnimationGraphManagerHolder(
 			RE::WeaponAnimationGraphManagerHolderPtr& a_ptr);*/
 
-		/*[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() noexcept
+		/*[[nodiscard]] constexpr auto& GetAnimationUpdateList() noexcept
 		{
 			return m_animationUpdateList;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetAnimationUpdateList() const noexcept
+		[[nodiscard]] constexpr auto& GetAnimationUpdateList() const noexcept
 		{
 			return m_animationUpdateList;
 		}*/
 
-		[[nodiscard]] inline constexpr bool HasHumanoidSkeleton() const noexcept
+		[[nodiscard]] constexpr bool HasHumanoidSkeleton() const noexcept
 		{
 			return m_flags.test(ActorObjectHolderFlags::kHumanoidSkeleton);
 		}
 
-		[[nodiscard]] inline constexpr bool IsXP32Skeleton() const noexcept
+		[[nodiscard]] constexpr bool IsXP32Skeleton() const noexcept
 		{
 			return m_skeletonID.xp_version().has_value();
 		}
 
-		[[nodiscard]] inline constexpr bool GetNodeConditionForced() const noexcept
+		[[nodiscard]] constexpr bool GetNodeConditionForced() const noexcept
 		{
 			return m_flags.test(ActorObjectHolderFlags::kForceNodeCondTrue);
 		}
 
-		[[nodiscard]] inline constexpr void SetNodeConditionForced(bool a_switch) noexcept
+		[[nodiscard]] constexpr void SetNodeConditionForced(bool a_switch) noexcept
 		{
 			if (m_flags.test(ActorObjectHolderFlags::kForceNodeCondTrue) != a_switch)
 			{
@@ -582,13 +588,13 @@ namespace IED
 			return m_state;
 		}
 
-		inline constexpr void ClearCurrentProcessParams() noexcept
+		constexpr void ClearCurrentProcessParams() noexcept
 		{
 			return m_currentParams.reset();
 		}
 
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& GetOrCreateProcessParams(Args&&... a_args) noexcept
+		[[nodiscard]] constexpr auto& GetOrCreateProcessParams(Args&&... a_args) noexcept
 		{
 			if (!m_currentParams)
 			{
@@ -599,13 +605,13 @@ namespace IED
 		}
 
 		template <class... Args>
-		inline constexpr auto& CreateProcessParams(Args&&... a_args) noexcept
+		constexpr auto& CreateProcessParams(Args&&... a_args) noexcept
 		{
 			m_currentParams.emplace(std::forward<Args>(a_args)...);
 			return *m_currentParams;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCurrentProcessParams() noexcept
+		[[nodiscard]] constexpr auto& GetCurrentProcessParams() noexcept
 		{
 			return m_currentParams;
 		}
@@ -624,17 +630,17 @@ namespace IED
 			}
 		}*/
 
-		[[nodiscard]] inline constexpr auto& GetVariables() const noexcept
+		[[nodiscard]] constexpr auto& GetVariables() const noexcept
 		{
 			return m_variables;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetVariables() noexcept
+		[[nodiscard]] constexpr auto& GetVariables() noexcept
 		{
 			return m_variables;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetBipedSlotData() const noexcept
+		[[nodiscard]] constexpr auto& GetBipedSlotData() const noexcept
 		{
 			return m_lastEquipped;
 		}
@@ -651,12 +657,12 @@ namespace IED
 			}
 		}
 
-		inline constexpr void RequestVariableUpdate() const noexcept
+		constexpr void RequestVariableUpdate() const noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kWantVarUpdate);
 		}
 
-		inline constexpr void MarkDestroyed() noexcept
+		constexpr void MarkDestroyed() noexcept
 		{
 			m_flags.set(ActorObjectHolderFlags::kDestroyed);
 		}
@@ -677,8 +683,8 @@ namespace IED
 		void SimWriteTransforms() const noexcept;
 		void SimUpdate(float a_step) const noexcept;
 
-		void SimComponentListClear();
-		void ClearAllPhysicsData();
+		void SimComponentListClear() noexcept;
+		void ClearAllPhysicsData() noexcept;
 
 		std::size_t GetSimComponentListSize() const noexcept;
 		std::size_t GetNumAnimObjects() const noexcept;
@@ -694,17 +700,17 @@ namespace IED
 		void RemoveSimComponent(const std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
 		void RemoveAndDestroySimComponent(std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
 
-		[[nodiscard]] inline constexpr auto& GetSimComponentList() const noexcept
+		[[nodiscard]] constexpr auto& GetSimComponentList() const noexcept
 		{
 			return m_simNodeList;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetTempData() noexcept
+		[[nodiscard]] constexpr auto& GetTempData() noexcept
 		{
 			return *m_temp;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetMonitorNodes() noexcept
+		[[nodiscard]] constexpr auto& GetMonitorNodes() noexcept
 		{
 			return m_monitorNodes;
 		}

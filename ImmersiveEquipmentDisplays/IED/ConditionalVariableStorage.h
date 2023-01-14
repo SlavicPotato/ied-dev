@@ -24,7 +24,7 @@ namespace IED
 
 		conditionalVariableValue_t() noexcept = default;
 
-		inline constexpr conditionalVariableValue_t(
+		constexpr conditionalVariableValue_t(
 			Game::FormID a_form) noexcept :
 			form(a_form)
 		{
@@ -61,20 +61,20 @@ namespace IED
 
 		conditionalVariableStorage_t() noexcept = default;
 
-		inline constexpr conditionalVariableStorage_t(
+		constexpr conditionalVariableStorage_t(
 			ConditionalVariableType a_type) noexcept :
 			type(a_type)
 		{
 		}
 
-		inline constexpr conditionalVariableStorage_t(
+		constexpr conditionalVariableStorage_t(
 			Game::FormID a_form) noexcept :
 			conditionalVariableValue_t(a_form),
 			type(ConditionalVariableType::kForm)
 		{
 		}
 
-		[[nodiscard]] inline constexpr bool operator==(
+		[[nodiscard]] constexpr bool operator==(
 			const conditionalVariableStorage_t& a_rhs) const noexcept
 		{
 			if (type != a_rhs.type)
@@ -96,7 +96,7 @@ namespace IED
 		}
 
 		/*template <class T>
-		inline constexpr bool set_value(T a_value) noexcept
+		constexpr bool set_value(T a_value) noexcept
 		{
 			bool result;
 

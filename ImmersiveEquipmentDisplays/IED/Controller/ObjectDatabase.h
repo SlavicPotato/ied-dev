@@ -17,7 +17,7 @@ namespace IED
 			NiPointer<NiNode> object;
 		};
 
-		inline static constexpr long long CLEANUP_DELAY = 1000000;
+		static constexpr long long CLEANUP_DELAY = 1000000;
 
 	public:
 		using ObjectDatabaseEntry = std::shared_ptr<entry_t>;
@@ -26,7 +26,7 @@ namespace IED
 		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
 
 	public:
-		static inline constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kDisabled;
+		static constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kDisabled;
 
 		[[nodiscard]] bool GetUniqueObject(
 			const char*          a_path,
@@ -40,7 +40,7 @@ namespace IED
 		void RunObjectCleanup() noexcept;
 		void QueueDatabaseCleanup() noexcept;
 
-		[[nodiscard]] inline constexpr auto GetODBLevel() const noexcept
+		[[nodiscard]] constexpr auto GetODBLevel() const noexcept
 		{
 			return m_level;
 		}
@@ -57,7 +57,7 @@ namespace IED
 		FN_NAMEPROC("ObjectDatabase");
 
 	protected:
-		inline constexpr void SetODBLevel(ObjectDatabaseLevel a_level) noexcept
+		constexpr void SetODBLevel(ObjectDatabaseLevel a_level) noexcept
 		{
 			m_level =
 				a_level != ObjectDatabaseLevel::kDisabled ?

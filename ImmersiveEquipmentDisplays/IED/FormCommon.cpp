@@ -6,49 +6,19 @@
 
 namespace IED
 {
-	bool IFormCommon::IsValidCustomForm(TESForm* a_form) noexcept
+	bool IFormCommon::IsValidCustomForm(
+		const TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
 			return false;
 		}
 
-		switch (a_form->formType)
-		{
-		case TESObjectMISC::kTypeID:
-		case TESObjectSTAT::kTypeID:
-		case BGSMovableStatic::kTypeID:
-		case TESObjectTREE::kTypeID:
-		case TESGrass::kTypeID:
-		case TESObjectWEAP::kTypeID:
-		case TESObjectBOOK::kTypeID:
-		case TESObjectACTI::kTypeID:
-		case TESObjectANIO::kTypeID:
-		case TESObjectDOOR::kTypeID:
-		case BGSTalkingActivator::kTypeID:
-		case TESSoulGem::kTypeID:
-		case TESKey::kTypeID:
-		case TESAmmo::kTypeID:
-		case BGSArtObject::kTypeID:
-		case IngredientItem::kTypeID:
-		case AlchemyItem::kTypeID:
-		case ScrollItem::kTypeID:
-		case TESFlora::kTypeID:
-		case TESFurniture::kTypeID:
-		case BGSStaticCollection::kTypeID:
-		case BGSExplosion::kTypeID:
-		case BGSMaterialObject::kTypeID:
-		case BGSProjectile::kTypeID:
-		case TESObjectARMO::kTypeID:
-		case TESObjectLIGH::kTypeID:
-		case BGSHazard::kTypeID:
-			return true;
-		default:
-			return false;
-		}
+		return IsValidCustomFormType(a_form->formType);
 	}
 
-	bool IFormCommon::IsValidCustomFormType(std::uint8_t a_type) noexcept
+	bool IFormCommon::IsValidCustomFormType(
+		std::uint8_t a_type) noexcept
 	{
 		switch (a_type)
 		{
@@ -85,7 +55,8 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsInventoryForm(TESForm* a_form) noexcept
+	bool IFormCommon::IsInventoryForm(
+		const TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
@@ -106,13 +77,14 @@ namespace IED
 		case TESObjectARMO::kTypeID:
 			return true;
 		case TESObjectLIGH::kTypeID:
-			return static_cast<TESObjectLIGH*>(a_form)->CanCarry();
+			return static_cast<const TESObjectLIGH*>(a_form)->CanCarry();
 		default:
 			return false;
 		}
 	}
 
-	bool IFormCommon::IsInventoryFormType(std::uint8_t a_type) noexcept
+	bool IFormCommon::IsInventoryFormType(
+		std::uint8_t a_type) noexcept
 	{
 		switch (a_type)
 		{
@@ -133,7 +105,8 @@ namespace IED
 		}
 	}
 
-	bool IFormCommon::IsValidSlotForm(TESForm* a_form) noexcept
+	bool IFormCommon::IsValidSlotForm(
+		const TESForm* a_form) noexcept
 	{
 		if (a_form->IsDeleted())
 		{
@@ -146,20 +119,21 @@ namespace IED
 		case TESAmmo::kTypeID:
 			return true;
 		case TESObjectARMO::kTypeID:
-			return static_cast<TESObjectARMO*>(a_form)->IsShield();
+			return static_cast<const TESObjectARMO*>(a_form)->IsShield();
 		case TESObjectLIGH::kTypeID:
-			return static_cast<TESObjectLIGH*>(a_form)->CanCarry();
+			return static_cast<const TESObjectLIGH*>(a_form)->CanCarry();
 		}
 
 		return false;
 	}
 
-	bool IFormCommon::IsEquippableForm(TESForm* a_form) noexcept
+	bool IFormCommon::IsEquippableForm(
+		const TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
 		{
 		case TESObjectLIGH::kTypeID:
-			return static_cast<TESObjectLIGH*>(a_form)->CanCarry();
+			return static_cast<const TESObjectLIGH*>(a_form)->CanCarry();
 		case TESObjectWEAP::kTypeID:
 		case TESObjectARMO::kTypeID:
 		case TESAmmo::kTypeID:
@@ -173,80 +147,41 @@ namespace IED
 
 	stl::flag<FormInfoFlags> IFormCommon::GetFormFlags(TESForm* a_form) noexcept
 	{
-		FormInfoFlags flags{ FormInfoFlags::kNone };
+		stl::flag<FormInfoFlags> result{ FormInfoFlags::kNone };
 
 		if (IsInventoryForm(a_form))
 		{
-			flags |= FormInfoFlags::kInventory;
+			result.set(FormInfoFlags::kInventory);
 		}
 
 		if (IsValidCustomForm(a_form))
 		{
-			flags |= FormInfoFlags::kValidCustom;
+			result.set(FormInfoFlags::kValidCustom);
 		}
 
 		if (IsValidSlotForm(a_form))
 		{
-			flags |= FormInfoFlags::kValidSlot;
+			result.set(FormInfoFlags::kValidSlot);
 		}
 
-		return flags;
+		return result;
 	}
 
-	template <class T>
-	inline static constexpr const char* GetFullName(const TESForm* a_form)  //
-		noexcept                                                            //
-		requires(std::is_convertible_v<T*, TESFullName*>)
-	{
-		return static_cast<const T*>(a_form)->GetFullName();
-	}
-
-	inline static constexpr const char* GetKeywordString(const BGSKeyword* a_form) noexcept
+	constexpr const char* GetKeywordString(const BGSKeyword* a_form) noexcept
 	{
 		return a_form->keyword.c_str();
 	}
 
 	template <class T>
-	inline static constexpr const char* GetEditorID(const T* a_form) noexcept
+	constexpr const char* GetEditorID(const T* a_form) noexcept
 	{
 		return a_form->editorId.c_str();
 	}
 
-	inline static constexpr const char* GetReferenceName(TESObjectREFR* a_form) noexcept
-	{
-		return a_form->GetReferenceName();
-	}
-
-	inline static constexpr const char* GetFormNamePtr(TESForm* a_form) noexcept
+	constexpr const char* GetFormNamePtr(TESForm* a_form) noexcept
 	{
 		switch (a_form->formType)
 		{
-		case TESObjectWEAP::kTypeID:
-			return GetFullName<TESObjectWEAP>(a_form);
-		case TESObjectARMO::kTypeID:
-			return GetFullName<TESObjectARMO>(a_form);
-		case TESNPC::kTypeID:
-			return GetFullName<TESNPC>(a_form);
-		case TESSoulGem::kTypeID:
-		case TESKey::kTypeID:
-		case TESObjectMISC::kTypeID:
-			return GetFullName<TESObjectMISC>(a_form);
-		case TESObjectLIGH::kTypeID:
-			return GetFullName<TESObjectLIGH>(a_form);
-		case TESObjectBOOK::kTypeID:
-			return GetFullName<TESObjectBOOK>(a_form);
-		case TESAmmo::kTypeID:
-			return GetFullName<TESAmmo>(a_form);
-		case TESObjectACTI::kTypeID:
-			return GetFullName<TESObjectACTI>(a_form);
-		case BGSTalkingActivator::kTypeID:
-			return GetFullName<BGSTalkingActivator>(a_form);
-		case TESFlora::kTypeID:
-			return GetFullName<TESFlora>(a_form);
-		case TESFurniture::kTypeID:
-			return GetFullName<TESFurniture>(a_form);
-		case BGSHeadPart::kTypeID:
-			return GetFullName<BGSHeadPart>(a_form);
 		case BGSKeyword::kTypeID:
 			return GetKeywordString(static_cast<const BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
@@ -255,46 +190,15 @@ namespace IED
 			return GetEditorID(static_cast<const TESQuest*>(a_form));
 		case TESObjectANIO::kTypeID:
 			return GetEditorID(static_cast<const TESObjectANIO*>(a_form));
-		case TESObjectDOOR::kTypeID:
-			return GetFullName<TESObjectDOOR>(a_form);
-		case BGSExplosion::kTypeID:
-			return GetFullName<BGSExplosion>(a_form);
-		case BGSProjectile::kTypeID:
-			return GetFullName<BGSProjectile>(a_form);
-		case BGSLocation::kTypeID:
-			return GetFullName<BGSLocation>(a_form);
-		case TESWorldSpace::kTypeID:
-			return GetFullName<TESWorldSpace>(a_form);
-		case TESShout::kTypeID:
-			return GetFullName<TESShout>(a_form);
-		case TESFaction::kTypeID:
-			return GetFullName<TESFaction>(a_form);
-		case EffectSetting::kTypeID:
-			return GetFullName<EffectSetting>(a_form);
-		case EnchantmentItem::kTypeID:
-		case SpellItem::kTypeID:
-		case ScrollItem::kTypeID:
-		case AlchemyItem::kTypeID:
-		case IngredientItem::kTypeID:
-		case MagicItem::kTypeID:
-			return GetFullName<MagicItem>(a_form);
-		case TESClass::kTypeID:
-			return GetFullName<TESClass>(a_form);
-		case TESObjectCELL::kTypeID:
-			return GetFullName<TESObjectCELL>(a_form);
-		case BGSPerk::kTypeID:
-			return GetFullName<BGSPerk>(a_form);
-		case BGSHazard::kTypeID:
-			return GetFullName<BGSHazard>(a_form);
 		case TESGlobal::kTypeID:
-			return GetEditorID(static_cast<TESGlobal*>(a_form));
+			return GetEditorID(static_cast<const TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:
-			return GetEditorID(static_cast<TESIdleForm*>(a_form));
+			return GetEditorID(static_cast<const TESIdleForm*>(a_form));
 		case Actor::kTypeID:
 		case TESObjectREFR::kTypeID:
-			return GetReferenceName(static_cast<TESObjectREFR*>(a_form));
+			return static_cast<TESObjectREFR*>(a_form)->GetReferenceName();
 		default:
-			return nullptr;
+			return a_form->GetName();
 		}
 	}
 
@@ -307,44 +211,12 @@ namespace IED
 		const TESForm*    a_form,
 		const BGSKeyword* a_keyword) noexcept
 	{
-		switch (a_form->formType)
+		if (const auto keywordForm = a_form->As<BGSKeywordForm>())
 		{
-		case TESObjectWEAP::kTypeID:
-			return FormHasKeywordImpl<TESObjectWEAP>(a_form, a_keyword);
-		case TESObjectARMO::kTypeID:
-			return FormHasKeywordImpl<TESObjectARMO>(a_form, a_keyword);
-		case TESSoulGem::kTypeID:
-		case TESKey::kTypeID:
-		case TESObjectMISC::kTypeID:
-			return FormHasKeywordImpl<TESObjectMISC>(a_form, a_keyword);
-		case TESObjectBOOK::kTypeID:
-			return FormHasKeywordImpl<TESObjectBOOK>(a_form, a_keyword);
-		case TESAmmo::kTypeID:
-			return FormHasKeywordImpl<TESAmmo>(a_form, a_keyword);
-		case TESRace::kTypeID:
-			return FormHasKeywordImpl<TESRace>(a_form, a_keyword);
-		case TESObjectACTI::kTypeID:
-			return FormHasKeywordImpl<TESObjectACTI>(a_form, a_keyword);
-		case BGSTalkingActivator::kTypeID:
-			return FormHasKeywordImpl<BGSTalkingActivator>(a_form, a_keyword);
-		case TESFlora::kTypeID:
-			return FormHasKeywordImpl<TESFlora>(a_form, a_keyword);
-		case TESFurniture::kTypeID:
-			return FormHasKeywordImpl<TESFurniture>(a_form, a_keyword);
-		case BGSLocation::kTypeID:
-			return FormHasKeywordImpl<BGSLocation>(a_form, a_keyword);
-		case TESNPC::kTypeID:
-			return FormHasKeywordImpl<TESNPC>(a_form, a_keyword);
-		case EffectSetting::kTypeID:
-			return FormHasKeywordImpl<EffectSetting>(a_form, a_keyword);
-		case EnchantmentItem::kTypeID:
-		case SpellItem::kTypeID:
-		case ScrollItem::kTypeID:
-		case AlchemyItem::kTypeID:
-		case IngredientItem::kTypeID:
-		case MagicItem::kTypeID:
-			return FormHasKeywordImpl<MagicItem>(a_form, a_keyword);
-		default:
+			return keywordForm->HasKeyword(a_keyword);
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -353,7 +225,7 @@ namespace IED
 		const TESForm* a_form,
 		Game::FormID   a_keyword) noexcept
 	{
-		if (const auto* const keyword = a_keyword.As<BGSKeyword>())
+		if (const auto keyword = a_keyword.As<const BGSKeyword>())
 		{
 			return HasKeyword(a_form, keyword);
 		}
@@ -367,7 +239,7 @@ namespace IED
 		const TESForm*                  a_form,
 		const Data::configCachedForm_t& a_keyword) noexcept
 	{
-		if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
+		if (const auto keyword = a_keyword.get_form<const BGSKeyword>())
 		{
 			return HasKeyword(a_form, keyword);
 		}

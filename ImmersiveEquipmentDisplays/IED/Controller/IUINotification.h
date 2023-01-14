@@ -14,12 +14,12 @@ namespace IED
 
 		void UIEnableNotifications(bool a_switch);
 
-		inline constexpr void UISetLogNotificationThreshold(LogLevel a_level) noexcept
+		constexpr void UISetLogNotificationThreshold(LogLevel a_level) noexcept
 		{
 			m_llThreshold = a_level;
 		}
 
-		[[nodiscard]] inline constexpr auto UIGetLogNotificationThreshold() const noexcept
+		[[nodiscard]] constexpr auto UIGetLogNotificationThreshold() const noexcept
 		{
 			return m_llThreshold;
 		}

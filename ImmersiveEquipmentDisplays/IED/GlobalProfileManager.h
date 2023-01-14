@@ -82,7 +82,7 @@ namespace IED
 
 	public:
 		template <class T>
-		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			if constexpr (std::is_same_v<T, SlotProfile>)
 			{

@@ -60,7 +60,7 @@ namespace IED
 		void             UpdateWorldMatrix(const NiAVObject* a_object);
 		void XM_CALLCONV UpdateWorldMatrix(DirectX::XMMATRIX a_matrix);
 
-		inline constexpr void XM_CALLCONV SetOriginalWorldMatrix(
+		constexpr void XM_CALLCONV SetOriginalWorldMatrix(
 			DirectX::XMMATRIX a_matrix) noexcept
 		{
 			m_originalWorld = a_matrix;
@@ -74,17 +74,17 @@ namespace IED
 
 		void ApplyEffect(ID3D11DeviceContext* a_context, const D3DEffectResources& a_resources);
 
-		[[nodiscard]] inline constexpr auto XM_CALLCONV GetWorldMatrix() const noexcept
+		[[nodiscard]] constexpr auto XM_CALLCONV GetWorldMatrix() const noexcept
 		{
 			return m_world;
 		}
 		
-		[[nodiscard]] inline constexpr auto XM_CALLCONV GetOriginalWorldMatrix() const noexcept
+		[[nodiscard]] constexpr auto XM_CALLCONV GetOriginalWorldMatrix() const noexcept
 		{
 			return m_originalWorld;
 		}
 
-		[[nodiscard]] inline constexpr auto XM_CALLCONV GetWorldPosition() const noexcept
+		[[nodiscard]] constexpr auto XM_CALLCONV GetWorldPosition() const noexcept
 		{
 			return m_world.r[3];
 		}

@@ -57,9 +57,9 @@ namespace IED
 
 		if (auto node = a_object->AsNode())
 		{
-			a_data.children.reserve(node->m_children.m_size);
+			a_data.children.reserve(node->m_children.size());
 
-			for (auto& object : node->m_children)
+			for (const auto& object : node->m_children)
 			{
 				if (object)
 				{
@@ -186,19 +186,19 @@ namespace IED
 			return nullptr;
 		}
 
-		if (!stream->m_rootObjects.m_data)
+		if (!stream->m_rootObjects.initialized())
 		{
 			return nullptr;
 		}
 
-		for (auto& e : stream->m_rootObjects)
+		for (const auto& e : stream->m_rootObjects)
 		{
 			if (!e)
 			{
 				continue;
 			}
 
-			if (auto object = NRTTI<NiAVObject>()(e))
+			if (auto object = NRTTI<NiAVObject>()(e.get()))
 			{
 				return object;
 			}
@@ -219,7 +219,7 @@ namespace IED
 			a_data.type = type;
 		}
 
-		a_data.name = a_object->m_name.c_str();
+		a_data.name   = a_object->m_name.c_str();
 		a_data.local  = a_object->m_localTransform;
 		a_data.world  = a_object->m_worldTransform;
 		a_data.flags  = a_object->m_flags;

@@ -18,10 +18,10 @@ namespace IED
 			public UIContext,
 			public UIWindow
 		{
-			inline static constexpr auto WINDOW_ID = "ied_noe";
+			static constexpr auto WINDOW_ID = "ied_noe";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeOverrideEditorWindow;
+			static constexpr auto CHILD_ID = ChildWindowID::kUINodeOverrideEditorWindow;
 
 			UINodeOverrideEditorWindow(
 				Controller& a_controller);

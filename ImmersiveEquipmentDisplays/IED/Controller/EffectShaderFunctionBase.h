@@ -38,15 +38,15 @@ namespace IED
 
 		SKMP_REDEFINE_NEW_PREF()  //
 
-		inline static constexpr auto PI  = std::numbers::pi_v<float>;
-		inline static constexpr auto PI2 = std::numbers::pi_v<float> * 2.0f;
+		static constexpr auto PI  = std::numbers::pi_v<float>;
+		static constexpr auto PI2 = std::numbers::pi_v<float> * 2.0f;
 
 	private:
 		Data::EffectShaderFunctionType type;
 	};
 
 	template <class T>
-	inline constexpr auto make_effect_shader_function(
+	constexpr auto make_effect_shader_function(
 		const Data::configEffectShaderFunction_t& a_data)                                        //
 		noexcept(std::is_nothrow_constructible_v<T, const Data::configEffectShaderFunction_t&>)  //
 		requires(std::is_base_of_v<EffectShaderFunctionBase, T>)

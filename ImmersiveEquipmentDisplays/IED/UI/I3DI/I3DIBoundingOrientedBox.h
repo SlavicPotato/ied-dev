@@ -12,7 +12,7 @@ namespace IED
 			public I3DIBoundingBase
 		{
 		public:
-			inline static constexpr auto BOUND_TYPE = BoundingShape::kOrientedBox;
+			static constexpr auto BOUND_TYPE = BoundingShape::kOrientedBox;
 
 			virtual ~I3DIBoundingOrientedBox() noexcept override = default;
 
@@ -33,12 +33,12 @@ namespace IED
 
 			[[nodiscard]] virtual DirectX::XMVECTOR XM_CALLCONV GetBoundingShapeCenter() const override;
 
-			[[nodiscard]] inline constexpr auto& GetBound() const noexcept
+			[[nodiscard]] constexpr auto& GetBound() const noexcept
 			{
 				return m_bound;
 			}
 			
-			[[nodiscard]] inline constexpr auto& GetBound() noexcept
+			[[nodiscard]] constexpr auto& GetBound() noexcept
 			{
 				return m_bound;
 			}

@@ -32,7 +32,7 @@ namespace IED
 
 			configConditionalVariableValueData_t() noexcept = default;
 
-			inline constexpr configConditionalVariableValueData_t(
+			constexpr configConditionalVariableValueData_t(
 				ConditionalVariableType a_type) noexcept :
 				value(a_type)
 			{
@@ -78,13 +78,13 @@ namespace IED
 
 			configConditionalVariable_t() noexcept = default;
 
-			inline constexpr configConditionalVariable_t(
+			constexpr configConditionalVariable_t(
 				const stl::fixed_string& a_desc) noexcept :
 				desc(a_desc)
 			{
 			}
 
-			inline constexpr configConditionalVariable_t(
+			constexpr configConditionalVariable_t(
 				stl::fixed_string&& a_desc) noexcept :
 				desc(std::move(a_desc))
 			{
@@ -127,7 +127,7 @@ namespace IED
 
 			configConditionalVariablesEntry_t() noexcept = default;
 
-			inline constexpr configConditionalVariablesEntry_t(
+			constexpr configConditionalVariablesEntry_t(
 				ConditionalVariableType a_type) noexcept :
 				defaultValue(a_type)
 			{
@@ -192,7 +192,7 @@ namespace IED
 			}
 
 			template <class Tf>
-			inline constexpr void visit(Tf a_func)
+			constexpr void visit(Tf a_func)
 			{
 				for (auto& e : data)
 				{

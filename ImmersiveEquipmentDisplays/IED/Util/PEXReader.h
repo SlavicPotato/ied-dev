@@ -6,14 +6,14 @@ namespace IED
 {
 	class PEXReader
 	{
-		inline static constexpr std::uint32_t MAGIC = 0xFA57C0DE;
+		static constexpr std::uint32_t MAGIC = 0xFA57C0DE;
 
 	public:
 		void Open(const fs::path& a_path);
 
 		void ReadData();
 
-		[[nodiscard]] inline constexpr auto& GetStringTable() const noexcept
+		[[nodiscard]] constexpr auto& GetStringTable() const noexcept
 		{
 			return m_stringTable;
 		}

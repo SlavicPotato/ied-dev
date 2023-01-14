@@ -14,13 +14,13 @@ namespace IED
 		void SetKeyState(KeyEventState a_ev, UINT a_key);
 		void ClearKeyState(UINT a_key);
 
-		[[nodiscard]] inline constexpr const auto& GetKeyStateData() const noexcept
+		[[nodiscard]] constexpr const auto& GetKeyStateData() const noexcept
 		{
 			return m_data;
 		}
 
-		inline static constexpr BYTE KS_MS_BIT = 1ui8 << 7;
-		inline static constexpr BYTE KS_LS_BIT = 1ui8 << 0;
+		static constexpr BYTE KS_MS_BIT = 1ui8 << 7;
+		static constexpr BYTE KS_LS_BIT = 1ui8 << 0;
 
 	private:
 		void SetLRKeyState(KeyEventState a_ev, std::uint32_t a_sc, UINT a_vk);

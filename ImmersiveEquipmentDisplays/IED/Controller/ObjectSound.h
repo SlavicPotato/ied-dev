@@ -6,7 +6,7 @@ namespace IED
 {
 	struct ObjectSound
 	{
-		BSSoundHandle   handle;
-		SoundDescriptor desc;
+		BSSoundHandle           handle;
+		BGSSoundDescriptorForm* form{ nullptr };
 	};
 }

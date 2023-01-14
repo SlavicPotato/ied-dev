@@ -28,10 +28,10 @@ namespace IED
 			UIMiscTextInterface,
 			UICollapsibles
 		{
-			inline static constexpr auto WINDOW_ID = "ied_stats";
+			static constexpr auto WINDOW_ID = "ied_stats";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIStats;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIStats;
 
 			UIStats(
 				Tasks::UIRenderTaskBase& a_owner,

@@ -18,7 +18,7 @@ namespace IED
 			public:
 				KeyEventTaskPress() = delete;
 
-				inline constexpr explicit KeyEventTaskPress(
+				constexpr explicit KeyEventTaskPress(
 					UINT  a_key,
 					WCHAR a_char) :
 					m_keys{ a_key, a_char },
@@ -26,7 +26,7 @@ namespace IED
 				{
 				}
 
-				inline constexpr explicit KeyEventTaskPress(
+				constexpr explicit KeyEventTaskPress(
 					KeyEventType a_type,
 					UINT         a_key) :
 					m_keys{ a_key, 0 },
@@ -34,7 +34,7 @@ namespace IED
 				{
 				}
 
-				inline constexpr explicit KeyEventTaskPress(
+				constexpr explicit KeyEventTaskPress(
 					float a_delta) :
 					m_wheel{ a_delta },
 					m_type(KeyEventType::Wheel)
@@ -84,12 +84,12 @@ namespace IED
 		protected:
 			void ProcessEvent(const Handlers::KeyEvent& a_evn);
 
-			[[nodiscard]] inline constexpr auto& GetKeyPressQueue() noexcept
+			[[nodiscard]] constexpr auto& GetKeyPressQueue() noexcept
 			{
 				return m_keyPressQueue;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetKeyReleaseQueue() noexcept
+			[[nodiscard]] constexpr auto& GetKeyReleaseQueue() noexcept
 			{
 				return m_keyReleaseQueue;
 			}

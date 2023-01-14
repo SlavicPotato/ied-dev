@@ -49,7 +49,7 @@ namespace IED
 			[[nodiscard]] DirectX::XMVECTOR XM_CALLCONV GetBoundingShapeCenter() const;
 
 			template <class T>
-			[[nodiscard]] inline constexpr T* GetBoundingShape() const noexcept //
+			[[nodiscard]] constexpr T* GetBoundingShape() const noexcept //
 				requires(std::is_base_of_v<I3DIBoundingBase, T>)
 			{
 				if (T::BOUND_TYPE == m_type)
@@ -62,7 +62,7 @@ namespace IED
 				}
 			}
 
-			[[nodiscard]] inline constexpr auto GetBoundingShapeType() const noexcept
+			[[nodiscard]] constexpr auto GetBoundingShapeType() const noexcept
 			{
 				return m_type;
 			}

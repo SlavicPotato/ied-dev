@@ -12,17 +12,17 @@ namespace IED
 			DataVersion1 = 1,
 		};
 
-		inline constexpr auto IncrementCounter() noexcept
+		constexpr auto IncrementCounter() noexcept
 		{
 			return ++m_counter;
 		}
 
-		[[nodiscard]] inline constexpr auto GetCounterValue() const noexcept
+		[[nodiscard]] constexpr auto GetCounterValue() const noexcept
 		{
 			return m_counter;
 		}
 
-		inline constexpr void ResetCounter() noexcept
+		constexpr void ResetCounter() noexcept
 		{
 			m_counter = 0;
 		}

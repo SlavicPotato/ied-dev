@@ -16,27 +16,27 @@ namespace IED
 
 		SkeletonID(NiNode* a_root);
 
-		[[nodiscard]] inline constexpr auto& id() const noexcept
+		[[nodiscard]] constexpr auto& id() const noexcept
 		{
 			return m_id;
 		}
 
-		[[nodiscard]] inline constexpr auto& bsx_flags() const noexcept
+		[[nodiscard]] constexpr auto& bsx_flags() const noexcept
 		{
 			return m_bsx;
 		}
 
-		[[nodiscard]] inline constexpr auto& xp_version() const noexcept
+		[[nodiscard]] constexpr auto& xp_version() const noexcept
 		{
 			return m_xpmse_version;
 		}
 
-		[[nodiscard]] inline constexpr auto& signature() const noexcept
+		[[nodiscard]] constexpr auto& signature() const noexcept
 		{
 			return m_signature;
 		}
 
-		[[nodiscard]] inline constexpr auto& presence_flags() const noexcept
+		[[nodiscard]] constexpr auto& presence_flags() const noexcept
 		{
 			return m_pflags;
 		}

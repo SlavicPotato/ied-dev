@@ -15,19 +15,19 @@ namespace IED
 			bool changed{ false };
 			bool reset{ false };
 
-			inline constexpr ESFEditorResult& operator=(bool a_changed) noexcept
+			constexpr ESFEditorResult& operator=(bool a_changed) noexcept
 			{
 				changed = a_changed;
 				return *this;
 			}
 
-			inline constexpr ESFEditorResult& operator|=(bool a_changed) noexcept
+			constexpr ESFEditorResult& operator|=(bool a_changed) noexcept
 			{
 				changed |= a_changed;
 				return *this;
 			}
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return changed;
 			}
@@ -36,7 +36,7 @@ namespace IED
 		class UIEffectShaderFunctionEditorWidget :
 			public UIEffectShaderFunctionSelector
 		{
-			inline static constexpr auto POPUP_ID = "esf_ed";
+			static constexpr auto POPUP_ID = "esf_ed";
 
 		public:
 			UIEffectShaderFunctionEditorWidget() = default;

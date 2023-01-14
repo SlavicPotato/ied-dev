@@ -210,7 +210,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline constexpr bool UICustomEditorCommon<T>::BaseConfigStoreCC() const
+		constexpr bool UICustomEditorCommon<T>::BaseConfigStoreCC() const
 		{
 			return false;
 		}

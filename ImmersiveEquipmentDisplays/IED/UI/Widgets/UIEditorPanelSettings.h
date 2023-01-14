@@ -19,7 +19,7 @@ namespace IED
 
 			void DrawEditorPanelSettings();
 
-			inline constexpr auto GetSex() const noexcept
+			constexpr auto GetSex() const noexcept
 			{
 				return m_sex;
 			}

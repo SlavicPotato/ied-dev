@@ -100,17 +100,17 @@ namespace IED
 		{
 			auto targetNode = ItemData::GetDefaultSlotNode(a_slot);
 
-			auto& nodeMapData = NodeMap::GetSingleton().GetData();
+			const auto& nodeMapData = NodeMap::GetSingleton().GetData();
 
-			auto it        = nodeMapData.find(targetNode.name);
-			auto nodeFlags = it != nodeMapData.end() ?
-			                     it->second.flags.value :
-			                     NodeDescriptorFlags::kNone;
+			if (auto it = nodeMapData.find(targetNode.name); 
+				it != nodeMapData.end())
+			{
+				targetNode.flags = it->second.flags;
+			}
 
 			for (auto& e : a_data())
 			{
-				e.targetNode.name  = targetNode.name;
-				e.targetNode.flags = nodeFlags;
+				e.targetNode = targetNode;
 			}
 		}
 

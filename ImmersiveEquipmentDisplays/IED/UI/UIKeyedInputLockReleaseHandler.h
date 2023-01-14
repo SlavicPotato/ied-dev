@@ -15,7 +15,7 @@ namespace IED
 	{
 		class UIKeyedInputLockReleaseHandler
 		{
-			inline static constexpr float ALPHA_FADE_RATE = 13.0f;
+			static constexpr float ALPHA_FADE_RATE = 13.0f;
 
 		public:
 			UIKeyedInputLockReleaseHandler(
@@ -31,32 +31,32 @@ namespace IED
 			void ILRHBegin();
 			void ILRHEnd();
 
-			[[nodiscard]] inline constexpr bool ILRHEnabled() const noexcept
+			[[nodiscard]] constexpr bool ILRHEnabled() const noexcept
 			{
 				return m_key != 0;
 			}
 
-			[[nodiscard]] inline constexpr auto ILRHGetKey() const noexcept
+			[[nodiscard]] constexpr auto ILRHGetKey() const noexcept
 			{
 				return m_key;
 			}
 
-			[[nodiscard]] inline constexpr auto ILRHGetComboKey() const noexcept
+			[[nodiscard]] constexpr auto ILRHGetComboKey() const noexcept
 			{
 				return m_comboKey;
 			}
 
-			[[nodiscard]] inline constexpr auto ILRHIsHeld() const noexcept
+			[[nodiscard]] constexpr auto ILRHIsHeld() const noexcept
 			{
 				return m_held;
 			}
 
-			inline constexpr void ILRHSetLockedAlpha(float a_alpha)
+			constexpr void ILRHSetLockedAlpha(float a_alpha)
 			{
 				m_lockedAlpha = std::clamp(a_alpha, 0.0f, 1.0f);
 			}
 
-			[[nodiscard]] inline constexpr auto ILRHGetLockedAlpha() const noexcept
+			[[nodiscard]] constexpr auto ILRHGetLockedAlpha() const noexcept
 			{
 				return m_lockedAlpha;
 			}

@@ -7,6 +7,7 @@
 #include "IED/AnimationUpdateManager.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ReferenceLightController.h"
+#include "IED/Util/Common.h"
 
 #include <ext/Model.h>
 #include <ext/Node.h>
@@ -66,7 +67,7 @@ namespace IED
 			{
 				SoundPlay(
 					state->form->formType,
-					state->nodes.rootNode->m_parent,
+					a_actor,
 					false);
 			}
 		}
@@ -239,13 +240,16 @@ namespace IED
 		bool           a_xfrmUpdate,
 		bool           a_xfrmUpdateNoDefer) const noexcept
 	{
-		if (IsActorValid(a_actor))
+		if (auto actor = a_actor->As<Actor>())
 		{
-			QueueRequestEvaluate(
-				a_actor->formID,
-				a_defer,
-				a_xfrmUpdate,
-				a_xfrmUpdateNoDefer);
+			if (Util::Common::IsREFRValid(a_actor))
+			{
+				QueueRequestEvaluate(
+					a_actor->formID,
+					a_defer,
+					a_xfrmUpdate,
+					a_xfrmUpdateNoDefer);
+			}
 		}
 	}
 
@@ -313,7 +317,7 @@ namespace IED
 		}
 		else
 		{
-			a_holder.visit([&](auto& a_object) {
+			a_holder.visit([&](auto& a_object) noexcept {
 				result |= RemoveObject(
 					a_actor,
 					a_handle,
@@ -696,15 +700,13 @@ namespace IED
 				state->light);
 		}
 
-		state->sound.desc = GetSoundDescriptor(a_modelForm, state->light);
+		state->sound.form = GetSoundDescriptor(a_modelForm, state->light);
 
 		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 		{
 			TryInitializeAndPlaySound(
 				a_params.actor,
-				state->sound,
-				state->light,
-				object);
+				state->sound);
 		}
 
 		//UpdateDownwardPass(itemRoot);
@@ -1056,15 +1058,13 @@ namespace IED
 					n.light);
 			}
 
-			n.sound.desc = GetSoundDescriptor(e.form, n.light);
+			n.sound.form = GetSoundDescriptor(e.form, n.light);
 
 			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
 			{
 				TryInitializeAndPlaySound(
 					a_params.actor,
-					n.sound,
-					n.light,
-					n.object);
+					n.sound);
 			}
 
 			e.grpObject = std::addressof(n);
@@ -1222,28 +1222,10 @@ namespace IED
 	}
 
 	void IObjectManager::TryInitializeAndPlaySound(
-		Actor*             a_actor,
-		ObjectSound&       a_sound,
-		const ObjectLight& a_light,
-		NiAVObject*        a_object) noexcept
+		Actor*       a_actor,
+		ObjectSound& a_sound) noexcept
 	{
-		if (!a_sound.desc)
-		{
-			return;
-		}
-
-		auto followObject =
-			a_sound.desc.attachToLight ?
-				a_light.niObject.get() :
-				a_object;
-
-		if (!followObject)
-		{
-			followObject = a_object;
-		}
-
-		const auto audioManager = BSAudioManager::GetSingleton();
-		if (!audioManager)
+		if (!a_sound.form)
 		{
 			return;
 		}
@@ -1255,21 +1237,28 @@ namespace IED
 			handle.StopAndReleaseNow();
 		}
 
+		const auto audioManager = BSAudioManager::GetSingleton();
+		if (!audioManager)
+		{
+			return;
+		}
+
 		if (audioManager->BuildSoundDataFromDescriptor(
 				handle,
-				a_sound.desc.form,
-				0x1A))
+				a_sound.form))
 		{
 			handle.SetPosition(a_actor->pos.x, a_actor->pos.y, a_actor->pos.z);
-			handle.SetObjectToFollow(followObject);
+			if (auto followObject = a_actor->Get3D1(false))
+			{
+				handle.SetObjectToFollow(followObject);
+			}
 			handle.Play();
 		}
 	}
 
-	auto IObjectManager::GetSoundDescriptor(
+	BGSSoundDescriptorForm* IObjectManager::GetSoundDescriptor(
 		const TESForm*     a_modelForm,
 		const ObjectLight& a_light) noexcept
-		-> SoundDescriptor
 	{
 		switch (a_modelForm->formType)
 		{
@@ -1277,7 +1266,7 @@ namespace IED
 
 			if (a_light)
 			{
-				return { static_cast<const TESObjectLIGH*>(a_modelForm)->sound, true };
+				return static_cast<const TESObjectLIGH*>(a_modelForm)->sound;
 			}
 
 			break;
@@ -1288,20 +1277,20 @@ namespace IED
 
 				if (const auto soundForm = hazard->data.sound)
 				{
-					return { soundForm, false };
+					return soundForm;
 				}
 				else if (a_light)
 				{
 					if (const auto light = hazard->data.light)
 					{
-						return { light->sound, true };
+						return light->sound;
 					}
 				}
 			}
 			break;
 		}
 
-		return { nullptr, false };
+		return nullptr;
 	}
 
 	void IObjectManager::PlayObjectSound(
@@ -1319,7 +1308,7 @@ namespace IED
 			{
 				SoundPlay(
 					a_objectEntry.data.state->form->formType,
-					a_objectEntry.data.state->nodes.rootNode,
+					a_params.actor,
 					a_equip);
 			}
 		}

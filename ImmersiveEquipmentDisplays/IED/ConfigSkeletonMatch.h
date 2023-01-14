@@ -10,7 +10,7 @@ namespace IED
 		{
 			[[nodiscard]] bool test(const SkeletonID& a_id) const noexcept;
 
-			[[nodiscard]] inline constexpr bool empty() const noexcept
+			[[nodiscard]] constexpr bool empty() const noexcept
 			{
 				return ids.empty() && signatures.empty();
 			}

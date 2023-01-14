@@ -455,7 +455,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline constexpr bool UISlotEditorCommon<T>::BaseConfigStoreCC() const
+		constexpr bool UISlotEditorCommon<T>::BaseConfigStoreCC() const
 		{
 			return true;
 		}

@@ -22,22 +22,22 @@ namespace IED
 
 			bool Load(const fs::path& a_path);
 
-			inline constexpr const auto& GetData() const noexcept
+			constexpr const auto& GetData() const noexcept
 			{
 				return m_data.data;
 			}
 
-			inline constexpr const auto& GetLang() const noexcept
+			constexpr const auto& GetLang() const noexcept
 			{
 				return m_data.lang;
 			}
 
-			inline constexpr const auto& GetGlyphData() const noexcept
+			constexpr const auto& GetGlyphData() const noexcept
 			{
 				return m_data.glyph_data;
 			}
 
-			inline constexpr const auto& GetLastException() const noexcept
+			constexpr const auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}

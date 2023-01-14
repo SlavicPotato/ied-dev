@@ -22,13 +22,13 @@ namespace IED
 			friend class Parser;
 
 		public:
-			[[nodiscard]] inline constexpr bool has_errors() const noexcept
+			[[nodiscard]] constexpr bool has_errors() const noexcept
 			{
 				return m_flags.test(ParserStateFlags::kHasErrors);
 			}
 
 		private:
-			inline constexpr void clear() noexcept
+			constexpr void clear() noexcept
 			{
 				m_flags = ParserStateFlags::kNone;
 			}
@@ -52,18 +52,18 @@ namespace IED
 			bool Parse(const Json::Value& a_in, T& a_out, bool a_arg) const;
 			bool Parse(const Json::Value& a_in, T& a_out, float a_arg) const;
 
-			[[nodiscard]] inline constexpr bool HasErrors() const noexcept
+			[[nodiscard]] constexpr bool HasErrors() const noexcept
 			{
 				return m_state.m_flags.test(ParserStateFlags::kHasErrors);
 			}
 
 		protected:
-			inline constexpr void SetHasErrors() const noexcept
+			constexpr void SetHasErrors() const noexcept
 			{
 				m_state.m_flags.set(ParserStateFlags::kHasErrors);
 			}
 
-			inline constexpr void ClearState() const noexcept
+			constexpr void ClearState() const noexcept
 			{
 				m_state.clear();
 			}
@@ -73,7 +73,7 @@ namespace IED
 		};
 
 		template <class T>
-		inline constexpr Parser<T>::Parser(ParserState& a_state) :
+		constexpr Parser<T>::Parser(ParserState& a_state) :
 			m_state(a_state)
 		{
 		}
@@ -203,7 +203,7 @@ namespace IED
 
 		bool FileExists(const fs::path& a_path) noexcept;
 
-		inline static constexpr auto TMP_EXT = ".tmp";
+		static constexpr auto TMP_EXT = ".tmp";
 
 		template <class T>
 		constexpr void ReadData(

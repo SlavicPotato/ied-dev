@@ -41,42 +41,42 @@ namespace IED
 				return static_cast<I3DIDropTarget*>(this);
 			};
 
-			[[nodiscard]] inline constexpr auto& GetNodeName() const noexcept
+			[[nodiscard]] constexpr auto& GetNodeName() const noexcept
 			{
 				return m_name;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetWeaponNode() const noexcept
+			[[nodiscard]] constexpr auto& GetWeaponNode() const noexcept
 			{
 				return m_weaponNode;
 			}
 
-			inline constexpr void SetWeaponNodeAttached(bool a_switch) noexcept
+			constexpr void SetWeaponNodeAttached(bool a_switch) noexcept
 			{
 				m_weaponNodeAttached = a_switch;
 			}
 
-			/*inline constexpr void SetHasVisibleGeometry(bool a_switch) noexcept
+			/*constexpr void SetHasVisibleGeometry(bool a_switch) noexcept
 			{
 				m_hasVisibleGeometry = a_switch;
 			}
 
-			[[nodiscard]] inline constexpr auto HasVisibleGeometry() const noexcept
+			[[nodiscard]] constexpr auto HasVisibleGeometry() const noexcept
 			{
 				return m_hasVisibleGeometry;
 			}*/
 
-			[[nodiscard]] inline constexpr auto GetCMENodeInfo() const noexcept
+			[[nodiscard]] constexpr auto GetCMENodeInfo() const noexcept
 			{
 				return m_cmeNodeInfo;
 			}
 
-			inline constexpr void XM_CALLCONV SetOriginalPos(DirectX::XMVECTOR a_pos) noexcept
+			constexpr void XM_CALLCONV SetOriginalPos(DirectX::XMVECTOR a_pos) noexcept
 			{
 				m_originalPos = a_pos;
 			}
 
-			inline constexpr auto XM_CALLCONV GetOriginalPos() const noexcept
+			constexpr auto XM_CALLCONV GetOriginalPos() const noexcept
 			{
 				return m_originalPos;
 			}

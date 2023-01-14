@@ -31,12 +31,12 @@ namespace IED
 			void consume(SlotItemCandidates& a_candidates) const  //
 				noexcept(std::is_nothrow_move_assignable_v<SlotItemCandidates::value_type>);
 
-			[[nodiscard]] inline constexpr auto* operator->() const noexcept
+			[[nodiscard]] constexpr auto* operator->() const noexcept
 			{
 				return std::addressof(*(*item));
 			}
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return item.has_value();
 			}

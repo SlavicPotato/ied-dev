@@ -188,7 +188,7 @@ namespace IED
 		}
 	}
 
-	inline static constexpr bool may_set_shader_data(BSShaderProperty* a_prop) noexcept
+	static constexpr bool may_set_shader_data(BSShaderProperty* a_prop) noexcept
 	{
 		return !a_prop->flags.test(BSShaderProperty::Flag::kDecal) &&
 		       a_prop->AcceptsEffectData();

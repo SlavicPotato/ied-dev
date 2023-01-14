@@ -29,12 +29,12 @@ namespace IED
 
 			virtual ~I3DIDraggable() noexcept = default;
 
-			[[nodiscard]] inline constexpr bool IsDragging() const noexcept
+			[[nodiscard]] constexpr bool IsDragging() const noexcept
 			{
 				return m_dragging;
 			}
 
-			[[nodiscard]] inline constexpr I3DIDraggableType GetDraggableType() const noexcept
+			[[nodiscard]] constexpr I3DIDraggableType GetDraggableType() const noexcept
 			{
 				return m_type;
 			}
@@ -46,7 +46,7 @@ namespace IED
 			virtual void OnDragEnd(I3DIDragDropResult a_result, I3DIDropTarget* a_target) = 0;
 			virtual void OnDragUpdate(I3DICommonData& a_data){};
 
-			inline constexpr void SetDragging(bool a_switch) noexcept
+			constexpr void SetDragging(bool a_switch) noexcept
 			{
 				m_dragging = a_switch;
 			}

@@ -5,7 +5,7 @@
 namespace IED
 {
 	template <class T>
-	inline static constexpr bool ExtractModelParams(
+	static constexpr bool ExtractModelParams(
 		T*                     a_ptr,
 		IModel::modelParams_t& a_out,
 		ModelType              a_type = ModelType::kMisc)  //
@@ -44,7 +44,7 @@ namespace IED
 	}
 
 	template <class T>
-	inline static constexpr bool ExtractFormModelParams(
+	static constexpr bool ExtractFormModelParams(
 		TESForm*               a_form,
 		IModel::modelParams_t& a_out,
 		ModelType              a_type = ModelType::kMisc)  //

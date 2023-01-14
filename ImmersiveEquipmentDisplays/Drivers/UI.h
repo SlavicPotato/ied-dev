@@ -71,8 +71,8 @@ namespace IED
 
 			using font_data_container = stl::unordered_map<stl::fixed_string, FontEntry>;
 
-			inline static constexpr auto DEFAULT_FONT_NAME = "Default";
-			inline static constexpr auto DEFAULT_STYLE     = UIStylePreset::Dark;
+			static constexpr auto DEFAULT_FONT_NAME = "Default";
+			static constexpr auto DEFAULT_STYLE     = UIStylePreset::Dark;
 
 		public:
 			enum class UpdateFlags : std::uint8_t
@@ -106,7 +106,7 @@ namespace IED
 				return m_Instance.m_drawTasks.contains(a_id);
 			}
 
-			[[nodiscard]] inline static constexpr const auto& GetBufferSize() noexcept
+			[[nodiscard]] static constexpr const auto& GetBufferSize() noexcept
 			{
 				return m_Instance.m_info.bufferSize;
 			}
@@ -117,37 +117,37 @@ namespace IED
 				m_Instance.m_updateFlags.set(UpdateFlags::kResetInput);
 			}
 
-			inline static void SetImGuiIni(const std::string& a_path)
+			static constexpr void SetImGuiIni(const std::string& a_path)
 			{
 				m_Instance.m_conf.imgui_ini = a_path;
 			}
 
-			inline static void SetImGuiIni(std::string&& a_path)
+			static constexpr void SetImGuiIni(std::string&& a_path)
 			{
 				m_Instance.m_conf.imgui_ini = std::move(a_path);
 			}
 
-			inline static void SetImGuiIni(const char* a_path)
+			static constexpr void SetImGuiIni(const char* a_path)
 			{
 				m_Instance.m_conf.imgui_ini = a_path;
 			}
 
-			[[nodiscard]] inline static constexpr auto GetPerf() noexcept
+			[[nodiscard]] static constexpr auto GetPerf() noexcept
 			{
 				return m_Instance.m_uiRenderPerf.current;
 			}
 
-			[[nodiscard]] inline static constexpr auto GetFrameCount() noexcept
+			[[nodiscard]] static constexpr auto GetFrameCount() noexcept
 			{
 				return m_Instance.m_frameCount;
 			}
 
-			[[nodiscard]] inline static constexpr const auto& GetAvailableFonts() noexcept
+			[[nodiscard]] static constexpr const auto& GetAvailableFonts() noexcept
 			{
 				return m_Instance.m_availableFonts;
 			}
 
-			[[nodiscard]] inline static constexpr const auto GetCurrentFont() noexcept
+			[[nodiscard]] static constexpr const auto GetCurrentFont() noexcept
 			{
 				return m_Instance.m_currentFont;
 			}
@@ -194,12 +194,12 @@ namespace IED
 				return m_Instance.m_imInitialized.load(std::memory_order_relaxed);
 			}
 
-			[[nodiscard]] static inline constexpr auto GetWindowHandle() noexcept
+			[[nodiscard]] static constexpr auto GetWindowHandle() noexcept
 			{
 				return m_Instance.m_info.hWnd;
 			}
 
-			[[nodiscard]] static inline constexpr bool IsImInputBlocked() noexcept
+			[[nodiscard]] static constexpr bool IsImInputBlocked() noexcept
 			{
 				return static_cast<bool>(m_Instance.m_state.blockInputImGuiCounter);
 			}

@@ -21,22 +21,22 @@ namespace IED
 				NodeDescriptorFlags flags;
 			};
 
-			static inline constexpr auto& GetSingleton() noexcept
+			static constexpr auto& GetSingleton() noexcept
 			{
 				return m_Instance;
 			}
 
-			inline constexpr auto& GetData() noexcept
+			constexpr auto& GetData() noexcept
 			{
 				return m_data;
 			}
 
-			inline constexpr const auto& GetData() const noexcept
+			constexpr const auto& GetData() const noexcept
 			{
 				return m_data;
 			}
 
-			inline constexpr const auto& GetExtraData() const noexcept
+			constexpr const auto& GetExtraData() const noexcept
 			{
 				return m_extraData;
 			}
@@ -62,7 +62,7 @@ namespace IED
 
 			void SortIfDirty();
 
-			inline constexpr void SetDirty() noexcept
+			constexpr void SetDirty() noexcept
 			{
 				m_dirty = true;
 			}
@@ -70,7 +70,7 @@ namespace IED
 			bool SaveUserNodes(const fs::path& a_path) const;
 			bool LoadExtra(const fs::path& a_path);
 
-			inline constexpr const auto& GetLastException() const noexcept
+			constexpr const auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}

@@ -28,9 +28,9 @@ namespace IED
 			public UIContext,
 			public UIWindow
 		{
-			inline static constexpr auto WINDOW_ID = "ied_toast";
+			static constexpr auto WINDOW_ID = "ied_toast";
 
-			inline static constexpr auto MESSAGE_LIFETIME = 2.0f;
+			static constexpr auto MESSAGE_LIFETIME = 2.0f;
 
 			struct ToastMessage
 			{

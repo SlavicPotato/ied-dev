@@ -16,7 +16,7 @@ namespace IED
 	class IAnimationManager :
 		public PluginInterfaceHolder<PluginInterfaceSDS>
 	{
-		inline static constexpr auto FNIS_AA2_PEX_PATH = "Data\\Scripts\\FNIS_aa2.pex";
+		static constexpr auto FNIS_AA2_PEX_PATH = "Data\\Scripts\\FNIS_aa2.pex";
 
 		struct AnimStringHolder
 		{
@@ -28,13 +28,13 @@ namespace IED
 				BSFixedString crc;
 			};
 
-			[[nodiscard]] inline constexpr auto& get_eqp(AnimationWeaponType a_id) noexcept
+			[[nodiscard]] constexpr auto& get_eqp(AnimationWeaponType a_id) noexcept
 			{
 				assert(a_id < AnimationWeaponType::Max);
 				return eqp[stl::underlying(a_id)];
 			}
 
-			[[nodiscard]] inline constexpr auto& get_eqp(AnimationWeaponType a_id) const noexcept
+			[[nodiscard]] constexpr auto& get_eqp(AnimationWeaponType a_id) const noexcept
 			{
 				assert(a_id < AnimationWeaponType::Max);
 				return eqp[stl::underlying(a_id)];
@@ -72,7 +72,7 @@ namespace IED
 			       kBow
 		};
 
-		[[nodiscard]] inline constexpr bool HasAnimationInfo() const noexcept
+		[[nodiscard]] constexpr bool HasAnimationInfo() const noexcept
 		{
 			return m_groupInfo.has_value();
 		}
@@ -81,13 +81,13 @@ namespace IED
 		void                      InitializeAnimationStrings();
 		static AnimationGroupInfo ExtractAnimationInfoFromPEX();
 
-		inline constexpr void SetAnimationInfo(const AnimationGroupInfo& a_in) noexcept(
+		constexpr void SetAnimationInfo(const AnimationGroupInfo& a_in) noexcept(
 			std::is_nothrow_copy_constructible_v<AnimationGroupInfo>)
 		{
 			m_groupInfo.emplace(a_in);
 		}
 
-		[[nodiscard]] inline constexpr auto& GetAnimationInfo() const noexcept
+		[[nodiscard]] constexpr auto& GetAnimationInfo() const noexcept
 		{
 			return m_groupInfo;
 		}

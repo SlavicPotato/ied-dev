@@ -21,7 +21,7 @@ namespace IED
 			TESNPC* const      a_npc,
 			TESNPC* const      a_npcOrTemplate,
 			TESRace* const     a_race,
-			NiNode* const      a_root,
+			BSFadeNode* const  a_root,
 			NiNode* const      a_npcroot,
 			ActorObjectHolder& a_holder,
 			Controller&        a_controller) noexcept :
@@ -36,14 +36,14 @@ namespace IED
 		{
 		}
 
-		Actor* const            actor;
-		TESNPC* const           npc;
-		TESNPC* const           npcOrTemplate;
-		TESRace* const          race;
-		const NiPointer<NiNode> root;
-		const NiPointer<NiNode> npcRoot;
-		ActorObjectHolder&      objects;
-		Controller&             controller;
+		Actor* const                actor;
+		TESNPC* const               npc;
+		TESNPC* const               npcOrTemplate;
+		TESRace* const              race;
+		const NiPointer<BSFadeNode> root;
+		const NiPointer<NiNode>     npcRoot;
+		ActorObjectHolder&          objects;
+		Controller&                 controller;
 
 		[[nodiscard]] bool is_player() const noexcept;
 
@@ -89,7 +89,7 @@ namespace IED
 			return *isDead;
 		}
 
-		[[nodiscard]] inline constexpr auto get_current_location() const noexcept
+		[[nodiscard]] constexpr auto get_current_location() const noexcept
 		{
 			if (!location)
 			{
@@ -106,7 +106,7 @@ namespace IED
 			return *location;
 		}
 
-		[[nodiscard]] inline constexpr bool is_player_teammate() const noexcept
+		[[nodiscard]] constexpr bool is_player_teammate() const noexcept
 		{
 			return actor != *g_thePlayer &&
 			       actor->IsPlayerTeammate();
@@ -125,7 +125,7 @@ namespace IED
 			return *currentWeather;
 		}
 
-		[[nodiscard]] inline constexpr auto get_weather_class() const noexcept
+		[[nodiscard]] constexpr auto get_weather_class() const noexcept
 		{
 			if (!weatherClass)
 			{
@@ -143,7 +143,7 @@ namespace IED
 			return *weatherClass;
 		}
 
-		[[nodiscard]] inline constexpr auto get_shield_slot() const noexcept
+		[[nodiscard]] constexpr auto get_shield_slot() const noexcept
 		{
 			if (!shieldSlot)
 			{
@@ -153,7 +153,7 @@ namespace IED
 			return *shieldSlot;
 		}
 
-		[[nodiscard]] inline constexpr auto get_time_of_day() const noexcept
+		[[nodiscard]] constexpr auto get_time_of_day() const noexcept
 		{
 			if (!timeOfDay)
 			{
@@ -163,7 +163,7 @@ namespace IED
 			return *timeOfDay;
 		}
 
-		[[nodiscard]] inline constexpr auto is_on_mount() const noexcept
+		[[nodiscard]] constexpr auto is_on_mount() const noexcept
 		{
 			if (!isMounted)
 			{
@@ -181,7 +181,7 @@ namespace IED
 
 		[[nodiscard]] NiPointer<Actor>& get_last_ridden_player_horse() const noexcept;
 
-		[[nodiscard]] inline constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
+		[[nodiscard]] constexpr bool test_equipment_flags(TESRace::EquipmentFlag a_mask) const noexcept
 		{
 			return a_mask && race->validEquipTypes.test(a_mask);
 		}

@@ -219,6 +219,7 @@ namespace IED
 		flagslf1(a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1),
 		flagslf2(a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2),
 		baseFlags(a_actor->GetActorBase()->actorData.actorBaseFlags & NPC_BASE_CHECK_FLAGS),
+		lifeState(a_actor->GetLifeState()),
 		level(a_actor->GetLevel()),
 		swimming(a_actor->IsSwimming()),
 		sitting(a_actor->IsSitting()),
@@ -226,14 +227,12 @@ namespace IED
 		beingRidden(a_actor->IsBeingRidden()),
 		weaponDrawn(a_actor->IsWeaponDrawn()),
 		arrested(a_actor->IsArrested()),
-		unconscious(a_actor->IsUnconscious()),
-		flying(a_actor->IsFlying()),
-		restrained(a_actor->IsRestrained())
+		flying(a_actor->IsFlying())
 	{
 	}
 
 	template <class Tv>
-	inline static constexpr void state_var_update(
+	static constexpr void state_var_update(
 		Tv&       a_var,
 		const Tv& a_current,
 		bool&     a_result) noexcept
@@ -257,13 +256,12 @@ namespace IED
 		state_var_update(inCombat, Game::GetActorInCombat(a_actor), result);
 		state_var_update(flags1.value, a_actor->flags1 & ACTOR_CHECK_FLAGS_1, result);
 		state_var_update(flags2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_2, result);
+		state_var_update(lifeState, a_actor->GetLifeState(), result);
 		state_var_update(sitting, a_actor->IsSitting(), result);
 		state_var_update(sleeping, a_actor->IsSleeping(), result);
 		state_var_update(sneaking, a_actor->IsSneaking(), result);
 		state_var_update(weaponDrawn, a_actor->IsWeaponDrawn(), result);
-		state_var_update(unconscious, a_actor->IsUnconscious(), result);
 		state_var_update(flying, a_actor->IsFlying(), result);
-		state_var_update(restrained, a_actor->IsRestrained(), result);
 		state_var_update(arrested, a_actor->IsArrested(), result);
 		state_var_update(beingRidden, a_actor->IsBeingRidden(), result);
 

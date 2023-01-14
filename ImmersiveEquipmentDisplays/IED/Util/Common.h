@@ -6,7 +6,7 @@ namespace IED
 	{
 		namespace Common
 		{
-			inline constexpr bool IsREFRValid(const TESObjectREFR* a_refr) noexcept
+			[[nodiscard]] constexpr bool IsREFRValid(const TESObjectREFR* a_refr) noexcept
 			{
 				return a_refr &&
 				       a_refr->formID != 0 &&

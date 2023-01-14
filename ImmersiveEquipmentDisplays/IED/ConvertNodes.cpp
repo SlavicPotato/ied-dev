@@ -18,7 +18,7 @@ namespace IED
 
 			for (auto& e : BSStringHolder::GetSingleton()->GetSheathNodes())
 			{
-				auto target = FindNode(a_root, e.name);
+				auto target = GetNodeByName(a_root, e.name);
 				if (!target)
 				{
 					continue;

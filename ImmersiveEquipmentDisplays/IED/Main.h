@@ -9,15 +9,15 @@ namespace IED
 		ILog,
 		::Events::EventSink<SKSEMessagingEvent>
 	{
-		inline static constexpr std::uint32_t SKSE_SERIALIZATION_UID = 'ADEI';
+		static constexpr std::uint32_t SKSE_SERIALIZATION_UID = 'ADEI';
 
 	public:
-		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
 
-		[[nodiscard]] inline static constexpr auto* GetController() noexcept
+		[[nodiscard]] static constexpr auto* GetController() noexcept
 		{
 			return m_Instance.m_controller;
 		}

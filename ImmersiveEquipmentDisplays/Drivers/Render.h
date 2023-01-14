@@ -14,27 +14,27 @@ namespace IED
 		public:
 			static bool Initialize(bool a_prepHook);
 
-			[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
+			[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 			{
 				return m_Instance;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetBufferSize() const noexcept
+			[[nodiscard]] constexpr auto& GetBufferSize() const noexcept
 			{
 				return m_bufferSize;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetSwapChainInfo() const noexcept
+			[[nodiscard]] constexpr auto& GetSwapChainInfo() const noexcept
 			{
 				return m_swapChainDesc;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetDevice() const noexcept
+			[[nodiscard]] constexpr auto& GetDevice() const noexcept
 			{
 				return m_device;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetContext() const noexcept
+			[[nodiscard]] constexpr auto& GetContext() const noexcept
 			{
 				return m_context;
 			}
@@ -45,7 +45,7 @@ namespace IED
 					std::is_convertible_v<
 						Render,
 						::Events::EventDispatcher<T>>>>
-			[[nodiscard]] inline constexpr auto& GetEventDispatcher() noexcept
+			[[nodiscard]] constexpr auto& GetEventDispatcher() noexcept
 			{
 				return static_cast<::Events::EventDispatcher<T>&>(*this);
 			}

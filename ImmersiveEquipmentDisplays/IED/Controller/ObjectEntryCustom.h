@@ -21,7 +21,7 @@ namespace IED
 	struct ObjectEntryCustom :
 		ObjectEntryBase
 	{
-		inline constexpr void clear_chance_flags() noexcept
+		constexpr void clear_chance_flags() noexcept
 		{
 			cflags.clear(CustomObjectEntryFlags::kChanceMask);
 		}

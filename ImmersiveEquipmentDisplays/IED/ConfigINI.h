@@ -16,22 +16,22 @@ namespace IED
 		ConfigKeyCombo() = default;
 		void Parse(const std::string& a_input);
 
-		[[nodiscard]] inline constexpr bool Has() const noexcept
+		[[nodiscard]] constexpr bool Has() const noexcept
 		{
 			return static_cast<bool>(key);
 		}
 
-		[[nodiscard]] inline constexpr auto GetKey() const noexcept
+		[[nodiscard]] constexpr auto GetKey() const noexcept
 		{
 			return key;
 		}
 
-		[[nodiscard]] inline constexpr auto GetComboKey() const noexcept
+		[[nodiscard]] constexpr auto GetComboKey() const noexcept
 		{
 			return comboKey;
 		}
 
-		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		[[nodiscard]] constexpr explicit operator bool() const noexcept
 		{
 			return static_cast<bool>(key);
 		}
@@ -39,15 +39,15 @@ namespace IED
 
 	class ConfigINI
 	{
-		inline static constexpr auto SECT_GENERAL        = "General";
-		inline static constexpr auto SECT_DEBUG          = "Debug";
-		inline static constexpr auto SECT_GUI            = "GUI";
-		inline static constexpr auto SECT_NODE_OVERRIDE  = "NodeOverride";
-		inline static constexpr auto SECT_SOUND          = "Sound";
-		inline static constexpr auto SECT_ANIM           = "Animation";
-		inline static constexpr auto SECT_EXPERIMENTAL   = "Experimental";
-		inline static constexpr auto SECT_BIPCACHE       = "BipedSlotCache";
-		inline static constexpr auto SECT_EFFECT_SHADERS = "EffectShaders";
+		static constexpr auto SECT_GENERAL        = "General";
+		static constexpr auto SECT_DEBUG          = "Debug";
+		static constexpr auto SECT_GUI            = "GUI";
+		static constexpr auto SECT_NODE_OVERRIDE  = "NodeOverride";
+		static constexpr auto SECT_SOUND          = "Sound";
+		static constexpr auto SECT_ANIM           = "Animation";
+		static constexpr auto SECT_EXPERIMENTAL   = "Experimental";
+		static constexpr auto SECT_BIPCACHE       = "BipedSlotCache";
+		static constexpr auto SECT_EFFECT_SHADERS = "EffectShaders";
 
 	public:
 		ConfigINI() = default;
@@ -55,7 +55,7 @@ namespace IED
 
 		bool Load(const std::string& a_path);
 
-		inline constexpr bool IsLoaded() const noexcept
+		constexpr bool IsLoaded() const noexcept
 		{
 			return m_loaded;
 		}

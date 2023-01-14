@@ -40,7 +40,7 @@ namespace IED
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
 
 		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object) noexcept;
-		typedef NiNode* (*unk1291cc0_t)(NiAVObject* a_object, NiNode* a_node) noexcept;
+		typedef NiNode* (*unk1291cc0_t)(NiAVObject* a_object, BSFadeNode* a_node) noexcept;
 		typedef NiNode* (*unkSSN1_t)(RE::ShadowSceneNode* a_node, NiAVObject* a_object) noexcept;
 		typedef void (*unkDC6140_t)(NiNode* a_node, bool a_unk2) noexcept;
 		typedef void (*unk1CDB30_t)(NiAVObject* a_node) noexcept;
@@ -125,19 +125,19 @@ namespace IED
 			const BSFixedString& a_name) noexcept;
 
 		static stl::flag<AttachResultFlags> AttachObject(
-			Actor*    a_actor,
-			TESForm*  a_modelForm,
-			NiNode*   a_root,
-			NiNode*   a_targetNode,
-			NiNode*   a_object,
-			ModelType a_modelType,
-			bool      a_leftWeapon,
-			bool      a_dropOnDeath,
-			bool      a_removeScabbards,
-			bool      a_keepTorchFlame,
-			bool      a_disableHavok,
-			bool      a_removeTracers,
-			bool      a_removeEditorMarker) noexcept;
+			Actor*      a_actor,
+			TESForm*    a_modelForm,
+			BSFadeNode* a_root,
+			NiNode*     a_targetNode,
+			NiNode*     a_object,
+			ModelType   a_modelType,
+			bool        a_leftWeapon,
+			bool        a_dropOnDeath,
+			bool        a_removeScabbards,
+			bool        a_keepTorchFlame,
+			bool        a_disableHavok,
+			bool        a_removeTracers,
+			bool        a_removeEditorMarker) noexcept;
 
 		static bool CreateWeaponBehaviorGraph(
 			NiAVObject*                               a_object,
@@ -166,17 +166,17 @@ namespace IED
 
 		//inline static const auto fUnk362E90 = IAL::Address<fUnk362E90_t>(24220, 0);
 
-		[[nodiscard]] inline static constexpr bool IsWeaponAdjustDisabled() noexcept
+		[[nodiscard]] static constexpr bool IsWeaponAdjustDisabled() noexcept
 		{
 			return m_Instance.m_conf.weaponAdjustDisable;
 		}
 
-		[[nodiscard]] inline static constexpr bool GetTransformOverridesEnabled() noexcept
+		[[nodiscard]] static constexpr bool GetTransformOverridesEnabled() noexcept
 		{
 			return m_Instance.m_conf.applyTransformOverrides;
 		}
 
-		[[nodiscard]] inline static constexpr bool ParallelAnimationUpdatesEnabled() noexcept
+		[[nodiscard]] static constexpr bool ParallelAnimationUpdatesEnabled() noexcept
 		{
 			return m_Instance.m_conf.parallelAnimationUpdates;
 		}
@@ -204,18 +204,18 @@ namespace IED
 		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 
 		//inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
-		inline static const auto SetRootOnShaderProperties = IAL::Address<unk1291cc0_t>(98895, 105542);
-		inline static const auto fUnk12ba3e0               = IAL::Address<unkSSN1_t>(99702, 106336);
-		inline static const auto fUnk12b99f0               = IAL::Address<unkSSN1_t>(99696, 106330);
-		inline static const auto fUnk1CD130                = IAL::Address<unk1CD130_t>(15567, 15745);
-		inline static const auto QueueAttachHavok          = IAL::Address<unk5C3C40_t>(35950, 36925);
-		inline static const auto fUnk5EBD90                = IAL::Address<unk5EBD90_t>(36559, 37560);
-		inline static const auto fUnk5C39F0                = IAL::Address<unk5C39F0_t>(35947, 36922);
-		inline static const auto AttachAddonParticles      = IAL::Address<attachAddonNodes_t>(19207, 19633);
-		inline static const auto fUnkDC6140                = IAL::Address<fUnk140DC6140_t>(76545, 78389);
-		inline static const auto fUnk12BAFB0               = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
-		inline static const auto AttachAddonNodes          = IAL::Address<unk14028BAD0_t>(19206, 19632);
-		inline static const auto StripCollision            = IAL::Address<stripCollision_t>(76037, 77870);
+		inline static const auto SetShaderPropsFadeNode = IAL::Address<unk1291cc0_t>(98895, 105542);
+		inline static const auto fUnk12ba3e0            = IAL::Address<unkSSN1_t>(99702, 106336);
+		inline static const auto fUnk12b99f0            = IAL::Address<unkSSN1_t>(99696, 106330);
+		inline static const auto fUnk1CD130             = IAL::Address<unk1CD130_t>(15567, 15745);
+		inline static const auto QueueAttachHavok       = IAL::Address<unk5C3C40_t>(35950, 36925);
+		inline static const auto fUnk5EBD90             = IAL::Address<unk5EBD90_t>(36559, 37560);
+		inline static const auto fUnk5C39F0             = IAL::Address<unk5C39F0_t>(35947, 36922);
+		inline static const auto AttachAddonParticles   = IAL::Address<attachAddonNodes_t>(19207, 19633);
+		inline static const auto fUnkDC6140             = IAL::Address<fUnk140DC6140_t>(76545, 78389);
+		inline static const auto fUnk12BAFB0            = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
+		inline static const auto AttachAddonNodes       = IAL::Address<unk14028BAD0_t>(19206, 19632);
+		inline static const auto StripCollision         = IAL::Address<stripCollision_t>(76037, 77870);
 
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);

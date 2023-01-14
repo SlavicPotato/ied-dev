@@ -1771,6 +1771,9 @@ namespace IED
 								case Data::ExtraConditionType::kDayOfWeek:
 									m_condParamEditor.SetNext<ConditionParamItem::DayOfWeek>(e.dayOfWeek);
 									break;
+								case Data::ExtraConditionType::kLifeState:
+									m_condParamEditor.SetNext<ConditionParamItem::LifeState>(e.lifeState);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);

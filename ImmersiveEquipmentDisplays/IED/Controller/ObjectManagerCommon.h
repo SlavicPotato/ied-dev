@@ -26,7 +26,7 @@ namespace IED
 				tag.reset();
 			}
 
-			[[nodiscard]] inline constexpr bool operator==(
+			[[nodiscard]] constexpr bool operator==(
 				const Data::configTransform_t& a_rhs) const noexcept
 			{
 				return tag == a_rhs;

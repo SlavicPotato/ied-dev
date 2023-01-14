@@ -29,19 +29,19 @@ namespace IED
 			using copy_func_t = std::function<void(char*, std::size_t)>;
 
 			template <class... Args>
-			inline constexpr auto TextCopyable(const char* a_fmt, Args... a_args) const
+			constexpr auto TextCopyable(const char* a_fmt, Args... a_args) const
 			{
 				return TextCopyableImpl(ImGui::TextV, a_fmt, a_args...);
 			}
 
 			template <class... Args>
-			inline constexpr auto TextCopyable(copy_func_t a_copyfunc, const char* a_fmt, Args... a_args) const
+			constexpr auto TextCopyable(copy_func_t a_copyfunc, const char* a_fmt, Args... a_args) const
 			{
 				return TextCopyableImpl(ImGui::TextV, a_copyfunc, a_fmt, a_args...);
 			}
 
 			template <class... Args>
-			inline constexpr auto TextWrappedCopyable(const char* a_fmt, Args... a_args) const
+			constexpr auto TextWrappedCopyable(const char* a_fmt, Args... a_args) const
 			{
 				return TextCopyableImpl(ImGui::TextWrappedV, a_fmt, a_args...);
 			}

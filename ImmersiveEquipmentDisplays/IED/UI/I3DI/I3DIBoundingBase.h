@@ -17,7 +17,7 @@ namespace IED
 		class I3DIBoundingBase
 		{
 		public:
-			inline static constexpr auto BOUND_TYPE = BoundingShape::kInvalid;
+			static constexpr auto BOUND_TYPE = BoundingShape::kInvalid;
 
 			virtual ~I3DIBoundingBase() noexcept = default;
 

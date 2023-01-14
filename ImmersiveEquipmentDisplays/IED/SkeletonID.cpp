@@ -59,7 +59,7 @@ namespace IED
 			m_pflags.set(PresenceFlags::kHasBoundExtraData);
 		}
 
-		if (auto npcRoot = FindNode(a_root, sh->m_npcroot))
+		if (auto npcRoot = GetNodeByName(a_root, sh->m_npcroot))
 		{
 			m_pflags.set(PresenceFlags::kHasNPCRootNode);
 

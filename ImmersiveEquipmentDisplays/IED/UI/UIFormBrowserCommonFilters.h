@@ -34,7 +34,7 @@ namespace IED
 		class UIFormBrowserCommonFilters
 		{
 		public:
-			[[nodiscard]] inline static constexpr const auto& Get(UIFormBrowserFilter a_id)
+			[[nodiscard]] static constexpr const auto& Get(UIFormBrowserFilter a_id)
 			{
 				return m_Instance.m_filters[stl::underlying(a_id)];
 			}

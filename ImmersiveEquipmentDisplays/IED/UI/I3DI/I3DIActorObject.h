@@ -38,22 +38,22 @@ namespace IED
 
 			void Update(const ActorObjectHolder& a_holder);
 
-			[[nodiscard]] inline constexpr auto& GetActorBound() const noexcept
+			[[nodiscard]] constexpr auto& GetActorBound() const noexcept
 			{
 				return GetBoundingShape<I3DIBoundingOrientedBox>()->GetBound();
 			}
 
-			inline constexpr void SetLost() noexcept
+			constexpr void SetLost() noexcept
 			{
 				m_lost = true;
 			}
 
-			[[nodiscard]] inline constexpr bool IsActorLost() const noexcept
+			[[nodiscard]] constexpr bool IsActorLost() const noexcept
 			{
 				return m_lost;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetActorFormID() const noexcept
+			[[nodiscard]] constexpr auto& GetActorFormID() const noexcept
 			{
 				return m_actor;
 			}

@@ -15,12 +15,12 @@ namespace IED
 			std::uint32_t min{ 0 };
 			std::uint32_t max{ 0 };
 
-			inline constexpr operator std::uint32_t*() noexcept
+			constexpr operator std::uint32_t*() noexcept
 			{
 				return std::addressof(min);
 			}
 
-			[[nodiscard]] inline constexpr bool empty() const noexcept
+			[[nodiscard]] constexpr bool empty() const noexcept
 			{
 				return !min && !max;
 			}
@@ -35,7 +35,7 @@ namespace IED
 			using Game::FormID::FormID;
 			using Game::FormID::operator=;
 
-			inline constexpr configForm_t(
+			constexpr configForm_t(
 				const Game::FormID& a_rhs) noexcept :
 				Game::FormID(a_rhs)
 			{
@@ -73,7 +73,7 @@ namespace IED
 			using Game::FormID::FormID;
 			using Game::FormID::operator=;
 
-			inline constexpr configFormZeroMissing_t(
+			constexpr configFormZeroMissing_t(
 				const Game::FormID& a_rhs) noexcept :
 				Game::FormID(a_rhs)
 			{
@@ -114,26 +114,26 @@ namespace IED
 
 			configCachedForm_t() noexcept = default;
 
-			inline constexpr configCachedForm_t(
+			constexpr configCachedForm_t(
 				const Game::FormID& a_id) noexcept :
 				id(a_id)
 			{
 			}
 
-			inline constexpr configCachedForm_t(
+			constexpr configCachedForm_t(
 				const configCachedForm_t& a_rhs) noexcept :
 				id(a_rhs.id)
 			{
 			}
 
-			inline constexpr configCachedForm_t(
+			constexpr configCachedForm_t(
 				configCachedForm_t&& a_rhs) noexcept :
 				id(a_rhs.id)
 			{
 				a_rhs.form = nullptr;
 			}
 
-			inline constexpr configCachedForm_t& operator=(
+			constexpr configCachedForm_t& operator=(
 				const Game::FormID& a_id) noexcept
 			{
 				id   = a_id;
@@ -142,7 +142,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr configCachedForm_t& operator=(
+			constexpr configCachedForm_t& operator=(
 				const configCachedForm_t& a_rhs) noexcept
 			{
 				id   = a_rhs.id;
@@ -151,7 +151,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr configCachedForm_t& operator=(
+			constexpr configCachedForm_t& operator=(
 				configCachedForm_t&& a_rhs) noexcept
 			{
 				id   = a_rhs.id;
@@ -162,7 +162,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr TESForm* get_form() const noexcept
+			constexpr TESForm* get_form() const noexcept
 			{
 				if (!id)
 				{
@@ -182,14 +182,13 @@ namespace IED
 				return form;
 			}
 
-			template <
-				class T,
-				class form_type = stl::strip_type<T>>
-			inline constexpr form_type* get_form() const noexcept
+			template <class T>
+			constexpr T* get_form() const noexcept  //
+				requires(!std::is_pointer_v<T> && !std::is_reference_v<T>)
 			{
 				if (const auto f = get_form())
 				{
-					return f->As<form_type>();
+					return f->As<T>();
 				}
 				else
 				{
@@ -197,38 +196,38 @@ namespace IED
 				}
 			}
 
-			inline constexpr auto& get_id() const noexcept
+			constexpr auto& get_id() const noexcept
 			{
 				return id;
 			}
 
-			inline constexpr auto& get_id() noexcept
+			constexpr auto& get_id() noexcept
 			{
 				return id;
 			}
 
-			[[nodiscard]] inline constexpr friend bool operator==(
+			[[nodiscard]] constexpr friend bool operator==(
 				const configCachedForm_t& a_lhs,
 				const Game::FormID&       a_rhs) noexcept
 			{
 				return a_lhs.id == a_rhs;
 			}
 
-			[[nodiscard]] inline constexpr friend bool operator<=(
+			[[nodiscard]] constexpr friend bool operator<=(
 				const configCachedForm_t& a_lhs,
 				const Game::FormID&       a_rhs) noexcept
 			{
 				return a_lhs.id <= a_rhs;
 			}
 
-			[[nodiscard]] inline constexpr friend bool operator==(
+			[[nodiscard]] constexpr friend bool operator==(
 				const configCachedForm_t& a_lhs,
 				const configCachedForm_t& a_rhs) noexcept
 			{
 				return a_lhs.id == a_rhs.id;
 			}
 
-			[[nodiscard]] inline constexpr friend bool operator<=(
+			[[nodiscard]] constexpr friend bool operator<=(
 				const configCachedForm_t& a_lhs,
 				const configCachedForm_t& a_rhs) noexcept
 			{
@@ -324,7 +323,7 @@ namespace IED
 			kIsLayingDown            = 42,
 			kInPlayerEnemyFaction    = 43,
 			kIsHorse                 = 44,
-			kIsRestrained            = 45,
+			kIsRestrained            = 45,  // unused
 			kIsUnique                = 46,
 			kIsSummonable            = 47,
 			kIsInvulnerable          = 48,
@@ -332,6 +331,7 @@ namespace IED
 			kDayOfWeek               = 50,
 			kIsSneaking              = 51,
 			kInDialogue              = 52,
+			kLifeState               = 53,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -362,32 +362,32 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			[[nodiscard]] inline constexpr auto& operator()() noexcept
+			[[nodiscard]] constexpr auto& operator()() noexcept
 			{
 				return data;
 			}
 
-			[[nodiscard]] inline constexpr auto& operator()() const noexcept
+			[[nodiscard]] constexpr auto& operator()() const noexcept
 			{
 				return data;
 			}
 
-			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) noexcept
+			[[nodiscard]] constexpr auto& get(ConfigSex a_sex) noexcept
 			{
 				return data[stl::underlying(a_sex)];
 			}
 
-			[[nodiscard]] inline constexpr auto& get(ConfigSex a_sex) const noexcept
+			[[nodiscard]] constexpr auto& get(ConfigSex a_sex) const noexcept
 			{
 				return data[stl::underlying(a_sex)];
 			}
 
-			[[nodiscard]] inline constexpr auto& operator()(ConfigSex a_sex) noexcept
+			[[nodiscard]] constexpr auto& operator()(ConfigSex a_sex) noexcept
 			{
 				return get(a_sex);
 			}
 
-			[[nodiscard]] inline constexpr auto& operator()(ConfigSex a_sex) const noexcept
+			[[nodiscard]] constexpr auto& operator()(ConfigSex a_sex) const noexcept
 			{
 				return get(a_sex);
 			}
@@ -463,72 +463,72 @@ namespace IED
 
 			using data_type = T;
 
-			inline constexpr auto& GetActorData() noexcept
+			constexpr auto& GetActorData() noexcept
 			{
 				return data[stl::underlying(ConfigClass::Actor)];
 			}
 
-			inline constexpr auto& GetActorData() const noexcept
+			constexpr auto& GetActorData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::Actor)];
 			}
 
-			inline constexpr auto& GetRaceData() noexcept
+			constexpr auto& GetRaceData() noexcept
 			{
 				return data[stl::underlying(ConfigClass::Race)];
 			}
 
-			inline constexpr auto& GetRaceData() const noexcept
+			constexpr auto& GetRaceData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::Race)];
 			}
 
-			inline constexpr auto& GetNPCData() noexcept
+			constexpr auto& GetNPCData() noexcept
 			{
 				return data[stl::underlying(ConfigClass::NPC)];
 			}
 
-			inline constexpr auto& GetNPCData() const noexcept
+			constexpr auto& GetNPCData() const noexcept
 			{
 				return data[stl::underlying(ConfigClass::NPC)];
 			}
 
-			/*inline constexpr auto& GetData(ConfigClass a_class) noexcept
+			/*constexpr auto& GetData(ConfigClass a_class) noexcept
 			{
 				return data[stl::underlying(a_class)];
 			}
 
-			inline constexpr const auto& GetData(ConfigClass a_class) const noexcept
+			constexpr const auto& GetData(ConfigClass a_class) const noexcept
 			{
 				return data[stl::underlying(a_class)];
 			}*/
 
-			inline constexpr auto& GetGlobalData() noexcept
+			constexpr auto& GetGlobalData() noexcept
 			{
 				return global;
 			}
 
-			inline constexpr auto& GetGlobalData() const noexcept
+			constexpr auto& GetGlobalData() const noexcept
 			{
 				return global;
 			}
 
-			inline constexpr auto& GetGlobalData(GlobalConfigType a_type) noexcept
+			constexpr auto& GetGlobalData(GlobalConfigType a_type) noexcept
 			{
 				return global[stl::underlying(a_type)];
 			}
 
-			inline constexpr auto& GetGlobalData(GlobalConfigType a_type) const noexcept
+			constexpr auto& GetGlobalData(GlobalConfigType a_type) const noexcept
 			{
 				return global[stl::underlying(a_type)];
 			}
 
-			inline constexpr auto& GetFormMaps() noexcept
+			constexpr auto& GetFormMaps() noexcept
 			{
 				return data;
 			}
 
-			inline constexpr const auto& GetFormMaps() const noexcept
+			constexpr const auto& GetFormMaps() const noexcept
 			{
 				return data;
 			}
@@ -610,7 +610,7 @@ namespace IED
 			configFormSet_t                allow;
 			configFormSet_t                deny;
 
-			inline constexpr bool test(
+			constexpr bool test(
 				Game::FormID a_form) const noexcept
 			{
 				if (allow.contains(a_form))
@@ -791,12 +791,12 @@ namespace IED
 		configCopyableUniquePtr_t(configCopyableUniquePtr_t&&)            = default;
 		configCopyableUniquePtr_t& operator=(configCopyableUniquePtr_t&&) = default;
 
-		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		[[nodiscard]] constexpr explicit operator bool() const noexcept
 		{
 			return static_cast<bool>(data.get());
 		}
 
-		[[nodiscard]] inline constexpr auto operator->() const noexcept
+		[[nodiscard]] constexpr auto operator->() const noexcept
 		{
 			return data.get();
 		}
@@ -811,7 +811,7 @@ namespace std
 	template <>
 	struct hash<::IED::Data::configForm_t>
 	{
-		inline constexpr std::size_t operator()(
+		constexpr std::size_t operator()(
 			::IED::Data::configForm_t const& a_in) const noexcept
 		{
 			return hash<Game::FormID>()(a_in);
@@ -821,7 +821,7 @@ namespace std
 	template <>
 	struct hash<::IED::Data::configCachedForm_t>
 	{
-		inline constexpr std::size_t operator()(
+		constexpr std::size_t operator()(
 			::IED::Data::configCachedForm_t const& a_in) const noexcept
 		{
 			return hash<Game::FormID>()(a_in.get_id());
@@ -831,7 +831,7 @@ namespace std
 	template <>
 	struct hash<::IED::Data::configFormZeroMissing_t>
 	{
-		inline constexpr std::size_t operator()(
+		constexpr std::size_t operator()(
 			::IED::Data::configFormZeroMissing_t const& a_in) const noexcept
 		{
 			return hash<Game::FormID>()(a_in);

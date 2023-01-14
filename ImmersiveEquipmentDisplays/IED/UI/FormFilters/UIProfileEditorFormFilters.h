@@ -25,7 +25,7 @@ namespace IED
 			UIFormFilterWidget<FFPEFormFilterParams_t>
 		{
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorFormFilters;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorFormFilters;
 
 			UIProfileEditorFormFilters(Controller& a_controller);
 			~UIProfileEditorFormFilters() noexcept override;
@@ -34,7 +34,7 @@ namespace IED
 
 			virtual void DrawProfileEditorMenuBarItems() override;
 
-			[[nodiscard]] inline constexpr bool ChangedConfig() const
+			[[nodiscard]] constexpr bool ChangedConfig() const
 			{
 				const bool res = m_changedConfig;
 				if (res)

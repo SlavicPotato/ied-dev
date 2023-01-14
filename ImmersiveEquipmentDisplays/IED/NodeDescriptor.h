@@ -33,12 +33,12 @@ namespace IED
 			stl::fixed_string              name;
 			stl::flag<NodeDescriptorFlags> flags{ NodeDescriptorFlags::kNone };
 
-			[[nodiscard]] inline constexpr bool managed() const noexcept
+			[[nodiscard]] constexpr bool managed() const noexcept
 			{
 				return flags.test(NodeDescriptorFlags::kManaged);
 			}
 
-			inline constexpr explicit operator bool() const noexcept
+			constexpr explicit operator bool() const noexcept
 			{
 				return !name.empty();
 			}

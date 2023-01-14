@@ -31,7 +31,7 @@ namespace IED
 		virtual ~IUIRenderTask() noexcept override = default;
 
 		template <class T = UI::UIContext>
-		[[nodiscard]] inline constexpr T* GetContext() const noexcept
+		[[nodiscard]] constexpr T* GetContext() const noexcept
 			requires std::is_base_of_v<UI::UIContext, T>
 		{
 			return static_cast<T*>(m_context.get());
@@ -50,7 +50,7 @@ namespace IED
 			m_context->Initialize();
 		}
 
-		inline constexpr void QueueReset() noexcept
+		constexpr void QueueReset() noexcept
 		{
 			m_reset = true;
 		}
@@ -143,7 +143,7 @@ namespace IED
 		UI::UIFormInfoCache& UIGetFormLookupCache() noexcept;
 		void                 UIReset();
 
-		[[nodiscard]] inline constexpr auto& UIGetRenderTask() const noexcept
+		[[nodiscard]] constexpr auto& UIGetRenderTask() const noexcept
 		{
 			return m_task;
 		}

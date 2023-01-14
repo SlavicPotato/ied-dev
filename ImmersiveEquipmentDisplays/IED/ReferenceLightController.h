@@ -58,7 +58,7 @@ namespace IED
 		using unique_lock = std::unique_lock<lock_type>;
 
 	public:
-		[[nodiscard]] static inline constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
@@ -91,7 +91,7 @@ namespace IED
 
 		std::size_t GetNumLights() const noexcept;
 
-		[[nodiscard]] inline constexpr bool GetEnabled() const noexcept
+		[[nodiscard]] constexpr bool GetEnabled() const noexcept
 		{
 			return m_initialized;
 		}

@@ -8,49 +8,49 @@ namespace IED
 		class UIFilterBase
 		{
 		public:
-			inline static constexpr std::size_t FILTER_BUF_SIZE = 256;
+			static constexpr std::size_t FILTER_BUF_SIZE = 256;
 
 			bool Draw(const char* a_label = "##fil_input");
 			void DrawButton();
 			void clear();
 			void Toggle();
 
-			[[nodiscard]] inline constexpr bool IsOpen() const noexcept
+			[[nodiscard]] constexpr bool IsOpen() const noexcept
 			{
 				return m_searchOpen;
 			}
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return m_filter.has_value();
 			}
 
-			/*[[nodiscard]] inline constexpr const auto& operator*() const noexcept
+			/*[[nodiscard]] constexpr const auto& operator*() const noexcept
 			{
 				return m_filter;
 			}
 
-			[[nodiscard]] inline constexpr const auto* operator->() const noexcept
+			[[nodiscard]] constexpr const auto* operator->() const noexcept
 			{
 				return std::addressof(m_filter);
 			}*/
 
-			inline constexpr void NextSetFocus() noexcept
+			constexpr void NextSetFocus() noexcept
 			{
 				m_nextSetFocus = true;
 			}
 
-			[[nodiscard]] inline constexpr bool Has() const noexcept
+			[[nodiscard]] constexpr bool Has() const noexcept
 			{
 				return m_filter.has_value();
 			}
 
-			[[nodiscard]] inline constexpr const char* GetBuffer() const noexcept
+			[[nodiscard]] constexpr const char* GetBuffer() const noexcept
 			{
 				return m_filterBuf.get();
 			}
 
-			inline constexpr void SetFlags(ImGuiInputTextFlags a_flags) noexcept
+			constexpr void SetFlags(ImGuiInputTextFlags a_flags) noexcept
 			{
 				m_inputTextFlags = a_flags;
 			}

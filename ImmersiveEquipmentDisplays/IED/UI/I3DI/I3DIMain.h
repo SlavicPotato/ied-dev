@@ -27,10 +27,10 @@ namespace IED
 				}
 			};*/
 
-			inline static constexpr auto WINDOW_ID = "ied_i3di";
+			static constexpr auto WINDOW_ID = "ied_i3di";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kI3DI;
+			static constexpr auto CHILD_ID = ChildWindowID::kI3DI;
 
 			I3DIMain(Controller& a_controller);
 
@@ -50,17 +50,17 @@ namespace IED
 				return static_cast<std::uint32_t>(CHILD_ID);
 			}
 
-			[[nodiscard]] inline constexpr auto& GetActorContext() const noexcept
+			[[nodiscard]] constexpr auto& GetActorContext() const noexcept
 			{
 				return m_actorContext;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetCommonData() const noexcept
+			[[nodiscard]] constexpr auto& GetCommonData() const noexcept
 			{
 				return m_data;
 			}
 
-			[[nodiscard]] inline constexpr auto GetLastPrepTime() const noexcept
+			[[nodiscard]] constexpr auto GetLastPrepTime() const noexcept
 			{
 				return m_lastPrepTime;
 			}

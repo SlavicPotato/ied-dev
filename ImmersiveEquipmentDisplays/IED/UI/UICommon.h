@@ -103,7 +103,7 @@ namespace IED
 					return result;
 				}
 
-				inline constexpr void reset() noexcept
+				constexpr void reset() noexcept
 				{
 					current = _Min;
 				}

@@ -9,18 +9,18 @@ namespace IED
 		class LocalizationDataManager : ILog
 		{
 		public:
-			inline static constexpr auto DEFAULT_LANG = "English";
+			static constexpr auto DEFAULT_LANG = "English";
 
 			using shared_string_table = std::shared_ptr<const StringTable>;
 
 			bool Load(const fs::path& a_path);
 
-			[[nodiscard]] static inline constexpr auto& GetSingleton() noexcept
+			[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 			{
 				return m_Instance;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetData() const noexcept
+			[[nodiscard]] constexpr auto& GetData() const noexcept
 			{
 				return m_data;
 			}
@@ -35,17 +35,17 @@ namespace IED
 				return m_emptyTable;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetDefaultTable() const noexcept
+			[[nodiscard]] constexpr auto& GetDefaultTable() const noexcept
 			{
 				return m_defaultTable;
 			}
 
-			[[nodiscard]] inline constexpr auto IsLoaded() const noexcept
+			[[nodiscard]] constexpr auto IsLoaded() const noexcept
 			{
 				return m_loaded;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetLastException() const noexcept
+			[[nodiscard]] constexpr auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}

@@ -651,7 +651,7 @@ namespace IED
 			kLastEquipped
 		};
 
-		inline static constexpr CustomObjectMode GetMode(
+		constexpr CustomObjectMode GetCustomObjectModel(
 			const stl::flag<Data::CustomFlags>& a_flags) noexcept
 		{
 			if (a_flags.test(Data::CustomFlags::kLastEquippedMode))
@@ -676,7 +676,7 @@ namespace IED
 
 			ImGui::PushID("gs");
 
-			auto mode = GetMode(data.customFlags);
+			auto mode = GetCustomObjectModel(data.customFlags);
 
 			if (ImGui::RadioButton(
 					UIL::LS(CommonStrings::Single, "1"),

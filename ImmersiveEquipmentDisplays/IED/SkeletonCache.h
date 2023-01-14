@@ -9,7 +9,7 @@ namespace IED
 		using const_actor_entry_type = std::shared_ptr<const stl::unordered_map<stl::fixed_string, NiTransform>>;
 		using data_type              = stl::unordered_map<stl::fixed_string, actor_entry_type>;
 
-		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}

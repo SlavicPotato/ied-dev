@@ -340,7 +340,7 @@ namespace IED
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
-		auto attachmentNode = ::Util::Node::FindNode(a_object, sh->m_attachLight);
+		auto attachmentNode = ::Util::Node::GetNodeByName(a_object, sh->m_attachLight);
 
 		if (!attachmentNode)
 		{

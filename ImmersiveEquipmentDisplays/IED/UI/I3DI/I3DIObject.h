@@ -106,47 +106,47 @@ namespace IED
 			virtual void                 SetLastDistance(const std::optional<float>& a_distance){};
 			virtual std::optional<float> GetLastDistance() const { return {}; };
 
-			[[nodiscard]] inline constexpr bool IsHovered() const noexcept
+			[[nodiscard]] constexpr bool IsHovered() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kHovered);
 			}
 
-			[[nodiscard]] inline constexpr bool IsSelected() const noexcept
+			[[nodiscard]] constexpr bool IsSelected() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kSelected);
 			}
 			
-			[[nodiscard]] inline constexpr bool IsDisabled() const noexcept
+			[[nodiscard]] constexpr bool IsDisabled() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kDisabled);
 			}
 
-			[[nodiscard]] inline constexpr bool HideOtherWhenSelected() const noexcept
+			[[nodiscard]] constexpr bool HideOtherWhenSelected() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kHideOtherWhenSelected);
 			}
 
-			[[nodiscard]] inline constexpr bool IsGeometryHidden() const noexcept
+			[[nodiscard]] constexpr bool IsGeometryHidden() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kGeometryHidden);
 			}
 
-			[[nodiscard]] inline constexpr bool HasWorldData() const noexcept
+			[[nodiscard]] constexpr bool HasWorldData() const noexcept
 			{
 				return m_objectFlags.test(I3DIObjectFlags::kHasWorldData);
 			}
 
-			[[nodiscard]] inline constexpr void SetHasWorldData(bool a_switch) noexcept
+			[[nodiscard]] constexpr void SetHasWorldData(bool a_switch) noexcept
 			{
 				return m_objectFlags.set(I3DIObjectFlags::kHasWorldData, a_switch);
 			}
 			
-			[[nodiscard]] inline constexpr void SetDisabled(bool a_switch) noexcept
+			[[nodiscard]] constexpr void SetDisabled(bool a_switch) noexcept
 			{
 				return m_objectFlags.set(I3DIObjectFlags::kDisabled, a_switch);
 			}
 
-			inline constexpr void SetGeometryHidden(bool a_switch) noexcept
+			constexpr void SetGeometryHidden(bool a_switch) noexcept
 			{
 				m_objectFlags.set(I3DIObjectFlags::kGeometryHidden, a_switch);
 			}

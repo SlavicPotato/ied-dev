@@ -6,7 +6,7 @@ namespace IED
 {
 	struct npcInfoEntry_t
 	{
-		inline constexpr auto& get_npc_or_template() const noexcept
+		constexpr auto& get_npc_or_template() const noexcept
 		{
 			return nontemp;
 		}
@@ -77,7 +77,7 @@ namespace IED
 			return npc ? npc->get_npc_or_template() : Game::FormID{};
 		}
 
-		inline constexpr auto GetSex() const noexcept
+		constexpr auto GetSex() const noexcept
 		{
 			return npc && npc->female ?
 			           Data::ConfigSex::Female :

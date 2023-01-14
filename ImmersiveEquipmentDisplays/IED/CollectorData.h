@@ -39,7 +39,7 @@ namespace IED
 				ItemData() noexcept = delete;
 
 				template <class T>
-				inline constexpr ItemData(
+				constexpr ItemData(
 					TESForm*             a_form,
 					const ItemExtraData& a_extra,
 					T                    a_count)  //
@@ -51,14 +51,14 @@ namespace IED
 					itemCount(a_count),
 					sharedCount(a_count){};
 
-				inline constexpr ItemData(
+				constexpr ItemData(
 					TESForm*             a_form,
 					const ItemExtraData& a_extra) noexcept :
 					form(a_form),
 					extra(a_extra){};
 
 				template <class F>
-				inline constexpr ItemData(
+				constexpr ItemData(
 					TESForm* a_form,
 					F        a_getextra)                                              //
 					noexcept(std::is_nothrow_invocable_r_v<ItemExtraData, F>)  //
@@ -67,34 +67,34 @@ namespace IED
 					form(a_form),
 					extra(a_getextra()){};
 
-				[[nodiscard]] inline constexpr bool is_equipped_right() const noexcept
+				[[nodiscard]] constexpr bool is_equipped_right() const noexcept
 				{
 					return extra.flags.test(ItemFlags::kEquipped);
 				}
 
-				[[nodiscard]] inline constexpr bool is_equipped_left() const noexcept
+				[[nodiscard]] constexpr bool is_equipped_left() const noexcept
 				{
 					return extra.flags.test(ItemFlags::kEquippedLeft);
 				}
 
-				[[nodiscard]] inline constexpr bool is_equipped() const noexcept
+				[[nodiscard]] constexpr bool is_equipped() const noexcept
 				{
 					return extra.flags.test_any(ItemFlags::kEquippedMask);
 				}
 
-				[[nodiscard]] inline constexpr std::uint32_t get_equip_count() const noexcept;
+				[[nodiscard]] constexpr std::uint32_t get_equip_count() const noexcept;
 
-				[[nodiscard]] inline constexpr bool is_favorited() const noexcept
+				[[nodiscard]] constexpr bool is_favorited() const noexcept
 				{
 					return extra.flags.test(ItemFlags::kFavorite);
 				}
 
-				[[nodiscard]] inline constexpr bool cannot_wear() const noexcept
+				[[nodiscard]] constexpr bool cannot_wear() const noexcept
 				{
 					return extra.flags.test(ItemFlags::kCannotWear);
 				}
 
-				inline constexpr void consume_one() const noexcept
+				constexpr void consume_one() const noexcept
 				{
 					if (extra.type == Data::ObjectType::kAmmo)
 					{
@@ -116,35 +116,35 @@ namespace IED
 				mutable std::int32_t sharedCount{ 0 };
 			};
 
-			[[nodiscard]] inline constexpr bool IsSlotEquipped(std::underlying_type_t<ObjectSlotExtra> a_slot) const noexcept
+			[[nodiscard]] constexpr bool IsSlotEquipped(std::underlying_type_t<ObjectSlotExtra> a_slot) const noexcept
 			{
 				assert(a_slot < stl::underlying(ObjectSlotExtra::kMax));
 				return static_cast<bool>(equippedSlots & (1ui32 << a_slot));
 			}
 
-			[[nodiscard]] inline constexpr bool IsSlotEquipped(ObjectSlotExtra a_slot) const noexcept
+			[[nodiscard]] constexpr bool IsSlotEquipped(ObjectSlotExtra a_slot) const noexcept
 			{
 				return IsSlotEquipped(stl::underlying(a_slot));
 			}
 
-			[[nodiscard]] inline constexpr bool IsTypePresent(std::underlying_type_t<ObjectTypeExtra> a_type) const noexcept
+			[[nodiscard]] constexpr bool IsTypePresent(std::underlying_type_t<ObjectTypeExtra> a_type) const noexcept
 			{
 				assert(a_slot < stl::underlying(ObjectTypeExtra::kMax));
 				return static_cast<bool>(presentTypes & (1ui32 << a_type));
 			}
 
-			[[nodiscard]] inline constexpr bool IsTypePresent(ObjectTypeExtra a_type) const noexcept
+			[[nodiscard]] constexpr bool IsTypePresent(ObjectTypeExtra a_type) const noexcept
 			{
 				return IsTypePresent(stl::underlying(a_type));
 			}
 
-			[[nodiscard]] inline constexpr void SetSlotEquipped(ObjectSlotExtra a_slot) noexcept
+			[[nodiscard]] constexpr void SetSlotEquipped(ObjectSlotExtra a_slot) noexcept
 			{
 				assert(a_slot < ObjectSlotExtra::kMax);
 				equippedSlots |= (1ui32 << stl::underlying(a_slot));
 			}
 
-			[[nodiscard]] inline constexpr void SetTypePresent(ObjectTypeExtra a_type) noexcept
+			[[nodiscard]] constexpr void SetTypePresent(ObjectTypeExtra a_type) noexcept
 			{
 				assert(a_slot < ObjectTypeExtra::kMax);
 				presentTypes |= (1ui32 << stl::underlying(a_type));
@@ -162,7 +162,7 @@ namespace IED
 			{
 				EquippedItemData() noexcept = delete;
 
-				inline constexpr EquippedItemData(const ItemData& a_rhs) noexcept :
+				constexpr EquippedItemData(const ItemData& a_rhs) noexcept :
 					form(a_rhs.form),
 					extraEquipped(a_rhs.extra.equipped)
 				{
@@ -174,7 +174,7 @@ namespace IED
 
 			using eq_container_type = std::vector<EquippedItemData>;
 
-			inline constexpr CollectorData(
+			constexpr CollectorData(
 				container_type&    a_container,
 				eq_container_type& a_equippedContainer)  //
 				noexcept(
@@ -195,7 +195,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(CollectorData::ItemFlags);
 
-		inline constexpr std::uint32_t CollectorData::ItemData::get_equip_count() const noexcept
+		constexpr std::uint32_t CollectorData::ItemData::get_equip_count() const noexcept
 		{
 			static_assert(stl::underlying(ItemFlags::kEquipped) == 1);
 			static_assert(stl::underlying(ItemFlags::kEquippedLeft) == 2);

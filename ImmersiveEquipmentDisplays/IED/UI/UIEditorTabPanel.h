@@ -31,7 +31,7 @@ namespace IED
 				Interface() = default;
 
 				template <detail::accept_editor_label Ts>
-				inline constexpr Interface(
+				constexpr Interface(
 					std::unique_ptr<UIEditorInterface> a_interface,
 					Ts                                 a_label) :
 					ptr(std::move(a_interface)),
@@ -39,12 +39,12 @@ namespace IED
 				{
 				}
 
-				[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+				[[nodiscard]] constexpr explicit operator bool() const noexcept
 				{
 					return static_cast<bool>(ptr);
 				}
 
-				[[nodiscard]] inline constexpr auto operator->() const noexcept
+				[[nodiscard]] constexpr auto operator->() const noexcept
 				{
 					return ptr.get();
 				}
@@ -92,12 +92,12 @@ namespace IED
 				};
 			}
 
-			inline constexpr auto& GetInterface(Data::ConfigClass a_class) noexcept
+			constexpr auto& GetInterface(Data::ConfigClass a_class) noexcept
 			{
 				return m_interfaces[stl::underlying(a_class)];
 			}
 
-			inline constexpr auto& GetInterface(Data::ConfigClass a_class) const noexcept
+			constexpr auto& GetInterface(Data::ConfigClass a_class) const noexcept
 			{
 				return m_interfaces[stl::underlying(a_class)];
 			}

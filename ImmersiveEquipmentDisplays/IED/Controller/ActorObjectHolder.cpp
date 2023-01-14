@@ -130,18 +130,18 @@ namespace IED
 		{
 			for (auto& e : NodeOverrideData::GetMonitorNodeData())
 			{
-				if (auto node = FindNode(a_npcroot, e))
+				if (auto node = GetNodeByName(a_npcroot, e))
 				{
 					m_monitorNodes.emplace_back(
 						node,
 						node->m_parent,
-						node->m_children.m_size,
+						node->m_children.size(),
 						node->IsVisible());
 				}
 			}
 
 			auto const npcroot1p = m_root1p ?
-			                           FindNode(
+			                           GetNodeByName(
 										   m_root1p,
 										   BSStringHolder::GetSingleton()->m_npcroot) :
 			                           nullptr;
@@ -150,7 +150,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
-				if (auto node = FindNode(a_npcroot, e->second.bsname))
+				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
 					auto& r = m_cmeNodes.raw().emplace_back(
 						std::piecewise_construct,
@@ -159,7 +159,7 @@ namespace IED
 
 					if (a_syncToFirstPersonSkeleton && npcroot1p)
 					{
-						node = FindNode(npcroot1p, e->second.bsname);
+						node = GetNodeByName(npcroot1p, e->second.bsname);
 						if (node)
 						{
 							r.second.firstPerson = {
@@ -178,7 +178,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
-				if (auto node = FindNode(a_npcroot, e->second.bsname))
+				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
 					m_movNodes.raw().emplace_back(
 						std::piecewise_construct,
@@ -195,12 +195,12 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
-				if (auto node = FindNode(a_npcroot, e->second.bsname); node && node->m_parent)
+				if (auto node = GetNodeByName(a_npcroot, e->second.bsname); node && node->m_parent)
 				{
-					if (auto defParentNode = FindNode(a_npcroot, e->second.bsdefParent))
+					if (auto defParentNode = GetNodeByName(a_npcroot, e->second.bsdefParent))
 					{
 						auto node1p = npcroot1p ?
-						                  FindNode(npcroot1p, e->second.bsname) :
+						                  GetNodeByName(npcroot1p, e->second.bsname) :
 						                  nullptr;
 
 						m_weapNodes.emplace_back(
@@ -237,7 +237,7 @@ namespace IED
 				}
 			}
 
-			if (auto parent = FindNode(a_npcroot, e.parent))
+			if (auto parent = GetNodeByName(a_npcroot, e.parent))
 			{
 				auto& r = m_nodeMonitorEntries.raw().emplace_back(
 					std::piecewise_construct,
@@ -617,24 +617,6 @@ namespace IED
 
 	void ActorObjectHolder::QueueDisposeMOVSimComponents() noexcept
 	{
-		/*using list_type = stl::forward_list<std::shared_ptr<PHYSimComponent>>;
-
-		list_type list;
-
-		for (auto& e : m_movNodes)
-		{
-			if (auto& sc = e.second.simComponent)
-			{
-				list.emplace_front(std::move(sc));
-			}
-		}
-
-		if (!list.empty())
-		{
-			ITaskPool::AddPriorityTask<
-				ITaskPool::SimpleDisposeTask<list_type>>(std::move(list));
-		}*/
-
 		for (auto& e : m_movNodes)
 		{
 			if (auto& sc = e.second.simComponent)
@@ -654,7 +636,7 @@ namespace IED
 
 		list_type list;
 
-		visit([&](auto& a_entry) {
+		visit([&](auto& a_entry) noexcept {
 			if (a_entry.data)
 			{
 				if (auto& state = a_entry.data.state)
@@ -759,12 +741,12 @@ namespace IED
 		}
 	}
 
-	void ActorObjectHolder::SimComponentListClear()
+	void ActorObjectHolder::SimComponentListClear() noexcept
 	{
 		m_simNodeList.clear();
 	}
 
-	void ActorObjectHolder::ClearAllPhysicsData()
+	void ActorObjectHolder::ClearAllPhysicsData() noexcept
 	{
 		m_simNodeList.clear();
 
@@ -836,7 +818,7 @@ namespace IED
 				return;
 			}
 
-			auto target = FindNode(a_npcroot, v.name_parent);
+			auto target = GetNodeByName(a_npcroot, v.name_parent);
 			if (!target)
 			{
 				return;
@@ -868,7 +850,7 @@ namespace IED
 			return;
 		}
 
-		auto source = FindNode(a_npcroot, a_entry.bssrc);
+		auto source = GetNodeByName(a_npcroot, a_entry.bssrc);
 		if (!source)
 		{
 			return;

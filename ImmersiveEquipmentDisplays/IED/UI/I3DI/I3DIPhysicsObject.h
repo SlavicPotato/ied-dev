@@ -21,10 +21,10 @@ namespace IED
 			public I3DIModelObject,
 			public I3DIDraggable
 		{
-			static inline constexpr std::uint32_t NB_SPHERE_DETAIL_FACTOR = 2;
+			static constexpr std::uint32_t NB_SPHERE_DETAIL_FACTOR = 2;
 
-			static inline constexpr std::uint32_t NB_SECTORS_SPHERE = 9 * NB_SPHERE_DETAIL_FACTOR;
-			static inline constexpr std::uint32_t NB_STACKS_SPHERE  = 5 * NB_SPHERE_DETAIL_FACTOR;
+			static constexpr std::uint32_t NB_SECTORS_SPHERE = 9 * NB_SPHERE_DETAIL_FACTOR;
+			static constexpr std::uint32_t NB_STACKS_SPHERE  = 5 * NB_SPHERE_DETAIL_FACTOR;
 
 		public:
 			I3DIPhysicsObject(
@@ -46,7 +46,7 @@ namespace IED
 
 			//virtual void UpdateBound() override;
 
-			[[nodiscard]] inline constexpr auto& GetLUID() const noexcept
+			[[nodiscard]] constexpr auto& GetLUID() const noexcept
 			{
 				return m_tag;
 			}

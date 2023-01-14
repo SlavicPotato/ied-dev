@@ -67,7 +67,7 @@ namespace IED
 			m_data.clear();
 		}
 
-		inline constexpr auto& GetList() const noexcept
+		constexpr auto& GetList() const noexcept
 		{
 			return m_data;
 		}
@@ -92,7 +92,7 @@ namespace IED
 
 	public:
 		template <class... Args>
-		[[nodiscard]] inline constexpr auto& GetOrCreateObjectHolder(
+		[[nodiscard]] constexpr auto& GetOrCreateObjectHolder(
 			Actor* a_actor,
 			Args&&... a_args) noexcept
 		{
@@ -120,12 +120,12 @@ namespace IED
 			return r.first->second;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetObjects() const noexcept
+		[[nodiscard]] constexpr auto& GetObjects() const noexcept
 		{
 			return m_objects;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetObjects() noexcept
+		[[nodiscard]] constexpr auto& GetObjects() noexcept
 		{
 			return m_objects;
 		}

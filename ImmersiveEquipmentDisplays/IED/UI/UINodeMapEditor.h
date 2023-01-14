@@ -20,10 +20,10 @@ namespace IED
 			public UIWindow,
 			public UITableRowInputWidget<stl::fixed_string>
 		{
-			inline static constexpr auto WINDOW_ID = "ied_nodemap";
+			static constexpr auto WINDOW_ID = "ied_nodemap";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUINodeMapEditor;
+			static constexpr auto CHILD_ID = ChildWindowID::kUINodeMapEditor;
 
 			UINodeMapEditor(Controller& a_controller);
 

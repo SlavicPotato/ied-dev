@@ -32,17 +32,17 @@ namespace IED
 			{
 			}
 
-			inline constexpr void SetKey(std::uint32_t a_key) noexcept
+			constexpr void SetKey(std::uint32_t a_key) noexcept
 			{
 				m_key = a_key;
 			}
 
-			inline constexpr auto GetKey() const noexcept
+			constexpr auto GetKey() const noexcept
 			{
 				return m_key;
 			}
 
-			inline constexpr void SetProcessPaused(bool a_switch) noexcept
+			constexpr void SetProcessPaused(bool a_switch) noexcept
 			{
 				m_processPaused = a_switch;
 			}
@@ -52,13 +52,13 @@ namespace IED
 				m_func = std::move(a_func);
 			}
 
-			inline constexpr bool Enabled() const noexcept
+			constexpr bool Enabled() const noexcept
 			{
 				return m_key != 0;
 			}
 
 		protected:
-			inline constexpr bool CanProcess() const noexcept
+			constexpr bool CanProcess() const noexcept
 			{
 				if (m_processPaused)
 				{
@@ -73,7 +73,7 @@ namespace IED
 				return !Game::Main::GetSingleton()->freezeTime;
 			}
 
-			inline constexpr void Trigger() const
+			constexpr void Trigger() const
 			{
 				if (CanProcess())
 				{
@@ -92,13 +92,13 @@ namespace IED
 		public:
 			using KeyPressHandler::KeyPressHandler;
 
-			inline constexpr void SetComboKey(std::uint32_t a_key) noexcept
+			constexpr void SetComboKey(std::uint32_t a_key) noexcept
 			{
 				m_comboKey     = a_key;
 				m_comboKeyDown = false;
 			}
 
-			inline constexpr void SetKeys(
+			constexpr void SetKeys(
 				std::uint32_t a_comboKey,
 				std::uint32_t a_key) noexcept
 			{
@@ -106,7 +106,7 @@ namespace IED
 				SetKey(a_key);
 			}
 
-			inline constexpr auto GetComboKey() const noexcept
+			constexpr auto GetComboKey() const noexcept
 			{
 				return m_comboKey;
 			}

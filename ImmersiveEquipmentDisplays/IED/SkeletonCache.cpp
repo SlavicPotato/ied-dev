@@ -104,19 +104,19 @@ namespace IED
 			return;
 		}
 
-		if (!stream->m_rootObjects.m_data)
+		if (!stream->m_rootObjects.initialized())
 		{
 			return;
 		}
 
-		for (auto& e : stream->m_rootObjects)
+		for (const auto& e : stream->m_rootObjects)
 		{
 			if (!e)
 			{
 				continue;
 			}
 
-			if (auto object = NRTTI<NiAVObject>()(e))
+			if (auto object = NRTTI<NiAVObject>()(e.get()))
 			{
 				::Util::Node::Traverse(
 					object,

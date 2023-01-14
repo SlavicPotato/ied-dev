@@ -74,13 +74,13 @@ namespace IED
 
 		using data_type = stl::vector<Entry>;
 
-		[[nodiscard]] inline constexpr bool operator==(
+		[[nodiscard]] constexpr bool operator==(
 			const Data::configEffectShaderHolder_t& a_rhs) const noexcept
 		{
 			return tag == a_rhs;
 		}
 
-		/*[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		/*[[nodiscard]] constexpr explicit operator bool() const noexcept
 		{
 			return tag.has_value();
 		}*/
@@ -120,7 +120,7 @@ namespace IED
 			}
 		}*/
 
-		[[nodiscard]] inline constexpr auto& GetSheathNode(bool a_firstPerson) const noexcept
+		[[nodiscard]] constexpr auto& GetSheathNode(bool a_firstPerson) const noexcept
 		{
 			return a_firstPerson ? sheathNode1p : sheathNode;
 		}

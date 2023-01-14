@@ -86,7 +86,7 @@ namespace IED
 		};
 
 		template <class T, class data_type>
-		inline constexpr const data_type* UIClipboard::Get() noexcept
+		constexpr const data_type* UIClipboard::Get() noexcept
 		{
 			auto& data = m_Instance.m_data;
 
@@ -371,7 +371,7 @@ namespace IED
 		}
 
 		template <class T, class>
-		inline constexpr void UIClipboard::Set(const T& a_data)
+		constexpr void UIClipboard::Set(const T& a_data)
 		{
 			clear();
 
@@ -381,7 +381,7 @@ namespace IED
 		}
 
 		template <class T, class... Args>
-		inline constexpr void UIClipboard::Set(Args&&... a_data)
+		constexpr void UIClipboard::Set(Args&&... a_data)
 		{
 			clear();
 
@@ -391,7 +391,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline constexpr void UIClipboard::erase()
+		constexpr void UIClipboard::erase()
 		{
 			auto& data = m_Instance.m_data;
 
@@ -406,7 +406,7 @@ namespace IED
 		}
 
 		template <class T>
-		inline constexpr void UIClipboard::set_type()
+		constexpr void UIClipboard::set_type()
 		{
 			auto& data = m_Instance.m_data;
 

@@ -6,17 +6,17 @@ namespace IED
 {
 	using namespace ::Util::Node;
 
-	inline static bool find_visible_geometry(
+	static constexpr bool find_visible_geometry(
 		NiAVObject* a_object) noexcept
 	{
 		return HasVisibleGeometry(a_object);
 	}
 
-	inline static bool HasVisibleChildObject(
+	static constexpr bool HasVisibleChildObject(
 		NiNode*              a_node,
 		const BSFixedString& a_name) noexcept
 	{
-		for (auto& object : a_node->m_children)
+		for (const auto& object : a_node->m_children)
 		{
 			if (!object)
 			{
@@ -33,11 +33,11 @@ namespace IED
 		return false;
 	}
 
-	inline static bool HasVisibleChildNode(
+	static constexpr bool HasVisibleChildNode(
 		NiNode*              a_node,
 		const BSFixedString& a_name) noexcept
 	{
-		for (auto& object : a_node->m_children)
+		for (const auto& object : a_node->m_children)
 		{
 			if (!object)
 			{
@@ -55,11 +55,11 @@ namespace IED
 		return false;
 	}
 
-	inline static bool HasVisibleChildGeometry(
+	static constexpr bool HasVisibleChildGeometry(
 		NiNode*              a_node,
 		const BSFixedString& a_name) noexcept
 	{
-		for (auto& object : a_node->m_children)
+		for (const auto& object : a_node->m_children)
 		{
 			if (!object)
 			{
@@ -76,11 +76,11 @@ namespace IED
 		return false;
 	}
 
-	inline static bool HasVisibleChildNodeWithGeometryChild(
+	static constexpr bool HasVisibleChildNodeWithGeometryChild(
 		NiNode*              a_node,
 		const BSFixedString& a_name) noexcept
 	{
-		for (auto& object : a_node->m_children)
+		for (const auto& object : a_node->m_children)
 		{
 			if (!object)
 			{
@@ -90,9 +90,9 @@ namespace IED
 			if (object->m_name == a_name &&
 			    object->IsVisible())
 			{
-				if (auto node = object->AsNode())
+				if (const auto node = object->AsNode())
 				{
-					for (auto& e : node->m_children)
+					for (const auto& e : node->m_children)
 					{
 						if (!e)
 						{
@@ -112,13 +112,12 @@ namespace IED
 	}
 
 	template <class Tp>
-	inline static constexpr bool TraverseChildren(
-		NiNode* a_node,
-		Tp      a_func)                                              //
-		noexcept(std::is_nothrow_invocable_v<Tp, NiAVObject*>)  //
-		requires(std::invocable<Tp, NiAVObject*>)
+	static constexpr bool TraverseChildren(
+		NiNode*   a_node,
+		const Tp& a_func)  //
+		noexcept(std::is_nothrow_invocable_r_v<VisitorControl, Tp, NiAVObject*>)
 	{
-		for (auto& object : a_node->m_children)
+		for (const auto& object : a_node->m_children)
 		{
 			if (Traverse(object, a_func) == VisitorControl::kStop)
 			{
@@ -161,7 +160,7 @@ namespace IED
 
 			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
-				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) {
+				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
 					{
 						return VisitorControl::kSkip;
@@ -184,7 +183,7 @@ namespace IED
 
 			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
-				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) {
+				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
 					{
 						return VisitorControl::kSkip;
@@ -207,7 +206,7 @@ namespace IED
 
 			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
-				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) {
+				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
 					{
 						return VisitorControl::kSkip;
@@ -220,7 +219,7 @@ namespace IED
 
 					if (auto node = a_object->AsNode())
 					{
-						for (auto& e : node->m_children)
+						for (const auto& e : node->m_children)
 						{
 							if (!e)
 							{
@@ -253,7 +252,10 @@ namespace IED
 
 		const bool result = n != m_present;
 
-		m_present = n;
+		if (result)
+		{
+			m_present = n;
+		}
 
 		return result;
 	}

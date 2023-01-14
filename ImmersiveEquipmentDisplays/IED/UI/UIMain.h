@@ -32,7 +32,7 @@ namespace IED
 			UIAboutModal,
 			::Events::EventSink<UIContextStateChangeEvent>
 		{
-			inline static constexpr auto WINDOW_ID = "ied_main";
+			static constexpr auto WINDOW_ID = "ied_main";
 
 		public:
 			UIMain(
@@ -58,25 +58,25 @@ namespace IED
 				return static_cast<std::uint32_t>(-1);
 			}
 
-			[[nodiscard]] inline constexpr auto& GetPopupQueue() noexcept
+			[[nodiscard]] constexpr auto& GetPopupQueue() noexcept
 			{
 				return m_popupQueue;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetFormLookupCache() noexcept
+			[[nodiscard]] constexpr auto& GetFormLookupCache() noexcept
 			{
 				return m_formLookupCache;
 			}
 
 			Data::SettingHolder::UserInterface& GetUISettings() noexcept;
 
-			[[nodiscard]] inline constexpr auto& GetOwnerTask() const noexcept
+			[[nodiscard]] constexpr auto& GetOwnerTask() const noexcept
 			{
 				return m_owner;
 			}
 
 			template <class T>
-			[[nodiscard]] inline constexpr auto GetChildContext() const noexcept
+			[[nodiscard]] constexpr auto GetChildContext() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
@@ -91,7 +91,7 @@ namespace IED
 			}
 
 			template <class T>
-			[[nodiscard]] inline constexpr T* GetChild() const noexcept
+			[[nodiscard]] constexpr T* GetChild() const noexcept
 			{
 				static_assert(T::CHILD_ID < ChildWindowID::kMax);
 
@@ -100,7 +100,7 @@ namespace IED
 				return static_cast<T*>(ptr);
 			}
 
-			[[nodiscard]] inline constexpr auto& GetFormBrowser() noexcept
+			[[nodiscard]] constexpr auto& GetFormBrowser() noexcept
 			{
 				auto result = GetChild<UIFormBrowser>();
 				assert(result);

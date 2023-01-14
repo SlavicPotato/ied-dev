@@ -18,9 +18,9 @@ namespace IED
 
 			using container_type = stl::unordered_map<Game::FormID, entry_t>;
 
-			inline static constexpr std::size_t CLEANUP_THRESHOLD    = 1250;
-			inline static constexpr std::size_t CLEANUP_TARGET       = 1000;
-			inline static constexpr long long   CLEANUP_RUN_INTERVAL = 30000000;
+			static constexpr std::size_t CLEANUP_THRESHOLD    = 1250;
+			static constexpr std::size_t CLEANUP_TARGET       = 1000;
+			static constexpr long long   CLEANUP_RUN_INTERVAL = 30000000;
 
 		public:
 			UIFormInfoCache(

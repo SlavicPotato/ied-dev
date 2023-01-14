@@ -53,22 +53,22 @@ namespace IED
 
 		[[nodiscard]] bool SaveProfile(const stl::fixed_string& a_name);
 
-		[[nodiscard]] inline constexpr auto& Data() noexcept
+		[[nodiscard]] constexpr auto& Data() noexcept
 		{
 			return m_storage;
 		}
 
-		[[nodiscard]] inline constexpr const auto& Data() const noexcept
+		[[nodiscard]] constexpr const auto& Data() const noexcept
 		{
 			return m_storage;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
+		[[nodiscard]] constexpr const auto& GetLastException() const noexcept
 		{
 			return m_lastExcept;
 		}
 
-		[[nodiscard]] inline constexpr bool IsInitialized() const noexcept
+		[[nodiscard]] constexpr bool IsInitialized() const noexcept
 		{
 			return m_isInitialized;
 		}

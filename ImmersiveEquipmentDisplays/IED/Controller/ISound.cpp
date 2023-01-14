@@ -6,14 +6,9 @@ namespace IED
 {
 	void ISound::SoundPlay(
 		std::uint8_t a_formType,
-		NiAVObject*  a_object,
+		TESObjectREFR* a_actor,
 		bool         a_equip) const noexcept
 	{
-		if (!a_object)
-		{
-			return;
-		}
-
 		auto audioManager = BSAudioManager::GetSingleton();
 		if (!audioManager)
 		{
@@ -32,7 +27,11 @@ namespace IED
 				handle,
 				soundForm))
 		{
-			handle.SetObjectToFollow(a_object);
+			handle.SetPosition(a_actor->pos.x, a_actor->pos.y, a_actor->pos.z);
+			if (const auto followObject = a_actor->Get3D1(false))
+			{
+				handle.SetObjectToFollow(followObject);
+			}
 			handle.Play();
 		}
 	}

@@ -14,7 +14,7 @@ namespace IED
 			ILocalization() = default;
 			ILocalization(const LocalizationDataManager::shared_string_table& a_table);
 
-			[[nodiscard]] inline constexpr const auto& GetCurrentLanguageTable() const noexcept
+			[[nodiscard]] constexpr const auto& GetCurrentLanguageTable() const noexcept
 			{
 				return m_currentTable;
 			}
@@ -28,12 +28,12 @@ namespace IED
 				class = std::enable_if_t<
 					std::is_enum_v<Te> &&
 					std::is_same_v<std::underlying_type_t<Te>, StringID>>>
-			[[nodiscard]] inline constexpr auto& L(Te a_id) const
+			[[nodiscard]] constexpr auto& L(Te a_id) const
 			{
 				return L(stl::underlying(a_id));
 			}
 
-			[[nodiscard]] inline constexpr auto LS(StringID a_id) const
+			[[nodiscard]] constexpr auto LS(StringID a_id) const
 			{
 				return L(a_id).c_str();
 			}
@@ -43,7 +43,7 @@ namespace IED
 				class = std::enable_if_t<
 					std::is_enum_v<Te> &&
 					std::is_same_v<std::underlying_type_t<Te>, StringID>>>
-			inline constexpr auto LS(Te a_id) const
+			constexpr auto LS(Te a_id) const
 			{
 				return L(stl::underlying(a_id)).c_str();
 			}

@@ -23,10 +23,10 @@ namespace IED
 			public UIWindow,
 			UIExportFilterWidget
 		{
-			inline static constexpr auto WINDOW_ID  = "ied_displmgmt";
+			static constexpr auto WINDOW_ID  = "ied_displmgmt";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIDisplayManagement;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIDisplayManagement;
 
 			UIDisplayManagement(Controller& a_controller);
 
@@ -50,17 +50,17 @@ namespace IED
 			void OpenEditorPanel(UIDisplayManagementEditorPanel a_panel);
 			void SetTitle(Localization::StringID a_strid);
 
-			inline static constexpr std::size_t NUM_PANELS = 2;
+			static constexpr std::size_t NUM_PANELS = 2;
 
 			template <class T>
-			[[nodiscard]] inline constexpr auto& GetEditorPanelBase() const noexcept
+			[[nodiscard]] constexpr auto& GetEditorPanelBase() const noexcept
 			{
 				static_assert(stl::underlying(T::PANEL_ID) < NUM_PANELS);
 
 				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
 			}
 
-			[[nodiscard]] inline constexpr auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
+			[[nodiscard]] constexpr auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
 			{
 				assert(stl::underlying(a_id) < NUM_PANELS);
 

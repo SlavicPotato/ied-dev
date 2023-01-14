@@ -1090,19 +1090,19 @@ namespace IED
 	}
 
 	auto EngineExtensions::AttachObject(
-		Actor*    a_actor,
-		TESForm*  a_modelForm,
-		NiNode*   a_root,
-		NiNode*   a_targetNode,
-		NiNode*   a_object,
-		ModelType a_modelType,
-		bool      a_leftWeapon,
-		bool      a_dropOnDeath,
-		bool      a_removeScabbards,
-		bool      a_keepTorchFlame,
-		bool      a_disableHavok,
-		bool      a_removeTracers,
-		bool      a_removeEditorMarker) noexcept
+		Actor*      a_actor,
+		TESForm*    a_modelForm,
+		BSFadeNode* a_root,
+		NiNode*     a_targetNode,
+		NiNode*     a_object,
+		ModelType   a_modelType,
+		bool        a_leftWeapon,
+		bool        a_dropOnDeath,
+		bool        a_removeScabbards,
+		bool        a_keepTorchFlame,
+		bool        a_disableHavok,
+		bool        a_removeTracers,
+		bool        a_removeEditorMarker) noexcept
 		-> stl::flag<AttachResultFlags>
 	{
 		stl::flag<AttachResultFlags> result{
@@ -1123,6 +1123,10 @@ namespace IED
 				a_removeEditorMarker = false;
 			}
 		}
+		else
+		{
+			a_removeEditorMarker = false;
+		}
 
 		AttachAddonParticles(a_object);
 
@@ -1131,7 +1135,7 @@ namespace IED
 			fadeNode->unk153 = (fadeNode->unk153 & 0xF0) | 0x7;
 		}
 
-		SetRootOnShaderProperties(a_object, a_root);
+		SetShaderPropsFadeNode(a_object, a_root);
 
 		a_targetNode->AttachChild(a_object, true);
 
@@ -1281,7 +1285,7 @@ namespace IED
 		QueueAttachHavok(
 			BSTaskPool::GetSingleton(),
 			a_object,
-			a_dropOnDeath ? 4 : 0,
+			(a_disableHavok || a_dropOnDeath) ? 4 : 0,
 			true);
 
 		if (const auto cell = a_actor->GetParentCell())
@@ -1299,7 +1303,7 @@ namespace IED
 			}
 		}
 
-		SetRootOnShaderProperties(a_targetNode, a_root);
+		SetShaderPropsFadeNode(a_targetNode, a_root);
 
 		a_actor->UpdateAlpha();
 
@@ -1391,7 +1395,7 @@ namespace IED
 		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
 	}
 
-	static inline constexpr bool should_update(TESObjectREFR* a_refr) noexcept
+	static constexpr bool should_update(TESObjectREFR* a_refr) noexcept
 	{
 		if (a_refr->GetMustUpdate())
 		{

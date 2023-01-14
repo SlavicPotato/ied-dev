@@ -27,17 +27,17 @@ namespace IED
 			using list_type = stl::map<Th, stl::fixed_string>;
 
 		public:
-			inline constexpr void QueueListUpdateCurrent()
+			constexpr void QueueListUpdateCurrent()
 			{
 				m_listNextUpdateCurrent = true;
 			}
 
-			inline constexpr void QueueListUpdate()
+			constexpr void QueueListUpdate()
 			{
 				m_listNextUpdate = true;
 			}
 
-			inline constexpr void QueueListUpdate(Th const a_desiredHandle)
+			constexpr void QueueListUpdate(Th const a_desiredHandle)
 			{
 				m_listNextUpdate = true;
 				m_desiredHandle  = a_desiredHandle;
@@ -69,7 +69,7 @@ namespace IED
 
 			virtual void ListDrawInfoText(const listValue_t& a_entry) = 0;
 
-			inline constexpr const std::optional<listValue_t>& ListGetSelected() const noexcept;
+			constexpr const std::optional<listValue_t>& ListGetSelected() const noexcept;
 
 			virtual bool ListSetCurrentItem(Th a_handle);
 
@@ -259,7 +259,7 @@ namespace IED
 		}
 
 		template <class Td, detail::valid_list_handle Th>
-		inline constexpr auto UIListBase<Td, Th>::ListGetSelected() const noexcept
+		constexpr auto UIListBase<Td, Th>::ListGetSelected() const noexcept
 			-> const std::optional<listValue_t>&
 		{
 			return m_listCurrent;

@@ -59,7 +59,7 @@ namespace IED
 				T&                            a_params,
 				Data::configFormFilterBase_t& a_data);
 
-			inline constexpr void SetOnChangeFunc(callback_func_t a_func)
+			constexpr void SetOnChangeFunc(callback_func_t a_func)
 			{
 				m_onChangeFunc = std::move(a_func);
 			}

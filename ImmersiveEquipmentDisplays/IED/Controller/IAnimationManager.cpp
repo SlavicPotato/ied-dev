@@ -183,12 +183,12 @@ namespace IED
 		return result;
 	}
 
-	inline static constexpr bool is_shield(TESForm* a_form) noexcept
+	constexpr bool is_shield(TESForm* a_form) noexcept
 	{
 		return a_form && a_form->IsArmor() && static_cast<TESObjectARMO*>(a_form)->IsShield();
 	}
 
-	inline static constexpr bool shield_on_back_enabled(
+	constexpr bool shield_on_back_enabled(
 		Actor*                                     a_actor,
 		PluginInterfaceHolder<PluginInterfaceSDS>* a_holder) noexcept
 	{

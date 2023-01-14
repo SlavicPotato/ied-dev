@@ -68,7 +68,7 @@ namespace IED
 				return *this;
 			}
 
-			inline constexpr auto& set_text_wrap_size(float a_size) noexcept(
+			constexpr auto& set_text_wrap_size(float a_size) noexcept(
 				std::is_nothrow_assignable_v<decltype(m_textWrapSize), float>)
 			{
 				m_textWrapSize = a_size;
@@ -76,13 +76,13 @@ namespace IED
 			}
 
 			template <class... Args>
-			inline constexpr auto& fmt_input(const char* a_fmt, Args... a_args)
+			constexpr auto& fmt_input(const char* a_fmt, Args... a_args)
 			{
 				stl::snprintf(m_input, a_fmt, a_args...);
 				return *this;
 			}
 
-			inline constexpr auto& GetInput() const noexcept
+			constexpr auto& GetInput() const noexcept
 			{
 				return m_input;
 			}

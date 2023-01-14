@@ -43,42 +43,42 @@ namespace IED
 			m_desc.clear();
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetDescription() const noexcept
+		[[nodiscard]] constexpr const auto& GetDescription() const noexcept
 		{
 			return m_desc;
 		}
 
-		[[nodiscard]] inline constexpr const auto& Name() const noexcept
+		[[nodiscard]] constexpr const auto& Name() const noexcept
 		{
 			return m_name;
 		}
 
-		[[nodiscard]] inline constexpr const auto& Path() const noexcept
+		[[nodiscard]] constexpr const auto& Path() const noexcept
 		{
 			return m_path;
 		}
 
-		[[nodiscard]] inline constexpr const auto& PathStr() const noexcept
+		[[nodiscard]] constexpr const auto& PathStr() const noexcept
 		{
 			return m_pathStr;
 		}
 
-		[[nodiscard]] inline constexpr T& Data() noexcept
+		[[nodiscard]] constexpr T& Data() noexcept
 		{
 			return m_data;
 		}
 
-		[[nodiscard]] inline constexpr const T& Data() const noexcept
+		[[nodiscard]] constexpr const T& Data() const noexcept
 		{
 			return m_data;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
+		[[nodiscard]] constexpr const auto& GetLastException() const noexcept
 		{
 			return m_lastExcept;
 		}
 
-		[[nodiscard]] inline constexpr std::uint64_t GetID() const noexcept
+		[[nodiscard]] constexpr std::uint64_t GetID() const noexcept
 		{
 			return m_id;
 		}
@@ -115,7 +115,7 @@ namespace IED
 		virtual bool Save(const T& a_data, bool a_store) override;
 		virtual bool Save(T&& a_data, bool a_store) override;
 
-		inline constexpr bool HasParserErrors() const noexcept
+		constexpr bool HasParserErrors() const noexcept
 		{
 			return m_hasParserErrors;
 		}

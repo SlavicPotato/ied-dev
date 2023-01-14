@@ -47,7 +47,7 @@ namespace IED
 			a_tmp.uc.clear();
 		}
 
-		inline constexpr void mark_slot_presence_change(Data::ObjectSlot a_slot) noexcept
+		constexpr void mark_slot_presence_change(Data::ObjectSlot a_slot) noexcept
 		{
 			slotPresenceChanges.set(
 				static_cast<Data::ObjectSlotBits>(
@@ -67,7 +67,7 @@ namespace IED
 		CommonParams
 	{
 		template <class... Args>
-		inline constexpr processParams_t(
+		constexpr processParams_t(
 			const Data::ConfigSex                  a_configSex,
 			const stl::flag<ControllerUpdateFlags> a_flags,
 			Actor* const                           a_actor,

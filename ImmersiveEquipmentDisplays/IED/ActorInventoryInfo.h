@@ -45,12 +45,12 @@ namespace IED
 
 		struct ExtraData
 		{
-			[[nodiscard]] inline constexpr auto& GetName(const Base& a_base) const
+			[[nodiscard]] constexpr auto& GetName(const Base& a_base) const noexcept
 			{
 				return name ? *name : a_base.name;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetEnchantment(const Base& a_base) const
+			[[nodiscard]] constexpr auto& GetEnchantment(const Base& a_base) const noexcept
 			{
 				return enchantment ? enchantment : a_base.enchantment;
 			}
@@ -66,7 +66,7 @@ namespace IED
 
 		struct Base
 		{
-			[[nodiscard]] inline constexpr auto IsEquipped() const noexcept
+			[[nodiscard]] constexpr auto IsEquipped() const noexcept
 			{
 				return flags.test_any(InventoryInfoBaseFlags::kEquippedMask);
 			}

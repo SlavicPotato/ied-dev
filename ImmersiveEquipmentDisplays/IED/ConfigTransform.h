@@ -25,7 +25,7 @@ namespace IED
 				DataVersion2 = 2
 			};
 
-			inline static constexpr auto TRANSFORM_DEFAULT_FLAGS = ConfigTransformFlags::kExtrinsicRotation;
+			static constexpr auto TRANSFORM_DEFAULT_FLAGS = ConfigTransformFlags::kExtrinsicRotation;
 
 			configTransform_t()
 			{
@@ -153,7 +153,7 @@ namespace IED
 				update_tag();
 			}
 
-			[[nodiscard]] inline constexpr bool empty() const noexcept
+			[[nodiscard]] constexpr bool empty() const noexcept
 			{
 				return !scale && !position && !rotation;
 			}

@@ -21,69 +21,69 @@ namespace IED
 		public:
 			virtual ~UIRenderTaskBase() noexcept = default;
 
-			inline constexpr void SetControlLock(bool a_switch) noexcept
+			constexpr void SetControlLock(bool a_switch) noexcept
 			{
 				m_options.lockControls = a_switch;
 			}
 
-			inline constexpr void SetFreezeTime(bool a_switch) noexcept
+			constexpr void SetFreezeTime(bool a_switch) noexcept
 			{
 				m_options.freeze = a_switch;
 			}
 
-			inline constexpr void SetWantCursor(bool a_switch) noexcept
+			constexpr void SetWantCursor(bool a_switch) noexcept
 			{
 				m_options.wantCursor = a_switch;
 			}
 
-			inline constexpr void EnableRestrictions(bool a_switch) noexcept
+			constexpr void EnableRestrictions(bool a_switch) noexcept
 			{
 				m_options.enableChecks = a_switch;
 			}
 
-			inline constexpr bool GetFreeze() const noexcept
+			constexpr bool GetFreeze() const noexcept
 			{
 				return m_options.freeze;
 			}
 
-			inline constexpr bool GetWantCursor() const noexcept
+			constexpr bool GetWantCursor() const noexcept
 			{
 				return m_options.wantCursor;
 			}
 
-			inline constexpr void SetEnabledInMenu(bool a_switch) noexcept
+			constexpr void SetEnabledInMenu(bool a_switch) noexcept
 			{
 				m_options.enableInMenu = a_switch;
 			}
 
-			inline constexpr bool GetEnabledInMenu() const noexcept
+			constexpr bool GetEnabledInMenu() const noexcept
 			{
 				return m_options.enableInMenu;
 			}
 
-			inline constexpr void SetBlockCursor(bool a_switch) noexcept
+			constexpr void SetBlockCursor(bool a_switch) noexcept
 			{
 				m_options.blockCursor = a_switch;
 			}
 
-			inline constexpr bool GetBlockCursor() const noexcept
+			constexpr bool GetBlockCursor() const noexcept
 			{
 				return m_options.blockCursor;
 			}
 
-			inline constexpr void SetBlockImGuiInput(bool a_switch) noexcept
+			constexpr void SetBlockImGuiInput(bool a_switch) noexcept
 			{
 				m_options.blockImGuiInput = a_switch;
 			}
 
-			inline constexpr bool GetBlockInput() const noexcept
+			constexpr bool GetBlockInput() const noexcept
 			{
 				return m_options.blockImGuiInput;
 			}
 
 			long long GetRunTime() const noexcept;
 
-			inline constexpr bool IsRunning() const noexcept
+			constexpr bool IsRunning() const noexcept
 			{
 				return m_state.running;
 			}
@@ -91,13 +91,13 @@ namespace IED
 			virtual bool RunEnableChecks() const;
 
 			template <class T>
-			[[nodiscard]] inline constexpr const T* As() const
+			[[nodiscard]] constexpr const T* As() const
 			{
 				return dynamic_cast<const T*>(this);
 			}
 			
 			template <class T>
-			[[nodiscard]] inline constexpr T* As()
+			[[nodiscard]] constexpr T* As()
 			{
 				return dynamic_cast<T*>(this);
 			}

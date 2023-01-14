@@ -54,10 +54,10 @@ namespace IED
 			UIFormInfoTooltipWidget,
 			UICollapsibles
 		{
-			inline static constexpr auto WINDOW_ID = "ied_ainfo";
+			static constexpr auto WINDOW_ID = "ied_ainfo";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIActorInfo;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIActorInfo;
 
 			UIActorInfo(Controller& a_controller);
 

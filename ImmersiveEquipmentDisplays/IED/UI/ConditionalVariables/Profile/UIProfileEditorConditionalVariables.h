@@ -19,7 +19,7 @@ namespace IED
 			public UIConditionalVariablesEditorWidget
 		{
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorConditionalVariables;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorConditionalVariables;
 
 			UIProfileEditorConditionalVariables(Controller& a_controller);
 

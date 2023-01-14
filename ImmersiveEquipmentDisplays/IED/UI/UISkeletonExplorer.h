@@ -35,10 +35,10 @@ namespace IED
 			UICollapsibles,
 			UIMiscTextInterface
 		{
-			inline static constexpr auto WINDOW_ID = "ied_skexp";
+			static constexpr auto WINDOW_ID = "ied_skexp";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUISkeletonExplorer;
+			static constexpr auto CHILD_ID = ChildWindowID::kUISkeletonExplorer;
 
 			UISkeletonExplorer(Controller& a_controller);
 

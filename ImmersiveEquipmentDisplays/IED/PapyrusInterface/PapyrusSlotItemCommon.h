@@ -9,7 +9,7 @@ namespace IED
 		namespace Slot
 		{
 
-			[[nodiscard]] inline constexpr Data::ObjectSlot GetSlot(std::int32_t a_slot) noexcept
+			[[nodiscard]] constexpr Data::ObjectSlot GetSlot(std::int32_t a_slot) noexcept
 			{
 				if (a_slot < 0 || a_slot > stl::underlying(Data::ObjectSlot::kMax))
 				{

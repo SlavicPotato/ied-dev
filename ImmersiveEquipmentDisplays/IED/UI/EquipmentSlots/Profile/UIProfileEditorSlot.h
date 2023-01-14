@@ -18,7 +18,7 @@ namespace IED
 			public UISlotEditorBase<UIGlobalEditorDummyHandle>
 		{
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorSlot;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorSlot;
 
 			UIProfileEditorSlot(Controller& a_controller);
 			~UIProfileEditorSlot() noexcept override;

@@ -69,7 +69,7 @@ namespace IED
 
 			configEffectShaderTexture_t() = default;
 
-			inline constexpr configEffectShaderTexture_t(
+			constexpr configEffectShaderTexture_t(
 				EffectShaderTextureFlags a_flags) noexcept :
 				flags{ a_flags }
 			{
@@ -103,7 +103,7 @@ namespace IED
 				DataVersion2 = 2
 			};
 
-			inline static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kNone;
+			static constexpr auto DEFAULT_FLAGS = EffectShaderDataFlags::kNone;
 
 			stl::flag<EffectShaderDataFlags> flags{ DEFAULT_FLAGS };
 			TextureAddressMode               textureClampMode{ TextureAddressMode::kWrapSWrapT };
@@ -195,7 +195,7 @@ namespace IED
 			friend class boost::serialization::access;
 
 		public:
-			inline static constexpr auto DEFAULT_FLAGS = EffectShaderHolderFlags::kEnabled;
+			static constexpr auto DEFAULT_FLAGS = EffectShaderHolderFlags::kEnabled;
 
 			enum Serialization : unsigned int
 			{
@@ -210,7 +210,7 @@ namespace IED
 			{
 			}
 
-			[[nodiscard]] inline constexpr bool enabled() const noexcept
+			[[nodiscard]] constexpr bool enabled() const noexcept
 			{
 				return flags.test(EffectShaderHolderFlags::kEnabled);
 			}
@@ -241,7 +241,7 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			[[nodiscard]] inline constexpr bool empty() const noexcept
+			[[nodiscard]] constexpr bool empty() const noexcept
 			{
 				return data.empty();
 			}

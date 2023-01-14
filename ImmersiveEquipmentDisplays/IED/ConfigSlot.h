@@ -28,7 +28,7 @@ namespace IED
 				DataVersion2 = 2
 			};
 
-			static inline constexpr auto DEFAULT_SLOT_FLAGS = SlotFlags::kNone;
+			static constexpr auto DEFAULT_SLOT_FLAGS = SlotFlags::kNone;
 
 			stl::flag<SlotFlags>             slotFlags{ DEFAULT_SLOT_FLAGS };
 			configFormList_t                 preferredItems;
@@ -121,13 +121,13 @@ namespace IED
 				return true;
 			}
 
-			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
+			[[nodiscard]] constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
 				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 
-			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
+			[[nodiscard]] constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
 				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
@@ -223,13 +223,13 @@ namespace IED
 				return true;
 			}
 
-			[[nodiscard]] inline constexpr const auto& get(ObjectSlot a_slot) const noexcept
+			[[nodiscard]] constexpr const auto& get(ObjectSlot a_slot) const noexcept
 			{
 				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
 			}
 
-			[[nodiscard]] inline constexpr auto& get(ObjectSlot a_slot) noexcept
+			[[nodiscard]] constexpr auto& get(ObjectSlot a_slot) noexcept
 			{
 				assert(a_slot < ObjectSlot::kMax);
 				return data[stl::underlying(a_slot)];
@@ -325,7 +325,7 @@ namespace IED
 		};
 
 		template <class Td>
-		inline constexpr void assign_uptr(
+		constexpr void assign_uptr(
 			const std::unique_ptr<Td>& a_src,
 			std::unique_ptr<Td>&       a_dst)
 		{
@@ -347,7 +347,7 @@ namespace IED
 		}
 
 		template <class Td>
-		inline constexpr void assign_uptr(
+		constexpr void assign_uptr(
 			const std::unique_ptr<configSlotHolderCopy_t::data_value_pair<Td>>& a_src,
 			std::unique_ptr<Td>&                                                a_dst)
 		{
@@ -369,7 +369,7 @@ namespace IED
 		}
 
 		template <class Td>
-		inline constexpr void assign_uptr(
+		constexpr void assign_uptr(
 			std::unique_ptr<configSlotHolderCopy_t::data_value_pair<Td>>&& a_src,
 			std::unique_ptr<Td>&                                           a_dst)
 		{

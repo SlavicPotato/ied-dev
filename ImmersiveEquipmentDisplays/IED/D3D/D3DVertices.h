@@ -12,7 +12,7 @@ namespace IED
 		VertexPositionColorAV(VertexPositionColorAV&&) = default;
 		VertexPositionColorAV& operator=(VertexPositionColorAV&&) = default;
 
-		inline constexpr VertexPositionColorAV(
+		constexpr VertexPositionColorAV(
 			DirectX::XMVECTOR const& a_position,
 			DirectX::XMVECTOR const& a_color) noexcept :
 			position(a_position),
@@ -23,7 +23,7 @@ namespace IED
 		DirectX::XMVECTOR position;
 		DirectX::XMVECTOR color;
 
-		inline static constexpr unsigned int  InputElementCount = 2;
+		static constexpr unsigned int  InputElementCount = 2;
 		static const D3D11_INPUT_ELEMENT_DESC InputElements[InputElementCount];
 	};
 }

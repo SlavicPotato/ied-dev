@@ -17,7 +17,7 @@ namespace IED
 
 		namespace detail
 		{
-			inline constexpr auto make_type_index_array() noexcept
+			constexpr auto make_type_index_array() noexcept
 			{
 				return stl::make_array<
 					ObjectType,
@@ -46,7 +46,7 @@ namespace IED
 			{
 			}
 
-			inline constexpr ObjectType translate_type_safe(
+			constexpr ObjectType translate_type_safe(
 				std::underlying_type_t<ObjectType> a_in) const noexcept
 			{
 				assert(a_in < stl::underlying(ObjectType::kMax));
@@ -59,13 +59,13 @@ namespace IED
 				return result;
 			}
 			
-			inline constexpr ObjectType translate_type_safe(
+			constexpr ObjectType translate_type_safe(
 				ObjectType a_in) const noexcept
 			{
 				return translate_type_safe(a_in);
 			}
 
-			inline constexpr void clear()  //
+			constexpr void clear()  //
 				noexcept(std::is_nothrow_move_assignable_v<configSlotPriority_t>&&
 			                 std::is_nothrow_default_constructible_v<configSlotPriority_t>)
 			{
@@ -102,7 +102,7 @@ namespace IED
 				return true;
 			}
 
-			inline static constexpr auto DEFAULT_FLAGS = SlotPriorityFlags::kAccountForEquipped;
+			static constexpr auto DEFAULT_FLAGS = SlotPriorityFlags::kAccountForEquipped;
 
 			stl::flag<SlotPriorityFlags> flags{ DEFAULT_FLAGS };
 			std::uint32_t                limit{ stl::underlying(ObjectType::kMax) };

@@ -31,17 +31,17 @@ namespace IED
 			void SetOpenState(bool a_state, bool a_notify = false);
 			void ToggleOpenState(bool a_notify = false);
 
-			[[nodiscard]] inline constexpr auto GetOpenState() noexcept
+			[[nodiscard]] constexpr auto GetOpenState() noexcept
 			{
 				return std::addressof(m_openState);
 			}
 
-			[[nodiscard]] inline constexpr auto GetOpenState() const noexcept
+			[[nodiscard]] constexpr auto GetOpenState() const noexcept
 			{
 				return std::addressof(m_openState);
 			}
 
-			[[nodiscard]] inline constexpr auto IsContextOpen() const noexcept
+			[[nodiscard]] constexpr auto IsContextOpen() const noexcept
 			{
 				return m_openState;
 			}

@@ -31,10 +31,10 @@ namespace IED
 				bool                 state{ false };
 			};
 
-			inline static constexpr auto POPUP_ID = "form_browser";
+			static constexpr auto POPUP_ID = "form_browser";
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUIFormBrowser;
+			static constexpr auto CHILD_ID = ChildWindowID::kUIFormBrowser;
 
 			using selected_form_list = stl::vectormap<Game::FormID, IFormDatabase::entry_t>;
 
@@ -69,12 +69,12 @@ namespace IED
 				return static_cast<std::uint32_t>(CHILD_ID);
 			}
 
-			inline constexpr auto& GetSelectedEntry() const noexcept
+			constexpr auto& GetSelectedEntry() const noexcept
 			{
 				return m_selectedEntry;
 			}
 
-			inline constexpr auto& GetSelectedEntries() const noexcept
+			constexpr auto& GetSelectedEntries() const noexcept
 			{
 				return m_selectedEntries;
 			}

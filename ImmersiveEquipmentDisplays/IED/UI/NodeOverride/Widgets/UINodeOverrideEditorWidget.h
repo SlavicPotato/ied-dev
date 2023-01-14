@@ -2627,7 +2627,7 @@ namespace IED
 		}
 
 		template <class Ts, class Td>
-		static inline constexpr void paste_move_entries(
+		static constexpr void paste_move_entries(
 			Ts&&              a_src,
 			Td&               a_dst,
 			Data::ConfigSex   a_srcSex,

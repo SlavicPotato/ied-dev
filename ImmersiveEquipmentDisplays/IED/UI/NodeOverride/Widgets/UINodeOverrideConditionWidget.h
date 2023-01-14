@@ -77,7 +77,7 @@ namespace IED
 
 			void UpdateMatchParamAllowedTypes(Data::NodeOverrideConditionType a_type);
 
-			inline constexpr auto reset_oo()
+			constexpr auto reset_oo()
 			{
 				m_ooNewEntryID        = {};
 				m_ooNewEntryIDKW      = {};

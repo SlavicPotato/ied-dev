@@ -27,18 +27,18 @@ namespace IED
 			D3DCommon& a_scene);
 
 		template <class... Args>
-		inline constexpr void AddLine(Args&&... a_args)
+		constexpr void AddLine(Args&&... a_args)
 		{
 			m_lines.emplace_back(std::forward<Args>(a_args)...);
 		}
 
 		template <class... Args>
-		inline constexpr void AddTriangle(Args&&... a_args)
+		constexpr void AddTriangle(Args&&... a_args)
 		{
 			m_tris.emplace_back(std::forward<Args>(a_args)...);
 		}
 
-		inline constexpr void EnableDepth(bool a_switch) noexcept
+		constexpr void EnableDepth(bool a_switch) noexcept
 		{
 			m_flags.set(D3DPrimitiveBatchFlags::kDepth, a_switch);
 		}
@@ -48,7 +48,7 @@ namespace IED
 
 		struct vertex_pair_type
 		{
-			inline constexpr vertex_pair_type(
+			constexpr vertex_pair_type(
 				const DirectX::XMVECTOR& a_p1,
 				const DirectX::XMVECTOR& a_c1,
 				const DirectX::XMVECTOR& a_p2,
@@ -58,7 +58,7 @@ namespace IED
 			{
 			}
 
-			inline constexpr vertex_pair_type(
+			constexpr vertex_pair_type(
 				const DirectX::XMVECTOR& a_p1,
 				const DirectX::XMVECTOR& a_p2,
 				const DirectX::XMVECTOR& a_c) noexcept :
@@ -73,7 +73,7 @@ namespace IED
 
 		struct triangle_type
 		{
-			inline constexpr triangle_type(
+			constexpr triangle_type(
 				const DirectX::XMVECTOR& a_p1,
 				const DirectX::XMVECTOR& a_p2,
 				const DirectX::XMVECTOR& a_p3,

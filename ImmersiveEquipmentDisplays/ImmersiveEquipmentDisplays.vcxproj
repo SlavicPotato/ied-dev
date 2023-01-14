@@ -844,6 +844,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIImportWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UILastEquippedWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UILifeStateSelectorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UILifeStateSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIPackageTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIPhysicsValueEditorWidget.h" />
@@ -1292,6 +1294,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UILastEquippedWidget.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UILifeStateSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UINodeMonitorSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPackageTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIPhysicsValueEditorWidget.cpp" />

@@ -129,7 +129,7 @@ namespace IED
 		}
 	}
 
-	inline static constexpr bool is_non_shield_armor(TESForm* a_form) noexcept
+	static constexpr bool is_non_shield_armor(TESForm* a_form) noexcept
 	{
 		if (auto armor = a_form->As<TESObjectARMO>())
 		{

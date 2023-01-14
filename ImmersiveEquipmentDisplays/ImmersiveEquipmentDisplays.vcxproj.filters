@@ -1739,6 +1739,12 @@
     <ClInclude Include="IED\Controller\ObjectSound.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UILifeStateSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UILifeStateSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2766,6 +2772,9 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\ObjectLight.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UILifeStateSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

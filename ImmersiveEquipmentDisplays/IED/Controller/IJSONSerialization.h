@@ -27,7 +27,7 @@ namespace IED
 		bool LoadConfigStore(const fs::path& a_path, Data::configStore_t& a_out, Serialization::ParserState& a_state) const;
 		bool SaveConfigStore(const fs::path& a_path, const Data::configStore_t& a_data) const;
 
-		inline constexpr const auto& JSGetLastException() const noexcept
+		constexpr const auto& JSGetLastException() const noexcept
 		{
 			return m_lastException;
 		}

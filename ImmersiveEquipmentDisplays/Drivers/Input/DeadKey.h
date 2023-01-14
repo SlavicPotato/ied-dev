@@ -7,22 +7,22 @@ namespace IED
 	public:
 		DeadKey& operator=(WCHAR a_code) noexcept;
 
-		[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+		[[nodiscard]] constexpr explicit operator bool() const noexcept
 		{
 			return static_cast<bool>(m_comb);
 		}
 
-		[[nodiscard]] inline constexpr auto code() const noexcept
+		[[nodiscard]] constexpr auto code() const noexcept
 		{
 			return m_code;
 		}
 
-		[[nodiscard]] inline constexpr auto comb() const noexcept
+		[[nodiscard]] constexpr auto comb() const noexcept
 		{
 			return m_comb;
 		}
 
-		inline constexpr void clear() noexcept
+		constexpr void clear() noexcept
 		{
 			m_comb = 0;
 		}

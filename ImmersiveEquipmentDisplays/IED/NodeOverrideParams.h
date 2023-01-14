@@ -20,7 +20,7 @@ namespace IED
 		using item_container_type = stl::flat_map<Game::FormID, BipedInfoEntry>;
 
 		template <class... Args>
-		inline constexpr nodeOverrideParams_t(
+		constexpr nodeOverrideParams_t(
 			item_container_type& a_container,
 			Args&&... a_args) noexcept :
 			itemData(a_container),
@@ -51,7 +51,7 @@ namespace IED
 
 		float get_weapon_adjust() noexcept;
 
-		inline constexpr float get_weight_adjust() noexcept
+		constexpr float get_weight_adjust() noexcept
 		{
 			if (!weightAdjust)
 			{
@@ -61,12 +61,12 @@ namespace IED
 			return *weightAdjust;
 		}
 
-		inline constexpr void clear_matched_items() noexcept
+		constexpr void clear_matched_items() noexcept
 		{
 			matchedSlotFlags = 0;
 		}
 
-		inline constexpr void set_matched_item(BIPED_OBJECT a_object) noexcept
+		constexpr void set_matched_item(BIPED_OBJECT a_object) noexcept
 		{
 			matchedSlotFlags |= 1ui64 << stl::underlying(a_object);
 		}
@@ -134,7 +134,7 @@ namespace IED
 	private:
 		void make_item_data() noexcept;
 
-		inline constexpr bool is_av_ignored_slot(
+		constexpr bool is_av_ignored_slot(
 			BIPED_OBJECT a_slot) const noexcept
 		{
 			if (a_slot == get_shield_slot())

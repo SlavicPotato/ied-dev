@@ -24,7 +24,7 @@ namespace IED
 
 			for (auto& e : NodeOverrideData::GetTransformOverrideData())
 			{
-				if (auto node = FindNode(a_root, e.name))
+				if (auto node = GetNodeByName(a_root, e.name))
 				{
 					node->m_localTransform.rot = e.rot;
 				}

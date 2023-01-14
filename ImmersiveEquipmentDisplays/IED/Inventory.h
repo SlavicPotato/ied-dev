@@ -46,7 +46,7 @@ namespace IED
 	public:
 		void GenerateSlotCandidates(const bool a_isPlayer, const bool a_checkFav) noexcept;
 
-		[[nodiscard]] inline constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
+		[[nodiscard]] constexpr auto& GetCandidates(Data::ObjectType a_type) noexcept
 		{
 			assert(a_type < Data::ObjectType::kMax);
 			return slotResults[stl::underlying(a_type)];

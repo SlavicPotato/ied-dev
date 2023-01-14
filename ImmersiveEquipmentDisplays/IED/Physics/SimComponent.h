@@ -41,70 +41,70 @@ namespace IED
 		void UpdateMotion(const btVector3& a_step) noexcept;
 		void UpdateConfig(const Data::configNodePhysicsValues_t& a_conf) noexcept;
 
-		[[nodiscard]] inline constexpr bool operator==(const PHYSimComponent& a_rhs) const noexcept
+		[[nodiscard]] constexpr bool operator==(const PHYSimComponent& a_rhs) const noexcept
 		{
 			return m_tag == a_rhs.m_tag;
 		}
 
-		[[nodiscard]] inline constexpr bool operator==(const luid_tag& a_rhs) const noexcept
+		[[nodiscard]] constexpr bool operator==(const luid_tag& a_rhs) const noexcept
 		{
 			return m_tag == a_rhs;
 		}
 
-		inline static constexpr void SetMaxDiff(float a_value) noexcept
+		static constexpr void SetMaxDiff(float a_value) noexcept
 		{
 			a_value    = std::clamp(a_value, 128.0f, 32768.0f);
 			m_maxDiff2 = a_value * a_value;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetObjectLocalTransform() const noexcept
+		[[nodiscard]] constexpr auto& GetObjectLocalTransform() const noexcept
 		{
 			return m_objectLocalTransform;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetObjectInitialTransform() const noexcept
+		[[nodiscard]] constexpr auto& GetObjectInitialTransform() const noexcept
 		{
 			return m_initialTransform;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCachedParentWorldTransform() const noexcept
+		[[nodiscard]] constexpr auto& GetCachedParentWorldTransform() const noexcept
 		{
 			return m_parentWorldTransform;
 		}
 
 		[[nodiscard]] const NiTransform& GetCurrentParentWorldTransform() const noexcept;
 
-		[[nodiscard]] inline constexpr auto& GetVirtualPos() const noexcept
+		[[nodiscard]] constexpr auto& GetVirtualPos() const noexcept
 		{
 			return m_virtld;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetRotationAxis() const noexcept
+		[[nodiscard]] constexpr auto& GetRotationAxis() const noexcept
 		{
 			return m_rotParams.m_axis;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetConfig() const noexcept
+		[[nodiscard]] constexpr auto& GetConfig() const noexcept
 		{
 			return m_conf;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetLUID() const noexcept
+		[[nodiscard]] constexpr auto& GetLUID() const noexcept
 		{
 			return m_tag;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetObject() const noexcept
+		[[nodiscard]] constexpr auto& GetObject() const noexcept
 		{
 			return m_object;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetVelocity() const noexcept
+		[[nodiscard]] constexpr auto& GetVelocity() const noexcept
 		{
 			return m_velocity;
 		}
 
-		inline constexpr void XM_CALLCONV ApplyForce(DirectX::XMVECTOR a_target, float a_mag) const noexcept
+		constexpr void XM_CALLCONV ApplyForce(DirectX::XMVECTOR a_target, float a_mag) const noexcept
 		{
 			m_applyForce.emplace(a_target, a_mag);
 		}

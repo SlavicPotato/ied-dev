@@ -18,22 +18,22 @@ namespace IED
 
 		void ClearActorInfo();
 
-		[[nodiscard]] inline constexpr const auto& GetActorInfo() const noexcept
+		[[nodiscard]] constexpr const auto& GetActorInfo() const noexcept
 		{
 			return m_actorInfo;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetNPCInfo() const noexcept
+		[[nodiscard]] constexpr const auto& GetNPCInfo() const noexcept
 		{
 			return m_npcInfo;
 		}
 
-		[[nodiscard]] inline constexpr auto GetActorInfoUpdateID() const noexcept
+		[[nodiscard]] constexpr auto GetActorInfoUpdateID() const noexcept
 		{
 			return m_actorInfoUpdateID;
 		}
 
-		[[nodiscard]] inline constexpr const auto& GetCrosshairRef() const noexcept
+		[[nodiscard]] constexpr const auto& GetCrosshairRef() const noexcept
 		{
 			return m_crosshairRef;
 		}

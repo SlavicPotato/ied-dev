@@ -32,7 +32,7 @@ namespace IED
 				cachedItem_t() = delete;
 
 				template <detail::accept_cached_item_string Ts, class... Args>
-				inline constexpr cachedItem_t(
+				constexpr cachedItem_t(
 					Ts&& a_name,
 					Args&&... a_args) :
 					name(std::forward<Ts>(a_name)),

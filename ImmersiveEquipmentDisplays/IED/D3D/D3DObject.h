@@ -43,28 +43,28 @@ namespace IED
 
 		void Draw(D3DCommon& a_scene);
 
-		[[nodiscard]] inline constexpr auto& GetModelData() const noexcept
+		[[nodiscard]] constexpr auto& GetModelData() const noexcept
 		{
 			return m_data;
 		}
 
-		/*[[nodiscard]] inline constexpr auto& GetEffect() const noexcept
+		/*[[nodiscard]] constexpr auto& GetEffect() const noexcept
 		{
 			return m_effect;
 		}*/
 
-		[[nodiscard]] inline constexpr void SetRasterizerState(
+		[[nodiscard]] constexpr void SetRasterizerState(
 			D3DObjectRasterizerState a_value) noexcept
 		{
 			m_flagsbf.rasterizerState = a_value;
 		}
 
-		[[nodiscard]] inline constexpr void EnableDepth(bool a_switch) noexcept
+		[[nodiscard]] constexpr void EnableDepth(bool a_switch) noexcept
 		{
 			m_flags.set(D3DObjectFlags::kDepth, a_switch);
 		}
 
-		[[nodiscard]] inline constexpr bool IsOpaque() const noexcept
+		[[nodiscard]] constexpr bool IsOpaque() const noexcept
 		{
 			return m_alpha >= 1.0f;
 		}

@@ -15,22 +15,22 @@ class ISKSE :
 	::Events::EventSink<LoggerMessageEvent>
 {
 public:
-	[[nodiscard]] inline static constexpr auto& GetSingleton()
+	[[nodiscard]] static constexpr auto& GetSingleton()
 	{
 		return m_Instance;
 	}
 
-	[[nodiscard]] inline static constexpr auto& GetBranchTrampoline()
+	[[nodiscard]] static constexpr auto& GetBranchTrampoline()
 	{
 		return m_Instance.GetTrampoline(TrampolineID::kBranch);
 	}
 
-	[[nodiscard]] inline static constexpr auto& GetLocalTrampoline()
+	[[nodiscard]] static constexpr auto& GetLocalTrampoline()
 	{
 		return m_Instance.GetTrampoline(TrampolineID::kLocal);
 	}
 
-	[[nodiscard]] inline static constexpr auto& GetBacklog()
+	[[nodiscard]] static constexpr auto& GetBacklog()
 	{
 		return m_Instance.m_backlog;
 	}

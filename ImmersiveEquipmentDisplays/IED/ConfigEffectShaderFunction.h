@@ -94,7 +94,7 @@ namespace IED
 				}
 			}
 
-			[[nodiscard]] inline constexpr auto& get_unique_id() const noexcept
+			[[nodiscard]] constexpr auto& get_unique_id() const noexcept
 			{
 				return uniqueID;
 			}

@@ -35,7 +35,7 @@ namespace IED
 			UIFormPickerWidget,
 			public virtual UIFormTypeSelectorWidget
 		{
-			inline static constexpr auto WINDOW_ID = "ied_settings";
+			static constexpr auto WINDOW_ID = "ied_settings";
 
 			enum class ContextMenuAction
 			{
@@ -45,7 +45,7 @@ namespace IED
 			};
 
 		public:
-			inline static constexpr auto CHILD_ID = ChildWindowID::kUISettings;
+			static constexpr auto CHILD_ID = ChildWindowID::kUISettings;
 
 			UISettings(
 				Tasks::UIRenderTaskBase& a_owner,

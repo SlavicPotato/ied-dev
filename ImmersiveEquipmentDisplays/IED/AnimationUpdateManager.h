@@ -23,12 +23,12 @@ namespace IED
 
 		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 
-		[[nodiscard]] inline static constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
 
-		[[nodiscard]] inline constexpr bool GetEnabled() const noexcept
+		[[nodiscard]] constexpr bool GetEnabled() const noexcept
 		{
 			return m_enabled;
 		}

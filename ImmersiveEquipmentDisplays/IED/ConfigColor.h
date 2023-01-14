@@ -14,12 +14,12 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			inline constexpr operator float*() noexcept
+			constexpr operator float*() noexcept
 			{
 				return std::addressof(r);
 			}
 
-			inline constexpr operator const float*() const noexcept
+			constexpr operator const float*() const noexcept
 			{
 				return std::addressof(r);
 			}

@@ -37,7 +37,7 @@ namespace IED
 			return s_str;
 		}
 
-		inline constexpr HRESULT get_result() const noexcept
+		constexpr HRESULT get_result() const noexcept
 		{
 			return m_result;
 		}
@@ -49,7 +49,7 @@ namespace IED
 		HRESULT       m_result;
 	};
 
-	inline constexpr void ThrowIfFailed(
+	constexpr void ThrowIfFailed(
 		HRESULT              a_hresult,
 		std::source_location a_src = std::source_location::current()) noexcept(false)
 	{

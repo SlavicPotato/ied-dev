@@ -17,7 +17,7 @@ namespace IED
 			const Data::ObjectSlot,
 			const Data::ObjectSlotExtra>;
 
-		inline constexpr ObjectEntrySlot(
+		constexpr ObjectEntrySlot(
 			const tuple_init_type& a_init)  //
 			noexcept(std::is_nothrow_default_constructible_v<ObjectEntryBase>) :
 			slotState(std::get<0>(a_init)),

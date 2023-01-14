@@ -47,7 +47,7 @@ namespace IED
 								std::underlying_type_t<T>,
 								EditorPanelCommonFlagsType>,
 						void>>
-				inline constexpr stl::flag<T&> get_flags() noexcept
+				constexpr stl::flag<T&> get_flags() noexcept
 				{
 					return reinterpret_cast<T&>(flags);
 				}
@@ -194,13 +194,13 @@ namespace IED
 				float                alpha{ 1.0f };
 				stl::optional<float> bgAlpha;
 
-				/*[[nodiscard]] inline constexpr bool GetChildWindowOpen(UI::ChildWindowID a_id) const noexcept
+				/*[[nodiscard]] constexpr bool GetChildWindowOpen(UI::ChildWindowID a_id) const noexcept
 				{
 					assert(a_id < UI::ChildWindowID::kMax);
 					return windowOpenStates[stl::underlying(a_id)];
 				}
 
-				inline constexpr void SetChildWindowOpen(UI::ChildWindowID a_id, bool a_state) noexcept
+				constexpr void SetChildWindowOpen(UI::ChildWindowID a_id, bool a_state) noexcept
 				{
 					assert(a_id < UI::ChildWindowID::kMax);
 					windowOpenStates[stl::underlying(a_id)] = a_state;
@@ -261,7 +261,7 @@ namespace IED
 				m_path = std::move(a_path);
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetPath() const noexcept
+			[[nodiscard]] constexpr const auto& GetPath() const noexcept
 			{
 				return m_path;
 			}
@@ -273,7 +273,7 @@ namespace IED
 			template <
 				class Tm,
 				class Tv>
-			inline constexpr void set(Tm& a_member, Tv&& a_value)  //
+			constexpr void set(Tm& a_member, Tv&& a_value)  //
 				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>)  //
 				requires(std::is_assignable_v<Tm&, Tv &&>)
 			{
@@ -281,12 +281,12 @@ namespace IED
 				m_dirty  = true;
 			}
 
-			inline constexpr void mark_dirty() noexcept
+			constexpr void mark_dirty() noexcept
 			{
 				m_dirty = true;
 			}
 
-			inline constexpr bool mark_if(bool a_isTrue) noexcept
+			constexpr bool mark_if(bool a_isTrue) noexcept
 			{
 				if (a_isTrue)
 				{
@@ -295,12 +295,12 @@ namespace IED
 				return a_isTrue;
 			}
 
-			[[nodiscard]] inline constexpr const auto& GetLastException() const noexcept
+			[[nodiscard]] constexpr const auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}
 
-			[[nodiscard]] inline constexpr auto HasErrors() const noexcept
+			[[nodiscard]] constexpr auto HasErrors() const noexcept
 			{
 				return m_loadHasErrors;
 			}

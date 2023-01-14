@@ -631,7 +631,7 @@ namespace IED
 			return;
 		}
 
-		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		auto npcroot = GetNodeByName(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return;
@@ -651,7 +651,7 @@ namespace IED
 			return;
 		}
 
-		auto root = a_actor->GetNiRootNode(false);
+		auto root = a_actor->GetNiRootFadeNode(false);
 		if (!root)
 		{
 			Warning(
@@ -663,7 +663,7 @@ namespace IED
 			return;
 		}
 
-		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		auto npcroot = GetNodeByName(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return;
@@ -750,7 +750,7 @@ namespace IED
 
 			if (auto actor = refr->As<Actor>())
 			{
-				if (IsActorValid(actor))
+				if (IsREFRValid(actor))
 				{
 					actor->QueueNiNodeUpdate(true);
 				}
@@ -2332,7 +2332,7 @@ namespace IED
 				}
 			}
 
-			if (state->sound.desc)
+			if (state->sound.form)
 			{
 				if (!a_config.flags.test(BaseFlags::kPlaySound))
 				{
@@ -2347,9 +2347,7 @@ namespace IED
 					{
 						TryInitializeAndPlaySound(
 							a_params.actor,
-							state->sound,
-							state->light,
-							state->nodes.object.get());
+							state->sound);
 					}
 				}
 			}
@@ -2362,7 +2360,7 @@ namespace IED
 				{
 					auto& object = e.second;
 
-					if (!object.sound.desc)
+					if (!object.sound.form)
 					{
 						continue;
 					}
@@ -2379,7 +2377,7 @@ namespace IED
 				{
 					auto& object = e.second;
 
-					if (!object.sound.desc)
+					if (!object.sound.form)
 					{
 						continue;
 					}
@@ -2388,9 +2386,7 @@ namespace IED
 					{
 						TryInitializeAndPlaySound(
 							a_params.actor,
-							object.sound,
-							object.light,
-							object.object.get());
+							object.sound);
 					}
 				}
 			}
@@ -3693,7 +3689,7 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
-		NiNode*                          a_root,
+		BSFadeNode*                      a_root,
 		NiNode*                          a_npcroot,
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
@@ -3826,7 +3822,7 @@ namespace IED
 	}
 
 	template <class... Args>
-	inline constexpr processParams_t& make_process_params(
+	constexpr processParams_t& make_process_params(
 		ActorObjectHolder&                     a_holder,
 		std::optional<processParams_t>&        a_paramsOut,
 		const stl::flag<ControllerUpdateFlags> a_flags,
@@ -3851,7 +3847,7 @@ namespace IED
 	}
 
 	void Controller::EvaluateImpl(
-		NiNode*                          a_root,
+		BSFadeNode*                      a_root,
 		NiNode*                          a_npcroot,
 		Actor*                           a_actor,
 		TESNPC*                          a_npc,
@@ -4184,7 +4180,7 @@ namespace IED
 	}
 
 	template <class... Args>
-	inline constexpr nodeOverrideParams_t make_node_override_params(
+	constexpr nodeOverrideParams_t make_node_override_params(
 		ActorObjectHolder& a_holder,
 		Args&&... a_args) noexcept
 	{
@@ -4205,7 +4201,7 @@ namespace IED
 	}
 
 	bool Controller::ProcessTransformsImpl(
-		NiNode*                          a_root,
+		BSFadeNode*                      a_root,
 		NiNode*                          a_npcRoot,
 		Actor*                           a_actor,
 		TESNPC*                          a_npc,
@@ -5311,7 +5307,7 @@ namespace IED
 			return {};
 		}
 
-		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		auto npcroot = GetNodeByName(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return {};
@@ -5374,7 +5370,7 @@ namespace IED
 			return {};
 		}
 
-		auto npcroot = FindNode(root, BSStringHolder::GetSingleton()->m_npcroot);
+		auto npcroot = FindNodeTraverse(root, BSStringHolder::GetSingleton()->m_npcroot);
 		if (!npcroot)
 		{
 			return {};
@@ -5899,8 +5895,6 @@ namespace IED
 		{
 			a_in >> *this;
 		}
-
-		//auto& v = r.get(ConfigSex::Female);
 
 		return 4;
 	}

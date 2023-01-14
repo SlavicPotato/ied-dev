@@ -7,81 +7,81 @@ namespace IED
 	class BSStringHolder
 	{
 	public:
-		static inline constexpr auto NINODE_WEAPON_BACK      = "WeaponBack";
-		static inline constexpr auto NINODE_SWORD            = "WeaponSword";
-		static inline constexpr auto NINODE_SWORD_LEFT       = "WeaponSwordLeft";
-		static inline constexpr auto NINODE_AXE              = "WeaponAxe";
-		static inline constexpr auto NINODE_AXE_LEFT         = "WeaponAxeLeft";
-		static inline constexpr auto NINODE_AXE_LEFT_REVERSE = "WeaponAxeLeftReverse";
-		static inline constexpr auto NINODE_MACE             = "WeaponMace";
-		static inline constexpr auto NINODE_MACE_LEFT        = "WeaponMaceLeft";
-		static inline constexpr auto NINODE_AXE_MACE_BACK    = "WeaponBackAxeMace";
-		static inline constexpr auto NINODE_DAGGER           = "WeaponDagger";
-		static inline constexpr auto NINODE_DAGGER_LEFT      = "WeaponDaggerLeft";
-		static inline constexpr auto NINODE_STAFF            = "WeaponStaff";
-		static inline constexpr auto NINODE_STAFF_LEFT       = "WeaponStaffLeft";
-		static inline constexpr auto NINODE_BOW              = "WeaponBow";
-		static inline constexpr auto NINODE_CROSSBOW         = "WeaponCrossBow";
-		static inline constexpr auto NINODE_SHIELD_BACK      = "ShieldBack";
-		static inline constexpr auto NINODE_QUIVER           = "QUIVER";
-		static inline constexpr auto NINODE_SHIELD           = "SHIELD";
-		static inline constexpr auto NINODE_WEAPON           = "WEAPON";
-		static inline constexpr auto NINODE_NPCROOT          = "NPC Root [Root]";
-		static inline constexpr auto NINODE_NPCSPINE2        = "NPC Spine2 [Spn2]";
-		static inline constexpr auto NINODE_NPCRHAND         = "NPC R Hand [RHnd]";
+		static constexpr auto NINODE_WEAPON_BACK      = "WeaponBack";
+		static constexpr auto NINODE_SWORD            = "WeaponSword";
+		static constexpr auto NINODE_SWORD_LEFT       = "WeaponSwordLeft";
+		static constexpr auto NINODE_AXE              = "WeaponAxe";
+		static constexpr auto NINODE_AXE_LEFT         = "WeaponAxeLeft";
+		static constexpr auto NINODE_AXE_LEFT_REVERSE = "WeaponAxeLeftReverse";
+		static constexpr auto NINODE_MACE             = "WeaponMace";
+		static constexpr auto NINODE_MACE_LEFT        = "WeaponMaceLeft";
+		static constexpr auto NINODE_AXE_MACE_BACK    = "WeaponBackAxeMace";
+		static constexpr auto NINODE_DAGGER           = "WeaponDagger";
+		static constexpr auto NINODE_DAGGER_LEFT      = "WeaponDaggerLeft";
+		static constexpr auto NINODE_STAFF            = "WeaponStaff";
+		static constexpr auto NINODE_STAFF_LEFT       = "WeaponStaffLeft";
+		static constexpr auto NINODE_BOW              = "WeaponBow";
+		static constexpr auto NINODE_CROSSBOW         = "WeaponCrossBow";
+		static constexpr auto NINODE_SHIELD_BACK      = "ShieldBack";
+		static constexpr auto NINODE_QUIVER           = "QUIVER";
+		static constexpr auto NINODE_SHIELD           = "SHIELD";
+		static constexpr auto NINODE_WEAPON           = "WEAPON";
+		static constexpr auto NINODE_NPCROOT          = "NPC Root [Root]";
+		static constexpr auto NINODE_NPCSPINE2        = "NPC Spine2 [Spn2]";
+		static constexpr auto NINODE_NPCRHAND         = "NPC R Hand [RHnd]";
 
-		static inline constexpr auto NINODE_ARROW_QUIVER = "ArrowQuiver";
-		static inline constexpr auto NINODE_ARROW_1      = "Arrow1";
-		static inline constexpr auto NINODE_ARROW_2      = "Arrow2";
-		static inline constexpr auto NINODE_ARROW_3      = "Arrow3";
-		static inline constexpr auto NINODE_ARROW_4      = "Arrow4";
-		static inline constexpr auto NINODE_ARROW_5      = "Arrow5";
+		static constexpr auto NINODE_ARROW_QUIVER = "ArrowQuiver";
+		static constexpr auto NINODE_ARROW_1      = "Arrow1";
+		static constexpr auto NINODE_ARROW_2      = "Arrow2";
+		static constexpr auto NINODE_ARROW_3      = "Arrow3";
+		static constexpr auto NINODE_ARROW_4      = "Arrow4";
+		static constexpr auto NINODE_ARROW_5      = "Arrow5";
 
-		static inline constexpr auto NINODE_SCB           = "Scb";
-		static inline constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
-		static inline constexpr auto BSX                  = "BSX";
-		static inline constexpr auto BGED                 = "BGED";
-		static inline constexpr auto NINODE_TORCH_FIRE    = "TorchFire";
-		static inline constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
-		static inline constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
-		static inline constexpr auto NINODE_TRACER_ROOT   = "TracerRoot";
-		static inline constexpr auto NINODE_EDITOR_MARKER = "EditorMarker";
+		static constexpr auto NINODE_SCB           = "Scb";
+		static constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
+		static constexpr auto BSX                  = "BSX";
+		static constexpr auto BGED                 = "BGED";
+		static constexpr auto NINODE_TORCH_FIRE    = "TorchFire";
+		static constexpr auto NINODE_ATTACH_LIGHT  = "AttachLight";
+		static constexpr auto NINODE_GLOW_ADD_MESH = "GlowAddMesh";
+		static constexpr auto NINODE_TRACER_ROOT   = "TracerRoot";
+		static constexpr auto NINODE_EDITOR_MARKER = "EditorMarker";
 
-		static inline constexpr auto NINODE_MOV_DEFAULT_SWORD  = "MOV WeaponSwordDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_AXE    = "MOV WeaponAxeDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_MACE   = "MOV WeaponMaceDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_DAGGER = "MOV WeaponDaggerDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_BOW    = "MOV WeaponBowDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_BACK   = "MOV WeaponBackDefault";
-		static inline constexpr auto NINODE_MOV_DEFAULT_QUIVER = "MOV QUIVERDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_SWORD  = "MOV WeaponSwordDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_AXE    = "MOV WeaponAxeDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_MACE   = "MOV WeaponMaceDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_DAGGER = "MOV WeaponDaggerDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_BOW    = "MOV WeaponBowDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_BACK   = "MOV WeaponBackDefault";
+		static constexpr auto NINODE_MOV_DEFAULT_QUIVER = "MOV QUIVERDefault";
 
-		static inline constexpr auto NINODE_CME_DEFAULT_SWORD  = "CME WeaponSwordDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_AXE    = "CME WeaponAxeDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_MACE   = "CME WeaponMaceDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_DAGGER = "CME WeaponDaggerDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_BOW    = "CME WeaponBowDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_BACK   = "CME WeaponBackDefault";
-		static inline constexpr auto NINODE_CME_DEFAULT_QUIVER = "CME QUIVERDefault";
+		static constexpr auto NINODE_CME_DEFAULT_SWORD  = "CME WeaponSwordDefault";
+		static constexpr auto NINODE_CME_DEFAULT_AXE    = "CME WeaponAxeDefault";
+		static constexpr auto NINODE_CME_DEFAULT_MACE   = "CME WeaponMaceDefault";
+		static constexpr auto NINODE_CME_DEFAULT_DAGGER = "CME WeaponDaggerDefault";
+		static constexpr auto NINODE_CME_DEFAULT_BOW    = "CME WeaponBowDefault";
+		static constexpr auto NINODE_CME_DEFAULT_BACK   = "CME WeaponBackDefault";
+		static constexpr auto NINODE_CME_DEFAULT_QUIVER = "CME QUIVERDefault";
 
 		// IED-added
 
-		static inline constexpr auto NINODE_IED_OBJECT  = "OBJECT ROOT";
-		static inline constexpr auto NINODE_IED_PHYSICS = "OBJECT PHY";
+		static constexpr auto NINODE_IED_OBJECT  = "OBJECT ROOT";
+		static constexpr auto NINODE_IED_PHYSICS = "OBJECT PHY";
 
 		// non-vanilla
 
-		static inline constexpr auto NINODE_MX_TORCH_SMOKE          = "MXTorchSmoke01";
-		static inline constexpr auto NINODE_MX_TORCH_SPARKS         = "MXTorchSparks02";
-		static inline constexpr auto NINODE_MX_ATTACH_SMOKE         = "MXAttachSmoke";
-		static inline constexpr auto NINODE_MX_ATTACH_SPARKS        = "MXAttachSparks";
-		static inline constexpr auto BSVALUENODE_ATTACH_ENB_LIGHT   = "AttachENBLight";
-		static inline constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER  = "pFireENBLight01-Emitter";
-		static inline constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
+		static constexpr auto NINODE_MX_TORCH_SMOKE          = "MXTorchSmoke01";
+		static constexpr auto NINODE_MX_TORCH_SPARKS         = "MXTorchSparks02";
+		static constexpr auto NINODE_MX_ATTACH_SMOKE         = "MXAttachSmoke";
+		static constexpr auto NINODE_MX_ATTACH_SPARKS        = "MXAttachSparks";
+		static constexpr auto BSVALUENODE_ATTACH_ENB_LIGHT   = "AttachENBLight";
+		static constexpr auto NINODE_ENB_FIRE_LIGHT_EMITTER  = "pFireENBLight01-Emitter";
+		static constexpr auto NINODE_ENB_TORCH_LIGHT_EMITTER = "pTorchENBLight01-Emitter";
 
 		// animation
 
-		static inline constexpr auto WEAPON_SHEATHE = "WeaponSheathe";
-		static inline constexpr auto GRAPH_DELETING = "GraphDeleting";
+		static constexpr auto WEAPON_SHEATHE = "WeaponSheathe";
+		static constexpr auto GRAPH_DELETING = "GraphDeleting";
 
 		static constinit inline const char* ANIM_EVENTS[] = {
 			//"tailUnequip",
@@ -129,12 +129,12 @@ namespace IED
 
 		static void Create();
 
-		inline static constexpr const auto* GetSingleton() noexcept
+		static constexpr const auto* GetSingleton() noexcept
 		{
 			return m_Instance.get();
 		}
 
-		inline constexpr auto& GetSheathNodes() const noexcept
+		constexpr auto& GetSheathNodes() const noexcept
 		{
 			return m_sheathNodes;
 		}
@@ -205,14 +205,14 @@ namespace IED
 	class StringHolder
 	{
 	public:
-		static inline constexpr auto FMT_NINODE_IED_GROUP = "OBJECT GROUP [%.8X]";
-		static inline constexpr auto HK_NPC_ROOT          = "NPC Root [Root]";
+		static constexpr auto FMT_NINODE_IED_GROUP = "OBJECT GROUP [%.8X]";
+		static constexpr auto HK_NPC_ROOT          = "NPC Root [Root]";
 
 		using slot_names_array_t = std::array<
 			stl::fixed_string,
 			stl::underlying(Data::ObjectSlot::kMax)>;
 
-		[[nodiscard]] inline static constexpr const auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr const auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
@@ -222,7 +222,7 @@ namespace IED
 		StringHolder& operator=(const StringHolder&) = delete;
 		StringHolder& operator=(StringHolder&&)      = delete;
 
-		[[nodiscard]] inline constexpr const auto& GetSlotName(Data::ObjectSlot a_slot) const noexcept
+		[[nodiscard]] constexpr const auto& GetSlotName(Data::ObjectSlot a_slot) const noexcept
 		{
 			assert(a_slot < Data::ObjectSlot::kMax);
 			return slotNames[stl::underlying(a_slot)];

@@ -15,7 +15,7 @@ namespace IED
 				ID3D11Device*        a_device,
 				ID3D11DeviceContext* a_context) noexcept(false);
 
-			inline constexpr auto& GetModel(I3DIModelID a_index) const noexcept
+			constexpr auto& GetModel(I3DIModelID a_index) const noexcept
 			{
 				assert(a_index < I3DIModelID::kMax);
 				return m_models[stl::underlying(a_index)];

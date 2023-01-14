@@ -31,7 +31,7 @@ namespace IED
 		public D3DEffectResources
 	{
 	public:
-		inline static constexpr auto DEFAULT_FLAGS =
+		static constexpr auto DEFAULT_FLAGS =
 			D3DCommonFlags::kNone;
 
 		D3DCommon(
@@ -44,77 +44,77 @@ namespace IED
 		void PreDraw();
 		void PostDraw();
 
-		[[nodiscard]] inline constexpr auto& GetViewport() const noexcept
+		[[nodiscard]] constexpr auto& GetViewport() const noexcept
 		{
 			return m_viewport;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetDepthStencilView() const noexcept
+		[[nodiscard]] constexpr auto& GetDepthStencilView() const noexcept
 		{
 			return m_depthStencilView;
 		}
 
-		/*[[nodiscard]] inline constexpr auto& GetStates() noexcept
+		/*[[nodiscard]] constexpr auto& GetStates() noexcept
 		{
 			return m_states;
 		}*/
 
-		[[nodiscard]] inline constexpr auto& GetViewMatrix() noexcept
+		[[nodiscard]] constexpr auto& GetViewMatrix() noexcept
 		{
 			return m_view;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetViewMatrix() const noexcept
+		[[nodiscard]] constexpr auto& GetViewMatrix() const noexcept
 		{
 			return m_view;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetProjectionMatrix() noexcept
+		[[nodiscard]] constexpr auto& GetProjectionMatrix() noexcept
 		{
 			return m_proj;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetProjectionMatrix() const noexcept
+		[[nodiscard]] constexpr auto& GetProjectionMatrix() const noexcept
 		{
 			return m_proj;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCameraPosition() noexcept
+		[[nodiscard]] constexpr auto& GetCameraPosition() noexcept
 		{
 			return m_camPos;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCameraPosition() const noexcept
+		[[nodiscard]] constexpr auto& GetCameraPosition() const noexcept
 		{
 			return m_camPos;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCameraMatrix() noexcept
+		[[nodiscard]] constexpr auto& GetCameraMatrix() noexcept
 		{
 			return m_camMatrix;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCameraMatrix() const noexcept
+		[[nodiscard]] constexpr auto& GetCameraMatrix() const noexcept
 		{
 			return m_camMatrix;
 		}
 		
-		[[nodiscard]] inline constexpr auto& GetCameraSetMatrix() noexcept
+		[[nodiscard]] constexpr auto& GetCameraSetMatrix() noexcept
 		{
 			return m_camSetMatrix;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetCameraSetMatrix() const noexcept
+		[[nodiscard]] constexpr auto& GetCameraSetMatrix() const noexcept
 		{
 			return m_camSetMatrix;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetDevice() const noexcept
+		[[nodiscard]] constexpr auto& GetDevice() const noexcept
 		{
 			return m_device;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetContext() const noexcept
+		[[nodiscard]] constexpr auto& GetContext() const noexcept
 		{
 			return m_context;
 		}

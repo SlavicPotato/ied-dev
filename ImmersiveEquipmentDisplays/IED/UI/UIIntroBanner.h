@@ -22,7 +22,7 @@ namespace IED
 			public UIContext,
 			public UIWindow
 		{
-			inline static constexpr auto WINDOW_ID = "ied_intro";
+			static constexpr auto WINDOW_ID = "ied_intro";
 
 		public:
 			UIIntroBanner(

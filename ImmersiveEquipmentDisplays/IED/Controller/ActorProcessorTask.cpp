@@ -220,7 +220,7 @@ namespace IED
 				result = true;
 			}
 
-			if (const auto size = f.node->m_children.m_size;
+			if (const auto size = f.node->m_children.size();
 			    f.size != size)
 			{
 				f.size = size;
@@ -626,7 +626,7 @@ namespace IED
 						runEffectUpdates);
 				});
 
-			m_syncRefParentQueue.process([this](const auto& a_e) {
+			m_syncRefParentQueue.process([this](const auto& a_e) noexcept {
 				const bool result = SyncRefParentNode(*a_e.first, *a_e.second);
 
 				if (result)
@@ -640,7 +640,8 @@ namespace IED
 				}
 			});
 
-			/*if (!m_unloadQueue.empty())
+			/*
+			if (!m_unloadQueue.empty())
 			{
 				for (const auto& e : m_unloadQueue)
 				{
@@ -654,7 +655,8 @@ namespace IED
 				}
 
 				m_unloadQueue.clear();
-			}*/
+			}
+			*/
 		}
 		else
 		{

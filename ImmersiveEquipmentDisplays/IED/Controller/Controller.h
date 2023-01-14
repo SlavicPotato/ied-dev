@@ -74,7 +74,7 @@ namespace IED
 			kCurrentVersion = kDataVersion10
 		};
 
-		static inline constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
+		static constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
 
 		struct actorLookupResult_t
 		{
@@ -124,7 +124,7 @@ namespace IED
 			TESNPC*               npc;
 			TESNPC*               npcOrTemplate;
 			TESRace*              race;
-			NiNode*               root;
+			BSFadeNode*           root;
 			NiNode*               npcRoot;
 			Data::ConfigSex       sex;
 			ActorObjectHolder&    objects;
@@ -132,11 +132,11 @@ namespace IED
 
 		struct cachedActorInfo2_t
 		{
-			TESNPC*  npc;
-			TESNPC*  npcOrTemplate;
-			TESRace* race;
-			NiNode*  root;
-			NiNode*  npcRoot;
+			TESNPC*     npc;
+			TESNPC*     npcOrTemplate;
+			TESRace*    race;
+			BSFadeNode* root;
+			NiNode*     npcRoot;
 		};
 
 		Controller(const std::shared_ptr<const ConfigINI>& a_config);
@@ -394,32 +394,32 @@ namespace IED
 
 		bool SkeletonCheck(Game::FormID a_actor);
 
-		[[nodiscard]] inline constexpr auto& GetConfigStore() noexcept
+		[[nodiscard]] constexpr auto& GetConfigStore() noexcept
 		{
 			return m_config;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetConfigStore() const noexcept
+		[[nodiscard]] constexpr auto& GetConfigStore() const noexcept
 		{
 			return m_config;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSettings() noexcept
+		[[nodiscard]] constexpr auto& GetSettings() noexcept
 		{
 			return m_config.settings;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetSettings() const noexcept
+		[[nodiscard]] constexpr auto& GetSettings() const noexcept
 		{
 			return m_config.settings;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetInputHandlers() noexcept
+		[[nodiscard]] constexpr auto& GetInputHandlers() noexcept
 		{
 			return m_inputHandlers;
 		}
 
-		[[nodiscard]] inline constexpr auto& GetLastException() const noexcept
+		[[nodiscard]] constexpr auto& GetLastException() const noexcept
 		{
 			return m_lastException;
 		}
@@ -435,12 +435,12 @@ namespace IED
 		void QueueUpdateNPCInfo(Game::FormID a_npc);
 		void QueueUpdateNPCInfo(Game::FormID a_npc, std::function<void(bool)> a_callback);
 
-		[[nodiscard]] inline constexpr auto GetNodeOverrideEnabled() const noexcept
+		[[nodiscard]] constexpr auto GetNodeOverrideEnabled() const noexcept
 		{
 			return m_nodeOverrideEnabled;
 		}
 
-		[[nodiscard]] inline constexpr auto GetNodeOverridePlayerEnabled() const noexcept
+		[[nodiscard]] constexpr auto GetNodeOverridePlayerEnabled() const noexcept
 		{
 			return m_nodeOverridePlayerEnabled;
 		}
@@ -448,12 +448,12 @@ namespace IED
 		void QueueObjectDatabaseClear();
 		void SetObjectDatabaseLevel(ObjectDatabaseLevel a_level);
 
-		[[nodiscard]] inline constexpr auto IsDefaultConfigForced() const noexcept
+		[[nodiscard]] constexpr auto IsDefaultConfigForced() const noexcept
 		{
 			return m_forceDefaultConfig;
 		}
 
-		[[nodiscard]] inline constexpr auto UIGetIniKeysForced() const noexcept
+		[[nodiscard]] constexpr auto UIGetIniKeysForced() const noexcept
 		{
 			return m_iniKeysForced;
 		}
@@ -463,12 +463,12 @@ namespace IED
 			return m_bipedCache.size();
 		}
 
-		[[nodiscard]] inline constexpr auto GetEquippedItemCacheSizeMax() const noexcept
+		[[nodiscard]] constexpr auto GetEquippedItemCacheSizeMax() const noexcept
 		{
 			return m_bipedCache.max_size();
 		}
 
-		[[nodiscard]] inline constexpr auto& GetBipedDataCache() const noexcept
+		[[nodiscard]] constexpr auto& GetBipedDataCache() const noexcept
 		{
 			return m_bipedCache;
 		}
@@ -479,17 +479,17 @@ namespace IED
 
 		void RunUpdateBipedSlotCache(processParams_t& a_params) noexcept;
 
-		[[nodiscard]] inline constexpr auto GetEvalCounter() const noexcept
+		[[nodiscard]] constexpr auto GetEvalCounter() const noexcept
 		{
 			return m_evalCounter;
 		}
 
-		[[nodiscard]] inline constexpr auto CPUHasSSE41() const noexcept
+		[[nodiscard]] constexpr auto CPUHasSSE41() const noexcept
 		{
 			return m_cpuHasSSE41;
 		}
 
-		/*[[nodiscard]] inline constexpr bool ConsumeInventoryChangeFlags(
+		/*[[nodiscard]] constexpr bool ConsumeInventoryChangeFlags(
 			InventoryChangeConsumerFlags a_mask)
 		{
 			return m_invChangeConsumerFlags.consume(a_mask);
@@ -513,7 +513,7 @@ namespace IED
 				ObjectEntryCustom&)>;
 
 			template <class... Args>
-			inline constexpr bool operator()(Args&&... a_args) const
+			constexpr bool operator()(Args&&... a_args) const
 			{
 				return func(std::forward<Args>(a_args)...);
 			}
@@ -535,7 +535,7 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
-			NiNode*                          a_root,
+			BSFadeNode*                      a_root,
 			NiNode*                          a_npcroot,
 			Actor*                           a_actor,
 			Game::ObjectRefHandle            a_handle,
@@ -547,7 +547,7 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		void EvaluateImpl(
-			NiNode*                          a_root,
+			BSFadeNode*                      a_root,
 			NiNode*                          a_npcroot,
 			Actor*                           a_actor,
 			TESNPC*                          a_npc,
@@ -579,7 +579,7 @@ namespace IED
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool ProcessTransformsImpl(
-			NiNode*                          a_root,
+			BSFadeNode*                      a_root,
 			NiNode*                          a_npcRoot,
 			Actor*                           a_actor,
 			TESNPC*                          a_npc,

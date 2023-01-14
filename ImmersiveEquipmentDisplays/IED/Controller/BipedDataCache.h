@@ -34,9 +34,9 @@ namespace IED
 	{
 		using data_type = stl::boost_unordered_map<Data::configForm_t, BipedCacheEntry>;
 
-		inline static constexpr std::uint32_t DEFAULT_SIZE_THRESHOLD_UPPER = 2200;
-		inline static constexpr std::uint32_t DEFAULT_SIZE_TARGET          = 2000;
-		inline static constexpr std::uint32_t MIN_SIZE                     = 500;
+		static constexpr std::uint32_t DEFAULT_SIZE_THRESHOLD_UPPER = 2200;
+		static constexpr std::uint32_t DEFAULT_SIZE_TARGET          = 2000;
+		static constexpr std::uint32_t MIN_SIZE                     = 500;
 
 		friend class boost::serialization::access;
 
@@ -61,17 +61,17 @@ namespace IED
 			return m_data.size();
 		}
 
-		[[nodiscard]] inline constexpr auto max_size() const noexcept
+		[[nodiscard]] constexpr auto max_size() const noexcept
 		{
 			return m_maxSizeUpper;
 		}
 
-		[[nodiscard]] inline constexpr auto max_forms() const noexcept
+		[[nodiscard]] constexpr auto max_forms() const noexcept
 		{
 			return m_maxFormsPerSlot;
 		}
 
-		[[nodiscard]] inline constexpr auto& data() const noexcept
+		[[nodiscard]] constexpr auto& data() const noexcept
 		{
 			return m_data;
 		}
@@ -81,7 +81,7 @@ namespace IED
 			return m_data.clear();
 		}
 
-		inline constexpr void SetMaxSize(std::uint32_t a_newSize) noexcept
+		constexpr void SetMaxSize(std::uint32_t a_newSize) noexcept
 		{
 			if (!a_newSize)
 			{
@@ -95,7 +95,7 @@ namespace IED
 			}
 		}
 
-		inline constexpr void SetMaxFormsPerSlot(std::uint32_t a_newSize) noexcept
+		constexpr void SetMaxFormsPerSlot(std::uint32_t a_newSize) noexcept
 		{
 			m_maxFormsPerSlot = std::clamp(a_newSize, 1u, 512u);
 		}

@@ -46,17 +46,17 @@ namespace IED
 
 			void UpdateLocalMatrix(const NiTransform& a_transform);
 
-			[[nodiscard]] inline constexpr auto XM_CALLCONV GetLocalMatrix() const noexcept
+			[[nodiscard]] constexpr auto XM_CALLCONV GetLocalMatrix() const noexcept
 			{
 				return m_localMatrix;
 			}
 
-			[[nodiscard]] inline constexpr auto& GetNodeName() const noexcept
+			[[nodiscard]] constexpr auto& GetNodeName() const noexcept
 			{
 				return m_nodeName;
 			}
 
-			[[nodiscard]] inline constexpr auto GetNodeDesc() const noexcept
+			[[nodiscard]] constexpr auto GetNodeDesc() const noexcept
 			{
 				return m_nodeInfo.desc;
 			}

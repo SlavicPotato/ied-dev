@@ -10,7 +10,7 @@ namespace IED
 			Th  handle{};
 			Td* data{ nullptr };
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return static_cast<bool>(data);
 			}

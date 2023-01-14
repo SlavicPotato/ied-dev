@@ -37,28 +37,28 @@ namespace IED
 				kEnablePhysics
 		};
 
-		[[nodiscard]] inline constexpr bool ShaderProcessingEnabled() const noexcept
+		[[nodiscard]] constexpr bool ShaderProcessingEnabled() const noexcept
 		{
 			return m_flags.test(Flags::kEnableShaders);
 		}
 
-		[[nodiscard]] inline constexpr bool PhysicsProcessingEnabled() const noexcept
+		[[nodiscard]] constexpr bool PhysicsProcessingEnabled() const noexcept
 		{
 			return m_flags.test(Flags::kEnablePhysics);
 		}
 
-		inline constexpr void SetPhysicsProcessingEnabled(bool a_switch) noexcept
+		constexpr void SetPhysicsProcessingEnabled(bool a_switch) noexcept
 		{
 			m_flags.set(Flags::kEnablePhysics, a_switch);
 		}
 
-		inline constexpr void SetShaderProcessingEnabled(bool a_switch) noexcept
+		constexpr void SetShaderProcessingEnabled(bool a_switch) noexcept
 		{
 			m_flags.set(Flags::kEnableShaders, a_switch);
 		}
 
 	protected:
-		[[nodiscard]] inline constexpr bool AnyProcessingEnabled() const noexcept
+		[[nodiscard]] constexpr bool AnyProcessingEnabled() const noexcept
 		{
 			return m_flags.test_any(Flags::kEnableMask);
 		}

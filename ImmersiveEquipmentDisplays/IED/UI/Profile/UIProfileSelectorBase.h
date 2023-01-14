@@ -36,9 +36,9 @@ namespace IED
 			virtual protected UIAlignment
 		{
 		protected:
-			inline static constexpr auto POPUP_ID_APPLY = "popup_apply";
-			inline static constexpr auto POPUP_ID_MERGE = "popup_merge";
-			inline static constexpr auto POPUP_ID_SAVE  = "popup_save";
+			static constexpr auto POPUP_ID_APPLY = "popup_apply";
+			static constexpr auto POPUP_ID_MERGE = "popup_merge";
+			static constexpr auto POPUP_ID_SAVE  = "popup_save";
 
 			UIProfileSelectorBase(
 				UIProfileSelectorFlags a_flags = UIProfileSelectorFlags::kEnableApply);

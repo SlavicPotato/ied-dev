@@ -7,7 +7,7 @@ namespace IED
 	public:
 		bool IsInFirstPerson() const noexcept;
 
-		[[nodiscard]] inline constexpr bool IFPV_Detected() const noexcept
+		[[nodiscard]] constexpr bool IFPV_Detected() const noexcept
 		{
 			return static_cast<bool>(m_ifpvState);
 		}
