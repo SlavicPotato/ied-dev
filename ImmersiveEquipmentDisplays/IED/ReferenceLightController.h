@@ -8,10 +8,10 @@ namespace IED
 		public BSTEventSink<TESCellAttachDetachEvent>
 	{
 		typedef bool (*updateRefrLight_t)(
-			TESObjectLIGH*    a1,
-			const REFR_LIGHT& a2,
-			TESObjectREFR*    a3,
-			float             a4) noexcept;
+			TESObjectLIGH*                 a1,
+			const NiPointer<NiPointLight>& a2,
+			TESObjectREFR*                 a3,
+			float                          a4) noexcept;
 
 		typedef bool (*setNiPointLightAttenuation_t)(
 			NiAVObject*  a_object,
@@ -43,14 +43,14 @@ namespace IED
 				NiPointLight*  a_light,
 				RE::BSLight*   a_bsLight) :
 				form(a_form),
-				data{ a_light, -1.0f },
+				niLight(a_light),
 				bsLight(a_bsLight)
 			{
 			}
 
-			TESObjectLIGH*         form;
-			REFR_LIGHT             data;
-			NiPointer<RE::BSLight> bsLight;
+			TESObjectLIGH*          form;
+			NiPointer<NiPointLight> niLight;
+			NiPointer<RE::BSLight>  bsLight;
 		};
 
 		using lock_type   = std::shared_mutex;
@@ -105,14 +105,13 @@ namespace IED
 		{
 			m_fixVanillaNPCLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
-		
+
 		inline void SetNPCLightUpdatesEnabled(bool a_switch) noexcept
 		{
 			m_npcLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
 
 	private:
-
 		template <class Tf>
 		constexpr void visit_lights(Actor* a_actor, Tf a_func) const noexcept
 		{

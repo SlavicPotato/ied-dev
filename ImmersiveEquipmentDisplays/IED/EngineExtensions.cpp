@@ -1436,6 +1436,9 @@ namespace IED
 
 		if (auto& bip = a_refr->GetBiped2())
 		{
+			data.postAnimChannelUpdateFunctor = nullptr;
+			data.unkfunc                      = nullptr;
+
 			for (auto& e : bip->objects)
 			{
 				if (auto& h = e.weaponAnimationGraphManagerHolder)

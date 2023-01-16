@@ -29,17 +29,18 @@ namespace IED
 			kUseWorldModel              = 1u << 13,
 			kIgnoreRaceEquipTypes       = 1u << 14,
 			kPlaySequence               = 1u << 15,
-			kPapyrus                    = 1u << 16,
+			kPapyrus                    = 1u << 16,  // unused
 			kDisableWeaponAnims         = 1u << 17,
-			kDisableAnimEventForwarding = 1u << 18,
+			kDisableAnimEventForwarding = 1u << 18,  // unused
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
 			kRemoveProjectileTracers    = 1u << 21,
 			kDynamicArrows              = 1u << 22,
 			kAttachLight                = 1u << 23,
-			kHideLight                  = 1u << 24,
+			kHideLight                  = 1u << 24,  // unused
 			kRemoveEditorMarker         = 1u << 25,
 			kGeometryScaleCollider      = 1u << 26,
+			kForceTryLoadAnim           = 1u << 27,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |
@@ -52,7 +53,8 @@ namespace IED
 			                     kRemoveProjectileTracers |
 			                     kAttachLight |
 			                     kRemoveEditorMarker |
-			                     kGeometryScaleCollider
+			                     kGeometryScaleCollider |
+			                     kForceTryLoadAnim
 
 		};
 

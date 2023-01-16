@@ -1418,7 +1418,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
-				
+
 				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::DynamicArrows, "3"),
 						stl::underlying(std::addressof(a_data.flags.value)),
@@ -1489,7 +1489,7 @@ namespace IED
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 				UITipsInterface::DrawTip(UITip::AttachLight);
-				
+
 				/*if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::HideLight, "_2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
@@ -1588,7 +1588,6 @@ namespace IED
 
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 						}
-					
 					},
 					static_cast<Localization::StringID>(UIBaseConfigString::GeometryTransform),
 					ImGuiTreeNodeFlags_None);
@@ -1750,6 +1749,19 @@ namespace IED
 						ImGui::EndPopup();
 					}
 				}
+
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::ForceTryLoadAnim, "4"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kForceTryLoadAnim)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kForceTryLoadAnim);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
+				}
+				UITipsInterface::DrawTip(UITip::ForceTryLoadAnim);
 
 				/*if (ImGui::CheckboxFlagsT(
 					UILI::LS(UIWidgetCommonStrings::DisableAnimEventForwarding, "4"),

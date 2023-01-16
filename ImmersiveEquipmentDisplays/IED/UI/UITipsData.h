@@ -111,6 +111,7 @@ namespace IED
 			DynamicArrows                       = 1102,
 			NPCLightCellAttachFix               = 1103,
 			NPCLightUpdateFix                   = 1104,
+			ForceTryLoadAnim                    = 1105,
 		};
 
 	}

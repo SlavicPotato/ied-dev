@@ -122,6 +122,7 @@ namespace IED
 			NoSSE41SupportWarning               = 2114,
 			DynamicArrows                       = 2115,
 			RemoveEditorMarker                  = 2116,
+			ForceTryLoadAnim                    = 2117,
 		};
 	}
 }

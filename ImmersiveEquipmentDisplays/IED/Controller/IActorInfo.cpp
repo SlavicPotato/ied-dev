@@ -54,10 +54,13 @@ namespace IED
 				cell->formID,
 				IFormCommon::GetFormName(cell)
 			};
+
+			a_out.cellCoords = cell->GetCellCoordinates();
 		}
 		else
 		{
 			a_out.cell = {};
+			a_out.cellCoords.reset();
 		}
 
 		if (auto skin = a_actor->GetSkin())

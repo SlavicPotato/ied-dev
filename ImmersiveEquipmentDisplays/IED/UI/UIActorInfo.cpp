@@ -491,6 +491,12 @@ namespace IED
 					}
 				}
 
+				if (data.cellCoords)
+				{
+					ImGui::SameLine();
+					ImGui::TextWrapped("[%d, %d]", data.cellCoords->x, data.cellCoords->y);
+				}
+
 				DrawActorInfoLineFormStringPair(CommonStrings::Location, data.location);
 
 				ImGui::EndTable();

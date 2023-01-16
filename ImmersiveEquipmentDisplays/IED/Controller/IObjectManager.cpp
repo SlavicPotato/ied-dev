@@ -745,7 +745,8 @@ namespace IED
 		}
 		else if (
 			a_bhkAnims &&
-			modelParams.type == ModelType::kWeapon &&
+			(modelParams.type == ModelType::kWeapon || 
+				a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
 			!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims))
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
@@ -757,11 +758,18 @@ namespace IED
 				                   !a_baseConfig.hkxFilter.contains(a_path);
 					}))
 			{
-				const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
-				                            a_activeConfig.animationEvent :
-				                            StringHolder::GetSingleton().weaponSheathe;
+				if (modelParams.type == ModelType::kWeapon)
+				{
+					const auto& eventName = a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent) ?
+					                            a_activeConfig.animationEvent :
+					                            StringHolder::GetSingleton().weaponSheathe;
 
-				state->anim.UpdateAndSendAnimationEvent(eventName);
+					state->anim.UpdateAndSendAnimationEvent(eventName);
+				}
+				else if (a_activeConfig.flags.test(Data::BaseFlags::kAnimationEvent))
+				{
+					state->anim.UpdateAndSendAnimationEvent(a_activeConfig.animationEvent);
+				}
 
 				AnimationUpdateController::GetSingleton().AddObject(
 					a_params.actor->formID,
@@ -1088,7 +1096,9 @@ namespace IED
 			}
 			else if (
 				a_bhkAnims &&
-				e.params.type == ModelType::kWeapon &&
+				(e.params.type == ModelType::kWeapon || 
+					a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim) ||
+					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)) &&
 				!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims))
 			{
@@ -1101,12 +1111,19 @@ namespace IED
 					                   !a_baseConfig.hkxFilter.contains(a_path);
 						}))
 				{
-					const auto& eventName =
-						e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent) ?
-							e.entry->second.animationEvent :
-							StringHolder::GetSingleton().weaponSheathe;
+					if (e.params.type == ModelType::kWeapon)
+					{
+						const auto& eventName =
+							e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent) ?
+								e.entry->second.animationEvent :
+								StringHolder::GetSingleton().weaponSheathe;
 
-					e.grpObject->anim.UpdateAndSendAnimationEvent(eventName);
+						e.grpObject->anim.UpdateAndSendAnimationEvent(eventName);
+					}
+					else if (e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+					{
+						e.grpObject->anim.UpdateAndSendAnimationEvent(e.entry->second.animationEvent);
+					}
 
 					AnimationUpdateController::GetSingleton().AddObject(
 						a_params.actor->formID,

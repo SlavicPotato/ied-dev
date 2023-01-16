@@ -27,6 +27,7 @@ namespace IED
 			kRemoveProjectileTracers    = 1u << 13,
 			kAttachLight                = 1u << 14,
 			kRemoveEditorMarker         = 1u << 15,
+			kForceTryLoadAnim           = 1u << 16,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(ConfigModelGroupEntryFlags);

@@ -325,6 +325,7 @@ namespace IED
 			m_listFirstUpdate       = false;
 			m_listNextUpdate        = true;
 			m_listData.clear();
+			m_listCurrent.reset();
 		}
 
 		template <class Td, detail::valid_list_handle Th>

@@ -170,7 +170,7 @@ namespace IED
 		visit_lights(
 			a_actor,
 			[&](auto& a_entry) noexcept [[msvc::forceinline]] {
-				UpdateRefrLight(a_entry.form, a_entry.data, a_actor, -1.0f);
+				UpdateRefrLight(a_entry.form, a_entry.niLight, a_actor, -1.0f);
 			});
 	}
 
@@ -183,7 +183,7 @@ namespace IED
 			const auto params = detail::make_params(a_entry.form);
 
 			const auto ssn = *EngineExtensions::m_shadowSceneNode;
-			ssn->CreateAndAddLight(a_entry.data.light.get(), params);
+			ssn->CreateAndAddLight(a_entry.niLight.get(), params);
 		});
 	}
 
@@ -238,7 +238,7 @@ namespace IED
 				[](auto& a_entry) noexcept [[msvc::forceinline]] {
 					UnkQueueBSLight(
 						*EngineExtensions::m_shadowSceneNode,
-						a_entry.data.light.get());
+						a_entry.niLight.get());
 				});
 		}
 		else
@@ -250,7 +250,14 @@ namespace IED
 				{
 					if (auto equipped = GetEquippedLHLight(a_actor))
 					{
-						UpdateRefrLight(equipped, *a_extraLight, a_actor, -1.0f);
+						if (::NRTTI<NiPointLight>::IsType(a_extraLight->light->GetRTTI()))
+						{
+							UpdateRefrLight(
+								equipped,
+								reinterpret_cast<const NiPointer<NiPointLight>&>(a_extraLight->light),
+								a_actor,
+								-1.0f);
+						}
 					}
 				}
 			}
@@ -264,13 +271,13 @@ namespace IED
 					[&](auto& a_entry) noexcept [[msvc::forceinline]] {
 						UpdateRefrLight(
 							a_entry.form,
-							a_entry.data,
+							a_entry.niLight,
 							a_actor,
 							-1.0f);
 
 						UnkQueueBSLight(
 							*EngineExtensions::m_shadowSceneNode,
-							a_entry.data.light.get());
+							a_entry.niLight.get());
 					});
 			}
 			else
@@ -282,7 +289,7 @@ namespace IED
 					[](auto& a_entry) noexcept [[msvc::forceinline]] {
 						UnkQueueBSLight(
 							*EngineExtensions::m_shadowSceneNode,
-							a_entry.data.light.get());
+							a_entry.niLight.get());
 					});
 			}
 		}
@@ -316,7 +323,7 @@ namespace IED
 			{
 				it->second.remove_if(
 					[&](auto& a_v) {
-						return a_v.data.light == a_light;
+						return a_v.niLight == a_light;
 					});
 			}
 		}
