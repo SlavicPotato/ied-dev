@@ -362,7 +362,7 @@ namespace IED
 
 			return stl::make_array<
 				NiPointer<NiAVObject>,
-				5>([&]<std::size_t I>() noexcept {
+				6>([&]<std::size_t I>() noexcept {
 				return Util::Node::FindChildObject(a_root, arrowStrings[I]);
 			});
 		}
@@ -375,7 +375,7 @@ namespace IED
 
 	void ObjectEntryBase::QuiverArrowState::Update(std::int32_t a_count) noexcept
 	{
-		a_count = std::min(a_count, 6);
+		a_count = std::min(a_count, 7);
 
 		if (inventoryCount == a_count)
 		{
@@ -390,7 +390,7 @@ namespace IED
 		{
 			if (e)
 			{
-				e->SetVisible(--c >= 0);
+				e->SetVisible(c-- > 0);
 			}
 		}
 	}

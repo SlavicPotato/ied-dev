@@ -50,7 +50,8 @@ namespace IED
 			NINODE_ARROW_2,
 			NINODE_ARROW_3,
 			NINODE_ARROW_4,
-			NINODE_ARROW_5
+			NINODE_ARROW_5,
+			NINODE_ARROW_6,
 		}
 	{
 	}
