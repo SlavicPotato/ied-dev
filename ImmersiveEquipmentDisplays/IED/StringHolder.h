@@ -37,6 +37,7 @@ namespace IED
 		static constexpr auto NINODE_ARROW_4      = "Arrow4";
 		static constexpr auto NINODE_ARROW_5      = "Arrow5";
 		static constexpr auto NINODE_ARROW_6      = "Arrow6";
+		static constexpr auto NINODE_ARROW_7      = "Arrow7";
 
 		static constexpr auto NINODE_SCB           = "Scb";
 		static constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
@@ -198,7 +199,7 @@ namespace IED
 		};
 
 		std::array<SheathNodeEntry, 7> m_sheathNodes;
-		std::array<BSFixedString, 6>   m_arrows;
+		std::array<BSFixedString, 7>   m_arrows;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};

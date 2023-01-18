@@ -354,28 +354,24 @@ namespace IED
 		}
 	}
 
-	namespace detail
+	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) noexcept
 	{
-		inline auto make_arrow_array(NiNode* a_root) noexcept
+		const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;
+
+		arrows.reserve(arrowStrings.size());
+
+		for (std::uint32_t i = 0; i < arrowStrings.size(); i++)
 		{
-			const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;
-
-			return stl::make_array<
-				NiPointer<NiAVObject>,
-				6>([&]<std::size_t I>() noexcept {
-				return Util::Node::FindChildObject(a_root, arrowStrings[I]);
-			});
+			if (auto object = Util::Node::FindChildObject(a_arrowQuiver, arrowStrings[i]))
+			{
+				arrows.emplace_back(object);
+			}
 		}
-	}
-
-	ObjectEntryBase::QuiverArrowState::QuiverArrowState(NiNode* a_arrowQuiver) noexcept :
-		arrows{ detail::make_arrow_array(a_arrowQuiver) }
-	{
 	}
 
 	void ObjectEntryBase::QuiverArrowState::Update(std::int32_t a_count) noexcept
 	{
-		a_count = std::min(a_count, 7);
+		a_count = std::min(a_count, 8);
 
 		if (inventoryCount == a_count)
 		{
@@ -388,10 +384,7 @@ namespace IED
 
 		for (const auto& e : arrows)
 		{
-			if (e)
-			{
-				e->SetVisible(c-- > 0);
-			}
+			e->SetVisible(c-- > 0);
 		}
 	}
 

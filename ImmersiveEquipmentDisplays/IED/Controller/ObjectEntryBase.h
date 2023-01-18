@@ -85,8 +85,8 @@ namespace IED
 
 			void Update(std::int32_t a_count) noexcept;
 
-			std::array<NiPointer<NiAVObject>, 6> arrows;
-			std::int32_t                         inventoryCount{ 0 };
+			stl::vector<NiPointer<NiAVObject>> arrows;
+			std::int32_t                       inventoryCount{ 0 };
 		};
 
 		struct ObjectAnim
