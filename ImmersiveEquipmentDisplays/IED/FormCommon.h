@@ -86,5 +86,47 @@ namespace IED
 
 			return false;
 		}
+
+		template <class T>
+		static constexpr bool HasKeyword(
+			const T*          a_form,
+			const BGSKeyword* a_keyword)  //
+			noexcept                      //
+			requires(std::is_convertible_v<T*, TESObjectREFR*>)
+		{
+			return a_form->HasKeywordHelper(a_keyword);
+		}
+
+		template <class T>
+		static constexpr bool HasKeyword(
+			const T*     a_form,
+			Game::FormID a_keyword)  //
+			noexcept                 //
+			requires(std::is_convertible_v<T*, TESObjectREFR*>)
+		{
+			if (const auto* const keyword = a_keyword.As<BGSKeyword>())
+			{
+				return a_form->HasKeywordHelper(keyword);
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		template <class T>
+		static constexpr bool HasKeyword(
+			const T*                        a_form,
+			const Data::configCachedForm_t& a_keyword)  //
+			noexcept                                    //
+			requires(std::is_convertible_v<T*, TESObjectREFR*>)
+		{
+			if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
+			{
+				return a_form->HasKeywordHelper(keyword);
+			}
+
+			return false;
+		}
 	};
 }

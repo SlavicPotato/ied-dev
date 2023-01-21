@@ -342,7 +342,7 @@ namespace IED
 			if (a_match.keyword.get_id())
 			{
 				if (a_match.flags.test(Tf::kNegateMatch1) ==
-				    IFormCommon::HasKeyword(a_params.npc, a_match.keyword))
+				    IFormCommon::HasKeyword(a_params.actor, a_match.keyword))
 				{
 					return false;
 				}
