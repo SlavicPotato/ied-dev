@@ -65,7 +65,9 @@ namespace IED
 	{
 		auto& seh = SKSESerializationEventHandler::GetSingleton();
 
-		seh.AddSink(this);
+		seh.GetDispatcher<SKSESerializationEvent>().AddSink(this);
+		seh.GetDispatcher<SKSESerializationFormDeleteEvent>().AddSink(this);
+
 		ASSERT(seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this));
 	}
 
@@ -5466,6 +5468,51 @@ namespace IED
 	void Controller::Receive(const SKSESerializationLoadEvent& a_evn)
 	{
 		ReadRecord(a_evn.intfc, a_evn.type, a_evn.version, a_evn.length);
+	}
+
+	void Controller::Receive(const SKSESerializationFormDeleteEvent& a_evn)
+	{
+		if (a_evn.handle.GetUpper() != 0xFFFF)
+		{
+			return;
+		}
+
+		const auto formid = a_evn.handle.GetFormID();
+
+		if (!formid.IsTemporary())
+		{
+			return;
+		}
+
+		class HandleDeletedFormTask :
+			public TaskDelegate
+		{
+		public:
+			constexpr explicit HandleDeletedFormTask(
+				Controller&  a_controller,
+				Game::FormID a_form) noexcept :
+				m_controller(a_controller),
+				m_formid(a_form)
+			{
+			}
+
+			virtual void Run() noexcept override
+			{
+				const stl::lock_guard lock(m_controller.m_lock);
+				m_controller.m_bipedCache.data().erase(m_formid);
+			}
+
+			virtual void Dispose() noexcept override
+			{
+				delete this;
+			}
+
+		private:
+			Controller&  m_controller;
+			Game::FormID m_formid;
+		};
+
+		ITaskPool::AddPriorityTask<HandleDeletedFormTask>(*this, formid);
 	}
 
 	void Controller::Receive(const SKSEMessagingEvent& a_evn)

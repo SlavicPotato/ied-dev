@@ -75,6 +75,11 @@ namespace IED
 		{
 			return m_data;
 		}
+		
+		[[nodiscard]] constexpr auto& data() noexcept
+		{
+			return m_data;
+		}
 
 		inline void clear()
 		{

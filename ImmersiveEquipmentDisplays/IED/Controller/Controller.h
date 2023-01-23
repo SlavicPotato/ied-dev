@@ -38,6 +38,7 @@ namespace IED
 		public IUINotification,
 		public ::Events::EventSink<SKSESerializationEvent>,
 		public ::Events::EventSink<SKSESerializationLoadEvent>,
+		public ::Events::EventSink<SKSESerializationFormDeleteEvent>,
 		public ::Events::EventSink<SKSEMessagingEvent>,
 		public ::Events::EventSink<SDSPlayerShieldOnBackSwitchEvent>,
 		public BSTEventSink<TESObjectLoadedEvent>,
@@ -861,6 +862,7 @@ namespace IED
 
 		virtual void Receive(const SKSESerializationEvent& a_evn) override;
 		virtual void Receive(const SKSESerializationLoadEvent& a_evn) override;
+		virtual void Receive(const SKSESerializationFormDeleteEvent& a_evn) override;
 		virtual void Receive(const SKSEMessagingEvent& a_evn) override;
 		virtual void Receive(const SDSPlayerShieldOnBackSwitchEvent& a_evn) override;
 

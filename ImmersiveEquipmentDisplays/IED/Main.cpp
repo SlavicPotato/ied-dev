@@ -219,7 +219,8 @@ namespace IED
 		SKSESerializationEventHandler::GetSingleton().Setup(
 			handle,
 			SKSE_SERIALIZATION_UID,
-			serializationInterface);
+			serializationInterface,
+			true);
 	}
 
 	void Initializer::Receive(const SKSEMessagingEvent& a_evn)

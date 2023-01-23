@@ -30,15 +30,15 @@ namespace IED
 
 				if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kSpotShadow))
 				{
-					params.shadowAngle = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
+					params.fov = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
 				}
 				else if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kHemiShadow))
 				{
-					params.shadowAngle = std::numbers::pi_v<float>;
+					params.fov = std::numbers::pi_v<float>;
 				}
 				else
 				{
-					params.shadowAngle = std::numbers::pi_v<float> * 2.0f;
+					params.fov = std::numbers::pi_v<float> * 2.0f;
 				}
 
 				params.nearDistance    = a_lightForm->data.nearDistance;
