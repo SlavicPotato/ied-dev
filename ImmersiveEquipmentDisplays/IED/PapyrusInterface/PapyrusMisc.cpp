@@ -10,6 +10,33 @@ namespace IED
 	{
 		namespace Misc
 		{
+			namespace detail
+			{
+				[[nodiscard]] constexpr auto translate_biped_object(
+					Actor*       a_actor,
+					BIPED_OBJECT a_object) noexcept
+				{
+					if (a_object < BIPED_OBJECT::kTotal)
+					{
+						return a_object;
+					}
+
+					switch (a_object)
+					{
+					case BIPED_OBJECT::kRaceHead:
+						return a_actor->GetHeadBipedObject();
+					case BIPED_OBJECT::kRaceHair:
+						return a_actor->GetHairBipedObject();
+					case BIPED_OBJECT::kRaceShield:
+						return a_actor->GetShieldBipedObject();
+					case BIPED_OBJECT::kRaceBody:
+						return a_actor->GetBodyBipedObject();
+					default:
+						return BIPED_OBJECT::kNone;
+					}
+				}
+			}
+
 			static TESForm* GetLastEquippedForm(
 				StaticFunctionTag*,
 				Actor*       a_actor,
@@ -22,7 +49,10 @@ namespace IED
 					return nullptr;
 				}
 
-				auto bip = static_cast<BIPED_OBJECT>(a_bipedObject);
+				const auto bip = detail::translate_biped_object(
+					a_actor,
+					static_cast<BIPED_OBJECT>(a_bipedObject));
+
 				if (bip >= BIPED_OBJECT::kTotal)
 				{
 					return nullptr;

@@ -49,7 +49,12 @@ namespace IED
 			"Bow",
 			"Staff",
 			"Crossbow",
-			"Quiver"
+			"Quiver",
+
+			"Race - Head",
+			"Race - Hair",
+			"Race - Shield",
+			"Race - Body"
 
 		} };
 
@@ -62,9 +67,12 @@ namespace IED
 
 			ImGui::PushID("bo_sel");
 
-			auto preview = a_data != BIPED_OBJECT::kNone ?
-			                   GetBipedSlotDesc(a_data) :
-                               "None";
+			auto preview = GetBipedSlotDesc(a_data);
+
+			if (!preview)
+			{
+				preview = "None";
+			}
 
 			if (ImGui::BeginCombo(
 					a_label,
@@ -90,9 +98,9 @@ namespace IED
 
 				using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
-				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
+				for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kSpecTotal); i++)
 				{
-					auto e = static_cast<BIPED_OBJECT>(i);
+					const auto e = static_cast<BIPED_OBJECT>(i);
 
 					ImGui::PushID(i);
 

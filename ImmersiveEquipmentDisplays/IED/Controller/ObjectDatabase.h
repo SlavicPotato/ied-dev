@@ -26,7 +26,7 @@ namespace IED
 		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
 
 	public:
-		static constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kDisabled;
+		static constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kNone;
 
 		[[nodiscard]] bool GetUniqueObject(
 			const char*          a_path,
@@ -59,17 +59,21 @@ namespace IED
 	protected:
 		constexpr void SetODBLevel(ObjectDatabaseLevel a_level) noexcept
 		{
-			m_level =
-				a_level != ObjectDatabaseLevel::kDisabled ?
-					std::clamp(
-						a_level,
-						ObjectDatabaseLevel::kNone,
-						ObjectDatabaseLevel::kMax) :
-					a_level;
+			if (a_level == ObjectDatabaseLevel::kDisabled)
+			{
+				m_level = ObjectDatabaseLevel::kNone;
+			}
+			else
+			{
+				m_level = std::clamp(
+					a_level,
+					ObjectDatabaseLevel::kNone,
+					ObjectDatabaseLevel::kMax);
+			}
 		}
 
 	private:
-		static NiNode* CreateClone(NiNode* a_object, float a_colliderScale) noexcept;
+		static NiNode* CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept;
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;

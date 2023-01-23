@@ -469,8 +469,15 @@ namespace IED
 					return false;
 				}
 
-				if (a_data.bipedSlot < BIPED_OBJECT::kTotal)
+				if (a_data.bipedSlot != BIPED_OBJECT::kNone)
 				{
+					const auto slot = a_params.translate_biped_object(a_data.bipedSlot);
+
+					if (slot < BIPED_OBJECT::kTotal)
+					{
+						return false;
+					}
+
 					auto biped = a_params.get_biped();
 					if (!biped)
 					{

@@ -38,7 +38,7 @@ namespace IED
 			noexcept                      //
 			requires(std::is_convertible_v<T*, BGSKeywordForm*>)
 		{
-			return a_form->HasKeyword(a_keyword);
+			return static_cast<const T*>(a_form)->HasKeyword(a_keyword);
 		}
 
 		static bool HasKeyword(const TESForm* a_form, const BGSKeyword* a_keyword) noexcept;
@@ -94,7 +94,7 @@ namespace IED
 			noexcept                      //
 			requires(std::is_convertible_v<T*, TESObjectREFR*>)
 		{
-			return a_form->HasKeywordHelper(a_keyword);
+			return static_cast<const T*>(a_form)->HasKeywordHelper(a_keyword);
 		}
 
 		template <class T>
@@ -106,7 +106,7 @@ namespace IED
 		{
 			if (const auto* const keyword = a_keyword.As<BGSKeyword>())
 			{
-				return a_form->HasKeywordHelper(keyword);
+				return static_cast<const T*>(a_form)->HasKeywordHelper(keyword);
 			}
 			else
 			{
@@ -123,7 +123,7 @@ namespace IED
 		{
 			if (const auto* const keyword = a_keyword.get_form<BGSKeyword>())
 			{
-				return a_form->HasKeywordHelper(keyword);
+				return static_cast<const T*>(a_form)->HasKeywordHelper(keyword);
 			}
 
 			return false;

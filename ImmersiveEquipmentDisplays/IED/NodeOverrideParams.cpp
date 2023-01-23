@@ -41,13 +41,15 @@ namespace IED
 
 			for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 			{
-				const auto item = data->objects[i].item;
+				const auto& e = data->objects[i];
+
+				const auto item = e.item;
 				if (!item)
 				{
 					continue;
 				}
 
-				const auto addon = data->objects[i].addon;
+				const auto addon = e.addon;
 				if (addon == item)
 				{
 					continue;
@@ -58,16 +60,13 @@ namespace IED
 					item,
 					static_cast<BIPED_OBJECT>(i));
 
-				if (addon)
+				if (addon && item->IsArmor())
 				{
-					if (const auto armor = item->As<TESObjectARMO>())
+					if (const auto arma = addon->As<TESObjectARMA>())
 					{
-						if (const auto arma = addon->As<TESObjectARMA>())
-						{
-							r.first->second.weaponAdjust = std::max(
-								arma->data.weaponAdjust,
-								r.first->second.weaponAdjust);
-						}
+						r.first->second.weaponAdjust = std::max(
+							arma->data.weaponAdjust,
+							r.first->second.weaponAdjust);
 					}
 				}
 			}

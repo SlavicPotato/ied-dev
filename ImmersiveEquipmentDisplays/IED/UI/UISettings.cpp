@@ -21,7 +21,6 @@ namespace IED
 	{
 		static constexpr auto s_odbmvals = stl::make_array(
 
-			std::make_pair(ObjectDatabaseLevel::kDisabled, CommonStrings::Disabled),
 			std::make_pair(ObjectDatabaseLevel::kNone, CommonStrings::UsedOnly),
 			std::make_pair(ObjectDatabaseLevel::kMin, CommonStrings::Minimum),
 			std::make_pair(ObjectDatabaseLevel::kVeryLow, CommonStrings::VeryLow),
@@ -203,43 +202,24 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::NoCheckFav);
 
+				bool disabled = !AnimationUpdateController::GetSingleton().GetInitialized();
+
+				UICommon::PushDisabled(disabled);
+
+				bool v = AnimationUpdateController::GetSingleton().GetEnabled();
+
 				if (ImGui::Checkbox(
 						UIL::LS(UISettingsStrings::BhkAnims, "4"),
-						std::addressof(data.hkWeaponAnimations)))
+						std::addressof(v)))
 				{
-					if (data.hkWeaponAnimations && !data.hkWeaponAnimationsWarned)
-					{
-						data.hkWeaponAnimations = false;
+					settings.set(data.hkWeaponAnimations, v);
 
-						auto& queue = m_controller.UIGetPopupQueue();
-
-						queue.push(
-								 UIPopupType::Confirm,
-								 UIL::LS(CommonStrings::Confirm),
-								 "%s",
-								 UIL::LS(UISettingsStrings::ExperimentalFeatureWarn))
-							.set_text_wrap_size(30.0f)
-							.call([this](auto&) {
-								auto& settings = m_controller.GetConfigStore().settings;
-								auto& data     = settings.data;
-
-								data.hkWeaponAnimations       = true;
-								data.hkWeaponAnimationsWarned = true;
-
-								settings.mark_dirty();
-
-								m_controller.SetProcessorTaskRunAUState(true);
-								m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
-							});
-					}
-					else
-					{
-						settings.mark_dirty();
-						m_controller.SetProcessorTaskRunAUState(data.hkWeaponAnimations);
-						m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
-					}
+					AnimationUpdateController::GetSingleton().SetEnabled(v);
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
 				}
-				UITipsInterface::DrawTipImportant(UITip::BhkAnims);
+				UITipsInterface::DrawTip(UITip::BhkAnims);
+
+				UICommon::PopDisabled(disabled);
 
 				/*if (data.hkWeaponAnimations)
 				{
@@ -480,8 +460,8 @@ namespace IED
 							UIL::LS(UISettingsStrings::MaxDiff, "3"),
 							std::addressof(data.physics.maxDiff),
 							ImGui::GetIO().KeyShift ? 0.0005f : 0.25f,
-							128,
-							8192,
+							128.0f,
+							8192.0f,
 							"%.2f",
 							ImGuiSliderFlags_AlwaysClamp)))
 					{

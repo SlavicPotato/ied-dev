@@ -21,7 +21,7 @@ namespace IED
 			kUseWorldModel              = 1u << 7,
 			kDisabled                   = 1u << 8,
 			kPlaySequence               = 1u << 9,
-			kDisableWeaponAnims         = 1u << 10,
+			kDisableBehaviorGraphAnims         = 1u << 10,
 			kDisableAnimEventForwarding = 1u << 11,
 			kAnimationEvent             = 1u << 12,
 			kRemoveProjectileTracers    = 1u << 13,

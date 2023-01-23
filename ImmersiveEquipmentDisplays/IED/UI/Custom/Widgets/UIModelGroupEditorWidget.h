@@ -433,7 +433,7 @@ namespace IED
 			if (ImGui::CheckboxFlagsT(
 					UIL::LS(UIWidgetCommonStrings::DisableWeaponAnims, "D"),
 					stl::underlying(std::addressof(entry.flags.value)),
-					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims)))
+					stl::underlying(Data::ConfigModelGroupEntryFlags::kDisableBehaviorGraphAnims)))
 			{
 				OnModelGroupEditorChange(
 					a_handle,

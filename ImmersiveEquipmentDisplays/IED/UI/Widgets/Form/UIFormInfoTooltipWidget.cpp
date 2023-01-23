@@ -57,12 +57,6 @@ namespace IED
 				ImGui::Spacing();
 			}
 
-			auto dt = IPerfCounter::delta_us(
-				a_entry.data.state->created,
-				PerfCounter::Query());
-
-			ImGui::Text("%s: %lld min", UIL::LS(CommonStrings::Age), dt / (1000000ll * 60));
-
 			ImGui::PopTextWrapPos();
 			ImGui::EndTooltip();
 		}

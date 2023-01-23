@@ -247,7 +247,9 @@ namespace IED
 			const Tm&     a_match,
 			Tp            a_post) noexcept
 		{
-			if (a_match.bipedSlot >= BIPED_OBJECT::kTotal)
+			const auto slot = a_params.translate_biped_object(a_match.bipedSlot);
+
+			if (slot >= BIPED_OBJECT::kTotal)
 			{
 				return false;
 			}
@@ -258,7 +260,7 @@ namespace IED
 				return false;
 			}
 
-			auto& e = biped->get_object(a_match.bipedSlot);
+			auto& e = biped->get_object(slot);
 
 			auto form = e.item;
 			if (!form || e.addon == form)

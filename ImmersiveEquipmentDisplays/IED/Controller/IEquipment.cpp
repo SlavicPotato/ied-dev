@@ -281,7 +281,7 @@ namespace IED
 				}
 			}
 
-			auto& tmp = m_temp.fl;
+			auto& tmp = a_params.objects.GetTempData().fl;
 
 			tmp.assign(a_config.extraItems.begin(), a_config.extraItems.end());
 			tmp.emplace_back(a_config.form.get_id());

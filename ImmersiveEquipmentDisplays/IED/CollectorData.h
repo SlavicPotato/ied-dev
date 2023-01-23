@@ -40,7 +40,7 @@ namespace IED
 
 				template <class T>
 				constexpr ItemData(
-					TESForm*             a_form,
+					TESBoundObject*      a_form,
 					const ItemExtraData& a_extra,
 					T                    a_count)  //
 					noexcept    //
@@ -52,15 +52,15 @@ namespace IED
 					sharedCount(a_count){};
 
 				constexpr ItemData(
-					TESForm*             a_form,
+					TESBoundObject*      a_form,
 					const ItemExtraData& a_extra) noexcept :
 					form(a_form),
 					extra(a_extra){};
 
 				template <class F>
 				constexpr ItemData(
-					TESForm* a_form,
-					F        a_getextra)                                              //
+					TESBoundObject* a_form,
+					F               a_getextra)                                              //
 					noexcept(std::is_nothrow_invocable_r_v<ItemExtraData, F>)  //
 					requires(std::is_invocable_r_v<ItemExtraData, F>)
 					:
@@ -110,7 +110,7 @@ namespace IED
 					}
 				}
 
-				TESForm*             form;
+				TESBoundObject*      form;
 				ItemExtraData        extra;
 				std::int32_t         itemCount{ 0 };
 				mutable std::int32_t sharedCount{ 0 };
@@ -129,7 +129,7 @@ namespace IED
 
 			[[nodiscard]] constexpr bool IsTypePresent(std::underlying_type_t<ObjectTypeExtra> a_type) const noexcept
 			{
-				assert(a_slot < stl::underlying(ObjectTypeExtra::kMax));
+				assert(a_type < stl::underlying(ObjectTypeExtra::kMax));
 				return static_cast<bool>(presentTypes & (1ui32 << a_type));
 			}
 
@@ -146,7 +146,7 @@ namespace IED
 
 			[[nodiscard]] constexpr void SetTypePresent(ObjectTypeExtra a_type) noexcept
 			{
-				assert(a_slot < ObjectTypeExtra::kMax);
+				assert(a_type < ObjectTypeExtra::kMax);
 				presentTypes |= (1ui32 << stl::underlying(a_type));
 			}
 
@@ -168,7 +168,7 @@ namespace IED
 				{
 				}
 
-				TESForm*                     form;
+				TESBoundObject*              form;
 				ItemExtraData::ExtraEquipped extraEquipped;
 			};
 

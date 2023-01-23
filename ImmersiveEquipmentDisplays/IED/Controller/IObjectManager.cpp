@@ -519,7 +519,6 @@ namespace IED
 		const bool                      a_leftWeapon,
 		const bool                      a_visible,
 		const bool                      a_disableHavok,
-		const bool                      a_bhkAnims,
 		const bool                      a_physics) noexcept
 	{
 		if (a_objectEntry.data.state)
@@ -616,7 +615,7 @@ namespace IED
 			state->dbEntry = std::move(dbentry);
 		}
 
-		a_params.SuspendEffectShaders();
+		a_params.SuspendReferenceEffectShaders();
 
 		if (modelParams.swap)
 		{
@@ -744,10 +743,10 @@ namespace IED
 				a_activeConfig.niControllerSequence);
 		}
 		else if (
-			a_bhkAnims &&
-			(modelParams.type == ModelType::kWeapon || 
-				a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
-			!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims))
+			AnimationUpdateController::GetSingleton().GetEnabled() &&
+			(modelParams.type == ModelType::kWeapon ||
+		     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
+			!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims))
 		{
 			if (EngineExtensions::CreateWeaponBehaviorGraph(
 					object,
@@ -772,7 +771,7 @@ namespace IED
 				}
 
 				AnimationUpdateController::GetSingleton().AddObject(
-					a_params.actor->formID,
+					a_params.objects.GetActorFormID(),
 					state->anim.holder);
 			}
 		}
@@ -811,7 +810,6 @@ namespace IED
 		const bool                      a_leftWeapon,
 		const bool                      a_visible,
 		const bool                      a_disableHavok,
-		const bool                      a_bhkAnims,
 		const bool                      a_physics) noexcept
 	{
 		if (a_objectEntry.data.state)
@@ -943,7 +941,7 @@ namespace IED
 			return false;
 		}
 
-		a_params.SuspendEffectShaders();
+		a_params.SuspendReferenceEffectShaders();
 
 		char buffer[INode::NODE_NAME_BUFFER_SIZE];
 
@@ -1095,12 +1093,12 @@ namespace IED
 					e.entry->second.niControllerSequence);
 			}
 			else if (
-				a_bhkAnims &&
-				(e.params.type == ModelType::kWeapon || 
-					a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim) ||
-					e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)) &&
-				!a_activeConfig.flags.test(Data::BaseFlags::kDisableWeaponAnims) &&
-				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableWeaponAnims))
+				AnimationUpdateController::GetSingleton().GetEnabled() &&
+				(e.params.type == ModelType::kWeapon ||
+			     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim) ||
+			     e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)) &&
+				!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims) &&
+				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableBehaviorGraphAnims))
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
 						e.grpObject->object,
@@ -1126,7 +1124,7 @@ namespace IED
 					}
 
 					AnimationUpdateController::GetSingleton().AddObject(
-						a_params.actor->formID,
+						a_params.objects.GetActorFormID(),
 						e.grpObject->anim.holder);
 				}
 			}
@@ -1183,7 +1181,6 @@ namespace IED
 		a_state->nodes.ref      = std::move(a_targetNodes.ref);
 		a_state->nodes.object   = a_objectNode;
 		a_state->nodeDesc       = a_config.targetNode;
-		a_state->created        = IPerfCounter::Query();
 		a_state->atmReference   = a_config.targetNode.managed() ||
 		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
 
@@ -1196,7 +1193,7 @@ namespace IED
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
-		if (const auto arrowQuiver = FindChildNode(a_object, sh->m_arrowQuiver))
+		if (const auto arrowQuiver = GetNodeByName(a_object, sh->m_arrowQuiver))
 		{
 			a_state->arrowState =
 				std::make_unique<ObjectEntryBase::QuiverArrowState>(arrowQuiver);

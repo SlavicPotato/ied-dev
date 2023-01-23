@@ -55,10 +55,7 @@ namespace IED
 
 				const auto odbLevel = m_controller.GetODBLevel();
 
-				if (odbLevel != ObjectDatabaseLevel::kDisabled)
-				{
-					ImGui::TextUnformatted("Model cache:");
-				}
+				ImGui::TextUnformatted("Model cache:");
 
 				if (m_controller.PhysicsProcessingEnabled())
 				{
@@ -99,16 +96,13 @@ namespace IED
 					m_controller.GetEquippedItemCacheSize(),
 					m_controller.GetEquippedItemCacheSizeMax());
 
-				if (odbLevel != ObjectDatabaseLevel::kDisabled)
-				{
-					ImGui::Text(
-						"%zu/%zu/%u",
-						m_controller.GetODBUnusedObjectCount(),
-						m_controller.GetODBObjectCount(),
-						stl::underlying(odbLevel));
+				ImGui::Text(
+					"%zu/%zu/%u",
+					m_controller.GetODBUnusedObjectCount(),
+					m_controller.GetODBObjectCount(),
+					stl::underlying(odbLevel));
 
-					UITipsInterface::DrawTip(UITip::CacheInfo);
-				}
+				UITipsInterface::DrawTip(UITip::CacheInfo);
 
 				if (m_controller.PhysicsProcessingEnabled())
 				{

@@ -143,7 +143,7 @@ namespace IED
 			rlc.SetNPCLightUpdateFixEnabled(true);
 		}
 
-		if (config->m_parallelAnimationUpdates)
+		if (config->m_behaviorGraphAnims)
 		{
 			AnimationUpdateController::GetSingleton().Initialize();
 		}

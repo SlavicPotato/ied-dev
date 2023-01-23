@@ -71,7 +71,7 @@ namespace IED
 			matchedSlotFlags |= 1ui64 << stl::underlying(a_object);
 		}
 
-		float get_matched_weapon_adjust() const noexcept
+		constexpr float get_matched_weapon_adjust() const noexcept
 		{
 			float result = 0.0f;
 
@@ -91,7 +91,7 @@ namespace IED
 
 		template <class Tf>
 		constexpr bool equipped_armor_visitor(
-			Tf a_func)                                                 //
+			Tf a_func)                                                         //
 			noexcept(std::is_nothrow_invocable_r_v<bool, Tf, TESObjectARMO*>)  //
 			requires(std::is_invocable_r_v<bool, Tf, TESObjectARMO*>)
 		{
@@ -101,29 +101,43 @@ namespace IED
 				return false;
 			}
 
-			const auto skin = get_actor_skin();
+			const auto skin       = get_actor_skin();
+			const auto shieldSlot = get_npc_shield_slot();
 
 			using enum_type = std::underlying_type_t<BIPED_OBJECT>;
 
 			for (enum_type i = stl::underlying(BIPED_OBJECT::kHead); i < stl::underlying(BIPED_OBJECT::kEditorTotal); i++)
 			{
-				if (is_av_ignored_slot(static_cast<BIPED_OBJECT>(i)))
+				const auto slot = static_cast<BIPED_OBJECT>(i);
+
+				if (slot == shieldSlot)
 				{
 					continue;
 				}
 
-				auto& e = bip->objects[i];
-
-				if (e.item &&
-				    e.item != e.addon &&
-				    e.item != skin)
+				switch (slot)
 				{
-					if (const auto armor = e.item->As<TESObjectARMO>())
+					// ??
+				case BIPED_OBJECT::kDecapitateHead:
+				case BIPED_OBJECT::kDecapitate:
+				case BIPED_OBJECT::kFX01:
+					continue;
+				}
+
+				const auto& e = bip->objects[i];
+
+				if (!e.item ||
+				    e.item == e.addon ||
+				    e.item == skin)
+				{
+					continue;
+				}
+
+				if (const auto armor = e.item->As<TESObjectARMO>())
+				{
+					if (a_func(armor) == true)
 					{
-						if (a_func(armor) == true)
-						{
-							return true;
-						}
+						return true;
 					}
 				}
 			}
@@ -133,26 +147,6 @@ namespace IED
 
 	private:
 		void make_item_data() noexcept;
-
-		constexpr bool is_av_ignored_slot(
-			BIPED_OBJECT a_slot) const noexcept
-		{
-			if (a_slot == get_shield_slot())
-			{
-				return true;
-			}
-
-			switch (a_slot)
-			{
-				// ??
-			case BIPED_OBJECT::kDecapitateHead:
-			case BIPED_OBJECT::kDecapitate:
-			case BIPED_OBJECT::kFX01:
-				return true;
-			default:
-				return false;
-			}
-		}
 
 		item_container_type& itemData;
 		bool                 hasItemData{ false };

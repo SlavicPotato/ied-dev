@@ -85,7 +85,7 @@ namespace IED
 		{
 		}
 
-		void SuspendEffectShaders() noexcept;
+		void SuspendReferenceEffectShaders() noexcept;
 
 		processState_t state;
 	};

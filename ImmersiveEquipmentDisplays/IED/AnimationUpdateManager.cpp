@@ -8,7 +8,7 @@ namespace IED
 
 	void AnimationUpdateController::Initialize() noexcept
 	{
-		m_enabled = true;
+		m_initialized = true;
 	}
 
 	std::size_t AnimationUpdateController::GetNumObjects() const noexcept
@@ -32,14 +32,17 @@ namespace IED
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data) const noexcept
 	{
-		const shared_lock lock(m_lock);
-
-		auto it = m_data.find(a_actor->formID);
-		if (it != m_data.end())
+		if (GetEnabled())
 		{
-			for (auto& e : it->second)
+			const shared_lock lock(m_lock);
+
+			auto it = m_data.find(a_actor->formID);
+			if (it != m_data.end())
 			{
-				UpdateAnimationGraph(e.get(), a_data);
+				for (auto& e : it->second)
+				{
+					UpdateAnimationGraph(e.get(), a_data);
+				}
 			}
 		}
 	}
@@ -48,7 +51,7 @@ namespace IED
 		Game::FormID                                    a_actor,
 		const RE::WeaponAnimationGraphManagerHolderPtr& a_ptr) noexcept
 	{
-		if (m_enabled)
+		if (GetEnabled())
 		{
 			const unique_lock lock(m_lock);
 
@@ -62,7 +65,7 @@ namespace IED
 		Game::FormID                                    a_actor,
 		const RE::WeaponAnimationGraphManagerHolderPtr& a_ptr) noexcept
 	{
-		if (m_enabled)
+		if (GetInitialized())
 		{
 			const unique_lock lock(m_lock);
 
@@ -77,7 +80,7 @@ namespace IED
 	void AnimationUpdateController::RemoveActor(
 		Game::FormID a_actor) noexcept
 	{
-		if (m_enabled)
+		if (GetInitialized())
 		{
 			const unique_lock lock(m_lock);
 

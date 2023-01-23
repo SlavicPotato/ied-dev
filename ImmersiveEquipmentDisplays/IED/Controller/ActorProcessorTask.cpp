@@ -502,46 +502,6 @@ namespace IED
 					{
 						if (state->flags.test(ObjectEntryFlags::kInvisible))
 						{
-							/*if (state->flags.test(ObjectEntryFlags::kWantUnloadAfterHide))
-							{
-								if constexpr (_Par)
-								{
-									{
-										stl::lock_guard lock(m_syncRefParentQueueWRLock);
-										std::erase_if(
-											m_syncRefParentQueue,
-											[&](auto& a_e) {
-												return a_e.second == std::addressof(a_v);
-											});
-									}
-
-									stl::lock_guard lock(m_unloadQueueWRLock);
-									m_unloadQueue.emplace_back(std::addressof(a_holder), std::addressof(a_v));
-								}
-								else
-								{
-									GetController().RemoveObject(
-										nullptr,
-										a_holder.GetHandle(),
-										a_v,
-										a_holder,
-										ControllerUpdateFlags::kNone,
-										false);
-								}
-							}
-							else
-							{
-								state->SetVisible(false);
-
-								if (state->nodes.HasPhysicsNode())
-								{
-									if (auto& simComponent = state->simComponent)
-									{
-										a_holder.RemoveAndDestroySimComponent(simComponent);
-									}
-								}
-							}*/
-
 							state->SetVisible(false);
 
 							if (state->nodes.HasPhysicsNode())
@@ -595,8 +555,7 @@ namespace IED
 		}
 	}
 
-	void ActorProcessorTask::RunPreUpdates(
-		const Game::Unk2f6b948::Steps& a_stepMuls) noexcept
+	void ActorProcessorTask::RunPreUpdates() noexcept
 	{
 		const auto interval = *Game::g_frameTimerSlow;
 
@@ -606,7 +565,7 @@ namespace IED
 		{
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
-
+		const auto stepMuls         = Game::Unk2f6b948::GetStepMultipliers();
 		const auto runEffectUpdates = !Game::IsPaused();
 
 		auto& data = GetController().GetObjects().getvec();
@@ -620,43 +579,25 @@ namespace IED
 				[&](auto& a_e) noexcept {
 					DoActorUpdate<true>(
 						interval,
-						a_stepMuls,
+						stepMuls,
 						physUpdateData,
 						a_e->second,
 						runEffectUpdates);
 				});
 
-			m_syncRefParentQueue.process([this](const auto& a_e) noexcept {
-				const bool result = SyncRefParentNode(*a_e.first, *a_e.second);
+			m_syncRefParentQueue.process(
+				[this](const auto& a_e) noexcept [[msvc::forceinline]] {
+					const bool result = SyncRefParentNode(*a_e.first, *a_e.second);
 
-				if (result)
-				{
-					a_e.first->RequestEval();
-				}
-				else
-				{
-					a_e.second->data.state->flags.set(
-						ObjectEntryFlags::kRefSyncDisableFailedOrphan);
-				}
-			});
-
-			/*
-			if (!m_unloadQueue.empty())
-			{
-				for (const auto& e : m_unloadQueue)
-				{
-					GetController().RemoveObject(
-						nullptr,
-						e.first->GetHandle(),
-						*e.second,
-						*e.first,
-						ControllerUpdateFlags::kNone,
-						false);
-				}
-
-				m_unloadQueue.clear();
-			}
-			*/
+					if (result)
+					{
+						a_e.first->RequestEval();
+					}
+					else
+					{
+						a_e.second->DisableRefSync();
+					}
+				});
 		}
 		else
 		{
@@ -664,67 +605,12 @@ namespace IED
 			{
 				DoActorUpdate<false>(
 					interval,
-					a_stepMuls,
+					stepMuls,
 					physUpdateData,
 					e->second,
 					runEffectUpdates);
 			}
 		}
-	}
-
-	static void UpdateActorGearAnimations(
-		TESObjectREFR*           a_actor,
-		const ActorObjectHolder& a_holder,
-		float                    a_step) noexcept
-	{
-		struct TLSData
-		{
-			std::uint8_t  unk000[0x768];  // 000
-			std::uint32_t unk768;         // 768
-		};
-
-		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
-
-		auto& tlsUnk768 = tlsData[*g_TlsIndexPtr]->unk768;
-
-		const auto oldUnk768 = tlsUnk768;
-		tlsUnk768            = 0x3A;
-
-		BSAnimationUpdateData data{ a_step };
-		data.reference    = a_actor;
-		data.shouldUpdate = a_actor->GetMustUpdate();
-
-		a_actor->ModifyAnimationUpdateData(data);
-
-		a_holder.UpdateAllAnimationGraphs(data);
-
-		tlsUnk768 = oldUnk768;
-	}
-
-	void ActorProcessorTask::RunSequentialAnimUpdates(
-		const Game::Unk2f6b948::Steps& a_stepMuls) noexcept
-	{
-		const animUpdateData_t updateData{
-			a_stepMuls * *Game::g_frameTimerSlow
-		};
-
-		for (auto& e : GetController().m_objects)
-		{
-			if (e.second.IsActive())
-			{
-				const auto step =
-					e.second.IsPlayer() ?
-						updateData.steps.player :
-						updateData.steps.npc;
-
-				UpdateActorGearAnimations(e.second.m_actor, e.second, step);
-			}
-		}
-	}
-
-	void ActorProcessorTask::SetProcessorTaskRunAUState(bool a_state) noexcept
-	{
-		m_runAnimationUpdates = !AnimationUpdateController::GetSingleton().GetEnabled() && a_state;
 	}
 
 	void ActorProcessorTask::Run() noexcept
@@ -742,9 +628,7 @@ namespace IED
 
 		UpdateGlobalState();
 
-		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
-
-		RunPreUpdates(stepMuls);
+		RunPreUpdates();
 
 		const auto& cvdata = controller.m_config.active.condvars;
 
@@ -775,38 +659,6 @@ namespace IED
 						}
 					}
 				}
-
-				/*const bool wantVarUpdate = e.m_flags.consume(ActorObjectHolderFlags::kWantVarUpdate);
-
-				if (wantVarUpdate || e.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame))
-				{
-					if (const auto info = controller.LookupCachedActorInfo2(e.m_actor, e))
-					{
-						auto& params = e.CreateProcessParams(
-							e.GetSex(),
-							ControllerUpdateFlags::kPlaySound,
-							e.m_actor.get(),
-							e.GetHandle(),
-							e.GetTempData(),
-							e.m_actor.get(),
-							info->npc,
-							info->npcOrTemplate,
-							info->race,
-							info->root,
-							info->npcRoot,
-							e,
-							controller);
-
-						if (IConditionalVariableProcessor::UpdateVariableMap(
-								params,
-								cvdata,
-								e.GetVariables()))
-						{
-							controller.RequestHFEvaluateAll(i);
-							e.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
-						}
-					}
-				}*/
 			}
 		}
 
@@ -821,12 +673,6 @@ namespace IED
 
 				holder.ClearCurrentProcessParams();
 			}
-		}
-
-		if (m_runAnimationUpdates &&
-		    !Game::IsPaused())
-		{
-			RunSequentialAnimUpdates(stepMuls);
 		}
 
 		controller.RunObjectCleanup();

@@ -80,7 +80,7 @@ namespace IED
 		bool           m_applyTransformOverrides{ true };
 		bool           m_enableCorpseScatter{ false };
 		bool           m_enableEarlyLoadHooks{ true };
-		bool           m_parallelAnimationUpdates{ false };
+		bool           m_behaviorGraphAnims{ false };
 		bool           m_forceFlushSaveData{ false };
 		bool           m_enableLights{ false };
 		bool           m_effectShaderFlickerFix{ false };

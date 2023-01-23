@@ -13,14 +13,7 @@ namespace IED
 		{
 			for (auto& e : a_in)
 			{
-				auto v = e.asUInt();
-				if (v >= stl::underlying(BIPED_OBJECT::kTotal))
-				{
-					Error("%s: bad biped slot index", __FUNCTION__);
-					return false;
-				}
-
-				a_out.emplace_back(static_cast<BIPED_OBJECT>(v));
+				a_out.emplace_back(static_cast<BIPED_OBJECT>(e.asUInt()));
 			}
 
 			return true;

@@ -139,7 +139,7 @@ namespace IED
 				resetTriggerFlags = a_in.flags & Data::BaseFlags::kResetTriggerFlags;
 			}
 
-			void UpdateFlags(
+			constexpr void UpdateFlags(
 				const Data::configBaseValues_t& a_in) noexcept
 			{
 				// gross but efficient
@@ -180,7 +180,7 @@ namespace IED
 			void SetVisible(bool a_switch) noexcept;
 
 			template <class Tf>
-			void visit_db_entries(Tf a_func)  //
+			constexpr void visit_db_entries(Tf a_func)  //
 				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabase::ObjectDatabaseEntry&>)
 				requires(std::invocable<Tf, ObjectDatabase::ObjectDatabaseEntry&>)  //
 			{
@@ -209,7 +209,6 @@ namespace IED
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			std::shared_ptr<PHYSimComponent>                   simComponent;
 			stl::fixed_string                                  currentSequence;
-			long long                                          created{ 0 };
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			ObjectLight                                        light;
 			ObjectSound                                        sound;
@@ -237,6 +236,14 @@ namespace IED
 			std::unique_ptr<State>            state;
 			std::unique_ptr<EffectShaderData> effectShaderData;
 		};
+
+		constexpr void DisableRefSync() noexcept
+		{
+			if (auto &state = data.state)
+			{
+				state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
+			}
+		}
 
 		ObjectEntryData data;
 	};

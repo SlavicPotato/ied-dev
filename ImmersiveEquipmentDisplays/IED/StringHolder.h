@@ -31,13 +31,6 @@ namespace IED
 		static constexpr auto NINODE_NPCRHAND         = "NPC R Hand [RHnd]";
 
 		static constexpr auto NINODE_ARROW_QUIVER = "ArrowQuiver";
-		static constexpr auto NINODE_ARROW_1      = "Arrow1";
-		static constexpr auto NINODE_ARROW_2      = "Arrow2";
-		static constexpr auto NINODE_ARROW_3      = "Arrow3";
-		static constexpr auto NINODE_ARROW_4      = "Arrow4";
-		static constexpr auto NINODE_ARROW_5      = "Arrow5";
-		static constexpr auto NINODE_ARROW_6      = "Arrow6";
-		static constexpr auto NINODE_ARROW_7      = "Arrow7";
 
 		static constexpr auto NINODE_SCB           = "Scb";
 		static constexpr auto NINODE_SCB_LEFT      = "ScbLeft";
@@ -85,42 +78,7 @@ namespace IED
 		static constexpr auto WEAPON_SHEATHE = "WeaponSheathe";
 		static constexpr auto GRAPH_DELETING = "GraphDeleting";
 
-		static constinit inline const char* ANIM_EVENTS[] = {
-			//"tailUnequip",
-			//"tailEquip",
-			"BeginWeaponDraw",
-			"BeginWeaponSheathe",
-			"WeaponSheathe",
-			"WeaponDraw",
-			"weaponSwing",
-			"weaponLeftSwing",
-			"BowDraw",
-			"BowDrawn",
-			"BowDrawStart",
-			"BowDrawEnd",
-			"BowReset",
-			"BowReleaseFast",
-			"BowRelease",
-			"BowZoomStart",
-			"BowZoomStop",
-			"BowEnd",
-			"ArrowAttach",
-			"ArrowDetach",
-			"ArrowRelease",
-			"AttackStart",
-			"AttackStop",
-			"Unequip_Out",
-			"Unequip_OutMoving",
-			"WeapEquip_OutMoving",
-			"WeapEquip_Out",
-			"AttackWinStart",
-			"PowerAttack_Start_end",
-			"AttackWinStartLeft",
-			"AttackWinEndLeft",
-			"AttackWinStart",
-			"AttackWinEnd",
-			"PowerAttackStop",
-		};
+		static constexpr std::size_t NUM_DYN_ARROWS = 19;
 
 		BSStringHolder();
 
@@ -198,8 +156,8 @@ namespace IED
 			BSFixedString cme;
 		};
 
-		std::array<SheathNodeEntry, 7> m_sheathNodes;
-		std::array<BSFixedString, 7>   m_arrows;
+		std::array<SheathNodeEntry, 7>            m_sheathNodes;
+		std::array<BSFixedString, NUM_DYN_ARROWS> m_arrows;
 
 		static std::unique_ptr<BSStringHolder> m_Instance;
 	};

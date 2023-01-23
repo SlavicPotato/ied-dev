@@ -163,7 +163,7 @@ namespace IED
 			gLog.SetLogLevel(*settings.logLevel);
 		}
 
-		ISKSE::GetBacklog().SetLimit(std::clamp<std::uint32_t>(settings.ui.logLimit, 1, 2000));
+		ISKSE::GetBacklog().SetLimit(std::clamp<std::uint32_t>(settings.ui.logLimit, 1, 10000));
 
 		SetODBLevel(settings.odbLevel);
 
@@ -186,7 +186,7 @@ namespace IED
 		InitializeConfig();
 		LoadAnimationData();
 
-		SetProcessorTaskRunAUState(settings.hkWeaponAnimations);
+		AnimationUpdateController::GetSingleton().SetEnabled(settings.hkWeaponAnimations);
 		SetShaderProcessingEnabled(settings.enableEffectShaders);
 		SetProcessorTaskParallelUpdates(settings.apParallelUpdates);
 
@@ -2434,7 +2434,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.SuspendEffectShaders();
+			a_params.SuspendReferenceEffectShaders();
 		}
 	}
 
@@ -2449,7 +2449,7 @@ namespace IED
 
 			data.reset();
 
-			a_params.SuspendEffectShaders();
+			a_params.SuspendReferenceEffectShaders();
 		}
 	}
 
@@ -2474,7 +2474,7 @@ namespace IED
 			{
 				a_objectEntry.data.effectShaderData = std::make_unique<EffectShaderData>(*es);
 
-				a_params.SuspendEffectShaders();
+				a_params.SuspendReferenceEffectShaders();
 			}
 			else
 			{
@@ -2482,7 +2482,7 @@ namespace IED
 						a_objectEntry.data.state->nodes.rootNode,
 						*es))
 				{
-					a_params.SuspendEffectShaders();
+					a_params.SuspendReferenceEffectShaders();
 				}
 				else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 				{
@@ -2492,7 +2492,7 @@ namespace IED
 							a_objectEntry.data.state->nodes.rootNode,
 							*es);
 
-						a_params.SuspendEffectShaders();
+						a_params.SuspendReferenceEffectShaders();
 					}
 				}
 			}
@@ -2529,11 +2529,6 @@ namespace IED
 		auto pm = a_params.actor->processManager;
 		if (!pm)
 		{
-			Warning(
-				"%s: [%.8X] actor has no process manager",
-				__FUNCTION__,
-				a_params.actor->formID.get());
-
 			return;
 		}
 
@@ -2874,7 +2869,6 @@ namespace IED
 						ItemData::IsLeftWeaponSlot(f.slot),
 						visible,
 						false,
-						settings.hkWeaponAnimations,
 						PhysicsProcessingEnabled()))
 				{
 					objectEntry.SetObjectVisible(visible);
@@ -2988,13 +2982,13 @@ namespace IED
 								nodes.second,
 								*es);
 
-						a_params.SuspendEffectShaders();
+						a_params.SuspendReferenceEffectShaders();
 					}
 					else
 					{
 						if (objectEntry.data.effectShaderData->UpdateIfChanged(a_params.objects, *es))
 						{
-							a_params.SuspendEffectShaders();
+							a_params.SuspendReferenceEffectShaders();
 						}
 						else if (a_params.flags.test(ControllerUpdateFlags::kWantEffectShaderConfigUpdate))
 						{
@@ -3004,7 +2998,7 @@ namespace IED
 									a_params.objects,
 									*es);
 
-								a_params.SuspendEffectShaders();
+								a_params.SuspendReferenceEffectShaders();
 							}
 						}
 					}
@@ -3267,8 +3261,6 @@ namespace IED
 			return false;
 		}
 
-		const auto& settings = m_config.settings.data;
-
 		if (a_config.customFlags.test_any(CustomFlags::kIsInInventoryMask))
 		{
 			bool hasMinCount;
@@ -3400,7 +3392,6 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations,
 					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
@@ -3417,7 +3408,6 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations,
 					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
@@ -3556,7 +3546,6 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations,
 					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.set(CustomObjectEntryFlags::kGroupMode);
@@ -3573,7 +3562,6 @@ namespace IED
 					a_config.customFlags.test(CustomFlags::kLeftWeapon),
 					visible,
 					a_config.customFlags.test(CustomFlags::kDisableHavok),
-					settings.hkWeaponAnimations,
 					PhysicsProcessingEnabled());
 
 				a_objectEntry.cflags.clear(CustomObjectEntryFlags::kGroupMode);
@@ -4335,12 +4323,9 @@ namespace IED
 							simComponent->UpdateConfig(conf);
 						}
 					}
-					else
+					else if (simComponent)
 					{
-						if (simComponent)
-						{
-							a_holder.RemoveAndDestroySimComponent(simComponent);
-						}
+						a_holder.RemoveAndDestroySimComponent(simComponent);
 					}
 				}
 				else if (simComponent)
@@ -6104,15 +6089,7 @@ namespace IED
 		if (a_level != GetODBLevel())
 		{
 			SetODBLevel(a_level);
-
-			if (a_level == ObjectDatabaseLevel::kDisabled)
-			{
-				QueueObjectDatabaseClear();
-			}
-			else
-			{
-				QueueDatabaseCleanup();
-			}
+			QueueDatabaseCleanup();
 		}
 	}
 

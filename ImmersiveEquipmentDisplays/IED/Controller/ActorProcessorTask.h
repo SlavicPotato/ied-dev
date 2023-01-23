@@ -56,8 +56,6 @@ namespace IED
 			m_run = a_state;
 		}
 
-		[[nodiscard]] void SetProcessorTaskRunAUState(bool a_state) noexcept;
-
 		constexpr void SetProcessorTaskParallelUpdates(bool a_switch) noexcept
 		{
 			m_parallelProcessing = a_switch;
@@ -133,8 +131,7 @@ namespace IED
 			ActorObjectHolder&                      a_holder,
 			bool                                    a_updateEffects) noexcept;
 
-		void RunPreUpdates(const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
-		void RunSequentialAnimUpdates(const Game::Unk2f6b948::Steps& a_stepMuls) noexcept;
+		void RunPreUpdates() noexcept;
 
 		GlobalState m_globalState;
 

@@ -94,7 +94,7 @@ namespace IED
 		const auto* const extraFactionChanges =
 			a_actor->extraData.Get<ExtraFactionChanges>();
 
-		const auto sig = GetSignature(extraFactionChanges);
+		const auto sig = GetSignature(extraFactionChanges, a_npc);
 
 		if (sig == currentSignature)
 		{
@@ -116,21 +116,18 @@ namespace IED
 	}
 
 	constexpr std::size_t CachedFactionData::GetSignature(
-		const ExtraFactionChanges* a_factionChanges) noexcept
+		const ExtraFactionChanges* a_factionChanges,
+		TESNPC*                    a_npc) noexcept
 	{
 		auto result = hash::fnv1::fnv_offset_basis;
 
-		if (a_factionChanges)
-		{
-			for (const auto& info : a_factionChanges->factions)
-			{
-				if (const auto* const faction = info.faction)
-				{
-					result = hash::fnv1::_append_hash_fnv1a(result, faction->formID);
-					result = hash::fnv1::_append_hash_fnv1a(result, info.rank);
-				}
-			}
-		}
+		visit_factions(
+			a_factionChanges,
+			a_npc,
+			[&](const auto& a_info) noexcept [[msvc::forceinline]] {
+				result = hash::fnv1::_append_hash_fnv1a(result, a_info.faction->formID);
+				result = hash::fnv1::_append_hash_fnv1a(result, a_info.rank);
+			});
 
 		return result;
 	}

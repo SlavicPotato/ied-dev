@@ -28,7 +28,7 @@ namespace IED
 
 	namespace detail
 	{
-		inline auto make_object_slot_array(
+		constexpr auto make_object_slot_array(
 			BipedSlotData::display_slot_data_type& a_1) noexcept
 		{
 			return stl::make_array<
@@ -146,23 +146,22 @@ namespace IED
 										   BSStringHolder::GetSingleton()->m_npcroot) :
 			                           nullptr;
 
-			m_cmeNodes.reserve(NodeOverrideData::GetCMENodeData().size());
-
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
-					auto& r = m_cmeNodes.raw().emplace_back(
-						std::piecewise_construct,
-						std::forward_as_tuple(e->first),
-						std::forward_as_tuple(node, GetCachedOrZeroTransform(e->second.name)));
+					auto& r = m_cmeNodes.try_emplace(
+											e->first,
+											node,
+											GetCachedOrZeroTransform(e->second.name))
+					              .first->second;
 
 					if (a_syncToFirstPersonSkeleton && npcroot1p)
 					{
 						node = GetNodeByName(npcroot1p, e->second.bsname);
 						if (node)
 						{
-							r.second.firstPerson = {
+							r.firstPerson = {
 								node,
 								GetCachedOrZeroTransform(e->second.name, true)
 							};
@@ -171,27 +170,18 @@ namespace IED
 				}
 			}
 
-			m_cmeNodes.sort_data();
-			m_cmeNodes.shrink_to_fit();
-
-			m_cmeNodes.reserve(NodeOverrideData::GetMOVNodeData().size());
-
 			for (auto& e : NodeOverrideData::GetMOVNodeData().getvec())
 			{
 				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
-					m_movNodes.raw().emplace_back(
-						std::piecewise_construct,
-						std::forward_as_tuple(e->first),
-						std::forward_as_tuple(
-							node,
-							GetCachedOrCurrentTransform(e->second.name, node),
-							e->second.placementID));
+					m_movNodes.try_emplace(
+						e->first,
+
+						node,
+						GetCachedOrCurrentTransform(e->second.name, node),
+						e->second.placementID);
 				}
 			}
-
-			m_movNodes.sort_data();
-			m_movNodes.shrink_to_fit();
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
@@ -220,8 +210,6 @@ namespace IED
 			CreateExtraMovNodes(a_npcroot);
 		}
 
-		m_nodeMonitorEntries.reserve(NodeOverrideData::GetNodeMonitorEntries().size());
-
 		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
 		{
 			if (!e.data.flags.test(Data::NodeMonitorFlags::kTargetAllSkeletons))
@@ -239,17 +227,15 @@ namespace IED
 
 			if (auto parent = GetNodeByName(a_npcroot, e.parent))
 			{
-				auto& r = m_nodeMonitorEntries.raw().emplace_back(
-					std::piecewise_construct,
-					std::forward_as_tuple(i),
-					std::forward_as_tuple(parent, std::addressof(e)));
+				auto& r = m_nodeMonitorEntries.try_emplace(
+												  i,
+												  parent,
+												  std::addressof(e))
+				              .first->second;
 
-				r.second.Update();
+				r.Update();
 			}
 		}
-
-		m_nodeMonitorEntries.sort_data();
-		m_nodeMonitorEntries.shrink_to_fit();
 
 		/*RE::BSAnimationGraphManagerPtr agm;
 		if (a_actor->GetAnimationGraphManagerImpl(agm))

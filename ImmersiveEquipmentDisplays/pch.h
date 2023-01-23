@@ -31,6 +31,7 @@
 #include <ext/StringCache.h>
 #include <ext/Vector.h>
 #include <ext/WeaponAnimationGraphManagerHolder.h>
+#include <ext/compiletime-strings.h>
 #include <ext/hkaSkeleton.h>
 
 #include <ext/stl_boost_serialization_containers.h>

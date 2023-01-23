@@ -1016,7 +1016,7 @@ namespace IED
 
 				auto old = e.flags;
 
-				e.flags.set(BaseFlags::kDisableWeaponAnims, a_enable);
+				e.flags.set(BaseFlags::kDisableBehaviorGraphAnims, a_enable);
 
 				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
 				{

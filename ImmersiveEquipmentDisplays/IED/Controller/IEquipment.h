@@ -100,17 +100,11 @@ namespace IED
 
 	private:
 		template <class Tf>
-		static inline auto SelectSlotEntryForm(
+		static constexpr auto SelectSlotEntryForm(
 			processParams_t&                  a_params,
 			const Data::configLastEquipped_t& a_config,
 			const BipedSlotCacheEntry&        a_slotEntry,
 			Tf                                a_validationFunc) noexcept;
-
-		struct
-		{
-			stl::vector<const BipedSlotCacheEntry*> le;
-			Data::configFormList_t                  fl;
-		} m_temp;
 
 		RandomNumberGeneratorBase& m_rng;
 	};
@@ -130,9 +124,12 @@ namespace IED
 			auto it = std::find_if(
 				a_config.bipedSlots.begin(),
 				a_config.bipedSlots.end(),
-				[&](auto& a_v) [[msvc::forceinline]] {
-					return a_v < BIPED_OBJECT::kTotal &&
-				           data[stl::underlying(a_v)].occupied;
+				[&](auto& a_v) noexcept [[msvc::forceinline]] {
+
+					const auto slot = a_params.translate_biped_object(a_v);
+
+					return slot < BIPED_OBJECT::kTotal &&
+				           data[stl::underlying(slot)].occupied;
 				});
 
 			if (it != a_config.bipedSlots.end())
@@ -144,18 +141,20 @@ namespace IED
 		if (a_config.flags.test(Data::LastEquippedFlags::kPrioritizeRecentSlots) &&
 		    a_config.bipedSlots.size() > 1)
 		{
-			auto& bipedSlots = m_temp.le;
+			auto& bipedSlots = a_params.objects.GetTempData().le;
 
 			bipedSlots.clear();
 
 			for (auto& e : a_config.bipedSlots)
 			{
-				if (e >= BIPED_OBJECT::kTotal)
+				const auto slot = a_params.translate_biped_object(e);
+
+				if (slot >= BIPED_OBJECT::kTotal)
 				{
 					continue;
 				}
 
-				auto& v = data[stl::underlying(e)];
+				auto& v = data[stl::underlying(slot)];
 
 				if (a_config.flags.test(Data::LastEquippedFlags::kSkipOccupiedSlots) &&
 				    v.occupied)
@@ -191,12 +190,14 @@ namespace IED
 		{
 			for (auto& e : a_config.bipedSlots)
 			{
-				if (e >= BIPED_OBJECT::kTotal)
+				const auto slot = a_params.translate_biped_object(e);
+
+				if (slot >= BIPED_OBJECT::kTotal)
 				{
 					continue;
 				}
 
-				auto& v = data[stl::underlying(e)];
+				auto& v = data[stl::underlying(slot)];
 
 				if (a_config.flags.test(Data::LastEquippedFlags::kSkipOccupiedSlots) &&
 				    v.occupied)
@@ -279,7 +280,7 @@ namespace IED
 	}
 
 	template <class Tf>
-	auto IEquipment::SelectSlotEntryForm(
+	constexpr auto IEquipment::SelectSlotEntryForm(
 		processParams_t&                  a_params,
 		const Data::configLastEquipped_t& a_config,
 		const BipedSlotCacheEntry&        a_slotEntry,

@@ -6,11 +6,11 @@
 
 namespace IED
 {
-	void ObjectLight::Cleanup(NiNode* a_object) noexcept
+	void ObjectLight::Cleanup(NiNode* a_root) noexcept
 	{
 		if (niObject)
 		{
-			ReferenceLightController::CleanupLights(a_object);
+			ReferenceLightController::CleanupLights(a_root);
 		}
 	}
 }

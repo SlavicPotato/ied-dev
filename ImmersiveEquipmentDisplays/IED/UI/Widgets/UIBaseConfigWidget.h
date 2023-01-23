@@ -1689,11 +1689,11 @@ namespace IED
 				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::DisableWeaponAnims, "2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kDisableWeaponAnims)))
+						stl::underlying(Data::BaseFlags::kDisableBehaviorGraphAnims)))
 				{
 					PropagateFlagToEquipmentOverrides(
 						a_baseConfig,
-						Data::BaseFlags::kDisableWeaponAnims);
+						Data::BaseFlags::kDisableBehaviorGraphAnims);
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}

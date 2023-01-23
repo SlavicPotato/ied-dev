@@ -1727,7 +1727,7 @@ namespace IED
 			case Data::NodeOverrideConditionType::Node:
 
 				{
-					bool disabled = match->bipedSlot < BIPED_OBJECT::kTotal;
+					bool disabled = match->bipedSlot != BIPED_OBJECT::kNone;
 
 					UICommon::PushDisabled(disabled);
 

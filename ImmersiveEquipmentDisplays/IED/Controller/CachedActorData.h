@@ -94,7 +94,8 @@ namespace IED
 			requires(std::invocable<Tf, const RE::FACTION_RANK&>);
 
 		[[nodiscard]] static constexpr std::size_t GetSignature(
-			const ExtraFactionChanges* a_factionChanges) noexcept;
+			const ExtraFactionChanges* a_factionChanges,
+			TESNPC*                    a_npc) noexcept;
 
 		container_type data;
 

@@ -47,7 +47,7 @@ namespace IED
 
 				parent->SetAt1(target->parentIndex, cme, replacedObject);
 
-				ASSERT(
+				assert(
 					target == replacedObject &&
 					target->m_parent == nullptr);
 

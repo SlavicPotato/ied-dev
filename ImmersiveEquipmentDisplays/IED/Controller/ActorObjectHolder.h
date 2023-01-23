@@ -113,15 +113,13 @@ namespace IED
 			bool              visible;
 		};
 
-		using cme_node_map_type = stl::flat_map<
+		using cme_node_map_type = stl::unordered_map<
 			stl::fixed_string,
-			CMENodeEntry,
-			stl::fixed_string_less_equal_ptr>;
+			CMENodeEntry>;
 
-		using mov_node_map_type = stl::flat_map<
+		using mov_node_map_type = stl::unordered_map<
 			stl::fixed_string,
-			MOVNodeEntry,
-			stl::fixed_string_less_equal_ptr>;
+			MOVNodeEntry>;
 
 	public:
 		static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
@@ -258,29 +256,17 @@ namespace IED
 
 		inline void RequestTransformUpdateDefer() const noexcept
 		{
-			if (!m_cmeNodes.empty() ||
-			    !m_movNodes.empty())
-			{
-				m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateDefer);
-			}
+			m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateDefer);
 		}
 
 		inline void RequestTransformUpdateDeferNoSkip() const noexcept
 		{
-			if (!m_cmeNodes.empty() ||
-			    !m_movNodes.empty())
-			{
-				m_flags.set(ActorObjectHolderFlags::kWantTransformUpdate);
-			}
+			m_flags.set(ActorObjectHolderFlags::kWantTransformUpdate);
 		}
 
 		inline void RequestTransformUpdate() const noexcept
 		{
-			if (!m_cmeNodes.empty() ||
-			    !m_movNodes.empty())
-			{
-				m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateImmediate);
-			}
+			m_flags.set(ActorObjectHolderFlags::kRequestTransformUpdateImmediate);
 		}
 
 		constexpr void RequestEvalDefer(std::uint8_t a_delay = 2) const noexcept
@@ -372,7 +358,7 @@ namespace IED
 
 		template <class Tf>
 		constexpr void visit(Tf a_func)  //
-			/*noexcept(
+										 /*noexcept(
 				std::is_nothrow_invocable_v<Tf, ObjectEntrySlot&>&&
 					std::is_nothrow_invocable_v<Tf, ObjectEntryCustom&>)*/
 		{
@@ -394,8 +380,8 @@ namespace IED
 		}
 
 		template <class Tf>
-		constexpr void visit(Tf a_func) const   //
-			/* noexcept(
+		constexpr void visit(Tf a_func) const  //
+											   /* noexcept(
 				std::is_nothrow_invocable_v<Tf, const ObjectEntrySlot&>&&
 					std::is_nothrow_invocable_v<Tf, const ObjectEntryCustom&>)*/
 		{
@@ -751,9 +737,9 @@ namespace IED
 		stl::vector<monitorNodeEntry_t> m_monitorNodes;
 		stl::vector<WeaponNodeEntry>    m_weapNodes;
 
-		cme_node_map_type                              m_cmeNodes;
-		mov_node_map_type                              m_movNodes;
-		stl::flat_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+		cme_node_map_type                                   m_cmeNodes;
+		mov_node_map_type                                   m_movNodes;
+		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
 
 		std::optional<processParams_t> m_currentParams;
 

@@ -11,11 +11,11 @@ namespace IED
 
 			[[nodiscard]] static constexpr const char* GetBipedSlotDesc(BIPED_OBJECT a_slot) noexcept
 			{
-				return a_slot < BIPED_OBJECT::kTotal ? m_desc[stl::underlying(a_slot)] : nullptr;
+				return a_slot < BIPED_OBJECT::kSpecTotal ? m_desc[stl::underlying(a_slot)] : nullptr;
 			}
 
 		private:
-			using data_type = std::array<const char*, stl::underlying(BIPED_OBJECT::kTotal)>;
+			using data_type = std::array<const char*, stl::underlying(BIPED_OBJECT::kSpecTotal)>;
 
 			static data_type m_desc;
 		};

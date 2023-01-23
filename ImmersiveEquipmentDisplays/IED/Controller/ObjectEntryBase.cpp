@@ -358,11 +358,9 @@ namespace IED
 	{
 		const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;
 
-		arrows.reserve(arrowStrings.size());
-
 		for (std::uint32_t i = 0; i < arrowStrings.size(); i++)
 		{
-			if (auto object = Util::Node::FindChildObject(a_arrowQuiver, arrowStrings[i]))
+			if (auto object = a_arrowQuiver->GetObjectByName(arrowStrings[i]))
 			{
 				arrows.emplace_back(object);
 			}

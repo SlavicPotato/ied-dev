@@ -10,11 +10,28 @@ namespace IED
 
 	namespace detail
 	{
-		inline auto make_slot_names() noexcept
+		constexpr auto make_slot_names() noexcept
 		{
-			return stl::make_array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)>([&]<std::size_t I>() {
+			return stl::make_array<stl::fixed_string, stl::underlying(Data::ObjectSlot::kMax)>([]<std::size_t I>() {
 				constexpr auto slotid = static_cast<Data::ObjectSlot>(I);
 				return stl::fixed_string::make_tuple(Data::GetSlotName(slotid));
+			});
+		}
+
+		template <std::size_t I>
+		constexpr const char* make_arrow_string() noexcept
+		{
+			using namespace stl::cts;
+
+			static combine_strings_t<char_list<'A', 'r', 'r', 'o', 'w'>, convert_t<I>> res;
+			return res.str;
+		}
+
+		template <std::size_t _Num>
+		constexpr auto make_arrow_string_array() noexcept
+		{
+			return stl::make_array<BSFixedString, _Num>([]<std::size_t I>() {
+				return make_arrow_string<I + 1>();
 			});
 		}
 
@@ -46,13 +63,7 @@ namespace IED
 			SheathNodeEntry{ NINODE_QUIVER, NINODE_MOV_DEFAULT_QUIVER, NINODE_CME_DEFAULT_QUIVER }
 		},
 		m_arrows{
-			NINODE_ARROW_1,
-			NINODE_ARROW_2,
-			NINODE_ARROW_3,
-			NINODE_ARROW_4,
-			NINODE_ARROW_5,
-			NINODE_ARROW_6,
-			NINODE_ARROW_7,
+			detail::make_arrow_string_array<NUM_DYN_ARROWS>()
 		}
 	{
 	}

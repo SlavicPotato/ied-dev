@@ -1040,6 +1040,5 @@ namespace IED
 		std::unique_ptr<configSlotHolderCopy_t::data_type> CreateDefaultSlotConfig(
 			ObjectSlot  a_slot,
 			ConfigClass a_class);
-
 	}
 }

@@ -133,7 +133,6 @@ namespace IED
 			const bool                      a_leftWeapon,
 			const bool                      a_visible,
 			const bool                      a_disableHavok,
-			const bool                      a_bhkAnims,
 			const bool                      a_physics) noexcept;
 
 		bool LoadAndAttachGroup(
@@ -146,7 +145,6 @@ namespace IED
 			const bool                      a_leftWeapon,
 			const bool                      a_visible,
 			const bool                      a_disableHavok,
-			const bool                      a_bgedAnims,
 			const bool                      a_physics) noexcept;
 
 		static void FinalizeObjectState(

@@ -30,7 +30,7 @@ namespace IED
 			kIgnoreRaceEquipTypes       = 1u << 14,
 			kPlaySequence               = 1u << 15,
 			kPapyrus                    = 1u << 16,  // unused
-			kDisableWeaponAnims         = 1u << 17,
+			kDisableBehaviorGraphAnims         = 1u << 17,
 			kDisableAnimEventForwarding = 1u << 18,  // unused
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
@@ -48,7 +48,7 @@ namespace IED
 			                     kRemoveScabbard |
 			                     kLoad1pWeaponModel |
 			                     kUseWorldModel |
-			                     kDisableWeaponAnims |
+			                     kDisableBehaviorGraphAnims |
 			                     kDisableHavok |
 			                     kRemoveProjectileTracers |
 			                     kAttachLight |

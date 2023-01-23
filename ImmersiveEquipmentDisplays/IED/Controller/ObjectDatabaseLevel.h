@@ -4,7 +4,7 @@ namespace IED
 {
 	enum class ObjectDatabaseLevel : std::uint32_t
 	{
-		kDisabled = static_cast<std::underlying_type_t<ObjectDatabaseLevel>>(-1),
+		kDisabled = static_cast<std::underlying_type_t<ObjectDatabaseLevel>>(-1), // not used
 
 		kNone     = 0,
 		kMin      = 2,

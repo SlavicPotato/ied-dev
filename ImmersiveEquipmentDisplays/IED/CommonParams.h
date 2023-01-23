@@ -143,14 +143,67 @@ namespace IED
 			return *weatherClass;
 		}
 
+		[[nodiscard]] constexpr auto get_npc_shield_slot() const noexcept
+		{
+			return npc->GetShieldBipedObject();
+		}
+
+		[[nodiscard]] constexpr auto get_npc_body_slot() const noexcept
+		{
+			return npc->GetBodyBipedObject();
+		}
+
+		[[nodiscard]] constexpr auto get_npc_head_slot() const noexcept
+		{
+			return npc->GetHeadBipedObject();
+		}
+
+		[[nodiscard]] constexpr auto get_npc_hair_slot() const noexcept
+		{
+			return npc->GetHairBipedObject();
+		}
+
 		[[nodiscard]] constexpr auto get_shield_slot() const noexcept
 		{
-			if (!shieldSlot)
+			return race->data.shieldObject;
+		}
+
+		[[nodiscard]] constexpr auto get_body_slot() const noexcept
+		{
+			return race->data.bodyObject;
+		}
+
+		[[nodiscard]] constexpr auto get_head_slot() const noexcept
+		{
+			return race->data.headObject;
+		}
+
+		[[nodiscard]] constexpr auto get_hair_slot() const noexcept
+		{
+			return race->data.hairObject;
+		}
+
+		[[nodiscard]] constexpr auto translate_biped_object(
+			BIPED_OBJECT a_object) const noexcept
+		{
+			if (a_object < BIPED_OBJECT::kTotal)
 			{
-				shieldSlot.emplace(actor->GetShieldBipedObject());
+				return a_object;
 			}
 
-			return *shieldSlot;
+			switch (a_object)
+			{
+			case BIPED_OBJECT::kRaceHead:
+				return get_head_slot();
+			case BIPED_OBJECT::kRaceHair:
+				return get_hair_slot();
+			case BIPED_OBJECT::kRaceShield:
+				return get_shield_slot();
+			case BIPED_OBJECT::kRaceBody:
+				return get_body_slot();
+			default:
+				return BIPED_OBJECT::kNone;
+			}
 		}
 
 		[[nodiscard]] constexpr auto get_time_of_day() const noexcept
@@ -198,7 +251,6 @@ namespace IED
 		mutable std::optional<TESCombatStyle*>                       combatStyle;
 		mutable std::optional<RE::TESWeather*>                       currentWeather;
 		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
-		mutable std::optional<BIPED_OBJECT>                          shieldSlot;
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
 		mutable std::optional<NiPointer<Actor>>                      mountedActor;
 		mutable std::optional<NiPointer<Actor>>                      mountedByActor;

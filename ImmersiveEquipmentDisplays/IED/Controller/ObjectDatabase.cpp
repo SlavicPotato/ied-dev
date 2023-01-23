@@ -20,7 +20,10 @@ namespace IED
 			return false;
 		}
 
-		if (m_level == ObjectDatabaseLevel::kDisabled)
+		stl::fixed_string spath(path);
+
+		auto it = m_data.find(spath);
+		if (it == m_data.end())
 		{
 			NiPointer<NiNode> tmp;
 
@@ -35,42 +38,19 @@ namespace IED
 				return false;
 			}
 
-			a_outObject = std::move(tmp);
+			auto entry = std::make_shared<entry_t>();
+
+			entry->object = std::move(tmp);
+
+			it = m_data.emplace(spath, std::move(entry)).first;
+
+			QueueDatabaseCleanup();
 		}
-		else
-		{
-			stl::fixed_string spath(path);
 
-			auto it = m_data.find(spath);
-			if (it == m_data.end())
-			{
-				NiPointer<NiNode> tmp;
+		it->second->accessed = IPerfCounter::Query();
 
-				ModelLoader loader;
-				if (!loader.LoadObject(path, tmp))
-				{
-					return false;
-				}
-
-				if (!ValidateObject(path, tmp))
-				{
-					return false;
-				}
-
-				auto entry = std::make_shared<entry_t>();
-
-				entry->object = std::move(tmp);
-
-				it = m_data.emplace(spath, std::move(entry)).first;
-
-				QueueDatabaseCleanup();
-			}
-
-			it->second->accessed = IPerfCounter::Query();
-
-			a_outEntry  = it->second;
-			a_outObject = CreateClone(it->second->object.get(), a_colliderScale);
-		}
+		a_outEntry  = it->second;
+		a_outObject = CreateClone(it->second->object.get(), a_colliderScale);
 
 		return true;
 	}
@@ -122,13 +102,14 @@ namespace IED
 
 		m_cleanupDeadline.reset();
 
-		if (m_level == ObjectDatabaseLevel::kDisabled)
+		if (m_level == ObjectDatabaseLevel::kNone)
 		{
-			return;
-		}
-		else if (m_level == ObjectDatabaseLevel::kNone)
-		{
-			std::erase_if(m_data, [](auto& a_v) { return a_v.second.use_count() <= 1; });
+			std::erase_if(
+				m_data,
+				[](auto& a_v) noexcept [[msvc::forceinline]] {
+					return a_v.second.use_count() <= 1;
+				});
+
 			return;
 		}
 
@@ -186,7 +167,7 @@ namespace IED
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept
 	{
-		if (m_level != ObjectDatabaseLevel::kDisabled && !m_cleanupDeadline)
+		if (!m_cleanupDeadline)
 		{
 			m_cleanupDeadline = IPerfCounter::get_tp(CLEANUP_DELAY);
 		}
@@ -213,11 +194,11 @@ namespace IED
 		m_cleanupDeadline.reset();
 	}
 
-	NiNode* ObjectDatabase::CreateClone(NiNode* a_object, float a_colliderScale) noexcept
+	NiNode* ObjectDatabase::CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept
 	{
 		NiCloningProcess process(NiObjectNET::CopyType::COPY_EXACT);
 
-		process.SetColliderScaleUniform(a_colliderScale);
+		process.SetCollisionObjectScaleUniform(a_collisionObjectScale);
 
 		auto result = a_object->CreateClone(process);
 		a_object->ProcessClone(process);
