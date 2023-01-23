@@ -56,7 +56,6 @@ namespace IED
 		const std::shared_ptr<ConfigINI>& a_config)
 	{
 		m_controller                    = a_controller;
-		m_conf.parallelAnimationUpdates = a_config->m_parallelAnimationUpdates;
 		m_conf.applyTransformOverrides  = a_config->m_applyTransformOverrides;
 		//m_conf.enableLights             = a_config->m_enableLights;
 
@@ -96,9 +95,9 @@ namespace IED
 			Hook_ToggleFav();
 		}
 
-		if (a_config->m_parallelAnimationUpdates)
+		if (a_config->m_behaviorGraphAnims)
 		{
-			Install_ParallelAnimationUpdate();
+			Install_UpdateReferenceBehaviorGraphs();
 		}
 
 		if (a_config->m_enableLights)
@@ -436,71 +435,20 @@ namespace IED
 			m_toggleFav1_a.get());
 	}
 
-	void EngineExtensions::Install_ParallelAnimationUpdate()
+	void EngineExtensions::Install_UpdateReferenceBehaviorGraphs()
 	{
-		const auto addrRefUpdate    = m_animUpdateRef_a.get() + 0x74;
+		const auto addrRefUpdate    = m_animUpdateRef_a.get() + 0xAB;
 		const auto addrPlayerUpdate = m_animUpdatePlayer_a.get() + 0xD0;
-		//auto addrAnimUpdatePre  = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xB9 : 0xC0);
-		//auto addrAnimUpdatePost = m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2);
 
 		VALIDATE_MEMORY(
 			addrRefUpdate,
-			({ 0xE8 }),
-			({ 0xE8 }));
+			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }),
+			({ 0xFF, 0x90, 0xF8, 0x03, 0x00, 0x00 }));
 
 		VALIDATE_MEMORY(
 			addrPlayerUpdate,
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }),
 			({ 0xFF, 0x90, 0xF0, 0x03, 0x00, 0x00 }));
-
-		/*if (hook::call5(
-				ISKSE::GetBranchTrampoline(),
-				addrAnimUpdatePre,
-				std::uintptr_t(PrepareAnimUpdateLists_Hook),
-				m_prepareAnimUpdateLists_o))
-		{
-			Debug(
-				"[%s] Installed pre anim update hook @0x%llX",
-				__FUNCTION__,
-				addrAnimUpdatePre);
-		}
-		else
-		{
-			HALT(__FUNCTION__ ": failed to install pre anim update hook");
-		}
-
-		if (hook::call5(
-				ISKSE::GetBranchTrampoline(),
-				m_animUpdateDispatcher_a.get() + (IAL::IsAE() ? 0xEB : 0xF2),
-				std::uintptr_t(ClearAnimUpdateLists_Hook),
-				m_clearAnimUpdateLists_o))
-		{
-			Debug(
-				"[%s] Installed post anim update hook @0x%llX",
-				__FUNCTION__,
-				addrAnimUpdatePost);
-		}
-		else
-		{
-			HALT(__FUNCTION__ ": failed to install post anim update hook");
-		}*/
-
-		std::uintptr_t dummy;
-		if (hook::call(
-				ISKSE::GetBranchTrampoline(),
-				addrRefUpdate,
-				std::uintptr_t(UpdateReferenceAnimations),
-				dummy))
-		{
-			Debug(
-				"[%s] Replaced reference anim update call @0x%llX",
-				__FUNCTION__,
-				addrRefUpdate);
-		}
-		else
-		{
-			HALT(__FUNCTION__ ": failed to replace reference anim update call");
-		}
 
 		LogPatchBegin();
 		{
@@ -520,11 +468,17 @@ namespace IED
 			};
 
 			Assembly code(
-				reinterpret_cast<std::uintptr_t>(UpdatePlayerAnim_Hook));
+				reinterpret_cast<std::uintptr_t>(UpdateRefAnim_Hook));
+
+			const auto dst = code.get();
+
+			ISKSE::GetBranchTrampoline().Write6Call(
+				addrRefUpdate,
+				dst);
 
 			ISKSE::GetBranchTrampoline().Write6Call(
 				addrPlayerUpdate,
-				code.get());
+				dst);
 		}
 		LogPatchEnd();
 	}
@@ -610,14 +564,6 @@ namespace IED
 			m_pcUpdateRefLightPlayerCharacter_o,
 			true,
 			"PlayerCharacter::UpdateRefLight");
-
-		/*InstallVtableDetour(
-			m_vtblCharacter_a,
-			0x55,
-			Character_UpdateRefLight_Hook,
-			m_updateRefLightPlayerCharacter_o,
-			true,
-			"Character::UpdateRefLight");		*/
 	}
 
 	void EngineExtensions::Install_EffectShaderPostResume()
@@ -949,29 +895,15 @@ namespace IED
 		return m_Instance.m_hkaLookupSkeletonNode_o(a_root, a_name, a_result);
 	}
 
-	/*void EngineExtensions::PrepareAnimUpdateLists_Hook(
-		Game::ProcessLists* a_pl,
-		void*               a_unk) noexcept
-	{
-		m_Instance.m_prepareAnimUpdateLists_o(a_pl, a_unk);
-		m_Instance.BeginAnimationUpdate(m_Instance.m_controller);
-	}
-
-	void EngineExtensions::ClearAnimUpdateLists_Hook(std::uint32_t a_unk) noexcept
-	{
-		m_Instance.EndAnimationUpdate(m_Instance.m_controller);
-		m_Instance.m_clearAnimUpdateLists_o(a_unk);
-	}*/
-
-	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdatePlayerAnim_Hook(
-		TESObjectREFR*               a_player,
+	const RE::BSTSmartPointer<Biped>& IED::EngineExtensions::UpdateRefAnim_Hook(
+		TESObjectREFR*               a_refr,
 		const BSAnimationUpdateData& a_data) noexcept
 	{
-		auto& bip = a_player->GetBiped1(false);
+		auto& bip = a_refr->GetBiped1(false);
 
 		if (bip)  // skip if no biped data
 		{
-			if (auto actor = a_player->As<Actor>())
+			if (auto actor = a_refr->As<Actor>())
 			{
 				AnimationUpdateController::GetSingleton().OnUpdate(
 					actor,
@@ -1393,69 +1325,6 @@ namespace IED
 	BSXFlags* EngineExtensions::GetBSXFlags(NiObjectNET* a_object) noexcept
 	{
 		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
-	}
-
-	static constexpr bool should_update(TESObjectREFR* a_refr) noexcept
-	{
-		if (a_refr->GetMustUpdate())
-		{
-			return true;
-		}
-
-		if (const auto* const door = a_refr->baseForm ? a_refr->baseForm->As<TESObjectDOOR>() : nullptr)
-		{
-			return door->doorFlags.test(TESObjectDOOR::Flag::kAutomatic);
-		}
-
-		return false;
-	}
-
-	void EngineExtensions::UpdateReferenceAnimations(
-		TESObjectREFR* a_refr,
-		float          a_step) noexcept
-	{
-		struct TLSData
-		{
-			std::uint8_t  unk000[0x768];  // 000
-			std::uint32_t unk768;         // 768
-		};
-
-		auto tlsData = reinterpret_cast<TLSData**>(__readgsqword(0x58));
-
-		auto& tlsUnk768 = tlsData[*g_TlsIndexPtr]->unk768;
-
-		auto oldUnk768 = tlsUnk768;
-		tlsUnk768      = 0x3A;
-
-		BSAnimationUpdateData data{ a_step };
-		data.reference    = a_refr;
-		data.shouldUpdate = should_update(a_refr);
-
-		a_refr->ModifyAnimationUpdateData(data);
-		UpdateAnimationGraph(a_refr, data);
-
-		if (auto& bip = a_refr->GetBiped2())
-		{
-			data.postAnimChannelUpdateFunctor = nullptr;
-			data.unkfunc                      = nullptr;
-
-			for (auto& e : bip->objects)
-			{
-				if (auto& h = e.weaponAnimationGraphManagerHolder)
-				{
-					UpdateAnimationGraph(h.get(), data);
-				}
-			}
-
-			if (auto actor = a_refr->As<Actor>())
-			{
-				AnimationUpdateController::GetSingleton().OnUpdate(
-					actor,
-					data);
-			}
-		}
-
-		tlsUnk768 = oldUnk768;
 	}
 
 }
