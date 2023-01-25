@@ -62,6 +62,7 @@ namespace IED
 			IsSneaking              = 5451,
 			InDialogue              = 5452,
 			LifeState               = 5453,
+			ActorValue              = 5454,
 		};
 	}
 }

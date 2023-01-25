@@ -72,7 +72,7 @@ namespace IED
 	{
 		if (!m_Instance)
 		{
-			ASSERT(StringCache::IsInitialized());
+			assert(StringCache::IsInitialized());
 
 			m_Instance = std::make_unique<BSStringHolder>();
 		}

@@ -332,6 +332,7 @@ namespace IED
 			kIsSneaking              = 51,
 			kInDialogue              = 52,
 			kLifeState               = 53,
+			kActorValue              = 54,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

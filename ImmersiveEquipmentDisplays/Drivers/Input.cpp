@@ -393,7 +393,7 @@ namespace IED
 			KeyEventState a_event,
 			std::uint32_t a_keyCode)
 		{
-			Handlers::KeyEvent evn{
+			const Handlers::KeyEvent evn{
 				a_event,
 				a_keyCode
 			};
@@ -403,7 +403,7 @@ namespace IED
 
 		void Input::DispatchPriorityKeyEvent(const MouseMoveEvent* a_evn)
 		{
-			Handlers::MouseMoveEvent evn{
+			const Handlers::MouseMoveEvent evn{
 				a_evn->mouseInputX,
 				a_evn->mouseInputY
 			};
@@ -415,7 +415,7 @@ namespace IED
 			KeyEventState a_event,
 			std::uint32_t a_keyCode)
 		{
-			Handlers::KeyEvent evn{
+			const Handlers::KeyEvent evn{
 				a_event,
 				a_keyCode
 			};

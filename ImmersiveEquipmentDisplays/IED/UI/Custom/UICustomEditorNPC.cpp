@@ -31,9 +31,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.customEditor.npcConfig.sex, false);
+			SetSex(settings.data.ui.customEditor.npcConfig.sex, false);
 		}
 
 		void UICustomEditorNPC::EditorDraw()
@@ -81,13 +81,13 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelActorSettings& UICustomEditorNPC::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor.npcConfig;
+			return m_controller.GetSettings().data.ui.customEditor.npcConfig;
 		}
 
 		Data::configCustomHolder_t& UICustomEditorNPC::GetOrCreateConfigSlotHolder(
 			Game::FormID a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().custom.GetNPCData();
 			auto& sh   = StringHolder::GetSingleton();
 
 			auto& pluginMap = data.try_emplace(a_handle).first->second;
@@ -97,8 +97,8 @@ namespace IED
 
 		entryCustomData_t UICustomEditorNPC::GetData(Game::FormID a_handle)
 		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data  = store.active.custom.GetNPCData();
+			auto& store = m_controller.GetActiveConfig();
+			auto& data  = store.custom.GetNPCData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -140,7 +140,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorNPC::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::NPC)];
@@ -148,24 +148,22 @@ namespace IED
 
 		void UICustomEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorNPC::OnListOptionsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorNPC::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor;
+			return m_controller.GetSettings().data.ui.customEditor;
 		}
 
 		void UICustomEditorNPC::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorNPC::ListResetAllValues(Game::FormID a_handle)
@@ -181,7 +179,7 @@ namespace IED
 				return;
 			}
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (!settings.data.ui.customEditor.actorConfig.autoSelectSex)
 			{
@@ -203,12 +201,12 @@ namespace IED
 
 		void UICustomEditorNPC::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.customEditor.npcConfig.sex != a_newSex)
+			if (settings.data.ui.customEditor.npcConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.customEditor.npcConfig.sex,
+				settings.set(
+					settings.data.ui.customEditor.npcConfig.sex,
 					a_newSex);
 			}
 		}
@@ -254,9 +252,9 @@ namespace IED
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfig(a_handle, *params, store.settings.data.ui.customEditor.sexSync);
+			UpdateConfig(a_handle, *params, settings.data.ui.customEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -317,7 +315,7 @@ namespace IED
 			Game::FormID                   a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().custom.GetNPCData();
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
@@ -350,7 +348,7 @@ namespace IED
 		const ImVec4* UICustomEditorNPC::HighlightEntry(Game::FormID a_handle)
 		{
 			return HasConfigEntry(
-					   m_controller.GetConfigStore().active.custom.GetNPCData(),
+					   m_controller.GetActiveConfig().custom.GetNPCData(),
 					   a_handle) ?
 			           std::addressof(UICommon::g_colorLightOrange) :
                        nullptr;

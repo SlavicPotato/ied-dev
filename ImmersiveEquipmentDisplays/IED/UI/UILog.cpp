@@ -45,7 +45,7 @@ namespace IED
 
 		void UILog::DrawHeader()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			auto& data = ISKSE::GetBacklog();
 
@@ -113,7 +113,7 @@ namespace IED
 
 		void UILog::DrawLogText()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			const auto& data = ISKSE::GetBacklog();
 
@@ -221,7 +221,7 @@ namespace IED
 
 		void UILog::DrawLevelCheckbox(const char* a_label, LogLevel a_level)
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			settings.mark_if(ImGui::Checkbox(
 				a_label,

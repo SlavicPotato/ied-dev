@@ -176,7 +176,7 @@ namespace IED
 			if (m_currentClass != conf.lastConfigClass)
 			{
 				conf.lastConfigClass = m_currentClass;
-				m_controller.GetConfigStore().settings.mark_dirty();
+				m_controller.GetSettings().mark_dirty();
 			}
 		}
 

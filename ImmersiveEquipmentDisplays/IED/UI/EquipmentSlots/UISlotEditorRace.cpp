@@ -28,9 +28,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.slotEditor.raceConfig.sex, false);
+			SetSex(settings.data.ui.slotEditor.raceConfig.sex, false);
 		}
 
 		void UISlotEditorRace::EditorDraw()
@@ -58,7 +58,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelRaceSettings& UISlotEditorRace::GetRaceSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.slotEditor.raceConfig;
+			return m_controller.GetSettings().data.ui.slotEditor.raceConfig;
 		}
 
 		auto UISlotEditorRace::GetCurrentData()
@@ -76,13 +76,12 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelCommon& UISlotEditorRace::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.slotEditor;
+			return m_controller.GetSettings().data.ui.slotEditor;
 		}
 
 		void UISlotEditorRace::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UISlotEditorRace::ListResetAllValues(
@@ -92,18 +91,19 @@ namespace IED
 		auto UISlotEditorRace::GetData(Game::FormID a_handle)
 			-> entrySlotData_t
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			return store.active.slot.GetRaceCopy(
+			return store.slot.GetRaceCopy(
 				a_handle,
-				store.settings.data.ui.slotEditor.globalType);
+				settings.data.ui.slotEditor.globalType);
 		}
 
 		auto UISlotEditorRace::GetOrCreateConfigSlotHolder(
 			Game::FormID a_handle) const
 			-> Data::configSlotHolder_t&
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 			auto& data  = store.slot.GetRaceData();
 
 			return data.try_emplace(a_handle).first->second;
@@ -142,12 +142,12 @@ namespace IED
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				*params,
-				store.settings.data.ui.slotEditor.sexSync);
+				settings.data.ui.slotEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -186,12 +186,12 @@ namespace IED
 			Game::FormID                          a_handle,
 			const SlotPriorityConfigUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				a_params,
-				store.settings.data.ui.slotEditor.sexSync);
+				settings.data.ui.slotEditor.sexSync);
 
 			m_controller.QueueEvaluateRace(
 				a_handle,
@@ -217,7 +217,7 @@ namespace IED
 			Game::FormID                       a_handle,
 			const SingleSlotConfigClearParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 
 			ResetConfigSlot(a_handle, a_params.slot, store.slot.GetRaceData());
 
@@ -230,7 +230,7 @@ namespace IED
 			Game::FormID                     a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 
 			ResetConfig(a_handle, store.slot.GetRaceData());
 			QueueListUpdateCurrent();
@@ -241,7 +241,7 @@ namespace IED
 		void UISlotEditorRace::OnSexChanged(
 			Data::ConfigSex a_newSex)
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (settings.data.ui.slotEditor.raceConfig.sex != a_newSex)
 			{
@@ -253,8 +253,7 @@ namespace IED
 
 		void UISlotEditorRace::OnListOptionsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		UIPopupQueue& UISlotEditorRace::GetPopupQueue()
@@ -269,7 +268,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorRace::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
@@ -277,12 +276,12 @@ namespace IED
 
 		void UISlotEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		const ImVec4* UISlotEditorRace::HighlightEntry(Game::FormID a_handle)
 		{
-			const auto& data = m_controller.GetConfigStore().active.slot.GetRaceData();
+			const auto& data = m_controller.GetActiveConfig().slot.GetRaceData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

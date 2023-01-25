@@ -112,8 +112,8 @@ namespace IED
 			}
 
 		private:
-			bool          m_comboKeyDown{ false };
 			std::uint32_t m_comboKey{ 0 };
+			bool          m_comboKeyDown{ false };
 
 			virtual void Receive(const KeyEvent& a_evn) override;
 		};

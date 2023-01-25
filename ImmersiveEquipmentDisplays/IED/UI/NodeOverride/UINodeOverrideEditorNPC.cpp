@@ -27,9 +27,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.transformEditor.npcConfig.sex, false);
+			SetSex(settings.data.ui.transformEditor.npcConfig.sex, false);
 		}
 
 		void UINodeOverrideEditorNPC::EditorDraw()
@@ -84,7 +84,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelActorSettings& UINodeOverrideEditorNPC::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor.npcConfig;
+			return m_controller.GetSettings().data.ui.transformEditor.npcConfig;
 		}
 
 		auto UINodeOverrideEditorNPC::GetCurrentData()
@@ -102,7 +102,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorNPC::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::NPC)];
@@ -110,22 +110,22 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorNPC::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor;
+			return m_controller.GetSettings().data.ui.transformEditor;
 		}
 
 		void UINodeOverrideEditorNPC::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorNPC::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorNPC::ListResetAllValues(Game::FormID a_handle)
@@ -141,7 +141,7 @@ namespace IED
 				return;
 			}
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (!settings.data.ui.transformEditor.npcConfig.autoSelectSex)
 			{
@@ -167,9 +167,9 @@ namespace IED
 
 			if (auto it = npcInfo.find(a_handle); it != npcInfo.end())
 			{
-				auto& store = m_controller.GetConfigStore();
+				auto& store = m_controller.GetActiveConfig();
 
-				return store.active.transforms.GetNPCCopy(
+				return store.transforms.GetNPCCopy(
 					a_handle,
 					it->second->race);
 			}
@@ -181,12 +181,12 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.transformEditor.npcConfig.sex != a_newSex)
+			if (settings.data.ui.transformEditor.npcConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.transformEditor.npcConfig.sex,
+				settings.set(
+					settings.data.ui.transformEditor.npcConfig.sex,
 					a_newSex);
 			}
 		}
@@ -217,9 +217,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}
@@ -228,9 +228,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}
@@ -239,9 +239,9 @@ namespace IED
 			Game::FormID                                 a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsNPC(a_handle, true);
 		}
@@ -261,7 +261,7 @@ namespace IED
 			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryTransform_t>(
@@ -282,7 +282,7 @@ namespace IED
 			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryPlacement_t>(
@@ -301,7 +301,7 @@ namespace IED
 
 		void UINodeOverrideEditorNPC::OnClearPhysics(Game::FormID a_handle, const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryPhysics_t>(
@@ -322,7 +322,7 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -340,7 +340,7 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -358,7 +358,7 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -375,8 +375,8 @@ namespace IED
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorNPC::GetOrCreateConfigHolder(Game::FormID a_handle) const
 		{
 			auto& result = m_controller
-			                   .GetConfigStore()
-			                   .active.transforms.GetNPCData()
+			                   .GetActiveConfig()
+			                   .transforms.GetNPCData()
 			                   .try_emplace(a_handle)
 			                   .first->second;
 
@@ -388,8 +388,8 @@ namespace IED
 		Data::configNodeOverrideHolder_t* UINodeOverrideEditorNPC::GetConfigHolder(Game::FormID a_handle) const
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetNPCData();
+			                 .GetActiveConfig()
+			                 .transforms.GetNPCData();
 
 			auto it = data.find(a_handle);
 
@@ -408,7 +408,7 @@ namespace IED
 
 		const ImVec4* UINodeOverrideEditorNPC::HighlightEntry(Game::FormID a_handle)
 		{
-			const auto& data = m_controller.GetConfigStore().active.transforms.GetNPCData();
+			const auto& data = m_controller.GetActiveConfig().transforms.GetNPCData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

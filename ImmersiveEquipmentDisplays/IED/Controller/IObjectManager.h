@@ -62,6 +62,9 @@ namespace IED
 			bool         a_defer,
 			bool         a_xfrmUpdate,
 			bool         a_xfrmUpdateNoDefer) const noexcept;
+		
+		void RequestEvaluateLF(
+			Game::FormID a_actor) const noexcept;
 
 		// use when acquiring global lock may be detrimental to performance
 		void QueueRequestEvaluate(
@@ -69,6 +72,11 @@ namespace IED
 			bool         a_defer,
 			bool         a_xfrmUpdate,
 			bool         a_xfrmUpdateNoDefer = false) const noexcept;
+						
+		void QueueRequestEvaluateLF(
+			Game::FormID a_actor) const noexcept;
+				
+		void QueueRequestEvaluateLFAll() const noexcept;
 
 		void QueueRequestEvaluate(
 			TESObjectREFR* a_actor,
@@ -110,13 +118,6 @@ namespace IED
 			Game::ObjectRefHandle a_handle) noexcept;
 
 		void ClearObjectsImpl() noexcept;
-
-		/*bool ConstructArmorNode(
-			TESForm*                                          a_form,
-			const stl::vector<TESObjectARMA*>&                a_in,
-			bool                                              a_isFemale,
-			stl::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
-			NiPointer<NiNode>&                                a_out);*/
 
 		static void GetNodeName(
 			TESForm*                     a_form,

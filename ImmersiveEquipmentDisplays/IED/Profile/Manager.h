@@ -284,7 +284,7 @@ namespace IED
 				sort();
 
 				OnProfileAdd(r.first->second);
-				ProfileManagerEvent<T> evn{
+				const ProfileManagerEvent<T> evn{
 					ProfileManagerEvent<T>::EventType::kProfileAdd,
 					nullptr,
 					std::addressof(r.first->first),
@@ -332,7 +332,7 @@ namespace IED
 			}
 
 			OnProfileDelete(it->second);
-			ProfileManagerEvent<T> evn{
+			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileDelete,
 				nullptr,
 				std::addressof(it->first),
@@ -391,7 +391,7 @@ namespace IED
 
 			auto oldName(a_oldName);
 
-			ProfileManagerEvent<T> evn{
+			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileRename,
 				std::addressof(oldName),
 				std::addressof(r.first->first),
@@ -424,7 +424,7 @@ namespace IED
 			if (!it->second.Save(std::forward<Td>(a_in), true))
 				throw std::exception("Profile save failed");
 
-			ProfileManagerEvent<T> evn{
+			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,
 				nullptr,
 				std::addressof(it->first),
@@ -455,7 +455,7 @@ namespace IED
 			if (!it->second.Save())
 				throw std::exception("Profile save failed");
 
-			ProfileManagerEvent<T> evn{
+			const ProfileManagerEvent<T> evn{
 				ProfileManagerEvent<T>::EventType::kProfileSave,
 				nullptr,
 				std::addressof(it->first),

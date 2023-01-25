@@ -9,6 +9,7 @@ namespace IED
 
 		static constexpr auto s_data = stl::make_array(
 
+			std::make_pair(Data::ExtraConditionType::kActorValue, UIConditionExtraSelectorWidgetStrings::ActorValue),
 			std::make_pair(Data::ExtraConditionType::kAngryWithPlayer, UIConditionExtraSelectorWidgetStrings::AngryWithPlayer),
 			std::make_pair(Data::ExtraConditionType::kBleedingOut, UIConditionExtraSelectorWidgetStrings::BleedingOut),
 			std::make_pair(Data::ExtraConditionType::kBribedByPlayer, UIConditionExtraSelectorWidgetStrings::BribedByPlayer),
@@ -218,6 +219,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InDialogue);
 			case Data::ExtraConditionType::kLifeState:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LifeState);
+			case Data::ExtraConditionType::kActorValue:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::ActorValue);
 			default:
 				return nullptr;
 			}

@@ -527,7 +527,7 @@ namespace IED
 		auto& controller = GetController();
 
 		if (a_holder.m_flags.test(ActorObjectHolderFlags::kEvalThisFrame) ||
-		    (!controller.m_config.active.condvars.empty() &&
+		    (!controller.GetActiveConfig().condvars.empty() &&
 		     a_holder.m_flags.test(ActorObjectHolderFlags::kWantVarUpdate)))
 		{
 			if (const auto info = controller.LookupCachedActorInfo2(a_holder.m_actor, a_holder))
@@ -565,6 +565,7 @@ namespace IED
 		{
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
+
 		const auto stepMuls         = Game::Unk2f6b948::GetStepMultipliers();
 		const auto runEffectUpdates = !Game::IsPaused();
 
@@ -630,7 +631,7 @@ namespace IED
 
 		RunPreUpdates();
 
-		const auto& cvdata = controller.m_config.active.condvars;
+		const auto& cvdata = controller.GetActiveConfig().condvars;
 
 		if (!cvdata.empty())
 		{

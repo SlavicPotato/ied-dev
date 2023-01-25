@@ -57,7 +57,7 @@ namespace IED
 							ImGui::Separator();
 						}
 
-						auto& conf = m_controller.GetConfigStore().settings;
+						auto& conf = m_controller.GetSettings();
 
 						conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
@@ -104,7 +104,7 @@ namespace IED
 						return conf.data.ui.importExport.serializationFlags.test_any(Data::ConfigStoreSerializationFlags::kAll);
 					})
 					.call([this, data = std::move(data)](const auto&) mutable {
-						const auto& conf = m_controller.GetConfigStore().settings;
+						const auto& conf = m_controller.GetSettings();
 						DoImport(
 							*data,
 							conf.data.ui.importExport.importFlags,

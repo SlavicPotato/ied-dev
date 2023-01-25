@@ -77,9 +77,7 @@ namespace IED
 
 			ImGui::Spacing();
 
-			auto& settings = m_controller
-			                     .GetConfigStore()
-			                     .settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (settings.mark_if(
 					ImGui::Checkbox(
@@ -118,9 +116,7 @@ namespace IED
 					"%s",
 					UIL::LS(CommonStrings::Filter)))
 			{
-				auto& settings = m_controller
-				                     .GetConfigStore()
-				                     .settings;
+				auto& settings = m_controller.GetSettings();
 
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -13.0f);
 
@@ -268,8 +264,8 @@ namespace IED
 			const ActorSkeletonData& a_data)
 		{
 			const auto& settings = m_controller
-			                           .GetConfigStore()
-			                           .settings.data.ui.skeletonExplorer;
+			                           .GetSettings()
+			                           .data.ui.skeletonExplorer;
 
 			if (settings.showLoadedSkeleton)
 			{
@@ -320,8 +316,8 @@ namespace IED
 			if (a_disableFilter || m_nodeFilter.Test(a_object.name))
 			{
 				const auto& settings = m_controller
-				                           .GetConfigStore()
-				                           .settings.data.ui.skeletonExplorer;
+				                           .GetSettings()
+				                           .data.ui.skeletonExplorer;
 
 				if (settings.filterShowChildNodes)
 				{
@@ -436,8 +432,8 @@ namespace IED
 			ActorSkeletonData result;
 
 			const auto& settings = m_controller
-			                           .GetConfigStore()
-			                           .settings.data.ui.skeletonExplorer;
+			                           .GetSettings()
+			                           .data.ui.skeletonExplorer;
 
 			ISkeletonInfo::QueueSkeletonInfoLookup(
 				a_handle,
@@ -454,22 +450,22 @@ namespace IED
 
 		void UISkeletonExplorer::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelActorSettings& UISkeletonExplorer::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.skeletonExplorer.actorSettings;
+			return m_controller.GetSettings().data.ui.skeletonExplorer.actorSettings;
 		}
 
 		UIData::UICollapsibleStates& UISkeletonExplorer::GetCollapsibleStatesData()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.skeletonExplorer.colStates;
+			return m_controller.GetSettings().data.ui.skeletonExplorer.colStates;
 		}
 
 		void UISkeletonExplorer::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 	}
 }

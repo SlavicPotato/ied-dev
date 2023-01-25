@@ -174,7 +174,7 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& data     = settings.data;
 
 				if (settings.mark_if(ImGui::Checkbox(
@@ -309,7 +309,7 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& data     = settings.data;
 
 				if (settings.mark_if(ImGui::Checkbox(
@@ -412,7 +412,7 @@ namespace IED
 			{
 				ImGui::PushID("4");
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& data     = settings.data;
 
 				ImGui::Spacing();
@@ -536,7 +536,7 @@ namespace IED
 				ImGui::Spacing();
 				ImGui::Indent();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& ui       = settings.data.ui;
 
 				if (settings.mark_if(UIStylePresetSelectorWidget::DrawStylePresetSelector(ui.stylePreset)))
@@ -883,7 +883,7 @@ namespace IED
 
 		void UISettings::DrawSoundSection()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			ImGui::PushID("sound_sect");
 
@@ -987,7 +987,7 @@ namespace IED
 					"%s",
 					UIL::LS(UIWidgetCommonStrings::ModelDatabase)))
 			{
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 
 				char        buf[std::numeric_limits<std::uint32_t>::digits10 + 3];
 				const char* preview;
@@ -1077,7 +1077,7 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& ldm      = Localization::LocalizationDataManager::GetSingleton();
 				auto& current  = m_controller.GetCurrentLanguageTable();
 
@@ -1133,7 +1133,7 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 				auto& data     = settings.data.ui.i3di;
 
 				settings.mark_if(ImGui::Checkbox(
@@ -1151,7 +1151,7 @@ namespace IED
 		{
 			ImGui::PushID("font_selector");
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			auto current = Drivers::UI::GetCurrentFont();
 
@@ -1253,7 +1253,7 @@ namespace IED
 				ImGui::Indent();
 				ImGui::Spacing();
 
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 
 				decltype(s_extraGlyphs)::size_type i = 0;
 
@@ -1296,7 +1296,7 @@ namespace IED
 
 		void UISettings::DrawFontMiscOptions()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 			auto& ui       = settings.data.ui;
 
 			ImGui::PushID("font_misc_opt");
@@ -1464,12 +1464,12 @@ namespace IED
 		auto UISettings::GetCollapsibleStatesData()
 			-> UIData::UICollapsibleStates&
 		{
-			return m_controller.GetConfigStore().settings.data.ui.settingsColStates;
+			return m_controller.GetSettings().data.ui.settingsColStates;
 		}
 
 		void UISettings::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UISettings::DrawMenuBar()
@@ -1523,7 +1523,7 @@ namespace IED
 
 		void UISettings::DrawMaintenanceMenu()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (UIL::LCG_MI(UISettingsStrings::ClearStoredColStates, "1"))
 			{

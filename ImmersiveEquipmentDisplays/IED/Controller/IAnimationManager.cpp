@@ -8,7 +8,7 @@
 namespace IED
 {
 	IAnimationManager::IAnimationManager(
-		Data::SettingHolder& a_settings) :
+		const std::unique_ptr<Data::SettingHolder>& a_settings) :
 		m_settings(a_settings)
 	{
 	}
@@ -525,12 +525,12 @@ namespace IED
 			{
 				std::int32_t av;
 
-				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowIdle, m_settings.data.XP32AABowIdle ? a_value : -1);
+				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowIdle, m_settings->data.XP32AABowIdle ? a_value : -1);
 
 				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowidle, av);
 				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowidle_crc, m_groupInfo->crc);
 
-				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowAttack, m_settings.data.XP32AABowAtk ? a_value : -1);
+				av = m_groupInfo->get_value_extra(AnimationExtraGroup::BowAttack, m_settings->data.XP32AABowAtk ? a_value : -1);
 
 				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowatk, av);
 				a_actor->SetVariableOnGraphsInt(m_strings->FNISaa_bowatk_crc, m_groupInfo->crc);

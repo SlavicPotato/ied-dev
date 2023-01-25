@@ -1979,22 +1979,22 @@ namespace IED
 
 		void UIActorInfo::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelActorSettings& UIActorInfo::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.actorInfo.actorSettings;
+			return m_controller.GetSettings().data.ui.actorInfo.actorSettings;
 		}
 
 		UIData::UICollapsibleStates& UIActorInfo::GetCollapsibleStatesData()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.actorInfo.colStates;
+			return m_controller.GetSettings().data.ui.actorInfo.colStates;
 		}
 
 		void UIActorInfo::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UIActorInfo::QueueInfoUpdate(

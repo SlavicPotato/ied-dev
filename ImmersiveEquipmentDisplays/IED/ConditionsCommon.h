@@ -177,7 +177,12 @@ namespace IED
 			case Data::ExtraConditionType::kInDialogue:
 				return is_in_dialogue(a_params);
 			case Data::ExtraConditionType::kLifeState:
-				return a_cached.lifeState == a_match.lifeState;				
+				return a_cached.lifeState == a_match.lifeState;		
+			case Data::ExtraConditionType::kActorValue:
+				return compare(
+					a_match.compOperator2,
+					a_params.actor->GetActorValue(a_match.actorValue),
+					a_match.avMatch);			
 			default:
 				return false;
 			}
@@ -981,7 +986,7 @@ namespace IED
 
 			return false;
 		}
-
+		
 		template <class Tm, class Tf>
 		constexpr bool match_effect(
 			CommonParams&                 a_params,

@@ -28,7 +28,7 @@ namespace IED
 				e->Initialize();
 			}
 
-			auto& conf = m_controller.GetConfigStore().settings;
+			auto& conf = m_controller.GetSettings();
 
 			switch (conf.data.ui.lastPanel)
 			{
@@ -162,7 +162,7 @@ namespace IED
 				break;
 			}
 
-			auto& conf = m_controller.GetConfigStore().settings;
+			auto& conf = m_controller.GetSettings();
 			conf.set(conf.data.ui.lastPanel, a_panel);
 		}
 

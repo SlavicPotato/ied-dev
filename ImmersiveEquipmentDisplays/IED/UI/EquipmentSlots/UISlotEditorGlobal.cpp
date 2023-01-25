@@ -26,16 +26,16 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.slotEditor.globalSex, false);
+			SetSex(settings.data.ui.slotEditor.globalSex, false);
 		}
 
 		void UISlotEditorGlobal::EditorDraw()
 		{
 			if (ImGui::BeginChild("slot_editor_global", { -1.0f, 0.0f }))
 			{
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 
 				if (DrawTypeSelectorRadio(settings.data.ui.slotEditor.globalType))
 				{
@@ -118,19 +118,18 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelCommon& UISlotEditorGlobal::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.slotEditor;
+			return m_controller.GetSettings().data.ui.slotEditor;
 		}
 
 		void UISlotEditorGlobal::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::configSlotHolder_t& UISlotEditorGlobal::GetOrCreateConfigSlotHolder(UIGlobalEditorDummyHandle) const
 		{
-			auto& store = m_controller.GetConfigStore().active;
-
-			const auto& settings = m_controller.GetConfigStore().settings;
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
 			return store.slot.GetGlobalData(settings.data.ui.slotEditor.globalType);
 		}
@@ -241,12 +240,12 @@ namespace IED
 
 		void UISlotEditorGlobal::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.slotEditor.globalSex != a_newSex)
+			if (settings.data.ui.slotEditor.globalSex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.slotEditor.globalSex,
+				settings.set(
+					settings.data.ui.slotEditor.globalSex,
 					a_newSex);
 			}
 		}
@@ -263,7 +262,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
@@ -271,17 +270,16 @@ namespace IED
 
 		void UISlotEditorGlobal::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UISlotEditorGlobal::UpdateData(entrySlotData_t& a_data)
 		{
-			auto& store = m_controller.GetConfigStore();
-
-			const auto& settings = store.settings;
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
 			a_data = {
-				store.active.slot.GetGlobalData(
+				store.slot.GetGlobalData(
 					settings.data.ui.slotEditor.globalType),
 				Data::ConfigClass::Global
 			};

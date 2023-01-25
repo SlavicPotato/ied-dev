@@ -1289,6 +1289,11 @@ namespace IED
 								case Data::ExtraConditionType::kLifeState:
 									m_condParamEditor.SetNext<ConditionParamItem::LifeState>(e.lifeState);
 									break;
+								case Data::ExtraConditionType::kActorValue:
+									m_condParamEditor.SetNext<ConditionParamItem::ActorValue>(e.actorValue);
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::Float>(e.avMatch);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);

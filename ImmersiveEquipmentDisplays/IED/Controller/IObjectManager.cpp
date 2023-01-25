@@ -214,6 +214,16 @@ namespace IED
 		}
 	}
 
+	void IObjectManager::RequestEvaluateLF(
+		Game::FormID a_actor) const noexcept
+	{
+		auto it = m_objects.find(a_actor);
+		if (it != m_objects.end())
+		{
+			it->second.m_wantLFUpdate = true;
+		}
+	}
+
 	void IObjectManager::QueueRequestEvaluate(
 		Game::FormID a_actor,
 		bool         a_defer,
@@ -234,18 +244,40 @@ namespace IED
 			});
 	}
 
+	void IObjectManager::QueueRequestEvaluateLF(
+		Game::FormID a_actor) const noexcept
+	{
+		ITaskPool::AddTask(
+			[this,
+		     a_actor]() {
+				const stl::lock_guard lock(m_lock);
+
+				RequestEvaluateLF(a_actor);
+			});
+	}
+
+	void IObjectManager::QueueRequestEvaluateLFAll() const noexcept
+	{
+		ITaskPool::AddTask(
+			[this] {
+				const stl::lock_guard lock(m_lock);
+
+				RequestLFEvaluateAll();
+			});
+	}
+
 	void IObjectManager::QueueRequestEvaluate(
 		TESObjectREFR* a_actor,
 		bool           a_defer,
 		bool           a_xfrmUpdate,
 		bool           a_xfrmUpdateNoDefer) const noexcept
 	{
-		if (auto actor = a_actor->As<Actor>())
+		if (Util::Common::IsREFRValid(a_actor) )
 		{
-			if (Util::Common::IsREFRValid(a_actor))
+			if (auto actor = a_actor->As<Actor>())
 			{
 				QueueRequestEvaluate(
-					a_actor->formID,
+					actor->formID,
 					a_defer,
 					a_xfrmUpdate,
 					a_xfrmUpdateNoDefer);
@@ -407,72 +439,6 @@ namespace IED
 	{
 		m_objects.clear();
 	}
-
-	/*bool IObjectManager::ConstructArmorNode(
-		TESForm*                                          a_form,
-		const stl::vector<TESObjectARMA*>&                a_in,
-		bool                                              a_isFemale,
-		stl::vector<ObjectDatabase::ObjectDatabaseEntry>& a_dbEntries,
-		NiPointer<NiNode>&                                a_out)
-	{
-		bool result = false;
-
-		for (auto& e : a_in)
-		{
-			auto texSwap = std::addressof(e->bipedModels[a_isFemale ? 1 : 0]);
-			auto path    = texSwap->GetModelName();
-
-			if (!path || path[0] == 0)
-			{
-				texSwap = std::addressof(e->bipedModels[a_isFemale ? 0 : 1]);
-				path    = texSwap->GetModelName();
-
-				if (!path || path[0] == 0)
-				{
-					continue;
-				}
-			}
-
-			NiPointer<NiNode>   object;
-			ObjectDatabaseEntry entry;
-
-			if (!GetUniqueObject(path, entry, object))
-			{
-				continue;
-			}
-
-			if (!a_out)
-			{
-				a_out          = NiNode::Create(1);
-				a_out->m_flags = NiAVObject::kFlag_SelectiveUpdate |
-				                 NiAVObject::kFlag_SelectiveUpdateTransforms |
-				                 NiAVObject::kFlag_kSelectiveUpdateController;
-			}
-
-			char buffer[INode::NODE_NAME_BUFFER_SIZE];
-
-			stl::snprintf(
-				buffer,
-				"OBJECT ARMA [%.8X/%.8X]",
-				a_form->formID.get(),
-				e->formID.get());
-
-			object->m_name = buffer;
-
-			EngineExtensions::ApplyTextureSwap(texSwap, object.get());
-
-			a_out->AttachChild(object, true);
-
-			if (entry)
-			{
-				a_dbEntries.emplace_back(std::move(entry));
-			}
-
-			result = true;
-		}
-
-		return result;
-	}*/
 
 	void IObjectManager::GetNodeName(
 		TESForm*                     a_form,

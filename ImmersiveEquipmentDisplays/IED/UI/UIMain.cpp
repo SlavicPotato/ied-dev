@@ -184,7 +184,7 @@ namespace IED
 
 		Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
 		{
-			return m_controller.GetConfigStore().settings.data.ui;
+			return m_controller.GetSettings().data.ui;
 		}
 
 		void UIMain::Receive(const UIContextStateChangeEvent& a_evn)
@@ -393,7 +393,7 @@ namespace IED
 					.draw([this,
 				           c_exists  = Serialization::FileExists(PATHS::DEFAULT_CONFIG),
 				           uc_exists = Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER)] {
-						auto& settings = m_controller.GetConfigStore().settings;
+						auto& settings = m_controller.GetSettings();
 
 						ImGui::PushID("dc_sel_radio");
 
@@ -440,7 +440,7 @@ namespace IED
 						}
 					})
 					.call([this](const auto&) {
-						const auto& settings = m_controller.GetConfigStore().settings;
+						const auto& settings = m_controller.GetSettings();
 
 						switch (settings.data.ui.selectedDefaultConfImport)
 						{
@@ -472,7 +472,7 @@ namespace IED
 								"%s",
 								UIL::LS(UIMainStrings::SaveCurrentAsDefaultPrompt))
 					.draw([this] {
-						auto& conf = m_controller.GetConfigStore().settings;
+						auto& conf = m_controller.GetSettings();
 
 						conf.mark_if(UIExportFilterWidget::DrawExportFilters(conf.data.ui.defaultExportFlags));
 
@@ -550,7 +550,7 @@ namespace IED
 
 		void UIMain::OnClose()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			using enum_type = std::underlying_type_t<ChildWindowID>;
 			for (enum_type i = 0; i < stl::underlying(ChildWindowID::kMax); i++)

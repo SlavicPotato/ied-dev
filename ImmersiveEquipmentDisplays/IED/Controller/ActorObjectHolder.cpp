@@ -660,7 +660,7 @@ namespace IED
 			{
 			}
 
-			virtual void Run() noexcept override
+			virtual void Run() override
 			{
 				if (m_handle)
 				{
@@ -676,7 +676,7 @@ namespace IED
 				}
 			}
 
-			virtual void Dispose() noexcept override
+			virtual void Dispose() override
 			{
 				delete this;
 			}

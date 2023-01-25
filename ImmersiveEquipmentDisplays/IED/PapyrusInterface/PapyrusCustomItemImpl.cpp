@@ -138,11 +138,11 @@ namespace IED
 			{
 				const stl::lock_guard lock(Initializer::GetController()->GetLock());
 
-				auto& store = Initializer::GetController()->GetConfigStore();
+				auto& store = Initializer::GetController()->GetActiveConfig();
 
 				stl::unordered_set<Game::FormID> erased;
 
-				for (auto& e : store.active.custom.GetFormMaps())
+				for (auto& e : store.custom.GetFormMaps())
 				{
 					for (auto itd = e.begin(); itd != e.end();)
 					{

@@ -24,16 +24,16 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.transformEditor.globalSex, false);
+			SetSex(settings.data.ui.transformEditor.globalSex, false);
 		}
 
 		void UINodeOverrideEditorGlobal::EditorDraw()
 		{
 			if (ImGui::BeginChild("no_editor_global", { -1.0f, 0.0f }))
 			{
-				auto& settings = m_controller.GetConfigStore().settings;
+				auto& settings = m_controller.GetSettings();
 
 				if (DrawTypeSelectorRadio(settings.data.ui.transformEditor.globalType))
 				{
@@ -92,7 +92,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
@@ -100,27 +100,27 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorGlobal::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor;
+			return m_controller.GetSettings().data.ui.transformEditor;
 		}
 
 		void UINodeOverrideEditorGlobal::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorGlobal::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.transformEditor.globalSex != a_newSex)
+			if (settings.data.ui.transformEditor.globalSex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.transformEditor.globalSex,
+				settings.set(
+					settings.data.ui.transformEditor.globalSex,
 					a_newSex);
 			}
 		}
@@ -149,12 +149,12 @@ namespace IED
 			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				a_params,
-				store.settings.data.ui.transformEditor.sexSync);
+				settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -163,12 +163,12 @@ namespace IED
 			UIGlobalEditorDummyHandle                      a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				a_params,
-				store.settings.data.ui.transformEditor.sexSync);
+				settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -177,12 +177,12 @@ namespace IED
 			UIGlobalEditorDummyHandle                    a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				a_params,
-				store.settings.data.ui.transformEditor.sexSync);
+				settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsAll(true);
 		}
@@ -202,10 +202,11 @@ namespace IED
 			UIGlobalEditorDummyHandle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			if (data.transformData.erase(a_params.name) > 0)
 			{
@@ -217,10 +218,11 @@ namespace IED
 			UIGlobalEditorDummyHandle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			if (data.placementData.erase(a_params.name) > 0)
 			{
@@ -232,10 +234,11 @@ namespace IED
 			UIGlobalEditorDummyHandle            a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			if (data.physicsData.erase(a_params.name) > 0)
 			{
@@ -247,10 +250,11 @@ namespace IED
 			UIGlobalEditorDummyHandle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			data.transformData.clear();
 
@@ -261,10 +265,11 @@ namespace IED
 			UIGlobalEditorDummyHandle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			data.placementData.clear();
 
@@ -275,10 +280,11 @@ namespace IED
 			UIGlobalEditorDummyHandle               a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			auto& data = store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			auto& data = store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 
 			data.physicsData.clear();
 
@@ -287,18 +293,20 @@ namespace IED
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorGlobal::GetOrCreateConfigHolder(UIGlobalEditorDummyHandle) const
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			return store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType);
+			return store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType);
 		}
 
 		Data::configNodeOverrideHolder_t* UINodeOverrideEditorGlobal::GetConfigHolder(UIGlobalEditorDummyHandle) const
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			return std::addressof(store.active.transforms.GetGlobalData(
-				store.settings.data.ui.transformEditor.globalType));
+			return std::addressof(store.transforms.GetGlobalData(
+				settings.data.ui.transformEditor.globalType));
 		}
 
 		UIPopupQueue& UINodeOverrideEditorGlobal::GetPopupQueue_ProfileBase() const
@@ -313,11 +321,12 @@ namespace IED
 
 		void UINodeOverrideEditorGlobal::UpdateData(entryNodeOverrideData_t& a_data)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
 			a_data = {
-				store.active.transforms.GetGlobalData(
-					store.settings.data.ui.transformEditor.globalType),
+				store.transforms.GetGlobalData(
+					settings.data.ui.transformEditor.globalType),
 				Data::ConfigClass::Global
 			};
 		}

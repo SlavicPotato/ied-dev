@@ -32,46 +32,27 @@ namespace IED
 		m_Instance.InstallImpl(a_controller, a_config);
 	}
 
-	bool EngineExtensions::RemoveObjectByName(
-		NiNode*              a_object,
-		const BSFixedString& a_name) noexcept
-	{
-		if (NiPointer object = GetObjectByName(a_object, a_name, true))
-		{
-			if (auto parent = object->m_parent)
-			{
-				parent->DetachChild2(object);
-
-				ShrinkToSize(a_object);
-
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	void EngineExtensions::InstallImpl(
 		Controller*                       a_controller,
 		const std::shared_ptr<ConfigINI>& a_config)
 	{
-		m_controller                    = a_controller;
-		m_conf.applyTransformOverrides  = a_config->m_applyTransformOverrides;
+		m_controller                   = a_controller;
+		m_conf.applyTransformOverrides = a_config->m_applyTransformOverrides;
 		//m_conf.enableLights             = a_config->m_enableLights;
 
 		Install_RemoveAllBipedParts();
-		Hook_REFR_GarbageCollector();
-		Hook_Actor_Resurrect();
-		Hook_Actor_3DEvents();
+		Install_REFR_GarbageCollector();
+		Install_Actor_Resurrect();
+		Install_Actor_3DEvents();
+		Install_Actor_ActorValueOwner();
 
 		if (a_config->m_nodeOverrideEnabled)
 		{
 			m_conf.weaponAdjustDisable       = a_config->m_weaponAdjustDisable;
 			m_conf.weaponAdjustDisableForce  = a_config->m_weaponAdjustForceDisable;
 			m_conf.nodeOverridePlayerEnabled = a_config->m_nodeOverridePlayerEnabled;
-			m_conf.disableNPCProcessing      = a_config->m_disableNPCProcessing;
 
-			Hook_Armor_Update();
+			Install_Armor_Update();
 			Install_CreateWeaponNodes();
 		}
 
@@ -85,14 +66,14 @@ namespace IED
 			Install_SetWeapAdjAnimVar();
 		}
 
-		if (m_conf.weaponAdjustDisable)
+		if (a_config->m_weaponAdjustDisable)
 		{
 			Install_WeaponAdjustDisable();
 		}
 
 		if (a_config->m_immediateFavUpdate)
 		{
-			Hook_ToggleFav();
+			Install_ToggleFav();
 		}
 
 		if (a_config->m_behaviorGraphAnims)
@@ -109,6 +90,8 @@ namespace IED
 		{
 			Install_EffectShaderPostResume();
 		}
+
+		//Install_SetupEventSinks();
 	}
 
 	template <class T>
@@ -192,7 +175,7 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::Hook_REFR_GarbageCollector()
+	void EngineExtensions::Install_REFR_GarbageCollector()
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
@@ -211,7 +194,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Hook_Actor_Resurrect()
+	void EngineExtensions::Install_Actor_Resurrect()
 	{
 		InstallVtableDetour(
 			m_vtblCharacter_a,
@@ -238,13 +221,8 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Hook_Actor_3DEvents()
+	void EngineExtensions::Install_Actor_3DEvents()
 	{
-		VALIDATE_MEMORY(
-			m_refrLoad3DClone_a.get(),
-			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }),
-			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }));
-
 		InstallVtableDetour(
 			m_vtblActor_a,
 			0x6B,
@@ -272,6 +250,11 @@ namespace IED
 
 	void EngineExtensions::Install_PostLoad3DHooks()
 	{
+		VALIDATE_MEMORY(
+			m_refrLoad3DClone_a.get(),
+			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }),
+			({ 0xFF, 0x90, 0x50, 0x02, 0x00, 0x00 }));
+
 		ISKSE::GetBranchTrampoline().Write6Call(
 			m_refrLoad3DClone_a.get(),
 			std::uintptr_t(REFR_Load3D_Clone_Hook));
@@ -298,7 +281,7 @@ namespace IED
 		}
 	}
 
-	void EngineExtensions::Hook_Armor_Update()
+	void EngineExtensions::Install_Armor_Update()
 	{
 		if (hook::call5(
 				ISKSE::GetBranchTrampoline(),
@@ -419,7 +402,7 @@ namespace IED
 		LogPatchEnd();
 	}
 
-	void EngineExtensions::Hook_ToggleFav()
+	void EngineExtensions::Install_ToggleFav()
 	{
 		bool result = hook::call5(
 			ISKSE::GetBranchTrampoline(),
@@ -600,6 +583,106 @@ namespace IED
 				code.get());
 		}
 		LogPatchEnd();
+	}
+
+	/*void EngineExtensions::Install_SetupEventSinks()
+	{
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				m_setupEventSinks_a.get(),
+				std::uintptr_t(SetupEventSinks_Hook),
+				m_SetupEventSinks_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX",
+				__FUNCTION__,
+				m_setupEventSinks_a.get());
+		}
+		else
+		{
+			HALT(__FUNCTION__ ": failed");
+		}
+	}*/
+
+	template <class T>
+	inline void EngineExtensions::AVHookThunk<T>::Install(
+		const IAL::Address<std::uintptr_t>& a_vtblAddr)
+	{
+		GetSingleton().InstallVtableDetour(
+			a_vtblAddr,
+			0x4,
+			SetBaseActorValue_Hook,
+			_SetBaseActorValue_o,
+			true,
+			"ActorValueOwner::SetBaseActorValue");
+
+		GetSingleton().InstallVtableDetour(
+			a_vtblAddr,
+			0x5,
+			ModActorValue_Hook,
+			_ModActorValue_o,
+			true,
+			"ActorValueOwner::ModActorValue");
+
+		GetSingleton().InstallVtableDetour(
+			a_vtblAddr,
+			0x6,
+			RestoreActorValue_Hook,
+			_RestoreActorValue_o,
+			true,
+			"ActorValueOwner::RestoreActorValue");
+	}
+
+	template <class T>
+	inline void EngineExtensions::AVHookThunk<T>::OnFuncCall(
+		Actor*         a_actor,
+		RE::ActorValue a_akValue) noexcept
+	{
+		if (IsValidAV(a_akValue))
+		{
+			GetSingleton().m_controller->QueueRequestEvaluateLF(a_actor->formID);
+		}
+	}
+
+	template <class T>
+	inline void EngineExtensions::AVHookThunk<T>::SetBaseActorValue_Hook(
+		ActorValueOwner* a_this,
+		RE::ActorValue   a_akValue,
+		float            a_value) noexcept
+	{
+		_SetBaseActorValue_o(a_this, a_akValue, a_value);
+
+		OnFuncCall(static_cast<T*>(a_this), a_akValue);
+	}
+
+	template <class T>
+	inline void EngineExtensions::AVHookThunk<T>::ModActorValue_Hook(
+		ActorValueOwner* a_this,
+		RE::ActorValue   a_akValue,
+		float            a_value) noexcept
+	{
+		_ModActorValue_o(a_this, a_akValue, a_value);
+
+		OnFuncCall(static_cast<T*>(a_this), a_akValue);
+	}
+
+	template <class T>
+	inline void EngineExtensions::AVHookThunk<T>::RestoreActorValue_Hook(
+		ActorValueOwner*         a_this,
+		RE::ACTOR_VALUE_MODIFIER a_modifier,
+		RE::ActorValue           a_akValue,
+		float                    a_value) noexcept
+	{
+		_RestoreActorValue_o(a_this, a_modifier, a_akValue, a_value);
+
+		OnFuncCall(static_cast<T*>(a_this), a_akValue);
+	}
+
+	void EngineExtensions::Install_Actor_ActorValueOwner()
+	{
+		AVHookThunk<Actor>::Install(m_vtblActor_ActorValueOwner);
+		AVHookThunk<Character>::Install(m_vtblCharacter_ActorValueOwner);
+		AVHookThunk<PlayerCharacter>::Install(m_vtblPlayerCharacter_ActorValueOwner);
 	}
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept
@@ -973,6 +1056,12 @@ namespace IED
 		return result;
 	}
 
+	/*void EngineExtensions::SetupEventSinks_Hook() noexcept
+	{
+		m_Instance.m_SetupEventSinks_o();
+		m_Instance.m_controller->SinkEventsT3();
+	}*/
+
 	/*void EngineExtensions::Character_UpdateRefLight_Hook(Character* a_character) noexcept
 	{
 		_DMESSAGE(".8X", a_character->formID);
@@ -1019,6 +1108,25 @@ namespace IED
 		}
 
 		return result;
+	}
+
+	bool EngineExtensions::RemoveObjectByName(
+		NiNode*              a_object,
+		const BSFixedString& a_name) noexcept
+	{
+		if (NiPointer object = GetObjectByName(a_object, a_name, true))
+		{
+			if (auto parent = object->m_parent)
+			{
+				parent->DetachChild2(object);
+
+				ShrinkToSize(a_object);
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	auto EngineExtensions::AttachObject(

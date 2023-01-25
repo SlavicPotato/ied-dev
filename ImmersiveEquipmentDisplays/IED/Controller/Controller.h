@@ -36,25 +36,20 @@ namespace IED
 		private ISerializationBase,
 		public IJSONSerialization,
 		public IUINotification,
-		public ::Events::EventSink<SKSESerializationEvent>,
-		public ::Events::EventSink<SKSESerializationLoadEvent>,
-		public ::Events::EventSink<SKSESerializationFormDeleteEvent>,
-		public ::Events::EventSink<SKSEMessagingEvent>,
-		public ::Events::EventSink<SDSPlayerShieldOnBackSwitchEvent>,
 		public BSTEventSink<TESObjectLoadedEvent>,
 		public BSTEventSink<TESInitScriptEvent>,
 		public BSTEventSink<TESEquipEvent>,
 		public BSTEventSink<TESContainerChangedEvent>,
 		public BSTEventSink<TESFurnitureEvent>,
 		public BSTEventSink<TESDeathEvent>,
-		//public BSTEventSink<TESCombatEvent>, // useless
 		public BSTEventSink<TESSwitchRaceCompleteEvent>,
 		public BSTEventSink<MenuOpenCloseEvent>,
-		//public BSTEventSink<TESSceneEvent>,
-		//public BSTEventSink<SKSENiNodeUpdateEvent>,
-		//public BSTEventSink<TESQuestStartStopEvent>,
-		//public BSTEventSink<TESPackageEvent>,
 		public BSTEventSink<TESActorLocationChangeEvent>,
+		public ::Events::EventSink<SKSESerializationEvent>,
+		public ::Events::EventSink<SKSESerializationLoadEvent>,
+		public ::Events::EventSink<SKSESerializationFormDeleteEvent>,
+		public ::Events::EventSink<SKSEMessagingEvent>,
+		public ::Events::EventSink<SDSPlayerShieldOnBackSwitchEvent>,
 		virtual private ILog
 	{
 		friend class boost::serialization::access;
@@ -89,8 +84,24 @@ namespace IED
 			TESRace* race;
 		};
 
+		struct ConfigData
+		{
+			std::unique_ptr<Data::configStore_t> active;
+			std::unique_ptr<Data::configStore_t> stash;
+			std::unique_ptr<Data::configStore_t> initial;
+			std::unique_ptr<Data::SettingHolder> settings;
+		};
+
+		struct InputHandlers
+		{
+			Handlers::ComboKeyPressHandler playerBlock;
+			Handlers::ComboKeyPressHandler uiOpen;
+		};
+
 		using actorLookupResultMap_t =
-			stl::unordered_map<Game::ObjectRefHandle, NiPointer<Actor>>;
+			stl::unordered_map<
+				Game::ObjectRefHandle,
+				NiPointer<Actor>>;
 
 		friend class ActorProcessorTask;
 
@@ -395,34 +406,39 @@ namespace IED
 
 		bool SkeletonCheck(Game::FormID a_actor);
 
+		[[nodiscard]] constexpr auto& GetActiveConfig() noexcept
+		{
+			return *m_configData.active;
+		}
+
+		[[nodiscard]] constexpr auto& GetActiveConfig() const noexcept
+		{
+			return *m_configData.active;
+		}
+
 		[[nodiscard]] constexpr auto& GetConfigStore() noexcept
 		{
-			return m_config;
+			return m_configData;
 		}
 
 		[[nodiscard]] constexpr auto& GetConfigStore() const noexcept
 		{
-			return m_config;
+			return m_configData;
 		}
 
 		[[nodiscard]] constexpr auto& GetSettings() noexcept
 		{
-			return m_config.settings;
+			return *m_configData.settings;
 		}
 
 		[[nodiscard]] constexpr auto& GetSettings() const noexcept
 		{
-			return m_config.settings;
+			return *m_configData.settings;
 		}
 
 		[[nodiscard]] constexpr auto& GetInputHandlers() noexcept
 		{
 			return m_inputHandlers;
-		}
-
-		[[nodiscard]] constexpr auto& GetLastException() const noexcept
-		{
-			return m_lastException;
 		}
 
 		bool SaveCurrentConfigAsDefault(
@@ -451,7 +467,7 @@ namespace IED
 
 		[[nodiscard]] constexpr auto IsDefaultConfigForced() const noexcept
 		{
-			return m_forceDefaultConfig;
+			return static_cast<bool>(m_configData.stash);
 		}
 
 		[[nodiscard]] constexpr auto UIGetIniKeysForced() const noexcept
@@ -942,7 +958,7 @@ namespace IED
 
 		virtual constexpr const Data::configStore_t& AIGetConfigStore() noexcept override
 		{
-			return m_config.active;
+			return *m_configData.active;
 		}
 
 		// json serialization
@@ -954,7 +970,7 @@ namespace IED
 
 		virtual constexpr Data::configStore_t& JSGetConfigStore() noexcept override
 		{
-			return m_config.active;
+			return *m_configData.active;
 		}
 
 		virtual void JSOnDataImport() override;
@@ -963,36 +979,22 @@ namespace IED
 
 		std::shared_ptr<const ConfigINI> m_iniconf;
 		Data::actorBlockList_t           m_actorBlockList;
+		InputHandlers                    m_inputHandlers;
+		ConfigData                       m_configData;
 
-		struct
-		{
-			Handlers::ComboKeyPressHandler playerBlock;
-			Handlers::ComboKeyPressHandler uiOpen;
-		} m_inputHandlers;
-
-		struct
-		{
-			Data::configStore_t active;
-			Data::configStore_t stash;
-			Data::configStore_t initial;
-			Data::SettingHolder settings;
-		} m_config;
-
-		stl::vector<Game::ObjectRefHandle>    m_activeHandles;
-		stl::flag<EventSinkInstallationFlags> m_esif{ EventSinkInstallationFlags::kNone };
-		except::descriptor                    m_lastException;
+		stl::vector<Game::ObjectRefHandle> m_activeHandles;
 
 		BipedDataCache m_bipedCache;
 
-		bool m_nodeOverrideEnabled{ false };
-		bool m_nodeOverridePlayerEnabled{ false };
-		bool m_forceDefaultConfig{ false };
-		bool m_npcProcessingDisabled{ false };
-		bool m_iniKeysForced{ false };
-		bool m_enableCorpseScatter{ false };
+		const bool m_nodeOverrideEnabled{ false };
+		const bool m_nodeOverridePlayerEnabled{ false };
+		const bool m_npcProcessingDisabled{ false };
+		bool       m_forceDefaultConfig{ false };
+		const bool m_forceFlushSaveData{ false };
+		bool       m_iniKeysForced{ false };
+		bool       m_cpuHasSSE41{ false };
+		//bool m_enableCorpseScatter{ false };
 		//bool m_forceOrigWeapXFRM{ false };
-		bool m_forceFlushSaveData{ false };
-		bool m_cpuHasSSE41{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
 

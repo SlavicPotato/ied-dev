@@ -275,6 +275,16 @@ namespace IED
 				ExtraConditionType a_type) noexcept :
 				extraCondType(a_type)
 			{
+				switch (a_type)
+				{
+				case ExtraConditionType::kActorValue:
+					actorValue = RE::ActorValue::kOneHanded;
+					[[fallthrough]];
+				case ExtraConditionType::kLevel:
+					compOperator2 = ComparisonOperator::kEqual;
+					break;
+				}
+
 				fbf.type = NodeOverrideConditionType::Extra;
 			}
 
@@ -335,6 +345,7 @@ namespace IED
 			{
 				float f32a{ 0.0f };
 				float percent;
+				float avMatch;
 			};
 
 			union
@@ -344,8 +355,10 @@ namespace IED
 				std::int32_t      factionRank;
 				std::int32_t      perkRank;
 				RE::Calendar::Day dayOfWeek;
+				RE::ActorValue    actorValue;
 
 				static_assert(std::is_same_v<std::underlying_type_t<RE::Calendar::Day>, std::int32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<RE::ActorValue>, std::int32_t>);
 			};
 
 			union

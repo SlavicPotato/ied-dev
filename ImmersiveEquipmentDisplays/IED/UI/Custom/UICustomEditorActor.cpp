@@ -34,9 +34,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& store = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.customEditor.actorConfig.sex, false);
+			SetSex(store.data.ui.customEditor.actorConfig.sex, false);
 		}
 
 		void UICustomEditorActor::EditorDraw()
@@ -104,13 +104,13 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelActorSettings& UICustomEditorActor::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor.actorConfig;
+			return m_controller.GetSettings().data.ui.customEditor.actorConfig;
 		}
 
 		Data::configCustomHolder_t& UICustomEditorActor::GetOrCreateConfigSlotHolder(
 			Game::FormID a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetActorData();
+			auto& data = m_controller.GetActiveConfig().custom.GetActorData();
 			auto& sh   = StringHolder::GetSingleton();
 
 			auto& pluginMap = data.try_emplace(a_handle).first->second;
@@ -120,8 +120,8 @@ namespace IED
 
 		entryCustomData_t UICustomEditorActor::GetData(Game::FormID a_handle)
 		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data  = store.active.custom.GetActorData();
+			auto& store = m_controller.GetActiveConfig();
+			auto& data  = store.custom.GetActorData();
 
 			auto it = data.find(static_cast<Data::configForm_t>(a_handle));
 			if (it != data.end())
@@ -163,7 +163,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorActor::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Actor)];
@@ -171,24 +171,22 @@ namespace IED
 
 		void UICustomEditorActor::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorActor::OnListOptionsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorActor::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor;
+			return m_controller.GetSettings().data.ui.customEditor;
 		}
 
 		void UICustomEditorActor::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorActor::ListResetAllValues(Game::FormID a_handle)
@@ -204,7 +202,7 @@ namespace IED
 				return;
 			}
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = GetSettings();
 
 			if (!settings.data.ui.customEditor.actorConfig.autoSelectSex)
 			{
@@ -222,12 +220,12 @@ namespace IED
 
 		void UICustomEditorActor::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = GetSettings();
 
-			if (store.settings.data.ui.customEditor.actorConfig.sex != a_newSex)
+			if (settings.data.ui.customEditor.actorConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.customEditor.actorConfig.sex,
+				settings.set(
+					settings.data.ui.customEditor.actorConfig.sex,
 					a_newSex);
 			}
 		}
@@ -273,9 +271,7 @@ namespace IED
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
-
-			UpdateConfig(a_handle, *params, store.settings.data.ui.customEditor.sexSync);
+			UpdateConfig(a_handle, *params, GetSettings().data.ui.customEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -337,7 +333,7 @@ namespace IED
 			Game::FormID                   a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetActorData();
+			auto& data = m_controller.GetActiveConfig().custom.GetActorData();
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
@@ -441,7 +437,7 @@ namespace IED
 		const ImVec4* UICustomEditorActor::HighlightEntry(Game::FormID a_handle)
 		{
 			return HasConfigEntry(
-					   m_controller.GetConfigStore().active.custom.GetActorData(),
+					   m_controller.GetActiveConfig().custom.GetActorData(),
 					   a_handle) ?
 			           std::addressof(UICommon::g_colorLimeGreen) :
                        nullptr;

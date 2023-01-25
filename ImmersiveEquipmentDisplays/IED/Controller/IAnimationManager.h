@@ -49,7 +49,7 @@ namespace IED
 		};
 
 	public:
-		IAnimationManager(Data::SettingHolder& a_settings);
+		IAnimationManager(const std::unique_ptr<Data::SettingHolder>& a_settings);
 
 		enum class PresenceFlags : std::uint32_t
 		{
@@ -110,7 +110,7 @@ namespace IED
 			TESForm*             a_objLeft,
 			Actor*               a_actor) noexcept;
 
-		Data::SettingHolder& m_settings;
+		const std::unique_ptr<Data::SettingHolder>& m_settings;
 
 		std::optional<AnimationGroupInfo>       m_groupInfo;
 		std::unique_ptr<const AnimStringHolder> m_strings;

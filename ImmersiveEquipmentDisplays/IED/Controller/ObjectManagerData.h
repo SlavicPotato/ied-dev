@@ -96,7 +96,7 @@ namespace IED
 			Actor* a_actor,
 			Args&&... a_args) noexcept
 		{
-			auto r = m_objects.try_emplace(
+			const auto r = m_objects.try_emplace(
 				a_actor->formID,
 				a_actor,
 				std::forward<Args>(a_args)...);
@@ -105,7 +105,7 @@ namespace IED
 			{
 				m_objects.sortvec(
 					[](const auto& a_lhs,
-				       const auto& a_rhs) {
+				       const auto& a_rhs) noexcept [[msvc::forceinline]] {
 						return a_lhs->first < a_rhs->first;
 					});
 
@@ -130,11 +130,6 @@ namespace IED
 			return m_objects;
 		}
 
-		/*inline void ClearPlayerState() noexcept
-		{
-			m_playerState.reset();
-		}*/
-
 		void ClearVariablesOnAll(bool a_requestEval) noexcept;
 		void ClearVariables(Game::FormID a_handle, bool a_requestEval) noexcept;
 
@@ -143,26 +138,22 @@ namespace IED
 
 		void RequestEvaluateOnAll() const noexcept;
 
-		//void StorePlayerState(ActorObjectHolder& a_holder);
-
 	private:
-		//void ApplyActorState(ActorObjectHolder& a_holder);
-
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;
 		virtual bool WantGlobalVariableUpdateOnAddRemove() const noexcept = 0;
 
 	protected:
 		void RequestEvaluateAll(bool a_defer) const noexcept;
 
-		void RequestLFEvaluateAll() noexcept;
-		void RequestLFEvaluateAll(Game::FormID a_skip) noexcept;
+		void RequestLFEvaluateAll() const noexcept;
+		void RequestLFEvaluateAll(Game::FormID a_skip) const noexcept;
 
-		void RequestHFEvaluateAll() noexcept;
-		void RequestHFEvaluateAll(Game::FormID a_skip) noexcept;
+		void RequestHFEvaluateAll() const noexcept;
+		void RequestHFEvaluateAll(Game::FormID a_skip) const noexcept;
 
 		inline auto EraseActor(ActorObjectMap::const_iterator a_it) noexcept
 		{
-			auto result = m_objects.erase(a_it);
+			const auto result = m_objects.erase(a_it);
 
 			if (WantGlobalVariableUpdateOnAddRemove())
 			{
@@ -174,7 +165,7 @@ namespace IED
 
 		inline auto EraseActor(const ActorObjectMap::key_type& a_key) noexcept
 		{
-			auto result = m_objects.erase(a_key);
+			const auto result = m_objects.erase(a_key);
 
 			if (result)
 			{

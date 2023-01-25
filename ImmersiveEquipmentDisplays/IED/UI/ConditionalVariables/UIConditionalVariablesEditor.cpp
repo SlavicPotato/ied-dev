@@ -33,7 +33,7 @@ namespace IED
 
 		void UIConditionalVariablesEditor::EditorDraw()
 		{
-			auto& data = m_controller.GetConfigStore().active.condvars;
+			auto& data = m_controller.GetActiveConfig().condvars;
 
 			DrawCondVarEditor(data);
 		}
@@ -127,7 +127,7 @@ namespace IED
 
 		std::optional<std::reference_wrapper<Data::configConditionalVariablesHolder_t>> UIConditionalVariablesEditor::GetCurrentData()
 		{
-			return m_controller.GetConfigStore().active.condvars;
+			return m_controller.GetActiveConfig().condvars;
 		}
 
 		UIPopupQueue& UIConditionalVariablesEditor::GetPopupQueue_ProfileBase() const

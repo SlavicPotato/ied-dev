@@ -64,7 +64,11 @@ namespace IED
 
 		void UIContext::SendOpenStateEvent()
 		{
-			UIContextStateChangeEvent evn{ *this, m_openState };
+			const UIContextStateChangeEvent evn{
+				*this,
+				m_openState
+			};
+
 			SendEvent(evn);
 		}
 	}

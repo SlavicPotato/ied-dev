@@ -211,16 +211,16 @@ namespace IED
 
 			configMapCustom_t& GetConfigMap(ConfigClass a_class) noexcept
 			{
-				auto& store = Initializer::GetController()->GetConfigStore();
+				auto& store = Initializer::GetController()->GetActiveConfig();
 
 				switch (a_class)
 				{
 				case ConfigClass::Actor:
-					return store.active.custom.GetActorData();
+					return store.custom.GetActorData();
 				case ConfigClass::NPC:
-					return store.active.custom.GetNPCData();
+					return store.custom.GetNPCData();
 				case ConfigClass::Race:
-					return store.active.custom.GetRaceData();
+					return store.custom.GetRaceData();
 				default:
 					HALT("FIXME");
 				}

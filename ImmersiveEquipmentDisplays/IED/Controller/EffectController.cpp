@@ -41,6 +41,8 @@ namespace IED
 		const std::optional<PhysicsUpdateData>& a_physUpdData,
 		const ActorObjectHolder&                a_holder) noexcept
 	{
+		stl::ftz_daz_ctl_scoped<_MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON> fds;
+
 		const auto stepMul =
 			a_holder.IsPlayer() ?
 				a_stepMuls.player :
@@ -72,15 +74,6 @@ namespace IED
 		const PhysicsUpdateData& a_physUpdData,
 		const ActorObjectHolder& a_holder) noexcept
 	{
-		constexpr unsigned int ftz_daz_mask = _MM_FLUSH_ZERO_MASK | _MM_DENORMALS_ZERO_MASK;
-		constexpr unsigned int ftz_daz_on   = _MM_FLUSH_ZERO_ON | _MM_DENORMALS_ZERO_ON;
-
-		const auto current_csr = _mm_getcsr();
-
-		const auto ftz_daz_bk = current_csr & ftz_daz_mask;
-
-		_mm_setcsr((current_csr & ~ftz_daz_mask) | ftz_daz_on);
-
 		a_holder.SimReadTransforms(a_physUpdData.timeAccum * a_stepMul);
 
 		auto timeStep = a_physUpdData.timeStep;
@@ -95,8 +88,6 @@ namespace IED
 		a_holder.SimUpdate(timeStep * a_stepMul);
 
 		a_holder.SimWriteTransforms();
-
-		_mm_setcsr((_mm_getcsr() & ~ftz_daz_mask) | ftz_daz_bk);
 	}
 
 	void EffectController::UpdateShadersOnDisplay(

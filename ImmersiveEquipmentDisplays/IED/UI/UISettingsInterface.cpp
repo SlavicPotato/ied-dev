@@ -17,12 +17,12 @@ namespace IED
 
 		Data::SettingHolder& UISettingsInterface::GetSettings() const noexcept
 		{
-			return m_controller.GetConfigStore().settings;
+			return m_controller.GetSettings();
 		}
 
 		Data::configStore_t& UISettingsInterface::GetConfigStore() const noexcept
 		{
-			return m_controller.GetConfigStore().active;
+			return m_controller.GetActiveConfig();
 		}
 
 		bool UISettingsInterface::GetShaderProcessingEnabled() const noexcept
@@ -42,7 +42,7 @@ namespace IED
 
 		void UISettingsInterface::MarkSettingsDirty()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 	}
 }

@@ -154,12 +154,12 @@ namespace IED
 
 		UIData::UICollapsibleStates& UIStats::GetCollapsibleStatesData()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.statsColStates;
+			return m_controller.GetSettings().data.ui.statsColStates;
 		}
 
 		void UIStats::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UIStats::DrawActorTable()

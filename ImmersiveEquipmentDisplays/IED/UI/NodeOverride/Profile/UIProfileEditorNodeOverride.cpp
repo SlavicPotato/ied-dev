@@ -27,9 +27,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.transformProfileEditor.sex, false);
+			SetSex(settings.data.ui.transformProfileEditor.sex, false);
 		}
 
 		void UIProfileEditorNodeOverride::DrawItem(NodeOverrideProfile& a_profile)
@@ -155,12 +155,12 @@ namespace IED
 		void UIProfileEditorNodeOverride::OnSexChanged(
 			Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.transformProfileEditor.sex != a_newSex)
+			if (settings.data.ui.transformProfileEditor.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.transformProfileEditor.sex,
+				settings.set(
+					settings.data.ui.transformProfileEditor.sex,
 					a_newSex);
 			}
 		}
@@ -168,27 +168,25 @@ namespace IED
 		Data::SettingHolder::EditorPanelCommon& UIProfileEditorNodeOverride::GetEditorPanelSettings()
 		{
 			return m_controller
-			    .GetConfigStore()
-			    .settings.data.ui.transformProfileEditor;
+			    .GetSettings()
+			    .data.ui.transformProfileEditor;
 		}
 
 		void UIProfileEditorNodeOverride::OnEditorPanelSettingsChange()
 		{
-			m_controller
-				.GetConfigStore()
-				.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorNodeOverride::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.transformProfileEditor.colStates;
 		}
 
 		void UIProfileEditorNodeOverride::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UIProfileEditorNodeOverride::OnUpdate(

@@ -30,9 +30,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.customProfileEditor.sex, false);
+			SetSex(settings.data.ui.customProfileEditor.sex, false);
 		}
 
 		constexpr Data::ConfigClass UIProfileEditorCustom::GetConfigClass() const
@@ -105,37 +105,37 @@ namespace IED
 		void UIProfileEditorCustom::OnSexChanged(
 			Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& store = m_controller.GetSettings();
 
-			if (store.settings.data.ui.customProfileEditor.sex != a_newSex)
+			if (store.data.ui.customProfileEditor.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.customProfileEditor.sex,
+				store.set(
+					store.data.ui.customProfileEditor.sex,
 					a_newSex);
 			}
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UIProfileEditorCustom::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customProfileEditor;
+			return m_controller.GetSettings().data.ui.customProfileEditor;
 		}
 
 		void UIProfileEditorCustom::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			auto& store = m_controller.GetSettings();
+			store.mark_dirty();
 		}
 
 		UIData::UICollapsibleStates& UIProfileEditorCustom::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.customProfileEditor.colStates;
 		}
 
 		void UIProfileEditorCustom::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UIProfileEditorCustom::OnBaseConfigChange(

@@ -36,6 +36,7 @@
 
 #include <ext/stl_boost_serialization_containers.h>
 #include <ext/stl_comparison.h>
+#include <ext/stl_csr.h>
 #include <ext/stl_error.h>
 #include <ext/stl_flat_map.h>
 #include <ext/stl_flat_set.h>

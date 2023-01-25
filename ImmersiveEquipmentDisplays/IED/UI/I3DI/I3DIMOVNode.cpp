@@ -99,8 +99,8 @@ namespace IED
 			}
 
 			auto& e =
-				controller.GetConfigStore()
-					.active.transforms.GetActorData()
+				controller.GetActiveConfig()
+					.transforms.GetActorData()
 					.try_emplace(actorid)
 					.first->second.placementData.try_emplace(weaponNode->GetNodeName())
 					.first->second

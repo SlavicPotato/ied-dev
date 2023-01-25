@@ -43,7 +43,7 @@ namespace IED
 				{
 				}
 
-				virtual void Run() noexcept override
+				virtual void Run() override
 				{
 					if (m_handle)
 					{
@@ -56,7 +56,7 @@ namespace IED
 					m_data.Cleanup(m_handle, m_root, m_root1p, m_db);
 				}
 
-				virtual void Dispose() noexcept override
+				virtual void Dispose() override
 				{
 					delete this;
 				}

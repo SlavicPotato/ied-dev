@@ -101,11 +101,11 @@ namespace IED
 			const stl::fixed_string& a_oldName,
 			const stl::fixed_string& a_newName)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& store = m_controller.GetActiveConfig();
 
 			bool chg = false;
 
-			store.active.slot.visit(
+			store.slot.visit(
 				[&](Data::configSlot_t& a_conf) {
 					if (a_conf.filters)
 					{
@@ -123,7 +123,7 @@ namespace IED
 					}
 				});
 
-			store.active.custom.visit(
+			store.custom.visit(
 				[&](Data::configCustom_t& a_conf) {
 					if (a_conf.filters)
 					{
@@ -161,7 +161,7 @@ namespace IED
 
 		void UIProfileEditorFormFilters::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		WindowLayoutData UIProfileEditorFormFilters::GetWindowDimensions() const

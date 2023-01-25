@@ -45,6 +45,7 @@ namespace IED
 			FormAny,
 			DayOfWeek,
 			LifeState,
+			ActorValue,
 
 			Total
 		};
@@ -378,6 +379,16 @@ namespace IED
 				Ap == ConditionParamItem::LifeState)
 			{
 				static_assert(std::is_same_v<T, ActorState::ACTOR_LIFE_STATE>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::ActorValue)
+			{
+				static_assert(std::is_same_v<T, RE::ActorValue>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

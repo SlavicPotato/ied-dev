@@ -26,9 +26,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.transformEditor.raceConfig.sex, false);
+			SetSex(settings.data.ui.transformEditor.raceConfig.sex, false);
 		}
 
 		void UINodeOverrideEditorRace::EditorDraw()
@@ -71,7 +71,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelRaceSettings& UINodeOverrideEditorRace::GetRaceSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor.raceConfig;
+			return m_controller.GetSettings().data.ui.transformEditor.raceConfig;
 		}
 
 		auto UINodeOverrideEditorRace::GetCurrentData()
@@ -89,7 +89,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorRace::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Race)];
@@ -97,22 +97,22 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorRace::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor;
+			return m_controller.GetSettings().data.ui.transformEditor;
 		}
 
 		void UINodeOverrideEditorRace::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorRace::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorRace::ListResetAllValues(Game::FormID a_handle)
@@ -121,21 +121,22 @@ namespace IED
 
 		entryNodeOverrideData_t UINodeOverrideEditorRace::GetData(Game::FormID a_handle)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto&       store    = m_controller.GetActiveConfig();
+			const auto& settings = m_controller.GetSettings();
 
-			return store.active.transforms.GetRaceCopy(
+			return store.transforms.GetRaceCopy(
 				a_handle,
-				store.settings.data.ui.transformEditor.globalType);
+				settings.data.ui.transformEditor.globalType);
 		}
 
 		void UINodeOverrideEditorRace::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.transformEditor.raceConfig.sex != a_newSex)
+			if (settings.data.ui.transformEditor.raceConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.transformEditor.raceConfig.sex,
+				settings.set(
+					settings.data.ui.transformEditor.raceConfig.sex,
 					a_newSex);
 			}
 		}
@@ -166,9 +167,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
@@ -177,9 +178,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
@@ -188,9 +189,9 @@ namespace IED
 			Game::FormID                                 a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsRace(a_handle, true);
 		}
@@ -210,7 +211,7 @@ namespace IED
 			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			if (EraseConfig<Data::configNodeOverrideEntryTransform_t>(a_handle, data, a_params.name))
 			{
@@ -227,7 +228,7 @@ namespace IED
 			Game::FormID                         a_handle,
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			if (EraseConfig<Data::configNodeOverrideEntryPlacement_t>(a_handle, data, a_params.name))
 			{
@@ -242,7 +243,7 @@ namespace IED
 
 		void UINodeOverrideEditorRace::OnClearPhysics(Game::FormID a_handle, const ClearNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			if (EraseConfig<Data::configNodeOverrideEntryPhysics_t>(a_handle, data, a_params.name))
 			{
@@ -259,7 +260,7 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -275,7 +276,7 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -289,9 +290,10 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorRace::OnClearAllPhysics(
-			Game::FormID a_handle, const ClearAllNodeOverrideUpdateParams& a_params)
+			Game::FormID                            a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -306,7 +308,7 @@ namespace IED
 
 		Data::configNodeOverrideHolder_t& UINodeOverrideEditorRace::GetOrCreateConfigHolder(Game::FormID a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			return data.try_emplace(a_handle).first->second;
 		}
@@ -314,8 +316,8 @@ namespace IED
 		Data::configNodeOverrideHolder_t* UINodeOverrideEditorRace::GetConfigHolder(Game::FormID a_handle) const
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetRaceData();
+			                 .GetActiveConfig()
+			                 .transforms.GetRaceData();
 
 			auto it = data.find(a_handle);
 
@@ -334,7 +336,7 @@ namespace IED
 
 		const ImVec4* UINodeOverrideEditorRace::HighlightEntry(Game::FormID a_handle)
 		{
-			const auto& data = m_controller.GetConfigStore().active.transforms.GetRaceData();
+			const auto& data = m_controller.GetActiveConfig().transforms.GetRaceData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

@@ -194,7 +194,7 @@ namespace IED
 							 "%s",
 							 UIL::LS(UIDialogImportExportStrings::ExportConfirm))
 						.draw([this] {
-							auto& conf = m_controller.GetConfigStore().settings;
+							auto& conf = m_controller.GetSettings();
 
 							conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
@@ -252,7 +252,7 @@ namespace IED
 								 UIL::LS(UIDialogImportExportStrings::OverwriteConfirm),
 								 selected->m_key.c_str())
 							.draw([this] {
-								auto& conf = m_controller.GetConfigStore().settings;
+								auto& conf = m_controller.GetSettings();
 
 								conf.mark_if(DrawExportFilters(conf.data.ui.importExport.serializationFlags));
 
@@ -273,7 +273,7 @@ namespace IED
 		{
 			try
 			{
-				const auto& settings = m_controller.GetConfigStore().settings;
+				const auto& settings = m_controller.GetSettings();
 
 				if (!m_controller.ExportData(
 						a_path,

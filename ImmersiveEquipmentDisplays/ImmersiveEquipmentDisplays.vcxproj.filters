@@ -1745,6 +1745,12 @@
     <ClInclude Include="IED\UI\Widgets\UILifeStateSelectorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2774,6 +2780,9 @@
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UILifeStateSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIActorValueSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>

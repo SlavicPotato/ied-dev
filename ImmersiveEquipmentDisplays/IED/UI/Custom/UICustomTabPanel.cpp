@@ -23,7 +23,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanel& UICustomEditorTabPanel::GetEditorConfig()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor;
+			return m_controller.GetSettings().data.ui.customEditor;
 		}
 
 	}

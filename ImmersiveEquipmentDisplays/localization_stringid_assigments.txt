@@ -37,3 +37,4 @@
 7400-7499:		phys val widget
 7500-7599:		day of the week sel widget
 7600-7699:		life state sel widget
+7700-7799:		av sel widget

@@ -32,9 +32,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.slotEditor.npcConfig.sex, false);
+			SetSex(settings.data.ui.slotEditor.npcConfig.sex, false);
 		}
 
 		void UISlotEditorNPC::EditorDraw()
@@ -48,7 +48,7 @@ namespace IED
 
 				if (m_listCurrent)
 				{
-					auto& settings = m_controller.GetConfigStore().settings;
+					auto& settings = m_controller.GetSettings();
 
 					if (settings.data.disableNPCSlots &&
 					    m_listCurrent->handle != Data::IData::GetPlayerBaseID())
@@ -73,7 +73,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelActorSettings& UISlotEditorNPC::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.slotEditor.npcConfig;
+			return m_controller.GetSettings().data.ui.slotEditor.npcConfig;
 		}
 
 		auto UISlotEditorNPC::GetCurrentData()
@@ -91,13 +91,12 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelCommon& UISlotEditorNPC::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.slotEditor;
+			return m_controller.GetSettings().data.ui.slotEditor;
 		}
 
 		void UISlotEditorNPC::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UISlotEditorNPC::ListResetAllValues(Game::FormID a_handle) {}
@@ -110,7 +109,7 @@ namespace IED
 			auto it = npcInfo.find(a_handle);
 			if (it != npcInfo.end())
 			{
-				auto& store = m_controller.GetConfigStore().active;
+				const auto& store = m_controller.GetActiveConfig();
 
 				return store.slot.GetNPCCopy(
 					a_handle,
@@ -125,7 +124,7 @@ namespace IED
 		Data::configSlotHolder_t&
 			UISlotEditorNPC::GetOrCreateConfigSlotHolder(Game::FormID a_handle) const
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 			auto& data  = store.slot.GetNPCData();
 
 			return data.try_emplace(a_handle).first->second;
@@ -164,12 +163,12 @@ namespace IED
 		{
 			auto params = static_cast<const SingleSlotConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				*params,
-				store.settings.data.ui.slotEditor.sexSync);
+				settings.data.ui.slotEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -210,12 +209,12 @@ namespace IED
 			Game::FormID                          a_handle,
 			const SlotPriorityConfigUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
 			UpdateConfigSingle(
 				a_handle,
 				a_params,
-				store.settings.data.ui.slotEditor.sexSync);
+				settings.data.ui.slotEditor.sexSync);
 
 			m_controller.QueueEvaluateNPC(
 				a_handle,
@@ -241,7 +240,7 @@ namespace IED
 			Game::FormID                       a_handle,
 			const SingleSlotConfigClearParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 
 			ResetConfigSlot(a_handle, a_params.slot, store.slot.GetNPCData());
 
@@ -257,7 +256,7 @@ namespace IED
 			Game::FormID                     a_handle,
 			const FullSlotConfigClearParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore().active;
+			auto& store = m_controller.GetActiveConfig();
 
 			ResetConfig(a_handle, store.slot.GetNPCData());
 			a_params.data = GetData(a_handle);
@@ -276,7 +275,7 @@ namespace IED
 				return;
 			}
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (!settings.data.ui.slotEditor.npcConfig.autoSelectSex)
 			{
@@ -290,7 +289,7 @@ namespace IED
 			{
 				auto sex = it->second->female ?
 				               Data::ConfigSex::Female :
-                               Data::ConfigSex::Male;
+				               Data::ConfigSex::Male;
 
 				SetSex(sex, false);
 			}
@@ -298,20 +297,19 @@ namespace IED
 
 		void UISlotEditorNPC::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.slotEditor.npcConfig.sex != a_newSex)
+			if (settings.data.ui.slotEditor.npcConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.slotEditor.npcConfig.sex,
+				settings.set(
+					settings.data.ui.slotEditor.npcConfig.sex,
 					a_newSex);
 			}
 		}
 
 		void UISlotEditorNPC::OnListOptionsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		UIPopupQueue& UISlotEditorNPC::GetPopupQueue()
@@ -346,7 +344,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UISlotEditorNPC::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.slotEditor
 			    .colStates[stl::underlying(Data::ConfigClass::NPC)];
@@ -354,7 +352,7 @@ namespace IED
 
 		void UISlotEditorNPC::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UISlotEditorNPC::DrawMenuBarItemsExtra()
@@ -363,7 +361,7 @@ namespace IED
 
 		const ImVec4* UISlotEditorNPC::HighlightEntry(Game::FormID a_handle)
 		{
-			const auto& data = m_controller.GetConfigStore().active.slot.GetNPCData();
+			const auto& data = m_controller.GetActiveConfig().slot.GetNPCData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

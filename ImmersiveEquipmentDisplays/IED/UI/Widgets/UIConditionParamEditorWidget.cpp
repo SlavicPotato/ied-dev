@@ -2,6 +2,7 @@
 
 #include "UIConditionParamEditorWidget.h"
 
+#include "UIActorValueSelectorWidget.h"
 #include "UIBipedObjectSelectorWidget.h"
 #include "UICMNodeSelector.h"
 #include "UIComparisonOperatorSelector.h"
@@ -117,6 +118,16 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::LifeState); f.p1)
 						{
 							f.As1<ActorState::ACTOR_LIFE_STATE>() = ActorState::ACTOR_LIFE_STATE::kAlive;
+						}
+
+						if (const auto& f = get(ConditionParamItem::ActorValue); f.p1)
+						{
+							f.As1<RE::ActorValue>() = RE::ActorValue::kOneHanded;
+						}
+
+						if (const auto& f = get(ConditionParamItem::CompOper); f.p1)
+						{
+							f.As1<Data::ComparisonOperator>() = Data::ComparisonOperator::kEqual;
 						}
 					}
 
@@ -294,7 +305,7 @@ namespace IED
 				result |= UIDayOfWeekSelectorWidget::DrawDayOfWeekSelectorWidget(
 					e.As1<RE::Calendar::Day>());
 			}
-			
+
 			if (const auto& e = get(ConditionParamItem::LifeState); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -303,6 +314,16 @@ namespace IED
 
 				result |= UILifeStateSelectorWidget::DrawLifeStateSelector(
 					e.As1<ActorState::ACTOR_LIFE_STATE>());
+			}
+
+			if (const auto& e = get(ConditionParamItem::ActorValue); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::ActorValue);
+
+				result |= UIActorValueSelectorWidget::DrawActorValueSelector(
+					e.As1<RE::ActorValue>());
 			}
 
 			if (const auto& e = get(ConditionParamItem::CondVarType); e.p1)
@@ -647,6 +668,24 @@ namespace IED
 
 							break;
 
+						case Data::ExtraConditionType::kLevel:
+
+							{
+								const auto& f = get(ConditionParamItem::CompOper);
+								const auto& g = get(ConditionParamItem::UInt32);
+
+								stl::snprintf(
+									m_descBuffer,
+									"%s %s %u",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									f.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(f.As1<Data::ComparisonOperator>()) : nullptr,
+									g.p1 ? g.As1<std::uint32_t>() : 0);
+
+								return m_descBuffer;
+							}
+
+							break;
+
 						case Data::ExtraConditionType::kLifeState:
 
 							if (const auto& f = get(ConditionParamItem::LifeState); f.p1)
@@ -656,6 +695,26 @@ namespace IED
 									"%s [%s]",
 									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									UILifeStateSelectorWidget::life_state_to_desc(f.As1<ActorState::ACTOR_LIFE_STATE>()));
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kActorValue:
+
+							if (const auto& f = get(ConditionParamItem::ActorValue); f.p1)
+							{
+								const auto& g = get(ConditionParamItem::CompOper);
+								const auto& h = get(ConditionParamItem::Float);
+
+								stl::snprintf(
+									m_descBuffer,
+									"%s [%s %s %f]",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									UIActorValueSelectorWidget::actor_value_to_desc(f.As1<RE::ActorValue>()),
+									g.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(g.As1<Data::ComparisonOperator>()) : nullptr,
+									h.p1 ? h.As1<float>() : 0.0f);
 
 								return m_descBuffer;
 							}

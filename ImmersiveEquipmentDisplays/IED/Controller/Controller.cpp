@@ -34,13 +34,13 @@ namespace IED
 		const std::shared_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(),
 		IEquipment(m_rngBase),
-		IAnimationManager(m_config.settings),
+		IAnimationManager(m_configData.settings),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
-		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
-		m_enableCorpseScatter(a_config->m_enableCorpseScatter),
+		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
+		//m_enableCorpseScatter(a_config->m_enableCorpseScatter),
 		//m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
 		m_forceFlushSaveData(a_config->m_forceFlushSaveData),
 		m_bipedCache(
@@ -68,7 +68,7 @@ namespace IED
 		seh.GetDispatcher<SKSESerializationEvent>().AddSink(this);
 		seh.GetDispatcher<SKSESerializationFormDeleteEvent>().AddSink(this);
 
-		ASSERT(seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this));
+		seh.RegisterForLoadEvent(SKSE_SERIALIZATION_TYPE_ID, this);
 	}
 
 	void Controller::SinkEventsT0()
@@ -83,16 +83,9 @@ namespace IED
 
 	bool Controller::SinkEventsT1()
 	{
-		if (m_esif.test(EventSinkInstallationFlags::kT1))
-		{
-			return true;
-		}
-
 		if (auto mm = MenuManager::GetSingleton())
 		{
 			mm->GetMenuOpenCloseEventDispatcher().AddEventSink(this);
-
-			m_esif.set(EventSinkInstallationFlags::kT1);
 
 			return true;
 		}
@@ -104,11 +97,6 @@ namespace IED
 
 	bool Controller::SinkEventsT2()
 	{
-		if (m_esif.test(EventSinkInstallationFlags::kT2))
-		{
-			return true;
-		}
-
 		if (auto edl = ScriptEventSourceHolder::GetSingleton())
 		{
 			edl->AddEventSink<TESInitScriptEvent>(this);
@@ -124,8 +112,6 @@ namespace IED
 			//edl->AddEventSink<TESPackageEvent>(this);
 			//edl->AddEventSink<TESQuestStartStopEvent>(this);
 
-			m_esif.set(EventSinkInstallationFlags::kT2);
-
 			return true;
 		}
 		else
@@ -138,44 +124,48 @@ namespace IED
 	{
 		assert(m_iniconf);
 
-		m_config.settings.SetPath(PATHS::SETTINGS);
+		m_configData.settings = std::make_unique<Data::SettingHolder>();
 
-		if (!m_config.settings.Load())
+		auto& settings = *m_configData.settings;
+
+		settings.SetPath(PATHS::SETTINGS);
+
+		if (!settings.Load())
 		{
 			if (Serialization::FileExists(PATHS::SETTINGS))
 			{
 				Error(
 					"%s: failed loading settings: %s",
 					PATHS::SETTINGS,
-					m_config.settings.GetLastException().what());
+					settings.GetLastException().what());
 			}
 		}
 		else
 		{
-			if (m_config.settings.HasErrors())
+			if (settings.HasErrors())
 			{
 				Warning("%s: settings loaded with errors", PATHS::SETTINGS);
 			}
 		}
 
-		const auto& settings = m_config.settings.data;
+		const auto& data = settings.data;
 
-		if (settings.logLevel)
+		if (data.logLevel)
 		{
-			gLog.SetLogLevel(*settings.logLevel);
+			gLog.SetLogLevel(*data.logLevel);
 		}
 
-		ISKSE::GetBacklog().SetLimit(std::clamp<std::uint32_t>(settings.ui.logLimit, 1, 10000));
+		ISKSE::GetBacklog().SetLimit(std::clamp<std::uint32_t>(data.ui.logLimit, 1, 10000));
 
-		SetODBLevel(settings.odbLevel);
+		SetODBLevel(data.odbLevel);
 
 		InitializeSound();
 
-		if (settings.playerBlockKeys)
+		if (data.playerBlockKeys)
 		{
 			m_inputHandlers.playerBlock.SetKeys(
-				settings.playerBlockKeys->comboKey,
-				settings.playerBlockKeys->key);
+				data.playerBlockKeys->comboKey,
+				data.playerBlockKeys->key);
 		}
 		else
 		{
@@ -188,16 +178,16 @@ namespace IED
 		InitializeConfig();
 		LoadAnimationData();
 
-		AnimationUpdateController::GetSingleton().SetEnabled(settings.hkWeaponAnimations);
-		SetShaderProcessingEnabled(settings.enableEffectShaders);
-		SetProcessorTaskParallelUpdates(settings.apParallelUpdates);
+		AnimationUpdateController::GetSingleton().SetEnabled(data.hkWeaponAnimations);
+		SetShaderProcessingEnabled(data.enableEffectShaders);
+		SetProcessorTaskParallelUpdates(data.apParallelUpdates);
 
 		m_cpuHasSSE41 = ::IsProcessorFeaturePresent(PF_SSE4_1_INSTRUCTIONS_AVAILABLE);
 
 		if (m_cpuHasSSE41)
 		{
-			SetPhysicsProcessingEnabled(settings.enableEquipmentPhysics);
-			PHYSimComponent::SetMaxDiff(settings.physics.maxDiff);
+			SetPhysicsProcessingEnabled(data.enableEquipmentPhysics);
+			PHYSimComponent::SetMaxDiff(data.physics.maxDiff);
 		}
 		else
 		{
@@ -206,9 +196,9 @@ namespace IED
 
 		auto& rlc = ReferenceLightController::GetSingleton();
 
-		rlc.SetNPCLightCellAttachFixEnabled(settings.lightNPCCellAttachFix);
-		rlc.SetNPCLightUpdateFixEnabled(settings.lightNPCUpdateFix);
-		rlc.SetNPCLightUpdatesEnabled(settings.lightEnableNPCUpdates);
+		rlc.SetNPCLightCellAttachFixEnabled(data.lightNPCCellAttachFix);
+		rlc.SetNPCLightUpdateFixEnabled(data.lightNPCUpdateFix);
+		rlc.SetNPCLightUpdatesEnabled(data.lightEnableNPCUpdates);
 	}
 
 	void Controller::GetSDSInterface()
@@ -262,8 +252,9 @@ namespace IED
 	void Controller::InitializeSound()
 	{
 		assert(m_iniconf);
+		assert(m_configData.settings);
 
-		auto& settings = m_config.settings.data.sound;
+		auto& settings = m_configData.settings->data.sound;
 
 		for (auto& e : m_iniconf->m_sound.data)
 		{
@@ -279,7 +270,9 @@ namespace IED
 
 	void Controller::UpdateSoundForms()
 	{
-		const auto& settings = m_config.settings.data.sound;
+		assert(m_configData.settings);
+
+		const auto& settings = m_configData.settings->data.sound;
 
 		ClearSounds();
 
@@ -319,10 +312,11 @@ namespace IED
 	void Controller::InitializeUI()
 	{
 		assert(m_iniconf);
+		assert(m_configData.settings);
 
 		UIInitialize(*this);
 
-		const auto& config = m_config.settings.data;
+		const auto& config = m_configData.settings->data;
 
 		if (auto& renderTask = UIGetRenderTask())
 		{
@@ -417,20 +411,24 @@ namespace IED
 
 	void Controller::InitializeConfig()
 	{
+		assert(m_iniconf);
+
+		m_configData.initial = std::make_unique<Data::configStore_t>();
+
 		bool defaultConfLoaded = false;
 
 		if (Serialization::FileExists(PATHS::DEFAULT_CONFIG_USER))
 		{
 			defaultConfLoaded = LoadConfigStore(
 				PATHS::DEFAULT_CONFIG_USER,
-				m_config.initial);
+				*m_configData.initial);
 		}
 
 		if (!defaultConfLoaded)
 		{
 			defaultConfLoaded = LoadConfigStore(
 				PATHS::DEFAULT_CONFIG,
-				m_config.initial);
+				*m_configData.initial);
 		}
 
 		if (!defaultConfLoaded)
@@ -438,20 +436,20 @@ namespace IED
 			Warning("No default configuration could be loaded");
 		}
 
-		FillGlobalSlotConfig(m_config.initial.slot);
-		IMaintenance::CleanConfigStore(m_config.initial);
+		FillGlobalSlotConfig(m_configData.initial->slot);
+		IMaintenance::CleanConfigStore(*m_configData.initial);
 
-		m_config.active = m_config.initial;
+		m_configData.active = std::make_unique<Data::configStore_t>(*m_configData.initial);
 
-		if (m_forceDefaultConfig)
+		if (IsDefaultConfigForced())
 		{
-			Message("Note: ForceDefaultConfig is enabled");
+			Message("Note: default config is forced");
 		}
 	}
 
 	void Controller::InitializeLocalization()
 	{
-		auto& settings = m_config.settings;
+		auto& settings = *m_configData.settings;
 		auto& clang    = settings.data.language;
 
 		stl::optional<stl::fixed_string> defaultLang;
@@ -517,7 +515,7 @@ namespace IED
 
 	void Controller::InitializeBSFixedStringTable()
 	{
-		ASSERT(StringCache::IsInitialized());
+		assert(StringCache::IsInitialized());
 
 		const stl::lock_guard lock(m_lock);
 
@@ -1199,14 +1197,16 @@ namespace IED
 			return;
 		}
 
-		if (m_config.active
+		auto& config = GetActiveConfig();
+
+		if (config
 		        .transforms.GetActorData()
 		        .contains(a_holder.m_actor->formID))
 		{
 			return;
 		}
 
-		if (m_config.active
+		if (config
 		        .transforms.GetNPCData()
 		        .contains(npc->formID))
 		{
@@ -1248,7 +1248,7 @@ namespace IED
 			return;
 		}
 
-		m_config.active
+		config
 			.transforms.GetNPCData()
 			.emplace(npc->formID, std::move(tmp));
 	}
@@ -1260,7 +1260,7 @@ namespace IED
 			a_holder.ApplyXP32NodeTransformOverrides();
 		}
 
-		if (m_config.settings.data.placementRandomization &&
+		if (GetSettings().data.placementRandomization &&
 		    !a_holder.m_movNodes.empty())
 		{
 			GenerateRandomPlacementEntries(a_holder);
@@ -1271,7 +1271,7 @@ namespace IED
 
 	bool Controller::WantGlobalVariableUpdateOnAddRemove() const noexcept
 	{
-		return !m_config.active.condvars.empty();
+		return !GetActiveConfig().condvars.empty();
 	}
 
 	void Controller::QueueResetAll(
@@ -2004,7 +2004,7 @@ namespace IED
 	{
 		ITaskPool::AddTask([this] {
 			const stl::lock_guard lock(m_lock);
-			IMaintenance::ClearConfigStoreRand(m_config.active);
+			IMaintenance::ClearConfigStoreRand(GetActiveConfig());
 		});
 	}
 
@@ -2097,7 +2097,7 @@ namespace IED
 
 		m_actorBlockList.playerToggle = !m_actorBlockList.playerToggle;
 
-		if (!m_config.settings.data.toggleKeepLoaded)
+		if (!GetSettings().data.toggleKeepLoaded)
 		{
 			if (m_actorBlockList.playerToggle)
 			{
@@ -2534,7 +2534,7 @@ namespace IED
 			return;
 		}
 
-		const auto& settings = m_config.settings.data;
+		const auto& settings = GetSettings().data;
 
 		a_params.collector.GenerateSlotCandidates(
 			a_params.objects.IsPlayer(),
@@ -2552,7 +2552,9 @@ namespace IED
 
 		const configSlotPriority_t* prio;
 
-		if (auto d = m_config.active.slot.GetActorPriority(
+		const auto& activeConfig = GetActiveConfig();
+
+		if (auto d = activeConfig.slot.GetActorPriority(
 				a_params.actor->formID,
 				a_params.npcOrTemplate->formID,
 				a_params.race->formID,
@@ -2715,7 +2717,7 @@ namespace IED
 					continue;
 				}
 
-				auto entry = m_config.active.slot.GetActor(
+				auto entry = activeConfig.slot.GetActor(
 					a_params.actor->formID,
 					a_params.npcOrTemplate->formID,
 					a_params.race->formID,
@@ -2922,7 +2924,7 @@ namespace IED
 
 					if (!f.slotConfig)
 					{
-						f.slotConfig = m_config.active.slot.GetActor(
+						f.slotConfig = activeConfig.slot.GetActor(
 							a_params.actor->formID,
 							a_params.npcOrTemplate->formID,
 							a_params.race->formID,
@@ -3022,7 +3024,7 @@ namespace IED
 		}
 
 		if (a_actor == *g_thePlayer &&
-		    m_config.settings.data.toggleKeepLoaded &&
+		    GetSettings().data.toggleKeepLoaded &&
 		    m_actorBlockList.playerToggle)
 		{
 			return false;
@@ -3281,7 +3283,7 @@ namespace IED
 
 			if (a_config.customFlags.test_any(CustomFlags::kEquipmentModeMask) &&
 			    !hasMinCount &&
-			    (!m_config.settings.data.hideEquipped ||
+			    (!GetSettings().data.hideEquipped ||
 			     a_config.customFlags.test(CustomFlags::kAlwaysUnload)))
 			{
 				a_objectEntry.clear_chance_flags();
@@ -3637,7 +3639,7 @@ namespace IED
 
 	void Controller::ProcessCustom(processParams_t& a_params) noexcept
 	{
-		const auto& cstore = m_config.active.custom;
+		const auto& cstore = GetActiveConfig().custom;
 
 		auto& actorConfig = cstore.GetActorData();
 
@@ -3720,8 +3722,6 @@ namespace IED
 			m_nodeOverrideEnabled,
 			m_nodeOverridePlayerEnabled,
 			GetSettings().data.syncTransformsToFirstPersonSkeleton,
-			/*m_config.settings.data.hkWeaponAnimations &&
-				m_config.settings.data.animEventForwarding,*/
 			m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 		if (a_handle != objects.GetHandle())
@@ -3766,8 +3766,6 @@ namespace IED
 					m_nodeOverrideEnabled,
 					m_nodeOverridePlayerEnabled,
 					GetSettings().data.syncTransformsToFirstPersonSkeleton,
-					/*m_config.settings.data.hkWeaponAnimations &&
-						m_config.settings.data.animEventForwarding,*/
 					m_bipedCache.GetOrCreate(a_actor->formID, GetCounterValue()));
 
 				EvaluateImpl(
@@ -4002,7 +4000,7 @@ namespace IED
 		processParams_t& a_params,
 		bool             a_markAllForEval) noexcept
 	{
-		const auto& config = m_config.active.condvars;
+		const auto& config = GetActiveConfig().condvars;
 
 		if (config.empty())
 		{
@@ -4041,7 +4039,7 @@ namespace IED
 	void Controller::DoObjectEvaluation(
 		processParams_t& a_params) noexcept
 	{
-		if (!m_config.settings.data.disableNPCSlots ||
+		if (!GetSettings().data.disableNPCSlots ||
 		    a_params.objects.IsPlayer())
 		{
 			ProcessSlots(a_params);
@@ -4230,11 +4228,13 @@ namespace IED
 			a_holder,
 			*this);
 
+		const auto& activeConfig = GetActiveConfig();
+
 		configStoreNodeOverride_t::holderCache_t hc;
 
 		for (auto& e : a_holder.m_weapNodes)
 		{
-			const auto r = m_config.active.transforms.GetActorPlacement(
+			const auto r = activeConfig.transforms.GetActorPlacement(
 				a_actor->formID,
 				params.npcOrTemplate->formID,
 				a_race->formID,
@@ -4253,7 +4253,7 @@ namespace IED
 
 		for (auto& [i, e] : a_holder.m_cmeNodes)
 		{
-			const auto r = m_config.active.transforms.GetActorTransform(
+			const auto r = activeConfig.transforms.GetActorTransform(
 				a_actor->formID,
 				params.npcOrTemplate->formID,
 				a_race->formID,
@@ -4295,7 +4295,7 @@ namespace IED
 		{
 			for (auto& [i, e] : a_holder.m_movNodes)
 			{
-				const auto r = m_config.active.transforms.GetActorPhysics(
+				const auto r = activeConfig.transforms.GetActorPhysics(
 					a_actor->formID,
 					params.npcOrTemplate->formID,
 					a_race->formID,
@@ -4577,7 +4577,7 @@ namespace IED
 
 			configStoreSlot_t::holderCache_t hc;
 
-			auto config = m_config.active.slot.GetActor(
+			auto config = GetActiveConfig().slot.GetActor(
 				info->actor->formID,
 				info->npcOrTemplate->formID,
 				info->race->formID,
@@ -4846,7 +4846,7 @@ namespace IED
 		}*/
 
 		auto& data = a_record.GetCustom(a_class);
-		auto& conf = m_config.active.custom;
+		auto& conf = GetActiveConfig().custom;
 
 		switch (a_class)
 		{
@@ -4944,7 +4944,7 @@ namespace IED
 		}*/
 
 		auto& data = a_record.GetCustom(a_class);
-		auto& conf = m_config.active.custom;
+		auto& conf = GetActiveConfig().custom;
 
 		switch (a_class)
 		{
@@ -5020,7 +5020,7 @@ namespace IED
 		}*/
 
 		auto& data = a_record.GetCustom(a_class);
-		auto& conf = m_config.active.custom;
+		auto& conf = GetActiveConfig().custom;
 
 		switch (a_class)
 		{
@@ -5496,13 +5496,13 @@ namespace IED
 			{
 			}
 
-			virtual void Run() noexcept override
+			virtual void Run() override
 			{
 				const stl::lock_guard lock(m_controller.m_lock);
 				m_controller.m_bipedCache.data().erase(m_formid);
 			}
 
-			virtual void Dispose() noexcept override
+			virtual void Dispose() override
 			{
 				delete this;
 			}
@@ -5725,18 +5725,13 @@ namespace IED
 		{
 			auto uish = UIStringHolder::GetSingleton();
 
-			if (a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu) ||
-			    a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu) ||
-			    a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kgiftMenu) ||
-			    a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kbarterMenu) ||
-			    a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kmagicMenu) ||
-			    a_evn->menuName ==
-			        uish->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu))
+			 if (
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu) || 
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu) ||
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kgiftMenu) ||
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kbarterMenu) ||
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kmagicMenu) ||
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu))
 			{
 				if (auto player = *g_thePlayer)
 				{
@@ -5801,7 +5796,7 @@ namespace IED
 		stl::flag<ConfigStoreSerializationFlags> a_flags)
 	{
 		auto tmp = CreateFilteredConfigStore(
-			m_config.active,
+			GetActiveConfig(),
 			a_exportFlags,
 			a_flags);
 
@@ -5813,7 +5808,7 @@ namespace IED
 			return false;
 		}
 
-		m_config.initial = std::move(*tmp);
+		m_configData.initial = std::move(tmp);
 
 		return true;
 	}
@@ -5832,22 +5827,20 @@ namespace IED
 
 		const stl::lock_guard lock(m_lock);
 
-		//m_storedActorStates.clear();
-
-		if (m_forceDefaultConfig)
+		if (IsDefaultConfigForced())
 		{
-			m_config.stash = m_config.initial;
+			m_configData.stash.reset();
 		}
 		else
 		{
-			m_config.active = m_config.initial;
+			*m_configData.active = *m_configData.initial;
 		}
 
 		m_actorBlockList.clear();
 		m_bipedCache.clear();
 
 		ClearObjectsImpl();
-		ClearObjectDatabase();
+		//ClearObjectDatabase();
 
 		ResetCounter();
 		m_evalCounter = 0;
@@ -5860,13 +5853,13 @@ namespace IED
 
 		a_out << m_actorBlockList;
 
-		if (m_forceDefaultConfig)
+		if (IsDefaultConfigForced() && m_configData.stash)
 		{
-			a_out << m_config.stash;
+			a_out << *m_configData.stash;
 		}
 		else
 		{
-			a_out << m_config.active;
+			a_out << *m_configData.active;
 		}
 
 		a_out << *this;
@@ -5892,35 +5885,36 @@ namespace IED
 		const stl::lock_guard lock(m_lock);
 
 		actorBlockList_t blockList;
-		configStore_t    cfgStore;
+		auto             cfgStore = std::make_unique<configStore_t>();
 
 		a_in >> blockList;
-		a_in >> cfgStore;
+		a_in >> *cfgStore;
 
 		if (a_version < stl::underlying(SerializationVersion::kDataVersion9))
 		{
-			actorStateHolder_t actorState;
-			a_in >> actorState;
+			auto actorState = std::make_unique<actorStateHolder_t>();
+			a_in >> *actorState;
 		}
 
-		FillGlobalSlotConfig(cfgStore.slot);
-		IMaintenance::CleanConfigStore(cfgStore);
 		IMaintenance::CleanBlockList(blockList);
 
-		if (!m_config.settings.data.placementRandomization)
+		FillGlobalSlotConfig(cfgStore->slot);
+		IMaintenance::CleanConfigStore(*cfgStore);
+
+		if (!GetSettings().data.placementRandomization)
 		{
-			IMaintenance::ClearConfigStoreRand(cfgStore);
+			IMaintenance::ClearConfigStoreRand(*cfgStore);
 		}
 
 		m_actorBlockList = std::move(blockList);
 
-		if (m_forceDefaultConfig)
+		if (IsDefaultConfigForced())
 		{
-			m_config.stash = std::move(cfgStore);
+			m_configData.stash = std::move(cfgStore);
 		}
 		else
 		{
-			m_config.active = std::move(cfgStore);
+			m_configData.active = std::move(cfgStore);
 		}
 
 		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
@@ -6013,8 +6007,10 @@ namespace IED
 
 	void Controller::JSOnDataImport()
 	{
-		FillGlobalSlotConfig(m_config.active.slot);
-		IMaintenance::CleanConfigStore(m_config.active);
+		auto& activeConfig = GetActiveConfig();
+
+		FillGlobalSlotConfig(activeConfig.slot);
+		IMaintenance::CleanConfigStore(activeConfig);
 		QueueResetAll(ControllerUpdateFlags::kNone);
 
 		if (auto& rt = UIGetRenderTask())
@@ -6022,32 +6018,6 @@ namespace IED
 			rt->QueueReset();
 		}
 	}
-
-	/*auto Controller::ReceiveEvent(
-		const SKSENiNodeUpdateEvent* a_evn,
-		BSTEventSource<SKSENiNodeUpdateEvent>* a_dispatcher)
-		-> EventResult
-	{
-		if (a_evn && a_evn->reference)
-		{
-			if (auto actor = a_evn->reference->As<Actor>())
-			{
-				{
-					const stl::lock_guard lock(m_lock);
-
-					auto it = m_objects.find(actor->formID);
-					if (it != m_objects.end())
-					{
-						RemoveActorImpl(actor, it->second.GetHandle(), ControllerUpdateFlags::kNone);
-					}
-				}
-
-				QueueEvaluate(actor, ControllerUpdateFlags::kNone);
-			}
-		}
-
-		return EventResult::kEvent_Continue;
-	}*/
 
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)
 	{

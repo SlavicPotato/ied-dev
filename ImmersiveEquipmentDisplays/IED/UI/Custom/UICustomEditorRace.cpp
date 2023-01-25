@@ -31,9 +31,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.customEditor.raceConfig.sex, false);
+			SetSex(settings.data.ui.customEditor.raceConfig.sex, false);
 		}
 
 		void UICustomEditorRace::EditorDraw()
@@ -82,14 +82,14 @@ namespace IED
 		Data::SettingHolder::EditorPanelRaceSettings& UICustomEditorRace::GetRaceSettings() const
 		{
 			return m_controller
-			    .GetConfigStore()
-			    .settings.data.ui.customEditor.raceConfig;
+			    .GetSettings()
+			    .data.ui.customEditor.raceConfig;
 		}
 
 		Data::configCustomHolder_t& UICustomEditorRace::GetOrCreateConfigSlotHolder(
 			Game::FormID a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetRaceData();
+			auto& data = m_controller.GetActiveConfig().custom.GetRaceData();
 			auto& sh   = StringHolder::GetSingleton();
 
 			auto& pluginMap = data.try_emplace(a_handle).first->second;
@@ -99,8 +99,7 @@ namespace IED
 
 		entryCustomData_t UICustomEditorRace::GetData(Game::FormID a_handle)
 		{
-			auto& store = m_controller.GetConfigStore();
-			auto& data  = store.active.custom.GetRaceData();
+			auto& data  = m_controller.GetActiveConfig().custom.GetRaceData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -142,7 +141,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorRace::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings
 			    .data.ui.customEditor
@@ -151,26 +150,24 @@ namespace IED
 
 		void UICustomEditorRace::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorRace::OnListOptionsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorRace::GetEditorPanelSettings()
 		{
 			return m_controller
-			    .GetConfigStore()
-			    .settings.data.ui.customEditor;
+			    .GetSettings()
+			    .data.ui.customEditor;
 		}
 
 		void UICustomEditorRace::OnEditorPanelSettingsChange()
 		{
-			auto& store = m_controller.GetConfigStore();
-			store.settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorRace::ListResetAllValues(Game::FormID a_handle)
@@ -179,12 +176,12 @@ namespace IED
 
 		void UICustomEditorRace::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.customEditor.raceConfig.sex != a_newSex)
+			if (settings.data.ui.customEditor.raceConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.customEditor.raceConfig.sex,
+				settings.set(
+					settings.data.ui.customEditor.raceConfig.sex,
 					a_newSex);
 			}
 		}
@@ -230,9 +227,9 @@ namespace IED
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfig(a_handle, *params, store.settings.data.ui.customEditor.sexSync);
+			UpdateConfig(a_handle, *params, settings.data.ui.customEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -298,8 +295,8 @@ namespace IED
 			const CustomConfigEraseParams& a_params)
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.custom.GetRaceData();
+			                 .GetActiveConfig()
+			                 .custom.GetRaceData();
 
 			if (EraseConfig(a_handle, data, a_params.name))
 			{
@@ -333,8 +330,8 @@ namespace IED
 		{
 			return HasConfigEntry(
 					   m_controller
-						   .GetConfigStore()
-						   .active.custom.GetRaceData(),
+						   .GetActiveConfig()
+						   .custom.GetRaceData(),
 					   a_handle) ?
 			           std::addressof(UICommon::g_colorPurple) :
                        nullptr;

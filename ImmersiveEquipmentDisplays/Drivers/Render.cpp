@@ -80,7 +80,7 @@ namespace IED
 
 			Debug("%s: Sending event", __FUNCTION__);
 
-			Events::D3D11CreateEventPost evd_post{
+			const Events::D3D11CreateEventPost evd_post{
 				m_swapChainDesc,
 				renderManager->forwarder,
 				renderManager->context,
@@ -94,7 +94,7 @@ namespace IED
 		{
 			m_Instance.m_unkPresent_o(a_p1);
 
-			Events::IDXGISwapChainPresent evn;
+			const Events::IDXGISwapChainPresent evn{};
 
 			m_Instance.GetEventDispatcher<Events::IDXGISwapChainPresent>().SendEvent(evn);
 		}

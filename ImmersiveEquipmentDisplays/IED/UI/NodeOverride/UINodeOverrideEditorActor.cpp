@@ -27,9 +27,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.transformEditor.actorConfig.sex, false);
+			SetSex(settings.data.ui.transformEditor.actorConfig.sex, false);
 		}
 
 		void UINodeOverrideEditorActor::EditorDraw()
@@ -97,7 +97,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanelActorSettings& UINodeOverrideEditorActor::GetActorSettings() const
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor.actorConfig;
+			return m_controller.GetSettings().data.ui.transformEditor.actorConfig;
 		}
 
 		auto UINodeOverrideEditorActor::GetCurrentData()
@@ -115,7 +115,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UINodeOverrideEditorActor::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.transformEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Actor)];
@@ -123,22 +123,22 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UINodeOverrideEditorActor::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor;
+			return m_controller.GetSettings().data.ui.transformEditor;
 		}
 
 		void UINodeOverrideEditorActor::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorActor::OnListOptionsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UINodeOverrideEditorActor::ListResetAllValues(Game::FormID a_handle)
@@ -154,7 +154,7 @@ namespace IED
 				return;
 			}
 
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			if (!settings.data.ui.transformEditor.actorConfig.autoSelectSex)
 			{
@@ -176,9 +176,9 @@ namespace IED
 
 			if (auto it = actorInfo.find(a_handle); it != actorInfo.end())
 			{
-				auto& store = m_controller.GetConfigStore();
+				auto& store = m_controller.GetActiveConfig();
 
-				return store.active.transforms.GetActorCopy(
+				return store.transforms.GetActorCopy(
 					a_handle,
 					it->second.GetBaseOrTemplate(),
 					it->second.GetRace());
@@ -191,12 +191,12 @@ namespace IED
 
 		void UINodeOverrideEditorActor::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.transformEditor.actorConfig.sex != a_newSex)
+			if (settings.data.ui.transformEditor.actorConfig.sex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.transformEditor.actorConfig.sex,
+				settings.set(
+					settings.data.ui.transformEditor.actorConfig.sex,
 					a_newSex);
 			}
 		}
@@ -227,9 +227,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverrideTransformUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsActor(a_handle, true);
 		}
@@ -238,9 +238,9 @@ namespace IED
 			Game::FormID                                   a_handle,
 			const SingleNodeOverridePlacementUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsActor(a_handle, true);
 		}
@@ -249,9 +249,9 @@ namespace IED
 			Game::FormID                                 a_handle,
 			const SingleNodeOverridePhysicsUpdateParams& a_params)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			UpdateConfigSingle(a_handle, a_params, store.settings.data.ui.transformEditor.sexSync);
+			UpdateConfigSingle(a_handle, a_params, settings.data.ui.transformEditor.sexSync);
 
 			m_controller.RequestEvaluateTransformsActor(a_handle, true);
 		}
@@ -272,8 +272,8 @@ namespace IED
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetActorData();
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryTransform_t>(
@@ -295,8 +295,8 @@ namespace IED
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetActorData();
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryPlacement_t>(
@@ -318,8 +318,8 @@ namespace IED
 			const ClearNodeOverrideUpdateParams& a_params)
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetActorData();
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			if (EraseConfig<
 					Data::configNodeOverrideEntryPhysics_t>(
@@ -340,7 +340,9 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			auto& data = m_controller
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -358,7 +360,9 @@ namespace IED
 			Game::FormID                            a_handle,
 			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			auto& data = m_controller
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -373,9 +377,12 @@ namespace IED
 		}
 
 		void UINodeOverrideEditorActor::OnClearAllPhysics(
-			Game::FormID a_handle, const ClearAllNodeOverrideUpdateParams& a_params)
+			Game::FormID                            a_handle,
+			const ClearAllNodeOverrideUpdateParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.transforms.GetActorData();
+			auto& data = m_controller
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			auto it = data.find(a_handle);
 			if (it != data.end())
@@ -393,8 +400,8 @@ namespace IED
 			Game::FormID a_handle) const
 		{
 			auto& result = m_controller
-			                   .GetConfigStore()
-			                   .active.transforms.GetActorData()
+			                   .GetActiveConfig()
+			                   .transforms.GetActorData()
 			                   .try_emplace(a_handle)
 			                   .first->second;
 
@@ -406,8 +413,8 @@ namespace IED
 		Data::configNodeOverrideHolder_t* UINodeOverrideEditorActor::GetConfigHolder(Game::FormID a_handle) const
 		{
 			auto& data = m_controller
-			                 .GetConfigStore()
-			                 .active.transforms.GetActorData();
+			                 .GetActiveConfig()
+			                 .transforms.GetActorData();
 
 			auto it = data.find(a_handle);
 
@@ -427,8 +434,8 @@ namespace IED
 		const ImVec4* UINodeOverrideEditorActor::HighlightEntry(Game::FormID a_handle)
 		{
 			const auto& data = m_controller
-			                       .GetConfigStore()
-			                       .active.transforms.GetActorData();
+			                       .GetActiveConfig()
+			                       .transforms.GetActorData();
 
 			if (auto it = data.find(a_handle); it != data.end() && !it->second.empty())
 			{

@@ -24,7 +24,7 @@ namespace IED
 
 		Data::SettingHolder::EditorPanel& UINodeOverrideTabPanel::GetEditorConfig()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.transformEditor;
+			return m_controller.GetSettings().data.ui.transformEditor;
 		}
 
 	}

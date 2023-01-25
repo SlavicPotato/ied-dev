@@ -27,9 +27,9 @@ namespace IED
 		{
 			InitializeProfileBase();
 
-			const auto& store = m_controller.GetConfigStore();
+			const auto& settings = m_controller.GetSettings();
 
-			SetSex(store.settings.data.ui.customEditor.globalSex, false);
+			SetSex(settings.data.ui.customEditor.globalSex, false);
 		}
 
 		void UICustomEditorGlobal::EditorDraw()
@@ -70,7 +70,7 @@ namespace IED
 		Data::configCustomHolder_t& UICustomEditorGlobal::GetOrCreateConfigSlotHolder(
 			UIGlobalEditorDummyHandle a_handle) const
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetGlobalData()[0];
+			auto& data = m_controller.GetActiveConfig().custom.GetGlobalData()[0];
 			auto& sh   = StringHolder::GetSingleton();
 
 			return data.try_emplace(sh.IED).first->second;
@@ -94,7 +94,7 @@ namespace IED
 
 		UIData::UICollapsibleStates& UICustomEditorGlobal::GetCollapsibleStatesData()
 		{
-			auto& settings = m_controller.GetConfigStore().settings;
+			auto& settings = m_controller.GetSettings();
 
 			return settings.data.ui.customEditor
 			    .colStates[stl::underlying(Data::ConfigClass::Global)];
@@ -102,27 +102,27 @@ namespace IED
 
 		void UICustomEditorGlobal::OnCollapsibleStatesUpdate()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		Data::SettingHolder::EditorPanelCommon& UICustomEditorGlobal::GetEditorPanelSettings()
 		{
-			return m_controller.GetConfigStore().settings.data.ui.customEditor;
+			return m_controller.GetSettings().data.ui.customEditor;
 		}
 
 		void UICustomEditorGlobal::OnEditorPanelSettingsChange()
 		{
-			m_controller.GetConfigStore().settings.mark_dirty();
+			m_controller.GetSettings().mark_dirty();
 		}
 
 		void UICustomEditorGlobal::OnSexChanged(Data::ConfigSex a_newSex)
 		{
-			auto& store = m_controller.GetConfigStore();
+			auto& settings = m_controller.GetSettings();
 
-			if (store.settings.data.ui.customEditor.globalSex != a_newSex)
+			if (settings.data.ui.customEditor.globalSex != a_newSex)
 			{
-				store.settings.set(
-					store.settings.data.ui.customEditor.globalSex,
+				settings.set(
+					settings.data.ui.customEditor.globalSex,
 					a_newSex);
 			}
 		}
@@ -170,9 +170,7 @@ namespace IED
 		{
 			auto params = static_cast<const SingleCustomConfigUpdateParams*>(a_params);
 
-			auto& store = m_controller.GetConfigStore();
-
-			UpdateConfig(a_handle, *params, store.settings.data.ui.customEditor.sexSync);
+			UpdateConfig(a_handle, *params, GetSettings().data.ui.customEditor.sexSync);
 
 			switch (a_action)
 			{
@@ -229,7 +227,7 @@ namespace IED
 			UIGlobalEditorDummyHandle  a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetGlobalData()[0];
+			auto& data = m_controller.GetActiveConfig().custom.GetGlobalData()[0];
 
 			if (EraseConfig(data, a_params.name))
 			{
@@ -259,7 +257,7 @@ namespace IED
 
 		void UICustomEditorGlobal::UpdateData()
 		{
-			auto& data = m_controller.GetConfigStore().active.custom.GetGlobalData()[0];
+			auto& data = m_controller.GetActiveConfig().custom.GetGlobalData()[0];
 			auto& sh   = StringHolder::GetSingleton();
 
 			auto it = data.find(sh.IED);

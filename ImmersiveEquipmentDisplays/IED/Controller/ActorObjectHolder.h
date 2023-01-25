@@ -718,8 +718,8 @@ namespace IED
 
 		CachedActorData m_state;
 
-		bool m_wantLFUpdate{ false };
-		bool m_wantHFUpdate{ false };
+		mutable bool m_wantLFUpdate{ false };
+		mutable bool m_wantHFUpdate{ false };
 		//bool m_wantLFVarUpdate{ false };
 
 		Game::ObjectRefHandle m_handle;
