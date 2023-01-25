@@ -1179,6 +1179,36 @@ namespace IED
 				return true;
 			}
 
+			bool SetAlwaysLoadGraphImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_switch)
+			{
+				const stl::lock_guard lock(Initializer::GetController()->GetLock());
+
+				auto conf = LookupConfig(a_target, a_class, a_key, a_name);
+				if (!conf)
+				{
+					return false;
+				}
+
+				auto& e = conf->get(a_sex);
+
+				auto old = e.flags;
+
+				e.flags.set(BaseFlags::kForceTryLoadAnim, a_switch);
+
+				if (old != e.flags && !e.flags.test(BaseFlags::kDisabled))
+				{
+					QueueReset(a_target, a_class);
+				}
+
+				return true;
+			}
+
 			bool ItemExistsImpl(
 				Game::FormID             a_target,
 				ConfigClass              a_class,

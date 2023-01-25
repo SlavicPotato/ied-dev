@@ -1,7 +1,7 @@
 Scriptname IED Hidden
 
 Int Function GetScriptVersion() global
-	return 10
+	return 11
 EndFunction
 
 Int Function GetVersion() native global
@@ -120,6 +120,10 @@ Bool Function SetItemRemoveTracersRace(Race akRace, string asPlugin, string asNa
 Bool Function SetItemAttachLightActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemAttachLightNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemAttachLightRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+
+Bool Function SetAlwaysLoadGraphActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetAlwaysLoadGraphNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetAlwaysLoadGraphRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global

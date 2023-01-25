@@ -786,6 +786,35 @@ namespace IED
 			}
 
 			template <detail::valid_target T>
+			static bool SetAlwaysLoadGraph(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_switch)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetAlwaysLoadGraphImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_switch);
+			}
+
+			template <detail::valid_target T>
 			static bool DoClearTransform(
 				T*                   a_target,
 				const BSFixedString& a_key,
@@ -1593,6 +1622,27 @@ namespace IED
 						"SetItemAttachLightRace",
 						SCRIPT_NAME,
 						SetItemAttachLight,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetAlwaysLoadGraphActor",
+						SCRIPT_NAME,
+						SetAlwaysLoadGraph,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetAlwaysLoadGraphNPC",
+						SCRIPT_NAME,
+						SetAlwaysLoadGraph,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetAlwaysLoadGraphRace",
+						SCRIPT_NAME,
+						SetAlwaysLoadGraph,
 						a_registry));
 
 				a_registry->RegisterFunction(

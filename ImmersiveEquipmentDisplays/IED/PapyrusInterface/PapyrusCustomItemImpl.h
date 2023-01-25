@@ -277,6 +277,14 @@ namespace IED
 				const stl::fixed_string& a_name,
 				Data::ConfigSex          a_sex,
 				bool                     a_switch);
+			
+			bool SetAlwaysLoadGraphImpl(
+				Game::FormID             a_target,
+				Data::ConfigClass        a_class,
+				const stl::fixed_string& a_key,
+				const stl::fixed_string& a_name,
+				Data::ConfigSex          a_sex,
+				bool                     a_switch);
 
 			bool ItemExistsImpl(
 				Game::FormID             a_target,
