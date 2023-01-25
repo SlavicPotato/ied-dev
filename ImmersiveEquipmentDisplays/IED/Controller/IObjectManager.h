@@ -62,7 +62,7 @@ namespace IED
 			bool         a_defer,
 			bool         a_xfrmUpdate,
 			bool         a_xfrmUpdateNoDefer) const noexcept;
-		
+
 		void RequestEvaluateLF(
 			Game::FormID a_actor) const noexcept;
 
@@ -72,10 +72,10 @@ namespace IED
 			bool         a_defer,
 			bool         a_xfrmUpdate,
 			bool         a_xfrmUpdateNoDefer = false) const noexcept;
-						
+
 		void QueueRequestEvaluateLF(
 			Game::FormID a_actor) const noexcept;
-				
+
 		void QueueRequestEvaluateLFAll() const noexcept;
 
 		void QueueRequestEvaluate(
@@ -162,16 +162,17 @@ namespace IED
 			NiNode*                                  a_object) noexcept;
 
 		static void TryCreatePointLight(
-			Actor*         a_actor,
-			NiNode*        a_object,
-			TESObjectLIGH* a_lightForm,
-			ObjectLight&   a_out) noexcept;
+			Actor*                        a_actor,
+			NiNode*                       a_object,
+			TESObjectLIGH*                a_lightForm,
+			const Data::extraLightData_t& a_config,
+			ObjectLight&                  a_out) noexcept;
 
 		static TESObjectLIGH* GetLightFormForAttach(TESForm* a_modelForm) noexcept;
 
 		static void TryInitializeAndPlaySound(
-			Actor*             a_actor,
-			ObjectSound&       a_sound) noexcept;
+			Actor*       a_actor,
+			ObjectSound& a_sound) noexcept;
 
 		static BGSSoundDescriptorForm* GetSoundDescriptor(
 			const TESForm*     a_modelForm,

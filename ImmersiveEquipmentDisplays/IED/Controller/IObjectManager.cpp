@@ -272,7 +272,7 @@ namespace IED
 		bool           a_xfrmUpdate,
 		bool           a_xfrmUpdateNoDefer) const noexcept
 	{
-		if (Util::Common::IsREFRValid(a_actor) )
+		if (Util::Common::IsREFRValid(a_actor))
 		{
 			if (auto actor = a_actor->As<Actor>())
 			{
@@ -639,6 +639,7 @@ namespace IED
 				a_params.actor,
 				object,
 				lightForm,
+				a_activeConfig.extraLightConfig.data,
 				state->light);
 		}
 
@@ -659,6 +660,8 @@ namespace IED
 
 		if (state->light)
 		{
+			state->currentExtraLightTag = a_activeConfig.extraLightConfig;
+
 			ReferenceLightController::GetSingleton().AddLight(
 				a_params.actor->formID,
 				lightForm,
@@ -995,6 +998,7 @@ namespace IED
 					a_params.actor,
 					e.object,
 					lightForm,
+					Data::extraLightData_t{},
 					n.light);
 			}
 
@@ -1147,10 +1151,8 @@ namespace IED
 		a_state->nodes.ref      = std::move(a_targetNodes.ref);
 		a_state->nodes.object   = a_objectNode;
 		a_state->nodeDesc       = a_config.targetNode;
-		a_state->atmReference   = a_config.targetNode.managed() ||
-		                        a_config.flags.test(Data::BaseFlags::kReferenceMode);
-
-		a_state->owner = a_actor->formID;
+		a_state->atmReference   = a_config.targetNode.managed() || a_config.flags.test(Data::BaseFlags::kReferenceMode);
+		a_state->owner          = a_actor->formID;
 	}
 
 	void IObjectManager::TryMakeArrowState(
@@ -1167,14 +1169,19 @@ namespace IED
 	}
 
 	void IObjectManager::TryCreatePointLight(
-		Actor*         a_actor,
-		NiNode*        a_object,
-		TESObjectLIGH* a_lightForm,
-		ObjectLight&   a_out) noexcept
+		Actor*                        a_actor,
+		NiNode*                       a_object,
+		TESObjectLIGH*                a_lightForm,
+		const Data::extraLightData_t& a_config,
+		ObjectLight&                  a_out) noexcept
 	{
 		if (a_lightForm)
 		{
-			a_out = ReferenceLightController::CreateAndAttachPointLight(a_lightForm, a_actor, a_object);
+			a_out = ReferenceLightController::CreateAndAttachPointLight(
+				a_lightForm,
+				a_actor,
+				a_object,
+				a_config);
 		}
 	}
 

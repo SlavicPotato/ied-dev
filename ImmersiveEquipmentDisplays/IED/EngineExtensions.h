@@ -249,7 +249,7 @@ namespace IED
 		void Install_Actor_ActorValueOwner();
 
 		template <class T>
-		class AVHookThunk
+		class AVThunk
 		{
 		public:
 			static void Install(const IAL::Address<std::uintptr_t>& a_vtblAddr);
@@ -261,7 +261,7 @@ namespace IED
 				       a_akValue <= RE::ActorValue::kEnchanting;
 			}
 
-			static void OnFuncCall(Actor* a_actor, RE::ActorValue a_akValue) noexcept;
+			static void OnFuncCall(T* a_actor, RE::ActorValue a_akValue) noexcept;
 
 			static void SetBaseActorValue_Hook(ActorValueOwner* a_this, RE::ActorValue a_akValue, float a_value) noexcept;
 			static void ModActorValue_Hook(ActorValueOwner* a_this, RE::ActorValue a_akValue, float a_value) noexcept;

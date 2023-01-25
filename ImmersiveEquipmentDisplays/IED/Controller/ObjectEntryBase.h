@@ -210,6 +210,7 @@ namespace IED
 			std::shared_ptr<PHYSimComponent>                   simComponent;
 			stl::fixed_string                                  currentSequence;
 			std::optional<luid_tag>                            currentGeomTransformTag;
+			std::optional<luid_tag>                            currentExtraLightTag;
 			ObjectLight                                        light;
 			ObjectSound                                        sound;
 			ObjectAnim                                         anim;

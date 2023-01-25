@@ -19,6 +19,7 @@
 #include "UIEffectShaderEditorWidget.h"
 #include "UIEquipmentOverrideConditionsWidget.h"
 #include "UIEquipmentOverrideResult.h"
+#include "UIExtraLightEditorWidget.h"
 #include "UINodeSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPhysicsValueEditorWidget.h"
@@ -186,6 +187,15 @@ namespace IED
 				Data::configBase_t*       a_baseConfig);
 
 			void DrawBaseConfigAnimationFlags(
+				T                         a_handle,
+				Data::configBaseValues_t& a_data,
+				const void*               a_params,
+				const stl::fixed_string&  a_slotName,
+				bool                      a_storecc,
+				bool                      a_disabled,
+				Data::configBase_t*       a_baseConfig);
+
+			void DrawBaseConfigLightFlags(
 				T                         a_handle,
 				Data::configBaseValues_t& a_data,
 				const void*               a_params,
@@ -563,6 +573,11 @@ namespace IED
 							std::addressof(static_cast<Data::configBaseValues_t&>(e))) +
 						a_offset);
 
+					if constexpr (std::is_base_of_v<Data::configLUIDTagAG_t, Tpv>)
+					{
+
+					}
+
 					*dstVal = a_srcVal;
 				}
 			}
@@ -737,6 +752,15 @@ namespace IED
 				storecc,
 				a_disabled,
 				a_baseConfig);
+			
+			DrawBaseConfigLightFlags(
+				a_handle,
+				a_data,
+				a_params,
+				a_slotName,
+				storecc,
+				a_disabled,
+				a_baseConfig);
 
 			if (a_baseConfig)
 			{
@@ -896,32 +920,9 @@ namespace IED
 					static_cast<Data::configTransform_t&>(a_data),
 					false,
 					[&](TransformUpdateValue a_v) {
-						switch (a_v)
-						{
-						case TransformUpdateValue::Position:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, position),
-								a_data.position);
-							break;
-						case TransformUpdateValue::Rotation:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, rotation),
-								a_data.rotation);
-							break;
-						case TransformUpdateValue::Scale:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, scale),
-								a_data.scale);
-							break;
-						case TransformUpdateValue::All:
-							PropagateToEquipmentOverrides<
-								Data::configTransform_t>(
-								a_baseConfig);
-							break;
-						}
+						PropagateToEquipmentOverrides<
+							Data::configTransform_t>(
+							a_baseConfig);
 
 						OnBaseConfigChange(
 							a_handle,
@@ -1543,33 +1544,10 @@ namespace IED
 					a_data.geometryTransform,
 					false,
 					[&](TransformUpdateValue a_v) {
-						switch (a_v)
-						{
-						case TransformUpdateValue::Position:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, geometryTransform.position),
-								a_data.geometryTransform.position);
-							break;
-						case TransformUpdateValue::Rotation:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, geometryTransform.rotation),
-								a_data.geometryTransform.rotation);
-							break;
-						case TransformUpdateValue::Scale:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, geometryTransform.scale),
-								a_data.geometryTransform.scale);
-							break;
-						case TransformUpdateValue::All:
-							PropagateMemberToEquipmentOverrides(
-								a_baseConfig,
-								offsetof(Data::configBaseValues_t, geometryTransform),
-								a_data.geometryTransform);
-							break;
-						}
+						PropagateMemberToEquipmentOverrides(
+							a_baseConfig,
+							offsetof(Data::configBaseValues_t, geometryTransform),
+							a_data.geometryTransform);
 
 						OnBaseConfigChange(
 							a_handle,
@@ -1779,6 +1757,60 @@ namespace IED
 				UICommon::PopDisabled(a_disabled);
 
 				ImGui::Columns();
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
+		}
+
+		template <class T>
+		void UIBaseConfigWidget<T>::DrawBaseConfigLightFlags(
+			T                         a_handle,
+			Data::configBaseValues_t& a_data,
+			const void*               a_params,
+			const stl::fixed_string&  a_slotName,
+			bool                      a_storecc,
+			bool                      a_disabled,
+			Data::configBase_t*       a_baseConfig)
+		{
+			bool tresult;
+
+			if (a_storecc)
+			{
+				tresult = TreeEx(
+					"f_li",
+					true,
+					"%s",
+					UIL::LS(CommonStrings::Light));
+			}
+			else
+			{
+				tresult = ImGui::TreeNodeEx(
+					"f_li",
+					ImGuiTreeNodeFlags_DefaultOpen |
+						ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					UIL::LS(CommonStrings::Light));
+			}
+
+			if (tresult)
+			{
+				ImGui::Spacing();
+
+				UICommon::PushDisabled(a_disabled);
+
+				if (UIExtraLightEditorWidget::DrawExtraLightEditor(a_data.extraLightConfig))
+				{
+					PropagateMemberToEquipmentOverrides(
+						a_baseConfig,
+						offsetof(Data::configBaseValues_t, extraLightConfig),
+						a_data.extraLightConfig);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				UICommon::PopDisabled(a_disabled);
 
 				ImGui::Spacing();
 
@@ -2795,7 +2827,7 @@ namespace IED
 
 						auto& luid = e.get_tag_data();
 
-						ImGui::Text("LUID: %llx.%lld", luid.p1, luid.p2);
+						ImGui::Text("LUID: %llx", luid.p1);
 
 						ImGui::Spacing();
 
@@ -2808,7 +2840,7 @@ namespace IED
 									a_params);
 							});
 
-						bool empty = e.conditions.empty();
+						const bool empty = e.conditions.empty();
 
 						if (!empty)
 						{

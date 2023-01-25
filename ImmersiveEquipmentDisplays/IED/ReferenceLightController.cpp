@@ -11,15 +11,17 @@ namespace IED
 	namespace detail
 	{
 		static constexpr RE::LIGHT_CREATE_PARAMS make_params(
-			const TESObjectLIGH* a_lightForm) noexcept
+			TESObjectREFR*                a_refr,
+			const TESObjectLIGH*          a_lightForm,
+			const Data::extraLightData_t* a_config) noexcept
 		{
 			RE::LIGHT_CREATE_PARAMS params;
 
 			params.portalStrict = a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kPortalStrict);
-			params.affectLand   = true;  // EngineFixes patch (always true for chars), default is (a_actor->flags & kTESObjectREFRFlag_DoesntLightLandscape) == 0
-			params.lightsWater  = true;  // (a_actor->flags & TESObjectREFR::kFlag_DoesnLightWater) == 0;
-			params.neverFades   = true;  // !a_refr->IsHeadingMarker();
-			params.unk00        = true;  // arg4 in the original func
+			params.affectLand   = a_config ? !a_config->flags.test(Data::ExtraLightFlags::kDontLightLandscape) : true;  // EngineFixes patch (always true for chars), default is (a_actor->flags & kTESObjectREFRFlag_DoesntLightLandscape) == 0
+			params.lightsWater  = a_config ? !a_config->flags.test(Data::ExtraLightFlags::kDontLightWater) : true;      // (a_actor->flags & TESObjectREFR::kFlag_DoesnLightWater) == 0;
+			params.neverFades   = true;                                                                                 // !a_refr->IsHeadingMarker();
+			params.unk00        = true;                                                                                 // arg4 in the original func
 
 			params.data3D.lensFlareRenderData = static_cast<RE::BSLensFlareRenderData*>(a_lightForm->lensFlare);
 
@@ -30,7 +32,7 @@ namespace IED
 
 				if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kSpotShadow))
 				{
-					params.fov = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
+					params.fov = a_config ? a_config->fieldOfView : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
 				}
 				else if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kHemiShadow))
 				{
@@ -41,13 +43,19 @@ namespace IED
 					params.fov = std::numbers::pi_v<float> * 2.0f;
 				}
 
-				params.nearDistance    = a_lightForm->data.nearDistance;
-				params.shadowDepthBias = 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
+				params.nearDistance          = a_lightForm->data.nearDistance;
+				params.shadowDepthBias       = a_config ? a_config->shadowDepthBias : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
+				params.data3D.lightingTarget = nullptr;
 
 				//params.unk00           = true;
 			}
 			else
 			{
+				if (a_config && a_config->flags.test(Data::ExtraLightFlags::kTargetSelf))
+				{
+					params.data3D.lightingTarget = a_refr->Get3D2();
+				}
+
 				params.shadow = false;
 			}
 
@@ -180,7 +188,10 @@ namespace IED
 		const shared_lock lock(m_lock);
 
 		visit_lights(a_actor, [&](auto& a_entry) [[msvc::forceinline]] {
-			const auto params = detail::make_params(a_entry.form);
+			const auto params = detail::make_params(
+				a_actor,
+				a_entry.form,
+				std::addressof(a_entry.config));
 
 			const auto ssn = *EngineExtensions::m_shadowSceneNode;
 			ssn->CreateAndAddLight(a_entry.niLight.get(), params);
@@ -341,9 +352,10 @@ namespace IED
 	}
 
 	ObjectLight ReferenceLightController::CreateAndAttachPointLight(
-		const TESObjectLIGH* a_lightForm,
-		Actor*               a_actor,
-		NiNode*              a_object) noexcept
+		const TESObjectLIGH*          a_lightForm,
+		Actor*                        a_actor,
+		NiNode*                       a_object,
+		const Data::extraLightData_t& a_config) noexcept
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 
@@ -376,7 +388,10 @@ namespace IED
 		if (!extraLitWaterRefs ||
 		    extraLitWaterRefs->refs.empty())  // ?
 		{
-			const auto params = detail::make_params(a_lightForm);
+			const auto params = detail::make_params(
+				a_actor,
+				a_lightForm,
+				std::addressof(a_config));
 
 			const auto ssn = *EngineExtensions::m_shadowSceneNode;
 			bsLight        = ssn->CreateAndAddLight(pointLight, params);
@@ -437,7 +452,7 @@ namespace IED
 
 		const auto params =
 			torch ?
-				detail::make_params(torch) :
+				detail::make_params(a_actor, torch, nullptr) :
 				detail::make_params();
 
 		const auto ssn = *EngineExtensions::m_shadowSceneNode;

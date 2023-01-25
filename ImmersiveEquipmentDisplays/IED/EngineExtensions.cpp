@@ -605,7 +605,7 @@ namespace IED
 	}*/
 
 	template <class T>
-	inline void EngineExtensions::AVHookThunk<T>::Install(
+	inline void EngineExtensions::AVThunk<T>::Install(
 		const IAL::Address<std::uintptr_t>& a_vtblAddr)
 	{
 		GetSingleton().InstallVtableDetour(
@@ -634,8 +634,8 @@ namespace IED
 	}
 
 	template <class T>
-	inline void EngineExtensions::AVHookThunk<T>::OnFuncCall(
-		Actor*         a_actor,
+	inline void EngineExtensions::AVThunk<T>::OnFuncCall(
+		T*             a_actor,
 		RE::ActorValue a_akValue) noexcept
 	{
 		if (IsValidAV(a_akValue))
@@ -645,7 +645,7 @@ namespace IED
 	}
 
 	template <class T>
-	inline void EngineExtensions::AVHookThunk<T>::SetBaseActorValue_Hook(
+	inline void EngineExtensions::AVThunk<T>::SetBaseActorValue_Hook(
 		ActorValueOwner* a_this,
 		RE::ActorValue   a_akValue,
 		float            a_value) noexcept
@@ -656,7 +656,7 @@ namespace IED
 	}
 
 	template <class T>
-	inline void EngineExtensions::AVHookThunk<T>::ModActorValue_Hook(
+	inline void EngineExtensions::AVThunk<T>::ModActorValue_Hook(
 		ActorValueOwner* a_this,
 		RE::ActorValue   a_akValue,
 		float            a_value) noexcept
@@ -667,7 +667,7 @@ namespace IED
 	}
 
 	template <class T>
-	inline void EngineExtensions::AVHookThunk<T>::RestoreActorValue_Hook(
+	inline void EngineExtensions::AVThunk<T>::RestoreActorValue_Hook(
 		ActorValueOwner*         a_this,
 		RE::ACTOR_VALUE_MODIFIER a_modifier,
 		RE::ActorValue           a_akValue,
@@ -680,9 +680,9 @@ namespace IED
 
 	void EngineExtensions::Install_Actor_ActorValueOwner()
 	{
-		AVHookThunk<Actor>::Install(m_vtblActor_ActorValueOwner);
-		AVHookThunk<Character>::Install(m_vtblCharacter_ActorValueOwner);
-		AVHookThunk<PlayerCharacter>::Install(m_vtblPlayerCharacter_ActorValueOwner);
+		AVThunk<Actor>::Install(m_vtblActor_ActorValueOwner);
+		AVThunk<Character>::Install(m_vtblCharacter_ActorValueOwner);
+		AVThunk<PlayerCharacter>::Install(m_vtblPlayerCharacter_ActorValueOwner);
 	}
 
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept

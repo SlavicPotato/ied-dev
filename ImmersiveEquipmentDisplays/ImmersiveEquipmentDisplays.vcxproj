@@ -403,7 +403,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;X:\repos\oneTBB\msvc_19.32_cxx_64_md_release\tbb12.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;$(SolutionDir)..\oneTBB\msvc_19.32_cxx_64_md_release\tbb12.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SSEPath)\Data\SKSE\Plugins\" /Y
@@ -645,6 +645,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigConvertNodes.h" />
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
+    <ClInclude Include="IED\ConfigExtraLight.h" />
     <ClInclude Include="IED\ConfigExtraNode.h" />
     <ClInclude Include="IED\ConfigLastEquipped.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
@@ -701,6 +702,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\D3D\D3DModelData.h" />
     <ClInclude Include="IED\D3D\D3DObject.h" />
     <ClInclude Include="IED\D3D\D3DVertices.h" />
+    <ClInclude Include="IED\ExtraLightData.h" />
     <ClInclude Include="IED\ExtraNodes.h" />
     <ClInclude Include="IED\GearNodeID.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
@@ -729,6 +731,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariablesListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigExtraLight.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringListParser.h" />
@@ -841,6 +844,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelectorStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidget.h" />
+    <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.h" />
@@ -1207,6 +1212,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariablesListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigConditionalVariableValueDataParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigExtraLight.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringListParser.cpp" />
@@ -1293,6 +1299,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderDepthModeSelector.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.cpp" />
+    <ClCompile Include="IED\UI\Widgets\UIExtraLightEditorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIFormTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIGlobalConfigTypeSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIImportWidget.cpp" />

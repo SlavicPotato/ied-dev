@@ -121,9 +121,9 @@ Bool Function SetItemAttachLightActor(Actor akActor, string asPlugin, string asN
 Bool Function SetItemAttachLightNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemAttachLightRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 
-Bool Function SetAlwaysLoadGraphActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
-Bool Function SetAlwaysLoadGraphNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
-Bool Function SetAlwaysLoadGraphRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemAlwaysLoadGraphActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemAlwaysLoadGraphNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemAlwaysLoadGraphRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global

@@ -278,7 +278,7 @@ namespace IED
 				Data::ConfigSex          a_sex,
 				bool                     a_switch);
 			
-			bool SetAlwaysLoadGraphImpl(
+			bool SetItemAlwaysLoadGraphImpl(
 				Game::FormID             a_target,
 				Data::ConfigClass        a_class,
 				const stl::fixed_string& a_key,

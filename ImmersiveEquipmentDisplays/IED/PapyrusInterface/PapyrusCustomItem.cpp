@@ -786,7 +786,7 @@ namespace IED
 			}
 
 			template <detail::valid_target T>
-			static bool SetAlwaysLoadGraph(
+			static bool SetItemAlwaysLoadGraph(
 				StaticFunctionTag*,
 				T*            a_target,
 				BSFixedString a_key,
@@ -805,7 +805,7 @@ namespace IED
 					return false;
 				}
 
-				return SetAlwaysLoadGraphImpl(
+				return SetItemAlwaysLoadGraphImpl(
 					a_target->formID,
 					GetConfigClass<T>(),
 					keys.key,
@@ -1626,23 +1626,23 @@ namespace IED
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
-						"SetAlwaysLoadGraphActor",
+						"SetItemAlwaysLoadGraphActor",
 						SCRIPT_NAME,
-						SetAlwaysLoadGraph,
+						SetItemAlwaysLoadGraph,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
-						"SetAlwaysLoadGraphNPC",
+						"SetItemAlwaysLoadGraphNPC",
 						SCRIPT_NAME,
-						SetAlwaysLoadGraph,
+						SetItemAlwaysLoadGraph,
 						a_registry));
 
 				a_registry->RegisterFunction(
 					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
-						"SetAlwaysLoadGraphRace",
+						"SetItemAlwaysLoadGraphRace",
 						SCRIPT_NAME,
-						SetAlwaysLoadGraph,
+						SetItemAlwaysLoadGraph,
 						a_registry));
 
 				a_registry->RegisterFunction(

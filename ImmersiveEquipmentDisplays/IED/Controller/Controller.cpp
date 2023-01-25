@@ -2207,6 +2207,11 @@ namespace IED
 					return false;
 				}
 			}
+
+			if (state->light && state->currentExtraLightTag != a_config.extraLightConfig)
+			{
+				return false;
+			}
 		}
 
 		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);

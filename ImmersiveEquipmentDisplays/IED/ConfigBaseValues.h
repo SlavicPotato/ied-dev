@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ConfigCommon.h"
+#include "ConfigExtraLight.h"
 #include "ConfigNodePhysicsValues.h"
 #include "ConfigTransform.h"
 #include "NodeDescriptor.h"
@@ -30,7 +31,7 @@ namespace IED
 			kIgnoreRaceEquipTypes       = 1u << 14,
 			kPlaySequence               = 1u << 15,
 			kPapyrus                    = 1u << 16,  // unused
-			kDisableBehaviorGraphAnims         = 1u << 17,
+			kDisableBehaviorGraphAnims  = 1u << 17,
 			kDisableAnimEventForwarding = 1u << 18,  // unused
 			kAnimationEvent             = 1u << 19,
 			kDisableHavok               = 1u << 20,
@@ -74,6 +75,7 @@ namespace IED
 				DataVersion4 = 4,
 				DataVersion5 = 5,
 				DataVersion6 = 6,
+				DataVersion7 = 7,
 			};
 
 			static constexpr auto DEFAULT_FLAGS =
@@ -89,6 +91,7 @@ namespace IED
 			configCachedForm_t                                   forceModel;
 			configCopyableUniquePtr_t<configNodePhysicsValues_t> physicsValues;
 			configTransform_t                                    geometryTransform;
+			configExtraLight_t                                   extraLightConfig;
 
 		protected:
 			template <class Archive>
@@ -102,6 +105,7 @@ namespace IED
 				a_ar& forceModel;
 				a_ar& physicsValues.data;
 				a_ar& geometryTransform;
+				a_ar& extraLightConfig;
 			}
 
 			template <class Archive>
@@ -132,6 +136,11 @@ namespace IED
 								if (a_version >= DataVersion6)
 								{
 									a_ar& geometryTransform;
+
+									if (a_version >= DataVersion7)
+									{
+										a_ar& extraLightConfig;
+									}
 								}
 							}
 						}
@@ -146,4 +155,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configBaseValues_t,
-	IED::Data::configBaseValues_t::Serialization::DataVersion6);
+	IED::Data::configBaseValues_t::Serialization::DataVersion7);

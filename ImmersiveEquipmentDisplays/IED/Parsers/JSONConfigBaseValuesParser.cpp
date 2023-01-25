@@ -3,6 +3,7 @@
 #include "JSONConfigBaseValuesParser.h"
 
 #include "JSONConfigCachedFormParser.h"
+#include "JSONConfigExtraLight.h"
 #include "JSONConfigNodePhysicsValuesParser.h"
 #include "JSONConfigTransformParser.h"
 #include "JSONNodeMapValueParser.h"
@@ -29,7 +30,7 @@ namespace IED
 					return false;
 				}
 			}
-			
+
 			if (auto& data = a_in["gxfrm"])
 			{
 				if (!xparser.Parse(data, a_out.geometryTransform, a_version))
@@ -83,6 +84,16 @@ namespace IED
 				}
 			}
 
+			if (auto& data = a_in["exl"])
+			{
+				Parser<Data::configExtraLight_t> parser(m_state);
+
+				if (!parser.Parse(data, a_out.extraLightConfig))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -99,7 +110,7 @@ namespace IED
 			{
 				xparser.Create(a_data, a_out["xfrm"]);
 			}
-			
+
 			if (!a_data.geometryTransform.empty())
 			{
 				xparser.Create(a_data.geometryTransform, a_out["gxfrm"]);
@@ -135,6 +146,10 @@ namespace IED
 
 				parser.Create(*data, a_out["phy"]);
 			}
+
+			Parser<Data::configExtraLight_t> parserexl(m_state);
+
+			parserexl.Create(a_data.extraLightConfig, a_out["exl"]);
 		}
 
 	}

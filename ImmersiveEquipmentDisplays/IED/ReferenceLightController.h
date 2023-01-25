@@ -2,6 +2,8 @@
 
 #include "Controller/ObjectLight.h"
 
+#include "IED/ConfigExtraLight.h"
+
 namespace IED
 {
 	class ReferenceLightController :
@@ -48,9 +50,10 @@ namespace IED
 			{
 			}
 
-			TESObjectLIGH*          form;
-			NiPointer<NiPointLight> niLight;
-			NiPointer<RE::BSLight>  bsLight;
+			TESObjectLIGH*               form;
+			NiPointer<NiPointLight>      niLight;
+			NiPointer<RE::BSLight>       bsLight;
+			const Data::extraLightData_t config;
 		};
 
 		using lock_type   = std::shared_mutex;
@@ -83,9 +86,10 @@ namespace IED
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
 		[[nodiscard]] static ObjectLight CreateAndAttachPointLight(
-			const TESObjectLIGH* a_lightForm,
-			Actor*               a_actor,
-			NiNode*              a_object) noexcept;
+			const TESObjectLIGH*          a_lightForm,
+			Actor*                        a_actor,
+			NiNode*                       a_object,
+			const Data::extraLightData_t& a_config) noexcept;
 
 		static void CleanupLights(NiNode* a_node) noexcept;
 

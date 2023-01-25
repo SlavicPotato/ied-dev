@@ -258,5 +258,6 @@ namespace IED
 		Perk            = 329,
 		Perks           = 330,
 		Active          = 331,
+		Light           = 332,
 	};
 }

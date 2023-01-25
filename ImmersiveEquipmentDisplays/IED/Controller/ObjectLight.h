@@ -14,9 +14,9 @@ namespace IED
 			return niObject.get();
 		}
 
-		void Cleanup(NiNode *a_root) noexcept;
+		void Cleanup(NiNode* a_root) noexcept;
 
-		NiPointer<NiPointLight> niObject;
-		NiPointer<RE::BSLight>  bsObject;
+		NiPointer<NiPointLight>        niObject;
+		NiPointer<RE::BSLight>         bsObject;
 	};
 }
