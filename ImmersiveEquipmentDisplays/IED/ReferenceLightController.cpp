@@ -30,17 +30,19 @@ namespace IED
 				params.shadow          = true;
 				params.falloffExponent = a_lightForm->data.fallofExponent;
 
+				constexpr auto pi = std::numbers::pi_v<float>;
+
 				if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kSpotShadow))
 				{
-					params.fov = a_config ? a_config->fieldOfView : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
+					params.fov = a_config ? a_config->fieldOfView * pi / 180.0f : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetLightExtraFOV(a_refr) * 0.017453292);
 				}
 				else if (a_lightForm->data.flags.test_any(TES_LIGHT_FLAGS::kHemiShadow))
 				{
-					params.fov = std::numbers::pi_v<float>;
+					params.fov = pi;
 				}
 				else
 				{
-					params.fov = std::numbers::pi_v<float> * 2.0f;
+					params.fov = pi * 2.0f;
 				}
 
 				params.nearDistance          = a_lightForm->data.nearDistance;
