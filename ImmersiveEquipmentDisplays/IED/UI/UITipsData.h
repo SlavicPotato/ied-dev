@@ -112,6 +112,8 @@ namespace IED
 			NPCLightCellAttachFix               = 1103,
 			NPCLightUpdateFix                   = 1104,
 			ForceTryLoadAnim                    = 1105,
+			LightFieldOfView                    = 1106,
+			LightTargetSelf                     = 1107,
 		};
 
 	}

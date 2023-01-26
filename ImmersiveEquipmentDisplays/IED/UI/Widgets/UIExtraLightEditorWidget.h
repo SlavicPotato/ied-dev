@@ -14,8 +14,6 @@ namespace IED
 	{
 		class UIExtraLightEditorWidget
 		{
-			using update_func_t = std::function<void()>;
-
 		public:
 			static bool DrawExtraLightEditor(
 				Data::configExtraLight_t& a_data);
