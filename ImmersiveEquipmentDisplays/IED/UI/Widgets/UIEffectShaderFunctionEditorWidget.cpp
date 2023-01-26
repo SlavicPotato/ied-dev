@@ -78,8 +78,8 @@ namespace IED
 					"%.2f",
 					ImGuiSliderFlags_AlwaysClamp))
 			{
-				a_data.angle   = angle * (pi / 180.0f);
-				result.changed = true;
+				a_data.angle = angle * (pi / 180.0f);
+				result       = true;
 			}
 
 			if (ImGui::DragFloat(
@@ -90,8 +90,8 @@ namespace IED
 					10.0f,
 					"%.2f"))
 			{
-				a_data.speed   = std::clamp(a_data.speed, 0.01f, 100.0f);
-				result.changed = true;
+				a_data.speed = std::clamp(a_data.speed, 0.01f, 100.0f);
+				result       = true;
 			}
 
 			return result;

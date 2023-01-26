@@ -137,17 +137,19 @@ namespace IED
 				const void*      a_params,
 				PostChangeAction a_action) = 0;
 
-			template <class Tpv>
+			template <class Tpv, class Tf>
 			void PropagateMemberToEquipmentOverrides(
 				Data::configBase_t* a_data,
 				std::ptrdiff_t      a_offset,
-				const Tpv&          a_value);
+				const Tpv&          a_value,
+				Tf                  a_postWrite);
 
-			template <class Tpv>
+			template <class Tpv, class Tf>
 			static void RecursivePropagateMemberToEquipmentOverrides(
 				Data::equipmentOverrideList_t& a_list,
 				std::ptrdiff_t                 a_offset,
-				const Tpv&                     a_srcVal);
+				const Tpv&                     a_srcVal,
+				Tf                             a_postWrite);
 
 			template <class Tpv>
 			void PropagateToEquipmentOverrides(
@@ -526,11 +528,12 @@ namespace IED
 		}
 
 		template <class T>
-		template <class Tpv>
+		template <class Tpv, class Tf>
 		void UIBaseConfigWidget<T>::PropagateMemberToEquipmentOverrides(
 			Data::configBase_t* a_data,
 			std::ptrdiff_t      a_offset,
-			const Tpv&          a_value)
+			const Tpv&          a_value,
+			Tf                  a_postWrite)
 		{
 			if (!a_data)
 			{
@@ -550,35 +553,36 @@ namespace IED
 			RecursivePropagateMemberToEquipmentOverrides(
 				a_data->equipmentOverrides,
 				a_offset,
-				*srcVal);
+				*srcVal,
+				a_postWrite);
 		}
 
 		template <class T>
-		template <class Tpv>
+		template <class Tpv, class Tf>
 		void UIBaseConfigWidget<T>::RecursivePropagateMemberToEquipmentOverrides(
 			Data::equipmentOverrideList_t& a_list,
 			std::ptrdiff_t                 a_offset,
-			const Tpv&                     a_srcVal)
+			const Tpv&                     a_srcVal,
+			Tf                             a_postWrite)
 		{
 			for (auto& e : a_list)
 			{
 				if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
 				{
-					RecursivePropagateMemberToEquipmentOverrides(e.group, a_offset, a_srcVal);
+					RecursivePropagateMemberToEquipmentOverrides(e.group, a_offset, a_srcVal, a_postWrite);
 				}
 				else
 				{
+					auto& v = static_cast<Data::configBaseValues_t&>(e);
+
 					auto dstVal = reinterpret_cast<Tpv*>(
 						reinterpret_cast<std::uintptr_t>(
-							std::addressof(static_cast<Data::configBaseValues_t&>(e))) +
+							std::addressof(v)) +
 						a_offset);
 
-					if constexpr (std::is_base_of_v<Data::configLUIDTagAG_t, Tpv>)
-					{
-
-					}
-
 					*dstVal = a_srcVal;
+
+					a_postWrite(v);
 				}
 			}
 		}
@@ -752,7 +756,7 @@ namespace IED
 				storecc,
 				a_disabled,
 				a_baseConfig);
-			
+
 			DrawBaseConfigLightFlags(
 				a_handle,
 				a_data,
@@ -898,7 +902,8 @@ namespace IED
 					PropagateMemberToEquipmentOverrides(
 						a_baseConfig,
 						offsetof(Data::configBaseValues_t, targetNode),
-						a_data.targetNode);
+						a_data.targetNode,
+						[](auto&) {});
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
@@ -920,9 +925,42 @@ namespace IED
 					static_cast<Data::configTransform_t&>(a_data),
 					false,
 					[&](TransformUpdateValue a_v) {
-						PropagateToEquipmentOverrides<
-							Data::configTransform_t>(
-							a_baseConfig);
+						switch (a_v)
+						{
+						case TransformUpdateValue::Position:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, position),
+								a_data.position,
+								[](auto& a_v) {
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::Rotation:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, rotation),
+								a_data.rotation,
+								[](auto& a_v) {
+									a_v.update_rotation_matrix();
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::Scale:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, scale),
+								a_data.scale,
+								[](auto& a_v) {
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::All:
+							PropagateToEquipmentOverrides<
+								Data::configTransform_t>(
+								a_baseConfig);
+							break;
+						}
 
 						OnBaseConfigChange(
 							a_handle,
@@ -990,7 +1028,8 @@ namespace IED
 					PropagateMemberToEquipmentOverrides(
 						a_baseConfig,
 						offsetof(Data::configBaseValues_t, forceModel),
-						a_data.forceModel);
+						a_data.forceModel,
+						[](auto&) {});
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
@@ -1544,10 +1583,44 @@ namespace IED
 					a_data.geometryTransform,
 					false,
 					[&](TransformUpdateValue a_v) {
-						PropagateMemberToEquipmentOverrides(
-							a_baseConfig,
-							offsetof(Data::configBaseValues_t, geometryTransform),
-							a_data.geometryTransform);
+						switch (a_v)
+						{
+						case TransformUpdateValue::Position:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.position),
+								a_data.geometryTransform.position,
+								[](auto& a_v) {
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::Rotation:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.rotation),
+								a_data.geometryTransform.rotation,
+								[](auto& a_v) {
+									a_v.update_rotation_matrix();
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::Scale:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform.scale),
+								a_data.geometryTransform.scale,
+								[](auto& a_v) {
+									a_v.update_tag();
+								});
+							break;
+						case TransformUpdateValue::All:
+							PropagateMemberToEquipmentOverrides(
+								a_baseConfig,
+								offsetof(Data::configBaseValues_t, geometryTransform),
+								a_data.geometryTransform,
+								[](auto& a_v) {});
+							break;
+						}
 
 						OnBaseConfigChange(
 							a_handle,
@@ -1655,7 +1728,8 @@ namespace IED
 							PropagateMemberToEquipmentOverrides(
 								a_baseConfig,
 								offsetof(Data::configBaseValues_t, niControllerSequence),
-								a_data.niControllerSequence);
+								a_data.niControllerSequence,
+								[](auto&) {});
 
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						}
@@ -1719,7 +1793,8 @@ namespace IED
 							PropagateMemberToEquipmentOverrides(
 								a_baseConfig,
 								offsetof(Data::configBaseValues_t, animationEvent),
-								a_data.animationEvent);
+								a_data.animationEvent,
+								[](auto&) {});
 
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 						}
@@ -1780,7 +1855,7 @@ namespace IED
 			{
 				tresult = TreeEx(
 					"f_li",
-					true,
+					false,
 					"%s",
 					UIL::LS(CommonStrings::Light));
 			}
@@ -1788,8 +1863,7 @@ namespace IED
 			{
 				tresult = ImGui::TreeNodeEx(
 					"f_li",
-					ImGuiTreeNodeFlags_DefaultOpen |
-						ImGuiTreeNodeFlags_SpanAvailWidth,
+					ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
 					UIL::LS(CommonStrings::Light));
 			}
@@ -1805,9 +1879,10 @@ namespace IED
 					PropagateMemberToEquipmentOverrides(
 						a_baseConfig,
 						offsetof(Data::configBaseValues_t, extraLightConfig),
-						a_data.extraLightConfig);
+						a_data.extraLightConfig,
+						[](auto&) {});
 
-					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 				}
 
 				UICommon::PopDisabled(a_disabled);
