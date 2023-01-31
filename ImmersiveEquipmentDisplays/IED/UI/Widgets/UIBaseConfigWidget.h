@@ -1089,7 +1089,8 @@ namespace IED
 							UIL::LS(CommonStrings::Create, "1")))
 					{
 						a_data.physicsValues.data =
-							std::make_unique<Data::configNodePhysicsValues_t>();
+							std::make_unique_for_overwrite<
+								Data::configNodePhysicsValues_t>();
 
 						OnBaseConfigChange(
 							a_handle,

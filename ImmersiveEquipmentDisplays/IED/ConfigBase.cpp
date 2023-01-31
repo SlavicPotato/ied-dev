@@ -1077,7 +1077,15 @@ namespace IED
 					return false;
 				}
 
-				return it->second.is_equipped();
+				switch (a_match.fbf.presenceEquipedHandMatch)
+				{
+				case PresenceEquippedHandMatch::kLeft:
+					return it->second.is_equipped_left();
+				case PresenceEquippedHandMatch::kRight:
+					return it->second.is_equipped_right();
+				default:
+					return it->second.is_equipped();
+				}
 			}
 			else
 			{
@@ -1209,6 +1217,47 @@ namespace IED
 			}
 
 			return count > 0;
+		}
+
+		static constexpr bool match_equip_slot(
+			Game::FormID a_matchForm,
+			TESForm*     a_form) noexcept
+		{
+			BGSEquipSlot* slot;
+
+			switch (a_form->formType)
+			{
+			case SpellItem::kTypeID:
+				slot = static_cast<const SpellItem*>(a_form)->equipSlot;
+				break;
+			case ScrollItem::kTypeID:
+				slot = static_cast<const ScrollItem*>(a_form)->equipSlot;
+				break;
+			case TESObjectWEAP::kTypeID:
+				slot = static_cast<const TESObjectWEAP*>(a_form)->equipSlot;
+				break;
+			default:
+				return false;
+			}
+
+			return slot && slot->formID == a_matchForm;
+		}
+
+		static constexpr bool match_is_favorited(
+			const processParams_t& a_params,
+			Game::FormID           a_formid) noexcept
+		{
+			const auto& data = a_params.collector.data.forms;
+
+			auto it = data.find(a_formid);
+			if (it != data.end())
+			{
+				return it->second.is_favorited();
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		template <
@@ -1469,6 +1518,23 @@ namespace IED
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag4))
 					{
 						if (!a_checkForm.form->GetPlayable())
+						{
+							return false;
+						}
+					}
+
+					if (auto& formid = a_match.form.get_id())
+					{
+						if (a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) ==
+						    match_equip_slot(formid, a_checkForm.form))
+						{
+							return false;
+						}
+					}
+
+					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag5))
+					{
+						if (match_is_favorited(a_params, a_checkForm.form->formID))
 						{
 							return false;
 						}

@@ -46,7 +46,7 @@ namespace IED
 			}
 
 			template <std::uint32_t _NumHash>
-			static inline const char* LMKID(
+			static constexpr const char* LMKID(
 				const char* a_str,
 				const char* a_im_id) noexcept
 			{
@@ -62,7 +62,7 @@ namespace IED
 
 				for (; i < mslen; i++)
 				{
-					auto c = a_str[i];
+					const auto c = a_str[i];
 					if (!c || (c == '#' && a_str[i + 1] == '#'))
 					{
 						break;

@@ -82,7 +82,7 @@ namespace IED
 		stl::list<RE::WeaponAnimationGraphManagerHolderPtr> m_data;
 	};*/
 
-	using ActorObjectMap = stl::vectormap<Game::FormID, ActorObjectHolder>;
+	using ActorObjectMap = stl::cache_aligned::vectormap<Game::FormID, ActorObjectHolder>;
 
 	class ActorProcessorTask;
 
@@ -96,14 +96,14 @@ namespace IED
 			Actor* a_actor,
 			Args&&... a_args) noexcept
 		{
-			const auto r = m_objects.try_emplace(
+			const auto r = m_actorMap.try_emplace(
 				a_actor->formID,
 				a_actor,
 				std::forward<Args>(a_args)...);
 
 			if (r.second)
 			{
-				m_objects.sortvec(
+				m_actorMap.sortvec(
 					[](const auto& a_lhs,
 				       const auto& a_rhs) noexcept [[msvc::forceinline]] {
 						return a_lhs->first < a_rhs->first;
@@ -120,14 +120,14 @@ namespace IED
 			return r.first->second;
 		}
 
-		[[nodiscard]] constexpr auto& GetObjects() const noexcept
+		[[nodiscard]] constexpr auto& GetActorMap() const noexcept
 		{
-			return m_objects;
+			return m_actorMap;
 		}
 
-		[[nodiscard]] constexpr auto& GetObjects() noexcept
+		[[nodiscard]] constexpr auto& GetActorMap() noexcept
 		{
-			return m_objects;
+			return m_actorMap;
 		}
 
 		void ClearVariablesOnAll(bool a_requestEval) noexcept;
@@ -153,7 +153,7 @@ namespace IED
 
 		inline auto EraseActor(ActorObjectMap::const_iterator a_it) noexcept
 		{
-			const auto result = m_objects.erase(a_it);
+			const auto result = m_actorMap.erase(a_it);
 
 			if (WantGlobalVariableUpdateOnAddRemove())
 			{
@@ -165,7 +165,7 @@ namespace IED
 
 		inline auto EraseActor(const ActorObjectMap::key_type& a_key) noexcept
 		{
-			const auto result = m_objects.erase(a_key);
+			const auto result = m_actorMap.erase(a_key);
 
 			if (result)
 			{
@@ -178,7 +178,7 @@ namespace IED
 			return result;
 		}
 
-		ActorObjectMap m_objects;
+		ActorObjectMap m_actorMap;
 	};
 
 }

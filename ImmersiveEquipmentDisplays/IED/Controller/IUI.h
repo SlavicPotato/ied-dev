@@ -126,7 +126,7 @@ namespace IED
 		inline auto make_render_task(
 			Args&&... a_args)
 		{
-			auto result = std::make_shared<IUIRenderTask>(
+			auto result = stl::make_smart<IUIRenderTask>(
 				*this);
 
 			result->InitializeContext<Tc>(
@@ -174,7 +174,7 @@ namespace IED
 		bool m_safeToOpenUI{ false };
 
 	private:
-		const std::shared_ptr<IUIRenderTask>& GetOrCreateToastTask();
+		const stl::smart_ptr<IUIRenderTask>& GetOrCreateToastTask();
 
 		virtual constexpr stl::recursive_mutex& UIGetLock() noexcept = 0;
 		virtual void                            OnUIOpen(){};
@@ -182,8 +182,8 @@ namespace IED
 
 		UIOpenResult UIOpenImpl();
 
-		std::shared_ptr<IUIRenderTaskMain> m_task;
-		std::shared_ptr<IUIRenderTask>     m_toastTask;
+		stl::smart_ptr<IUIRenderTaskMain> m_task;
+		stl::smart_ptr<IUIRenderTask>     m_toastTask;
 	};
 
 }

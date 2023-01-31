@@ -7,9 +7,24 @@ namespace IED
 	class ObjectDatabase :
 		public virtual ILog
 	{
-		struct entry_t
+		struct entry_t :
+			stl::intrusive_ref_counted
 		{
+			SKMP_REDEFINE_NEW_PREF();
+
 			friend class ObjectDatabase;
+
+			explicit entry_t(
+				const NiPointer<NiNode>& a_object) :
+				object(a_object)
+			{
+			}
+			
+			explicit entry_t(
+				NiPointer<NiNode>&& a_object) :
+				object(std::move(a_object))
+			{
+			}
 
 			long long accessed{ 0 };
 
@@ -20,7 +35,7 @@ namespace IED
 		static constexpr long long CLEANUP_DELAY = 1000000;
 
 	public:
-		using ObjectDatabaseEntry = std::shared_ptr<entry_t>;
+		using ObjectDatabaseEntry = stl::smart_ptr<entry_t>;
 
 	private:
 		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;

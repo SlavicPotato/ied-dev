@@ -9,23 +9,25 @@
 
 namespace IED
 {
-	SkeletonID::SkeletonID(NiNode* a_root)
+	SkeletonID::SkeletonID(NiNode* a_root) noexcept
 	{
 		using namespace hash::fnv1;
 		using namespace ::Util::Node;
 
-		auto sh = BSStringHolder::GetSingleton();
+		const auto sh = BSStringHolder::GetSingleton();
 
 		assert(sh != nullptr);
 
-		m_signature = _append_hash_istring_fnv1a(
-			m_signature,
+		auto signature = hash::fnv1::fnv_offset_basis;
+
+		signature = _append_hash_istring_fnv1a(
+			signature,
 			a_root->m_name.data());
 
 		if (auto rtti = a_root->GetRTTI(); rtti && rtti->name)
 		{
-			m_signature = _append_hash_istring_fnv1a(
-				m_signature,
+			signature = _append_hash_istring_fnv1a(
+				signature,
 				rtti->name);
 		}
 
@@ -34,8 +36,8 @@ namespace IED
 		{
 			m_id = extra->m_data;
 
-			m_signature = _append_hash_fnv1a(
-				m_signature,
+			signature = _append_hash_fnv1a(
+				signature,
 				extra->m_data);
 		}
 
@@ -44,8 +46,8 @@ namespace IED
 		{
 			m_bsx = extra->m_data;
 
-			m_signature = _append_hash_fnv1a(
-				m_signature,
+			signature = _append_hash_fnv1a(
+				signature,
 				extra->m_data);
 		}
 
@@ -70,8 +72,8 @@ namespace IED
 				{
 					m_xpmse_version = extra->m_data;
 
-					m_signature = _append_hash_fnv1a(
-						m_signature,
+					signature = _append_hash_fnv1a(
+						signature,
 						extra->m_data);
 				}
 
@@ -79,8 +81,8 @@ namespace IED
 						sh->m_rigVersion);
 				    extra && extra->m_pString)
 				{
-					m_signature = _append_hash_istring_fnv1a(
-						m_signature,
+					signature = _append_hash_istring_fnv1a(
+						signature,
 						extra->m_pString);
 				}
 
@@ -88,8 +90,8 @@ namespace IED
 						sh->m_rigPerspective);
 				    extra && extra->m_pString)
 				{
-					m_signature = _append_hash_istring_fnv1a(
-						m_signature,
+					signature = _append_hash_istring_fnv1a(
+						signature,
 						extra->m_pString);
 				}
 
@@ -97,13 +99,13 @@ namespace IED
 						sh->m_species);
 				    extra && extra->m_pString)
 				{
-					m_signature = _append_hash_istring_fnv1a(
-						m_signature,
+					signature = _append_hash_istring_fnv1a(
+						signature,
 						extra->m_pString);
 				}
 			}
 		}
 
-		m_signature = _append_hash_fnv1a(m_signature, m_pflags);
+		m_signature = _append_hash_fnv1a(signature, m_pflags);
 	}
 }

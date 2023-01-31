@@ -61,8 +61,6 @@ namespace IED
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceDisableVanillaWeaponAdjust", false);
 		m_weaponAdjustFix =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "WeaponAdjustFix", true);
-		/*m_forceOrigWeapXFRM =
-			reader.GetBoolValue(SECT_NODE_OVERRIDE, "ForceOriginalWeaponTransform", true);*/
 		m_enableEarlyLoadHooks =
 			reader.GetBoolValue(SECT_NODE_OVERRIDE, "EnableEarlyLoadHooks", true);
 
@@ -78,16 +76,13 @@ namespace IED
 
 		m_logLevel = ILog::LookupLogLevel(reader.GetValue(SECT_GENERAL, "LogLevel", "message"));
 
-		//m_taskPoolBudget = reader.GetLongValue(SECT_GENERAL, "TaskPoolBudget", 0);
-
 		m_enableUI             = reader.GetBoolValue(SECT_GUI, "Enabled", true);
 		m_dpiAwareness         = reader.GetBoolValue(SECT_GUI, "EnableProcessDPIAwareness", false);
 		m_forceUIOpenKeys      = reader.GetBoolValue(SECT_GUI, "OverrideToggleKeys", false);
 		m_enableUIRestrictions = reader.GetBoolValue(SECT_GUI, "EnableRestrictions", false);
-		//m_UIScaling            = reader.GetBoolValue(SECT_GUI, "EnableScaling", true);
-		m_enableInMenus      = reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
-		m_disableIntroBanner = reader.GetBoolValue(SECT_GUI, "DisableIntroBanner", false);
-		m_introBannerVOffset = static_cast<float>(reader.GetDoubleValue(SECT_GUI, "IntroBannerVerticalOffset", 110.0f));
+		m_enableInMenus        = reader.GetBoolValue(SECT_GUI, "EnableInMenus", false);
+		m_disableIntroBanner   = reader.GetBoolValue(SECT_GUI, "DisableIntroBanner", false);
+		m_introBannerVOffset   = static_cast<float>(reader.GetDoubleValue(SECT_GUI, "IntroBannerVerticalOffset", 110.0f));
 
 		m_UIOpenKeys.Parse(reader.GetValue(SECT_GUI, "ToggleKeys", "0x0E"));
 
@@ -171,8 +166,6 @@ namespace IED
 		}
 
 		m_behaviorGraphAnims = reader.GetBoolValue(SECT_ANIM, "EnableBehaviorGraphControlledAnimations", true);
-
-		//m_enableCorpseScatter = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableCorpseGearScatter", false);
 
 		m_enableLights = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
 

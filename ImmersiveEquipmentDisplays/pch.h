@@ -42,6 +42,7 @@
 #include <ext/stl_flat_set.h>
 #include <ext/stl_math.h>
 #include <ext/stl_mutex.h>
+#include <ext/stl_smart_pointer.h>
 #include <ext/stl_str_helpers.h>
 #include <ext/str_conv.h>
 

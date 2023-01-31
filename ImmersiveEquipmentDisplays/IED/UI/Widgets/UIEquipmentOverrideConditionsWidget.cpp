@@ -659,6 +659,18 @@ namespace IED
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
 
+					ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::IsPlayable, "2"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag4));
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(UIWidgetCommonStrings::IsFavorited, "4"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag5));
+
 					ImGui::Separator();
 
 					if (!match->flags.test_any(Data::EquipmentOverrideConditionFlags::kExtraFlag2))
@@ -679,19 +691,54 @@ namespace IED
 								UIL::LS(CommonStrings::Biped, "B"),
 								match->bipedSlot,
 								true);
+
+							if (match->bipedSlot == BIPED_OBJECT::kNone)
+							{
+								ImGui::AlignTextToFramePadding();
+								ImGui::TextUnformatted(UIL::LS(CommonStrings::Hand));
+								ImGui::SameLine();
+
+								if (ImGui::RadioButton(
+										UIL::LS(CommonStrings::Any, "C"),
+										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kEither))
+								{
+									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kEither;
+									result                              = true;
+								}
+
+								ImGui::SameLine();
+
+								if (ImGui::RadioButton(
+										UIL::LS(CommonStrings::Left, "D"),
+										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kLeft))
+								{
+									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kLeft;
+									result                              = true;
+								}
+
+								ImGui::SameLine();
+
+								if (ImGui::RadioButton(
+										UIL::LS(CommonStrings::Right, "E"),
+										match->fbf.presenceEquipedHandMatch == Data::PresenceEquippedHandMatch::kRight))
+								{
+									match->fbf.presenceEquipedHandMatch = Data::PresenceEquippedHandMatch::kRight;
+									result                              = true;
+								}
+							}
 						}
 
 						ImGui::Separator();
 
 						result |= ImGui::CheckboxFlagsT(
-							UIL::LS(CommonStrings::Displayed, "C"),
+							UIL::LS(CommonStrings::Displayed, "F"),
 							stl::underlying(std::addressof(match->flags.value)),
 							stl::underlying(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots));
 
 						if (match->flags.test(Data::EquipmentOverrideConditionFlags::kMatchEquipmentSlots))
 						{
 							result |= UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-								UIL::LS(CommonStrings::Slot, "D"),
+								UIL::LS(CommonStrings::Slot, "G"),
 								match->slot,
 								true);
 						}
@@ -706,7 +753,23 @@ namespace IED
 						}
 					}
 
+					result |= ImGui::CheckboxFlagsT(
+						"!##8",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+
+					m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::EquipSlot));
+					m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+
+					result |= m_condParamEditor.GetFormPicker().DrawFormPicker(
+						"9",
+						static_cast<Localization::StringID>(UIFormBrowserStrings::EquipSlot),
+						match->form);
+
 					ImGui::Spacing();
+
 					ImGui::Text("%s:", UIL::LS(CommonStrings::Info));
 					ImGui::SameLine();
 					UITipsInterface::DrawTip(UITip::Presence);

@@ -14,7 +14,7 @@ namespace IED
 			kHasBoundExtraData   = 1u << 2,
 		};
 
-		SkeletonID(NiNode* a_root);
+		SkeletonID(NiNode* a_root) noexcept;
 
 		[[nodiscard]] constexpr auto& id() const noexcept
 		{
@@ -46,7 +46,7 @@ namespace IED
 		std::optional<stl::flag<BSXFlags::Flag>> m_bsx;
 		std::optional<float>                     m_xpmse_version;
 		stl::flag<PresenceFlags>                 m_pflags{ PresenceFlags::kNone };
-		std::uint64_t                            m_signature{ hash::fnv1::fnv_offset_basis };
+		std::uint64_t                            m_signature;
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(SkeletonID::PresenceFlags);

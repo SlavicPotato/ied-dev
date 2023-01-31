@@ -117,7 +117,7 @@ namespace IED
 	{
 		auto& formData = a_params.collector.data.forms;
 
-		const auto& data = a_params.objects.m_lastEquipped->biped;
+		const auto& data = a_params.objects.m_slotCache->biped;
 
 		if (a_config.flags.test(Data::LastEquippedFlags::kDisableIfSlotOccupied))
 		{

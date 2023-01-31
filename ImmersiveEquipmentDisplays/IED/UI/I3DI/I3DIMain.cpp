@@ -138,7 +138,7 @@ namespace IED
 
 		void I3DIMain::OnClose()
 		{
-			for (auto& e : m_controller.GetObjects())
+			for (auto& e : m_controller.GetActorMap())
 			{
 				e.second.SetNodeConditionForced(false);
 			}
@@ -266,7 +266,7 @@ namespace IED
 
 		bool I3DIMain::SwitchToActorContext(Game::FormID a_actor)
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			auto ith = data.find(a_actor);
 			if (ith == data.end())
@@ -360,7 +360,7 @@ namespace IED
 		{
 			auto& actors = m_data->actors;
 
-			for (auto& [i, e] : m_controller.GetObjects())
+			for (auto& [i, e] : m_controller.GetActorMap())
 			{
 				if (!e.IsActive())
 				{
@@ -402,7 +402,7 @@ namespace IED
 
 			for (auto it = actors.begin(); it != actors.end();)
 			{
-				if (!m_controller.GetObjects().contains(it->first))
+				if (!m_controller.GetActorMap().contains(it->first))
 				{
 					//_DMESSAGE("lost (2): %.8X", it->first);
 
@@ -464,7 +464,7 @@ namespace IED
 
 		void I3DIMain::SetNodeConditionForced(Game::FormID a_actor, bool a_switch) const
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			if (auto it = data.find(a_actor); it != data.end())
 			{

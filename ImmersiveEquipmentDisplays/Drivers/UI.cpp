@@ -389,7 +389,7 @@ namespace IED
 			});
 		}
 
-		std::shared_ptr<Tasks::UIRenderTaskBase> UI::GetTask(std::int32_t a_id)
+		stl::smart_ptr<Tasks::UIRenderTaskBase> UI::GetTask(std::int32_t a_id)
 		{
 			const stl::lock_guard lock(m_Instance.m_lock);
 
@@ -654,7 +654,7 @@ namespace IED
 
 		bool UI::AddTask(
 			std::int32_t                                    a_id,
-			const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task)
+			const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task)
 		{
 			return m_Instance.AddTaskImpl(a_id, a_task);
 		}
@@ -1318,7 +1318,7 @@ namespace IED
 
 		bool UI::AddTaskImpl(
 			std::int32_t                                    a_id,
-			const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task)
+			const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task)
 		{
 			assert(a_task);
 

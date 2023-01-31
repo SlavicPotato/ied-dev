@@ -24,9 +24,7 @@ namespace IED
 			virtual ~UIContext() noexcept = default;
 
 			UIContext(const UIContext&)            = delete;
-			UIContext(UIContext&&)                 = delete;
 			UIContext& operator=(const UIContext&) = delete;
-			UIContext& operator=(UIContext&&)      = delete;
 
 			void SetOpenState(bool a_state, bool a_notify = false);
 			void ToggleOpenState(bool a_notify = false);

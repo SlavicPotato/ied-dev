@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	class IFormDatabase : public IFormCommon
+	class IFormDatabase
 	{
 	public:
 		static constexpr std::uint32_t EXTRA_TYPE_ARMOR = 0xFFFF;
@@ -37,10 +37,16 @@ namespace IED
 		using value_type     = typename container_type::value_type;
 		using result_type    = std::shared_ptr<container_type>;
 
-	protected:
 		using form_db_get_func_t = std::function<void(result_type)>;
 
-		result_type GetFormDatabase();
+		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
+		{
+			return m_Instance;
+		}
+
+		void QueueGetFormDatabase(IFormDatabase::form_db_get_func_t a_func);
+
+		result_type GetDatabase();
 
 	private:
 		template <class T, class Tf = T>
@@ -58,5 +64,8 @@ namespace IED
 		static result_type Create();
 
 		std::weak_ptr<container_type> m_data;
+		mutable stl::fast_spin_lock   m_lock;
+
+		static IFormDatabase m_Instance;
 	};
 }

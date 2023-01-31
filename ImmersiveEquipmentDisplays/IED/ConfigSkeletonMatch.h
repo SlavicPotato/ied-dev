@@ -15,8 +15,8 @@ namespace IED
 				return ids.empty() && signatures.empty();
 			}
 
-			stl::flat_set<std::int32_t>  ids;
-			stl::flat_set<std::uint64_t> signatures;
+			stl::cache_aligned::flat_set<std::int32_t>  ids;
+			stl::cache_aligned::flat_set<std::uint64_t> signatures;
 		};
 	}
 }

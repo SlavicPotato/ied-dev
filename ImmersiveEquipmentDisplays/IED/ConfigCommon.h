@@ -309,7 +309,7 @@ namespace IED
 			kProtected               = 28,
 			kSitting                 = 29,
 			kSleeping                = 30,
-			kBeingRidden             = 31,
+			kIsMountRidden             = 31,
 			kWeaponDrawn             = 32,
 			kRandomPercent           = 33,
 			kNodeMonitor             = 34,
@@ -333,6 +333,7 @@ namespace IED
 			kInDialogue              = 52,
 			kLifeState               = 53,
 			kActorValue              = 54,
+			kXP32Skeleton         = 55,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -432,8 +433,6 @@ namespace IED
 				a_func(ConfigSex::Male, get(ConfigSex::Male));
 				a_func(ConfigSex::Female, get(ConfigSex::Female));
 			}
-
-			SKMP_REDEFINE_NEW_PREF();
 
 		private:
 			T data[2]{};

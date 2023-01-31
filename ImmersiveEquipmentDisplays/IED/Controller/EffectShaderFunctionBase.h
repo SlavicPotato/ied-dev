@@ -36,8 +36,6 @@ namespace IED
 		virtual void UpdateConfigImpl(const Data::configEffectShaderFunction_t& a_data) = 0;
 		virtual void UpdateConfigInitImpl(const Data::configEffectShaderFunction_t& a_data){};
 
-		SKMP_REDEFINE_NEW_PREF()  //
-
 		static constexpr auto PI  = std::numbers::pi_v<float>;
 		static constexpr auto PI2 = std::numbers::pi_v<float> * 2.0f;
 

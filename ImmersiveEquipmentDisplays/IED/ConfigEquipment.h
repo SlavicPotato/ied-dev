@@ -58,6 +58,10 @@ namespace IED
 
 			kExtraFlag3 = 1u << 17,
 			kExtraFlag4 = 1u << 18,
+			kExtraFlag5 = 1u << 19,
+
+			kExtraFlag6 = 1u << 20,
+			kExtraFlag7 = 1u << 21,
 
 			//kMatchTemplate = 1u << 30
 		};
@@ -93,10 +97,19 @@ namespace IED
 			Perk       = 24,
 		};
 
+		enum class PresenceEquippedHandMatch : std::uint32_t
+		{
+			kEither = 0,
+			kLeft   = 1,
+			kRight  = 2
+		};
+
 		struct EquipmentOverrideConditionFlagsBitfield
 		{
-			EquipmentOverrideConditionType type  : 5 { EquipmentOverrideConditionType::Form };
-			std::uint32_t                  unused: 27 { 0 };
+			EquipmentOverrideConditionType type                    : 5 { EquipmentOverrideConditionType::Form };
+			std::uint32_t                  unused1                 : 15;
+			PresenceEquippedHandMatch      presenceEquipedHandMatch: 2;
+			std::uint32_t                  unused2                 : 10;
 		};
 
 		static_assert(sizeof(EquipmentOverrideConditionFlagsBitfield) == sizeof(EquipmentOverrideConditionFlags));

@@ -97,6 +97,8 @@ namespace IED
 			Drawn         = 6980,
 			WantToSheathe = 6981,
 			Sheathing     = 6982,
+
+			ActorValues = 6983,
 		};
 	}
 }

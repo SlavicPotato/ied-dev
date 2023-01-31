@@ -4,7 +4,7 @@
 
 namespace IED
 {
-	using SkeletonInfoLookupResult = std::shared_ptr<SI_Root>;
+	using SkeletonInfoLookupResult = stl::smart_ptr<SI_Root>;
 
 	class ISkeletonInfo
 	{

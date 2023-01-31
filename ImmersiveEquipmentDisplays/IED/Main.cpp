@@ -38,7 +38,7 @@ namespace IED
 
 		Debug("Loading INI..");
 
-		const auto& config = m_config = std::make_shared<ConfigINI>(PLUGIN_INI_FILE_NOEXT);
+		const auto& config = m_config = stl::make_smart<ConfigINI>(PLUGIN_INI_FILE_NOEXT);
 
 		if (!config->IsLoaded())
 		{

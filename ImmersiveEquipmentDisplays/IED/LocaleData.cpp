@@ -8,7 +8,7 @@ namespace IED
 
 	void LocaleData::CreateSingleton()
 	{
-		m_Instance = std::make_unique<LocaleData>();
+		m_Instance = std::make_unique_for_overwrite<LocaleData>();
 	}
 
 	void LocaleData::SetFromLang(const char* a_lang)

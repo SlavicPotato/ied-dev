@@ -14,11 +14,14 @@ namespace IED
 {
 	namespace Tasks
 	{
-		class UIRenderTaskBase
+		class UIRenderTaskBase :
+			public stl::intrusive_ref_counted
 		{
 			friend class IED::Drivers::UI;
 
 		public:
+			SKMP_REDEFINE_NEW_PREF();
+
 			virtual ~UIRenderTaskBase() noexcept = default;
 
 			constexpr void SetControlLock(bool a_switch) noexcept
@@ -91,13 +94,25 @@ namespace IED
 			virtual bool RunEnableChecks() const;
 
 			template <class T>
-			[[nodiscard]] constexpr const T* As() const
+			[[nodiscard]] constexpr const T& As() const
+			{
+				return static_cast<const T&>(*this);
+			}
+
+			template <class T>
+			[[nodiscard]] constexpr T& As()
+			{
+				return static_cast<T&>(*this);
+			}
+
+			template <class T>
+			[[nodiscard]] constexpr const T* To() const
 			{
 				return dynamic_cast<const T*>(this);
 			}
-			
+
 			template <class T>
-			[[nodiscard]] constexpr T* As()
+			[[nodiscard]] constexpr T* To()
 			{
 				return dynamic_cast<T*>(this);
 			}
@@ -109,7 +124,7 @@ namespace IED
 			virtual void OnMouseMove(const Handlers::MouseMoveEvent& a_evn){};
 			virtual void OnKeyEvent(const Handlers::KeyEvent& a_evn){};
 
-			struct renderTaskOptions_t
+			struct TaskOptions
 			{
 				bool lockControls{ true };
 				bool freeze{ false };
@@ -120,7 +135,7 @@ namespace IED
 				bool blockImGuiInput{ false };
 			};
 
-			struct renderTaskState_t
+			struct TaskState
 			{
 				long long startTime{ 0 };
 
@@ -132,8 +147,8 @@ namespace IED
 				bool holdsBlockImGuiInput{ false };
 			};
 
-			renderTaskOptions_t m_options;
-			renderTaskState_t   m_state;
+			TaskOptions m_options;
+			TaskState   m_state;
 
 			bool m_stopMe{ false };
 

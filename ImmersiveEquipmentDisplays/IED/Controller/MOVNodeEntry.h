@@ -5,15 +5,14 @@
 
 namespace IED
 {
-
 	struct MOVNodeEntry
 	{
 		bool has_visible_geometry() const noexcept;
 		bool parent_has_visible_geometry() const noexcept;
 
-		NiPointer<NiNode>                node;
-		NiTransform                      origTransform;  // cached or read from loaded actor 3D
-		WeaponPlacementID                placementID;
-		std::shared_ptr<PHYSimComponent> simComponent;
+		const NiPointer<NiNode>         node;
+		const NiTransform               origTransform;  // cached or read from loaded actor 3D
+		const WeaponPlacementID         placementID;
+		stl::smart_ptr<PHYSimComponent> simComponent;
 	};
 }

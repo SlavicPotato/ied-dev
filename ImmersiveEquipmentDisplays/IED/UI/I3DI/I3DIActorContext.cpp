@@ -153,7 +153,7 @@ namespace IED
 
 		bool I3DIActorContext::Update(I3DICommonData& a_data)
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			auto it = data.find(m_actor);
 			if (it == data.end())

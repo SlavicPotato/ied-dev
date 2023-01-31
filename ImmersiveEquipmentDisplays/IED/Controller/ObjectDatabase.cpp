@@ -38,11 +38,10 @@ namespace IED
 				return false;
 			}
 
-			auto entry = std::make_shared<entry_t>();
-
-			entry->object = std::move(tmp);
-
-			it = m_data.emplace(spath, std::move(entry)).first;
+			it = m_data.emplace(
+						   spath,
+						   new entry_t(std::move(tmp)))
+			         .first;
 
 			QueueDatabaseCleanup();
 		}

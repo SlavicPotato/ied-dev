@@ -49,9 +49,7 @@ namespace IED
 		~ObjectEntryBase() noexcept = default;
 
 		ObjectEntryBase(const ObjectEntryBase&)            = delete;
-		ObjectEntryBase(ObjectEntryBase&&)                 = delete;
 		ObjectEntryBase& operator=(const ObjectEntryBase&) = delete;
-		ObjectEntryBase& operator=(ObjectEntryBase&&)      = delete;
 
 		bool reset(
 			Game::ObjectRefHandle    a_handle,
@@ -103,9 +101,7 @@ namespace IED
 			~State() noexcept = default;
 
 			State(const State&)            = delete;
-			State(State&&)                 = delete;
 			State& operator=(const State&) = delete;
-			State& operator=(State&&)      = delete;
 
 			struct GroupObject
 			{
@@ -153,9 +149,6 @@ namespace IED
 					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
 					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
-
-			void UpdateAnimationGraphs(
-				const BSAnimationUpdateData& a_data) const noexcept;
 
 			void UpdateArrows(std::int32_t a_count) noexcept;
 
@@ -207,7 +200,7 @@ namespace IED
 			Data::cacheTransform_t                             transform;
 			ObjectDatabase::ObjectDatabaseEntry                dbEntry;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
-			std::shared_ptr<PHYSimComponent>                   simComponent;
+			stl::smart_ptr<PHYSimComponent>                    simComponent;
 			stl::fixed_string                                  currentSequence;
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			std::optional<luid_tag>                            currentExtraLightTag;
@@ -229,7 +222,7 @@ namespace IED
 				const NiPointer<NiNode>& a_root1p,
 				ObjectDatabase&          a_db) noexcept;
 
-			[[nodiscard]] inline explicit operator bool() const noexcept
+			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 			{
 				return state || effectShaderData;
 			}
@@ -240,7 +233,7 @@ namespace IED
 
 		constexpr void DisableRefSync() noexcept
 		{
-			if (auto &state = data.state)
+			if (auto& state = data.state)
 			{
 				state->flags.set(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 			}

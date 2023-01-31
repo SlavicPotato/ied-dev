@@ -24,9 +24,7 @@ namespace IED
 		virtual ~ProfileManager() noexcept = default;
 
 		ProfileManager(const ProfileManager<T>&) = delete;
-		ProfileManager(ProfileManager<T>&&)      = delete;
 		ProfileManager<T>& operator=(const ProfileManager<T>&) = delete;
-		ProfileManager<T>& operator=(ProfileManager<T>&&) = delete;
 
 		bool Load(const fs::path& a_path);
 		bool Unload();

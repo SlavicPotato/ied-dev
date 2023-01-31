@@ -24,10 +24,8 @@ namespace IED
 		public:
 			UIPopupAction() = delete;
 
-			UIPopupAction(const UIPopupAction&) = delete;
-			UIPopupAction(UIPopupAction&&)      = delete;
+			UIPopupAction(const UIPopupAction&)            = delete;
 			UIPopupAction& operator=(const UIPopupAction&) = delete;
-			UIPopupAction& operator=(UIPopupAction&&) = delete;
 
 			template <class... Args>
 			UIPopupAction(
@@ -38,7 +36,7 @@ namespace IED
 				m_type(a_type),
 				m_key(a_key)
 			{
-				mk_key();
+				make_key();
 				stl::snprintf(
 					m_buf,
 					a_fmt,
@@ -51,7 +49,7 @@ namespace IED
 				m_type(a_type),
 				m_key(a_key)
 			{
-				mk_key();
+				make_key();
 			}
 
 			auto& call(func_type a_func) noexcept(
@@ -88,7 +86,7 @@ namespace IED
 			}
 
 		private:
-			void mk_key()
+			void make_key()
 			{
 				if (auto it = std::find(
 						m_key.begin(),

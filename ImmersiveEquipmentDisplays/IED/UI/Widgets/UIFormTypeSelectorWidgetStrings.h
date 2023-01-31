@@ -58,6 +58,7 @@ namespace IED
 			Enchantment      = 6347,
 			Perk             = 6348,
 			Hazard           = 6349,
+			EquipSlot        = 6350,
 		};
 	}
 }

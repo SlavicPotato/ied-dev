@@ -6,9 +6,21 @@
 
 namespace IED
 {
-	auto IFormDatabase::GetFormDatabase()
+	IFormDatabase IFormDatabase::m_Instance;
+
+	void IFormDatabase::QueueGetFormDatabase(
+		IFormDatabase::form_db_get_func_t a_func)
+	{
+		ITaskPool::AddTask([this, func = std::move(a_func)] {
+			func(GetDatabase());
+		});
+	}
+
+	auto IFormDatabase::GetDatabase()
 		-> result_type
 	{
+		stl::lock_guard lock(m_lock);
+
 		if (auto data = m_data.lock())
 		{
 			return data;
@@ -67,8 +79,8 @@ namespace IED
 
 			holder.emplace_back(
 				e->formID,
-				GetFormFlags(form),
-				GetFormName(form));
+				IFormCommon::GetFormFlags(form),
+				IFormCommon::GetFormName(form));
 		}
 
 		std::sort(
@@ -115,8 +127,8 @@ namespace IED
 
 			holder.emplace_back(
 				e->formID,
-				GetFormFlags(e),
-				GetFormName(e));
+				IFormCommon::GetFormFlags(e),
+				IFormCommon::GetFormName(e));
 		}
 
 		std::sort(
@@ -173,6 +185,7 @@ namespace IED
 			Populate(*result, dh->arrEffectSettings);
 			Populate(*result, dh->arrPERK);
 			Populate(*result, dh->arrHAZD);
+			Populate(*result, dh->arrEQUP);
 			//Populate(*result, dh->arrIDLE);
 			Populate<TESForm*, BGSMovableStatic*>(*result, dh->arrMSTT);
 

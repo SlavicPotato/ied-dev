@@ -51,7 +51,7 @@ namespace IED
 		NiAVObject*  a_object,
 		SI_NiObject& a_data,
 		SI_NiObject* a_parent,
-		Tf           a_func)
+		const Tf&    a_func)
 	{
 		a_func(a_object, a_data, a_parent);
 

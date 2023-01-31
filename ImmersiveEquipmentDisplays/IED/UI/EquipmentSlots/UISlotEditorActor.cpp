@@ -412,7 +412,7 @@ namespace IED
 		void UISlotEditorActor::ListDrawExtraActorInfo(
 			const listValue_t& a_entry)
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			auto it = data.find(a_entry.handle);
 			if (it == data.end())
@@ -420,7 +420,7 @@ namespace IED
 				return;
 			}
 
-			if (!it->second.AnySlotOccupied())
+			if (!it->second.IsAnySlotOccupied())
 			{
 				return;
 			}
@@ -475,7 +475,7 @@ namespace IED
 			const entrySlotData_t::data_type& a_entry,
 			bool                              a_infoDrawn)
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			auto it = data.find(a_handle);
 			if (it == data.end())

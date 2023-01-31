@@ -15,7 +15,7 @@ namespace IED
 
 	namespace UI
 	{
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept accept_editor_label =                                              //
@@ -30,7 +30,7 @@ namespace IED
 			{
 				Interface() = default;
 
-				template <detail::accept_editor_label Ts>
+				template <concepts::accept_editor_label Ts>
 				constexpr Interface(
 					std::unique_ptr<UIEditorInterface> a_interface,
 					Ts                                 a_label) :
@@ -59,7 +59,7 @@ namespace IED
 				Controller&            a_controller,
 				Localization::StringID a_menuName);
 
-			template <detail::accept_editor_label Ts, class... Args>
+			template <concepts::accept_editor_label Ts, class... Args>
 			constexpr UIEditorTabPanel(
 				Controller& a_controller,
 				Ts          a_menuName,
@@ -80,7 +80,7 @@ namespace IED
 			void OnOpen();
 			void OnClose();
 
-			template <detail::accept_editor_label Ts>
+			template <concepts::accept_editor_label Ts>
 			constexpr void SetEditor(
 				Data::ConfigClass                  a_class,
 				std::unique_ptr<UIEditorInterface> a_interface,

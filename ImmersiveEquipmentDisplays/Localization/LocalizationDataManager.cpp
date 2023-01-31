@@ -35,7 +35,7 @@ namespace IED
 							continue;
 						}
 
-						auto tmp = std::make_shared<StringTable>();
+						auto tmp = stl::make_smart_for_overwrite<StringTable>();
 						if (!tmp->Load(path))
 						{
 							Error(

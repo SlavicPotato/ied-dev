@@ -10,7 +10,7 @@ namespace IED
 {
 	namespace UI
 	{
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept valid_list_handle =
@@ -21,7 +21,7 @@ namespace IED
 
 		template <
 			class Td,
-			detail::valid_list_handle Th>
+			concepts::valid_list_handle Th>
 		class UIListBase
 		{
 			using list_type = stl::map<Th, stl::fixed_string>;
@@ -110,14 +110,14 @@ namespace IED
 			virtual void OnListSetHandleInternal(Th a_handle) = 0;
 		};
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		UIListBase<Td, Th>::UIListBase(
 			float a_itemWidthScalar) noexcept :
 			m_itemWidthScalar(a_itemWidthScalar)
 		{
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListDraw()
 		{
 			ListTick();
@@ -211,17 +211,17 @@ namespace IED
 			ImGui::PopID();
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListDrawOptions()
 		{
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListDrawExtraControls()
 		{
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		bool UIListBase<Td, Th>::ListSelectFirstAvailable()
 		{
 			for (const auto& e : m_listData)
@@ -239,7 +239,7 @@ namespace IED
 			return false;
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListFilterSelected()
 		{
 			if (m_listCurrent)
@@ -258,14 +258,14 @@ namespace IED
 			}
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		constexpr auto UIListBase<Td, Th>::ListGetSelected() const noexcept
 			-> const std::optional<listValue_t>&
 		{
 			return m_listCurrent;
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		bool UIListBase<Td, Th>::ListSetCurrentItem(Th a_handle)
 		{
 			auto it = m_listData.find(a_handle);
@@ -280,7 +280,7 @@ namespace IED
 			}
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListSetCurrentItem(
 			const typename list_type::value_type& a_value)
 		{
@@ -295,7 +295,7 @@ namespace IED
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListClearCurrentItem()
 		{
 			const auto old(std::move(m_listCurrent));
@@ -305,20 +305,20 @@ namespace IED
 			OnListChangeCurrentItem(old, m_listCurrent);
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::OnListChangeCurrentItem(
 			const std::optional<listValue_t>& a_oldHandle,
 			const std::optional<listValue_t>& a_newHandle)
 		{
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		const ImVec4* UIListBase<Td, Th>::HighlightEntry(Th a_handle)
 		{
 			return nullptr;
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListReset()
 		{
 			m_listNextUpdateCurrent = false;
@@ -328,7 +328,7 @@ namespace IED
 			m_listCurrent.reset();
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListTick()
 		{
 			if (m_listNextUpdateCurrent)
@@ -350,7 +350,7 @@ namespace IED
 			}
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListUpdateCurrent()
 		{
 			if (m_listCurrent)
@@ -359,7 +359,7 @@ namespace IED
 			}
 		}
 
-		template <class Td, detail::valid_list_handle Th>
+		template <class Td, concepts::valid_list_handle Th>
 		void UIListBase<Td, Th>::ListDrawInfo(const listValue_t& a_entry)
 		{
 			ImGui::SameLine();

@@ -125,6 +125,10 @@ Bool Function SetItemAlwaysLoadGraphActor(Actor akActor, string asPlugin, string
 Bool Function SetItemAlwaysLoadGraphNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 Bool Function SetItemAlwaysLoadGraphRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
 
+Bool Function SetItemLightTargetSelfActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemLightTargetSelfNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+Bool Function SetItemLightTargetSelfRace(Race akRace, string asPlugin, string asName, bool abIsFemale, bool abSwitch) native global
+
 Bool Function SetItemCountRangeActor(Actor akActor, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeNPC(ActorBase akActorBase, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global
 Bool Function SetItemCountRangeRace(Race akRace, string asPlugin, string asName, bool abIsFemale, int aiMin, int aiMax) native global

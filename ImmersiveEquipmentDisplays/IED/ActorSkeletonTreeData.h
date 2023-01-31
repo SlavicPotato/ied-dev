@@ -24,8 +24,8 @@ namespace IED
 
 	struct SI_NiObject
 	{
-		stl::string              type;
-		stl::string              name;
+		std::string              type;
+		std::string              name;
 		SI_Transform             local;
 		SI_Transform             world;
 		std::uint32_t            flags;
@@ -33,8 +33,11 @@ namespace IED
 		SI_NiObject*             parent{ nullptr };
 	};
 
-	struct SI_Root
+	struct SI_Root :
+		stl::intrusive_ref_counted
 	{
+		SKMP_REDEFINE_NEW_PREF();
+
 		Game::FormID                actor;
 		std::string                 path;
 		SI_NiObject                 object;
@@ -43,8 +46,6 @@ namespace IED
 		bool                        succeeded{ false };
 		bool                        isLoadedData{ true };
 		long long                   lastUpdate{ 0 };
-		stl::mutex                lock;
-
-		SKMP_REDEFINE_NEW_PREF();
+		stl::mutex                  lock;
 	};
 }

@@ -16,11 +16,8 @@ namespace IED
 		public:
 			UIPopupQueue() = default;
 
-			UIPopupQueue(const UIPopupQueue&) = delete;
-			UIPopupQueue(UIPopupQueue&&)      = delete;
-
+			UIPopupQueue(const UIPopupQueue&)            = delete;
 			UIPopupQueue& operator=(const UIPopupQueue&) = delete;
-			UIPopupQueue& operator=(UIPopupQueue&&) = delete;
 
 			void run();
 
@@ -31,7 +28,8 @@ namespace IED
 			}
 
 			inline void clear() noexcept(
-				std::is_nothrow_move_assignable_v<queue_type>)
+				std::is_nothrow_default_constructible_v<queue_type>&&
+					std::is_nothrow_move_assignable_v<queue_type>)
 			{
 				m_queue = {};
 			}

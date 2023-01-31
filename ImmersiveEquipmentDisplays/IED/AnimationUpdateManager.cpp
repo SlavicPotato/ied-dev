@@ -32,17 +32,14 @@ namespace IED
 		Actor*                       a_actor,
 		const BSAnimationUpdateData& a_data) const noexcept
 	{
-		if (GetEnabled())
-		{
-			const shared_lock lock(m_lock);
+		const shared_lock lock(m_lock);
 
-			auto it = m_data.find(a_actor->formID);
-			if (it != m_data.end())
+		auto it = m_data.find(a_actor->formID);
+		if (it != m_data.end())
+		{
+			for (auto& e : it->second)
 			{
-				for (auto& e : it->second)
-				{
-					UpdateAnimationGraph(e.get(), a_data);
-				}
+				UpdateAnimationGraph(e.get(), a_data);
 			}
 		}
 	}
@@ -51,7 +48,7 @@ namespace IED
 		Game::FormID                                    a_actor,
 		const RE::WeaponAnimationGraphManagerHolderPtr& a_ptr) noexcept
 	{
-		if (GetEnabled())
+		if (IsInitialized())
 		{
 			const unique_lock lock(m_lock);
 
@@ -65,7 +62,7 @@ namespace IED
 		Game::FormID                                    a_actor,
 		const RE::WeaponAnimationGraphManagerHolderPtr& a_ptr) noexcept
 	{
-		if (GetInitialized())
+		if (IsInitialized())
 		{
 			const unique_lock lock(m_lock);
 
@@ -80,7 +77,7 @@ namespace IED
 	void AnimationUpdateController::RemoveActor(
 		Game::FormID a_actor) noexcept
 	{
-		if (GetInitialized())
+		if (IsInitialized())
 		{
 			const unique_lock lock(m_lock);
 

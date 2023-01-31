@@ -23,11 +23,13 @@ namespace IED
 		DEFINE_ENUM_CLASS_BITWISE(ConfigNodePhysicsFlags);
 
 		struct configNodePhysicsValues_t :
-			configLUIDTagAC_t
+			configLUIDTagGI_t
 		{
+		private:
 			friend class boost::serialization::access;
 
 		public:
+
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1
@@ -56,14 +58,17 @@ namespace IED
 			float stiffness2{ 1.0f };
 			float springSlackOffset{ 0.0f };
 			float springSlackMag{ 0.0f };
+
 			float damping{ 0.95f };
 			float maxOffsetSphereRadius{ 20.0f };
 			float maxOffsetSphereFriction{ 0.025f };
 			float maxOffsetBoxFriction{ 0.025f };
+
 			float gravityBias{ 1200.0f };
 			float gravityCorrection{ 0.0f };
 			float rotGravityCorrection{ 0.0f };
 			float resistance{ 0.0f };
+
 			float mass{ 1.0f };
 			float maxVelocity{ 20000.0f };
 
@@ -152,6 +157,7 @@ namespace IED
 			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 	}
+
 }
 
 BOOST_CLASS_VERSION(

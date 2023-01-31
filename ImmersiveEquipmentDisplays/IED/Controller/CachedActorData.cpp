@@ -43,13 +43,16 @@ namespace IED
 				}
 			}
 
-			for (std::uint32_t i = 0; i < a_npc->perkCount; i++)
+			if (a_npc->perks)
 			{
-				const auto& e = a_npc->perks[i];
-
-				if (const auto* const perk = e.perk)
+				for (std::uint32_t i = 0; i < a_npc->perkCount; i++)
 				{
-					data.try_emplace(perk->formID, e.currentRank);
+					const auto& e = a_npc->perks[i];
+
+					if (const auto* const perk = e.perk)
+					{
+						data.try_emplace(perk->formID, e.currentRank);
+					}
 				}
 			}
 		}
@@ -221,7 +224,7 @@ namespace IED
 		swimming(a_actor->IsSwimming()),
 		sitting(a_actor->IsSitting()),
 		sleeping(a_actor->IsSleeping()),
-		beingRidden(a_actor->IsBeingRidden()),
+		beingRidden(a_actor->IsMountRidden()),
 		weaponDrawn(a_actor->IsWeaponDrawn()),
 		arrested(a_actor->IsArrested()),
 		flying(a_actor->IsFlying())
@@ -260,7 +263,7 @@ namespace IED
 		state_var_update(weaponDrawn, a_actor->IsWeaponDrawn(), result);
 		state_var_update(flying, a_actor->IsFlying(), result);
 		state_var_update(arrested, a_actor->IsArrested(), result);
-		state_var_update(beingRidden, a_actor->IsBeingRidden(), result);
+		state_var_update(beingRidden, a_actor->IsMountRidden(), result);
 
 		if (auto npc = a_actor->GetActorBase())
 		{

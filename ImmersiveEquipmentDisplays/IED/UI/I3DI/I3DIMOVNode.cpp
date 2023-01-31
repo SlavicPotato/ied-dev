@@ -90,7 +90,7 @@ namespace IED
 
 			auto& controller = m_actorContext.GetController();
 			auto& actorid    = m_actorContext.GetActorFormID();
-			auto& objects    = controller.GetObjects();
+			auto& objects    = controller.GetActorMap();
 
 			auto it = objects.find(actorid);
 			if (it == objects.end())

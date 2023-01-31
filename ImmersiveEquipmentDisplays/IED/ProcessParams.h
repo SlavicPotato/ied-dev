@@ -35,11 +35,9 @@ namespace IED
 		inline processParamsData_t(
 			Actor* const                           a_actor,
 			const Game::ObjectRefHandle            a_handle,
-			const Data::ConfigSex                  a_configSex,
 			const stl::flag<ControllerUpdateFlags> a_flags,
 			ActorTempData&                         a_tmp) :
 			handle(a_handle),
-			configSex(a_configSex),
 			flags(a_flags),
 			useCount(a_tmp.uc),
 			collector(a_tmp.sr, a_tmp.idt, a_tmp.eqt, a_actor)
@@ -55,7 +53,6 @@ namespace IED
 		}
 
 		const Game::ObjectRefHandle      handle;
-		const Data::ConfigSex            configSex;
 		stl::flag<ControllerUpdateFlags> flags;
 		stl::flag<Data::ObjectSlotBits>  slotPresenceChanges{ Data::ObjectSlotBits::kNone };
 		UseCountContainer&               useCount;
@@ -68,7 +65,6 @@ namespace IED
 	{
 		template <class... Args>
 		constexpr processParams_t(
-			const Data::ConfigSex                  a_configSex,
 			const stl::flag<ControllerUpdateFlags> a_flags,
 			Actor* const                           a_actor,
 			const Game::ObjectRefHandle            a_handle,
@@ -77,7 +73,6 @@ namespace IED
 			processParamsData_t(
 				a_actor,
 				a_handle,
-				a_configSex,
 				a_flags,
 				a_tmp),
 			CommonParams(

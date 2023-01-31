@@ -15,6 +15,7 @@
 #include "IED/ActorFactionInfo.h"
 #include "IED/ActorInventoryInfo.h"
 #include "IED/ActorPerkInfo.h"
+#include "IED/ActorValueInfo.h"
 #include "IED/ConditionalVariableStorage.h"
 
 namespace IED
@@ -23,8 +24,11 @@ namespace IED
 
 	namespace UI
 	{
-		struct ActorInfoAggregate
+		struct ActorInfoAggregate :
+			stl::intrusive_ref_counted
 		{
+			SKMP_REDEFINE_NEW_PREF();
+
 			stl::mutex              lock;
 			long long               lastUpdate{ 0 };
 			bool                    initialized{ false };
@@ -35,16 +39,17 @@ namespace IED
 			actorFactionInfo_t      factions;
 			actorActiveEffectInfo_t effects;
 			actorPerkInfo_t         perks;
+			actorValueInfo_t        actorValues;
 		};
 
 		struct ActorInfoData
 		{
 			ActorInfoData() :
-				data(std::make_shared<ActorInfoAggregate>())
+				data(stl::make_smart_for_overwrite<ActorInfoAggregate>())
 			{
 			}
 
-			std::shared_ptr<ActorInfoAggregate> data;
+			stl::smart_ptr<ActorInfoAggregate> data;
 		};
 
 		class UIActorInfo :
@@ -55,6 +60,19 @@ namespace IED
 			UICollapsibles
 		{
 			static constexpr auto WINDOW_ID = "ied_ainfo";
+
+			enum class TabItem
+			{
+				kNone,
+
+				kInventory,
+				kFactions,
+				kActiveEffects,
+				kVariables,
+				kActorState,
+				kPerks,
+				kActorValues
+			};
 
 		public:
 			static constexpr auto CHILD_ID = ChildWindowID::kUIActorInfo;
@@ -85,8 +103,12 @@ namespace IED
 			void DrawFactionsTabItem(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawPerkTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawAVTabItem(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
@@ -130,8 +152,12 @@ namespace IED
 			void DrawFactionTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
-			
+
 			void DrawPerkTreeContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
+			void DrawAVTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
@@ -156,8 +182,12 @@ namespace IED
 			void DrawFactionEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
-			
+
 			void DrawPerkEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
+
+			void DrawActorValueEntries(
 				Game::FormID              a_handle,
 				const ActorInfoAggregate& a_data);
 
@@ -213,6 +243,8 @@ namespace IED
 			void QueueInfoUpdate(Game::FormID a_handle, const ActorInfoData& a_data);
 
 			UIGenericFilter m_invFilter;
+
+			TabItem m_currentTab{ TabItem::kNone };
 
 			char m_buffer[256]{ 0 };
 

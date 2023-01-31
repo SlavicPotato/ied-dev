@@ -402,7 +402,7 @@ namespace IED
 			const Data::configCustomEntry_t& a_entry)
 			-> const ObjectEntryCustom*
 		{
-			auto& data = m_controller.GetObjects();
+			auto& data = m_controller.GetActorMap();
 
 			auto it = data.find(a_handle);
 			if (it == data.end())

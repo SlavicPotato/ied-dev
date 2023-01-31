@@ -39,7 +39,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown),
 			std::make_pair(Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount),
 			std::make_pair(Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount),
-			std::make_pair(Data::ExtraConditionType::kBeingRidden, UIConditionExtraSelectorWidgetStrings::IsBeingRidden),
+			std::make_pair(Data::ExtraConditionType::kIsMountRidden, UIConditionExtraSelectorWidgetStrings::IsMountRidden),
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
@@ -64,7 +64,8 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay),
 			std::make_pair(Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing),
 			std::make_pair(Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater),
-			std::make_pair(Data::ExtraConditionType::kWeaponDrawn, UIConditionExtraSelectorWidgetStrings::WeaponDrawn)
+			std::make_pair(Data::ExtraConditionType::kWeaponDrawn, UIConditionExtraSelectorWidgetStrings::WeaponDrawn),
+			std::make_pair(Data::ExtraConditionType::kXP32Skeleton, UIConditionExtraSelectorWidgetStrings::XP32Skeleton)
 
 		);
 
@@ -173,8 +174,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Sitting);
 			case Data::ExtraConditionType::kSleeping:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::Sleeping);
-			case Data::ExtraConditionType::kBeingRidden:
-				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsBeingRidden);
+			case Data::ExtraConditionType::kIsMountRidden:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsMountRidden);
 			case Data::ExtraConditionType::kWeaponDrawn:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::WeaponDrawn);
 			case Data::ExtraConditionType::kRandomPercent:
@@ -221,6 +222,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LifeState);
 			case Data::ExtraConditionType::kActorValue:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::ActorValue);
+			case Data::ExtraConditionType::kXP32Skeleton:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::XP32Skeleton);
 			default:
 				return nullptr;
 			}

@@ -18,7 +18,7 @@ namespace IED
 
 				const stl::lock_guard lock(controller->GetLock());
 
-				auto& objects = controller->GetObjects();
+				auto& objects = controller->GetActorMap();
 
 				auto it = objects.find(a_actor);
 				if (it != objects.end())

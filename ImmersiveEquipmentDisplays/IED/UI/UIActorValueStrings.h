@@ -6,9 +6,11 @@ namespace IED
 {
 	namespace UI
 	{
-		enum class UIActorValueSelectorWidgetStrings : Localization::StringID
+		enum class UIActorValueStrings : Localization::StringID
 		{
-			Aggresion   = 7700,
+			kHead = 7700,
+
+			Aggresion   = kHead,
 			Confidence  = 7701,
 			Energy      = 7702,
 			Morality    = 7703,

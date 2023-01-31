@@ -5,7 +5,6 @@
 
 namespace IED
 {
-
 	struct WeaponNodeEntry
 	{
 		friend class INodeOverride;
@@ -31,13 +30,13 @@ namespace IED
 
 		bool has_visible_geometry() const noexcept;
 
-		const stl::fixed_string    nodeName;
-		NiPointer<NiNode>          node;
-		NiPointer<NiNode>          defaultNode;
-		NiPointer<NiNode>          node1p;
-		AnimationWeaponSlot        animSlot;
-		GearNodeID                 gearNodeID;
-		std::optional<NiTransform> originalTransform;
+		const stl::fixed_string          nodeName;
+		const NiPointer<NiNode>          node;
+		const NiPointer<NiNode>          defaultNode;
+		const NiPointer<NiNode>          node1p;
+		const AnimationWeaponSlot        animSlot;
+		const GearNodeID                 gearNodeID;
+		const std::optional<NiTransform> originalTransform;
 
 	private:
 		mutable NiPointer<NiNode> target;

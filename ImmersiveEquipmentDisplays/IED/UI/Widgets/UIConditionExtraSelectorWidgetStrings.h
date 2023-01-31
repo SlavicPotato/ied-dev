@@ -39,7 +39,7 @@ namespace IED
 			Protected               = 5428,
 			Sitting                 = 5429,
 			Sleeping                = 5430,
-			IsBeingRidden           = 5431,
+			IsMountRidden           = 5431,
 			WeaponDrawn             = 5432,
 			RandomPercent           = 5433,
 			NodeMonitor             = 5434,
@@ -63,6 +63,7 @@ namespace IED
 			InDialogue              = 5452,
 			LifeState               = 5453,
 			ActorValue              = 5454,
+			XP32Skeleton            = 5455,
 		};
 	}
 }

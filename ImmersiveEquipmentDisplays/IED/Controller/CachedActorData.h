@@ -35,7 +35,7 @@ namespace IED
 	class CachedPerkData
 	{
 		using container_type =
-			stl::flat_map<
+			stl::cache_aligned::flat_map<
 				Game::FormID,
 				std::int8_t>;
 
@@ -65,7 +65,7 @@ namespace IED
 	class CachedFactionData
 	{
 		using container_type =
-			stl::flat_map<
+			stl::cache_aligned::flat_map<
 				TESFaction*,
 				std::int8_t>;
 
@@ -132,7 +132,7 @@ namespace IED
 
 	class CachedActiveEffectData
 	{
-		using container_type = stl::flat_set<EffectSetting*>;
+		using container_type = stl::cache_aligned::flat_set<EffectSetting*>;
 
 	public:
 		CachedActiveEffectData(Actor* a_actor) noexcept;

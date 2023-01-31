@@ -2,8 +2,6 @@
 
 #include "IED/ConfigCommon.h"
 
-#include "UIActorValueSelectorWidgetStrings.h"
-
 #include "IED/UI/UILocalizationInterface.h"
 
 namespace IED

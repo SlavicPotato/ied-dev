@@ -10,6 +10,8 @@ namespace IED
 
 	struct ActorTempData
 	{
+		SKMP_ALIGNED_REDEFINE_NEW_PREF(stl::L1_CACHE_LINE_SIZE);
+
 		Data::CollectorData::container_type       idt;
 		Data::CollectorData::eq_container_type    eqt;
 		nodeOverrideParams_t::item_container_type nc;

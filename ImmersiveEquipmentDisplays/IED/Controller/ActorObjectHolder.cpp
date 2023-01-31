@@ -45,18 +45,17 @@ namespace IED
 	}
 
 	ActorObjectHolder::ActorObjectHolder(
-		Actor*                a_actor,
-		TESNPC*               a_npc,
-		TESRace*              a_race,
-		NiNode*               a_root,
-		NiNode*               a_npcroot,
-		IObjectManager&       a_owner,
-		Game::ObjectRefHandle a_handle,
-		bool                  a_nodeOverrideEnabled,
-		bool                  a_nodeOverrideEnabledPlayer,
-		bool                  a_syncToFirstPersonSkeleton,
-		//bool                    a_animEventForwarding,
-		const BipedSlotDataPtr& a_lastEquipped) noexcept :
+		Actor*                  a_actor,
+		TESNPC*                 a_npc,
+		TESRace*                a_race,
+		NiNode*                 a_root,
+		NiNode*                 a_npcroot,
+		IObjectManager&         a_owner,
+		Game::ObjectRefHandle   a_handle,
+		bool                    a_nodeOverrideEnabled,
+		bool                    a_nodeOverrideEnabledPlayer,
+		bool                    a_syncToFirstPersonSkeleton,
+		const BipedSlotDataPtr& a_slotCache) noexcept :
 		m_owner(a_owner),
 		m_handle(a_handle),
 		m_actor(a_actor),
@@ -66,13 +65,12 @@ namespace IED
 		m_npcid(a_npc->formID),
 		m_npcTemplateId(a_npc->GetFirstNonTemporaryOrThis()->formID),
 		m_raceid(a_race->formID),
-		//m_enableAnimEventForwarding(a_animEventForwarding),
 		m_created(IPerfCounter::Query()),
-		m_lastEquipped(a_lastEquipped),
+		m_slotCache(a_slotCache),
 		m_skeletonID(a_root),
 		m_state(a_actor),
-		m_entriesSlot{ detail::make_object_slot_array(a_lastEquipped->displays) },
-		m_temp(std::make_unique<ActorTempData>())
+		m_entriesSlot{ detail::make_object_slot_array(a_slotCache->displays) },
+		m_temp(std::make_unique_for_overwrite<ActorTempData>())
 	{
 		m_flags.set(ActorObjectHolderFlags::kIsFemale, a_npc->GetSex() == 1);
 		m_flags.set(ActorObjectHolderFlags::kIsPlayer, a_actor == *g_thePlayer);
@@ -106,11 +104,12 @@ namespace IED
 			m_root1p = root1p->AsNode();
 		}
 
-		m_skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
+		auto                      skeletonCache = SkeletonCache::GetSingleton().Get(a_actor);
+		SkeletonCache::ActorEntry skeletonCache1p;
 
 		if (m_root1p && a_syncToFirstPersonSkeleton)
 		{
-			m_skeletonCache1p = SkeletonCache::GetSingleton().Get(a_actor, true);
+			skeletonCache1p = SkeletonCache::GetSingleton().Get(a_actor, true);
 		}
 
 		if (NodeOverrideData::GetHumanoidSkeletonSignatures()
@@ -121,7 +120,7 @@ namespace IED
 
 		for (auto& e : NodeOverrideData::GetExtraCopyNodes())
 		{
-			CreateExtraCopyNode(a_npcroot, e);
+			CreateExtraCopyNode(skeletonCache, a_npcroot, e);
 		}
 
 		if (a_nodeOverrideEnabled &&
@@ -140,33 +139,26 @@ namespace IED
 				}
 			}
 
-			auto const npcroot1p = m_root1p ?
-			                           GetNodeByName(
-										   m_root1p,
-										   BSStringHolder::GetSingleton()->m_npcroot) :
-			                           nullptr;
+			const auto npcroot1p =
+				m_root1p ?
+					GetNodeByName(
+						m_root1p,
+						BSStringHolder::GetSingleton()->m_npcroot) :
+					nullptr;
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
 				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
-					auto& r = m_cmeNodes.try_emplace(
-											e->first,
-											node,
-											GetCachedOrZeroTransform(e->second.name))
-					              .first->second;
-
-					if (a_syncToFirstPersonSkeleton && npcroot1p)
-					{
-						node = GetNodeByName(npcroot1p, e->second.bsname);
-						if (node)
-						{
-							r.firstPerson = {
-								node,
-								GetCachedOrZeroTransform(e->second.name, true)
-							};
-						}
-					}
+					m_cmeNodes.try_emplace(
+								  e->first,
+								  node,
+								  a_syncToFirstPersonSkeleton ? npcroot1p : nullptr,
+								  skeletonCache,
+								  skeletonCache1p,
+								  e->second.name,
+								  e->second.bsname)
+						.first->second;
 				}
 			}
 
@@ -176,9 +168,8 @@ namespace IED
 				{
 					m_movNodes.try_emplace(
 						e->first,
-
 						node,
-						GetCachedOrCurrentTransform(e->second.name, node),
+						skeletonCache.GetCachedOrCurrentTransform(e->second.name, node),
 						e->second.placementID);
 				}
 			}
@@ -201,13 +192,16 @@ namespace IED
 							e->second.animSlot,
 							e->second.nodeID,
 							e->second.vanilla ?
-								GetCachedTransform(e->first) :
+								skeletonCache.GetCachedTransform(e->first) :
 								std::optional<NiTransform>{});
 					}
 				}
 			}
 
-			CreateExtraMovNodes(a_npcroot);
+			if (!EngineExtensions::HasEarly3DLoadHooks())
+			{
+				CreateExtraMovNodes(a_npcroot);
+			}
 		}
 
 		for (auto& [i, e] : NodeOverrideData::GetNodeMonitorEntries())
@@ -230,7 +224,7 @@ namespace IED
 				auto& r = m_nodeMonitorEntries.try_emplace(
 												  i,
 												  parent,
-												  std::addressof(e))
+												  e)
 				              .first->second;
 
 				r.Update();
@@ -264,12 +258,7 @@ namespace IED
 			}
 		}*/
 
-		/*if (m_player)
-		{
-			m_owner.StorePlayerState(*this);
-		}*/
-
-		m_lastEquipped->accessed = m_owner.IncrementCounter();
+		m_slotCache->accessed = m_owner.IncrementCounter();
 
 		const bool defer = EngineExtensions::ShouldDefer3DTask();
 
@@ -310,7 +299,7 @@ namespace IED
 			std::optional<Game::ObjectRefHandle> handle;
 			NiPointer<TESObjectREFR>             ref;
 
-			visit([&](auto& a_entry) {
+			visit([&](auto& a_entry) noexcept {
 				if (!a_entry.data)
 				{
 					return;
@@ -332,7 +321,7 @@ namespace IED
 		}
 	}
 
-	bool ActorObjectHolder::AnySlotOccupied() const noexcept
+	bool ActorObjectHolder::IsAnySlotOccupied() const noexcept
 	{
 		for (auto& e : m_entriesSlot)
 		{
@@ -362,7 +351,7 @@ namespace IED
 
 	std::size_t ActorObjectHolder::GetNumOccupiedCustom() const noexcept
 	{
-		std::size_t r = 0;
+		std::size_t result = 0;
 
 		for (auto& e : m_entriesCustom)
 		{
@@ -372,13 +361,13 @@ namespace IED
 				{
 					if (g.second.data.state)
 					{
-						r++;
+						result++;
 					}
 				}
 			}
 		}
 
-		return r;
+		return result;
 	}
 
 	bool ActorObjectHolder::IsActorNPCOrTemplate(Game::FormID a_npc) const
@@ -419,69 +408,6 @@ namespace IED
 		return false;
 	}
 
-	NiTransform ActorObjectHolder::GetCachedOrZeroTransform(
-		const stl::fixed_string& a_name,
-		bool                     a_firstPerson) const
-	{
-		if (auto& cache = GetSkeletonCache(a_firstPerson))
-		{
-			auto it = cache->find(a_name);
-			if (it != cache->end())
-			{
-				return it->second;
-			}
-		}
-
-		return {};
-	}
-
-	NiTransform ActorObjectHolder::GetCachedOrCurrentTransform(
-		const stl::fixed_string& a_name,
-		NiAVObject*              a_object,
-		bool                     a_firstPerson) const
-	{
-		if (auto& cache = GetSkeletonCache(a_firstPerson))
-		{
-			auto it = cache->find(a_name);
-			if (it != cache->end())
-			{
-				return it->second;
-			}
-		}
-
-		return a_object->m_localTransform;
-	}
-
-	std::optional<NiTransform> ActorObjectHolder::GetCachedTransform(
-		const stl::fixed_string& a_name,
-		bool                     a_firstPerson) const
-	{
-		if (auto& cache = GetSkeletonCache(a_firstPerson))
-		{
-			auto it = cache->find(a_name);
-			if (it != cache->end())
-			{
-				return it->second;
-			}
-		}
-
-		return {};
-	}
-
-	void ActorObjectHolder::UpdateAllAnimationGraphs(
-		const BSAnimationUpdateData& a_data) const noexcept
-	{
-		visit([&](auto& a_e) noexcept [[msvc::forceinline]] {
-			if (auto& state = a_e.data.state)
-			{
-				//if (!state->flags.test(ObjectEntryFlags::kInvisible))
-				//{
-				state->UpdateAnimationGraphs(a_data);
-				//}
-			}
-		});
-	}
-
 	float ActorObjectHolder::GetRandomPercent(const luid_tag& a_luid) noexcept
 	{
 		if (m_rpc.size() > MAX_RPC_SIZE)
@@ -507,9 +433,9 @@ namespace IED
 	{
 		bool result = false;
 
-		for (auto& e : m_nodeMonitorEntries)
+		for (const auto& e : m_nodeMonitorEntries.getvec())
 		{
-			result |= e.second.Update();
+			result |= e->second.Update();
 		}
 
 		return result;
@@ -651,7 +577,7 @@ namespace IED
 				Game::ObjectRefHandle    a_handle,
 				const NiPointer<NiNode>& a_root,
 				const NiPointer<NiNode>& a_root1p,
-				IObjectManager&          a_db) :
+				IObjectManager&          a_db) noexcept :
 				m_list(std::move(a_list)),
 				m_handle(a_handle),
 				m_root(a_root),
@@ -660,7 +586,7 @@ namespace IED
 			{
 			}
 
-			virtual void Run() override
+			virtual void Run() noexcept override
 			{
 				if (m_handle)
 				{
@@ -676,7 +602,7 @@ namespace IED
 				}
 			}
 
-			virtual void Dispose() override
+			virtual void Dispose() noexcept override
 			{
 				delete this;
 			}
@@ -721,8 +647,6 @@ namespace IED
 
 		for (auto& e : m_simNodeList)
 		{
-			assert(e.use_count() > 1);
-
 			e->UpdateMotion(step);
 		}
 	}
@@ -780,13 +704,13 @@ namespace IED
 	}
 
 	void ActorObjectHolder::RemoveSimComponent(
-		const std::shared_ptr<PHYSimComponent>& a_sc) noexcept
+		const stl::smart_ptr<PHYSimComponent>& a_sc) noexcept
 	{
 		std::erase(m_simNodeList, a_sc);
 	}
 
 	void ActorObjectHolder::RemoveAndDestroySimComponent(
-		std::shared_ptr<PHYSimComponent>& a_sc) noexcept
+		stl::smart_ptr<PHYSimComponent>& a_sc) noexcept
 	{
 		std::erase(m_simNodeList, a_sc);
 		a_sc.reset();
@@ -828,16 +752,17 @@ namespace IED
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(
+		const SkeletonCache::ActorEntry&              a_sc,
 		NiNode*                                       a_npcroot,
 		const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const noexcept
 	{
-		if (a_npcroot->GetObjectByName(a_entry.dst))
+		auto source = GetNodeByName(a_npcroot, a_entry.bssrc);
+		if (!source)
 		{
 			return;
 		}
 
-		auto source = GetNodeByName(a_npcroot, a_entry.bssrc);
-		if (!source)
+		if (a_npcroot->GetObjectByName(a_entry.dst))
 		{
 			return;
 		}
@@ -850,11 +775,11 @@ namespace IED
 
 		auto node = CreateAttachmentNode(a_entry.dst);
 
-		if (auto& cache = GetSkeletonCache())
+		if (a_sc)
 		{
-			auto it = cache->find(a_entry.src);
+			auto it = a_sc->find(a_entry.src);
 
-			node->m_localTransform = it != cache->end() ?
+			node->m_localTransform = it != a_sc->end() ?
 			                             it->second :
 			                             source->m_localTransform;
 		}

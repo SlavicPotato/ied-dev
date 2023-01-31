@@ -270,8 +270,10 @@ namespace IED
 		{
 			auto& controller = GetController();
 
-			if (auto it = controller.m_objects.find(Data::IData::GetPlayerRefID());
-			    it != controller.m_objects.end())
+			auto& actorMap = controller.GetActorMap();
+
+			if (auto it = actorMap.find(Data::IData::GetPlayerRefID());
+			    it != actorMap.end())
 			{
 				it->second.RequestEval();
 			}
@@ -317,8 +319,8 @@ namespace IED
 				{
 					m_state.playerEnemiesNearby = n;
 
-					if (auto it = m_controller.m_objects.find(Data::IData::GetPlayerRefID());
-					    it != m_controller.m_objects.end())
+					if (auto it = m_controller.m_actors.find(Data::IData::GetPlayerRefID());
+					    it != m_controller.m_actors.end())
 					{
 						it->second.RequestEval();
 					}
@@ -533,7 +535,6 @@ namespace IED
 			if (const auto info = controller.LookupCachedActorInfo2(a_holder.m_actor, a_holder))
 			{
 				a_holder.CreateProcessParams(
-					a_holder.GetSex(),
 					ControllerUpdateFlags::kPlaySound,
 					a_holder.m_actor.get(),
 					a_holder.GetHandle(),
@@ -569,7 +570,7 @@ namespace IED
 		const auto stepMuls         = Game::Unk2f6b948::GetStepMultipliers();
 		const auto runEffectUpdates = !Game::IsPaused();
 
-		auto& data = GetController().GetObjects().getvec();
+		auto& data = GetController().GetActorMap().getvec();
 
 		if (ParallelProcessingEnabled())
 		{
@@ -635,7 +636,7 @@ namespace IED
 
 		if (!cvdata.empty())
 		{
-			for (auto& e : controller.GetObjects().getvec())
+			for (auto& e : controller.GetActorMap().getvec())
 			{
 				auto& holder = e->second;
 
@@ -663,7 +664,7 @@ namespace IED
 			}
 		}
 
-		for (auto& e : controller.GetObjects().getvec())
+		for (auto& e : controller.GetActorMap().getvec())
 		{
 			auto& holder = e->second;
 

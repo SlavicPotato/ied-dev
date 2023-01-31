@@ -1748,9 +1748,6 @@
     <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidgetStrings.h">
-      <Filter>Source\IED\UI\Widgets</Filter>
-    </ClInclude>
     <ClInclude Include="IED\ConfigExtraLight.h">
       <Filter>Source\IED\Config</Filter>
     </ClInclude>
@@ -1765,6 +1762,12 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorValueInfo.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIActorValueStrings.h">
+      <Filter>Source\IED\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2805,6 +2808,9 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIExtraLightEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorValueInfo.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

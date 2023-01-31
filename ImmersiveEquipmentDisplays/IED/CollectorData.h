@@ -150,11 +150,7 @@ namespace IED
 				presentTypes |= (1ui32 << stl::underlying(a_type));
 			}
 
-			using container_type = stl::flat_map<
-				Game::FormID,
-				ItemData,
-				std::less_equal<Game::FormID>,
-				stl::cache_aligned_allocator<std::pair<Game::FormID, ItemData>>>;
+			using container_type = stl::cache_aligned::flat_map<Game::FormID, ItemData>;
 
 			static_assert(stl::L1_CACHE_LINE_SIZE % sizeof(container_type::value_type) == 0);
 
@@ -172,7 +168,7 @@ namespace IED
 				ItemExtraData::ExtraEquipped extraEquipped;
 			};
 
-			using eq_container_type = std::vector<EquippedItemData>;
+			using eq_container_type = stl::cache_aligned::vector<EquippedItemData>;
 
 			constexpr CollectorData(
 				container_type&    a_container,

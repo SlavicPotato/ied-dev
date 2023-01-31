@@ -57,7 +57,6 @@ namespace IED
 			a_out.XP32AABowAtk                        = data.get("xp32_aa_bow_atk", false).asBool();
 			a_out.XP32AABowIdle                       = data.get("xp32_aa_bow_idle", false).asBool();
 			a_out.placementRandomization              = data.get("placement_randomization", false).asBool();
-			a_out.hkWeaponAnimations                  = data.get("hk_weap_anims", true).asBool();
 			a_out.enableEffectShaders                 = data.get("effect_shaders", false).asBool();
 			a_out.lightEnableNPCUpdates               = data.get("light_npc_updates", false).asBool();
 			a_out.lightNPCUpdateFix                   = data.get("light_npc_update_fix", false).asBool();
@@ -118,7 +117,6 @@ namespace IED
 			data["xp32_aa_bow_atk"]         = a_data.XP32AABowAtk;
 			data["xp32_aa_bow_idle"]        = a_data.XP32AABowIdle;
 			data["placement_randomization"] = a_data.placementRandomization;
-			data["hk_weap_anims"]           = a_data.hkWeaponAnimations;
 			data["effect_shaders"]          = a_data.enableEffectShaders;
 			data["light_npc_updates"]       = a_data.lightEnableNPCUpdates;
 			data["light_npc_update_fix"]    = a_data.lightNPCUpdateFix;

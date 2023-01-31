@@ -100,8 +100,8 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			it->second.SetHandle(a_handle);
 
@@ -124,8 +124,8 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			it->second.SetHandle(a_actor->GetHandle());
 
@@ -148,8 +148,8 @@ namespace IED
 		Game::FormID                     a_actor,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
 			{
@@ -188,8 +188,8 @@ namespace IED
 	{
 		const stl::lock_guard lock(m_lock);
 
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			if (a_defer)
 			{
@@ -217,8 +217,8 @@ namespace IED
 	void IObjectManager::RequestEvaluateLF(
 		Game::FormID a_actor) const noexcept
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			it->second.m_wantLFUpdate = true;
 		}
@@ -328,8 +328,8 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			RemoveActorGear(a_actor, a_handle, it->second, a_flags);
 		}
@@ -437,7 +437,7 @@ namespace IED
 
 	void IObjectManager::ClearObjectsImpl() noexcept
 	{
-		m_objects.clear();
+		m_actorMap.clear();
 	}
 
 	void IObjectManager::GetNodeName(
@@ -515,7 +515,7 @@ namespace IED
 				a_params.actor,
 				a_modelForm,
 				a_params.race,
-				a_params.configSex == Data::ConfigSex::Female,
+				a_params.objects.IsFemale(),
 				a_activeConfig.flags.test(Data::BaseFlags::kLoad1pWeaponModel),
 				a_activeConfig.flags.test(Data::BaseFlags::kUseWorldModel),
 				modelParams))
@@ -547,7 +547,7 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique<ObjectEntryBase::State>();
+		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();
 
 		NiPointer<NiNode>   object;
 		ObjectDatabaseEntry dbentry;
@@ -712,7 +712,7 @@ namespace IED
 				a_activeConfig.niControllerSequence);
 		}
 		else if (
-			AnimationUpdateController::GetSingleton().GetEnabled() &&
+			AnimationUpdateController::GetSingleton().IsInitialized() &&
 			(modelParams.type == ModelType::kWeapon ||
 		     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
 			!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims))
@@ -840,7 +840,7 @@ namespace IED
 					a_params.actor,
 					form,
 					a_params.race,
-					a_params.configSex == Data::ConfigSex::Female,
+					a_params.objects.IsFemale(),
 					e.second.flags.test(Data::ConfigModelGroupEntryFlags::kLoad1pWeaponModel),
 					a_activeConfig.flags.test(Data::BaseFlags::kUseWorldModel) ||
 						e.second.flags.test(Data::ConfigModelGroupEntryFlags::kUseWorldModel),
@@ -884,7 +884,7 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique<ObjectEntryBase::State>();
+		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();
 
 		bool loaded = false;
 
@@ -1063,7 +1063,7 @@ namespace IED
 					e.entry->second.niControllerSequence);
 			}
 			else if (
-				AnimationUpdateController::GetSingleton().GetEnabled() &&
+				AnimationUpdateController::GetSingleton().IsInitialized() &&
 				(e.params.type == ModelType::kWeapon ||
 			     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim) ||
 			     e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kForceTryLoadAnim)) &&

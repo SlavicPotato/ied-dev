@@ -8,12 +8,15 @@ namespace IED
 {
 	namespace Localization
 	{
-		class StringTable
+		class StringTable :
+			public stl::intrusive_ref_counted
 		{
 		public:
+			SKMP_REDEFINE_NEW_PREF();
+
 			using container_type = stl::unordered_map<StringID, std::string>;
 
-			struct data_storage_type
+			struct table_data
 			{
 				stl::fixed_string                lang;
 				container_type                   data;
@@ -43,7 +46,7 @@ namespace IED
 			}
 
 		private:
-			data_storage_type m_data;
+			table_data m_data;
 
 			except::descriptor m_lastException;
 		};

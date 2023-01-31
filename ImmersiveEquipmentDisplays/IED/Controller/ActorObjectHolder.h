@@ -105,21 +105,13 @@ namespace IED
 
 		static constexpr std::size_t MAX_RPC_SIZE = 1024 * 1024;
 
-		struct monitorNodeEntry_t
+		struct MonitorGearNodeEntry
 		{
-			NiPointer<NiNode> node;
-			NiPointer<NiNode> parent;
-			std::uint16_t     size;
-			bool              visible;
+			const NiPointer<NiNode> node;
+			NiPointer<NiNode>       parent;
+			std::uint16_t           size;
+			bool                    visible;
 		};
-
-		using cme_node_map_type = stl::unordered_map<
-			stl::fixed_string,
-			CMENodeEntry>;
-
-		using mov_node_map_type = stl::unordered_map<
-			stl::fixed_string,
-			MOVNodeEntry>;
 
 	public:
 		static constexpr long long STATE_CHECK_INTERVAL_LOW  = 1000000;
@@ -131,25 +123,22 @@ namespace IED
 
 		ActorObjectHolder() = delete;
 		ActorObjectHolder(
-			Actor*                a_actor,
-			TESNPC*               a_npc,
-			TESRace*              a_race,
-			NiNode*               a_root,
-			NiNode*               a_npcroot,
-			IObjectManager&       a_owner,
-			Game::ObjectRefHandle a_handle,
-			bool                  a_nodeOverrideEnabled,
-			bool                  a_nodeOverrideEnabledPlayer,
-			bool                  a_syncToFirstPersonSkeleton,
-			//bool                    a_animEventForwarding,
-			const BipedSlotDataPtr& a_lastEquipped) noexcept;
+			Actor*                  a_actor,
+			TESNPC*                 a_npc,
+			TESRace*                a_race,
+			NiNode*                 a_root,
+			NiNode*                 a_npcroot,
+			IObjectManager&         a_owner,
+			Game::ObjectRefHandle   a_handle,
+			bool                    a_nodeOverrideEnabled,
+			bool                    a_nodeOverrideEnabledPlayer,
+			bool                    a_syncToFirstPersonSkeleton,
+			const BipedSlotDataPtr& a_slotCache) noexcept;
 
 		~ActorObjectHolder() noexcept;
 
 		ActorObjectHolder(const ActorObjectHolder&)            = delete;
-		ActorObjectHolder(ActorObjectHolder&&)                 = delete;
 		ActorObjectHolder& operator=(const ActorObjectHolder&) = delete;
-		ActorObjectHolder& operator=(ActorObjectHolder&&)      = delete;
 
 		[[nodiscard]] constexpr auto& GetSlot(
 			Data::ObjectSlot a_slot) noexcept
@@ -195,7 +184,7 @@ namespace IED
 			return m_root;
 		}
 
-		[[nodiscard]] bool        AnySlotOccupied() const noexcept;
+		[[nodiscard]] bool        IsAnySlotOccupied() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedSlots() const noexcept;
 		[[nodiscard]] std::size_t GetNumOccupiedCustom() const noexcept;
 
@@ -478,11 +467,6 @@ namespace IED
 			return m_raceid;
 		}
 
-		[[nodiscard]] constexpr auto& GetSkeletonCache(bool a_firstPerson = false) const noexcept
-		{
-			return a_firstPerson ? m_skeletonCache1p : m_skeletonCache;
-		}
-
 		[[nodiscard]] constexpr auto& GetSkeletonID() const noexcept
 		{
 			return m_skeletonID;
@@ -505,26 +489,13 @@ namespace IED
 
 		[[nodiscard]] constexpr auto GetSex() const noexcept
 		{
-			return IsFemale() ? Data::ConfigSex::Female : Data::ConfigSex::Male;
+			return static_cast<Data::ConfigSex>(IsFemale());
 		}
 
 		/*[[nodiscard]] constexpr bool IsAnimEventForwardingEnabled() const noexcept
 		{
 			return m_enableAnimEventForwarding;
 		}*/
-
-		[[nodiscard]] NiTransform GetCachedOrZeroTransform(
-			const stl::fixed_string& a_name,
-			bool                     a_firstPerson = false) const;
-
-		[[nodiscard]] NiTransform GetCachedOrCurrentTransform(
-			const stl::fixed_string& a_name,
-			NiAVObject*              a_object,
-			bool                     a_firstPerson = false) const;
-
-		[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
-			const stl::fixed_string& a_name,
-			bool                     a_firstPerson = false) const;
 
 		//void ReSinkAnimationGraphs();
 
@@ -550,7 +521,7 @@ namespace IED
 			return m_flags.test(ActorObjectHolderFlags::kHumanoidSkeleton);
 		}
 
-		[[nodiscard]] constexpr bool IsXP32Skeleton() const noexcept
+		[[nodiscard]] constexpr bool HasXP32Skeleton() const noexcept
 		{
 			return m_skeletonID.xp_version().has_value();
 		}
@@ -628,7 +599,7 @@ namespace IED
 
 		[[nodiscard]] constexpr auto& GetBipedSlotData() const noexcept
 		{
-			return m_lastEquipped;
+			return m_slotCache;
 		}
 
 		inline void ClearVariables(bool a_requestEval) noexcept
@@ -652,8 +623,6 @@ namespace IED
 		{
 			m_flags.set(ActorObjectHolderFlags::kDestroyed);
 		}
-
-		void UpdateAllAnimationGraphs(const BSAnimationUpdateData& a_data) const noexcept;
 
 		float GetRandomPercent(const luid_tag& a_luid) noexcept;
 
@@ -679,12 +648,12 @@ namespace IED
 		[[nodiscard]] auto& CreateAndAddSimComponent(Args&&... a_args) noexcept
 		{
 			return m_simNodeList.emplace_back(
-				std::make_shared<PHYSimComponent>(
+				new PHYSimComponent(
 					std::forward<Args>(a_args)...));
 		}
 
-		void RemoveSimComponent(const std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
-		void RemoveAndDestroySimComponent(std::shared_ptr<PHYSimComponent>& a_sc) noexcept;
+		void RemoveSimComponent(const stl::smart_ptr<PHYSimComponent>& a_sc) noexcept;
+		void RemoveAndDestroySimComponent(stl::smart_ptr<PHYSimComponent>& a_sc) noexcept;
 
 		[[nodiscard]] constexpr auto& GetSimComponentList() const noexcept
 		{
@@ -705,6 +674,7 @@ namespace IED
 		void CreateExtraMovNodes(NiNode* a_npcroot) noexcept;
 
 		void CreateExtraCopyNode(
+			const SkeletonCache::ActorEntry&              a_sc,
 			NiNode*                                       a_npcroot,
 			const NodeOverrideData::extraNodeCopyEntry_t& a_entry) const noexcept;
 
@@ -734,28 +704,17 @@ namespace IED
 		ObjectSlotArray   m_entriesSlot;
 		customPluginMap_t m_entriesCustom[Data::CONFIG_CLASS_MAX];
 
-		stl::vector<monitorNodeEntry_t> m_monitorNodes;
-		stl::vector<WeaponNodeEntry>    m_weapNodes;
+		stl::cache_aligned::vector<MonitorGearNodeEntry>            m_monitorNodes;
+		stl::cache_aligned::vector<WeaponNodeEntry>                 m_weapNodes;
+		stl::cache_aligned::vector<stl::smart_ptr<PHYSimComponent>> m_simNodeList;
 
-		cme_node_map_type                                   m_cmeNodes;
-		mov_node_map_type                                   m_movNodes;
-		stl::unordered_map<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+		stl::unordered_map<stl::fixed_string, CMENodeEntry> m_cmeNodes;
+		stl::unordered_map<stl::fixed_string, MOVNodeEntry> m_movNodes;
+
+		stl::cache_aligned::vectormap<std::uint32_t, NodeMonitorEntry> m_nodeMonitorEntries;
+		conditionalVariableMap_t                                       m_variables;
 
 		std::optional<processParams_t> m_currentParams;
-
-		stl::unordered_map<luid_tag, float> m_rpc;
-
-		stl::vector<
-			std::shared_ptr<PHYSimComponent>
-#if defined(IED_USE_MIMALLOC_SIMCOMPONENT)
-			,
-			stl::mi_allocator<std::shared_ptr<PHYSimComponent>>
-#else
-#endif
-			>
-			m_simNodeList;
-
-		conditionalVariableMap_t m_variables;
 
 		NiPointer<Actor>  m_actor;
 		NiPointer<NiNode> m_root;
@@ -771,19 +730,15 @@ namespace IED
 		long long m_nextMFStateCheck;
 		long long m_nextHFStateCheck;
 
-		SkeletonCache::const_actor_entry_type m_skeletonCache;
-		SkeletonCache::const_actor_entry_type m_skeletonCache1p;
-		SkeletonID                            m_skeletonID;
+		SkeletonID m_skeletonID;
 
 		mutable ActorAnimationState m_animState;
 
-		//AnimationGraphManagerHolderList m_animationUpdateList;
-		//AnimationGraphManagerHolderList m_animEventForwardRegistrations;
-		//const bool                      m_enableAnimEventForwarding{ false };
-
-		BipedSlotDataPtr m_lastEquipped;
+		BipedSlotDataPtr m_slotCache;
 
 		std::unique_ptr<ActorTempData> m_temp;
+
+		stl::unordered_map<luid_tag, float> m_rpc;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

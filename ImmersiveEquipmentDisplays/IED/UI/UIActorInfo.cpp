@@ -3,6 +3,7 @@
 #include "UIActorInfo.h"
 
 #include "UIActorInfoStrings.h"
+#include "UIActorValueStrings.h"
 
 #include "IED/UI/Widgets/UIVariableTypeSelectorWidget.h"
 
@@ -141,6 +142,7 @@ namespace IED
 				DrawVariablesTabItem(a_handle);
 				DrawActorStateTabItem(a_handle, a_data);
 				DrawPerkTabItem(a_handle, a_data);
+				DrawAVTabItem(a_handle, a_data);
 
 				ImGui::EndTabBar();
 			}
@@ -159,6 +161,8 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LMKID<3>(m_buffer, "1")))
 			{
+				m_currentTab = TabItem::kInventory;
+
 				ImGui::Spacing();
 				ImGui::PushID("1");
 
@@ -184,6 +188,8 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LMKID<3>(m_buffer, "6")))
 			{
+				m_currentTab = TabItem::kFactions;
+
 				ImGui::Spacing();
 				ImGui::PushID("6");
 
@@ -197,7 +203,8 @@ namespace IED
 		}
 
 		void UIActorInfo::DrawPerkTabItem(
-			Game::FormID a_handle, const ActorInfoData& a_data)
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
 		{
 			stl::snprintf(
 				m_buffer,
@@ -208,10 +215,33 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LMKID<3>(m_buffer, "2")))
 			{
+				m_currentTab = TabItem::kPerks;
+
 				ImGui::Spacing();
 				ImGui::PushID("2");
 
 				DrawPerkTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawAVTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			if (ImGui::BeginTabItem(
+					UIL::LS<UIActorInfoStrings, 3>(UIActorInfoStrings::ActorValues, "7")))
+			{
+				m_currentTab = TabItem::kActorValues;
+
+				ImGui::Spacing();
+				ImGui::PushID("7");
+
+				DrawAVTreeContents(a_handle, a_data);
 
 				ImGui::PopID();
 				ImGui::Spacing();
@@ -233,6 +263,8 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LMKID<3>(m_buffer, "3")))
 			{
+				m_currentTab = TabItem::kActiveEffects;
+
 				ImGui::Spacing();
 				ImGui::PushID("3");
 
@@ -248,7 +280,7 @@ namespace IED
 		void UIActorInfo::DrawVariablesTabItem(
 			Game::FormID a_handle)
 		{
-			const auto& objects = m_controller.GetObjects();
+			const auto& objects = m_controller.GetActorMap();
 
 			auto it = objects.find(a_handle);
 			if (it != objects.end())
@@ -264,6 +296,8 @@ namespace IED
 				if (ImGui::BeginTabItem(
 						UIL::LMKID<3>(m_buffer, "4")))
 				{
+					m_currentTab = TabItem::kVariables;
+
 					ImGui::Spacing();
 					ImGui::PushID("4");
 
@@ -284,6 +318,8 @@ namespace IED
 			if (ImGui::BeginTabItem(
 					UIL::LS(UIActorInfoStrings::ActorState, "5")))
 			{
+				m_currentTab = TabItem::kActorState;
+
 				ImGui::Spacing();
 				ImGui::PushID("5");
 
@@ -850,6 +886,27 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+		void UIActorInfo::DrawAVTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawActorValueEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryTreeContents(
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
@@ -1319,6 +1376,58 @@ namespace IED
 
 					ImGui::TableSetColumnIndex(2);
 					ImGui::Text("%hhd", e.second.rank);
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::PopStyleVar();
+		}
+
+		void UIActorInfo::DrawActorValueEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& data = a_data.actorValues.data;
+
+			constexpr int NUM_COLUMNS = 2;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 4.f, 4.f });
+
+			if (ImGui::BeginTable(
+					"table",
+					NUM_COLUMNS,
+					ImGuiTableFlags_Borders |
+						ImGuiTableFlags_ScrollY |
+						ImGuiTableFlags_Resizable |
+						ImGuiTableFlags_SizingStretchProp,
+					{ -1.0f, -1.0f }))
+			{
+				ImGui::TableSetupScrollFreeze(0, 1);
+
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Value));
+
+				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+				for (int column = 0; column < NUM_COLUMNS; column++)
+				{
+					ImGui::TableSetColumnIndex(column);
+					ImGui::TableHeader(ImGui::TableGetColumnName(column));
+				}
+
+				for (std::uint32_t i = 0; i < data.size(); i++)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text(
+						"%s",
+						UIL::LS(static_cast<Localization::StringID>(
+							stl::underlying(UIActorValueStrings::kHead) + i)));
+
+					ImGui::TableSetColumnIndex(1);
+					ImGui::Text("%f", data[i]);
 				}
 
 				ImGui::EndTable();
@@ -2006,7 +2115,7 @@ namespace IED
 				return;
 			}
 
-			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data] {
+			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data, tab = m_currentTab] {
 				const stl::lock_guard lock(m_controller.GetLock());
 				const stl::lock_guard datalock(data->lock);
 
@@ -2030,6 +2139,13 @@ namespace IED
 					data->factions.Update(actor);
 					data->effects.Update(actor);
 					data->perks.Update(actor);
+
+					switch (tab)
+					{
+					case TabItem::kActorValues:
+						data->actorValues.Update(actor);
+						break;
+					}
 
 					data->succeeded = true;
 				}

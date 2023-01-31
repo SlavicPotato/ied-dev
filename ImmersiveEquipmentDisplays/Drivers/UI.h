@@ -19,13 +19,13 @@ namespace IED
 			float height{ 0.0f };
 		};
 
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept is_render_task =
 				std::is_convertible_v<
 					T,
-					std::shared_ptr<Tasks::UIRenderTaskBase>>;
+					stl::smart_ptr<Tasks::UIRenderTaskBase>>;
 		}
 
 		class UI :
@@ -58,11 +58,8 @@ namespace IED
 				{
 				}
 
-				FontEntry(const FontEntry&) = delete;
-				FontEntry(FontEntry&&)      = delete;
-
+				FontEntry(const FontEntry&)            = delete;
 				FontEntry& operator=(const FontEntry&) = delete;
-				FontEntry& operator=(FontEntry&&) = delete;
 
 				ImFont*           font;
 				float             size;
@@ -94,7 +91,7 @@ namespace IED
 				return !m_Instance.m_drawTasks.empty();
 			}
 
-			[[nodiscard]] static std::shared_ptr<Tasks::UIRenderTaskBase> GetTask(std::int32_t a_id);
+			[[nodiscard]] static stl::smart_ptr<Tasks::UIRenderTaskBase> GetTask(std::int32_t a_id);
 
 			static void QueueRemoveTask(std::int32_t a_id);
 
@@ -207,8 +204,8 @@ namespace IED
 			static void QueueImGuiSettingsSave();
 
 			static bool AddTask(
-				std::int32_t                                    a_id,
-				const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task);
+				std::int32_t                                   a_id,
+				const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task);
 
 			FN_NAMEPROC("UI");
 
@@ -238,8 +235,8 @@ namespace IED
 			void Suspend();
 
 			bool AddTaskImpl(
-				std::int32_t a_id,
-				const std::shared_ptr<Tasks::UIRenderTaskBase>& a_task);
+				std::int32_t                                   a_id,
+				const stl::smart_ptr<Tasks::UIRenderTaskBase>& a_task);
 
 			void LockControls(bool a_switch);
 			void FreezeTime(bool a_switch);
@@ -322,7 +319,7 @@ namespace IED
 
 			using map_type = stl::map<
 				std::int32_t,
-				std::shared_ptr<Tasks::UIRenderTaskBase>>;
+				stl::smart_ptr<Tasks::UIRenderTaskBase>>;
 
 			map_type m_drawTasks;
 

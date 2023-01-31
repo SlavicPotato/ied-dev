@@ -2,7 +2,8 @@
 
 #include "ActorInventoryInfo.h"
 
-#include "IED/LocaleData.h"
+#include "FormCommon.h"
+#include "LocaleData.h"
 
 namespace IED
 {
@@ -42,13 +43,7 @@ namespace IED
 
 		if (r.second)
 		{
-			if (auto fullname = ::RTTI<TESFullName>::Cast(a_item))
-			{
-				if (auto name = fullname->GetFullName())
-				{
-					e.name = LocaleData::ToUTF8(name);
-				}
-			}
+			e.name = IFormCommon::GetFormName(a_item);
 
 			if (auto enchantable = ::RTTI<TESEnchantableForm>()(a_item))
 			{

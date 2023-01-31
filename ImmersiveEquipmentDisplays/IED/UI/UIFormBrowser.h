@@ -43,7 +43,7 @@ namespace IED
 				bool result{ false };
 				bool closed{ false };
 
-				inline explicit operator bool() const noexcept
+				[[nodiscard]] inline constexpr explicit operator bool() const noexcept
 				{
 					return result;
 				}
@@ -106,13 +106,17 @@ namespace IED
 			//bool m_openPopup{ false };
 			bool m_nextDoFilterUpdate{ false };
 
-			struct db_container
+			struct db_container :
+				stl::intrusive_ref_counted
 			{
-				bool                       queryInProgress{ false };
+				SKMP_REDEFINE_NEW_PREF();
+
 				IFormDatabase::result_type data;
+				bool                       queryInProgress{ false };
+				stl::mutex                 lock;
 			};
 
-			const std::shared_ptr<db_container> m_db;
+			const stl::smart_ptr<db_container> m_db;
 
 			UIGenericFilter m_formIDFilter;
 			UIGenericFilter m_formNameFilter;
@@ -122,7 +126,7 @@ namespace IED
 			std::uint32_t m_currentType{ 0 };
 			Game::FormID  m_hlForm;
 
-			std::array<TabItem, 42> m_tabItems;
+			std::array<TabItem, 43> m_tabItems;
 
 			//select_callback_t m_current;
 

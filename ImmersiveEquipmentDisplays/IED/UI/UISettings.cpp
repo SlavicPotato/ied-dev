@@ -202,25 +202,6 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::NoCheckFav);
 
-				bool disabled = !AnimationUpdateController::GetSingleton().GetInitialized();
-
-				UICommon::PushDisabled(disabled);
-
-				bool v = AnimationUpdateController::GetSingleton().GetEnabled();
-
-				if (ImGui::Checkbox(
-						UIL::LS(UISettingsStrings::BhkAnims, "4"),
-						std::addressof(v)))
-				{
-					settings.set(data.hkWeaponAnimations, v);
-
-					AnimationUpdateController::GetSingleton().SetEnabled(v);
-					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
-				}
-				UITipsInterface::DrawTip(UITip::BhkAnims);
-
-				UICommon::PopDisabled(disabled);
-
 				/*if (data.hkWeaponAnimations)
 				{
 					ImGui::Indent();
@@ -767,62 +748,61 @@ namespace IED
 						"%s",
 						UIL::LS(UISettingsStrings::ReleaseControlLockKeys)))
 				{
-					if (auto task = m_owner.As<IUIRenderTaskMain>())
+					auto& task = m_owner.As<IUIRenderTaskMain>();
+
+					ImGui::Indent();
+					ImGui::Spacing();
+
+					auto& context = task.GetContext();
+
+					auto tmpk = context.ILRHGetComboKey();
+
+					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
+							UIL::LS(CommonStrings::ComboKey, "1"),
+							UIData::g_comboControlMap,
+							tmpk,
+							true)))
 					{
-						ImGui::Indent();
-						ImGui::Spacing();
+						context.ILRHSetKeys(
+							context.ILRHGetKey(),
+							tmpk);
 
-						auto& context = task->GetContext();
-
-						auto tmpk = context.ILRHGetComboKey();
-
-						if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-								UIL::LS(CommonStrings::ComboKey, "1"),
-								UIData::g_comboControlMap,
-								tmpk,
-								true)))
-						{
-							context.ILRHSetKeys(
-								context.ILRHGetKey(),
-								tmpk);
-
-							ui.releaseLockKeys->comboKey = tmpk;
-							ui.releaseLockKeys.mark(true);
-						}
-
-						tmpk = context.ILRHGetKey();
-
-						if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-								UIL::LS(CommonStrings::Key, "2"),
-								UIData::g_controlMap,
-								tmpk)))
-						{
-							context.ILRHSetKeys(tmpk, context.ILRHGetComboKey());
-
-							ui.releaseLockKeys->key = tmpk;
-							ui.releaseLockKeys.mark(true);
-						}
-
-						if (settings.mark_if(ImGui::SliderFloat(
-								UIL::LS(UISettingsStrings::Alpha, "3"),
-								std::addressof(ui.releaseLockAlpha),
-								0.0f,
-								1.0f,
-								"%.2f")))
-						{
-							context.ILRHSetLockedAlpha(ui.releaseLockAlpha);
-						}
-
-						if (settings.mark_if(ImGui::Checkbox(
-								UIL::LS(UISettingsStrings::UnfreezeTime, "4"),
-								std::addressof(ui.releaseLockUnfreezeTime))))
-						{
-							context.ILRHSetUnfreezeTime(ui.releaseLockUnfreezeTime);
-						}
-
-						ImGui::Spacing();
-						ImGui::Unindent();
+						ui.releaseLockKeys->comboKey = tmpk;
+						ui.releaseLockKeys.mark(true);
 					}
+
+					tmpk = context.ILRHGetKey();
+
+					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
+							UIL::LS(CommonStrings::Key, "2"),
+							UIData::g_controlMap,
+							tmpk)))
+					{
+						context.ILRHSetKeys(tmpk, context.ILRHGetComboKey());
+
+						ui.releaseLockKeys->key = tmpk;
+						ui.releaseLockKeys.mark(true);
+					}
+
+					if (settings.mark_if(ImGui::SliderFloat(
+							UIL::LS(UISettingsStrings::Alpha, "3"),
+							std::addressof(ui.releaseLockAlpha),
+							0.0f,
+							1.0f,
+							"%.2f")))
+					{
+						context.ILRHSetLockedAlpha(ui.releaseLockAlpha);
+					}
+
+					if (settings.mark_if(ImGui::Checkbox(
+							UIL::LS(UISettingsStrings::UnfreezeTime, "4"),
+							std::addressof(ui.releaseLockUnfreezeTime))))
+					{
+						context.ILRHSetUnfreezeTime(ui.releaseLockUnfreezeTime);
+					}
+
+					ImGui::Spacing();
+					ImGui::Unindent();
 
 					ImGui::TreePop();
 				}

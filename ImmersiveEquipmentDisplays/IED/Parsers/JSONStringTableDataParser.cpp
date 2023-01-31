@@ -11,9 +11,9 @@ namespace IED
 		static constexpr std::uint32_t CURRENT_VERSION = 1;
 
 		template <>
-		bool Parser<Localization::StringTable::data_storage_type>::Parse(
-			const Json::Value&                            a_in,
-			Localization::StringTable::data_storage_type& a_out) const
+		bool Parser<Localization::StringTable::table_data>::Parse(
+			const Json::Value&                     a_in,
+			Localization::StringTable::table_data& a_out) const
 		{
 			JSON_PARSE_VERSION()
 
@@ -79,9 +79,9 @@ namespace IED
 		}
 
 		template <>
-		void Parser<Localization::StringTable::data_storage_type>::Create(
-			const Localization::StringTable::data_storage_type& a_data,
-			Json::Value&                                        a_out) const
+		void Parser<Localization::StringTable::table_data>::Create(
+			const Localization::StringTable::table_data& a_data,
+			Json::Value&                                 a_out) const
 		{
 		}
 

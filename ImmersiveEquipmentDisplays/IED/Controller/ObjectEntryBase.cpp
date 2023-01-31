@@ -155,23 +155,6 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::State::UpdateAnimationGraphs(
-		const BSAnimationUpdateData& a_data) const noexcept
-	{
-		for (auto& e : groupObjects)
-		{
-			if (auto& h = e.second.anim.holder)
-			{
-				AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
-			}
-		}
-
-		if (auto& h = anim.holder)
-		{
-			AnimationUpdateController::UpdateAnimationGraph(h.get(), a_data);
-		}
-	}
-
 	void ObjectEntryBase::State::UpdateArrows(std::int32_t a_count) noexcept
 	{
 		if (arrowState)

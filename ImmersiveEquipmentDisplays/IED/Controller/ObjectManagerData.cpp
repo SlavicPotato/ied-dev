@@ -8,7 +8,7 @@ namespace IED
 {
 	void ObjectManagerData::ClearVariablesOnAll(bool a_requestEval) noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.ClearVariables(a_requestEval);
 		}
@@ -18,8 +18,8 @@ namespace IED
 		Game::FormID a_handle,
 		bool         a_requestEval) noexcept
 	{
-		auto it = m_objects.find(a_handle);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_handle);
+		if (it != m_actorMap.end())
 		{
 			it->second.ClearVariables(a_requestEval);
 		}
@@ -27,7 +27,7 @@ namespace IED
 
 	void ObjectManagerData::RequestVariableUpdateOnAll() const noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.RequestVariableUpdate();
 		}
@@ -35,8 +35,8 @@ namespace IED
 
 	void ObjectManagerData::RequestVariableUpdate(Game::FormID a_handle) const noexcept
 	{
-		auto it = m_objects.find(a_handle);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_handle);
+		if (it != m_actorMap.end())
 		{
 			it->second.RequestVariableUpdate();
 		}
@@ -44,7 +44,7 @@ namespace IED
 
 	void ObjectManagerData::RequestEvaluateOnAll() const noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.RequestEvalDefer();
 		}
@@ -52,7 +52,7 @@ namespace IED
 
 	void ObjectManagerData::RequestEvaluateAll(bool a_defer) const noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (a_defer)
 			{
@@ -67,7 +67,7 @@ namespace IED
 
 	void ObjectManagerData::RequestLFEvaluateAll() const noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.m_wantLFUpdate = true;
 		}
@@ -76,7 +76,7 @@ namespace IED
 	void ObjectManagerData::RequestLFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{
-		for (auto& [i, e] : m_objects)
+		for (auto& [i, e] : m_actorMap)
 		{
 			if (i != a_skip)
 			{
@@ -87,7 +87,7 @@ namespace IED
 
 	void ObjectManagerData::RequestHFEvaluateAll() const noexcept
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.m_wantHFUpdate = true;
 		}
@@ -96,7 +96,7 @@ namespace IED
 	void ObjectManagerData::RequestHFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{
-		for (auto& [i, e] : m_objects)
+		for (auto& [i, e] : m_actorMap)
 		{
 			if (i != a_skip)
 			{

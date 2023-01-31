@@ -19,9 +19,9 @@ namespace IED
 		const Data::configNodePhysicsValues_t& a_conf) noexcept :
 		m_tag(ILUID{}()),
 		m_initialTransform(a_initialTransform),
-		m_object(a_object)
+		m_object(a_object),
+		m_conf(a_conf)
 	{
-		m_conf                 = a_conf;
 		m_objectLocalTransform = m_initialTransform;
 
 		m_parentWorldTransform = GetCurrentParentWorldTransform();
@@ -34,8 +34,6 @@ namespace IED
 
 	PHYSimComponent::~PHYSimComponent() noexcept
 	{
-		assert(!EngineExtensions::ShouldDefer3DTask());
-
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 	}
 
@@ -58,9 +56,6 @@ namespace IED
 	{
 		m_initialTransform.writeNiTransform(m_object->m_localTransform);
 		m_objectLocalTransform = m_initialTransform;
-
-		/*NiAVObject::ControllerUpdateContext ctx{ 0, 0 };
-		m_object->UpdateWorldData(std::addressof(ctx));*/
 
 		m_parentWorldTransform = GetCurrentParentWorldTransform();
 		m_oldParentPos         = m_parentWorldTransform.getOrigin();

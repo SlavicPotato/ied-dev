@@ -134,7 +134,7 @@ namespace IED
 				return a_cached.sitting;
 			case Data::ExtraConditionType::kSleeping:
 				return a_cached.sleeping;
-			case Data::ExtraConditionType::kBeingRidden:
+			case Data::ExtraConditionType::kIsMountRidden:
 				return a_cached.beingRidden;
 			case Data::ExtraConditionType::kWeaponDrawn:
 				return a_cached.weaponDrawn;
@@ -177,12 +177,14 @@ namespace IED
 			case Data::ExtraConditionType::kInDialogue:
 				return is_in_dialogue(a_params);
 			case Data::ExtraConditionType::kLifeState:
-				return a_cached.lifeState == a_match.lifeState;		
+				return a_cached.lifeState == a_match.lifeState;
 			case Data::ExtraConditionType::kActorValue:
 				return compare(
 					a_match.compOperator2,
 					a_params.actor->GetActorValue(a_match.actorValue),
-					a_match.avMatch);			
+					a_match.avMatch);
+			case Data::ExtraConditionType::kXP32Skeleton:
+				return a_params.objects.HasXP32Skeleton();
 			default:
 				return false;
 			}
@@ -250,7 +252,9 @@ namespace IED
 		constexpr bool match_biped(
 			CommonParams& a_params,
 			const Tm&     a_match,
-			Tp            a_post) noexcept
+			Tp            a_post)  //
+			noexcept    //
+			requires(std::invocable<Tp, TESForm*>)
 		{
 			const auto slot = a_params.translate_biped_object(a_match.bipedSlot);
 
@@ -463,14 +467,9 @@ namespace IED
 				}
 			}
 
-			if (a_match.flags.test(Tf::kExtraFlag1))
-			{
-				return a_params.get_laying_down();
-			}
-			else
-			{
-				return a_params.is_using_furniture();
-			}
+			return a_match.flags.test(Tf::kExtraFlag1) ?
+			           a_params.get_laying_down() :
+			           a_params.is_using_furniture();
 		}
 
 		template <class Tm, class Tf>
@@ -627,7 +626,7 @@ namespace IED
 		}
 
 		template <class Tm, class Tf>
-		bool match_form_with_id(
+		constexpr bool match_form_with_id(
 			const Tm& a_match,
 			TESForm*  a_form) noexcept
 		{
@@ -986,7 +985,7 @@ namespace IED
 
 			return false;
 		}
-		
+
 		template <class Tm, class Tf>
 		constexpr bool match_effect(
 			CommonParams&                 a_params,

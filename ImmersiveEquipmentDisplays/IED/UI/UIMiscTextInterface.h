@@ -8,7 +8,7 @@ namespace IED
 
 	namespace UI
 	{
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept is_string_id = std::is_same_v<std::underlying_type_t<T>, Localization::StringID>;

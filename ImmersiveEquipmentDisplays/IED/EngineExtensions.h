@@ -111,9 +111,7 @@ namespace IED
 
 	public:
 		EngineExtensions(const EngineExtensions&)            = delete;
-		EngineExtensions(EngineExtensions&&)                 = delete;
 		EngineExtensions& operator=(const EngineExtensions&) = delete;
-		EngineExtensions& operator=(EngineExtensions&&)      = delete;
 
 		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
@@ -121,8 +119,8 @@ namespace IED
 		}
 
 		static void Install(
-			Controller*                       a_controller,
-			const std::shared_ptr<ConfigINI>& a_config);
+			Controller*                      a_controller,
+			const stl::smart_ptr<ConfigINI>& a_config);
 
 		static bool RemoveAllChildren(
 			NiNode*              a_object,
@@ -184,6 +182,11 @@ namespace IED
 		{
 			return m_Instance.m_conf.applyTransformOverrides;
 		}
+		
+		[[nodiscard]] static constexpr bool HasEarly3DLoadHooks() noexcept
+		{
+			return m_Instance.m_conf.early3DLoadHooks;
+		}
 
 		[[nodiscard]] inline static bool ShouldDefer3DTask() noexcept
 		{
@@ -200,8 +203,8 @@ namespace IED
 		EngineExtensions() = default;
 
 		void InstallImpl(
-			Controller*                       a_controller,
-			const std::shared_ptr<ConfigINI>& a_config);
+			Controller*                      a_controller,
+			const stl::smart_ptr<ConfigINI>& a_config);
 
 		//inline static const auto removeHavokFuncPtr = IAL::Address<void**>(512244, 389072);
 
@@ -373,6 +376,7 @@ namespace IED
 			bool weaponAdjustDisableForce{ false };
 			bool nodeOverridePlayerEnabled{ false };
 			bool applyTransformOverrides{ false };
+			bool early3DLoadHooks{ false };
 		} m_conf;
 
 		Controller* m_controller{ nullptr };

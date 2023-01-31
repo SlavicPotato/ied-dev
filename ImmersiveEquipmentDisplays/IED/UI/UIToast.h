@@ -18,7 +18,7 @@ namespace IED
 
 	namespace UI
 	{
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept accept_toast_msg_type = std::is_convertible_v<T, std::string>;
@@ -53,7 +53,7 @@ namespace IED
 				return static_cast<std::uint32_t>(-1);
 			}
 
-			template <detail::accept_toast_msg_type Tm, class... Args>
+			template <concepts::accept_toast_msg_type Tm, class... Args>
 			void QueueMessage(
 				Tm&& a_message,
 				Args&&... a_args)

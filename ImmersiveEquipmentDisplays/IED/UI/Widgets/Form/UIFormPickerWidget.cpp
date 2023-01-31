@@ -64,11 +64,11 @@ namespace IED
 
 			result = DrawContextMenu(a_form);
 
-			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
-
 			ImGui::PopStyleVar();
 
 			ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, { 6.0f, 4.0f });
+
+			ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (ImGui::BeginTable(
 					"table",
@@ -125,6 +125,7 @@ namespace IED
 							{
 								formBrowser.ClearTabFilter();
 							}
+
 							formBrowser.SetHighlightForm(a_form);
 						}
 					}
@@ -230,8 +231,8 @@ namespace IED
 
 			ImGui::PopStyleVar();
 
-			ImGui::SameLine();
 			ImGui::AlignTextToFramePadding();
+			ImGui::SameLine();
 			ImGui::TextUnformatted(UIL::LS(a_label));
 
 			if (a_tipText)

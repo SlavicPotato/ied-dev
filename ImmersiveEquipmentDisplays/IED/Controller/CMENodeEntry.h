@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigNodeOverride.h"
+#include "IED/SkeletonCache.h"
 
 namespace IED
 {
@@ -10,34 +11,53 @@ namespace IED
 	{
 		struct Node
 		{
+			Node() = default;
+
+			Node(
+				NiNode*            a_node,
+				const NiTransform& a_xfrm) noexcept;
+
+			Node(
+				NiNode*                          a_node,
+				const SkeletonCache::ActorEntry& a_sce,
+				const stl::fixed_string&         a_name) noexcept;
+
+			Node(
+				NiNode*                          a_root,
+				const SkeletonCache::ActorEntry& a_sce,
+				const stl::fixed_string&         a_name,
+				const BSFixedString&             a_bsname) noexcept;
+
 			[[nodiscard]] constexpr explicit operator bool() const noexcept
 			{
 				return static_cast<bool>(node.get());
 			}
 
 			NiPointer<NiNode> node;
-			NiTransform       orig;  // cached or zero, never read from loaded actor 3D
+			NiTransform       orig{ NiTransform::noinit_arg_t{} };  // cached or zero, never read from loaded actor 3D
 		};
 
 		inline CMENodeEntry(
 			NiNode*            a_node3p,
 			const NiTransform& a_originalTransform3p) noexcept :
-			thirdPerson{ a_node3p, a_originalTransform3p }
+			thirdPerson(a_node3p, a_originalTransform3p)
 		{
 		}
 
 		inline CMENodeEntry(
-			NiNode*            a_node3p,
-			const NiTransform& a_originalTransform3p,
-			NiNode*            a_node1p,
-			const NiTransform& a_originalTransform1p) noexcept :
-			thirdPerson{ a_node3p, a_originalTransform3p },
-			firstPerson{ a_node1p, a_originalTransform1p }
+			NiNode*                          a_node3p,
+			NiNode*                          a_root1p,
+			const SkeletonCache::ActorEntry& a_sce3p,
+			const SkeletonCache::ActorEntry& a_sce1p,
+			const stl::fixed_string&         a_name,
+			const BSFixedString&             a_bsname) noexcept :
+			thirdPerson(a_node3p, a_sce3p, a_name),
+			firstPerson(a_root1p, a_sce1p, a_name, a_bsname)
 		{
 		}
 
-		Node thirdPerson;
-		Node firstPerson;
+		const Node thirdPerson;
+		const Node firstPerson;
 
 		static bool find_visible_geometry(
 			NiAVObject*           a_object,

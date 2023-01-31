@@ -9,14 +9,14 @@ namespace IED
 	namespace Serialization
 	{
 		template <>
-		bool Parser<Localization::StringTable::data_storage_type>::Parse(
-			const Json::Value&                            a_in,
-			Localization::StringTable::data_storage_type& a_outData) const;
+		bool Parser<Localization::StringTable::table_data>::Parse(
+			const Json::Value&                     a_in,
+			Localization::StringTable::table_data& a_outData) const;
 
 		template <>
-		void Parser<Localization::StringTable::data_storage_type>::Create(
-			const Localization::StringTable::data_storage_type& a_data,
-			Json::Value&                                        a_out) const;
+		void Parser<Localization::StringTable::table_data>::Create(
+			const Localization::StringTable::table_data& a_data,
+			Json::Value&                                 a_out) const;
 
 	}
 }

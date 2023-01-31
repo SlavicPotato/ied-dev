@@ -132,11 +132,11 @@ namespace IED
 	{
 		bool n;
 
-		switch (m_config->data.testType)
+		switch (m_config.data.testType)
 		{
 		case Data::NodeMonitorTestType::kObject:
 
-			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
+			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
@@ -144,21 +144,21 @@ namespace IED
 						return VisitorControl::kSkip;
 					}
 
-					return a_object->m_name == m_config->subject ?
+					return a_object->m_name == m_config.subject ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
 				});
 			}
 			else
 			{
-				n = HasVisibleChildObject(m_parent, m_config->subject);
+				n = HasVisibleChildObject(m_parent, m_config.subject);
 			}
 
 			break;
 
 		case Data::NodeMonitorTestType::kNode:
 
-			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
+			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
@@ -166,7 +166,7 @@ namespace IED
 						return VisitorControl::kSkip;
 					}
 
-					return (a_object->m_name == m_config->subject &&
+					return (a_object->m_name == m_config.subject &&
 					        static_cast<bool>(a_object->AsNode())) ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
@@ -174,14 +174,14 @@ namespace IED
 			}
 			else
 			{
-				n = HasVisibleChildNode(m_parent, m_config->subject);
+				n = HasVisibleChildNode(m_parent, m_config.subject);
 			}
 
 			break;
 
 		case Data::NodeMonitorTestType::kGeometry:
 
-			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
+			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
@@ -189,7 +189,7 @@ namespace IED
 						return VisitorControl::kSkip;
 					}
 
-					return (a_object->m_name == m_config->subject &&
+					return (a_object->m_name == m_config.subject &&
 					        find_visible_geometry(a_object)) ?
 					           VisitorControl::kStop :
 					           VisitorControl::kContinue;
@@ -197,14 +197,14 @@ namespace IED
 			}
 			else
 			{
-				n = HasVisibleChildGeometry(m_parent, m_config->subject);
+				n = HasVisibleChildGeometry(m_parent, m_config.subject);
 			}
 
 			break;
 
 		case Data::NodeMonitorTestType::kNodeWithGeometryChild:
 
-			if (m_config->data.flags.test(Data::NodeMonitorFlags::kRecursive))
+			if (m_config.data.flags.test(Data::NodeMonitorFlags::kRecursive))
 			{
 				n = TraverseChildren(m_parent, [&](NiAVObject* a_object) noexcept {
 					if (a_object->IsHidden())
@@ -212,7 +212,7 @@ namespace IED
 						return VisitorControl::kSkip;
 					}
 
-					if (a_object->m_name != m_config->subject)
+					if (a_object->m_name != m_config.subject)
 					{
 						return VisitorControl::kContinue;
 					}
@@ -238,7 +238,7 @@ namespace IED
 			}
 			else
 			{
-				n = HasVisibleChildNodeWithGeometryChild(m_parent, m_config->subject);
+				n = HasVisibleChildNodeWithGeometryChild(m_parent, m_config.subject);
 			}
 
 			break;

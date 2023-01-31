@@ -68,13 +68,13 @@ namespace IED
 	{
 	}
 
-	void BSStringHolder::Create()
+	SKMP_NOINLINE void BSStringHolder::Create()
 	{
 		if (!m_Instance)
 		{
 			assert(StringCache::IsInitialized());
 
-			m_Instance = std::make_unique<BSStringHolder>();
+			m_Instance = std::make_unique_for_overwrite<BSStringHolder>();
 		}
 	}
 

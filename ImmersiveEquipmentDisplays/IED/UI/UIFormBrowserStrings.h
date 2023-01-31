@@ -49,5 +49,6 @@ namespace IED
 		Light             = 5240,
 		Perk              = 5241,
 		Hazard            = 5242,
+		EquipSlot         = 5243,
 	};
 }

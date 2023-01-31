@@ -31,7 +31,7 @@ namespace IED
 	using namespace Data;
 
 	Controller::Controller(
-		const std::shared_ptr<const ConfigINI>& a_config) :
+		const stl::smart_ptr<const ConfigINI>& a_config) :
 		ActorProcessorTask(),
 		IEquipment(m_rngBase),
 		IAnimationManager(m_configData.settings),
@@ -178,7 +178,6 @@ namespace IED
 		InitializeConfig();
 		LoadAnimationData();
 
-		AnimationUpdateController::GetSingleton().SetEnabled(data.hkWeaponAnimations);
 		SetShaderProcessingEnabled(data.enableEffectShaders);
 		SetProcessorTaskParallelUpdates(data.apParallelUpdates);
 
@@ -561,7 +560,7 @@ namespace IED
 
 	void Controller::ClearActorPhysicsDataImpl()
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			e.second.ClearAllPhysicsData();
 		}
@@ -580,7 +579,7 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			result += e.second.GetSimComponentListSize();
 		}
@@ -592,7 +591,7 @@ namespace IED
 	{
 		std::size_t result = 0;
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			result += e.second.GetNumAnimObjects();
 		}
@@ -611,8 +610,8 @@ namespace IED
 
 				if (ShaderProcessingEnabled())
 				{
-					auto it = m_objects.find(a_actor->formID);
-					if (it != m_objects.end())
+					auto it = m_actorMap.find(a_actor->formID);
+					if (it != m_actorMap.end())
 					{
 						UpdateShaders(a_actor, 0.0f, it->second);
 					}
@@ -736,8 +735,8 @@ namespace IED
 			{
 				const stl::lock_guard lock(m_lock);
 
-				auto it = m_objects.find(a_actor);
-				if (it == m_objects.end())
+				auto it = m_actorMap.find(a_actor);
+				if (it == m_actorMap.end())
 				{
 					return;
 				}
@@ -812,7 +811,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				if (e.second.IsActorNPCOrTemplate(a_npc))
 				{
@@ -829,7 +828,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				if (e.second.IsActorRace(a_race))
 				{
@@ -845,7 +844,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				EvaluateImpl(e.second, a_flags);
 			}
@@ -872,8 +871,8 @@ namespace IED
 			return;
 		}
 
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			if (a_noDefer)
 			{
@@ -897,7 +896,7 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
@@ -924,7 +923,7 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorRace(a_race))
 			{
@@ -950,7 +949,7 @@ namespace IED
 			return;
 		}
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (a_noDefer)
 			{
@@ -1141,7 +1140,7 @@ namespace IED
 	void Controller::CollectKnownActors(
 		actorLookupResultMap_t& a_out)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			NiPointer<TESObjectREFR> ref;
 			auto                     handle = e.second.GetHandle();
@@ -1255,7 +1254,8 @@ namespace IED
 
 	void Controller::OnActorAcquire(ActorObjectHolder& a_holder) noexcept
 	{
-		if (EngineExtensions::GetTransformOverridesEnabled())
+		if (!EngineExtensions::HasEarly3DLoadHooks() &&
+			EngineExtensions::GetTransformOverridesEnabled())
 		{
 			a_holder.ApplyXP32NodeTransformOverrides();
 		}
@@ -1314,7 +1314,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_flags] {
 			const stl::lock_guard lock(m_lock);
 
-			auto& objects = GetObjects();
+			auto& objects = GetActorMap();
 			auto  it      = objects.find(a_actor);
 
 			if (it == objects.end())
@@ -1343,7 +1343,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_flags] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				NiPointer<TESObjectREFR> ref;
 				auto                     handle = e.second.GetHandle();
@@ -1388,7 +1388,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_npc, a_slot]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				if (e.second.IsActorNPCOrTemplate(a_npc))
 				{
@@ -1405,7 +1405,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_race, a_slot]() {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				if (e.second.IsActorRace(a_race))
 				{
@@ -1420,7 +1420,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_slot] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				UpdateTransformSlotImpl(e.second, a_slot);
 			}
@@ -1432,7 +1432,7 @@ namespace IED
 		ITaskPool::AddTask([this] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				actorLookupResult_t result;
 				if (LookupTrackedActor(e.first, result))
@@ -1886,7 +1886,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				UpdateCustomImpl(
 					e.second,
@@ -1905,7 +1905,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_class, a_pkey] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				UpdateCustomImpl(
 					e.second,
@@ -1922,7 +1922,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_class] {
 			const stl::lock_guard lock(m_lock);
 
-			for (auto& e : m_objects)
+			for (auto& e : m_actorMap)
 			{
 				UpdateCustomImpl(
 					e.second,
@@ -1934,10 +1934,10 @@ namespace IED
 
 	void Controller::QueueLookupFormInfo(
 		Game::FormID              a_formId,
-		form_lookup_result_func_t a_func)
+		IForm::form_lookup_result_func_t a_func)
 	{
 		ITaskPool::AddTask([this, a_formId, func = std::move(a_func)] {
-			auto result = LookupFormInfo(a_formId);
+			auto result = IForm::LookupFormInfo(a_formId);
 
 			const stl::lock_guard lock(m_lock);
 
@@ -1946,7 +1946,7 @@ namespace IED
 	}
 
 	void Controller::QueueLookupFormInfoCrosshairRef(
-		form_lookup_result_func_t a_func)
+		IForm::form_lookup_result_func_t a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
 			std::unique_ptr<formInfoResult_t> result;
@@ -1955,22 +1955,13 @@ namespace IED
 				NiPointer<TESObjectREFR> ref;
 				if (LookupCrosshairRef(ref))
 				{
-					result = LookupFormInfo(ref->formID);
+					result = IForm::LookupFormInfo(ref->formID);
 				}
 			}
 
 			const stl::lock_guard lock(m_lock);
 
 			func(std::move(result));
-		});
-	}
-
-	void Controller::QueueGetFormDatabase(form_db_get_func_t a_func)
-	{
-		ITaskPool::AddTask([this, func = std::move(a_func)] {
-			const stl::lock_guard lock(m_lock);
-
-			func(GetFormDatabase());
 		});
 	}
 
@@ -2015,7 +2006,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, ev = std::move(a_event)] {
 			const stl::lock_guard lock(m_lock);
 
-			auto& data = GetObjects();
+			auto& data = GetActorMap();
 
 			auto it = data.find(a_actor);
 			if (it == data.end())
@@ -2052,8 +2043,8 @@ namespace IED
 
 		if (r.second)
 		{
-			auto it = m_objects.find(a_actor);
-			if (it != m_objects.end())
+			auto it = m_actorMap.find(a_actor);
+			if (it != m_actorMap.end())
 			{
 				EvaluateImpl(it->second, ControllerUpdateFlags::kSoundAll);
 			}
@@ -2076,8 +2067,8 @@ namespace IED
 			{
 				m_actorBlockList.data.erase(it);
 
-				auto ita = m_objects.find(a_actor);
-				if (ita != m_objects.end())
+				auto ita = m_actorMap.find(a_actor);
+				if (ita != m_actorMap.end())
 				{
 					EvaluateImpl(ita->second, ControllerUpdateFlags::kSoundAll);
 				}
@@ -2117,8 +2108,8 @@ namespace IED
 				RemoveActorBlock(player->formID, StringHolder::GetSingleton().IED);
 			}
 
-			auto it = m_objects.find(player->formID);
-			if (it != m_objects.end())
+			auto it = m_actorMap.find(player->formID);
+			if (it != m_actorMap.end())
 			{
 				EvaluateImpl(it->second, ControllerUpdateFlags::kSoundAll);
 			}
@@ -2152,14 +2143,14 @@ namespace IED
 
 	bool Controller::SkeletonCheck(Game::FormID a_actor)
 	{
-		auto it = m_objects.find(a_actor);
-		if (it == m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it == m_actorMap.end())
 		{
 			return true;
 		}
 
 		return !it->second.HasHumanoidSkeleton() ||
-		       it->second.IsXP32Skeleton();
+		       it->second.HasXP32Skeleton();
 	}
 
 	bool Controller::DoItemUpdate(
@@ -2565,7 +2556,7 @@ namespace IED
 				a_params.race->formID,
 				hc))
 		{
-			prio = std::addressof(d->get(a_params.configSex));
+			prio = std::addressof(d->get(a_params.get_sex()));
 		}
 		else
 		{
@@ -2740,7 +2731,7 @@ namespace IED
 					continue;
 				}
 
-				auto& configEntry = entry->get(a_params.configSex);
+				auto& configEntry = entry->get(a_params.get_sex());
 
 				if (!configEntry.run_filters(a_params))
 				{
@@ -2946,7 +2937,7 @@ namespace IED
 						}
 					}
 
-					auto& configEntry = f.slotConfig->get(a_params.configSex);
+					auto& configEntry = f.slotConfig->get(a_params.get_sex());
 
 					const configEffectShaderHolder_t* es       = nullptr;
 					const auto                        equipped = static_cast<bool>(f.equippedForm);
@@ -3068,8 +3059,8 @@ namespace IED
 		Game::FormID         a_actor,
 		actorLookupResult_t& a_out) noexcept
 	{
-		auto it = m_objects.find(a_actor);
-		if (it == m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it == m_actorMap.end())
 		{
 			return false;
 		}
@@ -3141,7 +3132,7 @@ namespace IED
 		}
 		else
 		{
-			auto& data = GetObjects();
+			auto& data = GetActorMap();
 
 			auto it = data.find(a_id);
 			if (it != data.end())
@@ -3605,7 +3596,7 @@ namespace IED
 
 			if (!ProcessCustomEntry(
 					a_params,
-					f.second(a_params.configSex),
+					f.second(a_params.get_sex()),
 					it->second))
 			{
 				if (RemoveObject(
@@ -3824,14 +3815,12 @@ namespace IED
 		if (a_flags.test(ControllerUpdateFlags::kUseCachedParams))
 		{
 			return a_holder.GetOrCreateProcessParams(
-				a_holder.GetSex(),
 				a_flags,
 				std::forward<Args>(a_args)...);
 		}
 		else
 		{
 			a_paramsOut.emplace(
-				a_holder.GetSex(),
 				a_flags,
 				std::forward<Args>(a_args)...);
 
@@ -3936,7 +3925,7 @@ namespace IED
 		/*PerfTimer pt;
 		pt.Start();*/
 
-		auto& data = a_holder.m_lastEquipped->biped;
+		auto& data = a_holder.m_slotCache->biped;
 
 		auto& biped = a_params.actor->GetBiped1(false);
 		if (!biped)
@@ -4147,7 +4136,6 @@ namespace IED
 					params->npc,
 					params->npcOrTemplate,
 					params->race,
-					params->configSex,
 					a_holder,
 					a_flags))
 			{
@@ -4163,7 +4151,6 @@ namespace IED
 					info->npc,
 					info->npcOrTemplate,
 					info->race,
-					info->sex,
 					a_holder,
 					a_flags))
 			{
@@ -4200,7 +4187,6 @@ namespace IED
 		TESNPC*                          a_npc,
 		TESNPC*                          a_npcOrTemplate,
 		TESRace*                         a_race,
-		ConfigSex                        a_sex,
 		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
 	{
@@ -4248,7 +4234,7 @@ namespace IED
 
 			if (r)
 			{
-				INodeOverride::ApplyNodePlacement(r->get(a_sex), e, params);
+				INodeOverride::ApplyNodePlacement(r->get(params.get_sex()), e, params);
 			}
 			else
 			{
@@ -4271,7 +4257,7 @@ namespace IED
 			{
 				INodeOverride::ApplyNodeVisibility(
 					e,
-					r->get(a_sex),
+					r->get(params.get_sex()),
 					params);
 			}
 		}
@@ -4283,7 +4269,7 @@ namespace IED
 				INodeOverride::ApplyNodeOverride(
 					i,
 					e,
-					conf->get(a_sex),
+					conf->get(params.get_sex()),
 					params);
 			}
 			else
@@ -4311,7 +4297,7 @@ namespace IED
 
 				if (r)
 				{
-					auto& conf = INodeOverride::GetPhysicsConfig(r->get(a_sex), params);
+					auto& conf = INodeOverride::GetPhysicsConfig(r->get(params.get_sex()), params);
 
 					if (!conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
 					    e.parent_has_visible_geometry())
@@ -4322,8 +4308,6 @@ namespace IED
 								e.node.get(),
 								e.origTransform,
 								conf);
-
-							//Debug("%.8X: adding %s", a_actor->formID, e.first.c_str());
 						}
 						else if (simComponent->GetConfig() != conf)
 						{
@@ -4410,8 +4394,8 @@ namespace IED
 			return;
 		}
 
-		auto it = m_objects.find(a_actor->formID);
-		if (it == m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it == m_actorMap.end())
 		{
 			return;
 		}
@@ -4438,8 +4422,8 @@ namespace IED
 		const stl::fixed_string& a_pkey,
 		const stl::fixed_string& a_vkey)
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			auto& data = it->second.GetCustom(a_class);
 
@@ -4479,8 +4463,8 @@ namespace IED
 		ConfigClass              a_class,
 		const stl::fixed_string& a_pkey)
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			auto& data = it->second.GetCustom(a_class);
 
@@ -4513,8 +4497,8 @@ namespace IED
 		Game::ObjectRefHandle a_handle,
 		ConfigClass           a_class)
 	{
-		auto it = m_objects.find(a_actor->formID);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor->formID);
+		if (it != m_actorMap.end())
 		{
 			auto& data = it->second.GetCustom(a_class);
 
@@ -4555,8 +4539,8 @@ namespace IED
 		Game::FormID a_actor,
 		ObjectSlot   a_slot)
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			UpdateTransformSlotImpl(it->second, a_slot);
 		}
@@ -4644,7 +4628,6 @@ namespace IED
 		Controller&                          a_controller) noexcept
 	{
 		return processParams_t{
-			a_info.sex,
 			ControllerUpdateFlags::kNone,
 			a_info.actor,
 			a_info.handle,
@@ -4710,8 +4693,8 @@ namespace IED
 		const stl::fixed_string& a_vkey,
 		updateActionFunc_t       a_func)
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			UpdateCustomImpl(it->second, a_class, a_pkey, a_vkey, a_func);
 		}
@@ -4724,7 +4707,7 @@ namespace IED
 		const stl::fixed_string& a_vkey,
 		updateActionFunc_t       a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
@@ -4740,7 +4723,7 @@ namespace IED
 		const stl::fixed_string& a_vkey,
 		updateActionFunc_t       a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorRace(a_race))
 			{
@@ -4755,8 +4738,8 @@ namespace IED
 		const stl::fixed_string& a_pkey,
 		updateActionFunc_t       a_func)
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			UpdateCustomImpl(it->second, a_class, a_pkey, a_func);
 		}
@@ -4768,7 +4751,7 @@ namespace IED
 		const stl::fixed_string& a_pkey,
 		updateActionFunc_t       a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
@@ -4783,7 +4766,7 @@ namespace IED
 		const stl::fixed_string& a_pkey,
 		updateActionFunc_t       a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorRace(a_race))
 			{
@@ -4797,8 +4780,8 @@ namespace IED
 		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
-		auto it = m_objects.find(a_actor);
-		if (it != m_objects.end())
+		auto it = m_actorMap.find(a_actor);
+		if (it != m_actorMap.end())
 		{
 			UpdateCustomImpl(it->second, a_class, a_func);
 		}
@@ -4809,7 +4792,7 @@ namespace IED
 		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorNPCOrTemplate(a_npc))
 			{
@@ -4823,7 +4806,7 @@ namespace IED
 		ConfigClass        a_class,
 		updateActionFunc_t a_func)
 	{
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			if (e.second.IsActorRace(a_race))
 			{
@@ -5693,8 +5676,8 @@ namespace IED
 				[this](Actor* a_actor, Game::ActorHandle a_handle) {
 					const stl::lock_guard lock(m_lock);
 
-					auto it = m_objects.find(a_actor->formID);
-					if (it != m_objects.end())
+					auto it = m_actorMap.find(a_actor->formID);
+					if (it != m_actorMap.end())
 					{
 						RemoveInvisibleObjects(
 							it->second,
@@ -6002,7 +5985,7 @@ namespace IED
 
 	void Controller::OnUIOpen()
 	{
-		UpdateActorInfo(m_objects);
+		UpdateActorInfo(m_actorMap);
 	}
 
 	void Controller::OnUIClose()
@@ -6066,7 +6049,7 @@ namespace IED
 
 		m_activeHandles.clear();
 
-		for (auto& e : m_objects)
+		for (auto& e : m_actorMap)
 		{
 			m_activeHandles.emplace_back(e.second.GetHandle());
 		}

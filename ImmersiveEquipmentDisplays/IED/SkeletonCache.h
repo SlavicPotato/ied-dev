@@ -4,43 +4,80 @@ namespace IED
 {
 	class SkeletonCache
 	{
-	public:
-		using actor_entry_type       = std::shared_ptr<stl::unordered_map<stl::fixed_string, NiTransform>>;
-		using const_actor_entry_type = std::shared_ptr<const stl::unordered_map<stl::fixed_string, NiTransform>>;
-		using data_type              = stl::unordered_map<stl::fixed_string, actor_entry_type>;
+		struct actor_entry_data :
+			stl::intrusive_ref_counted
+		{
+			SKMP_REDEFINE_NEW_PREF();
 
+			actor_entry_data(const stl::fixed_string& a_key);
+
+			stl::unordered_map<stl::fixed_string, NiTransform> data;
+		};
+
+	public:
+		class ActorEntry
+		{
+			friend class SkeletonCache;
+
+		public:
+			ActorEntry() = default;
+			ActorEntry(const stl::fixed_string& a_key);
+
+			[[nodiscard]] NiTransform GetCachedOrZeroTransform(
+				const stl::fixed_string& a_name) const;
+
+			[[nodiscard]] NiTransform GetCachedOrCurrentTransform(
+				const stl::fixed_string& a_name,
+				NiAVObject*              a_object) const;
+
+			[[nodiscard]] std::optional<NiTransform> GetCachedTransform(
+				const stl::fixed_string& a_name) const;
+
+			[[nodiscard]] constexpr explicit operator bool() const noexcept
+			{
+				return static_cast<bool>(ptr);
+			}
+
+			[[nodiscard]] constexpr const auto* operator->() const noexcept
+			{
+				return std::addressof(ptr->data);
+			}
+
+		private:
+			stl::smart_ptr<actor_entry_data> ptr;
+		};
+
+	private:
+		using data_type = stl::unordered_map<stl::fixed_string, ActorEntry>;
+
+	public:
 		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
 
-		/*const Entry* GetNode(
-			TESObjectREFR*           a_refr,
-			const stl::fixed_string& a_name);*/
-
-		const const_actor_entry_type Get(
+		ActorEntry Get(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson = false);
 
-		[[nodiscard]] std::size_t GetSize() const noexcept;
-		[[nodiscard]] std::size_t GetTotalEntries() const noexcept;
+		[[nodiscard]] std::size_t GetSize() const;
+		[[nodiscard]] std::size_t GetTotalEntries() const;
 
 	private:
 		SkeletonCache() = default;
 
-		static stl::fixed_string mk_key(
+		static stl::fixed_string make_key(
 			TESObjectREFR* a_refr,
 			bool           a_firstPerson);
 
-		const const_actor_entry_type get_or_create(
+		ActorEntry get_or_create(
 			const stl::fixed_string& a_key);
 
-		static void fill(
-			const stl::fixed_string&        a_key,
-			actor_entry_type::element_type& a_entry);
+		ActorEntry try_get(
+			const stl::fixed_string& a_key) const;
 
-		mutable stl::mutex m_lock;
-		data_type            m_data;
+		mutable std::shared_mutex m_lock;
+		data_type                 m_data;
 
 		static SkeletonCache m_Instance;
 	};

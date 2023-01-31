@@ -259,5 +259,9 @@ namespace IED
 		Perks           = 330,
 		Active          = 331,
 		Light           = 332,
+		Either          = 333,
+		Left            = 334,
+		Right           = 335,
+		Hand            = 336,
 	};
 }

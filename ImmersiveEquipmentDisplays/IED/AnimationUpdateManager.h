@@ -28,19 +28,9 @@ namespace IED
 			return m_Instance;
 		}
 
-		[[nodiscard]] inline bool GetEnabled() const noexcept
-		{
-			return m_enabled.load(std::memory_order_relaxed);
-		}
-
-		[[nodiscard]] constexpr bool GetInitialized() const noexcept
+		[[nodiscard]] constexpr bool IsInitialized() const noexcept
 		{
 			return m_initialized;
-		}
-
-		inline void SetEnabled(bool a_switch) noexcept
-		{
-			m_enabled.store(m_initialized && a_switch, std::memory_order_relaxed);
 		}
 
 		std::size_t GetNumObjects() const noexcept;
@@ -62,8 +52,7 @@ namespace IED
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
 	private:
-		std::atomic_bool m_enabled{ false };
-		bool             m_initialized{ false };
+		bool m_initialized{ false };
 
 		mutable lock_type                                          m_lock;
 		stl::unordered_map<Game::FormID, stl::forward_list<Entry>> m_data;

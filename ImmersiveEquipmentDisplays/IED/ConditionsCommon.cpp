@@ -85,7 +85,7 @@ namespace IED
 
 		const ActorObjectMap& get_actor_object_map(CommonParams& a_params) noexcept
 		{
-			return a_params.controller.GetObjects();
+			return a_params.controller.GetActorMap();
 		}
 
 		bool is_in_first_person(CommonParams& a_params) noexcept

@@ -18,7 +18,7 @@ namespace IED
 			{
 				if (a_trackedActor)
 				{
-					auto& data = a_controller->GetObjects();
+					auto& data = a_controller->GetActorMap();
 
 					auto it = data.find(a_actor);
 					if (it != data.end())

@@ -11,7 +11,7 @@ namespace IED
 		public:
 			static constexpr auto DEFAULT_LANG = "English";
 
-			using shared_string_table = std::shared_ptr<const StringTable>;
+			using shared_string_table = stl::smart_ptr<const StringTable>;
 
 			bool Load(const fs::path& a_path);
 
@@ -57,7 +57,7 @@ namespace IED
 			FN_NAMEPROC("LocalizationDataManager");
 
 		private:
-			stl::unordered_map<stl::fixed_string, std::shared_ptr<StringTable>> m_data;
+			stl::unordered_map<stl::fixed_string, stl::smart_ptr<StringTable>> m_data;
 
 			mutable std::unique_ptr<StringTable::container_type> m_emptyTable;
 			shared_string_table                                  m_defaultTable;

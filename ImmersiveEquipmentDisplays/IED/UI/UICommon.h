@@ -75,17 +75,17 @@ namespace IED
 				}
 			}*/
 
-			namespace detail
+			namespace concepts
 			{
 				template <class T>
 				concept accept_float_anim_t = std::is_floating_point_v<T>;
 			}
 
 			template <
-				detail::accept_float_anim_t T,
-				T                           _Min,
-				T                           _Max,
-				T                           _Speed>
+				concepts::accept_float_anim_t T,
+				T                             _Min,
+				T                             _Max,
+				T                             _Speed>
 			struct float_anim_t
 			{
 			public:
@@ -95,7 +95,7 @@ namespace IED
 					current     = std::clamp(current + static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed, _Min, _Max);
 					return result;
 				}
-				
+
 				constexpr T lerp()
 				{
 					auto result = current;

@@ -83,9 +83,7 @@ namespace IED
 		BSStringHolder();
 
 		BSStringHolder(const BSStringHolder&)            = delete;
-		BSStringHolder(BSStringHolder&&)                 = delete;
 		BSStringHolder& operator=(const BSStringHolder&) = delete;
-		BSStringHolder& operator=(BSStringHolder&&)      = delete;
 
 		static void Create();
 
@@ -178,9 +176,7 @@ namespace IED
 		}
 
 		StringHolder(const StringHolder&)            = delete;
-		StringHolder(StringHolder&&)                 = delete;
 		StringHolder& operator=(const StringHolder&) = delete;
-		StringHolder& operator=(StringHolder&&)      = delete;
 
 		[[nodiscard]] constexpr const auto& GetSlotName(Data::ObjectSlot a_slot) const noexcept
 		{

@@ -4,7 +4,7 @@
 
 #include "Widgets/UIPopupToggleButtonWidget.h"
 
-#include "IED/Controller/Controller.h"
+#include "IED/Controller/IFormDatabase.h"
 
 namespace IED
 {
@@ -14,7 +14,7 @@ namespace IED
 			m_controller(a_controller),
 			m_formIDFilter(true),
 			m_formNameFilter(true),
-			m_db(std::make_shared<db_container>()),
+			m_db(stl::make_smart_for_overwrite<db_container>()),
 			m_tabItems{ {
 
 				{ UIFormBrowserStrings::Weapons, TESObjectWEAP::kTypeID },
@@ -59,6 +59,7 @@ namespace IED
 				{ UIFormBrowserStrings::Hazard, BGSHazard::kTypeID },
 				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
 				{ UIFormBrowserStrings::Perk, BGSPerk::kTypeID },
+				{ UIFormBrowserStrings::EquipSlot, BGSEquipSlot::kTypeID },
 
 			} }
 
@@ -96,6 +97,8 @@ namespace IED
 						ImGuiWindowFlags_NoScrollbar |
 							ImGuiWindowFlags_NoScrollWithMouse))
 				{
+					const stl::lock_guard lock(m_db->lock);
+
 					if (!m_db->data)
 					{
 						QueueGetDatabase();
@@ -536,8 +539,10 @@ namespace IED
 
 			m_db->queryInProgress = true;
 
-			m_controller.QueueGetFormDatabase(
+			IFormDatabase::GetSingleton().QueueGetFormDatabase(
 				[db = m_db](IFormDatabase::result_type a_result) {
+					const stl::lock_guard lock(db->lock);
+
 					if (db->queryInProgress)
 					{
 						db->data            = std::move(a_result);

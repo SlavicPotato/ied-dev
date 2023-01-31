@@ -1,12 +1,11 @@
 #pragma once
 
-#include "IFormDatabase.h"
+#include "IED/FormCommon.h"
 
 namespace IED
 {
 	struct formInfo_t
 	{
-		formInfo_t() = delete;
 		formInfo_t(TESForm* a_form);
 
 		Game::FormID             id;
@@ -33,15 +32,13 @@ namespace IED
 		}
 	};
 
-	class IForm : public IFormDatabase
+	class IForm
 	{
 	public:
 		using info_result               = std::unique_ptr<formInfoResult_t>;
 		using form_lookup_result_func_t = std::function<void(info_result)>;
 
 		static std::uint32_t GetFormExtraType(TESForm* a_form);
-
-	protected:
 		static info_result LookupFormInfo(Game::FormID a_form);
 	};
 }

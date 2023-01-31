@@ -26,18 +26,19 @@ namespace IED
 	EngineExtensions EngineExtensions::m_Instance;
 
 	void EngineExtensions::Install(
-		Controller*                       a_controller,
-		const std::shared_ptr<ConfigINI>& a_config)
+		Controller*                      a_controller,
+		const stl::smart_ptr<ConfigINI>& a_config)
 	{
 		m_Instance.InstallImpl(a_controller, a_config);
 	}
 
 	void EngineExtensions::InstallImpl(
-		Controller*                       a_controller,
-		const std::shared_ptr<ConfigINI>& a_config)
+		Controller*                      a_controller,
+		const stl::smart_ptr<ConfigINI>& a_config)
 	{
 		m_controller                   = a_controller;
 		m_conf.applyTransformOverrides = a_config->m_applyTransformOverrides;
+		m_conf.early3DLoadHooks        = a_config->m_enableEarlyLoadHooks;
 		//m_conf.enableLights             = a_config->m_enableLights;
 
 		Install_RemoveAllBipedParts();

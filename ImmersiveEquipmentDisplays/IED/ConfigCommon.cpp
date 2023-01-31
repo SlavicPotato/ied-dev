@@ -161,6 +161,7 @@ namespace IED
 			case TESGlobal::kTypeID:
 			case BGSPerk::kTypeID:
 			case BGSHazard::kTypeID:
+			case BGSEquipSlot::kTypeID:
 				return form;
 			default:
 				return nullptr;

@@ -18,7 +18,7 @@ namespace IED
 		std::uint32_t                        rating;
 	};
 
-	using SlotItemCandidates = std::vector<SlotCandidate>;
+	using SlotItemCandidates = stl::vector<SlotCandidate>;
 
 	using SlotResults = std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)>;
 
@@ -56,8 +56,6 @@ namespace IED
 		SlotResults&        slotResults;
 	};
 
-	using UseCountContainer = stl::flat_map<
-		Game::FormID,
-		std::uint32_t>;
+	using UseCountContainer = stl::cache_aligned::flat_map<Game::FormID, std::uint32_t>;
 
 }

@@ -6,7 +6,8 @@
 
 namespace IED
 {
-	class PHYSimComponent
+	class PHYSimComponent :
+		public stl::intrusive_ref_counted
 	{
 		struct rotationParams_t
 		{
@@ -21,9 +22,7 @@ namespace IED
 		};
 
 	public:
-#if defined(IED_USE_MIMALLOC_SIMCOMPONENT)
-		SKMP_ALIGNED_REDEFINE_NEW_MI(16);
-#endif
+		SKMP_ALIGNED_REDEFINE_NEW_PREF(stl::L1_CACHE_LINE_SIZE);
 
 		PHYSimComponent(
 			NiAVObject*                            a_object,

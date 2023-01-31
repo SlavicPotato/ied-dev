@@ -10,14 +10,17 @@ namespace IED
 	public:
 		struct BipedInfoEntry
 		{
-			TESForm*     item;
-			BIPED_OBJECT bip{ BIPED_OBJECT::kNone };
-			float        weaponAdjust{ 0.0f };
+			TESForm*      item;
+			BIPED_OBJECT  bip{ BIPED_OBJECT::kNone };
+			float         weaponAdjust{ 0.0f };
+			std::uint64_t __pad;
 		};
 
 		using BipedInfoKey = std::pair<Game::FormID, BIPED_OBJECT>;
 
-		using item_container_type = stl::flat_map<Game::FormID, BipedInfoEntry>;
+		using item_container_type = stl::cache_aligned::flat_map<Game::FormID, BipedInfoEntry>;
+
+		static_assert(sizeof(item_container_type::value_type) == 0x20);
 
 		template <class... Args>
 		constexpr nodeOverrideParams_t(

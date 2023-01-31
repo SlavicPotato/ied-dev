@@ -80,7 +80,7 @@ namespace IED
 
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		m_task = std::make_shared<IUIRenderTaskMain>(*this);
+		m_task = stl::make_smart<IUIRenderTaskMain>(*this);
 		m_task->InitializeContext<UI::UIMain>(a_controller);
 	}
 
@@ -89,7 +89,7 @@ namespace IED
 		return m_task.get() != nullptr;
 	}
 
-	const std::shared_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
+	const stl::smart_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
 	{
 		const stl::lock_guard lock(UIGetLock());
 

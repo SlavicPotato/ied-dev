@@ -92,7 +92,7 @@ namespace IED
 					id.get(),
 					e.second->name.c_str());
 
-				this->m_listData.emplace(id.get(), this->m_listBuf1);
+				this->m_listData.emplace(id, this->m_listBuf1);
 			}
 
 			if (this->m_listData.empty())

@@ -12,7 +12,7 @@ namespace IED
 {
 	namespace UI
 	{
-		namespace detail
+		namespace concepts
 		{
 			template <class T>
 			concept accept_cached_item_string = std::is_convertible_v<T, stl::fixed_string>;
@@ -31,7 +31,7 @@ namespace IED
 			{
 				cachedItem_t() = delete;
 
-				template <detail::accept_cached_item_string Ts, class... Args>
+				template <concepts::accept_cached_item_string Ts, class... Args>
 				constexpr cachedItem_t(
 					Ts&& a_name,
 					Args&&... a_args) :

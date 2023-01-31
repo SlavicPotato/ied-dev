@@ -31,7 +31,6 @@ namespace IED
 		public IObjectManager,
 		public IEquipment,
 		public IAnimationManager,
-		public IForm,
 		public ActorProcessorTask,
 		private ISerializationBase,
 		public IJSONSerialization,
@@ -152,12 +151,10 @@ namespace IED
 			NiNode*     npcRoot;
 		};
 
-		Controller(const std::shared_ptr<const ConfigINI>& a_config);
+		Controller(const stl::smart_ptr<const ConfigINI>& a_config);
 
 		Controller(const Controller&)            = delete;
-		Controller(Controller&&)                 = delete;
 		Controller& operator=(const Controller&) = delete;
-		Controller& operator=(Controller&&)      = delete;
 
 		void InitializeInputHandlers();
 		void SinkEventsT0();
@@ -197,7 +194,7 @@ namespace IED
 			long long a_lifetime,
 			Args&&... a_args)
 		{
-			auto result = std::make_shared<IUITimedRenderTask>(
+			auto result = stl::make_smart<IUITimedRenderTask>(
 				*this,
 				a_lifetime);
 
@@ -380,9 +377,8 @@ namespace IED
 		void QueueUpdateTransformCustomAll(
 			Data::ConfigClass a_class);
 
-		void QueueLookupFormInfo(Game::FormID a_formId, form_lookup_result_func_t a_func);
-		void QueueLookupFormInfoCrosshairRef(form_lookup_result_func_t a_func);
-		void QueueGetFormDatabase(form_db_get_func_t a_func);
+		void QueueLookupFormInfo(Game::FormID a_formId, IForm::form_lookup_result_func_t a_func);
+		void QueueLookupFormInfoCrosshairRef(IForm::form_lookup_result_func_t a_func);
 
 		void QueueGetCrosshairRef(std::function<void(Game::FormID)> a_func);
 
@@ -603,7 +599,6 @@ namespace IED
 			TESNPC*                          a_npc,
 			TESNPC*                          a_npcOrTemplate,
 			TESRace*                         a_race,
-			Data::ConfigSex                  a_sex,
 			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
@@ -978,10 +973,10 @@ namespace IED
 
 		// members
 
-		std::shared_ptr<const ConfigINI> m_iniconf;
-		Data::actorBlockList_t           m_actorBlockList;
-		InputHandlers                    m_inputHandlers;
-		ConfigData                       m_configData;
+		stl::smart_ptr<const ConfigINI> m_iniconf;
+		Data::actorBlockList_t          m_actorBlockList;
+		InputHandlers                   m_inputHandlers;
+		ConfigData                      m_configData;
 
 		stl::vector<Game::ObjectRefHandle> m_activeHandles;
 

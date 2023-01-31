@@ -19,13 +19,13 @@ namespace IED
 		{
 			using namespace Data;
 
-			namespace detail
+			namespace concepts
 			{
 				template <class T>
 				concept valid_target = stl::is_any_same_v<T, Actor, TESNPC, TESRace>;
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool CreateItem(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -69,7 +69,7 @@ namespace IED
 					a_node);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool DeleteItem(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -94,7 +94,7 @@ namespace IED
 					keys.name);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool DeleteAll(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -130,7 +130,7 @@ namespace IED
 				return DeleteAllImpl(key);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAttachmentMode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -161,7 +161,7 @@ namespace IED
 					a_syncReference);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -190,7 +190,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemNode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -219,7 +219,7 @@ namespace IED
 					a_node);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemPosition(
 				StaticFunctionTag*,
 				T*             a_target,
@@ -259,7 +259,7 @@ namespace IED
 					*tmp);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemRotation(
 				StaticFunctionTag*,
 				T*             a_target,
@@ -301,7 +301,7 @@ namespace IED
 					*tmp);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemScale(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -330,7 +330,7 @@ namespace IED
 					std::clamp(stl::zero_nan(a_scale), 0.01f, 100.0f));
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemInventory(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -359,7 +359,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemEquipmentMode(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -392,7 +392,7 @@ namespace IED
 					a_disableIfEquipped);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemLeftWeapon(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -421,7 +421,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemRemoveScabbard(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -450,7 +450,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemUseWorldModel(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -479,7 +479,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetIgnoreRaceEquipTypes(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -508,7 +508,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemLoadChance(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -539,7 +539,7 @@ namespace IED
 					a_chance);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAnimationEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -568,7 +568,7 @@ namespace IED
 					a_enable);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAnimationSequence(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -604,7 +604,7 @@ namespace IED
 					seq);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemWeaponAnimationDisabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -633,7 +633,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAnimationEventEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -662,7 +662,7 @@ namespace IED
 					a_enable);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAnimationEvent(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -698,7 +698,7 @@ namespace IED
 					ev);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemDisableHavok(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -727,7 +727,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemRemoveTracers(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -756,7 +756,7 @@ namespace IED
 					a_disable);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAttachLight(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -785,7 +785,7 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemAlwaysLoadGraph(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -814,7 +814,36 @@ namespace IED
 					a_switch);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
+			static bool SetItemLightTargetSelf(
+				StaticFunctionTag*,
+				T*            a_target,
+				BSFixedString a_key,
+				BSFixedString a_name,
+				bool          a_female,
+				bool          a_switch)
+			{
+				if (!a_target)
+				{
+					return false;
+				}
+
+				auto keys = GetKeys(a_key, a_name);
+				if (!keys)
+				{
+					return false;
+				}
+
+				return SetItemLightTargetSelfImpl(
+					a_target->formID,
+					GetConfigClass<T>(),
+					keys.key,
+					keys.name,
+					GetSex(a_female),
+					a_switch);
+			}
+
+			template <concepts::valid_target T>
 			static bool DoClearTransform(
 				T*                   a_target,
 				const BSFixedString& a_key,
@@ -842,7 +871,7 @@ namespace IED
 					a_flags);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ClearItemPosition(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -858,7 +887,7 @@ namespace IED
 					TransformClearFlags::Position);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ClearItemRotation(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -874,7 +903,7 @@ namespace IED
 					TransformClearFlags::Rotation);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ClearItemScale(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -890,7 +919,7 @@ namespace IED
 					TransformClearFlags::Scale);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -919,7 +948,7 @@ namespace IED
 					a_form);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool AddItemExtraForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -950,7 +979,7 @@ namespace IED
 					a_index);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool RemoveItemExtraForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -979,7 +1008,7 @@ namespace IED
 					a_form);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool RemovetemExtraFormByIndex(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1008,7 +1037,7 @@ namespace IED
 					a_index);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static std::int32_t GetNumExtraForms(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1035,7 +1064,7 @@ namespace IED
 					GetSex(a_female));
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemModelSwapForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1064,7 +1093,7 @@ namespace IED
 					a_form);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ClearItemModelSwapForm(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1091,7 +1120,7 @@ namespace IED
 					GetSex(a_female));
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool SetItemCountRange(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1122,7 +1151,7 @@ namespace IED
 					a_max);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ItemExists(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1147,7 +1176,7 @@ namespace IED
 					keys.name);
 			}
 
-			template <detail::valid_target T>
+			template <concepts::valid_target T>
 			static bool ItemEnabled(
 				StaticFunctionTag*,
 				T*            a_target,
@@ -1643,6 +1672,27 @@ namespace IED
 						"SetItemAlwaysLoadGraphRace",
 						SCRIPT_NAME,
 						SetItemAlwaysLoadGraph,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, Actor*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemLightTargetSelfActor",
+						SCRIPT_NAME,
+						SetItemLightTargetSelf,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESNPC*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemLightTargetSelfNPC",
+						SCRIPT_NAME,
+						SetItemLightTargetSelf,
+						a_registry));
+
+				a_registry->RegisterFunction(
+					new NativeFunction5<StaticFunctionTag, bool, TESRace*, BSFixedString, BSFixedString, bool, bool>(
+						"SetItemLightTargetSelfRace",
+						SCRIPT_NAME,
+						SetItemLightTargetSelf,
 						a_registry));
 
 				a_registry->RegisterFunction(

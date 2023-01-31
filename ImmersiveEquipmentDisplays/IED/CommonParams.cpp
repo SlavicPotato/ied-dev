@@ -21,6 +21,27 @@ namespace IED
 		return it != data.end();
 	}
 
+	CommonParams::CommonParams(
+		Actor* const       a_actor,
+		TESNPC* const      a_npc,
+		TESNPC* const      a_npcOrTemplate,
+		TESRace* const     a_race,
+		BSFadeNode* const  a_root,
+		NiNode* const      a_npcroot,
+		ActorObjectHolder& a_holder,
+		Controller&        a_controller) noexcept :
+		actor(a_actor),
+		npc(a_npc),
+		npcOrTemplate(a_npcOrTemplate),
+		race(a_race),
+		root(a_root),
+		npcRoot(a_npcroot),
+		objects(a_holder),
+		controller(a_controller),
+		configSex(a_holder.GetSex())
+	{
+	}
+
 	bool CommonParams::is_player() const noexcept
 	{
 		return objects.IsPlayer();
@@ -38,6 +59,10 @@ namespace IED
 				    actor->actorState1.sitSleepState == ActorState::SIT_SLEEP_STATE::kIsSleeping)
 				{
 					handle = pm->GetOccupiedFurniture();
+					if (!handle.IsValid())
+					{
+						handle = Game::ObjectRefHandle{};
+					}
 				}
 			}
 
@@ -50,7 +75,7 @@ namespace IED
 	bool CommonParams::is_using_furniture() const noexcept
 	{
 		const auto handle = get_current_furniture_handle();
-		return handle && handle.IsValid();
+		return static_cast<bool>(handle);
 	}
 
 	TESFurniture* CommonParams::get_furniture() const noexcept
@@ -58,7 +83,7 @@ namespace IED
 		if (!furniture)
 		{
 			if (const auto handle = get_current_furniture_handle();
-			    handle && handle.IsValid())
+			    static_cast<bool>(handle))
 			{
 				NiPointer<TESObjectREFR> ref;
 
@@ -110,11 +135,15 @@ namespace IED
 	{
 		if (!combatStyle)
 		{
-			TESCombatStyle* cs = nullptr;
+			TESCombatStyle* cs;
 
 			if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
 			{
 				cs = extraCombatStyle->combatStyle;
+			}
+			else
+			{
+				cs = nullptr;
 			}
 
 			if (!cs)
@@ -261,5 +290,17 @@ namespace IED
 		}
 
 		return *isMountHorse;
+	}
+
+	BGSVoiceType* CommonParams::get_voice_type() const noexcept
+	{
+		BGSVoiceType* result = npc->voiceType;
+
+		if (!result)
+		{
+			result = race->voiceTypes[objects.IsFemale()];
+		}
+
+		return result;
 	}
 }

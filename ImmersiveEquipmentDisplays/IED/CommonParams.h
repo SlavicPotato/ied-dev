@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ConfigData.h"
 #include "FormCommon.h"
 #include "FormHolder.h"
 #include "TimeOfDay.h"
@@ -16,7 +17,7 @@ namespace IED
 	struct CommonParams
 	{
 	public:
-		inline CommonParams(
+		CommonParams(
 			Actor* const       a_actor,
 			TESNPC* const      a_npc,
 			TESNPC* const      a_npcOrTemplate,
@@ -24,17 +25,7 @@ namespace IED
 			BSFadeNode* const  a_root,
 			NiNode* const      a_npcroot,
 			ActorObjectHolder& a_holder,
-			Controller&        a_controller) noexcept :
-			actor(a_actor),
-			npc(a_npc),
-			npcOrTemplate(a_npcOrTemplate),
-			race(a_race),
-			root(a_root),
-			npcRoot(a_npcroot),
-			objects(a_holder),
-			controller(a_controller)
-		{
-		}
+			Controller&        a_controller) noexcept;
 
 		Actor* const                actor;
 		TESNPC* const               npc;
@@ -44,6 +35,12 @@ namespace IED
 		const NiPointer<NiNode>     npcRoot;
 		ActorObjectHolder&          objects;
 		Controller&                 controller;
+		const Data::ConfigSex       configSex;
+
+		[[nodiscard]] constexpr auto get_sex() const noexcept
+		{
+			return configSex;
+		}
 
 		[[nodiscard]] bool is_player() const noexcept;
 
@@ -241,6 +238,8 @@ namespace IED
 
 		[[nodiscard]] bool is_horse() const noexcept;
 		[[nodiscard]] bool is_mounted_actor_horse() const noexcept;
+
+		[[nodiscard]] BGSVoiceType* get_voice_type() const noexcept;
 
 	private:
 		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;

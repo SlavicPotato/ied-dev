@@ -39,10 +39,9 @@ namespace IED
 						WINDOW_ID),
 					GetOpenState()))
 			{
-				auto task = m_owner.As<IUIRenderTaskMain>();
-				assert(task);
+				auto &task = m_owner.As<IUIRenderTaskMain>();
 
-				auto i3di = task->GetContext().GetChild<I3DIMain>();
+				auto i3di = task.GetContext().GetChild<I3DIMain>();
 
 				ImGui::Columns(2, nullptr, false);
 
@@ -67,7 +66,10 @@ namespace IED
 					ImGui::TextUnformatted("Lights:");
 				}
 
-				ImGui::TextUnformatted("Anim objects:");
+				if (AnimationUpdateController::GetSingleton().IsInitialized())
+				{
+					ImGui::TextUnformatted("Anim objects:");
+				}
 
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
@@ -114,11 +116,10 @@ namespace IED
 					ImGui::Text("%zu", ReferenceLightController::GetSingleton().GetNumLights());
 				}
 
-				ImGui::Text(
-					"%zu",
-					AnimationUpdateController::GetSingleton().GetEnabled() ?
-						AnimationUpdateController::GetSingleton().GetNumObjects() :
-						m_controller.GetNumAnimObjects());
+				if (AnimationUpdateController::GetSingleton().IsInitialized())
+				{
+					ImGui::Text("%zu", AnimationUpdateController::GetSingleton().GetNumObjects());
+				}
 
 				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());
@@ -141,7 +142,7 @@ namespace IED
 						true,
 						"%s [%zu]",
 						UIL::LS(CommonStrings::Actors),
-						m_controller.GetObjects().size()))
+						m_controller.GetActorMap().size()))
 				{
 					DrawActorTable();
 
@@ -199,7 +200,7 @@ namespace IED
 					ImGui::TableHeader(ImGui::TableGetColumnName(column));
 				}
 
-				const auto& objects = m_controller.GetObjects();
+				const auto& objects = m_controller.GetActorMap();
 				const auto& ai      = m_controller.GetActorInfo();
 
 				const auto ss = ImGui::TableGetSortSpecs();

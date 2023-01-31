@@ -599,15 +599,6 @@ namespace IED
 
 		}),
 
-		/*m_humanoidSkeletonPaths({
-
-			"meshes\\Actors\\character\\character assets\\skeleton.nif",
-			"meshes\\actors\\character\\character assets\\skeletonbeast.nif",
-			"meshes\\actors\\character\\character assets female\\skeleton_female.nif",
-			"meshes\\actors\\character\\character assets female\\skeletonbeast_female.nif",
-
-		})*/
-
 		m_humanoidSkeletonSignatures{
 
 			11462500511823126705,
@@ -638,7 +629,7 @@ namespace IED
 	{
 		if (!m_Instance)
 		{
-			m_Instance = std::make_unique<NodeOverrideData>();
+			m_Instance = std::make_unique_for_overwrite<NodeOverrideData>();
 		}
 	}
 
@@ -704,7 +695,7 @@ namespace IED
 
 				const auto strPath = Serialization::SafeGetPath(path);
 
-				T result;
+				std::unique_ptr<T> result;
 
 				try
 				{
@@ -734,9 +725,9 @@ namespace IED
 					"%s: loaded '%s' [%zu]",
 					__FUNCTION__,
 					strPath.c_str(),
-					result.size());
+					result->size());
 
-				a_out.emplace_back(std::move(result));
+				a_out.emplace_back(std::move(*result));
 			}
 
 			return true;
@@ -761,7 +752,7 @@ namespace IED
 	}
 
 	template <class T>
-	T NodeOverrideData::LoadDataFile(const fs::path& a_path)
+	std::unique_ptr<T> NodeOverrideData::LoadDataFile(const fs::path& a_path)
 	{
 		using namespace Serialization;
 
@@ -772,9 +763,9 @@ namespace IED
 		ParserState state;
 		Parser<T>   parser(state);
 
-		T result;
+		auto result = std::make_unique<T>();
 
-		if (!parser.Parse(root, result))
+		if (!parser.Parse(root, *result))
 		{
 			throw std::exception("parse failed");
 		}
@@ -794,8 +785,8 @@ namespace IED
 					continue;
 				}
 
-				stl::fixed_string mov = std::string("MOV ") + *f.name;
-				stl::fixed_string cme = std::string("CME ") + *f.name;
+				const stl::fixed_string mov = std::string("MOV ") + *f.name;
+				const stl::fixed_string cme = std::string("CME ") + *f.name;
 
 				if (m_mov.contains(mov))
 				{

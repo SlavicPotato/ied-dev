@@ -676,8 +676,8 @@ namespace IED
 
 			ImGui::PushItemWidth(ImGui::GetFontSize() * 5.5f);
 
-			std::uint32_t lmin = 1;
-			std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
+			constexpr std::uint32_t lmin = 0;
+			constexpr std::uint32_t lmax = stl::underlying(Data::ObjectType::kMax);
 
 			changed |= ImGui::SliderScalar(
 				UIL::LS(UISlotEditorWidgetStrings::MaxActiveTypes, "2"),

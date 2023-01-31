@@ -2,6 +2,8 @@
 
 #include "UIActorValueSelectorWidget.h"
 
+#include "IED/UI/UIActorValueStrings.h"
+
 namespace IED
 {
 	namespace UI
@@ -9,30 +11,30 @@ namespace IED
 
 		static constexpr auto s_data = stl::make_array(
 
-			std::make_pair(RE::ActorValue::kAggresion, UIActorValueSelectorWidgetStrings::Aggresion),
-			std::make_pair(RE::ActorValue::kConfidence, UIActorValueSelectorWidgetStrings::Confidence),
-			std::make_pair(RE::ActorValue::kEnergy, UIActorValueSelectorWidgetStrings::Energy),
-			std::make_pair(RE::ActorValue::kMorality, UIActorValueSelectorWidgetStrings::Morality),
-			std::make_pair(RE::ActorValue::kMood, UIActorValueSelectorWidgetStrings::Mood),
-			std::make_pair(RE::ActorValue::kAssistance, UIActorValueSelectorWidgetStrings::Assistance),
-			std::make_pair(RE::ActorValue::kOneHanded, UIActorValueSelectorWidgetStrings::OneHanded),
-			std::make_pair(RE::ActorValue::kTwoHanded, UIActorValueSelectorWidgetStrings::TwoHanded),
-			std::make_pair(RE::ActorValue::kArchery, UIActorValueSelectorWidgetStrings::Archery),
-			std::make_pair(RE::ActorValue::kBlock, UIActorValueSelectorWidgetStrings::Block),
-			std::make_pair(RE::ActorValue::kSmithing, UIActorValueSelectorWidgetStrings::Smithing),
-			std::make_pair(RE::ActorValue::kHeavyArmor, UIActorValueSelectorWidgetStrings::HeavyArmor),
-			std::make_pair(RE::ActorValue::kLightArmor, UIActorValueSelectorWidgetStrings::LightArmor),
-			std::make_pair(RE::ActorValue::kPickpocket, UIActorValueSelectorWidgetStrings::Pickpocket),
-			std::make_pair(RE::ActorValue::kLockpicking, UIActorValueSelectorWidgetStrings::Lockpicking),
-			std::make_pair(RE::ActorValue::kSneak, UIActorValueSelectorWidgetStrings::Sneak),
-			std::make_pair(RE::ActorValue::kAlchemy, UIActorValueSelectorWidgetStrings::Alchemy),
-			std::make_pair(RE::ActorValue::kSpeech, UIActorValueSelectorWidgetStrings::Speech),
-			std::make_pair(RE::ActorValue::kAlteration, UIActorValueSelectorWidgetStrings::Alteration),
-			std::make_pair(RE::ActorValue::kConjuration, UIActorValueSelectorWidgetStrings::Conjuration),
-			std::make_pair(RE::ActorValue::kDestruction, UIActorValueSelectorWidgetStrings::Destruction),
-			std::make_pair(RE::ActorValue::kIllusion, UIActorValueSelectorWidgetStrings::Illusion),
-			std::make_pair(RE::ActorValue::kRestoration, UIActorValueSelectorWidgetStrings::Restoration),
-			std::make_pair(RE::ActorValue::kEnchanting, UIActorValueSelectorWidgetStrings::Enchanting)
+			std::make_pair(RE::ActorValue::kAggresion, UIActorValueStrings::Aggresion),
+			std::make_pair(RE::ActorValue::kConfidence, UIActorValueStrings::Confidence),
+			std::make_pair(RE::ActorValue::kEnergy, UIActorValueStrings::Energy),
+			std::make_pair(RE::ActorValue::kMorality, UIActorValueStrings::Morality),
+			std::make_pair(RE::ActorValue::kMood, UIActorValueStrings::Mood),
+			std::make_pair(RE::ActorValue::kAssistance, UIActorValueStrings::Assistance),
+			std::make_pair(RE::ActorValue::kOneHanded, UIActorValueStrings::OneHanded),
+			std::make_pair(RE::ActorValue::kTwoHanded, UIActorValueStrings::TwoHanded),
+			std::make_pair(RE::ActorValue::kArchery, UIActorValueStrings::Archery),
+			std::make_pair(RE::ActorValue::kBlock, UIActorValueStrings::Block),
+			std::make_pair(RE::ActorValue::kSmithing, UIActorValueStrings::Smithing),
+			std::make_pair(RE::ActorValue::kHeavyArmor, UIActorValueStrings::HeavyArmor),
+			std::make_pair(RE::ActorValue::kLightArmor, UIActorValueStrings::LightArmor),
+			std::make_pair(RE::ActorValue::kPickpocket, UIActorValueStrings::Pickpocket),
+			std::make_pair(RE::ActorValue::kLockpicking, UIActorValueStrings::Lockpicking),
+			std::make_pair(RE::ActorValue::kSneak, UIActorValueStrings::Sneak),
+			std::make_pair(RE::ActorValue::kAlchemy, UIActorValueStrings::Alchemy),
+			std::make_pair(RE::ActorValue::kSpeech, UIActorValueStrings::Speech),
+			std::make_pair(RE::ActorValue::kAlteration, UIActorValueStrings::Alteration),
+			std::make_pair(RE::ActorValue::kConjuration, UIActorValueStrings::Conjuration),
+			std::make_pair(RE::ActorValue::kDestruction, UIActorValueStrings::Destruction),
+			std::make_pair(RE::ActorValue::kIllusion, UIActorValueStrings::Illusion),
+			std::make_pair(RE::ActorValue::kRestoration, UIActorValueStrings::Restoration),
+			std::make_pair(RE::ActorValue::kEnchanting, UIActorValueStrings::Enchanting)
 
 		);
 
@@ -58,7 +60,7 @@ namespace IED
 					}
 
 					if (ImGui::Selectable(
-							UIL::LS<UIActorValueSelectorWidgetStrings, 3>(e, "1"),
+							UIL::LS<UIActorValueStrings, 3>(e, "1"),
 							selected))
 					{
 						a_type = i;
@@ -80,53 +82,53 @@ namespace IED
 			switch (a_type)
 			{
 			case RE::ActorValue::kAggresion:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Aggresion);
+				return UIL::LS(UIActorValueStrings::Aggresion);
 			case RE::ActorValue::kConfidence:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Confidence);
+				return UIL::LS(UIActorValueStrings::Confidence);
 			case RE::ActorValue::kEnergy:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Energy);
+				return UIL::LS(UIActorValueStrings::Energy);
 			case RE::ActorValue::kMorality:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Morality);
+				return UIL::LS(UIActorValueStrings::Morality);
 			case RE::ActorValue::kMood:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Mood);
+				return UIL::LS(UIActorValueStrings::Mood);
 			case RE::ActorValue::kAssistance:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Assistance);
+				return UIL::LS(UIActorValueStrings::Assistance);
 			case RE::ActorValue::kOneHanded:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::OneHanded);
+				return UIL::LS(UIActorValueStrings::OneHanded);
 			case RE::ActorValue::kTwoHanded:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::TwoHanded);
+				return UIL::LS(UIActorValueStrings::TwoHanded);
 			case RE::ActorValue::kArchery:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Archery);
+				return UIL::LS(UIActorValueStrings::Archery);
 			case RE::ActorValue::kBlock:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Block);
+				return UIL::LS(UIActorValueStrings::Block);
 			case RE::ActorValue::kSmithing:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Smithing);
+				return UIL::LS(UIActorValueStrings::Smithing);
 			case RE::ActorValue::kHeavyArmor:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::HeavyArmor);
+				return UIL::LS(UIActorValueStrings::HeavyArmor);
 			case RE::ActorValue::kLightArmor:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::LightArmor);
+				return UIL::LS(UIActorValueStrings::LightArmor);
 			case RE::ActorValue::kPickpocket:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Pickpocket);
+				return UIL::LS(UIActorValueStrings::Pickpocket);
 			case RE::ActorValue::kLockpicking:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Lockpicking);
+				return UIL::LS(UIActorValueStrings::Lockpicking);
 			case RE::ActorValue::kSneak:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Sneak);
+				return UIL::LS(UIActorValueStrings::Sneak);
 			case RE::ActorValue::kAlchemy:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Alchemy);
+				return UIL::LS(UIActorValueStrings::Alchemy);
 			case RE::ActorValue::kSpeech:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Speech);
+				return UIL::LS(UIActorValueStrings::Speech);
 			case RE::ActorValue::kAlteration:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Alteration);
+				return UIL::LS(UIActorValueStrings::Alteration);
 			case RE::ActorValue::kConjuration:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Conjuration);
+				return UIL::LS(UIActorValueStrings::Conjuration);
 			case RE::ActorValue::kDestruction:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Destruction);
+				return UIL::LS(UIActorValueStrings::Destruction);
 			case RE::ActorValue::kIllusion:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Illusion);
+				return UIL::LS(UIActorValueStrings::Illusion);
 			case RE::ActorValue::kRestoration:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Restoration);
+				return UIL::LS(UIActorValueStrings::Restoration);
 			case RE::ActorValue::kEnchanting:
-				return UIL::LS(UIActorValueSelectorWidgetStrings::Enchanting);
+				return UIL::LS(UIActorValueStrings::Enchanting);
 			default:
 				return nullptr;
 			}
