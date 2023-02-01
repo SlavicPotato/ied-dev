@@ -267,6 +267,8 @@ namespace IED
 					return ObjectTypeExtra::kAmmo;
 				case SpellItem::kTypeID:
 					return ObjectTypeExtra::kSpell;
+				case ScrollItem::kTypeID:
+					return ObjectTypeExtra::kScroll;
 				default:
 					return ObjectTypeExtra::kNone;
 				}
@@ -278,6 +280,8 @@ namespace IED
 				{
 				case SpellItem::kTypeID:
 					return CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kSpell);
+				case ScrollItem::kTypeID:
+					return CollectorData::ItemExtraData(ObjectType::kMax, ObjectTypeExtra::kScroll);
 				case TESObjectARMO::kTypeID:
 					return static_cast<const TESObjectARMO*>(a_form)->IsShield() ?
 					           CollectorData::ItemExtraData(ObjectType::kShield, ObjectTypeExtra::kShield) :
@@ -368,6 +372,8 @@ namespace IED
 					return ObjectSlotExtra::kAmmo;
 				case SpellItem::kTypeID:
 					return ObjectSlotExtra::kSpell;
+				case ScrollItem::kTypeID:
+					return ObjectSlotExtra::kScroll;
 				default:
 					return ObjectSlotExtra::kNone;
 				}
@@ -392,6 +398,8 @@ namespace IED
 					return ObjectSlotExtra::kAmmo;
 				case SpellItem::kTypeID:
 					return ObjectSlotExtra::kSpell;
+				case ScrollItem::kTypeID:
+					return ObjectSlotExtra::kScroll;
 				default:
 					return ObjectSlotExtra::kNone;
 				}
@@ -432,6 +440,8 @@ namespace IED
 					           ObjectSlotExtra::kNone;
 				case SpellItem::kTypeID:
 					return ObjectSlotExtra::kSpellLeft;
+				case ScrollItem::kTypeID:
+					return ObjectSlotExtra::kScrollLeft;
 				case TESObjectLIGH::kTypeID:
 					return static_cast<const TESObjectLIGH*>(a_form)->CanCarry() ?
 					           ObjectSlotExtra::kTorch :
@@ -506,6 +516,8 @@ namespace IED
 					return ObjectSlotExtra::kAmmo;
 				case ObjectTypeExtra::kSpell:
 					return ObjectSlotExtra::kSpell;
+				case ObjectTypeExtra::kScroll:
+					return ObjectSlotExtra::kScroll;
 				default:
 					return ObjectSlotExtra::kNone;
 				}
@@ -551,6 +563,9 @@ namespace IED
 				case ObjectSlotExtra::kSpell:
 				case ObjectSlotExtra::kSpellLeft:
 					return ObjectTypeExtra::kSpell;
+				case ObjectSlotExtra::kScroll:
+				case ObjectSlotExtra::kScrollLeft:
+					return ObjectTypeExtra::kScroll;
 				default:
 					return ObjectTypeExtra::kNone;
 				}
@@ -599,6 +614,8 @@ namespace IED
 					return ObjectSlotExtra::kStaffLeft;
 				case ObjectSlotExtra::kSpell:
 					return ObjectSlotExtra::kSpellLeft;
+				case ObjectSlotExtra::kScroll:
+					return ObjectSlotExtra::kScrollLeft;
 				default:
 					return ObjectSlotExtra::kNone;
 				}
@@ -727,6 +744,7 @@ namespace IED
 				case ObjectSlotExtra::kMaceLeft:
 				case ObjectSlotExtra::kStaffLeft:
 				case ObjectSlotExtra::kSpellLeft:
+				case ObjectSlotExtra::kScrollLeft:
 				case ObjectSlotExtra::kShield:
 				case ObjectSlotExtra::kTorch:
 					return true;
@@ -942,6 +960,10 @@ namespace IED
 				return "Spell";
 			case ObjectSlotExtra::kSpellLeft:
 				return "Spell Left";
+			case ObjectSlotExtra::kScroll:
+				return "Scroll";
+			case ObjectSlotExtra::kScrollLeft:
+				return "Scroll Left";
 			default:
 				return nullptr;
 			}
@@ -1012,6 +1034,8 @@ namespace IED
 				return "Ammo";
 			case ObjectTypeExtra::kSpell:
 				return "Spell";
+			case ObjectTypeExtra::kScroll:
+				return "Scroll";
 			default:
 				return nullptr;
 			}

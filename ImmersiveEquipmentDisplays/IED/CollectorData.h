@@ -116,6 +116,8 @@ namespace IED
 				mutable std::int32_t sharedCount{ 0 };
 			};
 
+			static_assert(stl::underlying(ObjectSlotExtra::kMax) <= 32);
+
 			[[nodiscard]] constexpr bool IsSlotEquipped(std::underlying_type_t<ObjectSlotExtra> a_slot) const noexcept
 			{
 				assert(a_slot < stl::underlying(ObjectSlotExtra::kMax));

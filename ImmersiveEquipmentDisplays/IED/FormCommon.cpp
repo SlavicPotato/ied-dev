@@ -138,6 +138,7 @@ namespace IED
 		case TESObjectARMO::kTypeID:
 		case TESAmmo::kTypeID:
 		case SpellItem::kTypeID:
+		case ScrollItem::kTypeID:
 		case TESShout::kTypeID:
 			return true;
 		default:

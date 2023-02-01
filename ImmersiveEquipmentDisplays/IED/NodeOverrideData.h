@@ -309,7 +309,7 @@ namespace IED
 		using cm_data_type             = stl::cache_aligned::vectormap<stl::fixed_string, const overrideNodeEntry_t>;
 		using mon_data_type            = stl::container_init_wrapper<stl::cache_aligned::vector<BSFixedString>>;
 		using weapnode_data_type       = stl::cache_aligned::vectormap<stl::fixed_string, weaponNodeEntry_t>;
-		using exn_data_type            = stl::container_init_wrapper<stl::cache_aligned::list<extraNodeEntry_t>>;
+		using exn_data_type            = stl::container_init_wrapper<stl::list<extraNodeEntry_t>>;
 		using exn_copy_data_type       = stl::container_init_wrapper<stl::cache_aligned::vector<extraNodeCopyEntry_t>>;
 		using xfrm_override_data_type  = stl::container_init_wrapper<stl::cache_aligned::vector<xfrmOverrideNodeEntry_t>>;
 		using rand_placement_data_type = stl::container_init_wrapper<stl::cache_aligned::vector<randWeapEntry_t>>;

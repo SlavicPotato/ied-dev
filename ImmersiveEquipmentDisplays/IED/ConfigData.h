@@ -78,20 +78,21 @@ namespace IED
 		{
 			kNone = static_cast<std::underlying_type_t<ObjectTypeExtra>>(-1),
 
-			k1HSword      = 0,
-			k1HAxe        = 1,
-			k2HSword      = 2,
-			k2HAxe        = 3,
-			kDagger       = 4,
-			kMace         = 5,
-			kBow          = 6,
-			kStaff        = 7,
-			kCrossBow     = 8,
-			kShield       = 9,
-			kTorch        = 10,
-			kArmor        = 11,
-			kAmmo         = 12,
-			kSpell        = 13,
+			k1HSword  = 0,
+			k1HAxe    = 1,
+			k2HSword  = 2,
+			k2HAxe    = 3,
+			kDagger   = 4,
+			kMace     = 5,
+			kBow      = 6,
+			kStaff    = 7,
+			kCrossBow = 8,
+			kShield   = 9,
+			kTorch    = 10,
+			kArmor    = 11,
+			kAmmo     = 12,
+			kSpell    = 13,
+			kScroll   = 14,
 
 			kMax
 		};
@@ -100,28 +101,30 @@ namespace IED
 		{
 			kNone = static_cast<std::underlying_type_t<ObjectTypeExtra>>(-1),
 
-			k1HSword      = 0,
-			k1HSwordLeft  = 1,
-			k1HAxe        = 2,
-			k1HAxeLeft    = 3,
-			k2HSword      = 4,
-			k2HSwordLeft  = 5,
-			k2HAxe        = 6,
-			k2HAxeLeft    = 7,
-			kDagger       = 8,
-			kDaggerLeft   = 9,
-			kMace         = 10,
-			kMaceLeft     = 11,
-			kStaff        = 12,
-			kStaffLeft    = 13,
-			kBow          = 14,
-			kCrossBow     = 15,
-			kShield       = 16,
-			kTorch        = 17,
-			kArmor        = 18,
-			kAmmo         = 19,
-			kSpell        = 20,
-			kSpellLeft    = 21,
+			k1HSword     = 0,
+			k1HSwordLeft = 1,
+			k1HAxe       = 2,
+			k1HAxeLeft   = 3,
+			k2HSword     = 4,
+			k2HSwordLeft = 5,
+			k2HAxe       = 6,
+			k2HAxeLeft   = 7,
+			kDagger      = 8,
+			kDaggerLeft  = 9,
+			kMace        = 10,
+			kMaceLeft    = 11,
+			kStaff       = 12,
+			kStaffLeft   = 13,
+			kBow         = 14,
+			kCrossBow    = 15,
+			kShield      = 16,
+			kTorch       = 17,
+			kArmor       = 18,
+			kAmmo        = 19,
+			kSpell       = 20,
+			kSpellLeft   = 21,
+			kScroll      = 22,
+			kScrollLeft  = 23,
 
 			kMax
 		};
@@ -159,7 +162,7 @@ namespace IED
 		{
 			return a_sex == Data::ConfigSex::Female ?
 			           Data::ConfigSex::Male :
-                       Data::ConfigSex::Female;
+			           Data::ConfigSex::Female;
 		}
 
 		using ConfigForm = IPluginInfoA::formPair_t;
@@ -167,10 +170,10 @@ namespace IED
 		template <
 			class T,
 			class form_descriptor_type = stl::strip_type<T>>
-		requires stl::is_any_same_v<
-			form_descriptor_type,
-			ConfigForm,
-			Game::FormID>
+			requires stl::is_any_same_v<
+				form_descriptor_type,
+				ConfigForm,
+				Game::FormID>
 		struct ConfigSound
 		{
 			using soundPair_t = std::pair<
