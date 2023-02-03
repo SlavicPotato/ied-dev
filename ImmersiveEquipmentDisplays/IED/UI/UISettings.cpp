@@ -1535,6 +1535,56 @@ namespace IED
 
 				settings.mark_dirty();
 			}
+
+			if (UIL::LCG_MI(UISettingsStrings::ClearBipedCache, "2"))
+			{
+				m_controller.ClearBipedCache();
+				m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+			}
+
+			if (UIL::LCG_MI(UISettingsStrings::RemoveBipedCacheTempForms, "3"))
+			{
+				const auto result = m_controller.RemoveBipedCacheEntries([](Game::FormID a_id) {
+					return a_id.IsTemporary();
+				});
+
+				if (result)
+				{
+					m_controller.QueueResetAll(ControllerUpdateFlags::kNone);
+				}
+
+				m_controller.QueueToastAsync(
+					"%zu temporary reference(s) were removed",
+					UICommon::g_colorWarning,
+					result);
+			}
+
+			if (UIL::LCG_MI(UISettingsStrings::RemoveBipedCacheDeletedTempForms, "4"))
+			{
+				ITaskPool::AddPriorityTask([&ctrl = m_controller]() {
+					const stl::lock_guard lock(ctrl.GetLock());
+
+					const auto result = ctrl.RemoveBipedCacheEntries([](Game::FormID a_id) {
+						if (!a_id.IsTemporary())
+						{
+							return false;
+						}
+
+						const auto actor = a_id.As<Actor>();
+						return actor ? actor->IsDeleted() : false;
+					});
+
+					if (result)
+					{
+						ctrl.QueueResetAll(ControllerUpdateFlags::kNone);
+					}
+
+					ctrl.QueueToast(
+						"%zu deleted temporary reference(s) were removed",
+						UICommon::g_colorWarning,
+						result);
+				});
+			}
 		}
 
 		void UISettings::DrawCommonResetContextMenu(

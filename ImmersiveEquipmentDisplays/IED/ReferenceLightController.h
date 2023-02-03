@@ -53,7 +53,7 @@ namespace IED
 			TESObjectLIGH*               form;
 			NiPointer<NiPointLight>      niLight;
 			NiPointer<RE::BSLight>       bsLight;
-			const Data::extraLightData_t config;
+			const Data::ExtraLightData config;
 		};
 
 		using lock_type   = std::shared_mutex;
@@ -89,7 +89,7 @@ namespace IED
 			const TESObjectLIGH*          a_lightForm,
 			Actor*                        a_actor,
 			NiNode*                       a_object,
-			const Data::extraLightData_t& a_config) noexcept;
+			const Data::ExtraLightData& a_config) noexcept;
 
 		static void CleanupLights(NiNode* a_node) noexcept;
 
@@ -142,7 +142,7 @@ namespace IED
 		inline static const auto UnkQueueBSLight            = IAL::Address<shadowSceneNode_UnkQueueBSLight_t>(99706, 106340);
 
 		mutable lock_type                                          m_lock;
-		stl::unordered_map<Game::FormID, std::forward_list<Entry>> m_data;
+		stl::unordered_map<Game::FormID, stl::forward_list<Entry>> m_data;
 
 		bool             m_initialized{ false };
 		std::atomic_bool m_fixVanillaLightOnCellAttach{ false };

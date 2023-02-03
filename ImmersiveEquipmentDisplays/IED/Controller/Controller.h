@@ -145,7 +145,6 @@ namespace IED
 		struct cachedActorInfo2_t
 		{
 			TESNPC*     npc;
-			TESNPC*     npcOrTemplate;
 			TESRace*    race;
 			BSFadeNode* root;
 			NiNode*     npcRoot;
@@ -516,6 +515,9 @@ namespace IED
 
 		void QueueSetEffectShaders(Actor* a_actor) noexcept;
 
+		void        ClearBipedCache();
+		std::size_t RemoveBipedCacheEntries(std::function<bool (Game::FormID)> a_filter);
+
 	private:
 		FN_NAMEPROC("Controller");
 
@@ -597,7 +599,6 @@ namespace IED
 			NiNode*                          a_npcRoot,
 			Actor*                           a_actor,
 			TESNPC*                          a_npc,
-			TESNPC*                          a_npcOrTemplate,
 			TESRace*                         a_race,
 			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;

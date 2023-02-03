@@ -606,7 +606,7 @@ namespace IED
 			[this](
 				Actor*            a_actor,
 				Game::ActorHandle a_handle) noexcept {
-				stl::lock_guard lock(m_lock);
+				const stl::lock_guard lock(m_lock);
 
 				if (ShaderProcessingEnabled())
 				{
@@ -617,6 +617,34 @@ namespace IED
 					}
 				}
 			});
+	}
+
+	void Controller::ClearBipedCache()
+	{
+		m_bipedCache.clear();
+	}
+
+	std::size_t Controller::RemoveBipedCacheEntries(
+		std::function<bool(Game::FormID)> a_filter)
+	{
+		std::size_t result = 0;
+
+		auto& data = m_bipedCache.data();
+
+		for (auto it = data.begin(); it != data.end();)
+		{
+			if (a_filter(it->first))
+			{
+				it = data.erase(it);
+				result++;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		return result;
 	}
 
 	void Controller::EvaluateImpl(
@@ -1255,7 +1283,7 @@ namespace IED
 	void Controller::OnActorAcquire(ActorObjectHolder& a_holder) noexcept
 	{
 		if (!EngineExtensions::HasEarly3DLoadHooks() &&
-			EngineExtensions::GetTransformOverridesEnabled())
+		    EngineExtensions::GetTransformOverridesEnabled())
 		{
 			a_holder.ApplyXP32NodeTransformOverrides();
 		}
@@ -1933,7 +1961,7 @@ namespace IED
 	}
 
 	void Controller::QueueLookupFormInfo(
-		Game::FormID              a_formId,
+		Game::FormID                     a_formId,
 		IForm::form_lookup_result_func_t a_func)
 	{
 		ITaskPool::AddTask([this, a_formId, func = std::move(a_func)] {
@@ -2878,7 +2906,9 @@ namespace IED
 							itemData->itemCount :
 							6);
 
-					objectEntry.slotState.lastSlotted = objectEntry.data.state->form->formID;
+					objectEntry.slotState.insert_last_slotted(
+						objectEntry.data.state->form->formID,
+						m_bipedCache.max_forms());
 
 					if (visible)
 					{
@@ -3287,8 +3317,6 @@ namespace IED
 			}
 
 			const auto& itemData = it->second;
-
-			assert(itemData.form);
 
 			const auto configOverride =
 				a_config.get_equipment_override_sfp(
@@ -3859,7 +3887,6 @@ namespace IED
 			a_holder.GetTempData(),
 			a_actor,
 			a_npc,
-			a_npc->GetFirstNonTemporaryOrThis(),
 			a_race,
 			a_root,
 			a_npcroot,
@@ -3946,24 +3973,25 @@ namespace IED
 
 		for (enum_type i = 0; i < stl::underlying(BIPED_OBJECT::kTotal); i++)
 		{
-			auto& e = biped->objects[i];
-			auto& f = data[i];
+			const auto& e = biped->objects[i];
+			auto&       f = data[i];
 
 			if (e.item &&
 			    e.item != skin &&
 			    e.item != e.addon)
 			{
-				auto fid = e.item->formID;
+				const auto fid = e.item->formID;
 
 				if (f.forms.empty() || f.forms.front() != fid)
 				{
-					auto itex = std::find(f.forms.begin(), f.forms.end(), fid);
-					if (itex != f.forms.end())
+					auto it = std::find(f.forms.begin(), f.forms.end(), fid);
+					if (it != f.forms.end())
 					{
-						f.forms.erase(itex);
+						f.forms.erase(it);
 					}
 
 					f.forms.emplace(f.forms.begin(), fid);
+
 					if (f.forms.size() > m_bipedCache.max_forms())
 					{
 						f.forms.pop_back();
@@ -3977,14 +4005,6 @@ namespace IED
 			{
 				f.occupied = false;
 			}
-
-			/*if (a_params.actor == *g_thePlayer)
-			{
-				if (!f.forms.empty())
-				{
-					_DMESSAGE("%u: %x", i, f.forms.front());
-				}
-			}*/
 		}
 
 		//_DMESSAGE("%f", pt.Stop());
@@ -4134,7 +4154,6 @@ namespace IED
 					params->npcRoot,
 					params->actor,
 					params->npc,
-					params->npcOrTemplate,
 					params->race,
 					a_holder,
 					a_flags))
@@ -4149,7 +4168,6 @@ namespace IED
 					info->npcRoot,
 					info->actor,
 					info->npc,
-					info->npcOrTemplate,
 					info->race,
 					a_holder,
 					a_flags))
@@ -4185,7 +4203,6 @@ namespace IED
 		NiNode*                          a_npcRoot,
 		Actor*                           a_actor,
 		TESNPC*                          a_npc,
-		TESNPC*                          a_npcOrTemplate,
 		TESRace*                         a_race,
 		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags) noexcept
@@ -4212,7 +4229,6 @@ namespace IED
 			a_holder,
 			a_actor,
 			a_npc,
-			a_npcOrTemplate,
 			a_race,
 			a_root,
 			a_npcRoot,
@@ -4634,7 +4650,6 @@ namespace IED
 			a_info.objects.GetTempData(),
 			a_info.actor,
 			a_info.npc,
-			a_info.npcOrTemplate,
 			a_info.race,
 			a_info.root,
 			a_info.npcRoot,
@@ -5353,7 +5368,6 @@ namespace IED
 
 		return std::make_optional<cachedActorInfo2_t>(
 			npc,
-			npc->GetFirstNonTemporaryOrThis(),
 			race,
 			root,
 			npcroot);
@@ -5713,8 +5727,8 @@ namespace IED
 		{
 			auto uish = UIStringHolder::GetSingleton();
 
-			 if (
-				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu) || 
+			if (
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kgiftMenu) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kbarterMenu) ||

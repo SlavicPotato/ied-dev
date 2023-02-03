@@ -400,19 +400,19 @@ namespace IED
 		template <class T>
 		bool LoadEntryList(
 			const char*   a_path,
-			std::list<T>& a_out);
+			stl::list<T>& a_out);
 
 		void AddExtraNodeData(
-			const std::list<Data::configExtraNodeList_t>& a_data);
+			const stl::list<Data::configExtraNodeList_t>& a_data);
 
 		void AddNodeMonitorData(
-			const std::list<Data::configNodeMonitorEntryList_t>& a_data);
+			const stl::list<Data::configNodeMonitorEntryList_t>& a_data);
 
 		void AddConvertNodesData(
-			const std::list<Data::configConvertNodesList_t>& a_data);
+			const stl::list<Data::configConvertNodesList_t>& a_data);
 
 		void AddAdditionalCMENodeData(
-			const std::list<Data::configAdditionalCMENodeList_t>& a_data);
+			const stl::list<Data::configAdditionalCMENodeList_t>& a_data);
 
 		cm_data_type             m_cme;
 		cm_data_type             m_mov;

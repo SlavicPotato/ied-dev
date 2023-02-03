@@ -20,14 +20,18 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kEssential, UIConditionExtraSelectorWidgetStrings::Essential),
 			std::make_pair(Data::ExtraConditionType::kHumanoidSkeleton, UIConditionExtraSelectorWidgetStrings::HumanoidSkeleton),
 			std::make_pair(Data::ExtraConditionType::kInCombat, UIConditionExtraSelectorWidgetStrings::InCombat),
+			std::make_pair(Data::ExtraConditionType::kInDarkArea, UIConditionExtraSelectorWidgetStrings::InDarkArea),
 			std::make_pair(Data::ExtraConditionType::kInDialogue, UIConditionExtraSelectorWidgetStrings::InDialogue),
 			std::make_pair(Data::ExtraConditionType::kIsInFirstPerson, UIConditionExtraSelectorWidgetStrings::InFirstPerson),
 			std::make_pair(Data::ExtraConditionType::kInInterior, UIConditionExtraSelectorWidgetStrings::InInterior),
 			std::make_pair(Data::ExtraConditionType::kInKillmove, UIConditionExtraSelectorWidgetStrings::InKillmove),
 			std::make_pair(Data::ExtraConditionType::kInMerchantFaction, UIConditionExtraSelectorWidgetStrings::InMerchantFaction),
+			std::make_pair(Data::ExtraConditionType::kInOwnedCell, UIConditionExtraSelectorWidgetStrings::InOwnedCell),
 			std::make_pair(Data::ExtraConditionType::kInPlayerEnemyFaction, UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction),
+			std::make_pair(Data::ExtraConditionType::kInPublicCell, UIConditionExtraSelectorWidgetStrings::InPublicCell),
 			std::make_pair(Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater),
 			std::make_pair(Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested),
+			std::make_pair(Data::ExtraConditionType::kIsCellOwner, UIConditionExtraSelectorWidgetStrings::IsCellOwner),
 			std::make_pair(Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild),
 			std::make_pair(Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded),
 			std::make_pair(Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead),
@@ -39,6 +43,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsLayingDown, UIConditionExtraSelectorWidgetStrings::IsLayingDown),
 			std::make_pair(Data::ExtraConditionType::kIsMount, UIConditionExtraSelectorWidgetStrings::IsMount),
 			std::make_pair(Data::ExtraConditionType::kIsRidingMount, UIConditionExtraSelectorWidgetStrings::IsRidingMount),
+			std::make_pair(Data::ExtraConditionType::kIsNPCCellOwner, UIConditionExtraSelectorWidgetStrings::IsNPCCellOwner),
 			std::make_pair(Data::ExtraConditionType::kIsMountRidden, UIConditionExtraSelectorWidgetStrings::IsMountRidden),
 			std::make_pair(Data::ExtraConditionType::kIsPlayer, UIConditionExtraSelectorWidgetStrings::IsPlayer),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
@@ -224,6 +229,16 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::ActorValue);
 			case Data::ExtraConditionType::kXP32Skeleton:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::XP32Skeleton);
+			case Data::ExtraConditionType::kInDarkArea:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InDarkArea);
+			case Data::ExtraConditionType::kInPublicCell:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InPublicCell);
+			case Data::ExtraConditionType::kIsCellOwner:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsCellOwner);
+			case Data::ExtraConditionType::kInOwnedCell:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InOwnedCell);
+			case Data::ExtraConditionType::kIsNPCCellOwner:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsNPCCellOwner);
 			default:
 				return nullptr;
 			}

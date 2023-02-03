@@ -11,9 +11,9 @@ namespace IED
 	namespace detail
 	{
 		static constexpr RE::LIGHT_CREATE_PARAMS make_params(
-			TESObjectREFR*                a_refr,
-			const TESObjectLIGH*          a_lightForm,
-			const Data::extraLightData_t* a_config) noexcept
+			TESObjectREFR*              a_refr,
+			const TESObjectLIGH*        a_lightForm,
+			const Data::ExtraLightData* a_config) noexcept
 		{
 			RE::LIGHT_CREATE_PARAMS params;
 
@@ -257,20 +257,18 @@ namespace IED
 		else
 		{
 			if (a_extraLight &&
+			    a_extraLight->light &&
 			    m_fixVanillaNPCLightUpdates.load(std::memory_order_relaxed))
 			{
-				if (a_extraLight->light)
+				if (auto equipped = GetEquippedLHLight(a_actor))
 				{
-					if (auto equipped = GetEquippedLHLight(a_actor))
+					if (::NRTTI<NiPointLight>::IsType(a_extraLight->light->GetRTTI()))
 					{
-						if (::NRTTI<NiPointLight>::IsType(a_extraLight->light->GetRTTI()))
-						{
-							UpdateRefrLight(
-								equipped,
-								reinterpret_cast<const NiPointer<NiPointLight>&>(a_extraLight->light),
-								a_actor,
-								-1.0f);
-						}
+						UpdateRefrLight(
+							equipped,
+							reinterpret_cast<const NiPointer<NiPointLight>&>(a_extraLight->light),
+							a_actor,
+							-1.0f);
 					}
 				}
 			}
@@ -354,10 +352,10 @@ namespace IED
 	}
 
 	ObjectLight ReferenceLightController::CreateAndAttachPointLight(
-		const TESObjectLIGH*          a_lightForm,
-		Actor*                        a_actor,
-		NiNode*                       a_object,
-		const Data::extraLightData_t& a_config) noexcept
+		const TESObjectLIGH*        a_lightForm,
+		Actor*                      a_actor,
+		NiNode*                     a_object,
+		const Data::ExtraLightData& a_config) noexcept
 	{
 		const auto sh = BSStringHolder::GetSingleton();
 

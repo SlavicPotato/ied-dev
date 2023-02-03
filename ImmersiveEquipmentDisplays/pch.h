@@ -28,7 +28,9 @@
 #include <ext/SKSESerializationEvents.h>
 #include <ext/ShaderReferenceEffect.h>
 #include <ext/ShadowSceneNode.h>
+#include <ext/Sky.h>
 #include <ext/StringCache.h>
+#include <ext/TESClimate.h>
 #include <ext/Vector.h>
 #include <ext/WeaponAnimationGraphManagerHolder.h>
 #include <ext/compiletime-strings.h>

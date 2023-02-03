@@ -635,7 +635,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddExtraNodes(const char* a_path)
 	{
-		std::list<Data::configExtraNodeList_t> data;
+		stl::list<Data::configExtraNodeList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddExtraNodeData(data);
@@ -644,7 +644,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddNodeMonitor(const char* a_path)
 	{
-		std::list<Data::configNodeMonitorEntryList_t> data;
+		stl::list<Data::configNodeMonitorEntryList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddNodeMonitorData(data);
@@ -653,7 +653,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddConvertNodes(const char* a_path)
 	{
-		std::list<Data::configConvertNodesList_t> data;
+		stl::list<Data::configConvertNodesList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddConvertNodesData(data);
@@ -662,7 +662,7 @@ namespace IED
 
 	void NodeOverrideData::LoadAndAddAdditionalCMENodes(const char* a_path)
 	{
-		std::list<Data::configAdditionalCMENodeList_t> data;
+		stl::list<Data::configAdditionalCMENodeList_t> data;
 		if (m_Instance->LoadEntryList(a_path, data))
 		{
 			m_Instance->AddAdditionalCMENodeData(data);
@@ -672,7 +672,7 @@ namespace IED
 	template <class T>
 	bool NodeOverrideData::LoadEntryList(
 		const char*   a_path,
-		std::list<T>& a_out)
+		stl::list<T>& a_out)
 	{
 		try
 		{
@@ -774,7 +774,7 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddExtraNodeData(
-		const std::list<Data::configExtraNodeList_t>& a_data)
+		const stl::list<Data::configExtraNodeList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{
@@ -857,7 +857,7 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddAdditionalCMENodeData(
-		const std::list<Data::configAdditionalCMENodeList_t>& a_data)
+		const stl::list<Data::configAdditionalCMENodeList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{
@@ -882,7 +882,7 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddNodeMonitorData(
-		const std::list<Data::configNodeMonitorEntryList_t>& a_data)
+		const stl::list<Data::configNodeMonitorEntryList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{
@@ -915,7 +915,7 @@ namespace IED
 	}
 
 	void NodeOverrideData::AddConvertNodesData(
-		const std::list<Data::configConvertNodesList_t>& a_data)
+		const stl::list<Data::configConvertNodesList_t>& a_data)
 	{
 		for (auto& e : a_data)
 		{

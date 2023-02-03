@@ -94,35 +94,7 @@ namespace IED
 			TESContainer&                          a_container,
 			RE::BSSimpleList<InventoryEntryData*>* a_dataList);
 
-		using map_type =
-			std::unordered_map<
-				Game::FormID,
-				Base,
-				std::hash<Game::FormID>,
-				std::equal_to<Game::FormID>,
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-				stl::mi_allocator
-#else
-				stl::container_allocator
-#endif
-				<std::pair<const Game::FormID, Base>>>;
-
-		using vector_type =
-			std::vector<
-				const typename map_type::value_type*,
-#if defined(IED_USE_MIMALLOC_COLLECTOR)
-				stl::mi_allocator
-#else
-				stl::container_allocator
-#endif
-				<const typename map_type::value_type*>>;
-
-		stl::vectormap<
-			Game::FormID,
-			Base,
-			map_type,
-			vector_type>
-			items;
+		stl::vectormap<Game::FormID, Base> items;
 
 	private:
 		Base& AddOrGetBaseItem(TESBoundObject* a_item);

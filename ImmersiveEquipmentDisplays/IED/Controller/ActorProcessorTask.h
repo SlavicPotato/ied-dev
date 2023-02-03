@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IED/ConfigCommon.h"
+#include "IED/GlobalParams.h"
 #include "IED/TimeOfDay.h"
 
 #include "EffectController.h"
@@ -66,6 +67,16 @@ namespace IED
 			return m_globalState;
 		}
 
+		[[nodiscard]] constexpr const auto& GetOrCreateGlobalParams() noexcept
+		{
+			if (!m_globalParams)
+			{
+				m_globalParams.emplace();
+			}
+
+			return *m_globalParams;
+		}
+
 	private:
 		struct GlobalState
 		{
@@ -84,6 +95,7 @@ namespace IED
 			Game::ActorHandle playerLastRidden;
 			bool              inFirstPerson{ false };
 			bool              inDialogue{ false };
+			bool              isAreaDark{ false };
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };
 #endif
@@ -99,7 +111,8 @@ namespace IED
 
 		virtual void Run() noexcept override;
 
-		SKMP_FORCEINLINE Controller& GetController() noexcept;
+		SKMP_FORCEINLINE Controller&       GetController() noexcept;
+		SKMP_FORCEINLINE const Controller& GetController() const noexcept;
 
 		bool SyncRefParentNode(
 			ActorObjectHolder& a_record,
@@ -131,9 +144,10 @@ namespace IED
 			ActorObjectHolder&                      a_holder,
 			bool                                    a_updateEffects) noexcept;
 
-		void RunPreUpdates() noexcept;
+		void RunPreUpdates(bool a_effectUpdates) noexcept;
 
-		GlobalState m_globalState;
+		GlobalState                 m_globalState;
+		std::optional<GlobalParams> m_globalParams;
 
 		PerfTimerInt m_timer{ 1000000LL };
 		long long    m_currentTime{ 0LL };
@@ -170,14 +184,11 @@ namespace IED
 			}
 
 		private:
-			stl::vector<T>      m_queue;
-			stl::fast_spin_lock m_lock;
+			stl::cache_aligned::vector<T> m_queue;
+			stl::fast_spin_lock           m_lock;
 		};
 
 		PostMTTaskQueue<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_syncRefParentQueue;
-
-		/*stl::fast_spin_lock                                          m_unloadQueueWRLock;
-		stl::vector<std::pair<ActorObjectHolder*, ObjectEntryBase*>> m_unloadQueue;*/
 	};
 
 }

@@ -39,20 +39,50 @@ namespace IED
 		enum Serialization : unsigned int
 		{
 			DataVersion1 = 1,
+			DataVersion2 = 2,
 		};
 
-		Data::configFormZeroMissing_t lastEquipped;
-		Data::configFormZeroMissing_t lastSlotted;
-		std::uint64_t                 lastSeenEquipped{ 0 };
+		void insert_last_slotted(
+			Game::FormID  a_form,
+			std::uint32_t a_limit) noexcept;
+
+		Data::configFormZeroMissing_t                    lastEquipped;
+		stl::boost_vector<Data::configFormZeroMissing_t> lastSlotted;
+		std::uint64_t                                    lastSeenEquipped{ 0 };
 
 	private:
 		template <class Archive>
-		void serialize(Archive& a_ar, const unsigned int a_version)
+		void save(Archive& a_ar, const unsigned int a_version) const
 		{
 			a_ar& lastEquipped;
 			a_ar& lastSlotted;
 			a_ar& lastSeenEquipped;
 		}
+
+		template <class Archive>
+		void load(Archive& a_ar, const unsigned int a_version)
+		{
+			a_ar& lastEquipped;
+
+			if (a_version >= DataVersion2)
+			{
+				a_ar& lastSlotted;
+			}
+			else
+			{
+				Data::configFormZeroMissing_t tmp;
+				a_ar&                         tmp;
+
+				if (tmp)
+				{
+					lastSlotted.emplace_back(tmp);
+				}
+			}
+
+			a_ar& lastSeenEquipped;
+		}
+
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};
 
 	struct BipedSlotData
@@ -126,7 +156,7 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::DisplaySlotCacheEntry,
-	::IED::DisplaySlotCacheEntry::Serialization::DataVersion1);
+	::IED::DisplaySlotCacheEntry::Serialization::DataVersion2);
 
 BOOST_CLASS_VERSION(
 	::IED::BipedSlotData,

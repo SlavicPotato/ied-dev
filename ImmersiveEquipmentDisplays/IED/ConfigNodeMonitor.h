@@ -35,7 +35,7 @@ namespace IED
 			stl::fixed_string           subject;
 		};
 
-		using configNodeMonitorEntryList_t = std::list<configNodeMonitorEntry_t>;
+		using configNodeMonitorEntryList_t = stl::list<configNodeMonitorEntry_t>;
 
 		struct configNodeMonitorEntryBS_t
 		{

@@ -51,6 +51,7 @@ namespace IED
 				ConditionalVariablesList,
 				ConditionalVariablesEntry,
 				ConditionalVariable,
+				ObjectSlotList,
 			};
 
 			struct entry_t
@@ -363,6 +364,12 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::configObjectSlotList_t>)
+			{
+				return data.type == DataType::ObjectSlotList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				//static_assert(false);
@@ -561,6 +568,10 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configConditionalVariable_t>)
 			{
 				data.type = DataType::ConditionalVariable;
+			}
+			else if constexpr (std::is_same_v<T, Data::configObjectSlotList_t>)
+			{
+				data.type = DataType::ObjectSlotList;
 			}
 			else
 			{

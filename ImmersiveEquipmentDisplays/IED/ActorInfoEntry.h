@@ -34,6 +34,7 @@ namespace IED
 		Game::FormID                             race;
 		Game::FormID                             worldspace;
 		std::pair<Game::FormID, std::string>     cell;
+		Game::FormID                             cellOwner;
 		std::optional<TESObjectCELL::CellCoords> cellCoords;
 		std::pair<Game::FormID, std::string>     location;
 		std::pair<Game::FormID, std::string>     skin;
@@ -53,6 +54,7 @@ namespace IED
 		std::uint16_t                            level{ 0 };
 		bool                                     pcLevelMult{ false };
 		long long                                ts{ 0 };
+		float                                    lightLevel{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 

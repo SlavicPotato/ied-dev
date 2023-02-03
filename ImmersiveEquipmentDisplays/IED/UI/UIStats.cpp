@@ -71,6 +71,7 @@ namespace IED
 					ImGui::TextUnformatted("Anim objects:");
 				}
 
+				//ImGui::TextUnformatted("Frame timers:");
 				ImGui::TextUnformatted("CC:");
 				ImGui::TextUnformatted("EV:");
 
@@ -121,6 +122,9 @@ namespace IED
 					ImGui::Text("%zu", AnimationUpdateController::GetSingleton().GetNumObjects());
 				}
 
+				//auto steps = Game::Unk2f6b948::GetStepMultipliers();
+
+				//ImGui::Text("%f / %f | %f / %f", *Game::g_frameTimer, *Game::g_frameTimerSlow, steps.player, steps.npc);
 				ImGui::Text("%llu", m_controller.GetCounterValue());
 				ImGui::Text("%llu", m_controller.GetEvalCounter());
 

@@ -533,6 +533,12 @@ namespace IED
 					ImGui::TextWrapped("[%d, %d]", data.cellCoords->x, data.cellCoords->y);
 				}
 
+				if (data.cellOwner)
+				{
+					ImGui::SameLine();
+					DrawFormWithInfoWrapped(data.cellOwner);
+				}
+
 				DrawActorInfoLineFormStringPair(CommonStrings::Location, data.location);
 
 				ImGui::EndTable();
@@ -677,6 +683,14 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text(data.pcLevelMult ? "%hu [PCM]" : "%hu", data.level);
+				
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::LightLevel));
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%f", data.lightLevel);
 
 				ImGui::EndTable();
 			}

@@ -115,6 +115,33 @@ namespace IED
 			       MenuTopicManager::GetSingleton()->HasDialogueTarget();
 		}
 
+		bool is_cell_owner(
+			CommonParams&            a_params,
+			const CachedFactionData& a_cachedFactionData) noexcept
+		{
+			if (const auto ownerForm = a_params.get_parent_cell_owner())
+			{
+				switch (ownerForm->formType)
+				{
+				case TESFaction::kTypeID:
+					{
+						auto& data = a_cachedFactionData.GetFactionContainer();
+
+						auto it = data.find(static_cast<TESFaction*>(ownerForm));
+						if (it != data.end())
+						{
+							return it->second > -1;
+						}
+					}
+					break;
+				case TESNPC::kTypeID:
+					return ownerForm == a_params.npc;
+				}
+			}
+
+			return false;
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{

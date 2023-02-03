@@ -71,13 +71,13 @@ namespace IED
 		{
 			if (a_actor)
 			{
-				Initializer::GetController()->QueueEvaluate(a_actor, ControllerUpdateFlags::kNone);
+				Initializer::GetController()->QueueRequestEvaluate(a_actor->formID, false, true, true);
 			}
 		}
 
 		static void EvaluateAll(StaticFunctionTag*)
 		{
-			Initializer::GetController()->QueueEvaluateAll(ControllerUpdateFlags::kNone);
+			Initializer::GetController()->QueueRequestEvaluateLFAll();
 		}
 
 		static void Reset(

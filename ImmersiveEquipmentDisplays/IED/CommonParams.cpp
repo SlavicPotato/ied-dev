@@ -4,6 +4,10 @@
 
 #include "Controller/ActorObjectHolder.h"
 
+#include "AreaLightingDetection.h"
+
+#include "IED/Controller/Controller.h"
+
 namespace IED
 {
 	template <class Tf>
@@ -24,7 +28,6 @@ namespace IED
 	CommonParams::CommonParams(
 		Actor* const       a_actor,
 		TESNPC* const      a_npc,
-		TESNPC* const      a_npcOrTemplate,
 		TESRace* const     a_race,
 		BSFadeNode* const  a_root,
 		NiNode* const      a_npcroot,
@@ -32,7 +35,7 @@ namespace IED
 		Controller&        a_controller) noexcept :
 		actor(a_actor),
 		npc(a_npc),
-		npcOrTemplate(a_npcOrTemplate),
+		npcOrTemplate(a_npc->GetFirstNonTemporaryOrThis()),
 		race(a_race),
 		root(a_root),
 		npcRoot(a_npcroot),
@@ -184,6 +187,34 @@ namespace IED
 		return *canDualWield;
 	}
 
+	RE::TESWeather* CommonParams::get_current_weather() const noexcept
+	{
+		return controller.GetOrCreateGlobalParams().get_current_weather();
+	}
+
+	stl::flag<WeatherClassificationFlags> CommonParams::get_weather_class() const noexcept
+	{
+		if (const auto w = get_current_weather())
+		{
+			const auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
+			return static_cast<WeatherClassificationFlags>(f);
+		}
+		else
+		{
+			return WeatherClassificationFlags::kNone;
+		}
+	}
+
+	Data::TimeOfDay CommonParams::get_time_of_day() const noexcept
+	{
+		return controller.GetOrCreateGlobalParams().get_time_of_day();
+	}
+
+	bool CommonParams::is_area_dark() const noexcept
+	{
+		return controller.GetOrCreateGlobalParams().is_area_dark();
+	}
+
 	NiPointer<Actor>& CommonParams::get_mounted_actor() const noexcept
 	{
 		if (!mountedActor)
@@ -195,7 +226,7 @@ namespace IED
 			}
 			else
 			{
-				mountedActor.emplace(nullptr);
+				mountedActor.emplace();
 			}
 		}
 
@@ -213,7 +244,7 @@ namespace IED
 			}
 			else
 			{
-				mountedByActor.emplace(nullptr);
+				mountedByActor.emplace();
 			}
 		}
 
@@ -252,7 +283,7 @@ namespace IED
 	{
 		if (!lastRiddenPlayerHorse)
 		{
-			lastRiddenPlayerHorse.emplace(nullptr);
+			lastRiddenPlayerHorse.emplace();
 
 			const auto handle = (*g_thePlayer)->lastRiddenHorseHandle;
 
@@ -294,7 +325,7 @@ namespace IED
 
 	BGSVoiceType* CommonParams::get_voice_type() const noexcept
 	{
-		BGSVoiceType* result = npc->voiceType;
+		auto result = npc->voiceType;
 
 		if (!result)
 		{
@@ -302,5 +333,16 @@ namespace IED
 		}
 
 		return result;
+	}
+
+	TESForm* CommonParams::get_parent_cell_owner() const noexcept
+	{
+		if (!parentCellOwner)
+		{
+			const auto parentCell = actor->GetParentCell();
+			parentCellOwner.emplace(parentCell ? parentCell->GetOwnerForm() : nullptr);
+		}
+
+		return *parentCellOwner;
 	}
 }

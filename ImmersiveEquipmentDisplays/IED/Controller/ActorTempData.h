@@ -2,7 +2,6 @@
 
 #include "IED/Inventory.h"
 #include "IED/NodeOverrideParams.h"
-#include "IED/ConfigCommon.h"
 
 namespace IED
 {
@@ -12,12 +11,12 @@ namespace IED
 	{
 		SKMP_ALIGNED_REDEFINE_NEW_PREF(stl::L1_CACHE_LINE_SIZE);
 
-		Data::CollectorData::container_type       idt;
-		Data::CollectorData::eq_container_type    eqt;
-		nodeOverrideParams_t::item_container_type nc;
-		SlotResults                               sr;
-		UseCountContainer                         uc;
-		stl::vector<const BipedSlotCacheEntry*>   le;
-		Data::configFormList_t                    fl;
+		Data::CollectorData::container_type                    idt;
+		Data::CollectorData::eq_container_type                 eqt;
+		SlotResults                                            sr;
+		nodeOverrideParams_t::item_container_type              nc;
+		UseCountContainer                                      uc;
+		stl::cache_aligned::vector<const BipedSlotCacheEntry*> le;
+		stl::cache_aligned::vector<Game::FormID>               fl;
 	};
 }

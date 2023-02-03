@@ -131,6 +131,9 @@ namespace IED
 			case DataType::ConditionalVariable:
 				erase<Data::configConditionalVariable_t>();
 				break;
+			case DataType::ObjectSlotList:
+				erase<Data::configObjectSlotList_t>();
+				break;
 			default:
 				assert(false);
 			}

@@ -36,6 +36,7 @@ namespace IED
 		}
 
 		bool is_in_dialogue(CommonParams& a_params) noexcept;
+		bool is_cell_owner(CommonParams& a_params, const CachedFactionData& a_cachedFactionData) noexcept;
 
 		template <class Tv, class Tm>
 		constexpr bool compare(
@@ -185,6 +186,16 @@ namespace IED
 					a_match.avMatch);
 			case Data::ExtraConditionType::kXP32Skeleton:
 				return a_params.objects.HasXP32Skeleton();
+			case Data::ExtraConditionType::kInDarkArea:
+				return a_params.is_area_dark();
+			case Data::ExtraConditionType::kInPublicCell:
+				return a_params.actor->InPublicCell();
+			case Data::ExtraConditionType::kIsCellOwner:
+				return is_cell_owner(a_params, a_cached);
+			case Data::ExtraConditionType::kInOwnedCell:
+				return static_cast<bool>(a_params.get_parent_cell_owner());
+			case Data::ExtraConditionType::kIsNPCCellOwner:
+				return a_params.get_parent_cell_owner() == a_params.npc;
 			default:
 				return false;
 			}
@@ -213,9 +224,9 @@ namespace IED
 			           Data::ItemData::GetItemSlotExtra(a_form) == a_slot;
 		}
 
-		constexpr bool is_ammo_bolt(TESForm* a_form) noexcept
+		constexpr bool is_ammo_bolt(const TESForm* a_form) noexcept
 		{
-			if (auto ammo = a_form->As<TESAmmo>())
+			if (const auto ammo = a_form->As<TESAmmo>())
 			{
 				return ammo->isBolt();
 			}
@@ -225,7 +236,7 @@ namespace IED
 			}
 		}
 
-		constexpr bool is_object_visible(NiPointer<NiAVObject>& a_object) noexcept
+		constexpr bool is_object_visible(const NiPointer<NiAVObject>& a_object) noexcept
 		{
 			return a_object && a_object->IsVisible();
 		}
@@ -254,7 +265,7 @@ namespace IED
 			const Tm&     a_match,
 			Tp            a_post)  //
 			noexcept    //
-			requires(std::invocable<Tp, TESForm*>)
+			requires(std::invocable<Tp, const TESForm*>)
 		{
 			const auto slot = a_params.translate_biped_object(a_match.bipedSlot);
 
@@ -263,7 +274,7 @@ namespace IED
 				return false;
 			}
 
-			auto biped = a_params.get_biped();
+			const auto* const biped = a_params.get_biped();
 			if (!biped)
 			{
 				return false;
@@ -271,7 +282,7 @@ namespace IED
 
 			auto& e = biped->get_object(slot);
 
-			auto form = e.item;
+			const auto* const form = e.item;
 			if (!form || e.addon == form)
 			{
 				return false;
@@ -279,7 +290,7 @@ namespace IED
 
 			if (a_match.flags.test(Tf::kExtraFlag2))
 			{
-				if (auto skin = a_params.get_actor_skin())
+				if (const auto* const skin = a_params.get_actor_skin())
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1) ==
 					    (form == skin))
@@ -369,8 +380,13 @@ namespace IED
 		{
 			if (a_match.form.get_id())
 			{
+				const auto npc =
+					a_match.flags.test(Tf::kExtraFlag1) ?
+						a_params.npcOrTemplate :
+						a_params.npc;
+
 				if (a_match.flags.test(Tf::kNegateMatch2) ==
-				    (a_params.npc->formID == a_match.form.get_id()))
+				    (npc->formID == a_match.form.get_id()))
 				{
 					return false;
 				}
@@ -1041,6 +1057,48 @@ namespace IED
 			}
 
 			return !data.empty();
+		}
+
+		template <class Tm, class Tf>
+		constexpr bool match_cell(
+			CommonParams& a_params,
+			const Tm&     a_match) noexcept
+		{
+			if (const auto cell = a_params.actor->GetParentCell())
+			{
+				if (a_match.form.get_id())
+				{
+					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					    (a_match.form.get_id() == cell->formID))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.flags.test(Tf::kExtraFlag1))
+				{
+					if (a_match.flags.test(Tf::kNegateMatch3) ==
+					    cell->cellFlags.test(TESObjectCELL::Flag::kIsInteriorCell))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.flags.test(Tf::kExtraFlag2))
+				{
+					if (a_match.flags.test(Tf::kNegateMatch4) ==
+					    cell->cellFlags.test(TESObjectCELL::Flag::kPublicArea))
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 
 		template <class Tm>

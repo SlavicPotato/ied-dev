@@ -381,7 +381,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf 143|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>SKMP_CUSTOM_ALLOCATOR=2;TASK_POOL_USE_TBB_CONCURRENT_QUEUE;SKMP_USE_BOOST_LOCKS;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>SKMP_CUSTOM_ALLOCATOR=0;SKMP_USE_BOOST_LOCKS;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
@@ -637,6 +637,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\AnimationUpdateManager.h" />
     <ClInclude Include="IED\AnimationWeaponSlot.h" />
     <ClInclude Include="IED\AnimationWeaponType.h" />
+    <ClInclude Include="IED\AreaLightingDetection.h" />
     <ClInclude Include="IED\ConditionalVariableStorage.h" />
     <ClInclude Include="IED\ConditionsCommon.h" />
     <ClInclude Include="IED\ConfigAdditionalCMENode.h" />
@@ -706,6 +707,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ExtraLightData.h" />
     <ClInclude Include="IED\ExtraNodes.h" />
     <ClInclude Include="IED\GearNodeID.h" />
+    <ClInclude Include="IED\GlobalParams.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
     <ClInclude Include="IED\LocaleData.h" />
@@ -748,6 +750,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigOverrideModelGroupParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSkeletonMatchParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigObjectSlotListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSlotPriorityParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundPairParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigSoundParser.h" />
@@ -825,6 +828,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\UIToast.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
+    <ClInclude Include="IED\UI\Widgets\Lists\UIObjectSlotList.h" />
     <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIDayOfWeekSelectorWidgetStrings.h" />
@@ -1155,12 +1159,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ActorPerkInfo.cpp" />
     <ClCompile Include="IED\ActorValueInfo.cpp" />
     <ClCompile Include="IED\AnimationUpdateManager.cpp" />
+    <ClCompile Include="IED\AreaLightingDetection.cpp" />
     <ClCompile Include="IED\CommonParams.cpp" />
     <ClCompile Include="IED\ConditionsCommon.cpp" />
     <ClCompile Include="IED\ConfigEffectShader.cpp" />
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\ConfigSkeletonMatch.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
+    <ClCompile Include="IED\Controller\BipedSlotData.cpp" />
     <ClCompile Include="IED\Controller\IConditionalVariableProcessor.cpp" />
     <ClCompile Include="IED\Controller\IUINotification.cpp" />
     <ClCompile Include="IED\Controller\MOVNodeEntry.cpp" />
@@ -1190,6 +1196,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\D3D\D3DObject.cpp" />
     <ClCompile Include="IED\D3D\D3DVertices.cpp" />
     <ClCompile Include="IED\ExtraNodes.cpp" />
+    <ClCompile Include="IED\GlobalParams.cpp" />
     <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\NodeOverrideData.cpp" />
@@ -1230,6 +1237,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigOverrideModelGroupParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSkeletonMatchParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigObjectSlotListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSlotPriorityParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundPairParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigSoundParser.cpp" />
@@ -1290,6 +1298,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\UIMiscTextInterface.cpp" />
     <ClCompile Include="IED\UI\UISkeletonExplorer.cpp" />
     <ClCompile Include="IED\UI\UIToast.cpp" />
+    <ClCompile Include="IED\UI\Widgets\Lists\UIObjectSlotList.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIActorValueSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.cpp" />
     <ClCompile Include="IED\UI\Widgets\UIEquipmentOverrideConditionsWidget.cpp" />

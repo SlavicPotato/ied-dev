@@ -55,11 +55,15 @@ namespace IED
 				IFormCommon::GetFormName(cell)
 			};
 
+			const auto owner = cell->GetOwnerForm();
+
+			a_out.cellOwner  = owner ? owner->formID : Game::FormID{};
 			a_out.cellCoords = cell->GetCellCoordinates();
 		}
 		else
 		{
 			a_out.cell = {};
+			a_out.cellOwner = {};
 			a_out.cellCoords.reset();
 		}
 
@@ -177,6 +181,15 @@ namespace IED
 		a_out.state2   = a_actor->actorState2;
 
 		a_out.ts = IPerfCounter::Query();
+
+		if (auto pm = a_actor->processManager)
+		{
+			a_out.lightLevel = pm->high ? pm->high->lightLevel : 0.0f;
+		}
+		else
+		{
+			a_out.lightLevel = 0.0f;
+		}
 
 		if (auto npc = a_actor->GetActorBase())
 		{

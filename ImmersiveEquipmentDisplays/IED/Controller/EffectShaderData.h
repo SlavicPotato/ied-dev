@@ -45,11 +45,6 @@ namespace IED
 			Entry& operator=(const Entry&) = delete;
 			Entry& operator=(Entry&&)      = default;
 
-			/*struct node_t
-			{
-				NiPointer<BSShaderProperty> prop;
-			};*/
-
 			stl::fixed_string                                      key;
 			stl::flag<EntryFlags>                                  flags{ EntryFlags::kNone };
 			RE::BSTSmartPointer<BSEffectShaderData>                shaderData;
@@ -127,9 +122,9 @@ namespace IED
 
 		data_type               data;
 		BIPED_OBJECT            bipedObject{ BIPED_OBJECT::kNone };
+		bool                    targettingEquipped{ false };
 		NiPointer<NiNode>       sheathNode;
 		NiPointer<NiNode>       sheathNode1p;
-		bool                    targettingEquipped{ false };
 		std::optional<luid_tag> tag;
 
 	private:

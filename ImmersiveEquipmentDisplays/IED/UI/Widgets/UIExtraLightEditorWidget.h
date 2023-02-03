@@ -7,7 +7,7 @@ namespace IED
 	namespace Data
 	{
 		struct configExtraLight_t;
-		struct extraLightData_t;
+		struct ExtraLightData;
 	}
 
 	namespace UI
@@ -20,7 +20,7 @@ namespace IED
 
 		private:
 			static bool DrawImpl(
-				Data::extraLightData_t& a_data);
+				Data::ExtraLightData& a_data);
 		};
 	}
 }

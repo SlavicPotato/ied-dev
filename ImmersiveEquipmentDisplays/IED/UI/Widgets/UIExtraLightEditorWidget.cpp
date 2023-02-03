@@ -25,7 +25,7 @@ namespace IED
 		}
 
 		bool UIExtraLightEditorWidget::DrawImpl(
-			Data::extraLightData_t& a_data)
+			Data::ExtraLightData& a_data)
 		{
 			bool result = false;
 

@@ -42,7 +42,7 @@ namespace IED
 		}
 	}
 
-	void ObjectManagerData::RequestEvaluateOnAll() const noexcept
+	void ObjectManagerData::RequestEvaluateAll() const noexcept
 	{
 		for (auto& e : m_actorMap)
 		{

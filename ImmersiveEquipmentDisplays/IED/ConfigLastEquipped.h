@@ -31,26 +31,49 @@ namespace IED
 			enum Serialization : unsigned int
 			{
 				DataVersion1 = 1,
+				DataVersion2 = 2,
 			};
 
 			stl::flag<LastEquippedFlags>     flags{ DEFAULT_FLAGS };
 			configBipedObjectList_t          bipedSlots;
 			equipmentOverrideConditionList_t filterConditions;
-			Data::ObjectSlot                 slot{ Data::ObjectSlot::kMax };
+			Data::configObjectSlotList_t     slots;
 
 		private:
 			template <class Archive>
-			void serialize(Archive& a_ar, const unsigned int a_version)
+			void save(Archive& a_ar, const unsigned int a_version) const
 			{
 				a_ar& flags.value;
 				a_ar& bipedSlots;
 				a_ar& filterConditions;
-				a_ar& slot;
+				a_ar& slots;
 			}
+
+			template <class Archive>
+			void load(Archive& a_ar, const unsigned int a_version)
+			{
+				a_ar& flags.value;
+				a_ar& bipedSlots;
+				a_ar& filterConditions;
+
+				if (a_version >= DataVersion2)
+				{
+					a_ar& slots;
+				}
+				else
+				{
+					Data::ObjectSlot tmp;
+					a_ar&            tmp;
+
+					slots.emplace_back(tmp);
+				}
+			}
+
+			BOOST_SERIALIZATION_SPLIT_MEMBER();
 		};
 	}
 }
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configLastEquipped_t,
-	::IED::Data::configLastEquipped_t::Serialization::DataVersion1);
+	::IED::Data::configLastEquipped_t::Serialization::DataVersion2);

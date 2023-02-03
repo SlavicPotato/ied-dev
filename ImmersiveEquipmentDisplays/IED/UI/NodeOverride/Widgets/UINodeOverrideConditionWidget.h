@@ -87,6 +87,7 @@ namespace IED
 				m_ooNewEntryIDFaction = {};
 				m_ooNewEntryIDEffect  = {};
 				m_ooNewEntryIDPerk    = {};
+				m_ooNewEntryIDCell    = {};
 				m_ooNewBiped          = BIPED_OBJECT::kNone;
 				m_ooNewSlot           = Data::ObjectSlotExtra::kNone;
 				m_ooNewExtraCond      = Data::ExtraConditionType::kNone;
@@ -100,6 +101,7 @@ namespace IED
 			Game::FormID m_ooNewEntryIDFaction;
 			Game::FormID m_ooNewEntryIDEffect;
 			Game::FormID m_ooNewEntryIDPerk;
+			Game::FormID m_ooNewEntryIDCell;
 
 			BIPED_OBJECT             m_ooNewBiped{ BIPED_OBJECT::kNone };
 			Data::ObjectSlotExtra    m_ooNewSlot{ Data::ObjectSlotExtra::kNone };

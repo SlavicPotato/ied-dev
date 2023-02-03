@@ -12,7 +12,7 @@
 namespace IED
 {
 	void IUI::QueueToast(
-		const std::string&           a_message,
+		std::string                  a_message,
 		const std::optional<ImVec4>& a_color)
 	{
 		if (a_message.empty())
@@ -25,11 +25,11 @@ namespace IED
 			return;
 		}
 
-		QueueToastImpl(a_message, a_color);
+		QueueToastImpl(std::move(a_message), a_color);
 	}
 
 	void IUI::QueueToastAsync(
-		const std::string&           a_message,
+		std::string                  a_message,
 		const std::optional<ImVec4>& a_color)
 	{
 		if (a_message.empty())
@@ -44,7 +44,7 @@ namespace IED
 
 		ITaskPool::AddTask(
 			[this,
-		     msg = a_message,
+		     msg = std::move(a_message),
 		     col = a_color]() mutable {
 				QueueToastImpl(std::move(msg), col);
 			});

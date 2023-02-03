@@ -64,7 +64,7 @@ namespace IED
 	static std::optional<ModelData> GetModelData(
 		T*   a_form,
 		bool a_female)  //
-		noexcept //
+		noexcept        //
 		requires(
 			std::is_base_of_v<TESObjectARMO, T> ||
 			std::is_base_of_v<TESObjectARMA, T>)
@@ -108,12 +108,7 @@ namespace IED
 		case TESAmmo::kTypeID:
 			return ExtractFormModelParams<TESAmmo>(a_form, a_out, ModelType::kAmmo);
 		case TESObjectLIGH::kTypeID:
-
-			return ExtractFormModelParams<TESObjectLIGH>(
-				a_form,
-				a_out,
-				ModelType::kLight);
-
+			return ExtractFormModelParams<TESObjectLIGH>(a_form, a_out, ModelType::kLight);
 		case BGSArtObject::kTypeID:
 			return ExtractFormModelParams<BGSArtObject>(a_form, a_out);
 		case TESObjectBOOK::kTypeID:

@@ -16,7 +16,7 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(ExtraLightFlags);
 
-		struct extraLightData_t
+		struct ExtraLightData
 		{
 			static constexpr auto DEFAULT_FLAGS =
 				ExtraLightFlags::kNone;

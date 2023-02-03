@@ -1,21 +1,23 @@
 #include "pch.h"
 
-#include "UIBipedObjectList.h"
+#include "UIObjectSlotList.h"
 
-#include "IED/UI/Widgets/UIBipedObjectSelectorWidget.h"
+#include "IED/UI/Widgets/UIObjectTypeSelectorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 
 #include "IED/UI/UIClipboard.h"
 #include "IED/UI/UICommon.h"
 
+#include "IED/Data.h"
+
 namespace IED
 {
 	namespace UI
 	{
-		bool UIBipedObjectList::DrawBipedObjectListTree(
-			const char*                    a_strid,
-			Data::configBipedObjectList_t& a_data,
-			std::function<bool()>          a_extra)
+		bool UIObjectSlotList::DrawObjectSlotListTree(
+			const char*                   a_strid,
+			Data::configObjectSlotList_t& a_data,
+			std::function<bool()>         a_extra)
 		{
 			ImGui::PushID(a_strid);
 
@@ -27,14 +29,14 @@ namespace IED
 
 			switch (hr)
 			{
-			case UIBipedObjectListContextAction::Add:
-			case UIBipedObjectListContextAction::Paste:
+			case UIObjectSlotListContextAction::Add:
+			case UIObjectSlotListContextAction::Paste:
 				if (!treeDisabled)
 				{
 					ImGui::SetNextItemOpen(true);
 				}
 				[[fallthrough]];
-			case UIBipedObjectListContextAction::Clear:
+			case UIObjectSlotListContextAction::Clear:
 				result = true;
 				break;
 			}
@@ -46,7 +48,7 @@ namespace IED
 					ImGuiTreeNodeFlags_DefaultOpen |
 						ImGuiTreeNodeFlags_SpanAvailWidth,
 					"%s",
-					UIL::LS(UIWidgetCommonStrings::BipedSlots)))
+					UIL::LS(UIWidgetCommonStrings::EquipmentSlots)))
 			{
 				if (!treeDisabled)
 				{
@@ -71,11 +73,11 @@ namespace IED
 			return result;
 		}
 
-		UIBipedObjectListContextAction UIBipedObjectList::DrawHeaderContextMenu(
-			Data::configBipedObjectList_t& a_data)
+		UIObjectSlotListContextAction UIObjectSlotList::DrawHeaderContextMenu(
+			Data::configObjectSlotList_t& a_data)
 		{
-			UIBipedObjectListContextAction result{
-				UIBipedObjectListContextAction::None
+			UIObjectSlotListContextAction result{
+				UIObjectSlotListContextAction::None
 			};
 
 			ImGui::PushID("context_area");
@@ -84,7 +86,7 @@ namespace IED
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
-				m_newObject = BIPED_OBJECT::kNone;
+				m_newObject = Data::ObjectSlot::kMax;
 			}
 
 			ImGui::PopStyleVar();
@@ -95,16 +97,16 @@ namespace IED
 			{
 				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
-					if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector("##0", m_newObject))
+					if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector("##0", m_newObject))
 					{
-						if (m_newObject != BIPED_OBJECT::kNone)
+						if (m_newObject < Data::ObjectSlot::kMax)
 						{
 							auto it = std::find(a_data.begin(), a_data.end(), m_newObject);
 							if (it == a_data.end())
 							{
 								a_data.emplace_back(m_newObject);
 
-								result = UIBipedObjectListContextAction::Add;
+								result = UIObjectSlotListContextAction::Add;
 							}
 						}
 
@@ -117,17 +119,17 @@ namespace IED
 				if (UIL::LCG_MI(UIWidgetCommonStrings::ClearAll, "2"))
 				{
 					a_data.clear();
-					result = UIBipedObjectListContextAction::Clear;
+					result = UIObjectSlotListContextAction::Clear;
 				}
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem(UIL::LS(CommonStrings::Copy, "3")))
 				{
-					UIClipboard::Set<Data::configBipedObjectList_t>(a_data);
+					UIClipboard::Set<Data::configObjectSlotList_t>(a_data);
 				}
 
-				auto clipData = UIClipboard::Get<Data::configBipedObjectList_t>();
+				const auto clipData = UIClipboard::Get<Data::configObjectSlotList_t>();
 
 				if (ImGui::MenuItem(
 						UIL::LS(CommonStrings::PasteOver, "4"),
@@ -138,7 +140,7 @@ namespace IED
 					if (clipData)
 					{
 						a_data = *clipData;
-						result = UIBipedObjectListContextAction::Paste;
+						result = UIObjectSlotListContextAction::Paste;
 					}
 				}
 
@@ -150,9 +152,9 @@ namespace IED
 			return result;
 		}
 
-		UIBipedObjectListContextResult UIBipedObjectList::DrawEntryContextMenu()
+		UIObjectSlotListContextResult UIObjectSlotList::DrawEntryContextMenu()
 		{
-			UIBipedObjectListContextResult result;
+			UIObjectSlotListContextResult result;
 
 			ImGui::PushID("context_area");
 
@@ -160,14 +162,14 @@ namespace IED
 
 			if (UIPopupToggleButtonWidget::DrawPopupToggleButton("open", "context_menu"))
 			{
-				m_newObject = BIPED_OBJECT::kNone;
+				m_newObject = Data::ObjectSlot::kMax;
 			}
 
 			ImGui::SameLine(0, ImGui::GetStyle().ItemInnerSpacing.x);
 
 			if (ImGui::ArrowButton("up", ImGuiDir_Up))
 			{
-				result.action = UIBipedObjectListContextAction::Swap;
+				result.action = UIObjectSlotListContextAction::Swap;
 				result.dir    = SwapDirection::Up;
 			}
 
@@ -175,7 +177,7 @@ namespace IED
 
 			if (ImGui::ArrowButton("down", ImGuiDir_Down))
 			{
-				result.action = UIBipedObjectListContextAction::Swap;
+				result.action = UIObjectSlotListContextAction::Swap;
 				result.dir    = SwapDirection::Down;
 			}
 
@@ -187,10 +189,10 @@ namespace IED
 			{
 				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (UIBipedObjectSelectorWidget::DrawBipedObjectSelector("##0", m_newObject))
+					if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector("##0", m_newObject))
 					{
 						result.object = m_newObject;
-						result.action = UIBipedObjectListContextAction::Add;
+						result.action = UIObjectSlotListContextAction::Add;
 
 						ImGui::CloseCurrentPopup();
 					}
@@ -200,7 +202,7 @@ namespace IED
 
 				if (UIL::LCG_MI(CommonStrings::Delete, "2"))
 				{
-					result.action = UIBipedObjectListContextAction::Clear;
+					result.action = UIObjectSlotListContextAction::Clear;
 				}
 
 				ImGui::EndPopup();
@@ -211,8 +213,8 @@ namespace IED
 			return result;
 		}
 
-		bool UIBipedObjectList::DrawTable(
-			Data::configBipedObjectList_t& a_data)
+		bool UIObjectSlotList::DrawTable(
+			Data::configObjectSlotList_t& a_data)
 		{
 			if (a_data.empty())
 			{
@@ -234,11 +236,11 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.f }))
 			{
-				auto w =
+				const auto w =
 					(ImGui::GetFontSize() + ImGui::GetStyle().ItemInnerSpacing.x) * 3.0f + 2.0f;
 
 				ImGui::TableSetupColumn("", ImGuiTableColumnFlags_NoResize | ImGuiTableColumnFlags_WidthFixed, w);
-				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Biped), ImGuiTableColumnFlags_None, 250.0f);
+				ImGui::TableSetupColumn(UIL::LS(CommonStrings::Slot), ImGuiTableColumnFlags_None, 250.0f);
 
 				ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
 
@@ -263,9 +265,9 @@ namespace IED
 
 					switch (hr.action)
 					{
-					case UIBipedObjectListContextAction::Add:
+					case UIObjectSlotListContextAction::Add:
 
-						if (hr.object != BIPED_OBJECT::kNone)
+						if (hr.object < Data::ObjectSlot::kMax)
 						{
 							if (std::find(a_data.begin(), a_data.end(), hr.object) == a_data.end())
 							{
@@ -275,14 +277,14 @@ namespace IED
 						}
 
 						break;
-					case UIBipedObjectListContextAction::Clear:
+					case UIObjectSlotListContextAction::Clear:
 
 						it     = a_data.erase(it);
 						result = true;
 
 						break;
 
-					case UIBipedObjectListContextAction::Swap:
+					case UIObjectSlotListContextAction::Swap:
 
 						if (IterSwap(a_data, it, hr.dir))
 						{
@@ -296,7 +298,7 @@ namespace IED
 					{
 						ImGui::TableSetColumnIndex(1);
 
-						ImGui::Text("%s", UIBipedObjectSelectorWidget::GetBipedSlotDesc(*it));
+						ImGui::Text("%s", Data::GetSlotName(*it));
 
 						++it;
 						i++;

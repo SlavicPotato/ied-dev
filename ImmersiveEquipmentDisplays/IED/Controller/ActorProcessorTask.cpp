@@ -7,14 +7,12 @@
 #include "IObjectManager.h"
 
 #include "IED/AnimationUpdateManager.h"
+#include "IED/AreaLightingDetection.h"
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 #include "IED/Util/Common.h"
-
-#include <ext/BSAnimationUpdateData.h>
-#include <ext/Sky.h>
 
 namespace IED
 {
@@ -244,33 +242,31 @@ namespace IED
 	{
 		bool changed = false;
 
-		if (const auto lrhandle = (*g_thePlayer)->lastRiddenHorseHandle;
-		    lrhandle != m_globalState.playerLastRidden)
+		if (const auto v = (*g_thePlayer)->lastRiddenHorseHandle;
+		    v != m_globalState.playerLastRidden)
 		{
-			m_globalState.playerLastRidden = lrhandle;
+			m_globalState.playerLastRidden = v;
 
 			GetController().RequestLFEvaluateAll();
 		}
 
-		if (const auto fpstate = IsInFirstPerson();
-		    fpstate != m_globalState.inFirstPerson)
+		if (const auto v = IsInFirstPerson();
+		    v != m_globalState.inFirstPerson)
 		{
-			m_globalState.inFirstPerson = fpstate;
+			m_globalState.inFirstPerson = v;
 			changed                     = true;
 		}
 
-		if (const bool cv = MenuTopicManager::GetSingleton()->HasDialogueTarget();
-		    cv != m_globalState.inDialogue)
+		if (const bool v = MenuTopicManager::GetSingleton()->HasDialogueTarget();
+		    v != m_globalState.inDialogue)
 		{
-			m_globalState.inDialogue = cv;
+			m_globalState.inDialogue = v;
 			changed                  = true;
 		}
 
 		if (changed)
 		{
-			auto& controller = GetController();
-
-			auto& actorMap = controller.GetActorMap();
+			const auto& actorMap = GetController().GetActorMap();
 
 			if (auto it = actorMap.find(Data::IData::GetPlayerRefID());
 			    it != actorMap.end())
@@ -288,20 +284,26 @@ namespace IED
 				IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL);
 
 			const auto* const sky = RE::Sky::GetSingleton();
-			assert(sky);
 
-			if (const auto current = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
-			    current != m_globalState.currentWeather)
+			if (const auto v = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
+			    v != m_globalState.currentWeather)
 			{
-				m_globalState.currentWeather = current;
+				m_globalState.currentWeather = v;
 				changed                      = true;
 			}
 
-			if (const auto tod = Data::GetTimeOfDay(sky);
-			    tod != m_globalState.timeOfDay)
+			if (const auto v = Data::GetTimeOfDay(sky);
+			    v != m_globalState.timeOfDay)
 			{
-				m_globalState.timeOfDay = tod;
+				m_globalState.timeOfDay = v;
 				changed                 = true;
+			}
+
+			if (const auto v = IsAreaDark(sky);
+			    v != m_globalState.isAreaDark)
+			{
+				m_globalState.isAreaDark = v;
+				changed                  = true;
 			}
 
 #if defined(IED_ENABLE_CONDITION_EN)
@@ -339,10 +341,10 @@ namespace IED
 			const auto calendar = RE::Calendar::GetSingleton();
 			assert(calendar);
 
-			if (const auto cd = calendar->GetDayOfWeek();
-			    cd != m_globalState.dayOfWeek)
+			if (const auto v = calendar->GetDayOfWeek();
+			    v != m_globalState.dayOfWeek)
 			{
-				m_globalState.dayOfWeek = cd;
+				m_globalState.dayOfWeek = v;
 				changed                 = true;
 			}
 		}
@@ -377,7 +379,14 @@ namespace IED
 			return;
 		}
 
-		const auto* const cell = actor->GetParentCell();
+		if (actor != a_holder.m_actor)  // ??
+		{
+			state.active = false;
+			return;
+		}
+
+		const auto cell = actor->GetParentCell();
+
 		if (cell && cell->IsAttached())
 		{
 			if (!state.active)
@@ -390,11 +399,6 @@ namespace IED
 		{
 			state.active = false;
 			return;
-		}
-
-		if (actor != a_holder.m_actor)  // ??
-		{
-			a_holder.m_actor = actor;
 		}
 
 		if (state.UpdateState(actor, cell))
@@ -454,15 +458,15 @@ namespace IED
 			a_holder.RequestEval();
 		}
 
-		if (a_holder.m_flags.test(ActorObjectHolderFlags::kWantEval))
+		if (a_holder.m_flagsbf.wantEval)
 		{
-			if (a_holder.m_flagsbf.evalCountdown > 0)
+			if (a_holder.m_flagsbf.evalCountdown != 0)
 			{
 				a_holder.m_flagsbf.evalCountdown--;
 			}
 
-			if (a_holder.m_flags.test(ActorObjectHolderFlags::kImmediateEval) ||
-			    a_holder.m_flagsbf.evalCountdown == 0)
+			if (a_holder.m_flagsbf.evalCountdown == 0 ||
+			    a_holder.m_flagsbf.immediateEval)
 			{
 				a_holder.m_flags.clear(ActorObjectHolderFlags::kRequestEvalMask);
 				a_holder.m_flags.set(ActorObjectHolderFlags::kEvalThisFrame);
@@ -541,7 +545,6 @@ namespace IED
 					a_holder.GetTempData(),
 					a_holder.m_actor.get(),
 					info->npc,
-					info->npcOrTemplate,
 					info->race,
 					info->root,
 					info->npcRoot,
@@ -556,21 +559,20 @@ namespace IED
 		}
 	}
 
-	void ActorProcessorTask::RunPreUpdates() noexcept
+	void ActorProcessorTask::RunPreUpdates(bool a_effectUpdates) noexcept
 	{
 		const auto interval = *Game::g_frameTimerSlow;
 
 		std::optional<PhysicsUpdateData> physUpdateData;
 
-		if (PhysicsProcessingEnabled())
+		if (PhysicsProcessingEnabled() && a_effectUpdates)
 		{
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
 
-		const auto stepMuls         = Game::Unk2f6b948::GetStepMultipliers();
-		const auto runEffectUpdates = !Game::IsPaused();
+		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
 
-		auto& data = GetController().GetActorMap().getvec();
+		const auto& data = GetController().GetActorMap().getvec();
 
 		if (ParallelProcessingEnabled())
 		{
@@ -584,7 +586,7 @@ namespace IED
 						stepMuls,
 						physUpdateData,
 						a_e->second,
-						runEffectUpdates);
+						a_effectUpdates);
 				});
 
 			m_syncRefParentQueue.process(
@@ -610,7 +612,7 @@ namespace IED
 					stepMuls,
 					physUpdateData,
 					e->second,
-					runEffectUpdates);
+					a_effectUpdates);
 			}
 		}
 	}
@@ -628,9 +630,14 @@ namespace IED
 
 		m_timer.Begin();
 
-		UpdateGlobalState();
+		const bool notPaused = !Game::IsPaused();
 
-		RunPreUpdates();
+		if (notPaused)
+		{
+			UpdateGlobalState();
+		}
+
+		RunPreUpdates(notPaused);
 
 		const auto& cvdata = controller.GetActiveConfig().condvars;
 
@@ -672,10 +679,12 @@ namespace IED
 			{
 				ProcessEvalRequest(holder);
 				ProcessTransformUpdateRequest(holder);
-
-				holder.ClearCurrentProcessParams();
 			}
+
+			holder.ClearCurrentProcessParams();
 		}
+
+		m_globalParams.reset();
 
 		controller.RunObjectCleanup();
 
@@ -685,6 +694,11 @@ namespace IED
 	Controller& ActorProcessorTask::GetController() noexcept
 	{
 		return static_cast<Controller&>(*this);
+	}
+
+	const Controller& ActorProcessorTask::GetController() const noexcept
+	{
+		return static_cast<const Controller&>(*this);
 	}
 
 }

@@ -114,6 +114,7 @@ namespace IED
 			ForceTryLoadAnim                    = 1105,
 			LightFieldOfView                    = 1106,
 			LightTargetSelf                     = 1107,
+			MatchNPCOrTemplate                  = 1108,
 		};
 
 	}

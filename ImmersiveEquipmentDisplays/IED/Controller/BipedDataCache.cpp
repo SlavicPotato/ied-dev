@@ -73,6 +73,28 @@ namespace IED
 		}
 	}
 
+	namespace detail
+	{
+		SKMP_FORCEINLINE constexpr void clean_form_list(
+			stl::boost_vector<Data::configFormZeroMissing_t>& a_data,
+			std::uint32_t                                     a_maxCount)
+		{
+			std::erase_if(
+				a_data,
+				[](auto& a_v) [[msvc::forceinline]] {
+					return !a_v;
+				});
+
+			while (!a_data.empty() &&
+			       a_data.size() > a_maxCount)
+			{
+				a_data.pop_back();
+			}
+
+			a_data.shrink_to_fit();
+		}
+	}
+
 	void BipedDataCache::clean_entry(BipedCacheEntry& a_entry)
 	{
 		// probably can't happen but just in case
@@ -82,21 +104,14 @@ namespace IED
 			return;
 		}
 
-		for (auto& f : a_entry.data->biped)
+		for (auto& e : a_entry.data->biped)
 		{
-			std::erase_if(
-				f.forms,
-				[](auto& a_v) [[msvc::forceinline]] {
-					return !a_v;
-				});
+			detail::clean_form_list(e.forms, m_maxFormsPerSlot);
+		}
 
-			while (!f.forms.empty() &&
-			       f.forms.size() > m_maxFormsPerSlot)
-			{
-				f.forms.pop_back();
-			}
-
-			f.forms.shrink_to_fit();
+		for (auto& e : a_entry.data->displays)
+		{
+			detail::clean_form_list(e.lastSlotted, m_maxFormsPerSlot);
 		}
 	}
 }

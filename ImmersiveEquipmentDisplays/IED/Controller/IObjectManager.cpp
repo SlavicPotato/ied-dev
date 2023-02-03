@@ -256,6 +256,16 @@ namespace IED
 			});
 	}
 
+	void IObjectManager::QueueRequestEvaluateAll() const noexcept
+	{
+		ITaskPool::AddTask(
+			[this] {
+				const stl::lock_guard lock(m_lock);
+
+				RequestEvaluateAll();
+			});
+	}
+
 	void IObjectManager::QueueRequestEvaluateLFAll() const noexcept
 	{
 		ITaskPool::AddTask(
@@ -627,7 +637,7 @@ namespace IED
 		}
 
 		targetNodes.rootNode->AttachChild(itemRoot, true);
-
+		
 		UpdateDownwardPass(itemRoot);
 
 		TESObjectLIGH* lightForm = nullptr;
@@ -635,6 +645,7 @@ namespace IED
 		if (a_activeConfig.flags.test(Data::BaseFlags::kAttachLight))
 		{
 			lightForm = GetLightFormForAttach(a_modelForm);
+
 			TryCreatePointLight(
 				a_params.actor,
 				object,
@@ -994,11 +1005,12 @@ namespace IED
 			    e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kAttachLight))
 			{
 				lightForm = GetLightFormForAttach(e.form);
+
 				TryCreatePointLight(
 					a_params.actor,
 					e.object,
 					lightForm,
-					Data::extraLightData_t{},
+					Data::ExtraLightData{},
 					n.light);
 			}
 
@@ -1169,11 +1181,11 @@ namespace IED
 	}
 
 	void IObjectManager::TryCreatePointLight(
-		Actor*                        a_actor,
-		NiNode*                       a_object,
-		TESObjectLIGH*                a_lightForm,
-		const Data::extraLightData_t& a_config,
-		ObjectLight&                  a_out) noexcept
+		Actor*                      a_actor,
+		NiNode*                     a_object,
+		TESObjectLIGH*              a_lightForm,
+		const Data::ExtraLightData& a_config,
+		ObjectLight&                a_out) noexcept
 	{
 		if (a_lightForm)
 		{

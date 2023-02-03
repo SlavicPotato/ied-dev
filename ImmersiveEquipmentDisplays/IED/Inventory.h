@@ -18,7 +18,7 @@ namespace IED
 		std::uint32_t                        rating;
 	};
 
-	using SlotItemCandidates = stl::vector<SlotCandidate>;
+	using SlotItemCandidates = stl::cache_aligned::vector<SlotCandidate>;
 
 	using SlotResults = std::array<SlotItemCandidates, stl::underlying(Data::ObjectType::kMax)>;
 

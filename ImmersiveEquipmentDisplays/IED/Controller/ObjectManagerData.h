@@ -136,7 +136,7 @@ namespace IED
 		void RequestVariableUpdateOnAll() const noexcept;
 		void RequestVariableUpdate(Game::FormID a_handle) const noexcept;
 
-		void RequestEvaluateOnAll() const noexcept;
+		void RequestEvaluateAll() const noexcept;
 
 	private:
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;

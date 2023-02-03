@@ -398,7 +398,7 @@ namespace IED
 					a_objectEntry,
 					a_hasMinCount,
 					[&](auto& a_item) noexcept {
-						return configBase_t::do_match_fp(
+						return configBase_t::do_match_sfp(
 							a_config.lastEquipped.filterConditions,
 							{ a_item.form },
 							a_params,

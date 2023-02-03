@@ -20,7 +20,6 @@ namespace IED
 		CommonParams(
 			Actor* const       a_actor,
 			TESNPC* const      a_npc,
-			TESNPC* const      a_npcOrTemplate,
 			TESRace* const     a_race,
 			BSFadeNode* const  a_root,
 			NiNode* const      a_npcroot,
@@ -109,36 +108,10 @@ namespace IED
 			       actor->IsPlayerTeammate();
 		}
 
-		[[nodiscard]] constexpr auto get_current_weather() const noexcept
-		{
-			if (!currentWeather)
-			{
-				const auto* const sky = RE::Sky::GetSingleton();
-				const auto        cw  = sky ? sky->GetCurrentWeatherHalfPct() : nullptr;
-
-				currentWeather.emplace(cw);
-			}
-
-			return *currentWeather;
-		}
-
-		[[nodiscard]] constexpr auto get_weather_class() const noexcept
-		{
-			if (!weatherClass)
-			{
-				if (const auto w = get_current_weather())
-				{
-					const auto f = w->data.flags & RE::TESWeather::WeatherDataFlag::kWeatherMask;
-					weatherClass.emplace(static_cast<WeatherClassificationFlags>(f));
-				}
-				else
-				{
-					weatherClass.emplace(WeatherClassificationFlags::kNone);
-				}
-			}
-
-			return *weatherClass;
-		}
+		[[nodiscard]] RE::TESWeather*                       get_current_weather() const noexcept;
+		[[nodiscard]] stl::flag<WeatherClassificationFlags> get_weather_class() const noexcept;
+		[[nodiscard]] Data::TimeOfDay                       get_time_of_day() const noexcept;
+		[[nodiscard]] bool                                  is_area_dark() const noexcept;
 
 		[[nodiscard]] constexpr auto get_npc_shield_slot() const noexcept
 		{
@@ -203,16 +176,6 @@ namespace IED
 			}
 		}
 
-		[[nodiscard]] constexpr auto get_time_of_day() const noexcept
-		{
-			if (!timeOfDay)
-			{
-				timeOfDay.emplace(Data::GetTimeOfDay(RE::Sky::GetSingleton()));
-			}
-
-			return *timeOfDay;
-		}
-
 		[[nodiscard]] constexpr auto is_on_mount() const noexcept
 		{
 			if (!isMounted)
@@ -241,26 +204,26 @@ namespace IED
 
 		[[nodiscard]] BGSVoiceType* get_voice_type() const noexcept;
 
+		[[nodiscard]] TESForm* get_parent_cell_owner() const noexcept;
+
 	private:
-		mutable std::optional<Game::ObjectRefHandle>                 furnHandle;
-		mutable std::optional<TESFurniture*>                         furniture;
-		mutable std::optional<Biped*>                                biped;
-		mutable std::optional<TESObjectARMO*>                        actorSkin;
-		mutable std::optional<BGSLocation*>                          location;
-		mutable std::optional<TESCombatStyle*>                       combatStyle;
-		mutable std::optional<RE::TESWeather*>                       currentWeather;
-		mutable std::optional<stl::flag<WeatherClassificationFlags>> weatherClass;
-		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		mutable std::optional<NiPointer<Actor>>                      mountedActor;
-		mutable std::optional<NiPointer<Actor>>                      mountedByActor;
-		mutable std::optional<NiPointer<Actor>>                      lastRiddenPlayerHorse;
-		mutable std::optional<bool>                                  layingDown;
-		mutable std::optional<bool>                                  canDualWield;
-		mutable std::optional<bool>                                  isDead;
-		mutable std::optional<bool>                                  isInMerchantFaction;
-		mutable std::optional<bool>                                  isInPlayerEnemyFaction;
-		mutable std::optional<bool>                                  isMounted;
-		mutable std::optional<bool>                                  isHorse;
-		mutable std::optional<bool>                                  isMountHorse;
+		mutable std::optional<Game::ObjectRefHandle> furnHandle;
+		mutable std::optional<TESFurniture*>         furniture;
+		mutable std::optional<Biped*>                biped;
+		mutable std::optional<TESObjectARMO*>        actorSkin;
+		mutable std::optional<BGSLocation*>          location;
+		mutable std::optional<TESCombatStyle*>       combatStyle;
+		mutable std::optional<NiPointer<Actor>>      mountedActor;
+		mutable std::optional<NiPointer<Actor>>      mountedByActor;
+		mutable std::optional<NiPointer<Actor>>      lastRiddenPlayerHorse;
+		mutable std::optional<bool>                  layingDown;
+		mutable std::optional<bool>                  canDualWield;
+		mutable std::optional<bool>                  isDead;
+		mutable std::optional<bool>                  isInMerchantFaction;
+		mutable std::optional<bool>                  isInPlayerEnemyFaction;
+		mutable std::optional<bool>                  isMounted;
+		mutable std::optional<bool>                  isHorse;
+		mutable std::optional<bool>                  isMountHorse;
+		mutable std::optional<TESForm*>              parentCellOwner;
 	};
 }

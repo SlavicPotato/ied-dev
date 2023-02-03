@@ -95,6 +95,7 @@ namespace IED
 			Variable   = 22,
 			Effect     = 23,
 			Perk       = 24,
+			Cell       = 25,
 		};
 
 		enum class PresenceEquippedHandMatch : std::uint32_t
@@ -175,13 +176,13 @@ namespace IED
 			{
 				switch (a_type)
 				{
+				case EquipmentOverrideConditionType::Perk:
+					perkRank = 1;
+					[[fallthrough]];
 				case EquipmentOverrideConditionType::Global:
 				case EquipmentOverrideConditionType::Race:
 				case EquipmentOverrideConditionType::Actor:
 				case EquipmentOverrideConditionType::NPC:
-				case EquipmentOverrideConditionType::Perk:
-					perkRank = 1;
-					[[fallthrough]];
 				case EquipmentOverrideConditionType::Faction:
 					form = a_form;
 					break;
@@ -274,6 +275,7 @@ namespace IED
 				case EquipmentOverrideConditionType::Idle:
 				case EquipmentOverrideConditionType::Skeleton:
 				case EquipmentOverrideConditionType::Effect:
+				case EquipmentOverrideConditionType::Cell:
 
 					switch (a_matchType)
 					{

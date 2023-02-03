@@ -208,6 +208,7 @@ namespace IED
 		CachedFactionData(a_actor),
 		CachedActiveEffectData(a_actor),
 		CachedPerkData(a_actor),
+		cell(a_actor->GetParentCell()),
 		active(a_actor->IsParentCellAttached()),
 		inInterior(a_actor->IsInInteriorCell()),
 		worldspace(a_actor->GetParentCellWorldspace()),
@@ -246,11 +247,12 @@ namespace IED
 	}
 
 	bool CachedActorData::UpdateState(
-		const Actor*         a_actor,
-		const TESObjectCELL* a_cell) noexcept
+		const Actor*   a_actor,
+		TESObjectCELL* a_cell) noexcept
 	{
 		bool result = false;
 
+		state_var_update(cell, a_cell, result);
 		state_var_update(inInterior, a_cell->IsInterior(), result);
 		state_var_update(worldspace, a_cell->GetWorldSpace(), result);
 		state_var_update(currentIdle, a_actor->GetFurnitureIdle(), result);

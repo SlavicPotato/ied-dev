@@ -309,7 +309,7 @@ namespace IED
 			kProtected               = 28,
 			kSitting                 = 29,
 			kSleeping                = 30,
-			kIsMountRidden             = 31,
+			kIsMountRidden           = 31,
 			kWeaponDrawn             = 32,
 			kRandomPercent           = 33,
 			kNodeMonitor             = 34,
@@ -333,7 +333,12 @@ namespace IED
 			kInDialogue              = 52,
 			kLifeState               = 53,
 			kActorValue              = 54,
-			kXP32Skeleton         = 55,
+			kXP32Skeleton            = 55,
+			kInDarkArea              = 56,
+			kInPublicCell            = 57,
+			kIsCellOwner             = 58,
+			kInOwnedCell             = 59,
+			kIsNPCCellOwner          = 60,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -679,6 +684,7 @@ namespace IED
 			stl::boost_container_allocator<stl::fixed_string>>;
 
 		using configFixedStringList_t = stl::boost_vector<stl::fixed_string>;
+		using configObjectSlotList_t  = stl::boost_vector<Data::ObjectSlot>;
 
 	}
 

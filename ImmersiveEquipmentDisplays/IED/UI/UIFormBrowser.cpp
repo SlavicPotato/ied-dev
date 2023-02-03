@@ -59,7 +59,7 @@ namespace IED
 				{ UIFormBrowserStrings::Hazard, BGSHazard::kTypeID },
 				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
 				{ UIFormBrowserStrings::Perk, BGSPerk::kTypeID },
-				{ UIFormBrowserStrings::EquipSlot, BGSEquipSlot::kTypeID },
+				{ UIFormBrowserStrings::EquipSlot, BGSEquipSlot::kTypeID }
 
 			} }
 

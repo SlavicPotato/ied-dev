@@ -64,6 +64,11 @@ namespace IED
 			LifeState               = 5453,
 			ActorValue              = 5454,
 			XP32Skeleton            = 5455,
+			InDarkArea              = 5456,
+			InPublicCell            = 5457,
+			IsCellOwner             = 5458,
+			InOwnedCell             = 5459,
+			IsNPCCellOwner          = 5460,
 		};
 	}
 }

@@ -30,13 +30,10 @@ namespace IED
 		public:
 			UIBipedObjectList() = default;
 
-			bool DrawBipedObjectTree(
+			bool DrawBipedObjectListTree(
+				const char*                    a_strid,
 				Data::configBipedObjectList_t& a_data,
-				const std::function<bool()>&   a_extra = [] { return false; });
-
-			bool DrawBipedObjectList(
-				Data::configBipedObjectList_t& a_data,
-				const std::function<void()>&   a_extra);
+				std::function<bool()>          a_extra = [] { return false; });
 
 		private:
 			UIBipedObjectListContextAction DrawHeaderContextMenu(Data::configBipedObjectList_t& a_data);

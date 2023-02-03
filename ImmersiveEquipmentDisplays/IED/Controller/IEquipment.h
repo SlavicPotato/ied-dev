@@ -125,7 +125,6 @@ namespace IED
 				a_config.bipedSlots.begin(),
 				a_config.bipedSlots.end(),
 				[&](auto& a_v) noexcept [[msvc::forceinline]] {
-
 					const auto slot = a_params.translate_biped_object(a_v);
 
 					return slot < BIPED_OBJECT::kTotal &&
@@ -229,24 +228,27 @@ namespace IED
 	{
 		auto& formData = a_params.collector.data.forms;
 
-		if (a_config.slot < Data::ObjectSlot::kMax)
+		for (auto& e : a_config.slots)
 		{
-			const auto& slot = a_params.objects.GetSlot(a_config.slot);
-
-			if (const auto& form = slot.slotState.lastSlotted)
+			if (e < Data::ObjectSlot::kMax)
 			{
-				auto it = formData.find(form);
-				if (it != formData.end())
+				const auto& slot = a_params.objects.GetSlot(e);
+
+				for (const auto& form : slot.slotState.lastSlotted)
 				{
-					if (Data::configBase_t::do_match_fp(
-							a_config.filterConditions,
-							{ it->second.form },
-							a_params,
-							true))
+					auto it = formData.find(form);
+					if (it != formData.end())
 					{
-						if (a_validationFunc(*it))
+						if (Data::configBase_t::do_match_sfp(
+								a_config.filterConditions,
+								{ it->second.form },
+								a_params,
+								true))
 						{
-							return it;
+							if (a_validationFunc(*it))
+							{
+								return it;
+							}
 						}
 					}
 				}
@@ -296,7 +298,7 @@ namespace IED
 				continue;
 			}
 
-			if (!Data::configBase_t::do_match_fp(
+			if (!Data::configBase_t::do_match_sfp(
 					a_config.filterConditions,
 					{ it->second.form },
 					a_params,

@@ -16,11 +16,11 @@ namespace IED
 
 		SKMP_FORCEINLINE constexpr bool IsReferenceMovedOrOphaned() const noexcept
 		{
-			if (auto objParent = rootNode->m_parent)
+			if (const auto* const objParent = rootNode->m_parent)
 			{
-				if (auto objParentParent = objParent->m_parent)
+				if (const auto* const objParentParent = objParent->m_parent)
 				{
-					if (auto refParent = ref->m_parent)
+					if (const auto* const refParent = ref->m_parent)
 					{
 						return refParent != objParentParent;
 					}
@@ -92,7 +92,7 @@ namespace IED
 		static void GetLightNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
-		
+
 		static void GetMiscNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;

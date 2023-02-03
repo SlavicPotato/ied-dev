@@ -263,5 +263,6 @@ namespace IED
 		Left            = 334,
 		Right           = 335,
 		Hand            = 336,
+		Interior        = 337,
 	};
 }

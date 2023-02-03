@@ -76,6 +76,7 @@ namespace IED
 		void QueueRequestEvaluateLF(
 			Game::FormID a_actor) const noexcept;
 
+		void QueueRequestEvaluateAll() const noexcept;
 		void QueueRequestEvaluateLFAll() const noexcept;
 
 		void QueueRequestEvaluate(
@@ -165,7 +166,7 @@ namespace IED
 			Actor*                        a_actor,
 			NiNode*                       a_object,
 			TESObjectLIGH*                a_lightForm,
-			const Data::extraLightData_t& a_config,
+			const Data::ExtraLightData& a_config,
 			ObjectLight&                  a_out) noexcept;
 
 		static TESObjectLIGH* GetLightFormForAttach(TESForm* a_modelForm) noexcept;

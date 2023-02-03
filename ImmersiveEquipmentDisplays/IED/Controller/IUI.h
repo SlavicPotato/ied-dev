@@ -149,12 +149,24 @@ namespace IED
 		}
 
 		void QueueToast(
-			const std::string&           a_message,
+			std::string                  a_message,
 			const std::optional<ImVec4>& a_color = {});
 
+		template <class... Args>
+		void QueueToast(
+			const char*                  a_fmt,
+			const std::optional<ImVec4>& a_color,
+			Args... a_args);
+
 		void QueueToastAsync(
-			const std::string&           a_message,
+			std::string                  a_message,
 			const std::optional<ImVec4>& a_color = {});
+
+		template <class... Args>
+		void QueueToastAsync(
+			const char*                  a_fmt,
+			const std::optional<ImVec4>& a_color,
+			Args... a_args);
 
 	protected:
 		void QueueToastImpl(
@@ -185,5 +197,31 @@ namespace IED
 		stl::smart_ptr<IUIRenderTaskMain> m_task;
 		stl::smart_ptr<IUIRenderTask>     m_toastTask;
 	};
+
+	template <class... Args>
+	void IUI::QueueToast(
+		const char*                  a_fmt,
+		const std::optional<ImVec4>& a_color,
+		Args... a_args)
+	{
+		const auto buffer = std::make_unique<char[]>(2048);
+
+		::_snprintf_s(buffer.get(), 2048, _TRUNCATE, a_fmt, a_args...);
+
+		QueueToast(std::string(buffer.get()), a_color);
+	}
+
+	template <class... Args>
+	void IUI::QueueToastAsync(
+		const char*                  a_fmt,
+		const std::optional<ImVec4>& a_color,
+		Args... a_args)
+	{
+		const auto buffer = std::make_unique<char[]>(2048);
+
+		::_snprintf_s(buffer.get(), 2048, _TRUNCATE, a_fmt, a_args...);
+
+		QueueToastAsync(std::string(buffer.get()), a_color);
+	}
 
 }

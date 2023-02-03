@@ -123,6 +123,10 @@ namespace IED
 			DynamicArrows                       = 2115,
 			RemoveEditorMarker                  = 2116,
 			ForceTryLoadAnim                    = 2117,
+			LightLevel                          = 2118,
+			PublicArea                          = 2119,
+			EquipmentSlots                      = 2120,
+			MatchNPCOrTemplate                  = 2121,
 		};
 	}
 }

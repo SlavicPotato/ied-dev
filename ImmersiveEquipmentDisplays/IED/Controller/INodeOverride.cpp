@@ -441,11 +441,12 @@ namespace IED
 					Data::NodeOverrideConditionFlags>(
 					a_params,
 					a_data,
-					[&](TESForm* a_form) {
+					[&](const TESForm* a_form) {
 						if (a_form->IsArmor())
 						{
 							auto& data = a_params.get_item_data();
 							auto  it   = data.find(a_form->formID);
+
 							if (it != data.end())
 							{
 								a_params.set_matched_item(it->second.bip);
@@ -657,6 +658,14 @@ namespace IED
 				a_params,
 				a_data,
 				a_params.objects.GetCachedData());
+
+		case Data::NodeOverrideConditionType::Cell:
+
+			return Conditions::match_cell<
+				Data::configNodeOverrideCondition_t,
+				Data::NodeOverrideConditionFlags>(
+				a_params,
+				a_data);
 		}
 
 		return false;

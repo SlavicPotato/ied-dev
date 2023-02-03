@@ -2,8 +2,6 @@
 
 #include "UILastEquippedWidget.h"
 
-#include "UIObjectTypeSelectorWidget.h"
-
 #include "IED/Controller/Controller.h"
 
 #include "IED/UI/Custom/Widgets/UICustomEditorStrings.h"
@@ -13,7 +11,6 @@ namespace IED
 	namespace UI
 	{
 		UILastEquippedWidget::UILastEquippedWidget(Controller& a_controller) :
-			UIBipedObjectList(),
 			UIEquipmentOverrideConditionsWidget(a_controller)
 		{
 		}
@@ -28,7 +25,7 @@ namespace IED
 				a_data.filterConditions,
 				a_updateFunc);
 
-			bool empty = a_data.filterConditions.empty();
+			const bool empty = a_data.filterConditions.empty();
 
 			if (!empty)
 			{
@@ -63,7 +60,8 @@ namespace IED
 
 			UICommon::PopDisabled(empty);
 
-			if (DrawBipedObjectTree(
+			if (DrawBipedObjectListTree(
+					"bol_tree",
 					a_data.bipedSlots,
 					[&] {
 						ImGui::Columns(2, nullptr, false);
@@ -80,7 +78,7 @@ namespace IED
 
 						ImGui::NextColumn();
 
-						bool d = a_data.flags.test(Data::LastEquippedFlags::kDisableIfSlotOccupied);
+						const bool d = a_data.flags.test(Data::LastEquippedFlags::kDisableIfSlotOccupied);
 
 						UICommon::PushDisabled(d);
 
@@ -111,9 +109,9 @@ namespace IED
 
 			if (a_data.flags.test(Data::LastEquippedFlags::kFallBackToSlotted))
 			{
-				if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector(
-					UIL::LS(CommonStrings::Slot, "ctl_2"),
-					a_data.slot))
+				if (DrawObjectSlotListTree(
+						"esl_tree",
+						a_data.slots))
 				{
 					a_updateFunc();
 				}

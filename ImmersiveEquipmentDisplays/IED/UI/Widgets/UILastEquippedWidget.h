@@ -3,6 +3,7 @@
 #include "UIEquipmentOverrideConditionsWidget.h"
 
 #include "Lists/UIBipedObjectList.h"
+#include "Lists/UIObjectSlotList.h"
 
 #include "IED/ConfigLastEquipped.h"
 
@@ -16,6 +17,7 @@ namespace IED
 	{
 		class UILastEquippedWidget :
 			public UIBipedObjectList,
+			public UIObjectSlotList,
 			public virtual UIEquipmentOverrideConditionsWidget
 		{
 		public:

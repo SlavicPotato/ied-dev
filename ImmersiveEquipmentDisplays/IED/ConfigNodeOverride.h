@@ -117,6 +117,7 @@ namespace IED
 			Variable   = 21,
 			Effect     = 22,
 			Perk       = 23,
+			Cell       = 24,
 		};
 
 		struct NodeOverrideConditionFlagsBitfield
@@ -190,14 +191,14 @@ namespace IED
 			{
 				switch (a_type)
 				{
+				case NodeOverrideConditionType::Perk:
+					perkRank = 1;
+					[[fallthrough]];
 				case NodeOverrideConditionType::Global:
 				case NodeOverrideConditionType::Race:
 				case NodeOverrideConditionType::Actor:
 				case NodeOverrideConditionType::NPC:
 				case NodeOverrideConditionType::Idle:
-				case NodeOverrideConditionType::Perk:
-					perkRank = 1;
-					[[fallthrough]];
 				case NodeOverrideConditionType::Faction:
 					form = a_form;
 					break;
@@ -236,6 +237,7 @@ namespace IED
 				case NodeOverrideConditionType::Idle:
 				case NodeOverrideConditionType::Skeleton:
 				case NodeOverrideConditionType::Effect:
+				case NodeOverrideConditionType::Cell:
 					if (a_type == NodeOverrideConditionType::Location ||
 					    a_type == NodeOverrideConditionType::Worldspace)
 					{

@@ -318,6 +318,12 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (UIL::LCG_BM(CommonStrings::Cell, "N"))
+					{
+						result.action    = NodeOverrideCommonAction::Insert;
+						result.matchType = Data::NodeOverrideConditionType::Cell;
+					}
+
 					if (UIL::LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
@@ -732,6 +738,16 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (UIL::LCG_MI(CommonStrings::Cell, "N"))
+					{
+						a_entry.emplace_back(
+							Data::NodeOverrideConditionType::Cell);
+
+						a_updateFunc();
+
+						result = NodeOverrideCommonAction::Insert;
+					}
+
 					if (UIL::LCG_BM(CommonStrings::Extra, "Y"))
 					{
 						if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
@@ -1006,6 +1022,7 @@ namespace IED
 						case Data::NodeOverrideConditionType::Idle:
 						case Data::NodeOverrideConditionType::Skeleton:
 						case Data::NodeOverrideConditionType::Effect:
+						case Data::NodeOverrideConditionType::Cell:
 
 							it = a_entry.emplace(
 								it,
@@ -1502,6 +1519,18 @@ namespace IED
 
 								break;
 
+							case Data::NodeOverrideConditionType::Cell:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = UIL::LS(CommonStrings::Cell);
+
+								break;
+
 							default:
 								tdesc = nullptr;
 								vdesc = nullptr;
@@ -1879,6 +1908,45 @@ namespace IED
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
 
 				break;
+
+			case Data::NodeOverrideConditionType::Cell:
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##1",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(CommonStrings::Interior, "2"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##3",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch4));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::PublicArea, "4"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
+
+				break;
+
+			case Data::NodeOverrideConditionType::NPC:
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::MatchNPCOrTemplate, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag1));
+
+				UITipsInterface::DrawTip(UITip::MatchNPCOrTemplate);
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -1965,6 +2033,7 @@ namespace IED
 			case Data::NodeOverrideConditionType::NPC:
 			case Data::NodeOverrideConditionType::Race:
 			case Data::NodeOverrideConditionType::Idle:
+			case Data::NodeOverrideConditionType::Cell:
 
 				if (a_item == ConditionParamItem::Form)
 				{

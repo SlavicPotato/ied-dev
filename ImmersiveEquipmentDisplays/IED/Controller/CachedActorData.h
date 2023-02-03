@@ -207,11 +207,12 @@ namespace IED
 	{
 		CachedActorData(Actor* a_actor) noexcept;
 
-		bool UpdateState(const Actor* a_actor, const TESObjectCELL* a_cell) noexcept;
+		bool UpdateState(const Actor* a_actor, TESObjectCELL* a_cell) noexcept;
 		bool UpdateStateLF(const Actor* a_actor) noexcept;
 		bool UpdateStateHF(const Actor* a_actor) noexcept;
 		bool DoLFUpdates(Actor* a_actor) noexcept;
 
+		TESObjectCELL*                   cell;
 		TESWorldSpace*                   worldspace;
 		TESPackage*                      currentPackage;
 		TESIdleForm*                     currentIdle;

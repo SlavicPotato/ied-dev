@@ -114,7 +114,7 @@ namespace IED
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ BGSEquipSlot::kTypeID }),
-
+						
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(

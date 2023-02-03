@@ -574,7 +574,7 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match,
-					[](TESForm*) {});
+					[](auto*) {});
 
 			case EquipmentOverrideConditionType::Quest:
 
@@ -696,6 +696,14 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Cell:
+
+				return Conditions::match_cell<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -925,7 +933,7 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match,
-					[](TESForm*) {});
+					[](auto*) {});
 
 			case EquipmentOverrideConditionType::Quest:
 
@@ -1047,6 +1055,14 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Cell:
+
+				return Conditions::match_cell<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1439,7 +1455,7 @@ namespace IED
 					EquipmentOverrideConditionFlags>(
 					a_params,
 					a_match,
-					[](TESForm*) {});
+					[](auto*) {});
 
 			case EquipmentOverrideConditionType::Quest:
 
@@ -1641,6 +1657,14 @@ namespace IED
 					a_params,
 					a_match,
 					a_params.objects.GetCachedData());
+
+			case EquipmentOverrideConditionType::Cell:
+
+				return Conditions::match_cell<
+					equipmentOverrideCondition_t,
+					EquipmentOverrideConditionFlags>(
+					a_params,
+					a_match);
 			}
 
 			return false;
@@ -1710,7 +1734,8 @@ namespace IED
 				}
 				else
 				{
-					if (f.flags.test(Data::EquipmentOverrideConditionFlags::kMatchThisItem))
+					if (f.flags.test(Data::EquipmentOverrideConditionFlags::kMatchThisItem) ||
+					    f.fbf.type == EquipmentOverrideConditionType::Presence)
 					{
 						result = match_equipped_or_form<
 							EquipmentOverrideConditionFlags::kMatchMaskEquippedAndThis,

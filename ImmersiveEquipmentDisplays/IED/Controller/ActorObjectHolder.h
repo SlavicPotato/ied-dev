@@ -60,8 +60,9 @@ namespace IED
 			1u << 11 |
 			1u << 12,
 
-		kWantVarUpdate = 1u << 13,
-		kEvalThisFrame = 1u << 14,
+		kEvalThisFrame = 1u << 13,
+
+		kWantVarUpdate = 1u << 14,
 
 		kRequestTransformUpdateDefer     = kWantTransformUpdate | kSkipNextTransformUpdate,
 		kRequestTransformUpdateImmediate = kWantTransformUpdate | kImmediateTransformUpdate,
@@ -108,7 +109,7 @@ namespace IED
 		struct MonitorGearNodeEntry
 		{
 			const NiPointer<NiNode> node;
-			NiPointer<NiNode>       parent;
+			NiNode*                 parent;
 			std::uint16_t           size;
 			bool                    visible;
 		};

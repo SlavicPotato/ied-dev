@@ -328,6 +328,12 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
+					if (UIL::LCG_MI(CommonStrings::Cell, "P"))
+					{
+						result.action    = BaseConfigEditorAction::Insert;
+						result.entryType = Data::EquipmentOverrideConditionType::Cell;
+					}
+
 					if (UIL::LCG_BM(CommonStrings::Extra, "X"))
 					{
 						if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
@@ -844,6 +850,45 @@ namespace IED
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
 
 				break;
+
+			case Data::EquipmentOverrideConditionType::Cell:
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##1",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch3));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(CommonStrings::Interior, "2"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##3",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch4));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::PublicArea, "4"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
+
+				break;
+
+			case Data::EquipmentOverrideConditionType::NPC:
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::MatchNPCOrTemplate, "1"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+				UITipsInterface::DrawTip(UITip::MatchNPCOrTemplate);
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -930,6 +975,7 @@ namespace IED
 			case Data::EquipmentOverrideConditionType::NPC:
 			case Data::EquipmentOverrideConditionType::Race:
 			case Data::EquipmentOverrideConditionType::Idle:
+			case Data::EquipmentOverrideConditionType::Cell:
 
 				if (a_item == ConditionParamItem::Form)
 				{
@@ -1228,6 +1274,7 @@ namespace IED
 					case Data::EquipmentOverrideConditionType::Idle:
 					case Data::EquipmentOverrideConditionType::Skeleton:
 					case Data::EquipmentOverrideConditionType::Effect:
+					case Data::EquipmentOverrideConditionType::Cell:
 
 						a_entry.emplace_back(
 							result.entryType);
@@ -1527,6 +1574,7 @@ namespace IED
 						case Data::EquipmentOverrideConditionType::Idle:
 						case Data::EquipmentOverrideConditionType::Skeleton:
 						case Data::EquipmentOverrideConditionType::Effect:
+						case Data::EquipmentOverrideConditionType::Cell:
 
 							it = a_entry.emplace(
 								it,
@@ -2107,6 +2155,18 @@ namespace IED
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
 								tdesc = UIL::LS(CommonStrings::Perk);
+
+								break;
+
+							case Data::EquipmentOverrideConditionType::Cell:
+
+								m_condParamEditor.SetNext<ConditionParamItem::Form>(
+									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
+									e);
+
+								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::Form);
+								tdesc = UIL::LS(CommonStrings::Cell);
 
 								break;
 

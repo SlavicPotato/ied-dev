@@ -19,7 +19,7 @@ namespace IED
 				DataVersion1 = 1,
 			};
 
-			extraLightData_t data;
+			ExtraLightData data;
 
 		protected:
 			template <class Archive>

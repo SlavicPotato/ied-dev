@@ -1769,6 +1769,18 @@
     <ClInclude Include="IED\UI\UIActorValueStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
+    <ClInclude Include="IED\AreaLightingDetection.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\GlobalParams.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\Lists\UIObjectSlotList.h">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigObjectSlotListParser.h">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2811,6 +2823,21 @@
     </ClCompile>
     <ClCompile Include="IED\ActorValueInfo.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\AreaLightingDetection.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\GlobalParams.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Controller\BipedSlotData.cpp">
+      <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\Lists\UIObjectSlotList.cpp">
+      <Filter>Source\IED\UI\Widgets\Lists</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigObjectSlotListParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

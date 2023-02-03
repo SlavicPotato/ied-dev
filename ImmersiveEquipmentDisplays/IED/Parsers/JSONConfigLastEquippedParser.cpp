@@ -3,13 +3,14 @@
 #include "JSONConfigLastEquippedParser.h"
 
 #include "JSONConfigBipedObjectListParser.h"
+#include "JSONConfigObjectSlotListParser.h"
 #include "JSONEquipmentOverrideConditionListParser.h"
 
 namespace IED
 {
 	namespace Serialization
 	{
-		static constexpr std::uint32_t CURRENT_VERSION = 1;
+		static constexpr std::uint32_t CURRENT_VERSION = 2;
 
 		template <>
 		bool Parser<Data::configLastEquipped_t>::Parse(
@@ -45,8 +46,25 @@ namespace IED
 								  stl::underlying(Data::configLastEquipped_t::DEFAULT_FLAGS))
 			                  .asUInt();
 
-			a_out.slot = static_cast<Data::ObjectSlot>(
-				data.get("es", stl::underlying(Data::ObjectSlot::kMax)).asUInt());
+			if (version >= 2)
+			{
+				if (auto& d = data["esl"])
+				{
+					Parser<Data::configObjectSlotList_t> parser(m_state);
+
+					if (!parser.Parse(d, a_out.slots))
+					{
+						return false;
+					}
+				}
+			}
+			else
+			{
+				const auto slot = static_cast<Data::ObjectSlot>(
+					data.get("es", stl::underlying(Data::ObjectSlot::kMax)).asUInt());
+
+				a_out.slots.emplace_back(slot);
+			}
 
 			return true;
 		}
@@ -73,7 +91,13 @@ namespace IED
 			}
 
 			data["flags"] = a_in.flags.underlying();
-			data["es"]    = stl::underlying(a_in.slot);
+
+			if (!a_in.slots.empty())
+			{
+				Parser<Data::configObjectSlotList_t> parser(m_state);
+
+				parser.Create(a_in.slots, data["esl"]);
+			}
 
 			a_out["version"] = CURRENT_VERSION;
 		}

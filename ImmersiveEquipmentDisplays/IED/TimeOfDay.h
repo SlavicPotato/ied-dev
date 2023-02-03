@@ -1,8 +1,5 @@
 #pragma once
 
-#include <ext/Sky.h>
-#include <ext/TESClimate.h>
-
 namespace IED
 {
 	namespace Data
@@ -39,19 +36,19 @@ namespace IED
 
 			auto hour = a_sky->currentGameHour;
 
-			if (hour < static_cast<float>(climate->timing.sunrise.begin) / 6.0f)
+			if (hour < static_cast<float>(climate->timing.sunrise.begin) * (1.0f / 6.0f))
 			{
 				return TimeOfDay::kNight;
 			}
-			else if (hour < static_cast<float>(climate->timing.sunrise.end) / 6.0f)
+			else if (hour < static_cast<float>(climate->timing.sunrise.end) * (1.0f / 6.0f))
 			{
 				return TimeOfDay::kSunrise;
 			}
-			else if (hour < static_cast<float>(climate->timing.sunset.begin) / 6.0f)
+			else if (hour < static_cast<float>(climate->timing.sunset.begin) * (1.0f / 6.0f))
 			{
 				return TimeOfDay::kDay;
 			}
-			else if (hour < static_cast<float>(climate->timing.sunset.end) / 6.0f)
+			else if (hour < static_cast<float>(climate->timing.sunset.end) * (1.0f / 6.0f))
 			{
 				return TimeOfDay::kSunset;
 			}
