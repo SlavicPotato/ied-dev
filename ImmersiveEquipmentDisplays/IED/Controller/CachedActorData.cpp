@@ -227,7 +227,8 @@ namespace IED
 		beingRidden(a_actor->IsMountRidden()),
 		weaponDrawn(a_actor->IsWeaponDrawn()),
 		arrested(a_actor->IsArrested()),
-		flying(a_actor->IsFlying())
+		flying(a_actor->IsFlying()),
+		sneaking(a_actor->IsSneaking())
 	{
 	}
 
