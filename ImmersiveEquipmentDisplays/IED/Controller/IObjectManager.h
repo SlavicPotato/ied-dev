@@ -171,15 +171,14 @@ namespace IED
 
 		static TESObjectLIGH* GetLightFormForAttach(TESForm* a_modelForm) noexcept;
 
-		static void TryInitializeAndPlaySound(
+		static void TryInitializeAndPlayLoopSound(
 			Actor*       a_actor,
 			ObjectSound& a_sound) noexcept;
 
 		static BGSSoundDescriptorForm* GetSoundDescriptor(
-			const TESForm*     a_modelForm,
-			const ObjectLight& a_light) noexcept;
+			const TESForm*     a_modelForm) noexcept;
 
-		void PlayObjectSound(
+		void PlayEquipObjectSound(
 			const processParams_t&          a_params,
 			const Data::configBaseValues_t& a_config,
 			const ObjectEntryBase&          a_objectEntry,

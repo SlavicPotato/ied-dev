@@ -256,9 +256,9 @@ namespace IED
 		}
 		else
 		{
-			if (a_extraLight &&
-			    a_extraLight->light &&
-			    m_fixVanillaNPCLightUpdates.load(std::memory_order_relaxed))
+			if (m_fixVanillaNPCLightUpdates.load(std::memory_order_relaxed) &&
+			    a_extraLight &&
+			    a_extraLight->light)
 			{
 				if (auto equipped = GetEquippedLHLight(a_actor))
 				{

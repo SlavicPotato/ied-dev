@@ -35,6 +35,7 @@ namespace IED
 		Game::FormID                             worldspace;
 		std::pair<Game::FormID, std::string>     cell;
 		Game::FormID                             cellOwner;
+		Game::FormID                             cellLightingTemplate;
 		std::optional<TESObjectCELL::CellCoords> cellCoords;
 		std::pair<Game::FormID, std::string>     location;
 		std::pair<Game::FormID, std::string>     skin;

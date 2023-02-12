@@ -57,8 +57,8 @@ namespace IED
 			if (
 				!a_defer &&
 				m_playSound &&
-				a_flags.test(ControllerUpdateFlags::kPlaySound) &&
-				state->flags.test(ObjectEntryFlags::kPlaySound) &&
+				a_flags.test(ControllerUpdateFlags::kPlayEquipSound) &&
+				state->flags.test(ObjectEntryFlags::kPlayEquipSound) &&
 				a_actor &&
 				a_actor->loadedState &&
 				(a_actor == *g_thePlayer || m_playSoundNPC) &&
@@ -637,7 +637,7 @@ namespace IED
 		}
 
 		targetNodes.rootNode->AttachChild(itemRoot, true);
-		
+
 		UpdateDownwardPass(itemRoot);
 
 		TESObjectLIGH* lightForm = nullptr;
@@ -679,11 +679,11 @@ namespace IED
 				state->light);
 		}
 
-		state->sound.form = GetSoundDescriptor(a_modelForm, state->light);
+		state->sound.form = GetSoundDescriptor(a_modelForm);
 
-		if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+		if (a_activeConfig.flags.test(Data::BaseFlags::kPlayLoopSound))
 		{
-			TryInitializeAndPlaySound(
+			TryInitializeAndPlayLoopSound(
 				a_params.actor,
 				state->sound);
 		}
@@ -770,7 +770,7 @@ namespace IED
 
 		if (a_visible)
 		{
-			PlayObjectSound(
+			PlayEquipObjectSound(
 				a_params,
 				a_activeConfig,
 				a_objectEntry,
@@ -1046,11 +1046,11 @@ namespace IED
 					n.light);
 			}
 
-			n.sound.form = GetSoundDescriptor(e.form, n.light);
+			n.sound.form = GetSoundDescriptor(e.form);
 
-			if (a_activeConfig.flags.test(Data::BaseFlags::kPlaySound))
+			if (a_activeConfig.flags.test(Data::BaseFlags::kPlayLoopSound))
 			{
-				TryInitializeAndPlaySound(
+				TryInitializeAndPlayLoopSound(
 					a_params.actor,
 					n.sound);
 			}
@@ -1139,7 +1139,7 @@ namespace IED
 
 		if (a_visible)
 		{
-			PlayObjectSound(
+			PlayEquipObjectSound(
 				a_params,
 				a_activeConfig,
 				a_objectEntry,
@@ -1220,7 +1220,7 @@ namespace IED
 		}
 	}
 
-	void IObjectManager::TryInitializeAndPlaySound(
+	void IObjectManager::TryInitializeAndPlayLoopSound(
 		Actor*       a_actor,
 		ObjectSound& a_sound) noexcept
 	{
@@ -1256,19 +1256,13 @@ namespace IED
 	}
 
 	BGSSoundDescriptorForm* IObjectManager::GetSoundDescriptor(
-		const TESForm*     a_modelForm,
-		const ObjectLight& a_light) noexcept
+		const TESForm*     a_modelForm) noexcept
 	{
 		switch (a_modelForm->formType)
 		{
 		case TESObjectLIGH::kTypeID:
 
-			if (a_light)
-			{
-				return static_cast<const TESObjectLIGH*>(a_modelForm)->sound;
-			}
-
-			break;
+			return static_cast<const TESObjectLIGH*>(a_modelForm)->sound;
 
 		case BGSHazard::kTypeID:
 			{
@@ -1278,29 +1272,46 @@ namespace IED
 				{
 					return soundForm;
 				}
-				else if (a_light)
+				else if (const auto light = hazard->data.light)
 				{
-					if (const auto light = hazard->data.light)
-					{
-						return light->sound;
-					}
+					return light->sound;
 				}
 			}
 			break;
+
+		case TESObjectACTI::kTypeID:
+
+			return static_cast<const TESObjectACTI*>(a_modelForm)->soundLoop;
+
+		case BGSProjectile::kTypeID:
+
+			return static_cast<const BGSProjectile*>(a_modelForm)->data.sound;
+
+		case TESObjectDOOR::kTypeID:
+
+			return static_cast<const TESObjectDOOR*>(a_modelForm)->loopSound;
+
+		case BGSMovableStatic::kTypeID:
+
+			return static_cast<const BGSMovableStatic*>(a_modelForm)->soundLoop;
+
+		case TESObjectWEAP::kTypeID:
+
+			return static_cast<const TESObjectWEAP*>(a_modelForm)->idleSound;
 		}
 
 		return nullptr;
 	}
 
-	void IObjectManager::PlayObjectSound(
+	void IObjectManager::PlayEquipObjectSound(
 		const processParams_t&          a_params,
 		const Data::configBaseValues_t& a_config,
 		const ObjectEntryBase&          a_objectEntry,
 		bool                            a_equip) noexcept
 	{
 		if (a_objectEntry.data.state &&
-		    a_params.flags.test(ControllerUpdateFlags::kPlaySound) &&
-		    a_config.flags.test(Data::BaseFlags::kPlaySound) &&
+		    a_params.flags.test(ControllerUpdateFlags::kPlayEquipSound) &&
+		    a_config.flags.test(Data::BaseFlags::kPlayEquipSound) &&
 		    m_playSound)
 		{
 			if (a_params.objects.IsPlayer() || m_playSoundNPC)

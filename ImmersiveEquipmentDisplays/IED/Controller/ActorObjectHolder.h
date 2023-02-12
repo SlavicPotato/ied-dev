@@ -626,6 +626,7 @@ namespace IED
 		}
 
 		float GetRandomPercent(const luid_tag& a_luid) noexcept;
+		void  ClearRPC() noexcept;
 
 		bool UpdateNodeMonitorEntries() noexcept;
 		bool GetNodeMonitorResult(std::uint32_t a_uid) const noexcept;

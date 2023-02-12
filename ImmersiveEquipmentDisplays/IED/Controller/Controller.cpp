@@ -647,6 +647,21 @@ namespace IED
 		return result;
 	}
 
+	void Controller::ClearPlayerRPC() noexcept
+	{
+		ITaskPool::AddPriorityTask([this] {
+			const stl::lock_guard lock(m_lock);
+
+			auto& data = GetActorMap();
+
+			auto it = data.find(IData::GetPlayerRefID());
+			if (it != data.end())
+			{
+				it->second.ClearRPC();
+			}
+		});
+	}
+
 	void Controller::EvaluateImpl(
 		Actor*                           a_actor,
 		Game::ObjectRefHandle            a_handle,
@@ -824,7 +839,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				Evaluate(result.actor, result.handle, a_flags);
@@ -1029,7 +1044,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_flags]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				ActorResetImpl(result.actor, result.handle, a_flags);
@@ -1097,7 +1112,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_flags, a_slot]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				ActorResetImpl(
@@ -1462,7 +1477,7 @@ namespace IED
 
 			for (auto& e : m_actorMap)
 			{
-				actorLookupResult_t result;
+				ActorLookupResult result;
 				if (LookupTrackedActor(e.first, result))
 				{
 					ResetAA(result.actor, e.second.GetAnimState());
@@ -1480,7 +1495,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				ResetCustomImpl(
@@ -1561,7 +1576,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_class, a_pkey]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				ResetCustomImpl(
@@ -1636,7 +1651,7 @@ namespace IED
 		ITaskPool::AddTask([this, a_actor, a_class]() {
 			const stl::lock_guard lock(m_lock);
 
-			actorLookupResult_t result;
+			ActorLookupResult result;
 			if (LookupTrackedActor(a_actor, result))
 			{
 				ResetCustomImpl(
@@ -2242,7 +2257,7 @@ namespace IED
 			{
 				if (a_params.flags.test(ControllerUpdateFlags::kVisibilitySounds))
 				{
-					PlayObjectSound(a_params, a_config, a_entry, true);
+					PlayEquipObjectSound(a_params, a_config, a_entry, true);
 				}
 
 				const auto ts = IPerfCounter::Query();
@@ -2258,7 +2273,7 @@ namespace IED
 			{
 				if (isVisible)
 				{
-					PlayObjectSound(a_params, a_config, a_entry, false);
+					PlayEquipObjectSound(a_params, a_config, a_entry, false);
 				}
 			}
 		}
@@ -2360,7 +2375,7 @@ namespace IED
 
 			if (state->sound.form)
 			{
-				if (!a_config.flags.test(BaseFlags::kPlaySound))
+				if (!a_config.flags.test(BaseFlags::kPlayLoopSound))
 				{
 					if (state->sound.handle.IsValid())
 					{
@@ -2371,7 +2386,7 @@ namespace IED
 				{
 					if (!state->sound.handle.IsValid())
 					{
-						TryInitializeAndPlaySound(
+						TryInitializeAndPlayLoopSound(
 							a_params.actor,
 							state->sound);
 					}
@@ -2380,7 +2395,7 @@ namespace IED
 		}
 		else
 		{
-			if (!a_config.flags.test(BaseFlags::kPlaySound))
+			if (!a_config.flags.test(BaseFlags::kPlayLoopSound))
 			{
 				for (auto& e : state->groupObjects)
 				{
@@ -2410,7 +2425,7 @@ namespace IED
 
 					if (!object.sound.handle.IsValid())
 					{
-						TryInitializeAndPlaySound(
+						TryInitializeAndPlayLoopSound(
 							a_params.actor,
 							object.sound);
 					}
@@ -2863,7 +2878,7 @@ namespace IED
 						objectEntry.data.state->UpdateArrows(
 							usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 								itemData->itemCount :
-								6);
+								BSStringHolder::NUM_DYN_ARROWS);
 
 						if (visible)
 						{
@@ -2904,7 +2919,7 @@ namespace IED
 					objectEntry.data.state->UpdateArrows(
 						usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 							itemData->itemCount :
-							6);
+							BSStringHolder::NUM_DYN_ARROWS);
 
 					objectEntry.slotState.insert_last_slotted(
 						objectEntry.data.state->form->formID,
@@ -3086,8 +3101,8 @@ namespace IED
 	}
 
 	bool Controller::LookupTrackedActor(
-		Game::FormID         a_actor,
-		actorLookupResult_t& a_out) noexcept
+		Game::FormID       a_actor,
+		ActorLookupResult& a_out) noexcept
 	{
 		auto it = m_actorMap.find(a_actor);
 		if (it == m_actorMap.end())
@@ -3100,7 +3115,7 @@ namespace IED
 
 	bool Controller::LookupTrackedActor(
 		const ActorObjectHolder& a_record,
-		actorLookupResult_t&     a_out) noexcept
+		ActorLookupResult&       a_out) noexcept
 	{
 		auto handle = a_record.GetHandle();
 
@@ -3370,7 +3385,7 @@ namespace IED
 						a_objectEntry.data.state->UpdateArrows(
 							usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 								itemData.itemCount :
-								6);
+								BSStringHolder::NUM_DYN_ARROWS);
 
 						if (_visible)
 						{
@@ -3446,7 +3461,7 @@ namespace IED
 				a_objectEntry.data.state->UpdateArrows(
 					usedBaseConf.flags.test(BaseFlags::kDynamicArrows) ?
 						itemData.itemCount :
-						6);
+						BSStringHolder::NUM_DYN_ARROWS);
 
 				a_objectEntry.SetObjectVisible(visible);
 
@@ -5486,11 +5501,11 @@ namespace IED
 			return;
 		}
 
-		class HandleDeletedFormTask :
+		class DeletedFormHandlerTask :
 			public TaskDelegate
 		{
 		public:
-			constexpr explicit HandleDeletedFormTask(
+			constexpr explicit DeletedFormHandlerTask(
 				Controller&  a_controller,
 				Game::FormID a_form) noexcept :
 				m_controller(a_controller),
@@ -5514,7 +5529,7 @@ namespace IED
 			Game::FormID m_formid;
 		};
 
-		ITaskPool::AddPriorityTask<HandleDeletedFormTask>(*this, formid);
+		ITaskPool::AddPriorityTask<DeletedFormHandlerTask>(*this, formid);
 	}
 
 	void Controller::Receive(const SKSEMessagingEvent& a_evn)
@@ -5712,7 +5727,7 @@ namespace IED
 	{
 		if (a_evn)
 		{
-			QueueReset(a_evn->refr, ControllerUpdateFlags::kPlaySound);
+			QueueReset(a_evn->refr, ControllerUpdateFlags::kPlayEquipSound);
 		}
 
 		return EventResult::kContinue;
@@ -5771,7 +5786,7 @@ namespace IED
 
 	auto Controller::GetNPCRacePair(
 		Actor* a_actor) noexcept
-		-> std::optional<npcRacePair_t>
+		-> std::optional<NRP>
 	{
 		auto npc = a_actor->GetActorBase();
 		if (!npc)
@@ -5790,7 +5805,7 @@ namespace IED
 			}
 		}
 
-		return npcRacePair_t{ npc, race };
+		return NRP{ npc, race };
 	}
 
 	bool Controller::SaveCurrentConfigAsDefault(
@@ -6121,22 +6136,4 @@ namespace IED
 		});
 	}
 
-	/*void Controller::QueueClearVariableStorage(bool a_requestEval)
-	{
-		ITaskPool::AddTask([this, a_requestEval] {
-			const stl::lock_guard lock(m_lock);
-
-			ClearConditionalVariables();
-
-			if (a_requestEval)
-			{
-				for (auto& e : m_objects)
-				{
-					e.second.m_flags.set(
-						ActorObjectHolderFlags::kWantVarUpdate |
-						ActorObjectHolderFlags::kRequestEvalImmediate);
-				}
-			}
-		});
-	}*/
 }

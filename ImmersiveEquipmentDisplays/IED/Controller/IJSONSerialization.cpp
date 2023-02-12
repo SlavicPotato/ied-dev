@@ -243,6 +243,11 @@ namespace IED
 			m_lastException = e;
 			return false;
 		}
+		catch (...)
+		{
+			m_lastException.clear();
+			return false;
+		}
 	}
 
 	bool IJSONSerialization::LoadConfigStore(
@@ -299,6 +304,17 @@ namespace IED
 
 			return false;
 		}
+		catch (...)
+		{
+			m_lastException.clear();
+
+			Error(
+				"%s: [%s] unknown",
+				__FUNCTION__,
+				SafeGetPath(a_path).c_str());
+
+			return false;
+		}
 	}
 
 	bool IJSONSerialization::SaveConfigStore(
@@ -330,6 +346,17 @@ namespace IED
 				__FUNCTION__,
 				SafeGetPath(a_path).c_str(),
 				e.what());
+
+			return false;
+		}
+		catch (...)
+		{
+			m_lastException.clear();
+
+			Error(
+				"%s: [%s] unknown",
+				__FUNCTION__,
+				SafeGetPath(a_path).c_str());
 
 			return false;
 		}

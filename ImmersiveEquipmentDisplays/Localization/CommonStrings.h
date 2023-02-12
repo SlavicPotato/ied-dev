@@ -33,7 +33,7 @@ namespace IED
 		Flags           = 24,
 		Invisible       = 25,
 		Conditions      = 26,
-		kPlaySound      = 27,
+		PlayEquipSound  = 27,
 		LayingDown      = 28,
 		Confirm         = 29,
 		Enable          = 30,
@@ -264,5 +264,7 @@ namespace IED
 		Right           = 335,
 		Hand            = 336,
 		Interior        = 337,
+		PlayLoopSound   = 338,
+		Miscellaneous   = 339,
 	};
 }

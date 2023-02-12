@@ -57,13 +57,15 @@ namespace IED
 
 			const auto owner = cell->GetOwnerForm();
 
-			a_out.cellOwner  = owner ? owner->formID : Game::FormID{};
-			a_out.cellCoords = cell->GetCellCoordinates();
+			a_out.cellOwner            = owner ? owner->formID : Game::FormID{};
+			a_out.cellCoords           = cell->GetCellCoordinates();
+			a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
 		}
 		else
 		{
-			a_out.cell = {};
-			a_out.cellOwner = {};
+			a_out.cell                 = {};
+			a_out.cellOwner            = {};
+			a_out.cellLightingTemplate = {};
 			a_out.cellCoords.reset();
 		}
 

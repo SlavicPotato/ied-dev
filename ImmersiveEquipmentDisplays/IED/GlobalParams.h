@@ -12,7 +12,7 @@ namespace IED
 		{
 			if (!timeOfDay)
 			{
-				timeOfDay.emplace(Data::GetTimeOfDay(RE::Sky::GetSingleton()));
+				timeOfDay.emplace(Data::GetTimeOfDay(RE::TES::GetSingleton()->sky));
 			}
 
 			return *timeOfDay;
@@ -22,18 +22,20 @@ namespace IED
 		{
 			if (!currentWeather)
 			{
-				const auto* const sky = RE::Sky::GetSingleton();
-				currentWeather.emplace(sky->GetCurrentWeatherHalfPct());
+				const auto* const sky = RE::TES::GetSingleton()->sky;
+				currentWeather.emplace(sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
 			}
 
 			return *currentWeather;
 		}
 
-		[[nodiscard]] bool is_area_dark() const noexcept;
+		[[nodiscard]] bool is_exterior_dark() const noexcept;
+		[[nodiscard]] bool is_sun_angle_less_than_60() const noexcept;
 
 	private:
 		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
 		mutable std::optional<RE::TESWeather*>                       currentWeather;
-		mutable std::optional<bool>                                  isAreaDark;
+		mutable std::optional<bool>                                  isExteriorDark;
+		mutable std::optional<bool>                                  isSunAngleLessThan60;
 	};
 }

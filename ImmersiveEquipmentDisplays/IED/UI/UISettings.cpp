@@ -78,10 +78,10 @@ namespace IED
 				DrawObjectDatabaseSection();
 				DrawUISection();
 				DrawLocalizationSection();
+				DrawSoundSection();
 #if defined(IED_ENABLE_I3DI)
 				DrawI3DISection();
 #endif
-				DrawSoundSection();
 
 				ImGui::PopItemWidth();
 			}

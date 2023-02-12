@@ -352,7 +352,7 @@ namespace IED
 
 	void ObjectEntryBase::QuiverArrowState::Update(std::int32_t a_count) noexcept
 	{
-		a_count = std::min(a_count, 8);
+		a_count = std::min(a_count, static_cast<std::int32_t>(BSStringHolder::NUM_DYN_ARROWS) + 1);
 
 		if (inventoryCount == a_count)
 		{

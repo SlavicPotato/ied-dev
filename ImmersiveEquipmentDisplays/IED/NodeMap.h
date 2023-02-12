@@ -94,7 +94,7 @@ namespace IED
 			bool m_dirty{ false };
 
 			mutable stl::recursive_mutex m_rwLock;
-			mutable except::descriptor    m_lastException;
+			mutable except::descriptor   m_lastException;
 
 			static NodeMap m_Instance;
 		};

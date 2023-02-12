@@ -92,6 +92,11 @@ namespace IED
 			Install_EffectShaderPostResume();
 		}
 
+		if (a_config->m_clearRPCOnSceneMove)
+		{
+			Install_Player_OnMoveScene();
+		}
+
 		//Install_SetupEventSinks();
 	}
 
@@ -686,6 +691,27 @@ namespace IED
 		AVThunk<PlayerCharacter>::Install(m_vtblPlayerCharacter_ActorValueOwner);
 	}
 
+	void EngineExtensions::Install_Player_OnMoveScene()
+	{
+		const auto addr = m_PlayerCharacter_unk_205_a.get() + 0x7A0;
+
+		if (hook::call5(
+				ISKSE::GetBranchTrampoline(),
+				addr,
+				std::uintptr_t(PlayerCharacter_unk_205_Post_Hook),
+				m_PlayerCharacter_unk_205_Post_o))
+		{
+			Debug(
+				"[%s] Installed @0x%llX",
+				__FUNCTION__,
+				addr);
+		}
+		else
+		{
+			Warning(__FUNCTION__ ": failed to install hook");
+		}
+	}
+
 	void EngineExtensions::RemoveAllBipedParts_Hook(Biped* a_biped) noexcept
 	{
 		{
@@ -1046,7 +1072,7 @@ namespace IED
 
 		const auto controller = m_Instance.m_controller;
 
-		if (controller->ShaderProcessingEnabled() && result)
+		if (result && controller->ShaderProcessingEnabled())
 		{
 			if (auto actor = a_refr->As<Actor>())
 			{
@@ -1055,6 +1081,15 @@ namespace IED
 		}
 
 		return result;
+	}
+
+	void EngineExtensions::PlayerCharacter_unk_205_Post_Hook(RE::TES* a_tes) noexcept
+	{
+		m_Instance.m_PlayerCharacter_unk_205_Post_o(a_tes);
+
+		const auto controller = m_Instance.m_controller;
+
+		controller->ClearPlayerRPC();
 	}
 
 	/*void EngineExtensions::SetupEventSinks_Hook() noexcept

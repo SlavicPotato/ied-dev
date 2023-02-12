@@ -210,9 +210,23 @@ namespace IED
 		return controller.GetOrCreateGlobalParams().get_time_of_day();
 	}
 
-	bool CommonParams::is_area_dark() const noexcept
+	bool CommonParams::is_in_dark_area() const noexcept
 	{
-		return controller.GetOrCreateGlobalParams().is_area_dark();
+		if (!isInDarkArea)
+		{
+			const bool result = actor->IsInInterior() ?
+			                        ALD::IsActorInDarkInterior(actor, RE::TES::GetSingleton()->sky) :
+			                        controller.GetOrCreateGlobalParams().is_exterior_dark();
+
+			isInDarkArea.emplace(result);
+		}
+
+		return *isInDarkArea;
+	}
+
+	bool CommonParams::is_sun_angle_less_than_60() const noexcept
+	{
+		return controller.GetOrCreateGlobalParams().is_sun_angle_less_than_60();
 	}
 
 	NiPointer<Actor>& CommonParams::get_mounted_actor() const noexcept

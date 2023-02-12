@@ -72,13 +72,13 @@ namespace IED
 
 		static constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
 
-		struct actorLookupResult_t
+		struct ActorLookupResult
 		{
 			NiPointer<Actor>      actor;
 			Game::ObjectRefHandle handle;
 		};
 
-		struct npcRacePair_t
+		struct NRP
 		{
 			TESNPC*  npc;
 			TESRace* race;
@@ -516,7 +516,9 @@ namespace IED
 		void QueueSetEffectShaders(Actor* a_actor) noexcept;
 
 		void        ClearBipedCache();
-		std::size_t RemoveBipedCacheEntries(std::function<bool (Game::FormID)> a_filter);
+		std::size_t RemoveBipedCacheEntries(std::function<bool(Game::FormID)> a_filter);
+
+		void ClearPlayerRPC() noexcept;
 
 	private:
 		FN_NAMEPROC("Controller");
@@ -837,11 +839,11 @@ namespace IED
 
 		bool LookupTrackedActor(
 			Game::FormID         a_actor,
-			actorLookupResult_t& a_out) noexcept;
+			ActorLookupResult& a_out) noexcept;
 
 		bool LookupTrackedActor(
 			const ActorObjectHolder& a_record,
-			actorLookupResult_t&     a_out) noexcept;
+			ActorLookupResult&     a_out) noexcept;
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			Actor*             a_actor,
@@ -866,7 +868,7 @@ namespace IED
 		static void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data);
 		//void FillInitialConfig(Data::configStore_t& a_data) const;
 
-		static std::optional<npcRacePair_t> GetNPCRacePair(Actor* a_actor) noexcept;
+		static std::optional<NRP> GetNPCRacePair(Actor* a_actor) noexcept;
 
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept override;
 		virtual bool WantGlobalVariableUpdateOnAddRemove() const noexcept override;

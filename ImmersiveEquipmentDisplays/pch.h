@@ -19,6 +19,7 @@
 #include <ext/IOS.h>
 #include <ext/IPluginInfo.h>
 #include <ext/ISerializationBase.h>
+#include <ext/ISettingCollection.h>
 #include <ext/ITaskPool.h>
 #include <ext/LightCreateParams.h>
 #include <ext/Model.h>
@@ -30,6 +31,7 @@
 #include <ext/ShadowSceneNode.h>
 #include <ext/Sky.h>
 #include <ext/StringCache.h>
+#include <ext/TES.h>
 #include <ext/TESClimate.h>
 #include <ext/Vector.h>
 #include <ext/WeaponAnimationGraphManagerHolder.h>

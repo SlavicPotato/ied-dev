@@ -418,8 +418,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				ImGui::TableNextRow();
 
@@ -537,6 +537,17 @@ namespace IED
 				{
 					ImGui::SameLine();
 					DrawFormWithInfoWrapped(data.cellOwner);
+				}
+
+				if (data.cellLightingTemplate)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::LightingTemplate));
+
+					ImGui::TableSetColumnIndex(1);
+					DrawFormWithInfoWrapped(data.cellLightingTemplate);
 				}
 
 				DrawActorInfoLineFormStringPair(CommonStrings::Location, data.location);
@@ -683,7 +694,7 @@ namespace IED
 
 				ImGui::TableSetColumnIndex(1);
 				ImGui::Text(data.pcLevelMult ? "%hu [PCM]" : "%hu", data.level);
-				
+
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);

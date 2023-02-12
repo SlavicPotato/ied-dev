@@ -1461,7 +1461,7 @@ namespace IED
 
 				GetConditionListDepth(a_entry, res, off);
 
-				if (res > 1)
+				if (res > 2)
 				{
 					const auto avail       = ImGui::GetContentRegionAvail().x;
 					const auto wantedWidth = MIN_TAB_WIDTH + MIN_TAB_WIDTH * static_cast<float>(res);
@@ -1472,7 +1472,7 @@ namespace IED
 						        ImGuiTableFlags_ScrollY;
 
 						innerWidth = wantedWidth;
-						height     = 300.0f;
+						height     = 400.0f;
 					}
 				}
 

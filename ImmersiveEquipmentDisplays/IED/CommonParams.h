@@ -111,7 +111,8 @@ namespace IED
 		[[nodiscard]] RE::TESWeather*                       get_current_weather() const noexcept;
 		[[nodiscard]] stl::flag<WeatherClassificationFlags> get_weather_class() const noexcept;
 		[[nodiscard]] Data::TimeOfDay                       get_time_of_day() const noexcept;
-		[[nodiscard]] bool                                  is_area_dark() const noexcept;
+		[[nodiscard]] bool                                  is_in_dark_area() const noexcept;
+		[[nodiscard]] bool                                  is_sun_angle_less_than_60() const noexcept;
 
 		[[nodiscard]] constexpr auto get_npc_shield_slot() const noexcept
 		{
@@ -224,6 +225,7 @@ namespace IED
 		mutable std::optional<bool>                  isMounted;
 		mutable std::optional<bool>                  isHorse;
 		mutable std::optional<bool>                  isMountHorse;
+		mutable std::optional<bool>                  isInDarkArea;
 		mutable std::optional<TESForm*>              parentCellOwner;
 	};
 }

@@ -192,9 +192,9 @@ namespace IED
 		using namespace Util::Node;
 
 		TraverseGeometry(a_object, [&](BSGeometry* a_geometry) noexcept {
-			if (auto& effect = a_geometry->m_spEffectState)
+			if (const auto& effect = a_geometry->m_spEffectState)
 			{
-				if (auto shaderProp = ::NRTTI<BSShaderProperty>()(effect.get()))
+				if (const auto shaderProp = ::NRTTI<BSShaderProperty>()(effect.get()))
 				{
 					if (!a_entry.targetNodes.empty())
 					{
@@ -204,9 +204,10 @@ namespace IED
 						}
 					}
 
-					const bool trySet = a_entry.flags.test(EffectShaderData::EntryFlags::kForce) ?
-					                        shaderProp->effectData != a_entry.shaderData :
-					                        !shaderProp->effectData;
+					const bool trySet =
+						a_entry.flags.test(EffectShaderData::EntryFlags::kForce) ?
+							shaderProp->effectData != a_entry.shaderData :
+							!shaderProp->effectData;
 
 					if (trySet)
 					{

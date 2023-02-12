@@ -1330,13 +1330,25 @@ namespace IED
 				ImGui::NextColumn();
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(CommonStrings::kPlaySound, "4"),
+						UIL::LS(CommonStrings::PlayEquipSound, "4"),
 						stl::underlying(std::addressof(a_data.flags.value)),
-						stl::underlying(Data::BaseFlags::kPlaySound)))
+						stl::underlying(Data::BaseFlags::kPlayEquipSound)))
 				{
 					PropagateFlagToEquipmentOverrides(
 						a_baseConfig,
-						Data::BaseFlags::kPlaySound);
+						Data::BaseFlags::kPlayEquipSound);
+
+					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+				}
+
+				if (ImGui::CheckboxFlagsT(
+						UIL::LS(CommonStrings::PlayLoopSound, "4a"),
+						stl::underlying(std::addressof(a_data.flags.value)),
+						stl::underlying(Data::BaseFlags::kPlayLoopSound)))
+				{
+					PropagateFlagToEquipmentOverrides(
+						a_baseConfig,
+						Data::BaseFlags::kPlayLoopSound);
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}

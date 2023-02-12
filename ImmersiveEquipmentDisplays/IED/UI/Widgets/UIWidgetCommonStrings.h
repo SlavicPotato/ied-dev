@@ -127,6 +127,7 @@ namespace IED
 			PublicArea                          = 2119,
 			EquipmentSlots                      = 2120,
 			MatchNPCOrTemplate                  = 2121,
+			LightingTemplate                    = 2122,
 		};
 	}
 }

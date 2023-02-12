@@ -189,7 +189,7 @@ namespace IED
 				GetController().EvaluateImpl(
 					*params,
 					a_data,
-					ControllerUpdateFlags::kPlaySound |
+					ControllerUpdateFlags::kPlayEquipSound |
 						ControllerUpdateFlags::kFromProcessorTask |
 						ControllerUpdateFlags::kUseCachedParams);
 			}
@@ -197,7 +197,7 @@ namespace IED
 			{
 				GetController().EvaluateImpl(
 					a_data,
-					ControllerUpdateFlags::kPlaySound |
+					ControllerUpdateFlags::kPlayEquipSound |
 						ControllerUpdateFlags::kFromProcessorTask |
 						ControllerUpdateFlags::kUseCachedParams);
 			}
@@ -240,41 +240,35 @@ namespace IED
 
 	void ActorProcessorTask::UpdateGlobalState() noexcept
 	{
-		bool changed = false;
+		enum class ChangeFlag : std::uint8_t
+		{
+			kNone = 0,
+
+			kPlayer = 1ui8 << 0,
+			kGlobal = 1ui8 << 1
+		};
+
+		stl::flag<ChangeFlag> change{ ChangeFlag::kNone };
 
 		if (const auto v = (*g_thePlayer)->lastRiddenHorseHandle;
 		    v != m_globalState.playerLastRidden)
 		{
 			m_globalState.playerLastRidden = v;
-
-			GetController().RequestLFEvaluateAll();
+			change.set(ChangeFlag::kGlobal);
 		}
 
 		if (const auto v = IsInFirstPerson();
 		    v != m_globalState.inFirstPerson)
 		{
 			m_globalState.inFirstPerson = v;
-			changed                     = true;
+			change.set(ChangeFlag::kPlayer);
 		}
 
 		if (const bool v = MenuTopicManager::GetSingleton()->HasDialogueTarget();
 		    v != m_globalState.inDialogue)
 		{
 			m_globalState.inDialogue = v;
-			changed                  = true;
-		}
-
-		if (changed)
-		{
-			const auto& actorMap = GetController().GetActorMap();
-
-			if (auto it = actorMap.find(Data::IData::GetPlayerRefID());
-			    it != actorMap.end())
-			{
-				it->second.RequestEval();
-			}
-
-			changed = false;
+			change.set(ChangeFlag::kPlayer);
 		}
 
 		if (m_timer.GetStartTime() >= m_globalState.nextRun)
@@ -283,27 +277,43 @@ namespace IED
 				m_timer.GetStartTime() +
 				IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL);
 
-			const auto* const sky = RE::Sky::GetSingleton();
+			const auto* const sky = RE::TES::GetSingleton()->sky;
 
-			if (const auto v = (sky ? sky->GetCurrentWeatherHalfPct() : nullptr);
+			if (const auto v = sky ? sky->GetCurrentWeatherHalfPct() : nullptr;
 			    v != m_globalState.currentWeather)
 			{
 				m_globalState.currentWeather = v;
-				changed                      = true;
+				change.set(ChangeFlag::kGlobal);
 			}
 
 			if (const auto v = Data::GetTimeOfDay(sky);
 			    v != m_globalState.timeOfDay)
 			{
 				m_globalState.timeOfDay = v;
-				changed                 = true;
+				change.set(ChangeFlag::kGlobal);
 			}
 
-			if (const auto v = IsAreaDark(sky);
-			    v != m_globalState.isAreaDark)
+			if (const auto v = ALD::IsExteriorDark(sky);
+			    v != m_globalState.isExteriorDark)
 			{
-				m_globalState.isAreaDark = v;
-				changed                  = true;
+				m_globalState.isExteriorDark = v;
+				change.set(ChangeFlag::kGlobal);
+			}
+
+			if (const auto v = ALD::GetRoomLightingTemplate(sky);
+			    v != m_globalState.roomLightingTemplate)
+			{
+				m_globalState.roomLightingTemplate = v;
+				change.set(ChangeFlag::kPlayer);
+			}
+
+			constexpr auto a = 60.0f * std::numbers::pi_v<float> / 180.0f;
+
+			if (const auto v = ALD::IsSunAngleLessThan(sky, a);
+			    v != m_globalState.isSunAngleLessThan60)
+			{
+				m_globalState.isSunAngleLessThan60 = v;
+				change.set(ChangeFlag::kGlobal);
 			}
 
 #if defined(IED_ENABLE_CONDITION_EN)
@@ -345,13 +355,23 @@ namespace IED
 			    v != m_globalState.dayOfWeek)
 			{
 				m_globalState.dayOfWeek = v;
-				changed                 = true;
+				change.set(ChangeFlag::kGlobal);
 			}
 		}
 
-		if (changed)
+		if (change.test(ChangeFlag::kGlobal))
 		{
 			GetController().RequestLFEvaluateAll();
+		}
+		else if (change.test(ChangeFlag::kPlayer))
+		{
+			const auto& actorMap = GetController().GetActorMap();
+
+			if (auto it = actorMap.find(Data::IData::GetPlayerRefID());
+			    it != actorMap.end())
+			{
+				it->second.RequestEval();
+			}
 		}
 	}
 
@@ -539,7 +559,7 @@ namespace IED
 			if (const auto info = controller.LookupCachedActorInfo2(a_holder.m_actor, a_holder))
 			{
 				a_holder.CreateProcessParams(
-					ControllerUpdateFlags::kPlaySound,
+					ControllerUpdateFlags::kPlayEquipSound,
 					a_holder.m_actor.get(),
 					a_holder.GetHandle(),
 					a_holder.GetTempData(),

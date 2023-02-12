@@ -270,7 +270,7 @@ namespace IED
 			template <
 				class Tm,
 				class Tv>
-			constexpr void set(Tm& a_member, Tv&& a_value)  //
+			constexpr void set(Tm& a_member, Tv&& a_value)         //
 				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>)  //
 				requires(std::is_assignable_v<Tm&, Tv &&>)
 			{

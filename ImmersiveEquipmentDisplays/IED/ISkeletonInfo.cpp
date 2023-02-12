@@ -222,7 +222,7 @@ namespace IED
 		a_data.name   = a_object->m_name.c_str();
 		a_data.local  = a_object->m_localTransform;
 		a_data.world  = a_object->m_worldTransform;
-		a_data.flags  = a_object->m_flags;
+		a_data.flags  = a_object->m_flags.underlying();
 		a_data.parent = a_parent;
 	}
 

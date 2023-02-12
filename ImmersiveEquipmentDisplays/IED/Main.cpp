@@ -3,6 +3,7 @@
 #include "Main.h"
 
 #include "AnimationUpdateManager.h"
+#include "AreaLightingDetection.h"
 #include "ConfigINI.h"
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
@@ -322,6 +323,8 @@ namespace IED
 				GlobalProfileManager::GetSingleton<ModelProfile>().Load(
 					PATHS::PROFILE_MANAGER_MODEL);
 #endif
+
+				ALD::InitGSPtr();
 
 				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 

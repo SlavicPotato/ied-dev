@@ -49,6 +49,8 @@ namespace IED
 		static constexpr auto SECT_EXPERIMENTAL   = "Experimental";
 		static constexpr auto SECT_BIPCACHE       = "BipedSlotCache";
 		static constexpr auto SECT_EFFECT_SHADERS = "EffectShaders";
+		static constexpr auto SECT_MISCELLANEOUS  = "Miscellaneous";
+		static constexpr auto SECT_LIGHTS         = "Lights";
 
 	public:
 		ConfigINI() = default;
@@ -83,9 +85,10 @@ namespace IED
 		bool          m_enableEarlyLoadHooks{ true };
 		bool          m_behaviorGraphAnims{ false };
 		bool          m_forceFlushSaveData{ false };
-		bool          m_enableLights{ false };
+		bool          m_enableLights{ true };
 		bool          m_effectShaderFlickerFix{ false };
 		bool          m_enableInMenus{ false };
+		bool          m_clearRPCOnSceneMove{ false };
 		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t m_bipedSlotCacheMaxForms{ 16 };
 		float         m_introBannerVOffset{ 110.0f };

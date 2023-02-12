@@ -167,9 +167,10 @@ namespace IED
 
 		m_behaviorGraphAnims = reader.GetBoolValue(SECT_ANIM, "EnableBehaviorGraphControlledAnimations", true);
 
-		m_enableLights = reader.GetBoolValue(SECT_EXPERIMENTAL, "EnableLights", false);
+		m_enableLights = reader.GetBoolValue(SECT_LIGHTS, "Enable", true);
 
 		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
+		m_clearRPCOnSceneMove    = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
 
 		m_loaded = reader.is_loaded();
 

@@ -187,7 +187,7 @@ namespace IED
 			case Data::ExtraConditionType::kXP32Skeleton:
 				return a_params.objects.HasXP32Skeleton();
 			case Data::ExtraConditionType::kInDarkArea:
-				return a_params.is_area_dark();
+				return a_params.is_in_dark_area();
 			case Data::ExtraConditionType::kInPublicCell:
 				return a_params.actor->InPublicCell();
 			case Data::ExtraConditionType::kIsCellOwner:
@@ -196,6 +196,8 @@ namespace IED
 				return static_cast<bool>(a_params.get_parent_cell_owner());
 			case Data::ExtraConditionType::kIsNPCCellOwner:
 				return a_params.get_parent_cell_owner() == a_params.npc;
+			case Data::ExtraConditionType::kIsSunAngleLessThan60:
+				return a_params.is_sun_angle_less_than_60();
 			default:
 				return false;
 			}

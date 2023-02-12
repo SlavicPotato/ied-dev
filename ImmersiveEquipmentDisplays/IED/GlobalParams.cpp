@@ -6,13 +6,20 @@
 
 namespace IED
 {
-	bool GlobalParams::is_area_dark() const noexcept
+	bool GlobalParams::is_exterior_dark() const noexcept
 	{
-		if (!isAreaDark)
+		if (!isExteriorDark)
 		{
-			isAreaDark.emplace(IsAreaDark(RE::Sky::GetSingleton()));
+			isExteriorDark.emplace(ALD::IsExteriorDark(RE::TES::GetSingleton()->sky));
 		}
 
-		return *isAreaDark;
+		return *isExteriorDark;
+	}
+
+	bool GlobalParams::is_sun_angle_less_than_60() const noexcept
+	{
+		return ALD::IsSunAngleLessThan(
+			RE::TES::GetSingleton()->sky,
+			60.0f * std::numbers::pi_v<float> / 180.0f);
 	}
 }

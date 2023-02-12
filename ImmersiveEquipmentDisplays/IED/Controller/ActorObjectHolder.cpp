@@ -429,6 +429,11 @@ namespace IED
 		return value;
 	}
 
+	void ActorObjectHolder::ClearRPC() noexcept
+	{
+		m_rpc.clear();
+	}
+
 	bool ActorObjectHolder::UpdateNodeMonitorEntries() noexcept
 	{
 		bool result = false;

@@ -21,7 +21,7 @@ namespace IED
 		kRefSyncDisableFailedOrphan = 1u << 1,
 		kScbLeft                    = 1u << 2,
 		kSyncReferenceTransform     = 1u << 6,
-		kPlaySound                  = 1u << 8,
+		kPlayEquipSound             = 1u << 8,
 		kIsGroup                    = 1u << 9,
 		kWantUnloadAfterHide        = 1u << 10,
 		kHasCollisionObjectScale    = 1u << 11,
@@ -142,12 +142,12 @@ namespace IED
 
 				static_assert(
 					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::BaseFlags>> &&
-					stl::underlying(ObjectEntryFlags::kPlaySound) == stl::underlying(Data::BaseFlags::kPlaySound) &&
+					stl::underlying(ObjectEntryFlags::kPlayEquipSound) == stl::underlying(Data::BaseFlags::kPlayEquipSound) &&
 					stl::underlying(ObjectEntryFlags::kSyncReferenceTransform) == stl::underlying(Data::BaseFlags::kSyncReferenceTransform));
 
 				flags =
-					(flags & ~(ObjectEntryFlags::kPlaySound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
-					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlaySound | Data::BaseFlags::kSyncReferenceTransform)));
+					(flags & ~(ObjectEntryFlags::kPlayEquipSound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
+					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlayEquipSound | Data::BaseFlags::kSyncReferenceTransform)));
 			}
 
 			void UpdateArrows(std::int32_t a_count) noexcept;

@@ -22,7 +22,7 @@ namespace IED
 			kDisabled                   = 1u << 5,
 			kSyncReferenceTransform     = 1u << 6,
 			kReferenceMode              = 1u << 7,
-			kPlaySound                  = 1u << 8,
+			kPlayEquipSound             = 1u << 8,
 			kKeepTorchFlame             = 1u << 9,
 			kRemoveScabbard             = 1u << 10,
 			kLoad1pWeaponModel          = 1u << 11,
@@ -42,6 +42,7 @@ namespace IED
 			kRemoveEditorMarker         = 1u << 25,
 			kGeometryScaleCollider      = 1u << 26,
 			kForceTryLoadAnim           = 1u << 27,
+			kPlayLoopSound              = 1u << 28,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kReferenceMode |

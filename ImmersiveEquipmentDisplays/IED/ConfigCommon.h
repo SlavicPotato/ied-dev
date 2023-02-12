@@ -339,6 +339,7 @@ namespace IED
 			kIsCellOwner             = 58,
 			kInOwnedCell             = 59,
 			kIsNPCCellOwner          = 60,
+			kIsSunAngleLessThan60    = 61,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -351,12 +352,16 @@ namespace IED
 			kLowerOrEqual   = 5
 		};
 
-		template <class T>
-		concept AcceptDataClear = requires(T a_data) {
-									  a_data.clear();
-								  };
+		namespace concepts
+		{
 
-		template <AcceptDataClear T>
+			template <class T>
+			concept accept_clear = requires(T a_data) {
+											a_data.clear();
+										};
+		}
+
+		template <concepts::accept_clear T>
 		class configSexRoot_t
 		{
 			friend class boost::serialization::access;
@@ -455,7 +460,7 @@ namespace IED
 		template <class T>
 		using configFormMap_t = stl::boost_unordered_map<configForm_t, T>;
 
-		template <AcceptDataClear T>
+		template <concepts::accept_clear T>
 		class configStoreBase_t
 		{
 			friend class boost::serialization::access;

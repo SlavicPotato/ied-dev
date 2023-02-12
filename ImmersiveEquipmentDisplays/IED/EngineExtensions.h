@@ -182,7 +182,7 @@ namespace IED
 		{
 			return m_Instance.m_conf.applyTransformOverrides;
 		}
-		
+
 		[[nodiscard]] static constexpr bool HasEarly3DLoadHooks() noexcept
 		{
 			return m_Instance.m_conf.early3DLoadHooks;
@@ -247,9 +247,8 @@ namespace IED
 		void Install_UpdateReferenceBehaviorGraphs();
 		void Install_Lighting();
 		void Install_EffectShaderPostResume();
-		//void Install_SetupEventSinks();
-
 		void Install_Actor_ActorValueOwner();
+		void Install_Player_OnMoveScene();
 
 		template <class T>
 		class AVThunk
@@ -310,6 +309,7 @@ namespace IED
 		static void                              PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept;
 		static REFR_LIGHT*                       Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
 		static NiAVObject*                       ShaderReferenceEffect_Resume_GetAttachRoot(RE::ShaderReferenceEffect* a_this, TESObjectREFR* a_refr) noexcept;
+		static void                              PlayerCharacter_unk_205_Post_Hook(RE::TES* a_tes) noexcept;
 		//static void                              SetupEventSinks_Hook() noexcept;
 
 		/*static void                                    Character_UpdateRefLight_Hook(Character* a_character) noexcept;
@@ -368,6 +368,7 @@ namespace IED
 		decltype(&PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook)       m_PlayerCharacter_unk_205_RefreshMagicCasterLights_o{ nullptr };
 		decltype(&PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook) m_PlayerCharacter_RefreshLights_RefreshMagicCasterLights_o{ nullptr };
 		decltype(&Actor_Update_Actor_GetExtraLight_Hook)                       m_Actor_Update_Actor_GetExtraLight_o{ nullptr };
+		decltype(&PlayerCharacter_unk_205_Post_Hook)                           m_PlayerCharacter_unk_205_Post_o{ nullptr };
 		//decltype(&SetupEventSinks_Hook)                                        m_SetupEventSinks_o{ nullptr };
 
 		struct

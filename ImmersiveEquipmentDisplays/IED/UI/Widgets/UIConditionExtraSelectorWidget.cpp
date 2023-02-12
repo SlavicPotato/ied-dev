@@ -50,6 +50,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
+			std::make_pair(Data::ExtraConditionType::kIsSunAngleLessThan60, UIConditionExtraSelectorWidgetStrings::IsSunAngleLessThan60),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
 			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
@@ -239,6 +240,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InOwnedCell);
 			case Data::ExtraConditionType::kIsNPCCellOwner:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsNPCCellOwner);
+			case Data::ExtraConditionType::kIsSunAngleLessThan60:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSunAngleLessThan60);
 			default:
 				return nullptr;
 			}

@@ -304,7 +304,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PreprocessorDefinitions>IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;_XM_SSE4_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -321,7 +321,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;$(SolutionDir)..\oneTBB\msvc_19.32_cxx_64_md_release\tbb12.lib;$(SolutionDir)..\oneTBB\msvc_19.32_cxx_64_md_release\tbbmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SSEPath)\Data\SKSE\Plugins\" /Y
@@ -542,7 +542,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <PreprocessorDefinitions>_XM_SSE4_INTRINSICS_;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;SKMP_AE_POST_629;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/Zc:__cplusplus %(AdditionalOptions)</AdditionalOptions>
       <ForcedIncludeFiles>
@@ -560,7 +560,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
-      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>version.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;$(SolutionDir)..\oneTBB\msvc_19.32_cxx_64_md_release\tbb12.lib;$(SolutionDir)..\oneTBB\msvc_19.32_cxx_64_md_release\tbbmalloc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(AE_CURRENT_PATH)\Data\SKSE\Plugins" /Y</Command>
