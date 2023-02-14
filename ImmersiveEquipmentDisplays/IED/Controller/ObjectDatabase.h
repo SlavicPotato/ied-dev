@@ -19,7 +19,7 @@ namespace IED
 				object(a_object)
 			{
 			}
-			
+
 			explicit entry_t(
 				NiPointer<NiNode>&& a_object) :
 				object(std::move(a_object))
@@ -93,5 +93,7 @@ namespace IED
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;
 		container_type           m_data;
+
+		stl::vector<std::pair<stl::fixed_string, long long>> m_scc;
 	};
 }

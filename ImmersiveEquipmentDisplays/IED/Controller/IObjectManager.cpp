@@ -62,8 +62,8 @@ namespace IED
 				a_actor &&
 				a_actor->loadedState &&
 				(a_actor == *g_thePlayer || m_playSoundNPC) &&
-				state->nodes.rootNode->m_parent &&
-				state->nodes.rootNode->IsVisible())
+				state->commonNodes.rootNode->m_parent &&
+				state->commonNodes.rootNode->IsVisible())
 			{
 				SoundPlay(
 					state->form->formType,
@@ -629,7 +629,7 @@ namespace IED
 
 			itemRoot->AttachChild(objectAttachmentNode, true);
 
-			state->nodes.physics = objectAttachmentNode;
+			state->physics = objectAttachmentNode;
 		}
 		else
 		{
@@ -690,14 +690,14 @@ namespace IED
 
 		//UpdateDownwardPass(itemRoot);
 
-		if (a_visible && state->nodes.HasPhysicsNode())
+		if (a_visible && state->HasPhysicsNode())
 		{
 			if (auto& pv = a_activeConfig.physicsValues.data;
 			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
 				state->simComponent = a_params.objects.CreateAndAddSimComponent(
-					state->nodes.physics.get(),
-					state->nodes.physics->m_localTransform,
+					state->physics.get(),
+					state->physics->m_localTransform,
 					*pv);
 			}
 		}
@@ -946,7 +946,7 @@ namespace IED
 
 			groupRoot->AttachChild(objectAttachmentNode, true);
 
-			state->nodes.physics = objectAttachmentNode;
+			state->physics = objectAttachmentNode;
 		}
 		else
 		{
@@ -981,7 +981,7 @@ namespace IED
 											 e.entry->first,
 											 e.form,
 											 itemRoot,
-											 e.object)
+											 e.object.get())
 			              .first->second;
 
 			if (e.dbEntry)
@@ -993,7 +993,7 @@ namespace IED
 
 			INode::UpdateObjectTransform(
 				n.transform,
-				n.rootNode,
+				n.commonNodes.rootNode,
 				nullptr);
 
 			objectAttachmentNode->AttachChild(itemRoot, true);
@@ -1010,7 +1010,7 @@ namespace IED
 					a_params.actor,
 					e.object,
 					lightForm,
-					Data::ExtraLightData{},
+					e.entry->second.extraLightConfig.data,
 					n.light);
 			}
 
@@ -1083,7 +1083,7 @@ namespace IED
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableBehaviorGraphAnims))
 			{
 				if (EngineExtensions::CreateWeaponBehaviorGraph(
-						e.grpObject->object,
+						e.grpObject->commonNodes.object,
 						e.grpObject->anim.holder,
 						[&](const char* a_path) noexcept {
 							return a_baseConfig.hkxFilter.empty() ?
@@ -1112,14 +1112,14 @@ namespace IED
 			}
 		}
 
-		if (a_visible && state->nodes.HasPhysicsNode())
+		if (a_visible && state->HasPhysicsNode())
 		{
 			if (auto& pv = a_activeConfig.physicsValues.data;
 			    pv && !pv->valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
 				state->simComponent = a_params.objects.CreateAndAddSimComponent(
-					state->nodes.physics.get(),
-					state->nodes.physics->m_localTransform,
+					state->physics.get(),
+					state->physics->m_localTransform,
 					*pv);
 			}
 		}
@@ -1158,13 +1158,13 @@ namespace IED
 		const Data::configBaseValues_t&          a_config,
 		Actor*                                   a_actor) noexcept
 	{
-		a_state->form           = a_form;
-		a_state->nodes.rootNode = a_rootNode;
-		a_state->nodes.ref      = std::move(a_targetNodes.ref);
-		a_state->nodes.object   = a_objectNode;
-		a_state->nodeDesc       = a_config.targetNode;
-		a_state->atmReference   = a_config.targetNode.managed() || a_config.flags.test(Data::BaseFlags::kReferenceMode);
-		a_state->owner          = a_actor->formID;
+		a_state->form                 = a_form;
+		a_state->commonNodes.rootNode = a_rootNode;
+		a_state->commonNodes.object   = a_objectNode;
+		a_state->ref                  = std::move(a_targetNodes.ref);
+		a_state->nodeDesc             = a_config.targetNode;
+		a_state->atmReference         = a_config.targetNode.managed() || a_config.flags.test(Data::BaseFlags::kReferenceMode);
+		a_state->owner                = a_actor->formID;
 	}
 
 	void IObjectManager::TryMakeArrowState(
@@ -1256,7 +1256,7 @@ namespace IED
 	}
 
 	BGSSoundDescriptorForm* IObjectManager::GetSoundDescriptor(
-		const TESForm*     a_modelForm) noexcept
+		const TESForm* a_modelForm) noexcept
 	{
 		switch (a_modelForm->formType)
 		{
@@ -1341,8 +1341,8 @@ namespace IED
 			a_node,
 			a_atmReference,
 			a_root,
-			state->nodes.rootNode,
-			state->nodes.ref);
+			state->commonNodes.rootNode,
+			state->ref);
 
 		if (result)
 		{

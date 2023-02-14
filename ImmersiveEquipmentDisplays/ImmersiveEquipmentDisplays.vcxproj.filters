@@ -1781,6 +1781,9 @@
     <ClInclude Include="IED\Parsers\JSONConfigObjectSlotListParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
     </ClInclude>
+    <ClInclude Include="IED\SPtrHolder.h">
+      <Filter>Source\IED</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2838,6 +2841,12 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigObjectSlotListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\SPtrHolder.cpp">
+      <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\TimeOfDay.cpp">
+      <Filter>Source\IED</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

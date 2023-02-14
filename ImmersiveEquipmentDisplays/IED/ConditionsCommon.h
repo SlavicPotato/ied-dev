@@ -88,7 +88,7 @@ namespace IED
 			case Data::ExtraConditionType::kInMerchantFaction:
 				return a_params.is_in_merchant_faction();
 			case Data::ExtraConditionType::kCombatStyle:
-				return match_form_with_id<Tm, Tf>(a_match, a_params.get_combat_style());
+				return match_form_with_id<Tm, Tf>(a_match, a_cached.combatStyle);
 			case Data::ExtraConditionType::kClass:
 				return match_form_with_id<Tm, Tf>(a_match, a_params.npc->GetClass());
 			case Data::ExtraConditionType::kTimeOfDay:
@@ -196,8 +196,17 @@ namespace IED
 				return static_cast<bool>(a_params.get_parent_cell_owner());
 			case Data::ExtraConditionType::kIsNPCCellOwner:
 				return a_params.get_parent_cell_owner() == a_params.npc;
-			case Data::ExtraConditionType::kIsSunAngleLessThan60:
-				return a_params.is_sun_angle_less_than_60();
+			case Data::ExtraConditionType::kSunAngle:
+				{
+					const auto angle = a_params.get_sun_angle();
+
+					return compare(
+						a_match.compOperator2,
+						a_match.flags.test(Tf::kExtraFlag1) ? std::fabsf(angle) : angle,
+						a_match.sunAngle);
+				}
+			case Data::ExtraConditionType::kIsDaytime:
+				return a_params.is_daytime();
 			default:
 				return false;
 			}

@@ -23,6 +23,7 @@ namespace IED
 		UIStats::UIStats(
 			Tasks::UIRenderTaskBase& a_owner,
 			Controller&              a_controller) :
+			UIFormInfoTooltipWidget(a_controller),
 			UIMiscTextInterface(a_controller),
 			m_owner(a_owner),
 			m_controller(a_controller)
@@ -39,7 +40,7 @@ namespace IED
 						WINDOW_ID),
 					GetOpenState()))
 			{
-				auto &task = m_owner.As<IUIRenderTaskMain>();
+				auto& task = m_owner.As<IUIRenderTaskMain>();
 
 				auto i3di = task.GetContext().GetChild<I3DIMain>();
 
@@ -244,7 +245,7 @@ namespace IED
 					ImGui::PushID(e->obj.first.get());
 
 					ImGui::TableSetColumnIndex(0);
-					TextCopyable("%.8X", e->obj.first.get());
+					DrawFormWithInfo(e->obj.first);
 
 					ImGui::TableSetColumnIndex(1);
 					TextCopyable("%.8X", e->obj.second.GetHandle().get());
@@ -256,12 +257,12 @@ namespace IED
 					}
 
 					ImGui::TableSetColumnIndex(3);
-					TextCopyable("%.8X", e->obj.second.GetNPCFormID().get());
+					DrawFormWithInfo(e->obj.second.GetNPCFormID());
 
 					if (e->race)
 					{
 						ImGui::TableSetColumnIndex(4);
-						TextCopyable("%.8X", e->race.get());
+						DrawFormWithInfo(e->race);
 					}
 
 					ImGui::TableSetColumnIndex(5);

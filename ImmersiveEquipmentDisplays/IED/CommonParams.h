@@ -71,8 +71,6 @@ namespace IED
 			return *actorSkin;
 		}
 
-		[[nodiscard]] TESCombatStyle* get_combat_style() const noexcept;
-
 		[[nodiscard]] bool can_dual_wield() const noexcept;
 
 		[[nodiscard]] constexpr bool get_actor_dead() const noexcept
@@ -112,7 +110,8 @@ namespace IED
 		[[nodiscard]] stl::flag<WeatherClassificationFlags> get_weather_class() const noexcept;
 		[[nodiscard]] Data::TimeOfDay                       get_time_of_day() const noexcept;
 		[[nodiscard]] bool                                  is_in_dark_area() const noexcept;
-		[[nodiscard]] bool                                  is_sun_angle_less_than_60() const noexcept;
+		[[nodiscard]] bool                                  is_daytime() const noexcept;
+		[[nodiscard]] float                                 get_sun_angle() const noexcept;
 
 		[[nodiscard]] constexpr auto get_npc_shield_slot() const noexcept
 		{
@@ -213,7 +212,6 @@ namespace IED
 		mutable std::optional<Biped*>                biped;
 		mutable std::optional<TESObjectARMO*>        actorSkin;
 		mutable std::optional<BGSLocation*>          location;
-		mutable std::optional<TESCombatStyle*>       combatStyle;
 		mutable std::optional<NiPointer<Actor>>      mountedActor;
 		mutable std::optional<NiPointer<Actor>>      mountedByActor;
 		mutable std::optional<NiPointer<Actor>>      lastRiddenPlayerHorse;

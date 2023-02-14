@@ -348,6 +348,7 @@ namespace IED
 				float f32a{ 0.0f };
 				float percent;
 				float avMatch;
+				float sunAngle;
 			};
 
 			union

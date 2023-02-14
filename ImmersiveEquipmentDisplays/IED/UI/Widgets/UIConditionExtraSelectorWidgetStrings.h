@@ -69,7 +69,8 @@ namespace IED
 			IsCellOwner             = 5458,
 			InOwnedCell             = 5459,
 			IsNPCCellOwner          = 5460,
-			IsSunAngleLessThan60    = 5461,
+			SunAngle                = 5461,
+			IsDaytime               = 5462,
 		};
 	}
 }

@@ -38,13 +38,14 @@ namespace IED
 			kRemoveProjectileTracers    = 1u << 21,
 			kDynamicArrows              = 1u << 22,
 			kAttachLight                = 1u << 23,
-			kHideLight                  = 1u << 24,  // unused
+			kHideLight                  = 1u << 24,
 			kRemoveEditorMarker         = 1u << 25,
 			kGeometryScaleCollider      = 1u << 26,
 			kForceTryLoadAnim           = 1u << 27,
 			kPlayLoopSound              = 1u << 28,
 
 			kResetTriggerFlags = kDropOnDeath |
+			                     kDisabled |
 			                     kReferenceMode |
 			                     kKeepTorchFlame |
 			                     kRemoveScabbard |

@@ -3,7 +3,6 @@
 #include "Main.h"
 
 #include "AnimationUpdateManager.h"
-#include "AreaLightingDetection.h"
 #include "ConfigINI.h"
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
@@ -16,6 +15,7 @@
 #include "NodeOverrideData.h"
 #include "PapyrusInterface/Papyrus.h"
 #include "ReferenceLightController.h"
+#include "SPtrHolder.h"
 
 #include "Drivers/Input.h"
 #include "Drivers/Render.h"
@@ -237,6 +237,8 @@ namespace IED
 			NodeOverrideData::Create();
 			NodeOverrideData::LoadAndAddExtraNodes(PATHS::EXTRA_NODES);
 			NodeOverrideData::LoadAndAddConvertNodes(PATHS::CONVERT_NODES);
+			NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
+			NodeOverrideData::LoadAndAddAdditionalCMENodes(PATHS::ADDITIONAL_CME_NODES);
 
 			ASSERT(Drivers::Input::SinkToInputDispatcher());
 
@@ -270,7 +272,8 @@ namespace IED
 				ASSERT(Data::IData::PopulateRaceList());
 				ASSERT(Data::IData::PopulatePluginInfo());
 
-				FormHolder::Populate();
+				FormHolder::Initialize();
+				SPtrHolder::Initialize();
 
 				auto& ldm = Localization::LocalizationDataManager::GetSingleton();
 				if (!ldm.Load(PATHS::LOCALIZATION))
@@ -279,9 +282,6 @@ namespace IED
 						"Exception occured while loading localization data: %s",
 						ldm.GetLastException().what());
 				}
-
-				NodeOverrideData::LoadAndAddNodeMonitor(PATHS::NODE_MONITOR);
-				NodeOverrideData::LoadAndAddAdditionalCMENodes(PATHS::ADDITIONAL_CME_NODES);
 
 				auto& nodeMap = IED::Data::NodeMap::GetSingleton();
 
@@ -323,8 +323,6 @@ namespace IED
 				GlobalProfileManager::GetSingleton<ModelProfile>().Load(
 					PATHS::PROFILE_MANAGER_MODEL);
 #endif
-
-				ALD::InitGSPtr();
 
 				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 

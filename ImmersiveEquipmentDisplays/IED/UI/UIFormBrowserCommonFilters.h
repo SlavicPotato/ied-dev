@@ -28,6 +28,7 @@ namespace IED
 			EffectSource,
 			Perk,
 			EquipSlot,
+			Cell,
 			Common,
 			ModelTypes,
 		};
@@ -35,7 +36,7 @@ namespace IED
 		class UIFormBrowserCommonFilters
 		{
 		public:
-			[[nodiscard]] static constexpr const auto& Get(UIFormBrowserFilter a_id)
+			[[nodiscard]] static constexpr auto& Get(UIFormBrowserFilter a_id) noexcept
 			{
 				return m_Instance.m_filters[stl::underlying(a_id)];
 			}
@@ -43,9 +44,9 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 22> m_filters;
+			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 23> m_filters;
 
-			static UIFormBrowserCommonFilters m_Instance;
+			static const UIFormBrowserCommonFilters m_Instance;
 		};
 
 	}

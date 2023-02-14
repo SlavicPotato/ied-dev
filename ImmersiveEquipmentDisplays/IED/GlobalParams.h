@@ -29,13 +29,15 @@ namespace IED
 			return *currentWeather;
 		}
 
-		[[nodiscard]] bool is_exterior_dark() const noexcept;
-		[[nodiscard]] bool is_sun_angle_less_than_60() const noexcept;
+		[[nodiscard]] bool  is_exterior_dark() const noexcept;
+		[[nodiscard]] bool  is_daytime() const noexcept;
+		[[nodiscard]] float get_sun_angle() const noexcept;
 
 	private:
-		mutable std::optional<Data::TimeOfDay>                       timeOfDay;
-		mutable std::optional<RE::TESWeather*>                       currentWeather;
-		mutable std::optional<bool>                                  isExteriorDark;
-		mutable std::optional<bool>                                  isSunAngleLessThan60;
+		mutable std::optional<Data::TimeOfDay> timeOfDay;
+		mutable std::optional<RE::TESWeather*> currentWeather;
+		mutable std::optional<bool>            isExteriorDark;
+		mutable std::optional<bool>            isDaytime;
+		mutable std::optional<float>           sunAngle;
 	};
 }

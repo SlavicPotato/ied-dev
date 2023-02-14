@@ -339,7 +339,8 @@ namespace IED
 			kIsCellOwner             = 58,
 			kInOwnedCell             = 59,
 			kIsNPCCellOwner          = 60,
-			kIsSunAngleLessThan60    = 61,
+			kSunAngle                = 61,
+			kIsDaytime               = 62,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -357,8 +358,8 @@ namespace IED
 
 			template <class T>
 			concept accept_clear = requires(T a_data) {
-											a_data.clear();
-										};
+									   a_data.clear();
+								   };
 		}
 
 		template <concepts::accept_clear T>

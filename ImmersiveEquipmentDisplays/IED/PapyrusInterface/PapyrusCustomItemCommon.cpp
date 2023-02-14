@@ -123,38 +123,6 @@ namespace IED
 				}
 			}
 
-			void QueueTransformUpdate(
-				Game::FormID             a_target,
-				Data::ConfigClass        a_class,
-				const stl::fixed_string& a_key,
-				const stl::fixed_string& a_name)
-			{
-				switch (a_class)
-				{
-				case ConfigClass::Actor:
-					Initializer::GetController()->QueueUpdateTransformCustom(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				case ConfigClass::NPC:
-					Initializer::GetController()->QueueUpdateTransformCustomNPC(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				case ConfigClass::Race:
-					Initializer::GetController()->QueueUpdateTransformCustomRace(
-						a_target,
-						a_class,
-						a_key,
-						a_name);
-					break;
-				}
-			}
-
 			void QueueEvaluate(
 				Game::FormID      a_target,
 				Data::ConfigClass a_class)
@@ -164,17 +132,17 @@ namespace IED
 				case ConfigClass::Actor:
 					Initializer::GetController()->QueueEvaluate(
 						a_target,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kWantGroupUpdate);
 					break;
 				case ConfigClass::NPC:
 					Initializer::GetController()->QueueEvaluateNPC(
 						a_target,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kWantGroupUpdate);
 					break;
 				case ConfigClass::Race:
 					Initializer::GetController()->QueueEvaluateRace(
 						a_target,
-						ControllerUpdateFlags::kNone);
+						ControllerUpdateFlags::kWantGroupUpdate);
 					break;
 				}
 			}

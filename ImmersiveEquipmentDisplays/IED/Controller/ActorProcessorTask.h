@@ -82,11 +82,13 @@ namespace IED
 		{
 			constexpr GlobalState(long long a_ct) noexcept :
 				nextRun(a_ct),
+				nextRunMF(a_ct),
 				nextRunLF(a_ct)
 			{
 			}
 
 			long long nextRun;
+			long long nextRunMF;
 			long long nextRunLF;
 
 			RE::TESWeather*      currentWeather{ nullptr };
@@ -94,17 +96,19 @@ namespace IED
 			Data::TimeOfDay      timeOfDay{ Data::TimeOfDay::kDay };
 			BGSLightingTemplate* roomLightingTemplate{ nullptr };
 			Game::ActorHandle    playerLastRidden;
+			float                sunAngle{ 0.0f };
 			bool                 inFirstPerson{ false };
 			bool                 inDialogue{ false };
 			bool                 isExteriorDark{ false };
 			bool                 isPlayerInDarkInterior{ false };
-			bool                 isSunAngleLessThan60{ false };
+			bool                 isDaytime{ true };
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };
 #endif
 		};
 
 		static constexpr auto COMMON_STATE_CHECK_INTERVAL    = 1000000ll;
+		static constexpr auto COMMON_STATE_CHECK_INTERVAL_MF = 5000000ll;
 		static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15000000ll;
 
 		[[nodiscard]] constexpr bool ParallelProcessingEnabled() const noexcept

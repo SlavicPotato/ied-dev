@@ -134,32 +134,6 @@ namespace IED
 		return *layingDown;
 	}
 
-	TESCombatStyle* CommonParams::get_combat_style() const noexcept
-	{
-		if (!combatStyle)
-		{
-			TESCombatStyle* cs;
-
-			if (auto extraCombatStyle = actor->extraData.Get<ExtraCombatStyle>())
-			{
-				cs = extraCombatStyle->combatStyle;
-			}
-			else
-			{
-				cs = nullptr;
-			}
-
-			if (!cs)
-			{
-				cs = npc->combatStyle;
-			}
-
-			combatStyle.emplace(cs);
-		}
-
-		return *combatStyle;
-	}
-
 	bool CommonParams::can_dual_wield() const noexcept
 	{
 		if (!canDualWield)
@@ -174,9 +148,9 @@ namespace IED
 			{
 				if (race->data.raceFlags.test(TESRace::Flag::kCanDualWield))
 				{
-					if (auto cs = get_combat_style())
+					if (const auto* const style = objects.GetCachedData().combatStyle)
 					{
-						result = cs->AllowDualWielding();
+						result = style->AllowDualWielding();
 					}
 				}
 			}
@@ -224,9 +198,14 @@ namespace IED
 		return *isInDarkArea;
 	}
 
-	bool CommonParams::is_sun_angle_less_than_60() const noexcept
+	bool CommonParams::is_daytime() const noexcept
 	{
-		return controller.GetOrCreateGlobalParams().is_sun_angle_less_than_60();
+		return controller.GetOrCreateGlobalParams().is_daytime();
+	}
+
+	float CommonParams::get_sun_angle() const noexcept
+	{
+		return controller.GetOrCreateGlobalParams().get_sun_angle();
 	}
 
 	NiPointer<Actor>& CommonParams::get_mounted_actor() const noexcept

@@ -1413,63 +1413,6 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueUpdateTransformSlot(
-		Game::FormID a_actor,
-		ObjectSlot   a_slot)
-	{
-		ITaskPool::AddTask([this, a_actor, a_slot] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateTransformSlotImpl(a_actor, a_slot);
-		});
-	}
-
-	void Controller::QueueUpdateTransformSlotNPC(
-		Game::FormID a_npc,
-		ObjectSlot   a_slot)
-	{
-		ITaskPool::AddTask([this, a_npc, a_slot]() {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				if (e.second.IsActorNPCOrTemplate(a_npc))
-				{
-					UpdateTransformSlotImpl(e.second, a_slot);
-				}
-			}
-		});
-	}
-
-	void Controller::QueueUpdateTransformSlotRace(
-		Game::FormID a_race,
-		ObjectSlot   a_slot)
-	{
-		ITaskPool::AddTask([this, a_race, a_slot]() {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				if (e.second.IsActorRace(a_race))
-				{
-					UpdateTransformSlotImpl(e.second, a_slot);
-				}
-			}
-		});
-	}
-
-	void Controller::QueueUpdateTransformSlotAll(ObjectSlot a_slot)
-	{
-		ITaskPool::AddTask([this, a_slot] {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				UpdateTransformSlotImpl(e.second, a_slot);
-			}
-		});
-	}
-
 	void Controller::QueueResetAAAll()
 	{
 		ITaskPool::AddTask([this] {
@@ -1777,204 +1720,6 @@ namespace IED
 		});
 	}
 
-	void Controller::QueueUpdateTransformCustom(
-		Game::FormID             a_actor,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class, a_pkey, a_vkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomNPC(
-		Game::FormID             a_npc,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class, a_pkey, a_vkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomRace(
-		Game::FormID             a_race,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_race, a_class, a_pkey, a_vkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				a_pkey,
-				a_vkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustom(
-		Game::FormID             a_actor,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class, a_pkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				a_pkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomNPC(
-		Game::FormID             a_npc,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class, a_pkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				a_pkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomRace(
-		Game::FormID             a_race,
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_race, a_class, a_pkey] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				a_pkey,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustom(
-		Game::FormID a_actor,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_actor, a_class] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomImpl(
-				a_actor,
-				a_class,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomNPC(
-		Game::FormID a_npc,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_npc, a_class] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomNPCImpl(
-				a_npc,
-				a_class,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomRace(
-		Game::FormID a_race,
-		ConfigClass  a_class)
-	{
-		ITaskPool::AddTask([this, a_race, a_class] {
-			const stl::lock_guard lock(m_lock);
-
-			UpdateCustomRaceImpl(
-				a_race,
-				a_class,
-				MakeTransformUpdateFunc());
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomAll(
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey,
-		const stl::fixed_string& a_vkey)
-	{
-		ITaskPool::AddTask([this, a_class, a_pkey, a_vkey] {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					a_pkey,
-					a_vkey,
-					MakeTransformUpdateFunc());
-			}
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomAll(
-		ConfigClass              a_class,
-		const stl::fixed_string& a_pkey)
-	{
-		ITaskPool::AddTask([this, a_class, a_pkey] {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					a_pkey,
-					MakeTransformUpdateFunc());
-			}
-		});
-	}
-
-	void Controller::QueueUpdateTransformCustomAll(
-		ConfigClass a_class)
-	{
-		ITaskPool::AddTask([this, a_class] {
-			const stl::lock_guard lock(m_lock);
-
-			for (auto& e : m_actorMap)
-			{
-				UpdateCustomImpl(
-					e.second,
-					a_class,
-					MakeTransformUpdateFunc());
-			}
-		});
-	}
-
 	void Controller::QueueLookupFormInfo(
 		Game::FormID                     a_formId,
 		IForm::form_lookup_result_func_t a_func)
@@ -2249,7 +1994,6 @@ namespace IED
 		}
 
 		const bool isVisible = !state->flags.test(ObjectEntryFlags::kInvisible);
-		//const bool isLightHidden = state->flags.test(ObjectEntryFlags::kHideLight);
 
 		if (a_visible)
 		{
@@ -2278,30 +2022,19 @@ namespace IED
 			}
 		}
 
+		const bool isLightHidden = state->flags.test(ObjectEntryFlags::kHideLight);
+
 		state->UpdateFlags(a_config);
 
-		if (isVisible != a_visible)
-		//isLightHidden != a_config.flags.test(BaseFlags::kHideLight))
+		if (isVisible != a_visible ||
+		    isLightHidden != a_config.flags.test(BaseFlags::kHideLight))
 		{
-			a_entry.SetObjectVisible(a_visible);
-
-			/*const bool lightVisible = a_visible &&
-			                          !state->flags.test(ObjectEntryFlags::kHideLight);
-
-			for (auto& e : state->groupObjects)
+			if (!a_entry.SetObjectVisible(a_visible))
 			{
-				if (e.second.light)
-				{
-					e.second.light->SetVisible(lightVisible);
-				}
+				state->SetLightsVisible(a_visible);
 			}
 
-			if (state->light)
-			{
-				state->light->SetVisible(lightVisible);
-			}
-
-			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);*/
+			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
 
 		bool updateTransform = false;
@@ -2331,8 +2064,8 @@ namespace IED
 		{
 			INode::UpdateObjectTransform(
 				state->transform,
-				state->nodes.rootNode,
-				state->nodes.ref);
+				state->commonNodes.rootNode,
+				state->ref);
 
 			a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 		}
@@ -2343,7 +2076,7 @@ namespace IED
 			{
 				INode::UpdateObjectTransform(
 					a_config.geometryTransform,
-					state->nodes.object);
+					state->commonNodes.object);
 
 				state->currentGeomTransformTag = a_config.geometryTransform;
 
@@ -2352,25 +2085,18 @@ namespace IED
 
 			if (a_config.flags.test(BaseFlags::kPlaySequence))
 			{
-				if (a_config.niControllerSequence != state->currentSequence)
-				{
-					state->UpdateAndPlayAnimationSequence(
-						a_params.actor,
-						a_config.niControllerSequence);
-				}
+				state->UpdateAndPlayAnimationSequence(
+					a_params.actor,
+					a_config.niControllerSequence);
 			}
 			else if (state->anim.holder)
 			{
-				if (a_config.flags.test(Data::BaseFlags::kAnimationEvent))
-				{
-					state->anim.UpdateAndSendAnimationEvent(
-						a_config.animationEvent);
-				}
-				else
-				{
-					state->anim.UpdateAndSendAnimationEvent(
-						StringHolder::GetSingleton().weaponSheathe);
-				}
+				const auto& currentEvent =
+					a_config.flags.test(Data::BaseFlags::kAnimationEvent) ?
+						a_config.animationEvent :
+						StringHolder::GetSingleton().weaponSheathe;
+
+				state->anim.UpdateAndSendAnimationEvent(currentEvent);
 			}
 
 			if (state->sound.form)
@@ -2433,7 +2159,7 @@ namespace IED
 			}
 		}
 
-		if (state->nodes.HasPhysicsNode())
+		if (state->HasPhysicsNode())
 		{
 			auto& simComponent = state->simComponent;
 
@@ -2446,8 +2172,8 @@ namespace IED
 				if (!simComponent)
 				{
 					simComponent = a_params.objects.CreateAndAddSimComponent(
-						state->nodes.physics.get(),
-						state->nodes.physics->m_localTransform,
+						state->physics.get(),
+						state->physics->m_localTransform,
 						conf);
 				}
 				else if (simComponent->GetConfig() != conf)
@@ -2520,7 +2246,7 @@ namespace IED
 			else
 			{
 				if (a_objectEntry.data.effectShaderData->UpdateIfChanged(
-						a_objectEntry.data.state->nodes.rootNode,
+						a_objectEntry.data.state->commonNodes.rootNode,
 						*es))
 				{
 					a_params.SuspendReferenceEffectShaders();
@@ -2530,7 +2256,7 @@ namespace IED
 					if (!a_objectEntry.data.effectShaderData->UpdateConfigValues(*es))
 					{
 						a_objectEntry.data.effectShaderData->Update(
-							a_objectEntry.data.state->nodes.rootNode,
+							a_objectEntry.data.state->commonNodes.rootNode,
 							*es);
 
 						a_params.SuspendReferenceEffectShaders();
@@ -2543,7 +2269,47 @@ namespace IED
 			ResetEffectShaderData(
 				a_params,
 				a_objectEntry,
-				a_objectEntry.data.state->nodes.rootNode);
+				a_objectEntry.data.state->commonNodes.rootNode);
+		}
+	}
+
+	void Controller::UpdateCustomGroup(
+		processParams_t&            a_params,
+		const Data::configCustom_t& a_config,
+		ObjectEntryCustom&          a_objectEntry) noexcept
+	{
+		for (auto& e : a_config.group.entries)
+		{
+			if (auto it = a_objectEntry.data.state->groupObjects.find(e.first);
+			    it != a_objectEntry.data.state->groupObjects.end())
+			{
+				if (it->second.transform != e.second.transform)
+				{
+					it->second.transform.Update(e.second.transform);
+
+					INode::UpdateObjectTransform(
+						it->second.transform,
+						it->second.commonNodes.rootNode,
+						nullptr);
+
+					a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
+				}
+
+				if (it->second.anim.holder)
+				{
+					if (e.second.flags.test(
+							Data::ConfigModelGroupEntryFlags::kAnimationEvent))
+					{
+						it->second.anim.UpdateAndSendAnimationEvent(
+							e.second.animationEvent);
+					}
+					else
+					{
+						it->second.anim.UpdateAndSendAnimationEvent(
+							StringHolder::GetSingleton().weaponSheathe);
+					}
+				}
+			}
 		}
 	}
 
@@ -3400,6 +3166,12 @@ namespace IED
 							a_config,
 							a_objectEntry);
 
+						if (a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode) &&
+						    a_params.flags.test(ControllerUpdateFlags::kWantGroupUpdate))
+						{
+							UpdateCustomGroup(a_params, a_config, a_objectEntry);
+						}
+
 						return true;
 					}
 				}
@@ -3558,6 +3330,12 @@ namespace IED
 							a_params,
 							a_config,
 							a_objectEntry);
+
+						if (a_objectEntry.cflags.test(CustomObjectEntryFlags::kGroupMode) &&
+						    a_params.flags.test(ControllerUpdateFlags::kWantGroupUpdate))
+						{
+							UpdateCustomGroup(a_params, a_config, a_objectEntry);
+						}
 
 						return true;
 					}
@@ -4615,43 +4393,12 @@ namespace IED
 
 				INode::UpdateObjectTransform(
 					objectEntry.data.state->transform,
-					objectEntry.data.state->nodes.rootNode,
-					objectEntry.data.state->nodes.ref);
+					objectEntry.data.state->commonNodes.rootNode,
+					objectEntry.data.state->ref);
 
 				INode::UpdateRootIfGamePaused(info->root);
 			}
 		}
-	}
-
-	auto Controller::MakeTransformUpdateFunc()
-		-> updateActionFunc_t
-	{
-		return {
-			[this](
-				cachedActorInfo_t&         a_info,
-				const configCustomEntry_t& a_confEntry,
-				ObjectEntryCustom&         a_entry) {
-				if (!a_entry.data.state)
-				{
-					return false;
-				}
-				else
-				{
-					auto& conf = GetConfigForActor(
-						a_info,
-						a_confEntry(a_info.sex),
-						a_entry);
-
-					UpdateTransformCustomImpl(
-						a_info,
-						a_confEntry(a_info.sex),
-						conf,
-						a_entry);
-
-					return true;
-				}
-			}
-		};
 	}
 
 	inline auto make_process_params(
@@ -5212,61 +4959,6 @@ namespace IED
 		a_func.clean = a_func(a_info, itc->second, itd->second);
 	}
 
-	void Controller::UpdateTransformCustomImpl(
-		cachedActorInfo_t&       a_info,
-		const configCustom_t&    a_configEntry,
-		const configTransform_t& a_xfrmConfigEntry,
-		ObjectEntryCustom&       a_entry)
-	{
-		if (!a_entry.data.state)
-		{
-			return;
-		}
-
-		a_entry.data.state->transform.Update(a_xfrmConfigEntry);
-
-		INode::UpdateObjectTransform(
-			a_entry.data.state->transform,
-			a_entry.data.state->nodes.rootNode,
-			a_entry.data.state->nodes.ref);
-
-		//a_entry.state->UpdateGroupTransforms(a_configEntry.group);
-
-		for (auto& e : a_configEntry.group.entries)
-		{
-			if (auto it = a_entry.data.state->groupObjects.find(e.first);
-			    it != a_entry.data.state->groupObjects.end())
-			{
-				it->second.transform.Update(e.second.transform);
-
-				if (it->second.anim.holder)
-				{
-					if (e.second.flags.test(
-							Data::ConfigModelGroupEntryFlags::kAnimationEvent))
-					{
-						it->second.anim.UpdateAndSendAnimationEvent(
-							e.second.animationEvent);
-					}
-					else
-					{
-						it->second.anim.UpdateAndSendAnimationEvent(
-							StringHolder::GetSingleton().weaponSheathe);
-					}
-				}
-			}
-		}
-
-		for (auto& e : a_entry.data.state->groupObjects)
-		{
-			INode::UpdateObjectTransform(
-				e.second.transform,
-				e.second.rootNode,
-				nullptr);
-		}
-
-		INode::UpdateRootIfGamePaused(a_info.root);
-	}
-
 	auto Controller::LookupCachedActorInfo(
 		Actor*             a_actor,
 		ActorObjectHolder& a_holder) noexcept
@@ -5748,6 +5440,7 @@ namespace IED
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kgiftMenu) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kbarterMenu) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kmagicMenu) ||
+				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kconsole) ||
 				a_evn->menuName == uish->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu))
 			{
 				if (auto player = *g_thePlayer)

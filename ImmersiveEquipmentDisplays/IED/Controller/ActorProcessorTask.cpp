@@ -22,40 +22,39 @@ namespace IED
 	}
 
 	SKMP_FORCEINLINE static constexpr void sync_ref_transform(
-		ObjectEntryBase::State* a_state,
-		const nodesRef_t&       a_nodes) noexcept
+		ObjectEntryBase::State* a_state) noexcept
 	{
 		if (a_state->flags.test(ObjectEntryFlags::kSyncReferenceTransform) &&
-		    a_nodes.rootNode->IsVisible())
+		    a_state->commonNodes.rootNode->IsVisible())
 		{
 			if (a_state->transform.scale)
 			{
-				a_nodes.rootNode->m_localTransform.scale =
-					a_nodes.ref->m_localTransform.scale * *a_state->transform.scale;
+				a_state->commonNodes.rootNode->m_localTransform.scale =
+					a_state->ref->m_localTransform.scale * *a_state->transform.scale;
 			}
 			else
 			{
-				a_nodes.rootNode->m_localTransform.scale = a_nodes.ref->m_localTransform.scale;
+				a_state->commonNodes.rootNode->m_localTransform.scale = a_state->ref->m_localTransform.scale;
 			}
 
 			if (a_state->transform.rotation)
 			{
-				a_nodes.rootNode->m_localTransform.rot =
-					a_nodes.ref->m_localTransform.rot * *a_state->transform.rotation;
+				a_state->commonNodes.rootNode->m_localTransform.rot =
+					a_state->ref->m_localTransform.rot * *a_state->transform.rotation;
 			}
 			else
 			{
-				a_nodes.rootNode->m_localTransform.rot = a_nodes.ref->m_localTransform.rot;
+				a_state->commonNodes.rootNode->m_localTransform.rot = a_state->ref->m_localTransform.rot;
 			}
 
 			if (a_state->transform.position)
 			{
-				a_nodes.rootNode->m_localTransform.pos =
-					a_nodes.ref->m_localTransform * *a_state->transform.position;
+				a_state->commonNodes.rootNode->m_localTransform.pos =
+					a_state->ref->m_localTransform * *a_state->transform.position;
 			}
 			else
 			{
-				a_nodes.rootNode->m_localTransform.pos = a_nodes.ref->m_localTransform.pos;
+				a_state->commonNodes.rootNode->m_localTransform.pos = a_state->ref->m_localTransform.pos;
 			}
 		}
 	}
@@ -95,15 +94,14 @@ namespace IED
 		ActorObjectHolder& a_record,
 		ObjectEntryBase&   a_entry) noexcept
 	{
-		const auto  state = a_entry.data.state.get();
-		const auto& nodes = state->nodes;
+		const auto state = a_entry.data.state.get();
 
-		if (!nodes.ref)
+		if (!state->ref)
 		{
 			return;
 		}
 
-		if (nodes.IsReferenceMovedOrOphaned())
+		if (state->IsReferenceMovedOrOphaned())
 		{
 			if (state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
 			{
@@ -121,28 +119,27 @@ namespace IED
 				return;
 			}
 
-			if (!nodes.ref)
+			if (!state->ref)
 			{
 				return;
 			}
 		}
 
-		sync_ref_transform(state, nodes);
+		sync_ref_transform(state);
 	}
 
 	void ActorProcessorTask::DoObjectRefSyncMTSafe(
 		ActorObjectHolder& a_record,
 		ObjectEntryBase&   a_entry) noexcept
 	{
-		const auto  state = a_entry.data.state.get();
-		const auto& nodes = state->nodes;
+		const auto state = a_entry.data.state.get();
 
-		if (!nodes.ref)
+		if (!state->ref)
 		{
 			return;
 		}
 
-		if (nodes.IsReferenceMovedOrOphaned())
+		if (state->IsReferenceMovedOrOphaned())
 		{
 			if (!state->flags.test(ObjectEntryFlags::kRefSyncDisableFailedOrphan))
 			{
@@ -153,7 +150,7 @@ namespace IED
 		}
 		else
 		{
-			sync_ref_transform(state, nodes);
+			sync_ref_transform(state);
 		}
 	}
 
@@ -240,7 +237,7 @@ namespace IED
 
 	void ActorProcessorTask::UpdateGlobalState() noexcept
 	{
-		enum class ChangeFlag : std::uint8_t
+		enum class UpdateFlag : std::uint8_t
 		{
 			kNone = 0,
 
@@ -248,27 +245,27 @@ namespace IED
 			kGlobal = 1ui8 << 1
 		};
 
-		stl::flag<ChangeFlag> change{ ChangeFlag::kNone };
+		stl::flag<UpdateFlag> update{ UpdateFlag::kNone };
 
 		if (const auto v = (*g_thePlayer)->lastRiddenHorseHandle;
 		    v != m_globalState.playerLastRidden)
 		{
 			m_globalState.playerLastRidden = v;
-			change.set(ChangeFlag::kGlobal);
+			update.set(UpdateFlag::kGlobal);
 		}
 
 		if (const auto v = IsInFirstPerson();
 		    v != m_globalState.inFirstPerson)
 		{
 			m_globalState.inFirstPerson = v;
-			change.set(ChangeFlag::kPlayer);
+			update.set(UpdateFlag::kPlayer);
 		}
 
 		if (const bool v = MenuTopicManager::GetSingleton()->HasDialogueTarget();
 		    v != m_globalState.inDialogue)
 		{
 			m_globalState.inDialogue = v;
-			change.set(ChangeFlag::kPlayer);
+			update.set(UpdateFlag::kPlayer);
 		}
 
 		if (m_timer.GetStartTime() >= m_globalState.nextRun)
@@ -283,37 +280,14 @@ namespace IED
 			    v != m_globalState.currentWeather)
 			{
 				m_globalState.currentWeather = v;
-				change.set(ChangeFlag::kGlobal);
-			}
-
-			if (const auto v = Data::GetTimeOfDay(sky);
-			    v != m_globalState.timeOfDay)
-			{
-				m_globalState.timeOfDay = v;
-				change.set(ChangeFlag::kGlobal);
-			}
-
-			if (const auto v = ALD::IsExteriorDark(sky);
-			    v != m_globalState.isExteriorDark)
-			{
-				m_globalState.isExteriorDark = v;
-				change.set(ChangeFlag::kGlobal);
+				update.set(UpdateFlag::kGlobal);
 			}
 
 			if (const auto v = ALD::GetRoomLightingTemplate(sky);
 			    v != m_globalState.roomLightingTemplate)
 			{
 				m_globalState.roomLightingTemplate = v;
-				change.set(ChangeFlag::kPlayer);
-			}
-
-			constexpr auto a = 60.0f * std::numbers::pi_v<float> / 180.0f;
-
-			if (const auto v = ALD::IsSunAngleLessThan(sky, a);
-			    v != m_globalState.isSunAngleLessThan60)
-			{
-				m_globalState.isSunAngleLessThan60 = v;
-				change.set(ChangeFlag::kGlobal);
+				update.set(UpdateFlag::kPlayer);
 			}
 
 #if defined(IED_ENABLE_CONDITION_EN)
@@ -342,6 +316,43 @@ namespace IED
 #endif
 		}
 
+		if (m_timer.GetStartTime() >= m_globalState.nextRunMF)
+		{
+			m_globalState.nextRunMF =
+				m_timer.GetStartTime() +
+				IPerfCounter::T(COMMON_STATE_CHECK_INTERVAL_MF);
+
+			const auto* const sky = RE::TES::GetSingleton()->sky;
+
+			const auto t1 = Data::GetTimeOfDay2(sky);
+
+			if (t1.first != m_globalState.timeOfDay)
+			{
+				m_globalState.timeOfDay = t1.first;
+				update.set(UpdateFlag::kGlobal);
+			}
+
+			if (t1.second != m_globalState.isDaytime)
+			{
+				m_globalState.isDaytime = t1.second;
+				update.set(UpdateFlag::kGlobal);
+			}
+
+			if (const auto v = ALD::IsExteriorDark(sky);
+			    v != m_globalState.isExteriorDark)
+			{
+				m_globalState.isExteriorDark = v;
+				update.set(UpdateFlag::kGlobal);
+			}
+
+			if (const auto v = ALD::GetRoundedSunAngle(sky);
+			    v != m_globalState.sunAngle)
+			{
+				m_globalState.sunAngle = v;
+				update.set(UpdateFlag::kGlobal);
+			}
+		}
+
 		if (m_timer.GetStartTime() >= m_globalState.nextRunLF)
 		{
 			m_globalState.nextRunLF =
@@ -355,15 +366,16 @@ namespace IED
 			    v != m_globalState.dayOfWeek)
 			{
 				m_globalState.dayOfWeek = v;
-				change.set(ChangeFlag::kGlobal);
+				update.set(UpdateFlag::kGlobal);
 			}
 		}
 
-		if (change.test(ChangeFlag::kGlobal))
+		if (update.test(UpdateFlag::kGlobal))
 		{
 			GetController().RequestLFEvaluateAll();
 		}
-		else if (change.test(ChangeFlag::kPlayer))
+
+		if (update.test(UpdateFlag::kPlayer))
 		{
 			const auto& actorMap = GetController().GetActorMap();
 
@@ -530,7 +542,7 @@ namespace IED
 						{
 							state->SetVisible(false);
 
-							if (state->nodes.HasPhysicsNode())
+							if (state->HasPhysicsNode())
 							{
 								if (auto& simComponent = state->simComponent)
 								{

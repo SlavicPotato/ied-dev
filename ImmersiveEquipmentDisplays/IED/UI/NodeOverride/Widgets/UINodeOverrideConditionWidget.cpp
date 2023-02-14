@@ -1311,6 +1311,10 @@ namespace IED
 									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
 									m_condParamEditor.SetNext<ConditionParamItem::Float>(e.avMatch);
 									break;
+								case Data::ExtraConditionType::kSunAngle:
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::SunAngle>(e.sunAngle);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
@@ -1947,6 +1951,27 @@ namespace IED
 				UITipsInterface::DrawTip(UITip::MatchNPCOrTemplate);
 
 				break;
+
+			case Data::NodeOverrideConditionType::Extra:
+
+				switch (match->extraCondType)
+				{
+				case Data::ExtraConditionType::kSunAngle:
+
+					result |= ImGui::CheckboxFlagsT(
+						UIL::LS(CommonStrings::Absolute, "1"),
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag1));
+
+					ImGui::Spacing();
+					ImGui::Text("%s:", UIL::LS(CommonStrings::Info));
+					ImGui::SameLine();
+					UITipsInterface::DrawTip(UITip::SunAngle);
+
+					break;
+				}
+
+				break;
 			}
 
 			ImGui::PopID();
@@ -2340,6 +2365,10 @@ namespace IED
 			case Data::NodeOverrideConditionType::Perk:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Perk));
 				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+				break;
+			case Data::NodeOverrideConditionType::Cell:
+				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Cell));
+				m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(false);
 				break;
 			default:
 				m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Common));

@@ -2,6 +2,7 @@
 
 #include "ConfigData.h"
 #include "ConfigEffectShader.h"
+#include "ConfigExtraLight.h"
 #include "ConfigTransform.h"
 
 namespace IED
@@ -21,7 +22,7 @@ namespace IED
 			kUseWorldModel              = 1u << 7,
 			kDisabled                   = 1u << 8,
 			kPlaySequence               = 1u << 9,
-			kDisableBehaviorGraphAnims         = 1u << 10,
+			kDisableBehaviorGraphAnims  = 1u << 10,
 			kDisableAnimEventForwarding = 1u << 11,
 			kAnimationEvent             = 1u << 12,
 			kRemoveProjectileTracers    = 1u << 13,
@@ -42,6 +43,7 @@ namespace IED
 				DataVersion1 = 1,
 				DataVersion2 = 2,
 				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
 			stl::flag<ConfigModelGroupEntryFlags> flags{ ConfigModelGroupEntryFlags::kNone };
@@ -49,6 +51,7 @@ namespace IED
 			configTransform_t                     transform;
 			stl::fixed_string                     niControllerSequence;
 			stl::fixed_string                     animationEvent;
+			configExtraLight_t                    extraLightConfig;
 
 		private:
 			template <class Archive>
@@ -59,6 +62,7 @@ namespace IED
 				a_ar& transform;
 				a_ar& niControllerSequence;
 				a_ar& animationEvent;
+				a_ar& extraLightConfig;
 			}
 
 			template <class Archive>
@@ -75,6 +79,11 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& animationEvent;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& extraLightConfig;
+						}
 					}
 				}
 
@@ -129,4 +138,4 @@ BOOST_CLASS_VERSION(
 
 BOOST_CLASS_VERSION(
 	::IED::Data::configModelGroupEntry_t,
-	::IED::Data::configModelGroupEntry_t::Serialization::DataVersion3);
+	::IED::Data::configModelGroupEntry_t::Serialization::DataVersion4);

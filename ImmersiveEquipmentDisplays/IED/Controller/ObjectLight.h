@@ -15,6 +15,7 @@ namespace IED
 		}
 
 		void Cleanup(NiNode* a_root) noexcept;
+		void Release() noexcept;
 
 		NiPointer<NiPointLight>        niObject;
 		NiPointer<RE::BSLight>         bsObject;

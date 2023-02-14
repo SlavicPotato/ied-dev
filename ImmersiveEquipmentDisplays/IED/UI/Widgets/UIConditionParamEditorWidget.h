@@ -33,6 +33,7 @@ namespace IED
 			WeatherClass,
 			CompOper,
 			Float,
+			SunAngle,
 			UInt32,
 			Int32,
 			TimeOfDay,
@@ -315,6 +316,7 @@ namespace IED
 			}
 			else if constexpr (
 				Ap == ConditionParamItem::Float ||
+				Ap == ConditionParamItem::SunAngle ||
 				Ap == ConditionParamItem::Percent)
 			{
 				static_assert(std::is_same_v<T, float>);

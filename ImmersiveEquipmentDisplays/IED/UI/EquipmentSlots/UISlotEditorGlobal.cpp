@@ -174,15 +174,14 @@ namespace IED
 			switch (a_action)
 			{
 			case PostChangeAction::Evaluate:
+			case PostChangeAction::UpdateTransform:
 				m_controller.QueueEvaluateAll(
 					ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+					ControllerUpdateFlags::kWantGroupUpdate |
 					ControllerUpdateFlags::kImmediateTransformUpdate);
 				break;
 			case PostChangeAction::Reset:
 				m_controller.QueueResetAll(ControllerUpdateFlags::kNone, params->slot);
-				break;
-			case PostChangeAction::UpdateTransform:
-				m_controller.QueueUpdateTransformSlotAll(params->slot);
 				break;
 			}
 		}

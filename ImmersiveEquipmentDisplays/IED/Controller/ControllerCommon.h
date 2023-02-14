@@ -14,6 +14,7 @@ namespace IED
 		kFailVariableCondition        = 1u << 7,
 		kFromProcessorTask            = 1u << 8,
 		kDestroyed                    = 1u << 9,
+		kWantGroupUpdate              = 1u << 10,
 
 		kAll      = kPlayEquipSound,
 		kSoundAll = kPlayEquipSound | kVisibilitySounds

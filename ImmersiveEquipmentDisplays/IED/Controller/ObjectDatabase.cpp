@@ -134,26 +134,25 @@ namespace IED
 			return;
 		}
 
-		stl::vector<std::pair<stl::fixed_string, long long>> candidates;
-		candidates.reserve(numCandidates);
+		m_scc.reserve(numCandidates);
 
 		for (const auto& [i, e] : m_data)
 		{
 			if (e.use_count() <= 1)
 			{
-				candidates.emplace_back(i, e->accessed);
+				m_scc.emplace_back(i, e->accessed);
 			}
 		}
 
 		std::sort(
-			candidates.begin(),
-			candidates.end(),
+			m_scc.begin(),
+			m_scc.end(),
 			[](const auto& a_lhs,
 		       const auto& a_rhs) noexcept [[msvc::forceinline]] {
 				return a_lhs.second < a_rhs.second;
 			});
 
-		for (const auto& e : candidates)
+		for (const auto& e : m_scc)
 		{
 			if (m_data.size() <= level)
 			{
@@ -162,6 +161,8 @@ namespace IED
 
 			m_data.erase(e.first);
 		}
+
+		m_scc.clear();
 	}
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept

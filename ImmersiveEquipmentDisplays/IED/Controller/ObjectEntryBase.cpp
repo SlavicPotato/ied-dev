@@ -114,7 +114,7 @@ namespace IED
 	bool ObjectEntryBase::DeferredHideObject(
 		std::uint8_t a_delay) const noexcept
 	{
-		assert(!a_delay);
+		assert(a_delay != 0);
 
 		auto& state = data.state;
 
@@ -166,48 +166,16 @@ namespace IED
 	void ObjectEntryBase::State::Cleanup(
 		Game::ObjectRefHandle a_handle) noexcept
 	{
-		const auto ts = IPerfCounter::Query();
-
 		for (auto& e : groupObjects)
 		{
-			if (e.second.sound.handle.IsValid())
-			{
-				sound.handle.StopAndReleaseNow();
-			}
-
-			e.second.light.Cleanup(e.second.object.get());
-
-			EngineExtensions::CleanupObjectImpl(
-				a_handle,
-				e.second.rootNode.get());
-
-			EngineExtensions::CleanupWeaponBehaviorGraph(
-				e.second.anim.holder);
-
-			if (auto& d = e.second.dbEntry)
-			{
-				d->accessed = ts;
-			}
+			e.second.CleanupObject(a_handle);
 		}
 
-		if (sound.handle.IsValid())
-		{
-			sound.handle.StopAndReleaseNow();
-		}
+		ref.reset();
+		physics.reset();
+		arrowState.reset();
 
-		light.Cleanup(nodes.object.get());
-
-		EngineExtensions::CleanupObjectImpl(
-			a_handle,
-			nodes.rootNode.get());
-
-		EngineExtensions::CleanupWeaponBehaviorGraph(
-			anim.holder);
-
-		if (auto& d = dbEntry)
-		{
-			d->accessed = ts;
-		}
+		CleanupObject(a_handle);
 	}
 
 	void ObjectEntryBase::State::GroupObject::PlayAnimation(
@@ -219,12 +187,12 @@ namespace IED
 			return;
 		}
 
-		if (!object)
+		if (!commonNodes.object)
 		{
 			return;
 		}
 
-		if (auto controller = object->GetControllers())
+		if (auto controller = commonNodes.object->GetControllers())
 		{
 			if (auto manager = controller->AsNiControllerManager())
 			{
@@ -243,22 +211,18 @@ namespace IED
 		Actor*                   a_actor,
 		const stl::fixed_string& a_sequence) noexcept
 	{
-		if (a_sequence.empty())
+		if (a_sequence == currentSequence ||
+		    a_sequence.empty())
 		{
 			return;
 		}
 
-		if (a_sequence == currentSequence)
+		if (!commonNodes.object)
 		{
 			return;
 		}
 
-		if (!nodes.object)
-		{
-			return;
-		}
-
-		if (const auto controller = nodes.object->GetControllers())
+		if (const auto controller = commonNodes.object->GetControllers())
 		{
 			if (const auto manager = controller->AsNiControllerManager())
 			{
@@ -279,22 +243,31 @@ namespace IED
 		}
 	}
 
-	void ObjectEntryBase::State::SetVisible(bool a_switch) noexcept
+	void ObjectEntryBase::State::SetLightsVisible(bool a_switch) noexcept
 	{
+		if (flags.test(ObjectEntryFlags::kHideLight))
+		{
+			a_switch = false;
+		}
+
 		for (auto& e : groupObjects)
 		{
-			if (e.second.light)
+			if (auto& l = e.second.light)
 			{
-				e.second.light->SetVisible(a_switch);  // && !flags.test(ObjectEntryFlags::kHideLight));
+				l->SetVisible(a_switch);
 			}
 		}
 
 		if (light)
 		{
-			light->SetVisible(a_switch);  // && !flags.test(ObjectEntryFlags::kHideLight));
+			light->SetVisible(a_switch);
 		}
+	}
 
-		nodes.rootNode->SetVisible(a_switch);
+	void ObjectEntryBase::State::SetVisible(bool a_switch) noexcept
+	{
+		SetLightsVisible(a_switch);
+		commonNodes.rootNode->SetVisible(a_switch);
 	}
 
 	void ObjectEntryBase::ObjectAnim::UpdateAndSendAnimationEvent(
@@ -302,16 +275,14 @@ namespace IED
 	{
 		assert(holder != nullptr);
 
-		if (a_event.empty())
+		if (a_event == currentEvent ||
+			a_event.empty())
 		{
 			return;
 		}
 
-		if (a_event != currentEvent)
-		{
-			currentEvent = a_event;
-			holder->NotifyAnimationGraph(a_event.c_str());
-		}
+		currentEvent = a_event;
+		holder->NotifyAnimationGraph(a_event.c_str());
 	}
 
 	void ObjectEntryBase::ObjectEntryData::Cleanup(
@@ -341,9 +312,9 @@ namespace IED
 	{
 		const auto& arrowStrings = BSStringHolder::GetSingleton()->m_arrows;
 
-		for (std::uint32_t i = 0; i < arrowStrings.size(); i++)
+		for (auto& e : arrowStrings)
 		{
-			if (auto object = a_arrowQuiver->GetObjectByName(arrowStrings[i]))
+			if (auto object = a_arrowQuiver->GetObjectByName(e))
 			{
 				arrows.emplace_back(object);
 			}
@@ -366,6 +337,29 @@ namespace IED
 		for (const auto& e : arrows)
 		{
 			e->SetVisible(c-- > 0);
+		}
+	}
+
+	void ObjectEntryBase::Object::CleanupObject(Game::ObjectRefHandle a_handle) noexcept
+	{
+		if (sound.handle.IsValid())
+		{
+			sound.handle.StopAndReleaseNow();
+		}
+
+		light.Cleanup(commonNodes.object.get());
+		light.Release();
+
+		EngineExtensions::CleanupObjectImpl(
+			a_handle,
+			commonNodes.rootNode.get());
+
+		EngineExtensions::CleanupWeaponBehaviorGraph(
+			anim.holder);
+
+		if (dbEntry)
+		{
+			dbEntry->accessed = IPerfCounter::Query();
 		}
 	}
 

@@ -103,21 +103,21 @@ namespace IED
 			{
 				if (e.flags.test(EffectShaderData::EntryFlags::kTargetRoot))
 				{
-					ProcessNiObjectTree(a_state.nodes.rootNode, e);
+					ProcessNiObjectTree(a_state.commonNodes.rootNode, e);
 				}
 				else
 				{
 					for (auto& f : a_state.groupObjects)
 					{
-						ProcessNiObjectTree(f.second.object, e);
+						ProcessNiObjectTree(f.second.commonNodes.object, e);
 					}
 				}
 			}
 			else
 			{
 				auto& object = e.flags.test(EffectShaderData::EntryFlags::kTargetRoot) ?
-				                   a_state.nodes.rootNode :
-				                   a_state.nodes.object;
+				                   a_state.commonNodes.rootNode :
+				                   a_state.commonNodes.object;
 
 				ProcessNiObjectTree(object, e);
 			}

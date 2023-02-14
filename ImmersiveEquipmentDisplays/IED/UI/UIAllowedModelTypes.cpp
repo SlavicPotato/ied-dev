@@ -11,7 +11,7 @@ namespace IED
 {
 	namespace UI
 	{
-		std::initializer_list<std::uint32_t> g_allowedModelTypes{
+		const std::initializer_list<std::uint32_t> g_allowedModelTypes{
 			TESObjectWEAP::kTypeID,
 			TESObjectARMO::kTypeID,
 			TESAmmo::kTypeID,

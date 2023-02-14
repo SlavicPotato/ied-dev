@@ -8,7 +8,7 @@ namespace IED
 {
 	namespace UI
 	{
-		UIFormBrowserCommonFilters UIFormBrowserCommonFilters::m_Instance;
+		const UIFormBrowserCommonFilters UIFormBrowserCommonFilters::m_Instance;
 
 		UIFormBrowserCommonFilters::UIFormBrowserCommonFilters() :
 			m_filters{
@@ -114,6 +114,11 @@ namespace IED
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ BGSEquipSlot::kTypeID }),
+						
+				std::make_shared<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESObjectCELL::kTypeID }),
 						
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,

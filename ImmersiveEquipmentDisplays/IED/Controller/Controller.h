@@ -255,11 +255,6 @@ namespace IED
 		void QueueResetGearAll(stl::flag<ControllerUpdateFlags> a_flags);
 		void QueueClearObjects();
 
-		void QueueUpdateTransformSlot(Game::FormID a_actor, Data::ObjectSlot a_slot);
-		void QueueUpdateTransformSlotNPC(Game::FormID a_npc, Data::ObjectSlot a_slot);
-		void QueueUpdateTransformSlotRace(Game::FormID a_race, Data::ObjectSlot a_slot);
-		void QueueUpdateTransformSlotAll(Data::ObjectSlot a_slot);
-
 		void QueueResetAAAll();
 
 		void QueueResetCustom(
@@ -317,63 +312,6 @@ namespace IED
 			const stl::fixed_string& a_pkey);
 
 		void QueueResetCustomAll(
-			Data::ConfigClass a_class);
-
-		void QueueUpdateTransformCustom(
-			Game::FormID             a_actor,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateTransformCustomNPC(
-			Game::FormID             a_npc,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateTransformCustomRace(
-			Game::FormID             a_race,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateTransformCustom(
-			Game::FormID             a_actor,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateTransformCustomNPC(
-			Game::FormID             a_npc,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateTransformCustomRace(
-			Game::FormID             a_race,
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateTransformCustom(
-			Game::FormID      a_actor,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateTransformCustomNPC(
-			Game::FormID      a_npc,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateTransformCustomRace(
-			Game::FormID      a_race,
-			Data::ConfigClass a_class);
-
-		void QueueUpdateTransformCustomAll(
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey,
-			const stl::fixed_string& a_vkey);
-
-		void QueueUpdateTransformCustomAll(
-			Data::ConfigClass        a_class,
-			const stl::fixed_string& a_pkey);
-
-		void QueueUpdateTransformCustomAll(
 			Data::ConfigClass a_class);
 
 		void QueueLookupFormInfo(Game::FormID a_formId, IForm::form_lookup_result_func_t a_func);
@@ -648,8 +586,6 @@ namespace IED
 			ActorObjectHolder& a_record,
 			Data::ObjectSlot   a_slot);
 
-		updateActionFunc_t MakeTransformUpdateFunc();
-
 		const Data::configBaseValues_t& GetConfigForActor(
 			const cachedActorInfo_t&    a_info,
 			const Data::configCustom_t& a_config,
@@ -760,15 +696,9 @@ namespace IED
 			const stl::fixed_string&             a_vkey,
 			const updateActionFunc_t&            a_func);
 
-		void UpdateTransformCustomImpl(
-			cachedActorInfo_t&             a_info,
-			const Data::configCustom_t&    a_configEntry,
-			const Data::configTransform_t& a_xfrmConfigEntry,
-			ObjectEntryCustom&             a_entry);
-
 		bool DoItemUpdate(
 			processParams_t&                a_params,
-			const Data::configBaseValues_t& a_config,
+			const Data::configBaseValues_t& a_usedConfig,
 			ObjectEntryBase&                a_entry,
 			bool                            a_visible,
 			TESForm*                        a_currentModelForm) noexcept;
@@ -783,6 +713,11 @@ namespace IED
 			NiAVObject*      a_object) noexcept;
 
 		void UpdateObjectEffectShaders(
+			processParams_t&            a_params,
+			const Data::configCustom_t& a_config,
+			ObjectEntryCustom&          a_objectEntry) noexcept;
+		
+		void UpdateCustomGroup(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;

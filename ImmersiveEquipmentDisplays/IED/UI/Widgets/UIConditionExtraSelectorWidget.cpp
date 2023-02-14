@@ -34,6 +34,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsCellOwner, UIConditionExtraSelectorWidgetStrings::IsCellOwner),
 			std::make_pair(Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild),
 			std::make_pair(Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded),
+			std::make_pair(Data::ExtraConditionType::kIsDaytime, UIConditionExtraSelectorWidgetStrings::IsDaytime),
 			std::make_pair(Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead),
 			std::make_pair(Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale),
 			std::make_pair(Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying),
@@ -50,7 +51,6 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
-			std::make_pair(Data::ExtraConditionType::kIsSunAngleLessThan60, UIConditionExtraSelectorWidgetStrings::IsSunAngleLessThan60),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
 			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
@@ -66,6 +66,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kSDSShieldOnBackEnabled, UIConditionExtraSelectorWidgetStrings::SDSShieldOnBackEnabled),
 			std::make_pair(Data::ExtraConditionType::kSitting, UIConditionExtraSelectorWidgetStrings::Sitting),
 			std::make_pair(Data::ExtraConditionType::kSleeping, UIConditionExtraSelectorWidgetStrings::Sleeping),
+			std::make_pair(Data::ExtraConditionType::kSunAngle, UIConditionExtraSelectorWidgetStrings::SunAngle),
 			std::make_pair(Data::ExtraConditionType::kSwimming, UIConditionExtraSelectorWidgetStrings::Swimming),
 			std::make_pair(Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay),
 			std::make_pair(Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing),
@@ -240,8 +241,10 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InOwnedCell);
 			case Data::ExtraConditionType::kIsNPCCellOwner:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsNPCCellOwner);
-			case Data::ExtraConditionType::kIsSunAngleLessThan60:
-				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSunAngleLessThan60);
+			case Data::ExtraConditionType::kSunAngle:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SunAngle);
+			case Data::ExtraConditionType::kIsDaytime:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsDaytime);
 			default:
 				return nullptr;
 			}

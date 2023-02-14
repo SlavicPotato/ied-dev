@@ -383,6 +383,29 @@ namespace IED
 				}
 			}
 
+			if (const auto& e = get(ConditionParamItem::SunAngle); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::SunAngle);
+
+				if (!args.hide)
+				{
+					auto value = reinterpret_cast<float*>(e.p1);
+
+					if (ImGui::SliderAngle(
+							"##in_ang",
+							value,
+							-90.0f,
+							90.0f,
+							"%.0f deg",
+							ImGuiSliderFlags_AlwaysClamp))
+					{
+						result = true;
+					}
+				}
+			}
+
 			if (const auto& e = get(ConditionParamItem::UInt32); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -715,6 +738,24 @@ namespace IED
 									UIActorValueSelectorWidget::actor_value_to_desc(f.As1<RE::ActorValue>()),
 									g.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(g.As1<Data::ComparisonOperator>()) : nullptr,
 									h.p1 ? h.As1<float>() : 0.0f);
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kSunAngle:
+
+							if (const auto& f = get(ConditionParamItem::SunAngle); f.p1)
+							{
+								const auto& g = get(ConditionParamItem::CompOper);
+
+								stl::snprintf(
+									m_descBuffer,
+									"%s %s %.0f deg",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									g.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(g.As1<Data::ComparisonOperator>()) : nullptr,
+									f.As1<float>() * 180.0f / std::numbers::pi_v<float>);
 
 								return m_descBuffer;
 							}

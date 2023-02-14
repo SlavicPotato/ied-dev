@@ -322,7 +322,7 @@ namespace IED
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
-					QueueTransformUpdate(a_target, a_class, a_key, a_name);
+					QueueEvaluate(a_target, a_class);
 				}
 
 				return true;
@@ -353,7 +353,7 @@ namespace IED
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
-					QueueTransformUpdate(a_target, a_class, a_key, a_name);
+					QueueEvaluate(a_target, a_class);
 				}
 
 				return true;
@@ -383,7 +383,7 @@ namespace IED
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
-					QueueTransformUpdate(a_target, a_class, a_key, a_name);
+					QueueEvaluate(a_target, a_class);
 				}
 
 				return true;
@@ -425,7 +425,7 @@ namespace IED
 
 				if (!e.flags.test(BaseFlags::kDisabled))
 				{
-					QueueTransformUpdate(a_target, a_class, a_key, a_name);
+					QueueEvaluate(a_target, a_class);
 				}
 
 				return true;

@@ -66,12 +66,6 @@ namespace IED
 				Game::FormID      a_target,
 				Data::ConfigClass a_class);
 
-			void QueueTransformUpdate(
-				Game::FormID             a_target,
-				Data::ConfigClass        a_class,
-				const stl::fixed_string& a_key,
-				const stl::fixed_string& a_name);
-
 			void QueueEvaluate(
 				Game::FormID      a_target,
 				Data::ConfigClass a_class);

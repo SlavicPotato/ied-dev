@@ -16,10 +16,23 @@ namespace IED
 		return *isExteriorDark;
 	}
 
-	bool GlobalParams::is_sun_angle_less_than_60() const noexcept
+	bool GlobalParams::is_daytime() const noexcept
 	{
-		return ALD::IsSunAngleLessThan(
-			RE::TES::GetSingleton()->sky,
-			60.0f * std::numbers::pi_v<float> / 180.0f);
+		if (!isDaytime)
+		{
+			isDaytime.emplace(Data::IsDaytime(RE::TES::GetSingleton()->sky));
+		}
+
+		return *isDaytime;
+	}
+
+	float GlobalParams::get_sun_angle() const noexcept
+	{
+		if (!sunAngle)
+		{
+			sunAngle.emplace(ALD::GetRoundedSunAngle(RE::TES::GetSingleton()->sky));
+		}
+
+		return *sunAngle;
 	}
 }

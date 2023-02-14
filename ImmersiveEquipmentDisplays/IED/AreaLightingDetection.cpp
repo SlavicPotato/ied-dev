@@ -2,6 +2,9 @@
 
 #include "AreaLightingDetection.h"
 
+#include "SPtrHolder.h"
+#include "TimeOfDay.h"
+
 namespace IED
 {
 	namespace ALD
@@ -32,30 +35,26 @@ namespace IED
 				return nullptr;
 			}
 
-			static constexpr bool is_nighttime(const RE::Sky* a_sky, const RE::TESClimate* a_climate) noexcept
+			static bool is_nighttime(const RE::Sky* a_sky) noexcept
 			{
+				const auto timing = Data::GetClimateTimingData(a_sky);
+
 				const auto hour = a_sky->currentGameHour;
 
-				const auto srBegin = static_cast<float>(a_climate->timing.sunrise.begin) * (1.0f / 6.0f);
-				const auto srEnd   = static_cast<float>(a_climate->timing.sunrise.end) * (1.0f / 6.0f);
-
-				const auto ssBegin = static_cast<float>(a_climate->timing.sunset.begin) * (1.0f / 6.0f);
-				const auto ssEnd   = static_cast<float>(a_climate->timing.sunset.end) * (1.0f / 6.0f);
-
-				return hour > ssEnd - (ssEnd - ssBegin) * 0.125f ||
-				       hour < srBegin + (srEnd - srBegin) * 0.125f;
+				return hour > timing.ss_end - (timing.ss_end - timing.ss_begin) * 0.125f ||
+				       hour < timing.sr_begin + (timing.sr_end - timing.sr_begin) * 0.125f;
 			}
 
 			static constexpr bool is_nighttime() noexcept
 			{
-				const auto calendar = RE::Calendar::GetSingleton();
+				const auto* const calendar = RE::Calendar::GetSingleton();
 
 				if (!calendar)
 				{
 					return false;
 				}
 
-				if (auto gameHour = calendar->gameHour)
+				if (const auto* const gameHour = calendar->gameHour)
 				{
 					return gameHour->value > 20.0f || gameHour->value < 6.0f;
 				}
@@ -97,13 +96,6 @@ namespace IED
 			}
 		}
 
-		static float* s_fTorchLightLevelNight = nullptr;
-
-		void InitGSPtr()
-		{
-			s_fTorchLightLevelNight = ISettingCollection::GetGameSettingAddr<float>("fTorchLightLevelNight");
-		}
-
 		bool IsExteriorDark(const RE::Sky* a_sky) noexcept
 		{
 			if (!a_sky)
@@ -111,20 +103,11 @@ namespace IED
 				return false;
 			}
 
-			bool isNightTime;
-
-			if (const auto* const climate = a_sky->currentClimate)
-			{
-				isNightTime = detail::is_nighttime(a_sky, climate);
-			}
-			else
-			{
-				isNightTime = detail::is_nighttime();
-			}
+			const bool isNightTime = detail::is_nighttime(a_sky);
 
 			const auto& col = a_sky->skyColor[3];
 
-			return (col.r + col.g + col.b) < (isNightTime ? (s_fTorchLightLevelNight ? *s_fTorchLightLevelNight : 1.2f) : 0.6f);
+			return (col.r + col.g + col.b) < (isNightTime ? (SPtrHolder::GetSingleton().fTorchLightLevelNight ? *SPtrHolder::GetSingleton().fTorchLightLevelNight : 1.2f) : 0.6f);
 		}
 
 		bool IsActorInDarkInterior(const Actor* a_actor, const RE::Sky* a_sky) noexcept
@@ -172,6 +155,38 @@ namespace IED
 			}
 
 			return false;
+		}
+
+		float GetRoundedSunAngle(const RE::Sky* a_sky, float a_nearest) noexcept
+		{
+			assert(a_nearest != 0.0f);
+
+			if (a_sky)
+			{
+				float currentAngle;
+
+				if (detail::get_sun_angle(a_sky, currentAngle))
+				{
+					return std::roundf(currentAngle / a_nearest) * a_nearest;
+				}
+			}
+
+			return 0.0f;
+		}
+
+		float GetSunAngle(const RE::Sky* a_sky) noexcept
+		{
+			if (a_sky)
+			{
+				float currentAngle;
+
+				if (detail::get_sun_angle(a_sky, currentAngle))
+				{
+					return currentAngle;
+				}
+			}
+
+			return 0.0f;
 		}
 
 		BGSLightingTemplate* GetRoomLightingTemplate(const RE::Sky* a_sky) noexcept

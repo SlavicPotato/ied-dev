@@ -30,13 +30,6 @@ namespace IED
 	{
 		const bool in_fp_state = is_in_first_person_state();
 
-		if (m_ifpvState)
-		{
-			return in_fp_state || m_ifpvState->value != 0.f;
-		}
-		else
-		{
-			return in_fp_state;
-		}
+		return in_fp_state || (m_ifpvState && m_ifpvState->value != 0.f);
 	}
 }

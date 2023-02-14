@@ -6,6 +6,7 @@
 #include "IED/UI/Widgets/Form/UIFormPickerWidget.h"
 #include "IED/UI/Widgets/UIBaseConfigWidgetStrings.h"
 #include "IED/UI/Widgets/UIDescriptionPopup.h"
+#include "IED/UI/Widgets/UIExtraLightEditorWidget.h"
 #include "IED/UI/Widgets/UIPopupToggleButtonWidget.h"
 #include "IED/UI/Widgets/UITransformSliderWidget.h"
 
@@ -254,7 +255,7 @@ namespace IED
 				ImGui::TreePop();
 			}
 
-			bool disabled = entry.flags.test(Data::ConfigModelGroupEntryFlags::kDisabled);
+			const bool disabled = entry.flags.test(Data::ConfigModelGroupEntryFlags::kDisabled);
 
 			UICommon::PushDisabled(disabled);
 
@@ -270,6 +271,30 @@ namespace IED
 				[] {});
 
 			UICommon::PopDisabled(disabled);
+
+			if (ImGui::TreeNodeEx(
+					"light",
+					ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					UIL::LS(CommonStrings::Light)))
+			{
+				ImGui::Spacing();
+				ImGui::Indent();
+
+				if (UIExtraLightEditorWidget::DrawExtraLightEditor(
+					a_value.second.extraLightConfig))
+				{
+					OnModelGroupEditorChange(
+						a_handle,
+						a_params,
+						ModelGroupEditorOnChangeEventType::Flags);
+				}
+
+				ImGui::Unindent();
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
 		}
 
 		template <class T>
@@ -403,7 +428,7 @@ namespace IED
 					a_params,
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
-			
+
 			ImGui::NextColumn();
 
 			if (ImGui::CheckboxFlagsT(
@@ -522,7 +547,7 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			UITipsInterface::DrawTip(UITip::DisableHavok);
-			
+
 			if (ImGui::CheckboxFlagsT(
 					UIL::LS(UIWidgetCommonStrings::RemoveProjectileTracers, "H"),
 					stl::underlying(std::addressof(entry.flags.value)),
@@ -534,7 +559,7 @@ namespace IED
 					ModelGroupEditorOnChangeEventType::Flags);
 			}
 			UITipsInterface::DrawTip(UITip::RemoveProjectileTracers);
-			
+
 			if (ImGui::CheckboxFlagsT(
 					UIL::LS(UIWidgetCommonStrings::AttachLight, "I"),
 					stl::underlying(std::addressof(entry.flags.value)),

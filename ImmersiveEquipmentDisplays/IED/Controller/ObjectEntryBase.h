@@ -25,7 +25,8 @@ namespace IED
 		kIsGroup                    = 1u << 9,
 		kWantUnloadAfterHide        = 1u << 10,
 		kHasCollisionObjectScale    = 1u << 11,
-		kInvisible                  = 1u << 24,
+		kHideLight                  = 1u << 24,
+		kInvisible                  = 1u << 31,
 
 		//kInvisibilityFlags = kInvisible | kWantUnloadAfterHide,
 	};
@@ -62,24 +63,40 @@ namespace IED
 		bool DeferredHideObject(const std::uint8_t a_delay) const noexcept;
 		void ResetDeferredHide() const noexcept;
 
-		SKMP_FORCEINLINE auto IsNodeVisible() const noexcept
+		constexpr auto IsNodeVisible() const noexcept
 		{
 			return data.state && !data.state->flags.test(ObjectEntryFlags::kInvisible);
 		}
 
-		SKMP_FORCEINLINE auto IsActive() const noexcept
+		constexpr auto IsActive() const noexcept
 		{
 			return IsNodeVisible();
 		}
 
-		SKMP_FORCEINLINE auto GetFormIfActive() const noexcept
+		constexpr auto GetFormIfActive() const noexcept
 		{
 			return IsActive() ? data.state->form : nullptr;
 		}
 
+		struct CommonNodes
+		{
+			CommonNodes() = default;
+
+			explicit CommonNodes(
+				NiNode* a_rootNode,
+				NiNode* a_object) noexcept :
+				rootNode(a_rootNode),
+				object(a_object)
+			{
+			}
+
+			NiPointer<NiNode> rootNode;
+			NiPointer<NiNode> object;
+		};
+
 		struct QuiverArrowState
 		{
-			QuiverArrowState(NiNode* a_arrowQuiver) noexcept;
+			explicit QuiverArrowState(NiNode* a_arrowQuiver) noexcept;
 
 			void Update(std::int32_t a_count) noexcept;
 
@@ -95,7 +112,37 @@ namespace IED
 			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
 		};
 
-		struct State
+		struct Object
+		{
+			Object() = default;
+
+			explicit Object(TESForm* a_modelForm) noexcept :
+				modelForm(a_modelForm)
+			{
+			}
+
+			explicit Object(
+				TESForm* a_modelForm,
+				NiNode*  a_rootNode,
+				NiNode*  a_object) noexcept :
+				modelForm(a_modelForm),
+				commonNodes(a_rootNode, a_object)
+			{
+			}
+
+			void CleanupObject(Game::ObjectRefHandle a_handle) noexcept;
+
+			TESForm*                            modelForm{ nullptr };
+			CommonNodes                         commonNodes;
+			Data::cacheTransform_t              transform;
+			ObjectDatabase::ObjectDatabaseEntry dbEntry;
+			ObjectLight                         light;
+			ObjectSound                         sound;
+			ObjectAnim                          anim;
+		};
+
+		struct State :
+			Object
 		{
 			State() noexcept  = default;
 			~State() noexcept = default;
@@ -103,26 +150,16 @@ namespace IED
 			State(const State&)            = delete;
 			State& operator=(const State&) = delete;
 
-			struct GroupObject
+			struct GroupObject :
+				Object
 			{
-				GroupObject(
-					TESForm*           a_modelForm,
-					NiNode*            a_rootNode,
-					NiPointer<NiNode>& a_object) noexcept :
-					modelForm(a_modelForm),
-					rootNode(a_rootNode),
-					object(a_object)
+				explicit GroupObject(
+					TESForm* a_modelForm,
+					NiNode*  a_rootNode,
+					NiNode*  a_object) noexcept :
+					Object(a_modelForm, a_rootNode, a_object)
 				{
 				}
-
-				TESForm*                            modelForm;
-				NiPointer<NiNode>                   rootNode;
-				NiPointer<NiNode>                   object;
-				Data::cacheTransform_t              transform;
-				ObjectDatabase::ObjectDatabaseEntry dbEntry;
-				ObjectLight                         light;
-				ObjectSound                         sound;
-				ObjectAnim                          anim;
 
 				void PlayAnimation(Actor* a_actor, const stl::fixed_string& a_sequence) noexcept;
 			};
@@ -143,11 +180,12 @@ namespace IED
 				static_assert(
 					std::is_same_v<std::underlying_type_t<ObjectEntryFlags>, std::underlying_type_t<Data::BaseFlags>> &&
 					stl::underlying(ObjectEntryFlags::kPlayEquipSound) == stl::underlying(Data::BaseFlags::kPlayEquipSound) &&
+					stl::underlying(ObjectEntryFlags::kHideLight) == stl::underlying(Data::BaseFlags::kHideLight) &&
 					stl::underlying(ObjectEntryFlags::kSyncReferenceTransform) == stl::underlying(Data::BaseFlags::kSyncReferenceTransform));
 
 				flags =
-					(flags & ~(ObjectEntryFlags::kPlayEquipSound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan)) |
-					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlayEquipSound | Data::BaseFlags::kSyncReferenceTransform)));
+					(flags & ~(ObjectEntryFlags::kPlayEquipSound | ObjectEntryFlags::kSyncReferenceTransform | ObjectEntryFlags::kRefSyncDisableFailedOrphan | ObjectEntryFlags::kHideLight)) |
+					static_cast<ObjectEntryFlags>((a_in.flags & (Data::BaseFlags::kPlayEquipSound | Data::BaseFlags::kSyncReferenceTransform | Data::BaseFlags::kHideLight)));
 			}
 
 			void UpdateArrows(std::int32_t a_count) noexcept;
@@ -170,6 +208,7 @@ namespace IED
 				Actor*                   a_actor,
 				const stl::fixed_string& a_sequence) noexcept;
 
+			void SetLightsVisible(bool a_switch) noexcept;
 			void SetVisible(bool a_switch) noexcept;
 
 			template <class Tf>
@@ -191,22 +230,41 @@ namespace IED
 				}
 			}
 
+			constexpr bool IsReferenceMovedOrOphaned() const noexcept
+			{
+				if (const auto* const objParent = commonNodes.rootNode->m_parent)
+				{
+					if (const auto* const objParentParent = objParent->m_parent)
+					{
+						if (const auto* const refParent = ref->m_parent)
+						{
+							return refParent != objParentParent;
+						}
+						else
+						{
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
+
+			[[nodiscard]] constexpr bool HasPhysicsNode() const noexcept
+			{
+				return static_cast<bool>(physics.get());
+			}
 			TESForm*                                           form{ nullptr };
-			TESForm*                                           modelForm{ nullptr };
 			stl::flag<ObjectEntryFlags>                        flags{ ObjectEntryFlags::kNone };
 			stl::flag<Data::BaseFlags>                         resetTriggerFlags{ Data::BaseFlags::kNone };
 			Data::NodeDescriptor                               nodeDesc;
-			nodesRef_t                                         nodes;
-			Data::cacheTransform_t                             transform;
-			ObjectDatabase::ObjectDatabaseEntry                dbEntry;
+			NiPointer<NiNode>                                  ref;
+			NiPointer<NiNode>                                  physics;
 			stl::unordered_map<stl::fixed_string, GroupObject> groupObjects;
 			stl::smart_ptr<PHYSimComponent>                    simComponent;
 			stl::fixed_string                                  currentSequence;
 			std::optional<luid_tag>                            currentGeomTransformTag;
 			std::optional<luid_tag>                            currentExtraLightTag;
-			ObjectLight                                        light;
-			ObjectSound                                        sound;
-			ObjectAnim                                         anim;
 			std::unique_ptr<QuiverArrowState>                  arrowState;
 			stl::optional<float>                               colliderScale;
 			Game::FormID                                       owner;

@@ -216,6 +216,7 @@ namespace IED
 		TESWorldSpace*                   worldspace;
 		TESPackage*                      currentPackage;
 		TESIdleForm*                     currentIdle;
+		TESCombatStyle*                  combatStyle;
 		stl::flag<Actor::Flags1>         flags1;
 		stl::flag<Actor::Flags2>         flags2;
 		stl::flag<Actor::Flags1>         flagslf1;

@@ -234,20 +234,15 @@ namespace IED
 			switch (a_action)
 			{
 			case PostChangeAction::Evaluate:
+			case PostChangeAction::UpdateTransform:
 				m_controller.QueueEvaluateRace(
 					a_handle,
 					ControllerUpdateFlags::kWantEffectShaderConfigUpdate |
+						ControllerUpdateFlags::kWantGroupUpdate |
 						ControllerUpdateFlags::kImmediateTransformUpdate);
 				break;
 			case PostChangeAction::Reset:
 				m_controller.QueueResetCustomRace(
-					a_handle,
-					GetConfigClass(),
-					StringHolder::GetSingleton().IED,
-					params->name);
-				break;
-			case PostChangeAction::UpdateTransform:
-				m_controller.QueueUpdateTransformCustomRace(
 					a_handle,
 					GetConfigClass(),
 					StringHolder::GetSingleton().IED,

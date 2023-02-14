@@ -7,8 +7,9 @@
 #include "IED/UI/Controls/UICollapsibles.h"
 
 #include "IED/UI/UIContext.h"
-#include "IED/UI/UIMiscTextInterface.h"
 #include "IED/UI/Window/UIWindow.h"
+
+#include "IED/UI/Widgets/Form/UIFormInfoTooltipWidget.h"
 
 #include "UILocalizationInterface.h"
 
@@ -25,7 +26,7 @@ namespace IED
 		class UIStats :
 			public UIContext,
 			public UIWindow,
-			UIMiscTextInterface,
+			UIFormInfoTooltipWidget,
 			UICollapsibles
 		{
 			static constexpr auto WINDOW_ID = "ied_stats";

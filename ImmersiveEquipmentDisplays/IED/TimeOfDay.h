@@ -21,42 +21,19 @@ namespace IED
 
 		DEFINE_ENUM_CLASS_BITWISE(TimeOfDay);
 
-		static constexpr TimeOfDay GetTimeOfDay(const RE::Sky* a_sky) noexcept
+		struct ClimateTimingData
 		{
-			if (!a_sky)
-			{
-				return TimeOfDay::kNone;
-			}
+			float sr_begin;
+			float sr_end;
+			float ss_begin;
+			float ss_end;
+		};
 
-			auto climate = a_sky->currentClimate;
-			if (!climate)
-			{
-				return TimeOfDay::kNone;
-			}
+		ClimateTimingData GetClimateTimingData(const RE::Sky* a_sky) noexcept;
 
-			auto hour = a_sky->currentGameHour;
-
-			if (hour < static_cast<float>(climate->timing.sunrise.begin) * (1.0f / 6.0f))
-			{
-				return TimeOfDay::kNight;
-			}
-			else if (hour < static_cast<float>(climate->timing.sunrise.end) * (1.0f / 6.0f))
-			{
-				return TimeOfDay::kSunrise;
-			}
-			else if (hour < static_cast<float>(climate->timing.sunset.begin) * (1.0f / 6.0f))
-			{
-				return TimeOfDay::kDay;
-			}
-			else if (hour < static_cast<float>(climate->timing.sunset.end) * (1.0f / 6.0f))
-			{
-				return TimeOfDay::kSunset;
-			}
-			else
-			{
-				return TimeOfDay::kNight;
-			}
-		}
+		TimeOfDay                  GetTimeOfDay(const RE::Sky* a_sky) noexcept;
+		bool                       IsDaytime(const RE::Sky* a_sky) noexcept;
+		std::pair<TimeOfDay, bool> GetTimeOfDay2(const RE::Sky* a_sky) noexcept;
 
 	}
 

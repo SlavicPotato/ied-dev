@@ -4,6 +4,6 @@ namespace IED
 {
 	namespace UI
 	{
-		extern std::initializer_list<std::uint32_t> g_allowedModelTypes;
+		extern const std::initializer_list<std::uint32_t> g_allowedModelTypes;
 	}
 }

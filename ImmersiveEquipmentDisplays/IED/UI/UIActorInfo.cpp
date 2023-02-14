@@ -564,8 +564,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				if (data.npc)
 				{
@@ -724,8 +724,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				if (data.equipped.first)
 				{
@@ -768,8 +768,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				if (data.equipped.second)
 				{
@@ -821,8 +821,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				ImGui::TableNextRow();
 
@@ -848,8 +848,8 @@ namespace IED
 						ImGuiTableFlags_SizingStretchProp,
 					{ -1.0f, 0.0f }))
 			{
-				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.25f);
-				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.75f);
+				ImGui::TableSetupColumn("0", ImGuiTableColumnFlags_None, 0.3f);
+				ImGui::TableSetupColumn("1", ImGuiTableColumnFlags_None, 0.7f);
 
 				ImGui::TableNextRow();
 

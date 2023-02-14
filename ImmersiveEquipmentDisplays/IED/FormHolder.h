@@ -12,7 +12,7 @@ namespace IED
 			return m_Instance;
 		}
 
-		static void Populate();
+		static void Initialize();
 
 		BGSKeyword* layDown{ nullptr };
 

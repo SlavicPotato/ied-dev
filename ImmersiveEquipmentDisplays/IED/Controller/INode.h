@@ -7,39 +7,6 @@
 
 namespace IED
 {
-	struct nodesRef_t
-	{
-		NiPointer<NiNode> rootNode;
-		NiPointer<NiNode> ref;
-		NiPointer<NiNode> object;
-		NiPointer<NiNode> physics;
-
-		SKMP_FORCEINLINE constexpr bool IsReferenceMovedOrOphaned() const noexcept
-		{
-			if (const auto* const objParent = rootNode->m_parent)
-			{
-				if (const auto* const objParentParent = objParent->m_parent)
-				{
-					if (const auto* const refParent = ref->m_parent)
-					{
-						return refParent != objParentParent;
-					}
-					else
-					{
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-		[[nodiscard]] constexpr bool HasPhysicsNode() const noexcept
-		{
-			return static_cast<bool>(physics.get());
-		}
-	};
-
 	struct targetNodes_t
 	{
 		NiPointer<NiNode> rootNode;

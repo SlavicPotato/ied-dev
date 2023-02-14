@@ -165,10 +165,10 @@ namespace IED
 				return false;
 			}
 
-			auto tmp = ito->second;
+			auto tmp = std::make_unique<Data::configCustomEntry_t>(std::move(ito->second));
 
 			conf.data.erase(ito);
-			conf.data.insert_or_assign(a_params.newName, tmp);
+			conf.data.insert_or_assign(a_params.newName, std::move(*tmp));
 
 			return true;
 		}

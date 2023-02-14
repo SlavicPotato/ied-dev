@@ -1543,7 +1543,7 @@ namespace IED
 				}
 				UITipsInterface::DrawTip(UITip::AttachLight);
 
-				/*if (ImGui::CheckboxFlagsT(
+				if (ImGui::CheckboxFlagsT(
 						UIL::LS(UIWidgetCommonStrings::HideLight, "_2"),
 						stl::underlying(std::addressof(a_data.flags.value)),
 						stl::underlying(Data::BaseFlags::kHideLight)))
@@ -1554,7 +1554,7 @@ namespace IED
 
 					OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
 				}
-				UITipsInterface::DrawTip(UITip::HideLight);*/
+				UITipsInterface::DrawTip(UITip::HideLight);
 
 				UICommon::PopDisabled(disable);
 

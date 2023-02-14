@@ -214,6 +214,7 @@ namespace IED
 		worldspace(a_actor->GetParentCellWorldspace()),
 		currentPackage(a_actor->GetCurrentPackage()),
 		currentIdle(a_actor->GetFurnitureIdle()),
+		combatStyle(a_actor->GetCombatStyle()),
 		inCombat(Game::GetActorInCombat(a_actor)),
 		flags1(a_actor->flags1 & ACTOR_CHECK_FLAGS_1),
 		flags2(a_actor->flags2 & ACTOR_CHECK_FLAGS_2),
@@ -288,6 +289,7 @@ namespace IED
 		state_var_update(flagslf1.value, a_actor->flags1 & ACTOR_CHECK_FLAGS_LF_1, result);
 		state_var_update(flagslf2.value, a_actor->flags2 & ACTOR_CHECK_FLAGS_LF_2, result);
 		state_var_update(swimming, a_actor->IsSwimming(), result);
+		state_var_update(combatStyle, a_actor->GetCombatStyle(), result);
 
 		return result;
 	}

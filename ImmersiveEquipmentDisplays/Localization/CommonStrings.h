@@ -266,5 +266,6 @@ namespace IED
 		Interior        = 337,
 		PlayLoopSound   = 338,
 		Miscellaneous   = 339,
+		Absolute        = 340,
 	};
 }

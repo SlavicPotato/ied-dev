@@ -115,6 +115,7 @@ namespace IED
 			LightFieldOfView                    = 1106,
 			LightTargetSelf                     = 1107,
 			MatchNPCOrTemplate                  = 1108,
+			SunAngle                            = 1109,
 		};
 
 	}
