@@ -317,7 +317,11 @@ namespace IED
 
 			auto& e = m_data.try_emplace(a_actor).first->second;
 
-			e.emplace_front(a_form, a_light.niObject, a_light.bsObject);
+			e.emplace_front(
+				a_form,
+				a_light.niObject,
+				a_light.bsObject,
+				a_light.extraLightData);
 		}
 	}
 
@@ -351,7 +355,7 @@ namespace IED
 		}
 	}
 
-	ObjectLight ReferenceLightController::CreateAndAttachPointLight(
+	std::unique_ptr<ObjectLight> ReferenceLightController::CreateAndAttachPointLight(
 		const TESObjectLIGH*        a_lightForm,
 		Actor*                      a_actor,
 		NiNode*                     a_object,
@@ -409,7 +413,10 @@ namespace IED
 
 		pointLight->fade = a_lightForm->fade;
 
-		return { pointLight, a_actor == *g_thePlayer ? bsLight : nullptr };
+		return std::make_unique<ObjectLight>(
+			pointLight,
+			a_actor == *g_thePlayer ? bsLight : nullptr,
+			a_config);
 	}
 
 	void ReferenceLightController::CleanupLights(NiNode* a_node) noexcept

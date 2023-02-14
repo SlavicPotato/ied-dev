@@ -16,10 +16,10 @@ namespace IED
 		{
 			const bool result = DrawImpl(a_data.data);
 
-			if (result)
+			/*if (result)
 			{
 				a_data.update_tag();
-			}
+			}*/
 
 			return result;
 		}

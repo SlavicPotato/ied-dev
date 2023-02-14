@@ -1233,7 +1233,7 @@ namespace IED
 
 				if (old != e.extraLightConfig.data.flags)
 				{
-					e.extraLightConfig.update_tag();
+					//e.extraLightConfig.update_tag();
 
 					if (!e.flags.test(BaseFlags::kDisabled))
 					{

@@ -40,19 +40,9 @@ namespace IED
 
 		struct Entry
 		{
-			Entry(
-				TESObjectLIGH* a_form,
-				NiPointLight*  a_light,
-				RE::BSLight*   a_bsLight) :
-				form(a_form),
-				niLight(a_light),
-				bsLight(a_bsLight)
-			{
-			}
-
-			TESObjectLIGH*               form;
-			NiPointer<NiPointLight>      niLight;
-			NiPointer<RE::BSLight>       bsLight;
+			TESObjectLIGH*             form;
+			NiPointer<NiPointLight>    niLight;
+			NiPointer<RE::BSLight>     bsLight;
 			const Data::ExtraLightData config;
 		};
 
@@ -85,10 +75,10 @@ namespace IED
 
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
-		[[nodiscard]] static ObjectLight CreateAndAttachPointLight(
-			const TESObjectLIGH*          a_lightForm,
-			Actor*                        a_actor,
-			NiNode*                       a_object,
+		[[nodiscard]] static std::unique_ptr<ObjectLight> CreateAndAttachPointLight(
+			const TESObjectLIGH*        a_lightForm,
+			Actor*                      a_actor,
+			NiNode*                     a_object,
 			const Data::ExtraLightData& a_config) noexcept;
 
 		static void CleanupLights(NiNode* a_node) noexcept;

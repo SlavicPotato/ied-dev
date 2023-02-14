@@ -254,13 +254,13 @@ namespace IED
 		{
 			if (auto& l = e.second.light)
 			{
-				l->SetVisible(a_switch);
+				l->niObject->SetVisible(a_switch);
 			}
 		}
 
 		if (light)
 		{
-			light->SetVisible(a_switch);
+			light->niObject->SetVisible(a_switch);
 		}
 	}
 
@@ -347,8 +347,11 @@ namespace IED
 			sound.handle.StopAndReleaseNow();
 		}
 
-		light.Cleanup(commonNodes.object.get());
-		light.Release();
+		if (light)
+		{
+			light->Cleanup(commonNodes.object.get());
+			light.reset();
+		}
 
 		EngineExtensions::CleanupObjectImpl(
 			a_handle,

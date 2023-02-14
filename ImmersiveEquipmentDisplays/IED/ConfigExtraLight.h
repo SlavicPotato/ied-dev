@@ -8,8 +8,7 @@ namespace IED
 {
 	namespace Data
 	{
-		struct configExtraLight_t :
-			configLUIDTagGI_t
+		struct configExtraLight_t
 		{
 			friend class boost::serialization::access;
 

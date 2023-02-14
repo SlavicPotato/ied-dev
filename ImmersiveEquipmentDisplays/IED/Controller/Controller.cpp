@@ -1987,7 +1987,7 @@ namespace IED
 				}
 			}
 
-			if (state->light && state->currentExtraLightTag != a_config.extraLightConfig)
+			if (state->light && state->light->extraLightData != a_config.extraLightConfig.data)
 			{
 				return false;
 			}

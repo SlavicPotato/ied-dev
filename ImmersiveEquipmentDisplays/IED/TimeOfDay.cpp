@@ -12,30 +12,34 @@ namespace IED
 		{
 			if (const auto* const climate = a_sky->currentClimate)
 			{
-				return ClimateTimingData(
+				return {
 					static_cast<float>(climate->timing.sunrise.begin) * (1.0f / 6.0f),
 					static_cast<float>(climate->timing.sunrise.end) * (1.0f / 6.0f),
 					static_cast<float>(climate->timing.sunset.begin) * (1.0f / 6.0f),
-					static_cast<float>(climate->timing.sunset.end) * (1.0f / 6.0f));
+					static_cast<float>(climate->timing.sunset.end) * (1.0f / 6.0f)
+				};
 			}
 
 			auto& sh = SPtrHolder::GetSingleton();
 
 			if (sh.HasTimespan())
 			{
-				return ClimateTimingData(
+				return {
 					*sh.fTimeSpanSunriseStart,
 					*sh.fTimeSpanSunriseEnd,
 					*sh.fTimeSpanSunsetStart,
-					*sh.fTimeSpanSunsetEnd);
+					*sh.fTimeSpanSunsetEnd
+				};
 			}
 
-			return ClimateTimingData{ 6.0f, 10.5f, 15.5f, 20.5f };
+			return { 6.0f, 10.5f, 15.5f, 20.5f };
 		}
 
 		namespace detail
 		{
-			static constexpr TimeOfDay get_time_of_day(const RE::Sky* a_sky, const ClimateTimingData& a_data) noexcept
+			static constexpr TimeOfDay get_time_of_day(
+				const RE::Sky*           a_sky,
+				const ClimateTimingData& a_data) noexcept
 			{
 				const auto hour = a_sky->currentGameHour;
 
@@ -61,7 +65,9 @@ namespace IED
 				}
 			}
 
-			static constexpr bool is_daytime(const RE::Sky* a_sky, const ClimateTimingData& a_data) noexcept
+			static constexpr bool is_daytime(
+				const RE::Sky*           a_sky,
+				const ClimateTimingData& a_data) noexcept
 			{
 				const auto hour = a_sky->currentGameHour;
 
@@ -113,7 +119,10 @@ namespace IED
 
 			const auto timing = GetClimateTimingData(a_sky);
 
-			return { detail::get_time_of_day(a_sky, timing), detail::is_daytime(a_sky, timing) };
+			return {
+				detail::get_time_of_day(a_sky, timing),
+				detail::is_daytime(a_sky, timing)
+			};
 		}
 	}
 }

@@ -166,8 +166,8 @@ namespace IED
 			Actor*                        a_actor,
 			NiNode*                       a_object,
 			TESObjectLIGH*                a_lightForm,
-			const Data::ExtraLightData& a_config,
-			ObjectLight&                  a_out) noexcept;
+			const Data::ExtraLightData&   a_config,
+			std::unique_ptr<ObjectLight>& a_out) noexcept;
 
 		static TESObjectLIGH* GetLightFormForAttach(TESForm* a_modelForm) noexcept;
 
@@ -176,7 +176,7 @@ namespace IED
 			ObjectSound& a_sound) noexcept;
 
 		static BGSSoundDescriptorForm* GetSoundDescriptor(
-			const TESForm*     a_modelForm) noexcept;
+			const TESForm* a_modelForm) noexcept;
 
 		void PlayEquipObjectSound(
 			const processParams_t&          a_params,

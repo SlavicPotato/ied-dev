@@ -13,10 +13,4 @@ namespace IED
 			ReferenceLightController::CleanupLights(a_root);
 		}
 	}
-
-	void ObjectLight::Release() noexcept
-	{
-		niObject.reset();
-		bsObject.reset();
-	}
 }

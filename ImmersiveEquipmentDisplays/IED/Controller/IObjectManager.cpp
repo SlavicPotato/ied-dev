@@ -33,7 +33,7 @@ namespace IED
 
 			if (auto& pl = state->light)
 			{
-				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
+				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl->niObject.get());
 			}
 
 			if (auto& ah = state->anim.holder)
@@ -45,7 +45,7 @@ namespace IED
 			{
 				if (auto& pl = e.second.light)
 				{
-					ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl.niObject.get());
+					ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl->niObject.get());
 				}
 
 				if (auto& ah = e.second.anim.holder)
@@ -671,12 +671,12 @@ namespace IED
 
 		if (state->light)
 		{
-			state->currentExtraLightTag = a_activeConfig.extraLightConfig;
+			//state->currentExtraLightTag.emplace(a_activeConfig.extraLightConfig);
 
 			ReferenceLightController::GetSingleton().AddLight(
 				a_params.actor->formID,
 				lightForm,
-				state->light);
+				*state->light);
 		}
 
 		state->sound.form = GetSoundDescriptor(a_modelForm);
@@ -1043,7 +1043,7 @@ namespace IED
 				ReferenceLightController::GetSingleton().AddLight(
 					a_params.actor->formID,
 					lightForm,
-					n.light);
+					*n.light);
 			}
 
 			n.sound.form = GetSoundDescriptor(e.form);
@@ -1181,11 +1181,11 @@ namespace IED
 	}
 
 	void IObjectManager::TryCreatePointLight(
-		Actor*                      a_actor,
-		NiNode*                     a_object,
-		TESObjectLIGH*              a_lightForm,
-		const Data::ExtraLightData& a_config,
-		ObjectLight&                a_out) noexcept
+		Actor*                        a_actor,
+		NiNode*                       a_object,
+		TESObjectLIGH*                a_lightForm,
+		const Data::ExtraLightData&   a_config,
+		std::unique_ptr<ObjectLight>& a_out) noexcept
 	{
 		if (a_lightForm)
 		{

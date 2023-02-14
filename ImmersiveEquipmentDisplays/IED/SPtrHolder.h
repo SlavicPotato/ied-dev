@@ -7,12 +7,12 @@ namespace IED
 	public:
 		static void Initialize();
 
-		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
+		[[nodiscard]] static constexpr const auto& GetSingleton() noexcept
 		{
 			return m_Instance;
 		}
 
-		[[nodiscard]] constexpr bool HasTimespan() noexcept
+		[[nodiscard]] constexpr bool HasTimespan() const noexcept
 		{
 			return m_hasTimespan;
 		}

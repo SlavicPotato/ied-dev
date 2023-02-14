@@ -136,7 +136,7 @@ namespace IED
 			CommonNodes                         commonNodes;
 			Data::cacheTransform_t              transform;
 			ObjectDatabase::ObjectDatabaseEntry dbEntry;
-			ObjectLight                         light;
+			std::unique_ptr<ObjectLight>        light;
 			ObjectSound                         sound;
 			ObjectAnim                          anim;
 		};
@@ -264,9 +264,8 @@ namespace IED
 			stl::smart_ptr<PHYSimComponent>                    simComponent;
 			stl::fixed_string                                  currentSequence;
 			std::optional<luid_tag>                            currentGeomTransformTag;
-			std::optional<luid_tag>                            currentExtraLightTag;
-			std::unique_ptr<QuiverArrowState>                  arrowState;
 			stl::optional<float>                               colliderScale;
+			std::unique_ptr<QuiverArrowState>                  arrowState;
 			Game::FormID                                       owner;
 			std::uint8_t                                       hideCountdown{ 0 };
 			bool                                               atmReference{ true };
