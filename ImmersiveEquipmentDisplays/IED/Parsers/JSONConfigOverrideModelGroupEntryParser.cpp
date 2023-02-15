@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "JSONConfigCachedFormParser.h"
+#include "JSONConfigExtraLight.h"
 #include "JSONConfigOverrideModelGroupEntryParser.h"
 #include "JSONConfigTransformParser.h"
 
@@ -49,6 +50,16 @@ namespace IED
 				a_out.animationEvent = aev.asString();
 			}
 
+			if (auto& el = data["exl"])
+			{
+				Parser<Data::configExtraLight_t> parser(m_state);
+
+				if (!parser.Parse(el, a_out.extraLightConfig))
+				{
+					return false;
+				}
+			}
+
 			return true;
 		}
 
@@ -81,6 +92,10 @@ namespace IED
 			{
 				data["aev"] = *a_data.animationEvent;
 			}
+
+			Parser<Data::configExtraLight_t> parserexl(m_state);
+
+			parserexl.Create(a_data.extraLightConfig, data["exl"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}
