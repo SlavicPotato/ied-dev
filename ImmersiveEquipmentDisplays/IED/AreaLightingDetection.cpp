@@ -110,15 +110,8 @@ namespace IED
 			return (col.r + col.g + col.b) < (isNightTime ? (SPtrHolder::GetSingleton().fTorchLightLevelNight ? *SPtrHolder::GetSingleton().fTorchLightLevelNight : 1.2f) : 0.6f);
 		}
 
-		bool IsActorInDarkInterior(const Actor* a_actor, const RE::Sky* a_sky) noexcept
+		bool IsInteriorDark(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept
 		{
-			const auto* const cell = a_actor->parentCell;
-
-			if (!cell || !cell->IsInterior())
-			{
-				return false;
-			}
-
 			if (a_actor == *g_thePlayer)
 			{
 				if (const auto* const templ = detail::get_room_lighting_template(a_sky))
@@ -127,11 +120,11 @@ namespace IED
 				}
 			}
 
-			const auto* const intData = cell->cellData.interior;
+			const auto* const intData = a_cell->cellData.interior;
 
 			if (!intData || intData->lightingTemplateInheritanceFlags.test(RE::INTERIOR_DATA::Inherit::kAmbientColor))
 			{
-				const auto* const templ = cell->lightingTemplate;
+				const auto* const templ = a_cell->lightingTemplate;
 
 				if (templ)
 				{

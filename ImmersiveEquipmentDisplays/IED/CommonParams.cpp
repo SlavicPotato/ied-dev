@@ -188,9 +188,22 @@ namespace IED
 	{
 		if (!isInDarkArea)
 		{
-			const bool result = actor->IsInInterior() ?
-			                        ALD::IsActorInDarkInterior(actor, RE::TES::GetSingleton()->sky) :
-			                        controller.GetOrCreateGlobalParams().is_exterior_dark();
+			bool result;
+
+			const auto* const cell = actor->GetParentCell();
+
+			if (cell &&
+			    cell->IsInterior() &&
+			    !cell->cellFlags.test(
+					TESObjectCELL::Flag::kShowSky |
+					TESObjectCELL::Flag::kUseSkyLighting))
+			{
+				result = ALD::IsInteriorDark(actor, RE::TES::GetSingleton()->sky, cell);
+			}
+			else
+			{
+				result = controller.GetOrCreateGlobalParams().is_exterior_dark();
+			}
 
 			isInDarkArea.emplace(result);
 		}

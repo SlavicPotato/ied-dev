@@ -108,8 +108,8 @@ namespace IED
 		};
 
 		static constexpr auto COMMON_STATE_CHECK_INTERVAL    = 1000000ll;
-		static constexpr auto COMMON_STATE_CHECK_INTERVAL_MF = 5000000ll;
-		static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15000000ll;
+		static constexpr auto COMMON_STATE_CHECK_INTERVAL_MF = 5150000ll;
+		static constexpr auto COMMON_STATE_CHECK_INTERVAL_LF = 15270000ll;
 
 		[[nodiscard]] constexpr bool ParallelProcessingEnabled() const noexcept
 		{
