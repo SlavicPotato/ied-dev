@@ -42,8 +42,18 @@ namespace IED
 					ImGuiInputTextFlags_EnterReturnsTrue,
 					e.m_funcDraw,
 					e.m_textWrapSize,
-					e.m_input,
-					sizeof(e.m_input));
+					e.a_allowEmpty,
+					e.m_input);
+				break;
+			case UIPopupType::MultilineInput:
+				res = TextInputMultilineDialog(
+					e.m_key.c_str(),
+					e.m_buf,
+					ImGuiInputTextFlags_EnterReturnsTrue,
+					e.m_funcDraw,
+					e.m_textWrapSize,
+					e.a_allowEmpty,
+					e.m_input);
 				break;
 			case UIPopupType::Message:
 				res = MessageDialog(

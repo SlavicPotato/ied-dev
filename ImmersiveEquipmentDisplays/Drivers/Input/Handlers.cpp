@@ -28,5 +28,18 @@ namespace IED
 				}
 			}
 		}
+
+		bool KeyPressHandler::CanProcess() const noexcept
+		{
+			return m_processPaused || !Game::IsPaused();
+		}
+
+		void KeyPressHandler::Trigger() const
+		{
+			if (CanProcess())
+			{
+				m_func();
+			}
+		}
 	}
 }

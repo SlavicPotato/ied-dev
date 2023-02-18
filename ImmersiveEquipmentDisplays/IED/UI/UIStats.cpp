@@ -2,7 +2,7 @@
 
 #include "UIStats.h"
 
-#include "IED/AnimationUpdateManager.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/Controller/Controller.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/SkeletonCache.h"

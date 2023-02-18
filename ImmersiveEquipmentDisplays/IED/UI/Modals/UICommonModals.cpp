@@ -12,8 +12,8 @@ namespace IED
 			ImGuiInputTextFlags         a_flags,
 			const cm_func_t&            a_func,
 			const std::optional<float>& a_twsz,
-			char*                       a_buf,
-			std::size_t                 a_size)
+			bool                        a_allowEmpty,
+			std::string&                a_out)
 			-> ModalStatus
 		{
 			return TextInputDialog(
@@ -22,8 +22,8 @@ namespace IED
 				a_flags,
 				a_func,
 				a_twsz,
-				a_buf,
-				a_size,
+				a_allowEmpty,
+				a_out,
 				a_text);
 		}
 

@@ -306,7 +306,7 @@ namespace IED
 					 "%s",
 					 UIL::LS(UIWidgetCommonStrings::NewItemPrompt))
 				.call([this](const auto& a_p) {
-					std::string name(a_p.GetInput());
+					auto &name = a_p.GetInput();
 
 					if (name.empty())
 					{
@@ -439,11 +439,10 @@ namespace IED
 					 UIL::LS(UIWidgetCommonStrings::NewItem),
 					 "%s",
 					 UIL::LS(UIWidgetCommonStrings::RenamePrompt))
-				.fmt_input("%s", a_data.name.c_str())
+				.set_input(*a_data.name)
 				.call([this, oldName = a_data.name](const auto& a_p) {
-					auto& in = a_p.GetInput();
 
-					stl::fixed_string newName(in);
+					stl::fixed_string newName(a_p.GetInput());
 
 					if (newName.empty())
 					{

@@ -49,6 +49,32 @@ namespace IED
 			return blocked;
 		}
 
+		namespace detail
+		{
+			static constexpr std::uint32_t get_keycode(const ButtonEvent* a_event) noexcept
+			{
+				const auto    deviceType = a_event->device;
+				std::uint32_t keyCode;
+
+				switch (deviceType)
+				{
+				case INPUT_DEVICE::kMouse:
+					keyCode = InputMap::kMacro_MouseButtonOffset + a_event->GetIDCode();
+					break;
+				case INPUT_DEVICE::kGamepad:
+					keyCode = InputMap::kMacro_GamepadOffset + a_event->GetIDCode();
+					break;
+				case INPUT_DEVICE::kKeyboard:
+					keyCode = a_event->GetIDCode();
+					break;
+				default:
+					return 0;
+				}
+
+				return keyCode < InputMap::kMaxMacros ? keyCode : 0;
+			}
+		}
+
 		void Input::ProcessPriorityEvents(const InputEvent** a_evns)
 		{
 			for (auto it = *a_evns; it; it = it->next)
@@ -57,25 +83,10 @@ namespace IED
 				{
 				case INPUT_EVENT_TYPE::kButton:
 					{
-						auto buttonEvent = static_cast<const ButtonEvent*>(it);
+						const auto buttonEvent = static_cast<const ButtonEvent*>(it);
+						const auto keyCode     = detail::get_keycode(buttonEvent);
 
-						auto          deviceType = buttonEvent->device;
-						std::uint32_t keyCode;
-
-						if (deviceType == INPUT_DEVICE::kMouse)
-						{
-							keyCode = InputMap::kMacro_MouseButtonOffset + buttonEvent->GetIDCode();
-						}
-						else if (deviceType == INPUT_DEVICE::kKeyboard)
-						{
-							keyCode = buttonEvent->GetIDCode();
-						}
-						else
-						{
-							continue;
-						}
-
-						if (!keyCode || keyCode >= InputMap::kMaxMacros)
+						if (!keyCode)
 						{
 							continue;
 						}
@@ -116,20 +127,14 @@ namespace IED
 			{
 				for (auto it = *a_evns; it; it = it->next)
 				{
-					auto buttonEvent = it->AsButtonEvent();
+					const auto buttonEvent = it->AsButtonEvent();
 					if (!buttonEvent)
 					{
 						continue;
 					}
 
-					if (buttonEvent->device != INPUT_DEVICE::kKeyboard)
-					{
-						continue;
-					}
-
-					std::uint32_t keyCode = buttonEvent->GetIDCode();
-
-					if (!keyCode || keyCode >= InputMap::kMaxMacros)
+					const auto keyCode = detail::get_keycode(buttonEvent);
+					if (!keyCode)
 					{
 						continue;
 					}
@@ -308,7 +313,7 @@ namespace IED
 			         ExtractHookCallAddr<true>(
 						 m_inputEventpProc_a.get(),
 						 m_Instance.m_nextIEPCall) :
-                     ExtractHookCallAddr<false>(
+			         ExtractHookCallAddr<false>(
 						 m_inputEventpProc_a.get(),
 						 m_Instance.m_nextIEPCall)))
 			{
@@ -401,7 +406,8 @@ namespace IED
 			m_prioHandlers.SendEvent(evn);
 		}
 
-		void Input::DispatchPriorityKeyEvent(const MouseMoveEvent* a_evn)
+		void Input::DispatchPriorityKeyEvent(
+			const MouseMoveEvent* a_evn)
 		{
 			const Handlers::MouseMoveEvent evn{
 				a_evn->mouseInputX,

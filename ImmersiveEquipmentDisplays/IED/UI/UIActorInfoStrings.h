@@ -99,6 +99,12 @@ namespace IED
 			Sheathing     = 6982,
 
 			ActorValues = 6983,
+
+			Skeleton3D    = 6984,
+			WeaponNodes   = 6985,
+			CMENodes      = 6986,
+			MOVNodes      = 6987,
+			NumChildNodes = 6988,
 		};
 	}
 }

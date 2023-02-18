@@ -45,13 +45,6 @@ namespace IED
 			const Data::configNodeOverrideTransform_t& a_data,
 			nodeOverrideParams_t&                      a_params) noexcept;
 
-		static void attach_node_to(
-			const WeaponNodeEntry&   a_entry,
-			const NiPointer<NiNode>& a_target,
-			nodeOverrideParams_t*    a_params,
-			WeaponPlacementID        a_placementID,
-			bool                     a_defer) noexcept;
-
 		static void ApplyNodePlacement(
 			const Data::configNodeOverridePlacement_t& a_data,
 			const WeaponNodeEntry&                     a_entry,

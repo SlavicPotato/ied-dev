@@ -8,9 +8,9 @@ namespace IED
 {
 	void ObjectManagerData::ClearVariablesOnAll(bool a_requestEval) noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			e.second.ClearVariables(a_requestEval);
+			e->second.ClearVariables(a_requestEval);
 		}
 	}
 
@@ -27,9 +27,9 @@ namespace IED
 
 	void ObjectManagerData::RequestVariableUpdateOnAll() const noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			e.second.RequestVariableUpdate();
+			e->second.RequestVariableUpdate();
 		}
 	}
 
@@ -44,63 +44,63 @@ namespace IED
 
 	void ObjectManagerData::RequestEvaluateAll() const noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			e.second.RequestEvalDefer();
+			e->second.RequestEvalDefer();
 		}
 	}
 
 	void ObjectManagerData::RequestEvaluateAll(bool a_defer) const noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
 			if (a_defer)
 			{
-				e.second.RequestEvalDefer();
+				e->second.RequestEvalDefer();
 			}
 			else
 			{
-				e.second.RequestEval();
+				e->second.RequestEval();
 			}
 		}
 	}
 
 	void ObjectManagerData::RequestLFEvaluateAll() const noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			e.second.m_wantLFUpdate = true;
+			e->second.m_wantLFUpdate = true;
 		}
 	}
 
 	void ObjectManagerData::RequestLFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{
-		for (auto& [i, e] : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (i != a_skip)
+			if (e->first != a_skip)
 			{
-				e.m_wantLFUpdate = true;
+				e->second.m_wantLFUpdate = true;
 			}
 		}
 	}
 
 	void ObjectManagerData::RequestHFEvaluateAll() const noexcept
 	{
-		for (auto& e : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			e.second.m_wantHFUpdate = true;
+			e->second.m_wantHFUpdate = true;
 		}
 	}
 
 	void ObjectManagerData::RequestHFEvaluateAll(
 		Game::FormID a_skip) const noexcept
 	{
-		for (auto& [i, e] : m_actorMap)
+		for (auto& e : m_actorMap.getvec())
 		{
-			if (i != a_skip)
+			if (e->first != a_skip)
 			{
-				e.m_wantHFUpdate = true;
+				e->second.m_wantHFUpdate = true;
 			}
 		}
 	}

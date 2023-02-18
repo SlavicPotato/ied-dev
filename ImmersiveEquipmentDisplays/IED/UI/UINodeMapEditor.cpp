@@ -147,7 +147,7 @@ namespace IED
 					 "%s",
 					 UIL::LS(UIWidgetCommonStrings::NewNodePrompt))
 				.call([this](const auto& a_p) {
-					std::string name(a_p.GetInput());
+					auto& name = a_p.GetInput();
 
 					if (!Data::NodeMap::ValidateNodeName(name))
 					{
@@ -220,17 +220,22 @@ namespace IED
 			auto& map = Data::NodeMap::GetSingleton();
 			map.SetDirty();
 
-			if (!map.SaveUserNodes(PATHS::NODEMAP))
-			{
-				auto& queue = m_controller.UIGetPopupQueue();
-				queue.push(
-					UIPopupType::Message,
-					UIL::LS(CommonStrings::Error),
-					"%s [%s]\n\n%s",
-					UIL::LS(UIWidgetCommonStrings::DataSaveError),
-					PATHS::NODEMAP,
-					map.GetLastException().what());
-			}
+			ITaskPool::AddTask([&controller = m_controller] {
+				const stl::lock_guard lock(controller.GetLock());
+
+				auto& map = Data::NodeMap::GetSingleton();
+				if (!map.SaveUserNodes(PATHS::NODEMAP))
+				{
+					auto& queue = controller.UIGetPopupQueue();
+					queue.push(
+						UIPopupType::Message,
+						UIL::LS(CommonStrings::Error),
+						"%s [%s]\n\n%s",
+						UIL::LS(UIWidgetCommonStrings::DataSaveError),
+						PATHS::NODEMAP,
+						map.GetLastException().what());
+				}
+			});
 		}
 	}
 }

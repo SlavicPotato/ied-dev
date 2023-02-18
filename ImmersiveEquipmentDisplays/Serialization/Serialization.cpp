@@ -47,7 +47,7 @@ namespace IED
 			}
 		}
 
-		void SafeCleanup(const fs::path& a_path) noexcept
+		void SafeCleanup(const fs::path& a_path)
 		{
 			try
 			{
@@ -58,11 +58,11 @@ namespace IED
 			}
 		}
 
-		std::string SafeGetPath(const fs::path& a_path) noexcept
+		std::string SafeGetPath(const fs::path& a_path)
 		{
 			try
 			{
-				return str_conv::wstr_to_str(a_path.wstring());
+				return stl::wstr_to_str(a_path.wstring());
 			}
 			catch (...)
 			{
@@ -87,7 +87,7 @@ namespace IED
 			}
 		}
 
-		bool FileExists(const fs::path& a_path) noexcept
+		bool FileExists(const fs::path& a_path)
 		{
 			try
 			{

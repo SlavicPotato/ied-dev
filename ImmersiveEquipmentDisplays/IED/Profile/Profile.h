@@ -4,6 +4,15 @@
 
 namespace IED
 {
+	enum class ProfileFlags : std::uint32_t
+	{
+		kNone = 0,
+
+		kMergeOnly = 1u << 0
+	};
+
+	DEFINE_ENUM_CLASS_BITWISE(ProfileFlags);
+
 	template <class T>
 	class ProfileBase
 	{
@@ -24,8 +33,8 @@ namespace IED
 		void SetPath(const fs::path& a_path)
 		{
 			m_path    = a_path;
-			m_pathStr = str_conv::wstr_to_str(a_path.wstring());
-			m_name    = str_conv::wstr_to_str(a_path.stem().wstring());
+			m_pathStr = stl::wstr_to_str(a_path.wstring());
+			m_name    = stl::wstr_to_str(a_path.stem().wstring());
 		}
 
 		inline void SetDescription(const std::string& a_text) noexcept
@@ -40,61 +49,60 @@ namespace IED
 
 		inline void ClearDescription() noexcept
 		{
-			m_desc.clear();
+			m_desc.reset();
 		}
 
-		[[nodiscard]] constexpr const auto& GetDescription() const noexcept
+		[[nodiscard]] constexpr auto& GetDescription() const noexcept
 		{
 			return m_desc;
 		}
 
-		[[nodiscard]] constexpr const auto& Name() const noexcept
+		[[nodiscard]] constexpr auto& Name() const noexcept
 		{
 			return m_name;
 		}
 
-		[[nodiscard]] constexpr const auto& Path() const noexcept
+		[[nodiscard]] constexpr auto& Path() const noexcept
 		{
 			return m_path;
 		}
 
-		[[nodiscard]] constexpr const auto& PathStr() const noexcept
+		[[nodiscard]] constexpr auto& PathStr() const noexcept
 		{
 			return m_pathStr;
 		}
 
-		[[nodiscard]] constexpr T& Data() noexcept
+		[[nodiscard]] constexpr auto& Data() noexcept
 		{
 			return m_data;
 		}
 
-		[[nodiscard]] constexpr const T& Data() const noexcept
+		[[nodiscard]] constexpr auto& Data() const noexcept
 		{
 			return m_data;
 		}
 
-		[[nodiscard]] constexpr const auto& GetLastException() const noexcept
+		[[nodiscard]] constexpr auto& GetLastException() const noexcept
 		{
 			return m_lastExcept;
 		}
 
-		[[nodiscard]] constexpr std::uint64_t GetID() const noexcept
+		[[nodiscard]] constexpr auto& GetFlags() noexcept
 		{
-			return m_id;
+			return m_flags;
 		}
 
-		inline void SetID(std::uint64_t a_id) noexcept
+		[[nodiscard]] constexpr auto& GetFlags() const noexcept
 		{
-			m_id = a_id;
+			return m_flags;
 		}
 
 	protected:
-		std::filesystem::path m_path;
-		stl::fixed_string     m_pathStr;
-		stl::fixed_string     m_name;
-
-		std::uint64_t              m_id{ 0 };
+		std::filesystem::path      m_path;
+		stl::fixed_string          m_pathStr;
+		stl::fixed_string          m_name;
 		std::optional<std::string> m_desc;
+		stl::flag<ProfileFlags>    m_flags{ ProfileFlags::kNone };
 
 		T m_data;
 
@@ -176,18 +184,17 @@ namespace IED
 
 			m_hasParserErrors = parser.HasErrors();
 
-			this->m_id = root.get("id", 0).asUInt64();
+			const auto                 flags = root.get("flags", stl::underlying(ProfileFlags::kNone)).asUInt();
+			std::optional<std::string> desc;
 
-			if (auto& desc = root["desc"])
+			if (auto& d = root["desc"])
 			{
-				this->m_desc = desc.asString();
-			}
-			else
-			{
-				this->m_desc.reset();
+				desc.emplace(d.asString());
 			}
 
-			this->m_data = std::move(*tmp);
+			this->m_data  = std::move(*tmp);
+			this->m_flags = std::move(flags);
+			this->m_desc  = std::move(desc);
 
 			return true;
 		}
@@ -218,11 +225,12 @@ namespace IED
 
 			parser.Create(a_data, root);
 
-			root["id"] = this->m_id;
 			if (this->m_desc)
 			{
 				root["desc"] = *this->m_desc;
 			}
+
+			root["flags"] = this->m_flags.underlying();
 
 			Serialization::WriteData(this->m_path, root);
 

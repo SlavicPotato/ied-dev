@@ -252,6 +252,21 @@
     <Filter Include="Source\IED\UI\DisplayManagement">
       <UniqueIdentifier>{a59111bc-e01d-4174-aa29-21eed3335f50}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\KB">
+      <UniqueIdentifier>{54f96948-f094-4a40-86d3-a8c11108ac96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\KB">
+      <UniqueIdentifier>{b6f34d18-c14c-486a-b604-3b60d1eb2132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\Widgets\KeyBind">
+      <UniqueIdentifier>{3c31ceaf-a4b6-4c1d-953e-1448fb8e67f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\KeyBind">
+      <UniqueIdentifier>{65749331-32ab-4e91-a549-9babc725633b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\ActorInfo">
+      <UniqueIdentifier>{7d517078-0471-4cbc-891a-df402ba98779}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -469,9 +484,6 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONSettingsHolder.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ActorInfoEntry.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\ActorProcessorTask.h">
       <Filter>Source\IED\Controller</Filter>
@@ -739,9 +751,6 @@
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\Lists\UIActorInfoAddInterface.h">
       <Filter>Source\IED\UI\Widgets\Lists</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ActorState.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\Widgets\UIConditionParamEditorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
@@ -1244,7 +1253,7 @@
     <ClInclude Include="IED\Controller\IFirstPersonState.h">
       <Filter>Source\IED\Controller</Filter>
     </ClInclude>
-    <ClInclude Include="IED\AnimationUpdateManager.h">
+    <ClInclude Include="IED\AnimationUpdateController.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\UI\UISkeletonExplorer.h">
@@ -1255,9 +1264,6 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ActorSkeletonTreeData.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\ISkeletonInfo.h">
       <Filter>Source\IED</Filter>
@@ -1433,9 +1439,6 @@
     <ClInclude Include="IED\UI\UIActorInfo.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ActorInventoryInfo.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONActorInfoParser.h">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClInclude>
@@ -1510,9 +1513,6 @@
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.h">
       <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ActorFactionInfo.h">
-      <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\GearNodeID.h">
       <Filter>Source\IED</Filter>
@@ -1688,9 +1688,6 @@
     <ClInclude Include="IED\TransformOverrides.h">
       <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ActorActiveEffectInfo.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.h">
       <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClInclude>
@@ -1719,9 +1716,6 @@
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
     <ClInclude Include="IED\ReferenceLightController.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\ActorPerkInfo.h">
       <Filter>Source\IED</Filter>
     </ClInclude>
     <ClInclude Include="IED\Controller\ActorTempData.h">
@@ -1763,9 +1757,6 @@
     <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\ActorValueInfo.h">
-      <Filter>Source\IED</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\UIActorValueStrings.h">
       <Filter>Source\IED\UI</Filter>
     </ClInclude>
@@ -1783,6 +1774,66 @@
     </ClInclude>
     <ClInclude Include="IED\SPtrHolder.h">
       <Filter>Source\IED</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\KeyToggleStateEntry.h">
+      <Filter>Source\IED\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\KeyBindEventHandler.h">
+      <Filter>Source\IED\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\KeyBindDataHolder.h">
+      <Filter>Source\IED\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\KeyToggleStateEntryHolder.h">
+      <Filter>Source\IED\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Controller\KeyToggleStates.h">
+      <Filter>Source\IED\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIKeyBindIDSelectorWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntry.h">
+      <Filter>Source\IED\JSONParsers\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.h">
+      <Filter>Source\IED\JSONParsers\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.h">
+      <Filter>Source\IED\UI\Widgets\KeyBind</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Keybind\UIKeyBindEditorWindow.h">
+      <Filter>Source\IED\UI\KeyBind</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorValueInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorActiveEffectInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorFactionInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorInfoEntry.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorInventoryInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorPerkInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorSkeletonTreeData.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorState.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ActorWeaponNodeInfo.h">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Profile\UIProfileEditorBaseStrings.h">
+      <Filter>Source\IED\UI\Profile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2449,7 +2500,7 @@
     <ClCompile Include="IED\Controller\IFirstPersonState.cpp">
       <Filter>Source\IED\Controller</Filter>
     </ClCompile>
-    <ClCompile Include="IED\AnimationUpdateManager.cpp">
+    <ClCompile Include="IED\AnimationUpdateController.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\UI\UISkeletonExplorer.cpp">
@@ -2584,9 +2635,6 @@
     <ClCompile Include="IED\UI\UIActorInfo.cpp">
       <Filter>Source\IED\UI</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ActorInventoryInfo.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Parsers\JSONActorInfoParser.cpp">
       <Filter>Source\IED\JSONParsers\Settings</Filter>
     </ClCompile>
@@ -2634,9 +2682,6 @@
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigAdditionalCMENodeListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ActorFactionInfo.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\Controller\IConditionalVariableProcessor.cpp">
       <Filter>Source\IED\Controller</Filter>
@@ -2776,9 +2821,6 @@
     <ClCompile Include="IED\TransformOverrides.cpp">
       <Filter>Source\IED\SkeletonExtensions</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ActorActiveEffectInfo.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.cpp">
       <Filter>Source\IED\UI\NodeOverride\Widgets</Filter>
     </ClCompile>
@@ -2803,9 +2845,6 @@
     <ClCompile Include="IED\ReferenceLightController.cpp">
       <Filter>Source\IED</Filter>
     </ClCompile>
-    <ClCompile Include="IED\ActorPerkInfo.cpp">
-      <Filter>Source\IED</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIDayOfWeekSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
@@ -2823,9 +2862,6 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UIExtraLightEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\ActorValueInfo.cpp">
-      <Filter>Source\IED</Filter>
     </ClCompile>
     <ClCompile Include="IED\AreaLightingDetection.cpp">
       <Filter>Source\IED</Filter>
@@ -2847,6 +2883,51 @@
     </ClCompile>
     <ClCompile Include="IED\TimeOfDay.cpp">
       <Filter>Source\IED</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\KeyBindEventHandler.cpp">
+      <Filter>Source\IED\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\KeyToggleStateEntry.cpp">
+      <Filter>Source\IED\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\KeyBindDataHolder.cpp">
+      <Filter>Source\IED\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UIKeyBindIDSelectorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntry.cpp">
+      <Filter>Source\IED\JSONParsers\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.cpp">
+      <Filter>Source\IED\UI\Widgets\KeyBind</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Keybind\UIKeyBindEditorWindow.cpp">
+      <Filter>Source\IED\UI\KeyBind</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorActiveEffectInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorFactionInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorInventoryInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorPerkInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorValueInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\ActorWeaponNodeInfo.cpp">
+      <Filter>Source\IED\ActorInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\KeyToggleStateEntryHolder.cpp">
+      <Filter>Source\IED\KB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

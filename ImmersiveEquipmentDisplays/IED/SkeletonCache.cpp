@@ -34,14 +34,14 @@ namespace IED
 
 	std::size_t SkeletonCache::GetSize() const
 	{
-		const std::shared_lock lock(m_lock);
+		const stl::read_lock_guard lock(m_lock);
 
 		return m_data.size();
 	}
 
 	std::size_t SkeletonCache::GetTotalEntries() const
 	{
-		const std::shared_lock lock(m_lock);
+		const stl::read_lock_guard lock(m_lock);
 
 		std::size_t result = 0;
 
@@ -80,7 +80,7 @@ namespace IED
 		const stl::fixed_string& a_key)
 		-> ActorEntry
 	{
-		const std::unique_lock lock(m_lock);
+		const stl::write_lock_guard lock(m_lock);
 
 		return m_data.try_emplace(a_key, a_key).first->second;
 	}
@@ -89,7 +89,7 @@ namespace IED
 		const stl::fixed_string& a_key) const
 		-> ActorEntry
 	{
-		const std::shared_lock lock(m_lock);
+		const stl::read_lock_guard lock(m_lock);
 
 		auto it = m_data.find(a_key);
 		if (it != m_data.end())

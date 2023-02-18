@@ -7,7 +7,7 @@
 #include "ObjectManagerData.h"
 
 #include "IED/ActorState.h"
-#include "IED/AnimationUpdateManager.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ExtraNodes.h"
 #include "IED/ReferenceLightController.h"
@@ -127,6 +127,24 @@ namespace IED
 		    (a_nodeOverrideEnabledPlayer ||
 		     a_actor != *g_thePlayer))
 		{
+			const auto npcroot1p =
+				m_root1p ?
+					GetNodeByName(
+						m_root1p,
+						BSStringHolder::GetSingleton()->m_npcroot) :
+					nullptr;
+
+			if (!EngineExtensions::HasEarly3DLoadHooks())
+			{
+				CreateExtraMovNodes(a_npcroot, m_skeletonID);
+				if (npcroot1p)
+				{
+					SkeletonID skelid1p(npcroot1p);
+
+					CreateExtraMovNodes(npcroot1p, skelid1p);
+				}
+			}
+
 			for (auto& e : NodeOverrideData::GetMonitorNodeData())
 			{
 				if (auto node = GetNodeByName(a_npcroot, e))
@@ -138,13 +156,6 @@ namespace IED
 						node->IsVisible());
 				}
 			}
-
-			const auto npcroot1p =
-				m_root1p ?
-					GetNodeByName(
-						m_root1p,
-						BSStringHolder::GetSingleton()->m_npcroot) :
-					nullptr;
 
 			for (auto& e : NodeOverrideData::GetCMENodeData().getvec())
 			{
@@ -169,38 +180,41 @@ namespace IED
 					m_movNodes.try_emplace(
 						e->first,
 						node,
-						skeletonCache.GetCachedOrCurrentTransform(e->second.name, node),
+						a_syncToFirstPersonSkeleton ? npcroot1p : nullptr,
+						skeletonCache,
+						skeletonCache1p,
+						e->second.name,
+						e->second.bsname,
 						e->second.placementID);
 				}
 			}
 
 			for (auto& e : NodeOverrideData::GetWeaponNodeData().getvec())
 			{
-				if (auto node = GetNodeByName(a_npcroot, e->second.bsname); node && node->m_parent)
+				if (auto node = GetNodeByName(a_npcroot, e->second.bsname))
 				{
-					if (auto defParentNode = GetNodeByName(a_npcroot, e->second.bsdefParent))
+					NiNode* defParentNode1p = nullptr;
+					NiNode* node1p          = nullptr;
+
+					if (npcroot1p)
 					{
-						auto node1p = npcroot1p ?
-						                  GetNodeByName(npcroot1p, e->second.bsname) :
-						                  nullptr;
+						node1p = GetNodeByName(npcroot1p, e->second.bsname);
 
-						m_weapNodes.emplace_back(
-							e->first,
-							node,
-							defParentNode,
-							node1p,
-							e->second.animSlot,
-							e->second.nodeID,
-							e->second.vanilla ?
-								skeletonCache.GetCachedTransform(e->first) :
-								std::optional<NiTransform>{});
+						if (node1p && a_syncToFirstPersonSkeleton)
+						{
+							defParentNode1p = GetNodeByName(npcroot1p, e->second.bsdefParent);
+						}
 					}
-				}
-			}
 
-			if (!EngineExtensions::HasEarly3DLoadHooks())
-			{
-				CreateExtraMovNodes(a_npcroot);
+					m_weapNodes.emplace_back(
+						e->first,
+						node,
+						GetNodeByName(a_npcroot, e->second.bsdefParent),
+						node1p,
+						defParentNode1p,
+						e->second.animSlot,
+						e->second.nodeID);
+				}
 			}
 		}
 
@@ -520,8 +534,8 @@ namespace IED
 		if (it != m_weapNodes.end())
 		{
 			a_out = {
-				it->node.get(),
-				it->node1p.get()
+				it->node3p.node.get(),
+				it->node1p.node.get()
 			};
 
 			return true;
@@ -536,7 +550,15 @@ namespace IED
 	{
 		for (auto& e : m_movNodes)
 		{
-			if (auto& sc = e.second.simComponent)
+			if (auto& sc = e.second.thirdPerson.simComponent)
+			{
+				ITaskPool::AddPriorityTask<
+					ITaskPool::SimpleDisposeTask<
+						std::remove_cvref_t<
+							decltype(sc)>>>(std::move(sc));
+			}
+
+			if (auto& sc = e.second.firstPerson.simComponent)
 			{
 				ITaskPool::AddPriorityTask<
 					ITaskPool::SimpleDisposeTask<
@@ -656,28 +678,6 @@ namespace IED
 		}
 	}
 
-	void ActorObjectHolder::SimComponentListClear() noexcept
-	{
-		m_simNodeList.clear();
-	}
-
-	void ActorObjectHolder::ClearAllPhysicsData() noexcept
-	{
-		m_simNodeList.clear();
-
-		for (auto& e : m_movNodes)
-		{
-			e.second.simComponent.reset();
-		}
-
-		visit([](auto& a_e) {
-			if (auto& state = a_e.data.state)
-			{
-				state->simComponent.reset();
-			}
-		});
-	}
-
 	std::size_t ActorObjectHolder::GetSimComponentListSize() const noexcept
 	{
 		return m_simNodeList.size();
@@ -719,41 +719,6 @@ namespace IED
 	{
 		std::erase(m_simNodeList, a_sc);
 		a_sc.reset();
-	}
-
-	void ActorObjectHolder::CreateExtraMovNodes(
-		NiNode* a_npcroot) noexcept
-	{
-		for (auto& v : NodeOverrideData::GetExtraMovNodes())
-		{
-			if (m_cmeNodes.contains(v.name_cme) ||
-			    m_movNodes.contains(v.name_mov) ||
-			    a_npcroot->GetObjectByName(v.bsname_node))
-			{
-				return;
-			}
-
-			auto target = GetNodeByName(a_npcroot, v.name_parent);
-			if (!target)
-			{
-				return;
-			}
-
-			auto it = std::find_if(
-				v.skel.begin(),
-				v.skel.end(),
-				[&](auto& a_v) {
-					return a_v.match.test(m_skeletonID);
-				});
-
-			if (it != v.skel.end())
-			{
-				const auto result = AttachExtraNodes(target, v, *it);
-
-				m_cmeNodes.try_emplace(v.name_cme, result.cme, result.cme->m_localTransform);
-				m_movNodes.try_emplace(v.name_mov, result.mov, result.mov->m_localTransform, v.placementID);
-			}
-		}
 	}
 
 	void ActorObjectHolder::CreateExtraCopyNode(

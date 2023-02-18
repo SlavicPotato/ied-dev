@@ -207,6 +207,8 @@ namespace IED
 				}
 			case Data::ExtraConditionType::kIsDaytime:
 				return a_params.is_daytime();
+			case Data::ExtraConditionType::kKeyIDToggled:
+				return a_params.get_key_toggle_state(a_match.s0);
 			default:
 				return false;
 			}

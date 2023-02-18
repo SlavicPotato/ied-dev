@@ -4,7 +4,7 @@
 #include "INodeOverride.h"
 #include "IObjectManager.h"
 
-#include "IED/AnimationUpdateManager.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ReferenceLightController.h"
 #include "IED/Util/Common.h"
@@ -20,7 +20,7 @@ namespace IED
 		TESObjectREFR*                   a_actor,
 		Game::ObjectRefHandle            a_handle,
 		ObjectEntryBase&                 a_objectEntry,
-		ActorObjectHolder&               a_data,
+		ActorObjectHolder&               a_holder,
 		stl::flag<ControllerUpdateFlags> a_flags,
 		bool                             a_defer) noexcept
 	{
@@ -28,29 +28,29 @@ namespace IED
 		{
 			if (auto& sc = state->simComponent)
 			{
-				a_data.RemoveSimComponent(sc);
+				a_holder.RemoveSimComponent(sc);
 			}
 
 			if (auto& pl = state->light)
 			{
-				ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl->niObject.get());
+				ReferenceLightController::GetSingleton().RemoveLight(a_holder.GetActorFormID(), pl->niObject.get());
 			}
 
 			if (auto& ah = state->anim.holder)
 			{
-				AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
+				AnimationUpdateController::GetSingleton().RemoveObject(a_holder.GetActorFormID(), ah);
 			}
 
 			for (auto& e : state->groupObjects)
 			{
 				if (auto& pl = e.second.light)
 				{
-					ReferenceLightController::GetSingleton().RemoveLight(a_data.GetActorFormID(), pl->niObject.get());
+					ReferenceLightController::GetSingleton().RemoveLight(a_holder.GetActorFormID(), pl->niObject.get());
 				}
 
 				if (auto& ah = e.second.anim.holder)
 				{
-					AnimationUpdateController::GetSingleton().RemoveObject(a_data.GetActorFormID(), ah);
+					AnimationUpdateController::GetSingleton().RemoveObject(a_holder.GetActorFormID(), ah);
 				}
 			}
 
@@ -89,8 +89,8 @@ namespace IED
 
 		return a_objectEntry.reset(
 			a_handle,
-			a_data.m_root,
-			a_data.m_root1p,
+			a_holder.m_root,
+			a_holder.m_root1p,
 			*this,
 			a_defer);
 	}
@@ -728,7 +728,7 @@ namespace IED
 		     a_activeConfig.flags.test(Data::BaseFlags::kForceTryLoadAnim)) &&
 			!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims))
 		{
-			if (EngineExtensions::CreateWeaponBehaviorGraph(
+			if (AnimationUpdateController::CreateWeaponBehaviorGraph(
 					object,
 					state->anim.holder,
 					[&](const char* a_path) noexcept {
@@ -1082,7 +1082,7 @@ namespace IED
 				!a_activeConfig.flags.test(Data::BaseFlags::kDisableBehaviorGraphAnims) &&
 				!e.entry->second.flags.test(Data::ConfigModelGroupEntryFlags::kDisableBehaviorGraphAnims))
 			{
-				if (EngineExtensions::CreateWeaponBehaviorGraph(
+				if (AnimationUpdateController::CreateWeaponBehaviorGraph(
 						e.grpObject->commonNodes.object,
 						e.grpObject->anim.holder,
 						[&](const char* a_path) noexcept {

@@ -53,6 +53,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
+			std::make_pair(Data::ExtraConditionType::kKeyIDToggled, UIConditionExtraSelectorWidgetStrings::KeyIDToggled),
 			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
 			std::make_pair(Data::ExtraConditionType::kLifeState, UIConditionExtraSelectorWidgetStrings::LifeState),
 			std::make_pair(Data::ExtraConditionType::kNodeMonitor, UIConditionExtraSelectorWidgetStrings::NodeMonitor),
@@ -245,6 +246,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SunAngle);
 			case Data::ExtraConditionType::kIsDaytime:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsDaytime);
+			case Data::ExtraConditionType::kKeyIDToggled:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::KeyIDToggled);
 			default:
 				return nullptr;
 			}

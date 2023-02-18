@@ -7,6 +7,7 @@
 #include "Custom/Profile/UIProfileEditorCustom.h"
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "FormFilters/UIProfileEditorFormFilters.h"
+#include "Keybind/UIKeyBindEditorWindow.h"
 #include "NodeOverride/Profile/UIProfileEditorNodeOverride.h"
 #include "NodeOverride/UINodeOverrideEditorWindow.h"
 #include "UIActorInfo.h"
@@ -62,6 +63,8 @@ namespace IED
 #else
 				nullptr
 #endif
+				,
+				std::make_unique<UIKeyBindEditorWindow>(a_controller)
 		}
 		,
 			m_formLookupCache(a_controller),
@@ -348,11 +351,12 @@ namespace IED
 			}
 
 			DrawContextMenuItem<UINodeMapEditor>(CommonStrings::Nodes, "2");
-			DrawContextMenuItem<UISettings>(CommonStrings::Settings, "3");
-			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "4");
-			DrawContextMenuItem<UILog>(CommonStrings::Log, "5");
+			DrawContextMenuItem<UIKeyBindEditorWindow>(UIMainStrings::KeyBinds, "3");
+			DrawContextMenuItem<UISettings>(CommonStrings::Settings, "4");
+			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "5");
+			DrawContextMenuItem<UILog>(CommonStrings::Log, "6");
 
-			if (UIL::LCG_BM(UIMainStrings::Diagnostics, "6"))
+			if (UIL::LCG_BM(UIMainStrings::Diagnostics, "7"))
 			{
 				DrawDiagnosticsSubmenu();
 

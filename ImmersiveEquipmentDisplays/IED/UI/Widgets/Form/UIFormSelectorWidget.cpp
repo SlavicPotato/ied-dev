@@ -437,7 +437,7 @@ namespace IED
 			char tmp[16];
 			stl::snprintf(tmp, "0x%s", m_state->m_inputBuffer);
 
-			auto v = str_conv::ston<unsigned long>(tmp, 0);
+			auto v = stl::ston<unsigned long>(tmp, 0);
 
 			return v ? Game::FormID{ *v } : Game::FormID{};
 		}

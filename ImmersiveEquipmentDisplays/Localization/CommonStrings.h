@@ -267,5 +267,8 @@ namespace IED
 		PlayLoopSound   = 338,
 		Miscellaneous   = 339,
 		Absolute        = 340,
+		Set             = 341,
+		Scancode        = 342,
+		Options         = 343,
 	};
 }

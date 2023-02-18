@@ -46,9 +46,9 @@ namespace IED
 			const Data::ExtraLightData config;
 		};
 
-		using lock_type   = std::shared_mutex;
-		using shared_lock = std::shared_lock<lock_type>;
-		using unique_lock = std::unique_lock<lock_type>;
+		using lock_type        = stl::shared_mutex;
+		using read_lock_guard  = stl::read_lock_guard<lock_type>;
+		using write_lock_guard = stl::write_lock_guard<lock_type>;
 
 	public:
 		[[nodiscard]] static constexpr auto& GetSingleton() noexcept

@@ -4,6 +4,7 @@
 
 #include "IObjectManager.h"
 
+#include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
 #include "IED/StringHolder.h"
 
@@ -276,7 +277,7 @@ namespace IED
 		assert(holder != nullptr);
 
 		if (a_event == currentEvent ||
-			a_event.empty())
+		    a_event.empty())
 		{
 			return;
 		}
@@ -357,7 +358,7 @@ namespace IED
 			a_handle,
 			commonNodes.rootNode.get());
 
-		EngineExtensions::CleanupWeaponBehaviorGraph(
+		AnimationUpdateController::CleanupWeaponBehaviorGraph(
 			anim.holder);
 
 		if (dbEntry)

@@ -128,6 +128,7 @@ namespace IED
 			EquipmentSlots                      = 2120,
 			MatchNPCOrTemplate                  = 2121,
 			LightingTemplate                    = 2122,
+			CopyIDToClipboard                   = 2123,
 		};
 	}
 }

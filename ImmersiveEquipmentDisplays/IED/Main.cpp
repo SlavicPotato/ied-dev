@@ -2,7 +2,7 @@
 
 #include "Main.h"
 
-#include "AnimationUpdateManager.h"
+#include "AnimationUpdateController.h"
 #include "ConfigINI.h"
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
@@ -285,9 +285,9 @@ namespace IED
 
 				auto& nodeMap = IED::Data::NodeMap::GetSingleton();
 
-				if (!nodeMap.LoadExtra(PATHS::NODEMAP))
+				if (Serialization::FileExists(PATHS::NODEMAP))
 				{
-					if (Serialization::FileExists(PATHS::NODEMAP))
+					if (!nodeMap.LoadExtra(PATHS::NODEMAP))
 					{
 						Error(
 							"%s: %s",

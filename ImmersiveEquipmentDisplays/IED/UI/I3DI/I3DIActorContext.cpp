@@ -176,9 +176,9 @@ namespace IED
 						continue;
 					}
 
-					itwn->second->UpdateLocalMatrix(e.node->m_localTransform);
+					itwn->second->UpdateLocalMatrix(e.node3p.node->m_localTransform);
 
-					const auto m = VectorMath::NiTransformToMatrix4x4(e.node->m_worldTransform);
+					const auto m = VectorMath::NiTransformToMatrix4x4(e.node3p.node->m_worldTransform);
 
 					itwn->second->UpdateWorldMatrix(m);
 					itwn->second->SetOriginalWorldMatrix(m);
@@ -198,7 +198,7 @@ namespace IED
 						continue;
 					}
 
-					const auto m = VectorMath::NiTransformToMatrix4x4(e.second.node->m_worldTransform);
+					const auto m = VectorMath::NiTransformToMatrix4x4(e.second.thirdPerson.node->m_worldTransform);
 
 					itmn->second->UpdateWorldMatrix(m);
 					itmn->second->SetOriginalWorldMatrix(m);
@@ -210,7 +210,7 @@ namespace IED
 						weaponNodes.begin(),
 						weaponNodes.end(),
 						[&](auto& a_v) {
-							return a_v.node->m_parent == e.second.node;
+							return a_v.node3p.node->m_parent == e.second.thirdPerson.node;
 						});
 
 					itmn->second->SetWeaponNodeAttached(itwn != weaponNodes.end());

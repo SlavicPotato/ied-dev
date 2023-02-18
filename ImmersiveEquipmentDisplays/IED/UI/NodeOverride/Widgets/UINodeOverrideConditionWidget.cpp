@@ -1315,6 +1315,9 @@ namespace IED
 									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
 									m_condParamEditor.SetNext<ConditionParamItem::SunAngle>(e.sunAngle);
 									break;
+								case Data::ExtraConditionType::kKeyIDToggled:
+									m_condParamEditor.SetNext<ConditionParamItem::KeyBindID>(e.s0);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);

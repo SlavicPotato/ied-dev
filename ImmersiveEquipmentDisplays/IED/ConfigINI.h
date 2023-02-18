@@ -81,7 +81,6 @@ namespace IED
 		bool          m_immediateFavUpdate{ false };
 		bool          m_disableIntroBanner{ false };
 		bool          m_applyTransformOverrides{ true };
-		bool          m_enableCorpseScatter{ false };
 		bool          m_enableEarlyLoadHooks{ true };
 		bool          m_behaviorGraphAnims{ false };
 		bool          m_forceFlushSaveData{ false };

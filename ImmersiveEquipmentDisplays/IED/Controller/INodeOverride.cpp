@@ -502,7 +502,7 @@ namespace IED
 
 						auto r = ::Util::Node::Traverse(it->second.thirdPerson.node.get(), [&](NiAVObject* a_object) {
 							auto it = std::find_if(wnodes.begin(), wnodes.end(), [&](const auto& a_v) {
-								return a_v.node == a_object;
+								return a_v.node3p.node == a_object;
 							});
 
 							return it != wnodes.end() ?
@@ -905,7 +905,7 @@ namespace IED
 		if (a_defer)
 		{
 			ITaskPool::AddPriorityTask(
-				[entry = a_entry] {
+				[entry = a_entry]() noexcept {
 					ResetNodeOverrideImpl(entry.thirdPerson);
 					if (entry.firstPerson)
 					{
@@ -1021,53 +1021,68 @@ namespace IED
 		}
 	}
 
-	void INodeOverride::attach_node_to(
-		const WeaponNodeEntry&   a_entry,
+	static void try_attach_node_impl(
+		const NiPointer<NiNode>& a_node,
 		const NiPointer<NiNode>& a_target,
-		nodeOverrideParams_t*    a_params,
-		WeaponPlacementID        a_placementID,
 		bool                     a_defer) noexcept
 	{
 		if (a_target &&
-		    a_entry.node->m_parent)
+		    a_node->m_parent &&
+		    a_node->m_parent != a_target)
 		{
-			if (a_entry.node->m_parent != a_target)
+			if (a_defer)
 			{
-				if (a_defer)
-				{
-					ITaskPool::AddPriorityTask(
-						[target = a_target,
-					     node   = a_entry.node]() {
-							if (node->m_parent &&
-						        node->m_parent != target)
-							{
-								target->AttachChild(node, true);
+				ITaskPool::AddPriorityTask(
+					[target = a_target,
+				     node   = a_node]() noexcept {
+						if (node->m_parent &&
+					        node->m_parent != target)
+						{
+							target->AttachChild(node, true);
 
-								//UpdateDownwardPass(node);
-							}
-						});
-				}
-				else
-				{
-					assert(!EngineExtensions::ShouldDefer3DTask());
-
-					a_target->AttachChild(a_entry.node, true);
-
-					UpdateDownwardPass(a_entry.node);
-				}
+							//UpdateDownwardPass(node);
+						}
+					});
 			}
-
-			if (a_params &&
-			    a_entry.animSlot < AnimationWeaponSlot::Max)
+			else
 			{
-				auto& state = a_params->objects.GetAnimState();
+				assert(!EngineExtensions::ShouldDefer3DTask());
 
-				const auto index = stl::underlying(a_entry.animSlot);
-				if (state.placement[index] != a_placementID)
-				{
-					state.placement[index] = a_placementID;
-					state.flags.set(ActorAnimationState::Flags::kNeedUpdate);
-				}
+				a_target->AttachChild(a_node, true);
+
+				UpdateDownwardPass(a_node);
+			}
+		}
+	}
+
+	static void try_attach_node_to(
+		const WeaponNodeEntry&   a_entry,
+		const NiPointer<NiNode>& a_target,
+		const NiPointer<NiNode>& a_target1p,
+		bool                     a_defer) noexcept
+	{
+		try_attach_node_impl(a_entry.node3p.node, a_target, a_defer);
+
+		if (a_entry.node1p)
+		{
+			try_attach_node_impl(a_entry.node1p.node, a_target1p, a_defer);
+		}
+	}
+
+	static constexpr void try_update_anim_placement_id(
+		const WeaponNodeEntry& a_entry,
+		nodeOverrideParams_t*  a_params,
+		WeaponPlacementID      a_placementID) noexcept
+	{
+		if (a_params && a_entry.animSlot < AnimationWeaponSlot::Max)
+		{
+			auto& state = a_params->objects.GetAnimState();
+
+			const auto index = stl::underlying(a_entry.animSlot);
+			if (state.placement[index] != a_placementID)
+			{
+				state.placement[index] = a_placementID;
+				state.flags.set(ActorAnimationState::Flags::kNeedUpdate);
 			}
 		}
 	}
@@ -1087,17 +1102,18 @@ namespace IED
 
 			if (auto it = mdata.find(target); it != mdata.end())
 			{
-				if (a_entry.target != it->second.node)
-				{
-					a_entry.target = it->second.node;
-				}
+				auto& e = it->second;
 
-				attach_node_to(
+				try_attach_node_to(
 					a_entry,
-					a_entry.target,
-					std::addressof(a_params),
-					it->second.placementID,
+					e.thirdPerson.node,
+					e.firstPerson.node,
 					false);
+
+				try_update_anim_placement_id(
+					a_entry,
+					std::addressof(a_params),
+					e.placementID);
 			}
 		}
 		else
@@ -1150,17 +1166,19 @@ namespace IED
 		nodeOverrideParams_t*  a_params,
 		bool                   a_defer) noexcept
 	{
-		if (a_entry.target != nullptr)
-		{
-			a_entry.target.reset();
+		//a_entry.target.reset();
+		//a_entry.target1p.reset();
 
-			attach_node_to(
-				a_entry,
-				a_entry.defaultNode,
-				a_params,
-				WeaponPlacementID::Default,
-				a_defer);
-		}
+		try_attach_node_to(
+			a_entry,
+			a_entry.node3p.defaultParentNode,
+			a_entry.node1p.defaultParentNode,
+			a_defer);
+
+		try_update_anim_placement_id(
+			a_entry,
+			a_params,
+			WeaponPlacementID::Default);
 	}
 
 }

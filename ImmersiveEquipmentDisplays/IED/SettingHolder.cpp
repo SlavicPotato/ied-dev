@@ -12,23 +12,25 @@ namespace IED
 	{
 		bool SettingHolder::Load()
 		{
+			using namespace Serialization;
+
 			try
 			{
 				Json::Value root;
 
-				Serialization::ReadData(m_path, root);
+				ReadData(m_path, root);
 
-				Settings tmp;
+				ParserState      state;
+				Parser<Settings> parser(state);
 
-				Serialization::ParserState      state;
-				Serialization::Parser<Settings> parser(state);
+				auto tmp = std::make_unique_for_overwrite<Settings>();
 
-				if (!parser.Parse(root, tmp))
+				if (!parser.Parse(root, *tmp))
 				{
 					throw std::exception("parser error");
 				}
 
-				data = std::move(tmp);
+				data = std::move(*tmp);
 
 				m_loadHasErrors = state.has_errors();
 				m_dirty         = false;
@@ -44,16 +46,18 @@ namespace IED
 
 		bool SettingHolder::Save()
 		{
+			using namespace Serialization;
+
 			try
 			{
 				Json::Value root;
 
-				Serialization::ParserState      state;
-				Serialization::Parser<Settings> parser(state);
+				ParserState      state;
+				Parser<Settings> parser(state);
 
 				parser.Create(data, root);
 
-				Serialization::WriteData(m_path, root);
+				WriteData(m_path, root);
 
 				m_dirty = false;
 
@@ -68,7 +72,7 @@ namespace IED
 
 		bool SettingHolder::SaveIfDirty()
 		{
-			return m_dirty ? Save() : false;
+			return m_dirty ? Save() : true;
 		}
 
 	}

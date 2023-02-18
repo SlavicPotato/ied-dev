@@ -15,7 +15,7 @@ namespace IED
 			fontInfoEntry_t&   a_out,
 			std::uint32_t      a_version) const
 		{
-			fs::path path(str_conv::str_to_wstr(a_in["file"].asString()));
+			fs::path path(stl::str_to_wstr(a_in["file"].asString()));
 
 			if (path.empty())
 			{
@@ -38,11 +38,11 @@ namespace IED
 				tmp /= "Fonts";
 				tmp /= path;
 
-				a_out.path = str_conv::wstr_to_str(tmp.wstring());
+				a_out.path = stl::wstr_to_str(tmp.wstring());
 			}
 			else
 			{
-				a_out.path = str_conv::wstr_to_str(path.wstring());
+				a_out.path = stl::wstr_to_str(path.wstring());
 			}
 
 			Parser<fontGlyphData_t> gparser(m_state);

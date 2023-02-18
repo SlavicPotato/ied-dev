@@ -7,7 +7,7 @@
 #include "ObjectManagerCommon.h"
 #include "ObjectSound.h"
 
-#include "IED/AnimationUpdateManager.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/ConfigBaseValues.h"
 #include "IED/Physics/SimComponent.h"
 
@@ -212,9 +212,9 @@ namespace IED
 			void SetVisible(bool a_switch) noexcept;
 
 			template <class Tf>
-			constexpr void visit_db_entries(Tf a_func)  //
-				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabase::ObjectDatabaseEntry&>)
-				requires(std::invocable<Tf, ObjectDatabase::ObjectDatabaseEntry&>)  //
+			constexpr void visit_db_entries(Tf a_func)                                           //
+				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabase::ObjectDatabaseEntry&>)  //
+				requires(std::invocable<Tf, ObjectDatabase::ObjectDatabaseEntry&>)
 			{
 				if (auto& d = dbEntry)
 				{

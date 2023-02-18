@@ -231,7 +231,8 @@ namespace IED
 
 					if (settings.mark_if(
 							UIControlKeySelectorWidget::DrawKeySelector(
-								UIL::LS(CommonStrings::ComboKey, "1"),
+								"1",
+								static_cast<Localization::StringID>(CommonStrings::ComboKey),
 								UIData::g_comboControlMap,
 								tmpk,
 								true)))
@@ -246,7 +247,8 @@ namespace IED
 					tmpk = m_controller.GetInputHandlers().playerBlock.GetKey();
 
 					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-							UIL::LS(CommonStrings::Key, "2"),
+							"2",
+							static_cast<Localization::StringID>(CommonStrings::Key),
 							UIData::g_controlMap,
 							tmpk,
 							true)))
@@ -711,7 +713,8 @@ namespace IED
 					auto tmpk = m_controller.GetInputHandlers().uiOpen.GetComboKey();
 
 					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-							UIL::LS(CommonStrings::ComboKey, "1"),
+							"1",
+							static_cast<Localization::StringID>(CommonStrings::ComboKey),
 							UIData::g_comboControlMap,
 							tmpk,
 							true)))
@@ -726,7 +729,8 @@ namespace IED
 					tmpk = m_controller.GetInputHandlers().uiOpen.GetKey();
 
 					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-							UIL::LS(CommonStrings::Key, "2"),
+							"2",
+							static_cast<Localization::StringID>(CommonStrings::Key),
 							UIData::g_controlMap,
 							tmpk)))
 					{
@@ -758,7 +762,8 @@ namespace IED
 					auto tmpk = context.ILRHGetComboKey();
 
 					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-							UIL::LS(CommonStrings::ComboKey, "1"),
+							"1",
+							static_cast<Localization::StringID>(CommonStrings::ComboKey),
 							UIData::g_comboControlMap,
 							tmpk,
 							true)))
@@ -774,7 +779,8 @@ namespace IED
 					tmpk = context.ILRHGetKey();
 
 					if (settings.mark_if(UIControlKeySelectorWidget::DrawKeySelector(
-							UIL::LS(CommonStrings::Key, "2"),
+							"2",
+							static_cast<Localization::StringID>(CommonStrings::Key),
 							UIData::g_controlMap,
 							tmpk)))
 					{

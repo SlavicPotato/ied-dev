@@ -206,6 +206,8 @@ namespace IED
 
 		[[nodiscard]] TESForm* get_parent_cell_owner() const noexcept;
 
+		[[nodiscard]] bool get_key_toggle_state(const stl::fixed_string& a_id) const noexcept;
+
 	private:
 		mutable std::optional<Game::ObjectRefHandle> furnHandle;
 		mutable std::optional<TESFurniture*>         furniture;

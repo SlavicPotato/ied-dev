@@ -221,6 +221,7 @@ namespace IED
 
 				ParserState      state;
 				Parser<map_type> parser(state);
+
 				map_type         tmp;
 
 				if (!parser.Parse(root, tmp, false))

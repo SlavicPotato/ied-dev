@@ -47,6 +47,7 @@ namespace IED
 			DayOfWeek,
 			LifeState,
 			ActorValue,
+			KeyBindID,
 
 			Total
 		};
@@ -391,6 +392,16 @@ namespace IED
 				Ap == ConditionParamItem::ActorValue)
 			{
 				static_assert(std::is_same_v<T, RE::ActorValue>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::KeyBindID)
+			{
+				static_assert(std::is_same_v<T, stl::fixed_string>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

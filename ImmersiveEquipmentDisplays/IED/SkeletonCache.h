@@ -76,7 +76,7 @@ namespace IED
 		ActorEntry try_get(
 			const stl::fixed_string& a_key) const;
 
-		mutable std::shared_mutex m_lock;
+		mutable stl::shared_mutex m_lock;
 		data_type                 m_data;
 
 		static SkeletonCache m_Instance;

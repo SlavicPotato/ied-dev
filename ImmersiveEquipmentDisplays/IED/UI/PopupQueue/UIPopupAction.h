@@ -8,6 +8,7 @@ namespace IED
 		{
 			Confirm,
 			Input,
+			MultilineInput,
 			Message,
 			Custom
 		};
@@ -28,7 +29,7 @@ namespace IED
 			UIPopupAction& operator=(const UIPopupAction&) = delete;
 
 			template <class... Args>
-			UIPopupAction(
+			explicit UIPopupAction(
 				UIPopupType a_type,
 				const char* a_key,
 				const char* a_fmt,
@@ -43,7 +44,7 @@ namespace IED
 					a_args...);
 			}
 
-			UIPopupAction(
+			explicit UIPopupAction(
 				UIPopupType a_type,
 				const char* a_key) :
 				m_type(a_type),
@@ -73,14 +74,36 @@ namespace IED
 				return *this;
 			}
 
-			template <class... Args>
-			constexpr auto& fmt_input(const char* a_fmt, Args... a_args)
+			template <class Ts>
+			constexpr auto& set_input(const Ts& a_text)                         //
+				noexcept(std::is_nothrow_assignable_v<std::string, const Ts&>)  //
+				requires(std::is_assignable_v<std::string, const Ts&>)
 			{
-				stl::snprintf(m_input, a_fmt, a_args...);
+				m_input = a_text;
 				return *this;
 			}
 
-			constexpr auto& GetInput() const noexcept
+			template <class Ts>
+			constexpr auto& set_input(Ts&& a_text)                         //
+				noexcept(std::is_nothrow_assignable_v<std::string, Ts&&>)  //
+				requires(std::is_assignable_v<std::string, Ts &&>)
+			{
+				m_input = std::move(a_text);
+				return *this;
+			}
+
+			constexpr auto& set_allow_empty(bool a_switch) noexcept
+			{
+				a_allowEmpty = a_switch;
+				return *this;
+			}
+
+			[[nodiscard]] constexpr auto& GetInput() noexcept
+			{
+				return m_input;
+			}
+
+			[[nodiscard]] constexpr auto& GetInput() const noexcept
 			{
 				return m_input;
 			}
@@ -101,11 +124,12 @@ namespace IED
 			}
 
 			std::string m_key;
+			std::string m_input;
 
 			char m_buf[512]{ 0 };
-			char m_input[512]{ 0 };
 
 			UIPopupType    m_type;
+			bool           a_allowEmpty{ false };
 			func_type      m_func;
 			func_type_draw m_funcDraw;
 

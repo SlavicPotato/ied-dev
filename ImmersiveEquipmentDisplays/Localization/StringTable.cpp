@@ -10,23 +10,25 @@ namespace IED
 	{
 		bool StringTable::Load(const fs::path& a_path)
 		{
+			using namespace Serialization;
+
 			try
 			{
 				Json::Value root;
 
-				Serialization::ReadData(a_path, root);
+				ReadData(a_path, root);
 
-				Serialization::ParserState                            state;
-				Serialization::Parser<StringTable::table_data> parser(state);
+				ParserState                     state;
+				Parser<StringTable::table_data> parser(state);
 
-				StringTable::table_data tmp;
+				auto tmp = std::make_unique_for_overwrite<StringTable::table_data>();
 
-				if (!parser.Parse(root, tmp))
+				if (!parser.Parse(root, *tmp))
 				{
 					throw std::exception("parser error");
 				}
 
-				m_data = std::move(tmp);
+				m_data = std::move(*tmp);
 
 				return true;
 			}

@@ -26,6 +26,7 @@ namespace IED
 			DisplayManagement          = 4617,
 			ConditionalVariables       = 4618,
 			I3DI                       = 4619,
+			KeyBinds                   = 4620,
 		};
 	}
 }

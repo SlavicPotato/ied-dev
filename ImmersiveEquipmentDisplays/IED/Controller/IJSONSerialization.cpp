@@ -273,9 +273,10 @@ namespace IED
 			ReadData(a_path, root);
 
 			Parser<Data::configStore_t> parser(a_state);
-			Data::configStore_t         tmp;
 
-			if (!parser.Parse(root, tmp))
+			auto tmp = std::make_unique_for_overwrite<Data::configStore_t>();
+
+			if (!parser.Parse(root, *tmp))
 			{
 				throw std::exception("parse failed");
 			}
@@ -288,7 +289,7 @@ namespace IED
 					SafeGetPath(a_path).c_str());
 			}
 
-			a_out = std::move(tmp);
+			a_out = std::move(*tmp);
 
 			return true;
 		}

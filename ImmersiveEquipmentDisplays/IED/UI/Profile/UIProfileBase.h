@@ -53,7 +53,7 @@ namespace IED
 
 			struct
 			{
-				char                             new_input[260]{ 0 };
+				std::string                      new_input;
 				std::optional<stl::fixed_string> selected;
 				except::descriptor               lastException;
 			} m_state;
@@ -93,14 +93,14 @@ namespace IED
 					ImGuiInputTextFlags_EnterReturnsTrue,
 					{},
 					{},
+					false,
 					m_state.new_input,
-					sizeof(m_state.new_input),
 					UIL::LS(UIProfileStrings::ProfileNamePrompt)) != ModalStatus::kAccept)
 			{
 				return;
 			}
 
-			if (!stl::strlen(m_state.new_input))
+			if (m_state.new_input.empty())
 			{
 				return;
 			}
@@ -109,9 +109,10 @@ namespace IED
 
 			T profile;
 
-			if (!pm.CreateProfile(m_state.new_input, profile, false))
+			if (!pm.CreateProfile(m_state.new_input.c_str(), profile, false))
 			{
 				m_state.lastException = pm.GetLastException();
+				m_state.new_input.clear();
 
 				GetPopupQueue_ProfileBase().push(
 					UIPopupType::Message,
@@ -122,6 +123,8 @@ namespace IED
 
 				return;
 			}
+
+			m_state.new_input.clear();
 
 			if (!InitializeProfile(profile))
 			{

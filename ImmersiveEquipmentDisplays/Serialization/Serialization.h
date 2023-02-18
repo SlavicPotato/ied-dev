@@ -197,11 +197,11 @@ namespace IED
 			std::uint32_t a_size,
 			Json::Value&  a_out);
 
-		void        SafeCleanup(const fs::path& a_path) noexcept;
-		std::string SafeGetPath(const fs::path& a_path) noexcept;
+		void        SafeCleanup(const fs::path& a_path);
+		std::string SafeGetPath(const fs::path& a_path);
 		void        CreateRootPath(const fs::path& a_path);
 
-		bool FileExists(const fs::path& a_path) noexcept;
+		bool FileExists(const fs::path& a_path);
 
 		static constexpr auto TMP_EXT = ".tmp";
 

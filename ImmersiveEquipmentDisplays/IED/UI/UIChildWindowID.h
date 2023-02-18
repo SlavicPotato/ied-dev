@@ -24,6 +24,7 @@ namespace IED
 			kUIConditionalVariablesEditorWindow,
 			kUIProfileEditorConditionalVariables,
 			kI3DI,
+			kKeyBindEditor,
 
 			kMax
 		};

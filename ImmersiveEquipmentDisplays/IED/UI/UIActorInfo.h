@@ -16,11 +16,13 @@
 #include "IED/ActorInventoryInfo.h"
 #include "IED/ActorPerkInfo.h"
 #include "IED/ActorValueInfo.h"
+#include "IED/ActorWeaponNodeInfo.h"
 #include "IED/ConditionalVariableStorage.h"
 
 namespace IED
 {
 	class Controller;
+	class ActorObjectHolder;
 
 	namespace UI
 	{
@@ -40,6 +42,7 @@ namespace IED
 			actorActiveEffectInfo_t effects;
 			actorPerkInfo_t         perks;
 			actorValueInfo_t        actorValues;
+			actorWeaponNodeInfo_t   weaponNodes;
 		};
 
 		struct ActorInfoData
@@ -112,6 +115,10 @@ namespace IED
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
+			void DrawSkeletonTabItem(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
 			void DrawEffectsTabItem(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
@@ -161,6 +168,10 @@ namespace IED
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
+			void DrawSkeletonTreeContents(
+				Game::FormID         a_handle,
+				const ActorInfoData& a_data);
+
 			void DrawInventoryTreeContents(
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
@@ -177,7 +188,7 @@ namespace IED
 				Game::FormID         a_handle,
 				const ActorInfoData& a_data);
 
-			void DrawInventoryFilterTree();
+			void DrawFilterTree(UIGenericFilter& a_filter);
 
 			void DrawFactionEntries(
 				Game::FormID              a_handle,
@@ -189,6 +200,24 @@ namespace IED
 
 			void DrawActorValueEntries(
 				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
+
+			void DrawSkeletonEntries(
+				Game::FormID              a_handle,
+				const ActorInfoAggregate& a_data);
+
+			void DrawSkeletonWeaponNodeTab(
+				const char*               a_strid,
+				const ActorInfoAggregate& a_data);
+
+			void DrawSkeletonCMENodeTab(
+				const char*               a_strid,
+				const ActorObjectHolder&  a_holder,
+				const ActorInfoAggregate& a_data);
+			
+			void DrawSkeletonMOVNodeTab(
+				const char*               a_strid,
+				const ActorObjectHolder&  a_holder,
 				const ActorInfoAggregate& a_data);
 
 			void DrawInventoryEntries(
@@ -243,6 +272,7 @@ namespace IED
 			void QueueInfoUpdate(Game::FormID a_handle, const ActorInfoData& a_data);
 
 			UIGenericFilter m_invFilter;
+			UIGenericFilter m_skelNodeFilter;
 
 			TabItem m_currentTab{ TabItem::kNone };
 

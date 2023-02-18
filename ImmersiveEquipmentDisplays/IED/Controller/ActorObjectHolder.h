@@ -640,9 +640,6 @@ namespace IED
 		void SimWriteTransforms() const noexcept;
 		void SimUpdate(float a_step) const noexcept;
 
-		void SimComponentListClear() noexcept;
-		void ClearAllPhysicsData() noexcept;
-
 		std::size_t GetSimComponentListSize() const noexcept;
 		std::size_t GetNumAnimObjects() const noexcept;
 
@@ -673,7 +670,6 @@ namespace IED
 		}
 
 	private:
-		void CreateExtraMovNodes(NiNode* a_npcroot) noexcept;
 
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,

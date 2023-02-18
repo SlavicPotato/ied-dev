@@ -135,16 +135,22 @@ namespace IED
 			const auto targetAlpha =
 				held ?
 					std::min(m_lockedAlpha, style.Alpha) :
-                    style.Alpha;
+					style.Alpha;
 
 			m_originalAlpha = style.Alpha;
 
-			if (std::fabs(targetAlpha - *m_currentAlpha) > 0.001f)
+			const float absDeltaA = std::fabs(targetAlpha - *m_currentAlpha);
+
+			if (absDeltaA > 0.001f)
 			{
-				style.Alpha = *m_currentAlpha = std::lerp(
-					*m_currentAlpha,
-					targetAlpha,
-					ImGui::GetIO().DeltaTime * ALPHA_FADE_RATE);
+				style.Alpha = *m_currentAlpha =
+					std::clamp(
+						std::lerp(
+							*m_currentAlpha,
+							targetAlpha,
+							ImGui::GetIO().DeltaTime * ALPHA_FADE_RATE),
+						std::min(*m_currentAlpha, targetAlpha),
+						std::max(*m_currentAlpha, targetAlpha));
 			}
 			else if (held)
 			{

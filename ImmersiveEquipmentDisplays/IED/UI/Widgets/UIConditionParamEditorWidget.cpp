@@ -13,6 +13,7 @@
 #include "UIPackageTypeSelectorWidget.h"
 #include "UIVariableConditionSourceSelectorWidget.h"
 #include "UIVariableTypeSelectorWidget.h"
+#include "UIKeyBindIDSelectorWidget.h"
 
 #include "IED/Controller/Controller.h"
 #include "IED/Data.h"
@@ -128,6 +129,11 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::CompOper); f.p1)
 						{
 							f.As1<Data::ComparisonOperator>() = Data::ComparisonOperator::kEqual;
+						}
+
+						if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
+						{
+							f.As1<stl::fixed_string>().clear();
 						}
 					}
 
@@ -441,6 +447,19 @@ namespace IED
 						nullptr,
 						"%d",
 						ImGuiInputTextFlags_EnterReturnsTrue);
+				}
+			}
+			
+			if (const auto& e = get(ConditionParamItem::KeyBindID); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::KeyBindID);
+
+				if (!args.hide)
+				{
+					result |= UIKeyBindIDSelectorWidget::DrawKeyBindIDSelector(
+						e.As1<stl::fixed_string>());
 				}
 			}
 
@@ -761,6 +780,21 @@ namespace IED
 							}
 
 							break;
+						case Data::ExtraConditionType::kKeyIDToggled:
+							
+							if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
+							{
+								stl::snprintf(
+									m_descBuffer,
+									"%s %s: %s",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									UIL::LS(CommonStrings::ID),
+									f.As1<const stl::fixed_string>().c_str());
+
+								return m_descBuffer;
+							}
+
+							break;
 						}
 
 						if (auto r = UIConditionExtraSelectorWidget::condition_type_to_desc(type))
@@ -816,7 +850,7 @@ namespace IED
 							stl::snprintf(
 								m_descBuffer,
 								"%s %s %d",
-								e.As2<stl::fixed_string>().c_str(),
+								e.As2<const stl::fixed_string>().c_str(),
 								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::Int32).As1<std::int32_t>());
 
@@ -827,7 +861,7 @@ namespace IED
 							stl::snprintf(
 								m_descBuffer,
 								"%s %s %.3f",
-								e.As2<stl::fixed_string>().c_str(),
+								e.As2<const stl::fixed_string>().c_str(),
 								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::Float).As1<float>());
 
@@ -838,7 +872,7 @@ namespace IED
 							stl::snprintf(
 								m_descBuffer,
 								"%s %s %.8X",
-								e.As2<stl::fixed_string>().c_str(),
+								e.As2<const stl::fixed_string>().c_str(),
 								UIComparisonOperatorSelector::comp_operator_to_desc(compOper),
 								get(ConditionParamItem::FormAny).As1<Game::FormID>().get());
 

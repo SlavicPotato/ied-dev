@@ -8,6 +8,8 @@
 #include "IED/ConfigStore.h"
 #include "IED/Data.h"
 #include "IED/Inventory.h"
+#include "IED/KeyBindDataHolder.h"
+#include "IED/KeyBindEventHandler.h"
 #include "IED/SettingHolder.h"
 #include "IED/StringHolder.h"
 
@@ -20,6 +22,7 @@
 #include "IJSONSerialization.h"
 #include "IObjectManager.h"
 #include "IUINotification.h"
+//#include "KeyToggleStates.h"
 
 #include "Drivers/Input/Handlers.h"
 
@@ -32,7 +35,8 @@ namespace IED
 		public IEquipment,
 		public IAnimationManager,
 		public ActorProcessorTask,
-		private ISerializationBase,
+		//public KeyToggleStates,
+		public ISerializationBase,
 		public IJSONSerialization,
 		public IUINotification,
 		public BSTEventSink<TESObjectLoadedEvent>,
@@ -49,6 +53,7 @@ namespace IED
 		public ::Events::EventSink<SKSESerializationFormDeleteEvent>,
 		public ::Events::EventSink<SKSEMessagingEvent>,
 		public ::Events::EventSink<SDSPlayerShieldOnBackSwitchEvent>,
+		public KB::KeyBindEventHandler,
 		virtual private ILog
 	{
 		friend class boost::serialization::access;
@@ -66,8 +71,9 @@ namespace IED
 			kDataVersion9  = 9,
 			kDataVersion10 = 10,
 			kDataVersion11 = 11,
+			kDataVersion12 = 12,
 
-			kCurrentVersion = kDataVersion11
+			kCurrentVersion = kDataVersion12
 		};
 
 		static constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -109,6 +115,7 @@ namespace IED
 		enum : unsigned int
 		{
 			DataVersion1 = 1,
+			DataVersion2 = 2,
 		};
 
 		enum class EventSinkInstallationFlags : std::uint8_t
@@ -166,6 +173,7 @@ namespace IED
 		void InitializeConfig();
 		void InitializeLocalization();
 		void LoadAnimationData();
+		void LoadKeyBinds();
 		void InitializeData();
 		void GetSDSInterface();
 		void InitializeBSFixedStringTable();
@@ -380,6 +388,7 @@ namespace IED
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		void SaveSettings(bool a_defer, bool a_dirtyOnly, const bool a_debug = false);
+		void SaveKeyBinds(bool a_defer, bool a_dirtyOnly);
 
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);
@@ -445,8 +454,6 @@ namespace IED
 		{
 			return m_invChangeConsumerFlags.consume(a_mask);
 		}*/
-
-		void QueueClearActorPhysicsData();
 
 		std::size_t GetNumSimComponents() const noexcept;
 		std::size_t GetNumAnimObjects() const noexcept;
@@ -542,6 +549,11 @@ namespace IED
 			TESRace*                         a_race,
 			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
+
+		void ProcessTransformsImplPhysNode(
+			nodeOverrideParams_t&                         a_params,
+			const Data::configNodeOverrideEntryPhysics_t* a_config,
+			const MOVNodeEntry::Node&                     a_node) noexcept;
 
 		void ActorResetImpl(
 			Actor*                           a_actor,
@@ -716,7 +728,7 @@ namespace IED
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
 			ObjectEntryCustom&          a_objectEntry) noexcept;
-		
+
 		void UpdateCustomGroup(
 			processParams_t&            a_params,
 			const Data::configCustom_t& a_config,
@@ -773,12 +785,12 @@ namespace IED
 			processParams_t&           a_params) noexcept;
 
 		bool LookupTrackedActor(
-			Game::FormID         a_actor,
+			Game::FormID       a_actor,
 			ActorLookupResult& a_out) noexcept;
 
 		bool LookupTrackedActor(
 			const ActorObjectHolder& a_record,
-			ActorLookupResult&     a_out) noexcept;
+			ActorLookupResult&       a_out) noexcept;
 
 		std::optional<cachedActorInfo_t> LookupCachedActorInfo(
 			Actor*             a_actor,
@@ -797,8 +809,6 @@ namespace IED
 		bool SetLanguageImpl(const stl::fixed_string& a_lang);
 
 		void GenerateRandomPlacementEntries(const ActorObjectHolder& a_holder);
-
-		void ClearActorPhysicsDataImpl();
 
 		static void FillGlobalSlotConfig(Data::configStoreSlot_t& a_data);
 		//void FillInitialConfig(Data::configStore_t& a_data) const;
@@ -909,6 +919,8 @@ namespace IED
 
 		virtual void JSOnDataImport() override;
 
+		virtual void OnKBStateChanged() override;
+
 		// members
 
 		stl::smart_ptr<const ConfigINI> m_iniconf;
@@ -916,7 +928,8 @@ namespace IED
 		InputHandlers                   m_inputHandlers;
 		ConfigData                      m_configData;
 
-		stl::vector<Game::ObjectRefHandle> m_activeHandles;
+		stl::vector<Game::ObjectRefHandle>
+			m_activeHandles;
 
 		BipedDataCache m_bipedCache;
 
@@ -927,19 +940,33 @@ namespace IED
 		const bool m_forceFlushSaveData{ false };
 		bool       m_iniKeysForced{ false };
 		bool       m_cpuHasSSE41{ false };
-		//bool m_enableCorpseScatter{ false };
-		//bool m_forceOrigWeapXFRM{ false };
 
 		std::uint64_t m_evalCounter{ 0 };
 
-		//stl::flag<InventoryChangeConsumerFlags> m_invChangeConsumerFlags{ InventoryChangeConsumerFlags::kAll };
+		template <class Archive>
+		void save(Archive& a_ar, const unsigned int a_version) const
+		{
+			a_ar& static_cast<const IPersistentCounter&>(*this);
+			a_ar& m_bipedCache;
+			a_ar& GetKeyBindDataHolder()->GetKeyToggleStates();
+		}
 
 		template <class Archive>
-		void serialize(Archive& a_ar, const unsigned int a_version)
+		void load(Archive& a_ar, const unsigned int a_version)
 		{
 			a_ar& static_cast<IPersistentCounter&>(*this);
 			a_ar& m_bipedCache;
+
+			if (a_version >= DataVersion2)
+			{
+				KB::KeyToggleStateEntryHolder::state_data tmp;
+				a_ar&                                     tmp;
+
+				GetKeyBindDataHolder()->InitializeKeyToggleStates(tmp);
+			}
 		}
+
+		BOOST_SERIALIZATION_SPLIT_MEMBER();
 	};
 
 	DEFINE_ENUM_CLASS_BITWISE(Controller::EventSinkInstallationFlags);
@@ -948,4 +975,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Controller,
-	::IED::Controller::DataVersion1);
+	::IED::Controller::DataVersion2);

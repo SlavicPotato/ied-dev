@@ -6,7 +6,7 @@
 #include "IConditionalVariableProcessor.h"
 #include "IObjectManager.h"
 
-#include "IED/AnimationUpdateManager.h"
+#include "IED/AnimationUpdateController.h"
 #include "IED/AreaLightingDetection.h"
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"

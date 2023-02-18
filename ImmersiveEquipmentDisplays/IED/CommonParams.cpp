@@ -351,4 +351,9 @@ namespace IED
 
 		return *parentCellOwner;
 	}
+
+	bool CommonParams::get_key_toggle_state(const stl::fixed_string& a_id) const noexcept
+	{
+		return controller.GetKeyBindDataHolder()->GetKeyState(a_id);
+	}
 }

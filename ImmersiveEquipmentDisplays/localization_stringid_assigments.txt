@@ -39,3 +39,4 @@
 7600-7699:		life state sel widget
 7700-7799:		actor values
 7800-7899:		light widget
+7900-7999:		profile editor base

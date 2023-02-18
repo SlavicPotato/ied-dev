@@ -25,5 +25,6 @@ namespace IED
 		static constexpr auto CONVERT_NODES                        = "Data\\SKSE\\Plugins\\IED\\SkeletonExtensions\\ConvertNodes";
 		static constexpr auto NODE_MONITOR                         = "Data\\SKSE\\Plugins\\IED\\NodeMonitor";
 		static constexpr auto ADDITIONAL_CME_NODES                 = "Data\\SKSE\\Plugins\\IED\\AdditionalCMENodes";
+		static constexpr auto KEY_BINDS                            = "Data\\SKSE\\Plugins\\IED\\KeyBinds.json";
 	}
 }

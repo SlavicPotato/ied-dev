@@ -21,6 +21,7 @@ namespace IED
 			UISettingsInterface(a_controller),
 			UIActorInfoInterface(a_controller),
 			m_invFilter(true),
+			m_skelNodeFilter(true),
 			m_controller(a_controller)
 		{
 		}
@@ -143,6 +144,7 @@ namespace IED
 				DrawActorStateTabItem(a_handle, a_data);
 				DrawPerkTabItem(a_handle, a_data);
 				DrawAVTabItem(a_handle, a_data);
+				DrawSkeletonTabItem(a_handle, a_data);
 
 				ImGui::EndTabBar();
 			}
@@ -242,6 +244,27 @@ namespace IED
 				ImGui::PushID("7");
 
 				DrawAVTreeContents(a_handle, a_data);
+
+				ImGui::PopID();
+				ImGui::Spacing();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawSkeletonTabItem(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			if (ImGui::BeginTabItem(
+					UIL::LS<UIActorInfoStrings, 3>(UIActorInfoStrings::Skeleton3D, "8")))
+			{
+				m_currentTab = TabItem::kActorValues;
+
+				ImGui::Spacing();
+				ImGui::PushID("8");
+
+				DrawSkeletonTreeContents(a_handle, a_data);
 
 				ImGui::PopID();
 				ImGui::Spacing();
@@ -932,13 +955,34 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
+		void UIActorInfo::DrawSkeletonTreeContents(
+			Game::FormID         a_handle,
+			const ActorInfoData& a_data)
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			const auto offsetY = ImGui::GetStyle().ItemInnerSpacing.y;
+
+			if (ImGui::BeginChild(
+					"child",
+					{ -1.0f, -offsetY },
+					false))
+			{
+				DrawSkeletonEntries(a_handle, *a_data.data);
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
+		}
+
 		void UIActorInfo::DrawInventoryTreeContents(
 			Game::FormID         a_handle,
 			const ActorInfoData& a_data)
 		{
 			ImGui::PushID("header");
 
-			DrawInventoryFilterTree();
+			DrawFilterTree(m_invFilter);
 
 			ImGui::Spacing();
 			ImGui::Separator();
@@ -1281,7 +1325,7 @@ namespace IED
 			ImGui::Columns();
 		}
 
-		void UIActorInfo::DrawInventoryFilterTree()
+		void UIActorInfo::DrawFilterTree(UIGenericFilter& a_filter)
 		{
 			if (TreeEx(
 					"flt",
@@ -1289,7 +1333,7 @@ namespace IED
 					"%s",
 					UIL::LS(CommonStrings::Filters)))
 			{
-				m_invFilter.Draw();
+				a_filter.Draw();
 
 				ImGui::TreePop();
 			}
@@ -1459,6 +1503,282 @@ namespace IED
 			}
 
 			ImGui::PopStyleVar();
+		}
+
+		void UIActorInfo::DrawSkeletonEntries(
+			Game::FormID              a_handle,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& objects = m_controller.GetActorMap();
+
+			auto it = objects.find(a_handle);
+			if (it == objects.end())
+			{
+				return;
+			}
+
+			auto& e = it->second;
+
+			auto& skelid = e.GetSkeletonID();
+
+			ImGui::Text("XPMSSE:");
+			ImGui::SameLine();
+
+			if (auto& xpver = skelid.xp_version())
+			{
+				ImGui::Text("%.3f", *xpver);
+			}
+			else
+			{
+				ImGui::TextUnformatted("N/A");
+			}
+
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+
+			if (ImGui::BeginTabBar(
+					"1",
+					ImGuiTabBarFlags_NoCloseWithMiddleMouseButton))
+			{
+				DrawSkeletonWeaponNodeTab("1", a_data);
+				DrawSkeletonCMENodeTab("2", e, a_data);
+				DrawSkeletonMOVNodeTab("3", e, a_data);
+
+				ImGui::EndTabBar();
+			}
+		}
+
+		void UIActorInfo::DrawSkeletonWeaponNodeTab(
+			const char*               a_strid,
+			const ActorInfoAggregate& a_data)
+		{
+			stl::snprintf(
+				m_buffer,
+				"%s [%zu]",
+				UIL::LS(UIActorInfoStrings::WeaponNodes),
+				a_data.weaponNodes.data.size());
+
+			constexpr int NUM_COLUMNS = 4;
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, a_strid)))
+			{
+				ImGui::PushID(a_strid);
+
+				ImGui::Separator();
+				DrawFilterTree(m_skelNodeFilter);
+				ImGui::Separator();
+
+				if (ImGui::BeginTable(
+						"table",
+						NUM_COLUMNS,
+						ImGuiTableFlags_Borders |
+							ImGuiTableFlags_ScrollY |
+							ImGuiTableFlags_Resizable |
+							ImGuiTableFlags_SizingStretchProp,
+						{ -1.0f, -ImGui::GetStyle().ItemInnerSpacing.y }))
+				{
+					ImGui::TableSetupScrollFreeze(0, 1);
+
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Parent));
+					ImGui::TableSetupColumn(UIL::LS(UIActorInfoStrings::NumChildNodes));
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Visibility));
+
+					ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+					for (int column = 0; column < NUM_COLUMNS; column++)
+					{
+						ImGui::TableSetColumnIndex(column);
+						ImGui::TableHeader(ImGui::TableGetColumnName(column));
+					}
+
+					for (auto& e : a_data.weaponNodes.data)
+					{
+						if (!m_skelNodeFilter.Test(e.name))
+						{
+							continue;
+						}
+
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						TextCopyable("%s", e.name.c_str());
+
+						ImGui::TableSetColumnIndex(1);
+						TextCopyable("%s", e.parent.c_str());
+
+						ImGui::TableSetColumnIndex(2);
+						ImGui::Text("%hu", e.numChildren);
+
+						ImGui::TableSetColumnIndex(3);
+						ImGui::Text(
+							"%s",
+							e.visible ?
+								UIL::LS(CommonStrings::True) :
+								UIL::LS(CommonStrings::False));
+					}
+
+					ImGui::EndTable();
+				}
+
+				ImGui::Spacing();
+
+				ImGui::PopID();
+
+				ImGui::EndTabItem();
+			}
+		}
+
+		void UIActorInfo::DrawSkeletonCMENodeTab(
+			const char*               a_strid,
+			const ActorObjectHolder&  a_holder,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& cmeNodes = a_holder.GetCMENodes();
+
+			stl::snprintf(
+				m_buffer,
+				"%s [%zu]",
+				UIL::LS(UIActorInfoStrings::CMENodes),
+				cmeNodes.size());
+
+			constexpr int NUM_COLUMNS = 2;
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, a_strid)))
+			{
+				ImGui::PushID(a_strid);
+
+				ImGui::Separator();
+				DrawFilterTree(m_skelNodeFilter);
+				ImGui::Separator();
+
+				if (ImGui::BeginTable(
+						"table",
+						NUM_COLUMNS,
+						ImGuiTableFlags_Borders |
+							ImGuiTableFlags_ScrollY |
+							ImGuiTableFlags_Resizable |
+							ImGuiTableFlags_SizingStretchProp,
+						{ -1.0f, -ImGui::GetStyle().ItemInnerSpacing.y }))
+				{
+					ImGui::TableSetupScrollFreeze(0, 1);
+
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Visibility));
+
+					ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+					for (int column = 0; column < NUM_COLUMNS; column++)
+					{
+						ImGui::TableSetColumnIndex(column);
+						ImGui::TableHeader(ImGui::TableGetColumnName(column));
+					}
+
+					for (auto& e : cmeNodes)
+					{
+						if (!m_skelNodeFilter.Test(e.first))
+						{
+							continue;
+						}
+
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						TextCopyable("%s", e.first.c_str());
+
+						ImGui::TableSetColumnIndex(1);
+						ImGui::Text(
+							"%s",
+							e.second.thirdPerson.node->IsVisible() ?
+								UIL::LS(CommonStrings::True) :
+								UIL::LS(CommonStrings::False));
+					}
+
+					ImGui::EndTable();
+				}
+
+				ImGui::Spacing();
+
+				ImGui::PopID();
+
+				ImGui::TreePop();
+			}
+		}
+
+		void UIActorInfo::DrawSkeletonMOVNodeTab(
+			const char*               a_strid,
+			const ActorObjectHolder&  a_holder,
+			const ActorInfoAggregate& a_data)
+		{
+			auto& movNodes = a_holder.GetMOVNodes();
+
+			stl::snprintf(
+				m_buffer,
+				"%s [%zu]",
+				UIL::LS(UIActorInfoStrings::MOVNodes),
+				movNodes.size());
+
+			constexpr int NUM_COLUMNS = 2;
+
+			if (ImGui::BeginTabItem(
+					UIL::LMKID<3>(m_buffer, a_strid)))
+			{
+				ImGui::PushID(a_strid);
+
+				ImGui::Separator();
+				DrawFilterTree(m_skelNodeFilter);
+				ImGui::Separator();
+
+				if (ImGui::BeginTable(
+						"table",
+						NUM_COLUMNS,
+						ImGuiTableFlags_Borders |
+							ImGuiTableFlags_ScrollY |
+							ImGuiTableFlags_Resizable |
+							ImGuiTableFlags_SizingStretchProp,
+						{ -1.0f, -ImGui::GetStyle().ItemInnerSpacing.y }))
+				{
+					ImGui::TableSetupScrollFreeze(0, 1);
+
+					ImGui::TableSetupColumn(UIL::LS(CommonStrings::Name));
+					ImGui::TableSetupColumn(UIL::LS(UIActorInfoStrings::NumChildNodes));
+
+					ImGui::TableNextRow(ImGuiTableRowFlags_Headers);
+
+					for (int column = 0; column < NUM_COLUMNS; column++)
+					{
+						ImGui::TableSetColumnIndex(column);
+						ImGui::TableHeader(ImGui::TableGetColumnName(column));
+					}
+
+					for (auto& e : movNodes)
+					{
+						if (!m_skelNodeFilter.Test(e.first))
+						{
+							continue;
+						}
+
+						ImGui::TableNextRow();
+
+						ImGui::TableSetColumnIndex(0);
+						TextCopyable("%s", e.first.c_str());
+
+						ImGui::TableSetColumnIndex(1);
+						TextCopyable("%hu", e.second.thirdPerson.node->m_children.size());
+					}
+
+					ImGui::EndTable();
+				}
+
+				ImGui::Spacing();
+
+				ImGui::PopID();
+
+				ImGui::TreePop();
+			}
 		}
 
 		void UIActorInfo::DrawInventoryEntries(
@@ -2140,8 +2460,8 @@ namespace IED
 				return;
 			}
 
-			ITaskPool::AddTask([this, handle = a_handle, data = a_data.data, tab = m_currentTab] {
-				const stl::lock_guard lock(m_controller.GetLock());
+			ITaskPool::AddTask([&controller = m_controller, handle = a_handle, data = a_data.data, tab = m_currentTab] {
+				const stl::lock_guard lock(controller.GetLock());
 				const stl::lock_guard datalock(data->lock);
 
 				data->lastUpdate  = IPerfCounter::Query();
@@ -2150,7 +2470,7 @@ namespace IED
 
 				if (auto actor = handle.As<Actor>())
 				{
-					m_controller.FillActorInfoEntry(actor, data->entry, true);
+					controller.FillActorInfoEntry(actor, data->entry, true);
 
 					if (auto npc = actor->GetActorBase())
 					{
@@ -2164,6 +2484,7 @@ namespace IED
 					data->factions.Update(actor);
 					data->effects.Update(actor);
 					data->perks.Update(actor);
+					data->weaponNodes.Update(actor, controller);
 
 					switch (tab)
 					{

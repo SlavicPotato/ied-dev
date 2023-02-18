@@ -5,6 +5,8 @@
 #include "IED/UI/Controls/UIAlignment.h"
 #include "IED/UI/Widgets/Filters/UIGenericFilter.h"
 
+#include "UIProfileEditorBaseStrings.h"
+
 #include "IED/UI/UIContext.h"
 #include "IED/UI/Window/UIWindow.h"
 
@@ -46,8 +48,8 @@ namespace IED
 
 		public:
 			UIProfileEditorBase(
-				UIProfileStrings             a_title,
-				const char*                  a_strid);
+				UIProfileStrings a_title,
+				const char*      a_strid);
 
 			virtual ~UIProfileEditorBase() noexcept = default;
 
@@ -77,8 +79,8 @@ namespace IED
 
 		template <class T>
 		UIProfileEditorBase<T>::UIProfileEditorBase(
-			UIProfileStrings             a_title,
-			const char*                  a_strid) :
+			UIProfileStrings a_title,
+			const char*      a_strid) :
 			UIProfileBase<T>(),
 			m_title(a_title),
 			m_strid(a_strid)
@@ -193,7 +195,7 @@ namespace IED
 				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
 					ImGui::OpenPopup(UIL::LS(UIProfileStrings::NewProfile, UIProfileBase<T>::POPUP_NEW_ID));
-					this->m_state.new_input[0] = 0;
+					this->m_state.new_input.clear();
 				}
 
 				m_filter.Draw();
@@ -270,9 +272,9 @@ namespace IED
 									 UIL::LS(CommonStrings::Rename),
 									 "%s:",
 									 UIL::LS(UIProfileStrings::ProfileNamePrompt))
-								.fmt_input("%s", profile.Name().c_str())
+								.set_input(*profile.Name())
 								.call([this, item = *this->m_state.selected](const auto& a_p) {
-									std::string newName(a_p.GetInput());
+									auto& newName = a_p.GetInput();
 
 									if (newName.empty())
 									{
@@ -359,6 +361,62 @@ namespace IED
 					}
 
 					ImGui::EndMenu();
+				}
+
+				if (const auto& selected = this->m_state.selected)
+				{
+					auto& data = GetProfileManager().Data();
+
+					if (auto it = data.find(*selected); it != data.end())
+					{
+						if (ImGui::BeginMenu(UIL::LS(CommonStrings::Settings, "2")))
+						{
+							auto& flags = it->second.GetFlags();
+
+							if (ImGui::MenuItem(
+									UIL::LS(UIProfileEditorBaseStrings::MergeOnly, "1"),
+									nullptr,
+									flags.test(ProfileFlags::kMergeOnly)))
+							{
+								flags.toggle(ProfileFlags::kMergeOnly);
+							}
+
+							ImGui::Separator();
+
+							if (ImGui::MenuItem(UIL::LS(CommonStrings::Description, "2")))
+							{
+								auto& queue = this->GetPopupQueue_ProfileBase();
+
+								auto& e =
+									queue.push(
+											 UIPopupType::MultilineInput,
+											 UIL::LS(CommonStrings::Description))
+										.set_allow_empty(true)
+										.call([this, item = *this->m_state.selected](auto& a_p) {
+											auto& data = GetProfileManager().Data();
+											if (auto it = data.find(item); it != data.end())
+											{
+												auto& text = a_p.GetInput();
+												if (!text.empty())
+												{
+													it->second.SetDescription(std::move(a_p.GetInput()));
+												}
+												else
+												{
+													it->second.ClearDescription();
+												}
+											}
+										});
+
+								if (auto& desc = it->second.GetDescription())
+								{
+									e.set_input(*desc);
+								}
+							}
+
+							ImGui::EndMenu();
+						}
+					}
 				}
 
 				ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);

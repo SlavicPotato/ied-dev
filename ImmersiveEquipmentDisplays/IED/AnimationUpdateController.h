@@ -4,15 +4,23 @@ namespace IED
 {
 	class AnimationUpdateController
 	{
-		typedef bool (*updateAnimationGraph_t)(
+		using updateAnimationGraph_t = bool (*)(
 			RE::IAnimationGraphManagerHolder* a_holder,
 			const BSAnimationUpdateData&      a_data) noexcept;
 
+		using loadWeaponGraph_t = bool (*)(
+			RE::IAnimationGraphManagerHolder& a_weapHolder,
+			const char*                       a_hkxPath) noexcept;
+
+		using bindAnimationObject_t = bool (*)(
+			RE::WeaponAnimationGraphManagerHolder& a_holder,
+			NiAVObject*                            a_object) noexcept;
+
 		using Entry = RE::WeaponAnimationGraphManagerHolderPtr;
 
-		using lock_type   = std::shared_mutex;
-		using shared_lock = std::shared_lock<lock_type>;
-		using unique_lock = std::unique_lock<lock_type>;
+		using lock_type        = stl::shared_mutex;
+		using read_lock_guard  = stl::read_lock_guard<lock_type>;
+		using write_lock_guard = stl::write_lock_guard<lock_type>;
 
 	public:
 		/*void BeginAnimationUpdate(
@@ -20,8 +28,6 @@ namespace IED
 
 		void EndAnimationUpdate(
 			Controller* a_controller) noexcept;*/
-
-		inline static const auto UpdateAnimationGraph = IAL::Address<updateAnimationGraph_t>(32155, 32899);
 
 		[[nodiscard]] static constexpr auto& GetSingleton() noexcept
 		{
@@ -51,7 +57,19 @@ namespace IED
 
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
+		static bool CreateWeaponBehaviorGraph(
+			NiAVObject*                               a_object,
+			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
+			std::function<bool(const char*)>          a_allowFunc = [](const char*) { return true; });
+
+		static void CleanupWeaponBehaviorGraph(
+			RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
+
 	private:
+		inline static const auto UpdateAnimationGraph         = IAL::Address<updateAnimationGraph_t>(32155, 32899);
+		inline static const auto LoadAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
+		inline static const auto BindAnimationObject          = IAL::Address<bindAnimationObject_t>(32250, 32985);
+
 		bool m_initialized{ false };
 
 		mutable lock_type                                          m_lock;

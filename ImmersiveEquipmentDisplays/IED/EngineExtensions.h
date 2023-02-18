@@ -4,7 +4,7 @@
 #include "Controller/ModelType.h"
 #include "Controller/ObjectLight.h"
 
-#include "AnimationUpdateManager.h"
+#include "AnimationUpdateController.h"
 
 namespace IED
 {
@@ -94,14 +94,6 @@ namespace IED
 			const char*                            a_hkxPath,
 			RE::IAnimationGraphManagerHolder&      a_characterHolder) noexcept;
 
-		typedef bool (*loadWeaponGraph_t)(
-			RE::IAnimationGraphManagerHolder& a_weapHolder,
-			const char*                       a_hkxPath) noexcept;
-
-		typedef bool (*bindAnimationObject_t)(
-			RE::WeaponAnimationGraphManagerHolder& a_holder,
-			NiAVObject*                            a_object) noexcept;
-
 		typedef bool (*stripCollision_t)(
 			NiAVObject* a_object,
 			bool        a_recursive,
@@ -142,14 +134,6 @@ namespace IED
 			bool        a_disableHavok,
 			bool        a_removeTracers,
 			bool        a_removeEditorMarker) noexcept;
-
-		static bool CreateWeaponBehaviorGraph(
-			NiAVObject*                               a_object,
-			RE::WeaponAnimationGraphManagerHolderPtr& a_out,
-			std::function<bool(const char*)>          a_filter);
-
-		static void CleanupWeaponBehaviorGraph(
-			RE::WeaponAnimationGraphManagerHolderPtr& a_graph) noexcept;
 
 		static void UpdateRoot(NiNode* a_root) noexcept;
 
@@ -227,8 +211,6 @@ namespace IED
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
 
 		//inline static const auto fLoadAndRegisterWeaponGraph = IAL::Address<loadAndRegisterWeaponGraph_t>(32249, 32984);
-		inline static const auto LoadAnimationBehahaviorGraph = IAL::Address<loadWeaponGraph_t>(32148, 32892);
-		inline static const auto BindAnimationObject          = IAL::Address<bindAnimationObject_t>(32250, 32985);
 
 		//inline static const auto hkaGetSkeletonNode = IAL::Address<hkaLookupSkeletonNode_t>(69352, 70732);
 
@@ -288,28 +270,28 @@ namespace IED
 			Actor*                     a_actor,
 			const std::source_location a_loc = std::source_location::current()) noexcept;
 
-		static void                              RemoveAllBipedParts_Hook(Biped* a_biped) noexcept;
-		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D) noexcept;
-		static void                              PlayerCharacter_Release3D_Hook(PlayerCharacter* a_actor) noexcept;
-		static void                              Actor_Release3D_Hook(Actor* a_actor) noexcept;
-		static void                              Character_Release3D_Hook(Character* a_actor) noexcept;
-		static NiAVObject*                       REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr) noexcept;
-		static std::uint32_t                     PlayerCharacter_Load3D_LoadSkeleton_Hook(const char* a_path, NiPointer<NiAVObject>& a_out3D, std::uint32_t& a_unk3) noexcept;
-		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1) noexcept;
-		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left) noexcept;
-		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor) noexcept;
-		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr) noexcept;
-		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped) noexcept;
-		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor) noexcept;  // always player
-		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
-		static const RE::BSTSmartPointer<Biped>& UpdateRefAnim_Hook(TESObjectREFR* a_refr, const BSAnimationUpdateData& a_data) noexcept;  // getbiped1
-		static void                              PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player) noexcept;
-		static REFR_LIGHT*                       TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
-		static void                              PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept;
-		static void                              PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn) noexcept;
-		static REFR_LIGHT*                       Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor) noexcept;
-		static NiAVObject*                       ShaderReferenceEffect_Resume_GetAttachRoot(RE::ShaderReferenceEffect* a_this, TESObjectREFR* a_refr) noexcept;
-		static void                              PlayerCharacter_unk_205_Post_Hook(RE::TES* a_tes) noexcept;
+		static void                              RemoveAllBipedParts_Hook(Biped* a_biped);
+		static void                              Character_Resurrect_Hook(Character* a_actor, bool a_resetInventory, bool a_attach3D);
+		static void                              PlayerCharacter_Release3D_Hook(PlayerCharacter* a_actor);
+		static void                              Actor_Release3D_Hook(Actor* a_actor);
+		static void                              Character_Release3D_Hook(Character* a_actor);
+		static NiAVObject*                       REFR_Load3D_Clone_Hook(TESBoundObject* a_obj, TESObjectREFR* a_refr);
+		static std::uint32_t                     PlayerCharacter_Load3D_LoadSkeleton_Hook(const char* a_path, NiPointer<NiAVObject>& a_out3D, std::uint32_t& a_unk3);
+		static void                              ReanimateActorStateUpdate_Hook(Actor* a_actor, bool a_unk1);
+		static void                              CreateWeaponNodes_Hook(TESObjectREFR* a_actor, TESForm* a_object, bool a_left);
+		static void                              ArmorUpdate_Hook(Game::InventoryChanges* a_ic, Game::InitWornVisitor& a_visitor);
+		static bool                              GarbageCollectorReference_Hook(TESObjectREFR* a_refr);
+		static bool                              SetWeapAdjAnimVar_Hook(TESObjectREFR* a_refr, const BSFixedString& a_animVarName, float a_val, Biped* a_biped);
+		static BaseExtraList*                    ToggleFavGetExtraList_Hook(TESObjectREFR* a_actor);  // always player
+		static bool                              hkaLookupSkeletonNode_Hook(NiNode* a_root, const BSFixedString& a_name, hkaGetSkeletonNodeResult& a_result, const RE::hkaSkeleton& a_hkaSkeleton);
+		static const RE::BSTSmartPointer<Biped>& UpdateRefAnim_Hook(TESObjectREFR* a_refr, const BSAnimationUpdateData& a_data);  // getbiped1
+		static void                              PlayerCharacter_UpdateRefLight_Hook(PlayerCharacter* a_player);
+		static REFR_LIGHT*                       TESObjectCELL_unk_178_Actor_GetExtraLight_Hook(Actor* a_actor);
+		static void                              PlayerCharacter_unk_205_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn);
+		static void                              PlayerCharacter_RefreshLights_RefreshMagicCasterLights_Hook(PlayerCharacter* a_actor, RE::ShadowSceneNode* a_ssn);
+		static REFR_LIGHT*                       Actor_Update_Actor_GetExtraLight_Hook(Actor* a_actor);
+		static NiAVObject*                       ShaderReferenceEffect_Resume_GetAttachRoot(RE::ShaderReferenceEffect* a_this, TESObjectREFR* a_refr);
+		static void                              PlayerCharacter_unk_205_Post_Hook(RE::TES* a_tes);
 		//static void                              SetupEventSinks_Hook() noexcept;
 
 		/*static void                                    Character_UpdateRefLight_Hook(Character* a_character) noexcept;
@@ -318,7 +300,7 @@ namespace IED
 		static bool hkaShouldBlockNode(NiAVObject* a_root, const BSFixedString& a_name, const RE::hkaSkeleton& a_hkaSkeleton) noexcept;
 
 		template <class T>
-		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*) noexcept) noexcept;
+		static void RunRelease3DHook(T* a_actor, void (*&a_origCall)(T*));
 
 		//inline static const auto m_vtblTESObjectREFR_a                = IAL::Address<std::uintptr_t>(235511, 190259);
 		inline static const auto m_vtblCharacter_a                    = IAL::Address<std::uintptr_t>(261397, 207886);

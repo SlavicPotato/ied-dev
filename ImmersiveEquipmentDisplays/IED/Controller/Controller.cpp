@@ -32,16 +32,14 @@ namespace IED
 
 	Controller::Controller(
 		const stl::smart_ptr<const ConfigINI>& a_config) :
-		ActorProcessorTask(),
 		IEquipment(m_rngBase),
 		IAnimationManager(m_configData.settings),
+		KeyBindEventHandler(stl::make_smart_for_overwrite<KB::KeyBindDataHolder>()),
 		m_iniconf(a_config),
 		m_nodeOverrideEnabled(a_config->m_nodeOverrideEnabled),
 		m_nodeOverridePlayerEnabled(a_config->m_nodeOverridePlayerEnabled),
 		m_npcProcessingDisabled(a_config->m_disableNPCProcessing),
 		m_forceDefaultConfig(a_config->m_forceDefaultConfig),
-		//m_enableCorpseScatter(a_config->m_enableCorpseScatter),
-		//m_forceOrigWeapXFRM(a_config->m_forceOrigWeapXFRM),
 		m_forceFlushSaveData(a_config->m_forceFlushSaveData),
 		m_bipedCache(
 			a_config->m_bipedSlotCacheMaxSize,
@@ -54,6 +52,7 @@ namespace IED
 		assert(m_iniconf);
 
 		Drivers::Input::RegisterForKeyEvents(m_inputHandlers.playerBlock);
+		Drivers::Input::RegisterForKeyEvents(static_cast<KB::KeyBindEventHandler&>(*this));
 
 		if (m_iniconf->m_enableUI)
 		{
@@ -177,6 +176,7 @@ namespace IED
 		InitializeLocalization();
 		InitializeConfig();
 		LoadAnimationData();
+		LoadKeyBinds();
 
 		SetShaderProcessingEnabled(data.enableEffectShaders);
 		SetProcessorTaskParallelUpdates(data.apParallelUpdates);
@@ -512,6 +512,21 @@ namespace IED
 		}
 	}
 
+	void Controller::LoadKeyBinds()
+	{
+		const auto path = PATHS::KEY_BINDS;
+
+		if (Serialization::FileExists(path))
+		{
+			auto& holder = GetKeyBindDataHolder();
+
+			if (!holder->Load(PATHS::KEY_BINDS))
+			{
+				Error("Could not load key binds: %s", holder->GetLastException().what());
+			}
+		}
+	}
+
 	void Controller::InitializeBSFixedStringTable()
 	{
 		assert(StringCache::IsInitialized());
@@ -556,23 +571,6 @@ namespace IED
 		const stl::lock_guard lock(m_lock);
 
 		EvaluateImpl(a_actor, a_handle, a_flags);
-	}
-
-	void Controller::ClearActorPhysicsDataImpl()
-	{
-		for (auto& e : m_actorMap)
-		{
-			e.second.ClearAllPhysicsData();
-		}
-	}
-
-	void Controller::QueueClearActorPhysicsData()
-	{
-		ITaskPool::AddPriorityTask([this]() {
-			const stl::lock_guard lock(m_lock);
-
-			ClearActorPhysicsDataImpl();
-		});
 	}
 
 	std::size_t Controller::GetNumSimComponents() const noexcept
@@ -4051,7 +4049,7 @@ namespace IED
 			}
 		}
 
-		for (auto& [i, e] : a_holder.m_cmeNodes)
+		for (const auto& [i, e] : a_holder.m_cmeNodes)
 		{
 			const auto r = activeConfig.transforms.GetActorTransform(
 				a_actor->formID,
@@ -4093,7 +4091,7 @@ namespace IED
 
 		if (PhysicsProcessingEnabled())
 		{
-			for (auto& [i, e] : a_holder.m_movNodes)
+			for (const auto& [i, e] : a_holder.m_movNodes)
 			{
 				const auto r = activeConfig.transforms.GetActorPhysics(
 					a_actor->formID,
@@ -4102,50 +4100,28 @@ namespace IED
 					i,
 					hc);
 
-				auto& simComponent = e.simComponent;
-
-				if (r)
+				if (!r)
 				{
-					auto& conf = INodeOverride::GetPhysicsConfig(r->get(params.get_sex()), params);
+					if (e.thirdPerson.simComponent)
+					{
+						a_holder.RemoveAndDestroySimComponent(e.thirdPerson.simComponent);
+					}
 
-					if (!conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
-					    e.parent_has_visible_geometry())
+					if (e.firstPerson.simComponent)
 					{
-						if (!simComponent)
-						{
-							simComponent = a_holder.CreateAndAddSimComponent(
-								e.node.get(),
-								e.origTransform,
-								conf);
-						}
-						else if (simComponent->GetConfig() != conf)
-						{
-							simComponent->UpdateConfig(conf);
-						}
+						a_holder.RemoveAndDestroySimComponent(e.firstPerson.simComponent);
 					}
-					else if (simComponent)
-					{
-						a_holder.RemoveAndDestroySimComponent(simComponent);
-					}
+
+					continue;
 				}
-				else if (simComponent)
+
+				ProcessTransformsImplPhysNode(params, r, e.thirdPerson);
+				if (e.firstPerson)
 				{
-					a_holder.RemoveAndDestroySimComponent(simComponent);
+					ProcessTransformsImplPhysNode(params, r, e.firstPerson);
 				}
 			}
 		}
-
-		/*if (m_forceOrigWeapXFRM &&
-		    EngineExtensions::IsWeaponAdjustDisabled())
-		{
-			for (auto& e : a_holder.m_weapNodes)
-			{
-				if (e.originalTransform)
-				{
-					e.node->m_localTransform = *e.originalTransform;
-				}
-			}
-		}*/
 
 		if (GetSettings().data.enableXP32AA &&
 		    a_holder.m_animState.flags.consume(ActorAnimationState::Flags::kNeedUpdate))
@@ -4158,6 +4134,36 @@ namespace IED
 #endif
 
 		return true;
+	}
+
+	void Controller::ProcessTransformsImplPhysNode(
+		nodeOverrideParams_t&                   a_params,
+		const configNodeOverrideEntryPhysics_t* a_config,
+		const MOVNodeEntry::Node&               a_node) noexcept
+	{
+		auto& simComponent = a_node.simComponent;
+
+		auto& conf = INodeOverride::GetPhysicsConfig(a_config->get(a_params.get_sex()), a_params);
+
+		if (!conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
+		    a_node.parent_has_visible_geometry())
+		{
+			if (!simComponent)
+			{
+				simComponent = a_params.objects.CreateAndAddSimComponent(
+					a_node.node.get(),
+					a_node.orig,
+					conf);
+			}
+			else if (simComponent->GetConfig() != conf)
+			{
+				simComponent->UpdateConfig(conf);
+			}
+		}
+		else if (simComponent)
+		{
+			a_params.objects.RemoveAndDestroySimComponent(simComponent);
+		}
 	}
 
 	void Controller::ActorResetImpl(
@@ -5270,6 +5276,7 @@ namespace IED
 		case SKSEMessagingInterface::kMessage_SaveGame:
 
 			SaveSettings(false, true);
+			SaveKeyBinds(false, true);
 
 			break;
 		}
@@ -5550,6 +5557,7 @@ namespace IED
 		m_bipedCache.clear();
 
 		ClearObjectsImpl();
+		GetKeyBindDataHolder()->ClearKeyToggleStates();
 		//ClearObjectDatabase();
 
 		ResetCounter();
@@ -5595,15 +5603,20 @@ namespace IED
 		const stl::lock_guard lock(m_lock);
 
 		actorBlockList_t blockList;
-		auto             cfgStore = std::make_unique<configStore_t>();
+		auto             cfgStore = std::make_unique_for_overwrite<configStore_t>();
 
 		a_in >> blockList;
 		a_in >> *cfgStore;
 
 		if (a_version < stl::underlying(SerializationVersion::kDataVersion9))
 		{
-			auto actorState = std::make_unique<actorStateHolder_t>();
+			auto actorState = std::make_unique_for_overwrite<actorStateHolder_t>();
 			a_in >> *actorState;
+		}
+
+		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
+		{
+			a_in >> *this;
 		}
 
 		IMaintenance::CleanBlockList(blockList);
@@ -5625,11 +5638,6 @@ namespace IED
 		else
 		{
 			m_configData.active = std::move(cfgStore);
-		}
-
-		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
-		{
-			a_in >> *this;
 		}
 
 		return 4;
@@ -5693,6 +5701,37 @@ namespace IED
 					sl.function_name(),
 					pt.Stop());
 			}
+			else if (!result)
+			{
+				Error("Could not save settings: %s", GetSettings().GetLastException().what());
+			}
+		};
+
+		if (a_defer)
+		{
+			ITaskPool::AddTask(std::move(func));
+		}
+		else
+		{
+			func();
+		}
+	}
+
+	void Controller::SaveKeyBinds(bool a_defer, bool a_dirtyOnly)
+	{
+		auto func = [this, a_dirtyOnly] {
+			const stl::lock_guard lock(m_lock);
+
+			auto& holder = GetKeyBindDataHolder();
+
+			const bool result = a_dirtyOnly ?
+			                        holder->SaveIfDirty(PATHS::KEY_BINDS) :
+			                        holder->Save(PATHS::KEY_BINDS);
+
+			if (!result)
+			{
+				Error("Could not save key binds: %s", holder->GetLastException().what());
+			}
 		};
 
 		if (a_defer)
@@ -5727,6 +5766,25 @@ namespace IED
 		{
 			rt->QueueReset();
 		}
+	}
+
+	void Controller::OnKBStateChanged()
+	{
+		ITaskPool::AddTask([this] {
+			const stl::lock_guard lock(m_lock);
+
+			for (auto& e : m_actorMap.getvec())
+			{
+				if (e->first == IData::GetPlayerRefID())
+				{
+					e->second.RequestEval();
+				}
+				else
+				{
+					e->second.m_wantHFUpdate = true;
+				}
+			}
+		});
 	}
 
 	void Controller::QueueUpdateActorInfo(Game::FormID a_actor)

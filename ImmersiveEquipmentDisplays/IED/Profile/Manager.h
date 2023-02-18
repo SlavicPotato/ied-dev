@@ -231,7 +231,7 @@ namespace IED
 
 			fs::path path(m_root);
 
-			auto fn = fs::path(str_conv::str_to_wstr(a_name)).filename();
+			auto fn = fs::path(stl::str_to_wstr(a_name)).filename();
 			if (!fn.has_filename())
 			{
 				throw std::exception("Bad filename");

@@ -175,7 +175,7 @@ namespace IED
 	void ReferenceLightController::OnUpdatePlayerLight(
 		PlayerCharacter* a_actor) const noexcept
 	{
-		const shared_lock lock(m_lock);
+		const read_lock_guard lock(m_lock);
 
 		visit_lights(
 			a_actor,
@@ -187,7 +187,7 @@ namespace IED
 	void ReferenceLightController::OnActorCrossCellBoundary(
 		Actor* a_actor) const noexcept
 	{
-		const shared_lock lock(m_lock);
+		const read_lock_guard lock(m_lock);
 
 		visit_lights(a_actor, [&](auto& a_entry) [[msvc::forceinline]] {
 			const auto params = detail::make_params(
@@ -224,7 +224,7 @@ namespace IED
 	void ReferenceLightController::OnRefreshLightOnSceneMove(
 		Actor* a_actor) const noexcept
 	{
-		const shared_lock lock(m_lock);
+		const read_lock_guard lock(m_lock);
 
 		visit_lights(
 			a_actor,
@@ -244,7 +244,7 @@ namespace IED
 	{
 		if (a_actor == *g_thePlayer)
 		{
-			const shared_lock lock(m_lock);
+			const read_lock_guard lock(m_lock);
 
 			visit_lights(
 				a_actor,
@@ -275,7 +275,7 @@ namespace IED
 
 			if (m_npcLightUpdates.load(std::memory_order_relaxed))
 			{
-				const shared_lock lock(m_lock);
+				const read_lock_guard lock(m_lock);
 
 				visit_lights(
 					a_actor,
@@ -293,7 +293,7 @@ namespace IED
 			}
 			else
 			{
-				const shared_lock lock(m_lock);
+				const read_lock_guard lock(m_lock);
 
 				visit_lights(
 					a_actor,
@@ -313,7 +313,7 @@ namespace IED
 	{
 		if (m_initialized)
 		{
-			const unique_lock lock(m_lock);
+			const write_lock_guard lock(m_lock);
 
 			auto& e = m_data.try_emplace(a_actor).first->second;
 
@@ -331,7 +331,7 @@ namespace IED
 	{
 		if (m_initialized)
 		{
-			const unique_lock lock(m_lock);
+			const write_lock_guard lock(m_lock);
 
 			auto it = m_data.find(a_actor);
 			if (it != m_data.end())
@@ -349,7 +349,7 @@ namespace IED
 	{
 		if (m_initialized)
 		{
-			const unique_lock lock(m_lock);
+			const write_lock_guard lock(m_lock);
 
 			m_data.erase(a_actor);
 		}
@@ -426,7 +426,7 @@ namespace IED
 
 	std::size_t ReferenceLightController::GetNumLights() const noexcept
 	{
-		const shared_lock lock(m_lock);
+		const read_lock_guard lock(m_lock);
 
 		std::size_t i = 0;
 

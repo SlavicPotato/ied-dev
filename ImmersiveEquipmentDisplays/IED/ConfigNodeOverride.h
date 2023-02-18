@@ -320,7 +320,6 @@ namespace IED
 				NodeOverrideConditionFlagsBitfield    fbf;
 			};
 
-			stl::fixed_string  s0;
 			configCachedForm_t form;
 			configCachedForm_t form2;
 			configCachedForm_t keyword;
@@ -393,6 +392,8 @@ namespace IED
 				std::uint64_t ui64a{ 0 };
 				std::uint64_t skeletonSignature;
 			};
+
+			stl::fixed_string s0;
 
 			configNodeOverrideConditionGroup_t group;
 

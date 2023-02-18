@@ -82,9 +82,9 @@ namespace IED
 								 UIL::LS(CommonStrings::Rename),
 								 "%s",
 								 UIL::LS(UIDialogImportExportStrings::RenamePrompt))
-							.fmt_input("%s", selected->m_key.c_str())
+							.set_input(*selected->m_key)
 							.call([this, item = *selected](const auto& a_p) {
-								std::string file(a_p.GetInput());
+								auto& file = a_p.GetInput();
 
 								if (file.empty())
 								{
@@ -93,7 +93,7 @@ namespace IED
 
 								try
 								{
-									fs::path name(str_conv::str_to_wstr(file));
+									fs::path name(stl::str_to_wstr(file));
 									name += ".json";
 
 									if (!RenameItem(item, name))
@@ -211,7 +211,7 @@ namespace IED
 							try
 							{
 								fs::path path(PATHS::EXPORTS);
-								auto     fn = fs::path(str_conv::str_to_wstr(file)).filename();
+								auto     fn = fs::path(stl::str_to_wstr(file)).filename();
 								if (!fn.has_filename())
 								{
 									throw std::exception("bad filename");
@@ -293,7 +293,7 @@ namespace IED
 				{
 					if (DoUpdate())
 					{
-						SelectItem(str_conv::wstr_to_str(a_path.filename().stem().wstring()));
+						SelectItem(stl::wstr_to_str(a_path.filename().stem().wstring()));
 					}
 				}
 			}

@@ -58,28 +58,8 @@ namespace IED
 			}
 
 		protected:
-			constexpr bool CanProcess() const noexcept
-			{
-				if (m_processPaused)
-				{
-					return true;
-				}
-
-				if (Game::InPausedMenu())
-				{
-					return false;
-				}
-
-				return !Game::Main::GetSingleton()->freezeTime;
-			}
-
-			constexpr void Trigger() const
-			{
-				if (CanProcess())
-				{
-					m_func();
-				}
-			}
+			bool CanProcess() const noexcept;
+			void Trigger() const;
 
 			std::uint32_t m_key{ 0 };
 			bool          m_processPaused{ true };

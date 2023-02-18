@@ -5,6 +5,7 @@
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
 #include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONFormFilterBaseParser.h"
+#include "IED/Parsers/JSONKeyToggleStateEntryHolderParser.h"
 
 #include "IED/Profile/Manager.h"
 
@@ -17,6 +18,7 @@ namespace IED
 	using NodeOverrideProfile = Profile<Data::configNodeOverrideHolder_t>;
 	using FormFilterProfile   = Profile<Data::configFormFilterBase_t>;
 	using CondVarProfile      = Profile<Data::configConditionalVariablesHolder_t>;
+	using KeyToggleProfile    = Profile<KB::KeyToggleStateEntryHolder>;
 
 	class GlobalProfileManager
 	{

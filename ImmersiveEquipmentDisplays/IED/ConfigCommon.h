@@ -341,6 +341,7 @@ namespace IED
 			kIsNPCCellOwner          = 60,
 			kSunAngle                = 61,
 			kIsDaytime               = 62,
+			kKeyIDToggled            = 63,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

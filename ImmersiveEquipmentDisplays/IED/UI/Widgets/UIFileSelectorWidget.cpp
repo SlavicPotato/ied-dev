@@ -253,7 +253,7 @@ namespace IED
 
 		std::string UIFileSelector::get_key(const fs::path& a_filename)
 		{
-			auto key = str_conv::wstr_to_str(a_filename.stem().wstring());
+			auto key = stl::wstr_to_str(a_filename.stem().wstring());
 			if (key.empty())
 			{
 				throw std::exception("bad key");

@@ -56,6 +56,8 @@ namespace IED
 			virtual bool DrawProfileImportOptions(const T& a_data, const P& a_profile, bool a_isMerge) { return true; };
 			virtual void ResetProfileImportOptions() {}
 
+			void DrawDescription(const P& a_profile);
+
 			stl::flag<UIProfileSelectorFlags> m_flags;
 		};
 
@@ -127,7 +129,7 @@ namespace IED
 				if (ButtonRight(sh.snew, !this->AllowCreateNew()))
 				{
 					ImGui::OpenPopup(UIL::LS(UIProfileStrings::NewProfile, UIProfileBase<P>::POPUP_NEW_ID));
-					this->m_state.new_input[0] = 0;
+					this->m_state.new_input.clear();
 				}
 			}
 
@@ -145,7 +147,8 @@ namespace IED
 
 					if (!m_flags.test(UIProfileSelectorFlags::kDisableControls))
 					{
-						if (m_flags.test(UIProfileSelectorFlags::kEnableApply))
+						if (m_flags.test(UIProfileSelectorFlags::kEnableApply) &&
+						    !profile.GetFlags().test(ProfileFlags::kMergeOnly))
 						{
 							ImGui::SameLine(wcm.x - GetNextTextOffset(sh.apply));
 							if (ButtonRight(sh.apply))
@@ -237,6 +240,8 @@ namespace IED
 					ImGui::PushID("ps_options");
 					DrawProfileSelectorOptions(a_data);
 					ImGui::PopID();
+
+					DrawDescription(profile);
 				}
 			}
 
@@ -248,6 +253,37 @@ namespace IED
 		template <class T, class P>
 		void UIProfileSelectorBase<T, P>::DrawProfileSelectorOptions(const T& a_data)
 		{
+		}
+
+		template <class T, class P>
+		void UIProfileSelectorBase<T, P>::DrawDescription(const P& a_profile)
+		{
+			auto& desc = a_profile.GetDescription();
+			if (!desc || desc->empty())
+			{
+				return;
+			}
+
+			ImGui::Spacing();
+
+			const auto size = ImGui::CalcTextSize(desc->c_str());
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+
+			ImGui::SetNextWindowSizeConstraints({ 0, 0 }, { -1, 150 });
+
+			if(ImGui::BeginChild(
+				"ps_desc",
+				{ 0.0f, size.y },
+				false,
+				ImGuiWindowFlags_None))
+			{
+				ImGui::TextUnformatted(desc->c_str());
+			}
+
+			ImGui::EndChild();
+
+			ImGui::PopStyleVar();
 		}
 
 	}
