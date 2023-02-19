@@ -27,7 +27,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					UIL::LS(CommonStrings::Source, "ex_ls_sel"),
+					UIL::LS(CommonStrings::State, "ex_ls_sel"),
 					life_state_to_desc(a_state),
 					ImGuiComboFlags_HeightLarge))
 			{
