@@ -21,7 +21,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					"##ex_tod_sel",
+					UIL::LS(CommonStrings::Flags, "ex_tod_sel"),
 					time_of_day_to_desc(a_tod),
 					ImGuiComboFlags_HeightLarge))
 			{

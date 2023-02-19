@@ -455,6 +455,73 @@ namespace IED
 				ImGui::TableNextRow();
 
 				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
+
+				ImGui::TableSetColumnIndex(1);
+				TextCopyable("%.8X", data.flags);
+
+				UICommon::ToolTip(100.0f, [&] {
+					if (data.flags & 1u << 4)
+					{
+						ImGui::Text(UIL::LS(UIWidgetCommonStrings::CollisionDisabled));
+					}
+
+					if (data.flags & 1u << 5)
+					{
+						ImGui::Text(UIL::LS(CommonStrings::Deleted));
+					}
+
+					if (data.flags & 1u << 10)
+					{
+						ImGui::Text(UIL::LS(CommonStrings::Persistent));
+					}
+
+					if (data.flags & 1u << 11)
+					{
+						ImGui::Text(UIL::LS(CommonStrings::Disabled));
+					}
+
+					if (data.flags & 1u << 12)
+					{
+						ImGui::Text(UIL::LS(UIWidgetCommonStrings::Ignored));
+					}
+
+					if (data.flags & 1u << 16)
+					{
+						ImGui::Text(UIL::LS(UIWidgetCommonStrings::FullLOD));
+					}
+				});
+
+				if (data.dead || data.hasLoadedState)
+				{
+					ImGui::TableNextRow();
+
+					ImGui::TableSetColumnIndex(0);
+					ImGui::Text("%s:", UIL::LS(CommonStrings::State));
+
+					ImGui::TableSetColumnIndex(1);
+
+					if (data.hasLoadedState)
+					{
+						ImGui::TextWrapped("%s", UIL::LS(CommonStrings::Loaded));
+					}
+
+					if (data.dead)
+					{
+						if (data.hasLoadedState)
+						{
+							ImGui::SameLine();
+							ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+							ImGui::SameLine();
+						}
+
+						ImGui::TextWrapped("%s", UIL::LS(CommonStrings::Dead));
+					}
+				}
+
+				ImGui::TableNextRow();
+
+				ImGui::TableSetColumnIndex(0);
 				ImGui::Text("%s:", UIL::LS(CommonStrings::Base));
 
 				ImGui::TableSetColumnIndex(1);
@@ -603,73 +670,6 @@ namespace IED
 						data.npc->female ?
 							UIL::LS(CommonStrings::Female) :
 							UIL::LS(CommonStrings::Male));
-				}
-
-				ImGui::TableNextRow();
-
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
-
-				ImGui::TableSetColumnIndex(1);
-				TextCopyable("%.8X", data.flags);
-
-				UICommon::ToolTip(100.0f, [&] {
-					if (data.flags & 1u << 4)
-					{
-						ImGui::Text(UIL::LS(UIWidgetCommonStrings::CollisionDisabled));
-					}
-
-					if (data.flags & 1u << 5)
-					{
-						ImGui::Text(UIL::LS(CommonStrings::Deleted));
-					}
-
-					if (data.flags & 1u << 10)
-					{
-						ImGui::Text(UIL::LS(CommonStrings::Persistent));
-					}
-
-					if (data.flags & 1u << 11)
-					{
-						ImGui::Text(UIL::LS(CommonStrings::Disabled));
-					}
-
-					if (data.flags & 1u << 12)
-					{
-						ImGui::Text(UIL::LS(UIWidgetCommonStrings::Ignored));
-					}
-
-					if (data.flags & 1u << 16)
-					{
-						ImGui::Text(UIL::LS(UIWidgetCommonStrings::FullLOD));
-					}
-				});
-
-				if (data.dead || data.hasLoadedState)
-				{
-					ImGui::TableNextRow();
-
-					ImGui::TableSetColumnIndex(0);
-					ImGui::Text("%s:", UIL::LS(CommonStrings::State));
-
-					ImGui::TableSetColumnIndex(1);
-
-					if (data.hasLoadedState)
-					{
-						ImGui::TextWrapped("%s", UIL::LS(CommonStrings::Loaded));
-					}
-
-					if (data.dead)
-					{
-						if (data.hasLoadedState)
-						{
-							ImGui::SameLine();
-							ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-							ImGui::SameLine();
-						}
-
-						ImGui::TextWrapped("%s", UIL::LS(CommonStrings::Dead));
-					}
 				}
 
 				ImGui::TableNextRow();
