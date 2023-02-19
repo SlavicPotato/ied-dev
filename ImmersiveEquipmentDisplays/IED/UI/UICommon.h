@@ -99,7 +99,13 @@ namespace IED
 				constexpr T lerp()
 				{
 					auto result = current;
-					current     = std::lerp(current, _Max, static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed);
+					current     = std::clamp(
+                        std::lerp(
+                            current,
+                            _Max,
+                            static_cast<T>(ImGui::GetIO().DeltaTime) * _Speed),
+                        std::min(current, _Min),
+                        std::max(current, _Max));
 					return result;
 				}
 
