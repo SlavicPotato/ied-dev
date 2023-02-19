@@ -270,5 +270,6 @@ namespace IED
 		Set             = 341,
 		Scancode        = 342,
 		Options         = 343,
+		Day             = 344,
 	};
 }

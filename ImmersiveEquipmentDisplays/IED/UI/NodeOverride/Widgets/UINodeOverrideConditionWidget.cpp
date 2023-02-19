@@ -1491,7 +1491,7 @@ namespace IED
 									e.vcSource);
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id(),
-									CommonStrings::Source);
+									CommonStrings::Form);
 								m_condParamEditor.SetNext<ConditionParamItem::CompOper>(
 									e.compOperator);
 								m_condParamEditor.SetNext<ConditionParamItem::Int32>(

@@ -24,7 +24,7 @@ namespace IED
 			bool result = false;
 
 			if (ImGui::BeginCombo(
-					UIL::LS(CommonStrings::Source, "ex_dw_sel"),
+					UIL::LS(CommonStrings::Day, "ex_dw_sel"),
 					day_of_week_to_desc(a_type),
 					ImGuiComboFlags_HeightLarge))
 			{
