@@ -825,14 +825,8 @@ namespace IED
 					return false;
 				}
 
-				auto base = actor->GetActorBase();
-				if (!base)
-				{
-					return false;
-				}
-
 				if (a_match.flags.test(Tf::kNegateMatch3) ==
-				    IFormCommon::HasKeyword(base, a_match.form2))
+				    IFormCommon::HasKeyword(actor, a_match.form2))
 				{
 					return false;
 				}
