@@ -111,8 +111,14 @@ namespace IED
 
 		bool is_in_dialogue(CommonParams& a_params) noexcept
 		{
-			return a_params.objects.IsPlayer() &&
-			       MenuTopicManager::GetSingleton()->HasDialogueTarget();
+			if (a_params.objects.IsPlayer())
+			{
+				return MenuTopicManager::GetSingleton()->HasDialogueTarget();
+			}
+			else
+			{
+				return MenuTopicManager::GetSingleton()->talkingHandle == a_params.objects.GetHandle();
+			}
 		}
 
 		bool is_cell_owner(
