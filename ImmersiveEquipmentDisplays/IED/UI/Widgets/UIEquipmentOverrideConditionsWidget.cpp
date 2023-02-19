@@ -1873,7 +1873,7 @@ namespace IED
 								switch (e.extraCondType)
 								{
 								case Data::ExtraConditionType::kShoutEquipped:
-									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::Shout));
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::ShoutAndSpell));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;

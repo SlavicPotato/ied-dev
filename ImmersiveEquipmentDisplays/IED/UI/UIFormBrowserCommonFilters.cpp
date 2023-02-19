@@ -97,7 +97,7 @@ namespace IED
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ EffectSetting::kTypeID }),
-			
+
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
@@ -109,17 +109,23 @@ namespace IED
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ BGSPerk::kTypeID }),
-			
+
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ BGSEquipSlot::kTypeID }),
-						
+
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
 					{ TESObjectCELL::kTypeID }),
-						
+
+				std::make_shared<
+					UIFormBrowser::tab_filter_type,
+					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(
+					{ TESShout::kTypeID,
+			          SpellItem::kTypeID }),
+
 				std::make_shared<
 					UIFormBrowser::tab_filter_type,
 					std::initializer_list<UIFormBrowser::tab_filter_type::value_type>>(

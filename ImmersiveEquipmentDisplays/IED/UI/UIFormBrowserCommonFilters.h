@@ -29,6 +29,7 @@ namespace IED
 			Perk,
 			EquipSlot,
 			Cell,
+			ShoutAndSpell,
 			Common,
 			ModelTypes,
 		};
@@ -44,7 +45,7 @@ namespace IED
 		private:
 			UIFormBrowserCommonFilters();
 
-			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 23> m_filters;
+			const std::array<std::shared_ptr<const UIFormBrowser::tab_filter_type>, 24> m_filters;
 
 			static const UIFormBrowserCommonFilters m_Instance;
 		};
