@@ -264,7 +264,7 @@ namespace IED
 			isInMerchantFaction.emplace(match_faction(
 				objects.GetCachedData(),
 				[&](auto& a_v) {
-					return a_v.first->IsLikelyMerchantFaction();
+					return a_v.second > -1 && a_v.first->IsLikelyMerchantFaction();
 				}));
 		}
 
@@ -278,7 +278,7 @@ namespace IED
 			isInPlayerEnemyFaction.emplace(match_faction(
 				objects.GetCachedData(),
 				[&](auto& a_v) {
-					return a_v.first->data.flags.test_any(FACTION_DATA::Flag::kPlayerIsEnemy);
+					return a_v.second > -1 && a_v.first->data.flags.test_any(FACTION_DATA::Flag::kPlayerIsEnemy);
 				}));
 		}
 
