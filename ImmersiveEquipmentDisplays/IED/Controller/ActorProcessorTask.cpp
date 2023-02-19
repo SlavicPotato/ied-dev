@@ -261,10 +261,27 @@ namespace IED
 			update.set(UpdateFlag::kPlayer);
 		}
 
-		if (const bool v = MenuTopicManager::GetSingleton()->HasDialogueTarget();
-		    v != m_globalState.inDialogue)
+		if (const auto v = MenuTopicManager::GetSingleton()->talkingHandle;
+		    v != m_globalState.talkingHandle)
 		{
-			m_globalState.inDialogue = v;
+			const auto h = v && v.IsValid() ? v : m_globalState.talkingHandle;
+
+			m_globalState.talkingHandle = v;
+
+			const auto& data = GetController().GetActorMap().getvec();
+
+			const auto it = std::find_if(
+				data.begin(),
+				data.end(),
+				[h](auto& a_v) noexcept {
+					return a_v->second.GetHandle() == h;
+				});
+
+			if (it != data.end())
+			{
+				(*it)->second.RequestEval();
+			}
+
 			update.set(UpdateFlag::kPlayer);
 		}
 
@@ -732,5 +749,4 @@ namespace IED
 	{
 		return static_cast<const Controller&>(*this);
 	}
-
 }

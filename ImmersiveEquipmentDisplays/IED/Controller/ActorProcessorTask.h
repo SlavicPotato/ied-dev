@@ -91,17 +91,18 @@ namespace IED
 			long long nextRunMF;
 			long long nextRunLF;
 
-			RE::TESWeather*      currentWeather{ nullptr };
-			RE::Calendar::Day    dayOfWeek{ RE::Calendar::Day::kSundas };
-			Data::TimeOfDay      timeOfDay{ Data::TimeOfDay::kDay };
-			BGSLightingTemplate* roomLightingTemplate{ nullptr };
-			Game::ActorHandle    playerLastRidden;
-			float                sunAngle{ 0.0f };
-			bool                 inFirstPerson{ false };
-			bool                 inDialogue{ false };
-			bool                 isExteriorDark{ false };
-			bool                 isPlayerInDarkInterior{ false };
-			bool                 isDaytime{ true };
+			RE::TESWeather*       currentWeather{ nullptr };
+			RE::Calendar::Day     dayOfWeek{ RE::Calendar::Day::kSundas };
+			Data::TimeOfDay       timeOfDay{ Data::TimeOfDay::kDay };
+			BGSLightingTemplate*  roomLightingTemplate{ nullptr };
+			Game::ActorHandle     playerLastRidden;
+			Game::ObjectRefHandle talkingHandle;
+			float                 sunAngle{ 0.0f };
+			bool                  inFirstPerson{ false };
+			bool                  inDialogue{ false };
+			bool                  isExteriorDark{ false };
+			bool                  isPlayerInDarkInterior{ false };
+			bool                  isDaytime{ true };
 #if defined(IED_ENABLE_CONDITION_EN)
 			bool playerEnemiesNearby{ false };
 #endif
