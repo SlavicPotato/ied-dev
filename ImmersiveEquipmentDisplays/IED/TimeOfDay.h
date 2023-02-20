@@ -32,7 +32,7 @@ namespace IED
 		ClimateTimingData GetClimateTimingData(const RE::Sky* a_sky) noexcept;
 
 		TimeOfDay                  GetTimeOfDay(const RE::Sky* a_sky) noexcept;
-		bool                       IsDaytime(const RE::Sky* a_sky) noexcept;
+		bool                       IsSunAboveHorizon(const RE::Sky* a_sky) noexcept;
 		std::pair<TimeOfDay, bool> GetTimeOfDay2(const RE::Sky* a_sky) noexcept;
 
 	}

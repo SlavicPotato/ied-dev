@@ -340,7 +340,7 @@ namespace IED
 			kInOwnedCell             = 59,
 			kIsNPCCellOwner          = 60,
 			kSunAngle                = 61,
-			kIsDaytime               = 62,
+			kIsSunAboveHorizon       = 62,
 			kKeyIDToggled            = 63,
 			kLightingTemplate        = 64,
 		};

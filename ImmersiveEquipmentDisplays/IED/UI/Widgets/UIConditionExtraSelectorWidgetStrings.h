@@ -70,7 +70,7 @@ namespace IED
 			InOwnedCell             = 5459,
 			IsNPCCellOwner          = 5460,
 			SunAngle                = 5461,
-			IsDaytime               = 5462,
+			IsSunAboveHorizon               = 5462,
 			KeyIDToggled            = 5463,
 			LightingTemplate        = 5464,
 		};

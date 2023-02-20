@@ -20,7 +20,7 @@ namespace IED
 	{
 		if (!isDaytime)
 		{
-			isDaytime.emplace(Data::IsDaytime(RE::TES::GetSingleton()->sky));
+			isDaytime.emplace(Data::IsSunAboveHorizon(RE::TES::GetSingleton()->sky));
 		}
 
 		return *isDaytime;

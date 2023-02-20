@@ -98,7 +98,7 @@ namespace IED
 			return detail::get_time_of_day(a_sky, timing);
 		}
 
-		bool IsDaytime(const RE::Sky* a_sky) noexcept
+		bool IsSunAboveHorizon(const RE::Sky* a_sky) noexcept
 		{
 			if (!a_sky)
 			{

@@ -206,7 +206,7 @@ namespace IED
 						a_match.flags.test(Tf::kExtraFlag1) ? std::fabsf(angle) : angle,
 						a_match.sunAngle);
 				}
-			case Data::ExtraConditionType::kIsDaytime:
+			case Data::ExtraConditionType::kIsSunAboveHorizon:
 				return a_params.is_daytime();
 			case Data::ExtraConditionType::kKeyIDToggled:
 				return a_params.get_key_toggle_state(a_match.s0);

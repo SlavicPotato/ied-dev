@@ -34,7 +34,6 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsCellOwner, UIConditionExtraSelectorWidgetStrings::IsCellOwner),
 			std::make_pair(Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild),
 			std::make_pair(Data::ExtraConditionType::kIsCommanded, UIConditionExtraSelectorWidgetStrings::IsCommanded),
-			std::make_pair(Data::ExtraConditionType::kIsDaytime, UIConditionExtraSelectorWidgetStrings::IsDaytime),
 			std::make_pair(Data::ExtraConditionType::kIsDead, UIConditionExtraSelectorWidgetStrings::IsDead),
 			std::make_pair(Data::ExtraConditionType::kIsFemale, UIConditionExtraSelectorWidgetStrings::IsFemale),
 			std::make_pair(Data::ExtraConditionType::kIsFlying, UIConditionExtraSelectorWidgetStrings::IsFlying),
@@ -50,6 +49,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsPlayerLastRiddenMount, UIConditionExtraSelectorWidgetStrings::IsPlayerLastRiddenMount),
 			std::make_pair(Data::ExtraConditionType::kIsPlayerTeammate, UIConditionExtraSelectorWidgetStrings::IsPlayerTeammate),
 			std::make_pair(Data::ExtraConditionType::kIsSneaking, UIConditionExtraSelectorWidgetStrings::IsSneaking),
+			std::make_pair(Data::ExtraConditionType::kIsSunAboveHorizon, UIConditionExtraSelectorWidgetStrings::IsSunAboveHorizon),
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
@@ -245,8 +245,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsNPCCellOwner);
 			case Data::ExtraConditionType::kSunAngle:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SunAngle);
-			case Data::ExtraConditionType::kIsDaytime:
-				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsDaytime);
+			case Data::ExtraConditionType::kIsSunAboveHorizon:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSunAboveHorizon);
 			case Data::ExtraConditionType::kKeyIDToggled:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::KeyIDToggled);
 			case Data::ExtraConditionType::kLightingTemplate:
