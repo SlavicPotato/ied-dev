@@ -241,6 +241,7 @@ namespace IED
 							tmpk);
 
 						data.playerBlockKeys->comboKey = tmpk;
+						data.playerBlockKeys->key      = m_controller.GetInputHandlers().playerBlock.GetKey();
 						data.playerBlockKeys.mark(true);
 					}
 
@@ -256,7 +257,8 @@ namespace IED
 						m_controller.GetInputHandlers().playerBlock.SetKey(
 							tmpk);
 
-						data.playerBlockKeys->key = tmpk;
+						data.playerBlockKeys->key      = tmpk;
+						data.playerBlockKeys->comboKey = m_controller.GetInputHandlers().playerBlock.GetComboKey();
 						data.playerBlockKeys.mark(true);
 					}
 
@@ -723,6 +725,7 @@ namespace IED
 							tmpk);
 
 						ui.openKeys->comboKey = tmpk;
+						ui.openKeys->key      = m_controller.GetInputHandlers().uiOpen.GetKey();
 						ui.openKeys.mark(true);
 					}
 
@@ -736,7 +739,8 @@ namespace IED
 					{
 						m_controller.GetInputHandlers().uiOpen.SetKey(tmpk);
 
-						ui.openKeys->key = tmpk;
+						ui.openKeys->key      = tmpk;
+						ui.openKeys->comboKey = m_controller.GetInputHandlers().uiOpen.GetComboKey();
 						ui.openKeys.mark(true);
 					}
 
