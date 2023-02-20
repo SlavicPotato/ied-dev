@@ -63,17 +63,17 @@ namespace IED
 		bool DeferredHideObject(const std::uint8_t a_delay) const noexcept;
 		void ResetDeferredHide() const noexcept;
 
-		constexpr auto IsNodeVisible() const noexcept
+		SKMP_143_CONSTEXPR auto IsNodeVisible() const noexcept
 		{
 			return data.state && !data.state->flags.test(ObjectEntryFlags::kInvisible);
 		}
 
-		constexpr auto IsActive() const noexcept
+		SKMP_143_CONSTEXPR auto IsActive() const noexcept
 		{
 			return IsNodeVisible();
 		}
 
-		constexpr auto GetFormIfActive() const noexcept
+		SKMP_143_CONSTEXPR auto GetFormIfActive() const noexcept
 		{
 			return IsActive() ? data.state->form : nullptr;
 		}
@@ -279,7 +279,7 @@ namespace IED
 				const NiPointer<NiNode>& a_root1p,
 				ObjectDatabase&          a_db) noexcept;
 
-			[[nodiscard]] inline constexpr explicit operator bool() const noexcept
+			[[nodiscard]] inline SKMP_143_CONSTEXPR explicit operator bool() const noexcept
 			{
 				return state || effectShaderData;
 			}
@@ -288,7 +288,7 @@ namespace IED
 			std::unique_ptr<EffectShaderData> effectShaderData;
 		};
 
-		constexpr void DisableRefSync() noexcept
+		SKMP_143_CONSTEXPR void DisableRefSync() noexcept
 		{
 			if (auto& state = data.state)
 			{

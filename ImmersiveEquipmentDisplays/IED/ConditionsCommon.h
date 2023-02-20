@@ -35,8 +35,9 @@ namespace IED
 			return a_percent >= 100.0f || a_params.objects.GetRandomPercent(a_luid) < a_percent;
 		}
 
-		bool is_in_dialogue(CommonParams& a_params) noexcept;
-		bool is_cell_owner(CommonParams& a_params, const CachedFactionData& a_cachedFactionData) noexcept;
+		bool                 is_in_dialogue(CommonParams& a_params) noexcept;
+		bool                 is_cell_owner(CommonParams& a_params, const CachedFactionData& a_cachedFactionData) noexcept;
+		BGSLightingTemplate* get_active_lighting_template(CommonParams& a_params) noexcept;
 
 		template <class Tv, class Tm>
 		constexpr bool compare(
@@ -209,6 +210,8 @@ namespace IED
 				return a_params.is_daytime();
 			case Data::ExtraConditionType::kKeyIDToggled:
 				return a_params.get_key_toggle_state(a_match.s0);
+			case Data::ExtraConditionType::kLightingTemplate:
+				return match_form_with_id<Tm, Tf>(a_match, get_active_lighting_template(a_params));
 			default:
 				return false;
 			}
@@ -1084,8 +1087,7 @@ namespace IED
 
 				if (a_match.flags.test(Tf::kExtraFlag1))
 				{
-					if (a_match.flags.test(Tf::kNegateMatch3) ==
-					    cell->cellFlags.test(TESObjectCELL::Flag::kIsInteriorCell))
+					if (a_match.flags.test(Tf::kNegateMatch3) == cell->IsInterior())
 					{
 						return false;
 					}
@@ -1093,8 +1095,19 @@ namespace IED
 
 				if (a_match.flags.test(Tf::kExtraFlag2))
 				{
-					if (a_match.flags.test(Tf::kNegateMatch4) ==
-					    cell->cellFlags.test(TESObjectCELL::Flag::kPublicArea))
+					if (a_match.flags.test(Tf::kNegateMatch4) == cell->IsPublicArea())
+					{
+						return false;
+					}
+				}
+
+				if ((a_match.lightingTemplateInheritanceFlags &
+				     RE::INTERIOR_DATA::Inherit::kAll) != RE::INTERIOR_DATA::Inherit::kNone)
+				{
+					const stl::flag flags(cell->GetLightingTemplateInheritanceFlags());
+
+					if (a_match.flags.test(Tf::kNegateMatch5) ==
+					    flags.test_any(a_match.lightingTemplateInheritanceFlags))
 					{
 						return false;
 					}
@@ -1108,93 +1121,98 @@ namespace IED
 			}
 		}
 
-		template <class Tm>
-		SKMP_FORCEINLINE constexpr bool do_var_match(
-			const conditionalVariableStorage_t& a_data,
-			const Tm&                           a_match) noexcept
+		namespace detail
 		{
-			switch (a_data.type)
+
+			template <class Tm>
+			SKMP_FORCEINLINE constexpr bool do_var_match(
+				const conditionalVariableStorage_t& a_data,
+				const Tm&                           a_match) noexcept
 			{
-			case ConditionalVariableType::kInt32:
-				switch (a_match.condVarType)
+				switch (a_data.type)
 				{
 				case ConditionalVariableType::kInt32:
-					return compare(a_match.compOperator, a_data.i32, a_match.i32a);
+					switch (a_match.condVarType)
+					{
+					case ConditionalVariableType::kInt32:
+						return compare(a_match.compOperator, a_data.i32, a_match.i32a);
+					case ConditionalVariableType::kFloat:
+						return compare(a_match.compOperator, static_cast<float>(a_data.i32), a_match.f32a);
+					}
+					break;
 				case ConditionalVariableType::kFloat:
-					return compare(a_match.compOperator, static_cast<float>(a_data.i32), a_match.f32a);
+					switch (a_match.condVarType)
+					{
+					case ConditionalVariableType::kInt32:
+						return compare(a_match.compOperator, static_cast<std::int32_t>(a_data.f32), a_match.i32a);
+					case ConditionalVariableType::kFloat:
+						return compare(a_match.compOperator, a_data.f32, a_match.f32a);
+					}
+					break;
+				case ConditionalVariableType::kForm:
+					if (a_match.condVarType == ConditionalVariableType::kForm)
+					{
+						return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form2.get_id().get());
+					}
+					break;
 				}
-				break;
-			case ConditionalVariableType::kFloat:
-				switch (a_match.condVarType)
-				{
-				case ConditionalVariableType::kInt32:
-					return compare(a_match.compOperator, static_cast<std::int32_t>(a_data.f32), a_match.i32a);
-				case ConditionalVariableType::kFloat:
-					return compare(a_match.compOperator, a_data.f32, a_match.f32a);
-				}
-				break;
-			case ConditionalVariableType::kForm:
-				if (a_match.condVarType == ConditionalVariableType::kForm)
-				{
-					return compare(a_match.compOperator, a_data.form.get_id().get(), a_match.form2.get_id().get());
-				}
-				break;
+
+				return false;
 			}
 
-			return false;
-		}
-
-		template <class Tm, class Tff>
-		constexpr bool do_var_match_all_filtered(
-			CommonParams& a_params,
-			const Tm&     a_match,
-			Tff           a_filter) noexcept
-		{
-			for (auto& e : get_actor_object_map(a_params))
+			template <class Tm, class Tff>
+			constexpr bool do_var_match_all_filtered(
+				CommonParams& a_params,
+				const Tm&     a_match,
+				Tff           a_filter) noexcept
 			{
-				if (!a_filter(e))
+				for (auto& e : get_actor_object_map(a_params))
 				{
-					continue;
+					if (!a_filter(e))
+					{
+						continue;
+					}
+
+					auto& vdata = e.second.GetVariables();
+
+					auto it = vdata.find(a_match.s0);
+					if (it == vdata.end())
+					{
+						continue;
+					}
+
+					if (do_var_match(it->second, a_match))
+					{
+						return true;
+					}
 				}
 
-				auto& vdata = e.second.GetVariables();
-
-				auto it = vdata.find(a_match.s0);
-				if (it == vdata.end())
-				{
-					continue;
-				}
-
-				if (do_var_match(it->second, a_match))
-				{
-					return true;
-				}
+				return false;
 			}
 
-			return false;
-		}
-
-		template <class Tm>
-		constexpr bool do_var_match_id(
-			CommonParams& a_params,
-			Game::FormID  a_id,
-			const Tm&     a_match) noexcept
-		{
-			auto& data = get_actor_object_map(a_params);
-
-			auto ita = data.find(a_id);
-			if (ita != data.end())
+			template <class Tm>
+			constexpr bool do_var_match_id(
+				CommonParams& a_params,
+				Game::FormID  a_id,
+				const Tm&     a_match) noexcept
 			{
-				auto& vdata = ita->second.GetVariables();
+				auto& data = get_actor_object_map(a_params);
 
-				auto it = vdata.find(a_match.s0);
-				if (it != vdata.end())
+				auto ita = data.find(a_id);
+				if (ita != data.end())
 				{
-					return do_var_match(it->second, a_match);
+					auto& vdata = ita->second.GetVariables();
+
+					auto it = vdata.find(a_match.s0);
+					if (it != vdata.end())
+					{
+						return do_var_match(it->second, a_match);
+					}
 				}
+
+				return false;
 			}
 
-			return false;
 		}
 
 		template <class Tm, class Tf>
@@ -1206,7 +1224,7 @@ namespace IED
 			{
 			case Data::VariableConditionSource::kAny:
 
-				return do_var_match_all_filtered(
+				return detail::do_var_match_all_filtered(
 					a_params,
 					a_match,
 					[](auto&) { return true; });
@@ -1217,7 +1235,7 @@ namespace IED
 
 				if (a_match.flags.test(Tf::kNegateMatch2))
 				{
-					return do_var_match_all_filtered(
+					return detail::do_var_match_all_filtered(
 						a_params,
 						a_match,
 						[fid = a_params.objects.GetActorFormID()](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1231,7 +1249,7 @@ namespace IED
 					auto it = vdata.find(a_match.s0);
 					if (it != vdata.end())
 					{
-						return do_var_match(it->second, a_match);
+						return detail::do_var_match(it->second, a_match);
 					}
 				}
 
@@ -1243,7 +1261,7 @@ namespace IED
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
-						return do_var_match_all_filtered(
+						return detail::do_var_match_all_filtered(
 							a_params,
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1252,7 +1270,7 @@ namespace IED
 					}
 					else
 					{
-						return do_var_match_id(a_params, fid, a_match);
+						return detail::do_var_match_id(a_params, fid, a_match);
 					}
 				}
 
@@ -1264,7 +1282,7 @@ namespace IED
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
-						return do_var_match_all_filtered(
+						return detail::do_var_match_all_filtered(
 							a_params,
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1273,7 +1291,7 @@ namespace IED
 					}
 					else
 					{
-						return do_var_match_all_filtered(
+						return detail::do_var_match_all_filtered(
 							a_params,
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1290,7 +1308,7 @@ namespace IED
 				{
 					if (a_match.flags.test(Tf::kNegateMatch1))
 					{
-						return do_var_match_all_filtered(
+						return detail::do_var_match_all_filtered(
 							a_params,
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1299,7 +1317,7 @@ namespace IED
 					}
 					else
 					{
-						return do_var_match_all_filtered(
+						return detail::do_var_match_all_filtered(
 							a_params,
 							a_match,
 							[fid](auto& a_e) noexcept [[msvc::forceinline]] {
@@ -1312,9 +1330,9 @@ namespace IED
 
 			case Data::VariableConditionSource::kPlayerHorse:
 
-				if (auto& actor = a_params.get_last_ridden_player_horse())
+				if (const auto& actor = a_params.get_last_ridden_player_horse())
 				{
-					return do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match);
 				}
 
 				break;
@@ -1323,7 +1341,7 @@ namespace IED
 
 				if (const auto& actor = a_params.get_mounted_actor())
 				{
-					return do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match);
 				}
 
 				break;
@@ -1332,7 +1350,7 @@ namespace IED
 
 				if (const auto& actor = a_params.get_mounting_actor())
 				{
-					return do_var_match_id(a_params, actor->formID, a_match);
+					return detail::do_var_match_id(a_params, actor->formID, a_match);
 				}
 
 				break;

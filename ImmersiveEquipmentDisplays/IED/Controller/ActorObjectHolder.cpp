@@ -28,7 +28,7 @@ namespace IED
 
 	namespace detail
 	{
-		constexpr auto make_object_slot_array(
+		SKMP_143_CONSTEXPR auto make_object_slot_array(
 			BipedSlotData::display_slot_data_type& a_1) noexcept
 		{
 			return stl::make_array<

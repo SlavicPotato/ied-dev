@@ -40,3 +40,4 @@
 7700-7799:		actor values
 7800-7899:		light widget
 7900-7999:		profile editor base
+8000-8099:		lt inherit flags

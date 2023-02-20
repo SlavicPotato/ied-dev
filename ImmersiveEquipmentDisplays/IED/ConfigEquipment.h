@@ -63,6 +63,8 @@ namespace IED
 			kExtraFlag6 = 1u << 20,
 			kExtraFlag7 = 1u << 21,
 
+			kNegateMatch5 = 1u << 22,
+
 			//kMatchTemplate = 1u << 30
 		};
 
@@ -359,10 +361,12 @@ namespace IED
 				std::uint32_t                level;
 				ConditionalVariableType      condVarType;
 				ActorState::ACTOR_LIFE_STATE lifeState;
+				RE::INTERIOR_DATA::Inherit   lightingTemplateInheritanceFlags;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ActorState::ACTOR_LIFE_STATE>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<RE::INTERIOR_DATA::Inherit>, std::uint32_t>);
 			};
 
 			union

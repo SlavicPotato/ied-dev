@@ -44,7 +44,7 @@ namespace IED
 		void FillNPCInfoEntry(TESNPC* a_npc, npcInfoEntry_t& a_out);
 
 	private:
-		virtual constexpr const Data::configStore_t& AIGetConfigStore() noexcept = 0;
+		virtual SKMP_143_CONSTEXPR const Data::configStore_t& AIGetConfigStore() noexcept = 0;
 
 		void AddExtraActorEntry(Game::FormID a_formid);
 		void AddExtraNPCEntry(Game::FormID a_formid);

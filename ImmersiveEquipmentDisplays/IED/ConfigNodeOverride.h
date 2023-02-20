@@ -86,7 +86,9 @@ namespace IED
 			kNegateMatch3 = 1u << 15,
 			kNegateMatch4 = 1u << 16,
 
-			kExtraFlag3 = 1u << 17
+			kExtraFlag3 = 1u << 17,
+
+			kNegateMatch5 = 1u << 18,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionFlags);
@@ -371,10 +373,12 @@ namespace IED
 				std::uint32_t                level;
 				ConditionalVariableType      condVarType;
 				ActorState::ACTOR_LIFE_STATE lifeState;
+				RE::INTERIOR_DATA::Inherit   lightingTemplateInheritanceFlags;
 
 				static_assert(std::is_same_v<std::underlying_type_t<TimeOfDay>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ConditionalVariableType>, std::uint32_t>);
 				static_assert(std::is_same_v<std::underlying_type_t<ActorState::ACTOR_LIFE_STATE>, std::uint32_t>);
+				static_assert(std::is_same_v<std::underlying_type_t<RE::INTERIOR_DATA::Inherit>, std::uint32_t>);
 			};
 
 			union

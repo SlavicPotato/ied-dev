@@ -348,12 +348,12 @@ namespace IED
 
 		bool SkeletonCheck(Game::FormID a_actor);
 
-		[[nodiscard]] constexpr auto& GetActiveConfig() noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetActiveConfig() noexcept
 		{
 			return *m_configData.active;
 		}
 
-		[[nodiscard]] constexpr auto& GetActiveConfig() const noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetActiveConfig() const noexcept
 		{
 			return *m_configData.active;
 		}
@@ -368,12 +368,12 @@ namespace IED
 			return m_configData;
 		}
 
-		[[nodiscard]] constexpr auto& GetSettings() noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetSettings() noexcept
 		{
 			return *m_configData.settings;
 		}
 
-		[[nodiscard]] constexpr auto& GetSettings() const noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetSettings() const noexcept
 		{
 			return *m_configData.settings;
 		}
@@ -408,7 +408,7 @@ namespace IED
 		void QueueObjectDatabaseClear();
 		void SetObjectDatabaseLevel(ObjectDatabaseLevel a_level);
 
-		[[nodiscard]] constexpr auto IsDefaultConfigForced() const noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto IsDefaultConfigForced() const noexcept
 		{
 			return static_cast<bool>(m_configData.stash);
 		}
@@ -900,7 +900,7 @@ namespace IED
 
 		// actor info overrides
 
-		virtual constexpr const Data::configStore_t& AIGetConfigStore() noexcept override
+		virtual SKMP_143_CONSTEXPR const Data::configStore_t& AIGetConfigStore() noexcept override
 		{
 			return *m_configData.active;
 		}
@@ -912,7 +912,7 @@ namespace IED
 			return m_lock;
 		}
 
-		virtual constexpr Data::configStore_t& JSGetConfigStore() noexcept override
+		virtual SKMP_143_CONSTEXPR Data::configStore_t& JSGetConfigStore() noexcept override
 		{
 			return *m_configData.active;
 		}

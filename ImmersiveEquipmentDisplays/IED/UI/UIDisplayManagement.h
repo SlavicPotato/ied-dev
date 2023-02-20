@@ -53,14 +53,14 @@ namespace IED
 			static constexpr std::size_t NUM_PANELS = 2;
 
 			template <class T>
-			[[nodiscard]] constexpr auto& GetEditorPanelBase() const noexcept
+			[[nodiscard]] SKMP_143_CONSTEXPR auto& GetEditorPanelBase() const noexcept
 			{
 				static_assert(stl::underlying(T::PANEL_ID) < NUM_PANELS);
 
 				return *m_editorPanels[stl::underlying(T::PANEL_ID)];
 			}
 
-			[[nodiscard]] constexpr auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
+			[[nodiscard]] SKMP_143_CONSTEXPR auto& GetEditorPanelBase(UIDisplayManagementEditorPanel a_id) const noexcept
 			{
 				assert(stl::underlying(a_id) < NUM_PANELS);
 

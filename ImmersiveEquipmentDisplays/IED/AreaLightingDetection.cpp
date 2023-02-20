@@ -105,7 +105,7 @@ namespace IED
 
 			const bool isNightTime = detail::is_nighttime(a_sky);
 
-			const auto& col = a_sky->skyColor[3];
+			const auto& col = a_sky->skyColor[RE::TESWeather::ColorTypes::kAmbient];
 
 			return (col.r + col.g + col.b) < (isNightTime ? (SPtrHolder::GetSingleton().fTorchLightLevelNight ? *SPtrHolder::GetSingleton().fTorchLightLevelNight : 1.2f) : 0.6f);
 		}
@@ -186,6 +186,29 @@ namespace IED
 		{
 			const auto* const cell = (*g_thePlayer)->parentCell;
 			return cell && cell->IsInterior() ? detail::get_room_lighting_template(a_sky) : nullptr;
+		}
+
+		BGSLightingTemplate* GetActiveLightingTemplate(const Actor* a_actor, const RE::Sky* a_sky) noexcept
+		{
+			const auto cell = a_actor->GetParentCell();
+			if (!cell ||
+			    !cell->IsInterior() ||
+			    cell->cellFlags.test(
+					TESObjectCELL::Flag::kShowSky |
+					TESObjectCELL::Flag::kUseSkyLighting))
+			{
+				return nullptr;
+			}
+
+			if (a_actor == *g_thePlayer)
+			{
+				if (const auto rlt = detail::get_room_lighting_template(a_sky))
+				{
+					return rlt;
+				}
+			}
+
+			return cell->lightingTemplate;
 		}
 
 	}

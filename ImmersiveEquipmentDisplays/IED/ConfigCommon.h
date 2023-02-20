@@ -342,6 +342,7 @@ namespace IED
 			kSunAngle                = 61,
 			kIsDaytime               = 62,
 			kKeyIDToggled            = 63,
+			kLightingTemplate        = 64,
 		};
 
 		enum class ComparisonOperator : std::uint32_t

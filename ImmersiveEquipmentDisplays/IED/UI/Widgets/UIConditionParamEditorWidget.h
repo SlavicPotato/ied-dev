@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Form/UIFormPickerWidget.h"
+#include "UILightingTemplateInheritanceFlagsWidget.h"
 #include "UINodeMonitorSelectorWidget.h"
 #include "UITimeOfDaySelectorWidget.h"
 #include "UIWeatherClassSelectorWidget.h"
@@ -48,6 +49,7 @@ namespace IED
 			LifeState,
 			ActorValue,
 			KeyBindID,
+			LightingTemplateInheritanceFlags,
 
 			Total
 		};
@@ -102,7 +104,8 @@ namespace IED
 			public UIFormLookupInterface,
 			public UIWeatherClassSelectorWidget,
 			public UITimeOfDaySelectorWidget,
-			public UINodeMonitorSelectorWidget
+			public UINodeMonitorSelectorWidget,
+			public UILightingTemplateInheritanceFlagsWidget
 		{
 			static constexpr auto POPUP_ID = "mpr_ed";
 
@@ -402,6 +405,16 @@ namespace IED
 				Ap == ConditionParamItem::KeyBindID)
 			{
 				static_assert(std::is_same_v<T, stl::fixed_string>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					nullptr
+				};
+			}
+			else if constexpr (
+				Ap == ConditionParamItem::LightingTemplateInheritanceFlags)
+			{
+				static_assert(std::is_same_v<T, RE::INTERIOR_DATA::Inherit>);
 
 				e = {
 					static_cast<void*>(std::addressof(a_p1)),

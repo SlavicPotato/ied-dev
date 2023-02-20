@@ -67,11 +67,8 @@ namespace IED
 
 					if (ImGui::Selectable(e->second, selected))
 					{
-						if (a_key != e->first)
-						{
-							a_key  = e->first;
-							result = true;
-						}
+						a_key  = e->first;
+						result = true;
 					}
 
 					ImGui::PopID();

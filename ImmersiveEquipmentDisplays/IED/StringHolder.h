@@ -87,7 +87,7 @@ namespace IED
 
 		static void Create();
 
-		static constexpr const auto* GetSingleton() noexcept
+		static SKMP_143_CONSTEXPR const auto* GetSingleton() noexcept
 		{
 			return m_Instance.get();
 		}

@@ -59,6 +59,7 @@ namespace IED
 			Perk             = 6348,
 			Hazard           = 6349,
 			EquipSlot        = 6350,
+			LightingTemplate = 6351,
 		};
 	}
 }

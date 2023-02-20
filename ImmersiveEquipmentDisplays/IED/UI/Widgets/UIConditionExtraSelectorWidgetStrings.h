@@ -71,7 +71,8 @@ namespace IED
 			IsNPCCellOwner          = 5460,
 			SunAngle                = 5461,
 			IsDaytime               = 5462,
-			KeyIDToggled          = 5463,
+			KeyIDToggled            = 5463,
+			LightingTemplate        = 5464,
 		};
 	}
 }

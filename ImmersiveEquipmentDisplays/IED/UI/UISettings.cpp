@@ -772,11 +772,10 @@ namespace IED
 							tmpk,
 							true)))
 					{
-						context.ILRHSetKeys(
-							context.ILRHGetKey(),
-							tmpk);
+						context.ILRHSetKeys(context.ILRHGetKey(), tmpk);
 
 						ui.releaseLockKeys->comboKey = tmpk;
+						ui.releaseLockKeys->key      = context.ILRHGetKey();
 						ui.releaseLockKeys.mark(true);
 					}
 
@@ -790,7 +789,8 @@ namespace IED
 					{
 						context.ILRHSetKeys(tmpk, context.ILRHGetComboKey());
 
-						ui.releaseLockKeys->key = tmpk;
+						ui.releaseLockKeys->key      = tmpk;
+						ui.releaseLockKeys->comboKey = context.ILRHGetComboKey();
 						ui.releaseLockKeys.mark(true);
 					}
 

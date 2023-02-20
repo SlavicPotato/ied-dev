@@ -264,21 +264,29 @@ namespace IED
 				return;
 			}
 
+			auto window = ImGui::GetCurrentWindow();
+			if (window->SkipItems)
+			{
+				return;
+			}
+
 			ImGui::Spacing();
 
-			const auto size = ImGui::CalcTextSize(desc->c_str());
+			const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0.0f);
+
+			const auto size = ImGui::CalcTextSize(desc->c_str(), nullptr, false, wrapWidth);
 
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
 
-			ImGui::SetNextWindowSizeConstraints({ 0, 0 }, { -1, 150 });
+			ImGui::SetNextWindowSizeConstraints({ 0, 0 }, { -1, 200 });
 
-			if(ImGui::BeginChild(
-				"ps_desc",
-				{ 0.0f, size.y },
-				false,
-				ImGuiWindowFlags_None))
+			if (ImGui::BeginChild(
+					"ps_desc",
+					{ 0.0f, size.y },
+					false,
+					ImGuiWindowFlags_None))
 			{
-				ImGui::TextUnformatted(desc->c_str());
+				ImGui::TextWrapped("%s", desc->c_str());
 			}
 
 			ImGui::EndChild();

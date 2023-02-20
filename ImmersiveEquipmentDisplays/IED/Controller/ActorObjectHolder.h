@@ -659,7 +659,7 @@ namespace IED
 			return m_simNodeList;
 		}
 
-		[[nodiscard]] constexpr auto& GetTempData() noexcept
+		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetTempData() noexcept
 		{
 			return *m_temp;
 		}

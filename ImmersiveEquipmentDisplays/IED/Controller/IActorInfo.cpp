@@ -2,6 +2,8 @@
 
 #include "IActorInfo.h"
 
+#include "IED/AreaLightingDetection.h"
+
 #include "IED/FormCommon.h"
 
 #include <ext/GameCommon.h>
@@ -59,14 +61,23 @@ namespace IED
 
 			a_out.cellOwner            = owner ? owner->formID : Game::FormID{};
 			a_out.cellCoords           = cell->GetCellCoordinates();
-			a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
+			//a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
 		}
 		else
 		{
 			a_out.cell                 = {};
 			a_out.cellOwner            = {};
-			a_out.cellLightingTemplate = {};
+			//a_out.cellLightingTemplate = {};
 			a_out.cellCoords.reset();
+		}
+
+		if (const auto lt = ALD::GetActiveLightingTemplate(a_actor, RE::TES::GetSingleton()->sky))
+		{
+			a_out.cellLightingTemplate = lt ? lt->formID : Game::FormID{};
+		}
+		else
+		{
+			a_out.cellLightingTemplate = {};
 		}
 
 		if (auto skin = a_actor->GetSkin())

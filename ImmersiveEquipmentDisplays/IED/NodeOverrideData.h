@@ -320,42 +320,42 @@ namespace IED
 
 		static void Create();
 
-		static constexpr const auto& GetCMENodeData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetCMENodeData() noexcept
 		{
 			return m_Instance->m_cme;
 		}
 
-		static constexpr const auto& GetMOVNodeData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetMOVNodeData() noexcept
 		{
 			return m_Instance->m_mov;
 		}
 
-		static constexpr const auto& GetMonitorNodeData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetMonitorNodeData() noexcept
 		{
 			return m_Instance->m_monitor;
 		}
 
-		static constexpr const auto& GetWeaponNodeData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetWeaponNodeData() noexcept
 		{
 			return m_Instance->m_weap;
 		}
 
-		static constexpr const auto& GetExtraMovNodes() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetExtraMovNodes() noexcept
 		{
 			return m_Instance->m_extramov;
 		}
 
-		static constexpr const auto& GetExtraCopyNodes() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetExtraCopyNodes() noexcept
 		{
 			return m_Instance->m_extraCopy;
 		}
 
-		static constexpr const auto& GetTransformOverrideData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetTransformOverrideData() noexcept
 		{
 			return m_Instance->m_transformOverride;
 		}
 
-		static constexpr const auto& GetRandPlacementData() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetRandPlacementData() noexcept
 		{
 			return m_Instance->m_randPlacement;
 		}
@@ -365,22 +365,22 @@ namespace IED
 			return m_Instance->m_humanoidSkeletonPaths;
 		}*/
 
-		static constexpr const auto& GetHumanoidSkeletonSignatures() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetHumanoidSkeletonSignatures() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonSignatures;
 		}
 
-		static constexpr const auto& GetHumanoidSkeletonSignaturesXp32() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetHumanoidSkeletonSignaturesXp32() noexcept
 		{
 			return m_Instance->m_humanoidSkeletonSignaturesXp32;
 		}
 
-		static constexpr const auto& GetNodeMonitorEntries() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetNodeMonitorEntries() noexcept
 		{
 			return m_Instance->m_nodeMonEntries;
 		}
 
-		static constexpr const auto& GetConvertNodes() noexcept
+		static SKMP_143_CONSTEXPR const auto& GetConvertNodes() noexcept
 		{
 			return m_Instance->m_convertNodes;
 		}

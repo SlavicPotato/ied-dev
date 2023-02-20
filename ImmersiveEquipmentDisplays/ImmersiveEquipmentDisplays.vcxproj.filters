@@ -1835,6 +1835,12 @@
     <ClInclude Include="IED\UI\Profile\UIProfileEditorBaseStrings.h">
       <Filter>Source\IED\UI\Profile</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UILightingTemplateInheritanceFlagsWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UILightingTemplateInheritanceFlagsWidgetStrings.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2928,6 +2934,9 @@
     </ClCompile>
     <ClCompile Include="IED\KeyToggleStateEntryHolder.cpp">
       <Filter>Source\IED\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Widgets\UILightingTemplateInheritanceFlagsWidget.cpp">
+      <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

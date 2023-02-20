@@ -39,12 +39,12 @@ namespace IED
 				{
 				}
 
-				[[nodiscard]] constexpr explicit operator bool() const noexcept
+				[[nodiscard]] SKMP_143_CONSTEXPR explicit operator bool() const noexcept
 				{
 					return static_cast<bool>(ptr);
 				}
 
-				[[nodiscard]] constexpr auto operator->() const noexcept
+				[[nodiscard]] SKMP_143_CONSTEXPR auto operator->() const noexcept
 				{
 					return ptr.get();
 				}

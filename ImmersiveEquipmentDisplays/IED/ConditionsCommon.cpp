@@ -148,6 +148,30 @@ namespace IED
 			return false;
 		}
 
+		BGSLightingTemplate* get_active_lighting_template(
+			CommonParams& a_params) noexcept
+		{
+			const auto cell = a_params.actor->GetParentCell();
+			if (!cell ||
+			    !cell->IsInterior() ||
+			    cell->cellFlags.test(
+					TESObjectCELL::Flag::kShowSky |
+					TESObjectCELL::Flag::kUseSkyLighting))
+			{
+				return nullptr;
+			}
+
+			if (a_params.objects.IsPlayer())
+			{
+				if (const auto rlt = a_params.controller.GetGlobalState().roomLightingTemplate)
+				{
+					return rlt;
+				}
+			}
+
+			return cell->lightingTemplate;
+		}
+
 #if defined(IED_ENABLE_CONDITION_EN)
 		bool enemies_nearby(CommonParams& a_params) noexcept
 		{

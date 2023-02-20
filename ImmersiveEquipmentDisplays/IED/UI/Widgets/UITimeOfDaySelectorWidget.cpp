@@ -28,7 +28,7 @@ namespace IED
 				ImGui::PushID("1");
 
 				if (ImGui::CheckboxFlagsT(
-						UIL::LS(CommonStrings::All, "1"),
+						UIL::LS(CommonStrings::Any, "1"),
 						stl::underlying(std::addressof(a_tod)),
 						stl::underlying(Data::TimeOfDay::kAll)))
 				{
@@ -81,7 +81,7 @@ namespace IED
 
 				if (a_type.test(Data::TimeOfDay::kSunrise))
 				{
-					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Sunrise);
+					m_buf += UIL::L(UITimeOfDaySelectorWidgetStrings::Sunrise);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kDay))
@@ -90,7 +90,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Day);
+					m_buf += UIL::L(UITimeOfDaySelectorWidgetStrings::Day);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kSunset))
@@ -99,7 +99,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Sunset);
+					m_buf += UIL::L(UITimeOfDaySelectorWidgetStrings::Sunset);
 				}
 
 				if (a_type.test(Data::TimeOfDay::kNight))
@@ -108,7 +108,7 @@ namespace IED
 					{
 						m_buf += ", ";
 					}
-					m_buf += UIL::LS(UITimeOfDaySelectorWidgetStrings::Night);
+					m_buf += UIL::L(UITimeOfDaySelectorWidgetStrings::Night);
 				}
 
 				return m_buf.c_str();

@@ -135,6 +135,16 @@ namespace IED
 						{
 							f.As1<stl::fixed_string>().clear();
 						}
+
+						if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
+						{
+							f.As1<stl::fixed_string>().clear();
+						}
+
+						if (const auto& f = get(ConditionParamItem::LightingTemplateInheritanceFlags); f.p1)
+						{
+							f.As1<RE::INTERIOR_DATA::Inherit>() = RE::INTERIOR_DATA::Inherit::kNone;
+						}
 					}
 
 					result = true;
@@ -478,6 +488,22 @@ namespace IED
 						100.0f,
 						"%.2f",
 						ImGuiSliderFlags_AlwaysClamp);
+				}
+			}
+			
+			if (const auto& e = get(ConditionParamItem::LightingTemplateInheritanceFlags); e.p1)
+			{
+				ConditionParamItemExtraArgs args;
+
+				result |= DrawExtra(e, args, ConditionParamItem::LightingTemplateInheritanceFlags);
+
+				if (!args.hide)
+				{
+					UICommon::PushDisabled(args.disable);
+
+					result |= DrawLightingTemplateInheritanceFlags(e.As1<RE::INTERIOR_DATA::Inherit>());
+
+					UICommon::PopDisabled(args.disable);					
 				}
 			}
 

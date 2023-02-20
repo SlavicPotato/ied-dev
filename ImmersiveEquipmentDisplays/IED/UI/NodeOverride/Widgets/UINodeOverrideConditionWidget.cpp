@@ -1318,6 +1318,11 @@ namespace IED
 								case Data::ExtraConditionType::kKeyIDToggled:
 									m_condParamEditor.SetNext<ConditionParamItem::KeyBindID>(e.s0);
 									break;
+								case Data::ExtraConditionType::kLightingTemplate:
+									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::LightingTemplate));
+									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
+									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
@@ -1530,6 +1535,8 @@ namespace IED
 
 								m_condParamEditor.SetNext<ConditionParamItem::Form>(
 									e.form.get_id());
+								m_condParamEditor.SetNext<ConditionParamItem::LightingTemplateInheritanceFlags>(
+									e.lightingTemplateInheritanceFlags);
 								m_condParamEditor.SetNext<ConditionParamItem::Extra>(
 									e);
 
@@ -2046,7 +2053,7 @@ namespace IED
 				if (a_item == ConditionParamItem::FormAny)
 				{
 					result = ImGui::CheckboxFlagsT(
-						"!##ctl_neg_3",
+						"!##ctl_neg_fa_1",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch3));
 
@@ -2065,7 +2072,7 @@ namespace IED
 
 				if (a_item == ConditionParamItem::Form)
 				{
-					result = ImGui::CheckboxFlagsT(
+					result |= ImGui::CheckboxFlagsT(
 						"!##ctl_neg_1",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch2));
@@ -2074,10 +2081,31 @@ namespace IED
 				}
 				else if (a_item == ConditionParamItem::Keyword)
 				{
-					result = ImGui::CheckboxFlagsT(
+					result |= ImGui::CheckboxFlagsT(
 						"!##ctl_neg_2",
 						stl::underlying(std::addressof(match->flags.value)),
 						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch1));
+
+					ImGui::SameLine();
+				}
+				else if (a_item == ConditionParamItem::LightingTemplateInheritanceFlags)
+				{
+					result |= ImGui::CheckboxFlagsT(
+						"!##ctl_neg_3",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch5));
+
+					/*ImGui::SameLine();
+
+					result |= ImGui::CheckboxFlagsT(
+						"##ctl_sw_1",
+						stl::underlying(std::addressof(match->flags.value)),
+						stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag3));
+
+					if (!match->flags.test(Data::NodeOverrideConditionFlags::kExtraFlag3))
+					{
+						a_args.disable = true;
+					}*/
 
 					ImGui::SameLine();
 				}
@@ -2093,6 +2121,7 @@ namespace IED
 					case Data::ExtraConditionType::kShoutEquipped:
 					case Data::ExtraConditionType::kCombatStyle:
 					case Data::ExtraConditionType::kClass:
+					case Data::ExtraConditionType::kLightingTemplate:
 
 						result = ImGui::CheckboxFlagsT(
 							"!##ctl_neg_1",
