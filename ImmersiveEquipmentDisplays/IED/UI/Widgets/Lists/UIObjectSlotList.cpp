@@ -296,9 +296,11 @@ namespace IED
 
 					if (it != a_data.end())
 					{
-						ImGui::TableSetColumnIndex(1);
-
-						ImGui::Text("%s", Data::GetSlotName(*it));
+						if (const auto slotDesc = Data::GetSlotName(*it))
+						{
+							ImGui::TableSetColumnIndex(1);
+							ImGui::Text(slotDesc);
+						}
 
 						++it;
 						i++;
