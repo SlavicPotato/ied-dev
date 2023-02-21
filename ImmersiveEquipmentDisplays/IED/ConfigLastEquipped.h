@@ -62,10 +62,13 @@ namespace IED
 				}
 				else
 				{
-					Data::ObjectSlot tmp;
-					a_ar&            tmp;
+					ObjectSlot tmp;
+					a_ar&      tmp;
 
-					slots.emplace_back(tmp);
+					if (tmp < ObjectSlot::kMax)
+					{
+						slots.emplace_back(tmp);
+					}
 				}
 			}
 
