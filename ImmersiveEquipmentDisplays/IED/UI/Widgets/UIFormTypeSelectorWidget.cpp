@@ -61,6 +61,7 @@ namespace IED
 			std::make_pair(BGSHazard::kTypeID, UIFormTypeSelectorWidgetStrings::Hazard),
 			std::make_pair(BGSEquipSlot::kTypeID, UIFormTypeSelectorWidgetStrings::EquipSlot),
 			std::make_pair(BGSLightingTemplate::kTypeID, UIFormTypeSelectorWidgetStrings::LightingTemplate),
+			std::make_pair(TESObjectCELL::kTypeID, UIFormTypeSelectorWidgetStrings::Cell),
 			std::make_pair(TESForm::kTypeID, UIFormTypeSelectorWidgetStrings::Form)
 		);
 
@@ -219,6 +220,8 @@ namespace IED
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::EquipSlot);
 			case BGSLightingTemplate::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::LightingTemplate);
+			case TESObjectCELL::kTypeID:
+				return UIL::LS(UIFormTypeSelectorWidgetStrings::Cell);
 			case TESForm::kTypeID:
 				return UIL::LS(UIFormTypeSelectorWidgetStrings::Form);
 			default:

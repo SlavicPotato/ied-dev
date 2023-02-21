@@ -60,6 +60,7 @@ namespace IED
 			Hazard           = 6349,
 			EquipSlot        = 6350,
 			LightingTemplate = 6351,
+			Cell             = 6352,
 		};
 	}
 }
