@@ -2234,6 +2234,11 @@ namespace IED
 								break;
 							}
 
+							if (!tdesc)
+							{
+								tdesc = "";
+							}
+							
 							if (!vdesc)
 							{
 								vdesc = "";

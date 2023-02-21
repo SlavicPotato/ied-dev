@@ -43,6 +43,7 @@ namespace IED
 			kGeometryScaleCollider      = 1u << 26,
 			kForceTryLoadAnim           = 1u << 27,
 			kPlayLoopSound              = 1u << 28,
+			kHideGeometry               = 1u << 29,
 
 			kResetTriggerFlags = kDropOnDeath |
 			                     kDisabled |

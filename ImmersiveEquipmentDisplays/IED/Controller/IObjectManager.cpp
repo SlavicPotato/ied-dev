@@ -707,6 +707,12 @@ namespace IED
 			TryMakeArrowState(state, object);
 		}
 
+		if (const bool wantHidden = a_activeConfig.flags.test(Data::BaseFlags::kHideGeometry);
+		    wantHidden != object->IsHidden())
+		{
+			object->SetHidden(wantHidden);
+		}
+
 		FinalizeObjectState(
 			state,
 			a_form,

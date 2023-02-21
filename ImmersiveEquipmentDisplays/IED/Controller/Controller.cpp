@@ -2070,6 +2070,12 @@ namespace IED
 
 		if (!state->flags.test(ObjectEntryFlags::kIsGroup))
 		{
+			if (const bool wantHidden = a_config.flags.test(BaseFlags::kHideGeometry);
+			    wantHidden != state->commonNodes.object->IsHidden())
+			{
+				state->commonNodes.object->SetHidden(wantHidden);
+			}
+
 			if (state->currentGeomTransformTag != a_config.geometryTransform)
 			{
 				INode::UpdateObjectTransform(
@@ -2405,7 +2411,7 @@ namespace IED
 			const auto mainSlot = ItemData::GetSlotFromType(type);
 
 			if (const auto leftSlot = ItemData::GetLeftSlot(mainSlot);
-			    leftSlot != ObjectSlot::kMax)
+			    leftSlot < ObjectSlot::kMax)
 			{
 				const auto& cer = a_params.objects.GetSlot(mainSlot);
 				const auto& cel = a_params.objects.GetSlot(leftSlot);
@@ -2433,7 +2439,7 @@ namespace IED
 
 			for (auto& slot : e.slots)
 			{
-				if (slot.slot == ObjectSlot::kMax)
+				if (slot.slot >= ObjectSlot::kMax)
 				{
 					continue;
 				}
@@ -2504,7 +2510,7 @@ namespace IED
 
 			for (auto& f : e.slots)
 			{
-				if (f.slot == ObjectSlot::kMax)
+				if (f.slot >= ObjectSlot::kMax)
 				{
 					continue;
 				}
@@ -2720,7 +2726,7 @@ namespace IED
 			{
 				for (auto& f : e.slots)
 				{
-					if (f.slot == ObjectSlot::kMax)
+					if (f.slot >= ObjectSlot::kMax)
 					{
 						continue;
 					}

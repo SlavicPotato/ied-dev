@@ -1642,7 +1642,20 @@ namespace IED
 					},
 					[&] {
 						if (ImGui::CheckboxFlagsT(
-								UIL::LS(UIBaseConfigString::ScaleCollider, "1"),
+								UIL::LS(CommonStrings::Invisible, "1"),
+								stl::underlying(std::addressof(a_data.flags.value)),
+								stl::underlying(Data::BaseFlags::kHideGeometry)))
+						{
+							PropagateFlagToEquipmentOverrides(
+								a_baseConfig,
+								Data::BaseFlags::kHideGeometry);
+
+							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
+						}
+						UITipsInterface::DrawTip(UITip::HideGeometry);
+
+						if (ImGui::CheckboxFlagsT(
+								UIL::LS(UIBaseConfigString::ScaleCollider, "2"),
 								stl::underlying(std::addressof(a_data.flags.value)),
 								stl::underlying(Data::BaseFlags::kGeometryScaleCollider)))
 						{
@@ -1653,7 +1666,7 @@ namespace IED
 							OnBaseConfigChange(a_handle, a_params, PostChangeAction::Reset);
 						}
 					},
-					static_cast<Localization::StringID>(UIBaseConfigString::GeometryTransform),
+					static_cast<Localization::StringID>(UIBaseConfigString::Geometry),
 					ImGuiTreeNodeFlags_None);
 
 				UICommon::PopDisabled(a_disabled);
