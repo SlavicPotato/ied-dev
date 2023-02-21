@@ -164,9 +164,9 @@ namespace IED
 								m_currentInfo->form.name.c_str(),
 								desc);
 						}
-						else
+						else if (desc)
 						{
-							ImGui::Text("%s", desc);
+							ImGui::TextUnformatted(desc);
 						}
 
 						UICommon::ToolTip(100.0f, [&] {

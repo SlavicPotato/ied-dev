@@ -294,9 +294,11 @@ namespace IED
 
 					if (it != a_data.end())
 					{
-						ImGui::TableSetColumnIndex(1);
-
-						ImGui::Text("%s", UIBipedObjectSelectorWidget::GetBipedSlotDesc(*it));
+						if (const auto desc = UIBipedObjectSelectorWidget::GetBipedSlotDesc(*it))
+						{
+							ImGui::TableSetColumnIndex(1);
+							ImGui::TextUnformatted(desc);
+						}
 
 						++it;
 						i++;
