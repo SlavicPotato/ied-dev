@@ -89,7 +89,7 @@ namespace IED
 			}
 			else
 			{
-				return ObjectSlot::kMax;
+				return ObjectSlot::kNone;
 			}
 		}
 	}

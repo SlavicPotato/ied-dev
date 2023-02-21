@@ -168,6 +168,10 @@ namespace IED
 						{
 							ImGui::TextUnformatted(desc);
 						}
+						else
+						{
+							ImGui::Text("%hhu", m_currentInfo->form.type);
+						}
 
 						UICommon::ToolTip(100.0f, [&] {
 							stl::fixed_string modName;

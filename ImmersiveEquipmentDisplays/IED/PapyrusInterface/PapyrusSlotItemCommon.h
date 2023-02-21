@@ -13,7 +13,7 @@ namespace IED
 			{
 				if (a_slot < 0 || a_slot > stl::underlying(Data::ObjectSlot::kMax))
 				{
-					return Data::ObjectSlot::kMax;
+					return Data::ObjectSlot::kNone;
 				}
 				else
 				{

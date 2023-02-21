@@ -99,7 +99,7 @@ namespace IED
 								KeyEventState::KeyDown,
 								keyCode);
 						}
-						else if (buttonEvent->IsUpLF())
+						else if (buttonEvent->IsUp())
 						{
 							DispatchPriorityKeyEvent(
 								KeyEventState::KeyUp,
@@ -143,7 +143,7 @@ namespace IED
 					{
 						DispatchKeyEvent(KeyEventState::KeyDown, keyCode);
 					}
-					else if (buttonEvent->IsUpLF())
+					else if (buttonEvent->IsUp())
 					{
 						DispatchKeyEvent(KeyEventState::KeyUp, keyCode);
 					}

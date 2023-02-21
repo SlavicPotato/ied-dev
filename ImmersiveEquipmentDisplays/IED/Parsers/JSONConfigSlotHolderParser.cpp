@@ -26,11 +26,11 @@ namespace IED
 
 			for (auto it = data.begin(); it != data.end(); ++it)
 			{
-				auto key = it.key().asString();
+				const auto key = it.key().asString();
 
-				auto slot = s_slotKeyParser.KeyToSlot(key);
+				const auto slot = s_slotKeyParser.KeyToSlot(key);
 
-				if (slot == Data::ObjectSlot::kMax)
+				if (slot >= Data::ObjectSlot::kMax)
 				{
 					Error("%s: unrecognized slot key: '%s'", __FUNCTION__, key.c_str());
 					return false;

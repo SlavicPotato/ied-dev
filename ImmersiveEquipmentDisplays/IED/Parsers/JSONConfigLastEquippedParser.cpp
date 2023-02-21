@@ -61,7 +61,7 @@ namespace IED
 			else
 			{
 				const auto slot = static_cast<Data::ObjectSlot>(
-					data.get("es", stl::underlying(Data::ObjectSlot::kMax)).asUInt());
+					data.get("es", stl::underlying(Data::ObjectSlot::kNone)).asUInt());
 
 				if (slot < Data::ObjectSlot::kMax)
 				{

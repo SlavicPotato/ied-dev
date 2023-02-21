@@ -6,6 +6,8 @@ namespace IED
 	{
 		enum class ObjectSlot : std::uint32_t
 		{
+			kNone = static_cast<std::underlying_type_t<ObjectSlot>>(-1),
+
 			k1HSword     = 0,
 			k1HSwordLeft = 1,
 			k1HAxe       = 2,
