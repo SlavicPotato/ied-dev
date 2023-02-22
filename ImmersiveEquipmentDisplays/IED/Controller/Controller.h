@@ -410,7 +410,7 @@ namespace IED
 
 		[[nodiscard]] SKMP_143_CONSTEXPR auto IsDefaultConfigForced() const noexcept
 		{
-			return static_cast<bool>(m_configData.stash);
+			return m_forceDefaultConfig;
 		}
 
 		[[nodiscard]] constexpr auto UIGetIniKeysForced() const noexcept
