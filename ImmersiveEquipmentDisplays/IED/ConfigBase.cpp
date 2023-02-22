@@ -1550,7 +1550,7 @@ namespace IED
 
 					if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag5))
 					{
-						if (match_is_favorited(a_params, a_checkForm.form->formID))
+						if (!match_is_favorited(a_params, a_checkForm.form->formID))
 						{
 							return false;
 						}
