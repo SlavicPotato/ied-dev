@@ -1078,7 +1078,7 @@ namespace IED
 			{
 				if (a_match.form.get_id())
 				{
-					if (a_match.flags.test(Tf::kNegateMatch1) ==
+					if (a_match.flags.test(Tf::kNegateMatch2) ==
 					    (a_match.form.get_id() == cell->formID))
 					{
 						return false;
