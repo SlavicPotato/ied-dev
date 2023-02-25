@@ -88,6 +88,8 @@ namespace IED
 		bool          m_effectShaderFlickerFix{ false };
 		bool          m_enableInMenus{ false };
 		bool          m_clearRPCOnSceneMove{ false };
+		bool          m_lightNPCCellAttachFix{ false };
+		bool          m_lightNPCVanillaUpdates{ false };
 		std::uint32_t m_bipedSlotCacheMaxSize{ 2000 };
 		std::uint32_t m_bipedSlotCacheMaxForms{ 16 };
 		float         m_introBannerVOffset{ 110.0f };

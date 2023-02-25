@@ -472,27 +472,11 @@ namespace IED
 						ImGui::Spacing();
 
 						if (settings.mark_if(ImGui::Checkbox(
-								UIL::LS(UISettingsStrings::NPCLightCellAttachFix, "4"),
-								std::addressof(data.lightNPCCellAttachFix))))
-						{
-							rlc.SetNPCLightCellAttachFixEnabled(data.lightNPCCellAttachFix);
-						}
-						UITipsInterface::DrawTip(UITip::NPCLightCellAttachFix);
-
-						if (settings.mark_if(ImGui::Checkbox(
-								UIL::LS(UISettingsStrings::NPCLightUpdates, "5"),
+								UIL::LS(UISettingsStrings::NPCLightUpdates, "1"),
 								std::addressof(data.lightEnableNPCUpdates))))
 						{
 							rlc.SetNPCLightUpdatesEnabled(data.lightEnableNPCUpdates);
 						}
-
-						if (settings.mark_if(ImGui::Checkbox(
-								UIL::LS(UISettingsStrings::NPCLightUpdateFix, "6"),
-								std::addressof(data.lightNPCUpdateFix))))
-						{
-							rlc.SetNPCLightUpdateFixEnabled(data.lightNPCUpdateFix);
-						}
-						UITipsInterface::DrawTip(UITip::NPCLightUpdateFix);
 
 						ImGui::Spacing();
 						ImGui::Unindent();

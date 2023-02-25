@@ -233,8 +233,6 @@ namespace IED
 				bool enableEquipmentPhysics{ false };
 				bool enableEffectShaders{ false };
 				bool lightEnableNPCUpdates{ false };
-				bool lightNPCUpdateFix{ false };
-				bool lightNPCCellAttachFix{ false };
 				bool apParallelUpdates{ true };
 
 				stl::optional<LogLevel> logLevel;

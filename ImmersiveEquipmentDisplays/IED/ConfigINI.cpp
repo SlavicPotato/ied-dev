@@ -167,7 +167,9 @@ namespace IED
 
 		m_behaviorGraphAnims = reader.GetBoolValue(SECT_ANIM, "EnableBehaviorGraphControlledAnimations", true);
 
-		m_enableLights = reader.GetBoolValue(SECT_LIGHTS, "Enable", true);
+		m_enableLights           = reader.GetBoolValue(SECT_LIGHTS, "Enable", true);
+		m_lightNPCCellAttachFix  = reader.GetBoolValue(SECT_LIGHTS, "VanillaLightCellAttachFix", false);
+		m_lightNPCVanillaUpdates = reader.GetBoolValue(SECT_LIGHTS, "VanillaLightUpdates", false);
 
 		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
 

@@ -59,8 +59,6 @@ namespace IED
 			a_out.placementRandomization              = data.get("placement_randomization", false).asBool();
 			a_out.enableEffectShaders                 = data.get("effect_shaders", false).asBool();
 			a_out.lightEnableNPCUpdates               = data.get("light_npc_updates", false).asBool();
-			a_out.lightNPCUpdateFix                   = data.get("light_npc_update_fix", false).asBool();
-			a_out.lightNPCCellAttachFix               = data.get("light_cell_attach_fix", false).asBool();
 			a_out.enableEquipmentPhysics              = data.get("equipment_physics", false).asBool();
 			a_out.apParallelUpdates                   = data.get("ap_parallel_updates", true).asBool();
 			a_out.syncTransformsToFirstPersonSkeleton = data.get("sync_to_1p", false).asBool();
@@ -119,8 +117,6 @@ namespace IED
 			data["placement_randomization"] = a_data.placementRandomization;
 			data["effect_shaders"]          = a_data.enableEffectShaders;
 			data["light_npc_updates"]       = a_data.lightEnableNPCUpdates;
-			data["light_npc_update_fix"]    = a_data.lightNPCUpdateFix;
-			data["light_cell_attach_fix"]   = a_data.lightNPCCellAttachFix;
 			data["equipment_physics"]       = a_data.enableEquipmentPhysics;
 			data["ap_parallel_updates"]     = a_data.apParallelUpdates;
 			data["sync_to_1p"]              = a_data.syncTransformsToFirstPersonSkeleton;
