@@ -56,6 +56,7 @@ namespace IED
 		bool                                     pcLevelMult{ false };
 		long long                                ts{ 0 };
 		float                                    lightLevel{ 0 };
+		float                                    directionalAmbientLightLevel{ 0 };
 
 		std::shared_ptr<npcInfoEntry_t> npc;
 
