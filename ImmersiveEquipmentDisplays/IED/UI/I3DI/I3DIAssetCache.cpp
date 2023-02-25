@@ -16,7 +16,18 @@ namespace IED
 			stl::underlying(I3DIModelID::kMax)>
 			I3DIAssetCache::m_mdbNames{
 				"sphere",
-				"movap",
+				nullptr,
+
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr,
+				nullptr
+				/*"movap",
 
 				"1hsword",
 				"waraxe",
@@ -26,7 +37,7 @@ namespace IED
 				"bow",
 				"staff",
 				"quiver",
-				"shield"
+				"shield"*/
 			};
 
 		I3DIAssetCache::I3DIAssetCache(
@@ -39,7 +50,13 @@ namespace IED
 
 			for (enum_type i = 0; i < stl::underlying(I3DIModelID::kMax); i++)
 			{
-				auto it = data.find(m_mdbNames[i]);
+				const auto n = m_mdbNames[i];
+				if (!n)
+				{
+					continue;
+				}
+
+				auto it = data.find(n);
 				if (it == data.end())
 				{
 					continue;

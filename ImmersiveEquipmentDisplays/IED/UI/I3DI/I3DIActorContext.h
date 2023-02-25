@@ -108,11 +108,14 @@ namespace IED
 			}
 
 		private:
+
 			Game::FormID m_actor;
 
 			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIWeaponNode>> m_weaponNodes;
 			stl::unordered_map<stl::fixed_string, std::shared_ptr<I3DIMOVNode>>    m_movNodes;
 			stl::unordered_map<luid_tag, std::shared_ptr<I3DIPhysicsObject>>       m_physicsObjects;
+
+			std::shared_ptr<D3DModelData> m_sphereModel;
 
 			/*struct objpair_t
 			{

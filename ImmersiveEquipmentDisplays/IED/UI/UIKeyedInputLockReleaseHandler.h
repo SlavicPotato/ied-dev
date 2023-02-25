@@ -64,8 +64,8 @@ namespace IED
 			void ILRHSetUnfreezeTime(bool a_switch);
 
 		private:
-			virtual bool ILRHGetCurrentControlLockSetting() = 0;
-			virtual bool ILRHGetCurrentFreezeTimeSetting()  = 0;
+			virtual bool ILRHGetCurrentControlLockSetting() const = 0;
+			virtual bool ILRHGetCurrentFreezeTimeSetting() const  = 0;
 
 			void SetHeldTaskOptions();
 			void EvaluateCurrentState();

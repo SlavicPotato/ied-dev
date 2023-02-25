@@ -252,9 +252,9 @@ namespace IED
 						case ImGuiMouseButton_Left:
 							SelectObject(a_data, a_hoveredObject);
 							break;
-						case ImGuiMouseButton_Right:
+						/*case ImGuiMouseButton_Right:
 							UnSelectObject(a_data, a_hoveredObject);
-							break;
+							break;*/
 						}
 					}
 
@@ -282,6 +282,16 @@ namespace IED
 					};
 
 					a_hoveredObject->OnMouseDown(a_data, a_button);
+				}
+			}
+			else
+			{
+				if (a_button == ImGuiMouseButton_Right && 
+					io.MouseReleased[a_button] &&
+					m_selected)
+				{
+					m_selected->OnUnselectInt(a_data);
+					m_selected.reset();
 				}
 			}
 		}

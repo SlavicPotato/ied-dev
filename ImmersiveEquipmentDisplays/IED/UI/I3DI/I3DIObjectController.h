@@ -75,19 +75,22 @@ namespace IED
 			std::shared_ptr<I3DIObject> GetHovered(
 				I3DICommonData& a_data);
 
-			bool ShouldProcessObject(I3DICommonData& a_data, I3DIObject* a_object, bool a_allowParent);
+			bool ShouldProcessObject(
+				I3DICommonData& a_data,
+				I3DIObject*     a_object,
+				bool            a_allowParent);
 
 			void SelectObject(
 				I3DICommonData&                    a_data,
 				const std::shared_ptr<I3DIObject>& a_object);
-			
+
 			void UnSelectObject(
 				I3DICommonData&                    a_data,
 				const std::shared_ptr<I3DIObject>& a_object);
 
 			bool TryBeginDrag(
-				I3DICommonData&                    a_data,
-				ImGuiMouseButton                   a_button);
+				I3DICommonData&  a_data,
+				ImGuiMouseButton a_button);
 
 			std::pair<I3DIDragDropResult, I3DIDropTarget*> HandleDragEnd(
 				I3DICommonData&                    a_data,

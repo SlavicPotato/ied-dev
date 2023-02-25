@@ -50,7 +50,12 @@ namespace IED
 			m_actor(a_holder.GetActorFormID()),
 			m_actorObject(a_actorObject)
 		{
-			auto& activeWeaponNodes = a_holder.GetWeapNodes();
+			if (!a_data.assets.GetModel(I3DIModelID::kSphere))
+			{
+				throw std::exception("sphere model not loaded");
+			}
+
+			/*auto& activeWeaponNodes = a_holder.GetWeapNodes();
 			auto& cme               = NodeOverrideData::GetCMENodeData();
 			auto& movAnchorModel    = a_data.assets.GetModel(I3DIModelID::kAttachmentPoint);
 
@@ -115,7 +120,7 @@ namespace IED
 
 					s.first->second->EnableDepth(false);
 				}
-			}
+			}*/
 		}
 
 		void I3DIActorContext::RegisterObjects(
@@ -162,7 +167,7 @@ namespace IED
 				return false;
 			}
 
-			const bool weaponsEnabled = a_data.controller.GetSettings().data.ui.i3di.enableWeapons;
+			/*const bool weaponsEnabled = a_data.controller.GetSettings().data.ui.i3di.enableWeapons;
 
 			if (weaponsEnabled)
 			{
@@ -232,7 +237,7 @@ namespace IED
 						}
 					}
 				}
-			}
+			}*/
 
 			auto& sclist = it->second.GetSimComponentList();
 
@@ -255,16 +260,16 @@ namespace IED
 
 			if (m_physicsObjects.size() > sclist.size())
 			{
-				stl::unordered_set<luid_tag> tmp;
-
-				for (auto& e : sclist)
-				{
-					tmp.emplace(e->GetLUID());
-				}
-
 				for (auto itp = m_physicsObjects.begin(); itp != m_physicsObjects.end();)
 				{
-					if (!tmp.contains(itp->second->GetLUID()))
+					auto itl = std::find_if(
+						sclist.begin(),
+						sclist.end(),
+						[&](auto& a_v) {
+							return a_v->GetLUID() == itp->second->GetLUID();
+						});
+
+					if (itl == sclist.end())
 					{
 						a_data.objectController.UnregisterObject(itp->second);
 
@@ -280,7 +285,7 @@ namespace IED
 			m_lastUpdateFailed = false;
 			m_ranFirstUpdate   = true;
 
-			it->second.SetNodeConditionForced(weaponsEnabled);
+			//it->second.SetNodeConditionForced(weaponsEnabled);
 
 			return true;
 		}
@@ -315,5 +320,6 @@ namespace IED
 				camera->CameraProcessMouseInput(a_evn);
 			}
 		}
+
 	}
 }

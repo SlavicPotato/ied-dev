@@ -7,6 +7,7 @@
 #include "Custom/Profile/UIProfileEditorCustom.h"
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "FormFilters/UIProfileEditorFormFilters.h"
+#include "I3DI/I3DIMain.h"
 #include "Keybind/UIKeyBindEditorWindow.h"
 #include "NodeOverride/Profile/UIProfileEditorNodeOverride.h"
 #include "NodeOverride/UINodeOverrideEditorWindow.h"
@@ -26,8 +27,6 @@
 #include "Widgets/UIExportFilterWidget.h"
 
 #include "IED/Controller/Controller.h"
-
-#include "I3DI/I3DIMain.h"
 
 namespace IED
 {
@@ -185,7 +184,7 @@ namespace IED
 			}
 		}
 
-		Data::SettingHolder::UserInterface& UIMain::GetUISettings() noexcept
+		Data::SettingHolder::UserInterface& UIMain::GetUISettings() const noexcept
 		{
 			return m_controller.GetSettings().data.ui;
 		}
@@ -193,8 +192,6 @@ namespace IED
 		void UIMain::Receive(const UIContextStateChangeEvent& a_evn)
 		{
 			const auto id = static_cast<ChildWindowID>(a_evn.context.GetContextID());
-
-			assert(id < ChildWindowID::kMax);
 
 			if (id >= ChildWindowID::kMax)
 			{
@@ -290,13 +287,7 @@ namespace IED
 
 		void UIMain::DrawFileMenu()
 		{
-			if (auto context = GetChildContext<UIDialogImportExport>())
-			{
-				if (UIL::LCG_MI(UIMainStrings::ImportExport, "1"))
-				{
-					context->ToggleOpenState();
-				}
-			}
+			DrawContextMenuItem<UIDialogImportExport>(UIMainStrings::ImportExport, "1");
 
 			ImGui::Separator();
 
@@ -318,11 +309,14 @@ namespace IED
 		void UIMain::DrawViewMenu()
 		{
 			DrawContextMenuItem<UIDisplayManagement>(UIMainStrings::DisplayManagement, "1");
-			DrawContextMenuItem<UINodeOverrideEditorWindow>(UIMainStrings::NodeOverride, "2");
+			DrawContextMenuItem<UINodeOverrideEditorWindow>(UIMainStrings::GearPositioning, "2");
 
 			ImGui::Separator();
 
 			DrawContextMenuItem<UIConditionalVariablesEditorWindow>(UIMainStrings::ConditionalVariables, "3");
+
+			ImGui::Separator();
+
 			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "4");
 		}
 
@@ -330,7 +324,7 @@ namespace IED
 		{
 			DrawContextMenuItem<UIProfileEditorSlot>(CommonStrings::Equipment, "1");
 			DrawContextMenuItem<UIProfileEditorCustom>(CommonStrings::Custom, "2");
-			DrawContextMenuItem<UIProfileEditorNodeOverride>(UIMainStrings::NodeOverride, "3");
+			DrawContextMenuItem<UIProfileEditorNodeOverride>(UIMainStrings::GearPositioning, "3");
 			DrawContextMenuItem<UIProfileEditorFormFilters>(UIMainStrings::FormFilters, "4");
 			DrawContextMenuItem<UIProfileEditorConditionalVariables>(UIMainStrings::ConditionalVariables, "5");
 		}
@@ -514,12 +508,12 @@ namespace IED
 			return false;
 		}
 
-		bool UIMain::ILRHGetCurrentControlLockSetting()
+		bool UIMain::ILRHGetCurrentControlLockSetting() const
 		{
 			return GetUISettings().enableControlLock;
 		}
 
-		bool UIMain::ILRHGetCurrentFreezeTimeSetting()
+		bool UIMain::ILRHGetCurrentFreezeTimeSetting() const
 		{
 			return GetUISettings().enableFreezeTime;
 		}

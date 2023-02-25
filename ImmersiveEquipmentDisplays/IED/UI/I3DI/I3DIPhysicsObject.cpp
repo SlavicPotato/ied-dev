@@ -39,23 +39,23 @@ namespace IED
 			m_objectFlags.set(I3DIObjectFlags::kHideOtherWhenSelected);
 
 			SetDiffuseColor(diffuseColor1);
-			SetAlpha(1);
+			SetAlpha(0.8f);
 			EnableDepth(false);
 			SetLightingEnabled(true);
 			//SetRasterizerState(D3DObjectRasterizerState::kWireframe);
 
 			m_virtSphere->EnableDepth(false);
-			m_virtSphere->SetAlpha(1);
+			m_virtSphere->SetAlpha(0.8f);
 			m_virtSphere->SetDiffuseColor({ 0, 1, 0, 1 });
 			m_virtSphere->SetLightingEnabled(true);
 
 			m_cogSphere->EnableDepth(false);
-			m_cogSphere->SetAlpha(1);
+			m_cogSphere->SetAlpha(0.8f);
 			m_cogSphere->SetDiffuseColor({ 0.9882f, 0.4666f, 0.0117f, 1 });
 			m_cogSphere->SetLightingEnabled(true);
 
 			m_constraintSphere->EnableDepth(false);
-			m_constraintSphere->SetAlpha(0.6f);
+			m_constraintSphere->SetAlpha(0.5f);
 			m_constraintSphere->SetDiffuseColor({ 1, 1, 1, 1 });
 			m_constraintSphere->SetLightingEnabled(false);
 			m_constraintSphere->SetRasterizerState(D3DObjectRasterizerState::kWireframe);
@@ -210,6 +210,27 @@ namespace IED
 			return true;
 		}
 
+		bool I3DIPhysicsObject::OnSelect(I3DICommonData& a_data)
+		{
+			SetAlpha(1);
+			m_virtSphere->SetAlpha(1);
+			m_cogSphere->SetAlpha(1);
+			m_constraintSphere->SetAlpha(0.6f);
+
+			return true;
+		}
+
+		void I3DIPhysicsObject::OnUnselect(I3DICommonData& a_data)
+		{
+			if (!m_objectFlags.test_any(I3DIObjectFlags::kHSMask))
+			{
+				SetAlpha(0.8f);
+				m_virtSphere->SetAlpha(0.8f);
+				m_cogSphere->SetAlpha(0.8f);
+				m_constraintSphere->SetAlpha(0.5f);
+			}
+		}
+
 		void XM_CALLCONV I3DIPhysicsObject::DrawImpl(
 			D3DPrimitiveBatch& a_batch,
 			XMVECTOR           a_color)
@@ -296,80 +317,23 @@ namespace IED
 			const auto pu = pos + up * l;
 			const auto pr = pos + right * l;
 
-			constexpr XMVECTOR col1 = { 1, 0, 0, 1 };
-			constexpr XMVECTOR col2 = { 0, 1, 0, 1 };
-			constexpr XMVECTOR col3 = { 0, 0, 1, 1 };
+			const auto alpha = IsSelected() ? 1.0f : 0.8f;
+
+			const XMVECTOR col1 = { 1, 0, 0, alpha };
+			const XMVECTOR col2 = { 0, 1, 0, alpha };
+			const XMVECTOR col3 = { 0, 0, 1, alpha };
 
 			a_batch.AddLine(pos, pf, col1);
 			a_batch.AddLine(pos, pu, col2);
 			a_batch.AddLine(pos, pr, col3);
 
-			constexpr XMVECTOR cola = { 1, 0, 1, 1 };
-			constexpr XMVECTOR colb = { 1, 1, 0, 1 };
+			const XMVECTOR cola = { 1, 0, 1, alpha };
+			const XMVECTOR colb = { 1, 1, 0, alpha };
 
 			const auto pm = m_axis.get128() * l;
 
 			a_batch.AddLine(pos - pm, cola, pos + pm, colb);
 		}
 
-		void XM_CALLCONV I3DIPhysicsObject::DrawSphere(
-			D3DPrimitiveBatch& a_batch,
-			XMVECTOR           a_pos,
-			float              a_radius,
-			XMVECTOR           a_color)
-		{
-			XMVECTOR vertices[(NB_SECTORS_SPHERE + 1) * (NB_STACKS_SPHERE + 1) + (NB_SECTORS_SPHERE + 1)];
-
-			// Vertices
-			const float sectorStep = 2 * std::numbers::pi_v<float> / NB_SECTORS_SPHERE;
-			const float stackStep  = std::numbers::pi_v<float> / NB_STACKS_SPHERE;
-
-			for (std::uint32_t i = 0; i <= NB_STACKS_SPHERE; i++)
-			{
-				const float stackAngle = std::numbers::pi_v<float> / 2 - i * stackStep;
-
-				float s, c;
-				XMScalarSinCos(&s, &c, stackAngle);
-
-				const float radiusCosStackAngle = a_radius * c;
-				const float z                   = a_radius * s;
-
-				for (std::uint32_t j = 0; j <= NB_SECTORS_SPHERE; j++)
-				{
-					const float sectorAngle = j * sectorStep;
-
-					XMScalarSinCos(&s, &c, sectorAngle);
-
-					const float x = radiusCosStackAngle * c;
-					const float y = radiusCosStackAngle * s;
-
-					assert(i * (NB_SECTORS_SPHERE + 1) + j < sizeof(vertices));
-
-					vertices[i * (NB_SECTORS_SPHERE + 1) + j] = a_pos + DirectX::XMVectorSet(x, y, z, 0);
-				}
-			}
-
-			// Faces
-			for (std::uint32_t i = 0; i < NB_STACKS_SPHERE; i++)
-			{
-				std::uint32_t a1 = i * (NB_SECTORS_SPHERE + 1);
-				std::uint32_t a2 = a1 + NB_SECTORS_SPHERE + 1;
-
-				for (std::uint32_t j = 0; j < NB_SECTORS_SPHERE; j++, a1++, a2++)
-				{
-					// 2 triangles per sector except for the first and last stacks
-
-					if (i != 0)
-					{
-						a_batch.AddTriangle(vertices[a1], vertices[a2], vertices[a1 + 1], a_color);
-					}
-
-					if (i != (NB_STACKS_SPHERE - 1))
-					{
-						a_batch.AddTriangle(vertices[a1 + 1], vertices[a2], vertices[a2 + 1], a_color);
-					}
-				}
-			}
-		}
 	}
 }

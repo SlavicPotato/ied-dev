@@ -66,6 +66,8 @@ namespace IED
 			virtual void DrawObjectExtra(I3DICommonData& a_data) override;
 
 			virtual bool IsSelectable() override;
+			virtual bool OnSelect(I3DICommonData& a_data) override;
+			virtual void OnUnselect(I3DICommonData& a_data) override;
 
 			void XM_CALLCONV DrawImpl(
 				D3DPrimitiveBatch& a_batch,
@@ -81,12 +83,6 @@ namespace IED
 
 			void DrawOrientation(
 				D3DPrimitiveBatch& a_batch);
-
-			static void XM_CALLCONV DrawSphere(
-				D3DPrimitiveBatch& a_batch,
-				DirectX::XMVECTOR  a_pos,
-				float              a_radius,
-				DirectX::XMVECTOR  a_color);
 
 			Bullet::btTransformEx                   m_parentTransform;
 			Bullet::btTransformEx                   m_objectTransform;

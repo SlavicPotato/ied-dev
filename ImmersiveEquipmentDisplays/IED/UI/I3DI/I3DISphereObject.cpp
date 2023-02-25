@@ -39,6 +39,7 @@ namespace IED
 		void I3DISphereObject::OnMouseMoveOut(I3DICommonData& a_data)
 		{
 		}
+
 		void I3DISphereObject::DrawObjectExtra(I3DICommonData& a_data)
 		{
 		}

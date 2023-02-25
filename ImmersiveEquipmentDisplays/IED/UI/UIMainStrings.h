@@ -9,7 +9,7 @@ namespace IED
 		enum class UIMainStrings : Localization::StringID
 		{
 			SaveCurrentAsDefault       = 4602,
-			NodeOverride               = 4603,
+			GearPositioning            = 4603,
 			ProfileEditors             = 4604,
 			FormFilters                = 4605,
 			EvaluateAll                = 4606,

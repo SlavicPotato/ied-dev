@@ -80,7 +80,7 @@ namespace IED
 				DrawLocalizationSection();
 				DrawSoundSection();
 #if defined(IED_ENABLE_I3DI)
-				DrawI3DISection();
+				//DrawI3DISection();
 #endif
 
 				ImGui::PopItemWidth();
@@ -152,7 +152,7 @@ namespace IED
 					m_controller.SetProcessorTaskParallelUpdates(
 						settings.data.apParallelUpdates);
 				}
-				UITipsInterface::DrawTipImportant(UITip::EffectShadersParallelUpdates);
+				UITipsInterface::DrawTip(UITip::EffectShadersParallelUpdates);
 
 				ImGui::Unindent();
 				ImGui::Spacing();

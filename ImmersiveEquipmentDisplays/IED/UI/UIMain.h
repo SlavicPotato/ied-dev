@@ -68,7 +68,7 @@ namespace IED
 				return m_formLookupCache;
 			}
 
-			Data::SettingHolder::UserInterface& GetUISettings() noexcept;
+			Data::SettingHolder::UserInterface& GetUISettings() const noexcept;
 
 			[[nodiscard]] constexpr auto& GetOwnerTask() const noexcept
 			{
@@ -129,8 +129,8 @@ namespace IED
 			template <class T, class Te>
 			void DrawContextMenuItem(Te a_title, const char* a_id);
 
-			virtual bool ILRHGetCurrentControlLockSetting() override;
-			virtual bool ILRHGetCurrentFreezeTimeSetting() override;
+			virtual bool ILRHGetCurrentControlLockSetting() const override;
+			virtual bool ILRHGetCurrentFreezeTimeSetting() const override;
 
 			template <class T, class... Args>
 			constexpr void CreateChild(Args&&... a_args)  //
