@@ -9,6 +9,13 @@ namespace IED
 {
 	namespace ALD
 	{
+		static float s_interiorAmbientLightThreshold = 90.0f;
+
+		void SetInteriorAmbientLightThreshold(float a_value) noexcept
+		{
+			s_interiorAmbientLightThreshold = std::clamp(a_value, 0.0f, 3.0f) * 255.0f;
+		}
+
 		namespace detail
 		{
 			static BGSLightingTemplate* get_room_lighting_template(
@@ -64,19 +71,41 @@ namespace IED
 				}
 			}
 
-			static constexpr bool is_color_dark(const RE::Color& a_color) noexcept
+			static constexpr float get_directional_ambient_color_intensity(
+				const RE::BGSDirectionalAmbientLightingColors::Directional& a_color) noexcept
 			{
-				return static_cast<float>(static_cast<std::uint32_t>(a_color.red) + a_color.green + a_color.blue) < 0.35f * 255.0f;
+				const auto x =
+					static_cast<std::uint32_t>(std::max(a_color.x.min.red, a_color.x.max.red)) +
+					std::max(a_color.x.min.green, a_color.x.max.green) +
+					std::max(a_color.x.min.blue, a_color.x.max.blue);
+
+				const auto y =
+					static_cast<std::uint32_t>(std::max(a_color.y.min.red, a_color.y.max.red)) +
+					std::max(a_color.y.min.green, a_color.y.max.green) +
+					std::max(a_color.y.min.blue, a_color.y.max.blue);
+
+				const auto z =
+					static_cast<std::uint32_t>(std::max(a_color.z.min.red, a_color.z.max.red)) +
+					std::max(a_color.z.min.green, a_color.z.max.green) +
+					std::max(a_color.z.min.blue, a_color.z.max.blue);
+
+				return static_cast<float>(x + y + z) * (1.0f / 3.0f);
+			}
+
+			static constexpr bool is_color_dark(
+				const RE::BGSDirectionalAmbientLightingColors::Directional& a_color) noexcept
+			{
+				return get_directional_ambient_color_intensity(a_color) < s_interiorAmbientLightThreshold;
 			}
 
 			static constexpr bool is_ambient_lighting_dark(const BGSLightingTemplate* a_templ) noexcept
 			{
-				return is_color_dark(a_templ->data.ambient);
+				return is_color_dark(a_templ->directionalAmbientLightingColors.directional);
 			}
 
 			static constexpr bool is_ambient_lighting_dark(const RE::INTERIOR_DATA* a_interior) noexcept
 			{
-				return a_interior ? is_color_dark(a_interior->ambient) : false;
+				return a_interior ? is_color_dark(a_interior->directionalAmbientLightingColors.directional) : false;
 			}
 
 			static bool get_sun_angle(const RE::Sky* a_sky, float& a_out) noexcept
@@ -133,6 +162,31 @@ namespace IED
 			}
 
 			return detail::is_ambient_lighting_dark(intData);
+		}
+
+		float GetDirectionalAmbientLightLevel(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept
+		{
+			if (a_actor == *g_thePlayer)
+			{
+				if (const auto* const templ = detail::get_room_lighting_template(a_sky))
+				{
+					return detail::get_directional_ambient_color_intensity(templ->directionalAmbientLightingColors.directional);
+				}
+			}
+
+			const auto* const intData = a_cell->cellData.interior;
+
+			if (!intData || intData->lightingTemplateInheritanceFlags.test(RE::INTERIOR_DATA::Inherit::kAmbientColor))
+			{
+				const auto* const templ = a_cell->lightingTemplate;
+
+				if (templ)
+				{
+					return detail::get_directional_ambient_color_intensity(templ->directionalAmbientLightingColors.directional);
+				}
+			}
+
+			return intData ? detail::get_directional_ambient_color_intensity(intData->directionalAmbientLightingColors.directional) : 0.0f;
 		}
 
 		bool IsSunAngleLessThan(const RE::Sky* a_sky, float a_angle) noexcept
