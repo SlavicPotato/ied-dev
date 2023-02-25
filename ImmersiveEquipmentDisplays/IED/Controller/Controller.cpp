@@ -195,8 +195,6 @@ namespace IED
 
 		auto& rlc = ReferenceLightController::GetSingleton();
 
-		rlc.SetNPCLightCellAttachFixEnabled(data.lightNPCCellAttachFix);
-		rlc.SetNPCLightUpdateFixEnabled(data.lightNPCUpdateFix);
 		rlc.SetNPCLightUpdatesEnabled(data.lightEnableNPCUpdates);
 	}
 
@@ -442,7 +440,7 @@ namespace IED
 
 		if (IsDefaultConfigForced())
 		{
-			Message("Note: default config is forced");
+			Message("Default configuration is forced");
 		}
 	}
 
@@ -3862,7 +3860,7 @@ namespace IED
 		{
 			if (a_params.state.flags.test(ProcessStateUpdateFlags::kForceUpdate))
 			{
-				EngineExtensions::UpdateRoot(a_params.root);
+				INode::UpdateRoot(a_params.root);
 			}
 			else
 			{
@@ -4177,17 +4175,6 @@ namespace IED
 		Game::ObjectRefHandle            a_handle,
 		stl::flag<ControllerUpdateFlags> a_flags)
 	{
-		/*bool eraseState = false;
-
-		if (a_actor != *g_thePlayer)
-		{
-			if (auto it = m_objects.find(a_actor->formID); it != m_objects.end())
-			{
-				m_storedActorStates.data.insert_or_assign(a_actor->formID, it->second);
-				eraseState = true;
-			}
-		}*/
-
 		RemoveActorImpl(
 			a_actor,
 			a_handle,
@@ -4197,11 +4184,6 @@ namespace IED
 			a_actor,
 			a_handle,
 			a_flags | ControllerUpdateFlags::kImmediateTransformUpdate);
-
-		/*if (eraseState)
-		{
-			m_storedActorStates.data.erase(a_actor->formID);
-		}*/
 	}
 
 	void Controller::ActorResetImpl(
@@ -5511,7 +5493,7 @@ namespace IED
 			}
 		}
 
-		return NRP{ npc, race };
+		return std::make_optional<NRP>(npc, race);
 	}
 
 	bool Controller::SaveCurrentConfigAsDefault(
@@ -5563,7 +5545,7 @@ namespace IED
 		m_bipedCache.clear();
 
 		ClearObjectsImpl();
-		GetKeyBindDataHolder()->ClearKeyToggleStates();
+		GetKeyBindDataHolder()->ResetKeyToggleStates();
 		//ClearObjectDatabase();
 
 		ResetCounter();

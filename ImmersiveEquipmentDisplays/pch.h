@@ -30,7 +30,6 @@
 #include <ext/ShaderReferenceEffect.h>
 #include <ext/ShadowSceneNode.h>
 #include <ext/Sky.h>
-#include <ext/StringCache.h>
 #include <ext/TES.h>
 #include <ext/TESClimate.h>
 #include <ext/Vector.h>
@@ -42,6 +41,7 @@
 #include <ext/stl_comparison.h>
 #include <ext/stl_csr.h>
 #include <ext/stl_error.h>
+#include <ext/stl_fixed_string.h>
 #include <ext/stl_flat_map.h>
 #include <ext/stl_flat_set.h>
 #include <ext/stl_math.h>

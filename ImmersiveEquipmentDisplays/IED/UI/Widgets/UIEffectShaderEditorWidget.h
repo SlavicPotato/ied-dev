@@ -820,8 +820,7 @@ namespace IED
 					if (it != a_data.end())
 					{
 						ImGui::TableSetColumnIndex(1);
-
-						ImGui::Text("%s", it->c_str());
+						ImGui::TextUnformatted(it->c_str());
 
 						++it;
 						i++;

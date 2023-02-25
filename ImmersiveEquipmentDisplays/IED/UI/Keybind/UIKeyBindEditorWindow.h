@@ -41,6 +41,8 @@ namespace IED
 			void DrawActionMenu();
 			void DrawAddPopup();
 
+			void AddKeyBind(std::string&& a_id);
+
 			std::string m_tmpID;
 
 			Controller& m_controller;

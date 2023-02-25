@@ -32,7 +32,7 @@ namespace IED
 				const ExtraLightData& a_lhs,
 				const ExtraLightData& a_rhs) noexcept
 			{
-				return !(a_lhs.flags == a_rhs.flags && a_lhs.shadowDepthBias == a_rhs.shadowDepthBias && a_lhs.fieldOfView == a_rhs.fieldOfView);
+				return !(a_lhs == a_rhs);
 			}
 
 			stl::flag<ExtraLightFlags> flags{ DEFAULT_FLAGS };

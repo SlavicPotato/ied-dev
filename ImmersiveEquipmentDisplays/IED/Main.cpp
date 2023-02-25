@@ -3,6 +3,7 @@
 #include "Main.h"
 
 #include "AnimationUpdateController.h"
+#include "AreaLightingDetection.h"
 #include "ConfigINI.h"
 #include "ConfigStore.h"
 #include "Controller/Controller.h"
@@ -140,8 +141,9 @@ namespace IED
 		if (config->m_enableLights)
 		{
 			auto& rlc = ReferenceLightController::GetSingleton();
-			rlc.SetNPCLightCellAttachFixEnabled(true);
-			rlc.SetNPCLightUpdateFixEnabled(true);
+
+			rlc.SetNPCLightCellAttachFixEnabled(config->m_lightNPCCellAttachFix);
+			rlc.SetNPCEnableVanillaLightUpdates(config->m_lightNPCVanillaUpdates);
 		}
 
 		if (config->m_behaviorGraphAnims)

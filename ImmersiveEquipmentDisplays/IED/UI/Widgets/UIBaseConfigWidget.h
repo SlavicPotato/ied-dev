@@ -1641,6 +1641,8 @@ namespace IED
 							PostChangeAction::Evaluate);
 					},
 					[&] {
+						ImGui::Spacing();
+
 						if (ImGui::CheckboxFlagsT(
 								UIL::LS(CommonStrings::Invisible, "1"),
 								stl::underlying(std::addressof(a_data.flags.value)),

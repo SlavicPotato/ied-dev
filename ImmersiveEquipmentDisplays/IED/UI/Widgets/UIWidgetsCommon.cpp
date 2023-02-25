@@ -12,6 +12,12 @@ namespace IED
 	{
 		void DrawConfigClassInUse(Data::ConfigClass a_class)
 		{
+			const auto text = Data::GetConfigClassName(a_class);
+			if (!text)
+			{
+				return;
+			}
+
 			switch (a_class)
 			{
 			case Data::ConfigClass::Race:
@@ -28,7 +34,7 @@ namespace IED
 				break;
 			}
 
-			ImGui::TextUnformatted(Data::GetConfigClassName(a_class));
+			ImGui::TextUnformatted(text);
 
 			ImGui::PopStyleColor();
 		};

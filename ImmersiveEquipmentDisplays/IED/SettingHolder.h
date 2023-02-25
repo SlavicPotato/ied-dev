@@ -246,17 +246,15 @@ namespace IED
 
 			Settings data;
 
-			inline void SetPath(const fs::path& a_path)
+			template <class Tp>
+			void SetPath(Tp&& a_path)                                   //
+				noexcept(std::is_nothrow_assignable_v<fs::path, Tp&&>)  //
+				requires(std::is_assignable_v<fs::path, Tp &&>)
 			{
-				m_path = a_path;
+				m_path = std::forward<Tp>(a_path);
 			}
 
-			inline void SetPath(fs::path&& a_path)
-			{
-				m_path = std::move(a_path);
-			}
-
-			[[nodiscard]] constexpr const auto& GetPath() const noexcept
+			[[nodiscard]] constexpr auto& GetPath() const noexcept
 			{
 				return m_path;
 			}
@@ -268,7 +266,7 @@ namespace IED
 			template <
 				class Tm,
 				class Tv>
-			constexpr void set(Tm& a_member, Tv&& a_value)         //
+			void set(Tm& a_member, Tv&& a_value)                   //
 				noexcept(std::is_nothrow_assignable_v<Tm&, Tv&&>)  //
 				requires(std::is_assignable_v<Tm&, Tv &&>)
 			{
@@ -290,7 +288,7 @@ namespace IED
 				return a_isTrue;
 			}
 
-			[[nodiscard]] constexpr const auto& GetLastException() const noexcept
+			[[nodiscard]] constexpr auto& GetLastException() const noexcept
 			{
 				return m_lastException;
 			}

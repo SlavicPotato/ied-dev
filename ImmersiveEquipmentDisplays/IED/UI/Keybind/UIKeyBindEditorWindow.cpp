@@ -118,22 +118,26 @@ namespace IED
 
 		void UIKeyBindEditorWindow::DrawAddPopup()
 		{
-			auto& holder  = m_controller.GetKeyBindDataHolder();
-			auto& entries = holder->GetData().entries;
-
-			const stl::lock_guard lock(holder->GetLock());
-
 			const bool result = UIKeyBindIDSelectorWidget::DrawKeyBindIDSelector(m_tmpID);
 
 			if (result && !m_tmpID.empty())
 			{
-				entries.try_emplace(m_tmpID);
-				holder->MarkDirty();
-
-				m_tmpID.clear();
+				AddKeyBind(std::move(m_tmpID));
 
 				ImGui::CloseCurrentPopup();
 			}
+		}
+
+		void UIKeyBindEditorWindow::AddKeyBind(std::string&& a_id)
+		{
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			const stl::lock_guard lock(holder->GetLock());
+
+			auto& entries = holder->GetData().entries;
+
+			entries.try_emplace(std::move(a_id));
+			holder->MarkDirty();
 		}
 	}
 }

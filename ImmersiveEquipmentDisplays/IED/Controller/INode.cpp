@@ -137,7 +137,7 @@ namespace IED
 
 		if (update)
 		{
-			EngineExtensions::UpdateRoot(a_root);
+			UpdateRoot(a_root);
 		}
 
 		/*if (Game::IsPaused())
@@ -189,6 +189,16 @@ namespace IED
 		stl::snprintf(tmp, fmt, a_node.name.c_str());
 
 		return tmp;
+	}
+
+	void INode::UpdateRoot(NiNode* a_root) noexcept
+	{
+		a_root->UpdateWorldBound();
+
+		NiAVObject::ControllerUpdateContext ctx{ 0, 0x2000 };
+		a_root->Update(ctx);
+
+		fUnk12BAFB0(*m_shadowSceneNode, a_root, false);
 	}
 
 	bool INode::CreateTargetNode(
@@ -324,6 +334,28 @@ namespace IED
 			stl::snprintf(
 				a_out,
 				"OBJECT ARMOR [%.8X]",
+				a_armor.get());
+		}
+	}
+
+	void INode::GetShieldNodeName(
+		Game::FormID a_armor,
+		Game::FormID a_arma,
+		char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept
+	{
+		if (a_arma)
+		{
+			stl::snprintf(
+				a_out,
+				"OBJECT SHIELD [%.8X/%.8X]",
+				a_armor.get(),
+				a_arma.get());
+		}
+		else
+		{
+			stl::snprintf(
+				a_out,
+				"OBJECT SHIELD [%.8X]",
 				a_armor.get());
 		}
 	}

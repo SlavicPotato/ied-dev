@@ -496,7 +496,7 @@ namespace IED
 				else
 				{
 #if defined(IED_ENABLE_I3DI)
-					if (a_params.objects.GetNodeConditionForced())
+					/*if (a_params.objects.GetNodeConditionForced())
 					{
 						auto& wnodes = a_params.objects.GetWeapNodes();
 
@@ -511,7 +511,7 @@ namespace IED
 						});
 
 						return r == Util::Node::VisitorControl::kStop;
-					}
+					}*/
 #endif
 
 					auto sh = a_data.flags.test(Data::NodeOverrideConditionFlags::kExtraFlag0) ?

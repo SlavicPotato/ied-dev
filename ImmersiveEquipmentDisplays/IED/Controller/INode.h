@@ -52,6 +52,11 @@ namespace IED
 			Game::FormID a_arma,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
 
+		static void GetShieldNodeName(
+			Game::FormID a_formid,
+			Game::FormID a_arma,
+			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
+
 		static void GetWeaponNodeName(
 			Game::FormID a_formid,
 			char (&a_out)[NODE_NAME_BUFFER_SIZE]) noexcept;
@@ -80,5 +85,13 @@ namespace IED
 		static BSFixedString GetTargetNodeName(
 			const Data::NodeDescriptor& a_node,
 			bool                        a_atmReference) noexcept;
+
+		using fUnk1412BAFB0_t                = NiAVObject* (*)(RE::ShadowSceneNode* a_shadowSceneNode, NiAVObject* a_object, bool) noexcept;
+		inline static const auto fUnk12BAFB0 = IAL::Address<fUnk1412BAFB0_t>(99712, 106349);
+
+	public:
+		static void UpdateRoot(NiNode* a_root) noexcept;
+
+		inline static const auto m_shadowSceneNode = IAL::Address<RE::ShadowSceneNode**>(513211, 390951);
 	};
 }

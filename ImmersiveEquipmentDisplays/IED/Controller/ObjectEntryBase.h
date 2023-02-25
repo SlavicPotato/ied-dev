@@ -130,6 +130,7 @@ namespace IED
 			{
 			}
 
+			void UnregisterFromControllers(Game::FormID a_owner) noexcept;
 			void CleanupObject(Game::ObjectRefHandle a_handle) noexcept;
 
 			TESForm*                            modelForm{ nullptr };

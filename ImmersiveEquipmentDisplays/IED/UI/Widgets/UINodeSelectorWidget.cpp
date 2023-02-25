@@ -67,7 +67,7 @@ namespace IED
 				{
 					for (auto& e : data.getvec())
 					{
-						if (!m_filter.Test(*e->second.name))
+						if (!m_filter.Test(e->second.name))
 						{
 							continue;
 						}

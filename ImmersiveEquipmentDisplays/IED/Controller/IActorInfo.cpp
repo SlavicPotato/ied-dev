@@ -59,15 +59,22 @@ namespace IED
 
 			const auto owner = cell->GetOwnerForm();
 
-			a_out.cellOwner            = owner ? owner->formID : Game::FormID{};
-			a_out.cellCoords           = cell->GetCellCoordinates();
+			a_out.cellOwner  = owner ? owner->formID : Game::FormID{};
+			a_out.cellCoords = cell->GetCellCoordinates();
+
+			a_out.directionalAmbientLightLevel =
+				cell->IsInterior() ?
+					ALD::GetDirectionalAmbientLightLevel(a_actor, RE::TES::GetSingleton()->sky, cell) :
+					0.0f;
+
 			//a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
 		}
 		else
 		{
-			a_out.cell                 = {};
-			a_out.cellOwner            = {};
+			a_out.cell      = {};
+			a_out.cellOwner = {};
 			//a_out.cellLightingTemplate = {};
+			a_out.directionalAmbientLightLevel = 0.0f;
 			a_out.cellCoords.reset();
 		}
 

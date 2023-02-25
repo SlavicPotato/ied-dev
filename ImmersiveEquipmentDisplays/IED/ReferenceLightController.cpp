@@ -1,7 +1,8 @@
 #include "pch.h"
 
-#include "EngineExtensions.h"
 #include "ReferenceLightController.h"
+
+#include "Controller/INode.h"
 #include "StringHolder.h"
 
 namespace IED
@@ -195,7 +196,7 @@ namespace IED
 				a_entry.form,
 				std::addressof(a_entry.config));
 
-			const auto ssn = *EngineExtensions::m_shadowSceneNode;
+			const auto ssn = *INode::m_shadowSceneNode;
 			ssn->CreateAndAddLight(a_entry.niLight.get(), params);
 		});
 	}
@@ -232,7 +233,7 @@ namespace IED
 				if (auto& bsl = a_entry.bsLight)
 				{
 					QueueAddLight(
-						*EngineExtensions::m_shadowSceneNode,
+						*INode::m_shadowSceneNode,
 						bsl.get());
 				}
 			});
@@ -250,7 +251,7 @@ namespace IED
 				a_actor,
 				[](auto& a_entry) noexcept [[msvc::forceinline]] {
 					UnkQueueBSLight(
-						*EngineExtensions::m_shadowSceneNode,
+						*INode::m_shadowSceneNode,
 						a_entry.niLight.get());
 				});
 		}
@@ -287,7 +288,7 @@ namespace IED
 							-1.0f);
 
 						UnkQueueBSLight(
-							*EngineExtensions::m_shadowSceneNode,
+							*INode::m_shadowSceneNode,
 							a_entry.niLight.get());
 					});
 			}
@@ -299,7 +300,7 @@ namespace IED
 					a_actor,
 					[](auto& a_entry) noexcept [[msvc::forceinline]] {
 						UnkQueueBSLight(
-							*EngineExtensions::m_shadowSceneNode,
+							*INode::m_shadowSceneNode,
 							a_entry.niLight.get());
 					});
 			}
@@ -355,6 +356,32 @@ namespace IED
 		}
 	}
 
+	/*void ReferenceLightController::ReAttachLight(
+		Actor*        a_actor,
+		ObjectLight&  a_object) noexcept
+	{
+		if (m_initialized)
+		{
+			const write_lock_guard lock(m_lock);
+
+			auto it = m_data.find(a_actor->formID);
+			if (it != m_data.end())
+			{
+				auto it2 = std::find_if(
+					it->second.begin(),
+					it->second.end(),
+					[&](auto& a_e) {
+						return a_e.niLight == a_object.niObject;
+					});
+
+				if (it2 != it->second.end())
+				{
+					ReAttachLightImpl(a_actor, *it2, a_object);
+				}
+			}
+		}
+	}*/
+
 	std::unique_ptr<ObjectLight> ReferenceLightController::CreateAndAttachPointLight(
 		const TESObjectLIGH*        a_lightForm,
 		Actor*                      a_actor,
@@ -397,7 +424,7 @@ namespace IED
 				a_lightForm,
 				std::addressof(a_config));
 
-			const auto ssn = *EngineExtensions::m_shadowSceneNode;
+			const auto ssn = *INode::m_shadowSceneNode;
 			bsLight        = ssn->CreateAndAddLight(pointLight, params);
 		}
 
@@ -419,9 +446,32 @@ namespace IED
 			a_config);
 	}
 
-	void ReferenceLightController::CleanupLights(NiNode* a_node) noexcept
+	/*void ReferenceLightController::ReAttachLightImpl(
+		Actor* a_actor,
+		Entry&       a_entry,
+		ObjectLight& a_object) noexcept
 	{
-		QueueRemoveAllLights(*EngineExtensions::m_shadowSceneNode, a_node, true, true);
+		a_entry.config = a_object.extraLightData;
+
+		const auto ssn = *INode::m_shadowSceneNode;
+		QueueRemoveLight(ssn, a_entry.niLight.get());
+
+		const auto params = detail::make_params(
+			a_actor,
+			a_entry.form,
+			std::addressof(a_entry.config));
+
+		const auto bsLight = ssn->CreateAndAddLight(a_entry.niLight.get(), params);
+
+		if (a_actor == *g_thePlayer)
+		{
+			a_entry.bsLight = bsLight;
+		}
+	}*/
+
+	void ReferenceLightController::QueueRemoveAllLightsFromNode(NiNode* a_node) noexcept
+	{
+		QueueRemoveAllLightsFromNodeImpl(*INode::m_shadowSceneNode, a_node, true, true);
 	}
 
 	std::size_t ReferenceLightController::GetNumLights() const noexcept
@@ -462,7 +512,7 @@ namespace IED
 				detail::make_params(a_actor, torch, nullptr) :
 				detail::make_params();
 
-		const auto ssn = *EngineExtensions::m_shadowSceneNode;
+		const auto ssn = *INode::m_shadowSceneNode;
 		ssn->CreateAndAddLight(light.get(), params);
 	}
 

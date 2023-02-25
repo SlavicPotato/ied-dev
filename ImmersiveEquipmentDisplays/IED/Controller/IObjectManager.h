@@ -24,6 +24,15 @@ namespace IED
 		virtual public ILog
 	{
 	public:
+		enum class AttachResultFlags : std::uint8_t
+		{
+			kNone = 0,
+
+			kScbLeft            = 1ui8 << 0,
+			kTorchFlameRemoved  = 1ui8 << 1,
+			kTorchCustomRemoved = 1ui8 << 2,
+		};
+
 		FN_NAMEPROC("IObjectManager");
 
 		constexpr void SetPlaySound(bool a_switch) noexcept
@@ -44,10 +53,6 @@ namespace IED
 		bool RemoveActorImpl(
 			TESObjectREFR*                   a_actor,
 			Game::ObjectRefHandle            a_handle,
-			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
-
-		bool RemoveActorImpl(
-			TESObjectREFR*                   a_actor,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
 		bool RemoveActorImpl(
@@ -190,10 +195,88 @@ namespace IED
 			bool                        a_atmReference,
 			const ObjectEntryBase&      a_entry) noexcept;
 
+	private:
+		struct unks_01
+		{
+			std::uint16_t p1;
+			std::uint16_t p2;
+		};
+
+		using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_unk) noexcept;
+		inline static const auto GetObjectByName = IAL::Address<getObjectByName_t>(74481, 76207);
+
+		using applyTextureSwap_t                  = void (*)(TESModelTextureSwap* a_swap, NiAVObject* a_object) noexcept;
+		inline static const auto ApplyTextureSwap = IAL::Address<applyTextureSwap_t>(14660, 14837);  // 19baa0
+
+		using shrinkToSize_t                  = NiAVObject* (*)(NiNode*) noexcept;
+		inline static const auto ShrinkToSize = IAL::Address<shrinkToSize_t>(15571, 15748);
+
+		using attachAddonNodes_t                  = bool (*)(NiNode* a_node) noexcept;
+		inline static const auto AttachAddonNodes = IAL::Address<attachAddonNodes_t>(19206, 19632);
+
+		using attachAddonParticles_t                  = void (*)(NiAVObject* a_object) noexcept;
+		inline static const auto AttachAddonParticles = IAL::Address<attachAddonParticles_t>(19207, 19633);
+
+		using setShaderPropsFadeNode_t                  = NiNode* (*)(NiAVObject* a_object, BSFadeNode* a_node) noexcept;
+		inline static const auto SetShaderPropsFadeNode = IAL::Address<setShaderPropsFadeNode_t>(98895, 105542);
+
+		using unkSSN1_t                      = NiNode* (*)(RE::ShadowSceneNode* a_node, NiAVObject* a_object) noexcept;
+		inline static const auto fUnk12ba3e0 = IAL::Address<unkSSN1_t>(99702, 106336);
+		inline static const auto fUnk12b99f0 = IAL::Address<unkSSN1_t>(99696, 106330);
+
+		using unk1CD130_t                   = bool (*)(NiAVObject* a_object, std::uint32_t a_collisionFilterInfo) noexcept;
+		inline static const auto fUnk1CD130 = IAL::Address<unk1CD130_t>(15567, 15745);
+
+		using queueAttachHavok_t                  = void (*)(BSTaskPool* a_taskpool, NiAVObject* a_object, std::uint32_t a_unk3, bool a_unk4) noexcept;
+		inline static const auto QueueAttachHavok = IAL::Address<queueAttachHavok_t>(35950, 36925);
+
+		using unk5EBD90_t                   = unks_01& (*)(TESObjectREFR* a_ref, unks_01& a_out) noexcept;
+		inline static const auto fUnk5EBD90 = IAL::Address<unk5EBD90_t>(36559, 37560);
+
+		using unk5C39F0_t                   = void (*)(BSTaskPool* a_taskpool, NiAVObject* a_object, RE::bhkWorld* a_world, std::uint32_t a_unk4) noexcept;
+		inline static const auto fUnk5C39F0 = IAL::Address<unk5C39F0_t>(35947, 36922);
+
+		using unkDC6140_t                   = NiAVObject* (*)(NiAVObject*, bool) noexcept;
+		inline static const auto fUnkDC6140 = IAL::Address<unkDC6140_t>(76545, 78389);
+
+		using stripCollision_t                  = bool (*)(NiAVObject* a_object, bool a_recursive, bool a_ignoreHavokFlag) noexcept;
+		inline static const auto StripCollision = IAL::Address<stripCollision_t>(76037, 77870);
+
+		static bool RemoveAllChildren(
+			NiNode*              a_object,
+			const BSFixedString& a_name) noexcept;
+
+		static bool RemoveObjectByName(
+			NiNode*              a_object,
+			const BSFixedString& a_name) noexcept;
+
+		static BSXFlags* GetBSXFlags(NiObjectNET* a_object) noexcept;
+
+		static stl::flag<AttachResultFlags> AttachObject(
+			Actor*      a_actor,
+			TESForm*    a_modelForm,
+			BSFadeNode* a_root,
+			NiNode*     a_targetNode,
+			NiNode*     a_object,
+			ModelType   a_modelType,
+			bool        a_leftWeapon,
+			bool        a_dropOnDeath,
+			bool        a_removeScabbards,
+			bool        a_keepTorchFlame,
+			bool        a_disableHavok,
+			bool        a_removeTracers,
+			bool        a_removeEditorMarker) noexcept;
+
+	public:
+		using cleanupObject_t                      = void (*)(const Game::ObjectRefHandle& a_handle, NiAVObject* a_object) noexcept;
+		inline static const auto CleanupObjectImpl = IAL::Address<cleanupObject_t>(15495, 15660);
+
+	protected:
 		bool m_playSound{ false };
 		bool m_playSoundNPC{ false };
 
 		mutable stl::recursive_mutex m_lock;
 	};
 
+	DEFINE_ENUM_CLASS_BITWISE(IObjectManager::AttachResultFlags);
 }

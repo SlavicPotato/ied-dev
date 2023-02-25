@@ -1,12 +1,13 @@
 #include "pch.h"
 
-#include "Controller.h"
+#include "INode.h"
 #include "INodeOverride.h"
 #include "IObjectManager.h"
 
 #include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
 #include "IED/ReferenceLightController.h"
+#include "IED/StringHolder.h"
 #include "IED/Util/Common.h"
 
 #include <ext/Model.h>
@@ -31,27 +32,11 @@ namespace IED
 				a_holder.RemoveSimComponent(sc);
 			}
 
-			if (auto& pl = state->light)
-			{
-				ReferenceLightController::GetSingleton().RemoveLight(a_holder.GetActorFormID(), pl->niObject.get());
-			}
-
-			if (auto& ah = state->anim.holder)
-			{
-				AnimationUpdateController::GetSingleton().RemoveObject(a_holder.GetActorFormID(), ah);
-			}
+			state->UnregisterFromControllers(a_holder.GetActorFormID());
 
 			for (auto& e : state->groupObjects)
 			{
-				if (auto& pl = e.second.light)
-				{
-					ReferenceLightController::GetSingleton().RemoveLight(a_holder.GetActorFormID(), pl->niObject.get());
-				}
-
-				if (auto& ah = e.second.anim.holder)
-				{
-					AnimationUpdateController::GetSingleton().RemoveObject(a_holder.GetActorFormID(), ah);
-				}
+				e.second.UnregisterFromControllers(a_holder.GetActorFormID());
 			}
 
 			if (
@@ -104,30 +89,6 @@ namespace IED
 		if (it != m_actorMap.end())
 		{
 			it->second.SetHandle(a_handle);
-
-			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
-			{
-				it->second.MarkDestroyed();
-			}
-
-			EraseActor(it);
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool IObjectManager::RemoveActorImpl(
-		TESObjectREFR*                   a_actor,
-		stl::flag<ControllerUpdateFlags> a_flags) noexcept
-	{
-		auto it = m_actorMap.find(a_actor->formID);
-		if (it != m_actorMap.end())
-		{
-			it->second.SetHandle(a_actor->GetHandle());
 
 			if (a_flags.test(ControllerUpdateFlags::kDestroyed))
 			{
@@ -461,8 +422,15 @@ namespace IED
 			INode::GetWeaponNodeName(a_form->formID, a_out);
 			break;
 		case ModelType::kArmor:
-		case ModelType::kShield:
 			INode::GetArmorNodeName(
+				a_form->formID,
+				a_params.arma ?
+					a_params.arma->formID :
+					Game::FormID{},
+				a_out);
+			break;
+		case ModelType::kShield:
+			INode::GetShieldNodeName(
 				a_form->formID,
 				a_params.arma ?
 					a_params.arma->formID :
@@ -472,16 +440,12 @@ namespace IED
 		case ModelType::kLight:
 			INode::GetLightNodeName(a_form->formID, a_out);
 			break;
-		case ModelType::kProjectile:
-		case ModelType::kHazard:
-		case ModelType::kMisc:
-			INode::GetMiscNodeName(a_form->formID, a_out);
-			break;
 		case ModelType::kAmmo:
 			INode::GetAmmoNodeName(a_form->formID, a_out);
 			break;
 		default:
-			HALT("FIXME");
+			INode::GetMiscNodeName(a_form->formID, a_out);
+			break;
 		}
 	}
 
@@ -514,7 +478,14 @@ namespace IED
 
 		const auto hasModelForm = static_cast<bool>(a_modelForm);
 
-		if (!hasModelForm)
+		if (hasModelForm)
+		{
+			if (a_modelForm->formID.IsTemporary())
+			{
+				return false;
+			}
+		}
+		else
 		{
 			a_modelForm = a_form;
 		}
@@ -595,9 +566,7 @@ namespace IED
 
 		if (modelParams.swap)
 		{
-			EngineExtensions::ApplyTextureSwap(
-				modelParams.swap,
-				object.get());
+			ApplyTextureSwap(modelParams.swap, object.get());
 		}
 
 		//object->m_localTransform = {};
@@ -654,7 +623,7 @@ namespace IED
 				state->light);
 		}
 
-		const auto ar = EngineExtensions::AttachObject(
+		const auto ar = AttachObject(
 			a_params.actor,
 			a_modelForm,
 			a_params.root,
@@ -813,9 +782,7 @@ namespace IED
 			return false;
 		}
 
-		const stl::fixed_string emptyString;
-
-		auto it = a_group.entries.find(emptyString);
+		auto it = a_group.entries.find(stl::fixed_string());
 		if (it == a_group.entries.end())
 		{
 			return false;
@@ -974,9 +941,7 @@ namespace IED
 
 			if (e.params.swap)
 			{
-				EngineExtensions::ApplyTextureSwap(
-					e.params.swap,
-					e.object);
+				ApplyTextureSwap(e.params.swap, e.object);
 			}
 
 			GetNodeName(e.form, e.params, buffer);
@@ -1020,7 +985,7 @@ namespace IED
 					n.light);
 			}
 
-			EngineExtensions::AttachObject(
+			AttachObject(
 				a_params.actor,
 				e.form,
 				a_params.root,
@@ -1357,6 +1322,263 @@ namespace IED
 
 			state->flags.clear(ObjectEntryFlags::kRefSyncDisableFailedOrphan);
 		}
+
+		return result;
+	}
+
+	bool IObjectManager::RemoveAllChildren(
+		NiNode*              a_object,
+		const BSFixedString& a_name) noexcept
+	{
+		bool result = false;
+
+		std::uint32_t maxiter = 1000;
+
+		while (NiPointer object = GetObjectByName(a_object, a_name, true))
+		{
+			object->m_parent->DetachChild2(object);
+			result = true;
+
+			if (!--maxiter)
+			{
+				break;
+			}
+
+			ShrinkToSize(a_object);
+		}
+
+		return result;
+	}
+
+	bool IObjectManager::RemoveObjectByName(
+		NiNode*              a_object,
+		const BSFixedString& a_name) noexcept
+	{
+		if (NiPointer object = GetObjectByName(a_object, a_name, true))
+		{
+			if (auto parent = object->m_parent)
+			{
+				parent->DetachChild2(object);
+
+				ShrinkToSize(a_object);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	BSXFlags* IObjectManager::GetBSXFlags(NiObjectNET* a_object) noexcept
+	{
+		return a_object->GetExtraData<BSXFlags>(BSStringHolder::GetSingleton()->m_bsx);
+	}
+
+	auto IObjectManager::AttachObject(
+		Actor*      a_actor,
+		TESForm*    a_modelForm,
+		BSFadeNode* a_root,
+		NiNode*     a_targetNode,
+		NiNode*     a_object,
+		ModelType   a_modelType,
+		bool        a_leftWeapon,
+		bool        a_dropOnDeath,
+		bool        a_removeScabbards,
+		bool        a_keepTorchFlame,
+		bool        a_disableHavok,
+		bool        a_removeTracers,
+		bool        a_removeEditorMarker) noexcept
+		-> stl::flag<AttachResultFlags>
+	{
+		stl::flag<AttachResultFlags> result{
+			AttachResultFlags::kNone
+		};
+
+		if (const auto* const bsxFlags = GetBSXFlags(a_object))
+		{
+			const stl::flag<BSXFlags::Flag> flags(bsxFlags->m_data);
+
+			if (flags.test(BSXFlags::Flag::kAddon))
+			{
+				AttachAddonNodes(a_object);
+			}
+
+			if (!flags.test(BSXFlags::Flag::kEditorMarker))
+			{
+				a_removeEditorMarker = false;
+			}
+		}
+		else
+		{
+			a_removeEditorMarker = false;
+		}
+
+		AttachAddonParticles(a_object);
+
+		if (auto fadeNode = a_object->AsFadeNode())
+		{
+			fadeNode->unk153 = (fadeNode->unk153 & 0xF0) | 0x7;
+		}
+
+		SetShaderPropsFadeNode(a_object, a_root);
+
+		a_targetNode->AttachChild(a_object, true);
+
+		NiAVObject::ControllerUpdateContext ctx{
+			static_cast<float>(*EngineExtensions::m_gameRuntimeMS),
+			0
+		};
+
+		a_object->UpdateDownwardPass(ctx, 0);
+
+		a_object->IncRef();
+
+		fUnk12ba3e0(*INode::m_shadowSceneNode, a_object);
+		fUnk12b99f0(*INode::m_shadowSceneNode, a_object);
+
+		a_object->DecRef();
+
+		const auto sh = BSStringHolder::GetSingleton();
+
+		a_object->m_name = sh->m_object;
+
+		switch (a_modelType)
+		{
+		case ModelType::kWeapon:
+			{
+				const NiPointer scbNode     = GetObjectByName(a_object, sh->m_scb, true);
+				const NiPointer scbLeftNode = GetObjectByName(a_object, sh->m_scbLeft, true);
+
+				if (a_removeScabbards)
+				{
+					if (scbNode || scbLeftNode)
+					{
+						if (scbNode)
+						{
+							scbNode->m_parent->DetachChild2(scbNode);
+						}
+
+						if (scbLeftNode)
+						{
+							scbLeftNode->m_parent->DetachChild2(scbLeftNode);
+						}
+
+						ShrinkToSize(a_object);
+					}
+				}
+				else
+				{
+					NiAVObject* scbAttach;
+					NiAVObject* scbRemove;
+
+					if (a_leftWeapon && scbLeftNode)
+					{
+						scbAttach = scbLeftNode;
+						scbRemove = scbNode;
+
+						scbLeftNode->ClearHidden();
+
+						result.set(AttachResultFlags::kScbLeft);
+					}
+					else
+					{
+						scbAttach = scbNode;
+						scbRemove = scbLeftNode;
+					}
+
+					if (scbAttach || scbRemove)
+					{
+						if (scbAttach)
+						{
+							a_targetNode->AttachChild(scbAttach, true);
+
+							fUnkDC6140(a_targetNode, true);
+						}
+
+						if (scbRemove)
+						{
+							scbRemove->m_parent->DetachChild2(scbRemove);
+						}
+
+						ShrinkToSize(a_object);
+					}
+				}
+			}
+
+			break;
+
+		case ModelType::kLight:
+
+			if (a_modelForm->IsTorch())
+			{
+				if (!a_keepTorchFlame)
+				{
+					if (RemoveObjectByName(a_object, sh->m_torchFire))
+					{
+						result.set(AttachResultFlags::kTorchFlameRemoved);
+					}
+
+#if !defined(IED_DISABLE_ENB_LIGHT_STRIPPING)
+
+					for (auto& e : sh->m_enbLightAttachNodes)
+					{
+						if (RemoveAllChildren(a_object, e))
+						{
+							result.set(AttachResultFlags::kTorchCustomRemoved);
+						}
+					}
+#endif
+				}
+			}
+
+			break;
+
+		case ModelType::kProjectile:
+
+			if (a_removeTracers)
+			{
+				RemoveObjectByName(a_object, sh->m_tracerRoot);
+			}
+
+			break;
+		}
+
+		if (a_removeEditorMarker)
+		{
+			RemoveObjectByName(a_object, sh->m_editorMarker);
+		}
+
+		if (a_disableHavok)  // maybe just force this for ammo
+		{
+			StripCollision(a_object, true, true);
+		}
+
+		fUnk1CD130(a_object, std::uint32_t(0x0));
+
+		QueueAttachHavok(
+			BSTaskPool::GetSingleton(),
+			a_object,
+			(a_disableHavok || a_dropOnDeath) ? 4 : 0,
+			true);
+
+		if (const auto cell = a_actor->GetParentCell())
+		{
+			if (const auto world = cell->GetHavokWorld())
+			{
+				NiPointer<Actor> mountedActor;
+
+				const bool isMounted = a_actor->GetMountedActor(mountedActor);
+
+				unks_01 tmp;
+
+				auto& r = fUnk5EBD90(isMounted ? mountedActor.get() : a_actor, tmp);
+				fUnk5C39F0(BSTaskPool::GetSingleton(), a_object, world, r.p2);
+			}
+		}
+
+		SetShaderPropsFadeNode(a_targetNode, a_root);
+
+		a_actor->UpdateAlpha();
 
 		return result;
 	}

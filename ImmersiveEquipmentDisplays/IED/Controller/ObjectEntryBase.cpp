@@ -6,6 +6,7 @@
 
 #include "IED/AnimationUpdateController.h"
 #include "IED/EngineExtensions.h"
+#include "IED/ReferenceLightController.h"
 #include "IED/StringHolder.h"
 
 namespace IED
@@ -341,6 +342,19 @@ namespace IED
 		}
 	}
 
+	void ObjectEntryBase::Object::UnregisterFromControllers(Game::FormID a_owner) noexcept
+	{
+		if (light)
+		{
+			ReferenceLightController::GetSingleton().RemoveLight(a_owner, light->niObject.get());
+		}
+
+		if (anim.holder)
+		{
+			AnimationUpdateController::GetSingleton().RemoveObject(a_owner, anim.holder);
+		}
+	}
+
 	void ObjectEntryBase::Object::CleanupObject(Game::ObjectRefHandle a_handle) noexcept
 	{
 		if (sound.handle.IsValid())
@@ -350,11 +364,11 @@ namespace IED
 
 		if (light)
 		{
-			light->Cleanup(commonNodes.object.get());
+			ReferenceLightController::QueueRemoveAllLightsFromNode(commonNodes.rootNode.get());
 			light.reset();
 		}
 
-		EngineExtensions::CleanupObjectImpl(
+		IObjectManager::CleanupObjectImpl(
 			a_handle,
 			commonNodes.rootNode.get());
 

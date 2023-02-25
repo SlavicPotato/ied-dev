@@ -37,7 +37,7 @@ namespace IED
 					{
 						if (const auto* const perk = e->perk)
 						{
-							data.try_emplace(perk->formID, e->currentRank);
+							data.emplace(perk->formID, e->currentRank);
 						}
 					}
 				}
@@ -51,7 +51,7 @@ namespace IED
 
 					if (const auto* const perk = e.perk)
 					{
-						data.try_emplace(perk->formID, e.currentRank);
+						data.emplace(perk->formID, e.currentRank);
 					}
 				}
 			}
@@ -112,7 +112,7 @@ namespace IED
 			extraFactionChanges,
 			a_npc,
 			[&](const auto& a_info) noexcept {
-				data.try_emplace(a_info.faction, a_info.rank);
+				data.emplace(a_info.faction, a_info.rank);
 			});
 
 		return true;
@@ -169,7 +169,8 @@ namespace IED
 		return true;
 	}
 
-	bool CachedActiveEffectData::HasEffectWithKeyword(const BGSKeyword* a_keyword) const noexcept
+	bool CachedActiveEffectData::HasEffectWithKeyword(
+		const BGSKeyword* a_keyword) const noexcept
 	{
 		if (a_keyword)
 		{

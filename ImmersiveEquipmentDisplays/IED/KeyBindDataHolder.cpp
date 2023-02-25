@@ -8,7 +8,7 @@ namespace IED
 {
 	namespace KB
 	{
-		void KeyBindDataHolder::ClearKeyToggleStates() noexcept
+		void KeyBindDataHolder::ResetKeyToggleStates() noexcept
 		{
 			const stl::lock_guard lock(m_lock);
 

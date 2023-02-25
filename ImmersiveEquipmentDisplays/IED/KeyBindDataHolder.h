@@ -56,7 +56,7 @@ namespace IED
 				}
 			}
 
-			void ClearKeyToggleStates() noexcept;
+			void ResetKeyToggleStates() noexcept;
 			KeyToggleStateEntryHolder::state_data GetKeyToggleStates() const;
 			void InitializeKeyToggleStates(const KeyToggleStateEntryHolder::state_data& a_states) noexcept;
 

@@ -10,10 +10,10 @@ namespace IED
 		public BSTEventSink<TESCellAttachDetachEvent>
 	{
 		typedef bool (*updateRefrLight_t)(
-			TESObjectLIGH*                 a1,
-			const NiPointer<NiPointLight>& a2,
-			TESObjectREFR*                 a3,
-			float                          a4) noexcept;
+			TESObjectLIGH*                 a_this,
+			const NiPointer<NiPointLight>& a_light,
+			TESObjectREFR*                 a_reference,
+			float                          a_wantDimmer) noexcept;
 
 		typedef bool (*setNiPointLightAttenuation_t)(
 			NiAVObject*  a_object,
@@ -24,6 +24,10 @@ namespace IED
 			NiNode*              a_node,
 			bool                 a_lightNodeInvisibilitySwitch,
 			bool                 a_remove) noexcept;
+
+		typedef bool (*shadowSceneNodeQueueRemoveLight_t)(
+			RE::ShadowSceneNode* a_ssn,
+			NiLight*             a_node) noexcept;
 
 		typedef bool (*shadowSceneNodeCleanupCellMoveReAddLight_t)(
 			RE::ShadowSceneNode* a_ssn,
@@ -40,10 +44,10 @@ namespace IED
 
 		struct Entry
 		{
-			TESObjectLIGH*             form;
-			NiPointer<NiPointLight>    niLight;
-			NiPointer<RE::BSLight>     bsLight;
-			const Data::ExtraLightData config;
+			TESObjectLIGH*          form;
+			NiPointer<NiPointLight> niLight;
+			NiPointer<RE::BSLight>  bsLight;
+			Data::ExtraLightData    config;
 		};
 
 		using lock_type        = stl::shared_mutex;
@@ -75,13 +79,17 @@ namespace IED
 
 		void RemoveActor(Game::FormID a_actor) noexcept;
 
+		/*void ReAttachLight(
+			Actor*        a_actor,
+			ObjectLight&  a_object) noexcept;*/
+
 		[[nodiscard]] static std::unique_ptr<ObjectLight> CreateAndAttachPointLight(
 			const TESObjectLIGH*        a_lightForm,
 			Actor*                      a_actor,
 			NiNode*                     a_object,
 			const Data::ExtraLightData& a_config) noexcept;
 
-		static void CleanupLights(NiNode* a_node) noexcept;
+		static void QueueRemoveAllLightsFromNode(NiNode* a_node) noexcept;
 
 		std::size_t GetNumLights() const noexcept;
 
@@ -95,7 +103,7 @@ namespace IED
 			m_fixVanillaLightOnCellAttach.store(a_switch, std::memory_order_relaxed);
 		}
 
-		inline void SetNPCLightUpdateFixEnabled(bool a_switch) noexcept
+		inline void SetNPCEnableVanillaLightUpdates(bool a_switch) noexcept
 		{
 			m_fixVanillaNPCLightUpdates.store(a_switch, std::memory_order_relaxed);
 		}
@@ -119,17 +127,23 @@ namespace IED
 			}
 		}
 
+		/*static void ReAttachLightImpl(
+			Actor*       a_actor,
+			Entry&       a_entry,
+			ObjectLight& a_object) noexcept;*/
+
 		static void ReAddActorExtraLight(Actor* a_actor) noexcept;
 
 		virtual EventResult ReceiveEvent(
 			const TESCellAttachDetachEvent*           a_evn,
 			BSTEventSource<TESCellAttachDetachEvent>* a_dispatcher) override;
 
-		inline static const auto UpdateRefrLight            = IAL::Address<updateRefrLight_t>(17212, 17614);
-		inline static const auto NiPointLightSetAttenuation = IAL::Address<setNiPointLightAttenuation_t>(17224, 17626);
-		inline static const auto QueueRemoveAllLights       = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
-		inline static const auto QueueAddLight              = IAL::Address<refreshLightOnSceneMove_t>(99693, 106327);
-		inline static const auto UnkQueueBSLight            = IAL::Address<shadowSceneNode_UnkQueueBSLight_t>(99706, 106340);
+		inline static const auto UpdateRefrLight              = IAL::Address<updateRefrLight_t>(17212, 17614);
+		inline static const auto NiPointLightSetAttenuation   = IAL::Address<setNiPointLightAttenuation_t>(17224, 17626);
+		inline static const auto QueueRemoveAllLightsFromNodeImpl = IAL::Address<shadowSceneNodeCleanupLights_t>(99732, 106376);
+		inline static const auto QueueAddLight                = IAL::Address<refreshLightOnSceneMove_t>(99693, 106327);
+		inline static const auto UnkQueueBSLight              = IAL::Address<shadowSceneNode_UnkQueueBSLight_t>(99706, 106340);
+		//inline static const auto QueueRemoveLight           = IAL::Address<shadowSceneNodeQueueRemoveLight_t>(99697, 106331);
 
 		mutable lock_type                                          m_lock;
 		stl::unordered_map<Game::FormID, stl::forward_list<Entry>> m_data;
