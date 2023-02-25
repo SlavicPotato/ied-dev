@@ -149,6 +149,8 @@ namespace IED
 			AnimationUpdateController::GetSingleton().Initialize();
 		}
 
+		ALD::SetInteriorAmbientLightThreshold(config->m_interiorAmbientLightThreshold);
+
 		m_done = true;
 
 		return true;

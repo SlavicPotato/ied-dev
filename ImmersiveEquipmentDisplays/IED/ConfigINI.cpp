@@ -170,7 +170,9 @@ namespace IED
 		m_enableLights = reader.GetBoolValue(SECT_LIGHTS, "Enable", true);
 
 		m_effectShaderFlickerFix = reader.GetBoolValue(SECT_EFFECT_SHADERS, "FlickerFix", false);
-		m_clearRPCOnSceneMove    = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
+
+		m_clearRPCOnSceneMove           = reader.GetBoolValue(SECT_MISCELLANEOUS, "ClearPlayerRandomPercentContainerOnSceneMove", false);
+		m_interiorAmbientLightThreshold = static_cast<float>(reader.GetDoubleValue(SECT_MISCELLANEOUS, "InteriorAmbientLightThreshold", 0.35f));
 
 		m_loaded = reader.is_loaded();
 
