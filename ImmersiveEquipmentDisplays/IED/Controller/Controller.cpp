@@ -2080,7 +2080,7 @@ namespace IED
 					a_config.geometryTransform,
 					state->commonNodes.object);
 
-				state->currentGeomTransformTag = a_config.geometryTransform;
+				state->currentGeomTransformTag.emplace(a_config.geometryTransform);
 
 				a_params.state.flags.set(ProcessStateUpdateFlags::kMenuUpdate);
 			}

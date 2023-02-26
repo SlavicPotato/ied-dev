@@ -8,12 +8,12 @@
 #include "UIComparisonOperatorSelector.h"
 #include "UIConditionExtraSelectorWidget.h"
 #include "UIDayOfWeekSelectorWidget.h"
+#include "UIKeyBindIDSelectorWidget.h"
 #include "UILifeStateSelectorWidget.h"
 #include "UIObjectTypeSelectorWidget.h"
 #include "UIPackageTypeSelectorWidget.h"
 #include "UIVariableConditionSourceSelectorWidget.h"
 #include "UIVariableTypeSelectorWidget.h"
-#include "UIKeyBindIDSelectorWidget.h"
 
 #include "IED/Controller/Controller.h"
 #include "IED/Data.h"
@@ -144,6 +144,14 @@ namespace IED
 						if (const auto& f = get(ConditionParamItem::LightingTemplateInheritanceFlags); f.p1)
 						{
 							f.As1<RE::INTERIOR_DATA::Inherit>() = RE::INTERIOR_DATA::Inherit::kNone;
+						}
+
+						if (c == Data::ExtraConditionType::kInteriorAmbientLightLevel)
+						{
+							if (const auto& f = get(ConditionParamItem::Float); f.p1)
+							{
+								f.As1<float>() = 0.0f;
+							}
 						}
 					}
 
@@ -459,7 +467,7 @@ namespace IED
 						ImGuiInputTextFlags_EnterReturnsTrue);
 				}
 			}
-			
+
 			if (const auto& e = get(ConditionParamItem::KeyBindID); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -490,7 +498,7 @@ namespace IED
 						ImGuiSliderFlags_AlwaysClamp);
 				}
 			}
-			
+
 			if (const auto& e = get(ConditionParamItem::LightingTemplateInheritanceFlags); e.p1)
 			{
 				ConditionParamItemExtraArgs args;
@@ -503,7 +511,7 @@ namespace IED
 
 					result |= DrawLightingTemplateInheritanceFlags(e.As1<RE::INTERIOR_DATA::Inherit>());
 
-					UICommon::PopDisabled(args.disable);					
+					UICommon::PopDisabled(args.disable);
 				}
 			}
 
@@ -807,7 +815,7 @@ namespace IED
 
 							break;
 						case Data::ExtraConditionType::kKeyIDToggled:
-							
+
 							if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
 							{
 								stl::snprintf(
@@ -816,6 +824,24 @@ namespace IED
 									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									UIL::LS(CommonStrings::ID),
 									f.As1<const stl::fixed_string>().c_str());
+
+								return m_descBuffer;
+							}
+
+							break;
+
+						case Data::ExtraConditionType::kInteriorAmbientLightLevel:
+
+							{
+								const auto& f = get(ConditionParamItem::CompOper);
+								const auto& g = get(ConditionParamItem::Float);
+
+								stl::snprintf(
+									m_descBuffer,
+									"%s %s %f",
+									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
+									f.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(f.As1<Data::ComparisonOperator>()) : nullptr,
+									g.p1 ? g.As1<float>() : 0);
 
 								return m_descBuffer;
 							}

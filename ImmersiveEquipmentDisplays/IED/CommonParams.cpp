@@ -144,14 +144,11 @@ namespace IED
 			{
 				result = true;
 			}
-			else
+			else if (race->data.raceFlags.test(TESRace::Flag::kCanDualWield))
 			{
-				if (race->data.raceFlags.test(TESRace::Flag::kCanDualWield))
+				if (const auto* const style = objects.GetCachedData().combatStyle)
 				{
-					if (const auto* const style = objects.GetCachedData().combatStyle)
-					{
-						result = style->AllowDualWielding();
-					}
+					result = style->AllowDualWielding();
 				}
 			}
 
@@ -198,7 +195,17 @@ namespace IED
 					TESObjectCELL::Flag::kShowSky |
 					TESObjectCELL::Flag::kUseSkyLighting))
 			{
-				result = ALD::IsInteriorDark(actor, RE::TES::GetSingleton()->sky, cell);
+				if (!interiorAmbientLightLevel)
+				{
+					interiorAmbientLightLevel.emplace(
+						ALD::GetInteriorAmbientLightLevel(
+							actor,
+							RE::TES::GetSingleton()->sky,
+							cell));
+				}
+
+				result = *interiorAmbientLightLevel >= 0.0f &&
+				         *interiorAmbientLightLevel < ALD::GetInteriorAmbientLightThreshold();
 			}
 			else
 			{
@@ -209,6 +216,36 @@ namespace IED
 		}
 
 		return *isInDarkArea;
+	}
+
+	float CommonParams::get_interior_ambient_light_level() const noexcept
+	{
+		if (!interiorAmbientLightLevel)
+		{
+			const auto* const cell = actor->GetParentCell();
+
+			float result;
+
+			if (cell &&
+			    cell->IsInterior() &&
+			    !cell->cellFlags.test(
+					TESObjectCELL::Flag::kShowSky |
+					TESObjectCELL::Flag::kUseSkyLighting))
+			{
+				result = ALD::GetInteriorAmbientLightLevel(
+					actor,
+					RE::TES::GetSingleton()->sky,
+					cell);
+			}
+			else
+			{
+				result = -1.0f;
+			}
+
+			interiorAmbientLightLevel.emplace(result);
+		}
+
+		return *interiorAmbientLightLevel;
 	}
 
 	bool CommonParams::is_daytime() const noexcept

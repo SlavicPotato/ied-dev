@@ -63,9 +63,12 @@ namespace IED
 			a_out.cellCoords = cell->GetCellCoordinates();
 
 			a_out.directionalAmbientLightLevel =
-				cell->IsInterior() ?
-					ALD::GetDirectionalAmbientLightLevel(a_actor, RE::TES::GetSingleton()->sky, cell) :
-					0.0f;
+				(cell->IsInterior() &&
+						!cell->cellFlags.test(
+							TESObjectCELL::Flag::kShowSky |
+							TESObjectCELL::Flag::kUseSkyLighting)) ?
+					ALD::GetInteriorAmbientLightLevel(a_actor, RE::TES::GetSingleton()->sky, cell) :
+					-1.0f;
 
 			//a_out.cellLightingTemplate = cell->lightingTemplate ? cell->lightingTemplate->formID : Game::FormID{};
 		}
@@ -74,7 +77,7 @@ namespace IED
 			a_out.cell      = {};
 			a_out.cellOwner = {};
 			//a_out.cellLightingTemplate = {};
-			a_out.directionalAmbientLightLevel = 0.0f;
+			a_out.directionalAmbientLightLevel = -1.0f;
 			a_out.cellCoords.reset();
 		}
 

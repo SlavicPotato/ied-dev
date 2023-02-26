@@ -129,6 +129,7 @@ namespace IED
 			MatchNPCOrTemplate                  = 2121,
 			LightingTemplate                    = 2122,
 			CopyIDToClipboard                   = 2123,
+			UsesSkyLighting                     = 2124,
 		};
 	}
 }

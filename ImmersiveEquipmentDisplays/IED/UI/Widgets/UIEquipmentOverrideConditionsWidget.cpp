@@ -877,6 +877,18 @@ namespace IED
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag2));
 
+				result |= ImGui::CheckboxFlagsT(
+					"!##5",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kNegateMatch6));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::UsesSkyLighting, "6"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::EquipmentOverrideConditionFlags::kExtraFlag3));
+
 				break;
 
 			case Data::EquipmentOverrideConditionType::NPC:
@@ -1945,6 +1957,10 @@ namespace IED
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::LightingTemplate));
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
+									break;
+								case Data::ExtraConditionType::kInteriorAmbientLightLevel:
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::Float>(e.ambientLightLevel);
 									break;
 								}
 

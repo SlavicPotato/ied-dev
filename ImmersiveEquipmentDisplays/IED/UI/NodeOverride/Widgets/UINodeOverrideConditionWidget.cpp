@@ -1323,6 +1323,10 @@ namespace IED
 									m_condParamEditor.GetFormPicker().SetFormBrowserEnabled(true);
 									m_condParamEditor.SetNext<ConditionParamItem::Form>(e.form.get_id());
 									break;
+								case Data::ExtraConditionType::kInteriorAmbientLightLevel:
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::Float>(e.ambientLightLevel);
+									break;
 								}
 
 								vdesc = m_condParamEditor.GetItemDesc(ConditionParamItem::CondExtra);
@@ -1555,7 +1559,7 @@ namespace IED
 							{
 								tdesc = "";
 							}
-							
+
 							if (!vdesc)
 							{
 								vdesc = "N/A";
@@ -1953,6 +1957,18 @@ namespace IED
 					UIL::LS(UIWidgetCommonStrings::PublicArea, "4"),
 					stl::underlying(std::addressof(match->flags.value)),
 					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag2));
+
+				result |= ImGui::CheckboxFlagsT(
+					"!##5",
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kNegateMatch6));
+
+				ImGui::SameLine();
+
+				result |= ImGui::CheckboxFlagsT(
+					UIL::LS(UIWidgetCommonStrings::UsesSkyLighting, "6"),
+					stl::underlying(std::addressof(match->flags.value)),
+					stl::underlying(Data::NodeOverrideConditionFlags::kExtraFlag3));
 
 				break;
 

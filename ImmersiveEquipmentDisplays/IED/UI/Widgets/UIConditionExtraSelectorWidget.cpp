@@ -30,6 +30,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kInPlayerEnemyFaction, UIConditionExtraSelectorWidgetStrings::InPlayerEnemyFaction),
 			std::make_pair(Data::ExtraConditionType::kInPublicCell, UIConditionExtraSelectorWidgetStrings::InPublicCell),
 			std::make_pair(Data::ExtraConditionType::kInWater, UIConditionExtraSelectorWidgetStrings::InWater),
+			std::make_pair(Data::ExtraConditionType::kInteriorAmbientLightLevel, UIConditionExtraSelectorWidgetStrings::InteriorAmbientLightLevel),
 			std::make_pair(Data::ExtraConditionType::kArrested, UIConditionExtraSelectorWidgetStrings::IsArrested),
 			std::make_pair(Data::ExtraConditionType::kIsCellOwner, UIConditionExtraSelectorWidgetStrings::IsCellOwner),
 			std::make_pair(Data::ExtraConditionType::kIsChild, UIConditionExtraSelectorWidgetStrings::IsChild),
@@ -251,6 +252,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::KeyIDToggled);
 			case Data::ExtraConditionType::kLightingTemplate:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LightingTemplate);
+			case Data::ExtraConditionType::kInteriorAmbientLightLevel:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InteriorAmbientLightLevel);
 			default:
 				return nullptr;
 			}

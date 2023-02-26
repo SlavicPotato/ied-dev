@@ -724,7 +724,7 @@ namespace IED
 				ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::LightLevel));
 
 				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%f / %f", data.lightLevel, data.directionalAmbientLightLevel / 255.0f);
+				ImGui::Text("%f / %f", data.lightLevel, data.directionalAmbientLightLevel);
 
 				ImGui::EndTable();
 			}

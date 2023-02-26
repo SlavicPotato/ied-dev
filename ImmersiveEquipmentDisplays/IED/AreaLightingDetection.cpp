@@ -13,7 +13,12 @@ namespace IED
 
 		void SetInteriorAmbientLightThreshold(float a_value) noexcept
 		{
-			s_interiorAmbientLightThreshold = std::clamp(a_value, 0.0f, 3.0f) * 255.0f;
+			s_interiorAmbientLightThreshold = std::clamp(a_value, 0.0f, 3.0f);
+		}
+
+		float GetInteriorAmbientLightThreshold() noexcept
+		{
+			return s_interiorAmbientLightThreshold;
 		}
 
 		namespace detail
@@ -89,7 +94,7 @@ namespace IED
 					std::max(a_color.z.min.green, a_color.z.max.green) +
 					std::max(a_color.z.min.blue, a_color.z.max.blue);
 
-				return static_cast<float>(x + y + z) * (1.0f / 3.0f);
+				return static_cast<float>(x + y + z) * ((1.0f / 255.0f) / 3.0f);
 			}
 
 			static constexpr bool is_color_dark(
@@ -164,7 +169,7 @@ namespace IED
 			return detail::is_ambient_lighting_dark(intData);
 		}
 
-		float GetDirectionalAmbientLightLevel(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept
+		float GetInteriorAmbientLightLevel(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept
 		{
 			if (a_actor == *g_thePlayer)
 			{
@@ -186,7 +191,7 @@ namespace IED
 				}
 			}
 
-			return intData ? detail::get_directional_ambient_color_intensity(intData->directionalAmbientLightingColors.directional) : 0.0f;
+			return intData ? detail::get_directional_ambient_color_intensity(intData->directionalAmbientLightingColors.directional) : -1.0f;
 		}
 
 		bool IsSunAngleLessThan(const RE::Sky* a_sky, float a_angle) noexcept

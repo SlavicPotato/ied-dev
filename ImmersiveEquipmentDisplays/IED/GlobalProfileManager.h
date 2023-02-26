@@ -66,7 +66,7 @@ namespace IED
 			public ProfileManager<ModelProfile>
 		{
 		public:
-			FN_NAMEPROC("ModelManager");
+			FN_NAMEPROC("ModelDataManager");
 
 		private:
 			using ProfileManager<ModelProfile>::ProfileManager;

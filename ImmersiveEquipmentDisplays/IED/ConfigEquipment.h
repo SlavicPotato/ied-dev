@@ -64,6 +64,7 @@ namespace IED
 			kExtraFlag7 = 1u << 21,
 
 			kNegateMatch5 = 1u << 22,
+			kNegateMatch6 = 1u << 23,
 
 			//kMatchTemplate = 1u << 30
 		};
@@ -337,6 +338,7 @@ namespace IED
 				float percent;
 				float avMatch;
 				float sunAngle;
+				float ambientLightLevel;
 			};
 
 			union

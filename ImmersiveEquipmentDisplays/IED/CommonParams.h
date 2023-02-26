@@ -102,14 +102,14 @@ namespace IED
 
 		[[nodiscard]] constexpr bool is_player_teammate() const noexcept
 		{
-			return actor != *g_thePlayer &&
-			       actor->IsPlayerTeammate();
+			return actor != *g_thePlayer && actor->IsPlayerTeammate();
 		}
 
 		[[nodiscard]] RE::TESWeather*                       get_current_weather() const noexcept;
 		[[nodiscard]] stl::flag<WeatherClassificationFlags> get_weather_class() const noexcept;
 		[[nodiscard]] Data::TimeOfDay                       get_time_of_day() const noexcept;
 		[[nodiscard]] bool                                  is_in_dark_area() const noexcept;
+		[[nodiscard]] float                                 get_interior_ambient_light_level() const noexcept;
 		[[nodiscard]] bool                                  is_daytime() const noexcept;
 		[[nodiscard]] float                                 get_sun_angle() const noexcept;
 
@@ -227,5 +227,6 @@ namespace IED
 		mutable std::optional<bool>                  isMountHorse;
 		mutable std::optional<bool>                  isInDarkArea;
 		mutable std::optional<TESForm*>              parentCellOwner;
+		mutable std::optional<float>                 interiorAmbientLightLevel;
 	};
 }

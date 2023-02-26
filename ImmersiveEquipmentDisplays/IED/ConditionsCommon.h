@@ -212,6 +212,11 @@ namespace IED
 				return a_params.get_key_toggle_state(a_match.s0);
 			case Data::ExtraConditionType::kLightingTemplate:
 				return match_form_with_id<Tm, Tf>(a_match, get_active_lighting_template(a_params));
+			case Data::ExtraConditionType::kInteriorAmbientLightLevel:
+				return compare(
+					a_match.compOperator2,
+					a_params.get_interior_ambient_light_level(),
+					a_match.ambientLightLevel);
 			default:
 				return false;
 			}
@@ -1108,6 +1113,17 @@ namespace IED
 
 					if (a_match.flags.test(Tf::kNegateMatch5) ==
 					    flags.test_any(a_match.lightingTemplateInheritanceFlags))
+					{
+						return false;
+					}
+				}
+
+				if (a_match.flags.test(Tf::kExtraFlag3))
+				{
+					if (a_match.flags.test(Tf::kNegateMatch6) ==
+					    cell->cellFlags.test(
+							TESObjectCELL::Flag::kShowSky |
+							TESObjectCELL::Flag::kUseSkyLighting))
 					{
 						return false;
 					}

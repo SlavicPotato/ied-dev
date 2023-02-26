@@ -89,6 +89,7 @@ namespace IED
 			kExtraFlag3 = 1u << 17,
 
 			kNegateMatch5 = 1u << 18,
+			kNegateMatch6 = 1u << 19,
 		};
 
 		DEFINE_ENUM_CLASS_BITWISE(NodeOverrideConditionFlags);
@@ -350,6 +351,7 @@ namespace IED
 				float percent;
 				float avMatch;
 				float sunAngle;
+				float ambientLightLevel;
 			};
 
 			union
