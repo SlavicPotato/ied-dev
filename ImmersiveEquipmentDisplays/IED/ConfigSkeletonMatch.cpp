@@ -11,6 +11,11 @@ namespace IED
 		bool configSkeletonMatch_t::test(
 			const SkeletonID& a_id) const noexcept
 		{
+			if (ids.empty() && signatures.empty())
+			{
+				return false;
+			}
+
 			if (!ids.empty())
 			{
 				auto& id = a_id.id();
