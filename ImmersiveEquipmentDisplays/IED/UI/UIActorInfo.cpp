@@ -1777,7 +1777,7 @@ namespace IED
 
 				ImGui::PopID();
 
-				ImGui::TreePop();
+				ImGui::EndTabItem();
 			}
 		}
 
