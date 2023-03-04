@@ -3310,10 +3310,7 @@ namespace IED
 				usedBaseConf.flags,
 				a_params);
 
-			const auto modelForm =
-				usedBaseConf.forceModel.get_id() ?
-					usedBaseConf.forceModel.get_form() :
-					a_config.modelForm.get_form();
+			const auto modelForm = usedBaseConf.forceModel.get_form();
 
 			if (a_objectEntry.data.state &&
 			    a_objectEntry.data.state->form == form)
