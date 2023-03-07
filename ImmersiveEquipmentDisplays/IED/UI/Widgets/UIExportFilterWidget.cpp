@@ -186,6 +186,13 @@ namespace IED
 				stl::underlying(std::addressof(a_flags.value)),
 				stl::underlying(ConfigStoreSerializationFlags::kConditionalVariables));
 
+#if defined(IED_ENABLE_OUTFIT)
+			result |= ImGui::CheckboxFlagsT(
+				"Outfit##otft",
+				stl::underlying(std::addressof(a_flags.value)),
+				stl::underlying(ConfigStoreSerializationFlags::kOutfit));
+#endif
+
 			ImGui::Unindent();
 			ImGui::Spacing();
 			ImGui::Separator();

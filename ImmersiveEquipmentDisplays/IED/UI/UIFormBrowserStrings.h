@@ -51,5 +51,7 @@ namespace IED
 		Hazard            = 5242,
 		EquipSlot         = 5243,
 		LightingTemplate  = 5244,
+		Outfit            = 5245,
+		LeveledItem       = 5246,
 	};
 }

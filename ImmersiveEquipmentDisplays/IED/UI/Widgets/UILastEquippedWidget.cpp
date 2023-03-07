@@ -29,8 +29,8 @@ namespace IED
 
 			if (!empty)
 			{
-				if (r == BaseConfigEditorAction::PasteOver ||
-				    r == BaseConfigEditorAction::Insert)
+				if (r == UIEquipmentOverrideAction::PasteOver ||
+				    r == UIEquipmentOverrideAction::Insert)
 				{
 					ImGui::SetNextItemOpen(true);
 				}

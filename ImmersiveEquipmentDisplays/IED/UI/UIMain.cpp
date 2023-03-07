@@ -21,6 +21,14 @@
 #include "UISkeletonExplorer.h"
 #include "UIStats.h"
 
+#if defined(IED_ENABLE_OUTFIT)
+#	include "IED/OM/UI/Profile/UIOutfitProfileEditor.h"
+#	include "IED/OM/UI/UIOutfitEditorWindow.h"
+#	if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+#		include "IED/OM/UI/UIOutfitFormManager.h"
+#	endif
+#endif
+
 #include "Custom/UICustomTabPanel.h"
 #include "EquipmentSlots/UISlotTabPanel.h"
 
@@ -63,7 +71,21 @@ namespace IED
 				nullptr
 #endif
 				,
-				std::make_unique<UIKeyBindEditorWindow>(a_controller)
+				std::make_unique<UIKeyBindEditorWindow>(a_controller),
+
+#if defined(IED_ENABLE_OUTFIT)
+#	if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+				std::make_unique<OM::UIOutfitFormManager>(a_controller),
+#	else
+				nullptr,
+#	endif
+				std::make_unique<OM::UIOutfitEditorWindow>(a_controller),
+				std::make_unique<OM::UIOutfitProfileEditor>(a_controller)
+#else
+				nullptr,
+				nullptr,
+				nullptr
+#endif
 		}
 		,
 			m_formLookupCache(a_controller),
@@ -315,9 +337,13 @@ namespace IED
 
 			DrawContextMenuItem<UIConditionalVariablesEditorWindow>(UIMainStrings::ConditionalVariables, "3");
 
+#if defined(IED_ENABLE_OUTFIT)
+			DrawContextMenuItem<OM::UIOutfitEditorWindow>(UIWidgetCommonStrings::OutfitConfig, "4");
+#endif
+
 			ImGui::Separator();
 
-			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "4");
+			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "5");
 		}
 
 		void UIMain::DrawProfileEditorsSubmenu()
@@ -327,6 +353,9 @@ namespace IED
 			DrawContextMenuItem<UIProfileEditorNodeOverride>(UIMainStrings::GearPositioning, "3");
 			DrawContextMenuItem<UIProfileEditorFormFilters>(UIMainStrings::FormFilters, "4");
 			DrawContextMenuItem<UIProfileEditorConditionalVariables>(UIMainStrings::ConditionalVariables, "5");
+#if defined(IED_ENABLE_OUTFIT)
+			DrawContextMenuItem<OM::UIOutfitProfileEditor>(UIWidgetCommonStrings::OutfitConfig, "6");
+#endif
 		}
 
 		void UIMain::DrawDiagnosticsSubmenu()
@@ -350,7 +379,11 @@ namespace IED
 			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "5");
 			DrawContextMenuItem<UILog>(CommonStrings::Log, "6");
 
-			if (UIL::LCG_BM(UIMainStrings::Diagnostics, "7"))
+#if defined(IED_ENABLE_OUTFIT) && defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+			DrawContextMenuItem<OM::UIOutfitFormManager>(UIMainStrings::OutfitFormManager, "7");
+#endif
+
+			if (UIL::LCG_BM(UIMainStrings::Diagnostics, "8"))
 			{
 				DrawDiagnosticsSubmenu();
 

@@ -16,7 +16,7 @@ namespace IED
 			UIEditorPanelSettingsGear() = default;
 
 		protected:
-			virtual void DrawExtraEditorPanelSettings() override;
+			virtual void DrawExtraEditorPanelSettings(const void* a_params) override;
 		};
 	}
 }

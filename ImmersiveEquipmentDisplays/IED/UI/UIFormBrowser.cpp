@@ -60,7 +60,9 @@ namespace IED
 				{ UIFormBrowserStrings::Light, IFormDatabase::EXTRA_TYPE_LIGHT },
 				{ UIFormBrowserStrings::Perk, BGSPerk::kTypeID },
 				{ UIFormBrowserStrings::EquipSlot, BGSEquipSlot::kTypeID },
-				{ UIFormBrowserStrings::LightingTemplate, BGSLightingTemplate::kTypeID }
+				{ UIFormBrowserStrings::LightingTemplate, BGSLightingTemplate::kTypeID },
+				{ UIFormBrowserStrings::Outfit, BGSOutfit::kTypeID },
+				{ UIFormBrowserStrings::LeveledItem, TESLevItem::kTypeID }
 
 			} }
 
@@ -81,7 +83,7 @@ namespace IED
 			SetWindowDimensions(0.f, 1200.f, 700.f, true);
 
 			if (ImGui::BeginPopupModal(
-					UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID),
+					UIL::LS<UIWidgetCommonStrings, 3>(UIWidgetCommonStrings::FormBrowser, POPUP_ID),
 					GetOpenState(),
 					ImGuiWindowFlags_NoScrollbar |
 						ImGuiWindowFlags_NoScrollWithMouse))
@@ -169,14 +171,14 @@ namespace IED
 
 			SetOpenState(true);
 
-			ImGui::OpenPopup(UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
+			ImGui::OpenPopup(UIL::LS<UIWidgetCommonStrings, 3>(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 
 			return true;
 		}
 
 		bool UIFormBrowser::IsBrowserOpen() const
 		{
-			return ImGui::IsPopupOpen(UIL::LS(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
+			return ImGui::IsPopupOpen(UIL::LS<UIWidgetCommonStrings, 3>(UIWidgetCommonStrings::FormBrowser, POPUP_ID));
 		}
 
 		void UIFormBrowser::SetTabFilter(

@@ -5,8 +5,6 @@
 #include "IED/UI/UIContext.h"
 #include "IED/UI/Window/UIWindow.h"
 
-#include "IED/UI/UILocalizationInterface.h"
-
 namespace IED
 {
 	class Controller;

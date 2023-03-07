@@ -6,6 +6,8 @@
 #include "JSONConfigStoreParser.h"
 #include "JSONConfigStoreSlotParser.h"
 
+#include "IED/OM/Parsers/JSONConfigStoreOutfitParser.h"
+
 namespace IED
 {
 	namespace Serialization
@@ -62,6 +64,16 @@ namespace IED
 					return false;
 				}
 			}
+			
+			if (auto& v = data["otft"])
+			{
+				Parser<Data::OM::configStoreOutfit_t> parser(m_state);
+
+				if (!parser.Parse(v, a_out.outfit))
+				{
+					return false;
+				}
+			}
 
 			return true;
 		}
@@ -77,11 +89,13 @@ namespace IED
 			Parser<Data::configStoreCustom_t>                cparser(m_state);
 			Parser<Data::configStoreNodeOverride_t>          eparser(m_state);
 			Parser<Data::configConditionalVariablesHolder_t> cvparser(m_state);
+			Parser<Data::OM::configStoreOutfit_t>            oparser(m_state);
 
 			sparser.Create(a_data.slot, data["slot"]);
 			cparser.Create(a_data.custom, data["custom"]);
 			eparser.Create(a_data.transforms, data["transforms"]);
 			cvparser.Create(a_data.condvars, data["cvar"]);
+			oparser.Create(a_data.outfit, data["otft"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

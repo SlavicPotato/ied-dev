@@ -155,7 +155,7 @@ namespace IED
 		void NodeMap::Sort()
 		{
 			m_data.sortvec([](const auto& a_lhs, const auto& a_rhs) {
-				return a_lhs->second.name < a_rhs->second.name;
+				return stl::fixed_string::less_str{}(a_lhs->second.name, a_rhs->second.name);
 			});
 		}
 
@@ -222,7 +222,7 @@ namespace IED
 				ParserState      state;
 				Parser<map_type> parser(state);
 
-				map_type         tmp;
+				map_type tmp;
 
 				if (!parser.Parse(root, tmp, false))
 				{

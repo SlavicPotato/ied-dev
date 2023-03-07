@@ -44,27 +44,15 @@ namespace IED
 			return m_Instance;
 		}
 
-		void QueueGetFormDatabase(IFormDatabase::form_db_get_func_t a_func);
+		void QueueGetFormDatabase(form_db_get_func_t a_func);
 
 		result_type GetDatabase();
 
 	private:
-		template <class T, class Tf = T>
-		constexpr static void Populate(
-			container_type&        a_data,
-			const RE::BSTArray<T>& a_fromData);
-
-		template <class T, class Tf>
-		constexpr static void Populate2(
-			container_type&        a_data,
-			const RE::BSTArray<T>& a_fromData,
-			std::uint32_t          a_type,
-			Tf                     a_func);
-
 		static result_type Create();
 
 		std::weak_ptr<container_type> m_data;
-		mutable stl::fast_spin_lock   m_lock;
+		mutable stl::mutex            m_lock;
 
 		static IFormDatabase m_Instance;
 	};

@@ -145,7 +145,7 @@ namespace IED
 			Game::FormID   a_npc,
 			Game::FormID   a_race,
 			ObjectSlot     a_slot,
-			holderCache_t& a_hc) const
+			holderCache_t& a_hc) const noexcept
 		{
 			if (auto& b = GetActorData(); !b.empty())
 			{

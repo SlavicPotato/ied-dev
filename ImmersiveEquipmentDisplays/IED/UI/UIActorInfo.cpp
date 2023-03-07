@@ -697,14 +697,7 @@ namespace IED
 
 				DrawActorInfoLineFormStringPair(CommonStrings::Skin, data.skin);
 
-				if (DrawActorInfoLineForm(CommonStrings::Outfit, data.outfit.first))
-				{
-					if (data.outfit.second)
-					{
-						ImGui::SameLine();
-						ImGui::TextWrapped("[%s]", UIL::LS(CommonStrings::Default));
-					}
-				}
+				DrawActorInfoLineForm(CommonStrings::Outfit, data.outfit);
 
 				DrawActorInfoLineFormStringPair(CommonStrings::Idle, data.idle);
 				DrawActorInfoLineFormStringPair(CommonStrings::Furniture, data.furniture);
@@ -1704,7 +1697,7 @@ namespace IED
 
 				ImGui::PopID();
 
-				ImGui::TreePop();
+				ImGui::EndTabItem();
 			}
 		}
 

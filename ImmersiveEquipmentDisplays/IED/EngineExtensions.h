@@ -22,7 +22,7 @@ namespace IED
 		static_assert(sizeof(hkaGetSkeletonNodeResult) == 0x10);
 
 		typedef BSFadeNode* (*GetNearestFadeNodeParent_t)(NiAVObject* a_object) noexcept;
-		
+
 		typedef bool (*unk63F810_t)() noexcept;
 		typedef NiExtraData* (*fFindNiExtraData_t)(
 			NiObjectNET*         a_object,
@@ -57,7 +57,7 @@ namespace IED
 
 		// inline static const auto playSound = IAL::Address<playSound_t>(52054);
 
-		inline static const auto m_gameRuntimeMS   = IAL::Address<std::int32_t*>(523662, 410201);
+		inline static const auto m_gameRuntimeMS = IAL::Address<std::int32_t*>(523662, 410201);
 		//inline static const auto tlsIndex             = IAL::Address<std::uint32_t*>(528600, 415542);
 		inline static const auto ShouldDefer3DTaskImpl = IAL::Address<unk63F810_t>(38079, 39033);
 
@@ -107,7 +107,6 @@ namespace IED
 
 		//inline static const auto GetNearestFadeNode        = IAL::Address<GetNearestFadeNodeParent_t>(98861, 105503);
 
-
 		//inline static const auto m_unkDC6140 = IAL::Address<unkDC6140_t>(76545);
 		//inline static const auto m_unk1CDB30 = IAL::Address<unk1CDB30_t>(15571);
 		//inline static const auto FindNiExtraData = IAL::Address<fFindNiExtraData_t>(69149, 70510);
@@ -141,8 +140,9 @@ namespace IED
 		private:
 			static constexpr bool IsValidAV(RE::ActorValue a_akValue) noexcept
 			{
-				return a_akValue >= RE::ActorValue::kAggresion &&
-				       a_akValue <= RE::ActorValue::kEnchanting;
+				return (a_akValue >= RE::ActorValue::kAggresion &&
+				        a_akValue <= RE::ActorValue::kEnchanting) ||
+				       a_akValue == RE::ActorValue::kWaitingForPlayer;
 			}
 
 			static void OnFuncCall(T* a_actor, RE::ActorValue a_akValue) noexcept;

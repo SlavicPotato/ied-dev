@@ -393,4 +393,10 @@ namespace IED
 	{
 		return controller.GetKeyBindDataHolder()->GetKeyState(a_id);
 	}
+
+	bool CommonParams::is_waiting_for_player() const noexcept
+	{
+		return !objects.IsPlayer() && 
+			actor->GetActorValue(RE::ActorValue::kWaitingForPlayer) == 1.0f;
+	}
 }

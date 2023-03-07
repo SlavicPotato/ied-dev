@@ -27,6 +27,8 @@ namespace IED
 			ConditionalVariables       = 4618,
 			I3DI                       = 4619,
 			KeyBinds                   = 4620,
+			OutfitFormManager          = 4621,
+			OutfitConfig               = 4622,
 		};
 	}
 }

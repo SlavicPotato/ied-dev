@@ -530,6 +530,13 @@ namespace IED
 		{
 			result->condvars = a_data.condvars;
 		}
+		
+		//
+
+		if (a_flags.test(ConfigStoreSerializationFlags::kOutfit))
+		{
+			result->outfit = a_data.outfit;
+		}
 
 		return result;
 	}

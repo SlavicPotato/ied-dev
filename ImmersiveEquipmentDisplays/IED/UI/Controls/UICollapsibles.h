@@ -8,7 +8,7 @@ namespace IED
 	{
 		class UICollapsibles
 		{
-		protected:
+		public:
 			bool CollapsingHeader(
 				const char* a_label,
 				bool        a_default = true);

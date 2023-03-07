@@ -4,16 +4,30 @@
 
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
 
-#include "BaseConfigEditorAction.h"
-
 namespace IED
 {
 	namespace UI
 	{
 
+		enum class UIEquipmentOverrideAction
+		{
+			None,
+			Insert,
+			InsertGroup,
+			Delete,
+			Swap,
+			Edit,
+			Reset,
+			Rename,
+			Copy,
+			Paste,
+			PasteOver,
+			Create
+		};
+
 		struct UIEquipmentOverrideResult
 		{
-			BaseConfigEditorAction               action{ BaseConfigEditorAction::None };
+			UIEquipmentOverrideAction            action{ UIEquipmentOverrideAction::None };
 			Game::FormID                         form;
 			Data::EquipmentOverrideConditionType entryType;
 

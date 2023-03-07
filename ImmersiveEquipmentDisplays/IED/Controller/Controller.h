@@ -28,6 +28,8 @@
 
 #include <ext/SDSPlayerShieldOnBackSwitchEvent.h>
 
+#include "IED/OM/OutfitController.h"
+
 namespace IED
 {
 	class Controller :
@@ -35,10 +37,10 @@ namespace IED
 		public IEquipment,
 		public IAnimationManager,
 		public ActorProcessorTask,
-		//public KeyToggleStates,
 		public ISerializationBase,
 		public IJSONSerialization,
 		public IUINotification,
+		public OM::OutfitController,
 		public BSTEventSink<TESObjectLoadedEvent>,
 		public BSTEventSink<TESInitScriptEvent>,
 		public BSTEventSink<TESEquipEvent>,
@@ -72,8 +74,9 @@ namespace IED
 			kDataVersion10 = 10,
 			kDataVersion11 = 11,
 			kDataVersion12 = 12,
+			kDataVersion13 = 13,
 
-			kCurrentVersion = kDataVersion12
+			kCurrentVersion = kDataVersion13
 		};
 
 		static constexpr std::uint32_t SKSE_SERIALIZATION_TYPE_ID = 'DDEI';
@@ -350,11 +353,13 @@ namespace IED
 
 		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetActiveConfig() noexcept
 		{
+			assert(m_configData.active);
 			return *m_configData.active;
 		}
 
 		[[nodiscard]] SKMP_143_CONSTEXPR auto& GetActiveConfig() const noexcept
 		{
+			assert(m_configData.active);
 			return *m_configData.active;
 		}
 
@@ -928,8 +933,7 @@ namespace IED
 		InputHandlers                   m_inputHandlers;
 		ConfigData                      m_configData;
 
-		stl::vector<Game::ObjectRefHandle>
-			m_activeHandles;
+		stl::vector<Game::ObjectRefHandle> m_activeHandles;
 
 		BipedDataCache m_bipedCache;
 

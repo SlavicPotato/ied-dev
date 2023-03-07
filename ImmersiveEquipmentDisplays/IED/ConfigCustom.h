@@ -205,7 +205,9 @@ namespace IED
 		{
 		public:
 			template <class Tf>
-			void visit(Tf a_func)
+			void visit(Tf a_func)                              //
+				noexcept(noexcept(configCustomHolder_t().visit(a_func)))  //
+				requires(requires(configCustomHolder_t a_v, Tf a_func) { a_v.visit(a_func); })
 			{
 				for (auto& e : data)
 				{

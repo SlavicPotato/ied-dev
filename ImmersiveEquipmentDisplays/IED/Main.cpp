@@ -25,6 +25,10 @@
 #include <ext/SKSEMessagingHandler.h>
 #include <ext/SKSESerializationEventHandler.h>
 
+#if defined(IED_ENABLE_OUTFIT) && defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+#	include "IED/OM/PersistentOutfitFormManager.h"
+#endif
+
 namespace IED
 {
 	Initializer Initializer::m_Instance;
@@ -86,6 +90,10 @@ namespace IED
 		Debug("Installing engine extensions..");
 
 		EngineExtensions::Install(m_controller, config);
+
+#if defined(IED_ENABLE_OUTFIT) && defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+		OM::PersistentOutfitFormManager::GetSingleton().Install();
+#endif
 
 		if (config->m_enableUI)
 		{
@@ -328,7 +336,17 @@ namespace IED
 					PATHS::PROFILE_MANAGER_MODEL);
 #endif
 
-				auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
+#if defined(IED_ENABLE_OUTFIT)
+				GlobalProfileManager::GetSingleton<OutfitProfile>().Load(
+					PATHS::PROFILE_MANAGER_OUTFIT);
+
+#	if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+				GlobalProfileManager::GetSingleton<OutfitFormListProfile>().Load(
+					PATHS::PROFILE_MANAGER_OUTFIT_FORM_LIST);
+#	endif
+#endif
+
+				const auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 
 				Debug(
 					"Loaded plugins: %zu, light: %zu [%zu total]",

@@ -41,3 +41,4 @@
 7800-7899:		light widget
 7900-7999:		profile editor base
 8000-8099:		lt inherit flags
+8100-8199:		ofm

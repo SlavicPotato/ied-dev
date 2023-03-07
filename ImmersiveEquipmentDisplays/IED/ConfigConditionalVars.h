@@ -30,10 +30,10 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			configConditionalVariableValueData_t() noexcept = default;
+			configConditionalVariableValueData_t() = default;
 
 			constexpr configConditionalVariableValueData_t(
-				ConditionalVariableType a_type) noexcept :
+				ConditionalVariableType a_type) :
 				value(a_type)
 			{
 			}
@@ -76,16 +76,16 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			configConditionalVariable_t() noexcept = default;
+			configConditionalVariable_t() = default;
 
 			constexpr configConditionalVariable_t(
-				const stl::fixed_string& a_desc) noexcept :
+				const stl::fixed_string& a_desc) :
 				desc(a_desc)
 			{
 			}
 
 			constexpr configConditionalVariable_t(
-				stl::fixed_string&& a_desc) noexcept :
+				stl::fixed_string&& a_desc) :
 				desc(std::move(a_desc))
 			{
 			}
@@ -125,10 +125,10 @@ namespace IED
 				DataVersion1 = 1
 			};
 
-			configConditionalVariablesEntry_t() noexcept = default;
+			configConditionalVariablesEntry_t() = default;
 
 			constexpr configConditionalVariablesEntry_t(
-				ConditionalVariableType a_type) noexcept :
+				ConditionalVariableType a_type) :
 				defaultValue(a_type)
 			{
 			}

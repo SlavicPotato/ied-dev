@@ -3,7 +3,6 @@
 #include "IED/UI/UICommon.h"
 
 #include "IED/UI/Widgets/Lists/UINPCLIstWidget.h"
-#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
 
 #include "UISlotEditorCommon.h"
 

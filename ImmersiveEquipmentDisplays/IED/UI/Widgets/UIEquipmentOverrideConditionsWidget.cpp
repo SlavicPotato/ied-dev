@@ -16,6 +16,7 @@
 
 #include "UIBaseConfigWidgetStrings.h"
 
+
 namespace IED
 {
 	namespace UI
@@ -60,7 +61,7 @@ namespace IED
 			{
 				if (ImGui::ArrowButton("up", ImGuiDir_Up))
 				{
-					result.action = BaseConfigEditorAction::Swap;
+					result.action = UIEquipmentOverrideAction::Swap;
 					result.dir    = SwapDirection::Up;
 				}
 
@@ -68,7 +69,7 @@ namespace IED
 
 				if (ImGui::ArrowButton("down", ImGuiDir_Down))
 				{
-					result.action = BaseConfigEditorAction::Swap;
+					result.action = UIEquipmentOverrideAction::Swap;
 					result.dir    = SwapDirection::Down;
 				}
 			}
@@ -83,7 +84,7 @@ namespace IED
 					{
 						if (UIObjectSlotSelectorWidget::DrawObjectSlotSelector("##ss", m_aoNewSlot))
 						{
-							result.action    = BaseConfigEditorAction::Insert;
+							result.action    = UIEquipmentOverrideAction::Insert;
 							result.slot      = m_aoNewSlot;
 							result.entryType = Data::EquipmentOverrideConditionType::Type;
 
@@ -102,7 +103,7 @@ namespace IED
 						{
 							if (m_aoNewEntryID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryID;
 								result.entryType = Data::EquipmentOverrideConditionType::Form;
 
@@ -120,7 +121,7 @@ namespace IED
 						{
 							if (m_aoNewEntryKWID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryKWID;
 								result.entryType = Data::EquipmentOverrideConditionType::Keyword;
 
@@ -137,7 +138,7 @@ namespace IED
 								UIL::LS(CommonStrings::Biped, "bp"),
 								m_ooNewBiped))
 						{
-							result.action    = BaseConfigEditorAction::Insert;
+							result.action    = UIEquipmentOverrideAction::Insert;
 							result.biped     = m_ooNewBiped;
 							result.entryType = Data::EquipmentOverrideConditionType::BipedSlot;
 
@@ -149,25 +150,25 @@ namespace IED
 
 					if (UIL::LCG_MI(CommonStrings::Actor, "6"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Actor;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::NPC, "7"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::NPC;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Race, "8"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Race;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Furniture, "9"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Furniture;
 
 						ImGui::CloseCurrentPopup();
@@ -182,7 +183,7 @@ namespace IED
 						{
 							if (m_aoNewEntryID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryID;
 								result.entryType = Data::EquipmentOverrideConditionType::Quest;
 
@@ -195,25 +196,25 @@ namespace IED
 
 					if (UIL::LCG_MI(CommonStrings::Location, "B"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Location;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Worldspace, "C"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Worldspace;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Package, "D"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Package;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Weather, "E"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Weather;
 					}
 
@@ -226,7 +227,7 @@ namespace IED
 						{
 							if (m_aoNewEntryGlobID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryGlobID;
 								result.entryType = Data::EquipmentOverrideConditionType::Global;
 
@@ -239,31 +240,31 @@ namespace IED
 
 					if (UIL::LCG_MI(UIWidgetCommonStrings::Mounting, "G"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Mounting;
 					}
 
 					if (UIL::LCG_MI(UIWidgetCommonStrings::Mounted, "H"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Mounted;
 					}
 
 					if (UIL::LCG_MI(UIWidgetCommonStrings::CurrentItem, "I"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Presence;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Idle, "J"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Idle;
 					}
 
 					if (UIL::LCG_MI(CommonStrings::Skeleton, "K"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Skeleton;
 					}
 
@@ -276,7 +277,7 @@ namespace IED
 						{
 							if (m_aoNewEntryFactionID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryFactionID;
 								result.entryType = Data::EquipmentOverrideConditionType::Faction;
 
@@ -289,7 +290,7 @@ namespace IED
 
 					if (UIL::LCG_MI(CommonStrings::Effect, "M"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Effect;
 					}
 
@@ -297,7 +298,7 @@ namespace IED
 					{
 						if (DrawDescriptionPopup())
 						{
-							result.action = BaseConfigEditorAction::Insert;
+							result.action = UIEquipmentOverrideAction::Insert;
 							result.desc   = GetDescriptionPopupBuffer();
 
 							result.entryType = Data::EquipmentOverrideConditionType::Variable;
@@ -317,7 +318,7 @@ namespace IED
 						{
 							if (m_aoNewEntryPerkID)
 							{
-								result.action    = BaseConfigEditorAction::Insert;
+								result.action    = UIEquipmentOverrideAction::Insert;
 								result.form      = m_aoNewEntryPerkID;
 								result.entryType = Data::EquipmentOverrideConditionType::Perk;
 
@@ -330,7 +331,7 @@ namespace IED
 
 					if (UIL::LCG_MI(CommonStrings::Cell, "P"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Cell;
 					}
 
@@ -339,7 +340,7 @@ namespace IED
 						if (UIConditionExtraSelectorWidget::DrawExtraConditionSelector(
 								m_ooNewExtraCond))
 						{
-							result.action    = BaseConfigEditorAction::Insert;
+							result.action    = UIEquipmentOverrideAction::Insert;
 							result.excond    = m_ooNewExtraCond;
 							result.entryType = Data::EquipmentOverrideConditionType::Extra;
 
@@ -351,7 +352,7 @@ namespace IED
 
 					if (UIL::LCG_MI(CommonStrings::Group, "Y"))
 					{
-						result.action    = BaseConfigEditorAction::Insert;
+						result.action    = UIEquipmentOverrideAction::Insert;
 						result.entryType = Data::EquipmentOverrideConditionType::Group;
 
 						ImGui::CloseCurrentPopup();
@@ -367,7 +368,7 @@ namespace IED
 							false,
 							clipData != nullptr))
 					{
-						result.action = BaseConfigEditorAction::Paste;
+						result.action = UIEquipmentOverrideAction::Paste;
 					}
 
 					ImGui::EndMenu();
@@ -375,7 +376,7 @@ namespace IED
 
 				if (UIL::LCG_MI(CommonStrings::Delete, "2"))
 				{
-					result.action = BaseConfigEditorAction::Delete;
+					result.action = UIEquipmentOverrideAction::Delete;
 				}
 
 				ImGui::Separator();
@@ -384,7 +385,7 @@ namespace IED
 				{
 					if (UIL::LCG_MI(CommonStrings::Copy, "3"))
 					{
-						result.action = BaseConfigEditorAction::Copy;
+						result.action = UIEquipmentOverrideAction::Copy;
 					}
 
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>();
@@ -395,14 +396,14 @@ namespace IED
 							false,
 							clipData != nullptr))
 					{
-						result.action = BaseConfigEditorAction::PasteOver;
+						result.action = UIEquipmentOverrideAction::PasteOver;
 					}
 				}
 				else
 				{
 					if (UIL::LCG_MI(CommonStrings::Copy, "3"))
 					{
-						result.action = BaseConfigEditorAction::Copy;
+						result.action = UIEquipmentOverrideAction::Copy;
 					}
 
 					auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>();
@@ -413,7 +414,7 @@ namespace IED
 							false,
 							clipData != nullptr))
 					{
-						result.action = BaseConfigEditorAction::PasteOver;
+						result.action = UIEquipmentOverrideAction::PasteOver;
 					}
 				}
 
@@ -1273,17 +1274,17 @@ namespace IED
 			}
 		}
 
-		BaseConfigEditorAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionHeaderContextMenu(
+		UIEquipmentOverrideAction UIEquipmentOverrideConditionsWidget::DrawEquipmentOverrideConditionHeaderContextMenu(
 			Data::equipmentOverrideConditionList_t& a_entry,
 			update_func_t                           a_updFunc)
 		{
-			BaseConfigEditorAction action{ BaseConfigEditorAction ::None };
+			UIEquipmentOverrideAction action{ UIEquipmentOverrideAction ::None };
 
 			const auto result = DrawEquipmentOverrideConditionContextMenu(true);
 
 			switch (result.action)
 			{
-			case BaseConfigEditorAction::Insert:
+			case UIEquipmentOverrideAction::Insert:
 				{
 					switch (result.entryType)
 					{
@@ -1377,11 +1378,11 @@ namespace IED
 
 				break;
 
-			case BaseConfigEditorAction::Copy:
+			case UIEquipmentOverrideAction::Copy:
 				UIClipboard::Set(a_entry);
 				break;
 
-			case BaseConfigEditorAction::Paste:
+			case UIEquipmentOverrideAction::Paste:
 				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
 				{
 					a_entry.emplace_back(*clipData);
@@ -1391,7 +1392,7 @@ namespace IED
 					action = result.action;
 				}
 				break;
-			case BaseConfigEditorAction::PasteOver:
+			case UIEquipmentOverrideAction::PasteOver:
 				if (auto clipData = UIClipboard::Get<Data::equipmentOverrideConditionList_t>())
 				{
 					a_entry = *clipData;
@@ -1401,7 +1402,7 @@ namespace IED
 					action = result.action;
 				}
 				break;
-			case BaseConfigEditorAction::Delete:
+			case UIEquipmentOverrideAction::Delete:
 				a_entry.clear();
 
 				action = result.action;
@@ -1431,9 +1432,9 @@ namespace IED
 			{
 				switch (r)
 				{
-				case BaseConfigEditorAction::Paste:
-				case BaseConfigEditorAction::PasteOver:
-				case BaseConfigEditorAction::Insert:
+				case UIEquipmentOverrideAction::Paste:
+				case UIEquipmentOverrideAction::PasteOver:
+				case UIEquipmentOverrideAction::Insert:
 					ImGui::SetNextItemOpen(true);
 					break;
 				}
@@ -1581,11 +1582,11 @@ namespace IED
 
 					switch (result.action)
 					{
-					case BaseConfigEditorAction::Delete:
+					case UIEquipmentOverrideAction::Delete:
 						it = a_entry.erase(it);
 						a_updFunc();
 						break;
-					case BaseConfigEditorAction::Insert:
+					case UIEquipmentOverrideAction::Insert:
 
 						switch (result.entryType)
 						{
@@ -1674,7 +1675,7 @@ namespace IED
 
 						break;
 
-					case BaseConfigEditorAction::Swap:
+					case UIEquipmentOverrideAction::Swap:
 
 						if (IterSwap(a_entry, it, result.dir))
 						{
@@ -1683,13 +1684,13 @@ namespace IED
 
 						break;
 
-					case BaseConfigEditorAction::Copy:
+					case UIEquipmentOverrideAction::Copy:
 
 						UIClipboard::Set(*it);
 
 						break;
 
-					case BaseConfigEditorAction::Paste:
+					case UIEquipmentOverrideAction::Paste:
 
 						if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
 						{
@@ -1702,7 +1703,7 @@ namespace IED
 
 						break;
 
-					case BaseConfigEditorAction::PasteOver:
+					case UIEquipmentOverrideAction::PasteOver:
 
 						if (auto clipData = UIClipboard::Get<Data::equipmentOverrideCondition_t>())
 						{

@@ -267,6 +267,30 @@
     <Filter Include="Source\IED\ActorInfo">
       <UniqueIdentifier>{7d517078-0471-4cbc-891a-df402ba98779}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\Override">
+      <UniqueIdentifier>{08f604a0-ca8f-4c64-9c58-4ed308b3453e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM">
+      <UniqueIdentifier>{8056f624-71a4-4a26-af10-e298f487e429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\Config">
+      <UniqueIdentifier>{5a400b64-d8bb-4321-b272-9e84269de529}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\UI">
+      <UniqueIdentifier>{8366d9f4-ae65-455b-bc67-99c2d7aedca5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\JSONParsers">
+      <UniqueIdentifier>{b193ab7f-7efd-48f5-bd94-6f4947affd86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\UI\Widgets">
+      <UniqueIdentifier>{60170644-9d73-4dd3-a5c3-7c172a6dc50e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\UI\Profile">
+      <UniqueIdentifier>{461cef3d-3639-4cc1-8fba-9804c19ed849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\OM\Config\FormManager">
+      <UniqueIdentifier>{41997b38-b837-4533-a6ef-35b77afb66e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -602,16 +626,10 @@
     <ClInclude Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideListParser.h">
-      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
-    </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.h">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionParser.h">
-      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideParser.h">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClInclude>
     <ClInclude Include="IED\Parsers\JSONConfigBaseParser.h">
@@ -1841,6 +1859,102 @@
     <ClInclude Include="IED\UI\Widgets\UILightingTemplateInheritanceFlagsWidgetStrings.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
+    <ClInclude Include="IED\OM\BGSOutfitHolder.h">
+      <Filter>Source\IED\OM</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\PersistentOutfitFormManager.h">
+      <Filter>Source\IED\OM</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigOutfitOverride.h">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigOutfit.h">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigOutfitEntry.h">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigStoreOutfit.h">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\OutfitController.h">
+      <Filter>Source\IED\OM</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitFormManager.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitFormManagerStrings.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\EquipmentOverride\UIEquipmentOverrideWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideWidget.h">
+      <Filter>Source\IED\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigOverride.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigEquipmentOverrideCondition.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Override</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideListParser.h">
+      <Filter>Source\IED\JSONParsers\Config\Override</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitEntryParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigStoreOutfitParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigMapOutfitParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitEntryHolderParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigOutfitEntryHolder.h">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\Widgets\UIOutfitEntryEditorWidget.h">
+      <Filter>Source\IED\OM\UI\Widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorNPC.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorTabPanel.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorWindow.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorRace.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorGlobal.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\Profile\UIOutfitProfileEditor.h">
+      <Filter>Source\IED\OM\UI\Profile</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorCommon.h">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\ConfigOutfitForm.h">
+      <Filter>Source\IED\OM\Config\FormManager</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitFormParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.h">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -2110,16 +2224,10 @@
     <ClCompile Include="IED\UI\Widgets\UIObjectTypeSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideListParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
-    </ClCompile>
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionParser.cpp">
-      <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideParser.cpp">
       <Filter>Source\IED\JSONParsers\Config\EquipmentOverride</Filter>
     </ClCompile>
     <ClCompile Include="IED\Parsers\JSONConfigBaseParser.cpp">
@@ -2937,6 +3045,63 @@
     </ClCompile>
     <ClCompile Include="IED\UI\Widgets\UILightingTemplateInheritanceFlagsWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\BGSOutfitHolder.cpp">
+      <Filter>Source\IED\OM</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\PersistentOutfitFormManager.cpp">
+      <Filter>Source\IED\OM</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\ConfigOutfitEntry.cpp">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\OutfitController.cpp">
+      <Filter>Source\IED\OM</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\ConfigStoreOutfit.cpp">
+      <Filter>Source\IED\OM\Config</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitFormManager.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitEntryParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigStoreOutfitParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigMapOutfitParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitEntryHolderParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorNPC.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorTabPanel.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorWindow.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorRace.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorGlobal.cpp">
+      <Filter>Source\IED\OM\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\UI\Profile\UIOutfitProfileEditor.cpp">
+      <Filter>Source\IED\OM\UI\Profile</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitFormParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.cpp">
+      <Filter>Source\IED\OM\JSONParsers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

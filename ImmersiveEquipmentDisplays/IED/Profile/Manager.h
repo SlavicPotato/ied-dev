@@ -487,10 +487,10 @@ namespace IED
 	}
 
 	template <class T>
-	inline void ProfileManager<T>::sort()
+	void ProfileManager<T>::sort()
 	{
 		m_storage.sortvec([](auto& a_lhs, auto& a_rhs) -> bool {
-			return a_lhs->first < a_rhs->first;
+			return stl::fixed_string::less_str{}(a_lhs->first, a_rhs->first);
 		});
 	}
 

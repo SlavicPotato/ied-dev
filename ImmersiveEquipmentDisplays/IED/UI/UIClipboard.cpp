@@ -134,6 +134,18 @@ namespace IED
 			case DataType::ObjectSlotList:
 				erase<Data::configObjectSlotList_t>();
 				break;
+			case DataType::Outfit:
+				erase<Data::OM::configOutfit_t>();
+				break;
+			case DataType::OutfitOverrideList:
+				erase<Data::OM::outfitOverrideList_t>();
+				break;
+			case DataType::OutfitOverride:
+				erase<Data::OM::outfitOverride_t>();
+				break;
+			case DataType::OutfitEntry:
+				erase<Data::OM::configOutfitEntry_t>();
+				break;
 			default:
 				assert(false);
 			}

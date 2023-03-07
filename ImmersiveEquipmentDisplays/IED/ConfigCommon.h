@@ -344,6 +344,7 @@ namespace IED
 			kKeyIDToggled              = 63,
 			kLightingTemplate          = 64,
 			kInteriorAmbientLightLevel = 65,
+			kWaitingForPlayer          = 66,
 		};
 
 		enum class ComparisonOperator : std::uint32_t
@@ -417,7 +418,8 @@ namespace IED
 			}
 
 			template <class Tf>
-			constexpr void visit(Tf a_func)
+			constexpr void visit(Tf a_func)  //
+				noexcept(std::is_nothrow_invocable_v<Tf, config_type&>)
 			{
 				for (auto& e : data)
 				{
@@ -426,7 +428,8 @@ namespace IED
 			}
 
 			template <class Tf>
-			constexpr void visit(Tf a_func) const
+			constexpr void visit(Tf a_func) const  //
+				noexcept(std::is_nothrow_invocable_v<Tf, const config_type&>)
 			{
 				for (auto& e : data)
 				{
@@ -476,6 +479,7 @@ namespace IED
 			};
 
 			using data_type = T;
+			using map_type  = configFormMap_t<data_type>;
 
 			constexpr auto& GetActorData() noexcept
 			{
@@ -570,8 +574,8 @@ namespace IED
 				a_ar& global;
 			}
 
-			configFormMap_t<data_type> data[3];
-			data_type                  global[2];
+			map_type  data[3];
+			data_type global[2];
 		};
 
 		class configFormSet_t :

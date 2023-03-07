@@ -9,6 +9,7 @@
 #include "IED/EngineExtensions.h"
 #include "IED/Inventory.h"
 #include "IED/NodeMap.h"
+#include "IED/ReferenceLightController.h"
 #include "IED/TransformOverrides.h"
 #include "IED/UI/UIMain.h"
 #include "IED/Util/Common.h"
@@ -20,7 +21,6 @@
 
 #include "IED/Parsers/JSONConfigStoreParser.h"
 
-#include <IED/ReferenceLightController.h>
 #include <ext/SKSEMessagingHandler.h>
 #include <ext/SKSESerializationEventHandler.h>
 
@@ -3721,6 +3721,15 @@ namespace IED
 			UpdateAA(a_actor, a_holder.m_animState);
 		}
 
+#if defined(IED_ENABLE_OUTFIT)
+
+		if (!params.is_player())
+		{
+			EvaluateOutfit(m_configData.active->outfit, params);
+		}
+
+#endif
+
 		if (a_flags.test(ControllerUpdateFlags::kImmediateTransformUpdate))
 		{
 			a_holder.RequestTransformUpdate();
@@ -5256,6 +5265,7 @@ namespace IED
 			{
 				ClearStoredHandles();
 			}
+
 
 			break;
 		case SKSEMessagingInterface::kMessage_SaveGame:

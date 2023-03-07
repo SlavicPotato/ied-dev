@@ -385,7 +385,7 @@ copy "$(TargetPath)" "$(ENDERAL_SE_PATH)\Data\SKSE\Plugins\" /Y</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release MT Perf 143|x64'">
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>_MSVC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);SKMP_LOCK_TYPE=2;SKMP_CUSTOM_ALLOCATOR=0;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MSVC_PLATFORM_TOOLSET=$(PlatformToolsetVersion);SKMP_LOCK_TYPE=2;SKMP_CUSTOM_ALLOCATOR=0;RE_USE_OWN_SHARED_LOCK_IMPL;IMGUI_DISABLE_DEBUG_TOOLS;BT_NO_SIMD_OPERATOR_OVERLOADS;BT_USE_SSE_IN_API;B3_USE_SSE_IN_API;BT_USE_AVX;_XM_SSE4_INTRINSICS_;_XM_AVX2_INTRINSICS_;IMGUI_IMPL_WIN32_DISABLE_GAMEPAD;SKMP_ENABLE_STRING_CACHE;SKMP_PLUGIN_INFO_USE_SC;SKSE_ENABLE_BOOST_SERIALIZATION;NDEBUG;ImmersiveEquipmentDisplays_EXPORTS;_WINDOWS;_USRDLL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;NOMINMAX;IED_PERF_BUILD;IED_DISABLE_ENB_LIGHT_STRIPPING;IED_ENABLE_OUTFIT;IED_ENABLE_OUTFIT_FORM_MANAGER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)..\sse-build-resources\;$(SolutionDir)..\sse-build-resources\skse64\;$(SolutionDir)..\sse-build-resources\skse64\skse64\;$(ProjectDir);$(SolutionDir)..\imgui;$(SolutionDir)..\assimp\include;$(SolutionDir)..\bullet3\src;$(SolutionDir)..\xbyak;$(SolutionDir)..\oneTBB\include</AdditionalIncludeDirectories>
@@ -655,6 +655,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigConvertNodes.h" />
     <ClInclude Include="IED\ConfigEffectShader.h" />
     <ClInclude Include="IED\ConfigEffectShaderFunction.h" />
+    <ClInclude Include="IED\ConfigEquipmentOverrideCondition.h" />
     <ClInclude Include="IED\ConfigExtraLight.h" />
     <ClInclude Include="IED\ConfigExtraNode.h" />
     <ClInclude Include="IED\ConfigLastEquipped.h" />
@@ -662,6 +663,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigLUIDTag.h" />
     <ClInclude Include="IED\ConfigNodeMonitor.h" />
     <ClInclude Include="IED\ConfigNodePhysicsValues.h" />
+    <ClInclude Include="IED\ConfigOverride.h" />
     <ClInclude Include="IED\ConfigSkeletonMatch.h" />
     <ClInclude Include="IED\ConfigSlotPriority.h" />
     <ClInclude Include="IED\ConfigVariableConditionSource.h" />
@@ -725,6 +727,17 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\LocaleData.h" />
     <ClInclude Include="IED\NodeOverrideData.h" />
     <ClInclude Include="IED\NodeOverrideParams.h" />
+    <ClInclude Include="IED\OM\ConfigOutfitForm.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitFormParser.h" />
+    <ClInclude Include="IED\OM\UI\Profile\UIOutfitProfileEditor.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorCommon.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorGlobal.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorNPC.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorRace.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorTabPanel.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitEditorWindow.h" />
+    <ClInclude Include="IED\OM\UI\Widgets\UIOutfitEntryEditorWidget.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusMisc.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusMiscImpl.h" />
     <ClInclude Include="IED\PapyrusInterface\PapyrusSlotItem.h" />
@@ -846,6 +859,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UISkeletonExplorerStrings.h" />
     <ClInclude Include="IED\UI\UIToast.h" />
     <ClInclude Include="IED\UI\Widgets\BaseConfigEditorAction.h" />
+    <ClInclude Include="IED\UI\Widgets\EquipmentOverride\UIEquipmentOverrideWidget.h" />
     <ClInclude Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\Lists\UIObjectSlotList.h" />
     <ClInclude Include="IED\UI\Widgets\UIActorValueSelectorWidget.h" />
@@ -868,6 +882,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelector.h" />
     <ClInclude Include="IED\UI\Widgets\UIEffectShaderFunctionSelectorStrings.h" />
+    <ClInclude Include="IED\UI\Widgets\UIEquipmentOverrideWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidget.h" />
     <ClInclude Include="IED\UI\Widgets\UIExtraLightEditorWidgetStrings.h" />
     <ClInclude Include="IED\UI\Widgets\UIFormTypeSelectorWidget.h" />
@@ -989,10 +1004,10 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigTransformParser.h" />
-    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideListParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionParser.h" />
-    <ClInclude Include="IED\Parsers\JSONEquipmentOverrideParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigOverrideParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigBaseParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigBaseValuesParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigCustomHolderParser.h" />
@@ -1138,6 +1153,21 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\Window\WindowLayoutData.h" />
     <ClInclude Include="IED\Util\Common.h" />
     <ClInclude Include="IED\Util\Logging.h" />
+    <ClInclude Include="IED\OM\BGSOutfitHolder.h" />
+    <ClInclude Include="IED\OM\ConfigOutfit.h" />
+    <ClInclude Include="IED\OM\ConfigOutfitEntry.h" />
+    <ClInclude Include="IED\OM\ConfigOutfitEntryHolder.h" />
+    <ClInclude Include="IED\OM\ConfigOutfitOverride.h" />
+    <ClInclude Include="IED\OM\ConfigStoreOutfit.h" />
+    <ClInclude Include="IED\OM\OutfitController.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigMapOutfitParser.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitEntryParser.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitEntryHolderParser.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigOutfitParser.h" />
+    <ClInclude Include="IED\OM\Parsers\JSONConfigStoreOutfitParser.h" />
+    <ClInclude Include="IED\OM\PersistentOutfitFormManager.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitFormManager.h" />
+    <ClInclude Include="IED\OM\UI\UIOutfitFormManagerStrings.h" />
     <ClInclude Include="paths.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="plugin.h" />
@@ -1226,6 +1256,14 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\LocaleData.cpp" />
     <ClCompile Include="IED\NodeOverrideData.cpp" />
     <ClCompile Include="IED\NodeOverrideParams.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitFormListParser.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitFormParser.cpp" />
+    <ClCompile Include="IED\OM\UI\Profile\UIOutfitProfileEditor.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorGlobal.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorNPC.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorRace.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorTabPanel.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitEditorWindow.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusMisc.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusMiscImpl.cpp" />
     <ClCompile Include="IED\PapyrusInterface\PapyrusSlotItem.cpp" />
@@ -1420,10 +1458,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigNodeOverrideValuesParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigStoreNodeOverrideParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigTransformParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONEquipmentOverrideParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigBaseParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigBaseValuesParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigCustomHolderParser.cpp" />
@@ -1526,6 +1562,17 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\Window\UIWindow.cpp" />
     <ClCompile Include="IED\Util\Common.cpp" />
     <ClCompile Include="IED\Util\Logging.cpp" />
+    <ClCompile Include="IED\OM\BGSOutfitHolder.cpp" />
+    <ClCompile Include="IED\OM\ConfigOutfitEntry.cpp" />
+    <ClCompile Include="IED\OM\ConfigStoreOutfit.cpp" />
+    <ClCompile Include="IED\OM\OutfitController.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigMapOutfitParser.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitEntryParser.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitEntryHolderParser.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigOutfitParser.cpp" />
+    <ClCompile Include="IED\OM\Parsers\JSONConfigStoreOutfitParser.cpp" />
+    <ClCompile Include="IED\OM\PersistentOutfitFormManager.cpp" />
+    <ClCompile Include="IED\OM\UI\UIOutfitFormManager.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release MT|x64'">Create</PrecompiledHeader>

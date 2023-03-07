@@ -29,7 +29,7 @@ namespace IED
 			UIEquipmentOverrideResult DrawEquipmentOverrideConditionContextMenu(
 				bool a_drawDelete);
 
-			BaseConfigEditorAction DrawEquipmentOverrideConditionHeaderContextMenu(
+			UIEquipmentOverrideAction DrawEquipmentOverrideConditionHeaderContextMenu(
 				Data::equipmentOverrideConditionList_t& a_entry,
 				update_func_t                           a_updFunc);
 

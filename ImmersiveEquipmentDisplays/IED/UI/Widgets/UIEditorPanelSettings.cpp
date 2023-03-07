@@ -17,7 +17,7 @@ namespace IED
 			}
 		}
 
-		void UIEditorPanelSettings::DrawEditorPanelSettings()
+		void UIEditorPanelSettings::DrawEditorPanelSettings(const void* a_params)
 		{
 			ImGui::PushID("sex_selector");
 
@@ -51,11 +51,11 @@ namespace IED
 			ImGui::PopID();
 
 			ImGui::PushID("edp_extra");
-			DrawExtraEditorPanelSettings();
+			DrawExtraEditorPanelSettings(a_params);
 			ImGui::PopID();
 		}
 
-		void UIEditorPanelSettings::DrawExtraEditorPanelSettings()
+		void UIEditorPanelSettings::DrawExtraEditorPanelSettings(const void* a_params)
 		{
 		}
 

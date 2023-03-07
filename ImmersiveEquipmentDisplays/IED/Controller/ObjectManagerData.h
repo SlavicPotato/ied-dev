@@ -137,6 +137,7 @@ namespace IED
 		void RequestVariableUpdate(Game::FormID a_handle) const noexcept;
 
 		void RequestEvaluateAll() const noexcept;
+		void RequestLFEvaluateAll() const noexcept;
 
 	private:
 		virtual void OnActorAcquire(ActorObjectHolder& a_holder) noexcept = 0;
@@ -145,7 +146,6 @@ namespace IED
 	protected:
 		void RequestEvaluateAll(bool a_defer) const noexcept;
 
-		void RequestLFEvaluateAll() const noexcept;
 		void RequestLFEvaluateAll(Game::FormID a_skip) const noexcept;
 
 		void RequestHFEvaluateAll() const noexcept;

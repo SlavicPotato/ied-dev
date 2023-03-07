@@ -19,12 +19,6 @@ namespace IED
 				Controller& a_controller);
 
 		private:
-			virtual void DrawExtraEquipmentOverrideOptions(
-				T                          a_handle,
-				Data::configBase_t&        a_data,
-				const void*                a_params,
-				Data::equipmentOverride_t& a_override) override;
-
 			SlotProfile::base_type m_tempData;
 		};
 
@@ -33,24 +27,6 @@ namespace IED
 			Controller& a_controller) :
 			UISlotEditorWidget<T>(a_controller)
 		{}
-
-		template <class T>
-		void UISlotEditorBase<T>::DrawExtraEquipmentOverrideOptions(
-			T                          a_handle,
-			Data::configBase_t&        a_data,
-			const void*                a_params,
-			Data::equipmentOverride_t& a_override)
-		{
-			/*if (ImGui::CheckboxFlagsT(
-					"Match slot item##eo_ctl",
-					stl::underlying(std::addressof(a_override.eoFlags.value)),
-					stl::underlying(Data::EquipmentOverrideFlags::kSlotItem)))
-			{
-				OnBaseConfigChange(a_handle, a_params, PostChangeAction::Evaluate);
-			}
-
-			ImGui::Spacing();*/
-		}
 
 	}
 }

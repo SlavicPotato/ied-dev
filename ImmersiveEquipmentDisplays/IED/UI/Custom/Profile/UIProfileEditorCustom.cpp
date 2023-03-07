@@ -13,7 +13,7 @@ namespace IED
 			UIProfileEditorBase<CustomProfile>(
 				UIProfileStrings::TitleCustom,
 				"ied_pe_cust"),
-			UICustomEditorWidget<int>(a_controller),
+			UICustomEditorWidget<UIGlobalEditorDummyHandle>(a_controller),
 			UIPopupInterface(a_controller),
 			UISettingsInterface(a_controller),
 			UIEquipmentOverrideConditionsWidget(a_controller),
@@ -139,7 +139,7 @@ namespace IED
 		}
 
 		void UIProfileEditorCustom::OnBaseConfigChange(
-			int,
+			UIGlobalEditorDummyHandle,
 			const void*      a_params,
 			PostChangeAction a_action)
 		{
@@ -154,20 +154,20 @@ namespace IED
 		}
 
 		void UIProfileEditorCustom::OnFullConfigChange(
-			int,
+			UIGlobalEditorDummyHandle,
 			const CustomConfigUpdateParams& a_params)
 		{
 		}
 
 		bool UIProfileEditorCustom::OnCreateNew(
-			int                          a_handle,
+			UIGlobalEditorDummyHandle    a_handle,
 			const CustomConfigNewParams& a_params)
 		{
 			return true;
 		}
 
 		void UIProfileEditorCustom::OnErase(
-			int                            a_handle,
+			UIGlobalEditorDummyHandle      a_handle,
 			const CustomConfigEraseParams& a_params)
 		{
 		}
@@ -187,7 +187,7 @@ namespace IED
 		}
 
 		bool UIProfileEditorCustom::OnRename(
-			int                             a_handle,
+			UIGlobalEditorDummyHandle       a_handle,
 			const CustomConfigRenameParams& a_params)
 		{
 			return true;

@@ -15,7 +15,7 @@ namespace IED
 
 		struct KeyToggleStateEntryHolder
 		{
-			using container_type = stl::cache_aligned::flat_map<stl::fixed_string, KeyToggleStateEntry, stl::fixed_string_less_equal_ptr>;
+			using container_type = stl::cache_aligned::flat_map<stl::fixed_string, KeyToggleStateEntry>;
 			using state_data     = stl::boost_vector<std::pair<stl::fixed_string, bool>>;
 
 			state_data make_state_data() const;

@@ -271,5 +271,9 @@ namespace IED
 		Scancode        = 342,
 		Options         = 343,
 		Day             = 344,
+		EditorID        = 345,
+		Read            = 346,
+		Write           = 347,
+		Serialization   = 348,
 	};
 }

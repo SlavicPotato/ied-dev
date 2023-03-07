@@ -52,6 +52,10 @@ namespace IED
 				ConditionalVariablesEntry,
 				ConditionalVariable,
 				ObjectSlotList,
+				OutfitOverride,
+				OutfitOverrideList,
+				Outfit,
+				OutfitEntry,
 			};
 
 			struct entry_t
@@ -370,6 +374,30 @@ namespace IED
 				           static_cast<data_type*>(data.data) :
                            nullptr;
 			}
+			else if constexpr (std::is_same_v<data_type, Data::OM::configOutfit_t>)
+			{
+				return data.type == DataType::Outfit ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::OM::outfitOverrideList_t>)
+			{
+				return data.type == DataType::OutfitOverrideList ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::OM::outfitOverride_t>)
+			{
+				return data.type == DataType::OutfitOverride ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
+			else if constexpr (std::is_same_v<data_type, Data::OM::configOutfitEntry_t>)
+			{
+				return data.type == DataType::OutfitEntry ?
+				           static_cast<data_type*>(data.data) :
+                           nullptr;
+			}
 			else
 			{
 				//static_assert(false);
@@ -572,6 +600,22 @@ namespace IED
 			else if constexpr (std::is_same_v<T, Data::configObjectSlotList_t>)
 			{
 				data.type = DataType::ObjectSlotList;
+			}
+			else if constexpr (std::is_same_v<T, Data::OM::configOutfit_t>)
+			{
+				data.type = DataType::Outfit;
+			}
+			else if constexpr (std::is_same_v<T, Data::OM::outfitOverrideList_t>)
+			{
+				data.type = DataType::OutfitOverrideList;
+			}
+			else if constexpr (std::is_same_v<T, Data::OM::outfitOverride_t>)
+			{
+				data.type = DataType::OutfitOverride;
+			}
+			else if constexpr (std::is_same_v<T, Data::OM::configOutfitEntry_t>)
+			{
+				data.type = DataType::OutfitEntry;
 			}
 			else
 			{

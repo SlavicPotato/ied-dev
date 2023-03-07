@@ -144,7 +144,7 @@ namespace IED
 				T                              a_handle,
 				const entryNodeOverrideData_t& a_data) const;
 
-			virtual void DrawExtraEditorPanelSettings() override;
+			virtual void DrawExtraEditorPanelSettings(const void* a_params) override;
 
 			void DrawItemFilter();
 
@@ -485,7 +485,7 @@ namespace IED
 		}
 
 		template <class T>
-		void UINodeOverrideEditorWidget<T>::DrawExtraEditorPanelSettings()
+		void UINodeOverrideEditorWidget<T>::DrawExtraEditorPanelSettings(const void* a_params)
 		{
 			ImGui::Spacing();
 			ImGui::Separator();

@@ -22,7 +22,7 @@ namespace IED
 
 			UICommonModals() = default;
 
-			ModalStatus TextInputDialog(
+			static ModalStatus TextInputDialog(
 				const char*                 a_name,
 				const char*                 a_text,
 				ImGuiInputTextFlags         a_flags,
@@ -32,7 +32,7 @@ namespace IED
 				std::string&                a_out);
 
 			template <class... Args>
-			ModalStatus TextInputDialog(
+			static ModalStatus TextInputDialog(
 				const char*                 a_name,
 				const char*                 a_text,
 				ImGuiInputTextFlags         a_flags,
@@ -43,7 +43,7 @@ namespace IED
 				Args... args);
 
 			template <class... Args>
-			ModalStatus TextInputMultilineDialog(
+			static ModalStatus TextInputMultilineDialog(
 				const char*                 a_name,
 				const char*                 a_text,
 				ImGuiInputTextFlags         a_flags,
@@ -53,28 +53,28 @@ namespace IED
 				std::string&                a_out,
 				Args... args);
 
-			ModalStatus MessageDialog(
+			static ModalStatus MessageDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
 				const std::optional<float>& a_twsz,
 				const char*                 text);
 
 			template <class... Args>
-			ModalStatus MessageDialog(
+			static ModalStatus MessageDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
 				const std::optional<float>& a_twsz,
 				const char*                 text,
 				Args... args);
 
-			ModalStatus ConfirmDialog(
+			static ModalStatus ConfirmDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
 				const std::optional<float>& a_twsz,
 				const char*                 text);
 
 			template <class... Args>
-			ModalStatus ConfirmDialog(
+			static ModalStatus ConfirmDialog(
 				const char*                 name,
 				const cm_func_t&            a_func,
 				const std::optional<float>& a_twsz,
@@ -82,13 +82,13 @@ namespace IED
 				Args... args);
 
 			template <class... Args>
-			ModalStatus CustomDialog(
+			static ModalStatus CustomDialog(
 				const char*      name,
 				const cm_func_t& a_func);
 
 		private:
 			template <class... Args>
-			ModalStatus TextInputDialogImpl(
+			static ModalStatus TextInputDialogImpl(
 				bool                        a_multiLine,
 				const char*                 a_name,
 				const char*                 a_text,

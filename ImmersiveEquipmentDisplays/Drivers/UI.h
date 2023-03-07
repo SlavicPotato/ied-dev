@@ -340,8 +340,8 @@ namespace IED
 
 			UIStylePreset m_currentStyle{ DEFAULT_STYLE };
 
-			stl::set<stl::fixed_string> m_availableFonts;
-			stl::fixed_string           m_sDefaultFont{ DEFAULT_FONT_NAME };
+			stl::set<stl::fixed_string, stl::fixed_string::less_str> m_availableFonts;
+			stl::fixed_string                                        m_sDefaultFont{ DEFAULT_FONT_NAME };
 
 			std::uint64_t m_frameCount{ 0 };
 

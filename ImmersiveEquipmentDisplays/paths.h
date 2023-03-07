@@ -14,6 +14,8 @@ namespace IED
 		static constexpr auto PROFILE_MANAGER_EQUIPMENT_TRANSFORMS = "Data\\SKSE\\Plugins\\IED\\Profiles\\NodeOverrides";
 		static constexpr auto PROFILE_MANAGER_FORM_FILTER          = "Data\\SKSE\\Plugins\\IED\\Profiles\\FormFilters";
 		static constexpr auto PROFILE_MANAGER_VARIABLES            = "Data\\SKSE\\Plugins\\IED\\Profiles\\Variables";
+		static constexpr auto PROFILE_MANAGER_OUTFIT               = "Data\\SKSE\\Plugins\\IED\\Profiles\\Outfit";
+		static constexpr auto PROFILE_MANAGER_OUTFIT_FORM_LIST     = "Data\\SKSE\\Plugins\\IED\\Profiles\\OutfitFormList";
 		static constexpr auto PROFILE_MANAGER_MODEL                = "Data\\SKSE\\Plugins\\IED\\Assets\\Models";
 		static constexpr auto EXPORTS                              = "Data\\SKSE\\Plugins\\IED\\Exports";
 		static constexpr auto DEFAULT_CONFIG                       = "Data\\SKSE\\Plugins\\IED\\DefaultConfig.json";

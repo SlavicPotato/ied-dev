@@ -164,6 +164,8 @@ namespace IED
 			case BGSEquipSlot::kTypeID:
 			case BGSLightingTemplate::kTypeID:
 			case TESObjectCELL::kTypeID:
+			case TESLevItem::kTypeID:
+			case BGSOutfit::kTypeID:
 				return form;
 			default:
 				return nullptr;

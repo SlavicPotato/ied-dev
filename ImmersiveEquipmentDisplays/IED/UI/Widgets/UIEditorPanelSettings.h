@@ -17,7 +17,7 @@ namespace IED
 		public:
 			UIEditorPanelSettings() = default;
 
-			void DrawEditorPanelSettings();
+			void DrawEditorPanelSettings(const void *a_params = nullptr);
 
 			constexpr auto GetSex() const noexcept
 			{
@@ -32,7 +32,7 @@ namespace IED
 			virtual void OnEditorPanelSettingsChange() = 0;
 
 		private:
-			virtual void DrawExtraEditorPanelSettings();
+			virtual void DrawExtraEditorPanelSettings(const void* a_params);
 
 			virtual void OnSexChanged(Data::ConfigSex a_newSex) = 0;
 

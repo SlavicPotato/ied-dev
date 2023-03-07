@@ -74,6 +74,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kTimeOfDay, UIConditionExtraSelectorWidgetStrings::TimeOfDay),
 			std::make_pair(Data::ExtraConditionType::kTresspassing, UIConditionExtraSelectorWidgetStrings::Tresspassing),
 			std::make_pair(Data::ExtraConditionType::kUnderwater, UIConditionExtraSelectorWidgetStrings::Underwater),
+			std::make_pair(Data::ExtraConditionType::kWaitingForPlayer, UIConditionExtraSelectorWidgetStrings::WaitingForPlayer),
 			std::make_pair(Data::ExtraConditionType::kWeaponDrawn, UIConditionExtraSelectorWidgetStrings::WeaponDrawn),
 			std::make_pair(Data::ExtraConditionType::kXP32Skeleton, UIConditionExtraSelectorWidgetStrings::XP32Skeleton)
 
@@ -254,6 +255,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LightingTemplate);
 			case Data::ExtraConditionType::kInteriorAmbientLightLevel:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::InteriorAmbientLightLevel);
+			case Data::ExtraConditionType::kWaitingForPlayer:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::WaitingForPlayer);
 			default:
 				return nullptr;
 			}

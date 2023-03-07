@@ -21,6 +21,8 @@ namespace IED
 			template <class T>
 			friend class Parser;
 
+			friend class ParserBase;
+
 		public:
 			[[nodiscard]] constexpr bool has_errors() const noexcept
 			{
@@ -36,25 +38,18 @@ namespace IED
 			stl::flag<ParserStateFlags> m_flags{ ParserStateFlags::kNone };
 		};
 
-		template <class T>
-		class Parser : ILog
+		class ParserBase :
+			public ILog
 		{
 		public:
-			constexpr Parser(ParserState& a_state);
-
-			void Create(const T& a_in, Json::Value& a_out) const;
-			void Create(const T& a_in, Json::Value& a_out, bool a_arg) const;
-			void Create(const T& a_in, Json::Value& a_out, std::uint32_t a_arg) const;
-
-			bool Parse(const Json::Value& a_in, T& a_out) const;
-			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version) const;
-			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version, bool a_arg) const;
-			bool Parse(const Json::Value& a_in, T& a_out, bool a_arg) const;
-			bool Parse(const Json::Value& a_in, T& a_out, float a_arg) const;
+			ParserBase(ParserState& a_state) :
+				m_state(a_state)
+			{
+			}
 
 			[[nodiscard]] constexpr bool HasErrors() const noexcept
 			{
-				return m_state.m_flags.test(ParserStateFlags::kHasErrors);
+				return m_state.has_errors();
 			}
 
 		protected:
@@ -68,83 +63,46 @@ namespace IED
 				m_state.clear();
 			}
 
-		private:
 			ParserState& m_state;
 		};
 
-		template <class T>
-		constexpr Parser<T>::Parser(ParserState& a_state) :
-			m_state(a_state)
+		template <template <class> class, class...>
+		class ParserTemplateVA :
+			public ParserBase
 		{
-		}
+		public:
+			template <template <class> class X, class... Args>
+			inline auto make() const
+			{
+				return ParserTemplateVA<X, Args...>(m_state);
+			}
+
+			using ParserBase::ParserBase;
+		};
 
 		template <class T>
-		void Parser<T>::Create(const T& a_in, Json::Value& a_out) const
+		class Parser :
+			public ParserBase
 		{
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
+		public:
+			using ParserBase::ParserBase;
 
-		template <class T>
-		void Parser<T>::Create(const T& a_in, Json::Value& a_out, bool a_arg) const
-		{
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
+			template <class X>
+			inline auto make() const
+			{
+				return Parser<X>(m_state);
+			}
 
-		template <class T>
-		void Parser<T>::Create(
-			const T&      a_in,
-			Json::Value&  a_out,
-			std::uint32_t a_arg) const
-		{
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
+			void Create(const T& a_in, Json::Value& a_out) const;
+			void Create(const T& a_in, Json::Value& a_out, bool a_arg) const;
+			void Create(const T& a_in, Json::Value& a_out, std::uint32_t a_arg) const;
 
-		template <class T>
-		bool Parser<T>::Parse(const Json::Value& a_in, T& a_out) const
-		{
-			return false;
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		bool Parser<T>::Parse(
-			const Json::Value&  a_in,
-			T&                  a_out,
-			const std::uint32_t a_version) const
-		{
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		bool Parser<T>::Parse(
-			const Json::Value&  a_in,
-			T&                  a_out,
-			const std::uint32_t a_version,
-			bool                a_arg) const
-		{
-			return false;
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		bool Parser<T>::Parse(
-			const Json::Value& a_in,
-			T&                 a_out,
-			bool               a_arg) const
-		{
-			return false;
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
-
-		template <class T>
-		bool Parser<T>::Parse(
-			const Json::Value& a_in,
-			T&                 a_out,
-			float              a_arg) const
-		{
-			return false;
-			//static_assert(false, PARSER_NOT_IMPL_STR);
-		}
+			bool Parse(const Json::Value& a_in, T& a_out) const;
+			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version) const;
+			bool Parse(const Json::Value& a_in, T& a_out, const std::uint32_t a_version, bool a_arg) const;
+			bool Parse(const Json::Value& a_in, T& a_out, bool a_arg) const;
+			bool Parse(const Json::Value& a_in, T& a_out, float a_arg) const;
+		};
 
 		template <std::size_t _Size>
 		constexpr bool ParseFloatArray(

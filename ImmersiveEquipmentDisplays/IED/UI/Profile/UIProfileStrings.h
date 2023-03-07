@@ -28,6 +28,7 @@ namespace IED
 			SaveCurrentToProfile      = 4517,
 			ProfileParserErrorWarning = 4518,
 			TitleConditionalVariables = 4519,
+			TitleOutfit               = 4520,
 		};
 	}
 }

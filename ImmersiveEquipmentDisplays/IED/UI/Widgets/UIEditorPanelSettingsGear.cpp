@@ -9,7 +9,7 @@ namespace IED
 {
 	namespace UI
 	{
-		void UIEditorPanelSettingsGear::DrawExtraEditorPanelSettings()
+		void UIEditorPanelSettingsGear::DrawExtraEditorPanelSettings(const void* a_params)
 		{
 			auto& data = GetEditorPanelSettings();
 

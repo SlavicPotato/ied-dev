@@ -64,9 +64,9 @@ namespace IED
 
 			a_out.directionalAmbientLightLevel =
 				(cell->IsInterior() &&
-						!cell->cellFlags.test(
-							TESObjectCELL::Flag::kShowSky |
-							TESObjectCELL::Flag::kUseSkyLighting)) ?
+			     !cell->cellFlags.test(
+					 TESObjectCELL::Flag::kShowSky |
+					 TESObjectCELL::Flag::kUseSkyLighting)) ?
 					ALD::GetInteriorAmbientLightLevel(a_actor, RE::TES::GetSingleton()->sky, cell) :
 					-1.0f;
 
@@ -135,25 +135,15 @@ namespace IED
 			a_out.furniture = {};
 		}
 
-		if (auto extraOutfit = a_actor->extraData.Get<ExtraOutfitItem>())  // ??
+		if (auto npc = a_actor->GetActorBase())
 		{
-			a_out.outfit.first  = extraOutfit->id;
-			a_out.outfit.second = false;
+			a_out.outfit = npc->defaultOutfit ?
+			                   npc->defaultOutfit->formID :
+			                   Game::FormID{};
 		}
 		else
 		{
-			a_out.outfit.second = true;
-
-			if (auto npc = a_actor->GetActorBase())
-			{
-				a_out.outfit.first = npc->defaultOutfit ?
-				                         npc->defaultOutfit->formID :
-				                         Game::FormID{};
-			}
-			else
-			{
-				a_out.outfit.first = {};
-			}
+			a_out.outfit = {};
 		}
 
 		if (auto rightHand = a_actor->GetEquippedObject(false))

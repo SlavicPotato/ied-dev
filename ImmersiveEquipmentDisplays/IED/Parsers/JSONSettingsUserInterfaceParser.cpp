@@ -60,6 +60,13 @@ namespace IED
 			{
 				return false;
 			}
+			
+			if (!editorPanelParser.Parse(
+					data["outfit_editor"],
+					a_out.outfitEditor))
+			{
+				return false;
+			}
 
 			if (!profileEditorParser.Parse(
 					data["slot_profile_editor"],
@@ -78,6 +85,13 @@ namespace IED
 			if (!profileEditorParser.Parse(
 					data["transform_profile_editor"],
 					a_out.transformProfileEditor))
+			{
+				return false;
+			}
+			
+			if (!profileEditorParser.Parse(
+					data["outfit_profile_editor"],
+					a_out.outfitProfileEditor))
 			{
 				return false;
 			}
@@ -267,6 +281,7 @@ namespace IED
 			editorPanelParser.Create(a_data.slotEditor, data["slot_editor"]);
 			editorPanelParser.Create(a_data.customEditor, data["custom_editor"]);
 			editorPanelParser.Create(a_data.transformEditor, data["transform_editor"]);
+			editorPanelParser.Create(a_data.outfitEditor, data["outfit_editor"]);
 
 			profileEditorParser.Create(
 				a_data.slotProfileEditor,
@@ -279,6 +294,10 @@ namespace IED
 			profileEditorParser.Create(
 				a_data.transformProfileEditor,
 				data["transform_profile_editor"]);
+			
+			profileEditorParser.Create(
+				a_data.outfitProfileEditor,
+				data["outfit_profile_editor"]);
 
 			ieParser.Create(
 				a_data.importExport,

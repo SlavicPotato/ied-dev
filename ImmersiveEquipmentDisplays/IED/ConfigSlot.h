@@ -298,7 +298,7 @@ namespace IED
 				Game::FormID   a_npc,
 				Game::FormID   a_race,
 				ObjectSlot     a_slot,
-				holderCache_t& a_hc) const;
+				holderCache_t& a_hc) const noexcept;
 
 			const configSlotHolder_t::prio_data_type* GetActorPriority(
 				Game::FormID   a_actor,
@@ -307,7 +307,9 @@ namespace IED
 				holderCache_t& a_hc) const;
 
 			template <class Tf>
-			void visit(Tf a_func)
+			void visit(Tf a_func)                              //
+				noexcept(noexcept(data_type().visit(a_func)))  //
+				requires(requires(data_type a_v, Tf a_func) { a_v.visit(a_func); })
 			{
 				for (auto& e : data)
 				{

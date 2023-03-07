@@ -16,7 +16,7 @@ namespace IED
 	{
 		class UIProfileEditorCustom :
 			public UIProfileEditorBase<CustomProfile>,
-			public UICustomEditorWidget<int>
+			public UICustomEditorWidget<UIGlobalEditorDummyHandle>
 		{
 		public:
 			static constexpr auto CHILD_ID = ChildWindowID::kUIProfileEditorCustom;
@@ -76,24 +76,24 @@ namespace IED
 			virtual void OnCollapsibleStatesUpdate();
 
 			virtual void OnBaseConfigChange(
-				int,
+				UIGlobalEditorDummyHandle,
 				const void*      a_params,
 				PostChangeAction a_action) override;
 
 			virtual void OnFullConfigChange(
-				int,
+				UIGlobalEditorDummyHandle,
 				const CustomConfigUpdateParams& a_params) override;
 
 			virtual bool OnCreateNew(
-				int                          a_handle,
+				UIGlobalEditorDummyHandle    a_handle,
 				const CustomConfigNewParams& a_params) override;
 
 			virtual void OnErase(
-				int                            a_handle,
+				UIGlobalEditorDummyHandle      a_handle,
 				const CustomConfigEraseParams& a_params) override;
 
 			virtual bool OnRename(
-				int                             a_handle,
+				UIGlobalEditorDummyHandle       a_handle,
 				const CustomConfigRenameParams& a_params) override;
 
 			virtual constexpr bool BaseConfigStoreCC() const override;

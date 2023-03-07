@@ -142,9 +142,11 @@ namespace IED
 				EditorPanel                slotEditor;
 				EditorPanel                customEditor;
 				EditorPanel                transformEditor;
+				EditorPanel                outfitEditor;
 				ProfileEditor              slotProfileEditor;
 				ProfileEditor              customProfileEditor;
 				ProfileEditor              transformProfileEditor;
+				ProfileEditor              outfitProfileEditor;
 				ImportExport               importExport;
 				SkeletonExplorer           skeletonExplorer;
 				ActorInfo                  actorInfo;

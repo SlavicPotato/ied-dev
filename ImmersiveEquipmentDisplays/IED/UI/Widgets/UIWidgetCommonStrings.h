@@ -130,6 +130,7 @@ namespace IED
 			LightingTemplate                    = 2122,
 			CopyIDToClipboard                   = 2123,
 			UsesSkyLighting                     = 2124,
+			OutfitConfig                        = 2125,
 		};
 	}
 }

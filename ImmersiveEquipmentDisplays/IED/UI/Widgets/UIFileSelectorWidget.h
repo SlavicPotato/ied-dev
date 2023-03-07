@@ -8,7 +8,10 @@ namespace IED
 	{
 		class UIFileSelector
 		{
-			using storage_type = stl::map<stl::fixed_string, fs::path>;
+			using storage_type = stl::map<
+				stl::fixed_string,
+				fs::path,
+				stl::fixed_string::less_str>;
 
 			class SelectedFile
 			{
@@ -31,8 +34,8 @@ namespace IED
 
 		protected:
 			UIFileSelector(
-				const fs::path&              a_root,
-				const fs::path&              a_ext);
+				const fs::path& a_root,
+				const fs::path& a_ext);
 
 			void DrawFileSelector();
 

@@ -74,6 +74,7 @@ namespace IED
 			KeyIDToggled              = 5463,
 			LightingTemplate          = 5464,
 			InteriorAmbientLightLevel = 5465,
+			WaitingForPlayer        = 5466,
 		};
 	}
 }

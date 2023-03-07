@@ -668,6 +668,16 @@ namespace IED
 		{
 			return m_monitorNodes;
 		}
+		
+		[[nodiscard]] constexpr auto& GetLastQueuedOutfitEquipFrame() const noexcept
+		{
+			return m_lastQueuedOutfitEquipFrame;
+		}
+		
+		[[nodiscard]] constexpr void SetLastQueuedOutfitEquipFrame(std::uint32_t a_value) noexcept
+		{
+			m_lastQueuedOutfitEquipFrame = a_value;
+		}
 
 	private:
 
@@ -737,6 +747,8 @@ namespace IED
 		std::unique_ptr<ActorTempData> m_temp;
 
 		stl::unordered_map<luid_tag, float> m_rpc;
+
+		std::uint32_t m_lastQueuedOutfitEquipFrame{ 0 };
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

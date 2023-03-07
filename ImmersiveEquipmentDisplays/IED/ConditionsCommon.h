@@ -217,6 +217,8 @@ namespace IED
 					a_match.compOperator2,
 					a_params.get_interior_ambient_light_level(),
 					a_match.ambientLightLevel);
+			case Data::ExtraConditionType::kWaitingForPlayer:
+				return a_params.is_waiting_for_player();
 			default:
 				return false;
 			}

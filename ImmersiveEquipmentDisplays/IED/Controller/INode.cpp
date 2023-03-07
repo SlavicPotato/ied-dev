@@ -120,18 +120,16 @@ namespace IED
 
 			if (mm && mm->InPausedMenu())
 			{
-				auto sh = UIStringHolder::GetSingleton();
+				constexpr UIStringHolder::STRING_INDICES menus[] = {
+					UIStringHolder::STRING_INDICES::kinventoryMenu,
+					UIStringHolder::STRING_INDICES::kcontainerMenu,
+					UIStringHolder::STRING_INDICES::kfavoritesMenu,
+					UIStringHolder::STRING_INDICES::kbarterMenu,
+					UIStringHolder::STRING_INDICES::kgiftMenu,
+					UIStringHolder::STRING_INDICES::kconsole,
+				};
 
-				assert(sh);
-
-				update =
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kinventoryMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kcontainerMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kfavoritesMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kbarterMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kgiftMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kmagicMenu)) ||
-					mm->IsMenuOpen(sh->GetString(UIStringHolder::STRING_INDICES::kconsole));
+				update = Game::IsAnyMenuOpen(menus);
 			}
 		}
 

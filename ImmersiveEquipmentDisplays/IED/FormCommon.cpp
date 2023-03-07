@@ -4,6 +4,10 @@
 #include "FormCommon.h"
 #include "LocaleData.h"
 
+#if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+#	include "OM/PersistentOutfitFormManager.h"
+#endif
+
 namespace IED
 {
 	bool IFormCommon::IsValidCustomForm(
@@ -168,33 +172,47 @@ namespace IED
 		return result;
 	}
 
-	constexpr const char* GetKeywordString(const BGSKeyword* a_form) noexcept
+	constexpr const char* GetStringImpl(const BGSKeyword* a_form)  //
+		noexcept(noexcept(a_form->keyword.c_str()))                //
 	{
-		return a_form->keyword.c_str();
+		return a_form->keyword.__ptr();
 	}
 
 	template <class T>
-	constexpr const char* GetEditorID(const T* a_form) noexcept
+	constexpr const char* GetStringImpl(const T* a_form)  //
+		noexcept(noexcept(a_form->editorId.c_str()))      //
+		requires(
+			stl::is_any_same_v<
+				decltype(T::editorId),
+				BSFixedString,
+				BSString>)
 	{
-		return a_form->editorId.c_str();
+		if constexpr (std::is_same_v<decltype(T::editorId), BSFixedString>)
+		{
+			return a_form->editorId.__ptr();
+		}
+		else
+		{
+			return a_form->editorId.c_str();
+		}
 	}
 
-	constexpr const char* GetFormNamePtr(TESForm* a_form) noexcept
+	constexpr const char* GetFormNamePtr(TESForm* a_form)
 	{
 		switch (a_form->formType)
 		{
 		case BGSKeyword::kTypeID:
-			return GetKeywordString(static_cast<const BGSKeyword*>(a_form));
+			return GetStringImpl(static_cast<const BGSKeyword*>(a_form));
 		case TESRace::kTypeID:
-			return GetEditorID(static_cast<const TESRace*>(a_form));
+			return GetStringImpl(static_cast<const TESRace*>(a_form));
 		case TESQuest::kTypeID:
-			return GetEditorID(static_cast<const TESQuest*>(a_form));
+			return GetStringImpl(static_cast<const TESQuest*>(a_form));
 		case TESObjectANIO::kTypeID:
-			return GetEditorID(static_cast<const TESObjectANIO*>(a_form));
+			return GetStringImpl(static_cast<const TESObjectANIO*>(a_form));
 		case TESGlobal::kTypeID:
-			return GetEditorID(static_cast<const TESGlobal*>(a_form));
+			return GetStringImpl(static_cast<const TESGlobal*>(a_form));
 		case TESIdleForm::kTypeID:
-			return GetEditorID(static_cast<const TESIdleForm*>(a_form));
+			return GetStringImpl(static_cast<const TESIdleForm*>(a_form));
 		case Actor::kTypeID:
 		case TESObjectREFR::kTypeID:
 			return static_cast<TESObjectREFR*>(a_form)->GetReferenceName();
@@ -205,6 +223,15 @@ namespace IED
 
 	std::string IFormCommon::GetFormName(TESForm* a_form)
 	{
+#if defined(IED_ENABLE_OUTFIT_FORM_MANAGER)
+		/*if (a_form->formType == BGSOutfit::kTypeID)
+		{
+			if (auto form = OM::PersistentOutfitFormManager::GetSingleton().GetHolder(a_form->formID))
+			{
+				return LocaleData::ToUTF8(form->get_name().__ptr());
+			}
+		}*/
+#endif
 		return LocaleData::ToUTF8(GetFormNamePtr(a_form));
 	}
 
@@ -212,7 +239,7 @@ namespace IED
 		const TESForm*    a_form,
 		const BGSKeyword* a_keyword) noexcept
 	{
-		if (const auto keywordForm = a_form->As<BGSKeywordForm>())
+		if (const auto keywordForm = a_form->As<const BGSKeywordForm>())
 		{
 			return keywordForm->HasKeyword(a_keyword);
 		}

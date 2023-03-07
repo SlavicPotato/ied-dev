@@ -47,7 +47,7 @@ namespace IED
 			{
 				if (do_match(e.conditions, a_params, true))
 				{
-					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					if (e.overrideFlags.test(Data::ConfigOverrideFlags::kIsGroup))
 					{
 						if (auto result = get_equipment_override(
 								a_params,
@@ -56,7 +56,7 @@ namespace IED
 							return result;
 						}
 
-						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						if (!e.overrideFlags.test(Data::ConfigOverrideFlags::kContinue))
 						{
 							break;
 						}
@@ -90,7 +90,7 @@ namespace IED
 			{
 				if (do_match_fp(e.conditions, a_checkForm, a_params, true))
 				{
-					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					if (e.overrideFlags.test(Data::ConfigOverrideFlags::kIsGroup))
 					{
 						if (auto result = get_equipment_override_fp(
 								a_checkForm,
@@ -100,7 +100,7 @@ namespace IED
 							return result;
 						}
 
-						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						if (!e.overrideFlags.test(Data::ConfigOverrideFlags::kContinue))
 						{
 							break;
 						}
@@ -134,7 +134,7 @@ namespace IED
 			{
 				if (do_match_sfp(e.conditions, a_checkForm, a_params, true))
 				{
-					if (e.eoFlags.test(Data::EquipmentOverrideFlags::kIsGroup))
+					if (e.overrideFlags.test(Data::ConfigOverrideFlags::kIsGroup))
 					{
 						if (auto result = get_equipment_override_sfp(
 								a_checkForm,
@@ -144,7 +144,7 @@ namespace IED
 							return result;
 						}
 
-						if (!e.eoFlags.test(Data::EquipmentOverrideFlags::kContinue))
+						if (!e.overrideFlags.test(Data::ConfigOverrideFlags::kContinue))
 						{
 							break;
 						}

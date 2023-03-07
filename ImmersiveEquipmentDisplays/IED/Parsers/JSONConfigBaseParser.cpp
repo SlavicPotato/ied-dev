@@ -4,8 +4,10 @@
 #include "JSONConfigBaseValuesParser.h"
 #include "JSONConfigFixedStringSetParser.h"
 #include "JSONEffectShaderListParser.h"
-#include "JSONEquipmentOverrideListParser.h"
 #include "JSONFormFilterParser.h"
+
+#include "JSONConfigOverrideListParser.h"
+#include "JSONConfigOverrideParser.h"
 
 namespace IED
 {
@@ -26,7 +28,7 @@ namespace IED
 
 			if (auto& ao = a_in["ao"])
 			{
-				Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+				ParserTemplateVA<Data::configOverrideList_t, Data::equipmentOverride_t::base_value_type> aoListParser(m_state);
 
 				if (!aoListParser.Parse(ao, a_out.equipmentOverrides))
 				{
@@ -89,7 +91,7 @@ namespace IED
 			bvParser.Create(a_data, a_out);
 			if (!a_data.equipmentOverrides.empty())
 			{
-				Parser<Data::equipmentOverrideList_t> aoListParser(m_state);
+				ParserTemplateVA<Data::configOverrideList_t, Data::equipmentOverride_t::base_value_type> aoListParser(m_state);
 
 				aoListParser.Create(a_data.equipmentOverrides, a_out["ao"]);
 			}

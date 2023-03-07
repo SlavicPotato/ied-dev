@@ -61,6 +61,7 @@ namespace IED
 			EquipSlot        = 6350,
 			LightingTemplate = 6351,
 			Cell             = 6352,
+			LevItem          = 6353,
 		};
 	}
 }

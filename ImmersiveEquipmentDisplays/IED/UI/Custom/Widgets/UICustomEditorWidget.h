@@ -189,12 +189,6 @@ namespace IED
 				T                               a_handle,
 				const CustomConfigRenameParams& a_params) = 0;
 
-			virtual void DrawExtraEquipmentOverrideOptions(
-				T                          a_handle,
-				Data::configBase_t&        a_data,
-				const void*                a_params,
-				Data::equipmentOverride_t& a_override) override;
-
 			virtual bool DrawExtraItemInfo(
 				T                                a_handle,
 				const stl::fixed_string&         a_name,
@@ -271,7 +265,7 @@ namespace IED
 					sorted.begin(),
 					sorted.end(),
 					[](const auto& a_lhs, const auto& a_rhs) {
-						return a_lhs->first < a_rhs->first;
+						return stl::fixed_string::less_str{}(a_lhs->first, a_rhs->first);
 					});
 
 				ImGui::PushItemWidth(ImGui::GetFontSize() * -10.5f);
@@ -306,7 +300,7 @@ namespace IED
 					 "%s",
 					 UIL::LS(UIWidgetCommonStrings::NewItemPrompt))
 				.call([this](const auto& a_p) {
-					auto &name = a_p.GetInput();
+					auto& name = a_p.GetInput();
 
 					if (name.empty())
 					{
@@ -441,7 +435,6 @@ namespace IED
 					 UIL::LS(UIWidgetCommonStrings::RenamePrompt))
 				.set_input(*a_data.name)
 				.call([this, oldName = a_data.name](const auto& a_p) {
-
 					stl::fixed_string newName(a_p.GetInput());
 
 					if (newName.empty())
@@ -1653,15 +1646,6 @@ namespace IED
 		inline bool UICustomEditorWidget<T>::GetEnableEquipmentOverridePropagation()
 		{
 			return GetEditorPanelSettings().eoPropagation;
-		}
-
-		template <class T>
-		void UICustomEditorWidget<T>::DrawExtraEquipmentOverrideOptions(
-			T                          a_handle,
-			Data::configBase_t&        a_data,
-			const void*                a_params,
-			Data::equipmentOverride_t& a_override)
-		{
 		}
 
 		template <class T>

@@ -202,7 +202,7 @@ namespace IED
 			std::uint16_t p2;
 		};
 
-		using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_unk) noexcept;
+		using getObjectByName_t                  = NiAVObject* (*)(NiAVObject* a_root, const BSFixedString& a_name, bool a_recursiveLookup) noexcept;
 		inline static const auto GetObjectByName = IAL::Address<getObjectByName_t>(74481, 76207);
 
 		using applyTextureSwap_t                  = void (*)(TESModelTextureSwap* a_swap, NiAVObject* a_object) noexcept;
