@@ -29,61 +29,86 @@ namespace IED
 				return false;
 			}
 
-			if (!m_options.enableInMenu && Game::InPausedMenu())
+			if (!m_options.enableInMenu)
 			{
-				//Game::Debug::Notification("UI unavailable while an in-game menu is open");
-				return false;
-			}
-
-			if (!m_options.enableChecks)
-			{
-				return true;
-			}
-
-			auto player = *g_thePlayer;
-			if (!player)
-			{
-				return false;
-			}
-
-			if (player->IsInCombat())
-			{
-				Game::Debug::Notification("UI unavailable while in combat");
-				return false;
-			}
-
-			if (auto pl = Game::ProcessLists::GetSingleton())
-			{
-				if (pl->GuardsPursuing(player))
+				if (Game::InPausedMenu())
 				{
-					Game::Debug::Notification("UI unavailable while pursued by guards");
+					return false;
+				}
+
+				constexpr UIStringHolder::STRING_INDICES menus[] = {
+					UIStringHolder::STRING_INDICES::kcontainerMenu,
+					UIStringHolder::STRING_INDICES::kinventoryMenu,
+					UIStringHolder::STRING_INDICES::kmagicMenu,
+					UIStringHolder::STRING_INDICES::ktweenMenu,
+					UIStringHolder::STRING_INDICES::ksleepWaitMenu,
+					UIStringHolder::STRING_INDICES::kbarterMenu,
+					UIStringHolder::STRING_INDICES::kgiftMenu,
+					UIStringHolder::STRING_INDICES::kfavoritesMenu,
+					UIStringHolder::STRING_INDICES::ktrainingMenu,
+					UIStringHolder::STRING_INDICES::ktutorialMenu,
+					UIStringHolder::STRING_INDICES::klockpickingMenu,
+					UIStringHolder::STRING_INDICES::kbookMenu,
+					UIStringHolder::STRING_INDICES::kconsole,
+					UIStringHolder::STRING_INDICES::kjournalMenu,
+					UIStringHolder::STRING_INDICES::kmessageBoxMenu,
+					UIStringHolder::STRING_INDICES::kmapMenu,
+					UIStringHolder::STRING_INDICES::klevelUpMenu,
+					UIStringHolder::STRING_INDICES::kstatsMenu
+				};
+
+				if (Game::IsAnyMenuOpen(menus))
+				{
 					return false;
 				}
 			}
 
-			if (auto tm = MenuTopicManager::GetSingleton())
+			if (m_options.enableChecks)
 			{
-				if (tm->GetDialogueTarget() != nullptr)
+				auto player = *g_thePlayer;
+				if (!player)
 				{
-					Game::Debug::Notification("UI unavailable while in a conversation");
 					return false;
 				}
-			}
 
-			if (player->unkBDA & PlayerCharacter::FlagBDA::kAIDriven)
-			{
-				Game::Debug::Notification("UI unavailable while the player is AI driven");
-				return false;
-			}
+				if (player->IsInCombat())
+				{
+					Game::Debug::Notification("UI unavailable while in combat");
+					return false;
+				}
 
-			if (player->byCharGenFlag & PlayerCharacter::ByCharGenFlag::kHandsBound)
-			{
-				Game::Debug::Notification("UI unavailable while your hands are bound");
-				return false;
+				if (auto pl = Game::ProcessLists::GetSingleton())
+				{
+					if (pl->GuardsPursuing(player))
+					{
+						Game::Debug::Notification("UI unavailable while pursued by guards");
+						return false;
+					}
+				}
+
+				if (auto tm = MenuTopicManager::GetSingleton())
+				{
+					if (tm->talkingHandle && tm->talkingHandle.IsValid())
+					{
+						Game::Debug::Notification("UI unavailable while in a conversation");
+						return false;
+					}
+				}
+
+				if (player->unkBDA & PlayerCharacter::FlagBDA::kAIDriven)
+				{
+					Game::Debug::Notification("UI unavailable while the player is AI driven");
+					return false;
+				}
+
+				if (player->byCharGenFlag & PlayerCharacter::ByCharGenFlag::kHandsBound)
+				{
+					Game::Debug::Notification("UI unavailable while your hands are bound");
+					return false;
+				}
 			}
 
 			return true;
 		}
-
 	}
 }
