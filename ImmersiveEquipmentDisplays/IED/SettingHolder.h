@@ -239,7 +239,7 @@ namespace IED
 
 				stl::optional<LogLevel> logLevel;
 
-				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kLow };
+				ObjectDatabaseLevel odbLevel{ ObjectDatabaseLevel::kMedium };
 
 				Physics physics;
 
