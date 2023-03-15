@@ -127,7 +127,7 @@ namespace IED
 			bool HasOpenChild() const;
 
 			template <class T, class Te>
-			void DrawContextMenuItem(Te a_title, const char* a_id);
+			void DrawContextMenuItem(Te a_title, const char* a_id, bool a_enabled = true);
 
 			virtual bool ILRHGetCurrentControlLockSetting() const override;
 			virtual bool ILRHGetCurrentFreezeTimeSetting() const override;
@@ -164,7 +164,7 @@ namespace IED
 		};
 
 		template <class T, class Te>
-		void UIMain::DrawContextMenuItem(Te a_title, const char* a_id)
+		void UIMain::DrawContextMenuItem(Te a_title, const char* a_id, bool a_enabled)
 		{
 			auto context = GetChildContext<T>();
 
@@ -172,7 +172,7 @@ namespace IED
 					UIL::LS(a_title, a_id),
 					nullptr,
 					context && context->IsContextOpen(),
-					static_cast<bool>(context)))
+					static_cast<bool>(context) && a_enabled))
 			{
 				if (context)
 				{

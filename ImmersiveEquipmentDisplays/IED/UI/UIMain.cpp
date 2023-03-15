@@ -309,11 +309,13 @@ namespace IED
 
 		void UIMain::DrawFileMenu()
 		{
-			DrawContextMenuItem<UIDialogImportExport>(UIMainStrings::ImportExport, "1");
+			const bool enabled = !m_controller.IsDefaultConfigForced();
+
+			DrawContextMenuItem<UIDialogImportExport>(UIMainStrings::ImportExport, "1", enabled);
 
 			ImGui::Separator();
 
-			if (UIL::LCG_BM(UIMainStrings::DefaultConfig, "2"))
+			if (ImGui::BeginMenu(UIL::LS(UIMainStrings::DefaultConfig, "2"), enabled))
 			{
 				DrawDefaultConfigSubmenu();
 
