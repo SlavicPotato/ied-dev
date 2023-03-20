@@ -1,9 +1,9 @@
 /*
 	A very hacky implementation that:
-		1.) allows temporary outfit forms to be created and modified in-game
-		2.) makes the forms persist in the save
+		1. allows temporary outfit forms to be created and modified in-game
+		2. makes the forms persist in the save
 
-	Writes data directly to the save, absolutely not to be included in a public release!
+	Writes data directly to the save buffer, absolutely not to be included in a public release!
 
 */
 
@@ -14,7 +14,7 @@
 #	include "PersistentOutfitFormManager.h"
 
 #	include <ext/JITASM.h>
-#	include <ext/SKSEMessagingHandler.h>
+//#	include <ext/SKSEMessagingHandler.h>
 
 namespace IED
 {

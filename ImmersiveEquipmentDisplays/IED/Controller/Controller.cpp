@@ -554,6 +554,8 @@ namespace IED
 			Debug("IFPV detector plugin found");
 		}
 
+		StartObjectLoaderWorkerThreads(m_iniconf->m_objectLoaderThreads);
+
 		SetProcessorTaskRunState(true);
 
 		m_iniconf.reset();

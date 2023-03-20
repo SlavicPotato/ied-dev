@@ -133,13 +133,13 @@ namespace IED
 			void UnregisterFromControllers(Game::FormID a_owner) noexcept;
 			void CleanupObject(Game::ObjectRefHandle a_handle) noexcept;
 
-			TESForm*                            modelForm{ nullptr };
-			CommonNodes                         commonNodes;
-			Data::cacheTransform_t              transform;
-			ObjectDatabase::ObjectDatabaseEntry dbEntry;
-			std::unique_ptr<ObjectLight>        light;
-			ObjectSound                         sound;
-			ObjectAnim                          anim;
+			TESForm*                     modelForm{ nullptr };
+			CommonNodes                  commonNodes;
+			Data::cacheTransform_t       transform;
+			ObjectDatabaseEntry          dbEntry;
+			std::unique_ptr<ObjectLight> light;
+			ObjectSound                  sound;
+			ObjectAnim                   anim;
 		};
 
 		struct State :
@@ -213,9 +213,9 @@ namespace IED
 			void SetVisible(bool a_switch) noexcept;
 
 			template <class Tf>
-			constexpr void visit_db_entries(Tf a_func)                                           //
-				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabase::ObjectDatabaseEntry&>)  //
-				requires(std::invocable<Tf, ObjectDatabase::ObjectDatabaseEntry&>)
+			constexpr void visit_db_entries(Tf a_func)                           //
+				noexcept(std::is_nothrow_invocable_v<Tf, ObjectDatabaseEntry&>)  //
+				requires(std::invocable<Tf, ObjectDatabaseEntry&>)
 			{
 				if (auto& d = dbEntry)
 				{

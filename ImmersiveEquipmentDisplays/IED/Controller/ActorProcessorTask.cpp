@@ -412,6 +412,14 @@ namespace IED
 		ActorObjectHolder&                      a_holder,
 		bool                                    a_updateEffects) noexcept
 	{
+		if (!a_holder.m_queuedModels.empty())
+		{
+			if (a_holder.ProcessQueuedModels())
+			{
+				GetController().RequestCleanup();
+			}
+		}
+
 		auto& state = a_holder.m_state;
 
 		NiPointer<TESObjectREFR> refr;
@@ -688,11 +696,24 @@ namespace IED
 
 		RunPreUpdates(notPaused);
 
+		const auto& actorList = controller.GetActorMap().getvec();
+
+		/*if (controller.HasCompletedAsyncLoads())
+		{
+			for (auto& e : actorList)
+			{
+				if (e->second.m_flags.test(ActorObjectHolderFlags::kHasPendingLoads))
+				{
+					e->second.RequestEval();
+				}
+			}
+		}*/
+
 		const auto& cvdata = controller.GetActiveConfig().condvars;
 
 		if (!cvdata.empty())
 		{
-			for (auto& e : controller.GetActorMap().getvec())
+			for (auto& e : actorList)
 			{
 				auto& holder = e->second;
 
@@ -720,7 +741,7 @@ namespace IED
 			}
 		}
 
-		for (auto& e : controller.GetActorMap().getvec())
+		for (auto& e : actorList)
 		{
 			auto& holder = e->second;
 
@@ -735,6 +756,7 @@ namespace IED
 
 		m_globalParams.reset();
 
+		controller.PreODBCleanup();
 		controller.RunObjectCleanup();
 
 		m_timer.End(m_currentTime);

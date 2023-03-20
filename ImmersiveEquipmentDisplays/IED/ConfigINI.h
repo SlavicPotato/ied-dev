@@ -51,6 +51,7 @@ namespace IED
 		static constexpr auto SECT_EFFECT_SHADERS = "EffectShaders";
 		static constexpr auto SECT_MISCELLANEOUS  = "Miscellaneous";
 		static constexpr auto SECT_LIGHTS         = "Lights";
+		static constexpr auto SECT_OBJECTDB       = "ObjectDatabase";
 
 	public:
 		ConfigINI() = default;
@@ -95,6 +96,7 @@ namespace IED
 		float         m_introBannerVOffset{ 110.0f };
 		float         m_interiorAmbientLightThreshold{ 0.35f };
 		LogLevel      m_logLevel{ LogLevel::Message };
+		std::uint32_t m_objectLoaderThreads{ 4 };
 
 		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;

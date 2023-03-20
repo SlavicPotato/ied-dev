@@ -306,7 +306,7 @@ namespace IED
 			state->Cleanup(a_handle);
 			state.reset();
 
-			a_db.QueueDatabaseCleanup();
+			a_db.RequestCleanup();
 		}
 	}
 

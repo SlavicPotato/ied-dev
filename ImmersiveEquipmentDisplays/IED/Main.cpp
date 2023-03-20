@@ -29,6 +29,10 @@
 #	include "IED/OM/PersistentOutfitFormManager.h"
 #endif
 
+#include "ext/BSThread.h"
+
+#include "IED/SkeletonCache.h"
+
 namespace IED
 {
 	Initializer Initializer::m_Instance;

@@ -48,9 +48,6 @@ namespace IED
 
 				params.nearDistance          = a_lightForm->data.nearDistance;
 				params.shadowDepthBias       = a_config ? a_config->shadowDepthBias : 0.0f;  // 0 if base != TESObjectLIGH (TESObjectREFR::GetExtraLightShadowDepthBias(a_refr))
-				params.data3D.lightingTarget = nullptr;
-
-				//params.unk00           = true;
 			}
 			else
 			{

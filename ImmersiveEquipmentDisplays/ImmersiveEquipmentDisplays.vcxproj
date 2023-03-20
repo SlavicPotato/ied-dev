@@ -672,6 +672,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\ActorAnimationState.h" />
     <ClInclude Include="IED\Controller\ActorObjectHolder.h" />
     <ClInclude Include="IED\Controller\ActorTempData.h" />
+    <ClInclude Include="IED\Controller\BackgroundLoaderThreadPool.h" />
     <ClInclude Include="IED\Controller\IConditionalVariableProcessor.h" />
     <ClInclude Include="IED\Controller\IUINotification.h" />
     <ClInclude Include="IED\Controller\KeyToggleStates.h" />
@@ -695,6 +696,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Controller\BipedSlotData.h" />
     <ClInclude Include="IED\Controller\IRNG.h" />
     <ClInclude Include="IED\Controller\MOVNodeEntry.h" />
+    <ClInclude Include="IED\Controller\ObjectDatabaseEntry.h" />
     <ClInclude Include="IED\Controller\ObjectEntryBase.h" />
     <ClInclude Include="IED\Controller\ObjectEntryCustom.h" />
     <ClInclude Include="IED\Controller\ObjectEntrySlot.h" />
@@ -1219,6 +1221,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\ConfigNodeOverride.cpp" />
     <ClCompile Include="IED\ConfigSkeletonMatch.cpp" />
     <ClCompile Include="IED\Controller\ActorObjectHolder.cpp" />
+    <ClCompile Include="IED\Controller\BackgroundLoaderThreadPool.cpp" />
     <ClCompile Include="IED\Controller\BipedSlotData.cpp" />
     <ClCompile Include="IED\Controller\IConditionalVariableProcessor.cpp" />
     <ClCompile Include="IED\Controller\IUINotification.cpp" />

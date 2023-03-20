@@ -4,11 +4,13 @@
 
 namespace IED
 {
-	bool ObjectDatabase::GetUniqueObject(
+
+	auto ObjectDatabase::GetUniqueObject(
 		const char*          a_path,
 		ObjectDatabaseEntry& a_outEntry,
 		NiPointer<NiNode>&   a_outObject,
 		float                a_colliderScale) noexcept
+		-> ObjectLoadResult
 	{
 		using namespace ::Util::Model;
 
@@ -17,41 +19,64 @@ namespace IED
 
 		if (!MakePath("meshes", a_path, path_buffer, path))
 		{
-			return false;
+			return ObjectLoadResult::kFailed;
 		}
 
 		stl::fixed_string spath(path);
 
-		auto it = m_data.find(spath);
-		if (it == m_data.end())
+		const auto r = m_data.try_emplace(spath);
+
+		auto& entry = r.first->second;
+
+		if (m_threadPool)
 		{
-			NiPointer<NiNode> tmp;
-
-			ModelLoader loader;
-			if (!loader.LoadObject(path, tmp))
+			if (r.second)
 			{
-				return false;
+				entry.reset(new ObjectDatabaseEntryData);
+				m_threadPool->Push(path, entry);
 			}
-
-			if (!ValidateObject(path, tmp))
+		}
+		else
+		{
+			if (r.second)
 			{
-				return false;
+				auto object = LoadImpl(path);
+
+				if (object)
+				{
+					entry.reset(new ObjectDatabaseEntryData(std::move(object)));
+					entry->loadState.store(ODBEntryLoadState::kLoaded);
+				}
+				else
+				{
+					entry->loadState.store(ODBEntryLoadState::kError);
+				}
+
+				QueueDatabaseCleanup();
 			}
-
-			it = m_data.emplace(
-						   spath,
-						   new entry_t(std::move(tmp)))
-			         .first;
-
-			QueueDatabaseCleanup();
 		}
 
-		it->second->accessed = IPerfCounter::Query();
+		switch (entry->loadState.load())
+		{
+		case ODBEntryLoadState::kPending:
 
-		a_outEntry  = it->second;
-		a_outObject = CreateClone(it->second->object.get(), a_colliderScale);
+			a_outEntry = entry;
 
-		return true;
+			return ObjectLoadResult::kPending;
+
+		case ODBEntryLoadState::kLoaded:
+
+			entry->accessed = IPerfCounter::Query();
+
+			a_outEntry  = entry;
+			a_outObject = CreateClone(entry->object.get(), a_colliderScale);
+
+			return ObjectLoadResult::kSuccess;
+
+		default:
+
+			return ObjectLoadResult::kFailed;
+		}
 	}
 
 	bool ObjectDatabase::ValidateObject(
@@ -62,7 +87,7 @@ namespace IED
 
 		if (result)
 		{
-			Debug("[%s] meshes with BSDismemberSkinInstance objects are not supported", a_path);
+			gLog.Debug("[%s] meshes with BSDismemberSkinInstance objects are not supported", a_path);
 		}
 
 		return !result;
@@ -85,6 +110,15 @@ namespace IED
 		});
 
 		return r == VisitorControl::kStop;
+	}
+
+	void ObjectDatabase::PreODBCleanup() noexcept
+	{
+		bool e = true;
+		if (m_wantCleanup.compare_exchange_strong(e, false))
+		{
+			QueueDatabaseCleanup();
+		}
 	}
 
 	void ObjectDatabase::RunObjectCleanup() noexcept
@@ -192,6 +226,38 @@ namespace IED
 	{
 		m_data.clear();
 		m_cleanupDeadline.reset();
+	}
+
+	void ObjectDatabase::StartObjectLoaderWorkerThreads(std::uint32_t a_numThreads)
+	{
+		if (!a_numThreads)
+		{
+			return;
+		}
+
+		Message("Spinning up %u object loader thread(s)..", a_numThreads);
+
+		m_threadPool = std::make_unique_for_overwrite<BackgroundLoaderThreadPool>();
+		m_threadPool->Start(*this, a_numThreads);
+	}
+
+	NiPointer<NiNode> ObjectDatabase::LoadImpl(const char* a_path)
+	{
+		NiPointer<NiNode> result;
+
+		::Util::Model::ModelLoader loader;
+
+		if (!loader.LoadObject(a_path, result))
+		{
+			return {};
+		}
+
+		if (!ValidateObject(a_path, result))
+		{
+			return {};
+		}
+
+		return result;
 	}
 
 	NiNode* ObjectDatabase::CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept

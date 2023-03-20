@@ -668,19 +668,25 @@ namespace IED
 		{
 			return m_monitorNodes;
 		}
-		
+
 		[[nodiscard]] constexpr auto& GetLastQueuedOutfitEquipFrame() const noexcept
 		{
 			return m_lastQueuedOutfitEquipFrame;
 		}
-		
+
 		[[nodiscard]] constexpr void SetLastQueuedOutfitEquipFrame(std::uint32_t a_value) noexcept
 		{
 			m_lastQueuedOutfitEquipFrame = a_value;
 		}
 
-	private:
+		constexpr void AddQueuedModel(ObjectDatabaseEntry&& a_entry) noexcept
+		{
+			m_queuedModels.emplace(std::move(a_entry));
+		}
 
+		bool ProcessQueuedModels() noexcept;
+
+	private:
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,
 			NiNode*                                       a_npcroot,
@@ -749,6 +755,8 @@ namespace IED
 		stl::unordered_map<luid_tag, float> m_rpc;
 
 		std::uint32_t m_lastQueuedOutfitEquipFrame{ 0 };
+
+		stl::flat_set<ObjectDatabaseEntry> m_queuedModels;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

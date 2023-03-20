@@ -141,7 +141,9 @@ namespace IED
 
 			const auto& col = a_sky->skyColor[RE::TESWeather::ColorTypes::kAmbient];
 
-			return (col.r + col.g + col.b) < (isNightTime ? (SPtrHolder::GetSingleton().fTorchLightLevelNight ? *SPtrHolder::GetSingleton().fTorchLightLevelNight : 1.2f) : 0.6f);
+			auto& sh = SPtrHolder::GetSingleton();
+
+			return (col.r + col.g + col.b) < (isNightTime ? (sh.fTorchLightLevelNight ? *sh.fTorchLightLevelNight : 1.2f) : 0.6f);
 		}
 
 		bool IsInteriorDark(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept

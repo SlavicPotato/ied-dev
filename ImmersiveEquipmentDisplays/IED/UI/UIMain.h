@@ -172,7 +172,7 @@ namespace IED
 					UIL::LS(a_title, a_id),
 					nullptr,
 					context && context->IsContextOpen(),
-					static_cast<bool>(context) && a_enabled))
+					context && a_enabled))
 			{
 				if (context)
 				{

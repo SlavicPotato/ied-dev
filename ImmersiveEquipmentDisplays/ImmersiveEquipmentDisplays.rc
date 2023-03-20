@@ -80,7 +80,7 @@ LANGUAGE LANG_NEUTRAL,
 	PLUGIN_NAME VALUE "OriginalFilename",
 	PLUGIN_NAME ".dll" VALUE "ProductName", PLUGIN_NAME_FULL VALUE "ProductVersion",
 	PLUGIN_VERSION_VERSTRING     VALUE "LegalCopyright",
-	"Copyright (C) 2022 " PLUGIN_AUTHOR END END BLOCK "VarFileInfo" BEGIN VALUE "Translation",
+	"MIT License" END END BLOCK "VarFileInfo" BEGIN VALUE "Translation",
 	0x409, 1200 END END
 
 #endif  // English (United States) resources

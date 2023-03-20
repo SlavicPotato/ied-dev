@@ -721,6 +721,36 @@ namespace IED
 		a_sc.reset();
 	}
 
+	bool ActorObjectHolder::ProcessQueuedModels() noexcept
+	{
+		bool result = false;
+
+		for (auto it = m_queuedModels.begin(); it != m_queuedModels.end();)
+		{
+			const auto loadState = (*it)->loadState.load();
+
+			if (loadState != ODBEntryLoadState::kPending)
+			{
+				//_DMESSAGE("%.8X: %p | %d", GetActorFormID(), it->get(), loadState);
+
+				it = m_queuedModels.erase(it);
+
+				result = true;
+			}
+			else
+			{
+				++it;
+			}
+		}
+
+		if (result)
+		{
+			RequestEval();
+		}
+
+		return result;
+	}
+
 	void ActorObjectHolder::CreateExtraCopyNode(
 		const SkeletonCache::ActorEntry&              a_sc,
 		NiNode*                                       a_npcroot,

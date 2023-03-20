@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "ActorObjectHolder.h"
 #include "INode.h"
 #include "INodeOverride.h"
 #include "IObjectManager.h"
@@ -539,14 +540,18 @@ namespace IED
 			state->flags.set(ObjectEntryFlags::kHasCollisionObjectScale);
 		}
 
-		if (!GetUniqueObject(
-				modelParams.path,
-				dbentry,
-				object,
-				state->colliderScale ?
-					*state->colliderScale :
-					1.0f))
+		const auto odbResult = GetUniqueObject(
+			modelParams.path,
+			dbentry,
+			object,
+			state->colliderScale ?
+				*state->colliderScale :
+				1.0f);
+
+		switch (odbResult)
 		{
+		case ObjectLoadResult::kFailed:
+
 			Warning(
 				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
 				a_params.actor->formID.get(),
@@ -555,12 +560,14 @@ namespace IED
 				modelParams.path);
 
 			return false;
+		case ObjectLoadResult::kPending:
+
+			a_params.objects.AddQueuedModel(std::move(dbentry));
+
+			return false;
 		}
 
-		if (dbentry)
-		{
-			state->dbEntry = std::move(dbentry);
-		}
+		state->dbEntry = std::move(dbentry);
 
 		a_params.SuspendReferenceEffectShaders();
 
@@ -874,8 +881,12 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
-			if (!GetUniqueObject(e.params.path, e.dbEntry, e.object))
+			const auto odbResult = GetUniqueObject(e.params.path, e.dbEntry, e.object);
+
+			switch (odbResult)
 			{
+			case ObjectLoadResult::kFailed:
+
 				Warning(
 					"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
 					a_params.actor->formID.get(),
@@ -884,6 +895,11 @@ namespace IED
 					e.params.path);
 
 				continue;
+			case ObjectLoadResult::kPending:
+
+				a_params.objects.AddQueuedModel(std::move(e.dbEntry));
+
+				return false;
 			}
 
 			loaded = true;

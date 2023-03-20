@@ -1,41 +1,18 @@
 #pragma once
 
+#include "BackgroundLoaderThreadPool.h"
+#include "ObjectDatabaseEntry.h"
 #include "ObjectDatabaseLevel.h"
+
+#include <ext/BSThread.h>
+#include <ext/stl_queue.h>
 
 namespace IED
 {
 	class ObjectDatabase :
 		public virtual ILog
 	{
-		struct entry_t :
-			stl::intrusive_ref_counted
-		{
-			SKMP_REDEFINE_NEW_PREF();
-
-			friend class ObjectDatabase;
-
-			explicit entry_t(
-				const NiPointer<NiNode>& a_object) :
-				object(a_object)
-			{
-			}
-
-			explicit entry_t(
-				NiPointer<NiNode>&& a_object) :
-				object(std::move(a_object))
-			{
-			}
-
-			long long accessed{ 0 };
-
-		private:
-			NiPointer<NiNode> object;
-		};
-
 		static constexpr long long CLEANUP_DELAY = 1000000;
-
-	public:
-		using ObjectDatabaseEntry = stl::smart_ptr<entry_t>;
 
 	private:
 		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
@@ -43,15 +20,23 @@ namespace IED
 	public:
 		static constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kNone;
 
-		[[nodiscard]] bool GetUniqueObject(
+		enum class ObjectLoadResult
+		{
+			kPending,
+			kFailed,
+			kSuccess
+		};
+
+		[[nodiscard]] ObjectLoadResult GetUniqueObject(
 			const char*          a_path,
 			ObjectDatabaseEntry& a_outEntry,
 			NiPointer<NiNode>&   a_outObject,
 			float                a_colliderScale = 1.0f) noexcept;
 
-		bool        ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
+		static bool ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
 
+		void PreODBCleanup() noexcept;
 		void RunObjectCleanup() noexcept;
 		void QueueDatabaseCleanup() noexcept;
 
@@ -68,6 +53,14 @@ namespace IED
 		[[nodiscard]] std::size_t GetODBUnusedObjectCount() const noexcept;
 
 		void ClearObjectDatabase();
+
+		void StartObjectLoaderWorkerThreads(std::uint32_t a_numThreads);
+
+		inline void RequestCleanup() noexcept
+		{
+			bool expected = false;
+			m_wantCleanup.compare_exchange_strong(expected, true);
+		}
 
 		FN_NAMEPROC("ObjectDatabase");
 
@@ -87,12 +80,18 @@ namespace IED
 			}
 		}
 
+		public:
+		static NiPointer<NiNode> LoadImpl(const char* a_path);
+
 	private:
 		static NiNode* CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept;
 
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;
 		container_type           m_data;
+
+		std::unique_ptr<BackgroundLoaderThreadPool> m_threadPool;
+		std::atomic_bool                            m_wantCleanup{ false };
 
 		stl::vector<std::pair<stl::fixed_string, long long>> m_scc;
 	};
