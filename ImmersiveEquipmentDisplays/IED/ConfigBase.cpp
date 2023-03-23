@@ -457,21 +457,19 @@ namespace IED
 			const equipmentOverrideCondition_t& a_match) noexcept
 		{
 			auto it = a_data.forms.find(a_match.form.get_id());
-			if (it == a_data.forms.end())
-			{
-				return false;
-			}
+
+			const auto itemCount = it == a_data.forms.end() ? 0 : it->second.itemCount;
 
 			if (a_match.flags.test(EquipmentOverrideConditionFlags::kExtraFlag1))
 			{
-				if (!Conditions::compare(a_match.compOperator, static_cast<std::int64_t>(it->second.itemCount), a_match.count))
+				if (!Conditions::compare(a_match.compOperator, static_cast<std::int64_t>(itemCount), a_match.count))
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (it->second.itemCount <= 0)
+				if (itemCount <= 0)
 				{
 					return false;
 				}
@@ -479,6 +477,11 @@ namespace IED
 
 			if (a_match.keyword.get_id())
 			{
+				if (it == a_data.forms.end())
+				{
+					return false;
+				}
+
 				return a_match.flags.test(EquipmentOverrideConditionFlags::kNegateMatch1) !=
 				       IFormCommon::HasKeyword(it->second.form, a_match.keyword);
 			}
