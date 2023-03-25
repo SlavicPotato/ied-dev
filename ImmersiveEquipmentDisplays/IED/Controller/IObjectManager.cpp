@@ -560,6 +560,7 @@ namespace IED
 				modelParams.path);
 
 			return false;
+
 		case ObjectLoadResult::kPending:
 
 			a_params.objects.AddQueuedModel(std::move(dbentry));
@@ -875,13 +876,14 @@ namespace IED
 			return false;
 		}
 
-		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();
-
 		bool loaded = false;
 
 		for (auto& e : modelParams)
 		{
-			const auto odbResult = GetUniqueObject(e.params.path, e.dbEntry, e.object);
+			const auto odbResult = GetUniqueObject(
+				e.params.path,
+				e.dbEntry,
+				e.object);
 
 			switch (odbResult)
 			{
@@ -909,6 +911,8 @@ namespace IED
 		{
 			return false;
 		}
+
+		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();
 
 		a_params.SuspendReferenceEffectShaders();
 

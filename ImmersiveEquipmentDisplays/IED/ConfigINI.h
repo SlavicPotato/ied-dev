@@ -96,7 +96,8 @@ namespace IED
 		float         m_introBannerVOffset{ 110.0f };
 		float         m_interiorAmbientLightThreshold{ 0.35f };
 		LogLevel      m_logLevel{ LogLevel::Message };
-		std::uint32_t m_objectLoaderThreads{ 4 };
+		bool          m_backgroundObjectLoader{ false };
+		std::uint32_t m_objectLoaderThreads{ 0 };
 
 		long               m_agManualMode{ 0 };
 		AnimationGroupInfo m_agInfo;

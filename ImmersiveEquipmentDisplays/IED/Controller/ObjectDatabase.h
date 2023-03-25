@@ -15,7 +15,7 @@ namespace IED
 		static constexpr long long CLEANUP_DELAY = 1000000;
 
 	private:
-		using container_type = stl::unordered_map<stl::fixed_string, ObjectDatabaseEntry>;
+		using container_type = stl::vectormap<stl::fixed_string, ObjectDatabaseEntry>;
 
 	public:
 		static constexpr auto DEFAULT_LEVEL = ObjectDatabaseLevel::kNone;
@@ -31,7 +31,8 @@ namespace IED
 			const char*          a_path,
 			ObjectDatabaseEntry& a_outEntry,
 			NiPointer<NiNode>&   a_outObject,
-			float                a_colliderScale = 1.0f) noexcept;
+			float                a_colliderScale      = 1.0f,
+			bool                 a_forceImmediateLoad = false) noexcept;
 
 		static bool ValidateObject(const char* a_path, NiAVObject* a_object) noexcept;
 		static bool HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept;
@@ -80,7 +81,7 @@ namespace IED
 			}
 		}
 
-		public:
+	public:
 		static NiPointer<NiNode> LoadImpl(const char* a_path);
 
 	private:
@@ -93,6 +94,6 @@ namespace IED
 		std::unique_ptr<BackgroundLoaderThreadPool> m_threadPool;
 		std::atomic_bool                            m_wantCleanup{ false };
 
-		stl::vector<std::pair<stl::fixed_string, long long>> m_scc;
+		//stl::vector<std::pair<stl::fixed_string, long long>> m_scc;
 	};
 }

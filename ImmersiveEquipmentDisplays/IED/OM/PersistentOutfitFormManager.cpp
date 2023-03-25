@@ -735,7 +735,7 @@ namespace IED
 				return;
 			}
 
-			Debug("write");
+			//Debug("write");
 
 			const stl::lock_guard lock(m_lock);
 
@@ -752,7 +752,7 @@ namespace IED
 
 				const auto numitems = form->outfitItems.size();
 
-				Debug("storing %.8X [%u]", form->formID, numitems);
+				//Debug("storing %.8X [%u]", form->formID, numitems);
 
 				BGSSaveGameBuffer_unk_16(a_buffer, numitems);
 
@@ -777,7 +777,7 @@ namespace IED
 				return;
 			}
 
-			Debug("read");
+			//Debug("read");
 
 			const stl::lock_guard lock(m_lock);
 
@@ -804,7 +804,7 @@ namespace IED
 
 				const auto numItems = BGSLoadFormBuffer_unk_5(a_buffer);
 
-				Debug("read %.8X [%u] [%s]", formid.get(), numItems, name.c_str());
+				//Debug("read %.8X [%u] [%s]", formid.get(), numItems, name.c_str());
 
 				RE::BSTArray<TESForm*> outfitItems;
 

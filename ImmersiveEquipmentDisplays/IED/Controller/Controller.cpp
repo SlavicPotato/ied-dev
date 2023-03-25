@@ -554,7 +554,15 @@ namespace IED
 			Debug("IFPV detector plugin found");
 		}
 
-		StartObjectLoaderWorkerThreads(m_iniconf->m_objectLoaderThreads);
+		if (m_iniconf->m_backgroundObjectLoader)
+		{
+			const auto numThreads =
+				m_iniconf->m_objectLoaderThreads ?
+					m_iniconf->m_objectLoaderThreads :
+					WinApi::GetNumPhysicalCores();
+
+			StartObjectLoaderWorkerThreads(numThreads ? std::min(numThreads, 12u) : 4u);
+		}
 
 		SetProcessorTaskRunState(true);
 
@@ -571,6 +579,18 @@ namespace IED
 		const stl::lock_guard lock(m_lock);
 
 		EvaluateImpl(a_actor, a_handle, a_flags);
+	}
+
+	std::size_t Controller::GetNumQueuedModels() const noexcept
+	{
+		std::size_t result = 0;
+
+		for (auto& e : m_actorMap)
+		{
+			result += e.second.GetNumQueuedModels();
+		}
+
+		return result;
 	}
 
 	std::size_t Controller::GetNumSimComponents() const noexcept
@@ -5267,7 +5287,6 @@ namespace IED
 			{
 				ClearStoredHandles();
 			}
-
 
 			break;
 		case SKSEMessagingInterface::kMessage_SaveGame:

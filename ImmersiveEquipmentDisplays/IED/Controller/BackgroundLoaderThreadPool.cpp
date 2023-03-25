@@ -8,68 +8,104 @@ namespace IED
 {
 	BackgroundLoaderThreadPool::~BackgroundLoaderThreadPool()
 	{
-		std::for_each(m_workers.begin(), m_workers.end(), [&](auto&) {
-			m_queue.push();
-		});
+		std::for_each(
+			m_workers.begin(),
+			m_workers.end(),
+			[&](auto&) {
+				m_queue.push();
+			});
 
 		m_workers.clear();
 	}
 
 	void BackgroundLoaderThreadPool::Start(
-		ObjectDatabase& a_db,
-		std::uint32_t   a_numThreads)
+		std::uint32_t a_numThreads)
 	{
 		if (!m_workers.empty())
 		{
 			return;
 		}
 
+		decltype(m_workers) tmp;
+
 		for (std::uint32_t i = 0; i < a_numThreads; ++i)
 		{
-			auto& thread = m_workers.emplace_front(a_db, m_queue);
-			thread.StartThread();
+			tmp.emplace_front(*this);
 		}
+
+		for (auto& e : tmp)
+		{
+			ASSERT(e.StartThread());
+		}
+
+		//ASSERT(m_wts.WaitForThreads(a_numThreads, 5000));
+
+		m_workers = std::move(tmp);
 	}
 
-	DWORD BackgroundLoaderThreadPool::Thread::RunThread()
+	DWORD BackgroundLoaderThreadPool::Thread::Run()
 	{
-		//_DMESSAGE("%u: starting", GetCurrentThreadId());
+		//m_owner.m_wts.NotifyThreadStart();
+
+		gLog.Debug(__FUNCTION__ " [%u] starting", threadID);
 
 		for (;;)
 		{
-			QueuedFile queued;
+			const auto file = m_owner.m_queue.pop();
 
-			m_queue.pop(queued);
-
-			if (!queued.entry)
+			if (!file)
 			{
 				break;
 			}
 
-			auto expected = ODBEntryLoadState::kPending;
+			auto& entry = file->entry;
 
-			auto obj = ObjectDatabase::LoadImpl(queued.path.c_str());
-
-			if (obj)
+			if (entry->try_acquire_for_load())
 			{
-				queued.entry->object   = std::move(obj);
-				queued.entry->accessed = IPerfCounter::Query();
+				auto obj = ObjectDatabase::LoadImpl(file->path.c_str());
 
-				ASSERT(queued.entry->loadState.compare_exchange_strong(expected, ODBEntryLoadState::kLoaded));
+				if (obj)
+				{
+					entry->object   = std::move(obj);
+					entry->accessed = IPerfCounter::Query();
 
-				//_DMESSAGE("loaded %s", tmp.path.c_str());
+					entry->loadState.store(ODBEntryLoadState::kLoaded);
+
+					//_DMESSAGE("loaded %s", tmp.path.c_str());
+				}
+				else
+				{
+					entry->loadState.store(ODBEntryLoadState::kError);
+				}
+
+				m_owner.m_owner.RequestCleanup();
 			}
-			else
-			{
-				ASSERT(queued.entry->loadState.compare_exchange_strong(expected, ODBEntryLoadState::kError));
-			}
-
-			m_db.RequestCleanup();
 		}
 
-		//_DMESSAGE("%u: stopping", GetCurrentThreadId());
+		gLog.Debug(__FUNCTION__ " [%u] stopping", threadID);
 
 		return 0;
+	}
+
+	bool BackgroundLoaderThreadPool::WaitThreadStartHelper::WaitForThreads(
+		std::uint32_t a_expectedNum,
+		long long     a_timeout)
+	{
+		std::unique_lock<std::mutex> lock(m_mutex);
+
+		return m_cond.wait_for(
+			lock,
+			std::chrono::milliseconds(a_timeout),
+			[&] { return m_count == a_expectedNum; });
+	}
+
+	void BackgroundLoaderThreadPool::WaitThreadStartHelper::NotifyThreadStart()
+	{
+		{
+			std::unique_lock<std::mutex> lock(m_mutex);
+			m_count++;
+		}
+		m_cond.notify_one();
 	}
 
 }

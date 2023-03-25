@@ -729,7 +729,7 @@ namespace IED
 		{
 			const auto loadState = (*it)->loadState.load();
 
-			if (loadState != ODBEntryLoadState::kPending)
+			if (loadState > ODBEntryLoadState::kProcessing)
 			{
 				//_DMESSAGE("%.8X: %p | %d", GetActorFormID(), it->get(), loadState);
 

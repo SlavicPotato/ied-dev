@@ -9,7 +9,8 @@ namespace IED
 		const char*          a_path,
 		ObjectDatabaseEntry& a_outEntry,
 		NiPointer<NiNode>&   a_outObject,
-		float                a_colliderScale) noexcept
+		float                a_colliderScale,
+		bool                 a_forceImmediateLoad) noexcept
 		-> ObjectLoadResult
 	{
 		using namespace ::Util::Model;
@@ -28,11 +29,11 @@ namespace IED
 
 		auto& entry = r.first->second;
 
-		if (m_threadPool)
+		if (m_threadPool && !a_forceImmediateLoad)
 		{
 			if (r.second)
 			{
-				entry.reset(new ObjectDatabaseEntryData);
+				entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
 				m_threadPool->Push(path, entry);
 			}
 		}
@@ -40,11 +41,16 @@ namespace IED
 		{
 			if (r.second)
 			{
+				entry = stl::make_smart_for_overwrite<ObjectDatabaseEntryData>();
+			}
+
+			if (entry->try_acquire_for_load())
+			{
 				auto object = LoadImpl(path);
 
 				if (object)
 				{
-					entry.reset(new ObjectDatabaseEntryData(std::move(object)));
+					entry->object = std::move(object);
 					entry->loadState.store(ODBEntryLoadState::kLoaded);
 				}
 				else
@@ -59,6 +65,7 @@ namespace IED
 		switch (entry->loadState.load())
 		{
 		case ODBEntryLoadState::kPending:
+		case ODBEntryLoadState::kProcessing:
 
 			a_outEntry = entry;
 
@@ -83,14 +90,7 @@ namespace IED
 		const char* a_path,
 		NiAVObject* a_object) noexcept
 	{
-		const bool result = HasBSDismemberSkinInstance(a_object);
-
-		if (result)
-		{
-			gLog.Debug("[%s] meshes with BSDismemberSkinInstance objects are not supported", a_path);
-		}
-
-		return !result;
+		return !HasBSDismemberSkinInstance(a_object);
 	}
 
 	bool ObjectDatabase::HasBSDismemberSkinInstance(NiAVObject* a_object) noexcept
@@ -137,11 +137,17 @@ namespace IED
 
 		if (m_level == ObjectDatabaseLevel::kNone)
 		{
-			std::erase_if(
-				m_data,
-				[](auto& a_v) noexcept [[msvc::forceinline]] {
-					return a_v.second.use_count() <= 1;
-				});
+			for (auto it = m_data.begin(); it != m_data.end();)
+			{
+				if (it->second.use_count() <= 1)
+				{
+					it = m_data.erase(it);
+				}
+				else
+				{
+					++it;
+				}
+			}
 
 			return;
 		}
@@ -153,50 +159,29 @@ namespace IED
 			return;
 		}
 
-		std::size_t numCandidates = 0;
+		m_data.sortvec([](auto& a_lhs, auto& a_rhs) noexcept {
+			return a_lhs->second->accessed < a_rhs->second->accessed;
+		});
 
-		for (auto& e : m_data)
+		auto& vec = m_data.getvec();
+
+		for (auto it = vec.begin(); it != vec.end();)
 		{
-			if (e.second.use_count() <= 1)
+			if ((*it)->second.use_count() > 1)
 			{
-				numCandidates++;
+				++it;
+			}
+			else
+			{
+				it = m_data.erase(it);
+
+				if (m_data.size() <= level)
+				{
+					break;
+				}
 			}
 		}
 
-		if (numCandidates <= level)
-		{
-			return;
-		}
-
-		m_scc.reserve(numCandidates);
-
-		for (const auto& [i, e] : m_data)
-		{
-			if (e.use_count() <= 1)
-			{
-				m_scc.emplace_back(i, e->accessed);
-			}
-		}
-
-		std::sort(
-			m_scc.begin(),
-			m_scc.end(),
-			[](const auto& a_lhs,
-		       const auto& a_rhs) noexcept [[msvc::forceinline]] {
-				return a_lhs.second < a_rhs.second;
-			});
-
-		for (const auto& e : m_scc)
-		{
-			if (m_data.size() <= level)
-			{
-				break;
-			}
-
-			m_data.erase(e.first);
-		}
-
-		m_scc.clear();
 	}
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept
@@ -237,8 +222,8 @@ namespace IED
 
 		Message("Spinning up %u object loader thread(s)..", a_numThreads);
 
-		m_threadPool = std::make_unique_for_overwrite<BackgroundLoaderThreadPool>();
-		m_threadPool->Start(*this, a_numThreads);
+		m_threadPool = std::make_unique<BackgroundLoaderThreadPool>(*this);
+		m_threadPool->Start(a_numThreads);
 	}
 
 	NiPointer<NiNode> ObjectDatabase::LoadImpl(const char* a_path)

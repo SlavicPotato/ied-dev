@@ -6,9 +6,10 @@ namespace IED
 
 	enum class ODBEntryLoadState
 	{
-		kPending = 0,
-		kError   = 1,
-		kLoaded  = 2
+		kPending    = 0,
+		kProcessing = 1,
+		kError      = 2,
+		kLoaded     = 3
 	};
 
 	struct ObjectDatabaseEntryData :
@@ -33,9 +34,15 @@ namespace IED
 		{
 		}
 
+		[[nodiscard]] inline bool try_acquire_for_load() noexcept
+		{
+			auto expected = ODBEntryLoadState::kPending;
+			return loadState.compare_exchange_strong(expected, ODBEntryLoadState::kProcessing);
+		}
+
+		NiPointer<NiNode>              object;
 		volatile long long             accessed{ 0 };
 		std::atomic<ODBEntryLoadState> loadState{ ODBEntryLoadState::kPending };
-		NiPointer<NiNode>              object;
 	};
 
 	using ObjectDatabaseEntry = stl::smart_ptr<ObjectDatabaseEntryData>;

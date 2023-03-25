@@ -11,49 +11,68 @@ namespace IED
 
 	class BackgroundLoaderThreadPool
 	{
-	public:
+	private:
 		struct QueuedFile
 		{
 			std::string         path;
 			ObjectDatabaseEntry entry;
 		};
 
-		using queue_type = stl::producer_consumer_queue<QueuedFile>;
+		using queue_type = stl::producer_consumer_queue<std::unique_ptr<QueuedFile>>;
 
 		class Thread :
 			public RE::BSThread
 		{
 		public:
-			Thread(
-				ObjectDatabase& a_db,
-				queue_type&     a_queue) :
+			inline Thread(
+				BackgroundLoaderThreadPool& a_owner) :
 				RE::BSThread(),
-				m_db(a_db),
-				m_queue(a_queue)
+				m_owner(a_owner)
 			{
 			}
 
-		private:
-			DWORD RunThread() override;
+			Thread(const Thread&)            = delete;
+			Thread& operator=(const Thread&) = delete;
 
-			ObjectDatabase& m_db;
-			queue_type&     m_queue;
+		private:
+			DWORD Run() override;
+
+			BackgroundLoaderThreadPool& m_owner;
+		};
+
+		class WaitThreadStartHelper
+		{
+		public:
+			bool WaitForThreads(
+				std::uint32_t a_expectedNum,
+				long long     a_timeout);
+
+			void NotifyThreadStart();
+
+		private:
+			std::mutex              m_mutex;
+			std::condition_variable m_cond;
+			std::uint32_t           m_count{ 0 };
 		};
 
 	public:
+		inline BackgroundLoaderThreadPool(
+			ObjectDatabase& a_owner) :
+			m_owner(a_owner)
+		{
+		}
+
 		~BackgroundLoaderThreadPool();
 
-		void Start(
-			ObjectDatabase& a_db,
-			std::uint32_t   a_numThreads = 1);
+		void Start(std::uint32_t a_numThreads);
 
 		template <class... Args>
 		void Push(Args&&... a_args)
 		{
-			m_queue.push(std::forward<Args>(a_args)...);
+			m_queue.push(std::make_unique<QueuedFile>(std::forward<Args>(a_args)...));
 		}
 
-		inline bool IsEnabled() const noexcept
+		[[nodiscard]] inline bool IsEnabled() const noexcept
 		{
 			return !m_workers.empty();
 		}
@@ -61,5 +80,8 @@ namespace IED
 	private:
 		stl::forward_list<Thread> m_workers;
 		queue_type                m_queue;
+		ObjectDatabase&           m_owner;
+
+		//WaitThreadStartHelper m_wts;
 	};
 }

@@ -686,6 +686,11 @@ namespace IED
 
 		bool ProcessQueuedModels() noexcept;
 
+		[[nodiscard]] constexpr auto GetNumQueuedModels() const noexcept
+		{
+			return m_queuedModels.size();
+		}
+
 	private:
 		void CreateExtraCopyNode(
 			const SkeletonCache::ActorEntry&              a_sc,

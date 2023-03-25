@@ -453,6 +453,8 @@ namespace IED
 		{
 			return m_cpuHasSSE41;
 		}
+		
+		[[nodiscard]] std::size_t GetNumQueuedModels() const noexcept;
 
 		/*[[nodiscard]] constexpr bool ConsumeInventoryChangeFlags(
 			InventoryChangeConsumerFlags a_mask)
