@@ -318,7 +318,7 @@ namespace IED
 						ImGui::EndMenu();
 					}
 
-					if (UIL::LCG_BM(CommonStrings::Cell, "N"))
+					if (ImGui::MenuItem(UIL::LS(CommonStrings::Cell, "N")))
 					{
 						result.action    = NodeOverrideCommonAction::Insert;
 						result.matchType = Data::NodeOverrideConditionType::Cell;
