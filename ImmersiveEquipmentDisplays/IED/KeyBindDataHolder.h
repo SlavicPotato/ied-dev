@@ -57,10 +57,13 @@ namespace IED
 			}
 
 			void ResetKeyToggleStates() noexcept;
-			KeyToggleStateEntryHolder::state_data GetKeyToggleStates() const;
-			void InitializeKeyToggleStates(const KeyToggleStateEntryHolder::state_data& a_states) noexcept;
+			KeyToggleStateEntryHolder::state_data2 GetKeyToggleStates() const;
 
-			bool GetKeyState(const stl::fixed_string& a_id) const noexcept;
+			template <class T>
+			void InitializeKeyToggleStates(const T& a_states) noexcept //
+				requires(std::is_integral_v<typename T::value_type::second_type>);
+
+			std::uint32_t GetKeyState(const stl::fixed_string& a_id) const noexcept;
 
 			bool Save(const fs::path& a_path) const;
 			bool Load(const fs::path& a_path);
@@ -82,5 +85,30 @@ namespace IED
 			mutable except::descriptor  m_lastException;
 			mutable bool                m_dirty{ false };
 		};
+
+		template <class T>
+		void KeyBindDataHolder::InitializeKeyToggleStates(
+			const T& a_states) noexcept //
+			requires(std::is_integral_v<typename T::value_type::second_type>)
+		{
+			const stl::lock_guard lock(m_lock);
+
+			auto& entries = m_data.entries;
+
+			for (auto& e : entries)
+			{
+				e.second.SetState(0);
+			}
+
+			for (auto& e : a_states)
+			{
+				const auto it = entries.find(e.first);
+
+				if (it != entries.end())
+				{
+					it->second.SetState(e.second);
+				}
+			}
+		}
 	}
 }

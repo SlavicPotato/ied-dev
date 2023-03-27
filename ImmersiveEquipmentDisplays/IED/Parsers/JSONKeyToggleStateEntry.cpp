@@ -17,9 +17,10 @@ namespace IED
 
 			auto& data = a_in["data"];
 
-			a_out.flags    = static_cast<std::uint8_t>(data.get("f", stl::underlying(KB::KeyToggleStateEntryFlags::kNone)).asUInt());
-			a_out.key      = data.get("k", 0).asUInt();
-			a_out.comboKey = data.get("c", 0).asUInt();
+			a_out.flags     = static_cast<std::uint8_t>(data.get("f", stl::underlying(KB::KeyToggleStateEntryFlags::kNone)).asUInt());
+			a_out.key       = data.get("k", 0).asUInt();
+			a_out.comboKey  = data.get("c", 0).asUInt();
+			a_out.SetNumStates(data.get("s", 1).asUInt());
 
 			return true;
 		}
@@ -34,6 +35,7 @@ namespace IED
 			data["f"] = a_in.flags.underlying();
 			data["k"] = a_in.key;
 			data["c"] = a_in.comboKey;
+			data["s"] = a_in.numStates;
 
 			a_out["version"] = CURRENT_VERSION;
 		}

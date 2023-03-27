@@ -119,6 +119,7 @@ namespace IED
 		{
 			DataVersion1 = 1,
 			DataVersion2 = 2,
+			DataVersion3 = 3,
 		};
 
 		enum class EventSinkInstallationFlags : std::uint8_t
@@ -453,7 +454,7 @@ namespace IED
 		{
 			return m_cpuHasSSE41;
 		}
-		
+
 		[[nodiscard]] std::size_t GetNumQueuedModels() const noexcept;
 
 		/*[[nodiscard]] constexpr bool ConsumeInventoryChangeFlags(
@@ -965,6 +966,22 @@ namespace IED
 
 			if (a_version >= DataVersion2)
 			{
+				ser_load_kts(a_ar, a_version);
+			}
+		}
+
+		template <class Archive>
+		void ser_load_kts(Archive& a_ar, const unsigned int a_version)
+		{
+			if (a_version >= DataVersion3)
+			{
+				KB::KeyToggleStateEntryHolder::state_data2 tmp;
+				a_ar&                                      tmp;
+
+				GetKeyBindDataHolder()->InitializeKeyToggleStates(tmp);
+			}
+			else
+			{
 				KB::KeyToggleStateEntryHolder::state_data tmp;
 				a_ar&                                     tmp;
 
@@ -981,4 +998,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	::IED::Controller,
-	::IED::Controller::DataVersion2);
+	::IED::Controller::DataVersion3);

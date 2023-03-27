@@ -275,5 +275,6 @@ namespace IED
 		Read            = 346,
 		Write           = 347,
 		Serialization   = 348,
+		States          = 349,
 	};
 }

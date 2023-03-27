@@ -136,11 +136,6 @@ namespace IED
 							f.As1<stl::fixed_string>().clear();
 						}
 
-						if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
-						{
-							f.As1<stl::fixed_string>().clear();
-						}
-
 						if (const auto& f = get(ConditionParamItem::LightingTemplateInheritanceFlags); f.p1)
 						{
 							f.As1<RE::INTERIOR_DATA::Inherit>() = RE::INTERIOR_DATA::Inherit::kNone;
@@ -438,8 +433,13 @@ namespace IED
 
 				if (!args.hide)
 				{
+					const char* label =
+						e.p2 ?
+							UIL::LS(static_cast<Localization::StringID>(reinterpret_cast<std::uintptr_t>(e.p2)), "in_ui32") :
+							"##in_ui32";
+
 					result |= ImGui::InputScalar(
-						"##in_ui32",
+						label,
 						ImGuiDataType_U32,
 						reinterpret_cast<std::uint32_t*>(e.p1),
 						nullptr,
@@ -814,16 +814,21 @@ namespace IED
 							}
 
 							break;
-						case Data::ExtraConditionType::kKeyIDToggled:
+						case Data::ExtraConditionType::kKeyBindState:
 
 							if (const auto& f = get(ConditionParamItem::KeyBindID); f.p1)
 							{
+								const auto& g = get(ConditionParamItem::CompOper);
+								const auto& h = get(ConditionParamItem::UInt32);
+
 								stl::snprintf(
 									m_descBuffer,
-									"%s %s: %s",
+									"%s %s: %s %s %u",
 									UIConditionExtraSelectorWidget::condition_type_to_desc(type),
 									UIL::LS(CommonStrings::ID),
-									f.As1<const stl::fixed_string>().c_str());
+									f.As1<const stl::fixed_string>().c_str(),
+									g.p1 ? UIComparisonOperatorSelector::comp_operator_to_desc(g.As1<Data::ComparisonOperator>()) : nullptr,
+									h.p1 ? h.As1<std::uint32_t>() : 0);
 
 								return m_descBuffer;
 							}

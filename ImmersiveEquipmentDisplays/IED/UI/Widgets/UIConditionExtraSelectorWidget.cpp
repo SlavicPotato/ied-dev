@@ -54,7 +54,7 @@ namespace IED
 			std::make_pair(Data::ExtraConditionType::kIsSummonable, UIConditionExtraSelectorWidgetStrings::IsSummonable),
 			std::make_pair(Data::ExtraConditionType::kIsUnconscious, UIConditionExtraSelectorWidgetStrings::IsUnconscious),
 			std::make_pair(Data::ExtraConditionType::kIsUnique, UIConditionExtraSelectorWidgetStrings::IsUnique),
-			std::make_pair(Data::ExtraConditionType::kKeyIDToggled, UIConditionExtraSelectorWidgetStrings::KeyIDToggled),
+			std::make_pair(Data::ExtraConditionType::kKeyBindState, UIConditionExtraSelectorWidgetStrings::KeyBindState),
 			std::make_pair(Data::ExtraConditionType::kLevel, UIConditionExtraSelectorWidgetStrings::Level),
 			std::make_pair(Data::ExtraConditionType::kLifeState, UIConditionExtraSelectorWidgetStrings::LifeState),
 			std::make_pair(Data::ExtraConditionType::kLightingTemplate, UIConditionExtraSelectorWidgetStrings::LightingTemplate),
@@ -249,8 +249,8 @@ namespace IED
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::SunAngle);
 			case Data::ExtraConditionType::kIsSunAboveHorizon:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::IsSunAboveHorizon);
-			case Data::ExtraConditionType::kKeyIDToggled:
-				return UIL::LS(UIConditionExtraSelectorWidgetStrings::KeyIDToggled);
+			case Data::ExtraConditionType::kKeyBindState:
+				return UIL::LS(UIConditionExtraSelectorWidgetStrings::KeyBindState);
 			case Data::ExtraConditionType::kLightingTemplate:
 				return UIL::LS(UIConditionExtraSelectorWidgetStrings::LightingTemplate);
 			case Data::ExtraConditionType::kInteriorAmbientLightLevel:

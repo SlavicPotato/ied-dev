@@ -17,8 +17,9 @@ namespace IED
 		{
 			using container_type = stl::cache_aligned::flat_map<stl::fixed_string, KeyToggleStateEntry>;
 			using state_data     = stl::boost_vector<std::pair<stl::fixed_string, bool>>;
+			using state_data2    = stl::boost_vector<std::pair<stl::fixed_string, std::uint32_t>>;
 
-			state_data make_state_data() const;
+			state_data2 make_state_data() const;
 
 			stl::flag<KeyToggleStateEntryHolderFlags> flags{ KeyToggleStateEntryHolderFlags::kNone };
 			container_type                            entries;

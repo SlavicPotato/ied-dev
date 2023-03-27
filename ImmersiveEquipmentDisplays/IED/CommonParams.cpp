@@ -389,14 +389,15 @@ namespace IED
 		return *parentCellOwner;
 	}
 
-	bool CommonParams::get_key_toggle_state(const stl::fixed_string& a_id) const noexcept
+	std::uint32_t CommonParams::get_key_toggle_state(
+		const stl::fixed_string& a_id) const noexcept
 	{
 		return controller.GetKeyBindDataHolder()->GetKeyState(a_id);
 	}
 
 	bool CommonParams::is_waiting_for_player() const noexcept
 	{
-		return !objects.IsPlayer() && 
-			actor->GetActorValue(RE::ActorValue::kWaitingForPlayer) == 1.0f;
+		return !objects.IsPlayer() &&
+		       actor->GetActorValue(RE::ActorValue::kWaitingForPlayer) == 1.0f;
 	}
 }

@@ -17,8 +17,8 @@ namespace IED
 				}
 
 				if (key && a_evn.key == key && (!comboKey || comboKeyDown))
-				{
-					state = !state;
+				{					
+					state = ++state > numStates ? 0 : state;
 					return true;
 				}
 			}

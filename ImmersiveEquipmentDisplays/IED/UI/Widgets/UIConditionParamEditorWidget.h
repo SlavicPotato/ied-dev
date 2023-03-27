@@ -487,6 +487,18 @@ namespace IED
 					static_cast<const void*>(std::addressof(a_p2))
 				};
 			}
+			else if constexpr(
+				Ap == ConditionParamItem::UInt32)
+			{
+				static_assert(
+					std::is_same_v<Tp1, std::uint32_t> && 
+					std::is_same_v<std::underlying_type_t<Tp2>, Localization::StringID>);
+
+				e = {
+					static_cast<void*>(std::addressof(a_p1)),
+					reinterpret_cast<const void*>(a_p2)
+				};
+			}
 			else
 			{
 				HALT("fixme");

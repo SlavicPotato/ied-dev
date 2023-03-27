@@ -71,10 +71,10 @@ namespace IED
 			IsNPCCellOwner            = 5460,
 			SunAngle                  = 5461,
 			IsSunAboveHorizon         = 5462,
-			KeyIDToggled              = 5463,
+			KeyBindState              = 5463,
 			LightingTemplate          = 5464,
 			InteriorAmbientLightLevel = 5465,
-			WaitingForPlayer        = 5466,
+			WaitingForPlayer          = 5466,
 		};
 	}
 }

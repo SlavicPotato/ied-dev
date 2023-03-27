@@ -14,41 +14,18 @@ namespace IED
 
 			for (auto& e : m_data.entries)
 			{
-				e.second.SetState(false);
+				e.second.SetState(0);
 			}
 		}
 
-		KeyToggleStateEntryHolder::state_data KeyBindDataHolder::GetKeyToggleStates() const
+		KeyToggleStateEntryHolder::state_data2 KeyBindDataHolder::GetKeyToggleStates() const
 		{
 			const stl::lock_guard lock(m_lock);
 
 			return m_data.make_state_data();
 		}
 
-		void KeyBindDataHolder::InitializeKeyToggleStates(
-			const KeyToggleStateEntryHolder::state_data& a_states) noexcept
-		{
-			const stl::lock_guard lock(m_lock);
-
-			auto& entries = m_data.entries;
-
-			for (auto& e : entries)
-			{
-				e.second.SetState(false);
-			}
-
-			for (auto& e : a_states)
-			{
-				const auto it = entries.find(e.first);
-
-				if (it != entries.end())
-				{
-					it->second.SetState(e.second);
-				}
-			}
-		}
-
-		bool KeyBindDataHolder::GetKeyState(const stl::fixed_string& a_id) const noexcept
+		std::uint32_t KeyBindDataHolder::GetKeyState(const stl::fixed_string& a_id) const noexcept
 		{
 			const stl::lock_guard lock(m_lock);
 

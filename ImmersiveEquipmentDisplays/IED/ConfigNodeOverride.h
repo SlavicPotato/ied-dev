@@ -282,6 +282,10 @@ namespace IED
 			{
 				switch (a_type)
 				{
+				case ExtraConditionType::kKeyBindState:
+					compOperator2 = ComparisonOperator::kEqual;
+					keyBindState  = 1;
+					break;
 				case ExtraConditionType::kActorValue:
 					actorValue = RE::ActorValue::kOneHanded;
 					[[fallthrough]];
@@ -373,6 +377,7 @@ namespace IED
 				TimeOfDay                    timeOfDay;
 				std::uint32_t                uid;
 				std::uint32_t                level;
+				std::uint32_t                keyBindState;
 				ConditionalVariableType      condVarType;
 				ActorState::ACTOR_LIFE_STATE lifeState;
 				RE::INTERIOR_DATA::Inherit   lightingTemplateInheritanceFlags;

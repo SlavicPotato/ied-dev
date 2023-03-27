@@ -7,9 +7,9 @@ namespace IED
 	namespace KB
 	{
 		auto KeyToggleStateEntryHolder::make_state_data() const
-			-> state_data
+			-> state_data2
 		{
-			state_data result;
+			state_data2 result;
 
 			result.reserve(entries.size());
 

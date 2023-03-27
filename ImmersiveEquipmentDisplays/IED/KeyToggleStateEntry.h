@@ -21,26 +21,32 @@ namespace IED
 				return key != 0;
 			}
 
-			[[nodiscard]] constexpr bool GetState() const noexcept
+			[[nodiscard]] constexpr std::uint32_t GetState() const noexcept
 			{
 				return state;
 			}
-			
-			constexpr void SetState(bool a_state) noexcept
+
+			constexpr void SetState(std::uint32_t a_state) noexcept
 			{
-				state = a_state;
+				state = a_state > numStates ? 0 : a_state;
+			}
+
+			constexpr void SetNumStates(std::uint32_t a_numStates) noexcept
+			{
+				numStates = std::max(a_numStates, 1u);
+				state     = state > numStates ? 0 : state;
 			}
 
 			bool ProcessEvent(const Handlers::KeyEvent& a_evn) noexcept;
 
 			std::uint32_t                       key{ 0 };
 			std::uint32_t                       comboKey{ 0 };
+			std::uint32_t                       numStates{ 1 };
 			stl::flag<KeyToggleStateEntryFlags> flags{ KeyToggleStateEntryFlags::kNone };
 
 		private:
-
-			bool state{ false };
-			bool comboKeyDown{ false };
+			std::uint32_t state{ 0 };
+			bool          comboKeyDown{ false };
 		};
 	}
 }

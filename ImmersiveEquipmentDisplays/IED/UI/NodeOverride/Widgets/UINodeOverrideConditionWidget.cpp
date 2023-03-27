@@ -1315,8 +1315,10 @@ namespace IED
 									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
 									m_condParamEditor.SetNext<ConditionParamItem::SunAngle>(e.sunAngle);
 									break;
-								case Data::ExtraConditionType::kKeyIDToggled:
+								case Data::ExtraConditionType::kKeyBindState:
 									m_condParamEditor.SetNext<ConditionParamItem::KeyBindID>(e.s0);
+									m_condParamEditor.SetNext<ConditionParamItem::CompOper>(e.compOperator2);
+									m_condParamEditor.SetNext<ConditionParamItem::UInt32>(e.keyBindState, CommonStrings::State);
 									break;
 								case Data::ExtraConditionType::kLightingTemplate:
 									m_condParamEditor.GetFormPicker().SetAllowedTypes(UIFormBrowserCommonFilters::Get(UIFormBrowserFilter::LightingTemplate));

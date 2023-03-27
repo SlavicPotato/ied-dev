@@ -341,7 +341,7 @@ namespace IED
 			kIsNPCCellOwner            = 60,
 			kSunAngle                  = 61,
 			kIsSunAboveHorizon         = 62,
-			kKeyIDToggled              = 63,
+			kKeyBindState              = 63,
 			kLightingTemplate          = 64,
 			kInteriorAmbientLightLevel = 65,
 			kWaitingForPlayer          = 66,

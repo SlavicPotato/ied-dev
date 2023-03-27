@@ -17,7 +17,7 @@
 #elif defined(PLUGIN_VERSION_BETA)
 #	define PLUGIN_VERSION_APPEND "b"
 #elif defined(PLUGIN_VERSION_RC)
-#	define PLUGIN_VERSION_APPEND "-RC"
+#	define PLUGIN_VERSION_APPEND "-RC3"
 #else
 #	define PLUGIN_VERSION_APPEND ""
 #endif
