@@ -43,7 +43,7 @@ namespace IED
 				{
 				case UIKeyBindEditorContextAction::Delete:
 
-					it = a_data.entries.erase(it);
+					it     = a_data.entries.erase(it);
 					result = true;
 
 					break;
@@ -134,6 +134,8 @@ namespace IED
 
 				ImGui::Unindent();
 				ImGui::Spacing();
+
+				ImGui::TreePop();
 			}
 
 			ImGui::PopID();
@@ -161,6 +163,23 @@ namespace IED
 				UIData::g_controlMap,
 				a_data.second.key,
 				true);
+
+			constexpr std::uint32_t step     = 1;
+			constexpr std::uint32_t stepFast = 3;
+
+			if (ImGui::InputScalar(
+				UIL::LS(CommonStrings::States, "3"),
+				ImGuiDataType_U32,
+				std::addressof(a_data.second.numStates),
+				std::addressof(step),
+				std::addressof(stepFast),
+				"%u",
+				ImGuiInputTextFlags_None))
+			{
+				a_data.second.numStates = std::max(a_data.second.numStates, 1u);
+
+				result = true;
+			}
 
 			ImGui::PopID();
 
