@@ -558,10 +558,15 @@ namespace IED
 			ActorObjectHolder&               a_holder,
 			stl::flag<ControllerUpdateFlags> a_flags) noexcept;
 
-		void ProcessTransformsImplPhysNode(
+		static void ProcessTransformsImplPhys(
 			nodeOverrideParams_t&                         a_params,
 			const Data::configNodeOverrideEntryPhysics_t* a_config,
-			const MOVNodeEntry::Node&                     a_node) noexcept;
+			const MOVNodeEntry&                           a_entry) noexcept;
+
+		static void ProcessTransformsImplPhysNode(
+			nodeOverrideParams_t&                  a_params,
+			const Data::configNodePhysicsValues_t& a_conf,
+			const MOVNodeEntry::Node&              a_node) noexcept;
 
 		void ActorResetImpl(
 			Actor*                           a_actor,

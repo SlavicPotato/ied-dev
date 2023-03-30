@@ -690,6 +690,11 @@ namespace IED
 		{
 			return m_queuedModels.size();
 		}
+		
+		[[nodiscard]] constexpr auto HasQueuedModels() const noexcept
+		{
+			return !m_queuedModels.empty();
+		}
 
 	private:
 		void CreateExtraCopyNode(
@@ -761,7 +766,7 @@ namespace IED
 
 		std::uint32_t m_lastQueuedOutfitEquipFrame{ 0 };
 
-		stl::flat_set<ObjectDatabaseEntry> m_queuedModels;
+		stl::flat_set<ObjectDatabaseEntry>          m_queuedModels;
 
 		// parent, it's never destroyed
 		IObjectManager& m_owner;

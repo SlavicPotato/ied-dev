@@ -4134,23 +4134,19 @@ namespace IED
 
 				if (!r)
 				{
-					if (e.thirdPerson.simComponent)
+					if (auto &node = e.thirdPerson.simComponent)
 					{
-						a_holder.RemoveAndDestroySimComponent(e.thirdPerson.simComponent);
+						a_holder.RemoveAndDestroySimComponent(node);
 					}
 
-					if (e.firstPerson.simComponent)
+					if (auto& node = e.thirdPerson.simComponent)
 					{
-						a_holder.RemoveAndDestroySimComponent(e.firstPerson.simComponent);
+						a_holder.RemoveAndDestroySimComponent(node);
 					}
-
-					continue;
 				}
-
-				ProcessTransformsImplPhysNode(params, r, e.thirdPerson);
-				if (e.firstPerson)
+				else
 				{
-					ProcessTransformsImplPhysNode(params, r, e.firstPerson);
+					ProcessTransformsImplPhys(params, r, e);
 				}
 			}
 		}
@@ -4168,33 +4164,53 @@ namespace IED
 		return true;
 	}
 
-	void Controller::ProcessTransformsImplPhysNode(
+	void Controller::ProcessTransformsImplPhys(
 		nodeOverrideParams_t&                   a_params,
 		const configNodeOverrideEntryPhysics_t* a_config,
-		const MOVNodeEntry::Node&               a_node) noexcept
+		const MOVNodeEntry&                     a_entry) noexcept
+	{
+		auto& conf = INodeOverride::GetPhysicsConfig(a_config->get(a_params.get_sex()), a_params);
+
+		ProcessTransformsImplPhysNode(a_params, conf, a_entry.thirdPerson);
+
+		if (auto& node = a_entry.firstPerson)
+		{
+			ProcessTransformsImplPhysNode(a_params, conf, node);
+		}
+	}
+
+	void Controller::ProcessTransformsImplPhysNode(
+		nodeOverrideParams_t&                  a_params,
+		const Data::configNodePhysicsValues_t& a_conf,
+		const MOVNodeEntry::Node&              a_node) noexcept
 	{
 		auto& simComponent = a_node.simComponent;
 
-		auto& conf = INodeOverride::GetPhysicsConfig(a_config->get(a_params.get_sex()), a_params);
-
-		if (!conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
-		    a_node.parent_has_visible_geometry())
+		if (simComponent)
 		{
-			if (!simComponent)
+			if (a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled))
 			{
-				simComponent = a_params.objects.CreateAndAddSimComponent(
-					a_node.node.get(),
-					a_node.orig,
-					conf);
+				a_params.objects.RemoveAndDestroySimComponent(simComponent);
 			}
-			else if (simComponent->GetConfig() != conf)
+			else if (
+				!a_params.objects.HasQueuedModels() &&
+				!a_node.parent_has_visible_geometry())
 			{
-				simComponent->UpdateConfig(conf);
+				a_params.objects.RemoveAndDestroySimComponent(simComponent);
+			}
+			else if (simComponent->GetConfig() != a_conf)
+			{
+				simComponent->UpdateConfig(a_conf);
 			}
 		}
-		else if (simComponent)
+		else if (
+			!a_conf.valueFlags.test(Data::ConfigNodePhysicsFlags::kDisabled) &&
+			a_node.parent_has_visible_geometry())
 		{
-			a_params.objects.RemoveAndDestroySimComponent(simComponent);
+			simComponent = a_params.objects.CreateAndAddSimComponent(
+				a_node.node.get(),
+				a_node.orig,
+				a_conf);
 		}
 	}
 
