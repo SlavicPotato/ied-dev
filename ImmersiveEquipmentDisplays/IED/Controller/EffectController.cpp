@@ -129,7 +129,7 @@ namespace IED
 		const EffectShaderData& a_data,
 		float                   a_step) noexcept
 	{
-		if (a_data.bipedObject < BIPED_OBJECT::kTotal)
+		if (a_data.bipedObject >= BIPED_OBJECT::kTotal)
 		{
 			return;
 		}
