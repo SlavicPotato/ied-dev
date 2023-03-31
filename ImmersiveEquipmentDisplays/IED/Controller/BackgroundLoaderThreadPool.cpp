@@ -8,12 +8,12 @@ namespace IED
 {
 	BackgroundLoaderThreadPool::~BackgroundLoaderThreadPool()
 	{
-		std::for_each(
-			m_workers.begin(),
-			m_workers.end(),
-			[&](auto&) {
-				m_queue.push();
-			});
+		m_queue.terminate();
+
+		for (auto& e : m_workers)
+		{
+			e.stop_and_wait_for_thread();
+		}
 
 		m_workers.clear();
 	}
@@ -51,9 +51,9 @@ namespace IED
 
 		for (;;)
 		{
-			const auto file = m_owner.m_queue.pop();
+			std::unique_ptr<QueuedFile> file;
 
-			if (!file)
+			if (!m_owner.m_queue.pop(file))
 			{
 				break;
 			}

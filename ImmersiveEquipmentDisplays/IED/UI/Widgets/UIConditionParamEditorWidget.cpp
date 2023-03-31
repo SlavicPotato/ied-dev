@@ -160,7 +160,7 @@ namespace IED
 					UIL::LS(CommonStrings::Node, "ns"),
 					e.As1<stl::fixed_string>(),
 					NodeOverrideData::GetCMENodeData(),
-					static_cast<const stl::fixed_string*>(e.p2));
+					nullptr); // static_cast<const stl::fixed_string*>(e.p2) - allow matching self
 
 				ImGui::Spacing();
 			}

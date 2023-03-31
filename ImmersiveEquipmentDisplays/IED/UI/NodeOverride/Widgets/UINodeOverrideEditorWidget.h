@@ -442,7 +442,7 @@ namespace IED
 				ImGui::EndChild();
 
 				break;
-			default:
+			case PanelType::Transform:
 
 				if (ImGui::BeginChild(
 						"et_editor_panel",
@@ -1832,13 +1832,15 @@ namespace IED
 					{
 						ImGui::Spacing();
 
+						constexpr bool ignoreNode = !std::is_same_v<Tb, SingleNodeOverridePhysicsUpdateParams>;
+
 						DrawConditionTree(
 							a_params.name,
 							GetNodeOverrideDataTypeFromParams<Tb>(),
 							a_data,
 							e.conditions,
 							a_exists,
-							true,
+							ignoreNode,
 							[&] {
 								HandleValueUpdate(
 									a_handle,

@@ -155,6 +155,7 @@ namespace IED
 		{
 			return;
 		}
+
 		const bool  thirdPerson = a_actor->GetBiped1(false) == biped;
 		const auto& sheathNode  = a_data.GetSheathNode(!thirdPerson);
 

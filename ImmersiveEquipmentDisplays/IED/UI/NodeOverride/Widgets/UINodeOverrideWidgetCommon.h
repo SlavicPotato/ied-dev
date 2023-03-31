@@ -89,7 +89,7 @@ namespace IED
 		};
 
 		template <class T>
-		inline consteval NodeOverrideDataType GetNodeOverrideDataTypeFromParams()
+		inline consteval NodeOverrideDataType GetNodeOverrideDataTypeFromParams() noexcept
 		{
 			if constexpr (std::is_same_v<T, SingleNodeOverrideTransformUpdateParams>)
 			{

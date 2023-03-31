@@ -73,7 +73,9 @@ namespace IED
 			{
 				if (UIL::LCG_BM(CommonStrings::Insert, "1"))
 				{
-					if (a_type == NodeOverrideDataType::kTransform && !a_ignoreNode)
+					if ((a_type == NodeOverrideDataType::kTransform ||
+					     a_type == NodeOverrideDataType::kPhysics) &&
+					    !a_ignoreNode)
 					{
 						if (UIL::LCG_BM(CommonStrings::Node, "2"))
 						{
@@ -83,7 +85,7 @@ namespace IED
 									"##node_sel",
 									c,
 									NodeOverrideData::GetCMENodeData(),
-									std::addressof(a_name)))
+									nullptr))  // std::addressof(a_name)
 							{
 								result.action    = NodeOverrideCommonAction::Insert;
 								result.str       = std::move(c);
@@ -400,7 +402,9 @@ namespace IED
 			{
 				if (UIL::LCG_BM(CommonStrings::Add, "1"))
 				{
-					if (a_type == NodeOverrideDataType::kTransform && !a_ignoreNode)
+					if ((a_type == NodeOverrideDataType::kTransform ||
+					     a_type == NodeOverrideDataType::kPhysics) &&
+					    !a_ignoreNode)
 					{
 						if (UIL::LCG_BM(CommonStrings::Node, "2"))
 						{
@@ -410,7 +414,7 @@ namespace IED
 									"##node_sel",
 									c,
 									NodeOverrideData::GetCMENodeData(),
-									std::addressof(a_name)))
+									nullptr))  // std::addressof(a_name)
 							{
 								a_entry.emplace_back(std::move(c));
 
