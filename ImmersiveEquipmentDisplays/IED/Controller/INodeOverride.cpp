@@ -474,7 +474,7 @@ namespace IED
 				{
 					const auto slot = a_params.translate_biped_object(a_data.bipedSlot);
 
-					if (slot < BIPED_OBJECT::kTotal)
+					if (slot >= BIPED_OBJECT::kTotal)
 					{
 						return false;
 					}
