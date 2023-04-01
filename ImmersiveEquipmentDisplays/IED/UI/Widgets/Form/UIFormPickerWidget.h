@@ -51,7 +51,7 @@ namespace IED
 			bool                                 DrawContextMenu(Game::FormID& a_form);
 			UIFormBrowser::FormBrowserDrawResult DrawFormBrowserPopup(Game::FormID& a_form);
 
-			const formInfoResult_t* m_currentInfo{ nullptr };
+			const FormInfoResult* m_currentInfo{ nullptr };
 
 			bool m_allowClear{ true };
 

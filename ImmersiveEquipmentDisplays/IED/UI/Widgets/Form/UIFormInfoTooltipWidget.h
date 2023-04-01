@@ -8,8 +8,9 @@
 
 namespace IED
 {
-	struct formInfoResult_t;
-	struct formInfo_t;
+	struct FormInfoResult;
+	struct FormInfoData;
+	class BaseExtraFormInfo;
 	struct ObjectEntryBase;
 
 	class Controller;
@@ -23,12 +24,12 @@ namespace IED
 			UIFormInfoTooltipWidget(Controller& a_controller);
 
 			void DrawFormInfoTooltip(
-				const formInfoResult_t* a_info,
-				const ObjectEntryBase&  a_entry);
+				const FormInfoResult*  a_info,
+				const ObjectEntryBase& a_entry);
 
 			void DrawObjectEntryHeaderInfo(
-				const formInfoResult_t* a_info,
-				const ObjectEntryBase&  a_entry);
+				const FormInfoResult*  a_info,
+				const ObjectEntryBase& a_entry);
 
 			void DrawFormWithInfo(Game::FormID a_form);
 			void DrawFormWithInfoWrapped(Game::FormID a_form);
@@ -37,10 +38,13 @@ namespace IED
 			void DrawGeneralFormInfoTooltip(Game::FormID a_form);
 
 			void DrawGeneralFormInfoTooltip(
-				const formInfoResult_t* a_info);
+				const FormInfoResult* a_info);
 
 			void DrawFormInfo(
-				const formInfo_t& a_info);
+				const FormInfoData& a_info);
+
+			void DrawExtraFormInfo(
+				const BaseExtraFormInfo& a_info);
 
 			Controller& m_controller;
 		};

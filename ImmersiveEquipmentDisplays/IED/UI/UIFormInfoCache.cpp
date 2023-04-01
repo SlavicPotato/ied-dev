@@ -20,7 +20,7 @@ namespace IED
 
 		auto UIFormInfoCache::LookupForm(
 			Game::FormID a_form)
-			-> const formInfoResult_t*
+			-> const FormInfoResult*
 		{
 			if (!a_form)
 			{

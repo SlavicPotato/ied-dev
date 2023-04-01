@@ -3,7 +3,7 @@
 namespace IED
 {
 	class Controller;
-	struct formInfoResult_t;
+	struct FormInfoResult;
 
 	namespace UI
 	{
@@ -13,7 +13,7 @@ namespace IED
 			UIFormLookupInterface(
 				Controller& a_controller);
 
-			const formInfoResult_t* LookupForm(Game::FormID a_form) const;
+			const FormInfoResult* LookupForm(Game::FormID a_form) const;
 
 		private:
 			Controller& m_controller;

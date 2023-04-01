@@ -291,6 +291,9 @@
     <Filter Include="Source\IED\OM\Config\FormManager">
       <UniqueIdentifier>{41997b38-b837-4533-a6ef-35b77afb66e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\IED\GeneralInfo">
+      <UniqueIdentifier>{19afd2f7-d80d-43ad-b222-00b0e52d1208}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -1961,6 +1964,15 @@
     <ClInclude Include="IED\Controller\ObjectDatabaseEntry.h">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
     </ClInclude>
+    <ClInclude Include="IED\UI\UIGeneralInfo.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\UIGeneralInfoStrings.h">
+      <Filter>Source\IED\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\GeneralInfo.h">
+      <Filter>Source\IED\GeneralInfo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="IED\Controller\Controller.cpp">
@@ -3111,6 +3123,12 @@
     </ClCompile>
     <ClCompile Include="IED\Controller\BackgroundLoaderThreadPool.cpp">
       <Filter>Source\IED\Controller\ObjectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\UIGeneralInfo.cpp">
+      <Filter>Source\IED\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\GeneralInfo.cpp">
+      <Filter>Source\IED\GeneralInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

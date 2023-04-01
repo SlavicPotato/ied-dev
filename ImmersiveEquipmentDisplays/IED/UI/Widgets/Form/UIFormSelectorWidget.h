@@ -53,7 +53,7 @@ namespace IED
 
 			void ClearSelectedEntries() noexcept;
 
-			[[nodiscard]] bool HasType(const formInfo_t& a_info) const;
+			[[nodiscard]] bool HasType(const FormInfoData& a_info) const;
 
 			[[nodiscard]] inline const auto& GetInfo() const noexcept
 			{

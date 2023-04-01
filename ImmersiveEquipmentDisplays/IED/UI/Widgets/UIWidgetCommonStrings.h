@@ -131,6 +131,8 @@ namespace IED
 			CopyIDToClipboard                   = 2123,
 			UsesSkyLighting                     = 2124,
 			OutfitConfig                        = 2125,
+			GeneralInfo                         = 2126,
+			WeaponType                          = 2127,
 		};
 	}
 }

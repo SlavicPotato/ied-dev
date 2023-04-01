@@ -1755,7 +1755,7 @@ namespace IED
 		IForm::form_lookup_result_func_t a_func)
 	{
 		ITaskPool::AddTask([this, func = std::move(a_func)] {
-			std::unique_ptr<formInfoResult_t> result;
+			std::unique_ptr<FormInfoResult> result;
 
 			{
 				NiPointer<TESObjectREFR> ref;

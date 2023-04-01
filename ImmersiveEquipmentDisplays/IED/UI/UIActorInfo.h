@@ -6,7 +6,6 @@
 #include "Widgets/Lists/UIActorListWidget.h"
 
 #include "UIContext.h"
-#include "UIMiscTextInterface.h"
 #include "Window/UIWindow.h"
 
 #include "UILocalizationInterface.h"

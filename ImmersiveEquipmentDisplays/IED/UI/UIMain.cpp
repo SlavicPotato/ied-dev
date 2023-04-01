@@ -15,6 +15,7 @@
 #include "UIDialogImportExport.h"
 #include "UIDisplayManagement.h"
 #include "UIFormBrowser.h"
+#include "UIGeneralInfo.h"
 #include "UILog.h"
 #include "UINodeMapEditor.h"
 #include "UISettings.h"
@@ -86,6 +87,8 @@ namespace IED
 				nullptr,
 				nullptr
 #endif
+					,
+				std::make_unique<UIGeneralInfo>(a_controller)
 		}
 		,
 			m_formLookupCache(a_controller),
@@ -362,8 +365,9 @@ namespace IED
 
 		void UIMain::DrawDiagnosticsSubmenu()
 		{
-			DrawContextMenuItem<UIActorInfo>(UIWidgetCommonStrings::ActorInfo, "1");
-			DrawContextMenuItem<UISkeletonExplorer>(UIWidgetCommonStrings::SkeletonExplorer, "2");
+			DrawContextMenuItem<UIGeneralInfo>(UIWidgetCommonStrings::GeneralInfo, "1");
+			DrawContextMenuItem<UIActorInfo>(UIWidgetCommonStrings::ActorInfo, "2");
+			DrawContextMenuItem<UISkeletonExplorer>(UIWidgetCommonStrings::SkeletonExplorer, "3");
 		}
 
 		void UIMain::DrawToolsMenu()

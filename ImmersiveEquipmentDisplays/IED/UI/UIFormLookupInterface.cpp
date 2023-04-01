@@ -16,7 +16,7 @@ namespace IED
 		{
 		}
 
-		const formInfoResult_t* UIFormLookupInterface::LookupForm(Game::FormID a_form) const
+		const FormInfoResult* UIFormLookupInterface::LookupForm(Game::FormID a_form) const
 		{
 			return m_controller.UIGetFormLookupCache().LookupForm(a_form);
 		}

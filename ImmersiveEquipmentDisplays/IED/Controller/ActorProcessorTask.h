@@ -33,7 +33,7 @@ namespace IED
 	{
 		struct animUpdateData_t
 		{
-			Game::Unk2f6b948::Steps steps;
+			Game::Unk2f6b948::TimeMultipliers steps;
 			//BSAnimationUpdateData   data;
 		};
 
@@ -147,7 +147,7 @@ namespace IED
 		template <bool _Par>
 		void DoActorUpdate(
 			const float                             a_interval,
-			const Game::Unk2f6b948::Steps&          a_stepMuls,
+			const Game::Unk2f6b948::TimeMultipliers&          a_stepMuls,
 			const std::optional<PhysicsUpdateData>& a_physUpdData,
 			ActorObjectHolder&                      a_holder,
 			bool                                    a_updateEffects) noexcept;

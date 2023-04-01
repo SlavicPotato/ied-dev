@@ -720,6 +720,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ExtraLightData.h" />
     <ClInclude Include="IED\ExtraNodes.h" />
     <ClInclude Include="IED\GearNodeID.h" />
+    <ClInclude Include="IED\GeneralInfo.h" />
     <ClInclude Include="IED\GlobalParams.h" />
     <ClInclude Include="IED\I3DIModelID.h" />
     <ClInclude Include="IED\ISkeletonInfo.h" />
@@ -851,6 +852,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\UIChildWindowID.h" />
     <ClInclude Include="IED\UI\UIDisplayManagement.h" />
     <ClInclude Include="IED\UI\UIFormBrowserCommonFilters.h" />
+    <ClInclude Include="IED\UI\UIGeneralInfo.h" />
+    <ClInclude Include="IED\UI\UIGeneralInfoStrings.h" />
     <ClInclude Include="IED\UI\UIIntroBanner.h" />
     <ClInclude Include="IED\UI\UIIntroBannerStrings.h" />
     <ClInclude Include="IED\UI\UIKeyedInputLockReleaseHandler.h" />
@@ -1252,6 +1255,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\D3D\D3DObject.cpp" />
     <ClCompile Include="IED\D3D\D3DVertices.cpp" />
     <ClCompile Include="IED\ExtraNodes.cpp" />
+    <ClCompile Include="IED\GeneralInfo.cpp" />
     <ClCompile Include="IED\GlobalParams.cpp" />
     <ClCompile Include="IED\ISkeletonInfo.cpp" />
     <ClCompile Include="IED\KeyBindDataHolder.cpp" />
@@ -1366,6 +1370,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\UIContext.cpp" />
     <ClCompile Include="IED\UI\UIDisplayManagement.cpp" />
     <ClCompile Include="IED\UI\UIFormBrowserCommonFilters.cpp" />
+    <ClCompile Include="IED\UI\UIGeneralInfo.cpp" />
     <ClCompile Include="IED\UI\UIIntroBanner.cpp" />
     <ClCompile Include="IED\UI\UIKeyedInputLockReleaseHandler.cpp" />
     <ClCompile Include="IED\UI\UIMiscTextInterface.cpp" />

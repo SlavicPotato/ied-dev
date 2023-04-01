@@ -932,7 +932,7 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
-			if (e.dbEntry)
+			if (e.dbEntry && e.dbEntry->object)
 			{
 				e.object = CreateClone(e.dbEntry->object.get(), 1.0f);
 			}

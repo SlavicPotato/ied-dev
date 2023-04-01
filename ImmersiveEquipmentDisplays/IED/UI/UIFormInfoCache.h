@@ -36,7 +36,7 @@ namespace IED
 				return m_data.size();
 			}
 
-			const formInfoResult_t* LookupForm(Game::FormID a_form);
+			const FormInfoResult* LookupForm(Game::FormID a_form);
 
 			void RunCleanup();
 

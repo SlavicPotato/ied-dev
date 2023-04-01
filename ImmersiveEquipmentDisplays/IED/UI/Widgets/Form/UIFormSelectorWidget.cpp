@@ -281,7 +281,7 @@ namespace IED
 			m_controller.UIGetFormBrowser().ClearSelectedEntries();
 		}
 
-		bool UIFormSelectorWidget::HasType(const formInfo_t& a_info) const
+		bool UIFormSelectorWidget::HasType(const FormInfoData& a_info) const
 		{
 			return m_types->contains(a_info.type) ||
 			       (a_info.extraType && m_types->contains(a_info.extraType));

@@ -9,6 +9,8 @@ namespace IED
 		void                 SetInteriorAmbientLightThreshold(float a_value) noexcept;
 		float                GetInteriorAmbientLightThreshold() noexcept;
 		bool                 IsExteriorDark(const RE::Sky* a_sky) noexcept;
+		float                GetExteriorAmbientLightLevel(const RE::Sky* a_sky) noexcept;
+		float                GetTorchLightLevel(const RE::Sky* a_sky) noexcept;
 		bool                 IsInteriorDark(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept;
 		float                GetInteriorAmbientLightLevel(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept;
 		bool                 IsSunAngleLessThan(const RE::Sky* a_sky, float a_angle) noexcept;

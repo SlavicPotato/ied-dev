@@ -42,3 +42,4 @@
 7900-7999:		profile editor base
 8000-8099:		lt inherit flags
 8100-8199:		ofm
+8200-8299:		general info

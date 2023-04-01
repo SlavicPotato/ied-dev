@@ -406,11 +406,11 @@ namespace IED
 
 	template <bool _Par>
 	void ActorProcessorTask::DoActorUpdate(
-		const float                             a_interval,
-		const Game::Unk2f6b948::Steps&          a_stepMuls,
-		const std::optional<PhysicsUpdateData>& a_physUpdData,
-		ActorObjectHolder&                      a_holder,
-		bool                                    a_updateEffects) noexcept
+		const float                              a_interval,
+		const Game::Unk2f6b948::TimeMultipliers& a_stepMuls,
+		const std::optional<PhysicsUpdateData>&  a_physUpdData,
+		ActorObjectHolder&                       a_holder,
+		bool                                     a_updateEffects) noexcept
 	{
 		if (!a_holder.m_queuedModels.empty())
 		{
@@ -627,7 +627,7 @@ namespace IED
 			PreparePhysicsUpdateData(interval, physUpdateData);
 		}
 
-		const auto stepMuls = Game::Unk2f6b948::GetStepMultipliers();
+		const auto stepMuls = Game::Unk2f6b948::GetTimeMultipliers();
 
 		const auto& data = GetController().GetActorMap().getvec();
 

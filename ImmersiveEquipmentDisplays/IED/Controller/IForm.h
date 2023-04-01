@@ -2,11 +2,62 @@
 
 #include "IED/FormCommon.h"
 
+#include "IED/WeatherClassificationFlags.h"
+
 namespace IED
 {
-	struct formInfo_t
+	class BaseExtraFormInfo
 	{
-		formInfo_t(TESForm* a_form);
+	public:
+		explicit constexpr BaseExtraFormInfo(
+			const TESForm* a_form) noexcept :
+			type(a_form->formType)
+		{
+		}
+
+		virtual ~BaseExtraFormInfo() noexcept = default;
+
+		[[nodiscard]] static std::unique_ptr<BaseExtraFormInfo> Create(const TESForm* a_form);
+
+		const std::uint8_t type;
+	};
+
+	class ExtraFormInfoTESWeather :
+		public BaseExtraFormInfo
+	{
+	public:
+		using FORM_TYPE = RE::TESWeather;
+
+		ExtraFormInfoTESWeather(const FORM_TYPE* a_form);
+
+		const WeatherClassificationFlags classFlags;
+	};
+
+	class ExtraFormInfoTESObjectWEAP :
+		public BaseExtraFormInfo
+	{
+	public:
+		using FORM_TYPE = TESObjectWEAP;
+
+		ExtraFormInfoTESObjectWEAP(const FORM_TYPE* a_form);
+
+		const WEAPON_TYPE weaponType;
+	};
+	
+	class ExtraFormInfoTESAmmo :
+		public BaseExtraFormInfo
+	{
+	public:
+		using FORM_TYPE = TESAmmo;
+
+		ExtraFormInfoTESAmmo(const FORM_TYPE* a_form);
+
+		const bool isBolt;
+	};
+
+	struct FormInfoData
+	{
+		FormInfoData(TESForm* a_form);
 
 		Game::FormID             id;
 		std::uint8_t             type;
@@ -14,12 +65,14 @@ namespace IED
 		stl::flag<FormInfoFlags> flags;
 		std::string              name;
 		std::uint32_t            extraType;
+
+		std::unique_ptr<BaseExtraFormInfo> extraInfo;
 	};
 
-	struct formInfoResult_t
+	struct FormInfoResult
 	{
-		formInfo_t                  form;
-		std::unique_ptr<formInfo_t> base;
+		FormInfoData                  form;
+		std::unique_ptr<FormInfoData> base;
 
 		[[nodiscard]] constexpr const auto& get_base() const noexcept
 		{
@@ -35,10 +88,10 @@ namespace IED
 	class IForm
 	{
 	public:
-		using info_result               = std::unique_ptr<formInfoResult_t>;
+		using info_result               = std::unique_ptr<FormInfoResult>;
 		using form_lookup_result_func_t = std::function<void(info_result)>;
 
 		static std::uint32_t GetFormExtraType(TESForm* a_form);
-		static info_result LookupFormInfo(Game::FormID a_form);
+		static info_result   LookupFormInfo(Game::FormID a_form);
 	};
 }

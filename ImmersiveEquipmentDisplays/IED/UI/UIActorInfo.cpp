@@ -113,7 +113,7 @@ namespace IED
 			{
 				ImGui::Spacing();
 				ImGui::Indent();
-				ImGui::PushID("actor");
+				ImGui::PushID("ainfo");
 
 				DrawActorInfoContents(handle, data);
 
@@ -2457,10 +2457,6 @@ namespace IED
 				const stl::lock_guard lock(controller.GetLock());
 				const stl::lock_guard datalock(data->lock);
 
-				data->lastUpdate  = IPerfCounter::Query();
-				data->actor       = handle;
-				data->initialized = true;
-
 				if (auto actor = handle.As<Actor>())
 				{
 					controller.FillActorInfoEntry(actor, data->entry, true);
@@ -2492,6 +2488,10 @@ namespace IED
 				{
 					data->succeeded = false;
 				}
+
+				data->actor       = handle;
+				data->initialized = true;
+				data->lastUpdate  = IPerfCounter::Query();
 			});
 		}
 	}

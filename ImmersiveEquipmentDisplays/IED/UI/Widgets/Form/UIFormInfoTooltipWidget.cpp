@@ -5,7 +5,10 @@
 #include "IED/UI/UICommon.h"
 #include "IED/UI/UIFormInfoCache.h"
 
+#include "IED/UI/Widgets/UIWeatherClassSelectorWidget.h"
 #include "IED/UI/Widgets/UIWidgetsCommon.h"
+
+#include "IED/UI/NodeOverride/Widgets/UINodeOverrideEditorWidgetStrings.h"
 
 #include "IED/Controller/Controller.h"
 #include "IED/Controller/IForm.h"
@@ -23,8 +26,8 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawFormInfoTooltip(
-			const formInfoResult_t* a_info,
-			const ObjectEntryBase&  a_entry)
+			const FormInfoResult*  a_info,
+			const ObjectEntryBase& a_entry)
 		{
 			ImGui::BeginTooltip();
 			ImGui::PushTextWrapPos(ImGui::GetFontSize() * 50.0f);
@@ -62,8 +65,8 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawObjectEntryHeaderInfo(
-			const formInfoResult_t* a_info,
-			const ObjectEntryBase&  a_entry)
+			const FormInfoResult*  a_info,
+			const ObjectEntryBase& a_entry)
 		{
 			auto& state = a_entry.data.state;
 
@@ -211,7 +214,7 @@ namespace IED
 		}
 
 		void UIFormInfoTooltipWidget::DrawGeneralFormInfoTooltip(
-			const formInfoResult_t* a_info)
+			const FormInfoResult* a_info)
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 8, 8 });
 
@@ -251,7 +254,7 @@ namespace IED
 			ImGui::PopStyleVar();
 		}
 
-		void UIFormInfoTooltipWidget::DrawFormInfo(const formInfo_t& a_info)
+		void UIFormInfoTooltipWidget::DrawFormInfo(const FormInfoData& a_info)
 		{
 			ImGui::Text("%s:", UIL::LS(CommonStrings::FormID));
 			ImGui::SameLine();
@@ -280,6 +283,50 @@ namespace IED
 			ImGui::Text("%s:", UIL::LS(CommonStrings::Flags));
 			ImGui::SameLine();
 			ImGui::Text("%.8X", a_info.formFlags);
+
+			if (auto& extra = a_info.extraInfo)
+			{
+				ImGui::Spacing();
+				ImGui::Indent();
+
+				DrawExtraFormInfo(*extra);
+
+				ImGui::Unindent();
+			}
+		}
+
+		void UIFormInfoTooltipWidget::DrawExtraFormInfo(const BaseExtraFormInfo& a_info)
+		{
+			switch (a_info.type)
+			{
+			case ExtraFormInfoTESWeather::FORM_TYPE::kTypeID:
+				{
+					auto& v = static_cast<const ExtraFormInfoTESWeather&>(a_info);
+
+					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeatherClass));
+					ImGui::SameLine();
+					ImGui::Text("%s", UIWeatherClassSelectorWidget{}.weather_class_to_desc(v.classFlags));
+				}
+				break;
+			case ExtraFormInfoTESObjectWEAP::FORM_TYPE::kTypeID:
+				{
+					auto& v = static_cast<const ExtraFormInfoTESObjectWEAP&>(a_info);
+
+					ImGui::Text("%s:", UIL::LS(UIWidgetCommonStrings::WeaponType));
+					ImGui::SameLine();
+					ImGui::Text("%hhu", v.weaponType);
+				}
+				break;
+			case ExtraFormInfoTESAmmo::FORM_TYPE::kTypeID:
+				{
+					auto& v = static_cast<const ExtraFormInfoTESAmmo&>(a_info);
+
+					ImGui::Text("%s:", UIL::LS(UINodeOverrideEditorWidgetStrings::IsBolt));
+					ImGui::SameLine();
+					ImGui::Text("%s", UIL::LS(v.isBolt ? CommonStrings::Yes : CommonStrings::No));
+				}
+				break;
+			}
 		}
 	}
 }

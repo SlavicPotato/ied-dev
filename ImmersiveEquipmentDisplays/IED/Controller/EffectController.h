@@ -69,7 +69,7 @@ namespace IED
 
 		void RunEffectUpdates(
 			const float                             a_interval,
-			const Game::Unk2f6b948::Steps&          a_stepMuls,
+			const Game::Unk2f6b948::TimeMultipliers&          a_stepMuls,
 			const std::optional<PhysicsUpdateData>& a_physUpdData,
 			const ActorObjectHolder&                a_holder) noexcept;
 

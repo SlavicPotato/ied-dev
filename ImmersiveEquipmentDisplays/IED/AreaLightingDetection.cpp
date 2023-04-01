@@ -9,7 +9,7 @@ namespace IED
 {
 	namespace ALD
 	{
-		static float s_interiorAmbientLightThreshold = 90.0f;
+		static float s_interiorAmbientLightThreshold = 0.45f;
 
 		void SetInteriorAmbientLightThreshold(float a_value) noexcept
 		{
@@ -132,18 +132,23 @@ namespace IED
 
 		bool IsExteriorDark(const RE::Sky* a_sky) noexcept
 		{
-			if (!a_sky)
-			{
-				return false;
-			}
+			return a_sky ?
+				GetExteriorAmbientLightLevel(a_sky) < GetTorchLightLevel(a_sky):
+				false;
+		}
 
-			const bool isNightTime = detail::is_nighttime(a_sky);
-
+		float GetExteriorAmbientLightLevel(const RE::Sky* a_sky) noexcept
+		{
 			const auto& col = a_sky->skyColor[RE::TESWeather::ColorTypes::kAmbient];
+			return col.r + col.g + col.b;
+		}
 
-			auto& sh = SPtrHolder::GetSingleton();
+		float GetTorchLightLevel(const RE::Sky* a_sky) noexcept
+		{
+			const bool isNightTime = detail::is_nighttime(a_sky);
+			auto&      sh          = SPtrHolder::GetSingleton();
 
-			return (col.r + col.g + col.b) < (isNightTime ? (sh.fTorchLightLevelNight ? *sh.fTorchLightLevelNight : 1.2f) : 0.6f);
+			return isNightTime ? (sh.fTorchLightLevelNight ? *sh.fTorchLightLevelNight : 1.2f) : 0.6f;
 		}
 
 		bool IsInteriorDark(const Actor* a_actor, const RE::Sky* a_sky, const TESObjectCELL* a_cell) noexcept

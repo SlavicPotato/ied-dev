@@ -28,6 +28,7 @@ namespace IED
 			kOutfitFormManager,
 			kOutfitEditor,
 			kProfileEditorOutfit,
+			kGeneralInfo,
 
 			kMax
 		};
