@@ -890,14 +890,17 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
+			ObjectDatabaseEntry dbEntry;
+
 			const auto odbResult = GetModel(
 				e.params.path,
-				e.dbEntry,
-				nullptr);
+				dbEntry);
 
 			switch (odbResult)
 			{
 			case ObjectLoadResult::kSuccess:
+
+				e.dbEntry = std::move(dbEntry);
 
 				status.set(ModelLoadStatus::kHasLoaded);
 
@@ -916,7 +919,7 @@ namespace IED
 
 			case ObjectLoadResult::kPending:
 
-				a_params.objects.AddQueuedModel(std::move(e.dbEntry));
+				a_params.objects.AddQueuedModel(std::move(dbEntry));
 
 				status.set(ModelLoadStatus::kHasPending);
 
@@ -932,7 +935,7 @@ namespace IED
 
 		for (auto& e : modelParams)
 		{
-			if (e.dbEntry && e.dbEntry->object)
+			if (e.dbEntry)
 			{
 				e.object = CreateClone(e.dbEntry->object.get(), 1.0f);
 			}

@@ -30,7 +30,7 @@ namespace IED
 		[[nodiscard]] ObjectLoadResult GetModel(
 			const char*          a_path,
 			ObjectDatabaseEntry& a_outEntry,
-			NiPointer<NiNode>*   a_cloneResult,
+			NiPointer<NiNode>*   a_cloneResult = nullptr,
 			float                a_colliderScale      = 1.0f,
 			bool                 a_forceImmediateLoad = false) noexcept;
 
