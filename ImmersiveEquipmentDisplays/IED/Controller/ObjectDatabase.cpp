@@ -5,10 +5,10 @@
 namespace IED
 {
 
-	auto ObjectDatabase::GetUniqueObject(
+	auto ObjectDatabase::GetModel(
 		const char*          a_path,
 		ObjectDatabaseEntry& a_outEntry,
-		NiPointer<NiNode>&   a_outObject,
+		NiPointer<NiNode>*   a_cloneResult,
 		float                a_colliderScale,
 		bool                 a_forceImmediateLoad) noexcept
 		-> ObjectLoadResult
@@ -75,8 +75,12 @@ namespace IED
 
 			entry->accessed = IPerfCounter::Query();
 
-			a_outEntry  = entry;
-			a_outObject = CreateClone(entry->object.get(), a_colliderScale);
+			a_outEntry = entry;
+
+			if (a_cloneResult)
+			{
+				*a_cloneResult = CreateClone(entry->object.get(), a_colliderScale);
+			}
 
 			return ObjectLoadResult::kSuccess;
 
@@ -181,7 +185,6 @@ namespace IED
 				}
 			}
 		}
-
 	}
 
 	void ObjectDatabase::QueueDatabaseCleanup() noexcept

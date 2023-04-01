@@ -540,10 +540,10 @@ namespace IED
 			state->flags.set(ObjectEntryFlags::kHasCollisionObjectScale);
 		}
 
-		const auto odbResult = GetUniqueObject(
+		const auto odbResult = GetModel(
 			modelParams.path,
 			dbentry,
-			object,
+			std::addressof(object),
 			state->colliderScale ?
 				*state->colliderScale :
 				1.0f);
@@ -876,17 +876,33 @@ namespace IED
 			return false;
 		}
 
-		bool loaded = false;
+		enum class ModelLoadStatus : std::uint8_t
+		{
+			kNone = 0,
+
+			kHasLoaded  = 1ui8 << 0,
+			kHasPending = 1ui8 << 1,
+		};
+
+		stl::flag<ModelLoadStatus> status{
+			ModelLoadStatus::kNone
+		};
 
 		for (auto& e : modelParams)
 		{
-			const auto odbResult = GetUniqueObject(
+			const auto odbResult = GetModel(
 				e.params.path,
 				e.dbEntry,
-				e.object);
+				nullptr);
 
 			switch (odbResult)
 			{
+			case ObjectLoadResult::kSuccess:
+
+				status.set(ModelLoadStatus::kHasLoaded);
+
+				break;
+
 			case ObjectLoadResult::kFailed:
 
 				Warning(
@@ -896,20 +912,30 @@ namespace IED
 					e.form->formID.get(),
 					e.params.path);
 
-				continue;
+				break;
+
 			case ObjectLoadResult::kPending:
 
 				a_params.objects.AddQueuedModel(std::move(e.dbEntry));
 
-				return false;
-			}
+				status.set(ModelLoadStatus::kHasPending);
 
-			loaded = true;
+				break;
+			}
 		}
 
-		if (!loaded)
+		if (!status.test(ModelLoadStatus::kHasLoaded) || 
+			status.test(ModelLoadStatus::kHasPending))
 		{
 			return false;
+		}
+
+		for (auto& e : modelParams)
+		{
+			if (e.dbEntry)
+			{
+				e.object = CreateClone(e.dbEntry->object.get(), 1.0f);
+			}
 		}
 
 		auto state = std::make_unique_for_overwrite<ObjectEntryBase::State>();

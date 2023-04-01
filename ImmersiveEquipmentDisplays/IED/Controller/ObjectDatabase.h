@@ -27,10 +27,10 @@ namespace IED
 			kSuccess
 		};
 
-		[[nodiscard]] ObjectLoadResult GetUniqueObject(
+		[[nodiscard]] ObjectLoadResult GetModel(
 			const char*          a_path,
 			ObjectDatabaseEntry& a_outEntry,
-			NiPointer<NiNode>&   a_outObject,
+			NiPointer<NiNode>*   a_cloneResult,
 			float                a_colliderScale      = 1.0f,
 			bool                 a_forceImmediateLoad = false) noexcept;
 
@@ -83,10 +83,9 @@ namespace IED
 
 	public:
 		static NiPointer<NiNode> LoadImpl(const char* a_path);
+		static NiNode*           CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept;
 
 	private:
-		static NiNode* CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept;
-
 		ObjectDatabaseLevel      m_level{ DEFAULT_LEVEL };
 		std::optional<long long> m_cleanupDeadline;
 		container_type           m_data;
