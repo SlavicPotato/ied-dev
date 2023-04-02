@@ -29,6 +29,7 @@ namespace IED
 
 			kConditionalVariables = 1u << 16,
 			kOutfit               = 1u << 17,
+			kKeyBinds             = 1u << 18,
 
 			kAll = static_cast<std::underlying_type_t<ConfigStoreSerializationFlags>>(-1)
 		};

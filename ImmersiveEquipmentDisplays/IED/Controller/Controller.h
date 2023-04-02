@@ -177,7 +177,6 @@ namespace IED
 		void InitializeConfig();
 		void InitializeLocalization();
 		void LoadAnimationData();
-		void LoadKeyBinds();
 		void InitializeData();
 		void GetSDSInterface();
 		void InitializeBSFixedStringTable();
@@ -394,7 +393,6 @@ namespace IED
 			stl::flag<Data::ConfigStoreSerializationFlags> a_flags);
 
 		void SaveSettings(bool a_defer, bool a_dirtyOnly, const bool a_debug = false);
-		void SaveKeyBinds(bool a_defer, bool a_dirtyOnly);
 
 		void QueueUpdateActorInfo(Game::FormID a_actor);
 		void QueueUpdateActorInfo(Game::FormID a_actor, std::function<void(bool)> a_callback);

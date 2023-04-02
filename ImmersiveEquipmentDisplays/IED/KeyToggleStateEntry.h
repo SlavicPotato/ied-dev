@@ -2,20 +2,35 @@
 
 #include "Drivers/Input/Handlers.h"
 
+#include "IED/ConfigKeybind.h"
+
 namespace IED
 {
 	namespace KB
 	{
-		enum class KeyToggleStateEntryFlags : std::uint8_t
-		{
-			kNone = 0
-		};
-
-		DEFINE_ENUM_CLASS_BITWISE(KeyToggleStateEntryFlags);
-
 		struct KeyToggleStateEntry
 		{
 		public:
+			KeyToggleStateEntry() = default;
+
+			KeyToggleStateEntry(
+				const Data::configKeybindEntry_t& a_entry) :
+				key(a_entry.key),
+				comboKey(a_entry.comboKey),
+				numStates(std::max(a_entry.numStates, 1u))
+			{
+			}
+
+			KeyToggleStateEntry& operator=(
+				const Data::configKeybindEntry_t& a_entry) noexcept
+			{
+				key      = a_entry.key;
+				comboKey = a_entry.comboKey;
+				SetNumStates(a_entry.numStates);
+
+				return *this;
+			}
+
 			[[nodiscard]] constexpr bool Enabled() const noexcept
 			{
 				return key != 0;
@@ -42,7 +57,6 @@ namespace IED
 			std::uint32_t                       key{ 0 };
 			std::uint32_t                       comboKey{ 0 };
 			std::uint32_t                       numStates{ 1 };
-			stl::flag<KeyToggleStateEntryFlags> flags{ KeyToggleStateEntryFlags::kNone };
 
 		private:
 			std::uint32_t state{ 0 };

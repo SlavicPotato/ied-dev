@@ -80,18 +80,14 @@ namespace IED
 
 	void IUI::UIInitialize(Controller& a_controller)
 	{
-		m_task = stl::make_smart<IUIRenderTaskMain>(*this);
-		m_task->InitializeContext<UI::UIMain>(a_controller);
-	}
-
-	bool IUI::UIIsInitialized() const noexcept
-	{
-		return m_task.get() != nullptr;
+		auto tmp = stl::make_smart<IUIRenderTaskMain>(*this);
+		tmp->InitializeContext<UI::UIMain>(a_controller);
+		m_task = std::move(tmp);
 	}
 
 	const stl::smart_ptr<IUIRenderTask>& IUI::GetOrCreateToastTask()
 	{
-		const stl::lock_guard lock(UIGetLock());
+		const stl::lock_guard lock(m_makeToastLock);
 
 		auto& task = m_toastTask;
 
@@ -129,41 +125,23 @@ namespace IED
 		m_task->QueueReset();
 	}
 
-	auto IUI::UIToggle() -> UIOpenResult
-	{
-		const stl::lock_guard lock(UIGetLock());
-
-		if (!m_task || !m_safeToOpenUI)
-		{
-			return UIOpenResult::kResultNone;
-		}
-
-		if (m_task->IsRunning())
-		{
-			m_task->GetContext().SetOpenState(false);
-
-			return UIOpenResult::kResultDisabled;
-		}
-		else
-		{
-			return UIOpenImpl();
-		}
-	}
-
 	auto IUI::UIOpen() -> UIOpenResult
 	{
+		return UIOpenImpl();
+	}
+
+	const stl::smart_ptr<IUIRenderTaskMain>* IUI::UIOpenGetRenderTask()
+	{
 		const stl::lock_guard lock(UIGetLock());
 
-		return UIOpenImpl();
+		return m_task && m_safeToOpenUI ? std::addressof(m_task) : nullptr;
 	}
 
 	auto IUI::UIOpenImpl() -> UIOpenResult
 	{
-		if (m_task &&
-		    m_safeToOpenUI &&
-		    m_task->RunEnableChecks())
+		if (const auto task = UIOpenGetRenderTask())
 		{
-			if (Drivers::UI::AddTask(0, m_task))
+			if (Drivers::UI::AddTask(0, *task))
 			{
 				return UIOpenResult::kResultEnabled;
 			}

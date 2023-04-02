@@ -2,6 +2,8 @@
 
 #include "KeyToggleStateEntryHolder.h"
 
+#include "IED/ConfigKeybind.h"
+
 namespace IED
 {
 	namespace KB
@@ -23,11 +25,6 @@ namespace IED
 			[[nodiscard]] constexpr auto& GetLock() const noexcept
 			{
 				return m_lock;
-			}
-
-			[[nodiscard]] constexpr const auto& GetLastException() const noexcept
-			{
-				return m_lastException;
 			}
 
 			template <class Tf>
@@ -57,33 +54,22 @@ namespace IED
 			}
 
 			void ResetKeyToggleStates() noexcept;
+			
 			KeyToggleStateEntryHolder::state_data2 GetKeyToggleStates() const;
+
+			void Clear();
+			void SetFromConfig(const Data::configKeybindEntryHolder_t& a_data);
+			void MergeFromConfig(const Data::configKeybindEntryHolder_t& a_data);
 
 			template <class T>
 			void InitializeKeyToggleStates(const T& a_states) noexcept //
 				requires(std::is_integral_v<typename T::value_type::second_type>);
 
-			std::uint32_t GetKeyState(const stl::fixed_string& a_id) const noexcept;
-
-			bool Save(const fs::path& a_path) const;
-			bool Load(const fs::path& a_path);
-
-			template <class T>
-			bool SaveIfDirty(const T& a_path) const
-			{
-				return m_dirty ? Save(a_path) : true;
-			}
-
-			constexpr void MarkDirty() noexcept
-			{
-				m_dirty = true;
-			}
+			bool GetKeyState(const stl::fixed_string& a_id, std::uint32_t &a_stateOut) const noexcept;
 
 		private:
 			mutable stl::fast_spin_lock m_lock;
 			KeyToggleStateEntryHolder   m_data;
-			mutable except::descriptor  m_lastException;
-			mutable bool                m_dirty{ false };
 		};
 
 		template <class T>

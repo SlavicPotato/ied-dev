@@ -72,9 +72,9 @@ namespace IED
 
 			virtual void OnEditorPanelSettingsChange() override;
 
-			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData();
+			virtual UIData::UICollapsibleStates& GetCollapsibleStatesData() override;
 
-			virtual void OnCollapsibleStatesUpdate();
+			virtual void OnCollapsibleStatesUpdate() override;
 
 			virtual void OnBaseConfigChange(
 				UIGlobalEditorDummyHandle,

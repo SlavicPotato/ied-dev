@@ -2,8 +2,6 @@
 
 #include "KeyBindDataHolder.h"
 
-#include "Parsers/JSONKeyToggleStateEntryHolderParser.h"
-
 namespace IED
 {
 	namespace KB
@@ -25,7 +23,41 @@ namespace IED
 			return m_data.make_state_data();
 		}
 
-		std::uint32_t KeyBindDataHolder::GetKeyState(const stl::fixed_string& a_id) const noexcept
+		void KeyBindDataHolder::Clear()
+		{
+			const stl::lock_guard lock(m_lock);
+
+			m_data.entries.clear();
+			m_data.entries.shrink_to_fit();
+		}
+
+		void KeyBindDataHolder::SetFromConfig(const Data::configKeybindEntryHolder_t& a_data)
+		{
+			const stl::lock_guard lock(m_lock);
+
+			m_data.entries.clear();
+
+			for (auto& e : a_data.data)
+			{
+				m_data.entries.emplace(e.first, e.second);
+			}
+
+			m_data.entries.shrink_to_fit();
+		}
+
+		void KeyBindDataHolder::MergeFromConfig(const Data::configKeybindEntryHolder_t& a_data)
+		{
+			const stl::lock_guard lock(m_lock);
+
+			for (auto& e : a_data.data)
+			{
+				m_data.entries.insert_or_assign(e.first, e.second);
+			}
+		}
+
+		bool KeyBindDataHolder::GetKeyState(
+			const stl::fixed_string& a_id,
+			std::uint32_t&           a_stateOut) const noexcept
 		{
 			const stl::lock_guard lock(m_lock);
 
@@ -33,82 +65,15 @@ namespace IED
 
 			const auto it = entries.find(a_id);
 
-			return it != entries.end() ? it->second.GetState() : false;
+			if (it == entries.end())
+			{
+				return false;
+			}
+
+			a_stateOut= it->second.GetState();
+
+			return true;
 		}
 
-		bool KeyBindDataHolder::Save(const fs::path& a_path) const
-		{
-			using namespace Serialization;
-
-			try
-			{
-				const stl::lock_guard lock(m_lock);
-
-				ParserState                       state;
-				Parser<KeyToggleStateEntryHolder> parser(state);
-				Json::Value                       root;
-
-				parser.Create(m_data, root);
-
-				WriteData(a_path, root);
-
-				m_dirty = false;
-
-				return true;
-			}
-			catch (const std::exception& e)
-			{
-				m_lastException = e;
-
-				return false;
-			}
-			catch (...)
-			{
-				m_lastException.clear();
-
-				return false;
-			}
-		}
-
-		bool KeyBindDataHolder::Load(const fs::path& a_path)
-		{
-			using namespace Serialization;
-
-			try
-			{
-				const stl::lock_guard lock(m_lock);
-
-				ParserState                       state;
-				Parser<KeyToggleStateEntryHolder> parser(state);
-
-				Json::Value root;
-
-				ReadData(a_path, root);
-
-				auto tmp = std::make_unique_for_overwrite<KeyToggleStateEntryHolder>();
-
-				if (!parser.Parse(root, *tmp))
-				{
-					throw std::exception("parse failed");
-				}
-
-				m_data  = std::move(*tmp);
-				m_dirty = false;
-
-				return true;
-			}
-			catch (const std::exception& e)
-			{
-				m_lastException = e;
-
-				return false;
-			}
-			catch (...)
-			{
-				m_lastException.clear();
-
-				return false;
-			}
-		}
 	}
 }

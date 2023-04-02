@@ -1329,6 +1329,11 @@ namespace IED
 				return false;
 			}
 
+			if (!a_task->RunEnableChecks())
+			{
+				return false;
+			}
+
 			if (m_drawing)
 			{
 				if (m_drawTasks.contains(a_id))

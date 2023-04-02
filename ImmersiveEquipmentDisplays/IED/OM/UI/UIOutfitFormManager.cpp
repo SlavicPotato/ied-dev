@@ -61,6 +61,8 @@ namespace IED
 					DrawMenuBar();
 					DrawFilterTree();
 					ImGui::Separator();
+					DrawProfileTree();
+					ImGui::Separator();
 					DrawEntryPanel();
 				}
 
@@ -89,9 +91,6 @@ namespace IED
 				if (ImGui::BeginChild("entry_panel", { -1.0f, 0.0f }))
 				{
 					UpdateData();
-
-					DrawProfileTree();
-					ImGui::Separator();
 
 					ImGui::PushID("entries");
 					DrawEntryList();

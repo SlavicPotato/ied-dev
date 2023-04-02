@@ -255,9 +255,6 @@
     <Filter Include="Source\IED\KB">
       <UniqueIdentifier>{54f96948-f094-4a40-86d3-a8c11108ac96}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\IED\JSONParsers\KB">
-      <UniqueIdentifier>{b6f34d18-c14c-486a-b604-3b60d1eb2132}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\IED\UI\Widgets\KeyBind">
       <UniqueIdentifier>{3c31ceaf-a4b6-4c1d-953e-1448fb8e67f1}</UniqueIdentifier>
     </Filter>
@@ -293,6 +290,12 @@
     </Filter>
     <Filter Include="Source\IED\GeneralInfo">
       <UniqueIdentifier>{19afd2f7-d80d-43ad-b222-00b0e52d1208}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\JSONParsers\Config\KB">
+      <UniqueIdentifier>{40b8326f-040b-4628-8f20-5a4d1c5442a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\IED\UI\KeyBind\Profile">
+      <UniqueIdentifier>{0b709817-403d-4352-86f8-ce735833c2a0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1814,12 +1817,6 @@
     <ClInclude Include="IED\UI\Widgets\UIKeyBindIDSelectorWidget.h">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntry.h">
-      <Filter>Source\IED\JSONParsers\KB</Filter>
-    </ClInclude>
-    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.h">
-      <Filter>Source\IED\JSONParsers\KB</Filter>
-    </ClInclude>
     <ClInclude Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.h">
       <Filter>Source\IED\UI\Widgets\KeyBind</Filter>
     </ClInclude>
@@ -1972,6 +1969,18 @@
     </ClInclude>
     <ClInclude Include="IED\GeneralInfo.h">
       <Filter>Source\IED\GeneralInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\ConfigKeybind.h">
+      <Filter>Source\IED\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigKeybindEntryParser.h">
+      <Filter>Source\IED\JSONParsers\Config\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\Parsers\JSONConfigKeybindEntryHolderParser.h">
+      <Filter>Source\IED\JSONParsers\Config\KB</Filter>
+    </ClInclude>
+    <ClInclude Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.h">
+      <Filter>Source\IED\UI\KeyBind\Profile</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3028,12 +3037,6 @@
     <ClCompile Include="IED\UI\Widgets\UIKeyBindIDSelectorWidget.cpp">
       <Filter>Source\IED\UI\Widgets</Filter>
     </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntry.cpp">
-      <Filter>Source\IED\JSONParsers\KB</Filter>
-    </ClCompile>
-    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.cpp">
-      <Filter>Source\IED\JSONParsers\KB</Filter>
-    </ClCompile>
     <ClCompile Include="IED\UI\Widgets\KeyBind\UIKeyBindEditorWidget.cpp">
       <Filter>Source\IED\UI\Widgets\KeyBind</Filter>
     </ClCompile>
@@ -3129,6 +3132,15 @@
     </ClCompile>
     <ClCompile Include="IED\GeneralInfo.cpp">
       <Filter>Source\IED\GeneralInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigKeybindEntryParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\Parsers\JSONConfigKeybindEntryHolderParser.cpp">
+      <Filter>Source\IED\JSONParsers\Config\KB</Filter>
+    </ClCompile>
+    <ClCompile Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.cpp">
+      <Filter>Source\IED\UI\KeyBind\Profile</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

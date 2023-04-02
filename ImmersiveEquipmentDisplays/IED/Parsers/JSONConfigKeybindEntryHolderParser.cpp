@@ -1,8 +1,8 @@
 #include "pch.h"
 
-#include "JSONKeyToggleStateEntryHolderParser.h"
+#include "JSONConfigKeybindEntryHolderParser.h"
 
-#include "JSONKeyToggleStateEntry.h"
+#include "JSONConfigKeybindEntryParser.h"
 
 namespace IED
 {
@@ -11,17 +11,17 @@ namespace IED
 		static constexpr std::uint32_t CURRENT_VERSION = 1;
 
 		template <>
-		bool Parser<KB::KeyToggleStateEntryHolder>::Parse(
-			const Json::Value&             a_in,
-			KB::KeyToggleStateEntryHolder& a_out) const
+		bool Parser<Data::configKeybindEntryHolder_t>::Parse(
+			const Json::Value&                a_in,
+			Data::configKeybindEntryHolder_t& a_out) const
 		{
 			JSON_PARSE_VERSION()
 
-			Parser<KB::KeyToggleStateEntry> parser(m_state);
+			Parser<Data::configKeybindEntry_t> parser(m_state);
 
 			auto& data = a_in["data"];
 
-			a_out.flags = data.get("flags", stl::underlying(KB::KeyToggleStateEntryHolderFlags::kNone)).asUInt();
+			a_out.flags = data.get("flags", stl::underlying(Data::KeybindEntryHolderFlags::kNone)).asUInt();
 
 			auto& entries = data["entries"];
 
@@ -35,7 +35,7 @@ namespace IED
 					Error(__FUNCTION__ ": invalid ID (zero len)");
 				}
 
-				const auto r = a_out.entries.try_emplace(std::move(k));
+				const auto r = a_out.data.try_emplace(std::move(k));
 
 				if (r.second)
 				{
@@ -55,9 +55,9 @@ namespace IED
 		}
 
 		template <>
-		void Parser<KB::KeyToggleStateEntryHolder>::Create(
-			const KB::KeyToggleStateEntryHolder& a_in,
-			Json::Value&                         a_out) const
+		void Parser<Data::configKeybindEntryHolder_t>::Create(
+			const Data::configKeybindEntryHolder_t& a_in,
+			Json::Value&                            a_out) const
 		{
 			auto& data = (a_out["data"] = Json::Value(Json::ValueType::objectValue));
 
@@ -65,9 +65,9 @@ namespace IED
 
 			auto& entries = (data["entries"] = Json::Value(Json::ValueType::objectValue));
 
-			Parser<KB::KeyToggleStateEntry> parser(m_state);
+			Parser<Data::configKeybindEntry_t> parser(m_state);
 
-			for (auto& e : a_in.entries)
+			for (auto& e : a_in.data)
 			{
 				auto& v = entries[*e.first];
 

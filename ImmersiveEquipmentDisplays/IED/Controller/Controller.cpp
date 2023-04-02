@@ -176,7 +176,6 @@ namespace IED
 		InitializeLocalization();
 		InitializeConfig();
 		LoadAnimationData();
-		LoadKeyBinds();
 
 		SetShaderProcessingEnabled(data.enableEffectShaders);
 		SetProcessorTaskParallelUpdates(data.apParallelUpdates);
@@ -438,6 +437,8 @@ namespace IED
 
 		m_configData.active = std::make_unique<Data::configStore_t>(*m_configData.initial);
 
+		GetKeyBindDataHolder()->SetFromConfig(m_configData.active->keybinds);
+
 		if (IsDefaultConfigForced())
 		{
 			Message("Default configuration is forced");
@@ -507,21 +508,6 @@ namespace IED
 				info->get_base(AnimationWeaponType::Bow),
 				info->get_base_extra(AnimationExtraGroup::BowAttack),
 				info->get_base_extra(AnimationExtraGroup::BowIdle));
-		}
-	}
-
-	void Controller::LoadKeyBinds()
-	{
-		const auto path = PATHS::KEY_BINDS;
-
-		if (Serialization::FileExists(path))
-		{
-			auto& holder = GetKeyBindDataHolder();
-
-			if (!holder->Load(PATHS::KEY_BINDS))
-			{
-				Error("Could not load key binds: %s", holder->GetLastException().what());
-			}
 		}
 	}
 
@@ -4134,7 +4120,7 @@ namespace IED
 
 				if (!r)
 				{
-					if (auto &node = e.thirdPerson.simComponent)
+					if (auto& node = e.thirdPerson.simComponent)
 					{
 						a_holder.RemoveAndDestroySimComponent(node);
 					}
@@ -5308,7 +5294,6 @@ namespace IED
 		case SKSEMessagingInterface::kMessage_SaveGame:
 
 			SaveSettings(false, true);
-			SaveKeyBinds(false, true);
 
 			break;
 		}
@@ -5579,17 +5564,20 @@ namespace IED
 		if (IsDefaultConfigForced())
 		{
 			m_configData.stash.reset();
+
+			GetKeyBindDataHolder()->ResetKeyToggleStates();
 		}
 		else
 		{
 			*m_configData.active = *m_configData.initial;
+
+			GetKeyBindDataHolder()->Clear();
 		}
 
 		m_actorBlockList.clear();
 		m_bipedCache.clear();
 
 		ClearObjectsImpl();
-		GetKeyBindDataHolder()->ResetKeyToggleStates();
 		//ClearObjectDatabase();
 
 		ResetCounter();
@@ -5644,6 +5632,11 @@ namespace IED
 		{
 			auto actorState = std::make_unique_for_overwrite<actorStateHolder_t>();
 			a_in >> *actorState;
+		}
+
+		if (!IsDefaultConfigForced())
+		{
+			GetKeyBindDataHolder()->SetFromConfig(cfgStore->keybinds);
 		}
 
 		if (a_version >= stl::underlying(SerializationVersion::kDataVersion7))
@@ -5749,33 +5742,6 @@ namespace IED
 		}
 	}
 
-	void Controller::SaveKeyBinds(bool a_defer, bool a_dirtyOnly)
-	{
-		auto func = [this, a_dirtyOnly] {
-			const stl::lock_guard lock(m_lock);
-
-			auto& holder = GetKeyBindDataHolder();
-
-			const bool result = a_dirtyOnly ?
-			                        holder->SaveIfDirty(PATHS::KEY_BINDS) :
-			                        holder->Save(PATHS::KEY_BINDS);
-
-			if (!result)
-			{
-				Error("Could not save key binds: %s", holder->GetLastException().what());
-			}
-		};
-
-		if (a_defer)
-		{
-			ITaskPool::AddTask(std::move(func));
-		}
-		else
-		{
-			func();
-		}
-	}
-
 	void Controller::OnUIOpen()
 	{
 		UpdateActorInfo(m_actorMap);
@@ -5792,6 +5758,9 @@ namespace IED
 
 		FillGlobalSlotConfig(activeConfig.slot);
 		IMaintenance::CleanConfigStore(activeConfig);
+
+		GetKeyBindDataHolder()->SetFromConfig(activeConfig.keybinds);
+
 		QueueResetAll(ControllerUpdateFlags::kNone);
 
 		if (auto& rt = UIGetRenderTask())

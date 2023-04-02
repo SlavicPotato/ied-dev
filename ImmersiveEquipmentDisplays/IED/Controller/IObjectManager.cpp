@@ -552,7 +552,7 @@ namespace IED
 		{
 		case ObjectLoadResult::kFailed:
 
-			Warning(
+			Error(
 				"[%.8X] [race: %.8X] [item: %.8X] failed to load model: %s",
 				a_params.actor->formID.get(),
 				a_params.race->formID.get(),

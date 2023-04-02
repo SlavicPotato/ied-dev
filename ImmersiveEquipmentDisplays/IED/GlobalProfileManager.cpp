@@ -12,4 +12,5 @@ namespace IED
 	GlobalProfileManager::ProfileManagerCondVar        GlobalProfileManager::m_condVarManager;
 	GlobalProfileManager::ProfileManagerOutfit         GlobalProfileManager::m_outfitManager;
 	GlobalProfileManager::ProfileManagerOutfitFormList GlobalProfileManager::m_outfitFormListManager;
+	GlobalProfileManager::ProfileManagerKeybind        GlobalProfileManager::m_keybindManager;
 }

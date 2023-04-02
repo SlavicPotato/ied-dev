@@ -2,6 +2,7 @@
 
 #include "ConfigConditionalVars.h"
 #include "ConfigCustom.h"
+#include "ConfigKeybind.h"
 #include "ConfigNodeOverride.h"
 #include "ConfigSlot.h"
 #include "OM/ConfigStoreOutfit.h"
@@ -20,6 +21,7 @@ namespace IED
 				DataVersion1 = 1,
 				DataVersion2 = 2,
 				DataVersion3 = 3,
+				DataVersion4 = 4,
 			};
 
 			inline void clear()
@@ -36,6 +38,7 @@ namespace IED
 			configStoreNodeOverride_t          transforms;
 			configConditionalVariablesHolder_t condvars;
 			OM::configStoreOutfit_t            outfit;
+			configKeybindEntryHolder_t         keybinds;
 
 		private:
 			template <class Archive>
@@ -52,6 +55,11 @@ namespace IED
 					if (a_version >= DataVersion3)
 					{
 						a_ar& outfit;
+
+						if (a_version >= DataVersion4)
+						{
+							a_ar& keybinds;
+						}
 					}
 				}
 			}
@@ -61,4 +69,4 @@ namespace IED
 
 BOOST_CLASS_VERSION(
 	IED::Data::configStore_t,
-	IED::Data::configStore_t::Serialization::DataVersion3);
+	IED::Data::configStore_t::Serialization::DataVersion4);

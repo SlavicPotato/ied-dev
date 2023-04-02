@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IED/KeyToggleStateEntryHolder.h"
+#include "IED/ConfigKeybind.h"
 
 namespace IED
 {
@@ -8,7 +8,7 @@ namespace IED
 
 	namespace UI
 	{
-		class UIKeyBindEditorWidget 
+		class UIKeyBindEditorWidget
 		{
 			enum class UIKeyBindEditorContextAction
 			{
@@ -18,13 +18,24 @@ namespace IED
 			};
 
 		public:
-			bool DrawKeyBindEditorWidget(KB::KeyToggleStateEntryHolder& a_data);
+			[[nodiscard]] void DrawKeyBindEditorWidget(Data::configKeybindEntryHolder_t& a_data);
+			[[nodiscard]] void DrawKeyBindActionItems(Data::configKeybindEntryHolder_t& a_data);
 
 		private:
-			bool                         DrawList(KB::KeyToggleStateEntryHolder& a_data);
-			UIKeyBindEditorContextAction DrawEntryTreeContextMenu(KB::KeyToggleStateEntryHolder::container_type::value_type& a_data);
-			bool                         DrawEntryTree(KB::KeyToggleStateEntryHolder::container_type::value_type& a_data);
-			bool                         DrawEntry(KB::KeyToggleStateEntryHolder::container_type::value_type& a_data);
+			void                         DrawList(Data::configKeybindEntryHolder_t& a_data);
+			UIKeyBindEditorContextAction DrawEntryTreeContextMenu(Data::configKeybindEntryHolder_t::container_type::value_type& a_data);
+			void                         DrawEntryTree(Data::configKeybindEntryHolder_t::container_type::value_type& a_data);
+			void                         DrawEntry(Data::configKeybindEntryHolder_t::container_type::value_type& a_data);
+
+			virtual void OnKeybindErase(const Data::configKeybindEntryHolder_t::container_type::key_type& a_key);
+			virtual void OnKeybindAdd(const Data::configKeybindEntryHolder_t::container_type::value_type& a_key);
+			virtual void OnKeybindChange(const Data::configKeybindEntryHolder_t::container_type::value_type& a_data);
+
+			virtual bool GetKeybindState(
+				const Data::configKeybindEntryHolder_t::container_type::key_type& a_key,
+				std::uint32_t&                                                    a_stateOut);
+
+			std::string m_tmpID;
 		};
 	}
 }

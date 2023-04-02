@@ -6,13 +6,6 @@ namespace IED
 {
 	namespace KB
 	{
-		enum class KeyToggleStateEntryHolderFlags : std::uint32_t
-		{
-			kNone = 0
-		};
-
-		DEFINE_ENUM_CLASS_BITWISE(KeyToggleStateEntryHolderFlags);
-
 		struct KeyToggleStateEntryHolder
 		{
 			using container_type = stl::cache_aligned::flat_map<stl::fixed_string, KeyToggleStateEntry>;
@@ -21,7 +14,6 @@ namespace IED
 
 			state_data2 make_state_data() const;
 
-			stl::flag<KeyToggleStateEntryHolderFlags> flags{ KeyToggleStateEntryHolderFlags::kNone };
 			container_type                            entries;
 		};
 	}

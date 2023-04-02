@@ -110,6 +110,7 @@ namespace IED
 			stl::fixed_string                        currentEvent;
 
 			void UpdateAndSendAnimationEvent(const stl::fixed_string& a_event) noexcept;
+			void Cleanup();
 		};
 
 		struct Object

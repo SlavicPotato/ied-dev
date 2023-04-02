@@ -248,11 +248,13 @@ namespace IED
 		return result;
 	}
 
-	NiNode* ObjectDatabase::CreateClone(NiNode* a_object, float a_collisionObjectScale) noexcept
+	NiNode* ObjectDatabase::CreateClone(
+		NiNode* a_object,
+		float   a_collisionObjectScale) noexcept
 	{
-		NiCloningProcess process(NiObjectNET::CopyType::COPY_EXACT);
-
-		process.SetCollisionObjectScaleUniform(a_collisionObjectScale);
+		NiCloningProcess process(
+			NiObjectNET::CopyType::COPY_EXACT,
+			a_collisionObjectScale);
 
 		auto result = a_object->CreateClone(process);
 		a_object->ProcessClone(process);

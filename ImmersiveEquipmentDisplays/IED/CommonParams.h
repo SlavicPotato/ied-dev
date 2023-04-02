@@ -206,7 +206,7 @@ namespace IED
 
 		[[nodiscard]] TESForm* get_parent_cell_owner() const noexcept;
 
-		[[nodiscard]] std::uint32_t get_key_toggle_state(const stl::fixed_string& a_id) const noexcept;
+		[[nodiscard]] bool get_key_toggle_state(const stl::fixed_string& a_id, std::uint32_t &a_out) const noexcept;
 
 		[[nodiscard]] bool is_waiting_for_player() const noexcept;
 

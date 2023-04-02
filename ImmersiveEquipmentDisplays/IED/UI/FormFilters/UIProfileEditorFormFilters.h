@@ -30,9 +30,9 @@ namespace IED
 			UIProfileEditorFormFilters(Controller& a_controller);
 			~UIProfileEditorFormFilters() noexcept override;
 
-			void Initialize();
+			void Initialize() override;
 
-			virtual void DrawProfileEditorMenuBarItems() override;
+			void DrawProfileEditorMenuBarItems() override;
 
 			[[nodiscard]] constexpr bool ChangedConfig() const
 			{

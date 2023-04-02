@@ -15,9 +15,25 @@ namespace IED
 {
 	namespace UI
 	{
-		UIKeyBindEditorWindow::UIKeyBindEditorWindow(Controller& a_controller) :
+		UIKeyBindEditorWindow::UIKeyBindEditorWindow(
+			Controller& a_controller) :
+			UIProfileSelectorWidget<
+				KeyBindEditorPSParams,
+				KeybindProfile>(
+				UIProfileSelectorFlags::kEnableApply |
+				UIProfileSelectorFlags::kEnableMerge),
 			m_controller(a_controller)
 		{
+		}
+
+		UIKeyBindEditorWindow::~UIKeyBindEditorWindow()
+		{
+			GetProfileManager().RemoveSink(this);
+		}
+
+		void UIKeyBindEditorWindow::Initialize()
+		{
+			InitializeProfileBase();
 		}
 
 		void UIKeyBindEditorWindow::Draw()
@@ -32,38 +48,57 @@ namespace IED
 					ImGuiWindowFlags_MenuBar))
 			{
 				DrawMenuBar();
-
-				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
+				DrawProfileTree();
+				ImGui::Separator();
 
 				DrawEditor();
-
-				ImGui::PopItemWidth();
 			}
 
 			ImGui::End();
 		}
 
-		void UIKeyBindEditorWindow::OnClose()
-		{
-			m_controller.SaveKeyBinds(true, true);
-		}
-
 		void UIKeyBindEditorWindow::DrawEditor()
 		{
-			if (DrawEditorImpl())
+			if (ImGui::BeginChild("editor_panel", { -1.0f, 0.0f }))
 			{
-				m_controller.GetKeyBindDataHolder()->MarkDirty();
-				m_controller.RequestEvaluateAll();
+				ImGui::Spacing();
+
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -8.0f);
+
+				auto& config = m_controller.GetActiveConfig();
+
+				DrawKeyBindEditorWidget(config.keybinds);
+
+				ImGui::PopItemWidth();
 			}
+
+			ImGui::EndChild();
 		}
 
-		bool UIKeyBindEditorWindow::DrawEditorImpl()
+		void UIKeyBindEditorWindow::DrawProfileTree()
 		{
-			auto& holder = m_controller.GetKeyBindDataHolder();
+			if (ImGui::TreeNodeEx(
+					"tree_prof",
+					ImGuiTreeNodeFlags_SpanAvailWidth,
+					"%s",
+					UIL::LS(CommonStrings::Profile)))
+			{
+				ImGui::Spacing();
 
-			const stl::lock_guard lock(holder->GetLock());
+				ImGui::PushItemWidth(ImGui::GetFontSize() * -15.5f);
 
-			return UIKeyBindEditorWidget::DrawKeyBindEditorWidget(holder->GetData());
+				const KeyBindEditorPSParams params{
+					m_controller.GetActiveConfig().keybinds
+				};
+
+				DrawProfileSelector(params);
+
+				ImGui::PopItemWidth();
+
+				ImGui::Spacing();
+
+				ImGui::TreePop();
+			}
 		}
 
 		void UIKeyBindEditorWindow::DrawMenuBar()
@@ -92,15 +127,7 @@ namespace IED
 
 		void UIKeyBindEditorWindow::DrawFileMenu()
 		{
-			if (ImGui::MenuItem(UIL::LS(CommonStrings::Save, "1")))
-			{
-				m_controller.SaveKeyBinds(true, false);
-				m_controller.RequestEvaluateAll();
-			}
-
-			ImGui::Separator();
-
-			if (ImGui::MenuItem(UIL::LS(CommonStrings::Exit, "2")))
+			if (ImGui::MenuItem(UIL::LS(CommonStrings::Exit, "1")))
 			{
 				SetOpenState(false);
 			}
@@ -108,36 +135,101 @@ namespace IED
 
 		void UIKeyBindEditorWindow::DrawActionMenu()
 		{
-			if (ImGui::BeginMenu(UIL::LS(CommonStrings::Add, "1")))
-			{
-				DrawAddPopup();
+			auto& config = m_controller.GetActiveConfig();
 
-				ImGui::EndMenu();
-			}
+			DrawKeyBindActionItems(config.keybinds);
 		}
 
-		void UIKeyBindEditorWindow::DrawAddPopup()
+		void UIKeyBindEditorWindow::ApplyProfile(
+			const KeyBindEditorPSParams& a_data,
+			const KeybindProfile&        a_profile)
 		{
-			const bool result = UIKeyBindIDSelectorWidget::DrawKeyBindIDSelector(m_tmpID);
+			auto& config = m_controller.GetActiveConfig();
 
-			if (result && !m_tmpID.empty())
-			{
-				AddKeyBind(std::move(m_tmpID));
+			config.keybinds = a_profile.Data();
 
-				ImGui::CloseCurrentPopup();
-			}
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			holder->SetFromConfig(a_profile.Data());
 		}
 
-		void UIKeyBindEditorWindow::AddKeyBind(std::string&& a_id)
+		void UIKeyBindEditorWindow::MergeProfile(
+			const KeyBindEditorPSParams& a_data,
+			const KeybindProfile&        a_profile)
+		{
+			auto&       config = m_controller.GetActiveConfig();
+			const auto& data   = a_profile.Data();
+
+			for (auto& e : data.data)
+			{
+				config.keybinds.data.insert_or_assign(e.first, e.second);
+			}
+
+			config.keybinds.flags.set(data.flags);
+
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			holder->MergeFromConfig(config.keybinds);
+		}
+
+		UIPopupQueue& UIKeyBindEditorWindow::GetPopupQueue_ProfileBase() const
+		{
+			return m_controller.UIGetPopupQueue();
+		}
+
+		KeybindProfile::base_type UIKeyBindEditorWindow::GetData(
+			const KeyBindEditorPSParams& a_params)
+		{
+			return a_params.data;
+		}
+
+		void UIKeyBindEditorWindow::OnKeybindErase(
+			const Data::configKeybindEntryHolder_t::container_type::key_type& a_key)
 		{
 			auto& holder = m_controller.GetKeyBindDataHolder();
 
 			const stl::lock_guard lock(holder->GetLock());
 
-			auto& entries = holder->GetData().entries;
+			auto& data = holder->GetData().entries;
 
-			entries.try_emplace(std::move(a_id));
-			holder->MarkDirty();
+			data.erase(a_key);
+		}
+
+		void UIKeyBindEditorWindow::OnKeybindAdd(
+			const Data::configKeybindEntryHolder_t::container_type::value_type& a_data)
+		{
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			const stl::lock_guard lock(holder->GetLock());
+
+			auto& data = holder->GetData().entries;
+
+			data.try_emplace(a_data.first, a_data.second);
+		}
+
+		void UIKeyBindEditorWindow::OnKeybindChange(
+			const Data::configKeybindEntryHolder_t::container_type::value_type& a_data)
+		{
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			const stl::lock_guard lock(holder->GetLock());
+
+			auto& data = holder->GetData().entries;
+
+			auto r = data.try_emplace(a_data.first, a_data.second);
+
+			if (!r.second)
+			{
+				r.first->second = a_data.second;
+			}
+		}
+		bool UIKeyBindEditorWindow::GetKeybindState(
+			const Data::configKeybindEntryHolder_t::container_type::key_type& a_key,
+			std::uint32_t&                                                    a_stateOut)
+		{
+			auto& holder = m_controller.GetKeyBindDataHolder();
+
+			return holder->GetKeyState(a_key, a_stateOut);
 		}
 	}
 }

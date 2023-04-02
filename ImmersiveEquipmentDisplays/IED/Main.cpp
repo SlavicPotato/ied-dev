@@ -350,6 +350,9 @@ namespace IED
 #	endif
 #endif
 
+				GlobalProfileManager::GetSingleton<KeybindProfile>().Load(
+					PATHS::PROFILE_MANAGER_KEYBIND);
+
 				const auto pluginInfo = Data::IData::GetPluginInfo().GetInfo();
 
 				Debug(

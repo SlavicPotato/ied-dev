@@ -29,6 +29,7 @@ namespace IED
 			kOutfitEditor,
 			kProfileEditorOutfit,
 			kGeneralInfo,
+			kProfileEditorKeybind,
 
 			kMax
 		};

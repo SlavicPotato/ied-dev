@@ -193,6 +193,12 @@ namespace IED
 				stl::underlying(ConfigStoreSerializationFlags::kOutfit));
 #endif
 
+			
+			result |= ImGui::CheckboxFlagsT(
+				"Keybinds##kbnd",
+				stl::underlying(std::addressof(a_flags.value)),
+				stl::underlying(ConfigStoreSerializationFlags::kKeyBinds));
+
 			ImGui::Unindent();
 			ImGui::Spacing();
 			ImGui::Separator();

@@ -29,6 +29,7 @@ namespace IED
 			ProfileParserErrorWarning = 4518,
 			TitleConditionalVariables = 4519,
 			TitleOutfit               = 4520,
+			TitleKeybind              = 4521,
 		};
 	}
 }

@@ -658,6 +658,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\ConfigEquipmentOverrideCondition.h" />
     <ClInclude Include="IED\ConfigExtraLight.h" />
     <ClInclude Include="IED\ConfigExtraNode.h" />
+    <ClInclude Include="IED\ConfigKeybind.h" />
     <ClInclude Include="IED\ConfigLastEquipped.h" />
     <ClInclude Include="IED\ConfigModelGroup.h" />
     <ClInclude Include="IED\ConfigLUIDTag.h" />
@@ -767,6 +768,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONConfigExtraNodeListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigFixedStringSetParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigKeybindEntryHolderParser.h" />
+    <ClInclude Include="IED\Parsers\JSONConfigKeybindEntryParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigLastEquippedParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.h" />
     <ClInclude Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.h" />
@@ -791,8 +794,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\Parsers\JSONEffectShaderListParser.h" />
     <ClInclude Include="IED\Parsers\JSONEffectShaderTextureParser.h" />
     <ClInclude Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.h" />
-    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntry.h" />
-    <ClInclude Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.h" />
     <ClInclude Include="IED\Parsers\JSONSettingsI3DIParser.h" />
     <ClInclude Include="IED\Parsers\JSONSkeletonExplorerParser.h" />
     <ClInclude Include="IED\Physics\SimComponent.h" />
@@ -837,6 +838,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClInclude Include="IED\UI\I3DI\I3DISphereObject.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIWeaponNode.h" />
     <ClInclude Include="IED\UI\I3DI\I3DIMOVNode.h" />
+    <ClInclude Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.h" />
     <ClInclude Include="IED\UI\Keybind\UIKeyBindEditorWindow.h" />
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideWidgetCommon.h" />
     <ClInclude Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.h" />
@@ -1296,6 +1298,8 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONConfigExtraNodeListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigFixedStringSetParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigKeybindEntryHolderParser.cpp" />
+    <ClCompile Include="IED\Parsers\JSONConfigKeybindEntryParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigLastEquippedParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONConfigNodeMonitorEntryParser.cpp" />
@@ -1320,8 +1324,6 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\Parsers\JSONEffectShaderListParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEffectShaderTextureParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONEquipmentOverrideConditionGroupParser.cpp" />
-    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntry.cpp" />
-    <ClCompile Include="IED\Parsers\JSONKeyToggleStateEntryHolderParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSettingsI3DIParser.cpp" />
     <ClCompile Include="IED\Parsers\JSONSkeletonExplorerParser.cpp" />
     <ClCompile Include="IED\Physics\SimComponent.cpp" />
@@ -1361,6 +1363,7 @@ copy "$(TargetPath)" "$(SSE_AE_PATH)\Data\SKSE\Plugins\" /Y</Command>
     <ClCompile Include="IED\UI\I3DI\I3DISphereObject.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIWeaponNode.cpp" />
     <ClCompile Include="IED\UI\I3DI\I3DIMOVNode.cpp" />
+    <ClCompile Include="IED\UI\Keybind\Profile\UIProfileEditorKeybind.cpp" />
     <ClCompile Include="IED\UI\Keybind\UIKeyBindEditorWindow.cpp" />
     <ClCompile Include="IED\UI\NodeOverride\Widgets\UINodeOverrideConditionWidget.cpp" />
     <ClCompile Include="IED\UI\UIAboutModal.cpp" />

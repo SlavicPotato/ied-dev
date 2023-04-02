@@ -209,10 +209,20 @@ namespace IED
 			case Data::ExtraConditionType::kIsSunAboveHorizon:
 				return a_params.is_daytime();
 			case Data::ExtraConditionType::kKeyBindState:
-				return compare(
-					a_match.compOperator2,
-					a_params.get_key_toggle_state(a_match.s0),
-					a_match.keyBindState);
+				{
+					std::uint32_t state;
+					if (a_params.get_key_toggle_state(a_match.s0, state))
+					{
+						return compare(
+							a_match.compOperator2,
+							state,
+							a_match.keyBindState);
+					}
+					else
+					{
+						return false;
+					}
+				}
 			case Data::ExtraConditionType::kLightingTemplate:
 				return match_form_with_id<Tm, Tf>(a_match, get_active_lighting_template(a_params));
 			case Data::ExtraConditionType::kInteriorAmbientLightLevel:

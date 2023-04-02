@@ -5,6 +5,7 @@
 #include "JSONConfigStoreNodeOverrideParser.h"
 #include "JSONConfigStoreParser.h"
 #include "JSONConfigStoreSlotParser.h"
+#include "JSONConfigKeybindEntryHolderParser.h"
 
 #include "IED/OM/Parsers/JSONConfigStoreOutfitParser.h"
 
@@ -74,6 +75,16 @@ namespace IED
 					return false;
 				}
 			}
+			
+			if (auto& v = data["kbnd"])
+			{
+				Parser<Data::configKeybindEntryHolder_t> parser(m_state);
+
+				if (!parser.Parse(v, a_out.keybinds))
+				{
+					return false;
+				}
+			}
 
 			return true;
 		}
@@ -90,12 +101,14 @@ namespace IED
 			Parser<Data::configStoreNodeOverride_t>          eparser(m_state);
 			Parser<Data::configConditionalVariablesHolder_t> cvparser(m_state);
 			Parser<Data::OM::configStoreOutfit_t>            oparser(m_state);
+			Parser<Data::configKeybindEntryHolder_t>         kparser(m_state);
 
 			sparser.Create(a_data.slot, data["slot"]);
 			cparser.Create(a_data.custom, data["custom"]);
 			eparser.Create(a_data.transforms, data["transforms"]);
 			cvparser.Create(a_data.condvars, data["cvar"]);
 			oparser.Create(a_data.outfit, data["otft"]);
+			kparser.Create(a_data.keybinds, data["kbnd"]);
 
 			a_out["version"] = CURRENT_VERSION;
 		}

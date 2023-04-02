@@ -8,6 +8,7 @@
 #include "EquipmentSlots/Profile/UIProfileEditorSlot.h"
 #include "FormFilters/UIProfileEditorFormFilters.h"
 #include "I3DI/I3DIMain.h"
+#include "Keybind/Profile/UIProfileEditorKeybind.h"
 #include "Keybind/UIKeyBindEditorWindow.h"
 #include "NodeOverride/Profile/UIProfileEditorNodeOverride.h"
 #include "NodeOverride/UINodeOverrideEditorWindow.h"
@@ -88,7 +89,8 @@ namespace IED
 				nullptr
 #endif
 					,
-				std::make_unique<UIGeneralInfo>(a_controller)
+				std::make_unique<UIGeneralInfo>(a_controller),
+				std::make_unique<UIProfileEditorKeybind>(a_controller)
 		}
 		,
 			m_formLookupCache(a_controller),
@@ -341,14 +343,15 @@ namespace IED
 			ImGui::Separator();
 
 			DrawContextMenuItem<UIConditionalVariablesEditorWindow>(UIMainStrings::ConditionalVariables, "3");
+			DrawContextMenuItem<UIKeyBindEditorWindow>(UIMainStrings::KeyBinds, "4");
 
 #if defined(IED_ENABLE_OUTFIT)
-			DrawContextMenuItem<OM::UIOutfitEditorWindow>(UIWidgetCommonStrings::OutfitConfig, "4");
+			DrawContextMenuItem<OM::UIOutfitEditorWindow>(UIWidgetCommonStrings::OutfitConfig, "5");
 #endif
 
 			ImGui::Separator();
 
-			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "5");
+			DrawContextMenuItem<I3DIMain>(UIMainStrings::I3DI, "6");
 		}
 
 		void UIMain::DrawProfileEditorsSubmenu()
@@ -361,6 +364,7 @@ namespace IED
 #if defined(IED_ENABLE_OUTFIT)
 			DrawContextMenuItem<OM::UIOutfitProfileEditor>(UIWidgetCommonStrings::OutfitConfig, "6");
 #endif
+			DrawContextMenuItem<UIProfileEditorKeybind>(UIMainStrings::KeyBinds, "7");
 		}
 
 		void UIMain::DrawDiagnosticsSubmenu()
@@ -380,7 +384,6 @@ namespace IED
 			}
 
 			DrawContextMenuItem<UINodeMapEditor>(CommonStrings::Nodes, "2");
-			DrawContextMenuItem<UIKeyBindEditorWindow>(UIMainStrings::KeyBinds, "3");
 			DrawContextMenuItem<UISettings>(CommonStrings::Settings, "4");
 			DrawContextMenuItem<UIStats>(CommonStrings::Stats, "5");
 			DrawContextMenuItem<UILog>(CommonStrings::Log, "6");

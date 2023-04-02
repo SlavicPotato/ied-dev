@@ -4,6 +4,9 @@
 #include "IED/UI/Window/UIWindow.h"
 
 #include "IED/UI/Widgets/KeyBind/UIKeyBindEditorWidget.h"
+#include "IED/UI/Widgets/UIProfileSelectorWidget.h"
+
+#include "IED/GlobalProfileManager.h"
 
 namespace IED
 {
@@ -11,10 +14,18 @@ namespace IED
 
 	namespace UI
 	{
+		struct KeyBindEditorPSParams
+		{
+			Data::configKeybindEntryHolder_t& data;
+		};
+
 		class UIKeyBindEditorWindow :
 			public UIContext,
 			public UIWindow,
-			UIKeyBindEditorWidget
+			UIKeyBindEditorWidget,
+			UIProfileSelectorWidget<
+				KeyBindEditorPSParams,
+				KeybindProfile>
 		{
 			static constexpr auto WINDOW_ID = "ied_kbe";
 
@@ -23,9 +34,11 @@ namespace IED
 
 			UIKeyBindEditorWindow(
 				Controller& a_controller);
+			
+			~UIKeyBindEditorWindow();
 
+			void Initialize() override;
 			void Draw() override;
-			void OnClose() override;
 
 			virtual std::uint32_t GetContextID() override
 			{
@@ -34,16 +47,32 @@ namespace IED
 
 		private:
 			void DrawEditor();
-			bool DrawEditorImpl();
+			void DrawProfileTree();
 
 			void DrawMenuBar();
 			void DrawFileMenu();
 			void DrawActionMenu();
-			void DrawAddPopup();
 
-			void AddKeyBind(std::string&& a_id);
+			virtual void ApplyProfile(
+				const KeyBindEditorPSParams& a_data,
+				const KeybindProfile&        a_profile) override;
 
-			std::string m_tmpID;
+			virtual void MergeProfile(
+				const KeyBindEditorPSParams& a_data,
+				const KeybindProfile&        a_profile) override;
+
+			virtual UIPopupQueue& GetPopupQueue_ProfileBase() const override;
+
+			virtual KeybindProfile::base_type GetData(
+				const KeyBindEditorPSParams& a_params) override;
+
+			virtual void OnKeybindErase(const Data::configKeybindEntryHolder_t::container_type::key_type& a_key) override;
+			virtual void OnKeybindAdd(const Data::configKeybindEntryHolder_t::container_type::value_type& a_key) override;
+			virtual void OnKeybindChange(const Data::configKeybindEntryHolder_t::container_type::value_type& a_data) override;
+
+			virtual bool GetKeybindState(
+				const Data::configKeybindEntryHolder_t::container_type::key_type& a_key,
+				std::uint32_t&                                                    a_stateOut) override;
 
 			Controller& m_controller;
 		};

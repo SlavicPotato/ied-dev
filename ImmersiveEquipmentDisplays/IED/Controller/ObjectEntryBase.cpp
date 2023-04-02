@@ -287,6 +287,11 @@ namespace IED
 		holder->NotifyAnimationGraph(a_event.c_str());
 	}
 
+	void ObjectEntryBase::ObjectAnim::Cleanup()
+	{
+		AnimationUpdateController::CleanupWeaponBehaviorGraph(holder);
+	}
+
 	void ObjectEntryBase::ObjectEntryData::Cleanup(
 		Game::ObjectRefHandle    a_handle,
 		const NiPointer<NiNode>& a_root,
@@ -372,8 +377,7 @@ namespace IED
 			a_handle,
 			commonNodes.rootNode.get());
 
-		AnimationUpdateController::CleanupWeaponBehaviorGraph(
-			anim.holder);
+		anim.Cleanup();
 
 		if (dbEntry)
 		{

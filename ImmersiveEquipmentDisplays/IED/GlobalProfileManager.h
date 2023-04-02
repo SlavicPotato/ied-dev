@@ -5,7 +5,7 @@
 #include "IED/Parsers/JSONConfigNodeOverrideHolderParser.h"
 #include "IED/Parsers/JSONConfigSlotHolderParser.h"
 #include "IED/Parsers/JSONFormFilterBaseParser.h"
-#include "IED/Parsers/JSONKeyToggleStateEntryHolderParser.h"
+#include "IED/Parsers/JSONConfigKeybindEntryHolderParser.h"
 
 #include "IED/OM/Parsers/JSONConfigOutfitEntryHolderParser.h"
 #include "IED/OM/Parsers/JSONConfigOutfitFormListParser.h"
@@ -21,9 +21,9 @@ namespace IED
 	using NodeOverrideProfile   = Profile<Data::configNodeOverrideHolder_t>;
 	using FormFilterProfile     = Profile<Data::configFormFilterBase_t>;
 	using CondVarProfile        = Profile<Data::configConditionalVariablesHolder_t>;
-	using KeyToggleProfile      = Profile<KB::KeyToggleStateEntryHolder>;
 	using OutfitProfile         = Profile<Data::OM::configOutfitEntryHolder_t>;
 	using OutfitFormListProfile = Profile<Data::OM::configOutfitFormList_t>;
+	using KeybindProfile        = Profile<Data::configKeybindEntryHolder_t>;
 
 	class GlobalProfileManager
 	{
@@ -106,6 +106,16 @@ namespace IED
 		private:
 			using ProfileManager<OutfitFormListProfile>::ProfileManager;
 		};
+		
+		class ProfileManagerKeybind :
+			public ProfileManager<KeybindProfile>
+		{
+		public:
+			FN_NAMEPROC("ProfileManagerKeybind");
+
+		private:
+			using ProfileManager<KeybindProfile>::ProfileManager;
+		};
 
 	public:
 		template <class T>
@@ -143,6 +153,10 @@ namespace IED
 			{
 				return m_outfitFormListManager;
 			}
+			else if constexpr (std::is_same_v<T, KeybindProfile>)
+			{
+				return m_keybindManager;
+			}
 			else
 			{
 				HALT("Unrecognized profile");
@@ -158,6 +172,7 @@ namespace IED
 		static ProfileManagerCondVar        m_condVarManager;
 		static ProfileManagerOutfit         m_outfitManager;
 		static ProfileManagerOutfitFormList m_outfitFormListManager;
+		static ProfileManagerKeybind        m_keybindManager;
 	};
 
 }

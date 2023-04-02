@@ -537,6 +537,13 @@ namespace IED
 		{
 			result->outfit = a_data.outfit;
 		}
+		
+		//
+
+		if (a_flags.test(ConfigStoreSerializationFlags::kKeyBinds))
+		{
+			result->keybinds = a_data.keybinds;
+		}
 
 		return result;
 	}

@@ -178,10 +178,7 @@ namespace IED
 			const std::optional<ImVec4>& a_color);
 
 		void         UIInitialize(Controller& a_controller);
-		UIOpenResult UIToggle();
 		UIOpenResult UIOpen();
-
-		[[nodiscard]] bool UIIsInitialized() const noexcept;
 
 		bool m_safeToOpenUI{ false };
 
@@ -192,10 +189,13 @@ namespace IED
 		virtual void                            OnUIOpen(){};
 		virtual void                            OnUIClose(){};
 
-		UIOpenResult UIOpenImpl();
+		const stl::smart_ptr<IUIRenderTaskMain>* UIOpenGetRenderTask();
+		UIOpenResult                             UIOpenImpl();
 
 		stl::smart_ptr<IUIRenderTaskMain> m_task;
-		stl::smart_ptr<IUIRenderTask>     m_toastTask;
+
+		stl::mutex                    m_makeToastLock;
+		stl::smart_ptr<IUIRenderTask> m_toastTask;
 	};
 
 	template <class... Args>
